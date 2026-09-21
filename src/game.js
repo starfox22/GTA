@@ -1444,6 +1444,10 @@
       if (player.car) {
         player.car.ai = false;
         player.car.speed = 0;
+        if (player.car.vx !== undefined) player.car.vx = player.car.vy = 0;
+        player.car.av = 0;
+        // A pilot who dies at the controls leaves the aircraft to fall, not hover.
+        if (isAircraft(player.car)) player.car.abandonedFlight = true;
         player.car = null;
       }
       announce('THE CITY ALWAYS COLLECTS', 'WASTED', 4);
@@ -1521,6 +1525,20 @@
           break;
         }
       }
+      if (!found && vehicle.hp <= 0) {
+        // A wreck must never trap its driver: climb out onto the nearest clear ground.
+        for (let r = 24; r < 1200 && !found; r += 32)
+          for (let i = 0; i < 16 && !found; i++) {
+            const x = vehicle.x + Math.cos((i * TAU) / 16) * r,
+              y = vehicle.y + Math.sin((i * TAU) / 16) * r;
+            if (!solid(x, y, 8) && !vehicles.some((o) => pointInCar(x, y, o, 9))) {
+              player.x = x;
+              player.y = y;
+              player.altitude = terrainHeight(x, y);
+              found = true;
+            }
+          }
+      }
       if (!found) {
         tell(
           isBoat(vehicle)
@@ -1530,7 +1548,12 @@
         return;
       }
       vehicle.ai = false;
+      // Physics derives `speed` from vx/vy each step, so the rolling velocity must be cut too.
       vehicle.speed *= 0.45;
+      if (vehicle.vx !== undefined) {
+        vehicle.vx *= 0.45;
+        vehicle.vy *= 0.45;
+      }
       player.car = null;
       player.inv = 0.5;
       tell('On foot · F to fire · Shift to sprint', 1.8);
@@ -3655,6 +3678,8 @@
       syncCarRadio();
     });
     canvas.addEventListener('mousemove', (e) => {
+      // Compatibility mouse events synthesized from touches must not hijack the aim.
+      if (performance.now() < worldTouchUntil || e.sourceCapabilities?.firesTouchEvents) return;
       mouse.x = e.clientX;
       mouse.y = e.clientY;
       mouse.active = true;

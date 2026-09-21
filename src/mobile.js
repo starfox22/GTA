@@ -43,6 +43,8 @@
       if (context !== touchLastContext || gameMode !== touchLastMode) {
         clearTouchInput();
         touchLastContext = context;
+        // Overlays such as pause, map and death do not run updateUI, so refresh the touch layer here.
+        if (gameMode !== touchLastMode) updateTouchUI();
         touchLastMode = gameMode;
       }
       if (gameMode !== 'play' || !touchEnabled()) {
@@ -154,6 +156,7 @@
     ])
       getElement(id).onclick = (e) => {
         e.preventDefault();
+        if (gameMode !== 'play') return;
         fn();
         syncTouchInput();
         updateTouchUI();

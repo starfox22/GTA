@@ -417,18 +417,20 @@
             radius: 105,
           });
         }
+      const signalBulbIndex = {
+          red: 0,
+          amber: 1,
+          green: 2,
+        },
+        signalLitColors = ['#ff5141', '#ffc454', '#8cdb86'];
       function updateTrafficVisuals() {
         for (const s of signalModels) {
           if (!s.group.visible) continue;
           const state = trafficSignal(s.x, s.z);
           for (const h of s.heads) {
-            const on = {
-              red: 0,
-              amber: 1,
-              green: 2,
-            }[state[h.vertical ? 'vertical' : 'horizontal']];
+            const on = signalBulbIndex[state[h.vertical ? 'vertical' : 'horizontal']];
             h.bulbs.forEach((b, i) =>
-              b.material.color.set(i === on ? ['#ff5141', '#ffc454', '#8cdb86'][i] : '#252d30'),
+              b.material.color.set(i === on ? signalLitColors[i] : '#252d30'),
             );
           }
         }
@@ -509,18 +511,22 @@
           return g;
         },
       );
+      const beamTop = new Three.Vector3(),
+        beamBottom = new Three.Vector3(),
+        beamAxis = new Three.Vector3(),
+        beamUp = new Three.Vector3(0, 1, 0);
       function updateMissionVisuals() {
         depotRoof.visible = distanceBetween(player, VINNY_DEPOT.inside) > 330;
         const h = vehicles.find((c) => c.airUnit && c.hp > 0 && !c.airRetreat),
           t = airSearchPoint(h);
         airBeam.visible = airPool.visible = !!t && distanceBetween(h, cameraTarget) < 950;
         if (t) {
-          const top = new Three.Vector3(h.x, h.altitude + 9, h.y),
-            bottom = new Three.Vector3(t.x, entityElevation(t) + 1, t.y),
-            d = top.clone().sub(bottom);
+          const top = beamTop.set(h.x, h.altitude + 9, h.y),
+            bottom = beamBottom.set(t.x, entityElevation(t) + 1, t.y),
+            d = beamAxis.copy(top).sub(bottom);
           airBeam.position.copy(top).add(bottom).multiplyScalar(0.5);
           airBeam.scale.set(1, d.length(), 1);
-          airBeam.quaternion.setFromUnitVectors(new Three.Vector3(0, 1, 0), d.normalize());
+          airBeam.quaternion.setFromUnitVectors(beamUp, d.normalize());
           airPool.position.copy(bottom);
           airLight.position.copy(top);
           airLight.target.position.copy(bottom);

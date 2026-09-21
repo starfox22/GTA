@@ -5,20 +5,78 @@
        * Scope: createCityRenderer() closure.
        * Coastal details, street scenery and environmental objects.
        */
-      // Rolling water is visible through the transparent land texture, including the bay.
+      /**
+       * WATER
+       * One shader draws every body of water: the bay, the river, the ocean and the
+       * reservoir. A distance-to-shore field (built once from the land polygons)
+       * drives shallow turquoise near beaches, breaking foam on the shoreline and
+       * flattened swell in the shallows. Four Gerstner swells displace the mesh;
+       * two scrolling noise fields add fine ripples in the fragment shader.
+       */
+      const SHORE_RES = 512,
+        SHORE_UNIT_SCALE = 4; // texel value 255 = 1020 world units from land
+      function buildShoreDistanceTexture() {
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = maskCanvas.height = SHORE_RES;
+        const mc = maskCanvas.getContext('2d');
+        mc.fillStyle = '#000';
+        mc.fillRect(0, 0, SHORE_RES, SHORE_RES);
+        mc.scale(SHORE_RES / WORLD_SIZE, SHORE_RES / WORLD_SIZE);
+        coastPath(mc);
+        mc.fillStyle = '#fff';
+        mc.fill();
+        const px = mc.getImageData(0, 0, SHORE_RES, SHORE_RES).data,
+          n = SHORE_RES * SHORE_RES,
+          dist = new Float32Array(n),
+          far = 1e6;
+        for (let i = 0; i < n; i++) dist[i] = px[i * 4] > 127 ? 0 : far;
+        // Two-pass chamfer distance transform (3-4 metric) in texel units.
+        const relax = (i, j, cost) => {
+          if (dist[j] + cost < dist[i]) dist[i] = dist[j] + cost;
+        };
+        for (let y = 0; y < SHORE_RES; y++)
+          for (let x = 0; x < SHORE_RES; x++) {
+            const i = y * SHORE_RES + x;
+            if (x > 0) relax(i, i - 1, 3);
+            if (y > 0) {
+              relax(i, i - SHORE_RES, 3);
+              if (x > 0) relax(i, i - SHORE_RES - 1, 4);
+              if (x < SHORE_RES - 1) relax(i, i - SHORE_RES + 1, 4);
+            }
+          }
+        for (let y = SHORE_RES - 1; y >= 0; y--)
+          for (let x = SHORE_RES - 1; x >= 0; x--) {
+            const i = y * SHORE_RES + x;
+            if (x < SHORE_RES - 1) relax(i, i + 1, 3);
+            if (y < SHORE_RES - 1) {
+              relax(i, i + SHORE_RES, 3);
+              if (x < SHORE_RES - 1) relax(i, i + SHORE_RES + 1, 4);
+              if (x > 0) relax(i, i + SHORE_RES - 1, 4);
+            }
+          }
+        const data = new Uint8Array(n * 4),
+          unitsPerTexel = WORLD_SIZE / SHORE_RES;
+        for (let i = 0; i < n; i++) {
+          const units = (dist[i] / 3) * unitsPerTexel,
+            v = Math.round(Math.min(255, units / SHORE_UNIT_SCALE));
+          data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = v;
+          data[i * 4 + 3] = 255;
+        }
+        const tx = new Three.DataTexture(data, SHORE_RES, SHORE_RES, Three.RGBAFormat);
+        tx.minFilter = tx.magFilter = Three.LinearFilter;
+        tx.wrapS = tx.wrapT = Three.ClampToEdgeWrapping;
+        tx.needsUpdate = true;
+        return tx;
+      }
       const waterUniforms = {
-        uTime: {
-          value: 0,
-        },
-        uDay: {
-          value: 1,
-        },
-        uEye: {
-          value: new Three.Vector3(),
-        },
-        uSun: {
-          value: new Three.Vector3(-0.45, 0.76, -0.23).normalize(),
-        },
+        uTime: { value: 0 },
+        uDay: { value: 1 },
+        uDusk: { value: 0 },
+        uViewDir: { value: new Three.Vector3(0, 1, 0) },
+        uSun: { value: new Three.Vector3(-0.45, 0.76, -0.23).normalize() },
+        uShore: { value: buildShoreDistanceTexture() },
+        uWorldSize: { value: WORLD_SIZE },
+        uShoreScale: { value: 255 * SHORE_UNIT_SCALE },
       };
       const waterMaterial = new Three.ShaderMaterial({
         uniforms: waterUniforms,
@@ -26,23 +84,39 @@
           varying vec3 vWorld;
           varying vec3 vNormal;
           varying float vCrest;
+          varying float vShore;
           uniform float uTime;
+          uniform sampler2D uShore;
+          uniform float uWorldSize;
+          uniform float uShoreScale;
+          // Gerstner swell: horizontal pinch sharpens crests without extra geometry.
+          void wave(vec2 dir, float amp, float wavelength, float speed, float steep, vec2 p,
+                    inout vec3 offset, inout vec3 dNormal) {
+            float k = 6.28318 / wavelength;
+            float phase = k * dot(dir, p) - speed * uTime;
+            float c = cos(phase), s = sin(phase);
+            offset.xz += dir * (steep * amp * c);
+            offset.y += amp * s;
+            dNormal.x -= dir.x * k * amp * c;
+            dNormal.z -= dir.y * k * amp * c;
+          }
           void main(){
-            vec3 p=position;
-            vec4 origin=modelMatrix*vec4(p,1.);
-            float x=origin.x,z=origin.z;
-            float a=x*.010+z*.006-uTime*.9;
-            float b=x*.021-z*.015-uTime*1.25;
-            float c=x*.027+z*.038-uTime*1.8;
-            float h=sin(a)*1.6+sin(b)*.7+sin(c)*.28;
-            p.z=h;
-            vec4 world=modelMatrix*vec4(p,1.);
-            vWorld=world.xyz;
-            vCrest=h;
-            float dx=cos(a)*.016+cos(b)*.0147+cos(c)*.00756;
-            float dz=cos(a)*.0096-cos(b)*.0105+cos(c)*.01064;
-            vNormal=normalize(vec3(-dx,1.,-dz));
-            gl_Position=projectionMatrix*viewMatrix*world;
+            vec4 origin = modelMatrix * vec4(position, 1.);
+            vec2 p = origin.xz;
+            float shore = texture2D(uShore, p / uWorldSize).r * uShoreScale;
+            float depthFade = 0.22 + 0.78 * smoothstep(8., 190., shore);
+            vec3 offset = vec3(0.);
+            vec3 dNormal = vec3(0., 1., 0.);
+            wave(normalize(vec2(0.82, 0.57)), 1.9 * depthFade, 210., 1.05, 0.55, p, offset, dNormal);
+            wave(normalize(vec2(-0.35, 0.94)), 1.1 * depthFade, 128., 1.5, 0.5, p, offset, dNormal);
+            wave(normalize(vec2(0.98, -0.2)), 0.55 * depthFade, 66., 2.1, 0.4, p, offset, dNormal);
+            wave(normalize(vec2(0.3, -0.95)), 0.32 * depthFade, 37., 2.9, 0.3, p, offset, dNormal);
+            vec3 world = origin.xyz + offset;
+            vWorld = world;
+            vCrest = offset.y / max(0.05, 3.9 * depthFade);
+            vShore = shore;
+            vNormal = normalize(dNormal);
+            gl_Position = projectionMatrix * viewMatrix * vec4(world, 1.);
           }
         `,
         fragmentShader: `
@@ -50,31 +124,76 @@
           varying vec3 vWorld;
           varying vec3 vNormal;
           varying float vCrest;
+          varying float vShore;
           uniform float uTime;
           uniform float uDay;
-          uniform vec3 uEye;
+          uniform float uDusk;
+          uniform vec3 uViewDir;
           uniform vec3 uSun;
+          float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+          float vnoise(vec2 p){
+            vec2 i = floor(p), f = fract(p);
+            f = f * f * (3. - 2. * f);
+            return mix(mix(hash(i), hash(i + vec2(1., 0.)), f.x),
+                       mix(hash(i + vec2(0., 1.)), hash(i + vec2(1., 1.)), f.x), f.y);
+          }
+          float ripples(vec2 p){
+            return vnoise(p * 0.045 + vec2(uTime * 0.09, -uTime * 0.05)) * 0.6
+                 + vnoise(p * 0.11 + vec2(-uTime * 0.13, uTime * 0.07)) * 0.3
+                 + vnoise(p * 0.27 + vec2(uTime * 0.21, uTime * 0.16)) * 0.1;
+          }
           void main(){
-            float ripple=sin(vWorld.x*.082+vWorld.z*.057-uTime*2.1);
-            vec3 n=normalize(vNormal+vec3(ripple*.018,0.,ripple*.012));
-            vec3 viewDir=normalize(uEye-vWorld);
-            float fresnel=pow(1.-max(dot(viewDir,n),0.),3.);
-            float tropical=smoothstep(3300.,4700.,vWorld.x);
-            vec3 deep=mix(vec3(.035,.18,.27),vec3(.045,.30,.32),tropical);
-            vec3 sky=mix(vec3(.08,.15,.24),vec3(.48,.66,.73),uDay);
-            float shine=pow(max(dot(reflect(-uSun,n),viewDir),0.),65.);
-            vec3 color=mix(deep,sky,fresnel*.65);
-            color+=vec3(.9,.79,.54)*shine*.4*uDay;
-            float foam=smoothstep(1.9,2.55,vCrest)*.10;
-            color=mix(color,vec3(.65,.83,.8),foam);
-            color*=.35+.65*uDay;
-            gl_FragColor=vec4(color,1.);
+            // Fine ripple normal from noise gradient.
+            float e = 1.6;
+            float h0 = ripples(vWorld.xz);
+            float hx = ripples(vWorld.xz + vec2(e, 0.));
+            float hz = ripples(vWorld.xz + vec2(0., e));
+            float rippleScale = 0.55 + 0.45 * smoothstep(4., 120., vShore);
+            vec3 n = normalize(vNormal + vec3((h0 - hx) * 2.2, 0., (h0 - hz) * 2.2) * rippleScale);
+            vec3 viewDir = normalize(uViewDir);
+            float facing = max(dot(viewDir, n), 0.);
+            float fresnel = 0.04 + 0.96 * pow(1. - facing, 4.);
+            // Regional palettes: turquoise Keys and county reefs, cold slate in Marlow Bay.
+            float tropical = smoothstep(3500., 4600., vWorld.x) + smoothstep(5400., 6400., vWorld.z);
+            tropical = clamp(tropical, 0., 1.);
+            vec3 deep = mix(vec3(.018, .10, .19), vec3(.02, .26, .32), tropical);
+            vec3 shallow = mix(vec3(.10, .40, .48), vec3(.22, .68, .66), tropical);
+            float depthMix = 1. - smoothstep(0., 230., vShore + h0 * 30.);
+            vec3 body = mix(deep, shallow, depthMix * depthMix);
+            // Sky reflection: night navy -> dusk amber horizon -> pale day sky.
+            vec3 skyNight = vec3(.05, .08, .16);
+            vec3 skyDay = vec3(.55, .70, .84);
+            vec3 sky = mix(skyNight, skyDay, uDay);
+            sky = mix(sky, vec3(.92, .55, .33), uDusk * 0.55);
+            vec3 color = mix(body, sky, fresnel * 0.62);
+            // Wave-crest scattering lifts the color where the swell is tallest.
+            color += shallow * 0.18 * clamp(vCrest, 0., 1.) * uDay;
+            // Sun glitter: tight and broad specular lobes.
+            vec3 reflected = reflect(-uSun, n);
+            float spec = pow(max(dot(reflected, viewDir), 0.), 320.) * 2.4
+                       + pow(max(dot(reflected, viewDir), 0.), 28.) * 0.22;
+            vec3 sunColor = mix(vec3(1., .96, .86), vec3(1., .62, .34), uDusk);
+            color += sunColor * spec * (0.25 + 0.75 * uDay);
+            // Moon path and shoreline light spill at night.
+            float sparkle = smoothstep(0.78, 0.92, vnoise(vWorld.xz * 0.9 + uTime * 0.6));
+            color += vec3(.75, .82, 1.) * sparkle * 0.08 * (1. - uDay) * (0.3 + fresnel);
+            color += vec3(1., .78, .5) * sparkle * 0.14 * (1. - uDay) * (1. - smoothstep(0., 360., vShore));
+            // Foam: breaking edge, retreating wash and crest whitecaps.
+            float washPhase = fract(vShore * 0.026 - uTime * 0.28 + h0 * 0.4);
+            float wash = smoothstep(0.82, 1., washPhase) * (1. - smoothstep(20., 95., vShore));
+            float edge = 1. - smoothstep(0., 14. + h0 * 10., vShore);
+            float caps = smoothstep(0.62, 0.95, vCrest * (0.65 + h0 * 0.7)) * smoothstep(40., 160., vShore);
+            float foam = clamp(edge * 0.85 + wash * 0.55 + caps * 0.35, 0., 1.);
+            foam *= 0.55 + 0.45 * vnoise(vWorld.xz * 0.35 + uTime * 0.4);
+            color = mix(color, vec3(.86, .93, .92), foam);
+            color *= 0.3 + 0.7 * uDay;
+            gl_FragColor = vec4(color, 1.);
           }
         `,
       });
-      // Mobile halves the grid density; wave phase remains world-aligned at either resolution.
+      // Mobile halves the grid density; wave phase stays world-aligned at either resolution.
       const waterSurface = new Three.Mesh(
-        new Three.PlaneGeometry(6000, 6000, touchEnabled() ? 120 : 240, touchEnabled() ? 120 : 240),
+        new Three.PlaneGeometry(7000, 7000, touchEnabled() ? 110 : 220, touchEnabled() ? 110 : 220),
         waterMaterial,
       );
       waterSurface.rotation.x = -Math.PI / 2;
@@ -528,18 +647,22 @@
         );
         drinkLabel.visible = drinkLabel.userData.backing.visible =
           !!rooftopJob() && player.roof && !rooftopJob().killRegistered;
+        const light = daylight();
         waterUniforms.uTime.value = gameTime;
-        waterUniforms.uDay.value = 0.2 + 0.8 * daylight();
-        waterUniforms.uEye.value.copy(camera.position);
+        waterUniforms.uDay.value = 0.12 + 0.88 * light;
+        waterUniforms.uDusk.value = clamp(1 - Math.abs(light - 0.3) / 0.28, 0, 1);
+        camera.getWorldDirection(waterUniforms.uViewDir.value).multiplyScalar(-1);
         waterSurface.scale.set(Math.max(1, 1 / worldZoom / 2), Math.max(1, 1 / worldZoom / 2), 1);
         waterSurface.position.x = Math.round(cameraTarget.x / 25) * 25;
         waterSurface.position.z = Math.round(cameraTarget.y / 25) * 25;
         shoreFoam.forEach((m) => {
           const t = (gameTime * 0.18 + m.userData.phase) % 1;
           m.position.z = m.userData.outward * (3 + (1 - t) * (m.userData.beach ? 36 : 10));
-          m.material.opacity = Math.sin(t * Math.PI) * (m.userData.beach ? 0.42 : 0.2);
+          m.material.opacity = Math.sin(t * Math.PI) * (m.userData.beach ? 0.3 : 0.12);
         });
-        farWater.material.color.set(daylight() > 0.3 ? '#204e60' : '#102a3c');
+        farWater.material.color
+          .set('#061421')
+          .lerp(new Three.Color(cameraTarget.x > 3900 ? '#0c5a68' : '#0f3a52'), light);
       }
 
       // Causeway railings match the complete collision spans, including the wider southern bay.

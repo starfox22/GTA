@@ -405,18 +405,12 @@
             chrome,
           );
           for (const side of airline && x < 0 ? [-1, 1] : [0]) {
-            const wheel = mesh(
-              wheelGeo,
-              rubber,
-              body,
-              x,
-              radius,
-              z + side * 2.2,
-              radius,
-              airline ? 1.7 : 1.4,
-              radius,
-            );
-            wheel.rotation.x = Math.PI / 2;
+            // A pivot group spins about its axle; a pre-tilted cylinder would wobble instead.
+            const wheel = new Three.Group();
+            wheel.position.set(x, radius, z + side * 2.2);
+            body.add(wheel);
+            const tire = mesh(wheelGeo, rubber, wheel, 0, 0, 0, radius, airline ? 1.7 : 1.4, radius);
+            tire.rotation.x = Math.PI / 2;
             wheels.push({
               wheel,
             });
@@ -492,8 +486,11 @@
           [-35, 0],
         ]) {
           rod(body, new Three.Vector3(x, 10, z * 0.4), new Three.Vector3(x, 3, z), 0.9, chrome);
-          const wheel = mesh(wheelGeo, rubber, body, x, 3, z, 3, 2, 3);
-          wheel.rotation.x = Math.PI / 2;
+          const wheel = new Three.Group();
+          wheel.position.set(x, 3, z);
+          body.add(wheel);
+          const tire = mesh(wheelGeo, rubber, wheel, 0, 0, 0, 3, 2, 3);
+          tire.rotation.x = Math.PI / 2;
           wheels.push({
             wheel,
           });

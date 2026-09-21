@@ -608,7 +608,7 @@
           worldContext.stroke();
         }
       }
-      for (const y of [1320, 1710]) {
+      for (const y of [1320, 1675]) {
         const x = 3360,
           reach = 125 + Math.sin(gameTime * 0.23 + y) * 24;
         worldContext.strokeStyle = '#e3b95e';

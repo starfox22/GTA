@@ -216,9 +216,10 @@
       );
       if (aircraft.hp <= 0) {
         aircraft.throttle = 0;
-        if (aircraft.altitude > 0) {
+        const wreckFloor = terrainHeight(aircraft.x, aircraft.y);
+        if (aircraft.altitude > wreckFloor) {
           aircraft.vz -= flightModel.gravity * stepSeconds;
-          aircraft.altitude = Math.max(0, aircraft.altitude + aircraft.vz * stepSeconds);
+          aircraft.altitude = Math.max(wreckFloor, aircraft.altitude + aircraft.vz * stepSeconds);
         }
         aircraft.vx *= Math.exp(-stepSeconds * 0.3);
         aircraft.vy *= Math.exp(-stepSeconds * 0.3);
@@ -382,7 +383,11 @@
       }
       if (missionState.index === 10) {
         for (let i = vehicles.length - 1; i >= 0; i--)
-          if (vehicles[i].type === 'plane' && distanceBetween(vehicles[i], FLIGHT.plane) < 180)
+          if (
+            vehicles[i].type === 'plane' &&
+            vehicles[i] !== player.car &&
+            distanceBetween(vehicles[i], FLIGHT.plane) < 180
+          )
             vehicles.splice(i, 1);
         missionState.car = makeCar('plane', FLIGHT.plane.x, FLIGHT.plane.y, 0, false, '#dfd7bd');
         missionState.car.mission = true;

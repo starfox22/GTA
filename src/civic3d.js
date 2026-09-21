@@ -260,18 +260,44 @@
             return m;
           },
         );
+      // Club neon keeps a fixed tint; the sky colour is a reusable scratch value.
+      civicNeon.forEach((n, i) =>
+        n.material.color.set(i % 2 ? '#c36fd6' : '#78a7d8').multiplyScalar(0.82),
+      );
+      /**
+       * TIME OF DAY
+       * Sky, fog, sun and ambient colours follow daylight() through four keyframes:
+       * night (cool moonlight), dawn/dusk (amber horizon, long warm shadows), day.
+       * The dusk weight peaks when daylight is near 0.3 so sunsets read as sunsets.
+       */
+      const SKY_NIGHT = new Three.Color('#0d1524'),
+        SKY_DAY = new Three.Color('#93a8ba'),
+        SKY_DUSK = new Three.Color('#b0705a'),
+        SUN_NIGHT = new Three.Color('#7d93c4'),
+        SUN_DUSK = new Three.Color('#ffa564'),
+        SUN_DAY = new Three.Color('#fff1d6'),
+        HEMI_SKY_NIGHT = new Three.Color('#2f3d5e'),
+        HEMI_SKY_DAY = new Three.Color('#b8cbe8'),
+        HEMI_GROUND_NIGHT = new Three.Color('#1c1a22'),
+        HEMI_GROUND_DAY = new Three.Color('#5b4f47'),
+        skyScratch = new Three.Color();
+      let lastBadge = '';
       function updateCivicVisuals() {
         const light = daylight(),
-          night = 1 - light;
-        hemi.intensity = 0.55 + light * 1.5;
-        sun.intensity = 0.25 + light * 3;
-        fill.intensity = 0.3 + night * 0.2;
-        sun.color.set(light < 0.35 ? '#f2bd93' : '#fff0ce');
-        scene.background.set('#172739').lerp(new Three.Color('#899caa'), light);
-        scene.fog.color.copy(scene.background);
-        renderer.toneMappingExposure = 1.06 + night * 0.12;
-        getElement('renderBadge').textContent =
-          'SOUTH COAST · ' + (light < 0.1 ? 'NIGHT' : light < 0.4 ? 'TWILIGHT' : 'DAY');
+          night = 1 - light,
+          dusk = clamp(1 - Math.abs(light - 0.3) / 0.3, 0, 1);
+        hemi.intensity = 0.45 + light * 1.55;
+        hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, light);
+        hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, light);
+        sun.intensity = 0.35 + light * 3;
+        sun.color.copy(SUN_NIGHT).lerp(SUN_DAY, light).lerp(SUN_DUSK, dusk * 0.85);
+        fill.intensity = 0.28 + night * 0.25;
+        skyScratch.copy(SKY_NIGHT).lerp(SKY_DAY, light).lerp(SKY_DUSK, dusk * 0.6);
+        scene.background.copy(skyScratch);
+        scene.fog.color.copy(skyScratch);
+        renderer.toneMappingExposure = 1.04 + night * 0.16 + dusk * 0.05;
+        const badge = 'SOUTH COAST · ' + (light < 0.1 ? 'NIGHT' : light < 0.4 ? (dusk > 0.5 && (worldMinutes % 1440) / 60 < 12 ? 'DAWN' : 'DUSK') : 'DAY');
+        if (badge !== lastBadge) getElement('renderBadge').textContent = lastBadge = badge;
         for (let i = 0; i < bloodMeshes.length; i++) {
           const m = bloodMeshes[i],
             p = bloodPools[i];
@@ -293,8 +319,5 @@
           m.material.map = p.track ? treadMap : bloodMaps[p.variant || 0];
           m.material.opacity = (p.opacity ?? 0.95) * clamp((240 - age) / 35, 0, 1);
         }
-        civicNeon.forEach((n, i) =>
-          n.material.color.set(i % 2 ? '#c36fd6' : '#78a7d8').multiplyScalar(0.82),
-        );
       }
       // END SUBSYSTEM: src/civic3d.js

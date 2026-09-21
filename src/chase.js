@@ -246,7 +246,7 @@
         y: m.car.y,
       };
       for (const vehicle of vehicles)
-        if (vehicle.missionPursuit && vehicle.type === 'police') {
+        if (vehicle.missionPursuit && vehicle.type === 'police' && vehicle !== player.car) {
           vehicle.gangTarget = null;
           vehicle.pursuitTarget = m.car;
           vehicle.cop = vehicle.hp > 0;
@@ -259,7 +259,12 @@
       }
       for (let i = vehicles.length - 1; i >= 0; i--) {
         const vehicle = vehicles[i];
-        if (vehicle.missionPursuit && !vehicle.airUnit && distanceBetween(vehicle, m.car) > 1700) {
+        if (
+          vehicle.missionPursuit &&
+          !vehicle.airUnit &&
+          vehicle !== player.car &&
+          distanceBetween(vehicle, m.car) > 1700
+        ) {
           vehicles.splice(i, 1);
         }
       }
@@ -297,6 +302,12 @@
       for (let i = vehicles.length - 1; i >= 0; i--)
         if (vehicles[i].missionPursuit || vehicles[i].reconPatrol) {
           const c = vehicles[i];
+          if (c === player.car) {
+            // A stolen pursuit car or boarded launch stays in the world with the player.
+            c.missionPursuit = c.reconPatrol = c.cop = false;
+            c.pursuitTarget = null;
+            continue;
+          }
           for (let j = officers.length - 1; j >= 0; j--)
             if (officers[j].car === c) officers.splice(j, 1);
           vehicles.splice(i, 1);

@@ -353,105 +353,7 @@
       groundMesh.position.set(CITY_SIZE / 2, 0.02, CITY_SIZE / 2);
       groundMesh.receiveShadow = true;
       scene.add(groundMesh);
-      for (let i = 0; i < buildings.length; i++) {
-        const b = buildings[i];
-        if (b.depotWall) continue;
-        const height = b.height,
-          group = new Three.Group();
-        group.position.set(b.x, 0, b.y);
-        scene.add(group);
-        const wall = wallTextures[b.style === 2 ? 2 : i % 4 === 2 ? 3 : i % 2].clone();
-        if (b.style !== 2) wall.repeat.set(Math.round(b.w / 34) / 4, height / 72);
-        wall.needsUpdate = true;
-        const face = new Three.MeshStandardMaterial({
-          map: b.tropical ? null : wall,
-          color: b.tropical ? ['#e7c8b5', '#badcd5', '#ddd7c3', '#c4d0e5'][i % 4] : '#b6b2a9',
-          roughness: b.tropical ? 0.72 : 0.91,
-        });
-        const top = roofMat.clone(),
-          trim = mat(i % 2 ? '#9a958d' : '#796b62');
-        const block = box(group, b.w / 2, height / 2, b.h / 2, b.w, height, b.h, [
-          face,
-          face,
-          top,
-          concrete,
-          face,
-          face,
-        ]);
-        box(group, b.w / 2, height + 1.8, 2, b.w + 3, 3.6, 4, trim);
-        box(group, b.w / 2, height + 1.8, b.h - 2, b.w + 3, 3.6, 4, trim);
-        box(group, 2, height + 1.8, b.h / 2, 4, 3.6, b.h, trim);
-        box(group, b.w - 2, height + 1.8, b.h / 2, 4, 3.6, b.h, trim);
-        box(group, b.w / 2, 3, b.h + 1, b.w + 3, 6, 3, trim);
-        const ac = mat('#868c8e', 0.7, 0.4),
-          vent = mat('#434a4b', 0.8, 0.4);
-        for (let j = 0; !b.roofBar && j < Math.max(1, Math.floor(b.w / 85)); j++) {
-          const x = 25 + j * 75,
-            z = 30 + (i % 3) * 24;
-          box(group, x, height + 5, z, 21, 10, 16, ac);
-          box(group, x, height + 10.1, z, 16, 0.3, 11, vent);
-          for (let q = 0; q < 4; q++) box(group, x - 6 + q * 4, height + 10.4, z, 1, 0.5, 11, ac);
-          box(group, x + 3, height + 1, z + 15, 9, 2, 15, vent);
-        }
-        if (!b.roofBar && !b.tropical && i % 5 === 0 && b.style !== 2) {
-          mesh(
-            new Three.CylinderGeometry(11, 11, 20, 14),
-            wood,
-            group,
-            b.w - 29,
-            height + 16,
-            b.h - 27,
-          );
-          mesh(new Three.ConeGeometry(13, 6, 14), darkMetal, group, b.w - 29, height + 29, b.h - 27);
-          for (const dx of [-8, 8])
-            for (const dz of [-8, 8])
-              box(group, b.w - 29 + dx, height + 4, b.h - 27 + dz, 1, 9, 1, darkMetal);
-        }
-        if (!b.roofBar && !b.tropical && i % 4 === 0) {
-          const mast = box(group, 18, height + 18, b.h - 18, 0.9, 36, 0.9, darkMetal);
-          box(group, 18, height + 29, b.h - 18, 22, 0.7, 0.7, darkMetal);
-          box(group, 18, height + 23, b.h - 18, 15, 0.7, 0.7, darkMetal);
-        }
-        if (b.tropical && !b.roofBar) {
-          for (let y = 10; y < height - 3; y += 13)
-            for (let x = 12; x < b.w - 10; x += 22) {
-              box(group, x, y, b.h + 0.6, 13, 6, 0.7, glass);
-              box(group, x, y, -0.6, 13, 6, 0.7, glass);
-            }
-          if (!b.roofBar)
-            box(group, b.w / 2, height + 4, b.h / 2, b.w * 0.72, 4, b.h * 0.75, mat('#e8dfcd'));
-        }
-        if (b.roofBar) {
-          for (let y = 25; y < height - 8; y += 18) {
-            for (const z of [-1, b.h + 1]) {
-              box(group, b.w / 2, y, z, b.w + 2, 1.8, 3, concrete);
-              for (let x = 18; x < b.w - 12; x += 26) {
-                box(group, x, y + 7, z, 18, 10, 1, glass);
-                box(group, x, y + 2, z + (z < 0 ? -1 : 1), 20, 1.2, 5, trim);
-              }
-            }
-            for (const x of [-1, b.w + 1]) {
-              box(group, x, y, b.h / 2, 3, 1.8, b.h, concrete);
-              for (let z = 18; z < b.h - 12; z += 26) box(group, x, y + 7, z, 1, 10, 18, glass);
-            }
-          }
-          for (const x of [5, b.w - 5])
-            for (const z of [5, b.h - 5]) box(group, x, height / 2, z, 7, height + 1, 7, concrete);
-        }
-        allBuildings.push({
-          b,
-          group,
-          height,
-          materials: [face, top, trim],
-          opacity: 1,
-        });
-        statics.push({
-          x: b.x + b.w / 2,
-          y: b.y + b.h / 2,
-          group,
-          radius: Math.max(b.w, b.h),
-        });
-      }
+      // Buildings are constructed by src/cityscape3d.js (included below, after the halo helper).
       // Street trees with proper trunks and layered crowns.
       const blossomMat = mat('#d5a2b5');
       const leafGeo = new Three.IcosahedronGeometry(1, 1);
@@ -522,6 +424,8 @@
         parent.add(s);
         return s;
       }
+      const lampHalos = [],
+        lampGlows = [];
       for (let i = 0; i < lamps.length; i += 2) {
         const l = lamps[i],
           group = new Three.Group();
@@ -530,7 +434,7 @@
         box(group, 0, 17, 0, 1.1, 34, 1.1, darkMetal);
         box(group, 3, 34, 0, 7, 1, 1, darkMetal);
         box(group, 6, 33.5, 0, 5, 1.2, 3, warmLamp);
-        halo(group, 6, 33, 0, 14);
+        lampHalos.push(halo(group, 6, 33, 0, 14));
         const glow = new Three.Mesh(
           new Three.PlaneGeometry(65, 65),
           new Three.MeshBasicMaterial({
@@ -545,6 +449,7 @@
         glow.rotation.x = -Math.PI / 2;
         glow.position.set(6, 0.1, 0);
         group.add(glow);
+        lampGlows.push(glow);
         statics.push({
           x: l.x,
           y: l.y,
@@ -598,6 +503,7 @@
       box(ph, 0, 12, 3.1, 3, 2, 0.1, mat('#b0c9b1'));
       box(ph, 0, 17, 0, 12, 2, 8, mat('#517c70'));
       halo(ph, 0, 14, 0, 8, '#9bdbb1');
+      // @include src/cityscape3d.js
       // @include src/garage3d.js
       // @include src/landmarks3d.js
       // @include src/civic3d.js
@@ -731,7 +637,8 @@
         const shell = mesh(bodyGeo(l, w, h), paint, body, 0, 0, 0),
           original = new Float32Array(shell.geometry.attributes.position.array),
           wheels = [],
-          bumpers = [];
+          bumpers = [],
+          nightLights = [];
         const cabin = open
           ? box(body, l * 0.14, h + 2.4, 0, 0.7, 5, w * 0.73, glass.clone())
           : mesh(
@@ -815,6 +722,10 @@
           }
           box(body, l * 0.47, h - 2, side * w * 0.3, 1.5, 2.5, w * 0.24, warmLamp);
           box(body, -l * 0.47, h - 2, side * w * 0.3, 1.2, 2, w * 0.22, tailLamp);
+          nightLights.push(
+            halo(body, l * 0.5, h - 2, side * w * 0.3, 11, '#ffe9bd'),
+            halo(body, -l * 0.5, h - 2, side * w * 0.3, 7, '#ff5a44'),
+          );
         }
         bumpers.push(box(body, l * 0.48, 4.8, 0, 1.1, 1.4, w * 0.78, chrome));
         box(body, l * 0.489, 6.2, 0, 0.4, 2, w * 0.33, darkMetal);
@@ -905,6 +816,7 @@
           hood,
           hoodBaseY: h + 0.05,
           damageVersion: -1,
+          nightLights,
         };
       }
       function makePerson(person, isPlayer) {
@@ -1242,7 +1154,13 @@
       );
       scene.add(skidLines);
       let muzzleUntil = 0,
-        frames = 0;
+        frames = 0,
+        nightAmount = 0;
+      function updateStreetLighting() {
+        const glow = 0.1 + 0.9 * nightAmount;
+        for (const h of lampHalos) h.material.opacity = glow;
+        for (const g of lampGlows) g.material.opacity = 0.16 * glow;
+      }
       // Dynamic models own their cloned/new resources; the initial world and factory primitives persist.
       const sharedGeometries = new Set([boxGeo, sphereGeo, wheelGeo, cylinderGeo]),
         sharedMaterials = new Set();
@@ -1438,6 +1356,7 @@
         render() {
           const deltaSeconds = Math.min(0.04, Math.max(0, gameTime - lastVisualTime));
           lastVisualTime = gameTime;
+          nightAmount = clamp(1 - daylight() * 1.6, 0, 1);
           updateCivicVisuals();
           const altitude = entityElevation(player.car || player),
             flying = isAircraft(player.car) || player.parachute;
@@ -1470,6 +1389,8 @@
           updateSportsVisuals(deltaSeconds);
           updateGarageVisuals();
           updateWorldVisuals();
+          updateCityscapeVisuals();
+          updateStreetLighting();
           updateCountyVisuals();
           updateHarborVisuals();
           updateTrafficVisuals();
@@ -1547,6 +1468,14 @@
                 );
               }
               m.cargo.forEach((g, i) => (g.visible = i < (c.cargoCount || 0)));
+            }
+            if (m.nightLights) {
+              const lit = c.hp > 0 && (c.ai || c === player.car) && nightAmount > 0.25;
+              for (let k = 0; k < m.nightLights.length; k++) {
+                const sprite = m.nightLights[k];
+                sprite.visible = lit;
+                if (lit) sprite.material.opacity = (k % 2 ? 0.55 : 0.85) * nightAmount;
+              }
             }
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
             m.paint.color

@@ -1422,6 +1422,9 @@
           if (vehicle === player.car) {
             if (isAircraft(vehicle) && aircraftClearance(vehicle) > 2) {
               player.car = null;
+              // A mid-air destruction is always fatal; a lingering exit/landing invulnerability
+              // must not leave the player standing in the sky without an aircraft.
+              player.inv = 0;
               hurt(1000);
             } else {
               exitCar();
