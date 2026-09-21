@@ -1,0 +1,64 @@
+# Dead End City
+
+An original, self-contained top-down crime game in the spirit of GTA 1 and 2, set on the
+South Coast in 1997. One HTML file, no server, no build step to play: open
+`dead-end-city.html` in a desktop or mobile browser and press **ENTER THE CITY**.
+
+- 16 missions: an 11-chapter story (harbor heists, a rooftop hit, car chases, a flight
+  finale) followed by 5 open contracts (a hot-car checkpoint run, bomb defusal across the
+  Keys, a district-wide blackout, an aerial ring time-trial, and a repo job).
+- A living city: pedestrians who idle, window-shop, sit on benches, walk in pairs and talk
+  back; traffic that obeys signals; police with a real wanted system; gangs, wildlife,
+  trains, sports matches and a casino.
+- A 3D city renderer (Three.js r160, embedded) with district zoning, procedural roofs,
+  windows that light up at night, shopfronts, billboards, street furniture, a shore-aware
+  wave shader, and a full day/night cycle with dawn and dusk.
+
+## Play
+
+| Action | Keys |
+| --- | --- |
+| Move / drive | W A S D or arrows |
+| Interact, enter or leave a vehicle | E |
+| Fire | F, Space or mouse click |
+| Run / handbrake | Shift |
+| Weapons | 1 to 6, Q cycle, K knife, R reload, I arsenal |
+| City map | Tab |
+| Car radio | N power, B next station |
+| Bail out / parachute | J then Space |
+| Pause | Escape |
+
+Touch controls appear automatically on phones and tablets. Progress saves to the browser's
+local storage. The game runs offline; nothing is fetched from the network.
+
+## Repository layout
+
+```
+dead-end-city.html    The playable, self-contained build (the deliverable).
+src/                  Game source, one file per subsystem (see docs/SOURCE_GUIDE.md).
+src/shell.html        HTML shell: CSS, DOM and include directives.
+vendor/three.r160.js  Unminified Three.js r160 with its MIT license.
+assets/               Decoded images and audio plus manifest.json (embedded at build time).
+tools/build.py        Reassembles dead-end-city.html from the pieces above.
+tools/check.sh        Fast syntax gate (assemble + `node --check`).
+tools/smoke.mjs       Headless Chromium boot test with screenshots.
+docs/                 Source guide, audit notes and third-party credits.
+```
+
+## Build and verify
+
+```
+python3 tools/build.py          # writes dead-end-city.html
+sh tools/check.sh               # parses the assembled script with Node
+node tools/smoke.mjs            # boots the build headlessly (needs Playwright + Chromium)
+```
+
+Only Python 3 is needed to build. The assembled file is plain, readable source: nothing is
+minified, packed or evaluated, and every media block is labeled with its path, byte count
+and SHA-256.
+
+## Credits
+
+Original game code © the Dead End City authors. Three.js is MIT licensed. Audio samples and
+music are Creative Commons or CC0 and are credited in `docs/THIRD_PARTY_CREDITS.txt`, which
+is also embedded in the game file.

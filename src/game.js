@@ -842,6 +842,34 @@
       groundContext.fillText(text, x, y);
       groundContext.restore();
     }
+    /**
+     * ZONING
+     * Building height follows the district, the way a real skyline does: a
+     * financial core of towers whose height falls off with distance from the
+     * centre, mid-rise Midtown and South Bank, low brick Old Quarter, sheds on
+     * the docks, and pastel two-to-four storey Art Deco on the Keys with taller
+     * hotels along Ocean Drive. `index` gives deterministic variation.
+     */
+    function zoneHeight(x, y, w, style, index) {
+      const cx = x + w / 2,
+        vary = ((index * 7919) % 100) / 100;
+      if (style === 2) return 34 + vary * 22;
+      if (x > RIVER.right) {
+        if (y < 1500) return 24 + vary * 26;
+        if (y < 3100) return cx > 5050 ? 54 + vary * 46 : 34 + vary * 30;
+        if (y < 4400) return 22 + vary * 20;
+        return 20 + vary * 18;
+      }
+      if (y < 1450) return cx > 2500 ? 30 + vary * 18 : 30 + vary * 26;
+      if (y < 2650) return cx > 1700 && cx < 2300 ? 56 + vary * 30 : 62 + vary * 55;
+      if (y < 3700) {
+        if (cx < 1800) return 46 + vary * 40;
+        const core = clamp(Math.hypot(cx - 2450, y + 70 - 3150) / 950, 0, 1);
+        return 110 + (1 - core) * 130 + vary * 45;
+      }
+      if (y < 4650) return 50 + vary * 45;
+      return 30 + vary * 24;
+    }
     function makeBuilding(x, y, w, h, style, force = false) {
       if (
         !force &&
@@ -862,14 +890,7 @@
         h,
         style,
         tropical,
-        height:
-          style === 2
-            ? 38 + (buildings.length % 3) * 8
-            : tropical
-              ? 20 + (buildings.length % 4) * 12
-              : y > 2100 && y < 3650
-                ? 105 + (buildings.length % 5) * 33
-                : 48 + (buildings.length % 4) * 24,
+        height: zoneHeight(x, y, w, style, buildings.length),
       };
       buildings.push(b);
       rect(x + 11, y + 16, w + 4, h + 4, '#11161789');
@@ -1053,10 +1074,33 @@
               for (let z = 165; z < 335; z += 65) drawTree(x + 18, y + z, 16);
               continue;
             }
-            const split = randomBetween(132, 171);
-            makeBuilding(x + 7, y + 7, split - 12, 146, 0);
-            makeBuilding(x + split + 11, y + 7, w - split - 20, 146, 0);
-            makeBuilding(x + 7, y + 179, seededRandom() > 0.6 ? w - 15 : 155, 143, 1);
+            const zone = districtAt(x + w / 2, y + h / 2),
+              blockSeed = (bx * 31 + by * 17) % 7;
+            if (zone === 'FINANCIAL DISTRICT' && blockSeed % 2 === 0) {
+              // One tower on a plaza: towers need air around them to read as towers.
+              makeBuilding(x + 52, y + 12, w - 104, 140, 0);
+              rect(x + 8, y + 8, 40, 150, '#8d9385');
+              rect(x + w - 48, y + 8, 40, 150, '#8d9385');
+              for (let z = 30; z < 150; z += 40) {
+                drawTree(x + 28, y + z, 11);
+                drawTree(x + w - 28, y + z, 11);
+              }
+            } else if (zone.includes('OLD QUARTER') || zone === 'BATTERY POINT') {
+              // Dense low-rise: three narrow lots with alleys between them.
+              const lots = [7, 118, 229];
+              for (let k = 0; k < 3; k++) makeBuilding(x + lots[k], y + 7, 98, 146, k === 1 ? 1 : 0);
+              for (const ax of [105, 216]) rect(x + ax, y + 7, 13, 146, '#3d423f');
+            } else {
+              const split = randomBetween(132, 171);
+              makeBuilding(x + 7, y + 7, split - 12, 146, 0);
+              makeBuilding(x + split + 11, y + 7, w - split - 20, 146, 0);
+            }
+            if (zone === 'SOUTH BANK' && blockSeed % 3 === 0) {
+              // Residential slab with a courtyard instead of a parking court.
+              makeBuilding(x + 7, y + 179, w - 15, 60, 1);
+              rect(x + 40, y + 250, w - 80, 70, '#6f8a5c');
+              for (let k = 0; k < 4; k++) drawTree(x + 60 + k * 70, y + 285, 13);
+            } else makeBuilding(x + 7, y + 179, seededRandom() > 0.6 ? w - 15 : 155, 143, 1);
             if (buildings[buildings.length - 1].w < 200) {
               rect(x + 181, y + 183, 145, 135, '#4b524b');
               for (let p = 0; p < 5; p++) {
@@ -1273,23 +1317,50 @@
           continue;
         makeCar(type, x, y, a, false, randomChoice(VEHICLE_PAINT_COLORS));
       }
-      for (let i = 0; i < 250; i++) {
+      const PED_COLORS = [
+        '#cab392', '#879eb3', '#b57374', '#c2bd95', '#778e70', '#9689a7',
+        '#d9a066', '#5f7c9c', '#c95a4a', '#e0d8c0', '#4c5a6b', '#8a5c7a',
+      ];
+      for (let i = 0; i < 300; i++) {
         const vertical = seededRandom() > 0.5,
           r = randomChoice(ROAD_CENTERS),
           v = randomBetween(180, CITY_SIZE - 260),
           x = vertical ? r + randomChoice([-67, 67]) : v,
           y = vertical ? v : r + randomChoice([-67, 67]);
-        if (!solid(x, y, 5) && !inHarbor(x, y, 8) && !vehicles.some((c) => pointInCar(x, y, c, 10)))
-          pedestrians.push({
+        if (!solid(x, y, 5) && !inHarbor(x, y, 8) && !vehicles.some((c) => pointInCar(x, y, c, 10))) {
+          const walker = {
             x,
             y,
             a: vertical ? randomChoice([-Math.PI / 2, Math.PI / 2]) : randomChoice([0, Math.PI]),
-            color: randomChoice(['#cab392', '#879eb3', '#b57374', '#c2bd95', '#778e70', '#9689a7']),
+            color: randomChoice(PED_COLORS),
             hp: 30,
             flee: 0,
             timer: randomBetween(0, 8),
             walk: seededRandom() * 5,
-          });
+            state: 'walk',
+          };
+          pedestrians.push(walker);
+          // Roughly one in five walkers has company.
+          if (seededRandom() < 0.2) {
+            const side = randomChoice([-1, 1]),
+              px = x + Math.cos(walker.a + Math.PI / 2) * 9 * side,
+              py = y + Math.sin(walker.a + Math.PI / 2) * 9 * side;
+            if (!solid(px, py, 5))
+              pedestrians.push({
+                x: px,
+                y: py,
+                a: walker.a,
+                color: randomChoice(PED_COLORS),
+                hp: 30,
+                flee: 0,
+                timer: randomBetween(0, 8),
+                walk: seededRandom() * 5,
+                state: 'walk',
+                leader: walker,
+                pairSide: side,
+              });
+          }
+        }
       }
       [
         [790, 745],
@@ -1899,7 +1970,59 @@
       c.routeTime = 2;
     }
     // @include src/physics.js
+    /**
+     * PEDESTRIAN LIFE
+     * Pedestrians walk the sidewalk grid, wait for signals at crossings, and
+     * break their walk with small routines: standing to look around, window
+     * shopping at a shopfront, sitting on a bench, or walking in pairs. They
+     * react to the player with short spoken lines (near misses, bumps, panic,
+     * gossip about a wanted player). All timers are seconds.
+     */
+    const PED_LINES = {
+      panic: ['Get down!', 'Run!', 'He’s got a gun!', 'Call the cops!', 'Oh my god!', 'Somebody help!'],
+      nearMiss: ['Hey! Watch it!', 'Slow down!', 'Are you crazy?!', 'I’ve got your plate!', 'Sidewalk, pal!'],
+      bump: ['Watch it.', 'Excuse me!', 'Hey!', 'Do you mind?', 'Careful, buddy.'],
+      idle: [
+        'Nice night.',
+        'Bus is late again.',
+        'Did you see the game?',
+        'I need a coffee.',
+        'This city...',
+        'Rent’s due Friday.',
+        'Neon 88.7 all night.',
+        'Kola tastes like pennies.',
+        'Ferry’s cancelled. Again.',
+        'Heard shots by the docks.',
+      ],
+      wanted: ['It’s him!', 'That’s the guy from the news!', 'Don’t look at him.', 'Cops are everywhere tonight.'],
+    };
+    function pedSay(p, kind, chance = 1) {
+      if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return;
+      p.speech = randomChoice(PED_LINES[kind]);
+      p.speechUntil = gameTime + 2.6;
+    }
+    function shopfrontNear(p) {
+      // Standing on a south sidewalk directly in front of a building's street face.
+      return buildings.some(
+        (b) => !b.depotWall && p.x > b.x + 8 && p.x < b.x + b.w - 8 && Math.abs(p.y - (b.y + b.h + 14)) < 9,
+      );
+    }
+    function nearestFreeBench(p, range) {
+      let best = null,
+        bestDistance = range;
+      for (const spot of benchSpots()) {
+        if (spot.taken && spot.taken.hp > 0 && spot.taken !== p) continue;
+        const d = distanceBetween(p, spot);
+        if (d < bestDistance) {
+          best = spot;
+          bestDistance = d;
+        }
+      }
+      return best;
+    }
     function updatePeople(deltaSeconds) {
+      const playerSpeed = player.car ? Math.abs(player.car.speed || 0) : 0,
+        playerMoving = !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD || keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight);
       for (const p of pedestrians) {
         if (
           p.hp <= 0 ||
@@ -1910,19 +2033,141 @@
           continue;
         if (updateParkWalker(p, deltaSeconds)) continue;
         p.timer -= deltaSeconds;
-        const panic = p.flee > 0;
+        if (p.flinch > 0) p.flinch -= deltaSeconds;
+        const panic = p.flee > 0,
+          playerDistance = distanceBetween(p, player);
+        // Reactions to the player.
+        if (!panic && playerDistance < 140) {
+          if (player.car && playerSpeed > 130 && playerDistance < 36 && !(p.flinch > 0)) {
+            p.flinch = 0.8;
+            pedSay(p, 'nearMiss', 0.7);
+            if (p.sitting) {
+              p.sitting = false;
+              p.state = 'walk';
+            }
+          } else if (playerMoving && playerDistance < 9) pedSay(p, 'bump', 0.5);
+          else if (wantedStars >= 2 && seededRandom() < deltaSeconds * 0.25) pedSay(p, 'wanted');
+        }
+        // Walking pairs: the follower keeps a shoulder offset from the leader.
+        if (p.leader) {
+          const leader = p.leader;
+          if (leader.hp <= 0 || personIncapacitated(leader) || leader.flee > 0) {
+            p.leader = null;
+            if (leader.flee > 0) {
+              p.flee = leader.flee;
+              p.threat = leader.threat;
+            }
+          } else if (!panic) {
+            const side = p.pairSide || 1,
+              tx = leader.x + Math.cos(leader.a + Math.PI / 2) * 9 * side,
+              ty = leader.y + Math.sin(leader.a + Math.PI / 2) * 9 * side,
+              d = Math.hypot(tx - p.x, ty - p.y);
+            p.a = d > 4 ? Math.atan2(ty - p.y, tx - p.x) : leader.a;
+            p.walking = d > 2;
+            p.sitting = false;
+            if (d > 2) {
+              const speed = Math.min(60, 20 + d * 2.5);
+              p.walk += deltaSeconds * 7;
+              moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5);
+            }
+            continue;
+          }
+        }
         if (panic) {
           p.flee -= deltaSeconds;
           p.a = headingBetween(p.threat || player, p);
+          p.sitting = false;
+          p.walking = true;
+          if (p.bench) {
+            p.bench.taken = null;
+            p.bench = null;
+          }
+          p.state = 'walk';
           if (!p.panicSaid) {
             scream(p);
+            pedSay(p, 'panic', 0.35);
             p.panicSaid = true;
           }
+        } else if (p.state === 'idle' || p.state === 'shop') {
+          p.stateTime -= deltaSeconds;
+          p.walking = false;
+          if (p.state === 'idle' && seededRandom() < deltaSeconds * 0.08) pedSay(p, 'idle');
+          if (p.state === 'idle' && seededRandom() < deltaSeconds * 0.4) p.a += (seededRandom() - 0.5) * 0.6;
+          if (p.stateTime <= 0) {
+            p.state = 'walk';
+            p.walking = true;
+            p.a = (Math.round(p.a / (Math.PI / 2)) * Math.PI) / 2;
+            p.timer = randomBetween(4, 10);
+          }
+          continue;
+        } else if (p.state === 'toBench') {
+          const spot = p.bench;
+          if (!spot || (spot.taken && spot.taken !== p)) {
+            p.state = 'walk';
+            p.bench = null;
+            continue;
+          }
+          const d = distanceBetween(p, spot);
+          if (d < 4) {
+            p.state = 'sit';
+            p.sitting = true;
+            p.walking = false;
+            p.a = spot.a;
+            p.x = spot.x;
+            p.y = spot.y;
+            p.stateTime = randomBetween(9, 24);
+          } else {
+            p.a = headingBetween(p, spot);
+            p.walk += deltaSeconds * 7;
+            if (moveBody(p, Math.cos(p.a) * 24 * deltaSeconds, Math.sin(p.a) * 24 * deltaSeconds, 5)) {
+              p.state = 'walk';
+              spot.taken = null;
+              p.bench = null;
+            }
+          }
+          continue;
+        } else if (p.state === 'sit') {
+          p.stateTime -= deltaSeconds;
+          if (seededRandom() < deltaSeconds * 0.05) pedSay(p, 'idle');
+          if (p.stateTime <= 0) {
+            p.sitting = false;
+            p.walking = true;
+            p.state = 'walk';
+            if (p.bench) p.bench.taken = null;
+            p.bench = null;
+            p.a = randomChoice([0, Math.PI]);
+            p.timer = randomBetween(5, 12);
+          }
+          continue;
         } else if (p.timer < 0) {
           p.timer = randomBetween(5, 12);
-          if (seededRandom() < 0.18) p.a += Math.PI;
+          const roll = seededRandom();
+          if (roll < 0.1) {
+            p.state = 'idle';
+            p.stateTime = randomBetween(2.5, 6);
+            p.walking = false;
+            continue;
+          }
+          if (roll < 0.2 && shopfrontNear(p)) {
+            p.state = 'shop';
+            p.stateTime = randomBetween(3, 7);
+            p.a = -Math.PI / 2;
+            p.walking = false;
+            continue;
+          }
+          if (roll < 0.3) {
+            const spot = nearestFreeBench(p, 160);
+            if (spot) {
+              spot.taken = p;
+              p.bench = spot;
+              p.state = 'toBench';
+              continue;
+            }
+          }
+          if (roll < 0.45) p.a += Math.PI;
           p.a = (Math.round(p.a / (Math.PI / 2)) * Math.PI) / 2;
         }
+        p.walking = true;
         const vertical = Math.abs(Math.sin(p.a)) > 0.5,
           sign = vertical ? Math.sign(Math.sin(p.a)) : Math.sign(Math.cos(p.a)),
           v = vertical ? p.y : p.x,
@@ -1934,9 +2179,11 @@
           remaining > 70 &&
           remaining < 88 &&
           signal[vertical ? 'vertical' : 'horizontal'] !== 'green'
-        )
+        ) {
+          p.walking = false;
           continue;
-        const speed = panic ? 105 : 21;
+        }
+        const speed = panic ? 105 : p.flinch > 0 ? 6 : 21;
         p.walk += deltaSeconds * (panic ? 15 : 7);
         if (
           moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5)
@@ -3213,6 +3460,7 @@
         c = player.car;
       getElement('district').textContent = d;
       getElement('mapDistrict').textContent = d;
+      getElement('streetName').textContent = streetNameAt(player.x, player.y);
       getElement('cash').textContent = '$' + String(Math.floor(visibleCash())).padStart(6, '0');
       getElement('stars').textContent =
         '★'.repeat(Math.ceil(wantedStars)) + '☆'.repeat(5 - Math.ceil(wantedStars));
@@ -3557,9 +3805,10 @@
         if (code === 'Escape') {
           e.preventDefault();
           closeMissionSelect();
-        } else if (/^Digit[1-9]$/.test(code)) {
+        } else if (/^Digit[0-9]$/.test(code)) {
+          // 1-9 pick the first nine jobs; 0 picks the tenth. Later jobs use the buttons.
           e.preventDefault();
-          chooseMission(Number(code.slice(-1)) - 1);
+          chooseMission(code === 'Digit0' ? 9 : Number(code.slice(-1)) - 1);
         }
         return;
       }
@@ -3734,6 +3983,7 @@
     // @include src/military.js
     // @include src/aviation.js
     // @include src/challenges.js
+    // @include src/sidejobs.js
     // @include src/streets.js
     // @include src/terrain.js
     // @include src/casino.js

@@ -469,6 +469,7 @@
     function challengeMissionInteract() {
       const missionState = mission;
       if (!missionState || player.parachute) return false;
+      if (missionState.index >= SIDE_JOB_FIRST) return sideJobInteract();
       const near = missionState.target && distanceBetween(player, missionState.target) < 60;
       if (
         missionState.index === 4 &&
@@ -537,6 +538,7 @@
     function challengeMissionUI() {
       const missionState = mission;
       if (!missionState) return;
+      if (missionState.index >= SIDE_JOB_FIRST) sideJobUI();
       if (missionState.index === 6 && [2, 3].includes(missionState.stage) && player.roof) {
         getElement('interaction').style.display = 'block';
         getElement('interaction').textContent = reconWindow(missionState)

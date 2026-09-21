@@ -268,8 +268,73 @@
               drawingContext.lineTo(px, z + 330);
               drawingContext.stroke();
             }
+            // Zone-specific ground: mirrors the block patterns chosen in buildWorld().
+            const zone = districtAt(x + 177, z + 177),
+              blockSeed = (bx * 31 + by * 17) % 7;
+            if (zone === 'FINANCIAL DISTRICT' && blockSeed % 2 === 0) {
+              drawingContext.fillStyle = '#c3bfb2';
+              drawingContext.fillRect(x + 10, z + 10, 344, 160);
+              drawingContext.strokeStyle = '#a8a497';
+              drawingContext.lineWidth = 1.2;
+              for (let g = 10; g <= 344; g += 24) {
+                drawingContext.beginPath();
+                drawingContext.moveTo(x + g, z + 10);
+                drawingContext.lineTo(x + g, z + 170);
+                drawingContext.stroke();
+              }
+              drawingContext.fillStyle = '#5e8a86';
+              drawingContext.beginPath();
+              drawingContext.arc(x + 32, z + 90, 14, 0, TAU);
+              drawingContext.arc(x + 322, z + 90, 14, 0, TAU);
+              drawingContext.fill();
+            } else if (zone.includes('OLD QUARTER') || zone === 'BATTERY POINT') {
+              drawingContext.fillStyle = '#3a3d3c';
+              for (const ax of [115, 226]) drawingContext.fillRect(x + ax, z + 14, 13, 150);
+            }
+            if (zone === 'SOUTH BANK' && blockSeed % 3 === 0) {
+              drawingContext.fillStyle = grass;
+              drawingContext.fillRect(x + 50, z + 260, 254, 70);
+              drawingContext.fillStyle = paving;
+              drawingContext.fillRect(x + 170, z + 250, 14, 90);
+            }
+            // Kerb line: a pale edge that separates sidewalk from roadway.
+            drawingContext.strokeStyle = '#d2cfc366';
+            drawingContext.lineWidth = 2.5;
+            drawingContext.strokeRect(x - 1, z - 1, 356, 356);
           }
         }
+      // Manhole covers and utility plates scattered along the roadway.
+      for (let i = 0; i < 260; i++) {
+        const mx = 100 + ((i * 7919) % (CITY_SIZE - 200)),
+          mz = 100 + ((i * 104729) % (CITY_SIZE - 200));
+        if (!onRoad(mx, mz) || onBridge(mx, mz)) continue;
+        drawingContext.fillStyle = '#2b3134';
+        drawingContext.beginPath();
+        drawingContext.arc(mx, mz, 5.5, 0, TAU);
+        drawingContext.fill();
+        drawingContext.strokeStyle = '#6b7275';
+        drawingContext.lineWidth = 1.2;
+        drawingContext.stroke();
+      }
+      // Avenues carry a solid double yellow centre line; local streets keep their dashes.
+      for (const r of cityStreets()) {
+        if (r.width < 112) continue;
+        const [a, b] = r.points;
+        drawingContext.strokeStyle = '#3b4449';
+        drawingContext.lineWidth = 7;
+        drawingContext.beginPath();
+        drawingContext.moveTo(a[0], a[1]);
+        drawingContext.lineTo(b[0], b[1]);
+        drawingContext.stroke();
+        drawingContext.strokeStyle = '#c9a94a';
+        drawingContext.lineWidth = 1.6;
+        for (const offset of [-2.4, 2.4]) {
+          drawingContext.beginPath();
+          drawingContext.moveTo(a[0] + (r.vertical ? offset : 0), a[1] + (r.vertical ? 0 : offset));
+          drawingContext.lineTo(b[0] + (r.vertical ? offset : 0), b[1] + (r.vertical ? 0 : offset));
+          drawingContext.stroke();
+        }
+      }
       // Patches, drains, stop lines and curb stains keep the road from reading as a flat color.
       let rseed = 47;
       const random = () => {
@@ -434,7 +499,7 @@
         box(group, 0, 17, 0, 1.1, 34, 1.1, darkMetal);
         box(group, 3, 34, 0, 7, 1, 1, darkMetal);
         box(group, 6, 33.5, 0, 5, 1.2, 3, warmLamp);
-        lampHalos.push(halo(group, 6, 33, 0, 14));
+        lampHalos.push({ sprite: halo(group, 6, 33, 0, 14), x: l.x, y: l.y });
         const glow = new Three.Mesh(
           new Three.PlaneGeometry(65, 65),
           new Three.MeshBasicMaterial({
@@ -449,7 +514,7 @@
         glow.rotation.x = -Math.PI / 2;
         glow.position.set(6, 0.1, 0);
         group.add(glow);
-        lampGlows.push(glow);
+        lampGlows.push({ mesh: glow, x: l.x, y: l.y });
         statics.push({
           x: l.x,
           y: l.y,
@@ -504,6 +569,7 @@
       box(ph, 0, 17, 0, 12, 2, 8, mat('#517c70'));
       halo(ph, 0, 14, 0, 8, '#9bdbb1');
       // @include src/cityscape3d.js
+      // @include src/sidejobs3d.js
       // @include src/garage3d.js
       // @include src/landmarks3d.js
       // @include src/civic3d.js
@@ -1157,9 +1223,14 @@
         frames = 0,
         nightAmount = 0;
       function updateStreetLighting() {
-        const glow = 0.1 + 0.9 * nightAmount;
-        for (const h of lampHalos) h.material.opacity = glow;
-        for (const g of lampGlows) g.material.opacity = 0.16 * glow;
+        const glow = 0.1 + 0.9 * nightAmount,
+          size = 14 + nightAmount * 12;
+        for (const h of lampHalos) {
+          const power = sideJobPower(h.x, h.y);
+          h.sprite.material.opacity = glow * power;
+          h.sprite.scale.set(size, size, 1);
+        }
+        for (const g of lampGlows) g.mesh.material.opacity = 0.3 * glow * sideJobPower(g.x, g.y);
       }
       // Dynamic models own their cloned/new resources; the initial world and factory primitives persist.
       const sharedGeometries = new Set([boxGeo, sphereGeo, wheelGeo, cylinderGeo]),
@@ -1391,6 +1462,7 @@
           updateWorldVisuals();
           updateCityscapeVisuals();
           updateStreetLighting();
+          updateSideJobVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
           updateTrafficVisuals();
@@ -1666,6 +1738,19 @@
             m.parts['leg-1'].rotation.z = -step;
             m.parts.arm1.rotation.z = -step * 0.5;
             m.parts['arm-1'].rotation.z = step * 0.5;
+            if (p.sitting && p.hp > 0 && !incapacitated) {
+              // Seated on a bench: lowered hips, legs forward, hands in lap.
+              m.group.position.y -= 3.4;
+              m.parts.leg1.rotation.z = -1.35;
+              m.parts['leg-1'].rotation.z = -1.35;
+              m.parts.arm1.rotation.z = -0.6;
+              m.parts['arm-1'].rotation.z = -0.6;
+              m.torso.rotation.z = 0.08;
+            } else if (p.flinch > 0 && p.hp > 0) {
+              m.parts.arm1.rotation.z = 1.9;
+              m.parts['arm-1'].rotation.z = 1.9;
+              m.torso.rotation.z = -0.2;
+            }
             if (p.faction && !incapacitated) {
               m.parts.guns[0].visible = p.hp > 0 && !!p.aiming;
               m.parts.arm1.rotation.z = p.aiming ? 1.12 : -step * 0.5;
@@ -1989,6 +2074,30 @@
                 ? '#d99b84'
                 : '#c9b6e7';
             worldContext.fillText(p.name || '', q.x, q.y);
+          }
+          // Pedestrian speech: short lines drawn as bubbles above the speaker.
+          for (const p of pedestrians) {
+            if (!p.speech || p.speechUntil < gameTime || p.hp <= 0 || distanceBetween(p, cameraTarget) > 460) continue;
+            const q = api.project(p.x, p.y, entityElevation(p) + 27);
+            if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;
+            worldContext.font = '600 10px Arial';
+            const tw = worldContext.measureText(p.speech).width + 12,
+              fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1);
+            worldContext.globalAlpha = fade;
+            worldContext.fillStyle = '#f4efe2';
+            worldContext.beginPath();
+            if (worldContext.roundRect) worldContext.roundRect(q.x - tw / 2, q.y - 20, tw, 16, 5);
+            else worldContext.rect(q.x - tw / 2, q.y - 20, tw, 16);
+            worldContext.fill();
+            worldContext.beginPath();
+            worldContext.moveTo(q.x - 3, q.y - 4);
+            worldContext.lineTo(q.x + 3, q.y - 4);
+            worldContext.lineTo(q.x, q.y);
+            worldContext.fill();
+            worldContext.fillStyle = '#1b2026';
+            worldContext.textAlign = 'center';
+            worldContext.fillText(p.speech, q.x, q.y - 8);
+            worldContext.globalAlpha = 1;
           }
           for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers])
             if (personIncapacitated(p) && distanceBetween(p, cameraTarget) < 850) {

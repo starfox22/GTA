@@ -55,6 +55,83 @@
         }
       return (cityStreetCache = roads);
     }
+    /**
+     * STREET NAMES
+     * Every grid road has a name so the HUD, the map and mission copy can refer to
+     * real addresses ("HARBOR AVE & FOUNDRY AVE"). Vertical roads are keyed by x,
+     * horizontal roads by y; the four 112-wide roads are the avenues.
+     */
+    const STREET_NAMES = {
+      vertical: {
+        128: 'WEST QUAY',
+        640: 'SUNSET BLVD',
+        1152: 'ROYAL AVE',
+        1664: 'COMMONS ST',
+        2176: 'CANNERY ST',
+        2688: 'FOUNDRY AVE',
+        3200: 'RIVERBANK DR',
+        3712: 'PALM AVE',
+        4224: 'COLLINS AVE',
+        4736: 'FLAMINGO AVE',
+        5248: 'OCEAN DR',
+      },
+      horizontal: {
+        128: 'NORTH SHORE RD',
+        640: 'ARMORY ST',
+        1152: 'UNION ST',
+        1664: 'GARDEN ST',
+        2176: 'CENTRAL PKWY',
+        2688: 'EXCHANGE ST',
+        3200: 'HARBOR AVE',
+        3712: 'SOUTH BANK RD',
+        4224: 'BATTERY ST',
+        4736: 'STADIUM WAY',
+        5248: 'MARINA RD',
+      },
+    };
+    function streetNameAt(x, y) {
+      if (x > CITY_SIZE || y > CITY_SIZE || !landAt(x, y)) {
+        const county = COUNTY_ROADS.find((r) =>
+          r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + 30),
+        );
+        return county ? county.name : onBridge(x, y) ? 'CAUSEWAY' : '';
+      }
+      const nearestX = roadNear(x),
+        nearestY = roadNear(y),
+        onVertical = Math.abs(x - nearestX) < 62,
+        onHorizontal = Math.abs(y - nearestY) < 62,
+        v = STREET_NAMES.vertical[nearestX],
+        h = STREET_NAMES.horizontal[nearestY];
+      if (onVertical && onHorizontal && v && h) return v + ' & ' + h;
+      if (onVertical && v) return v;
+      if (onHorizontal && h) return h;
+      const boulevard = BOULEVARDS.find((r) =>
+        r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + 30),
+      );
+      if (boulevard) return boulevard.name;
+      // Off the road: name the nearer of the two bounding streets.
+      return (Math.abs(x - nearestX) < Math.abs(y - nearestY) ? v : h) || '';
+    }
+    /* Bench positions are shared by the renderer (which draws them) and by pedestrians (who sit on them). */
+    let benchCache = null;
+    function benchSpots() {
+      if (benchCache) return benchCache;
+      benchCache = [];
+      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
+        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
+          const x = ROAD_CENTERS[bx] + 89,
+            z = ROAD_CENTERS[by] + 89,
+            w = 334;
+          if (!validCityBlock(x, z, w, w) || harborOverlap(x, z, w, w) || stadiumOverlap(x, z, w, w) || isPark(bx, by))
+            continue;
+          for (const px of [x + 110, x + 222]) {
+            const y = z - 14;
+            if (landAt(px, y) && !onRoad(px, y) && !solid(px, y, 5) && !onBoulevard(px, y, 12) && !inHarbor(px, y, 20) && !inStadiumLot(px, y, 10))
+              benchCache.push({ x: px, y, a: Math.PI / 2, taken: null });
+          }
+        }
+      return benchCache;
+    }
     function cityIntersectionAt(x, y) {
       return (
         cityStreets().some((r) => !r.vertical && r.r === y && x > r.start + 100 && x < r.end - 100) &&

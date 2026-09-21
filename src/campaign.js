@@ -111,9 +111,8 @@
           (unlocked ? missions[i].title : '???') +
           '</b><small>' +
           (unlocked
-            ? i < completed
-              ? 'COMPLETED · REPLAY'
-              : 'CURRENT MISSION'
+            ? (i < completed ? 'COMPLETED · REPLAY' : 'CURRENT ' + (i >= SIDE_JOB_FIRST ? 'CONTRACT' : 'MISSION')) +
+              (i >= SIDE_JOB_FIRST ? ' · ' + CHARACTERS[missions[i].contact].name.split(' ')[0].toUpperCase() : '')
             : 'LOCKED · KEEP PLAYING') +
           '</small></span><span class="mission-lock">' +
           (unlocked ? '↗' : '🔒') +

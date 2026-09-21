@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Assemble the self-contained Dead End City HTML from the modular source.
 
-    python3 tools/build.py            -> dist/dead-end-city.html
+    python3 tools/build.py            -> dead-end-city.html (repo root, the deliverable)
     python3 tools/build.py --out X    -> custom output path
 
 Everything stays human-readable: JavaScript is copied verbatim (no
@@ -90,7 +90,7 @@ def build(out_path):
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('--out', default=os.path.join(ROOT, 'dist', 'dead-end-city.html'))
+    ap.add_argument('--out', default=os.path.join(ROOT, 'dead-end-city.html'))
     ap.add_argument('--js-out', help='also write the expanded game script (for `node --check`)')
     args = ap.parse_args()
     build(args.out)

@@ -173,17 +173,17 @@
             float spec = pow(max(dot(reflected, viewDir), 0.), 320.) * 2.4
                        + pow(max(dot(reflected, viewDir), 0.), 28.) * 0.22;
             vec3 sunColor = mix(vec3(1., .96, .86), vec3(1., .62, .34), uDusk);
-            color += sunColor * spec * (0.25 + 0.75 * uDay);
+            color += sunColor * spec * (0.25 + 1.1 * uDay);
             // Moon path and shoreline light spill at night.
             float sparkle = smoothstep(0.78, 0.92, vnoise(vWorld.xz * 0.9 + uTime * 0.6));
             color += vec3(.75, .82, 1.) * sparkle * 0.08 * (1. - uDay) * (0.3 + fresnel);
             color += vec3(1., .78, .5) * sparkle * 0.14 * (1. - uDay) * (1. - smoothstep(0., 360., vShore));
             // Foam: breaking edge, retreating wash and crest whitecaps.
-            float washPhase = fract(vShore * 0.026 - uTime * 0.28 + h0 * 0.4);
-            float wash = smoothstep(0.82, 1., washPhase) * (1. - smoothstep(20., 95., vShore));
-            float edge = 1. - smoothstep(0., 14. + h0 * 10., vShore);
-            float caps = smoothstep(0.62, 0.95, vCrest * (0.65 + h0 * 0.7)) * smoothstep(40., 160., vShore);
-            float foam = clamp(edge * 0.85 + wash * 0.55 + caps * 0.35, 0., 1.);
+            float washPhase = fract(vShore * 0.022 - uTime * 0.26 + h0 * 0.4);
+            float wash = smoothstep(0.78, 1., washPhase) * (1. - smoothstep(24., 120., vShore));
+            float edge = 1. - smoothstep(0., 22. + h0 * 14., vShore);
+            float caps = smoothstep(0.58, 0.95, vCrest * (0.65 + h0 * 0.7)) * smoothstep(40., 160., vShore);
+            float foam = clamp(edge * 0.9 + wash * 0.65 + caps * 0.4, 0., 1.);
             foam *= 0.55 + 0.45 * vnoise(vWorld.xz * 0.35 + uTime * 0.4);
             color = mix(color, vec3(.86, .93, .92), foam);
             color *= 0.3 + 0.7 * uDay;
@@ -207,7 +207,8 @@
         }),
       );
       farWater.rotation.x = -Math.PI / 2;
-      farWater.position.set(WORLD_SIZE / 2, -6, WORLD_SIZE / 2);
+      // Sits well below the deepest wave trough so it never pokes through the swell.
+      farWater.position.set(WORLD_SIZE / 2, -18, WORLD_SIZE / 2);
       scene.add(farWater);
       const shoreFoam = [],
         shoreMaterial = new Three.MeshBasicMaterial({

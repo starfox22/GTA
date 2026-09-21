@@ -1,11 +1,11 @@
 // Headless smoke test: boots the built HTML in Chromium, starts a game, drives
 // the player for a few seconds and reports console errors plus screenshots.
-//   node tools/smoke.mjs [dist/dead-end-city.html] [outdir]
+//   node tools/smoke.mjs [dead-end-city.html] [outdir]
 import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
 import path from 'node:path';
 import fs from 'node:fs';
 
-const file = path.resolve(process.argv[2] || 'dist/dead-end-city.html');
+const file = path.resolve(process.argv[2] || 'dead-end-city.html');
 const out = path.resolve(process.argv[3] || 'dist/smoke');
 fs.mkdirSync(out, { recursive: true });
 

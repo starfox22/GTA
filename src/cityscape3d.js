@@ -482,7 +482,7 @@
             emissiveMap: lit,
             emissiveIntensity: 0,
           });
-          litWindowMaterials.push({ material, strength: cityRange(0.7, 1.1), phase: cityRandom() * 9 });
+          litWindowMaterials.push({ material, strength: cityRange(0.7, 1.1), phase: cityRandom() * 9, x: b.x, y: b.y });
           return material;
         }
         const quadrant = kind === 'brick' ? 0 : kind === 'office' ? 1 : kind === 'warehouse' ? 2 : 3,
@@ -505,7 +505,7 @@
           material.emissive = new Three.Color('#ffd9a6');
           material.emissiveMap = lit;
           material.emissiveIntensity = 0;
-          litWindowMaterials.push({ material, strength: cityRange(0.6, 1.0), phase: cityRandom() * 9 });
+          litWindowMaterials.push({ material, strength: cityRange(0.6, 1.0), phase: cityRandom() * 9, x: b.x, y: b.y });
         }
         return material;
       }
@@ -644,7 +644,7 @@
         }
         if (kind === 'office') {
           acCluster(gx + 24, top, gz + b.h - 34, Math.max(2, Math.floor(b.w / 70)));
-          if (cityRandom() < 0.5) billboard(group, b.w / 2, top, b.h - 4, Math.min(120, b.w * 0.6));
+          if (!b.place && cityRandom() < 0.5) billboard(group, b.w / 2, top, b.h - 4, Math.min(120, b.w * 0.6));
           if (cityRandom() < 0.5) place(pools.dish, gx + b.w - 20, top + 6, gz + 22, 6, 3, 6);
           for (let k = 0; k < Math.floor(b.w / 45); k++) place(pools.hatch, gx + 14 + k * 45, top + 0.6, gz + b.h / 2, 6, 1.2, 6);
           if (cityRandom() < 0.4)
@@ -666,7 +666,7 @@
           }
           for (let k = 0; k < 2 + Math.floor(cityRandom() * 3); k++)
             place(pools.vent, gx + 10 + cityRandom() * (b.w - 20), top + 2.5, gz + 10 + cityRandom() * (b.h - 20), 1.4, 5, 1.4);
-          if (cityRandom() < 0.25 && b.w > 150) billboard(group, b.w / 2, top, b.h - 4, Math.min(90, b.w * 0.5));
+          if (!b.place && cityRandom() < 0.25 && b.w > 150) billboard(group, b.w / 2, top, b.h - 4, Math.min(90, b.w * 0.5));
           return;
         }
         if (kind === 'deco' || kind === 'decoTower') {
@@ -791,7 +791,7 @@
         if (kind === 'tower' && height > 120) {
           // Tapered crown: a narrower upper section reads as a setback tower.
           const crownH = Math.min(38, height * 0.25);
-          box(group, b.w / 2, height + crownH / 2, b.h / 2, b.w * 0.7, crownH, b.h * 0.7, face);
+          box(group, b.w / 2, height + crownH / 2, b.h / 2, b.w * 0.7, crownH, b.h * 0.7, [face, face, top, top, face, face]);
           box(group, b.w / 2, height + crownH + 1.2, b.h / 2, b.w * 0.7 + 2, 2.4, b.h * 0.7 + 2, trim);
           b.crownHeight = crownH;
         }
@@ -818,7 +818,7 @@
         if (streetSouth && !b.place && ['brick', 'stucco', 'office', 'deco'].includes(kind)) shopfront(group, b, kind, i);
         else if (kind === 'brick' && !b.place && cityRandom() < 0.7) fireEscape(group, b);
         if (kind === 'decoTower' && !b.place) balconies(group, b, mat('#efe4d2'));
-        if (!b.place || kind === 'tower') decorateRoof(kind, b, group, i);
+        decorateRoof(kind, b, group, i);
         allBuildings.push({
           b,
           group,
@@ -886,14 +886,7 @@
           if (cityRandom() < 0.5)
             for (let px = x + 40; px < x + w - 30; px += 52)
               if (clearSidewalk(px, south - 4)) place(pools.meter, px, 4.5, south - 4, 1.2, 9, 1.2);
-          // North sidewalk: benches between trees, a bin, a bollard row near corners.
-          for (const px of [x + 110, x + 222])
-            if (clearSidewalk(px, north)) {
-              place(pools.benchSeat, px, 4.2, north, 16, 1, 5);
-              place(pools.benchSeat, px, 7, north - 2.4, 16, 4.5, 0.8);
-              place(pools.benchLeg, px - 6.5, 2, north, 1, 4, 4.6);
-              place(pools.benchLeg, px + 6.5, 2, north, 1, 4, 4.6);
-            }
+          // North sidewalk: a bin and bollards; benches come from the shared benchSpots() list below.
           if (clearSidewalk(x + w - 30, north)) place(pools.trash, x + w - 30, 3.2, north, 2.6, 6.4, 2.6);
           // West and east sidewalks: bollards and the odd traffic cone.
           for (const [sx, sz] of [[west, z + 30], [west, z + w - 30], [east, z + 30], [east, z + w - 30]])
@@ -909,6 +902,12 @@
           if ([1152, 2688, 3200, 4736].includes(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
             busShelter(x + 180, south + 6, true);
         }
+      for (const spot of benchSpots()) {
+        place(pools.benchSeat, spot.x, 4.2, spot.y, 16, 1, 5);
+        place(pools.benchSeat, spot.x, 7, spot.y - 2.4, 16, 4.5, 0.8);
+        place(pools.benchLeg, spot.x - 6.5, 2, spot.y, 1, 4, 4.6);
+        place(pools.benchLeg, spot.x + 6.5, 2, spot.y, 1, 4, 4.6);
+      }
       for (const im of Object.values(pools)) im.instanceMatrix.needsUpdate = true;
       // ---- Night lighting update --------------------------------------------------------
       function updateCityscapeVisuals() {
@@ -918,13 +917,15 @@
           lateNight = hour > 1 && hour < 5 ? 0.45 : 1;
         for (const w of litWindowMaterials) {
           const flicker = 0.92 + 0.08 * Math.sin(gameTime * 0.7 + w.phase);
-          w.material.emissiveIntensity = night * w.strength * lateNight * flicker * 1.35;
+          w.material.emissiveIntensity =
+            night * w.strength * lateNight * flicker * 1.35 * sideJobPower(w.x, w.y);
         }
         shopGlassMaterial.emissiveIntensity = night * 0.9 * (hour > 0.5 && hour < 6 ? 0.35 : 1);
         for (const n of neonSigns) {
-          const on = n.beacon ? (Math.sin(gameTime * 2.4) > 0 ? 1 : 0.15) : 1;
-          n.sprite.material.opacity = clamp(0.06 + night * n.base, 0, 1) * on;
-          if (n.mesh) n.mesh.material.opacity = 0.65 + night * 0.35;
+          const on = n.beacon ? (Math.sin(gameTime * 2.4) > 0 ? 1 : 0.15) : 1,
+            power = sideJobPower(n.sprite.parent.position.x, n.sprite.parent.position.z);
+          n.sprite.material.opacity = clamp(0.06 + night * n.base, 0, 1) * on * power;
+          if (n.mesh) n.mesh.material.opacity = (0.65 + night * 0.35) * (0.3 + 0.7 * power);
         }
         beaconMaterial.color.set(Math.sin(gameTime * 2.4) > 0 ? '#ff3b2f' : '#4a1512');
       }

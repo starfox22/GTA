@@ -331,13 +331,13 @@
     }
     function offerMission() {
       if (missionIndex >= missions.length) {
-        tell('Elena is safe. Explore the islands, rooftop and gang territories.', 5);
+        tell('Every job is done. Explore the islands, rooftop and gang territories, or replay from pause.', 5);
         return;
       }
       const info = missions[missionIndex];
       showDialogue(
         info.contact,
-        'Mission ' + (missionIndex + 1) + ' · ' + info.title,
+        jobLabel(missionIndex) + ' · ' + info.title,
         info.phoneMessage,
         () => startMission(),
       );
@@ -354,6 +354,12 @@
       el.title = CHARACTERS[id]?.name || 'Vinny Moretti';
     }
     function missionSummary(m) {
+      if (m.index >= SIDE_JOB_FIRST)
+        return (
+          CHARACTERS[missions[m.index].contact].name.split(' ')[0] +
+          ' gave you a contract: ' +
+          missions[m.index].brief
+        );
       const name = CHARACTERS[missions[m.index].contact].name.split(' ')[0],
         task = (m.instruction || missions[m.index].brief)
           .toLowerCase()
@@ -423,9 +429,12 @@
       if (missionState.index === 0) startHarborJob(missionState);
       else if (missionState.index === 1) startRooftopHit(missionState);
       else if (missionState.index <= 8) startChallengeMission(missionState);
-      else flightMissionStart(missionState);
+      else if (missionState.index < SIDE_JOB_FIRST) flightMissionStart(missionState);
+      else startSideJob(missionState);
       announce(
-        'MISSION ' + (missionState.index + 1) + ' / ' + missions.length,
+        missionState.index >= SIDE_JOB_FIRST
+          ? 'CONTRACT ' + (missionState.index + 1 - SIDE_JOB_FIRST) + ' / ' + (missions.length - SIDE_JOB_FIRST)
+          : 'MISSION ' + (missionState.index + 1) + ' / ' + SIDE_JOB_FIRST,
         info.title.toUpperCase(),
         3,
       );
@@ -482,19 +491,27 @@
         .filter((p) => p.name === 'ELENA CRUZ')
         .forEach((p) => storyActors.splice(storyActors.indexOf(p), 1));
       vehicles.filter((c) => c.mission).forEach((c) => (c.mission = false));
+      const finale = missionState.index === SIDE_JOB_FIRST - 1,
+        lastContract = missionState.index === missions.length - 1;
       announce(
         'PAYDAY +$' + reward.toLocaleString(),
-        missionState.index === missions.length - 1
+        finale
           ? 'THE LEDGER DELIVERED'
-          : 'MISSION ' + (missionState.index + 1) + ' COMPLETE',
+          : lastContract
+            ? 'EVERY CONTRACT CLOSED'
+            : missionState.index >= SIDE_JOB_FIRST
+              ? 'CONTRACT ' + (missionState.index + 1 - SIDE_JOB_FIRST) + ' COMPLETE'
+              : 'MISSION ' + (missionState.index + 1) + ' COMPLETE',
         4,
       );
       tell(
-        missionState.index === missions.length - 1
-          ? 'The ledger is delivered. Your crew is safe. The county is yours.'
-          : missionIndex >= missions.length
-            ? 'Replay complete. Choose another mission from pause, or explore the city.'
-            : 'The payphone is ringing. The next chapter is waiting.',
+        finale
+          ? 'The ledger is delivered. Your crew is safe. The payphone still rings: contracts are open.'
+          : lastContract
+            ? 'Every contract is closed. The South Coast is yours.'
+            : missionIndex >= missions.length
+              ? 'Replay complete. Choose another mission from pause, or explore the city.'
+              : 'The payphone is ringing. The next job is waiting.',
         7,
       );
       getElement('storyLine').classList.remove('show');
@@ -534,6 +551,10 @@
           failMission('You ran out of time.');
           return;
         }
+      }
+      if (m.index >= SIDE_JOB_FIRST) {
+        sideJobUpdate(m, deltaSeconds);
+        return;
       }
       if (m.index >= 9) {
         flightMissionUpdate(m, deltaSeconds);

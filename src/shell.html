@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 24.0.0
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 25.0.0
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
 Edit the named source sections here, or use the modular source ZIP.
@@ -108,6 +108,18 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Ownership-driven equipment, mystery weapon cards, icon inventory, selection migration and knife combat.
   src/police-feedback.js: Police action feedback
     Independent escape and blocked-action banners with display timers.
+  src/sidejobs.js: Contract missions after the main story
+    Rush Hour, Fireworks Night, Blackout, Ring Run and Repo Man; blackout power hook for the renderer.
+  src/cityscape3d.js: Building archetypes, roofs, shopfronts and street furniture
+    Procedural roof and curtain-wall textures, lit windows at night, shopfronts, instanced props, benches.
+  src/sidejobs3d.js: Contract mission meshes
+    Sky rings, bomb and substation devices.
+
+REPOSITORY
+  The modular source of this build lives in the repository alongside it:
+  src/*.js (this file's subsystems), vendor/three.r160.js, assets/ (decoded
+  media), tools/build.py (reassembles this file), tools/smoke.mjs and
+  tools/check.sh (verification). See README.md and docs/SOURCE_GUIDE.md.
 
 AUDIT CONTRACTS
 - Game fragments share one closure; 3D fragments share createCityRenderer().
@@ -227,6 +239,14 @@ button:hover {
 .location b {
   font-size: 14px;
   letter-spacing: 1px;
+}
+.location .street {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  color: #d8c48f;
+  line-height: 1.7;
+  min-height: 17px;
 }
 .top-right {
   margin-left: auto;
@@ -3444,7 +3464,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       </div>
       <div class="location">
         <span class="eyebrow" id="renderBadge">SOUTH COAST · DUSK</span
-        ><b id="district">OLD QUARTER</b>
+        ><b id="district">OLD QUARTER</b><span class="street" id="streetName"></span>
       </div>
       <div class="top-right">
         <div class="cash"><span class="eyebrow">CASH</span><strong id="cash">$000000</strong></div>
