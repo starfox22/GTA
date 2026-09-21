@@ -19,6 +19,7 @@
             const x = vertical ? r : v,
               y = vertical ? v : r;
             if (inAirport(x, y) || parkStreetClosed(x, y) || inStadiumLot(x, y, 56)) return false;
+            if (onSunsetIsle(x, y)) return false;
             if (onBridge(x, y, 0)) return true;
             const side = width / 2 + 28;
             return (
@@ -67,8 +68,8 @@
         640: 'SUNSET BLVD',
         1152: 'ROYAL AVE',
         1664: 'COMMONS ST',
-        2176: 'CANNERY ST',
-        2688: 'FOUNDRY AVE',
+        2176: 'GARDEN ST',
+        2688: 'GARDEN AVE',
         3200: 'RIVERBANK DR',
         3712: 'PALM AVE',
         4224: 'COLLINS AVE',
@@ -79,7 +80,7 @@
         128: 'NORTH SHORE RD',
         640: 'ARMORY ST',
         1152: 'UNION ST',
-        1664: 'GARDEN ST',
+        1664: 'LINDEN ST',
         2176: 'CENTRAL PKWY',
         2688: 'EXCHANGE ST',
         3200: 'HARBOR AVE',

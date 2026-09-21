@@ -96,12 +96,12 @@
         },
       },
       {
-        name: 'CENTRAL COMMONS',
+        name: 'CENTRAL GARDEN',
         x: 2176,
-        y: 1460,
+        y: 2000,
         entry: {
-          x: 2104,
-          y: 1460,
+          x: 2248,
+          y: 2000,
         },
       },
       {

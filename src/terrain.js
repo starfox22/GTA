@@ -241,6 +241,143 @@
         }
       }
     }
+    /**
+     * FOOT TRAVEL ON THE MOUNTAIN
+     * The trail is graded: you walk it up or down at close to normal pace. Off the
+     * trail the slope decides. A moderate face can be traversed slowly and slips
+     * you sideways; a steep face cannot be climbed at all; and stepping off the
+     * lip of a steep face means going down it on your back, which hurts and which
+     * you do not steer. Gradients are height change per unit of ground, so 0.5 is
+     * about twenty-seven degrees.
+     */
+    const TRAIL_GRADE = 0.32,
+      SLIP_GRADE = 0.34,
+      TUMBLE_GRADE = 0.52,
+      UNCLIMBABLE_GRADE = 0.66;
+    function endTumble(landed = true) {
+      if (!player.tumble) return;
+      const fast = player.tumble.peak > 190;
+      player.tumble = null;
+      player.tumbleRoll = 0;
+      if (landed)
+        tell(fast ? 'You slide to a stop. Use the trail next time.' : 'Back on your feet.', 2.5);
+    }
+    function startTumble(downhill, grade) {
+      if (player.tumble) return;
+      player.tumble = {
+        vx: downhill.x * (40 + grade * 90),
+        vy: downhill.y * (40 + grade * 90),
+        time: 0,
+        peak: 0,
+        hurtClock: 0.35,
+      };
+      player.tumbleRoll = 0;
+      tell('You lose your footing on the scree.', 2.2);
+      noise(0.22, 0.14, 700);
+    }
+    function updateMountainFooting(deltaSeconds) {
+      if (player.car || player.roof || player.parachute || transitRide || gameMode !== 'play') {
+        endTumble(false);
+        return false;
+      }
+      const z = terrainHeight(player.x, player.y);
+      if (z < 4) {
+        endTumble(!!player.tumble);
+        player.mountainGrade = 0;
+        return false;
+      }
+      const slope = terrainSlope(player.x, player.y),
+        grade = Math.hypot(slope.x, slope.y),
+        trail = onMountainTrail(player.x, player.y),
+        downhill = grade > 1e-4 ? { x: -slope.x / grade, y: -slope.y / grade } : { x: 0, y: 0 };
+      player.mountainGrade = grade;
+      player.onMountainTrail = trail;
+      if (player.tumble) {
+        const t = player.tumble;
+        t.time += deltaSeconds;
+        t.vx -= slope.x * 900 * deltaSeconds;
+        t.vy -= slope.y * 900 * deltaSeconds;
+        const drag = Math.exp(-1.5 * deltaSeconds);
+        t.vx *= drag;
+        t.vy *= drag;
+        const speed = Math.hypot(t.vx, t.vy);
+        t.peak = Math.max(t.peak, speed);
+        player.a = speed > 4 ? Math.atan2(t.vy, t.vx) : player.a;
+        player.tumbleRoll = (player.tumbleRoll || 0) + speed * deltaSeconds * 0.05;
+        const blocked = moveBody(player, t.vx * deltaSeconds, t.vy * deltaSeconds, 8);
+        t.hurtClock -= deltaSeconds;
+        if (t.hurtClock <= 0 && speed > 120) {
+          t.hurtClock = 0.8;
+          hurt(3 + speed * 0.022, 'impact');
+          particle(player.x, player.y, '#a59a7e', 5, 60, 3);
+        }
+        if (blocked && speed > 220) hurt(speed * 0.03, 'impact');
+        if ((grade < 0.3 && speed < 55) || t.time > 14 || (blocked && speed < 90)) endTumble();
+        return true;
+      }
+      const right = keys.KeyD || keys.ArrowRight,
+        left = keys.KeyA || keys.ArrowLeft,
+        back = keys.KeyS || keys.ArrowDown,
+        forward = keys.KeyW || keys.ArrowUp,
+        ix = (right ? 1 : 0) - (left ? 1 : 0),
+        iy = (back ? 1 : 0) - (forward ? 1 : 0);
+      if (!trail && grade > TUMBLE_GRADE) {
+        const heading = ix || iy ? Math.atan2(iy, ix) : null,
+          intoDescent =
+            heading !== null && Math.cos(heading) * downhill.x + Math.sin(heading) * downhill.y > 0.3;
+        if (intoDescent || grade > UNCLIMBABLE_GRADE + 0.12) {
+          startTumble(downhill, grade);
+          return true;
+        }
+      }
+      if (!ix && !iy) {
+        // Standing on a loose face still costs ground.
+        if (!trail && grade > SLIP_GRADE)
+          moveBody(
+            player,
+            downhill.x * (grade - SLIP_GRADE) * 130 * deltaSeconds,
+            downhill.y * (grade - SLIP_GRADE) * 130 * deltaSeconds,
+            8,
+          );
+        return true;
+      }
+      const a = Math.atan2(iy, ix),
+        climb = Math.cos(a) * slope.x + Math.sin(a) * slope.y;
+      let speed = keys.ShiftLeft || keys.ShiftRight ? 158 : 100;
+      if (trail) {
+        // A graded path: steady going, uphill a little slower than down.
+        speed *= clamp(1 - Math.max(0, climb) * TRAIL_GRADE * 2.2, 0.46, 1);
+      } else {
+        if (climb > 0.02) {
+          if (grade > UNCLIMBABLE_GRADE) {
+            if (gameTime - (player.climbTold || -10) > 4) {
+              player.climbTold = gameTime;
+              tell('Too steep to climb here. Find the trail.', 2.6);
+            }
+            speed = 0;
+          } else speed *= clamp(1 - Math.max(0, grade - SLIP_GRADE) * 3.1, 0, 1);
+        } else speed *= clamp(1 - grade * 0.45, 0.4, 1);
+        if (grade > SLIP_GRADE) {
+          moveBody(
+            player,
+            downhill.x * (grade - SLIP_GRADE) * 150 * deltaSeconds,
+            downhill.y * (grade - SLIP_GRADE) * 150 * deltaSeconds,
+            8,
+          );
+        }
+      }
+      player.a = a;
+      if (speed > 0) {
+        player.walk += deltaSeconds * (keys.ShiftLeft ? 15 : 10) * clamp(speed / 100, 0.3, 1.6);
+        moveBody(
+          player,
+          (ix / Math.hypot(ix, iy)) * speed * deltaSeconds,
+          (iy / Math.hypot(ix, iy)) * speed * deltaSeconds,
+          8,
+        );
+      }
+      return true;
+    }
     function paintMountainTrails(g) {
       for (const t of MOUNTAIN_TRAILS) {
         strokeRoad(g, t.points, t.width + 8, '#71674c');

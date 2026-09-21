@@ -11,31 +11,34 @@
         id: 'northbank',
         name: 'NORTHBANK ISLAND',
         color: '#5b696b',
+        // Reclaimed waterfront: the coast now runs outside every block of the
+        // grid, so the whole eleven by eleven street plan is built city rather
+        // than stopping short at a ragged shore.
         polygon: [
-          [600, 120],
-          [2600, 120],
-          [2990, 280],
-          [3260, 660],
-          [3420, 1050],
+          [300, 70],
+          [2680, 60],
+          [3160, 150],
+          [3390, 680],
+          [3420, 1040],
           [3420, 2300],
           [3350, 2730],
           [3420, 3300],
           [3420, 4400],
-          [3290, 4900],
-          [2810, 5400],
-          [2300, 5530],
-          [1850, 5300],
-          [1460, 4880],
-          [1100, 4480],
-          [580, 4150],
-          [250, 3650],
-          [130, 2900],
-          [220, 2350],
-          [380, 2080],
-          [320, 1650],
-          [150, 1270],
-          [150, 550],
-          [240, 260],
+          [3300, 5020],
+          [2900, 5500],
+          [2340, 5610],
+          [1800, 5430],
+          [1380, 5030],
+          [980, 4630],
+          [430, 4270],
+          [120, 3760],
+          [40, 2880],
+          [110, 2280],
+          [250, 2010],
+          [180, 1600],
+          [50, 1220],
+          [50, 400],
+          [120, 160],
         ],
       },
       {
@@ -43,22 +46,38 @@
         name: 'PALM KEYS',
         color: '#93a897',
         polygon: [
-          [4100, 430],
-          [4620, 210],
-          [5110, 390],
-          [5410, 890],
-          [5530, 1690],
-          [5460, 2590],
-          [5570, 3290],
-          [5420, 4090],
-          [5160, 4880],
-          [4610, 5310],
-          [4230, 5000],
-          [4020, 4430],
+          [4040, 180],
+          [4700, 50],
+          [5280, 150],
+          [5540, 780],
+          [5620, 1690],
+          [5540, 2590],
+          [5630, 3290],
+          [5520, 4090],
+          [5300, 5080],
+          [4700, 5500],
+          [4200, 5160],
+          [3980, 4430],
           [3960, 3730],
           [4020, 2820],
           [3960, 2020],
-          [3960, 650],
+          [3960, 540],
+        ],
+      },
+      {
+        // Reclaimed sand bar in the lower bay, bought and built as a pleasure pier.
+        id: 'sunsetisle',
+        name: 'SUNSET PIER',
+        color: '#8e9b84',
+        polygon: [
+          [3560, 4850],
+          [3930, 4820],
+          [4130, 4980],
+          [4170, 5270],
+          [3990, 5490],
+          [3690, 5530],
+          [3490, 5340],
+          [3470, 5040],
         ],
       },
       {
@@ -250,6 +269,10 @@
       return (
         x >= b.minx && x <= b.maxx && y >= b.miny && y <= b.maxy && pointInPolygon(x, y, r.polygon)
       );
+    }
+    const SUNSET_ISLE = LAND_REGIONS.find((r) => r.id === 'sunsetisle');
+    function onSunsetIsle(x, y) {
+      return regionContains(SUNSET_ISLE, x, y);
     }
     function landAt(x, y) {
       return (
@@ -506,6 +529,7 @@
         return town ? town.name : reg.name;
       }
       if (inAirport(x, y) && landAt(x, y)) return 'SOUTHPORT AIRPORT';
+      if (onSunsetIsle(x, y)) return 'SUNSET PIER';
       if (x > RIVER.right && landAt(x, y))
         return y < 1500
           ? 'PALM KEYS · ART DECO'
@@ -515,7 +539,7 @@
               ? 'LITTLE HAVANA'
               : 'CORAL MARINA';
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
-      if (x > 1700 && x < 2640 && y > 680 && y < 2140) return 'CENTRAL COMMONS';
+      if (x > 2230 && x < 3150 && y > 1770 && y < 2640) return 'CENTRAL GARDEN';
       if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
       if (y < 2650) return 'MIDTOWN';
       if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';

@@ -332,6 +332,7 @@
       clearHarborPolice();
       harborGateUntil = 0;
       harborAlarmUntil = 0;
+      resetDepotDoors();
       for (const e of gangMembers)
         if (e.faction === 'harbor' && inHarbor(e.home.x, e.home.y)) {
           Object.assign(e, e.home, {
@@ -366,7 +367,97 @@
       m.car.hp = m.car.maxhp = 460;
       setStage(0, m.car, 'PICK UP VINNY’S MARKED CARGO TRUCK');
     }
+    /* The drop is not the end of the job: the front shutter comes down behind the
+       truck, the crates come off, and the only way out is the rear dock on foot. */
+    function beginDepotDrop(m) {
+      m.car.cargoCount = 0;
+      m.car.vx = m.car.vy = m.car.speed = m.car.av = 0;
+      m.dropTimer = 3.4;
+      setDepotDoors(1, 1);
+      noise(0.45, 0.2, 300);
+      setStage(
+        4,
+        VINNY_DEPOT.inside,
+        'CARGO COMING OFF · SHUTTER CLOSING',
+        'vinny',
+        'Kill the engine. I am dropping the front shutter — they are right behind you.',
+      );
+    }
+    function spawnDepotGetaway(m) {
+      let car = null;
+      try {
+        car = spawnClearCar('sedan', VINNY_DEPOT.alley.x, VINNY_DEPOT.alley.y + 26, Math.PI / 2, false, '#5d6b74');
+      } catch {
+        // Nothing fits in the alley: the escape is simply made on foot.
+        return;
+      }
+      if (!car) return;
+      car.mission = true;
+      car.locked = false;
+      car.occupied = false;
+      m.getaway = car;
+    }
+    function releaseCargoPursuit() {
+      // The truck is no longer the target; every unit switches to the runner on foot.
+      for (const c of vehicles) {
+        if (!c.missionPursuit) continue;
+        if (c.airUnit) {
+          c.missionPursuit = false;
+          c.generalAirUnit = true;
+          c.airTarget = player;
+          c.pursuitTarget = airTargetSnapshot(player);
+          c.airLastSeen = airTargetSnapshot(player);
+          continue;
+        }
+        c.missionPursuit = false;
+        c.pursuitTarget = null;
+        c.cop = c.hp > 0;
+        c.route = null;
+        c.routeTime = 0;
+      }
+    }
+    function updateDepotDrop(missionState, deltaSeconds) {
+      if (missionState.stage === 4) {
+        missionState.target = VINNY_DEPOT.inside;
+        missionState.dropTimer -= deltaSeconds;
+        if (missionState.dropTimer > 0) return;
+        setDepotDoors(1, 0);
+        missionState.car = null;
+        wantedStars = Math.max(4, wantedStars);
+        releaseCargoPursuit();
+        spawnDepotGetaway(missionState);
+        setStage(
+          5,
+          missionState.getaway || VINNY_DEPOT.alley,
+          'OUT THE BACK · TAKE THE CAR IN THE ALLEY',
+          'vinny',
+          'Crates are off and the front is shut. Out the back — there is a car in the alley.',
+        );
+        tell('Rear dock open. Leave the truck and slip out the back.', 5);
+        return;
+      }
+      if (missionState.stage === 5) {
+        missionState.target =
+          missionState.getaway?.hp > 0 ? missionState.getaway : VINNY_DEPOT.alley;
+        missionState.instruction = 'OUT THE BACK · TAKE THE CAR IN THE ALLEY';
+        if (missionState.getaway && player.car === missionState.getaway)
+          setStage(6, null, 'LOSE THE POLICE', 'vinny', 'Now lose them. Do not come here again tonight.');
+        else if (missionState.getaway?.hp <= 0)
+          setStage(6, null, 'LOSE THE POLICE', 'vinny', 'They torched the car. Do it on foot then.');
+        return;
+      }
+      missionState.target = null;
+      missionState.instruction = 'LOSE THE POLICE';
+      if (wantedStars <= 0) {
+        clearPolice();
+        winMission();
+      }
+    }
     function updateHarborMission(missionState, deltaSeconds) {
+      if (missionState.stage >= 4) {
+        updateDepotDrop(missionState, deltaSeconds);
+        return;
+      }
       if (missionState.stage === 0) {
         if (player.car === missionState.car)
           setStage(1, HARBOR.gate, 'DRIVE THE TRUCK TO THE HARBOR BARRIER');
@@ -441,11 +532,8 @@
         truckInsideDepot(missionState.car) &&
         Math.abs(missionState.car.speed) < 32 &&
         missionState.collected === 3
-      ) {
-        missionState.car.cargoCount = 0;
-        clearPolice();
-        winMission();
-      }
+      )
+        beginDepotDrop(missionState);
     }
     function updateHarbor(deltaSeconds) {
       const near = distanceBetween(player, HARBOR.gate);

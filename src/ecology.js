@@ -212,9 +212,9 @@
             ) {
               a.attack = 1.3;
               if (player.car) {
-                if (player.car.type === 'bicycle') hurt(18);
+                if (player.car.type === 'bicycle') hurt(18, 'melee');
                 else damageVehicle(player.car, 7, a.x, a.y);
-              } else hurt(17);
+              } else hurt(17, 'melee');
             }
           }
         } else if (

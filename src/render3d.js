@@ -54,7 +54,7 @@
       renderer.setSize(viewportWidth, viewportHeight);
       renderer.outputColorSpace = Three.SRGBColorSpace;
       renderer.toneMapping = Three.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.18;
+      renderer.toneMappingExposure = 1.14;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = Three.PCFSoftShadowMap;
       renderer.shadowMap.autoUpdate = false;
@@ -64,18 +64,19 @@
         hitPoint = new Three.Vector3();
       const hemi = new Three.HemisphereLight('#b3c5e9', '#564943', 2.0);
       scene.add(hemi);
-      const sun = new Three.DirectionalLight('#ffd7a0', 3.0);
+      const sun = new Three.DirectionalLight('#ffd7a0', 3.0),
+        shadowDetail = touchEnabled() ? 2048 : 3072;
       sun.castShadow = true;
-      sun.shadow.mapSize.set(2048, 2048);
-      sun.shadow.camera.left = -760;
-      sun.shadow.camera.right = 760;
-      sun.shadow.camera.top = 760;
-      sun.shadow.camera.bottom = -760;
+      sun.shadow.mapSize.set(shadowDetail, shadowDetail);
+      sun.shadow.camera.left = -900;
+      sun.shadow.camera.right = 900;
+      sun.shadow.camera.top = 900;
+      sun.shadow.camera.bottom = -900;
       sun.shadow.camera.near = 10;
-      sun.shadow.camera.far = 2200;
-      sun.shadow.bias = -0.0004;
-      sun.shadow.normalBias = 1.4;
-      sun.shadow.radius = 3;
+      sun.shadow.camera.far = 3200;
+      sun.shadow.bias = -0.00035;
+      sun.shadow.normalBias = 1.1;
+      sun.shadow.radius = 2.2;
       scene.add(sun, sun.target);
       const fill = new Three.DirectionalLight('#879ccc', 0.55);
       fill.position.set(-200, 100, -300);
@@ -679,6 +680,8 @@
       halo(ph, 0, 14, 0, 8, '#9bdbb1');
       // @include src/cityscape3d.js
       // @include src/sidejobs3d.js
+      // @include src/roadblocks3d.js
+      // @include src/themepark3d.js
       // @include src/garage3d.js
       // @include src/landmarks3d.js
       // @include src/civic3d.js
@@ -1588,12 +1591,14 @@
           updateCityscapeVisuals();
           updateStreetLighting();
           updateSideJobVisuals();
+          updateRoadblockVisuals();
+          updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
           updateTrafficVisuals();
           updateMissionVisuals();
           const shadowHeight = terrainHeight(cameraTarget.x, cameraTarget.y);
-          sun.position.set(cameraTarget.x - 450, 760 + shadowHeight, cameraTarget.y - 230);
+          sun.position.set(cameraTarget.x - 620, 980 + shadowHeight, cameraTarget.y - 340);
           sun.target.position.set(cameraTarget.x, shadowHeight, cameraTarget.y);
           const vr = Math.max(
             920,
@@ -1851,7 +1856,7 @@
               incapacitated = personIncapacitated(p);
             m.group.position.set(p.x, entityElevation(p) + fallen * 1.5, p.y);
             m.group.rotation.set(
-              0,
+              p.ejected ? p.ejectRoll || 0 : 0,
               -(activePlayer && (mouse.active || touchAim !== null) ? aim() : p.a),
               (fallen * Math.PI) / 2 +
                 (p.hp > 0 && p.dazedFor > 0 ? Math.sin(gameTime * 8) * 0.055 : 0),
@@ -1899,6 +1904,40 @@
               m.parts.arm1.rotation.z = 1.2;
               m.parts['arm-1'].rotation.z = 1.1;
             }
+            if (p.ejected) {
+              // Arms out as they go over: a throw, not a lie-down.
+              m.parts.arm1.rotation.z = 2.3;
+              m.parts['arm-1'].rotation.z = 1.4;
+              m.parts.leg1.rotation.z = 0.7;
+              m.parts['leg-1'].rotation.z = -0.5;
+            } else if (p.onPhone && p.hp > 0 && !incapacitated) {
+              m.parts.arm1.rotation.z = 2.25;
+              m.parts['arm-1'].rotation.z = 0.2;
+            }
+            // Outdoor gym regulars: `exercise` is 0..1 through one rep, null at rest.
+            if (p.exercise != null && p.hp > 0 && !incapacitated) {
+              const e = p.exercise;
+              if (p.exerciseKind === 'mat') {
+                m.group.position.y -= 4.2;
+                m.parts.leg1.rotation.z = -1.3;
+                m.parts['leg-1'].rotation.z = -1.3;
+                m.torso.rotation.z = -0.15 - e * 0.85;
+                m.parts.arm1.rotation.z = 2.4;
+                m.parts['arm-1'].rotation.z = 2.4;
+              } else if (p.exerciseKind === 'dip' || p.exerciseKind === 'bars') {
+                m.group.position.y += 5 + e * 5;
+                m.parts.arm1.rotation.z = -0.12;
+                m.parts['arm-1'].rotation.z = -0.12;
+                m.parts.leg1.rotation.z = -0.5;
+                m.parts['leg-1'].rotation.z = -0.34;
+              } else {
+                m.group.position.y += 7 + e * 6;
+                m.parts.arm1.rotation.z = 2.75 - e * 0.45;
+                m.parts['arm-1'].rotation.z = 2.75 - e * 0.45;
+                m.parts.leg1.rotation.z = -0.35;
+                m.parts['leg-1'].rotation.z = -0.2;
+              }
+            }
             if (p.illness && p.hp > 0) {
               m.group.rotation.z = -p.illness * 0.24 + Math.sin(gameTime * 8) * 0.025;
               m.torso.rotation.z = -p.illness * 0.2;
@@ -1915,6 +1954,15 @@
             if (incapacitated) m.parts.guns.forEach((g) => (g.visible = false));
             if (p.drinking && p.hp > 0 && !incapacitated) {
               m.parts.arm1.rotation.z = 1.5 + Math.sin(gameTime * 3) * 0.15;
+            }
+            if (activePlayer && player.tumble) {
+              m.group.rotation.z = Math.PI / 2;
+              m.group.rotation.x = player.tumbleRoll || 0;
+              m.group.position.y += 4;
+              m.parts.arm1.rotation.z = 2.1;
+              m.parts['arm-1'].rotation.z = 1.7;
+              m.parts.leg1.rotation.z = -0.7;
+              m.parts['leg-1'].rotation.z = -0.4;
             }
             if (activePlayer) {
               if (player.parachute) {

@@ -166,6 +166,13 @@
         a: [7800, 8150],
         b: [9440, 8150],
       },
+      {
+        // Palm Ave drops off the Stadium Way crossing and runs out to the pier.
+        name: 'SUNSET PIER CAUSEWAY',
+        width: 104,
+        a: [3712, 4736],
+        b: [3712, 4980],
+      },
     ];
     const COUNTY_TOWNS = [
       {
@@ -797,6 +804,7 @@
       populateMilitary();
       spawnTrailVehicles();
       populateRecreation();
+      populateSunsetPier();
       populateWildlife();
       resetTransit();
       populateAircraft();

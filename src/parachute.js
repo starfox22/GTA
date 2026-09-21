@@ -69,6 +69,17 @@
       tell('CANOPY OPEN · Steer toward clear ground · Hold S to slow your landing', 4);
       return true;
     }
+    function roofLandingSpot(x, y) {
+      for (let r = 12; r <= 200; r += 12)
+        for (let i = 0; i < 24; i++) {
+          const q = {
+            x: x + Math.cos((i * TAU) / 24) * r,
+            y: y + Math.sin((i * TAU) / 24) * r,
+          };
+          if (roofPointFree(q.x, q.y, 9)) return q;
+        }
+      return null;
+    }
     function parachuteLandingClear(x, y) {
       if (!groundAt(x, y, 10) || solid(x, y, 10)) return false;
       const floor = terrainHeight(x, y);
@@ -144,9 +155,42 @@
       player.x += p.vx * deltaSeconds;
       player.y += p.vy * deltaSeconds;
       player.altitude += p.vz * deltaSeconds;
+      // The Blue Hour terrace is a real landing zone: come in over the roof line
+      // with the canopy open and you put down among the tables instead of being
+      // pushed off the parapet like any other building.
+      const overTerrace =
+        p.stage === 'canopy' &&
+        player.x > ROOFTOP.x + 22 &&
+        player.x < ROOFTOP.x + ROOFTOP.w - 22 &&
+        player.y > ROOFTOP.y + 22 &&
+        player.y < ROOFTOP.y + ROOFTOP.h - 22;
+      if (overTerrace && player.altitude <= ROOFTOP.height + 4) {
+        const spot = roofPointFree(player.x, player.y, 9)
+          ? {
+              x: player.x,
+              y: player.y,
+            }
+          : roofLandingSpot(player.x, player.y);
+        if (spot) {
+          Object.assign(player, spot);
+          player.parachute = null;
+          player.roof = true;
+          player.altitude = ROOFTOP.height + 3;
+          player.inv = 1;
+          clearTouchInput();
+          keys = {};
+          announce('THE BLUE HOUR', 'TERRACE LANDING', 2.6);
+          tell('Canopy down on the terrace. E at the bar, Mara, or the elevator.', 5);
+          // Arriving by canopy in street clothes is not a quiet entrance.
+          const hit = rooftopJob();
+          if (hit && !hit.disguise) roofAlarm(hit);
+          return;
+        }
+      }
       // Glide past building faces instead of landing inside an inaccessible roof volume.
       for (const b of buildings)
         if (
+          !(overTerrace && b.roofBar) &&
           player.altitude < b.height + 18 &&
           player.x > b.x - 9 &&
           player.x < b.x + b.w + 9 &&

@@ -203,7 +203,9 @@
           maxy = Math.max(...cs.map((p) => p.y));
         for (let i = Math.floor(minx / 256); i <= Math.floor(maxx / 256); i++)
           for (let j = Math.floor(miny / 256); j <= Math.floor(maxy / 256); j++) {
-            const key = i + ',' + j;
+            // The lookup grid is keyed numerically; a string key here meant shore
+            // colliders were stored and never found, so coastlines stopped nothing.
+            const key = i * 4096 + j;
             if (!staticGrid.has(key)) staticGrid.set(key, []);
             staticGrid.get(key).push(b);
           }
@@ -274,6 +276,7 @@
           };
         }
       }
+      if (vehicle.locked && !vehicle.lockBroken && source) breakVehicleLock(vehicle, source);
       vehicle.hp = Math.max(0, vehicle.hp - amount);
       vehicle.damageVersion = (vehicle.damageVersion || 0) + 1;
       vehicle.sprite = null;
@@ -302,6 +305,7 @@
     }
     function repairVehicle(vehicle) {
       vehicle.hp = vehicle.maxhp;
+      vehicle.flatTyres = false;
       vehicle.damage = {
         front: 0,
         rear: 0,
@@ -341,7 +345,7 @@
       }
       if (a === player.car || b === player.car) {
         shake = Math.min(10, closing * 0.022);
-        hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075));
+        hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075), 'impact');
         if (closing > 130) radio('look-out');
         if (b && !a.cop && !b.cop) crime(0.06);
       }
@@ -541,6 +545,16 @@
       };
     }
     function trafficControl(c, stepSeconds) {
+      // A driver who decided to answer a gunshot with the accelerator.
+      if (c.ramUntil > gameTime && gameMode === 'play') {
+        c.hazard = true;
+        c.junction = null;
+        return ramControl(c);
+      }
+      if (c.ramUntil) {
+        c.ramUntil = 0;
+        c.navAngle = undefined;
+      }
       if (c.navAngle === undefined) c.navAngle = (Math.round(c.a / (Math.PI / 2)) * Math.PI) / 2;
       const vehicleDefinition = vehicleSpec(c),
         nav = c.navAngle,
@@ -854,6 +868,7 @@
           if (
             c.cop &&
             !c.crewDeployed &&
+            !c.blockade &&
             active &&
             (!player.car || isAircraft(player.car)) &&
             wantedStars > 0
@@ -973,6 +988,22 @@
               desired = clamp((distanceBetween(c, player) - 160) * 1.5, 0, 150);
               if (distanceBetween(c, player) < 150) steer = 0;
             }
+            const quarry = c.pursuitTarget?.hp > 0 ? c.pursuitTarget : player.car;
+            if (
+              wantedStars >= 4 &&
+              quarry &&
+              quarry !== c &&
+              !isAircraft(quarry) &&
+              distanceBetween(c, quarry) < 200
+            ) {
+              // Contact tactics: aim a car length ahead of the quarter panel and push.
+              const lead = {
+                x: quarry.x + (quarry.vx || 0) * 0.32,
+                y: quarry.y + (quarry.vy || 0) * 0.32,
+              };
+              steer = clamp(normalizeAngle(headingBetween(c, lead) - c.a) * 3.4, -2.3, 2.3);
+              desired = Math.max(desired, Math.hypot(quarry.vx || 0, quarry.vy || 0) + 75);
+            }
             acceleration = clamp(
               (desired - along) * 3,
               -(!player.car ? 620 : 300),
@@ -995,6 +1026,13 @@
           } else {
             drag = c.crewDeployed ? 9 : 1.8;
             grip = 4;
+          }
+          if (c.flatTyres && !isAircraft(c) && !isBoat(c)) {
+            // Rims on tarmac: no drive, no bite and a constant pull to one side.
+            acceleration *= 0.5;
+            drag = Math.max(drag, 1.15);
+            grip *= 0.55;
+            steer += Math.sin(physicsClock * 2.3 + c.id) * 0.22 * Math.sign(along || 1);
           }
           const terrain = roadVehicleTerrain(c);
           if (terrain) {
@@ -1123,6 +1161,18 @@
         }
         staticCandidates.set(c, list);
       }
+      // Roadblock kerb barriers are built and torn down mid-chase, so they live
+      // outside the baked static grid and are resolved from this short list.
+      const blockBodies = [...roadblockBarriers(), ...depotBarriers()].map((r, i) => ({
+        x: r.x + r.w / 2,
+        y: r.y + r.h / 2,
+        hx: r.w / 2,
+        hy: r.h / 2,
+        a: 0,
+        height: r.height,
+        kind: 'roadblock',
+        id: 'block' + i,
+      }));
       mark('phys:broadphase');
       for (let pass = 0; pass < 7; pass++) {
         for (const [a, b] of pairs) {
@@ -1167,6 +1217,15 @@
               if (hit) resolveContact(c, null, hit, b, pass === 0);
             }
         }
+        if (blockBodies.length)
+          for (const c of vehicles) {
+            if (isBoat(c) || (c.altitude || 0) >= 20) continue;
+            for (const b of blockBodies) {
+              if (Math.abs(c.x - b.x) > 90 || Math.abs(c.y - b.y) > 90) continue;
+              const hit = boxContact(vehicleShape(c), b);
+              if (hit) resolveContact(c, null, hit, b, pass === 0);
+            }
+          }
         for (const c of vehicles)
           for (const b of staticCandidates.get(c) || noStatics) {
             if (
@@ -1247,6 +1306,7 @@
       for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers]) {
         p.impactCooldown = Math.max(0, (p.impactCooldown || 0) - deltaSeconds);
         if (p.hp <= 0) continue;
+        if (p.ejected) stepEjection(p, deltaSeconds);
         if (p.knockedFor > 0) {
           p.aiming = false;
           p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);
@@ -1283,7 +1343,7 @@
       scream(person);
       if (damage > 0) {
         const fatal = damage >= person.hp;
-        strikePerson(person, damage, a, source, fatal);
+        strikePerson(person, damage, a, source, fatal, 'impact');
         if (bloodOn && fatal) {
           c.bloodyUntil = gameTime + 14;
           c.bloodTrackRemaining = BLOOD_TRACK_DISTANCE;
@@ -1468,18 +1528,31 @@
               entityElevation(vehicle),
             );
           if (vehicle === player.car) {
+            // Riding a vehicle when it detonates is fatal: the blast happens in the cabin.
+            // Any lingering exit/landing invulnerability is cleared first so the hit lands,
+            // and the clear happens after exitCar(), which grants its own half second.
             if (isAircraft(vehicle) && aircraftClearance(vehicle) > 2) {
               player.car = null;
-              // A mid-air destruction is always fatal; a lingering exit/landing invulnerability
-              // must not leave the player standing in the sky without an aircraft.
-              player.inv = 0;
-              hurt(1000);
             } else {
               exitCar();
-              hurt(22);
-              player.inv = 1;
+              player.car = null;
             }
+            player.inv = 0;
+            shake = Math.max(shake, 16);
+            flash = Math.max(flash, 0.5);
+            hurt(1000, 'blast');
           }
+        }
+        if (
+          vehicle === player.car &&
+          vehicle.hp > 0 &&
+          vehicle.hp < vehicle.maxhp * 0.26 &&
+          !vehicleSpec(vehicle).bicycle &&
+          gameTime - (vehicle.bailWarnedAt || -100) > 6
+        ) {
+          vehicle.bailWarnedAt = gameTime;
+          tell('ENGINE ON FIRE · BAIL OUT (E) BEFORE IT GOES UP', 3.5);
+          tone(520, 0.14, 0.2, 'square', 240);
         }
         updateBloodTracks(vehicle, active);
         if (
@@ -1516,7 +1589,7 @@
           pointInCar(player.x, player.y, vehicle, 6)
         ) {
           const a = Math.atan2(vehicle.vy, vehicle.vx);
-          hurt(speed * 0.15);
+          hurt(speed * 0.15, 'impact');
           player.inv = 1;
           moveBody(player, Math.cos(a) * 25, Math.sin(a) * 25, 8);
         }

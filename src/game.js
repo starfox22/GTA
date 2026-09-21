@@ -115,14 +115,11 @@
         },
       ],
       PARKS = [
-        [3, 1],
-        [3, 2],
-        [3, 3],
-        [4, 1],
-        [4, 2],
         [4, 3],
+        [4, 4],
+        [5, 3],
+        [5, 4],
         [1, 1],
-        [4, 3],
         [0, 4],
         [2, 5],
         [4, 7],
@@ -730,8 +727,10 @@
         underpassBlocked(x, y, r) ||
         airportSceneryBlocked(x, y, r) ||
         garageBlocked(x, y, r) ||
+        parkBlocked(x, y, r) ||
         !groundAt(x, y, r) ||
         harborBlocked(x, y, r) ||
+        depotBlocked(x, y, r) ||
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
       )
         return true;
@@ -805,6 +804,7 @@
           damageVersion: 0,
         };
       vehicles.push(vehicle);
+      if (autonomous) assignDriver(vehicle);
       return vehicle;
     }
     function canSpawnCar(type, x, y, a = 0, margin = 7, airframe) {
@@ -905,9 +905,9 @@
       if (y < 1450) return cx > 2500 ? 30 + vary * 18 : 30 + vary * 26;
       if (y < 2650) return cx > 1700 && cx < 2300 ? 56 + vary * 30 : 62 + vary * 55;
       if (y < 3700) {
-        if (cx < 1800) return 46 + vary * 40;
-        const core = clamp(Math.hypot(cx - 2450, y + 70 - 3150) / 950, 0, 1);
-        return 110 + (1 - core) * 130 + vary * 45;
+        if (cx < 1800) return 60 + vary * 46;
+        const core = clamp(Math.hypot(cx - 2600, y + 70 - 3150) / 1150, 0, 1);
+        return 155 + Math.pow(1 - core, 2.2) * 415 + vary * 95;
       }
       if (y < 4650) return 50 + vary * 45;
       return 30 + vary * 24;
@@ -1152,13 +1152,20 @@
               label('P', x + 245, y + 260, 19, '#9aa08a');
             }
           }
+          // Street planting on all four kerbs, not only the north side: a tree
+          // line is most of what separates a city block from a car park.
           for (let s = 0; s < 3; s++) {
             drawTree(x + 55 + s * 110, y - 16, 12);
+            drawTree(x + 55 + s * 110, y + h + 16, 12 + (s % 2) * 2);
             lamps.push({
               x: x + 22 + s * 144,
               y: y + h + 18,
             });
             rect(x + 19 + s * 144, y + h + 9, 3, 13, '#3f453a');
+          }
+          for (let s = 0; s < 2; s++) {
+            drawTree(x - 16, y + 90 + s * 150, 11);
+            drawTree(x + w + 16, y + 90 + s * 150, 11);
           }
         }
       // Waterfront promenades, continuous river and three navigable crossings.
@@ -1227,6 +1234,7 @@
       seedParkTrees();
       buildHarbor();
       buildVinnyDepot();
+      buildSunsetPier();
       buildCounty();
       for (const r of SERVICE_ROADS.filter((r) => r.name.startsWith('SOUTHPORT ')))
         strokeRoad(groundContext, r.points, r.width, '#606664');
@@ -1358,11 +1366,8 @@
           continue;
         makeCar(type, x, y, a, false, randomChoice(VEHICLE_PAINT_COLORS));
       }
-      const PED_COLORS = [
-        '#cab392', '#879eb3', '#b57374', '#c2bd95', '#778e70', '#9689a7',
-        '#d9a066', '#5f7c9c', '#c95a4a', '#e0d8c0', '#4c5a6b', '#8a5c7a',
-      ];
-      for (let i = 0; i < 300; i++) {
+      const PED_COLORS = DRIVER_COLORS;
+      for (let i = 0; i < 380; i++) {
         const vertical = seededRandom() > 0.5,
           r = randomChoice(ROAD_CENTERS),
           v = randomBetween(180, CITY_SIZE - 260),
@@ -1522,22 +1527,19 @@
         ),
       ])
         if (e.hp > 0 && distance(e) < 85 * power && clearSight(blast, e)) {
-          strikePerson(e, 200, headingBetween(blast, e), attacker);
+          strikePerson(e, 200, headingBetween(blast, e), attacker, true, 'blast');
         }
       for (const animal of wildlife)
         if (animal.hp > 0 && distance(animal) < 85 * power && clearSight(blast, animal))
           strikeWildlife(animal, Math.max(0, 200 * power - distance(animal) * 1.6));
       const pd = distance(player);
-      if (pd < 95 * power && clearSight(blast, player)) hurt(Math.max(0, (95 * power - pd) * 0.75));
+      if (pd < 95 * power && clearSight(blast, player))
+        hurt(Math.max(0, (95 * power - pd) * 0.75), 'blast');
       if (attacker === player) crime(0.5);
     }
-    function hurt(d) {
+    function hurt(d, kind = 'ballistic') {
       if (player.inv > 0 || gameMode !== 'play' || player.godMode) return;
-      if (player.armor > 0) {
-        const absorbed = Math.min(player.armor, d * 0.65);
-        player.armor -= absorbed;
-        d -= absorbed;
-      }
+      d = ballisticDamage(player, d, kind);
       player.hp -= d;
       if (d > 1 && !player.car) bleed(player, d / 35, player.a + Math.PI);
       flash = 0.12;
@@ -1545,6 +1547,13 @@
     }
     function die() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (player.coaster) {
+        player.coaster = null;
+        coasterTrain.running = false;
+        coasterTrain.t = 0;
+      }
+      player.tumble = null;
+      player.tumbleRoll = 0;
       if (player.roof) {
         player.roof = false;
         player.altitude = 0;
@@ -1675,6 +1684,7 @@
       if (gameMode !== 'play' || player.parachute) return;
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
+      if (parkInteract()) return;
       if (
         rooftopMissionInteract() ||
         challengeMissionInteract() ||
@@ -1699,7 +1709,19 @@
       }
       const c = nearestCar();
       if (c) {
+        if (vehicleIsLocked(c)) {
+          tell('LOCKED', 1.8);
+          tone(140, 0.07, 0.2, 'square');
+          const inside = pedestrians.find((p) => p.vehicleLine === c);
+          if (inside) driverTalk(inside, 'locked');
+          return;
+        }
+        if (c.occupied) {
+          ejectDriver(c, 'hijack');
+          crime(0.8);
+        }
         player.car = c;
+        c.ramUntil = 0;
         enforceVehicleHandgun();
         c.abandonedFlight = false;
         if (c.type === 'police' || c.military) c.stolen = true;
@@ -1857,6 +1879,13 @@
     }
     function resetMissionState() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (player.coaster) {
+        player.coaster = null;
+        coasterTrain.running = false;
+        coasterTrain.t = 0;
+      }
+      player.tumble = null;
+      player.tumbleRoll = 0;
       cleanupMissionExtras();
       repairJob = null;
       player.parachute = null;
@@ -1899,8 +1928,17 @@
     function clearLine(a, b) {
       return clearSight(a, b);
     }
+    function aheadOf(t, seconds) {
+      return {
+        x: clamp(t.x + (t.vx || 0) * seconds, 40, WORLD_SIZE - 40),
+        y: clamp(t.y + (t.vy || 0) * seconds, 40, WORLD_SIZE - 40),
+      };
+    }
     function copRoute(c) {
-      const chaseTarget = c.pursuitTarget || player;
+      // An interceptor routes to where the runner will be, not to where they are:
+      // half the patrol chases, the other half tries to be there first.
+      const quarry = c.pursuitTarget || player.car || player,
+        chaseTarget = c.interceptor ? aheadOf(quarry, 3.4) : c.pursuitTarget || player;
       if (
         c.x > CITY_SIZE ||
         c.y > CITY_SIZE ||
@@ -2007,6 +2045,7 @@
       const p = randomChoice(points),
         c = makeCar('police', p.x, p.y, headingBetween(p, player), true);
       c.speed = 140;
+      c.interceptor = occupied.length % 2 === 1;
       c.route = copRoute(c);
       c.routeTime = 2;
     }
@@ -2036,6 +2075,29 @@
         'Heard shots by the docks.',
       ],
       wanted: ['It’s him!', 'That’s the guy from the news!', 'Don’t look at him.', 'Cops are everywhere tonight.'],
+      gym: [
+        'Three more. Three.',
+        'Control the negative, don’t drop.',
+        'Elbows in on the dip.',
+        'That set was clean.',
+        'Thirty seconds rest, then again.',
+        'You’re kipping. Strict or it doesn’t count.',
+        'Grip goes before the back does.',
+        'Chalk’s in my bag if you want it.',
+        'Muscle-up by summer. I mean it this time.',
+        'Legs tomorrow. Always tomorrow.',
+        'Full range or it’s half a rep.',
+        'Breathe out on the way up.',
+        'Rings are wet, go easy.',
+        'Twelve. New best.',
+      ],
+      vendor: [
+        'Two tacos, no onion, coming up.',
+        'Coffee’s fresh, five minutes old.',
+        'Cash only, friend.',
+        'Noodles are ready in a minute.',
+        'Best lunch in the Garden.',
+      ],
     };
     function pedSay(p, kind, chance = 1) {
       if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return;
@@ -2081,6 +2143,9 @@
           if ((peopleFrame + index) % 3) continue;
           deltaSeconds = frameDelta * 3;
         }
+        if (updateParkGuest(p, deltaSeconds)) continue;
+        if (updateCarjackReactions(p, deltaSeconds)) continue;
+        if (updateGymGoer(p, deltaSeconds)) continue;
         if (updateParkWalker(p, deltaSeconds)) continue;
         p.timer -= deltaSeconds;
         if (p.flinch > 0) p.flinch -= deltaSeconds;
@@ -2191,21 +2256,22 @@
           continue;
         } else if (p.timer < 0) {
           p.timer = randomBetween(5, 12);
-          const roll = seededRandom();
-          if (roll < 0.1) {
+          const roll = seededRandom(),
+            tempo = cityTempo();
+          if (roll < tempo.idle) {
             p.state = 'idle';
             p.stateTime = randomBetween(2.5, 6);
             p.walking = false;
             continue;
           }
-          if (roll < 0.2 && shopfrontNear(p)) {
+          if (roll < tempo.shop && shopfrontNear(p)) {
             p.state = 'shop';
             p.stateTime = randomBetween(3, 7);
             p.a = -Math.PI / 2;
             p.walking = false;
             continue;
           }
-          if (roll < 0.3) {
+          if (roll < tempo.bench) {
             const spot = nearestFreeBench(p, 160);
             if (spot) {
               spot.taken = p;
@@ -2233,7 +2299,7 @@
           p.walking = false;
           continue;
         }
-        const speed = panic ? 105 : p.flinch > 0 ? 6 : 21;
+        const speed = panic ? 105 : p.flinch > 0 ? 6 : cityTempo().speed;
         p.walk += deltaSeconds * (panic ? 15 : 7);
         if (
           moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5)
@@ -2335,7 +2401,13 @@
       )
         return true;
       return (
-        [...garageWalls(), ...harborSolids(), ...militarySolids(), ...countySolids()].some(
+        [
+          ...garageWalls(),
+          ...harborSolids(),
+          ...depotSolids(),
+          ...militarySolids(),
+          ...countySolids(),
+        ].some(
           (b) => altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h,
         ) ||
         buildingsNear(x, y).some(
@@ -2499,10 +2571,11 @@
           }
         }
         timed('transit', () => updateTransit(deltaSeconds));
+        timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
         if (player.parachute) updateParachute(deltaSeconds);
-        else if (!player.car && !transitRide) {
+        else if (!player.car && !transitRide && !player.coaster && !updateMountainFooting(deltaSeconds)) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
           if (x || y) {
@@ -2523,7 +2596,7 @@
             );
           }
         }
-        if (!player.car && !player.roof && !player.parachute && !transitRide)
+        if (!player.car && !player.roof && !player.parachute && !transitRide && !player.coaster)
           player.altitude = terrainHeight(player.x, player.y);
         if (keys.KeyF || (!player.car && keys.Space) || mouse.down) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
@@ -3093,6 +3166,7 @@
       drawAviationGround(worldContext);
       drawHarbor2D();
       drawDepot2D();
+      drawRoadblocks2D();
       drawUnderpass2D();
       drawAirSearch2D();
       drawTrafficLights2D();
@@ -3354,7 +3428,8 @@
         drawingContext.textAlign = 'center';
         const labels = [
           ['N O R T H B A N K', 1580, 540],
-          ['CENTRAL COMMONS', 2167, 1420],
+          ['CENTRAL GARDEN', 2688, 2200],
+          ['SUNSET PIER', 3810, 5190],
           ['FINANCIAL DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
           ['BATTERY POINT', 2480, 5140],
@@ -3624,7 +3699,10 @@
           prompt = 'ANSWER PAYPHONE';
         else {
           const n = nearestCar();
-          if (n) prompt = 'ENTER ' + vehicleSpec(n).name;
+          if (n)
+            prompt = vehicleIsLocked(n)
+              ? 'LOCKED · BREAK THE WINDOW'
+              : (n.occupied ? 'PULL OUT THE DRIVER · ' : 'ENTER ') + vehicleSpec(n).name;
         }
       }
       getElement('interaction').style.display = prompt ? 'block' : 'none';
@@ -4033,6 +4111,9 @@
     // @include src/story.js
     // @include src/campaign.js
     // @include src/chase.js
+    // @include src/roadblocks.js
+    // @include src/carjack.js
+    // @include src/themepark.js
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
@@ -4109,7 +4190,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "25.1.0",
+      version: "26.0.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -4152,6 +4233,35 @@
         player.godMode = !!on;
         return player.godMode;
       },
+      // Set the wanted level directly. Useful for looking at containment and air
+      // support without having to earn them.
+      wanted(stars = 5) {
+        const n = clamp(Math.round(stars), 0, 5);
+        if (n <= 0) clearPolice();
+        else {
+          wantedStars = n;
+          wantedLevel = n;
+          wantedPressure = n;
+          starElapsed = 0;
+          searchActive = false;
+          searchRemaining = 12 + n * 3;
+          lastSeen = {
+            x: player.x,
+            y: player.y,
+          };
+        }
+        return this.status();
+      },
+      // Where the police have cut the map right now.
+      roadblocks: () =>
+        roadblocks.map((b) => ({
+          name: b.site.name,
+          x: Math.round(b.x),
+          y: Math.round(b.y),
+          cars: b.cars.filter((c) => c.hp > 0).length,
+          officers: b.crew.filter((o) => o.hp > 0).length,
+          spikes: !!b.spike && !b.spike.spent,
+        })),
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

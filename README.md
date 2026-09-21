@@ -7,9 +7,15 @@ South Coast in 1997. One HTML file, no server, no build step to play: open
 - 16 missions: an 11-chapter story (harbor heists, a rooftop hit, car chases, a flight
   finale) followed by 5 open contracts (a hot-car checkpoint run, bomb defusal across the
   Keys, a district-wide blackout, an aerial ring time-trial, and a repo job).
-- A living city: pedestrians who idle, window-shop, sit on benches, walk in pairs and talk
-  back; traffic that obeys signals; police with a real wanted system; gangs, wildlife,
-  trains, sports matches and a casino.
+- A living city whose day has a shape: pedestrians who commute, window-shop at lunch, sit
+  on benches, work out at the Central Garden gym and queue at food trucks; traffic with
+  drivers you have to pull out of the seat, some of whom fight back; police who close
+  bridges and lay spike strips instead of only following you.
+- Gunfire is lethal. Two rounds put anyone down unless they are wearing a vest — you
+  included. A car that goes up with you inside it kills you.
+- Central Garden, a financial core of setback towers, Sunset Pier with a rollercoaster you
+  can actually ride, a mountain you have to trek rather than stroll, trains, sports matches
+  and a casino.
 - A 3D city renderer (Three.js r160, embedded) with district zoning, procedural roofs,
   windows that light up at night, shopfronts, billboards, street furniture, a shore-aware
   wave shader, and a full day/night cycle with dawn and dusk.
@@ -26,6 +32,7 @@ South Coast in 1997. One HTML file, no server, no build step to play: open
 | City map | Tab |
 | Car radio | N power, B next station |
 | Bail out / parachute | J then Space |
+| Ride the Sunset Pier coaster | E at the station |
 | Pause | Escape |
 
 Touch controls appear automatically on phones and tablets. Progress saves to the browser's

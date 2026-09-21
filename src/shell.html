@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 25.1.0
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 26.0.0
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
 Edit the named source sections here, or use the modular source ZIP.
@@ -114,6 +114,16 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Procedural roof and curtain-wall textures, lit windows at night, shopfronts, instanced props, benches.
   src/sidejobs3d.js: Contract mission meshes
     Sky rings, bomb and substation devices.
+  src/roadblocks.js: Police containment and roadblocks
+    Chokepoint catalogue, blockade planning, spike strips and officer posts.
+  src/roadblocks3d.js: Police roadblock meshes
+    Concrete barriers, spike strip, cones and burning flares.
+  src/carjack.js: Carjacking and driver reactions
+    Occupied traffic, locked doors, the ejection throw and what drivers do next.
+  src/themepark.js: Sunset Pier amusement park
+    Island layout, ride footprints, the rideable coaster and the park crowd.
+  src/themepark3d.js: Sunset Pier ride meshes
+    Coaster track and train, big wheel, carousel, teacups, drop tower and midway.
 
 REPOSITORY
   The modular source of this build lives in the repository alongside it:
@@ -3501,21 +3511,21 @@ body:not(.touch-mode).police-search-active #carRadio {
     </div>
     <div id="districtBanner"></div>
     <div id="storyLine"></div>
-    <audio id="carRadioAudio" preload="metadata" loop hidden></audio>
+    <audio id="carRadioAudio" preload="auto" hidden></audio>
     <aside id="carRadio" class="hidden" aria-label="Car radio">
       <div class="car-radio-top">
-        <span id="radioGenre">80S SYNTH</span
+        <span id="radioGenre">AFTER-HOURS MIX</span
         ><button id="radioPower" aria-label="Toggle car radio" aria-pressed="true">N · ON</button>
       </div>
-      <strong id="radioStation">NEON 88.7</strong>
+      <strong id="radioStation">ODDBALL 99.3</strong>
       <div id="radioTrack" aria-live="polite"></div>
       <div class="radio-presets">
-        <button id="radioPreset0" aria-label="Tune Neon 88.7, 80s synth" aria-pressed="true">
-          NEON</button
-        ><button id="radioPreset1" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
-          RIOT</button
-        ><button id="radioPreset2" aria-label="Tune Oddball 99.3, eclectic" aria-pressed="false">
+        <button id="radioPreset0" aria-label="Tune Oddball 99.3, after-hours mix" aria-pressed="true">
           ODDBALL</button
+        ><button id="radioPreset1" aria-label="Tune Neon 88.7, 80s synth" aria-pressed="false">
+          NEON</button
+        ><button id="radioPreset2" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
+          RIOT</button
         ><button id="radioNext" aria-label="Next radio station">B · NEXT</button>
       </div>
     </aside>

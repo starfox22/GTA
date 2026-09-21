@@ -374,6 +374,8 @@
           faction: 'vescari',
           missionTag: 'rooftop-hit',
           boss: true,
+          // Vescari is the only one at the party with a plate under the jacket.
+          vest: 60,
           timer: 1.4,
           walk: 0,
         };
@@ -395,6 +397,11 @@
           [327, 231],
           [327, 310],
         ],
+        [
+          [128, 300],
+          [212, 296],
+          [212, 214],
+        ],
       ];
       for (let i = 0; i < routes.length; i++) {
         const route = routes[i].map((p) => roofAt(...p));
@@ -403,7 +410,7 @@
           a: i === 0 ? Math.PI : 0,
           hp: 70,
           color: '#293441',
-          name: ['NICO FALCO', 'BRUNO RIZZO', 'CARLO SERRA'][i],
+          name: ['NICO FALCO', 'BRUNO RIZZO', 'CARLO SERRA', 'TITO MARCHETTI'][i],
           faction: 'vescari',
           missionTag: 'rooftop-hit',
           guard: true,
@@ -507,9 +514,14 @@
       for (const e of enemies)
         if (e.missionTag === 'rooftop-hit') {
           e.aiming = true;
-          e.timer = Math.max(e.timer, 1.2);
+          // Close protection details do not hesitate: weapons come up now.
+          e.timer = 0.15 + seededRandom() * 0.15;
           e.roofRoute = null;
         }
+      // Security downstairs is called the moment the party breaks.
+      wantedStars = Math.max(2, wantedStars);
+      // The car brings the lift back up; the way out is not simply standing open.
+      m.liftRecalled = gameTime + 9;
     }
     function canSilentHit(m) {
       return (
@@ -730,18 +742,19 @@
               e.roofRoute = null;
             }
           }
-          if (
-            player.roof &&
-            roofSees(e, player, 118) &&
-            ((!m.partyPanic && distanceBetween(e, player) < 28) ||
-              (moving && (keys.ShiftLeft || keys.ShiftRight)))
-          )
-            suspicious = true;
+          if (player.roof && roofSees(e, player, 132)) {
+            const d = distanceBetween(e, player),
+              sprinting = moving && (keys.ShiftLeft || keys.ShiftRight);
+            // Crowding the detail, running, or lingering inside the cordon all read wrong.
+            if (d < 34 || sprinting || m.partyPanic) suspicious = true;
+            else if (d < 96) e.lingering = (e.lingering || 0) + deltaSeconds;
+            if ((e.lingering || 0) > 1.6) suspicious = true;
+          } else e.lingering = Math.max(0, (e.lingering || 0) - deltaSeconds * 1.6);
         }
         if (e.boss && !m.alarm && !m.poisoned) e.a = -Math.PI / 2 + Math.sin(gameTime * 0.22) * 0.45;
       }
       if (!m.alarm) {
-        m.suspicion = clamp(m.suspicion + (suspicious ? 42 : -19) * deltaSeconds, 0, 100);
+        m.suspicion = clamp(m.suspicion + (suspicious ? 64 : -11) * deltaSeconds, 0, 100);
         if (player.roof && (m.weaponDrawn || m.suspicion >= 100)) roofAlarm(m);
         if (m.killRegistered && !m.partyPanic) {
           m.bodyDelay -= deltaSeconds;
@@ -765,18 +778,18 @@
         e.a = headingBetween(e, player);
         e.aiming = seen;
         e.timer -= deltaSeconds;
-        if (!seen || distanceBetween(e, player) > 135) roofStep(e, player, deltaSeconds, 31);
+        if (!seen || distanceBetween(e, player) > 120) roofStep(e, player, deltaSeconds, 46);
         if (seen && e.timer <= 0) {
-          e.timer = 1.3 + seededRandom() * 0.45;
-          const a = e.a + randomBetween(-0.065, 0.065);
+          e.timer = 0.72 + seededRandom() * 0.34;
+          const a = e.a + randomBetween(-0.038, 0.038);
           bullets.push({
             x: e.x + Math.cos(a) * 14,
             y: e.y + Math.sin(a) * 14,
             altitude: e.altitude,
-            vx: Math.cos(a) * 450,
-            vy: Math.sin(a) * 450,
+            vx: Math.cos(a) * 520,
+            vy: Math.sin(a) * 520,
             life: 0.6,
-            dmg: 10,
+            dmg: 17,
             enemy: true,
             faction: 'vescari',
             owner: e,

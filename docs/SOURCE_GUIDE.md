@@ -30,7 +30,11 @@ Two closures matter:
 - Heading `a` is radians. Velocity `vx/vy` is units per second, `av` radians per second.
 - In Three.js a map point becomes `(x, elevation, y)`; model yaw is `-a`.
 - Compact entity keys are contracts: `hp`, `maxhp`, `a`, `w/l`, `hx/hy` (collider half
-  extents), `vz`, `inv` (invulnerability seconds).
+  extents), `vz`, `inv` (invulnerability seconds), `vest` (an NPC's body armor, in the
+  same units as `player.armor`).
+- All bullet, blast, melee and impact damage goes through `ballisticDamage()` in
+  combat-rules.js. Call `strikePerson(person, damage, a, source, showBlood, kind)` and
+  `hurt(damage, kind)` with the right `kind` rather than scaling damage at the call site.
 - `entityElevation(e)` is the only correct way to compare heights of actors on roofs,
   terrain and aircraft. Aircraft `altitude` is absolute; `aircraftClearance()` subtracts terrain.
 - Timers are seconds. Physics runs in fixed 1/120 s steps. `worldMinutes` advances one game
@@ -48,7 +52,10 @@ Game closure (in include order):
 | audio.js | Web Audio effects, voices, procedural sounds |
 | physics.js | Vehicle and pedestrian physics, traffic AI, signals, knockdowns |
 | geography.js | Land polygons, river, bridges, `districtAt`, coast segments, 2D water |
-| harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot |
+| harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot and its shutters |
+| roadblocks.js | Chokepoints, blockade planning, spike strips, `clearRoadblocks` |
+| carjack.js | Occupied traffic, locked doors, driver ejection and reactions |
+| themepark.js | Sunset Pier layout, ride solids, the rideable coaster, park crowd |
 | police-feedback.js | Wanted-level banners and delivery blocking |
 | arsenal.js | Weapon ownership, arsenal UI, knife |
 | citylife.js | Clock, `PLACES` (businesses), officers, police routing, `daylight()` |
@@ -66,7 +73,8 @@ Game closure (in include order):
 | render3d.js | Renderer entry: lights, ground texture painting, vehicle/person models, effects, `render()` |
 
 Renderer fragments (inside `createCityRenderer()`): cityscape3d (buildings, roofs, shopfronts,
-street furniture, night windows), sidejobs3d (rings/devices), garage3d, landmarks3d, civic3d
+street furniture, night windows), sidejobs3d (rings/devices), roadblocks3d (barriers, spikes,
+flares), themepark3d (coaster, wheel, carousel), garage3d, landmarks3d, civic3d
 (time-of-day palette, businesses), air-cover3d, renewal3d, sports3d, transit3d, ecology3d,
 world3d (water shader, palms, airport, rooftop bar), county3d, harbor3d (signals, depot,
 helicopter searchlight), helicopter3d, vehicles3d, plane3d.
@@ -78,17 +86,28 @@ helicopter searchlight), helicopter3d, vehicles3d, plane3d.
   yellow centre lines. Blocks are 334 units square with a parking court or courtyard inside.
 - Marlow Bay (the river, x 3420..3960) separates Northbank from Palm Keys (east). Bridges at
   y = 1152 (Union St), 3200 (Harbor Ave) and 4736 (Stadium Way).
-- Districts, from `districtAt()`: Old Quarter and Ironworks Docks (north), Central Gardens and
+- Districts, from `districtAt()`: Old Quarter and Ironworks Docks (north), Central Garden and
   Midtown, Broadway and Financial District (centre), South Bank, Battery Point and Southport
-  Airport (south); Palm Keys Art Deco, Ocean Drive, Little Havana and Coral Marina (east).
+  Airport (south); Palm Keys Art Deco, Ocean Drive, Little Havana and Coral Marina (east);
+  Sunset Pier on its own island in the lower bay.
   Zoning lives in `zoneHeight()` (heights) and the block patterns in `buildWorld()`; the
   renderer picks facade/roof archetypes from the same district names in `archetypeFor()`.
+  The coastline in `LAND_REGIONS` runs outside every block of the grid, so all eighty land
+  blocks build.
 - Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns, bridges, an airport and a railway (transit.js).
-- Central Commons (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks wide and three deep;
-  the streets inside it are closed by `parkStreetClosed`, and the elevated City Line crosses
-  it with the Central Commons station. Eastside Customs garage sits on Cannery St at (1320, 2022).
+- Central Garden (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks square at
+  x 2265..3111, y 1800..2600. Garden Ave (x 2688) and Linden St (y 2176) run inside it and are
+  closed by `parkStreetClosed`. No rail crosses it: the City Line runs up Garden St (x 2176),
+  one street west, with the Central Garden station on it. The outdoor gym stations come from
+  `gymStations()`; `updateGymGoer` runs the regulars and the food-truck staff.
+- Sunset Pier (themepark.js `PIER`, `COASTER_TRACK`) is a land region of its own reached by
+  the `SUNSET PIER CAUSEWAY` county bridge off the Stadium Way crossing. `updateCoaster`
+  carries the player along the track; `parkBlocked` keeps the rides solid.
+- Police containment lives in roadblocks.js: `roadblockSites()` is the chokepoint catalogue,
+  `planPoliceContainment` picks one ahead of and out of sight of the runner, and
+  `updateRoadblocks` runs the spike strips. `clearPolice()` tears them all down.
 - South Coast Stadium (sports-world.js) is enclosed: `STADIUM_ENCLOSURE` blocks people and
   vehicles, `STADIUM_VEHICLE_BARRIERS` (bollards, turnstile span) block vehicles only, and the
   two turnstile gates at x 2665..2686 and 2692..2713 (y 4845) are the only way onto the concourse.
@@ -158,7 +177,8 @@ game time is clamped per frame, which is why toasts and banners look "stuck" in 
 
 The **developer console** `window.DeadEndCity` (game.js, after the frame loop) exposes
 `status()`, `teleport(x, y)`, `setClock(hours)`, `setZoom(v)`, `startMission(index)`,
-`missions()` and `god(on)`. Test scripts use it; players can too from the browser console.
+`missions()`, `god(on)`, `wanted(stars)` and `roadblocks()`. Test scripts use it; players
+can too from the browser console.
 
 ## 8. Known limitations and ideas
 

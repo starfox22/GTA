@@ -6,6 +6,46 @@
      * Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
      */
     /* All gunfire travels through the same three-dimensional world. */
+
+    /**
+     * LETHALITY
+     * Firearms are lethal. An unprotected torso hit takes a person out of the fight
+     * in one or two rounds; a ballistic vest spreads the same energy across several
+     * and wears out as it does. Vehicle impacts and blasts keep their own scales so
+     * a fender bump does not read as a rifle round.
+     * `vest` is the NPC counterpart of `player.armor` and uses the same units.
+     */
+    const BALLISTIC_LETHALITY = 2.05,
+      MELEE_LETHALITY = 1.45,
+      VEST_SHARE = {
+        ballistic: 0.74,
+        melee: 0.55,
+        blast: 0.45,
+        impact: 0,
+      };
+    function vestOf(person) {
+      return Math.max(0, person === player ? player.armor : person.vest || 0);
+    }
+    function reduceVest(person, absorbed) {
+      if (person === player) player.armor = Math.max(0, player.armor - absorbed);
+      else person.vest = Math.max(0, (person.vest || 0) - absorbed);
+    }
+    function ballisticDamage(person, damage, kind = 'ballistic') {
+      let d =
+        damage *
+        (kind === 'ballistic' ? BALLISTIC_LETHALITY : kind === 'melee' ? MELEE_LETHALITY : 1);
+      const share = VEST_SHARE[kind] || 0,
+        vest = vestOf(person);
+      if (vest > 0 && share > 0) {
+        const absorbed = Math.min(vest, d * share);
+        reduceVest(person, absorbed);
+        d -= absorbed;
+      }
+      return Math.max(0, d);
+    }
+    function wearingVest(person) {
+      return vestOf(person) > 0;
+    }
     function combatDistance(a, b) {
       return Math.hypot(a.x - b.x, a.y - b.y, entityElevation(a) - entityElevation(b));
     }
@@ -181,7 +221,7 @@
       airDispatchTimer = Math.max(0, airDispatchTimer - deltaSeconds);
       // Destruction is processed before dispatch, so a kill cannot immediately spawn its replacement.
       for (const c of vehicles) if (c.airUnit && c.hp <= 0 && !c.airDown) markAirSupportDown(c);
-      const wanted = Math.ceil(wantedStars) >= 5 && !harborPoliceProtected(player.x, player.y, 100);
+      const wanted = Math.ceil(wantedStars) >= 4 && !harborPoliceProtected(player.x, player.y, 100);
       if (wanted && !airSupportUnit() && airDispatchTimer <= 0) requestAirSupport(player);
       const live = vehicles
         .filter((c) => c.airUnit && c.hp > 0 && c !== player.car && !c.airRetreat)
@@ -248,7 +288,7 @@
             ...origin,
             ...shotVelocity(origin, t, 650, a),
             life: 1,
-            dmg: 10,
+            dmg: 12,
             enemy: true,
             faction: 'police',
             owner: c,
@@ -270,7 +310,7 @@
               Math.ceil(Math.max(0, AIR_SEARCH_SECONDS - (c.airLostFor || 0))) +
               's · STAY HIDDEN'
             : 'HELICOPTER · ' + Math.ceil((c.hp / c.maxhp) * 100) + '% · FIND COVER';
-      return wantedStars >= 5 && airDispatchTimer > 0
+      return wantedStars >= 4 && airDispatchTimer > 0
         ? 'NO AIR SUPPORT · ' + Math.ceil(airDispatchTimer) + 's'
         : '';
     }

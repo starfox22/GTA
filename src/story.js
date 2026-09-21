@@ -633,7 +633,7 @@
             vx: Math.cos(a) * 460,
             vy: Math.sin(a) * 460,
             life: 0.75,
-            dmg: 9,
+            dmg: 14,
             enemy: true,
             faction: e.faction,
             owner: e,
@@ -664,6 +664,18 @@
       }
       if (up && wantedStars > 0) {
         needToLosePolice();
+        return;
+      }
+      const hit = rooftopJob();
+      if (!up && hit?.liftRecalled > gameTime) {
+        // Security holds the car at the lobby the moment the party breaks.
+        tell(
+          'The car has been recalled to the lobby · ' +
+            Math.ceil(hit.liftRecalled - gameTime) +
+            's — stay alive',
+          2.5,
+        );
+        tone(180, 0.18, 0.2, 'square', 120);
         return;
       }
       liftTravel = {

@@ -210,25 +210,16 @@
       // Sits well below the deepest wave trough so it never pokes through the swell.
       farWater.position.set(WORLD_SIZE / 2, -18, WORLD_SIZE / 2);
       scene.add(farWater);
-      const shoreFoam = [],
-        shoreMaterial = new Three.MeshBasicMaterial({
-          color: '#92cfbf',
-          transparent: true,
-          opacity: 0.15,
-          depthWrite: false,
-          side: Three.DoubleSide,
-        });
-      const foamCanvas = document.createElement('canvas');
-      foamCanvas.width = 128;
-      foamCanvas.height = 32;
-      const foamContext = foamCanvas.getContext('2d');
-      for (let x = 0; x < 128; x += 2) {
-        const y = 13 + Math.sin(x * 0.1) * 3 + Math.sin(x * 0.29) * 2;
-        foamContext.fillStyle =
-          'rgba(223,243,227,' + (0.28 + 0.28 * (0.5 + 0.5 * Math.sin(x * 0.37))) + ')';
-        foamContext.fillRect(x, y, 3, 2 + Math.sin(x * 0.16) * 1.5);
-      }
-      const foamTex = new Three.CanvasTexture(foamCanvas);
+      /**
+       * SHORELINE
+       * The wash, the breaking band and the wet-sand darkening are all produced by
+       * the water shader from its distance-to-shore field, so the shore carries no
+       * overlay planes. An earlier pass laid flat foam and shallow quads a few
+       * units under the surface; because they were fixed while the water is
+       * displaced by four Gerstner swells, they surfaced through the waves as pale
+       * rectangles. They are gone. What remains here is real build: the concrete
+       * quay edge, its coping, mooring bollards and a sand bank along the beaches.
+       */
       for (const e of coastSegments()) {
         if (e.opening) continue;
         const group = new Three.Group(),
@@ -242,33 +233,15 @@
         if (style === 'quay') {
           box(group, 0, 2.3, 0, e.length + 1, 5, 5, mat('#727e80'));
           box(group, 0, 5.2, 0, e.length + 1, 0.9, 7, concrete);
-        }
-        const shallow = new Three.Mesh(
-          new Three.PlaneGeometry(e.length + 2, style === 'beach' ? 48 : 15),
-          shoreMaterial,
-        );
-        shallow.rotation.x = -Math.PI / 2;
-        shallow.position.set(0, -0.55, outward * (style === 'beach' ? 19 : 7));
-        group.add(shallow);
-        for (let k = 0; k < (style === 'beach' ? 2 : 1); k++) {
-          const material = new Three.MeshBasicMaterial({
-              map: foamTex,
-              transparent: true,
-              opacity: 0.25,
-              depthWrite: false,
-              side: Three.DoubleSide,
-            }),
-            foam = new Three.Mesh(new Three.PlaneGeometry(e.length + 2, 13), material);
-          foam.rotation.x = -Math.PI / 2;
-          foam.userData.dynamic = true;
-          foam.position.y = -0.35 - k * 0.05;
-          foam.userData = {
-            outward,
-            phase: e.x * 0.003 + e.y * 0.002 + k * 0.5,
-            beach: style === 'beach',
-          };
-          group.add(foam);
-          shoreFoam.push(foam);
+          box(group, 0, 0.6, outward * 3.4, e.length + 1, 4, 2.2, mat('#5d6668', 0.95));
+          if (Math.round(e.x + e.y) % 3 === 0) {
+            mesh(cylinderGeo, darkMetal, group, 0, 6.6, -outward * 1.4, 1.5, 3.4, 1.5);
+            mesh(sphereGeo, darkMetal, group, 0, 8.3, -outward * 1.4, 1.9, 1.1, 1.9);
+          }
+        } else {
+          // A low sand bank so the beach meets the water with a lip, not an edge.
+          box(group, 0, 0.45, -outward * 5, e.length + 1, 1.2, 12, mat('#c8b68e', 0.97));
+          box(group, 0, 0.18, -outward * 13, e.length + 1, 0.9, 10, mat('#b8a884', 0.97));
         }
         statics.push({
           x: e.x,
@@ -277,6 +250,97 @@
           radius: 90,
         });
       }
+      /**
+       * STREET ENDS
+       * Every grid road stops where the land does. A road that simply stops is a
+       * bug; a road that stops at a kerbed turning head with a guardrail, a pair
+       * of chevron boards and a NO THROUGH ROAD plate is a street. Ends on a
+       * bridge or a boulevard are junctions, not ends, and are skipped.
+       */
+      function buildStreetEnds() {
+        const railMat = mat('#cfd3cd', 0.7),
+          chevron = mat('#e9e3d0', 0.75),
+          stripe = mat('#c14c3c', 0.7),
+          kerb = mat('#a9a89b', 0.92);
+        // One plate texture shared by every end: a canvas per sign would cost
+        // more memory than the rest of the street furniture put together.
+        const plate = document.createElement('canvas');
+        plate.width = 512;
+        plate.height = 128;
+        const pg = plate.getContext('2d');
+        pg.fillStyle = '#e9e3d0';
+        pg.fillRect(0, 0, 512, 128);
+        pg.strokeStyle = '#b23c33';
+        pg.lineWidth = 10;
+        pg.strokeRect(10, 10, 492, 108);
+        pg.fillStyle = '#20262a';
+        pg.font = '700 46px Arial';
+        pg.textAlign = 'center';
+        pg.textBaseline = 'middle';
+        pg.fillText('NO THROUGH ROAD', 256, 66, 460);
+        const plateTexture = new Three.CanvasTexture(plate);
+        plateTexture.colorSpace = Three.SRGBColorSpace;
+        const plateMaterial = new Three.MeshBasicMaterial({
+          map: plateTexture,
+          side: Three.DoubleSide,
+          toneMapped: false,
+        });
+        const plateGeometry = new Three.PlaneGeometry(34, 8.5);
+        for (const r of cityStreets()) {
+          for (const end of [r.start, r.end]) {
+            const p = r.vertical ? { x: r.r, y: end } : { x: end, y: r.r },
+              outward = end === r.start ? -1 : 1,
+              a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
+            if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+            if (inAirport(p.x, p.y) || inStadiumLot(p.x, p.y, 40)) continue;
+            const group = new Three.Group();
+            group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
+            group.rotation.y = -a;
+            scene.add(group);
+            batchGroups.push(group);
+            const half = r.width * 0.5;
+            // Kerb ring around the turning head.
+            const ring = mesh(new Three.TorusGeometry(half + 4, 2.4, 6, 26), kerb, group, 0, 1.6, 0);
+            ring.rotation.x = Math.PI / 2;
+            // Guardrail across the closed end.
+            for (let i = -3; i <= 3; i++) {
+              const z = (i * (r.width + 20)) / 7;
+              box(group, half + 7, 7, z, 3.4, 14, 3.4, railMat);
+            }
+            box(group, half + 7, 12, 0, 3, 3.6, r.width + 24, railMat);
+            box(group, half + 7, 6.4, 0, 3, 3, r.width + 24, railMat);
+            // Chevron boards facing the road, red and white.
+            for (const side of [-1, 1]) {
+              const z = side * (r.width * 0.24);
+              box(group, half + 2, 9.5, z, 1.6, 13, 26, chevron);
+              for (let k = -2; k <= 2; k++)
+                box(group, half + 1.2, 9.5, z + k * 5.2, 0.8, 13, 2.6, stripe);
+              box(group, half + 2, 2, z, 4, 4, 28, railMat);
+            }
+            // NO THROUGH ROAD plate on a post, set back on the kerb.
+            box(group, half - 8, 11, -half + 8, 1.8, 22, 1.8, railMat);
+            const boardMesh = new Three.Mesh(plateGeometry, plateMaterial);
+            boardMesh.position.set(half - 8, 22, -half + 8);
+            boardMesh.rotation.y = -Math.PI / 2;
+            boardMesh.userData.sign = true;
+            group.add(boardMesh);
+            // A planted island in the middle of a wide head.
+            if (r.width > 100) {
+              mesh(new Three.CylinderGeometry(15, 16, 2.4, 18), kerb, group, 0, 1.2, 0);
+              mesh(new Three.CylinderGeometry(13, 13, 1.2, 18), leafMats[1], group, 0, 2.4, 0);
+              rod(group, new Three.Vector3(0, 2, 0), new Three.Vector3(0, 20, 0), 1.6, mat('#6b5442'));
+              mesh(sphereGeo, leafMats[0], group, 0, 26, 0, 13, 10, 13);
+            }
+            statics.push({
+              x: p.x,
+              y: p.y,
+              group,
+              radius: 110,
+            });
+          }
+        }
+      }
+      buildStreetEnds();
       function makePalm(x, z, size = 1) {
         const g = new Three.Group();
         g.position.set(x, 0, z);
@@ -652,11 +716,6 @@
         waterSurface.scale.set(Math.max(1, 1 / worldZoom / 2), Math.max(1, 1 / worldZoom / 2), 1);
         waterSurface.position.x = Math.round(cameraTarget.x / 25) * 25;
         waterSurface.position.z = Math.round(cameraTarget.y / 25) * 25;
-        shoreFoam.forEach((m) => {
-          const t = (gameTime * 0.18 + m.userData.phase) % 1;
-          m.position.z = m.userData.outward * (3 + (1 - t) * (m.userData.beach ? 36 : 10));
-          m.material.opacity = Math.sin(t * Math.PI) * (m.userData.beach ? 0.3 : 0.12);
-        });
         farWater.material.color
           .set('#061421')
           .lerp(new Three.Color(cameraTarget.x > 3900 ? '#0c5a68' : '#0f3a52'), light);

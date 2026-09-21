@@ -251,6 +251,8 @@
           a: i % 2 ? Math.PI : 0,
           hp: 115,
           maxhp: 115,
+          // Base security wear plate carriers: small arms need several rounds to matter.
+          vest: 110,
           color: '#657653',
           faction: 'military',
           military: true,
@@ -369,7 +371,7 @@
               vx: Math.cos(a) * 680,
               vy: Math.sin(a) * 680,
               life: 0.9,
-              dmg: 10,
+              dmg: 13,
               enemy: true,
               faction: 'military',
               owner: e,

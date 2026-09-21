@@ -474,8 +474,16 @@
     function updateExplorationUI() {
       const t = player.car?.offroadState,
         p = player.parachute;
+      const trekking =
+        !player.car && !p && !transitRide && !player.roof && !player.coaster && terrainHeight(player.x, player.y) > 8;
       getElement('terrainStatus').style.display =
-        gameMode === 'play' && (transitRide || t?.z > 8 || p) ? 'block' : 'none';
+        gameMode === 'play' && (transitRide || t?.z > 8 || p || trekking || player.coaster)
+          ? 'block'
+          : 'none';
+      if (player.coaster) {
+        getElement('terrainStatus').textContent = coasterStatusText();
+        return;
+      }
       if (transitRide) {
         getElement('terrainStatus').textContent =
           'CITY RAIL → ' + transitRide.target.name + ' · E: NEXT STOP';
@@ -489,7 +497,26 @@
           ' · ' +
           Math.round(worldMeters(player.altitude - terrainHeight(player.x, player.y))) +
           ' m ABOVE GROUND';
-      else if (t?.z > 8)
+      else if (trekking) {
+        const grade = player.mountainGrade || 0,
+          degrees = Math.round((Math.atan(grade) * 180) / Math.PI);
+        getElement('terrainStatus').textContent = player.tumble
+          ? 'FALLING · ' + degrees + '° SLOPE'
+          : (player.onMountainTrail
+              ? 'ON THE TRAIL'
+              : grade > 0.66
+                ? 'TOO STEEP TO CLIMB'
+                : grade > 0.52
+                  ? 'LOOSE SCREE · DO NOT DESCEND HERE'
+                  : grade > 0.34
+                    ? 'SLIPPING · FIND THE TRAIL'
+                    : 'OPEN GROUND') +
+            ' · ' +
+            degrees +
+            '° · ' +
+            Math.round(worldMeters(terrainHeight(player.x, player.y))) +
+            ' m';
+      } else if (t?.z > 8)
         getElement('terrainStatus').textContent =
           (t.four ? '4×4 TRACTION' : 'ROAD TIRES · LOW GRIP') +
           ' · ' +

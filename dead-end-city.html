@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 25.1.0
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 26.0.0
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
 Edit the named source sections here, or use the modular source ZIP.
@@ -114,6 +114,16 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Procedural roof and curtain-wall textures, lit windows at night, shopfronts, instanced props, benches.
   src/sidejobs3d.js: Contract mission meshes
     Sky rings, bomb and substation devices.
+  src/roadblocks.js: Police containment and roadblocks
+    Chokepoint catalogue, blockade planning, spike strips and officer posts.
+  src/roadblocks3d.js: Police roadblock meshes
+    Concrete barriers, spike strip, cones and burning flares.
+  src/carjack.js: Carjacking and driver reactions
+    Occupied traffic, locked doors, the ejection throw and what drivers do next.
+  src/themepark.js: Sunset Pier amusement park
+    Island layout, ride footprints, the rideable coaster and the park crowd.
+  src/themepark3d.js: Sunset Pier ride meshes
+    Coaster track and train, big wheel, carousel, teacups, drop tower and midway.
 
 REPOSITORY
   The modular source of this build lives in the repository alongside it:
@@ -3501,21 +3511,21 @@ body:not(.touch-mode).police-search-active #carRadio {
     </div>
     <div id="districtBanner"></div>
     <div id="storyLine"></div>
-    <audio id="carRadioAudio" preload="metadata" loop hidden></audio>
+    <audio id="carRadioAudio" preload="auto" hidden></audio>
     <aside id="carRadio" class="hidden" aria-label="Car radio">
       <div class="car-radio-top">
-        <span id="radioGenre">80S SYNTH</span
+        <span id="radioGenre">AFTER-HOURS MIX</span
         ><button id="radioPower" aria-label="Toggle car radio" aria-pressed="true">N · ON</button>
       </div>
-      <strong id="radioStation">NEON 88.7</strong>
+      <strong id="radioStation">ODDBALL 99.3</strong>
       <div id="radioTrack" aria-live="polite"></div>
       <div class="radio-presets">
-        <button id="radioPreset0" aria-label="Tune Neon 88.7, 80s synth" aria-pressed="true">
-          NEON</button
-        ><button id="radioPreset1" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
-          RIOT</button
-        ><button id="radioPreset2" aria-label="Tune Oddball 99.3, eclectic" aria-pressed="false">
+        <button id="radioPreset0" aria-label="Tune Oddball 99.3, after-hours mix" aria-pressed="true">
           ODDBALL</button
+        ><button id="radioPreset1" aria-label="Tune Neon 88.7, 80s synth" aria-pressed="false">
+          NEON</button
+        ><button id="radioPreset2" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
+          RIOT</button
         ><button id="radioNext" aria-label="Next radio station">B · NEXT</button>
       </div>
     </aside>
@@ -4255,14 +4265,11 @@ body:not(.touch-mode).police-search-active #carRadio {
         },
       ],
       PARKS = [
-        [3, 1],
-        [3, 2],
-        [3, 3],
-        [4, 1],
-        [4, 2],
         [4, 3],
+        [4, 4],
+        [5, 3],
+        [5, 4],
         [1, 1],
-        [4, 3],
         [0, 4],
         [2, 5],
         [4, 7],
@@ -4958,7 +4965,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         );
     }
     function soundUpdate(deltaSeconds) {
-      syncCarRadio();
+      syncCarRadio(false, deltaSeconds);
       if (!audio) return;
       const active = gameMode === 'play' && soundOn,
         c = player.car;
@@ -5197,8 +5204,10 @@ body:not(.touch-mode).police-search-active #carRadio {
         underpassBlocked(x, y, r) ||
         airportSceneryBlocked(x, y, r) ||
         garageBlocked(x, y, r) ||
+        parkBlocked(x, y, r) ||
         !groundAt(x, y, r) ||
         harborBlocked(x, y, r) ||
+        depotBlocked(x, y, r) ||
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
       )
         return true;
@@ -5272,6 +5281,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           damageVersion: 0,
         };
       vehicles.push(vehicle);
+      if (autonomous) assignDriver(vehicle);
       return vehicle;
     }
     function canSpawnCar(type, x, y, a = 0, margin = 7, airframe) {
@@ -5372,9 +5382,9 @@ body:not(.touch-mode).police-search-active #carRadio {
       if (y < 1450) return cx > 2500 ? 30 + vary * 18 : 30 + vary * 26;
       if (y < 2650) return cx > 1700 && cx < 2300 ? 56 + vary * 30 : 62 + vary * 55;
       if (y < 3700) {
-        if (cx < 1800) return 46 + vary * 40;
-        const core = clamp(Math.hypot(cx - 2450, y + 70 - 3150) / 950, 0, 1);
-        return 110 + (1 - core) * 130 + vary * 45;
+        if (cx < 1800) return 60 + vary * 46;
+        const core = clamp(Math.hypot(cx - 2600, y + 70 - 3150) / 1150, 0, 1);
+        return 155 + Math.pow(1 - core, 2.2) * 415 + vary * 95;
       }
       if (y < 4650) return 50 + vary * 45;
       return 30 + vary * 24;
@@ -5619,13 +5629,20 @@ body:not(.touch-mode).police-search-active #carRadio {
               label('P', x + 245, y + 260, 19, '#9aa08a');
             }
           }
+          // Street planting on all four kerbs, not only the north side: a tree
+          // line is most of what separates a city block from a car park.
           for (let s = 0; s < 3; s++) {
             drawTree(x + 55 + s * 110, y - 16, 12);
+            drawTree(x + 55 + s * 110, y + h + 16, 12 + (s % 2) * 2);
             lamps.push({
               x: x + 22 + s * 144,
               y: y + h + 18,
             });
             rect(x + 19 + s * 144, y + h + 9, 3, 13, '#3f453a');
+          }
+          for (let s = 0; s < 2; s++) {
+            drawTree(x - 16, y + 90 + s * 150, 11);
+            drawTree(x + w + 16, y + 90 + s * 150, 11);
           }
         }
       // Waterfront promenades, continuous river and three navigable crossings.
@@ -5694,6 +5711,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       seedParkTrees();
       buildHarbor();
       buildVinnyDepot();
+      buildSunsetPier();
       buildCounty();
       for (const r of SERVICE_ROADS.filter((r) => r.name.startsWith('SOUTHPORT ')))
         strokeRoad(groundContext, r.points, r.width, '#606664');
@@ -5825,11 +5843,8 @@ body:not(.touch-mode).police-search-active #carRadio {
           continue;
         makeCar(type, x, y, a, false, randomChoice(VEHICLE_PAINT_COLORS));
       }
-      const PED_COLORS = [
-        '#cab392', '#879eb3', '#b57374', '#c2bd95', '#778e70', '#9689a7',
-        '#d9a066', '#5f7c9c', '#c95a4a', '#e0d8c0', '#4c5a6b', '#8a5c7a',
-      ];
-      for (let i = 0; i < 300; i++) {
+      const PED_COLORS = DRIVER_COLORS;
+      for (let i = 0; i < 380; i++) {
         const vertical = seededRandom() > 0.5,
           r = randomChoice(ROAD_CENTERS),
           v = randomBetween(180, CITY_SIZE - 260),
@@ -5989,22 +6004,19 @@ body:not(.touch-mode).police-search-active #carRadio {
         ),
       ])
         if (e.hp > 0 && distance(e) < 85 * power && clearSight(blast, e)) {
-          strikePerson(e, 200, headingBetween(blast, e), attacker);
+          strikePerson(e, 200, headingBetween(blast, e), attacker, true, 'blast');
         }
       for (const animal of wildlife)
         if (animal.hp > 0 && distance(animal) < 85 * power && clearSight(blast, animal))
           strikeWildlife(animal, Math.max(0, 200 * power - distance(animal) * 1.6));
       const pd = distance(player);
-      if (pd < 95 * power && clearSight(blast, player)) hurt(Math.max(0, (95 * power - pd) * 0.75));
+      if (pd < 95 * power && clearSight(blast, player))
+        hurt(Math.max(0, (95 * power - pd) * 0.75), 'blast');
       if (attacker === player) crime(0.5);
     }
-    function hurt(d) {
+    function hurt(d, kind = 'ballistic') {
       if (player.inv > 0 || gameMode !== 'play' || player.godMode) return;
-      if (player.armor > 0) {
-        const absorbed = Math.min(player.armor, d * 0.65);
-        player.armor -= absorbed;
-        d -= absorbed;
-      }
+      d = ballisticDamage(player, d, kind);
       player.hp -= d;
       if (d > 1 && !player.car) bleed(player, d / 35, player.a + Math.PI);
       flash = 0.12;
@@ -6012,6 +6024,13 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function die() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (player.coaster) {
+        player.coaster = null;
+        coasterTrain.running = false;
+        coasterTrain.t = 0;
+      }
+      player.tumble = null;
+      player.tumbleRoll = 0;
       if (player.roof) {
         player.roof = false;
         player.altitude = 0;
@@ -6142,6 +6161,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       if (gameMode !== 'play' || player.parachute) return;
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
+      if (parkInteract()) return;
       if (
         rooftopMissionInteract() ||
         challengeMissionInteract() ||
@@ -6166,7 +6186,19 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       const c = nearestCar();
       if (c) {
+        if (vehicleIsLocked(c)) {
+          tell('LOCKED', 1.8);
+          tone(140, 0.07, 0.2, 'square');
+          const inside = pedestrians.find((p) => p.vehicleLine === c);
+          if (inside) driverTalk(inside, 'locked');
+          return;
+        }
+        if (c.occupied) {
+          ejectDriver(c, 'hijack');
+          crime(0.8);
+        }
         player.car = c;
+        c.ramUntil = 0;
         enforceVehicleHandgun();
         c.abandonedFlight = false;
         if (c.type === 'police' || c.military) c.stolen = true;
@@ -6324,6 +6356,13 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function resetMissionState() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (player.coaster) {
+        player.coaster = null;
+        coasterTrain.running = false;
+        coasterTrain.t = 0;
+      }
+      player.tumble = null;
+      player.tumbleRoll = 0;
       cleanupMissionExtras();
       repairJob = null;
       player.parachute = null;
@@ -6366,8 +6405,17 @@ body:not(.touch-mode).police-search-active #carRadio {
     function clearLine(a, b) {
       return clearSight(a, b);
     }
+    function aheadOf(t, seconds) {
+      return {
+        x: clamp(t.x + (t.vx || 0) * seconds, 40, WORLD_SIZE - 40),
+        y: clamp(t.y + (t.vy || 0) * seconds, 40, WORLD_SIZE - 40),
+      };
+    }
     function copRoute(c) {
-      const chaseTarget = c.pursuitTarget || player;
+      // An interceptor routes to where the runner will be, not to where they are:
+      // half the patrol chases, the other half tries to be there first.
+      const quarry = c.pursuitTarget || player.car || player,
+        chaseTarget = c.interceptor ? aheadOf(quarry, 3.4) : c.pursuitTarget || player;
       if (
         c.x > CITY_SIZE ||
         c.y > CITY_SIZE ||
@@ -6474,6 +6522,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       const p = randomChoice(points),
         c = makeCar('police', p.x, p.y, headingBetween(p, player), true);
       c.speed = 140;
+      c.interceptor = occupied.length % 2 === 1;
       c.route = copRoute(c);
       c.routeTime = 2;
     }
@@ -6682,7 +6731,9 @@ body:not(.touch-mode).police-search-active #carRadio {
           maxy = Math.max(...cs.map((p) => p.y));
         for (let i = Math.floor(minx / 256); i <= Math.floor(maxx / 256); i++)
           for (let j = Math.floor(miny / 256); j <= Math.floor(maxy / 256); j++) {
-            const key = i + ',' + j;
+            // The lookup grid is keyed numerically; a string key here meant shore
+            // colliders were stored and never found, so coastlines stopped nothing.
+            const key = i * 4096 + j;
             if (!staticGrid.has(key)) staticGrid.set(key, []);
             staticGrid.get(key).push(b);
           }
@@ -6753,6 +6804,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           };
         }
       }
+      if (vehicle.locked && !vehicle.lockBroken && source) breakVehicleLock(vehicle, source);
       vehicle.hp = Math.max(0, vehicle.hp - amount);
       vehicle.damageVersion = (vehicle.damageVersion || 0) + 1;
       vehicle.sprite = null;
@@ -6781,6 +6833,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function repairVehicle(vehicle) {
       vehicle.hp = vehicle.maxhp;
+      vehicle.flatTyres = false;
       vehicle.damage = {
         front: 0,
         rear: 0,
@@ -6820,7 +6873,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       if (a === player.car || b === player.car) {
         shake = Math.min(10, closing * 0.022);
-        hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075));
+        hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075), 'impact');
         if (closing > 130) radio('look-out');
         if (b && !a.cop && !b.cop) crime(0.06);
       }
@@ -7020,6 +7073,16 @@ body:not(.touch-mode).police-search-active #carRadio {
       };
     }
     function trafficControl(c, stepSeconds) {
+      // A driver who decided to answer a gunshot with the accelerator.
+      if (c.ramUntil > gameTime && gameMode === 'play') {
+        c.hazard = true;
+        c.junction = null;
+        return ramControl(c);
+      }
+      if (c.ramUntil) {
+        c.ramUntil = 0;
+        c.navAngle = undefined;
+      }
       if (c.navAngle === undefined) c.navAngle = (Math.round(c.a / (Math.PI / 2)) * Math.PI) / 2;
       const vehicleDefinition = vehicleSpec(c),
         nav = c.navAngle,
@@ -7333,6 +7396,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           if (
             c.cop &&
             !c.crewDeployed &&
+            !c.blockade &&
             active &&
             (!player.car || isAircraft(player.car)) &&
             wantedStars > 0
@@ -7452,6 +7516,22 @@ body:not(.touch-mode).police-search-active #carRadio {
               desired = clamp((distanceBetween(c, player) - 160) * 1.5, 0, 150);
               if (distanceBetween(c, player) < 150) steer = 0;
             }
+            const quarry = c.pursuitTarget?.hp > 0 ? c.pursuitTarget : player.car;
+            if (
+              wantedStars >= 4 &&
+              quarry &&
+              quarry !== c &&
+              !isAircraft(quarry) &&
+              distanceBetween(c, quarry) < 200
+            ) {
+              // Contact tactics: aim a car length ahead of the quarter panel and push.
+              const lead = {
+                x: quarry.x + (quarry.vx || 0) * 0.32,
+                y: quarry.y + (quarry.vy || 0) * 0.32,
+              };
+              steer = clamp(normalizeAngle(headingBetween(c, lead) - c.a) * 3.4, -2.3, 2.3);
+              desired = Math.max(desired, Math.hypot(quarry.vx || 0, quarry.vy || 0) + 75);
+            }
             acceleration = clamp(
               (desired - along) * 3,
               -(!player.car ? 620 : 300),
@@ -7474,6 +7554,13 @@ body:not(.touch-mode).police-search-active #carRadio {
           } else {
             drag = c.crewDeployed ? 9 : 1.8;
             grip = 4;
+          }
+          if (c.flatTyres && !isAircraft(c) && !isBoat(c)) {
+            // Rims on tarmac: no drive, no bite and a constant pull to one side.
+            acceleration *= 0.5;
+            drag = Math.max(drag, 1.15);
+            grip *= 0.55;
+            steer += Math.sin(physicsClock * 2.3 + c.id) * 0.22 * Math.sign(along || 1);
           }
           const terrain = roadVehicleTerrain(c);
           if (terrain) {
@@ -7602,6 +7689,18 @@ body:not(.touch-mode).police-search-active #carRadio {
         }
         staticCandidates.set(c, list);
       }
+      // Roadblock kerb barriers are built and torn down mid-chase, so they live
+      // outside the baked static grid and are resolved from this short list.
+      const blockBodies = [...roadblockBarriers(), ...depotBarriers()].map((r, i) => ({
+        x: r.x + r.w / 2,
+        y: r.y + r.h / 2,
+        hx: r.w / 2,
+        hy: r.h / 2,
+        a: 0,
+        height: r.height,
+        kind: 'roadblock',
+        id: 'block' + i,
+      }));
       mark('phys:broadphase');
       for (let pass = 0; pass < 7; pass++) {
         for (const [a, b] of pairs) {
@@ -7646,6 +7745,15 @@ body:not(.touch-mode).police-search-active #carRadio {
               if (hit) resolveContact(c, null, hit, b, pass === 0);
             }
         }
+        if (blockBodies.length)
+          for (const c of vehicles) {
+            if (isBoat(c) || (c.altitude || 0) >= 20) continue;
+            for (const b of blockBodies) {
+              if (Math.abs(c.x - b.x) > 90 || Math.abs(c.y - b.y) > 90) continue;
+              const hit = boxContact(vehicleShape(c), b);
+              if (hit) resolveContact(c, null, hit, b, pass === 0);
+            }
+          }
         for (const c of vehicles)
           for (const b of staticCandidates.get(c) || noStatics) {
             if (
@@ -7726,6 +7834,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers]) {
         p.impactCooldown = Math.max(0, (p.impactCooldown || 0) - deltaSeconds);
         if (p.hp <= 0) continue;
+        if (p.ejected) stepEjection(p, deltaSeconds);
         if (p.knockedFor > 0) {
           p.aiming = false;
           p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);
@@ -7762,7 +7871,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       scream(person);
       if (damage > 0) {
         const fatal = damage >= person.hp;
-        strikePerson(person, damage, a, source, fatal);
+        strikePerson(person, damage, a, source, fatal, 'impact');
         if (bloodOn && fatal) {
           c.bloodyUntil = gameTime + 14;
           c.bloodTrackRemaining = BLOOD_TRACK_DISTANCE;
@@ -7947,18 +8056,31 @@ body:not(.touch-mode).police-search-active #carRadio {
               entityElevation(vehicle),
             );
           if (vehicle === player.car) {
+            // Riding a vehicle when it detonates is fatal: the blast happens in the cabin.
+            // Any lingering exit/landing invulnerability is cleared first so the hit lands,
+            // and the clear happens after exitCar(), which grants its own half second.
             if (isAircraft(vehicle) && aircraftClearance(vehicle) > 2) {
               player.car = null;
-              // A mid-air destruction is always fatal; a lingering exit/landing invulnerability
-              // must not leave the player standing in the sky without an aircraft.
-              player.inv = 0;
-              hurt(1000);
             } else {
               exitCar();
-              hurt(22);
-              player.inv = 1;
+              player.car = null;
             }
+            player.inv = 0;
+            shake = Math.max(shake, 16);
+            flash = Math.max(flash, 0.5);
+            hurt(1000, 'blast');
           }
+        }
+        if (
+          vehicle === player.car &&
+          vehicle.hp > 0 &&
+          vehicle.hp < vehicle.maxhp * 0.26 &&
+          !vehicleSpec(vehicle).bicycle &&
+          gameTime - (vehicle.bailWarnedAt || -100) > 6
+        ) {
+          vehicle.bailWarnedAt = gameTime;
+          tell('ENGINE ON FIRE · BAIL OUT (E) BEFORE IT GOES UP', 3.5);
+          tone(520, 0.14, 0.2, 'square', 240);
         }
         updateBloodTracks(vehicle, active);
         if (
@@ -7995,7 +8117,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           pointInCar(player.x, player.y, vehicle, 6)
         ) {
           const a = Math.atan2(vehicle.vy, vehicle.vx);
-          hurt(speed * 0.15);
+          hurt(speed * 0.15, 'impact');
           player.inv = 1;
           moveBody(player, Math.cos(a) * 25, Math.sin(a) * 25, 8);
         }
@@ -8029,6 +8151,29 @@ body:not(.touch-mode).police-search-active #carRadio {
         'Heard shots by the docks.',
       ],
       wanted: ['It’s him!', 'That’s the guy from the news!', 'Don’t look at him.', 'Cops are everywhere tonight.'],
+      gym: [
+        'Three more. Three.',
+        'Control the negative, don’t drop.',
+        'Elbows in on the dip.',
+        'That set was clean.',
+        'Thirty seconds rest, then again.',
+        'You’re kipping. Strict or it doesn’t count.',
+        'Grip goes before the back does.',
+        'Chalk’s in my bag if you want it.',
+        'Muscle-up by summer. I mean it this time.',
+        'Legs tomorrow. Always tomorrow.',
+        'Full range or it’s half a rep.',
+        'Breathe out on the way up.',
+        'Rings are wet, go easy.',
+        'Twelve. New best.',
+      ],
+      vendor: [
+        'Two tacos, no onion, coming up.',
+        'Coffee’s fresh, five minutes old.',
+        'Cash only, friend.',
+        'Noodles are ready in a minute.',
+        'Best lunch in the Garden.',
+      ],
     };
     function pedSay(p, kind, chance = 1) {
       if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return;
@@ -8074,6 +8219,9 @@ body:not(.touch-mode).police-search-active #carRadio {
           if ((peopleFrame + index) % 3) continue;
           deltaSeconds = frameDelta * 3;
         }
+        if (updateParkGuest(p, deltaSeconds)) continue;
+        if (updateCarjackReactions(p, deltaSeconds)) continue;
+        if (updateGymGoer(p, deltaSeconds)) continue;
         if (updateParkWalker(p, deltaSeconds)) continue;
         p.timer -= deltaSeconds;
         if (p.flinch > 0) p.flinch -= deltaSeconds;
@@ -8184,21 +8332,22 @@ body:not(.touch-mode).police-search-active #carRadio {
           continue;
         } else if (p.timer < 0) {
           p.timer = randomBetween(5, 12);
-          const roll = seededRandom();
-          if (roll < 0.1) {
+          const roll = seededRandom(),
+            tempo = cityTempo();
+          if (roll < tempo.idle) {
             p.state = 'idle';
             p.stateTime = randomBetween(2.5, 6);
             p.walking = false;
             continue;
           }
-          if (roll < 0.2 && shopfrontNear(p)) {
+          if (roll < tempo.shop && shopfrontNear(p)) {
             p.state = 'shop';
             p.stateTime = randomBetween(3, 7);
             p.a = -Math.PI / 2;
             p.walking = false;
             continue;
           }
-          if (roll < 0.3) {
+          if (roll < tempo.bench) {
             const spot = nearestFreeBench(p, 160);
             if (spot) {
               spot.taken = p;
@@ -8226,7 +8375,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           p.walking = false;
           continue;
         }
-        const speed = panic ? 105 : p.flinch > 0 ? 6 : 21;
+        const speed = panic ? 105 : p.flinch > 0 ? 6 : cityTempo().speed;
         p.walk += deltaSeconds * (panic ? 15 : 7);
         if (
           moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5)
@@ -8328,7 +8477,13 @@ body:not(.touch-mode).police-search-active #carRadio {
       )
         return true;
       return (
-        [...garageWalls(), ...harborSolids(), ...militarySolids(), ...countySolids()].some(
+        [
+          ...garageWalls(),
+          ...harborSolids(),
+          ...depotSolids(),
+          ...militarySolids(),
+          ...countySolids(),
+        ].some(
           (b) => altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h,
         ) ||
         buildingsNear(x, y).some(
@@ -8492,10 +8647,11 @@ body:not(.touch-mode).police-search-active #carRadio {
           }
         }
         timed('transit', () => updateTransit(deltaSeconds));
+        timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
         if (player.parachute) updateParachute(deltaSeconds);
-        else if (!player.car && !transitRide) {
+        else if (!player.car && !transitRide && !player.coaster && !updateMountainFooting(deltaSeconds)) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
           if (x || y) {
@@ -8516,7 +8672,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             );
           }
         }
-        if (!player.car && !player.roof && !player.parachute && !transitRide)
+        if (!player.car && !player.roof && !player.parachute && !transitRide && !player.coaster)
           player.altitude = terrainHeight(player.x, player.y);
         if (keys.KeyF || (!player.car && keys.Space) || mouse.down) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
@@ -9086,6 +9242,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       drawAviationGround(worldContext);
       drawHarbor2D();
       drawDepot2D();
+      drawRoadblocks2D();
       drawUnderpass2D();
       drawAirSearch2D();
       drawTrafficLights2D();
@@ -9347,7 +9504,8 @@ body:not(.touch-mode).police-search-active #carRadio {
         drawingContext.textAlign = 'center';
         const labels = [
           ['N O R T H B A N K', 1580, 540],
-          ['CENTRAL COMMONS', 2167, 1420],
+          ['CENTRAL GARDEN', 2688, 2200],
+          ['SUNSET PIER', 3810, 5190],
           ['FINANCIAL DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
           ['BATTERY POINT', 2480, 5140],
@@ -9617,7 +9775,10 @@ body:not(.touch-mode).police-search-active #carRadio {
           prompt = 'ANSWER PAYPHONE';
         else {
           const n = nearestCar();
-          if (n) prompt = 'ENTER ' + vehicleSpec(n).name;
+          if (n)
+            prompt = vehicleIsLocked(n)
+              ? 'LOCKED · BREAK THE WINDOW'
+              : (n.occupied ? 'PULL OUT THE DRIVER · ' : 'ENTER ') + vehicleSpec(n).name;
         }
       }
       getElement('interaction').style.display = prompt ? 'block' : 'none';
@@ -10031,31 +10192,34 @@ body:not(.touch-mode).police-search-active #carRadio {
         id: 'northbank',
         name: 'NORTHBANK ISLAND',
         color: '#5b696b',
+        // Reclaimed waterfront: the coast now runs outside every block of the
+        // grid, so the whole eleven by eleven street plan is built city rather
+        // than stopping short at a ragged shore.
         polygon: [
-          [600, 120],
-          [2600, 120],
-          [2990, 280],
-          [3260, 660],
-          [3420, 1050],
+          [300, 70],
+          [2680, 60],
+          [3160, 150],
+          [3390, 680],
+          [3420, 1040],
           [3420, 2300],
           [3350, 2730],
           [3420, 3300],
           [3420, 4400],
-          [3290, 4900],
-          [2810, 5400],
-          [2300, 5530],
-          [1850, 5300],
-          [1460, 4880],
-          [1100, 4480],
-          [580, 4150],
-          [250, 3650],
-          [130, 2900],
-          [220, 2350],
-          [380, 2080],
-          [320, 1650],
-          [150, 1270],
-          [150, 550],
-          [240, 260],
+          [3300, 5020],
+          [2900, 5500],
+          [2340, 5610],
+          [1800, 5430],
+          [1380, 5030],
+          [980, 4630],
+          [430, 4270],
+          [120, 3760],
+          [40, 2880],
+          [110, 2280],
+          [250, 2010],
+          [180, 1600],
+          [50, 1220],
+          [50, 400],
+          [120, 160],
         ],
       },
       {
@@ -10063,22 +10227,38 @@ body:not(.touch-mode).police-search-active #carRadio {
         name: 'PALM KEYS',
         color: '#93a897',
         polygon: [
-          [4100, 430],
-          [4620, 210],
-          [5110, 390],
-          [5410, 890],
-          [5530, 1690],
-          [5460, 2590],
-          [5570, 3290],
-          [5420, 4090],
-          [5160, 4880],
-          [4610, 5310],
-          [4230, 5000],
-          [4020, 4430],
+          [4040, 180],
+          [4700, 50],
+          [5280, 150],
+          [5540, 780],
+          [5620, 1690],
+          [5540, 2590],
+          [5630, 3290],
+          [5520, 4090],
+          [5300, 5080],
+          [4700, 5500],
+          [4200, 5160],
+          [3980, 4430],
           [3960, 3730],
           [4020, 2820],
           [3960, 2020],
-          [3960, 650],
+          [3960, 540],
+        ],
+      },
+      {
+        // Reclaimed sand bar in the lower bay, bought and built as a pleasure pier.
+        id: 'sunsetisle',
+        name: 'SUNSET PIER',
+        color: '#8e9b84',
+        polygon: [
+          [3560, 4850],
+          [3930, 4820],
+          [4130, 4980],
+          [4170, 5270],
+          [3990, 5490],
+          [3690, 5530],
+          [3490, 5340],
+          [3470, 5040],
         ],
       },
       {
@@ -10270,6 +10450,10 @@ body:not(.touch-mode).police-search-active #carRadio {
       return (
         x >= b.minx && x <= b.maxx && y >= b.miny && y <= b.maxy && pointInPolygon(x, y, r.polygon)
       );
+    }
+    const SUNSET_ISLE = LAND_REGIONS.find((r) => r.id === 'sunsetisle');
+    function onSunsetIsle(x, y) {
+      return regionContains(SUNSET_ISLE, x, y);
     }
     function landAt(x, y) {
       return (
@@ -10526,6 +10710,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         return town ? town.name : reg.name;
       }
       if (inAirport(x, y) && landAt(x, y)) return 'SOUTHPORT AIRPORT';
+      if (onSunsetIsle(x, y)) return 'SUNSET PIER';
       if (x > RIVER.right && landAt(x, y))
         return y < 1500
           ? 'PALM KEYS · ART DECO'
@@ -10535,7 +10720,7 @@ body:not(.touch-mode).police-search-active #carRadio {
               ? 'LITTLE HAVANA'
               : 'CORAL MARINA';
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
-      if (x > 1700 && x < 2640 && y > 680 && y < 2140) return 'CENTRAL COMMONS';
+      if (x > 2230 && x < 3150 && y > 1770 && y < 2640) return 'CENTRAL GARDEN';
       if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
       if (y < 2650) return 'MIDTOWN';
       if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';
@@ -11048,6 +11233,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       clearHarborPolice();
       harborGateUntil = 0;
       harborAlarmUntil = 0;
+      resetDepotDoors();
       for (const e of gangMembers)
         if (e.faction === 'harbor' && inHarbor(e.home.x, e.home.y)) {
           Object.assign(e, e.home, {
@@ -11082,7 +11268,97 @@ body:not(.touch-mode).police-search-active #carRadio {
       m.car.hp = m.car.maxhp = 460;
       setStage(0, m.car, 'PICK UP VINNY’S MARKED CARGO TRUCK');
     }
+    /* The drop is not the end of the job: the front shutter comes down behind the
+       truck, the crates come off, and the only way out is the rear dock on foot. */
+    function beginDepotDrop(m) {
+      m.car.cargoCount = 0;
+      m.car.vx = m.car.vy = m.car.speed = m.car.av = 0;
+      m.dropTimer = 3.4;
+      setDepotDoors(1, 1);
+      noise(0.45, 0.2, 300);
+      setStage(
+        4,
+        VINNY_DEPOT.inside,
+        'CARGO COMING OFF · SHUTTER CLOSING',
+        'vinny',
+        'Kill the engine. I am dropping the front shutter — they are right behind you.',
+      );
+    }
+    function spawnDepotGetaway(m) {
+      let car = null;
+      try {
+        car = spawnClearCar('sedan', VINNY_DEPOT.alley.x, VINNY_DEPOT.alley.y + 26, Math.PI / 2, false, '#5d6b74');
+      } catch {
+        // Nothing fits in the alley: the escape is simply made on foot.
+        return;
+      }
+      if (!car) return;
+      car.mission = true;
+      car.locked = false;
+      car.occupied = false;
+      m.getaway = car;
+    }
+    function releaseCargoPursuit() {
+      // The truck is no longer the target; every unit switches to the runner on foot.
+      for (const c of vehicles) {
+        if (!c.missionPursuit) continue;
+        if (c.airUnit) {
+          c.missionPursuit = false;
+          c.generalAirUnit = true;
+          c.airTarget = player;
+          c.pursuitTarget = airTargetSnapshot(player);
+          c.airLastSeen = airTargetSnapshot(player);
+          continue;
+        }
+        c.missionPursuit = false;
+        c.pursuitTarget = null;
+        c.cop = c.hp > 0;
+        c.route = null;
+        c.routeTime = 0;
+      }
+    }
+    function updateDepotDrop(missionState, deltaSeconds) {
+      if (missionState.stage === 4) {
+        missionState.target = VINNY_DEPOT.inside;
+        missionState.dropTimer -= deltaSeconds;
+        if (missionState.dropTimer > 0) return;
+        setDepotDoors(1, 0);
+        missionState.car = null;
+        wantedStars = Math.max(4, wantedStars);
+        releaseCargoPursuit();
+        spawnDepotGetaway(missionState);
+        setStage(
+          5,
+          missionState.getaway || VINNY_DEPOT.alley,
+          'OUT THE BACK · TAKE THE CAR IN THE ALLEY',
+          'vinny',
+          'Crates are off and the front is shut. Out the back — there is a car in the alley.',
+        );
+        tell('Rear dock open. Leave the truck and slip out the back.', 5);
+        return;
+      }
+      if (missionState.stage === 5) {
+        missionState.target =
+          missionState.getaway?.hp > 0 ? missionState.getaway : VINNY_DEPOT.alley;
+        missionState.instruction = 'OUT THE BACK · TAKE THE CAR IN THE ALLEY';
+        if (missionState.getaway && player.car === missionState.getaway)
+          setStage(6, null, 'LOSE THE POLICE', 'vinny', 'Now lose them. Do not come here again tonight.');
+        else if (missionState.getaway?.hp <= 0)
+          setStage(6, null, 'LOSE THE POLICE', 'vinny', 'They torched the car. Do it on foot then.');
+        return;
+      }
+      missionState.target = null;
+      missionState.instruction = 'LOSE THE POLICE';
+      if (wantedStars <= 0) {
+        clearPolice();
+        winMission();
+      }
+    }
     function updateHarborMission(missionState, deltaSeconds) {
+      if (missionState.stage >= 4) {
+        updateDepotDrop(missionState, deltaSeconds);
+        return;
+      }
       if (missionState.stage === 0) {
         if (player.car === missionState.car)
           setStage(1, HARBOR.gate, 'DRIVE THE TRUCK TO THE HARBOR BARRIER');
@@ -11157,11 +11433,8 @@ body:not(.touch-mode).police-search-active #carRadio {
         truckInsideDepot(missionState.car) &&
         Math.abs(missionState.car.speed) < 32 &&
         missionState.collected === 3
-      ) {
-        missionState.car.cargoCount = 0;
-        clearPolice();
-        winMission();
-      }
+      )
+        beginDepotDrop(missionState);
     }
     function updateHarbor(deltaSeconds) {
       const near = distanceBetween(player, HARBOR.gate);
@@ -11688,7 +11961,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       if (player.roof && rooftopJob()) rooftopShot();
       if (wildlife.includes(target)) strikeWildlife(target, KNIFE.dmg);
       else {
-        strikePerson(target, KNIFE.dmg, heading, player);
+        strikePerson(target, KNIFE.dmg, heading, player, true, 'melee');
         crime(target.police ? 0.6 : 0.2);
         if (target.hp <= 0) {
           cash += enemies.includes(target) ? 100 : 10;
@@ -11942,6 +12215,78 @@ body:not(.touch-mode).police-search-active #carRadio {
         },
       },
       {
+        id: 'diner',
+        kind: 'diner',
+        name: 'THE BLUE PLATE DINER',
+        bx: 2,
+        by: 1,
+        x: 1256,
+        y: 762,
+        w: 284,
+        h: 148,
+        height: 32,
+        color: '#e5c07a',
+        symbol: 'EAT',
+        door: {
+          x: 1398,
+          y: 930,
+        },
+      },
+      {
+        id: 'keys-diner',
+        kind: 'diner',
+        name: 'PALM GRILL · 24 HOURS',
+        bx: 9,
+        by: 4,
+        x: 4840,
+        y: 2286,
+        w: 280,
+        h: 146,
+        height: 32,
+        color: '#e8b384',
+        symbol: 'EAT',
+        door: {
+          x: 4980,
+          y: 2452,
+        },
+      },
+      {
+        id: 'outfitters',
+        kind: 'clothes',
+        name: 'SOUTH COAST OUTFITTERS',
+        bx: 3,
+        by: 6,
+        x: 1770,
+        y: 3272,
+        w: 276,
+        h: 150,
+        height: 40,
+        color: '#c3a6d3',
+        symbol: 'FIT',
+        door: {
+          x: 1908,
+          y: 3442,
+        },
+      },
+      {
+        id: 'keys-outfitters',
+        kind: 'clothes',
+        name: 'OCEAN DRIVE MENSWEAR',
+        bx: 8,
+        by: 6,
+        x: 4330,
+        y: 3272,
+        w: 276,
+        h: 150,
+        height: 40,
+        color: '#b7cfe0',
+        symbol: 'FIT',
+        door: {
+          x: 4468,
+          y: 3442,
+        },
+      },
+      {
         id: 'home',
         kind: 'sleep',
         name: 'YOUR SAFEHOUSE',
@@ -12092,7 +12437,8 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function openService(place) {
       if (!place) return;
-      if (wantedStars > 0) {
+      // An outfitter is the one door worth going through while the heat is on.
+      if (wantedStars > 0 && place.kind !== 'clothes') {
         needToLosePolice();
         return;
       }
@@ -12197,6 +12543,34 @@ body:not(.touch-mode).police-search-active #carRadio {
             },
           ];
       }
+      if (p.kind === 'diner') {
+        text =
+          'Counter service, booths at the back, open around the clock. A plate of food and a coffee put you back together.';
+        options = [
+          {
+            text: '1. BLUE PLATE SPECIAL · $28',
+            action: 'plate',
+          },
+          {
+            text: '2. COFFEE AND A BOOTH · $9',
+            action: 'coffee',
+          },
+        ];
+      }
+      if (p.kind === 'clothes') {
+        // A change of clothes is only worth anything while the search is running
+        // on a description rather than on eyes actually on you.
+        const useful = wantedStars > 0 && searchActive;
+        text = useful
+          ? 'Racks of workwear and a changing room with a back door. While the police are working from a description, new clothes end the search.'
+          : 'Racks of workwear, a changing room and a back door. Worth remembering when a patrol has lost sight of you.';
+        options = [
+          {
+            text: '1. CHANGE OF CLOTHES · $200',
+            action: 'change',
+          },
+        ];
+      }
       if (p.kind === 'school')
         text =
           'Classes 08:00–18:00. The campus includes teaching buildings, a courtyard and sports courts.';
@@ -12213,7 +12587,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function serviceAction(action, slot = 0) {
       if (gameMode !== 'service' || !servicePlace) return false;
-      if (wantedStars > 0) return needToLosePolice();
+      if (wantedStars > 0 && action !== 'change') return needToLosePolice();
       let cost = 0,
         advance = 0,
         health = 0;
@@ -12252,6 +12626,36 @@ body:not(.touch-mode).police-search-active #carRadio {
         if (servicePlace.kind !== 'bar') return false;
         cost = 35;
         health = 30;
+      } else if (action === 'plate') {
+        if (servicePlace.kind !== 'diner') return false;
+        cost = 28;
+        health = 45;
+        advance = 25;
+      } else if (action === 'coffee') {
+        if (servicePlace.kind !== 'diner') return false;
+        cost = 9;
+        health = 12;
+        advance = 10;
+      } else if (action === 'change') {
+        if (servicePlace.kind !== 'clothes') return false;
+        cost = 200;
+        if (cash < cost) {
+          tell('Not enough cash.', 2);
+          return false;
+        }
+        cash -= cost;
+        advance = 12;
+        worldMinutes += advance;
+        if (wantedStars > 0 && searchActive) {
+          clearPolice(true);
+          announce('NEW CLOTHES', 'DESCRIPTION USELESS', 3);
+        } else {
+          announce('BACK ON THE STREETS', 'CHANGED', 2.2);
+          if (wantedStars > 0) tell('They can still see you. Clothes will not help while they can.', 4);
+        }
+        save();
+        closeService();
+        return true;
       } else if (action === 'club') {
         if (servicePlace.kind !== 'club' || !clubOpen()) return false;
         cost = 80;
@@ -12306,17 +12710,106 @@ body:not(.touch-mode).police-search-active #carRadio {
               : n === 1
                 ? 'morning'
                 : null
-            : n === 0
-              ? {
-                  hospital: 'heal',
-                  bar: 'meal',
-                  club: 'club',
-                }[p.kind]
-              : null;
+            : p.kind === 'diner'
+              ? n === 0
+                ? 'plate'
+                : n === 1
+                  ? 'coffee'
+                  : null
+              : n === 0
+                ? {
+                    hospital: 'heal',
+                    bar: 'meal',
+                    club: 'club',
+                    clothes: 'change',
+                  }[p.kind]
+                : null;
         if (action) serviceAction(action);
       }
     }
+    /**
+     * DAILY RHYTHM
+     * The pavement at eight in the morning is not the pavement at two. The tempo
+     * shifts the mix between walking, loitering, window shopping and sitting, how
+     * quickly people move, and how many of them are out at all. Thinning the crowd
+     * removes pedestrians rather than hiding them, so nothing invisible is left in
+     * the world for bullets, traffic or the police to find.
+     */
+    const CROWD_BASE = 340;
+    let crowdTimer = 0;
+    function cityTempo() {
+      const hour = (worldMinutes / 60) % 24;
+      if (hour < 5.5) return { name: 'NIGHT', speed: 27, idle: 0.06, shop: 0.06, bench: 0.1, out: 0.26 };
+      if (hour < 9.5) return { name: 'MORNING RUSH', speed: 31, idle: 0.04, shop: 0.07, bench: 0.1, out: 1 };
+      if (hour < 11.5) return { name: 'MORNING', speed: 22, idle: 0.12, shop: 0.26, bench: 0.34, out: 0.86 };
+      if (hour < 14.5) return { name: 'LUNCH', speed: 21, idle: 0.15, shop: 0.34, bench: 0.5, out: 1 };
+      if (hour < 17.5) return { name: 'AFTERNOON', speed: 22, idle: 0.11, shop: 0.27, bench: 0.38, out: 0.88 };
+      if (hour < 19.5) return { name: 'EVENING RUSH', speed: 30, idle: 0.05, shop: 0.1, bench: 0.14, out: 1 };
+      if (hour < 23) return { name: 'EVENING', speed: 23, idle: 0.17, shop: 0.24, bench: 0.4, out: 0.82 };
+      return { name: 'LATE', speed: 28, idle: 0.08, shop: 0.07, bench: 0.12, out: 0.42 };
+    }
+    function ordinaryWalker(p) {
+      return (
+        !p.gymStation &&
+        !p.vendor &&
+        !p.queueing &&
+        !p.parkGuest &&
+        !p.parkRoute &&
+        !p.leader &&
+        !p.ejected &&
+        !p.angryUntil &&
+        !p.witnessUntil &&
+        p.hp > 0
+      );
+    }
+    function spawnWalker() {
+      for (let attempt = 0; attempt < 24; attempt++) {
+        const vertical = seededRandom() > 0.5,
+          r = randomChoice(ROAD_CENTERS),
+          v = randomBetween(180, CITY_SIZE - 260),
+          x = vertical ? r + randomChoice([-67, 67]) : v,
+          y = vertical ? v : r + randomChoice([-67, 67]);
+        if (Math.abs(x - player.x) < 620 && Math.abs(y - player.y) < 620) continue;
+        if (solid(x, y, 5) || inHarbor(x, y, 8)) continue;
+        if (vehicles.some((c) => pointInCar(x, y, c, 10))) continue;
+        pedestrians.push({
+          x,
+          y,
+          a: vertical ? randomChoice([-Math.PI / 2, Math.PI / 2]) : randomChoice([0, Math.PI]),
+          color: randomChoice(DRIVER_COLORS),
+          hp: 30,
+          flee: 0,
+          timer: randomBetween(0, 8),
+          walk: seededRandom() * 5,
+          state: 'walk',
+        });
+        return true;
+      }
+      return false;
+    }
+    function updateCrowdDensity(deltaSeconds) {
+      crowdTimer -= deltaSeconds;
+      if (crowdTimer > 0) return;
+      crowdTimer = 6;
+      const target = Math.round(CROWD_BASE * cityTempo().out),
+        walkers = pedestrians.filter(ordinaryWalker);
+      if (walkers.length > target + 12) {
+        // Thin from the far side of the city so nobody vanishes in front of you.
+        const going = walkers
+          .filter((p) => Math.abs(p.x - player.x) > 1300 || Math.abs(p.y - player.y) > 1300)
+          .slice(0, Math.min(14, walkers.length - target));
+        for (const p of going) {
+          const i = pedestrians.indexOf(p);
+          if (i < 0) continue;
+          pedestrians.splice(i, 1);
+          for (const q of pedestrians) if (q.leader === p) q.leader = null;
+        }
+        return;
+      }
+      for (let i = 0; i < Math.min(10, target - walkers.length); i++) if (!spawnWalker()) break;
+    }
     function clearPolice(notifyEscape = false) {
+      clearRoadblocks();
       const wasWanted = wantedStars > 0;
       if (notifyEscape && wasWanted) policeClearedNotice();
       wantedStars = 0;
@@ -12411,6 +12904,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         ...militarySolids(),
         ...countySolids(),
         ...harborSolids().filter((s) => s.height > 14),
+        ...depotSolids(),
       ]) {
         let lo = 0,
           hi = 1,
@@ -12487,6 +12981,8 @@ body:not(.touch-mode).police-search-active #carRadio {
           ...spawnPoint,
           a: c.a,
           hp: 85,
+          // Patrol officers wear a vest; the tactical units at high alert wear a heavier one.
+          vest: wantedStars >= 4 ? 90 : 55,
           color: '#2d455e',
           police: true,
           car: c,
@@ -12584,6 +13080,18 @@ body:not(.touch-mode).police-search-active #carRadio {
           o.state = 'return';
           continue;
         }
+        if (
+          o.post &&
+          target === player &&
+          !seesPlayer &&
+          distanceBetween(o, player) > 340 &&
+          distanceBetween(o, o.post) > 16
+        ) {
+          o.state = 'post';
+          o.target = null;
+          footStepTowards(o, o.post, deltaSeconds, 72);
+          continue;
+        }
         const seen = target === player ? seesPlayer : clearSight(o, target),
           d = distanceBetween(o, target),
           changed = o.target !== target;
@@ -12622,7 +13130,7 @@ body:not(.touch-mode).police-search-active #carRadio {
                 a,
               ),
               life: 0.7,
-              dmg: 12,
+              dmg: 17,
               enemy: true,
               faction: 'police',
               owner: o,
@@ -12643,7 +13151,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       for (let i = officers.length - 1; i >= 0; i--) if (officers[i].returned) officers.splice(i, 1);
       for (const c of vehicles)
-        if (c.crewDeployed && c.crew?.every((o) => o.returned || o.hp <= 0)) {
+        if (!c.blockade && c.crewDeployed && c.crew?.every((o) => o.returned || o.hp <= 0)) {
           c.crewLost = c.crew.every((o) => o.hp <= 0);
           if (c.crewLost) {
             c.cop = false;
@@ -12842,8 +13350,9 @@ body:not(.touch-mode).police-search-active #carRadio {
         p,
       );
     }
-    function strikePerson(person, damage, a = 0, source = null, showBlood = true) {
+    function strikePerson(person, damage, a = 0, source = null, showBlood = true, kind = 'ballistic') {
       if (person.hp <= 0) return;
+      const dealt = ballisticDamage(person, damage, kind);
       if (person.faction && source === player) alertGang(person.faction);
       if (source) {
         person.threat = {
@@ -12862,9 +13371,14 @@ body:not(.touch-mode).police-search-active #carRadio {
         source.policeAggroUntil = gameTime + 15;
       }
       if (person.faction && source?.police) person.policeAggroUntil = gameTime + 15;
-      person.hp -= damage;
+      person.hp -= dealt;
       person.flee = 8;
-      if (showBlood) bleed(person, Math.min(2, damage / 28), a);
+      // A round the vest ate sparks off the plate instead of opening a wound.
+      const stopped = dealt < damage * 0.4 && wearingVest(person);
+      if (stopped) {
+        particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
+        if (person.hp > 0) person.vestPingUntil = gameTime + 0.6;
+      } else if (showBlood) bleed(person, Math.min(2, dealt / 38), a);
       scream(person);
       if (person.hp <= 0) {
         person.deadTime = gameTime;
@@ -12877,6 +13391,9 @@ body:not(.touch-mode).police-search-active #carRadio {
       updateStoryWorld(deltaSeconds);
       updateOfficers(deltaSeconds);
       updateWanted(deltaSeconds);
+      updateRoadblocks(deltaSeconds);
+      updateDepotDoors(deltaSeconds);
+      updateCrowdDensity(deltaSeconds);
       updateAirPolice(deltaSeconds);
       for (let i = bloodPools.length - 1; i >= 0; i--)
         if (gameTime - bloodPools[i].created > 240) bloodPools.splice(i, 1);
@@ -13723,7 +14240,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             vx: Math.cos(a) * 460,
             vy: Math.sin(a) * 460,
             life: 0.75,
-            dmg: 9,
+            dmg: 14,
             enemy: true,
             faction: e.faction,
             owner: e,
@@ -13754,6 +14271,18 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       if (up && wantedStars > 0) {
         needToLosePolice();
+        return;
+      }
+      const hit = rooftopJob();
+      if (!up && hit?.liftRecalled > gameTime) {
+        // Security holds the car at the lobby the moment the party breaks.
+        tell(
+          'The car has been recalled to the lobby · ' +
+            Math.ceil(hit.liftRecalled - gameTime) +
+            's — stay alive',
+          2.5,
+        );
+        tone(180, 0.18, 0.2, 'square', 120);
         return;
       }
       liftTravel = {
@@ -14153,6 +14682,16 @@ body:not(.touch-mode).police-search-active #carRadio {
         x: 4480,
         y: 4450,
       },
+      // The loading dock at the back: closed while the truck is being brought in,
+      // opened once the cargo is off, which is the only way out after the drop.
+      rear: {
+        x: 4480,
+        y: 4576,
+      },
+      alley: {
+        x: 4480,
+        y: 4664,
+      },
       height: 64,
     };
     const depotWalls = [
@@ -14171,7 +14710,13 @@ body:not(.touch-mode).police-search-active #carRadio {
       {
         x: 4340,
         y: 4572,
-        w: 280,
+        w: 104,
+        h: 8,
+      },
+      {
+        x: 4516,
+        y: 4572,
+        w: 104,
         h: 8,
       },
       {
@@ -14187,6 +14732,61 @@ body:not(.touch-mode).police-search-active #carRadio {
         h: 8,
       },
     ];
+    /* Two roller shutters. 0 is fully open, 1 fully closed; they animate at the
+       same rate as the harbor barrier so the depot reads as one piece of kit. */
+    let depotFrontShutter = 0,
+      depotRearShutter = 1,
+      depotFrontTarget = 0,
+      depotRearTarget = 1;
+    function depotSolids() {
+      const list = [];
+      if (depotFrontShutter > 0.2)
+        list.push({
+          x: 4422,
+          y: 4338,
+          w: 116,
+          h: 7,
+          height: 58,
+          barrier: true,
+        });
+      if (depotRearShutter > 0.2)
+        list.push({
+          x: 4444,
+          y: 4570,
+          w: 72,
+          h: 7,
+          height: 58,
+          barrier: true,
+        });
+      return list;
+    }
+    function depotBlocked(x, y, r = 0) {
+      if (x < 4400 || x > 4560 || y < 4320 || y > 4590) return false;
+      return depotSolids().some(
+        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
+      );
+    }
+    function depotBarriers() {
+      return Math.abs(player.x - 4480) < 900 && Math.abs(player.y - 4460) < 900 ? depotSolids() : [];
+    }
+    function resetDepotDoors() {
+      depotFrontShutter = depotFrontTarget = 0;
+      depotRearShutter = depotRearTarget = 1;
+    }
+    function setDepotDoors(front, rear) {
+      depotFrontTarget = front;
+      depotRearTarget = rear;
+    }
+    function updateDepotDoors(deltaSeconds) {
+      const step = deltaSeconds * 0.55;
+      for (const [current, target, set] of [
+        [depotFrontShutter, depotFrontTarget, (v) => (depotFrontShutter = v)],
+        [depotRearShutter, depotRearTarget, (v) => (depotRearShutter = v)],
+      ]) {
+        if (Math.abs(target - current) < 1e-4) continue;
+        set(clamp(current + Math.sign(target - current) * step, 0, 1));
+      }
+    }
     function depotOverlap(x, y, w, h) {
       return x + w > 4315 && x < 4645 && y + h > 4250 && y < 4605;
     }
@@ -14319,28 +14919,27 @@ body:not(.touch-mode).police-search-active #carRadio {
       if (m.policeNotified) return;
       m.policeNotified = true;
       m.policeArrived = false;
-      m.policeArrivalIn = 10;
+      // The gate camera reads the plate on the way out: units roll straight away,
+      // and the force helicopter is five seconds behind them.
+      m.policeArrivalIn = 0;
+      m.airDelay = 5;
       clearPolice();
-      announce('HARBOR SECURITY · STOLEN CARGO', 'COPS ALERTED', 3);
-      tell(
-        'Cops arrive in 10 seconds. Respray the truck at an R garage to lose them — Vinny covers this paint job.',
-        7,
-      );
+      announce('HARBOR SECURITY · STOLEN CARGO', 'UNITS ROLLING', 3);
+      tell('Gate camera got the plate. Units are already moving — air support in 5.', 6);
       radio('call-backup');
     }
     function dispatchCargoPolice(m) {
       if (m.policeArrived || m.cargoDisguised) return;
       m.policeArrived = true;
       m.policeArrivalIn = 0;
-      m.dispatchTimer = 7;
+      m.dispatchTimer = 6;
       crime(3);
       wantedStars = Math.max(3, wantedStars);
-      for (let i = 0; i < 2; i++) spawnCargoPatrol(m);
-      m.airUnit = requestAirSupport(m.car, true);
-      tell(
-        'Police have arrived. Respray the cargo truck at an R garage or reach Vinny’s warehouse.',
-        5,
-      );
+      for (let i = 0; i < 3; i++) {
+        const patrol = spawnCargoPatrol(m);
+        if (patrol) patrol.interceptor = i % 2 === 1;
+      }
+      tell('Respray the truck at an R garage, or run it into Vinny’s depot. Bridges will be cut.', 6);
     }
     function evadeCargoPolice(vehicle) {
       const m = cargoChase();
@@ -14371,6 +14970,14 @@ body:not(.touch-mode).police-search-active #carRadio {
         if (m.policeArrivalIn > 1e-7) return;
         dispatchCargoPolice(m);
         return;
+      }
+      if (m.airDelay > 0) {
+        m.airDelay -= deltaSeconds;
+        if (m.airDelay <= 0) {
+          m.airDelay = 0;
+          m.airUnit = requestAirSupport(m.car, true);
+          announce('AIR UNIT ONE · OVERHEAD', 'HELICOPTER INBOUND', 3);
+        }
       }
       wantedStars = Math.max(3, wantedStars);
       searchActive = false;
@@ -14433,6 +15040,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function cleanupMissionExtras() {
       player.disguised = false;
+      resetDepotDoors();
       for (let i = vehicles.length - 1; i >= 0; i--)
         if (vehicles[i].missionPursuit || vehicles[i].reconPatrol) {
           const c = vehicles[i];
@@ -14488,6 +15096,938 @@ body:not(.touch-mode).police-search-active #carRadio {
       worldContext.stroke();
     }
     // END SUBSYSTEM: src/chase.js
+    // BEGIN SUBSYSTEM: src/roadblocks.js — Police containment and roadblocks
+    /**
+     * Police containment and roadblocks
+     * Source: src/roadblocks.js
+     * Scope: shared game closure.
+     * Chokepoint catalogue, blockade planning, spike strips and officer posts.
+     */
+    /**
+     * CONTAINMENT
+     * Dispatch does not only follow: once the alert is serious it starts closing
+     * the map. The river bridges and the four wide avenues are the only places
+     * worth cutting, so those are the catalogue. A blockade is placed ahead of
+     * the runner and out of sight, never in front of their bumper, which is what
+     * makes it read as police getting somewhere first rather than spawning in.
+     * Two cruisers nose-to-nose leave one gap; a spike strip covers the gap.
+     */
+    const ROADBLOCK_LIFETIME = 165,
+      ROADBLOCK_SPIKE_HALF = 52;
+    const roadblocks = [];
+    let roadblockSiteCache = null,
+      containmentTimer = 3,
+      roadblockNotice = 0;
+    function bridgeName(y) {
+      return y === BRIDGES[0] ? 'UNION ST' : y === BRIDGES[1] ? 'HARBOR AVE' : 'STADIUM WAY';
+    }
+    function roadblockSiteUsable(x, y) {
+      return (
+        groundAt(x, y, 46) &&
+        cityStreetAt(x, y, 10) &&
+        !inHarbor(x, y, 130) &&
+        !parkStreetClosed(x, y) &&
+        !inAirport(x, y) &&
+        !depotOverlap(x - 60, y - 60, 120, 120)
+      );
+    }
+    function roadblockSites() {
+      if (roadblockSiteCache) return roadblockSiteCache;
+      const sites = [];
+      // Bridge approaches. Cutting one of these separates Northbank from the Keys.
+      for (const y of BRIDGES) {
+        sites.push({
+          x: RIVER.left - 118,
+          y,
+          axis: 'x',
+          bridge: true,
+          name: bridgeName(y) + ' BRIDGE · WEST APPROACH',
+        });
+        sites.push({
+          x: RIVER.right + 118,
+          y,
+          axis: 'x',
+          bridge: true,
+          name: bridgeName(y) + ' BRIDGE · EAST APPROACH',
+        });
+      }
+      // Mid-block cuts on the four avenues: a junction block is simply driven around.
+      const AVENUES = [1152, 2688, 3200, 4736];
+      for (let i = 0; i < ROAD_CENTERS.length - 1; i++) {
+        const mid = (ROAD_CENTERS[i] + ROAD_CENTERS[i + 1]) / 2;
+        for (const avenue of AVENUES) {
+          if (roadblockSiteUsable(mid, avenue))
+            sites.push({
+              x: mid,
+              y: avenue,
+              axis: 'x',
+              name: streetNameAt(mid, avenue),
+            });
+          if (roadblockSiteUsable(avenue, mid))
+            sites.push({
+              x: avenue,
+              y: mid,
+              axis: 'y',
+              name: streetNameAt(avenue, mid),
+            });
+        }
+      }
+      roadblockSiteCache = sites;
+      return sites;
+    }
+    function roadblockAt(site) {
+      return roadblocks.find((r) => r.site === site) || null;
+    }
+    function roadblockCrewAlive(block) {
+      return block.crew.filter((o) => o.hp > 0).length;
+    }
+    function buildRoadblock(site, tag = 'wanted') {
+      if (roadblockAt(site)) return null;
+      const across = site.axis === 'x' ? Math.PI / 2 : 0,
+        lane =
+          site.axis === 'x'
+            ? {
+                x: 0,
+                y: 1,
+              }
+            : {
+                x: 1,
+                y: 0,
+              };
+      const block = {
+        site,
+        x: site.x,
+        y: site.y,
+        a: across,
+        axis: site.axis,
+        tag,
+        created: gameTime,
+        expires: gameTime + ROADBLOCK_LIFETIME,
+        cars: [],
+        crew: [],
+        props: [],
+        announced: false,
+      };
+      for (const offset of [-30, 30]) {
+        const x = site.x + lane.x * offset,
+          y = site.y + lane.y * offset,
+          a = across + (offset < 0 ? -0.38 : 0.38);
+        if (!canSpawnCar('police', x, y, a, 4)) continue;
+        const c = makeCar('police', x, y, a, false, '#e8eef1');
+        Object.assign(c, {
+          cop: true,
+          ai: false,
+          blockade: block,
+          // Parked across the carriageway: the cop driving branch must leave these alone.
+          crewDeployed: true,
+          vx: 0,
+          vy: 0,
+          speed: 0,
+          av: 0,
+        });
+        block.cars.push(c);
+      }
+      if (!block.cars.length) return null;
+      // Two officers work from behind the engine blocks, one either side of the gap.
+      for (const offset of [-52, 52]) {
+        const x = site.x + lane.x * offset,
+          y = site.y + lane.y * offset;
+        if (solid(x, y, 8)) continue;
+        const o = {
+          x,
+          y,
+          a: headingBetween(
+            {
+              x,
+              y,
+            },
+            site,
+          ),
+          hp: 85,
+          vest: wantedStars >= 4 ? 90 : 55,
+          color: '#2d455e',
+          police: true,
+          car: block.cars[0],
+          blockade: block,
+          post: {
+            x,
+            y,
+          },
+          state: 'pursue',
+          walk: 0,
+          timer: 0.9,
+          engagedSaid: false,
+          gangTarget: null,
+        };
+        officers.push(o);
+        block.crew.push(o);
+      }
+      block.cars[0].crew = block.crew;
+      // Cones and a flare either side mark the cut; the strip covers the centre gap.
+      block.props = [-1, 1].map((s) => ({
+        x: site.x + lane.x * s * 74,
+        y: site.y + lane.y * s * 74,
+      }));
+      block.spike = {
+        x: site.x,
+        y: site.y,
+        a: across,
+        half: ROADBLOCK_SPIKE_HALF,
+        lane,
+        spent: false,
+      };
+      roadblocks.push(block);
+      return block;
+    }
+    function removeRoadblock(block, index = roadblocks.indexOf(block)) {
+      for (let i = vehicles.length - 1; i >= 0; i--) {
+        const c = vehicles[i];
+        if (c.blockade !== block) continue;
+        if (c === player.car) {
+          // A cruiser the player stole stays in the world as an ordinary vehicle.
+          c.blockade = null;
+          c.crewDeployed = false;
+          c.cop = false;
+          continue;
+        }
+        vehicles.splice(i, 1);
+      }
+      for (let i = officers.length - 1; i >= 0; i--)
+        if (officers[i].blockade === block) officers.splice(i, 1);
+      for (let i = bullets.length - 1; i >= 0; i--)
+        if (bullets[i].owner?.blockade === block) bullets.splice(i, 1);
+      if (index >= 0) roadblocks.splice(index, 1);
+    }
+    function clearRoadblocks() {
+      for (let i = roadblocks.length - 1; i >= 0; i--) removeRoadblock(roadblocks[i], i);
+    }
+    function containmentTarget() {
+      const cargo = cargoChase();
+      return cargo?.policeArrived && cargo.car?.hp > 0 ? cargo.car : player.car || player;
+    }
+    function containmentBudget() {
+      const cargo = cargoChase();
+      if (cargo?.policeArrived) return 2;
+      const stars = Math.ceil(wantedStars);
+      return stars >= 5 ? 3 : stars >= 4 ? 1 : 0;
+    }
+    function planPoliceContainment(deltaSeconds) {
+      containmentTimer -= deltaSeconds;
+      if (containmentTimer > 0) return;
+      containmentTimer = 7;
+      const budget = containmentBudget();
+      if (budget <= 0) {
+        clearRoadblocks();
+        return;
+      }
+      if (roadblocks.length >= budget) return;
+      const target = containmentTarget(),
+        heading = Math.hypot(target.vx || 0, target.vy || 0) > 25 ? Math.atan2(target.vy, target.vx) : target.a || 0;
+      let best = null,
+        bestScore = 0.05;
+      for (const site of roadblockSites()) {
+        if (roadblockAt(site)) continue;
+        const d = distanceBetween(site, target);
+        if (d < 430 || d > 2200) continue;
+        // Never build one the runner can watch being built.
+        if (d < 950 && clearSight(site, target)) continue;
+        if (roadblocks.some((r) => distanceBetween(r, site) < 700)) continue;
+        const ahead = Math.cos(normalizeAngle(headingBetween(target, site) - heading)),
+          score = ahead * 1.7 + (site.bridge ? 1.5 : 0) + 1 - d / 2300;
+        if (score > bestScore) {
+          bestScore = score;
+          best = site;
+        }
+      }
+      if (!best) return;
+      const block = buildRoadblock(best, cargoChase() ? 'cargo' : 'wanted');
+      if (!block) return;
+      if (gameTime - roadblockNotice > 12) {
+        roadblockNotice = gameTime;
+        tell('POLICE ROADBLOCK · ' + best.name + ' · find another way', 5);
+        radio('call-backup');
+      }
+    }
+    function flattenTyres(vehicle) {
+      if (vehicle.flatTyres || isAircraft(vehicle) || isBoat(vehicle)) return;
+      vehicle.flatTyres = true;
+      playSample('tires', 0.5, 0.7, vehicle);
+      noise(0.3, 0.22, 900);
+      for (let i = 0; i < 3; i++) particle(vehicle.x, vehicle.y, '#3a3a3c', 6, 90, 3);
+      if (vehicle === player.car) tell('TYRES SHREDDED · the car will not hold the road now', 4.5);
+    }
+    function crossedSpikes(spike, from, to) {
+      // Signed distance either side of the strip line, plus a span test along it.
+      const nx = -Math.sin(spike.a),
+        ny = Math.cos(spike.a),
+        d0 = (from.x - spike.x) * nx + (from.y - spike.y) * ny,
+        d1 = (to.x - spike.x) * nx + (to.y - spike.y) * ny;
+      if (d0 * d1 > 0 && Math.abs(d1) > 6) return false;
+      const along = (to.x - spike.x) * Math.cos(spike.a) + (to.y - spike.y) * Math.sin(spike.a);
+      return Math.abs(along) < spike.half;
+    }
+    function updateRoadblocks(deltaSeconds) {
+      if (gameMode !== 'play') return;
+      planPoliceContainment(deltaSeconds);
+      for (let i = roadblocks.length - 1; i >= 0; i--) {
+        const block = roadblocks[i],
+          far = distanceBetween(block, containmentTarget()) > 2600;
+        if (
+          gameTime > block.expires ||
+          (far && gameTime - block.created > 25) ||
+          (!roadblockCrewAlive(block) && !block.cars.some((c) => c.hp > 0))
+        ) {
+          removeRoadblock(block, i);
+          continue;
+        }
+        for (const c of block.cars)
+          if (c.hp > 0 && c !== player.car) {
+            c.vx = c.vy = c.speed = c.av = 0;
+            c.cop = true;
+          }
+        if (!block.announced && distanceBetween(block, player) < 320) {
+          block.announced = true;
+          radio(randomChoice(['police-drop-weapon', 'police-get-down', 'police-under-arrest']), block);
+        }
+        const spike = block.spike;
+        if (!spike || spike.spent) continue;
+        for (const c of vehicles) {
+          if (c.blockade === block || c.flatTyres || isAircraft(c) || isBoat(c)) continue;
+          if (Math.abs(c.x - spike.x) > 200 || Math.abs(c.y - spike.y) > 200) continue;
+          if (Math.hypot(c.vx || 0, c.vy || 0) < 18) continue;
+          const from = c.personSweepStart || c;
+          if (crossedSpikes(spike, from, c)) flattenTyres(c);
+        }
+      }
+    }
+    /* Vehicles meet the barrier line itself, not only the parked cruisers. */
+    function roadblockBarriers() {
+      const list = [];
+      for (const block of roadblocks) {
+        if (Math.abs(block.x - player.x) > 900 || Math.abs(block.y - player.y) > 900) continue;
+        for (const p of block.props)
+          list.push({
+            x: p.x - 13,
+            y: p.y - 13,
+            w: 26,
+            h: 26,
+            height: 30,
+          });
+      }
+      return list;
+    }
+    function roadblockNear(x, y, r = 260) {
+      return roadblocks.some((b) => Math.hypot(b.x - x, b.y - y) < r);
+    }
+    function drawRoadblocks2D() {
+      for (const block of roadblocks) {
+        if (!visible(block, 220)) continue;
+        const ca = Math.cos(block.a),
+          sa = Math.sin(block.a);
+        worldContext.strokeStyle = '#e9c76a';
+        worldContext.lineWidth = 6;
+        worldContext.setLineDash([14, 10]);
+        worldContext.beginPath();
+        worldContext.moveTo(block.x - ca * 72, block.y - sa * 72);
+        worldContext.lineTo(block.x + ca * 72, block.y + sa * 72);
+        worldContext.stroke();
+        worldContext.setLineDash([]);
+        if (block.spike && !block.spike.spent) {
+          worldContext.strokeStyle = '#d96a5a';
+          worldContext.lineWidth = 3;
+          worldContext.beginPath();
+          worldContext.moveTo(block.x - ca * block.spike.half, block.y - sa * block.spike.half);
+          worldContext.lineTo(block.x + ca * block.spike.half, block.y + sa * block.spike.half);
+          worldContext.stroke();
+        }
+        for (const p of block.props) {
+          worldContext.fillStyle = '#e07a4a';
+          worldContext.fillRect(p.x - 7, p.y - 7, 14, 14);
+        }
+      }
+    }
+    // END SUBSYSTEM: src/roadblocks.js
+    // BEGIN SUBSYSTEM: src/carjack.js — Carjacking and driver reactions
+    /**
+     * Carjacking and driver reactions
+     * Source: src/carjack.js
+     * Scope: shared game closure.
+     * Occupied traffic, locked doors, the ejection throw and what drivers do next.
+     */
+    /**
+     * TAKING A CAR OFF SOMEBODY
+     * Traffic carries drivers. Opening the door means hauling one of them out: the
+     * driver is thrown clear along the door line, lands on their back and gets up
+     * dazed, and only then decides what to do. Roughly one car in three is locked;
+     * the window has to go first, and how that driver answers a gunshot through
+     * their glass depends on who they are. Every reaction is a normal pedestrian
+     * state afterwards, so the panic, police and crowd systems all see it.
+     */
+    const DRIVER_COLORS = [
+      '#cab392', '#879eb3', '#b57374', '#c2bd95', '#778e70', '#9689a7',
+      '#d9a066', '#5f7c9c', '#c95a4a', '#e0d8c0', '#4c5a6b', '#8a5c7a',
+    ];
+    const DRIVER_MOODS = ['flee', 'flee', 'flee', 'flee', 'plead', 'angry', 'witness', 'defiant'];
+    const CARJACK_LINES = {
+      pulled: ['That’s my car!', 'Take it! Take it!', 'Please — don’t!', 'Hey! HEY!', 'My keys!'],
+      plead: ['Okay, okay — it’s yours.', 'Don’t hurt me, please.', 'Just take it and go.'],
+      angry: ['I know your face!', 'Come back here!', 'You’re dead, you hear me?', 'That’s my livelihood!'],
+      witness: ['Blue sedan, heading south!', 'I’m calling it in right now.', 'Someone get the plate!'],
+      defiant: ['Get off my car!', 'Not today, pal.', 'You picked the wrong one.'],
+      locked: ['Not a chance.', 'Doors are locked, friend.', 'Keep walking.'],
+    };
+    function driverTalk(person, kind) {
+      const lines = CARJACK_LINES[kind];
+      if (!lines || (person.speechUntil || 0) > gameTime) return;
+      person.speech = randomChoice(lines);
+      person.speechUntil = gameTime + 2.8;
+    }
+    /* Ordinary traffic has somebody behind the wheel and a door that may be locked. */
+    function assignDriver(vehicle) {
+      if (
+        vehicle.type === 'police' ||
+        vehicle.type === 'bicycle' ||
+        vehicle.military ||
+        isAircraft(vehicle) ||
+        isBoat(vehicle)
+      )
+        return;
+      vehicle.occupied = true;
+      vehicle.locked = seededRandom() < 0.32;
+      vehicle.driverMood = randomChoice(DRIVER_MOODS);
+      vehicle.driverColor = randomChoice(DRIVER_COLORS);
+    }
+    function vehicleIsLocked(vehicle) {
+      return !!vehicle?.locked && !vehicle.lockBroken && vehicle.hp > 0 && vehicle.occupied !== false;
+    }
+    function driverDoor(vehicle) {
+      const spec = vehicleSpec(vehicle),
+        a = vehicle.a - Math.PI / 2;
+      return {
+        a,
+        x: vehicle.x + Math.cos(a) * (spec.w / 2 + 11),
+        y: vehicle.y + Math.sin(a) * (spec.w / 2 + 11),
+      };
+    }
+    function ejectDriver(vehicle, reason = 'hijack') {
+      if (!vehicle.occupied) return null;
+      vehicle.occupied = false;
+      const door = driverDoor(vehicle),
+        rolling = Math.hypot(vehicle.vx || 0, vehicle.vy || 0),
+        throwSpeed = reason === 'hijack' ? 62 + rolling * 0.55 : 34 + rolling * 0.3;
+      let x = door.x,
+        y = door.y;
+      if (solid(x, y, 7)) {
+        const other = vehicle.a + Math.PI / 2,
+          spec = vehicleSpec(vehicle);
+        x = vehicle.x + Math.cos(other) * (spec.w / 2 + 11);
+        y = vehicle.y + Math.sin(other) * (spec.w / 2 + 11);
+        if (solid(x, y, 7)) {
+          x = vehicle.x;
+          y = vehicle.y;
+        }
+      }
+      const driver = {
+        x,
+        y,
+        a: normalizeAngle(door.a + Math.PI),
+        hp: 30,
+        color: vehicle.driverColor || randomChoice(DRIVER_COLORS),
+        flee: 0,
+        timer: 1,
+        walk: 0,
+        state: 'walk',
+        mood: vehicle.driverMood || 'flee',
+        // The throw and the landing are one knockdown, so the fall animation,
+        // the daze and every collision rule already in the game apply to it.
+        knockedFor: reason === 'hijack' ? 1.35 : 0.9,
+        dazedFor: 0,
+        impactCooldown: 0.6,
+        ejected: {
+          vx: Math.cos(door.a) * throwSpeed,
+          vy: Math.sin(door.a) * throwSpeed,
+          spin: randomBetween(-8, 8),
+          time: 0,
+          reason,
+        },
+      };
+      pedestrians.push(driver);
+      driverTalk(driver, reason === 'hijack' ? 'pulled' : 'plead');
+      scream(driver);
+      particle(x, y, '#b9b3a0', 5, 45, 2);
+      return driver;
+    }
+    function finishEjection(person) {
+      const mood = person.mood || 'flee';
+      person.ejected = null;
+      person.ejectRoll = 0;
+      person.threat = {
+        x: player.x,
+        y: player.y,
+      };
+      if (mood === 'angry' || mood === 'defiant') {
+        // Chases the car for a few seconds, shouting, before thinking better of it.
+        person.angryUntil = gameTime + 6 + seededRandom() * 4;
+        driverTalk(person, mood === 'angry' ? 'angry' : 'defiant');
+      } else if (mood === 'witness') {
+        // Calls it in. That is a real cost: the description reaches dispatch.
+        person.witnessUntil = gameTime + 7;
+        driverTalk(person, 'witness');
+        crime(0.7);
+      } else {
+        person.flee = 10 + seededRandom() * 4;
+        if (mood === 'plead') driverTalk(person, 'plead');
+      }
+    }
+    /* The throw itself: applied wherever knockdowns are stepped, so it runs for
+       people the ordinary pedestrian loop skips while they are on the ground. */
+    function stepEjection(person, deltaSeconds) {
+      const e = person.ejected;
+      if (!e) return;
+      e.time += deltaSeconds;
+      moveBody(person, e.vx * deltaSeconds, e.vy * deltaSeconds, 6);
+      const drag = Math.exp(-4.4 * deltaSeconds);
+      e.vx *= drag;
+      e.vy *= drag;
+      person.ejectRoll = (person.ejectRoll || 0) + e.spin * deltaSeconds;
+      if (e.time > 0.34 && Math.hypot(e.vx, e.vy) < 8) {
+        e.vx = e.vy = 0;
+        e.spin *= 0.6;
+      }
+      if (person.knockedFor <= 0 || e.time > 3) finishEjection(person);
+    }
+    function updateCarjackReactions(person, deltaSeconds) {
+      if (person.angryUntil > gameTime) {
+        const chase = player.car || player;
+        person.a = headingBetween(person, chase);
+        person.walking = true;
+        person.sitting = false;
+        person.walk += deltaSeconds * 13;
+        if (distanceBetween(person, chase) > 26)
+          moveBody(
+            person,
+            Math.cos(person.a) * 96 * deltaSeconds,
+            Math.sin(person.a) * 96 * deltaSeconds,
+            5,
+          );
+        if (seededRandom() < deltaSeconds * 0.5) driverTalk(person, person.mood === 'defiant' ? 'defiant' : 'angry');
+        return true;
+      }
+      if (person.witnessUntil > gameTime) {
+        person.walking = false;
+        person.sitting = false;
+        person.a = headingBetween(person, player.car || player);
+        person.onPhone = true;
+        if (seededRandom() < deltaSeconds * 0.45) driverTalk(person, 'witness');
+        return true;
+      }
+      if (person.onPhone && person.witnessUntil <= gameTime) {
+        person.onPhone = false;
+        person.flee = 8;
+      }
+      return false;
+    }
+    /**
+     * A round through the glass. What happens next is the driver's call: most bail
+     * and run, a few put their foot down and aim the car at whoever is shooting.
+     */
+    function breakVehicleLock(vehicle, source) {
+      if (!vehicle.locked || vehicle.lockBroken) return;
+      vehicle.lockBroken = true;
+      particle(vehicle.x, vehicle.y, '#cfe3ea', 9, 90, 2);
+      noise(0.1, 0.16, 3200);
+      if (!vehicle.occupied) return;
+      const ram = vehicle.driverMood === 'defiant' || vehicle.driverMood === 'angry';
+      if (ram && source === player && vehicle.hp > vehicle.maxhp * 0.35) {
+        vehicle.ramUntil = gameTime + 13;
+        vehicle.ai = true;
+        vehicle.panicUntil = 0;
+        tell('THE DRIVER IS COMING AT YOU', 2.6);
+        playSample('tires', 0.4, 1.1, vehicle);
+        return;
+      }
+      const driver = ejectDriver(vehicle, 'shot');
+      if (driver) {
+        driver.flee = 12;
+        driver.mood = driver.mood === 'witness' ? 'witness' : 'flee';
+      }
+      vehicle.ai = false;
+      vehicle.vx = vehicle.vy = vehicle.speed = 0;
+      tell('The driver bailed out. The car is yours.', 2.6);
+    }
+    function ramControl(vehicle) {
+      // Straight at the player, with a lead so they cannot simply sidestep.
+      const lead = {
+        x: player.x + (player.car?.vx || 0) * 0.3,
+        y: player.y + (player.car?.vy || 0) * 0.3,
+      };
+      const da = normalizeAngle(headingBetween(vehicle, lead) - vehicle.a);
+      return {
+        steer: clamp(da * 3, -2.4, 2.4),
+        desired: distanceBetween(vehicle, player) < 60 ? 150 : 210,
+      };
+    }
+    function carjackPrompt(vehicle) {
+      return vehicleIsLocked(vehicle) ? 'LOCKED · BREAK THE WINDOW' : null;
+    }
+    // END SUBSYSTEM: src/carjack.js
+    // BEGIN SUBSYSTEM: src/themepark.js — Sunset Pier amusement park
+    /**
+     * Sunset Pier amusement park
+     * Source: src/themepark.js
+     * Scope: shared game closure.
+     * Island layout, ride footprints, the rideable coaster and the park crowd.
+     */
+    /**
+     * SUNSET PIER
+     * A pleasure pier built on a sand bar in the lower bay, reached by the Palm
+     * Ave causeway off the Stadium Way crossing. The park is laid out around a
+     * midway: the coaster wraps the eastern half, the wheel anchors the west, and
+     * the carousel, games row and food court fill the middle.
+     *
+     * The coaster is ridden, not watched. `COASTER_TRACK` is a closed list of
+     * [x, y, altitude] control points; a ride interpolates along it with a real
+     * gravity model (the train trades height for speed and is dragged up the lift
+     * hill by the chain), and the player is carried with the train. Track height
+     * is authored in world units, where 512 units is 100 metres.
+     */
+    const PIER = {
+      gate: { x: 3712, y: 4960 },
+      midway: { x: 3760, y: 5130 },
+      wheel: { x: 3580, y: 5230, r: 66 },
+      carousel: { x: 3690, y: 5330, r: 42 },
+      arcade: { x: 3570, y: 5090, w: 96, h: 64 },
+      gamesRow: { x: 3640, y: 5420, w: 220, h: 54 },
+      foodCourt: { x: 3840, y: 5386, w: 170, h: 60 },
+      station: { x: 3862, y: 5006 },
+      dropTower: { x: 3590, y: 5372 },
+      teacups: { x: 3960, y: 5230, r: 38 },
+    };
+    const COASTER_TRACK = [
+      [3862, 5006, 16],
+      [3930, 5000, 18],
+      [3990, 5016, 64],
+      [4046, 5060, 158],
+      [4074, 5122, 150],
+      [4062, 5196, 34],
+      [4016, 5252, 24],
+      [3952, 5286, 96],
+      [3884, 5310, 42],
+      [3812, 5326, 84],
+      [3742, 5318, 36],
+      [3684, 5278, 70],
+      [3648, 5216, 30],
+      [3646, 5152, 58],
+      [3684, 5104, 26],
+      [3744, 5084, 50],
+      [3806, 5104, 24],
+      [3856, 5148, 52],
+      [3884, 5206, 26],
+      [3856, 5258, 44],
+      [3792, 5272, 22],
+      [3726, 5246, 38],
+      [3682, 5192, 20],
+      [3676, 5128, 30],
+      [3716, 5064, 18],
+      [3782, 5026, 16],
+    ];
+    const COASTER_LIFT_START = 1,
+      COASTER_LIFT_END = 4,
+      COASTER_BRAKE = 23,
+      COASTER_GRAVITY = 52;
+    let coasterTrain = {
+      t: 0,
+      speed: 0,
+      running: false,
+      dwell: 3,
+      riders: 0,
+    };
+    function coasterPoint(t) {
+      const n = COASTER_TRACK.length,
+        i = ((Math.floor(t) % n) + n) % n,
+        f = t - Math.floor(t),
+        a = COASTER_TRACK[i],
+        b = COASTER_TRACK[(i + 1) % n];
+      return {
+        x: a[0] + (b[0] - a[0]) * f,
+        y: a[1] + (b[1] - a[1]) * f,
+        altitude: a[2] + (b[2] - a[2]) * f,
+      };
+    }
+    function coasterSegmentLength(i) {
+      const n = COASTER_TRACK.length,
+        a = COASTER_TRACK[i % n],
+        b = COASTER_TRACK[(i + 1) % n];
+      return Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) || 1;
+    }
+    function inPark(x, y, margin = 0) {
+      return onSunsetIsle(x, y) || (margin > 0 && onSunsetIsle(x + margin, y + margin));
+    }
+    /* Ride structures are solid: the player walks the midway, not through the wheel. */
+    function parkSolids() {
+      return [
+        { x: PIER.arcade.x, y: PIER.arcade.y, w: PIER.arcade.w, h: PIER.arcade.h, height: 46 },
+        { x: PIER.gamesRow.x, y: PIER.gamesRow.y, w: PIER.gamesRow.w, h: PIER.gamesRow.h, height: 34 },
+        { x: PIER.foodCourt.x, y: PIER.foodCourt.y, w: PIER.foodCourt.w, h: PIER.foodCourt.h, height: 30 },
+        { x: PIER.station.x - 46, y: PIER.station.y - 22, w: 92, h: 44, height: 28 },
+      ];
+    }
+    function parkBlocked(x, y, r = 0) {
+      if (!onSunsetIsle(x, y)) return false;
+      if (Math.hypot(x - PIER.wheel.x, y - PIER.wheel.y) < 16 + r) return true;
+      if (Math.hypot(x - PIER.carousel.x, y - PIER.carousel.y) < 12 + r) return true;
+      return parkSolids().some(
+        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
+      );
+    }
+    function coasterRideActive() {
+      return !!player.coaster;
+    }
+    function boardCoaster() {
+      if (player.car || player.roof || player.parachute || transitRide) return false;
+      if (player.coaster) return false;
+      if (distanceBetween(player, PIER.station) > 52) return false;
+      if (wantedStars > 0) {
+        needToLosePolice();
+        return true;
+      }
+      if (coasterTrain.running) {
+        tell('The train is out on the circuit. Wait for it to come back in.', 3);
+        return true;
+      }
+      player.coaster = {
+        time: 0,
+      };
+      coasterTrain.t = 0;
+      coasterTrain.speed = 26;
+      coasterTrain.running = true;
+      coasterTrain.dwell = 0;
+      announce('SUNSET PIER', 'THE SCREAMER', 2.4);
+      tell('Bars down. Hold on.', 3);
+      playSample('tires', 0.35, 0.8);
+      return true;
+    }
+    function leaveCoaster() {
+      player.coaster = null;
+      player.altitude = terrainHeight(PIER.station.x, PIER.station.y);
+      player.x = PIER.station.x - 58;
+      player.y = PIER.station.y + 12;
+      tell('Mind the step. Again?', 3);
+    }
+    function updateCoaster(deltaSeconds) {
+      if (gameMode !== 'play') return;
+      const train = coasterTrain;
+      if (!train.running) {
+        train.dwell = Math.max(0, train.dwell - deltaSeconds);
+        return;
+      }
+      const n = COASTER_TRACK.length,
+        i = Math.floor(train.t) % n,
+        segment = coasterSegmentLength(i),
+        a = COASTER_TRACK[i],
+        b = COASTER_TRACK[(i + 1) % n],
+        rise = (b[2] - a[2]) / segment;
+      if (i >= COASTER_LIFT_START && i < COASTER_LIFT_END) {
+        // Chain lift: constant haul up the first hill.
+        train.speed += (52 - train.speed) * Math.min(1, deltaSeconds * 1.6);
+      } else if (i >= COASTER_BRAKE) {
+        train.speed += (30 - train.speed) * Math.min(1, deltaSeconds * 2.2);
+      } else {
+        // Height traded for speed. `rise` is metres of climb per metre of track,
+        // so the acceleration along it is gravity times that gradient; at this
+        // scale (512 units to 100 m) gravity is about 50 units per second squared.
+        train.speed += -rise * COASTER_GRAVITY * deltaSeconds;
+        train.speed *= Math.exp(-0.14 * deltaSeconds);
+        train.speed = clamp(train.speed, 24, 330);
+      }
+      train.t += (train.speed * deltaSeconds) / segment;
+      if (train.t >= n) {
+        train.t = 0;
+        train.running = false;
+        train.speed = 0;
+        train.dwell = 4;
+        if (player.coaster) leaveCoaster();
+        return;
+      }
+      if (!player.coaster) return;
+      const p = coasterPoint(train.t),
+        ahead = coasterPoint(train.t + 0.08);
+      player.coaster.time += deltaSeconds;
+      player.x = p.x;
+      player.y = p.y;
+      player.altitude = p.altitude;
+      player.a = headingBetween(p, ahead);
+      cameraTarget.x = p.x;
+      cameraTarget.y = p.y;
+      if (train.speed > 150 && seededRandom() < deltaSeconds * 2.5) scream(player);
+    }
+    function coasterStatusText() {
+      if (!player.coaster) return '';
+      return (
+        'THE SCREAMER · ' +
+        Math.round(worldMeters(coasterTrain.speed) * 3.6) +
+        ' KM/H · ' +
+        Math.round(worldMeters(player.altitude)) +
+        ' m'
+      );
+    }
+    function parkInteract() {
+      if (boardCoaster()) return true;
+      if (player.coaster) {
+        tell('Not while the train is moving.', 2);
+        return true;
+      }
+      return false;
+    }
+    /* Paint the island: midway paving, ride pads, the pier boards and the beach. */
+    function paintSunsetPier(g) {
+      g.save();
+      g.fillStyle = '#b7ab8c';
+      g.beginPath();
+      SUNSET_ISLE.polygon.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
+      g.closePath();
+      g.fill();
+      g.clip();
+      g.fillStyle = '#8f9a83';
+      g.fillRect(3470, 4900, 720, 640);
+      // Midway: a wide paved spine from the gate to the far end.
+      g.fillStyle = '#cdc4ab';
+      g.fillRect(3676, 4900, 76, 560);
+      g.fillRect(3540, 5140, 560, 62);
+      g.fillRect(3540, 5340, 520, 56);
+      g.strokeStyle = '#b0a58c';
+      g.lineWidth = 1.5;
+      for (let x = 3540; x < 4110; x += 24) {
+        g.beginPath();
+        g.moveTo(x, 5140);
+        g.lineTo(x, 5202);
+        g.stroke();
+      }
+      // Ride pads.
+      g.fillStyle = '#9aa2a4';
+      for (const [cx, cy, r] of [
+        [PIER.wheel.x, PIER.wheel.y, 74],
+        [PIER.carousel.x, PIER.carousel.y, 50],
+        [PIER.teacups.x, PIER.teacups.y, 46],
+      ]) {
+        g.beginPath();
+        g.arc(cx, cy, r, 0, TAU);
+        g.fill();
+      }
+      g.fillStyle = '#78807f';
+      for (const b of parkSolids()) g.fillRect(b.x, b.y, b.w, b.h);
+      // Coaster shadow line so the track reads from above even in the flat map.
+      g.strokeStyle = '#5c5344';
+      g.lineWidth = 7;
+      g.beginPath();
+      COASTER_TRACK.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
+      g.closePath();
+      g.stroke();
+      g.fillStyle = '#e4d6a6';
+      g.font = 'bold 30px monospace';
+      g.textAlign = 'center';
+      g.fillText('SUNSET PIER', 3800, 4960);
+      g.font = 'bold 15px monospace';
+      g.fillText('THE SCREAMER', PIER.station.x, PIER.station.y - 30);
+      g.fillText('BIG WHEEL', PIER.wheel.x, PIER.wheel.y - 80);
+      g.fillText('MIDWAY GAMES', PIER.gamesRow.x + 110, PIER.gamesRow.y - 10);
+      g.fillText('FOOD COURT', PIER.foodCourt.x + 100, PIER.foodCourt.y - 10);
+      g.restore();
+    }
+    function buildSunsetPier() {
+      paintSunsetPier(groundContext);
+      for (let i = trees.length - 1; i >= 0; i--)
+        if (onSunsetIsle(trees[i].x, trees[i].y)) trees.splice(i, 1);
+      for (let i = 0; i < 26; i++) {
+        const a = (i * 2.399) % TAU,
+          x = 3820 + Math.cos(a) * (200 + ((i * 53) % 130)),
+          y = 5180 + Math.sin(a) * (190 + ((i * 71) % 120));
+        if (onSunsetIsle(x, y) && !parkBlocked(x, y, 14)) drawTree(x, y, 12 + (i % 4) * 2);
+      }
+    }
+    const PARK_LINES = [
+      'One more go on the Screamer.',
+      'I am not going on that.',
+      'Cotton candy first, rides after.',
+      'The queue is forty minutes.',
+      'Hold my hat.',
+      'You can see the whole city from the wheel.',
+      'Three tickets left.',
+      'I felt my stomach leave.',
+      'Best chips on the coast.',
+      'Meet by the carousel at six.',
+    ];
+    function populateSunsetPier() {
+      const spots = [
+        [PIER.station.x - 54, PIER.station.y + 20],
+        [PIER.station.x - 40, PIER.station.y + 34],
+        [PIER.carousel.x + 52, PIER.carousel.y],
+        [PIER.carousel.x - 48, PIER.carousel.y + 16],
+        [PIER.wheel.x + 80, PIER.wheel.y - 10],
+        [PIER.wheel.x + 66, PIER.wheel.y + 30],
+        [PIER.gamesRow.x + 40, PIER.gamesRow.y - 22],
+        [PIER.gamesRow.x + 140, PIER.gamesRow.y - 22],
+        [PIER.foodCourt.x + 60, PIER.foodCourt.y - 24],
+        [PIER.foodCourt.x + 150, PIER.foodCourt.y - 24],
+        [PIER.midway.x, PIER.midway.y + 40],
+        [PIER.midway.x + 60, PIER.midway.y - 30],
+        [PIER.teacups.x - 56, PIER.teacups.y],
+        [3700, 5020],
+        [3740, 5060],
+        [3660, 5180],
+      ];
+      for (const [x, y] of spots) {
+        if (!onSunsetIsle(x, y) || parkBlocked(x, y, 7)) continue;
+        pedestrians.push({
+          x,
+          y,
+          a: randomBetween(0, TAU),
+          hp: 30,
+          color: randomChoice(DRIVER_COLORS),
+          flee: 0,
+          timer: randomBetween(1, 7),
+          walk: seededRandom() * 5,
+          state: 'walk',
+          parkGuest: true,
+        });
+      }
+    }
+    function updateParkGuest(person, deltaSeconds) {
+      if (!person.parkGuest || person.flee > 0 || person.hp <= 0) return false;
+      person.timer -= deltaSeconds;
+      if (person.timer <= 0) {
+        person.timer = 4 + seededRandom() * 7;
+        person.parkGoal = null;
+        if (seededRandom() < 0.55) {
+          const target = randomChoice([PIER.midway, PIER.carousel, PIER.wheel, PIER.station, PIER.foodCourt]);
+          person.parkGoal = {
+            x: (target.x || 0) + randomBetween(-60, 60) + (target.w ? target.w / 2 : 0),
+            y: (target.y || 0) + randomBetween(-50, 50) + (target.h ? target.h + 24 : 0),
+          };
+        }
+        if ((person.speechUntil || 0) <= gameTime && seededRandom() < 0.5) {
+          person.speech = randomChoice(PARK_LINES);
+          person.speechUntil = gameTime + 3;
+        }
+      }
+      const goal = person.parkGoal;
+      if (!goal) {
+        person.walking = false;
+        return true;
+      }
+      if (distanceBetween(person, goal) < 10) {
+        person.parkGoal = null;
+        person.walking = false;
+        return true;
+      }
+      person.a = headingBetween(person, goal);
+      person.walking = true;
+      person.walk += deltaSeconds * 6;
+      if (moveBody(person, Math.cos(person.a) * 26 * deltaSeconds, Math.sin(person.a) * 26 * deltaSeconds, 5))
+        person.parkGoal = null;
+      return true;
+    }
+    // END SUBSYSTEM: src/themepark.js
     // BEGIN SUBSYSTEM: src/roofmission.js — Blue Hour rooftop mission
     /**
      * Blue Hour rooftop mission
@@ -14864,6 +16404,8 @@ body:not(.touch-mode).police-search-active #carRadio {
           faction: 'vescari',
           missionTag: 'rooftop-hit',
           boss: true,
+          // Vescari is the only one at the party with a plate under the jacket.
+          vest: 60,
           timer: 1.4,
           walk: 0,
         };
@@ -14885,6 +16427,11 @@ body:not(.touch-mode).police-search-active #carRadio {
           [327, 231],
           [327, 310],
         ],
+        [
+          [128, 300],
+          [212, 296],
+          [212, 214],
+        ],
       ];
       for (let i = 0; i < routes.length; i++) {
         const route = routes[i].map((p) => roofAt(...p));
@@ -14893,7 +16440,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           a: i === 0 ? Math.PI : 0,
           hp: 70,
           color: '#293441',
-          name: ['NICO FALCO', 'BRUNO RIZZO', 'CARLO SERRA'][i],
+          name: ['NICO FALCO', 'BRUNO RIZZO', 'CARLO SERRA', 'TITO MARCHETTI'][i],
           faction: 'vescari',
           missionTag: 'rooftop-hit',
           guard: true,
@@ -14997,9 +16544,14 @@ body:not(.touch-mode).police-search-active #carRadio {
       for (const e of enemies)
         if (e.missionTag === 'rooftop-hit') {
           e.aiming = true;
-          e.timer = Math.max(e.timer, 1.2);
+          // Close protection details do not hesitate: weapons come up now.
+          e.timer = 0.15 + seededRandom() * 0.15;
           e.roofRoute = null;
         }
+      // Security downstairs is called the moment the party breaks.
+      wantedStars = Math.max(2, wantedStars);
+      // The car brings the lift back up; the way out is not simply standing open.
+      m.liftRecalled = gameTime + 9;
     }
     function canSilentHit(m) {
       return (
@@ -15220,18 +16772,19 @@ body:not(.touch-mode).police-search-active #carRadio {
               e.roofRoute = null;
             }
           }
-          if (
-            player.roof &&
-            roofSees(e, player, 118) &&
-            ((!m.partyPanic && distanceBetween(e, player) < 28) ||
-              (moving && (keys.ShiftLeft || keys.ShiftRight)))
-          )
-            suspicious = true;
+          if (player.roof && roofSees(e, player, 132)) {
+            const d = distanceBetween(e, player),
+              sprinting = moving && (keys.ShiftLeft || keys.ShiftRight);
+            // Crowding the detail, running, or lingering inside the cordon all read wrong.
+            if (d < 34 || sprinting || m.partyPanic) suspicious = true;
+            else if (d < 96) e.lingering = (e.lingering || 0) + deltaSeconds;
+            if ((e.lingering || 0) > 1.6) suspicious = true;
+          } else e.lingering = Math.max(0, (e.lingering || 0) - deltaSeconds * 1.6);
         }
         if (e.boss && !m.alarm && !m.poisoned) e.a = -Math.PI / 2 + Math.sin(gameTime * 0.22) * 0.45;
       }
       if (!m.alarm) {
-        m.suspicion = clamp(m.suspicion + (suspicious ? 42 : -19) * deltaSeconds, 0, 100);
+        m.suspicion = clamp(m.suspicion + (suspicious ? 64 : -11) * deltaSeconds, 0, 100);
         if (player.roof && (m.weaponDrawn || m.suspicion >= 100)) roofAlarm(m);
         if (m.killRegistered && !m.partyPanic) {
           m.bodyDelay -= deltaSeconds;
@@ -15255,18 +16808,18 @@ body:not(.touch-mode).police-search-active #carRadio {
         e.a = headingBetween(e, player);
         e.aiming = seen;
         e.timer -= deltaSeconds;
-        if (!seen || distanceBetween(e, player) > 135) roofStep(e, player, deltaSeconds, 31);
+        if (!seen || distanceBetween(e, player) > 120) roofStep(e, player, deltaSeconds, 46);
         if (seen && e.timer <= 0) {
-          e.timer = 1.3 + seededRandom() * 0.45;
-          const a = e.a + randomBetween(-0.065, 0.065);
+          e.timer = 0.72 + seededRandom() * 0.34;
+          const a = e.a + randomBetween(-0.038, 0.038);
           bullets.push({
             x: e.x + Math.cos(a) * 14,
             y: e.y + Math.sin(a) * 14,
             altitude: e.altitude,
-            vx: Math.cos(a) * 450,
-            vy: Math.sin(a) * 450,
+            vx: Math.cos(a) * 520,
+            vy: Math.sin(a) * 520,
             life: 0.6,
-            dmg: 10,
+            dmg: 17,
             enemy: true,
             faction: 'vescari',
             owner: e,
@@ -15721,6 +17274,46 @@ body:not(.touch-mode).police-search-active #carRadio {
      * Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
      */
     /* All gunfire travels through the same three-dimensional world. */
+
+    /**
+     * LETHALITY
+     * Firearms are lethal. An unprotected torso hit takes a person out of the fight
+     * in one or two rounds; a ballistic vest spreads the same energy across several
+     * and wears out as it does. Vehicle impacts and blasts keep their own scales so
+     * a fender bump does not read as a rifle round.
+     * `vest` is the NPC counterpart of `player.armor` and uses the same units.
+     */
+    const BALLISTIC_LETHALITY = 2.05,
+      MELEE_LETHALITY = 1.45,
+      VEST_SHARE = {
+        ballistic: 0.74,
+        melee: 0.55,
+        blast: 0.45,
+        impact: 0,
+      };
+    function vestOf(person) {
+      return Math.max(0, person === player ? player.armor : person.vest || 0);
+    }
+    function reduceVest(person, absorbed) {
+      if (person === player) player.armor = Math.max(0, player.armor - absorbed);
+      else person.vest = Math.max(0, (person.vest || 0) - absorbed);
+    }
+    function ballisticDamage(person, damage, kind = 'ballistic') {
+      let d =
+        damage *
+        (kind === 'ballistic' ? BALLISTIC_LETHALITY : kind === 'melee' ? MELEE_LETHALITY : 1);
+      const share = VEST_SHARE[kind] || 0,
+        vest = vestOf(person);
+      if (vest > 0 && share > 0) {
+        const absorbed = Math.min(vest, d * share);
+        reduceVest(person, absorbed);
+        d -= absorbed;
+      }
+      return Math.max(0, d);
+    }
+    function wearingVest(person) {
+      return vestOf(person) > 0;
+    }
     function combatDistance(a, b) {
       return Math.hypot(a.x - b.x, a.y - b.y, entityElevation(a) - entityElevation(b));
     }
@@ -15896,7 +17489,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       airDispatchTimer = Math.max(0, airDispatchTimer - deltaSeconds);
       // Destruction is processed before dispatch, so a kill cannot immediately spawn its replacement.
       for (const c of vehicles) if (c.airUnit && c.hp <= 0 && !c.airDown) markAirSupportDown(c);
-      const wanted = Math.ceil(wantedStars) >= 5 && !harborPoliceProtected(player.x, player.y, 100);
+      const wanted = Math.ceil(wantedStars) >= 4 && !harborPoliceProtected(player.x, player.y, 100);
       if (wanted && !airSupportUnit() && airDispatchTimer <= 0) requestAirSupport(player);
       const live = vehicles
         .filter((c) => c.airUnit && c.hp > 0 && c !== player.car && !c.airRetreat)
@@ -15963,7 +17556,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             ...origin,
             ...shotVelocity(origin, t, 650, a),
             life: 1,
-            dmg: 10,
+            dmg: 12,
             enemy: true,
             faction: 'police',
             owner: c,
@@ -15985,7 +17578,7 @@ body:not(.touch-mode).police-search-active #carRadio {
               Math.ceil(Math.max(0, AIR_SEARCH_SECONDS - (c.airLostFor || 0))) +
               's · STAY HIDDEN'
             : 'HELICOPTER · ' + Math.ceil((c.hp / c.maxhp) * 100) + '% · FIND COVER';
-      return wantedStars >= 5 && airDispatchTimer > 0
+      return wantedStars >= 4 && airDispatchTimer > 0
         ? 'NO AIR SUPPORT · ' + Math.ceil(airDispatchTimer) + 's'
         : '';
     }
@@ -16172,6 +17765,13 @@ body:not(.touch-mode).police-search-active #carRadio {
         width: 126,
         a: [7800, 8150],
         b: [9440, 8150],
+      },
+      {
+        // Palm Ave drops off the Stadium Way crossing and runs out to the pier.
+        name: 'SUNSET PIER CAUSEWAY',
+        width: 104,
+        a: [3712, 4736],
+        b: [3712, 4980],
       },
     ];
     const COUNTY_TOWNS = [
@@ -16804,6 +18404,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       populateMilitary();
       spawnTrailVehicles();
       populateRecreation();
+      populateSunsetPier();
       populateWildlife();
       resetTransit();
       populateAircraft();
@@ -17302,6 +18903,8 @@ body:not(.touch-mode).police-search-active #carRadio {
           a: i % 2 ? Math.PI : 0,
           hp: 115,
           maxhp: 115,
+          // Base security wear plate carriers: small arms need several rounds to matter.
+          vest: 110,
           color: '#657653',
           faction: 'military',
           military: true,
@@ -17420,7 +19023,7 @@ body:not(.touch-mode).police-search-active #carRadio {
               vx: Math.cos(a) * 680,
               vy: Math.sin(a) * 680,
               life: 0.9,
-              dmg: 10,
+              dmg: 13,
               enemy: true,
               faction: 'military',
               owner: e,
@@ -19227,6 +20830,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             const x = vertical ? r : v,
               y = vertical ? v : r;
             if (inAirport(x, y) || parkStreetClosed(x, y) || inStadiumLot(x, y, 56)) return false;
+            if (onSunsetIsle(x, y)) return false;
             if (onBridge(x, y, 0)) return true;
             const side = width / 2 + 28;
             return (
@@ -19275,8 +20879,8 @@ body:not(.touch-mode).police-search-active #carRadio {
         640: 'SUNSET BLVD',
         1152: 'ROYAL AVE',
         1664: 'COMMONS ST',
-        2176: 'CANNERY ST',
-        2688: 'FOUNDRY AVE',
+        2176: 'GARDEN ST',
+        2688: 'GARDEN AVE',
         3200: 'RIVERBANK DR',
         3712: 'PALM AVE',
         4224: 'COLLINS AVE',
@@ -19287,7 +20891,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         128: 'NORTH SHORE RD',
         640: 'ARMORY ST',
         1152: 'UNION ST',
-        1664: 'GARDEN ST',
+        1664: 'LINDEN ST',
         2176: 'CENTRAL PKWY',
         2688: 'EXCHANGE ST',
         3200: 'HARBOR AVE',
@@ -19808,6 +21412,143 @@ body:not(.touch-mode).police-search-active #carRadio {
           announce('SUMMIT REACHED', peak.name, 4);
         }
       }
+    }
+    /**
+     * FOOT TRAVEL ON THE MOUNTAIN
+     * The trail is graded: you walk it up or down at close to normal pace. Off the
+     * trail the slope decides. A moderate face can be traversed slowly and slips
+     * you sideways; a steep face cannot be climbed at all; and stepping off the
+     * lip of a steep face means going down it on your back, which hurts and which
+     * you do not steer. Gradients are height change per unit of ground, so 0.5 is
+     * about twenty-seven degrees.
+     */
+    const TRAIL_GRADE = 0.32,
+      SLIP_GRADE = 0.34,
+      TUMBLE_GRADE = 0.52,
+      UNCLIMBABLE_GRADE = 0.66;
+    function endTumble(landed = true) {
+      if (!player.tumble) return;
+      const fast = player.tumble.peak > 190;
+      player.tumble = null;
+      player.tumbleRoll = 0;
+      if (landed)
+        tell(fast ? 'You slide to a stop. Use the trail next time.' : 'Back on your feet.', 2.5);
+    }
+    function startTumble(downhill, grade) {
+      if (player.tumble) return;
+      player.tumble = {
+        vx: downhill.x * (40 + grade * 90),
+        vy: downhill.y * (40 + grade * 90),
+        time: 0,
+        peak: 0,
+        hurtClock: 0.35,
+      };
+      player.tumbleRoll = 0;
+      tell('You lose your footing on the scree.', 2.2);
+      noise(0.22, 0.14, 700);
+    }
+    function updateMountainFooting(deltaSeconds) {
+      if (player.car || player.roof || player.parachute || transitRide || gameMode !== 'play') {
+        endTumble(false);
+        return false;
+      }
+      const z = terrainHeight(player.x, player.y);
+      if (z < 4) {
+        endTumble(!!player.tumble);
+        player.mountainGrade = 0;
+        return false;
+      }
+      const slope = terrainSlope(player.x, player.y),
+        grade = Math.hypot(slope.x, slope.y),
+        trail = onMountainTrail(player.x, player.y),
+        downhill = grade > 1e-4 ? { x: -slope.x / grade, y: -slope.y / grade } : { x: 0, y: 0 };
+      player.mountainGrade = grade;
+      player.onMountainTrail = trail;
+      if (player.tumble) {
+        const t = player.tumble;
+        t.time += deltaSeconds;
+        t.vx -= slope.x * 900 * deltaSeconds;
+        t.vy -= slope.y * 900 * deltaSeconds;
+        const drag = Math.exp(-1.5 * deltaSeconds);
+        t.vx *= drag;
+        t.vy *= drag;
+        const speed = Math.hypot(t.vx, t.vy);
+        t.peak = Math.max(t.peak, speed);
+        player.a = speed > 4 ? Math.atan2(t.vy, t.vx) : player.a;
+        player.tumbleRoll = (player.tumbleRoll || 0) + speed * deltaSeconds * 0.05;
+        const blocked = moveBody(player, t.vx * deltaSeconds, t.vy * deltaSeconds, 8);
+        t.hurtClock -= deltaSeconds;
+        if (t.hurtClock <= 0 && speed > 120) {
+          t.hurtClock = 0.8;
+          hurt(3 + speed * 0.022, 'impact');
+          particle(player.x, player.y, '#a59a7e', 5, 60, 3);
+        }
+        if (blocked && speed > 220) hurt(speed * 0.03, 'impact');
+        if ((grade < 0.3 && speed < 55) || t.time > 14 || (blocked && speed < 90)) endTumble();
+        return true;
+      }
+      const right = keys.KeyD || keys.ArrowRight,
+        left = keys.KeyA || keys.ArrowLeft,
+        back = keys.KeyS || keys.ArrowDown,
+        forward = keys.KeyW || keys.ArrowUp,
+        ix = (right ? 1 : 0) - (left ? 1 : 0),
+        iy = (back ? 1 : 0) - (forward ? 1 : 0);
+      if (!trail && grade > TUMBLE_GRADE) {
+        const heading = ix || iy ? Math.atan2(iy, ix) : null,
+          intoDescent =
+            heading !== null && Math.cos(heading) * downhill.x + Math.sin(heading) * downhill.y > 0.3;
+        if (intoDescent || grade > UNCLIMBABLE_GRADE + 0.12) {
+          startTumble(downhill, grade);
+          return true;
+        }
+      }
+      if (!ix && !iy) {
+        // Standing on a loose face still costs ground.
+        if (!trail && grade > SLIP_GRADE)
+          moveBody(
+            player,
+            downhill.x * (grade - SLIP_GRADE) * 130 * deltaSeconds,
+            downhill.y * (grade - SLIP_GRADE) * 130 * deltaSeconds,
+            8,
+          );
+        return true;
+      }
+      const a = Math.atan2(iy, ix),
+        climb = Math.cos(a) * slope.x + Math.sin(a) * slope.y;
+      let speed = keys.ShiftLeft || keys.ShiftRight ? 158 : 100;
+      if (trail) {
+        // A graded path: steady going, uphill a little slower than down.
+        speed *= clamp(1 - Math.max(0, climb) * TRAIL_GRADE * 2.2, 0.46, 1);
+      } else {
+        if (climb > 0.02) {
+          if (grade > UNCLIMBABLE_GRADE) {
+            if (gameTime - (player.climbTold || -10) > 4) {
+              player.climbTold = gameTime;
+              tell('Too steep to climb here. Find the trail.', 2.6);
+            }
+            speed = 0;
+          } else speed *= clamp(1 - Math.max(0, grade - SLIP_GRADE) * 3.1, 0, 1);
+        } else speed *= clamp(1 - grade * 0.45, 0.4, 1);
+        if (grade > SLIP_GRADE) {
+          moveBody(
+            player,
+            downhill.x * (grade - SLIP_GRADE) * 150 * deltaSeconds,
+            downhill.y * (grade - SLIP_GRADE) * 150 * deltaSeconds,
+            8,
+          );
+        }
+      }
+      player.a = a;
+      if (speed > 0) {
+        player.walk += deltaSeconds * (keys.ShiftLeft ? 15 : 10) * clamp(speed / 100, 0.3, 1.6);
+        moveBody(
+          player,
+          (ix / Math.hypot(ix, iy)) * speed * deltaSeconds,
+          (iy / Math.hypot(ix, iy)) * speed * deltaSeconds,
+          8,
+        );
+      }
+      return true;
     }
     function paintMountainTrails(g) {
       for (const t of MOUNTAIN_TRAILS) {
@@ -20485,42 +22226,59 @@ body:not(.touch-mode).police-search-active #carRadio {
      */
     /* Shared park plans drive scenery, recreation, traffic exclusions and the city map. */
     /**
-     * CENTRAL COMMONS
-     * Two blocks wide and three deep (x 1735..2599, y 710..2105), the city's great
-     * park. The elevated City Line crosses it north to south on x = 2176 with the
-     * Central Commons station in the middle; the streets that used to cut the park
-     * (Union St, Garden St and Cannery St inside it) are closed to traffic.
+     * CENTRAL GARDEN
+     * The city's great park, two blocks wide and two deep (x 2265..3111,
+     * y 1800..2600), set back from the western waterfront so it is a walk or a
+     * drive from the Old Quarter rather than a corner of it. The elevated City
+     * Line runs up Garden St on x = 2176, one street west of the boundary, so no
+     * train crosses the park; the Central Garden station sits on that line and
+     * opens onto the west gate. Garden Ave (x = 2688) and Linden St (y = 2176)
+     * cross inside the park and are closed to traffic.
      * Layout, west to east and north to south:
-     *   Great Lawn (1790..2110, 780..1330)     Commons Lake (ellipse at 2395,1010)
-     *   Statue walk / station plaza (1380..1540 around the station)
-     *   Rose garden and pergola (1900,1750)     Bandshell and lawn seating (2400,1700)
-     *   Playground (1900,1980)                  Gazebo corner (2480,1900)
+     *   Great Lawn (2320..2660, 1860..2190)     Garden Lake (ellipse at 2900,2010)
+     *   Founders statue (2690,2130)             Boathouse and dock (2856,2200)
+     *   Rose garden and pergola (2380,2290)     Garden Plaza and fountain (2670,2300)
+     *   Playground (2340,2480)                  Bandshell and lawn seating (2960,2300)
+     *   Calisthenics park (2560,2470)           Gazebo corner (3010,2520)
+     *   Food trucks on the plaza apron and by the north gate.
      */
     const CENTRAL_PARK = {
-      id: 'commons',
-      name: 'CENTRAL COMMONS',
+      id: 'garden',
+      name: 'CENTRAL GARDEN',
       kind: 'commons',
-      x: 1735,
-      y: 710,
-      w: 864,
-      h: 1395,
+      x: 2265,
+      y: 1800,
+      w: 846,
+      h: 800,
     };
     const COMMONS = {
-      lake: { x: 2395, y: 1010, rx: 150, ry: 215, a: 0.15 },
-      dock: { x: 2395, y: 1215, w: 24, h: 70 },
-      boathouse: { x: 2350, y: 1250, w: 90, h: 52 },
-      plaza: { x: 2020, y: 1380, w: 310, h: 160 },
-      fountain: { x: 2300, y: 1460 },
-      bandshell: { x: 2400, y: 1690 },
-      roseGarden: { x: 1900, y: 1760 },
-      playground: { x: 1900, y: 1985 },
-      gazebo: { x: 2480, y: 1905 },
-      statue: { x: 1950, y: 1400 },
-      lawn: { x: 1790, y: 780, w: 320, h: 550 },
+      lake: { x: 2900, y: 2010, rx: 150, ry: 165, a: 0.15 },
+      dock: { x: 2900, y: 2196, w: 24, h: 62 },
+      boathouse: { x: 2856, y: 2200, w: 88, h: 50 },
+      plaza: { x: 2520, y: 2230, w: 300, h: 140 },
+      fountain: { x: 2670, y: 2300 },
+      bandshell: { x: 2960, y: 2300 },
+      roseGarden: { x: 2380, y: 2290 },
+      playground: { x: 2340, y: 2480 },
+      gazebo: { x: 3010, y: 2520 },
+      statue: { x: 2690, y: 2130 },
+      lawn: { x: 2320, y: 1860, w: 340, h: 330 },
+      // Outdoor gym: pull-up and dip rig, parallel bars, rings and a rubber mat.
+      calisthenics: { x: 2560, y: 2470, w: 176, h: 112 },
+      // Street food on the plaza apron and by the north gate.
+      foodTrucks: [
+        { x: 2500, y: 2404, a: 0, menu: 'TACOS', color: '#d87a4a' },
+        { x: 2612, y: 2404, a: 0, menu: 'COFFEE', color: '#5f8f86' },
+        { x: 2712, y: 1868, a: Math.PI / 2, menu: 'NOODLES', color: '#b8556a' },
+      ],
+      kiosks: [
+        { x: 2762, y: 2262, color: '#e8b1c2' },
+        { x: 2300, y: 2140, color: '#4f8ab1' },
+      ],
     };
     const CITY_PARKS = [
       CENTRAL_PARK,
-      ...PARKS.filter(([bx, by]) => ![3, 4].includes(bx) || ![1, 2, 3].includes(by))
+      ...PARKS.filter(([bx, by]) => ![4, 5].includes(bx) || ![3, 4].includes(by))
         .map(([bx, by], i) => ({
           id: 'park-' + i,
           bx,
@@ -20559,9 +22317,10 @@ body:not(.touch-mode).police-search-active #carRadio {
         .filter((p) => validCityBlock(p.x, p.y, p.w, p.h)),
     ];
     function parkStreetClosed(x, y) {
+      // Linden St and Garden Ave run inside Central Garden and carry no traffic.
       return (
-        (x > 1664 && x < 2688 && (Math.abs(y - 1152) < 70 || Math.abs(y - 1664) < 70)) ||
-        (Math.abs(x - 2176) < 70 && y > 700 && y < 2115)
+        (x > 2200 && x < 3180 && Math.abs(y - 2176) < 70) ||
+        (Math.abs(x - 2688) < 70 && y > 1790 && y < 2610)
       );
     }
     function parkAt(x, y) {
@@ -20579,27 +22338,27 @@ body:not(.touch-mode).police-search-active #carRadio {
     function parkWalk(p) {
       return p.kind === 'commons'
         ? [
-            [1800, 765],
-            [2100, 770],
-            [2230, 860],
-            [2250, 1300],
-            [2395, 1310],
-            [2540, 1240],
-            [2560, 1450],
-            [2470, 1640],
-            [2300, 1500],
-            [2170, 1570],
-            [2000, 1600],
-            [1880, 1780],
-            [1900, 1990],
-            [2100, 2040],
-            [2380, 2030],
-            [2470, 1900],
-            [2300, 1790],
-            [2200, 1700],
-            [1990, 1420],
-            [1790, 1350],
-            [1800, 765],
+            [2320, 1860],
+            [2640, 1860],
+            [2712, 1930],
+            [2730, 2230],
+            [2910, 2300],
+            [3050, 2230],
+            [3062, 2380],
+            [2960, 2540],
+            [2760, 2500],
+            [2620, 2450],
+            [2470, 2440],
+            [2320, 2460],
+            [2330, 2560],
+            [2700, 2575],
+            [3010, 2560],
+            [3050, 2430],
+            [2860, 2370],
+            [2700, 2310],
+            [2500, 2210],
+            [2300, 2060],
+            [2320, 1860],
           ]
         : parkLoop(p, Math.min(p.w, p.h) * 0.25);
     }
@@ -20645,10 +22404,11 @@ body:not(.touch-mode).police-search-active #carRadio {
           if (p.kind === 'commons') {
             drawingContext.font = 'bold 13px Arial';
             drawingContext.fillStyle = '#e9ebc9';
-            drawingContext.fillText('GREAT LAWN', 1950, 1060);
-            drawingContext.fillText('COMMONS LAKE', 2395, 1020);
-            drawingContext.fillText('BANDSHELL', 2400, 1890);
-            drawingContext.fillText('ROSE GARDEN', 1900, 1835);
+            drawingContext.fillText('GREAT LAWN', 2490, 2030);
+            drawingContext.fillText('GARDEN LAKE', 2900, 2020);
+            drawingContext.fillText('BANDSHELL', 2960, 2480);
+            drawingContext.fillText('ROSE GARDEN', 2380, 2365);
+            drawingContext.fillText('OUTDOOR GYM', 2560, 2545);
           }
         }
       }
@@ -20722,19 +22482,41 @@ body:not(.touch-mode).police-search-active #carRadio {
       // Statue plinth pad.
       g.fillStyle = '#bcb4a0';
       g.fillRect(c.statue.x - 22, c.statue.y - 22, 44, 44);
+      // Outdoor gym: poured rubber safety surface with lane markings.
+      const cal = c.calisthenics;
+      g.fillStyle = '#4b4f52';
+      g.fillRect(cal.x - cal.w / 2, cal.y - cal.h / 2, cal.w, cal.h);
+      g.fillStyle = '#5c6367';
+      g.fillRect(cal.x - cal.w / 2 + 6, cal.y - cal.h / 2 + 6, cal.w - 12, cal.h - 12);
+      g.strokeStyle = '#d7cc9d';
+      g.lineWidth = 2;
+      g.strokeRect(cal.x - cal.w / 2 + 6, cal.y - cal.h / 2 + 6, cal.w - 12, cal.h - 12);
+      g.fillStyle = '#8d8365';
+      for (let i = -2; i <= 2; i++) g.fillRect(cal.x + i * 30 - 2, cal.y - cal.h / 2 + 12, 4, cal.h - 24);
+      // Food truck aprons.
+      g.fillStyle = '#b0a993';
+      for (const t of c.foodTrucks) g.fillRect(t.x - 30, t.y - 22, 60, 44);
     }
     function seedCommonsTrees() {
       const p = CENTRAL_PARK,
         c = COMMONS,
         route = parkWalk(p);
       let planted = 0;
-      for (let j = 0; j < 400 && planted < 150; j++) {
+      for (let j = 0; j < 1100 && planted < 280; j++) {
         const x = p.x + 30 + ((j * 733 + 91) % (p.w - 60)),
           y = p.y + 30 + ((j * 1217 + 37) % (p.h - 60)),
           onLawn = x > c.lawn.x + 20 && x < c.lawn.x + c.lawn.w - 20 && y > c.lawn.y + 20 && y < c.lawn.y + c.lawn.h - 20,
           edge = Math.min(x - p.x, p.x + p.w - x, y - p.y, p.y + p.h - y),
           groveChance = edge < 90 ? 0.9 : 0.35;
-        if (onLawn || Math.abs(x - 2176) < 34 || parkPondBlocked(x, y, 16)) continue;
+        if (onLawn || parkPondBlocked(x, y, 16)) continue;
+        if (
+          x > c.calisthenics.x - c.calisthenics.w / 2 - 14 &&
+          x < c.calisthenics.x + c.calisthenics.w / 2 + 14 &&
+          y > c.calisthenics.y - c.calisthenics.h / 2 - 14 &&
+          y < c.calisthenics.y + c.calisthenics.h / 2 + 14
+        )
+          continue;
+        if (c.foodTrucks.some((t) => Math.hypot(t.x - x, t.y - y) < 46)) continue;
         if (Math.abs(x - c.bandshell.x) < 165 && y > c.bandshell.y - 60 && y < c.bandshell.y + 165) continue;
         if (Math.abs(x - c.playground.x) < 85 && Math.abs(y - c.playground.y) < 60) continue;
         if (Math.abs(x - c.roseGarden.x) < 80 && Math.abs(y - c.roseGarden.y) < 80) continue;
@@ -20776,6 +22558,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
     }
     function populateRecreation() {
+      populateGardenLife();
       for (const p of CITY_PARKS) {
         const route = parkWalk(p);
         for (let j = 0; j < (p.kind === 'commons' ? 22 : 4); j++) {
@@ -20817,6 +22600,59 @@ body:not(.touch-mode).police-search-active #carRadio {
           makeCar('bicycle', x + 32, y + 34, 0, false, '#e0b76b');
       }
     }
+    /**
+     * OUTDOOR GYM
+     * Regulars work a station in sets: a burst of reps, then a rest where they
+     * shake out and talk. Stations are laid out along the rig from the shared
+     * calisthenics plan so the meshes and the people agree.
+     */
+    function gymStations() {
+      const cal = COMMONS.calisthenics;
+      return [
+        { x: cal.x - 62, y: cal.y - 24, kind: 'pullup' },
+        { x: cal.x - 22, y: cal.y - 24, kind: 'pullup' },
+        { x: cal.x + 22, y: cal.y - 26, kind: 'dip' },
+        { x: cal.x + 62, y: cal.y - 10, kind: 'rings' },
+        { x: cal.x - 46, y: cal.y + 28, kind: 'bars' },
+        { x: cal.x + 6, y: cal.y + 30, kind: 'mat' },
+        { x: cal.x + 56, y: cal.y + 30, kind: 'mat' },
+      ];
+    }
+    function updateGymGoer(person, deltaSeconds) {
+      if ((person.vendor || person.queueing) && person.flee <= 0 && person.hp > 0) {
+        person.walking = false;
+        person.sitting = false;
+        if (person.vendor) pedSay(person, 'vendor', deltaSeconds * 0.09);
+        else pedSay(person, 'idle', deltaSeconds * 0.06);
+        return true;
+      }
+      const station = person.gymStation;
+      if (!station || person.flee > 0 || person.hp <= 0) return false;
+      person.walking = false;
+      person.sitting = false;
+      const d = distanceBetween(person, station);
+      if (d > 5) {
+        person.a = headingBetween(person, station);
+        person.walking = true;
+        person.walk += deltaSeconds * 7;
+        moveBody(person, Math.cos(person.a) * 34 * deltaSeconds, Math.sin(person.a) * 34 * deltaSeconds, 5);
+        return true;
+      }
+      person.a = station.kind === 'mat' ? person.a : -Math.PI / 2;
+      person.gymTimer = (person.gymTimer || 0) - deltaSeconds;
+      if (person.gymTimer <= 0) {
+        person.gymWorking = !person.gymWorking;
+        person.gymTimer = person.gymWorking ? 7 + seededRandom() * 6 : 6 + seededRandom() * 7;
+        if (!person.gymWorking) pedSay(person, 'gym', 0.8);
+      }
+      // `exercise` drives the rep animation in the renderer; 0 is a standing rest.
+      person.exercise = person.gymWorking
+        ? 0.5 + 0.5 * Math.sin(gameTime * (station.kind === 'mat' ? 3.1 : 2.3) + (person.gymPhase || 0))
+        : null;
+      person.exerciseKind = station.kind;
+      if (!person.gymWorking && seededRandom() < deltaSeconds * 0.12) pedSay(person, 'gym', 1);
+      return true;
+    }
     function updateParkWalker(person, deltaSeconds) {
       if (!person.parkRoute || person.flee > 0) return false;
       const route = person.parkRoute,
@@ -20840,6 +22676,65 @@ body:not(.touch-mode).police-search-active #carRadio {
       )
         person.parkIndex = (person.parkIndex + 1) % route.length;
       return true;
+    }
+    /* The gym regulars and the food-truck staff who make the Garden feel used. */
+    function populateGardenLife() {
+      const stations = gymStations();
+      for (let i = 0; i < stations.length; i++) {
+        const s = stations[i],
+          x = s.x + ((i % 3) - 1) * 6,
+          y = s.y + 22;
+        if (solid(x, y, 6)) continue;
+        pedestrians.push({
+          x,
+          y,
+          a: -Math.PI / 2,
+          hp: 30,
+          color: randomChoice(['#c9705f', '#4f7f8d', '#d3c07a', '#6f8f63', '#b07fa3']),
+          flee: 0,
+          timer: 6,
+          walk: 0,
+          gymStation: s,
+          gymWorking: i % 2 === 0,
+          gymTimer: 2 + i * 1.3,
+          gymPhase: i * 0.9,
+        });
+      }
+      for (const truck of COMMONS.foodTrucks) {
+        const x = truck.x + Math.cos(truck.a + Math.PI / 2) * 26,
+          y = truck.y + Math.sin(truck.a + Math.PI / 2) * 26;
+        if (!solid(x, y, 6))
+          pedestrians.push({
+            x,
+            y,
+            a: truck.a - Math.PI / 2,
+            hp: 30,
+            color: '#e0d6bd',
+            flee: 0,
+            timer: 8,
+            walk: 0,
+            vendor: truck,
+            state: 'idle',
+          });
+        // A short queue: people actually buy lunch here.
+        for (let q = 0; q < 2; q++) {
+          const qx = x + Math.cos(truck.a) * (20 + q * 15),
+            qy = y + Math.sin(truck.a) * (20 + q * 15);
+          if (solid(qx, qy, 6)) continue;
+          pedestrians.push({
+            x: qx,
+            y: qy,
+            a: truck.a + Math.PI,
+            hp: 30,
+            color: randomChoice(['#dbbd9d', '#87ad9e', '#ca94a8', '#a0b8d1']),
+            flee: 0,
+            timer: 9,
+            walk: 0,
+            queueing: truck,
+            state: 'idle',
+          });
+        }
+      }
     }
     function parkPondBlocked(x, y, r = 0) {
       const inside = (cx, cy, rx, ry, a) => {
@@ -22442,12 +24337,12 @@ body:not(.touch-mode).police-search-active #carRadio {
         },
       },
       {
-        name: 'CENTRAL COMMONS',
+        name: 'CENTRAL GARDEN',
         x: 2176,
-        y: 1460,
+        y: 2000,
         entry: {
-          x: 2104,
-          y: 1460,
+          x: 2248,
+          y: 2000,
         },
       },
       {
@@ -23375,9 +25270,9 @@ body:not(.touch-mode).police-search-active #carRadio {
             ) {
               a.attack = 1.3;
               if (player.car) {
-                if (player.car.type === 'bicycle') hurt(18);
+                if (player.car.type === 'bicycle') hurt(18, 'melee');
                 else damageVehicle(player.car, 7, a.x, a.y);
-              } else hurt(17);
+              } else hurt(17, 'melee');
             }
           }
         } else if (
@@ -23976,8 +25871,16 @@ body:not(.touch-mode).police-search-active #carRadio {
     function updateExplorationUI() {
       const t = player.car?.offroadState,
         p = player.parachute;
+      const trekking =
+        !player.car && !p && !transitRide && !player.roof && !player.coaster && terrainHeight(player.x, player.y) > 8;
       getElement('terrainStatus').style.display =
-        gameMode === 'play' && (transitRide || t?.z > 8 || p) ? 'block' : 'none';
+        gameMode === 'play' && (transitRide || t?.z > 8 || p || trekking || player.coaster)
+          ? 'block'
+          : 'none';
+      if (player.coaster) {
+        getElement('terrainStatus').textContent = coasterStatusText();
+        return;
+      }
       if (transitRide) {
         getElement('terrainStatus').textContent =
           'CITY RAIL → ' + transitRide.target.name + ' · E: NEXT STOP';
@@ -23991,7 +25894,26 @@ body:not(.touch-mode).police-search-active #carRadio {
           ' · ' +
           Math.round(worldMeters(player.altitude - terrainHeight(player.x, player.y))) +
           ' m ABOVE GROUND';
-      else if (t?.z > 8)
+      else if (trekking) {
+        const grade = player.mountainGrade || 0,
+          degrees = Math.round((Math.atan(grade) * 180) / Math.PI);
+        getElement('terrainStatus').textContent = player.tumble
+          ? 'FALLING · ' + degrees + '° SLOPE'
+          : (player.onMountainTrail
+              ? 'ON THE TRAIL'
+              : grade > 0.66
+                ? 'TOO STEEP TO CLIMB'
+                : grade > 0.52
+                  ? 'LOOSE SCREE · DO NOT DESCEND HERE'
+                  : grade > 0.34
+                    ? 'SLIPPING · FIND THE TRAIL'
+                    : 'OPEN GROUND') +
+            ' · ' +
+            degrees +
+            '° · ' +
+            Math.round(worldMeters(terrainHeight(player.x, player.y))) +
+            ' m';
+      } else if (t?.z > 8)
         getElement('terrainStatus').textContent =
           (t.four ? '4×4 TRACTION' : 'ROAD TIRES · LOW GRIP') +
           ' · ' +
@@ -24072,6 +25994,17 @@ body:not(.touch-mode).police-search-active #carRadio {
       tell('CANOPY OPEN · Steer toward clear ground · Hold S to slow your landing', 4);
       return true;
     }
+    function roofLandingSpot(x, y) {
+      for (let r = 12; r <= 200; r += 12)
+        for (let i = 0; i < 24; i++) {
+          const q = {
+            x: x + Math.cos((i * TAU) / 24) * r,
+            y: y + Math.sin((i * TAU) / 24) * r,
+          };
+          if (roofPointFree(q.x, q.y, 9)) return q;
+        }
+      return null;
+    }
     function parachuteLandingClear(x, y) {
       if (!groundAt(x, y, 10) || solid(x, y, 10)) return false;
       const floor = terrainHeight(x, y);
@@ -24147,9 +26080,42 @@ body:not(.touch-mode).police-search-active #carRadio {
       player.x += p.vx * deltaSeconds;
       player.y += p.vy * deltaSeconds;
       player.altitude += p.vz * deltaSeconds;
+      // The Blue Hour terrace is a real landing zone: come in over the roof line
+      // with the canopy open and you put down among the tables instead of being
+      // pushed off the parapet like any other building.
+      const overTerrace =
+        p.stage === 'canopy' &&
+        player.x > ROOFTOP.x + 22 &&
+        player.x < ROOFTOP.x + ROOFTOP.w - 22 &&
+        player.y > ROOFTOP.y + 22 &&
+        player.y < ROOFTOP.y + ROOFTOP.h - 22;
+      if (overTerrace && player.altitude <= ROOFTOP.height + 4) {
+        const spot = roofPointFree(player.x, player.y, 9)
+          ? {
+              x: player.x,
+              y: player.y,
+            }
+          : roofLandingSpot(player.x, player.y);
+        if (spot) {
+          Object.assign(player, spot);
+          player.parachute = null;
+          player.roof = true;
+          player.altitude = ROOFTOP.height + 3;
+          player.inv = 1;
+          clearTouchInput();
+          keys = {};
+          announce('THE BLUE HOUR', 'TERRACE LANDING', 2.6);
+          tell('Canopy down on the terrace. E at the bar, Mara, or the elevator.', 5);
+          // Arriving by canopy in street clothes is not a quiet entrance.
+          const hit = rooftopJob();
+          if (hit && !hit.disguise) roofAlarm(hit);
+          return;
+        }
+      }
       // Glide past building faces instead of landing inside an inaccessible roof volume.
       for (const b of buildings)
         if (
+          !(overTerrace && b.roofBar) &&
           player.altitude < b.height + 18 &&
           player.x > b.x - 9 &&
           player.x < b.x + b.w + 9 &&
@@ -24597,27 +26563,36 @@ body:not(.touch-mode).police-search-active #carRadio {
      * Scope: shared game closure.
      * Three embedded tracks, station selection, playback and saved audio settings.
      */
-    /* Three in-vehicle music stations; a single streaming decoder keeps memory bounded. */
+    /* Three in-vehicle music stations; a single streaming decoder keeps memory bounded.
+       Oddball is preset one: it is the station the dashboard comes up on.
+       `lead` is how far into the file playback starts and loops back to. MP3 decoders
+       need a frame of priming and these files carry no gapless metadata, so the first
+       few hundredths of a second decode as noise. Starting past it, and ramping the
+       gain from silence, removes the click on both the first play and every loop. */
     const MUSIC_STATIONS = [
+      {
+        id: 'oddball',
+        name: 'ODDBALL 99.3',
+        genre: 'After-hours mix',
+        preset: 'ODDBALL',
+        lead: 0.34,
+      },
       {
         id: 'synth',
         name: 'NEON 88.7',
         genre: '80s synth',
         preset: 'NEON',
+        lead: 0.06,
       },
       {
         id: 'rock',
         name: 'RIOT 104.5',
         genre: 'Rock',
         preset: 'RIOT',
-      },
-      {
-        id: 'oddball',
-        name: 'ODDBALL 99.3',
-        genre: 'After-hours mix',
-        preset: 'ODDBALL',
+        lead: 0.06,
       },
     ];
+    const RADIO_FADE_IN = 3.6;
     let carRadioEnabled = true,
       carRadioStation = 0,
       carRadioPlayer = null,
@@ -24625,9 +26600,11 @@ body:not(.touch-mode).police-search-active #carRadio {
       carRadioPending = false,
       carRadioBlocked = false,
       carRadioUnavailable = false,
-      carRadioRevision = 0;
+      carRadioRevision = 0,
+      carRadioLead = MUSIC_STATIONS[0].lead,
+      carRadioGain = 0;
     try {
-      const pref = JSON.parse(localStorage.getItem('dead-end-city-radio-v1'));
+      const pref = JSON.parse(localStorage.getItem('dead-end-city-radio-v2'));
       if (pref && typeof pref === 'object') {
         carRadioEnabled = pref.enabled !== false;
         if (Number.isInteger(pref.station))
@@ -24637,7 +26614,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     function saveCarRadio() {
       try {
         localStorage.setItem(
-          'dead-end-city-radio-v1',
+          'dead-end-city-radio-v2',
           JSON.stringify({
             enabled: carRadioEnabled,
             station: carRadioStation,
@@ -24648,13 +26625,36 @@ body:not(.touch-mode).police-search-active #carRadio {
     function radioTrack() {
       return typeof ASSETS !== 'undefined' ? ASSETS.music?.[MUSIC_STATIONS[carRadioStation].id] : null;
     }
+    function seekCarRadioLead() {
+      if (!carRadioPlayer || !(carRadioLead > 0)) return;
+      const apply = () => {
+        try {
+          if (carRadioPlayer.currentTime < carRadioLead) carRadioPlayer.currentTime = carRadioLead;
+        } catch {}
+      };
+      if (carRadioPlayer.readyState >= 1) apply();
+      else
+        carRadioPlayer.addEventListener('loadedmetadata', apply, {
+          once: true,
+        });
+    }
     function carRadioReady() {
       if (carRadioPlayer) return true;
       if (typeof Audio === 'undefined') return false;
       carRadioPlayer = getElement('carRadioAudio');
-      carRadioPlayer.preload = 'metadata';
-      carRadioPlayer.loop = true;
-      carRadioPlayer.volume = 0.27;
+      carRadioPlayer.preload = 'auto';
+      // Looping is handled here rather than by the element so the seam skips the
+      // priming frames as well, and so every restart fades up from silence.
+      carRadioPlayer.loop = false;
+      carRadioPlayer.volume = 0;
+      carRadioPlayer.addEventListener('ended', () => {
+        carRadioGain = 0;
+        seekCarRadioLead();
+        try {
+          carRadioPlayer.currentTime = carRadioLead;
+        } catch {}
+        carRadioPlayer.play().catch(() => {});
+      });
       carRadioPlayer.addEventListener('error', () => {
         carRadioPending = false;
         carRadioBlocked = true;
@@ -24663,7 +26663,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       });
       return true;
     }
-    function syncCarRadio(gesture = false) {
+    function syncCarRadio(gesture = false, deltaSeconds = 0) {
       const party = gameMode === 'play' && player.roof && !document.hidden,
         riding = gameMode === 'play' && player.car?.hp > 0 && !document.hidden,
         wants = (party || (riding && carRadioEnabled)) && soundOn,
@@ -24674,6 +26674,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           carRadioPlayer.pause();
           carRadioRevision++;
           carRadioPending = false;
+          carRadioGain = 0;
         }
         return;
       }
@@ -24682,17 +26683,24 @@ body:not(.touch-mode).police-search-active #carRadio {
         carRadioRevision++;
         carRadioPending = false;
         carRadioPlayer.pause();
+        carRadioLead = party ? 0.06 : MUSIC_STATIONS[carRadioStation].lead || 0;
+        carRadioGain = 0;
+        carRadioPlayer.volume = 0;
         carRadioPlayer.src = track.src;
         carRadioLoaded = station;
         carRadioBlocked = false;
         carRadioUnavailable = false;
+        seekCarRadioLead();
       }
-      carRadioPlayer.volume = party
+      const target = party
         ? (rooftopJob()?.boss.speech?.length ? 0.055 : 0.18) *
           clamp(1 - distanceBetween(player, roofAt(195, 310)) / 600, 0.35, 1)
         : gameTime < radioUntil || gameTime < (mission?.lineUntil || 0)
           ? 0.11
           : 0.27;
+      if (!carRadioPlayer.paused)
+        carRadioGain = clamp(carRadioGain + (deltaSeconds || 0.016) * RADIO_FADE_IN, 0, 1);
+      carRadioPlayer.volume = clamp(target * carRadioGain, 0, 1);
       if (gesture) carRadioBlocked = false;
       if (carRadioPlayer.paused && !carRadioPending && !carRadioBlocked) {
         const revision = carRadioRevision;
@@ -25065,7 +27073,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       renderer.setSize(viewportWidth, viewportHeight);
       renderer.outputColorSpace = Three.SRGBColorSpace;
       renderer.toneMapping = Three.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.18;
+      renderer.toneMappingExposure = 1.14;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = Three.PCFSoftShadowMap;
       renderer.shadowMap.autoUpdate = false;
@@ -25075,18 +27083,19 @@ body:not(.touch-mode).police-search-active #carRadio {
         hitPoint = new Three.Vector3();
       const hemi = new Three.HemisphereLight('#b3c5e9', '#564943', 2.0);
       scene.add(hemi);
-      const sun = new Three.DirectionalLight('#ffd7a0', 3.0);
+      const sun = new Three.DirectionalLight('#ffd7a0', 3.0),
+        shadowDetail = touchEnabled() ? 2048 : 3072;
       sun.castShadow = true;
-      sun.shadow.mapSize.set(2048, 2048);
-      sun.shadow.camera.left = -760;
-      sun.shadow.camera.right = 760;
-      sun.shadow.camera.top = 760;
-      sun.shadow.camera.bottom = -760;
+      sun.shadow.mapSize.set(shadowDetail, shadowDetail);
+      sun.shadow.camera.left = -900;
+      sun.shadow.camera.right = 900;
+      sun.shadow.camera.top = 900;
+      sun.shadow.camera.bottom = -900;
       sun.shadow.camera.near = 10;
-      sun.shadow.camera.far = 2200;
-      sun.shadow.bias = -0.0004;
-      sun.shadow.normalBias = 1.4;
-      sun.shadow.radius = 3;
+      sun.shadow.camera.far = 3200;
+      sun.shadow.bias = -0.00035;
+      sun.shadow.normalBias = 1.1;
+      sun.shadow.radius = 2.2;
       scene.add(sun, sun.target);
       const fill = new Three.DirectionalLight('#879ccc', 0.55);
       fill.position.set(-200, 100, -300);
@@ -26322,18 +28331,22 @@ body:not(.touch-mode).police-search-active #carRadio {
         // Access bulkhead on almost every roof.
         if (cityRandom() < 0.85) bulkhead(group, 20 + cityRandom() * 12, top, 16 + cityRandom() * 10);
         if (kind === 'tower') {
-          bulkhead(group, b.w / 2, top, b.h / 2, b.w * 0.42, b.h * 0.38, 16 + (i % 3) * 6, mat('#8c949a', 0.6, 0.3));
-          const penthouseTop = top + 16 + (i % 3) * 6;
-          acCluster(gx + b.w * 0.36, penthouseTop, gz + b.h * 0.4, Math.max(1, Math.floor(b.w / 95)));
+          // Plant sits on the finished crown, not buried inside the setbacks.
+          const crownTop = top + (b.crownHeight || 0);
+          bulkhead(group, b.w / 2, crownTop, b.h / 2, b.w * 0.3, b.h * 0.28, 14 + (i % 3) * 5, mat('#8c949a', 0.6, 0.3));
+          const penthouseTop = crownTop + 14 + (i % 3) * 5;
+          acCluster(gx + b.w * 0.2, penthouseTop, gz + b.h * 0.25, Math.max(1, Math.floor(b.w / 95)));
           box(group, b.w / 2, penthouseTop + 12, b.h / 2, 1.2, 24, 1.2, darkMetal);
           const beacon = mesh(sphereGeo, beaconMaterial, group, b.w / 2, penthouseTop + 25, b.h / 2, 1.6, 1.6, 1.6);
           beacons.push(beacon);
           neonSigns.push({ sprite: halo(group, b.w / 2, penthouseTop + 25, b.h / 2, 16, '#ff6a5c'), base: 1, beacon: true });
-          if (b.height >= 150 && b.w > 200) helipad(group, b.w - 40, top, b.h - 40);
+          // The pad goes on the terrace the setback leaves, never inside it.
+          const terrace = Math.max(0, Math.min(b.w, b.h) * 0.11 - 6);
+          if (b.height >= 150 && terrace > 20) helipad(group, b.w - terrace, top, b.h - terrace);
           else if (cityRandom() < 0.5) {
-            for (let k = 0; k < 3; k++) place(pools.solar, gx + b.w - 30 - k * 14, top + 2.5, gz + b.h - 30, 12, 0.6, 22, 0.3);
+            for (let k = 0; k < 3; k++) place(pools.solar, gx + b.w - 12 - k * 11, top + 2.5, gz + b.h - 12, 9, 0.6, 16, 0.3);
           }
-          for (const dx of [8, b.w - 8]) for (const dz of [8, b.h - 8]) place(pools.vent, gx + dx, top + 3, gz + dz, 1.6, 6, 1.6);
+          for (const dx of [7, b.w - 7]) for (const dz of [7, b.h - 7]) place(pools.vent, gx + dx, top + 3, gz + dz, 1.6, 6, 1.6);
           return;
         }
         if (kind === 'office') {
@@ -26484,11 +28497,48 @@ body:not(.touch-mode).police-search-active #carRadio {
         box(group, b.w - 2, height + 1.6, b.h / 2, 4, 3.2, b.h, trim);
         if (kind !== 'tower') box(group, b.w / 2, 2.5, b.h + 0.8, b.w + 3, 5, 2, kind === 'stucco' || kind === 'deco' ? mat('#cbbfae') : trim);
         if (kind === 'tower' && height > 120) {
-          // Tapered crown: a narrower upper section reads as a setback tower.
-          const crownH = Math.min(38, height * 0.25);
-          box(group, b.w / 2, height + crownH / 2, b.h / 2, b.w * 0.7, crownH, b.h * 0.7, [face, face, top, top, face, face]);
-          box(group, b.w / 2, height + crownH + 1.2, b.h / 2, b.w * 0.7 + 2, 2.4, b.h * 0.7 + 2, trim);
-          b.crownHeight = crownH;
+          /* Setback crown. A single step reads as an office block; the towers of
+             the financial core step two or three times and carry a mast, which is
+             what makes a skyline out of a row of buildings. */
+          const steps = height > 420 ? 3 : height > 260 ? 2 : 1;
+          let level = height,
+            sw = b.w,
+            sh = b.h,
+            crown = 0;
+          for (let s = 0; s < steps; s++) {
+            const stepH = Math.min(52, height * (0.2 - s * 0.042));
+            sw *= 0.78;
+            sh *= 0.78;
+            box(group, b.w / 2, level + stepH / 2, b.h / 2, sw, stepH, sh, [face, face, top, top, face, face]);
+            box(group, b.w / 2, level + stepH + 1.2, b.h / 2, sw + 2, 2.4, sh + 2, trim);
+            level += stepH + 1.2;
+            crown += stepH + 1.2;
+          }
+          if (height > 420) {
+            const spire = Math.min(110, height * 0.17);
+            mesh(cylinderGeo, trim, group, b.w / 2, level + spire / 2, b.h / 2, 2.8, spire, 2.8);
+            mesh(cylinderGeo, chrome, group, b.w / 2, level + spire + 8, b.h / 2, 0.9, 20, 0.9);
+            crown += spire + 18;
+          }
+          // Vertical mullion fins: the curtain wall needs relief to catch the sun.
+          if (height > 260) {
+            const finMat = mat('#b6bec4', 0.45, 0.35);
+            for (let x = 22; x < b.w - 14; x += 38) {
+              box(group, x, height / 2, b.h + 0.7, 1.4, height - 10, 1.4, finMat);
+              box(group, x, height / 2, -0.7, 1.4, height - 10, 1.4, finMat);
+            }
+            for (let z = 22; z < b.h - 14; z += 38) {
+              box(group, -0.7, height / 2, z, 1.4, height - 10, 1.4, finMat);
+              box(group, b.w + 0.7, height / 2, z, 1.4, height - 10, 1.4, finMat);
+            }
+          }
+          // Glazed podium: towers meet the street on a wider base, never on a knife edge.
+          if (height > 260) {
+            const podium = Math.min(46, height * 0.1);
+            box(group, b.w / 2, podium / 2, b.h / 2, b.w + 22, podium, b.h + 22, [face, face, top, top, face, face]);
+            box(group, b.w / 2, podium + 1.4, b.h / 2, b.w + 26, 2.8, b.h + 26, trim);
+          }
+          b.crownHeight = crown;
         }
         if (kind === 'brick' && cityRandom() < 0.5)
           for (let y = 16; y < height - 6; y += 16) box(group, b.w / 2, y, b.h + 0.3, b.w + 1, 1.1, 1.4, trim);
@@ -26687,6 +28737,366 @@ body:not(.touch-mode).police-search-active #carRadio {
         });
       }
       // END SUBSYSTEM: src/sidejobs3d.js
+      // BEGIN SUBSYSTEM: src/roadblocks3d.js — Police roadblock meshes
+      /**
+       * Police roadblock meshes
+       * Source: src/roadblocks3d.js
+       * Scope: createCityRenderer() closure.
+       * Concrete barriers, a spike strip, cones and burning flares for each live cut.
+       */
+      const ROADBLOCK_POOL = 4;
+      const barrierMat = mat('#c9c4b4', 0.85),
+        barrierStripe = mat('#d8853f', 0.8),
+        spikeMat = mat('#2b2f33', 0.45, 0.7),
+        coneMat = mat('#d46438', 0.8),
+        flareMat = new Three.MeshBasicMaterial({
+          color: '#ff9a4a',
+        });
+      const roadblockPool = Array.from({ length: ROADBLOCK_POOL }, () => {
+        const g = new Three.Group();
+        g.visible = false;
+        g.userData.dynamic = true;
+        scene.add(g);
+        const barriers = [];
+        for (const side of [-1, 1]) {
+          const unit = new Three.Group();
+          unit.position.set(0, 0, side * 74);
+          g.add(unit);
+          box(unit, 0, 9, 0, 22, 18, 9, barrierMat);
+          box(unit, 0, 15, 0, 23, 3, 10, barrierStripe);
+          box(unit, 0, 2, 0, 26, 4, 13, barrierMat);
+          barriers.push(unit);
+        }
+        // Spike strip: a dark mat with a saw edge, laid across the gap.
+        const strip = new Three.Group();
+        g.add(strip);
+        box(strip, 0, 0.9, 0, 9, 1.8, 104, spikeMat);
+        for (let i = -6; i <= 6; i++)
+          mesh(cylinderGeo, spikeMat, strip, 0, 3.4, i * 8, 0.8, 4, 0.8);
+        const cones = [];
+        for (let i = -2; i <= 2; i++) {
+          if (!i) continue;
+          const c = new Three.Group();
+          c.position.set(i * 9, 0, i * 22);
+          g.add(c);
+          mesh(cylinderGeo, coneMat, c, 0, 5, 0, 3.4, 10, 3.4);
+          box(c, 0, 0.6, 0, 9, 1.2, 9, coneMat);
+          cones.push(c);
+        }
+        const flares = [-1, 1].map((side) => {
+          const f = mesh(sphereGeo, flareMat, g, 0, 2.5, side * 44, 2.4, 2.4, 2.4);
+          f.castShadow = false;
+          halo(f, 0, 0, 0, 34, '#ff9a4a');
+          return f;
+        });
+        return { g, strip, cones, flares, barriers };
+      });
+      function updateRoadblockVisuals() {
+        roadblockPool.forEach((slot, i) => {
+          const block = roadblocks[i];
+          slot.g.visible =
+            !!block && Math.abs(block.x - cameraTarget.x) < 1500 && Math.abs(block.y - cameraTarget.y) < 1500;
+          if (!slot.g.visible) return;
+          slot.g.position.set(block.x, terrainHeight(block.x, block.y), block.y);
+          slot.g.rotation.y = -block.a;
+          slot.strip.visible = !!block.spike && !block.spike.spent;
+          const flicker = 0.7 + Math.sin(gameTime * 17 + i) * 0.3;
+          for (const f of slot.flares) f.scale.setScalar(1 + flicker * 0.35);
+        });
+      }
+      // END SUBSYSTEM: src/roadblocks3d.js
+      // BEGIN SUBSYSTEM: src/themepark3d.js — Sunset Pier ride meshes
+      /**
+       * Sunset Pier ride meshes
+       * Source: src/themepark3d.js
+       * Scope: createCityRenderer() closure.
+       * Coaster track and train, big wheel, carousel, teacups, drop tower, midway
+       * stalls and the entrance arch. Ride motion is driven from the shared park
+       * state in themepark.js so what is drawn is what the simulation believes.
+       */
+      // Fixed build is batched; anything that turns, rises or rolls is not.
+      const parkStatic = new Three.Group();
+      scene.add(parkStatic);
+      batchGroups.push(parkStatic);
+      statics.push({
+        x: 3820,
+        y: 5180,
+        group: parkStatic,
+        radius: 640,
+      });
+      const parkGroup = new Three.Group();
+      scene.add(parkGroup);
+      statics.push({
+        x: 3820,
+        y: 5180,
+        group: parkGroup,
+        radius: 640,
+      });
+      const rideSteel = mat('#c4553f', 0.55, 0.35),
+        rideWhite = mat('#eee6d4', 0.7),
+        rideTeal = mat('#3f8f92', 0.6, 0.2),
+        rideGold = mat('#d9ad55', 0.45, 0.6),
+        rideRail = mat('#dcdad0', 0.35, 0.7),
+        boardWalk = mat('#a98a63', 0.85);
+      // A handful of shared bulb materials keeps the festoon lighting to a few
+      // draw calls instead of one material per lamp.
+      const bulbMaterials = new Map(),
+        parkHalos = [];
+      function bulbMaterial(color) {
+        if (!bulbMaterials.has(color))
+          bulbMaterials.set(color, new Three.MeshBasicMaterial({ color }));
+        return bulbMaterials.get(color);
+      }
+      function parkBulb(x, y, z, color = '#ffd79a') {
+        const bulb = mesh(sphereGeo, bulbMaterial(color), parkStatic, x, y, z, 1.3, 1.3, 1.3);
+        bulb.castShadow = false;
+        parkHalos.push(halo(parkStatic, x, y, z, 16, color));
+      }
+      // ---- Coaster -----------------------------------------------------------------
+      {
+        const n = COASTER_TRACK.length;
+        for (let i = 0; i < n; i++) {
+          const a = COASTER_TRACK[i],
+            b = COASTER_TRACK[(i + 1) % n],
+            steps = Math.max(2, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) / 14));
+          for (let s = 0; s < steps; s++) {
+            const t0 = s / steps,
+              t1 = (s + 1) / steps,
+              p0 = new Three.Vector3(
+                a[0] + (b[0] - a[0]) * t0,
+                a[2] + (b[2] - a[2]) * t0 + 6,
+                a[1] + (b[1] - a[1]) * t0,
+              ),
+              p1 = new Three.Vector3(
+                a[0] + (b[0] - a[0]) * t1,
+                a[2] + (b[2] - a[2]) * t1 + 6,
+                a[1] + (b[1] - a[1]) * t1,
+              );
+            const dx = p1.x - p0.x,
+              dz = p1.z - p0.z,
+              len = Math.hypot(dx, dz) || 1,
+              nx = -dz / len,
+              nz = dx / len;
+            for (const side of [-3.4, 3.4]) {
+              rod(
+                parkStatic,
+                new Three.Vector3(p0.x + nx * side, p0.y, p0.z + nz * side),
+                new Three.Vector3(p1.x + nx * side, p1.y, p1.z + nz * side),
+                0.75,
+                rideRail,
+              );
+            }
+            // Cross ties and a spine tube.
+            rod(
+              parkStatic,
+              new Three.Vector3(p0.x + nx * 3.4, p0.y, p0.z + nz * 3.4),
+              new Three.Vector3(p0.x - nx * 3.4, p0.y, p0.z - nz * 3.4),
+              0.5,
+              rideSteel,
+            );
+            rod(parkStatic, new Three.Vector3(p0.x, p0.y - 3, p0.z), new Three.Vector3(p1.x, p1.y - 3, p1.z), 1.1, rideSteel);
+            // A bent leg every few metres, braced to the deck.
+            if ((s + i * 7) % 4 === 0 && p0.y > 12) {
+              box(parkStatic, p0.x, p0.y / 2, p0.z, 2.4, p0.y, 2.4, rideSteel);
+              box(parkStatic, p0.x, p0.y / 2, p0.z, 8, 1.6, 1.6, rideSteel);
+            }
+          }
+        }
+        // Station: platform, roof, queue rail and a sign.
+        const st = PIER.station;
+        box(parkStatic, st.x, 4, st.y, 92, 8, 44, boardWalk);
+        for (const dx of [-42, 42]) for (const dz of [-20, 20]) box(parkStatic, st.x + dx, 16, st.y + dz, 3, 24, 3, rideSteel);
+        box(parkStatic, st.x, 29, st.y, 98, 3, 50, rideWhite);
+        for (let i = -3; i <= 3; i++) box(parkStatic, st.x + i * 14, 31.6, st.y, 12, 2.4, 50, i % 2 ? rideSteel : rideWhite);
+        for (let i = -3; i <= 3; i++) parkBulb(st.x + i * 14, 27, st.y - 25, i % 2 ? '#ffd79a' : '#ff8f6a');
+        sign('THE SCREAMER', st.x, st.y - 30, 90, '#ffd9a0');
+      }
+      // ---- Big wheel ---------------------------------------------------------------
+      const bigWheel = new Three.Group();
+      bigWheel.position.set(PIER.wheel.x, PIER.wheel.r + 16, PIER.wheel.y);
+      bigWheel.userData.dynamic = true;
+      parkGroup.add(bigWheel);
+      const wheelCabins = [];
+      {
+        const R = PIER.wheel.r;
+        for (const ring of [R, R * 0.92]) {
+          for (let i = 0; i < 36; i++) {
+            const a0 = (i * TAU) / 36,
+              a1 = ((i + 1) * TAU) / 36;
+            rod(
+              bigWheel,
+              new Three.Vector3(Math.cos(a0) * ring, Math.sin(a0) * ring, 0),
+              new Three.Vector3(Math.cos(a1) * ring, Math.sin(a1) * ring, 0),
+              1.1,
+              rideWhite,
+            );
+          }
+        }
+        for (let i = 0; i < 18; i++) {
+          const a = (i * TAU) / 18;
+          rod(bigWheel, new Three.Vector3(0, 0, 0), new Three.Vector3(Math.cos(a) * R, Math.sin(a) * R, 0), 0.6, rideRail);
+          const cabin = new Three.Group();
+          cabin.position.set(Math.cos(a) * R, Math.sin(a) * R, 0);
+          bigWheel.add(cabin);
+          box(cabin, 0, -5, 0, 11, 9, 13, i % 2 ? rideTeal : rideSteel);
+          box(cabin, 0, -0.4, 0, 12, 1.4, 14, rideGold);
+          wheelCabins.push(cabin);
+        }
+        mesh(cylinderGeo, rideGold, bigWheel, 0, 0, 0, 4, 20, 4).rotation.x = Math.PI / 2;
+      }
+      for (const side of [-1, 1]) {
+        const x = PIER.wheel.x + side * 30;
+        rod(
+          parkStatic,
+          new Three.Vector3(x, 0, PIER.wheel.y - 22),
+          new Three.Vector3(PIER.wheel.x, PIER.wheel.r + 16, PIER.wheel.y),
+          3,
+          rideSteel,
+        );
+        rod(
+          parkStatic,
+          new Three.Vector3(x, 0, PIER.wheel.y + 22),
+          new Three.Vector3(PIER.wheel.x, PIER.wheel.r + 16, PIER.wheel.y),
+          3,
+          rideSteel,
+        );
+      }
+      // ---- Carousel ----------------------------------------------------------------
+      const carousel = new Three.Group();
+      carousel.position.set(PIER.carousel.x, 0, PIER.carousel.y);
+      carousel.userData.dynamic = true;
+      parkGroup.add(carousel);
+      {
+        const R = PIER.carousel.r;
+        mesh(new Three.CylinderGeometry(R, R, 3, 26), boardWalk, carousel, 0, 2, 0);
+        mesh(cylinderGeo, rideGold, carousel, 0, 17, 0, 3, 30, 3);
+        const canopy = mesh(new Three.ConeGeometry(R + 5, 16, 26), rideSteel, carousel, 0, 38, 0);
+        canopy.castShadow = true;
+        mesh(new Three.CylinderGeometry(R + 5, R + 5, 3, 26), rideWhite, carousel, 0, 30, 0);
+        for (let i = 0; i < 12; i++) {
+          const a = (i * TAU) / 12,
+            x = Math.cos(a) * (R - 9),
+            z = Math.sin(a) * (R - 9);
+          mesh(cylinderGeo, rideGold, carousel, x, 17, z, 0.7, 28, 0.7);
+          const horse = new Three.Group();
+          horse.position.set(x, 12, z);
+          horse.rotation.y = -a;
+          carousel.add(horse);
+          box(horse, 0, 0, 0, 13, 6, 4.5, i % 2 ? rideWhite : rideTeal);
+          box(horse, 5, 4, 0, 4, 7, 3.6, i % 2 ? rideWhite : rideTeal);
+          box(horse, -5, -3, 0, 2.4, 7, 2.4, rideGold);
+          box(horse, 4, -3, 0, 2.4, 7, 2.4, rideGold);
+        }
+        for (let i = 0; i < 16; i++) parkBulb(PIER.carousel.x + Math.cos((i * TAU) / 16) * (R + 5), 30, PIER.carousel.y + Math.sin((i * TAU) / 16) * (R + 5), i % 2 ? '#ffd79a' : '#ff7fb0');
+      }
+      // ---- Teacups and drop tower --------------------------------------------------
+      const teacups = new Three.Group();
+      teacups.position.set(PIER.teacups.x, 0, PIER.teacups.y);
+      teacups.userData.dynamic = true;
+      parkGroup.add(teacups);
+      mesh(new Three.CylinderGeometry(PIER.teacups.r, PIER.teacups.r, 2.4, 22), rideWhite, teacups, 0, 1.6, 0);
+      for (let i = 0; i < 6; i++) {
+        const a = (i * TAU) / 6,
+          cup = mesh(
+            new Three.CylinderGeometry(8, 6, 9, 14),
+            i % 2 ? rideTeal : rideSteel,
+            teacups,
+            Math.cos(a) * (PIER.teacups.r - 12),
+            7,
+            Math.sin(a) * (PIER.teacups.r - 12),
+          );
+        cup.castShadow = true;
+      }
+      const dropCar = new Three.Group();
+      dropCar.userData.dynamic = true;
+      parkGroup.add(dropCar);
+      {
+        const d = PIER.dropTower;
+        for (const [dx, dz] of [[-9, -9], [9, -9], [-9, 9], [9, 9]])
+          box(parkStatic, d.x + dx, 62, d.y + dz, 3, 124, 3, rideSteel);
+        for (let y = 16; y < 124; y += 16)
+          for (const [ax, az, bx, bz] of [[-9, -9, 9, -9], [9, -9, 9, 9], [9, 9, -9, 9], [-9, 9, -9, -9]])
+            rod(parkStatic, new Three.Vector3(d.x + ax, y, d.y + az), new Three.Vector3(d.x + bx, y + 8, d.y + bz), 0.7, rideSteel);
+        mesh(new Three.ConeGeometry(13, 18, 12), rideGold, parkStatic, d.x, 133, d.y);
+        dropCar.position.set(d.x, 90, d.y);
+        mesh(new Three.CylinderGeometry(15, 15, 6, 14), rideWhite, dropCar, 0, 0, 0);
+        for (let i = 0; i < 8; i++) {
+          const a = (i * TAU) / 8;
+          box(dropCar, Math.cos(a) * 12, -4, Math.sin(a) * 12, 5, 8, 5, rideTeal);
+        }
+        sign('THE PLUNGE', d.x, d.y + 22, 60, '#ffd9a0');
+      }
+      // ---- Midway buildings, stalls and the entrance arch ---------------------------
+      for (const b of parkSolids()) {
+        if (b.w > 300) continue;
+        box(parkStatic, b.x + b.w / 2, b.height / 2, b.y + b.h / 2, b.w, b.height, b.h, rideWhite);
+        box(parkStatic, b.x + b.w / 2, b.height + 2, b.y + b.h / 2, b.w + 8, 4, b.h + 8, rideSteel);
+        for (let x = b.x + 14; x < b.x + b.w - 8; x += 28) {
+          const awning = box(parkStatic, x, b.height * 0.55, b.y + b.h + 7, 24, 0.8, 14, (x / 28) % 2 ? rideSteel : rideTeal);
+          awning.rotation.x = 0.36;
+          parkBulb(x, b.height * 0.66, b.y + b.h + 12, '#ffd79a');
+        }
+      }
+      {
+        const g = PIER.gate;
+        for (const side of [-56, 56]) box(parkStatic, g.x + side, 26, g.y, 10, 52, 10, rideSteel);
+        box(parkStatic, g.x, 56, g.y, 132, 12, 12, rideGold);
+        const arch = mesh(new Three.TorusGeometry(58, 5, 8, 22, Math.PI), rideGold, parkStatic, g.x, 56, g.y);
+        arch.rotation.y = Math.PI / 2;
+        sign('SUNSET PIER', g.x, g.y - 12, 140, '#ffd9a0');
+        for (let i = -4; i <= 4; i++) parkBulb(g.x + i * 13, 64, g.y, i % 2 ? '#ffd79a' : '#7fe9ff');
+      }
+      // Boardwalk edging and string lights down the midway.
+      for (let z = 4930; z < 5470; z += 46) {
+        for (const x of [3668, 3760]) box(parkStatic, x, 1.4, z, 6, 2.8, 42, boardWalk);
+        parkBulb(3668, 22, z, '#ffd79a');
+        parkBulb(3760, 22, z, '#ffd79a');
+        box(parkStatic, 3668, 12, z, 1.6, 24, 1.6, rideSteel);
+        box(parkStatic, 3760, 12, z, 1.6, 24, 1.6, rideSteel);
+      }
+      // ---- Coaster train -----------------------------------------------------------
+      const coasterCars = Array.from({ length: 5 }, (_, i) => {
+        const car = new Three.Group();
+        car.userData.dynamic = true;
+        parkGroup.add(car);
+        box(car, 0, 4, 0, 13, 7, 8, i === 0 ? rideGold : rideSteel);
+        box(car, 0, 8.4, 0, 12, 1.6, 8.6, rideWhite);
+        box(car, -5, 7, 0, 1.4, 6, 7.6, rideSteel);
+        if (i === 0) mesh(new Three.ConeGeometry(4, 8, 10), rideGold, car, 8, 4, 0).rotation.z = -Math.PI / 2;
+        for (const dz of [-4.4, 4.4]) {
+          const wheel = mesh(wheelGeo, darkMetal, car, 0, 0.8, dz, 2, 1.4, 2);
+          wheel.rotation.x = Math.PI / 2;
+        }
+        return car;
+      });
+      const trainAhead = new Three.Vector3();
+      function updateParkVisuals() {
+        const night = nightAmount;
+        for (const sprite of parkHalos) sprite.material.opacity = 0.1 + night * 0.7;
+        bigWheel.rotation.z = gameTime * 0.16;
+        for (const cabin of wheelCabins) cabin.rotation.z = -bigWheel.rotation.z;
+        carousel.rotation.y = gameTime * 0.55;
+        teacups.rotation.y = -gameTime * 0.75;
+        const dropPhase = (gameTime * 0.14) % 1;
+        dropCar.position.y =
+          dropPhase < 0.62 ? 14 + (dropPhase / 0.62) * 104 : 118 - Math.pow((dropPhase - 0.62) / 0.38, 2) * 104;
+        // Train: five cars spaced back along the track from the lead.
+        for (let i = 0; i < coasterCars.length; i++) {
+          const at = coasterTrain.running ? coasterTrain.t - i * 0.16 : -i * 0.16,
+            p = coasterPoint(at),
+            q = coasterPoint(at + 0.06);
+          coasterCars[i].position.set(p.x, p.altitude + 8, p.y);
+          trainAhead.set(q.x - p.x, q.altitude - p.altitude, q.y - p.y);
+          coasterCars[i].rotation.y = -Math.atan2(trainAhead.z, trainAhead.x);
+          coasterCars[i].rotation.z = Math.atan2(
+            trainAhead.y,
+            Math.hypot(trainAhead.x, trainAhead.z) || 1,
+          );
+          coasterCars[i].visible =
+            Math.abs(p.x - cameraTarget.x) < 1600 && Math.abs(p.y - cameraTarget.y) < 1600;
+        }
+      }
+      // END SUBSYSTEM: src/themepark3d.js
       // BEGIN SUBSYSTEM: src/garage3d.js — Garage meshes
       /**
        * Garage meshes
@@ -27173,31 +29583,32 @@ body:not(.touch-mode).police-search-active #carRadio {
        * The dusk weight peaks when daylight is near 0.3 so sunsets read as sunsets.
        */
       const SKY_NIGHT = new Three.Color('#0d1524'),
-        SKY_DAY = new Three.Color('#93a8ba'),
-        SKY_DUSK = new Three.Color('#b0705a'),
+        SKY_DAY = new Three.Color('#9fc0d8'),
+        SKY_DUSK = new Three.Color('#c07a55'),
         SUN_NIGHT = new Three.Color('#7d93c4'),
         SUN_DUSK = new Three.Color('#ffa564'),
-        SUN_DAY = new Three.Color('#fff1d6'),
+        SUN_DAY = new Three.Color('#fff4de'),
         HEMI_SKY_NIGHT = new Three.Color('#2f3d5e'),
-        HEMI_SKY_DAY = new Three.Color('#b8cbe8'),
+        HEMI_SKY_DAY = new Three.Color('#cfe0f2'),
         HEMI_GROUND_NIGHT = new Three.Color('#1c1a22'),
-        HEMI_GROUND_DAY = new Three.Color('#5b4f47'),
+        // Daylight bounces off pavement and planting, not off bare earth.
+        HEMI_GROUND_DAY = new Three.Color('#6d6a52'),
         skyScratch = new Three.Color();
       let lastBadge = '';
       function updateCivicVisuals() {
         const light = daylight(),
           night = 1 - light,
           dusk = clamp(1 - Math.abs(light - 0.3) / 0.3, 0, 1);
-        hemi.intensity = 0.45 + light * 1.55;
+        hemi.intensity = 0.45 + light * 1.75;
         hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, light);
         hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, light);
-        sun.intensity = 0.35 + light * 3;
+        sun.intensity = 0.35 + light * 3.6;
         sun.color.copy(SUN_NIGHT).lerp(SUN_DAY, light).lerp(SUN_DUSK, dusk * 0.85);
         fill.intensity = 0.28 + night * 0.25;
         skyScratch.copy(SKY_NIGHT).lerp(SKY_DAY, light).lerp(SKY_DUSK, dusk * 0.6);
         scene.background.copy(skyScratch);
         scene.fog.color.copy(skyScratch);
-        renderer.toneMappingExposure = 1.04 + night * 0.16 + dusk * 0.05;
+        renderer.toneMappingExposure = 1.1 + night * 0.16 + dusk * 0.07;
         const badge = 'SOUTH COAST · ' + (light < 0.1 ? 'NIGHT' : light < 0.4 ? (dusk > 0.5 && (worldMinutes % 1440) / 60 < 12 ? 'DAWN' : 'DUSK') : 'DAY');
         if (badge !== lastBadge) getElement('renderBadge').textContent = lastBadge = badge;
         for (let i = 0; i < bloodMeshes.length; i++) {
@@ -27560,10 +29971,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         box(group, st.x + 4.5, 19, st.y, 2, 10, 2, bronze);
         box(group, st.x - 4.5, 21, st.y, 2, 9, 2, bronze);
         // Kiosks: ice-cream cart by the plaza, a coffee stand by the lawn.
-        for (const [x, z, color] of [
-          [2200, 1565, '#e8b1c2'],
-          [1990, 1370, '#4f8ab1'],
-        ]) {
+        for (const { x, y: z, color } of c.kiosks) {
           box(group, x, 4.5, z, 14, 9, 8, mat(color, 0.6));
           box(group, x, 9.2, z, 15, 0.5, 9, chrome);
           mesh(new Three.ConeGeometry(12, 4, 12), mat(color === '#e8b1c2' ? '#f3f0e6' : '#d9c15f', 0.9), group, x, 16, z);
@@ -27580,14 +29988,114 @@ body:not(.touch-mode).police-search-active #carRadio {
             const t = (k - 0.5) / steps,
               x = ax + (bx - ax) * t + 12,
               z = az + (bz - az) * t + 12;
-            if (parkPondBlocked(x, z, 3) || Math.abs(x - 2176) < 30) continue;
+            if (parkPondBlocked(x, z, 3)) continue;
             box(group, x, 9, z, 0.9, 18, 0.9, darkMetal);
             box(group, x, 18.5, z, 3, 3, 3, warmLamp);
             lampHalos.push({ sprite: halo(group, x, 19, z, 14, '#ffe1b3'), x, y: z });
           }
         }
-        sign('CENTRAL COMMONS', 2167, 2100, 190, '#c7e5b9');
-        sign('COMMONS LAKE · BOATHOUSE', bh.x + bh.w / 2, bh.y + bh.h + 3, 120, '#d3ecdc');
+        // Outdoor gym: pull-up ladder, dip station, rings, parallel bars and mats.
+        const cal = c.calisthenics,
+          rigPaint = mat('#3f6f74', 0.55, 0.45),
+          matMat = mat('#39566b', 0.95);
+        box(group, cal.x, 0.5, cal.y, cal.w, 1, cal.h, mat('#4b4f52', 0.96));
+        for (const dx of [-84, -2]) {
+          for (const dz of [-34, -14]) box(group, cal.x + dx, 20, cal.y + dz, 2.6, 40, 2.6, rigPaint);
+          rod(
+            group,
+            new Three.Vector3(cal.x + dx, 40, cal.y - 34),
+            new Three.Vector3(cal.x + dx, 40, cal.y - 14),
+            1.3,
+            rigPaint,
+          );
+        }
+        rod(
+          group,
+          new Three.Vector3(cal.x - 84, 40, cal.y - 24),
+          new Three.Vector3(cal.x - 2, 40, cal.y - 24),
+          1.2,
+          rigPaint,
+        );
+        // Staggered pull-up bars at three heights.
+        for (let i = 0; i < 3; i++)
+          rod(
+            group,
+            new Three.Vector3(cal.x - 74 + i * 26, 28 + i * 5, cal.y - 34),
+            new Three.Vector3(cal.x - 74 + i * 26, 28 + i * 5, cal.y - 14),
+            0.9,
+            chrome,
+          );
+        // Dip station.
+        for (const dz of [-32, -20]) {
+          box(group, cal.x + 22, 11, cal.y + dz, 2.2, 22, 2.2, rigPaint);
+          rod(
+            group,
+            new Three.Vector3(cal.x + 14, 22, cal.y + dz),
+            new Three.Vector3(cal.x + 30, 22, cal.y + dz),
+            0.9,
+            chrome,
+          );
+        }
+        // Rings hanging from a cross beam.
+        box(group, cal.x + 62, 21, cal.y - 22, 2.4, 42, 2.4, rigPaint);
+        box(group, cal.x + 62, 21, cal.y + 2, 2.4, 42, 2.4, rigPaint);
+        rod(
+          group,
+          new Three.Vector3(cal.x + 62, 42, cal.y - 22),
+          new Three.Vector3(cal.x + 62, 42, cal.y + 2),
+          1.1,
+          rigPaint,
+        );
+        for (const dz of [-14, -6]) {
+          rod(
+            group,
+            new Three.Vector3(cal.x + 62, 42, cal.y + dz),
+            new Three.Vector3(cal.x + 62, 26, cal.y + dz),
+            0.25,
+            mat('#d9cba6', 0.9),
+          );
+          const ring = mesh(new Three.TorusGeometry(3, 0.7, 6, 14), parkWood, group, cal.x + 62, 24, cal.y + dz);
+          ring.rotation.x = Math.PI / 2;
+        }
+        // Parallel bars and two exercise mats.
+        for (const dz of [24, 34]) {
+          for (const dx of [-62, -30]) box(group, cal.x + dx, 7, cal.y + dz, 2, 14, 2, rigPaint);
+          rod(
+            group,
+            new Three.Vector3(cal.x - 62, 14, cal.y + dz),
+            new Three.Vector3(cal.x - 30, 14, cal.y + dz),
+            0.8,
+            chrome,
+          );
+        }
+        for (const dx of [6, 56]) box(group, cal.x + dx, 1.4, cal.y + 30, 34, 1.4, 20, matMat);
+        // Food trucks: body, cab, serving hatch, awning, wheels and a menu board.
+        for (const truck of c.foodTrucks) {
+          const t = new Three.Group();
+          t.position.set(truck.x, 0, truck.y);
+          t.rotation.y = -truck.a;
+          group.add(t);
+          const paint = mat(truck.color, 0.55, 0.25);
+          box(t, 0, 13, 0, 46, 20, 19, paint);
+          box(t, 26, 10, 0, 14, 14, 17, mat('#e8e4d7', 0.5, 0.3));
+          box(t, 32, 13, 0, 3, 7, 14, glass);
+          box(t, 0, 24, 0, 44, 2, 18, mat('#dfd9c8', 0.8));
+          // Serving hatch and awning on the kerb side.
+          box(t, -2, 15, -9.8, 26, 9, 1, mat('#20272b', 0.4, 0.5));
+          const awning = box(t, -2, 22, -15, 26, 0.8, 12, mat('#efe6d0', 0.85));
+          awning.rotation.x = 0.32;
+          box(t, -2, 9, -10.6, 24, 2.4, 2.6, mat('#c9c2ad', 0.8));
+          for (const dx of [-15, 15])
+            for (const dz of [-9.5, 9.5]) {
+              const wheel = mesh(wheelGeo, rubber, t, dx, 4, dz, 4, 2.4, 4);
+              wheel.rotation.x = Math.PI / 2;
+            }
+          sign(truck.menu, truck.x + Math.cos(truck.a + Math.PI / 2) * 16, truck.y + Math.sin(truck.a + Math.PI / 2) * 16, 34, '#ffe6b0');
+          halo(t, -2, 20, -12, 26, '#ffd9a0');
+        }
+        sign('OUTDOOR GYM', cal.x, cal.y + cal.h / 2 + 10, 90, '#cfe6ea');
+        sign('CENTRAL GARDEN', 2688, 1812, 200, '#c7e5b9');
+        sign('GARDEN LAKE · BOATHOUSE', bh.x + bh.w / 2, bh.y + bh.h + 3, 120, '#d3ecdc');
         sign('BANDSHELL · LIVE TONIGHT', bs.x, bs.y + 138, 130, '#f2d8a2');
       }
       // END SUBSYSTEM: src/renewal3d.js
@@ -29488,25 +31996,16 @@ body:not(.touch-mode).police-search-active #carRadio {
       // Sits well below the deepest wave trough so it never pokes through the swell.
       farWater.position.set(WORLD_SIZE / 2, -18, WORLD_SIZE / 2);
       scene.add(farWater);
-      const shoreFoam = [],
-        shoreMaterial = new Three.MeshBasicMaterial({
-          color: '#92cfbf',
-          transparent: true,
-          opacity: 0.15,
-          depthWrite: false,
-          side: Three.DoubleSide,
-        });
-      const foamCanvas = document.createElement('canvas');
-      foamCanvas.width = 128;
-      foamCanvas.height = 32;
-      const foamContext = foamCanvas.getContext('2d');
-      for (let x = 0; x < 128; x += 2) {
-        const y = 13 + Math.sin(x * 0.1) * 3 + Math.sin(x * 0.29) * 2;
-        foamContext.fillStyle =
-          'rgba(223,243,227,' + (0.28 + 0.28 * (0.5 + 0.5 * Math.sin(x * 0.37))) + ')';
-        foamContext.fillRect(x, y, 3, 2 + Math.sin(x * 0.16) * 1.5);
-      }
-      const foamTex = new Three.CanvasTexture(foamCanvas);
+      /**
+       * SHORELINE
+       * The wash, the breaking band and the wet-sand darkening are all produced by
+       * the water shader from its distance-to-shore field, so the shore carries no
+       * overlay planes. An earlier pass laid flat foam and shallow quads a few
+       * units under the surface; because they were fixed while the water is
+       * displaced by four Gerstner swells, they surfaced through the waves as pale
+       * rectangles. They are gone. What remains here is real build: the concrete
+       * quay edge, its coping, mooring bollards and a sand bank along the beaches.
+       */
       for (const e of coastSegments()) {
         if (e.opening) continue;
         const group = new Three.Group(),
@@ -29520,33 +32019,15 @@ body:not(.touch-mode).police-search-active #carRadio {
         if (style === 'quay') {
           box(group, 0, 2.3, 0, e.length + 1, 5, 5, mat('#727e80'));
           box(group, 0, 5.2, 0, e.length + 1, 0.9, 7, concrete);
-        }
-        const shallow = new Three.Mesh(
-          new Three.PlaneGeometry(e.length + 2, style === 'beach' ? 48 : 15),
-          shoreMaterial,
-        );
-        shallow.rotation.x = -Math.PI / 2;
-        shallow.position.set(0, -0.55, outward * (style === 'beach' ? 19 : 7));
-        group.add(shallow);
-        for (let k = 0; k < (style === 'beach' ? 2 : 1); k++) {
-          const material = new Three.MeshBasicMaterial({
-              map: foamTex,
-              transparent: true,
-              opacity: 0.25,
-              depthWrite: false,
-              side: Three.DoubleSide,
-            }),
-            foam = new Three.Mesh(new Three.PlaneGeometry(e.length + 2, 13), material);
-          foam.rotation.x = -Math.PI / 2;
-          foam.userData.dynamic = true;
-          foam.position.y = -0.35 - k * 0.05;
-          foam.userData = {
-            outward,
-            phase: e.x * 0.003 + e.y * 0.002 + k * 0.5,
-            beach: style === 'beach',
-          };
-          group.add(foam);
-          shoreFoam.push(foam);
+          box(group, 0, 0.6, outward * 3.4, e.length + 1, 4, 2.2, mat('#5d6668', 0.95));
+          if (Math.round(e.x + e.y) % 3 === 0) {
+            mesh(cylinderGeo, darkMetal, group, 0, 6.6, -outward * 1.4, 1.5, 3.4, 1.5);
+            mesh(sphereGeo, darkMetal, group, 0, 8.3, -outward * 1.4, 1.9, 1.1, 1.9);
+          }
+        } else {
+          // A low sand bank so the beach meets the water with a lip, not an edge.
+          box(group, 0, 0.45, -outward * 5, e.length + 1, 1.2, 12, mat('#c8b68e', 0.97));
+          box(group, 0, 0.18, -outward * 13, e.length + 1, 0.9, 10, mat('#b8a884', 0.97));
         }
         statics.push({
           x: e.x,
@@ -29555,6 +32036,97 @@ body:not(.touch-mode).police-search-active #carRadio {
           radius: 90,
         });
       }
+      /**
+       * STREET ENDS
+       * Every grid road stops where the land does. A road that simply stops is a
+       * bug; a road that stops at a kerbed turning head with a guardrail, a pair
+       * of chevron boards and a NO THROUGH ROAD plate is a street. Ends on a
+       * bridge or a boulevard are junctions, not ends, and are skipped.
+       */
+      function buildStreetEnds() {
+        const railMat = mat('#cfd3cd', 0.7),
+          chevron = mat('#e9e3d0', 0.75),
+          stripe = mat('#c14c3c', 0.7),
+          kerb = mat('#a9a89b', 0.92);
+        // One plate texture shared by every end: a canvas per sign would cost
+        // more memory than the rest of the street furniture put together.
+        const plate = document.createElement('canvas');
+        plate.width = 512;
+        plate.height = 128;
+        const pg = plate.getContext('2d');
+        pg.fillStyle = '#e9e3d0';
+        pg.fillRect(0, 0, 512, 128);
+        pg.strokeStyle = '#b23c33';
+        pg.lineWidth = 10;
+        pg.strokeRect(10, 10, 492, 108);
+        pg.fillStyle = '#20262a';
+        pg.font = '700 46px Arial';
+        pg.textAlign = 'center';
+        pg.textBaseline = 'middle';
+        pg.fillText('NO THROUGH ROAD', 256, 66, 460);
+        const plateTexture = new Three.CanvasTexture(plate);
+        plateTexture.colorSpace = Three.SRGBColorSpace;
+        const plateMaterial = new Three.MeshBasicMaterial({
+          map: plateTexture,
+          side: Three.DoubleSide,
+          toneMapped: false,
+        });
+        const plateGeometry = new Three.PlaneGeometry(34, 8.5);
+        for (const r of cityStreets()) {
+          for (const end of [r.start, r.end]) {
+            const p = r.vertical ? { x: r.r, y: end } : { x: end, y: r.r },
+              outward = end === r.start ? -1 : 1,
+              a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
+            if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+            if (inAirport(p.x, p.y) || inStadiumLot(p.x, p.y, 40)) continue;
+            const group = new Three.Group();
+            group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
+            group.rotation.y = -a;
+            scene.add(group);
+            batchGroups.push(group);
+            const half = r.width * 0.5;
+            // Kerb ring around the turning head.
+            const ring = mesh(new Three.TorusGeometry(half + 4, 2.4, 6, 26), kerb, group, 0, 1.6, 0);
+            ring.rotation.x = Math.PI / 2;
+            // Guardrail across the closed end.
+            for (let i = -3; i <= 3; i++) {
+              const z = (i * (r.width + 20)) / 7;
+              box(group, half + 7, 7, z, 3.4, 14, 3.4, railMat);
+            }
+            box(group, half + 7, 12, 0, 3, 3.6, r.width + 24, railMat);
+            box(group, half + 7, 6.4, 0, 3, 3, r.width + 24, railMat);
+            // Chevron boards facing the road, red and white.
+            for (const side of [-1, 1]) {
+              const z = side * (r.width * 0.24);
+              box(group, half + 2, 9.5, z, 1.6, 13, 26, chevron);
+              for (let k = -2; k <= 2; k++)
+                box(group, half + 1.2, 9.5, z + k * 5.2, 0.8, 13, 2.6, stripe);
+              box(group, half + 2, 2, z, 4, 4, 28, railMat);
+            }
+            // NO THROUGH ROAD plate on a post, set back on the kerb.
+            box(group, half - 8, 11, -half + 8, 1.8, 22, 1.8, railMat);
+            const boardMesh = new Three.Mesh(plateGeometry, plateMaterial);
+            boardMesh.position.set(half - 8, 22, -half + 8);
+            boardMesh.rotation.y = -Math.PI / 2;
+            boardMesh.userData.sign = true;
+            group.add(boardMesh);
+            // A planted island in the middle of a wide head.
+            if (r.width > 100) {
+              mesh(new Three.CylinderGeometry(15, 16, 2.4, 18), kerb, group, 0, 1.2, 0);
+              mesh(new Three.CylinderGeometry(13, 13, 1.2, 18), leafMats[1], group, 0, 2.4, 0);
+              rod(group, new Three.Vector3(0, 2, 0), new Three.Vector3(0, 20, 0), 1.6, mat('#6b5442'));
+              mesh(sphereGeo, leafMats[0], group, 0, 26, 0, 13, 10, 13);
+            }
+            statics.push({
+              x: p.x,
+              y: p.y,
+              group,
+              radius: 110,
+            });
+          }
+        }
+      }
+      buildStreetEnds();
       function makePalm(x, z, size = 1) {
         const g = new Three.Group();
         g.position.set(x, 0, z);
@@ -29930,11 +32502,6 @@ body:not(.touch-mode).police-search-active #carRadio {
         waterSurface.scale.set(Math.max(1, 1 / worldZoom / 2), Math.max(1, 1 / worldZoom / 2), 1);
         waterSurface.position.x = Math.round(cameraTarget.x / 25) * 25;
         waterSurface.position.z = Math.round(cameraTarget.y / 25) * 25;
-        shoreFoam.forEach((m) => {
-          const t = (gameTime * 0.18 + m.userData.phase) % 1;
-          m.position.z = m.userData.outward * (3 + (1 - t) * (m.userData.beach ? 36 : 10));
-          m.material.opacity = Math.sin(t * Math.PI) * (m.userData.beach ? 0.3 : 0.12);
-        });
         farWater.material.color
           .set('#061421')
           .lerp(new Three.Color(cameraTarget.x > 3900 ? '#0c5a68' : '#0f3a52'), light);
@@ -30843,6 +33410,13 @@ body:not(.touch-mode).police-search-active #carRadio {
         box(depotGroup, w.x + w.w / 2, 32, w.y + w.h / 2, w.w, 64, w.h, portSteel);
         box(depotGroup, w.x + w.w / 2, 3, w.y + w.h / 2, w.w + 1, 6, w.h + 1, portConcrete);
       }
+      // Two roller shutters that actually travel: front closes behind the drop,
+      // rear rolls up to let the runner out.
+      const shutterMat = mat('#8d9195', 0.62, 0.35);
+      const depotFrontDoor = box(depotGroup, 4480, 29, 4341, 116, 58, 4, shutterMat);
+      const depotRearDoor = box(depotGroup, 4480, 29, 4574, 72, 58, 4, shutterMat);
+      for (const door of [depotFrontDoor, depotRearDoor]) door.userData.dynamic = true;
+      box(depotGroup, 4480, 60, 4574, 84, 10, 7, portSteel);
       const depotRoof = box(depotGroup, 4480, 66, 4460, 286, 4, 246, portSteel.clone());
       for (let z = 4358; z < 4570; z += 35) box(depotGroup, 4480, 60, z, 274, 4, 3, cranePaint);
       box(depotGroup, 4480, 52, 4343, 116, 17, 5, portSteel);
@@ -30912,6 +33486,11 @@ body:not(.touch-mode).police-search-active #carRadio {
         beamUp = new Three.Vector3(0, 1, 0);
       function updateMissionVisuals() {
         depotRoof.visible = distanceBetween(player, VINNY_DEPOT.inside) > 330;
+        // The shutter slides up into its housing; 0 is open, 1 is fully down.
+        depotFrontDoor.visible = depotFrontShutter > 0.01;
+        depotFrontDoor.position.y = 29 + (1 - depotFrontShutter) * 59;
+        depotRearDoor.visible = depotRearShutter > 0.01;
+        depotRearDoor.position.y = 29 + (1 - depotRearShutter) * 59;
         const h = vehicles.find((c) => c.airUnit && c.hp > 0 && !c.airRetreat),
           t = airSearchPoint(h);
         airBeam.visible = airPool.visible = !!t && distanceBetween(h, cameraTarget) < 950;
@@ -32889,12 +35468,14 @@ body:not(.touch-mode).police-search-active #carRadio {
           updateCityscapeVisuals();
           updateStreetLighting();
           updateSideJobVisuals();
+          updateRoadblockVisuals();
+          updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
           updateTrafficVisuals();
           updateMissionVisuals();
           const shadowHeight = terrainHeight(cameraTarget.x, cameraTarget.y);
-          sun.position.set(cameraTarget.x - 450, 760 + shadowHeight, cameraTarget.y - 230);
+          sun.position.set(cameraTarget.x - 620, 980 + shadowHeight, cameraTarget.y - 340);
           sun.target.position.set(cameraTarget.x, shadowHeight, cameraTarget.y);
           const vr = Math.max(
             920,
@@ -33152,7 +35733,7 @@ body:not(.touch-mode).police-search-active #carRadio {
               incapacitated = personIncapacitated(p);
             m.group.position.set(p.x, entityElevation(p) + fallen * 1.5, p.y);
             m.group.rotation.set(
-              0,
+              p.ejected ? p.ejectRoll || 0 : 0,
               -(activePlayer && (mouse.active || touchAim !== null) ? aim() : p.a),
               (fallen * Math.PI) / 2 +
                 (p.hp > 0 && p.dazedFor > 0 ? Math.sin(gameTime * 8) * 0.055 : 0),
@@ -33200,6 +35781,40 @@ body:not(.touch-mode).police-search-active #carRadio {
               m.parts.arm1.rotation.z = 1.2;
               m.parts['arm-1'].rotation.z = 1.1;
             }
+            if (p.ejected) {
+              // Arms out as they go over: a throw, not a lie-down.
+              m.parts.arm1.rotation.z = 2.3;
+              m.parts['arm-1'].rotation.z = 1.4;
+              m.parts.leg1.rotation.z = 0.7;
+              m.parts['leg-1'].rotation.z = -0.5;
+            } else if (p.onPhone && p.hp > 0 && !incapacitated) {
+              m.parts.arm1.rotation.z = 2.25;
+              m.parts['arm-1'].rotation.z = 0.2;
+            }
+            // Outdoor gym regulars: `exercise` is 0..1 through one rep, null at rest.
+            if (p.exercise != null && p.hp > 0 && !incapacitated) {
+              const e = p.exercise;
+              if (p.exerciseKind === 'mat') {
+                m.group.position.y -= 4.2;
+                m.parts.leg1.rotation.z = -1.3;
+                m.parts['leg-1'].rotation.z = -1.3;
+                m.torso.rotation.z = -0.15 - e * 0.85;
+                m.parts.arm1.rotation.z = 2.4;
+                m.parts['arm-1'].rotation.z = 2.4;
+              } else if (p.exerciseKind === 'dip' || p.exerciseKind === 'bars') {
+                m.group.position.y += 5 + e * 5;
+                m.parts.arm1.rotation.z = -0.12;
+                m.parts['arm-1'].rotation.z = -0.12;
+                m.parts.leg1.rotation.z = -0.5;
+                m.parts['leg-1'].rotation.z = -0.34;
+              } else {
+                m.group.position.y += 7 + e * 6;
+                m.parts.arm1.rotation.z = 2.75 - e * 0.45;
+                m.parts['arm-1'].rotation.z = 2.75 - e * 0.45;
+                m.parts.leg1.rotation.z = -0.35;
+                m.parts['leg-1'].rotation.z = -0.2;
+              }
+            }
             if (p.illness && p.hp > 0) {
               m.group.rotation.z = -p.illness * 0.24 + Math.sin(gameTime * 8) * 0.025;
               m.torso.rotation.z = -p.illness * 0.2;
@@ -33216,6 +35831,15 @@ body:not(.touch-mode).police-search-active #carRadio {
             if (incapacitated) m.parts.guns.forEach((g) => (g.visible = false));
             if (p.drinking && p.hp > 0 && !incapacitated) {
               m.parts.arm1.rotation.z = 1.5 + Math.sin(gameTime * 3) * 0.15;
+            }
+            if (activePlayer && player.tumble) {
+              m.group.rotation.z = Math.PI / 2;
+              m.group.rotation.x = player.tumbleRoll || 0;
+              m.group.position.y += 4;
+              m.parts.arm1.rotation.z = 2.1;
+              m.parts['arm-1'].rotation.z = 1.7;
+              m.parts.leg1.rotation.z = -0.7;
+              m.parts['leg-1'].rotation.z = -0.4;
             }
             if (activePlayer) {
               if (player.parachute) {
@@ -33597,7 +36221,7 @@ body:not(.touch-mode).police-search-active #carRadio {
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "25.1.0",
+      version: "26.0.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -33640,6 +36264,35 @@ body:not(.touch-mode).police-search-active #carRadio {
         player.godMode = !!on;
         return player.godMode;
       },
+      // Set the wanted level directly. Useful for looking at containment and air
+      // support without having to earn them.
+      wanted(stars = 5) {
+        const n = clamp(Math.round(stars), 0, 5);
+        if (n <= 0) clearPolice();
+        else {
+          wantedStars = n;
+          wantedLevel = n;
+          wantedPressure = n;
+          starElapsed = 0;
+          searchActive = false;
+          searchRemaining = 12 + n * 3;
+          lastSeen = {
+            x: player.x,
+            y: player.y,
+          };
+        }
+        return this.status();
+      },
+      // Where the police have cut the map right now.
+      roadblocks: () =>
+        roadblocks.map((b) => ({
+          name: b.site.name,
+          x: Math.round(b.x),
+          y: Math.round(b.y),
+          cars: b.cars.filter((c) => c.hp > 0).length,
+          officers: b.crew.filter((o) => o.hp > 0).length,
+          spikes: !!b.spike && !b.spike.spent,
+        })),
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),
