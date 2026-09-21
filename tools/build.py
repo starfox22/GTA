@@ -91,5 +91,10 @@ def build(out_path):
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', default=os.path.join(ROOT, 'dist', 'dead-end-city.html'))
+    ap.add_argument('--js-out', help='also write the expanded game script (for `node --check`)')
     args = ap.parse_args()
     build(args.out)
+    if args.js_out:
+        with open(args.js_out, 'w', encoding='utf-8') as fh:
+            fh.write(expand_js('src/main.js') + '\n')
+        print('wrote', args.js_out)

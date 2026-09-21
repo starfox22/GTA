@@ -1420,7 +1420,7 @@
       if (attacker === player) crime(0.5);
     }
     function hurt(d) {
-      if (player.inv > 0 || gameMode !== 'play') return;
+      if (player.inv > 0 || gameMode !== 'play' || player.godMode) return;
       if (player.armor > 0) {
         const absorbed = Math.min(player.armor, d * 0.65);
         player.armor -= absorbed;
@@ -3750,6 +3750,58 @@
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
+    /**
+     * DEVELOPER CONSOLE
+     * `DeadEndCity` on window is a small, documented debugging surface used by
+     * tools/smoke.mjs and by anyone maintaining the game from the browser
+     * console. It reads and writes the same state the game itself uses; it is
+     * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
+     */
+    window.DeadEndCity = Object.freeze({
+      version: "25.0.0",
+      status: () => ({
+        mode: gameMode,
+        x: Math.round(player.x),
+        y: Math.round(player.y),
+        district: districtAt(player.x, player.y),
+        hp: Math.ceil(player.hp),
+        cash,
+        wanted: Math.ceil(wantedStars),
+        mission: mission ? missions[mission.index].title : null,
+        completed,
+        vehicle: player.car ? player.car.type : null,
+        clock: clockText(),
+        renderer: city3D ? '3d' : '2d',
+        vehicles: vehicles.length,
+        pedestrians: pedestrians.length,
+      }),
+      teleport(x, y) {
+        if (player.car) exitCar();
+        player.x = x;
+        player.y = y;
+        cameraTarget.x = x;
+        cameraTarget.y = y;
+        player.parachute = null;
+        return this.status();
+      },
+      setClock(hours) {
+        worldMinutes = Math.floor(worldMinutes / 1440) * 1440 + clamp(hours, 0, 24) * 60;
+        return clockText();
+      },
+      setZoom: (value) => setWorldZoom(value),
+      startMission(index) {
+        if (index >= 0 && index < missions.length) {
+          missionIndex = index;
+          startMission();
+        }
+        return this.status();
+      },
+      missions: () => missions.map((m, i) => ({ index: i, title: m.title, contact: m.contact })),
+      god(on = true) {
+        player.godMode = !!on;
+        return player.godMode;
+      },
+    });
     // Optional browser agent access uses exactly the same actions as the controls.
     if (document.modelContext?.registerTool) {
       const noArgs = {
