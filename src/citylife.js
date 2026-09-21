@@ -1385,10 +1385,8 @@
       person.flee = 8;
       // A round the vest ate sparks off the plate instead of opening a wound.
       const stopped = dealt < damage * 0.4 && wearingVest(person);
-      if (stopped) {
-        particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
-        if (person.hp > 0) person.vestPingUntil = gameTime + 0.6;
-      } else if (showBlood) bleed(person, Math.min(2, dealt / 38), a);
+      if (stopped) particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
+      else if (showBlood) bleed(person, Math.min(2, dealt / 38), a);
       scream(person);
       if (person.hp <= 0) {
         person.deadTime = gameTime;

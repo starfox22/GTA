@@ -37,21 +37,22 @@
       if (roadblockSiteCache) return roadblockSiteCache;
       const sites = [];
       // Bridge approaches. Cutting one of these separates Northbank from the Keys.
+      // The block goes on the approach road, clear of the deck: a causeway is walled
+      // by its own railings and there is no room to park two cars across it.
       for (const y of BRIDGES) {
-        sites.push({
-          x: RIVER.left - 118,
-          y,
-          axis: 'x',
-          bridge: true,
-          name: bridgeName(y) + ' BRIDGE · WEST APPROACH',
-        });
-        sites.push({
-          x: RIVER.right + 118,
-          y,
-          axis: 'x',
-          bridge: true,
-          name: bridgeName(y) + ' BRIDGE · EAST APPROACH',
-        });
+        const [west, east] = bridgeSpan(y);
+        for (const [x, side] of [
+          [west - 74, 'WEST'],
+          [east + 74, 'EAST'],
+        ])
+          if (roadblockSiteUsable(x, y))
+            sites.push({
+              x,
+              y,
+              axis: 'x',
+              bridge: true,
+              name: bridgeName(y) + ' BRIDGE · ' + side + ' APPROACH',
+            });
       }
       // Mid-block cuts on the four avenues: a junction block is simply driven around.
       const AVENUES = [1152, 2688, 3200, 4736];
@@ -85,17 +86,13 @@
     }
     function buildRoadblock(site, tag = 'wanted') {
       if (roadblockAt(site)) return null;
+      // `across` points a car over the carriageway; `lane` runs across the road and
+      // `along` down it. A cruiser turned across a road is nearly as long as the
+      // road is wide, so the pair is staggered down the road as well as across it —
+      // parked side by side they would simply be inside one another.
       const across = site.axis === 'x' ? Math.PI / 2 : 0,
-        lane =
-          site.axis === 'x'
-            ? {
-                x: 0,
-                y: 1,
-              }
-            : {
-                x: 1,
-                y: 0,
-              };
+        lane = site.axis === 'x' ? { x: 0, y: 1 } : { x: 1, y: 0 },
+        along = site.axis === 'x' ? { x: 1, y: 0 } : { x: 0, y: 1 };
       const block = {
         site,
         x: site.x,
@@ -111,10 +108,10 @@
         announced: false,
       };
       for (const offset of [-30, 30]) {
-        const x = site.x + lane.x * offset,
-          y = site.y + lane.y * offset,
-          a = across + (offset < 0 ? -0.38 : 0.38);
-        if (!canSpawnCar('police', x, y, a, 4)) continue;
+        const x = site.x + lane.x * offset + along.x * offset * 1.5,
+          y = site.y + lane.y * offset + along.y * offset * 1.5,
+          a = across + (offset < 0 ? -0.34 : 0.34);
+        if (!canSpawnCar('police', x, y, a, 2)) continue;
         const c = makeCar('police', x, y, a, false, '#e8eef1');
         Object.assign(c, {
           cop: true,
@@ -130,10 +127,10 @@
         block.cars.push(c);
       }
       if (!block.cars.length) return null;
-      // Two officers work from behind the engine blocks, one either side of the gap.
-      for (const offset of [-52, 52]) {
-        const x = site.x + lane.x * offset,
-          y = site.y + lane.y * offset;
+      // Two officers work from the kerb behind the cars, not out in the lane.
+      for (const offset of [-64, 64]) {
+        const x = site.x + lane.x * offset - along.x * 22,
+          y = site.y + lane.y * offset - along.y * 22;
         if (solid(x, y, 8)) continue;
         const o = {
           x,
@@ -224,9 +221,11 @@
       }
       if (roadblocks.length >= budget) return;
       const target = containmentTarget(),
-        heading = Math.hypot(target.vx || 0, target.vy || 0) > 25 ? Math.atan2(target.vy, target.vx) : target.a || 0;
-      let best = null,
-        bestScore = 0.05;
+        heading =
+          Math.hypot(target.vx || 0, target.vy || 0) > 25
+            ? Math.atan2(target.vy, target.vx)
+            : target.a || 0;
+      const ranked = [];
       for (const site of roadblockSites()) {
         if (roadblockAt(site)) continue;
         const d = distanceBetween(site, target);
@@ -236,17 +235,24 @@
         if (roadblocks.some((r) => distanceBetween(r, site) < 700)) continue;
         const ahead = Math.cos(normalizeAngle(headingBetween(target, site) - heading)),
           score = ahead * 1.7 + (site.bridge ? 1.5 : 0) + 1 - d / 2300;
-        if (score > bestScore) {
-          bestScore = score;
-          best = site;
+        if (score > 0.05) ranked.push({ site, score });
+      }
+      if (!ranked.length) return;
+      ranked.sort((a, b) => b.score - a.score);
+      // A site can turn out to have no room for two cars across it; try the next.
+      let block = null,
+        chosen = null;
+      for (const entry of ranked.slice(0, 5)) {
+        block = buildRoadblock(entry.site, cargoChase() ? 'cargo' : 'wanted');
+        if (block) {
+          chosen = entry.site;
+          break;
         }
       }
-      if (!best) return;
-      const block = buildRoadblock(best, cargoChase() ? 'cargo' : 'wanted');
       if (!block) return;
       if (gameTime - roadblockNotice > 12) {
         roadblockNotice = gameTime;
-        tell('POLICE ROADBLOCK · ' + best.name + ' · find another way', 5);
+        tell('POLICE ROADBLOCK · ' + chosen.name + ' · find another way', 5);
         radio('call-backup');
       }
     }
@@ -317,9 +323,6 @@
           });
       }
       return list;
-    }
-    function roadblockNear(x, y, r = 260) {
-      return roadblocks.some((b) => Math.hypot(b.x - x, b.y - y) < r);
     }
     function drawRoadblocks2D() {
       for (const block of roadblocks) {

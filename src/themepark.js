@@ -87,9 +87,6 @@
         b = COASTER_TRACK[(i + 1) % n];
       return Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) || 1;
     }
-    function inPark(x, y, margin = 0) {
-      return onSunsetIsle(x, y) || (margin > 0 && onSunsetIsle(x + margin, y + margin));
-    }
     /* Ride structures are solid: the player walks the midway, not through the wheel.
        The coaster station is deliberately not here — its platform is walked onto. */
     function parkSolids() {
@@ -106,9 +103,6 @@
       return parkSolids().some(
         (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
       );
-    }
-    function coasterRideActive() {
-      return !!player.coaster;
     }
     function boardCoaster() {
       if (player.car || player.roof || player.parachute || transitRide) return false;

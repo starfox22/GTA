@@ -25,7 +25,6 @@
       angry: ['I know your face!', 'Come back here!', 'You’re dead, you hear me?', 'That’s my livelihood!'],
       witness: ['Blue sedan, heading south!', 'I’m calling it in right now.', 'Someone get the plate!'],
       defiant: ['Get off my car!', 'Not today, pal.', 'You picked the wrong one.'],
-      locked: ['Not a chance.', 'Doors are locked, friend.', 'Keep walking.'],
     };
     function driverTalk(person, kind) {
       const lines = CARJACK_LINES[kind];
@@ -217,8 +216,5 @@
         steer: clamp(da * 3, -2.4, 2.4),
         desired: distanceBetween(vehicle, player) < 60 ? 150 : 210,
       };
-    }
-    function carjackPrompt(vehicle) {
-      return vehicleIsLocked(vehicle) ? 'LOCKED · BREAK THE WINDOW' : null;
     }
     // END SUBSYSTEM: src/carjack.js

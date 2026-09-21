@@ -1712,8 +1712,6 @@
         if (vehicleIsLocked(c)) {
           tell('LOCKED', 1.8);
           tone(140, 0.07, 0.2, 'square');
-          const inside = pedestrians.find((p) => p.vehicleLine === c);
-          if (inside) driverTalk(inside, 'locked');
           return;
         }
         if (c.occupied) {
