@@ -1,0 +1,200 @@
+[
+  {
+    "id": "media-cover",
+    "file": "assets/cover.webp",
+    "mime": "image/webp",
+    "original": "src/cover.webp"
+  },
+  {
+    "id": "media-contact-portraits",
+    "file": "assets/contact-portraits.webp",
+    "mime": "image/webp",
+    "original": "src/assets/contact-portraits.webp"
+  },
+  {
+    "id": "media-architecture",
+    "file": "assets/architecture-atlas.webp",
+    "mime": "image/webp",
+    "original": "src/assets/architecture-atlas.webp"
+  },
+  {
+    "id": "media-ground",
+    "file": "assets/ground-atlas.webp",
+    "mime": "image/webp",
+    "original": "src/assets/ground-atlas.webp"
+  },
+  {
+    "id": "media-weapons",
+    "file": "assets/weapons-atlas.webp",
+    "mime": "image/webp",
+    "original": "src/assets/weapons-atlas.webp"
+  },
+  {
+    "id": "media-harbor",
+    "file": "assets/harbor-atlas.webp",
+    "mime": "image/webp",
+    "original": "src/assets/harbor-atlas.webp"
+  },
+  {
+    "id": "media-arsenal",
+    "file": "assets/arsenal-icons.png",
+    "mime": "image/png",
+    "original": "src/assets/arsenal-icons.png"
+  },
+  {
+    "id": "media-music-synth",
+    "file": "assets/music/synth.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/synth.mp3"
+  },
+  {
+    "id": "media-music-rock",
+    "file": "assets/music/rock.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/rock.mp3"
+  },
+  {
+    "id": "media-music-oddball",
+    "file": "assets/music/oddball.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/oddball.mp3"
+  },
+  {
+    "id": "media-audio-automatic",
+    "file": "assets/audio/automatic.wav",
+    "mime": "audio/wav",
+    "original": "src/assets/audio/automatic.wav"
+  },
+  {
+    "id": "media-audio-call-backup",
+    "file": "assets/audio/call-backup.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/call-backup.ogg"
+  },
+  {
+    "id": "media-audio-civilian-scream-female-1",
+    "file": "assets/audio/civilian-scream-female-1.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/civilian-scream-female-1.ogg"
+  },
+  {
+    "id": "media-audio-civilian-scream-female-2",
+    "file": "assets/audio/civilian-scream-female-2.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/civilian-scream-female-2.ogg"
+  },
+  {
+    "id": "media-audio-civilian-scream-male-1",
+    "file": "assets/audio/civilian-scream-male-1.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/civilian-scream-male-1.ogg"
+  },
+  {
+    "id": "media-audio-civilian-scream-male-2",
+    "file": "assets/audio/civilian-scream-male-2.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/civilian-scream-male-2.ogg"
+  },
+  {
+    "id": "media-audio-engine",
+    "file": "assets/audio/engine.wav",
+    "mime": "audio/wav",
+    "original": "src/assets/audio/engine.wav"
+  },
+  {
+    "id": "media-audio-explosion",
+    "file": "assets/audio/explosion.wav",
+    "mime": "audio/wav",
+    "original": "src/assets/audio/explosion.wav"
+  },
+  {
+    "id": "media-audio-look-out",
+    "file": "assets/audio/look-out.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/look-out.ogg"
+  },
+  {
+    "id": "media-audio-mission-complete",
+    "file": "assets/audio/mission-complete.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/mission-complete.ogg"
+  },
+  {
+    "id": "media-audio-mission-failed",
+    "file": "assets/audio/mission-failed.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/mission-failed.ogg"
+  },
+  {
+    "id": "media-audio-pistol",
+    "file": "assets/audio/pistol.wav",
+    "mime": "audio/wav",
+    "original": "src/assets/audio/pistol.wav"
+  },
+  {
+    "id": "media-audio-police-challenge",
+    "file": "assets/audio/police-challenge.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/police-challenge.ogg"
+  },
+  {
+    "id": "media-audio-police-drop-weapon",
+    "file": "assets/audio/police-drop-weapon.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/police-drop-weapon.ogg"
+  },
+  {
+    "id": "media-audio-police-get-down",
+    "file": "assets/audio/police-get-down.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/police-get-down.ogg"
+  },
+  {
+    "id": "media-audio-police-hands-on-head",
+    "file": "assets/audio/police-hands-on-head.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/police-hands-on-head.ogg"
+  },
+  {
+    "id": "media-audio-police-under-arrest",
+    "file": "assets/audio/police-under-arrest.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/police-under-arrest.ogg"
+  },
+  {
+    "id": "media-audio-rifle",
+    "file": "assets/audio/rifle.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/rifle.ogg"
+  },
+  {
+    "id": "media-audio-rotor-loop",
+    "file": "assets/audio/rotor-loop.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/rotor-loop.ogg"
+  },
+  {
+    "id": "media-audio-shotgun",
+    "file": "assets/audio/shotgun.wav",
+    "mime": "audio/wav",
+    "original": "src/assets/audio/shotgun.wav"
+  },
+  {
+    "id": "media-audio-siren",
+    "file": "assets/audio/siren.wav",
+    "mime": "audio/wav",
+    "original": "src/assets/audio/siren.wav"
+  },
+  {
+    "id": "media-audio-target-engaged",
+    "file": "assets/audio/target-engaged.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/target-engaged.ogg"
+  },
+  {
+    "id": "media-audio-tires",
+    "file": "assets/audio/tires.wav",
+    "mime": "audio/wav",
+    "original": "src/assets/audio/tires.wav"
+  }
+]

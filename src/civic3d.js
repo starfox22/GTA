@@ -1,0 +1,300 @@
+      // BEGIN SUBSYSTEM: src/civic3d.js — Civic and rooftop meshes
+      /**
+       * Civic and rooftop meshes
+       * Source: src/civic3d.js
+       * Scope: createCityRenderer() closure.
+       * Businesses, rooftop party, service signs and animated city lighting.
+       */
+      // The island ends at masonry seawalls, with open water beyond every coast.
+      const coast = mat('#727d7b', 0.88),
+        serviceRings = [];
+      for (const d of DOCKS) {
+        const group = new Three.Group();
+        scene.add(group);
+        for (let x = d.x + 2; x < d.x + d.w; x += 5) box(group, x, 1, d.y + d.h / 2, 4.5, 2, d.h, wood);
+        for (const x of [d.x + 4, d.x + d.w - 4])
+          for (const z of [d.y + 3, d.y + d.h - 3]) {
+            box(group, x, 3, z, 2, 9, 2, wood);
+            mesh(cylinderGeo, darkMetal, group, x, 5, z, 2, 2, 2);
+          }
+        sign('MARINA', d.x + d.w / 2, d.y - 3, 52, '#b3dfdd');
+        statics.push({
+          x: d.x + d.w / 2,
+          y: d.y + d.h / 2,
+          group,
+          radius: 90,
+        });
+      }
+      const civicNeon = [];
+      for (const p of PLACES) {
+        const color = new Three.Color(p.color),
+          group = new Three.Group();
+        scene.add(group);
+        const x = p.door.x,
+          z = p.door.y;
+        const ring = new Three.Mesh(
+          new Three.RingGeometry(p.kind === 'rooftop' ? 7 : 15, p.kind === 'rooftop' ? 9 : 17, 40),
+          new Three.MeshBasicMaterial({
+            color,
+            transparent: true,
+            opacity: 0.6,
+            side: Three.DoubleSide,
+            depthWrite: false,
+          }),
+        );
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.set(x, 0.28, z);
+        group.add(ring);
+        serviceRings.push(ring);
+        if (p.x === undefined) {
+          sign('SAFEHOUSE · ROOMS', x, z - 27, 95, p.color);
+          box(group, x, 12, z - 29, 4, 24, 4, darkMetal);
+          continue;
+        }
+        const face = p.y + p.h;
+        if (p.kind !== 'rooftop')
+          sign(p.name, p.x + p.w / 2, face + 2, Math.min(220, p.w * 0.85), p.color);
+        // Recessed glass doors, lit entrances, steps and weather canopies.
+        box(group, x, 8, face + 1, 17, 16, 1.2, glass);
+        box(group, x, 8, face + 1.8, 0.7, 16, 0.3, chrome);
+        box(group, x, 18, face + 7, 38, 2, 16, mat(p.kind === 'club' ? '#332745' : '#4f6464'));
+        box(group, x, 0.8, face + 10, 34, 1.6, 17, concrete);
+        halo(group, x, 16, face + 11, 30, p.color);
+        for (const side of [-1, 1]) {
+          box(group, x + side * 17, 9, face + 13, 1.1, 18, 1.1, chrome);
+          box(group, x + side * (p.w * 0.38), 1.5, face + 14, 23, 3, 10, concrete);
+          for (let j = 0; j < 3; j++)
+            mesh(
+              sphereGeo,
+              leafMats[1],
+              group,
+              x + side * (p.w * 0.38) + j * 5 - 5,
+              6,
+              face + 14,
+              5,
+              4,
+              4,
+            );
+        }
+        if (p.kind === 'casino') {
+          const gold = mat('#bd9654', 0.3, 0.65),
+            ivory = mat('#d9c7a5'),
+            nightGlass = mat('#203d48', 0.18, 0.65),
+            burgundy = mat('#5d2c41');
+          box(group, x, p.height + 4, p.y + p.h / 2, p.w * 0.62, 8, p.h * 0.55, ivory);
+          box(group, x, p.height + 12, p.y + p.h / 2, p.w * 0.38, 8, p.h * 0.35, burgundy);
+          for (let dx = -140; dx <= 140; dx += 28) {
+            box(group, x + dx, 38, face - 2, 5, 72, 4, ivory);
+            box(group, x + dx + 10, 38, face + 0.2, 14, 48, 0.5, nightGlass);
+            for (const h of [21, 39, 57])
+              box(
+                group,
+                x + dx + 10,
+                h,
+                face + 0.7,
+                9,
+                1,
+                0.3,
+                new Three.MeshBasicMaterial({
+                  color: '#dab174',
+                }),
+              );
+          }
+          box(group, x, 28, face + 18, 166, 4, 42, burgundy);
+          box(group, x, 30.2, face + 20, 168, 0.7, 44, gold);
+          for (let dx = -66; dx <= 66; dx += 22) box(group, x + dx, 25.7, face + 29, 7, 0.6, 3, warmLamp);
+          sign('GOLDEN TIDE', x, face + 41, 162, '#f8d78a');
+          for (const side of [-1, 1]) {
+            box(group, x + side * 149, 45, face + 1, 4, 80, 3, gold);
+            box(group, x + side * 126, p.height + 7, p.y + 30, 11, 14, 11, ivory);
+          }
+        }
+        if (p.kind === 'hospital') {
+          const red = mat('#a6313b');
+          box(group, p.x + 34, p.height - 15, face + 2, 7, 24, 1.5, red);
+          box(group, p.x + 34, p.height - 15, face + 2, 24, 7, 1.5, red);
+          box(group, x, 22, face + 24, 88, 3, 37, mat('#b1ccca'));
+          for (const side of [-1, 1]) box(group, x + side * 40, 11, face + 37, 2, 22, 2, concrete);
+          sign('EMERGENCY · 24H', x, face + 43, 90, '#e5a0a0');
+          for (let dx = -95; dx <= 95; dx += 38) {
+            box(group, x + dx, 0.15, face + 59, 1, 0.2, 28, concrete);
+            box(group, x + dx + 13, 0.15, face + 72, 25, 0.2, 1, concrete);
+          }
+        }
+        if (p.kind === 'school') {
+          box(group, p.x + 40, 32, face + 3, 1, 64, 1, chrome);
+          box(group, p.x + 48, 56, face + 3, 16, 9, 0.5, mat('#c8b894'));
+          const cx = p.x + p.w * 0.62,
+            cz = face + 57;
+          box(group, cx, 0.1, cz, 102, 0.2, 62, mat('#667e75'));
+          for (const dz of [-30, 30]) box(group, cx, 0.3, cz + dz, 102, 0.3, 1, concrete);
+          for (const dx of [-50, 50]) {
+            box(group, cx + dx, 0.3, cz, 1, 0.3, 60, concrete);
+            box(group, cx + dx, 14, cz, 1, 28, 1, chrome);
+            box(group, cx + dx, 25, cz, 1, 9, 15, concrete);
+            const hoop = mesh(
+              new Three.TorusGeometry(3, 0.25, 5, 16),
+              mat('#ad583c'),
+              group,
+              cx + dx + (dx > 0 ? -4 : 4),
+              23,
+              cz,
+            );
+            hoop.rotation.x = Math.PI / 2;
+          }
+          const mid = new Three.Mesh(
+            new Three.RingGeometry(12, 12.8, 32),
+            new Three.MeshBasicMaterial({
+              color: '#dfd6b8',
+              side: Three.DoubleSide,
+            }),
+          );
+          mid.rotation.x = -Math.PI / 2;
+          mid.position.set(cx, 0.3, cz);
+          group.add(mid);
+          box(group, cx, 0.3, cz, 1, 0.3, 60, concrete);
+        }
+        if (p.kind === 'bar') {
+          for (const side of [-1, 1]) {
+            const xx = x + side * 65,
+              zz = face + 32;
+            mesh(cylinderGeo, wood, group, xx, 7, zz, 8, 1.5, 8);
+            box(group, xx, 3.5, zz, 1.5, 7, 1.5, chrome);
+            for (const dx of [-11, 11]) {
+              box(group, xx + dx, 4, zz, 5, 1, 6, wood);
+              box(group, xx + dx, 2, zz, 1, 4, 1, chrome);
+            }
+            box(group, xx, 15, zz, 1, 30, 1, chrome);
+            mesh(new Three.ConeGeometry(16, 5, 8), mat('#956459'), group, xx, 30, zz);
+          }
+        }
+        if (p.kind === 'club') {
+          for (const side of [-1, 1]) {
+            const neon = box(
+              group,
+              x + side * 47,
+              18,
+              face + 2,
+              2,
+              33,
+              2,
+              new Three.MeshBasicMaterial({
+                color: p.color,
+              }),
+            );
+            civicNeon.push(neon);
+            halo(group, x + side * 47, 25, face + 10, 40, p.color);
+            for (let dz = 18; dz < 58; dz += 14) {
+              box(group, x + side * 14, 5, face + dz, 1, 10, 1, chrome);
+              box(group, x + side * 14, 9, face + dz + 6, 1, 0.8, 14, mat('#9c485a'));
+            }
+          }
+        }
+        if (p.kind === 'guns') {
+          for (const side of [-1, 1]) {
+            box(group, x + side * 60, 11, face + 1, 43, 15, 1, glass);
+            for (let dx = -16; dx <= 16; dx += 8)
+              box(group, x + side * 60 + dx, 11, face + 2, 0.5, 15, 0.5, chrome);
+          }
+          sign('WEAPONS · AMMO · ARMOR', x, face + 36, 137, '#e9cb91');
+        }
+        if (p.kind === 'sleep')
+          for (let dx = 30; dx < p.w; dx += 45) {
+            box(group, p.x + dx, 9, face + 1, 14, 18, 1, mat('#4c7477'));
+            box(group, p.x + dx, 11, face + 1.6, 8, 4, 0.4, glass);
+          }
+        statics.push({
+          x: p.x + p.w / 2,
+          y: p.y + p.h / 2,
+          group,
+          radius: Math.max(p.w, p.h),
+        });
+      }
+      const bloodMaps = Array.from(
+        {
+          length: 4,
+        },
+        (_, i) => {
+          const t = new Three.CanvasTexture(bloodStamp(i));
+          t.colorSpace = Three.SRGBColorSpace;
+          return t;
+        },
+      );
+      const treadCanvas = document.createElement('canvas');
+      treadCanvas.width = 64;
+      treadCanvas.height = 16;
+      const treadCtx = treadCanvas.getContext('2d');
+      treadCtx.fillStyle = '#78101c';
+      treadCtx.fillRect(0, 1, 64, 14);
+      treadCtx.clearRect(0, 7, 64, 2);
+      for (let x = 0; x < 64; x += 7) {
+        treadCtx.clearRect(x, 0, 2, 16);
+      }
+      const treadMap = new Three.CanvasTexture(treadCanvas);
+      treadMap.colorSpace = Three.SRGBColorSpace;
+      const poolGeo = new Three.PlaneGeometry(1, 1),
+        bloodMeshes = Array.from(
+          {
+            length: BLOOD_LIMIT,
+          },
+          () => {
+            const m = new Three.Mesh(
+              poolGeo,
+              new Three.MeshStandardMaterial({
+                map: bloodMaps[0],
+                color: '#ffffff',
+                roughness: 0.27,
+                transparent: true,
+                opacity: 0.97,
+                depthWrite: false,
+                polygonOffset: true,
+                polygonOffsetFactor: -2,
+                polygonOffsetUnits: -2,
+              }),
+            );
+            m.rotation.x = -Math.PI / 2;
+            m.visible = false;
+            m.renderOrder = 3;
+            m.userData.blood = true;
+            scene.add(m);
+            return m;
+          },
+        );
+      function updateCivicVisuals() {
+        const light = daylight(),
+          night = 1 - light;
+        hemi.intensity = 0.55 + light * 1.5;
+        sun.intensity = 0.25 + light * 3;
+        fill.intensity = 0.3 + night * 0.2;
+        sun.color.set(light < 0.35 ? '#f2bd93' : '#fff0ce');
+        scene.background.set('#172739').lerp(new Three.Color('#899caa'), light);
+        scene.fog.color.copy(scene.background);
+        renderer.toneMappingExposure = 1.06 + night * 0.12;
+        getElement('renderBadge').textContent =
+          'SOUTH COAST · ' + (light < 0.1 ? 'NIGHT' : light < 0.4 ? 'TWILIGHT' : 'DAY');
+        for (let i = 0; i < bloodMeshes.length; i++) {
+          const m = bloodMeshes[i],
+            p = bloodPools[i];
+          m.visible =
+            bloodOn &&
+            !!p &&
+            Math.abs(p.x - cameraTarget.x) < 850 &&
+            Math.abs(p.y - cameraTarget.y) < 950;
+          if (!m.visible) continue;
+          const age = gameTime - p.created,
+            growth = p.grow ? 1 + Math.min(0.28, age * 0.045) : 1;
+          m.position.set(p.x, (p.surface || 0) + 0.32, p.y);
+          m.rotation.z = -p.a;
+          m.scale.set(
+            p.track ? p.r * 2.6 : p.r * 2.5 * growth,
+            p.track ? p.r * 0.46 : p.r * 2.5 * growth,
+            1,
+          );
+          m.material.map = p.track ? treadMap : bloodMaps[p.variant || 0];
+          m.material.opacity = (p.opacity ?? 0.95) * clamp((240 - age) / 35, 0, 1);
+        }
+        civicNeon.forEach((n, i) =>
+          n.material.color.set(i % 2 ? '#c36fd6' : '#78a7d8').multiplyScalar(0.82),
+        );
+      }
+      // END SUBSYSTEM: src/civic3d.js

@@ -1,0 +1,2080 @@
+    // BEGIN SUBSYSTEM: src/render3d.js — Three.js renderer and resource lifecycle
+    /**
+     * Three.js renderer and resource lifecycle
+     * Source: src/render3d.js
+     * Scope: shared game closure.
+     * Asset loading, camera, lights, shared geometry, entity models, effects and drawing API.
+     */
+    /* The cinematic renderer consumes the existing simulation without changing its rules. */
+    let city3D = null,
+      visualAssets = {},
+      lastVisualTime = 0;
+    async function loadVisuals() {
+      // Native simulation tests have no image decoder; canvas geometry stays usable.
+      if (typeof Image === 'undefined') return;
+      const names = ['architecture', 'ground', 'arsenal', 'harbor'];
+      await Promise.all(
+        names.map(
+          (name) =>
+            new Promise((resolve) => {
+              const im = new Image();
+              im.onload = () => {
+                visualAssets[name] = im;
+                resolve();
+              };
+              im.onerror = () => resolve();
+              im.src = ASSETS[name];
+            }),
+        ),
+      );
+      drawWeapon();
+      if (gameMode === 'arsenal') renderArsenal();
+      if (typeof THREE === 'undefined' || !visualAssets.architecture || !visualAssets.ground) return;
+      try {
+        city3D = createCityRenderer();
+        getElement('renderBadge').textContent = 'SOUTH COAST · DUSK';
+      } catch (error) {
+        console.warn('Reduced graphics mode:', error);
+        getElement('renderBadge').textContent = 'REDUCED GRAPHICS';
+      }
+      drawWeapon();
+    }
+    function createCityRenderer() {
+      const Three = THREE,
+        scene = new Three.Scene();
+      scene.background = new Three.Color('#444c63');
+      scene.fog = new Three.FogExp2('#747381', 0.00015);
+      const renderer = new Three.WebGLRenderer({
+        canvas: getElement('scene'),
+        antialias: true,
+        alpha: false,
+        powerPreference: 'high-performance',
+      });
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, touchEnabled() ? 1 : 1.6));
+      renderer.setSize(viewportWidth, viewportHeight);
+      renderer.outputColorSpace = Three.SRGBColorSpace;
+      renderer.toneMapping = Three.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.18;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = Three.PCFSoftShadowMap;
+      renderer.shadowMap.autoUpdate = false;
+      const camera = new Three.OrthographicCamera(-500, 500, 350, -350, 1, 7500),
+        ray = new Three.Raycaster(),
+        groundPlane = new Three.Plane(new Three.Vector3(0, 1, 0), -9),
+        hitPoint = new Three.Vector3();
+      const hemi = new Three.HemisphereLight('#b3c5e9', '#564943', 2.0);
+      scene.add(hemi);
+      const sun = new Three.DirectionalLight('#ffd7a0', 3.0);
+      sun.castShadow = true;
+      sun.shadow.mapSize.set(2048, 2048);
+      sun.shadow.camera.left = -760;
+      sun.shadow.camera.right = 760;
+      sun.shadow.camera.top = 760;
+      sun.shadow.camera.bottom = -760;
+      sun.shadow.camera.near = 10;
+      sun.shadow.camera.far = 2200;
+      sun.shadow.bias = -0.0004;
+      sun.shadow.normalBias = 1.4;
+      sun.shadow.radius = 3;
+      scene.add(sun, sun.target);
+      const fill = new Three.DirectionalLight('#879ccc', 0.55);
+      fill.position.set(-200, 100, -300);
+      scene.add(fill);
+      const allBuildings = [],
+        statics = [],
+        carModels = new Map(),
+        personModels = new Map(),
+        pickupModels = new Map(),
+        fx = [],
+        lightObjects = [];
+      const boxGeo = new Three.BoxGeometry(1, 1, 1),
+        sphereGeo = new Three.SphereGeometry(1, 12, 8),
+        wheelGeo = new Three.CylinderGeometry(1, 1, 1, 20),
+        cylinderGeo = new Three.CylinderGeometry(1, 1, 1, 10);
+      const mat = (color, roughness = 0.7, metalness = 0) =>
+        new Three.MeshStandardMaterial({
+          color,
+          roughness,
+          metalness,
+        });
+      const concrete = mat('#8a887e'),
+        darkMetal = mat('#353a3d', 0.5, 0.6),
+        chrome = mat('#b8c0c3', 0.22, 0.88),
+        rubber = mat('#141518', 0.93),
+        glass = new Three.MeshStandardMaterial({
+          color: '#182b3c',
+          roughness: 0.12,
+          metalness: 0.65,
+        }),
+        wood = mat('#4f4037'),
+        leafMats = ['#344c3c', '#4e654a', '#5b7150'].map((c) => mat(c));
+      const warmLamp = new Three.MeshBasicMaterial({
+          color: '#ffde9b',
+        }),
+        tailLamp = new Three.MeshBasicMaterial({
+          color: '#e6614f',
+        });
+      function mesh(geo, material, parent, x, y, z, sx = 1, sy = 1, sz = 1) {
+        const m = new Three.Mesh(geo, material);
+        m.position.set(x, y, z);
+        m.scale.set(sx, sy, sz);
+        m.castShadow = true;
+        m.receiveShadow = true;
+        parent.add(m);
+        return m;
+      }
+      function box(parent, x, y, z, width, height, depth, material) {
+        return mesh(boxGeo, material, parent, x, y, z, width, height, depth);
+      }
+      function rod(parent, a, b, r, material) {
+        const dir = new Three.Vector3().subVectors(b, a),
+          m = mesh(
+            cylinderGeo,
+            material,
+            parent,
+            (a.x + b.x) / 2,
+            (a.y + b.y) / 2,
+            (a.z + b.z) / 2,
+            r,
+            dir.length(),
+            r,
+          );
+        m.quaternion.setFromUnitVectors(new Three.Vector3(0, 1, 0), dir.normalize());
+        return m;
+      }
+      function texture(im, quadrant, repeatX = 1, repeatY = 1) {
+        const tile = document.createElement('canvas');
+        tile.width = tile.height = 512;
+        const drawingContext2 = tile.getContext('2d');
+        drawingContext2.drawImage(
+          im,
+          ((quadrant % 2) * im.width) / 2,
+          (Math.floor(quadrant / 2) * im.height) / 2,
+          im.width / 2,
+          im.height / 2,
+          0,
+          0,
+          512,
+          512,
+        );
+        const tx = new Three.CanvasTexture(tile);
+        tx.colorSpace = Three.SRGBColorSpace;
+        tx.wrapS = tx.wrapT = Three.RepeatWrapping;
+        tx.repeat.set(repeatX, repeatY);
+        tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        return tx;
+      }
+      const wallTextures = [0, 1, 2, 3].map((i) => texture(visualAssets.architecture, i));
+      const roofTexture = texture(visualAssets.ground, 3, 2, 2);
+      const roofMat = new Three.MeshStandardMaterial({
+        map: roofTexture,
+        color: '#7d838a',
+        roughness: 0.88,
+      });
+      // Subtle environment reflections across paintwork, chrome and glass.
+      const faces = [];
+      for (let i = 0; i < 6; i++) {
+        const c = document.createElement('canvas');
+        c.width = c.height = 128;
+        const drawingContext2 = c.getContext('2d'),
+          gr = drawingContext2.createLinearGradient(0, 0, 0, 128);
+        gr.addColorStop(0, '#718bad');
+        gr.addColorStop(0.43, '#b3b0a0');
+        gr.addColorStop(0.5, '#d9bc95');
+        gr.addColorStop(0.56, '#4f555e');
+        gr.addColorStop(1, '#181e28');
+        drawingContext2.fillStyle = gr;
+        drawingContext2.fillRect(0, 0, 128, 128);
+        faces.push(c);
+      }
+      const env = new Three.CubeTexture(faces);
+      env.needsUpdate = true;
+      env.colorSpace = Three.SRGBColorSpace;
+      scene.environment = env;
+      // Real ground materials and painted markings are baked once, then receive live shadows.
+      const terrain = document.createElement('canvas');
+      terrain.width = terrain.height = 4096;
+      const drawingContext = terrain.getContext('2d');
+      drawingContext.scale(4096 / CITY_SIZE, 4096 / CITY_SIZE);
+      function pattern(q, scale) {
+        const tile = document.createElement('canvas');
+        tile.width = tile.height = scale;
+        const tc = tile.getContext('2d');
+        tc.drawImage(
+          visualAssets.ground,
+          ((q % 2) * visualAssets.ground.width) / 2,
+          (Math.floor(q / 2) * visualAssets.ground.height) / 2,
+          visualAssets.ground.width / 2,
+          visualAssets.ground.height / 2,
+          0,
+          0,
+          scale,
+          scale,
+        );
+        if (q === 0) {
+          tc.fillStyle = '#222c38b0';
+          tc.fillRect(0, 0, scale, scale);
+        }
+        return drawingContext.createPattern(tile, 'repeat');
+      }
+      const asphalt = pattern(0, 112),
+        paving = pattern(1, 72),
+        grass = pattern(2, 100),
+        tarmac = pattern(3, 120);
+      drawingContext.save();
+      coastPath(drawingContext);
+      drawingContext.clip();
+      drawingContext.fillStyle = '#263e4d';
+      drawingContext.fillRect(0, 0, CITY_SIZE, CITY_SIZE);
+      drawingContext.fillStyle = paving;
+      drawingContext.fillRect(48, 45, CITY_SIZE - 112, CITY_SIZE - 112);
+      paintCityStreets(drawingContext, true);
+      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
+        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
+          const x = ROAD_CENTERS[bx] + 79,
+            z = ROAD_CENTERS[by] + 79;
+          if (
+            !validCityBlock(x + 10, z + 10) ||
+            harborOverlap(x, z, 354, 354) ||
+            stadiumOverlap(x, z, 354, 354)
+          )
+            continue;
+          if (bx === 8 && by === 4) {
+            drawingContext.fillStyle = paving;
+            drawingContext.fillRect(ROOFTOP.x - 14, ROOFTOP.y - 14, ROOFTOP.w + 28, ROOFTOP.h + 44);
+            continue;
+          }
+          if (isPark(bx, by)) continue;
+          // Curbs catch the low evening sun.
+          if (!onBoulevard(x + 177, z - 2, 190)) box(scene, x + 177, 1.4, z - 2, 354, 2.8, 3, concrete);
+          if (!onBoulevard(x - 2, z + 177, 190)) box(scene, x - 2, 1.4, z + 177, 3, 2.8, 354, concrete);
+          if (!onBoulevard(x + 355, z + 177, 190))
+            box(scene, x + 355, 1.4, z + 177, 3, 2.8, 354, concrete);
+          if (!onBoulevard(x + 177, z + 355, 190))
+            box(scene, x + 177, 1.4, z + 355, 354, 2.8, 3, concrete);
+          const park = isPark(bx, by);
+          if (park) {
+            continue;
+          } else {
+            drawingContext.fillStyle = tarmac;
+            drawingContext.fillRect(x + 18, z + 170, 318, 165);
+            drawingContext.strokeStyle = '#bebeb044';
+            drawingContext.lineWidth = 1;
+            for (let px = x + 20; px < x + 340; px += 26) {
+              drawingContext.beginPath();
+              drawingContext.moveTo(px, z + 178);
+              drawingContext.lineTo(px, z + 218);
+              drawingContext.moveTo(px, z + 291);
+              drawingContext.lineTo(px, z + 330);
+              drawingContext.stroke();
+            }
+          }
+        }
+      // Patches, drains, stop lines and curb stains keep the road from reading as a flat color.
+      let rseed = 47;
+      const random = () => {
+        rseed = (rseed * 1664525 + 1013904223) >>> 0;
+        return rseed / 4294967296;
+      };
+      for (let i = 0; i < 330; i++) {
+        const x = 80 + random() * (CITY_SIZE - 240),
+          z = 80 + random() * (CITY_SIZE - 240);
+        if (!onRoad(x, z)) continue;
+        drawingContext.fillStyle = 'rgba(12,17,23,' + (0.12 + random() * 0.12) + ')';
+        drawingContext.beginPath();
+        drawingContext.ellipse(x, z, 12 + random() * 35, 3 + random() * 9, random() * 3, 0, TAU);
+        drawingContext.fill();
+      }
+      for (const r of ROAD_CENTERS)
+        for (let z = 240; z < CITY_SIZE - 150; z += 230) {
+          drawingContext.fillStyle = '#1d282d';
+          drawingContext.fillRect(r + 48, z, 5, 11);
+          drawingContext.fillStyle = '#707576';
+          for (let k = 0; k < 10; k += 3) drawingContext.fillRect(r + 48, z + k, 5, 1);
+        }
+      // A broad river separates the old city from the garden borough.
+      paintPromenades(drawingContext);
+      for (const bridge of BRIDGES) {
+        drawingContext.fillStyle = asphalt;
+        drawingContext.fillRect(RIVER.left - 140, bridge - 56, RIVER.right - RIVER.left + 280, 112);
+        for (let x = RIVER.left - 140; x < RIVER.right + 140; x += 31) {
+          drawingContext.fillStyle = '#c3af72';
+          drawingContext.fillRect(x, bridge - 2, 15, 1.4);
+          drawingContext.fillRect(x, bridge + 2, 15, 1.4);
+        }
+      }
+      drawingContext.fillStyle = tarmac;
+      drawingContext.fillRect(1250, 3971, 300, 158);
+      for (let x = 1254; x < 1540; x += 53) {
+        drawingContext.fillStyle = '#cbd3c077';
+        drawingContext.fillRect(x, 3975, 1.5, 45);
+      }
+      for (const pad of HELIPADS) {
+        drawingContext.fillStyle = tarmac;
+        drawingContext.fillRect(pad.x - 50, pad.y - 50, 100, 100);
+      }
+      drawingContext.restore();
+      paintDistrictGround(drawingContext);
+      paintParks(drawingContext);
+      for (const r of SERVICE_ROADS.filter((r) => r.name.startsWith('SOUTHPORT ')))
+        strokeRoad(drawingContext, r.points, r.width, '#606664');
+      paintServiceForecourts(drawingContext, true);
+      paintCasinoGround(drawingContext);
+      paintHarborGround(drawingContext);
+      paintDepotGround(drawingContext);
+      paintSportsGround(drawingContext);
+      const groundTx = new Three.CanvasTexture(terrain);
+      groundTx.colorSpace = Three.SRGBColorSpace;
+      groundTx.anisotropy = 8;
+      const roughCanvas = document.createElement('canvas');
+      roughCanvas.width = roughCanvas.height = 896;
+      const rg = roughCanvas.getContext('2d');
+      rg.scale(896 / CITY_SIZE, 896 / CITY_SIZE);
+      rg.fillStyle = '#e9e9e9';
+      rg.fillRect(0, 0, CITY_SIZE, CITY_SIZE);
+      rg.fillStyle = '#737373';
+      for (const r of ROAD_CENTERS) {
+        rg.fillRect(r - 56, 48, 112, CITY_SIZE - 112);
+        rg.fillRect(51, r - 56, CITY_SIZE - 112, 112);
+      }
+      const roughTx = new Three.CanvasTexture(roughCanvas);
+      const groundMesh = new Three.Mesh(
+        new Three.PlaneGeometry(CITY_SIZE, CITY_SIZE),
+        new Three.MeshStandardMaterial({
+          map: groundTx,
+          roughnessMap: roughTx,
+          roughness: 1,
+          metalness: 0.14,
+          transparent: false,
+          alphaTest: 0.5,
+        }),
+      );
+      groundMesh.rotation.x = -Math.PI / 2;
+      groundMesh.position.set(CITY_SIZE / 2, 0.02, CITY_SIZE / 2);
+      groundMesh.receiveShadow = true;
+      scene.add(groundMesh);
+      for (let i = 0; i < buildings.length; i++) {
+        const b = buildings[i];
+        if (b.depotWall) continue;
+        const height = b.height,
+          group = new Three.Group();
+        group.position.set(b.x, 0, b.y);
+        scene.add(group);
+        const wall = wallTextures[b.style === 2 ? 2 : i % 4 === 2 ? 3 : i % 2].clone();
+        if (b.style !== 2) wall.repeat.set(Math.round(b.w / 34) / 4, height / 72);
+        wall.needsUpdate = true;
+        const face = new Three.MeshStandardMaterial({
+          map: b.tropical ? null : wall,
+          color: b.tropical ? ['#e7c8b5', '#badcd5', '#ddd7c3', '#c4d0e5'][i % 4] : '#b6b2a9',
+          roughness: b.tropical ? 0.72 : 0.91,
+        });
+        const top = roofMat.clone(),
+          trim = mat(i % 2 ? '#9a958d' : '#796b62');
+        const block = box(group, b.w / 2, height / 2, b.h / 2, b.w, height, b.h, [
+          face,
+          face,
+          top,
+          concrete,
+          face,
+          face,
+        ]);
+        box(group, b.w / 2, height + 1.8, 2, b.w + 3, 3.6, 4, trim);
+        box(group, b.w / 2, height + 1.8, b.h - 2, b.w + 3, 3.6, 4, trim);
+        box(group, 2, height + 1.8, b.h / 2, 4, 3.6, b.h, trim);
+        box(group, b.w - 2, height + 1.8, b.h / 2, 4, 3.6, b.h, trim);
+        box(group, b.w / 2, 3, b.h + 1, b.w + 3, 6, 3, trim);
+        const ac = mat('#868c8e', 0.7, 0.4),
+          vent = mat('#434a4b', 0.8, 0.4);
+        for (let j = 0; !b.roofBar && j < Math.max(1, Math.floor(b.w / 85)); j++) {
+          const x = 25 + j * 75,
+            z = 30 + (i % 3) * 24;
+          box(group, x, height + 5, z, 21, 10, 16, ac);
+          box(group, x, height + 10.1, z, 16, 0.3, 11, vent);
+          for (let q = 0; q < 4; q++) box(group, x - 6 + q * 4, height + 10.4, z, 1, 0.5, 11, ac);
+          box(group, x + 3, height + 1, z + 15, 9, 2, 15, vent);
+        }
+        if (!b.roofBar && !b.tropical && i % 5 === 0 && b.style !== 2) {
+          mesh(
+            new Three.CylinderGeometry(11, 11, 20, 14),
+            wood,
+            group,
+            b.w - 29,
+            height + 16,
+            b.h - 27,
+          );
+          mesh(new Three.ConeGeometry(13, 6, 14), darkMetal, group, b.w - 29, height + 29, b.h - 27);
+          for (const dx of [-8, 8])
+            for (const dz of [-8, 8])
+              box(group, b.w - 29 + dx, height + 4, b.h - 27 + dz, 1, 9, 1, darkMetal);
+        }
+        if (!b.roofBar && !b.tropical && i % 4 === 0) {
+          const mast = box(group, 18, height + 18, b.h - 18, 0.9, 36, 0.9, darkMetal);
+          box(group, 18, height + 29, b.h - 18, 22, 0.7, 0.7, darkMetal);
+          box(group, 18, height + 23, b.h - 18, 15, 0.7, 0.7, darkMetal);
+        }
+        if (b.tropical && !b.roofBar) {
+          for (let y = 10; y < height - 3; y += 13)
+            for (let x = 12; x < b.w - 10; x += 22) {
+              box(group, x, y, b.h + 0.6, 13, 6, 0.7, glass);
+              box(group, x, y, -0.6, 13, 6, 0.7, glass);
+            }
+          if (!b.roofBar)
+            box(group, b.w / 2, height + 4, b.h / 2, b.w * 0.72, 4, b.h * 0.75, mat('#e8dfcd'));
+        }
+        if (b.roofBar) {
+          for (let y = 25; y < height - 8; y += 18) {
+            for (const z of [-1, b.h + 1]) {
+              box(group, b.w / 2, y, z, b.w + 2, 1.8, 3, concrete);
+              for (let x = 18; x < b.w - 12; x += 26) {
+                box(group, x, y + 7, z, 18, 10, 1, glass);
+                box(group, x, y + 2, z + (z < 0 ? -1 : 1), 20, 1.2, 5, trim);
+              }
+            }
+            for (const x of [-1, b.w + 1]) {
+              box(group, x, y, b.h / 2, 3, 1.8, b.h, concrete);
+              for (let z = 18; z < b.h - 12; z += 26) box(group, x, y + 7, z, 1, 10, 18, glass);
+            }
+          }
+          for (const x of [5, b.w - 5])
+            for (const z of [5, b.h - 5]) box(group, x, height / 2, z, 7, height + 1, 7, concrete);
+        }
+        allBuildings.push({
+          b,
+          group,
+          height,
+          materials: [face, top, trim],
+          opacity: 1,
+        });
+        statics.push({
+          x: b.x + b.w / 2,
+          y: b.y + b.h / 2,
+          group,
+          radius: Math.max(b.w, b.h),
+        });
+      }
+      // Street trees with proper trunks and layered crowns.
+      const blossomMat = mat('#d5a2b5');
+      const leafGeo = new Three.IcosahedronGeometry(1, 1);
+      trees.forEach((t, i) => {
+        if (t.tropical ?? (t.x > RIVER.right && !t.county)) {
+          makePalm(t.x, t.y, t.r / 17);
+          return;
+        }
+        const group = new Three.Group();
+        group.position.set(t.x, terrainHeight(t.x, t.y), t.y);
+        scene.add(group);
+        mesh(new Three.CylinderGeometry(1.1, 1.8, t.r * 1.5, 7), wood, group, 0, t.r * 0.75, 0);
+        for (let j = 0; j < 4; j++) {
+          const a = j * 2.399;
+          if (t.pine)
+            mesh(
+              new Three.ConeGeometry(t.r * (0.88 - j * 0.12), t.r * 1.45, 7),
+              leafMats[(i + j) % 3],
+              group,
+              0,
+              t.r * (1.4 + j * 0.45),
+              0,
+            );
+          else
+            mesh(
+              leafGeo,
+              t.blossom ? blossomMat : leafMats[(i + j) % 3],
+              group,
+              Math.cos(a) * t.r * 0.4,
+              t.r * (1.5 + j * 0.17),
+              Math.sin(a) * t.r * 0.4,
+              t.r * 0.83,
+              t.r * 0.72,
+              t.r * 0.8,
+            );
+        }
+        statics.push({
+          x: t.x,
+          y: t.y,
+          group,
+          radius: 40,
+        });
+      });
+      // Lamps, illuminated signs and street furniture.
+      const haloCanvas = document.createElement('canvas');
+      haloCanvas.width = haloCanvas.height = 64;
+      const hg = haloCanvas.getContext('2d'),
+        hr = hg.createRadialGradient(32, 32, 0, 32, 32, 32);
+      hr.addColorStop(0, '#fff8df');
+      hr.addColorStop(0.14, '#ffda92c0');
+      hr.addColorStop(0.45, '#ffb45230');
+      hr.addColorStop(1, '#ffb45200');
+      hg.fillStyle = hr;
+      hg.fillRect(0, 0, 64, 64);
+      const haloTx = new Three.CanvasTexture(haloCanvas);
+      const haloMat = new Three.SpriteMaterial({
+        map: haloTx,
+        color: '#ffd99b',
+        transparent: true,
+        blending: Three.AdditiveBlending,
+        depthWrite: false,
+      });
+      function halo(parent, x, y, z, size, color) {
+        const s = new Three.Sprite(haloMat.clone());
+        s.position.set(x, y, z);
+        s.scale.set(size, size, 1);
+        if (color) s.material.color.set(color);
+        parent.add(s);
+        return s;
+      }
+      for (let i = 0; i < lamps.length; i += 2) {
+        const l = lamps[i],
+          group = new Three.Group();
+        group.position.set(l.x, 0, l.y);
+        scene.add(group);
+        box(group, 0, 17, 0, 1.1, 34, 1.1, darkMetal);
+        box(group, 3, 34, 0, 7, 1, 1, darkMetal);
+        box(group, 6, 33.5, 0, 5, 1.2, 3, warmLamp);
+        halo(group, 6, 33, 0, 14);
+        const glow = new Three.Mesh(
+          new Three.PlaneGeometry(65, 65),
+          new Three.MeshBasicMaterial({
+            map: haloTx,
+            color: '#ffbf73',
+            transparent: true,
+            opacity: 0.16,
+            depthWrite: false,
+            blending: Three.AdditiveBlending,
+          }),
+        );
+        glow.rotation.x = -Math.PI / 2;
+        glow.position.set(6, 0.1, 0);
+        group.add(glow);
+        statics.push({
+          x: l.x,
+          y: l.y,
+          group,
+          radius: 50,
+        });
+      }
+      function sign(text, x, z, width, color, vertical = false) {
+        const cv = document.createElement('canvas');
+        cv.width = 1024;
+        cv.height = 256;
+        const cg = cv.getContext('2d');
+        cg.fillStyle = '#18272d';
+        cg.fillRect(0, 0, 1024, 256);
+        cg.strokeStyle = color;
+        cg.lineWidth = 7;
+        cg.strokeRect(20, 22, 984, 212);
+        cg.fillStyle = color;
+        cg.font = '600 86px Arial';
+        cg.textAlign = 'center';
+        cg.textBaseline = 'middle';
+        cg.fillText(text, 512, 132, 932);
+        const tx = new Three.CanvasTexture(cv);
+        tx.colorSpace = Three.SRGBColorSpace;
+        tx.minFilter = Three.LinearMipmapLinearFilter;
+        tx.magFilter = Three.LinearFilter;
+        tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        const m = new Three.Mesh(
+          new Three.PlaneGeometry(width, width / 4),
+          new Three.MeshBasicMaterial({
+            map: tx,
+            side: Three.DoubleSide,
+            toneMapped: false,
+          }),
+        );
+        m.position.set(x, 23, z + 0.6);
+        m.userData.sign = true;
+        scene.add(m);
+        m.userData.backing = box(scene, x, 23, z - 1.5, width + 5, width / 4 + 5, 3, darkMetal);
+        return m;
+      }
+      sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb');
+      sign('24 HOUR', 1470, 544, 85, '#f3d394');
+      sign('FREIGHT CO.', 2880, 549, 106, '#c1d4bb');
+      sign('AUTO REPAIR', 1880, 1571, 100, '#adebd4');
+      const ph = new Three.Group();
+      ph.position.set(phone.x, 0, phone.y);
+      scene.add(ph);
+      box(ph, 0, 7, 0, 7, 14, 5, mat('#4f7d73', 0.5, 0.45));
+      box(ph, 0, 10, 2.8, 5, 7, 0.5, darkMetal);
+      box(ph, 0, 12, 3.1, 3, 2, 0.1, mat('#b0c9b1'));
+      box(ph, 0, 17, 0, 12, 2, 8, mat('#517c70'));
+      halo(ph, 0, 14, 0, 8, '#9bdbb1');
+      // @include src/garage3d.js
+      // @include src/landmarks3d.js
+      // @include src/civic3d.js
+      // @include src/air-cover3d.js
+      // @include src/renewal3d.js
+      // @include src/sports3d.js
+      // @include src/transit3d.js
+      // @include src/ecology3d.js
+      // @include src/world3d.js
+      // @include src/county3d.js
+      // @include src/harbor3d.js
+      // The bodyshell uses beveled cross-sections, not a box silhouette.
+      function bodyGeo(l, w, h) {
+        const verts = [],
+          indices = [],
+          sections = [
+            [-0.5, 0.82, 0.84],
+            [-0.43, 1, 1],
+            [-0.21, 1, 1],
+            [0.19, 1, 1],
+            [0.42, 0.94, 0.88],
+            [0.5, 0.78, 0.73],
+          ];
+        for (const [xx, ww, hh] of sections) {
+          const z = (w / 2) * ww,
+            top = h * hh;
+          for (const [y, zz] of [
+            [3.8, -z * 0.84],
+            [4.8, -z],
+            [top - 1, -z],
+            [top, -z * 0.83],
+            [top, z * 0.83],
+            [top - 1, z],
+            [4.8, z],
+            [3.8, z * 0.84],
+          ])
+            verts.push(xx * l, y, zz);
+        }
+        for (let k = 0; k < sections.length - 1; k++)
+          for (let j = 0; j < 8; j++) {
+            let a = k * 8 + j,
+              b = k * 8 + ((j + 1) % 8),
+              c = (k + 1) * 8 + ((j + 1) % 8),
+              d = (k + 1) * 8 + j;
+            indices.push(a, b, d, b, c, d);
+          }
+        for (let j = 1; j < 7; j++) {
+          indices.push(0, j + 1, j);
+          indices.push(40, 40 + j, 41 + j);
+        }
+        const geo = new Three.BufferGeometry();
+        geo.setAttribute('position', new Three.Float32BufferAttribute(verts, 3));
+        geo.setIndex(indices);
+        geo.computeVertexNormals();
+        return geo;
+      }
+      function cabinGeo(l, w, base, roof, van = false) {
+        const xb = van ? -0.41 : -0.32,
+          xf = van ? 0.27 : 0.27,
+          rb = van ? -0.4 : -0.19,
+          rf = van ? 0.13 : 0.07,
+          wb = w * 0.42,
+          wt = w * 0.35;
+        const v = [
+          xb * l,
+          base,
+          -wb,
+          xf * l,
+          base,
+          -wb,
+          xf * l,
+          base,
+          wb,
+          xb * l,
+          base,
+          wb,
+          rb * l,
+          roof,
+          -wt,
+          rf * l,
+          roof,
+          -wt,
+          rf * l,
+          roof,
+          wt,
+          rb * l,
+          roof,
+          wt,
+        ];
+        const geo = new Three.BufferGeometry();
+        geo.setAttribute('position', new Three.Float32BufferAttribute(v, 3));
+        geo.setIndex([
+          0, 4, 1, 1, 4, 5, 1, 5, 2, 2, 5, 6, 2, 6, 3, 3, 6, 7, 3, 7, 0, 0, 7, 4, 4, 7, 5, 5, 7, 6,
+        ]);
+        geo.computeVertexNormals();
+        return geo;
+      }
+      // @include src/helicopter3d.js
+      // @include src/vehicles3d.js
+      // @include src/plane3d.js
+      function makeVehicle(vehicle) {
+        if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
+        if (vehicle.type === 'plane') return makePlane(vehicle);
+        if (vehicleSpec(vehicle).tank) return makeTank(vehicle);
+        if (vehicle.type === 'helicopter') return makeHelicopter(vehicle);
+        if (vehicleSpec(vehicle).bike) return makeMotorcycle(vehicle);
+        if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
+        if (vehicleSpec(vehicle).boat) return makeBoat(vehicle);
+        if (vehicleSpec(vehicle).truck) return makeTruck(vehicle);
+        const group = new Three.Group(),
+          body = new Three.Group();
+        group.add(body);
+        scene.add(group);
+        const vehicleDefinition = vehicleSpec(vehicle),
+          l = vehicleDefinition.l,
+          w = vehicleDefinition.w * 0.87,
+          low = ['sport', 'supercar', 'roadster'].includes(vehicle.type),
+          open = vehicle.type === 'roadster',
+          rodCar = vehicle.type === 'hotrod',
+          rally = vehicle.type === 'rally',
+          limo = vehicle.type === 'limousine',
+          van = ['van', 'suv'].includes(vehicle.type),
+          roof = van ? 19 : rally ? 17 : rodCar ? 17 : low ? 11.7 : 14.5,
+          h = low ? 7 : 9;
+        const paint = new Three.MeshStandardMaterial({
+          color: vehicle.color,
+          roughness: 0.3,
+          metalness: 0.63,
+          envMapIntensity: 0.8,
+        });
+        const shell = mesh(bodyGeo(l, w, h), paint, body, 0, 0, 0),
+          original = new Float32Array(shell.geometry.attributes.position.array),
+          wheels = [],
+          bumpers = [];
+        const cabin = open
+          ? box(body, l * 0.14, h + 2.4, 0, 0.7, 5, w * 0.73, glass.clone())
+          : mesh(
+              cabinGeo(
+                l * (rodCar ? 0.55 : 1),
+                w * (rodCar ? 0.88 : 1),
+                h - 0.5,
+                roof,
+                van || rally || limo,
+              ),
+              glass.clone(),
+              body,
+              rodCar ? -l * 0.17 : 0,
+              0,
+              0,
+            );
+        if (open) cabin.rotation.z = 0.3;
+        if (!open)
+          box(
+            body,
+            l * (rodCar ? -0.19 : van || rally || limo ? -0.135 : -0.06),
+            roof + 0.1,
+            0,
+            l * (rodCar ? 0.25 : van || rally || limo ? 0.55 : 0.26),
+            0.7,
+            w * 0.7,
+            paint,
+          );
+        if (van) {
+          box(body, -l * 0.18, (roof + h) / 2, 0, l * 0.51, roof - h, w * 0.83, paint);
+          box(body, -l * 0.47, 11, 0, 0.7, 13, w * 0.74, chrome);
+          box(body, -l * 0.482, 11, 0, 0.5, 12, 0.3, darkMetal);
+        }
+        for (const side of [-1, 1]) {
+          const z = side * w * 0.423;
+          if (!open && !rodCar) {
+            rod(
+              body,
+              new Three.Vector3(-l * (van || rally || limo ? 0.41 : 0.32), h, z),
+              new Three.Vector3(-l * (van || rally || limo ? 0.4 : 0.19), roof, side * w * 0.35),
+              0.42,
+              paint,
+            );
+            rod(
+              body,
+              new Three.Vector3(l * 0.27, h, z),
+              new Three.Vector3(l * (van || rally || limo ? 0.13 : 0.07), roof, side * w * 0.35),
+              0.45,
+              paint,
+            );
+            rod(
+              body,
+              new Three.Vector3(-l * 0.055, h, z),
+              new Three.Vector3(-l * 0.055, roof, side * w * 0.35),
+              0.42,
+              darkMetal,
+            );
+          }
+          box(body, -l * 0.1, h - 0.8, side * w * 0.503, l * 0.35, 0.35, 0.25, darkMetal);
+          box(body, -l * 0.14, h - 0.6, side * w * 0.515, 3, 0.45, 0.4, chrome);
+          box(body, l * 0.09, h + 1.2, side * w * 0.52, 2.1, 1.3, 1.5, paint);
+          box(body, -1, 4.7, side * w * 0.51, l * 0.75, 0.5, 0.3, chrome);
+          for (const x of [-l * 0.31, l * 0.3]) {
+            const wheel = new Three.Group();
+            wheel.position.set(x, 4.2, side * (w * 0.46));
+            body.add(wheel);
+            wheels.push({
+              wheel,
+              side,
+            });
+            const tire = mesh(wheelGeo, rubber, wheel, 0, 0, 0, 4.2, 2.6, 4.2);
+            tire.rotation.x = Math.PI / 2;
+            const hub = mesh(wheelGeo, chrome, wheel, 0, 0, side * 1.4, 2.8, 0.3, 2.8);
+            hub.rotation.x = Math.PI / 2;
+            const center = mesh(wheelGeo, darkMetal, wheel, 0, 0, side * 1.61, 1, 0.4, 1);
+            center.rotation.x = Math.PI / 2;
+            for (let s = 0; s < 5; s++) {
+              const spoke = box(wheel, 0, 0, side * 1.65, 0.55, 5, 0.2, chrome);
+              spoke.rotation.z = (s * Math.PI) / 5;
+            }
+          }
+          box(body, l * 0.47, h - 2, side * w * 0.3, 1.5, 2.5, w * 0.24, warmLamp);
+          box(body, -l * 0.47, h - 2, side * w * 0.3, 1.2, 2, w * 0.22, tailLamp);
+        }
+        bumpers.push(box(body, l * 0.48, 4.8, 0, 1.1, 1.4, w * 0.78, chrome));
+        box(body, l * 0.489, 6.2, 0, 0.4, 2, w * 0.33, darkMetal);
+        bumpers.push(box(body, -l * 0.49, 5, 0, 1, 1.4, w * 0.8, chrome));
+        box(body, -l * 0.5, 6.5, 0, 0.5, 1.7, 4.5, mat('#dbd3b8'));
+        box(body, -l * 0.46, 3.2, -w * 0.3, 2.6, 0.8, 1.3, chrome);
+        if (vehicle.type === 'muscle') {
+          box(body, l * 0.28, h + 0.45, 0, l * 0.18, 0.8, 4, darkMetal);
+          box(body, -l * 0.4, h + 0.6, 0, 2, 1, w * 0.8, paint);
+        }
+        if (low && !open) {
+          box(body, -l * 0.39, h + 3, 0, 3, 0.8, w * 0.97, paint);
+          for (const side of [-1, 1])
+            box(body, -l * 0.39, h + 1.7, side * w * 0.3, 0.7, 2, 0.7, darkMetal);
+        }
+        if (vehicle.type === 'taxi') box(body, -1, roof + 1.5, 0, 6, 2.2, 4, mat('#d1c5a2'));
+        coachDetails(vehicle, body, l, w, h, roof, paint);
+        const strobes = [];
+        if (vehicle.type === 'police') {
+          box(body, -1, roof + 1.2, 0, 3, 1, w * 0.73, darkMetal);
+          for (const side of [-1, 1]) {
+            const model = box(
+              body,
+              -1,
+              roof + 2,
+              side * 4,
+              3,
+              1.5,
+              5,
+              new Three.MeshBasicMaterial({
+                color: side === 1 ? '#5186fa' : '#f24632',
+              }),
+            );
+            strobes.push(model);
+          }
+          for (const side of [-1, 1])
+            box(body, 0, h - 2, side * w * 0.501, l * 0.4, 3, 0.22, mat('#d8d3c7'));
+        }
+        const cracks = new Three.Group();
+        body.add(cracks);
+        const crackMat = new Three.LineBasicMaterial({
+          color: '#b7c7cb',
+          transparent: true,
+          opacity: 0.7,
+        });
+        for (let i = 0; i < 5; i++) {
+          const z = (i - 2) * w * 0.12,
+            points = [
+              new Three.Vector3(l * 0.185, roof - 2, z),
+              new Three.Vector3(l * 0.19 + 1, roof - 2.7, z + 2),
+              new Three.Vector3(l * 0.185 - 2, roof - 2, z + 4),
+            ];
+          cracks.add(new Three.Line(new Three.BufferGeometry().setFromPoints(points), crackMat));
+        }
+        cracks.visible = false;
+        const scuffs = [];
+        for (const side of [-1, 1]) {
+          const model = box(
+            body,
+            2,
+            h - 2,
+            side * (w * 0.501),
+            l * 0.43,
+            0.8,
+            0.2,
+            mat('#8d9290', 0.8, 0.3),
+          );
+          model.visible = false;
+          scuffs.push(model);
+        }
+        const hood = box(body, l * 0.34, h + 0.05, 0, l * 0.25, 0.4, w * 0.67, paint);
+        const bumperOrigins = bumpers.map((b) => b.position.clone());
+        return {
+          group,
+          body,
+          paint,
+          color: vehicle.color,
+          strobes,
+          dead: false,
+          shell,
+          original,
+          cabin,
+          cracks,
+          scuffs,
+          wheels,
+          bumpers,
+          bumperOrigins,
+          hood,
+          hoodBaseY: h + 0.05,
+          damageVersion: -1,
+        };
+      }
+      function makePerson(person, isPlayer) {
+        const group = new Three.Group();
+        scene.add(group);
+        const skin = mat(isPlayer ? '#bb9475' : '#af8b72'),
+          cloth = mat(isPlayer ? '#272d36' : person.color || '#6b5965'),
+          pants = mat(isPlayer ? '#536273' : '#343b44'),
+          shoe = mat('#18191c'),
+          parts = {};
+        const torso = box(group, 0, 10, 0, 4.5, 6, 6.5, cloth);
+        box(group, -0.5, 10, -3.35, 1.5, 5, 0.25, mat('#171c24'));
+        const head = mesh(sphereGeo, skin, group, 0, 15.3, 0, 2, 2.5, 2.1);
+        mesh(sphereGeo, mat('#302923'), group, -0.5, 16.5, 0, 1.9, 1.6, 2.13);
+        for (const side of [-1, 1]) {
+          const leg = new Three.Group();
+          leg.position.set(0, 7, side * 1.8);
+          group.add(leg);
+          box(leg, 0, -2.8, 0, 2, 5.5, 2.5, pants);
+          box(leg, 1, -5.3, 0, 3.8, 1.3, 2.6, shoe);
+          parts['leg' + side] = leg;
+          const arm = new Three.Group();
+          arm.position.set(0, 12, side * 4);
+          group.add(arm);
+          box(arm, 0.3, -2, 0, 1.8, 4.8, 1.8, cloth);
+          mesh(sphereGeo, skin, arm, 0.6, -4.3, 0, 1, 1.2, 1);
+          parts['arm' + side] = arm;
+        }
+        const guns = [];
+        for (let slot = 0; slot < (isPlayer ? 7 : 1); slot++) {
+          const gun = new Three.Group();
+          gun.position.set(5, 10, 3.8);
+          group.add(gun);
+          guns.push(gun);
+          gun.visible =
+            isPlayer || enemies.includes(person) || gangMembers.includes(person) || !!person.police;
+          if (slot === KNIFE_INDEX) {
+            box(gun, 0.5, 0, 0, 2.8, 0.9, 0.8, rubber);
+            box(gun, 2, 0, 0, 0.35, 1.7, 1.3, darkMetal);
+            box(gun, 4, 0, 0, 3.8, 0.22, 0.9, mat('#cbd6dd', 0.25, 0.8));
+          }
+          if (slot === 0) {
+            box(gun, 2, 0, 0, 4.5, 1.1, 0.9, darkMetal);
+            box(gun, 0.8, -1, 0, 1, 2, 0.8, rubber);
+          }
+          if (slot === 1) {
+            box(gun, 3, 0, 0, 5, 1.5, 1.1, darkMetal);
+            box(gun, 3, -2, 0, 0.8, 3, 1, darkMetal);
+            box(gun, -0.5, -0.5, 0, 2, 0.6, 1, rubber);
+            const barrel = mesh(cylinderGeo, darkMetal, gun, 7, 0, 0, 0.36, 3, 0.36);
+            barrel.rotation.z = Math.PI / 2;
+          }
+          if (slot === 2) {
+            const barrel = mesh(cylinderGeo, darkMetal, gun, 6, 0, 0, 0.32, 10, 0.32);
+            barrel.rotation.z = Math.PI / 2;
+            box(gun, 0, -0.4, 0, 4, 1, 1.1, wood);
+            box(gun, 5, -0.6, 0, 3, 1.1, 1.3, wood);
+          }
+          if (slot === 4 || slot === 5) {
+            box(gun, 3, 0, 0, 7, 1.4, 1.3, darkMetal);
+            box(gun, -2, -0.5, 0, 4, 1.6, 1.4, slot === 5 ? wood : rubber);
+            box(gun, 2, -2, 0, 1, 3, 1, darkMetal);
+            const barrel = mesh(cylinderGeo, darkMetal, gun, 10, 0, 0, 0.3, slot === 5 ? 11 : 7, 0.3);
+            barrel.rotation.z = Math.PI / 2;
+            if (slot === 5) {
+              const scope = mesh(cylinderGeo, darkMetal, gun, 3, 1.8, 0, 0.65, 5, 0.65);
+              scope.rotation.z = Math.PI / 2;
+            }
+          }
+          if (slot === 3) {
+            const tube = mesh(cylinderGeo, mat('#59644c', 0.65, 0.5), gun, 5, 0, 0, 1.2, 13, 1.2);
+            tube.rotation.z = Math.PI / 2;
+            const mouth = mesh(cylinderGeo, darkMetal, gun, 11.5, 0, 0, 1.5, 0.7, 1.5);
+            mouth.rotation.z = Math.PI / 2;
+            box(gun, 3, -1.9, 0, 0.8, 2, 1, darkMetal);
+            box(gun, 4, 1.6, 0, 2, 1, 0.6, darkMetal);
+          }
+        }
+        if (person.police) {
+          mesh(wheelGeo, mat('#20354b'), group, 0, 17.7, 0, 2.5, 1, 2.5);
+          box(group, 1.5, 17.4, 0, 3, 0.4, 4, mat('#162332'));
+          box(group, 2.35, 11.5, -1.5, 0.3, 1.8, 1.4, mat('#c7b57a'));
+          box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
+        }
+        if (person.boss || person.guest) {
+          const cup = new Three.Group();
+          parts.arm1.add(cup);
+          cup.position.set(0.6, -4.3, 0);
+          mesh(cylinderGeo, glass, cup, 0, -1, 0, 1.6, 3, 1.6);
+          mesh(cylinderGeo, mat('#8d2942'), cup, 0, -1.2, 0, 1.3, 1.7, 1.3);
+          cup.visible = false;
+          parts.cup = cup;
+        }
+        parts.guns = guns;
+        return {
+          group,
+          parts,
+          torso,
+          isPlayer,
+          cloth,
+          pants,
+        };
+      }
+      const chuteModel = new Three.Group();
+      chuteModel.name = 'Player parachute';
+      scene.add(chuteModel);
+      const canopy = mesh(
+        new Three.SphereGeometry(34, 24, 12, 0, TAU, 0, Math.PI / 2),
+        new Three.MeshStandardMaterial({
+          color: '#dc8757',
+          roughness: 0.7,
+          side: Three.DoubleSide,
+        }),
+        chuteModel,
+        0,
+        48,
+        0,
+        1,
+        0.36,
+        0.7,
+      );
+      for (const a of [
+        0,
+        Math.PI / 3,
+        (Math.PI * 2) / 3,
+        Math.PI,
+        (Math.PI * 4) / 3,
+        (Math.PI * 5) / 3,
+      ])
+        rod(
+          chuteModel,
+          new Three.Vector3(0, 16, Math.sin(a) > 0 ? 4 : -4),
+          new Three.Vector3(Math.cos(a) * 32, 48, Math.sin(a) * 23),
+          0.22,
+          chrome,
+        );
+      chuteModel.visible = false;
+      const playerRing = new Three.Mesh(
+        new Three.RingGeometry(10, 11.2, 36),
+        new Three.MeshBasicMaterial({
+          color: '#c9e29f',
+          transparent: true,
+          opacity: 0.5,
+          side: Three.DoubleSide,
+          depthWrite: false,
+        }),
+      );
+      playerRing.rotation.x = -Math.PI / 2;
+      scene.add(playerRing);
+      const objectiveRing = new Three.Mesh(
+        new Three.RingGeometry(27, 29, 48),
+        new Three.MeshBasicMaterial({
+          color: '#ebd297',
+          transparent: true,
+          opacity: 0.8,
+          side: Three.DoubleSide,
+          depthWrite: false,
+        }),
+      );
+      objectiveRing.rotation.x = -Math.PI / 2;
+      scene.add(objectiveRing);
+      const arrowGroup = new Three.Group();
+      const arrowMat = new Three.MeshBasicMaterial({
+        color: '#ffe2a2',
+        depthTest: false,
+        depthWrite: false,
+      });
+      const cone = mesh(new Three.ConeGeometry(6, 10, 4), arrowMat, arrowGroup, 0, 0, 0);
+      cone.rotation.z = Math.PI;
+      cone.renderOrder = 99;
+      scene.add(arrowGroup);
+      const targetLight = new Three.PointLight('#ffd083', 0.5, 90, 1);
+      scene.add(targetLight);
+      const playerHeadlight = new Three.SpotLight('#ffe6b4', 900, 210, Math.PI * 0.23, 0.7, 1.1);
+      playerHeadlight.position.set(0, 10, 0);
+      scene.add(playerHeadlight, playerHeadlight.target);
+      const muzzleLight = new Three.PointLight('#ffc67a', 0, 95, 1.5);
+      scene.add(muzzleLight);
+      const smokeCanvas = document.createElement('canvas');
+      smokeCanvas.width = smokeCanvas.height = 128;
+      const sm = smokeCanvas.getContext('2d');
+      for (let i = 0; i < 28; i++) {
+        const x = 64 + Math.sin(i * 2.4) * 34,
+          y = 64 + Math.cos(i * 1.7) * 34,
+          r = 14 + (i % 7) * 3,
+          gr = sm.createRadialGradient(x, y, 0, x, y, r);
+        gr.addColorStop(0, '#ffffff55');
+        gr.addColorStop(1, '#ffffff00');
+        sm.fillStyle = gr;
+        sm.fillRect(x - r, y - r, r * 2, r * 2);
+      }
+      const smokeTx = new Three.CanvasTexture(smokeCanvas);
+      const flameCanvas = document.createElement('canvas');
+      flameCanvas.width = 64;
+      flameCanvas.height = 128;
+      const fg = flameCanvas.getContext('2d');
+      for (let i = 0; i < 9; i++) {
+        const x = 32 + Math.sin(i * 2.4) * 11,
+          y = 88 - i * 7,
+          r = 21 - i * 1.5,
+          gr = fg.createRadialGradient(x, y, 1, x, y, r);
+        gr.addColorStop(0, i < 3 ? '#fff5ca' : '#ffbb65');
+        gr.addColorStop(0.45, '#ff8313c0');
+        gr.addColorStop(1, '#dd3b0000');
+        fg.fillStyle = gr;
+        fg.fillRect(x - r, y - r, r * 2, r * 2);
+      }
+      const flameTx = new Three.CanvasTexture(flameCanvas);
+      flameTx.colorSpace = Three.SRGBColorSpace;
+      const smokeMat = new Three.SpriteMaterial({
+        map: smokeTx,
+        color: '#8b8b8f',
+        transparent: true,
+        depthWrite: false,
+      });
+      const blastRings = Array.from(
+        {
+          length: 10,
+        },
+        () => {
+          const m = new Three.Mesh(
+            new Three.RingGeometry(0.82, 1, 48),
+            new Three.MeshBasicMaterial({
+              color: '#e7d0a6',
+              transparent: true,
+              opacity: 0,
+              side: Three.DoubleSide,
+              depthWrite: false,
+            }),
+          );
+          m.rotation.x = -Math.PI / 2;
+          m.visible = false;
+          scene.add(m);
+          return m;
+        },
+      );
+      let blastRingIndex = 0;
+      const flamePool = Array.from(
+        {
+          length: 72,
+        },
+        () => {
+          const s = new Three.Sprite(
+            new Three.SpriteMaterial({
+              map: flameTx,
+              transparent: true,
+              depthWrite: false,
+              blending: Three.AdditiveBlending,
+            }),
+          );
+          s.visible = false;
+          scene.add(s);
+          return s;
+        },
+      );
+      const fireLights = Array.from(
+        {
+          length: 4,
+        },
+        () => {
+          const light = new Three.PointLight('#ff9f4b', 0, 180, 1.5);
+          scene.add(light);
+          return light;
+        },
+      );
+      const scorchMeshes = Array.from(
+        {
+          length: 36,
+        },
+        () => {
+          const m = new Three.Mesh(
+            new Three.PlaneGeometry(1, 1),
+            new Three.MeshBasicMaterial({
+              map: smokeTx,
+              color: '#07090b',
+              transparent: true,
+              opacity: 0.75,
+              depthWrite: false,
+            }),
+          );
+          m.rotation.x = -Math.PI / 2;
+          m.visible = false;
+          m.renderOrder = 2;
+          scene.add(m);
+          return m;
+        },
+      );
+      const bloodDropCanvas = document.createElement('canvas');
+      bloodDropCanvas.width = bloodDropCanvas.height = 32;
+      const dropCtx = bloodDropCanvas.getContext('2d');
+      dropCtx.fillStyle = '#ffffff';
+      dropCtx.beginPath();
+      dropCtx.ellipse(16, 16, 9, 13, 0.25, 0, TAU);
+      dropCtx.fill();
+      const bloodDropTx = new Three.CanvasTexture(bloodDropCanvas);
+      const particlePool = Array.from(
+        {
+          length: 480,
+        },
+        () => {
+          const s = new Three.Sprite(smokeMat.clone());
+          s.visible = false;
+          scene.add(s);
+          return s;
+        },
+      );
+      const tracerGeo = new Three.BufferGeometry(),
+        tracerPositions = new Float32Array(3600);
+      tracerGeo.setAttribute(
+        'position',
+        new Three.BufferAttribute(tracerPositions, 3).setUsage(Three.DynamicDrawUsage),
+      );
+      const tracer = new Three.LineSegments(
+        tracerGeo,
+        new Three.LineBasicMaterial({
+          color: '#ffe1a1',
+          transparent: true,
+          opacity: 0.85,
+        }),
+      );
+      scene.add(tracer);
+      const skidGeo = new Three.BufferGeometry(),
+        skidPos = new Float32Array(6600);
+      skidGeo.setAttribute(
+        'position',
+        new Three.BufferAttribute(skidPos, 3).setUsage(Three.DynamicDrawUsage),
+      );
+      const skidLines = new Three.LineSegments(
+        skidGeo,
+        new Three.LineBasicMaterial({
+          color: '#171b20',
+          transparent: true,
+          opacity: 0.5,
+        }),
+      );
+      scene.add(skidLines);
+      let muzzleUntil = 0,
+        frames = 0;
+      // Dynamic models own their cloned/new resources; the initial world and factory primitives persist.
+      const sharedGeometries = new Set([boxGeo, sphereGeo, wheelGeo, cylinderGeo]),
+        sharedMaterials = new Set();
+      function collectResources(root, geometries, materials) {
+        root.traverse((o) => {
+          if (o.geometry) geometries.add(o.geometry);
+          if (o.material)
+            for (const material of Array.isArray(o.material) ? o.material : [o.material])
+              materials.add(material);
+        });
+      }
+      collectResources(scene, sharedGeometries, sharedMaterials);
+      const retiredGeometries = new Set(),
+        retiredMaterials = new Set();
+      function pruneModels(models, active) {
+        for (const [entity, model] of models)
+          if (!active.has(entity)) {
+            const group = model.group || model;
+            scene.remove(group);
+            collectResources(group, retiredGeometries, retiredMaterials);
+            models.delete(entity);
+          }
+      }
+      function disposeRetiredModels() {
+        if (!retiredGeometries.size && !retiredMaterials.size) return;
+        const liveGeometries = new Set(sharedGeometries),
+          liveMaterials = new Set(sharedMaterials);
+        collectResources(scene, liveGeometries, liveMaterials);
+        for (const geometry of retiredGeometries) if (!liveGeometries.has(geometry)) geometry.dispose();
+        for (const material of retiredMaterials) if (!liveMaterials.has(material)) material.dispose();
+        retiredGeometries.clear();
+        retiredMaterials.clear();
+      }
+      const viewFrustum = new Three.Frustum(),
+        viewProjection = new Three.Matrix4(),
+        entityBounds = new Three.Sphere();
+      function entityInView(entity, radius = 35) {
+        entityBounds.center.set(entity.x, entityElevation(entity) + radius * 0.25, entity.y);
+        entityBounds.radius = radius;
+        return viewFrustum.intersectsSphere(entityBounds);
+      }
+      /* REVIEW_HOOK:RENDERER_API */
+      const api = {
+        resize() {
+          renderer.setSize(viewportWidth, viewportHeight);
+          const viewH = clamp(viewportHeight * 0.68, 430, 630) / worldZoom;
+          camera.left = (-viewH * viewportWidth) / viewportHeight / 2;
+          camera.right = (viewH * viewportWidth) / viewportHeight / 2;
+          camera.top = viewH / 2;
+          camera.bottom = -viewH / 2;
+          camera.updateProjectionMatrix();
+        },
+        project(mapX, mapY, elevation = 0) {
+          const v = new Three.Vector3(mapX, elevation, mapY).project(camera);
+          return {
+            x: (v.x * 0.5 + 0.5) * viewportWidth,
+            y: (-0.5 * v.y + 0.5) * viewportHeight,
+          };
+        },
+        aim(mx, my) {
+          ray.setFromCamera(
+            new Three.Vector2((mx / viewportWidth) * 2 - 1, (-my / viewportHeight) * 2 + 1),
+            camera,
+          );
+          groundPlane.constant = -9 - entityElevation(player);
+          if (ray.ray.intersectPlane(groundPlane, hitPoint))
+            return Math.atan2(hitPoint.z - player.y, hitPoint.x - player.x);
+          return player.a;
+        },
+        fire(x, z, a, rocket, altitude = 0) {
+          muzzleUntil = gameTime + 0.055;
+          muzzleLight.position.set(x, 11 + altitude, z);
+          muzzleLight.intensity = rocket ? 1250 : 760;
+          for (let j = 0; j < 4; j++)
+            fx.push({
+              x: x + Math.cos(a) * j * 3,
+              y: 11 + altitude,
+              z: z + Math.sin(a) * j * 3,
+              vx: Math.cos(a) * 65,
+              vy: 5,
+              vz: Math.sin(a) * 65,
+              life: 0.045,
+              max: 0.045,
+              color: j ? '#ffa33a' : '#fff6d2',
+              size: rocket ? 18 : 7 - j,
+              glow: true,
+            });
+          if (!rocket) {
+            fx.push({
+              x,
+              y: 11 + altitude,
+              z,
+              vx: -Math.sin(a) * 42,
+              vy: 44,
+              vz: Math.cos(a) * 42,
+              life: 0.65,
+              max: 0.65,
+              color: '#caa55e',
+              size: 1.5,
+              case: true,
+            });
+            fx.push({
+              x,
+              y: 11 + altitude,
+              z,
+              vx: Math.cos(a) * 15,
+              vy: 13,
+              vz: Math.sin(a) * 15,
+              life: 0.36,
+              max: 0.36,
+              color: '#aab4b8',
+              size: 5,
+              smoke: true,
+            });
+          }
+        },
+        impact(x, z, kind, altitude = 0) {
+          for (let j = 0; j < (kind === 'metal' ? 8 : 5); j++)
+            fx.push({
+              x,
+              y: 5 + altitude,
+              z,
+              vx: (Math.random() - 0.5) * 100,
+              vy: 35 + Math.random() * 55,
+              vz: (Math.random() - 0.5) * 100,
+              life: 0.18 + Math.random() * 0.22,
+              max: 0.4,
+              color: kind === 'metal' ? '#ffd084' : '#b6aba0',
+              size: kind === 'metal' ? 1.7 : 3,
+              glow: kind === 'metal',
+              case: kind === 'metal',
+              smoke: kind !== 'metal',
+            });
+        },
+        explosion(x, z, power = 1, altitude = terrainHeight(x, z)) {
+          const ring = blastRings[blastRingIndex++ % blastRings.length];
+          ring.position.set(x, altitude + 0.38, z);
+          ring.userData = {
+            born: gameTime,
+            power,
+          };
+          ring.visible = true;
+          for (let j = 0; j < 66; j++) {
+            const a = Math.random() * TAU,
+              s = (25 + Math.random() * 170) * power,
+              glow = j < 20;
+            const life = glow ? 0.22 + Math.random() * 0.65 : 1.8 + Math.random() * 2.7;
+            fx.push({
+              x: x + Math.cos(a) * 5,
+              y: altitude + 6,
+              z: z + Math.sin(a) * 5,
+              vx: Math.cos(a) * s,
+              vy: glow ? 25 + Math.random() * 75 : 30 + Math.random() * 38,
+              vz: Math.sin(a) * s,
+              life,
+              max: life,
+              color: glow ? (j < 5 ? '#fff2bf' : '#ff8c31') : j % 2 ? '#3c4147' : '#656970',
+              size: (glow ? 14 : 22) * power,
+              glow,
+              smoke: !glow,
+            });
+          }
+          for (let j = 0; j < 16; j++) {
+            const a = Math.random() * TAU;
+            fx.push({
+              x,
+              y: altitude + 12,
+              z,
+              vx: Math.cos(a) * randomBetween(80, 180),
+              vy: randomBetween(70, 180),
+              vz: Math.sin(a) * randomBetween(80, 180),
+              life: 1.6,
+              max: 1.6,
+              color: '#ab9e81',
+              size: randomBetween(1, 3),
+              case: true,
+            });
+          }
+          if (
+            distanceBetween(
+              {
+                x,
+                y: z,
+              },
+              player,
+            ) < 700
+          ) {
+            muzzleLight.position.set(x, altitude + 20, z);
+            muzzleLight.intensity = 1900 * power;
+            muzzleUntil = gameTime + 0.18;
+          }
+        },
+        render() {
+          const deltaSeconds = Math.min(0.04, Math.max(0, gameTime - lastVisualTime));
+          lastVisualTime = gameTime;
+          updateCivicVisuals();
+          const altitude = entityElevation(player.car || player),
+            flying = isAircraft(player.car) || player.parachute;
+          camera.position.set(
+            cameraTarget.x,
+            680 / worldZoom + altitude + (flying ? Math.max(0, altitude - 100) * 0.9 : 0),
+            cameraTarget.y + 560 / worldZoom,
+          );
+          camera.far = 40000;
+          scene.fog.density = 0.00015 * Math.min(1, worldZoom);
+          camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
+          const viewH =
+            (clamp(viewportHeight * 0.68, 430, 630) *
+              (1 + (flying ? clamp(altitude / 2400, 0, 0.7) : 0))) /
+            worldZoom;
+          camera.left = (-viewH * viewportWidth) / viewportHeight / 2;
+          camera.right = (viewH * viewportWidth) / viewportHeight / 2;
+          camera.top = viewH / 2;
+          camera.bottom = -viewH / 2;
+          camera.updateProjectionMatrix();
+          camera.position.x += (Math.random() - 0.5) * shake * 0.35;
+          camera.position.y += (Math.random() - 0.5) * shake * 0.2;
+          camera.updateMatrixWorld(true);
+          viewFrustum.setFromProjectionMatrix(
+            viewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+          );
+          updateAirCoverVisuals();
+          updateTransitVisuals();
+          updateWildlifeVisuals(deltaSeconds);
+          updateSportsVisuals(deltaSeconds);
+          updateGarageVisuals();
+          updateWorldVisuals();
+          updateCountyVisuals();
+          updateHarborVisuals();
+          updateTrafficVisuals();
+          updateMissionVisuals();
+          const shadowHeight = terrainHeight(cameraTarget.x, cameraTarget.y);
+          sun.position.set(cameraTarget.x - 450, 760 + shadowHeight, cameraTarget.y - 230);
+          sun.target.position.set(cameraTarget.x, shadowHeight, cameraTarget.y);
+          const vr = Math.max(
+            920,
+            viewH * Math.max(1, viewportWidth / viewportHeight) * 0.95 + (flying ? altitude * 0.28 : 0),
+          );
+          for (const s of statics)
+            s.group.visible =
+              (worldZoom > 0.28 || s.radius >= 50) &&
+              Math.abs(s.x - cameraTarget.x) < vr + s.radius &&
+              Math.abs(s.y - cameraTarget.y) < vr + s.radius;
+          for (const o of allBuildings) {
+            const hidden =
+              !player.roof &&
+              player.x > o.b.x - 8 &&
+              player.x < o.b.x + o.b.w + 8 &&
+              player.y < o.b.y &&
+              player.y > o.b.y - o.height * 0.86;
+            let op = hidden ? 0.28 : 1;
+            if (o.opacity !== op) {
+              o.opacity = op;
+              for (const m of o.materials) {
+                m.transparent = op < 1;
+                m.opacity = op;
+                m.depthWrite = op === 1;
+                m.needsUpdate = true;
+              }
+            }
+          }
+          const people = [
+            ...pedestrians,
+            ...enemies,
+            ...gangMembers,
+            ...officers,
+            ...storyActors,
+            player,
+          ];
+          pruneModels(carModels, new Set(vehicles));
+          pruneModels(personModels, new Set(people));
+          pruneModels(pickupModels, new Set(pickups));
+          for (const c of vehicles) {
+            let m = carModels.get(c);
+            const near =
+              c === player.car ||
+              entityInView(c, Math.max(65, Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) * 0.75));
+            if (!m && !near) continue;
+            if (!m) {
+              m = makeVehicle(c);
+              carModels.set(c, m);
+            }
+            m.group.visible = near;
+            if (!near) continue;
+            m.group.position.set(c.x, 0.1 + entityElevation(c), c.y);
+            m.group.rotation.y = -c.a;
+            m.body.rotation.x =
+              c === player.car ? clamp(normalizeAngle(c.a - (c.moveA ?? c.a)) * -0.15, -0.05, 0.05) : 0;
+            m.body.rotation.z =
+              Math.sin(gameTime * 7 + c.id) * Math.min(0.008, Math.abs(c.speed) * 0.00002);
+            if (c.type === 'flatbed') {
+              if (!m.cargo) {
+                m.cargo = Array.from(
+                  {
+                    length: 3,
+                  },
+                  (_, i) => {
+                    const g = makeCargoCrate(m.body, 18);
+                    g.position.set(-34 + i * 19, 8, 0);
+                    return g;
+                  },
+                );
+              }
+              m.cargo.forEach((g, i) => (g.visible = i < (c.cargoCount || 0)));
+            }
+            const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
+            m.paint.color
+              .set(c.hp <= 0 ? '#303136' : c.color)
+              .lerp(new Three.Color('#585451'), wear * 0.22);
+            m.paint.roughness = 0.3 + wear * 0.6;
+            m.paint.metalness = 0.63 - wear * 0.42;
+            if (m.crank) m.crank.rotation.z -= deltaSeconds * c.speed * 0.13;
+            if (m.helicopter) {
+              const running =
+                (c === player.car ||
+                  c.airUnit ||
+                  (c.abandonedFlight && entityElevation(c) > terrainHeight(c.x, c.y) + 2)) &&
+                c.hp > 0;
+              m.rotor.rotation.y += deltaSeconds * (running ? 55 : 2);
+              m.tail.rotation.z += deltaSeconds * (running ? 90 : 2);
+              m.disc.visible = running;
+              m.body.rotation.z = clamp(-c.speed * 0.00035, -0.13, 0.13);
+              m.body.rotation.x = clamp(c.av * 0.065, -0.1, 0.1);
+              m.canopy.material.roughness = 0.12 + wear * 0.65;
+            } else if (!m.special && m.damageVersion !== c.damageVersion) {
+              m.damageVersion = c.damageVersion;
+              const positions = m.shell.geometry.attributes.position,
+                d = c.damage;
+              for (let i = 0; i < positions.count; i++) {
+                let x = m.original[i * 3],
+                  y = m.original[i * 3 + 1],
+                  z = m.original[i * 3 + 2];
+                for (const dent of c.dents) {
+                  const dx = x - dent.x,
+                    dz = z - dent.y,
+                    influence = Math.max(0, 1 - Math.hypot(dx, dz) / 17) * dent.force;
+                  x -= Math.sign(dent.x) * influence * 1.1;
+                  z -= Math.sign(dent.y) * influence * 0.8;
+                  y -= influence * 0.4;
+                }
+                positions.setXYZ(i, x, y, z);
+              }
+              positions.needsUpdate = true;
+              m.shell.geometry.computeVertexNormals();
+              m.cracks.visible = wear > 0.2;
+              m.cabin.material.color.set(wear > 0.65 ? '#3a494e' : '#182b3c');
+              m.cabin.material.roughness = 0.12 + wear * 0.65;
+              m.hood.rotation.z = d.front * 0.15;
+              m.hood.position.y = m.hoodBaseY + d.front * 2.3;
+              m.scuffs.forEach((v, i) => {
+                v.visible = c.damage[i ? 'right' : 'left'] > 0.12 || wear > 0.5;
+                v.scale.x = vehicleSpec(c).l * 0.43 * clamp(wear * 2, 0.3, 1);
+              });
+              m.bumpers.forEach((v, i) => {
+                const amount = i ? d.rear : d.front;
+                v.position.copy(m.bumperOrigins[i]);
+                v.position.x += (i ? 1 : -1) * amount * 2;
+                v.position.y -= amount * 1.5;
+                v.rotation.y = (i ? 1 : -1) * amount * 0.18;
+                v.rotation.z = amount * 0.1;
+              });
+              m.wheels.forEach(({ wheel, side }) => {
+                wheel.rotation.x = side * c.damage[side > 0 ? 'right' : 'left'] * 0.16;
+              });
+            }
+            if (m.plane) {
+              if (m.prop)
+                m.prop.rotation.x += deltaSeconds * (c.hp > 0 ? 7 + (c.throttle || 0) * 80 : 0);
+              m.body.rotation.set(c.bank || 0, 0, c.pitch || 0, 'ZYX');
+              for (const { wheel } of m.wheels) wheel.visible = true;
+            }
+            if (m.tank) {
+              m.turret.rotation.y = -normalizeAngle((c.turretA ?? c.a) - c.a);
+              m.barrel.position.x = (-Math.max(0, (c.cannonRecoilUntil || 0) - gameTime) / 0.25) * 4;
+            }
+            if (m.special) {
+              if (!m.plane) m.body.rotation.z = -wear * 0.025;
+              if (m.bike) {
+                m.body.rotation.x = clamp(c.av * 0.13, -0.28, 0.28);
+                m.rider.visible = c.hp > 0 && (c === player.car || c.ai);
+              }
+              if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
+              if (m.boat) {
+                const underBridge = underBridgeWater(c.x, c.y);
+                m.group.position.y = underBridge
+                  ? entityElevation(c)
+                  : 0.6 + Math.sin(gameTime * 1.7 + c.x * 0.02) * 0.45;
+                m.body.rotation.z = Math.sin(gameTime * 2 + c.id) * 0.023;
+                m.body.rotation.x = Math.sin(gameTime * 1.3 + c.y * 0.017) * 0.028;
+                m.wake.visible = Math.abs(c.speed) > 15;
+                m.wake.scale.x = 0.5 + Math.abs(c.speed) / 180;
+              }
+              for (const { wheel } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / 5;
+            }
+            if (c.bloodyUntil > gameTime && !m.blood) {
+              m.blood = new Three.Group();
+              m.body.add(m.blood);
+              const vehicleDefinition = vehicleSpec(c),
+                red = mat('#8d1325', 0.38);
+              for (let j = 0; j < 9; j++)
+                box(
+                  m.blood,
+                  vehicleDefinition.l * 0.493,
+                  5 + (j % 3) * 1.4,
+                  (j - 4) * vehicleDefinition.w * 0.082,
+                  0.3,
+                  1.4,
+                  1.8,
+                  red,
+                );
+            }
+            if (m.blood) m.blood.visible = c.bloodyUntil > gameTime;
+            m.strobes.forEach((s, i) => {
+              s.material.color.set(
+                ((c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.type === 'ambulance') &&
+                  Math.sin(gameTime * 17 + i * 3) > 0
+                  ? i
+                    ? '#78aefa'
+                    : '#ff6751'
+                  : '#3c4147',
+              );
+            });
+            if (
+              deltaSeconds > 0 &&
+              !vehicleSpec(c).bicycle &&
+              c.hp <= 0 &&
+              gameTime - c.deadTime < 12 &&
+              Math.random() < 1 - Math.pow(0.77, deltaSeconds * 60)
+            )
+              fx.push({
+                x: c.x + (Math.random() - 0.5) * 12,
+                y: 10 + entityElevation(c),
+                z: c.y + (Math.random() - 0.5) * 8,
+                vx: 0,
+                vy: 20,
+                vz: 0,
+                life: 1.6,
+                max: 1.6,
+                color: Math.random() > 0.55 ? '#d39150' : '#55585f',
+                size: 15,
+              });
+            if (
+              deltaSeconds > 0 &&
+              !vehicleSpec(c).bicycle &&
+              c.hp > 0 &&
+              c.hp < c.maxhp * 0.55 &&
+              Math.random() < 1 - Math.pow(1 - (0.55 - c.hp / c.maxhp) * 0.5, deltaSeconds * 60)
+            )
+              fx.push({
+                x: c.x + Math.cos(c.a) * 14,
+                y: 10 + entityElevation(c),
+                z: c.y + Math.sin(c.a) * 14,
+                vx: 0,
+                vy: 12,
+                vz: 0,
+                life: 1.6,
+                max: 1.6,
+                color: '#52585f',
+                size: 12,
+              });
+          }
+          for (const [c, m] of carModels)
+            if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
+              m.body.rotation.x += c.slopeRoll || 0;
+              m.body.rotation.z += c.slopePitch || 0;
+            }
+          for (const p of people) {
+            const activePlayer = p === player;
+            let m = personModels.get(p);
+            const near = activePlayer || (worldZoom > 0.22 && entityInView(p, 35));
+            if (!m && !near) continue;
+            if (!m) {
+              m = makePerson(p, activePlayer);
+              personModels.set(p, m);
+            }
+            m.group.visible = near && !(activePlayer && (player.car || transitRide));
+            if (p.hidden) m.group.visible = false;
+            if (!m.group.visible) continue;
+            const fallen = p.hp <= 0 ? 1 : (p.poisonCollapse ?? personFallAmount(p)),
+              incapacitated = personIncapacitated(p);
+            m.group.position.set(p.x, entityElevation(p) + fallen * 1.5, p.y);
+            m.group.rotation.set(
+              0,
+              -(activePlayer && (mouse.active || touchAim !== null) ? aim() : p.a),
+              (fallen * Math.PI) / 2 +
+                (p.hp > 0 && p.dazedFor > 0 ? Math.sin(gameTime * 8) * 0.055 : 0),
+            );
+            const step =
+              p.hp > 0 && !incapacitated && p.walking !== false ? Math.sin(p.walk || 0) * 0.5 : 0;
+            m.torso.rotation.z = 0;
+            m.parts.leg1.rotation.z = step;
+            m.parts['leg-1'].rotation.z = -step;
+            m.parts.arm1.rotation.z = -step * 0.5;
+            m.parts['arm-1'].rotation.z = step * 0.5;
+            if (p.faction && !incapacitated) {
+              m.parts.guns[0].visible = p.hp > 0 && !!p.aiming;
+              m.parts.arm1.rotation.z = p.aiming ? 1.12 : -step * 0.5;
+              m.parts['arm-1'].rotation.z = p.aiming ? 0.9 : step * 0.5;
+            }
+            if (p.police && !incapacitated) {
+              m.parts.guns[0].visible = p.hp > 0;
+              m.parts.arm1.rotation.z = p.state === 'aim' ? 1.12 : 0.3;
+              m.parts['arm-1'].rotation.z = p.state === 'aim' ? 0.9 : -step * 0.5;
+            }
+            if (m.parts.cup) m.parts.cup.visible = !!p.drinking && p.hp > 0;
+            if (p.hp > 0 && p.dancing) {
+              const beat = gameTime * 4 + p.phase;
+              m.group.rotation.z = Math.sin(beat) * 0.07;
+              m.parts.arm1.rotation.z = 0.7 + Math.sin(beat) * 0.5;
+              m.parts['arm-1'].rotation.z = 0.7 - Math.sin(beat) * 0.5;
+              m.parts.leg1.rotation.z = Math.sin(beat) * 0.22;
+              m.parts['leg-1'].rotation.z = -Math.sin(beat) * 0.22;
+            }
+            if (p.recoiling && p.hp > 0) {
+              m.parts.arm1.rotation.z = 1.2;
+              m.parts['arm-1'].rotation.z = 1.1;
+            }
+            if (p.illness && p.hp > 0) {
+              m.group.rotation.z = -p.illness * 0.24 + Math.sin(gameTime * 8) * 0.025;
+              m.torso.rotation.z = -p.illness * 0.2;
+              m.parts.arm1.rotation.z = 0.85;
+              m.parts['arm-1'].rotation.z = 0.5;
+            }
+            if (p.poisonCollapse !== undefined) {
+              m.group.rotation.z = ((p.hp <= 0 ? 1 : p.poisonCollapse) * Math.PI) / 2;
+              m.parts.leg1.rotation.z = 0.4 * (1 - p.poisonCollapse);
+              m.parts['leg-1'].rotation.z = 0.2 * (1 - p.poisonCollapse);
+              m.parts.arm1.rotation.z = 0.8 * (1 - p.poisonCollapse);
+              m.parts['arm-1'].rotation.z = 0.3;
+            }
+            if (incapacitated) m.parts.guns.forEach((g) => (g.visible = false));
+            if (p.drinking && p.hp > 0 && !incapacitated) {
+              m.parts.arm1.rotation.z = 1.5 + Math.sin(gameTime * 3) * 0.15;
+            }
+            if (activePlayer) {
+              if (player.parachute) {
+                m.parts.arm1.rotation.z = 2.6;
+                m.parts['arm-1'].rotation.z = 2.6;
+                m.parts.leg1.rotation.z = 0.25;
+                m.parts['leg-1'].rotation.z = -0.25;
+              }
+              m.cloth.color.set(player.disguised ? '#e3dac0' : '#272d36');
+              m.pants.color.set(player.disguised ? '#252a33' : '#536273');
+              const holstered = !!rooftopJob() && player.disguised && !rooftopJob().weaponDrawn;
+              const recoil = Math.max(0, ((player.recoilUntil || 0) - gameTime) / 0.12);
+              m.torso.rotation.z = -recoil * 0.12;
+              m.parts.guns.forEach((gun, i) => {
+                gun.visible = i === selectedWeaponIndex && !holstered && !player.parachute;
+                gun.position.x = 5 - recoil * 1.8;
+                gun.rotation.z = -recoil * 0.08;
+              });
+              const knifeSwing =
+                selectedWeaponIndex === KNIFE_INDEX
+                  ? Math.max(0, ((player.knifeSwingUntil || 0) - gameTime) / 0.28)
+                  : 0;
+              const knifeModel = m.parts.guns[KNIFE_INDEX];
+              knifeModel.rotation.y = Math.sin(knifeSwing * Math.PI) * 1.3;
+              knifeModel.position.x += Math.sin(knifeSwing * Math.PI) * 3;
+              m.parts.arm1.rotation.z = holstered
+                ? -step * 0.5
+                : 1.12 + Math.sin(knifeSwing * Math.PI) * 0.8;
+              m.parts['arm-1'].rotation.z = holstered
+                ? step * 0.5
+                : selectedWeaponIndex > 0
+                  ? 0.9
+                  : step * 0.5;
+              if (player.parachute) {
+                m.parts.arm1.rotation.z = 2.6;
+                m.parts['arm-1'].rotation.z = 2.6;
+              }
+            }
+          }
+          chuteModel.visible = !!player.parachute && player.parachute.stage === 'canopy';
+          if (chuteModel.visible) {
+            chuteModel.position.set(player.x, player.altitude, player.y);
+            chuteModel.rotation.y = -player.a;
+            chuteModel.scale.setScalar(Math.max(0.01, player.parachute.opening));
+          }
+          playerRing.visible = !transitRide && !player.car && !player.parachute;
+          playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
+          for (const p of pickups) {
+            let m = pickupModels.get(p);
+            if (!m) {
+              m = new Three.Group();
+              scene.add(m);
+              const co = p.type === 'health' ? '#71d2b3' : p.type === 'ammo' ? '#b294d0' : '#7daecb';
+              box(m, 0, 5, 0, 9, 9, 9, mat('#3b474b', 0.55, 0.3));
+              if (p.type === 'health') {
+                box(m, 0, 5, 4.7, 2, 6, 0.2, mat(co));
+                box(m, 0, 5, 4.7, 6, 2, 0.2, mat(co));
+              } else for (let j = -1; j < 2; j++) box(m, j * 2.3, 5, 4.7, 1.2, 5, 0.2, mat(co));
+              halo(m, 0, 5, 0, 24, co);
+              pickupModels.set(p, m);
+            }
+            m.visible = p.ready < gameTime && entityInView(p, 24);
+            m.position.set(p.x, terrainHeight(p.x, p.y) + 2 + Math.sin(gameTime * 2) * 1.2, p.y);
+            m.rotation.y = gameTime * 0.2;
+          }
+          disposeRetiredModels();
+          const target = objective(),
+            targetAltitude = target ? entityElevation(target) : 0;
+          objectiveRing.visible = arrowGroup.visible = !!target;
+          if (target) {
+            objectiveRing.position.set(target.x, 0.4 + targetAltitude, target.y);
+            arrowGroup.position.set(
+              target.x,
+              targetAltitude + 39 + Math.sin(gameTime * 3) * 3,
+              target.y,
+            );
+            arrowGroup.rotation.y = gameTime * 0.6;
+            targetLight.position.set(target.x, targetAltitude + 10, target.y);
+          }
+          if (player.car && !isAircraft(player.car)) {
+            playerHeadlight.intensity = 850;
+            const x = player.x + Math.cos(player.a) * 160,
+              z = player.y + Math.sin(player.a) * 160;
+            playerHeadlight.position.set(
+              player.x + Math.cos(player.a) * 18,
+              entityElevation(player.car) + 9,
+              player.y + Math.sin(player.a) * 18,
+            );
+            playerHeadlight.target.position.set(x, terrainHeight(x, z), z);
+          } else playerHeadlight.intensity = 0;
+          if (gameTime > muzzleUntil) muzzleLight.intensity = 0;
+          for (const ring of blastRings) {
+            if (!ring.visible) continue;
+            const age = gameTime - ring.userData.born;
+            ring.visible = age < 0.6;
+            const radius = 12 + age * 220 * ring.userData.power;
+            ring.scale.set(radius, radius, 1);
+            ring.material.opacity = Math.max(0, 0.35 * (1 - age / 0.6));
+          }
+          let fi = 0,
+            li = 0;
+          for (const fire of fires) {
+            if (distanceBetween(fire, cameraTarget) > 1000) continue;
+            const fade = Math.min(1, fire.life / 3),
+              age = fire.max - fire.life,
+              altitude = fire.altitude ?? terrainHeight(fire.x, fire.y);
+            for (let j = 0; j < 3 && fi < flamePool.length; j++) {
+              const sp = flamePool[fi++],
+                phase = gameTime * 7 + j * 2.4 + fire.x;
+              sp.visible = true;
+              sp.position.set(
+                fire.x + Math.sin(phase * 0.5) * 13 * fire.power,
+                altitude + 12 + Math.sin(phase) * 3,
+                fire.y + Math.cos(phase * 0.4) * 11 * fire.power,
+              );
+              sp.scale.set(
+                (28 + Math.sin(phase) * 6) * fire.power,
+                (52 + Math.cos(phase * 1.3) * 12) * fire.power,
+                1,
+              );
+              sp.material.opacity = fade * 0.9;
+            }
+            if (li < fireLights.length) {
+              const light = fireLights[li++];
+              light.position.set(fire.x, altitude + 20, fire.y);
+              light.intensity = fade * fire.power * (540 + Math.sin(gameTime * 17) * 90);
+            }
+            if (deltaSeconds > 0 && Math.random() < deltaSeconds * 12)
+              fx.push({
+                x: fire.x + randomBetween(-10, 10),
+                y: altitude + 18,
+                z: fire.y + randomBetween(-10, 10),
+                vx: 7,
+                vy: randomBetween(22, 40),
+                vz: 3,
+                life: 3,
+                max: 3,
+                color: age > 8 ? '#3b4146' : '#606166',
+                size: 18 * fire.power,
+                smoke: true,
+              });
+          }
+          for (; fi < flamePool.length; fi++) flamePool[fi].visible = false;
+          for (; li < fireLights.length; li++) fireLights[li].intensity = 0;
+          for (let i = 0; i < scorchMeshes.length; i++) {
+            const d = debris[debris.length - 1 - i],
+              m = scorchMeshes[i];
+            m.visible = !!d && distanceBetween(d, cameraTarget) < 1000;
+            if (d) {
+              m.position.set(d.x, (d.altitude ?? terrainHeight(d.x, d.y)) + 0.2, d.y);
+              m.scale.set(100, 85, 1);
+              m.material.opacity = Math.min(0.8, d.life / 10);
+            }
+          }
+          if (fx.length > 620) fx.splice(0, fx.length - 620);
+          let pi = 0;
+          for (let i = fx.length - 1; i >= 0; i--) {
+            const p = fx[i];
+            p.life -= deltaSeconds;
+            if (p.life <= 0) {
+              fx.splice(i, 1);
+              continue;
+            }
+            p.x += p.vx * deltaSeconds;
+            p.y += p.vy * deltaSeconds;
+            p.z += p.vz * deltaSeconds;
+            if (p.case) p.vy -= 120 * deltaSeconds;
+            else {
+              const drag = Math.pow(0.97, deltaSeconds * 60);
+              p.vx *= drag;
+              p.vz *= drag;
+            }
+            p.y = Math.max(0.5, p.y);
+            if (pi >= particlePool.length) continue;
+            const s = particlePool[pi++];
+            s.visible = true;
+            s.position.set(p.x, p.y, p.z);
+            const a = p.life / p.max;
+            s.material.map = p.glow ? haloTx : smokeTx;
+            s.material.color.set(p.color);
+            s.material.opacity = Math.min(p.smoke ? 0.56 : 0.96, a * 1.7);
+            s.material.blending = p.glow ? Three.AdditiveBlending : Three.NormalBlending;
+            let sz = p.case ? p.size : p.size * (1 + (1 - a) * 2);
+            s.scale.set(sz, sz, 1);
+          }
+          for (const p of particles) {
+            if (pi >= particlePool.length) break;
+            const s = particlePool[pi++];
+            s.visible = true;
+            s.position.set(
+              p.x,
+              p.blood || p.flame ? Math.max(0.3, p.z) : 2 + (1 - p.life / p.max) * 13,
+              p.y,
+            );
+            s.material.map = p.blood ? bloodDropTx : p.flame ? flameTx : smokeTx;
+            s.material.color.set(p.color);
+            s.material.opacity = p.blood ? 0.97 : clamp(p.life / p.max, 0, 0.7);
+            s.material.blending = p.flame ? Three.AdditiveBlending : Three.NormalBlending;
+            s.scale.set(p.size * (p.blood ? 1.1 : 1.6), p.size * (p.blood ? 1.8 : 1.6), 1);
+          }
+          for (; pi < particlePool.length; pi++) particlePool[pi].visible = false;
+          let bi = 0;
+          for (const b of bullets) {
+            if (bi + 6 > tracerPositions.length) break;
+            tracerPositions[bi++] = b.x;
+            tracerPositions[bi++] = 9 + (b.altitude || 0);
+            tracerPositions[bi++] = b.y;
+            tracerPositions[bi++] = b.x - b.vx * 0.009;
+            tracerPositions[bi++] = 9 + (b.altitude || 0) - (b.vz || 0) * 0.009;
+            tracerPositions[bi++] = b.y - b.vy * 0.009;
+          }
+          tracerGeo.setDrawRange(0, bi / 3);
+          tracerGeo.attributes.position.needsUpdate = true;
+          tracer.frustumCulled = false;
+          let si = 0;
+          for (const s of skids) {
+            if (si + 6 > skidPos.length) break;
+            const x = s.x + Math.cos(s.a) * s.len,
+              z = s.y + Math.sin(s.a) * s.len;
+            skidPos[si++] = s.x;
+            skidPos[si++] = terrainHeight(s.x, s.y) + 0.15;
+            skidPos[si++] = s.y;
+            skidPos[si++] = x;
+            skidPos[si++] = terrainHeight(x, z) + 0.15;
+            skidPos[si++] = z;
+          }
+          skidGeo.setDrawRange(0, si / 3);
+          skidGeo.attributes.position.needsUpdate = true;
+          skidLines.frustumCulled = false;
+          renderer.shadowMap.needsUpdate = frames++ % (touchEnabled() ? 5 : 2) === 0;
+          renderer.render(scene, camera);
+          worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
+          if (target && gameMode === 'play') {
+            const p = api.project(target.x, target.y, 32 + targetAltitude);
+            if (p.x < 60 || p.x > viewportWidth - 60 || p.y < 130 || p.y > viewportHeight - 210) {
+              const a = Math.atan2(p.y - viewportHeight / 2, p.x - viewportWidth / 2),
+                r = Math.min(
+                  (viewportWidth / 2 - 80) / Math.max(0.01, Math.abs(Math.cos(a))),
+                  (viewportHeight / 2 - 125) / Math.max(0.01, Math.abs(Math.sin(a))),
+                );
+              const x = viewportWidth / 2 + Math.cos(a) * r,
+                y = viewportHeight / 2 + Math.sin(a) * r;
+              worldContext.save();
+              worldContext.translate(x, y);
+              worldContext.rotate(a);
+              worldContext.fillStyle = '#efd7a1';
+              worldContext.beginPath();
+              worldContext.moveTo(12, 0);
+              worldContext.lineTo(-7, -7);
+              worldContext.lineTo(-3, 0);
+              worldContext.lineTo(-7, 7);
+              worldContext.closePath();
+              worldContext.fill();
+              worldContext.restore();
+              worldContext.fillStyle = '#eee0c4';
+              worldContext.font = 'bold 11px monospace';
+              worldContext.textAlign = 'center';
+              worldContext.fillText(distanceLabel(distanceBetween(player, target)), x, y + 24);
+            }
+          }
+          for (const p of [...storyActors, ...enemies, ...gangMembers]) {
+            if (
+              p.guest ||
+              p.boss ||
+              p.hidden ||
+              p.hp <= 0 ||
+              !sameFloor(p, player) ||
+              distanceBetween(p, player) > (p.ally ? 400 : 230)
+            )
+              continue;
+            const q = api.project(p.x, p.y, entityElevation(p) + 24);
+            if (q.x < 20 || q.x > viewportWidth - 20 || q.y < 80 || q.y > viewportHeight - 180)
+              continue;
+            worldContext.font = 'bold 10px Arial';
+            worldContext.textAlign = 'center';
+            worldContext.strokeStyle = '#11202a';
+            worldContext.lineWidth = 3;
+            worldContext.strokeText(p.name || '', q.x, q.y);
+            worldContext.fillStyle = p.ally
+              ? '#f0ddae'
+              : p.faction === 'harbor'
+                ? '#d99b84'
+                : '#c9b6e7';
+            worldContext.fillText(p.name || '', q.x, q.y);
+          }
+          for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers])
+            if (personIncapacitated(p) && distanceBetween(p, cameraTarget) < 850) {
+              const q = api.project(p.x, p.y, entityElevation(p) + (p.knockedFor > 0 ? 10 : 26));
+              drawDizzy(q.x, q.y);
+            }
+          drawHarborLabels3D(api);
+          drawHitTargetLabel();
+          if (flash > 0) {
+            worldContext.fillStyle = 'rgba(199,88,62,' + flash * 0.7 + ')';
+            worldContext.fillRect(0, 0, viewportWidth, viewportHeight);
+          }
+        },
+      };
+      api.resize();
+      return api;
+    }
+    // END SUBSYSTEM: src/render3d.js

@@ -1,0 +1,695 @@
+    // BEGIN SUBSYSTEM: src/geography.js — Coastlines and land regions
+    /**
+     * Coastlines and land regions
+     * Source: src/geography.js
+     * Scope: shared game closure.
+     * Shared land polygons, bridges, roads, shoreline tests and district lookup.
+     */
+    /* One coastline model drives terrain, water, the map and all vehicle footprints. */
+    const LAND_REGIONS = [
+      {
+        id: 'northbank',
+        name: 'NORTHBANK ISLAND',
+        color: '#5b696b',
+        polygon: [
+          [600, 120],
+          [2600, 120],
+          [2990, 280],
+          [3260, 660],
+          [3420, 1050],
+          [3420, 2300],
+          [3350, 2730],
+          [3420, 3300],
+          [3420, 4400],
+          [3290, 4900],
+          [2810, 5400],
+          [2300, 5530],
+          [1850, 5300],
+          [1460, 4880],
+          [1100, 4480],
+          [580, 4150],
+          [250, 3650],
+          [130, 2900],
+          [220, 2350],
+          [380, 2080],
+          [320, 1650],
+          [150, 1270],
+          [150, 550],
+          [240, 260],
+        ],
+      },
+      {
+        id: 'palmkeys',
+        name: 'PALM KEYS',
+        color: '#93a897',
+        polygon: [
+          [4100, 430],
+          [4620, 210],
+          [5110, 390],
+          [5410, 890],
+          [5530, 1690],
+          [5460, 2590],
+          [5570, 3290],
+          [5420, 4090],
+          [5160, 4880],
+          [4610, 5310],
+          [4230, 5000],
+          [4020, 4430],
+          [3960, 3730],
+          [4020, 2820],
+          [3960, 2020],
+          [3960, 650],
+        ],
+      },
+      {
+        id: 'airport',
+        name: 'SOUTHPORT AIRPORT',
+        color: '#77847e',
+        polygon: [
+          [170, 4100],
+          [620, 4100],
+          [1240, 4500],
+          [1430, 4830],
+          [1390, 5120],
+          [1210, 5500],
+          [570, 5570],
+          [130, 5320],
+          [80, 4750],
+        ],
+      },
+    ];
+    const COUNTY_LAKES = [
+      {
+        id: 'lake',
+        name: 'CLEARWATER RESERVOIR',
+        lake: true,
+        polygon: [
+          [8840, 1780],
+          [8930, 1600],
+          [9160, 1580],
+          [9330, 1750],
+          [9470, 2030],
+          [9310, 2290],
+          [9020, 2210],
+          [8870, 2030],
+        ],
+      },
+    ];
+    const BOULEVARDS = [
+      {
+        name: 'AIRPORT WAY',
+        width: 66,
+        points: [
+          [1664, 4160],
+          [1240, 4290],
+          [1000, 4560],
+          [1220, 4720],
+          [1220, 5200],
+        ],
+      },
+      {
+        name: 'OCEAN DRIVE',
+        width: 76,
+        points: [
+          [5248, 4384],
+          [5215, 4555],
+          [4980, 4736],
+        ],
+      },
+    ];
+    BOULEVARDS.push(
+      {
+        name: 'NORTHBANK QUAY',
+        width: 44,
+        points: [
+          [640, 190],
+          [2176, 190],
+        ],
+      },
+      {
+        name: 'GOLDEN TIDE APPROACH',
+        width: 44,
+        points: [
+          [4985, 3060],
+          [4985, 3200],
+        ],
+      },
+    );
+    const AIRPORT = {
+      x: 870,
+      y: 4800,
+      w: 280,
+      h: 170,
+      door: {
+        x: 1180,
+        y: 4890,
+      },
+      runway: {
+        x: 300,
+        y: 4280,
+        w: 236,
+        h: 1010,
+      },
+      hangar: {
+        x: 760,
+        y: 5200,
+        w: 250,
+        h: 150,
+      },
+      cargo: {
+        x: 1040,
+        y: 5180,
+      },
+    };
+    // Ground footprints shared by airport scenery, foot collision, traffic spawning and ballistics.
+    const AIRPORT_SCENERY_SOLIDS = [
+      {
+        x: 780.5,
+        y: 5065.5,
+        w: 19,
+        h: 19,
+        height: 126,
+        kind: 'tower',
+      },
+      {
+        x: 3519,
+        y: 8969,
+        w: 22,
+        h: 22,
+        height: 152,
+        kind: 'tower',
+      },
+      ...[
+        [680, 4800, true, 0.9],
+        [680, 5110, true, 1],
+        [1000, 5400, false, 0.65],
+        [4100, 9160, true, 1.8],
+        [4460, 9160, true, 1.6],
+        [5710, 9300, false, 1.4],
+      ].map(([x, y, vertical, size]) => {
+        const w = (vertical ? 18 : 126) * size,
+          h = (vertical ? 126 : 18) * size;
+        return {
+          x: x - w / 2,
+          y: y - h / 2,
+          w,
+          h,
+          height: 24 * size,
+          kind: 'parked aircraft',
+        };
+      }),
+    ];
+    function airportSceneryBlocked(x, y, r = 0) {
+      return AIRPORT_SCENERY_SOLIDS.some(
+        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
+      );
+    }
+    const ROOFTOP = {
+      id: 'skyline',
+      name: 'THE BLUE HOUR',
+      x: 4300,
+      y: 2250,
+      w: 360,
+      h: 350,
+      height: 135,
+      door: {
+        x: 4480,
+        y: 2622,
+      },
+      lift: {
+        x: 4336,
+        y: 2556,
+      },
+      bar: {
+        x: 4550,
+        y: 2317,
+      },
+      contact: {
+        x: 4618,
+        y: 2543,
+      },
+    };
+    function pointInPolygon(x, y, poly) {
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const [ax, ay] = poly[i],
+          [bx, by] = poly[j];
+        if (ay > y !== by > y && x < ((bx - ax) * (y - ay)) / (by - ay) + ax) inside = !inside;
+      }
+      return inside;
+    }
+    function regionContains(r, x, y) {
+      const b =
+        r.bounds ||
+        (r.bounds = {
+          minx: Math.min(...r.polygon.map((p) => p[0])),
+          maxx: Math.max(...r.polygon.map((p) => p[0])),
+          miny: Math.min(...r.polygon.map((p) => p[1])),
+          maxy: Math.max(...r.polygon.map((p) => p[1])),
+        });
+      return (
+        x >= b.minx && x <= b.maxx && y >= b.miny && y <= b.maxy && pointInPolygon(x, y, r.polygon)
+      );
+    }
+    function landAt(x, y) {
+      return (
+        !COUNTY_LAKES.some((r) => regionContains(r, x, y)) &&
+        LAND_REGIONS.some((r) => regionContains(r, x, y))
+      );
+    }
+    function inAirport(x, y) {
+      return y > 4120 && y < 5632 && x < 1400;
+    }
+    function segmentDistance(x, y, a, b) {
+      const dx = b[0] - a[0],
+        dy = b[1] - a[1],
+        t = clamp(((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy), 0, 1);
+      return Math.hypot(x - a[0] - t * dx, y - a[1] - t * dy);
+    }
+    function onBoulevard(x, y, margin = 0) {
+      return BOULEVARDS.some((r) =>
+        r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + margin),
+      );
+    }
+    function landRect(x, y, w, h) {
+      return [
+        [x, y],
+        [x + w, y],
+        [x + w, y + h],
+        [x, y + h],
+        [x + w / 2, y + h / 2],
+      ].every((p) => landAt(...p));
+    }
+    function bridgeSpan(y) {
+      return y === 4736 ? [3050, 4390] : y === 3200 ? [3160, 4260] : [3150, 4170];
+    }
+    function bridgeRailSpans(y) {
+      let spans = [bridgeSpan(y)];
+      for (const x of ROAD_CENTERS)
+        spans = spans.flatMap(([a, b]) =>
+          x + 85 <= a || x - 85 >= b
+            ? [[a, b]]
+            : [
+                [a, Math.min(b, x - 85)],
+                [Math.max(a, x + 85), b],
+              ].filter(([lo, hi]) => hi > lo),
+        );
+      return spans;
+    }
+    function onBridge(x, y, r = 0) {
+      return (
+        onCountyBridge(x, y, r) ||
+        BRIDGES.some((z) => {
+          const [a, b] = bridgeSpan(z);
+          return x - r >= a && x + r <= b && Math.abs(y - z) <= 56 - r;
+        })
+      );
+    }
+    function groundAt(x, y, r = 0) {
+      if (onBridge(x, y, r) || onDock(x, y, r)) return true;
+      return (
+        landAt(x, y) &&
+        (!r ||
+          (landAt(x - r, y - r) &&
+            landAt(x + r, y - r) &&
+            landAt(x - r, y + r) &&
+            landAt(x + r, y + r)))
+      );
+    }
+    function appendLakePaths(g) {
+      for (const lake of COUNTY_LAKES) {
+        [...lake.polygon].reverse().forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
+        g.closePath();
+      }
+    }
+    function coastPath(drawingContext) {
+      drawingContext.beginPath();
+      for (const reg of LAND_REGIONS) {
+        reg.polygon.forEach(([x, y], i) =>
+          i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y),
+        );
+        drawingContext.closePath();
+      }
+      appendLakePaths(drawingContext);
+    }
+    function regionPath(drawingContext, reg) {
+      drawingContext.beginPath();
+      reg.polygon.forEach(([x, y], i) =>
+        i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y),
+      );
+      drawingContext.closePath();
+      if (reg.id === 'ridgeline') appendLakePaths(drawingContext);
+    }
+    function drawBridgeGround(drawingContext) {
+      for (const z of BRIDGES) {
+        const [a, b] = bridgeSpan(z);
+        drawingContext.fillStyle = '#444f57';
+        drawingContext.fillRect(a, z - 56, b - a, 112);
+        drawingContext.fillStyle = '#b6b8af';
+        for (const [lo, hi] of bridgeRailSpans(z)) {
+          drawingContext.fillRect(lo, z - 57, hi - lo, 5);
+          drawingContext.fillRect(lo, z + 52, hi - lo, 5);
+        }
+        drawingContext.fillStyle = '#e3c98b';
+        for (let x = a; x < b; x += 31) drawingContext.fillRect(x, z - 1, 15, 2);
+      }
+    }
+    function strokeRoad(drawingContext, points, width, color) {
+      drawingContext.beginPath();
+      points.forEach(([x, y], i) => (i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y)));
+      drawingContext.strokeStyle = color;
+      drawingContext.lineWidth = width;
+      drawingContext.lineJoin = 'round';
+      drawingContext.lineCap = 'round';
+      drawingContext.stroke();
+    }
+    function paintDistrictGround(drawingContext, detail = true) {
+      drawingContext.save();
+      coastPath(drawingContext);
+      drawingContext.clip();
+      for (const r of LAND_REGIONS) {
+        regionPath(drawingContext, r);
+        drawingContext.strokeStyle = r.id === 'palmkeys' ? '#d5c49f' : '#929897';
+        drawingContext.lineWidth = r.id === 'palmkeys' ? 125 : 22;
+        drawingContext.stroke();
+      }
+      // Broad sandy strands and turquoise shallows belong to the eastern island.
+      drawingContext.save();
+      regionPath(drawingContext, LAND_REGIONS[1]);
+      drawingContext.clip();
+      drawingContext.strokeStyle = '#d8c89e';
+      drawingContext.lineWidth = 150;
+      drawingContext.beginPath();
+      LAND_REGIONS[1].polygon
+        .slice(1, 11)
+        .forEach(([x, y], i) => (i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y)));
+      drawingContext.stroke();
+      drawingContext.restore();
+      regionPath(drawingContext, LAND_REGIONS[2]);
+      drawingContext.fillStyle = '#8a9386';
+      drawingContext.fill();
+      for (const road of BOULEVARDS) {
+        strokeRoad(drawingContext, road.points, road.width + 15, '#b3ada0');
+        strokeRoad(drawingContext, road.points, road.width, '#485259');
+        drawingContext.setLineDash([19, 14]);
+        strokeRoad(drawingContext, road.points, 2, '#d4ba75');
+        drawingContext.setLineDash([]);
+      }
+      const r = AIRPORT.runway;
+      drawingContext.fillStyle = '#333e47';
+      drawingContext.fillRect(r.x, r.y, r.w, r.h);
+      drawingContext.strokeStyle = '#d5d6c4';
+      drawingContext.lineWidth = 2;
+      drawingContext.strokeRect(r.x + 6, r.y + 6, r.w - 12, r.h - 12);
+      drawingContext.fillStyle = '#ece8d7';
+      for (let y = r.y + 75; y < r.y + r.h - 65; y += 54)
+        drawingContext.fillRect(r.x + r.w / 2 - 2, y, 4, 24);
+      for (const y of [r.y + 18, r.y + r.h - 48])
+        for (let x = r.x + 16; x < r.x + r.w - 10; x += 13) drawingContext.fillRect(x, y, 6, 28);
+      strokeRoad(
+        drawingContext,
+        [
+          [r.x + r.w + 55, r.y + 100],
+          [r.x + r.w + 55, 5330],
+          [1060, 5330],
+        ],
+        45,
+        '#58616a',
+      );
+      strokeRoad(
+        drawingContext,
+        [
+          [530, 4890],
+          [825, 4890],
+          [825, 5110],
+          [1150, 5110],
+        ],
+        110,
+        '#717971',
+      );
+      if (detail) {
+        drawingContext.fillStyle = '#e2ddc8';
+        drawingContext.font = 'bold 32px monospace';
+        drawingContext.textAlign = 'center';
+        drawingContext.fillText('18', r.x + r.w / 2, r.y + 80);
+        drawingContext.save();
+        drawingContext.translate(r.x + r.w / 2, r.y + r.h - 76);
+        drawingContext.rotate(Math.PI);
+        drawingContext.fillText('36', 0, 0);
+        drawingContext.restore();
+      }
+      drawingContext.restore();
+      paintPromenades(drawingContext);
+      drawBridgeGround(drawingContext);
+    }
+    function segmentCross(a, b, c, d) {
+      const cross = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+      return (
+        cross(a, b, c) * cross(a, b, d) <= 0 &&
+        cross(c, d, a) * cross(c, d, b) <= 0 &&
+        Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x)) <=
+          Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x)) &&
+        Math.max(Math.min(a.y, b.y), Math.min(c.y, d.y)) <=
+          Math.min(Math.max(a.y, b.y), Math.max(c.y, d.y))
+      );
+    }
+    function hullTouchesLand(shape) {
+      const cs = corners(shape),
+        hull = [cs[0], cs[2], cs[3], cs[1]];
+      if (hull.some((p) => landAt(p.x, p.y))) return true;
+      for (const reg of [...LAND_REGIONS, ...COUNTY_LAKES]) {
+        regionContains(reg, shape.x, shape.y);
+        const b = reg.bounds,
+          radius = Math.hypot(shape.hx, shape.hy);
+        if (
+          shape.x + radius < b.minx ||
+          shape.x - radius > b.maxx ||
+          shape.y + radius < b.miny ||
+          shape.y - radius > b.maxy
+        )
+          continue;
+        for (let i = 0; i < reg.polygon.length; i++) {
+          const a = {
+              x: reg.polygon[i][0],
+              y: reg.polygon[i][1],
+            },
+            j = (i + 1) % reg.polygon.length,
+            b = {
+              x: reg.polygon[j][0],
+              y: reg.polygon[j][1],
+            };
+          if (
+            boxContact(shape, {
+              x: a.x,
+              y: a.y,
+              hx: 0.2,
+              hy: 0.2,
+              a: 0,
+            })
+          )
+            return true;
+          for (let k = 0; k < 4; k++) if (segmentCross(hull[k], hull[(k + 1) % 4], a, b)) return true;
+        }
+      }
+      return false;
+    }
+    function districtAt(x, y) {
+      if (COUNTY_LAKES.some((r) => regionContains(r, x, y))) return 'CLEARWATER RESERVOIR';
+      const reg = countyRegionAt(x, y);
+      if (reg) {
+        if (inMilitary(x, y)) return MILITARY.name;
+        const ap = COUNTY_AIRPORT;
+        if (x > ap.x && x < ap.x + ap.w && y > ap.y - 200 && y < ap.y + ap.h) return ap.name;
+        const town = COUNTY_TOWNS.find(
+          (t) => x > t.x - 180 && x < t.x + 1200 && y > t.y - 180 && y < t.y + 1200,
+        );
+        return town ? town.name : reg.name;
+      }
+      if (inAirport(x, y) && landAt(x, y)) return 'SOUTHPORT AIRPORT';
+      if (x > RIVER.right && landAt(x, y))
+        return y < 1500
+          ? 'PALM KEYS · ART DECO'
+          : y < 3100
+            ? 'OCEAN DRIVE'
+            : y < 4400
+              ? 'LITTLE HAVANA'
+              : 'CORAL MARINA';
+      if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
+      if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
+      if (y < 2650) return x > 1700 && x < 2300 ? 'CENTRAL GARDENS' : 'MIDTOWN';
+      if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';
+      if (y < 4650) return 'SOUTH BANK';
+      return 'BATTERY POINT';
+    }
+    function validCityBlock(x, y, w = 334, h = 334) {
+      return landRect(x - 8, y - 8, w + 16, h + 16) && !inAirport(x + w / 2, y + h / 2);
+    }
+    function drawWater2D() {
+      worldContext.fillStyle = cameraTarget.x > 3700 ? '#267581' : '#1d4d67';
+      worldContext.fillRect(0, 0, viewportWidth, viewportHeight);
+      worldContext.save();
+      worldContext.translate(viewportWidth / 2, viewportHeight / 2);
+      worldContext.scale(canvasScale, canvasScale);
+      worldContext.translate(-cameraTarget.x, -cameraTarget.y);
+      const minx = cameraTarget.x - viewportWidth / canvasScale / 2 - 70,
+        maxx = cameraTarget.x + viewportWidth / canvasScale / 2 + 70,
+        miny = cameraTarget.y - viewportHeight / canvasScale / 2 - 70,
+        maxy = cameraTarget.y + viewportHeight / canvasScale / 2 + 70;
+      worldContext.lineWidth = 1.3;
+      for (let y = Math.floor(miny / 32) * 32; y < maxy; y += 32)
+        for (let x = Math.floor(minx / 95) * 95; x < maxx; x += 95) {
+          if (landAt(x, y)) continue;
+          const phase = gameTime * 1.2 + x * 0.013 + y * 0.019,
+            xx = x + Math.sin(phase) * 9,
+            yy = y + Math.sin(phase * 0.7) * 4;
+          worldContext.strokeStyle =
+            'rgba(169,221,218,' + (0.08 + 0.07 * (0.5 + 0.5 * Math.sin(phase))) + ')';
+          worldContext.beginPath();
+          worldContext.moveTo(xx, yy);
+          worldContext.quadraticCurveTo(xx + 22, yy - 5, xx + 48, yy);
+          worldContext.stroke();
+        }
+      for (const e of coastSegments()) {
+        if (e.opening || !visible(e, 120)) continue;
+        const { nx, ny } = shoreNormal(e);
+        for (let k = 0; k < 2; k++) {
+          const t = (gameTime * 0.18 + e.x * 0.003 + e.y * 0.002 + k * 0.5) % 1,
+            offset = 3 + (1 - t) * (shoreStyle(e) === 'beach' ? 36 : 12),
+            dx = (Math.cos(e.a) * e.length) / 2,
+            dy = (Math.sin(e.a) * e.length) / 2;
+          worldContext.strokeStyle = 'rgba(201,238,222,' + Math.sin(t * Math.PI) * 0.28 + ')';
+          worldContext.lineWidth = 1.5;
+          worldContext.beginPath();
+          worldContext.moveTo(e.x + nx * offset - dx, e.y + ny * offset - dy);
+          worldContext.quadraticCurveTo(
+            e.x + nx * (offset + 3),
+            e.y + ny * (offset + 3),
+            e.x + nx * offset + dx,
+            e.y + ny * offset + dy,
+          );
+          worldContext.stroke();
+        }
+      }
+      worldContext.restore();
+    }
+    function buildCoastSegments() {
+      const result = [];
+      for (const reg of [...LAND_REGIONS, ...COUNTY_LAKES]) {
+        const poly = reg.polygon;
+        for (let i = 0; i < poly.length; i++) {
+          const a = poly[i],
+            b = poly[(i + 1) % poly.length],
+            len = Math.hypot(b[0] - a[0], b[1] - a[1]),
+            steps = Math.ceil(len / 45);
+          for (let k = 0; k < steps; k++) {
+            const t = (k + 0.5) / steps,
+              x = a[0] + (b[0] - a[0]) * t,
+              y = a[1] + (b[1] - a[1]) * t;
+            if (!reg.lake && LAND_REGIONS.some((o) => o !== reg && regionContains(o, x, y))) continue;
+            result.push({
+              x,
+              y,
+              a: Math.atan2(b[1] - a[1], b[0] - a[0]),
+              length: len / steps + 1,
+              region: reg.id,
+              opening:
+                onBridge(x, y, -8) ||
+                DOCKS.some((d) => x > d.x - 8 && x < d.x + d.w + 8 && y > d.y - 8 && y < d.y + d.h + 8),
+            });
+          }
+        }
+      }
+      return result;
+    }
+    function drawDistrictScenery2D() {
+      if (cameraTarget.x > 4400) {
+        for (let y = 740; y < 4550; y += 145) {
+          const x = y < 1900 ? 5250 : y < 3200 ? 5260 : 5170;
+          if (
+            !visible(
+              {
+                x,
+                y,
+              },
+              100,
+            )
+          )
+            continue;
+          for (const side of [-1, 1]) {
+            const px = x + side * 64;
+            worldContext.strokeStyle = '#99876c';
+            worldContext.lineWidth = 4;
+            worldContext.beginPath();
+            worldContext.moveTo(px, y);
+            worldContext.lineTo(px + 4, y - 20);
+            worldContext.stroke();
+            worldContext.strokeStyle = '#417d64';
+            worldContext.lineWidth = 5;
+            for (let i = 0; i < 7; i++) {
+              const a = (i * TAU) / 7;
+              worldContext.beginPath();
+              worldContext.moveTo(px + 4, y - 20);
+              worldContext.quadraticCurveTo(
+                px + 4 + Math.cos(a) * 15,
+                y - 20 + Math.sin(a) * 15 - 5,
+                px + 4 + Math.cos(a) * 23,
+                y - 20 + Math.sin(a) * 23,
+              );
+              worldContext.stroke();
+            }
+          }
+        }
+      }
+      if (cameraTarget.x < 1800 && cameraTarget.y > 4000) {
+        for (const [x, y, a, s] of [
+          [680, 4800, -Math.PI / 2, 0.9],
+          [680, 5110, -Math.PI / 2, 1],
+          [1000, 5400, 0, 0.65],
+        ]) {
+          if (
+            !visible(
+              {
+                x,
+                y,
+              },
+              100,
+            )
+          )
+            continue;
+          worldContext.save();
+          worldContext.translate(x + 6, y + 9);
+          worldContext.rotate(a);
+          worldContext.scale(s, s);
+          worldContext.fillStyle = '#1a2b3244';
+          worldContext.fillRect(-65, -10, 130, 20);
+          worldContext.fillRect(-10, -65, 24, 130);
+          worldContext.translate(-6, -9);
+          worldContext.fillStyle = '#dbe3df';
+          worldContext.beginPath();
+          worldContext.ellipse(0, 0, 66, 9, 0, 0, TAU);
+          worldContext.fill();
+          worldContext.beginPath();
+          worldContext.moveTo(-18, -64);
+          worldContext.lineTo(8, -64);
+          worldContext.lineTo(28, 0);
+          worldContext.lineTo(8, 64);
+          worldContext.lineTo(-18, 64);
+          worldContext.lineTo(-7, 0);
+          worldContext.closePath();
+          worldContext.fill();
+          worldContext.fillStyle = '#577f8e';
+          worldContext.fillRect(-52, -22, 14, 44);
+          worldContext.fillRect(43, -6, 9, 12);
+          for (const side of [-1, 1]) {
+            worldContext.fillRect(-2, side * 30 - 4, 18, 8);
+            for (let q = -35; q < 38; q += 8) worldContext.fillRect(q, side * 7 - 1, 3, 2);
+          }
+          worldContext.restore();
+        }
+        worldContext.fillStyle = '#a0b1b1';
+        worldContext.fillRect(771, 5056, 38, 38);
+        worldContext.fillStyle = '#476470';
+        worldContext.fillRect(775, 5060, 30, 30);
+      }
+    }
+    // END SUBSYSTEM: src/geography.js

@@ -1,0 +1,410 @@
+      THREE.JS r160 — ORIGINAL UNMINIFIED SOURCE
+The MIT License
+
+Copyright © 2010-2023 three.js authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+AUDIO EFFECTS / VOICES
+{
+  "original_assets": [
+    {
+      "file": "pistol.wav",
+      "meaning": "Pistol single shot",
+      "creator": "Michel Baradari",
+      "source": "https://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots",
+      "download": "https://opengameart.org/sites/default/files/shots.7z",
+      "archive_file": "shots/pistol.wav",
+      "license": "Creative Commons Attribution 3.0 Unported (CC BY 3.0)",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "notes": "Archive license matches source page. Uploaded finished sample; source page does not state production method.",
+      "bytes": 174952,
+      "duration_seconds": 0.991542,
+      "changes": "Converted to 32 kHz mono PCM; loudness normalized; explosion shortened to 3.8 s; siren excerpt selected."
+    },
+    {
+      "file": "automatic.wav",
+      "meaning": "Automatic / chaingun single shot; retrigger for burst fire",
+      "creator": "Michel Baradari",
+      "source": "https://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots",
+      "download": "https://opengameart.org/sites/default/files/shots.7z",
+      "archive_file": "shots/cg1.wav",
+      "license": "Creative Commons Attribution 3.0 Unported (CC BY 3.0)",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "notes": "Archive license matches source page. Uploaded finished sample; source page does not state production method.",
+      "bytes": 101948,
+      "duration_seconds": 0.577687,
+      "changes": "Converted to 32 kHz mono PCM; loudness normalized; explosion shortened to 3.8 s; siren excerpt selected."
+    },
+    {
+      "file": "shotgun.wav",
+      "meaning": "Shotgun shot with reload/pump sound",
+      "creator": "Michel Baradari",
+      "source": "https://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots",
+      "download": "https://opengameart.org/sites/default/files/shots.7z",
+      "archive_file": "shots/shotgun.wav",
+      "license": "Creative Commons Attribution 3.0 Unported (CC BY 3.0)",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "notes": "Page explicitly states shotgun includes reload. Archive license matches source page.",
+      "bytes": 213500,
+      "duration_seconds": 1.210068,
+      "changes": "Converted to 32 kHz mono PCM; loudness normalized; explosion shortened to 3.8 s; siren excerpt selected."
+    },
+    {
+      "file": "explosion.mp3",
+      "meaning": "Chunky explosion",
+      "creator": "Joth",
+      "source": "https://opengameart.org/content/chunky-explosion",
+      "download": "https://opengameart.org/sites/default/files/Chunky%20Explosion.mp3",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "Source tagged pseudorealistic, not asserted to be a field recording.",
+      "bytes": 116422,
+      "duration_seconds": 5.6163,
+      "changes": "Converted to 32 kHz mono PCM; loudness normalized; explosion shortened to 3.8 s; siren excerpt selected."
+    },
+    {
+      "file": "engine-loop.wav",
+      "meaning": "Car engine loop",
+      "creator": "domasx2",
+      "source": "https://opengameart.org/content/racing-car-engine-sound-loops",
+      "download": "https://opengameart.org/sites/default/files/loop_0.wav",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "Source says made from public domain car recording with pitch adjustment. Page discussion explicitly states assets were remade from public domain source after an earlier license concern. Quiet sample; normalize or apply gain.",
+      "bytes": 76332,
+      "duration_seconds": 0.864082,
+      "changes": "Converted to 32 kHz mono PCM; loudness normalized; explosion shortened to 3.8 s; siren excerpt selected."
+    },
+    {
+      "file": "tire-skid.wav",
+      "meaning": "Car tire squeal / skid loop",
+      "creator": "audible-edge (Tom Haigh); edited by qubodup",
+      "source": "https://opengameart.org/content/car-tire-squeal-skid-loop",
+      "download": "https://opengameart.org/sites/default/files/tires_squal_loop.wav",
+      "license": "Creative Commons Attribution 3.0 Unported (CC BY 3.0)",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "notes": "A 3-second loop edited from source tire sound. Credit original author and qubodup for loop edit.",
+      "bytes": 864044,
+      "duration_seconds": 3.0,
+      "changes": "Converted to 32 kHz mono PCM; loudness normalized; explosion shortened to 3.8 s; siren excerpt selected."
+    },
+    {
+      "file": "sirens-source.mp3",
+      "meaning": "Siren and alarm compilation; needs section selection for a looping police effect",
+      "creator": "aquinn",
+      "source": "https://opengameart.org/content/sirens-and-alarm-noise",
+      "download": "https://opengameart.org/sites/default/files/siren_0.mp3",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "41-second compilation; source does not specifically identify it as a recording of a police vehicle. Do not describe it as one without listening.",
+      "bytes": 661211,
+      "duration_seconds": 41.325688,
+      "changes": "First 6 seconds excerpted; converted to 32 kHz mono PCM; volume reduced to 80%."
+    }
+  ],
+  "helicopter_and_voice": [
+    {
+      "file": "rotor-loop.ogg",
+      "meaning": "Helicopter rotor/engine loop",
+      "creator": "WuxiaScrub",
+      "source": "https://opengameart.org/content/helicopter-sfx",
+      "download": "https://opengameart.org/sites/default/files/heli_0.ogg",
+      "changes": "Extracted source seconds 13\u201318, converted to mono 44.1kHz, used 0.5s wrap crossfade, peak normalized to about -3dBFS, encoded OGG Vorbis. WAV copy also available. Original retained as helicopter-source.ogg.",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 41871,
+      "duration_seconds": 4.491111
+    },
+    {
+      "file": "mission-complete.ogg",
+      "meaning": "Mission completed",
+      "creator": "Kenney (Kenney Vleugels); male voice Jeffrey M. Smith",
+      "source": "https://kenney.nl/assets/voiceover-pack",
+      "mirror": "https://opengameart.org/content/voiceover-pack-40-lines",
+      "download": "https://opengameart.org/sites/default/files/Voiceover%20Pack.zip",
+      "archive_file": "Male/mission_completed.ogg",
+      "changes": "None; byte-for-byte extraction and filename change only.",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 11493,
+      "duration_seconds": 1.262585
+    },
+    {
+      "file": "mission-failed.ogg",
+      "meaning": "Mission failed",
+      "creator": "Kenney (Kenney Vleugels); male voice Jeffrey M. Smith",
+      "source": "https://kenney.nl/assets/voiceover-pack",
+      "mirror": "https://opengameart.org/content/voiceover-pack-40-lines",
+      "download": "https://opengameart.org/sites/default/files/Voiceover%20Pack.zip",
+      "archive_file": "Male/mission_failed.ogg",
+      "changes": "None; byte-for-byte extraction and filename change only.",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 10178,
+      "duration_seconds": 1.107166
+    },
+    {
+      "file": "call-backup.ogg",
+      "meaning": "Call for backup",
+      "creator": "Kenney (Kenney Vleugels); male voice Jeffrey M. Smith",
+      "source": "https://kenney.nl/assets/voiceover-pack",
+      "mirror": "https://opengameart.org/content/voiceover-pack-40-lines",
+      "download": "https://opengameart.org/sites/default/files/Voiceover%20Pack.zip",
+      "archive_file": "Male/war_call_for_backup.ogg",
+      "changes": "None; byte-for-byte extraction and filename change only.",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 9860,
+      "duration_seconds": 1.032381
+    },
+    {
+      "file": "target-engaged.ogg",
+      "meaning": "Target engaged",
+      "creator": "Kenney (Kenney Vleugels); male voice Jeffrey M. Smith",
+      "source": "https://kenney.nl/assets/voiceover-pack",
+      "mirror": "https://opengameart.org/content/voiceover-pack-40-lines",
+      "download": "https://opengameart.org/sites/default/files/Voiceover%20Pack.zip",
+      "archive_file": "Male/war_target_engaged.ogg",
+      "changes": "None; byte-for-byte extraction and filename change only.",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 10485,
+      "duration_seconds": 1.12068
+    },
+    {
+      "file": "look-out.ogg",
+      "meaning": "Look out",
+      "creator": "Kenney (Kenney Vleugels); male voice Jeffrey M. Smith",
+      "source": "https://kenney.nl/assets/voiceover-pack",
+      "mirror": "https://opengameart.org/content/voiceover-pack-40-lines",
+      "download": "https://opengameart.org/sites/default/files/Voiceover%20Pack.zip",
+      "archive_file": "Male/war_look_out.ogg",
+      "changes": "None; byte-for-byte extraction and filename change only.",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bytes": 7251,
+      "duration_seconds": 0.610499
+    }
+  ],
+  "city_life_voices": {
+    "verified_date": "2026-09-19",
+    "files": [
+      {
+        "file": "police-challenge.ogg",
+        "content": "Sir! Drop your weapon, put your hands on your head, and get down on the ground!",
+        "creator": "tekgnosis",
+        "source": "https://freesound.org/people/tekgnosis/sounds/144702/",
+        "download": "https://cdn.freesound.org/previews/144/144702_2573276-lq.ogg",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Extracted seconds 0.1\u20133.89 from the public OGG preview; mono 24 kHz; 90 Hz high-pass; 12/15 ms edge fades; peak limiter -2 dBFS; OGG Vorbis quality 3.",
+        "bytes": 28503,
+        "duration_seconds": 3.79,
+        "channels": 1,
+        "sample_rate": 24000,
+        "sha256": "0ae6ffe88450b468456e9c0832aae956cfe8d12ac2705c2dc2efbcfd1dee77a5",
+        "source_seconds": [
+          0.1,
+          3.89
+        ],
+        "source_format_note": "Original is a 40.89-second mono human voice recording; public OGG preview used. No voice cloning or synthesized speech.",
+        "verification": "Source page transcript and local ASR word timings used to identify cuts."
+      },
+      {
+        "file": "police-drop-weapon.ogg",
+        "content": "Drop your weapon!",
+        "creator": "tekgnosis",
+        "source": "https://freesound.org/people/tekgnosis/sounds/144702/",
+        "download": "https://cdn.freesound.org/previews/144/144702_2573276-lq.ogg",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Extracted seconds 29.31\u201330.24 from the public OGG preview; mono 24 kHz; 90 Hz high-pass; 12/15 ms edge fades; peak limiter -2 dBFS; OGG Vorbis quality 3.",
+        "bytes": 9726,
+        "duration_seconds": 0.93,
+        "channels": 1,
+        "sample_rate": 24000,
+        "sha256": "08481a9c46b7a4982bffb94dd56cf5c89ef383c0d93df62b2824e42cf3a7c360",
+        "source_seconds": [
+          29.31,
+          30.24
+        ],
+        "source_format_note": "Original is a 40.89-second mono human voice recording; public OGG preview used. No voice cloning or synthesized speech.",
+        "verification": "Source page transcript and local ASR word timings used to identify cuts."
+      },
+      {
+        "file": "police-hands-on-head.ogg",
+        "content": "Put your hands on your head!",
+        "creator": "tekgnosis",
+        "source": "https://freesound.org/people/tekgnosis/sounds/144702/",
+        "download": "https://cdn.freesound.org/previews/144/144702_2573276-lq.ogg",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Extracted seconds 30.28\u201331.43 from the public OGG preview; mono 24 kHz; 90 Hz high-pass; 12/15 ms edge fades; peak limiter -2 dBFS; OGG Vorbis quality 3.",
+        "bytes": 10733,
+        "duration_seconds": 1.15,
+        "channels": 1,
+        "sample_rate": 24000,
+        "sha256": "902de97f19af0115e07ee0017e4e78d67d8167ae118dd5a544694ef02bfabfa2",
+        "source_seconds": [
+          30.28,
+          31.43
+        ],
+        "source_format_note": "Original is a 40.89-second mono human voice recording; public OGG preview used. No voice cloning or synthesized speech.",
+        "verification": "Source page transcript and local ASR word timings used to identify cuts."
+      },
+      {
+        "file": "police-under-arrest.ogg",
+        "content": "You are going to be placed under arrest.",
+        "creator": "tekgnosis",
+        "source": "https://freesound.org/people/tekgnosis/sounds/144702/",
+        "download": "https://cdn.freesound.org/previews/144/144702_2573276-lq.ogg",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Extracted seconds 4.0\u20136.43 from the public OGG preview; mono 24 kHz; 90 Hz high-pass; 12/15 ms edge fades; peak limiter -2 dBFS; OGG Vorbis quality 3.",
+        "bytes": 19877,
+        "duration_seconds": 2.43,
+        "channels": 1,
+        "sample_rate": 24000,
+        "sha256": "ade93f26e1cdd9f753a156c84a282ec74e26488fdd8da6b3cc9d64afbfd3b853",
+        "source_seconds": [
+          4.0,
+          6.43
+        ],
+        "source_format_note": "Original is a 40.89-second mono human voice recording; public OGG preview used. No voice cloning or synthesized speech.",
+        "verification": "Source page transcript and local ASR word timings used to identify cuts."
+      },
+      {
+        "file": "police-get-down.ogg",
+        "content": "Get down!",
+        "creator": "Kenney (Kenney Vleugels); male voice Jeffrey M. Smith",
+        "source": "https://kenney.nl/assets/voiceover-pack",
+        "download": "https://opengameart.org/sites/default/files/Voiceover%20Pack.zip",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Byte-for-byte extracted Male/war_get_down.ogg; filename change only.",
+        "bytes": 8754,
+        "duration_seconds": 0.853673,
+        "channels": 1,
+        "sample_rate": 44100,
+        "sha256": "ea5cc21f4a55da6746e5a05e6e65187ae39cf50b9670d9d779e1b4f8a22a56ae",
+        "mirror": "https://opengameart.org/content/voiceover-pack-40-lines"
+      },
+      {
+        "file": "civilian-scream-female-1.ogg",
+        "content": "Wordless adult female fear/terror scream.",
+        "creator": "AuraVoice / Nocturnal_Vanguard",
+        "source": "https://opengameart.org/content/female-scream-1",
+        "download": "https://opengameart.org/sites/default/files/female_scream_1.ogg",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Mono 24 kHz; 100 Hz high-pass; peak limiter -2 dBFS; OGG Vorbis quality 3.",
+        "bytes": 9487,
+        "duration_seconds": 1.821583,
+        "channels": 1,
+        "sample_rate": 24000,
+        "sha256": "fc4d4a039f023d7a889c33aea42733b929dfe308549f8e2db94414208a131929",
+        "source_notes": "Creator describes herself as a full-time voice-over artist and says she recorded the SFX; page lists CC0, no credit required."
+      },
+      {
+        "file": "civilian-scream-female-2.ogg",
+        "content": "Wordless adult female fear scream.",
+        "creator": "Archeos; excerpt prepared by congusbongus",
+        "source": "https://freesound.org/people/Archeos/sounds/261419/",
+        "download": "https://opengameart.org/sites/default/files/female_screams.zip",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Extracted 4.ogg from female_screams.zip. Original was already trimmed/normalized by congusbongus. Mono 24 kHz; 100 Hz high-pass; peak limiter -2 dBFS; OGG Vorbis quality 3.",
+        "bytes": 8968,
+        "duration_seconds": 0.924,
+        "channels": 1,
+        "sample_rate": 24000,
+        "sha256": "cce797971f6fa1e996b083d523d94caa9373bd97e899673a64037f5a8e14a41a",
+        "mirror": "https://opengameart.org/content/female-screams",
+        "source_notes": "Primary source explicitly says recorded by a 28-year-old woman. Bundled license.txt maps 4 to WomanScream.wav by Archeos, CC0. The collection page has mixed CC-BY/CC0 entries; this chosen entry is individually CC0."
+      },
+      {
+        "file": "civilian-scream-male-1.ogg",
+        "content": "Wordless male fear/pain scream, variant 1.",
+        "creator": "JohnsonBrandEditing; excerpt prepared by congusbongus",
+        "source": "https://freesound.org/people/JohnsonBrandEditing/sounds/173944/",
+        "download": "https://opengameart.org/sites/default/files/aargh.zip",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Extracted aargh3.ogg from aargh.zip. Original was already trimmed/normalized by congusbongus. Mono 24 kHz; 100 Hz high-pass; peak limiter -2 dBFS; OGG Vorbis quality 3.",
+        "bytes": 8675,
+        "duration_seconds": 0.84,
+        "channels": 1,
+        "sample_rate": 24000,
+        "sha256": "3062973b5c63fb172ca86721fe5ae9845f5f3d3f102acfe58a0a5f9e261ac4ec",
+        "mirror": "https://opengameart.org/content/aargh-male-screams",
+        "source_notes": "Primary source describes these as male screams. Bundled aargh.txt explicitly maps entries 3\u20137 to human male scream multi under CC0. Exact performer age is not stated. Collection page has mixed CC-BY/CC0 entries; these chosen entries are individually CC0."
+      },
+      {
+        "file": "civilian-scream-male-2.ogg",
+        "content": "Wordless male fear/pain scream, variant 2.",
+        "creator": "JohnsonBrandEditing; excerpt prepared by congusbongus",
+        "source": "https://freesound.org/people/JohnsonBrandEditing/sounds/173944/",
+        "download": "https://opengameart.org/sites/default/files/aargh.zip",
+        "license": "CC0 1.0 Universal",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "changes": "Extracted aargh4.ogg from aargh.zip. Original was already trimmed/normalized by congusbongus. Mono 24 kHz; 100 Hz high-pass; peak limiter -2 dBFS; OGG Vorbis quality 3.",
+        "bytes": 9161,
+        "duration_seconds": 0.91,
+        "channels": 1,
+        "sample_rate": 24000,
+        "sha256": "904b5b86c5bdfc756c6e02169b6ce9f26ec04fc27a0c8f9bd1ecb5cfce6a553c",
+        "mirror": "https://opengameart.org/content/aargh-male-screams",
+        "source_notes": "Primary source describes these as male screams. Bundled aargh.txt explicitly maps entries 3\u20137 to human male scream multi under CC0. Exact performer age is not stated. Collection page has mixed CC-BY/CC0 entries; these chosen entries are individually CC0."
+      }
+    ],
+    "not_found": "No suitable verified police delivery of exact \u201cStop\u201d or \u201cRaise your hands\u201d was selected; use the recorded \u201cPut your hands on your head\u201d instead.",
+    "omitted_material": "Other CC-BY archive entries were not selected. All chosen entries have a source-specific CC0 declaration."
+  },
+  "precision_rifle": {
+    "file": "rifle.ogg",
+    "creator": "Michel Baradari",
+    "source": "https://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots",
+    "license": "CC BY 3.0",
+    "license_url": "https://creativecommons.org/licenses/by/3.0/",
+    "changes": "Trimmed to 1.35 seconds, mono 32kHz, limiter, OGG Vorbis encoding"
+  }
+}
+
+RADIO MUSIC
+Radio music credits
+
+Retroracing One more round — Bogart VGM
+https://opengameart.org/content/retroracing-one-more-round
+https://www.facebook.com/BogartVGM/
+License: CC-BY-4.0 (https://creativecommons.org/licenses/by/4.0/)
+Loudness normalized to -18 LUFS target and transcoded to 128 kbps stereo MP3; no intentional musical cuts.
+
+Rock theme — obscure music
+https://opengameart.org/content/rock-theme
+https://opengameart.org/users/obscure-music
+License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+Loudness normalized to -18 LUFS target and transcoded to 128 kbps stereo MP3; no intentional musical cuts.
+
+Midnight Cruiser — Zane Little Music
+https://opengameart.org/content/midnight-cruiser
+https://opengameart.org/users/zane-little-music
+License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+Loudness normalized to -18 LUFS target and transcoded to 128 kbps stereo MP3; no intentional musical cuts.

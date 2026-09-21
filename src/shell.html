@@ -1,0 +1,4135 @@
+<!doctype html>
+<!--
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 24.0.0
+
+Open this HTML directly to play offline. No server, CDN or build step is needed.
+Edit the named source sections here, or use the modular source ZIP.
+All executable JavaScript is plain source. No packed/evaluated code is used.
+
+SOURCE ORDER
+1. Application HTML and readable CSS.
+2. Game source: search for BEGIN SUBSYSTEM: src/game.js.
+3. Original unminified Three.js r160, including its MIT license.
+4. Labeled image/audio Base64 blocks: binary media, never executable code.
+5. Readable media loader and startup call; complete third-party credits.
+
+SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
+  src/game.js: Game orchestration and shared state
+    DOM references, units, entity registries, world population, combat, fallback drawing, UI, input and frame loop.
+  src/audio.js: Effects and voice audio
+    Embedded samples, Web Audio lifecycle, spatial volume and procedural sound.
+  src/physics.js: Vehicle and pedestrian physics
+    Fixed time steps, oriented collision boxes, contact impulses, traffic, damage and impact injuries.
+  src/geography.js: Coastlines and land regions
+    Shared land polygons, bridges, roads, shoreline tests and district lookup.
+  src/harbor.js: Ironworks cargo terminal
+    Shared terminal geometry, crane loading, gates, guards and first-mission delivery rules.
+  src/citylife.js: Civic services and police
+    Clock, businesses, officers, police routing, wanted search and injury effects.
+  src/story.js: Story characters and mission stages
+    Mission definitions, contact dialogue, stage transitions, restart and completion.
+  src/campaign.js: Campaign saves and replay
+    Save schema, progression frontier, ammunition persistence and mission selection.
+  src/chase.js: Cargo pursuit
+    Harbor police alert, air support and cargo encounter updates.
+  src/roofmission.js: Blue Hour rooftop mission
+    Terrace layout, guests, disguise, poison sequence, guards and escape.
+  src/air-cover.js: Overhead cover geometry
+    Shared railway and bridge volumes for sight, bullets, vehicles and aircraft.
+  src/combat-rules.js: Aerial combat and pursuit rules
+    Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
+  src/county.js: Outlying districts
+    County roads, buildings, scenery, traffic, towns, regional police and bridges.
+  src/military.js: Fort Sentinel
+    Base security, military vehicles, barriers and combat.
+  src/aviation.js: Fixed-wing flight and flight missions
+    Three airframes, stall/lift/bank model, takeoff, landing, rescue and witness escape missions.
+  src/challenges.js: Mission-specific encounters
+    Story objectives, guards and special actions for campaign challenges.
+  src/streets.js: Road presentation
+    Intersections, sidewalks, road painting, waterfront promenades and traffic details.
+  src/terrain.js: Mountains and off-road contact
+    Shared triangulated elevation, snowy summits, trails, slope handling and services.
+  src/casino.js: Casino roulette
+    Business layout, stakes, result settlement, roulette UI and saved cash.
+  src/renewal.js: Parks and recreation
+    Distinct park layouts, ponds, boardwalks, walkers, joggers and bicycles.
+  src/transit.js: Public railway simulation
+    Track graph, station access, boarding, travel, stops and safe disembarkation.
+  src/ecology.js: Wildlife behavior
+    Habitats, harmless animals, bear warning/attack, damage and fallback drawing.
+  src/navigation.js: City map and route planning
+    Road graph, shortest paths, waypoints, map gestures and route guidance.
+  src/parachute.js: Bailout and parachute
+    Aircraft exit, freefall, canopy controls, landing and water rescue.
+  src/mobile.js: Touch controls
+    Independent movement/aim fingers, context actions, touch state and overlay cleanup.
+  src/world-view.js: World camera gestures
+    World zoom, pinch gestures, mouse wheel and camera limits.
+  src/car-radio.js: Vehicle radio stations
+    Three embedded tracks, station selection, playback and saved audio settings.
+  src/garages.js: Drive-in repair and respray
+    Garage geometry, vehicle fit, paint, repairs and pursuit clearance.
+  src/render3d.js: Three.js renderer and resource lifecycle
+    Asset loading, camera, lights, shared geometry, entity models, effects and drawing API.
+  src/garage3d.js: Garage meshes
+    Garage buildings, shutters, lights and service details.
+  src/landmarks3d.js: City landmark meshes
+    Distinctive buildings, waterfront and landmark details.
+  src/civic3d.js: Civic and rooftop meshes
+    Businesses, rooftop party, service signs and animated city lighting.
+  src/air-cover3d.js: Underpass meshes
+    Tunnel roof, walls, portals, illumination and player-facing cutaway.
+  src/renewal3d.js: Park meshes
+    Benches, fountains, sports courts, pergolas, pond bridge and bicycle racks.
+  src/transit3d.js: Railway meshes
+    Decks, instanced ties, piers, station platforms, canopies and moving trains.
+  src/ecology3d.js: Wildlife meshes
+    Species-specific geometry, gait animation, culling and owned-material cleanup.
+  src/world3d.js: World scenery meshes
+    Coastal details, street scenery and environmental objects.
+  src/county3d.js: County and mountain meshes
+    Terrain surface, snow colors, rural scenery, bridges and region visibility.
+  src/harbor3d.js: Cargo terminal meshes
+    Cranes, ship, containers, cargo and terminal architecture.
+  src/helicopter3d.js: Helicopter meshes
+    Airframe, rotor, lights and cockpit geometry.
+  src/vehicles3d.js: Vehicle meshes
+    Distinct road vehicles, bicycles, boats, riders and moving components.
+  src/plane3d.js: Airplane meshes
+    Courier propeller aircraft, executive jet and large airliner geometry.
+  src/sports.js: Live basketball and soccer matches
+    Teams, possession, passes, shots, scoring, restarts, deterministic match state and fallback actors.
+  src/sports-world.js: City sports venue layout
+    Stadium reservation, roads, collision, ground markings, map labels and venue destinations.
+  src/sports3d.js: Sports stadium and match meshes
+    Tiered stands, crowd, floodlights, scoreboards, court equipment and animated athletes and balls.
+  src/arsenal.js: Arsenal and knife combat
+    Ownership-driven equipment, mystery weapon cards, icon inventory, selection migration and knife combat.
+  src/police-feedback.js: Police action feedback
+    Independent escape and blocked-action banners with display timers.
+
+AUDIT CONTRACTS
+- Game fragments share one closure; 3D fragments share createCityRenderer().
+- Map x/y becomes Three.js (x, elevation, y); heading a is radians, yaw is -a.
+- 512 world units = 100 meters. Timers use seconds; frame timestamps use ms.
+- entityElevation() is authoritative for floor, terrain and aircraft altitude.
+- Physics uses 1/120-second steps; terrain uses shared Float32 triangles.
+- Compact entity keys (hp, a, vx/vy, w/l, hx/hy) are documented data contracts.
+- Browser localStorage holds campaign/audio settings; there is no game server.
+- Media blocks name original paths, byte counts and SHA-256 hashes.
+- The source ZIP includes original media, tests, build.py and SOURCE_GUIDE.md.
+
+POLICY: do not minify, obfuscate, pack or deploy this review build without
+the owner's explicit instruction. Readability includes dependencies.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#141419" />
+    <meta
+      name="description"
+      content="Dead End City. An original, self-contained top-down crime game. Steal a ride, take a job, and outrun the heat."
+    />
+    <title>Dead End City — A city. A score. A way out.</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23141419'/%3E%3Cpath d='M9 5h10l5 6v10l-5 6H9V5zm6 6v10h3l1-2v-6l-1-2z' fill='%23d9fb67'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+  --ink: #111216;
+  --paper: #f2f1e8;
+  --acid: #d7f970;
+  --muted: #92998c;
+  --pink: #e897b0;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: #101215;
+  color: var(--paper);
+  font-family: Arial, Helvetica, sans-serif;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+button:focus-visible {
+  outline: 3px solid var(--acid);
+  outline-offset: 4px;
+}
+button:hover {
+  filter: brightness(1.12);
+}
+#game {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+  image-rendering: auto;
+}
+#vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 130px #0205086b;
+  background: linear-gradient(#08090c65, transparent 25%, transparent 60%, #08090c88);
+}
+#topbar {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  top: 25px;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  pointer-events: none;
+}
+.wordmark {
+  font-size: 21px;
+  font-weight: 1000;
+  line-height: 0.83;
+  letter-spacing: -1px;
+  transform: skew(-7deg);
+}
+.wordmark > span {
+  display: block;
+  font-size: 32px;
+}
+.brand-dot {
+  display: inline;
+  font-size: 12px;
+  vertical-align: top;
+  margin-left: 3px;
+}
+.location {
+  border-left: 1px solid #ffffff36;
+  padding-left: 22px;
+}
+.eyebrow {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.7px;
+  color: #abb2a4;
+  line-height: 1.6;
+}
+.location b {
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+.top-right {
+  margin-left: auto;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+.cash strong {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-family: Consolas, monospace;
+  color: var(--acid);
+}
+.heat #stars {
+  color: var(--acid);
+  font-size: 28px;
+  letter-spacing: 5px;
+  line-height: 1.1;
+}
+.icon-btn {
+  pointer-events: auto;
+  background: #17191cdc;
+  border: 1px solid #b8c4b23b;
+  color: white;
+  width: 42px;
+  height: 42px;
+}
+.heat .eyebrow {
+  text-align: right;
+}
+.cash .eyebrow {
+  padding-left: 3px;
+}
+#healthbox {
+  position: absolute;
+  top: 93px;
+  left: 32px;
+  width: 151px;
+}
+.status-label {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+}
+.status-label b {
+  color: var(--acid);
+}
+.meter {
+  height: 4px;
+  background: #ffffff20;
+  overflow: hidden;
+  margin-top: 7px;
+}
+.meter i {
+  display: block;
+  background: var(--acid);
+  height: 100%;
+  width: 100%;
+  transition: width 0.15s;
+}
+#armorLabel {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  color: #929b8d;
+  margin-top: 6px;
+}
+#bottom {
+  position: absolute;
+  bottom: 25px;
+  left: 32px;
+  right: 32px;
+  display: flex;
+  align-items: flex-end;
+  gap: 23px;
+  pointer-events: none;
+}
+.minimap-box {
+  width: 226px;
+  background: #151a18ed;
+  border: 1px solid #b2c3a33d;
+  box-shadow: 0 5px 30px #0006;
+  flex-shrink: 0;
+}
+.mini-head {
+  padding: 9px 11px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #ffffff19;
+}
+#minimap {
+  width: 224px;
+  height: 156px;
+  display: block;
+}
+.minimap-box button {
+  pointer-events: auto;
+  background: #111714;
+  color: #c2cabb;
+  width: 100%;
+  border: 0;
+  border-top: 1px solid #ffffff19;
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.minimap-box button span {
+  float: right;
+  font-size: 15px;
+}
+kbd {
+  display: inline-block;
+  border: 1px solid #c6d1b949;
+  border-bottom-width: 2px;
+  background: #ffffff0b;
+  padding: 2px 5px;
+  font-family: Consolas, monospace;
+  font-size: 10px;
+  color: #e4e9dd;
+  line-height: 1.2;
+  border-radius: 2px;
+}
+.bottom-middle {
+  width: min(435px, 42vw);
+}
+#pager {
+  background: #171c18ee;
+  border: 1px solid #d8f97045;
+  border-left: 3px solid var(--acid);
+  padding: 15px 18px;
+  box-shadow: 0 4px 26px #0003;
+}
+.pager-head {
+  font:
+    10px Consolas,
+    monospace;
+  color: var(--acid);
+  letter-spacing: 1.6px;
+  display: flex;
+  gap: 7px;
+}
+.pager-head #missionCounter {
+  margin-left: auto;
+  color: #8e998b;
+  letter-spacing: 0;
+}
+#pager h2 {
+  font-size: 18px;
+  letter-spacing: -0.5px;
+  margin: 9px 0 7px;
+}
+#pager p {
+  font-size: 12px;
+  line-height: 1.55;
+  color: #bbc1b5;
+  margin: 0;
+}
+#missionMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font:
+    10px Consolas,
+    monospace;
+  color: var(--acid);
+  letter-spacing: 0.5px;
+}
+#missionTimer {
+  color: #efb1bc;
+}
+.quickkeys {
+  display: flex;
+  gap: 13px;
+  padding-top: 12px;
+  color: #bdc7b7;
+  font-size: 8px;
+  font-weight: bold;
+  white-space: nowrap;
+  align-items: center;
+}
+.quickkeys kbd {
+  margin-right: 3px;
+  font-size: 8px;
+  padding: 3px;
+}
+#equipment {
+  margin-left: auto;
+  width: 178px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, transparent, #14191bcc);
+  padding: 12px 7px 2px 13px;
+}
+.weapon-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 1px;
+  align-items: center;
+}
+.weapon-head .eyebrow {
+  font-size: 9px;
+}
+.weapon-head #weaponName {
+  font-weight: 700;
+}
+#weaponArt {
+  display: block;
+  image-rendering: pixelated;
+  width: 148px;
+  height: 52px;
+  margin: 5px 0 0 auto;
+}
+.ammo {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  justify-content: flex-end;
+}
+.ammo strong {
+  font:
+    700 30px Consolas,
+    monospace;
+  color: var(--acid);
+}
+.ammo span {
+  font:
+    14px Consolas,
+    monospace;
+  color: #a6b09e;
+}
+.ammo kbd {
+  margin-left: 5px;
+}
+#vehicleStats {
+  margin-top: 13px;
+  border-top: 1px solid #ffffff24;
+  padding-top: 10px;
+}
+#vehicleName {
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  color: #c3ccba;
+}
+#vehicleStats > div:not(.meter) {
+  float: right;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-top: -5px;
+}
+#speed {
+  font:
+    700 23px Consolas,
+    monospace;
+}
+#speedUnit {
+  font-size: 8px;
+  color: #a6b09e;
+}
+.blink {
+  animation: blink 1.4s infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+#toast {
+  position: absolute;
+  top: 160px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #111814ec;
+  border: 1px solid #bacba25e;
+  color: #e4efdb;
+  padding: 12px 23px;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  opacity: 0;
+  transition: 0.2s;
+  pointer-events: none;
+  max-width: 85vw;
+}
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+#interaction {
+  position: absolute;
+  top: 61%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #161c19ec;
+  padding: 10px 15px;
+  color: var(--acid);
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  border: 1px solid #d7f97055;
+  display: none;
+  pointer-events: none;
+}
+#interaction kbd {
+  background: var(--acid);
+  color: #171c16;
+  margin-right: 6px;
+  border: 0;
+  font-weight: 900;
+}
+#announcement {
+  position: absolute;
+  top: 32%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: 0.3s;
+  text-shadow: 0 4px 25px black;
+}
+#announcement.show {
+  opacity: 1;
+}
+#announcement small {
+  font:
+    12px Consolas,
+    monospace;
+  letter-spacing: 5px;
+  color: #dfebd2;
+  display: block;
+  margin-bottom: 9px;
+}
+#announcement strong {
+  font:
+    900 italic clamp(36px, 5.5vw, 80px) Arial,
+    sans-serif;
+  letter-spacing: -3px;
+  color: var(--acid);
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: #070b0bd6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  z-index: 20;
+}
+.hidden {
+  display: none !important;
+}
+.start-card {
+  width: min(1000px, 90vw);
+  height: min(586px, 80vh);
+  display: flex;
+  background: #181b1a;
+  border: 1px solid #51574a;
+  box-shadow: 0 30px 100px #0009;
+}
+.start-copy {
+  width: 51%;
+  padding: 29px 42px 22px;
+  position: relative;
+  z-index: 1;
+}
+.edition {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  color: #aab99c;
+}
+.edition > span:last-child {
+  margin-left: auto;
+  font-size: 8px;
+}
+.tiny-cross {
+  color: var(--acid);
+  font-size: 17px;
+}
+h1 {
+  margin: 34px 0 13px;
+  font-size: clamp(54px, 6.5vw, 88px);
+  font-weight: 1000;
+  line-height: 0.78;
+  letter-spacing: -6px;
+  position: relative;
+  transform: skew(-5deg);
+}
+h1 > span {
+  color: var(--acid);
+  font-size: 1.28em;
+  line-height: 0.85;
+}
+h1 i {
+  position: absolute;
+  font:
+    italic 12px Consolas,
+    monospace;
+  letter-spacing: 2px;
+  left: 275px;
+  bottom: 4px;
+  transform: rotate(-90deg);
+}
+.intro-rule {
+  height: 1px;
+  background: #58614d;
+  margin-top: 25px;
+  width: 50px;
+}
+.intro {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 1.3;
+  margin: 18px 0 10px;
+}
+.intro-small {
+  color: #98a28d;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+.primary {
+  background: var(--acid);
+  border: 0;
+  color: #152014;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  min-height: 48px;
+}
+.primary > span {
+  font-size: 21px;
+  line-height: 12px;
+}
+.text-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  background: none;
+  border: 0;
+  color: #e1e6d9;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-size: 10px;
+  width: 100%;
+}
+.text-btn > span {
+  color: #7f8c76;
+  font-size: 8px;
+  font-weight: normal;
+}
+.start-footer {
+  display: flex;
+  justify-content: space-between;
+  font:
+    8px Consolas,
+    monospace;
+  letter-spacing: 1.1px;
+  color: #76846c;
+  border-top: 1px solid #46503c;
+  padding-top: 14px;
+}
+.start-art {
+  width: 49%;
+  position: relative;
+  background: linear-gradient(160deg, #3b3451, #41514a 45%, #171920);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+.start-art:after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(#0004, transparent 30%, #080d09c9);
+  pointer-events: none;
+}
+.art-label {
+  position: absolute;
+  z-index: 1;
+  left: 29px;
+  bottom: 53px;
+  transform: rotate(-3deg);
+}
+.art-label > span {
+  display: block;
+  color: #d6e4c5;
+  font:
+    9px Consolas,
+    monospace;
+  letter-spacing: 2.5px;
+  margin-bottom: 10px;
+}
+.art-label strong {
+  font:
+    900 italic 40px/0.93 Arial,
+    sans-serif;
+  letter-spacing: -1.6px;
+}
+.art-bottom {
+  position: absolute;
+  bottom: 22px;
+  left: 30px;
+  z-index: 1;
+  font:
+    8px Consolas,
+    monospace;
+  letter-spacing: 2px;
+  color: #9fac95;
+}
+.menu-foot {
+  position: absolute;
+  bottom: 23px;
+  width: min(1000px, 90vw);
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  color: #8b9882;
+}
+.menu-foot button {
+  background: none;
+  border: none;
+  color: #bdcba8;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.dialog {
+  background: #191f1b;
+  border: 1px solid #67765366;
+  padding: 36px;
+  width: min(440px, 92vw);
+  box-shadow: 0 30px 100px #0006;
+}
+.dialog h2,
+.map-heading h2 {
+  font-size: 32px;
+  letter-spacing: -1.7px;
+  font-style: italic;
+  margin: 12px 0 20px;
+  font-weight: 900;
+}
+.dialog > p {
+  font-size: 13px;
+  color: #a4b198;
+  line-height: 1.6;
+  margin-bottom: 23px;
+}
+.secondary {
+  display: block;
+  background: #242d24;
+  border: 1px solid #768c5f45;
+  color: #dde8d4;
+  padding: 13px 15px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  width: 100%;
+  margin-top: 10px;
+  text-align: left;
+}
+.danger {
+  color: #eab5af;
+}
+.dialog .fine {
+  font-size: 10px;
+  margin-bottom: 0;
+}
+.help-dialog {
+  width: min(770px, 94vw);
+  max-height: 95vh;
+  overflow: auto;
+}
+.control-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 35px;
+}
+.control-grid > div {
+  border-bottom: 1px solid #ffffff15;
+  padding-bottom: 5px;
+}
+.control-grid kbd {
+  font-size: 12px;
+}
+.control-grid p {
+  font-size: 12px;
+  color: #a5b097;
+  margin: 8px 0;
+}
+.help-dialog .help-tip {
+  font-size: 12px;
+  line-height: 1.6;
+  border-left: 2px solid var(--acid);
+  padding-left: 14px;
+  margin: 20px 0;
+}
+.map-panel {
+  width: min(830px, 94vw);
+  max-height: 96vh;
+  padding: 23px;
+  background: #141a16;
+  border: 1px solid #5a6952;
+  display: flex;
+  flex-direction: column;
+}
+.map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.map-heading h2 {
+  font-size: 27px;
+  margin: 5px 0 14px;
+}
+.map-heading .secondary {
+  width: auto;
+  margin: 0;
+}
+#bigmap {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  object-fit: contain;
+  max-height: 68vh;
+  border: 1px solid #394232;
+}
+.legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  font-size: 9px;
+  color: #afbea1;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.legend i {
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  margin-right: 5px;
+}
+.yellow {
+  background: #ddf375;
+}
+.green {
+  background: #76e9ba;
+}
+.purple {
+  background: #cf92e9;
+}
+.blue {
+  background: #77cbe5;
+}
+@media (min-height: 900px) {
+  .start-card {
+    height: 620px;
+  }
+  .start-copy {
+    padding-top: 37px;
+  }
+  h1 {
+    margin-top: 48px;
+  }
+  .intro-small {
+    margin-bottom: 31px;
+  }
+  .intro {
+    margin-top: 25px;
+  }
+}
+@media (max-width: 850px) {
+  #topbar {
+    left: 18px;
+    right: 18px;
+    gap: 16px;
+  }
+  .location {
+    display: none;
+  }
+  .top-right {
+    gap: 15px;
+  }
+  #bottom {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    gap: 13px;
+  }
+  .minimap-box {
+    width: 170px;
+  }
+  #minimap {
+    width: 168px;
+    height: 117px;
+  }
+  .bottom-middle {
+    width: 42vw;
+  }
+  .quickkeys {
+    display: none;
+  }
+  #equipment {
+    width: 140px;
+  }
+  #weaponArt {
+    width: 125px;
+    height: 44px;
+  }
+  #pager {
+    padding: 12px;
+  }
+  #pager h2 {
+    font-size: 16px;
+  }
+  #pager p {
+    font-size: 11px;
+  }
+  #healthbox {
+    left: 18px;
+  }
+  .start-copy {
+    padding: 25px;
+    width: 55%;
+  }
+  .start-art {
+    width: 45%;
+  }
+  h1 {
+    font-size: 66px;
+    letter-spacing: -4px;
+  }
+  h1 i {
+    display: none;
+  }
+  .art-label strong {
+    font-size: 30px;
+  }
+  .edition {
+    font-size: 8px;
+  }
+  .edition > span:last-child {
+    display: none;
+  }
+  .menu-foot {
+    font-size: 8px;
+  }
+  .menu-foot > span:nth-child(2) {
+    display: none;
+  }
+}
+@media (max-height: 700px) {
+  .start-card {
+    height: 90vh;
+    max-height: 530px;
+  }
+  .start-copy {
+    padding: 22px 35px;
+  }
+  .edition {
+    font-size: 8px;
+  }
+  h1 {
+    font-size: 65px;
+    margin-top: 27px;
+  }
+  .intro {
+    font-size: 19px;
+    margin-top: 13px;
+  }
+  .intro-small {
+    margin-bottom: 17px;
+  }
+  .intro-rule {
+    margin-top: 18px;
+  }
+  .start-footer {
+    padding-top: 9px;
+  }
+  .menu-foot {
+    bottom: 7px;
+  }
+  .text-btn {
+    padding: 13px 0;
+  }
+  .dialog {
+    padding: 24px;
+  }
+}
+@media (max-width: 590px) {
+  .start-art {
+    display: none;
+  }
+  .start-copy {
+    width: 100%;
+  }
+  .start-card {
+    width: 360px;
+    max-width: 92vw;
+  }
+  h1 {
+    font-size: 71px;
+  }
+  .minimap-box {
+    width: 124px;
+  }
+  #minimap {
+    width: 122px;
+    height: 90px;
+  }
+  .mini-head {
+    font-size: 7px;
+    padding: 6px;
+  }
+  .bottom-middle {
+    width: calc(100vw - 166px);
+  }
+  #equipment {
+    position: absolute;
+    right: 0;
+    bottom: 190px;
+    width: 130px;
+  }
+  .top-right {
+    gap: 10px;
+  }
+  .cash strong {
+    font-size: 21px;
+  }
+  .heat #stars {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+  .heat .eyebrow {
+    font-size: 7px;
+  }
+  .wordmark {
+    font-size: 16px;
+  }
+  .wordmark > span {
+    font-size: 24px;
+  }
+  #pager p {
+    font-size: 10px;
+  }
+  #missionMeta {
+    font-size: 8px;
+  }
+  .control-grid {
+    gap: 8px 15px;
+  }
+  .help-dialog h2 {
+    font-size: 24px;
+  }
+  .help-dialog .help-tip {
+    font-size: 10px;
+  }
+  .control-grid p {
+    font-size: 10px;
+  }
+}
+
+/* Keep the game-native title screen usable on shorter displays. */
+.start-copy {
+  display: flex;
+  flex-direction: column;
+  padding: 30px 40px 22px;
+}
+h1 {
+  font-size: 76px;
+  line-height: 0.82;
+  letter-spacing: -5px;
+  margin: 27px 0 0;
+  flex-shrink: 0;
+}
+h1 > span {
+  font-size: 1.22em;
+  line-height: 0.85;
+}
+h1 i {
+  left: 260px;
+}
+.intro-rule {
+  margin-top: 22px;
+  flex-shrink: 0;
+}
+.intro {
+  font-size: 21px;
+  line-height: 1.25;
+  margin: 17px 0 9px;
+}
+.intro-small {
+  margin: 0 0 22px;
+}
+.start-footer {
+  margin-top: auto;
+}
+.primary {
+  flex-shrink: 0;
+}
+.start-art {
+  background-position: 68% 50%;
+}
+@media (min-height: 900px) {
+  .start-card {
+    height: 630px;
+  }
+  .start-copy {
+    padding-top: 34px;
+  }
+  h1 {
+    margin-top: 32px;
+  }
+  .intro {
+    margin-top: 20px;
+  }
+  .intro-small {
+    margin-bottom: 26px;
+  }
+}
+@media (max-height: 700px) {
+  .start-card {
+    height: 90vh;
+    max-height: 530px;
+  }
+  .start-copy {
+    padding: 20px 32px;
+  }
+  h1 {
+    font-size: 62px;
+    margin-top: 20px;
+  }
+  .intro-rule {
+    margin-top: 16px;
+  }
+  .intro {
+    font-size: 18px;
+    margin: 12px 0 8px;
+  }
+  .intro-small {
+    font-size: 11px;
+    line-height: 1.5;
+    margin: 0 0 15px;
+  }
+  .start-copy .primary {
+    padding: 13px 17px;
+    min-height: 44px;
+  }
+  .start-copy .text-btn {
+    padding: 12px 0;
+  }
+  .start-footer {
+    padding-top: 10px;
+  }
+  .art-label strong {
+    font-size: 34px;
+  }
+}
+@media (max-width: 850px) {
+  .start-copy {
+    padding-left: 26px;
+    padding-right: 26px;
+  }
+  h1 {
+    font-size: 66px;
+  }
+}
+@media (max-width: 590px) {
+  h1 {
+    font-size: 72px;
+  }
+  .start-copy {
+    padding: 24px 30px;
+  }
+}
+
+.start-card {
+  height: min(650px, 86vh);
+}
+.menu-foot a {
+  color: #b9cba5;
+  text-decoration: none;
+}
+#pager p {
+  font-size: 14px;
+  line-height: 1.45;
+}
+.pager-head {
+  font-size: 11px;
+}
+#missionMeta {
+  font-size: 11px;
+}
+.quickkeys {
+  font-size: 9px;
+}
+.quickkeys kbd {
+  font-size: 10px;
+}
+#vehicleName {
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.weapon-head {
+  font-size: 12px;
+}
+#interaction {
+  font-size: 13px;
+}
+.intro-small {
+  font-size: 14px;
+  line-height: 1.5;
+}
+h1 {
+  font-size: clamp(58px, 9vh, 76px);
+}
+.start-footer {
+  font-size: 9px;
+  letter-spacing: 0.6px;
+}
+.menu-foot {
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+@media (max-height: 700px) {
+  .start-card {
+    height: 90vh;
+    max-height: 530px;
+  }
+  .intro-small {
+    font-size: 12px;
+  }
+  h1 {
+    font-size: 62px;
+  }
+}
+@media (max-width: 850px) {
+  #pager p {
+    font-size: 12px;
+  }
+  .quickkeys {
+    display: none;
+  }
+  .intro-small {
+    font-size: 12px;
+  }
+  h1 {
+    font-size: 62px;
+  }
+}
+@media (max-width: 590px) {
+  #pager p {
+    font-size: 12px;
+  }
+  #missionMeta {
+    font-size: 9px;
+  }
+  h1 {
+    font-size: 68px;
+  }
+}
+/* Dusk edition: restrained warm instruments over the cinematic world. */
+:root {
+  --acid: #e6d4a6;
+  --paper: #f3eee4;
+  --muted: #a8abb0;
+}
+#scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#game {
+  background: transparent;
+}
+#vignette {
+  box-shadow: inset 0 0 90px #04061250;
+  background: linear-gradient(#0a10254d, transparent 22%, transparent 69%, #080a16aa);
+}
+#pager {
+  background: #121b22ef;
+  border-color: #c0ab805e;
+  border-left-color: #dcc392;
+  backdrop-filter: blur(10px);
+}
+#pager h2 {
+  font-size: 19px;
+}
+#pager p {
+  color: #c6c9c9;
+}
+#equipment {
+  width: 216px;
+  padding: 15px;
+  background: #101820ce;
+  border: 1px solid #b8bfbb29;
+  backdrop-filter: blur(8px);
+}
+#weaponArt {
+  width: 184px;
+  height: 65px;
+  margin: 7px 0 0;
+  image-rendering: auto;
+  mix-blend-mode: screen;
+}
+.weapon-head {
+  letter-spacing: 0.6px;
+}
+#vehicleStats {
+  padding-top: 12px;
+}
+.minimap-box {
+  border-color: #a6b2ac4d;
+  background: #16252bef;
+}
+#toast {
+  background: #172129eb;
+  border-color: #a8bfc155;
+}
+.overlay {
+  background: #070c16d6;
+}
+.start-copy,
+.dialog {
+  background: #172027;
+}
+.start-card {
+  border-color: #8e96906e;
+}
+.start-copy h1 span {
+  color: #e2c897;
+}
+.edition,
+.start-footer {
+  color: #9daea8;
+}
+.start-copy .intro-small {
+  color: #aab6b9;
+}
+.credits-copy p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #b9c4c7;
+}
+.credits-copy a {
+  color: #e3d0a0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.credits-copy {
+  margin-bottom: 22px;
+}
+@media (max-width: 850px) {
+  #equipment {
+    width: 170px;
+    padding: 11px;
+  }
+  #weaponArt {
+    width: 146px;
+    height: 52px;
+  }
+  .weapon-head {
+    font-size: 10px;
+  }
+}
+@media (max-width: 590px) {
+  #equipment {
+    width: 150px;
+  }
+  #weaponArt {
+    width: 128px;
+    height: 46px;
+  }
+}
+
+.dialog {
+  max-height: 94vh;
+  overflow-y: auto;
+}
+
+#radioCaption {
+  position: fixed;
+  top: 148px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-left: 2px solid #91bccc;
+  background: #15222bd9;
+  color: #c4dae3;
+  font: 11px monospace;
+  letter-spacing: 1.5px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 12;
+}
+#radioCaption.show {
+  opacity: 1;
+}
+#speedUnit {
+  max-width: 110px;
+  font-size: 9px;
+}
+.help-dialog {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#navigation {
+  position: fixed;
+  z-index: 9;
+  top: 104px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 220px;
+  max-width: 360px;
+  padding: 10px 20px;
+  background: #121d24ee;
+  border: 1px solid #d9c99570;
+  color: #f0dba2;
+  pointer-events: none;
+}
+#navArrow {
+  display: inline-block;
+  font-size: 37px;
+  font-weight: 800;
+  line-height: 1;
+  width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+#navigation div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+#navTitle {
+  font: 700 12px Arial;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+#navDistance {
+  font: 12px monospace;
+  color: #d9e1de;
+}
+#worldClock {
+  position: fixed;
+  z-index: 8;
+  top: 88px;
+  right: 34px;
+  font: 12px monospace;
+  color: #c3d1ce;
+}
+#chaseStatus {
+  position: fixed;
+  z-index: 9;
+  right: 34px;
+  top: 113px;
+  font: 700 12px monospace;
+  color: #ec978b;
+  max-width: 240px;
+  text-align: right;
+}
+#chaseStatus.searching {
+  color: #efce82;
+}
+.searching {
+  animation: searchflash 1.2s infinite alternate;
+}
+@keyframes searchflash {
+  to {
+    opacity: 0.55;
+  }
+}
+.service-dialog {
+  max-width: 580px;
+  max-height: 92vh;
+  overflow: auto;
+}
+.service-dialog h2 {
+  font-size: 30px;
+}
+.service-option {
+  text-align: left;
+  width: 100%;
+  font: 13px monospace;
+  margin-bottom: 7px;
+  padding: 14px;
+}
+.legend {
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+#radioCaption {
+  top: 218px;
+}
+#toast {
+  max-width: 650px;
+}
+@media (max-width: 850px) {
+  #navigation {
+    top: 106px;
+    left: 50%;
+    max-width: 210px;
+    min-width: 180px;
+    padding: 8px;
+    gap: 8px;
+  }
+  #navTitle {
+    font-size: 10px;
+  }
+  #worldClock {
+    right: 14px;
+    top: 90px;
+  }
+  #chaseStatus {
+    top: 166px;
+    right: 14px;
+    max-width: 150px;
+    font-size: 10px;
+  }
+}
+
+#districtBanner {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 700 11px Arial;
+  letter-spacing: 2.5px;
+  color: #e6dcc2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+#districtBanner.show {
+  opacity: 1;
+}
+#storyLine {
+  position: fixed;
+  left: 50%;
+  bottom: 249px;
+  transform: translateX(-50%);
+  width: min(570px, 70vw);
+  background: #12212ade;
+  border-left: 2px solid #c3a66d;
+  padding: 10px 14px;
+  color: #d6dfdb;
+  font: 12px/1.45 Arial;
+  pointer-events: none;
+  display: none;
+}
+#storyLine.show {
+  display: block;
+}
+.call-dialog {
+  width: min(650px, 92vw);
+  padding: 34px 40px;
+}
+.caller {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin: 24px 0 15px;
+}
+#callInitials {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid #a89674;
+  background: #31404a;
+  color: #e5cf9f;
+  font: 700 27px Georgia;
+}
+.caller h3 {
+  font-size: 23px;
+  margin: 0 0 7px;
+}
+.caller span {
+  color: #a8c1c8;
+  font-size: 14px;
+}
+#callBackground {
+  font-size: 13px;
+  line-height: 1.5;
+  border-bottom: 1px solid #a4b9bd33;
+  padding-bottom: 20px;
+  color: #aebcbc;
+}
+#callTitle {
+  font-size: 32px;
+  margin: 20px 0 14px;
+}
+#callMessage {
+  white-space: pre-line;
+  font: 16px/1.65 Georgia;
+  color: #e1e6df;
+  margin-bottom: 26px;
+}
+.elevator-dialog {
+  text-align: center;
+}
+.elevator-dialog h2 {
+  font: 300 47px monospace;
+  letter-spacing: 4px;
+}
+.elevator-dialog .meter {
+  height: 3px;
+}
+#navigation {
+  max-width: 410px;
+}
+#navTitle {
+  line-height: 1.3;
+}
+#radioCaption {
+  top: 224px;
+}
+@media (max-width: 850px) {
+  #storyLine {
+    left: 32%;
+    width: 57vw;
+    font-size: 11px;
+    bottom: 215px;
+  }
+  #navigation {
+    max-width: 240px;
+  }
+  #districtBanner {
+    display: none;
+  }
+  .call-dialog {
+    padding: 24px;
+  }
+  #callMessage {
+    font-size: 15px;
+  }
+}
+
+/* Compact contact cards keep the face and task together. */
+.contact-portrait {
+  display: block;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  background-size: 200% 200%;
+  background-repeat: no-repeat;
+  border: 1px solid #b59c66;
+  border-radius: 5px;
+  background-color: #293239;
+  box-shadow: 0 2px 8px #0005;
+}
+.mission-copy {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  margin: 12px 0 0;
+}
+.mission-copy > div {
+  min-width: 0;
+}
+#pager .mission-copy h2 {
+  font-size: 15px;
+  margin: 0 0 6px;
+}
+#pager .mission-copy p {
+  font-size: 14px;
+  line-height: 1.35;
+  color: #e1e6df;
+}
+#pager {
+  padding: 13px 16px;
+}
+.bottom-middle {
+  width: min(470px, 43vw);
+}
+#storyLine {
+  font-size: 14px;
+}
+.call-dialog {
+  width: min(530px, 92vw);
+  padding: 28px 32px;
+}
+.caller {
+  margin: 18px 0;
+}
+.caller .contact-portrait {
+  width: 84px;
+  height: 84px;
+}
+.caller h3 {
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+.call-job-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+#callTitle {
+  font-size: 25px;
+  margin: 10px 0 14px;
+}
+#callReward {
+  font: 700 16px monospace;
+  color: #e7d6a2;
+  white-space: nowrap;
+}
+#callMessage {
+  font: 16px/1.55 Arial;
+  margin: 4px 0 24px;
+}
+.call-dialog .text-btn {
+  padding-bottom: 0;
+}
+@media (max-width: 850px) {
+  #missionPortrait {
+    width: 48px;
+    height: 48px;
+  }
+  .mission-copy {
+    gap: 9px;
+  }
+  #pager .mission-copy p {
+    font-size: 12px;
+  }
+}
+
+#cargoStatus {
+  margin-top: 12px;
+  color: #ecd79e;
+  font: 11px monospace;
+  letter-spacing: 1px;
+}
+.cargo-track {
+  height: 4px;
+  background: #ffffff18;
+  margin-top: 6px;
+}
+.cargo-track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #e9c874;
+  transition: width 0.12s linear;
+}
+
+#missionSelect {
+  z-index: 45;
+}
+.mission-dialog {
+  width: min(660px, 94vw);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+#missionChoices {
+  display: grid;
+  gap: 7px;
+  margin: 20px 0;
+}
+.mission-choice {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #16232c;
+  border: 1px solid #69746a;
+  text-align: left;
+  color: #eee8d3;
+  cursor: pointer;
+}
+.mission-choice:not(:disabled):hover,
+.mission-choice:focus-visible {
+  border-color: #e6cb80;
+  background: #273630;
+  outline: 2px solid #e6cb80;
+}
+.mission-choice b {
+  display: block;
+  font-size: 16px;
+}
+.mission-choice small {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  margin-top: 4px;
+  color: #bdd095;
+}
+.mission-number {
+  font-size: 24px;
+  font-weight: 800;
+  color: #e4c990;
+}
+.mission-lock {
+  margin-left: auto;
+}
+.mission-choice.locked {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+.mission-choice.locked small {
+  color: #a8afb0;
+}
+.mission-choice.locked .mission-number {
+  color: #a8afb0;
+}
+#chooseMissionStart {
+  margin-top: 8px;
+}
+#newGameStart {
+  padding: 10px 0;
+}
+
+#stealthStatus {
+  position: fixed;
+  top: 188px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 310px;
+  padding: 10px 15px;
+  background: #13202ce8;
+  border: 1px solid #cbb577;
+  color: #eee0b0;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+#stealthStatus .meter {
+  margin-top: 8px;
+}
+#stealthFill {
+  background: #e9aa73;
+}
+
+.police-map-key {
+  background: #6ccfff;
+  border: 1px solid #e6f7ff;
+  box-shadow: inset -4px 0 #ff736d;
+}
+
+/* Compact dashboard radio: presets stay within reach without covering the road ahead. */
+#carRadio {
+  position: absolute;
+  right: 32px;
+  top: 160px;
+  width: 280px;
+  padding: 12px 14px;
+  background: #12202bee;
+  border: 1px solid #8aa3a75c;
+  border-left: 3px solid #87d9d4;
+  box-shadow: 0 5px 22px #0004;
+  color: #d1f1e8;
+  z-index: 3;
+}
+#carRadio button {
+  background: #233641;
+  border: 1px solid #67848a66;
+  color: #bfe4de;
+  min-height: 30px;
+  font: 700 12px monospace;
+  padding: 5px 7px;
+  border-radius: 2px;
+}
+.car-radio-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+#radioGenre {
+  font: 12px monospace;
+  letter-spacing: 1px;
+  color: #89aaa9;
+}
+#radioStation {
+  display: block;
+  font: 700 22px monospace;
+  letter-spacing: 1px;
+  margin: 6px 0;
+}
+#radioTrack {
+  font: 12px/1.4 Arial;
+  min-height: 34px;
+  color: #b7c9c7;
+  overflow: hidden;
+}
+.radio-presets {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+#carRadio .selected {
+  background: #a5d9c8;
+  color: #10252a;
+  border-color: #a5d9c8;
+}
+#carRadio.radio-off {
+  border-left-color: #677d83;
+}
+#carRadio.radio-off #radioStation {
+  color: #8a9d9c;
+}
+@media (max-width: 850px) {
+  #carRadio {
+    right: 18px;
+    top: 210px;
+    width: 245px;
+  }
+  #radioStation {
+    font-size: 20px;
+  }
+  #carRadio button {
+    padding: 5px;
+    font-size: 11px;
+  }
+}
+@media (max-width: 590px) {
+  #carRadio {
+    top: 220px;
+    right: 12px;
+    width: 230px;
+    padding: 8px 10px;
+  }
+  #radioTrack {
+    min-height: 17px;
+  }
+  .radio-presets {
+    gap: 3px;
+  }
+  #carRadio button {
+    min-height: 28px;
+  }
+}
+
+#chaseStatus.dispatching {
+  font: 700 16px/1.25 monospace;
+  color: #f8d384;
+  background: #251b16ed;
+  border: 1px solid #cfaa6470;
+  padding: 7px 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+@media (max-width: 850px) {
+  #chaseStatus.dispatching {
+    top: 164px;
+    max-width: 245px;
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+}
+
+/* Touch play reserves the lower corners for thumbs and keeps the centre of the road visible. */
+#game,
+#touchControls,
+#bigmap {
+  touch-action: none;
+}
+#touchControls {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#touchControls button,
+.touch-stick {
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#touchControls button {
+  min-width: 62px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid #bad5cf88;
+  border-radius: 12px;
+  background: #132532d9;
+  color: #f1e8ce;
+  font: 700 12px Arial;
+  box-shadow: 0 3px 12px #0005;
+}
+#touchControls button:active {
+  background: #617c72;
+}
+.touch-stick {
+  position: absolute;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: #16334387;
+  border: 2px solid #b4d5d45e;
+}
+.touch-stick span {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #d5e5d8;
+  font: 700 11px Arial;
+  pointer-events: none;
+}
+.touch-stick i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #9bbdae9c;
+  border: 2px solid #d2e8d3;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+#moveStick {
+  left: max(20px, env(safe-area-inset-left));
+}
+#aimStick {
+  right: max(20px, env(safe-area-inset-right));
+}
+.touch-actions {
+  position: absolute;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: 166px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+  width: 230px;
+}
+.touch-utility {
+  position: absolute;
+  left: 174px;
+  right: 174px;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+}
+#touchControls .touch-go {
+  background: #3c685adb;
+}
+#touchControls .touch-special {
+  border-color: #e0b786;
+  color: #ffe1a5;
+}
+#terrainStatus {
+  position: fixed;
+  top: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 7px 12px;
+  background: #132531e8;
+  border: 1px solid #baaa795c;
+  color: #e7d4a4;
+  font: 12px monospace;
+  pointer-events: none;
+  display: none;
+}
+.map-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  color: #b9d3d3;
+  font: 12px Arial;
+}
+.map-tools button {
+  padding: 10px 14px;
+  min-height: 42px;
+  border: 1px solid #698788;
+  background: #20343d;
+  color: #d2eee3;
+  cursor: pointer;
+}
+.map-tools span {
+  margin-left: auto;
+}
+#bigmap {
+  cursor: crosshair;
+}
+.touch-mode #bottom {
+  pointer-events: none;
+  bottom: 180px;
+  left: 18px;
+  right: 18px;
+  gap: 12px;
+}
+.touch-mode #bottom button {
+  pointer-events: auto;
+}
+.touch-mode .bottom-middle {
+  position: fixed;
+  top: 114px;
+  left: 16px;
+  width: min(295px, 36vw);
+  bottom: auto;
+}
+.touch-mode #pager {
+  padding: 8px 10px;
+}
+.touch-mode #pager .mission-copy h2 {
+  font-size: 12px;
+}
+.touch-mode #pager .mission-copy p {
+  font-size: 12px;
+}
+.touch-mode #missionPortrait,
+.touch-mode .quickkeys,
+.touch-mode #weaponArt,
+.touch-mode .mini-head,
+.touch-mode #missionMeta {
+  display: none;
+}
+.touch-mode #equipment {
+  position: fixed;
+  right: 18px;
+  top: 96px;
+  bottom: auto;
+  width: 150px;
+  padding: 8px;
+}
+.touch-mode #equipment .weapon-head {
+  font-size: 10px;
+}
+.touch-mode #equipment .ammo {
+  font-size: 14px;
+}
+.touch-mode #vehicleStats {
+  padding-top: 4px;
+}
+.touch-mode #minimap {
+  width: 134px;
+  height: 94px;
+}
+.touch-mode .minimap-box {
+  width: 136px;
+}
+.touch-mode #mapBtn {
+  min-height: 34px;
+}
+.touch-mode #carRadio {
+  top: 93px;
+  right: 178px;
+  width: 142px;
+  padding: 5px 8px;
+}
+.touch-mode #radioTrack,
+.touch-mode .radio-presets,
+.touch-mode #radioGenre {
+  display: none;
+}
+.touch-mode #radioStation {
+  font-size: 14px;
+  margin: 5px 0;
+}
+.touch-mode #radioPower {
+  min-height: 28px;
+  font-size: 10px;
+}
+.touch-mode #navigation {
+  top: 66px;
+  max-width: 360px;
+  min-width: 0;
+  padding: 5px 12px;
+}
+.touch-mode #navTitle {
+  font-size: 11px;
+}
+.touch-mode #navArrow {
+  font-size: 25px;
+  width: 24px;
+}
+.touch-mode #topbar {
+  top: max(12px, env(safe-area-inset-top));
+  left: 16px;
+  right: 16px;
+}
+.touch-mode #healthbox {
+  top: 73px;
+  left: 17px;
+  width: 115px;
+}
+.touch-mode #worldClock {
+  display: none;
+}
+.touch-mode #chaseStatus {
+  top: 158px;
+  right: 18px;
+  font-size: 12px;
+}
+.touch-mode #storyLine {
+  bottom: 326px;
+  left: 50%;
+  width: min(550px, 62vw);
+  font-size: 13px;
+}
+.touch-mode #interaction {
+  bottom: 152px;
+  left: 50%;
+  max-width: 58vw;
+  font-size: 12px;
+}
+.touch-mode #toast {
+  top: auto;
+  bottom: 312px;
+  max-width: 70vw;
+  font-size: 13px;
+}
+.touch-mode #radioCaption {
+  top: 204px;
+}
+.touch-mode #terrainStatus {
+  top: 112px;
+  font-size: 11px;
+  max-width: 44vw;
+}
+.touch-mode #stealthStatus {
+  top: 184px;
+  width: 260px;
+  padding: 6px;
+}
+.touch-mode #districtBanner {
+  display: none;
+}
+@media (max-width: 600px) {
+  .touch-mode #topbar {
+    gap: 8px;
+  }
+  .touch-mode .wordmark {
+    font-size: 12px;
+  }
+  .touch-mode .wordmark > span {
+    font-size: 18px;
+  }
+  .touch-mode .cash strong {
+    font-size: 17px;
+  }
+  .touch-mode .heat #stars {
+    font-size: 17px;
+  }
+  .touch-mode #navigation {
+    top: 65px;
+    left: auto;
+    right: 12px;
+    transform: none;
+    width: 210px;
+    max-width: 57vw;
+  }
+  .touch-mode .bottom-middle {
+    top: 116px;
+    width: calc(100vw - 32px);
+    max-width: none;
+  }
+  .touch-mode #pager .mission-copy p {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+  .touch-mode #pager .mission-copy {
+    margin-top: 4px;
+  }
+  .touch-mode #missionCounter {
+    font-size: 10px;
+  }
+  .touch-mode #equipment {
+    top: auto;
+    bottom: 186px;
+    right: 16px;
+    width: 128px;
+  }
+  .touch-mode #equipment .weapon-head {
+    font-size: 10px;
+  }
+  .touch-mode #bottom {
+    bottom: 186px;
+  }
+  .touch-mode #carRadio {
+    top: 232px;
+    right: 16px;
+    width: 136px;
+  }
+  .touch-mode #chaseStatus {
+    top: 206px;
+    right: 16px;
+  }
+  .touch-mode #stealthStatus {
+    top: 211px;
+    width: 290px;
+  }
+  .touch-mode #terrainStatus {
+    top: 216px;
+    left: 16px;
+    right: 16px;
+    transform: none;
+    max-width: none;
+    font-size: 11px;
+  }
+  .touch-mode #storyLine {
+    bottom: 350px;
+    width: 88vw;
+    left: 50%;
+    font-size: 12px;
+  }
+  .touch-mode #interaction {
+    bottom: 332px;
+    width: 88vw;
+    max-width: none;
+    font-size: 12px;
+  }
+  .touch-mode #toast {
+    bottom: 390px;
+    max-width: 88vw;
+  }
+  .touch-mode #radioCaption {
+    top: 267px;
+    max-width: 90vw;
+    font-size: 11px;
+  }
+  .touch-stick {
+    width: 112px;
+    height: 112px;
+    bottom: 26px;
+  }
+  #moveStick {
+    left: 14px;
+  }
+  #aimStick {
+    right: 14px;
+  }
+  .touch-stick i {
+    width: 47px;
+    height: 47px;
+  }
+  .touch-utility {
+    left: 12px;
+    right: 12px;
+    bottom: 145px;
+    gap: 5px;
+    justify-content: center;
+  }
+  .touch-actions {
+    right: 132px;
+    left: 132px;
+    bottom: 25px;
+    width: auto;
+    justify-content: center;
+    gap: 6px;
+  }
+  #touchControls button {
+    min-width: 54px;
+    min-height: 44px;
+    padding: 8px;
+    font-size: 10px;
+  }
+  .touch-actions #touchUp,
+  .touch-actions #touchDown {
+    font-size: 9px;
+  }
+  .touch-mode #touchJump {
+    position: fixed;
+    bottom: 290px;
+    right: 16px;
+  }
+  .touch-mode #touchDivert {
+    position: fixed;
+    bottom: 290px;
+    left: 16px;
+  }
+  .map-panel {
+    padding: 12px;
+    max-height: 96dvh;
+  }
+  .map-heading h2 {
+    font-size: 18px;
+  }
+  .map-heading .eyebrow {
+    display: none;
+  }
+  .map-heading .secondary {
+    padding: 10px 8px;
+    font-size: 10px;
+    min-height: 42px;
+  }
+  .map-tools {
+    flex-wrap: wrap;
+  }
+  .map-tools span {
+    flex-basis: 100%;
+    font-size: 12px;
+    margin: 0;
+  }
+  #bigmap {
+    max-height: 60dvh;
+  }
+  .legend {
+    max-height: 70px;
+    overflow: auto;
+    font-size: 10px;
+  }
+  .overlay {
+    padding: 8px;
+  }
+  .dialog {
+    max-height: 94dvh;
+  }
+  .service-option {
+    font-size: 14px;
+    min-height: 48px;
+  }
+}
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-mode .bottom-middle {
+    top: 107px;
+    width: 255px;
+  }
+  .touch-mode #pager .mission-copy p {
+    font-size: 11px;
+  }
+  .touch-mode #pager .pager-head {
+    font-size: 9px;
+  }
+  .touch-mode .minimap-box {
+    display: none;
+  }
+  .touch-mode #storyLine {
+    bottom: 169px;
+    width: 40vw;
+  }
+  .touch-mode #interaction {
+    bottom: 140px;
+    max-width: 42vw;
+  }
+  .touch-mode #toast {
+    bottom: 175px;
+    max-width: 42vw;
+  }
+  .touch-mode #carRadio {
+    display: none;
+  }
+  .touch-mode #stealthStatus {
+    top: 109px;
+    left: 50%;
+    width: 225px;
+  }
+  .touch-mode #terrainStatus {
+    top: 112px;
+    max-width: 34vw;
+  }
+  .touch-mode #equipment {
+    width: 135px;
+  }
+  .touch-actions {
+    bottom: 160px;
+    width: 245px;
+  }
+  .touch-stick {
+    width: 116px;
+    height: 116px;
+  }
+  .touch-utility {
+    bottom: 20px;
+    left: 148px;
+    right: 148px;
+  }
+  .touch-mode #chaseStatus {
+    top: 195px;
+  }
+  .start-card {
+    height: 94dvh;
+    max-height: none;
+  }
+  .start-copy h1 {
+    font-size: 42px;
+    margin-top: 8px;
+  }
+  .intro-rule,
+  .intro-small,
+  .start-footer {
+    display: none;
+  }
+  .start-copy .intro {
+    font-size: 14px;
+    margin: 8px 0;
+  }
+  .start-copy {
+    padding: 16px 25px;
+  }
+  .start-copy button {
+    min-height: 35px;
+    padding: 8px 12px;
+    margin: 3px 0;
+  }
+  .menu-foot {
+    display: none;
+  }
+  .map-heading h2 {
+    font-size: 18px;
+  }
+  .map-panel {
+    padding: 10px;
+    max-height: 97dvh;
+  }
+  #bigmap {
+    max-height: 65dvh;
+  }
+  .map-tools {
+    padding: 2px 0;
+  }
+  .legend {
+    display: none;
+  }
+}
+
+.touch-mode #interaction {
+  top: auto;
+  transform: translateX(-50%);
+}
+@media (max-width: 600px) {
+  .touch-mode.touch-driving .touch-actions {
+    left: auto;
+    right: 14px;
+    bottom: 24px;
+    width: 154px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .touch-mode.touch-driving #touchJump,
+  .touch-mode.touch-driving #touchDivert {
+    position: static;
+  }
+  .touch-mode.touch-driving .touch-utility {
+    bottom: 238px;
+  }
+  .touch-mode.touch-driving #bottom,
+  .touch-mode.touch-driving #equipment {
+    bottom: 294px;
+  }
+  .touch-mode.touch-driving #interaction {
+    bottom: 438px;
+  }
+  .touch-mode.touch-driving #storyLine {
+    bottom: 462px;
+  }
+  .touch-mode.touch-driving #toast {
+    bottom: 488px;
+  }
+  .touch-mode.touch-driving #carRadio {
+    display: none;
+  }
+}
+
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-mode #equipment {
+    top: 68px;
+  }
+  .touch-mode.touch-driving .touch-actions {
+    bottom: 20px;
+    width: 232px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+  .touch-mode.touch-driving .touch-utility {
+    left: 148px;
+    right: 270px;
+    bottom: 20px;
+  }
+  .touch-mode.touch-driving #touchJump,
+  .touch-mode.touch-driving #touchDivert {
+    position: static;
+  }
+}
+
+#casinoTable {
+  border-top: 1px solid #b6a57966;
+  padding-top: 12px;
+}
+.roulette-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.roulette-top canvas {
+  width: 54%;
+  height: auto;
+  max-width: 280px;
+}
+.roulette-bank {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.roulette-bank span,
+.roulette-bank label {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #d3c29b;
+}
+.roulette-bank strong {
+  font-size: 27px;
+  color: #f1d28c;
+}
+.roulette-bank input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #b39f73;
+  background: #17292e;
+  color: #fff2cc;
+  font: 18px monospace;
+  box-sizing: border-box;
+}
+.roulette-bank small {
+  font-size: 12px;
+  color: #a8bdb6;
+}
+.roulette-bets {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+.roulette-bets button,
+.roulette-number {
+  min-height: 44px;
+  border: 1px solid #b4a07a77;
+  background: #14252e;
+  color: #f8ecd1;
+  font-weight: bold;
+  cursor: pointer;
+}
+.roulette-bets button {
+  flex: 1;
+  padding: 12px;
+}
+.roulette-bets .red,
+.roulette-number.red {
+  background: #852d40;
+}
+.roulette-number.green {
+  background: #246c59;
+}
+.roulette-bets .selected,
+.roulette-number.selected {
+  outline: 2px solid #f5d18b;
+  outline-offset: -3px;
+  background-image: linear-gradient(#ffffff18, #ffffff08);
+}
+#casinoNumbers {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+}
+#casinoResult {
+  min-height: 42px;
+  color: #efce91;
+  font-size: 15px;
+  line-height: 1.45;
+}
+#casinoSpin {
+  width: 100%;
+  margin-bottom: 10px;
+}
+#casinoTable button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+@media (max-width: 600px) {
+  .roulette-top {
+    gap: 8px;
+  }
+  .roulette-bank strong {
+    font-size: 21px;
+  }
+  .roulette-bank span,
+  .roulette-bank label {
+    font-size: 10px;
+  }
+  .service-dialog h2 {
+    font-size: 25px;
+  }
+}
+
+#chaseStatus {
+  white-space: pre-line;
+  line-height: 1.5;
+  text-shadow:
+    0 2px 5px #000,
+    0 0 8px #000;
+}
+
+.touch-mode #chaseStatus {
+  top: 222px;
+  max-width: 260px;
+  padding: 7px 10px;
+  background: #101d28e8;
+  border-left: 2px solid #e7c581;
+}
+.touch-mode #chaseStatus:empty {
+  display: none;
+}
+@media (max-width: 600px) {
+  .touch-mode #chaseStatus {
+    top: 258px;
+    right: 14px;
+    max-width: 205px;
+    font-size: 12px;
+  }
+}
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-mode #chaseStatus {
+    top: 193px;
+    right: 18px;
+    max-width: 225px;
+  }
+}
+
+@media (max-width: 600px) {
+  .touch-mode.touch-driving #toast {
+    top: 346px;
+    bottom: auto;
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+    padding: 8px 12px;
+    line-height: 1.35;
+  }
+}
+
+.transit-panel {
+  width: min(640px, calc(100vw - 28px));
+  max-height: 88dvh;
+  overflow: auto;
+  background: #142a35;
+  border: 1px solid #749e9b;
+  padding: 28px;
+  color: #e8edda;
+  border-radius: 12px;
+  box-shadow: 0 20px 80px #0009;
+}
+.transit-panel h2 {
+  font: 600 27px Georgia;
+  margin: 8px 0 12px;
+}
+.transit-panel p {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.transit-kicker {
+  color: #85cbb9;
+  font-size: 12px !important;
+  letter-spacing: 0.12em;
+}
+#transitOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin: 20px 0;
+}
+#transitOptions button,
+#closeTransit {
+  min-height: 48px;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #547f83;
+  border-radius: 6px;
+  background: #234451;
+  color: #eef2de;
+  cursor: pointer;
+}
+#transitOptions button:hover {
+  background: #356166;
+}
+#closeTransit {
+  width: 100%;
+}
+@media (max-width: 480px) {
+  .transit-panel {
+    padding: 20px;
+  }
+  #transitOptions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The readable media loader sets this property from embedded image bytes. */
+.contact-portrait {
+  background-image: var(--contact-portrait-image);
+}
+
+/* POLICE FEEDBACK AND ARSENAL — readable interface additions, v23. */
+#policeStatusPanel {
+  position: fixed;
+  z-index: 10;
+  top: 113px;
+  right: 34px;
+  width: min(290px, calc(100vw - 28px));
+  pointer-events: none;
+  text-align: right;
+}
+#policeStatusPanel #chaseStatus {
+  position: static;
+  max-width: none;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+#policeStatusPanel #chaseStatus.searching {
+  animation: none;
+}
+#policeEscapeTimer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 10px 16px;
+  border: 2px solid #f4d681;
+  background: #121a24f2;
+  color: #fff0b5;
+  box-shadow: 0 5px 24px #0008;
+}
+#policeEscapeSeconds {
+  font: 900 38px/1 monospace;
+  font-variant-numeric: tabular-nums;
+}
+#policeEscapeTimer span {
+  font: 800 14px/1.3 monospace;
+}
+#policeNotice {
+  position: fixed;
+  z-index: 75;
+  top: 27%;
+  left: 50%;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  transform: translate(-50%, -8px);
+  padding: 18px 28px;
+  border: 2px solid #ffae92;
+  background: #2a1112f2;
+  color: #ffe9dc;
+  font:
+    900 clamp(22px, 3.5vw, 48px) / 1.15 Arial,
+    sans-serif;
+  letter-spacing: 0.02em;
+  text-align: center;
+  box-shadow: 0 12px 48px #0009;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+#policeNotice.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+#policeNotice.cleared {
+  color: #eaffb1;
+  border-color: #d7f970;
+  background: #172519f2;
+}
+#weaponButton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+}
+#weaponButton:focus-visible {
+  outline: 3px solid #d7f970;
+  outline-offset: 5px;
+}
+.arsenal-hint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 9px;
+  color: #d7f970;
+  font: 700 12px/1.4 monospace;
+}
+.arsenal-hint kbd {
+  color: #141a13;
+  background: #d7f970;
+  font-size: 14px;
+}
+.touch-mode #policeStatusPanel {
+  top: 222px;
+  right: 22px;
+  width: 260px;
+}
+.touch-mode #weaponButton .arsenal-hint {
+  padding-top: 3px;
+  font-size: 12px;
+}
+.touch-mode #weaponButton .arsenal-hint > span:last-child {
+  display: none;
+}
+@media (max-width: 600px) {
+  #policeStatusPanel,
+  .touch-mode #policeStatusPanel {
+    top: 258px;
+    right: 14px;
+    width: 205px;
+  }
+  #policeEscapeSeconds {
+    font-size: 30px;
+  }
+  #policeEscapeTimer {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  #policeEscapeTimer span {
+    font-size: 12px;
+  }
+  #policeNotice {
+    top: 19%;
+    padding: 14px 18px;
+  }
+}
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-mode #policeStatusPanel {
+    top: 193px;
+    right: 18px;
+    width: 225px;
+  }
+  #policeNotice {
+    top: 22%;
+    font-size: 26px;
+    padding: 10px 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #policeNotice {
+    transition: none;
+  }
+}
+
+/* Keep equipment labels legible within the compact equipment card. */
+#weaponButton .weapon-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+#weaponButton #weaponSlot {
+  font-size: 12px;
+}
+#weaponButton #weaponName {
+  font-size: 14px;
+  line-height: 1.3;
+}
+#weaponButton .ammo {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+#weaponButton #reserve {
+  font-size: 12px;
+}
+
+/* Reserve separate space when two notices or the vehicle radio are visible. */
+.police-notice-visible #announcement {
+  top: 48%;
+}
+body:not(.touch-mode).police-search-active #carRadio {
+  top: 245px;
+}
+
+/* ARSENAL v24 — gunmetal inventory, lime selection, concealed collectible cards. */
+#arsenalOverlay {
+  z-index: 80;
+  background: #080d11ed;
+  backdrop-filter: blur(12px);
+  padding: 20px;
+}
+#arsenalOverlay .arsenal-dialog {
+  width: min(1080px, 100%);
+  max-width: 1080px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #71806a #141e22;
+  padding: 28px 32px 22px;
+  color: #eef2e9;
+  background: linear-gradient(135deg, #212b2d, #121a21 55%, #10161c);
+  border: 1px solid #67747366;
+  border-top: 3px solid #d7f970;
+  border-radius: 12px;
+  box-shadow: 0 28px 100px #000b;
+}
+.arsenal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.arsenal-header .eyebrow {
+  color: #aebcba;
+  font-size: 12px;
+  letter-spacing: 0.13em;
+}
+#arsenalTitle {
+  margin: 9px 0 0;
+  font:
+    900 clamp(32px, 4vw, 48px) / 1 Arial,
+    sans-serif;
+  letter-spacing: -0.045em;
+}
+#arsenalTitle > span {
+  color: #d7f970;
+}
+.arsenal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+#arsenalEquippedCount {
+  font: 700 13px/1.4 monospace;
+  letter-spacing: 0.06em;
+  color: #d7f970;
+}
+.arsenal-close {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  border: 1px solid #68777566;
+  border-radius: 6px;
+  padding: 7px 12px;
+  background: #0d1518;
+  color: #dbe4df;
+  font: 700 12px monospace;
+  cursor: pointer;
+}
+.arsenal-close span {
+  font:
+    300 26px/1 Arial,
+    sans-serif;
+}
+#arsenalDescription {
+  margin: 12px 0 22px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #aebbbd;
+  max-width: none;
+}
+.arsenal-featured {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 26px;
+  align-items: center;
+  min-height: 210px;
+  padding: 18px 24px;
+  border: 1px solid #d7f97038;
+  border-radius: 8px;
+  background: linear-gradient(105deg, #a8c35512, #0c141855);
+}
+.arsenal-featured-visual {
+  position: relative;
+  min-width: 0;
+}
+.arsenal-featured-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  color: #d7f970;
+  border: 1px solid #c9ec6859;
+  border-radius: 3px;
+  padding: 5px 8px;
+  font: 700 12px/1.2 monospace;
+  letter-spacing: 0.08em;
+}
+#arsenalActiveArt {
+  width: 100%;
+  height: 180px;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 12px #0008);
+}
+#arsenalActiveCategory {
+  color: #c6d389;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+}
+#arsenalActiveName {
+  margin: 9px 0 18px;
+  font:
+    900 clamp(22px, 2.4vw, 32px) / 1.08 Arial,
+    sans-serif;
+  letter-spacing: -0.02em;
+}
+.arsenal-ammo-readout {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#arsenalActiveAmmo {
+  font: 800 38px/1 monospace;
+  color: #d7f970;
+}
+#arsenalActiveReserve {
+  color: #b5c1be;
+  font: 600 13px/1.4 monospace;
+}
+#arsenalActiveDescription {
+  margin: 12px 0 0;
+  color: #a4b4b1;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 340px;
+}
+.arsenal-collection-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 24px 0 12px;
+}
+.arsenal-collection-heading h3 {
+  margin: 0;
+  font:
+    800 14px/1.4 Arial,
+    sans-serif;
+  letter-spacing: 0.08em;
+}
+.arsenal-collection-heading > span {
+  font: 600 12px/1.4 monospace;
+  letter-spacing: 0.08em;
+  color: #90a09e;
+}
+.arsenal-collection {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.arsenal-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #5a6b6b66;
+  border-radius: 6px;
+  background: linear-gradient(145deg, #2d393d99, #10181e);
+  color: #dbe6de;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.16s,
+    background 0.16s,
+    transform 0.16s;
+}
+.arsenal-card:hover:not(:disabled) {
+  border-color: #d7f970aa;
+  background: #29372c;
+  transform: translateY(-2px);
+}
+.arsenal-card:focus-visible,
+.arsenal-close:focus-visible {
+  outline: 2px solid #e1ff9b;
+  outline-offset: 3px;
+}
+.arsenal-card.selected {
+  border-color: #d7f970;
+  box-shadow: inset 0 0 0 1px #d7f97022;
+  background: linear-gradient(145deg, #80944224, #182320);
+}
+.arsenal-card-top,
+.arsenal-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+.arsenal-card-status {
+  color: #a7b8b0;
+  font: 700 12px/1.4 monospace;
+  letter-spacing: 0.06em;
+}
+.selected .arsenal-card-status {
+  color: #d7f970;
+}
+.arsenal-shortcut {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  color: #b2c2b9;
+  background: #090f1580;
+  border: 1px solid #8f9f9338;
+  border-radius: 3px;
+  font: 700 12px/1 monospace;
+}
+.arsenal-weapon-icon {
+  display: block;
+  width: 100%;
+  height: 82px;
+  object-fit: contain;
+  margin: 4px 0;
+  filter: drop-shadow(0 5px 5px #0008);
+}
+.arsenal-weapon-name {
+  display: block;
+  margin: 4px 0 11px;
+  font:
+    800 14px/1.25 Arial,
+    sans-serif;
+}
+.arsenal-card-footer {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #84958c24;
+  font: 600 12px/1.4 monospace;
+  color: #93a69b;
+}
+.arsenal-card-supply {
+  color: #d5dfd8;
+}
+.arsenal-card.mystery {
+  cursor: default;
+  border-color: #54605e38;
+  border-style: dashed;
+  background: repeating-linear-gradient(135deg, transparent 0 9px, #82908804 9px 10px), #11191d;
+}
+.arsenal-card.mystery .arsenal-card-status,
+.arsenal-card.mystery .arsenal-card-footer {
+  color: #85928f;
+}
+.arsenal-card.mystery .arsenal-card-supply,
+.arsenal-card.mystery .arsenal-shortcut {
+  color: #74827c;
+}
+.arsenal-mystery-icon {
+  display: grid;
+  place-items: center;
+  height: 82px;
+  margin: 4px 0;
+  font: 800 38px/1 monospace;
+  letter-spacing: 0.12em;
+  color: #738275;
+  text-shadow: 0 0 25px #9fbf6e20;
+}
+.mystery .arsenal-weapon-name {
+  color: #99a899;
+  letter-spacing: 0.15em;
+}
+.arsenal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #879a8c2b;
+  color: #a1b1a7;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.arsenal-footer kbd {
+  margin: 0 4px 0 10px;
+  border-color: #8e9e7c66;
+  color: #dae8c7;
+  background: #141e1c;
+  font-size: 12px;
+}
+.arsenal-footer kbd:first-child {
+  margin-left: 0;
+}
+.arsenal-footer b {
+  color: #d7f970;
+}
+@media (max-width: 760px) {
+  #arsenalOverlay {
+    padding: 12px;
+  }
+  #arsenalOverlay .arsenal-dialog {
+    padding: 20px;
+    max-height: calc(100dvh - 24px);
+  }
+  .arsenal-header-right {
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .arsenal-featured {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+  .arsenal-collection {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .arsenal-card {
+    padding: 10px;
+  }
+}
+@media (max-width: 520px) {
+  #arsenalOverlay .arsenal-dialog {
+    padding: 18px 14px;
+  }
+  .arsenal-header {
+    gap: 10px;
+  }
+  .arsenal-header .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+  #arsenalTitle {
+    font-size: 36px;
+  }
+  #arsenalEquippedCount {
+    font-size: 12px;
+  }
+  #arsenalDescription {
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .arsenal-featured {
+    gap: 12px;
+    padding: 12px;
+    min-height: 174px;
+  }
+  #arsenalActiveArt {
+    height: 150px;
+  }
+  #arsenalActiveName {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  #arsenalActiveAmmo {
+    font-size: 30px;
+  }
+  #arsenalActiveDescription {
+    font-size: 12px;
+  }
+  .arsenal-collection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .arsenal-card-footer {
+    flex-wrap: wrap;
+  }
+  .arsenal-weapon-name {
+    font-size: 13px;
+  }
+}
+@media (max-width: 360px) {
+  .arsenal-featured {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arsenal-card {
+    transition: none;
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <canvas
+      id="game"
+      aria-label="Dead End City game world. Use touch controls or keyboard controls shown in the help menu."
+      tabindex="0"
+    ></canvas>
+    <div id="vignette"></div>
+    <header id="topbar">
+      <div class="wordmark">
+        DEAD END<span>CITY<span class="brand-dot">®</span></span>
+      </div>
+      <div class="location">
+        <span class="eyebrow" id="renderBadge">SOUTH COAST · DUSK</span
+        ><b id="district">OLD QUARTER</b>
+      </div>
+      <div class="top-right">
+        <div class="cash"><span class="eyebrow">CASH</span><strong id="cash">$000000</strong></div>
+        <div class="heat">
+          <span class="eyebrow">WANTED LEVEL</span>
+          <div id="stars">☆☆☆☆☆</div>
+        </div>
+        <button id="pauseBtn" class="icon-btn" aria-label="Pause game" title="Pause (Escape)">
+          Ⅱ
+        </button>
+      </div>
+    </header>
+    <div id="terrainStatus"></div>
+    <div id="worldClock">DAY 1 · 17:20</div>
+    <div id="navigation">
+      <span id="navArrow">↑</span>
+      <div><b id="navTitle">NEXT JOB · PAYPHONE</b><span id="navDistance"></span></div>
+    </div>
+    <div id="policeStatusPanel">
+      <div id="chaseStatus"></div>
+      <div id="policeEscapeTimer" class="hidden">
+        <strong id="policeEscapeSeconds">0s</strong><span>TO LOSE POLICE</span>
+      </div>
+    </div>
+    <div id="policeNotice" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="stealthStatus" style="display: none">
+      <span id="stealthLabel"></span>
+      <div class="meter"><i id="stealthFill"></i></div>
+    </div>
+    <div id="healthbox">
+      <span class="status-label">HEALTH <b id="healthValue">100</b></span>
+      <div class="meter"><i id="healthFill"></i></div>
+      <span id="armorLabel">NO ARMOR</span>
+    </div>
+    <div id="districtBanner"></div>
+    <div id="storyLine"></div>
+    <audio id="carRadioAudio" preload="metadata" loop hidden></audio>
+    <aside id="carRadio" class="hidden" aria-label="Car radio">
+      <div class="car-radio-top">
+        <span id="radioGenre">80S SYNTH</span
+        ><button id="radioPower" aria-label="Toggle car radio" aria-pressed="true">N · ON</button>
+      </div>
+      <strong id="radioStation">NEON 88.7</strong>
+      <div id="radioTrack" aria-live="polite"></div>
+      <div class="radio-presets">
+        <button id="radioPreset0" aria-label="Tune Neon 88.7, 80s synth" aria-pressed="true">
+          NEON</button
+        ><button id="radioPreset1" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
+          RIOT</button
+        ><button id="radioPreset2" aria-label="Tune Oddball 99.3, eclectic" aria-pressed="false">
+          ODDBALL</button
+        ><button id="radioNext" aria-label="Next radio station">B · NEXT</button>
+      </div>
+    </aside>
+    <div id="radioCaption" aria-live="polite"></div>
+    <div id="toast" aria-live="polite"></div>
+    <div id="announcement">
+      <small id="announceSmall"></small><strong id="announceBig"></strong>
+    </div>
+    <div id="interaction"></div>
+    <div id="bottom">
+      <section class="minimap-box">
+        <div class="mini-head"><span id="mapDistrict">OLD QUARTER</span><span>N ↑</span></div>
+        <canvas id="minimap" width="224" height="156"></canvas
+        ><button id="mapBtn"><kbd>TAB</kbd> CITY MAP <span>↗</span></button>
+      </section>
+      <div class="bottom-middle">
+        <div id="pager">
+          <div class="pager-head">
+            <span class="blink">●</span> <span id="pagerLabel">INCOMING CALL</span
+            ><span id="missionCounter">01 / 09</span>
+          </div>
+          <div class="mission-copy">
+            <span
+              id="missionPortrait"
+              class="contact-portrait"
+              role="img"
+              aria-label="Mission contact portrait"
+            ></span>
+            <div>
+              <h2 id="missionTitle">Every city has an opening.</h2>
+              <p id="missionText">Find the ringing payphone to pick up your first job.</p>
+            </div>
+          </div>
+          <div id="cargoStatus" style="display: none">
+            <span id="cargoLabel">CARGO 0 / 3</span>
+            <div class="cargo-track"><i id="cargoFill"></i></div>
+          </div>
+          <div id="missionMeta">
+            <span id="missionDistance">PAYPHONE · 80 M</span><span id="missionTimer"></span>
+          </div>
+        </div>
+        <div class="quickkeys">
+          <span><kbd>W A S D</kbd> MOVE / DRIVE</span><span><kbd>E</kbd> INTERACT</span
+          ><span><kbd>F</kbd> FIRE</span><span><kbd>?</kbd> CONTROLS</span>
+        </div>
+      </div>
+      <section id="equipment">
+        <button
+          id="weaponButton"
+          type="button"
+          aria-label="Open arsenal. Q changes equipped weapon; K selects knife."
+          aria-haspopup="dialog"
+        >
+          <span class="weapon-head"
+            ><span class="eyebrow" id="weaponSlot">EQUIPPED · 2 WEAPONS</span
+            ><span id="weaponName">PISTOL</span></span
+          >
+          <canvas id="weaponArt" width="328" height="116"></canvas>
+          <span class="ammo"
+            ><strong id="ammo">12</strong><span id="reserve">/ 96</span
+            ><kbd id="reloadHint">R</kbd></span
+          >
+          <span class="arsenal-hint"
+            ><span><kbd>Q</kbd> CHANGE WEAPON</span><span>CLICK FOR ARSENAL</span></span
+          >
+        </button>
+        <div id="vehicleStats">
+          <span id="vehicleName">ON FOOT</span>
+          <div><strong id="speed">0</strong><small id="speedUnit">KM/H</small></div>
+          <div class="meter"><i id="carFill"></i></div>
+        </div>
+      </section>
+    </div>
+    <div id="touchControls" class="hidden" aria-label="Touch game controls">
+      <div
+        id="moveStick"
+        class="touch-stick"
+        role="group"
+        aria-label="Movement and steering joystick"
+      >
+        <span id="moveLabel">MOVE</span><i id="moveNub"></i>
+      </div>
+      <div id="aimStick" class="touch-stick" role="group" aria-label="Aim and fire joystick">
+        <span>AIM / FIRE</span><i id="aimNub"></i>
+      </div>
+      <div class="touch-utility">
+        <button id="touchMap">MAP</button><button id="touchRadio">RADIO</button
+        ><button id="touchStation">STATION</button><button id="touchWeapon">WEAPON</button
+        ><button id="touchReload">RELOAD</button><button id="touchRun">RUN</button>
+      </div>
+      <div class="touch-actions">
+        <button id="touchPoison">POISON</button><button id="touchDivert">DIVERT</button
+        ><button id="touchJump" class="touch-special">PARACHUTE</button
+        ><button id="touchAction">ACTION</button><button id="touchFire">FIRE</button
+        ><button id="touchUp">NOSE UP</button><button id="touchDown">NOSE DOWN</button
+        ><button id="touchGo" class="touch-go">GAS</button><button id="touchBrake">BRAKE</button>
+      </div>
+    </div>
+    <div class="overlay" id="menu">
+      <div class="start-card">
+        <div class="start-copy">
+          <div class="edition">
+            <span class="tiny-cross">✚</span> SOUTH COAST STORIES <span>VOL. 01</span>
+          </div>
+          <h1>DEAD END<br /><span>CITY</span><i>1997</i></h1>
+          <div class="intro-rule"></div>
+          <p class="intro">A city. A score.<br />A way out.</p>
+          <p class="intro-small">
+            Take the wheel. Work the payphones.<br />Keep one step ahead of the law.
+          </p>
+          <button class="primary" id="startBtn">ENTER THE CITY <span>↗</span></button
+          ><button class="secondary" id="chooseMissionStart">CHOOSE MISSION</button
+          ><button class="text-btn" id="newGameStart">NEW GAME <span>START FROM ZERO</span></button
+          ><button class="text-btn" id="helpBtn">HOW TO PLAY <span>GAME CONTROLS ↗</span></button>
+          <div class="start-footer"><span>AN ORIGINAL TOP-DOWN CRIME GAME</span><span>◆</span></div>
+        </div>
+        <div class="start-art" id="coverArt">
+          <div class="art-label">
+            <span>WELCOME TO</span><strong>THE WRONG<br />SIDE OF TOWN.</strong>
+          </div>
+          <span class="art-bottom">NO CLEAN GETAWAYS.</span>
+        </div>
+      </div>
+      <div class="menu-foot">
+        <a href="./index.html" download="Dead-End-City.html">DOWNLOAD / PLAY OFFLINE ↘</a
+        ><span>TOUCH OR KEYBOARD · LANDSCAPE RECOMMENDED</span
+        ><button id="menuSound">SOUND ON ◖))</button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="missionSelect">
+      <div class="dialog mission-dialog">
+        <div class="eyebrow" id="campaignProgress"></div>
+        <h2>CHOOSE MISSION.</h2>
+        <p>Replay a completed job or continue your story. Future jobs stay secret.</p>
+        <div id="missionChoices"></div>
+        <button class="text-btn" id="closeMissions">BACK <span>ESC</span></button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="callOverlay">
+      <div class="dialog call-dialog">
+        <div class="eyebrow">THE SOUTH COAST LEDGER · INCOMING CALL</div>
+        <div class="caller">
+          <span
+            id="callPortrait"
+            class="contact-portrait"
+            role="img"
+            aria-label="Caller portrait"
+          ></span>
+          <div>
+            <h3 id="callName"></h3>
+            <span id="callRole"></span>
+          </div>
+        </div>
+        <div class="call-job-heading">
+          <h2 id="callTitle"></h2>
+          <span id="callReward"></span>
+        </div>
+        <p id="callMessage"></p>
+        <button class="primary" id="callAccept">ACCEPT JOB · ENTER</button
+        ><button class="text-btn" id="callDecline">HANG UP · ESCAPE</button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="elevatorOverlay">
+      <div class="dialog elevator-dialog">
+        <div class="eyebrow">THE BLUE HOUR · SKY LOUNGE</div>
+        <h2 id="elevatorFloor">FLOOR 00</h2>
+        <p id="elevatorDirection"></p>
+        <div class="meter"><i id="elevatorProgress"></i></div>
+      </div>
+    </div>
+    <div
+      class="overlay hidden"
+      id="arsenalOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="arsenalTitle"
+      aria-describedby="arsenalDescription"
+    >
+      <div class="dialog arsenal-dialog">
+        <div class="arsenal-header">
+          <div>
+            <span class="eyebrow">SOUTH COAST · PERSONAL EQUIPMENT</span>
+            <h2 id="arsenalTitle">ARSENAL<span>.</span></h2>
+          </div>
+          <div class="arsenal-header-right">
+            <span id="arsenalEquippedCount">2 / 7 EQUIPPED</span
+            ><button id="closeArsenal" class="arsenal-close" aria-label="Close arsenal">
+              ESC <span aria-hidden="true">×</span>
+            </button>
+          </div>
+        </div>
+        <p id="arsenalDescription">
+          Everything you own is equipped. Select a weapon to put it in your hand.
+        </p>
+        <div class="arsenal-featured">
+          <div class="arsenal-featured-visual">
+            <span class="arsenal-featured-label">IN HAND</span
+            ><canvas id="arsenalActiveArt" width="1000" height="500" aria-hidden="true"></canvas>
+          </div>
+          <div class="arsenal-featured-info">
+            <span class="eyebrow" id="arsenalActiveCategory"></span>
+            <h3 id="arsenalActiveName"></h3>
+            <div class="arsenal-ammo-readout">
+              <strong id="arsenalActiveAmmo"></strong><span id="arsenalActiveReserve"></span>
+            </div>
+            <p id="arsenalActiveDescription"></p>
+          </div>
+        </div>
+        <div class="arsenal-collection-heading">
+          <h3>YOUR WEAPONS</h3>
+          <span>SELECT TO USE</span>
+        </div>
+        <div id="arsenalCollection" class="arsenal-collection"></div>
+        <div class="arsenal-footer">
+          <span><kbd>Q</kbd> Cycle weapons <kbd>K</kbd> Knife</span
+          ><span>Find new weapons at <b>GUN</b> on the map.</span>
+        </div>
+      </div>
+    </div>
+    <div class="overlay hidden" id="serviceOverlay">
+      <div class="dialog service-dialog">
+        <div class="eyebrow" id="serviceClock"></div>
+        <h2 id="serviceName"></h2>
+        <p id="serviceDescription"></p>
+        <div id="serviceActions"></div>
+        <div id="casinoTable" class="hidden">
+          <div class="roulette-top">
+            <canvas
+              id="rouletteWheel"
+              width="280"
+              height="280"
+              aria-label="Roulette wheel"
+            ></canvas>
+            <div class="roulette-bank">
+              <span>YOUR CITY CASH</span><strong id="casinoBalance"></strong
+              ><label for="casinoStake">BET AMOUNT</label
+              ><input
+                id="casinoStake"
+                type="number"
+                inputmode="numeric"
+                min="10"
+                max="5000"
+                step="10"
+                value="50"
+              /><small>Table limit $10–$5,000</small>
+            </div>
+          </div>
+          <div class="roulette-bets">
+            <button id="betred" class="red">RED</button><button id="betblack">BLACK</button
+            ><button id="betnumber">A NUMBER</button>
+          </div>
+          <div id="casinoNumbers" class="hidden"></div>
+          <p id="casinoResult" role="status" aria-live="polite"></p>
+          <button id="casinoSpin" class="primary">SPIN THE WHEEL <span>↗</span></button>
+        </div>
+        <button class="text-btn" id="closeService">LEAVE <span>ESC / E</span></button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="pauseMenu">
+      <div class="dialog">
+        <div class="eyebrow">TAKE A BREATHER</div>
+        <h2>CITY ON HOLD.</h2>
+        <p id="pauseInfo">Your ride will be right where you left it.</p>
+        <button class="primary" id="resumeBtn">BACK TO THE STREETS <span>↗</span></button
+        ><button class="secondary" id="chooseMissionPause">CHOOSE MISSION</button
+        ><button class="secondary" id="pauseHelp">GAME CONTROLS</button
+        ><button class="secondary" id="touchToggle">TOUCH CONTROLS: AUTO</button
+        ><button class="secondary" id="soundBtn">SOUND: ON</button
+        ><button class="secondary" id="voicesBtn">RADIO VOICES: ON</button
+        ><button class="secondary" id="creditsBtn">ASSET CREDITS</button
+        ><button class="secondary danger" id="restartMission">RESTART CURRENT JOB</button
+        ><button class="text-btn" id="newGame">NEW GAME <span>RESET THIS RUN</span></button>
+        <p class="fine">Progress stays on this browser. Press Escape to resume.</p>
+      </div>
+    </div>
+    <div class="overlay hidden" id="help">
+      <div class="dialog help-dialog">
+        <div class="eyebrow">THE STREET MANUAL</div>
+        <h2>KNOW THE CONTROLS.</h2>
+        <div class="control-grid">
+          <div>
+            <kbd>W A S D</kbd>
+            <p>Move / accelerate & steer</p>
+          </div>
+          <div>
+            <kbd>↑ ← ↓ →</kbd>
+            <p>Alternative movement keys</p>
+          </div>
+          <div>
+            <kbd>E</kbd>
+            <p>Enter / exit vehicle · phone · enter a business</p>
+          </div>
+          <div>
+            <kbd>F</kbd> <kbd>SPACE</kbd>
+            <p>Fire on foot · F fires a handgun from vehicles</p>
+          </div>
+          <div>
+            <kbd>SPACE</kbd>
+            <p>Handbrake while driving</p>
+          </div>
+          <div>
+            <kbd>SHIFT</kbd>
+            <p>Sprint on foot</p>
+          </div>
+          <div>
+            <kbd>1 2 3 4 5 6</kbd>
+            <p>Pistol · machine pistol · shotgun · bazooka · assault rifle · precision rifle</p>
+          </div>
+          <div>
+            <kbd>P</kbd>
+            <p>Mission 2: poison the reserved drink</p>
+          </div>
+          <div>
+            <kbd>R</kbd> <kbd>Q</kbd>
+            <p>Reload · cycle all equipped weapons</p>
+          </div>
+          <div>
+            <kbd>I</kbd> <kbd>K</kbd>
+            <p>Open arsenal · equip knife (no ammunition needed)</p>
+          </div>
+          <div>
+            <kbd>TAB</kbd>
+            <p>City map and locations</p>
+          </div>
+          <div>
+            <kbd>J</kbd> <kbd>SPACE</kbd>
+            <p>Jump from aircraft / open parachute · A/D steer · W glide · S flare</p>
+          </div>
+          <div>
+            <kbd>TOUCH</kbd>
+            <p>
+              Move with the left stick, aim and fire with the right. Context buttons handle driving,
+              flying and missions. Enable manually in Pause if needed.
+            </p>
+          </div>
+          <div>
+            <kbd>N</kbd> <kbd>B</kbd>
+            <p>Car radio on / off · next station. Click a preset to tune directly.</p>
+          </div>
+          <div>
+            <kbd>H</kbd> <kbd>M</kbd>
+            <p>Horn · mute sound</p>
+          </div>
+          <div>
+            <kbd>ESC</kbd>
+            <p>Pause / resume</p>
+          </div>
+          <div>
+            <kbd>ENTER</kbd>
+            <p>Start / continue</p>
+          </div>
+          <div>
+            <kbd>SPACE</kbd> <kbd>SHIFT</kbd>
+            <p>Helicopter: rise / descend</p>
+          </div>
+          <div>
+            <kbd>W S</kbd> <kbd>A D</kbd>
+            <p>Helicopter: fly / turn · release to hover</p>
+          </div>
+          <div>
+            <kbd>W S</kbd> <kbd>A D</kbd>
+            <p>Airplane: throttle / ground brakes · bank</p>
+          </div>
+          <div>
+            <kbd>SPACE</kbd> <kbd>SHIFT</kbd>
+            <p>
+              Airplane: nose up / nose down · release to trim. Slow, level wings, gently flare; S
+              brakes.
+            </p>
+          </div>
+        </div>
+        <p class="help-tip">
+          Press E at the payphone, then Enter to accept the caller’s job. Eleven connected jobs take
+          you across Northbank, Palm Keys and Southport Airport. Explore the wider county via five
+          new crossings: Ridgeline mountain roads, Stonecreek, Northridge, Eastgate, Oceanview and
+          Palmshore. Oceanview International sits in the southern outskirts. Fort Sentinel is a
+          restricted military island in the southeast: E breaches the barrier; steal a tank and use
+          W/S to drive, A/D to pivot and F to fire its cannon. LIFT marks The Blue Hour: press E to
+          ride to its walkable rooftop terrace, bar and return elevator. During Mission 2, collect
+          guest clothes, walk calmly, and hold E near the unaware target for a quiet takedown. Or
+          press P beside his reserved drink on the west table. The drink takes 8 seconds; you can
+          leave while waiting. F draws your concealed pistol. Escape via the elevator. Outside this
+          job, weapons stay holstered on the terrace. The yellow jet ski waits at Bay Launch, marked
+          JET on the Palm Keys shore. Rust jackets belong to Harbor Kings; violet to Glasshouse
+          Crew. Buy weapons at GUN. Sleep at ZZ to heal and advance time. Hospitals provide
+          treatment; bars serve food; clubs open at 20:00. Boats are tied to the wooden river docks.
+          Break police sight and keep hidden until the countdown ends to clear all stars. Steal
+          helicopters at the H markers: Police HQ and Riverside. Slow down over clear ground to
+          land; press E after touchdown. Cars dent and smoke as damage builds. Face your target to
+          shoot. Nearby threats in front of you are aimed at automatically. Mouse aiming is
+          optional. Follow yellow markers for jobs. Green crosses heal; purple crates refill ammo.
+          Four R markers show drive-in respray shops. Drive fully inside an open bay, stop, and
+          press E. Repairs and paint cost $250. Mission 1: leaving the harbor starts a visible
+          10-second police countdown. Vinny covers the loaded truck’s first respray; use any R
+          garage to lose the cops, then deliver the crates. Mission 10: land, defeat the guards,
+          free Daniel and escort him to the helicopter. Mission 11: fly Daniel and the ledger; V
+          changes landing destination after the manifest is exposed. Escape in the van and drive
+          inside Vinny’s warehouse. Flyable courier planes, private jets and a large airliner wait
+          at the airports. The larger airliner needs Oceanview’s long runway. Hold W to accelerate,
+          then Space to rotate. Excessive nose-up pitch or too little speed causes a stall: release
+          Space, lower the nose with Shift, add W throttle. On approach keep a little power, reduce
+          descent and briefly raise the nose just before touchdown. Pinch the game view or scroll to
+          zoom out over the city; +/− zoom and 0 resets the view. Only one police helicopter follows
+          you. Hide in the U railway underpass in Northbank, take a boat beneath a bridge, or break
+          sight behind towers and mountain ridges. Stay unseen for 18 seconds and air support
+          leaves. Its search follows your last known position; coming back into view resets the
+          search. Shoot it down with rifles or a bazooka on foot, or use your handgun from a
+          vehicle. A destroyed helicopter cannot be replaced for 45 seconds. Ground patrols may
+          still pursue you. Vehicle gunfire is handgun-only; tank armor blocks ordinary bullets.
+          Find CAS on Palm Keys for roulette. Map: C or FIND ME centers on you. Tap or click any
+          destination for a cyan road route; drag to pan, pinch or use +/− to zoom, and CLEAR ROUTE
+          to remove it. City rail: look for M on the map. Press E at a station to choose any of 14
+          destinations; E on the train requests the next stop. Rail viaducts and station platforms
+          provide real overhead cover. Central Commons has a walking circuit and a separate green
+          cycle loop. Free bicycles wait by park racks and mountain trailheads: W pedals, S brakes,
+          A/D steers. Deer and rabbits flee noise; foxes can approach quietly. Bears warn before
+          charging—back away or reach a vehicle. Wanted levels build gradually between stars; air
+          support takes at least eight seconds to arrive before switching on its searchlight.
+          Mountains: take a Ranger 4×4 from either trailhead to climb Mount Ascent or Needle Ridge.
+          Road tires lose grip on steep slopes. Guns and lodging are available on every island. J
+          jumps from an aircraft when safely above the ground; Space opens the parachute, with
+          automatic opening near the ground.
+        </p>
+        <button class="primary" id="closeHelp">GOT IT. <span>↗</span></button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="mapOverlay">
+      <div class="map-panel">
+        <div class="map-heading">
+          <div>
+            <div class="eyebrow">SOUTH COAST · 1997</div>
+            <h2>SOUTH COAST COUNTY.</h2>
+          </div>
+          <button id="findMe" class="secondary">FIND ME <kbd>C</kbd></button
+          ><button id="closeMap" class="secondary">CLOSE <kbd>TAB</kbd></button>
+        </div>
+        <div class="map-tools">
+          <button id="mapZoomOut" aria-label="Zoom map out">−</button
+          ><button id="mapZoomIn" aria-label="Zoom map in">+</button
+          ><button id="mapBasketball">BASKETBALL</button><button id="mapStadium">STADIUM</button
+          ><button id="clearRoute">CLEAR ROUTE</button
+          ><span id="mapRouteStatus"
+            >Tap a destination · Drag to pan · Pinch or use + / − to zoom</span
+          >
+        </div>
+        <canvas id="bigmap" width="800" height="660"></canvas>
+        <div class="legend">
+          <span><i class="yellow"></i> JOB / PAYPHONE</span><span><i class="green"></i> HEALTH</span
+          ><span><i class="purple"></i> AMMO</span><span><i class="blue"></i> RESPRAY</span
+          ><span><i class="police-map-key"></i> POLICE · FLASHING = PURSUIT</span
+          ><span>⊕ POLICE HELICOPTER</span><span>H HELIPAD</span><span>U RAILWAY UNDERPASS</span
+          ><span>M RAIL STATION</span><span>GUN ARMORY</span><span>ZZ SLEEP</span
+          ><span>CAS CASINO</span><span>+ HOSPITAL</span><span>BOAT / JET · WATERCRAFT</span
+          ><span>LIFT ROOFTOP</span><span>RUST / VIOLET GANGS</span><span>▲ YOU</span>
+        </div>
+      </div>
+    </div>
+    <div class="overlay hidden" id="credits">
+      <div class="dialog help-dialog">
+        <div class="eyebrow">DEAD END CITY</div>
+        <h2>ASSET CREDITS.</h2>
+        <div class="credits-copy">
+          <p>
+            Building, ground, and weapon artwork: original generated assets. Vehicle models and
+            character meshes: original.
+          </p>
+          <p>
+            Gunfire:
+            <a
+              href="https://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots"
+              target="_blank"
+              rel="noopener"
+              >Michel Baradari</a
+            >. Tire sounds:
+            <a
+              href="https://opengameart.org/content/car-tire-squeal-skid-loop"
+              target="_blank"
+              rel="noopener"
+              >Tom Haigh / audible-edge; loop edited by qubodup</a
+            >. Licensed under
+            <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener"
+              >Creative Commons Attribution 3.0</a
+            >. Converted to mono, resampled and normalized.
+          </p>
+          <p>
+            Engine:
+            <a
+              href="https://opengameart.org/content/racing-car-engine-sound-loops"
+              target="_blank"
+              rel="noopener"
+              >domasx2</a
+            >. Explosion:
+            <a
+              href="https://opengameart.org/content/chunky-explosion"
+              target="_blank"
+              rel="noopener"
+              >Joth</a
+            >. Siren:
+            <a
+              href="https://opengameart.org/content/sirens-and-alarm-noise"
+              target="_blank"
+              rel="noopener"
+              >aquinn</a
+            >.
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >Creative Commons public-domain dedication</a
+            >. Resampled and levels adjusted; explosion and siren excerpted.
+          </p>
+          <p>
+            Helicopter rotor:
+            <a href="https://opengameart.org/content/helicopter-sfx" target="_blank" rel="noopener"
+              >WuxiaScrub</a
+            >, excerpted and crossfaded into a loop. Radio voices:
+            <a href="https://kenney.nl/assets/voiceover-pack" target="_blank" rel="noopener"
+              >Kenney / Jeffrey M. Smith</a
+            >. Both CC0 1.0 public domain.
+          </p>
+          <p>
+            Police commands:
+            <a
+              href="https://freesound.org/people/tekgnosis/sounds/144702/"
+              target="_blank"
+              rel="noopener"
+              >tekgnosis</a
+            >. Civilian screams: AuraVoice / Nocturnal_Vanguard, Archeos, and JohnsonBrandEditing;
+            excerpts prepared by congusbongus. Selected recordings are CC0, trimmed, converted to
+            mono and level-adjusted.
+          </p>
+          <p>
+            <strong>Driving radio</strong> — three licensed music stations. Tracks are
+            loudness-normalized and transcoded to stereo MP3.
+          </p>
+          <p>
+            Retroracing One more round —
+            <a href="https://www.facebook.com/BogartVGM/" target="_blank" rel="noopener"
+              >Bogart VGM</a
+            >.
+            <a
+              href="https://opengameart.org/content/retroracing-one-more-round"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener"
+              >CC-BY-4.0</a
+            >.
+          </p>
+          <p>
+            Rock theme —
+            <a href="https://opengameart.org/users/obscure-music" target="_blank" rel="noopener"
+              >obscure music</a
+            >.
+            <a href="https://opengameart.org/content/rock-theme" target="_blank" rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Midnight Cruiser —
+            <a href="https://opengameart.org/users/zane-little-music" target="_blank" rel="noopener"
+              >Zane Little Music</a
+            >.
+            <a
+              href="https://opengameart.org/content/midnight-cruiser"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Three-dimensional renderer:
+            <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, © 2010–2023
+            three.js authors,
+            <a
+              href="https://github.com/mrdoob/three.js/blob/r160/LICENSE"
+              target="_blank"
+              rel="noopener"
+              >MIT License</a
+            >.
+          </p>
+        </div>
+        <button class="primary" id="closeCredits">BACK <span>↗</span></button>
+      </div>
+    </div>
+    <div id="transitOverlay" class="overlay hidden">
+      <section
+        id="transitPanel"
+        class="transit-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="transitTitle"
+      >
+        <p class="transit-kicker">SOUTH COAST RAIL · FREE CITY SERVICE</p>
+        <h2 id="transitTitle" tabindex="-1">Choose your destination</h2>
+        <p>
+          Take the elevated railway across the islands. Select a station to board; press E during
+          the ride to request the next stop.
+        </p>
+        <div id="transitOptions"></div>
+        <button id="closeTransit" type="button">Back to the street</button>
+      </section>
+    </div>
+    <!-- READABLE GAME SOURCE: shared state and commented subsystems. -->
+    <script id="game-source">
+<!-- @include-game-source -->
+    </script>
+    <!-- ORIGINAL THIRD-PARTY SOURCE: Three.js r160, not minified. -->
+    <script id="three-source">
+<!-- @include-three-source -->
+    </script>
+    <!-- EMBEDDED BINARY MEDIA: images and audio only; these blocks are not code. -->
+<!-- @include-media -->
+    <script id="asset-loader">
+<!-- @include-asset-loader -->
+    </script>
+    <script id="third-party-credits" type="text/plain">
+<!-- @include-credits -->
+    </script>
+  </body>
+</html>
