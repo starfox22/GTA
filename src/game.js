@@ -2681,11 +2681,11 @@
       }
       shake *= Math.pow(0.008, deltaSeconds);
       flash = Math.max(0, flash - deltaSeconds);
-      const look = player.car ? player.car.speed * 0.35 : 0;
-      cameraTarget.x +=
-        (player.x + Math.cos(player.a) * look - cameraTarget.x) * Math.min(1, deltaSeconds * 4.5);
-      cameraTarget.y +=
-        (player.y + Math.sin(player.a) * look - cameraTarget.y) * Math.min(1, deltaSeconds * 4.5);
+      const look = player.car ? player.car.speed * 0.35 : 0,
+        // A coaster outruns the usual trailing camera; stay with the train.
+        follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
+      cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
+      cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
       timed('sound', () => soundUpdate(deltaSeconds));
       uiTime += deltaSeconds;
       if (uiTime > 0.09) {

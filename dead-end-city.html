@@ -8757,11 +8757,11 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       shake *= Math.pow(0.008, deltaSeconds);
       flash = Math.max(0, flash - deltaSeconds);
-      const look = player.car ? player.car.speed * 0.35 : 0;
-      cameraTarget.x +=
-        (player.x + Math.cos(player.a) * look - cameraTarget.x) * Math.min(1, deltaSeconds * 4.5);
-      cameraTarget.y +=
-        (player.y + Math.sin(player.a) * look - cameraTarget.y) * Math.min(1, deltaSeconds * 4.5);
+      const look = player.car ? player.car.speed * 0.35 : 0,
+        // A coaster outruns the usual trailing camera; stay with the train.
+        follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
+      cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
+      cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
       timed('sound', () => soundUpdate(deltaSeconds));
       uiTime += deltaSeconds;
       if (uiTime > 0.09) {
@@ -15763,13 +15763,13 @@ body:not(.touch-mode).police-search-active #carRadio {
     function inPark(x, y, margin = 0) {
       return onSunsetIsle(x, y) || (margin > 0 && onSunsetIsle(x + margin, y + margin));
     }
-    /* Ride structures are solid: the player walks the midway, not through the wheel. */
+    /* Ride structures are solid: the player walks the midway, not through the wheel.
+       The coaster station is deliberately not here — its platform is walked onto. */
     function parkSolids() {
       return [
         { x: PIER.arcade.x, y: PIER.arcade.y, w: PIER.arcade.w, h: PIER.arcade.h, height: 46 },
         { x: PIER.gamesRow.x, y: PIER.gamesRow.y, w: PIER.gamesRow.w, h: PIER.gamesRow.h, height: 34 },
         { x: PIER.foodCourt.x, y: PIER.foodCourt.y, w: PIER.foodCourt.w, h: PIER.foodCourt.h, height: 30 },
-        { x: PIER.station.x - 46, y: PIER.station.y - 22, w: 92, h: 44, height: 28 },
       ];
     }
     function parkBlocked(x, y, r = 0) {
@@ -15857,8 +15857,6 @@ body:not(.touch-mode).police-search-active #carRadio {
       player.y = p.y;
       player.altitude = p.altitude;
       player.a = headingBetween(p, ahead);
-      cameraTarget.x = p.x;
-      cameraTarget.y = p.y;
       if (train.speed > 150 && seededRandom() < deltaSeconds * 2.5) scream(player);
     }
     function coasterStatusText() {

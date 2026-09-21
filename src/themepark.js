@@ -90,13 +90,13 @@
     function inPark(x, y, margin = 0) {
       return onSunsetIsle(x, y) || (margin > 0 && onSunsetIsle(x + margin, y + margin));
     }
-    /* Ride structures are solid: the player walks the midway, not through the wheel. */
+    /* Ride structures are solid: the player walks the midway, not through the wheel.
+       The coaster station is deliberately not here — its platform is walked onto. */
     function parkSolids() {
       return [
         { x: PIER.arcade.x, y: PIER.arcade.y, w: PIER.arcade.w, h: PIER.arcade.h, height: 46 },
         { x: PIER.gamesRow.x, y: PIER.gamesRow.y, w: PIER.gamesRow.w, h: PIER.gamesRow.h, height: 34 },
         { x: PIER.foodCourt.x, y: PIER.foodCourt.y, w: PIER.foodCourt.w, h: PIER.foodCourt.h, height: 30 },
-        { x: PIER.station.x - 46, y: PIER.station.y - 22, w: 92, h: 44, height: 28 },
       ];
     }
     function parkBlocked(x, y, r = 0) {
@@ -184,8 +184,6 @@
       player.y = p.y;
       player.altitude = p.altitude;
       player.a = headingBetween(p, ahead);
-      cameraTarget.x = p.x;
-      cameraTarget.y = p.y;
       if (train.speed > 150 && seededRandom() < deltaSeconds * 2.5) scream(player);
     }
     function coasterStatusText() {
