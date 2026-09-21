@@ -89,6 +89,9 @@ Bug fixes
   leaves, rather than buried inside it.
 - Death and mission restarts clear an active coaster ride and an active fall.
 - Removing a pedestrian clears any companion still following them.
+- The title screen only offers the offline copy where a browser can actually save
+  one; sandboxed hosts and bare `file://` copies hide the link rather than showing
+  one that silently does nothing.
 
 
 ## 25.1.0 — Performance, park, stadium, railway and aircraft
