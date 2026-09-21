@@ -107,11 +107,8 @@
         props: [],
         announced: false,
       };
-      for (const offset of [-30, 30]) {
-        const x = site.x + lane.x * offset + along.x * offset * 1.5,
-          y = site.y + lane.y * offset + along.y * offset * 1.5,
-          a = across + (offset < 0 ? -0.34 : 0.34);
-        if (!canSpawnCar('police', x, y, a, 2)) continue;
+      const park = (x, y, a) => {
+        if (!canSpawnCar('police', x, y, a, 2)) return false;
         const c = makeCar('police', x, y, a, false, '#e8eef1');
         Object.assign(c, {
           cop: true,
@@ -125,7 +122,16 @@
           av: 0,
         });
         block.cars.push(c);
-      }
+        return true;
+      };
+      for (const offset of [-30, 30])
+        park(
+          site.x + lane.x * offset + along.x * offset * 0.8,
+          site.y + lane.y * offset + along.y * offset * 0.8,
+          across + (offset < 0 ? -0.34 : 0.34),
+        );
+      // A site can be tight for the pair but fine for one car on the centre line.
+      if (!block.cars.length) park(site.x, site.y, across);
       if (!block.cars.length) return null;
       // Two officers work from the kerb behind the cars, not out in the lane.
       for (const offset of [-64, 64]) {
@@ -242,14 +248,18 @@
       // A site can turn out to have no room for two cars across it; try the next.
       let block = null,
         chosen = null;
-      for (const entry of ranked.slice(0, 5)) {
+      for (const entry of ranked.slice(0, 8)) {
         block = buildRoadblock(entry.site, cargoChase() ? 'cargo' : 'wanted');
         if (block) {
           chosen = entry.site;
           break;
         }
       }
-      if (!block) return;
+      if (!block) {
+        // Nowhere usable right now; come back sooner than the normal cadence.
+        containmentTimer = 2.5;
+        return;
+      }
       if (gameTime - roadblockNotice > 12) {
         roadblockNotice = gameTime;
         tell('POLICE ROADBLOCK · ' + chosen.name + ' · find another way', 5);

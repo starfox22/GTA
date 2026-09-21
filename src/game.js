@@ -4250,6 +4250,13 @@
         }
         return this.status();
       },
+      // The chokepoint catalogue and the state of the cordon.
+      containment: () => ({
+        sites: roadblockSites().length,
+        budget: containmentBudget(),
+        active: roadblocks.length,
+        nextPlanIn: Math.round(Math.max(0, containmentTimer) * 10) / 10,
+      }),
       // Where the police have cut the map right now.
       roadblocks: () =>
         roadblocks.map((b) => ({

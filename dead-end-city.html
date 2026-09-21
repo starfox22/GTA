@@ -15201,11 +15201,8 @@ body:not(.touch-mode).police-search-active #carRadio {
         props: [],
         announced: false,
       };
-      for (const offset of [-30, 30]) {
-        const x = site.x + lane.x * offset + along.x * offset * 1.5,
-          y = site.y + lane.y * offset + along.y * offset * 1.5,
-          a = across + (offset < 0 ? -0.34 : 0.34);
-        if (!canSpawnCar('police', x, y, a, 2)) continue;
+      const park = (x, y, a) => {
+        if (!canSpawnCar('police', x, y, a, 2)) return false;
         const c = makeCar('police', x, y, a, false, '#e8eef1');
         Object.assign(c, {
           cop: true,
@@ -15219,7 +15216,16 @@ body:not(.touch-mode).police-search-active #carRadio {
           av: 0,
         });
         block.cars.push(c);
-      }
+        return true;
+      };
+      for (const offset of [-30, 30])
+        park(
+          site.x + lane.x * offset + along.x * offset * 0.8,
+          site.y + lane.y * offset + along.y * offset * 0.8,
+          across + (offset < 0 ? -0.34 : 0.34),
+        );
+      // A site can be tight for the pair but fine for one car on the centre line.
+      if (!block.cars.length) park(site.x, site.y, across);
       if (!block.cars.length) return null;
       // Two officers work from the kerb behind the cars, not out in the lane.
       for (const offset of [-64, 64]) {
@@ -15336,14 +15342,18 @@ body:not(.touch-mode).police-search-active #carRadio {
       // A site can turn out to have no room for two cars across it; try the next.
       let block = null,
         chosen = null;
-      for (const entry of ranked.slice(0, 5)) {
+      for (const entry of ranked.slice(0, 8)) {
         block = buildRoadblock(entry.site, cargoChase() ? 'cargo' : 'wanted');
         if (block) {
           chosen = entry.site;
           break;
         }
       }
-      if (!block) return;
+      if (!block) {
+        // Nowhere usable right now; come back sooner than the normal cadence.
+        containmentTimer = 2.5;
+        return;
+      }
       if (gameTime - roadblockNotice > 12) {
         roadblockNotice = gameTime;
         tell('POLICE ROADBLOCK · ' + chosen.name + ' · find another way', 5);
@@ -28744,34 +28754,37 @@ body:not(.touch-mode).police-search-active #carRadio {
         g.visible = false;
         g.userData.dynamic = true;
         scene.add(g);
+        /* Local +x runs across the carriageway and local +z runs down the road:
+           the group is turned by -block.a, and a map heading of `a` becomes local
+           +x, which is the same contract every other model in the game uses. */
         const barriers = [];
         for (const side of [-1, 1]) {
           const unit = new Three.Group();
-          unit.position.set(0, 0, side * 74);
+          unit.position.set(side * 74, 0, 0);
           g.add(unit);
           box(unit, 0, 9, 0, 22, 18, 9, barrierMat);
           box(unit, 0, 15, 0, 23, 3, 10, barrierStripe);
           box(unit, 0, 2, 0, 26, 4, 13, barrierMat);
           barriers.push(unit);
         }
-        // Spike strip: a dark mat with a saw edge, laid across the gap.
+        // Spike strip: a dark mat with a saw edge, laid across the carriageway.
         const strip = new Three.Group();
         g.add(strip);
-        box(strip, 0, 0.9, 0, 9, 1.8, 104, spikeMat);
+        box(strip, 0, 0.9, 0, 104, 1.8, 9, spikeMat);
         for (let i = -6; i <= 6; i++)
-          mesh(cylinderGeo, spikeMat, strip, 0, 3.4, i * 8, 0.8, 4, 0.8);
+          mesh(cylinderGeo, spikeMat, strip, i * 8, 3.4, 0, 0.8, 4, 0.8);
         const cones = [];
         for (let i = -2; i <= 2; i++) {
           if (!i) continue;
           const c = new Three.Group();
-          c.position.set(i * 9, 0, i * 22);
+          c.position.set(i * 26, 0, i * 12);
           g.add(c);
           mesh(cylinderGeo, coneMat, c, 0, 5, 0, 3.4, 10, 3.4);
           box(c, 0, 0.6, 0, 9, 1.2, 9, coneMat);
           cones.push(c);
         }
         const flares = [-1, 1].map((side) => {
-          const f = mesh(sphereGeo, flareMat, g, 0, 2.5, side * 44, 2.4, 2.4, 2.4);
+          const f = mesh(sphereGeo, flareMat, g, side * 44, 2.5, 0, 2.4, 2.4, 2.4);
           f.castShadow = false;
           halo(f, 0, 0, 0, 34, '#ff9a4a');
           return f;
@@ -36270,6 +36283,13 @@ body:not(.touch-mode).police-search-active #carRadio {
         }
         return this.status();
       },
+      // The chokepoint catalogue and the state of the cordon.
+      containment: () => ({
+        sites: roadblockSites().length,
+        budget: containmentBudget(),
+        active: roadblocks.length,
+        nextPlanIn: Math.round(Math.max(0, containmentTimer) * 10) / 10,
+      }),
       // Where the police have cut the map right now.
       roadblocks: () =>
         roadblocks.map((b) => ({
