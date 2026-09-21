@@ -1,5 +1,23 @@
 # Changelog
 
+## 25.1.0 — Performance, park, stadium, railway and aircraft
+
+- Profiler in the developer console; static geometry batching; building/pier/static spatial
+  grids; resting-vehicle and distant-traffic throttling; cheaper pedestrian collision tests.
+- Central Commons is now two blocks wide with a lake, boathouse, Great Lawn, station plaza,
+  bandshell, rose garden, playground and gazebo; the elevated line runs through it. Eastside
+  Customs moved out of the park to Cannery St.
+- South Coast Stadium is a real enclosed venue: pitch boards, concourse, turnstiles that only
+  people fit through, a bollard row that stops vehicles, ticket booths, flag poles, dugouts;
+  stands stop bullets.
+- Railway rebuilt: ballasted viaduct with parapets, catenary masts, tapered piers with
+  cross-heads; stations with canopies, departure boards, benches, clocks, kiosks, passengers,
+  stair towers and turnstiles; trains with lit windows and headlights at night.
+- Aircraft rebuilt from lofted fuselages and airfoil wings: courier prop plane, T-tail
+  business jet and twin-turbofan airliner with engines, gear, glazing, liveries and nav lights;
+  parked apron aircraft share the models.
+- Layered tree crowns; arsenal icon sheet stored as WebP (0.5 MB smaller).
+
 ## 25.0.0 — City, graphics and contracts overhaul
 
 Repository

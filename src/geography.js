@@ -515,8 +515,9 @@
               ? 'LITTLE HAVANA'
               : 'CORAL MARINA';
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
+      if (x > 1700 && x < 2640 && y > 680 && y < 2140) return 'CENTRAL COMMONS';
       if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
-      if (y < 2650) return x > 1700 && x < 2300 ? 'CENTRAL GARDENS' : 'MIDTOWN';
+      if (y < 2650) return 'MIDTOWN';
       if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';
       if (y < 4650) return 'SOUTH BANK';
       return 'BATTERY POINT';

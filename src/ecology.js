@@ -151,6 +151,15 @@
     function updateWildlife(deltaSeconds) {
       for (const a of wildlife) {
         const collisionRadius = WILDLIFE_SPECIES[a.species].collisionRadius;
+        // Position validation is the expensive part (polygon and scenery tests), so
+        // distant animals are checked about twice a second instead of every frame.
+        const far = Math.abs(a.x - player.x) > 1700 || Math.abs(a.y - player.y) > 1700;
+        a.validateIn = (a.validateIn ?? Math.random() * 0.5) - deltaSeconds;
+        if (far && a.validateIn > 0) {
+          if (a.hp > 0) a.speed = 0;
+          continue;
+        }
+        if (far) a.validateIn = 0.5;
         if (!wildlifePositionAllowed(a.home, a.x, a.y, collisionRadius)) {
           // Recover a stale/out-of-bounds actor before distance culling. This also
           // prevents a distant animal from being frozen in a forbidden location.

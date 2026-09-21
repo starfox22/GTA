@@ -118,6 +118,9 @@
         [3, 1],
         [3, 2],
         [3, 3],
+        [4, 1],
+        [4, 2],
+        [4, 3],
         [1, 1],
         [4, 3],
         [0, 4],
@@ -689,6 +692,36 @@
         y: player.y,
       };
     }
+    /**
+     * BUILDING GRID
+     * solid() and shotBlocked() run thousands of times per frame (every pedestrian
+     * step, bullet and spawn test). Buildings are bucketed into 256-unit cells once
+     * after buildWorld() so each query touches a handful of candidates instead of
+     * every building in the city. Rebuilt by buildBuildingGrid() when buildings change.
+     */
+    const BUILDING_CELL = 256,
+      buildingGrid = new Map(),
+      noBuildings = [];
+    function buildBuildingGrid() {
+      buildingGrid.clear();
+      for (const b of buildings) {
+        const x0 = Math.floor((b.x - 8) / BUILDING_CELL),
+          x1 = Math.floor((b.x + b.w + 8) / BUILDING_CELL),
+          y0 = Math.floor((b.y - 8) / BUILDING_CELL),
+          y1 = Math.floor((b.y + b.h + 8) / BUILDING_CELL);
+        for (let i = x0; i <= x1; i++)
+          for (let j = y0; j <= y1; j++) {
+            const key = i * 4096 + j;
+            let cell = buildingGrid.get(key);
+            if (!cell) buildingGrid.set(key, (cell = []));
+            cell.push(b);
+          }
+      }
+    }
+    function buildingsNear(x, y) {
+      if (!buildingGrid.size) return buildings;
+      return buildingGrid.get(Math.floor(x / BUILDING_CELL) * 4096 + Math.floor(y / BUILDING_CELL)) || noBuildings;
+    }
     function solid(x, y, r = 8) {
       if (
         sportsBlocked(x, y, r) ||
@@ -702,7 +735,9 @@
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
       )
         return true;
-      for (const b of buildings) {
+      // Radii above 8 can straddle a cell edge; fall back to the full list for those rare calls.
+      const candidates = r > 8 ? buildings : buildingsNear(x, y);
+      for (const b of candidates) {
         if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
       }
       return false;
@@ -711,13 +746,20 @@
       if (body === player && player.roof)
         return moveOnRoof(displacementX, displacementY, collisionRadius);
       let hit = false;
-      const blocked = (x, y) =>
-        solid(x, y, collisionRadius) ||
-        (body.police && harborPoliceProtected(x, y, collisionRadius)) ||
-        vehicles.some(
-          (c) =>
-            (!isAircraft(c) || aircraftClearance(c) < 20) && pointInCar(x, y, c, collisionRadius),
-        );
+      // Vehicle test: a cheap bounding box rejects almost every vehicle before the
+      // rotated point-in-car test (this runs for every pedestrian step each frame).
+      const reach = 90 + collisionRadius,
+        blocked = (x, y) => {
+          if (solid(x, y, collisionRadius)) return true;
+          if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
+          for (let i = 0; i < vehicles.length; i++) {
+            const c = vehicles[i];
+            if (c.x - x > reach || x - c.x > reach || c.y - y > reach || y - c.y > reach) continue;
+            if ((!isAircraft(c) || aircraftClearance(c) < 20) && pointInCar(x, y, c, collisionRadius))
+              return true;
+          }
+          return false;
+        };
       if (!blocked(body.x + displacementX, body.y)) body.x += displacementX;
       else hit = true;
       if (!blocked(body.x, body.y + displacementY)) body.y += displacementY;
@@ -1144,7 +1186,6 @@
         ['FREIGHT & CO.', 2880, 547, '#aab99f'],
         ['SOUTH PIER', 2869, 3108, '#d2c18b'],
         ['24 HOUR', 1470, 546, '#82b2a2'],
-        ['EASTSIDE AUTO', 1880, 1574, '#b3bd82'],
         ['LATE NIGHT', 465, 2085, '#c0a0aa'],
       ];
       for (const [s, x, y, c] of signs) {
@@ -1378,7 +1419,7 @@
       );
       [
         [1040, 640],
-        [2176, 910],
+        [2240, 2176],
         [2810, 1664],
         [2176, 2870],
         [640, 2688],
@@ -2003,7 +2044,7 @@
     }
     function shopfrontNear(p) {
       // Standing on a south sidewalk directly in front of a building's street face.
-      return buildings.some(
+      return buildingsNear(p.x, p.y - 14).some(
         (b) => !b.depotWall && p.x > b.x + 8 && p.x < b.x + b.w - 8 && Math.abs(p.y - (b.y + b.h + 14)) < 9,
       );
     }
@@ -2020,10 +2061,13 @@
       }
       return best;
     }
-    function updatePeople(deltaSeconds) {
+    let peopleFrame = 0;
+    function updatePeople(frameDelta) {
+      peopleFrame++;
       const playerSpeed = player.car ? Math.abs(player.car.speed || 0) : 0,
         playerMoving = !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD || keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight);
-      for (const p of pedestrians) {
+      for (let index = 0; index < pedestrians.length; index++) {
+        const p = pedestrians[index];
         if (
           p.hp <= 0 ||
           personIncapacitated(p) ||
@@ -2031,6 +2075,12 @@
           Math.abs(p.y - player.y) > 1500
         )
           continue;
+        // Off-screen walkers (beyond ~900 units) think and move every third frame.
+        let deltaSeconds = frameDelta;
+        if (Math.abs(p.x - player.x) > 900 || Math.abs(p.y - player.y) > 900) {
+          if ((peopleFrame + index) % 3) continue;
+          deltaSeconds = frameDelta * 3;
+        }
         if (updateParkWalker(p, deltaSeconds)) continue;
         p.timer -= deltaSeconds;
         if (p.flinch > 0) p.flinch -= deltaSeconds;
@@ -2200,7 +2250,7 @@
           }
         } else p.blocked = 0;
       }
-      updateGangFights(deltaSeconds);
+      updateGangFights(frameDelta);
     }
     function updateCombat(deltaSeconds) {
       for (let i = fires.length - 1; i >= 0; i--) {
@@ -2277,11 +2327,18 @@
         )
       )
         return true;
+      if (
+        inStadiumLot(x, y, 4) &&
+        STADIUM_STANDS.some(
+          (b) => altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h,
+        )
+      )
+        return true;
       return (
         [...garageWalls(), ...harborSolids(), ...militarySolids(), ...countySolids()].some(
           (b) => altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h,
         ) ||
-        buildings.some(
+        buildingsNear(x, y).some(
           (b) =>
             altitude + 10 < b.height &&
             x > b.x - 1 &&
@@ -2425,8 +2482,8 @@
         announceTime -= deltaSeconds;
         if (announceTime <= 0) getElement('announcement').classList.remove('show');
       }
-      if (active) updateKnockdowns(deltaSeconds);
-      if (active || gameMode === 'menu') updateCars(deltaSeconds, active);
+      if (active) timed('knockdowns', () => updateKnockdowns(deltaSeconds));
+      if (active || gameMode === 'menu') timed('cars', () => updateCars(deltaSeconds, active));
       if (active) {
         player.inv = Math.max(0, player.inv - deltaSeconds);
         shotCooldownSeconds = Math.max(0, shotCooldownSeconds - deltaSeconds);
@@ -2441,9 +2498,9 @@
             tone(230, 0.035, 0.06);
           }
         }
-        updateTransit(deltaSeconds);
-        updateWildlife(deltaSeconds);
-        updateSports(deltaSeconds);
+        timed('transit', () => updateTransit(deltaSeconds));
+        timed('wildlife', () => updateWildlife(deltaSeconds));
+        timed('sports', () => updateSports(deltaSeconds));
         if (player.parachute) updateParachute(deltaSeconds);
         else if (!player.car && !transitRide) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
@@ -2475,8 +2532,8 @@
           rooftopMissionInteract();
           keys.KeyE = false;
         }
-        updatePeople(deltaSeconds);
-        updateBullets(deltaSeconds);
+        timed('people', () => updatePeople(deltaSeconds));
+        timed('bullets', () => updateBullets(deltaSeconds));
         if (gameMode !== 'play') return;
         for (const p of pickups)
           if (
@@ -2508,13 +2565,13 @@
             tone(840, 0.15, 0.15, 'triangle');
             particle(p.x, p.y, '#d5efa8', 9, 70);
           }
-        updateGarage(deltaSeconds);
-        updateCivic(deltaSeconds);
-        updateRoofEncounter(deltaSeconds);
-        updateMilitary(deltaSeconds);
-        updateCombat(deltaSeconds);
-        missionUpdate(deltaSeconds);
-        updateWaypoint(deltaSeconds);
+        timed('garage', () => updateGarage(deltaSeconds));
+        timed('civic', () => updateCivic(deltaSeconds));
+        timed('roofencounter', () => updateRoofEncounter(deltaSeconds));
+        timed('military', () => updateMilitary(deltaSeconds));
+        timed('combat', () => updateCombat(deltaSeconds));
+        timed('mission', () => missionUpdate(deltaSeconds));
+        timed('waypoint', () => updateWaypoint(deltaSeconds));
       }
       for (let i = particles.length - 1; i >= 0; i--) {
         let p = particles[i];
@@ -2556,11 +2613,11 @@
         (player.x + Math.cos(player.a) * look - cameraTarget.x) * Math.min(1, deltaSeconds * 4.5);
       cameraTarget.y +=
         (player.y + Math.sin(player.a) * look - cameraTarget.y) * Math.min(1, deltaSeconds * 4.5);
-      soundUpdate(deltaSeconds);
+      timed('sound', () => soundUpdate(deltaSeconds));
       uiTime += deltaSeconds;
       if (uiTime > 0.09) {
         uiTime = 0;
-        updateUI();
+        timed('ui', updateUI);
       }
     }
     function carSprite(c) {
@@ -3297,7 +3354,7 @@
         drawingContext.textAlign = 'center';
         const labels = [
           ['N O R T H B A N K', 1580, 540],
-          ['CENTRAL GARDENS', 1910, 2200],
+          ['CENTRAL COMMONS', 2167, 1420],
           ['FINANCIAL DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
           ['BATTERY POINT', 2480, 5140],
@@ -4001,6 +4058,7 @@
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
     buildWorld();
+    buildBuildingGrid();
     buildColliders();
     populate();
     populateStoryWorld();
@@ -4011,17 +4069,35 @@
     updateUI();
     /* REVIEW_HOOK:LOAD_VISUALS */
     loadVisuals();
+    /**
+     * PROFILER
+     * Rolling averages of simulation and render CPU time per frame, plus the
+     * renderer's draw-call and triangle counts. Read through DeadEndCity.stats().
+     */
+    const profile = { frames: 0, update: 0, draw: 0, frameGap: 0, last: 0, parts: {} };
+    function timed(name, fn) {
+      const t0 = performance.now();
+      fn();
+      profile.parts[name] = (profile.parts[name] || 0) + performance.now() - t0;
+    }
     function frame(t) {
       syncTouchInput();
       const deltaSeconds = Math.min(0.033, Math.max(0, (t - lastTime) / 1000));
+      if (profile.last) profile.frameGap += t - profile.last;
+      profile.last = t;
       lastTime = t;
       updatePoliceNotice(deltaSeconds);
       updateWorldView(deltaSeconds);
       updateCasino(deltaSeconds);
       updateElevator(deltaSeconds);
+      const updateStart = performance.now();
       if (gameMode === 'play' || gameMode === 'menu' || gameMode === 'dead') update(deltaSeconds);
       else soundUpdate(deltaSeconds);
+      const drawStart = performance.now();
       drawWorld();
+      profile.update += drawStart - updateStart;
+      profile.draw += performance.now() - drawStart;
+      profile.frames++;
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
@@ -4033,7 +4109,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "25.0.0",
+      version: "25.1.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -4075,6 +4151,31 @@
       god(on = true) {
         player.godMode = !!on;
         return player.godMode;
+      },
+      // Average CPU milliseconds per frame since the last call, plus renderer counters.
+      stats() {
+        const n = Math.max(1, profile.frames),
+          info = city3D?.info?.() || null,
+          out = {
+            frames: profile.frames,
+            updateMs: +(profile.update / n).toFixed(2),
+            drawMs: +(profile.draw / n).toFixed(2),
+            frameMs: +(profile.frameGap / n).toFixed(1),
+            drawCalls: info?.calls ?? null,
+            triangles: info?.triangles ?? null,
+            sceneObjects: info?.objects ?? null,
+            byType: info?.byType ?? null,
+            vehicles: vehicles.length,
+            pedestrians: pedestrians.length,
+            parts: Object.fromEntries(
+              Object.entries(profile.parts)
+                .map(([k, v]) => [k, +(v / n).toFixed(2)])
+                .sort((a, b) => b[1] - a[1]),
+            ),
+          };
+        profile.frames = profile.update = profile.draw = profile.frameGap = 0;
+        profile.parts = {};
+        return out;
       },
     });
     // Optional browser agent access uses exactly the same actions as the controls.

@@ -237,6 +237,7 @@
         group.position.set(e.x, 0, e.y);
         group.rotation.y = -e.a;
         scene.add(group);
+        batchGroups.push(group);
         const outward = -Math.sin(e.a) * nx + Math.cos(e.a) * ny;
         if (style === 'quay') {
           box(group, 0, 2.3, 0, e.length + 1, 5, 5, mat('#727e80'));
@@ -259,6 +260,7 @@
             }),
             foam = new Three.Mesh(new Three.PlaneGeometry(e.length + 2, 13), material);
           foam.rotation.x = -Math.PI / 2;
+          foam.userData.dynamic = true;
           foam.position.y = -0.35 - k * 0.05;
           foam.userData = {
             outward,
@@ -279,6 +281,7 @@
         const g = new Three.Group();
         g.position.set(x, 0, z);
         scene.add(g);
+        batchGroups.push(g);
         const trunk = mat('#978266'),
           palm = mat('#3e7862');
         rod(g, new Three.Vector3(0, 0, 0), new Three.Vector3(2 * size, 28 * size, 0), 1.5 * size, trunk);
@@ -328,6 +331,7 @@
       for (const b of buildings.filter((b) => b.tropical && !b.place && !b.roofBar)) {
         const group = new Three.Group();
         scene.add(group);
+        batchGroups.push(group);
         const co = mat(resortColors[Math.floor(b.y / 200) % 4]);
         for (let y = 15; y < b.height; y += 13) {
           box(group, b.x + b.w / 2, y, b.y + b.h + 3, b.w - 12, 1.1, 7, co);
@@ -356,6 +360,7 @@
         if (!landAt(x, z)) continue;
         const group = new Three.Group();
         scene.add(group);
+        batchGroups.push(group);
         box(group, x, 9, z, 0.8, 18, 0.8, wood);
         mesh(new Three.ConeGeometry(12, 5, 10), mat(z % 360 ? '#dca48f' : '#92bbbd'), group, x, 18, z);
         for (const side of [-1, 1]) {
@@ -374,6 +379,7 @@
       // A terminal, gate arms, control tower, service equipment and parked aircraft.
       const ag = new Three.Group();
       scene.add(ag);
+      batchGroups.push(ag);
       const terminalGlass = mat('#446875', 0.16, 0.55),
         airWhite = mat('#d8dfdc', 0.36, 0.3),
         airTrim = mat('#507f8f');
@@ -394,25 +400,15 @@
       box(ag, 790, 113, 5075, 46, 20, 40, terminalGlass);
       box(ag, 790, 124, 5075, 50, 3, 44, airWhite);
       box(ag, 790, 139, 5075, 1, 27, 1, chrome);
+      // Static apron aircraft share the flying airframes' geometry (plane3d.js).
       function parkedJet(x, z, a, size = 1) {
         const group = new Three.Group();
         group.position.set(x, 0, z);
         group.rotation.y = a;
-        group.scale.setScalar(size);
+        const kind = size >= 0.9 ? 'airliner' : 'jet';
+        group.scale.setScalar(size * (kind === 'airliner' ? 0.63 : 0.9));
         ag.add(group);
-        mesh(sphereGeo, airWhite, group, 0, 13, 0, 67, 9, 9);
-        box(group, -42, 20, 0, 12, 24, 2, airTrim);
-        const wing = box(group, -2, 12, 0, 25, 2, 126, airWhite);
-        wing.rotation.y = 0.11;
-        box(group, -45, 13, 0, 17, 1.3, 43, airWhite);
-        for (const side of [-1, 1]) {
-          const engine = mesh(wheelGeo, airTrim, group, 0, 9, side * 28, 5, 21, 5);
-          engine.rotation.z = Math.PI / 2;
-          for (let i = -4; i < 4; i++) box(group, i * 10, 16, side * 8.6, 3, 2, 0.6, terminalGlass);
-          const wheel = mesh(wheelGeo, rubber, group, -28, 3, side * 8, 3, 2, 3);
-          wheel.rotation.x = Math.PI / 2;
-        }
-        box(group, 45, 17, 0, 8, 3, 12, terminalGlass);
+        buildAircraft(kind, group, { color: kind === 'airliner' ? '#e6ebe8' : '#dfe3e0', accent: kind === 'airliner' ? '#2c6f8e' : '#8a3b46' });
       }
       parkedJet(680, 4800, -Math.PI / 2, 0.9);
       parkedJet(680, 5110, -Math.PI / 2, 1);
@@ -671,6 +667,7 @@
         const [start, end] = bridgeSpan(z),
           group = new Three.Group();
         scene.add(group);
+        batchGroups.push(group);
         for (const [a, b] of bridgeRailSpans(z).flatMap(([a, b]) => [
           [a, Math.min(b, RIVER.left)],
           [Math.max(a, RIVER.right), b],

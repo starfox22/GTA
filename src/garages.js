@@ -10,9 +10,9 @@
       {
         id: 'eastside',
         name: 'EASTSIDE CUSTOMS',
-        x: 1850,
-        y: 1510,
-        roadY: 1664,
+        x: 1320,
+        y: 2022,
+        roadY: 2176,
         color: '#83c5bd',
       },
       {
@@ -40,8 +40,12 @@
         color: '#8ebac8',
       },
     ];
-    let repairJob = null;
+    let repairJob = null,
+      garageWallCache = null;
     function garageWalls() {
+      return garageWallCache || (garageWallCache = computeGarageWalls());
+    }
+    function computeGarageWalls() {
       return GARAGES.flatMap((s) => [
         {
           x: s.x - 96,

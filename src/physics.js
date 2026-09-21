@@ -135,20 +135,36 @@
       staticBodies.push(b);
       for (let i = Math.floor(x / 256); i <= Math.floor((x + w) / 256); i++)
         for (let j = Math.floor(y / 256); j <= Math.floor((y + h) / 256); j++) {
-          const key = i + ',' + j;
+          const key = i * 4096 + j;
           if (!staticGrid.has(key)) staticGrid.set(key, []);
           staticGrid.get(key).push(b);
         }
     }
+    // Numeric cell keys and a per-vehicle cache: a parked car asks for the same cells
+    // 120 times a second, so the lookup is only repeated when it changes cell.
     function nearbyStatics(c) {
-      const found = new Set(),
-        radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 20;
-      for (let i = Math.floor((c.x - radius) / 256); i <= Math.floor((c.x + radius) / 256); i++)
-        for (let j = Math.floor((c.y - radius) / 256); j <= Math.floor((c.y + radius) / 256); j++)
-          for (const b of staticGrid.get(i + ',' + j) || []) found.add(b);
+      const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 20,
+        i0 = Math.floor((c.x - radius) / 256),
+        i1 = Math.floor((c.x + radius) / 256),
+        j0 = Math.floor((c.y - radius) / 256),
+        j1 = Math.floor((c.y + radius) / 256),
+        cacheKey = i0 * 1e9 + i1 * 1e6 + j0 * 1e3 + j1;
+      if (c.staticCacheKey === cacheKey && c.staticCache && c.staticCacheVersion === staticGridVersion)
+        return c.staticCache;
+      const found = new Set();
+      for (let i = i0; i <= i1; i++)
+        for (let j = j0; j <= j1; j++) {
+          const list = staticGrid.get(i * 4096 + j);
+          if (list) for (let k = 0; k < list.length; k++) found.add(list[k]);
+        }
+      c.staticCacheKey = cacheKey;
+      c.staticCache = found;
+      c.staticCacheVersion = staticGridVersion;
       return found;
     }
+    let staticGridVersion = 0;
     function buildColliders() {
+      staticGridVersion++;
       staticGrid.clear();
       staticBodies.length = 0;
       impactContacts.clear();
@@ -162,6 +178,9 @@
         addStatic(fixture.x, fixture.y, fixture.w, fixture.h, fixture.height, 'sports fixture');
         if (fixture.minHeight !== undefined) staticBodies.at(-1).minHeight = fixture.minHeight;
       }
+      // Pitch fence, turnstiles, booths, bollards: vehicles stop here, people use the gates.
+      for (const barrier of SPORTS_VEHICLE_BARRIERS)
+        addStatic(barrier.x, barrier.y, barrier.w, barrier.h, barrier.height, barrier.id || 'stadium barrier');
       for (const b of buildings) addStatic(b.x, b.y, b.w, b.h, b.height + 22);
       // Water contact follows the same irregular shores as the visible terrain.
       for (const e of buildCoastSegments()) {
@@ -653,15 +672,20 @@
         );
       }
       // Give crossing pedestrians and an innocent player time to clear the lane.
-      for (const p of [...pedestrians, ...(!player.car ? [player] : [])]) {
-        if (p.hp <= 0 || p.roof) continue;
+      // Runs 120 times a second per car, so it scans in place without building arrays
+      // and skips anyone farther than the look-ahead box before doing any trigonometry.
+      const yieldTo = (p) => {
+        if (p.hp <= 0 || p.roof) return;
         const dx = p.x - c.x,
-          dy = p.y - c.y,
-          along = dx * headingCosine2 + dy * headingSine2,
+          dy = p.y - c.y;
+        if (dx > 150 || dx < -150 || dy > 150 || dy < -150) return;
+        const along = dx * headingCosine2 + dy * headingSine2,
           lateral = Math.abs(dx * rx + dy * ry);
         if (along > 0 && along < 140 && lateral < side + 11)
           desired = Math.min(desired, Math.sqrt(2 * 260 * Math.max(0, along - half - 22)) * 0.7);
-      }
+      };
+      for (let i = 0; i < pedestrians.length; i++) yieldTo(pedestrians[i]);
+      if (!player.car) yieldTo(player);
       return {
         steer: clamp(da * 3, -1.7, 1.7),
         desired: Math.max(0, desired),
@@ -798,9 +822,16 @@
       if (boatFits(c, c.x, c.y, nextA)) c.a = nextA;
       else c.av = 0;
     }
+    const noStatics = [];
     function physicsStep(stepSeconds, active) {
       physicsClock += stepSeconds;
       const pc = player.car;
+      let sectionStart = performance.now();
+      const mark = (name) => {
+        const now = performance.now();
+        profile.parts[name] = (profile.parts[name] || 0) + now - sectionStart;
+        sectionStart = now;
+      };
       for (const c of vehicles) {
         const vehicleDefinition = vehicleSpec(c);
         c.stepStartX = c.x;
@@ -949,15 +980,14 @@
             );
             drag = 0.2;
           } else if (c.hp > 0 && c.ai && !c.crewDeployed) {
+            // Traffic decisions are cached: 20 Hz near the player, 4 Hz for distant cars.
             const ai =
-              c.aiControl &&
-              physicsClock < (c.aiControlAt || 0) &&
-              physicsClock > (c.aiControlAt || 0) - 0.08
+              c.aiControl && physicsClock < (c.aiControlAt || 0)
                 ? c.aiControl
                 : ((c.aiControl = c.countyRoute
                     ? countyRouteControl(c)
                     : trafficControl(c, stepSeconds)),
-                  (c.aiControlAt = physicsClock + 0.05),
+                  (c.aiControlAt = physicsClock + (c.farFromPlayer ? 0.25 : 0.05)),
                   c.aiControl);
             steer = ai.steer;
             acceleration = clamp((ai.desired - along) * 5, -400, vehicleDefinition.acc);
@@ -1040,6 +1070,16 @@
         }
       }
       // A spatial hash provides solid contacts for every car, including stationary wrecks.
+      mark('phys:control');
+      // Vehicles that are far from the player, barely moving and untouched for a while
+      // "rest": they skip static-contact passes (they cannot have moved into a wall).
+      for (const c of vehicles) {
+        const still = Math.abs(c.vx) + Math.abs(c.vy) < 0.6 && Math.abs(c.av) < 0.02,
+          far = Math.abs(c.x - player.x) > 1700 || Math.abs(c.y - player.y) > 1700;
+        c.restSteps = still && c !== pc ? (c.restSteps || 0) + 1 : 0;
+        c.farFromPlayer = far;
+        c.resting = c.restSteps > 24 && (far || c.restSteps > 240);
+      }
       const cells = new Map(),
         pairs = [],
         seen = new Set();
@@ -1047,10 +1087,12 @@
         const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 2;
         for (let x = Math.floor((c.x - radius) / 96); x <= Math.floor((c.x + radius) / 96); x++)
           for (let y = Math.floor((c.y - radius) / 96); y <= Math.floor((c.y + radius) / 96); y++) {
-            const key = x + ',' + y,
-              list = cells.get(key) || [];
+            const key = x * 65536 + y;
+            let list = cells.get(key);
+            if (!list) cells.set(key, (list = []));
             for (const o of list) {
-              const pk = Math.min(c.id, o.id) + ':' + Math.max(c.id, o.id);
+              if (c.resting && o.resting) continue;
+              const pk = Math.min(c.id, o.id) * 1e6 + Math.max(c.id, o.id);
               if (
                 !seen.has(pk) &&
                 !!isBoat(c) === !!isBoat(o) &&
@@ -1063,23 +1105,25 @@
               }
             }
             list.push(c);
-            cells.set(key, list);
           }
       }
-      const staticCandidates = new Map(
-        vehicles.map((c) => [
-          c,
-          Array.from(nearbyStatics(c)).filter((b) => {
-            const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 12;
-            const ca = Math.abs(Math.cos(b.a || 0)),
-              sa = Math.abs(Math.sin(b.a || 0));
-            return (
-              Math.abs(c.x - b.x) < ca * b.hx + sa * b.hy + radius &&
-              Math.abs(c.y - b.y) < sa * b.hx + ca * b.hy + radius
-            );
-          }),
-        ]),
-      );
+      const staticCandidates = new Map();
+      for (const c of vehicles) {
+        if (c.resting) continue;
+        const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 12,
+          list = [];
+        for (const b of nearbyStatics(c)) {
+          const ca = Math.abs(Math.cos(b.a || 0)),
+            sa = Math.abs(Math.sin(b.a || 0));
+          if (
+            Math.abs(c.x - b.x) < ca * b.hx + sa * b.hy + radius &&
+            Math.abs(c.y - b.y) < sa * b.hx + ca * b.hy + radius
+          )
+            list.push(b);
+        }
+        staticCandidates.set(c, list);
+      }
+      mark('phys:broadphase');
       for (let pass = 0; pass < 7; pass++) {
         for (const [a, b] of pairs) {
           const radius =
@@ -1124,7 +1168,7 @@
             }
         }
         for (const c of vehicles)
-          for (const b of staticCandidates.get(c)) {
+          for (const b of staticCandidates.get(c) || noStatics) {
             if (
               isBoat(c) ||
               (b.minHeight !== undefined &&
@@ -1136,6 +1180,7 @@
             if (hit) resolveContact(c, null, hit, b, pass === 0);
           }
       }
+      mark('phys:contacts');
       for (const c of vehicles) {
         if (
           lawVehicle(c) &&
@@ -1326,6 +1371,7 @@
         return;
       }
       if (distance < 0.001) return;
+      if (!bloodPools.length && !(c.bloodTrackRemaining > 0)) return;
       const sources = bloodPools.filter(
         (b) =>
           !b.track &&
@@ -1394,6 +1440,8 @@
       }
     }
     function updateCars(deltaSeconds, active) {
+      // One combined people list per call: the old per-vehicle spread copied ~400 entries per vehicle per frame.
+      let peopleList = null;
       for (const vehicle of vehicles)
         vehicle.personSweepStart = {
           x: vehicle.x,
@@ -1444,10 +1492,14 @@
           continue;
         const speed = Math.hypot(vehicle.vx || 0, vehicle.vy || 0),
           contacts = new Set();
-        for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers])
+        if (!peopleList) peopleList = [...pedestrians, ...enemies, ...gangMembers, ...officers];
+        const reach = vehicleSpec(vehicle).l + 100;
+        for (const p of peopleList)
           if (
             p.hp > 0 &&
             !p.hidden &&
+            Math.abs(p.x - vehicle.x) < reach &&
+            Math.abs(p.y - vehicle.y) < reach &&
             sameFloor(vehicle, p) &&
             distanceBetween(vehicle, p) < vehicleSpec(vehicle).l + 100 &&
             sweptPersonContact(p, vehicle, vehicle.personSweepStart)

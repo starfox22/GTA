@@ -547,6 +547,7 @@
         const group = new Three.Group();
         group.name = 'South Coast Stadium';
         scene.add(group);
+        batchGroups.push(group);
         const centerX = venue.x + venue.w / 2;
         const centerY = venue.y + venue.h / 2;
         box(group, centerX, 0.1, centerY, venue.w + 46, 0.18, venue.h + 46, sportsMaterials.field);
@@ -625,9 +626,131 @@
         sportsVenueModels.set('soccer', { group, crowd, venue, x: centerX, y: centerY, radius: 600 });
       }
 
+      /**
+       * STADIUM ENCLOSURE
+       * Meshes for the logical enclosure defined in sports-world.js: pitch
+       * perimeter boards with sponsors, the south entrance arch, turnstiles with
+       * two person-wide gates, a bollard row that stops vehicles, ticket booths,
+       * flag poles, dugouts, exterior cladding ribs and entrance lamps.
+       */
+      const stadiumLampHalos = [];
+      function createStadiumEnclosure() {
+        const group = new Three.Group();
+        group.name = 'Stadium enclosure';
+        scene.add(group);
+        batchGroups.push(group);
+        const boardMat = mat('#1c2a36', 0.6, 0.3),
+          steel = mat('#8d979e', 0.45, 0.6),
+          yellow = mat('#e0b545', 0.5, 0.3),
+          booth = mat('#2f4a5e', 0.7, 0.2),
+          f = PITCH_FENCE,
+          e = STADIUM_ENTRANCE;
+        // Perimeter fence with advertising boards (shared sign atlas from cityscape3d).
+        for (const seg of f.segments) {
+          const horizontal = seg.w > seg.h,
+            length = horizontal ? seg.w : seg.h,
+            cx = seg.x + seg.w / 2,
+            cz = seg.y + seg.h / 2;
+          box(group, cx, f.height / 2, cz, horizontal ? length : 1.6, f.height, horizontal ? 1.6 : length, boardMat);
+          box(group, cx, f.height + 0.6, cz, horizontal ? length : 2.4, 1.2, horizontal ? 2.4 : length, steel);
+          const panels = Math.floor(length / 64);
+          for (let k = 0; k < panels; k++) {
+            const t = (k + 0.5) / panels,
+              px = horizontal ? seg.x + length * t : cx,
+              pz = horizontal ? cz : seg.y + length * t,
+              plane = new Three.Mesh(
+                new Three.PlaneGeometry(58, 7),
+                new Three.MeshBasicMaterial({
+                  map: adAtlas.cell(k % AD_LINES.length),
+                  toneMapped: false,
+                  side: Three.DoubleSide,
+                }),
+              );
+            plane.position.set(px + (horizontal ? 0 : seg.id === 'fence-west' ? 1.1 : -1.1), f.height / 2 + 0.5, pz + (horizontal ? (seg.id === 'fence-north' ? 1.1 : -1.1) : 0));
+            plane.rotation.y = horizontal ? 0 : Math.PI / 2;
+            plane.userData.sign = true;
+            group.add(plane);
+          }
+        }
+        // Entrance arch: two pylons, a lit lintel and the stadium name.
+        for (const pylon of e.pylons)
+          box(group, pylon.x + pylon.w / 2, pylon.height / 2, pylon.y + pylon.h / 2, pylon.w, pylon.height, pylon.h, sportsMaterials.facade);
+        box(group, e.x + e.w / 2, 80, 4887, e.w + 24, 6, 6, sportsMaterials.canopy);
+        const arch = sign('SOUTH COAST STADIUM', e.x + e.w / 2, 4892, 90, '#f2e2b0');
+        arch.position.y = arch.userData.backing.position.y = 72;
+        for (let k = -2; k <= 2; k++) {
+          box(group, e.x + e.w / 2 + k * 15, 76.5, 4890.5, 4, 1, 1, warmLamp);
+          stadiumLampHalos.push(halo(group, e.x + e.w / 2 + k * 15, 75, 4891, 14, '#ffe1b3'));
+        }
+        // Turnstiles: posts, tripod arms and a lit "ENTER" plate above each gate.
+        for (const post of e.posts) {
+          box(group, post.x + post.w / 2, e.turnstiles.height / 2, e.turnstiles.y + e.turnstiles.depth / 2, post.w, e.turnstiles.height, e.turnstiles.depth, steel);
+          box(group, post.x + post.w / 2, e.turnstiles.height + 0.5, e.turnstiles.y + e.turnstiles.depth / 2, post.w + 1, 1, e.turnstiles.depth + 1, darkMetal);
+        }
+        for (const gate of e.gates) {
+          const gx = gate.x + gate.w / 2;
+          for (let k = 0; k < 3; k++) {
+            const arm = box(group, gx - gate.w / 2 + 1.5 + k * 0.4, 7, e.turnstiles.y + 2, 9, 0.5, 0.5, chrome);
+            arm.rotation.y = (k * TAU) / 3;
+          }
+          box(group, gx, 15, e.turnstiles.y + 2, gate.w - 2, 4, 0.6, new Three.MeshBasicMaterial({ color: '#8fdc9a', toneMapped: false }));
+          box(group, gx, 17.5, e.turnstiles.y + 2, gate.w, 1, 1, darkMetal);
+        }
+        box(group, e.x + e.w / 2, 17.5, e.turnstiles.y + 2, e.w + 2, 1, 1, darkMetal);
+        // Bollards across the entrance mouth.
+        for (const x of e.bollards.xs) {
+          mesh(cylinderGeo, yellow, group, x, e.bollards.height / 2, e.bollards.y, 1.7, e.bollards.height, 1.7);
+          mesh(cylinderGeo, darkMetal, group, x, e.bollards.height + 0.4, e.bollards.y, 1.8, 0.8, 1.8);
+        }
+        // Ticket booths with a serving window and a small marquee.
+        for (const b of e.booths) {
+          box(group, b.x + b.w / 2, b.height / 2, b.y + b.h / 2, b.w, b.height, b.h, booth);
+          box(group, b.x + b.w / 2, b.height + 1, b.y + b.h / 2, b.w + 3, 2, b.h + 3, sportsMaterials.canopy);
+          box(group, b.x + b.w / 2, 8, b.y + b.h + 0.3, b.w - 8, 6, 0.6, glass);
+          const marquee = sign('TICKETS', b.x + b.w / 2, b.y + b.h + 1.2, 30, '#f2e2b0');
+          marquee.position.y = marquee.userData.backing.position.y = b.height + 4;
+        }
+        // Flag poles with team flags.
+        e.flagPoles.forEach((pole, i) => {
+          box(group, pole.x, 31, pole.y, 1.4, 62, 1.4, steel);
+          mesh(sphereGeo, yellow, group, pole.x, 62.5, pole.y, 1.2, 1.2, 1.2);
+          const flag = box(group, pole.x + 9, 55, pole.y, 17, 9, 0.4, mat(SPORTS_VENUES.soccer.teamColors[i % 2], 0.9));
+          flag.userData.dynamic = true;
+          stadiumFlags.push(flag);
+        });
+        // Dugouts against the north stand.
+        for (const d of e.dugouts) {
+          box(group, d.x + d.w / 2, d.height / 2, d.y + d.h / 2, d.w, d.height, d.h, sportsMaterials.facade);
+          box(group, d.x + d.w / 2, d.height + 0.4, d.y + d.h / 2 + 2, d.w + 2, 0.8, d.h + 6, glass);
+          for (let k = 0; k < 5; k++) box(group, d.x + 4 + k * 6.5, 3, d.y + d.h / 2, 5, 3, 3, sportsMaterials.seat);
+        }
+        // Exterior cladding ribs and lamps on the outside faces of the stands.
+        for (const stand of STADIUM_STANDS) {
+          const outsideZ = stand.id === 'north' ? stand.y - 1 : stand.y + stand.h + 1,
+            horizontal = stand.id === 'north' || stand.id.startsWith('south');
+          if (horizontal) {
+            for (let x = stand.x + 12; x < stand.x + stand.w - 8; x += 24) {
+              box(group, x, stand.height * 0.45, outsideZ, 3, stand.height * 0.9, 2, sportsMaterials.canopy);
+              if (x % 72 < 24) {
+                box(group, x, stand.height * 0.7, outsideZ + (stand.id === 'north' ? -1.6 : 1.6), 2, 1.5, 1.5, warmLamp);
+                stadiumLampHalos.push(halo(group, x, stand.height * 0.7, outsideZ + (stand.id === 'north' ? -3 : 3), 12, '#ffe1b3'));
+              }
+            }
+          } else {
+            const outsideX = stand.id === 'west' ? stand.x - 1 : stand.x + stand.w + 1;
+            for (let z = stand.y + 12; z < stand.y + stand.h - 8; z += 24)
+              box(group, outsideX, stand.height * 0.45, z, 2, stand.height * 0.9, 3, sportsMaterials.canopy);
+          }
+        }
+        statics.push({ x: e.x + e.w / 2, y: 4600, group, radius: 620 });
+      }
+      const stadiumFlags = [];
       for (const [sport, venue] of Object.entries(SPORTS_VENUES)) {
         if (sport === 'basketball') createBasketballVenue(venue);
-        if (sport === 'soccer') createSoccerVenue(venue);
+        if (sport === 'soccer') {
+          createSoccerVenue(venue);
+          createStadiumEnclosure();
+        }
       }
 
       // Athlete factories use fixed shared materials and primitive geometry. A reset
@@ -809,6 +932,9 @@
       }
 
       function updateSportsVisuals(deltaSeconds) {
+        for (let i = 0; i < stadiumFlags.length; i++)
+          stadiumFlags[i].rotation.y = Math.sin(gameTime * 1.7 + i) * 0.25;
+        for (const h of stadiumLampHalos) h.material.opacity = 0.1 + 0.9 * nightAmount;
         // deltaSeconds is deliberately not used as an animation clock: simulation
         // time and action timers freeze during pause and remain authoritative.
         const liveAthletes = new Set();

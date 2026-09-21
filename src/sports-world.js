@@ -7,6 +7,110 @@
      * Match rules live in sports.js; three-dimensional models live in sports3d.js.
      */
     const STADIUM_LOT = { x: 2250, y: 4288, w: 875, h: 620 };
+    // The paved forecourt south of the lot: entrance plaza, parking bays and the
+    // dead-end stub of the north-south street that stops in front of the gates.
+    const STADIUM_FORECOURT = { x: 2290, y: 4885, w: 800, h: 91 };
+    /**
+     * ENCLOSURE MODEL (shared by sportsBlocked, buildColliders and sports3d.js)
+     * - STADIUM_STANDS, ground-level SPORTS_FIXTURES and STADIUM_ENCLOSURE stop
+     *   people (solid -> sportsBlocked) and vehicles (physics static bodies).
+     * - STADIUM_VEHICLE_BARRIERS (the bollard row and the turnstile span) stop
+     *   vehicles only: people walk between the bollards and through the two gates.
+     * The pitch is fenced four units outside the touchlines with advertising
+     * boards, leaving a 26-unit concourse between the boards and every stand.
+     */
+    const PITCH_FENCE = (() => {
+      const pitch = SPORTS_VENUES.soccer,
+        inset = 4,
+        thickness = 2,
+        height = 10,
+        left = pitch.x - inset - thickness,
+        right = pitch.x + pitch.w + inset,
+        top = pitch.y - inset - thickness,
+        bottom = pitch.y + pitch.h + inset,
+        span = right + thickness - left,
+        depth = bottom + thickness - top;
+      return {
+        inset,
+        thickness,
+        height,
+        left,
+        right,
+        top,
+        bottom,
+        segments: [
+          { id: 'fence-north', x: left, y: top, w: span, h: thickness, height },
+          { id: 'fence-south', x: left, y: bottom, w: span, h: thickness, height },
+          { id: 'fence-west', x: left, y: top, w: thickness, h: depth, height },
+          { id: 'fence-east', x: right, y: top, w: thickness, h: depth, height },
+        ],
+      };
+    })();
+    // The sixty-unit gap between the south stands (x 2659..2719, y 4785..4885).
+    const STADIUM_ENTRANCE = {
+      x: 2659,
+      y: 4785,
+      w: 60,
+      h: 100,
+      // Three turnstile posts with two 21-unit gates between them; a person is 16 wide.
+      turnstiles: { y: 4845, depth: 4, height: 12 },
+      posts: [2659, 2686, 2713].map((x) => ({ x, w: 6 })),
+      gates: [
+        { id: 'A', x: 2665, w: 21 },
+        { id: 'B', x: 2692, w: 21 },
+      ],
+      // Nine bollards 7.5 apart across the mouth of the gap: narrower than a bicycle.
+      bollards: { y: 4891, height: 9, xs: Array.from({ length: 9 }, (_, index) => 2659 + index * 7.5) },
+      pylons: [
+        { id: 'arch-pylon', x: 2651, y: 4885, w: 8, h: 5, height: 82 },
+        { id: 'arch-pylon', x: 2719, y: 4885, w: 8, h: 5, height: 82 },
+      ],
+      booths: [
+        { id: 'ticket-booth', x: 2612, y: 4886, w: 34, h: 14, height: 16 },
+        { id: 'ticket-booth', x: 2732, y: 4886, w: 34, h: 14, height: 16 },
+      ],
+      flagPoles: [2540, 2566, 2592, 2786, 2812, 2838].map((x) => ({ x, y: 4899 })),
+      // Team dugouts stand against the front of the north stand, facing the pitch.
+      dugouts: [
+        { id: 'dugout', team: 0, x: 2555, y: 4373, w: 34, h: 7, height: 12 },
+        { id: 'dugout', team: 1, x: 2789, y: 4373, w: 34, h: 7, height: 12 },
+      ],
+    };
+    const STADIUM_ENCLOSURE = [
+      ...PITCH_FENCE.segments,
+      ...STADIUM_ENTRANCE.posts.map((post) => ({
+        id: 'turnstile-post',
+        x: post.x,
+        y: STADIUM_ENTRANCE.turnstiles.y,
+        w: post.w,
+        h: STADIUM_ENTRANCE.turnstiles.depth,
+        height: STADIUM_ENTRANCE.turnstiles.height,
+      })),
+      ...STADIUM_ENTRANCE.pylons,
+      ...STADIUM_ENTRANCE.booths,
+      ...STADIUM_ENTRANCE.flagPoles.map((pole) => ({
+        id: 'flag-pole',
+        x: pole.x - 1.5,
+        y: pole.y - 1.5,
+        w: 3,
+        h: 3,
+        height: 62,
+      })),
+      ...STADIUM_ENTRANCE.dugouts,
+    ];
+    const STADIUM_VEHICLE_BARRIERS = [
+      { id: 'bollard-row', x: 2653, y: 4889.5, w: 72, h: 3, height: STADIUM_ENTRANCE.bollards.height },
+      {
+        id: 'turnstile-span',
+        x: STADIUM_ENTRANCE.x,
+        y: STADIUM_ENTRANCE.turnstiles.y,
+        w: STADIUM_ENTRANCE.w,
+        h: STADIUM_ENTRANCE.turnstiles.depth,
+        height: STADIUM_ENTRANCE.turnstiles.height,
+      },
+    ];
+    // Everything vehicles must collide with that is not already a stand or fixture.
+    const SPORTS_VEHICLE_BARRIERS = [...STADIUM_ENCLOSURE, ...STADIUM_VEHICLE_BARRIERS];
     // Tall fixtures have separate height bands so aircraft hit the lights/boards,
     // while people can still walk beneath the entrance beam and elevated displays.
     const SPORTS_FIXTURES = [
@@ -28,6 +132,7 @@
     const SPORTS_GROUND_SOLIDS = [
       ...STADIUM_STANDS,
       ...SPORTS_FIXTURES.filter((fixture) => !fixture.minHeight),
+      ...STADIUM_ENCLOSURE,
     ];
     const SPORTS_ENTRANCES = {
       basketball: { x: 1378.5, y: 2972 },
@@ -63,13 +168,57 @@
       );
     }
 
+    function inStadiumForecourt(x, y) {
+      return (
+        x > STADIUM_FORECOURT.x &&
+        x < STADIUM_FORECOURT.x + STADIUM_FORECOURT.w &&
+        y > STADIUM_FORECOURT.y &&
+        y < STADIUM_FORECOURT.y + STADIUM_FORECOURT.h
+      );
+    }
+
     function prepareSportsGround() {
-      // Generic city scenery must not reappear inside the reserved stadium block.
+      // Generic city scenery must not reappear inside the reserved stadium block
+      // or on the paved forecourt in front of the turnstiles.
       for (const scenery of [trees, lamps]) {
         for (let index = scenery.length - 1; index >= 0; index--) {
-          if (inStadiumLot(scenery[index].x, scenery[index].y, 12)) scenery.splice(index, 1);
+          const item = scenery[index];
+          if (inStadiumLot(item.x, item.y, 12) || inStadiumForecourt(item.x, item.y))
+            scenery.splice(index, 1);
         }
       }
+    }
+
+    function paintPavers(context, x, y, width, height, step = 12) {
+      context.fillStyle = '#b1aa9a';
+      context.fillRect(x, y, width, height);
+      context.strokeStyle = '#968f80';
+      context.lineWidth = 0.9;
+      context.beginPath();
+      for (let column = x + step; column < x + width; column += step) {
+        context.moveTo(column, y);
+        context.lineTo(column, y + height);
+      }
+      for (let row = y + step; row < y + height; row += step) {
+        context.moveTo(x, row);
+        context.lineTo(x + width, row);
+      }
+      context.stroke();
+    }
+
+    function paintParkingRow(context, x, y, width, height, bayWidth = 22) {
+      context.fillStyle = '#4f5559';
+      context.fillRect(x, y, width, height);
+      context.strokeStyle = '#d9d6ca';
+      context.lineWidth = 1.4;
+      context.beginPath();
+      for (let line = x; line <= x + width; line += bayWidth) {
+        context.moveTo(line, y + 4);
+        context.lineTo(line, y + height - 6);
+      }
+      context.moveTo(x, y + 4);
+      context.lineTo(x + width, y + 4);
+      context.stroke();
     }
 
     function paintSportsGround(context, detail = true) {
@@ -108,8 +257,16 @@
       const pitch = SPORTS_VENUES.soccer;
       context.fillStyle = '#bdbaa4';
       context.fillRect(STADIUM_LOT.x, STADIUM_LOT.y, STADIUM_LOT.w, STADIUM_LOT.h);
-      context.fillStyle = '#446967';
-      context.fillRect(pitch.x - 32, pitch.y - 32, pitch.w + 64, pitch.h + 64);
+      // Concourse ring between the stands' front rows and the advertising boards.
+      context.fillStyle = '#a29e90';
+      context.fillRect(2388, 4373, 602, 412);
+      context.fillStyle = '#4b7f48';
+      context.fillRect(
+        PITCH_FENCE.left,
+        PITCH_FENCE.top,
+        PITCH_FENCE.right + PITCH_FENCE.thickness - PITCH_FENCE.left,
+        PITCH_FENCE.bottom + PITCH_FENCE.thickness - PITCH_FENCE.top,
+      );
       for (let stripe = 0; stripe < 12; stripe++) {
         context.fillStyle = stripe % 2 ? '#478344' : '#55984e';
         context.fillRect(pitch.x + (stripe * pitch.w) / 12, pitch.y, pitch.w / 12, pitch.h);
@@ -135,6 +292,15 @@
           pitch.goalWidth,
         );
       }
+      // Perimeter boards around the pitch.
+      context.strokeStyle = '#1c2a36';
+      context.lineWidth = PITCH_FENCE.thickness;
+      context.strokeRect(
+        PITCH_FENCE.left + PITCH_FENCE.thickness / 2,
+        PITCH_FENCE.top + PITCH_FENCE.thickness / 2,
+        PITCH_FENCE.right - PITCH_FENCE.left,
+        PITCH_FENCE.bottom - PITCH_FENCE.top,
+      );
       for (const stand of STADIUM_STANDS) {
         context.fillStyle = '#263a4c';
         context.fillRect(stand.x, stand.y, stand.w, stand.h);
@@ -144,6 +310,29 @@
           context.strokeRect(stand.x + 4, stand.y + 4, stand.w - 8, stand.h - 8);
         }
       }
+      // Entrance corridor, plaza and the forecourt south of the lot.
+      const entrance = STADIUM_ENTRANCE;
+      if (detail) {
+        paintPavers(context, entrance.x, entrance.y, entrance.w, entrance.h);
+        paintPavers(context, 2590, STADIUM_FORECOURT.y, 198, STADIUM_FORECOURT.h, 14);
+        paintParkingRow(context, 2300, 4914, 286, 50);
+        paintParkingRow(context, 2790, 4914, 286, 50);
+        context.fillStyle = '#e0b545';
+        for (const x of entrance.bollards.xs) {
+          context.beginPath();
+          context.arc(x, entrance.bollards.y, 1.9, 0, TAU);
+          context.fill();
+        }
+        context.fillStyle = '#1c2a36';
+        for (const post of entrance.posts)
+          context.fillRect(post.x, entrance.turnstiles.y, post.w, entrance.turnstiles.depth);
+        for (const booth of entrance.booths) context.fillRect(booth.x, booth.y, booth.w, booth.h);
+        for (const dugout of entrance.dugouts) context.fillRect(dugout.x, dugout.y, dugout.w, dugout.h);
+      } else {
+        context.fillStyle = '#b1aa9a';
+        context.fillRect(entrance.x, entrance.y, entrance.w, entrance.h);
+        context.fillRect(2590, STADIUM_FORECOURT.y, 198, STADIUM_FORECOURT.h);
+      }
       if (detail) {
         context.fillStyle = '#f0eddb';
         context.font = 'bold 17px Arial';
@@ -151,7 +340,11 @@
         context.fillText('SOUTH COAST STADIUM', pitch.x + pitch.w / 2, STADIUM_LOT.y + 37);
         context.font = 'bold 10px Arial';
         context.fillStyle = '#283e48';
-        context.fillText('MAIN ENTRANCE', SPORTS_ENTRANCES.soccer.x, 4905);
+        context.fillText('MAIN ENTRANCE', SPORTS_ENTRANCES.soccer.x, 4930);
+        context.fillStyle = '#d9d6ca';
+        context.font = 'bold 12px Arial';
+        context.fillText('P', 2443, 4948);
+        context.fillText('P', 2933, 4948);
       }
       context.restore();
     }

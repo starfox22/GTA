@@ -48,8 +48,8 @@
         missionState.car = spawnClearCar('coupe', 1000, 666, Math.PI, false, '#89c7ab');
         missionState.car.mission = true;
         missionState.workshop = {
-          x: 1850,
-          y: 1630,
+          x: 1320,
+          y: 2130,
         };
         setStage(0, missionState.car, 'STEAL VINNY’S SEA-GREEN COUPE');
       }

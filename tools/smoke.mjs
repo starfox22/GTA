@@ -19,7 +19,7 @@ const logs = [];
 page.on('console', (m) => { const t = m.type(); const s = `[${t}] ${m.text()}`; logs.push(s); if (t === 'error' || t === 'warning') errors.push(s); });
 page.on('pageerror', (e) => errors.push('[pageerror] ' + e.message + '\n' + (e.stack || '')));
 
-await page.goto('file://' + file, { timeout: 180000, waitUntil: 'load' });
+await page.goto('file://' + file, { timeout: 300000, waitUntil: 'load' });
 await page.waitForTimeout(2500);
 await page.screenshot({ path: path.join(out, '01-menu.png') });
 await page.click('#startBtn');

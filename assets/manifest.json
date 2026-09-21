@@ -37,9 +37,9 @@
   },
   {
     "id": "media-arsenal",
-    "file": "assets/arsenal-icons.png",
-    "mime": "image/png",
-    "original": "src/assets/arsenal-icons.png"
+    "file": "assets/arsenal-icons.webp",
+    "mime": "image/webp",
+    "original": "src/assets/arsenal-icons.webp"
   },
   {
     "id": "media-music-synth",

@@ -86,6 +86,12 @@ helicopter searchlight), helicopter3d, vehicles3d, plane3d.
 - Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns, bridges, an airport and a railway (transit.js).
+- Central Commons (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks wide and three deep;
+  the streets inside it are closed by `parkStreetClosed`, and the elevated City Line crosses
+  it with the Central Commons station. Eastside Customs garage sits on Cannery St at (1320, 2022).
+- South Coast Stadium (sports-world.js) is enclosed: `STADIUM_ENCLOSURE` blocks people and
+  vehicles, `STADIUM_VEHICLE_BARRIERS` (bollards, turnstile span) block vehicles only, and the
+  two turnstile gates at x 2665..2686 and 2692..2713 (y 4845) are the only way onto the concourse.
 
 ## 5. Missions
 
@@ -123,6 +129,21 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
   view-dependent.
 - Repeated props use `InstancedMesh` pools (`pools` in cityscape3d.js). Add a pool there
   rather than creating per-building meshes for small repeated objects.
+
+## 6b. Performance model
+
+- `DeadEndCity.stats()` returns rolling CPU milliseconds for simulation and drawing, a
+  per-subsystem breakdown (`parts`), renderer draw calls, triangles and a scene-object
+  histogram. Use it before and after any change that touches hot loops.
+- Static scenery is merged by `batchStaticGroups()` (render3d.js): every group pushed to
+  `batchGroups` has its plain single-material meshes merged per material and 1024-unit
+  cell after construction. Flag animated meshes with `userData.dynamic = true` and per-sign
+  textures with `userData.sign = true` so they are left alone.
+- Buildings are bucketed in `buildingGrid` (game.js) for `solid()`/`shotBlocked()`; rail
+  piers in `railPierCells()`; physics statics in `staticGrid` with a per-vehicle cache.
+- Vehicles far from the player and at rest skip contact passes; distant traffic re-plans
+  at 4 Hz instead of 20 Hz; off-screen pedestrians think every third frame; distant wildlife
+  validates its position twice a second.
 
 ## 7. Build, check, test
 

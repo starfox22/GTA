@@ -592,9 +592,13 @@
         for (let k = -w / 2; k <= w / 2; k += 4) box(group, x + k, top + 11, z, 0.8, 0.8, d + 2, wood);
         box(group, x, top + 10.2, z + d / 2, w + 2, 0.8, 0.8, wood);
         box(group, x, top + 10.2, z - d / 2, w + 2, 0.8, 0.8, wood);
+        // Instanced props live in world space; the pergola is placed in group-local space.
+        const wx = group.position.x,
+          wz = group.position.z,
+          wy = group.position.y;
         for (let k = -w / 2 + 6; k < w / 2; k += 12) {
-          place(pools.planter, x + k, top + 1.5, z + d / 2 + 5, 8, 3, 5);
-          place(pools.shrub, x + k, top + 5, z + d / 2 + 5, 4, 3, 3);
+          place(pools.planter, wx + x + k, wy + top + 1.5, wz + z + d / 2 + 5, 8, 3, 5);
+          place(pools.shrub, wx + x + k, wy + top + 5, wz + z + d / 2 + 5, 4, 3, 3);
         }
         neonSigns.push({ sprite: halo(group, x, top + 9.5, z, 26, '#ffd9a0'), base: 0.7 });
       }
@@ -767,6 +771,7 @@
           group = new Three.Group();
         group.position.set(b.x, 0, b.y);
         scene.add(group);
+        batchGroups.push(group);
         const face = facadeMaterial(kind, i, b),
           roof = roofMaterial(kind),
           top = roof.material,
@@ -836,9 +841,10 @@
       // ---- Sidewalk furniture --------------------------------------------------------
       const furnitureGroup = new Three.Group();
       scene.add(furnitureGroup);
+      batchGroups.push(furnitureGroup);
       const shelters = [];
       function clearSidewalk(x, y) {
-        return landAt(x, y) && !onRoad(x, y) && !solid(x, y, 5) && !onBoulevard(x, y, 12) && !inHarbor(x, y, 20) && !inStadiumLot(x, y, 10);
+        return landAt(x, y) && !onRoad(x, y) && !solid(x, y, 5) && !onBoulevard(x, y, 12) && !inHarbor(x, y, 20) && !inStadiumLot(x, y, 10) && !inGarageLot(x, y, 6);
       }
       function busShelter(x, z, faceSouth) {
         const g = new Three.Group();

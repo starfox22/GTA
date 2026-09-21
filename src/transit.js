@@ -431,9 +431,29 @@
         })
       )
         return true;
-      return railPiers.some(
-        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
-      );
+      const cell = railPierCells().get(Math.floor(x / 512) * 4096 + Math.floor(y / 512));
+      if (!cell) return false;
+      for (let i = 0; i < cell.length; i++) {
+        const b = cell[i];
+        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      }
+      return false;
+    }
+    // Piers bucketed by 512-unit cell; solid() asks about them for every pedestrian step.
+    let railPierGrid = null,
+      railPierGridCount = -1;
+    function railPierCells() {
+      if (railPierGrid && railPierGridCount === railPiers.length) return railPierGrid;
+      railPierGrid = new Map();
+      railPierGridCount = railPiers.length;
+      for (const b of railPiers)
+        for (let i = Math.floor((b.x - 16) / 512); i <= Math.floor((b.x + b.w + 16) / 512); i++)
+          for (let j = Math.floor((b.y - 16) / 512); j <= Math.floor((b.y + b.h + 16) / 512); j++) {
+            const key = i * 4096 + j;
+            if (!railPierGrid.has(key)) railPierGrid.set(key, []);
+            railPierGrid.get(key).push(b);
+          }
+      return railPierGrid;
     }
     function railNetwork() {
       if (railGraph) return railGraph;

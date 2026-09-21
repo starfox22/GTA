@@ -114,6 +114,96 @@
         tailLamp = new Three.MeshBasicMaterial({
           color: '#e6614f',
         });
+      /**
+       * STATIC BATCHER
+       * Static scenery is authored as thousands of small meshes (parapets, ledges,
+       * tree crowns, lamp posts, kerbs). Traversing and drawing them one by one
+       * costs more than the pixels they cover, so after construction each group
+       * registered here has its plain single-material meshes merged into one
+       * geometry per (material, 1024-unit cell). Materials are untouched, so
+       * per-building fades and night emissive still work; frustum culling per
+       * cell replaces the old per-group distance culling. Objects that move or
+       * animate must be flagged `userData.dynamic = true` to be left alone.
+       */
+      const batchGroups = [];
+      function batchStaticGroups(cellSize = 1024) {
+        const buckets = new Map(),
+          v = new Three.Vector3(),
+          n3 = new Three.Matrix3();
+        let removed = 0;
+        for (const group of batchGroups) {
+          group.updateMatrixWorld(true);
+          const taken = [];
+          group.traverse((o) => {
+            if (!o.isMesh || o.isInstancedMesh || o.isSprite || o.userData.dynamic || o.userData.sign) return;
+            if (Array.isArray(o.material) || !o.geometry?.attributes?.position) return;
+            if (o.material.transparent && o.material.opacity < 1) return;
+            const e = o.matrixWorld.elements,
+              key = o.material.uuid + '|' + Math.floor(e[12] / cellSize) + '|' + Math.floor(e[14] / cellSize);
+            let b = buckets.get(key);
+            if (!b) buckets.set(key, (b = { material: o.material, parts: [], vertices: 0, indices: 0 }));
+            const geo = o.geometry,
+              count = geo.attributes.position.count;
+            b.parts.push({ geo, matrix: o.matrixWorld.clone() });
+            b.vertices += count;
+            b.indices += geo.index ? geo.index.count : count;
+            taken.push(o);
+          });
+          for (const o of taken) o.parent.remove(o);
+          removed += taken.length;
+        }
+        for (const b of buckets.values()) {
+          const positions = new Float32Array(b.vertices * 3),
+            normals = new Float32Array(b.vertices * 3),
+            uvs = new Float32Array(b.vertices * 2),
+            indices = new Uint32Array(b.indices);
+          let vo = 0,
+            io = 0;
+          for (const { geo, matrix } of b.parts) {
+            const pos = geo.attributes.position,
+              nor = geo.attributes.normal,
+              uv = geo.attributes.uv,
+              count = pos.count;
+            n3.getNormalMatrix(matrix);
+            for (let i = 0; i < count; i++) {
+              v.fromBufferAttribute(pos, i).applyMatrix4(matrix);
+              positions[(vo + i) * 3] = v.x;
+              positions[(vo + i) * 3 + 1] = v.y;
+              positions[(vo + i) * 3 + 2] = v.z;
+              if (nor) v.fromBufferAttribute(nor, i).applyMatrix3(n3).normalize();
+              else v.set(0, 1, 0);
+              normals[(vo + i) * 3] = v.x;
+              normals[(vo + i) * 3 + 1] = v.y;
+              normals[(vo + i) * 3 + 2] = v.z;
+              if (uv) {
+                uvs[(vo + i) * 2] = uv.getX(i);
+                uvs[(vo + i) * 2 + 1] = uv.getY(i);
+              }
+            }
+            if (geo.index) {
+              const idx = geo.index;
+              for (let i = 0; i < idx.count; i++) indices[io + i] = idx.getX(i) + vo;
+              io += idx.count;
+            } else {
+              for (let i = 0; i < count; i++) indices[io + i] = vo + i;
+              io += count;
+            }
+            vo += count;
+          }
+          const merged = new Three.BufferGeometry();
+          merged.setAttribute('position', new Three.BufferAttribute(positions, 3));
+          merged.setAttribute('normal', new Three.BufferAttribute(normals, 3));
+          merged.setAttribute('uv', new Three.BufferAttribute(uvs, 2));
+          merged.setIndex(new Three.BufferAttribute(indices, 1));
+          merged.computeBoundingSphere();
+          const m = new Three.Mesh(merged, b.material);
+          m.castShadow = true;
+          m.receiveShadow = true;
+          m.name = 'static batch';
+          scene.add(m);
+        }
+        return { merged: removed, batches: buckets.size };
+      }
       function mesh(geo, material, parent, x, y, z, sx = 1, sy = 1, sz = 1) {
         const m = new Three.Mesh(geo, material);
         m.position.set(x, y, z);
@@ -229,6 +319,10 @@
       drawingContext.fillStyle = paving;
       drawingContext.fillRect(48, 45, CITY_SIZE - 112, CITY_SIZE - 112);
       paintCityStreets(drawingContext, true);
+      const curbGroup = new Three.Group();
+      curbGroup.name = 'kerbs';
+      scene.add(curbGroup);
+      batchGroups.push(curbGroup);
       for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
         for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
           const x = ROAD_CENTERS[bx] + 79,
@@ -245,13 +339,13 @@
             continue;
           }
           if (isPark(bx, by)) continue;
-          // Curbs catch the low evening sun.
-          if (!onBoulevard(x + 177, z - 2, 190)) box(scene, x + 177, 1.4, z - 2, 354, 2.8, 3, concrete);
-          if (!onBoulevard(x - 2, z + 177, 190)) box(scene, x - 2, 1.4, z + 177, 3, 2.8, 354, concrete);
+          // Curbs catch the low evening sun. Park blocks are kerbed by the park painter instead.
+          if (!onBoulevard(x + 177, z - 2, 190)) box(curbGroup, x + 177, 1.4, z - 2, 354, 2.8, 3, concrete);
+          if (!onBoulevard(x - 2, z + 177, 190)) box(curbGroup, x - 2, 1.4, z + 177, 3, 2.8, 354, concrete);
           if (!onBoulevard(x + 355, z + 177, 190))
-            box(scene, x + 355, 1.4, z + 177, 3, 2.8, 354, concrete);
+            box(curbGroup, x + 355, 1.4, z + 177, 3, 2.8, 354, concrete);
           if (!onBoulevard(x + 177, z + 355, 190))
-            box(scene, x + 177, 1.4, z + 355, 354, 2.8, 3, concrete);
+            box(curbGroup, x + 177, 1.4, z + 355, 354, 2.8, 3, concrete);
           const park = isPark(bx, by);
           if (park) {
             continue;
@@ -421,7 +515,8 @@
       // Buildings are constructed by src/cityscape3d.js (included below, after the halo helper).
       // Street trees with proper trunks and layered crowns.
       const blossomMat = mat('#d5a2b5');
-      const leafGeo = new Three.IcosahedronGeometry(1, 1);
+      const leafGeo = new Three.IcosahedronGeometry(1, 2),
+        trunkGeo = new Three.CylinderGeometry(0.9, 1.9, 1, 8);
       trees.forEach((t, i) => {
         if (t.tropical ?? (t.x > RIVER.right && !t.county)) {
           makePalm(t.x, t.y, t.r / 17);
@@ -430,30 +525,43 @@
         const group = new Three.Group();
         group.position.set(t.x, terrainHeight(t.x, t.y), t.y);
         scene.add(group);
-        mesh(new Three.CylinderGeometry(1.1, 1.8, t.r * 1.5, 7), wood, group, 0, t.r * 0.75, 0);
-        for (let j = 0; j < 4; j++) {
-          const a = j * 2.399;
+        batchGroups.push(group);
+        // Tapered trunk with a root flare, two main limbs, and a layered crown of
+        // five offset lobes so the canopy reads as foliage rather than a ball.
+        mesh(trunkGeo, wood, group, 0, t.r * 0.8, 0, 1, t.r * 1.6, 1);
+        if (!t.pine) {
+          for (const a of [0.7, 3.4]) {
+            const limb = mesh(cylinderGeo, wood, group, Math.cos(a) * t.r * 0.25, t.r * 1.45, Math.sin(a) * t.r * 0.25, 0.7, t.r * 0.9, 0.7);
+            limb.rotation.set(Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5);
+          }
+        }
+        const lobes = t.pine ? 4 : 5;
+        for (let j = 0; j < lobes; j++) {
+          const a = j * 2.399 + i * 0.7;
           if (t.pine)
             mesh(
-              new Three.ConeGeometry(t.r * (0.88 - j * 0.12), t.r * 1.45, 7),
+              new Three.ConeGeometry(t.r * (0.95 - j * 0.16), t.r * 1.2, 8),
               leafMats[(i + j) % 3],
               group,
               0,
-              t.r * (1.4 + j * 0.45),
+              t.r * (1.3 + j * 0.55),
               0,
             );
-          else
+          else {
+            const spread = j === 0 ? 0 : t.r * 0.42,
+              lift = j === 0 ? t.r * 0.35 : (j % 2) * t.r * 0.22;
             mesh(
               leafGeo,
-              t.blossom ? blossomMat : leafMats[(i + j) % 3],
+              t.blossom && j % 2 ? blossomMat : leafMats[(i + j) % 3],
               group,
-              Math.cos(a) * t.r * 0.4,
-              t.r * (1.5 + j * 0.17),
-              Math.sin(a) * t.r * 0.4,
-              t.r * 0.83,
-              t.r * 0.72,
-              t.r * 0.8,
+              Math.cos(a) * spread,
+              t.r * 1.75 + lift,
+              Math.sin(a) * spread,
+              t.r * (j === 0 ? 0.95 : 0.7),
+              t.r * (j === 0 ? 0.8 : 0.62),
+              t.r * (j === 0 ? 0.95 : 0.7),
             );
+          }
         }
         statics.push({
           x: t.x,
@@ -496,6 +604,7 @@
           group = new Three.Group();
         group.position.set(l.x, 0, l.y);
         scene.add(group);
+        batchGroups.push(group);
         box(group, 0, 17, 0, 1.1, 34, 1.1, darkMetal);
         box(group, 3, 34, 0, 7, 1, 1, darkMetal);
         box(group, 6, 33.5, 0, 5, 1.2, 3, warmLamp);
@@ -513,6 +622,7 @@
         );
         glow.rotation.x = -Math.PI / 2;
         glow.position.set(6, 0.1, 0);
+        glow.userData.dynamic = true;
         group.add(glow);
         lampGlows.push({ mesh: glow, x: l.x, y: l.y });
         statics.push({
@@ -559,7 +669,6 @@
       sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb');
       sign('24 HOUR', 1470, 544, 85, '#f3d394');
       sign('FREIGHT CO.', 2880, 549, 106, '#c1d4bb');
-      sign('AUTO REPAIR', 1880, 1571, 100, '#adebd4');
       const ph = new Three.Group();
       ph.position.set(phone.x, 0, phone.y);
       scene.add(ph);
@@ -1275,6 +1384,22 @@
       }
       /* REVIEW_HOOK:RENDERER_API */
       const api = {
+        info() {
+          let objects = 0;
+          const byType = {};
+          scene.traverse((o) => {
+            objects++;
+            const k = o.type + (o.isMesh && Array.isArray(o.material) ? '[multi]' : '');
+            byType[k] = (byType[k] || 0) + 1;
+          });
+          return {
+            byType,
+            calls: renderer.info.render.calls,
+            triangles: renderer.info.render.triangles,
+            objects,
+            batched: api.batchReport,
+          };
+        },
         resize() {
           renderer.setSize(viewportWidth, viewportHeight);
           const viewH = clamp(viewportHeight * 0.68, 430, 630) / worldZoom;
@@ -2112,6 +2237,8 @@
           }
         },
       };
+      const batchReport = batchStaticGroups();
+      api.batchReport = batchReport;
       api.resize();
       return api;
     }
