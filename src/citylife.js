@@ -1461,7 +1461,8 @@
     function civicUI() {
       storyUI();
       const hm = harborCargoJob();
-      getElement('cargoStatus').style.display = hm ? 'block' : 'none';
+      // The cargo bar matters until the crates are in Vinny's warehouse.
+      getElement('cargoStatus').style.display = hm && hm.stage < 4 ? 'block' : 'none';
       if (hm) {
         getElement('cargoLabel').textContent = hm.loading
           ? 'LOADING ' + (hm.collected + 1) + ' / 3'

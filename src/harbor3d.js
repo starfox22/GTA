@@ -448,13 +448,31 @@
         box(depotGroup, w.x + w.w / 2, 32, w.y + w.h / 2, w.w, 64, w.h, portSteel);
         box(depotGroup, w.x + w.w / 2, 3, w.y + w.h / 2, w.w + 1, 6, w.h + 1, portConcrete);
       }
-      // Two roller shutters that actually travel: front closes behind the drop,
-      // rear rolls up to let the runner out.
+      // The front roller shutter travels: it comes down behind the truck on the
+      // first mission's drop.
       const shutterMat = mat('#8d9195', 0.62, 0.35);
       const depotFrontDoor = box(depotGroup, 4480, 29, 4341, 116, 58, 4, shutterMat);
-      const depotRearDoor = box(depotGroup, 4480, 29, 4574, 72, 58, 4, shutterMat);
-      for (const door of [depotFrontDoor, depotRearDoor]) door.userData.dynamic = true;
-      box(depotGroup, 4480, 60, 4574, 84, 10, 7, portSteel);
+      depotFrontDoor.userData.dynamic = true;
+      // The back door: a steel personnel door hinged on its west jamb that swings
+      // out onto the pavement, with a lintel and a lit EXIT sign on both faces.
+      const backDoor = VINNY_DEPOT.backDoor,
+        doorWest = backDoor.x - backDoor.half,
+        doorWidth = backDoor.half * 2;
+      box(depotGroup, backDoor.x, 53, 4576, doorWidth, 22, 8, portSteel);
+      for (const x of [doorWest - 1.5, doorWest + doorWidth + 1.5])
+        box(depotGroup, x, 21, 4576, 3, 42, 10, cranePaint);
+      const depotBackHinge = new Three.Group();
+      depotBackHinge.position.set(doorWest, 0, 4576);
+      depotBackHinge.userData.dynamic = true;
+      depotGroup.add(depotBackHinge);
+      box(depotBackHinge, doorWidth / 2, 20.5, 0, doorWidth - 1, 41, 3, mat('#5f6e62', 0.55, 0.4));
+      box(depotBackHinge, doorWidth - 5, 20, 2, 3, 1.5, 2.5, portSteel);
+      depotBackHinge.traverse((o) => (o.userData.dynamic = true));
+      const exitSignMat = new Three.MeshBasicMaterial({ color: '#58e08a' });
+      for (const z of [4570, 4582]) {
+        box(depotGroup, backDoor.x, 46, z, 12, 4, 1.5, exitSignMat);
+        halo(depotGroup, backDoor.x, 46, z + (z > 4576 ? 3 : -3), 16, '#58e08a');
+      }
       const depotRoof = box(depotGroup, 4480, 66, 4460, 286, 4, 246, portSteel.clone());
       for (let z = 4358; z < 4570; z += 35) box(depotGroup, 4480, 60, z, 274, 4, 3, cranePaint);
       box(depotGroup, 4480, 52, 4343, 116, 17, 5, portSteel);
@@ -527,8 +545,8 @@
         // The shutter slides up into its housing; 0 is open, 1 is fully down.
         depotFrontDoor.visible = depotFrontShutter > 0.01;
         depotFrontDoor.position.y = 29 + (1 - depotFrontShutter) * 59;
-        depotRearDoor.visible = depotRearShutter > 0.01;
-        depotRearDoor.position.y = 29 + (1 - depotRearShutter) * 59;
+        // Closed is flush with the wall; open swings the leaf out ~100 degrees.
+        depotBackHinge.rotation.y = -(1 - depotBackDoor) * 1.75;
         const h = vehicles.find((c) => c.airUnit && c.hp > 0 && !c.airRetreat),
           t = airSearchPoint(h);
         airBeam.visible = airPool.visible = !!t && distanceBetween(h, cameraTarget) < 950;

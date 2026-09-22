@@ -48,8 +48,8 @@ Game closure (in include order):
 | audio.js | Web Audio effects, voices, procedural sounds |
 | physics.js | Vehicle and pedestrian physics, traffic AI, signals, knockdowns |
 | geography.js | Land polygons, river, bridges, `districtAt`, coast segments, 2D water |
-| harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot |
-| police-feedback.js | Wanted-level banners and delivery blocking |
+| harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot (front shutter, back door and the drop: `beginDepotDrop`, `depotShutterDown`, `updateDepotDrop`) |
+| police-feedback.js | Wanted-level status chips (NEED TO LOSE POLICE, POLICE CLEARED) and delivery blocking |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
 | arsenal.js | Weapon ownership, arsenal UI, knife |
 | citylife.js | Clock, `PLACES` (businesses), officers, police routing, `daylight()` |
@@ -103,7 +103,8 @@ resets state and dispatches by index. Each mission then:
 
 1. spawns what it needs (vehicles get `mission = true`, guards get a `missionTag`),
 2. advances with `setStage(stage, target, instruction, speaker?, line?)` (the target feeds the
-   map marker and navigation arrow via `objective()`),
+   map marker and navigation arrow via `objective()`; a new instruction reopens the HUD
+   mission card for six seconds before it folds back to one line, see `updateMissionCard`),
 3. updates every frame from `missionUpdate` -> its own update function,
 4. ends with `winMission()` or `failMission(reason)`.
 
@@ -159,7 +160,9 @@ game time is clamped per frame, which is why toasts and banners look "stuck" in 
 
 The **developer console** `window.DeadEndCity` (game.js, after the frame loop) exposes
 `status()`, `teleport(x, y)`, `setClock(hours)`, `setZoom(v)`, `startMission(index)`,
-`missions()` and `god(on)`. Test scripts use it; players can too from the browser console.
+`missions()` and `god(on)`, plus test helpers such as `simulate(seconds, keys)`,
+`missionState()` and `skipToDepotDelivery()`; the full list is in `docs/DEVELOPMENT.md`.
+Test scripts use it; players can too from the browser console.
 
 ## 8. Known limitations and ideas
 

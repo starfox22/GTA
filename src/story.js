@@ -67,8 +67,8 @@
         contact: 'vinny',
         reward: 2400,
         phoneMessage:
-          'Vinny gave you a mission: take his truck, load three harbor crates, and deliver them.',
-        brief: 'Take the truck, load three harbor crates, and deliver them.',
+          'Vinny gave you a mission: take his truck, load three harbor crates, and drive them into his warehouse.',
+        brief: 'Take the truck, load three harbor crates, and drive them into the warehouse.',
       },
       {
         title: 'A Seat at the Table',

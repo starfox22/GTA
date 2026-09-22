@@ -19,15 +19,19 @@
         x: 4480,
         y: 4450,
       },
-      // The loading dock at the back: closed while the truck is being brought in,
-      // opened once the cargo is off, which is the only way out after the drop.
-      rear: {
-        x: 4480,
+      // A personnel door in the back wall: too narrow for any vehicle, locked
+      // while the truck is brought in, opened once the front shutter is down.
+      // After the drop it is the only way out, and it has to be walked.
+      backDoor: {
+        x: 4478,
         y: 4576,
+        half: 14,
       },
-      alley: {
-        x: 4480,
-        y: 4664,
+      // Just outside the back door, on the Stadium Way pavement: reaching this on
+      // foot from inside the building completes the first mission.
+      exit: {
+        x: 4478,
+        y: 4624,
       },
       height: 64,
     };
@@ -44,16 +48,17 @@
         w: 8,
         h: 240,
       },
+      // Back wall, either side of the 28-unit personnel door at x 4464..4492.
       {
         x: 4340,
         y: 4572,
-        w: 104,
+        w: 124,
         h: 8,
       },
       {
-        x: 4516,
+        x: 4492,
         y: 4572,
-        w: 104,
+        w: 128,
         h: 8,
       },
       {
@@ -69,12 +74,16 @@
         h: 8,
       },
     ];
-    /* Two roller shutters. 0 is fully open, 1 fully closed; they animate at the
-       same rate as the harbor barrier so the depot reads as one piece of kit. */
+    /* The front roller shutter and the hinged back door. 0 is fully open and
+       1 fully closed. The shutter rolls at the same rate as the harbor barrier;
+       the door swings a little quicker. */
     let depotFrontShutter = 0,
-      depotRearShutter = 1,
+      depotBackDoor = 1,
       depotFrontTarget = 0,
-      depotRearTarget = 1;
+      depotBackTarget = 1;
+    // The front doorway, where a closing shutter must not come down on anything.
+    // It stops short of where truckInsideDepot() counts a truck as inside.
+    const DEPOT_DOORWAY = { x: 4422, y: 4318, w: 116, h: 32 };
     function depotSolids() {
       const list = [];
       if (depotFrontShutter > 0.2)
@@ -86,16 +95,50 @@
           height: 58,
           barrier: true,
         });
-      if (depotRearShutter > 0.2)
+      if (depotBackDoor > 0.2)
         list.push({
-          x: 4444,
-          y: 4570,
-          w: 72,
-          h: 7,
-          height: 58,
+          x: VINNY_DEPOT.backDoor.x - VINNY_DEPOT.backDoor.half,
+          y: 4572,
+          w: VINNY_DEPOT.backDoor.half * 2,
+          h: 8,
+          height: 46,
           barrier: true,
         });
       return list;
+    }
+    /* A vehicle in the doorway, or about to be: where it will be in 0.6 s counts
+       too, so a truck reversing out lifts the shutter before it reaches it. */
+    function inDepotDoorway(c) {
+      const d = DEPOT_DOORWAY,
+        inDoorway = (p) => p.x + 2 > d.x && p.x - 2 < d.x + d.w && p.y + 2 > d.y && p.y - 2 < d.y + d.h;
+      if (isAircraft(c) || Math.abs(c.x - (d.x + d.w / 2)) > 180 || Math.abs(c.y - (d.y + d.h / 2)) > 180)
+        return false;
+      const ahead = { x: c.x + (c.vx || 0) * 0.6, y: c.y + (c.vy || 0) * 0.6, a: c.a, type: c.type };
+      return corners(vehicleShape(c)).some(inDoorway) || corners(vehicleShape(ahead)).some(inDoorway);
+    }
+    /* The player or an ordinary vehicle in the front doorway. Pursuing police
+       cars do not hold the shutter up: they are shoved back out by it instead
+       (updateDepotDoors), or a tailing cruiser could stall the drop forever. */
+    function depotDoorwayOccupied() {
+      const d = DEPOT_DOORWAY;
+      if (
+        !player.car &&
+        player.x + 8 > d.x &&
+        player.x - 8 < d.x + d.w &&
+        player.y + 8 > d.y &&
+        player.y - 8 < d.y + d.h
+      )
+        return true;
+      return vehicles.some((c) => !c.missionPursuit && inDepotDoorway(c));
+    }
+    /* Whether a point is inside the depot's four walls. */
+    function insideDepot(x, y, margin = 0) {
+      return (
+        x > VINNY_DEPOT.x + 8 + margin &&
+        x < VINNY_DEPOT.x + VINNY_DEPOT.w - 8 - margin &&
+        y > VINNY_DEPOT.y + 8 + margin &&
+        y < VINNY_DEPOT.y + VINNY_DEPOT.h - 8 - margin
+      );
     }
     function depotBlocked(x, y, r = 0) {
       if (x < 4400 || x > 4560 || y < 4320 || y > 4590) return false;
@@ -106,23 +149,44 @@
     function depotBarriers() {
       return Math.abs(player.x - 4480) < 900 && Math.abs(player.y - 4460) < 900 ? depotSolids() : [];
     }
+    // Snap both doors to their idle state: shutter up, back door shut. Used when
+    // a mission starts, fails or is restarted, so no run inherits a closed depot.
     function resetDepotDoors() {
       depotFrontShutter = depotFrontTarget = 0;
-      depotRearShutter = depotRearTarget = 1;
+      depotBackDoor = depotBackTarget = 1;
     }
-    function setDepotDoors(front, rear) {
+    // After a completed drop, animate back to idle instead of snapping: the back
+    // door swings shut behind the runner and the shutter rolls up on the truck.
+    function settleDepotDoors() {
+      depotFrontShutter = 1;
+      depotBackDoor = 0;
+      setDepotDoors(0, 1);
+    }
+    function setDepotDoors(front, back) {
       depotFrontTarget = front;
-      depotRearTarget = rear;
+      depotBackTarget = back;
     }
     function updateDepotDoors(deltaSeconds) {
-      const step = deltaSeconds * 0.55;
-      for (const [current, target, set] of [
-        [depotFrontShutter, depotFrontTarget, (v) => (depotFrontShutter = v)],
-        [depotRearShutter, depotRearTarget, (v) => (depotRearShutter = v)],
-      ]) {
-        if (Math.abs(target - current) < 1e-4) continue;
-        set(clamp(current + Math.sign(target - current) * step, 0, 1));
-      }
+      // Like a real shutter's safety edge: anything in the doorway sends a closing
+      // shutter back up, and it comes down again once the way is clear.
+      const closing = depotFrontTarget > depotFrontShutter;
+      if (closing)
+        for (const c of vehicles)
+          if (c.missionPursuit && c !== player.car && inDepotDoorway(c)) {
+            // The descending shutter pushes a tailing cruiser back onto the street.
+            c.vy = Math.min(c.vy, -40);
+            c.vx *= 0.5;
+          }
+      if (closing && depotFrontShutter < 0.95 && depotDoorwayOccupied())
+        depotFrontShutter = Math.max(0, depotFrontShutter - deltaSeconds * 0.8);
+      else if (Math.abs(depotFrontTarget - depotFrontShutter) > 1e-4)
+        depotFrontShutter = clamp(
+          depotFrontShutter + Math.sign(depotFrontTarget - depotFrontShutter) * deltaSeconds * 0.55,
+          0,
+          1,
+        );
+      if (Math.abs(depotBackTarget - depotBackDoor) > 1e-4)
+        depotBackDoor = clamp(depotBackDoor + Math.sign(depotBackTarget - depotBackDoor) * deltaSeconds * 0.9, 0, 1);
     }
     function depotOverlap(x, y, w, h) {
       return x + w > 4315 && x < 4645 && y + h > 4250 && y < 4605;
@@ -182,6 +246,7 @@
       return mission?.index === 0 &&
         mission.policeNotified &&
         !mission.cargoDisguised &&
+        !mission.cargoDelivered &&
         mission.car?.hp > 0
         ? mission
         : null;
@@ -276,7 +341,7 @@
         const patrol = spawnCargoPatrol(m);
         if (patrol) patrol.interceptor = i % 2 === 1;
       }
-      tell('Respray the truck at an R garage, or run it into Vinny’s depot. Bridges will be cut.', 6);
+      tell('Respray the truck at an R garage, or drive it into Vinny’s warehouse. Bridges will be cut.', 6);
     }
     function evadeCargoPolice(vehicle) {
       const m = cargoChase();
@@ -296,7 +361,7 @@
       clearPolice();
       policeClearedNotice();
       m.target = HARBOR.delivery;
-      m.instruction = 'TRUCK RESPRAYED · DELIVER THE CRATES TO VINNY';
+      m.instruction = 'TRUCK RESPRAYED · DRIVE IT INTO VINNY’S WAREHOUSE';
       return true;
     }
     function updateCargoPursuit(deltaSeconds) {
@@ -405,7 +470,8 @@
       worldContext.lineWidth = 2;
       worldContext.strokeRect(v.x, v.y, v.w, v.h);
       worldContext.fillStyle = '#172631';
-      worldContext.fillRect(4422, 4340, 116, 7);
+      if (depotFrontShutter > 0.2) worldContext.fillRect(4422, 4340, 116, 7);
+      if (depotBackDoor > 0.2) worldContext.fillRect(4464, 4572, 28, 8);
       worldContext.fillStyle = '#ebd68e';
       worldContext.font = 'bold 16px monospace';
       worldContext.textAlign = 'center';

@@ -4570,6 +4570,41 @@
         return this.status();
       },
       missions: () => missions.map((m, i) => ({ index: i, title: m.title, contact: m.contact })),
+      // Mission 1 test shortcut: start Dockside Favor if needed, load all three
+      // crates, and put the player in the truck on the road outside Vinny's
+      // warehouse, facing its shutter, with the harbor alarm already raised.
+      skipToDepotDelivery() {
+        if (mission?.index !== 0) {
+          missionIndex = 0;
+          startMission();
+        }
+        const m = mission;
+        for (const p of m.packages) p.got = true;
+        m.collected = 3;
+        m.loading = null;
+        teleportPlayer(4480, 4180);
+        Object.assign(m.car, { x: 4480, y: 4232, a: Math.PI / 2, vx: 0, vy: 0, av: 0, speed: 0 });
+        m.car.cargoCount = 3;
+        enterVehicle(m.car);
+        setStage(3, HARBOR.delivery, 'LEAVE THE HARBOR WITH ALL THREE CRATES');
+        notifyCargoPolice(m);
+        return { stage: m.stage, instruction: m.instruction, ...this.status() };
+      },
+      // Where the current mission stands, including Vinny's depot doors.
+      missionState: () =>
+        mission
+          ? {
+              index: mission.index,
+              stage: mission.stage,
+              instruction: mission.instruction,
+              target: mission.target
+                ? { x: Math.round(mission.target.x), y: Math.round(mission.target.y) }
+                : null,
+              depotShutter: +depotFrontShutter.toFixed(2),
+              depotBackDoor: +depotBackDoor.toFixed(2),
+              wanted: Math.ceil(wantedStars),
+            }
+          : { mission: null, completed, depotShutter: +depotFrontShutter.toFixed(2), depotBackDoor: +depotBackDoor.toFixed(2) },
       god(on = true) {
         player.godMode = !!on;
         return player.godMode;

@@ -68,6 +68,8 @@ something, never a generic code-evaluation hook.
 | `places()` | Named businesses and landmarks with coordinates |
 | `setClock(hours)`, `sky(id)` | Time of day; weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`) |
 | `startMission(i)`, `missions()` | Jump into a mission |
+| `missionState()` | Current mission stage, instruction, objective target and Vinny's depot door state |
+| `skipToDepotDelivery()` | Mission 1: crates loaded, player in the truck outside Vinny's warehouse with the police alerted |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort) |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
