@@ -748,6 +748,19 @@
           }
       }
     }
+    /* The tallest roof within reach: an overhead camera gives no depth cue, so the
+       flight readout says how much air there is between you and the rooftops. */
+    function roofHeightNear(x, y, radius = 280) {
+      let top = 0;
+      for (let i = -1; i <= 1; i++)
+        for (let j = -1; j <= 1; j++)
+          for (const b of buildingsNear(x + i * radius, y + j * radius)) {
+            if (b.x - radius > x || b.x + b.w + radius < x) continue;
+            if (b.y - radius > y || b.y + b.h + radius < y) continue;
+            if (b.height > top) top = b.height;
+          }
+      return top;
+    }
     function buildingsNear(x, y) {
       if (!buildingGrid.size) return buildings;
       return buildingGrid.get(Math.floor(x / BUILDING_CELL) * 4096 + Math.floor(y / BUILDING_CELL)) || noBuildings;
@@ -1145,7 +1158,10 @@
             continue;
           }
           if (isPark(bx, by)) continue;
-          const industrial = bx >= 4 && by <= 2 && bx < 7;
+          // The Ironworks sheds are the three rows south of the old north shore.
+          // Without the lower bound this also caught the whole reclamation, which
+          // is why the new tower district came out as warehouses.
+          const industrial = bx >= 4 && bx < 7 && by >= 0 && by <= 2;
           if (industrial) {
             makeBuilding(x + 8, y + 8, w - 16, 140, 2);
             makeBuilding(x + 8, y + 203, 190, 120, 2);
@@ -1179,6 +1195,13 @@
                 drawTree(x + 28, y + z, 11);
                 drawTree(x + w - 28, y + z, 11);
               }
+            } else if (zone === 'THE RECLAMATION' || zone === 'HARBOR POINT MARINA') {
+              // Reclamation blocks are perimeter buildings around a planted court.
+              makeBuilding(x + 7, y + 7, w - 15, 74, 0);
+              makeBuilding(x + 7, y + 96, 88, 130, 1);
+              makeBuilding(x + w - 95, y + 96, 88, 130, 1);
+              rect(x + 104, y + 100, w - 210, 124, '#6f8a5c');
+              for (let k = 0; k < 3; k++) drawTree(x + 130 + k * 52, y + 162, 14);
             } else if (zone.includes('OLD QUARTER') || zone === 'BATTERY POINT') {
               // Dense low-rise: three narrow lots with alleys between them.
               const lots = [7, 118, 229];
@@ -1819,6 +1842,13 @@
           tell('CITY CYCLE · W pedal · SHIFT stand on the pedals · S brake · A/D steer', 5);
         else tell(vehicleSpec(c).name + ' · W accelerate · A/D steer · Space handbrake', 3);
         tone(200, 0.12, 0.25, 'triangle');
+    }
+    function roofClearanceText(c) {
+      const roof = roofHeightNear(c.x, c.y),
+        clearance = c.altitude - roof;
+      if (roof < 12) return Math.round(worldMeters(c.altitude - terrainHeight(c.x, c.y))) + ' m AGL';
+      if (clearance < 0) return 'BELOW ROOFTOPS';
+      return Math.round(worldMeters(clearance)) + ' m OVER ROOFS';
     }
     function startReload() {
       const w = currentWeapon();
@@ -3746,7 +3776,7 @@
         : '';
       getElement('speedUnit').textContent = c
         ? isAircraft(c)
-          ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT'
+          ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
           : ridingBicycle()
             ? 'KM/H · LEGS ' + Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) + '%'
             : 'KM/H'

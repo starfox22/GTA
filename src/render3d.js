@@ -58,7 +58,18 @@
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = Three.PCFSoftShadowMap;
       renderer.shadowMap.autoUpdate = false;
-      const camera = new Three.OrthographicCamera(-500, 500, 350, -350, 1, 7500),
+      /**
+       * CAMERA
+       * A perspective camera pulled well back and stopped down to a long lens.
+       * The framing is computed to cover exactly the same world height at the
+       * player's plane as the old orthographic camera did, so zoom and every
+       * screen-space measurement behave as before -- but towers now lean, their
+       * flanks open up as you pass them, and height finally reads as height.
+       * Pulling back keeps the lens long enough that the lean stays a cue rather
+       * than a distortion.
+       */
+      const CAMERA_PULLBACK = 1.85;
+      const camera = new Three.PerspectiveCamera(20, 1.6, 20, 40000),
         ray = new Three.Raycaster(),
         groundPlane = new Three.Plane(new Three.Vector3(0, 1, 0), -9),
         hitPoint = new Three.Vector3();
@@ -1154,6 +1165,91 @@
       );
       playerRing.rotation.x = -Math.PI / 2;
       scene.add(playerRing);
+      /**
+       * ALTITUDE COLUMN
+       * An overhead camera flattens height, so while you are flying a ring is
+       * drawn on the ground directly beneath the aircraft with a column joining
+       * the two. The ring tells you where you are over the city and the column
+       * tells you how far above it, which nothing else in the view can.
+       */
+      const altitudeRing = new Three.Mesh(
+        new Three.RingGeometry(16, 19, 40),
+        new Three.MeshBasicMaterial({
+          color: '#e8d49a',
+          transparent: true,
+          opacity: 0.55,
+          side: Three.DoubleSide,
+          depthWrite: false,
+        }),
+      );
+      altitudeRing.rotation.x = -Math.PI / 2;
+      altitudeRing.visible = false;
+      scene.add(altitudeRing);
+      const altitudeColumn = new Three.Mesh(
+        new Three.CylinderGeometry(1.2, 1.2, 1, 6),
+        new Three.MeshBasicMaterial({
+          color: '#e8d49a',
+          transparent: true,
+          opacity: 0.22,
+          depthWrite: false,
+        }),
+      );
+      altitudeColumn.visible = false;
+      scene.add(altitudeColumn);
+      /**
+       * BEHIND A TOWER
+       * Real perspective means a building between the eye and the player can hide
+       * them. Rather than fade the city -- the buildings are merged into batches,
+       * so there is nothing individual left to fade -- a marker is drawn through
+       * the geometry when that happens, so you always know where you are standing.
+       */
+      const occlusionMarker = new Three.Mesh(
+        new Three.RingGeometry(7, 9.5, 28),
+        new Three.MeshBasicMaterial({
+          color: '#d9fb67',
+          transparent: true,
+          opacity: 0.9,
+          side: Three.DoubleSide,
+          depthTest: false,
+          depthWrite: false,
+        }),
+      );
+      occlusionMarker.rotation.x = -Math.PI / 2;
+      occlusionMarker.renderOrder = 900;
+      occlusionMarker.visible = false;
+      scene.add(occlusionMarker);
+      const occlusionPin = new Three.Mesh(
+        new Three.CylinderGeometry(0.9, 0.9, 1, 5),
+        new Three.MeshBasicMaterial({
+          color: '#d9fb67',
+          transparent: true,
+          opacity: 0.55,
+          depthTest: false,
+          depthWrite: false,
+        }),
+      );
+      occlusionPin.renderOrder = 900;
+      occlusionPin.visible = false;
+      scene.add(occlusionPin);
+      // Walk the ground line from the player toward the eye and ask whether any
+      // building along it is tall enough to cross the sight line.
+      function sightBlocked(x, z, standY) {
+        const dx = camera.position.x - x,
+          dz = camera.position.z - z,
+          len = Math.hypot(dx, dz);
+        if (len < 1) return false;
+        const reach = Math.min(len, 1100);
+        for (let d = 34; d < reach; d += 26) {
+          const t = d / len,
+            px = x + dx * t,
+            pz = z + dz * t,
+            need = standY + (camera.position.y - standY) * t + 8;
+          for (const b of buildingsNear(px, pz))
+            if (px > b.x && px < b.x + b.w && pz > b.y && pz < b.y + b.h && b.height > need)
+              return true;
+        }
+        return false;
+      }
       const objectiveRing = new Three.Mesh(
         new Three.RingGeometry(27, 29, 48),
         new Three.MeshBasicMaterial({
@@ -1415,11 +1511,7 @@
         },
         resize() {
           renderer.setSize(viewportWidth, viewportHeight);
-          const viewH = clamp(viewportHeight * 0.68, 430, 630) / worldZoom;
-          camera.left = (-viewH * viewportWidth) / viewportHeight / 2;
-          camera.right = (viewH * viewportWidth) / viewportHeight / 2;
-          camera.top = viewH / 2;
-          camera.bottom = -viewH / 2;
+          camera.aspect = viewportWidth / Math.max(1, viewportHeight);
           camera.updateProjectionMatrix();
         },
         project(mapX, mapY, elevation = 0) {
@@ -1569,10 +1661,20 @@
           updateCivicVisuals();
           const altitude = entityElevation(player.car || player),
             flying = isAircraft(player.car) || player.parachute;
+          // Keep the eye above the local skyline: zoomed in among the towers the
+          // nominal height can fall below a roof, and with a real projection
+          // anything above the camera is behind its near plane and gets sliced.
+          const skyline = roofHeightNear(cameraTarget.x, cameraTarget.y, 420),
+            riseOffset = Math.max(
+              (680 / worldZoom + (flying ? Math.max(0, altitude - 100) * 0.9 : 0)) * CAMERA_PULLBACK,
+              skyline - altitude + 170,
+            ),
+            backOffset = (560 / worldZoom) * CAMERA_PULLBACK,
+            eyeDistance = Math.hypot(riseOffset, backOffset);
           camera.position.set(
             cameraTarget.x,
-            680 / worldZoom + altitude + (flying ? Math.max(0, altitude - 100) * 0.9 : 0),
-            cameraTarget.y + 560 / worldZoom,
+            altitude + riseOffset,
+            cameraTarget.y + backOffset,
           );
           camera.far = 40000;
           scene.fog.density = 0.00015 * Math.min(1, worldZoom);
@@ -1584,10 +1686,12 @@
             (clamp(viewportHeight * 0.68, 430, 630) *
               (1 + (flying ? clamp(altitude / 2400, 0, 0.7) : 0))) /
             worldZoom;
-          camera.left = (-viewH * viewportWidth) / viewportHeight / 2;
-          camera.right = (viewH * viewportWidth) / viewportHeight / 2;
-          camera.top = viewH / 2;
-          camera.bottom = -viewH / 2;
+          // Choose the field of view so viewH world units still fill the frame at
+          // the player's plane; both viewH and the eye distance scale with zoom, so
+          // the amount of perspective stays the same however far out you are.
+          camera.aspect = viewportWidth / Math.max(1, viewportHeight);
+          camera.fov = (2 * Math.atan(viewH / 2 / eyeDistance) * 180) / Math.PI;
+          camera.near = Math.max(4, eyeDistance * 0.06);
           camera.updateProjectionMatrix();
           camera.position.x += (Math.random() - 0.5) * shake * 0.35;
           camera.position.y += (Math.random() - 0.5) * shake * 0.2;
@@ -2022,6 +2126,27 @@
             chuteModel.scale.setScalar(Math.max(0.01, player.parachute.opening));
           }
           playerRing.visible = !transitRide && !taxiRide && !player.car && !player.parachute;
+          const standY = entityElevation(player.car || player),
+            hidden =
+              !player.roof &&
+              !transitRide &&
+              !(player.car && isAircraft(player.car) && player.car.altitude > 40) &&
+              sightBlocked(player.x, player.y, standY);
+          occlusionMarker.visible = occlusionPin.visible = hidden;
+          if (hidden) {
+            occlusionMarker.position.set(player.x, standY + 34, player.y);
+            occlusionPin.position.set(player.x, standY + 17, player.y);
+            occlusionPin.scale.set(1, 34, 1);
+          }
+          const airborne = player.car && isAircraft(player.car) ? player.car : null,
+            columnTop = airborne ? airborne.altitude : player.parachute ? player.altitude : 0,
+            columnBase = airborne || player.parachute ? terrainHeight(player.x, player.y) : 0;
+          altitudeRing.visible = altitudeColumn.visible = columnTop - columnBase > 18;
+          if (altitudeRing.visible) {
+            altitudeRing.position.set(player.x, columnBase + 0.6, player.y);
+            altitudeColumn.position.set(player.x, (columnBase + columnTop) / 2, player.y);
+            altitudeColumn.scale.set(1, columnTop - columnBase, 1);
+          }
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
           for (const p of pickups) {
             let m = pickupModels.get(p);
