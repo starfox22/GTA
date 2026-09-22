@@ -4679,8 +4679,35 @@
           y: Math.round(b.y),
           cars: b.cars.filter((c) => c.hp > 0).length,
           officers: b.crew.filter((o) => o.hp > 0).length,
-          spikes: !!b.spike && !b.spike.spent,
+          // Cruisers still anchored; a heavy rammer knocks them loose.
+          braced: b.cars.filter((c) => c.hp > 0 && c.braced).length,
+          conesKnocked: b.cones.filter((c) => c.tipped).length,
+          breached: !!b.breached,
         })),
+      // Build a police cut at chokepoint `siteIndex` (see containment().sites),
+      // or at the one nearest the player, and describe it. Dispatch's next re-plan
+      // is held off for a minute so the cut survives a clean wanted level.
+      roadblock(siteIndex) {
+        containmentTimer = 60;
+        const sites = roadblockSites(),
+          site =
+            sites[siteIndex] ||
+            sites.reduce((best, s) => (distanceBetween(s, player) < distanceBetween(best, player) ? s : best));
+        const block = roadblockAt(site) || buildRoadblock(site);
+        return block
+          ? { name: site.name, x: site.x, y: site.y, axis: site.axis, cars: block.cars.length }
+          : null;
+      },
+      // Set the current vehicle moving along its heading at `metersPerSecond`.
+      launch(metersPerSecond = 20) {
+        const c = player.car;
+        if (!c) return null;
+        const speed = (metersPerSecond * BLOCK_SIZE) / 100;
+        c.vx = Math.cos(c.a) * speed;
+        c.vy = Math.sin(c.a) * speed;
+        c.speed = speed;
+        return this.ride();
+      },
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

@@ -50,6 +50,7 @@ Game closure (in include order):
 | geography.js | Land polygons, river, bridges, `districtAt`, coast segments, 2D water |
 | harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot |
 | police-feedback.js | Wanted-level banners and delivery blocking |
+| roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
 | arsenal.js | Weapon ownership, arsenal UI, knife |
 | citylife.js | Clock, `PLACES` (businesses), officers, police routing, `daylight()` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate` |

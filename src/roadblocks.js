@@ -3,7 +3,7 @@
      * Police containment and roadblocks
      * Source: src/roadblocks.js
      * Scope: shared game closure.
-     * Chokepoint catalogue, blockade planning, spike strips and officer posts.
+     * Chokepoint catalogue, blockade planning, braced cruisers, cones and officer posts.
      */
     /**
      * CONTAINMENT
@@ -12,10 +12,22 @@
      * worth cutting, so those are the catalogue. A blockade is placed ahead of
      * the runner and out of sight, never in front of their bumper, which is what
      * makes it read as police getting somewhere first rather than spawning in.
-     * Two cruisers nose-to-nose leave one gap; a spike strip covers the gap.
+     *
+     * A cut is cruisers and cones, nothing else. Two cruisers park across the
+     * carriageway in a staggered V and one more sits on each pavement, so no gap
+     * is wide enough for a car. The parked cruisers are braced (brakes on, wheels
+     * turned): an ordinary car simply stops against them. A heavy vehicle with
+     * enough momentum shoves one loose instead -- see roadblockHolds() -- and it
+     * spins away under the ordinary vehicle physics. Cones are loose props that
+     * scatter when anything drives through them.
      */
     const ROADBLOCK_LIFETIME = 165,
-      ROADBLOCK_SPIKE_HALF = 52;
+      // Only vehicles at least this heavy (VEHICLE_DEFINITIONS mass: SUVs, vans,
+      // pickups, trucks, buses, the tank) can shove a braced cruiser at all...
+      ROADBLOCK_RAM_MASS = 2.2,
+      // ...and only with this much momentum, mass x closing speed along the contact
+      // normal: a truck needs ~55 km/h, a bus ~40, an SUV close to its top speed.
+      ROADBLOCK_RAM_MOMENTUM = 520;
     const roadblocks = [];
     let roadblockSiteCache = null,
       containmentTimer = 3,
@@ -106,7 +118,7 @@
         expires: gameTime + ROADBLOCK_LIFETIME,
         cars: [],
         crew: [],
-        props: [],
+        cones: [],
         announced: false,
       };
       const park = (x, y, a) => {
@@ -118,6 +130,8 @@
           blockade: block,
           // Parked across the carriageway: the cop driving branch must leave these alone.
           crewDeployed: true,
+          // Anchored until a heavy enough rammer knocks it loose (roadblockHolds).
+          braced: true,
           vx: 0,
           vy: 0,
           speed: 0,
@@ -126,19 +140,35 @@
         block.cars.push(c);
         return true;
       };
-      for (const offset of [-30, 30])
+      // Both carriageway cruisers reach just past the centre line, so the V has
+      // no slot to thread; the along-road stagger keeps them out of each other.
+      for (const offset of [-28, 28])
         park(
-          site.x + lane.x * offset + along.x * offset * 0.8,
-          site.y + lane.y * offset + along.y * offset * 0.8,
+          site.x + lane.x * offset + along.x * offset * 0.72,
+          site.y + lane.y * offset + along.y * offset * 0.72,
           across + (offset < 0 ? -0.34 : 0.34),
         );
       // A site can be tight for the pair but fine for one car on the centre line.
       if (!block.cars.length) park(site.x, site.y, across);
       if (!block.cars.length) return null;
-      // Two officers work from the kerb behind the cars, not out in the lane.
-      for (const offset of [-64, 64]) {
-        const x = site.x + lane.x * offset - along.x * 22,
-          y = site.y + lane.y * offset - along.y * 22;
+      // One more cruiser parked along each pavement closes the kerb run; a few
+      // inward positions are tried because street furniture can be in the way.
+      for (const side of [-1, 1])
+        for (const offset of [72, 68, 64])
+          if (
+            park(
+              site.x + lane.x * side * offset,
+              site.y + lane.y * side * offset,
+              site.axis === 'x' ? 0 : Math.PI / 2,
+            )
+          )
+            break;
+      // Officers stand behind the line, on the side away from the runner.
+      const runner = containmentTarget(),
+        behind = (site.x - runner.x) * along.x + (site.y - runner.y) * along.y >= 0 ? 1 : -1;
+      for (const offset of [-36, 36]) {
+        const x = site.x + lane.x * offset + along.x * behind * 54,
+          y = site.y + lane.y * offset + along.y * behind * 54;
         if (solid(x, y, 8)) continue;
         const o = {
           x,
@@ -170,19 +200,19 @@
         block.crew.push(o);
       }
       block.cars[0].crew = block.crew;
-      // Cones and a flare either side mark the cut; the strip covers the centre gap.
-      block.props = [-1, 1].map((s) => ({
-        x: site.x + lane.x * s * 74,
-        y: site.y + lane.y * s * 74,
-      }));
-      block.spike = {
-        x: site.x,
-        y: site.y,
-        a: across,
-        half: ROADBLOCK_SPIKE_HALF,
-        lane,
-        spent: false,
-      };
+      // A row of cones across each approach. They mark the cut; they stop nothing.
+      block.cones = [];
+      for (const end of [-1, 1])
+        for (const offset of [-42, -14, 14, 42])
+          block.cones.push({
+            x: site.x + lane.x * offset + along.x * end * 64,
+            y: site.y + lane.y * offset + along.y * end * 64,
+            a: across,
+            vx: 0,
+            vy: 0,
+            av: 0,
+            tipped: false,
+          });
       roadblocks.push(block);
       return block;
     }
@@ -268,23 +298,72 @@
         radio('call-backup');
       }
     }
-    function flattenTyres(vehicle) {
-      if (vehicle.flatTyres || isAircraft(vehicle) || isBoat(vehicle)) return;
-      vehicle.flatTyres = true;
-      playSample('tires', 0.5, 0.7, vehicle);
-      noise(0.3, 0.22, 900);
-      for (let i = 0; i < 3; i++) particle(vehicle.x, vehicle.y, '#3a3a3c', 6, 90, 3);
-      if (vehicle === player.car) tell('TYRES SHREDDED · the car will not hold the road now', 4.5);
+    /* Called by resolveContact (physics.js) when a vehicle meets a braced
+       roadblock cruiser. Returns true while the cruiser holds, which makes it an
+       immovable anchor for this contact; returns false once it has been knocked
+       loose, and from then on it is an ordinary 1.6-mass car that the rammer's
+       momentum shoves, spins and dents like any other. */
+    function roadblockHolds(cruiser, rammer, closing) {
+      const mass = vehicleSpec(rammer).mass || 1.25;
+      if (closing <= 0 || mass < ROADBLOCK_RAM_MASS || mass * closing < ROADBLOCK_RAM_MOMENTUM)
+        return true;
+      cruiser.braced = false;
+      cruiser.rammedAt = gameTime;
+      const attacker = rammer === player.car ? player : rammer;
+      damageVehicle(cruiser, 26 + closing * 0.22, rammer.x, rammer.y, attacker);
+      // The locked wheels bite at one end, so a shoved cruiser slews round.
+      cruiser.av += (seededRandom() < 0.5 ? -1 : 1) * clamp(closing / 55, 1.2, 2.6);
+      if (distanceBetween(cruiser, player) < 650) {
+        particle(cruiser.x, cruiser.y, '#ddd1b4', 14, 110, 3);
+        noise(0.4, 0.3, 240);
+        playSample('tires', 0.45, 0.8, cruiser);
+      }
+      if (rammer === player.car) {
+        shake = Math.max(shake, 8);
+        crime(0.4);
+        const block = cruiser.blockade;
+        if (block && !block.breached) {
+          block.breached = true;
+          tell('ROADBLOCK BUSTED · ' + block.site.name, 3);
+          radio('look-out');
+        }
+      }
+      return false;
     }
-    function crossedSpikes(spike, from, to) {
-      // Signed distance either side of the strip line, plus a span test along it.
-      const nx = -Math.sin(spike.a),
-        ny = Math.cos(spike.a),
-        d0 = (from.x - spike.x) * nx + (from.y - spike.y) * ny,
-        d1 = (to.x - spike.x) * nx + (to.y - spike.y) * ny;
-      if (d0 * d1 > 0 && Math.abs(d1) > 6) return false;
-      const along = (to.x - spike.x) * Math.cos(spike.a) + (to.y - spike.y) * Math.sin(spike.a);
-      return Math.abs(along) < spike.half;
+    /* Cones are loose: whatever drives through one flicks it ahead and to the
+       side, where it tumbles over and slides to a stop. */
+    function updateRoadblockCones(block, deltaSeconds) {
+      for (const cone of block.cones) {
+        for (const c of vehicles) {
+          if (Math.abs(c.x - cone.x) > 60 || Math.abs(c.y - cone.y) > 60) continue;
+          if (isBoat(c) || (isAircraft(c) && (c.altitude || 0) > 8)) continue;
+          const speed = Math.hypot(c.vx || 0, c.vy || 0);
+          if (speed < 6 || !pointInCar(cone.x, cone.y, c, 4)) continue;
+          const side =
+              Math.sign(-(cone.x - c.x) * Math.sin(c.a) + (cone.y - c.y) * Math.cos(c.a)) || 1,
+            kick = Math.max(30, speed * 1.2);
+          cone.vx = Math.cos(c.a) * kick - Math.sin(c.a) * side * kick * 0.45;
+          cone.vy = Math.sin(c.a) * kick + Math.cos(c.a) * side * kick * 0.45;
+          cone.av = side * (5 + speed * 0.03);
+          if (!cone.tipped && distanceBetween(cone, player) < 500) noise(0.05, 0.08, 1300);
+          cone.tipped = true;
+          break;
+        }
+        if (!cone.vx && !cone.vy) continue;
+        const nx = cone.x + cone.vx * deltaSeconds,
+          ny = cone.y + cone.vy * deltaSeconds;
+        if (solid(nx, ny, 3)) cone.vx = cone.vy = 0;
+        else {
+          cone.x = nx;
+          cone.y = ny;
+        }
+        cone.a += cone.av * deltaSeconds;
+        const friction = Math.exp(-3.2 * deltaSeconds);
+        cone.vx *= friction;
+        cone.vy *= friction;
+        cone.av *= friction;
+        if (Math.hypot(cone.vx, cone.vy) < 2) cone.vx = cone.vy = 0;
+      }
     }
     function updateRoadblocks(deltaSeconds) {
       if (gameMode !== 'play') return;
@@ -300,41 +379,19 @@
           removeRoadblock(block, i);
           continue;
         }
-        for (const c of block.cars)
-          if (c.hp > 0 && c !== player.car) {
-            c.vx = c.vy = c.speed = c.av = 0;
-            c.cop = true;
-          }
+        for (const c of block.cars) {
+          // A cruiser the player climbs into is theirs to drive, not an anchor.
+          if (c === player.car) c.braced = false;
+          if (c.hp <= 0 || c === player.car) continue;
+          c.cop = true;
+          if (c.braced) c.vx = c.vy = c.speed = c.av = 0;
+        }
+        updateRoadblockCones(block, deltaSeconds);
         if (!block.announced && distanceBetween(block, player) < 320) {
           block.announced = true;
           radio(randomChoice(['police-drop-weapon', 'police-get-down', 'police-under-arrest']), block);
         }
-        const spike = block.spike;
-        if (!spike || spike.spent) continue;
-        for (const c of vehicles) {
-          if (c.blockade === block || c.flatTyres || isAircraft(c) || isBoat(c)) continue;
-          if (Math.abs(c.x - spike.x) > 200 || Math.abs(c.y - spike.y) > 200) continue;
-          if (Math.hypot(c.vx || 0, c.vy || 0) < 18) continue;
-          const from = c.personSweepStart || c;
-          if (crossedSpikes(spike, from, c)) flattenTyres(c);
-        }
       }
-    }
-    /* Vehicles meet the barrier line itself, not only the parked cruisers. */
-    function roadblockBarriers() {
-      const list = [];
-      for (const block of roadblocks) {
-        if (Math.abs(block.x - player.x) > 900 || Math.abs(block.y - player.y) > 900) continue;
-        for (const p of block.props)
-          list.push({
-            x: p.x - 13,
-            y: p.y - 13,
-            w: 26,
-            h: 26,
-            height: 30,
-          });
-      }
-      return list;
     }
     function drawRoadblocks2D() {
       for (const block of roadblocks) {
@@ -349,17 +406,10 @@
         worldContext.lineTo(block.x + ca * 72, block.y + sa * 72);
         worldContext.stroke();
         worldContext.setLineDash([]);
-        if (block.spike && !block.spike.spent) {
-          worldContext.strokeStyle = '#d96a5a';
-          worldContext.lineWidth = 3;
-          worldContext.beginPath();
-          worldContext.moveTo(block.x - ca * block.spike.half, block.y - sa * block.spike.half);
-          worldContext.lineTo(block.x + ca * block.spike.half, block.y + sa * block.spike.half);
-          worldContext.stroke();
-        }
-        for (const p of block.props) {
-          worldContext.fillStyle = '#e07a4a';
-          worldContext.fillRect(p.x - 7, p.y - 7, 14, 14);
+        worldContext.fillStyle = '#e07a4a';
+        for (const cone of block.cones) {
+          const r = cone.tipped ? 3 : 4;
+          worldContext.fillRect(cone.x - r, cone.y - r, r * 2, r * 2);
         }
       }
     }

@@ -305,7 +305,6 @@
     }
     function repairVehicle(vehicle) {
       vehicle.hp = vehicle.maxhp;
-      vehicle.flatTyres = false;
       vehicle.damage = {
         front: 0,
         rear: 0,
@@ -351,11 +350,21 @@
       }
     }
     function resolveContact(a, b, hit, staticBody = null, record = true) {
-      const inverseMassA = 1 / (vehicleSpec(a).mass || 1.25),
-        inverseMassB = b ? 1 / (vehicleSpec(b).mass || 1.25) : 0,
-        inverseInertiaA = (inverseMassA * 12) / (vehicleSpec(a).l ** 2 + vehicleSpec(a).w ** 2),
-        inverseInertiaB = b ? (inverseMassB * 12) / (vehicleSpec(b).l ** 2 + vehicleSpec(b).w ** 2) : 0,
-        n = hit.n;
+      const n = hit.n;
+      let inverseMassA = 1 / (vehicleSpec(a).mass || 1.25),
+        inverseMassB = b ? 1 / (vehicleSpec(b).mass || 1.25) : 0;
+      // A braced roadblock cruiser is an anchor for this contact unless the other
+      // vehicle hits it hard and heavy enough to knock it loose (roadblocks.js).
+      if (b && !!a.braced !== !!b.braced) {
+        const anchor = a.braced ? a : b,
+          closing = -(((b.vx || 0) - (a.vx || 0)) * n.x + ((b.vy || 0) - (a.vy || 0)) * n.y);
+        if (roadblockHolds(anchor, anchor === a ? b : a, closing)) {
+          if (anchor === a) inverseMassA = 0;
+          else inverseMassB = 0;
+        }
+      }
+      const inverseInertiaA = (inverseMassA * 12) / (vehicleSpec(a).l ** 2 + vehicleSpec(a).w ** 2),
+        inverseInertiaB = b ? (inverseMassB * 12) / (vehicleSpec(b).l ** 2 + vehicleSpec(b).w ** 2) : 0;
       const contactOffsetA = {
           x: hit.x - a.x,
           y: hit.y - a.y,
@@ -1052,16 +1061,14 @@
             steer = ai.steer;
             acceleration = clamp((ai.desired - along) * 5, -400, vehicleDefinition.acc);
             drag = 0.15;
+          } else if (c.blockade && !c.braced) {
+            // A roadblock cruiser shoved loose by a rammer slides and slews on
+            // locked wheels before it scrubs to a halt.
+            drag = 1.5;
+            grip = 2.2;
           } else {
             drag = c.crewDeployed ? 9 : 1.8;
             grip = 4;
-          }
-          if (c.flatTyres && !isAircraft(c) && !isBoat(c)) {
-            // Rims on tarmac: no drive, no bite and a constant pull to one side.
-            acceleration *= 0.5;
-            drag = Math.max(drag, 1.15);
-            grip *= 0.55;
-            steer += Math.sin(physicsClock * 2.3 + c.id) * 0.22 * Math.sign(along || 1);
           }
           const terrain = roadVehicleTerrain(c);
           if (terrain) {
@@ -1083,7 +1090,9 @@
           c.vy -= headingCosine * traction;
           c.vx *= Math.exp(-drag * stepSeconds);
           c.vy *= Math.exp(-drag * stepSeconds);
-          c.av += (steer - c.av) * (1 - Math.exp(-5 * stepSeconds));
+          // Rammed roadblock cruisers keep their spin a little longer: nobody is steering.
+          c.av +=
+            (steer - c.av) * (1 - Math.exp(-(c.blockade && !c.braced ? 1.4 : 5) * stepSeconds));
           c.a = normalizeAngle(c.a + c.av * stepSeconds);
           c.moveA = Math.atan2(c.vy, c.vx);
           c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
@@ -1196,9 +1205,9 @@
         }
         staticCandidates.set(c, list);
       }
-      // Roadblock kerb barriers are built and torn down mid-chase, so they live
-      // outside the baked static grid and are resolved from this short list.
-      const blockBodies = [...roadblockBarriers(), ...depotBarriers()].map((r, i) => ({
+      // Vinny's depot shutters open and close mid-mission, so they live outside
+      // the baked static grid and are resolved from this short list.
+      const blockBodies = depotBarriers().map((r, i) => ({
         x: r.x + r.w / 2,
         y: r.y + r.h / 2,
         hx: r.w / 2,

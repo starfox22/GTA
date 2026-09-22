@@ -70,7 +70,9 @@ something, never a generic code-evaluation hook.
 | `startMission(i)`, `missions()` | Jump into a mission |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort) |
-| `roadblocks()`, `containment()` | Police cordon state |
+| `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
+| `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |
+| `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
 | `stats()` | Per-frame CPU timings, draw calls, triangles |
 
 ## Conventions
