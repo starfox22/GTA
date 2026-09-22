@@ -432,7 +432,7 @@
       const p = mapLocalPoint(e);
       if (!cancel && mapGesture?.id === e.pointerId && !mapGesture.drag && !mapPinch && p.valid) {
         const w = mapWorldPoint(p);
-        setWaypoint(w.x, w.y);
+        if (!taxiMapPick(w.x, w.y)) setWaypoint(w.x, w.y);
       }
       mapPointers.delete(e.pointerId);
       if (!mapPointers.size) {

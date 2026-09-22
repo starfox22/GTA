@@ -1747,6 +1747,7 @@
       if (transitInteract()) return;
       if (parkInteract()) return;
       if (marinaInteract()) return;
+      if (taxiInteract()) return;
       if (
         rooftopMissionInteract() ||
         challengeMissionInteract() ||
@@ -1780,6 +1781,15 @@
           ejectDriver(c, 'hijack');
           crime(0.8);
         }
+        enterVehicle(c);
+        return;
+      }
+      if (GARAGES.some((s) => distanceBetween(player, s) < 140))
+        tell('Drive fully inside the open bay, stop, and press E. Respray and repair: $250.');
+    }
+    /* Taking the wheel: shared by the action key, the cab hijack and the getaway
+       cars missions hand you, so every entry sets the same state. */
+    function enterVehicle(c) {
         player.car = c;
         c.ramUntil = 0;
         enforceVehicleHandgun();
@@ -1809,10 +1819,6 @@
           tell('BICYCLE · W pedal · S brake · A/D steer · Explore the green cycle loops', 5);
         else tell(vehicleSpec(c).name + ' · W accelerate · A/D steer · Space handbrake', 3);
         tone(200, 0.12, 0.25, 'triangle');
-        return;
-      }
-      if (GARAGES.some((s) => distanceBetween(player, s) < 140))
-        tell('Drive fully inside the open bay, stop, and press E. Respray and repair: $250.');
     }
     function startReload() {
       const w = currentWeapon();
@@ -2653,11 +2659,18 @@
           }
         }
         timed('transit', () => updateTransit(deltaSeconds));
+        timed('taxi', () => updateTaxiRide(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
         if (player.parachute) updateParachute(deltaSeconds);
-        else if (!player.car && !transitRide && !player.coaster && !updateMountainFooting(deltaSeconds)) {
+        else if (
+          !player.car &&
+          !transitRide &&
+          !taxiRide &&
+          !player.coaster &&
+          !updateMountainFooting(deltaSeconds)
+        ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
           if (x || y) {
@@ -2684,6 +2697,7 @@
           !player.deck &&
           !player.parachute &&
           !transitRide &&
+          !taxiRide &&
           !player.coaster
         )
           player.altitude = terrainHeight(player.x, player.y);
@@ -3788,7 +3802,9 @@
                 : 'RESPRAY & REPAIR · $250';
           else if (GARAGES.some((s) => distanceBetween(c, s) < 200))
             prompt = 'DRIVE FULLY INTO THE OPEN REPAIR BAY';
-        } else if (player.deck)
+        } else if (taxiRide) prompt = 'STOP HERE · $' + taxiRide.fare;
+        else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
+        else if (player.deck)
           prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : '';
         else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
@@ -3852,6 +3868,10 @@
         closeService();
         return;
       }
+      if (gameMode === 'taxi') {
+        closeTaxiOffer();
+        return;
+      }
       if (!getElement('credits').classList.contains('hidden')) {
         getElement('credits').classList.add('hidden');
         return;
@@ -3908,11 +3928,14 @@
       clearMapGesture();
       clearTouchInput();
       mapOpen = !mapOpen;
+      if (!mapOpen) cancelTaxiPick();
       gameMode = mapOpen ? 'map' : 'play';
       getElement('mapOverlay').classList.toggle('hidden', !mapOpen);
       keys = {};
       mouse.down = false;
       if (mapOpen) {
+        if (taxiPicking)
+          getElement('mapRouteStatus').textContent = 'CAB WAITING · Tap where you want to be dropped off';
         drawMap(cityMapContext, 800, 660, true);
         getElement('closeMap').focus();
       } else canvas.focus();
@@ -4064,6 +4087,13 @@
         }
         return;
       }
+      if (gameMode === 'taxi') {
+        if (code === 'Escape' || code === 'KeyE') {
+          e.preventDefault();
+          closeTaxiOffer();
+        }
+        return;
+      }
       if (gameMode === 'service') {
         const editing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName);
         if (
@@ -4198,6 +4228,7 @@
     getElement('closeMap').onclick = toggleMap;
     getElement('soundBtn').onclick = mute;
     getElement('menuSound').onclick = mute;
+    getElement('closeTaxi').onclick = closeTaxiOffer;
     // Sandboxed embeds and bare file:// copies cannot deliver this file, so hide
     // the offer instead of showing a link that silently does nothing.
     const offlineCopy = getElement('offlineCopy');
@@ -4223,6 +4254,7 @@
     // @include src/carjack.js
     // @include src/themepark.js
     // @include src/marina.js
+    // @include src/taxi.js
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
@@ -4360,6 +4392,14 @@
           };
         }
         return this.status();
+      },
+      // Put a cab at the kerb and ride it somewhere, without hunting for one.
+      cab(x, y) {
+        const car = spawnClearCar('taxi', player.x + 44, player.y, 0, true);
+        assignDriver(car);
+        if (x === undefined) return this.status();
+        startTaxiRide(car, { x, y });
+        return { riding: !!taxiRide, fare: taxiRide?.fare ?? null, stops: taxiRide?.route.length ?? 0 };
       },
       // The chokepoint catalogue and the state of the cordon.
       containment: () => ({

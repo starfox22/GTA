@@ -1857,7 +1857,7 @@
               m = makePerson(p, activePlayer);
               personModels.set(p, m);
             }
-            m.group.visible = near && !(activePlayer && (player.car || transitRide));
+            m.group.visible = near && !(activePlayer && (player.car || transitRide || taxiRide));
             if (p.hidden) m.group.visible = false;
             if (!m.group.visible) continue;
             const fallen = p.hp <= 0 ? 1 : (p.poisonCollapse ?? personFallAmount(p)),
@@ -2016,7 +2016,7 @@
             chuteModel.rotation.y = -player.a;
             chuteModel.scale.setScalar(Math.max(0.01, player.parachute.opening));
           }
-          playerRing.visible = !transitRide && !player.car && !player.parachute;
+          playerRing.visible = !transitRide && !taxiRide && !player.car && !player.parachute;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
           for (const p of pickups) {
             let m = pickupModels.get(p);
