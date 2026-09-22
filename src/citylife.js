@@ -842,6 +842,16 @@
       }
       for (let i = 0; i < Math.min(10, target - walkers.length); i++) if (!spawnWalker()) break;
     }
+    /**
+     * ESCAPE WINDOW
+     * How long you have to stay out of sight before the search is called off.
+     * It scales with the heat you are carrying but is capped: ten seconds out of
+     * sight is the longest any level of wanted will ever hold you.
+     */
+    const POLICE_SEARCH_MAX = 10;
+    function policeSearchSeconds(stars = wantedStars) {
+      return Math.min(POLICE_SEARCH_MAX, 5 + Math.ceil(clamp(stars, 0, 5)));
+    }
     function clearPolice(notifyEscape = false) {
       clearRoadblocks();
       const wasWanted = wantedStars > 0;
@@ -1244,11 +1254,11 @@
           y: player.y,
         };
         searchActive = false;
-        searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+        searchRemaining = policeSearchSeconds();
       } else {
         if (!searchActive) {
           searchActive = true;
-          searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+          searchRemaining = policeSearchSeconds();
         }
         searchRemaining = Math.max(0, searchRemaining - deltaSeconds);
         if (searchRemaining === 0) {

@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 28.0.0
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 28.1.0
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
 Edit the named source sections here, or use the modular source ZIP.
@@ -5220,7 +5220,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       crimeTime = gameTime;
       cooldown = 0;
       searchActive = false;
-      searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+      searchRemaining = policeSearchSeconds();
       lastSeen = {
         x: player.x,
         y: player.y,
@@ -13201,6 +13201,16 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       for (let i = 0; i < Math.min(10, target - walkers.length); i++) if (!spawnWalker()) break;
     }
+    /**
+     * ESCAPE WINDOW
+     * How long you have to stay out of sight before the search is called off.
+     * It scales with the heat you are carrying but is capped: ten seconds out of
+     * sight is the longest any level of wanted will ever hold you.
+     */
+    const POLICE_SEARCH_MAX = 10;
+    function policeSearchSeconds(stars = wantedStars) {
+      return Math.min(POLICE_SEARCH_MAX, 5 + Math.ceil(clamp(stars, 0, 5)));
+    }
     function clearPolice(notifyEscape = false) {
       clearRoadblocks();
       const wasWanted = wantedStars > 0;
@@ -13603,11 +13613,11 @@ body:not(.touch-mode).police-search-active #carRadio {
           y: player.y,
         };
         searchActive = false;
-        searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+        searchRemaining = policeSearchSeconds();
       } else {
         if (!searchActive) {
           searchActive = true;
-          searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+          searchRemaining = policeSearchSeconds();
         }
         searchRemaining = Math.max(0, searchRemaining - deltaSeconds);
         if (searchRemaining === 0) {
@@ -15376,7 +15386,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       wantedStars = Math.max(3, wantedStars);
       searchActive = false;
-      searchRemaining = 21;
+      searchRemaining = policeSearchSeconds();
       lastSeen = {
         x: m.car.x,
         y: m.car.y,
@@ -17384,6 +17394,8 @@ body:not(.touch-mode).police-search-active #carRadio {
       SINK_SECONDS = 3.2,
       SINK_DEPTH = 42;
     let swimBreath = SWIM_BREATH;
+    player.swimStroke = 0;
+    player.swimDrive = 0;
     function deepWater(x, y, r = 4) {
       return !groundAt(x, y, r) && !onBridge(x, y, r) && !onDock(x, y, r);
     }
@@ -17409,6 +17421,8 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       const inWater = deepWater(player.x, player.y, 3);
       if (inWater && !player.swimming) {
+        player.swimStroke = 0;
+        player.swimDrive = 0;
         splashAt(player.x, player.y, 1);
         tell('IN THE WATER · Shift to swim harder · your weapons are no use here', 3.5);
       }
@@ -17418,9 +17432,37 @@ body:not(.touch-mode).police-search-active #carRadio {
         swimBreath = Math.min(SWIM_BREATH, swimBreath + deltaSeconds * 5);
         return;
       }
-      // Floating: the head and shoulders ride just under the parapet line.
-      player.altitude = -5 + Math.sin(gameTime * 1.9) * 1.1;
-      swimBreath -= deltaSeconds * ((keys.ShiftLeft || keys.ShiftRight) && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) ? 1.7 : 1);
+      // Riding the surface: the body floats just awash, the back clear of it.
+      const driving = !!(
+          keys.KeyW ||
+          keys.KeyA ||
+          keys.KeyS ||
+          keys.KeyD ||
+          keys.ArrowUp ||
+          keys.ArrowDown ||
+          keys.ArrowLeft ||
+          keys.ArrowRight
+        ),
+        hard = driving && (keys.ShiftLeft || keys.ShiftRight);
+      player.swimDrive += ((driving ? (hard ? 1 : 0.62) : 0) - player.swimDrive) * Math.min(1, deltaSeconds * 4);
+      // One arm cycle per stroke: slow and long while floating, quick when driving.
+      player.swimStroke += deltaSeconds * (1.5 + player.swimDrive * 5.2);
+      player.altitude = -4.6 + Math.sin(player.swimStroke) * 0.5 + Math.sin(gameTime * 1.3) * 0.4;
+      swimBreath -= deltaSeconds * (hard ? 1.7 : 1);
+      if (Math.floor(player.swimStroke / Math.PI) !== player.swimBeat) {
+        player.swimBeat = Math.floor(player.swimStroke / Math.PI);
+        if (player.swimDrive > 0.25) {
+          const reach = player.a + (player.swimBeat % 2 ? 0.7 : -0.7);
+          particle(
+            player.x + Math.cos(reach) * 11,
+            player.y + Math.sin(reach) * 11,
+            '#e6f4f7',
+            3,
+            34 * player.swimDrive,
+            3,
+          );
+        }
+      }
       if (swimBreath <= 0) {
         swimBreath = 0;
         hurt(13 * deltaSeconds, 'blast');
@@ -37172,6 +37214,79 @@ body:not(.touch-mode).police-search-active #carRadio {
       );
       playerRing.rotation.x = -Math.PI / 2;
       scene.add(playerRing);
+      /**
+       * SWIM WAKE
+       * Two flat pieces lying on the water: a soft V that opens out behind the
+       * swimmer, and a ring that expands and fades once per stroke. Both are
+       * painted into one small canvas each, so the whole effect is two draw calls.
+       */
+      function wakeTexture(v) {
+        const size = 128,
+          cv = document.createElement('canvas');
+        cv.width = cv.height = size;
+        const g = cv.getContext('2d');
+        g.clearRect(0, 0, size, size);
+        if (v) {
+          // A widening pair of foam lines trailing the swimmer.
+          g.strokeStyle = '#ffffff';
+          g.lineCap = 'round';
+          for (const side of [-1, 1])
+            for (let i = 0; i < 3; i++) {
+              g.globalAlpha = 0.5 - i * 0.13;
+              g.lineWidth = 7 - i * 2;
+              g.beginPath();
+              g.moveTo(size * 0.62, size / 2 + side * 3);
+              g.quadraticCurveTo(
+                size * 0.34,
+                size / 2 + side * (12 + i * 9),
+                size * 0.05,
+                size / 2 + side * (30 + i * 13),
+              );
+              g.stroke();
+            }
+          g.globalAlpha = 0.5;
+          g.beginPath();
+          g.ellipse(size * 0.66, size / 2, 13, 8, 0, 0, Math.PI * 2);
+          g.fillStyle = '#ffffff';
+          g.fill();
+        } else {
+          const grad = g.createRadialGradient(size / 2, size / 2, size * 0.3, size / 2, size / 2, size / 2);
+          grad.addColorStop(0, 'rgba(255,255,255,0)');
+          grad.addColorStop(0.72, 'rgba(236,248,252,0.55)');
+          grad.addColorStop(1, 'rgba(236,248,252,0)');
+          g.fillStyle = grad;
+          g.fillRect(0, 0, size, size);
+        }
+        const tx = new Three.CanvasTexture(cv);
+        tx.colorSpace = Three.SRGBColorSpace;
+        return tx;
+      }
+      const swimWake = new Three.Mesh(
+        new Three.PlaneGeometry(46, 30),
+        new Three.MeshBasicMaterial({
+          map: wakeTexture(true),
+          transparent: true,
+          depthWrite: false,
+          opacity: 0,
+        }),
+      );
+      swimWake.rotation.x = -Math.PI / 2;
+      swimWake.renderOrder = 7;
+      swimWake.visible = false;
+      scene.add(swimWake);
+      const swimRipple = new Three.Mesh(
+        new Three.PlaneGeometry(1, 1),
+        new Three.MeshBasicMaterial({
+          map: wakeTexture(false),
+          transparent: true,
+          depthWrite: false,
+          opacity: 0,
+        }),
+      );
+      swimRipple.rotation.x = -Math.PI / 2;
+      swimRipple.renderOrder = 7;
+      swimRipple.visible = false;
+      scene.add(swimRipple);
       const objectiveRing = new Three.Mesh(
         new Three.RingGeometry(27, 29, 48),
         new Three.MeshBasicMaterial({
@@ -38031,6 +38146,27 @@ body:not(.touch-mode).police-search-active #carRadio {
                 m.parts.arm1.rotation.z = 2.6;
                 m.parts['arm-1'].rotation.z = 2.6;
               }
+              /**
+               * FRONT CRAWL
+               * Swimming is a whole-body pose, so it is applied last and overrides
+               * everything the walk and the weapon set before it. The body lies
+               * prone along its heading and rolls with the stroke the way a
+               * swimmer's does; the arms windmill a half cycle apart, catching and
+               * recovering rather than swinging like a walk; the legs flutter at
+               * twice the arm rate; and the whole thing rides at the waterline.
+               */
+              if (player.swimming) {
+                const stroke = player.swimStroke || 0,
+                  roll = Math.sin(stroke) * 0.44;
+                m.group.rotation.set(roll, -player.a, -Math.PI / 2);
+                m.group.position.y = entityElevation(player) + 2.6;
+                m.parts.arm1.rotation.z = stroke;
+                m.parts['arm-1'].rotation.z = stroke + Math.PI;
+                m.parts.leg1.rotation.z = Math.sin(stroke * 2) * 0.3;
+                m.parts['leg-1'].rotation.z = -Math.sin(stroke * 2) * 0.3;
+                m.torso.rotation.z = 0.14 + Math.sin(stroke * 2) * 0.06;
+                m.parts.guns.forEach((gun) => (gun.visible = false));
+              }
             }
           }
           chuteModel.visible = !!player.parachute && player.parachute.stage === 'canopy';
@@ -38039,8 +38175,25 @@ body:not(.touch-mode).police-search-active #carRadio {
             chuteModel.rotation.y = -player.a;
             chuteModel.scale.setScalar(Math.max(0.01, player.parachute.opening));
           }
-          playerRing.visible = !transitRide && !taxiRide && !player.car && !player.parachute;
+          playerRing.visible =
+            !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
+          // Wake: a bow wave that opens out behind the swimmer, and a ring of
+          // disturbed water around them that breathes with the stroke.
+          swimWake.visible = !!player.swimming;
+          if (swimWake.visible) {
+            const stroke = player.swimStroke || 0,
+              drive = clamp(player.swimDrive || 0, 0, 1);
+            swimWake.position.set(player.x, -1.4, player.y);
+            swimWake.rotation.z = -player.a;
+            swimWake.scale.set(1 + drive * 0.9, 0.8 + drive * 0.5, 1);
+            swimWake.material.opacity = 0.16 + drive * 0.34 + Math.sin(stroke * 2) * 0.05;
+            swimRipple.position.set(player.x, -1.5, player.y);
+            const pulse = (stroke % (Math.PI * 2)) / (Math.PI * 2);
+            swimRipple.scale.setScalar(9 + pulse * 26);
+            swimRipple.material.opacity = (1 - pulse) * 0.3 * (0.4 + drive);
+          }
+          swimRipple.visible = swimWake.visible;
           for (const p of pickups) {
             let m = pickupModels.get(p);
             if (!m) {
@@ -38375,7 +38528,7 @@ body:not(.touch-mode).police-search-active #carRadio {
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "28.0.0",
+      version: "28.1.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -38424,7 +38577,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           wantedPressure = n;
           starElapsed = 0;
           searchActive = false;
-          searchRemaining = 12 + n * 3;
+          searchRemaining = policeSearchSeconds(n);
           lastSeen = {
             x: player.x,
             y: player.y,

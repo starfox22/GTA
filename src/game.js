@@ -716,7 +716,7 @@
       crimeTime = gameTime;
       cooldown = 0;
       searchActive = false;
-      searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+      searchRemaining = policeSearchSeconds();
       lastSeen = {
         x: player.x,
         y: player.y,
@@ -4467,7 +4467,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "28.0.0",
+      version: "28.1.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -4516,7 +4516,7 @@
           wantedPressure = n;
           starElapsed = 0;
           searchActive = false;
-          searchRemaining = 12 + n * 3;
+          searchRemaining = policeSearchSeconds(n);
           lastSeen = {
             x: player.x,
             y: player.y,

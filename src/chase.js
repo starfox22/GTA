@@ -318,7 +318,7 @@
       }
       wantedStars = Math.max(3, wantedStars);
       searchActive = false;
-      searchRemaining = 21;
+      searchRemaining = policeSearchSeconds();
       lastSeen = {
         x: m.car.x,
         y: m.car.y,

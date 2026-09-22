@@ -1,5 +1,21 @@
 # Changelog
 
+## 28.1.0 — A real swimming stroke, and a shorter escape
+
+- Swimming was the walking pose held under the waterline. It is a front crawl
+  now: the body lies prone along its heading and rolls with the stroke the way a
+  swimmer's does, the arms windmill a half cycle apart -- catching and recovering
+  rather than swinging like a walk -- and the legs flutter at twice the arm rate.
+  The stroke quickens when you drive and lengthens when you float. The water
+  surface hides everything below it, so what shows is a back, two arms and the
+  turn of a head.
+- The swimmer carries a wake: a V of foam that opens out behind and widens with
+  speed, a ring of disturbed water that expands and fades once per stroke, and a
+  throw of spray at each catch.
+- The escape window is capped. Staying out of sight used to hold you for up to
+  twenty-seven seconds at five stars; no level of wanted now holds you for longer
+  than ten.
+
 ## 28.0.0 — Water, pedalling, one shore, and the camera back where it was
 
 The view
