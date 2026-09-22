@@ -955,13 +955,13 @@
           const venueModel = sportsVenueModels.get(match.sport);
           if (!venueModel) continue;
           venueModel.group.visible = entityInView(venueModel, venueModel.radius);
-          if (venueModel.crowd) venueModel.crowd.visible = worldZoom > 0.28;
+          if (venueModel.crowd) venueModel.crowd.visible = viewZoom > 0.28;
           for (const scoreboard of sportsScoreboards) {
             if (scoreboard.venueKind === match.sport && venueModel.group.visible)
               repaintSportsScoreboard(scoreboard, match);
           }
           for (const athlete of match.players) {
-            const visible = venueModel.group.visible && worldZoom > 0.22 && entityInView(athlete, 25);
+            const visible = venueModel.group.visible && viewZoom > 0.22 && entityInView(athlete, 25);
             let model = sportsAthleteModels.get(athlete);
             if (!model && !visible) continue;
             if (!model) {
@@ -972,7 +972,7 @@
             if (visible) poseSportsAthlete(model, athlete, match);
           }
           const ballVisible =
-            venueModel.group.visible && worldZoom > 0.22 && entityInView(match.ball, 40);
+            venueModel.group.visible && viewZoom > 0.22 && entityInView(match.ball, 40);
           let ballModel = sportsBallModels.get(match);
           if (!ballModel && ballVisible) {
             ballModel = createSportsBall(match);

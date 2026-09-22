@@ -765,7 +765,8 @@
       c.av += (turn * 1.6 - c.av) * Math.min(1, stepSeconds * 4);
       c.a += c.av * stepSeconds;
       const floor = terrainHeight(c.x, c.y),
-        ceiling = 2400,
+        // About 1400 m, above the cloud tops (clouds3d.js).
+        ceiling = 7200,
         clearance = c.altitude - floor;
       const flying = clearance > 1 || lift > 0,
         desired = flying ? forward * VEHICLE_DEFINITIONS.helicopter.max : 0,
@@ -775,7 +776,10 @@
       c.vy += Math.sin(c.a) * acceleration * stepSeconds;
       c.vx *= Math.exp(-stepSeconds * 0.45);
       c.vy *= Math.exp(-stepSeconds * 0.45);
-      c.vz += (lift * 75 - c.vz) * Math.min(1, stepSeconds * 3);
+      // Climb and descent quicken once well clear of the rooftops, so the cloud
+      // layer is a half-minute climb rather than a minute; low flying is unchanged.
+      const climbRate = 75 + clamp(clearance - 400, 0, 3000) * 0.035;
+      c.vz += (lift * climbRate - c.vz) * Math.min(1, stepSeconds * 3);
       let next = clamp(c.altitude + c.vz * stepSeconds, floor, ceiling);
       if (c.hp > 0 && next < floor + 20 && clearance >= 20 && !safeLanding(c)) {
         next = floor + 20;

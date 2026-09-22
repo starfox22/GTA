@@ -43,7 +43,7 @@
       const Three = THREE,
         scene = new Three.Scene();
       scene.background = new Three.Color('#444c63');
-      scene.fog = new Three.FogExp2('#747381', 0.00015);
+      // scene.fog (distance haze) is set up with the flight camera in flight-view3d.js.
       const renderer = new Three.WebGLRenderer({
         canvas: getElement('scene'),
         antialias: true,
@@ -60,12 +60,13 @@
       renderer.shadowMap.autoUpdate = false;
       /**
        * CAMERA
-       * Orthographic and overhead: the city reads as a plan, which is the whole
-       * point of the view. A perspective camera was tried and taken back out --
-       * the lean it gave tall buildings cost more in legibility than the sense of
-       * height was worth.
+       * On the street the view is orthographic and overhead: the city reads as a
+       * plan, which is the whole point of the view, and a perspective lean on tall
+       * buildings would cost legibility there. In the air a perspective camera
+       * takes over so height reads as height (see flight-view3d.js). `camera` is
+       * whichever of the two is active this frame.
        */
-      const camera = new Three.OrthographicCamera(-500, 500, 350, -350, 1, 7500),
+      const streetCamera = new Three.OrthographicCamera(-500, 500, 350, -350, 1, 7500),
         ray = new Three.Raycaster(),
         groundPlane = new Three.Plane(new Three.Vector3(0, 1, 0), -9),
         hitPoint = new Three.Vector3();
@@ -88,6 +89,8 @@
       const fill = new Three.DirectionalLight('#879ccc', 0.55);
       fill.position.set(-200, 100, -300);
       scene.add(fill);
+      let camera = streetCamera;
+      // @include src/flight-view3d.js
       const allBuildings = [],
         statics = [],
         carModels = new Map(),
@@ -133,7 +136,8 @@
        * cell replaces the old per-group distance culling. Objects that move or
        * animate must be flagged `userData.dynamic = true` to be left alone.
        */
-      const batchGroups = [];
+      const batchGroups = [],
+        staticBatchMeshes = [];
       function batchStaticGroups(cellSize = 1024) {
         const buckets = new Map(),
           v = new Three.Vector3(),
@@ -153,6 +157,7 @@
             const geo = o.geometry,
               count = geo.attributes.position.count;
             b.parts.push({ geo, matrix: o.matrixWorld.clone() });
+            noteFarScenery(o);
             b.vertices += count;
             b.indices += geo.index ? geo.index.count : count;
             taken.push(o);
@@ -209,6 +214,7 @@
           m.receiveShadow = true;
           m.name = 'static batch';
           scene.add(m);
+          staticBatchMeshes.push(m);
         }
         return { merged: removed, batches: buckets.size };
       }
@@ -704,6 +710,7 @@
       // @include src/marina3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
+      // @include src/clouds3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],
@@ -1490,11 +1497,11 @@
         resize() {
           renderer.setSize(viewportWidth, viewportHeight);
           const viewH = clamp(viewportHeight * 0.68, 430, 630) / worldZoom;
-          camera.left = (-viewH * viewportWidth) / viewportHeight / 2;
-          camera.right = (viewH * viewportWidth) / viewportHeight / 2;
-          camera.top = viewH / 2;
-          camera.bottom = -viewH / 2;
-          camera.updateProjectionMatrix();
+          streetCamera.left = (-viewH * viewportWidth) / viewportHeight / 2;
+          streetCamera.right = (viewH * viewportWidth) / viewportHeight / 2;
+          streetCamera.top = viewH / 2;
+          streetCamera.bottom = -viewH / 2;
+          streetCamera.updateProjectionMatrix();
         },
         project(mapX, mapY, elevation = 0) {
           const v = new Three.Vector3(mapX, elevation, mapY).project(camera);
@@ -1642,33 +1649,20 @@
           nightAmount = clamp(1 - daylight() * 1.6, 0, 1);
           updateCivicVisuals();
           const altitude = entityElevation(player.car || player),
-            flying = isAircraft(player.car) || player.parachute;
-          camera.position.set(
-            cameraTarget.x,
-            680 / worldZoom + altitude + (flying ? Math.max(0, altitude - 100) * 0.9 : 0),
-            cameraTarget.y + 560 / worldZoom,
-          );
-          camera.far = 40000;
-          scene.fog.density = 0.00015 * Math.min(1, worldZoom);
-          // Weather runs after the time-of-day pass so it modifies that day's light
-          // rather than being overwritten by it.
-          updateWeatherVisuals(deltaSeconds);
-          camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
-          const viewH =
-            (clamp(viewportHeight * 0.68, 430, 630) *
-              (1 + (flying ? clamp(altitude / 2400, 0, 0.7) : 0))) /
-            worldZoom;
-          camera.left = (-viewH * viewportWidth) / viewportHeight / 2;
-          camera.right = (viewH * viewportWidth) / viewportHeight / 2;
-          camera.top = viewH / 2;
-          camera.bottom = -viewH / 2;
-          camera.updateProjectionMatrix();
+            flying = !!(isAircraft(player.car) || player.parachute);
+          // Street (orthographic) or flight (perspective) camera, plus what it sees.
+          updateFlightView(deltaSeconds, altitude, flying);
           camera.position.x += (Math.random() - 0.5) * shake * 0.35;
           camera.position.y += (Math.random() - 0.5) * shake * 0.2;
           camera.updateMatrixWorld(true);
           viewFrustum.setFromProjectionMatrix(
             viewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
           );
+          // Weather runs after the time-of-day pass so it modifies that day's light
+          // rather than being overwritten by it; the clouds need the final camera.
+          updateWeatherVisuals(deltaSeconds);
+          applyAerialFog();
+          updateCloudVisuals(deltaSeconds);
           updateAirCoverVisuals();
           updateTransitVisuals();
           updateWildlifeVisuals(deltaSeconds);
@@ -1684,21 +1678,21 @@
           updateHarborVisuals();
           updateTrafficVisuals();
           updateMissionVisuals();
-          const shadowHeight = terrainHeight(cameraTarget.x, cameraTarget.y);
-          sun.position.set(cameraTarget.x - 620, 980 + shadowHeight, cameraTarget.y - 340);
-          sun.target.position.set(cameraTarget.x, shadowHeight, cameraTarget.y);
-          const vr = Math.max(
-            920,
-            viewH * Math.max(1, viewportWidth / viewportHeight) * 0.95 + (flying ? altitude * 0.28 : 0),
-          );
+          placeSun();
+          updateFarScenery();
+          // Scenery groups inside the visible ground footprint (flight-view3d.js);
+          // small ones drop out once they would only be a few pixels across.
           for (const s of statics)
             s.group.visible =
-              (worldZoom > 0.28 || s.radius >= 50) &&
-              Math.abs(s.x - cameraTarget.x) < vr + s.radius &&
-              Math.abs(s.y - cameraTarget.y) < vr + s.radius;
+              (viewZoom > 0.28 || s.radius >= 50) &&
+              Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&
+              Math.abs(s.y - viewCenter.y) < viewReach + s.radius;
           for (const o of allBuildings) {
+            // Fade a building that stands between the camera and the player, but
+            // not one the player is flying high above.
             const hidden =
               !player.roof &&
+              altitude < o.height + 30 &&
               player.x > o.b.x - 8 &&
               player.x < o.b.x + o.b.w + 8 &&
               player.y < o.b.y &&
@@ -1725,11 +1719,17 @@
           pruneModels(carModels, new Set(vehicles));
           pruneModels(personModels, new Set(people));
           pruneModels(pickupModels, new Set(pickups));
+          beginVehicleImpostors();
           for (const c of vehicles) {
             let m = carModels.get(c);
             const near =
               c === player.car ||
               entityInView(c, Math.max(65, Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) * 0.75));
+            // High above the city, traffic is drawn as instanced boxes (flight-view3d.js).
+            if (near && vehicleImpostor(c)) {
+              if (m) m.group.visible = false;
+              continue;
+            }
             if (!m && !near) continue;
             if (!m) {
               m = makeVehicle(c);
@@ -1922,6 +1922,7 @@
                 size: 12,
               });
           }
+          endVehicleImpostors();
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;
@@ -1930,7 +1931,9 @@
           for (const p of people) {
             const activePlayer = p === player;
             let m = personModels.get(p);
-            const near = activePlayer || (worldZoom > 0.22 && entityInView(p, 35));
+            const near =
+              activePlayer ||
+              ((flightViewActive ? viewZoom > PEOPLE_ZOOM : worldZoom > 0.22) && entityInView(p, 35));
             if (!m && !near) continue;
             if (!m) {
               m = makePerson(p, activePlayer);
@@ -2317,7 +2320,7 @@
           skidGeo.setDrawRange(0, si / 3);
           skidGeo.attributes.position.needsUpdate = true;
           skidLines.frustumCulled = false;
-          renderer.shadowMap.needsUpdate = frames++ % (touchEnabled() ? 5 : 2) === 0;
+          renderer.shadowMap.needsUpdate = frames++ % shadowRefreshInterval() === 0;
           renderer.render(scene, camera);
           worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
           if (target && gameMode === 'play') {
@@ -2412,6 +2415,9 @@
       };
       const batchReport = batchStaticGroups();
       api.batchReport = batchReport;
+      tagSceneryDetail();
+      compactBuildingBlocks();
+      buildFarScenery(staticBatchMeshes);
       api.resize();
       return api;
     }

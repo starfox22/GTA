@@ -72,6 +72,8 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Garage geometry, vehicle fit, paint, repairs and pursuit clearance.
   src/render3d.js: Three.js renderer and resource lifecycle
     Asset loading, camera, lights, shared geometry, entity models, effects and drawing API.
+  src/flight-view3d.js: Flight camera and aerial perspective
+    Perspective camera in the air, ground footprint, distance haze, shadow coverage, level of detail.
   src/garage3d.js: Garage meshes
     Garage buildings, shutters, lights and service details.
   src/landmarks3d.js: City landmark meshes
@@ -135,7 +137,9 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
   src/weather.js: Weather
     The weather state machine, road wetness, wind and the rain on the audio bus.
   src/weather3d.js: Weather and sky visuals
-    Rain, wet roads, lightning, and the cloud deck you can fly into.
+    Rain, wet roads, lightning and the overcast light.
+  src/clouds3d.js: Volumetric clouds and cloud shadows
+    Ray-marched cumulus layer at 600-950 m, lit by the sun, and the shadows it throws on the city.
   src/themepark.js: Sunset Pier amusement park
     Island layout, ride footprints, the rideable coaster and the park crowd.
   src/themepark3d.js: Sunset Pier ride meshes
