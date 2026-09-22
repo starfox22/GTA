@@ -29,7 +29,7 @@
         );
         box(body, 8, 17, 0, 1.3, 12, 23, paint);
         box(body, 5, 21, 0, 19, 1, 22, paint);
-        const boom = rod(body, new Three.Vector3(-15, 12, 0), new Three.Vector3(-42, 18, 0), 2.4, paint);
+        rod(body, new Three.Vector3(-15, 12, 0), new Three.Vector3(-42, 18, 0), 2.4, paint);
         box(body, -40, 23, 0, 10, 13, 1.6, paint);
         box(body, -35, 17, 0, 8, 1.6, 21, paint);
         box(body, -4, 24, 0, 16, 6, 13, paint);

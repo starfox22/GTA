@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 25.1.0
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 28.1.1
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
 Edit the named source sections here, or use the modular source ZIP.
@@ -114,6 +114,32 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Procedural roof and curtain-wall textures, lit windows at night, shopfronts, instanced props, benches.
   src/sidejobs3d.js: Contract mission meshes
     Sky rings, bomb and substation devices.
+  src/roadblocks.js: Police containment and roadblocks
+    Chokepoint catalogue, blockade planning, spike strips and officer posts.
+  src/roadblocks3d.js: Police roadblock meshes
+    Concrete barriers, spike strip, cones and burning flares.
+  src/carjack.js: Carjacking and driver reactions
+    Occupied traffic, locked doors, the ejection throw and what drivers do next.
+  src/marina.js: Harbor Point marina and the cruise liners
+    Yacht basin, cruise terminal, walkable liner decks and the crowds on them.
+  src/marina3d.js: Marina and cruise liner meshes
+    Pontoons, moored yachts, the terminal and the two liners.
+  src/taxi.js: Yellow cabs
+    Hailing, destination picking on the map, the ride itself and the hijack.
+  src/cycles.js: City bicycles
+    Bike-share stands, the bicycles racked at them and the rider's legs.
+  src/cycles3d.js: Bike-share stand meshes
+    The racks themselves; the bicycles in them are ordinary vehicles.
+  src/water.js: Swimming and sinking
+    Going into the water on foot, and what happens when a car follows you in.
+  src/weather.js: Weather
+    The weather state machine, road wetness, wind and the rain on the audio bus.
+  src/weather3d.js: Weather and sky visuals
+    Rain, wet roads, lightning, and the cloud deck you can fly into.
+  src/themepark.js: Sunset Pier amusement park
+    Island layout, ride footprints, the rideable coaster and the park crowd.
+  src/themepark3d.js: Sunset Pier ride meshes
+    Coaster track and train, big wheel, carousel, teacups, drop tower and midway.
 
 REPOSITORY
   The modular source of this build lives in the repository alongside it:
@@ -124,10 +150,19 @@ REPOSITORY
 AUDIT CONTRACTS
 - Game fragments share one closure; 3D fragments share createCityRenderer().
 - Map x/y becomes Three.js (x, elevation, y); heading a is radians, yaw is -a.
+- Street columns are ROAD_CENTERS, rows are ROAD_ROWS; rows run negative north of
+  the old shoreline. Block indices keep their pre-reclamation meaning.
 - 512 world units = 100 meters. Timers use seconds; frame timestamps use ms.
 - entityElevation() is authoritative for floor, terrain and aircraft altitude.
 - Physics uses 1/120-second steps; terrain uses shared Float32 triangles.
-- Compact entity keys (hp, a, vx/vy, w/l, hx/hy) are documented data contracts.
+- Compact entity keys (hp, a, vx/vy, w/l, hx/hy, sinkDepth) are data contracts.
+- The player is in one carrier at a time and they are mutually exclusive: car, roof,
+  deck, parachute, coaster, transitRide, taxiRide, swimming. Use teleportPlayer()
+  to move the player, since it lets go of whichever one is holding them.
+- solid(x, y, r, overWater) is the one collision test; the fourth argument exists
+  so the player can swim and is passed by nothing but moveBody(), on foot.
+- All damage goes through ballisticDamage(); entityElevation() is the only way to
+  compare heights across roofs, terrain, decks, sinking cars and aircraft.
 - Browser localStorage holds campaign/audio settings; there is no game server.
 - Media blocks name original paths, byte counts and SHA-256 hashes.
 - The source ZIP includes original media, tests, build.py and SOURCE_GUIDE.md.
@@ -3501,21 +3536,21 @@ body:not(.touch-mode).police-search-active #carRadio {
     </div>
     <div id="districtBanner"></div>
     <div id="storyLine"></div>
-    <audio id="carRadioAudio" preload="metadata" loop hidden></audio>
+    <audio id="carRadioAudio" preload="auto" hidden></audio>
     <aside id="carRadio" class="hidden" aria-label="Car radio">
       <div class="car-radio-top">
-        <span id="radioGenre">80S SYNTH</span
+        <span id="radioGenre">AFTER-HOURS MIX</span
         ><button id="radioPower" aria-label="Toggle car radio" aria-pressed="true">N · ON</button>
       </div>
-      <strong id="radioStation">NEON 88.7</strong>
+      <strong id="radioStation">ODDBALL 99.3</strong>
       <div id="radioTrack" aria-live="polite"></div>
       <div class="radio-presets">
-        <button id="radioPreset0" aria-label="Tune Neon 88.7, 80s synth" aria-pressed="true">
-          NEON</button
-        ><button id="radioPreset1" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
-          RIOT</button
-        ><button id="radioPreset2" aria-label="Tune Oddball 99.3, eclectic" aria-pressed="false">
+        <button id="radioPreset0" aria-label="Tune Oddball 99.3, after-hours mix" aria-pressed="true">
           ODDBALL</button
+        ><button id="radioPreset1" aria-label="Tune Neon 88.7, 80s synth" aria-pressed="false">
+          NEON</button
+        ><button id="radioPreset2" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
+          RIOT</button
         ><button id="radioNext" aria-label="Next radio station">B · NEXT</button>
       </div>
     </aside>
@@ -3640,7 +3675,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         </div>
       </div>
       <div class="menu-foot">
-        <a href="./index.html" download="Dead-End-City.html">DOWNLOAD / PLAY OFFLINE ↘</a
+        <a id="offlineCopy" href="./index.html" download="Dead-End-City.html">DOWNLOAD / PLAY OFFLINE ↘</a
         ><span>TOUCH OR KEYBOARD · LANDSCAPE RECOMMENDED</span
         ><button id="menuSound">SOUND ON ◖))</button>
       </div>
@@ -3733,6 +3768,15 @@ body:not(.touch-mode).police-search-active #carRadio {
           <span><kbd>Q</kbd> Cycle weapons <kbd>K</kbd> Knife</span
           ><span>Find new weapons at <b>GUN</b> on the map.</span>
         </div>
+      </div>
+    </div>
+    <div class="overlay hidden" id="taxiOverlay">
+      <div class="dialog">
+        <div class="eyebrow">SOUTH COAST YELLOW CAB</div>
+        <h2>TAKE A CAB?</h2>
+        <p id="taxiText"></p>
+        <div id="taxiActions"></div>
+        <button class="text-btn" id="closeTaxi">WALK AWAY <span>ESC</span></button>
       </div>
     </div>
     <div class="overlay hidden" id="serviceOverlay">

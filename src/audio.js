@@ -178,7 +178,7 @@
         );
     }
     function soundUpdate(deltaSeconds) {
-      syncCarRadio();
+      syncCarRadio(false, deltaSeconds);
       if (!audio) return;
       const active = gameMode === 'play' && soundOn,
         c = player.car;

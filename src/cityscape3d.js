@@ -427,7 +427,7 @@
         if (b.tropical) return b.height >= 60 ? 'decoTower' : 'deco';
         const district = districtAt(b.x + b.w / 2, b.y + b.h / 2);
         if (b.height >= 100) return 'tower';
-        if (b.height >= 68) return district === 'FINANCIAL DISTRICT' ? 'tower' : 'office';
+        if (b.height >= 68) return district.includes('FINANCIAL') ? 'tower' : 'office';
         if (district.includes('OLD QUARTER') || district.includes('IRONWORKS')) return b.style === 1 ? 'stucco' : 'brick';
         if (district === 'MIDTOWN' || district === 'BROADWAY') return cityRandom() < 0.55 ? 'brick' : 'office';
         return cityRandom() < 0.5 ? 'brick' : 'stucco';
@@ -632,18 +632,22 @@
         // Access bulkhead on almost every roof.
         if (cityRandom() < 0.85) bulkhead(group, 20 + cityRandom() * 12, top, 16 + cityRandom() * 10);
         if (kind === 'tower') {
-          bulkhead(group, b.w / 2, top, b.h / 2, b.w * 0.42, b.h * 0.38, 16 + (i % 3) * 6, mat('#8c949a', 0.6, 0.3));
-          const penthouseTop = top + 16 + (i % 3) * 6;
-          acCluster(gx + b.w * 0.36, penthouseTop, gz + b.h * 0.4, Math.max(1, Math.floor(b.w / 95)));
+          // Plant sits on the finished crown, not buried inside the setbacks.
+          const crownTop = top + (b.crownHeight || 0);
+          bulkhead(group, b.w / 2, crownTop, b.h / 2, b.w * 0.3, b.h * 0.28, 14 + (i % 3) * 5, mat('#8c949a', 0.6, 0.3));
+          const penthouseTop = crownTop + 14 + (i % 3) * 5;
+          acCluster(gx + b.w * 0.2, penthouseTop, gz + b.h * 0.25, Math.max(1, Math.floor(b.w / 95)));
           box(group, b.w / 2, penthouseTop + 12, b.h / 2, 1.2, 24, 1.2, darkMetal);
           const beacon = mesh(sphereGeo, beaconMaterial, group, b.w / 2, penthouseTop + 25, b.h / 2, 1.6, 1.6, 1.6);
           beacons.push(beacon);
           neonSigns.push({ sprite: halo(group, b.w / 2, penthouseTop + 25, b.h / 2, 16, '#ff6a5c'), base: 1, beacon: true });
-          if (b.height >= 150 && b.w > 200) helipad(group, b.w - 40, top, b.h - 40);
+          // The pad goes on the terrace the setback leaves, never inside it.
+          const terrace = Math.max(0, Math.min(b.w, b.h) * 0.11 - 6);
+          if (b.height >= 150 && terrace > 20) helipad(group, b.w - terrace, top, b.h - terrace);
           else if (cityRandom() < 0.5) {
-            for (let k = 0; k < 3; k++) place(pools.solar, gx + b.w - 30 - k * 14, top + 2.5, gz + b.h - 30, 12, 0.6, 22, 0.3);
+            for (let k = 0; k < 3; k++) place(pools.solar, gx + b.w - 12 - k * 11, top + 2.5, gz + b.h - 12, 9, 0.6, 16, 0.3);
           }
-          for (const dx of [8, b.w - 8]) for (const dz of [8, b.h - 8]) place(pools.vent, gx + dx, top + 3, gz + dz, 1.6, 6, 1.6);
+          for (const dx of [7, b.w - 7]) for (const dz of [7, b.h - 7]) place(pools.vent, gx + dx, top + 3, gz + dz, 1.6, 6, 1.6);
           return;
         }
         if (kind === 'office') {
@@ -794,11 +798,48 @@
         box(group, b.w - 2, height + 1.6, b.h / 2, 4, 3.2, b.h, trim);
         if (kind !== 'tower') box(group, b.w / 2, 2.5, b.h + 0.8, b.w + 3, 5, 2, kind === 'stucco' || kind === 'deco' ? mat('#cbbfae') : trim);
         if (kind === 'tower' && height > 120) {
-          // Tapered crown: a narrower upper section reads as a setback tower.
-          const crownH = Math.min(38, height * 0.25);
-          box(group, b.w / 2, height + crownH / 2, b.h / 2, b.w * 0.7, crownH, b.h * 0.7, [face, face, top, top, face, face]);
-          box(group, b.w / 2, height + crownH + 1.2, b.h / 2, b.w * 0.7 + 2, 2.4, b.h * 0.7 + 2, trim);
-          b.crownHeight = crownH;
+          /* Setback crown. A single step reads as an office block; the towers of
+             the financial core step two or three times and carry a mast, which is
+             what makes a skyline out of a row of buildings. */
+          const steps = height > 420 ? 3 : height > 260 ? 2 : 1;
+          let level = height,
+            sw = b.w,
+            sh = b.h,
+            crown = 0;
+          for (let s = 0; s < steps; s++) {
+            const stepH = Math.min(52, height * (0.2 - s * 0.042));
+            sw *= 0.78;
+            sh *= 0.78;
+            box(group, b.w / 2, level + stepH / 2, b.h / 2, sw, stepH, sh, [face, face, top, top, face, face]);
+            box(group, b.w / 2, level + stepH + 1.2, b.h / 2, sw + 2, 2.4, sh + 2, trim);
+            level += stepH + 1.2;
+            crown += stepH + 1.2;
+          }
+          if (height > 420) {
+            const spire = Math.min(110, height * 0.17);
+            mesh(cylinderGeo, trim, group, b.w / 2, level + spire / 2, b.h / 2, 2.8, spire, 2.8);
+            mesh(cylinderGeo, chrome, group, b.w / 2, level + spire + 8, b.h / 2, 0.9, 20, 0.9);
+            crown += spire + 18;
+          }
+          // Vertical mullion fins: the curtain wall needs relief to catch the sun.
+          if (height > 260) {
+            const finMat = mat('#b6bec4', 0.45, 0.35);
+            for (let x = 22; x < b.w - 14; x += 38) {
+              box(group, x, height / 2, b.h + 0.7, 1.4, height - 10, 1.4, finMat);
+              box(group, x, height / 2, -0.7, 1.4, height - 10, 1.4, finMat);
+            }
+            for (let z = 22; z < b.h - 14; z += 38) {
+              box(group, -0.7, height / 2, z, 1.4, height - 10, 1.4, finMat);
+              box(group, b.w + 0.7, height / 2, z, 1.4, height - 10, 1.4, finMat);
+            }
+          }
+          // Glazed podium: towers meet the street on a wider base, never on a knife edge.
+          if (height > 260) {
+            const podium = Math.min(46, height * 0.1);
+            box(group, b.w / 2, podium / 2, b.h / 2, b.w + 22, podium, b.h + 22, [face, face, top, top, face, face]);
+            box(group, b.w / 2, podium + 1.4, b.h / 2, b.w + 26, 2.8, b.h + 26, trim);
+          }
+          b.crownHeight = crown;
         }
         if (kind === 'brick' && cityRandom() < 0.5)
           for (let y = 16; y < height - 6; y += 16) box(group, b.w / 2, y, b.h + 0.3, b.w + 1, 1.1, 1.4, trim);
@@ -869,10 +910,10 @@
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
       }
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            z = ROAD_CENTERS[by] + 89,
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            z = blockY(by) + 89,
             w = 334;
           if (!validCityBlock(x, z, w, w) || harborOverlap(x, z, w, w) || stadiumOverlap(x, z, w, w) || isPark(bx, by)) continue;
           const south = z + w + 14,
@@ -904,8 +945,8 @@
             if (cityRandom() < 0.5) place(pools.crate, x + 214, 3, z + 176, 6, 6, 6, 0.4);
           }
           // Bus shelters on the wide avenues, one per block on the north sidewalk.
-          const avenue = ROAD_CENTERS[by + 1];
-          if ([1152, 2688, 3200, 4736].includes(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
+          const avenue = blockY(by + 1);
+          if (WIDE_ROADS.includes(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
             busShelter(x + 180, south + 6, true);
         }
       for (const spot of benchSpots()) {

@@ -12,13 +12,14 @@
       if (cityStreetCache) return cityStreetCache;
       const roads = [];
       for (const vertical of [false, true])
-        for (const r of ROAD_CENTERS) {
-          const width = [1152, 2688, 3200, 4736].includes(r) ? 112 : 88;
+        for (const r of vertical ? ROAD_CENTERS : ROAD_ROWS) {
+          const width = WIDE_ROADS.includes(r) ? 112 : 88;
           let start = null;
           const valid = (v) => {
             const x = vertical ? r : v,
               y = vertical ? v : r;
             if (inAirport(x, y) || parkStreetClosed(x, y) || inStadiumLot(x, y, 56)) return false;
+            if (onSunsetIsle(x, y)) return false;
             if (onBridge(x, y, 0)) return true;
             const side = width / 2 + 28;
             return (
@@ -28,7 +29,8 @@
               landAt(x - (vertical ? 0 : 25), y - (vertical ? 25 : 0))
             );
           };
-          for (let v = 64; v <= CITY_SIZE - 32; v += 16) {
+          const from = vertical ? CITY_TOP + 64 : 64;
+          for (let v = from; v <= CITY_SIZE - 32; v += 16) {
             if (v <= CITY_SIZE - 48 && valid(v)) {
               if (start === null) start = v;
             } else if (start !== null) {
@@ -67,8 +69,8 @@
         640: 'SUNSET BLVD',
         1152: 'ROYAL AVE',
         1664: 'COMMONS ST',
-        2176: 'CANNERY ST',
-        2688: 'FOUNDRY AVE',
+        2176: 'GARDEN ST',
+        2688: 'GARDEN AVE',
         3200: 'RIVERBANK DR',
         3712: 'PALM AVE',
         4224: 'COLLINS AVE',
@@ -79,7 +81,7 @@
         128: 'NORTH SHORE RD',
         640: 'ARMORY ST',
         1152: 'UNION ST',
-        1664: 'GARDEN ST',
+        1664: 'LINDEN ST',
         2176: 'CENTRAL PKWY',
         2688: 'EXCHANGE ST',
         3200: 'HARBOR AVE',
@@ -97,7 +99,7 @@
         return county ? county.name : onBridge(x, y) ? 'CAUSEWAY' : '';
       }
       const nearestX = roadNear(x),
-        nearestY = roadNear(y),
+        nearestY = rowNear(y),
         onVertical = Math.abs(x - nearestX) < 62,
         onHorizontal = Math.abs(y - nearestY) < 62,
         v = STREET_NAMES.vertical[nearestX],
@@ -117,10 +119,10 @@
     function benchSpots() {
       if (benchCache) return benchCache;
       benchCache = [];
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            z = ROAD_CENTERS[by] + 89,
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            z = blockY(by) + 89,
             w = 334;
           if (!validCityBlock(x, z, w, w) || harborOverlap(x, z, w, w) || stadiumOverlap(x, z, w, w) || isPark(bx, by))
             continue;
@@ -165,8 +167,48 @@
                 y: r.r,
               };
         for (const v of [r.start, r.end]) {
-          const p = pos(v);
+          const p = pos(v),
+            outward = v === r.start ? -1 : 1,
+            a = r.vertical
+              ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2)
+              : outward > 0
+                ? 0
+                : Math.PI;
           if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+          if (streetEndAtGate(p.x, p.y, a)) {
+            // Forecourt: the carriageway widens into a paved apron at the gates,
+            // with a crossing where the footway passes in front of them.
+            drawingContext.save();
+            drawingContext.translate(p.x, p.y);
+            drawingContext.rotate(a);
+            drawingContext.fillStyle = '#8f8d81';
+            drawingContext.fillRect(-14, -r.width / 2 - 34, 78, r.width + 68);
+            drawingContext.fillStyle = '#4b5659';
+            drawingContext.fillRect(-14, -r.width / 2, 42, r.width);
+            if (detail) {
+              drawingContext.fillStyle = '#d4d6c7';
+              for (let i = -3; i <= 3; i++) drawingContext.fillRect(34, i * 13 - 3, 15, 6);
+              drawingContext.fillStyle = '#a5a396';
+              for (let i = -3; i <= 3; i++) drawingContext.fillRect(56, i * 13 - 4, 16, 8);
+            }
+            drawingContext.restore();
+            continue;
+          }
+          if (streetEndAtShore(p.x, p.y, a)) {
+            // Meets the esplanade: a short apron and a crossing, no turning head.
+            drawingContext.save();
+            drawingContext.translate(p.x, p.y);
+            drawingContext.rotate(a);
+            drawingContext.fillStyle = '#4b5659';
+            drawingContext.fillRect(0, -r.width / 2, 22, r.width);
+            if (detail) {
+              drawingContext.fillStyle = '#d4d6c7';
+              for (let i = -2; i <= 2; i++)
+                drawingContext.fillRect(24, i * 12 - 3, 13, 6);
+            }
+            drawingContext.restore();
+            continue;
+          }
           drawingContext.fillStyle = '#4b5659';
           drawingContext.beginPath();
           drawingContext.arc(p.x, p.y, r.width * 0.5, 0, TAU);
@@ -183,14 +225,15 @@
         drawingContext.fillStyle = '#d0c39a';
         for (let v = r.start + 55; v < r.end - 50; v += 32) {
           const p = pos(v);
-          if (Math.abs(v - roadNear(v)) < 85 || onBoulevard(p.x, p.y, 35)) continue;
+          if (Math.abs(v - (r.vertical ? rowNear(v) : roadNear(v))) < 85 || onBoulevard(p.x, p.y, 35))
+            continue;
           if (r.vertical) drawingContext.fillRect(p.x - 1, p.y, 2, 15);
           else drawingContext.fillRect(p.x, p.y - 1, 15, 2);
         }
       }
       if (detail)
         for (const x of ROAD_CENTERS)
-          for (const y of ROAD_CENTERS) {
+          for (const y of ROAD_ROWS) {
             const horizontal = streets.find(
                 (r) => !r.vertical && r.r === y && x > r.start + 100 && x < r.end - 100,
               ),
@@ -230,28 +273,167 @@
         ny: headingCosine,
       };
     }
+    /**
+     * WATERFRONT
+     * A street that runs out at the shore is finished by the esplanade, not by a
+     * turning head: only the handful of ends that stop inland keep the barrier and
+     * the NO THROUGH ROAD plate. `promenadeSpots()` is the shared esplanade
+     * furniture list -- the renderer builds railings, lamps and benches from it and
+     * pedestrians walk between the same points, so what you see is what they use.
+     */
+    function streetEndAtShore(x, y, a) {
+      for (let d = 12; d < 170; d += 12)
+        if (!landAt(x + Math.cos(a) * d, y + Math.sin(a) * d)) return true;
+      return false;
+    }
+    /* A street that stops at a park or the stadium ends at its gates, not in a
+       painted circle in the middle of nowhere: it gets a forecourt instead. */
+    function streetEndAtGate(x, y, a) {
+      for (let d = 0; d < 150; d += 12) {
+        const px = x + Math.cos(a) * d,
+          py = y + Math.sin(a) * d;
+        if (parkAt(px, py) || parkStreetClosed(px, py) || inStadiumLot(px, py, 70)) return true;
+      }
+      return false;
+    }
+    const PROMENADE_REGIONS = ['northbank', 'palmkeys'];
+    // Wide enough for two people abreast and a bicycle past them.
+    const ESPLANADE_LANDWARD = 40,
+      ESPLANADE_SEAWARD = 32;
+    function esplanadePoint(e) {
+      const { nx, ny } = shoreNormal(e),
+        inset = shoreStyle(e) === 'beach' ? 92 : 40;
+      return { x: e.x - nx * inset, y: e.y - ny * inset, nx, ny, a: e.a };
+    }
+    let promenadeCache = null;
+    function promenadeSpots() {
+      if (promenadeCache) return promenadeCache;
+      promenadeCache = [];
+      let step = 0;
+      for (const e of coastSegments()) {
+        if (e.opening || !PROMENADE_REGIONS.includes(e.region)) continue;
+        const p = esplanadePoint(e);
+        if (!groundAt(p.x, p.y, 10)) continue;
+        step++;
+        // The walk runs on past a street mouth rather than stopping at it: the
+        // paving and the sea railing carry straight across and only the furniture
+        // steps aside, which is how a real seafront is built.
+        const crossing = onRoad(p.x, p.y);
+        promenadeCache.push({
+          x: p.x,
+          y: p.y,
+          a: p.a,
+          nx: p.nx,
+          ny: p.ny,
+          crossing,
+          beach: shoreStyle(e) === 'beach',
+          // A repeating rhythm of rail, lamp, bench and planter down the walk.
+          kind: crossing
+            ? 'rail'
+            : step % 6 === 2
+              ? 'bench'
+              : step % 6 === 4
+                ? 'lamp'
+                : step % 12 === 9
+                  ? 'tree'
+                  : 'rail',
+        });
+      }
+      return promenadeCache;
+    }
+    /* Strollers work along the esplanade spot list, so they keep to the walk and
+       turn at its ends instead of wandering into the road or the water. */
+    function populatePromenade() {
+      const spots = promenadeSpots();
+      for (let i = 3; i < spots.length; i += 6) {
+        if (seededRandom() > 0.5) continue;
+        const spot = spots[i];
+        if (solid(spot.x, spot.y, 6)) continue;
+        pedestrians.push({
+          x: spot.x,
+          y: spot.y,
+          a: spot.a,
+          color: randomChoice(DRIVER_COLORS),
+          hp: 30,
+          flee: 0,
+          timer: randomBetween(0, 6),
+          walk: 0,
+          stroll: {
+            index: i,
+            dir: seededRandom() > 0.5 ? 1 : -1,
+            pause: randomBetween(0, 14),
+          },
+        });
+      }
+    }
+    function updateStroller(p, deltaSeconds) {
+      if (!p.stroll || p.flee > 0 || p.knockedFor || p.ejected) return false;
+      const spots = promenadeSpots(),
+        stroll = p.stroll;
+      stroll.pause -= deltaSeconds;
+      if (stroll.pause < -4) stroll.pause = randomBetween(14, 40);
+      if (stroll.pause <= 0) {
+        // Stopped at the rail to look at the water.
+        p.walking = false;
+        p.a = Math.atan2(spots[stroll.index]?.ny || 0, spots[stroll.index]?.nx || 1);
+        pedSay(p, 'shore', 0.004);
+        return true;
+      }
+      let target = spots[stroll.index];
+      if (!target || distanceBetween(p, target) > 150) {
+        stroll.dir *= -1;
+        stroll.index = clamp(stroll.index + stroll.dir, 0, spots.length - 1);
+        target = spots[stroll.index];
+        if (!target) return false;
+      }
+      if (distanceBetween(p, target) < 13) {
+        const next = stroll.index + stroll.dir;
+        if (next < 0 || next >= spots.length) stroll.dir *= -1;
+        else stroll.index = next;
+      }
+      p.a = headingBetween(p, target);
+      p.walking = true;
+      p.walk += deltaSeconds * 6;
+      const speed = cityTempo().speed * 0.82;
+      moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5);
+      pedSay(p, 'shore', 0.0015);
+      return true;
+    }
     function paintPromenades(drawingContext) {
       drawingContext.save();
       coastPath(drawingContext);
       drawingContext.clip();
       for (const e of coastSegments()) {
-        if (e.opening || !['northbank', 'palmkeys'].includes(e.region)) continue;
-        const { nx, ny } = shoreNormal(e),
-          inset = shoreStyle(e) === 'beach' ? 78 : 27,
-          x = e.x - nx * inset,
-          y = e.y - ny * inset;
-        if (onRoad(x, y)) continue;
+        if (e.opening || !PROMENADE_REGIONS.includes(e.region)) continue;
+        const beach = shoreStyle(e) === 'beach',
+          p = esplanadePoint(e),
+          half = e.length / 2 + 1;
+        if (!groundAt(p.x, p.y, 10)) continue;
         drawingContext.save();
-        drawingContext.translate(x, y);
+        drawingContext.translate(p.x, p.y);
         drawingContext.rotate(e.a);
-        drawingContext.fillStyle = shoreStyle(e) === 'beach' ? '#bba889' : '#b5b2a2';
-        drawingContext.fillRect(-e.length / 2 - 1, -8, e.length + 2, 16);
+        // A cycle strip on the landward side, the walk itself, a band of setts
+        // against the buildings and a kerb line at the sea rail.
+        drawingContext.fillStyle = beach ? '#bba889' : '#b0ada0';
+        drawingContext.fillRect(-half, -ESPLANADE_LANDWARD, e.length + 2, ESPLANADE_LANDWARD + ESPLANADE_SEAWARD);
+        drawingContext.fillStyle = beach ? '#a8937a' : '#98a08f';
+        drawingContext.fillRect(-half, -ESPLANADE_LANDWARD + 6, e.length + 2, 17);
+        drawingContext.fillStyle = beach ? '#c7b591' : '#bdbaad';
+        drawingContext.fillRect(-half, -ESPLANADE_LANDWARD, e.length + 2, 6);
         drawingContext.strokeStyle = '#d4ceae';
-        drawingContext.lineWidth = 1;
+        drawingContext.lineWidth = 1.2;
         drawingContext.beginPath();
-        drawingContext.moveTo(-e.length / 2, -6);
-        drawingContext.lineTo(e.length / 2, -6);
+        drawingContext.moveTo(-half, ESPLANADE_SEAWARD - 4);
+        drawingContext.lineTo(half, ESPLANADE_SEAWARD - 4);
         drawingContext.stroke();
+        drawingContext.strokeStyle = '#9a9a8d';
+        drawingContext.lineWidth = 0.8;
+        for (let d = -half; d < half; d += 11) {
+          drawingContext.beginPath();
+          drawingContext.moveTo(d, ESPLANADE_SEAWARD - 14);
+          drawingContext.lineTo(d, ESPLANADE_SEAWARD - 4);
+          drawingContext.stroke();
+        }
         drawingContext.restore();
       }
       drawingContext.restore();

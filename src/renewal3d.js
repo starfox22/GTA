@@ -126,7 +126,7 @@
         });
       }
       /**
-       * CENTRAL COMMONS FEATURES
+       * CENTRAL GARDEN FEATURES
        * Built from the shared COMMONS plan in renewal.js so collision, painting
        * and meshes agree: lake with rowboats and a fountain jet, boathouse and
        * dock, station plaza fountain, bandshell with lawn seating, rose-garden
@@ -282,10 +282,7 @@
         box(group, st.x + 4.5, 19, st.y, 2, 10, 2, bronze);
         box(group, st.x - 4.5, 21, st.y, 2, 9, 2, bronze);
         // Kiosks: ice-cream cart by the plaza, a coffee stand by the lawn.
-        for (const [x, z, color] of [
-          [2200, 1565, '#e8b1c2'],
-          [1990, 1370, '#4f8ab1'],
-        ]) {
+        for (const { x, y: z, color } of c.kiosks) {
           box(group, x, 4.5, z, 14, 9, 8, mat(color, 0.6));
           box(group, x, 9.2, z, 15, 0.5, 9, chrome);
           mesh(new Three.ConeGeometry(12, 4, 12), mat(color === '#e8b1c2' ? '#f3f0e6' : '#d9c15f', 0.9), group, x, 16, z);
@@ -302,14 +299,114 @@
             const t = (k - 0.5) / steps,
               x = ax + (bx - ax) * t + 12,
               z = az + (bz - az) * t + 12;
-            if (parkPondBlocked(x, z, 3) || Math.abs(x - 2176) < 30) continue;
+            if (parkPondBlocked(x, z, 3)) continue;
             box(group, x, 9, z, 0.9, 18, 0.9, darkMetal);
             box(group, x, 18.5, z, 3, 3, 3, warmLamp);
             lampHalos.push({ sprite: halo(group, x, 19, z, 14, '#ffe1b3'), x, y: z });
           }
         }
-        sign('CENTRAL COMMONS', 2167, 2100, 190, '#c7e5b9');
-        sign('COMMONS LAKE · BOATHOUSE', bh.x + bh.w / 2, bh.y + bh.h + 3, 120, '#d3ecdc');
+        // Outdoor gym: pull-up ladder, dip station, rings, parallel bars and mats.
+        const cal = c.calisthenics,
+          rigPaint = mat('#3f6f74', 0.55, 0.45),
+          matMat = mat('#39566b', 0.95);
+        box(group, cal.x, 0.5, cal.y, cal.w, 1, cal.h, mat('#4b4f52', 0.96));
+        for (const dx of [-84, -2]) {
+          for (const dz of [-34, -14]) box(group, cal.x + dx, 20, cal.y + dz, 2.6, 40, 2.6, rigPaint);
+          rod(
+            group,
+            new Three.Vector3(cal.x + dx, 40, cal.y - 34),
+            new Three.Vector3(cal.x + dx, 40, cal.y - 14),
+            1.3,
+            rigPaint,
+          );
+        }
+        rod(
+          group,
+          new Three.Vector3(cal.x - 84, 40, cal.y - 24),
+          new Three.Vector3(cal.x - 2, 40, cal.y - 24),
+          1.2,
+          rigPaint,
+        );
+        // Staggered pull-up bars at three heights.
+        for (let i = 0; i < 3; i++)
+          rod(
+            group,
+            new Three.Vector3(cal.x - 74 + i * 26, 28 + i * 5, cal.y - 34),
+            new Three.Vector3(cal.x - 74 + i * 26, 28 + i * 5, cal.y - 14),
+            0.9,
+            chrome,
+          );
+        // Dip station.
+        for (const dz of [-32, -20]) {
+          box(group, cal.x + 22, 11, cal.y + dz, 2.2, 22, 2.2, rigPaint);
+          rod(
+            group,
+            new Three.Vector3(cal.x + 14, 22, cal.y + dz),
+            new Three.Vector3(cal.x + 30, 22, cal.y + dz),
+            0.9,
+            chrome,
+          );
+        }
+        // Rings hanging from a cross beam.
+        box(group, cal.x + 62, 21, cal.y - 22, 2.4, 42, 2.4, rigPaint);
+        box(group, cal.x + 62, 21, cal.y + 2, 2.4, 42, 2.4, rigPaint);
+        rod(
+          group,
+          new Three.Vector3(cal.x + 62, 42, cal.y - 22),
+          new Three.Vector3(cal.x + 62, 42, cal.y + 2),
+          1.1,
+          rigPaint,
+        );
+        for (const dz of [-14, -6]) {
+          rod(
+            group,
+            new Three.Vector3(cal.x + 62, 42, cal.y + dz),
+            new Three.Vector3(cal.x + 62, 26, cal.y + dz),
+            0.25,
+            mat('#d9cba6', 0.9),
+          );
+          const ring = mesh(new Three.TorusGeometry(3, 0.7, 6, 14), parkWood, group, cal.x + 62, 24, cal.y + dz);
+          ring.rotation.x = Math.PI / 2;
+        }
+        // Parallel bars and two exercise mats.
+        for (const dz of [24, 34]) {
+          for (const dx of [-62, -30]) box(group, cal.x + dx, 7, cal.y + dz, 2, 14, 2, rigPaint);
+          rod(
+            group,
+            new Three.Vector3(cal.x - 62, 14, cal.y + dz),
+            new Three.Vector3(cal.x - 30, 14, cal.y + dz),
+            0.8,
+            chrome,
+          );
+        }
+        for (const dx of [6, 56]) box(group, cal.x + dx, 1.4, cal.y + 30, 34, 1.4, 20, matMat);
+        // Food trucks: body, cab, serving hatch, awning, wheels and a menu board.
+        for (const truck of c.foodTrucks) {
+          const t = new Three.Group();
+          t.position.set(truck.x, 0, truck.y);
+          t.rotation.y = -truck.a;
+          group.add(t);
+          const paint = mat(truck.color, 0.55, 0.25);
+          box(t, 0, 13, 0, 46, 20, 19, paint);
+          box(t, 26, 10, 0, 14, 14, 17, mat('#e8e4d7', 0.5, 0.3));
+          box(t, 32, 13, 0, 3, 7, 14, glass);
+          box(t, 0, 24, 0, 44, 2, 18, mat('#dfd9c8', 0.8));
+          // Serving hatch and awning on the kerb side.
+          box(t, -2, 15, -9.8, 26, 9, 1, mat('#20272b', 0.4, 0.5));
+          const awning = box(t, -2, 22, -15, 26, 0.8, 12, mat('#efe6d0', 0.85));
+          awning.rotation.x = 0.32;
+          box(t, -2, 9, -10.6, 24, 2.4, 2.6, mat('#c9c2ad', 0.8));
+          for (const dx of [-15, 15])
+            for (const dz of [-9.5, 9.5]) {
+              const wheel = mesh(wheelGeo, rubber, t, dx, 4, dz, 4, 2.4, 4);
+              wheel.rotation.x = Math.PI / 2;
+            }
+          sign(truck.menu, truck.x + Math.cos(truck.a + Math.PI / 2) * 16, truck.y + Math.sin(truck.a + Math.PI / 2) * 16, 34, '#ffe6b0');
+          halo(t, -2, 20, -12, 26, '#ffd9a0');
+        }
+        sign('OUTDOOR GYM', cal.x, cal.y + cal.h / 2 + 10, 90, '#cfe6ea');
+        sign('CENTRAL GARDEN', 2688, 1812, 200, '#c7e5b9');
+        sign('GARDEN LAKE · BOATHOUSE', bh.x + bh.w / 2, bh.y + bh.h + 3, 120, '#d3ecdc');
         sign('BANDSHELL · LIVE TONIGHT', bs.x, bs.y + 138, 130, '#f2d8a2');
       }
       // END SUBSYSTEM: src/renewal3d.js

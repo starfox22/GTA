@@ -266,7 +266,7 @@
     function setWaypoint(x, y) {
       userWaypoint = {
         x: clamp(x, 0, WORLD_SIZE),
-        y: clamp(y, 0, WORLD_SIZE),
+        y: clamp(y, WORLD_TOP, WORLD_SIZE),
       };
       calculateUserRoute();
       drawMap(cityMapContext, 800, 660, true);
@@ -363,7 +363,7 @@
       };
     }
     function mapWorldPoint(p) {
-      const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_SIZE) * 0.92 * mapZoom;
+      const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
       return {
         x: mapCenter.x + (p.x - 400) / s,
         y: mapCenter.y + (p.y - 330) / s,
@@ -414,10 +414,10 @@
           dy = p.y - mapGesture.start.y;
         if (Math.hypot(dx, dy) > 5) mapGesture.drag = true;
         if (mapGesture.drag) {
-          const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_SIZE) * 0.92 * mapZoom;
+          const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
           mapCenter = {
             x: clamp(mapGesture.center.x - dx / s, 0, WORLD_SIZE),
-            y: clamp(mapGesture.center.y - dy / s, 0, WORLD_SIZE),
+            y: clamp(mapGesture.center.y - dy / s, WORLD_TOP, WORLD_SIZE),
           };
         }
       }
@@ -432,7 +432,14 @@
       const p = mapLocalPoint(e);
       if (!cancel && mapGesture?.id === e.pointerId && !mapGesture.drag && !mapPinch && p.valid) {
         const w = mapWorldPoint(p);
-        setWaypoint(w.x, w.y);
+        if (taxiMapPick(w.x, w.y)) {
+          // handled by the waiting cab
+        } else if (player.godMode) {
+          // God mode turns the map into a teleport: tap anywhere to be there.
+          teleportPlayer(w.x, w.y);
+          toggleMap();
+          tell('Teleported.', 2);
+        } else setWaypoint(w.x, w.y);
       }
       mapPointers.delete(e.pointerId);
       if (!mapPointers.size) {
@@ -474,8 +481,16 @@
     function updateExplorationUI() {
       const t = player.car?.offroadState,
         p = player.parachute;
+      const trekking =
+        !player.car && !p && !transitRide && !player.roof && !player.coaster && terrainHeight(player.x, player.y) > 8;
       getElement('terrainStatus').style.display =
-        gameMode === 'play' && (transitRide || t?.z > 8 || p) ? 'block' : 'none';
+        gameMode === 'play' && (transitRide || t?.z > 8 || p || trekking || player.coaster)
+          ? 'block'
+          : 'none';
+      if (player.coaster) {
+        getElement('terrainStatus').textContent = coasterStatusText();
+        return;
+      }
       if (transitRide) {
         getElement('terrainStatus').textContent =
           'CITY RAIL → ' + transitRide.target.name + ' · E: NEXT STOP';
@@ -489,7 +504,26 @@
           ' · ' +
           Math.round(worldMeters(player.altitude - terrainHeight(player.x, player.y))) +
           ' m ABOVE GROUND';
-      else if (t?.z > 8)
+      else if (trekking) {
+        const grade = player.mountainGrade || 0,
+          degrees = Math.round((Math.atan(grade) * 180) / Math.PI);
+        getElement('terrainStatus').textContent = player.tumble
+          ? 'FALLING · ' + degrees + '° SLOPE'
+          : (player.onMountainTrail
+              ? 'ON THE TRAIL'
+              : grade > 0.66
+                ? 'TOO STEEP TO CLIMB'
+                : grade > 0.52
+                  ? 'LOOSE SCREE · DO NOT DESCEND HERE'
+                  : grade > 0.34
+                    ? 'SLIPPING · FIND THE TRAIL'
+                    : 'OPEN GROUND') +
+            ' · ' +
+            degrees +
+            '° · ' +
+            Math.round(worldMeters(terrainHeight(player.x, player.y))) +
+            ' m';
+      } else if (t?.z > 8)
         getElement('terrainStatus').textContent =
           (t.four ? '4×4 TRACTION' : 'ROAD TIRES · LOW GRIP') +
           ' · ' +

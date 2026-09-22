@@ -88,7 +88,7 @@
     const REPO_TARGETS = [
       ['limousine', 4736, 1900, Math.PI / 2, '#2c2f36', 'THE BLACK LIMOUSINE · OCEAN DRIVE'],
       ['taxi', 1152, 3000, -Math.PI / 2, VEHICLE_DEFINITIONS.taxi.color, 'THE UNPAID TAXI · BROADWAY'],
-      ['supercar', 2688, 2900, Math.PI / 2, '#d8b23a', 'THE GOLD SUPERCAR · FINANCIAL'],
+      ['supercar', 2688, 2900, Math.PI / 2, '#d8b23a', 'THE GOLD SUPERCAR · EXCHANGE'],
       ['bus', 2176, 4224, 0, '#6a8fa6', 'THE TRANSIT BUS · SOUTH BANK'],
     ];
     function sideJobIndex(missionState) {

@@ -36,12 +36,42 @@
       CITY_SIZE = 5632,
       BLOCK_SIZE = 512,
       ROAD_WIDTH = 112,
+      // Avenues run north-south at these x. The column plan never changed.
       ROAD_CENTERS = Array.from(
         {
           length: 11,
         },
         (_, i) => 128 + i * BLOCK_SIZE,
-      );
+      ),
+      /**
+       * NORTH RECLAMATION
+       * The original grid started at y = 128 and ran south. The northern
+       * reclamation added eight more cross streets above it, so street rows now
+       * run from -3968 to 5248 and map coordinates north of the old shoreline are
+       * negative. Block indices keep their old meaning — by 0 is still y 128 —
+       * and the new blocks simply carry negative indices, so every place, park
+       * and landmark recorded before the reclamation still points at its block.
+       */
+      NORTH_ROWS = 8,
+      ROAD_ROWS = Array.from(
+        {
+          length: 11 + NORTH_ROWS,
+        },
+        (_, i) => 128 + (i - NORTH_ROWS) * BLOCK_SIZE,
+      ),
+      // Boulevard-width streets. Columns and rows share one list; the negative
+      // entries only ever match rows in the northern reclamation.
+      WIDE_ROADS = [1152, 2688, 3200, 4736, -1408, -2944],
+      CITY_TOP = -4224,
+      CITY_HEIGHT = CITY_SIZE - CITY_TOP,
+      WORLD_TOP = -5632,
+      WORLD_HEIGHT = WORLD_SIZE - WORLD_TOP;
+    const blockX = (bx) => 128 + bx * BLOCK_SIZE,
+      blockY = (by) => 128 + by * BLOCK_SIZE,
+      BLOCK_X_MIN = 0,
+      BLOCK_X_MAX = 9,
+      BLOCK_Y_MIN = -NORTH_ROWS,
+      BLOCK_Y_MAX = 9;
     const METERS_PER_UNIT = 100 / BLOCK_SIZE;
     const worldMeters = (units) => units * METERS_PER_UNIT,
       distanceLabel = (units) => Math.round(worldMeters(units)) + ' m';
@@ -83,7 +113,7 @@
     let mapZoom = 1,
       mapCenter = {
         x: WORLD_SIZE / 2,
-        y: WORLD_SIZE / 2,
+        y: (WORLD_TOP + WORLD_SIZE) / 2,
       };
     let cash = 0,
       wantedStars = 0,
@@ -115,14 +145,11 @@
         },
       ],
       PARKS = [
-        [3, 1],
-        [3, 2],
-        [3, 3],
-        [4, 1],
-        [4, 2],
-        [4, 3],
+        [3, 5],
+        [3, 6],
+        [4, 5],
+        [4, 6],
         [1, 1],
-        [4, 3],
         [0, 4],
         [2, 5],
         [4, 7],
@@ -132,6 +159,9 @@
         [9, 8],
         [8, 9],
         [0, 7],
+        [0, -2],
+        [4, -4],
+        [2, -7],
       ];
     const isPark = (x, y) => PARKS.some((p) => p[0] === x && p[1] === y),
       isRiver = (x, y, r = 0) =>
@@ -195,7 +225,7 @@
         name: 'CITY CYCLE',
         l: 28,
         w: 9,
-        max: 65,
+        max: 112,
         acc: 40,
         turn: 3.9,
         hp: 85,
@@ -686,7 +716,7 @@
       crimeTime = gameTime;
       cooldown = 0;
       searchActive = false;
-      searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+      searchRemaining = policeSearchSeconds();
       lastSeen = {
         x: player.x,
         y: player.y,
@@ -698,6 +728,11 @@
      * step, bullet and spawn test). Buildings are bucketed into 256-unit cells once
      * after buildWorld() so each query touches a handful of candidates instead of
      * every building in the city. Rebuilt by buildBuildingGrid() when buildings change.
+     *
+     * solid()'s fourth argument, `overWater`, is what lets the player swim: with it
+     * set, open water stops counting as solid while everything else still does. Only
+     * moveBody() passes it, and only for the player on foot -- traffic and
+     * pedestrians must keep to the land.
      */
     const BUILDING_CELL = 256,
       buildingGrid = new Map(),
@@ -718,11 +753,24 @@
           }
       }
     }
+    /* The tallest roof within reach: an overhead camera gives no depth cue, so the
+       flight readout says how much air there is between you and the rooftops. */
+    function roofHeightNear(x, y, radius = 280) {
+      let top = 0;
+      for (let i = -1; i <= 1; i++)
+        for (let j = -1; j <= 1; j++)
+          for (const b of buildingsNear(x + i * radius, y + j * radius)) {
+            if (b.x - radius > x || b.x + b.w + radius < x) continue;
+            if (b.y - radius > y || b.y + b.h + radius < y) continue;
+            if (b.height > top) top = b.height;
+          }
+      return top;
+    }
     function buildingsNear(x, y) {
       if (!buildingGrid.size) return buildings;
       return buildingGrid.get(Math.floor(x / BUILDING_CELL) * 4096 + Math.floor(y / BUILDING_CELL)) || noBuildings;
     }
-    function solid(x, y, r = 8) {
+    function solid(x, y, r = 8, overWater = false) {
       if (
         sportsBlocked(x, y, r) ||
         railBlocked(x, y, r) ||
@@ -730,8 +778,11 @@
         underpassBlocked(x, y, r) ||
         airportSceneryBlocked(x, y, r) ||
         garageBlocked(x, y, r) ||
-        !groundAt(x, y, r) ||
+        parkBlocked(x, y, r) ||
+        marinaBlocked(x, y, r) ||
+        (!overWater && !groundAt(x, y, r)) ||
         harborBlocked(x, y, r) ||
+        depotBlocked(x, y, r) ||
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
       )
         return true;
@@ -745,12 +796,18 @@
     function moveBody(body, displacementX, displacementY, collisionRadius) {
       if (body === player && player.roof)
         return moveOnRoof(displacementX, displacementY, collisionRadius);
+      if (body === player && player.deck)
+        return moveOnDeck(displacementX, displacementY, collisionRadius);
       let hit = false;
       // Vehicle test: a cheap bounding box rejects almost every vehicle before the
       // rotated point-in-car test (this runs for every pedestrian step each frame).
-      const reach = 90 + collisionRadius,
+      // On foot the player may leave the shore: the water is somewhere to be, not
+      // a wall. Everyone else is still stopped by it.
+      const swimmer =
+          body === player && !player.car && !player.roof && !player.deck && !player.parachute,
+        reach = 90 + collisionRadius,
         blocked = (x, y) => {
-          if (solid(x, y, collisionRadius)) return true;
+          if (solid(x, y, collisionRadius, swimmer)) return true;
           if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
           for (let i = 0; i < vehicles.length; i++) {
             const c = vehicles[i];
@@ -768,6 +825,9 @@
     }
     function roadNear(v) {
       return ROAD_CENTERS.reduce((a, b) => (Math.abs(a - v) < Math.abs(b - v) ? a : b));
+    }
+    function rowNear(v) {
+      return ROAD_ROWS.reduce((a, b) => (Math.abs(a - v) < Math.abs(b - v) ? a : b));
     }
     function onRoad(x, y) {
       return cityStreetAt(x, y);
@@ -805,6 +865,7 @@
           damageVersion: 0,
         };
       vehicles.push(vehicle);
+      if (autonomous) assignDriver(vehicle);
       return vehicle;
     }
     function canSpawnCar(type, x, y, a = 0, margin = 7, airframe) {
@@ -867,11 +928,16 @@
       throw Error('No clear vehicle spawn for ' + type);
     }
     /* REVIEW_HOOK:GROUND_CANVAS */
+    // One texture covers the whole city including the northern reclamation, so it
+    // is taller than it is wide. The pixels-per-unit ratio is held below the old
+    // 4096-square texture's so the bitmap does not grow with the city.
+    const GROUND_PIXELS_PER_UNIT = 3072 / CITY_SIZE;
     const groundCanvas = document.createElement('canvas');
-    groundCanvas.width = 4096;
-    groundCanvas.height = 4096;
+    groundCanvas.width = 3072;
+    groundCanvas.height = Math.ceil(CITY_HEIGHT * GROUND_PIXELS_PER_UNIT);
     const groundContext = groundCanvas.getContext('2d');
-    groundContext.scale(4096 / CITY_SIZE, 4096 / CITY_SIZE);
+    groundContext.scale(GROUND_PIXELS_PER_UNIT, GROUND_PIXELS_PER_UNIT);
+    groundContext.translate(0, -CITY_TOP);
     function rect(x, y, w, h, c) {
       groundContext.fillStyle = c;
       groundContext.fillRect(x, y, w, h);
@@ -902,13 +968,20 @@
         if (y < 4400) return 22 + vary * 20;
         return 20 + vary * 18;
       }
+      if (y < 0) {
+        // Northern reclamation. The tower core stands on the north-east point and
+        // falls away westward to the marina, which is kept deliberately low so the
+        // masts and the liner are the tallest things on that shore.
+        if (cx < 1750 && y < -2400) return 26 + vary * 30;
+        const core = clamp(Math.hypot(cx - 2820, y + 2620) / 1320, 0, 1),
+          tower = Math.pow(1 - core, 2);
+        return 58 + tower * 540 + vary * (48 + tower * 70);
+      }
       if (y < 1450) return cx > 2500 ? 30 + vary * 18 : 30 + vary * 26;
       if (y < 2650) return cx > 1700 && cx < 2300 ? 56 + vary * 30 : 62 + vary * 55;
-      if (y < 3700) {
-        if (cx < 1800) return 46 + vary * 40;
-        const core = clamp(Math.hypot(cx - 2450, y + 70 - 3150) / 950, 0, 1);
-        return 110 + (1 - core) * 130 + vary * 45;
-      }
+      // The old exchange district kept its name and its density but not its towers:
+      // the banks moved north to the point when the reclamation opened.
+      if (y < 3700) return cx < 1800 ? 60 + vary * 46 : 82 + vary * 96;
       if (y < 4650) return 50 + vary * 45;
       return 30 + vary * 24;
     }
@@ -1033,21 +1106,22 @@
       groundContext.save();
       coastPath(groundContext);
       groundContext.clip();
-      rect(0, 0, CITY_SIZE, CITY_SIZE, '#334a48');
+      rect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT, '#334a48');
       for (let x = 0; x < CITY_SIZE; x += 32)
-        for (let y = 0; y < CITY_SIZE; y += 26) {
+        for (let y = CITY_TOP; y < CITY_SIZE; y += 26) {
           if (seededRandom() > 0.6)
             rect(x + seededRandom() * 20, y, randomBetween(5, 16), 1, '#7795812b');
         }
-      rect(48, 48, CITY_SIZE - 112, CITY_SIZE - 112, '#696d60');
+      rect(48, CITY_TOP + 48, CITY_SIZE - 112, CITY_HEIGHT - 112, '#696d60');
       paintCityStreets(groundContext, true);
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            y = ROAD_CENTERS[by] + 89,
+      paintMarina(groundContext);
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            y = blockY(by) + 89,
             w = 334,
             h = 334;
-          if (x + w > RIVER.left && x < RIVER.right) continue;
+          if (y > 0 && x + w > RIVER.left && x < RIVER.right) continue;
           if (stadiumOverlap(x, y, w, h)) continue;
           const civicPlace = PLACES.find((p) => p.bx === bx && p.by === by);
           if (
@@ -1093,7 +1167,10 @@
             continue;
           }
           if (isPark(bx, by)) continue;
-          const industrial = bx >= 4 && by <= 2 && bx < 7;
+          // The Ironworks sheds are the three rows south of the old north shore.
+          // Without the lower bound this also caught the whole reclamation, which
+          // is why the new tower district came out as warehouses.
+          const industrial = bx >= 4 && bx < 7 && by >= 0 && by <= 2;
           if (industrial) {
             makeBuilding(x + 8, y + 8, w - 16, 140, 2);
             makeBuilding(x + 8, y + 203, 190, 120, 2);
@@ -1118,7 +1195,7 @@
             }
             const zone = districtAt(x + w / 2, y + h / 2),
               blockSeed = (bx * 31 + by * 17) % 7;
-            if (zone === 'FINANCIAL DISTRICT' && blockSeed % 2 === 0) {
+            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               // One tower on a plaza: towers need air around them to read as towers.
               makeBuilding(x + 52, y + 12, w - 104, 140, 0);
               rect(x + 8, y + 8, 40, 150, '#8d9385');
@@ -1127,6 +1204,13 @@
                 drawTree(x + 28, y + z, 11);
                 drawTree(x + w - 28, y + z, 11);
               }
+            } else if (zone === 'THE RECLAMATION' || zone === 'HARBOR POINT MARINA') {
+              // Reclamation blocks are perimeter buildings around a planted court.
+              makeBuilding(x + 7, y + 7, w - 15, 74, 0);
+              makeBuilding(x + 7, y + 96, 88, 130, 1);
+              makeBuilding(x + w - 95, y + 96, 88, 130, 1);
+              rect(x + 104, y + 100, w - 210, 124, '#6f8a5c');
+              for (let k = 0; k < 3; k++) drawTree(x + 130 + k * 52, y + 162, 14);
             } else if (zone.includes('OLD QUARTER') || zone === 'BATTERY POINT') {
               // Dense low-rise: three narrow lots with alleys between them.
               const lots = [7, 118, 229];
@@ -1152,13 +1236,20 @@
               label('P', x + 245, y + 260, 19, '#9aa08a');
             }
           }
+          // Street planting on all four kerbs, not only the north side: a tree
+          // line is most of what separates a city block from a car park.
           for (let s = 0; s < 3; s++) {
             drawTree(x + 55 + s * 110, y - 16, 12);
+            drawTree(x + 55 + s * 110, y + h + 16, 12 + (s % 2) * 2);
             lamps.push({
               x: x + 22 + s * 144,
               y: y + h + 18,
             });
             rect(x + 19 + s * 144, y + h + 9, 3, 13, '#3f453a');
+          }
+          for (let s = 0; s < 2; s++) {
+            drawTree(x - 16, y + 90 + s * 150, 11);
+            drawTree(x + w + 16, y + 90 + s * 150, 11);
           }
         }
       // Waterfront promenades, continuous river and three navigable crossings.
@@ -1192,9 +1283,9 @@
         rect(x - 54, y - 10, 108, 18, '#1c2928');
         label(s, x, y + 3, 10, c);
       }
-      for (let i = 0; i < 65; i++) {
+      for (let i = 0; i < 95; i++) {
         let x = randomChoice(ROAD_CENTERS) + randomChoice([-66, 66]),
-          y = randomBetween(200, 3300);
+          y = randomBetween(CITY_TOP + 200, 3300);
         if (!solid(x, y, 4)) {
           rect(x - 3, y - 4, 6, 8, '#3a5145');
           rect(x - 3, y - 5, 6, 2, '#899480');
@@ -1227,6 +1318,7 @@
       seedParkTrees();
       buildHarbor();
       buildVinnyDepot();
+      buildSunsetPier();
       buildCounty();
       for (const r of SERVICE_ROADS.filter((r) => r.name.startsWith('SOUTHPORT ')))
         strokeRoad(groundContext, r.points, r.width, '#606664');
@@ -1282,8 +1374,10 @@
       impactContacts.clear();
       for (let i = 0; i < 150; i++) {
         const vert = seededRandom() > 0.5,
-          r = randomChoice(ROAD_CENTERS),
-          v = randomBetween(170, CITY_SIZE - 260),
+          r = randomChoice(vert ? ROAD_CENTERS : ROAD_ROWS),
+          v = vert
+            ? randomBetween(CITY_TOP + 170, CITY_SIZE - 260)
+            : randomBetween(170, CITY_SIZE - 260),
           dir = seededRandom() > 0.5 ? 1 : -1,
           x = vert ? r - dir * 25 : v,
           y = vert ? v : r + dir * 25,
@@ -1310,7 +1404,7 @@
             'limousine',
           ]);
         if (
-          Math.abs(v - roadNear(v)) < 145 ||
+          Math.abs(v - (vert ? rowNear(v) : roadNear(v))) < 145 ||
           inHarbor(x, y, 70) ||
           !trafficSpawnValid(x, y, a) ||
           !canSpawnCar(type, x, y, a, 12)
@@ -1326,7 +1420,7 @@
         );
       }
       for (let i = 0; i < 70; i++) {
-        const r = randomChoice(ROAD_CENTERS),
+        const r = randomChoice(ROAD_ROWS),
           v = randomBetween(240, CITY_SIZE - 260),
           side = randomChoice([-1, 1]),
           x = v,
@@ -1351,21 +1445,20 @@
           ]);
         if (
           !cityStreetAt(x, y, 30) ||
-          Math.abs(v - roadNear(v)) < 125 ||
+          Math.abs(v - rowNear(v)) < 125 ||
           inHarbor(x, y, 40) ||
           !canSpawnCar(type, x, y, a, 8)
         )
           continue;
         makeCar(type, x, y, a, false, randomChoice(VEHICLE_PAINT_COLORS));
       }
-      const PED_COLORS = [
-        '#cab392', '#879eb3', '#b57374', '#c2bd95', '#778e70', '#9689a7',
-        '#d9a066', '#5f7c9c', '#c95a4a', '#e0d8c0', '#4c5a6b', '#8a5c7a',
-      ];
-      for (let i = 0; i < 300; i++) {
+      const PED_COLORS = DRIVER_COLORS;
+      for (let i = 0; i < 380; i++) {
         const vertical = seededRandom() > 0.5,
-          r = randomChoice(ROAD_CENTERS),
-          v = randomBetween(180, CITY_SIZE - 260),
+          r = randomChoice(vertical ? ROAD_CENTERS : ROAD_ROWS),
+          v = vertical
+            ? randomBetween(CITY_TOP + 180, CITY_SIZE - 260)
+            : randomBetween(180, CITY_SIZE - 260),
           x = vertical ? r + randomChoice([-67, 67]) : v,
           y = vertical ? v : r + randomChoice([-67, 67]);
         if (!solid(x, y, 5) && !inHarbor(x, y, 8) && !vehicles.some((c) => pointInCar(x, y, c, 10))) {
@@ -1446,18 +1539,6 @@
         }),
       );
     }
-    function oldDistrict() {
-      if (player.x < 48 || player.x > WORLD_SIZE - 64 || player.y < 48 || player.y > WORLD_SIZE - 64)
-        return 'SOUTH COAST OCEAN';
-      if (player.x > RIVER.right) return player.y > 3500 ? 'BAY GARDENS' : 'RIVERSIDE';
-      if (player.x > 3290) return 'SAINT MARLOW RIVER';
-      if (player.y > 3500) return player.x < 1800 ? 'CIVIC QUARTER' : 'SOUTH HILLS';
-      if (player.x > 2700) return player.y > 2600 ? 'SOUTH PIER' : 'IRONWORKS';
-      if (player.y > 2600) return 'SOUTH COAST';
-      if (player.x > 1800) return 'EASTSIDE';
-      if (player.y > 1500) return 'PALM HEIGHTS';
-      return 'OLD QUARTER';
-    }
     function district() {
       return districtAt(player.x, player.y);
     }
@@ -1522,22 +1603,19 @@
         ),
       ])
         if (e.hp > 0 && distance(e) < 85 * power && clearSight(blast, e)) {
-          strikePerson(e, 200, headingBetween(blast, e), attacker);
+          strikePerson(e, 200, headingBetween(blast, e), attacker, true, 'blast');
         }
       for (const animal of wildlife)
         if (animal.hp > 0 && distance(animal) < 85 * power && clearSight(blast, animal))
           strikeWildlife(animal, Math.max(0, 200 * power - distance(animal) * 1.6));
       const pd = distance(player);
-      if (pd < 95 * power && clearSight(blast, player)) hurt(Math.max(0, (95 * power - pd) * 0.75));
+      if (pd < 95 * power && clearSight(blast, player))
+        hurt(Math.max(0, (95 * power - pd) * 0.75), 'blast');
       if (attacker === player) crime(0.5);
     }
-    function hurt(d) {
+    function hurt(d, kind = 'ballistic') {
       if (player.inv > 0 || gameMode !== 'play' || player.godMode) return;
-      if (player.armor > 0) {
-        const absorbed = Math.min(player.armor, d * 0.65);
-        player.armor -= absorbed;
-        d -= absorbed;
-      }
+      d = ballisticDamage(player, d, kind);
       player.hp -= d;
       if (d > 1 && !player.car) bleed(player, d / 35, player.a + Math.PI);
       flash = 0.12;
@@ -1545,6 +1623,15 @@
     }
     function die() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (taxiRide) endTaxiRide(false);
+      player.deck = null;
+      if (player.coaster) {
+        player.coaster = null;
+        coasterTrain.running = false;
+        coasterTrain.t = 0;
+      }
+      player.tumble = null;
+      player.tumbleRoll = 0;
       if (player.roof) {
         player.roof = false;
         player.altitude = 0;
@@ -1675,6 +1762,9 @@
       if (gameMode !== 'play' || player.parachute) return;
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
+      if (parkInteract()) return;
+      if (marinaInteract()) return;
+      if (taxiInteract()) return;
       if (
         rooftopMissionInteract() ||
         challengeMissionInteract() ||
@@ -1699,7 +1789,26 @@
       }
       const c = nearestCar();
       if (c) {
+        if (vehicleIsLocked(c)) {
+          tell('LOCKED', 1.8);
+          tone(140, 0.07, 0.2, 'square');
+          return;
+        }
+        if (c.occupied) {
+          ejectDriver(c, 'hijack');
+          crime(0.8);
+        }
+        enterVehicle(c);
+        return;
+      }
+      if (GARAGES.some((s) => distanceBetween(player, s) < 140))
+        tell('Drive fully inside the open bay, stop, and press E. Respray and repair: $250.');
+    }
+    /* Taking the wheel: shared by the action key, the cab hijack and the getaway
+       cars missions hand you, so every entry sets the same state. */
+    function enterVehicle(c) {
         player.car = c;
+        c.ramUntil = 0;
         enforceVehicleHandgun();
         c.abandonedFlight = false;
         if (c.type === 'police' || c.military) c.stolen = true;
@@ -1724,13 +1833,16 @@
         } else if (isBoat(c))
           tell('W/S throttle · A/D steer · Space slow · E exit alongside a dock', 5);
         else if (c.type === 'bicycle')
-          tell('BICYCLE · W pedal · S brake · A/D steer · Explore the green cycle loops', 5);
+          tell('CITY CYCLE · TAP W to pedal, faster taps for more speed · SHIFT stand on the pedals · S brake', 6);
         else tell(vehicleSpec(c).name + ' · W accelerate · A/D steer · Space handbrake', 3);
         tone(200, 0.12, 0.25, 'triangle');
-        return;
-      }
-      if (GARAGES.some((s) => distanceBetween(player, s) < 140))
-        tell('Drive fully inside the open bay, stop, and press E. Respray and repair: $250.');
+    }
+    function roofClearanceText(c) {
+      const roof = roofHeightNear(c.x, c.y),
+        clearance = c.altitude - roof;
+      if (roof < 12) return Math.round(worldMeters(c.altitude - terrainHeight(c.x, c.y))) + ' m AGL';
+      if (clearance < 0) return 'BELOW ROOFTOPS';
+      return Math.round(worldMeters(clearance)) + ' m OVER ROOFS';
     }
     function startReload() {
       const w = currentWeapon();
@@ -1786,6 +1898,7 @@
         shotCooldownSeconds > 0 ||
         reloadSecondsRemaining > 0 ||
         gameMode !== 'play' ||
+        player.swimming ||
         (player.roof && !rooftopJob()) ||
         !weaponIsEquipped(selectedWeaponIndex)
       )
@@ -1857,6 +1970,15 @@
     }
     function resetMissionState() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (taxiRide) endTaxiRide(false);
+      player.deck = null;
+      if (player.coaster) {
+        player.coaster = null;
+        coasterTrain.running = false;
+        coasterTrain.t = 0;
+      }
+      player.tumble = null;
+      player.tumbleRoll = 0;
       cleanupMissionExtras();
       repairJob = null;
       player.parachute = null;
@@ -1896,11 +2018,17 @@
           c.ai = true;
         });
     }
-    function clearLine(a, b) {
-      return clearSight(a, b);
+    function aheadOf(t, seconds) {
+      return {
+        x: clamp(t.x + (t.vx || 0) * seconds, 40, WORLD_SIZE - 40),
+        y: clamp(t.y + (t.vy || 0) * seconds, WORLD_TOP + 40, WORLD_SIZE - 40),
+      };
     }
     function copRoute(c) {
-      const chaseTarget = c.pursuitTarget || player;
+      // An interceptor routes to where the runner will be, not to where they are:
+      // half the patrol chases, the other half tries to be there first.
+      const quarry = c.pursuitTarget || player.car || player,
+        chaseTarget = c.interceptor ? aheadOf(quarry, 3.4) : c.pursuitTarget || player;
       if (
         c.x > CITY_SIZE ||
         c.y > CITY_SIZE ||
@@ -1910,11 +2038,11 @@
         return countyCopRoute(c, chaseTarget);
       const start = {
           x: ROAD_CENTERS.indexOf(roadNear(c.x)),
-          y: ROAD_CENTERS.indexOf(roadNear(c.y)),
+          y: ROAD_ROWS.indexOf(rowNear(c.y)),
         },
         target = {
           x: ROAD_CENTERS.indexOf(roadNear(chaseTarget.x)),
-          y: ROAD_CENTERS.indexOf(roadNear(chaseTarget.y)),
+          y: ROAD_ROWS.indexOf(rowNear(chaseTarget.y)),
         },
         key = (p) => p.x + ',' + p.y,
         queue = [start],
@@ -1945,24 +2073,20 @@
             n.x < 0 ||
             n.x >= ROAD_CENTERS.length ||
             n.y < 0 ||
-            n.y >= ROAD_CENTERS.length ||
-            visited.has(key(n)) ||
-            harborPoliceProtected(ROAD_CENTERS[n.x], ROAD_CENTERS[n.y], 45) ||
-            harborPoliceProtected(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-              45,
-            ) ||
-            !groundAt(ROAD_CENTERS[n.x], ROAD_CENTERS[n.y], 10) ||
-            !groundAt(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-              10,
-            ) ||
-            !cityStreetAt(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-            )
+            n.y >= ROAD_ROWS.length ||
+            visited.has(key(n))
+          )
+            continue;
+          const nx = ROAD_CENTERS[n.x],
+            ny = ROAD_ROWS[n.y],
+            mx = (ROAD_CENTERS[p.x] + nx) / 2,
+            my = (ROAD_ROWS[p.y] + ny) / 2;
+          if (
+            harborPoliceProtected(nx, ny, 45) ||
+            harborPoliceProtected(mx, my, 45) ||
+            !groundAt(nx, ny, 10) ||
+            !groundAt(mx, my, 10) ||
+            !cityStreetAt(mx, my)
           )
             continue;
           visited.add(key(n));
@@ -1974,7 +2098,7 @@
       for (let p = end; p; p = parents.get(key(p)))
         route.unshift({
           x: ROAD_CENTERS[p.x],
-          y: ROAD_CENTERS[p.y],
+          y: ROAD_ROWS[p.y],
         });
       if (route.length && distanceBetween(c, route[0]) < 55) route.shift();
       return route;
@@ -1989,7 +2113,7 @@
       }
       let points = [];
       for (const x of ROAD_CENTERS)
-        for (const y of ROAD_CENTERS) {
+        for (const y of ROAD_ROWS) {
           const d = Math.hypot(x - player.x, y - player.y);
           if (
             d > 550 &&
@@ -2007,6 +2131,7 @@
       const p = randomChoice(points),
         c = makeCar('police', p.x, p.y, headingBetween(p, player), true);
       c.speed = 140;
+      c.interceptor = occupied.length % 2 === 1;
       c.route = copRoute(c);
       c.routeTime = 2;
     }
@@ -2036,6 +2161,48 @@
         'Heard shots by the docks.',
       ],
       wanted: ['It’s him!', 'That’s the guy from the news!', 'Don’t look at him.', 'Cops are everywhere tonight.'],
+      gym: [
+        'Three more. Three.',
+        'Control the negative, don’t drop.',
+        'Elbows in on the dip.',
+        'That set was clean.',
+        'Thirty seconds rest, then again.',
+        'You’re kipping. Strict or it doesn’t count.',
+        'Grip goes before the back does.',
+        'Chalk’s in my bag if you want it.',
+        'Muscle-up by summer. I mean it this time.',
+        'Legs tomorrow. Always tomorrow.',
+        'Full range or it’s half a rep.',
+        'Breathe out on the way up.',
+        'Rings are wet, go easy.',
+        'Twelve. New best.',
+      ],
+      vendor: [
+        'Two tacos, no onion, coming up.',
+        'Coffee’s fresh, five minutes old.',
+        'Cash only, friend.',
+        'Noodles are ready in a minute.',
+        'Best lunch in the Garden.',
+      ],
+      shore: [
+        'Best view in the city, right here.',
+        'Ferry horn. Must be six already.',
+        'Look at that liner.',
+        'Smell that? Rain coming.',
+        'Same walk every evening. Never gets old.',
+        'Careful, the rail is wet.',
+        'One more lap, then coffee.',
+      ],
+      deck: [
+        'The whole skyline from up here!',
+        'Sailing sets at six, they said.',
+        'Is that the tower district?',
+        'I am never getting off this boat.',
+        'Photo by the rail, come on.',
+        'The buffet reopens at four.',
+        'Look how small the taxis are.',
+        'Sea air. Finally.',
+      ],
     };
     function pedSay(p, kind, chance = 1) {
       if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return;
@@ -2081,6 +2248,14 @@
           if ((peopleFrame + index) % 3) continue;
           deltaSeconds = frameDelta * 3;
         }
+        if (p.onDeck) {
+          updateDeckWalker(p, deltaSeconds);
+          continue;
+        }
+        if (updateStroller(p, deltaSeconds)) continue;
+        if (updateParkGuest(p, deltaSeconds)) continue;
+        if (updateCarjackReactions(p, deltaSeconds)) continue;
+        if (updateGymGoer(p, deltaSeconds)) continue;
         if (updateParkWalker(p, deltaSeconds)) continue;
         p.timer -= deltaSeconds;
         if (p.flinch > 0) p.flinch -= deltaSeconds;
@@ -2191,21 +2366,22 @@
           continue;
         } else if (p.timer < 0) {
           p.timer = randomBetween(5, 12);
-          const roll = seededRandom();
-          if (roll < 0.1) {
+          const roll = seededRandom(),
+            tempo = cityTempo();
+          if (roll < tempo.idle) {
             p.state = 'idle';
             p.stateTime = randomBetween(2.5, 6);
             p.walking = false;
             continue;
           }
-          if (roll < 0.2 && shopfrontNear(p)) {
+          if (roll < tempo.shop && shopfrontNear(p)) {
             p.state = 'shop';
             p.stateTime = randomBetween(3, 7);
             p.a = -Math.PI / 2;
             p.walking = false;
             continue;
           }
-          if (roll < 0.3) {
+          if (roll < tempo.bench) {
             const spot = nearestFreeBench(p, 160);
             if (spot) {
               spot.taken = p;
@@ -2221,9 +2397,11 @@
         const vertical = Math.abs(Math.sin(p.a)) > 0.5,
           sign = vertical ? Math.sign(Math.sin(p.a)) : Math.sign(Math.cos(p.a)),
           v = vertical ? p.y : p.x,
-          next = ROAD_CENTERS.filter((r) => (r - v) * sign > 0).sort((a, b) => (a - b) * sign)[0],
+          next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
+            .filter((r) => (r - v) * sign > 0)
+            .sort((a, b) => (a - b) * sign)[0],
           remaining = Math.abs((next ?? 1e6) - v),
-          signal = trafficSignal(roadNear(p.x), roadNear(p.y));
+          signal = trafficSignal(roadNear(p.x), rowNear(p.y));
         if (
           !panic &&
           remaining > 70 &&
@@ -2233,7 +2411,7 @@
           p.walking = false;
           continue;
         }
-        const speed = panic ? 105 : p.flinch > 0 ? 6 : 21;
+        const speed = panic ? 105 : p.flinch > 0 ? 6 : cityTempo().speed;
         p.walk += deltaSeconds * (panic ? 15 : 7);
         if (
           moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5)
@@ -2335,7 +2513,13 @@
       )
         return true;
       return (
-        [...garageWalls(), ...harborSolids(), ...militarySolids(), ...countySolids()].some(
+        [
+          ...garageWalls(),
+          ...harborSolids(),
+          ...depotSolids(),
+          ...militarySolids(),
+          ...countySolids(),
+        ].some(
           (b) => altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h,
         ) ||
         buildingsNear(x, y).some(
@@ -2499,22 +2683,36 @@
           }
         }
         timed('transit', () => updateTransit(deltaSeconds));
+        timed('taxi', () => updateTaxiRide(deltaSeconds));
+        updateCycling(deltaSeconds);
+        updateWeather(deltaSeconds);
+        updateSwimming(deltaSeconds);
+        updateSinking(deltaSeconds);
+        timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
         if (player.parachute) updateParachute(deltaSeconds);
-        else if (!player.car && !transitRide) {
+        else if (
+          !player.car &&
+          !transitRide &&
+          !taxiRide &&
+          !player.coaster &&
+          !updateMountainFooting(deltaSeconds)
+        ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
           if (x || y) {
             player.a = Math.atan2(y, x);
             player.walk += deltaSeconds * (keys.ShiftLeft ? 15 : 10);
-            let s = player.roof
-              ? keys.ShiftLeft || keys.ShiftRight
-                ? 68
-                : 42
-              : keys.ShiftLeft || keys.ShiftRight
-                ? 158
-                : 100;
+            let s = player.swimming
+              ? swimSpeed()
+              : player.roof
+                ? keys.ShiftLeft || keys.ShiftRight
+                  ? 68
+                  : 42
+                : keys.ShiftLeft || keys.ShiftRight
+                  ? 158
+                  : 100;
             moveBody(
               player,
               (x / Math.hypot(x, y)) * s * deltaSeconds,
@@ -2523,7 +2721,16 @@
             );
           }
         }
-        if (!player.car && !player.roof && !player.parachute && !transitRide)
+        if (
+          !player.car &&
+          !player.roof &&
+          !player.deck &&
+          !player.parachute &&
+          !player.swimming &&
+          !transitRide &&
+          !taxiRide &&
+          !player.coaster
+        )
           player.altitude = terrainHeight(player.x, player.y);
         if (keys.KeyF || (!player.car && keys.Space) || mouse.down) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
@@ -2608,11 +2815,11 @@
       }
       shake *= Math.pow(0.008, deltaSeconds);
       flash = Math.max(0, flash - deltaSeconds);
-      const look = player.car ? player.car.speed * 0.35 : 0;
-      cameraTarget.x +=
-        (player.x + Math.cos(player.a) * look - cameraTarget.x) * Math.min(1, deltaSeconds * 4.5);
-      cameraTarget.y +=
-        (player.y + Math.sin(player.a) * look - cameraTarget.y) * Math.min(1, deltaSeconds * 4.5);
+      const look = player.car ? player.car.speed * 0.35 : 0,
+        // A coaster outruns the usual trailing camera; stay with the train.
+        follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
+      cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
+      cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
       timed('sound', () => soundUpdate(deltaSeconds));
       uiTime += deltaSeconds;
       if (uiTime > 0.09) {
@@ -3072,16 +3279,16 @@
       worldContext.scale(canvasScale, canvasScale);
       worldContext.translate(-cameraTarget.x, -cameraTarget.y);
       const sx = clamp(cameraTarget.x - viewportWidth / canvasScale / 2 - 20, 0, CITY_SIZE),
-        sy = clamp(cameraTarget.y - viewportHeight / canvasScale / 2 - 20, 0, CITY_SIZE),
+        sy = clamp(cameraTarget.y - viewportHeight / canvasScale / 2 - 20, CITY_TOP, CITY_SIZE),
         sw = Math.min(viewportWidth / canvasScale + 40, CITY_SIZE - sx),
         sh = Math.min(viewportHeight / canvasScale + 40, CITY_SIZE - sy);
       if (sw > 0 && sh > 0)
         worldContext.drawImage(
           groundCanvas,
-          (sx * 4096) / CITY_SIZE,
-          (sy * 4096) / CITY_SIZE,
-          (sw * 4096) / CITY_SIZE,
-          (sh * 4096) / CITY_SIZE,
+          sx * GROUND_PIXELS_PER_UNIT,
+          (sy - CITY_TOP) * GROUND_PIXELS_PER_UNIT,
+          sw * GROUND_PIXELS_PER_UNIT,
+          sh * GROUND_PIXELS_PER_UNIT,
           sx,
           sy,
           sw,
@@ -3093,6 +3300,7 @@
       drawAviationGround(worldContext);
       drawHarbor2D();
       drawDepot2D();
+      drawRoadblocks2D();
       drawUnderpass2D();
       drawAirSearch2D();
       drawTrafficLights2D();
@@ -3248,7 +3456,9 @@
       }
     }
     function drawMap(drawingContext, width, height, big = false) {
-      const scale = big ? Math.min(width / WORLD_SIZE, height / WORLD_SIZE) * 0.92 * mapZoom : 0.137,
+      const scale = big
+          ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
+          : 0.137,
         cx = big ? mapCenter.x : player.x,
         cy = big ? mapCenter.y : player.y;
       drawingContext.fillStyle = '#123244';
@@ -3353,9 +3563,14 @@
         drawingContext.restore();
         drawingContext.textAlign = 'center';
         const labels = [
+          ['N O R T H  P O I N T', 2700, -2620],
+          ['HARBOR POINT MARINA', 1060, -2960],
+          ['CRUISE TERMINAL', 2360, -3990],
+          ['THE RECLAMATION', 1420, -760],
           ['N O R T H B A N K', 1580, 540],
-          ['CENTRAL COMMONS', 2167, 1420],
-          ['FINANCIAL DISTRICT', 2680, 2890],
+          ['CENTRAL GARDEN', 2176, 3224],
+          ['SUNSET PIER', 3810, 5190],
+          ['EXCHANGE DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
           ['BATTERY POINT', 2480, 5140],
           ['SOUTHPORT', 640, 5450],
@@ -3551,18 +3766,32 @@
         ? 'CITY RAIL'
         : c
           ? vehicleSpec(c).name
-          : 'ON FOOT';
-      getElement('speed').textContent = c
-        ? Math.round(
-            worldMeters(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : Math.abs(c.speed)) *
-              3.6,
-          )
-        : '';
-      getElement('speedUnit').textContent = c
-        ? isAircraft(c)
-          ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT'
-          : 'KM/H'
-        : '';
+          : player.swimming
+            ? 'SWIMMING'
+            : 'ON FOOT';
+      // The speed readout doubles as the breath gauge while you are in the water.
+      const swimming = !c && player.swimming;
+      getElement('speed').textContent = swimming
+        ? Math.round(breathFraction() * 100)
+        : c
+          ? Math.round(
+              worldMeters(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : Math.abs(c.speed)) *
+                3.6,
+            )
+          : '';
+      getElement('speedUnit').textContent = swimming
+        ? '% BREATH'
+        : c
+          ? isAircraft(c)
+            ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
+            : ridingBicycle()
+              ? 'KM/H · ' +
+                Math.round(pedalCadence() * 60) +
+                ' RPM · LEGS ' +
+                Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) +
+                '%'
+              : 'KM/H'
+          : '';
       getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
       getElement('carFill').style.background = c && c.hp < c.maxhp * 0.3 ? '#e79177' : '#d7f970';
       const target = objective(),
@@ -3618,13 +3847,21 @@
                 : 'RESPRAY & REPAIR · $250';
           else if (GARAGES.some((s) => distanceBetween(c, s) < 200))
             prompt = 'DRIVE FULLY INTO THE OPEN REPAIR BAY';
-        } else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
+        } else if (taxiRide) prompt = 'STOP HERE · $' + taxiRide.fare;
+        else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
+        else if (player.deck)
+          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : '';
+        else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
+        else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (distanceBetween(player, phone) < 68 && !m && missionIndex < missions.length)
           prompt = 'ANSWER PAYPHONE';
         else {
           const n = nearestCar();
-          if (n) prompt = 'ENTER ' + vehicleSpec(n).name;
+          if (n)
+            prompt = vehicleIsLocked(n)
+              ? 'LOCKED · BREAK THE WINDOW'
+              : (n.occupied ? 'PULL OUT THE DRIVER · ' : 'ENTER ') + vehicleSpec(n).name;
         }
       }
       getElement('interaction').style.display = prompt ? 'block' : 'none';
@@ -3674,6 +3911,10 @@
       }
       if (gameMode === 'service') {
         closeService();
+        return;
+      }
+      if (gameMode === 'taxi') {
+        closeTaxiOffer();
         return;
       }
       if (!getElement('credits').classList.contains('hidden')) {
@@ -3732,11 +3973,14 @@
       clearMapGesture();
       clearTouchInput();
       mapOpen = !mapOpen;
+      if (!mapOpen) cancelTaxiPick();
       gameMode = mapOpen ? 'map' : 'play';
       getElement('mapOverlay').classList.toggle('hidden', !mapOpen);
       keys = {};
       mouse.down = false;
       if (mapOpen) {
+        if (taxiPicking)
+          getElement('mapRouteStatus').textContent = 'CAB WAITING · Tap where you want to be dropped off';
         drawMap(cityMapContext, 800, 660, true);
         getElement('closeMap').focus();
       } else canvas.focus();
@@ -3778,8 +4022,81 @@
       canvas.focus();
       updateUI();
     }
+    /**
+     * CHEAT CODE
+     * Letters typed during play accumulate in a short ring; when the tail spells a
+     * known code it fires. The keys still do their normal jobs while you type, so
+     * the character will walk about as you spell it -- which is part of the fun.
+     */
+    let cheatBuffer = '';
+    const CHEAT_CODES = {
+      godmode: () => {
+        player.godMode = !player.godMode;
+        if (player.godMode) {
+          for (const w of weapons) {
+            w.owned = true;
+            w.ammo = w.clip;
+            w.reserve = w.clip * (w.rocket ? 5 : 9);
+          }
+          player.hp = 100;
+          player.armor = 100;
+          announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
+          tell('GOD MODE ACTIVATED · every weapon · click the map to teleport', 4);
+        } else {
+          announce('SOUTH COAST', 'GODMODE OFF', 1.8);
+          tell('GODMODE OFF', 2.5);
+        }
+        drawWeapon();
+        updateUI();
+        tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
+      },
+    };
+    /* Put the player somewhere else, letting go of anything that was carrying
+       them: a hired cab or a liner deck would otherwise drag them straight back. */
+    function teleportPlayer(x, y) {
+      if (player.car) exitCar();
+      if (taxiRide) endTaxiRide(false);
+      cancelTaxiPick();
+      player.deck = null;
+      player.coaster = null;
+      player.parachute = null;
+      player.x = x;
+      player.y = y;
+      cameraTarget.x = x;
+      cameraTarget.y = y;
+    }
+    // Returns true once the tail of the buffer is going somewhere, so the caller
+    // can swallow the keypress: spelling a code should not also drive the car.
+    function feedCheatBuffer(key) {
+      if (!/^[a-z]$/.test(key)) {
+        cheatBuffer = '';
+        return false;
+      }
+      cheatBuffer = (cheatBuffer + key).slice(-16);
+      for (const [code, run] of Object.entries(CHEAT_CODES))
+        if (cheatBuffer.endsWith(code)) {
+          cheatBuffer = '';
+          run();
+          return true;
+        }
+      const tail = cheatBuffer.slice(-15);
+      for (const code of Object.keys(CHEAT_CODES))
+        for (let i = 1; i <= Math.min(tail.length, code.length); i++)
+          if (code.startsWith(tail.slice(-i))) return true;
+      return false;
+    }
     window.addEventListener('keydown', (e) => {
       const code = e.code;
+      if (
+        !e.repeat &&
+        (gameMode === 'play' || gameMode === 'map') &&
+        feedCheatBuffer((e.key || '').toLowerCase())
+      ) {
+        e.preventDefault();
+        return;
+      }
+      if (!e.repeat && gameMode === 'play' && (code === 'KeyW' || code === 'ArrowUp'))
+        cyclePedalKey();
       if (gameMode === 'map' && code === 'KeyC') {
         e.preventDefault();
         centerMapOnPlayer();
@@ -3824,7 +4141,7 @@
           mapZoom = 1;
           mapCenter = {
             x: WORLD_SIZE / 2,
-            y: WORLD_SIZE / 2,
+            y: (WORLD_TOP + WORLD_SIZE) / 2,
           };
         } else {
           const step = 500 / mapZoom;
@@ -3835,7 +4152,7 @@
           );
           mapCenter.y = clamp(
             mapCenter.y + (code === 'ArrowDown' ? step : code === 'ArrowUp' ? -step : 0),
-            0,
+            WORLD_TOP,
             WORLD_SIZE,
           );
         }
@@ -3885,6 +4202,13 @@
         if (code === 'Escape' || code === 'KeyE') {
           e.preventDefault();
           closeTransit();
+        }
+        return;
+      }
+      if (gameMode === 'taxi') {
+        if (code === 'Escape' || code === 'KeyE') {
+          e.preventDefault();
+          closeTaxiOffer();
         }
         return;
       }
@@ -4022,6 +4346,17 @@
     getElement('closeMap').onclick = toggleMap;
     getElement('soundBtn').onclick = mute;
     getElement('menuSound').onclick = mute;
+    getElement('closeTaxi').onclick = closeTaxiOffer;
+    // Sandboxed embeds and bare file:// copies cannot deliver this file, so hide
+    // the offer instead of showing a link that silently does nothing.
+    const offlineCopy = getElement('offlineCopy');
+    let sandboxed = location.protocol === 'file:' || !!window.claude;
+    try {
+      if (window.top !== window.self) sandboxed = true;
+    } catch (err) {
+      sandboxed = true;
+    }
+    if (offlineCopy && sandboxed) offlineCopy.hidden = true;
     getElement('restartMission').onclick = retryMission;
     getElement('newGame').onclick = newGame;
     window.addEventListener('resize', resize);
@@ -4033,6 +4368,14 @@
     // @include src/story.js
     // @include src/campaign.js
     // @include src/chase.js
+    // @include src/roadblocks.js
+    // @include src/carjack.js
+    // @include src/themepark.js
+    // @include src/marina.js
+    // @include src/taxi.js
+    // @include src/cycles.js
+    // @include src/weather.js
+    // @include src/water.js
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
@@ -4109,7 +4452,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "25.1.0",
+      version: "28.1.1",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -4127,12 +4470,7 @@
         pedestrians: pedestrians.length,
       }),
       teleport(x, y) {
-        if (player.car) exitCar();
-        player.x = x;
-        player.y = y;
-        cameraTarget.x = x;
-        cameraTarget.y = y;
-        player.parachute = null;
+        teleportPlayer(x, y);
         return this.status();
       },
       setClock(hours) {
@@ -4152,6 +4490,81 @@
         player.godMode = !!on;
         return player.godMode;
       },
+      // Set the wanted level directly. Useful for looking at containment and air
+      // support without having to earn them.
+      wanted(stars = 5) {
+        const n = clamp(Math.round(stars), 0, 5);
+        if (n <= 0) clearPolice();
+        else {
+          wantedStars = n;
+          wantedLevel = n;
+          wantedPressure = n;
+          starElapsed = 0;
+          searchActive = false;
+          searchRemaining = policeSearchSeconds(n);
+          lastSeen = {
+            x: player.x,
+            y: player.y,
+          };
+        }
+        return this.status();
+      },
+      // Force the sky: clear, fair, cloudy, overcast, rain, storm. Passing nothing
+      // hands the sky back to the weather machine.
+      sky(id) {
+        if (id === undefined) {
+          weather.locked = false;
+          return weatherLabel();
+        }
+        weather.locked = true;
+        return setWeather(id);
+      },
+      // What the vehicle under the player is actually doing.
+      ride: () => ({
+        type: player.car ? player.car.type : null,
+        speed: player.car ? Math.round((player.car.speed || 0) * 10) / 10 : 0,
+        vx: player.car ? Math.round((player.car.vx || 0) * 10) / 10 : 0,
+        vy: player.car ? Math.round((player.car.vy || 0) * 10) / 10 : 0,
+        cadence: Math.round(pedalCadence() * 100) / 100,
+        gear: Math.round(pedalGear() * 100) / 100,
+        strokeQueue: Math.round(pedalQueue() * 10) / 10,
+      }),
+      // Rack a bicycle beside the player.
+      bike(headingRadians = player.a) {
+        spawnClearCar(
+          'bicycle',
+          player.x + Math.cos(headingRadians) * 30,
+          player.y + Math.sin(headingRadians) * 30,
+          headingRadians,
+          false,
+        );
+        return this.status();
+      },
+      // Put a cab at the kerb and ride it somewhere, without hunting for one.
+      cab(x, y) {
+        const car = spawnClearCar('taxi', player.x + 44, player.y, 0, true);
+        assignDriver(car);
+        if (x === undefined) return this.status();
+        startTaxiRide(car, { x, y });
+        return { riding: !!taxiRide, fare: taxiRide?.fare ?? null, stops: taxiRide?.route.length ?? 0 };
+      },
+      // The chokepoint catalogue and the state of the cordon.
+      containment: () => ({
+        sites: roadblockSites().length,
+        budget: containmentBudget(),
+        active: roadblocks.length,
+        nextPlanIn: Math.round(Math.max(0, containmentTimer) * 10) / 10,
+      }),
+      // Where the police have cut the map right now.
+      roadblocks: () =>
+        roadblocks.map((b) => ({
+          name: b.site.name,
+          x: Math.round(b.x),
+          y: Math.round(b.y),
+          cars: b.cars.filter((c) => c.hp > 0).length,
+          officers: b.crew.filter((o) => o.hp > 0).length,
+          spikes: !!b.spike && !b.spike.spent,
+        })),
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

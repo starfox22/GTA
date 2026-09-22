@@ -38,7 +38,6 @@
         transparent: true,
         opacity: 0.6,
       });
-      const sportsLineMaterial = new Three.LineBasicMaterial({ color: '#f4f1db' });
       const sportsBallSeamMaterial = new Three.LineBasicMaterial({ color: '#473727' });
 
       // Draw nets and ball seams in one geometry per object, instead of individual

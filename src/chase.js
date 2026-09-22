@@ -19,6 +19,16 @@
         x: 4480,
         y: 4450,
       },
+      // The loading dock at the back: closed while the truck is being brought in,
+      // opened once the cargo is off, which is the only way out after the drop.
+      rear: {
+        x: 4480,
+        y: 4576,
+      },
+      alley: {
+        x: 4480,
+        y: 4664,
+      },
       height: 64,
     };
     const depotWalls = [
@@ -37,7 +47,13 @@
       {
         x: 4340,
         y: 4572,
-        w: 280,
+        w: 104,
+        h: 8,
+      },
+      {
+        x: 4516,
+        y: 4572,
+        w: 104,
         h: 8,
       },
       {
@@ -53,6 +69,61 @@
         h: 8,
       },
     ];
+    /* Two roller shutters. 0 is fully open, 1 fully closed; they animate at the
+       same rate as the harbor barrier so the depot reads as one piece of kit. */
+    let depotFrontShutter = 0,
+      depotRearShutter = 1,
+      depotFrontTarget = 0,
+      depotRearTarget = 1;
+    function depotSolids() {
+      const list = [];
+      if (depotFrontShutter > 0.2)
+        list.push({
+          x: 4422,
+          y: 4338,
+          w: 116,
+          h: 7,
+          height: 58,
+          barrier: true,
+        });
+      if (depotRearShutter > 0.2)
+        list.push({
+          x: 4444,
+          y: 4570,
+          w: 72,
+          h: 7,
+          height: 58,
+          barrier: true,
+        });
+      return list;
+    }
+    function depotBlocked(x, y, r = 0) {
+      if (x < 4400 || x > 4560 || y < 4320 || y > 4590) return false;
+      return depotSolids().some(
+        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
+      );
+    }
+    function depotBarriers() {
+      return Math.abs(player.x - 4480) < 900 && Math.abs(player.y - 4460) < 900 ? depotSolids() : [];
+    }
+    function resetDepotDoors() {
+      depotFrontShutter = depotFrontTarget = 0;
+      depotRearShutter = depotRearTarget = 1;
+    }
+    function setDepotDoors(front, rear) {
+      depotFrontTarget = front;
+      depotRearTarget = rear;
+    }
+    function updateDepotDoors(deltaSeconds) {
+      const step = deltaSeconds * 0.55;
+      for (const [current, target, set] of [
+        [depotFrontShutter, depotFrontTarget, (v) => (depotFrontShutter = v)],
+        [depotRearShutter, depotRearTarget, (v) => (depotRearShutter = v)],
+      ]) {
+        if (Math.abs(target - current) < 1e-4) continue;
+        set(clamp(current + Math.sign(target - current) * step, 0, 1));
+      }
+    }
     function depotOverlap(x, y, w, h) {
       return x + w > 4315 && x < 4645 && y + h > 4250 && y < 4605;
     }
@@ -119,7 +190,7 @@
       const target = m.car,
         options = [];
       for (const x of ROAD_CENTERS)
-        for (const y of ROAD_CENTERS) {
+        for (const y of ROAD_ROWS) {
           const d = distanceBetween(
             {
               x,
@@ -185,28 +256,27 @@
       if (m.policeNotified) return;
       m.policeNotified = true;
       m.policeArrived = false;
-      m.policeArrivalIn = 10;
+      // The gate camera reads the plate on the way out: units roll straight away,
+      // and the force helicopter is five seconds behind them.
+      m.policeArrivalIn = 0;
+      m.airDelay = 5;
       clearPolice();
-      announce('HARBOR SECURITY · STOLEN CARGO', 'COPS ALERTED', 3);
-      tell(
-        'Cops arrive in 10 seconds. Respray the truck at an R garage to lose them — Vinny covers this paint job.',
-        7,
-      );
+      announce('HARBOR SECURITY · STOLEN CARGO', 'UNITS ROLLING', 3);
+      tell('Gate camera got the plate. Units are already moving — air support in 5.', 6);
       radio('call-backup');
     }
     function dispatchCargoPolice(m) {
       if (m.policeArrived || m.cargoDisguised) return;
       m.policeArrived = true;
       m.policeArrivalIn = 0;
-      m.dispatchTimer = 7;
+      m.dispatchTimer = 6;
       crime(3);
       wantedStars = Math.max(3, wantedStars);
-      for (let i = 0; i < 2; i++) spawnCargoPatrol(m);
-      m.airUnit = requestAirSupport(m.car, true);
-      tell(
-        'Police have arrived. Respray the cargo truck at an R garage or reach Vinny’s warehouse.',
-        5,
-      );
+      for (let i = 0; i < 3; i++) {
+        const patrol = spawnCargoPatrol(m);
+        if (patrol) patrol.interceptor = i % 2 === 1;
+      }
+      tell('Respray the truck at an R garage, or run it into Vinny’s depot. Bridges will be cut.', 6);
     }
     function evadeCargoPolice(vehicle) {
       const m = cargoChase();
@@ -238,9 +308,17 @@
         dispatchCargoPolice(m);
         return;
       }
+      if (m.airDelay > 0) {
+        m.airDelay -= deltaSeconds;
+        if (m.airDelay <= 0) {
+          m.airDelay = 0;
+          m.airUnit = requestAirSupport(m.car, true);
+          announce('AIR UNIT ONE · OVERHEAD', 'HELICOPTER INBOUND', 3);
+        }
+      }
       wantedStars = Math.max(3, wantedStars);
       searchActive = false;
-      searchRemaining = 21;
+      searchRemaining = policeSearchSeconds();
       lastSeen = {
         x: m.car.x,
         y: m.car.y,
@@ -299,6 +377,7 @@
     }
     function cleanupMissionExtras() {
       player.disguised = false;
+      resetDepotDoors();
       for (let i = vehicles.length - 1; i >= 0; i--)
         if (vehicles[i].missionPursuit || vehicles[i].reconPatrol) {
           const c = vehicles[i];

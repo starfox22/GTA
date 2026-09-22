@@ -225,6 +225,78 @@
         },
       },
       {
+        id: 'diner',
+        kind: 'diner',
+        name: 'THE BLUE PLATE DINER',
+        bx: 2,
+        by: 1,
+        x: 1256,
+        y: 762,
+        w: 284,
+        h: 148,
+        height: 32,
+        color: '#e5c07a',
+        symbol: 'EAT',
+        door: {
+          x: 1398,
+          y: 930,
+        },
+      },
+      {
+        id: 'keys-diner',
+        kind: 'diner',
+        name: 'PALM GRILL · 24 HOURS',
+        bx: 9,
+        by: 4,
+        x: 4840,
+        y: 2286,
+        w: 280,
+        h: 146,
+        height: 32,
+        color: '#e8b384',
+        symbol: 'EAT',
+        door: {
+          x: 4980,
+          y: 2452,
+        },
+      },
+      {
+        id: 'outfitters',
+        kind: 'clothes',
+        name: 'SOUTH COAST OUTFITTERS',
+        bx: 3,
+        by: 6,
+        x: 1770,
+        y: 3272,
+        w: 276,
+        h: 150,
+        height: 40,
+        color: '#c3a6d3',
+        symbol: 'FIT',
+        door: {
+          x: 1908,
+          y: 3442,
+        },
+      },
+      {
+        id: 'keys-outfitters',
+        kind: 'clothes',
+        name: 'OCEAN DRIVE MENSWEAR',
+        bx: 8,
+        by: 6,
+        x: 4330,
+        y: 3272,
+        w: 276,
+        h: 150,
+        height: 40,
+        color: '#b7cfe0',
+        symbol: 'FIT',
+        door: {
+          x: 4468,
+          y: 3442,
+        },
+      },
+      {
         id: 'home',
         kind: 'sleep',
         name: 'YOUR SAFEHOUSE',
@@ -279,6 +351,25 @@
         boatY: 5147,
         type: 'speedboat',
       },
+      // Harbor Point: the way out to the liner riding at anchor.
+      {
+        x: 1566,
+        y: -3420,
+        w: 96,
+        h: 34,
+        boatX: 1500,
+        boatY: -3403,
+        type: 'jetski',
+      },
+      {
+        x: 1566,
+        y: -3560,
+        w: 96,
+        h: 34,
+        boatX: 1496,
+        boatY: -3543,
+        type: 'speedboat',
+      },
     ];
     const PRICES = [180, 650, 900, 2600, 1400, 1900],
       AMMO_PRICES = [60, 120, 100, 450, 180, 160];
@@ -286,9 +377,6 @@
       return DOCKS.some(
         (d) => x - r >= d.x && x + r <= d.x + d.w && y - r >= d.y && y + r <= d.y + d.h,
       );
-    }
-    function waterAt(x, y) {
-      return !landAt(x, y);
     }
     function boatFits(c, x = c.x, y = c.y, a = c.a) {
       const shape = {
@@ -322,6 +410,9 @@
         hy: HARBOR.ship.l / 2,
         a: 0,
       });
+      for (const ship of LINERS) obstacles.push(shipHull(ship));
+      for (const moored of marinaBoats())
+        obstacles.push({ x: moored.x, y: moored.y, hx: moored.beam / 2, hy: moored.len / 2, a: 0 });
       return !obstacles.some((b) => boxContact(shape, b));
     }
     function isBoat(vehicle) {
@@ -375,7 +466,8 @@
     }
     function openService(place) {
       if (!place) return;
-      if (wantedStars > 0) {
+      // An outfitter is the one door worth going through while the heat is on.
+      if (wantedStars > 0 && place.kind !== 'clothes') {
         needToLosePolice();
         return;
       }
@@ -480,6 +572,34 @@
             },
           ];
       }
+      if (p.kind === 'diner') {
+        text =
+          'Counter service, booths at the back, open around the clock. A plate of food and a coffee put you back together.';
+        options = [
+          {
+            text: '1. BLUE PLATE SPECIAL · $28',
+            action: 'plate',
+          },
+          {
+            text: '2. COFFEE AND A BOOTH · $9',
+            action: 'coffee',
+          },
+        ];
+      }
+      if (p.kind === 'clothes') {
+        // A change of clothes is only worth anything while the search is running
+        // on a description rather than on eyes actually on you.
+        const useful = wantedStars > 0 && searchActive;
+        text = useful
+          ? 'Racks of workwear and a changing room with a back door. While the police are working from a description, new clothes end the search.'
+          : 'Racks of workwear, a changing room and a back door. Worth remembering when a patrol has lost sight of you.';
+        options = [
+          {
+            text: '1. CHANGE OF CLOTHES · $200',
+            action: 'change',
+          },
+        ];
+      }
       if (p.kind === 'school')
         text =
           'Classes 08:00–18:00. The campus includes teaching buildings, a courtyard and sports courts.';
@@ -496,7 +616,7 @@
     }
     function serviceAction(action, slot = 0) {
       if (gameMode !== 'service' || !servicePlace) return false;
-      if (wantedStars > 0) return needToLosePolice();
+      if (wantedStars > 0 && action !== 'change') return needToLosePolice();
       let cost = 0,
         advance = 0,
         health = 0;
@@ -535,6 +655,36 @@
         if (servicePlace.kind !== 'bar') return false;
         cost = 35;
         health = 30;
+      } else if (action === 'plate') {
+        if (servicePlace.kind !== 'diner') return false;
+        cost = 28;
+        health = 45;
+        advance = 25;
+      } else if (action === 'coffee') {
+        if (servicePlace.kind !== 'diner') return false;
+        cost = 9;
+        health = 12;
+        advance = 10;
+      } else if (action === 'change') {
+        if (servicePlace.kind !== 'clothes') return false;
+        cost = 200;
+        if (cash < cost) {
+          tell('Not enough cash.', 2);
+          return false;
+        }
+        cash -= cost;
+        advance = 12;
+        worldMinutes += advance;
+        if (wantedStars > 0 && searchActive) {
+          clearPolice(true);
+          announce('NEW CLOTHES', 'DESCRIPTION USELESS', 3);
+        } else {
+          announce('BACK ON THE STREETS', 'CHANGED', 2.2);
+          if (wantedStars > 0) tell('They can still see you. Clothes will not help while they can.', 4);
+        }
+        save();
+        closeService();
+        return true;
       } else if (action === 'club') {
         if (servicePlace.kind !== 'club' || !clubOpen()) return false;
         cost = 80;
@@ -589,19 +739,124 @@
               : n === 1
                 ? 'morning'
                 : null
-            : n === 0
-              ? {
-                  hospital: 'heal',
-                  bar: 'meal',
-                  club: 'club',
-                }[p.kind]
-              : null;
+            : p.kind === 'diner'
+              ? n === 0
+                ? 'plate'
+                : n === 1
+                  ? 'coffee'
+                  : null
+              : n === 0
+                ? {
+                    hospital: 'heal',
+                    bar: 'meal',
+                    club: 'club',
+                    clothes: 'change',
+                  }[p.kind]
+                : null;
         if (action) serviceAction(action);
       }
     }
+    /**
+     * DAILY RHYTHM
+     * The pavement at eight in the morning is not the pavement at two. The tempo
+     * shifts the mix between walking, loitering, window shopping and sitting, how
+     * quickly people move, and how many of them are out at all. Thinning the crowd
+     * removes pedestrians rather than hiding them, so nothing invisible is left in
+     * the world for bullets, traffic or the police to find.
+     */
+    const CROWD_BASE = 340;
+    let crowdTimer = 0;
+    function cityTempo() {
+      const hour = (worldMinutes / 60) % 24;
+      if (hour < 5.5) return { name: 'NIGHT', speed: 27, idle: 0.06, shop: 0.06, bench: 0.1, out: 0.26 };
+      if (hour < 9.5) return { name: 'MORNING RUSH', speed: 31, idle: 0.04, shop: 0.07, bench: 0.1, out: 1 };
+      if (hour < 11.5) return { name: 'MORNING', speed: 22, idle: 0.12, shop: 0.26, bench: 0.34, out: 0.86 };
+      if (hour < 14.5) return { name: 'LUNCH', speed: 21, idle: 0.15, shop: 0.34, bench: 0.5, out: 1 };
+      if (hour < 17.5) return { name: 'AFTERNOON', speed: 22, idle: 0.11, shop: 0.27, bench: 0.38, out: 0.88 };
+      if (hour < 19.5) return { name: 'EVENING RUSH', speed: 30, idle: 0.05, shop: 0.1, bench: 0.14, out: 1 };
+      if (hour < 23) return { name: 'EVENING', speed: 23, idle: 0.17, shop: 0.24, bench: 0.4, out: 0.82 };
+      return { name: 'LATE', speed: 28, idle: 0.08, shop: 0.07, bench: 0.12, out: 0.42 };
+    }
+    function ordinaryWalker(p) {
+      return (
+        !p.gymStation &&
+        !p.vendor &&
+        !p.queueing &&
+        !p.parkGuest &&
+        !p.parkRoute &&
+        !p.leader &&
+        !p.ejected &&
+        !p.angryUntil &&
+        !p.witnessUntil &&
+        p.hp > 0
+      );
+    }
+    function spawnWalker() {
+      for (let attempt = 0; attempt < 24; attempt++) {
+        const vertical = seededRandom() > 0.5,
+          r = randomChoice(vertical ? ROAD_CENTERS : ROAD_ROWS),
+          v = vertical
+            ? randomBetween(CITY_TOP + 180, CITY_SIZE - 260)
+            : randomBetween(180, CITY_SIZE - 260),
+          x = vertical ? r + randomChoice([-67, 67]) : v,
+          y = vertical ? v : r + randomChoice([-67, 67]);
+        if (Math.abs(x - player.x) < 620 && Math.abs(y - player.y) < 620) continue;
+        if (solid(x, y, 5) || inHarbor(x, y, 8)) continue;
+        if (vehicles.some((c) => pointInCar(x, y, c, 10))) continue;
+        pedestrians.push({
+          x,
+          y,
+          a: vertical ? randomChoice([-Math.PI / 2, Math.PI / 2]) : randomChoice([0, Math.PI]),
+          color: randomChoice(DRIVER_COLORS),
+          hp: 30,
+          flee: 0,
+          timer: randomBetween(0, 8),
+          walk: seededRandom() * 5,
+          state: 'walk',
+        });
+        return true;
+      }
+      return false;
+    }
+    function updateCrowdDensity(deltaSeconds) {
+      crowdTimer -= deltaSeconds;
+      if (crowdTimer > 0) return;
+      crowdTimer = 6;
+      const target = Math.round(CROWD_BASE * cityTempo().out),
+        walkers = pedestrians.filter(ordinaryWalker);
+      if (walkers.length > target + 12) {
+        // Thin from the far side of the city so nobody vanishes in front of you.
+        const going = walkers
+          .filter((p) => Math.abs(p.x - player.x) > 1300 || Math.abs(p.y - player.y) > 1300)
+          .slice(0, Math.min(14, walkers.length - target));
+        for (const p of going) {
+          const i = pedestrians.indexOf(p);
+          if (i < 0) continue;
+          pedestrians.splice(i, 1);
+          for (const q of pedestrians) if (q.leader === p) q.leader = null;
+        }
+        return;
+      }
+      for (let i = 0; i < Math.min(10, target - walkers.length); i++) if (!spawnWalker()) break;
+    }
+    /**
+     * ESCAPE WINDOW
+     * How long you have to stay out of sight before the search is called off.
+     * It scales with the heat you are carrying but is capped: ten seconds out of
+     * sight is the longest any level of wanted will ever hold you.
+     */
+    const POLICE_SEARCH_MAX = 10;
+    function policeSearchSeconds(stars = wantedStars) {
+      return Math.min(POLICE_SEARCH_MAX, 5 + Math.ceil(clamp(stars, 0, 5)));
+    }
     function clearPolice(notifyEscape = false) {
+      clearRoadblocks();
       const wasWanted = wantedStars > 0;
       if (notifyEscape && wasWanted) policeClearedNotice();
+      // Losing the police means losing all of them. A respray used to leave the
+      // helicopter overhead, which is the one unit a change of paint fools best.
+      const air = airSupportUnit();
+      if (air) retireAirSupport(air, notifyEscape && wasWanted);
       wantedStars = 0;
       wantedPressure = 0;
       wantedLevel = 0;
@@ -694,6 +949,7 @@
         ...militarySolids(),
         ...countySolids(),
         ...harborSolids().filter((s) => s.height > 14),
+        ...depotSolids(),
       ]) {
         let lo = 0,
           hi = 1,
@@ -770,6 +1026,8 @@
           ...spawnPoint,
           a: c.a,
           hp: 85,
+          // Patrol officers wear a vest; the tactical units at high alert wear a heavier one.
+          vest: wantedStars >= 4 ? 90 : 55,
           color: '#2d455e',
           police: true,
           car: c,
@@ -867,6 +1125,18 @@
           o.state = 'return';
           continue;
         }
+        if (
+          o.post &&
+          target === player &&
+          !seesPlayer &&
+          distanceBetween(o, player) > 340 &&
+          distanceBetween(o, o.post) > 16
+        ) {
+          o.state = 'post';
+          o.target = null;
+          footStepTowards(o, o.post, deltaSeconds, 72);
+          continue;
+        }
         const seen = target === player ? seesPlayer : clearSight(o, target),
           d = distanceBetween(o, target),
           changed = o.target !== target;
@@ -905,7 +1175,7 @@
                 a,
               ),
               life: 0.7,
-              dmg: 12,
+              dmg: 17,
               enemy: true,
               faction: 'police',
               owner: o,
@@ -926,7 +1196,7 @@
       }
       for (let i = officers.length - 1; i >= 0; i--) if (officers[i].returned) officers.splice(i, 1);
       for (const c of vehicles)
-        if (c.crewDeployed && c.crew?.every((o) => o.returned || o.hp <= 0)) {
+        if (!c.blockade && c.crewDeployed && c.crew?.every((o) => o.returned || o.hp <= 0)) {
           c.crewLost = c.crew.every((o) => o.hp <= 0);
           if (c.crewLost) {
             c.cop = false;
@@ -981,11 +1251,11 @@
           y: player.y,
         };
         searchActive = false;
-        searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+        searchRemaining = policeSearchSeconds();
       } else {
         if (!searchActive) {
           searchActive = true;
-          searchRemaining = 12 + Math.ceil(wantedStars) * 3;
+          searchRemaining = policeSearchSeconds();
         }
         searchRemaining = Math.max(0, searchRemaining - deltaSeconds);
         if (searchRemaining === 0) {
@@ -1125,8 +1395,9 @@
         p,
       );
     }
-    function strikePerson(person, damage, a = 0, source = null, showBlood = true) {
+    function strikePerson(person, damage, a = 0, source = null, showBlood = true, kind = 'ballistic') {
       if (person.hp <= 0) return;
+      const dealt = ballisticDamage(person, damage, kind);
       if (person.faction && source === player) alertGang(person.faction);
       if (source) {
         person.threat = {
@@ -1145,9 +1416,12 @@
         source.policeAggroUntil = gameTime + 15;
       }
       if (person.faction && source?.police) person.policeAggroUntil = gameTime + 15;
-      person.hp -= damage;
+      person.hp -= dealt;
       person.flee = 8;
-      if (showBlood) bleed(person, Math.min(2, damage / 28), a);
+      // A round the vest ate sparks off the plate instead of opening a wound.
+      const stopped = dealt < damage * 0.4 && wearingVest(person);
+      if (stopped) particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
+      else if (showBlood) bleed(person, Math.min(2, dealt / 38), a);
       scream(person);
       if (person.hp <= 0) {
         person.deadTime = gameTime;
@@ -1160,6 +1434,9 @@
       updateStoryWorld(deltaSeconds);
       updateOfficers(deltaSeconds);
       updateWanted(deltaSeconds);
+      updateRoadblocks(deltaSeconds);
+      updateDepotDoors(deltaSeconds);
+      updateCrowdDensity(deltaSeconds);
       updateAirPolice(deltaSeconds);
       for (let i = bloodPools.length - 1; i >= 0; i--)
         if (gameTime - bloodPools[i].created > 240) bloodPools.splice(i, 1);

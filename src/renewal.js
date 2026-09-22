@@ -7,42 +7,58 @@
      */
     /* Shared park plans drive scenery, recreation, traffic exclusions and the city map. */
     /**
-     * CENTRAL COMMONS
-     * Two blocks wide and three deep (x 1735..2599, y 710..2105), the city's great
-     * park. The elevated City Line crosses it north to south on x = 2176 with the
-     * Central Commons station in the middle; the streets that used to cut the park
-     * (Union St, Garden St and Cannery St inside it) are closed to traffic.
+     * CENTRAL GARDEN
+     * The city's great park, two blocks wide and two deep (x 1753..2599,
+     * y 2824..3624), a block west and two blocks south of where it was first laid
+     * out: hard against the Ironworks docks it read as the harbour's back garden,
+     * and a city park needs its own quarter around it. No railway goes near it --
+     * the network runs the eastern shore and the bay. Central Ave (x = 2176) and
+     * Linden St (y = 3200) cross inside the park and are closed to traffic.
      * Layout, west to east and north to south:
-     *   Great Lawn (1790..2110, 780..1330)     Commons Lake (ellipse at 2395,1010)
-     *   Statue walk / station plaza (1380..1540 around the station)
-     *   Rose garden and pergola (1900,1750)     Bandshell and lawn seating (2400,1700)
-     *   Playground (1900,1980)                  Gazebo corner (2480,1900)
+     *   Great Lawn (1808..2148, 2884..3214)     Garden Lake (ellipse at 2388,3034)
+     *   Founders statue (2178,3154)             Boathouse and dock (2344,3224)
+     *   Rose garden and pergola (1868,3314)     Garden Plaza and fountain (2158,3324)
+     *   Playground (1828,3504)                  Bandshell and lawn seating (2448,3324)
+     *   Calisthenics park (2048,3494)           Gazebo corner (2498,3544)
+     *   Food trucks on the plaza apron and by the north gate.
      */
     const CENTRAL_PARK = {
-      id: 'commons',
-      name: 'CENTRAL COMMONS',
+      id: 'garden',
+      name: 'CENTRAL GARDEN',
       kind: 'commons',
-      x: 1735,
-      y: 710,
-      w: 864,
-      h: 1395,
+      x: 1753,
+      y: 2824,
+      w: 846,
+      h: 800,
     };
     const COMMONS = {
-      lake: { x: 2395, y: 1010, rx: 150, ry: 215, a: 0.15 },
-      dock: { x: 2395, y: 1215, w: 24, h: 70 },
-      boathouse: { x: 2350, y: 1250, w: 90, h: 52 },
-      plaza: { x: 2020, y: 1380, w: 310, h: 160 },
-      fountain: { x: 2300, y: 1460 },
-      bandshell: { x: 2400, y: 1690 },
-      roseGarden: { x: 1900, y: 1760 },
-      playground: { x: 1900, y: 1985 },
-      gazebo: { x: 2480, y: 1905 },
-      statue: { x: 1950, y: 1400 },
-      lawn: { x: 1790, y: 780, w: 320, h: 550 },
+      lake: { x: 2388, y: 3034, rx: 150, ry: 165, a: 0.15 },
+      dock: { x: 2388, y: 3220, w: 24, h: 62 },
+      boathouse: { x: 2344, y: 3224, w: 88, h: 50 },
+      plaza: { x: 2008, y: 3254, w: 300, h: 140 },
+      fountain: { x: 2158, y: 3324 },
+      bandshell: { x: 2448, y: 3324 },
+      roseGarden: { x: 1868, y: 3314 },
+      playground: { x: 1828, y: 3504 },
+      gazebo: { x: 2498, y: 3544 },
+      statue: { x: 2178, y: 3154 },
+      lawn: { x: 1808, y: 2884, w: 340, h: 330 },
+      // Outdoor gym: pull-up and dip rig, parallel bars, rings and a rubber mat.
+      calisthenics: { x: 2048, y: 3494, w: 176, h: 112 },
+      // Street food on the plaza apron and by the north gate.
+      foodTrucks: [
+        { x: 1988, y: 3428, a: 0, menu: 'TACOS', color: '#d87a4a' },
+        { x: 2100, y: 3428, a: 0, menu: 'COFFEE', color: '#5f8f86' },
+        { x: 2200, y: 2892, a: Math.PI / 2, menu: 'NOODLES', color: '#b8556a' },
+      ],
+      kiosks: [
+        { x: 2250, y: 3286, color: '#e8b1c2' },
+        { x: 1788, y: 3164, color: '#4f8ab1' },
+      ],
     };
     const CITY_PARKS = [
       CENTRAL_PARK,
-      ...PARKS.filter(([bx, by]) => ![3, 4].includes(bx) || ![1, 2, 3].includes(by))
+      ...PARKS.filter(([bx, by]) => ![3, 4].includes(bx) || ![5, 6].includes(by))
         .map(([bx, by], i) => ({
           id: 'park-' + i,
           bx,
@@ -59,6 +75,9 @@
             'COASTAL MEADOW',
             'MARINA GARDEN',
             'WEST QUAY GREEN',
+            'RECLAMATION GREEN',
+            'LIBERTY SQUARE',
+            'TERMINAL GARDENS',
           ][i],
           kind: [
             'square',
@@ -73,17 +92,18 @@
             'botanic',
             'orchard',
           ][i],
-          x: ROAD_CENTERS[bx] + 89 + (i % 3) * 17,
-          y: ROAD_CENTERS[by] + 89 + (i % 2) * 23,
+          x: blockX(bx) + 89 + (i % 3) * 17,
+          y: blockY(by) + 89 + (i % 2) * 23,
           w: [268, 334, 218, 292][i % 4],
           h: [245, 334, 192, 310][i % 4],
         }))
         .filter((p) => validCityBlock(p.x, p.y, p.w, p.h)),
     ];
     function parkStreetClosed(x, y) {
+      // Linden St and Garden Ave run inside Central Garden and carry no traffic.
       return (
-        (x > 1664 && x < 2688 && (Math.abs(y - 1152) < 70 || Math.abs(y - 1664) < 70)) ||
-        (Math.abs(x - 2176) < 70 && y > 700 && y < 2115)
+        (x > 1688 && x < 2668 && Math.abs(y - 3200) < 70) ||
+        (Math.abs(x - 2176) < 70 && y > 2814 && y < 3634)
       );
     }
     function parkAt(x, y) {
@@ -101,27 +121,27 @@
     function parkWalk(p) {
       return p.kind === 'commons'
         ? [
-            [1800, 765],
-            [2100, 770],
-            [2230, 860],
-            [2250, 1300],
-            [2395, 1310],
-            [2540, 1240],
-            [2560, 1450],
-            [2470, 1640],
-            [2300, 1500],
-            [2170, 1570],
-            [2000, 1600],
-            [1880, 1780],
-            [1900, 1990],
-            [2100, 2040],
-            [2380, 2030],
-            [2470, 1900],
-            [2300, 1790],
-            [2200, 1700],
-            [1990, 1420],
-            [1790, 1350],
-            [1800, 765],
+            [1808, 2884],
+            [2128, 2884],
+            [2200, 2954],
+            [2218, 3254],
+            [2398, 3324],
+            [2538, 3254],
+            [2550, 3404],
+            [2448, 3564],
+            [2248, 3524],
+            [2108, 3474],
+            [1958, 3464],
+            [1808, 3484],
+            [1818, 3584],
+            [2188, 3599],
+            [2498, 3584],
+            [2538, 3454],
+            [2348, 3394],
+            [2188, 3334],
+            [1988, 3234],
+            [1788, 3084],
+            [1808, 2884],
           ]
         : parkLoop(p, Math.min(p.w, p.h) * 0.25);
     }
@@ -167,10 +187,11 @@
           if (p.kind === 'commons') {
             drawingContext.font = 'bold 13px Arial';
             drawingContext.fillStyle = '#e9ebc9';
-            drawingContext.fillText('GREAT LAWN', 1950, 1060);
-            drawingContext.fillText('COMMONS LAKE', 2395, 1020);
-            drawingContext.fillText('BANDSHELL', 2400, 1890);
-            drawingContext.fillText('ROSE GARDEN', 1900, 1835);
+            drawingContext.fillText('GREAT LAWN', 1978, 3054);
+            drawingContext.fillText('GARDEN LAKE', 2388, 3044);
+            drawingContext.fillText('BANDSHELL', 2448, 3504);
+            drawingContext.fillText('ROSE GARDEN', 1868, 3389);
+            drawingContext.fillText('OUTDOOR GYM', 2048, 3569);
           }
         }
       }
@@ -244,19 +265,41 @@
       // Statue plinth pad.
       g.fillStyle = '#bcb4a0';
       g.fillRect(c.statue.x - 22, c.statue.y - 22, 44, 44);
+      // Outdoor gym: poured rubber safety surface with lane markings.
+      const cal = c.calisthenics;
+      g.fillStyle = '#4b4f52';
+      g.fillRect(cal.x - cal.w / 2, cal.y - cal.h / 2, cal.w, cal.h);
+      g.fillStyle = '#5c6367';
+      g.fillRect(cal.x - cal.w / 2 + 6, cal.y - cal.h / 2 + 6, cal.w - 12, cal.h - 12);
+      g.strokeStyle = '#d7cc9d';
+      g.lineWidth = 2;
+      g.strokeRect(cal.x - cal.w / 2 + 6, cal.y - cal.h / 2 + 6, cal.w - 12, cal.h - 12);
+      g.fillStyle = '#8d8365';
+      for (let i = -2; i <= 2; i++) g.fillRect(cal.x + i * 30 - 2, cal.y - cal.h / 2 + 12, 4, cal.h - 24);
+      // Food truck aprons.
+      g.fillStyle = '#b0a993';
+      for (const t of c.foodTrucks) g.fillRect(t.x - 30, t.y - 22, 60, 44);
     }
     function seedCommonsTrees() {
       const p = CENTRAL_PARK,
         c = COMMONS,
         route = parkWalk(p);
       let planted = 0;
-      for (let j = 0; j < 400 && planted < 150; j++) {
+      for (let j = 0; j < 1100 && planted < 280; j++) {
         const x = p.x + 30 + ((j * 733 + 91) % (p.w - 60)),
           y = p.y + 30 + ((j * 1217 + 37) % (p.h - 60)),
           onLawn = x > c.lawn.x + 20 && x < c.lawn.x + c.lawn.w - 20 && y > c.lawn.y + 20 && y < c.lawn.y + c.lawn.h - 20,
           edge = Math.min(x - p.x, p.x + p.w - x, y - p.y, p.y + p.h - y),
           groveChance = edge < 90 ? 0.9 : 0.35;
-        if (onLawn || Math.abs(x - 2176) < 34 || parkPondBlocked(x, y, 16)) continue;
+        if (onLawn || parkPondBlocked(x, y, 16)) continue;
+        if (
+          x > c.calisthenics.x - c.calisthenics.w / 2 - 14 &&
+          x < c.calisthenics.x + c.calisthenics.w / 2 + 14 &&
+          y > c.calisthenics.y - c.calisthenics.h / 2 - 14 &&
+          y < c.calisthenics.y + c.calisthenics.h / 2 + 14
+        )
+          continue;
+        if (c.foodTrucks.some((t) => Math.hypot(t.x - x, t.y - y) < 46)) continue;
         if (Math.abs(x - c.bandshell.x) < 165 && y > c.bandshell.y - 60 && y < c.bandshell.y + 165) continue;
         if (Math.abs(x - c.playground.x) < 85 && Math.abs(y - c.playground.y) < 60) continue;
         if (Math.abs(x - c.roseGarden.x) < 80 && Math.abs(y - c.roseGarden.y) < 80) continue;
@@ -298,6 +341,7 @@
       }
     }
     function populateRecreation() {
+      populateGardenLife();
       for (const p of CITY_PARKS) {
         const route = parkWalk(p);
         for (let j = 0; j < (p.kind === 'commons' ? 22 : 4); j++) {
@@ -339,6 +383,59 @@
           makeCar('bicycle', x + 32, y + 34, 0, false, '#e0b76b');
       }
     }
+    /**
+     * OUTDOOR GYM
+     * Regulars work a station in sets: a burst of reps, then a rest where they
+     * shake out and talk. Stations are laid out along the rig from the shared
+     * calisthenics plan so the meshes and the people agree.
+     */
+    function gymStations() {
+      const cal = COMMONS.calisthenics;
+      return [
+        { x: cal.x - 62, y: cal.y - 24, kind: 'pullup' },
+        { x: cal.x - 22, y: cal.y - 24, kind: 'pullup' },
+        { x: cal.x + 22, y: cal.y - 26, kind: 'dip' },
+        { x: cal.x + 62, y: cal.y - 10, kind: 'rings' },
+        { x: cal.x - 46, y: cal.y + 28, kind: 'bars' },
+        { x: cal.x + 6, y: cal.y + 30, kind: 'mat' },
+        { x: cal.x + 56, y: cal.y + 30, kind: 'mat' },
+      ];
+    }
+    function updateGymGoer(person, deltaSeconds) {
+      if ((person.vendor || person.queueing) && person.flee <= 0 && person.hp > 0) {
+        person.walking = false;
+        person.sitting = false;
+        if (person.vendor) pedSay(person, 'vendor', deltaSeconds * 0.09);
+        else pedSay(person, 'idle', deltaSeconds * 0.06);
+        return true;
+      }
+      const station = person.gymStation;
+      if (!station || person.flee > 0 || person.hp <= 0) return false;
+      person.walking = false;
+      person.sitting = false;
+      const d = distanceBetween(person, station);
+      if (d > 5) {
+        person.a = headingBetween(person, station);
+        person.walking = true;
+        person.walk += deltaSeconds * 7;
+        moveBody(person, Math.cos(person.a) * 34 * deltaSeconds, Math.sin(person.a) * 34 * deltaSeconds, 5);
+        return true;
+      }
+      person.a = station.kind === 'mat' ? person.a : -Math.PI / 2;
+      person.gymTimer = (person.gymTimer || 0) - deltaSeconds;
+      if (person.gymTimer <= 0) {
+        person.gymWorking = !person.gymWorking;
+        person.gymTimer = person.gymWorking ? 7 + seededRandom() * 6 : 6 + seededRandom() * 7;
+        if (!person.gymWorking) pedSay(person, 'gym', 0.8);
+      }
+      // `exercise` drives the rep animation in the renderer; 0 is a standing rest.
+      person.exercise = person.gymWorking
+        ? 0.5 + 0.5 * Math.sin(gameTime * (station.kind === 'mat' ? 3.1 : 2.3) + (person.gymPhase || 0))
+        : null;
+      person.exerciseKind = station.kind;
+      if (!person.gymWorking && seededRandom() < deltaSeconds * 0.12) pedSay(person, 'gym', 1);
+      return true;
+    }
     function updateParkWalker(person, deltaSeconds) {
       if (!person.parkRoute || person.flee > 0) return false;
       const route = person.parkRoute,
@@ -362,6 +459,65 @@
       )
         person.parkIndex = (person.parkIndex + 1) % route.length;
       return true;
+    }
+    /* The gym regulars and the food-truck staff who make the Garden feel used. */
+    function populateGardenLife() {
+      const stations = gymStations();
+      for (let i = 0; i < stations.length; i++) {
+        const s = stations[i],
+          x = s.x + ((i % 3) - 1) * 6,
+          y = s.y + 22;
+        if (solid(x, y, 6)) continue;
+        pedestrians.push({
+          x,
+          y,
+          a: -Math.PI / 2,
+          hp: 30,
+          color: randomChoice(['#c9705f', '#4f7f8d', '#d3c07a', '#6f8f63', '#b07fa3']),
+          flee: 0,
+          timer: 6,
+          walk: 0,
+          gymStation: s,
+          gymWorking: i % 2 === 0,
+          gymTimer: 2 + i * 1.3,
+          gymPhase: i * 0.9,
+        });
+      }
+      for (const truck of COMMONS.foodTrucks) {
+        const x = truck.x + Math.cos(truck.a + Math.PI / 2) * 26,
+          y = truck.y + Math.sin(truck.a + Math.PI / 2) * 26;
+        if (!solid(x, y, 6))
+          pedestrians.push({
+            x,
+            y,
+            a: truck.a - Math.PI / 2,
+            hp: 30,
+            color: '#e0d6bd',
+            flee: 0,
+            timer: 8,
+            walk: 0,
+            vendor: truck,
+            state: 'idle',
+          });
+        // A short queue: people actually buy lunch here.
+        for (let q = 0; q < 2; q++) {
+          const qx = x + Math.cos(truck.a) * (20 + q * 15),
+            qy = y + Math.sin(truck.a) * (20 + q * 15);
+          if (solid(qx, qy, 6)) continue;
+          pedestrians.push({
+            x: qx,
+            y: qy,
+            a: truck.a + Math.PI,
+            hp: 30,
+            color: randomChoice(['#dbbd9d', '#87ad9e', '#ca94a8', '#a0b8d1']),
+            flee: 0,
+            timer: 9,
+            walk: 0,
+            queueing: truck,
+            state: 'idle',
+          });
+        }
+      }
     }
     function parkPondBlocked(x, y, r = 0) {
       const inside = (cx, cy, rx, ry, a) => {

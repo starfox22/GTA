@@ -1,5 +1,11 @@
     // BEGIN SUBSYSTEM: src/police-feedback.js — Police action feedback
-    /** Police notices use a separate layer so mission and respray banners cannot overwrite them. */
+    /**
+     * Police action feedback
+     * Source: src/police-feedback.js
+     * Scope: shared game closure.
+     * Police notices use their own banner layer so mission and respray messages
+     * cannot overwrite them, and vice versa.
+     */
     let policeNoticeSeconds = 0;
     function showPoliceNotice(message, cleared = false) {
       const banner = getElement('policeNotice');

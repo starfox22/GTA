@@ -11,31 +11,58 @@
         id: 'northbank',
         name: 'NORTHBANK ISLAND',
         color: '#5b696b',
+        // Reclaimed waterfront: the coast runs outside every block of the grid,
+        // so the whole street plan is built city rather than stopping short at a
+        // ragged shore. The northern lobe (negative y) is the reclamation: a
+        // marina basin cut into the north-west shore, the cruise terminal quay
+        // along the north coast, and the tower district on the north-east point.
         polygon: [
-          [600, 120],
-          [2600, 120],
-          [2990, 280],
-          [3260, 660],
-          [3420, 1050],
+          [240, -3980],
+          [470, -4102],
+          [672, -4128],
+          [672, -3320],
+          [1528, -3300],
+          [1528, -4126],
+          [1730, -4166],
+          [2140, -4192],
+          [2760, -4188],
+          [3062, -4128],
+          [3268, -3960],
+          [3372, -3600],
+          [3352, -2980],
+          [3396, -2300],
+          [3360, -1620],
+          [3402, -980],
+          [3366, -380],
+          [3398, 60],
+          [3390, 680],
+          [3420, 1040],
           [3420, 2300],
           [3350, 2730],
           [3420, 3300],
           [3420, 4400],
-          [3290, 4900],
-          [2810, 5400],
-          [2300, 5530],
-          [1850, 5300],
-          [1460, 4880],
-          [1100, 4480],
-          [580, 4150],
-          [250, 3650],
-          [130, 2900],
-          [220, 2350],
-          [380, 2080],
-          [320, 1650],
-          [150, 1270],
-          [150, 550],
-          [240, 260],
+          [3300, 5020],
+          [2900, 5500],
+          [2340, 5610],
+          [1800, 5430],
+          [1380, 5030],
+          [980, 4630],
+          [430, 4270],
+          [120, 3760],
+          [40, 2880],
+          [110, 2280],
+          [250, 2010],
+          [180, 1600],
+          [50, 1220],
+          [50, 400],
+          [120, 160],
+          [86, -240],
+          [58, -900],
+          [98, -1560],
+          [54, -2200],
+          [104, -2880],
+          [68, -3450],
+          [126, -3862],
         ],
       },
       {
@@ -43,22 +70,38 @@
         name: 'PALM KEYS',
         color: '#93a897',
         polygon: [
-          [4100, 430],
-          [4620, 210],
-          [5110, 390],
-          [5410, 890],
-          [5530, 1690],
-          [5460, 2590],
-          [5570, 3290],
-          [5420, 4090],
-          [5160, 4880],
-          [4610, 5310],
-          [4230, 5000],
-          [4020, 4430],
+          [4040, 180],
+          [4700, 50],
+          [5280, 150],
+          [5540, 780],
+          [5620, 1690],
+          [5540, 2590],
+          [5630, 3290],
+          [5520, 4090],
+          [5300, 5080],
+          [4700, 5500],
+          [4200, 5160],
+          [3980, 4430],
           [3960, 3730],
           [4020, 2820],
           [3960, 2020],
-          [3960, 650],
+          [3960, 540],
+        ],
+      },
+      {
+        // Reclaimed sand bar in the lower bay, bought and built as a pleasure pier.
+        id: 'sunsetisle',
+        name: 'SUNSET PIER',
+        color: '#8e9b84',
+        polygon: [
+          [3560, 4850],
+          [3930, 4820],
+          [4130, 4980],
+          [4170, 5270],
+          [3990, 5490],
+          [3690, 5530],
+          [3490, 5340],
+          [3470, 5040],
         ],
       },
       {
@@ -250,6 +293,10 @@
       return (
         x >= b.minx && x <= b.maxx && y >= b.miny && y <= b.maxy && pointInPolygon(x, y, r.polygon)
       );
+    }
+    const SUNSET_ISLE = LAND_REGIONS.find((r) => r.id === 'sunsetisle');
+    function onSunsetIsle(x, y) {
+      return regionContains(SUNSET_ISLE, x, y);
     }
     function landAt(x, y) {
       return (
@@ -506,6 +553,7 @@
         return town ? town.name : reg.name;
       }
       if (inAirport(x, y) && landAt(x, y)) return 'SOUTHPORT AIRPORT';
+      if (onSunsetIsle(x, y)) return 'SUNSET PIER';
       if (x > RIVER.right && landAt(x, y))
         return y < 1500
           ? 'PALM KEYS · ART DECO'
@@ -515,10 +563,16 @@
               ? 'LITTLE HAVANA'
               : 'CORAL MARINA';
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
-      if (x > 1700 && x < 2640 && y > 680 && y < 2140) return 'CENTRAL COMMONS';
+      if (x > 1718 && x < 2638 && y > 2794 && y < 3664) return 'CENTRAL GARDEN';
+      if (y < 0) {
+        if (y < -3860 && x > 1600 && x < 3120) return 'CRUISE TERMINAL';
+        if (x < 1750 && y < -2400) return 'HARBOR POINT MARINA';
+        if (x > 1880 && y < -1300) return 'NORTH POINT · FINANCIAL';
+        return 'THE RECLAMATION';
+      }
       if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
       if (y < 2650) return 'MIDTOWN';
-      if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';
+      if (y < 3700) return x < 1800 ? 'BROADWAY' : 'EXCHANGE DISTRICT';
       if (y < 4650) return 'SOUTH BANK';
       return 'BATTERY POINT';
     }

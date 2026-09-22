@@ -1,6 +1,7 @@
     // BEGIN SUBSYSTEM: src/arsenal.js — Arsenal and knife combat
     /**
      * Arsenal and knife combat
+     * Source: src/arsenal.js
      * Scope: shared game closure. Firearm indices 0–5 remain stable for existing saves.
      * Every owned firearm is equipped; there is no separate storage or carrying limit.
      * The permanent knife is separate from the six firearm ammunition records.
@@ -181,7 +182,7 @@
       if (player.roof && rooftopJob()) rooftopShot();
       if (wildlife.includes(target)) strikeWildlife(target, KNIFE.dmg);
       else {
-        strikePerson(target, KNIFE.dmg, heading, player);
+        strikePerson(target, KNIFE.dmg, heading, player, true, 'melee');
         crime(target.police ? 0.6 : 0.2);
         if (target.hp <= 0) {
           cash += enemies.includes(target) ? 100 : 10;

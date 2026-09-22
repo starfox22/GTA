@@ -78,7 +78,7 @@
           box(b, 7, 14, side * 3, 1, 1, 4, rubber);
         }
         if (!cruiser) {
-          const fairing = mesh(sphereGeo, model.paint, b, 5, 9, 0, 5, 4, 4);
+          mesh(sphereGeo, model.paint, b, 5, 9, 0, 5, 4, 4);
           box(b, 7, 15, 0, 0.8, 4, 5, glass);
         } else {
           box(b, -8, 8, 0, 7, 3, 7, rubber);

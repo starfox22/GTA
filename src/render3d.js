@@ -54,28 +54,36 @@
       renderer.setSize(viewportWidth, viewportHeight);
       renderer.outputColorSpace = Three.SRGBColorSpace;
       renderer.toneMapping = Three.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.18;
+      renderer.toneMappingExposure = 1.14;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = Three.PCFSoftShadowMap;
       renderer.shadowMap.autoUpdate = false;
+      /**
+       * CAMERA
+       * Orthographic and overhead: the city reads as a plan, which is the whole
+       * point of the view. A perspective camera was tried and taken back out --
+       * the lean it gave tall buildings cost more in legibility than the sense of
+       * height was worth.
+       */
       const camera = new Three.OrthographicCamera(-500, 500, 350, -350, 1, 7500),
         ray = new Three.Raycaster(),
         groundPlane = new Three.Plane(new Three.Vector3(0, 1, 0), -9),
         hitPoint = new Three.Vector3();
       const hemi = new Three.HemisphereLight('#b3c5e9', '#564943', 2.0);
       scene.add(hemi);
-      const sun = new Three.DirectionalLight('#ffd7a0', 3.0);
+      const sun = new Three.DirectionalLight('#ffd7a0', 3.0),
+        shadowDetail = touchEnabled() ? 2048 : 3072;
       sun.castShadow = true;
-      sun.shadow.mapSize.set(2048, 2048);
-      sun.shadow.camera.left = -760;
-      sun.shadow.camera.right = 760;
-      sun.shadow.camera.top = 760;
-      sun.shadow.camera.bottom = -760;
+      sun.shadow.mapSize.set(shadowDetail, shadowDetail);
+      sun.shadow.camera.left = -900;
+      sun.shadow.camera.right = 900;
+      sun.shadow.camera.top = 900;
+      sun.shadow.camera.bottom = -900;
       sun.shadow.camera.near = 10;
-      sun.shadow.camera.far = 2200;
-      sun.shadow.bias = -0.0004;
-      sun.shadow.normalBias = 1.4;
-      sun.shadow.radius = 3;
+      sun.shadow.camera.far = 3200;
+      sun.shadow.bias = -0.00035;
+      sun.shadow.normalBias = 1.1;
+      sun.shadow.radius = 2.2;
       scene.add(sun, sun.target);
       const fill = new Three.DirectionalLight('#879ccc', 0.55);
       fill.position.set(-200, 100, -300);
@@ -255,12 +263,6 @@
         return tx;
       }
       const wallTextures = [0, 1, 2, 3].map((i) => texture(visualAssets.architecture, i));
-      const roofTexture = texture(visualAssets.ground, 3, 2, 2);
-      const roofMat = new Three.MeshStandardMaterial({
-        map: roofTexture,
-        color: '#7d838a',
-        roughness: 0.88,
-      });
       // Subtle environment reflections across paintwork, chrome and glass.
       const faces = [];
       for (let i = 0; i < 6; i++) {
@@ -282,10 +284,16 @@
       env.colorSpace = Three.SRGBColorSpace;
       scene.environment = env;
       // Real ground materials and painted markings are baked once, then receive live shadows.
+      // The baked ground now has to cover the northern reclamation as well, so the
+      // canvas is taller than it is wide and its pixels-per-unit is chosen to keep
+      // the texture's memory close to the old 4096-square sheet's.
+      const terrainPixelsPerUnit = (touchEnabled() ? 2560 : 3584) / CITY_SIZE;
       const terrain = document.createElement('canvas');
-      terrain.width = terrain.height = 4096;
+      terrain.width = Math.round(CITY_SIZE * terrainPixelsPerUnit);
+      terrain.height = Math.ceil(CITY_HEIGHT * terrainPixelsPerUnit);
       const drawingContext = terrain.getContext('2d');
-      drawingContext.scale(4096 / CITY_SIZE, 4096 / CITY_SIZE);
+      drawingContext.scale(terrainPixelsPerUnit, terrainPixelsPerUnit);
+      drawingContext.translate(0, -CITY_TOP);
       function pattern(q, scale) {
         const tile = document.createElement('canvas');
         tile.width = tile.height = scale;
@@ -315,18 +323,18 @@
       coastPath(drawingContext);
       drawingContext.clip();
       drawingContext.fillStyle = '#263e4d';
-      drawingContext.fillRect(0, 0, CITY_SIZE, CITY_SIZE);
+      drawingContext.fillRect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT);
       drawingContext.fillStyle = paving;
-      drawingContext.fillRect(48, 45, CITY_SIZE - 112, CITY_SIZE - 112);
+      drawingContext.fillRect(48, CITY_TOP + 45, CITY_SIZE - 112, CITY_HEIGHT - 112);
       paintCityStreets(drawingContext, true);
       const curbGroup = new Three.Group();
       curbGroup.name = 'kerbs';
       scene.add(curbGroup);
       batchGroups.push(curbGroup);
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 79,
-            z = ROAD_CENTERS[by] + 79;
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 79,
+            z = blockY(by) + 79;
           if (
             !validCityBlock(x + 10, z + 10) ||
             harborOverlap(x, z, 354, 354) ||
@@ -365,7 +373,7 @@
             // Zone-specific ground: mirrors the block patterns chosen in buildWorld().
             const zone = districtAt(x + 177, z + 177),
               blockSeed = (bx * 31 + by * 17) % 7;
-            if (zone === 'FINANCIAL DISTRICT' && blockSeed % 2 === 0) {
+            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               drawingContext.fillStyle = '#c3bfb2';
               drawingContext.fillRect(x + 10, z + 10, 344, 160);
               drawingContext.strokeStyle = '#a8a497';
@@ -445,7 +453,7 @@
         drawingContext.fill();
       }
       for (const r of ROAD_CENTERS)
-        for (let z = 240; z < CITY_SIZE - 150; z += 230) {
+        for (let z = CITY_TOP + 240; z < CITY_SIZE - 150; z += 230) {
           drawingContext.fillStyle = '#1d282d';
           drawingContext.fillRect(r + 48, z, 5, 11);
           drawingContext.fillStyle = '#707576';
@@ -480,25 +488,26 @@
       paintServiceForecourts(drawingContext, true);
       paintCasinoGround(drawingContext);
       paintHarborGround(drawingContext);
+      paintMarina(drawingContext);
       paintDepotGround(drawingContext);
       paintSportsGround(drawingContext);
       const groundTx = new Three.CanvasTexture(terrain);
       groundTx.colorSpace = Three.SRGBColorSpace;
       groundTx.anisotropy = 8;
       const roughCanvas = document.createElement('canvas');
-      roughCanvas.width = roughCanvas.height = 896;
+      roughCanvas.width = 896;
+      roughCanvas.height = Math.ceil((896 * CITY_HEIGHT) / CITY_SIZE);
       const rg = roughCanvas.getContext('2d');
       rg.scale(896 / CITY_SIZE, 896 / CITY_SIZE);
+      rg.translate(0, -CITY_TOP);
       rg.fillStyle = '#e9e9e9';
-      rg.fillRect(0, 0, CITY_SIZE, CITY_SIZE);
+      rg.fillRect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT);
       rg.fillStyle = '#737373';
-      for (const r of ROAD_CENTERS) {
-        rg.fillRect(r - 56, 48, 112, CITY_SIZE - 112);
-        rg.fillRect(51, r - 56, CITY_SIZE - 112, 112);
-      }
+      for (const r of ROAD_CENTERS) rg.fillRect(r - 56, CITY_TOP + 48, 112, CITY_HEIGHT - 112);
+      for (const r of ROAD_ROWS) rg.fillRect(51, r - 56, CITY_SIZE - 112, 112);
       const roughTx = new Three.CanvasTexture(roughCanvas);
       const groundMesh = new Three.Mesh(
-        new Three.PlaneGeometry(CITY_SIZE, CITY_SIZE),
+        new Three.PlaneGeometry(CITY_SIZE, CITY_HEIGHT),
         new Three.MeshStandardMaterial({
           map: groundTx,
           roughnessMap: roughTx,
@@ -509,7 +518,7 @@
         }),
       );
       groundMesh.rotation.x = -Math.PI / 2;
-      groundMesh.position.set(CITY_SIZE / 2, 0.02, CITY_SIZE / 2);
+      groundMesh.position.set(CITY_SIZE / 2, 0.02, (CITY_TOP + CITY_SIZE) / 2);
       groundMesh.receiveShadow = true;
       scene.add(groundMesh);
       // Buildings are constructed by src/cityscape3d.js (included below, after the halo helper).
@@ -679,6 +688,8 @@
       halo(ph, 0, 14, 0, 8, '#9bdbb1');
       // @include src/cityscape3d.js
       // @include src/sidejobs3d.js
+      // @include src/roadblocks3d.js
+      // @include src/themepark3d.js
       // @include src/garage3d.js
       // @include src/landmarks3d.js
       // @include src/civic3d.js
@@ -690,6 +701,9 @@
       // @include src/world3d.js
       // @include src/county3d.js
       // @include src/harbor3d.js
+      // @include src/marina3d.js
+      // @include src/cycles3d.js
+      // @include src/weather3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],
@@ -1141,6 +1155,79 @@
       );
       playerRing.rotation.x = -Math.PI / 2;
       scene.add(playerRing);
+      /**
+       * SWIM WAKE
+       * Two flat pieces lying on the water: a soft V that opens out behind the
+       * swimmer, and a ring that expands and fades once per stroke. Both are
+       * painted into one small canvas each, so the whole effect is two draw calls.
+       */
+      function wakeTexture(v) {
+        const size = 128,
+          cv = document.createElement('canvas');
+        cv.width = cv.height = size;
+        const g = cv.getContext('2d');
+        g.clearRect(0, 0, size, size);
+        if (v) {
+          // A widening pair of foam lines trailing the swimmer.
+          g.strokeStyle = '#ffffff';
+          g.lineCap = 'round';
+          for (const side of [-1, 1])
+            for (let i = 0; i < 3; i++) {
+              g.globalAlpha = 0.5 - i * 0.13;
+              g.lineWidth = 7 - i * 2;
+              g.beginPath();
+              g.moveTo(size * 0.62, size / 2 + side * 3);
+              g.quadraticCurveTo(
+                size * 0.34,
+                size / 2 + side * (12 + i * 9),
+                size * 0.05,
+                size / 2 + side * (30 + i * 13),
+              );
+              g.stroke();
+            }
+          g.globalAlpha = 0.5;
+          g.beginPath();
+          g.ellipse(size * 0.66, size / 2, 13, 8, 0, 0, Math.PI * 2);
+          g.fillStyle = '#ffffff';
+          g.fill();
+        } else {
+          const grad = g.createRadialGradient(size / 2, size / 2, size * 0.3, size / 2, size / 2, size / 2);
+          grad.addColorStop(0, 'rgba(255,255,255,0)');
+          grad.addColorStop(0.72, 'rgba(236,248,252,0.55)');
+          grad.addColorStop(1, 'rgba(236,248,252,0)');
+          g.fillStyle = grad;
+          g.fillRect(0, 0, size, size);
+        }
+        const tx = new Three.CanvasTexture(cv);
+        tx.colorSpace = Three.SRGBColorSpace;
+        return tx;
+      }
+      const swimWake = new Three.Mesh(
+        new Three.PlaneGeometry(46, 30),
+        new Three.MeshBasicMaterial({
+          map: wakeTexture(true),
+          transparent: true,
+          depthWrite: false,
+          opacity: 0,
+        }),
+      );
+      swimWake.rotation.x = -Math.PI / 2;
+      swimWake.renderOrder = 7;
+      swimWake.visible = false;
+      scene.add(swimWake);
+      const swimRipple = new Three.Mesh(
+        new Three.PlaneGeometry(1, 1),
+        new Three.MeshBasicMaterial({
+          map: wakeTexture(false),
+          transparent: true,
+          depthWrite: false,
+          opacity: 0,
+        }),
+      );
+      swimRipple.rotation.x = -Math.PI / 2;
+      swimRipple.renderOrder = 7;
+      swimRipple.visible = false;
+      scene.add(swimRipple);
       const objectiveRing = new Three.Mesh(
         new Three.RingGeometry(27, 29, 48),
         new Three.MeshBasicMaterial({
@@ -1563,6 +1650,9 @@
           );
           camera.far = 40000;
           scene.fog.density = 0.00015 * Math.min(1, worldZoom);
+          // Weather runs after the time-of-day pass so it modifies that day's light
+          // rather than being overwritten by it.
+          updateWeatherVisuals(deltaSeconds);
           camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
           const viewH =
             (clamp(viewportHeight * 0.68, 430, 630) *
@@ -1588,12 +1678,14 @@
           updateCityscapeVisuals();
           updateStreetLighting();
           updateSideJobVisuals();
+          updateRoadblockVisuals();
+          updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
           updateTrafficVisuals();
           updateMissionVisuals();
           const shadowHeight = terrainHeight(cameraTarget.x, cameraTarget.y);
-          sun.position.set(cameraTarget.x - 450, 760 + shadowHeight, cameraTarget.y - 230);
+          sun.position.set(cameraTarget.x - 620, 980 + shadowHeight, cameraTarget.y - 340);
           sun.target.position.set(cameraTarget.x, shadowHeight, cameraTarget.y);
           const vr = Math.max(
             920,
@@ -1844,14 +1936,14 @@
               m = makePerson(p, activePlayer);
               personModels.set(p, m);
             }
-            m.group.visible = near && !(activePlayer && (player.car || transitRide));
+            m.group.visible = near && !(activePlayer && (player.car || transitRide || taxiRide));
             if (p.hidden) m.group.visible = false;
             if (!m.group.visible) continue;
             const fallen = p.hp <= 0 ? 1 : (p.poisonCollapse ?? personFallAmount(p)),
               incapacitated = personIncapacitated(p);
             m.group.position.set(p.x, entityElevation(p) + fallen * 1.5, p.y);
             m.group.rotation.set(
-              0,
+              p.ejected ? p.ejectRoll || 0 : 0,
               -(activePlayer && (mouse.active || touchAim !== null) ? aim() : p.a),
               (fallen * Math.PI) / 2 +
                 (p.hp > 0 && p.dazedFor > 0 ? Math.sin(gameTime * 8) * 0.055 : 0),
@@ -1899,6 +1991,40 @@
               m.parts.arm1.rotation.z = 1.2;
               m.parts['arm-1'].rotation.z = 1.1;
             }
+            if (p.ejected) {
+              // Arms out as they go over: a throw, not a lie-down.
+              m.parts.arm1.rotation.z = 2.3;
+              m.parts['arm-1'].rotation.z = 1.4;
+              m.parts.leg1.rotation.z = 0.7;
+              m.parts['leg-1'].rotation.z = -0.5;
+            } else if (p.onPhone && p.hp > 0 && !incapacitated) {
+              m.parts.arm1.rotation.z = 2.25;
+              m.parts['arm-1'].rotation.z = 0.2;
+            }
+            // Outdoor gym regulars: `exercise` is 0..1 through one rep, null at rest.
+            if (p.exercise != null && p.hp > 0 && !incapacitated) {
+              const e = p.exercise;
+              if (p.exerciseKind === 'mat') {
+                m.group.position.y -= 4.2;
+                m.parts.leg1.rotation.z = -1.3;
+                m.parts['leg-1'].rotation.z = -1.3;
+                m.torso.rotation.z = -0.15 - e * 0.85;
+                m.parts.arm1.rotation.z = 2.4;
+                m.parts['arm-1'].rotation.z = 2.4;
+              } else if (p.exerciseKind === 'dip' || p.exerciseKind === 'bars') {
+                m.group.position.y += 5 + e * 5;
+                m.parts.arm1.rotation.z = -0.12;
+                m.parts['arm-1'].rotation.z = -0.12;
+                m.parts.leg1.rotation.z = -0.5;
+                m.parts['leg-1'].rotation.z = -0.34;
+              } else {
+                m.group.position.y += 7 + e * 6;
+                m.parts.arm1.rotation.z = 2.75 - e * 0.45;
+                m.parts['arm-1'].rotation.z = 2.75 - e * 0.45;
+                m.parts.leg1.rotation.z = -0.35;
+                m.parts['leg-1'].rotation.z = -0.2;
+              }
+            }
             if (p.illness && p.hp > 0) {
               m.group.rotation.z = -p.illness * 0.24 + Math.sin(gameTime * 8) * 0.025;
               m.torso.rotation.z = -p.illness * 0.2;
@@ -1915,6 +2041,15 @@
             if (incapacitated) m.parts.guns.forEach((g) => (g.visible = false));
             if (p.drinking && p.hp > 0 && !incapacitated) {
               m.parts.arm1.rotation.z = 1.5 + Math.sin(gameTime * 3) * 0.15;
+            }
+            if (activePlayer && player.tumble) {
+              m.group.rotation.z = Math.PI / 2;
+              m.group.rotation.x = player.tumbleRoll || 0;
+              m.group.position.y += 4;
+              m.parts.arm1.rotation.z = 2.1;
+              m.parts['arm-1'].rotation.z = 1.7;
+              m.parts.leg1.rotation.z = -0.7;
+              m.parts['leg-1'].rotation.z = -0.4;
             }
             if (activePlayer) {
               if (player.parachute) {
@@ -1952,6 +2087,27 @@
                 m.parts.arm1.rotation.z = 2.6;
                 m.parts['arm-1'].rotation.z = 2.6;
               }
+              /**
+               * FRONT CRAWL
+               * Swimming is a whole-body pose, so it is applied last and overrides
+               * everything the walk and the weapon set before it. The body lies
+               * prone along its heading and rolls with the stroke the way a
+               * swimmer's does; the arms windmill a half cycle apart, catching and
+               * recovering rather than swinging like a walk; the legs flutter at
+               * twice the arm rate; and the whole thing rides at the waterline.
+               */
+              if (player.swimming) {
+                const stroke = player.swimStroke || 0,
+                  roll = Math.sin(stroke) * 0.44;
+                m.group.rotation.set(roll, -player.a, -Math.PI / 2);
+                m.group.position.y = entityElevation(player) + 2.6;
+                m.parts.arm1.rotation.z = stroke;
+                m.parts['arm-1'].rotation.z = stroke + Math.PI;
+                m.parts.leg1.rotation.z = Math.sin(stroke * 2) * 0.3;
+                m.parts['leg-1'].rotation.z = -Math.sin(stroke * 2) * 0.3;
+                m.torso.rotation.z = 0.14 + Math.sin(stroke * 2) * 0.06;
+                m.parts.guns.forEach((gun) => (gun.visible = false));
+              }
             }
           }
           chuteModel.visible = !!player.parachute && player.parachute.stage === 'canopy';
@@ -1960,8 +2116,25 @@
             chuteModel.rotation.y = -player.a;
             chuteModel.scale.setScalar(Math.max(0.01, player.parachute.opening));
           }
-          playerRing.visible = !transitRide && !player.car && !player.parachute;
+          playerRing.visible =
+            !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
+          // Wake: a bow wave that opens out behind the swimmer, and a ring of
+          // disturbed water around them that breathes with the stroke.
+          swimWake.visible = !!player.swimming;
+          if (swimWake.visible) {
+            const stroke = player.swimStroke || 0,
+              drive = clamp(player.swimDrive || 0, 0, 1);
+            swimWake.position.set(player.x, -1.4, player.y);
+            swimWake.rotation.z = -player.a;
+            swimWake.scale.set(1 + drive * 0.9, 0.8 + drive * 0.5, 1);
+            swimWake.material.opacity = 0.16 + drive * 0.34 + Math.sin(stroke * 2) * 0.05;
+            swimRipple.position.set(player.x, -1.5, player.y);
+            const pulse = (stroke % (Math.PI * 2)) / (Math.PI * 2);
+            swimRipple.scale.setScalar(9 + pulse * 26);
+            swimRipple.material.opacity = (1 - pulse) * 0.3 * (0.4 + drive);
+          }
+          swimRipple.visible = swimWake.visible;
           for (const p of pickups) {
             let m = pickupModels.get(p);
             if (!m) {

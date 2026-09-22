@@ -271,32 +271,43 @@
        * The dusk weight peaks when daylight is near 0.3 so sunsets read as sunsets.
        */
       const SKY_NIGHT = new Three.Color('#0d1524'),
-        SKY_DAY = new Three.Color('#93a8ba'),
-        SKY_DUSK = new Three.Color('#b0705a'),
+        SKY_DAY = new Three.Color('#9fc0d8'),
+        SKY_DUSK = new Three.Color('#c07a55'),
         SUN_NIGHT = new Three.Color('#7d93c4'),
         SUN_DUSK = new Three.Color('#ffa564'),
-        SUN_DAY = new Three.Color('#fff1d6'),
+        SUN_DAY = new Three.Color('#fff4de'),
         HEMI_SKY_NIGHT = new Three.Color('#2f3d5e'),
-        HEMI_SKY_DAY = new Three.Color('#b8cbe8'),
+        HEMI_SKY_DAY = new Three.Color('#cfe0f2'),
         HEMI_GROUND_NIGHT = new Three.Color('#1c1a22'),
-        HEMI_GROUND_DAY = new Three.Color('#5b4f47'),
+        // Daylight bounces off pavement and planting, not off bare earth.
+        HEMI_GROUND_DAY = new Three.Color('#6d6a52'),
         skyScratch = new Three.Color();
       let lastBadge = '';
       function updateCivicVisuals() {
         const light = daylight(),
           night = 1 - light,
           dusk = clamp(1 - Math.abs(light - 0.3) / 0.3, 0, 1);
-        hemi.intensity = 0.45 + light * 1.55;
+        hemi.intensity = 0.45 + light * 1.75;
         hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, light);
         hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, light);
-        sun.intensity = 0.35 + light * 3;
+        sun.intensity = 0.35 + light * 3.6;
         sun.color.copy(SUN_NIGHT).lerp(SUN_DAY, light).lerp(SUN_DUSK, dusk * 0.85);
         fill.intensity = 0.28 + night * 0.25;
         skyScratch.copy(SKY_NIGHT).lerp(SKY_DAY, light).lerp(SKY_DUSK, dusk * 0.6);
         scene.background.copy(skyScratch);
         scene.fog.color.copy(skyScratch);
-        renderer.toneMappingExposure = 1.04 + night * 0.16 + dusk * 0.05;
-        const badge = 'SOUTH COAST · ' + (light < 0.1 ? 'NIGHT' : light < 0.4 ? (dusk > 0.5 && (worldMinutes % 1440) / 60 < 12 ? 'DAWN' : 'DUSK') : 'DAY');
+        renderer.toneMappingExposure = 1.1 + night * 0.16 + dusk * 0.07;
+        const badge =
+          'SOUTH COAST · ' +
+          (light < 0.1
+            ? 'NIGHT'
+            : light < 0.4
+              ? dusk > 0.5 && (worldMinutes % 1440) / 60 < 12
+                ? 'DAWN'
+                : 'DUSK'
+              : 'DAY') +
+          ' · ' +
+          weatherLabel();
         if (badge !== lastBadge) getElement('renderBadge').textContent = lastBadge = badge;
         for (let i = 0; i < bloodMeshes.length; i++) {
           const m = bloodMeshes[i],

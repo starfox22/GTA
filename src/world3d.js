@@ -13,20 +13,25 @@
        * flattened swell in the shallows. Four Gerstner swells displace the mesh;
        * two scrolling noise fields add fine ripples in the fragment shader.
        */
+      // The world box is taller than it is wide since the northern reclamation, so
+      // the distance field is too; texels stay square, which the chamfer pass needs.
       const SHORE_RES = 512,
+        SHORE_ROWS = Math.round((SHORE_RES * WORLD_HEIGHT) / WORLD_SIZE),
         SHORE_UNIT_SCALE = 4; // texel value 255 = 1020 world units from land
       function buildShoreDistanceTexture() {
         const maskCanvas = document.createElement('canvas');
-        maskCanvas.width = maskCanvas.height = SHORE_RES;
+        maskCanvas.width = SHORE_RES;
+        maskCanvas.height = SHORE_ROWS;
         const mc = maskCanvas.getContext('2d');
         mc.fillStyle = '#000';
-        mc.fillRect(0, 0, SHORE_RES, SHORE_RES);
+        mc.fillRect(0, 0, SHORE_RES, SHORE_ROWS);
         mc.scale(SHORE_RES / WORLD_SIZE, SHORE_RES / WORLD_SIZE);
+        mc.translate(0, -WORLD_TOP);
         coastPath(mc);
         mc.fillStyle = '#fff';
         mc.fill();
-        const px = mc.getImageData(0, 0, SHORE_RES, SHORE_RES).data,
-          n = SHORE_RES * SHORE_RES,
+        const px = mc.getImageData(0, 0, SHORE_RES, SHORE_ROWS).data,
+          n = SHORE_RES * SHORE_ROWS,
           dist = new Float32Array(n),
           far = 1e6;
         for (let i = 0; i < n; i++) dist[i] = px[i * 4] > 127 ? 0 : far;
@@ -34,7 +39,7 @@
         const relax = (i, j, cost) => {
           if (dist[j] + cost < dist[i]) dist[i] = dist[j] + cost;
         };
-        for (let y = 0; y < SHORE_RES; y++)
+        for (let y = 0; y < SHORE_ROWS; y++)
           for (let x = 0; x < SHORE_RES; x++) {
             const i = y * SHORE_RES + x;
             if (x > 0) relax(i, i - 1, 3);
@@ -44,11 +49,11 @@
               if (x < SHORE_RES - 1) relax(i, i - SHORE_RES + 1, 4);
             }
           }
-        for (let y = SHORE_RES - 1; y >= 0; y--)
+        for (let y = SHORE_ROWS - 1; y >= 0; y--)
           for (let x = SHORE_RES - 1; x >= 0; x--) {
             const i = y * SHORE_RES + x;
             if (x < SHORE_RES - 1) relax(i, i + 1, 3);
-            if (y < SHORE_RES - 1) {
+            if (y < SHORE_ROWS - 1) {
               relax(i, i + SHORE_RES, 3);
               if (x < SHORE_RES - 1) relax(i, i + SHORE_RES + 1, 4);
               if (x > 0) relax(i, i + SHORE_RES - 1, 4);
@@ -62,7 +67,7 @@
           data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = v;
           data[i * 4 + 3] = 255;
         }
-        const tx = new Three.DataTexture(data, SHORE_RES, SHORE_RES, Three.RGBAFormat);
+        const tx = new Three.DataTexture(data, SHORE_RES, SHORE_ROWS, Three.RGBAFormat);
         tx.minFilter = tx.magFilter = Three.LinearFilter;
         tx.wrapS = tx.wrapT = Three.ClampToEdgeWrapping;
         tx.needsUpdate = true;
@@ -76,6 +81,8 @@
         uSun: { value: new Three.Vector3(-0.45, 0.76, -0.23).normalize() },
         uShore: { value: buildShoreDistanceTexture() },
         uWorldSize: { value: WORLD_SIZE },
+        uWorldOrigin: { value: new Three.Vector2(0, WORLD_TOP) },
+        uWorldExtent: { value: new Three.Vector2(WORLD_SIZE, WORLD_HEIGHT) },
         uShoreScale: { value: 255 * SHORE_UNIT_SCALE },
       };
       const waterMaterial = new Three.ShaderMaterial({
@@ -88,6 +95,8 @@
           uniform float uTime;
           uniform sampler2D uShore;
           uniform float uWorldSize;
+          uniform vec2 uWorldOrigin;
+          uniform vec2 uWorldExtent;
           uniform float uShoreScale;
           // Gerstner swell: horizontal pinch sharpens crests without extra geometry.
           void wave(vec2 dir, float amp, float wavelength, float speed, float steep, vec2 p,
@@ -103,7 +112,7 @@
           void main(){
             vec4 origin = modelMatrix * vec4(position, 1.);
             vec2 p = origin.xz;
-            float shore = texture2D(uShore, p / uWorldSize).r * uShoreScale;
+            float shore = texture2D(uShore, (p - uWorldOrigin) / uWorldExtent).r * uShoreScale;
             float depthFade = 0.22 + 0.78 * smoothstep(8., 190., shore);
             vec3 offset = vec3(0.);
             vec3 dNormal = vec3(0., 1., 0.);
@@ -210,25 +219,16 @@
       // Sits well below the deepest wave trough so it never pokes through the swell.
       farWater.position.set(WORLD_SIZE / 2, -18, WORLD_SIZE / 2);
       scene.add(farWater);
-      const shoreFoam = [],
-        shoreMaterial = new Three.MeshBasicMaterial({
-          color: '#92cfbf',
-          transparent: true,
-          opacity: 0.15,
-          depthWrite: false,
-          side: Three.DoubleSide,
-        });
-      const foamCanvas = document.createElement('canvas');
-      foamCanvas.width = 128;
-      foamCanvas.height = 32;
-      const foamContext = foamCanvas.getContext('2d');
-      for (let x = 0; x < 128; x += 2) {
-        const y = 13 + Math.sin(x * 0.1) * 3 + Math.sin(x * 0.29) * 2;
-        foamContext.fillStyle =
-          'rgba(223,243,227,' + (0.28 + 0.28 * (0.5 + 0.5 * Math.sin(x * 0.37))) + ')';
-        foamContext.fillRect(x, y, 3, 2 + Math.sin(x * 0.16) * 1.5);
-      }
-      const foamTex = new Three.CanvasTexture(foamCanvas);
+      /**
+       * SHORELINE
+       * The wash, the breaking band and the wet-sand darkening are all produced by
+       * the water shader from its distance-to-shore field, so the shore carries no
+       * overlay planes. An earlier pass laid flat foam and shallow quads a few
+       * units under the surface; because they were fixed while the water is
+       * displaced by four Gerstner swells, they surfaced through the waves as pale
+       * rectangles. They are gone. What remains here is real build: the concrete
+       * quay edge, its coping, mooring bollards and a sand bank along the beaches.
+       */
       for (const e of coastSegments()) {
         if (e.opening) continue;
         const group = new Three.Group(),
@@ -242,33 +242,15 @@
         if (style === 'quay') {
           box(group, 0, 2.3, 0, e.length + 1, 5, 5, mat('#727e80'));
           box(group, 0, 5.2, 0, e.length + 1, 0.9, 7, concrete);
-        }
-        const shallow = new Three.Mesh(
-          new Three.PlaneGeometry(e.length + 2, style === 'beach' ? 48 : 15),
-          shoreMaterial,
-        );
-        shallow.rotation.x = -Math.PI / 2;
-        shallow.position.set(0, -0.55, outward * (style === 'beach' ? 19 : 7));
-        group.add(shallow);
-        for (let k = 0; k < (style === 'beach' ? 2 : 1); k++) {
-          const material = new Three.MeshBasicMaterial({
-              map: foamTex,
-              transparent: true,
-              opacity: 0.25,
-              depthWrite: false,
-              side: Three.DoubleSide,
-            }),
-            foam = new Three.Mesh(new Three.PlaneGeometry(e.length + 2, 13), material);
-          foam.rotation.x = -Math.PI / 2;
-          foam.userData.dynamic = true;
-          foam.position.y = -0.35 - k * 0.05;
-          foam.userData = {
-            outward,
-            phase: e.x * 0.003 + e.y * 0.002 + k * 0.5,
-            beach: style === 'beach',
-          };
-          group.add(foam);
-          shoreFoam.push(foam);
+          box(group, 0, 0.6, outward * 3.4, e.length + 1, 4, 2.2, mat('#5d6668', 0.95));
+          if (Math.round(e.x + e.y) % 3 === 0) {
+            mesh(cylinderGeo, darkMetal, group, 0, 6.6, -outward * 1.4, 1.5, 3.4, 1.5);
+            mesh(sphereGeo, darkMetal, group, 0, 8.3, -outward * 1.4, 1.9, 1.1, 1.9);
+          }
+        } else {
+          // A low sand bank so the beach meets the water with a lip, not an edge.
+          box(group, 0, 0.45, -outward * 5, e.length + 1, 1.2, 12, mat('#c8b68e', 0.97));
+          box(group, 0, 0.18, -outward * 13, e.length + 1, 0.9, 10, mat('#b8a884', 0.97));
         }
         statics.push({
           x: e.x,
@@ -277,6 +259,179 @@
           radius: 90,
         });
       }
+      /**
+       * STREET ENDS
+       * Every grid road stops where the land does. A road that simply stops is a
+       * bug; a road that stops at a kerbed turning head with a guardrail, a pair
+       * of chevron boards and a NO THROUGH ROAD plate is a street. Ends on a
+       * bridge or a boulevard are junctions, not ends, and are skipped.
+       */
+      function buildStreetEnds() {
+        const railMat = mat('#cfd3cd', 0.7),
+          chevron = mat('#e9e3d0', 0.75),
+          stripe = mat('#c14c3c', 0.7),
+          kerb = mat('#a9a89b', 0.92);
+        // One plate texture shared by every end: a canvas per sign would cost
+        // more memory than the rest of the street furniture put together.
+        const plate = document.createElement('canvas');
+        plate.width = 512;
+        plate.height = 128;
+        const pg = plate.getContext('2d');
+        pg.fillStyle = '#e9e3d0';
+        pg.fillRect(0, 0, 512, 128);
+        pg.strokeStyle = '#b23c33';
+        pg.lineWidth = 10;
+        pg.strokeRect(10, 10, 492, 108);
+        pg.fillStyle = '#20262a';
+        pg.font = '700 46px Arial';
+        pg.textAlign = 'center';
+        pg.textBaseline = 'middle';
+        pg.fillText('NO THROUGH ROAD', 256, 66, 460);
+        const plateTexture = new Three.CanvasTexture(plate);
+        plateTexture.colorSpace = Three.SRGBColorSpace;
+        const plateMaterial = new Three.MeshBasicMaterial({
+          map: plateTexture,
+          side: Three.DoubleSide,
+          toneMapped: false,
+        });
+        const plateGeometry = new Three.PlaneGeometry(34, 8.5);
+        for (const r of cityStreets()) {
+          for (const end of [r.start, r.end]) {
+            const p = r.vertical ? { x: r.r, y: end } : { x: end, y: r.r },
+              outward = end === r.start ? -1 : 1,
+              a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
+            if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+            if (inAirport(p.x, p.y) || inStadiumLot(p.x, p.y, 40)) continue;
+            // A street that runs out at the water is finished by the esplanade
+            // railing, so it gets no turning head and no barrier furniture.
+            if (streetEndAtShore(p.x, p.y, a)) continue;
+            // One that stops at a park or the stadium gets its gates instead.
+            if (streetEndAtGate(p.x, p.y, a)) {
+              const gate = new Three.Group();
+              gate.position.set(p.x, terrainHeight(p.x, p.y), p.y);
+              gate.rotation.y = -a;
+              scene.add(gate);
+              batchGroups.push(gate);
+              const pier = mat('#a8a396', 0.9),
+                gateIron = mat('#3f4744', 0.5, 0.5);
+              for (const side of [-1, 1]) {
+                const z = side * (r.width / 2 + 16);
+                box(gate, 52, 13, z, 13, 26, 13, pier);
+                box(gate, 52, 27.5, z, 16, 3, 16, pier);
+                // A length of railing running back from each pier to the kerb.
+                box(gate, 26, 8, z, 40, 1.8, 1.8, gateIron);
+                box(gate, 26, 4, z, 40, 1.4, 1.4, gateIron);
+                for (const d of [10, 26, 42]) box(gate, d, 6, z, 1.6, 12, 1.6, gateIron);
+                box(gate, 52, 32, z, 2.4, 10, 2.4, gateIron);
+              }
+              statics.push({ x: p.x, y: p.y, group: gate, radius: 120 });
+              continue;
+            }
+            const group = new Three.Group();
+            group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
+            group.rotation.y = -a;
+            scene.add(group);
+            batchGroups.push(group);
+            const half = r.width * 0.5;
+            // Kerb ring around the turning head.
+            const ring = mesh(new Three.TorusGeometry(half + 4, 2.4, 6, 26), kerb, group, 0, 1.6, 0);
+            ring.rotation.x = Math.PI / 2;
+            // Guardrail across the closed end.
+            for (let i = -3; i <= 3; i++) {
+              const z = (i * (r.width + 20)) / 7;
+              box(group, half + 7, 7, z, 3.4, 14, 3.4, railMat);
+            }
+            box(group, half + 7, 12, 0, 3, 3.6, r.width + 24, railMat);
+            box(group, half + 7, 6.4, 0, 3, 3, r.width + 24, railMat);
+            // Chevron boards facing the road, red and white.
+            for (const side of [-1, 1]) {
+              const z = side * (r.width * 0.24);
+              box(group, half + 2, 9.5, z, 1.6, 13, 26, chevron);
+              for (let k = -2; k <= 2; k++)
+                box(group, half + 1.2, 9.5, z + k * 5.2, 0.8, 13, 2.6, stripe);
+              box(group, half + 2, 2, z, 4, 4, 28, railMat);
+            }
+            // NO THROUGH ROAD plate on a post, set back on the kerb.
+            box(group, half - 8, 11, -half + 8, 1.8, 22, 1.8, railMat);
+            const boardMesh = new Three.Mesh(plateGeometry, plateMaterial);
+            boardMesh.position.set(half - 8, 22, -half + 8);
+            boardMesh.rotation.y = -Math.PI / 2;
+            boardMesh.userData.sign = true;
+            group.add(boardMesh);
+            // A planted island in the middle of a wide head.
+            if (r.width > 100) {
+              mesh(new Three.CylinderGeometry(15, 16, 2.4, 18), kerb, group, 0, 1.2, 0);
+              mesh(new Three.CylinderGeometry(13, 13, 1.2, 18), leafMats[1], group, 0, 2.4, 0);
+              rod(group, new Three.Vector3(0, 2, 0), new Three.Vector3(0, 20, 0), 1.6, mat('#6b5442'));
+              mesh(sphereGeo, leafMats[0], group, 0, 26, 0, 13, 10, 13);
+            }
+            statics.push({
+              x: p.x,
+              y: p.y,
+              group,
+              radius: 110,
+            });
+          }
+        }
+      }
+      buildStreetEnds();
+      /**
+       * ESPLANADE
+       * Railing bays, lamp standards, benches and planters along the whole
+       * waterfront, built from the shared promenadeSpots() list so the people
+       * strolling it walk exactly where the furniture is.
+       */
+      function buildPromenade() {
+        const railMetal = mat('#b9bcb4', 0.4, 0.55),
+          walkStone = mat('#b7b4a6', 0.9),
+          seatWood = mat('#9c7b52', 0.85),
+          lampPost = mat('#42484a', 0.6, 0.35),
+          lampGlass = new Three.MeshBasicMaterial({ color: '#ffe9bd' }),
+          planter = mat('#8c8779', 0.9);
+        let group = null,
+          groupAt = null,
+          count = 0;
+        for (const spot of promenadeSpots()) {
+          // Batch the furniture in runs so a mile of railing is a handful of meshes.
+          if (!group || Math.hypot(spot.x - groupAt.x, spot.y - groupAt.y) > 420 || count > 40) {
+            group = new Three.Group();
+            scene.add(group);
+            batchGroups.push(group);
+            statics.push({ x: spot.x, y: spot.y, group, radius: 560 });
+            groupAt = spot;
+            count = 0;
+          }
+          count++;
+          const inner = new Three.Group();
+          inner.position.set(spot.x, terrainHeight(spot.x, spot.y), spot.y);
+          inner.rotation.y = -spot.a;
+          group.add(inner);
+          if (!spot.beach) {
+            // Seaward railing, carried straight across a street mouth so the walk
+            // never stops and nothing drives off the end of the road.
+            for (const side of [-1, 1]) box(inner, side * 20, 6, 28, 2, 12, 2, railMetal);
+            box(inner, 0, 11, 28, 46, 1.8, 1.8, railMetal);
+            box(inner, 0, 6.5, 28, 46, 1.4, 1.4, railMetal);
+            box(inner, 0, 1.2, 28, 46, 2.4, 5, walkStone);
+          }
+          if (spot.crossing) continue;
+          if (spot.kind === 'lamp') {
+            box(inner, 0, 15, 14, 2.6, 30, 2.6, lampPost);
+            box(inner, 0, 2, 14, 7, 4, 7, lampPost);
+            const globe = mesh(sphereGeo, lampGlass, inner, 0, 32, 14, 3.4, 4.2, 3.4);
+            globe.castShadow = false;
+          } else if (spot.kind === 'bench') {
+            box(inner, 0, 4.4, 6, 20, 1.6, 6, seatWood);
+            box(inner, 0, 7.6, 3.6, 20, 5.4, 1.4, seatWood);
+            for (const side of [-1, 1]) box(inner, side * 8, 2, 6, 1.4, 4.4, 5.4, lampPost);
+          } else if (spot.kind === 'tree') {
+            mesh(new Three.CylinderGeometry(9, 9.6, 3, 12), planter, inner, 0, 1.5, -22);
+            rod(inner, new Three.Vector3(0, 3, -22), new Three.Vector3(0, 17, -22), 1.3, mat('#6b5442'));
+            mesh(sphereGeo, leafMats[0], inner, 0, 22, -22, 11, 9, 11);
+          }
+        }
+      }
+      buildPromenade();
       function makePalm(x, z, size = 1) {
         const g = new Three.Group();
         g.position.set(x, 0, z);
@@ -652,11 +807,6 @@
         waterSurface.scale.set(Math.max(1, 1 / worldZoom / 2), Math.max(1, 1 / worldZoom / 2), 1);
         waterSurface.position.x = Math.round(cameraTarget.x / 25) * 25;
         waterSurface.position.z = Math.round(cameraTarget.y / 25) * 25;
-        shoreFoam.forEach((m) => {
-          const t = (gameTime * 0.18 + m.userData.phase) % 1;
-          m.position.z = m.userData.outward * (3 + (1 - t) * (m.userData.beach ? 36 : 10));
-          m.material.opacity = Math.sin(t * Math.PI) * (m.userData.beach ? 0.3 : 0.12);
-        });
         farWater.material.color
           .set('#061421')
           .lerp(new Three.Color(cameraTarget.x > 3900 ? '#0c5a68' : '#0f3a52'), light);
