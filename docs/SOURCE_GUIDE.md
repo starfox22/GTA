@@ -74,7 +74,9 @@ roofs, shopfronts, street furniture, night windows), sidejobs3d (rings/devices),
 (time-of-day palette, businesses), air-cover3d, renewal3d, sports3d, transit3d, ecology3d,
 world3d (water shader, palms, airport, rooftop bar), county3d, boats3d (the boat kit),
 harbor3d (signals, depot, helicopter searchlight, the container ship), marina3d (marina,
-superyacht, terminal, liners), helicopter3d, vehicles3d, plane3d.
+superyacht, terminal, liners), weather3d (rain, wet roads, overcast light), clouds3d (volumetric
+clouds and cloud shadows), helicopter3d, vehicles3d, plane3d. flight-view3d (flight camera,
+distance haze, level of detail from the air) is included right after the camera and lights.
 
 ## 4. The city layout
 
@@ -197,8 +199,28 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
 
 ## 6. Rendering notes
 
-- The camera is orthographic, looking north-down at roughly 40 degrees, so roofs and
-  south-facing facades carry the look. `cityscape3d.js` builds every building: archetype
+- On the street the camera is orthographic, looking north-down at roughly 50 degrees, so roofs
+  and south-facing facades carry the look. In an aircraft or on a parachute a perspective
+  camera takes over (flight-view3d.js): it keeps the aircraft framed like the street view (a
+  dolly zoom from a 3 degree lens on the ground to 40 degrees by ~140 m, pitching down to 74
+  degrees by ~500 m), so the ground falls away, towers show parallax and the aircraft's shadow
+  drops away from it. `camera` is whichever camera is active; use `viewCenter`, `viewReach`
+  and `viewZoom` (the ground footprint and its scale, `viewZoom` meaning what `worldZoom`
+  means on the street) for culling and level of detail rather than `cameraTarget`/`worldZoom`.
+- Distance haze is `scene.fog`, a linear Fog whose shader chunk is replaced with an
+  aerial-perspective curve: clear out to `fog.near`, exponential-squared beyond it with
+  `fog.far = 1 / fog.density`. Keep adjusting `fog.density` and `fog.color`; `fog.near`
+  belongs to the flight camera. Nothing may lay a uniform wash over the frame.
+- Clouds (clouds3d.js) are a ray-marched cumulus layer at 600-950 m over a GPU-generated
+  3D noise volume, drawn at half resolution only when the flight camera is above the cloud
+  base and composited behind the player's aircraft. Coverage follows `weather.cloud`, drift
+  follows the wind, light follows the scene's sun, sky and ground colours. Cloud shadows on
+  the city come from the same density field. Aircraft ceilings are ~1400 m so the layer can
+  be climbed through.
+- From the air: small props move to detail layers the flight camera drops as `viewZoom`
+  falls, traffic becomes instanced box impostors, and below `viewZoom` 0.165 a merged far
+  copy of the static scenery (flight-view3d.js, FAR SCENERY) replaces the per-building
+  batches. Building blocks are compacted from six draw calls to two. `cityscape3d.js` builds every building: archetype
   (tower, office, brick, stucco, warehouse, deco, decoTower, hotel), procedural roof texture,
   parapet, roof props (instanced), shopfront with awnings and a sign atlas, fire escapes,
   balconies, billboards, helipads, beacons and neon hotel signs.
