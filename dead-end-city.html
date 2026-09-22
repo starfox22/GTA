@@ -4186,12 +4186,42 @@ body:not(.touch-mode).police-search-active #carRadio {
       CITY_SIZE = 5632,
       BLOCK_SIZE = 512,
       ROAD_WIDTH = 112,
+      // Avenues run north-south at these x. The column plan never changed.
       ROAD_CENTERS = Array.from(
         {
           length: 11,
         },
         (_, i) => 128 + i * BLOCK_SIZE,
-      );
+      ),
+      /**
+       * NORTH RECLAMATION
+       * The original grid started at y = 128 and ran south. The northern
+       * reclamation added eight more cross streets above it, so street rows now
+       * run from -3968 to 5248 and map coordinates north of the old shoreline are
+       * negative. Block indices keep their old meaning — by 0 is still y 128 —
+       * and the new blocks simply carry negative indices, so every place, park
+       * and landmark recorded before the reclamation still points at its block.
+       */
+      NORTH_ROWS = 8,
+      ROAD_ROWS = Array.from(
+        {
+          length: 11 + NORTH_ROWS,
+        },
+        (_, i) => 128 + (i - NORTH_ROWS) * BLOCK_SIZE,
+      ),
+      // Boulevard-width streets. Columns and rows share one list; the negative
+      // entries only ever match rows in the northern reclamation.
+      WIDE_ROADS = [1152, 2688, 3200, 4736, -1408, -2944],
+      CITY_TOP = -4224,
+      CITY_HEIGHT = CITY_SIZE - CITY_TOP,
+      WORLD_TOP = -5632,
+      WORLD_HEIGHT = WORLD_SIZE - WORLD_TOP;
+    const blockX = (bx) => 128 + bx * BLOCK_SIZE,
+      blockY = (by) => 128 + by * BLOCK_SIZE,
+      BLOCK_X_MIN = 0,
+      BLOCK_X_MAX = 9,
+      BLOCK_Y_MIN = -NORTH_ROWS,
+      BLOCK_Y_MAX = 9;
     const METERS_PER_UNIT = 100 / BLOCK_SIZE;
     const worldMeters = (units) => units * METERS_PER_UNIT,
       distanceLabel = (units) => Math.round(worldMeters(units)) + ' m';
@@ -4233,7 +4263,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     let mapZoom = 1,
       mapCenter = {
         x: WORLD_SIZE / 2,
-        y: WORLD_SIZE / 2,
+        y: (WORLD_TOP + WORLD_SIZE) / 2,
       };
     let cash = 0,
       wantedStars = 0,
@@ -5245,6 +5275,9 @@ body:not(.touch-mode).police-search-active #carRadio {
     function roadNear(v) {
       return ROAD_CENTERS.reduce((a, b) => (Math.abs(a - v) < Math.abs(b - v) ? a : b));
     }
+    function rowNear(v) {
+      return ROAD_ROWS.reduce((a, b) => (Math.abs(a - v) < Math.abs(b - v) ? a : b));
+    }
     function onRoad(x, y) {
       return cityStreetAt(x, y);
     }
@@ -5344,11 +5377,16 @@ body:not(.touch-mode).police-search-active #carRadio {
       throw Error('No clear vehicle spawn for ' + type);
     }
     /* REVIEW_HOOK:GROUND_CANVAS */
+    // One texture covers the whole city including the northern reclamation, so it
+    // is taller than it is wide. The pixels-per-unit ratio is held below the old
+    // 4096-square texture's so the bitmap does not grow with the city.
+    const GROUND_PIXELS_PER_UNIT = 3072 / CITY_SIZE;
     const groundCanvas = document.createElement('canvas');
-    groundCanvas.width = 4096;
-    groundCanvas.height = 4096;
+    groundCanvas.width = 3072;
+    groundCanvas.height = Math.ceil(CITY_HEIGHT * GROUND_PIXELS_PER_UNIT);
     const groundContext = groundCanvas.getContext('2d');
-    groundContext.scale(4096 / CITY_SIZE, 4096 / CITY_SIZE);
+    groundContext.scale(GROUND_PIXELS_PER_UNIT, GROUND_PIXELS_PER_UNIT);
+    groundContext.translate(0, -CITY_TOP);
     function rect(x, y, w, h, c) {
       groundContext.fillStyle = c;
       groundContext.fillRect(x, y, w, h);
@@ -5379,13 +5417,20 @@ body:not(.touch-mode).police-search-active #carRadio {
         if (y < 4400) return 22 + vary * 20;
         return 20 + vary * 18;
       }
+      if (y < 0) {
+        // Northern reclamation. The tower core stands on the north-east point and
+        // falls away westward to the marina, which is kept deliberately low so the
+        // masts and the liner are the tallest things on that shore.
+        if (cx < 1750 && y < -2400) return 26 + vary * 30;
+        const core = clamp(Math.hypot(cx - 2820, y + 2620) / 1320, 0, 1),
+          tower = Math.pow(1 - core, 2);
+        return 58 + tower * 540 + vary * (48 + tower * 70);
+      }
       if (y < 1450) return cx > 2500 ? 30 + vary * 18 : 30 + vary * 26;
       if (y < 2650) return cx > 1700 && cx < 2300 ? 56 + vary * 30 : 62 + vary * 55;
-      if (y < 3700) {
-        if (cx < 1800) return 60 + vary * 46;
-        const core = clamp(Math.hypot(cx - 2600, y + 70 - 3150) / 1150, 0, 1);
-        return 155 + Math.pow(1 - core, 2.2) * 415 + vary * 95;
-      }
+      // The old exchange district kept its name and its density but not its towers:
+      // the banks moved north to the point when the reclamation opened.
+      if (y < 3700) return cx < 1800 ? 60 + vary * 46 : 82 + vary * 96;
       if (y < 4650) return 50 + vary * 45;
       return 30 + vary * 24;
     }
@@ -5510,21 +5555,21 @@ body:not(.touch-mode).police-search-active #carRadio {
       groundContext.save();
       coastPath(groundContext);
       groundContext.clip();
-      rect(0, 0, CITY_SIZE, CITY_SIZE, '#334a48');
+      rect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT, '#334a48');
       for (let x = 0; x < CITY_SIZE; x += 32)
-        for (let y = 0; y < CITY_SIZE; y += 26) {
+        for (let y = CITY_TOP; y < CITY_SIZE; y += 26) {
           if (seededRandom() > 0.6)
             rect(x + seededRandom() * 20, y, randomBetween(5, 16), 1, '#7795812b');
         }
-      rect(48, 48, CITY_SIZE - 112, CITY_SIZE - 112, '#696d60');
+      rect(48, CITY_TOP + 48, CITY_SIZE - 112, CITY_HEIGHT - 112, '#696d60');
       paintCityStreets(groundContext, true);
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            y = ROAD_CENTERS[by] + 89,
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            y = blockY(by) + 89,
             w = 334,
             h = 334;
-          if (x + w > RIVER.left && x < RIVER.right) continue;
+          if (y > 0 && x + w > RIVER.left && x < RIVER.right) continue;
           if (stadiumOverlap(x, y, w, h)) continue;
           const civicPlace = PLACES.find((p) => p.bx === bx && p.by === by);
           if (
@@ -5676,9 +5721,9 @@ body:not(.touch-mode).police-search-active #carRadio {
         rect(x - 54, y - 10, 108, 18, '#1c2928');
         label(s, x, y + 3, 10, c);
       }
-      for (let i = 0; i < 65; i++) {
+      for (let i = 0; i < 95; i++) {
         let x = randomChoice(ROAD_CENTERS) + randomChoice([-66, 66]),
-          y = randomBetween(200, 3300);
+          y = randomBetween(CITY_TOP + 200, 3300);
         if (!solid(x, y, 4)) {
           rect(x - 3, y - 4, 6, 8, '#3a5145');
           rect(x - 3, y - 5, 6, 2, '#899480');
@@ -5767,8 +5812,10 @@ body:not(.touch-mode).police-search-active #carRadio {
       impactContacts.clear();
       for (let i = 0; i < 150; i++) {
         const vert = seededRandom() > 0.5,
-          r = randomChoice(ROAD_CENTERS),
-          v = randomBetween(170, CITY_SIZE - 260),
+          r = randomChoice(vert ? ROAD_CENTERS : ROAD_ROWS),
+          v = vert
+            ? randomBetween(CITY_TOP + 170, CITY_SIZE - 260)
+            : randomBetween(170, CITY_SIZE - 260),
           dir = seededRandom() > 0.5 ? 1 : -1,
           x = vert ? r - dir * 25 : v,
           y = vert ? v : r + dir * 25,
@@ -5795,7 +5842,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             'limousine',
           ]);
         if (
-          Math.abs(v - roadNear(v)) < 145 ||
+          Math.abs(v - (vert ? rowNear(v) : roadNear(v))) < 145 ||
           inHarbor(x, y, 70) ||
           !trafficSpawnValid(x, y, a) ||
           !canSpawnCar(type, x, y, a, 12)
@@ -5811,7 +5858,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         );
       }
       for (let i = 0; i < 70; i++) {
-        const r = randomChoice(ROAD_CENTERS),
+        const r = randomChoice(ROAD_ROWS),
           v = randomBetween(240, CITY_SIZE - 260),
           side = randomChoice([-1, 1]),
           x = v,
@@ -5836,7 +5883,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           ]);
         if (
           !cityStreetAt(x, y, 30) ||
-          Math.abs(v - roadNear(v)) < 125 ||
+          Math.abs(v - rowNear(v)) < 125 ||
           inHarbor(x, y, 40) ||
           !canSpawnCar(type, x, y, a, 8)
         )
@@ -5846,8 +5893,10 @@ body:not(.touch-mode).police-search-active #carRadio {
       const PED_COLORS = DRIVER_COLORS;
       for (let i = 0; i < 380; i++) {
         const vertical = seededRandom() > 0.5,
-          r = randomChoice(ROAD_CENTERS),
-          v = randomBetween(180, CITY_SIZE - 260),
+          r = randomChoice(vertical ? ROAD_CENTERS : ROAD_ROWS),
+          v = vertical
+            ? randomBetween(CITY_TOP + 180, CITY_SIZE - 260)
+            : randomBetween(180, CITY_SIZE - 260),
           x = vertical ? r + randomChoice([-67, 67]) : v,
           y = vertical ? v : r + randomChoice([-67, 67]);
         if (!solid(x, y, 5) && !inHarbor(x, y, 8) && !vehicles.some((c) => pointInCar(x, y, c, 10))) {
@@ -5929,7 +5978,12 @@ body:not(.touch-mode).police-search-active #carRadio {
       );
     }
     function oldDistrict() {
-      if (player.x < 48 || player.x > WORLD_SIZE - 64 || player.y < 48 || player.y > WORLD_SIZE - 64)
+      if (
+        player.x < 48 ||
+        player.x > WORLD_SIZE - 64 ||
+        player.y < WORLD_TOP + 48 ||
+        player.y > WORLD_SIZE - 64
+      )
         return 'SOUTH COAST OCEAN';
       if (player.x > RIVER.right) return player.y > 3500 ? 'BAY GARDENS' : 'RIVERSIDE';
       if (player.x > 3290) return 'SAINT MARLOW RIVER';
@@ -6406,7 +6460,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     function aheadOf(t, seconds) {
       return {
         x: clamp(t.x + (t.vx || 0) * seconds, 40, WORLD_SIZE - 40),
-        y: clamp(t.y + (t.vy || 0) * seconds, 40, WORLD_SIZE - 40),
+        y: clamp(t.y + (t.vy || 0) * seconds, WORLD_TOP + 40, WORLD_SIZE - 40),
       };
     }
     function copRoute(c) {
@@ -6423,11 +6477,11 @@ body:not(.touch-mode).police-search-active #carRadio {
         return countyCopRoute(c, chaseTarget);
       const start = {
           x: ROAD_CENTERS.indexOf(roadNear(c.x)),
-          y: ROAD_CENTERS.indexOf(roadNear(c.y)),
+          y: ROAD_ROWS.indexOf(rowNear(c.y)),
         },
         target = {
           x: ROAD_CENTERS.indexOf(roadNear(chaseTarget.x)),
-          y: ROAD_CENTERS.indexOf(roadNear(chaseTarget.y)),
+          y: ROAD_ROWS.indexOf(rowNear(chaseTarget.y)),
         },
         key = (p) => p.x + ',' + p.y,
         queue = [start],
@@ -6458,24 +6512,20 @@ body:not(.touch-mode).police-search-active #carRadio {
             n.x < 0 ||
             n.x >= ROAD_CENTERS.length ||
             n.y < 0 ||
-            n.y >= ROAD_CENTERS.length ||
-            visited.has(key(n)) ||
-            harborPoliceProtected(ROAD_CENTERS[n.x], ROAD_CENTERS[n.y], 45) ||
-            harborPoliceProtected(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-              45,
-            ) ||
-            !groundAt(ROAD_CENTERS[n.x], ROAD_CENTERS[n.y], 10) ||
-            !groundAt(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-              10,
-            ) ||
-            !cityStreetAt(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-            )
+            n.y >= ROAD_ROWS.length ||
+            visited.has(key(n))
+          )
+            continue;
+          const nx = ROAD_CENTERS[n.x],
+            ny = ROAD_ROWS[n.y],
+            mx = (ROAD_CENTERS[p.x] + nx) / 2,
+            my = (ROAD_ROWS[p.y] + ny) / 2;
+          if (
+            harborPoliceProtected(nx, ny, 45) ||
+            harborPoliceProtected(mx, my, 45) ||
+            !groundAt(nx, ny, 10) ||
+            !groundAt(mx, my, 10) ||
+            !cityStreetAt(mx, my)
           )
             continue;
           visited.add(key(n));
@@ -6487,7 +6537,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       for (let p = end; p; p = parents.get(key(p)))
         route.unshift({
           x: ROAD_CENTERS[p.x],
-          y: ROAD_CENTERS[p.y],
+          y: ROAD_ROWS[p.y],
         });
       if (route.length && distanceBetween(c, route[0]) < 55) route.shift();
       return route;
@@ -6502,7 +6552,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       let points = [];
       for (const x of ROAD_CENTERS)
-        for (const y of ROAD_CENTERS) {
+        for (const y of ROAD_ROWS) {
           const d = Math.hypot(x - player.x, y - player.y);
           if (
             d > 550 &&
@@ -6996,10 +7046,12 @@ body:not(.touch-mode).police-search-active #carRadio {
         vertical = Math.abs(headingSine) > 0.5,
         sign = vertical ? Math.sign(headingSine) : Math.sign(headingCosine),
         value = vertical ? y : x,
-        next = ROAD_CENTERS.filter((v) => (v - value) * sign > 2).sort((a, b) => (a - b) * sign)[0];
+        next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
+          .filter((v) => (v - value) * sign > 2)
+          .sort((a, b) => (a - b) * sign)[0];
       if (next === undefined) return false;
       const nx = vertical ? roadNear(x) : next,
-        ny = vertical ? next : roadNear(y);
+        ny = vertical ? next : rowNear(y);
       if (![a, a + Math.PI / 2, a - Math.PI / 2].some((q) => trafficExitValid(nx, ny, q))) return false;
       for (let d = 0; d < Math.abs(next - value); d += 32) {
         const px = x + headingCosine * d,
@@ -7089,7 +7141,9 @@ body:not(.touch-mode).police-search-active #carRadio {
         vertical = Math.abs(headingSine) > 0.5,
         sign = vertical ? Math.sign(headingSine) : Math.sign(headingCosine),
         value = vertical ? c.y : c.x;
-      const next = ROAD_CENTERS.filter((v) => (v - value) * sign > 2).sort((a, b) => (a - b) * sign)[0];
+      const next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
+        .filter((v) => (v - value) * sign > 2)
+        .sort((a, b) => (a - b) * sign)[0];
       let desired = c.panicUntil > gameTime ? 120 : 65 + (c.id % 4) * 7,
         target;
       if (c.panicUntil > gameTime) c.hazard = true;
@@ -7101,7 +7155,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         Math.abs(next - value) > 90
       ) {
         const x = vertical ? roadNear(c.x) : next,
-          y = vertical ? next : roadNear(c.y);
+          y = vertical ? next : rowNear(c.y);
         c.junction = planJunction(c, x, y, nav);
       }
       const j = c.junction;
@@ -7145,7 +7199,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           if (gap < 3) desired = 0;
           target = {
             x: c.x + headingCosine * 75 + (vertical ? roadNear(c.x) - sign * 25 - c.x : 0),
-            y: c.y + headingSine * 75 + (!vertical ? roadNear(c.y) + sign * 25 - c.y : 0),
+            y: c.y + headingSine * 75 + (!vertical ? rowNear(c.y) + sign * 25 - c.y : 0),
           };
         } else {
           while (j.index < j.points.length - 1 && distanceBetween(c, j.points[j.index]) < 24) j.index++;
@@ -7164,7 +7218,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             }
           : {
               x: c.x + sign * 85,
-              y: roadNear(c.y) + sign * 25,
+              y: rowNear(c.y) + sign * 25,
             };
         if (
           !trafficRoadValid(
@@ -7500,7 +7554,7 @@ body:not(.touch-mode).police-search-active #carRadio {
               if (c.route.length && distanceBetween(c, c.route[0]) < 45) c.route.shift();
               target = c.route[0] || {
                 x: roadNear(player.x),
-                y: roadNear(player.y),
+                y: rowNear(player.y),
               };
             }
             const da = normalizeAngle(headingBetween(c, target) - c.a);
@@ -8361,9 +8415,11 @@ body:not(.touch-mode).police-search-active #carRadio {
         const vertical = Math.abs(Math.sin(p.a)) > 0.5,
           sign = vertical ? Math.sign(Math.sin(p.a)) : Math.sign(Math.cos(p.a)),
           v = vertical ? p.y : p.x,
-          next = ROAD_CENTERS.filter((r) => (r - v) * sign > 0).sort((a, b) => (a - b) * sign)[0],
+          next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
+            .filter((r) => (r - v) * sign > 0)
+            .sort((a, b) => (a - b) * sign)[0],
           remaining = Math.abs((next ?? 1e6) - v),
-          signal = trafficSignal(roadNear(p.x), roadNear(p.y));
+          signal = trafficSignal(roadNear(p.x), rowNear(p.y));
         if (
           !panic &&
           remaining > 70 &&
@@ -9219,16 +9275,16 @@ body:not(.touch-mode).police-search-active #carRadio {
       worldContext.scale(canvasScale, canvasScale);
       worldContext.translate(-cameraTarget.x, -cameraTarget.y);
       const sx = clamp(cameraTarget.x - viewportWidth / canvasScale / 2 - 20, 0, CITY_SIZE),
-        sy = clamp(cameraTarget.y - viewportHeight / canvasScale / 2 - 20, 0, CITY_SIZE),
+        sy = clamp(cameraTarget.y - viewportHeight / canvasScale / 2 - 20, CITY_TOP, CITY_SIZE),
         sw = Math.min(viewportWidth / canvasScale + 40, CITY_SIZE - sx),
         sh = Math.min(viewportHeight / canvasScale + 40, CITY_SIZE - sy);
       if (sw > 0 && sh > 0)
         worldContext.drawImage(
           groundCanvas,
-          (sx * 4096) / CITY_SIZE,
-          (sy * 4096) / CITY_SIZE,
-          (sw * 4096) / CITY_SIZE,
-          (sh * 4096) / CITY_SIZE,
+          sx * GROUND_PIXELS_PER_UNIT,
+          (sy - CITY_TOP) * GROUND_PIXELS_PER_UNIT,
+          sw * GROUND_PIXELS_PER_UNIT,
+          sh * GROUND_PIXELS_PER_UNIT,
           sx,
           sy,
           sw,
@@ -9396,7 +9452,9 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
     }
     function drawMap(drawingContext, width, height, big = false) {
-      const scale = big ? Math.min(width / WORLD_SIZE, height / WORLD_SIZE) * 0.92 * mapZoom : 0.137,
+      const scale = big
+          ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
+          : 0.137,
         cx = big ? mapCenter.x : player.x,
         cy = big ? mapCenter.y : player.y;
       drawingContext.fillStyle = '#123244';
@@ -9976,7 +10034,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           mapZoom = 1;
           mapCenter = {
             x: WORLD_SIZE / 2,
-            y: WORLD_SIZE / 2,
+            y: (WORLD_TOP + WORLD_SIZE) / 2,
           };
         } else {
           const step = 500 / mapZoom;
@@ -9987,7 +10045,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           );
           mapCenter.y = clamp(
             mapCenter.y + (code === 'ArrowDown' ? step : code === 'ArrowUp' ? -step : 0),
-            0,
+            WORLD_TOP,
             WORLD_SIZE,
           );
         }
@@ -10200,13 +10258,30 @@ body:not(.touch-mode).police-search-active #carRadio {
         id: 'northbank',
         name: 'NORTHBANK ISLAND',
         color: '#5b696b',
-        // Reclaimed waterfront: the coast now runs outside every block of the
-        // grid, so the whole eleven by eleven street plan is built city rather
-        // than stopping short at a ragged shore.
+        // Reclaimed waterfront: the coast runs outside every block of the grid,
+        // so the whole street plan is built city rather than stopping short at a
+        // ragged shore. The northern lobe (negative y) is the reclamation: a
+        // marina basin cut into the north-west shore, the cruise terminal quay
+        // along the north coast, and the tower district on the north-east point.
         polygon: [
-          [300, 70],
-          [2680, 60],
-          [3160, 150],
+          [240, -3980],
+          [470, -4102],
+          [672, -4128],
+          [672, -3320],
+          [1528, -3300],
+          [1528, -4126],
+          [1730, -4166],
+          [2140, -4192],
+          [2760, -4188],
+          [3062, -4128],
+          [3268, -3960],
+          [3372, -3600],
+          [3352, -2980],
+          [3396, -2300],
+          [3360, -1620],
+          [3402, -980],
+          [3366, -380],
+          [3398, 60],
           [3390, 680],
           [3420, 1040],
           [3420, 2300],
@@ -10228,6 +10303,13 @@ body:not(.touch-mode).police-search-active #carRadio {
           [50, 1220],
           [50, 400],
           [120, 160],
+          [86, -240],
+          [58, -900],
+          [98, -1560],
+          [54, -2200],
+          [104, -2880],
+          [68, -3450],
+          [126, -3862],
         ],
       },
       {
@@ -10729,6 +10811,12 @@ body:not(.touch-mode).police-search-active #carRadio {
               : 'CORAL MARINA';
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
       if (x > 2230 && x < 3150 && y > 1770 && y < 2640) return 'CENTRAL GARDEN';
+      if (y < 0) {
+        if (y < -3860 && x > 1600 && x < 3120) return 'CRUISE TERMINAL';
+        if (x < 1750 && y < -2400) return 'HARBOR POINT MARINA';
+        if (x > 1880 && y < -1300) return 'NORTH POINT · FINANCIAL';
+        return 'THE RECLAMATION';
+      }
       if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
       if (y < 2650) return 'MIDTOWN';
       if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';
@@ -11703,7 +11791,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function drawTrafficLights2D() {
       for (const x of ROAD_CENTERS)
-        for (const y of ROAD_CENTERS) {
+        for (const y of ROAD_ROWS) {
           if (
             !visible(
               {
@@ -12773,8 +12861,10 @@ body:not(.touch-mode).police-search-active #carRadio {
     function spawnWalker() {
       for (let attempt = 0; attempt < 24; attempt++) {
         const vertical = seededRandom() > 0.5,
-          r = randomChoice(ROAD_CENTERS),
-          v = randomBetween(180, CITY_SIZE - 260),
+          r = randomChoice(vertical ? ROAD_CENTERS : ROAD_ROWS),
+          v = vertical
+            ? randomBetween(CITY_TOP + 180, CITY_SIZE - 260)
+            : randomBetween(180, CITY_SIZE - 260),
           x = vertical ? r + randomChoice([-67, 67]) : v,
           y = vertical ? v : r + randomChoice([-67, 67]);
         if (Math.abs(x - player.x) < 620 && Math.abs(y - player.y) < 620) continue;
@@ -14859,7 +14949,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       const target = m.car,
         options = [];
       for (const x of ROAD_CENTERS)
-        for (const y of ROAD_CENTERS) {
+        for (const y of ROAD_ROWS) {
           const d = distanceBetween(
             {
               x,
@@ -15159,10 +15249,9 @@ body:not(.touch-mode).police-search-active #carRadio {
             });
       }
       // Mid-block cuts on the four avenues: a junction block is simply driven around.
-      const AVENUES = [1152, 2688, 3200, 4736];
       for (let i = 0; i < ROAD_CENTERS.length - 1; i++) {
         const mid = (ROAD_CENTERS[i] + ROAD_CENTERS[i + 1]) / 2;
-        for (const avenue of AVENUES) {
+        for (const avenue of WIDE_ROADS)
           if (roadblockSiteUsable(mid, avenue))
             sites.push({
               x: mid,
@@ -15170,6 +15259,10 @@ body:not(.touch-mode).police-search-active #carRadio {
               axis: 'x',
               name: streetNameAt(mid, avenue),
             });
+      }
+      for (let i = 0; i < ROAD_ROWS.length - 1; i++) {
+        const mid = (ROAD_ROWS[i] + ROAD_ROWS[i + 1]) / 2;
+        for (const avenue of WIDE_ROADS)
           if (roadblockSiteUsable(avenue, mid))
             sites.push({
               x: avenue,
@@ -15177,7 +15270,6 @@ body:not(.touch-mode).police-search-active #carRadio {
               axis: 'y',
               name: streetNameAt(avenue, mid),
             });
-        }
       }
       roadblockSiteCache = sites;
       return sites;
@@ -20830,8 +20922,8 @@ body:not(.touch-mode).police-search-active #carRadio {
       if (cityStreetCache) return cityStreetCache;
       const roads = [];
       for (const vertical of [false, true])
-        for (const r of ROAD_CENTERS) {
-          const width = [1152, 2688, 3200, 4736].includes(r) ? 112 : 88;
+        for (const r of vertical ? ROAD_CENTERS : ROAD_ROWS) {
+          const width = WIDE_ROADS.includes(r) ? 112 : 88;
           let start = null;
           const valid = (v) => {
             const x = vertical ? r : v,
@@ -20847,7 +20939,8 @@ body:not(.touch-mode).police-search-active #carRadio {
               landAt(x - (vertical ? 0 : 25), y - (vertical ? 25 : 0))
             );
           };
-          for (let v = 64; v <= CITY_SIZE - 32; v += 16) {
+          const from = vertical ? CITY_TOP + 64 : 64;
+          for (let v = from; v <= CITY_SIZE - 32; v += 16) {
             if (v <= CITY_SIZE - 48 && valid(v)) {
               if (start === null) start = v;
             } else if (start !== null) {
@@ -20916,7 +21009,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         return county ? county.name : onBridge(x, y) ? 'CAUSEWAY' : '';
       }
       const nearestX = roadNear(x),
-        nearestY = roadNear(y),
+        nearestY = rowNear(y),
         onVertical = Math.abs(x - nearestX) < 62,
         onHorizontal = Math.abs(y - nearestY) < 62,
         v = STREET_NAMES.vertical[nearestX],
@@ -20936,10 +21029,10 @@ body:not(.touch-mode).police-search-active #carRadio {
     function benchSpots() {
       if (benchCache) return benchCache;
       benchCache = [];
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            z = ROAD_CENTERS[by] + 89,
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            z = blockY(by) + 89,
             w = 334;
           if (!validCityBlock(x, z, w, w) || harborOverlap(x, z, w, w) || stadiumOverlap(x, z, w, w) || isPark(bx, by))
             continue;
@@ -21002,14 +21095,15 @@ body:not(.touch-mode).police-search-active #carRadio {
         drawingContext.fillStyle = '#d0c39a';
         for (let v = r.start + 55; v < r.end - 50; v += 32) {
           const p = pos(v);
-          if (Math.abs(v - roadNear(v)) < 85 || onBoulevard(p.x, p.y, 35)) continue;
+          if (Math.abs(v - (r.vertical ? rowNear(v) : roadNear(v))) < 85 || onBoulevard(p.x, p.y, 35))
+            continue;
           if (r.vertical) drawingContext.fillRect(p.x - 1, p.y, 2, 15);
           else drawingContext.fillRect(p.x, p.y - 1, 15, 2);
         }
       }
       if (detail)
         for (const x of ROAD_CENTERS)
-          for (const y of ROAD_CENTERS) {
+          for (const y of ROAD_ROWS) {
             const horizontal = streets.find(
                 (r) => !r.vertical && r.r === y && x > r.start + 100 && x < r.end - 100,
               ),
@@ -22316,8 +22410,8 @@ body:not(.touch-mode).police-search-active #carRadio {
             'botanic',
             'orchard',
           ][i],
-          x: ROAD_CENTERS[bx] + 89 + (i % 3) * 17,
-          y: ROAD_CENTERS[by] + 89 + (i % 2) * 23,
+          x: blockX(bx) + 89 + (i % 3) * 17,
+          y: blockY(by) + 89 + (i % 2) * 23,
           w: [268, 334, 218, 292][i % 4],
           h: [245, 334, 192, 310][i % 4],
         }))
@@ -24552,7 +24646,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             !landAt(cx, cy) ||
             inAirport(cx, cy) ||
             underpassContains(cx, cy, -30) ||
-            (Math.abs(cx - roadNear(cx)) < 105 && Math.abs(cy - roadNear(cy)) < 105) ||
+            (Math.abs(cx - roadNear(cx)) < 105 && Math.abs(cy - rowNear(cy)) < 105) ||
             terrainHeight(cx, cy) > 12
           )
             continue;
@@ -25670,7 +25764,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     function setWaypoint(x, y) {
       userWaypoint = {
         x: clamp(x, 0, WORLD_SIZE),
-        y: clamp(y, 0, WORLD_SIZE),
+        y: clamp(y, WORLD_TOP, WORLD_SIZE),
       };
       calculateUserRoute();
       drawMap(cityMapContext, 800, 660, true);
@@ -25767,7 +25861,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       };
     }
     function mapWorldPoint(p) {
-      const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_SIZE) * 0.92 * mapZoom;
+      const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
       return {
         x: mapCenter.x + (p.x - 400) / s,
         y: mapCenter.y + (p.y - 330) / s,
@@ -25818,10 +25912,10 @@ body:not(.touch-mode).police-search-active #carRadio {
           dy = p.y - mapGesture.start.y;
         if (Math.hypot(dx, dy) > 5) mapGesture.drag = true;
         if (mapGesture.drag) {
-          const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_SIZE) * 0.92 * mapZoom;
+          const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
           mapCenter = {
             x: clamp(mapGesture.center.x - dx / s, 0, WORLD_SIZE),
-            y: clamp(mapGesture.center.y - dy / s, 0, WORLD_SIZE),
+            y: clamp(mapGesture.center.y - dy / s, WORLD_TOP, WORLD_SIZE),
           };
         }
       }
@@ -27309,10 +27403,16 @@ body:not(.touch-mode).police-search-active #carRadio {
       env.colorSpace = Three.SRGBColorSpace;
       scene.environment = env;
       // Real ground materials and painted markings are baked once, then receive live shadows.
+      // The baked ground now has to cover the northern reclamation as well, so the
+      // canvas is taller than it is wide and its pixels-per-unit is chosen to keep
+      // the texture's memory close to the old 4096-square sheet's.
+      const terrainPixelsPerUnit = (touchEnabled() ? 2560 : 3584) / CITY_SIZE;
       const terrain = document.createElement('canvas');
-      terrain.width = terrain.height = 4096;
+      terrain.width = Math.round(CITY_SIZE * terrainPixelsPerUnit);
+      terrain.height = Math.ceil(CITY_HEIGHT * terrainPixelsPerUnit);
       const drawingContext = terrain.getContext('2d');
-      drawingContext.scale(4096 / CITY_SIZE, 4096 / CITY_SIZE);
+      drawingContext.scale(terrainPixelsPerUnit, terrainPixelsPerUnit);
+      drawingContext.translate(0, -CITY_TOP);
       function pattern(q, scale) {
         const tile = document.createElement('canvas');
         tile.width = tile.height = scale;
@@ -27342,18 +27442,18 @@ body:not(.touch-mode).police-search-active #carRadio {
       coastPath(drawingContext);
       drawingContext.clip();
       drawingContext.fillStyle = '#263e4d';
-      drawingContext.fillRect(0, 0, CITY_SIZE, CITY_SIZE);
+      drawingContext.fillRect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT);
       drawingContext.fillStyle = paving;
-      drawingContext.fillRect(48, 45, CITY_SIZE - 112, CITY_SIZE - 112);
+      drawingContext.fillRect(48, CITY_TOP + 45, CITY_SIZE - 112, CITY_HEIGHT - 112);
       paintCityStreets(drawingContext, true);
       const curbGroup = new Three.Group();
       curbGroup.name = 'kerbs';
       scene.add(curbGroup);
       batchGroups.push(curbGroup);
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 79,
-            z = ROAD_CENTERS[by] + 79;
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 79,
+            z = blockY(by) + 79;
           if (
             !validCityBlock(x + 10, z + 10) ||
             harborOverlap(x, z, 354, 354) ||
@@ -27472,7 +27572,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         drawingContext.fill();
       }
       for (const r of ROAD_CENTERS)
-        for (let z = 240; z < CITY_SIZE - 150; z += 230) {
+        for (let z = CITY_TOP + 240; z < CITY_SIZE - 150; z += 230) {
           drawingContext.fillStyle = '#1d282d';
           drawingContext.fillRect(r + 48, z, 5, 11);
           drawingContext.fillStyle = '#707576';
@@ -27513,19 +27613,19 @@ body:not(.touch-mode).police-search-active #carRadio {
       groundTx.colorSpace = Three.SRGBColorSpace;
       groundTx.anisotropy = 8;
       const roughCanvas = document.createElement('canvas');
-      roughCanvas.width = roughCanvas.height = 896;
+      roughCanvas.width = 896;
+      roughCanvas.height = Math.ceil((896 * CITY_HEIGHT) / CITY_SIZE);
       const rg = roughCanvas.getContext('2d');
       rg.scale(896 / CITY_SIZE, 896 / CITY_SIZE);
+      rg.translate(0, -CITY_TOP);
       rg.fillStyle = '#e9e9e9';
-      rg.fillRect(0, 0, CITY_SIZE, CITY_SIZE);
+      rg.fillRect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT);
       rg.fillStyle = '#737373';
-      for (const r of ROAD_CENTERS) {
-        rg.fillRect(r - 56, 48, 112, CITY_SIZE - 112);
-        rg.fillRect(51, r - 56, CITY_SIZE - 112, 112);
-      }
+      for (const r of ROAD_CENTERS) rg.fillRect(r - 56, CITY_TOP + 48, 112, CITY_HEIGHT - 112);
+      for (const r of ROAD_ROWS) rg.fillRect(51, r - 56, CITY_SIZE - 112, 112);
       const roughTx = new Three.CanvasTexture(roughCanvas);
       const groundMesh = new Three.Mesh(
-        new Three.PlaneGeometry(CITY_SIZE, CITY_SIZE),
+        new Three.PlaneGeometry(CITY_SIZE, CITY_HEIGHT),
         new Three.MeshStandardMaterial({
           map: groundTx,
           roughnessMap: roughTx,
@@ -27536,7 +27636,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         }),
       );
       groundMesh.rotation.x = -Math.PI / 2;
-      groundMesh.position.set(CITY_SIZE / 2, 0.02, CITY_SIZE / 2);
+      groundMesh.position.set(CITY_SIZE / 2, 0.02, (CITY_TOP + CITY_SIZE) / 2);
       groundMesh.receiveShadow = true;
       scene.add(groundMesh);
       // Buildings are constructed by src/cityscape3d.js (included below, after the halo helper).
@@ -28616,10 +28716,10 @@ body:not(.touch-mode).police-search-active #carRadio {
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
       }
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            z = ROAD_CENTERS[by] + 89,
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            z = blockY(by) + 89,
             w = 334;
           if (!validCityBlock(x, z, w, w) || harborOverlap(x, z, w, w) || stadiumOverlap(x, z, w, w) || isPark(bx, by)) continue;
           const south = z + w + 14,
@@ -28651,8 +28751,8 @@ body:not(.touch-mode).police-search-active #carRadio {
             if (cityRandom() < 0.5) place(pools.crate, x + 214, 3, z + 176, 6, 6, 6, 0.4);
           }
           // Bus shelters on the wide avenues, one per block on the north sidewalk.
-          const avenue = ROAD_CENTERS[by + 1];
-          if ([1152, 2688, 3200, 4736].includes(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
+          const avenue = blockY(by + 1);
+          if (WIDE_ROADS.includes(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
             busShelter(x + 180, south + 6, true);
         }
       for (const spot of benchSpots()) {
@@ -31809,20 +31909,25 @@ body:not(.touch-mode).police-search-active #carRadio {
        * flattened swell in the shallows. Four Gerstner swells displace the mesh;
        * two scrolling noise fields add fine ripples in the fragment shader.
        */
+      // The world box is taller than it is wide since the northern reclamation, so
+      // the distance field is too; texels stay square, which the chamfer pass needs.
       const SHORE_RES = 512,
+        SHORE_ROWS = Math.round((SHORE_RES * WORLD_HEIGHT) / WORLD_SIZE),
         SHORE_UNIT_SCALE = 4; // texel value 255 = 1020 world units from land
       function buildShoreDistanceTexture() {
         const maskCanvas = document.createElement('canvas');
-        maskCanvas.width = maskCanvas.height = SHORE_RES;
+        maskCanvas.width = SHORE_RES;
+        maskCanvas.height = SHORE_ROWS;
         const mc = maskCanvas.getContext('2d');
         mc.fillStyle = '#000';
-        mc.fillRect(0, 0, SHORE_RES, SHORE_RES);
+        mc.fillRect(0, 0, SHORE_RES, SHORE_ROWS);
         mc.scale(SHORE_RES / WORLD_SIZE, SHORE_RES / WORLD_SIZE);
+        mc.translate(0, -WORLD_TOP);
         coastPath(mc);
         mc.fillStyle = '#fff';
         mc.fill();
-        const px = mc.getImageData(0, 0, SHORE_RES, SHORE_RES).data,
-          n = SHORE_RES * SHORE_RES,
+        const px = mc.getImageData(0, 0, SHORE_RES, SHORE_ROWS).data,
+          n = SHORE_RES * SHORE_ROWS,
           dist = new Float32Array(n),
           far = 1e6;
         for (let i = 0; i < n; i++) dist[i] = px[i * 4] > 127 ? 0 : far;
@@ -31830,7 +31935,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         const relax = (i, j, cost) => {
           if (dist[j] + cost < dist[i]) dist[i] = dist[j] + cost;
         };
-        for (let y = 0; y < SHORE_RES; y++)
+        for (let y = 0; y < SHORE_ROWS; y++)
           for (let x = 0; x < SHORE_RES; x++) {
             const i = y * SHORE_RES + x;
             if (x > 0) relax(i, i - 1, 3);
@@ -31840,11 +31945,11 @@ body:not(.touch-mode).police-search-active #carRadio {
               if (x < SHORE_RES - 1) relax(i, i - SHORE_RES + 1, 4);
             }
           }
-        for (let y = SHORE_RES - 1; y >= 0; y--)
+        for (let y = SHORE_ROWS - 1; y >= 0; y--)
           for (let x = SHORE_RES - 1; x >= 0; x--) {
             const i = y * SHORE_RES + x;
             if (x < SHORE_RES - 1) relax(i, i + 1, 3);
-            if (y < SHORE_RES - 1) {
+            if (y < SHORE_ROWS - 1) {
               relax(i, i + SHORE_RES, 3);
               if (x < SHORE_RES - 1) relax(i, i + SHORE_RES + 1, 4);
               if (x > 0) relax(i, i + SHORE_RES - 1, 4);
@@ -31858,7 +31963,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = v;
           data[i * 4 + 3] = 255;
         }
-        const tx = new Three.DataTexture(data, SHORE_RES, SHORE_RES, Three.RGBAFormat);
+        const tx = new Three.DataTexture(data, SHORE_RES, SHORE_ROWS, Three.RGBAFormat);
         tx.minFilter = tx.magFilter = Three.LinearFilter;
         tx.wrapS = tx.wrapT = Three.ClampToEdgeWrapping;
         tx.needsUpdate = true;
@@ -31872,6 +31977,8 @@ body:not(.touch-mode).police-search-active #carRadio {
         uSun: { value: new Three.Vector3(-0.45, 0.76, -0.23).normalize() },
         uShore: { value: buildShoreDistanceTexture() },
         uWorldSize: { value: WORLD_SIZE },
+        uWorldOrigin: { value: new Three.Vector2(0, WORLD_TOP) },
+        uWorldExtent: { value: new Three.Vector2(WORLD_SIZE, WORLD_HEIGHT) },
         uShoreScale: { value: 255 * SHORE_UNIT_SCALE },
       };
       const waterMaterial = new Three.ShaderMaterial({
@@ -31884,6 +31991,8 @@ body:not(.touch-mode).police-search-active #carRadio {
           uniform float uTime;
           uniform sampler2D uShore;
           uniform float uWorldSize;
+          uniform vec2 uWorldOrigin;
+          uniform vec2 uWorldExtent;
           uniform float uShoreScale;
           // Gerstner swell: horizontal pinch sharpens crests without extra geometry.
           void wave(vec2 dir, float amp, float wavelength, float speed, float steep, vec2 p,
@@ -31899,7 +32008,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           void main(){
             vec4 origin = modelMatrix * vec4(position, 1.);
             vec2 p = origin.xz;
-            float shore = texture2D(uShore, p / uWorldSize).r * uShoreScale;
+            float shore = texture2D(uShore, (p - uWorldOrigin) / uWorldExtent).r * uShoreScale;
             float depthFade = 0.22 + 0.78 * smoothstep(8., 190., shore);
             vec3 offset = vec3(0.);
             vec3 dNormal = vec3(0., 1., 0.);
@@ -33345,7 +33454,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       const signalModels = [];
       for (const x of ROAD_CENTERS)
-        for (const z of ROAD_CENTERS) {
+        for (const z of ROAD_ROWS) {
           if (!cityIntersectionAt(x, z) || !groundAt(x, z, 92) || inHarbor(x, z, 100)) continue;
           const group = new Three.Group();
           scene.add(group);
@@ -36179,18 +36288,21 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     // END SUBSYSTEM: src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
-    buildWorld();
-    buildBuildingGrid();
-    buildColliders();
-    populate();
-    populateStoryWorld();
-    populateCounty();
-    load();
-    resize();
-    drawWeapon();
-    updateUI();
+    const __t0 = performance.now();
+    const __step = (n, f) => { const a = performance.now(); f(); console.log('BOOT ' + n + ' ' + Math.round(performance.now() - a) + 'ms'); };
+    __step('buildWorld', buildWorld);
+    __step('buildBuildingGrid', buildBuildingGrid);
+    __step('buildColliders', buildColliders);
+    __step('populate', populate);
+    __step('populateStoryWorld', populateStoryWorld);
+    __step('populateCounty', populateCounty);
+    __step('load', load);
+    __step('resize', resize);
+    __step('drawWeapon', drawWeapon);
+    __step('updateUI', updateUI);
     /* REVIEW_HOOK:LOAD_VISUALS */
-    loadVisuals();
+    __step('loadVisuals', loadVisuals);
+    console.log('BOOT total ' + Math.round(performance.now() - __t0) + 'ms');
     /**
      * PROFILER
      * Rolling averages of simulation and render CPU time per frame, plus the

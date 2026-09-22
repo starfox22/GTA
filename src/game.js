@@ -36,12 +36,42 @@
       CITY_SIZE = 5632,
       BLOCK_SIZE = 512,
       ROAD_WIDTH = 112,
+      // Avenues run north-south at these x. The column plan never changed.
       ROAD_CENTERS = Array.from(
         {
           length: 11,
         },
         (_, i) => 128 + i * BLOCK_SIZE,
-      );
+      ),
+      /**
+       * NORTH RECLAMATION
+       * The original grid started at y = 128 and ran south. The northern
+       * reclamation added eight more cross streets above it, so street rows now
+       * run from -3968 to 5248 and map coordinates north of the old shoreline are
+       * negative. Block indices keep their old meaning — by 0 is still y 128 —
+       * and the new blocks simply carry negative indices, so every place, park
+       * and landmark recorded before the reclamation still points at its block.
+       */
+      NORTH_ROWS = 8,
+      ROAD_ROWS = Array.from(
+        {
+          length: 11 + NORTH_ROWS,
+        },
+        (_, i) => 128 + (i - NORTH_ROWS) * BLOCK_SIZE,
+      ),
+      // Boulevard-width streets. Columns and rows share one list; the negative
+      // entries only ever match rows in the northern reclamation.
+      WIDE_ROADS = [1152, 2688, 3200, 4736, -1408, -2944],
+      CITY_TOP = -4224,
+      CITY_HEIGHT = CITY_SIZE - CITY_TOP,
+      WORLD_TOP = -5632,
+      WORLD_HEIGHT = WORLD_SIZE - WORLD_TOP;
+    const blockX = (bx) => 128 + bx * BLOCK_SIZE,
+      blockY = (by) => 128 + by * BLOCK_SIZE,
+      BLOCK_X_MIN = 0,
+      BLOCK_X_MAX = 9,
+      BLOCK_Y_MIN = -NORTH_ROWS,
+      BLOCK_Y_MAX = 9;
     const METERS_PER_UNIT = 100 / BLOCK_SIZE;
     const worldMeters = (units) => units * METERS_PER_UNIT,
       distanceLabel = (units) => Math.round(worldMeters(units)) + ' m';
@@ -83,7 +113,7 @@
     let mapZoom = 1,
       mapCenter = {
         x: WORLD_SIZE / 2,
-        y: WORLD_SIZE / 2,
+        y: (WORLD_TOP + WORLD_SIZE) / 2,
       };
     let cash = 0,
       wantedStars = 0,
@@ -768,6 +798,9 @@
     function roadNear(v) {
       return ROAD_CENTERS.reduce((a, b) => (Math.abs(a - v) < Math.abs(b - v) ? a : b));
     }
+    function rowNear(v) {
+      return ROAD_ROWS.reduce((a, b) => (Math.abs(a - v) < Math.abs(b - v) ? a : b));
+    }
     function onRoad(x, y) {
       return cityStreetAt(x, y);
     }
@@ -867,11 +900,16 @@
       throw Error('No clear vehicle spawn for ' + type);
     }
     /* REVIEW_HOOK:GROUND_CANVAS */
+    // One texture covers the whole city including the northern reclamation, so it
+    // is taller than it is wide. The pixels-per-unit ratio is held below the old
+    // 4096-square texture's so the bitmap does not grow with the city.
+    const GROUND_PIXELS_PER_UNIT = 3072 / CITY_SIZE;
     const groundCanvas = document.createElement('canvas');
-    groundCanvas.width = 4096;
-    groundCanvas.height = 4096;
+    groundCanvas.width = 3072;
+    groundCanvas.height = Math.ceil(CITY_HEIGHT * GROUND_PIXELS_PER_UNIT);
     const groundContext = groundCanvas.getContext('2d');
-    groundContext.scale(4096 / CITY_SIZE, 4096 / CITY_SIZE);
+    groundContext.scale(GROUND_PIXELS_PER_UNIT, GROUND_PIXELS_PER_UNIT);
+    groundContext.translate(0, -CITY_TOP);
     function rect(x, y, w, h, c) {
       groundContext.fillStyle = c;
       groundContext.fillRect(x, y, w, h);
@@ -902,13 +940,20 @@
         if (y < 4400) return 22 + vary * 20;
         return 20 + vary * 18;
       }
+      if (y < 0) {
+        // Northern reclamation. The tower core stands on the north-east point and
+        // falls away westward to the marina, which is kept deliberately low so the
+        // masts and the liner are the tallest things on that shore.
+        if (cx < 1750 && y < -2400) return 26 + vary * 30;
+        const core = clamp(Math.hypot(cx - 2820, y + 2620) / 1320, 0, 1),
+          tower = Math.pow(1 - core, 2);
+        return 58 + tower * 540 + vary * (48 + tower * 70);
+      }
       if (y < 1450) return cx > 2500 ? 30 + vary * 18 : 30 + vary * 26;
       if (y < 2650) return cx > 1700 && cx < 2300 ? 56 + vary * 30 : 62 + vary * 55;
-      if (y < 3700) {
-        if (cx < 1800) return 60 + vary * 46;
-        const core = clamp(Math.hypot(cx - 2600, y + 70 - 3150) / 1150, 0, 1);
-        return 155 + Math.pow(1 - core, 2.2) * 415 + vary * 95;
-      }
+      // The old exchange district kept its name and its density but not its towers:
+      // the banks moved north to the point when the reclamation opened.
+      if (y < 3700) return cx < 1800 ? 60 + vary * 46 : 82 + vary * 96;
       if (y < 4650) return 50 + vary * 45;
       return 30 + vary * 24;
     }
@@ -1033,21 +1078,21 @@
       groundContext.save();
       coastPath(groundContext);
       groundContext.clip();
-      rect(0, 0, CITY_SIZE, CITY_SIZE, '#334a48');
+      rect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT, '#334a48');
       for (let x = 0; x < CITY_SIZE; x += 32)
-        for (let y = 0; y < CITY_SIZE; y += 26) {
+        for (let y = CITY_TOP; y < CITY_SIZE; y += 26) {
           if (seededRandom() > 0.6)
             rect(x + seededRandom() * 20, y, randomBetween(5, 16), 1, '#7795812b');
         }
-      rect(48, 48, CITY_SIZE - 112, CITY_SIZE - 112, '#696d60');
+      rect(48, CITY_TOP + 48, CITY_SIZE - 112, CITY_HEIGHT - 112, '#696d60');
       paintCityStreets(groundContext, true);
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            y = ROAD_CENTERS[by] + 89,
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            y = blockY(by) + 89,
             w = 334,
             h = 334;
-          if (x + w > RIVER.left && x < RIVER.right) continue;
+          if (y > 0 && x + w > RIVER.left && x < RIVER.right) continue;
           if (stadiumOverlap(x, y, w, h)) continue;
           const civicPlace = PLACES.find((p) => p.bx === bx && p.by === by);
           if (
@@ -1199,9 +1244,9 @@
         rect(x - 54, y - 10, 108, 18, '#1c2928');
         label(s, x, y + 3, 10, c);
       }
-      for (let i = 0; i < 65; i++) {
+      for (let i = 0; i < 95; i++) {
         let x = randomChoice(ROAD_CENTERS) + randomChoice([-66, 66]),
-          y = randomBetween(200, 3300);
+          y = randomBetween(CITY_TOP + 200, 3300);
         if (!solid(x, y, 4)) {
           rect(x - 3, y - 4, 6, 8, '#3a5145');
           rect(x - 3, y - 5, 6, 2, '#899480');
@@ -1290,8 +1335,10 @@
       impactContacts.clear();
       for (let i = 0; i < 150; i++) {
         const vert = seededRandom() > 0.5,
-          r = randomChoice(ROAD_CENTERS),
-          v = randomBetween(170, CITY_SIZE - 260),
+          r = randomChoice(vert ? ROAD_CENTERS : ROAD_ROWS),
+          v = vert
+            ? randomBetween(CITY_TOP + 170, CITY_SIZE - 260)
+            : randomBetween(170, CITY_SIZE - 260),
           dir = seededRandom() > 0.5 ? 1 : -1,
           x = vert ? r - dir * 25 : v,
           y = vert ? v : r + dir * 25,
@@ -1318,7 +1365,7 @@
             'limousine',
           ]);
         if (
-          Math.abs(v - roadNear(v)) < 145 ||
+          Math.abs(v - (vert ? rowNear(v) : roadNear(v))) < 145 ||
           inHarbor(x, y, 70) ||
           !trafficSpawnValid(x, y, a) ||
           !canSpawnCar(type, x, y, a, 12)
@@ -1334,7 +1381,7 @@
         );
       }
       for (let i = 0; i < 70; i++) {
-        const r = randomChoice(ROAD_CENTERS),
+        const r = randomChoice(ROAD_ROWS),
           v = randomBetween(240, CITY_SIZE - 260),
           side = randomChoice([-1, 1]),
           x = v,
@@ -1359,7 +1406,7 @@
           ]);
         if (
           !cityStreetAt(x, y, 30) ||
-          Math.abs(v - roadNear(v)) < 125 ||
+          Math.abs(v - rowNear(v)) < 125 ||
           inHarbor(x, y, 40) ||
           !canSpawnCar(type, x, y, a, 8)
         )
@@ -1369,8 +1416,10 @@
       const PED_COLORS = DRIVER_COLORS;
       for (let i = 0; i < 380; i++) {
         const vertical = seededRandom() > 0.5,
-          r = randomChoice(ROAD_CENTERS),
-          v = randomBetween(180, CITY_SIZE - 260),
+          r = randomChoice(vertical ? ROAD_CENTERS : ROAD_ROWS),
+          v = vertical
+            ? randomBetween(CITY_TOP + 180, CITY_SIZE - 260)
+            : randomBetween(180, CITY_SIZE - 260),
           x = vertical ? r + randomChoice([-67, 67]) : v,
           y = vertical ? v : r + randomChoice([-67, 67]);
         if (!solid(x, y, 5) && !inHarbor(x, y, 8) && !vehicles.some((c) => pointInCar(x, y, c, 10))) {
@@ -1452,7 +1501,12 @@
       );
     }
     function oldDistrict() {
-      if (player.x < 48 || player.x > WORLD_SIZE - 64 || player.y < 48 || player.y > WORLD_SIZE - 64)
+      if (
+        player.x < 48 ||
+        player.x > WORLD_SIZE - 64 ||
+        player.y < WORLD_TOP + 48 ||
+        player.y > WORLD_SIZE - 64
+      )
         return 'SOUTH COAST OCEAN';
       if (player.x > RIVER.right) return player.y > 3500 ? 'BAY GARDENS' : 'RIVERSIDE';
       if (player.x > 3290) return 'SAINT MARLOW RIVER';
@@ -1929,7 +1983,7 @@
     function aheadOf(t, seconds) {
       return {
         x: clamp(t.x + (t.vx || 0) * seconds, 40, WORLD_SIZE - 40),
-        y: clamp(t.y + (t.vy || 0) * seconds, 40, WORLD_SIZE - 40),
+        y: clamp(t.y + (t.vy || 0) * seconds, WORLD_TOP + 40, WORLD_SIZE - 40),
       };
     }
     function copRoute(c) {
@@ -1946,11 +2000,11 @@
         return countyCopRoute(c, chaseTarget);
       const start = {
           x: ROAD_CENTERS.indexOf(roadNear(c.x)),
-          y: ROAD_CENTERS.indexOf(roadNear(c.y)),
+          y: ROAD_ROWS.indexOf(rowNear(c.y)),
         },
         target = {
           x: ROAD_CENTERS.indexOf(roadNear(chaseTarget.x)),
-          y: ROAD_CENTERS.indexOf(roadNear(chaseTarget.y)),
+          y: ROAD_ROWS.indexOf(rowNear(chaseTarget.y)),
         },
         key = (p) => p.x + ',' + p.y,
         queue = [start],
@@ -1981,24 +2035,20 @@
             n.x < 0 ||
             n.x >= ROAD_CENTERS.length ||
             n.y < 0 ||
-            n.y >= ROAD_CENTERS.length ||
-            visited.has(key(n)) ||
-            harborPoliceProtected(ROAD_CENTERS[n.x], ROAD_CENTERS[n.y], 45) ||
-            harborPoliceProtected(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-              45,
-            ) ||
-            !groundAt(ROAD_CENTERS[n.x], ROAD_CENTERS[n.y], 10) ||
-            !groundAt(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-              10,
-            ) ||
-            !cityStreetAt(
-              (ROAD_CENTERS[p.x] + ROAD_CENTERS[n.x]) / 2,
-              (ROAD_CENTERS[p.y] + ROAD_CENTERS[n.y]) / 2,
-            )
+            n.y >= ROAD_ROWS.length ||
+            visited.has(key(n))
+          )
+            continue;
+          const nx = ROAD_CENTERS[n.x],
+            ny = ROAD_ROWS[n.y],
+            mx = (ROAD_CENTERS[p.x] + nx) / 2,
+            my = (ROAD_ROWS[p.y] + ny) / 2;
+          if (
+            harborPoliceProtected(nx, ny, 45) ||
+            harborPoliceProtected(mx, my, 45) ||
+            !groundAt(nx, ny, 10) ||
+            !groundAt(mx, my, 10) ||
+            !cityStreetAt(mx, my)
           )
             continue;
           visited.add(key(n));
@@ -2010,7 +2060,7 @@
       for (let p = end; p; p = parents.get(key(p)))
         route.unshift({
           x: ROAD_CENTERS[p.x],
-          y: ROAD_CENTERS[p.y],
+          y: ROAD_ROWS[p.y],
         });
       if (route.length && distanceBetween(c, route[0]) < 55) route.shift();
       return route;
@@ -2025,7 +2075,7 @@
       }
       let points = [];
       for (const x of ROAD_CENTERS)
-        for (const y of ROAD_CENTERS) {
+        for (const y of ROAD_ROWS) {
           const d = Math.hypot(x - player.x, y - player.y);
           if (
             d > 550 &&
@@ -2285,9 +2335,11 @@
         const vertical = Math.abs(Math.sin(p.a)) > 0.5,
           sign = vertical ? Math.sign(Math.sin(p.a)) : Math.sign(Math.cos(p.a)),
           v = vertical ? p.y : p.x,
-          next = ROAD_CENTERS.filter((r) => (r - v) * sign > 0).sort((a, b) => (a - b) * sign)[0],
+          next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
+            .filter((r) => (r - v) * sign > 0)
+            .sort((a, b) => (a - b) * sign)[0],
           remaining = Math.abs((next ?? 1e6) - v),
-          signal = trafficSignal(roadNear(p.x), roadNear(p.y));
+          signal = trafficSignal(roadNear(p.x), rowNear(p.y));
         if (
           !panic &&
           remaining > 70 &&
@@ -3143,16 +3195,16 @@
       worldContext.scale(canvasScale, canvasScale);
       worldContext.translate(-cameraTarget.x, -cameraTarget.y);
       const sx = clamp(cameraTarget.x - viewportWidth / canvasScale / 2 - 20, 0, CITY_SIZE),
-        sy = clamp(cameraTarget.y - viewportHeight / canvasScale / 2 - 20, 0, CITY_SIZE),
+        sy = clamp(cameraTarget.y - viewportHeight / canvasScale / 2 - 20, CITY_TOP, CITY_SIZE),
         sw = Math.min(viewportWidth / canvasScale + 40, CITY_SIZE - sx),
         sh = Math.min(viewportHeight / canvasScale + 40, CITY_SIZE - sy);
       if (sw > 0 && sh > 0)
         worldContext.drawImage(
           groundCanvas,
-          (sx * 4096) / CITY_SIZE,
-          (sy * 4096) / CITY_SIZE,
-          (sw * 4096) / CITY_SIZE,
-          (sh * 4096) / CITY_SIZE,
+          sx * GROUND_PIXELS_PER_UNIT,
+          (sy - CITY_TOP) * GROUND_PIXELS_PER_UNIT,
+          sw * GROUND_PIXELS_PER_UNIT,
+          sh * GROUND_PIXELS_PER_UNIT,
           sx,
           sy,
           sw,
@@ -3320,7 +3372,9 @@
       }
     }
     function drawMap(drawingContext, width, height, big = false) {
-      const scale = big ? Math.min(width / WORLD_SIZE, height / WORLD_SIZE) * 0.92 * mapZoom : 0.137,
+      const scale = big
+          ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
+          : 0.137,
         cx = big ? mapCenter.x : player.x,
         cy = big ? mapCenter.y : player.y;
       drawingContext.fillStyle = '#123244';
@@ -3900,7 +3954,7 @@
           mapZoom = 1;
           mapCenter = {
             x: WORLD_SIZE / 2,
-            y: WORLD_SIZE / 2,
+            y: (WORLD_TOP + WORLD_SIZE) / 2,
           };
         } else {
           const step = 500 / mapZoom;
@@ -3911,7 +3965,7 @@
           );
           mapCenter.y = clamp(
             mapCenter.y + (code === 'ArrowDown' ? step : code === 'ArrowUp' ? -step : 0),
-            0,
+            WORLD_TOP,
             WORLD_SIZE,
           );
         }

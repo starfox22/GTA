@@ -12,8 +12,8 @@
       if (cityStreetCache) return cityStreetCache;
       const roads = [];
       for (const vertical of [false, true])
-        for (const r of ROAD_CENTERS) {
-          const width = [1152, 2688, 3200, 4736].includes(r) ? 112 : 88;
+        for (const r of vertical ? ROAD_CENTERS : ROAD_ROWS) {
+          const width = WIDE_ROADS.includes(r) ? 112 : 88;
           let start = null;
           const valid = (v) => {
             const x = vertical ? r : v,
@@ -29,7 +29,8 @@
               landAt(x - (vertical ? 0 : 25), y - (vertical ? 25 : 0))
             );
           };
-          for (let v = 64; v <= CITY_SIZE - 32; v += 16) {
+          const from = vertical ? CITY_TOP + 64 : 64;
+          for (let v = from; v <= CITY_SIZE - 32; v += 16) {
             if (v <= CITY_SIZE - 48 && valid(v)) {
               if (start === null) start = v;
             } else if (start !== null) {
@@ -98,7 +99,7 @@
         return county ? county.name : onBridge(x, y) ? 'CAUSEWAY' : '';
       }
       const nearestX = roadNear(x),
-        nearestY = roadNear(y),
+        nearestY = rowNear(y),
         onVertical = Math.abs(x - nearestX) < 62,
         onHorizontal = Math.abs(y - nearestY) < 62,
         v = STREET_NAMES.vertical[nearestX],
@@ -118,10 +119,10 @@
     function benchSpots() {
       if (benchCache) return benchCache;
       benchCache = [];
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            z = ROAD_CENTERS[by] + 89,
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            z = blockY(by) + 89,
             w = 334;
           if (!validCityBlock(x, z, w, w) || harborOverlap(x, z, w, w) || stadiumOverlap(x, z, w, w) || isPark(bx, by))
             continue;
@@ -184,14 +185,15 @@
         drawingContext.fillStyle = '#d0c39a';
         for (let v = r.start + 55; v < r.end - 50; v += 32) {
           const p = pos(v);
-          if (Math.abs(v - roadNear(v)) < 85 || onBoulevard(p.x, p.y, 35)) continue;
+          if (Math.abs(v - (r.vertical ? rowNear(v) : roadNear(v))) < 85 || onBoulevard(p.x, p.y, 35))
+            continue;
           if (r.vertical) drawingContext.fillRect(p.x - 1, p.y, 2, 15);
           else drawingContext.fillRect(p.x, p.y - 1, 15, 2);
         }
       }
       if (detail)
         for (const x of ROAD_CENTERS)
-          for (const y of ROAD_CENTERS) {
+          for (const y of ROAD_ROWS) {
             const horizontal = streets.find(
                 (r) => !r.vertical && r.r === y && x > r.start + 100 && x < r.end - 100,
               ),

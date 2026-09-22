@@ -794,7 +794,7 @@
     }
     function drawTrafficLights2D() {
       for (const x of ROAD_CENTERS)
-        for (const y of ROAD_CENTERS) {
+        for (const y of ROAD_ROWS) {
           if (
             !visible(
               {

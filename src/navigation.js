@@ -266,7 +266,7 @@
     function setWaypoint(x, y) {
       userWaypoint = {
         x: clamp(x, 0, WORLD_SIZE),
-        y: clamp(y, 0, WORLD_SIZE),
+        y: clamp(y, WORLD_TOP, WORLD_SIZE),
       };
       calculateUserRoute();
       drawMap(cityMapContext, 800, 660, true);
@@ -363,7 +363,7 @@
       };
     }
     function mapWorldPoint(p) {
-      const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_SIZE) * 0.92 * mapZoom;
+      const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
       return {
         x: mapCenter.x + (p.x - 400) / s,
         y: mapCenter.y + (p.y - 330) / s,
@@ -414,10 +414,10 @@
           dy = p.y - mapGesture.start.y;
         if (Math.hypot(dx, dy) > 5) mapGesture.drag = true;
         if (mapGesture.drag) {
-          const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_SIZE) * 0.92 * mapZoom;
+          const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
           mapCenter = {
             x: clamp(mapGesture.center.x - dx / s, 0, WORLD_SIZE),
-            y: clamp(mapGesture.center.y - dy / s, 0, WORLD_SIZE),
+            y: clamp(mapGesture.center.y - dy / s, WORLD_TOP, WORLD_SIZE),
           };
         }
       }

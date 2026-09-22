@@ -373,7 +373,7 @@
       }
       const signalModels = [];
       for (const x of ROAD_CENTERS)
-        for (const z of ROAD_CENTERS) {
+        for (const z of ROAD_ROWS) {
           if (!cityIntersectionAt(x, z) || !groundAt(x, z, 92) || inHarbor(x, z, 100)) continue;
           const group = new Three.Group();
           scene.add(group);

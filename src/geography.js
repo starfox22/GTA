@@ -11,13 +11,30 @@
         id: 'northbank',
         name: 'NORTHBANK ISLAND',
         color: '#5b696b',
-        // Reclaimed waterfront: the coast now runs outside every block of the
-        // grid, so the whole eleven by eleven street plan is built city rather
-        // than stopping short at a ragged shore.
+        // Reclaimed waterfront: the coast runs outside every block of the grid,
+        // so the whole street plan is built city rather than stopping short at a
+        // ragged shore. The northern lobe (negative y) is the reclamation: a
+        // marina basin cut into the north-west shore, the cruise terminal quay
+        // along the north coast, and the tower district on the north-east point.
         polygon: [
-          [300, 70],
-          [2680, 60],
-          [3160, 150],
+          [240, -3980],
+          [470, -4102],
+          [672, -4128],
+          [672, -3320],
+          [1528, -3300],
+          [1528, -4126],
+          [1730, -4166],
+          [2140, -4192],
+          [2760, -4188],
+          [3062, -4128],
+          [3268, -3960],
+          [3372, -3600],
+          [3352, -2980],
+          [3396, -2300],
+          [3360, -1620],
+          [3402, -980],
+          [3366, -380],
+          [3398, 60],
           [3390, 680],
           [3420, 1040],
           [3420, 2300],
@@ -39,6 +56,13 @@
           [50, 1220],
           [50, 400],
           [120, 160],
+          [86, -240],
+          [58, -900],
+          [98, -1560],
+          [54, -2200],
+          [104, -2880],
+          [68, -3450],
+          [126, -3862],
         ],
       },
       {
@@ -540,6 +564,12 @@
               : 'CORAL MARINA';
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
       if (x > 2230 && x < 3150 && y > 1770 && y < 2640) return 'CENTRAL GARDEN';
+      if (y < 0) {
+        if (y < -3860 && x > 1600 && x < 3120) return 'CRUISE TERMINAL';
+        if (x < 1750 && y < -2400) return 'HARBOR POINT MARINA';
+        if (x > 1880 && y < -1300) return 'NORTH POINT · FINANCIAL';
+        return 'THE RECLAMATION';
+      }
       if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
       if (y < 2650) return 'MIDTOWN';
       if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';

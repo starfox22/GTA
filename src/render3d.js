@@ -283,10 +283,16 @@
       env.colorSpace = Three.SRGBColorSpace;
       scene.environment = env;
       // Real ground materials and painted markings are baked once, then receive live shadows.
+      // The baked ground now has to cover the northern reclamation as well, so the
+      // canvas is taller than it is wide and its pixels-per-unit is chosen to keep
+      // the texture's memory close to the old 4096-square sheet's.
+      const terrainPixelsPerUnit = (touchEnabled() ? 2560 : 3584) / CITY_SIZE;
       const terrain = document.createElement('canvas');
-      terrain.width = terrain.height = 4096;
+      terrain.width = Math.round(CITY_SIZE * terrainPixelsPerUnit);
+      terrain.height = Math.ceil(CITY_HEIGHT * terrainPixelsPerUnit);
       const drawingContext = terrain.getContext('2d');
-      drawingContext.scale(4096 / CITY_SIZE, 4096 / CITY_SIZE);
+      drawingContext.scale(terrainPixelsPerUnit, terrainPixelsPerUnit);
+      drawingContext.translate(0, -CITY_TOP);
       function pattern(q, scale) {
         const tile = document.createElement('canvas');
         tile.width = tile.height = scale;
@@ -316,18 +322,18 @@
       coastPath(drawingContext);
       drawingContext.clip();
       drawingContext.fillStyle = '#263e4d';
-      drawingContext.fillRect(0, 0, CITY_SIZE, CITY_SIZE);
+      drawingContext.fillRect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT);
       drawingContext.fillStyle = paving;
-      drawingContext.fillRect(48, 45, CITY_SIZE - 112, CITY_SIZE - 112);
+      drawingContext.fillRect(48, CITY_TOP + 45, CITY_SIZE - 112, CITY_HEIGHT - 112);
       paintCityStreets(drawingContext, true);
       const curbGroup = new Three.Group();
       curbGroup.name = 'kerbs';
       scene.add(curbGroup);
       batchGroups.push(curbGroup);
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 79,
-            z = ROAD_CENTERS[by] + 79;
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 79,
+            z = blockY(by) + 79;
           if (
             !validCityBlock(x + 10, z + 10) ||
             harborOverlap(x, z, 354, 354) ||
@@ -446,7 +452,7 @@
         drawingContext.fill();
       }
       for (const r of ROAD_CENTERS)
-        for (let z = 240; z < CITY_SIZE - 150; z += 230) {
+        for (let z = CITY_TOP + 240; z < CITY_SIZE - 150; z += 230) {
           drawingContext.fillStyle = '#1d282d';
           drawingContext.fillRect(r + 48, z, 5, 11);
           drawingContext.fillStyle = '#707576';
@@ -487,19 +493,19 @@
       groundTx.colorSpace = Three.SRGBColorSpace;
       groundTx.anisotropy = 8;
       const roughCanvas = document.createElement('canvas');
-      roughCanvas.width = roughCanvas.height = 896;
+      roughCanvas.width = 896;
+      roughCanvas.height = Math.ceil((896 * CITY_HEIGHT) / CITY_SIZE);
       const rg = roughCanvas.getContext('2d');
       rg.scale(896 / CITY_SIZE, 896 / CITY_SIZE);
+      rg.translate(0, -CITY_TOP);
       rg.fillStyle = '#e9e9e9';
-      rg.fillRect(0, 0, CITY_SIZE, CITY_SIZE);
+      rg.fillRect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT);
       rg.fillStyle = '#737373';
-      for (const r of ROAD_CENTERS) {
-        rg.fillRect(r - 56, 48, 112, CITY_SIZE - 112);
-        rg.fillRect(51, r - 56, CITY_SIZE - 112, 112);
-      }
+      for (const r of ROAD_CENTERS) rg.fillRect(r - 56, CITY_TOP + 48, 112, CITY_HEIGHT - 112);
+      for (const r of ROAD_ROWS) rg.fillRect(51, r - 56, CITY_SIZE - 112, 112);
       const roughTx = new Three.CanvasTexture(roughCanvas);
       const groundMesh = new Three.Mesh(
-        new Three.PlaneGeometry(CITY_SIZE, CITY_SIZE),
+        new Three.PlaneGeometry(CITY_SIZE, CITY_HEIGHT),
         new Three.MeshStandardMaterial({
           map: groundTx,
           roughnessMap: roughTx,
@@ -510,7 +516,7 @@
         }),
       );
       groundMesh.rotation.x = -Math.PI / 2;
-      groundMesh.position.set(CITY_SIZE / 2, 0.02, CITY_SIZE / 2);
+      groundMesh.position.set(CITY_SIZE / 2, 0.02, (CITY_TOP + CITY_SIZE) / 2);
       groundMesh.receiveShadow = true;
       scene.add(groundMesh);
       // Buildings are constructed by src/cityscape3d.js (included below, after the halo helper).

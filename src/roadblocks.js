@@ -55,10 +55,9 @@
             });
       }
       // Mid-block cuts on the four avenues: a junction block is simply driven around.
-      const AVENUES = [1152, 2688, 3200, 4736];
       for (let i = 0; i < ROAD_CENTERS.length - 1; i++) {
         const mid = (ROAD_CENTERS[i] + ROAD_CENTERS[i + 1]) / 2;
-        for (const avenue of AVENUES) {
+        for (const avenue of WIDE_ROADS)
           if (roadblockSiteUsable(mid, avenue))
             sites.push({
               x: mid,
@@ -66,6 +65,10 @@
               axis: 'x',
               name: streetNameAt(mid, avenue),
             });
+      }
+      for (let i = 0; i < ROAD_ROWS.length - 1; i++) {
+        const mid = (ROAD_ROWS[i] + ROAD_ROWS[i + 1]) / 2;
+        for (const avenue of WIDE_ROADS)
           if (roadblockSiteUsable(avenue, mid))
             sites.push({
               x: avenue,
@@ -73,7 +76,6 @@
               axis: 'y',
               name: streetNameAt(avenue, mid),
             });
-        }
       }
       roadblockSiteCache = sites;
       return sites;

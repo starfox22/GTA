@@ -190,7 +190,7 @@
       const target = m.car,
         options = [];
       for (const x of ROAD_CENTERS)
-        for (const y of ROAD_CENTERS) {
+        for (const y of ROAD_ROWS) {
           const d = distanceBetween(
             {
               x,

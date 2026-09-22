@@ -775,8 +775,10 @@
     function spawnWalker() {
       for (let attempt = 0; attempt < 24; attempt++) {
         const vertical = seededRandom() > 0.5,
-          r = randomChoice(ROAD_CENTERS),
-          v = randomBetween(180, CITY_SIZE - 260),
+          r = randomChoice(vertical ? ROAD_CENTERS : ROAD_ROWS),
+          v = vertical
+            ? randomBetween(CITY_TOP + 180, CITY_SIZE - 260)
+            : randomBetween(180, CITY_SIZE - 260),
           x = vertical ? r + randomChoice([-67, 67]) : v,
           y = vertical ? v : r + randomChoice([-67, 67]);
         if (Math.abs(x - player.x) < 620 && Math.abs(y - player.y) < 620) continue;

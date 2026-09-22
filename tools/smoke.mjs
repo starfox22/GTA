@@ -19,25 +19,28 @@ const logs = [];
 page.on('console', (m) => { const t = m.type(); const s = `[${t}] ${m.text()}`; logs.push(s); if (t === 'error' || t === 'warning') errors.push(s); });
 page.on('pageerror', (e) => errors.push('[pageerror] ' + e.message + '\n' + (e.stack || '')));
 
-await page.goto('file://' + file, { timeout: 300000, waitUntil: 'load' });
+// The built page is a single ~15MB file; waiting on the load event is flaky at
+// that size, so commit the navigation and wait for the game's own API instead.
+await page.goto('file://' + file, { timeout: 300000, waitUntil: 'commit' });
+await page.waitForFunction(() => !!window.DeadEndCity, null, { timeout: 300000 });
 await page.waitForTimeout(2500);
-await page.screenshot({ path: path.join(out, '01-menu.png') });
+await page.screenshot({ timeout: 120000, path: path.join(out, '01-menu.png') });
 await page.click('#startBtn');
 await page.waitForTimeout(3000);
-await page.screenshot({ path: path.join(out, '02-start.png') });
+await page.screenshot({ timeout: 120000, path: path.join(out, '02-start.png') });
 
 // Walk around, then steal a car and drive.
 const hold = async (key, ms) => { await page.keyboard.down(key); await page.waitForTimeout(ms); await page.keyboard.up(key); };
 await hold('KeyW', 1500);
 await hold('KeyD', 600);
-await page.screenshot({ path: path.join(out, '03-walk.png') });
+await page.screenshot({ timeout: 120000, path: path.join(out, '03-walk.png') });
 await page.keyboard.press('KeyE');
 await page.waitForTimeout(800);
 await hold('KeyW', 3000);
-await page.screenshot({ path: path.join(out, '04-drive.png') });
+await page.screenshot({ timeout: 120000, path: path.join(out, '04-drive.png') });
 await page.keyboard.press('Tab');
 await page.waitForTimeout(800);
-await page.screenshot({ path: path.join(out, '05-map.png') });
+await page.screenshot({ timeout: 120000, path: path.join(out, '05-map.png') });
 await page.keyboard.press('Tab');
 
 const stats = await page.evaluate(() => ({

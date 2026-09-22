@@ -13,20 +13,25 @@
        * flattened swell in the shallows. Four Gerstner swells displace the mesh;
        * two scrolling noise fields add fine ripples in the fragment shader.
        */
+      // The world box is taller than it is wide since the northern reclamation, so
+      // the distance field is too; texels stay square, which the chamfer pass needs.
       const SHORE_RES = 512,
+        SHORE_ROWS = Math.round((SHORE_RES * WORLD_HEIGHT) / WORLD_SIZE),
         SHORE_UNIT_SCALE = 4; // texel value 255 = 1020 world units from land
       function buildShoreDistanceTexture() {
         const maskCanvas = document.createElement('canvas');
-        maskCanvas.width = maskCanvas.height = SHORE_RES;
+        maskCanvas.width = SHORE_RES;
+        maskCanvas.height = SHORE_ROWS;
         const mc = maskCanvas.getContext('2d');
         mc.fillStyle = '#000';
-        mc.fillRect(0, 0, SHORE_RES, SHORE_RES);
+        mc.fillRect(0, 0, SHORE_RES, SHORE_ROWS);
         mc.scale(SHORE_RES / WORLD_SIZE, SHORE_RES / WORLD_SIZE);
+        mc.translate(0, -WORLD_TOP);
         coastPath(mc);
         mc.fillStyle = '#fff';
         mc.fill();
-        const px = mc.getImageData(0, 0, SHORE_RES, SHORE_RES).data,
-          n = SHORE_RES * SHORE_RES,
+        const px = mc.getImageData(0, 0, SHORE_RES, SHORE_ROWS).data,
+          n = SHORE_RES * SHORE_ROWS,
           dist = new Float32Array(n),
           far = 1e6;
         for (let i = 0; i < n; i++) dist[i] = px[i * 4] > 127 ? 0 : far;
@@ -34,7 +39,7 @@
         const relax = (i, j, cost) => {
           if (dist[j] + cost < dist[i]) dist[i] = dist[j] + cost;
         };
-        for (let y = 0; y < SHORE_RES; y++)
+        for (let y = 0; y < SHORE_ROWS; y++)
           for (let x = 0; x < SHORE_RES; x++) {
             const i = y * SHORE_RES + x;
             if (x > 0) relax(i, i - 1, 3);
@@ -44,11 +49,11 @@
               if (x < SHORE_RES - 1) relax(i, i - SHORE_RES + 1, 4);
             }
           }
-        for (let y = SHORE_RES - 1; y >= 0; y--)
+        for (let y = SHORE_ROWS - 1; y >= 0; y--)
           for (let x = SHORE_RES - 1; x >= 0; x--) {
             const i = y * SHORE_RES + x;
             if (x < SHORE_RES - 1) relax(i, i + 1, 3);
-            if (y < SHORE_RES - 1) {
+            if (y < SHORE_ROWS - 1) {
               relax(i, i + SHORE_RES, 3);
               if (x < SHORE_RES - 1) relax(i, i + SHORE_RES + 1, 4);
               if (x > 0) relax(i, i + SHORE_RES - 1, 4);
@@ -62,7 +67,7 @@
           data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = v;
           data[i * 4 + 3] = 255;
         }
-        const tx = new Three.DataTexture(data, SHORE_RES, SHORE_RES, Three.RGBAFormat);
+        const tx = new Three.DataTexture(data, SHORE_RES, SHORE_ROWS, Three.RGBAFormat);
         tx.minFilter = tx.magFilter = Three.LinearFilter;
         tx.wrapS = tx.wrapT = Three.ClampToEdgeWrapping;
         tx.needsUpdate = true;
@@ -76,6 +81,8 @@
         uSun: { value: new Three.Vector3(-0.45, 0.76, -0.23).normalize() },
         uShore: { value: buildShoreDistanceTexture() },
         uWorldSize: { value: WORLD_SIZE },
+        uWorldOrigin: { value: new Three.Vector2(0, WORLD_TOP) },
+        uWorldExtent: { value: new Three.Vector2(WORLD_SIZE, WORLD_HEIGHT) },
         uShoreScale: { value: 255 * SHORE_UNIT_SCALE },
       };
       const waterMaterial = new Three.ShaderMaterial({
@@ -88,6 +95,8 @@
           uniform float uTime;
           uniform sampler2D uShore;
           uniform float uWorldSize;
+          uniform vec2 uWorldOrigin;
+          uniform vec2 uWorldExtent;
           uniform float uShoreScale;
           // Gerstner swell: horizontal pinch sharpens crests without extra geometry.
           void wave(vec2 dir, float amp, float wavelength, float speed, float steep, vec2 p,
@@ -103,7 +112,7 @@
           void main(){
             vec4 origin = modelMatrix * vec4(position, 1.);
             vec2 p = origin.xz;
-            float shore = texture2D(uShore, p / uWorldSize).r * uShoreScale;
+            float shore = texture2D(uShore, (p - uWorldOrigin) / uWorldExtent).r * uShoreScale;
             float depthFade = 0.22 + 0.78 * smoothstep(8., 190., shore);
             vec3 offset = vec3(0.);
             vec3 dNormal = vec3(0., 1., 0.);

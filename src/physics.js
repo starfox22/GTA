@@ -470,10 +470,12 @@
         vertical = Math.abs(headingSine) > 0.5,
         sign = vertical ? Math.sign(headingSine) : Math.sign(headingCosine),
         value = vertical ? y : x,
-        next = ROAD_CENTERS.filter((v) => (v - value) * sign > 2).sort((a, b) => (a - b) * sign)[0];
+        next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
+          .filter((v) => (v - value) * sign > 2)
+          .sort((a, b) => (a - b) * sign)[0];
       if (next === undefined) return false;
       const nx = vertical ? roadNear(x) : next,
-        ny = vertical ? next : roadNear(y);
+        ny = vertical ? next : rowNear(y);
       if (![a, a + Math.PI / 2, a - Math.PI / 2].some((q) => trafficExitValid(nx, ny, q))) return false;
       for (let d = 0; d < Math.abs(next - value); d += 32) {
         const px = x + headingCosine * d,
@@ -563,7 +565,9 @@
         vertical = Math.abs(headingSine) > 0.5,
         sign = vertical ? Math.sign(headingSine) : Math.sign(headingCosine),
         value = vertical ? c.y : c.x;
-      const next = ROAD_CENTERS.filter((v) => (v - value) * sign > 2).sort((a, b) => (a - b) * sign)[0];
+      const next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
+        .filter((v) => (v - value) * sign > 2)
+        .sort((a, b) => (a - b) * sign)[0];
       let desired = c.panicUntil > gameTime ? 120 : 65 + (c.id % 4) * 7,
         target;
       if (c.panicUntil > gameTime) c.hazard = true;
@@ -575,7 +579,7 @@
         Math.abs(next - value) > 90
       ) {
         const x = vertical ? roadNear(c.x) : next,
-          y = vertical ? next : roadNear(c.y);
+          y = vertical ? next : rowNear(c.y);
         c.junction = planJunction(c, x, y, nav);
       }
       const j = c.junction;
@@ -619,7 +623,7 @@
           if (gap < 3) desired = 0;
           target = {
             x: c.x + headingCosine * 75 + (vertical ? roadNear(c.x) - sign * 25 - c.x : 0),
-            y: c.y + headingSine * 75 + (!vertical ? roadNear(c.y) + sign * 25 - c.y : 0),
+            y: c.y + headingSine * 75 + (!vertical ? rowNear(c.y) + sign * 25 - c.y : 0),
           };
         } else {
           while (j.index < j.points.length - 1 && distanceBetween(c, j.points[j.index]) < 24) j.index++;
@@ -638,7 +642,7 @@
             }
           : {
               x: c.x + sign * 85,
-              y: roadNear(c.y) + sign * 25,
+              y: rowNear(c.y) + sign * 25,
             };
         if (
           !trafficRoadValid(
@@ -974,7 +978,7 @@
               if (c.route.length && distanceBetween(c, c.route[0]) < 45) c.route.shift();
               target = c.route[0] || {
                 x: roadNear(player.x),
-                y: roadNear(player.y),
+                y: rowNear(player.y),
               };
             }
             const da = normalizeAngle(headingBetween(c, target) - c.a);

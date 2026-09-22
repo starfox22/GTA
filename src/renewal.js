@@ -90,8 +90,8 @@
             'botanic',
             'orchard',
           ][i],
-          x: ROAD_CENTERS[bx] + 89 + (i % 3) * 17,
-          y: ROAD_CENTERS[by] + 89 + (i % 2) * 23,
+          x: blockX(bx) + 89 + (i % 3) * 17,
+          y: blockY(by) + 89 + (i % 2) * 23,
           w: [268, 334, 218, 292][i % 4],
           h: [245, 334, 192, 310][i % 4],
         }))

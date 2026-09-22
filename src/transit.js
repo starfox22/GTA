@@ -304,7 +304,7 @@
             !landAt(cx, cy) ||
             inAirport(cx, cy) ||
             underpassContains(cx, cy, -30) ||
-            (Math.abs(cx - roadNear(cx)) < 105 && Math.abs(cy - roadNear(cy)) < 105) ||
+            (Math.abs(cx - roadNear(cx)) < 105 && Math.abs(cy - rowNear(cy)) < 105) ||
             terrainHeight(cx, cy) > 12
           )
             continue;

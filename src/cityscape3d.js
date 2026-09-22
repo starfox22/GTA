@@ -910,10 +910,10 @@
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
       }
-      for (let bx = 0; bx < ROAD_CENTERS.length - 1; bx++)
-        for (let by = 0; by < ROAD_CENTERS.length - 1; by++) {
-          const x = ROAD_CENTERS[bx] + 89,
-            z = ROAD_CENTERS[by] + 89,
+      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+        for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+          const x = blockX(bx) + 89,
+            z = blockY(by) + 89,
             w = 334;
           if (!validCityBlock(x, z, w, w) || harborOverlap(x, z, w, w) || stadiumOverlap(x, z, w, w) || isPark(bx, by)) continue;
           const south = z + w + 14,
@@ -945,8 +945,8 @@
             if (cityRandom() < 0.5) place(pools.crate, x + 214, 3, z + 176, 6, 6, 6, 0.4);
           }
           // Bus shelters on the wide avenues, one per block on the north sidewalk.
-          const avenue = ROAD_CENTERS[by + 1];
-          if ([1152, 2688, 3200, 4736].includes(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
+          const avenue = blockY(by + 1);
+          if (WIDE_ROADS.includes(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
             busShelter(x + 180, south + 6, true);
         }
       for (const spot of benchSpots()) {
