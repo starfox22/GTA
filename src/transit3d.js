@@ -3,18 +3,19 @@
        * Railway meshes
        * Source: src/transit3d.js
        * Scope: createCityRenderer() closure.
-       * Viaduct decks with ballast, rails and ties, tapered piers with cross-heads,
-       * catenary masts, detailed stations (platforms, canopies, departure boards,
-       * benches, kiosks, passengers, stair towers) and articulated trains with lit
-       * windows and headlights at night.
+       * A continuous viaduct (deck, parapets, ballast bed, two rails on sleepers),
+       * piers of three kinds, catenary masts, detailed stations (platforms,
+       * canopies, departure boards, benches, kiosks, passengers, stair towers) and
+       * articulated trains with lit windows and headlights at night.
        *
        * DESIGN NOTES
-       * Geometry follows transit.js exactly: railDecks() gives straight deck
-       * segments, railPiers the support positions, RAIL_STATIONS the stops. The
-       * train rides at elevation 62 (RAIL_DECK_TOP + 2). Repeated pieces (ties,
-       * mast posts, parapet posts, pier shafts) are InstancedMesh pools; station
-       * groups and deck groups are pushed to `statics` for distance culling and
-       * to `batchGroups` so their small meshes are merged after construction.
+       * Geometry follows transit.js exactly: each line's `points` is the smoothed
+       * track, swept here into one extrusion per ~600-unit run; railPiers are the
+       * supports and RAIL_STATIONS the stops. The train rides at elevation 62
+       * (RAIL_DECK_TOP + 2). Repeated pieces (sleepers, masts, pier shafts and
+       * caps) are InstancedMesh pools placed by arc length along the track;
+       * station groups are pushed to `statics` for distance culling and to
+       * `batchGroups` so their small meshes are merged after construction.
        */
       const railConcrete = mat('#8b948f', 0.9),
         railSteel = mat('#5f7079', 0.45, 0.65),
@@ -41,70 +42,167 @@
       const ballastMat = new Three.MeshStandardMaterial({ map: ballastTexture, roughness: 0.95 });
       const railPools = {
         tie: instanced(boxGeo, railWood, 6000),
-        parapetPost: instanced(boxGeo, railSteel, 4000),
         mast: instanced(boxGeo, railSteel, 900),
         mastArm: instanced(boxGeo, railSteel, 900),
-        pierShaft: instanced(boxGeo, railConcrete, 1200),
-        pierCap: instanced(boxGeo, railConcrete, 1200),
+        pierShaft: instanced(boxGeo, railConcrete, 1600),
+        pierCap: instanced(boxGeo, railConcrete, 1600),
         lamp: instanced(boxGeo, warmLamp, 900),
       };
-      // ---- Viaduct decks -------------------------------------------------------
-      for (const b of railDecks()) {
-        const group = new Three.Group();
-        group.name = 'Elevated railway';
-        group.position.set(b.x, 0, b.y);
-        group.rotation.y = -b.a;
-        scene.add(group);
-        batchGroups.push(group);
-        const length = b.hx * 2,
-          deckMaterial = railConcrete.clone();
-        deckMaterial.transparent = true;
-        const deck = box(group, 0, 55, 0, length, 6, 46, deckMaterial);
-        deck.userData.dynamic = true;
-        // Ballast bed, two rails, parapets and drainage channel.
-        const ballast = new Three.Mesh(new Three.BoxGeometry(1, 1, 1), ballastMat);
-        ballast.position.set(0, 58.6, 0);
-        ballast.scale.set(length, 1.4, 30);
-        ballast.receiveShadow = true;
-        group.add(ballast);
-        for (const side of [-1, 1]) {
-          box(group, 0, 61.4, side * 10, length, 1.6, 1.3, railTrack);
-          box(group, 0, 60.6, side * 10, length, 0.3, 2.6, railSteel);
-          box(group, 0, 60.5, side * 21.5, length, 5, 2, railParapet);
-          box(group, 0, 63.4, side * 21.5, length, 0.8, 2.6, railSteel);
+      // ---- Viaduct -----------------------------------------------------------------
+      /**
+       * The viaduct is swept, not stacked: each cross-section below is extruded
+       * along a line's whole track with mitred joints, so the deck, the ballast
+       * bed, the rails and the parapets run through every curve without a seam.
+       * (One box per segment left a wedge-shaped gap on the outside of each bend
+       * and an overlap on the inside, which is what made the curves look patchy.)
+       * Profiles are [offset from the centre line, elevation] pairs, listed left
+       * to right over the top, so a face's outward normal is (-dh, do).
+       */
+      const RAIL_SECTIONS = [
+        // Box-girder deck with its parapet walls.
+        {
+          part: 'deck',
+          closed: true,
+          points: [[-23, 52], [-23, 63.4], [-20.6, 63.4], [-20.6, 58], [20.6, 58], [20.6, 63.4], [23, 63.4], [23, 52]],
+        },
+        // Ballast bed with sloped shoulders.
+        { part: 'ballast', points: [[-15.5, 58.05], [-12.8, 59.5], [12.8, 59.5], [15.5, 58.05]] },
+        // Two running rails, standard spacing for the bogies at +-8.5.
+        ...[-8.5, 8.5].map((o) => ({
+          part: 'rail',
+          points: [[o - 0.8, 60.3], [o - 0.8, 61.9], [o + 0.8, 61.9], [o + 0.8, 60.3]],
+        })),
+        // Steel coping along both parapets.
+        ...[-1, 1].map((side) => ({
+          part: 'steel',
+          points: [[side * 21.8 - 1.5, 63.4], [side * 21.8 - 1.5, 64.2], [side * 21.8 + 1.5, 64.2], [side * 21.8 + 1.5, 63.4]],
+        })),
+      ];
+      // Mitred frame at each vertex of a run: the unit normal (left of travel) and
+      // the stretch that keeps the section's width true through the joint.
+      function railFrames(track) {
+        return track.map((p, i) => {
+          const prev = track[Math.max(0, i - 1)],
+            next = track[Math.min(track.length - 1, i + 1)],
+            d0 = i > 0 ? Math.atan2(p[1] - prev[1], p[0] - prev[0]) : null,
+            d1 = i < track.length - 1 ? Math.atan2(next[1] - p[1], next[0] - p[0]) : null,
+            a0 = d0 ?? d1,
+            a1 = d1 ?? d0,
+            tx = Math.cos(a0) + Math.cos(a1),
+            ty = Math.sin(a0) + Math.sin(a1),
+            tl = Math.hypot(tx, ty) || 1,
+            nx = -ty / tl,
+            ny = tx / tl,
+            miter = 1 / Math.max(0.5, nx * -Math.sin(a1) + ny * Math.cos(a1));
+          return { x: p[0], y: p[1], nx, ny, miter };
+        });
+      }
+      function railSweep(track, along, sections) {
+        const frames = railFrames(track),
+          position = [],
+          normal = [],
+          uv = [];
+        for (const section of sections) {
+          const pts = section.points,
+            edges = pts.length - (section.closed ? 0 : 1);
+          for (let k = 0; k < edges; k++) {
+            const [o0, h0] = pts[k],
+              [o1, h1] = pts[(k + 1) % pts.length],
+              en = Math.hypot(h1 - h0, o1 - o0),
+              no = -(h1 - h0) / en,
+              nh = (o1 - o0) / en;
+            for (let i = 0; i < frames.length - 1; i++) {
+              const quad = [
+                [frames[i], o0, h0, along[i], 0],
+                [frames[i], o1, h1, along[i], 1],
+                [frames[i + 1], o1, h1, along[i + 1], 1],
+                [frames[i + 1], o0, h0, along[i + 1], 0],
+              ].map(([f, o, h, s, v]) => ({
+                p: [f.x + f.nx * o * f.miter, h, f.y + f.ny * o * f.miter],
+                n: [f.nx * no, nh, f.ny * no],
+                t: [s / 30, v],
+              }));
+              // Wind each quad so its face points the way its profile edge does.
+              const [a, b, c] = quad,
+                ux = b.p[0] - a.p[0],
+                uy = b.p[1] - a.p[1],
+                uz = b.p[2] - a.p[2],
+                vx = c.p[0] - a.p[0],
+                vy = c.p[1] - a.p[1],
+                vz = c.p[2] - a.p[2],
+                facing = (uy * vz - uz * vy) * a.n[0] + (uz * vx - ux * vz) * a.n[1] + (ux * vy - uy * vx) * a.n[2],
+                order = facing >= 0 ? [0, 1, 2, 0, 2, 3] : [0, 2, 1, 0, 3, 2];
+              for (const j of order) {
+                position.push(...quad[j].p);
+                normal.push(...quad[j].n);
+                uv.push(...quad[j].t);
+              }
+            }
+          }
         }
-        const cos = Math.cos(b.a),
-          sin = Math.sin(b.a);
-        const tieCount = Math.max(0, Math.ceil((length - 8) / 14));
-        for (let i = 0; i < tieCount; i++) {
-          const along = -b.hx + 6 + i * 14;
-          place(railPools.tie, b.x + cos * along, 59.9, b.y + sin * along, 3.2, 0.9, 27, -b.a);
-        }
-        for (let along = -b.hx + 24; along < b.hx - 10; along += 48)
-          for (const side of [-1, 1])
-            place(
-              railPools.parapetPost,
-              b.x + cos * along - sin * side * 21.5,
-              63.5,
-              b.y + sin * along + cos * side * 21.5,
-              1.4,
-              4,
-              1.4,
-              -b.a,
+        const geometry = new Three.BufferGeometry();
+        geometry.setAttribute('position', new Three.Float32BufferAttribute(position, 3));
+        geometry.setAttribute('normal', new Three.Float32BufferAttribute(normal, 3));
+        geometry.setAttribute('uv', new Three.Float32BufferAttribute(uv, 2));
+        geometry.computeBoundingSphere();
+        return geometry;
+      }
+      ballastTexture.repeat.set(1, 1);
+      const railPartMaterial = { deck: railConcrete, ballast: ballastMat, rail: railTrack, steel: railSteel };
+      for (const line of RAIL_LINES) {
+        // Cut the line into runs of about 600 units for culling and fading.
+        const along = [0];
+        for (let i = 1; i < line.points.length; i++)
+          along.push(along[i - 1] + Math.hypot(line.points[i][0] - line.points[i - 1][0], line.points[i][1] - line.points[i - 1][1]));
+        let first = 0;
+        while (first < line.points.length - 1) {
+          let last = first + 1;
+          while (last < line.points.length - 1 && along[last] - along[first] < 600) last++;
+          const track = line.points.slice(first, last + 1),
+            runAlong = along.slice(first, last + 1),
+            group = new Three.Group(),
+            materials = [];
+          group.name = 'Elevated railway';
+          scene.add(group);
+          for (const part of ['deck', 'ballast', 'rail', 'steel']) {
+            const material = railPartMaterial[part].clone();
+            material.transparent = true;
+            materials.push(material);
+            const m = new Three.Mesh(
+              railSweep(track, runAlong, RAIL_SECTIONS.filter((s) => s.part === part)),
+              material,
             );
-        // Catenary masts with a lamp every 96 units along the outer edge.
-        for (let along = -b.hx + 48; along < b.hx - 20; along += 96) {
-          const mx = b.x + cos * along - sin * 24,
-            mz = b.y + sin * along + cos * 24;
-          place(railPools.mast, mx, 74, mz, 1.6, 26, 1.6, -b.a);
-          place(railPools.mastArm, b.x + cos * along - sin * 14, 85, b.y + sin * along + cos * 14, 1.2, 1.2, 22, -b.a);
-          place(railPools.lamp, mx + sin * 2, 70, mz - cos * 2, 3, 1.5, 3, -b.a);
-          railLampHalos.push({ sprite: halo(group, along, 70, 24, 16, '#ffe1b3'), x: mx, y: mz });
+            m.castShadow = part === 'deck';
+            m.receiveShadow = true;
+            m.userData.dynamic = true;
+            group.add(m);
+          }
+          const decks = railDecks().filter((b) =>
+              track.some((p, i) => i && Math.abs(b.x - (p[0] + track[i - 1][0]) / 2) < 0.01 && Math.abs(b.y - (p[1] + track[i - 1][1]) / 2) < 0.01),
+            ),
+            mid = track[Math.floor(track.length / 2)];
+          const radius = (runAlong.at(-1) - runAlong[0]) / 2 + 160;
+          railFades.push({ decks, materials, x: mid[0], y: mid[1], radius });
+          statics.push({ x: mid[0], y: mid[1], group, radius });
+          first = last;
         }
-        // Expansion joint plates at both ends.
-        for (const end of [-1, 1]) box(group, end * (b.hx - 1.5), 58.4, 0, 3, 0.6, 46, railSteel);
-        railFades.push({ b, material: deckMaterial });
-        statics.push({ x: b.x, y: b.y, group, radius: b.hx + 120 });
+        // Sleepers every 6 units, masts every 96 on the outer edge with a lamp on
+        // every other one, and expansion joints every 48; none on a platform.
+        const nearStation = (p, r) => RAIL_STATIONS.some((s) => Math.hypot(s.x - p.x, s.y - p.y) < r);
+        for (const p of railTrackSamples(line, 3, 6))
+          place(railPools.tie, p.x, 60, p.y, 2.2, 0.8, 22, -p.a);
+        for (const [k, p] of railTrackSamples(line, 48, 96).entries()) {
+          if (nearStation(p, 100)) continue;
+          const nx = -Math.sin(p.a),
+            ny = Math.cos(p.a),
+            mx = p.x + nx * 24,
+            mz = p.y + ny * 24;
+          place(railPools.mast, mx, 74, mz, 1.6, 26, 1.6, -p.a);
+          place(railPools.mastArm, p.x + nx * 14, 85, p.y + ny * 14, 1.2, 1.2, 22, -p.a);
+          if (k % 2) continue;
+          place(railPools.lamp, mx - nx * 2, 70, mz - ny * 2, 3, 1.5, 3, -p.a);
+          railLampHalos.push({ sprite: halo(scene, mx - nx * 2, 70, mz - ny * 2, 16, '#ffe1b3'), x: mx, y: mz });
+        }
       }
       // ---- Piers -----------------------------------------------------------------
       for (const p of railPiers) {
@@ -113,19 +211,19 @@
           dx = p.cx - px,
           dz = p.cy - pz,
           yaw = Math.atan2(dx, dz);
-        if (p.marine) {
-          // Pile bent: the shaft runs down past the waterline to a submerged cap.
+        if (p.kind === 'marine') {
+          // Pile: the shaft runs down past the waterline to a submerged cap, and a
+          // cap beam under the deck reaches across to its partner.
           place(railPools.pierShaft, px, 22, pz, 6, 64, 6, yaw);
           place(railPools.pierShaft, px, -9, pz, 9, 10, 9, yaw);
-          place(railPools.pierCap, px, 50, pz, 9, 4, 9, yaw);
-          continue;
+        } else {
+          place(railPools.pierShaft, px, 24, pz, p.kind === 'straddle' ? 6.5 : 7.5, 48, p.kind === 'straddle' ? 6.5 : 7.5, yaw);
+          place(railPools.pierShaft, px, 3, pz, 11, 6, 11, yaw);
         }
-        place(railPools.pierShaft, px, 24, pz, 7.5, 48, 7.5, yaw);
-        place(railPools.pierShaft, px, 3, pz, 11, 6, 11, yaw);
-        // Cross-head reaching under the deck centre line.
+        // Cross-head to the centre line; the partner's meets it there.
         const reach = Math.hypot(dx, dz);
-        place(railPools.pierCap, (px + p.cx) / 2, 51, (pz + p.cy) / 2, 8, 5, Math.max(8, reach + 8), yaw);
-        place(railPools.pierCap, px, 49, pz, 12, 3, 12, yaw);
+        place(railPools.pierCap, (px + p.cx) / 2, 49.5, (pz + p.cy) / 2, 8, 5, reach + 5, yaw);
+        place(railPools.pierCap, px, 49, pz, 11, 3, 11, yaw);
       }
       for (const im of Object.values(railPools)) im.instanceMatrix.needsUpdate = true;
       // ---- Stations -------------------------------------------------------------
@@ -361,13 +459,22 @@
             collectResources(m, retiredGeometries, retiredMaterials);
             railModels.delete(t);
           }
+        // A run of viaduct turns see-through while the player is underneath it.
+        const low = !transitRide && entityElevation(player) < 50;
         for (let i = 0; i < railFades.length; i++) {
-          const { b, material } = railFades[i],
-            q = coverLocal(b, player.x, player.y),
+          const { decks, materials, x, y, radius } = railFades[i],
             under =
-              !transitRide && entityElevation(player) < 50 && Math.abs(q.x) < b.hx && Math.abs(q.y) < 45;
-          material.opacity = under ? 0.22 : 1;
-          material.depthWrite = !under;
+              low &&
+              Math.hypot(player.x - x, player.y - y) < radius &&
+              decks.some((b) => {
+                const q = coverLocal(b, player.x, player.y);
+                return Math.abs(q.x) < b.hx + 2 && Math.abs(q.y) < 45;
+              });
+          if (materials[0].opacity === (under ? 0.22 : 1)) continue;
+          for (const material of materials) {
+            material.opacity = under ? 0.22 : 1;
+            material.depthWrite = !under;
+          }
         }
         const glow = 0.08 + 0.92 * night;
         for (let i = 0; i < railLampHalos.length; i++) railLampHalos[i].sprite.material.opacity = glow;

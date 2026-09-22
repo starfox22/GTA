@@ -31,6 +31,8 @@
       },
       height: 64,
     };
+    // Side walls run the full depth; the front and back pieces butt against them
+    // rather than overlapping, so the coplanar roofs do not flicker at the corners.
     const depotWalls = [
       {
         x: 4340,
@@ -45,27 +47,27 @@
         h: 240,
       },
       {
-        x: 4340,
+        x: 4348,
         y: 4572,
-        w: 104,
+        w: 96,
         h: 8,
       },
       {
         x: 4516,
         y: 4572,
-        w: 104,
+        w: 96,
         h: 8,
       },
       {
-        x: 4340,
+        x: 4348,
         y: 4340,
-        w: 82,
+        w: 74,
         h: 8,
       },
       {
         x: 4538,
         y: 4340,
-        w: 82,
+        w: 74,
         h: 8,
       },
     ];
