@@ -76,6 +76,13 @@ something, never a generic code-evaluation hook.
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
+| `crashTest(type, targetType, side, metersPerSecond, seconds)` | Drive a fresh car east into a parked one turned to show `side` (`front`, `rear`, `left`, `right`), throttle held; returns both damage reports |
+| `park(type, dx, dy, heading)`, `vehicleAt(x, y)` | Park an empty vehicle beside the player (returns its id); find the nearest vehicle |
+| `shootAt(x, y, weaponIndex)` | Fire one round (or one shotgun load) from the player at a map point |
+| `blast(x, y, power)` | Detonate at a map point (1 = a rocket) |
+| `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
+| `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and shop panes near a point, with their state |
+| `damageStats()` | Decal and debris pool use and GPU geometry/texture counts (for leak checks) |
 | `stats()` | Per-frame CPU timings, draw calls, triangles |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |

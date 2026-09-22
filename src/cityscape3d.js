@@ -41,6 +41,16 @@
         instanceDummy.updateMatrix();
         im.setMatrixAt(im.count++, instanceDummy.matrix);
       }
+      // Knockable sidewalk furniture: the instance is also a street prop (damage.js) that
+      // a car can flatten; damage3d.js re-poses it. Pass `prop` to add a part to one.
+      function placeProp(kind, im, x, y, z, sx, sy, sz, yaw = 0, prop = null) {
+        const index = im.count;
+        place(im, x, y, z, sx, sy, sz, yaw);
+        if (im.count === index) return prop;
+        prop = prop || registerStreetProp(kind, x, z, yaw);
+        linkPropInstance(prop, im, index);
+        return prop;
+      }
       // ---- Procedural roof textures --------------------------------------------------
       function canvasTexture(size, paint, repeatX = 1, repeatY = 1) {
         const cv = document.createElement('canvas');
@@ -715,6 +725,16 @@
             box(group, x, 12.6, face + 0.4, 9, 0.8, 0.6, chrome);
           } else {
             box(group, x, 7, face + 0.2, bayWidth - 8, 10, 0.5, shopGlassMaterial);
+            // The pane in world space, so a bullet can star it and a blast blow it in.
+            (b.shopPanes || (b.shopPanes = [])).push({
+              x0: b.x + x - (bayWidth - 8) / 2,
+              x1: b.x + x + (bayWidth - 8) / 2,
+              cx: b.x + x,
+              width: bayWidth - 8,
+              face: b.y + face + 0.45,
+              state: 0,
+              hits: 0,
+            });
             box(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, mat('#5b5f63'));
           }
           if (!door && cityRandom() < 0.55) {
@@ -921,28 +941,28 @@
             west = x - 14,
             east = x + w + 14;
           // South sidewalk: hydrant, bins, newspaper boxes, mailbox, parking meters.
-          if (clearSidewalk(x + 10, south)) place(pools.hydrant, x + 10, 2.8, south, 1.6, 5.6, 1.6);
+          if (clearSidewalk(x + 10, south)) placeProp('hydrant', pools.hydrant, x + 10, 2.8, south, 1.6, 5.6, 1.6);
           for (const px of [x + 96, x + 238])
-            if (clearSidewalk(px, south + 4)) place(pools.trash, px, 3.2, south + 4, 2.6, 6.4, 2.6);
+            if (clearSidewalk(px, south + 4)) placeProp('trash', pools.trash, px, 3.2, south + 4, 2.6, 6.4, 2.6);
           if (clearSidewalk(x + 150, south + 4)) {
-            place(pools.newsRed, x + 150, 3.6, south + 4, 3.5, 7, 3);
-            place(pools.newsYellow, x + 154, 3.6, south + 4, 3.5, 7, 3);
-            place(pools.newsBlue, x + 158, 3.6, south + 4, 3.5, 7, 3);
+            placeProp('news', pools.newsRed, x + 150, 3.6, south + 4, 3.5, 7, 3);
+            placeProp('news', pools.newsYellow, x + 154, 3.6, south + 4, 3.5, 7, 3);
+            placeProp('news', pools.newsBlue, x + 158, 3.6, south + 4, 3.5, 7, 3);
           }
-          if (clearSidewalk(x + 300, south + 3) && cityRandom() < 0.6) place(pools.mailbox, x + 300, 4, south + 3, 4, 8, 4);
+          if (clearSidewalk(x + 300, south + 3) && cityRandom() < 0.6) placeProp('mailbox', pools.mailbox, x + 300, 4, south + 3, 4, 8, 4);
           if (cityRandom() < 0.5)
             for (let px = x + 40; px < x + w - 30; px += 52)
-              if (clearSidewalk(px, south - 4)) place(pools.meter, px, 4.5, south - 4, 1.2, 9, 1.2);
+              if (clearSidewalk(px, south - 4)) placeProp('meter', pools.meter, px, 4.5, south - 4, 1.2, 9, 1.2);
           // North sidewalk: a bin and bollards; benches come from the shared benchSpots() list below.
-          if (clearSidewalk(x + w - 30, north)) place(pools.trash, x + w - 30, 3.2, north, 2.6, 6.4, 2.6);
+          if (clearSidewalk(x + w - 30, north)) placeProp('trash', pools.trash, x + w - 30, 3.2, north, 2.6, 6.4, 2.6);
           // West and east sidewalks: bollards and the odd traffic cone.
           for (const [sx, sz] of [[west, z + 30], [west, z + w - 30], [east, z + 30], [east, z + w - 30]])
-            if (clearSidewalk(sx, sz)) place(pools.bollard, sx, 2.6, sz, 1.2, 5.2, 1.2);
-          if (cityRandom() < 0.25 && clearSidewalk(east, z + w / 2)) place(pools.cone, east, 3, z + w / 2, 3, 6, 3);
+            if (clearSidewalk(sx, sz)) placeProp('bollard', pools.bollard, sx, 2.6, sz, 1.2, 5.2, 1.2);
+          if (cityRandom() < 0.25 && clearSidewalk(east, z + w / 2)) placeProp('cone', pools.cone, east, 3, z + w / 2, 3, 6, 3);
           // Alley clutter: dumpsters and crates in the interior parking court.
           if (cityRandom() < 0.7 && clearSidewalk(x + 200, z + 176)) {
-            place(pools.dumpster, x + 200, 4.5, z + 176, 16, 9, 8);
-            if (cityRandom() < 0.5) place(pools.crate, x + 214, 3, z + 176, 6, 6, 6, 0.4);
+            placeProp('dumpster', pools.dumpster, x + 200, 4.5, z + 176, 16, 9, 8);
+            if (cityRandom() < 0.5) placeProp('crate', pools.crate, x + 214, 3, z + 176, 6, 6, 6, 0.4);
           }
           // Bus shelters on the wide avenues, one per block on the north sidewalk.
           const avenue = blockY(by + 1);
@@ -950,10 +970,12 @@
             busShelter(x + 180, south + 6, true);
         }
       for (const spot of benchSpots()) {
-        place(pools.benchSeat, spot.x, 4.2, spot.y, 16, 1, 5);
-        place(pools.benchSeat, spot.x, 7, spot.y - 2.4, 16, 4.5, 0.8);
-        place(pools.benchLeg, spot.x - 6.5, 2, spot.y, 1, 4, 4.6);
-        place(pools.benchLeg, spot.x + 6.5, 2, spot.y, 1, 4, 4.6);
+        const bench = placeProp('bench', pools.benchSeat, spot.x, 4.2, spot.y, 16, 1, 5);
+        placeProp('bench', pools.benchSeat, spot.x, 7, spot.y - 2.4, 16, 4.5, 0.8, 0, bench);
+        placeProp('bench', pools.benchLeg, spot.x - 6.5, 2, spot.y, 1, 4, 4.6, 0, bench);
+        placeProp('bench', pools.benchLeg, spot.x + 6.5, 2, spot.y, 1, 4, 4.6, 0, bench);
+        // Knocked over, nobody can sit on it (damage.js topple).
+        if (bench) bench.bench = spot;
       }
       for (const im of Object.values(pools)) im.instanceMatrix.needsUpdate = true;
       // ---- Night lighting update --------------------------------------------------------

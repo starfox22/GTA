@@ -606,18 +606,33 @@
         parent.add(s);
         return s;
       }
+      // @include src/damage3d.js
       const lampHalos = [],
         lampGlows = [];
+      // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
+      // without unbatching the street; each is a street prop in damage.js.
+      const lampPosts = Math.ceil(lamps.length / 2),
+        lampPoles = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
+        lampArms = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
+        lampHeads = new Three.InstancedMesh(boxGeo, warmLamp, lampPosts);
+      for (const pool of [lampPoles, lampArms, lampHeads]) {
+        pool.count = 0;
+        pool.castShadow = true;
+        pool.receiveShadow = true;
+        pool.frustumCulled = false;
+        scene.add(pool);
+      }
       for (let i = 0; i < lamps.length; i += 2) {
         const l = lamps[i],
-          group = new Three.Group();
+          group = new Three.Group(),
+          prop = registerStreetProp('lamp', l.x, l.y);
         group.position.set(l.x, 0, l.y);
         scene.add(group);
-        batchGroups.push(group);
-        box(group, 0, 17, 0, 1.1, 34, 1.1, darkMetal);
-        box(group, 3, 34, 0, 7, 1, 1, darkMetal);
-        box(group, 6, 33.5, 0, 5, 1.2, 3, warmLamp);
-        lampHalos.push({ sprite: halo(group, 6, 33, 0, 14), x: l.x, y: l.y });
+        placePropInstance(lampPoles, prop, l.x, 17, l.y, 1.1, 34, 1.1);
+        placePropInstance(lampArms, prop, l.x + 3, 34, l.y, 7, 1, 1);
+        placePropInstance(lampHeads, prop, l.x + 6, 33.5, l.y, 5, 1.2, 3);
+        prop.halo = halo(group, 6, 33, 0, 14);
+        lampHalos.push({ sprite: prop.halo, x: l.x, y: l.y });
         const glow = new Three.Mesh(
           new Three.PlaneGeometry(65, 65),
           new Three.MeshBasicMaterial({
@@ -633,6 +648,7 @@
         glow.position.set(6, 0.1, 0);
         glow.userData.dynamic = true;
         group.add(glow);
+        prop.glow = glow;
         lampGlows.push({ mesh: glow, x: l.x, y: l.y });
         statics.push({
           x: l.x,
@@ -750,47 +766,6 @@
         geo.computeVertexNormals();
         return geo;
       }
-      function cabinGeo(l, w, base, roof, van = false) {
-        const xb = van ? -0.41 : -0.32,
-          xf = van ? 0.27 : 0.27,
-          rb = van ? -0.4 : -0.19,
-          rf = van ? 0.13 : 0.07,
-          wb = w * 0.42,
-          wt = w * 0.35;
-        const v = [
-          xb * l,
-          base,
-          -wb,
-          xf * l,
-          base,
-          -wb,
-          xf * l,
-          base,
-          wb,
-          xb * l,
-          base,
-          wb,
-          rb * l,
-          roof,
-          -wt,
-          rf * l,
-          roof,
-          -wt,
-          rf * l,
-          roof,
-          wt,
-          rb * l,
-          roof,
-          wt,
-        ];
-        const geo = new Three.BufferGeometry();
-        geo.setAttribute('position', new Three.Float32BufferAttribute(v, 3));
-        geo.setIndex([
-          0, 4, 1, 1, 4, 5, 1, 5, 2, 2, 5, 6, 2, 6, 3, 3, 6, 7, 3, 7, 0, 0, 7, 4, 4, 7, 5, 5, 7, 6,
-        ]);
-        geo.computeVertexNormals();
-        return geo;
-      }
       // @include src/helicopter3d.js
       // @include src/vehicles3d.js
       // @include src/plane3d.js
@@ -824,22 +799,24 @@
           metalness: 0.63,
           envMapIntensity: 0.8,
         });
-        const shell = mesh(bodyGeo(l, w, h), paint, body, 0, 0, 0),
-          original = new Float32Array(shell.geometry.attributes.position.array),
+        // The deformable shell and per-pane glasshouse (damage3d.js): shared while
+        // pristine, copied the first time the car is dented.
+        const shell = mesh(carShellGeometry(l, w, h), paint, body, 0, 0, 0),
           wheels = [],
           bumpers = [],
-          nightLights = [];
+          nightLights = [],
+          lamps = [];
         const cabin = open
-          ? box(body, l * 0.14, h + 2.4, 0, 0.7, 5, w * 0.73, glass.clone())
+          ? box(body, l * 0.14, h + 2.4, 0, 0.7, 5, w * 0.73, carGlass)
           : mesh(
-              cabinGeo(
+              carCabinGeometry(
                 l * (rodCar ? 0.55 : 1),
                 w * (rodCar ? 0.88 : 1),
                 h - 0.5,
                 roof,
                 van || rally || limo,
               ),
-              glass.clone(),
+              carGlass,
               body,
               rodCar ? -l * 0.17 : 0,
               0,
@@ -910,8 +887,18 @@
               spoke.rotation.z = (s * Math.PI) / 5;
             }
           }
-          box(body, l * 0.47, h - 2, side * w * 0.3, 1.5, 2.5, w * 0.24, warmLamp);
-          box(body, -l * 0.47, h - 2, side * w * 0.3, 1.2, 2, w * 0.22, tailLamp);
+          lamps.push(
+            {
+              mesh: box(body, l * 0.47, h - 2, side * w * 0.3, 1.5, 2.5, w * 0.24, warmLamp),
+              key: side < 0 ? 'headLeft' : 'headRight',
+              lit: warmLamp,
+            },
+            {
+              mesh: box(body, -l * 0.47, h - 2, side * w * 0.3, 1.2, 2, w * 0.22, tailLamp),
+              key: side < 0 ? 'tailLeft' : 'tailRight',
+              lit: tailLamp,
+            },
+          );
           nightLights.push(
             halo(body, l * 0.5, h - 2, side * w * 0.3, 11, '#ffe9bd'),
             halo(body, -l * 0.5, h - 2, side * w * 0.3, 7, '#ff5a44'),
@@ -954,38 +941,6 @@
           for (const side of [-1, 1])
             box(body, 0, h - 2, side * w * 0.501, l * 0.4, 3, 0.22, mat('#d8d3c7'));
         }
-        const cracks = new Three.Group();
-        body.add(cracks);
-        const crackMat = new Three.LineBasicMaterial({
-          color: '#b7c7cb',
-          transparent: true,
-          opacity: 0.7,
-        });
-        for (let i = 0; i < 5; i++) {
-          const z = (i - 2) * w * 0.12,
-            points = [
-              new Three.Vector3(l * 0.185, roof - 2, z),
-              new Three.Vector3(l * 0.19 + 1, roof - 2.7, z + 2),
-              new Three.Vector3(l * 0.185 - 2, roof - 2, z + 4),
-            ];
-          cracks.add(new Three.Line(new Three.BufferGeometry().setFromPoints(points), crackMat));
-        }
-        cracks.visible = false;
-        const scuffs = [];
-        for (const side of [-1, 1]) {
-          const model = box(
-            body,
-            2,
-            h - 2,
-            side * (w * 0.501),
-            l * 0.43,
-            0.8,
-            0.2,
-            mat('#8d9290', 0.8, 0.3),
-          );
-          model.visible = false;
-          scuffs.push(model);
-        }
         const hood = box(body, l * 0.34, h + 0.05, 0, l * 0.25, 0.4, w * 0.67, paint);
         const bumperOrigins = bumpers.map((b) => b.position.clone());
         return {
@@ -995,16 +950,18 @@
           color: vehicle.color,
           strobes,
           dead: false,
+          car: true,
+          dims: { l, w, h, roof, van },
           shell,
-          original,
+          shellBase: shell.geometry.attributes.position.array,
           cabin,
-          cracks,
-          scuffs,
+          cabinBase: open ? null : cabin.geometry.attributes.position.array,
           wheels,
           bumpers,
           bumperOrigins,
           hood,
           hoodBaseY: h + 0.05,
+          lamps,
           damageVersion: -1,
           nightLights,
         };
@@ -1472,6 +1429,8 @@
       }
       /* REVIEW_HOOK:RENDERER_API */
       const api = {
+        // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
+        ...damageApi,
         info() {
           let objects = 0;
           const byType = {};
@@ -1562,22 +1521,7 @@
           }
         },
         impact(x, z, kind, altitude = 0) {
-          for (let j = 0; j < (kind === 'metal' ? 8 : 5); j++)
-            fx.push({
-              x,
-              y: 5 + altitude,
-              z,
-              vx: (Math.random() - 0.5) * 100,
-              vy: 35 + Math.random() * 55,
-              vz: (Math.random() - 0.5) * 100,
-              life: 0.18 + Math.random() * 0.22,
-              max: 0.4,
-              color: kind === 'metal' ? '#ffd084' : '#b6aba0',
-              size: kind === 'metal' ? 1.7 : 3,
-              glow: kind === 'metal',
-              case: kind === 'metal',
-              smoke: kind !== 'metal',
-            });
+          impactEffect(x, z, kind, altitude);
         },
         explosion(x, z, power = 1, altitude = terrainHeight(x, z)) {
           const ring = blastRings[blastRingIndex++ % blastRings.length];
@@ -1739,12 +1683,15 @@
             }
             m.group.visible = near;
             if (!near) continue;
-            m.group.position.set(c.x, 0.1 + entityElevation(c), c.y);
+            // Suspension: weight transfer, the hop after a blast, a sag onto a flat (damage3d.js).
+            const stance = vehiclePose(c);
+            m.group.position.set(c.x, 0.1 + entityElevation(c) + stance.lift, c.y);
             m.group.rotation.y = -c.a;
             m.body.rotation.x =
-              c === player.car ? clamp(normalizeAngle(c.a - (c.moveA ?? c.a)) * -0.15, -0.05, 0.05) : 0;
+              (c === player.car ? clamp(normalizeAngle(c.a - (c.moveA ?? c.a)) * -0.15, -0.05, 0.05) : 0) +
+              stance.roll;
             m.body.rotation.z =
-              Math.sin(gameTime * 7 + c.id) * Math.min(0.008, Math.abs(c.speed) * 0.00002);
+              Math.sin(gameTime * 7 + c.id) * Math.min(0.008, Math.abs(c.speed) * 0.00002) + stance.pitch;
             if (c.type === 'flatbed') {
               if (!m.cargo) {
                 m.cargo = Array.from(
@@ -1764,16 +1711,12 @@
               const lit = c.hp > 0 && (c.ai || c === player.car) && nightAmount > 0.25;
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
-                sprite.visible = lit;
+                sprite.visible = lit && !m.lampOut?.[k];
                 if (lit) sprite.material.opacity = (k % 2 ? 0.55 : 0.85) * nightAmount;
               }
             }
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
-            m.paint.color
-              .set(c.hp <= 0 ? '#303136' : c.color)
-              .lerp(new Three.Color('#585451'), wear * 0.22);
-            m.paint.roughness = 0.3 + wear * 0.6;
-            m.paint.metalness = 0.63 - wear * 0.42;
+            paintVehicle(c, m);
             if (m.crank) m.crank.rotation.z -= deltaSeconds * c.speed * 0.13;
             if (m.helicopter) {
               const running =
@@ -1787,46 +1730,10 @@
               m.body.rotation.z = clamp(-c.speed * 0.00035, -0.13, 0.13);
               m.body.rotation.x = clamp(c.av * 0.065, -0.1, 0.1);
               m.canopy.material.roughness = 0.12 + wear * 0.65;
-            } else if (!m.special && m.damageVersion !== c.damageVersion) {
+            } else if (m.damageVersion !== c.damageVersion) {
+              // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js).
               m.damageVersion = c.damageVersion;
-              const positions = m.shell.geometry.attributes.position,
-                d = c.damage;
-              for (let i = 0; i < positions.count; i++) {
-                let x = m.original[i * 3],
-                  y = m.original[i * 3 + 1],
-                  z = m.original[i * 3 + 2];
-                for (const dent of c.dents) {
-                  const dx = x - dent.x,
-                    dz = z - dent.y,
-                    influence = Math.max(0, 1 - Math.hypot(dx, dz) / 17) * dent.force;
-                  x -= Math.sign(dent.x) * influence * 1.1;
-                  z -= Math.sign(dent.y) * influence * 0.8;
-                  y -= influence * 0.4;
-                }
-                positions.setXYZ(i, x, y, z);
-              }
-              positions.needsUpdate = true;
-              m.shell.geometry.computeVertexNormals();
-              m.cracks.visible = wear > 0.2;
-              m.cabin.material.color.set(wear > 0.65 ? '#3a494e' : '#182b3c');
-              m.cabin.material.roughness = 0.12 + wear * 0.65;
-              m.hood.rotation.z = d.front * 0.15;
-              m.hood.position.y = m.hoodBaseY + d.front * 2.3;
-              m.scuffs.forEach((v, i) => {
-                v.visible = c.damage[i ? 'right' : 'left'] > 0.12 || wear > 0.5;
-                v.scale.x = vehicleSpec(c).l * 0.43 * clamp(wear * 2, 0.3, 1);
-              });
-              m.bumpers.forEach((v, i) => {
-                const amount = i ? d.rear : d.front;
-                v.position.copy(m.bumperOrigins[i]);
-                v.position.x += (i ? 1 : -1) * amount * 2;
-                v.position.y -= amount * 1.5;
-                v.rotation.y = (i ? 1 : -1) * amount * 0.18;
-                v.rotation.z = amount * 0.1;
-              });
-              m.wheels.forEach(({ wheel, side }) => {
-                wheel.rotation.x = side * c.damage[side > 0 ? 'right' : 'left'] * 0.16;
-              });
+              applyVehicleDamage(c, m);
             }
             if (m.plane) {
               if (m.prop)
@@ -1839,7 +1746,7 @@
               m.barrel.position.x = (-Math.max(0, (c.cannonRecoilUntil || 0) - gameTime) / 0.25) * 4;
             }
             if (m.special) {
-              if (!m.plane) m.body.rotation.z = -wear * 0.025;
+              if (!m.plane) m.body.rotation.z = -wear * 0.025 + stance.pitch;
               if (m.bike) {
                 m.body.rotation.x = clamp(c.av * 0.13, -0.28, 0.28);
                 m.rider.visible = c.hp > 0 && (c === player.car || c.ai);
@@ -1886,50 +1793,16 @@
                   : '#3c4147',
               );
             });
-            if (
-              deltaSeconds > 0 &&
-              !vehicleSpec(c).bicycle &&
-              c.hp <= 0 &&
-              gameTime - c.deadTime < 12 &&
-              Math.random() < 1 - Math.pow(0.77, deltaSeconds * 60)
-            )
-              fx.push({
-                x: c.x + (Math.random() - 0.5) * 12,
-                y: 10 + entityElevation(c),
-                z: c.y + (Math.random() - 0.5) * 8,
-                vx: 0,
-                vy: 20,
-                vz: 0,
-                life: 1.6,
-                max: 1.6,
-                color: Math.random() > 0.55 ? '#d39150' : '#55585f',
-                size: 15,
-              });
-            if (
-              deltaSeconds > 0 &&
-              !vehicleSpec(c).bicycle &&
-              c.hp > 0 &&
-              c.hp < c.maxhp * 0.55 &&
-              Math.random() < 1 - Math.pow(1 - (0.55 - c.hp / c.maxhp) * 0.5, deltaSeconds * 60)
-            )
-              fx.push({
-                x: c.x + Math.cos(c.a) * 14,
-                y: 10 + entityElevation(c),
-                z: c.y + Math.sin(c.a) * 14,
-                vx: 0,
-                vy: 12,
-                vz: 0,
-                life: 1.6,
-                max: 1.6,
-                color: '#52585f',
-                size: 12,
-              });
+            // Engine smoke, fire and the burning wreck (damage3d.js).
+            vehicleEffects(c, m, deltaSeconds);
           }
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;
               m.body.rotation.z += c.slopePitch || 0;
             }
+          // Marks on vehicles, debris, knocked furniture and decal uploads (damage3d.js).
+          updateDamageVisuals(deltaSeconds);
           for (const p of people) {
             const activePlayer = p === player;
             let m = personModels.get(p);
@@ -2171,7 +2044,7 @@
             targetLight.position.set(target.x, targetAltitude + 10, target.y);
           }
           if (player.car && !isAircraft(player.car)) {
-            playerHeadlight.intensity = 850;
+            playerHeadlight.intensity = 850 * headlightShare(player.car);
             const x = player.x + Math.cos(player.a) * 160,
               z = player.y + Math.sin(player.a) * 160;
             playerHeadlight.position.set(
