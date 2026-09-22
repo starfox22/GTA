@@ -855,12 +855,7 @@
           altitude: 0,
           vz: 0,
           av: 0,
-          damage: {
-            front: 0,
-            rear: 0,
-            left: 0,
-            right: 0,
-          },
+          damage: freshDamage(),
           dents: [],
           damageVersion: 0,
         };
@@ -1592,7 +1587,16 @@
       });
       for (const c of vehicles)
         if (c.hp > 0 && distance(c) < 95 * power && clearSight(blast, c))
-          damageVehicle(c, Math.max(0, 200 * power - distance(c) * 1.6), x, y, attacker);
+          damageVehicle(c, Math.max(0, 200 * power - distance(c) * 1.6), x, y, attacker, {
+            kind: 'blast',
+            x,
+            y,
+            power,
+            falloff: 1 - distance(c) / (95 * power),
+          });
+      // The shock wave shoves and spins cars, blows out glass, flattens street
+      // furniture and scorches the nearest facades (damage.js).
+      blastEffects(x, y, altitude, power);
       for (const e of [
         ...pedestrians,
         ...enemies,
@@ -2539,6 +2543,9 @@
           hitKind = 'wall';
         const steps = Math.max(1, Math.ceil((Math.hypot(b.vx, b.vy, b.vz || 0) * deltaSeconds) / 7));
         for (let j = 0; j < steps && !impact; j++) {
+          // Where this sub-step started: damage.js traces the entry face from it.
+          b.px = b.x;
+          b.py = b.y;
           b.x += (b.vx * deltaSeconds) / steps;
           b.y += (b.vy * deltaSeconds) / steps;
           b.altitude = (b.altitude ?? 0) + ((b.vz || 0) * deltaSeconds) / steps;
@@ -2563,9 +2570,12 @@
                 (lawVehicle(c) || (c === player.car && b.target !== player))
               )
             )
-              damageVehicle(c, b.dmg, b.x, b.y, b.owner || (!b.enemy ? player : null));
+              damageVehicle(c, b.dmg, b.x, b.y, b.owner || (!b.enemy ? player : null), {
+                kind: 'bullet',
+              });
             impact = true;
-            hitKind = 'metal';
+            // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
+            hitKind = bulletHitVehicle(c, b);
             break;
           }
           if (impact) break;
@@ -2647,9 +2657,11 @@
               b.altitude ?? 0,
             );
           else if (impact && hitKind !== 'flesh') {
+            // Walls keep a chip or a hole, shop windows crack and then give way.
+            if (hitKind === 'wall') hitKind = bulletHitSurface(b);
             particle(b.x, b.y, hitKind === 'metal' ? '#dbd8a7' : '#aaa89e', 3, 40);
             if (city3D) city3D.impact(b.x, b.y, hitKind, b.altitude || 0);
-          }
+          } else if (!impact) bulletSpent(b);
           bullets.splice(i, 1);
         }
       }
@@ -2737,6 +2749,7 @@
         }
         timed('people', () => updatePeople(deltaSeconds));
         timed('bullets', () => updateBullets(deltaSeconds));
+        timed('damage', () => updateDamage(deltaSeconds));
         if (gameMode !== 'play') return;
         for (const p of pickups)
           if (
@@ -4417,6 +4430,7 @@
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
+    // @include src/damage.js
     // @include src/county.js
     // @include src/military.js
     // @include src/aviation.js
@@ -4748,6 +4762,9 @@
         c.speed = speed;
         return this.ride();
       },
+      // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
+      // streetProps(), damageStats() (see damage.js damageConsole).
+      ...damageConsole(),
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

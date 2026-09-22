@@ -19,6 +19,7 @@
           color: vehicle.color,
           strobes: [],
           wheels: [],
+          lamps: [],
           special: true,
           dead: false,
         };
@@ -262,8 +263,11 @@
         for (const side of [-1, 1]) {
           for (const x of [l * 0.32, -l * 0.31, ...(l > 75 ? [-l * 0.16] : [])])
             tireAt(model, x, side * w * 0.46, bus ? 5.5 : 5, 3.4);
-          box(b, l * 0.478, 10, side * w * 0.34, 1.2, 3, 4, warmLamp);
-          box(b, -l * 0.48, 9, side * w * 0.35, 0.7, 2, 3, tailLamp);
+          // Lamps a crash or a bullet can put out (damage3d.js).
+          model.lamps.push(
+            { mesh: box(b, l * 0.478, 10, side * w * 0.34, 1.2, 3, 4, warmLamp), key: side < 0 ? 'headLeft' : 'headRight', lit: warmLamp },
+            { mesh: box(b, -l * 0.48, 9, side * w * 0.35, 0.7, 2, 3, tailLamp), key: side < 0 ? 'tailLeft' : 'tailRight', lit: tailLamp },
+          );
         }
         box(b, l * 0.49, 6.5, 0, 2, 3, w * 0.9, chrome);
         box(b, l * 0.475, 11, 0, 1, 4, w * 0.43, darkMetal);

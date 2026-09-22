@@ -57,6 +57,7 @@ Game closure (in include order):
 | campaign.js | Saves, mission select menu |
 | roofmission.js | Blue Hour rooftop hit, `entityElevation` |
 | air-cover.js / combat-rules.js | Underpass volumes, elevation-aware shooting, air support |
+| damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`) |
 | county.js / military.js / terrain.js | Outlying regions, towns, Fort Sentinel, mountains |
 | aviation.js / parachute.js | Fixed-wing flight model, flight missions 9 and 10, bail-out |
 | challenges.js | Missions 2 to 8 and the interact/UI routing for all missions |
@@ -66,8 +67,9 @@ Game closure (in include order):
 | navigation.js, mobile.js, world-view.js, car-radio.js, garages.js | Route planning, touch, zoom, radio, garages |
 | render3d.js | Renderer entry: lights, ground texture painting, vehicle/person models, effects, `render()` |
 
-Renderer fragments (inside `createCityRenderer()`): cityscape3d (buildings, roofs, shopfronts,
-street furniture, night windows), sidejobs3d (rings/devices), garage3d, landmarks3d, civic3d
+Renderer fragments (inside `createCityRenderer()`): damage3d (deformable car bodies, decal atlas
+and pools, rubble and torn panels, knocked furniture, smoke and fire), cityscape3d (buildings,
+roofs, shopfronts, street furniture, night windows), sidejobs3d (rings/devices), garage3d, landmarks3d, civic3d
 (time-of-day palette, businesses), air-cover3d, renewal3d, sports3d, transit3d, ecology3d,
 world3d (water shader, palms, airport, rooftop bar), county3d, harbor3d (signals, depot,
 helicopter searchlight), helicopter3d, vehicles3d, plane3d.
@@ -131,6 +133,36 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
   view-dependent.
 - Repeated props use `InstancedMesh` pools (`pools` in cityscape3d.js). Add a pool there
   rather than creating per-building meshes for small repeated objects.
+
+## 6a. Damage and destruction
+
+Damage is data on the entity; `damage3d.js` only draws it (see the header of `damage.js`).
+
+- `damageVehicle(vehicle, amount, x, y, source, detail)` (physics.js) takes the hit points and
+  hands the rest to `recordVehicleDamage()`. `detail.kind` shapes it: `crash` (contact normal,
+  closing speed, the other mass) crumples along the normal; `blast` dishes the face toward the
+  explosion; `bullet` only marks the skin (`bulletHitVehicle` records the hole). No detail
+  dents toward the centre as before.
+- `vehicle.dents[]` are `{x, y, z, nx, ny, depth, r}` in vehicle space (x forward, y right,
+  z up). Nearby dents merge, so repeated hits fold one crumple deeper. `damage.front/rear/
+  left/right` stay 0..1 and drive the panels: hood (buckle, sprung, gone), bumpers (hang by one
+  bracket, torn off), doors (sprung, torn off), trunk, per-pane glass (windscreen cracks, side and
+  rear glass bursts), lamps, flat tyres and `damage.pull`.
+- `vehicleHandling(c)` turns that into engine power, top speed, grip and steering pull for the
+  player and traffic. Below 25% health the engine burns (`damage.burning`) down to the explosion;
+  wrecks are gutted once (`wreckVehicle`). `repairVehicle` and `freshDamage` reset everything.
+- Physics: tyre side-force is capped so hit cars slide; off-centre impulses set `spinUntil`
+  (the car spins out); explosions shove, spin and bounce vehicles (`blastEffects`, `c.hop`);
+  `resolveContact` records scrapes for sparks and paint scores.
+- Street furniture registers itself as it is placed (`registerStreetProp(kind, x, y, yaw)` from
+  cityscape3d, the lamp loop in render3d and the signals in harbor3d). Standing props are solid
+  boxes for vehicles; mass times closing speed above the kind's `toughness` knocks one down
+  (it stops being solid) and takes momentum off the car. They stand up again after four
+  minutes out of view. Hydrants spray, benches turn their sitter out.
+- Decals: one 4×4 procedural atlas; `worldDecals` (a 2400-slot ring buffer: wall chips,
+  shop-glass stars and shattered panes, scorch, soot, craters, rubble, scuffs, oil, puddles)
+  and `vehicleDecals` (rebuilt each frame from `damage.marks`, anchored by a ray along the
+  bullet path). Shop panes are recorded on their building as `b.shopPanes`.
 
 ## 6b. Performance model
 

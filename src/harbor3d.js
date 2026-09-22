@@ -382,18 +382,25 @@
             [true, 61, -65],
             [false, -65, 61],
           ]) {
-            box(group, x + dx, 15, z + dz, 1.1, 30, 1.1, darkMetal);
-            box(group, x + dx, 29, z + dz, 5, 12, 4, darkMetal);
+            // Each post stands in its own group at its base, so a car that knocks
+            // it down (a street prop in damage.js) tips the whole signal over.
+            const post = new Three.Group(),
+              prop = registerStreetProp('signal', x + dx, z + dz);
+            post.position.set(x + dx, 0, z + dz);
+            group.add(post);
+            prop.group = post;
+            box(post, 0, 15, 0, 1.1, 30, 1.1, darkMetal);
+            box(post, 0, 29, 0, 5, 12, 4, darkMetal);
             const bulbs = ['#a94332', '#d3aa44', '#80b987'].map((co, i) =>
               mesh(
                 sphereGeo,
                 new Three.MeshBasicMaterial({
                   color: co,
                 }),
-                group,
-                x + dx,
+                post,
+                0,
                 33 - i * 4,
-                z + dz + 2.5,
+                2.5,
                 1.5,
                 1.5,
                 0.7,
@@ -402,6 +409,7 @@
             heads.push({
               vertical,
               bulbs,
+              prop,
             });
           }
           signalModels.push({
@@ -428,7 +436,8 @@
           if (!s.group.visible) continue;
           const state = trafficSignal(s.x, s.z);
           for (const h of s.heads) {
-            const on = signalBulbIndex[state[h.vertical ? 'vertical' : 'horizontal']];
+            // A signal lying in the road is dark.
+            const on = h.prop.down ? -1 : signalBulbIndex[state[h.vertical ? 'vertical' : 'horizontal']];
             h.bulbs.forEach((b, i) =>
               b.material.color.set(i === on ? signalLitColors[i] : '#252d30'),
             );
