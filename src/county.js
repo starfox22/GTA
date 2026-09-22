@@ -806,6 +806,7 @@
       populateRecreation();
       populateSunsetPier();
       populateLiners();
+      populatePromenade();
       populateMarina();
       populateWildlife();
       resetTransit();

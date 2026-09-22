@@ -2154,6 +2154,15 @@
         'Noodles are ready in a minute.',
         'Best lunch in the Garden.',
       ],
+      shore: [
+        'Best view in the city, right here.',
+        'Ferry horn. Must be six already.',
+        'Look at that liner.',
+        'Smell that? Rain coming.',
+        'Same walk every evening. Never gets old.',
+        'Careful, the rail is wet.',
+        'One more lap, then coffee.',
+      ],
       deck: [
         'The whole skyline from up here!',
         'Sailing sets at six, they said.',
@@ -2213,6 +2222,7 @@
           updateDeckWalker(p, deltaSeconds);
           continue;
         }
+        if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateCarjackReactions(p, deltaSeconds)) continue;
         if (updateGymGoer(p, deltaSeconds)) continue;

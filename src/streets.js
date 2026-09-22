@@ -167,8 +167,29 @@
                 y: r.r,
               };
         for (const v of [r.start, r.end]) {
-          const p = pos(v);
+          const p = pos(v),
+            outward = v === r.start ? -1 : 1,
+            a = r.vertical
+              ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2)
+              : outward > 0
+                ? 0
+                : Math.PI;
           if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+          if (streetEndAtShore(p.x, p.y, a)) {
+            // Meets the esplanade: a short apron and a crossing, no turning head.
+            drawingContext.save();
+            drawingContext.translate(p.x, p.y);
+            drawingContext.rotate(a);
+            drawingContext.fillStyle = '#4b5659';
+            drawingContext.fillRect(0, -r.width / 2, 22, r.width);
+            if (detail) {
+              drawingContext.fillStyle = '#d4d6c7';
+              for (let i = -2; i <= 2; i++)
+                drawingContext.fillRect(24, i * 12 - 3, 13, 6);
+            }
+            drawingContext.restore();
+            continue;
+          }
           drawingContext.fillStyle = '#4b5659';
           drawingContext.beginPath();
           drawingContext.arc(p.x, p.y, r.width * 0.5, 0, TAU);
@@ -233,28 +254,138 @@
         ny: headingCosine,
       };
     }
+    /**
+     * WATERFRONT
+     * A street that runs out at the shore is finished by the esplanade, not by a
+     * turning head: only the handful of ends that stop inland keep the barrier and
+     * the NO THROUGH ROAD plate. `promenadeSpots()` is the shared esplanade
+     * furniture list -- the renderer builds railings, lamps and benches from it and
+     * pedestrians walk between the same points, so what you see is what they use.
+     */
+    function streetEndAtShore(x, y, a) {
+      for (let d = 12; d < 170; d += 12)
+        if (!landAt(x + Math.cos(a) * d, y + Math.sin(a) * d)) return true;
+      return false;
+    }
+    const PROMENADE_REGIONS = ['northbank', 'palmkeys'];
+    function esplanadePoint(e) {
+      const { nx, ny } = shoreNormal(e),
+        inset = shoreStyle(e) === 'beach' ? 78 : 30;
+      return { x: e.x - nx * inset, y: e.y - ny * inset, nx, ny, a: e.a };
+    }
+    let promenadeCache = null;
+    function promenadeSpots() {
+      if (promenadeCache) return promenadeCache;
+      promenadeCache = [];
+      let step = 0;
+      for (const e of coastSegments()) {
+        if (e.opening || !PROMENADE_REGIONS.includes(e.region)) continue;
+        const p = esplanadePoint(e);
+        if (onRoad(p.x, p.y) || !groundAt(p.x, p.y, 10)) continue;
+        step++;
+        promenadeCache.push({
+          x: p.x,
+          y: p.y,
+          a: p.a,
+          nx: p.nx,
+          ny: p.ny,
+          beach: shoreStyle(e) === 'beach',
+          // A repeating rhythm of rail, lamp, bench and planter down the walk.
+          kind: step % 6 === 2 ? 'bench' : step % 6 === 4 ? 'lamp' : step % 12 === 9 ? 'tree' : 'rail',
+        });
+      }
+      return promenadeCache;
+    }
+    /* Strollers work along the esplanade spot list, so they keep to the walk and
+       turn at its ends instead of wandering into the road or the water. */
+    function populatePromenade() {
+      const spots = promenadeSpots();
+      for (let i = 3; i < spots.length; i += 6) {
+        if (seededRandom() > 0.5) continue;
+        const spot = spots[i];
+        if (solid(spot.x, spot.y, 6)) continue;
+        pedestrians.push({
+          x: spot.x,
+          y: spot.y,
+          a: spot.a,
+          color: randomChoice(DRIVER_COLORS),
+          hp: 30,
+          flee: 0,
+          timer: randomBetween(0, 6),
+          walk: 0,
+          stroll: {
+            index: i,
+            dir: seededRandom() > 0.5 ? 1 : -1,
+            pause: randomBetween(0, 14),
+          },
+        });
+      }
+    }
+    function updateStroller(p, deltaSeconds) {
+      if (!p.stroll || p.flee > 0 || p.knockedFor || p.ejected) return false;
+      const spots = promenadeSpots(),
+        stroll = p.stroll;
+      stroll.pause -= deltaSeconds;
+      if (stroll.pause < -4) stroll.pause = randomBetween(14, 40);
+      if (stroll.pause <= 0) {
+        // Stopped at the rail to look at the water.
+        p.walking = false;
+        p.a = Math.atan2(spots[stroll.index]?.ny || 0, spots[stroll.index]?.nx || 1);
+        pedSay(p, 'shore', 0.004);
+        return true;
+      }
+      let target = spots[stroll.index];
+      if (!target || distanceBetween(p, target) > 150) {
+        stroll.dir *= -1;
+        stroll.index = clamp(stroll.index + stroll.dir, 0, spots.length - 1);
+        target = spots[stroll.index];
+        if (!target) return false;
+      }
+      if (distanceBetween(p, target) < 13) {
+        const next = stroll.index + stroll.dir;
+        if (next < 0 || next >= spots.length) stroll.dir *= -1;
+        else stroll.index = next;
+      }
+      p.a = headingBetween(p, target);
+      p.walking = true;
+      p.walk += deltaSeconds * 6;
+      const speed = cityTempo().speed * 0.82;
+      moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5);
+      pedSay(p, 'shore', 0.0015);
+      return true;
+    }
     function paintPromenades(drawingContext) {
       drawingContext.save();
       coastPath(drawingContext);
       drawingContext.clip();
       for (const e of coastSegments()) {
-        if (e.opening || !['northbank', 'palmkeys'].includes(e.region)) continue;
-        const { nx, ny } = shoreNormal(e),
-          inset = shoreStyle(e) === 'beach' ? 78 : 27,
-          x = e.x - nx * inset,
-          y = e.y - ny * inset;
-        if (onRoad(x, y)) continue;
+        if (e.opening || !PROMENADE_REGIONS.includes(e.region)) continue;
+        const beach = shoreStyle(e) === 'beach',
+          p = esplanadePoint(e);
+        if (onRoad(p.x, p.y)) continue;
+        const half = e.length / 2 + 1;
         drawingContext.save();
-        drawingContext.translate(x, y);
+        drawingContext.translate(p.x, p.y);
         drawingContext.rotate(e.a);
-        drawingContext.fillStyle = shoreStyle(e) === 'beach' ? '#bba889' : '#b5b2a2';
-        drawingContext.fillRect(-e.length / 2 - 1, -8, e.length + 2, 16);
+        // Walk, kerb line and a band of setts along the landward edge.
+        drawingContext.fillStyle = beach ? '#bba889' : '#b0ada0';
+        drawingContext.fillRect(-half, -20, e.length + 2, 40);
+        drawingContext.fillStyle = beach ? '#c7b591' : '#bdbaad';
+        drawingContext.fillRect(-half, -20, e.length + 2, 13);
         drawingContext.strokeStyle = '#d4ceae';
-        drawingContext.lineWidth = 1;
+        drawingContext.lineWidth = 1.2;
         drawingContext.beginPath();
-        drawingContext.moveTo(-e.length / 2, -6);
-        drawingContext.lineTo(e.length / 2, -6);
+        drawingContext.moveTo(-half, 17);
+        drawingContext.lineTo(half, 17);
         drawingContext.stroke();
+        drawingContext.strokeStyle = '#9a9a8d';
+        drawingContext.lineWidth = 0.8;
+        for (let d = -half; d < half; d += 9) {
+          drawingContext.beginPath();
+          drawingContext.moveTo(d, -20);
+          drawingContext.lineTo(d, -7);
+          drawingContext.stroke();
+        }
         drawingContext.restore();
       }
       drawingContext.restore();

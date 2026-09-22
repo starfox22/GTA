@@ -302,6 +302,9 @@
               a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
             if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
             if (inAirport(p.x, p.y) || inStadiumLot(p.x, p.y, 40)) continue;
+            // A street that runs out at the water is finished by the esplanade
+            // railing, so it gets no turning head and no barrier furniture.
+            if (streetEndAtShore(p.x, p.y, a)) continue;
             const group = new Three.Group();
             group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
             group.rotation.y = -a;
@@ -350,6 +353,61 @@
         }
       }
       buildStreetEnds();
+      /**
+       * ESPLANADE
+       * Railing bays, lamp standards, benches and planters along the whole
+       * waterfront, built from the shared promenadeSpots() list so the people
+       * strolling it walk exactly where the furniture is.
+       */
+      function buildPromenade() {
+        const railMetal = mat('#b9bcb4', 0.4, 0.55),
+          walkStone = mat('#b7b4a6', 0.9),
+          seatWood = mat('#9c7b52', 0.85),
+          lampPost = mat('#42484a', 0.6, 0.35),
+          lampGlass = new Three.MeshBasicMaterial({ color: '#ffe9bd' }),
+          planter = mat('#8c8779', 0.9);
+        let group = null,
+          groupAt = null,
+          count = 0;
+        for (const spot of promenadeSpots()) {
+          // Batch the furniture in runs so a mile of railing is a handful of meshes.
+          if (!group || Math.hypot(spot.x - groupAt.x, spot.y - groupAt.y) > 420 || count > 40) {
+            group = new Three.Group();
+            scene.add(group);
+            batchGroups.push(group);
+            statics.push({ x: spot.x, y: spot.y, group, radius: 560 });
+            groupAt = spot;
+            count = 0;
+          }
+          count++;
+          const inner = new Three.Group();
+          inner.position.set(spot.x, terrainHeight(spot.x, spot.y), spot.y);
+          inner.rotation.y = -spot.a;
+          group.add(inner);
+          if (!spot.beach) {
+            // Seaward railing: two posts and a pair of rails per bay.
+            for (const side of [-1, 1]) box(inner, side * 20, 6, 19, 2, 12, 2, railMetal);
+            box(inner, 0, 11, 19, 46, 1.8, 1.8, railMetal);
+            box(inner, 0, 6.5, 19, 46, 1.4, 1.4, railMetal);
+            box(inner, 0, 1.2, 19, 46, 2.4, 5, walkStone);
+          }
+          if (spot.kind === 'lamp') {
+            box(inner, 0, 15, 12, 2.6, 30, 2.6, lampPost);
+            box(inner, 0, 2, 12, 7, 4, 7, lampPost);
+            const globe = mesh(sphereGeo, lampGlass, inner, 0, 32, 12, 3.4, 4.2, 3.4);
+            globe.castShadow = false;
+          } else if (spot.kind === 'bench') {
+            box(inner, 0, 4.4, 4, 18, 1.6, 6, seatWood);
+            box(inner, 0, 7.6, 1.6, 18, 5.4, 1.4, seatWood);
+            for (const side of [-1, 1]) box(inner, side * 7, 2, 4, 1.4, 4.4, 5.4, lampPost);
+          } else if (spot.kind === 'tree') {
+            mesh(new Three.CylinderGeometry(9, 9.6, 3, 12), planter, inner, 0, 1.5, 6);
+            rod(inner, new Three.Vector3(0, 3, 6), new Three.Vector3(0, 17, 6), 1.3, mat('#6b5442'));
+            mesh(sphereGeo, leafMats[0], inner, 0, 22, 6, 11, 9, 11);
+          }
+        }
+      }
+      buildPromenade();
       function makePalm(x, z, size = 1) {
         const g = new Three.Group();
         g.position.set(x, 0, z);
