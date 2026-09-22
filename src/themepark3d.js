@@ -47,11 +47,18 @@
       }
       // ---- Coaster -----------------------------------------------------------------
       {
-        const n = COASTER_TRACK.length;
+        const n = COASTER_TRACK.length,
+          // The vertical loop: authored as a run of points that comes back to its
+          // own entry, so it is supported from the side rather than from below.
+          LOOP_FIRST = 10,
+          LOOP_LAST = 18,
+          insideLoop = (i) => i >= LOOP_FIRST && i < LOOP_LAST;
         for (let i = 0; i < n; i++) {
           const a = COASTER_TRACK[i],
             b = COASTER_TRACK[(i + 1) % n],
-            steps = Math.max(2, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) / 14));
+            // Stepped by true 3D length so the near-vertical sides of the loop are
+            // drawn as smoothly as the flat running track.
+            steps = Math.max(2, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) / 14));
           for (let s = 0; s < steps; s++) {
             const t0 = s / steps,
               t1 = (s + 1) / steps,
@@ -88,12 +95,27 @@
               rideSteel,
             );
             rod(parkStatic, new Three.Vector3(p0.x, p0.y - 3, p0.z), new Three.Vector3(p1.x, p1.y - 3, p1.z), 1.1, rideSteel);
-            // A bent leg every few metres, braced to the deck.
-            if ((s + i * 7) % 4 === 0 && p0.y > 12) {
+            // A bent leg every few metres, braced to the deck. The loop carries its
+            // own frame instead, so no legs are dropped through the inside of it.
+            if (!insideLoop(i) && (s + i * 7) % 4 === 0 && p0.y > 12) {
               box(parkStatic, p0.x, p0.y / 2, p0.z, 2.4, p0.y, 2.4, rideSteel);
               box(parkStatic, p0.x, p0.y / 2, p0.z, 8, 1.6, 1.6, rideSteel);
             }
           }
+        }
+        // Loop frame: a pair of towers either side of the circle with a spreader
+        // across the crown, the way a real loop is held up.
+        {
+          const base = COASTER_TRACK[LOOP_FIRST],
+            crown = COASTER_TRACK[LOOP_FIRST + 4];
+          for (const side of [-1, 1]) {
+            const z = base[1] + side * 26;
+            box(parkStatic, base[0], crown[2] / 2, z, 4.5, crown[2], 4.5, rideSteel);
+            box(parkStatic, base[0], crown[2] + 4, z, 150, 4, 4, rideSteel);
+            for (const lean of [-54, 54])
+              box(parkStatic, base[0] + lean, crown[2] * 0.3, z, 3, crown[2] * 0.6, 3, rideSteel);
+          }
+          box(parkStatic, base[0], crown[2] + 8, base[1], 8, 4, 56, rideSteel);
         }
         // Station: platform, roof, queue rail and a sign.
         const st = PIER.station;

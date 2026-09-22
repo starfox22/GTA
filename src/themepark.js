@@ -33,35 +33,50 @@
     const COASTER_TRACK = [
       [3862, 5006, 16],
       [3930, 5000, 18],
-      [3990, 5016, 64],
-      [4046, 5060, 158],
-      [4074, 5122, 150],
-      [4062, 5196, 34],
-      [4016, 5252, 24],
-      [3952, 5286, 96],
-      [3884, 5310, 42],
-      [3812, 5326, 84],
-      [3742, 5318, 36],
-      [3684, 5278, 70],
-      [3648, 5216, 30],
-      [3646, 5152, 58],
-      [3684, 5104, 26],
-      [3744, 5084, 50],
-      [3806, 5104, 24],
-      [3856, 5148, 52],
-      [3884, 5206, 26],
-      [3856, 5258, 44],
-      [3792, 5272, 22],
-      [3726, 5246, 38],
-      [3682, 5192, 20],
-      [3676, 5128, 30],
-      [3716, 5064, 18],
-      [3782, 5026, 16],
+      [3990, 5016, 70],
+      [4046, 5044, 180],
+      [4086, 5090, 300],
+      [4092, 5150, 282],
+      [4066, 5218, 96],
+      [4020, 5262, 34],
+      [3962, 5290, 146],
+      [3900, 5312, 52],
+      // Vertical loop: the plan position runs west, doubles back over the top and
+      // returns to the entry, so the circle lives in the vertical plane. Radius 84,
+      // entry and exit are the same point on the ground, and the crest is low
+      // enough that the train still carries about two and a half g over the top.
+      [3860, 5318, 24],
+      [3801, 5318, 49],
+      [3776, 5318, 108],
+      [3801, 5318, 167],
+      [3860, 5318, 192],
+      [3919, 5318, 167],
+      [3944, 5318, 108],
+      [3919, 5318, 49],
+      [3860, 5318, 24],
+      [3790, 5300, 40],
+      [3722, 5262, 118],
+      [3672, 5206, 34],
+      [3652, 5140, 104],
+      [3676, 5082, 32],
+      [3730, 5044, 96],
+      [3796, 5030, 30],
+      [3856, 5052, 84],
+      [3888, 5108, 28],
+      [3872, 5178, 72],
+      [3812, 5218, 26],
+      [3746, 5206, 58],
+      [3700, 5152, 24],
+      [3706, 5090, 44],
+      [3752, 5040, 22],
+      [3812, 5014, 18],
+      [3838, 5008, 16],
     ];
     const COASTER_LIFT_START = 1,
       COASTER_LIFT_END = 4,
-      COASTER_BRAKE = 23,
-      COASTER_GRAVITY = 52;
+      COASTER_BRAKE = 34,
+      COASTER_GRAVITY = 52,
+      COASTER_TOP_SPEED = 380;
     let coasterTrain = {
       t: 0,
       speed: 0,
@@ -144,6 +159,7 @@
       }
       const n = COASTER_TRACK.length,
         i = Math.floor(train.t) % n,
+        onBoard = !!player.coaster,
         segment = coasterSegmentLength(i),
         a = COASTER_TRACK[i],
         b = COASTER_TRACK[(i + 1) % n],
@@ -152,14 +168,19 @@
         // Chain lift: constant haul up the first hill.
         train.speed += (52 - train.speed) * Math.min(1, deltaSeconds * 1.6);
       } else if (i >= COASTER_BRAKE) {
-        train.speed += (30 - train.speed) * Math.min(1, deltaSeconds * 2.2);
+        train.speed += (34 - train.speed) * Math.min(1, deltaSeconds * 2.2);
       } else {
         // Height traded for speed. `rise` is metres of climb per metre of track,
         // so the acceleration along it is gravity times that gradient; at this
         // scale (512 units to 100 m) gravity is about 50 units per second squared.
+        // Height traded for speed, less what rolling and air resistance take. The
+        // old model shed speed as a fraction per second, which over a minute-long
+        // circuit bled the train down to the floor of the clamp and made the whole
+        // ride crawl; losses are now a small deceleration, so the energy budget of
+        // the layout is what actually decides whether a crest gets taken.
         train.speed += -rise * COASTER_GRAVITY * deltaSeconds;
-        train.speed *= Math.exp(-0.14 * deltaSeconds);
-        train.speed = clamp(train.speed, 24, 330);
+        train.speed -= (0.8 + train.speed * train.speed * 0.00001) * deltaSeconds;
+        train.speed = clamp(train.speed, 8, COASTER_TOP_SPEED);
       }
       train.t += (train.speed * deltaSeconds) / segment;
       if (train.t >= n) {
@@ -170,7 +191,12 @@
         if (player.coaster) leaveCoaster();
         return;
       }
-      if (!player.coaster) return;
+      if (!onBoard) {
+        // Carried down to the midway: you hear the train before you see it.
+        if (train.speed > 140 && seededRandom() < deltaSeconds * 1.4)
+          scream(coasterPoint(train.t));
+        return;
+      }
       const p = coasterPoint(train.t),
         ahead = coasterPoint(train.t + 0.08);
       player.coaster.time += deltaSeconds;
@@ -178,7 +204,10 @@
       player.y = p.y;
       player.altitude = p.altitude;
       player.a = headingBetween(p, ahead);
-      if (train.speed > 150 && seededRandom() < deltaSeconds * 2.5) scream(player);
+      // Riders shout on the drops and through the loop, not on the brake run.
+      const inverted = i >= 12 && i <= 16;
+      if ((rise < -0.22 || inverted || train.speed > 210) && seededRandom() < deltaSeconds * 4)
+        scream(player);
     }
     function coasterStatusText() {
       if (!player.coaster) return '';
