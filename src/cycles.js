@@ -12,88 +12,83 @@
      * rather than hand-placed, so the network grows with the city. Each stand
      * racks a few bicycles; take one and it is yours.
      *
-     * Riding has legs: holding Shift stands you on the pedals for a faster, harder
-     * gear that drains stamina, and easing off gets it back. Stamina only applies
-     * to the player's own bicycle; nothing else in traffic is affected.
+     * Riding has legs: holding Shift while pedalling stands you on the pedals for
+     * a faster, harder gear that drains stamina, and easing off gets it back.
+     * Stamina only applies to the player's own bicycle; nothing else in traffic
+     * is affected.
      */
     /**
      * PEDALLING
-     * A bicycle is not a throttle. Holding the key does nothing; each fresh press
-     * is one turn of the cranks, and how fast you can keep pressing is how fast
-     * you go. A stroke hands the bike a slug of speed and refreshes the cadence;
-     * the cadence decays if you stop, and what it settles at sets the gear you are
-     * effectively in, so the top speed rises and falls with your hands.
-     *
-     * The rising edge is read off the shared key map rather than the keyboard
-     * handler, so a touch button works exactly the same way and auto-repeat cannot
-     * pedal for you.
+     * Hold W (or the PEDAL touch button) and the rider pedals; let go and the
+     * bike freewheels. The legs are not a throttle, though: effort spins up over
+     * a fraction of a second, and the push they give fades as the bike nears
+     * its top speed (a square-root taper), so a bicycle leaps off the line,
+     * builds briskly through the middle and settles gently at the top instead of
+     * hitting a wall. Cadence is derived from speed and effort for the HUD and
+     * the crank sound. S brakes, then creeps backwards slowly.
      */
     const CYCLE_STAMINA_MAX = 7.5,
       CYCLE_SPRINT_TOP = 1.42,
-      CYCLE_SPRINT_ACC = 1.85,
-      CYCLE_STROKE = 13,
-      CYCLE_CADENCE_TOP = 4.1,
-      CYCLE_CADENCE_DECAY = 1.15;
+      CYCLE_SPRINT_PUSH = 1.3,
+      // Forward push at a standstill, world units per second squared.
+      CYCLE_PUSH = 68,
+      // How quickly the legs come up to full effort, and let go of it, per second.
+      CYCLE_SPIN_UP = 3.2,
+      CYCLE_SPIN_DOWN = 6,
+      // Crank revolutions per second at top speed in the normal gear (~95 rpm).
+      CYCLE_CADENCE_TOP = 1.6,
+      // Reverse is a walk-it-backwards shuffle, not a gear.
+      CYCLE_REVERSE_MAX = 34;
     let cycleStamina = CYCLE_STAMINA_MAX,
       cycleStandCache = null;
-    const pedal = { cadence: 0, kick: 0, held: false, last: -10, phase: 0 };
+    const pedal = { effort: 0, cadence: 0, crank: 0 };
     function ridingBicycle() {
       return !!player.car && vehicleSpec(player.car).bicycle;
     }
     function cycleSprinting() {
-      return ridingBicycle() && keys.ShiftLeft && cycleStamina > 0.05;
+      // Standing on the pedals only counts while actually pedalling.
+      return (
+        ridingBicycle() &&
+        !!(keys.KeyW || keys.ArrowUp) &&
+        !!(keys.ShiftLeft || keys.ShiftRight) &&
+        cycleStamina > 0.05
+      );
     }
     function pedalCadence() {
       return pedal.cadence;
     }
-    // Speed the current cadence is worth, as a fraction of the bike's top gear.
-    function pedalGear() {
-      return clamp(pedal.cadence / CYCLE_CADENCE_TOP, 0, 1);
+    function pedalEffort() {
+      return pedal.effort;
     }
-    function pedalQueue() {
-      return pedal.kick;
-    }
-    function pedalStroke() {
-      const gap = clamp(gameTime - pedal.last, 0.09, 1.4);
-      pedal.last = gameTime;
-      // A stroke's own rate is blended in, so cadence follows your hands quickly
-      // without jumping around on one fast tap.
-      pedal.cadence += (1 / gap - pedal.cadence) * 0.55;
-      pedal.cadence = clamp(pedal.cadence, 0, CYCLE_CADENCE_TOP * 1.15);
-      pedal.kick += CYCLE_STROKE * (cycleSprinting() ? CYCLE_SPRINT_ACC * 0.7 : 1);
-      pedal.phase = 0;
-      playSample('tires', 0.05, 2.4);
-    }
-    // Velocity the accumulated strokes are ready to hand over this step.
-    function pedalImpulse(stepSeconds) {
-      if (pedal.kick <= 0) return 0;
-      const give = Math.min(pedal.kick, 62 * stepSeconds);
-      pedal.kick -= give;
-      return give;
-    }
-    /* Strokes are taken from the key event, not from the frame: a quick tap can
-       begin and end between two frames, and sampling the key map would lose it --
-       which would make fast pedalling slower than slow pedalling. The frame check
-       below is the fallback that catches the touch button, which sets the key map
-       directly and fires no event. */
-    function cyclePedalKey() {
-      if (!ridingBicycle() || pedal.held) return;
-      pedalStroke();
-      pedal.held = true;
+    /* Forward acceleration the rider's legs give at speed `along` against a top
+       speed of `topSpeed` (physics.js adds it to the bike's own drag and brakes). */
+    function pedalDrive(along, topSpeed) {
+      if (pedal.effort <= 0 || along >= topSpeed) return 0;
+      const room = 1 - Math.max(0, along) / topSpeed;
+      return CYCLE_PUSH * pedal.effort * (cycleSprinting() ? CYCLE_SPRINT_PUSH : 1) * Math.sqrt(room);
     }
     function updateCycling(deltaSeconds) {
-      const pressed = !!(keys.KeyW || keys.ArrowUp);
-      if (ridingBicycle() && pressed && !pedal.held) pedalStroke();
-      pedal.held = pressed;
-      if (!ridingBicycle()) {
-        pedal.cadence = 0;
-        pedal.kick = 0;
+      const riding = ridingBicycle(),
+        pressed = riding && !!(keys.KeyW || keys.ArrowUp);
+      if (!riding) {
+        pedal.effort = pedal.cadence = 0;
       } else {
-        pedal.cadence = Math.max(0, pedal.cadence - CYCLE_CADENCE_DECAY * deltaSeconds);
-        pedal.phase += deltaSeconds * (2 + pedal.cadence * 2);
+        pedal.effort = pressed
+          ? Math.min(1, pedal.effort + CYCLE_SPIN_UP * deltaSeconds)
+          : Math.max(0, pedal.effort - CYCLE_SPIN_DOWN * deltaSeconds);
+        // Cadence follows road speed while pedalling and drops away when coasting.
+        const speedShare = clamp((player.car.speed || 0) / vehicleSpec(player.car).max, 0, 1.5),
+          target = pressed ? CYCLE_CADENCE_TOP * (0.35 + 0.65 * speedShare) : 0;
+        pedal.cadence += (target - pedal.cadence) * Math.min(1, deltaSeconds * (pressed ? 4 : 2.5));
+        // One soft crank tick per revolution while the legs are working.
+        pedal.crank += pedal.cadence * deltaSeconds;
+        if (pedal.crank >= 1) {
+          pedal.crank -= 1;
+          if (pressed) playSample('tires', 0.035, 2.4);
+        }
       }
       if (cycleSprinting()) cycleStamina = Math.max(0, cycleStamina - deltaSeconds);
-      else cycleStamina = Math.min(CYCLE_STAMINA_MAX, cycleStamina + deltaSeconds * (ridingBicycle() ? 0.55 : 3));
+      else cycleStamina = Math.min(CYCLE_STAMINA_MAX, cycleStamina + deltaSeconds * (riding ? 0.55 : 3));
     }
     function cycleStands() {
       if (cycleStandCache) return cycleStandCache;

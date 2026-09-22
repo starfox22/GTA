@@ -107,7 +107,8 @@
     }
     function syncCarRadio(gesture = false, deltaSeconds = 0) {
       const party = gameMode === 'play' && player.roof && !document.hidden,
-        riding = gameMode === 'play' && player.car?.hp > 0 && !document.hidden,
+        // A bicycle has no radio to play.
+        riding = gameMode === 'play' && player.car?.hp > 0 && !ridingBicycle() && !document.hidden,
         wants = (party || (riding && carRadioEnabled)) && soundOn,
         station = party ? -2 : carRadioStation,
         track = party ? (typeof ASSETS !== 'undefined' ? ASSETS.music?.synth : null) : radioTrack();
@@ -183,7 +184,7 @@
       updateCarRadioUI();
     }
     function updateCarRadioUI() {
-      const riding = gameMode === 'play' && player.car?.hp > 0;
+      const riding = gameMode === 'play' && player.car?.hp > 0 && !ridingBicycle();
       getElement('carRadio').classList.toggle('hidden', !riding);
       const station = MUSIC_STATIONS[carRadioStation],
         track = radioTrack();

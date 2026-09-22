@@ -227,8 +227,8 @@
         'touchDivert',
         mission?.index === 10 && mission.compromised && [1, 2, 3].includes(mission.stage),
       );
-      show('touchRadio', !!c);
-      show('touchStation', !!c);
+      show('touchRadio', !!c && !ridingBicycle());
+      show('touchStation', !!c && !ridingBicycle());
       getElement('moveLabel').textContent = foot ? 'MOVE' : 'STEER';
       getElement('touchGo').textContent = chute
         ? 'GLIDE'

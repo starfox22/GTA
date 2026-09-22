@@ -1833,7 +1833,7 @@
         } else if (isBoat(c))
           tell('W/S throttle · A/D steer · Space slow · E exit alongside a dock', 5);
         else if (c.type === 'bicycle')
-          tell('CITY CYCLE · TAP W to pedal, faster taps for more speed · SHIFT stand on the pedals · S brake', 6);
+          tell('CITY CYCLE · HOLD W to pedal · SHIFT stand on the pedals · S brake', 6);
         else tell(vehicleSpec(c).name + ' · W accelerate · A/D steer · Space handbrake', 3);
         tone(200, 0.12, 0.25, 'triangle');
     }
@@ -4126,8 +4126,6 @@
         e.preventDefault();
         return;
       }
-      if (!e.repeat && gameMode === 'play' && (code === 'KeyW' || code === 'ArrowUp'))
-        cyclePedalKey();
       if (gameMode === 'map' && code === 'KeyC') {
         e.preventDefault();
         centerMapOnPlayer();
@@ -4608,9 +4606,18 @@
         vx: player.car ? Math.round((player.car.vx || 0) * 10) / 10 : 0,
         vy: player.car ? Math.round((player.car.vy || 0) * 10) / 10 : 0,
         cadence: Math.round(pedalCadence() * 100) / 100,
-        gear: Math.round(pedalGear() * 100) / 100,
-        strokeQueue: Math.round(pedalQueue() * 10) / 10,
+        effort: Math.round(pedalEffort() * 100) / 100,
       }),
+      // Run the simulation forward without drawing, holding the given keys (for
+      // example ['KeyW']), so physics tests do not depend on the headless frame
+      // rate. Returns the vehicle telemetry at the end.
+      simulate(seconds = 1, held = []) {
+        for (const code of held) keys[code] = true;
+        const steps = Math.round(clamp(seconds, 0, 120) * 30);
+        for (let i = 0; i < steps && gameMode === 'play'; i++) update(1 / 30);
+        for (const code of held) keys[code] = false;
+        return this.ride();
+      },
       // Rack a bicycle beside the player.
       bike(headingRadians = player.a) {
         spawnClearCar(
@@ -4624,11 +4631,12 @@
       },
       // Spawn a vehicle of any VEHICLE_DEFINITIONS type beside the player and put
       // them at the controls. Aircraft can be lifted straight to an altitude in
-      // metres above the ground so tests can look at the flight view.
-      drive(type = 'sedan', altitudeMeters = 0) {
+      // metres above the ground so tests can look at the flight view. An optional
+      // heading (radians, 0 = east) points it down a chosen road.
+      drive(type = 'sedan', altitudeMeters = 0, headingRadians = player.a) {
         if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
         if (player.car) exitCar();
-        const car = spawnClearCar(type, player.x + 60, player.y, player.a, false);
+        const car = spawnClearCar(type, player.x + 60, player.y, headingRadians, false);
         car.authorized = true;
         enterVehicle(car);
         if (altitudeMeters > 0 && isAircraft(car)) {

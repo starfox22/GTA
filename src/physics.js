@@ -910,12 +910,11 @@
               down = keys.KeyS || keys.ArrowDown,
               brake = keys.Space,
               turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-            // A bicycle has no throttle: it is driven by the strokes queued up in
-            // cycles.js, and the cadence those strokes imply is the gear it is in.
+            // A bicycle has no engine: holding W pedals, and the push the rider's
+            // legs give tapers off toward the top speed (pedalDrive, cycles.js).
             const pedalled = !!vehicleDefinition.bicycle,
               sprint = pedalled && cycleSprinting(),
-              topSpeed =
-                vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1) * (pedalled ? pedalGear() : 1);
+              topSpeed = vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1);
             acceleration =
               up && !pedalled
                 ? vehicleDefinition.acc / (1 + (c.cargoCount || 0) * 0.1)
@@ -923,18 +922,14 @@
                   ? along > 10
                     ? -(vehicleDefinition.brake || 285)
                     : -vehicleDefinition.acc * 0.6
-                  : 0;
+                  : pedalled
+                    ? pedalDrive(along, topSpeed)
+                    : 0;
             if (
               (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up && !pedalled) ||
-              (along < -95 && down)
+              (along < -(pedalled ? CYCLE_REVERSE_MAX : 95) && down)
             )
               acceleration = 0;
-            if (pedalled) {
-              const room = Math.max(0, topSpeed - along),
-                give = Math.min(pedalImpulse(stepSeconds), room);
-              c.vx += headingCosine * give;
-              c.vy += headingSine * give;
-            }
             grip = brake ? 1.9 : vehicleDefinition.grip || 7;
             drag = pedalled
               ? brake

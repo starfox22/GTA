@@ -63,12 +63,13 @@ something, never a generic code-evaluation hook.
 | --- | --- |
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle |
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom |
-| `drive(type, altitudeMeters)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne |
+| `drive(type, altitudeMeters, heading)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne; optional heading in radians (0 = east) |
+| `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`); returns `ride()`. Physics tests use it because headless frames are slow |
 | `places()` | Named businesses and landmarks with coordinates |
 | `setClock(hours)`, `sky(id)` | Time of day; weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`) |
 | `startMission(i)`, `missions()` | Jump into a mission |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
-| `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry |
+| `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort) |
 | `roadblocks()`, `containment()` | Police cordon state |
 | `stats()` | Per-frame CPU timings, draw calls, triangles |
 
