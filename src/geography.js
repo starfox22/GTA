@@ -572,7 +572,7 @@
       }
       if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
       if (y < 2650) return 'MIDTOWN';
-      if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';
+      if (y < 3700) return x < 1800 ? 'BROADWAY' : 'EXCHANGE DISTRICT';
       if (y < 4650) return 'SOUTH BANK';
       return 'BATTERY POINT';
     }

@@ -372,7 +372,7 @@
             // Zone-specific ground: mirrors the block patterns chosen in buildWorld().
             const zone = districtAt(x + 177, z + 177),
               blockSeed = (bx * 31 + by * 17) % 7;
-            if (zone === 'FINANCIAL DISTRICT' && blockSeed % 2 === 0) {
+            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               drawingContext.fillStyle = '#c3bfb2';
               drawingContext.fillRect(x + 10, z + 10, 344, 160);
               drawingContext.strokeStyle = '#a8a497';
@@ -487,6 +487,7 @@
       paintServiceForecourts(drawingContext, true);
       paintCasinoGround(drawingContext);
       paintHarborGround(drawingContext);
+      paintMarina(drawingContext);
       paintDepotGround(drawingContext);
       paintSportsGround(drawingContext);
       const groundTx = new Three.CanvasTexture(terrain);
@@ -699,6 +700,7 @@
       // @include src/world3d.js
       // @include src/county3d.js
       // @include src/harbor3d.js
+      // @include src/marina3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],

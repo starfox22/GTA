@@ -4309,6 +4309,9 @@ body:not(.touch-mode).police-search-active #carRadio {
         [9, 8],
         [8, 9],
         [0, 7],
+        [0, -2],
+        [4, -4],
+        [2, -7],
       ];
     const isPark = (x, y) => PARKS.some((p) => p[0] === x && p[1] === y),
       isRiver = (x, y, r = 0) =>
@@ -5235,6 +5238,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         airportSceneryBlocked(x, y, r) ||
         garageBlocked(x, y, r) ||
         parkBlocked(x, y, r) ||
+        marinaBlocked(x, y, r) ||
         !groundAt(x, y, r) ||
         harborBlocked(x, y, r) ||
         depotBlocked(x, y, r) ||
@@ -5251,6 +5255,8 @@ body:not(.touch-mode).police-search-active #carRadio {
     function moveBody(body, displacementX, displacementY, collisionRadius) {
       if (body === player && player.roof)
         return moveOnRoof(displacementX, displacementY, collisionRadius);
+      if (body === player && player.deck)
+        return moveOnDeck(displacementX, displacementY, collisionRadius);
       let hit = false;
       // Vehicle test: a cheap bounding box rejects almost every vehicle before the
       // rotated point-in-car test (this runs for every pedestrian step each frame).
@@ -5563,6 +5569,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         }
       rect(48, CITY_TOP + 48, CITY_SIZE - 112, CITY_HEIGHT - 112, '#696d60');
       paintCityStreets(groundContext, true);
+      paintMarina(groundContext);
       for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
         for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
           const x = blockX(bx) + 89,
@@ -5640,7 +5647,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             }
             const zone = districtAt(x + w / 2, y + h / 2),
               blockSeed = (bx * 31 + by * 17) % 7;
-            if (zone === 'FINANCIAL DISTRICT' && blockSeed % 2 === 0) {
+            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               // One tower on a plaza: towers need air around them to read as towers.
               makeBuilding(x + 52, y + 12, w - 104, 140, 0);
               rect(x + 8, y + 8, 40, 150, '#8d9385');
@@ -6216,6 +6223,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
       if (parkInteract()) return;
+      if (marinaInteract()) return;
       if (
         rooftopMissionInteract() ||
         challengeMissionInteract() ||
@@ -8226,6 +8234,16 @@ body:not(.touch-mode).police-search-active #carRadio {
         'Noodles are ready in a minute.',
         'Best lunch in the Garden.',
       ],
+      deck: [
+        'The whole skyline from up here!',
+        'Sailing sets at six, they said.',
+        'Is that the tower district?',
+        'I am never getting off this boat.',
+        'Photo by the rail, come on.',
+        'The buffet reopens at four.',
+        'Look how small the taxis are.',
+        'Sea air. Finally.',
+      ],
     };
     function pedSay(p, kind, chance = 1) {
       if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return;
@@ -8270,6 +8288,10 @@ body:not(.touch-mode).police-search-active #carRadio {
         if (Math.abs(p.x - player.x) > 900 || Math.abs(p.y - player.y) > 900) {
           if ((peopleFrame + index) % 3) continue;
           deltaSeconds = frameDelta * 3;
+        }
+        if (p.onDeck) {
+          updateDeckWalker(p, deltaSeconds);
+          continue;
         }
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateCarjackReactions(p, deltaSeconds)) continue;
@@ -8726,7 +8748,14 @@ body:not(.touch-mode).police-search-active #carRadio {
             );
           }
         }
-        if (!player.car && !player.roof && !player.parachute && !transitRide && !player.coaster)
+        if (
+          !player.car &&
+          !player.roof &&
+          !player.deck &&
+          !player.parachute &&
+          !transitRide &&
+          !player.coaster
+        )
           player.altitude = terrainHeight(player.x, player.y);
         if (keys.KeyF || (!player.car && keys.Space) || mouse.down) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
@@ -9559,10 +9588,14 @@ body:not(.touch-mode).police-search-active #carRadio {
         drawingContext.restore();
         drawingContext.textAlign = 'center';
         const labels = [
+          ['N O R T H  P O I N T', 2700, -2620],
+          ['HARBOR POINT MARINA', 1060, -2960],
+          ['CRUISE TERMINAL', 2360, -3990],
+          ['THE RECLAMATION', 1420, -760],
           ['N O R T H B A N K', 1580, 540],
           ['CENTRAL GARDEN', 2688, 2200],
           ['SUNSET PIER', 3810, 5190],
-          ['FINANCIAL DISTRICT', 2680, 2890],
+          ['EXCHANGE DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
           ['BATTERY POINT', 2480, 5140],
           ['SOUTHPORT', 640, 5450],
@@ -9825,7 +9858,10 @@ body:not(.touch-mode).police-search-active #carRadio {
                 : 'RESPRAY & REPAIR · $250';
           else if (GARAGES.some((s) => distanceBetween(c, s) < 200))
             prompt = 'DRIVE FULLY INTO THE OPEN REPAIR BAY';
-        } else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
+        } else if (player.deck)
+          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : '';
+        else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
+        else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (distanceBetween(player, phone) < 68 && !m && missionIndex < missions.length)
           prompt = 'ANSWER PAYPHONE';
@@ -10819,7 +10855,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
       if (y < 1450) return x > 2500 ? 'IRONWORKS DOCKS' : 'NORTHBANK · OLD QUARTER';
       if (y < 2650) return 'MIDTOWN';
-      if (y < 3700) return x < 1800 ? 'BROADWAY' : 'FINANCIAL DISTRICT';
+      if (y < 3700) return x < 1800 ? 'BROADWAY' : 'EXCHANGE DISTRICT';
       if (y < 4650) return 'SOUTH BANK';
       return 'BATTERY POINT';
     }
@@ -12437,6 +12473,25 @@ body:not(.touch-mode).police-search-active #carRadio {
         boatY: 5147,
         type: 'speedboat',
       },
+      // Harbor Point: the way out to the liner riding at anchor.
+      {
+        x: 1566,
+        y: -3420,
+        w: 96,
+        h: 34,
+        boatX: 1500,
+        boatY: -3403,
+        type: 'jetski',
+      },
+      {
+        x: 1566,
+        y: -3560,
+        w: 96,
+        h: 34,
+        boatX: 1496,
+        boatY: -3543,
+        type: 'speedboat',
+      },
     ];
     const PRICES = [180, 650, 900, 2600, 1400, 1900],
       AMMO_PRICES = [60, 120, 100, 450, 180, 160];
@@ -12480,6 +12535,9 @@ body:not(.touch-mode).police-search-active #carRadio {
         hy: HARBOR.ship.l / 2,
         a: 0,
       });
+      for (const ship of LINERS) obstacles.push(shipHull(ship));
+      for (const moored of marinaBoats())
+        obstacles.push({ x: moored.x, y: moored.y, hx: moored.beam / 2, hy: moored.len / 2, a: 0 });
       return !obstacles.some((b) => boxContact(shape, b));
     }
     function isBoat(vehicle) {
@@ -16127,6 +16185,349 @@ body:not(.touch-mode).police-search-active #carRadio {
       return true;
     }
     // END SUBSYSTEM: src/themepark.js
+    // BEGIN SUBSYSTEM: src/marina.js — Harbor Point marina and the cruise liners
+    /**
+     * Harbor Point marina and the cruise liners
+     * Source: src/marina.js
+     * Scope: shared game closure.
+     * Yacht basin, cruise terminal, walkable liner decks and the crowds on them.
+     */
+    /**
+     * HARBOR POINT
+     * The reclamation's north-west shore is cut open into a yacht basin: four
+     * finger pontoons off the south quay, boats moored either side, and a club
+     * house on the east quay. East of it the cruise terminal takes the whole north
+     * apron, with a liner alongside.
+     *
+     * A liner is a walkable surface rather than scenery. `LINERS` are oriented
+     * boxes; `deckLocal()` puts a world point into a ship's frame, and while
+     * `player.deck` is set the player moves inside that frame instead of on the
+     * street grid. Elevation comes from the ship's deck height, so bullets,
+     * sight-lines and the renderer all place people on board correctly.
+     * Ship dimensions are world units, where 512 units is 100 metres.
+     */
+    const MARINA = {
+      basin: { x: 672, y: -4128, w: 856, h: 828 },
+      quay: { x: 640, y: -3300, w: 928, h: 46 },
+      club: { x: 1560, y: -3742, w: 148, h: 128 },
+      fuel: { x: 1556, y: -3486, w: 96, h: 54 },
+      terminal: { x: 1900, y: -4160, w: 724, h: 128 },
+      terminalDoor: { x: 2262, y: -4024 },
+      fingers: [760, 960, 1160, 1360].map((x) => ({ x, y: -3760, w: 17, h: 442 })),
+    };
+    // Moored boats: [finger index, side, distance along the finger, length, beam, hull, house].
+    const MARINA_BERTHS = [
+      [0, -1, 60, 118, 34, '#e7e9e4', '#2f4a55'],
+      [0, 1, 96, 86, 27, '#dfe3dd', '#4a5a52'],
+      [0, -1, 250, 72, 24, '#e9e2d4', '#5a4e43'],
+      [0, 1, 300, 132, 36, '#f0f2ee', '#26424e'],
+      [1, -1, 74, 154, 40, '#eef0ec', '#1f3a48'],
+      [1, 1, 130, 92, 28, '#e4e7e1', '#3d5a4e'],
+      [1, -1, 286, 104, 30, '#ded9cb', '#60513f'],
+      [1, 1, 330, 68, 22, '#e8ebe6', '#46545c'],
+      [2, -1, 66, 96, 29, '#e2e5e0', '#334f5c'],
+      [2, 1, 118, 176, 44, '#f2f3f0', '#1b3542'],
+      [2, -1, 268, 82, 26, '#e6e0d2', '#574a3c'],
+      [2, 1, 322, 110, 32, '#e9ece7', '#2b4650'],
+      [3, -1, 82, 138, 37, '#f0f1ed', '#22404d'],
+      [3, 1, 150, 74, 24, '#e3e6e0', '#42574f'],
+      [3, -1, 292, 120, 34, '#eceee9', '#2e4956'],
+      [3, 1, 336, 90, 28, '#e0dace', '#5c4f40'],
+    ];
+    /**
+     * Two ships of the same class. The Coral Dawn lies alongside the terminal and
+     * is boarded down the gangway; the Meridian Star rides at anchor out in the
+     * bay and has to be reached by boat or jetski.
+     */
+    const LINERS = [
+      {
+        id: 'coraldawn',
+        name: 'MS CORAL DAWN',
+        x: 2380,
+        y: -4292,
+        a: 0,
+        l: 1360,
+        w: 186,
+        deck: 44,
+        berthed: true,
+        // The gangway meets the quay here; boarding from the apron needs no boat.
+        board: { x: 2380, y: -4188 },
+      },
+      {
+        id: 'meridian',
+        name: 'MS MERIDIAN STAR',
+        x: 2460,
+        y: -5136,
+        a: 0.21,
+        l: 1360,
+        w: 186,
+        deck: 44,
+        berthed: false,
+        // Boarding platform off the stern, at the waterline.
+        board: null,
+      },
+    ];
+    const LINER_DECKHOUSES = [
+      // [along, across, length, width, height] in ship-local units.
+      [-430, 0, 300, 150, 86],
+      [-140, 0, 360, 158, 104],
+      [220, 0, 250, 146, 78],
+      [430, 0, 150, 120, 52],
+    ];
+    function deckLocal(ship, x, y) {
+      const c = Math.cos(-ship.a),
+        s = Math.sin(-ship.a),
+        dx = x - ship.x,
+        dy = y - ship.y;
+      return { u: dx * c - dy * s, v: dx * s + dy * c };
+    }
+    function deckWorld(ship, u, v) {
+      const c = Math.cos(ship.a),
+        s = Math.sin(ship.a);
+      return { x: ship.x + u * c - v * s, y: ship.y + u * s + v * c };
+    }
+    // The hull tapers at both ends, so the usable half-beam falls away fore and aft.
+    function hullHalfBeam(ship, u) {
+      const t = Math.min(1, Math.abs(u) / (ship.l / 2));
+      return (ship.w / 2) * Math.sqrt(Math.max(0, 1 - Math.pow(t, 6)));
+    }
+    function shipHull(ship) {
+      return { x: ship.x, y: ship.y, hx: ship.l / 2, hy: ship.w / 2, a: ship.a };
+    }
+    function shipAt(x, y, r = 0) {
+      return LINERS.find((ship) => {
+        const { u, v } = deckLocal(ship, x, y);
+        return Math.abs(u) < ship.l / 2 + r && Math.abs(v) < hullHalfBeam(ship, u) + r;
+      });
+    }
+    // Sterns carry a boarding platform at the waterline; that is the way aboard.
+    function shipPlatform(ship) {
+      return deckWorld(ship, -ship.l / 2 - 22, 0);
+    }
+    function deckPointFree(ship, x, y, r = 7) {
+      const { u, v } = deckLocal(ship, x, y);
+      if (Math.abs(u) > ship.l / 2 - 26 - r) return false;
+      if (Math.abs(v) > hullHalfBeam(ship, u) - 12 - r) return false;
+      return !LINER_DECKHOUSES.some(
+        (h) => Math.abs(u - h[0]) < h[2] / 2 + r && Math.abs(v - h[1]) < h[3] / 2 + r,
+      );
+    }
+    function moveOnDeck(dx, dy, r) {
+      const ship = player.deck;
+      let blocked = false;
+      if (deckPointFree(ship, player.x + dx, player.y, r)) player.x += dx;
+      else blocked = true;
+      if (deckPointFree(ship, player.x, player.y + dy, r)) player.y += dy;
+      else blocked = true;
+      return blocked;
+    }
+    function marinaSolids() {
+      return [
+        { ...MARINA.club, height: 44 },
+        { ...MARINA.fuel, height: 20 },
+        { ...MARINA.terminal, height: 96 },
+      ];
+    }
+    /* Pontoons are walkable, the basin around them is not, and hulls are solid. */
+    function marinaBlocked(x, y, r = 0) {
+      const b = MARINA.basin;
+      if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) {
+        const onFinger = MARINA.fingers.some(
+          (f) => x + r > f.x - 3 && x - r < f.x + f.w + 3 && y + r > f.y && y - r < f.y + f.h,
+        );
+        if (!onFinger) return true;
+        if (berthedHullAt(x, y, r)) return true;
+      }
+      return marinaSolids().some(
+        (s) => x + r > s.x && x - r < s.x + s.w && y + r > s.y && y - r < s.y + s.h,
+      );
+    }
+    let berthCache = null;
+    function marinaBoats() {
+      if (berthCache) return berthCache;
+      berthCache = MARINA_BERTHS.map(([fi, side, along, len, beam, hull, house], i) => {
+        const f = MARINA.fingers[fi];
+        return {
+          id: 'yacht' + i,
+          x: f.x + f.w / 2 + side * (beam / 2 + 13),
+          y: f.y + f.h - along,
+          len,
+          beam,
+          hull,
+          house,
+          a: -Math.PI / 2,
+          bob: i * 0.7,
+        };
+      });
+      return berthCache;
+    }
+    function berthedHullAt(x, y, r = 0) {
+      return marinaBoats().some(
+        (b) =>
+          Math.abs(x - b.x) < b.beam / 2 + r - 2 && Math.abs(y - b.y) < b.len / 2 + r - 4,
+      );
+    }
+    function paintMarina(drawingContext) {
+      const fill = (x, y, w, h, c) => {
+        drawingContext.fillStyle = c;
+        drawingContext.fillRect(x, y, w, h);
+      };
+      const b = MARINA.basin;
+      fill(b.x, b.y, b.w, b.h, '#1d4457');
+      // Quay coping all round the basin, then the finger pontoons.
+      fill(b.x - 14, b.y, 14, b.h + 14, '#a9a495');
+      fill(b.x + b.w, b.y, 14, b.h + 14, '#a9a495');
+      fill(b.x - 14, b.y + b.h, b.w + 28, 14, '#a9a495');
+      for (const f of MARINA.fingers) {
+        fill(f.x, f.y, f.w, f.h, '#b6ad99');
+        drawingContext.fillStyle = '#8d846f';
+        for (let y = f.y + 6; y < f.y + f.h; y += 15) drawingContext.fillRect(f.x, y, f.w, 2);
+      }
+      for (const boat of marinaBoats()) {
+        fill(boat.x - boat.beam / 2, boat.y - boat.len / 2, boat.beam, boat.len, boat.hull);
+        fill(boat.x - boat.beam / 4, boat.y - boat.len / 6, boat.beam / 2, boat.len / 3, boat.house);
+      }
+      // Cruise apron: a broad concrete deck with painted lanes and a terminal shed.
+      fill(1700, -4190, 1380, 168, '#8f8e83');
+      drawingContext.fillStyle = '#d8cfa8';
+      for (let x = 1740; x < 3040; x += 64) drawingContext.fillRect(x, -4104, 34, 3);
+      fill(MARINA.terminal.x, MARINA.terminal.y, MARINA.terminal.w, MARINA.terminal.h, '#6f7a7c');
+      fill(MARINA.club.x, MARINA.club.y, MARINA.club.w, MARINA.club.h, '#77756a');
+      fill(MARINA.fuel.x, MARINA.fuel.y, MARINA.fuel.w, MARINA.fuel.h, '#6a6f68');
+      drawingContext.save();
+      drawingContext.textAlign = 'center';
+      drawingContext.fillStyle = '#e3dcc2';
+      drawingContext.font = 'bold 15px monospace';
+      drawingContext.fillText('CRUISE TERMINAL', MARINA.terminalDoor.x, MARINA.terminalDoor.y - 4);
+      drawingContext.fillStyle = '#dcd6bd';
+      drawingContext.font = 'bold 11px monospace';
+      drawingContext.fillText('HARBOR POINT YACHT CLUB', 1634, -3736);
+      drawingContext.restore();
+    }
+    function marinaInteract() {
+      if (player.deck) {
+        if (!deckExitNear()) return false;
+        leaveLiner();
+        return true;
+      }
+      const ship = boardableLiner();
+      if (!ship) return false;
+      if (wantedStars > 0) {
+        needToLosePolice();
+        return true;
+      }
+      boardLiner(ship);
+      return true;
+    }
+    function boardableLiner() {
+      if (player.car || player.roof || player.parachute || transitRide || player.coaster) return null;
+      if (player.deck) return null;
+      return (
+        LINERS.find((ship) => {
+          const gate = ship.berthed ? ship.board : shipPlatform(ship);
+          return distanceBetween(player, gate) < 46;
+        }) || null
+      );
+    }
+    function boardLiner(ship) {
+      const aft = deckWorld(ship, -ship.l / 2 + 58, 0);
+      player.deck = ship;
+      player.x = aft.x;
+      player.y = aft.y;
+      player.altitude = ship.deck;
+      tell('ABOARD THE ' + ship.name.replace('MS ', ''), 2.4);
+    }
+    function leaveLiner() {
+      const ship = player.deck;
+      if (!ship) return;
+      const gate = ship.berthed ? ship.board : shipPlatform(ship);
+      player.deck = null;
+      player.x = gate.x;
+      player.y = gate.y;
+      player.altitude = terrainHeight(gate.x, gate.y);
+    }
+    function deckExitNear() {
+      const ship = player.deck;
+      if (!ship) return false;
+      const { u } = deckLocal(ship, player.x, player.y);
+      return u < -ship.l / 2 + 96;
+    }
+    /* Tourists stroll the promenade decks; the ship never moves, so they simply
+       patrol between waypoints and lean on the rail. */
+    function populateLiners() {
+      for (const ship of LINERS) {
+        const crowd = ship.berthed ? 34 : 30;
+        for (let i = 0; i < crowd; i++) {
+          let placed = null;
+          for (let tries = 0; tries < 24 && !placed; tries++) {
+            const u = randomBetween(-ship.l / 2 + 60, ship.l / 2 - 60),
+              v = randomBetween(-1, 1) * (hullHalfBeam(ship, u) - 26),
+              p = deckWorld(ship, u, v);
+            if (deckPointFree(ship, p.x, p.y, 8)) placed = p;
+          }
+          if (!placed) continue;
+          pedestrians.push({
+            ...placed,
+            a: randomBetween(0, TAU),
+            color: randomChoice(DRIVER_COLORS),
+            hp: 30,
+            flee: 0,
+            timer: randomBetween(0, 7),
+            walk: 0,
+            altitude: ship.deck,
+            onDeck: ship,
+            tourist: true,
+          });
+        }
+      }
+    }
+    /* Quay life: people walking the pontoons, crews working on the boats and a
+       queue of passengers waiting to board at the terminal. */
+    function populateMarina() {
+      const spots = [];
+      for (const f of MARINA.fingers)
+        for (let d = 40; d < f.h - 30; d += 74)
+          spots.push({ x: f.x + f.w / 2, y: f.y + d, a: seededRandom() > 0.5 ? -Math.PI / 2 : Math.PI / 2 });
+      for (let x = 1760; x < 3020; x += 58)
+        spots.push({ x, y: -4116 + randomBetween(-16, 16), a: seededRandom() > 0.5 ? 0 : Math.PI });
+      for (const spot of spots) {
+        if (seededRandom() > 0.62) continue;
+        if (solid(spot.x, spot.y, 6)) continue;
+        pedestrians.push({
+          x: spot.x,
+          y: spot.y,
+          a: spot.a,
+          color: randomChoice(DRIVER_COLORS),
+          hp: 30,
+          flee: 0,
+          timer: randomBetween(0, 8),
+          walk: 0,
+        });
+      }
+    }
+    function updateDeckWalker(p, deltaSeconds) {
+      const ship = p.onDeck;
+      p.altitude = ship.deck;
+      p.timer -= deltaSeconds;
+      if (p.timer <= 0) {
+        p.timer = randomBetween(3, 9);
+        p.a = randomBetween(0, TAU);
+        pedSay(p, 'deck', 0.16);
+      }
+      const speed = 26,
+        nx = p.x + Math.cos(p.a) * speed * deltaSeconds,
+        ny = p.y + Math.sin(p.a) * speed * deltaSeconds;
+      if (deckPointFree(ship, nx, ny, 7)) {
+        p.x = nx;
+        p.y = ny;
+        p.walk += deltaSeconds * 6;
+      } else {
+        p.a += Math.PI * randomBetween(0.4, 1.6);
+        p.timer = Math.min(p.timer, 1.2);
+      }
+      return true;
+    }
+    // END SUBSYSTEM: src/marina.js
     // BEGIN SUBSYSTEM: src/roofmission.js — Blue Hour rooftop mission
     /**
      * Blue Hour rooftop mission
@@ -18504,6 +18905,8 @@ body:not(.touch-mode).police-search-active #carRadio {
       spawnTrailVehicles();
       populateRecreation();
       populateSunsetPier();
+      populateLiners();
+      populateMarina();
       populateWildlife();
       resetTransit();
       populateAircraft();
@@ -20598,7 +21001,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     const REPO_TARGETS = [
       ['limousine', 4736, 1900, Math.PI / 2, '#2c2f36', 'THE BLACK LIMOUSINE · OCEAN DRIVE'],
       ['taxi', 1152, 3000, -Math.PI / 2, VEHICLE_DEFINITIONS.taxi.color, 'THE UNPAID TAXI · BROADWAY'],
-      ['supercar', 2688, 2900, Math.PI / 2, '#d8b23a', 'THE GOLD SUPERCAR · FINANCIAL'],
+      ['supercar', 2688, 2900, Math.PI / 2, '#d8b23a', 'THE GOLD SUPERCAR · EXCHANGE'],
       ['bus', 2176, 4224, 0, '#6a8fa6', 'THE TRANSIT BUS · SOUTH BANK'],
     ];
     function sideJobIndex(missionState) {
@@ -22396,6 +22799,9 @@ body:not(.touch-mode).police-search-active #carRadio {
             'COASTAL MEADOW',
             'MARINA GARDEN',
             'WEST QUAY GREEN',
+            'RECLAMATION GREEN',
+            'LIBERTY SQUARE',
+            'TERMINAL GARDENS',
           ][i],
           kind: [
             'square',
@@ -24456,7 +24862,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         },
       },
       {
-        name: 'FINANCIAL',
+        name: 'EXCHANGE',
         x: 2688,
         y: 2940,
         entry: {
@@ -27492,7 +27898,7 @@ body:not(.touch-mode).police-search-active #carRadio {
             // Zone-specific ground: mirrors the block patterns chosen in buildWorld().
             const zone = districtAt(x + 177, z + 177),
               blockSeed = (bx * 31 + by * 17) % 7;
-            if (zone === 'FINANCIAL DISTRICT' && blockSeed % 2 === 0) {
+            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               drawingContext.fillStyle = '#c3bfb2';
               drawingContext.fillRect(x + 10, z + 10, 344, 160);
               drawingContext.strokeStyle = '#a8a497';
@@ -27607,6 +28013,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       paintServiceForecourts(drawingContext, true);
       paintCasinoGround(drawingContext);
       paintHarborGround(drawingContext);
+      paintMarina(drawingContext);
       paintDepotGround(drawingContext);
       paintSportsGround(drawingContext);
       const groundTx = new Three.CanvasTexture(terrain);
@@ -28233,7 +28640,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         if (b.tropical) return b.height >= 60 ? 'decoTower' : 'deco';
         const district = districtAt(b.x + b.w / 2, b.y + b.h / 2);
         if (b.height >= 100) return 'tower';
-        if (b.height >= 68) return district === 'FINANCIAL DISTRICT' ? 'tower' : 'office';
+        if (b.height >= 68) return district.includes('FINANCIAL') ? 'tower' : 'office';
         if (district.includes('OLD QUARTER') || district.includes('IRONWORKS')) return b.style === 1 ? 'stucco' : 'brick';
         if (district === 'MIDTOWN' || district === 'BROADWAY') return cityRandom() < 0.55 ? 'brick' : 'office';
         return cityRandom() < 0.5 ? 'brick' : 'stucco';
@@ -29767,7 +30174,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         for (const x of [2638, 2738])
           box(tunnelGroup, x, 36, z + (z === 2780 ? -6 : 6), 10, 3, 1, warmLamp);
         const label = sign(
-          z === 2780 ? 'FINANCIAL STATION' : 'RAILWAY UNDERPASS',
+          z === 2780 ? 'EXCHANGE STATION' : 'RAILWAY UNDERPASS',
           2688,
           z + (z === 2780 ? -9 : 9),
           128,
@@ -33670,6 +34077,124 @@ body:not(.touch-mode).police-search-active #carRadio {
         }
       }
       // END SUBSYSTEM: src/harbor3d.js
+      // BEGIN SUBSYSTEM: src/marina3d.js — Marina and cruise liner meshes
+      /**
+       * Marina and cruise liner meshes
+       * Source: src/marina3d.js
+       * Scope: createCityRenderer() closure.
+       * Pontoons, moored yachts, the yacht club, the cruise terminal and the two
+       * liners. Hull sections follow the same taper the walkable deck uses, so
+       * what you can stand on is exactly what you can see.
+       */
+      const marinaStatic = new Three.Group();
+      scene.add(marinaStatic);
+      batchGroups.push(marinaStatic);
+      statics.push({ x: 1600, y: -3800, group: marinaStatic, radius: 2600 });
+      const deckWood = mat('#a8895f', 0.9),
+        pileWood = mat('#6d5a45', 0.95),
+        hullWhite = mat('#eef0ec', 0.45, 0.1),
+        hullNavy = mat('#20394a', 0.5, 0.15),
+        hullRed = mat('#7d3630', 0.6),
+        glassBlue = mat('#9fc4d6', 0.15, 0.6),
+        shedGrey = mat('#7b8486', 0.8),
+        quaySteel = mat('#d2d6d4', 0.35, 0.65),
+        lifeOrange = mat('#e0813a', 0.6),
+        funnelRed = mat('#b8443a', 0.55);
+      // ---- Pontoons and moored boats ------------------------------------------------
+      for (const f of MARINA.fingers) {
+        box(marinaStatic, f.x + f.w / 2, 3, f.y + f.h / 2, f.w, 3.4, f.h, deckWood);
+        for (let d = 14; d < f.h; d += 56)
+          for (const side of [-1, 1])
+            box(marinaStatic, f.x + f.w / 2 + side * (f.w / 2 + 2), 7, f.y + d, 2.6, 18, 2.6, pileWood);
+      }
+      for (const moored of marinaBoats()) {
+        const g = new Three.Group();
+        g.position.set(moored.x, 0, moored.y);
+        marinaStatic.add(g);
+        const hull = mat(moored.hull, 0.45, 0.1),
+          house = mat(moored.house, 0.5, 0.15);
+        const sections = 7;
+        for (let i = 0; i < sections; i++) {
+          const t = (i + 0.5) / sections - 0.5,
+            taper = Math.sqrt(Math.max(0.08, 1 - Math.pow(Math.abs(t) * 2, 4)));
+          box(g, 0, 5.5, t * moored.len, moored.beam * taper, 11, moored.len / sections + 1, hull);
+        }
+        box(g, 0, 12, -moored.len * 0.04, moored.beam * 0.62, 3, moored.len * 0.72, deckWood);
+        box(g, 0, 17, -moored.len * 0.1, moored.beam * 0.5, 12, moored.len * 0.3, house);
+        box(g, 0, 22, -moored.len * 0.1, moored.beam * 0.42, 4, moored.len * 0.22, glassBlue);
+        if (moored.len > 100)
+          box(g, 0, 40, moored.len * 0.02, 1.6, 52, 1.6, quaySteel);
+      }
+      // ---- Shore buildings ----------------------------------------------------------
+      {
+        const c = MARINA.club;
+        box(marinaStatic, c.x + c.w / 2, 20, c.y + c.h / 2, c.w, 40, c.h, shedGrey);
+        box(marinaStatic, c.x + c.w / 2, 42, c.y + c.h / 2, c.w + 10, 3, c.h + 10, mat('#5b6360', 0.8));
+        box(marinaStatic, c.x + c.w / 2, 24, c.y + 3, c.w - 26, 14, 3, glassBlue);
+        const f = MARINA.fuel;
+        box(marinaStatic, f.x + f.w / 2, 10, f.y + f.h / 2, f.w, 20, f.h, mat('#69706a', 0.85));
+        box(marinaStatic, f.x + f.w / 2, 23, f.y + f.h / 2, f.w + 14, 3, f.h + 14, mat('#3e4744', 0.8));
+        const t = MARINA.terminal;
+        box(marinaStatic, t.x + t.w / 2, 44, t.y + t.h / 2, t.w, 88, t.h, shedGrey);
+        box(marinaStatic, t.x + t.w / 2, 62, t.y + 3, t.w - 40, 34, 4, glassBlue);
+        box(marinaStatic, t.x + t.w / 2, 90, t.y + t.h / 2, t.w + 16, 5, t.h + 16, mat('#59615f', 0.8));
+        for (let x = t.x + 40; x < t.x + t.w - 20; x += 96)
+          box(marinaStatic, x, 22, t.y + t.h + 26, 6, 44, 6, quaySteel);
+        box(marinaStatic, t.x + t.w / 2, 46, t.y + t.h + 26, t.w - 60, 4, 52, mat('#4e5654', 0.8));
+      }
+      // ---- The liners ----------------------------------------------------------------
+      function buildLiner(ship) {
+        const g = new Three.Group();
+        g.position.set(ship.x, 0, ship.y);
+        g.rotation.y = -ship.a;
+        marinaStatic.add(g);
+        const draft = 22,
+          sections = 26;
+        for (let i = 0; i < sections; i++) {
+          const u = (-0.5 + (i + 0.5) / sections) * ship.l,
+            beam = hullHalfBeam(ship, u) * 2,
+            len = ship.l / sections + 1;
+          box(g, u, ship.deck / 2 - draft / 2, 0, len, ship.deck + draft, beam, hullNavy);
+          box(g, u, -draft / 2, 0, len, draft - 2, beam * 0.94, hullRed);
+          box(g, u, ship.deck - 2, 0, len, 5, beam + 2, hullWhite);
+        }
+        // Promenade rail: a run of posts down both sides rather than a solid wall.
+        for (let u = -ship.l / 2 + 40; u < ship.l / 2 - 40; u += 42) {
+          const beam = hullHalfBeam(ship, u);
+          for (const side of [-1, 1]) {
+            box(g, u, ship.deck + 8, side * (beam - 5), 2, 12, 2, quaySteel);
+            box(g, u + 21, ship.deck + 13, side * (beam - 5), 44, 1.6, 1.6, quaySteel);
+          }
+        }
+        for (const [u, v, len, wide, high] of LINER_DECKHOUSES) {
+          box(g, u, ship.deck + high / 2, v, len, high, wide, hullWhite);
+          for (let level = 14; level < high - 8; level += 17)
+            box(g, u, ship.deck + level, v, len - 8, 8, wide + 2.5, glassBlue);
+          box(g, u, ship.deck + high + 1.5, v, len - 6, 4, wide - 6, mat('#cfd3cd', 0.8));
+        }
+        // Funnels, masts and the boat deck.
+        for (const u of [-210, -60]) {
+          box(g, u, ship.deck + 128, 0, 54, 56, 62, funnelRed);
+          box(g, u, ship.deck + 158, 0, 58, 6, 66, mat('#2b2f31', 0.7));
+        }
+        box(g, 330, ship.deck + 92, 0, 4, 70, 4, quaySteel);
+        for (let u = -320; u <= 200; u += 62)
+          for (const side of [-1, 1]) {
+            const beam = hullHalfBeam(ship, u);
+            box(g, u, ship.deck + 58, side * (beam - 10), 44, 14, 16, lifeOrange);
+          }
+        // Stern boarding platform, and a gangway when the ship lies alongside.
+        box(g, -ship.l / 2 - 20, 3, 0, 52, 4, 74, deckWood);
+        box(g, -ship.l / 2 - 2, ship.deck / 2, 0, 34, ship.deck, 22, mat('#8a9094', 0.7));
+        if (ship.berthed) {
+          const gate = deckLocal(ship, ship.board.x, ship.board.y);
+          box(g, gate.u, ship.deck / 2 + 6, gate.v / 2, 46, 4, Math.abs(gate.v) + 20, mat('#b9bdb6', 0.7));
+          box(g, gate.u, ship.deck / 2 + 18, gate.v / 2, 46, 22, 3, quaySteel);
+        }
+        return g;
+      }
+      for (const ship of LINERS) buildLiner(ship);
+      // END SUBSYSTEM: src/marina3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],
@@ -36288,21 +36813,18 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     // END SUBSYSTEM: src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
-    const __t0 = performance.now();
-    const __step = (n, f) => { const a = performance.now(); f(); console.log('BOOT ' + n + ' ' + Math.round(performance.now() - a) + 'ms'); };
-    __step('buildWorld', buildWorld);
-    __step('buildBuildingGrid', buildBuildingGrid);
-    __step('buildColliders', buildColliders);
-    __step('populate', populate);
-    __step('populateStoryWorld', populateStoryWorld);
-    __step('populateCounty', populateCounty);
-    __step('load', load);
-    __step('resize', resize);
-    __step('drawWeapon', drawWeapon);
-    __step('updateUI', updateUI);
+    buildWorld();
+    buildBuildingGrid();
+    buildColliders();
+    populate();
+    populateStoryWorld();
+    populateCounty();
+    load();
+    resize();
+    drawWeapon();
+    updateUI();
     /* REVIEW_HOOK:LOAD_VISUALS */
-    __step('loadVisuals', loadVisuals);
-    console.log('BOOT total ' + Math.round(performance.now() - __t0) + 'ms');
+    loadVisuals();
     /**
      * PROFILER
      * Rolling averages of simulation and render CPU time per frame, plus the

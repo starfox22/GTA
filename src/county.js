@@ -805,6 +805,8 @@
       spawnTrailVehicles();
       populateRecreation();
       populateSunsetPier();
+      populateLiners();
+      populateMarina();
       populateWildlife();
       resetTransit();
       populateAircraft();

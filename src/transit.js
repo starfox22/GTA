@@ -114,7 +114,7 @@
         },
       },
       {
-        name: 'FINANCIAL',
+        name: 'EXCHANGE',
         x: 2688,
         y: 2940,
         entry: {

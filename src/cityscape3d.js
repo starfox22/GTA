@@ -427,7 +427,7 @@
         if (b.tropical) return b.height >= 60 ? 'decoTower' : 'deco';
         const district = districtAt(b.x + b.w / 2, b.y + b.h / 2);
         if (b.height >= 100) return 'tower';
-        if (b.height >= 68) return district === 'FINANCIAL DISTRICT' ? 'tower' : 'office';
+        if (b.height >= 68) return district.includes('FINANCIAL') ? 'tower' : 'office';
         if (district.includes('OLD QUARTER') || district.includes('IRONWORKS')) return b.style === 1 ? 'stucco' : 'brick';
         if (district === 'MIDTOWN' || district === 'BROADWAY') return cityRandom() < 0.55 ? 'brick' : 'office';
         return cityRandom() < 0.5 ? 'brick' : 'stucco';

@@ -159,6 +159,9 @@
         [9, 8],
         [8, 9],
         [0, 7],
+        [0, -2],
+        [4, -4],
+        [2, -7],
       ];
     const isPark = (x, y) => PARKS.some((p) => p[0] === x && p[1] === y),
       isRiver = (x, y, r = 0) =>
@@ -758,6 +761,7 @@
         airportSceneryBlocked(x, y, r) ||
         garageBlocked(x, y, r) ||
         parkBlocked(x, y, r) ||
+        marinaBlocked(x, y, r) ||
         !groundAt(x, y, r) ||
         harborBlocked(x, y, r) ||
         depotBlocked(x, y, r) ||
@@ -774,6 +778,8 @@
     function moveBody(body, displacementX, displacementY, collisionRadius) {
       if (body === player && player.roof)
         return moveOnRoof(displacementX, displacementY, collisionRadius);
+      if (body === player && player.deck)
+        return moveOnDeck(displacementX, displacementY, collisionRadius);
       let hit = false;
       // Vehicle test: a cheap bounding box rejects almost every vehicle before the
       // rotated point-in-car test (this runs for every pedestrian step each frame).
@@ -1086,6 +1092,7 @@
         }
       rect(48, CITY_TOP + 48, CITY_SIZE - 112, CITY_HEIGHT - 112, '#696d60');
       paintCityStreets(groundContext, true);
+      paintMarina(groundContext);
       for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
         for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
           const x = blockX(bx) + 89,
@@ -1163,7 +1170,7 @@
             }
             const zone = districtAt(x + w / 2, y + h / 2),
               blockSeed = (bx * 31 + by * 17) % 7;
-            if (zone === 'FINANCIAL DISTRICT' && blockSeed % 2 === 0) {
+            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               // One tower on a plaza: towers need air around them to read as towers.
               makeBuilding(x + 52, y + 12, w - 104, 140, 0);
               rect(x + 8, y + 8, 40, 150, '#8d9385');
@@ -1739,6 +1746,7 @@
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
       if (parkInteract()) return;
+      if (marinaInteract()) return;
       if (
         rooftopMissionInteract() ||
         challengeMissionInteract() ||
@@ -2146,6 +2154,16 @@
         'Noodles are ready in a minute.',
         'Best lunch in the Garden.',
       ],
+      deck: [
+        'The whole skyline from up here!',
+        'Sailing sets at six, they said.',
+        'Is that the tower district?',
+        'I am never getting off this boat.',
+        'Photo by the rail, come on.',
+        'The buffet reopens at four.',
+        'Look how small the taxis are.',
+        'Sea air. Finally.',
+      ],
     };
     function pedSay(p, kind, chance = 1) {
       if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return;
@@ -2190,6 +2208,10 @@
         if (Math.abs(p.x - player.x) > 900 || Math.abs(p.y - player.y) > 900) {
           if ((peopleFrame + index) % 3) continue;
           deltaSeconds = frameDelta * 3;
+        }
+        if (p.onDeck) {
+          updateDeckWalker(p, deltaSeconds);
+          continue;
         }
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateCarjackReactions(p, deltaSeconds)) continue;
@@ -2646,7 +2668,14 @@
             );
           }
         }
-        if (!player.car && !player.roof && !player.parachute && !transitRide && !player.coaster)
+        if (
+          !player.car &&
+          !player.roof &&
+          !player.deck &&
+          !player.parachute &&
+          !transitRide &&
+          !player.coaster
+        )
           player.altitude = terrainHeight(player.x, player.y);
         if (keys.KeyF || (!player.car && keys.Space) || mouse.down) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
@@ -3479,10 +3508,14 @@
         drawingContext.restore();
         drawingContext.textAlign = 'center';
         const labels = [
+          ['N O R T H  P O I N T', 2700, -2620],
+          ['HARBOR POINT MARINA', 1060, -2960],
+          ['CRUISE TERMINAL', 2360, -3990],
+          ['THE RECLAMATION', 1420, -760],
           ['N O R T H B A N K', 1580, 540],
           ['CENTRAL GARDEN', 2688, 2200],
           ['SUNSET PIER', 3810, 5190],
-          ['FINANCIAL DISTRICT', 2680, 2890],
+          ['EXCHANGE DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
           ['BATTERY POINT', 2480, 5140],
           ['SOUTHPORT', 640, 5450],
@@ -3745,7 +3778,10 @@
                 : 'RESPRAY & REPAIR · $250';
           else if (GARAGES.some((s) => distanceBetween(c, s) < 200))
             prompt = 'DRIVE FULLY INTO THE OPEN REPAIR BAY';
-        } else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
+        } else if (player.deck)
+          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : '';
+        else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
+        else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (distanceBetween(player, phone) < 68 && !m && missionIndex < missions.length)
           prompt = 'ANSWER PAYPHONE';
@@ -4176,6 +4212,7 @@
     // @include src/roadblocks.js
     // @include src/carjack.js
     // @include src/themepark.js
+    // @include src/marina.js
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js

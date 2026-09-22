@@ -76,6 +76,9 @@
             'COASTAL MEADOW',
             'MARINA GARDEN',
             'WEST QUAY GREEN',
+            'RECLAMATION GREEN',
+            'LIBERTY SQUARE',
+            'TERMINAL GARDENS',
           ][i],
           kind: [
             'square',

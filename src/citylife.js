@@ -351,6 +351,25 @@
         boatY: 5147,
         type: 'speedboat',
       },
+      // Harbor Point: the way out to the liner riding at anchor.
+      {
+        x: 1566,
+        y: -3420,
+        w: 96,
+        h: 34,
+        boatX: 1500,
+        boatY: -3403,
+        type: 'jetski',
+      },
+      {
+        x: 1566,
+        y: -3560,
+        w: 96,
+        h: 34,
+        boatX: 1496,
+        boatY: -3543,
+        type: 'speedboat',
+      },
     ];
     const PRICES = [180, 650, 900, 2600, 1400, 1900],
       AMMO_PRICES = [60, 120, 100, 450, 180, 160];
@@ -394,6 +413,9 @@
         hy: HARBOR.ship.l / 2,
         a: 0,
       });
+      for (const ship of LINERS) obstacles.push(shipHull(ship));
+      for (const moored of marinaBoats())
+        obstacles.push({ x: moored.x, y: moored.y, hx: moored.beam / 2, hy: moored.len / 2, a: 0 });
       return !obstacles.some((b) => boxContact(shape, b));
     }
     function isBoat(vehicle) {
