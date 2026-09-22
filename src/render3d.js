@@ -700,6 +700,7 @@
       // @include src/ecology3d.js
       // @include src/world3d.js
       // @include src/county3d.js
+      // @include src/boats3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js
       // @include src/cycles3d.js
@@ -1682,6 +1683,7 @@
           updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
+          updateMarinaVisuals(deltaSeconds);
           updateTrafficVisuals();
           updateMissionVisuals();
           const shadowHeight = terrainHeight(cameraTarget.x, cameraTarget.y);
@@ -1852,6 +1854,7 @@
                 m.body.rotation.x = Math.sin(gameTime * 1.3 + c.y * 0.017) * 0.028;
                 m.wake.visible = Math.abs(c.speed) > 15;
                 m.wake.scale.x = 0.5 + Math.abs(c.speed) / 180;
+                if (m.boatUpdate) m.boatUpdate(c);
               }
               for (const { wheel } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / 5;
             }
