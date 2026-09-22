@@ -690,8 +690,9 @@
         box(parent, u, z + 0.3, v + width / 2 + 1.2, length + 4.8, 0.8, 2.4, coping);
         box(parent, u - length / 2 - 1.2, z + 0.3, v, 2.4, 0.8, width, coping);
         box(parent, u + length / 2 + 1.2, z + 0.3, v, 2.4, 0.8, width, coping);
-        box(parent, u, z - 0.2, v, length, 0.4, width, kitPoolWater);
-        box(parent, u - length / 2 + 3, z - 0.1, v, 6, 0.4, width, tint('#8fe0e8', 'gloss'));
+        // The water sits just proud of the deck it is set into.
+        box(parent, u, z + 0.25, v, length, 0.3, width, kitPoolWater);
+        box(parent, u - length / 2 + 3, z + 0.3, v, 6, 0.3, width, tint('#8fe0e8', 'gloss'));
       }
       // A rigid-inflatable tender: grey tubes, white console, dark seat.
       function ribTender(parent, u, z, v, length, tubeColor = '#50565c', heading = 0) {
@@ -828,36 +829,52 @@
       function kitLight(list, parent, u, z, v, color = '#ffd9a0') {
         list.push({ parent, position: new Three.Vector3(u, z, v), color: kitColor(color) });
       }
+      /* Lights under a group flagged `userData.lightCloud` get a cloud of their
+         own inside that group, so they hide with it (the superyacht's decks);
+         everything else shares one cloud in the scene. */
       function kitLightCloud(list, size = 9) {
-        const positions = [],
-          colors = [];
+        const byRoot = new Map();
         for (const l of list) {
-          l.parent.updateWorldMatrix(true, false);
-          const p = l.position.clone().applyMatrix4(l.parent.matrixWorld);
-          positions.push(p.x, p.y, p.z);
-          colors.push(l.color.r, l.color.g, l.color.b);
+          let root = l.parent;
+          while (root && !root.userData.lightCloud) root = root.parent;
+          root = root || scene;
+          if (!byRoot.has(root)) byRoot.set(root, []);
+          byRoot.get(root).push(l);
         }
-        const geo = new Three.BufferGeometry();
-        geo.setAttribute('position', new Three.Float32BufferAttribute(positions, 3));
-        geo.setAttribute('color', new Three.Float32BufferAttribute(colors, 3));
-        geo.computeBoundingSphere();
-        const material = new Three.PointsMaterial({
-          map: haloTx,
-          size,
-          vertexColors: true,
-          transparent: true,
-          opacity: 0,
-          depthWrite: false,
-          blending: Three.AdditiveBlending,
-        });
-        material.userData.worldSize = size;
-        kitLightMaterials.push(material);
-        const points = new Three.Points(geo, material);
-        points.userData.dynamic = true;
-        points.frustumCulled = true;
-        points.renderOrder = 6;
-        scene.add(points);
-        return points;
+        const clouds = [];
+        for (const [root, lights] of byRoot) {
+          root.updateWorldMatrix(true, false);
+          const toRoot = new Three.Matrix4().copy(root.matrixWorld).invert(),
+            positions = [],
+            colors = [];
+          for (const l of lights) {
+            l.parent.updateWorldMatrix(true, false);
+            const p = l.position.clone().applyMatrix4(l.parent.matrixWorld).applyMatrix4(toRoot);
+            positions.push(p.x, p.y, p.z);
+            colors.push(l.color.r, l.color.g, l.color.b);
+          }
+          const geo = new Three.BufferGeometry();
+          geo.setAttribute('position', new Three.Float32BufferAttribute(positions, 3));
+          geo.setAttribute('color', new Three.Float32BufferAttribute(colors, 3));
+          geo.computeBoundingSphere();
+          const material = new Three.PointsMaterial({
+            map: haloTx,
+            size,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0,
+            depthWrite: false,
+            blending: Three.AdditiveBlending,
+          });
+          material.userData.worldSize = size;
+          kitLightMaterials.push(material);
+          const points = new Three.Points(geo, material);
+          points.userData.dynamic = true;
+          points.renderOrder = 6;
+          root.add(points);
+          clouds.push(points);
+        }
+        return clouds;
       }
       // Soft coloured glows lying on the water (underwater lights at a stern).
       const kitWaterGlows = [];

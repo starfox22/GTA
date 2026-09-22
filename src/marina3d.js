@@ -191,6 +191,7 @@
           base = new Three.Group(),
           decks = [2, 3, 4].map(() => new Three.Group());
         root.add(base, ...decks);
+        for (const d of decks) d.userData.lightCloud = true;
         const groupFor = (level) => (level >= 2 && level <= 4 ? decks[level - 2] : base),
           spec = superyachtHullSpec(ship),
           stairsFrom = (level) => ship.stairs.filter((s) => s.lo === level),
@@ -1279,7 +1280,7 @@
         // Pool deck on the tall midships house: two pools, rows of loungers, a slide.
         {
           const [u, , len, wide, high] = LINER_DECKHOUSES[1],
-            z = deck + high + 3;
+            z = deck + high + 3.8;
           pool(g, u - 60, 0, z, 70, 50);
           pool(g, u + 70, 0, z, 44, 36);
           for (const side of [-1, 1])
