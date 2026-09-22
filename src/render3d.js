@@ -701,6 +701,7 @@
       // @include src/county3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js
+      // @include src/cycles3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],

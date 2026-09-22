@@ -1816,7 +1816,7 @@
         } else if (isBoat(c))
           tell('W/S throttle · A/D steer · Space slow · E exit alongside a dock', 5);
         else if (c.type === 'bicycle')
-          tell('BICYCLE · W pedal · S brake · A/D steer · Explore the green cycle loops', 5);
+          tell('CITY CYCLE · W pedal · SHIFT stand on the pedals · S brake · A/D steer', 5);
         else tell(vehicleSpec(c).name + ' · W accelerate · A/D steer · Space handbrake', 3);
         tone(200, 0.12, 0.25, 'triangle');
     }
@@ -2660,6 +2660,7 @@
         }
         timed('transit', () => updateTransit(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
+        updateCycling(deltaSeconds);
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -3745,7 +3746,9 @@
       getElement('speedUnit').textContent = c
         ? isAircraft(c)
           ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT'
-          : 'KM/H'
+          : ridingBicycle()
+            ? 'KM/H · LEGS ' + Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) + '%'
+            : 'KM/H'
         : '';
       getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
       getElement('carFill').style.background = c && c.hp < c.maxhp * 0.3 ? '#e79177' : '#d7f970';
@@ -4255,6 +4258,7 @@
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js
+    // @include src/cycles.js
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js

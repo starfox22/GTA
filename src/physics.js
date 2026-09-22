@@ -811,17 +811,17 @@
         headingCosine = Math.cos(c.a),
         headingSine = Math.sin(c.a),
         along = c.vx * headingCosine + c.vy * headingSine;
+      // Standing on the pedals: a harder gear while the rider's legs last.
+      const sprint = controlled && vehicleDefinition.bicycle && cycleSprinting(),
+        topSpeed = vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1);
       let force = up
-        ? vehicleDefinition.acc
+        ? vehicleDefinition.acc * (sprint ? CYCLE_SPRINT_ACC : 1)
         : down
           ? along > 8
             ? -120
             : -vehicleDefinition.acc * 0.55
           : 0;
-      if (
-        (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up) ||
-        (along < -65 && down)
-      )
+      if ((along > topSpeed * (0.65 + (0.35 * c.hp) / c.maxhp) && up) || (along < -65 && down))
         force = 0;
       if (c.hp <= 0) force = 0;
       c.vx += headingCosine * force * stepSeconds;
