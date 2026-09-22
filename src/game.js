@@ -3821,11 +3821,16 @@
       const target = objective(),
         m = mission;
       getElement('pager').classList.toggle('hidden', !m && incomingCallRemaining <= 0);
+      // Numbered the same way as the mission-start headline: story missions out
+      // of the story, contracts out of the contracts.
+      const shownIndex = Math.min(mission?.index ?? missionIndex, missions.length - 1);
       getElement('missionCounter').textContent =
-        'MISSION ' +
-        String(Math.min((mission?.index ?? missionIndex) + 1, missions.length)).padStart(2, '0') +
-        ' / ' +
-        String(missions.length).padStart(2, '0');
+        shownIndex >= SIDE_JOB_FIRST
+          ? 'CONTRACT ' + (shownIndex + 1 - SIDE_JOB_FIRST) + ' / ' + (missions.length - SIDE_JOB_FIRST)
+          : 'MISSION ' +
+            String(shownIndex + 1).padStart(2, '0') +
+            ' / ' +
+            String(SIDE_JOB_FIRST).padStart(2, '0');
       getElement('missionTimer').textContent = m?.timeLimit
         ? Math.floor(Math.ceil(m.timer) / 60) + ':' + String(Math.ceil(m.timer) % 60).padStart(2, '0')
         : '';
