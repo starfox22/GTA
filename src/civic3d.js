@@ -297,7 +297,17 @@
         scene.background.copy(skyScratch);
         scene.fog.color.copy(skyScratch);
         renderer.toneMappingExposure = 1.1 + night * 0.16 + dusk * 0.07;
-        const badge = 'SOUTH COAST · ' + (light < 0.1 ? 'NIGHT' : light < 0.4 ? (dusk > 0.5 && (worldMinutes % 1440) / 60 < 12 ? 'DAWN' : 'DUSK') : 'DAY');
+        const badge =
+          'SOUTH COAST · ' +
+          (light < 0.1
+            ? 'NIGHT'
+            : light < 0.4
+              ? dusk > 0.5 && (worldMinutes % 1440) / 60 < 12
+                ? 'DAWN'
+                : 'DUSK'
+              : 'DAY') +
+          ' · ' +
+          weatherLabel();
         if (badge !== lastBadge) getElement('renderBadge').textContent = lastBadge = badge;
         for (let i = 0; i < bloodMeshes.length; i++) {
           const m = bloodMeshes[i],

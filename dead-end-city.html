@@ -7425,12 +7425,15 @@ body:not(.touch-mode).police-search-active #carRadio {
       if (c.hp <= 0) force = 0;
       c.vx += headingCosine * force * stepSeconds;
       c.vy += headingSine * force * stepSeconds;
-      const lateral = -c.vx * headingSine + c.vy * headingCosine,
-        grip = 1 - Math.exp(-stepSeconds * 2.4);
+      // Wet tarmac lets the back end go earlier and stretches the stopping distance.
+      const road = isBoat(c) || isAircraft(c) ? 1 : wetGrip(),
+        lateral = -c.vx * headingSine + c.vy * headingCosine,
+        grip = 1 - Math.exp(-stepSeconds * 2.4 * road);
       c.vx += headingSine * lateral * grip;
       c.vy -= headingCosine * lateral * grip;
-      c.vx *= Math.exp(-(brake ? 2.5 : 0.3) * stepSeconds);
-      c.vy *= Math.exp(-(brake ? 2.5 : 0.3) * stepSeconds);
+      const drag = Math.exp(-(brake ? 2.5 * road : 0.3) * stepSeconds);
+      c.vx *= drag;
+      c.vy *= drag;
       c.av +=
         (turn * vehicleDefinition.turn * clamp(Math.abs(along) / 70, 0.15, 1) * Math.sign(along || 1) -
           c.av) *
@@ -8750,6 +8753,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         timed('transit', () => updateTransit(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
+        updateWeather(deltaSeconds);
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -16961,6 +16965,152 @@ body:not(.touch-mode).police-search-active #carRadio {
       }
     }
     // END SUBSYSTEM: src/cycles.js
+    // BEGIN SUBSYSTEM: src/weather.js — Weather
+    /**
+     * Weather
+     * Source: src/weather.js
+     * Scope: shared game closure.
+     * The weather state machine, road wetness, wind and the rain on the audio bus.
+     */
+    /**
+     * WEATHER
+     * A chain of states from clear through to heavy rain, walked one step at a
+     * time so the sky always changes plausibly: it clouds over before it rains and
+     * clears the same way round. Everything downstream reads the smoothed values
+     * rather than the state, so a change of weather is a slow drift rather than a
+     * cut: `weather.cloud` dims the sun and greys the sky, `weather.rain` drives
+     * the fall and the hiss, and `weather.wet` lags both so the roads stay dark and
+     * greasy for a while after the shower has passed.
+     */
+    const WEATHER_STATES = [
+      { id: 'clear', name: 'CLEAR', cloud: 0.06, rain: 0, hold: [90, 260] },
+      { id: 'fair', name: 'FAIR', cloud: 0.34, rain: 0, hold: [70, 200] },
+      { id: 'cloudy', name: 'CLOUDY', cloud: 0.68, rain: 0, hold: [55, 150] },
+      { id: 'overcast', name: 'OVERCAST', cloud: 0.9, rain: 0.04, hold: [40, 110] },
+      { id: 'rain', name: 'RAIN', cloud: 0.95, rain: 0.6, hold: [30, 80] },
+      { id: 'storm', name: 'HEAVY RAIN', cloud: 1, rain: 1, hold: [14, 40] },
+    ];
+    const weather = {
+      index: 1,
+      cloud: WEATHER_STATES[1].cloud,
+      rain: 0,
+      wet: 0,
+      wind: 0.42,
+      windAngle: -0.7,
+      flash: 0,
+      thunderIn: 0,
+      until: 0,
+      locked: false,
+    };
+    function weatherState() {
+      return WEATHER_STATES[weather.index];
+    }
+    function weatherLabel() {
+      return weatherState().name;
+    }
+    // Asked for directly, the sky snaps rather than drifting, so what you set is
+    // what you immediately get; left alone, advanceWeather() always eases in.
+    function setWeather(id) {
+      const next = WEATHER_STATES.findIndex((s) => s.id === id);
+      if (next < 0) return weatherLabel();
+      weather.index = next;
+      weather.cloud = WEATHER_STATES[next].cloud;
+      weather.rain = WEATHER_STATES[next].rain;
+      weather.wet = Math.max(weather.wet, Math.min(1, weather.rain * 1.25));
+      weather.until = worldMinutes + randomBetween(...WEATHER_STATES[next].hold);
+      return weatherLabel();
+    }
+    function advanceWeather() {
+      const here = weather.index,
+        // Settled weather drifts; a downpour is always on its way out.
+        up = here < WEATHER_STATES.length - 1,
+        down = here > 0,
+        toward =
+          here >= 4 ? -1 : here === 0 ? 1 : seededRandom() < 0.55 ? 1 : -1,
+        next = clamp(here + (toward > 0 ? (up ? 1 : -1) : down ? -1 : 1), 0, WEATHER_STATES.length - 1);
+      weather.index = next;
+      weather.until = worldMinutes + randomBetween(...WEATHER_STATES[next].hold);
+    }
+    function updateWeather(deltaSeconds) {
+      if (!weather.until) weather.until = worldMinutes + randomBetween(...weatherState().hold);
+      if (!weather.locked && worldMinutes > weather.until) advanceWeather();
+      const target = weatherState(),
+        // Cloud builds and clears slowly; rain starts and stops faster than that.
+        toCloud = 1 - Math.exp(-deltaSeconds / 26),
+        toRain = 1 - Math.exp(-deltaSeconds / 11);
+      weather.cloud += (target.cloud - weather.cloud) * toCloud;
+      weather.rain += (target.rain - weather.rain) * toRain;
+      // Standing water builds while it rains and takes several minutes to dry.
+      weather.wet +=
+        weather.rain > 0.05
+          ? (Math.min(1, weather.rain * 1.25) - weather.wet) * (1 - Math.exp(-deltaSeconds / 20))
+          : -weather.wet * (1 - Math.exp(-deltaSeconds / 140));
+      weather.wet = clamp(weather.wet, 0, 1);
+      weather.wind += (0.3 + weather.rain * 0.9 - weather.wind) * (1 - Math.exp(-deltaSeconds / 30));
+      weather.windAngle += Math.sin(gameTime * 0.07) * deltaSeconds * 0.05;
+      weather.flash = Math.max(0, weather.flash - deltaSeconds * 4.5);
+      if (weather.thunderIn > 0) {
+        weather.thunderIn -= deltaSeconds;
+        if (weather.thunderIn <= 0) thunder();
+      } else if (weather.rain > 0.75 && seededRandom() < deltaSeconds * 0.09) {
+        weather.flash = 1;
+        weather.thunderIn = randomBetween(0.8, 4.5);
+      }
+      updateRainSound();
+    }
+    // Slower going in the wet: tyres let go earlier and stopping takes longer.
+    function wetGrip() {
+      return 1 - weather.wet * 0.28;
+    }
+    /* Rain is one looping band of filtered noise whose gain and brightness follow
+       the fall, so there is no sample to ship and nothing to start or stop. */
+    let rainSource = null,
+      rainGain = null,
+      rainFilter = null;
+    function startRainSound() {
+      if (!audio || rainSource) return;
+      const seconds = 3,
+        n = Math.floor(audio.sampleRate * seconds),
+        buffer = audio.createBuffer(1, n, audio.sampleRate),
+        data = buffer.getChannelData(0);
+      let low = 0;
+      for (let i = 0; i < n; i++) {
+        const white = Math.random() * 2 - 1;
+        low = low * 0.86 + white * 0.14;
+        data[i] = white * 0.42 + low * 1.4;
+      }
+      // Cross-fade the seam so the loop does not tick.
+      const fade = Math.floor(audio.sampleRate * 0.25);
+      for (let i = 0; i < fade; i++) {
+        const t = i / fade;
+        data[i] = data[i] * t + data[n - fade + i] * (1 - t);
+      }
+      rainSource = audio.createBufferSource();
+      rainGain = audio.createGain();
+      rainFilter = audio.createBiquadFilter();
+      rainSource.buffer = buffer;
+      rainSource.loop = true;
+      rainFilter.type = 'lowpass';
+      rainFilter.frequency.value = 2400;
+      rainGain.gain.value = 0;
+      rainSource.connect(rainFilter).connect(rainGain).connect(master);
+      rainSource.start();
+    }
+    function updateRainSound() {
+      if (!audio || !soundOn) return;
+      if (!rainSource) startRainSound();
+      if (!rainGain) return;
+      const indoors = player.car && !vehicleSpec(player.car).bike && !isBoat(player.car),
+        level = weather.rain * (indoors ? 0.12 : 0.3);
+      rainGain.gain.value += (level - rainGain.gain.value) * 0.05;
+      rainFilter.frequency.value = indoors ? 900 : 1700 + weather.rain * 2600;
+    }
+    function thunder() {
+      if (!audio || !soundOn) return;
+      noise(1.6, 0.5, 190);
+      tone(46, 1.4, 0.24, 'sine', 28);
+    }
+    // END SUBSYSTEM: src/weather.js
     // BEGIN SUBSYSTEM: src/roofmission.js — Blue Hour rooftop mission
     /**
      * Blue Hour rooftop mission
@@ -30716,7 +30866,17 @@ body:not(.touch-mode).police-search-active #carRadio {
         scene.background.copy(skyScratch);
         scene.fog.color.copy(skyScratch);
         renderer.toneMappingExposure = 1.1 + night * 0.16 + dusk * 0.07;
-        const badge = 'SOUTH COAST · ' + (light < 0.1 ? 'NIGHT' : light < 0.4 ? (dusk > 0.5 && (worldMinutes % 1440) / 60 < 12 ? 'DAWN' : 'DUSK') : 'DAY');
+        const badge =
+          'SOUTH COAST · ' +
+          (light < 0.1
+            ? 'NIGHT'
+            : light < 0.4
+              ? dusk > 0.5 && (worldMinutes % 1440) / 60 < 12
+                ? 'DAWN'
+                : 'DUSK'
+              : 'DAY') +
+          ' · ' +
+          weatherLabel();
         if (badge !== lastBadge) getElement('renderBadge').textContent = lastBadge = badge;
         for (let i = 0; i < bloodMeshes.length; i++) {
           const m = bloodMeshes[i],
@@ -34876,6 +35036,169 @@ body:not(.touch-mode).police-search-active #carRadio {
         }
       }
       // END SUBSYSTEM: src/cycles3d.js
+      // BEGIN SUBSYSTEM: src/weather3d.js — Weather and sky visuals
+      /**
+       * Weather and sky visuals
+       * Source: src/weather3d.js
+       * Scope: createCityRenderer() closure.
+       * Rain, wet roads, lightning, and the cloud deck you can fly into.
+       */
+      /**
+       * RAIN
+       * One LineSegments object of short streaks kept in a box around the camera.
+       * Each drop falls and is wrapped back to the top of the box, so the same few
+       * thousand vertices cover the whole city and nothing is allocated per frame.
+       *
+       * CLOUD DECK
+       * A broken layer of soft billboards at flying height whose coverage follows
+       * the weather. Climb into it and the fog closes in, which is the only honest
+       * altitude cue an overhead camera can give you.
+       */
+      const RAIN_DROPS = touchEnabled() ? 1100 : 2600,
+        RAIN_BOX = 1500,
+        RAIN_TOP = 560;
+      const rainPositions = new Float32Array(RAIN_DROPS * 6),
+        rainSeeds = new Float32Array(RAIN_DROPS * 3);
+      for (let i = 0; i < RAIN_DROPS; i++) {
+        rainSeeds[i * 3] = (Math.random() - 0.5) * RAIN_BOX;
+        rainSeeds[i * 3 + 1] = Math.random() * RAIN_TOP;
+        rainSeeds[i * 3 + 2] = (Math.random() - 0.5) * RAIN_BOX;
+      }
+      const rainGeometry = new Three.BufferGeometry();
+      rainGeometry.setAttribute('position', new Three.BufferAttribute(rainPositions, 3));
+      const rainMaterial = new Three.LineBasicMaterial({
+        color: '#bcd2e4',
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      });
+      const rainMesh = new Three.LineSegments(rainGeometry, rainMaterial);
+      rainMesh.frustumCulled = false;
+      rainMesh.visible = false;
+      scene.add(rainMesh);
+      // ---- Cloud deck ---------------------------------------------------------------
+      const CLOUD_ALTITUDE = 1180,
+        CLOUD_COUNT = touchEnabled() ? 26 : 54,
+        cloudTexture = (() => {
+          const cv = document.createElement('canvas');
+          cv.width = cv.height = 128;
+          const g = cv.getContext('2d'),
+            grad = g.createRadialGradient(64, 64, 6, 64, 64, 62);
+          grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+          grad.addColorStop(0.45, 'rgba(250,251,253,0.6)');
+          grad.addColorStop(1, 'rgba(240,244,250,0)');
+          g.fillStyle = grad;
+          g.beginPath();
+          g.arc(64, 64, 63, 0, Math.PI * 2);
+          g.fill();
+          const tx = new Three.CanvasTexture(cv);
+          tx.colorSpace = Three.SRGBColorSpace;
+          return tx;
+        })();
+      const cloudMaterial = new Three.SpriteMaterial({
+        map: cloudTexture,
+        transparent: true,
+        depthWrite: false,
+        opacity: 0.8,
+        fog: false,
+      });
+      const clouds = [];
+      for (let i = 0; i < CLOUD_COUNT; i++) {
+        const sprite = new Three.Sprite(cloudMaterial.clone());
+        const size = 620 + Math.random() * 1250;
+        sprite.scale.set(size, size * (0.42 + Math.random() * 0.2), 1);
+        sprite.userData.offset = {
+          x: (Math.random() - 0.5) * 9000,
+          z: (Math.random() - 0.5) * 9000,
+          y: CLOUD_ALTITUDE + (Math.random() - 0.5) * 210,
+          threshold: Math.random(),
+          drift: 0.4 + Math.random() * 0.8,
+        };
+        sprite.renderOrder = -2;
+        scene.add(sprite);
+        clouds.push(sprite);
+      }
+      // ---- Frame update --------------------------------------------------------------
+      let rainPhase = 0;
+      function updateWeatherVisuals(deltaSeconds) {
+        const rain = weather.rain,
+          cloud = weather.cloud,
+          light = daylight();
+        // Rain.
+        rainMesh.visible = rain > 0.02;
+        if (rainMesh.visible) {
+          rainMaterial.opacity = clamp(rain * 0.5, 0, 0.55) * (0.45 + 0.55 * light);
+          const fall = 900 + rain * 700,
+            slant = weather.wind * 190,
+            wx = Math.cos(weather.windAngle) * slant,
+            wz = Math.sin(weather.windAngle) * slant,
+            length = 16 + rain * 26;
+          rainPhase += deltaSeconds * fall;
+          const baseX = cameraTarget.x,
+            baseZ = cameraTarget.y,
+            ground = terrainHeight(cameraTarget.x, cameraTarget.y);
+          for (let i = 0; i < RAIN_DROPS; i++) {
+            const seedY = rainSeeds[i * 3 + 1],
+              y = ground + RAIN_TOP - ((rainPhase + seedY * 3) % RAIN_TOP),
+              drop = (rainPhase + seedY * 3) / RAIN_TOP,
+              x = baseX + rainSeeds[i * 3] + ((wx * drop) % RAIN_BOX),
+              z = baseZ + rainSeeds[i * 3 + 2] + ((wz * drop) % RAIN_BOX),
+              o = i * 6;
+            rainPositions[o] = x;
+            rainPositions[o + 1] = y;
+            rainPositions[o + 2] = z;
+            rainPositions[o + 3] = x - (wx / fall) * length;
+            rainPositions[o + 4] = y + length;
+            rainPositions[o + 5] = z - (wz / fall) * length;
+          }
+          rainGeometry.attributes.position.needsUpdate = true;
+        }
+        // Wet tarmac: a darker, glossier ground while the water stands.
+        groundMesh.material.roughness = 1 - weather.wet * 0.72;
+        groundMesh.material.metalness = 0.14 + weather.wet * 0.34;
+        groundMesh.material.color.setScalar(1 - weather.wet * 0.26);
+        // Overcast flattens the sun and lifts the ambient; lightning blows both out.
+        const overcast = cloud * cloud;
+        sun.intensity *= 1 - overcast * 0.62;
+        hemi.intensity *= 1 + overcast * 0.22;
+        scene.fog.density *= 1 + rain * 2.6 + cloud * 0.5;
+        if (weather.flash > 0) {
+          const f = weather.flash * weather.flash;
+          sun.intensity += 9 * f;
+          hemi.intensity += 3 * f;
+          scene.background.lerp(new Three.Color('#dfe6f2'), f * 0.7);
+        } else {
+          // Grey the sky down as it clouds over, without losing the dusk colour.
+          scene.background.lerp(new Three.Color('#8d949c'), overcast * 0.55);
+          scene.fog.color.lerp(new Three.Color('#8d949c'), overcast * 0.55);
+        }
+        // Cloud deck: coverage follows the weather, and it drifts downwind.
+        const tint = 0.55 + light * 0.45;
+        for (const sprite of clouds) {
+          const d = sprite.userData.offset,
+            shown = cloud > d.threshold * 0.95;
+          sprite.visible = shown;
+          if (!shown) continue;
+          d.x += Math.cos(weather.windAngle) * weather.wind * d.drift * deltaSeconds * 26;
+          d.z += Math.sin(weather.windAngle) * weather.wind * d.drift * deltaSeconds * 26;
+          if (d.x > 5200) d.x -= 10400;
+          if (d.x < -5200) d.x += 10400;
+          if (d.z > 5200) d.z -= 10400;
+          if (d.z < -5200) d.z += 10400;
+          sprite.position.set(cameraTarget.x + d.x, d.y, cameraTarget.y + d.z);
+          sprite.material.opacity = (0.2 + cloud * 0.62) * tint;
+          sprite.material.color.setScalar(tint);
+        }
+        // Inside the deck the world greys out, which is what tells you how high you are.
+        const altitude = entityElevation(player.car || player),
+          inCloud = clamp(1 - Math.abs(altitude - CLOUD_ALTITUDE) / 240, 0, 1) * cloud;
+        if (inCloud > 0.01) {
+          scene.fog.density += inCloud * 0.0022;
+          scene.fog.color.lerp(new Three.Color('#d5dbe2'), inCloud * 0.8);
+          scene.background.lerp(new Three.Color('#d5dbe2'), inCloud * 0.8);
+        }
+      }
+      // END SUBSYSTEM: src/weather3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],
@@ -36768,6 +37091,9 @@ body:not(.touch-mode).police-search-active #carRadio {
           );
           camera.far = 40000;
           scene.fog.density = 0.00015 * Math.min(1, worldZoom);
+          // Weather runs after the time-of-day pass so it modifies that day's light
+          // rather than being overwritten by it.
+          updateWeatherVisuals(deltaSeconds);
           camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
           const viewH =
             (clamp(viewportHeight * 0.68, 430, 630) *
@@ -37607,6 +37933,16 @@ body:not(.touch-mode).police-search-active #carRadio {
           };
         }
         return this.status();
+      },
+      // Force the sky: clear, fair, cloudy, overcast, rain, storm. Passing nothing
+      // hands the sky back to the weather machine.
+      sky(id) {
+        if (id === undefined) {
+          weather.locked = false;
+          return weatherLabel();
+        }
+        weather.locked = true;
+        return setWeather(id);
       },
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
       cab(x, y) {

@@ -702,6 +702,7 @@
       // @include src/harbor3d.js
       // @include src/marina3d.js
       // @include src/cycles3d.js
+      // @include src/weather3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],
@@ -1575,6 +1576,9 @@
           );
           camera.far = 40000;
           scene.fog.density = 0.00015 * Math.min(1, worldZoom);
+          // Weather runs after the time-of-day pass so it modifies that day's light
+          // rather than being overwritten by it.
+          updateWeatherVisuals(deltaSeconds);
           camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
           const viewH =
             (clamp(viewportHeight * 0.68, 430, 630) *

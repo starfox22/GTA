@@ -2661,6 +2661,7 @@
         timed('transit', () => updateTransit(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
+        updateWeather(deltaSeconds);
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -4259,6 +4260,7 @@
     // @include src/marina.js
     // @include src/taxi.js
     // @include src/cycles.js
+    // @include src/weather.js
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
@@ -4396,6 +4398,16 @@
           };
         }
         return this.status();
+      },
+      // Force the sky: clear, fair, cloudy, overcast, rain, storm. Passing nothing
+      // hands the sky back to the weather machine.
+      sky(id) {
+        if (id === undefined) {
+          weather.locked = false;
+          return weatherLabel();
+        }
+        weather.locked = true;
+        return setWeather(id);
       },
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
       cab(x, y) {

@@ -826,12 +826,15 @@
       if (c.hp <= 0) force = 0;
       c.vx += headingCosine * force * stepSeconds;
       c.vy += headingSine * force * stepSeconds;
-      const lateral = -c.vx * headingSine + c.vy * headingCosine,
-        grip = 1 - Math.exp(-stepSeconds * 2.4);
+      // Wet tarmac lets the back end go earlier and stretches the stopping distance.
+      const road = isBoat(c) || isAircraft(c) ? 1 : wetGrip(),
+        lateral = -c.vx * headingSine + c.vy * headingCosine,
+        grip = 1 - Math.exp(-stepSeconds * 2.4 * road);
       c.vx += headingSine * lateral * grip;
       c.vy -= headingCosine * lateral * grip;
-      c.vx *= Math.exp(-(brake ? 2.5 : 0.3) * stepSeconds);
-      c.vy *= Math.exp(-(brake ? 2.5 : 0.3) * stepSeconds);
+      const drag = Math.exp(-(brake ? 2.5 * road : 0.3) * stepSeconds);
+      c.vx *= drag;
+      c.vy *= drag;
       c.av +=
         (turn * vehicleDefinition.turn * clamp(Math.abs(along) / 70, 0.15, 1) * Math.sign(along || 1) -
           c.av) *
