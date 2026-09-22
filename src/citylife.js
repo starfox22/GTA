@@ -846,6 +846,10 @@
       clearRoadblocks();
       const wasWanted = wantedStars > 0;
       if (notifyEscape && wasWanted) policeClearedNotice();
+      // Losing the police means losing all of them. A respray used to leave the
+      // helicopter overhead, which is the one unit a change of paint fools best.
+      const air = airSupportUnit();
+      if (air) retireAirSupport(air, notifyEscape && wasWanted);
       wantedStars = 0;
       wantedPressure = 0;
       wantedLevel = 0;

@@ -563,7 +563,7 @@
               ? 'LITTLE HAVANA'
               : 'CORAL MARINA';
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
-      if (x > 2230 && x < 3150 && y > 1770 && y < 2640) return 'CENTRAL GARDEN';
+      if (x > 1718 && x < 2638 && y > 2794 && y < 3664) return 'CENTRAL GARDEN';
       if (y < 0) {
         if (y < -3860 && x > 1600 && x < 3120) return 'CRUISE TERMINAL';
         if (x < 1750 && y < -2400) return 'HARBOR POINT MARINA';

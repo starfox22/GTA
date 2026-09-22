@@ -145,10 +145,10 @@
         },
       ],
       PARKS = [
-        [4, 3],
-        [4, 4],
-        [5, 3],
-        [5, 4],
+        [3, 5],
+        [3, 6],
+        [4, 5],
+        [4, 6],
         [1, 1],
         [0, 4],
         [2, 5],
@@ -225,7 +225,7 @@
         name: 'CITY CYCLE',
         l: 28,
         w: 9,
-        max: 65,
+        max: 112,
         acc: 40,
         turn: 3.9,
         hp: 85,
@@ -1845,7 +1845,7 @@
         } else if (isBoat(c))
           tell('W/S throttle · A/D steer · Space slow · E exit alongside a dock', 5);
         else if (c.type === 'bicycle')
-          tell('CITY CYCLE · W pedal · SHIFT stand on the pedals · S brake · A/D steer', 5);
+          tell('CITY CYCLE · TAP W to pedal, faster taps for more speed · SHIFT stand on the pedals · S brake', 6);
         else tell(vehicleSpec(c).name + ' · W accelerate · A/D steer · Space handbrake', 3);
         tone(200, 0.12, 0.25, 'triangle');
     }
@@ -3583,7 +3583,7 @@
           ['CRUISE TERMINAL', 2360, -3990],
           ['THE RECLAMATION', 1420, -760],
           ['N O R T H B A N K', 1580, 540],
-          ['CENTRAL GARDEN', 2688, 2200],
+          ['CENTRAL GARDEN', 2176, 3224],
           ['SUNSET PIER', 3810, 5190],
           ['EXCHANGE DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
@@ -3800,7 +3800,11 @@
           ? isAircraft(c)
             ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
             : ridingBicycle()
-              ? 'KM/H · LEGS ' + Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) + '%'
+              ? 'KM/H · ' +
+                Math.round(pedalCadence() * 60) +
+                ' RPM · LEGS ' +
+                Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) +
+                '%'
               : 'KM/H'
           : '';
       getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
@@ -4033,8 +4037,81 @@
       canvas.focus();
       updateUI();
     }
+    /**
+     * CHEAT CODE
+     * Letters typed during play accumulate in a short ring; when the tail spells a
+     * known code it fires. The keys still do their normal jobs while you type, so
+     * the character will walk about as you spell it -- which is part of the fun.
+     */
+    let cheatBuffer = '';
+    const CHEAT_CODES = {
+      godmode: () => {
+        player.godMode = !player.godMode;
+        if (player.godMode) {
+          for (const w of weapons) {
+            w.owned = true;
+            w.ammo = w.clip;
+            w.reserve = w.clip * (w.rocket ? 5 : 9);
+          }
+          player.hp = 100;
+          player.armor = 100;
+          announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
+          tell('GOD MODE ACTIVATED · every weapon · click the map to teleport', 4);
+        } else {
+          announce('SOUTH COAST', 'GODMODE OFF', 1.8);
+          tell('GODMODE OFF', 2.5);
+        }
+        drawWeapon();
+        updateUI();
+        tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
+      },
+    };
+    /* Put the player somewhere else, letting go of anything that was carrying
+       them: a hired cab or a liner deck would otherwise drag them straight back. */
+    function teleportPlayer(x, y) {
+      if (player.car) exitCar();
+      if (taxiRide) endTaxiRide(false);
+      cancelTaxiPick();
+      player.deck = null;
+      player.coaster = null;
+      player.parachute = null;
+      player.x = x;
+      player.y = y;
+      cameraTarget.x = x;
+      cameraTarget.y = y;
+    }
+    // Returns true once the tail of the buffer is going somewhere, so the caller
+    // can swallow the keypress: spelling a code should not also drive the car.
+    function feedCheatBuffer(key) {
+      if (!/^[a-z]$/.test(key)) {
+        cheatBuffer = '';
+        return false;
+      }
+      cheatBuffer = (cheatBuffer + key).slice(-16);
+      for (const [code, run] of Object.entries(CHEAT_CODES))
+        if (cheatBuffer.endsWith(code)) {
+          cheatBuffer = '';
+          run();
+          return true;
+        }
+      const tail = cheatBuffer.slice(-15);
+      for (const code of Object.keys(CHEAT_CODES))
+        for (let i = 1; i <= Math.min(tail.length, code.length); i++)
+          if (code.startsWith(tail.slice(-i))) return true;
+      return false;
+    }
     window.addEventListener('keydown', (e) => {
       const code = e.code;
+      if (
+        !e.repeat &&
+        (gameMode === 'play' || gameMode === 'map') &&
+        feedCheatBuffer((e.key || '').toLowerCase())
+      ) {
+        e.preventDefault();
+        return;
+      }
+      if (!e.repeat && gameMode === 'play' && (code === 'KeyW' || code === 'ArrowUp'))
+        cyclePedalKey();
       if (gameMode === 'map' && code === 'KeyC') {
         e.preventDefault();
         centerMapOnPlayer();
@@ -4408,17 +4485,7 @@
         pedestrians: pedestrians.length,
       }),
       teleport(x, y) {
-        if (player.car) exitCar();
-        // A hired cab or a liner deck would otherwise drag the player straight back.
-        if (taxiRide) endTaxiRide(false);
-        cancelTaxiPick();
-        player.deck = null;
-        player.coaster = null;
-        player.x = x;
-        player.y = y;
-        cameraTarget.x = x;
-        cameraTarget.y = y;
-        player.parachute = null;
+        teleportPlayer(x, y);
         return this.status();
       },
       setClock(hours) {
@@ -4466,6 +4533,27 @@
         }
         weather.locked = true;
         return setWeather(id);
+      },
+      // What the vehicle under the player is actually doing.
+      ride: () => ({
+        type: player.car ? player.car.type : null,
+        speed: player.car ? Math.round((player.car.speed || 0) * 10) / 10 : 0,
+        vx: player.car ? Math.round((player.car.vx || 0) * 10) / 10 : 0,
+        vy: player.car ? Math.round((player.car.vy || 0) * 10) / 10 : 0,
+        cadence: Math.round(pedalCadence() * 100) / 100,
+        gear: Math.round(pedalGear() * 100) / 100,
+        strokeQueue: Math.round(pedalQueue() * 10) / 10,
+      }),
+      // Rack a bicycle beside the player.
+      bike(headingRadians = player.a) {
+        spawnClearCar(
+          'bicycle',
+          player.x + Math.cos(headingRadians) * 30,
+          player.y + Math.sin(headingRadians) * 30,
+          headingRadians,
+          false,
+        );
+        return this.status();
       },
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
       cab(x, y) {

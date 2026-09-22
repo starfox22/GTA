@@ -811,17 +811,17 @@
         headingCosine = Math.cos(c.a),
         headingSine = Math.sin(c.a),
         along = c.vx * headingCosine + c.vy * headingSine;
-      // Standing on the pedals: a harder gear while the rider's legs last.
-      const sprint = controlled && vehicleDefinition.bicycle && cycleSprinting(),
-        topSpeed = vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1);
       let force = up
-        ? vehicleDefinition.acc * (sprint ? CYCLE_SPRINT_ACC : 1)
+        ? vehicleDefinition.acc
         : down
           ? along > 8
             ? -120
             : -vehicleDefinition.acc * 0.55
           : 0;
-      if ((along > topSpeed * (0.65 + (0.35 * c.hp) / c.maxhp) && up) || (along < -65 && down))
+      if (
+        (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up) ||
+        (along < -65 && down)
+      )
         force = 0;
       if (c.hp <= 0) force = 0;
       c.vx += headingCosine * force * stepSeconds;
@@ -910,20 +910,43 @@
               down = keys.KeyS || keys.ArrowDown,
               brake = keys.Space,
               turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-            acceleration = up
-              ? vehicleDefinition.acc / (1 + (c.cargoCount || 0) * 0.1)
-              : down
-                ? along > 10
-                  ? -(vehicleDefinition.brake || 285)
-                  : -vehicleDefinition.acc * 0.6
-                : 0;
+            // A bicycle has no throttle: it is driven by the strokes queued up in
+            // cycles.js, and the cadence those strokes imply is the gear it is in.
+            const pedalled = !!vehicleDefinition.bicycle,
+              sprint = pedalled && cycleSprinting(),
+              topSpeed =
+                vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1) * (pedalled ? pedalGear() : 1);
+            acceleration =
+              up && !pedalled
+                ? vehicleDefinition.acc / (1 + (c.cargoCount || 0) * 0.1)
+                : down
+                  ? along > 10
+                    ? -(vehicleDefinition.brake || 285)
+                    : -vehicleDefinition.acc * 0.6
+                  : 0;
             if (
-              (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up) ||
+              (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up && !pedalled) ||
               (along < -95 && down)
             )
               acceleration = 0;
+            if (pedalled) {
+              const room = Math.max(0, topSpeed - along),
+                give = Math.min(pedalImpulse(stepSeconds), room);
+              c.vx += headingCosine * give;
+              c.vy += headingSine * give;
+            }
             grip = brake ? 1.9 : vehicleDefinition.grip || 7;
-            drag = brake ? 2.1 : up || down ? (onRoad(c.x, c.y) ? 0.1 : 0.65) : 0.72;
+            drag = pedalled
+              ? brake
+                ? 2.4
+                : 0.22
+              : brake
+                ? 2.1
+                : up || down
+                  ? onRoad(c.x, c.y)
+                    ? 0.1
+                    : 0.65
+                  : 0.72;
             steer =
               (turn *
                 vehicleDefinition.turn *

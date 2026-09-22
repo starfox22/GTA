@@ -305,6 +305,28 @@
             // A street that runs out at the water is finished by the esplanade
             // railing, so it gets no turning head and no barrier furniture.
             if (streetEndAtShore(p.x, p.y, a)) continue;
+            // One that stops at a park or the stadium gets its gates instead.
+            if (streetEndAtGate(p.x, p.y, a)) {
+              const gate = new Three.Group();
+              gate.position.set(p.x, terrainHeight(p.x, p.y), p.y);
+              gate.rotation.y = -a;
+              scene.add(gate);
+              batchGroups.push(gate);
+              const pier = mat('#a8a396', 0.9),
+                gateIron = mat('#3f4744', 0.5, 0.5);
+              for (const side of [-1, 1]) {
+                const z = side * (r.width / 2 + 16);
+                box(gate, 52, 13, z, 13, 26, 13, pier);
+                box(gate, 52, 27.5, z, 16, 3, 16, pier);
+                // A length of railing running back from each pier to the kerb.
+                box(gate, 26, 8, z, 40, 1.8, 1.8, gateIron);
+                box(gate, 26, 4, z, 40, 1.4, 1.4, gateIron);
+                for (const d of [10, 26, 42]) box(gate, d, 6, z, 1.6, 12, 1.6, gateIron);
+                box(gate, 52, 32, z, 2.4, 10, 2.4, gateIron);
+              }
+              statics.push({ x: p.x, y: p.y, group: gate, radius: 120 });
+              continue;
+            }
             const group = new Three.Group();
             group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
             group.rotation.y = -a;

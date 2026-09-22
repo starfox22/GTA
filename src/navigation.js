@@ -432,7 +432,14 @@
       const p = mapLocalPoint(e);
       if (!cancel && mapGesture?.id === e.pointerId && !mapGesture.drag && !mapPinch && p.valid) {
         const w = mapWorldPoint(p);
-        if (!taxiMapPick(w.x, w.y)) setWaypoint(w.x, w.y);
+        if (taxiMapPick(w.x, w.y)) {
+          // handled by the waiting cab
+        } else if (player.godMode) {
+          // God mode turns the map into a teleport: tap anywhere to be there.
+          teleportPlayer(w.x, w.y);
+          toggleMap();
+          tell('Teleported.', 2);
+        } else setWaypoint(w.x, w.y);
       }
       mapPointers.delete(e.pointerId);
       if (!mapPointers.size) {

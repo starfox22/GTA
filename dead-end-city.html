@@ -4320,10 +4320,10 @@ body:not(.touch-mode).police-search-active #carRadio {
         },
       ],
       PARKS = [
-        [4, 3],
-        [4, 4],
-        [5, 3],
-        [5, 4],
+        [3, 5],
+        [3, 6],
+        [4, 5],
+        [4, 6],
         [1, 1],
         [0, 4],
         [2, 5],
@@ -4400,7 +4400,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         name: 'CITY CYCLE',
         l: 28,
         w: 9,
-        max: 65,
+        max: 112,
         acc: 40,
         turn: 3.9,
         hp: 85,
@@ -6347,7 +6347,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         } else if (isBoat(c))
           tell('W/S throttle · A/D steer · Space slow · E exit alongside a dock', 5);
         else if (c.type === 'bicycle')
-          tell('CITY CYCLE · W pedal · SHIFT stand on the pedals · S brake · A/D steer', 5);
+          tell('CITY CYCLE · TAP W to pedal, faster taps for more speed · SHIFT stand on the pedals · S brake', 6);
         else tell(vehicleSpec(c).name + ' · W accelerate · A/D steer · Space handbrake', 3);
         tone(200, 0.12, 0.25, 'triangle');
     }
@@ -7465,17 +7465,17 @@ body:not(.touch-mode).police-search-active #carRadio {
         headingCosine = Math.cos(c.a),
         headingSine = Math.sin(c.a),
         along = c.vx * headingCosine + c.vy * headingSine;
-      // Standing on the pedals: a harder gear while the rider's legs last.
-      const sprint = controlled && vehicleDefinition.bicycle && cycleSprinting(),
-        topSpeed = vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1);
       let force = up
-        ? vehicleDefinition.acc * (sprint ? CYCLE_SPRINT_ACC : 1)
+        ? vehicleDefinition.acc
         : down
           ? along > 8
             ? -120
             : -vehicleDefinition.acc * 0.55
           : 0;
-      if ((along > topSpeed * (0.65 + (0.35 * c.hp) / c.maxhp) && up) || (along < -65 && down))
+      if (
+        (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up) ||
+        (along < -65 && down)
+      )
         force = 0;
       if (c.hp <= 0) force = 0;
       c.vx += headingCosine * force * stepSeconds;
@@ -7564,20 +7564,43 @@ body:not(.touch-mode).police-search-active #carRadio {
               down = keys.KeyS || keys.ArrowDown,
               brake = keys.Space,
               turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-            acceleration = up
-              ? vehicleDefinition.acc / (1 + (c.cargoCount || 0) * 0.1)
-              : down
-                ? along > 10
-                  ? -(vehicleDefinition.brake || 285)
-                  : -vehicleDefinition.acc * 0.6
-                : 0;
+            // A bicycle has no throttle: it is driven by the strokes queued up in
+            // cycles.js, and the cadence those strokes imply is the gear it is in.
+            const pedalled = !!vehicleDefinition.bicycle,
+              sprint = pedalled && cycleSprinting(),
+              topSpeed =
+                vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1) * (pedalled ? pedalGear() : 1);
+            acceleration =
+              up && !pedalled
+                ? vehicleDefinition.acc / (1 + (c.cargoCount || 0) * 0.1)
+                : down
+                  ? along > 10
+                    ? -(vehicleDefinition.brake || 285)
+                    : -vehicleDefinition.acc * 0.6
+                  : 0;
             if (
-              (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up) ||
+              (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up && !pedalled) ||
               (along < -95 && down)
             )
               acceleration = 0;
+            if (pedalled) {
+              const room = Math.max(0, topSpeed - along),
+                give = Math.min(pedalImpulse(stepSeconds), room);
+              c.vx += headingCosine * give;
+              c.vy += headingSine * give;
+            }
             grip = brake ? 1.9 : vehicleDefinition.grip || 7;
-            drag = brake ? 2.1 : up || down ? (onRoad(c.x, c.y) ? 0.1 : 0.65) : 0.72;
+            drag = pedalled
+              ? brake
+                ? 2.4
+                : 0.22
+              : brake
+                ? 2.1
+                : up || down
+                  ? onRoad(c.x, c.y)
+                    ? 0.1
+                    : 0.65
+                  : 0.72;
             steer =
               (turn *
                 vehicleDefinition.turn *
@@ -9701,7 +9724,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           ['CRUISE TERMINAL', 2360, -3990],
           ['THE RECLAMATION', 1420, -760],
           ['N O R T H B A N K', 1580, 540],
-          ['CENTRAL GARDEN', 2688, 2200],
+          ['CENTRAL GARDEN', 2176, 3224],
           ['SUNSET PIER', 3810, 5190],
           ['EXCHANGE DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
@@ -9918,7 +9941,11 @@ body:not(.touch-mode).police-search-active #carRadio {
           ? isAircraft(c)
             ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
             : ridingBicycle()
-              ? 'KM/H · LEGS ' + Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) + '%'
+              ? 'KM/H · ' +
+                Math.round(pedalCadence() * 60) +
+                ' RPM · LEGS ' +
+                Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) +
+                '%'
               : 'KM/H'
           : '';
       getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
@@ -10151,8 +10178,81 @@ body:not(.touch-mode).police-search-active #carRadio {
       canvas.focus();
       updateUI();
     }
+    /**
+     * CHEAT CODE
+     * Letters typed during play accumulate in a short ring; when the tail spells a
+     * known code it fires. The keys still do their normal jobs while you type, so
+     * the character will walk about as you spell it -- which is part of the fun.
+     */
+    let cheatBuffer = '';
+    const CHEAT_CODES = {
+      godmode: () => {
+        player.godMode = !player.godMode;
+        if (player.godMode) {
+          for (const w of weapons) {
+            w.owned = true;
+            w.ammo = w.clip;
+            w.reserve = w.clip * (w.rocket ? 5 : 9);
+          }
+          player.hp = 100;
+          player.armor = 100;
+          announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
+          tell('GOD MODE ACTIVATED · every weapon · click the map to teleport', 4);
+        } else {
+          announce('SOUTH COAST', 'GODMODE OFF', 1.8);
+          tell('GODMODE OFF', 2.5);
+        }
+        drawWeapon();
+        updateUI();
+        tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
+      },
+    };
+    /* Put the player somewhere else, letting go of anything that was carrying
+       them: a hired cab or a liner deck would otherwise drag them straight back. */
+    function teleportPlayer(x, y) {
+      if (player.car) exitCar();
+      if (taxiRide) endTaxiRide(false);
+      cancelTaxiPick();
+      player.deck = null;
+      player.coaster = null;
+      player.parachute = null;
+      player.x = x;
+      player.y = y;
+      cameraTarget.x = x;
+      cameraTarget.y = y;
+    }
+    // Returns true once the tail of the buffer is going somewhere, so the caller
+    // can swallow the keypress: spelling a code should not also drive the car.
+    function feedCheatBuffer(key) {
+      if (!/^[a-z]$/.test(key)) {
+        cheatBuffer = '';
+        return false;
+      }
+      cheatBuffer = (cheatBuffer + key).slice(-16);
+      for (const [code, run] of Object.entries(CHEAT_CODES))
+        if (cheatBuffer.endsWith(code)) {
+          cheatBuffer = '';
+          run();
+          return true;
+        }
+      const tail = cheatBuffer.slice(-15);
+      for (const code of Object.keys(CHEAT_CODES))
+        for (let i = 1; i <= Math.min(tail.length, code.length); i++)
+          if (code.startsWith(tail.slice(-i))) return true;
+      return false;
+    }
     window.addEventListener('keydown', (e) => {
       const code = e.code;
+      if (
+        !e.repeat &&
+        (gameMode === 'play' || gameMode === 'map') &&
+        feedCheatBuffer((e.key || '').toLowerCase())
+      ) {
+        e.preventDefault();
+        return;
+      }
+      if (!e.repeat && gameMode === 'play' && (code === 'KeyW' || code === 'ArrowUp'))
+        cyclePedalKey();
       if (gameMode === 'map' && code === 'KeyC') {
         e.preventDefault();
         centerMapOnPlayer();
@@ -10981,7 +11081,7 @@ body:not(.touch-mode).police-search-active #carRadio {
               ? 'LITTLE HAVANA'
               : 'CORAL MARINA';
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
-      if (x > 2230 && x < 3150 && y > 1770 && y < 2640) return 'CENTRAL GARDEN';
+      if (x > 1718 && x < 2638 && y > 2794 && y < 3664) return 'CENTRAL GARDEN';
       if (y < 0) {
         if (y < -3860 && x > 1600 && x < 3120) return 'CRUISE TERMINAL';
         if (x < 1750 && y < -2400) return 'HARBOR POINT MARINA';
@@ -13103,6 +13203,10 @@ body:not(.touch-mode).police-search-active #carRadio {
       clearRoadblocks();
       const wasWanted = wantedStars > 0;
       if (notifyEscape && wasWanted) policeClearedNotice();
+      // Losing the police means losing all of them. A respray used to leave the
+      // helicopter overhead, which is the one unit a change of paint fools best.
+      const air = airSupportUnit();
+      if (air) retireAirSupport(air, notifyEscape && wasWanted);
       wantedStars = 0;
       wantedPressure = 0;
       wantedLevel = 0;
@@ -16982,18 +17086,82 @@ body:not(.touch-mode).police-search-active #carRadio {
      * gear that drains stamina, and easing off gets it back. Stamina only applies
      * to the player's own bicycle; nothing else in traffic is affected.
      */
+    /**
+     * PEDALLING
+     * A bicycle is not a throttle. Holding the key does nothing; each fresh press
+     * is one turn of the cranks, and how fast you can keep pressing is how fast
+     * you go. A stroke hands the bike a slug of speed and refreshes the cadence;
+     * the cadence decays if you stop, and what it settles at sets the gear you are
+     * effectively in, so the top speed rises and falls with your hands.
+     *
+     * The rising edge is read off the shared key map rather than the keyboard
+     * handler, so a touch button works exactly the same way and auto-repeat cannot
+     * pedal for you.
+     */
     const CYCLE_STAMINA_MAX = 7.5,
       CYCLE_SPRINT_TOP = 1.42,
-      CYCLE_SPRINT_ACC = 1.85;
+      CYCLE_SPRINT_ACC = 1.85,
+      CYCLE_STROKE = 13,
+      CYCLE_CADENCE_TOP = 4.1,
+      CYCLE_CADENCE_DECAY = 1.15;
     let cycleStamina = CYCLE_STAMINA_MAX,
       cycleStandCache = null;
+    const pedal = { cadence: 0, kick: 0, held: false, last: -10, phase: 0 };
     function ridingBicycle() {
       return !!player.car && vehicleSpec(player.car).bicycle;
     }
     function cycleSprinting() {
       return ridingBicycle() && keys.ShiftLeft && cycleStamina > 0.05;
     }
+    function pedalCadence() {
+      return pedal.cadence;
+    }
+    // Speed the current cadence is worth, as a fraction of the bike's top gear.
+    function pedalGear() {
+      return clamp(pedal.cadence / CYCLE_CADENCE_TOP, 0, 1);
+    }
+    function pedalQueue() {
+      return pedal.kick;
+    }
+    function pedalStroke() {
+      const gap = clamp(gameTime - pedal.last, 0.09, 1.4);
+      pedal.last = gameTime;
+      // A stroke's own rate is blended in, so cadence follows your hands quickly
+      // without jumping around on one fast tap.
+      pedal.cadence += (1 / gap - pedal.cadence) * 0.55;
+      pedal.cadence = clamp(pedal.cadence, 0, CYCLE_CADENCE_TOP * 1.15);
+      pedal.kick += CYCLE_STROKE * (cycleSprinting() ? CYCLE_SPRINT_ACC * 0.7 : 1);
+      pedal.phase = 0;
+      playSample('tires', 0.05, 2.4);
+    }
+    // Velocity the accumulated strokes are ready to hand over this step.
+    function pedalImpulse(stepSeconds) {
+      if (pedal.kick <= 0) return 0;
+      const give = Math.min(pedal.kick, 62 * stepSeconds);
+      pedal.kick -= give;
+      return give;
+    }
+    /* Strokes are taken from the key event, not from the frame: a quick tap can
+       begin and end between two frames, and sampling the key map would lose it --
+       which would make fast pedalling slower than slow pedalling. The frame check
+       below is the fallback that catches the touch button, which sets the key map
+       directly and fires no event. */
+    function cyclePedalKey() {
+      if (!ridingBicycle() || pedal.held) return;
+      pedalStroke();
+      pedal.held = true;
+    }
     function updateCycling(deltaSeconds) {
+      const pressed = !!(keys.KeyW || keys.ArrowUp);
+      if (ridingBicycle() && pressed && !pedal.held) pedalStroke();
+      pedal.held = pressed;
+      if (!ridingBicycle()) {
+        pedal.cadence = 0;
+        pedal.kick = 0;
+      } else {
+        pedal.cadence = Math.max(0, pedal.cadence - CYCLE_CADENCE_DECAY * deltaSeconds);
+        pedal.phase += deltaSeconds * (2 + pedal.cadence * 2);
+      }
       if (cycleSprinting()) cycleStamina = Math.max(0, cycleStamina - deltaSeconds);
       else cycleStamina = Math.min(CYCLE_STAMINA_MAX, cycleStamina + deltaSeconds * (ridingBicycle() ? 0.55 : 3));
     }
@@ -22271,6 +22439,25 @@ body:not(.touch-mode).police-search-active #carRadio {
                 ? 0
                 : Math.PI;
           if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+          if (streetEndAtGate(p.x, p.y, a)) {
+            // Forecourt: the carriageway widens into a paved apron at the gates,
+            // with a crossing where the footway passes in front of them.
+            drawingContext.save();
+            drawingContext.translate(p.x, p.y);
+            drawingContext.rotate(a);
+            drawingContext.fillStyle = '#8f8d81';
+            drawingContext.fillRect(-14, -r.width / 2 - 34, 78, r.width + 68);
+            drawingContext.fillStyle = '#4b5659';
+            drawingContext.fillRect(-14, -r.width / 2, 42, r.width);
+            if (detail) {
+              drawingContext.fillStyle = '#d4d6c7';
+              for (let i = -3; i <= 3; i++) drawingContext.fillRect(34, i * 13 - 3, 15, 6);
+              drawingContext.fillStyle = '#a5a396';
+              for (let i = -3; i <= 3; i++) drawingContext.fillRect(56, i * 13 - 4, 16, 8);
+            }
+            drawingContext.restore();
+            continue;
+          }
           if (streetEndAtShore(p.x, p.y, a)) {
             // Meets the esplanade: a short apron and a crossing, no turning head.
             drawingContext.save();
@@ -22361,6 +22548,16 @@ body:not(.touch-mode).police-search-active #carRadio {
     function streetEndAtShore(x, y, a) {
       for (let d = 12; d < 170; d += 12)
         if (!landAt(x + Math.cos(a) * d, y + Math.sin(a) * d)) return true;
+      return false;
+    }
+    /* A street that stops at a park or the stadium ends at its gates, not in a
+       painted circle in the middle of nowhere: it gets a forecourt instead. */
+    function streetEndAtGate(x, y, a) {
+      for (let d = 0; d < 150; d += 12) {
+        const px = x + Math.cos(a) * d,
+          py = y + Math.sin(a) * d;
+        if (parkAt(px, py) || parkStreetClosed(px, py) || inStadiumLot(px, py, 70)) return true;
+      }
       return false;
     }
     const PROMENADE_REGIONS = ['northbank', 'palmkeys'];
@@ -23664,58 +23861,57 @@ body:not(.touch-mode).police-search-active #carRadio {
     /* Shared park plans drive scenery, recreation, traffic exclusions and the city map. */
     /**
      * CENTRAL GARDEN
-     * The city's great park, two blocks wide and two deep (x 2265..3111,
-     * y 1800..2600), set back from the western waterfront so it is a walk or a
-     * drive from the Old Quarter rather than a corner of it. The elevated City
-     * Line runs up Garden St on x = 2176, one street west of the boundary, so no
-     * train crosses the park; the Central Garden station sits on that line and
-     * opens onto the west gate. Garden Ave (x = 2688) and Linden St (y = 2176)
-     * cross inside the park and are closed to traffic.
+     * The city's great park, two blocks wide and two deep (x 1753..2599,
+     * y 2824..3624), a block west and two blocks south of where it was first laid
+     * out: hard against the Ironworks docks it read as the harbour's back garden,
+     * and a city park needs its own quarter around it. No railway goes near it --
+     * the network runs the eastern shore and the bay. Central Ave (x = 2176) and
+     * Linden St (y = 3200) cross inside the park and are closed to traffic.
      * Layout, west to east and north to south:
-     *   Great Lawn (2320..2660, 1860..2190)     Garden Lake (ellipse at 2900,2010)
-     *   Founders statue (2690,2130)             Boathouse and dock (2856,2200)
-     *   Rose garden and pergola (2380,2290)     Garden Plaza and fountain (2670,2300)
-     *   Playground (2340,2480)                  Bandshell and lawn seating (2960,2300)
-     *   Calisthenics park (2560,2470)           Gazebo corner (3010,2520)
+     *   Great Lawn (1808..2148, 2884..3214)     Garden Lake (ellipse at 2388,3034)
+     *   Founders statue (2178,3154)             Boathouse and dock (2344,3224)
+     *   Rose garden and pergola (1868,3314)     Garden Plaza and fountain (2158,3324)
+     *   Playground (1828,3504)                  Bandshell and lawn seating (2448,3324)
+     *   Calisthenics park (2048,3494)           Gazebo corner (2498,3544)
      *   Food trucks on the plaza apron and by the north gate.
      */
     const CENTRAL_PARK = {
       id: 'garden',
       name: 'CENTRAL GARDEN',
       kind: 'commons',
-      x: 2265,
-      y: 1800,
+      x: 1753,
+      y: 2824,
       w: 846,
       h: 800,
     };
     const COMMONS = {
-      lake: { x: 2900, y: 2010, rx: 150, ry: 165, a: 0.15 },
-      dock: { x: 2900, y: 2196, w: 24, h: 62 },
-      boathouse: { x: 2856, y: 2200, w: 88, h: 50 },
-      plaza: { x: 2520, y: 2230, w: 300, h: 140 },
-      fountain: { x: 2670, y: 2300 },
-      bandshell: { x: 2960, y: 2300 },
-      roseGarden: { x: 2380, y: 2290 },
-      playground: { x: 2340, y: 2480 },
-      gazebo: { x: 3010, y: 2520 },
-      statue: { x: 2690, y: 2130 },
-      lawn: { x: 2320, y: 1860, w: 340, h: 330 },
+      lake: { x: 2388, y: 3034, rx: 150, ry: 165, a: 0.15 },
+      dock: { x: 2388, y: 3220, w: 24, h: 62 },
+      boathouse: { x: 2344, y: 3224, w: 88, h: 50 },
+      plaza: { x: 2008, y: 3254, w: 300, h: 140 },
+      fountain: { x: 2158, y: 3324 },
+      bandshell: { x: 2448, y: 3324 },
+      roseGarden: { x: 1868, y: 3314 },
+      playground: { x: 1828, y: 3504 },
+      gazebo: { x: 2498, y: 3544 },
+      statue: { x: 2178, y: 3154 },
+      lawn: { x: 1808, y: 2884, w: 340, h: 330 },
       // Outdoor gym: pull-up and dip rig, parallel bars, rings and a rubber mat.
-      calisthenics: { x: 2560, y: 2470, w: 176, h: 112 },
+      calisthenics: { x: 2048, y: 3494, w: 176, h: 112 },
       // Street food on the plaza apron and by the north gate.
       foodTrucks: [
-        { x: 2500, y: 2404, a: 0, menu: 'TACOS', color: '#d87a4a' },
-        { x: 2612, y: 2404, a: 0, menu: 'COFFEE', color: '#5f8f86' },
-        { x: 2712, y: 1868, a: Math.PI / 2, menu: 'NOODLES', color: '#b8556a' },
+        { x: 1988, y: 3428, a: 0, menu: 'TACOS', color: '#d87a4a' },
+        { x: 2100, y: 3428, a: 0, menu: 'COFFEE', color: '#5f8f86' },
+        { x: 2200, y: 2892, a: Math.PI / 2, menu: 'NOODLES', color: '#b8556a' },
       ],
       kiosks: [
-        { x: 2762, y: 2262, color: '#e8b1c2' },
-        { x: 2300, y: 2140, color: '#4f8ab1' },
+        { x: 2250, y: 3286, color: '#e8b1c2' },
+        { x: 1788, y: 3164, color: '#4f8ab1' },
       ],
     };
     const CITY_PARKS = [
       CENTRAL_PARK,
-      ...PARKS.filter(([bx, by]) => ![4, 5].includes(bx) || ![3, 4].includes(by))
+      ...PARKS.filter(([bx, by]) => ![3, 4].includes(bx) || ![5, 6].includes(by))
         .map(([bx, by], i) => ({
           id: 'park-' + i,
           bx,
@@ -23759,8 +23955,8 @@ body:not(.touch-mode).police-search-active #carRadio {
     function parkStreetClosed(x, y) {
       // Linden St and Garden Ave run inside Central Garden and carry no traffic.
       return (
-        (x > 2200 && x < 3180 && Math.abs(y - 2176) < 70) ||
-        (Math.abs(x - 2688) < 70 && y > 1790 && y < 2610)
+        (x > 1688 && x < 2668 && Math.abs(y - 3200) < 70) ||
+        (Math.abs(x - 2176) < 70 && y > 2814 && y < 3634)
       );
     }
     function parkAt(x, y) {
@@ -23778,27 +23974,27 @@ body:not(.touch-mode).police-search-active #carRadio {
     function parkWalk(p) {
       return p.kind === 'commons'
         ? [
-            [2320, 1860],
-            [2640, 1860],
-            [2712, 1930],
-            [2730, 2230],
-            [2910, 2300],
-            [3050, 2230],
-            [3062, 2380],
-            [2960, 2540],
-            [2760, 2500],
-            [2620, 2450],
-            [2470, 2440],
-            [2320, 2460],
-            [2330, 2560],
-            [2700, 2575],
-            [3010, 2560],
-            [3050, 2430],
-            [2860, 2370],
-            [2700, 2310],
-            [2500, 2210],
-            [2300, 2060],
-            [2320, 1860],
+            [1808, 2884],
+            [2128, 2884],
+            [2200, 2954],
+            [2218, 3254],
+            [2398, 3324],
+            [2538, 3254],
+            [2550, 3404],
+            [2448, 3564],
+            [2248, 3524],
+            [2108, 3474],
+            [1958, 3464],
+            [1808, 3484],
+            [1818, 3584],
+            [2188, 3599],
+            [2498, 3584],
+            [2538, 3454],
+            [2348, 3394],
+            [2188, 3334],
+            [1988, 3234],
+            [1788, 3084],
+            [1808, 2884],
           ]
         : parkLoop(p, Math.min(p.w, p.h) * 0.25);
     }
@@ -23844,11 +24040,11 @@ body:not(.touch-mode).police-search-active #carRadio {
           if (p.kind === 'commons') {
             drawingContext.font = 'bold 13px Arial';
             drawingContext.fillStyle = '#e9ebc9';
-            drawingContext.fillText('GREAT LAWN', 2490, 2030);
-            drawingContext.fillText('GARDEN LAKE', 2900, 2020);
-            drawingContext.fillText('BANDSHELL', 2960, 2480);
-            drawingContext.fillText('ROSE GARDEN', 2380, 2365);
-            drawingContext.fillText('OUTDOOR GYM', 2560, 2545);
+            drawingContext.fillText('GREAT LAWN', 1978, 3054);
+            drawingContext.fillText('GARDEN LAKE', 2388, 3044);
+            drawingContext.fillText('BANDSHELL', 2448, 3504);
+            drawingContext.fillText('ROSE GARDEN', 1868, 3389);
+            drawingContext.fillText('OUTDOOR GYM', 2048, 3569);
           }
         }
       }
@@ -25771,32 +25967,17 @@ body:not(.touch-mode).police-search-active #carRadio {
         name: 'COAST LINE',
         color: '#67c6bd',
         points: [
-          [2780, -4060],
-          [1900, -4106],
-          [1100, -4122],
-          [600, -4110],
-          [240, -4030],
-          [168, -3860],
-          [140, -3300],
-          [158, -2700],
-          [132, -2100],
-          [160, -1500],
-          [136, -900],
-          [162, -300],
-          [140, 300],
-          [158, 900],
-          [132, 1500],
-          [150, 2100],
-          [128, 2700],
-          [152, 3300],
-          [178, 3760],
-          [300, 4150],
-          [620, 4420],
-          [980, 4660],
-          [1180, 4800],
-          [1300, 5080],
-          [1620, 5340],
-          [1980, 5520],
+          [3306, 2452],
+          [3500, 2760],
+          [3576, 3300],
+          [3590, 3900],
+          [3540, 4500],
+          [3360, 4820],
+          [3236, 4960],
+          [3330, 5190],
+          [3120, 5400],
+          [2760, 5620],
+          [2400, 5760],
           [2176, 6040],
           [2176, 7010],
           [2176, 7450],
@@ -25842,31 +26023,16 @@ body:not(.touch-mode).police-search-active #carRadio {
           [7262, 8112],
         ],
       },
-      {
-        id: 'southport',
-        name: 'AIRPORT BRANCH',
-        color: '#e2b766',
-        points: [
-          [1180, 4800],
-          [1220, 4900],
-          [1220, 5000],
-          [1220, 5030],
-        ],
-      },
     ];
     const RAIL_STATIONS = [
       { name: 'CRUISE TERMINAL', x: 2780, y: -4060, entry: { x: 2780, y: -3986 } },
       { name: 'NORTH HARBOUR', x: 3330, y: 800, entry: { x: 3258, y: 800 } },
       { name: 'EXCHANGE QUAY', x: 3306, y: 2452, entry: { x: 3234, y: 2452 } },
+      { name: 'BATTERY POINT', x: 3236, y: 4960, entry: { x: 3164, y: 4960 } },
       { name: 'OCEAN DRIVE', x: 4420, y: 2930, entry: { x: 4420, y: 2856 } },
       { name: 'STONECREEK', x: 7100, y: 3184, entry: { x: 7100, y: 3112 } },
       { name: 'NORTHRIDGE', x: 8932, y: 2920, entry: { x: 8858, y: 2920 } },
       { name: 'EASTGATE', x: 9924, y: 4950, entry: { x: 9996, y: 4950 } },
-      { name: 'WEST POINT', x: 140, y: -3300, entry: { x: 214, y: -3300 } },
-      { name: 'NORTH QUAY', x: 140, y: 300, entry: { x: 214, y: 300 } },
-      { name: 'WESTSIDE', x: 150, y: 2100, entry: { x: 224, y: 2100 } },
-      { name: 'BROADWAY WEST', x: 178, y: 3760, entry: { x: 252, y: 3760 } },
-      { name: 'SOUTHPORT TERMINAL', x: 1220, y: 5000, entry: { x: 1280, y: 5000 } },
       { name: 'OCEANVIEW', x: 2176, y: 7450, entry: { x: 2104, y: 7450 } },
       { name: 'OCEANVIEW AIRPORT', x: 4100, y: 8726.5823, entry: { x: 4100, y: 8828 } },
       { name: 'PALMSHORE', x: 7262, y: 7900, entry: { x: 7188, y: 7900 } },
@@ -25890,6 +26056,23 @@ body:not(.touch-mode).police-search-active #carRadio {
       for (const s of RAIL_STATIONS) fixed.add(Math.round(s.x) + ',' + Math.round(s.y));
       for (const line of RAIL_LINES) line.points = smoothTrack(line.points, fixed);
     }
+    const RAIL_TOP_SPEED = 530;
+    // How far the train can run before it must be stopped: to the next station on
+    // its path, or to the end of the line, whichever comes first. Path points are
+    // marked as stops once when the path is built, so this walk is just addition.
+    const RAIL_LOOKAHEAD = 1600;
+    function railStopDistance(t) {
+      let total = 0,
+        from = t;
+      for (let i = t.index; i < t.path.length; i++) {
+        const p = t.path[i];
+        total += distanceBetween(from, p);
+        from = p;
+        if (p.stop) return total;
+        if (total > RAIL_LOOKAHEAD) return RAIL_LOOKAHEAD;
+      }
+      return total;
+    }
     const RAIL_DECK_TOP = 60,
       railTrains = [],
       railPiers = [];
@@ -25898,12 +26081,6 @@ body:not(.touch-mode).police-search-active #carRadio {
       transitStation = null;
     // Terminal sidings support the complete train body without changing routing endpoints.
     const RAIL_TERMINAL_TRACKS = [
-      {
-        points: [
-          [1220, 5030],
-          [1220, 5180],
-        ],
-      },
       {
         points: [
           [9140, 8150],
@@ -26326,6 +26503,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         const points = l.points.map((p) => ({
             x: p[0],
             y: p[1],
+            stop: RAIL_STATIONS.some((s) => Math.hypot(s.x - p[0], s.y - p[1]) < 6),
           })),
           path = [...points, ...points.slice(0, -1).reverse()];
         const a = headingBetween(path[0], path[1]),
@@ -26359,7 +26537,14 @@ body:not(.touch-mode).police-search-active #carRadio {
         const q = t.path[t.index];
         if (!q) continue;
         const d = distanceBetween(t, q);
-        t.speed = Math.min(420, Math.sqrt(Math.max(0, d) * 200), t.speed + 110 * deltaSeconds);
+        // Brake for the next stop, not for the next point on the line. Rounding the
+        // corners filled the path with points a few units apart, and braking for
+        // each of those held the train to a crawl round every curve.
+        t.speed = Math.min(
+          RAIL_TOP_SPEED,
+          Math.sqrt(Math.max(0, railStopDistance(t)) * 300),
+          t.speed + 150 * deltaSeconds,
+        );
         const step = Math.min(d, t.speed * deltaSeconds);
         t.a = headingBetween(t, q);
         t.x += Math.cos(t.a) * step;
@@ -27271,7 +27456,14 @@ body:not(.touch-mode).police-search-active #carRadio {
       const p = mapLocalPoint(e);
       if (!cancel && mapGesture?.id === e.pointerId && !mapGesture.drag && !mapPinch && p.valid) {
         const w = mapWorldPoint(p);
-        if (!taxiMapPick(w.x, w.y)) setWaypoint(w.x, w.y);
+        if (taxiMapPick(w.x, w.y)) {
+          // handled by the waiting cab
+        } else if (player.godMode) {
+          // God mode turns the map into a teleport: tap anywhere to be there.
+          teleportPlayer(w.x, w.y);
+          toggleMap();
+          tell('Teleported.', 2);
+        } else setWaypoint(w.x, w.y);
       }
       mapPointers.delete(e.pointerId);
       if (!mapPointers.size) {
@@ -33589,6 +33781,28 @@ body:not(.touch-mode).police-search-active #carRadio {
             // A street that runs out at the water is finished by the esplanade
             // railing, so it gets no turning head and no barrier furniture.
             if (streetEndAtShore(p.x, p.y, a)) continue;
+            // One that stops at a park or the stadium gets its gates instead.
+            if (streetEndAtGate(p.x, p.y, a)) {
+              const gate = new Three.Group();
+              gate.position.set(p.x, terrainHeight(p.x, p.y), p.y);
+              gate.rotation.y = -a;
+              scene.add(gate);
+              batchGroups.push(gate);
+              const pier = mat('#a8a396', 0.9),
+                gateIron = mat('#3f4744', 0.5, 0.5);
+              for (const side of [-1, 1]) {
+                const z = side * (r.width / 2 + 16);
+                box(gate, 52, 13, z, 13, 26, 13, pier);
+                box(gate, 52, 27.5, z, 16, 3, 16, pier);
+                // A length of railing running back from each pier to the kerb.
+                box(gate, 26, 8, z, 40, 1.8, 1.8, gateIron);
+                box(gate, 26, 4, z, 40, 1.4, 1.4, gateIron);
+                for (const d of [10, 26, 42]) box(gate, d, 6, z, 1.6, 12, 1.6, gateIron);
+                box(gate, 52, 32, z, 2.4, 10, 2.4, gateIron);
+              }
+              statics.push({ x: p.x, y: p.y, group: gate, radius: 120 });
+              continue;
+            }
             const group = new Three.Group();
             group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
             group.rotation.y = -a;
@@ -38177,17 +38391,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         pedestrians: pedestrians.length,
       }),
       teleport(x, y) {
-        if (player.car) exitCar();
-        // A hired cab or a liner deck would otherwise drag the player straight back.
-        if (taxiRide) endTaxiRide(false);
-        cancelTaxiPick();
-        player.deck = null;
-        player.coaster = null;
-        player.x = x;
-        player.y = y;
-        cameraTarget.x = x;
-        cameraTarget.y = y;
-        player.parachute = null;
+        teleportPlayer(x, y);
         return this.status();
       },
       setClock(hours) {
@@ -38235,6 +38439,27 @@ body:not(.touch-mode).police-search-active #carRadio {
         }
         weather.locked = true;
         return setWeather(id);
+      },
+      // What the vehicle under the player is actually doing.
+      ride: () => ({
+        type: player.car ? player.car.type : null,
+        speed: player.car ? Math.round((player.car.speed || 0) * 10) / 10 : 0,
+        vx: player.car ? Math.round((player.car.vx || 0) * 10) / 10 : 0,
+        vy: player.car ? Math.round((player.car.vy || 0) * 10) / 10 : 0,
+        cadence: Math.round(pedalCadence() * 100) / 100,
+        gear: Math.round(pedalGear() * 100) / 100,
+        strokeQueue: Math.round(pedalQueue() * 10) / 10,
+      }),
+      // Rack a bicycle beside the player.
+      bike(headingRadians = player.a) {
+        spawnClearCar(
+          'bicycle',
+          player.x + Math.cos(headingRadians) * 30,
+          player.y + Math.sin(headingRadians) * 30,
+          headingRadians,
+          false,
+        );
+        return this.status();
       },
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
       cab(x, y) {

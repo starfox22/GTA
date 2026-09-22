@@ -90,32 +90,17 @@
         name: 'COAST LINE',
         color: '#67c6bd',
         points: [
-          [2780, -4060],
-          [1900, -4106],
-          [1100, -4122],
-          [600, -4110],
-          [240, -4030],
-          [168, -3860],
-          [140, -3300],
-          [158, -2700],
-          [132, -2100],
-          [160, -1500],
-          [136, -900],
-          [162, -300],
-          [140, 300],
-          [158, 900],
-          [132, 1500],
-          [150, 2100],
-          [128, 2700],
-          [152, 3300],
-          [178, 3760],
-          [300, 4150],
-          [620, 4420],
-          [980, 4660],
-          [1180, 4800],
-          [1300, 5080],
-          [1620, 5340],
-          [1980, 5520],
+          [3306, 2452],
+          [3500, 2760],
+          [3576, 3300],
+          [3590, 3900],
+          [3540, 4500],
+          [3360, 4820],
+          [3236, 4960],
+          [3330, 5190],
+          [3120, 5400],
+          [2760, 5620],
+          [2400, 5760],
           [2176, 6040],
           [2176, 7010],
           [2176, 7450],
@@ -161,31 +146,16 @@
           [7262, 8112],
         ],
       },
-      {
-        id: 'southport',
-        name: 'AIRPORT BRANCH',
-        color: '#e2b766',
-        points: [
-          [1180, 4800],
-          [1220, 4900],
-          [1220, 5000],
-          [1220, 5030],
-        ],
-      },
     ];
     const RAIL_STATIONS = [
       { name: 'CRUISE TERMINAL', x: 2780, y: -4060, entry: { x: 2780, y: -3986 } },
       { name: 'NORTH HARBOUR', x: 3330, y: 800, entry: { x: 3258, y: 800 } },
       { name: 'EXCHANGE QUAY', x: 3306, y: 2452, entry: { x: 3234, y: 2452 } },
+      { name: 'BATTERY POINT', x: 3236, y: 4960, entry: { x: 3164, y: 4960 } },
       { name: 'OCEAN DRIVE', x: 4420, y: 2930, entry: { x: 4420, y: 2856 } },
       { name: 'STONECREEK', x: 7100, y: 3184, entry: { x: 7100, y: 3112 } },
       { name: 'NORTHRIDGE', x: 8932, y: 2920, entry: { x: 8858, y: 2920 } },
       { name: 'EASTGATE', x: 9924, y: 4950, entry: { x: 9996, y: 4950 } },
-      { name: 'WEST POINT', x: 140, y: -3300, entry: { x: 214, y: -3300 } },
-      { name: 'NORTH QUAY', x: 140, y: 300, entry: { x: 214, y: 300 } },
-      { name: 'WESTSIDE', x: 150, y: 2100, entry: { x: 224, y: 2100 } },
-      { name: 'BROADWAY WEST', x: 178, y: 3760, entry: { x: 252, y: 3760 } },
-      { name: 'SOUTHPORT TERMINAL', x: 1220, y: 5000, entry: { x: 1280, y: 5000 } },
       { name: 'OCEANVIEW', x: 2176, y: 7450, entry: { x: 2104, y: 7450 } },
       { name: 'OCEANVIEW AIRPORT', x: 4100, y: 8726.5823, entry: { x: 4100, y: 8828 } },
       { name: 'PALMSHORE', x: 7262, y: 7900, entry: { x: 7188, y: 7900 } },
@@ -209,6 +179,23 @@
       for (const s of RAIL_STATIONS) fixed.add(Math.round(s.x) + ',' + Math.round(s.y));
       for (const line of RAIL_LINES) line.points = smoothTrack(line.points, fixed);
     }
+    const RAIL_TOP_SPEED = 530;
+    // How far the train can run before it must be stopped: to the next station on
+    // its path, or to the end of the line, whichever comes first. Path points are
+    // marked as stops once when the path is built, so this walk is just addition.
+    const RAIL_LOOKAHEAD = 1600;
+    function railStopDistance(t) {
+      let total = 0,
+        from = t;
+      for (let i = t.index; i < t.path.length; i++) {
+        const p = t.path[i];
+        total += distanceBetween(from, p);
+        from = p;
+        if (p.stop) return total;
+        if (total > RAIL_LOOKAHEAD) return RAIL_LOOKAHEAD;
+      }
+      return total;
+    }
     const RAIL_DECK_TOP = 60,
       railTrains = [],
       railPiers = [];
@@ -217,12 +204,6 @@
       transitStation = null;
     // Terminal sidings support the complete train body without changing routing endpoints.
     const RAIL_TERMINAL_TRACKS = [
-      {
-        points: [
-          [1220, 5030],
-          [1220, 5180],
-        ],
-      },
       {
         points: [
           [9140, 8150],
@@ -645,6 +626,7 @@
         const points = l.points.map((p) => ({
             x: p[0],
             y: p[1],
+            stop: RAIL_STATIONS.some((s) => Math.hypot(s.x - p[0], s.y - p[1]) < 6),
           })),
           path = [...points, ...points.slice(0, -1).reverse()];
         const a = headingBetween(path[0], path[1]),
@@ -678,7 +660,14 @@
         const q = t.path[t.index];
         if (!q) continue;
         const d = distanceBetween(t, q);
-        t.speed = Math.min(420, Math.sqrt(Math.max(0, d) * 200), t.speed + 110 * deltaSeconds);
+        // Brake for the next stop, not for the next point on the line. Rounding the
+        // corners filled the path with points a few units apart, and braking for
+        // each of those held the train to a crawl round every curve.
+        t.speed = Math.min(
+          RAIL_TOP_SPEED,
+          Math.sqrt(Math.max(0, railStopDistance(t)) * 300),
+          t.speed + 150 * deltaSeconds,
+        );
         const step = Math.min(d, t.speed * deltaSeconds);
         t.a = headingBetween(t, q);
         t.x += Math.cos(t.a) * step;

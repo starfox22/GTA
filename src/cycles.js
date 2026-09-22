@@ -16,18 +16,82 @@
      * gear that drains stamina, and easing off gets it back. Stamina only applies
      * to the player's own bicycle; nothing else in traffic is affected.
      */
+    /**
+     * PEDALLING
+     * A bicycle is not a throttle. Holding the key does nothing; each fresh press
+     * is one turn of the cranks, and how fast you can keep pressing is how fast
+     * you go. A stroke hands the bike a slug of speed and refreshes the cadence;
+     * the cadence decays if you stop, and what it settles at sets the gear you are
+     * effectively in, so the top speed rises and falls with your hands.
+     *
+     * The rising edge is read off the shared key map rather than the keyboard
+     * handler, so a touch button works exactly the same way and auto-repeat cannot
+     * pedal for you.
+     */
     const CYCLE_STAMINA_MAX = 7.5,
       CYCLE_SPRINT_TOP = 1.42,
-      CYCLE_SPRINT_ACC = 1.85;
+      CYCLE_SPRINT_ACC = 1.85,
+      CYCLE_STROKE = 13,
+      CYCLE_CADENCE_TOP = 4.1,
+      CYCLE_CADENCE_DECAY = 1.15;
     let cycleStamina = CYCLE_STAMINA_MAX,
       cycleStandCache = null;
+    const pedal = { cadence: 0, kick: 0, held: false, last: -10, phase: 0 };
     function ridingBicycle() {
       return !!player.car && vehicleSpec(player.car).bicycle;
     }
     function cycleSprinting() {
       return ridingBicycle() && keys.ShiftLeft && cycleStamina > 0.05;
     }
+    function pedalCadence() {
+      return pedal.cadence;
+    }
+    // Speed the current cadence is worth, as a fraction of the bike's top gear.
+    function pedalGear() {
+      return clamp(pedal.cadence / CYCLE_CADENCE_TOP, 0, 1);
+    }
+    function pedalQueue() {
+      return pedal.kick;
+    }
+    function pedalStroke() {
+      const gap = clamp(gameTime - pedal.last, 0.09, 1.4);
+      pedal.last = gameTime;
+      // A stroke's own rate is blended in, so cadence follows your hands quickly
+      // without jumping around on one fast tap.
+      pedal.cadence += (1 / gap - pedal.cadence) * 0.55;
+      pedal.cadence = clamp(pedal.cadence, 0, CYCLE_CADENCE_TOP * 1.15);
+      pedal.kick += CYCLE_STROKE * (cycleSprinting() ? CYCLE_SPRINT_ACC * 0.7 : 1);
+      pedal.phase = 0;
+      playSample('tires', 0.05, 2.4);
+    }
+    // Velocity the accumulated strokes are ready to hand over this step.
+    function pedalImpulse(stepSeconds) {
+      if (pedal.kick <= 0) return 0;
+      const give = Math.min(pedal.kick, 62 * stepSeconds);
+      pedal.kick -= give;
+      return give;
+    }
+    /* Strokes are taken from the key event, not from the frame: a quick tap can
+       begin and end between two frames, and sampling the key map would lose it --
+       which would make fast pedalling slower than slow pedalling. The frame check
+       below is the fallback that catches the touch button, which sets the key map
+       directly and fires no event. */
+    function cyclePedalKey() {
+      if (!ridingBicycle() || pedal.held) return;
+      pedalStroke();
+      pedal.held = true;
+    }
     function updateCycling(deltaSeconds) {
+      const pressed = !!(keys.KeyW || keys.ArrowUp);
+      if (ridingBicycle() && pressed && !pedal.held) pedalStroke();
+      pedal.held = pressed;
+      if (!ridingBicycle()) {
+        pedal.cadence = 0;
+        pedal.kick = 0;
+      } else {
+        pedal.cadence = Math.max(0, pedal.cadence - CYCLE_CADENCE_DECAY * deltaSeconds);
+        pedal.phase += deltaSeconds * (2 + pedal.cadence * 2);
+      }
       if (cycleSprinting()) cycleStamina = Math.max(0, cycleStamina - deltaSeconds);
       else cycleStamina = Math.min(CYCLE_STAMINA_MAX, cycleStamina + deltaSeconds * (ridingBicycle() ? 0.55 : 3));
     }

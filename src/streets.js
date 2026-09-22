@@ -175,6 +175,25 @@
                 ? 0
                 : Math.PI;
           if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+          if (streetEndAtGate(p.x, p.y, a)) {
+            // Forecourt: the carriageway widens into a paved apron at the gates,
+            // with a crossing where the footway passes in front of them.
+            drawingContext.save();
+            drawingContext.translate(p.x, p.y);
+            drawingContext.rotate(a);
+            drawingContext.fillStyle = '#8f8d81';
+            drawingContext.fillRect(-14, -r.width / 2 - 34, 78, r.width + 68);
+            drawingContext.fillStyle = '#4b5659';
+            drawingContext.fillRect(-14, -r.width / 2, 42, r.width);
+            if (detail) {
+              drawingContext.fillStyle = '#d4d6c7';
+              for (let i = -3; i <= 3; i++) drawingContext.fillRect(34, i * 13 - 3, 15, 6);
+              drawingContext.fillStyle = '#a5a396';
+              for (let i = -3; i <= 3; i++) drawingContext.fillRect(56, i * 13 - 4, 16, 8);
+            }
+            drawingContext.restore();
+            continue;
+          }
           if (streetEndAtShore(p.x, p.y, a)) {
             // Meets the esplanade: a short apron and a crossing, no turning head.
             drawingContext.save();
@@ -265,6 +284,16 @@
     function streetEndAtShore(x, y, a) {
       for (let d = 12; d < 170; d += 12)
         if (!landAt(x + Math.cos(a) * d, y + Math.sin(a) * d)) return true;
+      return false;
+    }
+    /* A street that stops at a park or the stadium ends at its gates, not in a
+       painted circle in the middle of nowhere: it gets a forecourt instead. */
+    function streetEndAtGate(x, y, a) {
+      for (let d = 0; d < 150; d += 12) {
+        const px = x + Math.cos(a) * d,
+          py = y + Math.sin(a) * d;
+        if (parkAt(px, py) || parkStreetClosed(px, py) || inStadiumLot(px, py, 70)) return true;
+      }
       return false;
     }
     const PROMENADE_REGIONS = ['northbank', 'palmkeys'];

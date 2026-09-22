@@ -8,58 +8,57 @@
     /* Shared park plans drive scenery, recreation, traffic exclusions and the city map. */
     /**
      * CENTRAL GARDEN
-     * The city's great park, two blocks wide and two deep (x 2265..3111,
-     * y 1800..2600), set back from the western waterfront so it is a walk or a
-     * drive from the Old Quarter rather than a corner of it. The elevated City
-     * Line runs up Garden St on x = 2176, one street west of the boundary, so no
-     * train crosses the park; the Central Garden station sits on that line and
-     * opens onto the west gate. Garden Ave (x = 2688) and Linden St (y = 2176)
-     * cross inside the park and are closed to traffic.
+     * The city's great park, two blocks wide and two deep (x 1753..2599,
+     * y 2824..3624), a block west and two blocks south of where it was first laid
+     * out: hard against the Ironworks docks it read as the harbour's back garden,
+     * and a city park needs its own quarter around it. No railway goes near it --
+     * the network runs the eastern shore and the bay. Central Ave (x = 2176) and
+     * Linden St (y = 3200) cross inside the park and are closed to traffic.
      * Layout, west to east and north to south:
-     *   Great Lawn (2320..2660, 1860..2190)     Garden Lake (ellipse at 2900,2010)
-     *   Founders statue (2690,2130)             Boathouse and dock (2856,2200)
-     *   Rose garden and pergola (2380,2290)     Garden Plaza and fountain (2670,2300)
-     *   Playground (2340,2480)                  Bandshell and lawn seating (2960,2300)
-     *   Calisthenics park (2560,2470)           Gazebo corner (3010,2520)
+     *   Great Lawn (1808..2148, 2884..3214)     Garden Lake (ellipse at 2388,3034)
+     *   Founders statue (2178,3154)             Boathouse and dock (2344,3224)
+     *   Rose garden and pergola (1868,3314)     Garden Plaza and fountain (2158,3324)
+     *   Playground (1828,3504)                  Bandshell and lawn seating (2448,3324)
+     *   Calisthenics park (2048,3494)           Gazebo corner (2498,3544)
      *   Food trucks on the plaza apron and by the north gate.
      */
     const CENTRAL_PARK = {
       id: 'garden',
       name: 'CENTRAL GARDEN',
       kind: 'commons',
-      x: 2265,
-      y: 1800,
+      x: 1753,
+      y: 2824,
       w: 846,
       h: 800,
     };
     const COMMONS = {
-      lake: { x: 2900, y: 2010, rx: 150, ry: 165, a: 0.15 },
-      dock: { x: 2900, y: 2196, w: 24, h: 62 },
-      boathouse: { x: 2856, y: 2200, w: 88, h: 50 },
-      plaza: { x: 2520, y: 2230, w: 300, h: 140 },
-      fountain: { x: 2670, y: 2300 },
-      bandshell: { x: 2960, y: 2300 },
-      roseGarden: { x: 2380, y: 2290 },
-      playground: { x: 2340, y: 2480 },
-      gazebo: { x: 3010, y: 2520 },
-      statue: { x: 2690, y: 2130 },
-      lawn: { x: 2320, y: 1860, w: 340, h: 330 },
+      lake: { x: 2388, y: 3034, rx: 150, ry: 165, a: 0.15 },
+      dock: { x: 2388, y: 3220, w: 24, h: 62 },
+      boathouse: { x: 2344, y: 3224, w: 88, h: 50 },
+      plaza: { x: 2008, y: 3254, w: 300, h: 140 },
+      fountain: { x: 2158, y: 3324 },
+      bandshell: { x: 2448, y: 3324 },
+      roseGarden: { x: 1868, y: 3314 },
+      playground: { x: 1828, y: 3504 },
+      gazebo: { x: 2498, y: 3544 },
+      statue: { x: 2178, y: 3154 },
+      lawn: { x: 1808, y: 2884, w: 340, h: 330 },
       // Outdoor gym: pull-up and dip rig, parallel bars, rings and a rubber mat.
-      calisthenics: { x: 2560, y: 2470, w: 176, h: 112 },
+      calisthenics: { x: 2048, y: 3494, w: 176, h: 112 },
       // Street food on the plaza apron and by the north gate.
       foodTrucks: [
-        { x: 2500, y: 2404, a: 0, menu: 'TACOS', color: '#d87a4a' },
-        { x: 2612, y: 2404, a: 0, menu: 'COFFEE', color: '#5f8f86' },
-        { x: 2712, y: 1868, a: Math.PI / 2, menu: 'NOODLES', color: '#b8556a' },
+        { x: 1988, y: 3428, a: 0, menu: 'TACOS', color: '#d87a4a' },
+        { x: 2100, y: 3428, a: 0, menu: 'COFFEE', color: '#5f8f86' },
+        { x: 2200, y: 2892, a: Math.PI / 2, menu: 'NOODLES', color: '#b8556a' },
       ],
       kiosks: [
-        { x: 2762, y: 2262, color: '#e8b1c2' },
-        { x: 2300, y: 2140, color: '#4f8ab1' },
+        { x: 2250, y: 3286, color: '#e8b1c2' },
+        { x: 1788, y: 3164, color: '#4f8ab1' },
       ],
     };
     const CITY_PARKS = [
       CENTRAL_PARK,
-      ...PARKS.filter(([bx, by]) => ![4, 5].includes(bx) || ![3, 4].includes(by))
+      ...PARKS.filter(([bx, by]) => ![3, 4].includes(bx) || ![5, 6].includes(by))
         .map(([bx, by], i) => ({
           id: 'park-' + i,
           bx,
@@ -103,8 +102,8 @@
     function parkStreetClosed(x, y) {
       // Linden St and Garden Ave run inside Central Garden and carry no traffic.
       return (
-        (x > 2200 && x < 3180 && Math.abs(y - 2176) < 70) ||
-        (Math.abs(x - 2688) < 70 && y > 1790 && y < 2610)
+        (x > 1688 && x < 2668 && Math.abs(y - 3200) < 70) ||
+        (Math.abs(x - 2176) < 70 && y > 2814 && y < 3634)
       );
     }
     function parkAt(x, y) {
@@ -122,27 +121,27 @@
     function parkWalk(p) {
       return p.kind === 'commons'
         ? [
-            [2320, 1860],
-            [2640, 1860],
-            [2712, 1930],
-            [2730, 2230],
-            [2910, 2300],
-            [3050, 2230],
-            [3062, 2380],
-            [2960, 2540],
-            [2760, 2500],
-            [2620, 2450],
-            [2470, 2440],
-            [2320, 2460],
-            [2330, 2560],
-            [2700, 2575],
-            [3010, 2560],
-            [3050, 2430],
-            [2860, 2370],
-            [2700, 2310],
-            [2500, 2210],
-            [2300, 2060],
-            [2320, 1860],
+            [1808, 2884],
+            [2128, 2884],
+            [2200, 2954],
+            [2218, 3254],
+            [2398, 3324],
+            [2538, 3254],
+            [2550, 3404],
+            [2448, 3564],
+            [2248, 3524],
+            [2108, 3474],
+            [1958, 3464],
+            [1808, 3484],
+            [1818, 3584],
+            [2188, 3599],
+            [2498, 3584],
+            [2538, 3454],
+            [2348, 3394],
+            [2188, 3334],
+            [1988, 3234],
+            [1788, 3084],
+            [1808, 2884],
           ]
         : parkLoop(p, Math.min(p.w, p.h) * 0.25);
     }
@@ -188,11 +187,11 @@
           if (p.kind === 'commons') {
             drawingContext.font = 'bold 13px Arial';
             drawingContext.fillStyle = '#e9ebc9';
-            drawingContext.fillText('GREAT LAWN', 2490, 2030);
-            drawingContext.fillText('GARDEN LAKE', 2900, 2020);
-            drawingContext.fillText('BANDSHELL', 2960, 2480);
-            drawingContext.fillText('ROSE GARDEN', 2380, 2365);
-            drawingContext.fillText('OUTDOOR GYM', 2560, 2545);
+            drawingContext.fillText('GREAT LAWN', 1978, 3054);
+            drawingContext.fillText('GARDEN LAKE', 2388, 3044);
+            drawingContext.fillText('BANDSHELL', 2448, 3504);
+            drawingContext.fillText('ROSE GARDEN', 1868, 3389);
+            drawingContext.fillText('OUTDOOR GYM', 2048, 3569);
           }
         }
       }
