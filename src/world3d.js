@@ -385,25 +385,27 @@
           inner.rotation.y = -spot.a;
           group.add(inner);
           if (!spot.beach) {
-            // Seaward railing: two posts and a pair of rails per bay.
-            for (const side of [-1, 1]) box(inner, side * 20, 6, 19, 2, 12, 2, railMetal);
-            box(inner, 0, 11, 19, 46, 1.8, 1.8, railMetal);
-            box(inner, 0, 6.5, 19, 46, 1.4, 1.4, railMetal);
-            box(inner, 0, 1.2, 19, 46, 2.4, 5, walkStone);
+            // Seaward railing, carried straight across a street mouth so the walk
+            // never stops and nothing drives off the end of the road.
+            for (const side of [-1, 1]) box(inner, side * 20, 6, 28, 2, 12, 2, railMetal);
+            box(inner, 0, 11, 28, 46, 1.8, 1.8, railMetal);
+            box(inner, 0, 6.5, 28, 46, 1.4, 1.4, railMetal);
+            box(inner, 0, 1.2, 28, 46, 2.4, 5, walkStone);
           }
+          if (spot.crossing) continue;
           if (spot.kind === 'lamp') {
-            box(inner, 0, 15, 12, 2.6, 30, 2.6, lampPost);
-            box(inner, 0, 2, 12, 7, 4, 7, lampPost);
-            const globe = mesh(sphereGeo, lampGlass, inner, 0, 32, 12, 3.4, 4.2, 3.4);
+            box(inner, 0, 15, 14, 2.6, 30, 2.6, lampPost);
+            box(inner, 0, 2, 14, 7, 4, 7, lampPost);
+            const globe = mesh(sphereGeo, lampGlass, inner, 0, 32, 14, 3.4, 4.2, 3.4);
             globe.castShadow = false;
           } else if (spot.kind === 'bench') {
-            box(inner, 0, 4.4, 4, 18, 1.6, 6, seatWood);
-            box(inner, 0, 7.6, 1.6, 18, 5.4, 1.4, seatWood);
-            for (const side of [-1, 1]) box(inner, side * 7, 2, 4, 1.4, 4.4, 5.4, lampPost);
+            box(inner, 0, 4.4, 6, 20, 1.6, 6, seatWood);
+            box(inner, 0, 7.6, 3.6, 20, 5.4, 1.4, seatWood);
+            for (const side of [-1, 1]) box(inner, side * 8, 2, 6, 1.4, 4.4, 5.4, lampPost);
           } else if (spot.kind === 'tree') {
-            mesh(new Three.CylinderGeometry(9, 9.6, 3, 12), planter, inner, 0, 1.5, 6);
-            rod(inner, new Three.Vector3(0, 3, 6), new Three.Vector3(0, 17, 6), 1.3, mat('#6b5442'));
-            mesh(sphereGeo, leafMats[0], inner, 0, 22, 6, 11, 9, 11);
+            mesh(new Three.CylinderGeometry(9, 9.6, 3, 12), planter, inner, 0, 1.5, -22);
+            rod(inner, new Three.Vector3(0, 3, -22), new Three.Vector3(0, 17, -22), 1.3, mat('#6b5442'));
+            mesh(sphereGeo, leafMats[0], inner, 0, 22, -22, 11, 9, 11);
           }
         }
       }

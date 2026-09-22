@@ -268,9 +268,12 @@
       return false;
     }
     const PROMENADE_REGIONS = ['northbank', 'palmkeys'];
+    // Wide enough for two people abreast and a bicycle past them.
+    const ESPLANADE_LANDWARD = 40,
+      ESPLANADE_SEAWARD = 32;
     function esplanadePoint(e) {
       const { nx, ny } = shoreNormal(e),
-        inset = shoreStyle(e) === 'beach' ? 78 : 30;
+        inset = shoreStyle(e) === 'beach' ? 92 : 40;
       return { x: e.x - nx * inset, y: e.y - ny * inset, nx, ny, a: e.a };
     }
     let promenadeCache = null;
@@ -281,17 +284,30 @@
       for (const e of coastSegments()) {
         if (e.opening || !PROMENADE_REGIONS.includes(e.region)) continue;
         const p = esplanadePoint(e);
-        if (onRoad(p.x, p.y) || !groundAt(p.x, p.y, 10)) continue;
+        if (!groundAt(p.x, p.y, 10)) continue;
         step++;
+        // The walk runs on past a street mouth rather than stopping at it: the
+        // paving and the sea railing carry straight across and only the furniture
+        // steps aside, which is how a real seafront is built.
+        const crossing = onRoad(p.x, p.y);
         promenadeCache.push({
           x: p.x,
           y: p.y,
           a: p.a,
           nx: p.nx,
           ny: p.ny,
+          crossing,
           beach: shoreStyle(e) === 'beach',
           // A repeating rhythm of rail, lamp, bench and planter down the walk.
-          kind: step % 6 === 2 ? 'bench' : step % 6 === 4 ? 'lamp' : step % 12 === 9 ? 'tree' : 'rail',
+          kind: crossing
+            ? 'rail'
+            : step % 6 === 2
+              ? 'bench'
+              : step % 6 === 4
+                ? 'lamp'
+                : step % 12 === 9
+                  ? 'tree'
+                  : 'rail',
         });
       }
       return promenadeCache;
@@ -361,29 +377,32 @@
       for (const e of coastSegments()) {
         if (e.opening || !PROMENADE_REGIONS.includes(e.region)) continue;
         const beach = shoreStyle(e) === 'beach',
-          p = esplanadePoint(e);
-        if (onRoad(p.x, p.y)) continue;
-        const half = e.length / 2 + 1;
+          p = esplanadePoint(e),
+          half = e.length / 2 + 1;
+        if (!groundAt(p.x, p.y, 10)) continue;
         drawingContext.save();
         drawingContext.translate(p.x, p.y);
         drawingContext.rotate(e.a);
-        // Walk, kerb line and a band of setts along the landward edge.
+        // A cycle strip on the landward side, the walk itself, a band of setts
+        // against the buildings and a kerb line at the sea rail.
         drawingContext.fillStyle = beach ? '#bba889' : '#b0ada0';
-        drawingContext.fillRect(-half, -20, e.length + 2, 40);
+        drawingContext.fillRect(-half, -ESPLANADE_LANDWARD, e.length + 2, ESPLANADE_LANDWARD + ESPLANADE_SEAWARD);
+        drawingContext.fillStyle = beach ? '#a8937a' : '#98a08f';
+        drawingContext.fillRect(-half, -ESPLANADE_LANDWARD + 6, e.length + 2, 17);
         drawingContext.fillStyle = beach ? '#c7b591' : '#bdbaad';
-        drawingContext.fillRect(-half, -20, e.length + 2, 13);
+        drawingContext.fillRect(-half, -ESPLANADE_LANDWARD, e.length + 2, 6);
         drawingContext.strokeStyle = '#d4ceae';
         drawingContext.lineWidth = 1.2;
         drawingContext.beginPath();
-        drawingContext.moveTo(-half, 17);
-        drawingContext.lineTo(half, 17);
+        drawingContext.moveTo(-half, ESPLANADE_SEAWARD - 4);
+        drawingContext.lineTo(half, ESPLANADE_SEAWARD - 4);
         drawingContext.stroke();
         drawingContext.strokeStyle = '#9a9a8d';
         drawingContext.lineWidth = 0.8;
-        for (let d = -half; d < half; d += 9) {
+        for (let d = -half; d < half; d += 11) {
           drawingContext.beginPath();
-          drawingContext.moveTo(d, -20);
-          drawingContext.lineTo(d, -7);
+          drawingContext.moveTo(d, ESPLANADE_SEAWARD - 14);
+          drawingContext.lineTo(d, ESPLANADE_SEAWARD - 4);
           drawingContext.stroke();
         }
         drawingContext.restore();
