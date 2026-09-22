@@ -35,6 +35,8 @@
       },
       height: 64,
     };
+    // Side walls run the full depth; the front and back pieces butt against them
+    // rather than overlapping, so the coplanar roofs do not flicker at the corners.
     const depotWalls = [
       {
         x: 4340,
@@ -50,27 +52,27 @@
       },
       // Back wall, either side of the 28-unit personnel door at x 4464..4492.
       {
-        x: 4340,
+        x: 4348,
         y: 4572,
-        w: 124,
+        w: 116,
         h: 8,
       },
       {
         x: 4492,
         y: 4572,
-        w: 128,
+        w: 120,
         h: 8,
       },
       {
-        x: 4340,
+        x: 4348,
         y: 4340,
-        w: 82,
+        w: 74,
         h: 8,
       },
       {
         x: 4538,
         y: 4340,
-        w: 82,
+        w: 74,
         h: 8,
       },
     ];

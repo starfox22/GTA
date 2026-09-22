@@ -19,7 +19,10 @@
             const x = vertical ? r : v,
               y = vertical ? v : r;
             if (inAirport(x, y) || parkStreetClosed(x, y) || inStadiumLot(x, y, 56)) return false;
-            if (onSunsetIsle(x, y)) return false;
+            if (onSunsetIsle(x, y) || onBeach(x, y)) return false;
+            // West Quay (x = 128) is not a street: the strip between the sea wall
+            // and the first blocks is the esplanade and the Shore Line viaduct.
+            if (vertical && r === RAIL_CORRIDOR_X) return false;
             if (onBridge(x, y, 0)) return true;
             const side = width / 2 + 28;
             return (
@@ -254,8 +257,20 @@
     function coastSegments() {
       return coastCache || (coastCache = buildCoastSegments());
     }
+    // Southport Beach is the one sandy stretch of Northbank's shore; its sand runs
+    // down to the water, so the esplanade stops at either end of it and the
+    // boardwalk along the top of the beach carries the walk across.
+    function beachShore(e) {
+      return e.region === 'northbank' && regionContains(BEACH, e.x, e.y);
+    }
+    // The Riverside helipad stands on the quay itself, so the esplanade stops at
+    // its fence instead of being painted across half of the landing square.
+    function esplanadeGivesWay(e) {
+      const p = esplanadePoint(e);
+      return beachShore(e) || HELIPADS.some((pad) => Math.abs(p.x - pad.x) < 64 && Math.abs(p.y - pad.y) < 64);
+    }
     function shoreStyle(e) {
-      return e.region === 'palmkeys' || COUNTY_REGIONS.find((r) => r.id === e.region)?.beach
+      return e.region === 'palmkeys' || beachShore(e) || COUNTY_REGIONS.find((r) => r.id === e.region)?.beach
         ? 'beach'
         : ['northbank', 'airport'].includes(e.region)
           ? 'quay'
@@ -282,8 +297,11 @@
      * pedestrians walk between the same points, so what you see is what they use.
      */
     function streetEndAtShore(x, y, a) {
-      for (let d = 12; d < 170; d += 12)
-        if (!landAt(x + Math.cos(a) * d, y + Math.sin(a) * d)) return true;
+      for (let d = 12; d < 170; d += 12) {
+        const px = x + Math.cos(a) * d,
+          py = y + Math.sin(a) * d;
+        if (!landAt(px, py) || onBeach(px, py)) return true;
+      }
       return false;
     }
     /* A street that stops at a park or the stadium ends at its gates, not in a
@@ -311,14 +329,17 @@
       promenadeCache = [];
       let step = 0;
       for (const e of coastSegments()) {
-        if (e.opening || !PROMENADE_REGIONS.includes(e.region)) continue;
+        if (e.opening || !PROMENADE_REGIONS.includes(e.region) || esplanadeGivesWay(e)) continue;
         const p = esplanadePoint(e);
         if (!groundAt(p.x, p.y, 10)) continue;
         step++;
         // The walk runs on past a street mouth rather than stopping at it: the
         // paving and the sea railing carry straight across and only the furniture
         // steps aside, which is how a real seafront is built.
-        const crossing = onRoad(p.x, p.y);
+        const crossing = onRoad(p.x, p.y),
+          // A station's lift tower stands at the sea edge of the walk on the west
+          // shore; the spot beside it keeps its railing and nothing else.
+          byLift = RAIL_STATIONS.some((s) => s.lift && Math.hypot(s.lift.x - p.x, s.lift.y - p.y) < 45);
         promenadeCache.push({
           x: p.x,
           y: p.y,
@@ -328,7 +349,7 @@
           crossing,
           beach: shoreStyle(e) === 'beach',
           // A repeating rhythm of rail, lamp, bench and planter down the walk.
-          kind: crossing
+          kind: crossing || byLift
             ? 'rail'
             : step % 6 === 2
               ? 'bench'
@@ -404,7 +425,7 @@
       coastPath(drawingContext);
       drawingContext.clip();
       for (const e of coastSegments()) {
-        if (e.opening || !PROMENADE_REGIONS.includes(e.region)) continue;
+        if (e.opening || !PROMENADE_REGIONS.includes(e.region) || esplanadeGivesWay(e)) continue;
         const beach = shoreStyle(e) === 'beach',
           p = esplanadePoint(e),
           half = e.length / 2 + 1;

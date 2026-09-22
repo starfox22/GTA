@@ -97,10 +97,10 @@
         });
       blocks.push(
         ...railPiers.map((p) => ({
-          x: p.x + 3,
-          y: p.y + 3,
-          hx: 3,
-          hy: 3,
+          x: p.x + p.w / 2,
+          y: p.y + p.h / 2,
+          hx: p.w / 2,
+          hy: p.h / 2,
           a: 0,
           minHeight: 0,
           height: 52,
@@ -218,7 +218,10 @@
             y <= Math.floor(Math.max(...cs.map((p) => p.y)) / 256);
             y++
           ) {
-            const key = x + ',' + y;
+            // Numeric cell keys, as physics.js uses: with a string key the decks
+            // were stored in cells nothing ever looked up, and aircraft flew
+            // straight through the viaduct.
+            const key = x * 4096 + y;
             if (!staticGrid.has(key)) staticGrid.set(key, []);
             staticGrid.get(key).push(body);
           }
