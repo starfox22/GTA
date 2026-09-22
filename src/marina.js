@@ -237,6 +237,7 @@
     }
     function boardableLiner() {
       if (player.car || player.roof || player.parachute || transitRide || player.coaster) return null;
+      if (taxiRide) return null;
       if (player.deck) return null;
       return (
         LINERS.find((ship) => {

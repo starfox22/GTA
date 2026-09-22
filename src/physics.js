@@ -858,6 +858,10 @@
         c.stepStartX = c.x;
         c.stepStartY = c.y;
         c.stepStartA = c.a;
+        // A parked car a long way off with nothing driving it has nothing to
+        // integrate: skipping its control and integration is what keeps a city
+        // with hundreds of kerbside vehicles and bicycles affordable.
+        if (c.resting && c !== pc && !c.ai && !c.cop && !c.taxiHire && c.hp > 0) continue;
         if (c.vx === undefined) {
           c.vx = Math.cos(c.a) * c.speed;
           c.vy = Math.sin(c.a) * c.speed;
@@ -1119,7 +1123,8 @@
       // Vehicles that are far from the player, barely moving and untouched for a while
       // "rest": they skip static-contact passes (they cannot have moved into a wall).
       for (const c of vehicles) {
-        const still = Math.abs(c.vx) + Math.abs(c.vy) < 0.6 && Math.abs(c.av) < 0.02,
+        const still =
+            Math.abs(c.vx || 0) + Math.abs(c.vy || 0) < 0.6 && Math.abs(c.av || 0) < 0.02,
           far = Math.abs(c.x - player.x) > 1700 || Math.abs(c.y - player.y) > 1700;
         c.restSteps = still && c !== pc ? (c.restSteps || 0) + 1 : 0;
         c.farFromPlayer = far;

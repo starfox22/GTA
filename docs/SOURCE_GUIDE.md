@@ -55,7 +55,11 @@ Game closure (in include order):
 | harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot and its shutters |
 | roadblocks.js | Chokepoints, blockade planning, spike strips, `clearRoadblocks` |
 | carjack.js | Occupied traffic, locked doors, driver ejection and reactions |
-| themepark.js | Sunset Pier layout, ride solids, the rideable coaster, park crowd |
+| themepark.js | Sunset Pier layout, ride solids, the rideable looping coaster, park crowd |
+| marina.js | Harbor Point basin, cruise terminal, the two liners and their walkable decks |
+| taxi.js | Hailing a cab, picking a drop-off on the map, the ride, the hijack |
+| cycles.js | Bike-share stands and the rider's stamina |
+| weather.js | Weather state machine, road wetness, wind, rain audio |
 | police-feedback.js | Wanted-level banners and delivery blocking |
 | arsenal.js | Weapon ownership, arsenal UI, knife |
 | citylife.js | Clock, `PLACES` (businesses), officers, police routing, `daylight()` |
@@ -97,11 +101,22 @@ helicopter searchlight), helicopter3d, vehicles3d, plane3d.
 - Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns, bridges, an airport and a railway (transit.js).
+- The northern reclamation is the land at negative y. `ROAD_CENTERS` is the column list
+  (unchanged, 128..5248) and `ROAD_ROWS` the row list (-3968..5248); `blockX`/`blockY` turn a
+  block index into a coordinate and block indices keep their pre-reclamation meaning, so
+  `by` 0 is still y 128 and the new blocks carry negative indices. Anything that walks the
+  grid must pick the list that matches its axis -- `roadNear` for columns, `rowNear` for
+  rows. `CITY_TOP` and `WORLD_TOP` are the northern bounds of the built city and the world.
+- Harbor Point (marina.js) is the basin cut into the north-west shore; `marinaBlocked` keeps
+  the water and the hulls solid while leaving the pontoons walkable. `LINERS` are oriented
+  boxes whose usable half-beam tapers fore and aft: `deckLocal`/`deckWorld` move between the
+  ship's frame and the map, and while `player.deck` is set `moveOnDeck` constrains the player
+  inside `deckPointFree`.
 - Central Garden (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks square at
   x 2265..3111, y 1800..2600. Garden Ave (x 2688) and Linden St (y 2176) run inside it and are
-  closed by `parkStreetClosed`. No rail crosses it: the City Line runs up Garden St (x 2176),
-  one street west, with the Central Garden station on it. The outdoor gym stations come from
-  `gymStations()`; `updateGymGoer` runs the regulars and the food-truck staff.
+  closed by `parkStreetClosed`. No rail crosses it -- the network is a perimeter system that
+  runs the shoreline and the bay. The outdoor gym stations come from `gymStations()`;
+  `updateGymGoer` runs the regulars and the food-truck staff.
 - Sunset Pier (themepark.js `PIER`, `COASTER_TRACK`) is a land region of its own reached by
   the `SUNSET PIER CAUSEWAY` county bridge off the Stadium Way crossing. `updateCoaster`
   carries the player along the track; `parkBlocked` keeps the rides solid.

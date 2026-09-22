@@ -13,12 +13,16 @@ South Coast in 1997. One HTML file, no server, no build step to play: open
   bridges and lay spike strips instead of only following you.
 - Gunfire is lethal. Two rounds put anyone down unless they are wearing a vest — you
   included. A car that goes up with you inside it kills you.
-- Central Garden, a financial core of setback towers, Sunset Pier with a rollercoaster you
-  can actually ride, a mountain you have to trek rather than stroll, trains, sports matches
-  and a casino.
+- Central Garden, a north-east financial point of setback towers, Harbor Point marina and
+  its cruise terminal with two walkable liners, Sunset Pier with a looping rollercoaster
+  you can actually ride, a mountain you have to trek rather than stroll, a coastal
+  railway on its own viaduct, sports matches and a casino.
+- Get around on foot, in anything you can steal, on a bike-share bicycle, by rail, or by
+  hailing a cab and picking your drop-off on the map.
 - A 3D city renderer (Three.js r160, embedded) with district zoning, procedural roofs,
   windows that light up at night, shopfronts, billboards, street furniture, a shore-aware
-  wave shader, and a full day/night cycle with dawn and dusk.
+  wave shader, a full day/night cycle, and weather that clouds over, rains, wets the roads
+  and clears again.
 
 ## Play
 
@@ -33,6 +37,9 @@ South Coast in 1997. One HTML file, no server, no build step to play: open
 | Car radio | N power, B next station |
 | Bail out / parachute | J then Space |
 | Ride the Sunset Pier coaster | E at the station |
+| Hail a cab | E beside an occupied taxi |
+| Stand on the pedals | Shift while cycling |
+| Board a liner | E at the gangway or the stern platform |
 | Pause | Escape |
 
 Touch controls appear automatically on phones and tablets. Progress saves to the browser's

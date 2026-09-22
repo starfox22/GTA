@@ -22,7 +22,13 @@ page.on('pageerror', (e) => errors.push('[pageerror] ' + e.message + '\n' + (e.s
 // The built page is a single ~15MB file; waiting on the load event is flaky at
 // that size, so commit the navigation and wait for the game's own API instead.
 await page.goto('file://' + file, { timeout: 300000, waitUntil: 'commit' });
-await page.waitForFunction(() => !!window.DeadEndCity, null, { timeout: 300000 });
+// Poll for the game's own API rather than waiting on a frame-driven predicate:
+// under a software renderer the page can take minutes of wall time to settle.
+for (let i = 0; ; i++) {
+  if (await page.evaluate(() => !!window.DeadEndCity).catch(() => false)) break;
+  if (i > 120) throw new Error('game never booted');
+  await page.waitForTimeout(3000);
+}
 await page.waitForTimeout(2500);
 await page.screenshot({ timeout: 120000, path: path.join(out, '01-menu.png') });
 await page.click('#startBtn');

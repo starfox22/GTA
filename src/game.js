@@ -1631,6 +1631,8 @@
     }
     function die() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (taxiRide) endTaxiRide(false);
+      player.deck = null;
       if (player.coaster) {
         player.coaster = null;
         coasterTrain.running = false;
@@ -1975,6 +1977,8 @@
     }
     function resetMissionState() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (taxiRide) endTaxiRide(false);
+      player.deck = null;
       if (player.coaster) {
         player.coaster = null;
         coasterTrain.running = false;
@@ -4367,7 +4371,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "26.0.0",
+      version: "27.0.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -4386,6 +4390,11 @@
       }),
       teleport(x, y) {
         if (player.car) exitCar();
+        // A hired cab or a liner deck would otherwise drag the player straight back.
+        if (taxiRide) endTaxiRide(false);
+        cancelTaxiPick();
+        player.deck = null;
+        player.coaster = null;
         player.x = x;
         player.y = y;
         cameraTarget.x = x;

@@ -1,5 +1,70 @@
 # Changelog
 
+## 27.0.0 — The reclamation, the railway, the weather and a real camera
+
+The city
+- The street grid only ran south from y=128 and the island's north coast sat hard
+  against the top of the world, so there was nowhere left to grow. Rows now run
+  from -3968 and the coastline carries a northern lobe: map coordinates north of
+  the old shoreline are negative. Block indices keep their old meaning, so every
+  place, park and landmark recorded before the reclamation still points at its
+  block. ROAD_CENTERS stays the column list and ROAD_ROWS is the new row list, and
+  everything that walked the grid on both axes now picks the list for its axis.
+- The tower core moved to the north-east point, built as setback towers on plazas.
+  The old exchange district keeps its density but loses its towers.
+- Harbor Point marina: a yacht basin cut into the north-west shore with four finger
+  pontoons, sixteen moored boats, a club house and a fuel dock. The north apron is
+  the cruise terminal.
+- Two cruise liners, walkable rather than scenery. The Coral Dawn lies alongside the
+  terminal and is boarded down the gangway; the Meridian Star rides at anchor out in
+  the bay and has to be reached by boat or jetski from the new Harbor Point docks.
+  Both carry a crowd of tourists.
+- Streets that run out at the water now meet an esplanade -- a paved walk with a
+  railing, lamps, benches and planting -- instead of the painted turning circle and
+  guardrail they all used to end in. Only ends that genuinely stop inland keep it.
+
+Getting around
+- The railway is a perimeter system. The Bay Line leaves the cruise terminal, runs
+  the length of Marlow Bay on its own viaduct -- crossing the road causeway as a
+  flyover, never sharing it -- and swings ashore twice before crossing to the Keys.
+  The Coast Line follows the western shoreline, bridges the marina mouth and runs
+  south past Southport. Every corner is rounded into an arc before anything reads
+  the route, and over water the viaduct stands on its own pile bents.
+- Yellow cabs. The action key offers the ride or the hijack; take the ride and the
+  map opens to pick a drop-off. The fare is distance-based and two stars gets you
+  put out on the pavement.
+- Bike-share stands at stations, park gates, the esplanade and the marina. Holding
+  Shift stands you on the pedals for a harder gear that costs stamina.
+
+Sky and light
+- Weather: a chain from clear to heavy rain walked one step at a time, so it clouds
+  over before it rains. Cloud dims the sun and greys the sky, rain falls and hisses,
+  and wetness lags both -- the tarmac stays dark and greasy, and tyres let go
+  earlier, for minutes after the shower. Heavy rain brings lightning and thunder.
+- A broken cloud deck at flying height that you can climb into.
+- The camera is perspective rather than orthographic, pulled back to a long lens and
+  framed to cover exactly the same world height as before. Towers now lean and their
+  flanks open up as you pass them. When one stands between the eye and the player, a
+  marker is drawn through it.
+- Flying shows a ring on the ground beneath the aircraft with a column joining the
+  two, and a readout of the air between you and the nearest rooftops.
+
+The Screamer
+- Rebuilt: a lift hill nearly twice as tall, a first drop that reaches 122 km/h,
+  airtime hills and a vertical loop carrying about three and a third g over the
+  crown. 584 metres of track, 28 seconds, never below 37 km/h.
+
+Bug fixes
+- The ride shed speed as a fraction per second, which over a minute-long circuit bled
+  it down to the floor of its own clamp; losses are now a deceleration, so the layout's
+  energy budget decides what gets taken.
+- The Ironworks shed rule read `by <= 2`, which was true of the whole reclamation once
+  block rows went negative, so the new financial district was built as warehouses
+  capped at fifty units.
+- The title screen only offers the offline copy where a browser can actually save one.
+- A parked vehicle far from the player with nothing driving it no longer has its
+  control and integration stepped.
+
 ## 26.0.0 — Lethality, containment, Central Garden and Sunset Pier
 
 Combat and survival

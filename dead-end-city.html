@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 26.0.0
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 27.0.0
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
 Edit the named source sections here, or use the modular source ZIP.
@@ -120,6 +120,20 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Concrete barriers, spike strip, cones and burning flares.
   src/carjack.js: Carjacking and driver reactions
     Occupied traffic, locked doors, the ejection throw and what drivers do next.
+  src/marina.js: Harbor Point marina and the cruise liners
+    Yacht basin, cruise terminal, walkable liner decks and the crowds on them.
+  src/marina3d.js: Marina and cruise liner meshes
+    Pontoons, moored yachts, the terminal and the two liners.
+  src/taxi.js: Yellow cabs
+    Hailing, destination picking on the map, the ride itself and the hijack.
+  src/cycles.js: City bicycles
+    Bike-share stands, the bicycles racked at them and the rider's legs.
+  src/cycles3d.js: Bike-share stand meshes
+    The racks themselves; the bicycles in them are ordinary vehicles.
+  src/weather.js: Weather
+    The weather state machine, road wetness, wind and the rain on the audio bus.
+  src/weather3d.js: Weather and sky visuals
+    Rain, wet roads, lightning, and the cloud deck you can fly into.
   src/themepark.js: Sunset Pier amusement park
     Island layout, ride footprints, the rideable coaster and the park crowd.
   src/themepark3d.js: Sunset Pier ride meshes
@@ -134,6 +148,8 @@ REPOSITORY
 AUDIT CONTRACTS
 - Game fragments share one closure; 3D fragments share createCityRenderer().
 - Map x/y becomes Three.js (x, elevation, y); heading a is radians, yaw is -a.
+- Street columns are ROAD_CENTERS, rows are ROAD_ROWS; rows run negative north of
+  the old shoreline. Block indices keep their pre-reclamation meaning.
 - 512 world units = 100 meters. Timers use seconds; frame timestamps use ms.
 - entityElevation() is authoritative for floor, terrain and aircraft altitude.
 - Physics uses 1/120-second steps; terrain uses shared Float32 triangles.
@@ -6117,6 +6133,8 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function die() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (taxiRide) endTaxiRide(false);
+      player.deck = null;
       if (player.coaster) {
         player.coaster = null;
         coasterTrain.running = false;
@@ -6461,6 +6479,8 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function resetMissionState() {
       if (transitRide) leaveTransit(transitRide.from, true);
+      if (taxiRide) endTaxiRide(false);
+      player.deck = null;
       if (player.coaster) {
         player.coaster = null;
         coasterTrain.running = false;
@@ -7487,6 +7507,10 @@ body:not(.touch-mode).police-search-active #carRadio {
         c.stepStartX = c.x;
         c.stepStartY = c.y;
         c.stepStartA = c.a;
+        // A parked car a long way off with nothing driving it has nothing to
+        // integrate: skipping its control and integration is what keeps a city
+        // with hundreds of kerbside vehicles and bicycles affordable.
+        if (c.resting && c !== pc && !c.ai && !c.cop && !c.taxiHire && c.hp > 0) continue;
         if (c.vx === undefined) {
           c.vx = Math.cos(c.a) * c.speed;
           c.vy = Math.sin(c.a) * c.speed;
@@ -7748,7 +7772,8 @@ body:not(.touch-mode).police-search-active #carRadio {
       // Vehicles that are far from the player, barely moving and untouched for a while
       // "rest": they skip static-contact passes (they cannot have moved into a wall).
       for (const c of vehicles) {
-        const still = Math.abs(c.vx) + Math.abs(c.vy) < 0.6 && Math.abs(c.av) < 0.02,
+        const still =
+            Math.abs(c.vx || 0) + Math.abs(c.vy || 0) < 0.6 && Math.abs(c.av || 0) < 0.02,
           far = Math.abs(c.x - player.x) > 1700 || Math.abs(c.y - player.y) > 1700;
         c.restSteps = still && c !== pc ? (c.restSteps || 0) + 1 : 0;
         c.farFromPlayer = far;
@@ -16540,6 +16565,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function boardableLiner() {
       if (player.car || player.roof || player.parachute || transitRide || player.coaster) return null;
+      if (taxiRide) return null;
       if (player.deck) return null;
       return (
         LINERS.find((ship) => {
@@ -38027,7 +38053,7 @@ body:not(.touch-mode).police-search-active #carRadio {
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "26.0.0",
+      version: "27.0.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -38046,6 +38072,11 @@ body:not(.touch-mode).police-search-active #carRadio {
       }),
       teleport(x, y) {
         if (player.car) exitCar();
+        // A hired cab or a liner deck would otherwise drag the player straight back.
+        if (taxiRide) endTaxiRide(false);
+        cancelTaxiPick();
+        player.deck = null;
+        player.coaster = null;
         player.x = x;
         player.y = y;
         cameraTarget.x = x;
