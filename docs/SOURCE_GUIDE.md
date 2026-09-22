@@ -60,6 +60,7 @@ Game closure (in include order):
 | taxi.js | Hailing a cab, picking a drop-off on the map, the ride, the hijack |
 | cycles.js | Bike-share stands and the rider's stamina |
 | weather.js | Weather state machine, road wetness, wind, rain audio |
+| water.js | Swimming, breath, and vehicles that flood and sink |
 | police-feedback.js | Wanted-level banners and delivery blocking |
 | arsenal.js | Weapon ownership, arsenal UI, knife |
 | citylife.js | Clock, `PLACES` (businesses), officers, police routing, `daylight()` |

@@ -4467,7 +4467,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "27.0.0",
+      version: "28.0.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),

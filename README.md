@@ -17,8 +17,9 @@ South Coast in 1997. One HTML file, no server, no build step to play: open
   its cruise terminal with two walkable liners, Sunset Pier with a looping rollercoaster
   you can actually ride, a mountain you have to trek rather than stroll, a coastal
   railway on its own viaduct, sports matches and a casino.
-- Get around on foot, in anything you can steal, on a bike-share bicycle, by rail, or by
-  hailing a cab and picking your drop-off on the map.
+- Get around on foot, in the water, in anything you can steal, on a bike-share bicycle you
+  pedal by tapping, by rail, or by hailing a cab and picking your drop-off on the map. Drive
+  into the bay and the car floods and takes you with it.
 - A 3D city renderer (Three.js r160, embedded) with district zoning, procedural roofs,
   windows that light up at night, shopfronts, billboards, street furniture, a shore-aware
   wave shader, a full day/night cycle, and weather that clouds over, rains, wets the roads
@@ -40,6 +41,8 @@ South Coast in 1997. One HTML file, no server, no build step to play: open
 | Hail a cab | E beside an occupied taxi |
 | Stand on the pedals | Shift while cycling |
 | Board a liner | E at the gangway or the stern platform |
+| Pedal a bicycle | Tap W repeatedly; faster taps, more speed |
+| Swim | Walk into the water; Shift to swim harder |
 | Pause | Escape |
 
 Touch controls appear automatically on phones and tablets. Progress saves to the browser's

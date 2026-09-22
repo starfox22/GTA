@@ -1,5 +1,61 @@
 # Changelog
 
+## 28.0.0 — Water, pedalling, one shore, and the camera back where it was
+
+The view
+- The perspective camera is out: the lean it gave tall buildings cost more in
+  legibility than the sense of height was worth. Orthographic and overhead again,
+  with its original framing, and the two markers that existed only to cope with
+  perspective -- the sight-line marker and the column drawn from an aircraft down
+  to the ground -- go with it.
+- Cloud was billboards, which is the wrong primitive for a view that looks straight
+  down: sprites face the camera, so a deck of them read as grey smears over the sea.
+  Cloud is two horizontal layers now. The deck sits at flying height and is only in
+  frame when you are above it. What you see from the street is the second layer: the
+  shadows those clouds throw, drifting on the wind, with the sun dimmed by the same
+  field sampled under the camera so the light breathes in step with them.
+
+Water
+- You can swim. Water stops counting as solid for the player on foot and for nobody
+  else, so step off the quay and you are swimming -- slower, unable to shoot, and on
+  a clock; breath comes back on land and running out of it drowns you.
+- The quay edge stops every vehicle except the player's own, so you can put a car in
+  the bay. It floods: the drag takes it to a stop, it settles under the surface, and
+  after a little over three seconds anyone still inside drowns with it.
+
+Getting about
+- Bicycles are pedalled, not throttled. Holding the key does nothing; each fresh
+  press is one turn of the cranks and your tapping speed is the gear you are in.
+- The railway ran down both shores. The western route is gone: the Bay Line comes
+  down the east side and the Coast Line carries on south from Exchange Quay, so the
+  track is on one shore only. It also runs properly now.
+
+The city
+- The seafront walk stopped dead at every street mouth. It runs straight through: the
+  paving and the sea railing carry across and only the furniture steps aside. It is
+  also half again as wide, with a cycle strip along the landward side.
+- Central Garden sat hard against the Ironworks docks and read as the harbour's back
+  garden. It has moved a block west and two blocks south.
+- Streets that stop at a park or the stadium get a forecourt and gate piers instead of
+  a painted circle in the middle of nowhere.
+
+Elsewhere
+- Losing the police means losing all of them: a respray used to leave the helicopter
+  overhead, which is the one unit a change of paint fools best.
+- Typing "godmode" in play toggles invulnerability, every weapon and a map that
+  teleports. Keys are swallowed while a code is being spelled.
+
+Bug fixes
+- The bicycle code added in 27.0.0 went into boatControl rather than the branch that
+  drives the player's road vehicle, so neither the sprint nor anything else it did
+  ever ran.
+- The train braked for the next point on the line; rounding the corners had filled the
+  path with points a few units apart, which held it to a crawl round every curve. It
+  brakes for the next stop instead.
+- Pedal strokes are taken from the key event rather than sampled off the key map each
+  frame: a quick tap can begin and end between two frames, and losing those would have
+  made fast pedalling slower than slow pedalling.
+
 ## 27.0.0 — The reclamation, the railway, the weather and a real camera
 
 The city
