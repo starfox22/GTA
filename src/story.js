@@ -764,7 +764,7 @@
       const d = districtAt(player.x, player.y);
       if (d !== lastDistrict) {
         lastDistrict = d;
-        districtNoticeUntil = gameTime + 4;
+        districtNoticeUntil = gameTime + 2.5;
         getElement('districtBanner').textContent = d;
         getElement('districtBanner').classList.add('show');
       }

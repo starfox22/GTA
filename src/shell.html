@@ -598,9 +598,11 @@ kbd {
   border: 0;
   font-weight: 900;
 }
+/* Headline cards (district, mission title, payday) are a beat, not a poster:
+   mid-size type high in the frame so the street stays readable under them. */
 #announcement {
   position: absolute;
-  top: 32%;
+  top: 29%;
   left: 0;
   width: 100%;
   text-align: center;
@@ -614,18 +616,18 @@ kbd {
 }
 #announcement small {
   font:
-    12px Consolas,
+    11px Consolas,
     monospace;
-  letter-spacing: 5px;
+  letter-spacing: 4px;
   color: #dfebd2;
   display: block;
-  margin-bottom: 9px;
+  margin-bottom: 6px;
 }
 #announcement strong {
   font:
-    900 italic clamp(36px, 5.5vw, 80px) Arial,
+    900 italic clamp(24px, 2.9vw, 42px) Arial,
     sans-serif;
-  letter-spacing: -3px;
+  letter-spacing: -1.5px;
   color: var(--acid);
 }
 .overlay {
@@ -1548,6 +1550,27 @@ h1 {
   font: 12px monospace;
   color: #d9e1de;
 }
+/* Optional performance readout (pause menu, FPS COUNTER). Tiny and in the
+   one corner nothing else uses, above overlays so it also reads while paused. */
+#fpsCounter {
+  position: fixed;
+  z-index: 90;
+  top: 4px;
+  left: 8px;
+  padding: 1px 5px;
+  background: #0b1015a8;
+  color: #c9e7a4;
+  font: 700 10px/1.4 monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+#fpsCounter.slow {
+  color: #f2c472;
+}
+#fpsCounter.hidden {
+  display: none;
+}
 #worldClock {
   position: fixed;
   z-index: 8;
@@ -1833,6 +1856,83 @@ h1 {
   }
 }
 
+/* Mission card folding: the full card shows for a few seconds after a new job
+   or objective, then folds into a one-line objective strip. O or a tap on the
+   strip opens it again (game.js, updateMissionCard). */
+#pager {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.pager-objective,
+#pagerHint {
+  display: none;
+}
+#pager:not(.compact) .mission-copy {
+  animation: pagerUnfold 0.35s ease-out;
+}
+#pager.compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 7px 12px;
+  animation: pagerFold 0.4s ease-out;
+}
+#pager.compact .pager-head,
+#pager.compact .mission-copy,
+#pager.compact #missionDistance {
+  display: none;
+}
+#pager.compact .pager-objective {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: 700 12px/1.3 Arial, sans-serif;
+  letter-spacing: 0.06em;
+  color: #e1e6df;
+}
+#pager.compact .pager-objective::before {
+  content: '● ';
+  color: var(--acid);
+}
+#pager.compact #missionMeta {
+  margin-top: 0;
+}
+#pager.compact #missionMeta:has(#missionTimer:empty) {
+  display: none;
+}
+#pager.compact #pagerHint {
+  display: inline-block;
+}
+#pager.compact #cargoStatus {
+  order: 3;
+  flex-basis: 100%;
+  margin-top: 2px;
+}
+.touch-mode #pager.compact #pagerHint {
+  display: none;
+}
+@keyframes pagerFold {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes pagerUnfold {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #pager.compact,
+  #pager:not(.compact) .mission-copy {
+    animation: none;
+  }
+}
 #cargoStatus {
   margin-top: 12px;
   color: #ecd79e;
@@ -2042,7 +2142,7 @@ h1 {
 }
 
 #chaseStatus.dispatching {
-  font: 700 16px/1.25 monospace;
+  font: 700 13px/1.25 monospace;
   color: #f8d384;
   background: #251b16ed;
   border: 1px solid #cfaa6470;
@@ -2920,7 +3020,7 @@ h1 {
   padding: 0;
   background: none;
   border: 0;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.4;
 }
 #policeStatusPanel #chaseStatus.searching {
@@ -2931,38 +3031,42 @@ h1 {
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 8px;
-  padding: 10px 16px;
-  border: 2px solid #f4d681;
-  background: #121a24f2;
+  margin-top: 6px;
+  padding: 6px 12px;
+  border: 1px solid #f4d681;
+  background: #121a24e8;
   color: #fff0b5;
-  box-shadow: 0 5px 24px #0008;
+  box-shadow: 0 4px 16px #0007;
 }
 #policeEscapeSeconds {
-  font: 900 38px/1 monospace;
+  font: 900 24px/1 monospace;
   font-variant-numeric: tabular-nums;
 }
 #policeEscapeTimer span {
-  font: 800 14px/1.3 monospace;
+  font: 800 11px/1.3 monospace;
+  letter-spacing: 0.08em;
 }
+/* A compact status chip, not a headline: it confirms what the wanted meter
+   already shows, so it sits under the navigation strip and toast at label size. */
 #policeNotice {
   position: fixed;
   z-index: 75;
-  top: 27%;
+  top: 212px;
   left: 50%;
   width: max-content;
   max-width: calc(100vw - 32px);
-  transform: translate(-50%, -8px);
-  padding: 18px 28px;
-  border: 2px solid #ffae92;
-  background: #2a1112f2;
+  transform: translate(-50%, -6px);
+  padding: 6px 14px;
+  border: 1px solid #ffae92;
+  border-left-width: 3px;
+  background: #2a1112e8;
   color: #ffe9dc;
   font:
-    900 clamp(22px, 3.5vw, 48px) / 1.15 Arial,
+    800 clamp(12px, 1.05vw, 15px) / 1.2 Arial,
     sans-serif;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.14em;
   text-align: center;
-  box-shadow: 0 12px 48px #0009;
+  box-shadow: 0 6px 20px #0007;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -3031,18 +3135,19 @@ h1 {
     width: 205px;
   }
   #policeEscapeSeconds {
-    font-size: 30px;
+    font-size: 20px;
   }
   #policeEscapeTimer {
-    padding: 8px 10px;
+    padding: 5px 9px;
     gap: 8px;
   }
   #policeEscapeTimer span {
-    font-size: 12px;
+    font-size: 10px;
   }
   #policeNotice {
-    top: 19%;
-    padding: 14px 18px;
+    top: 196px;
+    padding: 5px 12px;
+    font-size: 12px;
   }
 }
 @media (max-height: 520px) and (min-width: 601px) {
@@ -3052,9 +3157,9 @@ h1 {
     width: 225px;
   }
   #policeNotice {
-    top: 22%;
-    font-size: 26px;
-    padding: 10px 18px;
+    top: 176px;
+    font-size: 12px;
+    padding: 5px 12px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -3086,7 +3191,7 @@ h1 {
 
 /* Reserve separate space when two notices or the vehicle radio are visible. */
 .police-notice-visible #announcement {
-  top: 48%;
+  top: 36%;
 }
 body:not(.touch-mode).police-search-active #carRadio {
   top: 245px;
@@ -3514,6 +3619,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     </header>
     <div id="terrainStatus"></div>
     <div id="worldClock">DAY 1 · 17:20</div>
+    <div id="fpsCounter" class="hidden" aria-hidden="true"></div>
     <div id="navigation">
       <span id="navArrow">↑</span>
       <div><b id="navTitle">NEXT JOB · PAYPHONE</b><span id="navDistance"></span></div>
@@ -3588,9 +3694,11 @@ body:not(.touch-mode).police-search-active #carRadio {
             <span id="cargoLabel">CARGO 0 / 3</span>
             <div class="cargo-track"><i id="cargoFill"></i></div>
           </div>
+          <p id="missionObjective" class="pager-objective"></p>
           <div id="missionMeta">
             <span id="missionDistance">PAYPHONE · 80 M</span><span id="missionTimer"></span>
           </div>
+          <kbd id="pagerHint" title="Show the mission card">O</kbd>
         </div>
         <div class="quickkeys">
           <span><kbd>W A S D</kbd> MOVE / DRIVE</span><span><kbd>E</kbd> INTERACT</span
@@ -3829,6 +3937,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         ><button class="secondary" id="touchToggle">TOUCH CONTROLS: AUTO</button
         ><button class="secondary" id="soundBtn">SOUND: ON</button
         ><button class="secondary" id="voicesBtn">RADIO VOICES: ON</button
+        ><button class="secondary" id="fpsBtn">FPS COUNTER: OFF</button
         ><button class="secondary" id="creditsBtn">ASSET CREDITS</button
         ><button class="secondary danger" id="restartMission">RESTART CURRENT JOB</button
         ><button class="text-btn" id="newGame">NEW GAME <span>RESET THIS RUN</span></button>
@@ -3906,6 +4015,10 @@ body:not(.touch-mode).police-search-active #carRadio {
           <div>
             <kbd>ESC</kbd>
             <p>Pause / resume</p>
+          </div>
+          <div>
+            <kbd>O</kbd>
+            <p>Show the mission card again (it folds to one line after a few seconds)</p>
           </div>
           <div>
             <kbd>ENTER</kbd>

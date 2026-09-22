@@ -2662,10 +2662,6 @@
         toastTime -= deltaSeconds;
         if (toastTime <= 0) getElement('toast').classList.remove('show');
       }
-      if (announceTime > 0) {
-        announceTime -= deltaSeconds;
-        if (announceTime <= 0) getElement('announcement').classList.remove('show');
-      }
       if (active) timed('knockdowns', () => updateKnockdowns(deltaSeconds));
       if (active || gameMode === 'menu') timed('cars', () => updateCars(deltaSeconds, active));
       if (active) {
@@ -3724,6 +3720,34 @@
       }
       drawingContext.restore();
     }
+    /**
+     * MISSION CARD
+     * The pager card is read once, not stared at: it opens for
+     * MISSION_CARD_SECONDS whenever the job or its objective changes, then folds
+     * into a one-line objective strip. O (or a click/tap on the strip) opens it
+     * again. Game time drives it, so a pause or phone call does not eat the read.
+     */
+    const MISSION_CARD_SECONDS = 6;
+    let missionCardKey = '',
+      missionCardUntil = 0;
+    function updateMissionCard(objectiveLine) {
+      const key =
+        getElement('pagerLabel').textContent +
+        '|' +
+        getElement('missionTitle').textContent +
+        '|' +
+        objectiveLine;
+      if (key !== missionCardKey) {
+        missionCardKey = key;
+        missionCardUntil = gameTime + MISSION_CARD_SECONDS;
+      }
+      getElement('missionObjective').textContent = objectiveLine;
+      getElement('pager').classList.toggle('compact', gameTime >= missionCardUntil);
+    }
+    function toggleMissionCard() {
+      missionCardUntil = gameTime < missionCardUntil ? 0 : gameTime + MISSION_CARD_SECONDS;
+      updateUI();
+    }
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.
     function updateUI() {
       enforceVehicleHandgun();
@@ -3825,6 +3849,13 @@
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
         : 'FREE ROAM · ' + completed + ' JOBS COMPLETE';
+      updateMissionCard(
+        m
+          ? m.instruction || missions[m.index].brief
+          : missionIndex >= missions.length
+            ? 'FREE ROAM · ' + completed + ' JOBS COMPLETE'
+            : 'ANSWER THE RINGING PAYPHONE',
+      );
       let prompt = '';
       if (gameMode === 'play') {
         if (c) {
@@ -3898,7 +3929,7 @@
       canvas.focus();
       keys = {};
       tell('Welcome to South Coast. Answer the yellow payphone, or take a ride.', 5);
-      announce('SOUTH COAST · 1997', 'OLD QUARTER', 2.3);
+      announce('SOUTH COAST · 1997', 'OLD QUARTER', 1.8);
     }
     function togglePause() {
       if (gameMode === 'arsenal') {
@@ -4016,7 +4047,7 @@
       save();
       gameMode = 'play';
       getElement('pauseMenu').classList.add('hidden');
-      announce('A FRESH START', 'OLD QUARTER', 2);
+      announce('A FRESH START', 'OLD QUARTER', 1.8);
       tell('Your story starts at the yellow payphone.');
       newCallNotice();
       canvas.focus();
@@ -4287,6 +4318,7 @@
       if (code === 'KeyK' || code === 'Digit7') selectWeapon(KNIFE_INDEX);
       if (/^Digit[1-6]$/.test(code)) selectWeapon(Number(code.slice(-1)) - 1);
       if (code === 'KeyQ') cycleWeapon();
+      if (code === 'KeyO') toggleMissionCard();
       if (
         ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(
           code,
@@ -4343,6 +4375,9 @@
     getElement('pauseBtn').onclick = togglePause;
     getElement('resumeBtn').onclick = togglePause;
     getElement('mapBtn').onclick = toggleMap;
+    getElement('pager').onclick = () => {
+      if (gameMode === 'play') toggleMissionCard();
+    };
     getElement('closeMap').onclick = toggleMap;
     getElement('soundBtn').onclick = mute;
     getElement('menuSound').onclick = mute;
@@ -4423,9 +4458,55 @@
       fn();
       profile.parts[name] = (profile.parts[name] || 0) + performance.now() - t0;
     }
+    /**
+     * FPS COUNTER
+     * Optional readout switched from the pause menu and remembered in
+     * localStorage beside the touch-controls setting. It averages over half a
+     * second so the number is readable, and shows the average frame time too.
+     */
+    const fpsMeter = { shown: false, frames: 0, since: 0 };
+    try {
+      fpsMeter.shown = localStorage.getItem('dead-end-city-fps') === 'on';
+    } catch {}
+    function applyFpsSetting() {
+      getElement('fpsCounter').classList.toggle('hidden', !fpsMeter.shown);
+      getElement('fpsBtn').textContent = 'FPS COUNTER: ' + (fpsMeter.shown ? 'ON' : 'OFF');
+      getElement('fpsBtn').setAttribute('aria-pressed', String(fpsMeter.shown));
+    }
+    function toggleFpsCounter() {
+      fpsMeter.shown = !fpsMeter.shown;
+      fpsMeter.frames = 0;
+      fpsMeter.since = performance.now();
+      getElement('fpsCounter').textContent = '-- FPS';
+      try {
+        localStorage.setItem('dead-end-city-fps', fpsMeter.shown ? 'on' : 'off');
+      } catch {}
+      applyFpsSetting();
+    }
+    function updateFpsCounter(t) {
+      if (!fpsMeter.shown) return;
+      fpsMeter.frames++;
+      const elapsed = t - fpsMeter.since;
+      if (elapsed < 500) return;
+      const fps = (fpsMeter.frames * 1000) / elapsed,
+        el = getElement('fpsCounter');
+      el.textContent = Math.round(fps) + ' FPS · ' + (elapsed / fpsMeter.frames).toFixed(1) + ' ms';
+      el.classList.toggle('slow', fps < 30);
+      fpsMeter.frames = 0;
+      fpsMeter.since = t;
+    }
+    getElement('fpsBtn').onclick = toggleFpsCounter;
+    applyFpsSetting();
     function frame(t) {
       syncTouchInput();
+      updateFpsCounter(t);
       const deltaSeconds = Math.min(0.033, Math.max(0, (t - lastTime) / 1000));
+      // Headline cards run on the wall clock: a phone call or pause that opens
+      // right after one must not leave it frozen across the middle of the screen.
+      if (announceTime > 0) {
+        announceTime -= Math.min(0.25, Math.max(0, (t - lastTime) / 1000));
+        if (announceTime <= 0) getElement('announcement').classList.remove('show');
+      }
       if (profile.last) profile.frameGap += t - profile.last;
       profile.last = t;
       lastTime = t;
@@ -4494,7 +4575,8 @@
       // support without having to earn them.
       wanted(stars = 5) {
         const n = clamp(Math.round(stars), 0, 5);
-        if (n <= 0) clearPolice();
+        // Clearing reports the escape exactly like losing them in play would.
+        if (n <= 0) clearPolice(true);
         else {
           wantedStars = n;
           wantedLevel = n;
