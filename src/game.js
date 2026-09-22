@@ -765,7 +765,7 @@
       if (!buildingGrid.size) return buildings;
       return buildingGrid.get(Math.floor(x / BUILDING_CELL) * 4096 + Math.floor(y / BUILDING_CELL)) || noBuildings;
     }
-    function solid(x, y, r = 8) {
+    function solid(x, y, r = 8, overWater = false) {
       if (
         sportsBlocked(x, y, r) ||
         railBlocked(x, y, r) ||
@@ -775,7 +775,7 @@
         garageBlocked(x, y, r) ||
         parkBlocked(x, y, r) ||
         marinaBlocked(x, y, r) ||
-        !groundAt(x, y, r) ||
+        (!overWater && !groundAt(x, y, r)) ||
         harborBlocked(x, y, r) ||
         depotBlocked(x, y, r) ||
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
@@ -796,9 +796,13 @@
       let hit = false;
       // Vehicle test: a cheap bounding box rejects almost every vehicle before the
       // rotated point-in-car test (this runs for every pedestrian step each frame).
-      const reach = 90 + collisionRadius,
+      // On foot the player may leave the shore: the water is somewhere to be, not
+      // a wall. Everyone else is still stopped by it.
+      const swimmer =
+          body === player && !player.car && !player.roof && !player.deck && !player.parachute,
+        reach = 90 + collisionRadius,
         blocked = (x, y) => {
-          if (solid(x, y, collisionRadius)) return true;
+          if (solid(x, y, collisionRadius, swimmer)) return true;
           if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
           for (let i = 0; i < vehicles.length; i++) {
             const c = vehicles[i];
@@ -1906,6 +1910,7 @@
         shotCooldownSeconds > 0 ||
         reloadSecondsRemaining > 0 ||
         gameMode !== 'play' ||
+        player.swimming ||
         (player.roof && !rooftopJob()) ||
         !weaponIsEquipped(selectedWeaponIndex)
       )
@@ -2696,6 +2701,8 @@
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
         updateWeather(deltaSeconds);
+        updateSwimming(deltaSeconds);
+        updateSinking(deltaSeconds);
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -2712,13 +2719,15 @@
           if (x || y) {
             player.a = Math.atan2(y, x);
             player.walk += deltaSeconds * (keys.ShiftLeft ? 15 : 10);
-            let s = player.roof
-              ? keys.ShiftLeft || keys.ShiftRight
-                ? 68
-                : 42
-              : keys.ShiftLeft || keys.ShiftRight
-                ? 158
-                : 100;
+            let s = player.swimming
+              ? swimSpeed()
+              : player.roof
+                ? keys.ShiftLeft || keys.ShiftRight
+                  ? 68
+                  : 42
+                : keys.ShiftLeft || keys.ShiftRight
+                  ? 158
+                  : 100;
             moveBody(
               player,
               (x / Math.hypot(x, y)) * s * deltaSeconds,
@@ -2732,6 +2741,7 @@
           !player.roof &&
           !player.deck &&
           !player.parachute &&
+          !player.swimming &&
           !transitRide &&
           !taxiRide &&
           !player.coaster
@@ -3771,20 +3781,28 @@
         ? 'CITY RAIL'
         : c
           ? vehicleSpec(c).name
-          : 'ON FOOT';
-      getElement('speed').textContent = c
-        ? Math.round(
-            worldMeters(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : Math.abs(c.speed)) *
-              3.6,
-          )
-        : '';
-      getElement('speedUnit').textContent = c
-        ? isAircraft(c)
-          ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
-          : ridingBicycle()
-            ? 'KM/H · LEGS ' + Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) + '%'
-            : 'KM/H'
-        : '';
+          : player.swimming
+            ? 'SWIMMING'
+            : 'ON FOOT';
+      // The speed readout doubles as the breath gauge while you are in the water.
+      const swimming = !c && player.swimming;
+      getElement('speed').textContent = swimming
+        ? Math.round(breathFraction() * 100)
+        : c
+          ? Math.round(
+              worldMeters(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : Math.abs(c.speed)) *
+                3.6,
+            )
+          : '';
+      getElement('speedUnit').textContent = swimming
+        ? '% BREATH'
+        : c
+          ? isAircraft(c)
+            ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
+            : ridingBicycle()
+              ? 'KM/H · LEGS ' + Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) + '%'
+              : 'KM/H'
+          : '';
       getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
       getElement('carFill').style.background = c && c.hp < c.maxhp * 0.3 ? '#e79177' : '#d7f970';
       const target = objective(),
@@ -4295,6 +4313,7 @@
     // @include src/taxi.js
     // @include src/cycles.js
     // @include src/weather.js
+    // @include src/water.js
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js

@@ -1162,7 +1162,12 @@
         if (c.resting) continue;
         const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 12,
           list = [];
+        // The quay edge stops everything with a driver who ought to know better.
+        // The player's own car is not stopped by it: putting one in the bay is a
+        // thing you are allowed to do, and then it floods.
+        const throughShore = c === player.car && !isBoat(c) && !isAircraft(c);
         for (const b of nearbyStatics(c)) {
+          if (throughShore && b.kind === 'coast') continue;
           const ca = Math.abs(Math.cos(b.a || 0)),
             sa = Math.abs(Math.sin(b.a || 0));
           if (
