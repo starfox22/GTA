@@ -71,6 +71,8 @@ something, never a generic code-evaluation hook.
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry |
 | `roadblocks()`, `containment()` | Police cordon state |
 | `stats()` | Per-frame CPU timings, draw calls, triangles |
+| `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
+| `walk(heading, distance)` | Walk on foot through the real collision code (headless frames are too slow for keys) |
 
 ## Conventions
 

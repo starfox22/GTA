@@ -67,6 +67,14 @@
         emissive: '#ffc98c',
         emissiveIntensity: 0,
       });
+      // Balcony glass on the liners: bluer and paler, lit cabins behind at night.
+      const kitBalconyGlass = new Three.MeshStandardMaterial({
+        color: '#34566b',
+        roughness: 0.08,
+        metalness: 0.6,
+        emissive: '#ffd6a0',
+        emissiveIntensity: 0,
+      });
       // Bridge and wheelhouse glass stays cool and dim at night.
       const kitBridgeGlass = new Three.MeshStandardMaterial({
         color: '#0e1a22',
@@ -878,8 +886,9 @@
       function updateBoatKitVisuals() {
         const night = nightAmount;
         kitGlass.emissiveIntensity = night * 0.95;
+        kitBalconyGlass.emissiveIntensity = night * 0.7;
         kitBridgeGlass.emissiveIntensity = night * 0.35;
-        kitPoolWater.emissiveIntensity = 0.15 + night * 1.2;
+        kitPoolWater.emissiveIntensity = 0.15 + night * 0.7;
         const buffer = renderer.getDrawingBufferSize(kitSizeVector),
           ortho = camera.isOrthographicCamera;
         const pixelsPerUnit = ortho

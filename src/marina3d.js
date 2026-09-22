@@ -113,6 +113,7 @@
           beamBox(parent, a, b, 2.4, 2.6, kitWhite, z0 + 1.3);
           beamBox(parent, a, b, 1.6, z1 - z0 - 5.6, kitGlass, z0 + 2.6 + (z1 - z0 - 5.6) / 2);
           beamBox(parent, a, b, 2.4, 3, kitWhite, z1 - 1.5);
+          box(parent, a[0], (z0 + z1) / 2, a[1], 1.1, z1 - z0, 1.1, kitWhite);
         }
         // Door frames either side of each opening.
         for (const d of doors)
@@ -120,6 +121,18 @@
       }
       function sheerAt(spec, u) {
         return hullSheer(spec, u / spec.length);
+      }
+      // Half-width of a deck outline at a station, for placing things at its edge.
+      function pointHalfWidth(outline, u) {
+        let best = 0;
+        for (let i = 0; i < outline.length; i++) {
+          const a = outline[i],
+            b = outline[(i + 1) % outline.length];
+          if ((a[0] - u) * (b[0] - u) > 0 || a[0] === b[0]) continue;
+          const f = (u - a[0]) / (b[0] - a[0]);
+          best = Math.max(best, Math.abs(a[1] + (b[1] - a[1]) * f));
+        }
+        return best;
       }
       function lerpPoint(a, b, f) {
         return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
@@ -340,6 +353,21 @@
         }
         for (let u = -220; u <= 200; u += 70) kitWaterGlow(base, u, 58, 48, '#2fbfff');
 
+        // The ensign on its staff at the stern, and slim columns carrying each
+        // deck's aft overhang.
+        box(base, -280, Z[0] + 9, -34, 0.8, 18, 0.8, kitSteel);
+        box(base, -283.2, Z[0] + 15, -34, 6, 4, 0.3, tint('#b3262d', 'matte'));
+        box(base, -283.2, Z[0] + 16.3, -34, 6, 1.2, 0.34, tint('#f2f2ee', 'matte'));
+        for (const [level, u] of [
+          [2, -183],
+          [3, -147],
+          [4, -107],
+        ]) {
+          const lower = Z[level - 1],
+            hw = pointHalfWidth(plan.levels[level].outline, u) - 3,
+            group = level === 2 ? base : decks[level - 3];
+          for (const side of [-1, 1]) box(group, u, (lower + Z[level] - 3) / 2, side * hw, 1.8, Z[level] - 3 - lower, 1.8, kitWhite);
+        }
         // Main deck furniture.
         for (const f of plan.levels[0].furniture) superyachtFurniture(base, 0, f, Z[0]);
         for (const f of plan.levels[1].furniture) superyachtFurniture(base, 1, f, Z[1]);
@@ -501,8 +529,9 @@
           top = [u + (bow - u) * 0.1, head - 4, 0],
           foot = [bow - 2, sheerAt(spec, bow) + 3, 0];
         const m = strut(g, top, foot, 1.6, tint(color, 'matte'));
-        m.scale.x = m.scale.z = 1.3;
-        const cover = strut(g, [top[0] + (foot[0] - top[0]) * 0.6, top[1] + (foot[1] - top[1]) * 0.6, 0], foot, 2.2, tint('#1d3f6e', 'matte'));
+        m.scale.x = m.scale.z = 0.8;
+        const cover = strut(g, [top[0] + (foot[0] - top[0]) * 0.7, top[1] + (foot[1] - top[1]) * 0.7, 0], foot, 2.2, tint('#1d3f6e', 'matte'));
+        cover.scale.x = cover.scale.z = 1.1;
         return cover;
       }
       function boom(g, u, z, length, coverColor, boomColor = '#dfe2e4') {
@@ -1118,13 +1147,58 @@
         const f = MARINA.fuel;
         box(marinaStatic, f.x + f.w / 2, 10, f.y + f.h / 2, f.w, 20, f.h, mat('#69706a', 0.85));
         box(marinaStatic, f.x + f.w / 2, 23, f.y + f.h / 2, f.w + 14, 3, f.h + 14, mat('#3e4744', 0.8));
-        const t = MARINA.terminal;
-        box(marinaStatic, t.x + t.w / 2, 44, t.y + t.h / 2, t.w, 88, t.h, shedGrey);
-        box(marinaStatic, t.x + t.w / 2, 62, t.y + 3, t.w - 40, 34, 4, glassBlue);
-        box(marinaStatic, t.x + t.w / 2, 90, t.y + t.h / 2, t.w + 16, 5, t.h + 16, mat('#59615f', 0.8));
-        for (let x = t.x + 40; x < t.x + t.w - 20; x += 96)
-          box(marinaStatic, x, 22, t.y + t.h + 26, 6, 44, 6, quaySteel);
-        box(marinaStatic, t.x + t.w / 2, 46, t.y + t.h + 26, t.w - 60, 4, 52, mat('#4e5654', 0.8));
+        buildCruiseTerminal();
+      }
+
+      /**
+       * The cruise terminal: two storeys of glass between white floor plates,
+       * under a roof of five white shells like sails, with a drop-off canopy on
+       * the street side and a covered boarding bridge out to the liner's gangway.
+       */
+      function buildCruiseTerminal() {
+        const t = MARINA.terminal,
+          g = new Three.Group(),
+          white = tint('#eef0ee', 'satin'),
+          cx = t.x + t.w / 2,
+          cz = t.y + t.h / 2;
+        g.position.set(cx, 0, cz);
+        scene.add(g);
+        statics.push({ x: cx, y: cz, group: g, radius: 520 });
+        const hw = t.w / 2,
+          hd = t.h / 2;
+        box(g, 0, 1.5, 0, t.w, 3, t.h, tint('#b8b4a8', 'matte'));
+        for (const [z0, z1] of [
+          [3, 22],
+          [25, 44],
+        ]) {
+          box(g, 0, (z0 + z1) / 2, 0, t.w - 8, z1 - z0, t.h - 8, kitGlass);
+          for (let x = -hw + 12; x < hw - 6; x += 16) {
+            box(g, x, (z0 + z1) / 2, hd - 3.6, 1.2, z1 - z0, 1.2, white);
+            box(g, x, (z0 + z1) / 2, -hd + 3.6, 1.2, z1 - z0, 1.2, white);
+          }
+        }
+        for (const z of [23.5, 46]) box(g, 0, z, 0, t.w + 6, 3, t.h + 6, white);
+        // Roof shells: half-cylinders rising toward the sea.
+        for (let k = 0; k < 5; k++) {
+          const x = -hw + t.w * (k + 0.5) / 5,
+            shell = new Three.Mesh(new Three.CylinderGeometry(t.w / 10 - 4, t.w / 10 - 4, t.h - 10, 16, 1, true, 0, Math.PI), white);
+          shell.rotation.set(Math.PI / 2, 0, 0);
+          shell.scale.set(1, 1, 0.32);
+          shell.position.set(x, 47.5, 0);
+          shell.castShadow = shell.receiveShadow = true;
+          g.add(shell);
+        }
+        // Drop-off canopy on the street side, on slender posts.
+        deckSlab(g, rectOutline(-hw + 40, hw - 40, hd + 2, hd + 50), 30, 2, white, white);
+        for (let x = -hw + 50; x < hw - 40; x += 80) box(g, x, 14.5, hd + 46, 2, 29, 2, kitSteel);
+        kitNameBoard(g, 'CRUISE TERMINAL', 'HARBOR POINT', '#f4efe0', 120, 0, 36, hd + 3.5, 0);
+        // Boarding bridge from the upper floor out to the liner's gangway.
+        const ship = LINERS.find((l) => l.berthed),
+          gate = ship.board;
+        box(g, gate.x - cx, 34, (gate.y - cz - hd) / 2 - hd / 2 - 2, 22, 14, Math.abs(gate.y - (cz - hd)) + 4, white);
+        box(g, gate.x - cx, 36, (gate.y - cz - hd) / 2 - hd / 2 - 2, 22.4, 5, Math.abs(gate.y - (cz - hd)) - 4, kitGlass);
+        for (let z = 3; z < 44; z += 12) kitLight(marinaLights, g, -hw + 20, z + 8, hd + 1, '#ffe7c0');
+        kitMerge(g);
       }
 
       /* ---- The liners ---------------------------------------------------------- */
@@ -1175,12 +1249,15 @@
           deckhouse(g, outline, deck, deck + high, { rake: front ? 6 : 0, glassFrom: 0.1, glassTo: 0.1, paint: kitWhite });
           for (let level = 10; level < high - 6; level += 17) {
             const ring = offsetOutline(outline, 0.4);
-            mesh(prismGeometry(ring, ring, deck + level, deck + level + 9, false), kitGlass, g, 0, 0, 0);
+            mesh(prismGeometry(ring, ring, deck + level, deck + level + 9, false), kitBalconyGlass, g, 0, 0, 0);
             const lip = offsetOutline(outline, 3);
             mesh(prismGeometry(lip, lip, deck + level - 1, deck + level, true, true), kitWhite, g, 0, 0, 0);
           }
           const roof = offsetOutline(outline, 1.5);
           mesh(prismGeometry(roof, roof, deck + high, deck + high + 3, true), tint('#e6e8e6', 'satin'), g, 0, 0, 0);
+          deckSlab(g, offsetOutline(outline, -4), deck + high + 3.4, 0.3, tint('#b5533f', 'matte'), tint('#b5533f', 'matte'));
+          deckSlab(g, offsetOutline(outline, -10), deck + high + 3.6, 0.3, kitTeakPale, kitWhite);
+          railing(g, offsetOutline(outline, -0.5), deck + high + 3, 6, { closed: true, spacing: 14, glass: kitRailGlass });
           for (let k = 0; k < outline.length; k += 3) kitLight(lights, g, outline[k][0], deck + high + 4, outline[k][1], '#ffe2b0');
         });
         // Bridge on the forward house, with wings out to the full beam.
@@ -1215,6 +1292,50 @@
           );
           mesh(new Three.TubeGeometry(curve, 80, 3, 8, false), tint('#f2c232', 'gloss'), g, 0, 0, 0);
           box(g, u - 150, z + 22, -30, 4, 44, 4, kitWhite);
+        }
+        // Aft house roof: a fenced sports court, a glass solarium and loungers.
+        {
+          const [u, , len, wide, high] = LINER_DECKHOUSES[0],
+            z = deck + high + 3.8;
+          box(g, u - 40, z + 0.2, 0, 90, 0.4, 60, tint('#3f7f5a', 'matte'));
+          for (const dv of [-29, 29]) box(g, u - 40, z + 0.5, dv, 88, 0.3, 1, kitWhite);
+          for (const du of [-84, 4, -40]) box(g, u + du, z + 0.5, 0, 1, 0.3, 58, kitWhite);
+          railing(g, rectOutline(u - 86, u + 6, -31, 31), z, 12, { closed: true, spacing: 10, material: tint('#2c3a34', 'satin') });
+          const sol = new Three.Mesh(new Three.CylinderGeometry(30, 30, 80, 20, 1, false, 0, Math.PI), kitBalconyGlass);
+          sol.rotation.set(0, 0, Math.PI / 2);
+          sol.position.set(u + 80, z, 0);
+          g.add(sol);
+          for (const side of [-1, 1]) for (let k = 0; k < 5; k++) lounger(g, u + 22 + k * 14, side * (wide / 2 - 16), z, 11, 5.5, tint(k % 2 ? '#2e7cae' : '#f3efe6', 'matte'), kitWhite);
+        }
+        // Midships: hot tubs, a bar kiosk and parasols round the lido pools.
+        {
+          const [u, , , wide, high] = LINER_DECKHOUSES[1],
+            z = deck + high + 3.8;
+          for (const du of [-110, -95]) hotTub(g, u + du, 26, z, 7);
+          box(g, u + 20, z + 5, 0, 16, 10, 30, tint('#2b3440', 'gloss'));
+          deckSlab(g, deckOutline(u + 10, u + 30, 20, 0, 2), z + 16, 1.2, kitWhite, kitWhite);
+          for (const [du, dv] of [
+            [110, 40],
+            [130, 40],
+            [110, -40],
+            [130, -40],
+            [-20, 50],
+            [-20, -50],
+          ]) {
+            box(g, u + du, z + 6, dv, 0.8, 12, 0.8, kitSteel);
+            mesh(new Three.ConeGeometry(9, 3.4, 10), tint(du > 0 ? '#f3efe6' : '#2e7cae', 'matte'), g, u + du, z + 13, dv);
+          }
+          for (const side of [-1, 1]) for (let k = 0; k < 6; k++) lounger(g, u + 100 + k * 14 - 40, side * (wide / 2 - 16), z, 11, 5.5, tint(k % 2 ? '#2e7cae' : '#f3efe6', 'matte'), kitWhite);
+        }
+        // Forward house roof: a basketball court behind the bridge.
+        {
+          const [u, , , , high] = LINER_DECKHOUSES[2],
+            z = deck + high + 3.8;
+          box(g, u - 50, z + 0.2, 0, 70, 0.4, 44, tint('#2f5f8e', 'matte'));
+          box(g, u - 50, z + 0.3, 0, 60, 0.4, 36, tint('#c8733a', 'matte'));
+          box(g, u - 50, z + 0.5, 0, 1, 0.3, 36, kitWhite);
+          for (const du of [-82, -18]) box(g, u + du, z + 8, 0, 1, 16, 1, kitSteel);
+          railing(g, rectOutline(u - 86, u - 14, -23, 23), z, 12, { closed: true, spacing: 10, material: tint('#2c3a34', 'satin') });
         }
         // Funnels: raked ovals in the line's red with black tops.
         for (const u of [-210, -60]) {
@@ -1256,7 +1377,7 @@
           for (const u of [L / 2 - 90, L / 2 - 60, -L / 2 + 40]) bollard(g, u, deck, side * (hullHalfBeam(ship, u) - 16), 3);
           for (let u = -L / 2 + 60; u < L / 2 - 80; u += 50) kitLight(lights, g, u, deck + 10, side * (hullHalfBeam(ship, u) - 2), '#ffe2b0');
         }
-        return { group: g, lights };
+        return { group: g, lights, spec };
       }
       const linerClass = buildLinerClass(LINERS[0]);
       kitMerge(linerClass.group);
@@ -1271,12 +1392,16 @@
           copy.castShadow = copy.receiveShadow = true;
           g.add(copy);
         }
+        // The name on each bow, turned to follow the hull as it narrows.
         const nameShip = (name, u, side) => {
-          const hb = hullHalfBeam(ship, u);
-          kitNameBoard(g, name, null, '#f2f2ee', 120, u, ship.deck - 8, side * (hb + 1), side > 0 ? 0 : Math.PI);
+          const spec = linerClass.spec,
+            z = ship.deck - 6,
+            yaw = Math.atan2(hullBeamAt(spec, u - 40, z) - hullBeamAt(spec, u + 40, z), 80),
+            board = kitNameBoard(g, name, null, '#f2f2ee', 110, u, z, side * (hullBeamAt(spec, u, z) + 1.2), 0);
+          board.rotation.y = side > 0 ? yaw : Math.PI - yaw;
         };
-        nameShip(ship.name.replace('MS ', ''), ship.l / 2 - 170, 1);
-        nameShip(ship.name.replace('MS ', ''), ship.l / 2 - 170, -1);
+        nameShip(ship.name.replace('MS ', ''), ship.l / 2 - 250, 1);
+        nameShip(ship.name.replace('MS ', ''), ship.l / 2 - 250, -1);
         kitNameBoard(g, ship.name.replace('MS ', ''), 'HARBOR POINT', '#f2f2ee', 110, -ship.l / 2 - 0.5, ship.deck - 12, 0, -Math.PI / 2);
         for (const l of linerClass.lights) kitLight(marinaLights, g, l.position.x, l.position.y, l.position.z, '#' + l.color.getHexString());
         // Stern boarding platform, and a gangway when the ship lies alongside.

@@ -165,7 +165,7 @@
       fwd: 265,
       beam: 100,
       form: { transom: 0.9, maxAt: -0.08, entry: 1.9, bowShape: 0.78, sternCurve: 2.6 },
-      bulwark: 4,
+      bulwark: 3,
       board: { x: 660, y: -3950 },
       levels: [
         { name: 'SWIM PLATFORM', z: 7, outline: [-282, -238, 42, 0, 2] },
@@ -178,9 +178,9 @@
       // Deckhouses: solid, except the main saloon whose walls alone are solid and
       // whose aft doors stand open. `rake` pulls the top of the front back.
       houses: [
-        { level: 1, outline: [-150, 108, 34, 50, 1.9], open: true, rake: 6, doors: [[-156, -144, -13, 13]] },
-        { level: 2, outline: [-112, 90, 35, 50, 1.8], rake: 10 },
-        { level: 3, outline: [-72, 80, 31, 44, 1.6], rake: 12, bridge: true },
+        { level: 1, outline: [-150, 108, 32, 64, 1.6], open: true, rake: 6, doors: [[-156, -144, -13, 13]] },
+        { level: 2, outline: [-112, 90, 34, 50, 1.8], rake: 10 },
+        { level: 3, outline: [-72, 80, 30, 44, 1.6], rake: 12, bridge: true },
       ],
       stairs: [
         { lo: -1, hi: 0, u0: -306, u1: -282, v0: -6, v1: 6, gangway: true },
@@ -323,7 +323,7 @@
     /* A point is free on a level when it and four points around it are on that
        level's deck (or its stair landings), clear of houses and furniture, and
        the centre itself is not over a stair well. */
-    function yachtPointFree(levelIndex, u, v, r = 5) {
+    function yachtPointFree(levelIndex, u, v, r = 4) {
       const level = superyachtPlan().levels[levelIndex];
       if (!level) return false;
       const probes = [
@@ -457,7 +457,7 @@
       return [
         { ...MARINA.club, height: 44 },
         { ...MARINA.fuel, height: 20 },
-        { ...MARINA.terminal, height: 96 },
+        { ...MARINA.terminal, height: 56 },
       ];
     }
     /* Pontoons are walkable, the basin around them is not, and hulls are solid. */
