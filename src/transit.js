@@ -7,14 +7,25 @@
      */
     /**
      * RAILWAY
-     * The line is a perimeter system, not a street tram: it runs along the
-     * shoreline, out over Marlow Bay on its own viaduct and across the marina
-     * mouth, so it crosses the road causeways as a flyover and never shares one.
+     * A perimeter system, not a street tram, and all of it on the city's eastern
+     * side: the Bay Line leaves the cruise terminal and runs the length of Marlow
+     * Bay on its own viaduct, swinging ashore at North Harbour and Exchange Quay
+     * before crossing to the Keys; the Coast Line carries on south from Exchange
+     * Quay, touches land at Battery Point and heads out to the county. It crosses
+     * the road causeways as a flyover and never shares one, and it never runs
+     * along a street.
+     *
      * Authored points are the route's shape; `smoothTrack` rounds every corner
      * into an arc before anything else reads them, so the decks, the trains, the
      * piers and the map all follow the same easy curves. Junction points -- the
      * places where two lines or a station meet the track -- are held fixed so the
-     * rounding can never pull the network apart.
+     * rounding can never pull the network apart, which is also why every station
+     * must be an authored vertex on its line rather than a point that happens to
+     * fall near it.
+     *
+     * Trains brake for the next stop, never for the next point: rounding the
+     * corners fills the path with points a few units apart, and braking for those
+     * held the train to a crawl round every curve.
      */
     function smoothTrack(points, fixed, radius = 240, steps = 7) {
       if (points.length < 3) return points.map((p) => p.slice());

@@ -51,7 +51,8 @@ local storage. The game runs offline; nothing is fetched from the network.
 ## Repository layout
 
 ```
-dead-end-city.html    The playable, self-contained build (the deliverable).
+CLAUDE.md             Start here to work on the code: build loop, rules, how to verify.
+dead-end-city.html    The playable, self-contained build (the deliverable, generated).
 src/                  Game source, one file per subsystem (see docs/SOURCE_GUIDE.md).
 src/shell.html        HTML shell: CSS, DOM and include directives.
 vendor/three.r160.js  Unminified Three.js r160 with its MIT license.
@@ -59,8 +60,13 @@ assets/               Decoded images and audio plus manifest.json (embedded at b
 tools/build.py        Reassembles dead-end-city.html from the pieces above.
 tools/check.sh        Fast syntax gate (assemble + `node --check`).
 tools/smoke.mjs       Headless Chromium boot test with screenshots.
-docs/                 Source guide, audit notes and third-party credits.
+docs/SOURCE_GUIDE.md  Subsystem map, data contracts, city layout, mission structure.
+docs/CHANGELOG.md     What changed in each version.
+docs/audit/           Older review notes.
 ```
+
+`dead-end-city.html` is generated from `src/`. Edit the source and rebuild; never edit the
+built file by hand.
 
 ## Build and verify
 
@@ -73,6 +79,11 @@ node tools/smoke.mjs            # boots the build headlessly (needs Playwright +
 Only Python 3 is needed to build. The assembled file is plain, readable source: nothing is
 minified, packed or evaluated, and every media block is labeled with its path, byte count
 and SHA-256.
+
+Run `sh tools/check.sh` after every edit: the whole game is spliced into one closure, so a
+name that collides between two source files is a syntax error in the assembled file and
+invisible in the file you were editing. `CLAUDE.md` covers the rest of the working rules and
+`window.DeadEndCity`, the debug surface the tests drive the game through.
 
 ## Credits
 

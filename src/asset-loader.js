@@ -1,4 +1,11 @@
-      // Each reference points to a non-executable media block above.
+      /**
+       * Media loader
+       * Source: src/asset-loader.js
+       * Scope: top level of the built page, after the media blocks.
+       * Decodes the labelled Base64 blocks into images and audio buffers and then
+       * calls startDeadEndCity(). Each reference below points to a non-executable
+       * media block above it in the file.
+       */
 const embeddedAssetReferences = {
   "architecture": "media-architecture",
   "ground": "media-ground",

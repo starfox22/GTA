@@ -25,13 +25,20 @@ Two closures matter:
 
 ## 2. Data contracts (read before touching physics or rendering)
 
-- Map coordinates are `(x, y)` in world units. **512 units = 100 m.** `WORLD_SIZE` is 11264,
-  the city proper (`CITY_SIZE`) is 5632; the county lies beyond.
+- Map coordinates are `(x, y)` in world units. **512 units = 100 m.** `WORLD_SIZE` is 11264
+  and `CITY_SIZE` 5632, but the city also extends *north into negative y*: `CITY_TOP` (-4224)
+  and `WORLD_TOP` (-5632) are the northern bounds. The county lies east and south.
 - Heading `a` is radians. Velocity `vx/vy` is units per second, `av` radians per second.
 - In Three.js a map point becomes `(x, elevation, y)`; model yaw is `-a`.
 - Compact entity keys are contracts: `hp`, `maxhp`, `a`, `w/l`, `hx/hy` (collider half
   extents), `vz`, `inv` (invulnerability seconds), `vest` (an NPC's body armor, in the
-  same units as `player.armor`).
+  same units as `player.armor`), `sinkDepth` (how far a flooded vehicle has settled).
+- The player is in exactly one carrier at a time and they are mutually exclusive: `player.car`,
+  `player.roof` (the Blue Hour terrace), `player.deck` (a liner), `player.parachute`,
+  `player.coaster`, `transitRide`, `taxiRide`, `player.swimming`. Anything that moves the
+  player elsewhere must let go of them first -- use `teleportPlayer(x, y)`, which does.
+- `solid(x, y, r, overWater)` is the one collision test. The fourth argument is what lets the
+  player swim: with it set, water stops counting as solid. Nothing else passes it.
 - All bullet, blast, melee and impact damage goes through `ballisticDamage()` in
   combat-rules.js. Call `strikePerson(person, damage, a, source, showBlood, kind)` and
   `hurt(damage, kind)` with the right `kind` rather than scaling damage at the call site.
@@ -58,7 +65,7 @@ Game closure (in include order):
 | themepark.js | Sunset Pier layout, ride solids, the rideable looping coaster, park crowd |
 | marina.js | Harbor Point basin, cruise terminal, the two liners and their walkable decks |
 | taxi.js | Hailing a cab, picking a drop-off on the map, the ride, the hijack |
-| cycles.js | Bike-share stands and the rider's stamina |
+| cycles.js | Bike-share stands, tap-to-pedal strokes, cadence and the rider's legs |
 | weather.js | Weather state machine, road wetness, wind, rain audio |
 | water.js | Swimming, breath, and vehicles that flood and sink |
 | police-feedback.js | Wanted-level banners and delivery blocking |
@@ -81,24 +88,30 @@ Renderer fragments (inside `createCityRenderer()`): cityscape3d (buildings, roof
 street furniture, night windows), sidejobs3d (rings/devices), roadblocks3d (barriers, spikes,
 flares), themepark3d (coaster, wheel, carousel), garage3d, landmarks3d, civic3d
 (time-of-day palette, businesses), air-cover3d, renewal3d, sports3d, transit3d, ecology3d,
-world3d (water shader, palms, airport, rooftop bar), county3d, harbor3d (signals, depot,
-helicopter searchlight), helicopter3d, vehicles3d, plane3d.
+world3d (water shader, esplanade furniture, street ends, palms, airport, rooftop bar),
+county3d, harbor3d (signals, depot, helicopter searchlight), marina3d (pontoons, yachts, the
+two liners), cycles3d (bike racks), weather3d (rain, cloud shadows, the cloud deck),
+helicopter3d, vehicles3d, plane3d.
 
 ## 4. The city layout
 
-- Northbank Island (west) is an 11 by 11 grid: road centres at `128 + i*512` on both axes.
-  Streets are 88 wide; the avenues at 1152, 2688, 3200 and 4736 are 112 wide with double
-  yellow centre lines. Blocks are 334 units square with a parking court or courtyard inside.
+- Northbank Island (west) is a grid of 11 columns by 19 rows: columns at `128 + i*512`
+  (`ROAD_CENTERS`, 128..5248) and rows at the same spacing but running from -3968 to 5248
+  (`ROAD_ROWS`). Streets are 88 wide; the `WIDE_ROADS` list (1152, 2688, 3200, 4736 and the
+  northern rows -1408 and -2944) are 112 wide with double yellow centre lines. Blocks are 334
+  units square with a parking court or courtyard inside.
 - Marlow Bay (the river, x 3420..3960) separates Northbank from Palm Keys (east). Bridges at
   y = 1152 (Union St), 3200 (Harbor Ave) and 4736 (Stadium Way).
-- Districts, from `districtAt()`: Old Quarter and Ironworks Docks (north), Central Garden and
-  Midtown, Broadway and Financial District (centre), South Bank, Battery Point and Southport
-  Airport (south); Palm Keys Art Deco, Ocean Drive, Little Havana and Coral Marina (east);
-  Sunset Pier on its own island in the lower bay.
+- Districts, from `districtAt()`, north to south: on the reclamation (negative y) North Point
+  (the tower district), Harbor Point Marina, the Cruise Terminal and The Reclamation; then Old
+  Quarter and Ironworks Docks, Midtown, Broadway and the Exchange District (which kept the old
+  financial district's density but not its towers), Central Garden, South Bank, Battery Point
+  and Southport Airport; Palm Keys Art Deco, Ocean Drive, Little Havana and Coral Marina to the
+  east; Sunset Pier on its own island in the lower bay.
   Zoning lives in `zoneHeight()` (heights) and the block patterns in `buildWorld()`; the
   renderer picks facade/roof archetypes from the same district names in `archetypeFor()`.
-  The coastline in `LAND_REGIONS` runs outside every block of the grid, so all eighty land
-  blocks build.
+  The coastline in `LAND_REGIONS` runs outside every block of the grid, so every land block
+  builds -- about 144 of them since the reclamation.
 - Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns, bridges, an airport and a railway (transit.js).
@@ -114,13 +127,22 @@ helicopter searchlight), helicopter3d, vehicles3d, plane3d.
   ship's frame and the map, and while `player.deck` is set `moveOnDeck` constrains the player
   inside `deckPointFree`.
 - Central Garden (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks square at
-  x 2265..3111, y 1800..2600. Garden Ave (x 2688) and Linden St (y 2176) run inside it and are
-  closed by `parkStreetClosed`. No rail crosses it -- the network is a perimeter system that
-  runs the shoreline and the bay. The outdoor gym stations come from `gymStations()`;
-  `updateGymGoer` runs the regulars and the food-truck staff.
+  x 1753..2599, y 2824..3624 -- a block west and two south of where it was first laid out,
+  which put it against the Ironworks docks. Central Ave (x 2176) and Linden St (y 3200) run
+  inside it and are closed by `parkStreetClosed`. No rail crosses it: the network is a
+  perimeter system on the eastern shore. Every feature is a field of `COMMONS`, so moving the
+  park again means shifting that one object (x by dx, y by dy, leaving w/h/rx/ry alone), the
+  `parkWalk` loop, the `parkStreetClosed` bounds, the `PARKS` block indices, the `CITY_PARKS`
+  filter, the `districtAt` box and the map label. The outdoor gym stations come from
+  `gymStations()`; `updateGymGoer` runs the regulars and the food-truck staff.
 - Sunset Pier (themepark.js `PIER`, `COASTER_TRACK`) is a land region of its own reached by
   the `SUNSET PIER CAUSEWAY` county bridge off the Stadium Way crossing. `updateCoaster`
   carries the player along the track; `parkBlocked` keeps the rides solid.
+- The waterfront walk (streets.js `promenadeSpots`, painted by `paintPromenades`, built by
+  `buildPromenade` in world3d.js) runs unbroken along the shore: at a street mouth the paving
+  and sea railing carry across and only the furniture steps aside (`spot.crossing`). A street
+  that runs out at the water gets no turning head (`streetEndAtShore`); one that stops at a
+  park or the stadium gets a forecourt and gate piers instead (`streetEndAtGate`).
 - Police containment lives in roadblocks.js: `roadblockSites()` is the chokepoint catalogue,
   `planPoliceContainment` picks one ahead of and out of sight of the runner, and
   `updateRoadblocks` runs the spike strips. `clearPolice()` tears them all down.
@@ -158,10 +180,19 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
   neon halos and vehicle head/tail halos follow the same night amount.
 - Time of day: `updateCivicVisuals()` in civic3d.js blends sky, fog, sun and ambient colours
   between night, dusk and day keyframes.
-- Water: one `ShaderMaterial` (world3d.js). A 512 by 512 distance-to-shore texture built from
-  the land polygons drives shallow colour, foam bands and swell damping. Four Gerstner waves
-  displace the mesh; noise ripples add fine normals; sun glitter and moon sparkle are
-  view-dependent.
+- Water: one `ShaderMaterial` (world3d.js). A distance-to-shore texture built from the land
+  polygons drives shallow colour, foam bands and swell damping; it is 512 wide and taller than
+  that, because the world box is taller than it is wide since the reclamation, and its texels
+  must stay square for the chamfer pass that builds it. Four Gerstner waves displace the mesh;
+  noise ripples add fine normals; sun glitter and moon sparkle are view-dependent. The surface
+  writes depth, which is what hides the underwater half of a swimmer for free.
+- Weather (weather3d.js) runs *after* the time-of-day pass so it modifies that day's light
+  rather than being overwritten by it. Rain is one `LineSegments` of streaks wrapped inside a
+  box that follows the camera. Cloud is two horizontal layers on one shared tiling -- tops at
+  flying height, which are only in frame when you are above them, and the shadows they throw on
+  the city, which is what you actually see from the street. Billboards were tried for cloud and
+  are wrong for a view that looks straight down: sprites face the camera, so a deck of them
+  reads as grey smears lying over the sea.
 - Repeated props use `InstancedMesh` pools (`pools` in cityscape3d.js). Add a pool there
   rather than creating per-building meshes for small repeated objects.
 
@@ -193,14 +224,28 @@ game time is clamped per frame, which is why toasts and banners look "stuck" in 
 
 The **developer console** `window.DeadEndCity` (game.js, after the frame loop) exposes
 `status()`, `teleport(x, y)`, `setClock(hours)`, `setZoom(v)`, `startMission(index)`,
-`missions()`, `god(on)`, `wanted(stars)` and `roadblocks()`. Test scripts use it; players
-can too from the browser console.
+`missions()`, `god(on)`, `wanted(stars)`, `containment()`, `roadblocks()`, `sky(id)` (clear,
+fair, cloudy, overcast, rain, storm -- call with nothing to hand the sky back to the weather
+machine), `cab(x, y)`, `bike(heading)` and `ride()`. Test scripts use it; players can too from
+the browser console.
+
+There is one in-game cheat: typing `godmode` during play toggles invulnerability, every
+weapon and a map that teleports on tap. Codes live in `CHEAT_CODES` in game.js; keys are
+swallowed while one is being spelled so the letters do not also drive the car.
 
 ## 8. Known limitations and ideas
 
 - The 2D fallback renderer (used when WebGL is unavailable) does not draw the new roof props,
-  shopfronts or contract devices; it remains playable.
+  shopfronts, contract devices, weather or the marina; it remains playable.
 - Traffic AI follows the grid randomly; scripted convoys would need a waypoint follower.
+- A hired cab is driven along its route rather than through the physics solver, so it checks
+  its own road ahead instead of colliding properly. It holds for traffic and gives up on a node
+  it has been wedged against, but it will not be shunted by another car.
+- Simulation cost is dominated by the vehicle loop (`parts.cars` in `stats()`), around 40 ms
+  per frame under the headless software renderer with roughly 190 vehicles and 580 pedestrians.
+  That harness inflates JS timings, so treat it as a relative measure between builds rather
+  than a frame budget.
 - Audit notes with unresolved observations are in `docs/audit/`.
-- Ideas: weather (rain with wet-road reflections in the shader), radio DJ chatter between
-  tracks, pedestrian taxi hailing, a photo mode using the orthographic camera.
+- Ideas: radio DJ chatter between tracks, interiors worth entering, a photo mode using the
+  orthographic camera, and NPCs who use the esplanade and the cycle strip on their own
+  errands rather than strolling it.

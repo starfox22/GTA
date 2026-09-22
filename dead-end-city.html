@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 28.1.0
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 28.1.1
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
 Edit the named source sections here, or use the modular source ZIP.
@@ -155,7 +155,14 @@ AUDIT CONTRACTS
 - 512 world units = 100 meters. Timers use seconds; frame timestamps use ms.
 - entityElevation() is authoritative for floor, terrain and aircraft altitude.
 - Physics uses 1/120-second steps; terrain uses shared Float32 triangles.
-- Compact entity keys (hp, a, vx/vy, w/l, hx/hy) are documented data contracts.
+- Compact entity keys (hp, a, vx/vy, w/l, hx/hy, sinkDepth) are data contracts.
+- The player is in one carrier at a time and they are mutually exclusive: car, roof,
+  deck, parachute, coaster, transitRide, taxiRide, swimming. Use teleportPlayer()
+  to move the player, since it lets go of whichever one is holding them.
+- solid(x, y, r, overWater) is the one collision test; the fourth argument exists
+  so the player can swim and is passed by nothing but moveBody(), on foot.
+- All damage goes through ballisticDamage(); entityElevation() is the only way to
+  compare heights across roofs, terrain, decks, sinking cars and aircraft.
 - Browser localStorage holds campaign/audio settings; there is no game server.
 - Media blocks name original paths, byte counts and SHA-256 hashes.
 - The source ZIP includes original media, tests, build.py and SOURCE_GUIDE.md.
@@ -4174,6 +4181,14 @@ body:not(.touch-mode).police-search-active #carRadio {
     </div>
     <!-- READABLE GAME SOURCE: shared state and commented subsystems. -->
     <script id="game-source">
+      /**
+       * Entry point
+       * Source: src/main.js
+       * Scope: the whole game closure.
+       * Everything the game is lives inside this one function, spliced together by
+       * tools/build.py from the @include directives in src/game.js. ASSETS carries
+       * the decoded media handed over by src/asset-loader.js.
+       */
       function startDeadEndCity(ASSETS) {
   // BEGIN SUBSYSTEM: src/game.js — Game orchestration and shared state
   /**
@@ -5232,6 +5247,11 @@ body:not(.touch-mode).police-search-active #carRadio {
      * step, bullet and spawn test). Buildings are bucketed into 256-unit cells once
      * after buildWorld() so each query touches a handful of candidates instead of
      * every building in the city. Rebuilt by buildBuildingGrid() when buildings change.
+     *
+     * solid()'s fourth argument, `overWater`, is what lets the player swim: with it
+     * set, open water stops counting as solid while everything else still does. Only
+     * moveBody() passes it, and only for the player on foot -- traffic and
+     * pedestrians must keep to the land.
      */
     const BUILDING_CELL = 256,
       buildingGrid = new Map(),
@@ -6038,23 +6058,6 @@ body:not(.touch-mode).police-search-active #carRadio {
         }),
       );
     }
-    function oldDistrict() {
-      if (
-        player.x < 48 ||
-        player.x > WORLD_SIZE - 64 ||
-        player.y < WORLD_TOP + 48 ||
-        player.y > WORLD_SIZE - 64
-      )
-        return 'SOUTH COAST OCEAN';
-      if (player.x > RIVER.right) return player.y > 3500 ? 'BAY GARDENS' : 'RIVERSIDE';
-      if (player.x > 3290) return 'SAINT MARLOW RIVER';
-      if (player.y > 3500) return player.x < 1800 ? 'CIVIC QUARTER' : 'SOUTH HILLS';
-      if (player.x > 2700) return player.y > 2600 ? 'SOUTH PIER' : 'IRONWORKS';
-      if (player.y > 2600) return 'SOUTH COAST';
-      if (player.x > 1800) return 'EASTSIDE';
-      if (player.y > 1500) return 'PALM HEIGHTS';
-      return 'OLD QUARTER';
-    }
     function district() {
       return districtAt(player.x, player.y);
     }
@@ -6533,9 +6536,6 @@ body:not(.touch-mode).police-search-active #carRadio {
           c.cop = false;
           c.ai = true;
         });
-    }
-    function clearLine(a, b) {
-      return clearSight(a, b);
     }
     function aheadOf(t, seconds) {
       return {
@@ -12104,7 +12104,13 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     // END SUBSYSTEM: src/harbor.js
     // BEGIN SUBSYSTEM: src/police-feedback.js — Police action feedback
-    /** Police notices use a separate layer so mission and respray banners cannot overwrite them. */
+    /**
+     * Police action feedback
+     * Source: src/police-feedback.js
+     * Scope: shared game closure.
+     * Police notices use their own banner layer so mission and respray messages
+     * cannot overwrite them, and vice versa.
+     */
     let policeNoticeSeconds = 0;
     function showPoliceNotice(message, cleared = false) {
       const banner = getElement('policeNotice');
@@ -12150,6 +12156,7 @@ body:not(.touch-mode).police-search-active #carRadio {
     // BEGIN SUBSYSTEM: src/arsenal.js — Arsenal and knife combat
     /**
      * Arsenal and knife combat
+     * Source: src/arsenal.js
      * Scope: shared game closure. Firearm indices 0–5 remain stable for existing saves.
      * Every owned firearm is equipped; there is no separate storage or carrying limit.
      * The permanent knife is separate from the six firearm ammunition records.
@@ -12736,9 +12743,6 @@ body:not(.touch-mode).police-search-active #carRadio {
       return DOCKS.some(
         (d) => x - r >= d.x && x + r <= d.x + d.w && y - r >= d.y && y + r <= d.y + d.h,
       );
-    }
-    function waterAt(x, y) {
-      return !landAt(x, y);
     }
     function boatFits(c, x = c.x, y = c.y, a = c.a) {
       const shape = {
@@ -16573,12 +16577,6 @@ body:not(.touch-mode).police-search-active #carRadio {
     }
     function shipHull(ship) {
       return { x: ship.x, y: ship.y, hx: ship.l / 2, hy: ship.w / 2, a: ship.a };
-    }
-    function shipAt(x, y, r = 0) {
-      return LINERS.find((ship) => {
-        const { u, v } = deckLocal(ship, x, y);
-        return Math.abs(u) < ship.l / 2 + r && Math.abs(v) < hullHalfBeam(ship, u) + r;
-      });
     }
     // Sterns carry a boarding platform at the waterline; that is the way aboard.
     function shipPlatform(ship) {
@@ -25928,14 +25926,25 @@ body:not(.touch-mode).police-search-active #carRadio {
      */
     /**
      * RAILWAY
-     * The line is a perimeter system, not a street tram: it runs along the
-     * shoreline, out over Marlow Bay on its own viaduct and across the marina
-     * mouth, so it crosses the road causeways as a flyover and never shares one.
+     * A perimeter system, not a street tram, and all of it on the city's eastern
+     * side: the Bay Line leaves the cruise terminal and runs the length of Marlow
+     * Bay on its own viaduct, swinging ashore at North Harbour and Exchange Quay
+     * before crossing to the Keys; the Coast Line carries on south from Exchange
+     * Quay, touches land at Battery Point and heads out to the county. It crosses
+     * the road causeways as a flyover and never shares one, and it never runs
+     * along a street.
+     *
      * Authored points are the route's shape; `smoothTrack` rounds every corner
      * into an arc before anything else reads them, so the decks, the trains, the
      * piers and the map all follow the same easy curves. Junction points -- the
      * places where two lines or a station meet the track -- are held fixed so the
-     * rounding can never pull the network apart.
+     * rounding can never pull the network apart, which is also why every station
+     * must be an authored vertex on its line rather than a point that happens to
+     * fall near it.
+     *
+     * Trains brake for the next stop, never for the next point: rounding the
+     * corners fills the path with points a few units apart, and braking for those
+     * held the train to a crawl round every curve.
      */
     function smoothTrack(points, fixed, radius = 240, steps = 7) {
       if (points.length < 3) return points.map((p) => p.slice());
@@ -28960,12 +28969,6 @@ body:not(.touch-mode).police-search-active #carRadio {
         return tx;
       }
       const wallTextures = [0, 1, 2, 3].map((i) => texture(visualAssets.architecture, i));
-      const roofTexture = texture(visualAssets.ground, 3, 2, 2);
-      const roofMat = new Three.MeshStandardMaterial({
-        map: roofTexture,
-        color: '#7d838a',
-        roughness: 0.88,
-      });
       // Subtle environment reflections across paintwork, chrome and glass.
       const faces = [];
       for (let i = 0; i < 6; i++) {
@@ -31377,7 +31380,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       tunnelRoofMat.transparent = true;
       for (const b of UNDERPASS_WALLS)
         box(tunnelGroup, b.x + b.w / 2, b.height / 2, b.y + b.h / 2, b.w, b.height, b.h, tunnelConcrete);
-      const tunnelRoof = box(tunnelGroup, 2688, 55.5, 2940, 152, 7, 320, tunnelRoofMat);
+      box(tunnelGroup, 2688, 55.5, 2940, 152, 7, 320, tunnelRoofMat);
       for (const z of [2780, 3100]) {
         box(tunnelGroup, 2688, 46, z, 152, 12, 10, tunnelTrim);
         for (const x of [2618, 2758]) box(tunnelGroup, x, 23, z, 12, 46, 15, tunnelConcrete);
@@ -31542,7 +31545,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         });
       }
       /**
-       * CENTRAL COMMONS FEATURES
+       * CENTRAL GARDEN FEATURES
        * Built from the shared COMMONS plan in renewal.js so collision, painting
        * and meshes agree: lake with rowboats and a fountain jet, boathouse and
        * dock, station plaza fountain, bandshell with lawn seating, rose-garden
@@ -31866,7 +31869,6 @@ body:not(.touch-mode).police-search-active #carRadio {
         transparent: true,
         opacity: 0.6,
       });
-      const sportsLineMaterial = new Three.LineBasicMaterial({ color: '#f4f1db' });
       const sportsBallSeamMaterial = new Three.LineBasicMaterial({ color: '#473727' });
 
       // Draw nets and ball seams in one geometry per object, instead of individual
@@ -33158,7 +33160,6 @@ body:not(.touch-mode).police-search-active #carRadio {
         group.userData.windowMat = windowMat;
         return group;
       }
-      const railNoStop = new Three.Vector3();
       function updateTransitVisuals() {
         const night = nightAmount;
         for (const t of railTrains) {
@@ -35525,18 +35526,13 @@ body:not(.touch-mode).police-search-active #carRadio {
        * Weather and sky visuals
        * Source: src/weather3d.js
        * Scope: createCityRenderer() closure.
-       * Rain, wet roads, lightning, and the cloud deck you can fly into.
+       * Rain, wet roads, lightning, cloud shadows and the deck you can fly into.
        */
       /**
        * RAIN
        * One LineSegments object of short streaks kept in a box around the camera.
        * Each drop falls and is wrapped back to the top of the box, so the same few
        * thousand vertices cover the whole city and nothing is allocated per frame.
-       *
-       * CLOUD DECK
-       * A broken layer of soft billboards at flying height whose coverage follows
-       * the weather. Climb into it and the fog closes in, which is the only honest
-       * altitude cue an overhead camera can give you.
        */
       const RAIN_DROPS = touchEnabled() ? 1100 : 2600,
         RAIN_BOX = 1500,
@@ -35861,7 +35857,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         );
         box(body, 8, 17, 0, 1.3, 12, 23, paint);
         box(body, 5, 21, 0, 19, 1, 22, paint);
-        const boom = rod(body, new Three.Vector3(-15, 12, 0), new Three.Vector3(-42, 18, 0), 2.4, paint);
+        rod(body, new Three.Vector3(-15, 12, 0), new Three.Vector3(-42, 18, 0), 2.4, paint);
         box(body, -40, 23, 0, 10, 13, 1.6, paint);
         box(body, -35, 17, 0, 8, 1.6, 21, paint);
         box(body, -4, 24, 0, 16, 6, 13, paint);
@@ -36034,7 +36030,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           box(b, 7, 14, side * 3, 1, 1, 4, rubber);
         }
         if (!cruiser) {
-          const fairing = mesh(sphereGeo, model.paint, b, 5, 9, 0, 5, 4, 4);
+          mesh(sphereGeo, model.paint, b, 5, 9, 0, 5, 4, 4);
           box(b, 7, 15, 0, 0.8, 4, 5, glass);
         } else {
           box(b, -8, 8, 0, 7, 3, 7, rubber);
@@ -36844,12 +36840,6 @@ body:not(.touch-mode).police-search-active #carRadio {
           special: true,
           plane: true,
         };
-      }
-      function makeJetPlane(vehicle) {
-        return makePlane(vehicle);
-      }
-      function makeCourierPlane(vehicle) {
-        return makePlane(vehicle);
       }
       // END SUBSYSTEM: src/plane3d.js
       function makeVehicle(vehicle) {
@@ -38528,7 +38518,7 @@ body:not(.touch-mode).police-search-active #carRadio {
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "28.1.0",
+      version: "28.1.1",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -217621,7 +217611,14 @@ Ay38w/Sb7S/o7eSR4iLi5OMa5/DrgvLe+AP+lAKZBWoHVwhECXcK7wqYCqIJZglyCDoHwQYKBtYE0AIO
 8bP1
 </script>
     <script id="asset-loader">
-      // Each reference points to a non-executable media block above.
+      /**
+       * Media loader
+       * Source: src/asset-loader.js
+       * Scope: top level of the built page, after the media blocks.
+       * Decodes the labelled Base64 blocks into images and audio buffers and then
+       * calls startDeadEndCity(). Each reference below points to a non-executable
+       * media block above it in the file.
+       */
 const embeddedAssetReferences = {
   "architecture": "media-architecture",
   "ground": "media-ground",

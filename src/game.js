@@ -728,6 +728,11 @@
      * step, bullet and spawn test). Buildings are bucketed into 256-unit cells once
      * after buildWorld() so each query touches a handful of candidates instead of
      * every building in the city. Rebuilt by buildBuildingGrid() when buildings change.
+     *
+     * solid()'s fourth argument, `overWater`, is what lets the player swim: with it
+     * set, open water stops counting as solid while everything else still does. Only
+     * moveBody() passes it, and only for the player on foot -- traffic and
+     * pedestrians must keep to the land.
      */
     const BUILDING_CELL = 256,
       buildingGrid = new Map(),
@@ -1534,23 +1539,6 @@
         }),
       );
     }
-    function oldDistrict() {
-      if (
-        player.x < 48 ||
-        player.x > WORLD_SIZE - 64 ||
-        player.y < WORLD_TOP + 48 ||
-        player.y > WORLD_SIZE - 64
-      )
-        return 'SOUTH COAST OCEAN';
-      if (player.x > RIVER.right) return player.y > 3500 ? 'BAY GARDENS' : 'RIVERSIDE';
-      if (player.x > 3290) return 'SAINT MARLOW RIVER';
-      if (player.y > 3500) return player.x < 1800 ? 'CIVIC QUARTER' : 'SOUTH HILLS';
-      if (player.x > 2700) return player.y > 2600 ? 'SOUTH PIER' : 'IRONWORKS';
-      if (player.y > 2600) return 'SOUTH COAST';
-      if (player.x > 1800) return 'EASTSIDE';
-      if (player.y > 1500) return 'PALM HEIGHTS';
-      return 'OLD QUARTER';
-    }
     function district() {
       return districtAt(player.x, player.y);
     }
@@ -2029,9 +2017,6 @@
           c.cop = false;
           c.ai = true;
         });
-    }
-    function clearLine(a, b) {
-      return clearSight(a, b);
     }
     function aheadOf(t, seconds) {
       return {
@@ -4467,7 +4452,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "28.1.0",
+      version: "28.1.1",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),

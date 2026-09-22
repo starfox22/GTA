@@ -14,7 +14,7 @@
       tunnelRoofMat.transparent = true;
       for (const b of UNDERPASS_WALLS)
         box(tunnelGroup, b.x + b.w / 2, b.height / 2, b.y + b.h / 2, b.w, b.height, b.h, tunnelConcrete);
-      const tunnelRoof = box(tunnelGroup, 2688, 55.5, 2940, 152, 7, 320, tunnelRoofMat);
+      box(tunnelGroup, 2688, 55.5, 2940, 152, 7, 320, tunnelRoofMat);
       for (const z of [2780, 3100]) {
         box(tunnelGroup, 2688, 46, z, 152, 12, 10, tunnelTrim);
         for (const x of [2618, 2758]) box(tunnelGroup, x, 23, z, 12, 46, 15, tunnelConcrete);

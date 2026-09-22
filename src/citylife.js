@@ -378,9 +378,6 @@
         (d) => x - r >= d.x && x + r <= d.x + d.w && y - r >= d.y && y + r <= d.y + d.h,
       );
     }
-    function waterAt(x, y) {
-      return !landAt(x, y);
-    }
     function boatFits(c, x = c.x, y = c.y, a = c.a) {
       const shape = {
         ...vehicleShape(c, 1.5),

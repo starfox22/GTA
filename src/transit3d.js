@@ -335,7 +335,6 @@
         group.userData.windowMat = windowMat;
         return group;
       }
-      const railNoStop = new Three.Vector3();
       function updateTransitVisuals() {
         const night = nightAmount;
         for (const t of railTrains) {

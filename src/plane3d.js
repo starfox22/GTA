@@ -360,10 +360,4 @@
           plane: true,
         };
       }
-      function makeJetPlane(vehicle) {
-        return makePlane(vehicle);
-      }
-      function makeCourierPlane(vehicle) {
-        return makePlane(vehicle);
-      }
       // END SUBSYSTEM: src/plane3d.js

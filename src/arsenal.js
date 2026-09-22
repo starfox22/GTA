@@ -1,6 +1,7 @@
     // BEGIN SUBSYSTEM: src/arsenal.js — Arsenal and knife combat
     /**
      * Arsenal and knife combat
+     * Source: src/arsenal.js
      * Scope: shared game closure. Firearm indices 0–5 remain stable for existing saves.
      * Every owned firearm is equipped; there is no separate storage or carrying limit.
      * The permanent knife is separate from the six firearm ammunition records.

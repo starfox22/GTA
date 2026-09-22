@@ -263,12 +263,6 @@
         return tx;
       }
       const wallTextures = [0, 1, 2, 3].map((i) => texture(visualAssets.architecture, i));
-      const roofTexture = texture(visualAssets.ground, 3, 2, 2);
-      const roofMat = new Three.MeshStandardMaterial({
-        map: roofTexture,
-        color: '#7d838a',
-        roughness: 0.88,
-      });
       // Subtle environment reflections across paintwork, chrome and glass.
       const faces = [];
       for (let i = 0; i < 6; i++) {

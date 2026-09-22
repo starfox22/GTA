@@ -3,18 +3,13 @@
        * Weather and sky visuals
        * Source: src/weather3d.js
        * Scope: createCityRenderer() closure.
-       * Rain, wet roads, lightning, and the cloud deck you can fly into.
+       * Rain, wet roads, lightning, cloud shadows and the deck you can fly into.
        */
       /**
        * RAIN
        * One LineSegments object of short streaks kept in a box around the camera.
        * Each drop falls and is wrapped back to the top of the box, so the same few
        * thousand vertices cover the whole city and nothing is allocated per frame.
-       *
-       * CLOUD DECK
-       * A broken layer of soft billboards at flying height whose coverage follows
-       * the weather. Climb into it and the fog closes in, which is the only honest
-       * altitude cue an overhead camera can give you.
        */
       const RAIN_DROPS = touchEnabled() ? 1100 : 2600,
         RAIN_BOX = 1500,

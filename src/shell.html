@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 28.1.0
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 28.1.1
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
 Edit the named source sections here, or use the modular source ZIP.
@@ -155,7 +155,14 @@ AUDIT CONTRACTS
 - 512 world units = 100 meters. Timers use seconds; frame timestamps use ms.
 - entityElevation() is authoritative for floor, terrain and aircraft altitude.
 - Physics uses 1/120-second steps; terrain uses shared Float32 triangles.
-- Compact entity keys (hp, a, vx/vy, w/l, hx/hy) are documented data contracts.
+- Compact entity keys (hp, a, vx/vy, w/l, hx/hy, sinkDepth) are data contracts.
+- The player is in one carrier at a time and they are mutually exclusive: car, roof,
+  deck, parachute, coaster, transitRide, taxiRide, swimming. Use teleportPlayer()
+  to move the player, since it lets go of whichever one is holding them.
+- solid(x, y, r, overWater) is the one collision test; the fourth argument exists
+  so the player can swim and is passed by nothing but moveBody(), on foot.
+- All damage goes through ballisticDamage(); entityElevation() is the only way to
+  compare heights across roofs, terrain, decks, sinking cars and aircraft.
 - Browser localStorage holds campaign/audio settings; there is no game server.
 - Media blocks name original paths, byte counts and SHA-256 hashes.
 - The source ZIP includes original media, tests, build.py and SOURCE_GUIDE.md.

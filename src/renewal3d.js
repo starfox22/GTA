@@ -126,7 +126,7 @@
         });
       }
       /**
-       * CENTRAL COMMONS FEATURES
+       * CENTRAL GARDEN FEATURES
        * Built from the shared COMMONS plan in renewal.js so collision, painting
        * and meshes agree: lake with rowboats and a fountain jet, boathouse and
        * dock, station plaza fountain, bandshell with lawn seating, rose-garden

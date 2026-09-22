@@ -107,12 +107,6 @@
     function shipHull(ship) {
       return { x: ship.x, y: ship.y, hx: ship.l / 2, hy: ship.w / 2, a: ship.a };
     }
-    function shipAt(x, y, r = 0) {
-      return LINERS.find((ship) => {
-        const { u, v } = deckLocal(ship, x, y);
-        return Math.abs(u) < ship.l / 2 + r && Math.abs(v) < hullHalfBeam(ship, u) + r;
-      });
-    }
     // Sterns carry a boarding platform at the waterline; that is the way aboard.
     function shipPlatform(ship) {
       return deckWorld(ship, -ship.l / 2 - 22, 0);

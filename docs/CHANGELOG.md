@@ -1,5 +1,28 @@
 # Changelog
 
+## 28.1.1 — Handover pass
+
+No gameplay change. The repository is left in a state another person or model can
+pick up cold.
+
+- `CLAUDE.md` at the root is the start-here file: the build loop, the one-closure
+  rule and what it implies, the invariants that break things silently rather than
+  loudly (axis lists, the mutually exclusive player carriers, the damage and
+  elevation funnels, `solid`'s fourth argument), how to drive the game headlessly
+  through `window.DeadEndCity`, and the two facts about the software-rendered test
+  harness that otherwise waste an afternoon.
+- `docs/SOURCE_GUIDE.md` brought back in line with the code: the grid is 11 columns
+  by 19 rows with rows running negative, the district list names the reclamation
+  quarters, Central Garden's coordinates are its current ones, and the rendering,
+  tooling and limitations sections cover weather, the esplanade and the cab.
+- Stale comments corrected where behaviour had moved on: the railway header still
+  described a route down the western shore, the weather header still described cloud
+  as billboards, and one park block was still called Central Commons.
+- Every source file now carries a header naming itself, its closure and its scope.
+- Dead code removed: `oldDistrict`, `clearLine`, `waterAt`, `shipAt`, two plane-model
+  aliases that only forwarded, three unused materials and three bindings whose value
+  was never read. Nothing in `src/` is now declared and never referenced.
+
 ## 28.1.0 — A real swimming stroke, and a shorter escape
 
 - Swimming was the walking pose held under the waterline. It is a front crawl
