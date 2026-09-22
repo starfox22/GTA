@@ -2704,6 +2704,7 @@
         updateCycling(deltaSeconds);
         updateWeather(deltaSeconds);
         updateSwimming(deltaSeconds);
+        updateMarinaFooting();
         updateSinking(deltaSeconds);
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
@@ -4816,6 +4817,25 @@
         c.vy = Math.sin(c.a) * speed;
         c.speed = speed;
         return this.ride();
+      },
+      // Where the player stands aboard the superyacht (null when not aboard), and a
+      // shortcut onto her swim platform so tests can go straight to the decks.
+      yacht: () => superyachtDeckState(),
+      boardYacht() {
+        teleportPlayer(SUPERYACHT.board.x, SUPERYACHT.board.y);
+        boardLiner(SUPERYACHT);
+        return superyachtDeckState();
+      },
+      // Walk the player on foot `distance` units toward `heading` (radians, 0 is
+      // east) in small steps through the normal collision code. Headless frames
+      // are far too slow to walk anywhere by holding a key.
+      walk(heading, distance = 50) {
+        for (let i = 0; i < Math.ceil(distance / 2); i++) {
+          moveBody(player, Math.cos(heading) * 2, Math.sin(heading) * 2, 8);
+          updateMarinaFooting();
+        }
+        player.a = heading;
+        return { x: Math.round(player.x), y: Math.round(player.y), yacht: superyachtDeckState() };
       },
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {

@@ -110,93 +110,207 @@
         model.rider = rider;
         return model;
       }
+      /**
+       * Drivable boats. Hulls are lofted by the boat kit (boats3d.js) and painted
+       * in the vehicle's colour through `model.paint`, so wear and burn-out still
+       * show; stripes, boot tops and trim are kit tints. A foam V-wake trails the
+       * stern and a bow spray and planing trim come in with speed (boatUpdate).
+       */
+      const boatWakeTexture = wakeTexture(true),
+        boatScreenGlass = new Three.MeshStandardMaterial({
+          color: '#5d7c8c',
+          roughness: 0.05,
+          metalness: 0.5,
+          transparent: true,
+          opacity: 0.55,
+        });
+      function boatWake(model, length, width, sternX) {
+        const wake = new Three.Group();
+        wake.position.set(sternX, 0.35, 0);
+        wake.userData.dynamic = true;
+        model.body.add(wake);
+        const trail = new Three.Mesh(
+          new Three.PlaneGeometry(length * 2.2, width * 2.6),
+          new Three.MeshBasicMaterial({ map: boatWakeTexture, transparent: true, opacity: 0.55, depthWrite: false }),
+        );
+        trail.rotation.x = -Math.PI / 2;
+        // The texture's V opens toward -x; its apex sits near the stern.
+        trail.position.x = -length * 0.3;
+        trail.renderOrder = 7;
+        wake.add(trail);
+        const churn = new Three.Mesh(
+          new Three.PlaneGeometry(width * 1.1, width * 0.9),
+          new Three.MeshBasicMaterial({ map: haloTx, color: '#e9f6f4', transparent: true, opacity: 0.5, depthWrite: false }),
+        );
+        churn.rotation.x = -Math.PI / 2;
+        churn.position.x = -width * 0.25;
+        churn.renderOrder = 7;
+        wake.add(churn);
+        model.wake = wake;
+        model.wakeMaterials = [trail.material, churn.material];
+        return wake;
+      }
+      // White water thrown off either side of the bow once the boat is moving.
+      function boatSpray(model, x, width) {
+        const spray = new Three.Group();
+        spray.userData.dynamic = true;
+        model.body.add(spray);
+        for (const side of [-1, 1]) {
+          const m = new Three.Mesh(
+            new Three.PlaneGeometry(width * 0.9, width * 0.5),
+            new Three.MeshBasicMaterial({ map: haloTx, color: '#f4fbfa', transparent: true, opacity: 0.5, depthWrite: false }),
+          );
+          m.rotation.x = -Math.PI / 2;
+          m.position.set(x, 0.6, side * width * 0.42);
+          m.renderOrder = 7;
+          spray.add(m);
+        }
+        model.spray = spray;
+        return spray;
+      }
+      function boatDynamics(model, plane = 0.07) {
+        model.boatUpdate = (c) => {
+          const speed = Math.abs(c.speed || 0),
+            max = vehicleSpec(c).max || 300,
+            f = clamp(speed / max, 0, 1);
+          // Planing: the bow lifts as she gets on the plane, then settles a little.
+          model.body.rotation.z += plane * Math.sin(Math.min(1, f * 1.6) * Math.PI * 0.62);
+          for (const m of model.wakeMaterials) m.opacity = 0.2 + f * 0.55;
+          if (model.spray) {
+            model.spray.visible = f > 0.18 && c.hp > 0;
+            model.spray.scale.setScalar(0.6 + f * 0.9);
+          }
+        };
+      }
       function makeBoat(vehicle) {
         const model = specialVehicle(vehicle),
           b = model.body,
-          vehicleDefinition = vehicleSpec(vehicle),
+          def = vehicleSpec(vehicle),
+          l = def.l,
+          w = def.w,
           work = vehicle.type === 'workboat';
         model.boat = true;
-        // A narrow pointed bow and broad stern, with a contrasting lower hull.
-        const hull = new Three.Shape();
-        hull.moveTo(-vehicleDefinition.l * 0.48, -vehicleDefinition.w * 0.38);
-        hull.lineTo(vehicleDefinition.l * 0.1, -vehicleDefinition.w * 0.5);
-        hull.quadraticCurveTo(
-          vehicleDefinition.l * 0.4,
-          -vehicleDefinition.w * 0.35,
-          vehicleDefinition.l * 0.5,
-          0,
-        );
-        hull.quadraticCurveTo(
-          vehicleDefinition.l * 0.4,
-          vehicleDefinition.w * 0.35,
-          vehicleDefinition.l * 0.1,
-          vehicleDefinition.w * 0.5,
-        );
-        hull.lineTo(-vehicleDefinition.l * 0.48, vehicleDefinition.w * 0.38);
-        hull.closePath();
-        const geo = new Three.ExtrudeGeometry(hull, {
-          depth: 6,
-          bevelEnabled: true,
-          bevelThickness: 2,
-          bevelSize: 1.5,
-          bevelSegments: 2,
-          steps: 1,
-        });
-        geo.rotateX(Math.PI / 2);
-        mesh(geo, model.paint, b, 0, 7, 0);
-        const deckMaterial = mat('#d6d0bb');
-        deckMaterial.side = Three.DoubleSide;
-        const deck = mesh(new Three.ShapeGeometry(hull), deckMaterial, b, 0, 7.2, 0);
-        deck.rotation.x = Math.PI / 2;
-        box(b, -7, 9, 0, 20, 3, vehicleDefinition.w * 0.62, mat('#dcded7'));
-        box(b, 3, 13, 0, 1, 7, vehicleDefinition.w * 0.65, glass);
-        for (const side of [-1, 1]) {
-          box(b, -7, 11, side * vehicleDefinition.w * 0.29, 22, 3, 1, model.paint);
-          box(b, -11, 11, side * 5, 5, 3, 4, rubber);
-          rod(
-            b,
-            new Three.Vector3(8, 9, side * vehicleDefinition.w * 0.39),
-            new Three.Vector3(vehicleDefinition.l * 0.35, 9, side * 4),
-            0.35,
-            chrome,
-          );
-        }
-        box(b, -vehicleDefinition.l * 0.5, 5, 0, 5, 9, 4, darkMetal);
-        box(b, -vehicleDefinition.l * 0.53, 1, 0, 3, 1, 8, chrome);
-        if (work) {
-          box(b, -1, 16, 0, 22, 15, vehicleDefinition.w * 0.57, mat('#d9d4be'));
-          box(b, 10.1, 18, 0, 0.4, 7, vehicleDefinition.w * 0.45, glass);
-          for (const side of [-1, 1])
-            box(b, 0, 18, side * vehicleDefinition.w * 0.292, 16, 7, 0.3, glass);
-          box(b, 0, 24, 0, 25, 2, vehicleDefinition.w * 0.68, model.paint);
-          box(b, -3, 31, 0, 0.7, 13, 0.7, chrome);
-          box(b, -6, 29, 0, 8, 0.6, 0.6, chrome);
+        const cream = tint('#efe9dc', 'matte'),
+          navy = tint('#1e2f45', 'gloss'),
+          bottom = tint('#1b1d20', 'satin');
+        if (!work) {
+          // STINGRAY: a deep-vee sport runabout with a wraparound screen.
+          const spec = {
+            length: l,
+            beam: w,
+            draft: 3.5,
+            form: { transom: 0.86, maxAt: -0.12, entry: 1.6, bowShape: 0.7 },
+            sheer: [
+              [-0.5, 8.2],
+              [0.15, 9.2],
+              [0.5, 10.6],
+            ],
+            rake: 0.17,
+            forefoot: 0.22,
+            keelRise: 0.4,
+            bilge: 1.1,
+            flare: 0.38,
+            colors: { bottom: '#ffffff', boot: '#ffffff', top: '#ffffff' },
+            stations: 22,
+          };
+          mesh(loftHull(spec), model.paint, b, 0, 0, 0);
+          hullBand(b, spec, -4, 0.8, bottom, 0.12);
+          hullBand(b, spec, 5.2, 6.6, navy, 0.14, -0.5, 0.42);
+          hullBand(b, spec, 3.6, 4.2, tint('#c7392f', 'gloss'), 0.14, -0.5, 0.35);
+          // Foredeck and engine deck in gelcoat, a sunken teak cockpit between them.
+          hullDeck(b, spec, 8.2, l * 0.06, l / 2 - 1, 0.6, tint('#e6e3da', 'matte'));
+          hullDeck(b, spec, 8.2, -l / 2, -l * 0.34, 0.6, tint('#e6e3da', 'matte'));
+          hullDeck(b, spec, 4.6, -l * 0.34, l * 0.06, 0.8, kitTeak);
+          box(b, l * 0.06, 6.4, 0, 0.8, 3.6, hullBeamAt(spec, l * 0.06, 8) * 2 - 1, tint('#e6e3da', 'matte'));
+          box(b, -l * 0.34, 6.4, 0, 0.8, 3.6, hullBeamAt(spec, -l * 0.34, 8) * 2 - 1, tint('#e6e3da', 'matte'));
+          // Bucket seats at the helm, a bench across the back of the cockpit.
           for (const side of [-1, 1]) {
-            const ring = mesh(
-              new Three.TorusGeometry(3, 0.7, 6, 14),
-              mat('#c67543'),
-              b,
-              -8,
-              12,
-              side * vehicleDefinition.w * 0.4,
-            );
-            ring.rotation.y = Math.PI / 2;
+            box(b, -l * 0.04, 6.4, side * w * 0.17, 5.4, 3.6, 5.8, cream);
+            box(b, -l * 0.04 - 2.7, 9.2, side * w * 0.17, 1.6, 5.6, 5.8, cream);
+            box(b, -l * 0.04 - 2.7, 11.6, side * w * 0.17, 1.8, 0.8, 5.9, navy);
           }
+          box(b, -l * 0.29, 6.4, 0, 6, 3.6, w * 0.66, cream);
+          box(b, -l * 0.325, 9.4, 0, 1.8, 5, w * 0.66, cream);
+          box(b, l * 0.035, 7.4, w * 0.17, 3.4, 5.6, 7, tint('#2a2f35', 'satin'));
+          const helm = mesh(new Three.TorusGeometry(1.6, 0.3, 6, 14), tint('#1a1c1f', 'satin'), b, l * 0.015, 10.6, w * 0.17);
+          helm.rotation.y = Math.PI / 2;
+          helm.rotation.z = 0.5;
+          // Wraparound windscreen: a raked band of smoked glass on a curved plan.
+          const arc = [],
+            top = [];
+          for (let i = 0; i <= 10; i++) {
+            const a = (i / 10 - 0.5) * Math.PI * 0.85,
+              r = w * 0.4;
+            arc.push([l * 0.08 + Math.cos(a) * r * 0.45, Math.sin(a) * r]);
+            top.push([l * 0.08 + Math.cos(a) * r * 0.45 - 3.6, Math.sin(a) * r * 0.94]);
+          }
+          mesh(prismGeometry(arc, top, 8.4, 13, false), boatScreenGlass, b, 0, 0, 0);
+          for (const p of [arc[0], arc[10]]) box(b, p[0] - 1.8, 10.7, p[1], 0.6, 4.6, 0.6, chrome);
+          // Bow sun pad, engine hatch and swim platform aft.
+          box(b, l * 0.3, 9.2, 0, l * 0.16, 1.4, w * 0.36, cream);
+          box(b, l * 0.3, 10, 0, l * 0.02, 0.6, w * 0.36, navy);
+          box(b, -l * 0.42, 9.1, 0, l * 0.12, 1.6, w * 0.62, cream);
+          deckSlab(b, rectOutline(-l / 2 - 4, -l / 2 + 0.5, -w * 0.36, w * 0.36), 3.2, 1.2, kitTeak, tint('#f2f2ee'));
+          box(b, -l / 2 - 1, -1.5, 0, 3, 5, 2.4, tint('#2a2d31', 'satin'));
+          for (const side of [-1, 1]) {
+            railing(b, [[l * 0.18, side * w * 0.34], [l * 0.42, side * w * 0.14], [l * 0.49, 0]], 8.2, 2.6, { spacing: 7, material: chrome });
+            box(b, l * 0.22, 9, side * w * 0.36, 1.6, 0.6, 0.8, chrome);
+          }
+          box(b, l * 0.47, 11.2, 0, 0.8, 1, 1.6, warmLamp);
+          boatWake(model, l, w, -l / 2);
+          boatSpray(model, l * 0.22, w);
+          boatDynamics(model, 0.075);
+        } else {
+          // HARBOR LAUNCH: round-bilged workboat, wheelhouse, tyre fenders, tow bitt.
+          const spec = {
+            length: l,
+            beam: w,
+            draft: 6,
+            form: { transom: 0.8, maxAt: -0.05, entry: 1.9, bowShape: 0.72 },
+            sheer: [
+              [-0.5, 10],
+              [0.1, 10.5],
+              [0.5, 15],
+            ],
+            rake: 0.06,
+            forefoot: 0.18,
+            keelRise: 0.3,
+            bilge: 2.3,
+            flare: 0.25,
+            colors: { bottom: '#ffffff', boot: '#ffffff', top: '#ffffff' },
+            stations: 22,
+          };
+          mesh(loftHull(spec), model.paint, b, 0, 0, 0);
+          hullBand(b, spec, -6, 0.8, tint('#7c2e28', 'satin'), 0.12);
+          hullBand(b, spec, 8.4, 10.2, tint('#1b1d20', 'satin'), 0.5);
+          hullDeck(b, spec, 9.6, -l / 2, l / 2 - 1, 0.8, kitTeakPale);
+          const house = deckOutline(-l * 0.14, l * 0.16, w * 0.33, l * 0.07, 2.4);
+          deckhouse(b, house, 9.6, 22, { paint: tint('#efe9dc'), rake: 2, glazing: kitBridgeGlass, glassFrom: 0.5, glassTo: 0.86 });
+          deckSlab(b, offsetOutline(house, 1.5), 23.2, 1.2, tint('#efe9dc'), tint('#efe9dc'));
+          box(b, l * 0.02, 29, 0, 0.8, 12, 0.8, tint('#d8d8d0', 'metal'));
+          box(b, l * 0.02, 33, 0, 0.8, 0.8, 7, tint('#d8d8d0', 'metal'));
+          box(b, l * 0.02, 35.4, 0, 1.2, 1.2, 1.2, warmLamp);
+          mesh(cylinderGeo, tint('#2a2d31', 'satin'), b, -l * 0.06, 24.8, 0, 1.6, 2, 1.6);
+          // Towing bitt and hook aft, tyre fenders all round.
+          box(b, -l * 0.34, 12.5, 0, 2.4, 6, 2.4, tint('#2a2d31', 'satin'));
+          box(b, -l * 0.34, 14.6, 0, 1.4, 1.4, 8, tint('#2a2d31', 'satin'));
+          for (const f of [-0.36, -0.18, 0, 0.18, 0.34])
+            for (const side of [-1, 1]) {
+              const u = l * f,
+                tyre = mesh(new Three.TorusGeometry(2.3, 1, 6, 12), rubber, b, u, 7.2, side * (hullBeamAt(spec, u, 8) + 1));
+              tyre.rotation.y = Math.PI / 2;
+            }
+          for (const side of [-1, 1]) {
+            const ring = mesh(new Three.TorusGeometry(2.8, 0.7, 6, 14), tint('#e46a2a', 'gloss'), b, -l * 0.02, 17, side * (w * 0.33 + 0.4));
+            ring.rotation.y = 0;
+            railing(b, hullEdge(spec, 9.6, -l * 0.46, -l * 0.16, 1, 8).map(([u, v]) => [u, side * v]), 9.6, 4, { spacing: 8 });
+          }
+          box(b, l * 0.46, 15, 0, 1, 1, 1.4, warmLamp);
+          boatWake(model, l, w, -l / 2);
+          boatSpray(model, l * 0.28, w);
+          boatDynamics(model, 0.04);
         }
-        const wake = new Three.Mesh(
-          new Three.PlaneGeometry(vehicleDefinition.l * 1.1, vehicleDefinition.w * 1.3),
-          new Three.MeshBasicMaterial({
-            map: haloTx,
-            color: '#d2e4dc',
-            transparent: true,
-            opacity: 0.3,
-            depthWrite: false,
-          }),
-        );
-        wake.rotation.x = -Math.PI / 2;
-        wake.position.set(-vehicleDefinition.l * 0.6, 0.3, 0);
-        b.add(wake);
-        model.wake = wake;
+        kitMerge(b);
         return model;
       }
       function makeTruck(c) {
@@ -290,47 +404,65 @@
           b = model.body;
         model.boat = true;
         model.jetski = true;
-        mesh(bodyGeo(29, 12, 5), model.paint, b, 0, 0, 0);
-        mesh(sphereGeo, model.paint, b, 7, 7, 0, 8, 4, 5);
-        box(b, -5, 7, 0, 12, 2, 4, rubber);
-        box(b, 7, 10, 0, 1, 2, 7, darkMetal);
-        box(b, 8, 9, 0, 4, 1, 6, glass);
-        box(b, -14, 4, 0, 2, 2, 3, darkMetal);
+        // RIPTIDE: a short, fat planing hull with a stepped seat and handlebar pod.
+        const spec = {
+          length: 29,
+          beam: 12,
+          draft: 1.8,
+          form: { transom: 0.8, maxAt: -0.15, entry: 1.5, bowShape: 0.7 },
+          sheer: [
+            [-0.5, 4.2],
+            [0.2, 5.2],
+            [0.5, 5.8],
+          ],
+          rake: 0.26,
+          forefoot: 0.2,
+          keelRise: 0.3,
+          bilge: 1.15,
+          flare: 0.3,
+          colors: { bottom: '#ffffff', boot: '#ffffff', top: '#ffffff' },
+          stations: 16,
+        };
+        mesh(loftHull(spec), model.paint, b, 0, 0, 0);
+        hullBand(b, spec, -2, 1.6, tint('#f2f2ee', 'gloss'), 0.1);
+        hullBand(b, spec, 2.6, 3.2, tint('#1b1d20', 'gloss'), 0.12);
+        hullDeck(b, spec, 4.3, -14.5, 14, 0.6, tint('#23272b', 'matte'));
+        // Nose cowl sweeping up to the handlebar pod.
+        mesh(sphereGeo, model.paint, b, 6, 6, 0, 8, 3.2, 5);
+        box(b, 3.2, 8, 0, 3, 2.4, 4.2, model.paint);
+        const screen = box(b, 5.4, 9.4, 0, 0.3, 2.2, 4, kitGlass);
+        screen.rotation.z = 0.7;
+        box(b, 2.6, 9.6, 0, 1, 0.8, 9, tint('#1b1d20', 'satin'));
+        for (const side of [-1, 1]) box(b, 2.6, 9.6, side * 4.6, 1.4, 1.2, 1.4, tint('#1b1d20', 'matte'));
+        // Seat and footwells.
+        box(b, -5, 6.6, 0, 13, 2.2, 4.2, tint('#15181b', 'matte'));
+        box(b, -5, 7.8, 0, 11, 0.6, 3.6, tint('#2c3136', 'matte'));
+        box(b, -13.5, 3.9, 0, 3, 1, 9, tint('#2c3136', 'matte'));
+        box(b, -14.8, 1.2, 0, 1.4, 1.6, 2.4, tint('#2a2d31', 'satin'));
         const rider = new Three.Group();
+        rider.userData.dynamic = true;
         b.add(rider);
         box(rider, -2, 12, 0, 4, 7, 6, mat('#9f7545'));
+        box(rider, -2, 12.5, 0, 4.4, 5, 6.4, mat('#e46a2a'));
         mesh(sphereGeo, mat('#b69880'), rider, 0, 18, 0, 2, 2.5, 2);
         for (const side of [-1, 1]) {
-          rod(
-            rider,
-            new Three.Vector3(-1, 14, side * 3),
-            new Three.Vector3(7, 10, side * 3),
-            0.9,
-            mat('#b69880'),
-          );
-          rod(
-            rider,
-            new Three.Vector3(-5, 9, side * 2),
-            new Three.Vector3(-2, 5, side * 4),
-            1.1,
-            mat('#28343f'),
-          );
+          rod(rider, new Three.Vector3(-1, 14, side * 3), new Three.Vector3(2.6, 9.8, side * 4), 0.9, mat('#b69880'));
+          rod(rider, new Three.Vector3(-5, 9, side * 2), new Three.Vector3(-2, 5, side * 4), 1.1, mat('#28343f'));
         }
         model.rider = rider;
-        const wake = new Three.Mesh(
-          new Three.PlaneGeometry(50, 24),
-          new Three.MeshBasicMaterial({
-            map: haloTx,
-            color: '#c5e3dc',
-            transparent: true,
-            opacity: 0.42,
-            depthWrite: false,
-          }),
+        boatWake(model, 34, 13, -14.5);
+        boatSpray(model, 4, 13);
+        // A rooster tail of spray kicked up astern at speed.
+        const tail = new Three.Mesh(
+          new Three.PlaneGeometry(22, 8),
+          new Three.MeshBasicMaterial({ map: haloTx, color: '#f4fbfa', transparent: true, opacity: 0.55, depthWrite: false }),
         );
-        wake.rotation.x = -Math.PI / 2;
-        wake.position.set(-26, 0.2, 0);
-        b.add(wake);
-        model.wake = wake;
+        tail.rotation.x = -Math.PI / 2;
+        tail.position.set(-8, 1.4, 0);
+        model.wake.add(tail);
+        model.wakeMaterials.push(tail.material);
+        boatDynamics(model, 0.06);
+        kitMerge(b);
         return model;
       }
 

@@ -79,6 +79,8 @@ something, never a generic code-evaluation hook.
 | `stats()` | Per-frame CPU timings, draw calls, triangles |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
+| `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
+| `walk(heading, distance)` | Walk on foot through the real collision code (headless frames are too slow for keys) |
 
 ## Conventions
 

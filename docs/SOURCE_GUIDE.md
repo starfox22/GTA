@@ -51,6 +51,7 @@ Game closure (in include order):
 | harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot (front shutter, back door and the drop: `beginDepotDrop`, `depotShutterDown`, `updateDepotDrop`) |
 | police-feedback.js | Wanted-level status chips (NEED TO LOSE POLICE, POLICE CLEARED) and delivery blocking |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
+| marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan, liners, deck walking |
 | arsenal.js | Weapon ownership, arsenal UI, knife |
 | citylife.js | Clock, `PLACES` (businesses), officers, police routing, `daylight()` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate` |
@@ -69,8 +70,9 @@ Game closure (in include order):
 Renderer fragments (inside `createCityRenderer()`): cityscape3d (buildings, roofs, shopfronts,
 street furniture, night windows), sidejobs3d (rings/devices), garage3d, landmarks3d, civic3d
 (time-of-day palette, businesses), air-cover3d, renewal3d, sports3d, transit3d, ecology3d,
-world3d (water shader, palms, airport, rooftop bar), county3d, harbor3d (signals, depot,
-helicopter searchlight), helicopter3d, vehicles3d, plane3d.
+world3d (water shader, palms, airport, rooftop bar), county3d, boats3d (the boat kit),
+harbor3d (signals, depot, helicopter searchlight, the container ship), marina3d (marina,
+superyacht, terminal, liners), helicopter3d, vehicles3d, plane3d.
 
 ## 4. The city layout
 
@@ -125,6 +127,52 @@ helicopter searchlight), helicopter3d, vehicles3d, plane3d.
 - `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
   helipads, docks, ships, props, static colliders); `docs/audit/world-layout.md` describes the
   overlap audit run on it.
+
+## 4b. Harbor Point, the superyacht and the boats
+
+Harbor Point marina is the basin cut into the north-west reclamation (`MARINA` in marina.js,
+x 672..1528, y -4128..-3300). Four finger pontoons off the south quay carry sixteen moored
+boats; `MARINA_BERTHS` lists `[finger, side, distance along, design]` and each design's `type`
+picks its builder in `MARINA_BUILDERS` (marina3d.js): sloop, trawler, flybridge, launch,
+explorer, dayCruiser, catamaran, sportfisher, ketch, centerConsole, megayacht, sportYacht, gulet,
+racer, commuter, runabout. To add a boat, add a berth with a new design and, if needed, a
+builder; names are painted on the transom automatically.
+
+**M/Y AURELIA** (`SUPERYACHT`, marina.js) is a 105 m superyacht moored stern-to the west quay at
+(970, -3950), bow east. Walk east along the quay at y -3950 onto the passerelle (or press E by
+it) to board; walking back off the passerelle, or E on the swim platform, goes ashore.
+
+- Frame: `deckLocal()`/`deckWorld()` convert between the map and the ship frame (u forward,
+  v to starboard). The hull plan is `hullPlanFraction(SUPERYACHT.form, t)`, shared by the
+  walkable main deck and the lofted hull.
+- `levels[i]` are the walkable decks with their surface height `z`: 0 swim platform, 1 main
+  deck (follows the hull inside the bulwark), 2 upper, 3 bridge, 4 sun deck, 5 helipad.
+- `stairs` climb along +u from level `lo` at u0 to level `hi` at u1. Level -1 is the quay,
+  so the passerelle is just another stair. You can only step onto a stair from its ends.
+- `houses` are deckhouses (the main saloon is `open`: only its walls block, the aft doors
+  stand open). `furniture` rows (`[level, type, u, v, length, width]`) are drawn by
+  marina3d.js, block walking, and are where guests sit.
+- While aboard, `player.deck = SUPERYACHT`, `player.deckLevel` and `player.deckStair` track
+  the deck; `player.altitude` is the deck height, so `entityElevation()` just works.
+- Cutaway: `superyachtCoverHeight()` returns the lowest deck above the player whose outline
+  covers them; `updateMarinaVisuals()` hides that deck group and everything above it, and
+  guests on hidden decks are flagged `hidden`.
+- The liners (`LINERS`) keep their single promenade deck (`deckPointFree`); their hull plan is
+  `LINER_FORM`.
+
+**Boat kit** (boats3d.js, renderer). `loftHull(spec)` lofts a hull from a sheer line, keel line
+and plan shape with bands baked into vertex colours; `hullDeck`, `hullBand`, `hullBeamAt` and
+`hullEdge` fit decks, stripes and fittings to it. `deckhouse`, `deckSlab`, `prismGeometry` and
+`deckOutline` build superstructure; `railing`, `lounger`, `sofa`, `pool`, `hotTub`, `stairFlight`,
+`ribTender`, `radarScanner` and friends furnish it. Paint with `tint(color, finish)`: every
+tinted mesh merges into one vertex-coloured material per finish in `kitMerge(group)`, so a
+whole marina is a handful of draw calls (do not push kit-built groups into `batchGroups`: the
+static batcher drops vertex colours). Names go through one shared atlas (`kitNameBoard`);
+night lights through one `THREE.Points` cloud (`kitLight` / `kitLightCloud`).
+
+The Ironworks freighter (`buildCargoShip`, harbor3d.js) and the drivable speedboat, launch
+and jet ski (vehicles3d.js) use the same kit. Boats steer round everything in
+`marinaObstacles()` (liners, moored boats, the superyacht, her tender and the pontoons).
 
 ## 5. Missions
 
