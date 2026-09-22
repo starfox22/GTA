@@ -73,25 +73,57 @@ helicopter searchlight), helicopter3d, vehicles3d, plane3d.
 
 ## 4. The city layout
 
-- Northbank Island (west) is an 11 by 11 grid: road centres at `128 + i*512` on both axes.
-  Streets are 88 wide; the avenues at 1152, 2688, 3200 and 4736 are 112 wide with double
-  yellow centre lines. Blocks are 334 units square with a parking court or courtyard inside.
+- Northbank Island (west) is the street grid: avenue columns at `128 + i*512` (`ROAD_CENTERS`)
+  and street rows at `128 + j*512` from y -3968 to 5248 (`ROAD_ROWS`; the northern reclamation
+  has negative y). Streets are 88 wide; 1152, 2688, 3200, 4736 and the reclamation rows -1408
+  and -2944 are 112-wide avenues with double yellow centre lines. Blocks are 334 units square.
+  Streets are clipped to land, the airport, park closures, the stadium and the beach
+  (`cityStreets()` in streets.js).
+- The west shore is one straight reclaimed sea wall (x 40..52). The strip between it and the
+  first blocks (x 217) carries the esplanade on the sea side and the Shore Line viaduct above
+  the old West Quay alignment (`RAIL_CORRIDOR_X`, no longer a street). Rows run under the
+  viaduct to the esplanade.
 - Marlow Bay (the river, x 3420..3960) separates Northbank from Palm Keys (east). Bridges at
-  y = 1152 (Union St), 3200 (Harbor Ave) and 4736 (Stadium Way).
-- Districts, from `districtAt()`: Old Quarter and Ironworks Docks (north), Central Gardens and
-  Midtown, Broadway and Financial District (centre), South Bank, Battery Point and Southport
-  Airport (south); Palm Keys Art Deco, Ocean Drive, Little Havana and Coral Marina (east).
-  Zoning lives in `zoneHeight()` (heights) and the block patterns in `buildWorld()`; the
-  renderer picks facade/roof archetypes from the same district names in `archetypeFor()`.
+  y = 1152 (Union St), 3200 (Harbor Ave) and 4736 (Stadium Way), all starting on Riverbank Dr
+  (`bridgeSpan`).
+- Districts, from `districtAt()`: Harbor Point Marina, the Reclamation and North Point Financial
+  (north), Old Quarter and Ironworks Docks, Midtown, Broadway and the Exchange District, South
+  Bank, Battery Point, Southport Airport and Southport Beach (south); Palm Keys Art Deco, Ocean
+  Drive, Little Havana and Coral Marina (east). Zoning lives in `zoneHeight()` (heights) and the
+  block patterns in `buildWorld()`; the renderer picks facade/roof archetypes from the same
+  district names in `archetypeFor()`.
+- Southport Beach (`BEACH` in geography.js) is the reserved public strand on the south shore,
+  x 1740..3150, from the Marina Rd kerb (y 5306) to the water (y 5560..5810); its top edge is a
+  40-wide boardwalk (`BEACH.boardwalk`). No streets or blocks are laid on it, the esplanade
+  stops at either end, and its shore reads as 'beach'. The Oceanview Causeway crosses it at
+  x 2176. Beach life is meant to be built on this data.
 - Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
-  own roads, towns, bridges, an airport and a railway (transit.js).
-- Central Commons (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks wide and three deep;
-  the streets inside it are closed by `parkStreetClosed`, and the elevated City Line crosses
-  it with the Central Commons station. Eastside Customs garage sits on Cannery St at (1320, 2022).
+  own roads, towns, bridges and an airport.
+- The railway (transit.js, drawn by transit3d.js) runs on its own elevated right of way:
+  - SHORE LINE: Cruise Terminal (1580, -4170) -> sea viaduct round Harbor Point -> the west sea
+    wall at x 150 with Reclamation, Old Quarter and West Quay stations -> a curve across Viaduct
+    Green onto Harbor Ave (Broadway station, 860, 3200) -> Royal Ave -> Southport Airport
+    (1220, 4890), over the terminal forecourt on Airport Way. The avenue legs are an el on
+    straddle bents planted on the pavements.
+  - COAST LINE: Southport Airport -> sea viaduct across the channel -> Oceanview (1990, 7300) ->
+    Oceanview Airport, behind the terminal (4215, 8330) -> Coral Sound narrows -> Palmshore
+    (6600, 8150).
+  - RIDGE LINE: Palmshore -> its own bridge across the sound -> Eastgate (8790, 5000) ->
+    Northridge (8300, 3740) -> Stonecreek (7850, 4050).
+  Each line's `route` is a control polygon; `railTrackGeometry` fillets every corner with a
+  circular arc (per-point radius, minimum `RAIL_MIN_RADIUS`), eases it with a smoothing pass,
+  and thins it to `line.points`. Stations are inserted into their routes and kept on straight
+  track. Everything else (decks, piers, cover volumes, the map, trains) reads `line.points`.
+- Central Garden (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks wide and two deep; the
+  streets inside it are closed by `parkStreetClosed`. Eastside Customs garage sits on Cannery St
+  at (1320, 2022).
 - South Coast Stadium (sports-world.js) is enclosed: `STADIUM_ENCLOSURE` blocks people and
   vehicles, `STADIUM_VEHICLE_BARRIERS` (bollards, turnstile span) block vehicles only, and the
   two turnstile gates at x 2665..2686 and 2692..2713 (y 4845) are the only way onto the concourse.
+- `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
+  helipads, docks, ships, props, static colliders); `docs/audit/world-layout.md` describes the
+  overlap audit run on it.
 
 ## 5. Missions
 

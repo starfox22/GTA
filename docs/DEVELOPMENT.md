@@ -40,6 +40,7 @@ rather than assuming something is broken.
 ```
 node tools/smoke.mjs dist/game.html dist/smoke        # boot, walk, drive, map
 node tools/tour.mjs steps.json dist/tour dist/game.html
+node tools/layout-audit.mjs dist/game.html            # overlaps in the city plan
 ```
 
 `tools/tour.mjs` starts a game, declines the opening call and runs a list of steps, each
@@ -71,6 +72,8 @@ something, never a generic code-evaluation hook.
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry |
 | `roadblocks()`, `containment()` | Police cordon state |
 | `stats()` | Per-frame CPU timings, draw calls, triangles |
+| `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
+| `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 
 ## Conventions
 

@@ -1,30 +1,115 @@
-# Audit report: county, military, terrain, navigation, transit, parks, ecology, harbor, sports, streets
+# Audit report: world layout, railway, county, parks, harbor, sports, streets
 
-## Fixed
-- harbor.js: the 2D fallback drew the southern gantry crane 35 units north of its collision solids
-  and 3D model. Coordinates now match.
+## City layout pass (railway to the west, overlaps, beach)
 
-## Noted, not changed
-- The y=4736 bridge's west landing overlaps the stadium's east stand; the street is cut so AI
-  never drives there, but a player walking west along the deck hits the stand.
-- The x=3200 street is severed by the harbor's north wall by design.
+### How the audit is run
+`DeadEndCity.layout()` returns the plan as data: land and lake polygons, the beach, every
+street/boulevard/service/county road with its width, bridge spans, rail track, deck boxes, piers
+and stations (with their lift towers), building footprints, helipads, docks and their boats,
+parks, places, ship hulls, the marina, trees, lamps, benches and every non-building static
+collider. `node tools/layout-audit.mjs dist/game.html` (oriented-box SAT tests plus
+point-in-polygon for water) checks: rail decks against buildings, helipads, ships, docks and marina berths; piers
+against roads and buildings; station platforms against buildings and helipads; building/building,
+building/road, building/park, building/water and building/beach; helipads against roads; roads
+overlapping other roads at an oblique angle; trees, lamps and benches standing in a carriageway.
+After this pass it reports no overlaps; the 27 oblique road contacts it lists are all county and
+airport junctions. Rendering the same data as an SVG plan is the quickest way to eyeball a
+change (pass a second argument to save the layout JSON).
+
+### Found and fixed
+- **Train over the harbour ship.** The old Bay Line ran down Marlow Bay straight over the
+  Ironworks freighter (3525, 1455) and past the docks. The railway now runs on the west side.
+- **Railway moved west.** Three lines on their own right of way (see transit.js RAILWAY and
+  SOURCE_GUIDE section 4): Shore Line (Cruise Terminal -> Harbor Point sea viaduct -> west sea
+  wall at x 150 -> Viaduct Green -> Harbor Ave and Royal Ave el -> Southport Airport over the
+  Airport Way forecourt), Coast Line (airport -> channel viaduct -> Oceanview -> behind Oceanview
+  International -> Coral Sound narrows -> Palmshore), Ridge Line (Palmshore -> own bridge ->
+  Eastgate -> Northridge -> Stonecreek). 12 stations. The old county lines rode on top of the
+  Oceanview Parkway, Ridgeline Highway, Stonecreek Connector, the Coral Sound Bridge, the Sentinel
+  Causeway and town streets, with stations over carriageways; none of the new track shares a
+  road alignment in the county, and every road it meets is crossed as a flyover. The Palm Keys
+  (Ocean Drive) and Sentinel Causeway stations were dropped with that route; Fort Sentinel is a
+  restricted base and has no public station.
+- **Patchy curves.** Corners were rounded by a 7-step quadratic per corner and the viaduct was
+  one box per segment, so every bend showed wedge-shaped gaps outside and overlaps inside. Track
+  is now circular fillets (per-corner radius, minimum 180) eased by a smoothing pass, resampled
+  and thinned to 0.6-unit chord error; the viaduct is a swept extrusion (deck, parapets, ballast
+  bed, two rails, steel coping) with mitred joints; sleepers (every 6 units), masts and piers are
+  placed by arc length. Train cars take their heading from the track either side of each car.
+- **Trains crawling on low frame rates.** A train advanced at most one track point per frame; it
+  now runs through as many points as the frame's travel covers. Scenic trains dwell at stations.
+- **Piers.** Marine piles over water, portal columns under the deck edges on open ground, and
+  straddle bents with a cross-head over the avenues the el follows; bents are left out where
+  the deck crosses a road, a bridge or a dock. The old ±70 land piers stood in block kerbs.
+- **Rail collision.** Rail decks and platform canopies (and county bridge guard rails) were put
+  in the physics grid under string keys, but the grid is read with numeric keys, so aircraft
+  flew through the viaduct and traffic through county bridge rails. Fixed in air-cover.js and
+  county.js.
+- **Building in the sea.** The ragged west coast bit into block (0, 3) at y ~2010, leaving a
+  building's corner in the water. The west coast is now one straight reclaimed sea wall.
+- **West Quay.** The x = 128 column only existed as two stub streets between the coast and the
+  blocks; it is now the rail corridor (`RAIL_CORRIDOR_X`) and the rows run to the esplanade.
+- **Riverside helipad.** The esplanade was painted across half of the helipad at (3345, 1920);
+  it now gives way at the pad (`esplanadeGivesWay`), as it does at Southport Beach.
+- **Airport Way over Battery St.** Airport Way started at Commons St (1664, 4160) and ran
+  diagonally across the last 260 units of Battery St. It now starts at Battery St's west end
+  (1440, 4224) and shares a point with it, so the route graph joins them.
+- **Ocean Drive slip curve.** A boulevard from (5248, 4384) to (4980, 4736) was painted
+  diagonally across Ocean Dr, Stadium Way and the corner block. Removed; the grid junction
+  serves the corner.
+- **Northbank Quay lane.** A 44-wide lane at y 190 (x 640..2176) ran 18 units from North Shore
+  Rd's kerb, through the kerb trees: a leftover from before the reclamation. Removed.
+- **Stadium Way bridge.** Its deck and guard rails started at x 3050, inside the stadium's east
+  and south-east stands. All three crossings now start on Riverbank Dr (x 3150).
+- **Reclamation blocks.** The perimeter-block pattern fell through to the generic back-lot
+  building and car park, which were stacked over both wings and the planted court of every
+  reclamation block. The pattern now closes the court with a south range.
+- **South Coast Outfitters** was assigned block (3, 6), inside Central Garden: the shop stood
+  on the rose garden with its front on Linden St. Moved to block (2, 6) across Commons St.
+- **Vinny's depot** wall pieces overlapped at the corners (coplanar roofs flicker); they butt.
+- **Trees in carriageways.** Kerb trees landed on Airport Way, the Sunset Pier causeway and the
+  county market streets (21 trees); trees on roads or under rail piers are now removed.
+
+### Southport Beach (reserved)
+`BEACH` in geography.js: the south shore of Northbank between the airport fence (x 1740) and the
+Battery Point sea wall (x 3150), from the Marina Rd kerb (y 5306) to the water. The coast was
+pushed out (to y ~5810 at x 2420) so the strand is 250..500 units deep and ~1400 long. Sand,
+wet sand and a 40-wide boardwalk (`BEACH.boardwalk`, y 5306..5346) are painted; streets and
+blocks are kept off it (`cityStreets`, `validCityBlock`), the shore style is 'beach' (sand lip,
+no quay wall), the esplanade stops at either end, and `districtAt` names it. The Oceanview
+Causeway crosses it at x 2176; the Coast Line passes ~400 units to the west on its channel
+viaduct, never over the sand. Props and beach life are left for the beach pass.
+
+### Noted, not changed
+- Street ends at the airport fence (Sunset Blvd, Royal Ave, Stadium Way) keep their round
+  turning heads; from above the painted ring can read like a helipad. The Shore Line passes over
+  Royal Ave's.
+- County junctions meet at shallow angles in places, and the Ridgeline Highway runs on the same
+  alignment as Northridge's y = 2600 avenue for one block (coincident, not crossing).
+- The Oceanview Causeway road crosses Southport Beach at ground level, splitting the strand.
+- The Coral Dawn's rectangular hull box reaches within 6 units of the cruise terminal buffer
+  stops; the tapered hull itself is ~70 units clear.
+- The render3d roughness map still treats the x = 128 column as road.
+- The x = 3200 street is severed by the harbor's north wall by design.
 - navigation.js `closestNavNode` could return undefined on an all-isolated graph (unrealistic).
 - transit.js: while a stop is blocked, scenic trains also pause (cosmetic).
 
-## Verified
-- County bridges connect to the city grid through shared navigation nodes.
-- All 14 rail stations sit on track segments and are connected.
-- Wildlife habitats are on land; sports state machines cannot stall.
-- Gate thresholds match between navigation, physics and collision.
-- No millisecond/second mixing; arrays are bounded.
+## Earlier pass
+- harbor.js: the 2D fallback drew the southern gantry crane 35 units north of its collision solids
+  and 3D model. Coordinates now match.
+- Verified then: county bridges connect to the city grid through shared navigation nodes;
+  wildlife habitats are on land; sports state machines cannot stall; gate thresholds match
+  between navigation, physics and collision; no millisecond/second mixing; arrays are bounded.
 
 ## World layout as coded (reference)
-- Units: 512 = 100 m. WORLD_SIZE 11264, CITY_SIZE 5632, BLOCK_SIZE 512.
-- City grid: road centres at 128 + i*512 (i = 0..10) on both axes. Streets 88 wide; 112 wide on
-  1152, 2688, 3200 and 4736. Streets are clipped to land, the airport, park closures and the stadium.
+- Units: 512 = 100 m. WORLD_SIZE 11264, CITY_SIZE 5632, BLOCK_SIZE 512. Map x runs 0..11264; the
+  west coast of Northbank is at the world's western edge, so nothing may be built at x < 0.
+- City grid: avenue columns at 128 + i*512 (i = 0..10), rows at 128 + j*512 (j = -8..10). Streets
+  88 wide; 112 wide on 1152, 2688, 3200, 4736, -1408 and -2944. Streets are clipped to land, the
+  airport, park closures, the stadium and the beach; x = 128 is the rail corridor.
 - Marlow Bay river x 3420..3960 separates Northbank Island (west) from Palm Keys (east); bridges
   at y = 1152, 3200, 4736.
 - Districts: see `districtAt` in geography.js. County regions: Ridgeline (NE), Oceanview (S),
   Coral Coast (SE), Fort Sentinel island (far SE). Towns: Stonecreek, Northridge, Eastgate,
   Oceanview, Palmshore. Two airports (Southport in the city, Oceanview International in the county).
-- Rail: City, Coast, Ridge and Airport Branch lines with 14 stations (transit.js).
+- Rail: Shore, Coast and Ridge lines with 12 stations (transit.js); scenic trains shuttle each line.

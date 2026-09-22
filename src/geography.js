@@ -361,8 +361,10 @@
         [x + w / 2, y + h / 2],
       ].every((p) => landAt(...p));
     }
+    // Each crossing starts on Riverbank Dr (x = 3200). Stadium Way's used to start
+    // at x 3050, so its deck and guard rails ran through the stadium's east stand.
     function bridgeSpan(y) {
-      return y === 4736 ? [3050, 4390] : y === 3200 ? [3160, 4260] : [3150, 4170];
+      return y === 4736 ? [3150, 4390] : y === 3200 ? [3160, 4260] : [3150, 4170];
     }
     function bridgeRailSpans(y) {
       let spans = [bridgeSpan(y)];
