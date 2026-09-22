@@ -108,11 +108,18 @@
       }
       // ---- Piers -----------------------------------------------------------------
       for (const p of railPiers) {
-        const px = p.x + 3,
-          pz = p.y + 3,
+        const px = p.x + p.w / 2,
+          pz = p.y + p.h / 2,
           dx = p.cx - px,
           dz = p.cy - pz,
           yaw = Math.atan2(dx, dz);
+        if (p.marine) {
+          // Pile bent: the shaft runs down past the waterline to a submerged cap.
+          place(railPools.pierShaft, px, 22, pz, 6, 64, 6, yaw);
+          place(railPools.pierShaft, px, -9, pz, 9, 10, 9, yaw);
+          place(railPools.pierCap, px, 50, pz, 9, 4, 9, yaw);
+          continue;
+        }
         place(railPools.pierShaft, px, 24, pz, 7.5, 48, 7.5, yaw);
         place(railPools.pierShaft, px, 3, pz, 11, 6, 11, yaw);
         // Cross-head reaching under the deck centre line.

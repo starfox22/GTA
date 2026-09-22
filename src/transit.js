@@ -5,22 +5,83 @@
      * Scope: shared game closure.
      * Track graph, station access, boarding, travel, stops and safe disembarkation.
      */
-    /* Public railway follows existing road corridors and established bridge crossings. */
+    /**
+     * RAILWAY
+     * The line is a perimeter system, not a street tram: it runs along the
+     * shoreline, out over Marlow Bay on its own viaduct and across the marina
+     * mouth, so it crosses the road causeways as a flyover and never shares one.
+     * Authored points are the route's shape; `smoothTrack` rounds every corner
+     * into an arc before anything else reads them, so the decks, the trains, the
+     * piers and the map all follow the same easy curves. Junction points -- the
+     * places where two lines or a station meet the track -- are held fixed so the
+     * rounding can never pull the network apart.
+     */
+    function smoothTrack(points, fixed, radius = 240, steps = 7) {
+      if (points.length < 3) return points.map((p) => p.slice());
+      const held = (p) => fixed.has(Math.round(p[0]) + ',' + Math.round(p[1])),
+        out = [points[0].slice()];
+      for (let i = 1; i < points.length - 1; i++) {
+        const p = points[i],
+          a = points[i - 1],
+          b = points[i + 1],
+          la = Math.hypot(p[0] - a[0], p[1] - a[1]),
+          lb = Math.hypot(b[0] - p[0], b[1] - p[1]),
+          r = Math.min(radius, la * 0.45, lb * 0.45);
+        if (held(p) || r < 14) {
+          out.push(p.slice());
+          continue;
+        }
+        const sx = p[0] + ((a[0] - p[0]) / la) * r,
+          sy = p[1] + ((a[1] - p[1]) / la) * r,
+          ex = p[0] + ((b[0] - p[0]) / lb) * r,
+          ey = p[1] + ((b[1] - p[1]) / lb) * r;
+        for (let k = 0; k <= steps; k++) {
+          const t = k / steps,
+            u = 1 - t;
+          out.push([
+            u * u * sx + 2 * u * t * p[0] + t * t * ex,
+            u * u * sy + 2 * u * t * p[1] + t * t * ey,
+          ]);
+        }
+      }
+      out.push(points[points.length - 1].slice());
+      return out;
+    }
     const RAIL_LINES = [
       {
         id: 'city',
-        name: 'CITY LINE',
+        name: 'BAY LINE',
         color: '#e2b766',
         points: [
-          [2176, 300],
-          [2176, 2688],
-          [2688, 2688],
-          [2688, 3200],
-          [4500, 3200],
+          [2780, -4060],
+          [3180, -3980],
+          [3420, -3800],
+          [3520, -3480],
+          [3546, -2900],
+          [3530, -2100],
+          [3562, -1200],
+          [3536, -300],
+          [3470, 480],
+          [3330, 800],
+          [3480, 1010],
+          [3560, 1420],
+          [3566, 1900],
+          [3500, 2220],
+          [3306, 2452],
+          [3420, 2680],
+          [3700, 2790],
+          [4040, 2864],
+          [4420, 2930],
+          [4900, 2966],
+          [5380, 2930],
+          [5820, 2996],
+          [6260, 3086],
+          [7100, 3184],
           [7232, 3200],
           [7800, 3350],
           [8420, 3112],
           [8932, 3112],
+          [8932, 2920],
           [8932, 2600],
         ],
       },
@@ -29,9 +90,35 @@
         name: 'COAST LINE',
         color: '#67c6bd',
         points: [
-          [2176, 2688],
-          [2176, 4900],
+          [2780, -4060],
+          [1900, -4106],
+          [1100, -4122],
+          [600, -4110],
+          [240, -4030],
+          [168, -3860],
+          [140, -3300],
+          [158, -2700],
+          [132, -2100],
+          [160, -1500],
+          [136, -900],
+          [162, -300],
+          [140, 300],
+          [158, 900],
+          [132, 1500],
+          [150, 2100],
+          [128, 2700],
+          [152, 3300],
+          [178, 3760],
+          [300, 4150],
+          [620, 4420],
+          [980, 4660],
+          [1180, 4800],
+          [1300, 5080],
+          [1620, 5340],
+          [1980, 5520],
+          [2176, 6040],
           [2176, 7010],
+          [2176, 7450],
           [2176, 7522],
           [2176, 8034],
           [2440, 8420],
@@ -39,6 +126,7 @@
           [3510, 8300],
           [3800, 8450],
           [3800, 8700],
+          [4100, 8726.5823],
           [4590, 8770],
           [5100, 8500],
           [5580, 8270],
@@ -60,6 +148,7 @@
           [9970, 3390],
           [10150, 4100],
           [9924, 4700],
+          [9924, 4950],
           [9924, 5212],
           [9400, 5880],
           [8500, 5790],
@@ -67,6 +156,7 @@
           [7433.016, 7262.254],
           [7500, 7490],
           [7262, 7600],
+          [7262, 7900],
           [7262, 8000],
           [7262, 8112],
         ],
@@ -76,143 +166,49 @@
         name: 'AIRPORT BRANCH',
         color: '#e2b766',
         points: [
-          [2176, 4160],
-          [1664, 4160],
-          [1240, 4290],
-          [1000, 4560],
-          [1220, 4720],
+          [1180, 4800],
+          [1220, 4900],
+          [1220, 5000],
           [1220, 5030],
         ],
       },
     ];
     const RAIL_STATIONS = [
-      {
-        name: 'OLD QUARTER',
-        x: 2176,
-        y: 400,
-        entry: {
-          x: 2104,
-          y: 400,
-        },
-      },
-      {
-        name: 'CENTRAL GARDEN',
-        x: 2176,
-        y: 2000,
-        entry: {
-          x: 2248,
-          y: 2000,
-        },
-      },
-      {
-        name: 'MIDTOWN COLLEGE',
-        x: 2176,
-        y: 2400,
-        entry: {
-          x: 2104,
-          y: 2400,
-        },
-      },
-      {
-        name: 'EXCHANGE',
-        x: 2688,
-        y: 2940,
-        entry: {
-          x: 2592,
-          y: 2970,
-        },
-      },
-      {
-        name: 'PALM KEYS',
-        x: 4500,
-        y: 3200,
-        entry: {
-          x: 4500,
-          y: 3120,
-        },
-      },
-      {
-        name: 'STONECREEK',
-        x: 7100,
-        y: 3200,
-        entry: {
-          x: 7100,
-          y: 3128,
-        },
-      },
-      {
-        name: 'NORTHRIDGE',
-        x: 8932,
-        y: 2920,
-        entry: {
-          x: 8858,
-          y: 2920,
-        },
-      },
-      {
-        name: 'EASTGATE',
-        x: 9924,
-        y: 4950,
-        entry: {
-          x: 9996,
-          y: 4950,
-        },
-      },
-      {
-        name: 'SOUTH BANK',
-        x: 2176,
-        y: 4520,
-        entry: {
-          x: 2104,
-          y: 4520,
-        },
-      },
-      {
-        name: 'OCEANVIEW',
-        x: 2176,
-        y: 7450,
-        entry: {
-          x: 2104,
-          y: 7450,
-        },
-      },
-      {
-        name: 'OCEANVIEW AIRPORT',
-        x: 4100,
-        y: 8726.5823,
-        entry: {
-          x: 4100,
-          y: 8828,
-        },
-      },
-      {
-        name: 'PALMSHORE',
-        x: 7262,
-        y: 7900,
-        entry: {
-          x: 7188,
-          y: 7900,
-        },
-      },
-      {
-        name: 'SENTINEL CAUSEWAY',
-        x: 9140,
-        y: 8150,
-        entry: {
-          x: 9140,
-          y: 8072,
-        },
-      },
-      {
-        name: 'SOUTHPORT TERMINAL',
-        x: 1220,
-        y: 5000,
-        entry: {
-          x: 1280,
-          y: 5000,
-        },
-      },
+      { name: 'CRUISE TERMINAL', x: 2780, y: -4060, entry: { x: 2780, y: -3986 } },
+      { name: 'NORTH HARBOUR', x: 3330, y: 800, entry: { x: 3258, y: 800 } },
+      { name: 'EXCHANGE QUAY', x: 3306, y: 2452, entry: { x: 3234, y: 2452 } },
+      { name: 'OCEAN DRIVE', x: 4420, y: 2930, entry: { x: 4420, y: 2856 } },
+      { name: 'STONECREEK', x: 7100, y: 3184, entry: { x: 7100, y: 3112 } },
+      { name: 'NORTHRIDGE', x: 8932, y: 2920, entry: { x: 8858, y: 2920 } },
+      { name: 'EASTGATE', x: 9924, y: 4950, entry: { x: 9996, y: 4950 } },
+      { name: 'WEST POINT', x: 140, y: -3300, entry: { x: 214, y: -3300 } },
+      { name: 'NORTH QUAY', x: 140, y: 300, entry: { x: 214, y: 300 } },
+      { name: 'WESTSIDE', x: 150, y: 2100, entry: { x: 224, y: 2100 } },
+      { name: 'BROADWAY WEST', x: 178, y: 3760, entry: { x: 252, y: 3760 } },
+      { name: 'SOUTHPORT TERMINAL', x: 1220, y: 5000, entry: { x: 1280, y: 5000 } },
+      { name: 'OCEANVIEW', x: 2176, y: 7450, entry: { x: 2104, y: 7450 } },
+      { name: 'OCEANVIEW AIRPORT', x: 4100, y: 8726.5823, entry: { x: 4100, y: 8828 } },
+      { name: 'PALMSHORE', x: 7262, y: 7900, entry: { x: 7188, y: 7900 } },
+      { name: 'SENTINEL CAUSEWAY', x: 9140, y: 8150, entry: { x: 9140, y: 8072 } },
     ];
+    // Round the authored corners once, holding every junction and station point.
+    {
+      const fixed = new Set(),
+        counts = new Map();
+      for (const line of RAIL_LINES)
+        for (const p of line.points) {
+          const key = Math.round(p[0]) + ',' + Math.round(p[1]);
+          counts.set(key, (counts.get(key) || 0) + 1);
+        }
+      for (const [key, n] of counts) if (n > 1) fixed.add(key);
+      for (const line of RAIL_LINES) {
+        fixed.add(Math.round(line.points[0][0]) + ',' + Math.round(line.points[0][1]));
+        const last = line.points[line.points.length - 1];
+        fixed.add(Math.round(last[0]) + ',' + Math.round(last[1]));
+      }
+      for (const s of RAIL_STATIONS) fixed.add(Math.round(s.x) + ',' + Math.round(s.y));
+      for (const line of RAIL_LINES) line.points = smoothTrack(line.points, fixed);
+    }
     const RAIL_DECK_TOP = 60,
       railTrains = [],
       railPiers = [];
@@ -221,12 +217,6 @@
       transitStation = null;
     // Terminal sidings support the complete train body without changing routing endpoints.
     const RAIL_TERMINAL_TRACKS = [
-      {
-        points: [
-          [2176, 300],
-          [2176, 150],
-        ],
-      },
       {
         points: [
           [1220, 5030],
@@ -296,47 +286,59 @@
         };
       }
       railPiers.length = 0;
-      for (const b of railDecks()) {
-        for (let d = -b.hx + 100; d < b.hx - 55; d += 190) {
-          const cx = b.x + Math.cos(b.a) * d,
-            cy = b.y + Math.sin(b.a) * d;
+      // Piers are spaced along each route by travelled distance, so the short arc
+      // pieces on a curve carry their bents too; a per-segment walk would skip them.
+      const bents = [];
+      for (const line of [...RAIL_LINES, ...RAIL_TERMINAL_TRACKS]) {
+        let next = 120,
+          travelled = 0;
+        for (let i = 1; i < line.points.length; i++) {
+          const a = line.points[i - 1],
+            b = line.points[i],
+            len = Math.hypot(b[0] - a[0], b[1] - a[1]),
+            angle = Math.atan2(b[1] - a[1], b[0] - a[0]);
+          while (next < travelled + len) {
+            const d = next - travelled;
+            bents.push({
+              cx: a[0] + Math.cos(angle) * d,
+              cy: a[1] + Math.sin(angle) * d,
+              a: angle,
+            });
+            next += 190;
+          }
+          travelled += len;
+        }
+      }
+      for (const bent of bents) {
+        const { cx, cy } = bent;
+        if (underpassContains(cx, cy, -30) || terrainHeight(cx, cy) > 12) continue;
+        // Over water the viaduct stands on its own pile bents, tucked in under the
+        // deck; ashore the piers stand wide and reach back with a cross-head.
+        if (!landAt(cx, cy)) {
+          if (onBridge(cx, cy, 30) || onDock(cx, cy, 10)) continue;
+          for (const side of [-1, 1]) {
+            const x = cx - Math.sin(bent.a) * side * 26,
+              y = cy + Math.cos(bent.a) * side * 26;
+            railPiers.push({ x: x - 4, y: y - 4, w: 8, h: 8, height: 52, cx, cy, marine: true });
+          }
+          continue;
+        }
+        if (inAirport(cx, cy) || (Math.abs(cx - roadNear(cx)) < 105 && Math.abs(cy - rowNear(cy)) < 105))
+          continue;
+        for (const side of [-1, 1]) {
+          const x = cx - Math.sin(bent.a) * side * 70,
+            y = cy + Math.cos(bent.a) * side * 70;
           if (
-            !landAt(cx, cy) ||
-            inAirport(cx, cy) ||
-            underpassContains(cx, cy, -30) ||
-            (Math.abs(cx - roadNear(cx)) < 105 && Math.abs(cy - rowNear(cy)) < 105) ||
-            terrainHeight(cx, cy) > 12
+            !groundAt(x, y, 8) ||
+            cityStreetAt(x, y, 12) ||
+            buildings.some(
+              (o) => x > o.x - 12 && x < o.x + o.w + 12 && y > o.y - 12 && y < o.y + o.h + 12,
+            ) ||
+            garageBlocked(x, y, 12) ||
+            RAIL_STATIONS.some((s) => distanceBetween(s.entry, { x, y }) < 58)
           )
             continue;
-          for (const side of [-1, 1]) {
-            const x = cx - Math.sin(b.a) * side * 70,
-              y = cy + Math.cos(b.a) * side * 70;
-            if (
-              !groundAt(x, y, 8) ||
-              cityStreetAt(x, y, 12) ||
-              buildings.some(
-                (o) => x > o.x - 12 && x < o.x + o.w + 12 && y > o.y - 12 && y < o.y + o.h + 12,
-              ) ||
-              garageBlocked(x, y, 12) ||
-              RAIL_STATIONS.some(
-                (s) =>
-                  distanceBetween(s.entry, {
-                    x,
-                    y,
-                  }) < 58,
-              )
-            )
-              continue;
-            railPiers.push({
-              x: x - 3,
-              y: y - 3,
-              w: 6,
-              h: 6,
-              height: 52,
-              cx,
-              cy,
-            });
-          }
+          railPiers.push({ x: x - 3, y: y - 3, w: 6, h: 6, height: 52, cx, cy });
         }
       }
       airCoverCache = null;

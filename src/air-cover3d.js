@@ -21,7 +21,7 @@
         for (const x of [2638, 2738])
           box(tunnelGroup, x, 36, z + (z === 2780 ? -6 : 6), 10, 3, 1, warmLamp);
         const label = sign(
-          z === 2780 ? 'EXCHANGE STATION' : 'RAILWAY UNDERPASS',
+          z === 2780 ? 'EXCHANGE UNDERPASS' : 'ROAD UNDERPASS',
           2688,
           z + (z === 2780 ? -9 : 9),
           128,
