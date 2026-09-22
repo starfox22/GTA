@@ -78,7 +78,7 @@ AUDIO EFFECTS / VOICES
       "notes": "Source tagged pseudorealistic, not asserted to be a field recording.",
       "bytes": 116422,
       "duration_seconds": 5.6163,
-      "changes": "Converted to 32 kHz mono PCM; loudness normalized; explosion shortened to 3.8 s; siren excerpt selected."
+      "changes": "Converted to 32 kHz mono; loudness normalized; shortened to 3.8 s; stored as 80 kbps MP3."
     },
     {
       "file": "engine-loop.wav",
@@ -395,16 +395,16 @@ Retroracing One more round — Bogart VGM
 https://opengameart.org/content/retroracing-one-more-round
 https://www.facebook.com/BogartVGM/
 License: CC-BY-4.0 (https://creativecommons.org/licenses/by/4.0/)
-Loudness normalized to -18 LUFS target and transcoded to 128 kbps stereo MP3; no intentional musical cuts.
+Loudness normalized to -18 LUFS target and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
 
 Rock theme — obscure music
 https://opengameart.org/content/rock-theme
 https://opengameart.org/users/obscure-music
 License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-Loudness normalized to -18 LUFS target and transcoded to 128 kbps stereo MP3; no intentional musical cuts.
+Loudness normalized to -18 LUFS target and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
 
 Midnight Cruiser — Zane Little Music
 https://opengameart.org/content/midnight-cruiser
 https://opengameart.org/users/zane-little-music
 License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-Loudness normalized to -18 LUFS target and transcoded to 128 kbps stereo MP3; no intentional musical cuts.
+Loudness normalized to -18 LUFS target and transcoded to 96 kbps stereo MP3; no intentional musical cuts.

@@ -4540,6 +4540,32 @@
         );
         return this.status();
       },
+      // Spawn a vehicle of any VEHICLE_DEFINITIONS type beside the player and put
+      // them at the controls. Aircraft can be lifted straight to an altitude in
+      // metres above the ground so tests can look at the flight view.
+      drive(type = 'sedan', altitudeMeters = 0) {
+        if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+        if (player.car) exitCar();
+        const car = spawnClearCar(type, player.x + 60, player.y, player.a, false);
+        car.authorized = true;
+        enterVehicle(car);
+        if (altitudeMeters > 0 && isAircraft(car)) {
+          car.altitude = terrainHeight(car.x, car.y) + (altitudeMeters * BLOCK_SIZE) / 100;
+          if (car.type === 'plane') {
+            car.vx = Math.cos(car.a) * 420;
+            car.vy = Math.sin(car.a) * 420;
+          }
+        }
+        return this.status();
+      },
+      // Place the camera/player at a map point without touching anything else.
+      look(x, y, zoom) {
+        teleportPlayer(x, y);
+        if (zoom !== undefined) setWorldZoom(zoom);
+        return this.status();
+      },
+      // Named places the tests can visit: every PLACES entry plus the landmarks.
+      places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
       cab(x, y) {
         const car = spawnClearCar('taxi', player.x + 44, player.y, 0, true);

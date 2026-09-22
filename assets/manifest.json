@@ -103,9 +103,9 @@
   },
   {
     "id": "media-audio-explosion",
-    "file": "assets/audio/explosion.wav",
-    "mime": "audio/wav",
-    "original": "src/assets/audio/explosion.wav"
+    "file": "assets/audio/explosion.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/audio/explosion.mp3"
   },
   {
     "id": "media-audio-look-out",

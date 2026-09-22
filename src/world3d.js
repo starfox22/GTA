@@ -22,7 +22,7 @@
         const maskCanvas = document.createElement('canvas');
         maskCanvas.width = SHORE_RES;
         maskCanvas.height = SHORE_ROWS;
-        const mc = maskCanvas.getContext('2d');
+        const mc = maskCanvas.getContext('2d', { willReadFrequently: true });
         mc.fillStyle = '#000';
         mc.fillRect(0, 0, SHORE_RES, SHORE_ROWS);
         mc.scale(SHORE_RES / WORLD_SIZE, SHORE_RES / WORLD_SIZE);

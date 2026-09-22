@@ -460,11 +460,16 @@
           { rx, ry, positions, indices } = surface;
         let canvas = mountainGroundCache.get(peak);
         if (!canvas) {
+          // Rasterized straight into pixels: filling tens of thousands of tiny
+          // canvas paths one by one took minutes on software-rendered canvases.
+          const size = 768,
+            sx = size / (rx * 2),
+            sy = size / (ry * 2);
           canvas = document.createElement('canvas');
-          canvas.width = canvas.height = 768;
-          const c = canvas.getContext('2d');
-          c.scale(768 / (rx * 2), 768 / (ry * 2));
-          c.translate(rx, ry);
+          canvas.width = canvas.height = size;
+          const c = canvas.getContext('2d'),
+            image = c.createImageData(size, size),
+            pixels = image.data;
           for (let j = 0; j < indices.length; j += 3) {
             const a = indices[j] * 3,
               b = indices[j + 1] * 3,
@@ -497,26 +502,45 @@
               elevation * peak.h,
               slope,
             );
-            c.fillStyle =
-              'rgb(' +
-              [81 + stone * 87, 107 + stone * 60, 72 + stone * 82]
-                .map((v, k) =>
-                  Math.round(
-                    clamp(((v + mottle) * (1 - snow) + [222, 237, 242][k] * snow) * shade, 0, 255),
-                  ),
-                )
-                .join(',') +
-              ')';
-            c.beginPath();
-            c.moveTo(positions[a], positions[a + 2]);
-            c.lineTo(positions[b], positions[b + 2]);
-            c.lineTo(positions[d], positions[d + 2]);
-            c.closePath();
-            c.fill();
-            c.strokeStyle = c.fillStyle;
-            c.lineWidth = ((rx * 2) / 768) * 0.85;
-            c.stroke();
+            const base = [81 + stone * 87, 107 + stone * 60, 72 + stone * 82],
+              rgb = [0, 1, 2].map((k) =>
+                Math.round(clamp(((base[k] + mottle) * (1 - snow) + [222, 237, 242][k] * snow) * shade, 0, 255)),
+              );
+            // Triangle corners in pixel space, then a bounding-box scan with edge
+            // functions. The half-pixel slack closes hairline seams between faces.
+            const x0 = (positions[a] + rx) * sx,
+              y0 = (positions[a + 2] + ry) * sy,
+              x1 = (positions[b] + rx) * sx,
+              y1 = (positions[b + 2] + ry) * sy,
+              x2 = (positions[d] + rx) * sx,
+              y2 = (positions[d + 2] + ry) * sy,
+              area = (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0);
+            if (Math.abs(area) < 1e-9) continue;
+            const sign = area > 0 ? 1 : -1,
+              slack = 0.5 * Math.hypot(1, 1),
+              e0 = Math.hypot(x2 - x1, y2 - y1) * slack,
+              e1 = Math.hypot(x0 - x2, y0 - y2) * slack,
+              e2 = Math.hypot(x1 - x0, y1 - y0) * slack,
+              minX = Math.max(0, Math.floor(Math.min(x0, x1, x2) - 1)),
+              maxX = Math.min(size - 1, Math.ceil(Math.max(x0, x1, x2) + 1)),
+              minY = Math.max(0, Math.floor(Math.min(y0, y1, y2) - 1)),
+              maxY = Math.min(size - 1, Math.ceil(Math.max(y0, y1, y2) + 1));
+            for (let py = minY; py <= maxY; py++)
+              for (let px = minX; px <= maxX; px++) {
+                const cx = px + 0.5,
+                  cy = py + 0.5,
+                  w0 = sign * ((x2 - x1) * (cy - y1) - (y2 - y1) * (cx - x1)),
+                  w1 = sign * ((x0 - x2) * (cy - y2) - (y0 - y2) * (cx - x2)),
+                  w2 = sign * ((x1 - x0) * (cy - y0) - (y1 - y0) * (cx - x0));
+                if (w0 < -e0 || w1 < -e1 || w2 < -e2) continue;
+                const o = (py * size + px) * 4;
+                pixels[o] = rgb[0];
+                pixels[o + 1] = rgb[1];
+                pixels[o + 2] = rgb[2];
+                pixels[o + 3] = 255;
+              }
           }
+          c.putImageData(image, 0, 0);
           mountainGroundCache.set(peak, canvas);
         }
         drawingContext.drawImage(canvas, peak.x - rx, peak.y - ry, rx * 2, ry * 2);
