@@ -177,7 +177,11 @@
         for (let x = b.x + 12; x < b.x + b.w; x += 18)
           box(harborGroup, x, b.height + 2, b.y + b.h / 2, 1.5, 2, b.h, chrome);
       }
-      sign('IRONWORKS CARGO', 2940, 1438, 210, '#e6c581');
+      // On the facade above the loading-door canopy (y 29). At the default height
+      // and 210 wide it hung from below ground level to 49, with the canopy and its
+      // lamps running straight across the lettering.
+      const cargoSign = sign('IRONWORKS CARGO', 2940, 1436, 150, '#e6c581');
+      cargoSign.position.y = cargoSign.userData.backing.position.y = 50;
       sign('RESTRICTED · KEEP CLEAR', 2805, 1578, 119, '#e0b360');
       const gateRoot = new Three.Group();
       gateRoot.userData.dynamic = true;

@@ -167,6 +167,11 @@
         cityZonePower: { value: new Three.Vector3(1, 1, 1) },
         cityRiverLeft: { value: RIVER.left },
         cityWet: { value: 0 },
+        // Cutaway round the player (see CUTAWAY below): screen x, y and radius in
+        // drawing-buffer pixels, then the player's view depth; and the height
+        // below which nothing is cut.
+        cityCutaway: { value: new Three.Vector4(0, 0, 0, 0) },
+        cityCutawayFloor: { value: 0 },
       };
       function paintLampLight() {
         const g = lampCanvas.getContext('2d'),
@@ -234,6 +239,16 @@
           // Lamps hang ~33 units up: full light at street level, none on the roofs.
           float height = 1.0 - smoothstep( 4.0, 42.0, vCityWorld.y );
           return texture2D( cityLampMap, uv ).rgb * ( cityLampPower * zone * height );
+        }
+        uniform vec4 cityCutaway;
+        uniform float cityCutawayFloor;
+        float cityBayer2( vec2 a ) { return mod( 2.0 * a.x + 3.0 * a.y, 4.0 ); }
+        void cityCutawayClip() {
+          if ( cityCutaway.z <= 0.0 || vCityWorld.y < cityCutawayFloor || -vViewPosition.z > cityCutaway.w ) return;
+          float cut = ( 1.0 - smoothstep( 0.4, 1.0, length( gl_FragCoord.xy - cityCutaway.xy ) / cityCutaway.z ) ) * 0.9;
+          vec2 cell = mod( floor( gl_FragCoord.xy ), 4.0 );
+          float threshold = ( cityBayer2( mod( cell, 2.0 ) ) * 4.0 + cityBayer2( floor( cell * 0.5 ) ) + 0.5 ) / 16.0;
+          if ( threshold < cut ) discard;
         }`;
       const CITY_LIGHT_APPLY = `
         {
@@ -251,7 +266,42 @@
           .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\n' + CITY_WORLD_VERTEX);
         shader.fragmentShader = shader.fragmentShader
           .replace('#include <common>', '#include <common>\n' + CITY_LIGHT_PARS)
+          .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\ncityCutawayClip();')
           .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + CITY_LIGHT_APPLY);
+      }
+      /**
+       * CUTAWAY
+       * Whatever stands between the camera and the player (the tower south of
+       * them, a tree crown, the deck of a viaduct they walk under) is dithered
+       * away in a soft disc round the player with a 4x4 ordered screen-door
+       * pattern. This replaced fading a building's own three materials to 28%
+       * opacity, which left its shared pieces (glass bands, roof plant, parapet
+       * trim) solid and floating, showed every tier of a tower through the next,
+       * and recompiled the materials each time. Only fragments above the
+       * player's head (above the roof of their vehicle) and well in front of
+       * them are cut, so the street, people and the player's own car never are;
+       * shadows are unaffected.
+       */
+      const cutawayPoint = new Three.Vector3(),
+        cutawayEdge = new Three.Vector3(),
+        cutawaySize = new Three.Vector2(),
+        CUTAWAY_RADIUS = 96;
+      function updateCutaway(elevation) {
+        const u = cityLightUniforms;
+        renderer.getDrawingBufferSize(cutawaySize);
+        cutawayPoint.set(player.x, elevation + 8, player.y).applyMatrix4(camera.matrixWorldInverse);
+        const depth = -cutawayPoint.z;
+        cutawayPoint.set(player.x, elevation + 8, player.y).project(camera);
+        cutawayEdge.set(player.x + CUTAWAY_RADIUS, elevation + 8, player.y).project(camera);
+        const radius = Math.hypot((cutawayEdge.x - cutawayPoint.x) * cutawaySize.x, (cutawayEdge.y - cutawayPoint.y) * cutawaySize.y) / 2,
+          onScreen = Math.abs(cutawayPoint.x) < 1.2 && Math.abs(cutawayPoint.y) < 1.2 && cutawayPoint.z < 1;
+        u.cityCutaway.value.set(
+          (cutawayPoint.x * 0.5 + 0.5) * cutawaySize.x,
+          (cutawayPoint.y * 0.5 + 0.5) * cutawaySize.y,
+          onScreen && gameMode !== 'map' ? radius : 0,
+          depth - 30,
+        );
+        u.cityCutawayFloor.value = elevation + (player.car ? 34 : 9);
       }
       Three.MeshStandardMaterial.prototype.onBeforeCompile = cityMaterialPatch;
       // Unlit materials that opted out of tone mapping (signs, ad panels, screens)

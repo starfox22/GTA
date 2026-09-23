@@ -711,10 +711,13 @@
             polygonOffsetUnits: -2,
           }),
         );
-        m.position.set(x, 23, z + 0.6);
+        // Centred 23 up, but never so low that a wide board sinks into the ground
+        // (a 235-wide sign is 59 tall); callers raise facade signs further.
+        const signY = Math.max(23, width / 8 + 3);
+        m.position.set(x, signY, z + 0.6);
         m.userData.sign = true;
         scene.add(m);
-        m.userData.backing = box(scene, x, 23, z - 1.5, width + 5, width / 4 + 5, 3, darkMetal);
+        m.userData.backing = box(scene, x, signY, z - 1.5, width + 5, width / 4 + 5, 3, darkMetal);
         return m;
       }
       sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb');
@@ -1738,27 +1741,9 @@
               (viewZoom > 0.28 || s.radius >= 50) &&
               Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&
               Math.abs(s.y - viewCenter.y) < viewReach + s.radius;
-          for (const o of allBuildings) {
-            // Fade a building that stands between the camera and the player, but
-            // not one the player is flying high above.
-            const hidden =
-              !player.roof &&
-              altitude < o.height + 30 &&
-              player.x > o.b.x - 8 &&
-              player.x < o.b.x + o.b.w + 8 &&
-              player.y < o.b.y &&
-              player.y > o.b.y - o.height * 0.86;
-            let op = hidden ? 0.28 : 1;
-            if (o.opacity !== op) {
-              o.opacity = op;
-              for (const m of o.materials) {
-                m.transparent = op < 1;
-                m.opacity = op;
-                m.depthWrite = op === 1;
-                m.needsUpdate = true;
-              }
-            }
-          }
+          // Anything between the camera and the player is cut away round them
+          // (lighting3d.js, CUTAWAY).
+          updateCutaway(altitude);
           // Pedestrians are drawn by the instanced crowd (src/crowd3d.js); these
           // keep individual models for their weapons and uniforms.
           const people = [...enemies, ...gangMembers, ...officers, ...storyActors, player];
