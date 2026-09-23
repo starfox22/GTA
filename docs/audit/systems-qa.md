@@ -114,3 +114,42 @@ turn, reverse and let the driver out on clear ground.
   `marinaBlocked()` lets people stand on `DOCKS`.
 - Verified: from each jetty the boat boards, the player steps back off onto the jetty, the
   boat drives out, and diving over the side works.
+
+## Water
+
+Tested: boarding every dock boat and stepping back off, diving over the side (J), boats
+held off land, parachute bail-outs over the Old Quarter, Marlow Bay, the west sea, the
+marina basin, the viaduct and past the superyacht (land: safe landing; sea within reach of
+an exit: splashdown and swim; far offshore: rescue), driving a sedan off the Riverbank
+quay, bailing out, swimming to the nearest ladder and climbing out, and a sweep of all
+coastal water (within 500 units of land) for the distance to the nearest way out
+(worst: 646 units, north of the superyacht, well inside the 30 s of breath).
+
+### W1. Four ladders could not be climbed
+- Symptom: a swimmer placed 40 units off each ladder and swimming at it climbs out at 53
+  of 57. Failures: the marina south quay ladder (1378, -3315) sat in a 5-unit slot between
+  a finger pontoon and a moored yacht; the quay ladder next to the Southport dock had the
+  dock across its approach; the two dock-end ladders had the dock's own boat moored
+  across their foot.
+- Cause: `ladderList()` checked only that the foot was water and the top dry, not that a
+  swimmer (radius 8) could get to the foot.
+- Fix: a ladder is only placed where three points on its approach (0, 18 and 36 units out)
+  are open water clear of solids, docks and dock berths; the quay walk then puts it on the
+  next clear stretch.
+- Verified: 54 ladders, 54 climbed out onto dry, clear ground; worst coastal distance to an
+  exit unchanged (646).
+
+### W2. A car written off in the bay exploded under water
+- Symptom: a sedan driven off the quay, abandoned while flooding: 1.5 s after it settled
+  it blew up (a fire and a blast at the water surface, hurting anyone swimming nearby).
+- Cause: `updateSinking()` wrote the car off by setting `hp = 0`; `updateCars()` treats a
+  vehicle reaching 0 hp without a `deadTime` as a wreck going up and calls `explode()`.
+- Fix: the write-off sets `deadTime` (dated past the 12 s a fresh wreck burns for, so the
+  renderer draws no flames over it), `sunk`, and clears any engine fire.
+- Verified: the same drive: no explosion, no fire, `fires` unchanged.
+
+### W3. A burning car kept burning in the sea
+- Cause: nothing put out `damage.burning` when a car flooded, so a car on fire driven into
+  the bay burned down to an explosion under water.
+- Fix: `canBurn()` (damage.js) is false for a flooding car and `updateDamage()` puts out
+  a fire that can no longer burn (this also covers a car in the repair bay).

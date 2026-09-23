@@ -137,6 +137,23 @@
           top = { x: edge.x + Math.cos(a) * 16, y: edge.y + Math.sin(a) * 16 };
         if (!groundAt(top.x, top.y, 8) || solid(top.x, top.y, 8)) return;
         if (groundAt(foot.x, foot.y, 4) || solid(foot.x, foot.y, 6, true)) return;
+        // A swimmer (radius 8) has to be able to reach the foot head-on: a ladder
+        // squeezed between a finger pontoon and a moored hull, boxed in by a dock
+        // or hidden behind a dock's own boat was drawn but could not be climbed.
+        for (const k of [0, 18, 36]) {
+          const x = foot.x - Math.cos(a) * k,
+            y = foot.y - Math.sin(a) * k;
+          if (
+            landAt(x, y) ||
+            solid(x, y, 9, true) ||
+            DOCKS.some(
+              (d) =>
+                (x + 9 > d.x && x - 9 < d.x + d.w && y + 9 > d.y && y - 9 < d.y + d.h) ||
+                Math.hypot(x - d.boatX, y - d.boatY) < 40,
+            )
+          )
+            return;
+        }
         if (ladderCache.some((l) => Math.hypot(l.x - foot.x, l.y - foot.y) < 120)) return;
         ladderCache.push({ x: foot.x, y: foot.y, edge, top, a, kind, deck });
       };
@@ -592,10 +609,22 @@
             hurt(1000, 'blast');
           }
         } else if (c.sinkFor > SINK_SECONDS + 1.5 && c.hp > 0) {
-          // Anything else that ends up in the bay is simply written off there.
+          // Anything else that ends up in the bay is simply written off there. It
+          // is marked dead here so updateCars does not treat the write-off as a
+          // wreck going up (a flooded car on the seabed used to explode), and dated
+          // well past the 12 s a fresh wreck burns for, so no flames are drawn on
+          // the water above it.
           c.hp = 0;
+          c.deadTime = Math.max(0.001, gameTime - 60);
+          c.sunk = true;
           c.ai = false;
           c.cop = false;
+          c.sprite = null;
+          if (c.damage) {
+            c.damage.burning = 0;
+            c.damage.burnt = true;
+            c.damage.wreckedAt = c.deadTime;
+          }
         }
       }
     }
