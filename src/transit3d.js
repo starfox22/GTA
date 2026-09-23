@@ -19,7 +19,10 @@
        */
       const railConcrete = mat('#8b948f', 0.9),
         railSteel = mat('#5f7079', 0.45, 0.65),
-        railTrack = mat('#c4ced0', 0.25, 0.8),
+        // Worn rail heads: a glint, not a mirror. Polished (0.25 rough, 0.8 metal)
+        // they caught the sun along whole curves from the air and bloomed into a
+        // white streak over the viaduct.
+        railTrack = mat('#b4bcbf', 0.42, 0.7),
         railWood = mat('#5c5346'),
         railParapet = mat('#a3aba6', 0.85),
         railGlassCanopy = new Three.MeshStandardMaterial({
