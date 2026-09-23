@@ -250,6 +250,8 @@
       if (faction === 'harbor') harborAlarmUntil = gameTime + 25;
     }
     function notifyViolence(source, kind = 'gunfire', attacker = null) {
+      // Southport Beach scatters too (beach.js).
+      beachHearsViolence(source, kind);
       for (const p of pedestrians)
         if (
           p.hp > 0 &&

@@ -699,6 +699,7 @@
       // @include src/transit3d.js
       // @include src/ecology3d.js
       // @include src/world3d.js
+      // @include src/beach3d.js
       // @include src/county3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js

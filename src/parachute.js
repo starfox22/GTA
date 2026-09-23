@@ -108,6 +108,8 @@
       const p = player.parachute;
       if (!p) return;
       const water = !groundAt(player.x, player.y);
+      // Down in the sea within swimming distance of a way out: swim for it (water.js).
+      if (water && parachuteSplashdown()) return;
       let safe = findParachuteLandingPoint(player.x, player.y),
         recovered = false;
       if (!safe) {

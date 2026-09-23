@@ -249,7 +249,7 @@
         }
       }
       sign('EAGLE PASS · SCENIC ROUTE', 6650, 2460, 195, '#d5d6b9');
-      sign('OCEANVIEW / AIRPORT', 2245, 6920, 190, '#c3ded5');
+      sign('OCEANVIEW / AIRPORT', 3370, 6920, 190, '#c3ded5');
       sign('CORAL COAST', 7080, 7360, 165, '#f2ccae');
       const airportGroup = new Three.Group();
       scene.add(airportGroup);

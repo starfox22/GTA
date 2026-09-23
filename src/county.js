@@ -143,10 +143,15 @@
         b: [6580, 3200],
       },
       {
+        // Leaves Northbank from the south end of Riverbank Dr, down the Battery
+        // Point sea wall and past the east end of Southport Beach, and lands on
+        // Oceanview's east avenue where Beach Road starts. It used to run down
+        // Garden Ave straight across the middle of the beach at sand level,
+        // cutting the strand in two.
         name: 'OCEANVIEW CAUSEWAY',
         width: 128,
-        a: [2176, 4900],
-        b: [2176, 7010],
+        a: [3200, 5000],
+        b: [3200, 7010],
       },
       {
         name: 'CORAL SOUND BRIDGE',
@@ -807,6 +812,7 @@
       populateSunsetPier();
       populateLiners();
       populatePromenade();
+      populateBeach();
       populateCycles();
       populateMarina();
       populateWildlife();
@@ -902,6 +908,7 @@
       drawingContext.restore();
     }
     function addCountyColliders() {
+      addBeachColliders();
       for (const b of [...countySolids(), ...militaryWalls])
         addStatic(b.x, b.y, b.w, b.h, b.height, b.kind || 'military');
       for (const bridge of COUNTY_BRIDGES)

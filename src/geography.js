@@ -6,6 +6,35 @@
      * Shared land polygons, bridges, roads, shoreline tests and district lookup.
      */
     /* One coastline model drives terrain, water, the map and all vehicle footprints. */
+    /* A Catmull-Rom curve through `points` (both ends kept), `steps` pieces per
+       span, for coasts that should read as a sweep rather than a polygon. */
+    function smoothShoreline(points, steps) {
+      const out = [];
+      for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[Math.max(0, i - 1)],
+          p1 = points[i],
+          p2 = points[i + 1],
+          p3 = points[Math.min(points.length - 1, i + 2)];
+        for (let k = 0; k < steps; k++) {
+          const t = k / steps,
+            t2 = t * t,
+            t3 = t2 * t;
+          out.push(
+            [0, 1].map((c) =>
+              Math.round(
+                0.5 *
+                  (2 * p1[c] +
+                    (p2[c] - p0[c]) * t +
+                    (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * t2 +
+                    (3 * p1[c] - p0[c] - 3 * p2[c] + p3[c]) * t3),
+              ),
+            ),
+          );
+        }
+      }
+      out.push(points.at(-1).slice());
+      return out;
+    }
     const LAND_REGIONS = [
       {
         id: 'northbank',
@@ -42,14 +71,22 @@
           [3420, 3300],
           [3420, 4400],
           // South shore: the sweep of Southport Beach between Marina Rd and the
-          // water (see BEACH below), wide enough for a proper public strand.
+          // water (see BEACH below), wide enough for a proper public strand. The
+          // strand is one smooth curve, not a string of corners: a beach is
+          // shaped by the swell, and the surf, the wet sand and the swash all
+          // follow this line.
           [3300, 5020],
-          [3150, 5420],
-          [2860, 5700],
-          [2420, 5810],
-          [2000, 5760],
-          [1830, 5560],
-          [1800, 5430],
+          ...smoothShoreline(
+            [
+              [3150, 5420],
+              [2890, 5672],
+              [2420, 5806],
+              [2010, 5758],
+              [1836, 5572],
+              [1800, 5430],
+            ],
+            9,
+          ),
           [1380, 5030],
           [980, 4630],
           [430, 4270],
@@ -150,30 +187,43 @@
     /**
      * SOUTHPORT BEACH
      * The city's public strand on Northbank's south shore, between the airport
-     * fence (x 1740) and the Battery Point sea wall (x 3150): sand from the
-     * Marina Rd kerb down to the water, 250..500 units deep and 1400 long. It is
+     * fence (x 1740) and the Battery Point sea wall (x 3125): sand from the
+     * Marina Rd kerb down to the water, 250..460 units deep and 1400 long. It is
      * reserved ground: no street or block is laid on it (cityStreets,
      * validCityBlock), the esplanade gives way to the boardwalk along its top
-     * edge, and its shore reads as 'beach' so the water meets a sand lip rather
-     * than a quay wall. The Oceanview Causeway crosses it on its approach span at
-     * x = 2176. The Coast Line viaduct passes 400 units to the west, never over
-     * the sand. Beach life (umbrellas, towels, lifeguard towers, bathers) is to
-     * be built on this data; the polygon runs out past the waterline and
-     * `onBeach` clips it to land.
+     * edge, and its shore reads as 'beach' so the water meets the sand rather
+     * than a quay wall, and only here can someone on foot walk into the sea.
+     * Nothing crosses the sand: the Oceanview Causeway leaves from the end of
+     * Riverbank Dr, east of the sea wall, and the Coast Line viaduct passes well
+     * to the west. The polygon runs out past the waterline and `onBeach` clips
+     * it to land. Beach life, the props and the pier are built on this data by
+     * beach.js and beach3d.js.
+     *
+     * The fishing pier runs out from the lower sand into the swim zone: a
+     * walkable deck (part of `groundAt`, like the docks) that is a wall to
+     * anyone on foot and a roof to swimmers, who pass under it between the piles.
      */
     const BEACH = {
       name: 'SOUTHPORT BEACH',
       polygon: [
         [1740, 5306],
-        [3300, 5306],
-        [3300, 5960],
+        [3125, 5306],
+        [3125, 5960],
         [1650, 5960],
         [1650, 5440],
       ],
       // The promenade along the top of the sand: a 40-unit boardwalk just south
       // of the Marina Rd pavement, from the airport fence to the sea wall.
-      boardwalk: { x0: 1760, x1: 3130, y: 5326, width: 40 },
+      boardwalk: { x0: 1760, x1: 3110, y: 5326, width: 40 },
+      // Stem from the lower sand out past the breakers, and the T of the head.
+      pier: [
+        { x: 2683, y: 5688, w: 34, h: 300 },
+        { x: 2636, y: 5950, w: 128, h: 40 },
+      ],
     };
+    function onBeachPier(x, y, r = 0) {
+      return BEACH.pier.some((d) => x - r >= d.x && x + r <= d.x + d.w && y - r >= d.y && y + r <= d.y + d.h);
+    }
     function onBeach(x, y) {
       return regionContains(BEACH, x, y) && landAt(x, y);
     }
@@ -389,7 +439,7 @@
       );
     }
     function groundAt(x, y, r = 0) {
-      if (onBridge(x, y, r) || onDock(x, y, r)) return true;
+      if (onBridge(x, y, r) || onDock(x, y, r) || onBeachPier(x, y, r)) return true;
       return (
         landAt(x, y) &&
         (!r ||
@@ -641,6 +691,7 @@
             : y < 4400
               ? 'LITTLE HAVANA'
               : 'CORAL MARINA';
+      if (!landAt(x, y) && regionContains(BEACH, x, y) && !onBridge(x, y)) return BEACH.name;
       if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
       if (x > 1718 && x < 2638 && y > 2794 && y < 3664) return 'CENTRAL GARDEN';
       if (y < 0) {

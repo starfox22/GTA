@@ -17,6 +17,9 @@
       audioLoops = {},
       reverb = null,
       reverbSend = null,
+      // A low-pass across the whole mix: open on land, dulled while swimming
+      // (water-audio.js dips it each time the face goes under).
+      earFilter = null,
       footstepClock = 0;
     function initAudio() {
       if (!window.AudioContext && !window.webkitAudioContext) return;
@@ -34,7 +37,11 @@
         limiter.release.value = 0.22;
         master = audio.createGain();
         master.gain.value = soundOn ? 0.62 : 0;
-        master.connect(limiter).connect(audio.destination);
+        earFilter = audio.createBiquadFilter();
+        earFilter.type = 'lowpass';
+        earFilter.frequency.value = 20000;
+        earFilter.Q.value = 0.5;
+        master.connect(earFilter).connect(limiter).connect(audio.destination);
         reverb = audio.createConvolver();
         const n = Math.floor(audio.sampleRate * 1.3),
           ir = audio.createBuffer(2, n, audio.sampleRate);
@@ -253,10 +260,13 @@
           0.3,
         );
       }
+      updateWaterAudio(deltaSeconds);
       if (!active) return;
       footstepClock -= deltaSeconds;
       const walking =
         !c &&
+        !player.swimming &&
+        !player.climbing &&
         (keys.KeyW ||
           keys.KeyA ||
           keys.KeyS ||
@@ -267,8 +277,17 @@
           keys.ArrowRight);
       if (walking && footstepClock <= 0) {
         footstepClock = keys.ShiftLeft ? 0.22 : 0.34;
-        noise(0.09, 0.095, 520 + Math.random() * 260);
-        tone(95 + Math.random() * 40, 0.045, 0.09, 'sine', 45);
+        if (player.wading) {
+          // Striding through the shallows: slower steps, each one a swish.
+          footstepClock *= 1.35;
+          wadeStepSound(player.wading);
+        } else if (onBeach(player.x, player.y) && !player.roof) {
+          // Soft sand gives under the foot: a dull crunch and no heel strike.
+          noise(0.12, 0.07, 300 + Math.random() * 180);
+        } else {
+          noise(0.09, 0.095, 520 + Math.random() * 260);
+          tone(95 + Math.random() * 40, 0.045, 0.09, 'sine', 45);
+        }
       }
     }
     function mute() {

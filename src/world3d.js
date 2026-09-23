@@ -59,12 +59,37 @@
               if (x > 0) relax(i, i + SHORE_RES - 1, 4);
             }
           }
+        // Green channel: how close the water is to an open-sea beach, so the
+        // shader knows where to draw sandy shallows and rolling breakers. Beach
+        // shores up the bay and the river mouth are sheltered and left out.
+        mc.setTransform(1, 0, 0, 1, 0, 0);
+        mc.fillStyle = '#000';
+        mc.fillRect(0, 0, SHORE_RES, SHORE_ROWS);
+        mc.scale(SHORE_RES / WORLD_SIZE, SHORE_RES / WORLD_SIZE);
+        mc.translate(0, -WORLD_TOP);
+        mc.filter = 'blur(3px)';
+        mc.strokeStyle = 'rgba(255,255,255,0.6)';
+        mc.lineWidth = 460;
+        mc.lineCap = 'round';
+        mc.beginPath();
+        for (const e of coastSegments()) {
+          if (e.opening || shoreStyle(e) !== 'beach') continue;
+          if (e.x > RIVER.left - 200 && e.x < RIVER.right + 200 && e.y < 4750) continue;
+          const dx = (Math.cos(e.a) * e.length) / 2,
+            dy = (Math.sin(e.a) * e.length) / 2;
+          mc.moveTo(e.x - dx, e.y - dy);
+          mc.lineTo(e.x + dx, e.y + dy);
+        }
+        mc.stroke();
+        mc.filter = 'none';
+        const beachMask = mc.getImageData(0, 0, SHORE_RES, SHORE_ROWS).data;
         const data = new Uint8Array(n * 4),
           unitsPerTexel = WORLD_SIZE / SHORE_RES;
         for (let i = 0; i < n; i++) {
           const units = (dist[i] / 3) * unitsPerTexel,
             v = Math.round(Math.min(255, units / SHORE_UNIT_SCALE));
-          data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = v;
+          data[i * 4] = data[i * 4 + 2] = v;
+          data[i * 4 + 1] = Math.min(255, beachMask[i * 4] * 1.6);
           data[i * 4 + 3] = 255;
         }
         const tx = new Three.DataTexture(data, SHORE_RES, SHORE_ROWS, Three.RGBAFormat);
@@ -92,6 +117,7 @@
           varying vec3 vNormal;
           varying float vCrest;
           varying float vShore;
+          varying float vBeach;
           uniform float uTime;
           uniform sampler2D uShore;
           uniform float uWorldSize;
@@ -112,7 +138,9 @@
           void main(){
             vec4 origin = modelMatrix * vec4(position, 1.);
             vec2 p = origin.xz;
-            float shore = texture2D(uShore, (p - uWorldOrigin) / uWorldExtent).r * uShoreScale;
+            vec4 shoreTexel = texture2D(uShore, (p - uWorldOrigin) / uWorldExtent);
+            float shore = shoreTexel.r * uShoreScale;
+            vBeach = shoreTexel.g;
             float depthFade = 0.22 + 0.78 * smoothstep(8., 190., shore);
             vec3 offset = vec3(0.);
             vec3 dNormal = vec3(0., 1., 0.);
@@ -134,6 +162,7 @@
           varying vec3 vNormal;
           varying float vCrest;
           varying float vShore;
+          varying float vBeach;
           uniform float uTime;
           uniform float uDay;
           uniform float uDusk;
@@ -169,6 +198,11 @@
             vec3 shallow = mix(vec3(.10, .40, .48), vec3(.22, .68, .66), tropical);
             float depthMix = 1. - smoothstep(0., 230., vShore + h0 * 30.);
             vec3 body = mix(deep, shallow, depthMix * depthMix);
+            // Off a beach the sand bottom shows through the shallows: clear
+            // turquoise over pale sand, darkening where it shelves away.
+            float sandy = vBeach * (1. - smoothstep(8., 170., vShore + h0 * 24.));
+            body = mix(body, vec3(.30, .62, .60), sandy * 0.7);
+            body = mix(body, vec3(.58, .70, .60), vBeach * (1. - smoothstep(0., 50., vShore + h0 * 12.)) * 0.55);
             // Sky reflection: night navy -> dusk amber horizon -> pale day sky.
             vec3 skyNight = vec3(.05, .08, .16);
             vec3 skyDay = vec3(.55, .70, .84);
@@ -192,7 +226,15 @@
             float wash = smoothstep(0.78, 1., washPhase) * (1. - smoothstep(24., 120., vShore));
             float edge = 1. - smoothstep(0., 22. + h0 * 14., vShore);
             float caps = smoothstep(0.58, 0.95, vCrest * (0.65 + h0 * 0.7)) * smoothstep(40., 160., vShore);
-            float foam = clamp(edge * 0.9 + wash * 0.65 + caps * 0.4, 0., 1.);
+            // Breakers rolling in on a beach: lines of white water parallel to the
+            // shore, broken along their length, each trailing a fading wake of foam.
+            float bp = fract(vShore * 0.0125 - uTime * 0.137 + vnoise(vWorld.xz * 0.004) * 0.6);
+            float surfZone = vBeach * smoothstep(22., 60., vShore) * (1. - smoothstep(160., 270., vShore));
+            float broken = smoothstep(0.3, 0.75, vnoise(vec2(vWorld.x * 0.028 + vWorld.z * 0.011, bp * 2.5)));
+            float breaker = smoothstep(0.86, 0.96, bp) * (1. - smoothstep(0.965, 1., bp)) * surfZone * (0.3 + 0.7 * broken);
+            float trail = smoothstep(0.5, 0.96, bp) * (1. - smoothstep(0.965, 1., bp)) * surfZone * 0.35
+                        * vnoise(vWorld.xz * 0.18 + vec2(uTime * 0.2, -uTime * 0.25));
+            float foam = clamp(edge * 0.9 + wash * 0.65 + caps * 0.4 + breaker * 0.9 + trail, 0., 1.);
             foam *= 0.55 + 0.45 * vnoise(vWorld.xz * 0.35 + uTime * 0.4);
             color = mix(color, vec3(.86, .93, .92), foam);
             color *= 0.3 + 0.7 * uDay;
@@ -231,6 +273,8 @@
        */
       for (const e of coastSegments()) {
         if (e.opening) continue;
+        // Southport Beach's waterline is drawn by beach3d.js (sand, wet sand, swash).
+        if (shoreStyle(e) === 'beach' && e.region === 'northbank') continue;
         const group = new Three.Group(),
           style = shoreStyle(e),
           { nx, ny } = shoreNormal(e);
@@ -788,6 +832,7 @@
         radius: 300,
       });
       function updateWorldVisuals() {
+        updateBeachVisuals();
         const hit = rooftopJob();
         reservedGlass.visible = !hit || !['sip', 'sick', 'collapse', 'dead'].includes(hit.poisonPhase);
         poolMat.emissiveIntensity = 0.22 + Math.sin(gameTime * 1.8) * 0.055;

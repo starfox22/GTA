@@ -1304,10 +1304,13 @@
           c.junction = null;
           c.navAngle = undefined;
         }
+        // Only the player's own car may leave the land: into the surf off a
+        // beach or over a quay into the bay, where it floods (water.js).
         if (
           c.type !== 'plane' &&
           !(isAircraft(c) && c.altitude > 8) &&
           !isBoat(c) &&
+          c !== player.car &&
           corners(vehicleShape(c)).some((p) => !groundAt(p.x, p.y))
         ) {
           c.x = c.stepStartX;

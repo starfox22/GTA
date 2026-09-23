@@ -783,6 +783,7 @@
         garageBlocked(x, y, r) ||
         parkBlocked(x, y, r) ||
         marinaBlocked(x, y, r) ||
+        beachBlocked(x, y, r) ||
         (!overWater && !groundAt(x, y, r)) ||
         harborBlocked(x, y, r) ||
         depotBlocked(x, y, r) ||
@@ -811,6 +812,8 @@
         reach = 90 + collisionRadius,
         blocked = (x, y) => {
           if (solid(x, y, collisionRadius, swimmer)) return true;
+          // Where the player may cross the shoreline (beaches, ladders): water.js.
+          if (swimmer && shoreStepBlocked(body.x, body.y, x, y, collisionRadius)) return true;
           if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
           for (let i = 0; i < vehicles.length; i++) {
             const c = vehicles[i];
@@ -1759,10 +1762,12 @@
             }
           }
       }
+      // Out of a flooding car there is only the water (water.js).
+      if (!found && vehicle.sinkFor > 0) found = exitIntoWater(vehicle);
       if (!found) {
         tell(
           isBoat(vehicle)
-            ? 'Pull alongside a wooden dock before getting out.'
+            ? 'Pull alongside a wooden dock to step off, or press J to dive in.'
             : 'No room to get out. Move away from the wall.',
         );
         return;
@@ -2705,6 +2710,7 @@
         updateWeather(deltaSeconds);
         updateSwimming(deltaSeconds);
         updateSinking(deltaSeconds);
+        timed('beach', () => updateBeach(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -2730,6 +2736,7 @@
                 : keys.ShiftLeft || keys.ShiftRight
                   ? 158
                   : 100;
+            if (player.wading) s *= wadeFactor();
             moveBody(
               player,
               (x / Math.hypot(x, y)) * s * deltaSeconds,
@@ -2744,6 +2751,8 @@
           !player.deck &&
           !player.parachute &&
           !player.swimming &&
+          !player.wading &&
+          !player.climbing &&
           !transitRide &&
           !taxiRide &&
           !player.coaster
@@ -3813,7 +3822,9 @@
           ? vehicleSpec(c).name
           : player.swimming
             ? 'SWIMMING'
-            : 'ON FOOT';
+            : player.wading
+              ? 'WADING'
+              : 'ON FOOT';
       // The speed readout doubles as the breath gauge while you are in the water.
       const swimming = !c && player.swimming;
       getElement('speed').textContent = swimming
@@ -4117,6 +4128,7 @@
       player.deck = null;
       player.coaster = null;
       player.parachute = null;
+      player.climbing = null;
       player.x = x;
       player.y = y;
       cameraTarget.x = x;
@@ -4318,7 +4330,8 @@
         return;
       }
       if (code === 'KeyJ') {
-        bailOut();
+        // Aircraft: parachute. Boats and flooding cars: over the side (water.js).
+        if (!bailOut()) diveOverboard();
         return;
       }
       if (player.parachute && code === 'Space') {
@@ -4435,6 +4448,8 @@
     // @include src/cycles.js
     // @include src/weather.js
     // @include src/water.js
+    // @include src/water-audio.js
+    // @include src/beach.js
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
@@ -4709,6 +4724,19 @@
         }
         return this.status();
       },
+      // The player and the water: swimming, wading, stamina, shore type and the
+      // nearest way out (see water.js).
+      swim: () => swimStatus(),
+      // Every ladder out of the sea: foot in the water, top on the quay.
+      ladders: () =>
+        ladderList().map((l) => ({
+          kind: l.kind,
+          x: Math.round(l.x),
+          y: Math.round(l.y),
+          top: { x: Math.round(l.top.x), y: Math.round(l.top.y) },
+        })),
+      // Southport Beach: how busy it is and what everyone is doing (beach.js).
+      beach: () => beachStatus(),
       // Place the camera/player at a map point without touching anything else.
       look(x, y, zoom) {
         teleportPlayer(x, y);

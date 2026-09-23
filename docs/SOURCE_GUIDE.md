@@ -45,9 +45,12 @@ Game closure (in include order):
 | File | Role |
 | --- | --- |
 | game.js | Constants, vehicle definitions, world build (`buildWorld`, `zoneHeight`, `makeBuilding`), `populate`, combat, `update`, 2D fallback drawing, map, HUD, input, startup, `window.DeadEndCity` developer console |
-| audio.js | Web Audio effects, voices, procedural sounds |
+| audio.js | Web Audio effects, voices, procedural sounds; `earFilter` (a low-pass over the whole mix, dulled while swimming) |
 | physics.js | Vehicle and pedestrian physics, traffic AI, signals, knockdowns |
-| geography.js | Land polygons, river, bridges, `districtAt`, coast segments, 2D water |
+| geography.js | Land polygons, river, bridges, `districtAt`, coast segments, 2D water, `BEACH` (strand, boardwalk, pier) |
+| water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J in a boat), `parachuteSplashdown`, harbor-patrol rescue |
+| water-audio.js | Procedural water sound: splashes, strokes, gasps, wading, ladder rungs, flooding cars and bubbles; the surf, lapping and crowd loops; gulls and the lifeguard whistle (`updateWaterAudio`, called from `soundUpdate`) |
+| beach.js | Southport Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), the cast of `beachgoers` with time-of-day density, volleyball and frisbee games, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
 | harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot (front shutter, back door and the drop: `beginDepotDrop`, `depotShutterDown`, `updateDepotDrop`) |
 | police-feedback.js | Wanted-level status chips (NEED TO LOSE POLICE, POLICE CLEARED) and delivery blocking |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
@@ -69,7 +72,7 @@ Game closure (in include order):
 Renderer fragments (inside `createCityRenderer()`): cityscape3d (buildings, roofs, shopfronts,
 street furniture, night windows), sidejobs3d (rings/devices), garage3d, landmarks3d, civic3d
 (time-of-day palette, businesses), air-cover3d, renewal3d, sports3d, transit3d, ecology3d,
-world3d (water shader, palms, airport, rooftop bar), county3d, harbor3d (signals, depot,
+world3d (water shader, palms, airport, rooftop bar), beach3d (Southport Beach sand, swash, pier, props, ladders, instanced beachgoers; `updateBeachVisuals` from `updateWorldVisuals`), county3d, harbor3d (signals, depot,
 helicopter searchlight), helicopter3d, vehicles3d, plane3d.
 
 ## 4. The city layout
@@ -93,11 +96,19 @@ helicopter searchlight), helicopter3d, vehicles3d, plane3d.
   Drive, Little Havana and Coral Marina (east). Zoning lives in `zoneHeight()` (heights) and the
   block patterns in `buildWorld()`; the renderer picks facade/roof archetypes from the same
   district names in `archetypeFor()`.
-- Southport Beach (`BEACH` in geography.js) is the reserved public strand on the south shore,
-  x 1740..3150, from the Marina Rd kerb (y 5306) to the water (y 5560..5810); its top edge is a
-  40-wide boardwalk (`BEACH.boardwalk`). No streets or blocks are laid on it, the esplanade
-  stops at either end, and its shore reads as 'beach'. The Oceanview Causeway crosses it at
-  x 2176. Beach life is meant to be built on this data.
+- Southport Beach (`BEACH` in geography.js) is the public strand on the south shore, x 1740..3125,
+  from the Marina Rd kerb (y 5306) down to a smooth curved waterline (`smoothShoreline`, y
+  5430..5806); its top edge is a 40-wide boardwalk (`BEACH.boardwalk`) and a timber fishing pier
+  (`BEACH.pier`, part of `groundAt`) runs out from the lower sand at x 2700. No streets or blocks
+  are laid on it, the esplanade stops at either end, and its shore reads as 'beach'. Nothing
+  crosses the sand: the Oceanview Causeway leaves from the south end of Riverbank Dr (x 3200)
+  past the beach's east end and lands on Oceanview's east avenue at Beach Road (3200, 7010).
+  beach.js places the kiosks, bar, lifeguard towers, umbrellas, towels, court, buoys and people
+  on it; beach3d.js draws them.
+- Water access (water.js): on foot the sea can be entered only across a beach shore; everywhere
+  else the edge is a wall. Swimmers climb out at beaches, rocky shores and 58 ladders (every
+  ~420 units of quay, the end of each dock, the pier head), each marked by a lifebuoy post; no
+  city water is more than ~670 units from a way out.
 - Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns, bridges and an airport.
@@ -157,7 +168,13 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
   neon halos and vehicle head/tail halos follow the same night amount.
 - Time of day: `updateCivicVisuals()` in civic3d.js blends sky, fog, sun and ambient colours
   between night, dusk and day keyframes.
-- Water: one `ShaderMaterial` (world3d.js). A 512 by 512 distance-to-shore texture built from
+- Beach (beach3d.js): the sand is its own finer canvas mesh (ripples, footprints, wrack line, damp
+  and wet bands); a shader ribbon along the waterline draws the swash running up and draining off
+  the sand. Beachgoers are one rig of seven InstancedMeshes posed per frame, props are instanced,
+  fixed buildings are batched, and nothing animates unless the camera is near the beach.
+- Water: one `ShaderMaterial` (world3d.js). The shore texture's green channel marks water near an
+  open-sea beach, where the shader adds sandy turquoise shallows and rolling, broken breaker
+  lines. A 512 by 512 distance-to-shore texture built from
   the land polygons drives shallow colour, foam bands and swell damping. Four Gerstner waves
   displace the mesh; noise ripples add fine normals; sun glitter and moon sparkle are
   view-dependent.

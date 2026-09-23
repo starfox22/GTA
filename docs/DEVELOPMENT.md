@@ -78,6 +78,8 @@ something, never a generic code-evaluation hook.
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
 | `stats()` | Per-frame CPU timings, draw calls, triangles |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
+| `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
+| `beach()` | Southport Beach: crowd density for the hour, who is there and what they are doing, prop counts |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 
 ## Conventions
