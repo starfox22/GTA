@@ -537,7 +537,10 @@
         // (whose even gloom is the overcast dimming in weather3d.js) and at night.
         // At most a third darker: enough to read as passing cloud without turning
         // the streets into a patchwork from the air.
-        const shadeStrength = cloudsSupported ? 0.34 * clamp(light * 1.4, 0, 1) * (1 - overcast * 0.85) : 0;
+        // A closed deck (overcast and rain, cloud 0.9 and up) throws no pattern at
+        // all: its residual blotches over the rain-dark streets read as dirt.
+        const closedDeck = clamp((cloud - 0.72) / 0.18, 0, 1),
+          shadeStrength = cloudsSupported ? 0.34 * clamp(light * 1.4, 0, 1) * (1 - closedDeck) : 0;
         cloudShade.visible = shadeStrength > 0.01 && coverage > 0.05;
         if (cloudShade.visible) {
           const ground = terrainHeight(viewCenter.x, viewCenter.y),

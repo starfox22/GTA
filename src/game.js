@@ -4015,7 +4015,7 @@
       }
       // An airborne aircraft cannot be left (exitCar refuses), so it comes along
       // rather than being abandoned in the sky while the player jumps away.
-      if (player.car) {
+      if (player.car && isAircraft(player.car)) {
         player.car.x = x;
         player.car.y = y;
       }

@@ -240,7 +240,9 @@
             color += vec3(1., .78, .5) * sparkle * 0.14 * (1. - uDay) * (1. - smoothstep(0., 360., vShore));
             // Foam: breaking edge, retreating wash and crest whitecaps.
             float washPhase = fract(vShore * 0.022 - uTime * 0.26 + h0 * 0.4);
-            float wash = smoothstep(0.78, 1., washPhase) * (1. - smoothstep(24., 120., vShore));
+            // Rolling wash lines belong on a beach; off a sea wall or a quay they read
+            // as rings of foam drawn round the whole island, so there only a trace.
+            float wash = smoothstep(0.78, 1., washPhase) * (1. - smoothstep(24., 120., vShore)) * mix(0.22, 1., clamp(vBeach * 2., 0., 1.));
             float edge = 1. - smoothstep(0., 22. + h0 * 14., vShore);
             float caps = smoothstep(0.58, 0.95, vCrest * (0.65 + h0 * 0.7)) * smoothstep(40., 160., vShore);
             // Breakers rolling in on a beach: lines of white water parallel to the
