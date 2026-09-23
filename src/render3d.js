@@ -1809,7 +1809,7 @@
               m.blood = new Three.Group();
               m.body.add(m.blood);
               const vehicleDefinition = vehicleSpec(c),
-                red = mat('#8d1325', 0.38);
+                red = mat('#7a0f1f', 0.62);
               for (let j = 0; j < 9; j++)
                 box(
                   m.blood,
@@ -2123,6 +2123,9 @@
           }
           if (fx.length > 620) fx.splice(0, fx.length - 620);
           let pi = 0;
+          // Sprites are unlit: blood drops, casings, glass and smoke take the scene's
+          // light level so they do not glow in the dark (flames and sparks do).
+          const spriteLight = 0.3 + 0.7 * daylight();
           for (let i = fx.length - 1; i >= 0; i--) {
             const p = fx[i];
             p.life -= deltaSeconds;
@@ -2147,6 +2150,7 @@
             const a = p.life / p.max;
             s.material.map = p.glow ? haloTx : smokeTx;
             s.material.color.set(p.color);
+            if (!p.glow) s.material.color.multiplyScalar(spriteLight);
             s.material.opacity = Math.min(p.smoke ? 0.56 : 0.96, a * 1.7);
             s.material.blending = p.glow ? Three.AdditiveBlending : Three.NormalBlending;
             let sz = p.case ? p.size : p.size * (1 + (1 - a) * 2);
@@ -2163,6 +2167,7 @@
             );
             s.material.map = p.blood ? bloodDropTx : p.flame ? flameTx : smokeTx;
             s.material.color.set(p.color);
+            if (!p.flame) s.material.color.multiplyScalar(spriteLight);
             s.material.opacity = p.blood ? 0.97 : clamp(p.life / p.max, 0, 0.7);
             s.material.blending = p.flame ? Three.AdditiveBlending : Three.NormalBlending;
             s.scale.set(p.size * (p.blood ? 1.1 : 1.6), p.size * (p.blood ? 1.8 : 1.6), 1);
