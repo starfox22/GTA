@@ -20,6 +20,14 @@ vehicles, standing in the Old Quarter / driving a sedan on Harbor Ave:
 | `people` | 14-16 ms | 2.3-2.7 ms |
 | `ui` (HUD refresh, averaged per update) | 13.6-14.2 ms | 0.5 ms |
 
+### P5. Blood-track, pond and boat checks for cars that were not near anything
+- Cause: `updateBloodTracks` sampled the terrain under every blood pool in the city for
+  every moving car each frame before checking whether the pool was anywhere near it; the
+  new pond kerb (V2) ran its ellipse tests for every moving car's corners; `boatFits`
+  (a hull-against-coast test) ran every physics step for every moored boat.
+- Fix: the pool filter tests distance first; `parkPondNear()` (renewal.js) gates the pond
+  test with boxes round the ponds; a boat that has not moved this step is not re-fitted.
+
 ### P1. `landAt()` was over half of all simulation time
 - Symptom: CPU profile of `simulate(4)`: `landAt`/`pointInPolygon` 59% of samples.
 - Cause: every moving car tests its four hull corners with `groundAt()` every 1/120 s

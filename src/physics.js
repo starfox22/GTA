@@ -1399,11 +1399,12 @@
         // stops every wheeled vehicle, the player's included: a car used to drive
         // into the Commons lake and leave its driver no dry ground to step out on.
         const moved = c.x !== c.stepStartX || c.y !== c.stepStartY || c.a !== c.stepStartA,
-          wheeled = moved && c.type !== 'plane' && !(isAircraft(c) && c.altitude > 8) && !isBoat(c);
+          wheeled = moved && c.type !== 'plane' && !(isAircraft(c) && c.altitude > 8) && !isBoat(c),
+          nearPond = wheeled && parkPondNear(c.x, c.y, vehicleSpec(c).l);
         if (
           wheeled &&
           corners(vehicleShape(c)).some(
-            (p) => (c !== player.car && !groundAt(p.x, p.y)) || parkPondBlocked(p.x, p.y),
+            (p) => (c !== player.car && !groundAt(p.x, p.y)) || (nearPond && parkPondBlocked(p.x, p.y)),
           )
         ) {
           c.x = c.stepStartX;
@@ -1413,14 +1414,15 @@
           c.vx *= -0.15;
           c.vy *= -0.15;
         }
-        if (isBoat(c) && !boatFits(c)) {
+        // A moored boat that has not moved still fits where it lies.
+        if (isBoat(c) && moved && !boatFits(c)) {
           if (c.lastWater) {
             c.x = c.lastWater.x;
             c.y = c.lastWater.y;
             c.a = c.lastWater.a;
           }
           c.vx = c.vy = 0;
-        } else if (isBoat(c))
+        } else if (isBoat(c) && (moved || !c.lastWater))
           c.lastWater = {
             x: c.x,
             y: c.y,
@@ -1578,14 +1580,17 @@
       }
       if (distance < 0.001) return;
       if (!bloodPools.length && !(c.bloodTrackRemaining > 0)) return;
-      const sources = bloodPools.filter(
-        (b) =>
-          !b.track &&
-          Math.abs((b.surface || 0) - bloodSurface(b.x, b.y)) < 3 &&
-          gameTime - b.created < 180 &&
-          Math.abs(b.x - c.x) < distance + vehicleSpec(c).l + 30 &&
-          Math.abs(b.y - c.y) < distance + vehicleSpec(c).l + 30,
-      );
+      // Cheap distance test first: the surface check samples the terrain, and
+      // every moving car ran it for every pool in the city each frame.
+      const near = distance + vehicleSpec(c).l + 30,
+        sources = bloodPools.filter(
+          (b) =>
+            !b.track &&
+            Math.abs(b.x - c.x) < near &&
+            Math.abs(b.y - c.y) < near &&
+            gameTime - b.created < 180 &&
+            Math.abs((b.surface || 0) - bloodSurface(b.x, b.y)) < 3,
+        );
       if (!sources.length && !(c.bloodTrackRemaining > 0)) return;
       const steps = Math.ceil(distance / 2),
         ds = distance / steps,
