@@ -9,24 +9,18 @@ profiles of `simulate(4)` with the frame loop stopped, on a shared, heavily load
 
 ## Performance
 
-Baseline, per simulation update (1/30 s, four physics steps), 649 pedestrians and 189
-vehicles, standing in the Old Quarter / driving a sedan on Harbor Ave:
+Per simulation update (1/30 s of game time, four physics steps), with the frame loop
+stopped, ~650 pedestrians and ~190 vehicles, standing in the Old Quarter and then driving a
+sedan along Harbor Ave. Both builds measured back to back in the same headless browser
+(`bench.js` run three times, warm runs shown):
 
-| Part | Before | After |
+| Part | Before (0d4b74c) | After |
 | --- | --- | --- |
-| whole update (standing) | 71 ms | ~16 ms |
-| whole update (driving) | 72 ms | ~10 ms |
-| `cars` (updateCars + physics) | 32-33 ms | 6-10 ms |
-| `people` | 14-16 ms | 2.3-2.7 ms |
-| `ui` (HUD refresh, averaged per update) | 13.6-14.2 ms | 0.5 ms |
-
-### P5. Blood-track, pond and boat checks for cars that were not near anything
-- Cause: `updateBloodTracks` sampled the terrain under every blood pool in the city for
-  every moving car each frame before checking whether the pool was anywhere near it; the
-  new pond kerb (V2) ran its ellipse tests for every moving car's corners; `boatFits`
-  (a hull-against-coast test) ran every physics step for every moored boat.
-- Fix: the pool filter tests distance first; `parkPondNear()` (renewal.js) gates the pond
-  test with boxes round the ponds; a boat that has not moved this step is not re-fitted.
+| whole update, standing | 56-57 ms | 10-11 ms |
+| whole update, driving | 57-58 ms | 8-9.5 ms |
+| `cars` (updateCars + physics) | 27.6-28.3 ms | 4.7-7.1 ms |
+| `people` | 10.1-11.0 ms | 1.9-2.1 ms |
+| `ui` (HUD refresh, averaged per update) | 10.7-11.3 ms | 0.4-0.7 ms |
 
 ### P1. `landAt()` was over half of all simulation time
 - Symptom: CPU profile of `simulate(4)`: `landAt`/`pointInPolygon` 59% of samples.
@@ -71,6 +65,14 @@ vehicles, standing in the Old Quarter / driving a sedan on Harbor Ave:
   the car stands still (a teleported car is re-sampled). `updateKnockdowns` walks the four
   people lists in place instead of copying ~700 entries every frame. A `phys:post` timing
   part now covers the end of the physics step.
+
+### P5. Blood-track, pond and boat checks for cars that were not near anything
+- Cause: `updateBloodTracks` sampled the terrain under every blood pool in the city for
+  every moving car each frame before checking whether the pool was anywhere near it; the
+  new pond kerb (V2) ran its ellipse tests for every moving car's corners; `boatFits`
+  (a hull-against-coast test) ran every physics step for every moored boat.
+- Fix: the pool filter tests distance first; `parkPondNear()` (renewal.js) gates the pond
+  test with boxes round the ponds; a boat that has not moved this step is not re-fitted.
 
 ## Vehicles and collision
 
@@ -266,3 +268,48 @@ reset and a new colour.
 - Fix: `bulletTargets()` fills one reused list in the same order, taking pedestrians from
   the crowd grid within 16 units of the bullet; the story-actor filters run once a frame.
 - Verified: a pistol shot at the nearest pedestrian still kills them and raises a star.
+
+## Other checks that passed
+
+- Aircraft: a courier plane takes off from both ends of the Southport runway (pull with
+  Space from ~2.5 s) and lands on it from a southern approach; the runway centre line and
+  both Oceanview runway approaches are clear of statics. The Shore Line reaches the airport
+  along Royal Ave (x ~1150-1270), east of the terminal, far from the runway (x 300-536).
+  The helicopter lifts off the police HQ pad, flies to the Riverside pad and refuses to set
+  down on it while the pad's own helicopter is parked there ("Landing blocked").
+- Parachute: bail-outs land safely on land, splash down within reach of an exit (and swim),
+  or are rescued far offshore.
+- Rail statics: no station lift or viaduct pier stands in a carriageway; every deck volume
+  has a `minHeight` above traffic; pedestrians walking the Royal Ave pavements under the
+  viaduct for 30 s never stayed blocked. No street prop stands within 3 units of a
+  carriageway and none was knocked by traffic in a simulated minute.
+- Water pockets: a flood fill of swimmable water from every exit reaches all of it (the
+  only unreached cells are the marina's finger pontoons and the passerelle, which are
+  walkways).
+- Shore rules: walking into the sea from Southport Beach wades then swims and walks back
+  out; the Riverbank quay, the west sea wall, a dock end and the fishing pier deck all stop
+  a walker.
+- Casino roulette, arsenal and knife, save/load of cash, weapons, ammo, armour, clock and
+  the FPS setting across a reload, and the pause menu toggles (touch, sound, voices, FPS).
+- `tools/smoke.mjs` and `tools/layout-audit.mjs` (only the usual oblique junction notes).
+
+## Known remaining issues
+
+- Helicopters cannot land on building roofs: the flight floor is the terrain and building
+  colliders reach 22 units above the roof, so a helicopter descending onto a tower is
+  pushed off the side and settles in the street. Rooftop helipads on towers are scenery.
+  Landing on roofs would need a roof-aware floor, colliders that let an aircraft rest on
+  its own roof and a way to step out onto an arbitrary roof (only the Blue Hour terrace has
+  one).
+- The north approach to Southport crosses the Broadway blocks (roofs 61-79 units) before
+  the Shore Line curve (deck 52-60 units) 1,090 units short of the threshold: a flat
+  3-degree approach from the north clips the buildings first. Approach steeply from the
+  north or use the southern approach over the water.
+- There is no arrest: at any wanted level the police shoot, and "busted" does not exist;
+  death respawns at the hospital door with a $250 bill and a clean wanted level.
+- Traffic never overtakes; the new ease-past only handles stationary cars poking less than
+  12 units into the lane.
+- chase.js (mission 1's respray) calls `policeClearedNotice()` directly after
+  `clearPolice()`, so it shows POLICE CLEARED even when no stars were showing (mission
+  code, left to the mission QA pass).
+- The HUD names any water "MARLOW BAY" (including the marina basin and the open sea).

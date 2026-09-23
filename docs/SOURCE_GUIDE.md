@@ -117,9 +117,10 @@ and lights.
   beach.js places the kiosks, bar, lifeguard towers, umbrellas, towels, court, buoys and people
   on it; beach3d.js draws them.
 - Water access (water.js): on foot the sea can be entered only across a beach shore; everywhere
-  else the edge is a wall. Swimmers climb out at beaches, rocky shores and 58 ladders (every
-  ~420 units of quay, the end of each dock, the pier head), each marked by a lifebuoy post; no
-  city water is more than ~670 units from a way out.
+  else the edge is a wall. Swimmers climb out at beaches, rocky shores and 54 ladders (every
+  ~420 units of quay, dock ends and the pier head, each only where a swimmer can reach the
+  foot head-on), each marked by a lifebuoy post; no coastal water is more than ~650 units
+  from a way out. The superyacht's passerelle counts as dry ground for the shoreline rule.
 - Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns, bridges and an airport.
@@ -301,12 +302,21 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
   textures with `userData.sign = true` so they are left alone.
 - Buildings are bucketed in `buildingGrid` (game.js) for `solid()`/`shotBlocked()`; rail
   piers in `railPierCells()`; physics statics in `staticGrid` with a per-vehicle cache.
+- `landAt()` (geography.js) reads a lazily filled 16-unit cell cache: only cells a coastline
+  or lake edge crosses run the polygon test (`landAtExact`). It is called for every hull
+  corner of every moving car each physics step, so keep it cheap.
+- The minimap's static layers (land, streets, parks, ground, building footprints) are
+  painted once into an offscreen canvas (`minimapBaseLayer`); only the overlays are drawn
+  each HUD refresh. Anything added to `paintMapBase()` must be static.
+- Parked cars skip the post-step land check and `terrainVehiclePose()`; moored boats skip
+  `boatFits()`.
 - Vehicles far from the player and at rest skip contact passes; distant traffic re-plans
   at 4 Hz instead of 20 Hz; off-screen pedestrians think every fourth frame (every sixth
   beyond ~900 units); distant wildlife validates its position twice a second.
 - Pedestrians are drawn by crowd3d.js from one InstancedMesh per body part (about 30 draw
   calls for the whole crowd plus shadows), not per-person models. crowd.js rebuilds a 64-unit
-  neighbour grid once a frame; perception, panic spread, traffic yielding
+  neighbour grid once a frame; perception, panic spread, traffic yielding, car/pedestrian
+  contacts in `updateCars`, bullet targets (`bulletTargets`), the hired cab's look-ahead
   (`forEachPedestrianNear`) and near misses query it instead of scanning every pedestrian.
 
 ## 7. Build, check, test
