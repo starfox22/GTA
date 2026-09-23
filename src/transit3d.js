@@ -24,7 +24,6 @@
         // white streak over the viaduct.
         railTrack = mat('#b4bcbf', 0.42, 0.7),
         railWood = mat('#5c5346'),
-        railParapet = mat('#a3aba6', 0.85),
         railGlassCanopy = new Three.MeshStandardMaterial({
           color: '#9fc7d6',
           roughness: 0.15,
@@ -32,9 +31,7 @@
           transparent: true,
           opacity: 0.55,
         }),
-        railPaint = mat('#c6533f', 0.5, 0.3),
         railModels = new Map(),
-        railFades = [],
         railLampHalos = [];
       const ballastTexture = canvasTexture(128, (g, s) => {
         g.fillStyle = '#6d6a66';
@@ -153,7 +150,7 @@
       ballastTexture.repeat.set(1, 1);
       const railPartMaterial = { deck: railConcrete, ballast: ballastMat, rail: railTrack, steel: railSteel };
       for (const line of RAIL_LINES) {
-        // Cut the line into runs of about 600 units for culling and fading.
+        // Cut the line into runs of about 600 units for culling.
         const along = [0];
         for (let i = 1; i < line.points.length; i++)
           along.push(along[i - 1] + Math.hypot(line.points[i][0] - line.points[i - 1][0], line.points[i][1] - line.points[i - 1][1]));
@@ -163,29 +160,21 @@
           while (last < line.points.length - 1 && along[last] - along[first] < 600) last++;
           const track = line.points.slice(first, last + 1),
             runAlong = along.slice(first, last + 1),
-            group = new Three.Group(),
-            materials = [];
+            group = new Three.Group();
           group.name = 'Elevated railway';
           scene.add(group);
           for (const part of ['deck', 'ballast', 'rail', 'steel']) {
-            const material = railPartMaterial[part].clone();
-            material.transparent = true;
-            materials.push(material);
             const m = new Three.Mesh(
               railSweep(track, runAlong, RAIL_SECTIONS.filter((s) => s.part === part)),
-              material,
+              railPartMaterial[part],
             );
             m.castShadow = part === 'deck';
             m.receiveShadow = true;
             m.userData.dynamic = true;
             group.add(m);
           }
-          const decks = railDecks().filter((b) =>
-              track.some((p, i) => i && Math.abs(b.x - (p[0] + track[i - 1][0]) / 2) < 0.01 && Math.abs(b.y - (p[1] + track[i - 1][1]) / 2) < 0.01),
-            ),
-            mid = track[Math.floor(track.length / 2)];
-          const radius = (runAlong.at(-1) - runAlong[0]) / 2 + 160;
-          railFades.push({ decks, materials, x: mid[0], y: mid[1], radius });
+          const mid = track[Math.floor(track.length / 2)],
+            radius = (runAlong.at(-1) - runAlong[0]) / 2 + 160;
           statics.push({ x: mid[0], y: mid[1], group, radius });
           first = last;
         }
@@ -462,23 +451,6 @@
             collectResources(m, retiredGeometries, retiredMaterials);
             railModels.delete(t);
           }
-        // A run of viaduct turns see-through while the player is underneath it.
-        const low = !transitRide && entityElevation(player) < 50;
-        for (let i = 0; i < railFades.length; i++) {
-          const { decks, materials, x, y, radius } = railFades[i],
-            under =
-              low &&
-              Math.hypot(player.x - x, player.y - y) < radius &&
-              decks.some((b) => {
-                const q = coverLocal(b, player.x, player.y);
-                return Math.abs(q.x) < b.hx + 2 && Math.abs(q.y) < 45;
-              });
-          if (materials[0].opacity === (under ? 0.22 : 1)) continue;
-          for (const material of materials) {
-            material.opacity = under ? 0.22 : 1;
-            material.depthWrite = !under;
-          }
-        }
         const glow = 0.08 + 0.92 * night;
         for (let i = 0; i < railLampHalos.length; i++) railLampHalos[i].sprite.material.opacity = glow;
       }

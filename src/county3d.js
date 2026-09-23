@@ -29,7 +29,6 @@
       }
       const countyStone = mat('#778078', 0.96),
         countyRock = mat('#6b7468', 0.97),
-        countySand = mat('#bfb79a', 0.95),
         countyRail = mat('#a5b2b0', 0.64, 0.4),
         countyAsphalt = mat('#485356', 0.94),
         countyCream = mat('#d6cbb3', 0.86);
@@ -321,13 +320,7 @@
       const militaryGroup = new Three.Group();
       scene.add(militaryGroup);
       batchGroups.push(militaryGroup);
-      const armyPaint = mat('#647557', 0.85, 0.15),
-        fenceMat = new Three.MeshStandardMaterial({
-          color: '#99aa98',
-          wireframe: true,
-          transparent: true,
-          opacity: 0.52,
-        });
+      const armyPaint = mat('#647557', 0.85, 0.15);
       for (const wall of militaryWalls) {
         const cx = wall.x + wall.w / 2,
           cz = wall.y + wall.h / 2;

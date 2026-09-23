@@ -3,17 +3,16 @@
        * Underpass meshes
        * Source: src/air-cover3d.js
        * Scope: createCityRenderer() closure.
-       * Tunnel roof, walls, portals, illumination and player-facing cutaway.
+       * Tunnel roof, walls, portals and illumination.
        */
-      // A cut-and-cover road tunnel, with open portals and a roof that fades for navigation.
-      // Merged by the static batcher; the roof details (hidden with the cutaway) stay live.
+      // A cut-and-cover road tunnel with open portals, merged by the static batcher.
+      // The roof over the player is cleared by the dithered cutaway (lighting3d.js).
       const tunnelGroup = new Three.Group();
       scene.add(tunnelGroup);
       batchGroups.push(tunnelGroup);
       const tunnelConcrete = mat('#788a89', 0.95),
         tunnelTrim = mat('#c1b07f'),
         tunnelRoofMat = mat('#70867b', 0.95);
-      tunnelRoofMat.transparent = true;
       for (const b of UNDERPASS_WALLS)
         box(tunnelGroup, b.x + b.w / 2, b.height / 2, b.y + b.h / 2, b.w, b.height, b.h, tunnelConcrete);
       box(tunnelGroup, 2688, 55.5, 2940, 152, 7, 320, tunnelRoofMat);
@@ -34,12 +33,9 @@
       }
       for (let z = 2808; z < 3090; z += 44)
         for (const x of [2625, 2751]) box(tunnelGroup, x, 29, z, 1, 3, 16, warmLamp);
-      const tunnelRoofDetails = new Three.Group();
-      tunnelRoofDetails.userData.dynamic = true;
-      tunnelGroup.add(tunnelRoofDetails);
       for (const x of [2624, 2752]) {
-        box(tunnelRoofDetails, x, 63, 2940, 8, 6, 290, tunnelConcrete);
-        for (let z = 2814; z < 3080; z += 28) box(tunnelRoofDetails, x, 66, z, 2, 8, 2, tunnelTrim);
+        box(tunnelGroup, x, 63, 2940, 8, 6, 290, tunnelConcrete);
+        for (let z = 2814; z < 3080; z += 28) box(tunnelGroup, x, 66, z, 2, 8, 2, tunnelTrim);
       }
       statics.push({
         x: 2688,
@@ -47,10 +43,4 @@
         group: tunnelGroup,
         radius: 240,
       });
-      function updateAirCoverVisuals() {
-        const hidden = underpassContains(player.x, player.y, -25) && entityElevation(player) < 52;
-        tunnelRoofMat.opacity = hidden ? 0.12 : 1;
-        tunnelRoofMat.depthWrite = !hidden;
-        tunnelRoofDetails.visible = !hidden;
-      }
       // END SUBSYSTEM: src/air-cover3d.js

@@ -8,11 +8,7 @@
     let soundOn = true,
       audio = null,
       master = null,
-      engine = null,
-      engineGain = null,
-      musicTick = 0,
-      musicClock = 0,
-      sirenClock = 0;
+      engine = null;
     let audioBuffers = {},
       audioLoops = {},
       reverb = null,
@@ -195,7 +191,6 @@
           t = c ? vehicleSpec(c) : {},
           ratio = c ? clamp(speed / t.max, 0, 1) : 0,
           gear = Math.min(5, Math.floor(ratio * 5)),
-          throttle = keys.KeyW || keys.ArrowUp,
           rpm = t.plane
             ? 0.75 + (c.throttle || 0) * 0.9
             : t.boat

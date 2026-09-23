@@ -602,8 +602,7 @@
       scene.add(ag);
       batchGroups.push(ag);
       const terminalGlass = mat('#446875', 0.16, 0.55),
-        airWhite = mat('#d8dfdc', 0.36, 0.3),
-        airTrim = mat('#507f8f');
+        airWhite = mat('#d8dfdc', 0.36, 0.3);
       box(
         ag,
         AIRPORT.x + AIRPORT.w / 2,

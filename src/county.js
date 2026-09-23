@@ -443,8 +443,7 @@
         h: 220,
       },
     };
-    const countyGroundTiles = [],
-      countyDecor = [];
+    const countyGroundTiles = [];
     function onCountyRoad(x, y, margin = 0) {
       return COUNTY_ROADS.some((r) =>
         r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + margin),

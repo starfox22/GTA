@@ -1590,10 +1590,7 @@
       crowdAlarm('knock', person, c === player.car ? player : null, person.hp <= 0 ? 2 : 1.3);
       if (c === player.car) {
         crime(person.hp <= 0 ? 0.35 : 0.08);
-        if (person.hp <= 0) {
-          cash += 25;
-          sessionKills++;
-        }
+        if (person.hp <= 0) cash += 25;
       }
       return true;
     }

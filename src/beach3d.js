@@ -674,8 +674,7 @@
         rope.userData.dynamic = true;
         beachGroup.add(rope);
       }
-      const floating = [...L.pedalos, ...L.jetskis],
-        hulls = beachInstanced(boxGeo, mat('#ffffff', 0.4), L.pedalos.length * 2 + L.jetskis.length, 'pedal boats and jet skis'),
+      const hulls = beachInstanced(boxGeo, mat('#ffffff', 0.4), L.pedalos.length * 2 + L.jetskis.length, 'pedal boats and jet skis'),
         seats = beachInstanced(boxGeo, mat('#f2efe6', 0.6), L.pedalos.length + L.jetskis.length, 'boat seats'),
         // The swimmer's V-wake texture (render3d.js), stretched out behind each jet ski.
         wakes = beachInstanced(new Three.PlaneGeometry(1, 1), new Three.MeshBasicMaterial({ map: wakeTexture(true), transparent: true, opacity: 0.85, depthWrite: false }), L.jetskis.length, 'jet ski wakes');

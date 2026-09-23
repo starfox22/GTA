@@ -9,8 +9,7 @@
       const parkWater = mat('#6398a1', 0.22, 0.25),
         parkStone = mat('#c7c5ae', 0.9),
         parkWood = mat('#aa8560', 0.8),
-        parkRose = mat('#bc8399'),
-        parkCanopies = [];
+        parkRose = mat('#bc8399');
       function parkBench(g, x, z, a = 0) {
         const b = new Three.Group();
         b.position.set(x, 0, z);

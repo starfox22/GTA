@@ -824,7 +824,6 @@
       wantedPressure = 0;
       wantedLevel = 0;
       starElapsed = 0;
-      cooldown = 0;
       searchRemaining = 0;
       searchActive = false;
       copSpawn = 5;

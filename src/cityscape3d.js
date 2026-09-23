@@ -947,7 +947,6 @@
           group,
           height: height + (b.crownHeight || 0),
           materials: [face, top, trim],
-          opacity: 1,
         });
         statics.push({
           x: b.x + b.w / 2,

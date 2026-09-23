@@ -35,7 +35,6 @@
       WORLD_SIZE = 11264,
       CITY_SIZE = 5632,
       BLOCK_SIZE = 512,
-      ROAD_WIDTH = 112,
       // Avenues run north-south at these x. The column plan never changed.
       ROAD_CENTERS = Array.from(
         {
@@ -117,16 +116,13 @@
       };
     let cash = 0,
       wantedStars = 0,
-      crimeTime = -100,
-      cooldown = 0,
       copSpawn = 0,
       selectedWeaponIndex = 0,
       reloadSecondsRemaining = 0,
       shotCooldownSeconds = 0,
       missionIndex = 0,
       mission = null,
-      completed = 0,
-      sessionKills = 0;
+      completed = 0;
     const RIVER = {
         left: 3420,
         right: 3960,
@@ -166,9 +162,7 @@
         // this block, so it is a green under the viaduct rather than buildings.
         [0, 5],
       ];
-    const isPark = (x, y) => PARKS.some((p) => p[0] === x && p[1] === y),
-      isRiver = (x, y, r = 0) =>
-        x + r > RIVER.left && x - r < RIVER.right && !BRIDGES.some((v) => Math.abs(y - v) < 56 - r);
+    const isPark = (x, y) => PARKS.some((p) => p[0] === x && p[1] === y);
     const spawn = {
         x: 748,
         y: 584,
@@ -176,10 +170,6 @@
       phone = {
         x: 790,
         y: 553,
-      },
-      garage = {
-        x: 1670,
-        y: 1308,
       },
       safehouse = {
         x: 3200,
@@ -222,7 +212,6 @@
       '#736244',
       '#a25666',
     ];
-    /* REVIEW_HOOK:VEHICLE_DEFINITIONS */
     const VEHICLE_DEFINITIONS = {
       bicycle: {
         name: 'CITY CYCLE',
@@ -593,7 +582,6 @@
     function vehicleCollisionHeight(vehicle) {
       return vehicleSpec(vehicle)?.height ?? 32;
     }
-    /* REVIEW_HOOK:WEAPON_DEFINITIONS */
     const weapons = [
       {
         owned: true,
@@ -716,8 +704,6 @@
         0,
         5.75,
       );
-      crimeTime = gameTime;
-      cooldown = 0;
       searchActive = false;
       searchRemaining = policeSearchSeconds();
       lastSeen = {
@@ -930,7 +916,6 @@
         }
       throw Error('No clear vehicle spawn for ' + type);
     }
-    /* REVIEW_HOOK:GROUND_CANVAS */
     // One texture covers the whole city including the northern reclamation, so it
     // is taller than it is wide. The pixels-per-unit ratio is held below the old
     // 4096-square texture's so the bitmap does not grow with the city.
@@ -2068,7 +2053,6 @@
       // that ended as the payphone was answered) must not sit over its headline.
       hidePoliceNotice();
       resetOfficerCrews();
-      crimeTime = -100;
       player.hp = 100;
       player.armor = Math.max(player.armor, 50);
       player.inv = 2;
@@ -2575,10 +2559,7 @@
             strikePerson(p, b.dmg, Math.atan2(b.vy, b.vx), b.owner || (!b.enemy ? player : null));
             if (!b.enemy) {
               if (p.police) crime(0.3);
-              if (p.hp <= 0) {
-                cash += enemies.includes(p) ? 100 : 10;
-                sessionKills++;
-              }
+              if (p.hp <= 0) cash += enemies.includes(p) ? 100 : 10;
             }
             impact = true;
             hitKind = 'flesh';
@@ -4062,7 +4043,7 @@
       resetMissionState();
       resetCampaign();
       worldMinutes = 17 * 60 + 20;
-      harborGate = harborGateUntil = harborAlarmUntil = 0;
+      harborGate = harborGateUntil = 0;
       weapons.forEach((w, i) => (w.owned = i === 0));
       selectedWeaponIndex = 0;
       missionIndex = 0;
@@ -4509,7 +4490,6 @@
     resize();
     drawWeapon();
     updateUI();
-    /* REVIEW_HOOK:LOAD_VISUALS */
     loadVisuals();
     /**
      * PROFILER

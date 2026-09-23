@@ -768,7 +768,6 @@
     function updateStreetWalker(p, deltaSeconds) {
       const tempo = crowd.tempo;
       p.timer -= deltaSeconds;
-      if (p.flinch > 0) p.flinch -= deltaSeconds;
       p.pose = null;
       // Walking pairs: the follower keeps a shoulder offset from the leader.
       if (p.leader) {
@@ -998,7 +997,7 @@
         heading = Math.atan2(vy, vx),
         pace = Math.hypot(vx, vy);
       p.pose = p.texting ? 'text' : p.dog ? 'leash' : null;
-      if (crowdStep(p, heading, p.flinch > 0 ? 6 : pace, deltaSeconds)) {
+      if (crowdStep(p, heading, pace, deltaSeconds)) {
         p.blocked = (p.blocked || 0) + deltaSeconds;
         if (p.blocked > 0.35) {
           const a = dir + (Math.PI / 2) * (p.passSide || 1);

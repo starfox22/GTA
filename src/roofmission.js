@@ -606,7 +606,6 @@
         missionState.boss.speech = '';
         missionState.boss.drinking = false;
         bleed(missionState.boss, 1.5, player.a);
-        sessionKills++;
         updateRooftopHit(missionState, 0);
         tell('Vescari is down. Leave before the bodyguards find him.', 4);
         return true;
@@ -661,7 +660,6 @@
             b.poisonCollapse = 1;
             m.poisonPhase = 'dead';
             m.bodyDelay = 1.4;
-            sessionKills++;
             tell('Vescari is down. Blend into the crowd and leave through the elevator.', 5);
           }
         }

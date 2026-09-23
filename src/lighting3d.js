@@ -24,7 +24,6 @@
       const sunDirection = new Three.Vector3(-0.56, 0.62, -0.55).normalize(),
         MOON_DIRECTION = new Three.Vector3(-0.42, 0.78, -0.46).normalize(),
         sunScratch = new Three.Vector3();
-      let sunElevation = 0.8;
       function dayFraction() {
         return ((worldMinutes % 1440) / 60 - 5.66) / 14.17;
       }
@@ -36,7 +35,6 @@
         const azimuth = -Math.PI * clamp(t, -0.05, 1.05) - 0.95 * arc,
           // Never flatter than ~15 degrees for shadows, so dusk streets stay readable.
           elevation = 0.27 + (1.02 - 0.27) * Math.pow(arc, 0.8);
-        sunElevation = elevation;
         sunScratch.set(Math.cos(azimuth) * Math.cos(elevation), Math.sin(elevation), Math.sin(azimuth) * Math.cos(elevation));
         // Hand over to the moon through twilight.
         const moon = clamp(1 - daylight() / 0.12, 0, 1);

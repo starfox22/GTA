@@ -17,8 +17,7 @@
       const deckWood = mat('#a8895f', 0.9),
         pileWood = mat('#6d5a45', 0.95),
         glassBlue = mat('#9fc4d6', 0.15, 0.6),
-        shedGrey = mat('#7b8486', 0.8),
-        quaySteel = mat('#d2d6d4', 0.35, 0.65);
+        shedGrey = mat('#7b8486', 0.8);
       const marinaLights = kitLightList();
       // Shared paint and trim for everything built here.
       const kitWhite = tint('#f5f5f1'),
@@ -192,8 +191,7 @@
           decks = [2, 3, 4].map(() => new Three.Group());
         root.add(base, ...decks);
         for (const d of decks) d.userData.lightCloud = true;
-        const groupFor = (level) => (level >= 2 && level <= 4 ? decks[level - 2] : base),
-          spec = superyachtHullSpec(ship),
+        const spec = superyachtHullSpec(ship),
           stairsFrom = (level) => ship.stairs.filter((s) => s.lo === level),
           holesIn = (level) => ship.stairs.filter((s) => s.hi === level && s.lo >= 1).map((s) => rectOutline(s.u0, s.u1, s.v0, s.v1)),
           edgeLights = (group, outline, z, spacing = 14) => {

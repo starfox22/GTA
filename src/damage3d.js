@@ -532,7 +532,6 @@
         debrisQuaternion = new Three.Quaternion(),
         debrisScale = new Three.Vector3(),
         debrisPosition = new Three.Vector3(),
-        debrisAxis = new Three.Vector3(),
         debrisMatrix = new Three.Matrix4();
       let debrisDirty = false;
       function newDebris(list, capacity, piece) {
@@ -688,7 +687,7 @@
       }
 
       // ---- Vehicle bodies ------------------------------------------------------------------
-      // Section table of the saloon shell (as in bodyGeo): x along the length, then width
+      // Section table of the saloon shell: x along the length, then width
       // and height factors. The damageable shell is re-sliced much finer from it.
       const SHELL_SECTIONS = [
         [-0.5, 0.82, 0.84],
@@ -881,11 +880,6 @@
         return pivot;
       }
       const hingeScratch = new Three.Vector3();
-      function detachPart(c, m, part, color, dims) {
-        if (!part.visible) return;
-        spawnPanel(part, color, c, ...dims);
-        part.visible = false;
-      }
       function carBodyDamage(c, m, damage) {
         const { l, w, h, van } = m.dims,
           parts = damage.parts,

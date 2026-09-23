@@ -87,8 +87,7 @@
       ],
     };
     let harborGate = 0,
-      harborGateUntil = 0,
-      harborAlarmUntil = 0;
+      harborGateUntil = 0;
     const harborWalls = [
       {
         x: HARBOR.x,
@@ -247,7 +246,6 @@
             y: source.y,
           };
         }
-      if (faction === 'harbor') harborAlarmUntil = gameTime + 25;
     }
     function notifyViolence(source, kind = 'gunfire', attacker = null) {
       // Southport Beach scatters too (beach.js).
@@ -322,7 +320,6 @@
     function startHarborJob(m) {
       clearHarborPolice();
       harborGateUntil = 0;
-      harborAlarmUntil = 0;
       resetDepotDoors();
       for (const e of gangMembers)
         if (e.faction === 'harbor' && inHarbor(e.home.x, e.home.y)) {

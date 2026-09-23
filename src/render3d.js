@@ -101,8 +101,7 @@
         carModels = new Map(),
         personModels = new Map(),
         pickupModels = new Map(),
-        fx = [],
-        lightObjects = [];
+        fx = [];
       const boxGeo = new Three.BoxGeometry(1, 1, 1),
         sphereGeo = new Three.SphereGeometry(1, 12, 8),
         wheelGeo = new Three.CylinderGeometry(1, 1, 1, 20),
@@ -754,51 +753,6 @@
       // @include src/crowd3d.js
       // @include src/clouds3d.js
       // @include src/surfaces3d.js
-      // The bodyshell uses beveled cross-sections, not a box silhouette.
-      function bodyGeo(l, w, h) {
-        const verts = [],
-          indices = [],
-          sections = [
-            [-0.5, 0.82, 0.84],
-            [-0.43, 1, 1],
-            [-0.21, 1, 1],
-            [0.19, 1, 1],
-            [0.42, 0.94, 0.88],
-            [0.5, 0.78, 0.73],
-          ];
-        for (const [xx, ww, hh] of sections) {
-          const z = (w / 2) * ww,
-            top = h * hh;
-          for (const [y, zz] of [
-            [3.8, -z * 0.84],
-            [4.8, -z],
-            [top - 1, -z],
-            [top, -z * 0.83],
-            [top, z * 0.83],
-            [top - 1, z],
-            [4.8, z],
-            [3.8, z * 0.84],
-          ])
-            verts.push(xx * l, y, zz);
-        }
-        for (let k = 0; k < sections.length - 1; k++)
-          for (let j = 0; j < 8; j++) {
-            let a = k * 8 + j,
-              b = k * 8 + ((j + 1) % 8),
-              c = (k + 1) * 8 + ((j + 1) % 8),
-              d = (k + 1) * 8 + j;
-            indices.push(a, b, d, b, c, d);
-          }
-        for (let j = 1; j < 7; j++) {
-          indices.push(0, j + 1, j);
-          indices.push(40, 40 + j, 41 + j);
-        }
-        const geo = new Three.BufferGeometry();
-        geo.setAttribute('position', new Three.Float32BufferAttribute(verts, 3));
-        geo.setIndex(indices);
-        geo.computeVertexNormals();
-        return geo;
-      }
       // @include src/helicopter3d.js
       // @include src/vehicles3d.js
       // @include src/plane3d.js
@@ -1471,7 +1425,6 @@
         entityBounds.radius = radius;
         return viewFrustum.intersectsSphere(entityBounds);
       }
-      /* REVIEW_HOOK:RENDERER_API */
       const api = {
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
@@ -1716,7 +1669,6 @@
           updateSurfaces(deltaSeconds);
           applyAerialFog();
           updateCloudVisuals(deltaSeconds);
-          updateAirCoverVisuals();
           updateTransitVisuals();
           updateWildlifeVisuals(deltaSeconds);
           updateSportsVisuals(deltaSeconds);
@@ -1744,8 +1696,9 @@
           // Anything between the camera and the player is cut away round them
           // (lighting3d.js, CUTAWAY).
           updateCutaway(altitude);
-          // Pedestrians are drawn by the instanced crowd (src/crowd3d.js); these
-          // keep individual models for their weapons and uniforms.
+          // Pedestrians are drawn by the instanced crowd (src/crowd3d.js), poses and
+          // all; guards, gangs, officers, story actors and the player keep
+          // individual models for their weapons and uniforms.
           const people = [...enemies, ...gangMembers, ...officers, ...storyActors, player];
           updateCrowd3D(deltaSeconds);
           pruneModels(carModels, new Set(vehicles));
@@ -1928,19 +1881,6 @@
             m.parts['leg-1'].rotation.z = -step;
             m.parts.arm1.rotation.z = -step * 0.5;
             m.parts['arm-1'].rotation.z = step * 0.5;
-            if (p.sitting && p.hp > 0 && !incapacitated) {
-              // Seated on a bench: lowered hips, legs forward, hands in lap.
-              m.group.position.y -= 3.4;
-              m.parts.leg1.rotation.z = -1.35;
-              m.parts['leg-1'].rotation.z = -1.35;
-              m.parts.arm1.rotation.z = -0.6;
-              m.parts['arm-1'].rotation.z = -0.6;
-              m.torso.rotation.z = 0.08;
-            } else if (p.flinch > 0 && p.hp > 0) {
-              m.parts.arm1.rotation.z = 1.9;
-              m.parts['arm-1'].rotation.z = 1.9;
-              m.torso.rotation.z = -0.2;
-            }
             if (p.faction && !incapacitated) {
               m.parts.guns[0].visible = p.hp > 0 && !!p.aiming;
               m.parts.arm1.rotation.z = p.aiming ? 1.12 : -step * 0.5;
@@ -1963,40 +1903,6 @@
             if (p.recoiling && p.hp > 0) {
               m.parts.arm1.rotation.z = 1.2;
               m.parts['arm-1'].rotation.z = 1.1;
-            }
-            if (p.ejected) {
-              // Arms out as they go over: a throw, not a lie-down.
-              m.parts.arm1.rotation.z = 2.3;
-              m.parts['arm-1'].rotation.z = 1.4;
-              m.parts.leg1.rotation.z = 0.7;
-              m.parts['leg-1'].rotation.z = -0.5;
-            } else if (p.onPhone && p.hp > 0 && !incapacitated) {
-              m.parts.arm1.rotation.z = 2.25;
-              m.parts['arm-1'].rotation.z = 0.2;
-            }
-            // Outdoor gym regulars: `exercise` is 0..1 through one rep, null at rest.
-            if (p.exercise != null && p.hp > 0 && !incapacitated) {
-              const e = p.exercise;
-              if (p.exerciseKind === 'mat') {
-                m.group.position.y -= 4.2;
-                m.parts.leg1.rotation.z = -1.3;
-                m.parts['leg-1'].rotation.z = -1.3;
-                m.torso.rotation.z = -0.15 - e * 0.85;
-                m.parts.arm1.rotation.z = 2.4;
-                m.parts['arm-1'].rotation.z = 2.4;
-              } else if (p.exerciseKind === 'dip' || p.exerciseKind === 'bars') {
-                m.group.position.y += 5 + e * 5;
-                m.parts.arm1.rotation.z = -0.12;
-                m.parts['arm-1'].rotation.z = -0.12;
-                m.parts.leg1.rotation.z = -0.5;
-                m.parts['leg-1'].rotation.z = -0.34;
-              } else {
-                m.group.position.y += 7 + e * 6;
-                m.parts.arm1.rotation.z = 2.75 - e * 0.45;
-                m.parts['arm-1'].rotation.z = 2.75 - e * 0.45;
-                m.parts.leg1.rotation.z = -0.35;
-                m.parts['leg-1'].rotation.z = -0.2;
-              }
             }
             if (p.illness && p.hp > 0) {
               m.group.rotation.z = -p.illness * 0.24 + Math.sin(gameTime * 8) * 0.025;

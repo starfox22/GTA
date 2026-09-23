@@ -7,8 +7,7 @@
        */
       // Suspension bridges, waterside gardens and a civic precinct give the city its landmarks.
       const bridgeSteel = mat('#78534b', 0.55, 0.6),
-        cableMat = mat('#b8b5a7', 0.4, 0.6),
-        waterBlue = mat('#335d6b', 0.25, 0.45);
+        cableMat = mat('#b8b5a7', 0.4, 0.6);
       for (let bridgeIndex = 0; bridgeIndex < BRIDGES.length; bridgeIndex++) {
         const z = BRIDGES[bridgeIndex],
           left = RIVER.left,

@@ -214,8 +214,7 @@
         shadowAxisY = new Three.Vector3(),
         shadowAnchor = new Three.Vector3(),
         shadowWorldUp = new Three.Vector3(0, 1, 0);
-      let shadowHalfSize = 900,
-        shadowTexel = 1;
+      let shadowHalfSize = 900;
       function placeSun() {
         const craft = player.car && isAircraft(player.car) ? player.car : player.parachute ? player : null,
           centerX = flightViewActive ? viewCenter.x : cameraTarget.x,
@@ -259,7 +258,6 @@
           texel = (2 * half) / sun.shadow.mapSize.x,
           cx = Math.round((minX + maxX) / 2 / texel) * texel,
           cy = Math.round((minY + maxY) / 2 / texel) * texel;
-        shadowTexel = texel;
         // Anchor the light on the sun-ward side of the view, in the fixed frame.
         const lift = Math.max(700, casterTop + 200),
           anchorD = maxD + lift + 200;
