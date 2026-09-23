@@ -2407,7 +2407,45 @@
         )
       );
     }
+    // Who a bullet can hit where it is now, in the order hits are tested. The
+    // short lists go in whole; pedestrians come from the crowd's neighbour grid
+    // around the bullet. Every sub-step of every bullet used to copy all ~650
+    // pedestrians (plus everyone else) into a fresh array.
+    const bulletTargetList = [];
+    function bulletTargets(b, escorts, rooftop) {
+      const list = bulletTargetList,
+        add = (people) => {
+          for (let k = 0; k < people.length; k++) list.push(people[k]);
+        },
+        addNearbyPedestrians = () => forEachPedestrianNear(b.x, b.y, 16, (p) => list.push(p));
+      list.length = 0;
+      if (b.enemy) {
+        if (b.faction === 'police') {
+          add(enemies);
+          add(gangMembers);
+        } else if (b.faction) {
+          add(enemies);
+          add(gangMembers);
+          add(officers);
+          addNearbyPedestrians();
+        }
+        add(escorts);
+      } else {
+        add(enemies);
+        add(gangMembers);
+        addNearbyPedestrians();
+        add(officers);
+        add(escorts);
+        add(rooftop);
+      }
+      return list;
+    }
     function updateBullets(deltaSeconds) {
+      if (!bullets.length) return;
+      const escorts = storyActors.filter(
+          (p) => p.missionTag === 'flight-witness' && !p.hidden && mission?.stage >= 4,
+        ),
+        rooftopTargets = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && !p.hidden);
       for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         let impact = false,
@@ -2465,23 +2503,7 @@
             }
           }
           if (impact) break;
-          const escorts = storyActors.filter(
-            (p) => p.missionTag === 'flight-witness' && !p.hidden && mission?.stage >= 4,
-          );
-          const targets = b.enemy
-            ? b.faction === 'police'
-              ? [...enemies, ...gangMembers, ...escorts]
-              : b.faction
-                ? [...enemies, ...gangMembers, ...officers, ...pedestrians, ...escorts]
-                : escorts
-            : [
-                ...enemies,
-                ...gangMembers,
-                ...pedestrians,
-                ...officers,
-                ...escorts,
-                ...storyActors.filter((p) => p.missionTag === 'rooftop-hit' && !p.hidden),
-              ];
+          const targets = bulletTargets(b, escorts, rooftopTargets);
           for (const p of targets) {
             if (
               !sameFloor(p, b) ||

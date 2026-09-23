@@ -234,3 +234,27 @@ reset and a new colour.
 - Verified: walking east boards the yacht on the swim platform (`player.deck`, level 0);
   walking back west takes the player down the passerelle and ashore; E still boards and
   leaves.
+
+## Taxis and weapons
+
+### X1. A hired cab crawled at walking pace
+- Symptom: `DeadEndCity.cab(2600, 1400)` from Broadway was still 1,370 units short after
+  200 simulated seconds; the cab's speed read 6 units/s the whole way (it should cruise at
+  up to 260).
+- Cause: the cab is driven along its route by `updateTaxiRide`, which accelerated
+  `car.speed` by up to 180 units/s² a frame; but the physics step runs first each frame
+  and recomputes `car.speed` from `vx/vy`, which are zero for a car moved like this, so
+  the cab never got past one frame's worth of acceleration.
+- Fix: the commanded speed lives on the ride (`ride.speed`) and is copied to `car.speed`
+  for the renderer. The cab's look-ahead for pedestrians uses the crowd grid instead of
+  scanning every pedestrian each frame.
+- Verified: the same ride arrives in 45 s, the $29 fare is paid and the passenger steps out
+  40 units from the destination on clear ground.
+
+### X2. Every bullet sub-step copied the whole crowd
+- Cause: `updateBullets` built `[...enemies, ...gangMembers, ...pedestrians, ...officers,
+  ...]` (about 700 people) for every 7-unit sub-step of every bullet in flight, plus two
+  `storyActors.filter` calls.
+- Fix: `bulletTargets()` fills one reused list in the same order, taking pedestrians from
+  the crowd grid within 16 units of the bullet; the story-actor filters run once a frame.
+- Verified: a pistol shot at the nearest pedestrian still kills them and raises a star.
