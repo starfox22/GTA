@@ -3989,6 +3989,21 @@
       player.coaster = null;
       player.parachute = null;
       player.climbing = null;
+      // Out of the water too: otherwise the first frame at the new spot still draws
+      // the swimmer's pose and wake over dry land, and the SWIMMING toast lingers.
+      if (player.swimming || player.wading) {
+        player.swimming = false;
+        player.wading = 0;
+        if (!player.car) player.altitude = 0;
+        toastTime = 0;
+        getElement('toast').classList.remove('show');
+      }
+      // An airborne aircraft cannot be left (exitCar refuses), so it comes along
+      // rather than being abandoned in the sky while the player jumps away.
+      if (player.car) {
+        player.car.x = x;
+        player.car.y = y;
+      }
       player.x = x;
       player.y = y;
       cameraTarget.x = x;
