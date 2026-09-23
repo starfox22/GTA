@@ -2439,9 +2439,20 @@
                 (lawVehicle(c) || (c === player.car && b.target !== player))
               )
             )
-              damageVehicle(c, b.dmg, b.x, b.y, b.owner || (!b.enemy ? player : null), {
-                kind: 'bullet',
-              });
+              damageVehicle(
+                c,
+                // The vehicles missions hand you are built for the job (the cargo
+                // truck's steel cage, Vinny's armored van): gang small-arms fire
+                // does 40% damage to them, or a crew opening up on the loading
+                // truck wrecks it before the third crate is aboard.
+                b.enemy && c.mission && b.faction !== 'police' && !b.rocket ? b.dmg * 0.4 : b.dmg,
+                b.x,
+                b.y,
+                b.owner || (!b.enemy ? player : null),
+                {
+                  kind: 'bullet',
+                },
+              );
             impact = true;
             // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
             hitKind = bulletHitVehicle(c, b);
@@ -4571,6 +4582,10 @@
           guards: enemies
             .filter((e) => e.missionTag)
             .map((e) => ({ tag: e.missionTag, x: Math.round(e.x), y: Math.round(e.y), hp: Math.round(e.hp), solidSpot: solid(e.x, e.y, 6) })),
+          // Anyone armed within 600 units who is aiming at something right now.
+          hostiles: [...gangMembers, ...enemies]
+            .filter((e) => e.hp > 0 && e.aiming && distanceBetween(e, player) < 600)
+            .map((e) => ({ faction: e.faction, tag: e.missionTag || null, x: Math.round(e.x), y: Math.round(e.y) })),
           actors: storyActors
             .filter((p) => p.missionTag || p.name === 'ELENA CRUZ')
             .map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y), hp: Math.round(p.hp), hidden: !!p.hidden })),
@@ -4616,6 +4631,12 @@
           if (stuckFor > 1) backUp = 1;
           if (backUp > 0) {
             backUp -= 1 / 30;
+            keys.KeyW = false;
+            keys.KeyS = true;
+            keys.KeyD = err < 0;
+            keys.KeyA = err > 0;
+          } else if (Math.abs(err) > 1.9 && c.speed < 25 && !isBoat(c)) {
+            // Facing away: back up on opposite lock, a three-point turn.
             keys.KeyW = false;
             keys.KeyS = true;
             keys.KeyD = err < 0;
