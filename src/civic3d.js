@@ -11,6 +11,7 @@
       for (const d of DOCKS) {
         const group = new Three.Group();
         scene.add(group);
+        batchGroups.push(group);
         for (let x = d.x + 2; x < d.x + d.w; x += 5) box(group, x, 1, d.y + d.h / 2, 4.5, 2, d.h, wood);
         for (const x of [d.x + 4, d.x + d.w - 4])
           for (const z of [d.y + 3, d.y + d.h - 3]) {

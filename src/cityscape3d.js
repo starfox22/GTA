@@ -204,6 +204,26 @@
       const windowMasks = WINDOW_GRIDS.map((grid) =>
         grid ? Array.from({ length: 6 }, (_, k) => windowMask(grid, 0.32 + k * 0.08)) : null,
       );
+      /**
+       * Window gloss: one roughness/metalness map per facade quadrant (three.js
+       * reads roughness from green and metalness from blue). Masonry stays matte;
+       * the panes are smooth and faintly metallic, so from the tilted street camera
+       * every window catches the sky from the environment map (and the lamps at
+       * night) instead of reading as painted-on dark rectangles.
+       */
+      const windowGloss = WINDOW_GRIDS.map((grid) => {
+        if (!grid) return null;
+        const t = canvasTexture(256, (g, s) => {
+          g.fillStyle = 'rgb(0,235,0)';
+          g.fillRect(0, 0, s, s);
+          g.fillStyle = 'rgb(0,34,120)';
+          for (const cx of grid.cols)
+            for (const cy of grid.rows)
+              g.fillRect(((cx - grid.w / 2) / 512) * s + 1, ((cy - grid.h / 2) / 512) * s + 1, (grid.w / 512) * s - 2, (grid.h / 512) * s - 2);
+        });
+        t.colorSpace = Three.NoColorSpace;
+        return t;
+      });
       // Curtain wall tile for glass towers: panes, mullions and a lit variant.
       function curtainWall(tint, lit) {
         return canvasTexture(256, (g, s) => {
@@ -508,6 +528,14 @@
             roughness: kind === 'warehouse' ? 0.6 : 0.9,
             metalness: kind === 'warehouse' ? 0.35 : 0,
           });
+        if (windowGloss[quadrant]) {
+          const gloss = windowGloss[quadrant].clone();
+          gloss.repeat.set(repeatX, repeatY);
+          gloss.needsUpdate = true;
+          material.roughnessMap = material.metalnessMap = gloss;
+          material.roughness = kind === 'warehouse' ? 0.65 : 1;
+          material.metalness = kind === 'warehouse' ? 0.6 : 1;
+        }
         if (windowMasks[quadrant]) {
           const lit = cityPick(windowMasks[quadrant]).clone();
           lit.repeat.set(repeatX, repeatY);

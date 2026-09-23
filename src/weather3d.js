@@ -11,7 +11,8 @@
        * Each drop falls and is wrapped back to the top of the box, so the same few
        * thousand vertices cover the whole city and nothing is allocated per frame.
        */
-      const RAIN_DROPS = touchEnabled() ? 1100 : 2600,
+      // Streak count from the quality tier the game started with (quality.js).
+      const RAIN_DROPS = Math.min(graphicsTier().rain, touchEnabled() ? 1100 : 3200),
         RAIN_BOX = 1500,
         RAIN_TOP = 560;
       const rainPositions = new Float32Array(RAIN_DROPS * 6),

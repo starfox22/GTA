@@ -63,7 +63,7 @@ something, never a generic code-evaluation hook.
 | Method | Purpose |
 | --- | --- |
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle |
-| `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom |
+| `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once) |
 | `drive(type, altitudeMeters, heading)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne; optional heading in radians (0 = east) |
 | `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`); returns `ride()`. Physics tests use it because headless frames are slow |
 | `places()` | Named businesses and landmarks with coordinates |
@@ -91,6 +91,10 @@ something, never a generic code-evaluation hook.
 | `lifeScene(kind)` | Stage a street scene by the player: `vendor`, `busker`, `cafe`, `smokers`, `delivery`, `hail`, `nightlife`, `busStop` |
 | `poseGallery(role)` | Line up one labelled pedestrian per pose in front of the player |
 | `closeUp(zoom)` | Inspection only: zoom past the player's limit (up to 8) to look at people |
+| `stats()` | Per-frame CPU timings, draw calls (`viewCalls` camera, `shadowCalls` shadow map), triangles |
+| `postView(mode)` | Show the ambient-occlusion (`'ao'`) or bloom (`'bloom'`) buffer instead of the image; no argument restores it |
+| `drawProfile(top)` | Draw calls in view by object name and by 512-unit map cell (for finding unbatched scenery) |
+| `graphics(tier)` | Graphics quality: `auto`, `low`, `medium`, `high`, `ultra` (saved like the pause-menu setting); returns the active tier, GPU and shadow-map size. Headless SwiftShader auto-detects as LOW, so screenshot tours should call `graphics('high')` |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
 | `beach()` | Southport Beach: crowd density for the hour, who is there and what they are doing, prop counts |

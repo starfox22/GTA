@@ -27,7 +27,7 @@ South Coast in 1997. One HTML file, no server, no build step to play: open
 | Car radio | N power, B next station |
 | Bail out / parachute | J then Space |
 | Show the mission card again | O |
-| Pause (settings: sound, touch controls, FPS counter) | Escape |
+| Pause (settings: sound, touch controls, FPS counter, graphics quality) | Escape |
 
 Touch controls appear automatically on phones and tablets. Progress saves to the browser's
 local storage. The game runs offline; nothing is fetched from the network.

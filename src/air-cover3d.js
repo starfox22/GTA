@@ -6,8 +6,10 @@
        * Tunnel roof, walls, portals, illumination and player-facing cutaway.
        */
       // A cut-and-cover road tunnel, with open portals and a roof that fades for navigation.
+      // Merged by the static batcher; the roof details (hidden with the cutaway) stay live.
       const tunnelGroup = new Three.Group();
       scene.add(tunnelGroup);
+      batchGroups.push(tunnelGroup);
       const tunnelConcrete = mat('#788a89', 0.95),
         tunnelTrim = mat('#c1b07f'),
         tunnelRoofMat = mat('#70867b', 0.95);
@@ -33,6 +35,7 @@
       for (let z = 2808; z < 3090; z += 44)
         for (const x of [2625, 2751]) box(tunnelGroup, x, 29, z, 1, 3, 16, warmLamp);
       const tunnelRoofDetails = new Three.Group();
+      tunnelRoofDetails.userData.dynamic = true;
       tunnelGroup.add(tunnelRoofDetails);
       for (const x of [2624, 2752]) {
         box(tunnelRoofDetails, x, 63, 2940, 8, 6, 290, tunnelConcrete);

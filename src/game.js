@@ -4335,6 +4335,7 @@
     // @include src/garages.js
     // @include src/crowd.js
     // @include src/ambience.js
+    // @include src/quality.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
     buildWorld();
@@ -4606,7 +4607,11 @@
       // Place the camera/player at a map point without touching anything else.
       look(x, y, zoom) {
         teleportPlayer(x, y);
-        if (zoom !== undefined) setWorldZoom(zoom);
+        // The zoom is applied at once (headless frames are too slow to ease into it).
+        if (zoom !== undefined) {
+          setWorldZoom(zoom);
+          worldZoom = worldZoomTarget;
+        }
         return this.status();
       },
       // The plan as data, for layout audits: coast, streets, rail, footprints and
@@ -4797,6 +4802,17 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
+      // pause-menu setting); returns what the renderer is now using.
+      graphics(tier) {
+        if (tier !== undefined) cycleGraphicsSetting(String(tier).toLowerCase());
+        return { setting: graphicsSetting, ...(city3D?.quality?.() || {}) };
+      },
+      // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
+      // 'bloom'; nothing for the image) to tune the post-processing.
+      postView: (mode) => city3D?.postView?.(mode) ?? null,
+      // Scene draw calls in view by object name and by map cell (render3d.js).
+      drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),
@@ -4808,6 +4824,13 @@
             frameMs: +(profile.frameGap / n).toFixed(1),
             drawCalls: info?.calls ?? null,
             triangles: info?.triangles ?? null,
+            // Whether the shadow map was redrawn (its calls included) in that frame,
+            // and calls including the post-processing passes.
+            shadowFrame: info?.shadowFrame ?? null,
+            // Camera-only calls, and the shadow map's calls on its last refresh.
+            viewCalls: info?.viewCalls ?? null,
+            shadowCalls: info?.shadowCalls ?? null,
+            frameCalls: info?.frameCalls ?? null,
             sceneObjects: info?.objects ?? null,
             byType: info?.byType ?? null,
             vehicles: vehicles.length,

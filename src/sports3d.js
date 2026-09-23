@@ -255,6 +255,8 @@
         const group = new Three.Group();
         group.name = 'Riverside live basketball court';
         scene.add(group);
+        // Court lines are hundreds of short segments: merged by the static batcher.
+        batchGroups.push(group);
         const centerX = venue.x + venue.w / 2;
         const centerY = venue.y + venue.h / 2;
         box(group, centerX, 0.12, centerY, venue.w + 8, 0.2, venue.h + 8, sportsMaterials.court);
