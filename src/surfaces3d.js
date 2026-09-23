@@ -69,12 +69,17 @@
         vec2 slab = gp / 6.0, slabF = fract( slab );
         float joint = ( 1.0 - smoothstep( 0.0, 0.06, min( min( slabF.x, 1.0 - slabF.x ), min( slabF.y, 1.0 - slabF.y ) ) ) ) * detailFade;
         vec3 paving = groundBase * ( 0.92 + 0.14 * cityHash( floor( slab ) ) ) * ( 1.0 - 0.28 * joint ) * ( 0.94 + 0.12 * grainB );
-        float dry = smoothstep( 0.55, 0.8, cityNoise( gp * 0.035 + 5.0 ) );
+        // Grass noise is sampled on rotated, offset lattices and summed: a single
+        // value-noise octave shows its square grid, which read as a pixel mosaic of
+        // blades and square dry patches.
+        vec2 gr = mat2( 0.8, -0.6, 0.6, 0.8 ) * gp;
+        float dry = smoothstep( 0.52, 0.8, cityNoise( gp * 0.035 + 5.0 ) * 0.6 + cityNoise( gr * 0.083 + 2.0 ) * 0.4 );
         // Meadow: broad lusher and sunburnt swathes (a few hundred units across) so
         // open ground reads as land from the air, then blades close up.
-        float meadow = cityNoise( gp * 0.0045 + 3.7 ) * 0.62 + cityNoise( gp * 0.014 + 11.0 ) * 0.38;
+        float meadow = cityNoise( gp * 0.0045 + 3.7 ) * 0.62 + cityNoise( gr * 0.014 + 11.0 ) * 0.38;
         dry = max( dry, smoothstep( 0.62, 0.9, meadow ) * 0.7 );
-        vec3 grass = groundBase * mix( 1.0, 0.78 + 0.44 * cityNoise( gp * 0.35 ), detailFade ) * ( 0.84 + 0.3 * meadow )
+        float blades = cityNoise( gr * 0.35 ) * 0.55 + cityNoise( gp * 0.93 + 7.0 ) * 0.45;
+        vec3 grass = groundBase * mix( 1.0, 0.84 + 0.32 * blades, detailFade ) * ( 0.84 + 0.3 * meadow )
                    * mix( vec3( 1.0 ), vec3( 1.14, 1.06, 0.8 ), dry );
         diffuseColor.rgb = mix( mix( mix( groundBase * ( 0.94 + 0.12 * grain ), paving, paveMask ), asphalt, roadMask ), grass, grassMask );
         // Rain: everything darkens as it soaks; low spots in the tarmac hold water.

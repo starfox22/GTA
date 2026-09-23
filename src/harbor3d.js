@@ -502,7 +502,11 @@
           const g = makeCargoCrate(depotGroup, 24);
           g.position.set(x, 0, z);
         }
-      sign('MORETTI FREIGHT', 4480, 4337, 180, '#e8ce83');
+      // Over the shutter header and canopy, standing proud of the roof line. At the
+      // default height it hung across the vehicle doorway itself (the lettering
+      // clipped by the door posts) and hid the shutter the chase ends at.
+      const morettiSign = sign('MORETTI FREIGHT', 4480, 4337, 120, '#e8ce83');
+      morettiSign.position.y = morettiSign.userData.backing.position.y = 62;
       const airBeam = new Three.Mesh(
         new Three.ConeGeometry(54, 1, 32, 1, true),
         new Three.MeshBasicMaterial({
