@@ -84,7 +84,15 @@ in-game numbers (index + 1); contracts are C1..C5 (indices 11..15).
   shows it when stars were actually cleared; a mission start hides a stale chip.
 - Verified: `wanted(0)` at zero shows nothing; shot -> escape shows it; `startMission` hides it.
 
-### 7. Copy
+### 7. Mission 8: disembarking put the player on the wrong side of the inlet
+- Symptom: at the Southport dock, E dropped the player on the quay across the inlet (the
+  generic boat exit takes the first clear side), a long walk round by the street from Rafe.
+- Fix: in that stage E steps the player onto the dock deck nearest the jet ski. The sixth
+  channel gate also moved out to (1640, 5780), clear of the swimmers at the west end of the
+  beach.
+- Verified: exit at (1440, 5156) on the dock, straight walk to Rafe, mission won.
+
+### 8. Copy
 - Fireworks Night objectives read "BOMB 3 / 3 · BLUE" and "NEON": now "BLUE HOUR" and
   "NEON PALACE".
 - The mission card lower-cased names it did not know ("fly to northridge", "daniel's"):
