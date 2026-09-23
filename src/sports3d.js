@@ -229,8 +229,8 @@
           drawSportsCrest(context, away, W - 170, 230, 170);
           if (match.stage === 'over') boardText(context, match.scores[0] + ' - ' + match.scores[1], W / 2, 230, 150, '#f6f4d7');
           else boardText(context, 'v', W / 2, 230, 110, '#8fb4bd');
-          boardText(context, home.name, 250, 360, 44, lightenForBoard(homeKit.primary), 800, 460);
-          boardText(context, away.name, W - 250, 360, 44, lightenForBoard(awayKit.primary), 800, 460);
+          boardText(context, home.name, 250, 362, 56, lightenForBoard(homeKit.primary), 900, 470);
+          boardText(context, away.name, W - 250, 362, 56, lightenForBoard(awayKit.primary), 900, 470);
           const day = Math.floor(match.fixture.kickoff / 1440) + 1;
           boardText(
             context,

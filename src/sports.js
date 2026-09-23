@@ -108,8 +108,6 @@
       ],
       basketball: [{ x: 1378.5, y: 2849, tunnel: false }],
     };
-    // Where the players' tunnel meets the pitch: teams walk out from here.
-    const STADIUM_TUNNEL = SPORTS_EXITS.soccer[0];
     // The ball's owner id while the player dribbles it.
     const SPORTS_HUMAN = 'player';
     // Stewards walk you out to the plaza outside the turnstiles.

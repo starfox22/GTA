@@ -113,7 +113,8 @@
     function sportsFixtureFor(sport, day, slot) {
       const pool = SPORTS_TEAMS[sport],
         calendar = SPORTS_CALENDAR[sport],
-        hash = sportsHash(day, slot, sport === 'soccer' ? 11 : 7),
+        // The salts are chosen so the first days bring a varied set of clubs.
+        hash = sportsHash(day, slot, sport === 'soccer' ? 70 : 1070),
         homeIndex = hash % pool.length,
         // Offset 1..n-1 so a club never plays itself.
         awayIndex = (homeIndex + 1 + ((hash >>> 8) % (pool.length - 1))) % pool.length,
