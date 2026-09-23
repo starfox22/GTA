@@ -212,3 +212,25 @@ not reproduce).
 - Fix: the roadster starts clear of Royal Ave; and a parked, stationary vehicle that only
   pokes a little into the lane (less than 12 units) makes the driver ease across the lane
   past it instead of stopping.
+
+## Superyacht, police, trains, garages
+
+Passed without changes: the wanted cycle (a shot raises a star, the search runs out, one
+POLICE CLEARED banner, none when clearing at zero stars); a dispatch cut at 4 stars; a
+truck rams a bridge roadblock and breaches it while a sedan is stopped by it; drowning with
+3 stars respawns at the hospital door (on dry, clear ground) with the swim state, wanted
+level, parachute and deck cleared; every one of the 13 stations can be reached on foot from
+a street, opens its menu, and a ride to the next station ends on clear ground by the
+destination's entry; a sedan crumpled on three sides with burst glass, dead lamps, sprung
+doors and a burning engine comes out of the Eastside Customs bay with every damage field
+reset and a new colour.
+
+### Y1. You could not walk onto the superyacht's passerelle
+- Symptom: walking east along the quay at y -3950 stops at x 662, in front of the
+  passerelle; boarding only worked with E.
+- Cause: the beach-only swimming rule (`shoreStepBlocked`) sees the step from the quay onto
+  the passerelle as a step off a sea wall into the water.
+- Fix: the passerelle counts as dry ground for that rule.
+- Verified: walking east boards the yacht on the swim platform (`player.deck`, level 0);
+  walking back west takes the player down the passerelle and ashore; E still boards and
+  leaves.

@@ -247,8 +247,11 @@
         wallHint();
         return true;
       }
-      const targetDry = groundAt(x, y, r),
-        fromDry = groundAt(fromX, fromY, r);
+      // The superyacht's passerelle is a walkway off the quay, not the sea: walking
+      // east onto it is how you board (updateMarinaFooting), and the sea-wall rule
+      // used to stop everyone at the quay edge in front of it.
+      const targetDry = groundAt(x, y, r) || onSuperyachtGangway(x, y),
+        fromDry = groundAt(fromX, fromY, r) || onSuperyachtGangway(fromX, fromY);
       if (targetDry) {
         if (fromDry) return false;
         // Wading out: only up onto sand or rocks, never onto a structure.
