@@ -299,9 +299,10 @@
           (cutawayPoint.x * 0.5 + 0.5) * cutawaySize.x,
           (cutawayPoint.y * 0.5 + 0.5) * cutawaySize.y,
           onScreen && gameMode !== 'map' ? radius : 0,
-          depth - 30,
+          // Clear of the player's own vehicle: a bus is 70 long, a rotor 82 across.
+          depth - (player.car ? 70 : 30),
         );
-        u.cityCutawayFloor.value = elevation + (player.car ? 34 : 9);
+        u.cityCutawayFloor.value = elevation + (player.car ? (isAircraft(player.car) ? 48 : 34) : 9);
       }
       Three.MeshStandardMaterial.prototype.onBeforeCompile = cityMaterialPatch;
       // Unlit materials that opted out of tone mapping (signs, ad panels, screens)
