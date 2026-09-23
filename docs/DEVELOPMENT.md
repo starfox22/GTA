@@ -65,12 +65,18 @@ something, never a generic code-evaluation hook.
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle |
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom |
 | `drive(type, altitudeMeters, heading)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne; optional heading in radians (0 = east) |
-| `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`); returns `ride()`. Physics tests use it because headless frames are slow |
+| `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`, `['KeyE']` for hold-E objectives); also steps a Blue Hour elevator ride; returns `ride()`. Physics tests use it because headless frames are slow |
 | `places()` | Named businesses and landmarks with coordinates |
 | `setClock(hours)`, `sky(id)` | Time of day; weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`) |
 | `startMission(i)`, `missions()` | Jump into a mission |
-| `missionState()` | Current mission stage, instruction, objective target and Vinny's depot door state |
+| `missionState()` | Current mission stage, instruction, objective target and Vinny's depot door state; with no mission, how the last one ended |
 | `skipToDepotDelivery()` | Mission 1: crates loaded, player in the truck outside Vinny's warehouse with the police alerted |
+| `missionTargets()` | The current mission in full: target with altitude, timer, mission vehicles (health, fire), guards, armed hostiles aiming nearby, actors, and each job's point lists (gates, checkpoints, rings, repos...) |
+| `probe(x, y, r)` | What occupies a map point: land/water, solid, road, rail, beach, whether a car or a jet ski fits |
+| `steerTo(x, y, seconds, radius, passThrough)` | Drive the current road vehicle or boat toward a point through the real physics (straight-line pilot, backs off walls); `passThrough` counts the point at speed |
+| `interact()` | Press the action key once, as E would |
+| `boardMissionVehicle()`, `placeVehicle(x, y, heading, altitudeMeters)` | Take the mission's vehicle; move the player's vehicle (stopped, aircraft at an altitude) |
+| `defeatMissionGuards(tag)` | Put down the current mission's guards (to skip a fight already verified) |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort) |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
