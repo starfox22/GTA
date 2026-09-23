@@ -1932,7 +1932,7 @@ kbd {
 }
 .hud-stars i {
   font-style: normal;
-  color: #ffffff2a;
+  color: #ffffff40;
   transition:
     color 0.3s,
     transform 0.3s var(--ui-ease);
@@ -2221,7 +2221,7 @@ kbd {
   max-width: 46vw;
   text-align: right;
   font:
-    900 italic clamp(20px, 2.4vw, 32px) / 1 var(--ui-font);
+    900 italic clamp(18px, 2vw, 26px) / 1 var(--ui-font);
   letter-spacing: -0.01em;
   color: var(--ui-gold);
   text-shadow: 0 2px 12px #000, 0 1px 2px #000;
@@ -2426,7 +2426,7 @@ kbd {
 .minimap-box.folded .minimap-frame {
   height: 0;
   opacity: 0;
-  border-color: transparent;
+  border-width: 0;
   pointer-events: none;
 }
 .minimap-box.folded .mini-fold {
@@ -3009,6 +3009,9 @@ kbd {
 }
 #carRadio .radio-presets button {
   flex: 1;
+  padding-left: 4px;
+  padding-right: 4px;
+  white-space: nowrap;
 }
 #carRadio button.selected {
   border-color: var(--acid);
@@ -3494,6 +3497,20 @@ body:not(.touch-mode).police-search-active #carRadio {
 #missionSelect.god-mode #campaignProgress {
   color: var(--ui-gold);
 }
+.mission-choice {
+  border-radius: 10px;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    padding 0.25s var(--ui-ease);
+}
+button:focus-visible {
+  outline-width: 2px;
+  outline-offset: 3px;
+}
+body.no-key-hints .quickkeys {
+  display: none;
+}
 /* --- SETTINGS ------------------------------------------------------------- */
 #settingsOverlay {
   z-index: 40;
@@ -3957,18 +3974,30 @@ body:not(.touch-mode).police-search-active #carRadio {
   }
 }
 /* --- TOUCH PLAY: thumbs own the lower corners, so the HUD moves up --------- */
+/* Row 1: location, waypoint, cash and stars. Row 2: minimap, mission card,
+   weapon. Toasts and dialogue sit just above the button strip at the bottom. */
 .touch-mode {
   --hud-edge: max(12px, env(safe-area-inset-left));
 }
 .touch-mode #topbar {
   top: max(8px, env(safe-area-inset-top));
+  align-items: center;
   gap: 10px;
+}
+.touch-mode .hud-location {
+  max-width: 30vw;
 }
 .touch-mode .hud-location b {
   font-size: 12px;
 }
-.touch-mode .hud-location .eyebrow {
+.touch-mode .hud-location .eyebrow,
+.touch-mode #worldClock {
   display: none;
+}
+.touch-mode .hud-status {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }
 .touch-mode .hud-cash {
   font-size: 20px;
@@ -3983,7 +4012,7 @@ body:not(.touch-mode).police-search-active #carRadio {
 .touch-mode #navigation {
   top: max(8px, env(safe-area-inset-top));
   padding: 4px 12px 4px 4px;
-  max-width: 40vw;
+  max-width: 34vw;
 }
 .touch-mode #navArrow {
   width: 24px;
@@ -3992,25 +4021,37 @@ body:not(.touch-mode).police-search-active #carRadio {
 }
 .touch-mode #terrainStatus,
 .touch-mode #stealthStatus {
-  top: 52px;
-  max-width: 46vw;
+  top: auto;
+  bottom: 160px;
+  max-width: 50vw;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .touch-mode #toast {
-  top: 88px;
+  top: auto;
+  bottom: 86px;
   left: 50%;
-  max-width: min(420px, 48vw);
-  transform: translate(-50%, -6px);
+  max-width: min(420px, 50vw);
+  transform: translate(-50%, 6px);
   font-size: 12px;
   text-align: center;
 }
 .touch-mode #toast.show {
   transform: translate(-50%, 0);
 }
-/* The bottom row becomes a top row: minimap left, card centre, weapon right. */
+.touch-mode #storyLine {
+  bottom: 138px;
+  width: min(520px, 52vw);
+  font-size: 13px;
+}
+.touch-mode #interaction {
+  top: calc(50% + 40px);
+}
+.touch-mode #radioCaption {
+  top: 96px;
+}
 .touch-mode #bottom {
-  top: 62px;
+  top: 54px;
   bottom: auto;
   align-items: flex-start;
   gap: 10px;
@@ -4019,7 +4060,7 @@ body:not(.touch-mode).police-search-active #carRadio {
   width: 150px;
 }
 .touch-mode .minimap-frame {
-  height: 100px;
+  height: 96px;
 }
 .touch-mode .minimap-box.folded {
   width: 90px;
@@ -4027,19 +4068,16 @@ body:not(.touch-mode).police-search-active #carRadio {
 .touch-mode .mini-map-btn kbd {
   display: none;
 }
-.touch-mode .bottom-middle {
-  padding-top: 64px;
-}
 .touch-mode #pager {
-  width: min(360px, 100%);
-  padding: 9px 12px;
+  width: min(340px, 100%);
+  padding: 8px 12px;
 }
 .touch-mode #pager .mission-copy p {
   display: none;
 }
 .touch-mode #missionPortrait {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
 }
 .touch-mode #pager h2 {
   font-size: 13px;
@@ -4070,33 +4108,39 @@ body:not(.touch-mode).police-search-active #carRadio {
   font-size: 20px;
 }
 .touch-mode #carRadio {
-  top: 170px;
+  top: 150px;
   right: var(--hud-edge);
   width: 150px;
 }
 .touch-mode #carRadio.open {
   width: 230px;
 }
-.touch-mode #storyLine {
-  bottom: 176px;
-  width: min(520px, 56vw);
-  font-size: 13px;
-}
-.touch-mode #interaction {
-  top: calc(50% + 44px);
-}
+/* Portrait phones: the mission card drops under the minimap / weapon row. */
 @media (max-width: 600px) {
   .touch-mode .hud-location {
-    max-width: 38vw;
+    max-width: 44vw;
   }
   .touch-mode .hud-location .street {
     display: none;
   }
+  .touch-mode #navigation {
+    top: 52px;
+    max-width: 70vw;
+  }
+  .touch-mode #bottom {
+    top: 92px;
+    flex-wrap: wrap;
+  }
+  .touch-mode .bottom-middle {
+    order: 3;
+    flex-basis: 100%;
+  }
   .touch-mode .minimap-box {
-    width: 112px;
+    width: 124px;
+    margin-right: auto;
   }
   .touch-mode .minimap-frame {
-    height: 76px;
+    height: 84px;
   }
   .touch-mode .mini-district,
   .touch-mode .mini-map-btn {
@@ -4106,33 +4150,31 @@ body:not(.touch-mode).police-search-active #carRadio {
   .touch-mode #weaponButton,
   .touch-mode #weaponButton.open,
   .touch-mode #vehicleStats {
-    width: 112px;
+    width: 124px;
     min-width: 0;
   }
   .touch-mode #weaponButton #weaponArt {
-    width: 44px;
-    height: 16px;
+    width: 48px;
+    height: 18px;
   }
   .touch-mode .ammo strong {
-    font-size: 16px;
-  }
-  .touch-mode .bottom-middle {
-    padding-top: 92px;
-  }
-  .touch-mode #navigation {
-    top: 50px;
-    max-width: 60vw;
+    font-size: 17px;
   }
   .touch-mode #toast {
-    top: 190px;
+    bottom: 196px;
     max-width: 86vw;
   }
   .touch-mode #storyLine {
     width: 86vw;
-    bottom: 196px;
+    bottom: 250px;
+  }
+  .touch-mode #terrainStatus,
+  .touch-mode #stealthStatus {
+    bottom: 300px;
+    max-width: 86vw;
   }
   .touch-mode #carRadio {
-    top: 190px;
+    top: 250px;
   }
 }
 @media (max-height: 520px) and (min-width: 601px) {
@@ -4142,14 +4184,21 @@ body:not(.touch-mode).police-search-active #carRadio {
   .touch-mode .minimap-frame {
     height: 84px;
   }
-  .touch-mode .bottom-middle {
-    padding-top: 0;
-  }
-  .touch-mode #storyLine {
-    bottom: 150px;
-  }
   .touch-mode #carRadio {
-    top: 150px;
+    top: 140px;
+  }
+}
+/* Title menu on a short landscape phone: a darker veil behind the menu column
+   and taller rows for thumbs. */
+@media (max-height: 560px) {
+  .title-shade {
+    background:
+      linear-gradient(90deg, #06080bf2 0%, #06080be0 45%, #06080b99 75%, #06080b40 100%),
+      linear-gradient(0deg, #06080bee 0%, transparent 32%);
+  }
+  .touch-mode .menu-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
   }
 }
 /* --- Reduced motion: keep the states, drop the movement -------------------- */
@@ -4262,7 +4311,7 @@ body:not(.touch-mode).police-search-active #carRadio {
               NEON</button
             ><button id="radioPreset2" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
               RIOT</button
-            ><button id="radioNext" aria-label="Next radio station">B · NEXT</button>
+            ><button id="radioNext" aria-label="Next radio station">B ▸</button>
           </div>
         </div>
       </div>
@@ -4436,7 +4485,7 @@ body:not(.touch-mode).police-search-active #carRadio {
       <div class="dialog mission-dialog">
         <div class="eyebrow" id="campaignProgress"></div>
         <h2>CHOOSE MISSION.</h2>
-        <p>Replay a completed job or continue your story. Future jobs stay secret.</p>
+        <p id="missionSelectNote">Replay a completed job or continue your story. Future jobs stay secret.</p>
         <div id="missionChoices"></div>
         <button class="text-btn" id="closeMissions">BACK <span>ESC</span></button>
       </div>

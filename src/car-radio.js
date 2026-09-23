@@ -196,15 +196,15 @@
       getElement('radioTrack').textContent = !carRadioEnabled
         ? 'Radio off'
         : !soundOn
-          ? 'Game sound muted · M to unmute'
+          ? 'Game sound muted · ' + keyName('mute') + ' to unmute'
           : carRadioUnavailable
-            ? 'Track unavailable · N to retry'
+            ? 'Track unavailable · ' + keyName('radioPower') + ' to retry'
             : carRadioBlocked
-              ? 'Press N to start playback'
+              ? 'Press ' + keyName('radioPower') + ' to start playback'
               : track
                 ? track.title + ' · ' + track.artist
                 : 'Tuning…';
-      getElement('radioPower').textContent = 'N · ' + (carRadioEnabled ? 'ON' : 'OFF');
+      getElement('radioPower').textContent = keyName('radioPower') + ' · ' + (carRadioEnabled ? 'ON' : 'OFF');
       getElement('radioPower').setAttribute?.('aria-pressed', String(carRadioEnabled));
       getElement('carRadio').classList.toggle('radio-off', !carRadioEnabled);
       for (let i = 0; i < MUSIC_STATIONS.length; i++) {

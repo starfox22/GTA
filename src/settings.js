@@ -13,7 +13,7 @@
      *             localStorage 'dead-end-city-cutaway' at startup: 'off' = off)
      *   AUDIO     sound on/off, master / effects / radio music / voice volumes,
      *             radio voices (police and dispatch callouts)
-     *   GAMEPLAY  NPC chatter (street speech bubbles), minimap
+     *   GAMEPLAY  NPC chatter (street speech bubbles), minimap, control hints
      *   CONTROLS  touch controls (mobile.js) and key remapping (controls.js)
      *
      * Everything applies the moment it changes and is saved in localStorage. The
@@ -163,6 +163,14 @@
           note: () => 'Show the minimap, or fold it to a small chip (the button on the minimap does the same). Mouse wheel or pinch zooms it.',
           get: () => !hudState.minimapFolded,
           set: (on) => setMinimapFolded(!on),
+        },
+        {
+          id: 'keyHints',
+          kind: 'toggle',
+          label: 'Control hints',
+          note: () => 'The strip of keys under the mission card, which follows what you are doing: on foot, driving, flying.',
+          get: () => hudState.keyHints,
+          set: (on) => setKeyHints(on),
         },
       ],
       controls: [

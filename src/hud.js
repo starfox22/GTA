@@ -27,18 +27,23 @@
      *               saved story.
      */
     const HUD_STORAGE = 'dead-end-city-hud',
-      MINIMAP_ZOOM_MIN = 0.55,
-      MINIMAP_ZOOM_MAX = 2.6,
+      // The overlays (labels, markers) are drawn in world units and grow with
+      // the zoom, so the range stays modest.
+      MINIMAP_ZOOM_MIN = 0.5,
+      MINIMAP_ZOOM_MAX = 2.2,
       // How long a pop box stays open after something happens to it (ms).
       HUD_POP_MS = 3200;
     const hudState = {
       minimapFolded: false,
       minimapZoom: 1,
+      // The key-hint strip under the mission card (Settings · Gameplay).
+      keyHints: true,
     };
     try {
       const saved = JSON.parse(localStorage.getItem(HUD_STORAGE));
       if (saved && typeof saved === 'object') {
         hudState.minimapFolded = saved.minimapFolded === true;
+        hudState.keyHints = saved.keyHints !== false;
         if (Number.isFinite(saved.minimapZoom))
           hudState.minimapZoom = clamp(saved.minimapZoom, MINIMAP_ZOOM_MIN, MINIMAP_ZOOM_MAX);
       }
@@ -159,7 +164,8 @@
         e.preventDefault();
         e.stopPropagation();
         const delta = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1);
-        setMinimapZoom(hudState.minimapZoom * Math.exp(-clamp(delta, -160, 160) * 0.006));
+        // One wheel notch (100) is about a 1.5x step.
+        setMinimapZoom(hudState.minimapZoom * Math.exp(-clamp(delta, -160, 160) * 0.004));
       },
       { passive: false },
     );
@@ -190,6 +196,12 @@
         if (minimapPointers.size < 2) minimapPinch = null;
       });
     setMinimapFolded(hudState.minimapFolded);
+    function setKeyHints(on) {
+      hudState.keyHints = !!on;
+      document.body.classList.toggle('no-key-hints', !hudState.keyHints);
+      saveHudState();
+    }
+    setKeyHints(hudState.keyHints);
     /**
      * KEY HINTS
      * The strip follows the context; it is rebuilt only when the context or the
@@ -234,6 +246,7 @@
       getElement('mapKeyHint').textContent = keyName('map');
       getElement('cycleKeyHint').textContent = keyName('cycleWeapon');
       getElement('pagerHint').textContent = keyName('missionCard');
+      getElement('radioNext').textContent = keyName('radioNext') + ' ▸';
     }
     /* HOW TO PLAY: the key grid, built from the bindings when the card opens. */
     function renderControlsHelp() {

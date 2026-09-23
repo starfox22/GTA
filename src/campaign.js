@@ -95,6 +95,9 @@
       getElement('campaignProgress').textContent =
         completed + ' / ' + missions.length + ' MISSIONS COMPLETED' + (player.godMode ? ' · GOD MODE: ALL JOBS OPEN' : '');
       getElement('missionSelect').classList.toggle('god-mode', !!player.godMode);
+      getElement('missionSelectNote').textContent = player.godMode
+        ? 'God mode: every job is open. A job played ahead of the story does not skip it.'
+        : 'Replay a completed job or continue your story. Future jobs stay secret.';
       for (let i = 0; i < missions.length; i++) {
         const unlocked = missionUnlocked(i),
           b = document.createElement('button');

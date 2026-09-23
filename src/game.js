@@ -5234,6 +5234,7 @@
           if (typeof changes.voices === 'boolean' && changes.voices !== voicesOn) toggleVoices();
           if (typeof changes.fps === 'boolean' && changes.fps !== fpsMeter.shown) toggleFpsCounter();
           if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
+          if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
@@ -5254,6 +5255,7 @@
           chatter: settings.npcChatter,
           minimapFolded: hudState.minimapFolded,
           minimapZoom: +hudState.minimapZoom.toFixed(2),
+          keyHints: hudState.keyHints,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,
         };
