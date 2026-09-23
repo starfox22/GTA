@@ -123,6 +123,11 @@
         }),
         wood = mat('#4f4037'),
         leafMats = ['#344c3c', '#4e654a', '#5b7150'].map((c) => mat(c)),
+        // Planted greenery (hedges, planters, potted palms, roof gardens): the same
+        // green as leafMats[1] but it never sways. The wind patch (surfaces3d.js) is
+        // for trees; a clipped hedge or a pot on a sheltered roof waving about read
+        // as a glitch.
+        stillLeafMat = mat('#4e654a'),
         // Palms (makePalm in world3d.js) share these so they batch together.
         palmTrunkMaterial = mat('#978266'),
         palmFrondMaterial = new Three.MeshStandardMaterial({ color: '#3e7862', roughness: 0.7, side: Three.DoubleSide });

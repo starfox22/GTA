@@ -410,7 +410,7 @@ docs/audit/missions-qa.md shows the method).
   samples for foam and for its normal. Spray is one `Points` object.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
-  a bump, dielectric roughness and rain puddles (`weather.wet`). Leaf and palm materials sway.
+  a bump, dielectric roughness and rain puddles (`weather.wet`). Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
 
 ## 6a. Damage and destruction
 

@@ -758,7 +758,7 @@
           for (let i = 0; i < steps; i++)
             mesh(
               sphereGeo,
-              leafMats[1],
+              stillLeafMat,
               roofGroup,
               along ? p.x - ROOFTOP.x + 4 + i * 8 : x,
               20,
@@ -854,7 +854,7 @@
         box(roofGroup, x, 22, z, 1.5, 31, 1.5, wood);
         for (let k = 0; k < 6; k++) {
           const a = (k * TAU) / 6,
-            leaf = box(roofGroup, x + Math.cos(a) * 7, 38, z + Math.sin(a) * 7, 15, 1.4, 3, leafMats[1]);
+            leaf = box(roofGroup, x + Math.cos(a) * 7, 38, z + Math.sin(a) * 7, 15, 1.4, 3, stillLeafMat);
           leaf.rotation.y = -a;
           leaf.rotation.z = 0.18;
         }

@@ -67,7 +67,7 @@
           for (let j = 0; j < 3; j++)
             mesh(
               sphereGeo,
-              leafMats[1],
+              stillLeafMat,
               group,
               x + side * (p.w * 0.38) + j * 5 - 5,
               6,
