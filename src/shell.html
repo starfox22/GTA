@@ -1884,6 +1884,8 @@ kbd {
   text-shadow: 0 1px 3px #000c, 0 0 14px #0008;
 }
 .hud-location {
+  flex: 0 1 auto;
+  min-width: 0;
   border-left: 2px solid var(--acid);
   padding: 1px 0 1px 11px;
   max-width: 42vw;
@@ -4118,7 +4120,9 @@ body.no-key-hints .quickkeys {
 /* Portrait phones: the mission card drops under the minimap / weapon row. */
 @media (max-width: 600px) {
   .touch-mode .hud-location {
-    max-width: 44vw;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
   }
   .touch-mode .hud-location .street {
     display: none;
@@ -4160,22 +4164,45 @@ body.no-key-hints .quickkeys {
   .touch-mode .ammo strong {
     font-size: 17px;
   }
+  /* Between the mission card and the button strip: toast, dialogue, status. */
   .touch-mode #toast {
-    bottom: 196px;
+    top: 300px;
+    bottom: auto;
     max-width: 86vw;
   }
   .touch-mode #storyLine {
     width: 86vw;
-    bottom: 250px;
+    top: 356px;
+    bottom: auto;
   }
   .touch-mode #terrainStatus,
   .touch-mode #stealthStatus {
-    bottom: 300px;
+    top: 300px;
+    bottom: auto;
     max-width: 86vw;
   }
-  .touch-mode #carRadio {
-    top: 250px;
+  .touch-mode #carRadio,
+  .touch-mode #carRadio.open {
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: 236px;
+    transform: translateX(-50%);
   }
+  .touch-mode .hud-status {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+  }
+  .touch-mode .hud-cash {
+    font-size: 18px;
+  }
+  .touch-mode .hud-stars {
+    font-size: 12px;
+  }
+}
+.touch-mode #interaction kbd {
+  display: none;
 }
 @media (max-height: 520px) and (min-width: 601px) {
   .touch-mode #bottom {

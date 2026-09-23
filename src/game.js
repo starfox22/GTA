@@ -4041,7 +4041,9 @@
       gameMode = 'help';
       renderControlsHelp();
       getElement('help').classList.remove('hidden');
-      getElement('closeHelp').focus();
+      // Focus the button without scrolling the manual to its end.
+      getElement('closeHelp').focus({ preventScroll: true });
+      getElement('help').querySelector('.dialog').scrollTop = 0;
       keys = {};
     }
     function closeHelp() {
