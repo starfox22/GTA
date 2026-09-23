@@ -631,7 +631,7 @@
         lampGlows = [];
       // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
       // without unbatching the street; each is a street prop in damage.js.
-      const lampPosts = Math.ceil(lamps.length / 2),
+      const lampPosts = lamps.length,
         lampPoles = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
         lampArms = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
         lampHeads = new Three.InstancedMesh(boxGeo, warmLamp, lampPosts);
@@ -642,7 +642,9 @@
         pool.frustumCulled = false;
         scene.add(pool);
       }
-      for (let i = 0; i < lamps.length; i += 2) {
+      // Every lamp is drawn (only every second one used to be, which left most
+      // streets dark at night); their halos are hidden by day (updateStreetLighting).
+      for (let i = 0; i < lamps.length; i++) {
         const l = lamps[i],
           group = new Three.Group(),
           prop = registerStreetProp('lamp', l.x, l.y);
@@ -652,7 +654,7 @@
         placePropInstance(lampArms, prop, l.x + 3, 34, l.y, 7, 1, 1);
         placePropInstance(lampHeads, prop, l.x + 6, 33.5, l.y, 5, 1.2, 3);
         prop.halo = halo(group, 6, 33, 0, 14);
-        lampHalos.push({ sprite: prop.halo, x: l.x, y: l.y });
+        lampHalos.push({ sprite: prop.halo, x: l.x, y: l.y, prop });
         const glow = new Three.Mesh(
           new Three.PlaneGeometry(65, 65),
           new Three.MeshBasicMaterial({
@@ -1411,7 +1413,11 @@
       function updateStreetLighting() {
         const glow = 0.1 + 0.9 * nightAmount,
           size = 14 + nightAmount * 12;
+        // By day a halo is invisible anyway: skip its draw call.
+        const lit = nightAmount > 0.03;
         for (const h of lampHalos) {
+          h.sprite.visible = lit && !(h.prop && h.prop.down);
+          if (!h.sprite.visible) continue;
           const power = sideJobPower(h.x, h.y);
           h.sprite.material.opacity = glow * power;
           h.sprite.scale.set(size, size, 1);

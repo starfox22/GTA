@@ -185,9 +185,9 @@
           g.fillStyle = grad;
           g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
         };
-        // Street lamps (render3d.js draws every second entry of `lamps`); the
-        // lantern hangs 6 units out over the road.
-        for (let i = 0; i < lamps.length; i += 2) pool(lamps[i].x + 6, lamps[i].y + 6, 62, 255, 196, 128, 0.85);
+        // Street lamps (render3d.js draws one post per entry of `lamps`); the
+        // lantern hangs 6 units out from the post.
+        for (const l of lamps) pool(l.x + 6, l.y + 6, 62, 255, 196, 128, 0.85);
         // Shop windows spill warm light across the pavement in front of them.
         for (const b of buildings)
           for (const pane of b.shopPanes || []) pool(pane.cx, pane.face + 10, Math.max(22, pane.width * 0.8), 255, 214, 160, 0.45);
