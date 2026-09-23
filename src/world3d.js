@@ -61,7 +61,7 @@
           }
         // Green channel: how close the water is to an open-sea beach, so the
         // shader knows where to draw sandy shallows and rolling breakers. Beach
-        // shores up the bay and the river mouth are sheltered and left out.
+        // shores in a sheltered sound would be left out; every sand shore faces open sea.
         mc.setTransform(1, 0, 0, 1, 0, 0);
         mc.fillStyle = '#000';
         mc.fillRect(0, 0, SHORE_RES, SHORE_ROWS);

@@ -248,7 +248,7 @@
         }
     }
     function notifyViolence(source, kind = 'gunfire', attacker = null) {
-      // Southport Beach scatters too (beach.js).
+      // Palm Keys Beach scatters too (beach.js).
       beachHearsViolence(source, kind);
       // Pedestrians hear and see it through the crowd's perception (src/crowd.js).
       crowdAlarm(kind === 'explosion' ? 'explosion' : 'gunfire', source, attacker);

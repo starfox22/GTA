@@ -4969,7 +4969,7 @@
           y: Math.round(l.y),
           top: { x: Math.round(l.top.x), y: Math.round(l.top.y) },
         })),
-      // Southport Beach: how busy it is and what everyone is doing (beach.js).
+      // Palm Keys Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
       // Rooftop helipads, the roof the player stands on and the roof under the
       // player's helicopter (rooftops.js); with a map point, that roof and its plant.

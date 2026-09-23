@@ -795,6 +795,8 @@
           Math.abs(t.y + t.h / 2 - cameraTarget.y) < t.h / 2 + viewportHeight / canvasScale
         )
           worldContext.drawImage(t.canvas, t.x, t.y, t.w, t.h);
+      // Long bridges run over open water that no baked ground sheet covers.
+      drawBridgeGround(worldContext);
       for (const b of buildings)
         if (
           b.county &&

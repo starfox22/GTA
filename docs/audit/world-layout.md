@@ -1,5 +1,80 @@
 # Audit report: world layout, railway, county, parks, harbor, sports, streets
 
+## Island rearrangement pass (Palm Keys west, Sunset Pier north, wider bays)
+
+### The new geography
+Left to right: Palm Keys (x -3135..-1144, the tropical island), Palm Sound (~1200 of water),
+Northbank (x 40..3420), Marlow Bay (2400..2700 of water), Ridgeline and the county. The
+Sunset Pier island (x 1830..4260, y -7090..-5680) is north of the reclamation across North
+Sound. See SOURCE_GUIDE section 4 for the full plan, the bridge table and the reserved plots.
+
+### How it was moved
+- **Frames.** The world box gained `WORLD_LEFT` (-5120) and a deeper `WORLD_TOP` (-8192); the
+  city frame gained `CITY_LEFT` (-3584) and `CITY_RIGHT` (3712). Every consumer of the old
+  0..CITY_SIZE assumption was converted: the 2D ground sheet and its blit, the 3D terrain and
+  roughness sheets and the ground mesh, the night light map, the shore distance field and the
+  water shader's world rectangle (`SHORE_RES` 512 -> 768 so texels stay ~21 units), the city
+  map (scale, centre, pan limits) and the navigation clamps, the street loop, the crowd's grid
+  test, traffic and pedestrian spawn ranges, the manhole/stain scatter, the cloud city glow.
+- **Palm Keys** was reflected east-west as it moved, so Ocean Drive faces the open sea: blocks
+  kept their contents (block 8 -> -4 by x - 6144, block 9 -> -5 by x - 7168); street and strand
+  points were reflected (x' = 2816 - x). Moved with it: PLACES and the casino, the Blue Hour
+  (`ROOFTOP`, its terrace is ROOFTOP-relative), Vinny's depot (chase.js, harbor3d.js, the
+  mission 1 delivery), the armory, Palm Auto Paint, the parks on those blocks, the Golden Tide
+  approach, the two Keys jetties (now on the bay shore), the palms, the strand umbrellas, the
+  signs, the gangs, the rival patrol, mission and contract points (LOC.motel, LOC.warehouse,
+  the buoy, the recon launch, rush checkpoints, bomb sites, the repo limousine).
+- **Southport Beach** moved whole onto the Keys' south shore (x - 4410) as Palm Keys Beach: the
+  land polygon's smooth strand, `BEACH`, the boardwalk, the pier, every beach.js/beach3d.js
+  x literal; the beach waterline is found in the Keys polygon. Northbank's south shore is a
+  straight sea wall with Battery Park (a lawn) and the esplanade.
+- **Sunset Pier** moved to its own island and turned 180 degrees (p' = (7610, -1185) - p) so
+  the gate faces the bridge: `PIER`, `COASTER_TRACK`, the paint, the trees, the crowd spots,
+  the midway lamps and the stall fronts (now facing north, onto the midway). The island has
+  its own ground tile and Pier Island Drive.
+- **Bridges** are one list, `BRIDGES` (geography.js), replacing the three fixed Marlow Bay spans
+  (`bridgeSpan`) and `COUNTY_BRIDGES`. One set of consumers draws and collides them all:
+  county3d.js (deck, rails, pylons), countyBridgeRails and the pylon colliders (county.js),
+  air-cover.js, boatFits (pylons only), roadblocks.js (a cut at the city end of each bridge),
+  the 2D view and maps (`drawBridgeGround`), `districtAt` (a deck reads as its bridge's name).
+  The Marlow Bay suspension towers (landmarks3d.js) and railings (world3d.js) went with the
+  old spans.
+
+### Found and fixed on the way
+- **`inAirport` caught all of Palm Keys.** It only bounded x from above (x < 1400), so every
+  block, street and district south of y 4120 at negative x read as the airport. Bounded below.
+- **Palm Grill was never built.** Its footprint reached 2 units into Palm Auto Paint's lot and
+  `prepareGarages` deleted it (on the old site too). The diner is 6 units shallower.
+- **Navigation: collinear roads never joined.** A street carried over a bridge and the bridge
+  deck itself ran side by side without a shared node unless a crossing street happened to cut
+  both. Overlapping collinear segments now cut each other at their end points.
+- **`WIDE_ROADS` could not tell a column from a row** once columns went negative (-1408 is a
+  wide row and a narrow column). Split into `WIDE_COLUMNS` / `WIDE_ROWS`; `sidewalkOffset`
+  takes the axis.
+- **2D view: long bridges over open water were invisible** (no ground sheet covers them); the
+  2D renderer draws every deck.
+- **Foothill Road** (new) first ran past Stonecreek's south avenue at a shallow angle; it now
+  meets the town at its south-west corner.
+- **Meridian Star** rode at anchor where the Sunset Pier Bridge runs; she anchors 240 west.
+
+### Verified
+- `layout()` + the overlap audit: no overlaps; 29 oblique road contacts, all county and airport
+  junctions (two new: Foothill Road at the South Bay Bridge landing and at Stonecreek).
+- Every bridge: both ends on land, the middle over water, a car fits the deck;
+  `route(x, y)` from Midtown reaches Palm Keys (keys-harbor), Stonecreek (east-bay), the park
+  gate (pier-bridge), the beach and Oceanview (south-bay + oceanview). A sedan drives both
+  Keys crossings end to end. Roadblocks build at the Keys Bridge, Palm Sound Causeway and East
+  Bay Crossing approaches.
+- All 16 missions start; every moved objective probes as land (or water for the buoy, the
+  launch and the jet-ski route). Mission 1: skip to the depot, drive in, shutter down, out the
+  back door: won. Mission 8: jet ski from the Keys jetty, salvage at the buoy, the new Palm
+  Sound route (7 gates, 128 s of the 150 left), the Southport dock, disembark. Rush Hour
+  (18,146 of road, clock 330 -> 390 s) and Repo Man (clock 540 -> 660 s) grew their clocks
+  with the longer crossings.
+- Palm Keys Beach: 171 beachgoers at 17:20, 65 umbrellas, 5 kiosks, 38 buoys; walking off the
+  sand into the sea starts a swim ('beach' shore); 86 ladders.
+
+
 ## City layout pass (railway to the west, overlaps, beach)
 
 ### How the audit is run
@@ -112,13 +187,18 @@ viaduct, never over the sand. Props and beach life are left for the beach pass.
   between navigation, physics and collision; no millisecond/second mixing; arrays are bounded.
 
 ## World layout as coded (reference)
-- Units: 512 = 100 m. WORLD_SIZE 11264, CITY_SIZE 5632, BLOCK_SIZE 512. Map x runs 0..11264; the
-  west coast of Northbank is at the world's western edge, so nothing may be built at x < 0.
-- City grid: avenue columns at 128 + i*512 (i = 0..10), rows at 128 + j*512 (j = -8..10). Streets
-  88 wide; 112 wide on 1152, 2688, 3200, 4736, -1408 and -2944. Streets are clipped to land, the
-  airport, park closures, the stadium and the beach; x = 128 is the rail corridor.
-- Marlow Bay river x 3420..3960 separates Northbank Island (west) from Palm Keys (east); bridges
-  at y = 1152, 3200, 4736.
+- Units: 512 = 100 m. World box x -5120..11264, y -8192..11264 (`WORLD_LEFT`, `WORLD_TOP`,
+  `WORLD_SIZE`); city frame x -3584..3712, y -4224..5632 (`CITY_LEFT`, `CITY_RIGHT`,
+  `CITY_TOP`, `CITY_SIZE`); the county lies past x or y 5632. Nothing may be built outside
+  the world box.
+- City grid: avenue columns at 128 + i*512 (i = -5..10), rows at 128 + j*512 (j = -8..10).
+  Streets 88 wide; 112 wide on the `WIDE_COLUMNS` (-1920, 1152, 2688, 3200) and `WIDE_ROWS`
+  (1152, 2688, 3200, 4736, -1408, -2944). Streets are clipped to land, the airport, park
+  closures, the stadium, the beach and the reserved plots; x = 128 is the rail corridor.
+- Palm Keys (west) and Northbank are joined by the Keys Bridge (y 1152) and the Palm Sound
+  Causeway (y 3200); Northbank and Ridgeline by the East Bay Crossing (y 3200) and the South Bay
+  Bridge (y 4736); the Sunset Pier island by the Sunset Pier Bridge (x 3200). `BRIDGES` in
+  geography.js.
 - Districts: see `districtAt` in geography.js. County regions: Ridgeline (NE), Oceanview (S),
   Coral Coast (SE), Fort Sentinel island (far SE). Towns: Stonecreek, Northridge, Eastgate,
   Oceanview, Palmshore. Two airports (Southport in the city, Oceanview International in the county).

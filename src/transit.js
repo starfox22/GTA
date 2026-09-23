@@ -84,7 +84,7 @@
         route: [
           [1220, 4890],
           // Off the airport's south shore and across the channel on a sea
-          // viaduct, 400 units west of Southport Beach.
+          // viaduct past the south-west corner of Northbank.
           [1220, 5320, 900],
           [1990, 6720, 900],
           // Down the west edge of Oceanview, round the town's south-west corner
