@@ -1432,13 +1432,34 @@
         // into the Commons lake and leave its driver no dry ground to step out on.
         const moved = c.x !== c.stepStartX || c.y !== c.stepStartY || c.a !== c.stepStartA,
           wheeled = moved && c.type !== 'plane' && !(isAircraft(c) && c.altitude > 8) && !isBoat(c),
-          nearPond = wheeled && parkPondNear(c.x, c.y, vehicleSpec(c).l);
-        if (
-          wheeled &&
-          corners(vehicleShape(c)).some(
-            (p) => (c !== player.car && !groundAt(p.x, p.y)) || (nearPond && parkPondBlocked(p.x, p.y)),
-          )
-        ) {
+          nearPond = wheeled && parkPondNear(c.x, c.y, vehicleSpec(c).l),
+          footprint = wheeled && corners(vehicleShape(c)),
+          // More of the car over the water than at the start of the step: a car that
+          // somehow starts with a wheel over the kerb can still back off it.
+          cornersInPond = (shape) => corners(shape).filter((p) => parkPondBlocked(p.x, p.y)).length,
+          intoPond =
+            nearPond &&
+            footprint.some((p) => parkPondBlocked(p.x, p.y)) &&
+            cornersInPond(vehicleShape(c)) >
+              cornersInPond({ ...vehicleShape(c), x: c.stepStartX, y: c.stepStartY, a: c.stepStartA });
+        if (intoPond || (wheeled && c !== player.car && footprint.some((p) => !groundAt(p.x, p.y)))) {
+          // Hitting the pond's stone kerb at speed is a crash, not a soft stop.
+          const hitSpeed = Math.hypot(c.vx || 0, c.vy || 0);
+          // (Same severity as a wall in collisionImpact; the kerb is immovable.)
+          if (intoPond && hitSpeed > 42 && physicsClock - (c.kerbHitAt || -9) > 0.5) {
+            c.kerbHitAt = physicsClock;
+            const nx = c.vx / hitSpeed,
+              ny = c.vy / hitSpeed,
+              reach = vehicleSpec(c).l / 2;
+            damageVehicle(c, Math.pow(hitSpeed - 38, 1.12) * 0.062, c.x + nx * reach, c.y + ny * reach, null, {
+              kind: 'crash',
+              nx: -nx,
+              ny: -ny,
+              closing: hitSpeed,
+              otherMass: 0,
+            });
+            if (c === pc) shake = Math.max(shake, Math.min(10, hitSpeed / 40));
+          }
           c.x = c.stepStartX;
           c.y = c.stepStartY;
           c.a = c.stepStartA;

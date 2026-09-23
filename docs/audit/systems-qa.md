@@ -100,8 +100,12 @@ turn, reverse and let the driver out on clear ground.
   as a kerb for every wheeled vehicle, the player's included: the car is put back where
   it was at the start of the step and bounces off. (A flooding-car pond would need
   swimming in ponds, which water.js does not model.)
+  Hitting the kerb at speed is a crash (same severity as a wall in `collisionImpact`,
+  crumpling the front), not a soft stop; and the kerb only refuses a step that puts more of
+  the car over the water, so a car that somehow starts with a wheel over it can drive off.
 - Verified: a police car driven at the lake from all four sides stops at the kerb and the
-  driver steps out every time.
+  driver steps out every time; a roadster driven into it at 320 units/s stops with a
+  crumpled front (hp 120 → 85).
 
 ### V3. The Southport dock and its speedboat were on dry land
 - Symptom: the speedboat by the airport inlet could not move (`boatFits` false, two hull
