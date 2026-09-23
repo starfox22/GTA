@@ -7,10 +7,15 @@
      */
     /**
      * SUNSET PIER
-     * A pleasure pier built on a sand bar in the lower bay, reached by the Palm
-     * Ave causeway off the Stadium Way crossing. The park is laid out around a
-     * midway: the coaster wraps the eastern half, the wheel anchors the west, and
-     * the carousel, games row and food court fill the middle.
+     * The amusement island north of the reclamation across North Sound, reached
+     * by the Sunset Pier Bridge off the north end of Riverbank Dr and Pier Island
+     * Drive to the gate on the south side. The rides stand in the island's east
+     * half, laid out around a midway: the coaster wraps the western half of the
+     * park, the wheel anchors the east, and the carousel, games row and food
+     * court fill the middle. The west half of the island (THEME_PARK_RESERVE,
+     * geography.js) is kept clear for the big attractions. (The park used to
+     * stand on a sand bar in the lower bay; it was moved here whole and turned
+     * round so the gate faces the bridge.)
      *
      * The coaster is ridden, not watched. `COASTER_TRACK` is a closed list of
      * [x, y, altitude] control points; a ride interpolates along it with a real
@@ -19,58 +24,58 @@
      * is authored in world units, where 512 units is 100 metres.
      */
     const PIER = {
-      gate: { x: 3712, y: 4960 },
-      midway: { x: 3760, y: 5130 },
-      wheel: { x: 3580, y: 5230, r: 66 },
-      carousel: { x: 3690, y: 5330, r: 42 },
-      arcade: { x: 3570, y: 5090, w: 96, h: 64 },
-      gamesRow: { x: 3640, y: 5420, w: 220, h: 54 },
-      foodCourt: { x: 3840, y: 5386, w: 170, h: 60 },
-      station: { x: 3862, y: 5006 },
-      dropTower: { x: 3590, y: 5372 },
-      teacups: { x: 3960, y: 5230, r: 38 },
+      gate: { x: 3898, y: -6145 },
+      midway: { x: 3850, y: -6315 },
+      wheel: { x: 4030, y: -6415, r: 66 },
+      carousel: { x: 3920, y: -6515, r: 42 },
+      arcade: { x: 3944, y: -6339, w: 96, h: 64 },
+      gamesRow: { x: 3750, y: -6659, w: 220, h: 54 },
+      foodCourt: { x: 3600, y: -6631, w: 170, h: 60 },
+      station: { x: 3748, y: -6191 },
+      dropTower: { x: 4020, y: -6557 },
+      teacups: { x: 3650, y: -6415, r: 38 },
     };
     const COASTER_TRACK = [
-      [3862, 5006, 16],
-      [3930, 5000, 18],
-      [3990, 5016, 70],
-      [4046, 5044, 180],
-      [4086, 5090, 300],
-      [4092, 5150, 282],
-      [4066, 5218, 96],
-      [4020, 5262, 34],
-      [3962, 5290, 146],
-      [3900, 5312, 52],
-      // Vertical loop: the plan position runs west, doubles back over the top and
+      [3748, -6191, 16],
+      [3680, -6185, 18],
+      [3620, -6201, 70],
+      [3564, -6229, 180],
+      [3524, -6275, 300],
+      [3518, -6335, 282],
+      [3544, -6403, 96],
+      [3590, -6447, 34],
+      [3648, -6475, 146],
+      [3710, -6497, 52],
+      // Vertical loop: the plan position runs east, doubles back over the top and
       // returns to the entry, so the circle lives in the vertical plane. Radius 84,
       // entry and exit are the same point on the ground, and the crest is low
       // enough that the train still carries about two and a half g over the top.
-      [3860, 5318, 24],
-      [3801, 5318, 49],
-      [3776, 5318, 108],
-      [3801, 5318, 167],
-      [3860, 5318, 192],
-      [3919, 5318, 167],
-      [3944, 5318, 108],
-      [3919, 5318, 49],
-      [3860, 5318, 24],
-      [3790, 5300, 40],
-      [3722, 5262, 118],
-      [3672, 5206, 34],
-      [3652, 5140, 104],
-      [3676, 5082, 32],
-      [3730, 5044, 96],
-      [3796, 5030, 30],
-      [3856, 5052, 84],
-      [3888, 5108, 28],
-      [3872, 5178, 72],
-      [3812, 5218, 26],
-      [3746, 5206, 58],
-      [3700, 5152, 24],
-      [3706, 5090, 44],
-      [3752, 5040, 22],
-      [3812, 5014, 18],
-      [3838, 5008, 16],
+      [3750, -6503, 24],
+      [3809, -6503, 49],
+      [3834, -6503, 108],
+      [3809, -6503, 167],
+      [3750, -6503, 192],
+      [3691, -6503, 167],
+      [3666, -6503, 108],
+      [3691, -6503, 49],
+      [3750, -6503, 24],
+      [3820, -6485, 40],
+      [3888, -6447, 118],
+      [3938, -6391, 34],
+      [3958, -6325, 104],
+      [3934, -6267, 32],
+      [3880, -6229, 96],
+      [3814, -6215, 30],
+      [3754, -6237, 84],
+      [3722, -6293, 28],
+      [3738, -6363, 72],
+      [3798, -6403, 26],
+      [3864, -6391, 58],
+      [3910, -6337, 24],
+      [3904, -6275, 44],
+      [3858, -6225, 22],
+      [3798, -6199, 18],
+      [3772, -6193, 16],
     ];
     const COASTER_LIFT_START = 1,
       COASTER_LIFT_END = 4,
@@ -146,8 +151,8 @@
     function leaveCoaster() {
       player.coaster = null;
       player.altitude = terrainHeight(PIER.station.x, PIER.station.y);
-      player.x = PIER.station.x - 58;
-      player.y = PIER.station.y + 12;
+      player.x = PIER.station.x + 58;
+      player.y = PIER.station.y - 12;
       tell('Mind the step. Again?', 3);
     }
     function updateCoaster(deltaSeconds) {
@@ -227,28 +232,26 @@
       }
       return false;
     }
-    /* Paint the island: midway paving, ride pads, the pier boards and the beach. */
+    /* Paint the park: midway paving, ride pads and labels (paintParkIsland does the island). */
     function paintSunsetPier(g) {
       g.save();
-      g.fillStyle = '#b7ab8c';
       g.beginPath();
       SUNSET_ISLE.polygon.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
       g.closePath();
-      g.fill();
       g.clip();
       g.fillStyle = '#8f9a83';
-      g.fillRect(3470, 4900, 720, 640);
+      g.fillRect(3420, -6725, 720, 640);
       // Midway: a wide paved spine from the gate to the far end.
       g.fillStyle = '#cdc4ab';
-      g.fillRect(3676, 4900, 76, 560);
-      g.fillRect(3540, 5140, 560, 62);
-      g.fillRect(3540, 5340, 520, 56);
+      g.fillRect(3858, -6645, 76, 560);
+      g.fillRect(3510, -6387, 560, 62);
+      g.fillRect(3550, -6581, 520, 56);
       g.strokeStyle = '#b0a58c';
       g.lineWidth = 1.5;
-      for (let x = 3540; x < 4110; x += 24) {
+      for (let x = 3510; x < 4080; x += 24) {
         g.beginPath();
-        g.moveTo(x, 5140);
-        g.lineTo(x, 5202);
+        g.moveTo(x, -6387);
+        g.lineTo(x, -6325);
         g.stroke();
       }
       // Ride pads.
@@ -274,7 +277,7 @@
       g.fillStyle = '#e4d6a6';
       g.font = 'bold 30px monospace';
       g.textAlign = 'center';
-      g.fillText('SUNSET PIER', 3800, 4960);
+      g.fillText('SUNSET PIER', 3810, -6100);
       g.font = 'bold 15px monospace';
       g.fillText('THE SCREAMER', PIER.station.x, PIER.station.y - 30);
       g.fillText('BIG WHEEL', PIER.wheel.x, PIER.wheel.y - 80);
@@ -282,16 +285,72 @@
       g.fillText('FOOD COURT', PIER.foodCourt.x + 100, PIER.foodCourt.y - 10);
       g.restore();
     }
+    /**
+     * THE ISLAND GROUND
+     * The island lies north of the city frame's baked ground, so it has a ground
+     * tile of its own (drawn like the county's: county3d.js in 3D, drawCounty2D
+     * in the 2D view): lawns inside a paved rim, the island drive and the car
+     * park by the gate, the reserved attraction ground (THEME_PARK_RESERVE)
+     * marked out, then the Sunset Pier midway and ride pads.
+     */
+    const PARK_TILE = { x: 1792, y: -7168, w: 2560, h: 1536, pixelsPerUnit: 0.64 },
+      PARK_CAR_PARK = { x: 3290, y: -5846, w: 520, h: 110 };
+    function paintParkIsland(g) {
+      g.save();
+      g.beginPath();
+      SUNSET_ISLE.polygon.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
+      g.closePath();
+      g.fillStyle = '#7f986b';
+      g.fill();
+      g.clip();
+      g.lineJoin = 'round';
+      g.strokeStyle = '#b3ad9c';
+      g.lineWidth = 64;
+      g.stroke();
+      g.strokeStyle = '#929897';
+      g.lineWidth = 22;
+      g.stroke();
+      const r = THEME_PARK_RESERVE;
+      g.fillStyle = '#8aa476';
+      g.fillRect(r.x, r.y, r.w, r.h);
+      g.strokeStyle = '#d9d2b4';
+      g.lineWidth = 4;
+      g.setLineDash([24, 16]);
+      g.strokeRect(r.x + 8, r.y + 8, r.w - 16, r.h - 16);
+      g.setLineDash([]);
+      const lot = PARK_CAR_PARK;
+      g.fillStyle = '#4d565a';
+      g.fillRect(lot.x, lot.y, lot.w, lot.h);
+      g.fillStyle = '#d6d3c4';
+      for (let x = lot.x + 8; x < lot.x + lot.w - 8; x += 26) {
+        g.fillRect(x, lot.y + 4, 2, 38);
+        g.fillRect(x, lot.y + lot.h - 42, 2, 38);
+      }
+      g.restore();
+      paintCountyRoads(g, true);
+      drawBridgeGround(g);
+      paintSunsetPier(g);
+    }
     function buildSunsetPier() {
-      paintSunsetPier(groundContext);
+      const t = PARK_TILE,
+        canvas = document.createElement('canvas');
+      canvas.width = Math.round(t.w * t.pixelsPerUnit);
+      canvas.height = Math.round(t.h * t.pixelsPerUnit);
+      const g = canvas.getContext('2d');
+      g.scale(t.pixelsPerUnit, t.pixelsPerUnit);
+      g.translate(-t.x, -t.y);
+      paintParkIsland(g);
+      countyGroundTiles.push({ x: t.x, y: t.y, w: t.w, h: t.h, canvas });
       for (let i = trees.length - 1; i >= 0; i--)
         if (onSunsetIsle(trees[i].x, trees[i].y)) trees.splice(i, 1);
       for (let i = 0; i < 26; i++) {
         const a = (i * 2.399) % TAU,
-          x = 3820 + Math.cos(a) * (200 + ((i * 53) % 130)),
-          y = 5180 + Math.sin(a) * (190 + ((i * 71) % 120));
+          x = 3790 + Math.cos(a) * (200 + ((i * 53) % 130)),
+          y = -6365 + Math.sin(a) * (190 + ((i * 71) % 120));
         if (onSunsetIsle(x, y) && !parkBlocked(x, y, 14)) drawTree(x, y, 12 + (i % 4) * 2);
       }
+      // A line of trees along the island drive, clear of the reserved ground.
+      for (let x = 3260; x < 3860; x += 60) drawTree(x, -5978, 13);
     }
     const PARK_LINES = [
       'One more go on the Screamer.',
@@ -307,22 +366,22 @@
     ];
     function populateSunsetPier() {
       const spots = [
-        [PIER.station.x - 54, PIER.station.y + 20],
-        [PIER.station.x - 40, PIER.station.y + 34],
-        [PIER.carousel.x + 52, PIER.carousel.y],
-        [PIER.carousel.x - 48, PIER.carousel.y + 16],
-        [PIER.wheel.x + 80, PIER.wheel.y - 10],
-        [PIER.wheel.x + 66, PIER.wheel.y + 30],
-        [PIER.gamesRow.x + 40, PIER.gamesRow.y - 22],
-        [PIER.gamesRow.x + 140, PIER.gamesRow.y - 22],
-        [PIER.foodCourt.x + 60, PIER.foodCourt.y - 24],
-        [PIER.foodCourt.x + 150, PIER.foodCourt.y - 24],
-        [PIER.midway.x, PIER.midway.y + 40],
-        [PIER.midway.x + 60, PIER.midway.y - 30],
-        [PIER.teacups.x - 56, PIER.teacups.y],
-        [3700, 5020],
-        [3740, 5060],
-        [3660, 5180],
+        [PIER.station.x + 54, PIER.station.y - 20],
+        [PIER.station.x + 40, PIER.station.y - 34],
+        [PIER.carousel.x - 52, PIER.carousel.y],
+        [PIER.carousel.x + 48, PIER.carousel.y - 16],
+        [PIER.wheel.x - 80, PIER.wheel.y + 10],
+        [PIER.wheel.x - 66, PIER.wheel.y - 30],
+        [PIER.gamesRow.x + PIER.gamesRow.w - 40, PIER.gamesRow.y + PIER.gamesRow.h + 22],
+        [PIER.gamesRow.x + PIER.gamesRow.w - 140, PIER.gamesRow.y + PIER.gamesRow.h + 22],
+        [PIER.foodCourt.x + PIER.foodCourt.w - 60, PIER.foodCourt.y + PIER.foodCourt.h + 24],
+        [PIER.foodCourt.x + PIER.foodCourt.w - 150, PIER.foodCourt.y + PIER.foodCourt.h + 24],
+        [PIER.midway.x, PIER.midway.y - 40],
+        [PIER.midway.x - 60, PIER.midway.y + 30],
+        [PIER.teacups.x + 56, PIER.teacups.y],
+        [3910, -6205],
+        [3870, -6245],
+        [3950, -6365],
       ];
       for (const [x, y] of spots) {
         if (!onSunsetIsle(x, y) || parkBlocked(x, y, 7)) continue;
@@ -350,7 +409,7 @@
           const target = randomChoice([PIER.midway, PIER.carousel, PIER.wheel, PIER.station, PIER.foodCourt]);
           person.parkGoal = {
             x: (target.x || 0) + randomBetween(-60, 60) + (target.w ? target.w / 2 : 0),
-            y: (target.y || 0) + randomBetween(-50, 50) + (target.h ? target.h + 24 : 0),
+            y: (target.y || 0) + randomBetween(-50, 50) - (target.h ? 24 : 0),
           };
         }
         if ((person.speechUntil || 0) <= gameTime && seededRandom() < 0.5) {

@@ -135,50 +135,7 @@
       });
     }
     LAND_REGIONS.push(...COUNTY_REGIONS);
-    const COUNTY_BRIDGES = [
-      {
-        name: 'EAST BAY CROSSING',
-        width: 122,
-        a: [5248, 3200],
-        b: [6580, 3200],
-      },
-      {
-        // Leaves Northbank from the south end of Riverbank Dr, down the Battery
-        // Point sea wall and past the east end of Southport Beach, and lands on
-        // Oceanview's east avenue where Beach Road starts. It used to run down
-        // Garden Ave straight across the middle of the beach at sand level,
-        // cutting the strand in two.
-        name: 'OCEANVIEW CAUSEWAY',
-        width: 128,
-        a: [3200, 5000],
-        b: [3200, 7010],
-      },
-      {
-        name: 'CORAL SOUND BRIDGE',
-        width: 116,
-        a: [5700, 8000],
-        b: [6750, 8000],
-      },
-      {
-        name: 'RIDGELINE VIADUCT',
-        width: 116,
-        a: [7800, 5620],
-        b: [7433.016, 7262.254],
-      },
-      {
-        name: 'SENTINEL CAUSEWAY',
-        width: 126,
-        a: [7800, 8150],
-        b: [9440, 8150],
-      },
-      {
-        // Palm Ave drops off the Stadium Way crossing and runs out to the pier.
-        name: 'SUNSET PIER CAUSEWAY',
-        width: 104,
-        a: [3712, 4736],
-        b: [3712, 4980],
-      },
-    ];
+    // The bridges (county ones included) are listed in BRIDGES, geography.js.
     const COUNTY_TOWNS = [
       {
         name: 'STONECREEK',
@@ -330,7 +287,30 @@
           [7774, 7600],
         ],
       },
-      ...COUNTY_BRIDGES.map((b) => ({
+      {
+        // Off the South Bay Bridge's east landing, up through the western
+        // foothills to the end of the Ridgeline Highway.
+        name: 'FOOTHILL ROAD',
+        width: 96,
+        points: [
+          [6420, 4736],
+          [6700, 4480],
+          [7232, 4224],
+        ],
+      },
+      {
+        // Sunset Pier island: from the bridge landing along the south shore to
+        // the park gate, past the car park.
+        name: 'PIER ISLAND DRIVE',
+        width: 88,
+        points: [
+          [3200, -5800],
+          [3200, -5900],
+          [3898, -5900],
+          [3898, -6080],
+        ],
+      },
+      ...BRIDGES.map((b) => ({
         name: b.name,
         width: b.width,
         points: [b.a, b.b],
@@ -448,18 +428,6 @@
       return COUNTY_ROADS.some((r) =>
         r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + margin),
       );
-    }
-    function onCountyBridge(x, y, r = 0) {
-      return COUNTY_BRIDGES.some((b) => {
-        const pad = b.width / 2 - r;
-        return (
-          x >= Math.min(b.a[0], b.b[0]) - pad &&
-          x <= Math.max(b.a[0], b.b[0]) + pad &&
-          y >= Math.min(b.a[1], b.b[1]) - pad &&
-          y <= Math.max(b.a[1], b.b[1]) + pad &&
-          segmentDistance(x, y, b.a, b.b) <= pad
-        );
-      });
     }
     function countyRegionAt(x, y) {
       return COUNTY_REGIONS.find((r) => regionContains(r, x, y));
@@ -696,6 +664,8 @@
         countyGroundTiles.push({
           x,
           y,
+          w: CITY_SIZE,
+          h: CITY_SIZE,
           canvas,
         });
       }
@@ -821,11 +791,10 @@
     function drawCounty2D() {
       for (const t of countyGroundTiles)
         if (
-          Math.abs(t.x + CITY_SIZE / 2 - cameraTarget.x) <
-            CITY_SIZE / 2 + viewportWidth / canvasScale &&
-          Math.abs(t.y + CITY_SIZE / 2 - cameraTarget.y) < CITY_SIZE / 2 + viewportHeight / canvasScale
+          Math.abs(t.x + t.w / 2 - cameraTarget.x) < t.w / 2 + viewportWidth / canvasScale &&
+          Math.abs(t.y + t.h / 2 - cameraTarget.y) < t.h / 2 + viewportHeight / canvasScale
         )
-          worldContext.drawImage(t.canvas, t.x, t.y, CITY_SIZE, CITY_SIZE);
+          worldContext.drawImage(t.canvas, t.x, t.y, t.w, t.h);
       for (const b of buildings)
         if (
           b.county &&
@@ -910,7 +879,11 @@
       addBeachColliders();
       for (const b of [...countySolids(), ...militaryWalls])
         addStatic(b.x, b.y, b.w, b.h, b.height, b.kind || 'military');
-      for (const bridge of COUNTY_BRIDGES)
+      // Bridge pylons stand in the water beside the deck, tall enough to matter
+      // to a low helicopter.
+      for (const bridge of BRIDGES)
+        for (const p of bridgePylons(bridge)) addStatic(p.x - 7, p.y - 7, 14, 14, 140, 'tower');
+      for (const bridge of BRIDGES)
         for (const piece of countyBridgeRails(bridge)) {
           const b = {
             ...piece,
@@ -947,17 +920,6 @@
           cx = bridge.a[0] + dx * t,
           cy = bridge.a[1] + dy * t;
         if (landAt(cx, cy)) continue;
-        // Where a causeway leaves a city bridge (the Sunset Pier causeway drops off
-        // Stadium Way), its first rail pieces stood on the bridge deck across the
-        // eastbound lane: invisible walls that stopped traffic dead.
-        const reach = length / n / 2 + 4;
-        if (
-          BRIDGES.some((z) => {
-            const [x0, x1] = bridgeSpan(z);
-            return cx > x0 - reach && cx < x1 + reach && Math.abs(cy - z) < 56 + reach;
-          })
-        )
-          continue;
         for (const side of [-1, 1]) {
           const x = cx - Math.sin(a) * side * (bridge.width / 2 - 1),
             y = cy + Math.cos(a) * side * (bridge.width / 2 - 1),

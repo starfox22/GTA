@@ -1,6 +1,6 @@
-    // BEGIN SUBSYSTEM: src/beach.js — Southport Beach life
+    // BEGIN SUBSYSTEM: src/beach.js — Palm Keys Beach life
     /**
-     * Southport Beach life
+     * Palm Keys Beach life
      * Source: src/beach.js
      * Scope: shared game closure.
      * The strand's furniture plan and the people on it: sunbathers, swimmers,
@@ -52,9 +52,9 @@
     let beachWaterlineCache = null;
     function beachWaterline() {
       if (beachWaterlineCache) return beachWaterlineCache;
-      const poly = LAND_REGIONS[0].polygon,
-        from = poly.findIndex((p) => p[0] === 3150 && p[1] === 5420),
-        to = poly.findIndex((p) => p[0] === 1800 && p[1] === 5430),
+      const poly = LAND_REGIONS[1].polygon,
+        from = poly.findIndex((p) => p[0] === -1260 && p[1] === 5420),
+        to = poly.findIndex((p) => p[0] === -2610 && p[1] === 5430),
         points = poly
           .slice(from, to + 1)
           .reverse()
@@ -152,11 +152,11 @@
         beachReserve(k.x - 14, k.y - 4, k.x + k.w + 14, k.y + k.h + (kind === 'bar' ? 86 : 26));
         return k;
       };
-      kiosk('snack', 'SNACKS · COLD DRINKS', 1935, 58, 34, '#3f8fb0');
-      const bar = kiosk('bar', 'THE SANDBAR', 2390, 112, 42, '#d9603f');
-      kiosk('station', 'LIFEGUARD', 2575, 70, 38, '#d53a33');
-      kiosk('icecream', 'ICE CREAM', 2865, 44, 30, '#f19ab9');
-      kiosk('surf', 'SURF RENTALS', 3025, 54, 34, '#2c9e8c');
+      kiosk('snack', 'SNACKS · COLD DRINKS', -2475, 58, 34, '#3f8fb0');
+      const bar = kiosk('bar', 'THE SANDBAR', -2020, 112, 42, '#d9603f');
+      kiosk('station', 'LIFEGUARD', -1835, 70, 38, '#d53a33');
+      kiosk('icecream', 'ICE CREAM', -1545, 44, 30, '#f19ab9');
+      kiosk('surf', 'SURF RENTALS', -1385, 54, 34, '#2c9e8c');
       // The bar's deck: tables with small umbrellas and stools.
       for (let i = 0; i < 4; i++) {
         const t = { x: bar.x + 12 + i * 29, y: bar.y + bar.h + 34, color: BEACH_UMBRELLA[(i * 3) % BEACH_UMBRELLA.length] };
@@ -167,28 +167,28 @@
       for (let i = 0; i < 7; i++)
         L.boards.push({ x: surf.x - 8 - i * 7, y: surf.y + surf.h + 12, a: Math.PI / 2, upright: true, color: beachPick(BEACH_SWIM) });
       // Outdoor showers, bins and bike racks along the foot of the boardwalk.
-      for (const x of [2140, 2655, 2965]) {
+      for (const x of [-2270, -1755, -1445]) {
         L.showers.push({ x, y: walkBottom + 14 });
         beachReserve(x - 12, walkBottom, x + 12, walkBottom + 30);
       }
-      for (const x of [2255, 2770]) {
+      for (const x of [-2155, -1640]) {
         L.racks.push({ x, y: walkBottom + 12, w: 44 });
         beachReserve(x - 26, walkBottom, x + 26, walkBottom + 22);
       }
-      for (let x = 1840; x < 3100; x += 150) {
+      for (let x = -2570; x < -1310; x += 150) {
         if (L.reserved.some((b) => x > b.x0 - 6 && x < b.x1 + 6 && walkBottom + 10 > b.y0 && walkBottom + 10 < b.y1)) continue;
         L.bins.push({ x, y: walkBottom + 9 });
       }
       // Lamp standards along the sea edge of the boardwalk: the promenade is lit at night.
       for (let x = BEACH.boardwalk.x0 + 40; x < BEACH.boardwalk.x1; x += 96) L.lamps.push({ x, y: walkBottom - 2 });
       // Beach volleyball on the upper sand at the west end.
-      L.court = { x: 2090, y: 5452, w: 84, h: 42 };
+      L.court = { x: -2320, y: 5452, w: 84, h: 42 };
       beachReserve(L.court.x - L.court.w / 2 - 22, L.court.y - L.court.h / 2 - 16, L.court.x + L.court.w / 2 + 22, L.court.y + L.court.h / 2 + 16);
       // Lifeguard towers, facing the swim zone.
       for (const f of [0.2, 0.47, 0.78]) {
         let s = length * f,
           p = shoreAt(s, 92);
-        if (Math.abs(p.x - 2700) < 70) p = shoreAt((s += 90), 92);
+        if (Math.abs(p.x + 1710) < 70) p = shoreAt((s += 90), 92);
         L.towers.push({ x: p.x, y: p.y, a: p.a, s });
         beachReserve(p.x - 18, p.y - 18, p.x + 18, p.y + 18);
       }
@@ -204,7 +204,7 @@
           L.umbrellas.push(u);
           beachReserve(p.x - 8, p.y - 8, p.x + 8, p.y + 8);
           // Near the bar the rows are loungers for hire; elsewhere people bring towels.
-          const premium = Math.abs(p.x - 2440) < 190 && row <= 168;
+          const premium = Math.abs(p.x + 1970) < 190 && row <= 168;
           const pairs = beachRandom() < 0.55 ? 2 : 1;
           for (let k = 0; k < pairs; k++) {
             const side = pairs === 2 ? (k ? 1 : -1) : beachRandom() < 0.5 ? -1 : 1,
@@ -233,13 +233,13 @@
       }
       // Pedal boats pulled up on the sand by the pier.
       for (let i = 0; i < 4; i++) {
-        const p = shoreAt(shoreS(2600) - i * 22, 12);
+        const p = shoreAt(shoreS(-1810) - i * 22, 12);
         L.pedalos.push({ x: p.x, y: p.y, a: p.a + Math.PI / 2, color: ['#f4f1e8', '#e8c14f', '#e2574c', '#2f7fc1'][i], beached: true });
       }
       // The swim zone: a buoy line out past the breakers, bigger yellow markers at the corners.
       for (let s = 170; s < length - 150; s += 34) {
         const p = shoreAt(s, -178);
-        if (landAt(p.x, p.y) || (Math.abs(p.x - 2700) < 30 && p.y < 6000)) continue;
+        if (landAt(p.x, p.y) || (Math.abs(p.x + 1710) < 30 && p.y < 6000)) continue;
         L.buoys.push({ x: p.x, y: p.y, big: false });
       }
       if (L.buoys.length) {
@@ -247,10 +247,10 @@
         L.buoys.at(-1).big = true;
       }
       // Two pedal boats and two jet skis out on the water, beyond the buoys.
-      L.pedalos.push({ cx: 2330, cy: 6040, r: 60, speed: 0.05, color: '#f4f1e8', beached: false, phase: 0 });
-      L.pedalos.push({ cx: 2520, cy: 6080, r: 45, speed: -0.06, color: '#e8c14f', beached: false, phase: 2 });
-      L.jetskis.push({ cx: 2150, cy: 6090, r: 120, speed: 0.55, color: '#e2574c', phase: 0 });
-      L.jetskis.push({ cx: 2960, cy: 6060, r: 95, speed: -0.7, color: '#2f7fc1', phase: 1.7 });
+      L.pedalos.push({ cx: -2080, cy: 6040, r: 60, speed: 0.05, color: '#f4f1e8', beached: false, phase: 0 });
+      L.pedalos.push({ cx: -1890, cy: 6080, r: 45, speed: -0.06, color: '#e8c14f', beached: false, phase: 2 });
+      L.jetskis.push({ cx: -2260, cy: 6090, r: 120, speed: 0.55, color: '#e2574c', phase: 0 });
+      L.jetskis.push({ cx: -1450, cy: 6060, r: 95, speed: -0.7, color: '#2f7fc1', phase: 1.7 });
       return L;
     }
     /* Arc length of the waterline point nearest an x (the strand runs roughly east-west). */
@@ -267,7 +267,7 @@
     }
     /* Kiosks, the bar, the station and the tower legs are solid on foot. */
     function beachBlocked(x, y, r = 0) {
-      if (x < 1700 || x > 3160 || y < 5300 || y > 5900) return false;
+      if (x < -2710 || x > -1250 || y < 5300 || y > 5900) return false;
       const L = BEACH_LAYOUT;
       for (const k of L.kiosks) if (x + r > k.x && x - r < k.x + k.w && y + r > k.y && y - r < k.y + k.h) return true;
       for (const t of L.towers) if (Math.abs(x - t.x) < 9 + r && Math.abs(y - t.y) < 9 + r) return true;
@@ -374,7 +374,7 @@
         const s = beachBetween(180, length - 150),
           d = beachBetween(8, 40),
           p = shoreAt(s, -d);
-        if (Math.abs(p.x - 2700) < 40) continue;
+        if (Math.abs(p.x + 1710) < 40) continue;
         beachPerson('wader', { x: p.x, y: p.y, a: p.a + Math.PI, s, d }, { home: { x: p.x, y: p.y } });
       }
       // Volleyball: four players, two a side, all on court or none.
@@ -491,7 +491,7 @@
       if (!beachgoers.length) return;
       beachSpooked = Math.max(0, beachSpooked - deltaSeconds);
       // Nobody needs thinking about while the player is far from the strand.
-      if (Math.abs(player.x - 2440) > 2600 || Math.abs(player.y - 5600) > 2400) {
+      if (Math.abs(player.x + 1970) > 2600 || Math.abs(player.y - 5600) > 2400) {
         for (const p of beachgoers) p.visible = false;
         beachBall.active = false;
         return;
@@ -691,7 +691,7 @@
           }
           const q = shoreAt(p.s, p.lane + Math.sin(p.s * 0.02) * 4);
           // The pier stands across the path: go round the landward end of it.
-          if (Math.abs(q.x - 2700) < 34) {
+          if (Math.abs(q.x + 1710) < 34) {
             q.y = Math.min(q.y, BEACH.pier[0].y - 18);
           }
           p.a = Math.atan2(q.y - p.y, q.x - p.x);
@@ -852,7 +852,7 @@
      * run for the boardwalk and leave; swimmers duck under and strike out away.
      */
     function beachHearsViolence(source, kind = 'gunfire') {
-      if (!beachgoers.length || Math.abs(source.x - 2440) > 1500 || Math.abs(source.y - 5600) > 900) return;
+      if (!beachgoers.length || Math.abs(source.x + 1970) > 1500 || Math.abs(source.y - 5600) > 900) return;
       // Only the nearest dozen become full pedestrians: each costs a whole person
       // model to draw, and the rest are just as convincing running off the sand.
       const heard = kind === 'explosion' ? 900 : 620,
@@ -908,7 +908,7 @@
     function beachCarThreats(deltaSeconds) {
       for (const c of vehicles) {
         if (c.hp <= 0 || isBoat(c) || isAircraft(c) || Math.abs(c.speed || 0) < 45) continue;
-        if (c.x < 1700 || c.x > 3160 || c.y < 5330 || c.y > 5860) continue;
+        if (c.x < -2710 || c.x > -1250 || c.y < 5330 || c.y > 5860) continue;
         const ahead = { x: c.x + Math.cos(c.a) * 40, y: c.y + Math.sin(c.a) * 40 };
         for (const p of beachgoers) {
           if (!p.visible || p.state === 'flee' || p.state === 'off' || BEACH_WATER_KINDS.includes(p.kind) || p.tower) continue;
@@ -923,7 +923,7 @@
       if (!beachgoers.length) return 0;
       if (gameTime - beachCrowdCache.at < 0.5 && Math.hypot(x - beachCrowdCache.x, y - beachCrowdCache.y) < 80) return beachCrowdCache.level;
       let n = 0;
-      if (Math.abs(x - 2440) < 1400 && Math.abs(y - 5600) < 900)
+      if (Math.abs(x + 1970) < 1400 && Math.abs(y - 5600) < 900)
         for (const p of beachgoers) if (p.visible && p.state !== 'off' && Math.hypot(p.x - x, p.y - y) < 480) n++;
       beachCrowdCache = { at: gameTime, x, y, level: clamp(n / 45, 0, 1) };
       return beachCrowdCache.level;

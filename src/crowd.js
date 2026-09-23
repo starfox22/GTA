@@ -277,20 +277,20 @@
     }
     /* Inside the street grid of the city proper, where sidewalks follow the roads. */
     function inCityGrid(x, y) {
-      return x > 60 && x < CITY_SIZE - 60 && y > CITY_TOP + 60 && y < CITY_SIZE - 60;
+      return x > CITY_LEFT + 60 && x < CITY_SIZE - 60 && y > CITY_TOP + 60 && y < CITY_SIZE - 60;
     }
     /* Cheap carriageway test: within a road's asphalt on the grid. */
     function crowdOnRoad(x, y) {
       if (!inCityGrid(x, y)) return false;
       const rx = Math.abs(x - roadNear(x)),
         ry = Math.abs(y - rowNear(y)),
-        wideX = WIDE_ROADS.includes(roadNear(x)),
-        wideY = WIDE_ROADS.includes(rowNear(y));
+        wideX = wideColumn(roadNear(x)),
+        wideY = wideRow(rowNear(y));
       return rx < (wideX ? 56 : 44) || ry < (wideY ? 56 : 44);
     }
     /* Sidewalk centre offset from a road's centre line. */
-    function sidewalkOffset(road) {
-      return WIDE_ROADS.includes(road) ? 72 : 67;
+    function sidewalkOffset(road, column) {
+      return (column ? wideColumn(road) : wideRow(road)) ? 72 : 67;
     }
     /* Pull a point off the carriageway onto the nearer sidewalk, keeping it on land. */
     function snapToSidewalk(x, y) {
@@ -299,8 +299,8 @@
         C = rowNear(y),
         dx = Math.abs(x - R),
         dy = Math.abs(y - C);
-      if (dx < dy) return { x: R + Math.sign(x - R || 1) * sidewalkOffset(R), y };
-      return { x, y: C + Math.sign(y - C || 1) * sidewalkOffset(C) };
+      if (dx < dy) return { x: R + Math.sign(x - R || 1) * sidewalkOffset(R, true), y };
+      return { x, y: C + Math.sign(y - C || 1) * sidewalkOffset(C, false) };
     }
     /**
      * LINE OF SIGHT
@@ -521,7 +521,7 @@
           along = vertical
             ? player.y + randomBetween(-CROWD_RING, CROWD_RING)
             : player.x + randomBetween(-CROWD_RING, CROWD_RING),
-          off = sidewalkOffset(road) * randomChoice([-1, 1]) + randomBetween(-6, 6),
+          off = sidewalkOffset(road, vertical) * randomChoice([-1, 1]) + randomBetween(-6, 6),
           x = vertical ? road + off : along,
           y = vertical ? along : road + off;
         if (!inCityGrid(x, y) || (!allowInView && crowdInView(x, y, 70))) continue;
@@ -935,7 +935,7 @@
         remaining = Math.abs((next ?? 1e6) - v),
         beside = vertical ? roadNear(p.x) : rowNear(p.y),
         lateral = (vertical ? p.x : p.y) - beside,
-        crossOff = next !== undefined ? sidewalkOffset(next) : 67,
+        crossOff = next !== undefined ? sidewalkOffset(next, !vertical) : 67,
         // Walking down the middle of the road they run alongside (knocked or
         // shoved off the kerb, dodged a car, turned a corner short): steer back
         // onto the pavement instead of carrying on along the lane, where traffic
@@ -984,7 +984,7 @@
       // further to pass someone slow or standing in the way.
       let lateralSpeed = 0;
       if (onWalk) {
-        const centre = beside + Math.sign(lateral || 1) * sidewalkOffset(beside),
+        const centre = beside + Math.sign(lateral || 1) * sidewalkOffset(beside, vertical),
           right = vertical ? -Math.sin(dir) : Math.cos(dir),
           pass = p.passUntil > gameTime ? p.passSide * 10 : 0,
           targetLateral = centre + right * clamp((p.lane || 5) + pass, -12, 14),
@@ -1422,7 +1422,7 @@
           beside = vertical ? roadNear(p.x) : rowNear(p.y),
           lateral = (vertical ? p.x : p.y) - beside;
         if (Math.abs(lateral) > 36 && Math.abs(lateral) < 100) {
-          const centre = beside + Math.sign(lateral || 1) * sidewalkOffset(beside),
+          const centre = beside + Math.sign(lateral || 1) * sidewalkOffset(beside, vertical),
             error = centre - (vertical ? p.x : p.y),
             correction = clamp(error * 0.03, -0.35, 0.35);
           heading += vertical ? -correction * Math.sign(Math.sin(heading)) : correction * Math.sign(Math.cos(heading));
@@ -2125,7 +2125,7 @@
       if (!door) return null;
       const row = rowNear(door.y + 40),
         x = door.x + randomChoice([-70, 70]),
-        y = row - sidewalkOffset(row) + 8;
+        y = row - sidewalkOffset(row, false) + 8;
       if (solid(x, y, 8) || crowdOnRoad(x, y + 6)) return null;
       const s = makeScene('vendor', x, y);
       addSceneProp(s, 'cart', x, y, 0);
@@ -2192,7 +2192,7 @@
       s.van = makeCar('van', vx, vy, a, false, randomChoice(['#e8e4da', '#c9a342', '#8a2d2a', '#2f4f6a']));
       s.van.deliveryScene = s;
       s.van.occupied = false;
-      s.stack = addSceneProp(s, 'boxes', vx + 38, row - sidewalkOffset(row) + 12, 0);
+      s.stack = addSceneProp(s, 'boxes', vx + 38, row - sidewalkOffset(row, false) + 12, 0);
       s.boxes = Math.floor(randomBetween(4, 8));
       spawnSceneMember(s, 'worker', { x: vx + 32, y: row - 50, a: -Math.PI / 2 }, 'worker');
       return s;
@@ -2428,8 +2428,8 @@
         road = vertical ? roadNear(lx) : rowNear(ly),
         laneX = vertical ? road + rx * 25 : lx,
         laneY = vertical ? ly : road + ry * 25,
-        kerbX = vertical ? road + rx * (sidewalkOffset(road) - 14) : lx,
-        kerbY = vertical ? ly : road + ry * (sidewalkOffset(road) - 14),
+        kerbX = vertical ? road + rx * (sidewalkOffset(road, true) - 14) : lx,
+        kerbY = vertical ? ly : road + ry * (sidewalkOffset(road, false) - 14),
         crossing = nextCrossing(vertical ? ROAD_ROWS : ROAD_CENTERS, vertical ? ly : lx, vertical ? Math.sign(cy) : Math.sign(cx));
       if (!inCityGrid(kerbX, kerbY) || solid(kerbX, kerbY, 5) || !landAt(kerbX, kerbY)) return null;
       if (crossing !== undefined && Math.abs(crossing - (vertical ? ly : lx)) < 110) return null;
