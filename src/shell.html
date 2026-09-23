@@ -2144,10 +2144,22 @@ h1 {
   color: #b7c9c7;
   overflow: hidden;
 }
+/* Six presets in two rows of four slots; B · NEXT takes the last two. */
 .radio-presets {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
   margin-top: 8px;
+}
+#carRadio .radio-presets button {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 11px;
+  padding: 5px 3px;
+}
+#radioNext {
+  grid-column: span 2;
 }
 #carRadio .selected {
   background: #a5d9c8;
@@ -2172,6 +2184,10 @@ h1 {
   #carRadio button {
     padding: 5px;
     font-size: 11px;
+  }
+  #carRadio .radio-presets button {
+    padding: 5px 2px;
+    font-size: 10px;
   }
 }
 @media (max-width: 590px) {
@@ -3708,6 +3724,12 @@ body:not(.touch-mode).police-search-active #carRadio {
           NEON</button
         ><button id="radioPreset2" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
           RIOT</button
+        ><button id="radioPreset3" aria-label="Tune Velvet 91.5, lounge jazz" aria-pressed="false">
+          VELVET</button
+        ><button id="radioPreset4" aria-label="Tune Palms 95.9, island grooves" aria-pressed="false">
+          PALMS</button
+        ><button id="radioPreset5" aria-label="Tune Block 101.7, lo-fi beats" aria-pressed="false">
+          BLOCK</button
         ><button id="radioNext" aria-label="Next radio station">B · NEXT</button>
       </div>
     </aside>
@@ -4261,8 +4283,8 @@ body:not(.touch-mode).police-search-active #carRadio {
             mono and level-adjusted.
           </p>
           <p>
-            <strong>Driving radio</strong> — three licensed music stations. Tracks are
-            loudness-normalized and transcoded to stereo MP3.
+            <strong>Driving radio</strong> — six licensed music stations. Tracks are
+            loudness-normalized and transcoded to stereo MP3; station idents are procedural.
           </p>
           <p>
             Retroracing One more round —
@@ -4303,6 +4325,120 @@ body:not(.touch-mode).police-search-active #carRadio {
             >.
             <a
               href="https://opengameart.org/content/midnight-cruiser"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Martini Sunset (Velvet 91.5) —
+            <a href="https://incompetech.com/" target="_blank" rel="noopener"
+              >Kevin MacLeod</a
+            >.
+            <a
+              href="https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Martini%20Sunset.mp3"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Patron Saint of Heists (Velvet 91.5) —
+            <a href="https://bryanteoh.bandcamp.com/" target="_blank" rel="noopener"
+              >Bryan Teoh</a
+            >.
+            <a
+              href="https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Patron%20Saint%20of%20Heists.mp3"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Sunday Dub (Palms 95.9) —
+            <a href="https://incompetech.com/" target="_blank" rel="noopener"
+              >Kevin MacLeod</a
+            >.
+            <a
+              href="https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Sunday%20Dub.mp3"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Piña Colada (Palms 95.9) —
+            <a
+              href="https://alexandernakarada.bandcamp.com/album/complete-discography-creative-commons-by-40"
+              target="_blank"
+              rel="noopener"
+              >Alexander Nakarada (CreatorChords)</a
+            >.
+            <a
+              href="https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Pina%20Colada.mp3"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener"
+              >CC-BY-4.0</a
+            >.
+          </p>
+          <p>
+            Hooptie With The Windows Down (Block 101.7) —
+            <a href="https://freemusicarchive.org/music/holiznacc0/" target="_blank" rel="noopener"
+              >HoliznaCC0</a
+            >.
+            <a
+              href="https://freemusicarchive.org/music/holiznacc0/city-slacker/hooptie-with-the-windows-down/"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Lost On The Freeway (Block 101.7) —
+            <a href="https://freemusicarchive.org/music/holiznacc0/" target="_blank" rel="noopener"
+              >HoliznaCC0</a
+            >.
+            <a
+              href="https://freemusicarchive.org/music/holiznacc0/lost/lost-on-the-freeway/"
               target="_blank"
               rel="noopener"
               >Original track</a
