@@ -58,12 +58,13 @@ Sound. See SOURCE_GUIDE section 4 for the full plan, the bridge table and the re
 - **Meridian Star** rode at anchor where the Sunset Pier Bridge runs; she anchors 240 west.
 
 ### Verified
-- `layout()` + the overlap audit: no overlaps; 29 oblique road contacts, all county and airport
-  junctions (two new: Foothill Road at the South Bay Bridge landing and at Stonecreek).
+- `layout()` + the overlap audit: no overlaps; 28 oblique road contacts, all county and airport
+  junctions (one new: Foothill Road leaving the South Bay Bridge landing).
 - Every bridge: both ends on land, the middle over water, a car fits the deck;
   `route(x, y)` from Midtown reaches Palm Keys (keys-harbor), Stonecreek (east-bay), the park
-  gate (pier-bridge), the beach and Oceanview (south-bay + oceanview). A sedan drives both
-  Keys crossings end to end. Roadblocks build at the Keys Bridge, Palm Sound Causeway and East
+  gate (pier-bridge), the beach and Oceanview (south-bay + oceanview). A sedan drives the
+  Keys Bridge, the Palm Sound Causeway, the East Bay Crossing and the Sunset Pier Bridge end to
+  end. Roadblocks build at the Keys Bridge, Palm Sound Causeway and East
   Bay Crossing approaches.
 - All 16 missions start; every moved objective probes as land (or water for the buoy, the
   launch and the jet-ski route). Mission 1: skip to the depot, drive in, shutter down, out the
@@ -71,6 +72,10 @@ Sound. See SOURCE_GUIDE section 4 for the full plan, the bridge table and the re
   Sound route (7 gates, 128 s of the 150 left), the Southport dock, disembark. Rush Hour
   (18,146 of road, clock 330 -> 390 s) and Repo Man (clock 540 -> 660 s) grew their clocks
   with the longer crossings.
+- Mission 7: the Blue Hour lift, Mara, both sightlines logged against the launch now patrolling
+  Palm Sound (x -924).
+- 3D (LOW tier, headless): the Keys Bridge, the Sunset Pier island tile and bridge, the beach
+  (umbrellas, pier, club plot), Battery Park and the South Bay Bridge render; no console errors.
 - Palm Keys Beach: 171 beachgoers at 17:20, 65 umbrellas, 5 kiosks, 38 buoys; walking off the
   sand into the sea starts a swim ('beach' shore); 86 ladders.
 
