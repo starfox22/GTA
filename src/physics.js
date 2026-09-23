@@ -301,6 +301,7 @@
       impactContacts.set(key, {
         time: physicsClock,
       });
+      crowdCrash(a, b, hit, closing);
       const severity = Math.pow(Math.max(0, closing - 38), 1.12) * 0.062;
       // The contact normal points from a to b, so each body is crushed back along it
       // toward its own middle; how far depends on the closing speed and on how heavy
@@ -710,8 +711,10 @@
         if (along > 0 && along < 140 && lateral < side + 11)
           desired = Math.min(desired, Math.sqrt(2 * 260 * Math.max(0, along - half - 22)) * 0.7);
       };
-      for (let i = 0; i < pedestrians.length; i++) yieldTo(pedestrians[i]);
+      forEachPedestrianNear(c.x, c.y, 160, yieldTo);
       if (!player.car) yieldTo(player);
+      // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
+      desired = Math.min(desired, curbsideStop(c));
       return {
         steer: clamp(da * 3, -1.7, 1.7),
         desired: Math.max(0, desired),
@@ -1448,6 +1451,8 @@
           person.y = q.y;
           break;
         }
+      // Everyone who saw it reacts: gasps, onlookers, someone to help, a call.
+      crowdAlarm('knock', person, c === player.car ? player : null, person.hp <= 0 ? 2 : 1.3);
       if (c === player.car) {
         crime(person.hp <= 0 ? 0.35 : 0.08);
         if (person.hp <= 0) {

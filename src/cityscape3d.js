@@ -929,6 +929,8 @@
         box(g, 18, 17, 2, 6, 3, 0.4, mat('#2f5f9a'));
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
+        // People wait here (src/crowd.js) and buses stop for them.
+        registerBusStop(x, z);
       }
       for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
         for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {

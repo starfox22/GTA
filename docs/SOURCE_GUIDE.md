@@ -69,6 +69,8 @@ Game closure (in include order):
 | streets.js | Street grid, painting, `STREET_NAMES`, `streetNameAt`, `benchSpots` |
 | casino.js, renewal.js, sports.js, sports-world.js, transit.js, ecology.js | Casino, parks, sports venues, railway, wildlife |
 | navigation.js, mobile.js, world-view.js, car-radio.js, garages.js | Route planning, touch, zoom, radio, garages |
+| crowd.js | Pedestrian life: appearance and roles by hour (`dressPerson`), the crowd streamer that keeps walkers in a ring around the player (`streamCrowd`), sidewalk walking (lanes, corners, kerb signals, doors), perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up when aimed at, witness calls (`crowdReport`) and police tips, crash drivers and horns (`crowdCrash`, `updateTrafficLife`), taxi fares and bus stops (`curbsideStop`), street scenes (vendor, busker, cafe, smokers, delivery, nightlife, bus stop) |
+| ambience.js | Procedural city soundscape: traffic hum, crowd murmur, wind, birds, crickets, horns (`hornSound`), distant sirens, club beat, busker guitar, bus air brakes |
 | render3d.js | Renderer entry: lights, ground texture painting, vehicle/person models, effects, `render()` |
 
 Renderer fragments (inside `createCityRenderer()`): damage3d (deformable car bodies, decal atlas
@@ -79,7 +81,8 @@ world3d (water shader, palms, airport, rooftop bar), beach3d (Southport Beach sa
 props, ladders, instanced beachgoers; `updateBeachVisuals` from `updateWorldVisuals`), county3d,
 boats3d (the boat kit), harbor3d (signals, depot, helicopter searchlight, the container ship),
 marina3d (marina, superyacht, terminal, liners), weather3d (rain, wet roads, overcast light),
-clouds3d (volumetric clouds and cloud shadows), helicopter3d, vehicles3d, plane3d. flight-view3d
+clouds3d (volumetric clouds and cloud shadows), crowd3d (instanced pedestrian bodies, poses,
+dogs and scene props), helicopter3d, vehicles3d, plane3d. flight-view3d
 (flight camera, distance haze, level of detail from the air) is included right after the camera
 and lights.
 
@@ -299,8 +302,12 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
 - Buildings are bucketed in `buildingGrid` (game.js) for `solid()`/`shotBlocked()`; rail
   piers in `railPierCells()`; physics statics in `staticGrid` with a per-vehicle cache.
 - Vehicles far from the player and at rest skip contact passes; distant traffic re-plans
-  at 4 Hz instead of 20 Hz; off-screen pedestrians think every third frame; distant wildlife
-  validates its position twice a second.
+  at 4 Hz instead of 20 Hz; off-screen pedestrians think every fourth frame (every sixth
+  beyond ~900 units); distant wildlife validates its position twice a second.
+- Pedestrians are drawn by crowd3d.js from one InstancedMesh per body part (about 30 draw
+  calls for the whole crowd plus shadows), not per-person models. crowd.js rebuilds a 64-unit
+  neighbour grid once a frame; perception, panic spread, traffic yielding
+  (`forEachPedestrianNear`) and near misses query it instead of scanning every pedestrian.
 
 ## 7. Build, check, test
 
