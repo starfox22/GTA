@@ -97,6 +97,7 @@ something, never a generic code-evaluation hook.
 | `defeatMissionGuards(tag)` | Put down the current mission's guards (to skip a fight already verified) |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort) |
+| `route(x, y)` | Set a map waypoint and report the GPS route from the player: status, road length, the bridges it crosses |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |

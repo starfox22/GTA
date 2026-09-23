@@ -544,7 +544,7 @@
       return land;
     }
     function inAirport(x, y) {
-      return y > 4120 && y < 5632 && x < 1400;
+      return y > 4120 && y < 5632 && x > 40 && x < 1400;
     }
     function segmentDistance(x, y, a, b) {
       const dx = b[0] - a[0],
@@ -1154,7 +1154,7 @@
           }
         }
       }
-      if (cameraTarget.x < 1800 && cameraTarget.y > 4000) {
+      if (cameraTarget.x > -400 && cameraTarget.x < 1800 && cameraTarget.y > 4000) {
         for (const [x, y, a, s] of [
           [680, 4800, -Math.PI / 2, 0.9],
           [680, 5110, -Math.PI / 2, 1],

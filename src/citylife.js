@@ -251,7 +251,7 @@
         x: -2328,
         y: 2286,
         w: 280,
-        h: 146,
+        h: 140, // clear of Palm Auto Paint's lot (prepareGarages)
         height: 32,
         color: '#e8b384',
         symbol: 'EAT',

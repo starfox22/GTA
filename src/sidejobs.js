@@ -139,8 +139,11 @@
         missionState.car.hp = missionState.car.maxhp = 260;
         missionState.checkpoints = RUSH_CHECKPOINTS.map(([x, y]) => sideJobPoint(x, y));
         missionState.checkpoint = 0;
-        missionState.timeLimit = 330;
-        missionState.timer = 330;
+        // The last three checkpoints and the depot are on Palm Keys, across the
+        // Palm Sound causeway (the run is about a sixth longer than when the Keys
+        // were across Marlow Bay; the clock grew with it).
+        missionState.timeLimit = 390;
+        missionState.timer = 390;
         missionState.awayTimer = 0;
         setStage(0, missionState.car, 'GET IN THE RED MUSCLE CAR', 'vinny', 'The car is hot and the buyer is waiting. Eight checkpoints, then my depot. Don’t stop for anyone.');
       }
@@ -201,8 +204,10 @@
           return { car, label, delivered: false };
         });
         missionState.repo = 0;
-        missionState.timeLimit = 540;
-        missionState.timer = 540;
+        // Vinny's depot is on Palm Keys: three of the four runs cross Palm Sound
+        // twice (a clock of 540 s was set when the Keys were across Marlow Bay).
+        missionState.timeLimit = 660;
+        missionState.timer = 660;
         setStage(0, missionState.repos[0].car, 'COLLECT ' + missionState.repos[0].label, 'vinny', 'Four rides, four deadbeats. Bring each one to my depot. Scratches come out of your cut.');
       }
     }

@@ -178,10 +178,10 @@
         [2, 5],
         [4, 7],
         [1, 8],
-        [8, 2],
-        [8, 5],
-        [9, 8],
-        [8, 9],
+        [-4, 2],
+        [-4, 5],
+        [-5, 8],
+        [-4, 9],
         [0, 7],
         [0, -2],
         [4, -4],
@@ -5062,6 +5062,21 @@
       },
       // Named places the tests can visit: every PLACES entry plus the landmarks.
       places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
+      // GPS: set a map waypoint and report the route the navigation graph finds
+      // from the player (status, road length, the islands it passes through).
+      route(x, y) {
+        setWaypoint(x, y);
+        let length = 0;
+        for (let i = 1; i < userRoute.length; i++) length += distanceBetween(userRoute[i - 1], userRoute[i]);
+        return {
+          status: routeStatus,
+          points: userRoute.length,
+          length: Math.round(length),
+          bridges: [...new Set(userRoute.map((p) => BRIDGES.find((b) => segmentDistance(p.x, p.y, b.a, b.b) <= b.width / 2)?.id).filter(Boolean))],
+          first: userRoute[0] || null,
+          last: userRoute.at(-1) || null,
+        };
+      },
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
       cab(x, y) {
         const car = spawnClearCar('taxi', player.x + 44, player.y, 0, true);

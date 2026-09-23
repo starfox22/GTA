@@ -289,13 +289,13 @@
       },
       {
         // Off the South Bay Bridge's east landing, up through the western
-        // foothills to the end of the Ridgeline Highway.
+        // foothills to Stonecreek's south-west corner.
         name: 'FOOTHILL ROAD',
         width: 96,
         points: [
           [6420, 4736],
-          [6700, 4480],
-          [7232, 4224],
+          [6720, 4480],
+          [6720, 4224],
         ],
       },
       {
