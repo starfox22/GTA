@@ -34,6 +34,7 @@ Version 29.0.0 (see `docs/CHANGELOG.md`).
 | --- | --- |
 | Move / drive | W A S D or arrows |
 | Interact: enter or leave a vehicle, payphone, shops, stations, boarding | E |
+| Stadium pitch: dribble by walking into the ball; kick it the way you face | E (hold Shift for a harder, higher strike) |
 | Fire | F, Space or mouse click (on foot); F fires the pistol from a vehicle |
 | Handbrake (in a vehicle) | Space |
 | Sprint | Shift |
