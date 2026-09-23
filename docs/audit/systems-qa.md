@@ -63,3 +63,54 @@ vehicles, standing in the Old Quarter / driving a sedan on Harbor Ave:
   the car stands still (a teleported car is re-sampled). `updateKnockdowns` walks the four
   people lists in place instead of copying ~700 entries every frame. A `phys:post` timing
   part now covers the end of the physics step.
+
+## Vehicles and collision
+
+Vehicle matrix: every road type in `VEHICLE_DEFINITIONS` (bicycle, tank, flatbed, roadster,
+rally, limousine, hotrod, bike, cruiser, supercar, luxury, suv, pickup, truck, bus,
+ambulance, coupe, muscle, taxi, van, sport, sedan, police) spawned on Harbor Ave, driven
+2.5 s at full throttle, handbrake-turned (Space + D), reversed 4 s and exited: all drive,
+turn, reverse and let the driver out on clear ground.
+
+### V1. Cars drove through the marina and Sunset Pier buildings
+- Symptom: a sedan driven at the Harbor Point marina club, the cruise terminal, the
+  Sunset Pier arcade, games row or food court passes straight through them.
+- Cause: these buildings live outside `buildings` (marina.js `marinaSolids`, themepark.js
+  `parkSolids`, the wheel and carousel circles). `solid()` stops people with them, but
+  `buildColliders()` never added them to the vehicle statics.
+- Fix: `buildColliders()` adds them (kinds `marina` and `pier`).
+- Verified: the same drives now stop at the walls (sedan stops ~50 units short of where
+  it passed through before).
+
+### V2. A car could drive into the Central Garden lake and trap its driver
+- Symptom: in the vehicle matrix the police car ended up in the Commons lake; `exitCar()`
+  found no dry ground and kept the player in the car ("No room to get out").
+- Cause: park ponds (`parkPondBlocked`) only stop people; vehicles ignored them.
+- Fix: the post-step footprint check in `physicsStep` treats a pond (and the boathouse)
+  as a kerb for every wheeled vehicle, the player's included: the car is put back where
+  it was at the start of the step and bounces off. (A flooding-car pond would need
+  swimming in ponds, which water.js does not model.)
+- Verified: a police car driven at the lake from all four sides stops at the kerb and the
+  driver steps out every time.
+
+### V3. The Southport dock and its speedboat were on dry land
+- Symptom: the speedboat by the airport inlet could not move (`boatFits` false, two hull
+  corners on land); screenshot shows it parked on the esplanade.
+- Cause: the dock at (1320, 5130) and its boat at (1490, 5147) sat at the narrow head of
+  the inlet; after the airport shore was reshaped that spot is land.
+- Fix: the dock moved south to the inlet's east shore (1500..1630, 5230), boat at
+  (1462, 5247). The contraband mission's water route (challenges.js) ended at the old boat
+  spot and now ends at the new berth.
+- Verified: boat fits at spawn, board from the dock, step back off onto the dock, drive
+  out into the bay.
+
+### V4. The Harbor Point jetties stood on the quay, and their boats could not be reached
+- Symptom: the two jetties at x 1566 were drawn on the concrete east of the basin; the
+  jet ski and speedboat floated 66 units off their ends.
+- Cause: the basin's east quay is at x 1528; the docks were placed wholly on land, and
+  `marinaBlocked()` treated every point inside the basin rectangle that was not a finger
+  pontoon as water, so a dock moved over the basin would have been unwalkable.
+- Fix: both jetties moved to x 1476 (52 units out over the water, boats at x ~1447), and
+  `marinaBlocked()` lets people stand on `DOCKS`.
+- Verified: from each jetty the boat boards, the player steps back off onto the jetty, the
+  boat drives out, and diving over the side works.

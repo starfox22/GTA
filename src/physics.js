@@ -182,6 +182,17 @@
       for (const barrier of SPORTS_VEHICLE_BARRIERS)
         addStatic(barrier.x, barrier.y, barrier.w, barrier.h, barrier.height, barrier.id || 'stadium barrier');
       for (const b of buildings) addStatic(b.x, b.y, b.w, b.h, b.height + 22);
+      // Buildings kept outside `buildings` stop people through their own solid()
+      // tests, but cars drove straight through them: the marina club, fuel dock
+      // and cruise terminal, and the Sunset Pier arcade, games row, food court,
+      // big wheel and carousel.
+      for (const b of marinaSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'marina');
+      for (const b of parkSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier');
+      for (const [ride, radius, height] of [
+        [PIER.wheel, 16, 90],
+        [PIER.carousel, 12, 18],
+      ])
+        addStatic(ride.x - radius, ride.y - radius, radius * 2, radius * 2, height, 'pier');
       // Water contact follows the same irregular shores as the visible terrain.
       for (const e of buildCoastSegments()) {
         if (e.opening) continue;
@@ -1334,13 +1345,16 @@
         // Only the player's own car may leave the land: into the surf off a
         // beach or over a quay into the bay, where it floods (water.js). A car that
         // has not moved this step (most are parked) needs no footprint re-check.
+        // Park ponds (and the Central Garden boathouse) have a stone kerb that
+        // stops every wheeled vehicle, the player's included: a car used to drive
+        // into the Commons lake and leave its driver no dry ground to step out on.
+        const moved = c.x !== c.stepStartX || c.y !== c.stepStartY || c.a !== c.stepStartA,
+          wheeled = moved && c.type !== 'plane' && !(isAircraft(c) && c.altitude > 8) && !isBoat(c);
         if (
-          (c.x !== c.stepStartX || c.y !== c.stepStartY || c.a !== c.stepStartA) &&
-          c.type !== 'plane' &&
-          !(isAircraft(c) && c.altitude > 8) &&
-          !isBoat(c) &&
-          c !== player.car &&
-          corners(vehicleShape(c)).some((p) => !groundAt(p.x, p.y))
+          wheeled &&
+          corners(vehicleShape(c)).some(
+            (p) => (c !== player.car && !groundAt(p.x, p.y)) || parkPondBlocked(p.x, p.y),
+          )
         ) {
           c.x = c.stepStartX;
           c.y = c.stepStartY;

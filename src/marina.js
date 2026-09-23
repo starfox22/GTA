@@ -476,7 +476,8 @@
         const onFinger = MARINA.fingers.some(
           (f) => x + r > f.x - 3 && x - r < f.x + f.w + 3 && y + r > f.y && y - r < f.y + f.h,
         );
-        if (!onFinger && !onSuperyachtGangway(x, y, 1)) return true;
+        // The boat jetties off the east quay (DOCKS) are walkable too.
+        if (!onFinger && !onSuperyachtGangway(x, y, 1) && !onDock(x, y, r)) return true;
         if (berthedHullAt(x, y, r)) return true;
       }
       return marinaSolids().some(

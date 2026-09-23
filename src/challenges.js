@@ -385,9 +385,10 @@
               x: 1550,
               y: 5540,
             },
+            // The Southport dock's boat berth (DOCKS, citylife.js).
             {
-              x: 1490,
-              y: 5147,
+              x: 1462,
+              y: 5247,
             },
           ];
           missionState.waterGate = 0;
@@ -410,8 +411,8 @@
             setStage(
               3,
               {
-                x: 1490,
-                y: 5147,
+                x: 1462,
+                y: 5247,
               },
               'STOP AT THE DOCK · E TO DISEMBARK',
             );
