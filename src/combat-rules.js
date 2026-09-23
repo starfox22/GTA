@@ -19,6 +19,8 @@
     const BALLISTIC_LETHALITY = 2.05,
       MELEE_LETHALITY = 1.45,
       VEST_SHARE = {
+        // A headshot (precision rifle on its aimed target) goes round the vest.
+        headshot: 0,
         ballistic: 0.74,
         melee: 0.55,
         blast: 0.45,
@@ -34,7 +36,11 @@
     function ballisticDamage(person, damage, kind = 'ballistic') {
       let d =
         damage *
-        (kind === 'ballistic' ? BALLISTIC_LETHALITY : kind === 'melee' ? MELEE_LETHALITY : 1);
+        (kind === 'ballistic' || kind === 'headshot'
+          ? BALLISTIC_LETHALITY
+          : kind === 'melee'
+            ? MELEE_LETHALITY
+            : 1);
       const share = VEST_SHARE[kind] || 0,
         vest = vestOf(person);
       if (vest > 0 && share > 0) {
@@ -322,7 +328,7 @@
               ...shotVelocity(origin, t, 1100, a),
               life: 1,
               dmg: 40,
-              playerDmg: 17,
+              playerDmg: 14,
               enemy: true,
               faction: 'police',
               owner: c,

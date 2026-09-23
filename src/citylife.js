@@ -834,7 +834,9 @@
       for (const c of vehicles)
         if (c.cop) {
           c.cop = false;
-          c.ai = !c.crewDeployed && !c.crewLost;
+          // Patrol cars go back to patrolling; SWAT vans, agents and the tank wait
+          // where they are until they are out of sight and sent home (pursuit.js).
+          c.ai = !c.crewDeployed && !c.crewLost && !c.lawUnit;
           c.route = null;
           c.junction = null;
           c.navAngle = undefined;
@@ -955,11 +957,31 @@
       } else
         for (const block of buildings)
           if (sightBlockedBy(block, a.x, a.y, start, dx, dy, dz)) return false;
-      for (const list of [garageWalls(), militarySolids(), countySolids(), depotSolids()])
-        for (const block of list)
-          if (sightBlockedBy(block, a.x, a.y, start, dx, dy, dz)) return false;
-      for (const block of harborSolids())
-        if (block.height > 14 && sightBlockedBy(block, a.x, a.y, start, dx, dy, dz)) return false;
+      // The other solids: a bounding-box reject first (the county lists are long).
+      const minX = Math.min(a.x, b.x) - 4,
+        maxX = Math.max(a.x, b.x) + 4,
+        minY = Math.min(a.y, b.y) - 4,
+        maxY = Math.max(a.y, b.y) + 4;
+      const lists = [
+        garageWalls(),
+        militarySolids(),
+        countyStaticSolids,
+        AIRPORT_SCENERY_SOLIDS,
+        depotSolids(),
+        harborSolids(),
+      ];
+      for (let i = 0; i < lists.length; i++)
+        for (const block of lists[i])
+          if (
+            block.x <= maxX &&
+            block.x + block.w >= minX &&
+            block.y <= maxY &&
+            block.y + block.h >= minY &&
+            // Low harbor clutter (bollards, crates) does not block a line of sight.
+            (i < 5 || block.height > 14) &&
+            sightBlockedBy(block, a.x, a.y, start, dx, dy, dz)
+          )
+            return false;
       return true;
     }
     function policeSees(o) {
@@ -1446,12 +1468,13 @@
       worldMinutes += deltaSeconds;
       updateHarbor(deltaSeconds);
       updateStoryWorld(deltaSeconds);
-      updateOfficers(deltaSeconds);
-      updateWanted(deltaSeconds);
-      updateRoadblocks(deltaSeconds);
+      // Police parts are timed on their own so stats() shows the cost of a chase.
+      timed('police:officers', () => updateOfficers(deltaSeconds));
+      timed('police:wanted', () => updateWanted(deltaSeconds));
+      timed('police:roadblocks', () => updateRoadblocks(deltaSeconds));
       updateDepotDoors(deltaSeconds);
       updateCrowdDensity(deltaSeconds);
-      updateAirPolice(deltaSeconds);
+      timed('police:air', () => updateAirPolice(deltaSeconds));
       for (let i = bloodPools.length - 1; i >= 0; i--)
         if (gameTime - bloodPools[i].created > 240) bloodPools.splice(i, 1);
     }

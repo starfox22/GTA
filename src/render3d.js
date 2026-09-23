@@ -1906,8 +1906,9 @@
             }
             if (p.police && !incapacitated) {
               m.parts.guns[0].visible = p.hp > 0;
-              m.parts.arm1.rotation.z = p.state === 'aim' ? 1.12 : 0.3;
-              m.parts['arm-1'].rotation.z = p.state === 'aim' ? 0.9 : -step * 0.5;
+              const aiming = p.state === 'aim' || p.state === 'suppress';
+              m.parts.arm1.rotation.z = aiming ? 1.12 : 0.3;
+              m.parts['arm-1'].rotation.z = aiming ? 0.9 : -step * 0.5;
             }
             if (m.parts.cup) m.parts.cup.visible = !!p.drinking && p.hp > 0;
             if (p.hp > 0 && p.dancing) {

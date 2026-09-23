@@ -97,6 +97,9 @@ something, never a generic code-evaluation hook.
 | `defeatMissionGuards(tag)` | Put down the current mission's guards (to skip a fight already verified) |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort) |
+| `policeReport()` | The police response: stars, heat and the next star's threshold, the incident's body count, search (active, seconds left, last sighting), arrest progress, the tier's allowances, counts by unit (patrol, swat, fed, army, air, officers, roadblocks), every unit and officer, pursuit contacts and PITs |
+| `nearbyPeople(radius, kind)` | Living people near the player, nearest first (`civilian`, `police`, `gang` or `all`), with line of sight: play-tests pick victims with it |
+| `arm(index)` | Own weapon `index` (0 pistol to 5 precision rifle) with full ammunition and select it |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |

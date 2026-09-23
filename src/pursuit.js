@@ -18,26 +18,28 @@
     const POLICE_TIERS = [
       null,
       // 1 star: the nearest patrols investigate and try to make an arrest.
-      { patrols: 2, swat: 0, feds: 0, tanks: 0, every: 8, air: 0, roadblocks: 0, ram: false, accuracy: 0.5, deadly: false },
+      { patrols: 2, swat: 0, feds: 0, tanks: 0, every: 7, air: 0, roadblocks: 0, ram: false, accuracy: 0.42, deadly: false },
       // 2: several cruisers, contact tactics (PIT, box), officers shoot.
-      { patrols: 4, swat: 0, feds: 0, tanks: 0, every: 5.5, air: 0, roadblocks: 0, ram: true, accuracy: 0.58, deadly: true },
+      { patrols: 4, swat: 0, feds: 0, tanks: 0, every: 4.5, air: 0, roadblocks: 0, ram: true, accuracy: 0.46, deadly: true },
       // 3: more units, a helicopter with a marksman, a roadblock ahead.
-      { patrols: 5, swat: 0, feds: 0, tanks: 0, every: 4.5, air: 1, roadblocks: 1, ram: true, accuracy: 0.64, deadly: true },
+      { patrols: 5, swat: 0, feds: 0, tanks: 0, every: 3.8, air: 1, roadblocks: 1, ram: true, accuracy: 0.5, deadly: true },
       // 4: SWAT vans with armoured rifle teams, two helicopters, two roadblocks.
-      { patrols: 4, swat: 2, feds: 0, tanks: 0, every: 4, air: 2, roadblocks: 2, ram: true, accuracy: 0.7, deadly: true },
+      { patrols: 4, swat: 2, feds: 0, tanks: 0, every: 3.2, air: 2, roadblocks: 2, ram: true, accuracy: 0.55, deadly: true },
       // 5: federal agents and the army: a tank from Fort Sentinel, three roadblocks.
-      { patrols: 4, swat: 2, feds: 2, tanks: 1, every: 3.2, air: 2, roadblocks: 3, ram: true, accuracy: 0.76, deadly: true },
+      { patrols: 4, swat: 2, feds: 2, tanks: 1, every: 2.8, air: 2, roadblocks: 3, ram: true, accuracy: 0.6, deadly: true },
     ];
     // How each kind of officer fights. `dmg` is against NPCs, `playerDmg` against
-    // the player (before the lethality scale in combat-rules.js, so 8 is about 16
-    // health: an unarmoured player survives five or six hits).
+    // the player (before the lethality scale in combat-rules.js, so 5.5 is about 11
+    // health: an unarmoured player survives eight or nine pistol hits).
     const OFFICER_KINDS = {
-      patrol: { hp: 85, vest: 25, color: '#2d455e', rate: [1.05, 1.5], burst: 1, dmg: 17, playerDmg: 8, speed: 560, range: 210, run: 112, sample: 'pistol' },
-      road: { hp: 85, vest: 40, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 8, speed: 560, range: 230, run: 100, sample: 'pistol' },
-      swat: { hp: 110, vest: 120, color: '#1b2026', rate: [1.5, 2.1], burst: 3, dmg: 20, playerDmg: 6.5, speed: 820, range: 270, run: 118, sample: 'automatic', rifle: true },
-      fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 8.5, speed: 780, range: 250, run: 122, sample: 'automatic', rifle: true },
+      patrol: { hp: 85, vest: 25, color: '#2d455e', rate: [1.05, 1.5], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 210, run: 112, sample: 'pistol' },
+      road: { hp: 85, vest: 40, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 230, run: 100, sample: 'pistol' },
+      swat: { hp: 110, vest: 120, color: '#1b2026', rate: [1.5, 2.1], burst: 3, dmg: 20, playerDmg: 5, speed: 820, range: 270, run: 118, sample: 'automatic', rifle: true },
+      fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 6.5, speed: 780, range: 250, run: 122, sample: 'automatic', rifle: true },
     };
     const PURSUIT_SEARCH_SECONDS = [0, 6, 9, 13, 18, 24];
+    // Running totals for policeReport(): pursuit contacts with the player's car.
+    const pursuitStats = { contacts: 0, pits: 0, spawned: 0 };
     let dispatchTimer = 2,
       dispatchBurst = 0,
       arrestProgress = 0,
@@ -86,7 +88,7 @@
       // Reinforcements for the new tier start rolling in straight away: the
       // first couple of units come in a burst, the rest on the tier's cadence.
       dispatchTimer = Math.min(dispatchTimer, 0.4);
-      dispatchBurst = Math.max(dispatchBurst, stars >= 3 ? 2 : 1);
+      dispatchBurst = Math.max(dispatchBurst, stars >= 2 ? 2 : 1);
     }
     function policeRadioEvent(kind, where) {
       if (gameTime - lastDispatchLine < 5) return;
@@ -118,9 +120,8 @@
           const toward = Math.cos(normalizeAngle(Math.atan2(y - player.y, x - player.x) - heading));
           points.push({ x, y, score: (ahead && moving ? toward * 2 : 0) + seededRandom() });
         }
-      if (!points.length) return null;
       points.sort((a, b) => b.score - a.score);
-      return points[Math.floor(seededRandom() * Math.min(3, points.length))];
+      return points.slice(0, 5);
     }
     const UNIT_BUILDS = {
       patrol: { type: 'police', color: undefined, hp: 1, crew: 2 },
@@ -135,10 +136,11 @@
       }
       const build = UNIT_BUILDS[kind],
         count = vehicles.filter((c) => c.cop && c.hp > 0 && !c.blockade && !c.airUnit).length,
-        p = pursuitSpawnPoint(kind === 'patrol' ? count % 2 === 1 : kind !== 'army');
+        p = pursuitSpawnPoint(kind === 'patrol' ? count % 2 === 1 : kind !== 'army').find((q) =>
+          canSpawnCar(build.type, q.x, q.y, headingBetween(q, player), 4),
+        );
       if (!p) return null;
       const a = headingBetween(p, player);
-      if (!canSpawnCar(build.type, p.x, p.y, a, 4)) return null;
       const c = makeCar(build.type, p.x, p.y, a, kind === 'patrol', build.color);
       Object.assign(c, {
         cop: true,
@@ -159,6 +161,7 @@
       c.maxhp = c.hp = Math.round(c.hp * build.hp);
       c.route = copRoute(c);
       c.routeTime = 2;
+      pursuitStats.spawned++;
       if (kind === 'swat') policeRadioEvent('swat', c);
       if (kind === 'army') policeRadioEvent('tank', c);
       return c;
@@ -180,6 +183,41 @@
         dispatchBurst--;
         dispatchTimer = 0.6;
       } else dispatchTimer = tier.every * (searchActive ? 1.3 : 1) * randomBetween(0.8, 1.2);
+      // Patrol cars already cruising nearby join the pursuit before any new unit
+      // is sent: the response starts with whoever is closest.
+      if (have.patrol < tier.patrols && !(player.x > CITY_SIZE || player.y > CITY_SIZE)) {
+        let nearest = null;
+        for (const c of vehicles)
+          if (
+            c.type === 'police' &&
+            !c.cop &&
+            c.hp > 0 &&
+            !c.blockade &&
+            !c.stolen &&
+            !c.crewLost &&
+            !c.crewDeployed &&
+            c !== player.car &&
+            distanceBetween(c, player) < 1100 &&
+            (!nearest || distanceBetween(c, player) < distanceBetween(nearest, player))
+          )
+            nearest = c;
+        if (nearest) {
+          Object.assign(nearest, {
+            cop: true,
+            ai: false,
+            pursuitUnit: true,
+            crewSize: 2,
+            role: ['pit', 'flank', 'block'][units.length % 3],
+            interceptor: units.length % 2 === 1,
+            routeTime: 0,
+            spawnedAt: physicsClock,
+          });
+          nearest.junction = null;
+          nearest.navAngle = undefined;
+          dispatchTimer = Math.min(dispatchTimer, 1);
+          return;
+        }
+      }
       // Heaviest missing unit first: the tier's character arrives early.
       const order = [
         ['army', tier.tanks],
@@ -491,12 +529,12 @@
     }
     /**
      * FIRING TOKENS
-     * However many officers can see the player, only a few shoot at once: three
-     * at one star up to seven at five. Tokens go to those with the best view
+     * However many officers can see the player, only a few shoot at once: two
+     * at one star up to five at five. Tokens go to those with the best view
      * (closest, already firing) and are reshuffled every two seconds, so the
      * fire comes from changing directions but never as a firing squad.
      */
-    const FIRE_TOKENS = [0, 3, 4, 5, 6, 7];
+    const FIRE_TOKENS = [0, 2, 3, 3, 4, 5];
     let tokenShuffleAt = 0;
     function assignFireTokens() {
       const cap = FIRE_TOKENS[clamp(Math.ceil(wantedStars), 0, 5)],
@@ -545,22 +583,18 @@
       return true;
     }
     /**
-     * Where an officer engaging the player wants to stand. Patrol officers
-     * crouch behind their own car when it is close by (the side away from the
-     * player); SWAT and agents spread out to flank; anyone may step sideways to
-     * keep the shot open. Returns null to hold position.
+     * Where an officer engaging the player wants to stand (null: hold still).
+     * A patrol officer whose cruiser is close uses it: crouched behind the far
+     * corner while waiting, stepped out past the corner to fire while holding a
+     * firing token, so they can be shot back exactly when they are shooting.
+     * Everyone else waiting for a token works round the player's flank and
+     * closes in; SWAT and agents with a token hold at rifle range off the flank.
      */
     function officerPosition(o, target, d, advancing = false) {
       if (target !== player || o.blockade) return null;
       if (!o.flankSide) o.flankSide = seededRandom() < 0.5 ? -1 : 1;
-      const car = o.car;
-      // Waiting for a firing token: work round to the player's flank and close in.
-      if (advancing) {
-        const base = headingBetween(player, o) + o.flankSide * 0.35,
-          r = clamp(d - 40, 90, 170),
-          spot = { x: player.x + Math.cos(base) * r, y: player.y + Math.sin(base) * r };
-        return !solid(spot.x, spot.y, 8) && distanceBetween(o, spot) > 12 ? spot : null;
-      }
+      const car = o.car,
+        free = (spot, margin) => !solid(spot.x, spot.y, 8) && distanceBetween(o, spot) > margin;
       if (
         !o.rifle &&
         car?.hp > 0 &&
@@ -569,19 +603,21 @@
         distanceBetween(o, car) < 110 &&
         distanceBetween(car, player) > 60
       ) {
-        // At the corner of the car: covered, but with the head and gun arm out.
-        const away = headingBetween(player, car) + o.flankSide * 0.85,
+        const away = headingBetween(player, car) + o.flankSide * (advancing ? 0.5 : 1.4),
           spot = { x: car.x + Math.cos(away) * 25, y: car.y + Math.sin(away) * 25 };
-        if (!solid(spot.x, spot.y, 8) && distanceBetween(o, spot) > 8) return spot;
-        return null;
+        return free(spot, 6) ? spot : null;
       }
-      if (o.rifle || gameTime - (o.flankAt ?? -100) < 4) {
-        // Swing round to the player's side at the unit's preferred range.
-        if (gameTime - (o.flankAt ?? -100) > 4) o.flankAt = gameTime;
-        const base = headingBetween(player, o) + o.flankSide * 0.55,
+      if (advancing) {
+        const base = headingBetween(player, o) + o.flankSide * 0.35,
+          r = clamp(d - 40, 90, 170),
+          spot = { x: player.x + Math.cos(base) * r, y: player.y + Math.sin(base) * r };
+        return free(spot, 12) ? spot : null;
+      }
+      if (o.rifle) {
+        const base = headingBetween(player, o) + o.flankSide * 0.3,
           r = clamp(d, 130, 190),
           spot = { x: player.x + Math.cos(base) * r, y: player.y + Math.sin(base) * r };
-        if (!solid(spot.x, spot.y, 8) && distanceBetween(o, spot) > 14) return spot;
+        return free(spot, 14) ? spot : null;
       }
       return null;
     }
@@ -768,6 +804,29 @@
       clearTimeout(damageArcTimer);
       damageArcTimer = setTimeout(() => el.classList.remove('show'), 700);
     }
+    /* A hit on someone: a white cross where they stand, red for a kill, with a
+       tick (or a thump for a kill) and HEADSHOT for a precision-rifle one-shot. */
+    let hitMarkerTimer = null;
+    function playerHitMarker(victim, killed, headshot) {
+      const el = getElement('hitMarker');
+      if (!el) return;
+      const q = city3D
+        ? city3D.project(victim.x, victim.y, entityElevation(victim) + 12)
+        : {
+            x: (victim.x - cameraTarget.x) * canvasScale + viewportWidth / 2,
+            y: (victim.y - cameraTarget.y) * canvasScale + viewportHeight / 2,
+          };
+      el.style.left = q.x.toFixed(0) + 'px';
+      el.style.top = q.y.toFixed(0) + 'px';
+      el.className = killed ? 'kill' : '';
+      el.textContent = headshot ? 'HEADSHOT' : '';
+      void el.offsetWidth;
+      el.classList.add('show');
+      clearTimeout(hitMarkerTimer);
+      hitMarkerTimer = setTimeout(() => el.classList.remove('show'), killed ? 520 : 260);
+      if (killed) tone(150, 0.08, 0.13, 'triangle', 90);
+      else tone(1700, 0.025, 0.04, 'square');
+    }
     /* The per-frame pursuit update (called from updateWanted). */
     function updatePursuit(deltaSeconds) {
       player.carStoppedFor =
@@ -851,6 +910,7 @@
         search: { active: searchActive, remaining: Math.round(searchRemaining * 10) / 10, lastSeen: lastSeen ? { x: round(lastSeen.x), y: round(lastSeen.y) } : null },
         seen: wantedStars > 0 && policeCanSeePlayer(),
         arrest: Math.round(arrestProgress * 100) / 100,
+        pursuit: { ...pursuitStats },
         tier: wantedStars > 0 ? policeTier() : null,
         counts: {
           patrol: units.filter((u) => u.kind === 'patrol' && u.hp > 0).length,

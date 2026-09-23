@@ -1975,6 +1975,7 @@
           dmg: w.dmg,
           rocket: w.rocket,
           enemy: false,
+          headshotTarget: selectedWeaponIndex === 5 && shotTarget && !shotTarget.type ? shotTarget : null,
         });
       }
       particle(ox, oy, '#f4d990', 5, 70, 4);
@@ -2541,10 +2542,21 @@
             )
               continue;
             if (Math.hypot(b.x - p.x, b.y - p.y) >= 10) continue;
-            strikePerson(p, b.dmg, Math.atan2(b.vy, b.vx), b.owner || (!b.enemy ? player : null));
+            // A precision-rifle round on the target it was aimed at is a headshot:
+            // one shot, whatever the vest.
+            const headshot = !b.enemy && b.headshotTarget === p;
+            strikePerson(
+              p,
+              headshot ? 400 : b.dmg,
+              Math.atan2(b.vy, b.vx),
+              b.owner || (!b.enemy ? player : null),
+              true,
+              headshot ? 'headshot' : 'ballistic',
+            );
             if (!b.enemy) {
               if (p.police) crime(0.3);
               if (p.hp <= 0) cash += enemies.includes(p) ? 100 : 10;
+              playerHitMarker(p, p.hp <= 0, headshot);
             }
             impact = true;
             hitKind = 'flesh';
@@ -4850,6 +4862,19 @@
       // the incident's body count, the search, arrest progress, the tier's
       // allowances and every unit (patrol, swat, fed, army, air) and officer.
       policeReport: () => policeReportData(),
+      // Combat tests: own weapon `index` (0 pistol ... 5 precision rifle) with a
+      // full clip and reserve, and select it. Returns its name.
+      arm(index = 4) {
+        const w = weapons[index];
+        if (!w) return null;
+        w.owned = true;
+        w.ammo = w.clip;
+        w.reserve = Math.max(w.reserve, w.clip * 8);
+        selectedWeaponIndex = index;
+        reloadSecondsRemaining = 0;
+        drawWeapon();
+        return w.name;
+      },
       // Living people near the player, nearest first, for play-tests that pick a
       // victim: kind 'civilian', 'police', 'gang' or 'all' (default).
       nearbyPeople(radius = 500, kind = 'all') {

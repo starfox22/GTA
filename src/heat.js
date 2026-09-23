@@ -17,8 +17,9 @@
      */
     // Heat needed for each star. 1 star is any reported crime; the rest are
     // spaced so that two dead civilians make 2, a dead officer on top makes 3,
-    // a shoot-out with a couple more officers makes 4, and a massacre makes 5.
-    const HEAT_STARS = [0, 0.01, 12, 30, 56, 90],
+    // a shoot-out with a couple more officers makes 4, and a massacre (six or
+    // so officers, or SWAT) makes 5.
+    const HEAT_STARS = [0, 0.01, 12, 32, 72, 125],
       HEAT_MAX = 150,
       // One historic crime unit in heat points.
       CRIME_HEAT = 4,
@@ -32,8 +33,9 @@
         fed: 18,
         soldier: 14,
       },
-      // Seconds a newly earned star flashes before dispatch raises it.
-      ESCALATE_SECONDS = [0, 0, 1.2, 1.6, 2, 2.4];
+      // Seconds a newly earned star flashes before dispatch raises it: a lot of
+      // heat at once still climbs one star at a time, 14 s from one to five.
+      ESCALATE_SECONDS = [0, 0, 1.5, 2.5, 4, 6];
     let wantedLevel = 0,
       starElapsed = 0,
       wantedHeat = 0,
@@ -72,11 +74,13 @@
     }
     /* Set the level outright (the developer console, mission scripts). */
     function setWantedLevel(stars) {
+      const rising = stars > Math.ceil(wantedStars);
       wantedStars = stars;
       wantedLevel = stars;
       wantedHeat = Math.max(HEAT_STARS[stars] || 0, Math.min(wantedHeat, (HEAT_STARS[stars + 1] || HEAT_MAX) - 1));
       starElapsed = 0;
       escalateSeconds = 0;
+      if (rising) announceWantedLevel(stars);
     }
     function addHeat(points) {
       if (points <= 0) return;

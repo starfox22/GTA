@@ -347,6 +347,11 @@
         // Whoever was going faster did the ramming: the wreck is theirs, and
         // ramming a police car is assault on an officer (heat.js).
         const other = a === player.car ? b : a;
+        // Contact from a chasing unit (PIT, box, ram): counted for policeReport().
+        if (other?.cop && other.pursuitPlan && !other.blockade) {
+          pursuitStats.contacts++;
+          if (other.pursuitPlan.mode === 'pit') pursuitStats.pits++;
+        }
         if (
           other &&
           Math.hypot(player.car?.vx || 0, player.car?.vy || 0) > Math.hypot(other.vx || 0, other.vy || 0)

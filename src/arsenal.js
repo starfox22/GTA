@@ -188,6 +188,7 @@
         crowdAlarm('melee', target, player);
         crime(target.police ? 0.6 : 0.2);
         if (target.hp <= 0) cash += enemies.includes(target) ? 100 : 10;
+        playerHitMarker(target, target.hp <= 0, false);
       }
       noise(0.06, 0.12, 360);
       return true;
