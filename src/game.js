@@ -5218,7 +5218,7 @@
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
-      // pause-menu setting); returns what the renderer is now using.
+      // Settings choice); returns what the renderer is now using.
       graphics(tier) {
         if (tier !== undefined) cycleGraphicsSetting(String(tier).toLowerCase());
         return { setting: graphicsSetting, ...(city3D?.quality?.() || {}) };

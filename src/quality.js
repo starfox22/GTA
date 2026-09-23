@@ -76,10 +76,6 @@
       if (/intel|uhd|hd graphics|radeon graphics|vega \d|mali|adreno/.test(name)) return 'medium';
       return maxTexture >= 16384 ? 'high' : 'medium';
     }
-    function graphicsLabel() {
-      const tier = graphicsTier().name;
-      return 'GRAPHICS: ' + (graphicsSetting === 'auto' ? 'AUTO (' + tier + ')' : tier);
-    }
     function applyGraphicsSetting() {
       if (city3D && city3D.setQuality) city3D.setQuality(graphicsTier());
     }
