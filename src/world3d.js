@@ -150,6 +150,7 @@
           uniform float uPerspective;
           uniform vec3 uSun;
           #include <fog_pars_fragment>
+          #include <city_hdr_pars>
           float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
           float vnoise(vec2 p){
             vec2 i = floor(p), f = fract(p);
@@ -209,6 +210,7 @@
             color *= 0.3 + 0.7 * uDay;
             gl_FragColor = vec4(color, 1.);
             #include <fog_fragment>
+            #include <city_hdr_output>
           }
         `,
       });

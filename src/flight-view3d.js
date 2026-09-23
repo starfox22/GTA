@@ -191,36 +191,96 @@
       }
       /**
        * SHADOW COVERAGE
-       * The sun's shadow camera is a box around what you are looking at. From the air
-       * the box follows the middle of the view and grows with it (coarser texels, but
-       * the ground is further away too), and the sun is lifted along its own direction
-       * so an aircraft high above the city still falls inside it and throws a shadow
-       * that separates from it as it climbs.
+       * The sun's shadow camera is fitted to what the camera actually sees each
+       * frame: the four corner rays of the view are cut by the ground and by a
+       * plane SHADOW_RECEIVER_TOP above it, and the shadow box is the smallest one
+       * (in the sun's own frame) that holds those eight points. On the street at
+       * zoom 1 that is about a quarter of the old fixed 1800-unit box, so the same
+       * shadow map gives four times the detail; zoomed out or flying, the box grows
+       * with the view instead of leaving the edges unshadowed.
+       *
+       * Things that cast into the box stand between it and the sun, so only the
+       * depth range reaches back towards the sun (far enough for the tallest tower,
+       * or the aircraft). The box is anchored in a frame fixed to the world, its
+       * size moves in 8% steps and its position in whole texels, so shadow edges
+       * stay still while the camera scrolls instead of crawling.
        */
-      const SUN_OFFSET = new Three.Vector3(-620, 980, -340);
-      let shadowHalfSize = 900;
+      const SHADOW_RECEIVER_TOP = 140,
+        shadowCorner = new Three.Vector3(),
+        shadowFar = new Three.Vector3(),
+        shadowAxisX = new Three.Vector3(),
+        shadowAxisY = new Three.Vector3(),
+        shadowAnchor = new Three.Vector3(),
+        shadowWorldUp = new Three.Vector3(0, 1, 0);
+      let shadowHalfSize = 900,
+        shadowTexel = 1;
       function placeSun() {
         const craft = player.car && isAircraft(player.car) ? player.car : player.parachute ? player : null,
           centerX = flightViewActive ? viewCenter.x : cameraTarget.x,
           centerZ = flightViewActive ? viewCenter.y : cameraTarget.y,
           ground = terrainHeight(centerX, centerZ),
-          casterTop = craft ? Math.max(0, entityElevation(craft) - ground) + 80 : 0,
-          lift = Math.max(1, casterTop / 900),
-          half = flightViewActive ? clamp(viewReach * 0.9, 900, 3600) : 900;
-        sun.position.set(
-          centerX + SUN_OFFSET.x * lift,
-          ground + SUN_OFFSET.y * lift,
-          centerZ + SUN_OFFSET.z * lift,
-        );
-        sun.target.position.set(centerX, ground, centerZ);
-        const far = SUN_OFFSET.length() * lift + half * 1.6 + 800;
-        if (half !== shadowHalfSize || sun.shadow.camera.far !== far) {
+          casterTop = craft ? Math.max(0, entityElevation(craft) - ground) + 80 : 0;
+        // The sun's frame, as DirectionalLightShadow will build it with lookAt().
+        shadowAxisX.crossVectors(shadowWorldUp, sunDirection).normalize();
+        shadowAxisY.crossVectors(sunDirection, shadowAxisX);
+        let minX = Infinity,
+          maxX = -Infinity,
+          minY = Infinity,
+          maxY = -Infinity,
+          minD = Infinity,
+          maxD = -Infinity;
+        const reach = viewReach * 1.05;
+        for (const [nx, ny] of footprintCorners)
+          for (const top of [0, SHADOW_RECEIVER_TOP]) {
+            shadowCorner.set(nx, ny, -1).unproject(camera);
+            shadowFar.set(nx, ny, 1).unproject(camera).sub(shadowCorner);
+            const plane = ground + top,
+              t = shadowFar.y < -1e-3 ? (plane - shadowCorner.y) / shadowFar.y : 1e9;
+            shadowCorner.addScaledVector(shadowFar, clamp(t, 0, 1e9));
+            // Rays running towards the horizon stop at the edge of the visible ground.
+            shadowCorner.x = clamp(shadowCorner.x, centerX - reach, centerX + reach);
+            shadowCorner.z = clamp(shadowCorner.z, centerZ - reach, centerZ + reach);
+            shadowCorner.y = plane;
+            const x = shadowCorner.dot(shadowAxisX),
+              y = shadowCorner.dot(shadowAxisY),
+              d = shadowCorner.dot(sunDirection);
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+            minD = Math.min(minD, d);
+            maxD = Math.max(maxD, d);
+          }
+        // Square box, size on a ladder of 8% steps, centre snapped to whole texels.
+        const raw = Math.max(maxX - minX, maxY - minY) / 2 + 12,
+          half = Math.pow(1.08, Math.ceil(Math.log(Math.max(raw, 64)) / Math.log(1.08))),
+          texel = (2 * half) / sun.shadow.mapSize.x,
+          cx = Math.round((minX + maxX) / 2 / texel) * texel,
+          cy = Math.round((minY + maxY) / 2 / texel) * texel;
+        shadowTexel = texel;
+        // Anchor the light on the sun-ward side of the view, in the fixed frame.
+        const lift = Math.max(700, casterTop + 200),
+          anchorD = maxD + lift + 200;
+        shadowAnchor
+          .copy(shadowAxisX)
+          .multiplyScalar(cx)
+          .addScaledVector(shadowAxisY, cy)
+          .addScaledVector(sunDirection, anchorD);
+        sun.position.copy(shadowAnchor);
+        sun.target.position.copy(shadowAnchor).sub(sunDirection);
+        const cam = sun.shadow.camera,
+          near = Math.max(1, anchorD - maxD - lift),
+          far = anchorD - minD + 40;
+        if (half !== shadowHalfSize || cam.near !== near || cam.far !== far) {
           shadowHalfSize = half;
-          sun.shadow.camera.left = sun.shadow.camera.bottom = -half;
-          sun.shadow.camera.right = sun.shadow.camera.top = half;
-          sun.shadow.camera.far = far;
-          sun.shadow.camera.updateProjectionMatrix();
+          cam.left = cam.bottom = -half;
+          cam.right = cam.top = half;
+          cam.near = near;
+          cam.far = far;
+          cam.updateProjectionMatrix();
         }
+        // Keep acne away without detaching contact shadows: bias in texels.
+        sun.shadow.normalBias = clamp(texel * 1.6, 0.35, 4);
       }
       /**
        * LEVEL OF DETAIL FROM THE AIR
@@ -324,7 +384,7 @@
       // Frames between shadow-map refreshes: the street view's cadence, stretched in
       // the air where everything that casts is small and far away.
       function shadowRefreshInterval() {
-        const base = touchEnabled() ? 5 : 2;
+        const base = activeTier ? activeTier.shadowEvery : touchEnabled() ? 5 : 2;
         if (!flightViewActive || viewZoom >= 0.3) return base;
         return viewZoom < 0.15 ? base * 3 : base * 2;
       }

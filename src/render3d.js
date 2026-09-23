@@ -46,11 +46,14 @@
       // scene.fog (distance haze) is set up with the flight camera in flight-view3d.js.
       const renderer = new Three.WebGLRenderer({
         canvas: getElement('scene'),
-        antialias: true,
+        // Anti-aliasing happens on the HDR scene target (postfx3d.js), not the canvas.
+        antialias: false,
         alpha: false,
         powerPreference: 'high-performance',
       });
-      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, touchEnabled() ? 1 : 1.6));
+      // Quality tier (quality.js): 'auto' asks the GPU what it is first.
+      graphicsDetected = detectGraphicsTier(renderer.getContext());
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, graphicsTier().pixelRatio));
       renderer.setSize(viewportWidth, viewportHeight);
       renderer.outputColorSpace = Three.SRGBColorSpace;
       renderer.toneMapping = Three.ACESFilmicToneMapping;
@@ -91,6 +94,8 @@
       scene.add(fill);
       let camera = streetCamera;
       // @include src/flight-view3d.js
+      // @include src/postfx3d.js
+      // @include src/lighting3d.js
       const allBuildings = [],
         statics = [],
         carModels = new Map(),
@@ -1448,12 +1453,21 @@
           });
           return {
             byType,
-            calls: renderer.info.render.calls,
-            triangles: renderer.info.render.triangles,
+            // Scene pass (plus the shadow pass on frames that refresh it).
+            calls: frameStats.sceneCalls,
+            triangles: frameStats.sceneTriangles,
+            shadowFrame: frameStats.shadowFrame,
+            frameCalls: frameStats.totalCalls,
             objects,
             batched: api.batchReport,
           };
         },
+        // Switch graphics quality tier (quality.js) at runtime.
+        setQuality(tier) {
+          applyRendererQuality(tier);
+          api.resize();
+        },
+        quality: () => ({ tier: activeTier?.name, gpu: graphicsGpuName, hdr: hdrCapable, shadowMap: sun.shadow.mapSize.x, pixelRatio: renderer.getPixelRatio() }),
         resize() {
           renderer.setSize(viewportWidth, viewportHeight);
           const viewH = clamp(viewportHeight * 0.68, 430, 630) / worldZoom;
@@ -1606,6 +1620,7 @@
           // Weather runs after the time-of-day pass so it modifies that day's light
           // rather than being overwritten by it; the clouds need the final camera.
           updateWeatherVisuals(deltaSeconds);
+          updateLighting(deltaSeconds);
           applyAerialFog();
           updateCloudVisuals(deltaSeconds);
           updateAirCoverVisuals();
@@ -2197,7 +2212,8 @@
           skidGeo.attributes.position.needsUpdate = true;
           skidLines.frustumCulled = false;
           renderer.shadowMap.needsUpdate = frames++ % shadowRefreshInterval() === 0;
-          renderer.render(scene, camera);
+          // HDR scene, AO, bloom, tone curve and grade (postfx3d.js).
+          renderFrame();
           worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
           if (target && gameMode === 'play') {
             const p = api.project(target.x, target.y, 32 + targetAltitude);
@@ -2294,6 +2310,9 @@
       tagSceneryDetail();
       compactBuildingBlocks();
       buildFarScenery(staticBatchMeshes);
+      paintLampLight();
+      applyRendererQuality(graphicsTier());
+      refreshEnvironment(true);
       api.resize();
       return api;
     }

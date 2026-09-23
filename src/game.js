@@ -4472,6 +4472,7 @@
     // @include src/world-view.js
     // @include src/car-radio.js
     // @include src/garages.js
+    // @include src/quality.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
     buildWorld();
@@ -4854,6 +4855,12 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
+      // pause-menu setting); returns what the renderer is now using.
+      graphics(tier) {
+        if (tier !== undefined) cycleGraphicsSetting(String(tier).toLowerCase());
+        return { setting: graphicsSetting, ...(city3D?.quality?.() || {}) };
+      },
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),
@@ -4865,6 +4872,10 @@
             frameMs: +(profile.frameGap / n).toFixed(1),
             drawCalls: info?.calls ?? null,
             triangles: info?.triangles ?? null,
+            // Whether the shadow map was redrawn (its calls included) in that frame,
+            // and calls including the post-processing passes.
+            shadowFrame: info?.shadowFrame ?? null,
+            frameCalls: info?.frameCalls ?? null,
             sceneObjects: info?.objects ?? null,
             byType: info?.byType ?? null,
             vehicles: vehicles.length,

@@ -72,6 +72,8 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Three embedded tracks, station selection, playback and saved audio settings.
   src/garages.js: Drive-in repair and respray
     Garage geometry, vehicle fit, paint, repairs and pursuit clearance.
+  src/quality.js: Graphics quality tiers
+    LOW / MEDIUM / HIGH / ULTRA records, GPU capability check, saved setting and pause-menu toggle.
   src/render3d.js: Three.js renderer and resource lifecycle
     Asset loading, camera, lights, shared geometry, entity models, effects and drawing API.
   src/damage3d.js: Crumpling bodies, decals, debris and knocked furniture
@@ -3948,6 +3950,7 @@ body:not(.touch-mode).police-search-active #carRadio {
         ><button class="secondary" id="soundBtn">SOUND: ON</button
         ><button class="secondary" id="voicesBtn">RADIO VOICES: ON</button
         ><button class="secondary" id="fpsBtn">FPS COUNTER: OFF</button
+        ><button class="secondary" id="graphicsBtn">GRAPHICS: AUTO</button
         ><button class="secondary" id="creditsBtn">ASSET CREDITS</button
         ><button class="secondary danger" id="restartMission">RESTART CURRENT JOB</button
         ><button class="text-btn" id="newGame">NEW GAME <span>RESET THIS RUN</span></button>
