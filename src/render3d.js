@@ -704,6 +704,7 @@
       // @include src/marina3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
+      // @include src/crowd3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],
@@ -1714,14 +1715,10 @@
               }
             }
           }
-          const people = [
-            ...pedestrians,
-            ...enemies,
-            ...gangMembers,
-            ...officers,
-            ...storyActors,
-            player,
-          ];
+          // Pedestrians are drawn by the instanced crowd (src/crowd3d.js); these
+          // keep individual models for their weapons and uniforms.
+          const people = [...enemies, ...gangMembers, ...officers, ...storyActors, player];
+          updateCrowd3D(deltaSeconds);
           pruneModels(carModels, new Set(vehicles));
           pruneModels(personModels, new Set(people));
           pruneModels(pickupModels, new Set(pickups));
@@ -2374,9 +2371,10 @@
             worldContext.fillText(p.name || '', q.x, q.y);
           }
           // Pedestrian speech: short lines drawn as bubbles above the speaker.
-          for (const p of pedestrians) {
+          // Drivers shouting out of the window use the same bubble over the car.
+          for (const p of [...pedestrians, ...vehicles]) {
             if (!p.speech || p.speechUntil < gameTime || p.hp <= 0 || distanceBetween(p, cameraTarget) > 460) continue;
-            const q = api.project(p.x, p.y, entityElevation(p) + 27);
+            const q = api.project(p.x, p.y, entityElevation(p) + (p.type ? 22 : 27));
             if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;
             worldContext.font = '600 10px Arial';
             const tw = worldContext.measureText(p.speech).width + 12,

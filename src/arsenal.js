@@ -183,6 +183,8 @@
       if (wildlife.includes(target)) strikeWildlife(target, KNIFE.dmg);
       else {
         strikePerson(target, KNIFE.dmg, heading, player, true, 'melee');
+        // A stabbing is quiet, but everyone who sees it reacts.
+        crowdAlarm('melee', target, player);
         crime(target.police ? 0.6 : 0.2);
         if (target.hp <= 0) {
           cash += enemies.includes(target) ? 100 : 10;

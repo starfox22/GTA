@@ -760,15 +760,15 @@
      * DAILY RHYTHM
      * The pavement at eight in the morning is not the pavement at two. The tempo
      * shifts the mix between walking, loitering, window shopping and sitting, how
-     * quickly people move, and how many of them are out at all. Thinning the crowd
-     * removes pedestrians rather than hiding them, so nothing invisible is left in
-     * the world for bullets, traffic or the police to find.
+     * quickly people move, and how many of them are out at all (`out` scales the
+     * crowd streamer's target in src/crowd.js). Thinning the crowd removes
+     * pedestrians rather than hiding them, so nothing invisible is left in the
+     * world for bullets, traffic or the police to find.
      */
-    const CROWD_BASE = 340;
-    let crowdTimer = 0;
     function cityTempo() {
       const hour = (worldMinutes / 60) % 24;
-      if (hour < 5.5) return { name: 'NIGHT', speed: 27, idle: 0.06, shop: 0.06, bench: 0.1, out: 0.26 };
+      if (hour < 2) return { name: 'AFTER MIDNIGHT', speed: 26, idle: 0.1, shop: 0.05, bench: 0.1, out: 0.36 };
+      if (hour < 5.5) return { name: 'NIGHT', speed: 27, idle: 0.06, shop: 0.03, bench: 0.08, out: 0.17 };
       if (hour < 9.5) return { name: 'MORNING RUSH', speed: 31, idle: 0.04, shop: 0.07, bench: 0.1, out: 1 };
       if (hour < 11.5) return { name: 'MORNING', speed: 22, idle: 0.12, shop: 0.26, bench: 0.34, out: 0.86 };
       if (hour < 14.5) return { name: 'LUNCH', speed: 21, idle: 0.15, shop: 0.34, bench: 0.5, out: 1 };
@@ -791,53 +791,9 @@
         p.hp > 0
       );
     }
-    function spawnWalker() {
-      for (let attempt = 0; attempt < 24; attempt++) {
-        const vertical = seededRandom() > 0.5,
-          r = randomChoice(vertical ? ROAD_CENTERS : ROAD_ROWS),
-          v = vertical
-            ? randomBetween(CITY_TOP + 180, CITY_SIZE - 260)
-            : randomBetween(180, CITY_SIZE - 260),
-          x = vertical ? r + randomChoice([-67, 67]) : v,
-          y = vertical ? v : r + randomChoice([-67, 67]);
-        if (Math.abs(x - player.x) < 620 && Math.abs(y - player.y) < 620) continue;
-        if (solid(x, y, 5) || inHarbor(x, y, 8)) continue;
-        if (vehicles.some((c) => pointInCar(x, y, c, 10))) continue;
-        pedestrians.push({
-          x,
-          y,
-          a: vertical ? randomChoice([-Math.PI / 2, Math.PI / 2]) : randomChoice([0, Math.PI]),
-          color: randomChoice(DRIVER_COLORS),
-          hp: 30,
-          flee: 0,
-          timer: randomBetween(0, 8),
-          walk: seededRandom() * 5,
-          state: 'walk',
-        });
-        return true;
-      }
-      return false;
-    }
+    /* Crowd size and placement are handled by the streamer in src/crowd.js. */
     function updateCrowdDensity(deltaSeconds) {
-      crowdTimer -= deltaSeconds;
-      if (crowdTimer > 0) return;
-      crowdTimer = 6;
-      const target = Math.round(CROWD_BASE * cityTempo().out),
-        walkers = pedestrians.filter(ordinaryWalker);
-      if (walkers.length > target + 12) {
-        // Thin from the far side of the city so nobody vanishes in front of you.
-        const going = walkers
-          .filter((p) => Math.abs(p.x - player.x) > 1300 || Math.abs(p.y - player.y) > 1300)
-          .slice(0, Math.min(14, walkers.length - target));
-        for (const p of going) {
-          const i = pedestrians.indexOf(p);
-          if (i < 0) continue;
-          pedestrians.splice(i, 1);
-          for (const q of pedestrians) if (q.leader === p) q.leader = null;
-        }
-        return;
-      }
-      for (let i = 0; i < Math.min(10, target - walkers.length); i++) if (!spawnWalker()) break;
+      streamCrowd(deltaSeconds);
     }
     /**
      * ESCAPE WINDOW
@@ -1425,6 +1381,8 @@
       scream(person);
       if (person.hp <= 0) {
         person.deadTime = gameTime;
+        // Witnesses who find the body later report whoever did it.
+        person.killedBy = source;
         if (showBlood) bleed(person, 2, a);
       }
     }

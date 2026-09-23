@@ -250,19 +250,8 @@
       if (faction === 'harbor') harborAlarmUntil = gameTime + 25;
     }
     function notifyViolence(source, kind = 'gunfire', attacker = null) {
-      for (const p of pedestrians)
-        if (
-          p.hp > 0 &&
-          distanceBetween(p, source) < (kind === 'explosion' ? 500 : 300) &&
-          clearSight(p, source)
-        ) {
-          p.flee = 8 + seededRandom() * 3;
-          p.threat = {
-            x: source.x,
-            y: source.y,
-          };
-          p.panicSaid = false;
-        }
+      // Pedestrians hear and see it through the crowd's perception (src/crowd.js).
+      crowdAlarm(kind === 'explosion' ? 'explosion' : 'gunfire', source, attacker);
       for (const c of vehicles)
         if (
           c.ai &&

@@ -1960,12 +1960,6 @@
       notifyViolence(player, 'gunfire', player);
       crime(w.rocket ? 0.4 : 0.075);
       shake = Math.max(shake, w.rocket ? 5 : 1.4);
-      pedestrians.forEach((p) => {
-        if (p.hp > 0 && distanceBetween(p, player) < 300) {
-          p.flee = 8;
-          scream(p);
-        }
-      });
       if (!w.ammo && w.reserve) startReload();
     }
     function resetMissionState() {
@@ -2138,11 +2132,9 @@
     // @include src/physics.js
     /**
      * PEDESTRIAN LIFE
-     * Pedestrians walk the sidewalk grid, wait for signals at crossings, and
-     * break their walk with small routines: standing to look around, window
-     * shopping at a shopfront, sitting on a bench, or walking in pairs. They
-     * react to the player with short spoken lines (near misses, bumps, panic,
-     * gossip about a wanted player). All timers are seconds.
+     * Everyday chatter lives here; how people walk, what they do and how they
+     * react to danger is in src/crowd.js, which also has the reaction lines.
+     * All timers are seconds.
      */
     const PED_LINES = {
       panic: ['Get down!', 'Run!', 'He’s got a gun!', 'Call the cops!', 'Oh my god!', 'Somebody help!'],
@@ -2229,10 +2221,17 @@
       return best;
     }
     let peopleFrame = 0;
+    /**
+     * The per-frame pass over pedestrians. Special populations (ship decks,
+     * promenade strollers, theme-park guests, carjacked drivers, gym regulars,
+     * park walkers) run their own routines first; everyone else is handed to the
+     * crowd (src/crowd.js): perception and reactions, street scenes, and the
+     * ordinary walk along the sidewalk grid.
+     */
     function updatePeople(frameDelta) {
       peopleFrame++;
-      const playerSpeed = player.car ? Math.abs(player.car.speed || 0) : 0,
-        playerMoving = !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD || keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight);
+      updateCrowd(frameDelta);
+      const playerMoving = !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD || keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight);
       for (let index = 0; index < pedestrians.length; index++) {
         const p = pedestrians[index];
         if (
@@ -2242,191 +2241,35 @@
           Math.abs(p.y - player.y) > 1500
         )
           continue;
-        // Off-screen walkers (beyond ~900 units) think and move every third frame.
+        // Out of sight, people think and move every fourth frame (every sixth
+        // beyond ~900 units); nobody can see the coarser steps.
         let deltaSeconds = frameDelta;
-        if (Math.abs(p.x - player.x) > 900 || Math.abs(p.y - player.y) > 900) {
-          if ((peopleFrame + index) % 3) continue;
-          deltaSeconds = frameDelta * 3;
+        if (!crowdInView(p.x, p.y, 140)) {
+          const every = Math.abs(p.x - player.x) > 900 || Math.abs(p.y - player.y) > 900 ? 6 : 4;
+          if ((peopleFrame + index) % every) continue;
+          deltaSeconds = frameDelta * every;
         }
         if (p.onDeck) {
           updateDeckWalker(p, deltaSeconds);
           continue;
         }
+        if (!p.look) ensureLook(p);
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateCarjackReactions(p, deltaSeconds)) continue;
+        if (updateCrowdPerson(p, deltaSeconds)) continue;
         if (updateGymGoer(p, deltaSeconds)) continue;
         if (updateParkWalker(p, deltaSeconds)) continue;
-        p.timer -= deltaSeconds;
-        if (p.flinch > 0) p.flinch -= deltaSeconds;
-        const panic = p.flee > 0,
-          playerDistance = distanceBetween(p, player);
-        // Reactions to the player.
-        if (!panic && playerDistance < 140) {
-          if (player.car && playerSpeed > 130 && playerDistance < 36 && !(p.flinch > 0)) {
-            p.flinch = 0.8;
-            pedSay(p, 'nearMiss', 0.7);
-            if (p.sitting) {
-              p.sitting = false;
-              p.state = 'walk';
-            }
-          } else if (playerMoving && playerDistance < 9) pedSay(p, 'bump', 0.5);
-          else if (wantedStars >= 2 && seededRandom() < deltaSeconds * 0.25) pedSay(p, 'wanted');
-        }
-        // Walking pairs: the follower keeps a shoulder offset from the leader.
-        if (p.leader) {
-          const leader = p.leader;
-          if (leader.hp <= 0 || personIncapacitated(leader) || leader.flee > 0) {
-            p.leader = null;
-            if (leader.flee > 0) {
-              p.flee = leader.flee;
-              p.threat = leader.threat;
-            }
-          } else if (!panic) {
-            const side = p.pairSide || 1,
-              tx = leader.x + Math.cos(leader.a + Math.PI / 2) * 9 * side,
-              ty = leader.y + Math.sin(leader.a + Math.PI / 2) * 9 * side,
-              d = Math.hypot(tx - p.x, ty - p.y);
-            p.a = d > 4 ? Math.atan2(ty - p.y, tx - p.x) : leader.a;
-            p.walking = d > 2;
-            p.sitting = false;
-            if (d > 2) {
-              const speed = Math.min(60, 20 + d * 2.5);
-              p.walk += deltaSeconds * 7;
-              moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5);
-            }
-            continue;
+        // Everyday remarks to the player: bumped into, or recognised while wanted.
+        const playerDistance = distanceBetween(p, player);
+        if (playerDistance < 140) {
+          if (playerMoving && playerDistance < 9) pedSay(p, 'bump', 0.5);
+          else if (wantedStars >= 2 && seededRandom() < deltaSeconds * 0.25) {
+            pedSay(p, 'wanted');
+            p.sawPlayerAt = gameTime;
           }
         }
-        if (panic) {
-          p.flee -= deltaSeconds;
-          p.a = headingBetween(p.threat || player, p);
-          p.sitting = false;
-          p.walking = true;
-          if (p.bench) {
-            p.bench.taken = null;
-            p.bench = null;
-          }
-          p.state = 'walk';
-          if (!p.panicSaid) {
-            scream(p);
-            pedSay(p, 'panic', 0.35);
-            p.panicSaid = true;
-          }
-        } else if (p.state === 'idle' || p.state === 'shop') {
-          p.stateTime -= deltaSeconds;
-          p.walking = false;
-          if (p.state === 'idle' && seededRandom() < deltaSeconds * 0.08) pedSay(p, 'idle');
-          if (p.state === 'idle' && seededRandom() < deltaSeconds * 0.4) p.a += (seededRandom() - 0.5) * 0.6;
-          if (p.stateTime <= 0) {
-            p.state = 'walk';
-            p.walking = true;
-            p.a = (Math.round(p.a / (Math.PI / 2)) * Math.PI) / 2;
-            p.timer = randomBetween(4, 10);
-          }
-          continue;
-        } else if (p.state === 'toBench') {
-          const spot = p.bench;
-          if (!spot || (spot.taken && spot.taken !== p)) {
-            p.state = 'walk';
-            p.bench = null;
-            continue;
-          }
-          const d = distanceBetween(p, spot);
-          if (d < 4) {
-            p.state = 'sit';
-            p.sitting = true;
-            p.walking = false;
-            p.a = spot.a;
-            p.x = spot.x;
-            p.y = spot.y;
-            p.stateTime = randomBetween(9, 24);
-          } else {
-            p.a = headingBetween(p, spot);
-            p.walk += deltaSeconds * 7;
-            if (moveBody(p, Math.cos(p.a) * 24 * deltaSeconds, Math.sin(p.a) * 24 * deltaSeconds, 5)) {
-              p.state = 'walk';
-              spot.taken = null;
-              p.bench = null;
-            }
-          }
-          continue;
-        } else if (p.state === 'sit') {
-          p.stateTime -= deltaSeconds;
-          if (seededRandom() < deltaSeconds * 0.05) pedSay(p, 'idle');
-          if (p.stateTime <= 0) {
-            p.sitting = false;
-            p.walking = true;
-            p.state = 'walk';
-            if (p.bench) p.bench.taken = null;
-            p.bench = null;
-            p.a = randomChoice([0, Math.PI]);
-            p.timer = randomBetween(5, 12);
-          }
-          continue;
-        } else if (p.timer < 0) {
-          p.timer = randomBetween(5, 12);
-          const roll = seededRandom(),
-            tempo = cityTempo();
-          if (roll < tempo.idle) {
-            p.state = 'idle';
-            p.stateTime = randomBetween(2.5, 6);
-            p.walking = false;
-            continue;
-          }
-          if (roll < tempo.shop && shopfrontNear(p)) {
-            p.state = 'shop';
-            p.stateTime = randomBetween(3, 7);
-            p.a = -Math.PI / 2;
-            p.walking = false;
-            continue;
-          }
-          if (roll < tempo.bench) {
-            const spot = nearestFreeBench(p, 160);
-            if (spot) {
-              spot.taken = p;
-              p.bench = spot;
-              p.state = 'toBench';
-              continue;
-            }
-          }
-          if (roll < 0.45) p.a += Math.PI;
-          p.a = (Math.round(p.a / (Math.PI / 2)) * Math.PI) / 2;
-        }
-        p.walking = true;
-        const vertical = Math.abs(Math.sin(p.a)) > 0.5,
-          sign = vertical ? Math.sign(Math.sin(p.a)) : Math.sign(Math.cos(p.a)),
-          v = vertical ? p.y : p.x,
-          next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
-            .filter((r) => (r - v) * sign > 0)
-            .sort((a, b) => (a - b) * sign)[0],
-          remaining = Math.abs((next ?? 1e6) - v),
-          signal = trafficSignal(roadNear(p.x), rowNear(p.y));
-        if (
-          !panic &&
-          remaining > 70 &&
-          remaining < 88 &&
-          signal[vertical ? 'vertical' : 'horizontal'] !== 'green'
-        ) {
-          p.walking = false;
-          continue;
-        }
-        const speed = panic ? 105 : p.flinch > 0 ? 6 : cityTempo().speed;
-        p.walk += deltaSeconds * (panic ? 15 : 7);
-        if (
-          moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5)
-        ) {
-          p.blocked = (p.blocked || 0) + deltaSeconds;
-          if (p.blocked > 0.35) {
-            const a = p.a + Math.PI / 2;
-            if (!solid(p.x + Math.cos(a) * 15, p.y + Math.sin(a) * 15, 7))
-              moveBody(p, Math.cos(a) * speed * deltaSeconds, Math.sin(a) * speed * deltaSeconds, 5);
-            if (p.blocked > 2) {
-              p.a += Math.PI;
-              p.blocked = 0;
-            }
-          }
-        } else p.blocked = 0;
+        updateStreetWalker(p, deltaSeconds);
       }
       updateGangFights(frameDelta);
     }
@@ -2816,7 +2659,10 @@
         follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
       cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
       cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
-      timed('sound', () => soundUpdate(deltaSeconds));
+      timed('sound', () => {
+        soundUpdate(deltaSeconds);
+        updateAmbience(deltaSeconds);
+      });
       uiTime += deltaSeconds;
       if (uiTime > 0.09) {
         uiTime = 0;
@@ -4436,6 +4282,8 @@
     // @include src/world-view.js
     // @include src/car-radio.js
     // @include src/garages.js
+    // @include src/crowd.js
+    // @include src/ambience.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
     buildWorld();
@@ -4519,7 +4367,10 @@
       updateElevator(deltaSeconds);
       const updateStart = performance.now();
       if (gameMode === 'play' || gameMode === 'menu' || gameMode === 'dead') update(deltaSeconds);
-      else soundUpdate(deltaSeconds);
+      else {
+        soundUpdate(deltaSeconds);
+        updateAmbience(deltaSeconds);
+      }
       const drawStart = performance.now();
       drawWorld();
       profile.update += drawStart - updateStart;
@@ -4747,6 +4598,70 @@
         c.vy = Math.sin(c.a) * speed;
         c.speed = speed;
         return this.ride();
+      },
+      // The crowd around the player: counts by reaction, pose, role and state,
+      // street scenes, recent incidents and witness reports (src/crowd.js).
+      pedestrianReport: () => pedestrianReport(),
+      // Fire the equipped weapon toward a map point, exactly as the player would.
+      fireShot(x, y) {
+        if (player.car) exitCar();
+        player.a = Math.atan2(y - player.y, x - player.x);
+        shotCooldownSeconds = 0;
+        reloadSecondsRemaining = 0;
+        const w = currentWeapon();
+        if (!w.melee && w.ammo <= 0) w.ammo = w.clip;
+        const aimWasActive = mouse.active;
+        mouse.active = false;
+        shoot();
+        mouse.active = aimWasActive;
+        return { x: Math.round(player.x), y: Math.round(player.y), heading: +player.a.toFixed(2) };
+      },
+      // Stage a street scene next to the player: vendor, busker, cafe, smokers,
+      // delivery, hail, nightlife (nearest bar or club) or busStop (nearest shelter).
+      lifeScene(kind) {
+        crowd.settleStamp = gameTime;
+        const near = (list) => list.reduce((a, b) => (distanceBetween(a, player) < distanceBetween(b, player) ? a : b));
+        const place = near(PLACES.filter((p) => (p.kind === 'bar' || p.kind === 'club') && p.door)),
+          stop = BUS_STOPS.length ? near(BUS_STOPS) : null,
+          existing = crowd.scenes.find((s) => (kind === 'nightlife' && s.place === place) || (kind === 'busStop' && s.stop === stop));
+        const s = existing
+          ? existing
+          : kind === 'nightlife'
+            ? stageNightlife(place)
+            : kind === 'busStop'
+              ? stop
+                ? stageBusStop(stop)
+                : null
+              : kind === 'hail'
+                ? stageHail()
+                : { vendor: stageVendor, busker: stageBusker, cafe: stageCafe, smokers: stageSmokers, delivery: stageDelivery }[kind]?.(true);
+        return s ? { kind: s.kind, x: Math.round(s.x), y: Math.round(s.y), members: s.members.length } : null;
+      },
+      // Put an occupied car across the road ahead and drive the player's car into
+      // it at `metersPerSecond`, for looking at crash reactions.
+      stageCrash(metersPerSecond = 18) {
+        if (!player.car) this.drive('sedan', 0, 0);
+        const c = player.car,
+          target = spawnClearCar('sedan', c.x + Math.cos(c.a) * 120, c.y + Math.sin(c.a) * 120, c.a + Math.PI / 2, true, '#b57374');
+        target.occupied = true;
+        target.driverMood = 'angry';
+        target.vx = target.vy = target.speed = 0;
+        this.launch(metersPerSecond);
+        return { target: { x: Math.round(target.x), y: Math.round(target.y) } };
+      },
+      // Inspection only: zoom the camera in past the player's limit to look at
+      // people up close. Anything above 1.5 is not reachable in play.
+      closeUp(zoom = 4) {
+        worldZoom = worldZoomTarget = clamp(zoom, 0.14, 8);
+        return worldZoom;
+      },
+      // Line up one pedestrian per pose in front of the player (for screenshots);
+      // `role` dresses them all alike, e.g. 'commuter'.
+      poseGallery: (role) => poseGallery(role),
+      // Raise an incident at a map point without firing: gunfire, explosion, crash.
+      alarm(kind = 'gunfire', x = player.x, y = player.y) {
+        const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);
+        return inc ? { kind: inc.kind, x: Math.round(inc.x), y: Math.round(inc.y) } : null;
       },
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
