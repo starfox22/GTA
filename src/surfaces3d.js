@@ -45,6 +45,11 @@
         float grassMask = smoothstep( 0.004, 0.03, groundBase.g - max( groundBase.r, groundBase.b ) );
         float roadMask = ( 1.0 - smoothstep( 0.035, 0.09, groundLum ) ) * ( 1.0 - grassMask );
         float paveMask = smoothstep( 0.08, 0.2, groundLum ) * ( 1.0 - smoothstep( 0.42, 0.6, groundLum ) ) * ( 1.0 - grassMask );
+        #ifdef CITY_HILL
+          // A hillside is grass, rock and snow: no slab joints or tarmac there.
+          roadMask = 0.0;
+          paveMask = 0.0;
+        #endif
         // Detail fades out where it would shimmer (seen from high up).
         float detailFade = 1.0 - smoothstep( 0.6, 2.5, length( fwidth( gp ) ) );
         // Unsharp mask on the painted sheet: lane paint, kerb lines and crossings
@@ -65,7 +70,12 @@
         float joint = ( 1.0 - smoothstep( 0.0, 0.06, min( min( slabF.x, 1.0 - slabF.x ), min( slabF.y, 1.0 - slabF.y ) ) ) ) * detailFade;
         vec3 paving = groundBase * ( 0.92 + 0.14 * cityHash( floor( slab ) ) ) * ( 1.0 - 0.28 * joint ) * ( 0.94 + 0.12 * grainB );
         float dry = smoothstep( 0.55, 0.8, cityNoise( gp * 0.035 + 5.0 ) );
-        vec3 grass = groundBase * ( 0.78 + 0.44 * cityNoise( gp * 0.35 ) ) * mix( vec3( 1.0 ), vec3( 1.14, 1.06, 0.8 ), dry );
+        // Meadow: broad lusher and sunburnt swathes (a few hundred units across) so
+        // open ground reads as land from the air, then blades close up.
+        float meadow = cityNoise( gp * 0.0045 + 3.7 ) * 0.62 + cityNoise( gp * 0.014 + 11.0 ) * 0.38;
+        dry = max( dry, smoothstep( 0.62, 0.9, meadow ) * 0.7 );
+        vec3 grass = groundBase * mix( 1.0, 0.78 + 0.44 * cityNoise( gp * 0.35 ), detailFade ) * ( 0.84 + 0.3 * meadow )
+                   * mix( vec3( 1.0 ), vec3( 1.14, 1.06, 0.8 ), dry );
         diffuseColor.rgb = mix( mix( mix( groundBase * ( 0.94 + 0.12 * grain ), paving, paveMask ), asphalt, roadMask ), grass, grassMask );
         // Rain: everything darkens as it soaks; low spots in the tarmac hold water.
         float puddle = smoothstep( 0.6, 0.66, cityNoise( gp * 0.017 + 41.0 ) + grainA * 0.05 ) * roadMask * smoothstep( 0.2, 0.8, cityWet );
@@ -83,18 +93,27 @@
           normal = normalize( ( viewMatrix * vec4( worldNormal, 0.0 ) ).xyz );
         }`;
       const groundTexel = { value: new Three.Vector2(1 / terrain.width, 1 / terrain.height) };
-      function groundDetailPatch(shader) {
+      // Hills carry their colour in vertex colours, so their detail goes in after
+      // those are applied (`colorChunk`), the flat sheets' straight after the map.
+      function groundDetailPatch(shader, texel = groundTexel, colorChunk = '#include <map_fragment>') {
         cityMaterialPatch(shader);
-        shader.uniforms.cityGroundTexel = groundTexel;
+        shader.uniforms.cityGroundTexel = texel;
+        const hill = colorChunk !== '#include <map_fragment>' ? '#define CITY_HILL\n' : '';
         shader.fragmentShader = shader.fragmentShader
-          .replace('#include <common>', '#include <common>\nuniform vec2 cityGroundTexel;\n' + SURFACE_NOISE)
-          .replace('#include <map_fragment>', '#include <map_fragment>\n' + GROUND_ALBEDO)
+          .replace('#include <common>', '#include <common>\n' + hill + 'uniform vec2 cityGroundTexel;\n' + SURFACE_NOISE)
+          .replace(colorChunk, colorChunk + '\n' + GROUND_ALBEDO)
           .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + GROUND_ROUGHNESS)
           .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = 0.0;')
           .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + GROUND_NORMAL);
       }
-      groundMesh.material.onBeforeCompile = groundDetailPatch;
+      groundMesh.material.onBeforeCompile = (shader) => groundDetailPatch(shader);
       groundMesh.material.customProgramCacheKey = () => 'city-ground';
+      for (const m of countyGroundMaterials) {
+        const texel = { value: new Three.Vector2(1 / m.map.image.width, 1 / m.map.image.height) },
+          chunk = m.vertexColors ? '#include <color_fragment>' : '#include <map_fragment>';
+        m.onBeforeCompile = (shader) => groundDetailPatch(shader, texel, chunk);
+        m.customProgramCacheKey = () => (m.vertexColors ? 'county-hill' : 'county-ground');
+      }
       // ---- Wind in the foliage -----------------------------------------------------------------
       const SWAY_VERTEX = `
         {
