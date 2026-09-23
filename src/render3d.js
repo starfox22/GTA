@@ -743,6 +743,7 @@
       // @include src/transit3d.js
       // @include src/ecology3d.js
       // @include src/world3d.js
+      // @include src/wakes3d.js
       // @include src/beach3d.js
       // @include src/county3d.js
       // @include src/boats3d.js
@@ -1808,8 +1809,10 @@
                   : 0.6 + Math.sin(gameTime * 1.7 + c.x * 0.02) * 0.45;
                 m.body.rotation.z = Math.sin(gameTime * 2 + c.id) * 0.023;
                 m.body.rotation.x = Math.sin(gameTime * 1.3 + c.y * 0.017) * 0.028;
-                m.wake.visible = Math.abs(c.speed) > 15;
-                m.wake.scale.x = 0.5 + Math.abs(c.speed) / 180;
+                // Wake, bow wave and spray are drawn into the sea (wakes3d.js).
+                const boatSpec = vehicleSpec(c);
+                if (c.hp > 0 && (Math.abs(c.speed) > 2 || c === player.car))
+                  wakeEmit(c, c.x, c.y, c.a, c.speed, boatSpec.l, boatSpec.w, boatSpec.max || 300, !underBridge);
                 if (m.boatUpdate) m.boatUpdate(c);
               }
               for (const { wheel } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / 5;
@@ -1846,6 +1849,8 @@
             vehicleEffects(c, m, deltaSeconds);
           }
           endVehicleImpostors();
+          // Every craft on the water has reported in: draw the wake map (wakes3d.js).
+          updateWakes(deltaSeconds);
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;

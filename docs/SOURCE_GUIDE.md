@@ -132,6 +132,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
+| wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
 | county3d.js | County ground tiles and hills, snow, rural scenery, bridges and region visibility |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
@@ -399,6 +400,9 @@ docs/audit/missions-qa.md shows the method).
   people, trees and props never are; in the open there is no cutaway. `city3D.
   setCharacterCutaway(on)` switches it; localStorage `dead-end-city-cutaway` = `'off'` is
   read at start-up.
+- **Wakes** (wakes3d.js): boats call `wakeEmit()` each frame; trails and hull collars are
+  drawn into a wake map (foam, wave crest, trough) round the view that the water shader
+  samples for foam and for its normal. Spray is one `Points` object.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
   a bump, dielectric roughness and rain puddles (`weather.wet`). Leaf and palm materials sway.
