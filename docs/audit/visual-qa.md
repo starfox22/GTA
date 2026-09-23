@@ -64,7 +64,7 @@ mountains `mt-9760_1230` / `mt3-9760`, `mtair` / `mtair3`; night `n23-midtown06`
 - Inside the cloud layer (700-800 m, fair or cloudy) much of the frame is a flat grey
   wall; that is what flying in cloud looks like, but the wall has little structure.
 - The helicopter's rotor disc is quite visible from above at dusk.
-- Rail deck and tunnel roof fades (transit3d.js, air-cover3d.js) still run alongside the
-  new cutaway; both agree, but the fades could be retired in favour of it.
+- (Done in 29.0.0.) The rail deck and tunnel roof fades were retired in favour of the
+  cutaway.
 - The water's fine ripple normal uses value noise and shows faint axis-aligned streaks
   close up.

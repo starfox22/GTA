@@ -123,3 +123,18 @@ in-game numbers (index + 1); contracts are C1..C5 (indices 11..15).
 `interact()`, `boardMissionVehicle()`, `placeVehicle(x, y, heading, altitudeMeters)`,
 `defeatMissionGuards(tag)`; `missionState()` reports how the last mission ended;
 `simulate()` also steps the Blue Hour elevator ride.
+
+## Release pass (29.0.0)
+
+Re-verified after the parallel merges (mission QA and systems QA both touched mission 8):
+- Mission 8 end to end, eight runs: the systems pass moved the Southport dock to the inlet's
+  east shore (1500..1630, 5230) and the route's last gate with it. E at the dock called the
+  generic `exitCar()` first, which refuses when neither side of the jet ski is clear (most of
+  the new berth), so the job could stall on "Pull alongside a wooden dock". The step now
+  leaves the jet ski directly onto the deck; from the dock's shore end Rafe is a short walk
+  round the head of the inlet. All eight runs won.
+- Mission 1 respray: POLICE CLEARED shows only when stars were showing (respray with the
+  units on the truck shows it; the chip is hidden by a mission start).
+- All 16 missions: start and first stage advance through the real update loop; no console
+  errors.
+

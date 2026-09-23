@@ -328,12 +328,9 @@ reset and a new colour.
 
 ## Known remaining issues
 
-- Helicopters cannot land on building roofs: the flight floor is the terrain and building
-  colliders reach 22 units above the roof, so a helicopter descending onto a tower is
-  pushed off the side and settles in the street. Rooftop helipads on towers are scenery.
-  Landing on roofs would need a roof-aware floor, colliders that let an aircraft rest on
-  its own roof and a way to step out onto an arbitrary roof (only the Blue Hour terrace has
-  one).
+- (Resolved in 29.0.0, src/rooftops.js.) Helicopters could not land on building roofs:
+  they now set down on flat roofs and rooftop helipads, and the player can step out,
+  walk the roof and take off again.
 - The north approach to Southport crosses the Broadway blocks (roofs 61-79 units) before
   the Shore Line curve (deck 52-60 units) 1,090 units short of the threshold: a flat
   3-degree approach from the north clips the buildings first. Approach steeply from the
@@ -341,6 +338,5 @@ reset and a new colour.
 - There is no arrest: at any wanted level the police shoot, and "busted" does not exist;
   death respawns at the hospital door with a $250 bill and a clean wanted level.
 - Traffic only pulls out round stationary vehicles; it never overtakes a slow one.
-- chase.js (mission 1's respray) calls `policeClearedNotice()` directly after
-  `clearPolice()`, so it shows POLICE CLEARED even when no stars were showing (mission
-  code, left to the mission QA pass).
+- (Resolved: `evadeCargoPolice` only shows POLICE CLEARED when stars were showing;
+  re-verified in the 29.0.0 release pass.)
