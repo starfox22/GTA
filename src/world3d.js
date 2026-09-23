@@ -145,9 +145,14 @@
           void main(){
             vec4 origin = modelMatrix * vec4(position, 1.);
             vec2 p = origin.xz;
-            vec4 shoreTexel = texture2D(uShore, (p - uWorldOrigin) / uWorldExtent);
-            float shore = shoreTexel.r * uShoreScale;
-            vBeach = shoreTexel.g;
+            vec2 shoreUv = (p - uWorldOrigin) / uWorldExtent;
+            vec4 shoreTexel = texture2D(uShore, shoreUv);
+            // Beyond the edge of the field the clamped edge texel would be smeared out
+            // to the horizon (turquoise shallows and foam streaks far out in the west
+            // sea): add the distance past the edge so open water deepens as it should.
+            float beyond = length(max(vec2(0.), max(-shoreUv, shoreUv - 1.)) * uWorldExtent);
+            float shore = shoreTexel.r * uShoreScale + beyond;
+            vBeach = shoreTexel.g * (1. - smoothstep(0., 160., beyond));
             float depthFade = 0.22 + 0.78 * smoothstep(8., 190., shore);
             vec3 offset = vec3(0.);
             vec3 dNormal = vec3(0., 1., 0.);
