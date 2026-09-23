@@ -2255,7 +2255,8 @@
           }
           // Pedestrian speech: short lines drawn as bubbles above the speaker.
           // Drivers shouting out of the window use the same bubble over the car.
-          for (const p of [...pedestrians, ...vehicles]) {
+          // Settings · Gameplay · NPC chatter off hides them all (settings.js).
+          for (const p of npcChatterOn() ? [...pedestrians, ...vehicles] : []) {
             if (!p.speech || p.speechUntil < gameTime || p.hp <= 0 || distanceBetween(p, cameraTarget) > 460) continue;
             const q = api.project(p.x, p.y, entityElevation(p) + (p.type ? 22 : 27));
             if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;

@@ -128,8 +128,10 @@
     const touchButtons = [
       ['touchGo', () => ['KeyW']],
       ['touchBrake', () => ['KeyS']],
-      ['touchUp', () => ['Space']],
-      ['touchDown', () => ['ShiftLeft']],
+      // In an aircraft the up/down buttons are the climb and descend actions;
+      // elsewhere the up button is the handbrake (and opens the parachute).
+      ['touchUp', () => [isAircraft(player.car) ? actionCode('ascend') : actionCode('handbrake')]],
+      ['touchDown', () => [actionCode('descend')]],
       ['touchRun', () => ['ShiftLeft']],
       ['touchFire', () => ['KeyF']],
       ['touchAction', () => ['KeyE']],
@@ -161,15 +163,16 @@
         syncTouchInput();
         updateTouchUI();
       };
-    getElement('touchToggle').onclick = () => {
-      touchMode = touchEnabled() ? 'off' : 'on';
+    /* Settings · Controls: 'auto' (phones and tablets), 'on' or 'off'. */
+    function setTouchMode(mode) {
+      touchMode = ['auto', 'on', 'off'].includes(mode) ? mode : 'auto';
       try {
         localStorage.setItem('dead-end-city-touch', touchMode);
       } catch {}
       clearTouchInput();
       updateTouchUI();
       resize();
-    };
+    }
     for (const event of ['blur', 'resize']) window.addEventListener(event, clearTouchInput);
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) clearTouchInput();
@@ -179,7 +182,6 @@
         active = enabled && gameMode === 'play';
       getElement('touchControls').classList.toggle('hidden', !active);
       document.body?.classList.toggle('touch-mode', enabled);
-      getElement('touchToggle').textContent = 'TOUCH CONTROLS: ' + (enabled ? 'ON' : 'OFF');
       if (!active) return;
       if (transitRide) {
         for (const id of [

@@ -143,7 +143,7 @@
           : 0.27;
       if (!carRadioPlayer.paused)
         carRadioGain = clamp(carRadioGain + (deltaSeconds || 0.016) * RADIO_FADE_IN, 0, 1);
-      carRadioPlayer.volume = clamp(target * carRadioGain, 0, 1);
+      carRadioPlayer.volume = clamp(target * carRadioGain * volumeScale('radio'), 0, 1);
       if (gesture) carRadioBlocked = false;
       if (carRadioPlayer.paused && !carRadioPending && !carRadioBlocked) {
         const revision = carRadioRevision;
@@ -165,6 +165,8 @@
       }
     }
     function tuneCarRadio(index) {
+      // The radio box pops open to show the new station, then tucks away (hud.js).
+      hudPop('carRadio');
       carRadioStation = (index + MUSIC_STATIONS.length) % MUSIC_STATIONS.length;
       carRadioEnabled = true;
       carRadioBlocked = false;
@@ -174,6 +176,7 @@
       updateCarRadioUI();
     }
     function toggleCarRadio() {
+      hudPop('carRadio');
       if (carRadioBlocked && carRadioEnabled) {
         carRadioBlocked = false;
         if (carRadioUnavailable) carRadioLoaded = -1;

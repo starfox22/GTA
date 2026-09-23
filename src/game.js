@@ -25,6 +25,8 @@
      * Include fragments share this closure; renderer fragments share its inner closure.
      */
 
+    // The build's version, shown on the title menu and by DeadEndCity.version.
+    const GAME_VERSION = '29.0.0';
     const getElement = (id) => document.getElementById(id),
       canvas = getElement('game'),
       worldContext = canvas.getContext('2d', {
@@ -1808,7 +1810,7 @@
       }
       player.car = null;
       player.inv = 0.5;
-      tell('On foot · F to fire · Shift to sprint', 1.8);
+      tell('On foot · ' + keyName('fire') + ' to fire · ' + keyName('sprint') + ' to sprint', 1.8);
       tone(160, 0.06, 0.15, 'triangle');
     }
     function interact() {
@@ -1883,19 +1885,40 @@
         c.junction = null;
         c.navAngle = undefined;
         if (c.type === 'plane') {
-          tell('AIRPLANE · W/S throttle · A/D bank · Space nose up · Shift nose down', 8);
+          tell(
+            'AIRPLANE · ' + keyName('forward') + '/' + keyName('back') + ' throttle · ' + keyName('left') + '/' + keyName('right') +
+              ' bank · ' + keyName('ascend') + ' nose up · ' + keyName('descend') + ' nose down',
+            8,
+          );
         } else if (c.type === 'helicopter') {
           if (!c.authorized) crime(2);
-          tell('HELICOPTER · Space rise · Shift descend · W/S fly · A/D turn', 7);
+          tell(
+            'HELICOPTER · ' + keyName('ascend') + ' rise · ' + keyName('descend') + ' descend · ' + keyName('forward') + '/' +
+              keyName('back') + ' fly · ' + keyName('left') + '/' + keyName('right') + ' turn',
+            7,
+          );
           radio('call-backup');
         } else if (c.type === 'tank') {
           militaryAlarm();
           tell('TRACKED ARMOR · W/S drive · A/D pivot · F cannon · Mouse aim optional', 6);
         } else if (isBoat(c))
-          tell('W/S throttle · A/D steer · Space slow · E exit alongside a dock', 5);
+          tell(
+            keyName('forward') + '/' + keyName('back') + ' throttle · ' + keyName('left') + '/' + keyName('right') + ' steer · ' +
+              keyName('handbrake') + ' slow · ' + keyName('interact') + ' exit alongside a dock',
+            5,
+          );
         else if (c.type === 'bicycle')
-          tell('CITY CYCLE · HOLD W to pedal · SHIFT stand on the pedals · S brake', 6);
-        else tell(vehicleSpec(c).name + ' · W accelerate · A/D steer · Space handbrake', 3);
+          tell(
+            'CITY CYCLE · HOLD ' + keyName('forward') + ' to pedal · ' + keyName('sprint') + ' stand on the pedals · ' +
+              keyName('back') + ' brake',
+            6,
+          );
+        else
+          tell(
+            vehicleSpec(c).name + ' · ' + keyName('forward') + ' accelerate · ' + keyName('left') + '/' + keyName('right') +
+              ' steer · ' + keyName('handbrake') + ' handbrake',
+            3,
+          );
         tone(200, 0.12, 0.25, 'triangle');
     }
     function roofClearanceText(c) {
@@ -3479,18 +3502,23 @@
     function drawMap(drawingContext, width, height, big = false) {
       const scale = big
           ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
-          : MINIMAP_SCALE,
+          : MINIMAP_SCALE * minimapZoom(),
         cx = big ? mapCenter.x : player.x,
         cy = big ? mapCenter.y : player.y;
       drawingContext.fillStyle = '#123244';
       drawingContext.fillRect(0, 0, width, height);
       if (!big) {
         // Whole pixels keep the cached layer sharp; overlays are drawn in world units.
-        const base = minimapBaseLayer();
+        // Zoomed (hud.js), the cached layer is scaled with it.
+        const base = minimapBaseLayer(),
+          zoom = minimapZoom();
+        drawingContext.imageSmoothingEnabled = true;
         drawingContext.drawImage(
           base.canvas,
           Math.round(width / 2 - (cx - base.x0) * scale),
           Math.round(height / 2 - (cy - base.y0) * scale),
+          Math.round(base.canvas.width * zoom),
+          Math.round(base.canvas.height * zoom),
         );
       }
       drawingContext.save();
@@ -3768,11 +3796,12 @@
       getElement('mapDistrict').textContent = d;
       getElement('streetName').textContent = streetNameAt(player.x, player.y);
       getElement('cash').textContent = '$' + String(Math.floor(visibleCash())).padStart(6, '0');
-      getElement('stars').textContent =
-        '★'.repeat(Math.ceil(wantedStars)) + '☆'.repeat(5 - Math.ceil(wantedStars));
+      renderStars(Math.ceil(wantedStars));
       getElement('healthValue').textContent = Math.max(0, Math.ceil(player.hp));
       getElement('healthFill').style.width = clamp(player.hp, 0, 100) + '%';
-      getElement('healthFill').style.background = player.hp < 30 ? '#eb9d83' : '#d7f970';
+      getElement('armorFill').style.width = clamp(player.armor, 0, 100) + '%';
+      getElement('healthbox').classList.toggle('low', player.hp < 30);
+      getElement('healthbox').classList.toggle('armored', player.armor > 0);
       getElement('armorLabel').textContent =
         player.armor > 0
           ? 'ARMOR ' + Math.ceil(player.armor)
@@ -3792,10 +3821,10 @@
           : String(w.ammo).padStart(2, '0');
       getElement('reserve').textContent = w.melee ? 'NO AMMO NEEDED' : '/ ' + w.reserve;
       getElement('reloadHint').textContent = w.melee
-        ? 'F'
+        ? keyName('fire')
         : reloadSecondsRemaining > 0
           ? 'LOADING'
-          : 'R';
+          : keyName('reload');
       getElement('vehicleName').textContent = transitRide
         ? 'CITY RAIL'
         : c
@@ -3829,7 +3858,8 @@
               : 'KM/H'
           : '';
       getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
-      getElement('carFill').style.background = c && c.hp < c.maxhp * 0.3 ? '#e79177' : '#d7f970';
+      getElement('vehicleStats').classList.toggle('damaged', !!c && c.hp < c.maxhp * 0.3);
+      getElement('vehicleStats').classList.toggle('active', !!c || swimming || !!transitRide);
       const target = objective(),
         m = mission;
       getElement('pager').classList.toggle('hidden', !m && incomingCallRemaining <= 0);
@@ -3878,15 +3908,15 @@
         if (c) {
           if (c.type === 'plane')
             prompt = c.stalled
-              ? 'STALL · SHIFT NOSE DOWN + W THROTTLE'
-              : 'W/S THROTTLE ' +
+              ? 'STALL · ' + keyName('descend') + ' NOSE DOWN + ' + keyName('forward') + ' THROTTLE'
+              : keyName('forward') + '/' + keyName('back') + ' THROTTLE ' +
                 Math.round((c.throttle || 0) * 100) +
-                '% · A/D BANK · SPACE/SHIFT PITCH · J PARACHUTE';
+                '% · ' + keyName('ascend') + '/' + keyName('descend') + ' PITCH · ' + keyName('bail') + ' PARACHUTE';
           else if (c.type === 'helicopter')
             prompt =
               aircraftClearance(c) > 1
-                ? 'SPACE RISE · SHIFT DESCEND · WASD FLY'
-                : 'SPACE TAKE OFF · E EXIT';
+                ? keyName('ascend') + ' RISE · ' + keyName('descend') + ' DESCEND · ' + moveKeysName() + ' FLY'
+                : keyName('ascend') + ' TAKE OFF · ' + keyName('interact') + ' EXIT';
           else if (garageForCar(c))
             prompt = repairJob
               ? 'RESPRAYING…'
@@ -3914,9 +3944,9 @@
       }
       getElement('interaction').style.display = prompt ? 'block' : 'none';
       getElement('interaction').innerHTML = prompt
-        ? (isAircraft(c) ? '' : '<kbd>E</kbd> ') + prompt
+        ? (isAircraft(c) ? '' : '<kbd>' + keyName('interact') + '</kbd> ') + prompt
         : '';
-      drawMap(minimapContext, 224, 156);
+      if (!hudState.minimapFolded) drawMap(minimapContext, getElement('minimap').width, getElement('minimap').height);
       if (mapOpen) drawMap(cityMapContext, 800, 660, true);
       drawWeapon();
       civicUI();
@@ -3924,6 +3954,7 @@
       updateCarRadioUI();
       updateExplorationUI();
       updateTouchUI();
+      updateHud();
     }
     function resize() {
       viewportWidth = innerWidth;
@@ -4007,6 +4038,7 @@
       if (gameMode === 'dead') return;
       previousMode = gameMode;
       gameMode = 'help';
+      renderControlsHelp();
       getElement('help').classList.remove('hidden');
       getElement('closeHelp').focus();
       keys = {};
@@ -4089,7 +4121,7 @@
           player.hp = 100;
           player.armor = 100;
           announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
-          tell('GOD MODE ACTIVATED · every weapon · click the map to teleport', 4);
+          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · click the map to teleport', 5);
         } else {
           announce('SOUTH COAST', 'GODMODE OFF', 1.8);
           tell('GODMODE OFF', 2.5);
@@ -4097,6 +4129,8 @@
         drawWeapon();
         updateUI();
         tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
+        // God mode unlocks every job in the mission picker (campaign.js): offer it.
+        if (player.godMode && gameMode === 'play') openMissionSelect();
       },
     };
     /* Put the player somewhere else, letting go of anything that was carrying
@@ -4155,8 +4189,21 @@
           if (code.startsWith(tail.slice(-i))) return true;
       return false;
     }
+    /**
+     * KEYBOARD
+     * Physical keys go through the bindings (controls.js): `actions` are the ids
+     * of the actions the key drives, and holding one sets its entry in the
+     * virtual `keys` table. Menu keys (Escape, Enter, and in the city map the
+     * arrows, + / −, 0 and C) are fixed and read from the physical code.
+     */
     window.addEventListener('keydown', (e) => {
       const code = e.code;
+      // The settings screen owns the keyboard while it is open (and while it
+      // listens for a key to bind).
+      if (gameMode === 'settings') {
+        settingsKeyDown(e);
+        return;
+      }
       if (
         !e.repeat &&
         (gameMode === 'play' || gameMode === 'map') &&
@@ -4165,6 +4212,8 @@
         e.preventDefault();
         return;
       }
+      const actions = pressControlKey(code),
+        is = (id) => actions.includes(id);
       if (gameMode === 'map' && code === 'KeyC') {
         e.preventDefault();
         centerMapOnPlayer();
@@ -4172,7 +4221,7 @@
       }
       if (
         gameMode === 'play' &&
-        code === 'KeyV' &&
+        is('divert') &&
         !e.repeat &&
         mission?.index === 10 &&
         mission.compromised &&
@@ -4181,65 +4230,20 @@
         chooseFlightLanding(!mission.divert);
         return;
       }
-      if (
-        gameMode === 'map' &&
-        [
-          'Equal',
-          'NumpadAdd',
-          'Minus',
-          'NumpadSubtract',
-          'ArrowUp',
-          'ArrowDown',
-          'ArrowLeft',
-          'ArrowRight',
-          'Digit0',
-        ].includes(code)
-      ) {
-        e.preventDefault();
-        if (code === 'Equal' || code === 'NumpadAdd') {
-          if (mapZoom === 1)
-            mapCenter = {
-              x: player.x,
-              y: player.y,
-            };
-          mapZoom = Math.min(9, mapZoom * 1.5);
-        }
-        if (code === 'Minus' || code === 'NumpadSubtract') mapZoom = Math.max(1, mapZoom / 1.5);
-        if (mapZoom === 1 || code === 'Digit0') {
-          mapZoom = 1;
-          mapCenter = {
-            x: WORLD_SIZE / 2,
-            y: (WORLD_TOP + WORLD_SIZE) / 2,
-          };
-        } else {
-          const step = 500 / mapZoom;
-          mapCenter.x = clamp(
-            mapCenter.x + (code === 'ArrowRight' ? step : code === 'ArrowLeft' ? -step : 0),
-            0,
-            WORLD_SIZE,
-          );
-          mapCenter.y = clamp(
-            mapCenter.y + (code === 'ArrowDown' ? step : code === 'ArrowUp' ? -step : 0),
-            WORLD_TOP,
-            WORLD_SIZE,
-          );
-        }
-        drawMap(cityMapContext, 800, 660, true);
-        return;
-      }
+      if (gameMode === 'map' && mapKey(e, code, is)) return;
       if (gameMode === 'arsenal') {
         if (code === 'Tab') trapArsenalFocus(e);
-        if (!e.repeat && ['Escape', 'KeyI'].includes(code)) {
+        if (!e.repeat && (code === 'Escape' || is('arsenal'))) {
           e.preventDefault();
           closeArsenal();
-        } else if (!e.repeat && code === 'KeyQ') {
+        } else if (!e.repeat && is('cycleWeapon')) {
           e.preventDefault();
           cycleWeapon();
           updateUI();
           renderArsenal(selectedWeaponIndex);
-        } else if (!e.repeat && (code === 'KeyK' || /^Digit[1-7]$/.test(code))) {
+        } else if (!e.repeat && (is('knife') || weaponSlotKey(actions) >= 0)) {
           e.preventDefault();
-          selectArsenalWeapon(code === 'KeyK' ? KNIFE_INDEX : Number(code.slice(-1)) - 1);
+          selectArsenalWeapon(is('knife') ? KNIFE_INDEX : weaponSlotKey(actions));
         }
         return;
       }
@@ -4257,7 +4261,7 @@
       if (gameMode === 'dialogue') {
         e.preventDefault();
         if (!e.repeat) {
-          if (code === 'Enter' || code === 'KeyE') acceptDialogue();
+          if (code === 'Enter' || is('interact')) acceptDialogue();
           if (code === 'Escape') closeDialogue();
         }
         return;
@@ -4266,17 +4270,11 @@
         e.preventDefault();
         return;
       }
-      if (gameMode === 'transit') {
-        if (code === 'Escape' || code === 'KeyE') {
+      if (gameMode === 'transit' || gameMode === 'taxi') {
+        if (code === 'Escape' || is('interact')) {
           e.preventDefault();
-          closeTransit();
-        }
-        return;
-      }
-      if (gameMode === 'taxi') {
-        if (code === 'Escape' || code === 'KeyE') {
-          e.preventDefault();
-          closeTaxiOffer();
+          if (gameMode === 'transit') closeTransit();
+          else closeTaxiOffer();
         }
         return;
       }
@@ -4289,86 +4287,127 @@
         )
           return;
         e.preventDefault();
-        if (!e.repeat) serviceKey(code);
+        // The shop menus read E (leave) and the digits; E follows its binding.
+        if (!e.repeat) serviceKey(is('interact') ? 'KeyE' : code);
         return;
       }
-      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(code))
+      // A focused menu button takes Enter and Space itself (a native click).
+      const onButton =
+        document.activeElement?.tagName === 'BUTTON' && ['menu', 'pause', 'help', 'dead'].includes(gameMode);
+      if (onButton && ['Enter', 'NumpadEnter', 'Space'].includes(code)) return;
+      if ((gameMode === 'menu' || gameMode === 'pause') && ['ArrowUp', 'ArrowDown'].includes(code) && menuArrowKey(e))
+        return;
+      // Keys the browser would otherwise use to scroll or move focus.
+      if (
+        ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(code) ||
+        is('map')
+      )
         e.preventDefault();
       if (e.repeat) {
-        if (gameMode === 'play') keys[code] = true;
+        if (gameMode === 'play') holdActions(actions);
         return;
       }
       if (code === 'Escape') {
         togglePause();
         return;
       }
-      if (code === 'Tab') {
-        toggleMap();
-        return;
-      }
-      if (code === 'KeyM') {
-        mute();
-        return;
-      }
-      if (code === 'Slash') {
-        openHelp();
-        return;
-      }
-      if (code === 'Enter') {
+      if (code === 'Enter' || code === 'NumpadEnter') {
         if (gameMode === 'menu') begin();
         else if (gameMode === 'pause') togglePause();
         else if (gameMode === 'help') closeHelp();
         return;
       }
-      if (gameMode !== 'play') return;
-      if (['Equal', 'NumpadAdd', 'Minus', 'NumpadSubtract', 'Digit0'].includes(code)) {
-        e.preventDefault();
-        setWorldZoom(
-          code === 'Digit0'
-            ? 1
-            : worldZoomTarget * (code === 'Minus' || code === 'NumpadSubtract' ? 1 / 1.25 : 1.25),
-        );
+      if (is('map')) {
+        toggleMap();
         return;
       }
-      if (code === 'KeyJ') {
+      if (is('mute')) {
+        mute();
+        return;
+      }
+      if (is('help')) {
+        openHelp();
+        return;
+      }
+      if (gameMode !== 'play') return;
+      if (is('zoomIn') || is('zoomOut') || is('zoomReset')) {
+        e.preventDefault();
+        setWorldZoom(is('zoomReset') ? 1 : worldZoomTarget * (is('zoomOut') ? 1 / 1.25 : 1.25));
+        return;
+      }
+      if (is('bail')) {
         // Aircraft: parachute. Boats and flooding cars: over the side (water.js).
         if (!bailOut()) diveOverboard();
         return;
       }
-      if (player.parachute && code === 'Space') {
+      if (player.parachute && is('handbrake')) {
         deployParachute();
         return;
       }
-      if (player.car && code === 'KeyN') {
+      if (player.car && is('radioPower')) {
         toggleCarRadio();
         return;
       }
-      if (player.car && code === 'KeyB') {
+      if (player.car && is('radioNext')) {
         tuneCarRadio(carRadioStation + 1);
         return;
       }
-      keys[code] = true;
-      if (code === 'KeyF' || (code === 'Space' && !player.car)) shoot();
-      if (code === 'KeyE') interact();
-      if (code === 'KeyP') poisonDrink();
-      if (code === 'KeyR') startReload();
-      if (code === 'KeyI') openArsenal();
-      if (code === 'KeyK' || code === 'Digit7') selectWeapon(KNIFE_INDEX);
-      if (/^Digit[1-6]$/.test(code)) selectWeapon(Number(code.slice(-1)) - 1);
-      if (code === 'KeyQ') cycleWeapon();
-      if (code === 'KeyO') toggleMissionCard();
-      if (
-        ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(
-          code,
-        )
-      )
-        mouse.active = false;
+      holdActions(actions);
+      if (is('fire') || (is('handbrake') && !player.car)) shoot();
+      if (is('interact')) interact();
+      if (is('poison')) poisonDrink();
+      if (is('reload')) startReload();
+      if (is('arsenal')) openArsenal();
+      if (is('knife')) selectWeapon(KNIFE_INDEX);
+      if (weaponSlotKey(actions) >= 0) selectWeapon(weaponSlotKey(actions));
+      if (is('cycleWeapon')) cycleWeapon();
+      if (is('missionCard')) toggleMissionCard();
+      if (['forward', 'back', 'left', 'right'].some(is)) mouse.active = false;
     });
+    /* weapon1..weapon6 -> 0..5, or -1. */
+    function weaponSlotKey(actions) {
+      const slot = actions.find((id) => /^weapon[1-6]$/.test(id));
+      return slot ? Number(slot.slice(-1)) - 1 : -1;
+    }
+    /* City map keys: + / − zoom, arrows (and the movement keys) pan, 0 resets. */
+    function mapKey(e, code, is) {
+      const zoomIn = code === 'Equal' || code === 'NumpadAdd' || is('zoomIn'),
+        zoomOut = code === 'Minus' || code === 'NumpadSubtract' || is('zoomOut'),
+        reset = code === 'Digit0' || is('zoomReset'),
+        panX =
+          (code === 'ArrowRight' || is('right') ? 1 : 0) - (code === 'ArrowLeft' || is('left') ? 1 : 0),
+        panY = (code === 'ArrowDown' || is('back') ? 1 : 0) - (code === 'ArrowUp' || is('forward') ? 1 : 0);
+      if (!zoomIn && !zoomOut && !reset && !panX && !panY) return false;
+      e.preventDefault();
+      if (zoomIn) {
+        if (mapZoom === 1)
+          mapCenter = {
+            x: player.x,
+            y: player.y,
+          };
+        mapZoom = Math.min(9, mapZoom * 1.5);
+      }
+      if (zoomOut) mapZoom = Math.max(1, mapZoom / 1.5);
+      if (mapZoom === 1 || reset) {
+        mapZoom = 1;
+        mapCenter = {
+          x: WORLD_SIZE / 2,
+          y: (WORLD_TOP + WORLD_SIZE) / 2,
+        };
+      } else {
+        const step = 500 / mapZoom;
+        mapCenter.x = clamp(mapCenter.x + panX * step, 0, WORLD_SIZE);
+        mapCenter.y = clamp(mapCenter.y + panY * step, WORLD_TOP, WORLD_SIZE);
+      }
+      drawMap(cityMapContext, 800, 660, true);
+      return true;
+    }
     window.addEventListener('keyup', (e) => {
-      keys[e.code] = false;
+      releaseControlKey(e.code);
     });
     window.addEventListener('blur', () => {
       keys = {};
+      releaseAllControlKeys();
       mouse.down = false;
       if (gameMode === 'play') togglePause();
       syncCarRadio();
@@ -4397,14 +4436,10 @@
     });
     window.addEventListener('mouseup', () => (mouse.down = false));
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-    getElement('voicesBtn').onclick = toggleVoices;
-    getElement('creditsBtn').onclick = () => {
-      getElement('credits').classList.remove('hidden');
-      getElement('closeCredits').focus();
-    };
+    getElement('creditsBtn').onclick = () => openCredits(getElement('creditsBtn'));
     getElement('closeCredits').onclick = () => {
       getElement('credits').classList.add('hidden');
-      getElement('creditsBtn').focus();
+      (creditsOpener || getElement('creditsBtn')).focus();
     };
     getElement('startBtn').onclick = begin;
     getElement('helpBtn').onclick = openHelp;
@@ -4417,8 +4452,8 @@
       if (gameMode === 'play') toggleMissionCard();
     };
     getElement('closeMap').onclick = toggleMap;
-    getElement('soundBtn').onclick = mute;
     getElement('menuSound').onclick = mute;
+    applySoundLabels();
     getElement('closeTaxi').onclick = closeTaxiOffer;
     // Sandboxed embeds and bare file:// copies cannot deliver this file, so hide
     // the offer instead of showing a link that silently does nothing.
@@ -4433,6 +4468,7 @@
     getElement('restartMission').onclick = retryMission;
     getElement('newGame').onclick = newGame;
     window.addEventListener('resize', resize);
+    // @include src/controls.js
     // @include src/geography.js
     // @include src/harbor.js
     // @include src/police-feedback.js
@@ -4478,6 +4514,8 @@
     // @include src/crowd.js
     // @include src/ambience.js
     // @include src/quality.js
+    // @include src/settings.js
+    // @include src/hud.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
     buildWorld();
@@ -4491,6 +4529,7 @@
     resize();
     drawWeapon();
     updateUI();
+    updateTitleMenu();
     loadVisuals();
     /**
      * PROFILER
@@ -4505,7 +4544,7 @@
     }
     /**
      * FPS COUNTER
-     * Optional readout switched from the pause menu and remembered in
+     * Optional readout switched from Settings · Graphics and remembered in
      * localStorage beside the touch-controls setting. It averages over half a
      * second so the number is readable, and shows the average frame time too.
      */
@@ -4515,8 +4554,6 @@
     } catch {}
     function applyFpsSetting() {
       getElement('fpsCounter').classList.toggle('hidden', !fpsMeter.shown);
-      getElement('fpsBtn').textContent = 'FPS COUNTER: ' + (fpsMeter.shown ? 'ON' : 'OFF');
-      getElement('fpsBtn').setAttribute('aria-pressed', String(fpsMeter.shown));
     }
     function toggleFpsCounter() {
       fpsMeter.shown = !fpsMeter.shown;
@@ -4540,7 +4577,6 @@
       fpsMeter.frames = 0;
       fpsMeter.since = t;
     }
-    getElement('fpsBtn').onclick = toggleFpsCounter;
     applyFpsSetting();
     function frame(t) {
       syncTouchInput();
@@ -4563,7 +4599,14 @@
       updateCasino(deltaSeconds);
       updateElevator(deltaSeconds);
       const updateStart = performance.now();
-      if (gameMode === 'play' || gameMode === 'menu' || gameMode === 'dead') update(deltaSeconds);
+      // The city keeps living behind the title menu, and behind settings opened from it.
+      if (
+        gameMode === 'play' ||
+        gameMode === 'menu' ||
+        gameMode === 'dead' ||
+        (gameMode === 'settings' && settingsOrigin === 'menu')
+      )
+        update(deltaSeconds);
       else {
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);
@@ -4584,7 +4627,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "29.0.0",
+      version: GAME_VERSION,
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -5172,6 +5215,60 @@
       graphics(tier) {
         if (tier !== undefined) cycleGraphicsSetting(String(tier).toLowerCase());
         return { setting: graphicsSetting, ...(city3D?.quality?.() || {}) };
+      },
+      // Everything on the settings screen (settings.js), and the HUD's saved
+      // state. Pass an object to change some of it, e.g. { chatter: false,
+      // masterVolume: 40, minimapZoom: 2, minimapFolded: true, touch: 'on' }.
+      settings(changes) {
+        if (changes && typeof changes === 'object') {
+          for (const key of ['masterVolume', 'soundVolume', 'radioVolume', 'voiceVolume'])
+            if (Number.isFinite(changes[key])) settings[key] = clamp(Math.round(changes[key]), 0, 100);
+          if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
+          if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
+          if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
+          if (typeof changes.voices === 'boolean' && changes.voices !== voicesOn) toggleVoices();
+          if (typeof changes.fps === 'boolean' && changes.fps !== fpsMeter.shown) toggleFpsCounter();
+          if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
+          if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
+          if (typeof changes.touch === 'string') setTouchMode(changes.touch);
+          applyVolumes();
+          saveSettings();
+          if (gameMode === 'settings') renderSettings();
+          updateUI();
+        }
+        return {
+          graphics: graphicsSetting,
+          fps: fpsMeter.shown,
+          cutaway: settings.cutaway,
+          sound: soundOn,
+          masterVolume: settings.masterVolume,
+          soundVolume: settings.soundVolume,
+          radioVolume: settings.radioVolume,
+          voiceVolume: settings.voiceVolume,
+          voices: voicesOn,
+          chatter: settings.npcChatter,
+          minimapFolded: hudState.minimapFolded,
+          minimapZoom: +hudState.minimapZoom.toFixed(2),
+          touch: touchMode,
+          screen: gameMode === 'settings' ? settingsTab : null,
+        };
+      },
+      // Open the settings screen on a tab ('graphics', 'audio', 'gameplay',
+      // 'controls'); during play it opens over the pause menu. Screenshot tours use it.
+      openSettings(tab = 'graphics') {
+        if (gameMode === 'play') togglePause();
+        openSettings(SETTINGS_TABS.some((t) => t[0] === tab) ? tab : 'graphics');
+        return gameMode;
+      },
+      // Key bindings (controls.js) as { action: [primary, secondary] }. Pass
+      // { action: 'KeyX' } to bind a primary key (a clash swaps, as the settings
+      // screen offers), or 'reset' for the defaults.
+      bindings(changes) {
+        if (changes === 'reset') resetControlBindings();
+        else if (changes && typeof changes === 'object')
+          for (const [id, code] of Object.entries(changes))
+            if (!bindControl(id, 0, code, true)) throw Error('cannot bind ' + id + ' to ' + code);
+        return JSON.parse(JSON.stringify(controlBindings));
       },
       // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
       // 'bloom'; nothing for the image) to tune the post-processing.

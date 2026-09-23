@@ -868,7 +868,9 @@
       if (controlled) {
         forward = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
         turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-        lift = (keys.Space ? 1 : 0) - (keys.ShiftLeft || keys.ShiftRight ? 1 : 0);
+        // Climb and descend have their own keys (T / G by default, controls.js),
+        // clear of Space (handbrake) and Shift (sprint).
+        lift = (actionHeld('ascend') ? 1 : 0) - (actionHeld('descend') ? 1 : 0);
       }
       if (c.hp <= 0) lift = -1;
       c.av += (turn * 1.6 - c.av) * Math.min(1, stepSeconds * 4);

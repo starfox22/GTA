@@ -499,7 +499,7 @@
       if (p)
         getElement('terrainStatus').textContent =
           (p.stage === 'freefall'
-            ? 'FREEFALL · SPACE TO OPEN'
+            ? 'FREEFALL · ' + keyName('handbrake') + ' TO OPEN'
             : 'PARACHUTE · A/D STEER · W GLIDE · S FLARE') +
           ' · ' +
           Math.round(worldMeters(player.altitude - terrainHeight(player.x, player.y))) +

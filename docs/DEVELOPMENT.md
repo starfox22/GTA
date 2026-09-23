@@ -83,7 +83,7 @@ something, never a generic code-evaluation hook.
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once); lets go of any carrier |
 | `setZoom(value)` | Street zoom, eased like the mouse wheel (`look` and `closeUp` apply it at once) |
 | `drive(type, altitudeMeters, heading)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne; optional heading in radians (0 = east) |
-| `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`, `['KeyE']` for hold-E objectives); also steps a Blue Hour elevator ride; returns `ride()`. Physics tests use it because headless frames are slow |
+| `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`, `['KeyE']` for hold-E objectives, `['KeyT']` to climb in an aircraft); also steps a Blue Hour elevator ride; returns `ride()`. Physics tests use it because headless frames are slow. The codes are the actions' virtual codes (their default keys, controls.js), so they mean the same whatever the player has rebound |
 | `places()` | Named businesses and landmarks with coordinates |
 | `setClock(hours)`, `sky(id)` | Time of day; weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`) |
 | `startMission(i)`, `missions()` | Jump into a mission |
@@ -117,7 +117,10 @@ something, never a generic code-evaluation hook.
 | `stats()` | Per-frame CPU timings, draw calls (`viewCalls` camera, `shadowCalls` shadow map), triangles |
 | `postView(mode)` | Show the ambient-occlusion (`'ao'`) or bloom (`'bloom'`) buffer instead of the image; no argument restores it |
 | `drawProfile(top)` | Draw calls in view by object name and by 512-unit map cell (for finding unbatched scenery) |
-| `graphics(tier)` | Graphics quality: `auto`, `low`, `medium`, `high`, `ultra` (saved like the pause-menu setting); returns the active tier, GPU and shadow-map size. Headless SwiftShader auto-detects as LOW, so screenshot tours should call `graphics('high')` |
+| `graphics(tier)` | Graphics quality: `auto`, `low`, `medium`, `high`, `ultra` (saved like the Settings choice); returns the active tier, GPU and shadow-map size. Headless SwiftShader auto-detects as LOW, so screenshot tours should call `graphics('high')` |
+| `settings(changes)` | Every setting (graphics, fps, cutaway, sound, the four volumes, voices, NPC chatter, minimap fold and zoom, touch mode); pass an object such as `{ chatter: false, minimapZoom: 2 }` to change some |
+| `openSettings(tab)` | Open the settings screen on `graphics`, `audio`, `gameplay` or `controls` (over the pause menu during play) |
+| `bindings(changes)` | Key bindings as `{ action: [primary, secondary] }`; `{ ascend: 'KeyY' }` binds a primary key (a clash swaps), `'reset'` restores the defaults |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
 | `beach()` | Southport Beach: crowd density for the hour, who is there and what they are doing, prop counts |

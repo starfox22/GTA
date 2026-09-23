@@ -45,8 +45,12 @@ Two closures matter:
 - Timers are seconds. Physics runs in fixed 1/120 s steps. `worldMinutes` advances one game
   minute per real second; `daylight()` returns 0..1 (sun up 05:40, down 19:50).
 - Save data (`localStorage`, key `dead-end-city-v1`) holds campaign indices, cash, clock and
-  weapons; the radio, touch mode, FPS counter and graphics tier have their own keys. Adding
-  missions needs no schema change.
+  weapons. Settings have their own keys: `dead-end-city-settings` (volumes, sound, radio
+  voices, NPC chatter), `-controls` (key bindings), `-hud` (minimap fold and zoom),
+  `-graphics`, `-fps`, `-touch`, `-cutaway` and `-radio-v2`. Adding missions needs no schema
+  change.
+- Input goes through named actions (section 4d): `keys.KeyW` means "the forward action is
+  held", whatever key the player bound to it.
 
 ## 3. Subsystem map
 
@@ -62,6 +66,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | game.js | Constants, `VEHICLE_DEFINITIONS`, world build (`buildWorld`, `zoneHeight`, `makeBuilding`), `populate`, combat, `update`, `moveBody`, `exitCar`/`enterVehicle`, `teleportPlayer`, 2D fallback drawing, map (`paintMapBase`), HUD, input, startup, `window.DeadEndCity` |
 | audio.js | Web Audio effects, voices, procedural sounds; `earFilter` (a low-pass over the whole mix, dulled while swimming) |
 | physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
+| controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
 | geography.js | Land polygons and the cached `landAt`, river, bridges, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
 | harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
@@ -106,7 +111,9 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
-| quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check, the saved setting and its pause-menu button (`graphicsTier()`) |
+| quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
+| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, volumes (`volumeScale`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
+| hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
 
 Renderer closure (inside `createCityRenderer()` in render3d.js, in include order;
@@ -213,6 +220,42 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 - `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
   helipads, docks, ships, props, static colliders); `docs/audit/world-layout.md` describes the
   overlap audit run on it.
+
+## 4d. Input, settings and the HUD
+
+- **Actions, not keys** (controls.js). `CONTROL_ACTIONS` lists every keyboard action with
+  its default keys and the contexts it is used in (`foot`, `drive`, `air`, `chute`). Each
+  action's first default key is its *virtual code*: the keydown/keyup listeners (game.js,
+  KEYBOARD) translate physical keys through the bindings and set `keys[virtualCode]`, so
+  the simulation keeps reading `keys.KeyW`, `keys.ShiftLeft`, `keys.Space`, and tests that
+  hold `['KeyW']` or `['KeyT']` hold the action. New code should read `actionHeld('ascend')`
+  and name keys in prompts with `keyName('interact')` (never a literal "E"). Two actions may
+  share a key only when their contexts do not overlap (Space: handbrake in a car, fire on
+  foot); the settings screen offers to swap on a clash. Menu keys (Escape, Enter, the map's
+  arrows / + / − / 0 / C) are fixed.
+- **Aircraft** climb and descend on their own actions, `ascend` / `descend` (T / G): the
+  helicopter's lift and the plane's pitch (physics.js `helicopterControl`, aviation.js
+  `planeControl`), clear of Space (handbrake) and Shift (sprint).
+- **Settings** (settings.js) is one screen with four tabs built from `SETTING_ROWS`; each row
+  has `get()` / `set()` and applies at once. While it is open `gameMode` is `'settings'` and
+  the keydown listener hands every key to `settingsKeyDown()`. The character see-through
+  switch writes `dead-end-city-cutaway` and calls `city3D.setCharacterCutaway(on)` (owned by
+  the renderer). NPC chatter off hides the street speech bubbles (render3d.js); mission
+  dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected.
+- **Audio buses**: `master` carries effects and ambience at `effectsLevel()`, `voiceBus` the
+  radio callouts at `voiceLevel()`; the car radio element's volume is scaled by
+  `volumeScale('radio')`. `applyVolumes()` pushes a change into the live mix.
+- **HUD** (shell.html DOM and the INTERFACE 30 stylesheet section; hud.js): top-left
+  location, top-right cash / stars / clock, a waypoint pill top centre, bottom row minimap
+  with health and armour bars, the mission card and the equipment column. The radio and
+  weapon boxes are `.hud-pop` elements: compact until `hudPop(id)` (station change, weapon
+  change, firing, reloading) or hover opens their `.hud-more` rows. The minimap zooms with
+  the wheel or a pinch over it (`minimapZoom()` scales the cached base layer in
+  `drawMap`), folds with its button, and both are saved. In touch mode the bottom row
+  moves to the top so the thumbs have the lower corners.
+- **God mode** (the `godmode` cheat) unlocks every job in the mission picker
+  (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
+  advance the campaign.
 
 ## 4b. Harbor Point, the superyacht and the boats
 

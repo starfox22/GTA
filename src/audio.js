@@ -7,7 +7,11 @@
      */
     let soundOn = true,
       audio = null,
+      // `master` is the effects bus: everything but the radio callouts goes
+      // through it. Its level is the Sound on/off switch times the master and
+      // effects volumes (settings.js); `voiceBus` carries the callouts.
       master = null,
+      voiceBus = null,
       engine = null;
     let audioBuffers = {},
       audioLoops = {},
@@ -32,12 +36,15 @@
         limiter.attack.value = 0.003;
         limiter.release.value = 0.22;
         master = audio.createGain();
-        master.gain.value = soundOn ? 0.62 : 0;
+        master.gain.value = effectsLevel();
         earFilter = audio.createBiquadFilter();
         earFilter.type = 'lowpass';
         earFilter.frequency.value = 20000;
         earFilter.Q.value = 0.5;
         master.connect(earFilter).connect(limiter).connect(audio.destination);
+        voiceBus = audio.createGain();
+        voiceBus.gain.value = voiceLevel();
+        voiceBus.connect(earFilter);
         reverb = audio.createConvolver();
         const n = Math.floor(audio.sampleRate * 1.3),
           ir = audio.createBuffer(2, n, audio.sampleRate);
@@ -86,7 +93,14 @@
         filter,
       };
     }
-    function playSample(name, volume = 0.5, rate = 1, position = null) {
+    // Output levels of the two buses (0.62 is the mix's nominal level).
+    function effectsLevel() {
+      return soundOn ? 0.62 * volumeScale('sound') : 0;
+    }
+    function voiceLevel() {
+      return soundOn ? 0.62 * volumeScale('voice') : 0;
+    }
+    function playSample(name, volume = 0.5, rate = 1, position = null, bus = master) {
       if (!audio || !soundOn) return;
       const b = audioBuffers[name];
       if (!b) return;
@@ -102,7 +116,7 @@
         pan.pan.value = clamp((position.x - player.x) / 450, -0.9, 0.9);
       }
       g.gain.value = volume * attenuation;
-      s.connect(g).connect(pan).connect(master);
+      s.connect(g).connect(pan).connect(bus || master);
       if (['pistol', 'automatic', 'shotgun', 'rifle', 'explosion'].includes(name)) pan.connect(reverb);
       s.start();
       s.onended = () => {
@@ -287,10 +301,15 @@
     }
     function mute() {
       soundOn = !soundOn;
-      if (master) master.gain.setTargetAtTime(soundOn ? 0.62 : 0, audio.currentTime, 0.05);
-      getElement('soundBtn').textContent = 'SOUND: ' + (soundOn ? 'ON' : 'OFF');
-      getElement('menuSound').textContent = 'SOUND ' + (soundOn ? 'ON ◖))' : 'OFF');
+      applyVolumes();
+      applySoundLabels();
+      saveSettings();
       updateCarRadioUI();
+    }
+    function applySoundLabels() {
+      const menuSound = getElement('menuSound');
+      menuSound.textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
+      menuSound.setAttribute('aria-pressed', String(soundOn));
     }
     let voicesOn = true,
       radioUntil = 0,
@@ -324,7 +343,7 @@
         return false;
       const duration = audioBuffers[name]?.duration || (name === 'police-challenge' ? 3.8 : 1.8);
       radioUntil = gameTime + Math.max(police ? 6 : 3, duration + 0.4);
-      playSample(name, 0.7, 1, position);
+      playSample(name, 0.7, 1, position, voiceBus);
       const el = getElement('radioCaption');
       el.textContent = (police ? 'POLICE / ' : 'RADIO / ') + (radioText[name] || name.toUpperCase());
       el.classList.add('show');
@@ -337,6 +356,6 @@
     }
     function toggleVoices() {
       voicesOn = !voicesOn;
-      getElement('voicesBtn').textContent = 'RADIO VOICES: ' + (voicesOn ? 'ON' : 'OFF');
+      saveSettings();
     }
     // END SUBSYSTEM: src/audio.js
