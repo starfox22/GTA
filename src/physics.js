@@ -691,9 +691,23 @@
             y: through.points.at(-1).y + Math.sin(through.exit) * d,
           })),
         ],
-        ease = { amount: 0, side: 1 };
+        ease = { amount: 0, side: 1 },
+        // How far right of its lane's centre line the car is (the target sits on it).
+        laneOffset = -((target.x - c.x) * rx + (target.y - c.y) * ry),
+        // Nothing in the oncoming lane (left of us) from just behind to well past
+        // the obstacle, moving or not: room to pull out round it.
+        oncomingClear = (obstacle, reach) =>
+          !vehicles.some((v) => {
+            if (v === c || v === obstacle || isBoat(v) || (v.altitude || 0) > 20) return false;
+            const vx = v.x - c.x,
+              vy = v.y - c.y,
+              ahead = vx * headingCosine2 + vy * headingSine2,
+              left = -(vx * rx + vy * ry);
+            return ahead > -60 && ahead < reach + 260 && left > 6 && left < 80;
+          });
       for (const o of vehicles) {
         if (o === c || (o.altitude || 0) > 20 || isBoat(o) || distanceBetween(c, o) > 350) continue;
+        let standoff = 0;
         const dx = o.x - c.x,
           dy = o.y - c.y,
           along = dx * headingCosine2 + dy * headingSine2,
@@ -728,18 +742,36 @@
           })
         )
           continue;
-        // A parked car, a wreck or an abandoned van poking a little way into the
-        // lane from the kerb: ease across the lane past it instead of queuing
-        // behind it for ever (nobody is coming back to move it).
-        const intrusion = side + ow + 4 - lateral;
-        if (!through && !o.ai && !o.cop && o !== player.car && Math.abs(o.speed || 0) < 5 && intrusion < 12) {
-          if (intrusion > ease.amount) {
-            ease.amount = intrusion;
-            ease.side = Math.sign(dx * rx + dy * ry) || 1;
+        // A parked car, a wreck, a double-parked delivery van or a car its driver
+        // walked away from: nobody is coming back to move it. Ease across the lane
+        // past one poking a little way in from the kerb; pull out round one that
+        // fills the lane when the oncoming lane is clear and no junction is near.
+        // Traffic used to queue behind any of them for ever.
+        if (!through && !o.ai && !o.cop && o !== player.car && Math.abs(o.speed || 0) < 5) {
+          // Measured from our lane's centre line, not from where we are now: the
+          // shift must hold while we pull across, or it shrinks as we move.
+          const laneLateral = laneOffset + dx * rx + dy * ry,
+            intrusion = side + ow + 4 - Math.abs(laneLateral),
+            overtake =
+              intrusion >= 12 && intrusion < 38 && laneLateral > -12 && !c.junction && oncomingClear(o, along);
+          if (intrusion < 12 || overtake) {
+            // Pass on the left of anything in the middle of the lane.
+            const passLeft = overtake || laneLateral >= 0,
+              shift = side + ow + 4 + (passLeft ? -laneLateral : laneLateral);
+            if (shift > ease.amount) {
+              ease.amount = shift;
+              ease.side = passLeft ? 1 : -1;
+            }
+            if (intrusion < 12 || lateral > side + ow || along - half - ol > 45) continue;
+            // Caught close behind it still in line: creep out round it rather than
+            // stopping, which would leave the car unable to turn out at all.
+            desired = Math.min(desired, 20);
+            continue;
           }
-          continue;
+          // Waiting for the oncoming lane to clear: hold back far enough to pull out.
+          if (intrusion < 38 && laneLateral > -12) standoff = 40;
         }
-        const gap = along - half - ol - 12,
+        const gap = along - half - ol - 12 - standoff,
           lead = Math.max(0, (o.vx || 0) * headingCosine2 + (o.vy || 0) * headingSine2);
         desired = Math.min(
           desired,
@@ -771,8 +803,8 @@
       const steerA = ease.amount
         ? normalizeAngle(
             headingBetween(c, {
-              x: target.x - rx * ease.side * (ease.amount + 2),
-              y: target.y - ry * ease.side * (ease.amount + 2),
+              x: target.x - rx * ease.side * (ease.amount + 1),
+              y: target.y - ry * ease.side * (ease.amount + 1),
             }) - c.a,
           )
         : da;

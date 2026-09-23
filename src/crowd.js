@@ -2111,6 +2111,14 @@
       if (scene.van && scene.van !== player.car && !scene.van.stolen && scene.van.hp > 0 && !scene.van.ai) {
         const k = vehicles.indexOf(scene.van);
         if (k >= 0 && distanceBetween(scene.van, player) > 900) vehicles.splice(k, 1);
+        else if (k >= 0) {
+          // The delivery ended without its driver (scared off, hurt): the van used to
+          // stay double-parked in the lane for good. Someone from the firm drives it off.
+          assignDriver(scene.van);
+          scene.van.locked = false;
+          scene.van.ai = true;
+          scene.van.deliveryScene = null;
+        }
       }
     }
     function stageVendor(allowInView) {

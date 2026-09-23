@@ -223,6 +223,25 @@ not reproduce).
   pokes a little into the lane (less than 12 units) makes the driver ease across the lane
   past it instead of stopping.
 
+### T6. Double-parked delivery vans and abandoned cars blocked a lane for good
+- Symptom: a hot rod queued behind a van parked dead in the middle of the westbound lane
+  of the -2944 avenue for the whole soak.
+- Cause: the street-life delivery scene double-parks its van in the lane by design, and
+  when the scene ended without its worker (scared off or hurt) near the player,
+  `removeScene` left the empty van there; crash-abandoned cars and wrecks do the same.
+  Traffic had no way round a stationary car that filled the lane.
+- Fix: a delivery van left behind by its scene near the player gets a driver and rejoins
+  traffic. Traffic pulls out round a stationary, non-traffic vehicle that fills its lane
+  when the oncoming lane is clear from just behind to 260 units past it and no junction is
+  near; while waiting for the oncoming lane it holds 40 units back so it has room to pull
+  out, and the lateral shift is measured from the lane's centre line so it holds while
+  the car moves across. Close behind and still in line it creeps rather than stopping.
+- Verified: a sedan meets a van dead in its lane on Union St: with the oncoming lane clear
+  it pulls out 31 units, passes without touching the van and drops back into its lane
+  before the next junction; with a taxi coming the other way it waits 40 units back,
+  lets the taxi pass, then goes round. Four 140 s soaks (55-59 traffic cars each):
+  no traffic car damaged, none stuck.
+
 ## Superyacht, police, trains, garages
 
 Passed without changes: the wanted cycle (a shot raises a star, the search runs out, one
@@ -307,8 +326,7 @@ reset and a new colour.
   north or use the southern approach over the water.
 - There is no arrest: at any wanted level the police shoot, and "busted" does not exist;
   death respawns at the hospital door with a $250 bill and a clean wanted level.
-- Traffic never overtakes; the new ease-past only handles stationary cars poking less than
-  12 units into the lane.
+- Traffic only pulls out round stationary vehicles; it never overtakes a slow one.
 - chase.js (mission 1's respray) calls `policeClearedNotice()` directly after
   `clearPolice()`, so it shows POLICE CLEARED even when no stars were showing (mission
   code, left to the mission QA pass).
