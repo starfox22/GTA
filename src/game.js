@@ -162,6 +162,9 @@
         [0, -2],
         [4, -4],
         [2, -7],
+        // West Quay: the Shore Line swings off the sea wall onto Harbor Ave across
+        // this block, so it is a green under the viaduct rather than buildings.
+        [0, 5],
       ];
     const isPark = (x, y) => PARKS.some((p) => p[0] === x && p[1] === y),
       isRiver = (x, y, r = 0) =>
@@ -855,12 +858,7 @@
           altitude: 0,
           vz: 0,
           av: 0,
-          damage: {
-            front: 0,
-            rear: 0,
-            left: 0,
-            right: 0,
-          },
+          damage: freshDamage(),
           dents: [],
           damageVersion: 0,
         };
@@ -1194,7 +1192,8 @@
               continue;
             }
             const zone = districtAt(x + w / 2, y + h / 2),
-              blockSeed = (bx * 31 + by * 17) % 7;
+              blockSeed = (bx * 31 + by * 17) % 7,
+              perimeterBlock = zone === 'THE RECLAMATION' || zone === 'HARBOR POINT MARINA';
             if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               // One tower on a plaza: towers need air around them to read as towers.
               makeBuilding(x + 52, y + 12, w - 104, 140, 0);
@@ -1204,11 +1203,15 @@
                 drawTree(x + 28, y + z, 11);
                 drawTree(x + w - 28, y + z, 11);
               }
-            } else if (zone === 'THE RECLAMATION' || zone === 'HARBOR POINT MARINA') {
-              // Reclamation blocks are perimeter buildings around a planted court.
+            } else if (perimeterBlock) {
+              // Reclamation blocks are perimeter buildings around a planted court:
+              // a north range, two wings and a south range closing the court. The
+              // south range replaces the generic back-lot building, which used to
+              // be added on top and overlapped both wings and the court.
               makeBuilding(x + 7, y + 7, w - 15, 74, 0);
               makeBuilding(x + 7, y + 96, 88, 130, 1);
               makeBuilding(x + w - 95, y + 96, 88, 130, 1);
+              makeBuilding(x + 7, y + 241, w - 15, 86, 1);
               rect(x + 104, y + 100, w - 210, 124, '#6f8a5c');
               for (let k = 0; k < 3; k++) drawTree(x + 130 + k * 52, y + 162, 14);
             } else if (zone.includes('OLD QUARTER') || zone === 'BATTERY POINT') {
@@ -1221,13 +1224,15 @@
               makeBuilding(x + 7, y + 7, split - 12, 146, 0);
               makeBuilding(x + split + 11, y + 7, w - split - 20, 146, 0);
             }
-            if (zone === 'SOUTH BANK' && blockSeed % 3 === 0) {
+            if (perimeterBlock) {
+              // Closed on all four sides above; nothing more to add.
+            } else if (zone === 'SOUTH BANK' && blockSeed % 3 === 0) {
               // Residential slab with a courtyard instead of a parking court.
               makeBuilding(x + 7, y + 179, w - 15, 60, 1);
               rect(x + 40, y + 250, w - 80, 70, '#6f8a5c');
               for (let k = 0; k < 4; k++) drawTree(x + 60 + k * 70, y + 285, 13);
             } else makeBuilding(x + 7, y + 179, seededRandom() > 0.6 ? w - 15 : 155, 143, 1);
-            if (buildings[buildings.length - 1].w < 200) {
+            if (!perimeterBlock && buildings[buildings.length - 1].w < 200) {
               rect(x + 181, y + 183, 145, 135, '#4b524b');
               for (let p = 0; p < 5; p++) {
                 rect(x + 194 + p * 25, y + 187, 1, 49, '#d3d1a26b');
@@ -1331,6 +1336,17 @@
       paintSportsGround(groundContext);
       for (let i = lamps.length - 1; i >= 0; i--)
         if (!landAt(lamps[i].x, lamps[i].y)) lamps.splice(i, 1);
+      // Nothing grows in a carriageway or through a viaduct pier. Kerb-line
+      // planting is laid out per block, and where a boulevard, a county market
+      // street or the railway runs along a block edge it used to land on them.
+      const onServiceRoad = (x, y) =>
+        SERVICE_ROADS.some((r) =>
+          r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + 2),
+        );
+      for (let i = trees.length - 1; i >= 0; i--) {
+        const t = trees[i];
+        if (cityStreetAt(t.x, t.y, 2) || onServiceRoad(t.x, t.y) || railBlocked(t.x, t.y, 6)) trees.splice(i, 1);
+      }
     }
     function populate() {
       vehicles.length = 0;
@@ -1592,7 +1608,16 @@
       });
       for (const c of vehicles)
         if (c.hp > 0 && distance(c) < 95 * power && clearSight(blast, c))
-          damageVehicle(c, Math.max(0, 200 * power - distance(c) * 1.6), x, y, attacker);
+          damageVehicle(c, Math.max(0, 200 * power - distance(c) * 1.6), x, y, attacker, {
+            kind: 'blast',
+            x,
+            y,
+            power,
+            falloff: 1 - distance(c) / (95 * power),
+          });
+      // The shock wave shoves and spins cars, blows out glass, flattens street
+      // furniture and scorches the nearest facades (damage.js).
+      blastEffects(x, y, altitude, power);
       for (const e of [
         ...pedestrians,
         ...enemies,
@@ -2382,6 +2407,9 @@
           hitKind = 'wall';
         const steps = Math.max(1, Math.ceil((Math.hypot(b.vx, b.vy, b.vz || 0) * deltaSeconds) / 7));
         for (let j = 0; j < steps && !impact; j++) {
+          // Where this sub-step started: damage.js traces the entry face from it.
+          b.px = b.x;
+          b.py = b.y;
           b.x += (b.vx * deltaSeconds) / steps;
           b.y += (b.vy * deltaSeconds) / steps;
           b.altitude = (b.altitude ?? 0) + ((b.vz || 0) * deltaSeconds) / steps;
@@ -2406,9 +2434,12 @@
                 (lawVehicle(c) || (c === player.car && b.target !== player))
               )
             )
-              damageVehicle(c, b.dmg, b.x, b.y, b.owner || (!b.enemy ? player : null));
+              damageVehicle(c, b.dmg, b.x, b.y, b.owner || (!b.enemy ? player : null), {
+                kind: 'bullet',
+              });
             impact = true;
-            hitKind = 'metal';
+            // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
+            hitKind = bulletHitVehicle(c, b);
             break;
           }
           if (impact) break;
@@ -2490,9 +2521,11 @@
               b.altitude ?? 0,
             );
           else if (impact && hitKind !== 'flesh') {
+            // Walls keep a chip or a hole, shop windows crack and then give way.
+            if (hitKind === 'wall') hitKind = bulletHitSurface(b);
             particle(b.x, b.y, hitKind === 'metal' ? '#dbd8a7' : '#aaa89e', 3, 40);
             if (city3D) city3D.impact(b.x, b.y, hitKind, b.altitude || 0);
-          }
+          } else if (!impact) bulletSpent(b);
           bullets.splice(i, 1);
         }
       }
@@ -2526,6 +2559,7 @@
         updateCycling(deltaSeconds);
         updateWeather(deltaSeconds);
         updateSwimming(deltaSeconds);
+        updateMarinaFooting();
         updateSinking(deltaSeconds);
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
@@ -2580,6 +2614,7 @@
         }
         timed('people', () => updatePeople(deltaSeconds));
         timed('bullets', () => updateBullets(deltaSeconds));
+        timed('damage', () => updateDamage(deltaSeconds));
         if (gameMode !== 'play') return;
         for (const p of pickups)
           if (
@@ -4263,6 +4298,7 @@
     // @include src/roofmission.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
+    // @include src/damage.js
     // @include src/county.js
     // @include src/military.js
     // @include src/aviation.js
@@ -4545,6 +4581,54 @@
         if (zoom !== undefined) setWorldZoom(zoom);
         return this.status();
       },
+      // The plan as data, for layout audits: coast, streets, rail, footprints and
+      // every static collider in map units. A test renders it as a debug map and
+      // checks for overlaps (a road through a helipad, a viaduct over a berth).
+      layout: () => ({
+        land: LAND_REGIONS.map((r) => ({ id: r.id, polygon: r.polygon })),
+        lakes: COUNTY_LAKES.map((r) => r.polygon),
+        beach: BEACH,
+        peaks: COUNTY_PEAKS.map((p) => ({ x: p.x, y: p.y, r: p.r })),
+        streets: cityStreets().map((r) => ({ points: r.points, width: r.width })),
+        boulevards: [...BOULEVARDS, ...SERVICE_ROADS].map((r) => ({ name: r.name, points: r.points, width: r.width })),
+        countyRoads: COUNTY_ROADS.map((r) => ({ name: r.name, points: r.points, width: r.width, bridge: !!r.bridge })),
+        bridges: BRIDGES.map((y) => ({ y, span: bridgeSpan(y) })),
+        rail: RAIL_LINES.map((l) => ({ id: l.id, name: l.name, color: l.color, points: l.points })),
+        railDecks: railDecks(),
+        railPiers: railPiers.map((p) => ({ x: p.x, y: p.y, w: p.w, h: p.h })),
+        stations: RAIL_STATIONS.map((s) => ({ name: s.name, x: s.x, y: s.y, entry: s.entry, lift: s.lift })),
+        buildings: buildings.map((b) => ({ x: b.x, y: b.y, w: b.w, h: b.h, height: Math.round(b.height) })),
+        helipads: HELIPADS,
+        trees: trees.map((t) => [Math.round(t.x), Math.round(t.y), t.r]),
+        lamps: lamps.map((l) => [Math.round(l.x), Math.round(l.y)]),
+        benches: benchSpots().map((b) => [Math.round(b.x), Math.round(b.y)]),
+        docks: DOCKS.map((d) => ({ x: d.x, y: d.y, w: d.w, h: d.h, boatX: d.boatX, boatY: d.boatY })),
+        parks: CITY_PARKS.map((p) => ({ name: p.name, x: p.x, y: p.y, w: p.w, h: p.h })),
+        places: PLACES.filter((p) => p.w).map((p) => ({ name: p.name, x: p.x, y: p.y, w: p.w, h: p.h })),
+        ships: [
+          { name: 'harbor ship', x: HARBOR.ship.x, y: HARBOR.ship.y, hx: HARBOR.ship.w / 2, hy: HARBOR.ship.l / 2, a: 0 },
+          ...LINERS.map((s) => ({ name: s.name, ...shipHull(s) })),
+        ],
+        marina: MARINA,
+        statics: staticBodies
+          .filter((b) => b.kind !== 'coast' && b.kind !== 'building')
+          .map((b) => ({ x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a, kind: b.kind })),
+      }),
+      // Every train on the network: where it is, how fast, and whether it carries the player.
+      trains: () =>
+        railTrains.map((t) => ({
+          x: Math.round(t.x),
+          y: Math.round(t.y),
+          speed: Math.round(t.speed),
+          passenger: !!t.passenger,
+          target: t.passenger ? transitRide?.target.name : null,
+        })),
+      // Run the railway forward by `seconds` in 1/30 s steps: a ride takes minutes
+      // of game time, which headless test browsers render at a few frames a second.
+      advanceTrains(seconds = 10) {
+        for (let t = 0; t < seconds; t += 1 / 30) updateTransit(1 / 30);
+        return this.trains();
+      },
       // Named places the tests can visit: every PLACES entry plus the landmarks.
       places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
@@ -4663,6 +4747,28 @@
         const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);
         return inc ? { kind: inc.kind, x: Math.round(inc.x), y: Math.round(inc.y) } : null;
       },
+      // Where the player stands aboard the superyacht (null when not aboard), and a
+      // shortcut onto her swim platform so tests can go straight to the decks.
+      yacht: () => superyachtDeckState(),
+      boardYacht() {
+        teleportPlayer(SUPERYACHT.board.x, SUPERYACHT.board.y);
+        boardLiner(SUPERYACHT);
+        return superyachtDeckState();
+      },
+      // Walk the player on foot `distance` units toward `heading` (radians, 0 is
+      // east) in small steps through the normal collision code. Headless frames
+      // are far too slow to walk anywhere by holding a key.
+      walk(heading, distance = 50) {
+        for (let i = 0; i < Math.ceil(distance / 2); i++) {
+          moveBody(player, Math.cos(heading) * 2, Math.sin(heading) * 2, 8);
+          updateMarinaFooting();
+        }
+        player.a = heading;
+        return { x: Math.round(player.x), y: Math.round(player.y), yacht: superyachtDeckState() };
+      },
+      // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
+      // streetProps(), damageStats() (see damage.js damageConsole).
+      ...damageConsole(),
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

@@ -41,27 +41,32 @@
           [3350, 2730],
           [3420, 3300],
           [3420, 4400],
+          // South shore: the sweep of Southport Beach between Marina Rd and the
+          // water (see BEACH below), wide enough for a proper public strand.
           [3300, 5020],
-          [2900, 5500],
-          [2340, 5610],
+          [3150, 5420],
+          [2860, 5700],
+          [2420, 5810],
+          [2000, 5760],
+          [1830, 5560],
           [1800, 5430],
           [1380, 5030],
           [980, 4630],
           [430, 4270],
           [120, 3760],
-          [40, 2880],
-          [110, 2280],
-          [250, 2010],
-          [180, 1600],
-          [50, 1220],
-          [50, 400],
-          [120, 160],
-          [86, -240],
-          [58, -900],
-          [98, -1560],
-          [54, -2200],
-          [104, -2880],
-          [68, -3450],
+          // West shore: one straight reclaimed sea wall. The strip between it and
+          // the first row of blocks (x 40..217) carries the esplanade on the sea
+          // side and the Shore Line viaduct on the land side. The old ragged
+          // shore bit into block (0, 3), leaving a building standing in the sea.
+          [52, 3420],
+          [40, 3000],
+          [44, 2200],
+          [40, 1200],
+          [46, 0],
+          [40, -1200],
+          [44, -2400],
+          [40, -3400],
+          [70, -3700],
           [126, -3862],
         ],
       },
@@ -138,37 +143,66 @@
         ],
       },
     ];
+    // The West Quay alignment (x = 128) is the railway's corridor down the west
+    // shore, not a street: the Shore Line viaduct runs above the strip between
+    // the sea wall and the first blocks, just inland of the esplanade.
+    const RAIL_CORRIDOR_X = 128;
+    /**
+     * SOUTHPORT BEACH
+     * The city's public strand on Northbank's south shore, between the airport
+     * fence (x 1740) and the Battery Point sea wall (x 3150): sand from the
+     * Marina Rd kerb down to the water, 250..500 units deep and 1400 long. It is
+     * reserved ground: no street or block is laid on it (cityStreets,
+     * validCityBlock), the esplanade gives way to the boardwalk along its top
+     * edge, and its shore reads as 'beach' so the water meets a sand lip rather
+     * than a quay wall. The Oceanview Causeway crosses it on its approach span at
+     * x = 2176. The Coast Line viaduct passes 400 units to the west, never over
+     * the sand. Beach life (umbrellas, towels, lifeguard towers, bathers) is to
+     * be built on this data; the polygon runs out past the waterline and
+     * `onBeach` clips it to land.
+     */
+    const BEACH = {
+      name: 'SOUTHPORT BEACH',
+      polygon: [
+        [1740, 5306],
+        [3300, 5306],
+        [3300, 5960],
+        [1650, 5960],
+        [1650, 5440],
+      ],
+      // The promenade along the top of the sand: a 40-unit boardwalk just south
+      // of the Marina Rd pavement, from the airport fence to the sea wall.
+      boardwalk: { x0: 1760, x1: 3130, y: 5326, width: 40 },
+    };
+    function onBeach(x, y) {
+      return regionContains(BEACH, x, y) && landAt(x, y);
+    }
+    // (An 'OCEAN DRIVE' slip curve from (5248, 4384) to (4980, 4736) used to cut
+    // the corner of Ocean Dr and Stadium Way, painted diagonally across both
+    // streets and the corner block. The grid junction serves that corner.)
     const BOULEVARDS = [
       {
         name: 'AIRPORT WAY',
         width: 66,
+        // Carries straight on from the west end of Battery St (row 4224 stops at
+        // the airport fence, x 1408), sharing a point with it so the route graph
+        // joins them. It used to start at Commons St and run diagonally across
+        // the last 260 units of Battery St: two carriageways painted over each
+        // other.
         points: [
-          [1664, 4160],
+          [1440, 4224],
           [1240, 4290],
           [1000, 4560],
           [1220, 4720],
           [1220, 5200],
         ],
       },
-      {
-        name: 'OCEAN DRIVE',
-        width: 76,
-        points: [
-          [5248, 4384],
-          [5215, 4555],
-          [4980, 4736],
-        ],
-      },
     ];
+    // (A 44-wide 'NORTHBANK QUAY' lane used to run at y = 190 from x 640 to 2176,
+    // left over from when that was the north shore. Since the reclamation it ran
+    // alongside North Shore Rd, eighteen units from its kerb, through the kerb
+    // trees: two parallel roads where the street plan has one.)
     BOULEVARDS.push(
-      {
-        name: 'NORTHBANK QUAY',
-        width: 44,
-        points: [
-          [640, 190],
-          [2176, 190],
-        ],
-      },
       {
         name: 'GOLDEN TIDE APPROACH',
         width: 44,
@@ -327,8 +361,10 @@
         [x + w / 2, y + h / 2],
       ].every((p) => landAt(...p));
     }
+    // Each crossing starts on Riverbank Dr (x = 3200). Stadium Way's used to start
+    // at x 3050, so its deck and guard rails ran through the stadium's east stand.
     function bridgeSpan(y) {
-      return y === 4736 ? [3050, 4390] : y === 3200 ? [3160, 4260] : [3150, 4170];
+      return y === 4736 ? [3150, 4390] : y === 3200 ? [3160, 4260] : [3150, 4170];
     }
     function bridgeRailSpans(y) {
       let spans = [bridgeSpan(y)];
@@ -485,9 +521,51 @@
         drawingContext.fillText('36', 0, 0);
         drawingContext.restore();
       }
+      paintBeach(drawingContext, detail);
       drawingContext.restore();
       paintPromenades(drawingContext);
       drawBridgeGround(drawingContext);
+    }
+    /* Southport Beach: dry sand, a damp band and darker wet sand at the waterline,
+       and the boardwalk along the top. The speckle uses a local hash so painting
+       the map never disturbs the seeded world. */
+    function paintBeach(drawingContext, detail) {
+      const northbank = LAND_REGIONS[0];
+      drawingContext.save();
+      drawingContext.beginPath();
+      BEACH.polygon.forEach(([x, y], i) => (i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y)));
+      drawingContext.closePath();
+      drawingContext.clip();
+      drawingContext.fillStyle = '#dccb9f';
+      drawingContext.fillRect(1600, 5290, 1750, 700);
+      regionPath(drawingContext, northbank);
+      drawingContext.lineJoin = 'round';
+      drawingContext.strokeStyle = '#c3b187';
+      drawingContext.lineWidth = 150;
+      drawingContext.stroke();
+      drawingContext.strokeStyle = '#ae9c76';
+      drawingContext.lineWidth = 56;
+      drawingContext.stroke();
+      if (detail) {
+        for (let i = 0; i < 2600; i++) {
+          const h = Math.sin(i * 12.9898) * 43758.5453,
+            u = h - Math.floor(h),
+            k = Math.sin(i * 78.233) * 12543.1234,
+            v = k - Math.floor(k);
+          drawingContext.fillStyle = i % 3 ? '#e8dab4' : '#bba981';
+          drawingContext.fillRect(1650 + u * 1650, 5300 + v * 650, 2 + (i % 4), 1.2);
+        }
+      }
+      const walk = BEACH.boardwalk;
+      drawingContext.fillStyle = '#8f7457';
+      drawingContext.fillRect(walk.x0, walk.y - walk.width / 2, walk.x1 - walk.x0, walk.width);
+      drawingContext.fillStyle = '#6f5a44';
+      drawingContext.fillRect(walk.x0, walk.y + walk.width / 2 - 3, walk.x1 - walk.x0, 3);
+      if (detail) {
+        drawingContext.fillStyle = '#a58a69';
+        for (let x = walk.x0; x < walk.x1; x += 7) drawingContext.fillRect(x, walk.y - walk.width / 2, 1, walk.width - 3);
+      }
+      drawingContext.restore();
     }
     function segmentCross(a, b, c, d) {
       const cross = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
@@ -554,6 +632,7 @@
       }
       if (inAirport(x, y) && landAt(x, y)) return 'SOUTHPORT AIRPORT';
       if (onSunsetIsle(x, y)) return 'SUNSET PIER';
+      if (onBeach(x, y)) return BEACH.name;
       if (x > RIVER.right && landAt(x, y))
         return y < 1500
           ? 'PALM KEYS · ART DECO'
@@ -577,7 +656,11 @@
       return 'BATTERY POINT';
     }
     function validCityBlock(x, y, w = 334, h = 334) {
-      return landRect(x - 8, y - 8, w + 16, h + 16) && !inAirport(x + w / 2, y + h / 2);
+      return (
+        landRect(x - 8, y - 8, w + 16, h + 16) &&
+        !inAirport(x + w / 2, y + h / 2) &&
+        !regionContains(BEACH, x + w / 2, y + h + 8)
+      );
     }
     function drawWater2D() {
       worldContext.fillStyle = cameraTarget.x > 3700 ? '#267581' : '#1d4d67';

@@ -263,7 +263,10 @@
           return false;
       return true;
     }
-    function damageVehicle(vehicle, amount, x = vehicle.x, y = vehicle.y, source = null) {
+    // `detail` says what did the damage so damage.js can shape it: a crash crumples
+    // along the contact normal, a blast dishes in the face toward it, a bullet only
+    // holes the skin. Without a detail the hit dents toward the centre as before.
+    function damageVehicle(vehicle, amount, x = vehicle.x, y = vehicle.y, source = null, detail = null) {
       if (vehicle.hp <= 0 || amount <= 0) return;
       if (source) {
         vehicle.lastDamagedAt = gameTime;
@@ -280,43 +283,18 @@
       vehicle.hp = Math.max(0, vehicle.hp - amount);
       vehicle.damageVersion = (vehicle.damageVersion || 0) + 1;
       vehicle.sprite = null;
-      const headingCosine = Math.cos(vehicle.a),
-        headingSine = Math.sin(vehicle.a),
-        dx = x - vehicle.x,
-        dy = y - vehicle.y,
-        vehicleDefinition = vehicleSpec(vehicle),
-        lx = dx * headingCosine + dy * headingSine,
-        ly = -dx * headingSine + dy * headingCosine,
-        side =
-          Math.abs(lx / vehicleDefinition.l) > Math.abs(ly / vehicleDefinition.w)
-            ? lx > 0
-              ? 'front'
-              : 'rear'
-            : ly > 0
-              ? 'right'
-              : 'left';
-      vehicle.damage[side] = clamp(vehicle.damage[side] + (amount / vehicle.maxhp) * 2.5, 0, 1);
-      vehicle.dents.push({
-        x: clamp(lx, -vehicleDefinition.l / 2, vehicleDefinition.l / 2),
-        y: clamp(ly, -vehicleDefinition.w / 2, vehicleDefinition.w / 2),
-        force: clamp((amount / vehicle.maxhp) * 10, 0.25, 3.5),
-      });
-      if (vehicle.dents.length > 12) vehicle.dents.shift();
+      recordVehicleDamage(vehicle, amount, x, y, detail);
     }
     function repairVehicle(vehicle) {
       vehicle.hp = vehicle.maxhp;
-      vehicle.damage = {
-        front: 0,
-        rear: 0,
-        left: 0,
-        right: 0,
-      };
+      vehicle.damage = freshDamage();
       vehicle.dents = [];
+      vehicle.hop = null;
       vehicle.damageVersion = (vehicle.damageVersion || 0) + 1;
       vehicle.deadTime = 0;
       vehicle.sprite = null;
     }
-    function collisionImpact(a, b, hit, closing, key) {
+    function collisionImpact(a, b, hit, closing, key, staticBody = null) {
       if (closing < 42) return;
       const last = impactContacts.get(key);
       if (last && physicsClock - last.time < 0.24) return;
@@ -325,19 +303,23 @@
       });
       crowdCrash(a, b, hit, closing);
       const severity = Math.pow(Math.max(0, closing - 38), 1.12) * 0.062;
-      damageVehicle(
-        a,
-        a.type === 'plane' && a.altitude > 2 ? Math.max(severity, closing * 0.9) : severity,
-        hit.x,
-        hit.y,
-      );
-      if (b)
-        damageVehicle(
-          b,
-          b.type === 'plane' && b.altitude > 2 ? Math.max(severity, closing * 0.9) : severity,
-          hit.x,
-          hit.y,
-        );
+      // The contact normal points from a to b, so each body is crushed back along it
+      // toward its own middle; how far depends on the closing speed and on how heavy
+      // the other side is (a wall or a braced cruiser counts as immovable).
+      const crash = (self, other, sign) => ({
+        kind: 'crash',
+        nx: -hit.n.x * sign,
+        ny: -hit.n.y * sign,
+        closing,
+        otherMass: other ? vehicleSpec(other).mass || 1.25 : 0,
+      });
+      for (const [self, other, sign] of b ? [[a, b, 1], [b, a, -1]] : [[a, null, 1]]) {
+        const amount =
+          self.type === 'plane' && self.altitude > 2 ? Math.max(severity, closing * 0.9) : severity;
+        if (self.hp > 0) damageVehicle(self, amount, hit.x, hit.y, null, crash(self, other, sign));
+        else crumpleWreck(self, hit.x, hit.y, crash(self, other, sign));
+      }
+      if (!b && staticBody) structureImpact(a, hit, closing, staticBody);
       if (distanceBetween(a, player) < 650) {
         particle(hit.x, hit.y, '#ddd1b4', clamp(closing / 18, 3, 16), 85, 3);
         if (city3D) city3D.impact(hit.x, hit.y, 'metal');
@@ -404,16 +386,32 @@
           b.vy += n.y * impulse * inverseMassB;
           b.av += normalTorqueArmB * impulse * inverseInertiaB;
         }
-        const tx = -n.y,
+        // An off-centre hit leaves the car yawing. Nobody's steering input can
+        // cancel that at once, so the driver loses authority for a moment and the
+        // car spins out instead of snapping back to its heading (physicsStep).
+        const kickA = Math.abs(normalTorqueArmA * impulse * inverseInertiaA),
+          kickB = Math.abs(normalTorqueArmB * impulse * inverseInertiaB);
+        if (kickA > 0.55) a.spinUntil = physicsClock + clamp(kickA * 0.32, 0.25, 1.1);
+        if (b && kickB > 0.55) b.spinUntil = physicsClock + clamp(kickB * 0.32, 0.25, 1.1);
+        // Sheet metal on sheet metal grips harder than a tyre-scuffed wall face.
+        const friction = b ? 0.3 : 0.23,
+          tx = -n.y,
           ty = n.x,
           ta = contactOffsetA.x * ty - contactOffsetA.y * tx,
           tb = contactOffsetB.x * ty - contactOffsetB.y * tx,
+          sliding = rvx * tx + rvy * ty,
           tangentImpulse = clamp(
-            -(rvx * tx + rvy * ty) /
+            -sliding /
               (inverseMassA + inverseMassB + ta * ta * inverseInertiaA + tb * tb * inverseInertiaB),
-            -impulse * 0.23,
-            impulse * 0.23,
+            -impulse * friction,
+            impulse * friction,
           );
+        // Grinding along a wall or another car: damage.js throws sparks and scores the paint.
+        if (record && Math.abs(sliding) > 70) {
+          const scrape = { x: hit.x, y: hit.y, t: physicsClock, speed: Math.abs(sliding), nx: n.x, ny: n.y };
+          a.scrape = scrape;
+          if (b) b.scrape = { ...scrape, nx: -n.x, ny: -n.y };
+        }
         a.vx -= tx * tangentImpulse * inverseMassA;
         a.vy -= ty * tangentImpulse * inverseMassA;
         a.av -= ta * tangentImpulse * inverseInertiaA;
@@ -429,6 +427,7 @@
             hit,
             -normal,
             b ? 'c' + Math.min(a.id, b.id) + ':' + Math.max(a.id, b.id) : a.id + ':' + staticBody.id,
+            staticBody,
           );
       }
       const correction = (Math.max(0, hit.depth - 0.015) * 0.9) / (inverseMassA + inverseMassB);
@@ -777,7 +776,8 @@
       c.av += (turn * 1.6 - c.av) * Math.min(1, stepSeconds * 4);
       c.a += c.av * stepSeconds;
       const floor = terrainHeight(c.x, c.y),
-        ceiling = 2400,
+        // About 1400 m, above the cloud tops (clouds3d.js).
+        ceiling = 7200,
         clearance = c.altitude - floor;
       const flying = clearance > 1 || lift > 0,
         desired = flying ? forward * VEHICLE_DEFINITIONS.helicopter.max : 0,
@@ -787,7 +787,10 @@
       c.vy += Math.sin(c.a) * acceleration * stepSeconds;
       c.vx *= Math.exp(-stepSeconds * 0.45);
       c.vy *= Math.exp(-stepSeconds * 0.45);
-      c.vz += (lift * 75 - c.vz) * Math.min(1, stepSeconds * 3);
+      // Climb and descent quicken once well clear of the rooftops, so the cloud
+      // layer is a half-minute climb rather than a minute; low flying is unchanged.
+      const climbRate = 75 + clamp(clearance - 400, 0, 3000) * 0.035;
+      c.vz += (lift * climbRate - c.vz) * Math.min(1, stepSeconds * 3);
       let next = clamp(c.altitude + c.vz * stepSeconds, floor, ceiling);
       if (c.hp > 0 && next < floor + 20 && clearance >= 20 && !safeLanding(c)) {
         next = floor + 20;
@@ -926,10 +929,13 @@
             // legs give tapers off toward the top speed (pedalDrive, cycles.js).
             const pedalled = !!vehicleDefinition.bicycle,
               sprint = pedalled && cycleSprinting(),
-              topSpeed = vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1);
+              topSpeed = vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1),
+              // A hurt engine pulls weaker, flat tyres and a bent front end cap the
+              // speed and drag the car to one side (damage.js vehicleHandling).
+              handling = vehicleHandling(c);
             acceleration =
               up && !pedalled
-                ? vehicleDefinition.acc / (1 + (c.cargoCount || 0) * 0.1)
+                ? (vehicleDefinition.acc * handling.power) / (1 + (c.cargoCount || 0) * 0.1)
                 : down
                   ? along > 10
                     ? -(vehicleDefinition.brake || 285)
@@ -938,11 +944,13 @@
                     ? pedalDrive(along, topSpeed)
                     : 0;
             if (
-              (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up && !pedalled) ||
+              (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * handling.top &&
+                up &&
+                !pedalled) ||
               (along < -(pedalled ? CYCLE_REVERSE_MAX : 95) && down)
             )
               acceleration = 0;
-            grip = brake ? 1.9 : vehicleDefinition.grip || 7;
+            grip = brake ? 1.9 : (vehicleDefinition.grip || 7) * handling.grip;
             drag = pedalled
               ? brake
                 ? 2.4
@@ -961,6 +969,7 @@
                 Math.sign(along || 1) *
                 (brake ? 1.35 : 1)) /
               (1 + Math.pow(Math.abs(along) / 240, 1.5));
+            steer += handling.pull * clamp(Math.abs(along) / 160, 0, 1) * Math.sign(along || 1) * 0.45;
             if (brake && Math.abs(along) > 80 && Math.floor(physicsClock * 40) !== c.lastSkid) {
               c.lastSkid = Math.floor(physicsClock * 40);
               for (const side of [-1, 1])
@@ -1061,8 +1070,13 @@
                     : trafficControl(c, stepSeconds)),
                   (c.aiControlAt = physicsClock + (c.farFromPlayer ? 0.25 : 0.05)),
                   c.aiControl);
+            const handling = vehicleHandling(c);
             steer = ai.steer;
-            acceleration = clamp((ai.desired - along) * 5, -400, vehicleDefinition.acc);
+            acceleration = clamp(
+              (ai.desired * handling.top - along) * 5,
+              -400,
+              vehicleDefinition.acc * handling.power,
+            );
             drag = 0.15;
           } else if (c.blockade && !c.braced) {
             // A roadblock cruiser shoved loose by a rammer slides and slews on
@@ -1088,14 +1102,21 @@
           }
           c.vx += headingCosine * acceleration * stepSeconds;
           c.vy += headingSine * acceleration * stepSeconds;
-          const traction = lateral * (1 - Math.exp(-grip * stepSeconds));
+          // Tyres cancel sideways slip, but only up to what they can grip: about 60
+          // units/s² per point of grip. Normal cornering never reaches the limit; a car
+          // punted sideways by a T-bone or a blast skates across the lane and scrubs
+          // off instead of stopping dead as if glued to the road.
+          const lateralLimit = Math.max(grip, 5) * 62 * stepSeconds,
+            traction = clamp(lateral * (1 - Math.exp(-grip * stepSeconds)), -lateralLimit, lateralLimit);
           c.vx += headingSine * traction;
           c.vy -= headingCosine * traction;
           c.vx *= Math.exp(-drag * stepSeconds);
           c.vy *= Math.exp(-drag * stepSeconds);
           // Rammed roadblock cruisers keep their spin a little longer: nobody is steering.
-          c.av +=
-            (steer - c.av) * (1 - Math.exp(-(c.blockade && !c.braced ? 1.4 : 5) * stepSeconds));
+          // So does any car just spun by an off-centre hit (resolveContact sets spinUntil).
+          const yawAuthority =
+            c.blockade && !c.braced ? 1.4 : physicsClock < (c.spinUntil || 0) ? 1.1 : 5;
+          c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
           c.a = normalizeAngle(c.a + c.av * stepSeconds);
           c.moveA = Math.atan2(c.vy, c.vx);
           c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
@@ -1286,6 +1307,9 @@
             if (hit) resolveContact(c, null, hit, b, pass === 0);
           }
       }
+      // Lamp posts, hydrants, bins and benches: solid until something heavy and fast
+      // enough knocks them flat (damage.js).
+      streetPropContacts();
       mark('phys:contacts');
       for (const c of vehicles) {
         if (

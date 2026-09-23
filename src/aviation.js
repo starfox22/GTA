@@ -158,8 +158,10 @@
       mass: 1450,
       wing: 14,
       stallAngle: 0.27,
-      ceilingStart: 2000,
-      ceiling: 2400,
+      // About 1300-1400 m: room to climb through the cloud layer (clouds3d.js,
+      // 600-950 m) and fly above the tops.
+      ceilingStart: 6600,
+      ceiling: 7200,
     };
     function planeTouchdown(c, sink) {
       const runway = runwayAt(c),

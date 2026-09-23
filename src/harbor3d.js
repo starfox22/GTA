@@ -202,57 +202,14 @@
         group: berthGroup,
         radius: 420,
       });
-      const sw = HARBOR.ship.w,
-        sl = HARBOR.ship.l,
-        hullShape = new Three.Shape();
-      hullShape.moveTo(-sw * 0.47, sl * 0.5);
-      hullShape.lineTo(-sw * 0.5, -sl * 0.28);
-      hullShape.quadraticCurveTo(-sw * 0.45, -sl * 0.43, 0, -sl * 0.5);
-      hullShape.quadraticCurveTo(sw * 0.45, -sl * 0.43, sw * 0.5, -sl * 0.28);
-      hullShape.lineTo(sw * 0.47, sl * 0.5);
-      hullShape.closePath();
-      const hullGeo = new Three.ExtrudeGeometry(hullShape, {
-        depth: 38,
-        bevelEnabled: true,
-        bevelThickness: 3,
-        bevelSize: 3,
-        bevelSegments: 2,
-        steps: 1,
-      });
-      hullGeo.rotateX(Math.PI / 2);
-      mesh(hullGeo, mat('#253d47', 0.64, 0.45), berthGroup, 0, 27, 0);
-      box(berthGroup, 0, -9, 10, sw * 0.91, 6, sl * 0.88, mat('#805244', 0.75));
-      const deckGeo = new Three.ShapeGeometry(hullShape);
-      deckGeo.rotateX(Math.PI / 2);
-      const shipDeckMaterial = mat('#978877', 0.85);
-      shipDeckMaterial.side = Three.DoubleSide;
-      mesh(deckGeo, shipDeckMaterial, berthGroup, 0, 27.3, 0);
-      for (const side of [-1, 1]) {
-        box(berthGroup, side * sw * 0.46, 31, 15, 1.2, 7, sl * 0.84, chrome);
-        for (let z = -sl * 0.34; z < sl * 0.47; z += 19)
-          box(berthGroup, side * sw * 0.46, 31, z, 1, 8, 1, chrome);
-      }
-      for (let z = -100; z < 80; z += 53)
-        for (const x of [-35, 0, 35])
-          for (let h = 0; h < (z < 0 ? 2 : 1); h++) {
-            const cargo = portSteel.clone();
-            cargo.color.set((z + 100) % 2 ? '#ba855c' : '#73929a');
-            box(berthGroup, x, 39 + h * 23, z, 30, 22, 47, cargo);
-            box(berthGroup, x, 51 + h * 23, z, 31, 1, 48, darkMetal);
-          }
-      box(berthGroup, 0, 42, 133, 103, 29, 66, mat('#d8d4bd'));
-      box(berthGroup, 0, 62, 139, 92, 12, 43, mat('#eeead5'));
-      box(berthGroup, 0, 62, 116, 85, 8, 1, glass);
-      for (const side of [-1, 1]) box(berthGroup, side * 46.2, 62, 139, 1, 8, 35, glass);
-      box(berthGroup, 0, 70, 139, 100, 3, 49, chrome);
-      box(berthGroup, 12, 81, 148, 21, 23, 20, mat('#984b38'));
-      box(berthGroup, 12, 94, 148, 23, 3, 22, darkMetal);
-      box(berthGroup, -19, 85, 132, 1.2, 30, 1.2, chrome);
-      box(berthGroup, -19, 95, 132, 25, 1, 1, chrome);
-      for (const side of [-1, 1])
-        mesh(new Three.CylinderGeometry(4, 4, 4, 12), darkMetal, berthGroup, side * 24, 31, -sl * 0.36);
+      // The freighter is built bow-forward in its own frame and turned to lie
+      // north-south along the quay, port side to the cranes.
+      const cargoShip = buildCargoShip();
+      cargoShip.rotation.y = Math.PI / 2;
+      berthGroup.add(cargoShip);
+      kitMerge(cargoShip);
       for (const y of [1290, 1615])
-        rod(harborGroup, new Three.Vector3(3402, 5, y), new Three.Vector3(3470, 29, y + 25), 0.85, wood);
+        rod(harborGroup, new Three.Vector3(3402, 5, y), new Three.Vector3(3468, 31, y + 25), 0.85, wood);
       const craneMovers = [];
       for (const [index, z] of [1320, 1675].entries()) {
         const cg = new Three.Group();
@@ -382,18 +339,25 @@
             [true, 61, -65],
             [false, -65, 61],
           ]) {
-            box(group, x + dx, 15, z + dz, 1.1, 30, 1.1, darkMetal);
-            box(group, x + dx, 29, z + dz, 5, 12, 4, darkMetal);
+            // Each post stands in its own group at its base, so a car that knocks
+            // it down (a street prop in damage.js) tips the whole signal over.
+            const post = new Three.Group(),
+              prop = registerStreetProp('signal', x + dx, z + dz);
+            post.position.set(x + dx, 0, z + dz);
+            group.add(post);
+            prop.group = post;
+            box(post, 0, 15, 0, 1.1, 30, 1.1, darkMetal);
+            box(post, 0, 29, 0, 5, 12, 4, darkMetal);
             const bulbs = ['#a94332', '#d3aa44', '#80b987'].map((co, i) =>
               mesh(
                 sphereGeo,
                 new Three.MeshBasicMaterial({
                   color: co,
                 }),
-                group,
-                x + dx,
+                post,
+                0,
                 33 - i * 4,
-                z + dz + 2.5,
+                2.5,
                 1.5,
                 1.5,
                 0.7,
@@ -402,6 +366,7 @@
             heads.push({
               vertical,
               bulbs,
+              prop,
             });
           }
           signalModels.push({
@@ -428,7 +393,8 @@
           if (!s.group.visible) continue;
           const state = trafficSignal(s.x, s.z);
           for (const h of s.heads) {
-            const on = signalBulbIndex[state[h.vertical ? 'vertical' : 'horizontal']];
+            // A signal lying in the road is dark.
+            const on = h.prop.down ? -1 : signalBulbIndex[state[h.vertical ? 'vertical' : 'horizontal']];
             h.bulbs.forEach((b, i) =>
               b.material.color.set(i === on ? signalLitColors[i] : '#252d30'),
             );
@@ -606,4 +572,133 @@
           }
         }
       }
+      // BEGIN CARGO SHIP
+      /**
+       * IRONWORKS TRADER, a geared feeder container ship: lofted hull with a
+       * raised forecastle, four holds of containers stacked on hatch covers, two
+       * deck cranes, the accommodation block and bridge aft with its funnel, a
+       * free-fall lifeboat on the stern and mooring gear at both ends. Built in
+       * its own frame (bow +x, starboard +z) from HARBOR.ship's length and beam.
+       */
+      function buildCargoShip() {
+        const g = new Three.Group(),
+          L = HARBOR.ship.l,
+          B = HARBOR.ship.w,
+          deck = 30;
+        const spec = {
+          length: L,
+          beam: B,
+          draft: 22,
+          form: { transom: 0.8, maxAt: -0.08, entry: 2.6, bowShape: 0.62, sternCurve: 3.5 },
+          sheer: [
+            [-0.5, 34],
+            [0.31, 33],
+            [0.335, 42],
+            [0.5, 45],
+          ],
+          rake: 0.035,
+          forefoot: 0.1,
+          keelRise: 0.15,
+          bilge: 4,
+          flare: 0.28,
+          tuck: 0.12,
+          boot: [-3.2, 1.2],
+          colors: { bottom: '#8a2f2a', boot: '#1c1e21', top: '#23465a', bands: [[0.9, 0.93, '#e8e2d0']] },
+          finish: 'satin',
+          stations: 40,
+        };
+        hullMesh(g, spec);
+        const steelDeck = tint('#5f6b66', 'matte'),
+          white = tint('#eeece4', 'satin'),
+          crane = tint('#e0b83a', 'gloss'),
+          rust = tint('#7a4a36', 'matte');
+        hullDeck(g, spec, deck, -L / 2, L * 0.33, 1.5, steelDeck);
+        hullDeck(g, spec, 42, L * 0.33, L / 2 - 2, 1.5, steelDeck);
+        // Breakwater across the forecastle and the step down to the main deck.
+        box(g, L * 0.33, (deck + 42) / 2, 0, 2, 42 - deck, hullBeamAt(spec, L * 0.33, 36) * 2 - 2, white);
+        for (const side of [-1, 1]) {
+          const bw = strut(g, [L * 0.35, 43, side * 30], [L * 0.39, 49, 0], 2.4, white);
+          bw.scale.x = bw.scale.z = 2.4;
+        }
+        // Holds: hatch covers and container stacks, fewer rows where the bow narrows.
+        const palette = ['#1f5f8b', '#b23a2e', '#2f7d4f', '#d98e2b', '#e8e4da', '#6b6f73', '#8d3b72', '#c9b43c', '#1d3e6e', '#8a5a3a', '#3b8f96'];
+        let seed = 11;
+        const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+        for (const [bi, bu] of [-96, -44, 26, 78].entries()) {
+          const halfWidth = hullBeamAt(spec, bu + 24, deck) - 6,
+            rows = Math.min(5, Math.floor((halfWidth * 2) / 23));
+          box(g, bu, deck + 2, 0, 50, 4, rows * 23 + 4, tint('#3d5a4a', 'satin'));
+          for (let r = 0; r < rows; r++) {
+            const v = (r - (rows - 1) / 2) * 23,
+              tiers = 1 + Math.floor(rnd() * (bi === 3 ? 2.2 : 3.6));
+            for (let k = 0; k < tiers; k++) {
+              const c = palette[Math.floor(rnd() * palette.length)];
+              box(g, bu, deck + 4 + 10.5 + k * 21, v, 48, 21, 22, tint(c, 'ribbed'));
+            }
+          }
+        }
+        // Deck cranes: pedestal, cab, jib and hook, both slewed toward the quay.
+        for (const [cu, slew] of [
+          [-9, 2.2],
+          [114, 2.5],
+        ]) {
+          mesh(cylinderGeo, crane, g, cu, deck + 14, -30, 5, 28, 5);
+          box(g, cu, deck + 31, -30, 12, 8, 10, crane);
+          box(g, cu + 3, deck + 32, -24.8, 5, 4, 0.4, kitGlass);
+          const tip = [cu + Math.cos(slew) * 70, deck + 64, -30 - Math.sin(slew) * 70];
+          strut(g, [cu, deck + 30, -30], tip, 2.6, crane);
+          strut(g, tip, [tip[0], deck + 20, tip[2]], 0.5, tint('#222222', 'metal'));
+          box(g, tip[0], deck + 18, tip[2], 3, 3, 3, tint('#222222', 'metal'));
+        }
+        // Accommodation block, bridge with full-width wings, funnel and mast.
+        const ab = deckOutline(-L * 0.46, -L * 0.33, B * 0.4, 0, 2, 12, 3);
+        deckhouse(g, ab, deck, deck + 58, { paint: white, glassFrom: 0, glassTo: 0, roof: true });
+        for (let z = deck + 8; z < deck + 56; z += 12) {
+          const ring = offsetOutline(ab, 0.3);
+          mesh(prismGeometry(ring, ring, z, z + 4, false), kitGlass, g, 0, 0, 0);
+        }
+        box(g, -L * 0.35, deck + 64, 0, 22, 12, B - 2, white);
+        box(g, -L * 0.35 + 11.2, deck + 65, 0, 0.6, 5, B - 6, kitBridgeGlass);
+        for (const side of [-1, 1]) {
+          box(g, -L * 0.35, deck + 65, side * (B / 2 - 1.5), 16, 5, 0.6, kitBridgeGlass);
+          box(g, -L * 0.35 + 6, deck + 67, side * (B / 2 - 0.5), 2, 2, 1, side > 0 ? kitStarboardLamp : kitPortLamp);
+        }
+        box(g, -L * 0.35, deck + 70.5, 0, 24, 1.2, B, tint('#d6d3c8', 'satin'));
+        box(g, -L * 0.37, deck + 84, 0, 2, 26, 2, white);
+        box(g, -L * 0.37, deck + 92, 0, 2, 2, 26, white);
+        box(g, -L * 0.37 + 3, deck + 95, 0, 1.4, 1.2, 16, tint('#1d2226', 'satin'));
+        const fb = deckOutline(-L * 0.47, -L * 0.42, 11, 8, 2, 12, 2),
+          ft = fb.map(([u, v]) => [u - 5, v * 0.9]);
+        mesh(prismGeometry(fb, ft, deck + 58, deck + 88, false), tint('#1f5f8b', 'gloss'), g, 0, 0, 0);
+        mesh(prismGeometry(ft, ft.map(([u, v]) => [u - 1, v]), deck + 88, deck + 94, true), tint('#1a1c1f', 'satin'), g, 0, 0, 0);
+        mesh(prismGeometry(offsetOutline(fb, 0.3), offsetOutline(ft, 0.3).map(([u, v]) => [u + 2.5, v * 1.02]), deck + 70, deck + 75, false), white, g, 0, 0, 0);
+        // Free-fall lifeboat on its stern ramp.
+        const lifeboat = new Three.Group();
+        lifeboat.position.set(-L * 0.48, deck + 12, 0);
+        lifeboat.rotation.z = -0.5;
+        g.add(lifeboat);
+        box(lifeboat, 0, 0, 0, 30, 9, 11, tint('#e46a2a', 'gloss'));
+        box(lifeboat, 3, 5, 0, 18, 3, 8, tint('#e46a2a', 'gloss'));
+        box(g, -L * 0.47, deck + 5, 0, 4, 10, 14, rust);
+        // Forecastle: windlasses, foremast and anchors; bollards and winches aft.
+        for (const side of [-1, 1]) {
+          mesh(cylinderGeo, tint('#2b3a33', 'satin'), g, L * 0.43, 45, side * 9, 4, 5, 4);
+          box(g, L * 0.47, 36, side * (hullBeamAt(spec, L * 0.47, 36) + 0.3), 7, 6, 0.8, tint('#1c1e21', 'satin'));
+          for (const u of [-L * 0.44, -L * 0.3, L * 0.2, L * 0.4]) bollard(g, u, u > L * 0.33 ? 42 : deck, side * (hullBeamAt(spec, u, deck) - 5), 2.2);
+        }
+        box(g, L * 0.41, 60, 0, 2, 36, 2, white);
+        box(g, L * 0.41, 74, 0, 1.4, 1.4, 12, white);
+        // Deck edge rails.
+        for (const side of [-1, 1])
+          railing(g, hullEdge(spec, deck, -L * 0.48, L * 0.32, 1.5, 12).map(([u, v]) => [u, side * v]), deck, 5, { spacing: 12, material: white });
+        // Names on both bows and across the stern.
+        for (const side of [1, -1]) {
+          const u = L * 0.38,
+            board = kitNameBoard(g, 'IRONWORKS TRADER', null, '#f2f0e8', 60, u, 35, side * (hullBeamAt(spec, u, 35) + 0.6), side > 0 ? 0 : Math.PI);
+          board.rotation.y += side * Math.atan2(hullBeamAt(spec, u - 10, 35) - hullBeamAt(spec, u + 10, 35), 20);
+        }
+        kitNameBoard(g, 'IRONWORKS TRADER', 'SOUTH COAST', '#f2f0e8', 66, -L / 2 - 0.6, 22, 0, -Math.PI / 2);
+        return g;
+      }
+      // END CARGO SHIP
       // END SUBSYSTEM: src/harbor3d.js

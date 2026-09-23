@@ -84,14 +84,21 @@
         uWorldOrigin: { value: new Three.Vector2(0, WORLD_TOP) },
         uWorldExtent: { value: new Three.Vector2(WORLD_SIZE, WORLD_HEIGHT) },
         uShoreScale: { value: 255 * SHORE_UNIT_SCALE },
+        // 1 while the perspective flight camera is active: view vectors then run
+        // from each fragment to the camera instead of along one fixed direction.
+        uPerspective: { value: 0 },
+        // Distance haze (flight-view3d.js) so open sea fades like the land does.
+        ...Three.UniformsUtils.clone(Three.UniformsLib.fog),
       };
       const waterMaterial = new Three.ShaderMaterial({
         uniforms: waterUniforms,
+        fog: true,
         vertexShader: `
           varying vec3 vWorld;
           varying vec3 vNormal;
           varying float vCrest;
           varying float vShore;
+          #include <fog_pars_vertex>
           uniform float uTime;
           uniform sampler2D uShore;
           uniform float uWorldSize;
@@ -125,7 +132,9 @@
             vCrest = offset.y / max(0.05, 3.9 * depthFade);
             vShore = shore;
             vNormal = normalize(dNormal);
-            gl_Position = projectionMatrix * viewMatrix * vec4(world, 1.);
+            vec4 mvPosition = viewMatrix * vec4(world, 1.);
+            gl_Position = projectionMatrix * mvPosition;
+            #include <fog_vertex>
           }
         `,
         fragmentShader: `
@@ -138,7 +147,9 @@
           uniform float uDay;
           uniform float uDusk;
           uniform vec3 uViewDir;
+          uniform float uPerspective;
           uniform vec3 uSun;
+          #include <fog_pars_fragment>
           float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
           float vnoise(vec2 p){
             vec2 i = floor(p), f = fract(p);
@@ -159,7 +170,7 @@
             float hz = ripples(vWorld.xz + vec2(0., e));
             float rippleScale = 0.55 + 0.45 * smoothstep(4., 120., vShore);
             vec3 n = normalize(vNormal + vec3((h0 - hx) * 2.2, 0., (h0 - hz) * 2.2) * rippleScale);
-            vec3 viewDir = normalize(uViewDir);
+            vec3 viewDir = normalize(mix(uViewDir, normalize(cameraPosition - vWorld), uPerspective));
             float facing = max(dot(viewDir, n), 0.);
             float fresnel = 0.04 + 0.96 * pow(1. - facing, 4.);
             // Regional palettes: turquoise Keys and county reefs, cold slate in Marlow Bay.
@@ -197,6 +208,7 @@
             color = mix(color, vec3(.86, .93, .92), foam);
             color *= 0.3 + 0.7 * uDay;
             gl_FragColor = vec4(color, 1.);
+            #include <fog_fragment>
           }
         `,
       });
@@ -804,9 +816,13 @@
         waterUniforms.uDay.value = 0.12 + 0.88 * light;
         waterUniforms.uDusk.value = clamp(1 - Math.abs(light - 0.3) / 0.28, 0, 1);
         camera.getWorldDirection(waterUniforms.uViewDir.value).multiplyScalar(-1);
-        waterSurface.scale.set(Math.max(1, 1 / worldZoom / 2), Math.max(1, 1 / worldZoom / 2), 1);
-        waterSurface.position.x = Math.round(cameraTarget.x / 25) * 25;
-        waterSurface.position.z = Math.round(cameraTarget.y / 25) * 25;
+        waterUniforms.uPerspective.value = camera.isPerspectiveCamera ? 1 : 0;
+        // The swell mesh follows the middle of the view and grows to cover what
+        // the camera can see, which from the air is far more than the street view.
+        const waterScale = Math.max(1, 1 / viewZoom / 2, (viewReach * 2.2) / 7000);
+        waterSurface.scale.set(waterScale, waterScale, 1);
+        waterSurface.position.x = Math.round(viewCenter.x / 25) * 25;
+        waterSurface.position.z = Math.round(viewCenter.y / 25) * 25;
         farWater.material.color
           .set('#061421')
           .lerp(new Three.Color(cameraTarget.x > 3900 ? '#0c5a68' : '#0f3a52'), light);

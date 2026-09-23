@@ -51,12 +51,14 @@ Game closure (in include order):
 | harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot (front shutter, back door and the drop: `beginDepotDrop`, `depotShutterDown`, `updateDepotDrop`) |
 | police-feedback.js | Wanted-level status chips (NEED TO LOSE POLICE, POLICE CLEARED) and delivery blocking |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
+| marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan, liners, deck walking |
 | arsenal.js | Weapon ownership, arsenal UI, knife |
 | citylife.js | Clock, `PLACES` (businesses), officers, police routing, `daylight()` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate` |
 | campaign.js | Saves, mission select menu |
 | roofmission.js | Blue Hour rooftop hit, `entityElevation` |
 | air-cover.js / combat-rules.js | Underpass volumes, elevation-aware shooting, air support |
+| damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`) |
 | county.js / military.js / terrain.js | Outlying regions, towns, Fort Sentinel, mountains |
 | aviation.js / parachute.js | Fixed-wing flight model, flight missions 9 and 10, bail-out |
 | challenges.js | Missions 2 to 8 and the interact/UI routing for all missions |
@@ -66,33 +68,115 @@ Game closure (in include order):
 | navigation.js, mobile.js, world-view.js, car-radio.js, garages.js | Route planning, touch, zoom, radio, garages |
 | render3d.js | Renderer entry: lights, ground texture painting, vehicle/person models, effects, `render()` |
 
-Renderer fragments (inside `createCityRenderer()`): cityscape3d (buildings, roofs, shopfronts,
-street furniture, night windows), sidejobs3d (rings/devices), garage3d, landmarks3d, civic3d
+Renderer fragments (inside `createCityRenderer()`): damage3d (deformable car bodies, decal atlas
+and pools, rubble and torn panels, knocked furniture, smoke and fire), cityscape3d (buildings,
+roofs, shopfronts, street furniture, night windows), sidejobs3d (rings/devices), garage3d, landmarks3d, civic3d
 (time-of-day palette, businesses), air-cover3d, renewal3d, sports3d, transit3d, ecology3d,
-world3d (water shader, palms, airport, rooftop bar), county3d, harbor3d (signals, depot,
-helicopter searchlight), helicopter3d, vehicles3d, plane3d.
+world3d (water shader, palms, airport, rooftop bar), county3d, boats3d (the boat kit),
+harbor3d (signals, depot, helicopter searchlight, the container ship), marina3d (marina,
+superyacht, terminal, liners), weather3d (rain, wet roads, overcast light), clouds3d (volumetric
+clouds and cloud shadows), helicopter3d, vehicles3d, plane3d. flight-view3d (flight camera,
+distance haze, level of detail from the air) is included right after the camera and lights.
 
 ## 4. The city layout
 
-- Northbank Island (west) is an 11 by 11 grid: road centres at `128 + i*512` on both axes.
-  Streets are 88 wide; the avenues at 1152, 2688, 3200 and 4736 are 112 wide with double
-  yellow centre lines. Blocks are 334 units square with a parking court or courtyard inside.
+- Northbank Island (west) is the street grid: avenue columns at `128 + i*512` (`ROAD_CENTERS`)
+  and street rows at `128 + j*512` from y -3968 to 5248 (`ROAD_ROWS`; the northern reclamation
+  has negative y). Streets are 88 wide; 1152, 2688, 3200, 4736 and the reclamation rows -1408
+  and -2944 are 112-wide avenues with double yellow centre lines. Blocks are 334 units square.
+  Streets are clipped to land, the airport, park closures, the stadium and the beach
+  (`cityStreets()` in streets.js).
+- The west shore is one straight reclaimed sea wall (x 40..52). The strip between it and the
+  first blocks (x 217) carries the esplanade on the sea side and the Shore Line viaduct above
+  the old West Quay alignment (`RAIL_CORRIDOR_X`, no longer a street). Rows run under the
+  viaduct to the esplanade.
 - Marlow Bay (the river, x 3420..3960) separates Northbank from Palm Keys (east). Bridges at
-  y = 1152 (Union St), 3200 (Harbor Ave) and 4736 (Stadium Way).
-- Districts, from `districtAt()`: Old Quarter and Ironworks Docks (north), Central Gardens and
-  Midtown, Broadway and Financial District (centre), South Bank, Battery Point and Southport
-  Airport (south); Palm Keys Art Deco, Ocean Drive, Little Havana and Coral Marina (east).
-  Zoning lives in `zoneHeight()` (heights) and the block patterns in `buildWorld()`; the
-  renderer picks facade/roof archetypes from the same district names in `archetypeFor()`.
+  y = 1152 (Union St), 3200 (Harbor Ave) and 4736 (Stadium Way), all starting on Riverbank Dr
+  (`bridgeSpan`).
+- Districts, from `districtAt()`: Harbor Point Marina, the Reclamation and North Point Financial
+  (north), Old Quarter and Ironworks Docks, Midtown, Broadway and the Exchange District, South
+  Bank, Battery Point, Southport Airport and Southport Beach (south); Palm Keys Art Deco, Ocean
+  Drive, Little Havana and Coral Marina (east). Zoning lives in `zoneHeight()` (heights) and the
+  block patterns in `buildWorld()`; the renderer picks facade/roof archetypes from the same
+  district names in `archetypeFor()`.
+- Southport Beach (`BEACH` in geography.js) is the reserved public strand on the south shore,
+  x 1740..3150, from the Marina Rd kerb (y 5306) to the water (y 5560..5810); its top edge is a
+  40-wide boardwalk (`BEACH.boardwalk`). No streets or blocks are laid on it, the esplanade
+  stops at either end, and its shore reads as 'beach'. The Oceanview Causeway crosses it at
+  x 2176. Beach life is meant to be built on this data.
 - Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
-  own roads, towns, bridges, an airport and a railway (transit.js).
-- Central Commons (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks wide and three deep;
-  the streets inside it are closed by `parkStreetClosed`, and the elevated City Line crosses
-  it with the Central Commons station. Eastside Customs garage sits on Cannery St at (1320, 2022).
+  own roads, towns, bridges and an airport.
+- The railway (transit.js, drawn by transit3d.js) runs on its own elevated right of way:
+  - SHORE LINE: Cruise Terminal (1580, -4170) -> sea viaduct round Harbor Point -> the west sea
+    wall at x 150 with Reclamation, Old Quarter and West Quay stations -> a curve across Viaduct
+    Green onto Harbor Ave (Broadway station, 860, 3200) -> Royal Ave -> Southport Airport
+    (1220, 4890), over the terminal forecourt on Airport Way. The avenue legs are an el on
+    straddle bents planted on the pavements.
+  - COAST LINE: Southport Airport -> sea viaduct across the channel -> Oceanview (1990, 7300) ->
+    Oceanview Airport, behind the terminal (4215, 8330) -> Coral Sound narrows -> Palmshore
+    (6600, 8150).
+  - RIDGE LINE: Palmshore -> its own bridge across the sound -> Eastgate (8790, 5000) ->
+    Northridge (8300, 3740) -> Stonecreek (7850, 4050).
+  Each line's `route` is a control polygon; `railTrackGeometry` fillets every corner with a
+  circular arc (per-point radius, minimum `RAIL_MIN_RADIUS`), eases it with a smoothing pass,
+  and thins it to `line.points`. Stations are inserted into their routes and kept on straight
+  track. Everything else (decks, piers, cover volumes, the map, trains) reads `line.points`.
+- Central Garden (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks wide and two deep; the
+  streets inside it are closed by `parkStreetClosed`. Eastside Customs garage sits on Cannery St
+  at (1320, 2022).
 - South Coast Stadium (sports-world.js) is enclosed: `STADIUM_ENCLOSURE` blocks people and
   vehicles, `STADIUM_VEHICLE_BARRIERS` (bollards, turnstile span) block vehicles only, and the
   two turnstile gates at x 2665..2686 and 2692..2713 (y 4845) are the only way onto the concourse.
+- `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
+  helipads, docks, ships, props, static colliders); `docs/audit/world-layout.md` describes the
+  overlap audit run on it.
+
+## 4b. Harbor Point, the superyacht and the boats
+
+Harbor Point marina is the basin cut into the north-west reclamation (`MARINA` in marina.js,
+x 672..1528, y -4128..-3300). Four finger pontoons off the south quay carry sixteen moored
+boats; `MARINA_BERTHS` lists `[finger, side, distance along, design]` and each design's `type`
+picks its builder in `MARINA_BUILDERS` (marina3d.js): sloop, trawler, flybridge, launch,
+explorer, dayCruiser, catamaran, sportfisher, ketch, centerConsole, megayacht, sportYacht, gulet,
+racer, commuter, runabout. To add a boat, add a berth with a new design and, if needed, a
+builder; names are painted on the transom automatically.
+
+**M/Y AURELIA** (`SUPERYACHT`, marina.js) is a 105 m superyacht moored stern-to the west quay at
+(970, -3950), bow east. Walk east along the quay at y -3950 onto the passerelle (or press E by
+it) to board; walking back off the passerelle, or E on the swim platform, goes ashore.
+
+- Frame: `deckLocal()`/`deckWorld()` convert between the map and the ship frame (u forward,
+  v to starboard). The hull plan is `hullPlanFraction(SUPERYACHT.form, t)`, shared by the
+  walkable main deck and the lofted hull.
+- `levels[i]` are the walkable decks with their surface height `z`: 0 swim platform, 1 main
+  deck (follows the hull inside the bulwark), 2 upper, 3 bridge, 4 sun deck, 5 helipad.
+- `stairs` climb along +u from level `lo` at u0 to level `hi` at u1. Level -1 is the quay,
+  so the passerelle is just another stair. You can only step onto a stair from its ends.
+- `houses` are deckhouses (the main saloon is `open`: only its walls block, the aft doors
+  stand open). `furniture` rows (`[level, type, u, v, length, width]`) are drawn by
+  marina3d.js, block walking, and are where guests sit.
+- While aboard, `player.deck = SUPERYACHT`, `player.deckLevel` and `player.deckStair` track
+  the deck; `player.altitude` is the deck height, so `entityElevation()` just works.
+- Cutaway: `superyachtCoverHeight()` returns the lowest deck above the player whose outline
+  covers them; `updateMarinaVisuals()` hides that deck group and everything above it, and
+  guests on hidden decks are flagged `hidden`.
+- The liners (`LINERS`) keep their single promenade deck (`deckPointFree`); their hull plan is
+  `LINER_FORM`.
+
+**Boat kit** (boats3d.js, renderer). `loftHull(spec)` lofts a hull from a sheer line, keel line
+and plan shape with bands baked into vertex colours; `hullDeck`, `hullBand`, `hullBeamAt` and
+`hullEdge` fit decks, stripes and fittings to it. `deckhouse`, `deckSlab`, `prismGeometry` and
+`deckOutline` build superstructure; `railing`, `lounger`, `sofa`, `pool`, `hotTub`, `stairFlight`,
+`ribTender`, `radarScanner` and friends furnish it. Paint with `tint(color, finish)`: every
+tinted mesh merges into one vertex-coloured material per finish in `kitMerge(group)`, so a
+whole marina is a handful of draw calls (do not push kit-built groups into `batchGroups`: the
+static batcher drops vertex colours). Names go through one shared atlas (`kitNameBoard`);
+night lights through one `THREE.Points` cloud (`kitLight` / `kitLightCloud`).
+
+The Ironworks freighter (`buildCargoShip`, harbor3d.js) and the drivable speedboat, launch
+and jet ski (vehicles3d.js) use the same kit. Boats steer round everything in
+`marinaObstacles()` (liners, moored boats, the superyacht, her tender and the pontoons).
 
 ## 5. Missions
 
@@ -115,8 +199,28 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
 
 ## 6. Rendering notes
 
-- The camera is orthographic, looking north-down at roughly 40 degrees, so roofs and
-  south-facing facades carry the look. `cityscape3d.js` builds every building: archetype
+- On the street the camera is orthographic, looking north-down at roughly 50 degrees, so roofs
+  and south-facing facades carry the look. In an aircraft or on a parachute a perspective
+  camera takes over (flight-view3d.js): it keeps the aircraft framed like the street view (a
+  dolly zoom from a 3 degree lens on the ground to 40 degrees by ~140 m, pitching down to 74
+  degrees by ~500 m), so the ground falls away, towers show parallax and the aircraft's shadow
+  drops away from it. `camera` is whichever camera is active; use `viewCenter`, `viewReach`
+  and `viewZoom` (the ground footprint and its scale, `viewZoom` meaning what `worldZoom`
+  means on the street) for culling and level of detail rather than `cameraTarget`/`worldZoom`.
+- Distance haze is `scene.fog`, a linear Fog whose shader chunk is replaced with an
+  aerial-perspective curve: clear out to `fog.near`, exponential-squared beyond it with
+  `fog.far = 1 / fog.density`. Keep adjusting `fog.density` and `fog.color`; `fog.near`
+  belongs to the flight camera. Nothing may lay a uniform wash over the frame.
+- Clouds (clouds3d.js) are a ray-marched cumulus layer at 600-950 m over a GPU-generated
+  3D noise volume, drawn at half resolution only when the flight camera is above the cloud
+  base and composited behind the player's aircraft. Coverage follows `weather.cloud`, drift
+  follows the wind, light follows the scene's sun, sky and ground colours. Cloud shadows on
+  the city come from the same density field. Aircraft ceilings are ~1400 m so the layer can
+  be climbed through.
+- From the air: small props move to detail layers the flight camera drops as `viewZoom`
+  falls, traffic becomes instanced box impostors, and below `viewZoom` 0.165 a merged far
+  copy of the static scenery (flight-view3d.js, FAR SCENERY) replaces the per-building
+  batches. Building blocks are compacted from six draw calls to two. `cityscape3d.js` builds every building: archetype
   (tower, office, brick, stucco, warehouse, deco, decoTower, hotel), procedural roof texture,
   parapet, roof props (instanced), shopfront with awnings and a sign atlas, fire escapes,
   balconies, billboards, helipads, beacons and neon hotel signs.
@@ -131,6 +235,36 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
   view-dependent.
 - Repeated props use `InstancedMesh` pools (`pools` in cityscape3d.js). Add a pool there
   rather than creating per-building meshes for small repeated objects.
+
+## 6a. Damage and destruction
+
+Damage is data on the entity; `damage3d.js` only draws it (see the header of `damage.js`).
+
+- `damageVehicle(vehicle, amount, x, y, source, detail)` (physics.js) takes the hit points and
+  hands the rest to `recordVehicleDamage()`. `detail.kind` shapes it: `crash` (contact normal,
+  closing speed, the other mass) crumples along the normal; `blast` dishes the face toward the
+  explosion; `bullet` only marks the skin (`bulletHitVehicle` records the hole). No detail
+  dents toward the centre as before.
+- `vehicle.dents[]` are `{x, y, z, nx, ny, depth, r}` in vehicle space (x forward, y right,
+  z up). Nearby dents merge, so repeated hits fold one crumple deeper. `damage.front/rear/
+  left/right` stay 0..1 and drive the panels: hood (buckle, sprung, gone), bumpers (hang by one
+  bracket, torn off), doors (sprung, torn off), trunk, per-pane glass (windscreen cracks, side and
+  rear glass bursts), lamps, flat tyres and `damage.pull`.
+- `vehicleHandling(c)` turns that into engine power, top speed, grip and steering pull for the
+  player and traffic. Below 25% health the engine burns (`damage.burning`) down to the explosion;
+  wrecks are gutted once (`wreckVehicle`). `repairVehicle` and `freshDamage` reset everything.
+- Physics: tyre side-force is capped so hit cars slide; off-centre impulses set `spinUntil`
+  (the car spins out); explosions shove, spin and bounce vehicles (`blastEffects`, `c.hop`);
+  `resolveContact` records scrapes for sparks and paint scores.
+- Street furniture registers itself as it is placed (`registerStreetProp(kind, x, y, yaw)` from
+  cityscape3d, the lamp loop in render3d and the signals in harbor3d). Standing props are solid
+  boxes for vehicles; mass times closing speed above the kind's `toughness` knocks one down
+  (it stops being solid) and takes momentum off the car. They stand up again after four
+  minutes out of view. Hydrants spray, benches turn their sitter out.
+- Decals: one 4×4 procedural atlas; `worldDecals` (a 2400-slot ring buffer: wall chips,
+  shop-glass stars and shattered panes, scorch, soot, craters, rubble, scuffs, oil, puddles)
+  and `vehicleDecals` (rebuilt each frame from `damage.marks`, anchored by a ray along the
+  bullet path). Shop panes are recorded on their building as `b.shopPanes`.
 
 ## 6b. Performance model
 

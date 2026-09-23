@@ -264,18 +264,21 @@
         id: 'outfitters',
         kind: 'clothes',
         name: 'SOUTH COAST OUTFITTERS',
-        bx: 3,
+        // Block (2, 6), across Commons St from Central Garden. It used to be
+        // assigned block (3, 6), which is inside the park: the shop stood on the
+        // rose garden with its front half out on Linden St.
+        bx: 2,
         by: 6,
-        x: 1770,
-        y: 3272,
+        x: 1258,
+        y: 3306,
         w: 276,
         h: 150,
         height: 40,
         color: '#c3a6d3',
         symbol: 'FIT',
         door: {
-          x: 1908,
-          y: 3442,
+          x: 1396,
+          y: 3476,
         },
       },
       {
@@ -410,9 +413,8 @@
         hy: HARBOR.ship.l / 2,
         a: 0,
       });
-      for (const ship of LINERS) obstacles.push(shipHull(ship));
-      for (const moored of marinaBoats())
-        obstacles.push({ x: moored.x, y: moored.y, hx: moored.beam / 2, hy: moored.len / 2, a: 0 });
+      // Liners, moored yachts, the superyacht and the marina pontoons.
+      obstacles.push(...marinaObstacles());
       return !obstacles.some((b) => boxContact(shape, b));
     }
     function isBoat(vehicle) {

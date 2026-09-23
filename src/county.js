@@ -920,7 +920,9 @@
             maxy = Math.max(...cs.map((p) => p.y));
           for (let x = Math.floor(minx / 256); x <= Math.floor(maxx / 256); x++)
             for (let y = Math.floor(miny / 256); y <= Math.floor(maxy / 256); y++) {
-              const key = x + ',' + y;
+              // Numeric cell keys, as physics.js uses: string keys were never
+              // looked up, so traffic drove through the bridge guard rails.
+              const key = x * 4096 + y;
               if (!staticGrid.has(key)) staticGrid.set(key, []);
               staticGrid.get(key).push(b);
             }

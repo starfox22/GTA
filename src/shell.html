@@ -38,6 +38,8 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Shared railway and bridge volumes for sight, bullets, vehicles and aircraft.
   src/combat-rules.js: Aerial combat and pursuit rules
     Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
+  src/damage.js: Vehicle damage, bullet impacts and breakable street furniture
+    Crumple dents, panels, glass, lamps, tyres, engine fire, handling loss, blast shove and street props.
   src/county.js: Outlying districts
     County roads, buildings, scenery, traffic, towns, regional police and bridges.
   src/military.js: Fort Sentinel
@@ -72,6 +74,10 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Garage geometry, vehicle fit, paint, repairs and pursuit clearance.
   src/render3d.js: Three.js renderer and resource lifecycle
     Asset loading, camera, lights, shared geometry, entity models, effects and drawing API.
+  src/damage3d.js: Crumpling bodies, decals, debris and knocked furniture
+    Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire.
+  src/flight-view3d.js: Flight camera and aerial perspective
+    Perspective camera in the air, ground footprint, distance haze, shadow coverage, level of detail.
   src/garage3d.js: Garage meshes
     Garage buildings, shutters, lights and service details.
   src/landmarks3d.js: City landmark meshes
@@ -90,8 +96,10 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Coastal details, street scenery and environmental objects.
   src/county3d.js: County and mountain meshes
     Terrain surface, snow colors, rural scenery, bridges and region visibility.
+  src/boats3d.js: Boat kit: lofted hulls and shared yacht parts
+    Hull lofting, deckhouses, teak decks, railings, deck furniture, name boards, night lights, mesh merging.
   src/harbor3d.js: Cargo terminal meshes
-    Cranes, ship, containers, cargo and terminal architecture.
+    Cranes, the container ship, containers, cargo and terminal architecture.
   src/helicopter3d.js: Helicopter meshes
     Airframe, rotor, lights and cockpit geometry.
   src/vehicles3d.js: Vehicle meshes
@@ -120,10 +128,10 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
     Loose traffic cones and burning flares.
   src/carjack.js: Carjacking and driver reactions
     Occupied traffic, locked doors, the ejection throw and what drivers do next.
-  src/marina.js: Harbor Point marina and the cruise liners
-    Yacht basin, cruise terminal, walkable liner decks and the crowds on them.
-  src/marina3d.js: Marina and cruise liner meshes
-    Pontoons, moored yachts, the terminal and the two liners.
+  src/marina.js: Harbor Point marina, the superyacht and the cruise liners
+    Yacht basin, hull-form math, the boardable superyacht's deck plan, walkable liner decks and their crowds.
+  src/marina3d.js: Marina, superyacht and cruise liner meshes
+    Pontoons, sixteen unique moored yachts, the superyacht deck by deck, the terminal and the two liners.
   src/taxi.js: Yellow cabs
     Hailing, destination picking on the map, the ride itself and the hijack.
   src/cycles.js: City bicycles
@@ -135,7 +143,9 @@ SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
   src/weather.js: Weather
     The weather state machine, road wetness, wind and the rain on the audio bus.
   src/weather3d.js: Weather and sky visuals
-    Rain, wet roads, lightning, and the cloud deck you can fly into.
+    Rain, wet roads, lightning and the overcast light.
+  src/clouds3d.js: Volumetric clouds and cloud shadows
+    Ray-marched cumulus layer at 600-950 m, lit by the sun, and the shadows it throws on the city.
   src/themepark.js: Sunset Pier amusement park
     Island layout, ride footprints, the rideable coaster and the park crowd.
   src/themepark3d.js: Sunset Pier ride meshes

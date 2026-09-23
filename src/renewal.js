@@ -12,7 +12,7 @@
      * y 2824..3624), a block west and two blocks south of where it was first laid
      * out: hard against the Ironworks docks it read as the harbour's back garden,
      * and a city park needs its own quarter around it. No railway goes near it --
-     * the network runs the eastern shore and the bay. Central Ave (x = 2176) and
+     * the Shore Line runs the west sea wall and Royal Ave. Central Ave (x = 2176) and
      * Linden St (y = 3200) cross inside the park and are closed to traffic.
      * Layout, west to east and north to south:
      *   Great Lawn (1808..2148, 2884..3214)     Garden Lake (ellipse at 2388,3034)
@@ -77,7 +77,7 @@
             'WEST QUAY GREEN',
             'RECLAMATION GREEN',
             'LIBERTY SQUARE',
-            'TERMINAL GARDENS',
+            'VIADUCT GREEN',
           ][i],
           kind: [
             'square',
