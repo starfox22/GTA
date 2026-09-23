@@ -214261,6 +214261,9 @@ const embeddedAssetReferences = {
 function embeddedMediaDataUrl(identifier) {
   const payloadElement = document.getElementById(identifier);
   if (!payloadElement) throw new Error('Missing embedded media: ' + identifier);
+  // Split builds (tools/build.py --split-media) leave large streamed media such as
+  // the radio music out of the page; the block then names the file beside it.
+  if (payloadElement.dataset.src) return payloadElement.dataset.src;
   const base64Bytes = payloadElement.textContent.replace(/\s+/g, '');
   return 'data:' + payloadElement.dataset.mime + ';base64,' + base64Bytes;
 }

@@ -9,6 +9,14 @@ minification), Three.js keeps its original source and license, and every
 binary media file is embedded as a labeled Base64 block with its byte count
 and SHA-256 so the assembled file can be audited without tooling.
 
+    python3 tools/build.py --split-media dist/publish
+                                      -> dist/publish/index.html plus dist/publish/media/*:
+                                         the same game, but manifest entries marked
+                                         "stream": true (the radio music) are left out of
+                                         the page and loaded from media/ beside it. This is
+                                         the variant published as the claude.ai artifact,
+                                         whose page size is capped at 16 MB.
+
 Directives understood in src/shell.html:
   <!-- @include-game-source -->   src/main.js with nested `// @include` lines
   <!-- @include-three-source -->  vendor/three.r160.js
@@ -51,10 +59,25 @@ def expand_js(rel, seen=None):
     return '\n'.join(out)
 
 
-def media_blocks():
+def media_blocks(split_dir=None):
+    """Every manifest entry as a labelled Base64 block. With split_dir, entries
+    marked "stream" are copied to split_dir/media/ instead and their block is
+    left empty with a data-src the media loader resolves relative to the page."""
     manifest = json.loads(read('assets/manifest.json'))
     parts = []
     for entry in manifest:
+        if split_dir and entry.get('stream'):
+            name = os.path.basename(entry['file'])
+            os.makedirs(os.path.join(split_dir, 'media'), exist_ok=True)
+            with open(os.path.join(ROOT, entry['file']), 'rb') as src, \
+                    open(os.path.join(split_dir, 'media', name), 'wb') as dst:
+                dst.write(src.read())
+            parts.append(
+                f"<!-- STREAMED MEDIA: {entry['original']} is served from media/{name} -->\n"
+                f"<script type=\"application/octet-stream\" id=\"{entry['id']}\" data-mime=\"{entry['mime']}\" "
+                f"data-src=\"media/{name}\"></script>\n"
+            )
+            continue
         with open(os.path.join(ROOT, entry['file']), 'rb') as fh:
             raw = fh.read()
         sha = hashlib.sha256(raw).hexdigest()
@@ -68,12 +91,12 @@ def media_blocks():
     return '\n'.join(parts).rstrip('\n')
 
 
-def build(out_path):
+def build(out_path, split_dir=None):
     shell = read('src/shell.html')
     replacements = {
         '<!-- @include-game-source -->': expand_js('src/main.js'),
         '<!-- @include-three-source -->': read('vendor/three.r160.js').rstrip('\n'),
-        '<!-- @include-media -->': media_blocks(),
+        '<!-- @include-media -->': media_blocks(split_dir),
         '<!-- @include-asset-loader -->': read('src/asset-loader.js').rstrip('\n'),
         '<!-- @include-credits -->': read('docs/THIRD_PARTY_CREDITS.txt').rstrip('\n'),
     }
@@ -92,8 +115,13 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', default=os.path.join(ROOT, 'dead-end-city.html'))
     ap.add_argument('--js-out', help='also write the expanded game script (for `node --check`)')
+    ap.add_argument('--split-media', metavar='DIR',
+                    help='write DIR/index.html with streamed media as separate files in DIR/media')
     args = ap.parse_args()
-    build(args.out)
+    if args.split_media:
+        build(os.path.join(args.split_media, 'index.html'), args.split_media)
+    else:
+        build(args.out)
     if args.js_out:
         with open(args.js_out, 'w', encoding='utf-8') as fh:
             fh.write(expand_js('src/main.js') + '\n')

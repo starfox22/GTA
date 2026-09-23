@@ -45,19 +45,22 @@
     "id": "media-music-synth",
     "file": "assets/music/synth.mp3",
     "mime": "audio/mpeg",
-    "original": "src/assets/music/synth.mp3"
+    "original": "src/assets/music/synth.mp3",
+    "stream": true
   },
   {
     "id": "media-music-rock",
     "file": "assets/music/rock.mp3",
     "mime": "audio/mpeg",
-    "original": "src/assets/music/rock.mp3"
+    "original": "src/assets/music/rock.mp3",
+    "stream": true
   },
   {
     "id": "media-music-oddball",
     "file": "assets/music/oddball.mp3",
     "mime": "audio/mpeg",
-    "original": "src/assets/music/oddball.mp3"
+    "original": "src/assets/music/oddball.mp3",
+    "stream": true
   },
   {
     "id": "media-audio-automatic",

@@ -28,8 +28,12 @@ in `assets/manifest.json`, the media loader and the credits. Nothing is minified
 
 Put the file under `assets/`, add an entry to `assets/manifest.json` (`id`, `file`,
 `mime`, `original`), reference the id from `src/asset-loader.js`, and credit it in
-`docs/THIRD_PARTY_CREDITS.txt`. The built HTML must stay under 15.5 MB (it is 14.1 MB at
-29.0.0), so prefer procedural textures and keep media small (WebP images, MP3/OGG audio).
+`docs/THIRD_PARTY_CREDITS.txt`. Large media that is only ever played by URL (the radio
+music) is marked `"stream": true` in the manifest: `dead-end-city.html` still embeds it, but
+`python3 tools/build.py --split-media dist/publish` writes `dist/publish/index.html` with
+those files beside it in `dist/publish/media/`. That split build is what gets published as
+the claude.ai artifact, whose page is capped at 16 MB (each extra file at 15 MB). Keep the
+split page under ~15.5 MB; prefer procedural textures and small media (WebP, MP3/OGG).
 
 ## Test
 
