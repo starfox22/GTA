@@ -179,6 +179,7 @@
       );
       const target = candidates[0];
       if (!target) return false;
+      player.lastStrikeAt = gameTime;
       if (player.roof && rooftopJob()) rooftopShot();
       if (wildlife.includes(target)) strikeWildlife(target, KNIFE.dmg);
       else {

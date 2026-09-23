@@ -672,46 +672,7 @@
       getElement('announcement').classList.add('show');
       announceTime = t;
     }
-    let wantedPressure = 0,
-      wantedLevel = 0,
-      starElapsed = 0;
-    function updateStarProgress(deltaSeconds) {
-      const visible = Math.ceil(wantedStars);
-      if (visible !== wantedLevel) {
-        wantedLevel = visible;
-        wantedPressure = Math.max(wantedPressure, visible);
-        starElapsed = 0;
-      }
-      if (!visible) return;
-      starElapsed += deltaSeconds;
-      const delay = [0, 16, 20, 24, 28][visible] || 28;
-      if (visible < 5 && wantedPressure >= visible + 0.75 && starElapsed >= delay) {
-        wantedStars = visible + 1;
-        wantedLevel = visible + 1;
-        starElapsed = 0;
-        tell('DISPATCH ESCALATING · ' + wantedLevel + ' STARS', 3);
-      }
-    }
-    function crime(amount = 1) {
-      if (harborPoliceProtected(player.x, player.y, 40)) return;
-      if (wantedStars <= 0) {
-        wantedStars = 1;
-        wantedLevel = 1;
-        wantedPressure = 1;
-        starElapsed = 0;
-      }
-      wantedPressure = clamp(
-        Math.max(wantedPressure, Math.ceil(wantedStars)) + Math.max(0, amount) * 0.35,
-        0,
-        5.75,
-      );
-      searchActive = false;
-      searchRemaining = policeSearchSeconds();
-      lastSeen = {
-        x: player.x,
-        y: player.y,
-      };
-    }
+    // @include src/heat.js
     /**
      * BUILDING GRID
      * solid() and shotBlocked() run thousands of times per frame (every pedestrian
@@ -1686,8 +1647,10 @@
         player.car = null;
       }
       announce('THE CITY ALWAYS COLLECTS', 'WASTED', 4);
+      document.body?.classList.add('wasted');
       noise(0.3, 0.4);
       setTimeout(() => {
+        document.body?.classList.remove('wasted');
         if (gameMode !== 'dead') return;
         cash = Math.max(0, cash - 250);
         player.hp = 100;
@@ -2018,6 +1981,7 @@
       weaponSound(selectedWeaponIndex, ox, oy);
       if (city3D) city3D.fire(ox, oy, a, w.rocket, entityElevation(player));
       player.recoilUntil = gameTime + 0.12;
+      player.lastShotAt = gameTime;
       notifyViolence(player, 'gunfire', player);
       crime(w.rocket ? 0.4 : 0.075);
       shake = Math.max(shake, w.rocket ? 5 : 1.4);
@@ -2083,11 +2047,13 @@
         y: clamp(t.y + (t.vy || 0) * seconds, WORLD_TOP + 40, WORLD_SIZE - 40),
       };
     }
-    function copRoute(c) {
+    function copRoute(c, destination = null) {
       // An interceptor routes to where the runner will be, not to where they are:
-      // half the patrol chases, the other half tries to be there first.
+      // half the patrol chases, the other half tries to be there first. A search
+      // passes its own destination (pursuit.js).
       const quarry = c.pursuitTarget || player.car || player,
-        chaseTarget = c.interceptor ? aheadOf(quarry, 3.4) : c.pursuitTarget || player;
+        chaseTarget =
+          destination || (c.interceptor ? aheadOf(quarry, 3.4) : c.pursuitTarget || player);
       if (
         c.x > CITY_SIZE ||
         c.y > CITY_SIZE ||
@@ -2527,6 +2493,18 @@
                 },
               );
             impact = true;
+            // Rounds aimed at the driver come through the glass and the doors: a
+            // car is cover, not armour. Heavy vehicles and aircraft keep it out.
+            if (
+              c === player.car &&
+              b.enemy &&
+              b.target === player &&
+              !b.rocket &&
+              !['tank', 'bus', 'truck', 'flatbed'].includes(c.type) &&
+              !isAircraft(c) &&
+              seededRandom() < 0.55
+            )
+              hurt((b.playerDmg ?? b.dmg) * 0.6);
             // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
             hitKind = bulletHitVehicle(c, b);
             break;
@@ -2574,7 +2552,8 @@
             (b.faction !== 'police' || b.target === player) &&
             Math.hypot(b.x - player.x, b.y - player.y) < 10
           ) {
-            hurt(b.dmg);
+            hurt(b.playerDmg ?? b.dmg);
+            playerHitFeedback(b);
             impact = true;
             hitKind = 'flesh';
           }
@@ -3768,8 +3747,7 @@
       getElement('mapDistrict').textContent = d;
       getElement('streetName').textContent = streetNameAt(player.x, player.y);
       getElement('cash').textContent = '$' + String(Math.floor(visibleCash())).padStart(6, '0');
-      getElement('stars').textContent =
-        '★'.repeat(Math.ceil(wantedStars)) + '☆'.repeat(5 - Math.ceil(wantedStars));
+      heatUI();
       getElement('healthValue').textContent = Math.max(0, Math.ceil(player.hp));
       getElement('healthFill').style.width = clamp(player.hp, 0, 100) + '%';
       getElement('healthFill').style.background = player.hp < 30 ? '#eb9d83' : '#d7f970';
@@ -4438,6 +4416,7 @@
     // @include src/police-feedback.js
     // @include src/arsenal.js
     // @include src/citylife.js
+    // @include src/pursuit.js
     // @include src/story.js
     // @include src/campaign.js
     // @include src/chase.js
@@ -4563,7 +4542,9 @@
       updateCasino(deltaSeconds);
       updateElevator(deltaSeconds);
       const updateStart = performance.now();
-      if (gameMode === 'play' || gameMode === 'menu' || gameMode === 'dead') update(deltaSeconds);
+      // WASTED and BUSTED play out in slow motion.
+      if (gameMode === 'play' || gameMode === 'menu') update(deltaSeconds);
+      else if (gameMode === 'dead') update(deltaSeconds * 0.35);
       else {
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);
@@ -4849,10 +4830,7 @@
         // Clearing reports the escape exactly like losing them in play would.
         if (n <= 0) clearPolice(true);
         else {
-          wantedStars = n;
-          wantedLevel = n;
-          wantedPressure = n;
-          starElapsed = 0;
+          setWantedLevel(n);
           searchActive = false;
           searchRemaining = policeSearchSeconds(n);
           lastSeen = {
@@ -4861,6 +4839,33 @@
           };
         }
         return this.status();
+      },
+      // The police response as data: stars, heat and the next star's threshold,
+      // the incident's body count, the search, arrest progress, the tier's
+      // allowances and every unit (patrol, swat, fed, army, air) and officer.
+      policeReport: () => policeReportData(),
+      // Living people near the player, nearest first, for play-tests that pick a
+      // victim: kind 'civilian', 'police', 'gang' or 'all' (default).
+      nearbyPeople(radius = 500, kind = 'all') {
+        const lists = {
+          civilian: [pedestrians],
+          police: [officers],
+          gang: [gangMembers, enemies],
+          all: [pedestrians, officers, gangMembers, enemies],
+        }[kind] || [];
+        const found = [];
+        for (const list of lists)
+          for (const p of list)
+            if (p.hp > 0 && !p.hidden && distanceBetween(p, player) < radius)
+              found.push({
+                kind: p.police ? 'police:' + (p.unit || 'patrol') : p.faction ? 'gang:' + p.faction : 'civilian',
+                x: Math.round(p.x),
+                y: Math.round(p.y),
+                hp: Math.round(p.hp),
+                d: Math.round(distanceBetween(p, player)),
+                sight: clearSight(player, p),
+              });
+        return found.sort((a, b) => a.d - b.d).slice(0, 40);
       },
       // Force the sky: clear, fair, cloudy, overcast, rain, storm. Passing nothing
       // hands the sky back to the weather machine.

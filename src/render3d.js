@@ -912,7 +912,8 @@
         if (vehicle.type === 'taxi') box(body, -1, roof + 1.5, 0, 6, 2.2, 4, mat('#d1c5a2'));
         coachDetails(vehicle, body, l, w, h, roof, paint);
         const strobes = [];
-        if (vehicle.type === 'police') {
+        // Patrol cars, SWAT vans and agents' SUVs carry a light bar (pursuit.js).
+        if (vehicle.type === 'police' || vehicle.lawUnit === 'swat' || vehicle.lawUnit === 'fed') {
           box(body, -1, roof + 1.2, 0, 3, 1, w * 0.73, darkMetal);
           for (const side of [-1, 1]) {
             const model = box(
@@ -996,7 +997,14 @@
             box(gun, 2, 0, 0, 0.35, 1.7, 1.3, darkMetal);
             box(gun, 4, 0, 0, 3.8, 0.22, 0.9, mat('#cbd6dd', 0.25, 0.8));
           }
-          if (slot === 0) {
+          if (slot === 0 && !isPlayer && person.rifle) {
+            // SWAT and agents carry carbines (pursuit.js).
+            box(gun, 3, 0, 0, 7, 1.3, 1.1, darkMetal);
+            box(gun, -1.5, -0.4, 0, 3.5, 1.4, 1.1, rubber);
+            box(gun, 2.5, -1.8, 0, 1, 2.6, 0.9, darkMetal);
+            const barrel = mesh(cylinderGeo, darkMetal, gun, 8.5, 0, 0, 0.3, 5, 0.3);
+            barrel.rotation.z = Math.PI / 2;
+          } else if (slot === 0) {
             box(gun, 2, 0, 0, 4.5, 1.1, 0.9, darkMetal);
             box(gun, 0.8, -1, 0, 1, 2, 0.8, rubber);
           }
@@ -1033,7 +1041,17 @@
             box(gun, 4, 1.6, 0, 2, 1, 0.6, darkMetal);
           }
         }
-        if (person.police) {
+        if (person.police && person.unit === 'swat') {
+          // Helmet, plate carrier with a pale POLICE panel.
+          mesh(sphereGeo, mat('#15191e', 0.5, 0.2), group, 0, 16.3, 0, 2.5, 2.1, 2.55);
+          box(group, 0.2, 10.3, 0, 5.2, 5.2, 7, mat('#23292f'));
+          box(group, -2.7, 11, 0, 0.2, 1.6, 4.6, mat('#c9d3da'));
+          box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
+        } else if (person.police && person.unit === 'fed') {
+          // Windbreaker with the yellow back panel.
+          box(group, -2.35, 11, 0, 0.25, 2, 4.8, mat('#d9b93c'));
+          box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
+        } else if (person.police) {
           mesh(wheelGeo, mat('#20354b'), group, 0, 17.7, 0, 2.5, 1, 2.5);
           box(group, 1.5, 17.4, 0, 3, 0.4, 4, mat('#162332'));
           box(group, 2.35, 11.5, -1.5, 0.3, 1.8, 1.4, mat('#c7b57a'));

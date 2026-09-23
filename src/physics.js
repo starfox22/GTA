@@ -344,6 +344,25 @@
         hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075), 'impact');
         if (closing > 130) radio('look-out');
         if (b && !a.cop && !b.cop) crime(0.06);
+        // Whoever was going faster did the ramming: the wreck is theirs, and
+        // ramming a police car is assault on an officer (heat.js).
+        const other = a === player.car ? b : a;
+        if (
+          other &&
+          Math.hypot(player.car?.vx || 0, player.car?.vy || 0) > Math.hypot(other.vx || 0, other.vy || 0)
+        ) {
+          other.lastAttacker = player;
+          other.lastDamagedAt = gameTime;
+          if (
+            (other.type === 'police' || other.lawUnit) &&
+            !other.stolen &&
+            closing > 70 &&
+            gameTime - (other.rammedByPlayerAt ?? -100) > 1.5
+          ) {
+            other.rammedByPlayerAt = gameTime;
+            crime(wantedStars > 0 ? 0.35 : 0.6);
+          }
+        }
       }
     }
     function resolveContact(a, b, hit, staticBody = null, record = true) {
@@ -1107,61 +1126,11 @@
             wantedStars > 0 &&
             !harborPoliceProtected(player.x, player.y, 30)
           ) {
-            c.routeTime = (c.routeTime || 0) - stepSeconds;
-            let target;
-            if (
-              c.pursuitTarget &&
-              distanceBetween(c, c.pursuitTarget) < 330 &&
-              clearSight(c, c.pursuitTarget)
-            )
-              target = c.pursuitTarget;
-            else if (!c.pursuitTarget && c.seesPlayer && distanceBetween(c, player) < 370)
-              target = player;
-            else if (searchActive) target = lastSeen;
-            else {
-              if (c.routeTime <= 0 || !c.route?.length) {
-                c.route = copRoute(c);
-                c.routeTime = 2;
-              }
-              if (c.route.length && distanceBetween(c, c.route[0]) < 45) c.route.shift();
-              target = c.route[0] || {
-                x: roadNear(player.x),
-                y: rowNear(player.y),
-              };
-            }
-            const da = normalizeAngle(headingBetween(c, target) - c.a);
-            steer = clamp(da * 3, -2.1, 2.1);
-            let desired = Math.abs(da) > 1 ? 60 : Math.min(305, 185 + wantedStars * 22);
-            if (
-              !c.pursuitTarget &&
-              (!player.car || isAircraft(player.car)) &&
-              distanceBetween(c, player) < 310
-            ) {
-              desired = clamp((distanceBetween(c, player) - 160) * 1.5, 0, 150);
-              if (distanceBetween(c, player) < 150) steer = 0;
-            }
-            const quarry = c.pursuitTarget?.hp > 0 ? c.pursuitTarget : player.car;
-            if (
-              wantedStars >= 4 &&
-              quarry &&
-              quarry !== c &&
-              !isAircraft(quarry) &&
-              distanceBetween(c, quarry) < 200
-            ) {
-              // Contact tactics: aim a car length ahead of the quarter panel and push.
-              const lead = {
-                x: quarry.x + (quarry.vx || 0) * 0.32,
-                y: quarry.y + (quarry.vy || 0) * 0.32,
-              };
-              steer = clamp(normalizeAngle(headingBetween(c, lead) - c.a) * 3.4, -2.3, 2.3);
-              desired = Math.max(desired, Math.hypot(quarry.vx || 0, quarry.vy || 0) + 75);
-            }
-            acceleration = clamp(
-              (desired - along) * 3,
-              -(!player.car ? 620 : 300),
-              vehicleDefinition.acc,
-            );
-            drag = 0.2;
+            // Intercepts, PIT and boxing, search sweeps and stuck recovery (pursuit.js).
+            const control = pursuitControl(c, stepSeconds, along, vehicleDefinition);
+            steer = control.steer;
+            acceleration = control.acceleration;
+            drag = control.drag;
           } else if (c.hp > 0 && c.ai && !c.crewDeployed) {
             // Traffic decisions are cached: 20 Hz near the player, 4 Hz for distant cars.
             const ai =
@@ -1728,6 +1697,7 @@
           vehicle.ai = false;
           vehicle.cop = false;
           vehicle.sprite = null;
+          if (vehicle.lastAttacker === player && vehicle !== player.car) recordVehicleKill(vehicle);
           if (!vehicleSpec(vehicle).bicycle)
             explode(
               vehicle.x,

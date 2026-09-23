@@ -3639,6 +3639,125 @@ body:not(.touch-mode).police-search-active #carRadio {
   }
 }
 
+/* Wanted level (heat.js, pursuit.js): the next star flashes while dispatch
+   escalates, earned stars grey out and pulse during a search, a thin meter
+   shows the climb to the next star, the body count sits under it. */
+.heat #stars .star {
+  display: inline-block;
+}
+.heat #stars .star.on {
+  color: var(--acid);
+}
+.heat #stars .star.next {
+  color: #ff5f4f;
+  animation: starnext 0.36s steps(2) infinite;
+}
+.heat #stars .star.fresh {
+  animation: starpop 0.5s ease-out 3;
+}
+.heat #stars.searching .star.on {
+  color: #a9b0a4;
+}
+@keyframes starnext {
+  50% {
+    opacity: 0.15;
+  }
+}
+@keyframes starpop {
+  0% {
+    transform: scale(1.6);
+    color: #fff;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+#heatMeter {
+  height: 3px;
+  margin-top: 3px;
+  background: #ffffff21;
+}
+#heatMeter i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #f0b54d, #ff4e3d);
+  transition: width 0.3s;
+}
+#heatMeter.hidden {
+  visibility: hidden;
+}
+#bodyCount {
+  min-height: 12px;
+  margin-top: 2px;
+  font: 700 10px monospace;
+  letter-spacing: 1px;
+  color: #ec978b;
+  text-align: right;
+}
+#arrestStatus {
+  position: absolute;
+  left: 50%;
+  bottom: 26%;
+  transform: translateX(-50%);
+  width: 260px;
+  padding: 8px 12px;
+  background: #0b1320d9;
+  border: 1px solid #6fb6ff88;
+  color: #cfe6ff;
+  font: 700 12px monospace;
+  letter-spacing: 1.5px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+#arrestStatus.show {
+  opacity: 1;
+}
+#arrestStatus .meter {
+  margin-top: 6px;
+}
+#arrestStatus .meter i {
+  background: #6fb6ff;
+}
+#damageArc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border-top: 9px solid #ff3a2edd;
+  filter: blur(2px);
+  pointer-events: none;
+  opacity: 0;
+}
+#damageArc.show {
+  animation: damagearc 0.7s ease-out forwards;
+}
+@keyframes damagearc {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+/* WASTED and BUSTED: the world drains of colour in slow motion. */
+body.wasted #scene,
+body.wasted #game {
+  filter: grayscale(0.85) contrast(1.15) brightness(0.8);
+  transition: filter 1.4s;
+}
+body.wasted #announcement strong {
+  color: #e0463c;
+  font-size: clamp(46px, 7vw, 104px);
+  letter-spacing: 3px;
+}
+body.busted #announcement strong {
+  color: #6fb6ff;
+}
     </style>
   </head>
   <body>
@@ -3662,6 +3781,8 @@ body:not(.touch-mode).police-search-active #carRadio {
         <div class="heat">
           <span class="eyebrow">WANTED LEVEL</span>
           <div id="stars">☆☆☆☆☆</div>
+          <div id="heatMeter" class="hidden"><i id="heatFill"></i></div>
+          <div id="bodyCount"></div>
         </div>
         <button id="pauseBtn" class="icon-btn" aria-label="Pause game" title="Pause (Escape)">
           Ⅱ
@@ -3682,6 +3803,11 @@ body:not(.touch-mode).police-search-active #carRadio {
       </div>
     </div>
     <div id="policeNotice" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="arrestStatus" aria-live="polite">
+      BEING ARRESTED · FIGHT OR RUN
+      <div class="meter"><i id="arrestFill"></i></div>
+    </div>
+    <div id="damageArc" aria-hidden="true"></div>
     <div id="stealthStatus" style="display: none">
       <span id="stealthLabel"></span>
       <div class="meter"><i id="stealthFill"></i></div>
