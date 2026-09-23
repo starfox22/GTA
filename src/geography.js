@@ -382,11 +382,96 @@
     function onSunsetIsle(x, y) {
       return regionContains(SUNSET_ISLE, x, y);
     }
-    function landAt(x, y) {
+    function landAtExact(x, y) {
       return (
         !COUNTY_LAKES.some((r) => regionContains(r, x, y)) &&
         LAND_REGIONS.some((r) => regionContains(r, x, y))
       );
+    }
+    /**
+     * LAND CELL CACHE
+     * landAt() is asked hundreds of thousands of times a second (four hull corners
+     * per moving car per 1/120 s physics step, every footstep through solid(), the
+     * sinking check), and the polygon test was over half of all simulation time.
+     * The map is cut into LAND_CELL squares. Cells no coastline or lake edge passes
+     * through are uniformly land or water, so their answer is computed once (at the
+     * centre, on first use) and remembered; only cells an edge crosses still run the
+     * exact polygon test. The coast never changes at runtime, but county.js appends
+     * its regions after this file, so the grid is rebuilt if the region count moves.
+     */
+    const LAND_CELL = 16;
+    const landCells = { regions: -1, x0: 0, y0: 0, cols: 0, rows: 0, state: null };
+    // state per cell: 0 not yet known, 1 land, 2 water, 3 an edge crosses it (exact test).
+    function buildLandCells() {
+      const polygons = [...LAND_REGIONS, ...COUNTY_LAKES].map((r) => r.polygon);
+      let minx = Infinity,
+        miny = Infinity,
+        maxx = -Infinity,
+        maxy = -Infinity;
+      for (const poly of polygons)
+        for (const [x, y] of poly) {
+          minx = Math.min(minx, x);
+          miny = Math.min(miny, y);
+          maxx = Math.max(maxx, x);
+          maxy = Math.max(maxy, y);
+        }
+      const c = landCells;
+      c.regions = LAND_REGIONS.length + COUNTY_LAKES.length;
+      c.x0 = Math.floor(minx / LAND_CELL) - 2;
+      c.y0 = Math.floor(miny / LAND_CELL) - 2;
+      c.cols = Math.ceil(maxx / LAND_CELL) - c.x0 + 3;
+      c.rows = Math.ceil(maxy / LAND_CELL) - c.y0 + 3;
+      c.state = new Uint8Array(c.cols * c.rows);
+      // Flag every cell an edge touches: test each cell in the edge's bounding box
+      // (grown by a unit for rounding) against the segment with a separating-axis check.
+      for (const poly of polygons)
+        for (let i = 0; i < poly.length; i++) {
+          const [ax, ay] = poly[i],
+            [bx, by] = poly[(i + 1) % poly.length],
+            nx = ay - by,
+            ny = bx - ax,
+            c0 = Math.floor((Math.min(ax, bx) - 1) / LAND_CELL),
+            c1 = Math.floor((Math.max(ax, bx) + 1) / LAND_CELL),
+            r0 = Math.floor((Math.min(ay, by) - 1) / LAND_CELL),
+            r1 = Math.floor((Math.max(ay, by) + 1) / LAND_CELL);
+          for (let col = c0; col <= c1; col++)
+            for (let row = r0; row <= r1; row++) {
+              // The segment's line crosses the (slightly grown) box when the box
+              // corners do not all lie on one side of it.
+              const x = col * LAND_CELL - 1,
+                y = row * LAND_CELL - 1,
+                size = LAND_CELL + 2;
+              let above = 0,
+                below = 0;
+              for (const [px, py] of [
+                [x, y],
+                [x + size, y],
+                [x, y + size],
+                [x + size, y + size],
+              ]) {
+                const side = (px - ax) * nx + (py - ay) * ny;
+                if (side >= 0) above++;
+                if (side <= 0) below++;
+              }
+              if (above && below) c.state[(row - c.y0) * c.cols + col - c.x0] = 3;
+            }
+        }
+    }
+    function landAt(x, y) {
+      const c = landCells;
+      if (c.regions !== LAND_REGIONS.length + COUNTY_LAKES.length) buildLandCells();
+      const col = Math.floor(x / LAND_CELL) - c.x0,
+        row = Math.floor(y / LAND_CELL) - c.y0;
+      // Outside every polygon's bounds there is only sea.
+      if (col < 0 || row < 0 || col >= c.cols || row >= c.rows) return false;
+      const i = row * c.cols + col,
+        s = c.state[i];
+      if (s === 1) return true;
+      if (s === 2) return false;
+      if (s === 3) return landAtExact(x, y);
+      const land = landAtExact((col + c.x0 + 0.5) * LAND_CELL, (row + c.y0 + 0.5) * LAND_CELL);
+      c.state[i] = land ? 1 : 2;
+      return land;
     }
     function inAirport(x, y) {
       return y > 4120 && y < 5632 && x < 1400;

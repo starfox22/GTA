@@ -1332,8 +1332,10 @@
           c.navAngle = undefined;
         }
         // Only the player's own car may leave the land: into the surf off a
-        // beach or over a quay into the bay, where it floods (water.js).
+        // beach or over a quay into the bay, where it floods (water.js). A car that
+        // has not moved this step (most are parked) needs no footprint re-check.
         if (
+          (c.x !== c.stepStartX || c.y !== c.stepStartY || c.a !== c.stepStartA) &&
           c.type !== 'plane' &&
           !(isAircraft(c) && c.altitude > 8) &&
           !isBoat(c) &&
@@ -1369,6 +1371,7 @@
           player.altitude = (c.altitude || 0) + (c.groundHeight || 0);
         }
       }
+      mark('phys:post');
     }
     function personIncapacitated(p) {
       return p.hp > 0 && ((p.knockedFor || 0) > 0 || (p.dazedFor || 0) > 0);
@@ -1377,26 +1380,29 @@
       return p.hp <= 0 ? 1 : clamp((p.knockedFor || 0) / 0.55, 0, 1);
     }
     function updateKnockdowns(deltaSeconds) {
-      for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers]) {
-        p.impactCooldown = Math.max(0, (p.impactCooldown || 0) - deltaSeconds);
-        if (p.hp <= 0) continue;
-        if (p.ejected) stepEjection(p, deltaSeconds);
-        if (p.knockedFor > 0) {
-          p.aiming = false;
-          p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);
-          if (
-            p.knockedFor < 0.55 &&
-            vehicles.some((c) => sameFloor(c, p) && pointInCar(p.x, p.y, c, 6))
-          )
-            p.knockedFor = 0.6;
-          if (p.knockedFor === 0) {
-            p.dazedFor = 1.4;
-            p.flee = 8;
-          }
-        } else if (p.dazedFor > 0) {
-          p.aiming = false;
-          p.dazedFor = Math.max(0, p.dazedFor - deltaSeconds);
+      // Walk the four lists in place rather than copying ~700 people every frame.
+      for (const list of [pedestrians, enemies, gangMembers, officers])
+        for (const p of list) updateKnockdown(p, deltaSeconds);
+    }
+    function updateKnockdown(p, deltaSeconds) {
+      p.impactCooldown = Math.max(0, (p.impactCooldown || 0) - deltaSeconds);
+      if (p.hp <= 0) return;
+      if (p.ejected) stepEjection(p, deltaSeconds);
+      if (p.knockedFor > 0) {
+        p.aiming = false;
+        p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);
+        if (
+          p.knockedFor < 0.55 &&
+          vehicles.some((c) => sameFloor(c, p) && pointInCar(p.x, p.y, c, 6))
+        )
+          p.knockedFor = 0.6;
+        if (p.knockedFor === 0) {
+          p.dazedFor = 1.4;
+          p.flee = 8;
         }
+      } else if (p.dazedFor > 0) {
+        p.aiming = false;
+        p.dazedFor = Math.max(0, p.dazedFor - deltaSeconds);
       }
     }
     function knockPerson(person, c, speed) {
@@ -1576,8 +1582,6 @@
       }
     }
     function updateCars(deltaSeconds, active) {
-      // One combined people list per call: the old per-vehicle spread copied ~400 entries per vehicle per frame.
-      let peopleList = null;
       for (const vehicle of vehicles)
         vehicle.personSweepStart = {
           x: vehicle.x,
@@ -1640,21 +1644,28 @@
         )
           continue;
         const speed = Math.hypot(vehicle.vx || 0, vehicle.vy || 0),
-          contacts = new Set();
-        if (!peopleList) peopleList = [...pedestrians, ...enemies, ...gangMembers, ...officers];
-        const reach = vehicleSpec(vehicle).l + 100;
-        for (const p of peopleList)
+          contacts = new Set(),
+          reach = vehicleSpec(vehicle).l + 100;
+        const touch = (p) => {
           if (
             p.hp > 0 &&
             !p.hidden &&
             Math.abs(p.x - vehicle.x) < reach &&
             Math.abs(p.y - vehicle.y) < reach &&
             sameFloor(vehicle, p) &&
-            distanceBetween(vehicle, p) < vehicleSpec(vehicle).l + 100 &&
+            distanceBetween(vehicle, p) < reach &&
             sweptPersonContact(p, vehicle, vehicle.personSweepStart)
           ) {
             if (vehicle.pedestrianContacts?.has(p) || knockPerson(p, vehicle, speed)) contacts.add(p);
           }
+        };
+        // Some 650 pedestrians: ask the crowd's neighbour grid for the ones near
+        // this car instead of testing all of them for every car near the player.
+        // The swept test reaches back to where the car was a frame ago, so the
+        // query grows by the distance it covered.
+        const swept = Math.hypot(vehicle.x - vehicle.personSweepStart.x, vehicle.y - vehicle.personSweepStart.y);
+        forEachPedestrianNear(vehicle.x, vehicle.y, reach + swept, touch);
+        for (const list of [enemies, gangMembers, officers]) for (const p of list) touch(p);
         vehicle.pedestrianContacts = contacts;
         if (
           speed >= 40 &&

@@ -3341,18 +3341,46 @@
         }
       }
     }
-    function drawMap(drawingContext, width, height, big = false) {
-      const scale = big
-          ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
-          : 0.137,
-        cx = big ? mapCenter.x : player.x,
-        cy = big ? mapCenter.y : player.y;
-      drawingContext.fillStyle = '#123244';
-      drawingContext.fillRect(0, 0, width, height);
-      drawingContext.save();
-      drawingContext.translate(width / 2, height / 2);
-      drawingContext.scale(scale, scale);
-      drawingContext.translate(-cx, -cy);
+    /**
+     * MINIMAP BASE LAYER
+     * The minimap used to repaint the whole county (coast, every street, parks,
+     * promenades, county ground and every building footprint) on every HUD
+     * refresh, eleven times a second: tens of milliseconds each time, mostly in
+     * the shoreline tests of the promenade painter. None of it changes after
+     * startup, so it is painted once into an offscreen canvas at the minimap's
+     * fixed scale and each refresh copies the window around the player. The big
+     * city map zooms, so it still paints the vector layers directly.
+     */
+    const MINIMAP_SCALE = 0.137;
+    let minimapBase = null;
+    function minimapBaseLayer() {
+      if (minimapBase) return minimapBase;
+      let minx = Infinity,
+        miny = Infinity,
+        maxx = -Infinity,
+        maxy = -Infinity;
+      for (const reg of LAND_REGIONS)
+        for (const [x, y] of reg.polygon) {
+          minx = Math.min(minx, x);
+          miny = Math.min(miny, y);
+          maxx = Math.max(maxx, x);
+          maxy = Math.max(maxy, y);
+        }
+      // The coast is stroked 90 units wide, so leave room around the land.
+      const x0 = minx - 120,
+        y0 = miny - 120,
+        canvas = document.createElement('canvas');
+      canvas.width = Math.ceil((maxx - minx + 240) * MINIMAP_SCALE);
+      canvas.height = Math.ceil((maxy - miny + 240) * MINIMAP_SCALE);
+      const context = canvas.getContext('2d');
+      context.scale(MINIMAP_SCALE, MINIMAP_SCALE);
+      context.translate(-x0, -y0);
+      paintMapBase(context, false);
+      minimapBase = { canvas, x0, y0 };
+      return minimapBase;
+    }
+    // Land, streets, parks, ground and building footprints: the static layers.
+    function paintMapBase(drawingContext, big) {
       for (const reg of LAND_REGIONS) {
         regionPath(drawingContext, reg);
         drawingContext.strokeStyle = reg.id === 'palmkeys' ? '#33777e' : '#245369';
@@ -3381,6 +3409,29 @@
         }
       }
       drawingContext.restore();
+    }
+    function drawMap(drawingContext, width, height, big = false) {
+      const scale = big
+          ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
+          : MINIMAP_SCALE,
+        cx = big ? mapCenter.x : player.x,
+        cy = big ? mapCenter.y : player.y;
+      drawingContext.fillStyle = '#123244';
+      drawingContext.fillRect(0, 0, width, height);
+      if (!big) {
+        // Whole pixels keep the cached layer sharp; overlays are drawn in world units.
+        const base = minimapBaseLayer();
+        drawingContext.drawImage(
+          base.canvas,
+          Math.round(width / 2 - (cx - base.x0) * scale),
+          Math.round(height / 2 - (cy - base.y0) * scale),
+        );
+      }
+      drawingContext.save();
+      drawingContext.translate(width / 2, height / 2);
+      drawingContext.scale(scale, scale);
+      drawingContext.translate(-cx, -cy);
+      if (big) paintMapBase(drawingContext, big);
       if (big)
         for (const gang of GANGS) {
           drawingContext.fillStyle = gang.id === 'harbor' ? '#bb73571f' : '#ad88ca29';
