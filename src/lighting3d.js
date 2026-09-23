@@ -155,6 +155,8 @@
       const lampTexture = new Three.CanvasTexture(lampCanvas);
       lampTexture.colorSpace = Three.SRGBColorSpace;
       lampTexture.generateMipmaps = false;
+      // Row 0 of the canvas is the north edge, sampled at v = 0.
+      lampTexture.flipY = false;
       lampTexture.minFilter = Three.LinearFilter;
       const cityLightUniforms = {
         cityLampMap: { value: lampTexture },
@@ -359,12 +361,12 @@
               heads++;
             }
             beamPosition.set(c.x - cos * (spec.l * 0.5 + 9), ground, c.y - sin * (spec.l * 0.5 + 9));
-            beamScale.set(26, 1, spec.w * 1.3);
+            beamScale.set(18, 1, spec.w * 1.1);
             beamQuaternion.setFromAxisAngle(headBeamUp, -c.a);
-            beamPosition.x -= cos * 13;
-            beamPosition.z -= sin * 13;
+            beamPosition.x -= cos * 9;
+            beamPosition.z -= sin * 9;
             tailGlows.setMatrixAt(tails, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
-            tailGlows.setColorAt(tails, beamColor.setScalar(night * 0.35));
+            tailGlows.setColorAt(tails, beamColor.setScalar(night * 0.18));
             tails++;
           }
         headBeams.count = heads;
@@ -378,9 +380,11 @@
       // ---- Time-of-day look ------------------------------------------------------------------
       const SKY_KEYS = {
         // [zenith, horizon, ground, glow] in scene-linear sRGB hex.
-        day: ['#3f76b8', '#b4cde2', '#4a4e52', '#ffe2b8'],
-        dusk: ['#3a4f86', '#f0a070', '#3b3438', '#ff9a50'],
-        night: ['#050a18', '#15203a', '#08090c', '#3a3050'],
+        day: ['#5b87bd', '#c4d2dc', '#5c5a52', '#ffe2b8'],
+        dusk: ['#4a5a8a', '#f0a070', '#453c3a', '#ff9a50'],
+        // Brighter than a real night sky on purpose: it is the moonlit ambient
+        // that keeps the streets readable between the lamp pools.
+        night: ['#3c4862', '#4b5468', '#25272d', '#3a3050'],
         overcast: ['#8a949e', '#b3b9bf', '#4a4d50', '#d0d0d0'],
       };
       const skyKeyColors = Object.fromEntries(
@@ -389,16 +393,18 @@
       // Lamp materials are declared after this file; their day colours are read on first use.
       let warmLampBase = null,
         tailLampBase = null;
-      const gradeLiftNight = new Three.Vector3(0.012, 0.018, 0.04),
-        gradeGainNight = new Three.Vector3(1.04, 0.99, 0.92),
-        gradeLiftDusk = new Three.Vector3(0.0, 0.014, 0.03),
-        gradeGainDusk = new Three.Vector3(1.08, 0.98, 0.86),
-        gradeLiftDay = new Three.Vector3(0.0, 0.004, 0.012),
-        gradeGainDay = new Three.Vector3(1.02, 1.0, 0.97);
-      let lightingAge = 0;
+      const gradeLiftNight = new Three.Vector3(0.0, 0.003, 0.01),
+        gradeGainNight = new Three.Vector3(1.05, 1.0, 0.95),
+        gradeLiftDusk = new Three.Vector3(0.0, 0.002, 0.006),
+        gradeGainDusk = new Three.Vector3(1.1, 1.0, 0.86),
+        gradeLiftDay = new Three.Vector3(0.0, 0.0, 0.003),
+        gradeGainDay = new Three.Vector3(1.035, 1.0, 0.94);
+      let lightingClock = performance.now();
       function updateLighting(deltaSeconds) {
-        envAge += deltaSeconds || 0.016;
-        lightingAge += deltaSeconds;
+        // The environment rebuild is throttled on the wall clock, not game time.
+        const now = performance.now();
+        envAge += (now - lightingClock) / 1000;
+        lightingClock = now;
         updateSunPath();
         const light = daylight(),
           night = clamp(1 - light * 1.6, 0, 1),
@@ -435,11 +441,15 @@
         warmLamp.color.copy(warmLampBase).multiplyScalar(1 + night * 3.5);
         tailLamp.color.copy(tailLampBase).multiplyScalar(1 + night * 2.5);
         updateHeadlightBeams();
+        // Moonlight and sky light strong enough to read the streets by at night.
+        sun.intensity += night * 0.55;
+        hemi.intensity += night * 0.75;
         // Post look: exposure, bloom and grade (postfx3d.js).
-        postLook.exposure = renderer.toneMappingExposure;
+        // A touch more exposure at night: legibility first, darkness second.
+        postLook.exposure = renderer.toneMappingExposure * (1 + night * 0.22);
         postLook.bloomThreshold = 2.2 - night * 1.35 - dusk * 0.3;
-        postLook.bloomStrength = 0.22 + night * 0.38 + dusk * 0.1;
-        postLook.saturation = (1.06 + dusk * 0.08 - night * 0.12) * (1 - overcast * 0.14 - rain * 0.06);
+        postLook.bloomStrength = 0.22 + night * 0.3 + dusk * 0.1;
+        postLook.saturation = (1.06 + dusk * 0.08 - night * 0.2) * (1 - overcast * 0.14 - rain * 0.06);
         postLook.contrast = 1.05 + dusk * 0.03 - overcast * 0.04;
         postLook.lift.copy(gradeLiftDay).lerp(gradeLiftDusk, dusk).lerp(gradeLiftNight, night);
         postLook.gain.copy(gradeGainDay).lerp(gradeGainDusk, dusk).lerp(gradeGainNight, night);
