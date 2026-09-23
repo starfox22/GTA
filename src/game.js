@@ -1165,6 +1165,10 @@
                 place.door.y + (place.kind === 'rooftop' ? -11 : 14),
                 place.kind === 'rooftop' ? 10 : 15,
               );
+            // Street lamps round a landmark's block as round any other: the two
+            // outer ones on the front kerb (clear of the entrance) and the avenue kerb.
+            for (const s of [0, 2]) lamps.push({ x: x + 22 + s * 144, y: y + h + 18 });
+            for (let s = 0; s < 3; s++) lamps.push({ x: x + w + 18, y: y + 20 + s * 150 });
             continue;
           }
           if (isPark(bx, by)) continue;
@@ -1259,6 +1263,12 @@
             drawTree(x - 16, y + 90 + s * 150, 11);
             drawTree(x + w + 16, y + 90 + s * 150, 11);
           }
+          // Lamps down the avenue kerb too (east side, between the trees), so the
+          // north-south streets are not dark canyons between lit cross streets.
+          for (let s = 0; s < 3; s++) {
+            lamps.push({ x: x + w + 18, y: y + 20 + s * 150 });
+            rect(x + w + 16, y + 17 + s * 150, 3, 3, '#3f453a');
+          }
         }
       // Waterfront promenades, continuous river and three navigable crossings.
       paintPromenades(groundContext);
@@ -1349,6 +1359,11 @@
       for (let i = trees.length - 1; i >= 0; i--) {
         const t = trees[i];
         if (cityStreetAt(t.x, t.y, 2) || onServiceRoad(t.x, t.y) || railBlocked(t.x, t.y, 6)) trees.splice(i, 1);
+      }
+      // Lamp posts likewise (the head overhangs 6 units towards +x).
+      for (let i = lamps.length - 1; i >= 0; i--) {
+        const l = lamps[i];
+        if (cityStreetAt(l.x, l.y, 2) || onServiceRoad(l.x, l.y) || railBlocked(l.x, l.y, 6)) lamps.splice(i, 1);
       }
     }
     function populate() {
@@ -4004,6 +4019,21 @@
       player.coaster = null;
       player.parachute = null;
       player.climbing = null;
+      // Out of the water too: otherwise the first frame at the new spot still draws
+      // the swimmer's pose and wake over dry land, and the SWIMMING toast lingers.
+      if (player.swimming || player.wading) {
+        player.swimming = false;
+        player.wading = 0;
+        if (!player.car) player.altitude = 0;
+        toastTime = 0;
+        getElement('toast').classList.remove('show');
+      }
+      // An airborne aircraft cannot be left (exitCar refuses), so it comes along
+      // rather than being abandoned in the sky while the player jumps away.
+      if (player.car && isAircraft(player.car)) {
+        player.car.x = x;
+        player.car.y = y;
+      }
       player.x = x;
       player.y = y;
       cameraTarget.x = x;

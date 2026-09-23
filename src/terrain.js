@@ -389,29 +389,46 @@
     }
     function snowAmount(peak, x, y, height, slope = 0) {
       if (peak.h < 600) return 0;
-      const drift = Math.sin(x * 0.018 + y * 0.011) * 0.025 + Math.sin(y * 0.034 - x * 0.006) * 0.025;
+      // Drifts, plus gullies: tongues of snow reaching down the slope at irregular
+      // angles, so the snow line zigzags instead of capping the hill like icing.
+      const around = Math.atan2(y - peak.y, x - peak.x),
+        gully = Math.sin(around * 11 + Math.sin(around * 3 + peak.x) * 1.6) * 0.055 + Math.sin(around * 23 + peak.y) * 0.03,
+        drift = Math.sin(x * 0.018 + y * 0.011) * 0.025 + Math.sin(y * 0.034 - x * 0.006) * 0.025 + gully;
       return clamp((height / peak.h - 0.56 - drift) / 0.17, 0, 1) * clamp(1 - slope * 0.85, 0.24, 1);
     }
     function paintMountainTexture(drawingContext, peak, size = 1024) {
       const rx = peak.rx || peak.r,
         ry = peak.ry || peak.r;
-      drawingContext.fillStyle = '#b8bca6';
+      // A near-white base: the mesh's vertex colours carry the hue (ground, stone,
+      // snow), this texture only the grain, strata and trails on top of it.
+      drawingContext.fillStyle = '#f2f3ec';
       drawingContext.fillRect(0, 0, size, size);
       let randomSeed = Math.round(peak.x * 13 + peak.y * 7);
       const random = () => {
         randomSeed = (randomSeed * 1664525 + 1013904223) >>> 0;
         return randomSeed / 4294967296;
       };
-      for (let y = 0; y < size; y += 8)
-        for (let x = 0; x < size; x += 8) {
-          const wx = peak.x - rx + (x / size) * rx * 2,
-            wy = peak.y - ry + (y / size) * ry * 2,
-            s = snowAmount(peak, wx, wy, terrainHeight(wx, wy));
-          if (s > 0.01) {
-            drawingContext.fillStyle = 'rgba(240,247,248,' + s + ')';
-            drawingContext.fillRect(x, y, 9, 9);
-          }
+      // Snow drifts as a coarse mask scaled up with smoothing. (Overlapping 9-pixel
+      // squares on an 8-pixel grid doubled the alpha along every seam, which drew
+      // a grid over the snowfield and a staircase along the snow line.)
+      const cells = size / 8,
+        snowCanvas = document.createElement('canvas');
+      snowCanvas.width = snowCanvas.height = cells;
+      const snowContext = snowCanvas.getContext('2d'),
+        snowImage = snowContext.createImageData(cells, cells);
+      for (let y = 0; y < cells; y++)
+        for (let x = 0; x < cells; x++) {
+          const wx = peak.x - rx + ((x + 0.5) / cells) * rx * 2,
+            wy = peak.y - ry + ((y + 0.5) / cells) * ry * 2,
+            o = (y * cells + x) * 4;
+          snowImage.data[o] = 240;
+          snowImage.data[o + 1] = 247;
+          snowImage.data[o + 2] = 248;
+          snowImage.data[o + 3] = Math.round(snowAmount(peak, wx, wy, terrainHeight(wx, wy)) * 255);
         }
+      snowContext.putImageData(snowImage, 0, 0);
+      drawingContext.imageSmoothingEnabled = true;
+      drawingContext.drawImage(snowCanvas, 0, 0, size, size);
       // Fine rock grain and broken strata prevent smooth hills from looking like molded cones.
       for (let i = 0; i < 8000; i++) {
         const x = random() * size,

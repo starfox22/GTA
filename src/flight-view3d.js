@@ -561,8 +561,8 @@
       }
       /**
        * FAR SCENERY
-       * The static batches keep one material per building (for the see-through fade
-       * and each building's own window lighting), so the whole city is ~8000 draw
+       * The static batches keep one material per building (for each building's own
+       * window lighting), so the whole city is ~8000 draw
        * calls, and every building's main block is a six-material box on top. Seen
        * from the street only a few hundred are in view; from high up, all of them.
        * So a second, coarse copy of the city is built once: every piece of batched
@@ -587,7 +587,25 @@
       let farClasses = [],
         farSceneryShown = false,
         shadowProxyShown = false;
-      sun.shadow.camera.layers.enable(SHADOW_PROXY_LAYER);
+      // three.js tests an object's layers against the *view* camera in the shadow
+      // pass too (WebGLShadowMap.renderObject), so enabling the proxy layer on the
+      // sun's shadow camera does nothing: the proxy never reached the shadow map and
+      // the city lost every building shadow between ~150 m and ~500 m up. The view
+      // camera's render list is already built when the renderer draws the shadow
+      // map, so turning the layer on for the view camera just for that pass puts the
+      // proxy into the shadow map and nowhere else.
+      {
+        const renderShadowMap = renderer.shadowMap.render;
+        renderer.shadowMap.render = function (lights, shadowScene, viewCamera) {
+          const had = viewCamera.layers.isEnabled(SHADOW_PROXY_LAYER);
+          viewCamera.layers.enable(SHADOW_PROXY_LAYER);
+          try {
+            renderShadowMap.call(this, lights, shadowScene, viewCamera);
+          } finally {
+            if (!had) viewCamera.layers.disable(SHADOW_PROXY_LAYER);
+          }
+        };
+      }
       farScenery.visible = false;
       scene.add(farScenery);
       function farMaterialUsable(material) {

@@ -451,18 +451,43 @@
             uniform vec3 uSunDirection, uViewDirection;
             uniform float uPerspective, uGround, uStrength;
             varying vec3 vWorld;
+            // The layer's density with a soft threshold. cloudDensity() carves crisp
+            // cells out of the noise, right for the cloud you fly past but, thrown on
+            // the ground, a pattern of hard-edged blotches a hundred metres across
+            // (camouflage, seen from a helicopter). A real cloud shadow is a broad,
+            // soft pool: the same cells, but their edges ramp in over a wide band.
+            float softCloud(vec3 p){
+              float h = (p.y - uBase) / (uTop - uBase);
+              float cover = cloudCoverage(p.xz);
+              if (cover <= 0.001 || h <= 0. || h >= 1.) return 0.;
+              float top = mix(0.36, 1.0, cover);
+              float profile = smoothstep(0., 0.07, h) * (1. - smoothstep(top * 0.35, top, h));
+              vec3 q = vec3(p.x + uWind.x, p.y, p.z + uWind.y);
+              vec4 n = texture(uNoise, q / ${CLOUD_SHAPE_SCALE.toFixed(1)});
+              float shape = n.r * 0.75 + n.b * 0.25;
+              float cut = 1. - cover * profile * 0.94;
+              return smoothstep(cut - 0.16, cut + 0.3, shape);
+            }
             void main(){
               // Follow the view ray from this plane down to the ground it covers...
               vec3 rd = normalize(mix(uViewDirection, vWorld - cameraPosition, uPerspective));
               vec3 ground = vWorld + rd * ((uGround - vWorld.y) / min(rd.y, -0.05));
-              // ...then look up the sun ray through the slab from there.
+              // ...then look up the sun ray through the slab from there, at two heights,
+              // each a small ring of taps (a ~60 m penumbra) so edges blur into the
+              // soft pools a sun-lit cumulus actually throws.
               float depth = 0.;
-              for (int i = 0; i < 4; i++){
-                float y = mix(uBase, uTop, (float(i) + 0.5) / 4.);
-                depth += cloudDensity(ground + uSunDirection * ((y - ground.y) / uSunDirection.y), false);
+              for (int i = 0; i < 2; i++){
+                float y = mix(uBase, uTop, 0.22 + 0.26 * float(i));
+                vec3 p = ground + uSunDirection * ((y - ground.y) / uSunDirection.y);
+                depth += softCloud(p) * 2.;
+                depth += softCloud(p + vec3(310., 0., 90.));
+                depth += softCloud(p + vec3(-90., 0., 310.));
+                depth += softCloud(p + vec3(-310., 0., -90.));
+                depth += softCloud(p + vec3(90., 0., -310.));
               }
-              float shade = 1. - exp(-depth * 1.6);
-              gl_FragColor = vec4(0.02, 0.03, 0.06, shade * uStrength);
+              float shade = smoothstep(0.04, 0.8, depth / 12.);
+              // Sky-lit shade is cool but not ink: a slate tone rather than navy.
+              gl_FragColor = vec4(0.06, 0.08, 0.12, shade * uStrength);
             }`,
         }),
       );
@@ -510,7 +535,12 @@
         }
         // Shadows on the ground: strongest in broken cloud, gone under a closed deck
         // (whose even gloom is the overcast dimming in weather3d.js) and at night.
-        const shadeStrength = cloudsSupported ? 0.5 * clamp(light * 1.4, 0, 1) * (1 - overcast * 0.85) : 0;
+        // At most a third darker: enough to read as passing cloud without turning
+        // the streets into a patchwork from the air.
+        // A closed deck (overcast and rain, cloud 0.9 and up) throws no pattern at
+        // all: its residual blotches over the rain-dark streets read as dirt.
+        const closedDeck = clamp((cloud - 0.72) / 0.18, 0, 1),
+          shadeStrength = cloudsSupported ? 0.34 * clamp(light * 1.4, 0, 1) * (1 - closedDeck) : 0;
         cloudShade.visible = shadeStrength > 0.01 && coverage > 0.05;
         if (cloudShade.visible) {
           const ground = terrainHeight(viewCenter.x, viewCenter.y),
@@ -526,7 +556,12 @@
         // by the sun above the weather (the time-of-day strength, plus any lightning):
         // an overcast is grey underneath and bright on top.
         const cloudSunIntensity = 0.35 + light * 3.6 + 9 * weather.flash * weather.flash;
-        sun.intensity *= 1 - cloudOverhead(viewCenter.x, viewCenter.y, coverage) * (0.5 - overcast * 0.3) * (cloudsSupported ? 1 : 0);
+        // Only while the view is about the size of a cloud: from the air the frame
+        // spans several, and dimming the whole city for the one in the middle made
+        // the light pump as the helicopter crossed their edges.
+        const cloudSized = clamp((2600 - viewReach) / 1600, 0, 1);
+        sun.intensity *=
+          1 - cloudOverhead(viewCenter.x, viewCenter.y, coverage) * (0.42 - overcast * 0.25) * cloudSized * (cloudsSupported ? 1 : 0);
         // The layer itself: only from the flight camera, and only once it is above the
         // base (every view ray points downwards, so below it there is nothing to see).
         const active =

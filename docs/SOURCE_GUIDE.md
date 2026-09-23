@@ -289,6 +289,9 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
   `onBeforeCompile`) adds it to every lit surface near the ground, scaled by night, the
   blackout job's district power and height. A material with its own `onBeforeCompile` should
   call `cityMaterialPatch(shader)` first. Traffic headlights are instanced ground cones.
+- **Cutaway** (lighting3d.js, `updateCutaway`): the same patch dithers away, in a soft disc
+  round the player, any fragment above their head that is well in front of them (a tower
+  south of them, a tree crown, a viaduct deck), so nothing needs per-building fading.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
   a bump, dielectric roughness and rain puddles (`weather.wet`). Leaf and palm materials sway.

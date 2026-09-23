@@ -6,6 +6,9 @@
        * Terrain surface, snow colors, rural scenery, bridges and region visibility.
        */
       // Regional ground is tiled separately so the original city's ground detail stays sharp.
+      // Their materials get the same procedural ground detail as the city sheet
+      // (surfaces3d.js), or the county is a flat, textureless pastel.
+      const countyGroundMaterials = [];
       for (const tile of countyGroundTiles) {
         const tx = new Three.CanvasTexture(tile.canvas);
         tx.colorSpace = Three.SRGBColorSpace;
@@ -18,6 +21,7 @@
             alphaTest: 0.5,
           }),
         );
+        countyGroundMaterials.push(m.material);
         m.rotation.x = -Math.PI / 2;
         m.position.set(tile.x + CITY_SIZE / 2, 0.025, tile.y + CITY_SIZE / 2);
         m.receiveShadow = true;
@@ -37,16 +41,24 @@
         geo.setIndex(new Three.BufferAttribute(surface.indices, 1));
         geo.computeVertexNormals();
         const colors = [],
-          normal = geo.attributes.normal;
+          normal = geo.attributes.normal,
+          // The foot of the hill is the colour of the ground it rises from (the
+          // region fill in paintCountyGround), so the mesh's stepped outline on the
+          // 10-unit grid does not show as a pale ring; stone and snow come in above.
+          region = countyRegionAt(peak.x, peak.y),
+          foot = new Three.Color(
+            region && region.id === 'ridgeline' ? '#52694a' : region && region.id === 'sentinel' ? '#657057' : '#7e9068',
+          ),
+          stone = new Three.Color('#6f7369');
         for (let i = 0; i < surface.positions.length / 3; i++) {
           const height = surface.positions[i * 3 + 1],
             slope = 1 - Math.abs(normal.getY(i)),
-            rock = clamp(slope * 1.8 + (height / peak.h - 0.4) * 0.7, 0, 1),
-            grass = new Three.Color('#879879'),
-            stone = new Three.Color('#b2b2a3');
+            // Grassy lower slopes giving way to bare rock with height and steepness.
+            rock = clamp(slope * 1.3 + (height / peak.h - 0.45) * 0.9, 0, 1) * clamp(height / (peak.h * 0.15), 0, 1),
+            grass = foot.clone();
           grass.lerp(stone, rock);
           grass.lerp(
-            new Three.Color('#f1f7fa'),
+            new Three.Color('#e6edf1'),
             snowAmount(
               peak,
               peak.x + surface.positions[i * 3],
@@ -72,6 +84,7 @@
             roughness: 0.97,
           }),
         );
+        countyGroundMaterials.push(mountain.material);
         mountain.name = peak.name || 'County hill';
         mountain.userData.sharedTerrain = true;
         mountain.position.set(peak.x, 0, peak.y);

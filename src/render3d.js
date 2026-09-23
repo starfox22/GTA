@@ -631,7 +631,7 @@
         lampGlows = [];
       // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
       // without unbatching the street; each is a street prop in damage.js.
-      const lampPosts = Math.ceil(lamps.length / 2),
+      const lampPosts = lamps.length,
         lampPoles = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
         lampArms = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
         lampHeads = new Three.InstancedMesh(boxGeo, warmLamp, lampPosts);
@@ -642,7 +642,9 @@
         pool.frustumCulled = false;
         scene.add(pool);
       }
-      for (let i = 0; i < lamps.length; i += 2) {
+      // Every lamp is drawn (only every second one used to be, which left most
+      // streets dark at night); their halos are hidden by day (updateStreetLighting).
+      for (let i = 0; i < lamps.length; i++) {
         const l = lamps[i],
           group = new Three.Group(),
           prop = registerStreetProp('lamp', l.x, l.y);
@@ -652,7 +654,7 @@
         placePropInstance(lampArms, prop, l.x + 3, 34, l.y, 7, 1, 1);
         placePropInstance(lampHeads, prop, l.x + 6, 33.5, l.y, 5, 1.2, 3);
         prop.halo = halo(group, 6, 33, 0, 14);
-        lampHalos.push({ sprite: prop.halo, x: l.x, y: l.y });
+        lampHalos.push({ sprite: prop.halo, x: l.x, y: l.y, prop });
         const glow = new Three.Mesh(
           new Three.PlaneGeometry(65, 65),
           new Three.MeshBasicMaterial({
@@ -709,10 +711,13 @@
             polygonOffsetUnits: -2,
           }),
         );
-        m.position.set(x, 23, z + 0.6);
+        // Centred 23 up, but never so low that a wide board sinks into the ground
+        // (a 235-wide sign is 59 tall); callers raise facade signs further.
+        const signY = Math.max(23, width / 8 + 3);
+        m.position.set(x, signY, z + 0.6);
         m.userData.sign = true;
         scene.add(m);
-        m.userData.backing = box(scene, x, 23, z - 1.5, width + 5, width / 4 + 5, 3, darkMetal);
+        m.userData.backing = box(scene, x, signY, z - 1.5, width + 5, width / 4 + 5, 3, darkMetal);
         return m;
       }
       sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb');
@@ -1411,7 +1416,11 @@
       function updateStreetLighting() {
         const glow = 0.1 + 0.9 * nightAmount,
           size = 14 + nightAmount * 12;
+        // By day a halo is invisible anyway: skip its draw call.
+        const lit = nightAmount > 0.03;
         for (const h of lampHalos) {
+          h.sprite.visible = lit && !(h.prop && h.prop.down);
+          if (!h.sprite.visible) continue;
           const power = sideJobPower(h.x, h.y);
           h.sprite.material.opacity = glow * power;
           h.sprite.scale.set(size, size, 1);
@@ -1732,27 +1741,9 @@
               (viewZoom > 0.28 || s.radius >= 50) &&
               Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&
               Math.abs(s.y - viewCenter.y) < viewReach + s.radius;
-          for (const o of allBuildings) {
-            // Fade a building that stands between the camera and the player, but
-            // not one the player is flying high above.
-            const hidden =
-              !player.roof &&
-              altitude < o.height + 30 &&
-              player.x > o.b.x - 8 &&
-              player.x < o.b.x + o.b.w + 8 &&
-              player.y < o.b.y &&
-              player.y > o.b.y - o.height * 0.86;
-            let op = hidden ? 0.28 : 1;
-            if (o.opacity !== op) {
-              o.opacity = op;
-              for (const m of o.materials) {
-                m.transparent = op < 1;
-                m.opacity = op;
-                m.depthWrite = op === 1;
-                m.needsUpdate = true;
-              }
-            }
-          }
+          // Anything between the camera and the player is cut away round them
+          // (lighting3d.js, CUTAWAY).
+          updateCutaway(altitude);
           // Pedestrians are drawn by the instanced crowd (src/crowd3d.js); these
           // keep individual models for their weapons and uniforms.
           const people = [...enemies, ...gangMembers, ...officers, ...storyActors, player];

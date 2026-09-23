@@ -145,9 +145,14 @@
           void main(){
             vec4 origin = modelMatrix * vec4(position, 1.);
             vec2 p = origin.xz;
-            vec4 shoreTexel = texture2D(uShore, (p - uWorldOrigin) / uWorldExtent);
-            float shore = shoreTexel.r * uShoreScale;
-            vBeach = shoreTexel.g;
+            vec2 shoreUv = (p - uWorldOrigin) / uWorldExtent;
+            vec4 shoreTexel = texture2D(uShore, shoreUv);
+            // Beyond the edge of the field the clamped edge texel would be smeared out
+            // to the horizon (turquoise shallows and foam streaks far out in the west
+            // sea): add the distance past the edge so open water deepens as it should.
+            float beyond = length(max(vec2(0.), max(-shoreUv, shoreUv - 1.)) * uWorldExtent);
+            float shore = shoreTexel.r * uShoreScale + beyond;
+            vBeach = shoreTexel.g * (1. - smoothstep(0., 160., beyond));
             float depthFade = 0.22 + 0.78 * smoothstep(8., 190., shore);
             vec3 offset = vec3(0.);
             vec3 dNormal = vec3(0., 1., 0.);
@@ -235,7 +240,9 @@
             color += vec3(1., .78, .5) * sparkle * 0.14 * (1. - uDay) * (1. - smoothstep(0., 360., vShore));
             // Foam: breaking edge, retreating wash and crest whitecaps.
             float washPhase = fract(vShore * 0.022 - uTime * 0.26 + h0 * 0.4);
-            float wash = smoothstep(0.78, 1., washPhase) * (1. - smoothstep(24., 120., vShore));
+            // Rolling wash lines belong on a beach; off a sea wall or a quay they read
+            // as rings of foam drawn round the whole island, so there only a trace.
+            float wash = smoothstep(0.78, 1., washPhase) * (1. - smoothstep(24., 120., vShore)) * mix(0.22, 1., clamp(vBeach * 2., 0., 1.));
             float edge = 1. - smoothstep(0., 22. + h0 * 14., vShore);
             float caps = smoothstep(0.58, 0.95, vCrest * (0.65 + h0 * 0.7)) * smoothstep(40., 160., vShore);
             // Breakers rolling in on a beach: lines of white water parallel to the
