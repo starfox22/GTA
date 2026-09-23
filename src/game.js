@@ -2018,6 +2018,9 @@
       enemies.length = 0;
       bullets.length = 0;
       clearPolice();
+      // A chip left over from before the job (a "POLICE CLEARED!" from a chase
+      // that ended as the payphone was answered) must not sit over its headline.
+      hidePoliceNotice();
       resetOfficerCrews();
       crimeTime = -100;
       player.hp = 100;

@@ -73,9 +73,7 @@
         'elevatorOverlay',
       ])
         getElement(id).classList.add('hidden');
-      policeNoticeSeconds = 0;
-      getElement('policeNotice').classList.remove('show');
-      document.body?.classList.remove('police-notice-visible');
+      hidePoliceNotice();
       dialogueAction = null;
       liftTravel = null;
       servicePlace = null;
