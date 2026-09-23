@@ -441,8 +441,11 @@
       missionLine(info.contact, info.brief);
       save();
     }
+    // How the last mission ended (read by the developer console's missionState()).
+    let lastMissionOutcome = null;
     function failMission(reason) {
       if (!mission) return;
+      lastMissionOutcome = { result: 'failed', index: mission.index, stage: mission.stage, reason };
       const freight = mission.index === 0 && mission.policeNotified;
       cleanupMissionExtras();
       if (freight) clearPolice();
@@ -477,6 +480,7 @@
     }
     function winMission() {
       if (!mission) return;
+      lastMissionOutcome = { result: 'won', index: mission.index, stage: mission.stage };
       cleanupMissionExtras();
       radio('mission-complete');
       const previousCompleted = completed,

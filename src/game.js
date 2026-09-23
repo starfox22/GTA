@@ -4411,8 +4411,11 @@
       }
       if (profile.last) profile.frameGap += t - profile.last;
       profile.last = t;
+      // The police banner is a notice, like the headline cards: it times out on
+      // the wall clock (capped per frame) rather than the simulation's 33 ms step,
+      // so a slow frame rate cannot leave "POLICE CLEARED!" up for minutes.
+      updatePoliceNotice(Math.min(0.25, Math.max(0, (t - lastTime) / 1000)));
       lastTime = t;
-      updatePoliceNotice(deltaSeconds);
       updateWorldView(deltaSeconds);
       updateCasino(deltaSeconds);
       updateElevator(deltaSeconds);
@@ -4506,7 +4509,181 @@
               depotBackDoor: +depotBackDoor.toFixed(2),
               wanted: Math.ceil(wantedStars),
             }
-          : { mission: null, completed, depotShutter: +depotFrontShutter.toFixed(2), depotBackDoor: +depotBackDoor.toFixed(2) },
+          : { mission: null, last: lastMissionOutcome, completed, depotShutter: +depotFrontShutter.toFixed(2), depotBackDoor: +depotBackDoor.toFixed(2) },
+      // What occupies a map point: land or water, anything solid, road, rail, beach,
+      // and whether a car could be parked there. Mission tests use it to check that
+      // objectives, spawns and waypoints are not inside buildings or the sea.
+      probe(x, y, r = 8) {
+        let car = false;
+        try {
+          car = canSpawnCar('sedan', x, y, 0);
+        } catch {}
+        return {
+          x: Math.round(x),
+          y: Math.round(y),
+          land: !!landAt(x, y),
+          ground: !!groundAt(x, y, r),
+          solid: solid(x, y, r),
+          rail: railBlocked(x, y, r),
+          road: !!onRoad(x, y),
+          beach: onBeach(x, y),
+          terrain: Math.round(terrainHeight(x, y)),
+          carFits: car,
+          boatFits: boatFits({ type: 'jetski', x, y, a: 0 }),
+          district: districtAt(x, y),
+        };
+      },
+      // The current mission in full: target (with altitude), timer, the mission
+      // vehicles, its guards and actors, and each job's own list of points.
+      missionTargets() {
+        const m = mission;
+        if (!m) return null;
+        const pt = (p) =>
+          p ? { x: Math.round(p.x), y: Math.round(p.y), ...(p.altitude !== undefined ? { altitude: Math.round(p.altitude) } : {}) } : null;
+        const car = (c) =>
+          c
+            ? {
+                id: c.id,
+                type: c.type,
+                x: Math.round(c.x),
+                y: Math.round(c.y),
+                altitude: Math.round(c.altitude || 0),
+                hp: Math.round(c.hp),
+                maxhp: c.maxhp,
+                speed: Math.round(c.speed || 0),
+                burning: !!c.damage?.burning,
+                fireSpent: !!c.damage?.fireSpent,
+                driver: c === player.car,
+                inWorld: vehicles.includes(c),
+              }
+            : null;
+        return {
+          index: m.index,
+          title: missions[m.index].title,
+          stage: m.stage,
+          instruction: m.instruction,
+          target: pt(m.target),
+          timer: m.timeLimit ? Math.round(m.timer) : null,
+          wanted: Math.ceil(wantedStars),
+          player: { x: Math.round(player.x), y: Math.round(player.y), vehicle: player.car?.type || null, roof: !!player.roof, swimming: !!player.swimming, hp: Math.ceil(player.hp) },
+          car: car(m.car),
+          missionVehicles: vehicles.filter((c) => c.mission).map(car),
+          guards: enemies
+            .filter((e) => e.missionTag)
+            .map((e) => ({ tag: e.missionTag, x: Math.round(e.x), y: Math.round(e.y), hp: Math.round(e.hp), solidSpot: solid(e.x, e.y, 6) })),
+          actors: storyActors
+            .filter((p) => p.missionTag || p.name === 'ELENA CRUZ')
+            .map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y), hp: Math.round(p.hp), hidden: !!p.hidden })),
+          points: {
+            receipts: m.receipts?.map(pt),
+            waterRoute: m.waterRoute?.map(pt),
+            gates: m.gates?.map(pt),
+            checkpoints: m.checkpoints?.map(pt),
+            bombs: m.bombs?.map(pt),
+            substations: m.substations?.map(pt),
+            rings: m.rings?.map(pt),
+            repos: m.repos?.map((r) => ({ label: r.label, delivered: r.delivered, car: car(r.car) })),
+            approach: pt(m.approach),
+          },
+        };
+      },
+      // Drive the player's road vehicle or boat toward (x, y) through the real
+      // physics for up to `seconds`, holding W and steering with A/D, easing off
+      // near the point. A straight-line pilot for checking that a route is
+      // passable (it does not path-find); returns where it stopped and why. With
+      // `passThrough` it does not stop: it counts the point reached at speed.
+      steerTo(x, y, seconds = 30, radius = 50, passThrough = false) {
+        const c = player.car;
+        if (!c || isAircraft(c)) return null;
+        let t = 0,
+          reason = 'time',
+          stuckFor = 0,
+          backUp = 0;
+        for (; t < seconds; t += 1 / 30) {
+          if (gameMode !== 'play' || player.car !== c) {
+            reason = 'left vehicle';
+            break;
+          }
+          const d = Math.hypot(x - c.x, y - c.y);
+          if (d < radius && (passThrough || Math.abs(c.speed) < 8)) {
+            reason = 'arrived';
+            break;
+          }
+          const err = normalizeAngle(Math.atan2(y - c.y, x - c.x) - c.a);
+          const fast = !passThrough && c.speed > Math.max(40, d * 0.9);
+          // Wedged against a wall or a shore: back off for a moment, wheel turned.
+          stuckFor = d > radius && Math.abs(c.speed) < 5 ? stuckFor + 1 / 30 : 0;
+          if (stuckFor > 1) backUp = 1;
+          if (backUp > 0) {
+            backUp -= 1 / 30;
+            keys.KeyW = false;
+            keys.KeyS = true;
+            keys.KeyD = err < 0;
+            keys.KeyA = err > 0;
+          } else if (d < radius) {
+            // On the spot: just brake to a stop, whichever way it is rolling.
+            keys.KeyW = c.speed < -10;
+            keys.KeyS = c.speed > 10;
+            keys.KeyA = keys.KeyD = false;
+          } else {
+            keys.KeyW = !fast && (Math.abs(err) < 1.4 || c.speed < 20);
+            keys.KeyS = fast || (Math.abs(err) >= 1.4 && c.speed > 20);
+            keys.KeyD = err > 0.06;
+            keys.KeyA = err < -0.06;
+          }
+          update(1 / 30);
+        }
+        keys.KeyW = keys.KeyS = keys.KeyA = keys.KeyD = false;
+        return {
+          reason,
+          seconds: Math.round(t),
+          x: Math.round(c.x),
+          y: Math.round(c.y),
+          speed: Math.round(c.speed || 0),
+          hp: Math.round(c.hp),
+          left: Math.round(Math.hypot(x - c.x, y - c.y)),
+          wanted: Math.ceil(wantedStars),
+        };
+      },
+      // Press the action key once, exactly as E would.
+      interact() {
+        interact();
+        return this.missionState();
+      },
+      // Put the player at the controls of the current mission's vehicle.
+      boardMissionVehicle() {
+        const c = mission?.car;
+        if (!c) return null;
+        if (player.car && player.car !== c) exitCar();
+        teleportPlayer(c.x, c.y);
+        enterVehicle(c);
+        return this.missionState();
+      },
+      // Move the player's vehicle (with the player aboard) to a point, stopped,
+      // facing `heading`; aircraft can be lifted to an altitude in metres.
+      placeVehicle(x, y, heading = player.car?.a ?? 0, altitudeMeters = 0) {
+        const c = player.car;
+        if (!c) return null;
+        Object.assign(c, { x, y, a: heading, vx: 0, vy: 0, vz: 0, av: 0, speed: 0 });
+        if (isAircraft(c))
+          c.altitude = altitudeMeters > 0 ? terrainHeight(x, y) + (altitudeMeters * BLOCK_SIZE) / 100 : terrainHeight(x, y);
+        player.x = x;
+        player.y = y;
+        cameraTarget.x = x;
+        cameraTarget.y = y;
+        return this.status();
+      },
+      // Test shortcut for fights already verified: every live guard of the current
+      // mission (or only those with `tag`) is put down.
+      defeatMissionGuards(tag) {
+        let n = 0;
+        for (const e of enemies)
+          if (e.missionTag && (!tag || e.missionTag === tag) && e.hp > 0) {
+            e.hp = 0;
+            n++;
+          }
+        return n;
+      },
       god(on = true) {
         player.godMode = !!on;
         return player.godMode;
