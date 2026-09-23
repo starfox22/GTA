@@ -355,13 +355,14 @@
         type: 'speedboat',
       },
       // Harbor Point: the way out to the liner riding at anchor.
+      // (This jetty was at y -3420, where it stood in the street at y -3456.)
       {
         x: 1566,
-        y: -3420,
+        y: -3800,
         w: 96,
         h: 34,
         boatX: 1500,
-        boatY: -3403,
+        boatY: -3783,
         type: 'jetski',
       },
       {
@@ -413,9 +414,8 @@
         hy: HARBOR.ship.l / 2,
         a: 0,
       });
-      for (const ship of LINERS) obstacles.push(shipHull(ship));
-      for (const moored of marinaBoats())
-        obstacles.push({ x: moored.x, y: moored.y, hx: moored.beam / 2, hy: moored.len / 2, a: 0 });
+      // Liners, moored yachts, the superyacht and the marina pontoons.
+      obstacles.push(...marinaObstacles());
       return !obstacles.some((b) => boxContact(shape, b));
     }
     function isBoat(vehicle) {

@@ -20,11 +20,11 @@ change (pass a second argument to save the layout JSON).
 - **Train over the harbour ship.** The old Bay Line ran down Marlow Bay straight over the
   Ironworks freighter (3525, 1455) and past the docks. The railway now runs on the west side.
 - **Railway moved west.** Three lines on their own right of way (see transit.js RAILWAY and
-  SOURCE_GUIDE section 4): Shore Line (Cruise Terminal -> Harbor Point sea viaduct -> west sea
+  SOURCE_GUIDE section 4): Shore Line (Cruise Terminal -> Garden St and y -2944 el -> west sea
   wall at x 150 -> Viaduct Green -> Harbor Ave and Royal Ave el -> Southport Airport over the
   Airport Way forecourt), Coast Line (airport -> channel viaduct -> Oceanview -> behind Oceanview
   International -> Coral Sound narrows -> Palmshore), Ridge Line (Palmshore -> own bridge ->
-  Eastgate -> Northridge -> Stonecreek). 12 stations. The old county lines rode on top of the
+  Eastgate -> Northridge -> Stonecreek). 13 stations. The old county lines rode on top of the
   Oceanview Parkway, Ridgeline Highway, Stonecreek Connector, the Coral Sound Bridge, the Sentinel
   Causeway and town streets, with stations over carriageways; none of the new track shares a
   road alignment in the county, and every road it meets is crossed as a flyover. The Palm Keys
@@ -70,6 +70,18 @@ change (pass a second argument to save the layout JSON).
 - **Trees in carriageways.** Kerb trees landed on Airport Way, the Sunset Pier causeway and the
   county market streets (21 trees); trees on roads or under rail piers are now removed.
 
+- **Viaduct across the marina mouth.** The first west route ran on piers across the Harbor
+  Point basin's entrance at y ~-4100: no superyacht or masted yacht could have entered, and the
+  piles stood in the channel. The Shore Line now leaves the Cruise Terminal station on the apron
+  street (y -3968), runs as an el down Garden St and west along the y -2944 avenue (new Harbor
+  Point station at 1408, -2944) to the sea wall; the basin mouth is open water.
+- **Commons St through the yacht club.** Commons St ran from y -4112 straight through the club
+  house, the jetties and the fuel berth on the marina's east quay, and the fuel berth and the
+  south jetty stood in the y -3456 street. The east quay (`MARINA.eastQuay`) is now pedestrian:
+  Commons St ends in a T-junction at y -3456 and the apron street at x 1728; the fuel berth and
+  that jetty moved north of the club. Streets that end on a crossing street's carriageway get no
+  turning head or NO THROUGH ROAD barrier (`streetEndInJunction`).
+
 ### Southport Beach (reserved)
 `BEACH` in geography.js: the south shore of Northbank between the airport fence (x 1740) and the
 Battery Point sea wall (x 3150), from the Marina Rd kerb (y 5306) to the water. The coast was
@@ -87,8 +99,6 @@ viaduct, never over the sand. Props and beach life are left for the beach pass.
 - County junctions meet at shallow angles in places, and the Ridgeline Highway runs on the same
   alignment as Northridge's y = 2600 avenue for one block (coincident, not crossing).
 - The Oceanview Causeway road crosses Southport Beach at ground level, splitting the strand.
-- The Coral Dawn's rectangular hull box reaches within 6 units of the cruise terminal buffer
-  stops; the tapered hull itself is ~70 units clear.
 - The render3d roughness map still treats the x = 128 column as road.
 - The x = 3200 street is severed by the harbor's north wall by design.
 - navigation.js `closestNavNode` could return undefined on an all-isolated graph (unrealistic).
@@ -112,4 +122,4 @@ viaduct, never over the sand. Props and beach life are left for the beach pass.
 - Districts: see `districtAt` in geography.js. County regions: Ridgeline (NE), Oceanview (S),
   Coral Coast (SE), Fort Sentinel island (far SE). Towns: Stonecreek, Northridge, Eastgate,
   Oceanview, Palmshore. Two airports (Southport in the city, Oceanview International in the county).
-- Rail: Shore, Coast and Ridge lines with 12 stations (transit.js); scenic trains shuttle each line.
+- Rail: Shore, Coast and Ridge lines with 13 stations (transit.js); scenic trains shuttle each line.

@@ -43,7 +43,7 @@
       const Three = THREE,
         scene = new Three.Scene();
       scene.background = new Three.Color('#444c63');
-      scene.fog = new Three.FogExp2('#747381', 0.00015);
+      // scene.fog (distance haze) is set up with the flight camera in flight-view3d.js.
       const renderer = new Three.WebGLRenderer({
         canvas: getElement('scene'),
         antialias: true,
@@ -60,12 +60,13 @@
       renderer.shadowMap.autoUpdate = false;
       /**
        * CAMERA
-       * Orthographic and overhead: the city reads as a plan, which is the whole
-       * point of the view. A perspective camera was tried and taken back out --
-       * the lean it gave tall buildings cost more in legibility than the sense of
-       * height was worth.
+       * On the street the view is orthographic and overhead: the city reads as a
+       * plan, which is the whole point of the view, and a perspective lean on tall
+       * buildings would cost legibility there. In the air a perspective camera
+       * takes over so height reads as height (see flight-view3d.js). `camera` is
+       * whichever of the two is active this frame.
        */
-      const camera = new Three.OrthographicCamera(-500, 500, 350, -350, 1, 7500),
+      const streetCamera = new Three.OrthographicCamera(-500, 500, 350, -350, 1, 7500),
         ray = new Three.Raycaster(),
         groundPlane = new Three.Plane(new Three.Vector3(0, 1, 0), -9),
         hitPoint = new Three.Vector3();
@@ -88,6 +89,8 @@
       const fill = new Three.DirectionalLight('#879ccc', 0.55);
       fill.position.set(-200, 100, -300);
       scene.add(fill);
+      let camera = streetCamera;
+      // @include src/flight-view3d.js
       const allBuildings = [],
         statics = [],
         carModels = new Map(),
@@ -133,7 +136,8 @@
        * cell replaces the old per-group distance culling. Objects that move or
        * animate must be flagged `userData.dynamic = true` to be left alone.
        */
-      const batchGroups = [];
+      const batchGroups = [],
+        staticBatchMeshes = [];
       function batchStaticGroups(cellSize = 1024) {
         const buckets = new Map(),
           v = new Three.Vector3(),
@@ -153,6 +157,7 @@
             const geo = o.geometry,
               count = geo.attributes.position.count;
             b.parts.push({ geo, matrix: o.matrixWorld.clone() });
+            noteFarScenery(o);
             b.vertices += count;
             b.indices += geo.index ? geo.index.count : count;
             taken.push(o);
@@ -209,6 +214,7 @@
           m.receiveShadow = true;
           m.name = 'static batch';
           scene.add(m);
+          staticBatchMeshes.push(m);
         }
         return { merged: removed, batches: buckets.size };
       }
@@ -606,18 +612,33 @@
         parent.add(s);
         return s;
       }
+      // @include src/damage3d.js
       const lampHalos = [],
         lampGlows = [];
+      // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
+      // without unbatching the street; each is a street prop in damage.js.
+      const lampPosts = Math.ceil(lamps.length / 2),
+        lampPoles = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
+        lampArms = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
+        lampHeads = new Three.InstancedMesh(boxGeo, warmLamp, lampPosts);
+      for (const pool of [lampPoles, lampArms, lampHeads]) {
+        pool.count = 0;
+        pool.castShadow = true;
+        pool.receiveShadow = true;
+        pool.frustumCulled = false;
+        scene.add(pool);
+      }
       for (let i = 0; i < lamps.length; i += 2) {
         const l = lamps[i],
-          group = new Three.Group();
+          group = new Three.Group(),
+          prop = registerStreetProp('lamp', l.x, l.y);
         group.position.set(l.x, 0, l.y);
         scene.add(group);
-        batchGroups.push(group);
-        box(group, 0, 17, 0, 1.1, 34, 1.1, darkMetal);
-        box(group, 3, 34, 0, 7, 1, 1, darkMetal);
-        box(group, 6, 33.5, 0, 5, 1.2, 3, warmLamp);
-        lampHalos.push({ sprite: halo(group, 6, 33, 0, 14), x: l.x, y: l.y });
+        placePropInstance(lampPoles, prop, l.x, 17, l.y, 1.1, 34, 1.1);
+        placePropInstance(lampArms, prop, l.x + 3, 34, l.y, 7, 1, 1);
+        placePropInstance(lampHeads, prop, l.x + 6, 33.5, l.y, 5, 1.2, 3);
+        prop.halo = halo(group, 6, 33, 0, 14);
+        lampHalos.push({ sprite: prop.halo, x: l.x, y: l.y });
         const glow = new Three.Mesh(
           new Three.PlaneGeometry(65, 65),
           new Three.MeshBasicMaterial({
@@ -633,6 +654,7 @@
         glow.position.set(6, 0.1, 0);
         glow.userData.dynamic = true;
         group.add(glow);
+        prop.glow = glow;
         lampGlows.push({ mesh: glow, x: l.x, y: l.y });
         statics.push({
           x: l.x,
@@ -701,10 +723,12 @@
       // @include src/world3d.js
       // @include src/beach3d.js
       // @include src/county3d.js
+      // @include src/boats3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
+      // @include src/clouds3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],
@@ -750,47 +774,6 @@
         geo.computeVertexNormals();
         return geo;
       }
-      function cabinGeo(l, w, base, roof, van = false) {
-        const xb = van ? -0.41 : -0.32,
-          xf = van ? 0.27 : 0.27,
-          rb = van ? -0.4 : -0.19,
-          rf = van ? 0.13 : 0.07,
-          wb = w * 0.42,
-          wt = w * 0.35;
-        const v = [
-          xb * l,
-          base,
-          -wb,
-          xf * l,
-          base,
-          -wb,
-          xf * l,
-          base,
-          wb,
-          xb * l,
-          base,
-          wb,
-          rb * l,
-          roof,
-          -wt,
-          rf * l,
-          roof,
-          -wt,
-          rf * l,
-          roof,
-          wt,
-          rb * l,
-          roof,
-          wt,
-        ];
-        const geo = new Three.BufferGeometry();
-        geo.setAttribute('position', new Three.Float32BufferAttribute(v, 3));
-        geo.setIndex([
-          0, 4, 1, 1, 4, 5, 1, 5, 2, 2, 5, 6, 2, 6, 3, 3, 6, 7, 3, 7, 0, 0, 7, 4, 4, 7, 5, 5, 7, 6,
-        ]);
-        geo.computeVertexNormals();
-        return geo;
-      }
       // @include src/helicopter3d.js
       // @include src/vehicles3d.js
       // @include src/plane3d.js
@@ -824,22 +807,24 @@
           metalness: 0.63,
           envMapIntensity: 0.8,
         });
-        const shell = mesh(bodyGeo(l, w, h), paint, body, 0, 0, 0),
-          original = new Float32Array(shell.geometry.attributes.position.array),
+        // The deformable shell and per-pane glasshouse (damage3d.js): shared while
+        // pristine, copied the first time the car is dented.
+        const shell = mesh(carShellGeometry(l, w, h), paint, body, 0, 0, 0),
           wheels = [],
           bumpers = [],
-          nightLights = [];
+          nightLights = [],
+          lamps = [];
         const cabin = open
-          ? box(body, l * 0.14, h + 2.4, 0, 0.7, 5, w * 0.73, glass.clone())
+          ? box(body, l * 0.14, h + 2.4, 0, 0.7, 5, w * 0.73, carGlass)
           : mesh(
-              cabinGeo(
+              carCabinGeometry(
                 l * (rodCar ? 0.55 : 1),
                 w * (rodCar ? 0.88 : 1),
                 h - 0.5,
                 roof,
                 van || rally || limo,
               ),
-              glass.clone(),
+              carGlass,
               body,
               rodCar ? -l * 0.17 : 0,
               0,
@@ -910,8 +895,18 @@
               spoke.rotation.z = (s * Math.PI) / 5;
             }
           }
-          box(body, l * 0.47, h - 2, side * w * 0.3, 1.5, 2.5, w * 0.24, warmLamp);
-          box(body, -l * 0.47, h - 2, side * w * 0.3, 1.2, 2, w * 0.22, tailLamp);
+          lamps.push(
+            {
+              mesh: box(body, l * 0.47, h - 2, side * w * 0.3, 1.5, 2.5, w * 0.24, warmLamp),
+              key: side < 0 ? 'headLeft' : 'headRight',
+              lit: warmLamp,
+            },
+            {
+              mesh: box(body, -l * 0.47, h - 2, side * w * 0.3, 1.2, 2, w * 0.22, tailLamp),
+              key: side < 0 ? 'tailLeft' : 'tailRight',
+              lit: tailLamp,
+            },
+          );
           nightLights.push(
             halo(body, l * 0.5, h - 2, side * w * 0.3, 11, '#ffe9bd'),
             halo(body, -l * 0.5, h - 2, side * w * 0.3, 7, '#ff5a44'),
@@ -954,38 +949,6 @@
           for (const side of [-1, 1])
             box(body, 0, h - 2, side * w * 0.501, l * 0.4, 3, 0.22, mat('#d8d3c7'));
         }
-        const cracks = new Three.Group();
-        body.add(cracks);
-        const crackMat = new Three.LineBasicMaterial({
-          color: '#b7c7cb',
-          transparent: true,
-          opacity: 0.7,
-        });
-        for (let i = 0; i < 5; i++) {
-          const z = (i - 2) * w * 0.12,
-            points = [
-              new Three.Vector3(l * 0.185, roof - 2, z),
-              new Three.Vector3(l * 0.19 + 1, roof - 2.7, z + 2),
-              new Three.Vector3(l * 0.185 - 2, roof - 2, z + 4),
-            ];
-          cracks.add(new Three.Line(new Three.BufferGeometry().setFromPoints(points), crackMat));
-        }
-        cracks.visible = false;
-        const scuffs = [];
-        for (const side of [-1, 1]) {
-          const model = box(
-            body,
-            2,
-            h - 2,
-            side * (w * 0.501),
-            l * 0.43,
-            0.8,
-            0.2,
-            mat('#8d9290', 0.8, 0.3),
-          );
-          model.visible = false;
-          scuffs.push(model);
-        }
         const hood = box(body, l * 0.34, h + 0.05, 0, l * 0.25, 0.4, w * 0.67, paint);
         const bumperOrigins = bumpers.map((b) => b.position.clone());
         return {
@@ -995,16 +958,18 @@
           color: vehicle.color,
           strobes,
           dead: false,
+          car: true,
+          dims: { l, w, h, roof, van },
           shell,
-          original,
+          shellBase: shell.geometry.attributes.position.array,
           cabin,
-          cracks,
-          scuffs,
+          cabinBase: open ? null : cabin.geometry.attributes.position.array,
           wheels,
           bumpers,
           bumperOrigins,
           hood,
           hoodBaseY: h + 0.05,
+          lamps,
           damageVersion: -1,
           nightLights,
         };
@@ -1472,6 +1437,8 @@
       }
       /* REVIEW_HOOK:RENDERER_API */
       const api = {
+        // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
+        ...damageApi,
         info() {
           let objects = 0;
           const byType = {};
@@ -1491,11 +1458,11 @@
         resize() {
           renderer.setSize(viewportWidth, viewportHeight);
           const viewH = clamp(viewportHeight * 0.68, 430, 630) / worldZoom;
-          camera.left = (-viewH * viewportWidth) / viewportHeight / 2;
-          camera.right = (viewH * viewportWidth) / viewportHeight / 2;
-          camera.top = viewH / 2;
-          camera.bottom = -viewH / 2;
-          camera.updateProjectionMatrix();
+          streetCamera.left = (-viewH * viewportWidth) / viewportHeight / 2;
+          streetCamera.right = (viewH * viewportWidth) / viewportHeight / 2;
+          streetCamera.top = viewH / 2;
+          streetCamera.bottom = -viewH / 2;
+          streetCamera.updateProjectionMatrix();
         },
         project(mapX, mapY, elevation = 0) {
           const v = new Three.Vector3(mapX, elevation, mapY).project(camera);
@@ -1562,22 +1529,7 @@
           }
         },
         impact(x, z, kind, altitude = 0) {
-          for (let j = 0; j < (kind === 'metal' ? 8 : 5); j++)
-            fx.push({
-              x,
-              y: 5 + altitude,
-              z,
-              vx: (Math.random() - 0.5) * 100,
-              vy: 35 + Math.random() * 55,
-              vz: (Math.random() - 0.5) * 100,
-              life: 0.18 + Math.random() * 0.22,
-              max: 0.4,
-              color: kind === 'metal' ? '#ffd084' : '#b6aba0',
-              size: kind === 'metal' ? 1.7 : 3,
-              glow: kind === 'metal',
-              case: kind === 'metal',
-              smoke: kind !== 'metal',
-            });
+          impactEffect(x, z, kind, altitude);
         },
         explosion(x, z, power = 1, altitude = terrainHeight(x, z)) {
           const ring = blastRings[blastRingIndex++ % blastRings.length];
@@ -1643,33 +1595,20 @@
           nightAmount = clamp(1 - daylight() * 1.6, 0, 1);
           updateCivicVisuals();
           const altitude = entityElevation(player.car || player),
-            flying = isAircraft(player.car) || player.parachute;
-          camera.position.set(
-            cameraTarget.x,
-            680 / worldZoom + altitude + (flying ? Math.max(0, altitude - 100) * 0.9 : 0),
-            cameraTarget.y + 560 / worldZoom,
-          );
-          camera.far = 40000;
-          scene.fog.density = 0.00015 * Math.min(1, worldZoom);
-          // Weather runs after the time-of-day pass so it modifies that day's light
-          // rather than being overwritten by it.
-          updateWeatherVisuals(deltaSeconds);
-          camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
-          const viewH =
-            (clamp(viewportHeight * 0.68, 430, 630) *
-              (1 + (flying ? clamp(altitude / 2400, 0, 0.7) : 0))) /
-            worldZoom;
-          camera.left = (-viewH * viewportWidth) / viewportHeight / 2;
-          camera.right = (viewH * viewportWidth) / viewportHeight / 2;
-          camera.top = viewH / 2;
-          camera.bottom = -viewH / 2;
-          camera.updateProjectionMatrix();
+            flying = !!(isAircraft(player.car) || player.parachute);
+          // Street (orthographic) or flight (perspective) camera, plus what it sees.
+          updateFlightView(deltaSeconds, altitude, flying);
           camera.position.x += (Math.random() - 0.5) * shake * 0.35;
           camera.position.y += (Math.random() - 0.5) * shake * 0.2;
           camera.updateMatrixWorld(true);
           viewFrustum.setFromProjectionMatrix(
             viewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
           );
+          // Weather runs after the time-of-day pass so it modifies that day's light
+          // rather than being overwritten by it; the clouds need the final camera.
+          updateWeatherVisuals(deltaSeconds);
+          applyAerialFog();
+          updateCloudVisuals(deltaSeconds);
           updateAirCoverVisuals();
           updateTransitVisuals();
           updateWildlifeVisuals(deltaSeconds);
@@ -1683,23 +1622,24 @@
           updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
+          updateMarinaVisuals(deltaSeconds);
           updateTrafficVisuals();
           updateMissionVisuals();
-          const shadowHeight = terrainHeight(cameraTarget.x, cameraTarget.y);
-          sun.position.set(cameraTarget.x - 620, 980 + shadowHeight, cameraTarget.y - 340);
-          sun.target.position.set(cameraTarget.x, shadowHeight, cameraTarget.y);
-          const vr = Math.max(
-            920,
-            viewH * Math.max(1, viewportWidth / viewportHeight) * 0.95 + (flying ? altitude * 0.28 : 0),
-          );
+          placeSun();
+          updateFarScenery();
+          // Scenery groups inside the visible ground footprint (flight-view3d.js);
+          // small ones drop out once they would only be a few pixels across.
           for (const s of statics)
             s.group.visible =
-              (worldZoom > 0.28 || s.radius >= 50) &&
-              Math.abs(s.x - cameraTarget.x) < vr + s.radius &&
-              Math.abs(s.y - cameraTarget.y) < vr + s.radius;
+              (viewZoom > 0.28 || s.radius >= 50) &&
+              Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&
+              Math.abs(s.y - viewCenter.y) < viewReach + s.radius;
           for (const o of allBuildings) {
+            // Fade a building that stands between the camera and the player, but
+            // not one the player is flying high above.
             const hidden =
               !player.roof &&
+              altitude < o.height + 30 &&
               player.x > o.b.x - 8 &&
               player.x < o.b.x + o.b.w + 8 &&
               player.y < o.b.y &&
@@ -1726,11 +1666,17 @@
           pruneModels(carModels, new Set(vehicles));
           pruneModels(personModels, new Set(people));
           pruneModels(pickupModels, new Set(pickups));
+          beginVehicleImpostors();
           for (const c of vehicles) {
             let m = carModels.get(c);
             const near =
               c === player.car ||
               entityInView(c, Math.max(65, Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) * 0.75));
+            // High above the city, traffic is drawn as instanced boxes (flight-view3d.js).
+            if (near && vehicleImpostor(c)) {
+              if (m) m.group.visible = false;
+              continue;
+            }
             if (!m && !near) continue;
             if (!m) {
               m = makeVehicle(c);
@@ -1738,12 +1684,15 @@
             }
             m.group.visible = near;
             if (!near) continue;
-            m.group.position.set(c.x, 0.1 + entityElevation(c), c.y);
+            // Suspension: weight transfer, the hop after a blast, a sag onto a flat (damage3d.js).
+            const stance = vehiclePose(c);
+            m.group.position.set(c.x, 0.1 + entityElevation(c) + stance.lift, c.y);
             m.group.rotation.y = -c.a;
             m.body.rotation.x =
-              c === player.car ? clamp(normalizeAngle(c.a - (c.moveA ?? c.a)) * -0.15, -0.05, 0.05) : 0;
+              (c === player.car ? clamp(normalizeAngle(c.a - (c.moveA ?? c.a)) * -0.15, -0.05, 0.05) : 0) +
+              stance.roll;
             m.body.rotation.z =
-              Math.sin(gameTime * 7 + c.id) * Math.min(0.008, Math.abs(c.speed) * 0.00002);
+              Math.sin(gameTime * 7 + c.id) * Math.min(0.008, Math.abs(c.speed) * 0.00002) + stance.pitch;
             if (c.type === 'flatbed') {
               if (!m.cargo) {
                 m.cargo = Array.from(
@@ -1763,16 +1712,12 @@
               const lit = c.hp > 0 && (c.ai || c === player.car) && nightAmount > 0.25;
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
-                sprite.visible = lit;
+                sprite.visible = lit && !m.lampOut?.[k];
                 if (lit) sprite.material.opacity = (k % 2 ? 0.55 : 0.85) * nightAmount;
               }
             }
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
-            m.paint.color
-              .set(c.hp <= 0 ? '#303136' : c.color)
-              .lerp(new Three.Color('#585451'), wear * 0.22);
-            m.paint.roughness = 0.3 + wear * 0.6;
-            m.paint.metalness = 0.63 - wear * 0.42;
+            paintVehicle(c, m);
             if (m.crank) m.crank.rotation.z -= deltaSeconds * c.speed * 0.13;
             if (m.helicopter) {
               const running =
@@ -1786,46 +1731,10 @@
               m.body.rotation.z = clamp(-c.speed * 0.00035, -0.13, 0.13);
               m.body.rotation.x = clamp(c.av * 0.065, -0.1, 0.1);
               m.canopy.material.roughness = 0.12 + wear * 0.65;
-            } else if (!m.special && m.damageVersion !== c.damageVersion) {
+            } else if (m.damageVersion !== c.damageVersion) {
+              // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js).
               m.damageVersion = c.damageVersion;
-              const positions = m.shell.geometry.attributes.position,
-                d = c.damage;
-              for (let i = 0; i < positions.count; i++) {
-                let x = m.original[i * 3],
-                  y = m.original[i * 3 + 1],
-                  z = m.original[i * 3 + 2];
-                for (const dent of c.dents) {
-                  const dx = x - dent.x,
-                    dz = z - dent.y,
-                    influence = Math.max(0, 1 - Math.hypot(dx, dz) / 17) * dent.force;
-                  x -= Math.sign(dent.x) * influence * 1.1;
-                  z -= Math.sign(dent.y) * influence * 0.8;
-                  y -= influence * 0.4;
-                }
-                positions.setXYZ(i, x, y, z);
-              }
-              positions.needsUpdate = true;
-              m.shell.geometry.computeVertexNormals();
-              m.cracks.visible = wear > 0.2;
-              m.cabin.material.color.set(wear > 0.65 ? '#3a494e' : '#182b3c');
-              m.cabin.material.roughness = 0.12 + wear * 0.65;
-              m.hood.rotation.z = d.front * 0.15;
-              m.hood.position.y = m.hoodBaseY + d.front * 2.3;
-              m.scuffs.forEach((v, i) => {
-                v.visible = c.damage[i ? 'right' : 'left'] > 0.12 || wear > 0.5;
-                v.scale.x = vehicleSpec(c).l * 0.43 * clamp(wear * 2, 0.3, 1);
-              });
-              m.bumpers.forEach((v, i) => {
-                const amount = i ? d.rear : d.front;
-                v.position.copy(m.bumperOrigins[i]);
-                v.position.x += (i ? 1 : -1) * amount * 2;
-                v.position.y -= amount * 1.5;
-                v.rotation.y = (i ? 1 : -1) * amount * 0.18;
-                v.rotation.z = amount * 0.1;
-              });
-              m.wheels.forEach(({ wheel, side }) => {
-                wheel.rotation.x = side * c.damage[side > 0 ? 'right' : 'left'] * 0.16;
-              });
+              applyVehicleDamage(c, m);
             }
             if (m.plane) {
               if (m.prop)
@@ -1838,7 +1747,7 @@
               m.barrel.position.x = (-Math.max(0, (c.cannonRecoilUntil || 0) - gameTime) / 0.25) * 4;
             }
             if (m.special) {
-              if (!m.plane) m.body.rotation.z = -wear * 0.025;
+              if (!m.plane) m.body.rotation.z = -wear * 0.025 + stance.pitch;
               if (m.bike) {
                 m.body.rotation.x = clamp(c.av * 0.13, -0.28, 0.28);
                 m.rider.visible = c.hp > 0 && (c === player.car || c.ai);
@@ -1853,6 +1762,7 @@
                 m.body.rotation.x = Math.sin(gameTime * 1.3 + c.y * 0.017) * 0.028;
                 m.wake.visible = Math.abs(c.speed) > 15;
                 m.wake.scale.x = 0.5 + Math.abs(c.speed) / 180;
+                if (m.boatUpdate) m.boatUpdate(c);
               }
               for (const { wheel } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / 5;
             }
@@ -1884,54 +1794,23 @@
                   : '#3c4147',
               );
             });
-            if (
-              deltaSeconds > 0 &&
-              !vehicleSpec(c).bicycle &&
-              c.hp <= 0 &&
-              gameTime - c.deadTime < 12 &&
-              Math.random() < 1 - Math.pow(0.77, deltaSeconds * 60)
-            )
-              fx.push({
-                x: c.x + (Math.random() - 0.5) * 12,
-                y: 10 + entityElevation(c),
-                z: c.y + (Math.random() - 0.5) * 8,
-                vx: 0,
-                vy: 20,
-                vz: 0,
-                life: 1.6,
-                max: 1.6,
-                color: Math.random() > 0.55 ? '#d39150' : '#55585f',
-                size: 15,
-              });
-            if (
-              deltaSeconds > 0 &&
-              !vehicleSpec(c).bicycle &&
-              c.hp > 0 &&
-              c.hp < c.maxhp * 0.55 &&
-              Math.random() < 1 - Math.pow(1 - (0.55 - c.hp / c.maxhp) * 0.5, deltaSeconds * 60)
-            )
-              fx.push({
-                x: c.x + Math.cos(c.a) * 14,
-                y: 10 + entityElevation(c),
-                z: c.y + Math.sin(c.a) * 14,
-                vx: 0,
-                vy: 12,
-                vz: 0,
-                life: 1.6,
-                max: 1.6,
-                color: '#52585f',
-                size: 12,
-              });
+            // Engine smoke, fire and the burning wreck (damage3d.js).
+            vehicleEffects(c, m, deltaSeconds);
           }
+          endVehicleImpostors();
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;
               m.body.rotation.z += c.slopePitch || 0;
             }
+          // Marks on vehicles, debris, knocked furniture and decal uploads (damage3d.js).
+          updateDamageVisuals(deltaSeconds);
           for (const p of people) {
             const activePlayer = p === player;
             let m = personModels.get(p);
-            const near = activePlayer || (worldZoom > 0.22 && entityInView(p, 35));
+            const near =
+              activePlayer ||
+              ((flightViewActive ? viewZoom > PEOPLE_ZOOM : worldZoom > 0.22) && entityInView(p, 35));
             if (!m && !near) continue;
             if (!m) {
               m = makePerson(p, activePlayer);
@@ -2169,7 +2048,7 @@
             targetLight.position.set(target.x, targetAltitude + 10, target.y);
           }
           if (player.car && !isAircraft(player.car)) {
-            playerHeadlight.intensity = 850;
+            playerHeadlight.intensity = 850 * headlightShare(player.car);
             const x = player.x + Math.cos(player.a) * 160,
               z = player.y + Math.sin(player.a) * 160;
             playerHeadlight.position.set(
@@ -2318,7 +2197,7 @@
           skidGeo.setDrawRange(0, si / 3);
           skidGeo.attributes.position.needsUpdate = true;
           skidLines.frustumCulled = false;
-          renderer.shadowMap.needsUpdate = frames++ % (touchEnabled() ? 5 : 2) === 0;
+          renderer.shadowMap.needsUpdate = frames++ % shadowRefreshInterval() === 0;
           renderer.render(scene, camera);
           worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
           if (target && gameMode === 'play') {
@@ -2413,6 +2292,9 @@
       };
       const batchReport = batchStaticGroups();
       api.batchReport = batchReport;
+      tagSceneryDetail();
+      compactBuildingBlocks();
+      buildFarScenery(staticBatchMeshes);
       api.resize();
       return api;
     }

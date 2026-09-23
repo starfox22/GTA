@@ -19,7 +19,7 @@
             const x = vertical ? r : v,
               y = vertical ? v : r;
             if (inAirport(x, y) || parkStreetClosed(x, y) || inStadiumLot(x, y, 56)) return false;
-            if (onSunsetIsle(x, y) || onBeach(x, y)) return false;
+            if (onSunsetIsle(x, y) || onBeach(x, y) || marinaQuayAt(x, y)) return false;
             // West Quay (x = 128) is not a street: the strip between the sea wall
             // and the first blocks is the esplanade and the Shore Line viaduct.
             if (vertical && r === RAIL_CORRIDOR_X) return false;
@@ -137,6 +137,13 @@
         }
       return benchCache;
     }
+    // A street that stops on a crossing street's carriageway is a T-junction, not a
+    // dead end: no turning head, barrier or NO THROUGH ROAD plate.
+    function streetEndInJunction(r, p) {
+      return cityStreets().some(
+        (o) => o.vertical !== r.vertical && segmentDistance(p.x, p.y, o.points[0], o.points[1]) <= o.width / 2 + 6,
+      );
+    }
     function cityIntersectionAt(x, y) {
       return (
         cityStreets().some((r) => !r.vertical && r.r === y && x > r.start + 100 && x < r.end - 100) &&
@@ -177,7 +184,7 @@
               : outward > 0
                 ? 0
                 : Math.PI;
-          if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+          if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65) || streetEndInJunction(r, p)) continue;
           if (streetEndAtGate(p.x, p.y, a)) {
             // Forecourt: the carriageway widens into a paved apron at the gates,
             // with a crossing where the footway passes in front of them.

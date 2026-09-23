@@ -181,8 +181,8 @@
       },
     ];
     // The West Quay alignment (x = 128) is the railway's corridor down the west
-    // shore, not a street: the Shore Line viaduct runs above the strip between
-    // the sea wall and the first blocks, just inland of the esplanade.
+    // shore (south of y -2944), not a street: the Shore Line viaduct runs above
+    // the strip between the sea wall and the first blocks, inland of the esplanade.
     const RAIL_CORRIDOR_X = 128;
     /**
      * SOUTHPORT BEACH
