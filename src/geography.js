@@ -777,7 +777,14 @@
               ? 'LITTLE HAVANA'
               : 'CORAL MARINA';
       if (!landAt(x, y) && regionContains(BEACH, x, y) && !onBridge(x, y)) return BEACH.name;
-      if (!landAt(x, y)) return onBridge(x, y) ? 'MARLOW BAY CAUSEWAY' : 'MARLOW BAY';
+      if (!landAt(x, y)) {
+        if (onBridge(x, y)) return 'MARLOW BAY CAUSEWAY';
+        // Every stretch of water used to read MARLOW BAY, the marina basin and the
+        // open sea off the west wall included.
+        const basin = MARINA.basin;
+        if (x > basin.x && x < basin.x + basin.w && y > basin.y && y < basin.y + basin.h) return 'HARBOR POINT MARINA';
+        return x > RIVER.left - 120 && x < RIVER.right + 120 && y > 0 && y < 5600 ? 'MARLOW BAY' : 'OPEN SEA';
+      }
       if (x > 1718 && x < 2638 && y > 2794 && y < 3664) return 'CENTRAL GARDEN';
       if (y < 0) {
         if (y < -3860 && x > 1600 && x < 3120) return 'CRUISE TERMINAL';

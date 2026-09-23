@@ -288,6 +288,16 @@ reset and a new colour.
   the crowd grid within 16 units of the bullet; the story-actor filters run once a frame.
 - Verified: a pistol shot at the nearest pedestrian still kills them and raises a star.
 
+## HUD
+
+### H1. Every stretch of water was called MARLOW BAY
+- Symptom: swimming in the Harbor Point basin or off the west sea wall, the HUD district
+  line read MARLOW BAY.
+- Cause: `districtAt()` returned MARLOW BAY for any point off land.
+- Fix: water inside the marina basin reads HARBOR POINT MARINA, the channel between the
+  islands MARLOW BAY, everything else OPEN SEA (bridges still read MARLOW BAY CAUSEWAY).
+  Crowd density uses the same default for all three names, so nothing else changes.
+
 ## Other checks that passed
 
 - Aircraft: a courier plane takes off from both ends of the Southport runway (pull with
@@ -330,4 +340,3 @@ reset and a new colour.
 - chase.js (mission 1's respray) calls `policeClearedNotice()` directly after
   `clearPolice()`, so it shows POLICE CLEARED even when no stars were showing (mission
   code, left to the mission QA pass).
-- The HUD names any water "MARLOW BAY" (including the marina basin and the open sea).
