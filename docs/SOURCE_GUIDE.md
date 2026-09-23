@@ -222,7 +222,7 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
   the city come from the same density field. Aircraft ceilings are ~1400 m so the layer can
   be climbed through.
 - From the air: small props move to detail layers the flight camera drops as `viewZoom`
-  falls, traffic becomes instanced box impostors, and below `viewZoom` 0.165 a merged far
+  falls, traffic becomes instanced impostors, and below `viewZoom` 0.2 a merged far
   copy of the static scenery (flight-view3d.js, FAR SCENERY) replaces the per-building
   batches. Building blocks are compacted from six draw calls to two. `cityscape3d.js` builds every building: archetype
   (tower, office, brick, stucco, warehouse, deco, decoTower, hotel), procedural roof texture,
@@ -315,7 +315,8 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
   `stats()` reports `viewCalls` (camera) and `shadowCalls` (last shadow refresh) separately.
 - Level of detail, both cameras: intact cars become instanced per-type body shells below
   `viewZoom` 0.62 and boxes below 0.4; standing pedestrians become three instanced parts
-  below 0.52; the merged far city replaces the batches below 0.2 (street) / 0.165 (air).
+  below 0.52; the merged far city replaces the batches below 0.2 (and casts their shadows
+  below 0.55).
   The tier's `lodBias` scales these. Traffic signals are merged posts plus one instanced bulb
   pool. New car and person models only cast shadows from their larger parts.
 - Buildings are bucketed in `buildingGrid` (game.js) for `solid()`/`shotBlocked()`; rail

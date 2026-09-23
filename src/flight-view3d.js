@@ -572,11 +572,11 @@
        * into vertex colours and its texture repeat into the UVs, so ~7000 materials
        * collapse to the ~20 real combinations of texture and finish, and window
        * lighting follows the average of the buildings it stands for. Below
-       * FAR_SCENERY_ZOOM (roughly 650 m up) the flight camera shows this copy instead.
+       * FAR_SCENERY_ZOOM (roughly 500 m up) the flight camera shows this copy instead.
        */
       const SHADOW_PROXY_ZOOM = 0.55,
         SHADOW_PROXY_LAYER = 6,
-        FAR_SCENERY_ZOOM = 0.165,
+        FAR_SCENERY_ZOOM = 0.2,
         STREET_FAR_SCENERY_ZOOM = 0.2,
         FAR_PIECE_SIZE = 20,
         farBox = new Three.Box3(),

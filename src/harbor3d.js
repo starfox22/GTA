@@ -336,11 +336,12 @@
       }
       /**
        * TRAFFIC SIGNALS
-       * Each post (pole and head in one merged mesh) stands in its own group at its
-       * base so a car that knocks it down tips the whole signal over. The bulbs of
-       * every signal in the city are one instanced mesh, re-placed each frame from
-       * the posts in view and coloured by the signal phase: two draw calls per
-       * junction instead of ten.
+       * Each post stands in its own (empty) group at its base, which damage.js tips
+       * over when a car knocks it down. What is drawn is two instanced meshes for
+       * the whole city, re-placed each frame from the groups of the signals in
+       * view: the posts (pole and head merged into one geometry) and the bulbs,
+       * coloured by the signal phase. Two draw calls in all instead of ten per
+       * junction.
        */
       const signalPostGeometry = (() => {
         const pole = new Three.BoxGeometry(1.1, 30, 1.1).translate(0, 15, 0),
@@ -375,7 +376,6 @@
             post.position.set(x + dx, 0, z + dz);
             group.add(post);
             prop.group = post;
-            mesh(signalPostGeometry, darkMetal, post, 0, 0, 0);
             heads.push({ vertical, post, prop });
           }
           signalModels.push({
@@ -407,6 +407,12 @@
       signalBulbs.userData.dynamic = true;
       signalBulbs.setColorAt(0, signalBulbColor);
       scene.add(signalBulbs);
+      const signalPosts = new Three.InstancedMesh(signalPostGeometry, darkMetal, Math.max(1, signalModels.length * 2));
+      signalPosts.count = 0;
+      signalPosts.frustumCulled = false;
+      signalPosts.castShadow = signalPosts.receiveShadow = true;
+      signalPosts.userData.dynamic = true;
+      scene.add(signalPosts);
       const signalBulbIndex = {
           red: 0,
           amber: 1,
@@ -416,7 +422,8 @@
         signalLitColors = ['#ff5141', '#ffc454', '#8cdb86'].map((c) => new Three.Color(c).multiplyScalar(2.2)),
         signalDarkColor = new Three.Color('#252d30');
       function updateTrafficVisuals() {
-        let n = 0;
+        let n = 0,
+          posts = 0;
         for (const s of signalModels) {
           if (!s.group.visible) continue;
           const state = trafficSignal(s.x, s.z);
@@ -424,6 +431,7 @@
             // A signal lying in the road is dark.
             const on = h.prop.down ? -1 : signalBulbIndex[state[h.vertical ? 'vertical' : 'horizontal']];
             h.post.updateWorldMatrix(true, false);
+            signalPosts.setMatrixAt(posts++, h.post.matrixWorld);
             for (let i = 0; i < 3; i++) {
               signalBulbs.setMatrixAt(n, signalBulbMatrix.multiplyMatrices(h.post.matrixWorld, signalBulbLocal[i]));
               signalBulbs.setColorAt(n, i === on ? signalLitColors[i] : signalDarkColor);
@@ -432,6 +440,8 @@
           }
         }
         signalBulbs.count = n;
+        signalPosts.count = posts;
+        if (posts) signalPosts.instanceMatrix.needsUpdate = true;
         if (n) {
           signalBulbs.instanceMatrix.needsUpdate = true;
           signalBulbs.instanceColor.needsUpdate = true;

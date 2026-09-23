@@ -78,7 +78,7 @@
         {
           float e = 0.3, h0 = cityNoise( gp * 3.1 );
           vec2 slope = vec2( cityNoise( ( gp + vec2( e, 0.0 ) ) * 3.1 ) - h0, cityNoise( ( gp + vec2( 0.0, e ) ) * 3.1 ) - h0 ) / e;
-          float bump = ( roadMask * 0.22 + paveMask * 0.08 ) * ( 1.0 - puddle ) * detailFade;
+          float bump = ( roadMask * 0.12 + paveMask * 0.06 ) * ( 1.0 - puddle ) * detailFade;
           vec3 worldNormal = normalize( vec3( -slope.x * bump, 1.0, -slope.y * bump ) );
           normal = normalize( ( viewMatrix * vec4( worldNormal, 0.0 ) ).xyz );
         }`;
