@@ -680,7 +680,18 @@
         rx = -headingSine2,
         ry = headingCosine2,
         half = vehicleDefinition.l / 2,
-        side = vehicleDefinition.w / 2;
+        side = vehicleDefinition.w / 2,
+        through = c.junction?.committed && c.junction.turn ? c.junction : null,
+        // The rest of a committed turn, carried on 120 units down the exit lane so
+        // a car stopped just past the corner still holds us back.
+        pathAhead = through && [
+          ...through.points.slice(through.index),
+          ...[40, 80, 120].map((d) => ({
+            x: through.points.at(-1).x + Math.cos(through.exit) * d,
+            y: through.points.at(-1).y + Math.sin(through.exit) * d,
+          })),
+        ],
+        ease = { amount: 0, side: 1 };
       for (const o of vehicles) {
         if (o === c || (o.altitude || 0) > 20 || isBoat(o) || distanceBetween(c, o) > 350) continue;
         const dx = o.x - c.x,
@@ -701,6 +712,33 @@
             (Math.abs(headingCosine3 * rx + headingSine3 * ry) * vehicleDefinition2.l) / 2 +
             (Math.abs(-headingSine3 * rx + headingCosine3 * ry) * vehicleDefinition2.w) / 2;
         if (along <= 0 || lateral > side + ow + 4) continue;
+        // Mid-turn the look-ahead box swings across the cross street and the kerb,
+        // and found cars waiting there for us to clear the junction (each then
+        // waited for the other for ever) or parked at the kerb beside our exit.
+        // While committed, a car only counts if it stands on the rest of our path.
+        if (
+          pathAhead &&
+          !pathAhead.some((p) => {
+            const px = p.x - o.x,
+              py = p.y - o.y;
+            return (
+              Math.abs(px * headingCosine3 + py * headingSine3) < vehicleDefinition2.l / 2 + side + 4 &&
+              Math.abs(-px * headingSine3 + py * headingCosine3) < vehicleDefinition2.w / 2 + side + 4
+            );
+          })
+        )
+          continue;
+        // A parked car, a wreck or an abandoned van poking a little way into the
+        // lane from the kerb: ease across the lane past it instead of queuing
+        // behind it for ever (nobody is coming back to move it).
+        const intrusion = side + ow + 4 - lateral;
+        if (!through && !o.ai && !o.cop && o !== player.car && Math.abs(o.speed || 0) < 5 && intrusion < 12) {
+          if (intrusion > ease.amount) {
+            ease.amount = intrusion;
+            ease.side = Math.sign(dx * rx + dy * ry) || 1;
+          }
+          continue;
+        }
         const gap = along - half - ol - 12,
           lead = Math.max(0, (o.vx || 0) * headingCosine2 + (o.vy || 0) * headingSine2);
         desired = Math.min(
@@ -719,15 +757,27 @@
         if (dx > 150 || dx < -150 || dy > 150 || dy < -150) return;
         const along = dx * headingCosine2 + dy * headingSine2,
           lateral = Math.abs(dx * rx + dy * ry);
-        if (along > 0 && along < 140 && lateral < side + 11)
+        // Only people out on the carriageway: mid-turn the look-ahead box sweeps
+        // across the pavement, and a bus used to wait for ever on walkers who
+        // were themselves waiting at the kerb for it to clear.
+        if (along > 0 && along < 140 && lateral < side + 11 && cityStreetAt(p.x, p.y))
           desired = Math.min(desired, Math.sqrt(2 * 260 * Math.max(0, along - half - 22)) * 0.7);
       };
       forEachPedestrianNear(c.x, c.y, 160, yieldTo);
       if (!player.car) yieldTo(player);
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
       desired = Math.min(desired, curbsideStop(c));
+      // Steer for a point shifted away from whatever was easing us across the lane.
+      const steerA = ease.amount
+        ? normalizeAngle(
+            headingBetween(c, {
+              x: target.x - rx * ease.side * (ease.amount + 2),
+              y: target.y - ry * ease.side * (ease.amount + 2),
+            }) - c.a,
+          )
+        : da;
       return {
-        steer: clamp(da * 3, -1.7, 1.7),
+        steer: clamp(steerA * 3, -1.7, 1.7),
         desired: Math.max(0, desired),
       };
     }

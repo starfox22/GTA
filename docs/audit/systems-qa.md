@@ -153,3 +153,62 @@ coastal water (within 500 units of land) for the distance to the nearest way out
   the bay burned down to an explosion under water.
 - Fix: `canBurn()` (damage.js) is false for a flooding car and `updateDamage()` puts out
   a fire that can no longer burn (this also covers a car in the repair bay).
+
+## Traffic flow
+
+Test: stand at a point, simulate 40 s, then 30 s more, and list traffic cars within 1400
+units that moved less than 25 units in the last 30 s, with a per-car diagnosis (junction
+state and signal, cars that hold the junction or block its exit, what is in the look-ahead
+box, road validity probes, pedestrians ahead). Swept Broadway, Royal Ave under the
+viaduct, the -2944 avenue under the viaduct, Garden St, the marina, the beach, the
+Stadium Way bridge, Palm Keys, the Old Quarter and Midtown. Before the fixes most sweeps
+found a gridlock; after them the same sweeps find none that persist (one-off stalls did
+not reproduce).
+
+### T1. Gridlock at T-junctions: the turning car and the waiting car waited for each other
+- Symptom: junctions (3200, -2944), (1664, -3456), (1664, 4736), (2688, -3456): a truck
+  committed to a turn stopped mid-junction; the car waiting on the cross street never got
+  the junction because it was occupied; queues grew behind both.
+- Cause: the following check in `trafficControl` projects a box along the car's current
+  heading. Halfway through a turn that heading points across the cross street, straight
+  at the cars held at the stop line (or at a car parked at the kerb beside the exit).
+- Fix: while committed to a turn, another car only holds us back if it stands on the rest
+  of our turn path (the path points plus 120 units down the exit lane), tested against its
+  oriented footprint.
+
+### T2. A bus waited for ever on people standing on the pavement
+- Symptom: a bus turning off Marina Rd stopped with two walkers "ahead" of it, both on the
+  pavement, both waiting at the kerb.
+- Cause: pedestrian yielding used the same heading box, which sweeps the pavement while
+  turning.
+- Fix: traffic yields only to people who are on the carriageway (`cityStreetAt`).
+
+### T3. Invisible walls on Stadium Way bridge and in the Marina Rd junction
+- Symptom: police cars eastbound on the Stadium Way crossing stopped dead with nothing in
+  front of them; buses turning from Marina Rd onto the Oceanview causeway stuck on the
+  corner with Riverbank Dr queued behind.
+- Cause: `countyBridgeRails` placed guard-rail colliders wherever a causeway's centre line
+  was over water. The Sunset Pier causeway leaves the Stadium Way deck, so its first rail
+  pieces stood across the eastbound lane; the Oceanview causeway's centre line is over the
+  sea while its west edge is still on the quay, so a rail stood in the junction. The same
+  pieces are drawn by county3d.js.
+- Fix: rail pieces are skipped where any part of them is on land or on a city bridge deck.
+
+### T4. Pedestrians walking along the traffic lane blocked traffic, and it blocked them
+- Symptom: a hot rod stopped on Sunset Blvd with two walkers 26 units ahead of it, walking
+  down the middle of the northbound lane, "blocked" by the car.
+- Cause: `walkSidewalk` only steers a walker toward the pavement lane when they are
+  already on the pavement (40..100 units from the road's centre line). Someone knocked,
+  shoved or dodging into the road carried on down the lane.
+- Fix: a walker on the carriageway of the road they walk alongside, away from a crossing,
+  steers back onto the pavement.
+
+### T5. Parked cars poking into the lane stopped traffic for good
+- Symptom: queues behind a starter roadster parked at the corner of Royal Ave (its nose in
+  the southbound lane), behind the starter bus nudged 10 units off the kerb on Armory St,
+  and behind a parked hot rod at the -2944 kerb.
+- Cause: traffic never steers around anything; a stationary car overlapping the lane by a
+  few units was treated as a queue that never moves.
+- Fix: the roadster starts clear of Royal Ave; and a parked, stationary vehicle that only
+  pokes a little into the lane (less than 12 units) makes the driver ease across the lane
+  past it instead of stopping.

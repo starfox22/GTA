@@ -1365,7 +1365,9 @@
       makeCar('coupe', 782, 576, 0, false, '#88bcaa');
       makeCar('bike', 850, 704, 0, false);
       makeCar('supercar', 975, 704, 0, false);
-      makeCar('roadster', 1100, 704, 0);
+      // Clear of Royal Ave (x 1096..1208): at x 1100 its nose stood in the
+      // southbound lane and traffic queued behind it for ever.
+      makeCar('roadster', 1040, 704, 0);
       makeCar('rally', 1300, 704, 0);
       makeCar('hotrod', 1510, 576, 0);
       makeCar('limousine', 4530, 1728, 0);
