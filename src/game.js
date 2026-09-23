@@ -2004,6 +2004,7 @@
       player.tumble = null;
       player.tumbleRoll = 0;
       cleanupMissionExtras();
+      clearDepotFloor();
       repairJob = null;
       player.parachute = null;
       for (let i = storyActors.length - 1; i >= 0; i--)

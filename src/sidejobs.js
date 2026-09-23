@@ -66,9 +66,11 @@
       [4224, 4224],
     ];
     const BOMB_SITES = [
-      { name: 'GOLDEN TIDE CASINO', x: 4985, y: 3120 },
-      { name: 'NEON PALACE', x: 4470, y: 4080 },
-      { name: 'BLUE HOUR HOTEL', x: 4480, y: 2690 },
+      // `short` is the objective label ("BOMB 3 / 3 · BLUE HOUR"); the first word
+      // of the name read "BLUE" and "NEON".
+      { name: 'GOLDEN TIDE CASINO', short: 'CASINO', x: 4985, y: 3120 },
+      { name: 'NEON PALACE', short: 'NEON PALACE', x: 4470, y: 4080 },
+      { name: 'BLUE HOUR HOTEL', short: 'BLUE HOUR', x: 4480, y: 2690 },
     ];
     const SUBSTATIONS = [
       { name: 'OLD QUARTER SUBSTATION', x: 1560, y: 1090, zone: 0 },
@@ -146,6 +148,7 @@
         missionState.bombs = BOMB_SITES.map((site, i) => ({
           ...sideJobPoint(site.x, site.y),
           name: site.name,
+          short: site.short,
           defused: false,
           tag: 'bomb-' + i,
         }));
@@ -282,7 +285,7 @@
             missionState.stage + 1,
             next,
             job === 1
-              ? 'BOMB ' + n + ' / 3 · ' + next.name.split(' ')[0] + ' · HOLD E TO DEFUSE'
+              ? 'BOMB ' + n + ' / 3 · ' + next.short + ' · HOLD E TO DEFUSE'
               : 'RESTORE THE ' + next.name + ' · HOLD E',
             job === 1 ? 'mara' : 'elena',
             job === 1
@@ -356,6 +359,9 @@
           repo.car.mission = false;
           repo.car.repo = false;
           exitCar();
+          // Vinny's crew takes it off the floor: left parked in the warehouse, each
+          // delivery blocked the next (the bus could not get in past three cars).
+          if (!player.car) clearDepotFloor();
           missionState.repo++;
           const next = missionState.repos[missionState.repo];
           if (!next) {
