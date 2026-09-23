@@ -198,8 +198,11 @@
         cruise = Math.min(TAXI_SPEED, remaining < 2 ? Math.sqrt(distance * 180) + 18 : TAXI_SPEED),
         blocked = taxiPathBlocked(ride, deltaSeconds),
         desired = blocked ? 0 : Math.min(cruise, Math.sqrt(Math.max(0, distance) * 220) + 26);
-      car.speed += clamp(desired - car.speed, -340 * deltaSeconds, 180 * deltaSeconds);
-      car.speed = Math.max(0, car.speed);
+      // The cab's pace lives on the ride: the physics step recomputes car.speed
+      // from vx/vy (zero for a car driven along its route like this) before this
+      // runs, so accumulating on car.speed left the cab crawling at ~6 units/s.
+      ride.speed = Math.max(0, (ride.speed || 0) + clamp(desired - (ride.speed || 0), -340 * deltaSeconds, 180 * deltaSeconds));
+      car.speed = ride.speed;
       const heading = headingBetween(car, target),
         turn = normalizeAngle(heading - car.a);
       car.a += clamp(turn, -3.2 * deltaSeconds, 3.2 * deltaSeconds);
@@ -241,12 +244,14 @@
         blocked = vehicles.some(
           (o) => o !== car && o.hp > 0 && !isAircraft(o) && distanceBetween(o, ahead) < 46,
         );
-      for (const p of pedestrians)
+      // The crowd's neighbour grid, not all ~650 pedestrians every frame.
+      forEachPedestrianNear(ahead.x, ahead.y, 40, (p) => {
         if (p.hp > 0 && distanceBetween(p, ahead) < 40) {
           blocked = true;
           p.flee = Math.max(p.flee, 1.4);
           p.a = headingBetween(car, p);
         }
+      });
       ride.stuck = blocked ? (ride.stuck || 0) + deltaSeconds : 0;
       if (ride.stuck > 5) {
         ride.stuck = 0;

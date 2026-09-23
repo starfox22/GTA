@@ -519,6 +519,23 @@
         }
       }
     }
+    // Boxes round every pond and the boathouse: a cheap "near any park water?"
+    // test so the physics step only runs the ellipse tests beside a pond.
+    let parkPondBoxes = null;
+    function parkPondNear(x, y, reach = 0) {
+      if (!parkPondBoxes) {
+        const c = COMMONS,
+          box = (cx, cy, r) => ({ x0: cx - r, x1: cx + r, y0: cy - r, y1: cy + r });
+        parkPondBoxes = [
+          box(c.lake.x, c.lake.y, Math.max(c.lake.rx, c.lake.ry)),
+          { x0: c.boathouse.x, x1: c.boathouse.x + c.boathouse.w, y0: c.boathouse.y, y1: c.boathouse.y + c.boathouse.h },
+          ...CITY_PARKS.filter((p) => ['pond', 'botanic'].includes(p.kind)).map((p) =>
+            box(p.x + p.w * 0.5, p.y + p.h * 0.5, Math.max(p.w * 0.17, p.h * 0.23)),
+          ),
+        ];
+      }
+      return parkPondBoxes.some((b) => x > b.x0 - reach && x < b.x1 + reach && y > b.y0 - reach && y < b.y1 + reach);
+    }
     function parkPondBlocked(x, y, r = 0) {
       const inside = (cx, cy, rx, ry, a) => {
         const dx = x - cx,

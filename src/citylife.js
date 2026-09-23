@@ -345,32 +345,36 @@
         boatY: 2947,
         type: 'jetski',
       },
+      // Airport inlet, off the esplanade on its east shore. It used to sit at the
+      // narrow head of the inlet (1320, 5130), wholly on land once the airport
+      // shore was reshaped, with its speedboat beached on the promenade.
       {
-        x: 1320,
-        y: 5130,
+        x: 1500,
+        y: 5230,
         w: 130,
         h: 34,
-        boatX: 1490,
-        boatY: 5147,
+        boatX: 1462,
+        boatY: 5247,
         type: 'speedboat',
       },
-      // Harbor Point: the way out to the liner riding at anchor.
-      // (This jetty was at y -3420, where it stood in the street at y -3456.)
+      // Harbor Point: the way out to the liner riding at anchor, off the basin's
+      // east quay (x 1528). (This jetty was at y -3420, where it stood in the
+      // street at y -3456, and then at x 1566, wholly on the quay.)
       {
-        x: 1566,
+        x: 1476,
         y: -3800,
         w: 96,
         h: 34,
-        boatX: 1500,
+        boatX: 1448,
         boatY: -3783,
         type: 'jetski',
       },
       {
-        x: 1566,
+        x: 1476,
         y: -3560,
         w: 96,
         h: 34,
-        boatX: 1496,
+        boatX: 1446,
         boatY: -3543,
         type: 'speedboat',
       },

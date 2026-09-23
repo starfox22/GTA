@@ -936,8 +936,14 @@
         remaining = Math.abs((next ?? 1e6) - v),
         beside = vertical ? roadNear(p.x) : rowNear(p.y),
         lateral = (vertical ? p.x : p.y) - beside,
-        onWalk = inCityGrid(p.x, p.y) && Math.abs(lateral) > 40 && Math.abs(lateral) < 100,
-        crossOff = next !== undefined ? sidewalkOffset(next) : 67;
+        crossOff = next !== undefined ? sidewalkOffset(next) : 67,
+        // Walking down the middle of the road they run alongside (knocked or
+        // shoved off the kerb, dodged a car, turned a corner short): steer back
+        // onto the pavement instead of carrying on along the lane, where traffic
+        // stopped for them and they stood blocked by the traffic, for ever.
+        strayed =
+          inCityGrid(p.x, p.y) && Math.abs(lateral) <= 40 && remaining > crossOff + 25 && cityStreetAt(p.x, p.y),
+        onWalk = strayed || (inCityGrid(p.x, p.y) && Math.abs(lateral) > 40 && Math.abs(lateral) < 100);
       let speed = walkerSpeed(p);
       // Corners: decide once per junction whether to carry straight on or turn
       // onto the cross street (turning away from the road, so no crossing).
@@ -979,7 +985,7 @@
       // further to pass someone slow or standing in the way.
       let lateralSpeed = 0;
       if (onWalk) {
-        const centre = beside + Math.sign(lateral) * sidewalkOffset(beside),
+        const centre = beside + Math.sign(lateral || 1) * sidewalkOffset(beside),
           right = vertical ? -Math.sin(dir) : Math.cos(dir),
           pass = p.passUntil > gameTime ? p.passSide * 10 : 0,
           targetLateral = centre + right * clamp((p.lane || 5) + pass, -12, 14),
@@ -1417,7 +1423,7 @@
           beside = vertical ? roadNear(p.x) : rowNear(p.y),
           lateral = (vertical ? p.x : p.y) - beside;
         if (Math.abs(lateral) > 36 && Math.abs(lateral) < 100) {
-          const centre = beside + Math.sign(lateral) * sidewalkOffset(beside),
+          const centre = beside + Math.sign(lateral || 1) * sidewalkOffset(beside),
             error = centre - (vertical ? p.x : p.y),
             correction = clamp(error * 0.03, -0.35, 0.35);
           heading += vertical ? -correction * Math.sign(Math.sin(heading)) : correction * Math.sign(Math.cos(heading));
@@ -2105,6 +2111,14 @@
       if (scene.van && scene.van !== player.car && !scene.van.stolen && scene.van.hp > 0 && !scene.van.ai) {
         const k = vehicles.indexOf(scene.van);
         if (k >= 0 && distanceBetween(scene.van, player) > 900) vehicles.splice(k, 1);
+        else if (k >= 0) {
+          // The delivery ended without its driver (scared off, hurt): the van used to
+          // stay double-parked in the lane for good. Someone from the firm drives it off.
+          assignDriver(scene.van);
+          scene.van.locked = false;
+          scene.van.ai = true;
+          scene.van.deliveryScene = null;
+        }
       }
     }
     function stageVendor(allowInView) {

@@ -223,6 +223,12 @@
     }
     function terrainVehiclePose(vehicle, h) {
       if (isAircraft(vehicle) || isBoat(vehicle)) return;
+      // The pose depends only on where the car stands; hundreds of parked cars
+      // stand still, so skip the terrain sampling until one moves or is moved.
+      if (vehicle.poseX === vehicle.x && vehicle.poseY === vehicle.y && vehicle.poseA === vehicle.a) return;
+      vehicle.poseX = vehicle.x;
+      vehicle.poseY = vehicle.y;
+      vehicle.poseA = vehicle.a;
       const t = roadVehicleTerrain(vehicle);
       vehicle.groundHeight = t?.z || 0;
       vehicle.slopePitch = Math.atan(t?.along || 0);

@@ -528,7 +528,12 @@
     // ---- Fire, wrecks and per-frame upkeep ------------------------------------------
     function canBurn(vehicle) {
       const type = damageClass(vehicle);
-      return (type === 'car' || type === 'truck' || type === 'bike' || type === 'tank') && repairJob?.car !== vehicle;
+      // A flooding car cannot catch fire, and the bay puts out one that already has.
+      return (
+        (type === 'car' || type === 'truck' || type === 'bike' || type === 'tank') &&
+        repairJob?.car !== vehicle &&
+        !(vehicle.sinkFor > 0)
+      );
     }
     // An engine fire gives the driver a few seconds; the player and mission cars a few more.
     function burnSeconds(vehicle) {
@@ -635,6 +640,7 @@
           if (!damage.burnt) wreckVehicle(c);
           continue;
         }
+        if (damage.burning && !canBurn(c)) damage.burning = 0;
         if (!damage.burning && !damage.fireSpent && c.hp < c.maxhp * BURN_THRESHOLD && canBurn(c))
           igniteVehicle(c);
         if (damage.burning) {

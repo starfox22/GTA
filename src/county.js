@@ -948,16 +948,28 @@
           cx = bridge.a[0] + dx * t,
           cy = bridge.a[1] + dy * t;
         if (landAt(cx, cy)) continue;
-        for (const side of [-1, 1])
-          rails.push({
-            x: cx - Math.sin(a) * side * (bridge.width / 2 - 1),
-            y: cy + Math.cos(a) * side * (bridge.width / 2 - 1),
-            hx: length / n / 2,
-            hy: 1.2,
-            a,
-            localX: (t - 0.5) * length,
-            side,
-          });
+        // Where a causeway leaves a city bridge (the Sunset Pier causeway drops off
+        // Stadium Way), its first rail pieces stood on the bridge deck across the
+        // eastbound lane: invisible walls that stopped traffic dead.
+        const reach = length / n / 2 + 4;
+        if (
+          BRIDGES.some((z) => {
+            const [x0, x1] = bridgeSpan(z);
+            return cx > x0 - reach && cx < x1 + reach && Math.abs(cy - z) < 56 + reach;
+          })
+        )
+          continue;
+        for (const side of [-1, 1]) {
+          const x = cx - Math.sin(a) * side * (bridge.width / 2 - 1),
+            y = cy + Math.cos(a) * side * (bridge.width / 2 - 1),
+            hx = length / n / 2;
+          // Rails guard the edge over water only. The centre line can already be
+          // over the sea where the edge is still quay: the Oceanview causeway's
+          // first west rail stood in the Marina Rd junction, and buses turning
+          // onto the causeway stuck on it with Riverbank Dr queued behind them.
+          if ([-1, 0, 1].some((k) => landAt(x + Math.cos(a) * hx * k, y + Math.sin(a) * hx * k))) continue;
+          rails.push({ x, y, hx, hy: 1.2, a, localX: (t - 0.5) * length, side });
+        }
       }
       return (bridge.rails = rails);
     }

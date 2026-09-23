@@ -182,6 +182,17 @@
       for (const barrier of SPORTS_VEHICLE_BARRIERS)
         addStatic(barrier.x, barrier.y, barrier.w, barrier.h, barrier.height, barrier.id || 'stadium barrier');
       for (const b of buildings) addStatic(b.x, b.y, b.w, b.h, b.height + 22);
+      // Buildings kept outside `buildings` stop people through their own solid()
+      // tests, but cars drove straight through them: the marina club, fuel dock
+      // and cruise terminal, and the Sunset Pier arcade, games row, food court,
+      // big wheel and carousel.
+      for (const b of marinaSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'marina');
+      for (const b of parkSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier');
+      for (const [ride, radius, height] of [
+        [PIER.wheel, 16, 90],
+        [PIER.carousel, 12, 18],
+      ])
+        addStatic(ride.x - radius, ride.y - radius, radius * 2, radius * 2, height, 'pier');
       // Water contact follows the same irregular shores as the visible terrain.
       for (const e of buildCoastSegments()) {
         if (e.opening) continue;
@@ -669,9 +680,34 @@
         rx = -headingSine2,
         ry = headingCosine2,
         half = vehicleDefinition.l / 2,
-        side = vehicleDefinition.w / 2;
+        side = vehicleDefinition.w / 2,
+        through = c.junction?.committed && c.junction.turn ? c.junction : null,
+        // The rest of a committed turn, carried on 120 units down the exit lane so
+        // a car stopped just past the corner still holds us back.
+        pathAhead = through && [
+          ...through.points.slice(through.index),
+          ...[40, 80, 120].map((d) => ({
+            x: through.points.at(-1).x + Math.cos(through.exit) * d,
+            y: through.points.at(-1).y + Math.sin(through.exit) * d,
+          })),
+        ],
+        ease = { amount: 0, side: 1 },
+        // How far right of its lane's centre line the car is (the target sits on it).
+        laneOffset = -((target.x - c.x) * rx + (target.y - c.y) * ry),
+        // Nothing in the oncoming lane (left of us) from just behind to well past
+        // the obstacle, moving or not: room to pull out round it.
+        oncomingClear = (obstacle, reach) =>
+          !vehicles.some((v) => {
+            if (v === c || v === obstacle || isBoat(v) || (v.altitude || 0) > 20) return false;
+            const vx = v.x - c.x,
+              vy = v.y - c.y,
+              ahead = vx * headingCosine2 + vy * headingSine2,
+              left = -(vx * rx + vy * ry);
+            return ahead > -60 && ahead < reach + 260 && left > 6 && left < 80;
+          });
       for (const o of vehicles) {
         if (o === c || (o.altitude || 0) > 20 || isBoat(o) || distanceBetween(c, o) > 350) continue;
+        let standoff = 0;
         const dx = o.x - c.x,
           dy = o.y - c.y,
           along = dx * headingCosine2 + dy * headingSine2,
@@ -690,7 +726,52 @@
             (Math.abs(headingCosine3 * rx + headingSine3 * ry) * vehicleDefinition2.l) / 2 +
             (Math.abs(-headingSine3 * rx + headingCosine3 * ry) * vehicleDefinition2.w) / 2;
         if (along <= 0 || lateral > side + ow + 4) continue;
-        const gap = along - half - ol - 12,
+        // Mid-turn the look-ahead box swings across the cross street and the kerb,
+        // and found cars waiting there for us to clear the junction (each then
+        // waited for the other for ever) or parked at the kerb beside our exit.
+        // While committed, a car only counts if it stands on the rest of our path.
+        if (
+          pathAhead &&
+          !pathAhead.some((p) => {
+            const px = p.x - o.x,
+              py = p.y - o.y;
+            return (
+              Math.abs(px * headingCosine3 + py * headingSine3) < vehicleDefinition2.l / 2 + side + 4 &&
+              Math.abs(-px * headingSine3 + py * headingCosine3) < vehicleDefinition2.w / 2 + side + 4
+            );
+          })
+        )
+          continue;
+        // A parked car, a wreck, a double-parked delivery van or a car its driver
+        // walked away from: nobody is coming back to move it. Ease across the lane
+        // past one poking a little way in from the kerb; pull out round one that
+        // fills the lane when the oncoming lane is clear and no junction is near.
+        // Traffic used to queue behind any of them for ever.
+        if (!through && !o.ai && !o.cop && o !== player.car && Math.abs(o.speed || 0) < 5) {
+          // Measured from our lane's centre line, not from where we are now: the
+          // shift must hold while we pull across, or it shrinks as we move.
+          const laneLateral = laneOffset + dx * rx + dy * ry,
+            intrusion = side + ow + 4 - Math.abs(laneLateral),
+            overtake =
+              intrusion >= 12 && intrusion < 38 && laneLateral > -12 && !c.junction && oncomingClear(o, along);
+          if (intrusion < 12 || overtake) {
+            // Pass on the left of anything in the middle of the lane.
+            const passLeft = overtake || laneLateral >= 0,
+              shift = side + ow + 4 + (passLeft ? -laneLateral : laneLateral);
+            if (shift > ease.amount) {
+              ease.amount = shift;
+              ease.side = passLeft ? 1 : -1;
+            }
+            if (intrusion < 12 || lateral > side + ow || along - half - ol > 45) continue;
+            // Caught close behind it still in line: creep out round it rather than
+            // stopping, which would leave the car unable to turn out at all.
+            desired = Math.min(desired, 20);
+            continue;
+          }
+          // Waiting for the oncoming lane to clear: hold back far enough to pull out.
+          if (intrusion < 38 && laneLateral > -12) standoff = 40;
+        }
+        const gap = along - half - ol - 12 - standoff,
           lead = Math.max(0, (o.vx || 0) * headingCosine2 + (o.vy || 0) * headingSine2);
         desired = Math.min(
           desired,
@@ -708,15 +789,27 @@
         if (dx > 150 || dx < -150 || dy > 150 || dy < -150) return;
         const along = dx * headingCosine2 + dy * headingSine2,
           lateral = Math.abs(dx * rx + dy * ry);
-        if (along > 0 && along < 140 && lateral < side + 11)
+        // Only people out on the carriageway: mid-turn the look-ahead box sweeps
+        // across the pavement, and a bus used to wait for ever on walkers who
+        // were themselves waiting at the kerb for it to clear.
+        if (along > 0 && along < 140 && lateral < side + 11 && cityStreetAt(p.x, p.y))
           desired = Math.min(desired, Math.sqrt(2 * 260 * Math.max(0, along - half - 22)) * 0.7);
       };
       forEachPedestrianNear(c.x, c.y, 160, yieldTo);
       if (!player.car) yieldTo(player);
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
       desired = Math.min(desired, curbsideStop(c));
+      // Steer for a point shifted away from whatever was easing us across the lane.
+      const steerA = ease.amount
+        ? normalizeAngle(
+            headingBetween(c, {
+              x: target.x - rx * ease.side * (ease.amount + 1),
+              y: target.y - ry * ease.side * (ease.amount + 1),
+            }) - c.a,
+          )
+        : da;
       return {
-        steer: clamp(da * 3, -1.7, 1.7),
+        steer: clamp(steerA * 3, -1.7, 1.7),
         desired: Math.max(0, desired),
       };
     }
@@ -1332,14 +1425,41 @@
           c.navAngle = undefined;
         }
         // Only the player's own car may leave the land: into the surf off a
-        // beach or over a quay into the bay, where it floods (water.js).
-        if (
-          c.type !== 'plane' &&
-          !(isAircraft(c) && c.altitude > 8) &&
-          !isBoat(c) &&
-          c !== player.car &&
-          corners(vehicleShape(c)).some((p) => !groundAt(p.x, p.y))
-        ) {
+        // beach or over a quay into the bay, where it floods (water.js). A car that
+        // has not moved this step (most are parked) needs no footprint re-check.
+        // Park ponds (and the Central Garden boathouse) have a stone kerb that
+        // stops every wheeled vehicle, the player's included: a car used to drive
+        // into the Commons lake and leave its driver no dry ground to step out on.
+        const moved = c.x !== c.stepStartX || c.y !== c.stepStartY || c.a !== c.stepStartA,
+          wheeled = moved && c.type !== 'plane' && !(isAircraft(c) && c.altitude > 8) && !isBoat(c),
+          nearPond = wheeled && parkPondNear(c.x, c.y, vehicleSpec(c).l),
+          footprint = wheeled && corners(vehicleShape(c)),
+          // More of the car over the water than at the start of the step: a car that
+          // somehow starts with a wheel over the kerb can still back off it.
+          cornersInPond = (shape) => corners(shape).filter((p) => parkPondBlocked(p.x, p.y)).length,
+          intoPond =
+            nearPond &&
+            footprint.some((p) => parkPondBlocked(p.x, p.y)) &&
+            cornersInPond(vehicleShape(c)) >
+              cornersInPond({ ...vehicleShape(c), x: c.stepStartX, y: c.stepStartY, a: c.stepStartA });
+        if (intoPond || (wheeled && c !== player.car && footprint.some((p) => !groundAt(p.x, p.y)))) {
+          // Hitting the pond's stone kerb at speed is a crash, not a soft stop.
+          const hitSpeed = Math.hypot(c.vx || 0, c.vy || 0);
+          // (Same severity as a wall in collisionImpact; the kerb is immovable.)
+          if (intoPond && hitSpeed > 42 && physicsClock - (c.kerbHitAt || -9) > 0.5) {
+            c.kerbHitAt = physicsClock;
+            const nx = c.vx / hitSpeed,
+              ny = c.vy / hitSpeed,
+              reach = vehicleSpec(c).l / 2;
+            damageVehicle(c, Math.pow(hitSpeed - 38, 1.12) * 0.062, c.x + nx * reach, c.y + ny * reach, null, {
+              kind: 'crash',
+              nx: -nx,
+              ny: -ny,
+              closing: hitSpeed,
+              otherMass: 0,
+            });
+            if (c === pc) shake = Math.max(shake, Math.min(10, hitSpeed / 40));
+          }
           c.x = c.stepStartX;
           c.y = c.stepStartY;
           c.a = c.stepStartA;
@@ -1347,14 +1467,15 @@
           c.vx *= -0.15;
           c.vy *= -0.15;
         }
-        if (isBoat(c) && !boatFits(c)) {
+        // A moored boat that has not moved still fits where it lies.
+        if (isBoat(c) && moved && !boatFits(c)) {
           if (c.lastWater) {
             c.x = c.lastWater.x;
             c.y = c.lastWater.y;
             c.a = c.lastWater.a;
           }
           c.vx = c.vy = 0;
-        } else if (isBoat(c))
+        } else if (isBoat(c) && (moved || !c.lastWater))
           c.lastWater = {
             x: c.x,
             y: c.y,
@@ -1369,6 +1490,7 @@
           player.altitude = (c.altitude || 0) + (c.groundHeight || 0);
         }
       }
+      mark('phys:post');
     }
     function personIncapacitated(p) {
       return p.hp > 0 && ((p.knockedFor || 0) > 0 || (p.dazedFor || 0) > 0);
@@ -1377,26 +1499,29 @@
       return p.hp <= 0 ? 1 : clamp((p.knockedFor || 0) / 0.55, 0, 1);
     }
     function updateKnockdowns(deltaSeconds) {
-      for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers]) {
-        p.impactCooldown = Math.max(0, (p.impactCooldown || 0) - deltaSeconds);
-        if (p.hp <= 0) continue;
-        if (p.ejected) stepEjection(p, deltaSeconds);
-        if (p.knockedFor > 0) {
-          p.aiming = false;
-          p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);
-          if (
-            p.knockedFor < 0.55 &&
-            vehicles.some((c) => sameFloor(c, p) && pointInCar(p.x, p.y, c, 6))
-          )
-            p.knockedFor = 0.6;
-          if (p.knockedFor === 0) {
-            p.dazedFor = 1.4;
-            p.flee = 8;
-          }
-        } else if (p.dazedFor > 0) {
-          p.aiming = false;
-          p.dazedFor = Math.max(0, p.dazedFor - deltaSeconds);
+      // Walk the four lists in place rather than copying ~700 people every frame.
+      for (const list of [pedestrians, enemies, gangMembers, officers])
+        for (const p of list) updateKnockdown(p, deltaSeconds);
+    }
+    function updateKnockdown(p, deltaSeconds) {
+      p.impactCooldown = Math.max(0, (p.impactCooldown || 0) - deltaSeconds);
+      if (p.hp <= 0) return;
+      if (p.ejected) stepEjection(p, deltaSeconds);
+      if (p.knockedFor > 0) {
+        p.aiming = false;
+        p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);
+        if (
+          p.knockedFor < 0.55 &&
+          vehicles.some((c) => sameFloor(c, p) && pointInCar(p.x, p.y, c, 6))
+        )
+          p.knockedFor = 0.6;
+        if (p.knockedFor === 0) {
+          p.dazedFor = 1.4;
+          p.flee = 8;
         }
+      } else if (p.dazedFor > 0) {
+        p.aiming = false;
+        p.dazedFor = Math.max(0, p.dazedFor - deltaSeconds);
       }
     }
     function knockPerson(person, c, speed) {
@@ -1508,14 +1633,17 @@
       }
       if (distance < 0.001) return;
       if (!bloodPools.length && !(c.bloodTrackRemaining > 0)) return;
-      const sources = bloodPools.filter(
-        (b) =>
-          !b.track &&
-          Math.abs((b.surface || 0) - bloodSurface(b.x, b.y)) < 3 &&
-          gameTime - b.created < 180 &&
-          Math.abs(b.x - c.x) < distance + vehicleSpec(c).l + 30 &&
-          Math.abs(b.y - c.y) < distance + vehicleSpec(c).l + 30,
-      );
+      // Cheap distance test first: the surface check samples the terrain, and
+      // every moving car ran it for every pool in the city each frame.
+      const near = distance + vehicleSpec(c).l + 30,
+        sources = bloodPools.filter(
+          (b) =>
+            !b.track &&
+            Math.abs(b.x - c.x) < near &&
+            Math.abs(b.y - c.y) < near &&
+            gameTime - b.created < 180 &&
+            Math.abs((b.surface || 0) - bloodSurface(b.x, b.y)) < 3,
+        );
       if (!sources.length && !(c.bloodTrackRemaining > 0)) return;
       const steps = Math.ceil(distance / 2),
         ds = distance / steps,
@@ -1576,8 +1704,6 @@
       }
     }
     function updateCars(deltaSeconds, active) {
-      // One combined people list per call: the old per-vehicle spread copied ~400 entries per vehicle per frame.
-      let peopleList = null;
       for (const vehicle of vehicles)
         vehicle.personSweepStart = {
           x: vehicle.x,
@@ -1640,21 +1766,28 @@
         )
           continue;
         const speed = Math.hypot(vehicle.vx || 0, vehicle.vy || 0),
-          contacts = new Set();
-        if (!peopleList) peopleList = [...pedestrians, ...enemies, ...gangMembers, ...officers];
-        const reach = vehicleSpec(vehicle).l + 100;
-        for (const p of peopleList)
+          contacts = new Set(),
+          reach = vehicleSpec(vehicle).l + 100;
+        const touch = (p) => {
           if (
             p.hp > 0 &&
             !p.hidden &&
             Math.abs(p.x - vehicle.x) < reach &&
             Math.abs(p.y - vehicle.y) < reach &&
             sameFloor(vehicle, p) &&
-            distanceBetween(vehicle, p) < vehicleSpec(vehicle).l + 100 &&
+            distanceBetween(vehicle, p) < reach &&
             sweptPersonContact(p, vehicle, vehicle.personSweepStart)
           ) {
             if (vehicle.pedestrianContacts?.has(p) || knockPerson(p, vehicle, speed)) contacts.add(p);
           }
+        };
+        // Some 650 pedestrians: ask the crowd's neighbour grid for the ones near
+        // this car instead of testing all of them for every car near the player.
+        // The swept test reaches back to where the car was a frame ago, so the
+        // query grows by the distance it covered.
+        const swept = Math.hypot(vehicle.x - vehicle.personSweepStart.x, vehicle.y - vehicle.personSweepStart.y);
+        forEachPedestrianNear(vehicle.x, vehicle.y, reach + swept, touch);
+        for (const list of [enemies, gangMembers, officers]) for (const p of list) touch(p);
         vehicle.pedestrianContacts = contacts;
         if (
           speed >= 40 &&

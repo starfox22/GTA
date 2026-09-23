@@ -20,8 +20,9 @@ South Coast in 1997. One HTML file, no server, no build step to play: open
 | --- | --- |
 | Move / drive | W A S D or arrows |
 | Interact, enter or leave a vehicle | E |
-| Fire | F, Space or mouse click |
-| Run / handbrake | Shift |
+| Fire | F, Space or mouse click (on foot) |
+| Handbrake (in a vehicle) | Space |
+| Sprint | Shift |
 | Weapons | 1 to 6, Q cycle, K knife, R reload, I arsenal |
 | City map | Tab |
 | Car radio | N power, B next station |

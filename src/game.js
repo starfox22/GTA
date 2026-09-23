@@ -1380,7 +1380,9 @@
       makeCar('coupe', 782, 576, 0, false, '#88bcaa');
       makeCar('bike', 850, 704, 0, false);
       makeCar('supercar', 975, 704, 0, false);
-      makeCar('roadster', 1100, 704, 0);
+      // Clear of Royal Ave (x 1096..1208): at x 1100 its nose stood in the
+      // southbound lane and traffic queued behind it for ever.
+      makeCar('roadster', 1040, 704, 0);
       makeCar('rally', 1300, 704, 0);
       makeCar('hotrod', 1510, 576, 0);
       makeCar('limousine', 4530, 1728, 0);
@@ -2424,7 +2426,45 @@
         )
       );
     }
+    // Who a bullet can hit where it is now, in the order hits are tested. The
+    // short lists go in whole; pedestrians come from the crowd's neighbour grid
+    // around the bullet. Every sub-step of every bullet used to copy all ~650
+    // pedestrians (plus everyone else) into a fresh array.
+    const bulletTargetList = [];
+    function bulletTargets(b, escorts, rooftop) {
+      const list = bulletTargetList,
+        add = (people) => {
+          for (let k = 0; k < people.length; k++) list.push(people[k]);
+        },
+        addNearbyPedestrians = () => forEachPedestrianNear(b.x, b.y, 16, (p) => list.push(p));
+      list.length = 0;
+      if (b.enemy) {
+        if (b.faction === 'police') {
+          add(enemies);
+          add(gangMembers);
+        } else if (b.faction) {
+          add(enemies);
+          add(gangMembers);
+          add(officers);
+          addNearbyPedestrians();
+        }
+        add(escorts);
+      } else {
+        add(enemies);
+        add(gangMembers);
+        addNearbyPedestrians();
+        add(officers);
+        add(escorts);
+        add(rooftop);
+      }
+      return list;
+    }
     function updateBullets(deltaSeconds) {
+      if (!bullets.length) return;
+      const escorts = storyActors.filter(
+          (p) => p.missionTag === 'flight-witness' && !p.hidden && mission?.stage >= 4,
+        ),
+        rooftopTargets = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && !p.hidden);
       for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         let impact = false,
@@ -2493,23 +2533,7 @@
             }
           }
           if (impact) break;
-          const escorts = storyActors.filter(
-            (p) => p.missionTag === 'flight-witness' && !p.hidden && mission?.stage >= 4,
-          );
-          const targets = b.enemy
-            ? b.faction === 'police'
-              ? [...enemies, ...gangMembers, ...escorts]
-              : b.faction
-                ? [...enemies, ...gangMembers, ...officers, ...pedestrians, ...escorts]
-                : escorts
-            : [
-                ...enemies,
-                ...gangMembers,
-                ...pedestrians,
-                ...officers,
-                ...escorts,
-                ...storyActors.filter((p) => p.missionTag === 'rooftop-hit' && !p.hidden),
-              ];
+          const targets = bulletTargets(b, escorts, rooftopTargets);
           for (const p of targets) {
             if (
               !sameFloor(p, b) ||
@@ -3371,18 +3395,46 @@
         }
       }
     }
-    function drawMap(drawingContext, width, height, big = false) {
-      const scale = big
-          ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
-          : 0.137,
-        cx = big ? mapCenter.x : player.x,
-        cy = big ? mapCenter.y : player.y;
-      drawingContext.fillStyle = '#123244';
-      drawingContext.fillRect(0, 0, width, height);
-      drawingContext.save();
-      drawingContext.translate(width / 2, height / 2);
-      drawingContext.scale(scale, scale);
-      drawingContext.translate(-cx, -cy);
+    /**
+     * MINIMAP BASE LAYER
+     * The minimap used to repaint the whole county (coast, every street, parks,
+     * promenades, county ground and every building footprint) on every HUD
+     * refresh, eleven times a second: tens of milliseconds each time, mostly in
+     * the shoreline tests of the promenade painter. None of it changes after
+     * startup, so it is painted once into an offscreen canvas at the minimap's
+     * fixed scale and each refresh copies the window around the player. The big
+     * city map zooms, so it still paints the vector layers directly.
+     */
+    const MINIMAP_SCALE = 0.137;
+    let minimapBase = null;
+    function minimapBaseLayer() {
+      if (minimapBase) return minimapBase;
+      let minx = Infinity,
+        miny = Infinity,
+        maxx = -Infinity,
+        maxy = -Infinity;
+      for (const reg of LAND_REGIONS)
+        for (const [x, y] of reg.polygon) {
+          minx = Math.min(minx, x);
+          miny = Math.min(miny, y);
+          maxx = Math.max(maxx, x);
+          maxy = Math.max(maxy, y);
+        }
+      // The coast is stroked 90 units wide, so leave room around the land.
+      const x0 = minx - 120,
+        y0 = miny - 120,
+        canvas = document.createElement('canvas');
+      canvas.width = Math.ceil((maxx - minx + 240) * MINIMAP_SCALE);
+      canvas.height = Math.ceil((maxy - miny + 240) * MINIMAP_SCALE);
+      const context = canvas.getContext('2d');
+      context.scale(MINIMAP_SCALE, MINIMAP_SCALE);
+      context.translate(-x0, -y0);
+      paintMapBase(context, false);
+      minimapBase = { canvas, x0, y0 };
+      return minimapBase;
+    }
+    // Land, streets, parks, ground and building footprints: the static layers.
+    function paintMapBase(drawingContext, big) {
       for (const reg of LAND_REGIONS) {
         regionPath(drawingContext, reg);
         drawingContext.strokeStyle = reg.id === 'palmkeys' ? '#33777e' : '#245369';
@@ -3411,6 +3463,29 @@
         }
       }
       drawingContext.restore();
+    }
+    function drawMap(drawingContext, width, height, big = false) {
+      const scale = big
+          ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
+          : MINIMAP_SCALE,
+        cx = big ? mapCenter.x : player.x,
+        cy = big ? mapCenter.y : player.y;
+      drawingContext.fillStyle = '#123244';
+      drawingContext.fillRect(0, 0, width, height);
+      if (!big) {
+        // Whole pixels keep the cached layer sharp; overlays are drawn in world units.
+        const base = minimapBaseLayer();
+        drawingContext.drawImage(
+          base.canvas,
+          Math.round(width / 2 - (cx - base.x0) * scale),
+          Math.round(height / 2 - (cy - base.y0) * scale),
+        );
+      }
+      drawingContext.save();
+      drawingContext.translate(width / 2, height / 2);
+      drawingContext.scale(scale, scale);
+      drawingContext.translate(-cx, -cy);
+      if (big) paintMapBase(drawingContext, big);
       if (big)
         for (const gang of GANGS) {
           drawingContext.fillStyle = gang.id === 'harbor' ? '#bb73571f' : '#ad88ca29';
