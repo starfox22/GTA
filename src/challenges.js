@@ -538,12 +538,16 @@
             y: clamp(c.y, dock.y + 8, dock.y + dock.h - 8),
           };
         if (distanceBetween(c, step) < 110 && !solid(step.x, step.y, 6)) {
-          exitCar();
-          if (!player.car) {
-            player.x = step.x;
-            player.y = step.y;
-            player.altitude = terrainHeight(step.x, step.y);
-          }
+          // Straight onto the deck: the generic exitCar() refuses when neither side
+          // of the jet ski is clear, which is most of the berth.
+          c.ai = false;
+          c.vx = c.vy = c.speed = c.av = 0;
+          player.car = null;
+          player.x = step.x;
+          player.y = step.y;
+          player.altitude = terrainHeight(step.x, step.y);
+          player.inv = 0.5;
+          tone(160, 0.06, 0.15, 'triangle');
           return true;
         }
       }
