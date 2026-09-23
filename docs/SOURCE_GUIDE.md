@@ -400,6 +400,11 @@ docs/audit/missions-qa.md shows the method).
   people, trees and props never are; in the open there is no cutaway. `city3D.
   setCharacterCutaway(on)` switches it; localStorage `dead-end-city-cutaway` = `'off'` is
   read at start-up.
+- **Street camera clearance** (flight-view3d.js): the orthographic street camera stands far
+  enough back along its view line that its near plane clears the tallest roof and the
+  cloud-shadow plane (`streetCeiling()`); the image is unchanged. The street view has no
+  distance haze (from a camera looking down at 50 degrees it was only a pale gradient over
+  the top of the frame); the flight camera's haze gathers over the first ~60 m of a climb.
 - **Wakes** (wakes3d.js): boats call `wakeEmit()` each frame; trails and hull collars are
   drawn into a wake map (foam, wave crest, trough) round the view that the water shader
   samples for foam and for its normal. Spray is one `Points` object.
