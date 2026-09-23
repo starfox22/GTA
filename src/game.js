@@ -4754,7 +4754,12 @@
       simulate(seconds = 1, held = []) {
         for (const code of held) keys[code] = true;
         const steps = Math.round(clamp(seconds, 0, 120) * 30);
-        for (let i = 0; i < steps && gameMode === 'play'; i++) update(1 / 30);
+        for (let i = 0; i < steps; i++) {
+          // A Blue Hour elevator ride runs on its own clock (frame()); step it too.
+          if (gameMode === 'elevator') updateElevator(1 / 30);
+          else if (gameMode === 'play') update(1 / 30);
+          else break;
+        }
         for (const code of held) keys[code] = false;
         return this.ride();
       },

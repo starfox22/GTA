@@ -480,6 +480,23 @@
         4,
       );
     }
+    // One step of Daniel's walk: straight at the next crumb, or the smallest
+    // turn off it that actually moves him, so he slides round a wingtip or a
+    // parked car instead of pressing into it (moveBody stops at vehicles, while
+    // footStepTowards' sidestep only checks buildings).
+    function witnessStep(p, target, deltaSeconds, speed) {
+      const a = headingBetween(p, target),
+        step = speed * deltaSeconds;
+      for (const turn of [0, 0.5, -0.5, 1, -1, 1.6, -1.6, 2.3, -2.3]) {
+        if (personIncapacitated(p)) return;
+        const x = p.x,
+          y = p.y;
+        moveBody(p, Math.cos(a + turn) * step, Math.sin(a + turn) * step, 8);
+        if (Math.hypot(p.x - x, p.y - y) > step * 0.4) break;
+      }
+      p.a = a;
+      p.walk += deltaSeconds * 12;
+    }
     function followWitness(missionState, deltaSeconds) {
       const p = missionState.witnessActor;
       if (!p) return;
@@ -490,8 +507,22 @@
             y: player.y,
           });
           p.hidden = false;
+          missionState.witnessTrail = [];
         }
-        if (distanceBetween(p, player) > 30) footStepTowards(p, player, deltaSeconds, 118);
+        // Daniel walks the path the player walked (breadcrumbs every 24 units),
+        // so he rounds the parked plane, fences and buildings the player went
+        // round. Heading straight for the player, he stuck fast against the wing
+        // of the plane he had just climbed out of and the van would not board.
+        const trail = missionState.witnessTrail || (missionState.witnessTrail = []),
+          last = trail[trail.length - 1];
+        if (!last || distanceBetween(last, player) > 24) trail.push({ x: player.x, y: player.y });
+        if (trail.length > 400) trail.shift();
+        // Drop every crumb up to the last one he is standing on (the player's
+        // path may loop back past him).
+        let reached = -1;
+        for (let i = 0; i < trail.length - 1; i++) if (distanceBetween(p, trail[i]) < 16) reached = i;
+        if (reached >= 0) trail.splice(0, reached + 1);
+        if (distanceBetween(p, player) > 30) witnessStep(p, trail[0] || player, deltaSeconds, 118);
       } else if (missionState.stage === 5) p.hidden = true;
     }
     function flightMissionUpdate(missionState, deltaSeconds) {
