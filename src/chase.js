@@ -360,8 +360,11 @@
         if (removed.has(officers[i])) officers.splice(i, 1);
       for (let i = bullets.length - 1; i >= 0; i--)
         if (removed.has(bullets[i].owner)) bullets.splice(i, 1);
+      // "Police cleared" only when stars actually drop: a respray in the moment
+      // between the gate camera and the first units rolling had nothing to clear.
+      const wasWanted = wantedStars > 0;
       clearPolice();
-      policeClearedNotice();
+      if (wasWanted) policeClearedNotice();
       m.target = HARBOR.delivery;
       m.instruction = 'TRUCK RESPRAYED · DRIVE IT INTO VINNY’S WAREHOUSE';
       return true;
