@@ -391,9 +391,14 @@ docs/audit/missions-qa.md shows the method).
   `onBeforeCompile`) adds it to every lit surface near the ground, scaled by night, the
   blackout job's district power and height. A material with its own `onBeforeCompile` should
   call `cityMaterialPatch(shader)` first. Traffic headlights are instanced ground cones.
-- **Cutaway** (lighting3d.js, `updateCutaway`): the same patch dithers away, in a soft disc
-  round the player, any fragment above their head that is well in front of them (a tower
-  south of them, a tree crown, a viaduct deck), so nothing needs per-building fading.
+- **Cutaway** (lighting3d.js, `updateCutaway`): only when the player stands strictly under a
+  roof (`airCoverVolumes()`: the underpass, rail decks, station canopies; a building they are
+  inside; roofs registered with `registerCutawayRoof`: Vinny's depot, bus shelters) does the
+  same patch dither a small hole, about the player's size, through that roof. Only fragments
+  inside the covering structure's own volume and in front of the player are cut, so vehicles,
+  people, trees and props never are; in the open there is no cutaway. `city3D.
+  setCharacterCutaway(on)` switches it; localStorage `dead-end-city-cutaway` = `'off'` is
+  read at start-up.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
   a bump, dielectric roughness and rain puddles (`weather.wet`). Leaf and palm materials sway.

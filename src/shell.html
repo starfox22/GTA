@@ -209,8 +209,9 @@ AUDIT CONTRACTS
   through damageVehicle(), whose `detail` shapes the dent (damage.js).
 - Cameras: orthographic on the street, perspective in the air (flight-view3d.js).
   Cull and pick level of detail with viewCenter, viewReach and viewZoom, not
-  cameraTarget/worldZoom. Nothing lays a uniform wash over the frame; scenery
-  over the player is cleared by the dithered cutaway (lighting3d.js), not fades.
+  cameraTarget/worldZoom. Nothing lays a uniform wash over the frame. A roof
+  over the player (and only a roof) gets a small dithered hole round them
+  (lighting3d.js, CUTAWAY); nothing else is ever faded or cut.
 - Browser localStorage holds campaign/audio/graphics settings; there is no server.
 - window.DeadEndCity (end of src/game.js) is the only test surface: explicit named
   methods, never a code-evaluation hook.

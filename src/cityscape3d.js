@@ -985,6 +985,8 @@
         box(g, 18, 17, 2, 6, 3, 0.4, mat('#2f5f9a'));
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
+        // The roof is cut away round a player waiting under it (lighting3d.js).
+        registerCutawayRoof(x, z, 16, 6.5, 0, 15, 18);
         // People wait here (src/crowd.js) and buses stop for them.
         registerBusStop(x, z);
       }

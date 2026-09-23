@@ -1428,6 +1428,15 @@
       const api = {
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
+        /**
+         * Settings contract: the see-through hole round the player under a roof
+         * (lighting3d.js, CUTAWAY). On by default; read at start-up from
+         * localStorage 'dead-end-city-cutaway' ('off' disables). The settings
+         * menu saves that key and calls this to apply it at once.
+         */
+        setCharacterCutaway(on) {
+          setCharacterCutaway(on);
+        },
         info() {
           let objects = 0;
           const byType = {};
