@@ -958,6 +958,33 @@
           nightLights,
         };
       }
+      /**
+       * PLAYER AT NIGHT
+       * The player's dark jacket vanished into an unlit street. After dark their
+       * model picks up a cool rim light (strongest on the faces turned away from
+       * the camera, so the silhouette reads against the ground) and a faint fill,
+       * and a soft pool of light rides at their feet (playerGlow, updated in
+       * render()). Both follow nightAmount and are gone by day.
+       */
+      const playerRim = { value: new Three.Color(0, 0, 0) },
+        PLAYER_RIM_NIGHT = new Three.Color('#5d6f8f');
+      function playerRimMaterial(material) {
+        material.onBeforeCompile = (shader) => {
+          cityMaterialPatch(shader);
+          shader.uniforms.cityPlayerRim = playerRim;
+          shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\nuniform vec3 cityPlayerRim;')
+            .replace(
+              '#include <lights_fragment_end>',
+              `#include <lights_fragment_end>
+              {
+                float rimView = 1.0 - clamp( dot( normal, geometryViewDir ), 0.0, 1.0 );
+                totalEmissiveRadiance += cityPlayerRim * ( 0.18 + 1.4 * rimView * rimView );
+              }`,
+            );
+        };
+        material.customProgramCacheKey = () => 'player-rim';
+      }
       function makePerson(person, isPlayer) {
         const group = new Three.Group();
         scene.add(group);
@@ -984,6 +1011,8 @@
           mesh(sphereGeo, skin, arm, 0.6, -4.3, 0, 1, 1.2, 1);
           parts['arm' + side] = arm;
         }
+        // Body, clothes and hair (not the guns) carry the player's night rim light.
+        if (isPlayer) group.traverse((o) => o.material?.isMeshStandardMaterial && playerRimMaterial(o.material));
         const guns = [];
         for (let slot = 0; slot < (isPlayer ? 7 : 1); slot++) {
           const gun = new Three.Group();
@@ -1105,6 +1134,33 @@
       );
       playerRing.rotation.x = -Math.PI / 2;
       scene.add(playerRing);
+      // The soft pool of light at the player's feet after dark (see PLAYER AT NIGHT).
+      const playerGlowCanvas = document.createElement('canvas');
+      playerGlowCanvas.width = playerGlowCanvas.height = 64;
+      {
+        const g = playerGlowCanvas.getContext('2d'),
+          grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(255,255,255,1)');
+        grad.addColorStop(0.45, 'rgba(255,255,255,0.45)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 64, 64);
+      }
+      const playerGlow = new Three.Mesh(
+        new Three.PlaneGeometry(64, 64),
+        new Three.MeshBasicMaterial({
+          map: new Three.CanvasTexture(playerGlowCanvas),
+          color: '#b4c2e0',
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          blending: Three.AdditiveBlending,
+        }),
+      );
+      playerGlow.rotation.x = -Math.PI / 2;
+      playerGlow.renderOrder = 3;
+      playerGlow.visible = false;
+      scene.add(playerGlow);
       /**
        * SWIM WAKE
        * Two flat pieces lying on the water: a soft V that opens out behind the
@@ -2025,6 +2081,13 @@
           playerRing.visible =
             !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
+          // After dark: the rim light on the player's model and the pool at their feet.
+          playerRim.value.copy(PLAYER_RIM_NIGHT).multiplyScalar(nightAmount * 0.6);
+          playerGlow.visible = playerRing.visible && !player.hidden && nightAmount > 0.04;
+          if (playerGlow.visible) {
+            playerGlow.position.set(player.x, 0.4 + entityElevation(player), player.y);
+            playerGlow.material.opacity = nightAmount * 0.16;
+          }
           // Wake: a bow wave that opens out behind the swimmer, and a ring of
           // disturbed water around them that breathes with the stroke.
           swimWake.visible = !!player.swimming;
