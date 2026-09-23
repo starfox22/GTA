@@ -32,6 +32,8 @@
       MAX_VEHICLE_DENTS = 14,
       // Below this share of its health an engine catches fire and burns down to the tank.
       BURN_THRESHOLD = 0.25,
+      // A mission vehicle's engine fire goes out on its own at this share of health.
+      MISSION_FIRE_FLOOR = 0.08,
       NEUTRAL_HANDLING = Object.freeze({ power: 1, top: 1, grip: 1, pull: 0 });
     function freshDamage() {
       return {
@@ -51,6 +53,8 @@
         markSerial: 0,
         pull: 0,
         burning: 0,
+        // A mission vehicle's fire that has already burnt out (it does not relight).
+        fireSpent: false,
         burnt: false,
         wreckedAt: 0,
         leaks: 0,
@@ -631,10 +635,22 @@
           if (!damage.burnt) wreckVehicle(c);
           continue;
         }
-        if (!damage.burning && c.hp < c.maxhp * BURN_THRESHOLD && canBurn(c)) igniteVehicle(c);
+        if (!damage.burning && !damage.fireSpent && c.hp < c.maxhp * BURN_THRESHOLD && canBurn(c))
+          igniteVehicle(c);
         if (damage.burning) {
           damage.burning += deltaSeconds;
           c.hp = Math.max(0, c.hp - ((c.maxhp * BURN_THRESHOLD) / burnSeconds(c)) * deltaSeconds);
+          // A vehicle a mission depends on (the job's truck, Elena's car, a repo)
+          // does not burn itself out and fail the job on its own: the fire eats
+          // the engine down to a smouldering wreck that still drives, then dies
+          // out. Gunfire or a crash can still finish it off.
+          if (c.mission && c.hp <= c.maxhp * MISSION_FIRE_FLOOR) {
+            c.hp = Math.max(c.hp, 1);
+            damage.burning = 0;
+            damage.fireSpent = true;
+            c.damageVersion++;
+            if (c === player.car) tell('The engine fire burnt itself out · the car is barely holding together', 4);
+          }
         }
         // A holed sump or radiator leaves a trail of drips to the kerb.
         const type = damageClass(c);
@@ -829,6 +845,7 @@
         pull: round(vehicleHandling(vehicle).pull),
         handling: { ...vehicleHandling(vehicle) },
         burning: round(damage.burning),
+        fireSpent: !!damage.fireSpent,
         burnt: damage.burnt,
         speed: Math.round(Math.hypot(vehicle.vx || 0, vehicle.vy || 0)),
         spin: round(vehicle.av || 0),

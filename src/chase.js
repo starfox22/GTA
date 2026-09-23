@@ -190,6 +190,18 @@
       if (Math.abs(depotBackTarget - depotBackDoor) > 1e-4)
         depotBackDoor = clamp(depotBackDoor + Math.sign(depotBackTarget - depotBackDoor) * deltaSeconds * 0.9, 0, 1);
     }
+    // Vinny's crew clears the warehouse floor: parked vehicles left inside (the
+    // mission 1 truck, a delivered hot car or repo) are taken away, so the next
+    // job that ends by driving in (The Manifest, Rush Hour, Repo Man) finds
+    // room. The player's own vehicle is never touched.
+    function clearDepotFloor() {
+      for (let i = vehicles.length - 1; i >= 0; i--) {
+        const c = vehicles[i];
+        if (c === player.car || isAircraft(c) || !insideDepot(c.x, c.y)) continue;
+        for (let j = officers.length - 1; j >= 0; j--) if (officers[j].car === c) officers.splice(j, 1);
+        vehicles.splice(i, 1);
+      }
+    }
     function depotOverlap(x, y, w, h) {
       return x + w > 4315 && x < 4645 && y + h > 4250 && y < 4605;
     }
@@ -360,8 +372,11 @@
         if (removed.has(officers[i])) officers.splice(i, 1);
       for (let i = bullets.length - 1; i >= 0; i--)
         if (removed.has(bullets[i].owner)) bullets.splice(i, 1);
+      // "Police cleared" only when stars actually drop: a respray in the moment
+      // between the gate camera and the first units rolling had nothing to clear.
+      const wasWanted = wantedStars > 0;
       clearPolice();
-      policeClearedNotice();
+      if (wasWanted) policeClearedNotice();
       m.target = HARBOR.delivery;
       m.instruction = 'TRUCK RESPRAYED · DRIVE IT INTO VINNY’S WAREHOUSE';
       return true;

@@ -353,6 +353,8 @@
       el.style.backgroundPosition = tile;
       el.title = CHARACTERS[id]?.name || 'Vinny Moretti';
     }
+    const STORY_PROPER_NOUNS =
+      /\b(vinny|elena|mara|rafe|daniel|vescari|vale|rusk|palm keys|blue hour|coral palms|southport|oceanview|northridge|glasshouse|bay launch|eastside customs|sunset motel|hangar three)\b/g;
     function missionSummary(m) {
       if (m.index >= SIDE_JOB_FIRST)
         return (
@@ -363,17 +365,9 @@
       const name = CHARACTERS[missions[m.index].contact].name.split(' ')[0],
         task = (m.instruction || missions[m.index].brief)
           .toLowerCase()
-          .replace('vinny’s', 'Vinny’s')
-          .replace('vinny', 'Vinny')
-          .replace('elena', 'Elena')
-          .replace('mara', 'Mara')
-          .replace('palm keys', 'Palm Keys')
-          .replace('blue hour', 'Blue Hour')
-          .replace('coral palms', 'Coral Palms')
-          .replace('southport', 'Southport')
-          .replace('rafe', 'Rafe')
-          .replace('glasshouse', 'Glasshouse')
-          .replace('bay launch', 'Bay Launch');
+          // Every name the stage instructions use, capitalised wherever it appears
+          // ("fly to northridge", "daniel's guards" read as typos on the card).
+          .replace(STORY_PROPER_NOUNS, (word) => word.replace(/(^|\s)\S/g, (c) => c.toUpperCase()));
       return name + ' gave you a mission: ' + task + '.';
     }
     function missionLine(speaker, text) {
@@ -441,8 +435,11 @@
       missionLine(info.contact, info.brief);
       save();
     }
+    // How the last mission ended (read by the developer console's missionState()).
+    let lastMissionOutcome = null;
     function failMission(reason) {
       if (!mission) return;
+      lastMissionOutcome = { result: 'failed', index: mission.index, stage: mission.stage, reason };
       const freight = mission.index === 0 && mission.policeNotified;
       cleanupMissionExtras();
       if (freight) clearPolice();
@@ -477,6 +474,7 @@
     }
     function winMission() {
       if (!mission) return;
+      lastMissionOutcome = { result: 'won', index: mission.index, stage: mission.stage };
       cleanupMissionExtras();
       radio('mission-complete');
       const previousCompleted = completed,

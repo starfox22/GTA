@@ -372,23 +372,20 @@
           missionState.actionProgress = 0;
           missionState.timer = missionState.timeLimit = 150;
           crime(2);
+          // Down Marlow Bay, through the narrows between Battery Point and Sunset
+          // Pier, round the outside of Southport Beach (south of the fishing pier
+          // head and its swimmers) and up to the Southport speedboat dock. The old
+          // gates at (3720, 5410) and (2250, 5750) now sit on Sunset Pier and on
+          // the beach sand.
           missionState.waterRoute = [
-            {
-              x: 3720,
-              y: 5410,
-            },
-            {
-              x: 2250,
-              y: 5750,
-            },
-            {
-              x: 1550,
-              y: 5540,
-            },
-            {
-              x: 1490,
-              y: 5147,
-            },
+            { x: 3470, y: 4700 },
+            { x: 3420, y: 5000 },
+            { x: 3380, y: 5320 },
+            { x: 3150, y: 5750 },
+            { x: 2700, y: 6100 },
+            { x: 1640, y: 5780 },
+            { x: 1550, y: 5540 },
+            { x: 1490, y: 5147 },
           ];
           missionState.waterGate = 0;
           setStage(
@@ -398,7 +395,14 @@
             'elena',
             'Opening the case woke a transmitter. Get it to Rafe: he can cut the beacon.',
           );
-        } else if (missionState.stage === 2 && player.car === missionState.car && near) {
+        } else if (
+          missionState.stage === 2 &&
+          player.car === missionState.car &&
+          // Channel gates are passed at speed, so they are wider than a stop marker;
+          // the last one is the dock itself.
+          distanceBetween(player, missionState.target) <
+            (missionState.waterGate < missionState.waterRoute.length - 1 ? 110 : 55)
+        ) {
           missionState.waterGate++;
           if (missionState.waterGate < missionState.waterRoute.length)
             setStage(
@@ -513,6 +517,33 @@
           'CONTINUE',
         );
         return true;
+      }
+      if (
+        missionState.index === 7 &&
+        missionState.stage === 3 &&
+        player.car === missionState.car &&
+        Math.abs(missionState.car.speed) < 15
+      ) {
+        // Step off onto the Southport dock itself, on the hangar side. The generic
+        // boat exit takes the first clear side, which here is the quay across the
+        // inlet: from there Rafe is a long walk round by the street.
+        const c = missionState.car,
+          dock = DOCKS.reduce((a, b) =>
+            distanceBetween(c, { x: b.boatX, y: b.boatY }) < distanceBetween(c, { x: a.boatX, y: a.boatY }) ? b : a,
+          ),
+          step = {
+            x: clamp(c.x, dock.x + 10, dock.x + dock.w - 10),
+            y: clamp(c.y, dock.y + 8, dock.y + dock.h - 8),
+          };
+        if (distanceBetween(c, step) < 110 && !solid(step.x, step.y, 6)) {
+          exitCar();
+          if (!player.car) {
+            player.x = step.x;
+            player.y = step.y;
+            player.altitude = terrainHeight(step.x, step.y);
+          }
+          return true;
+        }
       }
       if (missionState.index === 7 && missionState.stage === 4 && !player.car && near) {
         winMission();

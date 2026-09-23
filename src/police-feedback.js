@@ -22,15 +22,17 @@
     function policeClearedNotice() {
       showPoliceNotice('POLICE CLEARED!', true);
     }
+    function hidePoliceNotice() {
+      policeNoticeSeconds = 0;
+      getElement('policeNotice').classList.remove('show');
+      document.body?.classList.remove('police-notice-visible');
+    }
     function updatePoliceNotice(deltaSeconds) {
       if (policeNoticeSeconds <= 0) return;
       const cleared = getElement('policeNotice').classList.contains('cleared');
       if ((cleared && wantedStars > 0) || (!cleared && wantedStars <= 0)) policeNoticeSeconds = 0;
       policeNoticeSeconds = Math.max(0, policeNoticeSeconds - deltaSeconds);
-      if (policeNoticeSeconds === 0) {
-        getElement('policeNotice').classList.remove('show');
-        document.body?.classList.remove('police-notice-visible');
-      }
+      if (policeNoticeSeconds === 0) hidePoliceNotice();
     }
 
     // Report explicit delivery attempts that are waiting for a clean wanted level.
