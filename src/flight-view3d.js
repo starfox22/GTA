@@ -303,7 +303,9 @@
         FAR_DETAIL_LAYER = 4,
         FAR_DETAIL_ZOOM = 0.12,
         PEOPLE_ZOOM = 0.32,
-        IMPOSTOR_ZOOM = 0.27,
+        IMPOSTOR_ZOOM = 0.4,
+        PERSON_IMPOSTOR_ZOOM = 0.52,
+        PERSON_IMPOSTOR_CAPACITY = 1200,
         IMPOSTOR_CAPACITY = 640;
       for (const layer of [DETAIL_LAYER, FAR_DETAIL_LAYER]) {
         streetCamera.layers.enable(layer);
@@ -359,9 +361,77 @@
         flightCamera.layers[flightViewActive && viewZoom < DETAIL_ZOOM ? 'disable' : 'enable'](DETAIL_LAYER);
         flightCamera.layers[flightViewActive && viewZoom < FAR_DETAIL_ZOOM ? 'disable' : 'enable'](FAR_DETAIL_LAYER);
       }
+      /**
+       * BODY IMPOSTORS
+       * Between the full model and the two-box impostor there is a middle level for
+       * ordinary cars: every car of a type shares that type's pristine body shell
+       * and glasshouse (damage3d.js caches them by size), so all the cars of one
+       * type in view are two instanced draws, the body tinted per car, under the
+       * same clear-coat paint. The pool for a type is made from the first full
+       * model of that type; until one exists the car is drawn normally.
+       */
+      const BODY_IMPOSTOR_ZOOM = 0.62,
+        BODY_POOL_CAPACITY = 160,
+        bodyPools = new Map(),
+        bodyPaint = new Three.MeshPhysicalMaterial({ roughness: 0.42, metalness: 0.55, clearcoat: 1, clearcoatRoughness: 0.1 }),
+        bodyGroupMatrix = new Three.Matrix4(),
+        bodyPartMatrix = new Three.Matrix4();
+      function bodyPoolFor(c) {
+        let pool = bodyPools.get(c.type);
+        if (pool !== undefined) return pool;
+        const m = carModels.get(c);
+        if (!m) return null;
+        // A dented body is its own copy: wait for a pristine one of this type.
+        if (m.car && m.shell.geometry.attributes.position.array !== m.shellBase) return null;
+        pool = false;
+        // Only a closed body (not the roadster's open cockpit) makes a pool.
+        if (m.car && m.cabin && m.cabinBase) {
+          m.body.updateMatrix();
+          m.shell.updateMatrix();
+          m.cabin.updateMatrix();
+          const make = (geometry, material) => {
+            const im = new Three.InstancedMesh(geometry, material, BODY_POOL_CAPACITY);
+            im.count = 0;
+            im.castShadow = im.receiveShadow = true;
+            im.frustumCulled = false;
+            im.userData.dynamic = true;
+            scene.add(im);
+            return im;
+          };
+          pool = {
+            shell: make(m.shell.geometry, bodyPaint),
+            cabin: make(m.cabin.geometry, m.cabin.material),
+            shellLocal: m.shell.matrix.clone(),
+            cabinLocal: m.cabin.matrix.clone(),
+            count: 0,
+          };
+          pool.shell.setColorAt(0, impostorColor);
+        }
+        bodyPools.set(c.type, pool);
+        return pool;
+      }
+      function bodyImpostor(c) {
+        const pool = bodyPoolFor(c);
+        if (!pool || pool.count >= BODY_POOL_CAPACITY) return false;
+        impostorRotation.setFromAxisAngle(impostorUp, -c.a);
+        impostorPosition.set(c.x, 0.1 + entityElevation(c), c.y);
+        bodyGroupMatrix.compose(impostorPosition, impostorRotation, impostorScale.set(1, 1, 1));
+        pool.shell.setMatrixAt(pool.count, bodyPartMatrix.multiplyMatrices(bodyGroupMatrix, pool.shellLocal));
+        pool.cabin.setMatrixAt(pool.count, bodyPartMatrix.multiplyMatrices(bodyGroupMatrix, pool.cabinLocal));
+        pool.shell.setColorAt(pool.count, impostorColor.set(c.color || '#888888'));
+        pool.count++;
+        return true;
+      }
       // True when `c` was drawn as an impostor this frame (the caller then hides its model).
+      // Zoomed out on the street a car is a couple of dozen pixels long too, so the
+      // impostors serve both cameras; the quality tier's lodBias moves the switch.
       function vehicleImpostor(c) {
-        if (!flightViewActive || viewZoom >= IMPOSTOR_ZOOM || impostorCount >= IMPOSTOR_CAPACITY) return false;
+        const lod = activeTier ? activeTier.lodBias : 1;
+        if (viewZoom >= BODY_IMPOSTOR_ZOOM * lod || c === player.car || isAircraft(c)) return false;
+        // Intact cars with a body pool; the badly damaged and everything else get
+        // the two boxes once they are small enough.
+        if (c.hp >= c.maxhp * 0.6 && bodyImpostor(c)) return true;
+        if (viewZoom >= IMPOSTOR_ZOOM * lod || impostorCount >= IMPOSTOR_CAPACITY) return false;
         if (c === player.car || isAircraft(c)) return false;
         const spec = vehicleSpec(c),
           length = spec.l,
@@ -388,7 +458,70 @@
         if (!flightViewActive || viewZoom >= 0.3) return base;
         return viewZoom < 0.15 ? base * 3 : base * 2;
       }
+      /**
+       * PEOPLE AT A DISTANCE
+       * A pedestrian model is a dozen meshes (torso, head, limbs, hands, gun
+       * models); zoomed out, a crowd of them was the largest share of the draw
+       * calls. Below PERSON_IMPOSTOR_ZOOM, anyone simply standing or walking is
+       * drawn as three instanced parts instead (legs, torso in their own clothing
+       * colour, head): three draw calls for the whole crowd. Anyone sitting,
+       * falling, swimming, fighting for breath or otherwise posed keeps the full
+       * model, as does the player.
+       */
+      const personMaterial = (color, roughness) => new Three.MeshStandardMaterial({ color, roughness }),
+        personImpostorLegs = new Three.InstancedMesh(impostorBox, personMaterial('#343b44', 0.85), PERSON_IMPOSTOR_CAPACITY),
+        personImpostorTorso = new Three.InstancedMesh(impostorBox, personMaterial('#ffffff', 0.8), PERSON_IMPOSTOR_CAPACITY),
+        personImpostorHead = new Three.InstancedMesh(new Three.IcosahedronGeometry(1, 1), personMaterial('#af8b72', 0.7), PERSON_IMPOSTOR_CAPACITY);
+      for (const m of [personImpostorLegs, personImpostorTorso, personImpostorHead]) {
+        m.count = 0;
+        m.castShadow = true;
+        m.receiveShadow = true;
+        m.frustumCulled = false;
+        m.userData.dynamic = true;
+        scene.add(m);
+      }
+      personImpostorTorso.setColorAt(0, impostorColor);
+      let personImpostorCount = 0;
+      function personImpostor(p) {
+        const lod = activeTier ? activeTier.lodBias : 1;
+        if (viewZoom >= PERSON_IMPOSTOR_ZOOM * lod || personImpostorCount >= PERSON_IMPOSTOR_CAPACITY) return false;
+        if (p.hp <= 0 || p.hidden || p.sitting || p.swimming || p.parachute || p.ejected || p.illness) return false;
+        if (p.poisonCollapse !== undefined || p.drinking || personIncapacitated(p)) return false;
+        const i = personImpostorCount++,
+          ground = entityElevation(p);
+        impostorRotation.setFromAxisAngle(impostorUp, -p.a);
+        impostorPosition.set(p.x, ground + 3.6, p.y);
+        impostorScale.set(2.6, 7.2, 5);
+        personImpostorLegs.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
+        impostorPosition.y = ground + 10.2;
+        impostorScale.set(4.6, 6.4, 8.2);
+        personImpostorTorso.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
+        personImpostorTorso.setColorAt(i, impostorColor.set(p.color || '#6b5965'));
+        impostorPosition.y = ground + 15.3;
+        impostorScale.set(2.1, 2.5, 2.1);
+        personImpostorHead.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
+        return true;
+      }
+      // Called once the frame's people have been placed (from renderFrame).
+      function endPersonImpostors() {
+        const n = personImpostorCount;
+        personImpostorCount = 0;
+        for (const m of [personImpostorLegs, personImpostorTorso, personImpostorHead]) {
+          m.count = n;
+          if (n) m.instanceMatrix.needsUpdate = true;
+        }
+        if (n) personImpostorTorso.instanceColor.needsUpdate = true;
+      }
       function endVehicleImpostors() {
+        for (const pool of bodyPools.values()) {
+          if (!pool) continue;
+          pool.shell.count = pool.cabin.count = pool.count;
+          if (pool.count) {
+            pool.shell.instanceMatrix.needsUpdate = pool.cabin.instanceMatrix.needsUpdate = true;
+            pool.shell.instanceColor.needsUpdate = true;
+          }
+          pool.count = 0;
+        }
         impostorBodies.count = impostorCabins.count = impostorCount;
         if (!impostorCount) return;
         impostorBodies.instanceMatrix.needsUpdate = impostorCabins.instanceMatrix.needsUpdate = true;
@@ -440,6 +573,7 @@
        * FAR_SCENERY_ZOOM (roughly 650 m up) the flight camera shows this copy instead.
        */
       const FAR_SCENERY_ZOOM = 0.165,
+        STREET_FAR_SCENERY_ZOOM = 0.2,
         FAR_PIECE_SIZE = 20,
         farBox = new Three.Box3(),
         FAR_CELL = 3072,
@@ -509,6 +643,7 @@
             m.map ? m.map.source.uuid : '',
             m.emissiveMap ? m.emissiveMap.source.uuid : '',
             m.roughnessMap ? m.roughnessMap.source.uuid : '',
+            m.metalnessMap ? m.metalnessMap.source.uuid : '',
             m.emissiveMap || m.emissiveIntensity > 0 ? m.emissive.getHexString() : '',
             m.roughness.toFixed(1),
             m.metalness.toFixed(1),
@@ -548,6 +683,7 @@
               map: identity(sample.map),
               emissiveMap: identity(sample.emissiveMap),
               roughnessMap: identity(sample.roughnessMap),
+              metalnessMap: identity(sample.metalnessMap),
               emissive: sample.emissive.clone(),
               emissiveIntensity: sample.emissiveIntensity,
               roughness: sample.roughness,
@@ -622,7 +758,10 @@
       }
       // Swap between the full city and the far copy; keep window light in step.
       function updateFarScenery() {
-        const far = flightViewActive && viewZoom < FAR_SCENERY_ZOOM && farClasses.length > 0;
+        // Zoomed right out on the street the whole city is in view too, so the far
+        // copy serves both cameras (the quality tier's lodBias moves the switch).
+        const lod = activeTier ? activeTier.lodBias : 1,
+          far = viewZoom < (flightViewActive ? FAR_SCENERY_ZOOM : STREET_FAR_SCENERY_ZOOM) * lod && farClasses.length > 0;
         if (far !== farSceneryShown) {
           farSceneryShown = far;
           farScenery.visible = far;

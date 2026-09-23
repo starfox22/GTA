@@ -44,7 +44,7 @@
             vec3( 1.764741, -0.147028, -0.036337 ),
             vec3( -0.675778, 1.160252, -0.162436 ),
             vec3( -0.088963, -0.013224, 1.198773 ) );
-          vec3 y = clamp( invOutput * display, 0.0, 0.985 );
+          vec3 y = clamp( invOutput * display, 0.0, 0.94 );
           // RRTAndODTFit solved for its input: (yc - 1) x^2 + (yd - a) x + (ye + b) = 0.
           vec3 qa = y * 0.983729 - 1.0, qb = y * 0.4329510 - 0.0245786, qc = y * 0.238081 + 0.000090537;
           vec3 x = ( -qb - sqrt( max( qb * qb - 4.0 * qa * qc, 0.0 ) ) ) / ( 2.0 * qa );
@@ -472,6 +472,8 @@
       const frameStats = { sceneCalls: 0, sceneTriangles: 0, shadowFrame: false, totalCalls: 0 };
       renderer.info.autoReset = false;
       function renderFrame() {
+        // Crowd impostors placed during this frame's people pass (flight-view3d.js).
+        endPersonImpostors();
         renderer.info.reset();
         frameStats.shadowFrame = renderer.shadowMap.needsUpdate;
         if (!hdrCapable || !postTier) {

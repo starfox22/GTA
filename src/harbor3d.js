@@ -63,8 +63,12 @@
         }
         return group;
       }
+      // Static terminal scenery, merged by the static batcher once built; the gate
+      // arm and the crane trolleys (which move) are flagged dynamic below.
       const harborGroup = new Three.Group();
+      harborGroup.name = 'harbor terminal';
       scene.add(harborGroup);
+      batchGroups.push(harborGroup);
       statics.push({
         x: 3100,
         y: 1500,
@@ -176,6 +180,7 @@
       sign('IRONWORKS CARGO', 2940, 1438, 210, '#e6c581');
       sign('RESTRICTED · KEEP CLEAR', 2805, 1578, 119, '#e0b360');
       const gateRoot = new Three.Group();
+      gateRoot.userData.dynamic = true;
       gateRoot.position.set(HARBOR.gate.x, 10, HARBOR.gate.y - 68);
       harborGroup.add(gateRoot);
       box(harborGroup, HARBOR.gate.x, 7, HARBOR.gate.y - 72, 11, 14, 11, cranePaint);
@@ -258,6 +263,7 @@
         box(cg, 3387, 68, z - 26, 2, 65, 1, chrome);
         for (let h = 39; h < 98; h += 5) box(cg, 3387, h, z - 27, 9, 1, 1, chrome);
         const trolley = new Three.Group();
+        trolley.userData.dynamic = true;
         cg.add(trolley);
         box(trolley, 0, 104, 0, 18, 8, 55, darkMetal);
         const load = new Three.Group();
@@ -328,6 +334,31 @@
         harborBayRing.visible = !!m && m.stage === 2;
         harborBayRing.material.opacity = 0.09 + 0.04 * Math.sin(gameTime * 3);
       }
+      /**
+       * TRAFFIC SIGNALS
+       * Each post (pole and head in one merged mesh) stands in its own group at its
+       * base so a car that knocks it down tips the whole signal over. The bulbs of
+       * every signal in the city are one instanced mesh, re-placed each frame from
+       * the posts in view and coloured by the signal phase: two draw calls per
+       * junction instead of ten.
+       */
+      const signalPostGeometry = (() => {
+        const pole = new Three.BoxGeometry(1.1, 30, 1.1).translate(0, 15, 0),
+          head = new Three.BoxGeometry(5, 12, 4).translate(0, 29, 0),
+          merged = new Three.BufferGeometry();
+        for (const name of ['position', 'normal', 'uv'])
+          merged.setAttribute(
+            name,
+            new Three.BufferAttribute(
+              new Float32Array([...pole.attributes[name].array, ...head.attributes[name].array]),
+              pole.attributes[name].itemSize,
+            ),
+          );
+        const offset = pole.attributes.position.count;
+        merged.setIndex([...pole.index.array, ...head.index.array].map((v, i) => (i < pole.index.count ? v : v + offset)));
+        merged.computeBoundingSphere();
+        return merged;
+      })();
       const signalModels = [];
       for (const x of ROAD_CENTERS)
         for (const z of ROAD_ROWS) {
@@ -339,35 +370,13 @@
             [true, 61, -65],
             [false, -65, 61],
           ]) {
-            // Each post stands in its own group at its base, so a car that knocks
-            // it down (a street prop in damage.js) tips the whole signal over.
             const post = new Three.Group(),
               prop = registerStreetProp('signal', x + dx, z + dz);
             post.position.set(x + dx, 0, z + dz);
             group.add(post);
             prop.group = post;
-            box(post, 0, 15, 0, 1.1, 30, 1.1, darkMetal);
-            box(post, 0, 29, 0, 5, 12, 4, darkMetal);
-            const bulbs = ['#a94332', '#d3aa44', '#80b987'].map((co, i) =>
-              mesh(
-                sphereGeo,
-                new Three.MeshBasicMaterial({
-                  color: co,
-                }),
-                post,
-                0,
-                33 - i * 4,
-                2.5,
-                1.5,
-                1.5,
-                0.7,
-              ),
-            );
-            heads.push({
-              vertical,
-              bulbs,
-              prop,
-            });
+            mesh(signalPostGeometry, darkMetal, post, 0, 0, 0);
+            heads.push({ vertical, post, prop });
           }
           signalModels.push({
             x,
@@ -382,23 +391,50 @@
             radius: 105,
           });
         }
+      const signalBulbs = new Three.InstancedMesh(
+          sphereGeo,
+          new Three.MeshBasicMaterial({ color: '#ffffff' }),
+          Math.max(1, signalModels.length * 6),
+        ),
+        // Red, amber, green from the top of the head, in the post's own frame.
+        signalBulbLocal = [0, 1, 2].map((i) =>
+          new Three.Matrix4().compose(new Three.Vector3(0, 33 - i * 4, 2.5), new Three.Quaternion(), new Three.Vector3(1.5, 1.5, 0.7)),
+        ),
+        signalBulbMatrix = new Three.Matrix4(),
+        signalBulbColor = new Three.Color();
+      signalBulbs.count = 0;
+      signalBulbs.frustumCulled = false;
+      signalBulbs.userData.dynamic = true;
+      signalBulbs.setColorAt(0, signalBulbColor);
+      scene.add(signalBulbs);
       const signalBulbIndex = {
           red: 0,
           amber: 1,
           green: 2,
         },
-        signalLitColors = ['#ff5141', '#ffc454', '#8cdb86'];
+        // Lit bulbs are brighter than white so they glow through the bloom.
+        signalLitColors = ['#ff5141', '#ffc454', '#8cdb86'].map((c) => new Three.Color(c).multiplyScalar(2.2)),
+        signalDarkColor = new Three.Color('#252d30');
       function updateTrafficVisuals() {
+        let n = 0;
         for (const s of signalModels) {
           if (!s.group.visible) continue;
           const state = trafficSignal(s.x, s.z);
           for (const h of s.heads) {
             // A signal lying in the road is dark.
             const on = h.prop.down ? -1 : signalBulbIndex[state[h.vertical ? 'vertical' : 'horizontal']];
-            h.bulbs.forEach((b, i) =>
-              b.material.color.set(i === on ? signalLitColors[i] : '#252d30'),
-            );
+            h.post.updateWorldMatrix(true, false);
+            for (let i = 0; i < 3; i++) {
+              signalBulbs.setMatrixAt(n, signalBulbMatrix.multiplyMatrices(h.post.matrixWorld, signalBulbLocal[i]));
+              signalBulbs.setColorAt(n, i === on ? signalLitColors[i] : signalDarkColor);
+              n++;
+            }
           }
+        }
+        signalBulbs.count = n;
+        if (n) {
+          signalBulbs.instanceMatrix.needsUpdate = true;
+          signalBulbs.instanceColor.needsUpdate = true;
         }
       }
       // Vinny's drive-in depot: real open doorway, interior loading lane and cutaway roof.

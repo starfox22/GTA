@@ -15,6 +15,7 @@
           right = RIVER.right,
           group = new Three.Group();
         scene.add(group);
+        batchGroups.push(group);
         for (const side of [-1, 1]) {
           box(group, (left + right) / 2, 3, z + side * 61, right - left, 6, 5, concrete);
           box(group, (left + right) / 2, 9, z + side * 61, right - left, 1.4, 1.3, cableMat);

@@ -4728,7 +4728,11 @@
       // Place the camera/player at a map point without touching anything else.
       look(x, y, zoom) {
         teleportPlayer(x, y);
-        if (zoom !== undefined) setWorldZoom(zoom);
+        // The zoom is applied at once (headless frames are too slow to ease into it).
+        if (zoom !== undefined) {
+          setWorldZoom(zoom);
+          worldZoom = worldZoomTarget;
+        }
         return this.status();
       },
       // The plan as data, for layout audits: coast, streets, rail, footprints and
@@ -4861,6 +4865,8 @@
         if (tier !== undefined) cycleGraphicsSetting(String(tier).toLowerCase());
         return { setting: graphicsSetting, ...(city3D?.quality?.() || {}) };
       },
+      // Scene draw calls in view by object name and by map cell (render3d.js).
+      drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

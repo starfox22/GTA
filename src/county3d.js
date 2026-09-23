@@ -89,6 +89,7 @@
         const group = new Three.Group();
         group.name = trail.peak.name + ' overlook';
         scene.add(group);
+        batchGroups.push(group);
         const p = trail.peak,
           h = terrainHeight(p.x, p.y);
         box(group, p.x, h + 18, p.y, 1.3, 36, 1.3, chrome);
@@ -140,6 +141,7 @@
         const group = new Three.Group();
         group.name = 'Mountain outcrop ' + i;
         scene.add(group);
+        batchGroups.push(group);
         const base = terrainHeight(r.x, r.y),
           rock = mesh(
             new Three.IcosahedronGeometry(1, 1),
@@ -182,6 +184,7 @@
         group.position.set((bridge.a[0] + bridge.b[0]) / 2, 0, (bridge.a[1] + bridge.b[1]) / 2);
         group.rotation.y = -a;
         scene.add(group);
+        batchGroups.push(group);
         box(group, 0, -3, 0, length, 6, bridge.width + 6, concrete);
         box(group, 0, 0.2, 0, length, 0.4, bridge.width, countyAsphalt);
         for (let x = -length / 2 + 25; x < length / 2; x += 48) {
@@ -232,6 +235,7 @@
         for (let j = 0; j < 5; j++) {
           const group = new Three.Group();
           scene.add(group);
+          batchGroups.push(group);
           const x = t.x + 70 + j * 185,
             z = t.y + 67;
           box(group, x, 19, z, 1.4, 38, 1.4, darkMetal);
@@ -251,8 +255,11 @@
       sign('EAGLE PASS · SCENIC ROUTE', 6650, 2460, 195, '#d5d6b9');
       sign('OCEANVIEW / AIRPORT', 2245, 6920, 190, '#c3ded5');
       sign('CORAL COAST', 7080, 7360, 165, '#f2ccae');
+      // County airport and Fort Sentinel are merged by the static batcher; the
+      // radar and the gate barrier (which move) are flagged dynamic.
       const airportGroup = new Three.Group();
       scene.add(airportGroup);
+      batchGroups.push(airportGroup);
       const air = COUNTY_AIRPORT;
       for (let x = air.terminal.x + 12; x < air.terminal.x + air.terminal.w - 10; x += 24) {
         box(airportGroup, x, 25, air.terminal.y + air.terminal.h + 1, 22, 35, 1.5, terminalGlass);
@@ -265,6 +272,7 @@
       box(airportGroup, 3530, 150, 8980, 68, 4, 61, airWhite);
       box(airportGroup, 3530, 170, 8980, 1, 37, 1, chrome);
       const radar = box(airportGroup, 3530, 183, 8980, 32, 8, 1, countyRail);
+      radar.userData.dynamic = true;
       const terminalTitle = sign('OCEANVIEW INTERNATIONAL', 4215, 8642, 380, '#d1e5df');
       terminalTitle.position.y = terminalTitle.userData.backing.position.y = 55;
       const arrivalsTitle = sign('DEPARTURES / ARRIVALS', 4190, 8709, 215, '#c2dcd5');
@@ -299,6 +307,7 @@
       });
       const militaryGroup = new Three.Group();
       scene.add(militaryGroup);
+      batchGroups.push(militaryGroup);
       const armyPaint = mat('#647557', 0.85, 0.15),
         fenceMat = new Three.MeshStandardMaterial({
           color: '#99aa98',
@@ -330,6 +339,7 @@
         }
       }
       const baseBarrier = new Three.Group();
+      baseBarrier.userData.dynamic = true;
       baseBarrier.position.set(9303, 2, 8056);
       militaryGroup.add(baseBarrier);
       box(baseBarrier, 0, 5, 94, 10, 10, 188, countyCream);

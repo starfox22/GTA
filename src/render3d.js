@@ -123,7 +123,10 @@
           metalness: 0.65,
         }),
         wood = mat('#4f4037'),
-        leafMats = ['#344c3c', '#4e654a', '#5b7150'].map((c) => mat(c));
+        leafMats = ['#344c3c', '#4e654a', '#5b7150'].map((c) => mat(c)),
+        // Palms (makePalm in world3d.js) share these so they batch together.
+        palmTrunkMaterial = mat('#978266'),
+        palmFrondMaterial = new Three.MeshStandardMaterial({ color: '#3e7862', roughness: 0.7, side: Three.DoubleSide });
       const warmLamp = new Three.MeshBasicMaterial({
           color: '#ffde9b',
         }),
@@ -151,8 +154,14 @@
         for (const group of batchGroups) {
           group.updateMatrixWorld(true);
           const taken = [];
+          // A mesh stays live if it, or any group between it and the batch root, is
+          // flagged dynamic (a crane trolley, a gate, a door that swings).
+          const liveBranch = (o) => {
+            for (; o && o !== group; o = o.parent) if (o.userData.dynamic) return true;
+            return false;
+          };
           group.traverse((o) => {
-            if (!o.isMesh || o.isInstancedMesh || o.isSprite || o.userData.dynamic || o.userData.sign) return;
+            if (!o.isMesh || o.isInstancedMesh || o.isSprite || o.userData.sign || liveBranch(o)) return;
             if (Array.isArray(o.material) || !o.geometry?.attributes?.position) return;
             if (o.material.transparent && o.material.opacity < 1) return;
             const e = o.matrixWorld.elements,
@@ -694,6 +703,10 @@
             map: tx,
             side: Three.DoubleSide,
             toneMapped: false,
+            // Wins the depth test against wall panels it is mounted on.
+            polygonOffset: true,
+            polygonOffsetFactor: -2,
+            polygonOffsetUnits: -2,
           }),
         );
         m.position.set(x, 23, z + 0.6);
@@ -733,6 +746,7 @@
       // @include src/cycles3d.js
       // @include src/weather3d.js
       // @include src/clouds3d.js
+      // @include src/surfaces3d.js
       // The bodyshell uses beveled cross-sections, not a box silhouette.
       function bodyGeo(l, w, h) {
         const verts = [],
@@ -805,11 +819,15 @@
           van = ['van', 'suv'].includes(vehicle.type),
           roof = van ? 19 : rally ? 17 : rodCar ? 17 : low ? 11.7 : 14.5,
           h = low ? 7 : 9;
-        const paint = new Three.MeshStandardMaterial({
+        // Metallic base coat under a glossy clear coat: the sky and street lights
+        // slide over the paint as a sharp reflection on top of the coloured sheen.
+        const paint = new Three.MeshPhysicalMaterial({
           color: vehicle.color,
-          roughness: 0.3,
-          metalness: 0.63,
-          envMapIntensity: 0.8,
+          roughness: 0.42,
+          metalness: 0.55,
+          clearcoat: 1,
+          clearcoatRoughness: 0.08,
+          envMapIntensity: 1,
         });
         // The deformable shell and per-pane glasshouse (damage3d.js): shared while
         // pristine, copied the first time the car is dented.
@@ -1396,7 +1414,10 @@
           h.sprite.material.opacity = glow * power;
           h.sprite.scale.set(size, size, 1);
         }
-        for (const g of lampGlows) g.mesh.material.opacity = 0.3 * glow * sideJobPower(g.x, g.y);
+        // The pools of light on the ground now come from the night light map
+        // (lighting3d.js), which lights whatever stands in them; the old additive
+        // glow planes would double them, so they stay hidden.
+        for (const g of lampGlows) g.mesh.visible = false;
       }
       // Dynamic models own their cloned/new resources; the initial world and factory primitives persist.
       const sharedGeometries = new Set([boxGeo, sphereGeo, wheelGeo, cylinderGeo]),
@@ -1461,6 +1482,59 @@
             objects,
             batched: api.batchReport,
           };
+        },
+        /**
+         * Where this frame's scene draw calls go: every drawable the camera would
+         * draw (visible, on an enabled layer, inside the frustum), counted by the
+         * name of its nearest named ancestor and by 512-unit cell. For hunting
+         * unbatched scenery; DeadEndCity.drawProfile() prints the top entries.
+         */
+        drawProfile(top = 15) {
+          const byName = new Map(),
+            byCell = new Map(),
+            sphere = new Three.Sphere(),
+            roles = new Map();
+          for (const m of carModels.values()) roles.set(m.group, 'vehicle');
+          for (const m of personModels.values()) roles.set(m.group || m, 'person');
+          let total = 0;
+          const visit = (o) => {
+            if (!o.visible || !o.layers.test(camera.layers)) return;
+            if ((o.isMesh || o.isSprite || o.isLine || o.isPoints) && o.material) {
+              let inView = !o.frustumCulled;
+              if (!inView) {
+                if (o.isSprite) sphere.set(o.getWorldPosition(new Three.Vector3()), 20);
+                else {
+                  if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+                  sphere.copy(o.geometry.boundingSphere).applyMatrix4(o.matrixWorld);
+                }
+                inView = viewFrustum.intersectsSphere(sphere);
+              }
+              if (inView) {
+                const calls = Array.isArray(o.material) ? Math.max(1, o.geometry.groups.length) : 1;
+                let named = o,
+                  root = o;
+                while (named && !named.name && named.parent && named.parent !== scene) named = named.parent;
+                while (root.parent && root.parent !== scene) root = root.parent;
+                if (roles.has(root)) named = { name: roles.get(root), type: '' };
+                else if (!named.name && root !== o)
+                  named = { name: 'group@' + Math.round(root.position.x) + ',' + Math.round(root.position.z), type: '' };
+                const material = Array.isArray(o.material) ? o.material[0] : o.material,
+                  key =
+                    (named.name || o.type + ' ' + (o.geometry?.type || '') + ' ' + material.type) +
+                    (named === o ? '' : ' in ' + (named.name || named.type)) +
+                    (o.isSprite ? ' (sprite)' : ''),
+                  p = o.getWorldPosition(new Three.Vector3()),
+                  cell = Math.floor(p.x / 512) * 512 + ',' + Math.floor(p.z / 512) * 512;
+                byName.set(key, (byName.get(key) || 0) + calls);
+                byCell.set(cell, (byCell.get(cell) || 0) + calls);
+                total += calls;
+              }
+            }
+            for (const c of o.children) visit(c);
+          };
+          visit(scene);
+          const sorted = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, top);
+          return { total, byName: sorted(byName), byCell: sorted(byCell) };
         },
         // Switch graphics quality tier (quality.js) at runtime.
         setQuality(tier) {
@@ -1621,6 +1695,7 @@
           // rather than being overwritten by it; the clouds need the final camera.
           updateWeatherVisuals(deltaSeconds);
           updateLighting(deltaSeconds);
+          updateSurfaces(deltaSeconds);
           applyAerialFog();
           updateCloudVisuals(deltaSeconds);
           updateAirCoverVisuals();
@@ -1825,6 +1900,11 @@
             const near =
               activePlayer ||
               ((flightViewActive ? viewZoom > PEOPLE_ZOOM : worldZoom > 0.22) && entityInView(p, 35));
+            // Zoomed out, plain standing/walking figures are instanced (flight-view3d.js).
+            if (near && !activePlayer && personImpostor(p)) {
+              if (m) m.group.visible = false;
+              continue;
+            }
             if (!m && !near) continue;
             if (!m) {
               m = makePerson(p, activePlayer);

@@ -9,6 +9,8 @@
       for (const s of GARAGES) {
         const group = new Three.Group();
         scene.add(group);
+        // Merged by the static batcher; the roof (hidden while you are inside) stays live.
+        batchGroups.push(group);
         const wall = mat('#aaa999', 0.86),
           trim = mat(s.color, 0.5, 0.3),
           bayFloor = mat('#717b78', 0.8);
@@ -52,6 +54,7 @@
             }),
           );
         const roof = box(group, s.x, 49, s.y, 196, 3, 176, mat('#566b71', 0.8));
+        roof.userData.dynamic = true;
         garageRoofs.push({
           shop: s,
           roof,

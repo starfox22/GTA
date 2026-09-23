@@ -1085,6 +1085,8 @@
             } else m.paint.color.set('#302c28');
             m.paint.roughness = 0.97;
             m.paint.metalness = 0.12;
+            // Burnt paint has no clear coat left (car paint is MeshPhysicalMaterial).
+            if (m.paint.isMeshPhysicalMaterial) m.paint.clearcoat = 0;
             m.paint.needsUpdate = true;
           }
           // Embers: the fresh wreck glows through the soot for a few seconds.
@@ -1109,6 +1111,13 @@
         m.paint.color.set(c.color).lerp(grime, wear * 0.22).lerp(sootColor, heat);
         m.paint.roughness = 0.3 + wear * 0.6;
         m.paint.metalness = 0.63 - wear * 0.42;
+        // Scuffed and dented panels lose the gloss of their clear coat.
+        if (m.paint.isMeshPhysicalMaterial) {
+          m.paint.roughness = 0.42 + wear * 0.5;
+          m.paint.metalness = 0.55 - wear * 0.35;
+          m.paint.clearcoat = 1 - wear * 0.8;
+          m.paint.clearcoatRoughness = 0.08 + wear * 0.5;
+        }
       }
       // Suspension pose on top of the body's own animation: weight transfer, the blast
       // hop, and the sag toward a flat tyre.

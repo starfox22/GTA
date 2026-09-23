@@ -32,8 +32,8 @@
         const t = dayFraction(),
           arc = Math.sin(clamp(t, 0, 1) * Math.PI);
         // East (t 0) through north-north-west at noon to west (t 1); the noon sun
-        // leans west of north the way the old fixed light did.
-        const azimuth = -Math.PI * clamp(t, -0.05, 1.05) - 0.55 * arc,
+        // leans to the west-north-west, where the old fixed light stood.
+        const azimuth = -Math.PI * clamp(t, -0.05, 1.05) - 0.95 * arc,
           // Never flatter than ~15 degrees for shadows, so dusk streets stay readable.
           elevation = 0.27 + (1.02 - 0.27) * Math.pow(arc, 0.8);
         sunElevation = elevation;
@@ -424,7 +424,7 @@
         // Sun glints on the water follow the real sun.
         waterUniforms.uSun.value.copy(sunDirection);
         // Night light: lamp pools, and emissive lamp heads bright enough to bloom.
-        cityLightUniforms.cityLampPower.value = night * 1.35;
+        cityLightUniforms.cityLampPower.value = night * 4.2;
         cityLightUniforms.cityWet.value = weather.wet;
         const blackout = cityLightUniforms.cityZonePower.value;
         blackout.set(sideJobPower(100, 100), sideJobPower(100, 2000), sideJobPower(100, 3000));

@@ -63,7 +63,7 @@ something, never a generic code-evaluation hook.
 | Method | Purpose |
 | --- | --- |
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle |
-| `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom |
+| `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once) |
 | `drive(type, altitudeMeters, heading)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne; optional heading in radians (0 = east) |
 | `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`); returns `ride()`. Physics tests use it because headless frames are slow |
 | `places()` | Named businesses and landmarks with coordinates |

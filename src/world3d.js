@@ -446,13 +446,15 @@
         }
       }
       buildPromenade();
+      // palmTrunkMaterial / palmFrondMaterial (render3d.js) are shared by every palm
+      // so the static batcher can merge them; the fronds sway (surfaces3d.js).
       function makePalm(x, z, size = 1) {
         const g = new Three.Group();
         g.position.set(x, 0, z);
         scene.add(g);
         batchGroups.push(g);
-        const trunk = mat('#978266'),
-          palm = mat('#3e7862');
+        const trunk = palmTrunkMaterial,
+          palm = palmFrondMaterial;
         rod(g, new Three.Vector3(0, 0, 0), new Three.Vector3(2 * size, 28 * size, 0), 1.5 * size, trunk);
         for (let k = 0; k < 7; k++) {
           const a = (k * TAU) / 7,
@@ -477,8 +479,7 @@
             idx.push(j * 2, j * 2 + 1, j * 2 + 2, j * 2 + 1, j * 2 + 3, j * 2 + 2);
           geo.setIndex(idx);
           geo.computeVertexNormals();
-          const model = mesh(geo, palm, g, 0, 0, 0);
-          model.material.side = Three.DoubleSide;
+          mesh(geo, palm, g, 0, 0, 0);
         }
         statics.push({
           x,
