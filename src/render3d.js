@@ -1662,7 +1662,11 @@
           lastVisualTime = gameTime;
           nightAmount = clamp(1 - daylight() * 1.6, 0, 1);
           updateCivicVisuals();
-          const altitude = entityElevation(player.car || player),
+          // A boat passing under a road bridge is dropped 30 units below the deck
+          // (boatSurfaceElevation, air-cover.js) so it slips under the roadway. The
+          // camera, the shadow fit and the cutaway stay on the water: following that
+          // drop jolted the whole view down and back up again at each bridge.
+          const altitude = player.car && isBoat(player.car) ? 0 : entityElevation(player.car || player),
             flying = !!(isAircraft(player.car) || player.parachute);
           // Street (orthographic) or flight (perspective) camera, plus what it sees.
           updateFlightView(deltaSeconds, altitude, flying);
@@ -1803,10 +1807,19 @@
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
               if (m.boat) {
-                const underBridge = underBridgeWater(c.x, c.y);
-                m.group.position.y = underBridge
-                  ? entityElevation(c)
-                  : 0.6 + Math.sin(gameTime * 1.7 + c.x * 0.02) * 0.45;
+                // Under a road bridge the hull slips below the deck (air-cover.js). It
+                // starts down as soon as the bow or stern is under the roadway and eases
+                // there, instead of popping 30 units when the middle of the boat crosses.
+                const half = vehicleSpec(c).l * 0.5,
+                  ux = Math.cos(c.a) * half,
+                  uy = Math.sin(c.a) * half,
+                  underBridge =
+                    underBridgeWater(c.x, c.y) ||
+                    underBridgeWater(c.x + ux, c.y + uy) ||
+                    underBridgeWater(c.x - ux, c.y - uy),
+                  float = underBridge ? -30 : 0.6 + Math.sin(gameTime * 1.7 + c.x * 0.02) * 0.45;
+                m.float = m.float === undefined || Math.abs(float - m.float) > 60 ? float : m.float + (float - m.float) * (1 - Math.exp(-deltaSeconds * 12));
+                m.group.position.y = m.float;
                 m.body.rotation.z = Math.sin(gameTime * 2 + c.id) * 0.023;
                 m.body.rotation.x = Math.sin(gameTime * 1.3 + c.y * 0.017) * 0.028;
                 // Wake, bow wave and spray are drawn into the sea (wakes3d.js).
