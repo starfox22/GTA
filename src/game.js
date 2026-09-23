@@ -16,7 +16,8 @@
      * Entity fields retain their established compact data keys for interoperability:
      * hp = health, maxhp = maximum health, a = heading, w/l = width/length,
      * vz = vertical speed, hx/hy = collider half-extents, inv = invulnerability time.
-     * Aircraft altitude is absolute; aircraftClearance() subtracts the local terrain.
+     * Aircraft altitude is absolute; aircraftClearance() subtracts the local terrain,
+     * or the flat roof a helicopter is over (c.roofSite, rooftops.js).
      * Always use entityElevation() to compare actors on different floors/surfaces.
      * Frame deltas and timers are seconds, except animation timestamps in milliseconds.
      * Physics uses fixed 1/120-second steps. worldMinutes advances one minute/second.
@@ -4583,7 +4584,7 @@
      * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
      */
     window.DeadEndCity = Object.freeze({
-      version: "28.1.1",
+      version: "29.0.0",
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),

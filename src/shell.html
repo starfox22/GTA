@@ -1,9 +1,10 @@
 <!doctype html>
 <!--
-DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 28.1.1
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 29.0.0
 
 Open this HTML directly to play offline. No server, CDN or build step is needed.
-Edit the named source sections here, or use the modular source ZIP.
+This file is assembled by tools/build.py from the modular source (src/); edit
+there and rebuild rather than editing this file.
 All executable JavaScript is plain source. No packed/evaluated code is used.
 
 SOURCE ORDER
@@ -13,154 +14,168 @@ SOURCE ORDER
 4. Labeled image/audio Base64 blocks: binary media, never executable code.
 5. Readable media loader and startup call; complete third-party credits.
 
-SUBSYSTEM INDEX — search for each BEGIN SUBSYSTEM marker
+SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
+  Game closure (src/main.js wraps everything; src/game.js includes these):
   src/game.js: Game orchestration and shared state
-    DOM references, units, entity registries, world population, combat, fallback drawing, UI, input and frame loop.
+    Constants, vehicle definitions, world build, population, combat, 2D fallback drawing, map, HUD, input, frame loop, developer console.
   src/audio.js: Effects and voice audio
-    Embedded samples, Web Audio lifecycle, spatial volume and procedural sound.
+    Embedded samples, Web Audio lifecycle, spatial volume, procedural sound and the ear filter.
   src/physics.js: Vehicle and pedestrian physics
-    Fixed time steps, oriented collision boxes, contact impulses, traffic, damage and impact injuries.
+    Fixed 1/120 s steps, oriented collision boxes, contact impulses, traffic AI, helicopter/boat control, knockdowns.
   src/geography.js: Coastlines and land regions
-    Shared land polygons, bridges, roads, shoreline tests and district lookup.
+    Land polygons, the cached land test, bridges, coast segments, districtAt, 2D water, Southport Beach outline.
   src/harbor.js: Ironworks cargo terminal
-    Shared terminal geometry, crane loading, gates, guards and first-mission delivery rules.
+    Terminal geometry, crane loading, gates, guards, Vinny's depot drop and mission 1 rules.
+  src/police-feedback.js: Police action feedback
+    NEED TO LOSE POLICE / POLICE CLEARED chips on their own banner layer; delivery blocking.
+  src/arsenal.js: Arsenal and knife combat
+    Ownership-driven equipment, mystery weapon cards, icon inventory and knife combat.
   src/citylife.js: Civic services and police
-    Clock, businesses, officers, police routing, wanted search and injury effects.
+    Clock, businesses (PLACES), docks, officers, police routing, wanted search and injury effects.
   src/story.js: Story characters and mission stages
-    Mission definitions, contact dialogue, stage transitions, restart and completion.
+    Characters, STORY missions, dialogue, setStage, start/restart/win/fail, the mission card.
   src/campaign.js: Campaign saves and replay
     Save schema, progression frontier, ammunition persistence and mission selection.
   src/chase.js: Cargo pursuit
-    Harbor police alert, air support and cargo encounter updates.
-  src/roofmission.js: Blue Hour rooftop mission
-    Terrace layout, guests, disguise, poison sequence, guards and escape.
-  src/air-cover.js: Overhead cover geometry
-    Shared railway and bridge volumes for sight, bullets, vehicles and aircraft.
-  src/combat-rules.js: Aerial combat and pursuit rules
-    Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
-  src/damage.js: Vehicle damage, bullet impacts and breakable street furniture
-    Crumple dents, panels, glass, lamps, tyres, engine fire, handling loss, blast shove and street props.
-  src/county.js: Outlying districts
-    County roads, buildings, scenery, traffic, towns, regional police and bridges.
-  src/military.js: Fort Sentinel
-    Base security, military vehicles, barriers and combat.
-  src/aviation.js: Fixed-wing flight and flight missions
-    Three airframes, stall/lift/bank model, takeoff, landing, rescue and witness escape missions.
-  src/challenges.js: Mission-specific encounters
-    Story objectives, guards and special actions for campaign challenges.
-  src/streets.js: Road presentation
-    Intersections, sidewalks, road painting, waterfront promenades and traffic details.
-  src/terrain.js: Mountains and off-road contact
-    Shared triangulated elevation, snowy summits, trails, slope handling and services.
-  src/casino.js: Casino roulette
-    Business layout, stakes, result settlement, roulette UI and saved cash.
-  src/renewal.js: Parks and recreation
-    Distinct park layouts, ponds, boardwalks, walkers, joggers and bicycles.
-  src/transit.js: Public railway simulation
-    Track graph, station access, boarding, travel, stops and safe disembarkation.
-  src/ecology.js: Wildlife behavior
-    Habitats, harmless animals, bear warning/attack, damage and fallback drawing.
-  src/navigation.js: City map and route planning
-    Road graph, shortest paths, waypoints, map gestures and route guidance.
-  src/parachute.js: Bailout and parachute
-    Aircraft exit, freefall, canopy controls, landing and water rescue.
-  src/mobile.js: Touch controls
-    Independent movement/aim fingers, context actions, touch state and overlay cleanup.
-  src/world-view.js: World camera gestures
-    World zoom, pinch gestures, mouse wheel and camera limits.
-  src/car-radio.js: Vehicle radio stations
-    Three embedded tracks, station selection, playback and saved audio settings.
-  src/garages.js: Drive-in repair and respray
-    Garage geometry, vehicle fit, paint, repairs and pursuit clearance.
-  src/crowd.js: Crowd life, perception and reactions
-    Appearance, roles by hour, crowd streaming, sidewalk walking, reactions, witnesses, street scenes, traffic life.
-  src/ambience.js: City soundscape
-    Procedural traffic hum, crowd murmur, birds, crickets, horns, sirens, club beat and busker.
-  src/quality.js: Graphics quality tiers
-    LOW / MEDIUM / HIGH / ULTRA records, GPU capability check, saved setting and pause-menu toggle.
-  src/render3d.js: Three.js renderer and resource lifecycle
-    Asset loading, camera, lights, shared geometry, entity models, effects and drawing API.
-  src/damage3d.js: Crumpling bodies, decals, debris and knocked furniture
-    Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire.
-  src/flight-view3d.js: Flight camera and aerial perspective
-    Perspective camera in the air, ground footprint, distance haze, shadow coverage, level of detail.
-  src/garage3d.js: Garage meshes
-    Garage buildings, shutters, lights and service details.
-  src/landmarks3d.js: City landmark meshes
-    Distinctive buildings, waterfront and landmark details.
-  src/civic3d.js: Civic and rooftop meshes
-    Businesses, rooftop party, service signs and animated city lighting.
-  src/air-cover3d.js: Underpass meshes
-    Tunnel roof, walls, portals, illumination and player-facing cutaway.
-  src/renewal3d.js: Park meshes
-    Benches, fountains, sports courts, pergolas, pond bridge and bicycle racks.
-  src/transit3d.js: Railway meshes
-    Decks, instanced ties, piers, station platforms, canopies and moving trains.
-  src/ecology3d.js: Wildlife meshes
-    Species-specific geometry, gait animation, culling and owned-material cleanup.
-  src/world3d.js: World scenery meshes
-  src/beach3d.js: Southport Beach meshes
-    Coastal details, street scenery and environmental objects.
-  src/county3d.js: County and mountain meshes
-    Terrain surface, snow colors, rural scenery, bridges and region visibility.
-  src/boats3d.js: Boat kit: lofted hulls and shared yacht parts
-    Hull lofting, deckhouses, teak decks, railings, deck furniture, name boards, night lights, mesh merging.
-  src/harbor3d.js: Cargo terminal meshes
-    Cranes, the container ship, containers, cargo and terminal architecture.
-  src/helicopter3d.js: Helicopter meshes
-    Airframe, rotor, lights and cockpit geometry.
-  src/vehicles3d.js: Vehicle meshes
-    Distinct road vehicles, bicycles, boats, riders and moving components.
-  src/plane3d.js: Airplane meshes
-    Courier propeller aircraft, executive jet and large airliner geometry.
-  src/sports.js: Live basketball and soccer matches
-    Teams, possession, passes, shots, scoring, restarts, deterministic match state and fallback actors.
-  src/sports-world.js: City sports venue layout
-    Stadium reservation, roads, collision, ground markings, map labels and venue destinations.
-  src/sports3d.js: Sports stadium and match meshes
-    Tiered stands, crowd, floodlights, scoreboards, court equipment and animated athletes and balls.
-  src/arsenal.js: Arsenal and knife combat
-    Ownership-driven equipment, mystery weapon cards, icon inventory, selection migration and knife combat.
-  src/police-feedback.js: Police action feedback
-    Independent escape and blocked-action banners with display timers.
-  src/sidejobs.js: Contract missions after the main story
-    Rush Hour, Fireworks Night, Blackout, Ring Run and Repo Man; blackout power hook for the renderer.
-  src/cityscape3d.js: Building archetypes, roofs, shopfronts and street furniture
-    Procedural roof and curtain-wall textures, lit windows at night, shopfronts, instanced props, benches.
-  src/sidejobs3d.js: Contract mission meshes
-    Sky rings, bomb and substation devices.
+    Harbor police alert, the cargo chase, respray escape, Vinny's depot doors and floor.
   src/roadblocks.js: Police containment and roadblocks
-    Chokepoint catalogue, blockade planning, braced cruisers you can ram, cones, officer posts.
-  src/roadblocks3d.js: Police roadblock meshes
-    Loose traffic cones and burning flares.
+    Chokepoint catalogue, blockade planning, braced cruisers a heavy vehicle can ram loose, cones.
   src/carjack.js: Carjacking and driver reactions
     Occupied traffic, locked doors, the ejection throw and what drivers do next.
+  src/themepark.js: Sunset Pier amusement park
+    Sunset Pier island layout, ride footprints, the rideable coaster and the park crowd.
   src/marina.js: Harbor Point marina, the superyacht and the cruise liners
-    Yacht basin, hull-form math, the boardable superyacht's deck plan, walkable liner decks and their crowds.
-  src/marina3d.js: Marina, superyacht and cruise liner meshes
-    Pontoons, sixteen unique moored yachts, the superyacht deck by deck, the terminal and the two liners.
+    Harbor Point basin, hull-form math, the boardable superyacht deck plan, liner decks and guests.
   src/taxi.js: Yellow cabs
     Hailing, destination picking on the map, the ride itself and the hijack.
   src/cycles.js: City bicycles
-    Bike-share stands, the bicycles racked at them and the rider's legs.
-  src/cycles3d.js: Bike-share stand meshes
-    The racks themselves; the bicycles in them are ordinary vehicles.
-  src/water.js: Swimming and sinking
-  src/water-audio.js: Water and beach sound
-  src/beach.js: Southport Beach life
-    Going into the water on foot, and what happens when a car follows you in.
+    Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs.
   src/weather.js: Weather
-    The weather state machine, road wetness, wind and the rain on the audio bus.
-  src/weather3d.js: Weather and sky visuals
-    Rain, wet roads, lightning and the overcast light.
-  src/clouds3d.js: Volumetric clouds and cloud shadows
-    Ray-marched cumulus layer at 600-950 m, lit by the sun, and the shadows it throws on the city.
-  src/crowd3d.js: Instanced crowd bodies, poses and street props
-    One InstancedMesh per body part, layered poses, stride from movement, dogs, scene props.
-  src/themepark.js: Sunset Pier amusement park
-    Island layout, ride footprints, the rideable coaster and the park crowd.
+    Weather state machine, road wetness, wind and rain on the audio bus.
+  src/water.js: Swimming and sinking
+    Swimming, wading, sinking cars, beach-only entry (shoreStepBlocked), ladders, dive/splashdown, rescue.
+  src/water-audio.js: Water and beach sound
+    Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle.
+  src/beach.js: Southport Beach life
+    Southport Beach furniture plan, beachgoers by hour, games, panic and kiosks.
+  src/roofmission.js: Blue Hour rooftop mission
+    Blue Hour terrace (player.roof), guests, disguise, poison sequence, guards, escape; entityElevation.
+  src/rooftops.js: Building roofs: helipads, helicopter landings, walking on a roof
+    Helicopters landing on flat roofs, rooftop helipads, player.buildingRoof and walking on a roof.
+  src/air-cover.js: Overhead cover geometry
+    Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft.
+  src/combat-rules.js: Aerial combat and pursuit rules
+    Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
+  src/damage.js: Vehicle damage, bullet impacts and breakable street furniture
+    Crumple dents, panels, glass, lamps, tyres, engine fire, handling loss, blast shove, street props.
+  src/county.js: Outlying districts
+    County roads, towns, buildings, scenery, traffic, regional police and bridges.
+  src/military.js: Fort Sentinel
+    Fort Sentinel security, military vehicles, barriers and combat.
+  src/aviation.js: Fixed-wing flight and flight missions
+    Three airframes, stall/lift/bank model, takeoff and landing, flight missions 10 and 11.
+  src/challenges.js: Mission-specific encounters
+    Missions 3-9 objectives, guards and special actions; interact/UI routing for missions.
+  src/sidejobs.js: Contract missions after the main story
+    Contracts: Rush Hour, Fireworks Night, Blackout, Ring Run, Repo Man; blackout power hook.
+  src/streets.js: Road presentation
+    Street grid, intersections, sidewalks, road painting, promenades, street names, benches.
+  src/terrain.js: Mountains and off-road contact
+    Triangulated mountains, snow caps, trails, slope handling and off-road contact.
+  src/casino.js: Casino roulette
+    Roulette layout, stakes, settlement, UI and saved cash.
+  src/renewal.js: Parks and recreation
+    Park layouts, ponds and their kerbs, boardwalks, walkers, joggers, outdoor gym.
+  src/sports.js: Live basketball and soccer matches
+    Live basketball and soccer: teams, possession, shots, scoring, restarts.
+  src/sports-world.js: City sports venue layout
+    South Coast Stadium reservation, enclosure, turnstiles, vehicle barriers, markings.
+  src/transit.js: Public railway simulation
+    Shore, Coast and Ridge lines: filleted track, 13 stations, boarding, rides, scenic trains.
+  src/ecology.js: Wildlife behavior
+    Habitats, harmless animals, bear warning/attack and 2D drawing.
+  src/navigation.js: City map and route planning
+    Road graph, shortest paths, waypoints, map gestures and route guidance.
+  src/parachute.js: Bailout and parachute
+    aircraftClearance, bail-out, freefall, canopy, landing, terrace landing, water rescue.
+  src/mobile.js: Touch controls
+    Independent movement/aim fingers, context actions and overlay cleanup.
+  src/world-view.js: World camera gestures
+    World zoom, pinch gestures, mouse wheel and camera limits.
+  src/car-radio.js: Vehicle radio stations
+    Three embedded tracks, station selection, playback and saved settings.
+  src/garages.js: Drive-in repair and respray
+    Repair bays, vehicle fit, paint, repairs and pursuit clearance.
+  src/crowd.js: Crowd life, perception and reactions
+    Appearance and roles by hour, crowd streaming, sidewalk walking, perception, reactions, witnesses, scenes.
+  src/ambience.js: City soundscape
+    Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker.
+  src/quality.js: Graphics quality tiers
+    LOW / MEDIUM / HIGH / ULTRA records, GPU capability check, saved setting and pause-menu toggle.
+  src/render3d.js: Three.js renderer and resource lifecycle
+    Renderer entry: cameras, lights, ground texture, batching, entity models, effects, render().
+  Renderer closure (createCityRenderer() in src/render3d.js includes these):
+  src/flight-view3d.js: Flight camera and aerial perspective
+    Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city.
+  src/postfx3d.js: HDR post-processing pipeline
+    Half-float scene target, MSAA, SAO ambient occlusion, bloom, ACES tone curve, grade, FXAA.
+  src/lighting3d.js: Sun, sky, reflections and night light
+    Sun path, sky dome and environment map, night light map, material patch, dithered cutaway, headlight cones.
+  src/damage3d.js: Crumpling bodies, decals, debris and knocked furniture
+    Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire.
+  src/cityscape3d.js: Building archetypes, roofs, shopfronts and street furniture
+    Facade archetypes, roof textures and plant (roof keep-outs), rooftop helipads, shopfronts, lit windows, street furniture.
+  src/sidejobs3d.js: Contract mission meshes
+    Sky rings, bomb and substation devices.
+  src/roadblocks3d.js: Police roadblock meshes
+    Loose traffic cones and burning flares.
   src/themepark3d.js: Sunset Pier ride meshes
     Coaster track and train, big wheel, carousel, teacups, drop tower and midway.
+  src/garage3d.js: Garage meshes
+    Garage buildings, shutters, lights and service details.
+  src/landmarks3d.js: City landmark meshes
+    Bridges, waterfront gardens, civic precinct and ground helipads.
+  src/civic3d.js: Civic and rooftop meshes
+    Businesses, the casino, hospital and school fronts, time-of-day palette.
+  src/air-cover3d.js: Underpass meshes
+    Road underpass walls, roof, portals and lamps.
+  src/renewal3d.js: Park meshes
+    Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks.
+  src/sports3d.js: Sports stadium and match meshes
+    Tiered stands, crowd, floodlights, scoreboards and animated matches.
+  src/transit3d.js: Railway meshes
+    Swept viaduct, sleepers, masts, piers and bents, stations and moving trains.
+  src/ecology3d.js: Wildlife meshes
+    Species geometry, gait animation, culling and material cleanup.
+  src/world3d.js: World scenery meshes
+    Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery.
+  src/beach3d.js: Southport Beach meshes
+    Sand, swash ribbon, pier, props, ladders and instanced beachgoers.
+  src/county3d.js: County and mountain meshes
+    County ground tiles and hills, snow, rural scenery, bridges and region visibility.
+  src/boats3d.js: Boat kit: lofted hulls and shared yacht parts
+    Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging.
+  src/harbor3d.js: Cargo terminal meshes
+    Cranes, the container ship, containers, depot, signals and helicopter searchlight.
+  src/marina3d.js: Marina, superyacht and cruise liner meshes
+    Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal and liners.
+  src/cycles3d.js: Bike-share stand meshes
+    Bike-share racks (the bicycles are ordinary vehicles).
+  src/weather3d.js: Weather and sky visuals
+    Rain, wet roads, lightning and the overcast light.
+  src/crowd3d.js: Instanced crowd bodies, poses and street props
+    One InstancedMesh per body part, layered poses, stride, dogs and scene props.
+  src/clouds3d.js: Volumetric clouds and cloud shadows
+    Ray-marched cumulus at 600-950 m over a 3D noise volume, and their shadows on the city.
+  src/surfaces3d.js: Procedural surface detail
+    Ground shader detail (asphalt, paving, grass), rain puddles, county ground, foliage sway.
+  src/helicopter3d.js: Helicopter meshes
+    Airframe, rotor, lights and cockpit.
+  src/vehicles3d.js: Vehicle meshes
+    Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts.
+  src/plane3d.js: Airplane meshes
+    Courier prop plane, business jet and airliner.
+  Outside the closure: src/asset-loader.js (decodes the media blocks and starts the game).
 
 REPOSITORY
   The modular source of this build lives in the repository alongside it:
@@ -169,24 +184,37 @@ REPOSITORY
   tools/check.sh (verification). See README.md and docs/SOURCE_GUIDE.md.
 
 AUDIT CONTRACTS
-- Game fragments share one closure; 3D fragments share createCityRenderer().
+- Game fragments share one closure; 3D fragments share createCityRenderer(), which
+  reads game state but never changes game rules.
 - Map x/y becomes Three.js (x, elevation, y); heading a is radians, yaw is -a.
 - Street columns are ROAD_CENTERS, rows are ROAD_ROWS; rows run negative north of
-  the old shoreline. Block indices keep their pre-reclamation meaning.
+  the old shoreline. Block indices keep their pre-reclamation meaning. The x = 128
+  column is the Shore Line's corridor (RAIL_CORRIDOR_X), not a street.
 - 512 world units = 100 meters. Timers use seconds; frame timestamps use ms.
-- entityElevation() is authoritative for floor, terrain and aircraft altitude.
 - Physics uses 1/120-second steps; terrain uses shared Float32 triangles.
 - Compact entity keys (hp, a, vx/vy, w/l, hx/hy, sinkDepth) are data contracts.
-- The player is in one carrier at a time and they are mutually exclusive: car, roof,
-  deck, parachute, coaster, transitRide, taxiRide, swimming. Use teleportPlayer()
-  to move the player, since it lets go of whichever one is holding them.
+- entityElevation() is the only way to compare heights across terrain, roofs,
+  decks, sinking cars, boats and aircraft. Aircraft altitude is absolute;
+  aircraftClearance() measures from the ground, or from the flat roof under a
+  helicopter (c.roofSite).
+- The player is in one carrier at a time and they are mutually exclusive: car,
+  roof (the Blue Hour terrace), buildingRoof (a roof reached by helicopter), deck
+  (the superyacht or a liner), parachute, coaster, transitRide, taxiRide, and the
+  water (swimming, wading, climbing a ladder). Use teleportPlayer() to move the
+  player: it lets go of whichever one is holding them.
 - solid(x, y, r, overWater) is the one collision test; the fourth argument exists
-  so the player can swim and is passed by nothing but moveBody(), on foot.
-- All damage goes through ballisticDamage(); entityElevation() is the only way to
-  compare heights across roofs, terrain, decks, sinking cars and aircraft.
-- Browser localStorage holds campaign/audio settings; there is no game server.
+  so the player can swim and is passed by nothing but moveBody(), on foot. On
+  foot the sea is entered only from a beach (shoreStepBlocked, water.js).
+- People take damage through ballisticDamage() (armour, lethality); vehicles
+  through damageVehicle(), whose `detail` shapes the dent (damage.js).
+- Cameras: orthographic on the street, perspective in the air (flight-view3d.js).
+  Cull and pick level of detail with viewCenter, viewReach and viewZoom, not
+  cameraTarget/worldZoom. Nothing lays a uniform wash over the frame; scenery
+  over the player is cleared by the dithered cutaway (lighting3d.js), not fades.
+- Browser localStorage holds campaign/audio/graphics settings; there is no server.
+- window.DeadEndCity (end of src/game.js) is the only test surface: explicit named
+  methods, never a code-evaluation hook.
 - Media blocks name original paths, byte counts and SHA-256 hashes.
-- The source ZIP includes original media, tests, build.py and SOURCE_GUIDE.md.
 
 POLICY: do not minify, obfuscate, pack or deploy this review build without
 the owner's explicit instruction. Readability includes dependencies.
@@ -4023,7 +4051,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           </div>
           <div>
             <kbd>J</kbd> <kbd>SPACE</kbd>
-            <p>Jump from aircraft / open parachute · A/D steer · W glide · S flare</p>
+            <p>Jump from aircraft / open parachute · A/D steer · W glide · S flare · J dives off a boat or out of a sinking car</p>
           </div>
           <div>
             <kbd>TOUCH</kbd>
@@ -4054,7 +4082,7 @@ body:not(.touch-mode).police-search-active #carRadio {
           </div>
           <div>
             <kbd>SPACE</kbd> <kbd>SHIFT</kbd>
-            <p>Helicopter: rise / descend</p>
+            <p>Helicopter: rise / descend · lands on open ground, helipads and clear flat roofs</p>
           </div>
           <div>
             <kbd>W S</kbd> <kbd>A D</kbd>

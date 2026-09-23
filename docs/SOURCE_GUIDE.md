@@ -32,62 +32,122 @@ Two closures matter:
 - Compact entity keys are contracts: `hp`, `maxhp`, `a`, `w/l`, `hx/hy` (collider half
   extents), `vz`, `inv` (invulnerability seconds).
 - `entityElevation(e)` is the only correct way to compare heights of actors on roofs,
-  terrain and aircraft. Aircraft `altitude` is absolute; `aircraftClearance()` subtracts terrain.
+  decks, terrain, boats, sinking cars and aircraft. Aircraft `altitude` is absolute;
+  `aircraftClearance()` subtracts the terrain, or the flat roof under a helicopter
+  (`c.roofSite`, section 4c).
+- The player is held by one carrier at a time: `player.car`, `player.roof` (the Blue Hour
+  terrace), `player.buildingRoof` (a roof reached by helicopter), `player.deck` (the
+  superyacht or a liner), `player.parachute`, `player.coaster`, `transitRide`, `taxiRide`,
+  or the water (`player.swimming`, `player.wading`, `player.climbing`). `teleportPlayer()`
+  lets go of all of them; anything that moves the player must go through it.
+- `solid(x, y, r, overWater)` is the one collision test for people; vehicles collide with
+  `staticBodies` (`addStatic`, looked up through the numeric-keyed `staticGrid`).
 - Timers are seconds. Physics runs in fixed 1/120 s steps. `worldMinutes` advances one game
   minute per real second; `daylight()` returns 0..1 (sun up 05:40, down 19:50).
-- Save data (`localStorage`) holds campaign indices, cash, clock, weapons and audio settings
-  only. Adding missions needs no schema change.
+- Save data (`localStorage`, key `dead-end-city-v1`) holds campaign indices, cash, clock and
+  weapons; the radio, touch mode, FPS counter and graphics tier have their own keys. Adding
+  missions needs no schema change.
 
 ## 3. Subsystem map
 
-Game closure (in include order):
+Every file below starts with `// BEGIN SUBSYSTEM: src/<file> — <title>` and a doc comment;
+the same list, with one-line summaries, is the SUBSYSTEM INDEX at the top of
+`src/shell.html`. Order matters only for top-level `const`/`let` used while the closure
+is being set up (function declarations are hoisted).
+
+Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes the rest):
 
 | File | Role |
 | --- | --- |
-| game.js | Constants, vehicle definitions, world build (`buildWorld`, `zoneHeight`, `makeBuilding`), `populate`, combat, `update`, 2D fallback drawing, map, HUD, input, startup, `window.DeadEndCity` developer console |
+| game.js | Constants, `VEHICLE_DEFINITIONS`, world build (`buildWorld`, `zoneHeight`, `makeBuilding`), `populate`, combat, `update`, `moveBody`, `exitCar`/`enterVehicle`, `teleportPlayer`, 2D fallback drawing, map (`paintMapBase`), HUD, input, startup, `window.DeadEndCity` |
 | audio.js | Web Audio effects, voices, procedural sounds; `earFilter` (a low-pass over the whole mix, dulled while swimming) |
-| physics.js | Vehicle and pedestrian physics, traffic AI, signals, knockdowns |
-| geography.js | Land polygons, river, bridges, `districtAt`, coast segments, 2D water, `BEACH` (strand, boardwalk, pier) |
-| water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J in a boat), `parachuteSplashdown`, harbor-patrol rescue |
-| water-audio.js | Procedural water sound: splashes, strokes, gasps, wading, ladder rungs, flooding cars and bubbles; the surf, lapping and crowd loops; gulls and the lifeguard whistle (`updateWaterAudio`, called from `soundUpdate`) |
-| beach.js | Southport Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), the cast of `beachgoers` with time-of-day density, volleyball and frisbee games, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
-| harbor.js / chase.js | Ironworks terminal, first mission, cargo pursuit, Vinny's depot (front shutter, back door and the drop: `beginDepotDrop`, `depotShutterDown`, `updateDepotDrop`) |
-| police-feedback.js | Wanted-level status chips (NEED TO LOSE POLICE, POLICE CLEARED) and delivery blocking |
+| physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
+| geography.js | Land polygons and the cached `landAt`, river, bridges, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
+| harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
+| police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
+| arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory and knife combat |
+| citylife.js | Clock, `PLACES` (businesses), `DOCKS` (boat jetties and their boats), officers, police routing and sight (`policeSees`), wanted search, `clearPolice`, `daylight()` |
+| story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
+| campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
+| chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
-| marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan, liners, deck walking |
-| arsenal.js | Weapon ownership, arsenal UI, knife |
-| citylife.js | Clock, `PLACES` (businesses), officers, police routing, `daylight()` |
-| story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate` |
-| campaign.js | Saves, mission select menu |
-| roofmission.js | Blue Hour rooftop hit, `entityElevation` |
-| air-cover.js / combat-rules.js | Underpass volumes, elevation-aware shooting, air support |
-| damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`) |
-| county.js / military.js / terrain.js | Outlying regions, towns, Fort Sentinel, mountains |
-| aviation.js / parachute.js | Fixed-wing flight model, flight missions 9 and 10, bail-out |
-| challenges.js | Missions 2 to 8 and the interact/UI routing for all missions |
-| sidejobs.js | Contracts 11 to 15 (`SIDE_JOB_FIRST` onward) and `sideJobPower` (blackout) |
-| streets.js | Street grid, painting, `STREET_NAMES`, `streetNameAt`, `benchSpots` |
-| casino.js, renewal.js, sports.js, sports-world.js, transit.js, ecology.js | Casino, parks, sports venues, railway, wildlife |
-| navigation.js, mobile.js, world-view.js, car-radio.js, garages.js | Route planning, touch, zoom, radio, garages |
-| crowd.js | Pedestrian life: appearance and roles by hour (`dressPerson`), the crowd streamer that keeps walkers in a ring around the player (`streamCrowd`), sidewalk walking (lanes, corners, kerb signals, doors), perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up when aimed at, witness calls (`crowdReport`) and police tips, crash drivers and horns (`crowdCrash`, `updateTrafficLife`), taxi fares and bus stops (`curbsideStop`), street scenes (vendor, busker, cafe, smokers, delivery, nightlife, bus stop) |
-| ambience.js | Procedural city soundscape: traffic hum, crowd murmur, wind, birds, crickets, horns (`hornSound`), distant sirens, club beat, busker guitar, bus air brakes |
-| quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check, the saved setting and its pause-menu button |
-| render3d.js | Renderer entry: lights, ground texture painting, vehicle/person models, effects, `render()` |
+| carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
+| themepark.js | Sunset Pier island layout, ride footprints, the rideable coaster and the park crowd |
+| marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`) |
+| taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
+| cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
+| weather.js | Weather state machine, road wetness, wind and rain on the audio bus |
+| water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J), `parachuteSplashdown`, harbor-patrol rescue |
+| water-audio.js | Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle |
+| beach.js | Southport Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
+| roofmission.js | The Blue Hour terrace (`ROOFTOP`, `player.roof`, `moveOnRoof`), mission 2's hit (index 1); `entityElevation`, `sameFloor` |
+| rooftops.js | Helicopter landings on flat roofs (`helicopterRoofSite`, `roofLandingClear`), rooftop helipads (`chooseRoofHelipads`, `b.helipad`), the `player.buildingRoof` carrier (`exitOntoRoof`, `moveOnBuildingRoof`), `playerOnRoof()` |
+| air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft |
+| combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit |
+| damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`), the damage console helpers |
+| county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
+| military.js | Fort Sentinel security, military vehicles, barriers and combat |
+| aviation.js | Fixed-wing flight model (`planeControl`), flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
+| challenges.js | Missions 3 to 9 (indices 2 to 8) and the interact/UI routing for all missions (`challengeMissionInteract`) |
+| sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
+| streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
+| terrain.js | Triangulated mountains, snow caps, trails, slope handling and off-road contact |
+| casino.js | Roulette layout, stakes, settlement, UI and saved cash |
+| renewal.js | Parks (`CENTRAL_PARK`, `COMMONS`), ponds (`parkPondBlocked`, `parkPondNear`), boardwalks, walkers, joggers, the outdoor gym |
+| sports.js | Live basketball and soccer: teams, possession, shots, scoring, restarts |
+| sports-world.js | South Coast Stadium reservation, enclosure, turnstiles, vehicle barriers, markings |
+| transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
+| ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
+| navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance |
+| parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy, the Blue Hour terrace landing, water rescue |
+| mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
+| world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
+| car-radio.js | Three embedded tracks, station selection, playback and saved settings |
+| garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
+| crowd.js | Pedestrian life: `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
+| ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
+| quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check, the saved setting and its pause-menu button (`graphicsTier()`) |
+| render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
 
-Renderer fragments (inside `createCityRenderer()`): damage3d (deformable car bodies, decal atlas
-and pools, rubble and torn panels, knocked furniture, smoke and fire), cityscape3d (buildings,
-roofs, shopfronts, street furniture, night windows), sidejobs3d (rings/devices), garage3d, landmarks3d, civic3d
-(time-of-day palette, businesses), air-cover3d, renewal3d, sports3d, transit3d, ecology3d,
-world3d (water shader, palms, airport, rooftop bar), beach3d (Southport Beach sand, swash, pier,
-props, ladders, instanced beachgoers; `updateBeachVisuals` from `updateWorldVisuals`), county3d,
-boats3d (the boat kit), harbor3d (signals, depot, helicopter searchlight, the container ship),
-marina3d (marina, superyacht, terminal, liners), weather3d (rain, wet roads, overcast light),
-clouds3d (volumetric clouds and cloud shadows), crowd3d (instanced pedestrian bodies, poses,
-dogs and scene props), surfaces3d (procedural ground detail, rain puddles, foliage sway),
-helicopter3d, vehicles3d, plane3d. flight-view3d (flight camera, distance haze, shadow fit,
-level of detail and impostors), postfx3d (HDR pipeline: AO, bloom, tone curve, grade, FXAA) and
-lighting3d (sun path, sky dome and environment map, night light map, headlight cones, the
-material patch, time-of-day look) are included right after the camera and lights.
+Renderer closure (inside `createCityRenderer()` in render3d.js, in include order;
+flight-view3d, postfx3d and lighting3d come first, right after the cameras and lights,
+and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
+
+| File | Role |
+| --- | --- |
+| flight-view3d.js | Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city |
+| postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom, ACES tone curve, grade, FXAA |
+| lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), headlight cones, time-of-day look |
+| damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire |
+| cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts and sign atlas, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| sidejobs3d.js | Sky rings, bomb and substation devices |
+| roadblocks3d.js | Loose traffic cones and burning flares |
+| themepark3d.js | Coaster track and train, big wheel, carousel, teacups, drop tower and midway |
+| garage3d.js | Garage buildings, shutters, lights and service details |
+| landmarks3d.js | Bridges, waterfront gardens, civic precinct and ground helipads |
+| civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
+| air-cover3d.js | Road underpass walls, roof, portals and lamps |
+| renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
+| sports3d.js | Tiered stands, crowd, floodlights, scoreboards and animated matches |
+| transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
+| ecology3d.js | Species geometry, gait animation, culling and material cleanup |
+| world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
+| beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
+| county3d.js | County ground tiles and hills, snow, rural scenery, bridges and region visibility |
+| boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
+| harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
+| marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal and liners |
+| cycles3d.js | Bike-share racks (the bicycles are ordinary vehicles) |
+| weather3d.js | Rain, wet roads, lightning and the overcast light |
+| crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
+| clouds3d.js | Ray-marched cumulus at 600-950 m over a 3D noise volume, and their shadows on the city |
+| surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles, county ground, foliage sway |
+| helicopter3d.js | Airframe, rotor, lights and cockpit |
+| vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts |
+| plane3d.js | Courier prop plane, business jet and airliner |
+
+`src/asset-loader.js` sits outside the closure: it decodes the media blocks and calls
+`startDeadEndCity(ASSETS)`.
 
 ## 4. The city layout
 
@@ -200,11 +260,46 @@ The Ironworks freighter (`buildCargoShip`, harbor3d.js) and the drivable speedbo
 and jet ski (vehicles3d.js) use the same kit. Boats steer round everything in
 `marinaObstacles()` (liners, moored boats, the superyacht, her tender and the pontoons).
 
+## 4c. Roofs and rooftop helipads
+
+rooftops.js. A helicopter can land on any flat roof that its whole airframe fits on inside
+the parapet (4 units), clear of roof plant; warehouses (sawtooth skylights), the Blue Hour
+terrace and Vinny's depot walls are not landable.
+
+- `helicopterRoofSite(c)` finds that roof while the helicopter is above it;
+  `helicopterControl` (physics.js) then uses the roof as its floor and keeps it in
+  `c.roofSite`. Building colliders reach 22 units above the roof (so a helicopter skimming
+  an edge is pushed off, as before); the contact pass skips the collider of `c.roofSite`.
+- `b.roofKeepOuts` are boxes the renderer records as it draws roof plant (cityscape3d.js:
+  bulkheads, water towers, AC, dishes, chimneys, skylights, pergolas, billboards, a tower's
+  first setback; civic3d.js: the casino roof). `roofLandingClear` refuses to set down on
+  them ("Landing blocked"). Without WebGL there are none, so every flat roof is clear.
+  Towers never take a helicopter: their setback leaves a terrace too narrow for it.
+- Rooftop helipads (`chooseRoofHelipads`, called at startup after the county is built): the
+  Police HQ and the six largest mid-rise flat roofs at least ~1100 units apart. Each carries
+  `b.helipad = {x, y, r}`; cityscape3d.js draws the pad instead of the usual clutter, the
+  ground canvas (2D view, minimap) and the city map show an H.
+- On the roof the player is carried by `player.buildingRoof` (the building); exitCar() steps
+  out beside the helicopter, `moveBody` keeps them inside the parapet and off the plant,
+  and E re-boards. `playerOnRoof()` (either roof carrier) is what "not at street level"
+  checks use: police sight, shops, stations, taxis, pickups, swimming.
+- `DeadEndCity.rooftops(x, y)` reports the pads, the player's roof and the helicopter's
+  floor, and any roof's height, landability and plant.
+
 ## 5. Missions
 
 `missions[]` is the ordered list. Indices 0..10 are the story (story.js, harbor.js,
 roofmission.js, challenges.js, aviation.js); `SIDE_JOB_FIRST` (11) onward are contracts in
-sidejobs.js. A mission is started by the payphone (`offerMission` -> `startMission`), which
+sidejobs.js. In-game numbers (and the audit logs) are the index plus one:
+
+| # | Index | Mission | Code |
+| --- | --- | --- | --- |
+| 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse) |
+| 2 | 1 | A Seat at the Table | roofmission.js (the Blue Hour hit) |
+| 3-9 | 2-8 | Vinny's Favor, Paper Trail, No Last Ferry, Both Sides of the Bay, Above the Noise, Saltwater Accounting, One Clean Exit | challenges.js |
+| 10-11 | 9-10 | The Last Witness, The Manifest | aviation.js |
+| C1-C5 | 11-15 | Rush Hour, Fireworks Night, Blackout, Ring Run, Repo Man | sidejobs.js |
+ A mission is started by the payphone (`offerMission` -> `startMission`), which
 resets state and dispatches by index. Each mission then:
 
 1. spawns what it needs (vehicles get `mission = true`, guards get a `missionTag`),
@@ -218,6 +313,10 @@ To add a mission: push an entry onto `missions` (title, contact, reward, brief,
 phoneMessage), add start/update/interact/UI branches (follow sidejobs.js), and make sure
 anything you spawn is tagged so `resetMissionState`/`cleanupMissionExtras` remove it. If a
 delivery must happen with zero wanted stars, add the stage to `policeBlocksMissionDelivery`.
+Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding, and
+take 40% of gang small-arms damage. Test a mission from the console with `startMission`,
+`missionTargets`, `steerTo`, `walk`, `interact` and `simulate` (docs/DEVELOPMENT.md;
+docs/audit/missions-qa.md shows the method).
 
 ## 6. Rendering notes
 
@@ -242,10 +341,12 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
 - From the air: small props move to detail layers the flight camera drops as `viewZoom`
   falls, traffic becomes instanced impostors, and below `viewZoom` 0.2 a merged far
   copy of the static scenery (flight-view3d.js, FAR SCENERY) replaces the per-building
-  batches. Building blocks are compacted from six draw calls to two. `cityscape3d.js` builds every building: archetype
-  (tower, office, brick, stucco, warehouse, deco, decoTower, hotel), procedural roof texture,
-  parapet, roof props (instanced), shopfront with awnings and a sign atlas, fire escapes,
-  balconies, billboards, helipads, beacons and neon hotel signs.
+  batches. Building blocks are compacted from six draw calls to two.
+- `cityscape3d.js` builds every building: archetype (tower, office, brick, stucco,
+  warehouse, deco, decoTower, hotel; stored as `b.archetype`), procedural roof texture,
+  parapet, roof props (instanced, recorded as `b.roofKeepOuts`), rooftop helipads,
+  shopfront with awnings and a sign atlas, fire escapes, balconies, billboards, beacons and
+  neon hotel signs.
 - Night: facade materials carry an `emissiveMap` window mask; `updateCityscapeVisuals()`
   scales emissive intensity by night amount, hour and `sideJobPower()`. Lamps, shop glass,
   neon halos and vehicle head/tail halos follow the same night amount.
@@ -368,9 +469,12 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
 ## 7. Build, check, test
 
 ```
-sh tools/check.sh [tag]                 # assemble + node --check (fast, run after every edit)
-python3 tools/build.py                  # write dead-end-city.html
-node tools/smoke.mjs dead-end-city.html dist/smoke   # boot, walk, drive, map; console errors + screenshots
+sh tools/check.sh [tag]                          # assemble + node --check (fast, run after every edit)
+python3 tools/build.py --out dist/game.html      # scratch build (the release writes dead-end-city.html)
+node tools/smoke.mjs dist/game.html dist/smoke   # boot, walk, drive, map; console errors + screenshots
+node tools/layout-audit.mjs dist/game.html       # overlaps in the city plan
+node tools/tour.mjs steps.json dist/tour dist/game.html   # scripted screenshots
+node tools/dead-code.mjs dist/check/<tag>.js     # functions and bindings nothing uses
 ```
 
 Headless Chromium uses SwiftShader, so the game renders at a few frames per second there;
@@ -379,14 +483,25 @@ game time is clamped per frame, which is why toasts and banners look "stuck" in 
 The **developer console** `window.DeadEndCity` (game.js, after the frame loop) exposes
 `status()`, `teleport(x, y)`, `setClock(hours)`, `setZoom(v)`, `startMission(index)`,
 `missions()` and `god(on)`, plus test helpers such as `simulate(seconds, keys)`,
-`missionState()` and `skipToDepotDelivery()`; the full list is in `docs/DEVELOPMENT.md`.
-Test scripts use it; players can too from the browser console.
+`missionTargets()`, `steerTo()`, `walk()`, `probe()`, `rooftops()` and `graphics(tier)`; the
+full list is in `docs/DEVELOPMENT.md`. Test scripts use it; players can too from the
+browser console. Screenshot tests call `graphics('high')` first (SwiftShader auto-detects
+as LOW).
 
 ## 8. Known limitations and ideas
 
-- The 2D fallback renderer (used when WebGL is unavailable) does not draw the new roof props,
-  shopfronts or contract devices; it remains playable.
-- Traffic AI follows the grid randomly; scripted convoys would need a waypoint follower.
-- Audit notes with unresolved observations are in `docs/audit/`.
-- Ideas: weather (rain with wet-road reflections in the shader), radio DJ chatter between
-  tracks, pedestrian taxi hailing, a photo mode using the orthographic camera.
+- The 2D fallback renderer (used when WebGL is unavailable) draws the city flat from the
+  ground canvas: no roof plant, shopfronts, contract devices, beach life or superyacht
+  decks. It remains playable, and with no roof plant recorded every flat roof is landable.
+- Traffic AI follows the grid randomly and only pulls out round stationary vehicles; it
+  never overtakes a slow one. Scripted convoys would need a waypoint follower.
+- There is no arrest: the police shoot at any wanted level; death respawns at the hospital.
+- The north approach to Southport clips the Broadway blocks at a flat 3 degree glide; use
+  the southern approach over the water.
+- The player cannot jump or climb between roofs; a building roof is left only by helicopter.
+- Mission 8 ends at the Southport dock on the inlet's east shore: Rafe is a short walk
+  round the head of the inlet.
+- Unresolved observations from each pass are listed at the end of the logs in `docs/audit/`
+  (missions-qa, systems-qa, visual-qa, world-layout).
+- Ideas: radio DJ chatter between tracks, a photo mode, rooftop stunt jumps, more boarding
+  points (liners from a tender), an arrest mechanic.

@@ -28,8 +28,8 @@ in `assets/manifest.json`, the media loader and the credits. Nothing is minified
 
 Put the file under `assets/`, add an entry to `assets/manifest.json` (`id`, `file`,
 `mime`, `original`), reference the id from `src/asset-loader.js`, and credit it in
-`docs/THIRD_PARTY_CREDITS.txt`. The published artifact must stay under 16 MB, so prefer
-procedural textures and keep media small (WebP images, MP3/OGG audio).
+`docs/THIRD_PARTY_CREDITS.txt`. The built HTML must stay under 15.5 MB (it is 14.1 MB at
+29.0.0), so prefer procedural textures and keep media small (WebP images, MP3/OGG audio).
 
 ## Test
 
@@ -41,7 +41,19 @@ rather than assuming something is broken.
 node tools/smoke.mjs dist/game.html dist/smoke        # boot, walk, drive, map
 node tools/tour.mjs steps.json dist/tour dist/game.html
 node tools/layout-audit.mjs dist/game.html            # overlaps in the city plan
+sh tools/check.sh dead && node tools/dead-code.mjs    # functions and bindings nothing uses
 ```
+
+Tours and tests that look at the image should call `DeadEndCity.graphics('high')` first:
+headless SwiftShader auto-detects as LOW. Booting takes a minute or more headless, so for
+long investigations keep one page open and send it console calls (a small Playwright
+script with an HTTP endpoint that runs `page.evaluate` works well) instead of re-running
+a tour per question.
+
+`tools/dead-code.mjs` lists functions never called outside their own body (repeatedly,
+so a function only called by dead ones shows up too), bindings mentioned only once and
+bindings that are only ever assigned. Read each hit before deleting it: something used
+only from the browser console or built from a string does not count as a use.
 
 `tools/tour.mjs` starts a game, declines the opening call and runs a list of steps, each
 optionally running JavaScript in the page, holding keys, waiting and taking a screenshot:
@@ -62,8 +74,10 @@ something, never a generic code-evaluation hook.
 
 | Method | Purpose |
 | --- | --- |
-| `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle |
-| `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once) |
+| `version` | The build version (29.0.0) |
+| `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle, renderer (`3d` or `2d`) |
+| `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once); lets go of any carrier |
+| `setZoom(value)` | Street zoom, eased like the mouse wheel (`look` and `closeUp` apply it at once) |
 | `drive(type, altitudeMeters, heading)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne; optional heading in radians (0 = east) |
 | `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`, `['KeyE']` for hold-E objectives); also steps a Blue Hour elevator ride; returns `ride()`. Physics tests use it because headless frames are slow |
 | `places()` | Named businesses and landmarks with coordinates |
@@ -89,7 +103,6 @@ something, never a generic code-evaluation hook.
 | `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
 | `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and shop panes near a point, with their state |
 | `damageStats()` | Decal and debris pool use and GPU geometry/texture counts (for leak checks) |
-| `stats()` | Per-frame CPU timings, draw calls, triangles |
 | `pedestrianReport()` | Crowd summary: counts by reaction, pose, role and state, street scenes, incidents, witness reports, horns |
 | `fireShot(x, y)` | Fire the equipped weapon toward a map point as the player would (the crowd hears and reacts) |
 | `alarm(kind, x, y)` | Raise a `gunfire`, `explosion` or `crash` incident at a point without firing |
@@ -106,6 +119,7 @@ something, never a generic code-evaluation hook.
 | `beach()` | Southport Beach: crowd density for the hour, who is there and what they are doing, prop counts |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
+| `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |
 | `walk(heading, distance)` | Walk on foot through the real collision code (headless frames are too slow for keys) |
 
 ## Conventions
@@ -115,4 +129,8 @@ something, never a generic code-evaluation hook.
 - Map coordinates are `(x, y)`; 512 units = 100 m. Three.js position is `(x, elevation, y)`.
 - `solid()` is the one collision test; `entityElevation()` the one height comparison;
   `teleportPlayer()` the one way to move the player.
-- Commit `dead-end-city.html` rebuilt from source, never hand-edited.
+- `dead-end-city.html` is only ever rebuilt from source, never hand-edited; feature
+  branches leave it alone and the release rebuilds it.
+- Every player carrier (car, Blue Hour `roof`, `buildingRoof`, `deck`, parachute,
+  coaster, train, taxi, the water) must be let go of by `teleportPlayer()`, death and
+  mission resets; see AUDIT CONTRACTS at the top of `src/shell.html`.

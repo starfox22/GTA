@@ -1,5 +1,118 @@
 # Changelog
 
+## 29.0.0 — West-shore railway, beach, superyacht, damage, flight view, crowd, HDR
+
+Everything since build 28.1.1 (commit 1b89eba). The audit logs in `docs/audit/`
+(missions-qa, systems-qa, visual-qa, world-layout) have the details, symptoms and
+verification for each fix.
+
+Railway and city layout
+- The railway moved to the west shore on its own right of way: the Shore Line
+  (Cruise Terminal, an el down Garden St and along the y -2944 avenue, the west sea wall,
+  Viaduct Green, Harbor Ave and Royal Ave to Southport Airport), the Coast Line (sea
+  viaduct to Oceanview, Oceanview International, Coral Sound to Palmshore) and the Ridge
+  Line (Palmshore, Eastgate, Northridge, Stonecreek); 13 stations. No track rides on a
+  road, crosses the harbour ship or the marina mouth.
+- Smooth track: circular fillets eased by a smoothing pass, resampled and thinned;
+  stations on straights; the viaduct is one swept extrusion per run with mitred joints;
+  sleepers, masts and piers placed by arc length; marine piles, portals and straddle bents.
+  Trains follow the curve car by car, dwell at stations and no longer crawl at low frame
+  rates. Rail decks and county bridge rails now collide (they were stored under keys
+  nothing read).
+- Layout fixes: one straight west sea wall (a building stood in the sea), West Quay is the
+  rail corridor, Airport Way no longer crosses Battery St, the Ocean Drive slip curve and
+  the Northbank Quay lane (roads over roads) are gone, the Stadium Way bridge starts off
+  the stadium, the esplanade gives way at the Riverside helipad, reclamation blocks no
+  longer stack buildings, Commons St no longer runs through the yacht club (pedestrian east
+  quay), trees off carriageways. `DeadEndCity.layout()` and `tools/layout-audit.mjs` check
+  the plan: no overlaps.
+
+Southport Beach and the water
+- A public strand on the south shore with its own sand, swash, sandy shallows and
+  breakers, boardwalk, kiosks, beach bar, lifeguard towers, volleyball court, buoyed swim
+  zone, pedal boats, jet skis and a fishing pier; ~260 instanced beachgoers who follow the
+  hour and the weather and scatter at violence.
+- Swimming only from a beach: quays, docks, the pier and bridges are walls. Out at
+  beaches, rocks or 54 reachable ladders (lifebuoy posts). J dives off a boat or out of a
+  sinking car, parachutes splash down, a spent swimmer is fished out. Procedural water
+  sound (splashes, strokes, wading, ladders, surf, gulls, lifeguard whistle).
+
+Harbor Point, the superyacht and ships
+- A boat kit (lofted hulls, deckhouses, railings, furniture, name boards, night lights,
+  merged meshes). Sixteen unique yachts in the marina, each named on the transom.
+- M/Y AURELIA, a 105 m boardable superyacht: five walkable decks and a helipad, pool,
+  jacuzzi, saloon, bridge, guests and crew; walk up the passerelle, decks above the player
+  lift away. Liners with roof decks and a two-storey cruise terminal; the freighter and
+  the drivable speedboat, launch and jet ski rebuilt on lofted hulls with wakes.
+
+Damage
+- Cars crumple along the contact normal (merged dents), hoods buckle and tear off,
+  bumpers hang, doors spring, glass cracks and bursts, lamps die, tyres go flat, handling
+  degrades, engines burn to an explosion; wrecks are gutted. Bullet holes, wall chips,
+  shop-glass stars, soot, craters, rubble and flying chunks; breakable street furniture
+  (lamps, signals, hydrants that spray, bins, benches...). Mission vehicles burn out
+  instead of exploding and take 40% damage from gang small arms.
+
+Flight camera and clouds
+- A perspective flight camera with real altitude (dolly zoom from street framing,
+  parallax, the aircraft's shadow dropping away) replaces the orthographic view in the air;
+  aerial-perspective haze instead of a milky wash; ray-marched volumetric cumulus at
+  600-950 m with cloud shadows; ceilings ~1400 m. Far scenery, impostors and detail layers
+  keep the air view cheap.
+- New: helicopters land on flat roofs and rooftop helipads (Police HQ and six large
+  mid-rise roofs); the player climbs out, walks the roof and takes off again.
+
+Crowd and ambience
+- Perception-driven pedestrians: roles and dress by hour, sidewalk lanes, kerb signals,
+  doors, cower/freeze/flee/film/call reactions with panic contagion, witness calls, hands
+  up when aimed at, crash drivers who get out and argue, horns, taxi fares, bus stops and
+  street scenes (vendor, busker, cafe, smokers, delivery, nightlife). Drawn as instanced
+  bodies with layered poses (about 30 draw calls for the whole crowd). A procedural city
+  soundscape (traffic hum, murmur, birds, crickets, sirens, club beat, busker).
+
+Graphics pipeline, lighting and surfaces
+- HDR pipeline: half-float target, MSAA, two-scale SAO ambient occlusion, bloom, ACES,
+  time-of-day grade, FXAA fallback. Quality tiers LOW / MEDIUM / HIGH / ULTRA with a GPU
+  check and a pause-menu GRAPHICS setting.
+- The sun follows the clock (moon at night) with a view-fitted shadow box and a far-city
+  shadow proxy; a procedural sky and environment map (clear-coat paint, window gloss, wet
+  tarmac reflect it); a painted night light map lights every lamp, shop and neon pool;
+  headlight cones. Procedural ground detail (asphalt, paving, grass, puddles), county
+  ground and hills without seams, foliage sway. A dithered cutaway round the player
+  replaces ghosted buildings and the old viaduct and tunnel-roof fades.
+
+HUD and controls
+- The mission card folds to one line after six seconds (O or a click reopens it); a small
+  police chip replaces the POLICE CLEARED poster and shows only on a real drop; story and
+  contracts numbered separately; FPS counter and graphics quality in the pause menu.
+- Bicycles: hold W to pedal (Shift stands on the pedals). Space is the handbrake.
+- Roadblocks: no spike strips; braced cruisers and loose cones that a heavy vehicle with
+  enough momentum rams through (a sedan stops).
+- Mission 1 ends in Vinny's warehouse: drive the truck in, the shutter comes down, leave
+  by the back door.
+
+Performance (headless, per 1/30 s update with ~650 pedestrians and ~190 vehicles)
+- 56-58 ms -> 8-11 ms: cached land test, a static minimap layer, grid-based car and
+  bullet contacts, parked cars skipping land and pose checks, cheaper blood-track, pond
+  and moored-boat tests. Instanced signals, crowd and car impostors, far city from 500 m.
+
+QA fixes (docs/audit/missions-qa.md, systems-qa.md, visual-qa.md)
+- Missions: mission 8's beacon gates were on land and its jet ski exit on the wrong side;
+  the mission 1 truck was wrecked while loading; Daniel stuck behind the plane in missions
+  10-11; repo cars blocking the warehouse; Fireworks Night labels; "POLICE CLEARED!" with
+  no stars.
+- Systems: cars through marina and pier buildings, cars into park ponds, docks and boats
+  on dry land, unreachable ladders, cars exploding under water, traffic gridlock at
+  T-junctions, parked and double-parked cars, pavement walkers and causeway rails; taxis
+  crawling; the passerelle; water named MARLOW BAY everywhere.
+- Visuals: smeared west-sea foam, no building shadows from the air, cloud-shadow blotches
+  and sun pumping, rail glare, the heavy HUD vignette, pale rings round the mountains and
+  a snow grid, flat county ground, dark avenues at night, signs over doorways.
+
+Release pass
+- Rooftop landing (src/rooftops.js), teleportPlayer() also lets go of the Blue Hour
+  terrace, dead code and superseded fades removed, docs brought up to date, version 29.0.0.
+
 ## 25.1.0 — Performance, park, stadium, railway and aircraft
 
 - Profiler in the developer console; static geometry batching; building/pier/static spatial
