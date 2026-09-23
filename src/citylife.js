@@ -1021,8 +1021,8 @@
           gangSeenAt: gameTime,
           gangLastSeen: c.gangLastSeen,
         });
-        // Patrol officers wear a vest; at four stars and up it is the heavy one.
-        if (unit === 'patrol' && wantedStars >= 4) o.vest = 90;
+        // Patrol officers wear a light vest; at four stars and up a heavier one.
+        if (unit === 'patrol' && wantedStars >= 4) o.vest = 60;
         officers.push(o);
         c.crew.push(o);
       }
@@ -1059,6 +1059,7 @@
       o.walk += deltaSeconds * 12;
     }
     function updateOfficers(deltaSeconds) {
+      assignFireTokens(deltaSeconds);
       for (const c of vehicles) {
         if (c.cop) c.seesPlayer = !c.crewDeployed && policeSees(c);
         if (!lawVehicle(c)) continue;
@@ -1103,6 +1104,7 @@
         const seesPlayer = wantedStars > 0 && policeSees(o),
           gang = o.gangTarget,
           kind = officerKind(o);
+        o.seesPlayer = seesPlayer;
         if (seesPlayer) {
           o.sightTime = (o.sightTime || 0) + deltaSeconds;
           o.lastSawPlayerAt = gameTime;
@@ -1175,13 +1177,15 @@
           if (d < 42)
             moveBody(o, -Math.cos(o.a) * 35 * deltaSeconds, -Math.sin(o.a) * 35 * deltaSeconds, 8);
           else {
-            const spot = officerPosition(o, target, d);
+            const spot = officerPosition(o, target, d, !o.fireToken && target === player);
             if (spot) {
-              footStepTowards(o, spot, deltaSeconds, kind.run * 0.65);
+              footStepTowards(o, spot, deltaSeconds, kind.run * (o.fireToken ? 0.65 : 0.9));
               o.a = headingBetween(o, target);
             }
           }
-          officerShoot(o, target, deltaSeconds);
+          // Only the officers holding a firing token shoot at the player; the
+          // rest hold aim and move up (pursuit.js assignFireTokens).
+          if (target !== player || o.fireToken) officerShoot(o, target, deltaSeconds);
         } else {
           if (target === player && !seen && officerSuppress(o, deltaSeconds)) {
             o.state = 'suppress';
@@ -1244,8 +1248,9 @@
         return;
       }
       const seen =
-        officers.some((o) => o.state !== 'return' && policeSees(o)) ||
-        vehicles.some((c) => c.cop && !c.crewDeployed && policeSees(c));
+        // Sight was worked out this frame by updateOfficers (and the air units).
+        officers.some((o) => o.state !== 'return' && o.hp > 0 && o.seesPlayer) ||
+        vehicles.some((c) => c.cop && !c.crewDeployed && c.hp > 0 && c.seesPlayer);
       if (seen) {
         lastSeen = {
           x: player.x,

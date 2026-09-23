@@ -3,7 +3,8 @@
      * Aerial combat and pursuit rules
      * Source: src/combat-rules.js
      * Scope: shared game closure.
-     * Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
+     * Elevation-aware shots, vehicle handgun rules, tank armor and the police helicopters
+     * (one at three stars, two at four and five; each carries a marksman).
      */
     /* All gunfire travels through the same three-dimensional world. */
 
@@ -91,6 +92,8 @@
           score = Math.abs(normalizeAngle(headingBetween(player, p) - a));
           if (score > (mouse.active ? 0.12 : touchAim !== null ? 0.32 : 0.8)) continue;
           score += distanceBetween(player, p) * 0.00008;
+          // Auto-aim prefers the gunmen on the ground to a helicopter overhead.
+          if (isAircraft(p)) score += 0.3;
         }
         if (score < best) {
           best = score;

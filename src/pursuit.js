@@ -32,8 +32,8 @@
     // the player (before the lethality scale in combat-rules.js, so 8 is about 16
     // health: an unarmoured player survives five or six hits).
     const OFFICER_KINDS = {
-      patrol: { hp: 85, vest: 55, color: '#2d455e', rate: [1.05, 1.5], burst: 1, dmg: 17, playerDmg: 8, speed: 560, range: 210, run: 112, sample: 'pistol' },
-      road: { hp: 85, vest: 55, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 8, speed: 560, range: 230, run: 100, sample: 'pistol' },
+      patrol: { hp: 85, vest: 25, color: '#2d455e', rate: [1.05, 1.5], burst: 1, dmg: 17, playerDmg: 8, speed: 560, range: 210, run: 112, sample: 'pistol' },
+      road: { hp: 85, vest: 40, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 8, speed: 560, range: 230, run: 100, sample: 'pistol' },
       swat: { hp: 110, vest: 120, color: '#1b2026', rate: [1.5, 2.1], burst: 3, dmg: 20, playerDmg: 6.5, speed: 820, range: 270, run: 118, sample: 'automatic', rifle: true },
       fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 8.5, speed: 780, range: 250, run: 122, sample: 'automatic', rifle: true },
     };
@@ -489,6 +489,35 @@
       playSample(kind.sample, o.rifle ? 0.26 : 0.3, randomBetween(0.95, 1.05), o);
       if (city3D) city3D.fire(o.x, o.y, a, false, entityElevation(o));
     }
+    /**
+     * FIRING TOKENS
+     * However many officers can see the player, only a few shoot at once: three
+     * at one star up to seven at five. Tokens go to those with the best view
+     * (closest, already firing) and are reshuffled every two seconds, so the
+     * fire comes from changing directions but never as a firing squad.
+     */
+    const FIRE_TOKENS = [0, 3, 4, 5, 6, 7];
+    let tokenShuffleAt = 0;
+    function assignFireTokens() {
+      const cap = FIRE_TOKENS[clamp(Math.ceil(wantedStars), 0, 5)],
+        reshuffle = gameTime >= tokenShuffleAt;
+      if (reshuffle) tokenShuffleAt = gameTime + 2;
+      const shooters = [];
+      for (const o of officers) {
+        if (o.hp <= 0 || !o.seesPlayer || o.state === 'return' || personIncapacitated(o)) {
+          o.fireToken = false;
+          continue;
+        }
+        shooters.push(o);
+      }
+      if (!reshuffle && shooters.filter((o) => o.fireToken).length >= Math.min(cap, shooters.length)) return;
+      for (const o of shooters)
+        o.tokenScore = distanceBetween(o, player) - (o.fireToken && !reshuffle ? 120 : 0) - seededRandom() * 60;
+      shooters.sort((a, b) => a.tokenScore - b.tokenScore);
+      shooters.forEach((o, i) => {
+        o.fireToken = i < cap;
+      });
+    }
     /* Suppressive fire at the corner the runner ducked behind. */
     function officerSuppress(o, deltaSeconds) {
       if (!lastSeen || gameTime - (o.lastSawPlayerAt ?? -100) > 3.5 || !policeTier().deadly) return false;
@@ -521,10 +550,17 @@
      * player); SWAT and agents spread out to flank; anyone may step sideways to
      * keep the shot open. Returns null to hold position.
      */
-    function officerPosition(o, target, d) {
+    function officerPosition(o, target, d, advancing = false) {
       if (target !== player || o.blockade) return null;
       if (!o.flankSide) o.flankSide = seededRandom() < 0.5 ? -1 : 1;
       const car = o.car;
+      // Waiting for a firing token: work round to the player's flank and close in.
+      if (advancing) {
+        const base = headingBetween(player, o) + o.flankSide * 0.35,
+          r = clamp(d - 40, 90, 170),
+          spot = { x: player.x + Math.cos(base) * r, y: player.y + Math.sin(base) * r };
+        return !solid(spot.x, spot.y, 8) && distanceBetween(o, spot) > 12 ? spot : null;
+      }
       if (
         !o.rifle &&
         car?.hp > 0 &&
@@ -533,8 +569,9 @@
         distanceBetween(o, car) < 110 &&
         distanceBetween(car, player) > 60
       ) {
-        const away = headingBetween(player, car) + o.flankSide * 0.45,
-          spot = { x: car.x + Math.cos(away) * 26, y: car.y + Math.sin(away) * 26 };
+        // At the corner of the car: covered, but with the head and gun arm out.
+        const away = headingBetween(player, car) + o.flankSide * 0.85,
+          spot = { x: car.x + Math.cos(away) * 25, y: car.y + Math.sin(away) * 25 };
         if (!solid(spot.x, spot.y, 8) && distanceBetween(o, spot) > 8) return spot;
         return null;
       }

@@ -64,9 +64,11 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
 | geography.js | Land polygons and the cached `landAt`, river, bridges, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
 | harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
+| heat.js | Heat and wanted stars: `crime(amount)` (heat by severity), `recordKill` / `recordVehicleKill` (by victim, with a spree bonus), `HEAT_STARS`, the escalation delay, `heatUI()` (stars, pending star, heat meter, body count) |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory and knife combat |
 | citylife.js | Clock, `PLACES` (businesses), `DOCKS` (boat jetties and their boats), officers, police routing and sight (`policeSees`), wanted search, `clearPolice`, `daylight()` |
+| pursuit.js | Police response: `POLICE_TIERS` (what each star sends), `OFFICER_KINDS` (patrol, road, swat, fed), `dispatchPolice` / `spawnPursuitUnit` (off-camera road spawns, bursts on a new star), `pursuitControl` (lead pursuit, PIT, flank, block, route-following search, whiskers, stuck recovery), officer fire and positioning, arrest and `bust()`, the pursuit tank, dispatch captions, the radar search area, `policeReportData` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
 | campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
 | chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
@@ -495,7 +497,8 @@ as LOW).
   decks. It remains playable, and with no roof plant recorded every flat roof is landable.
 - Traffic AI follows the grid randomly and only pulls out round stationary vehicles; it
   never overtakes a slow one. Scripted convoys would need a waypoint follower.
-- There is no arrest: the police shoot at any wanted level; death respawns at the hospital.
+- Pursuit cars follow the street grid; in the county they use the county road graph and
+  have none of the city's intercept or search routing.
 - The north approach to Southport clips the Broadway blocks at a flat 3 degree glide; use
   the southern approach over the water.
 - The player cannot jump or climb between roofs; a building roof is left only by helicopter.
@@ -504,4 +507,4 @@ as LOW).
 - Unresolved observations from each pass are listed at the end of the logs in `docs/audit/`
   (missions-qa, systems-qa, visual-qa, world-layout).
 - Ideas: radio DJ chatter between tracks, a photo mode, rooftop stunt jumps, more boarding
-  points (liners from a tender), an arrest mechanic.
+  points (liners from a tender).

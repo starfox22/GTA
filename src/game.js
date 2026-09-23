@@ -2484,7 +2484,13 @@
                 // truck's steel cage, Vinny's armored van): gang small-arms fire
                 // does 40% damage to them, or a crew opening up on the loading
                 // truck wrecks it before the third crate is aboard.
-                b.enemy && c.mission && b.faction !== 'police' && !b.rocket ? b.dmg * 0.4 : b.dmg,
+                b.enemy && c.mission && b.faction !== 'police' && !b.rocket
+                  ? b.dmg * 0.4
+                  : // Police rounds are meant for the driver: they chew a car up
+                    // slowly rather than wrecking it in a dozen hits.
+                    b.faction === 'police' && c === player.car && !b.rocket
+                    ? b.dmg * 0.45
+                    : b.dmg,
                 b.x,
                 b.y,
                 b.owner || (!b.enemy ? player : null),
