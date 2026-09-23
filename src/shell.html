@@ -530,8 +530,11 @@ kbd {
 #scene {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  /* Always the viewport, whatever pixel size the renderer last wrote into the
+     inline style: a stale larger size would widen a phone's layout viewport and
+     push the right-hand HUD off screen. */
+  width: 100% !important;
+  height: 100% !important;
   display: block;
 }
 #game {
@@ -1991,8 +1994,10 @@ kbd {
   position: fixed;
   z-index: 90;
   top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
   padding: 2px 8px;
   border-radius: 99px;
   background: #000a;
@@ -2011,8 +2016,10 @@ kbd {
   position: fixed;
   z-index: 9;
   top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2062,8 +2069,10 @@ kbd {
   position: fixed;
   z-index: 9;
   top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
   padding: 5px 14px;
   border-radius: 99px;
   background: var(--ui-panel);
@@ -2091,8 +2100,12 @@ kbd {
   position: fixed;
   z-index: 12;
   top: 142px;
-  left: 50%;
-  transform: translate(-50%, -4px);
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  transform: translateY(-4px);
   padding: 6px 14px;
   border-radius: 6px;
   border-left: 2px solid #91bccc;
@@ -2109,7 +2122,7 @@ kbd {
 }
 #radioCaption.show {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: none;
 }
 /* Help and status lines, GTA-style: a box under the location, left. */
 #toast {
@@ -2186,8 +2199,11 @@ kbd {
 #interaction {
   position: absolute;
   top: calc(50% + 58px);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
+  max-width: calc(100vw - 32px);
   display: none;
   padding: 7px 14px 7px 8px;
   border-radius: 99px;
@@ -2211,7 +2227,7 @@ kbd {
 @keyframes promptIn {
   from {
     opacity: 0;
-    transform: translate(-50%, 6px);
+    transform: translateY(6px);
   }
 }
 /* Area name, bottom right, as you cross into it. */
@@ -2242,9 +2258,10 @@ kbd {
 #storyLine {
   position: fixed;
   z-index: 8;
-  left: 50%;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
   bottom: 196px;
-  transform: translateX(-50%);
   width: min(640px, 64vw);
   padding: 8px 16px;
   border-radius: 8px;
@@ -2264,7 +2281,7 @@ kbd {
 @keyframes promptIn2 {
   from {
     opacity: 0;
-    transform: translate(-50%, 6px);
+    transform: translateY(6px);
   }
 }
 /* --- BOTTOM ROW: minimap + vitals, mission card, equipment ---------------- */
@@ -3022,6 +3039,17 @@ kbd {
 }
 body:not(.touch-mode).police-search-active #carRadio {
   top: 290px;
+}
+/* The police chip (police-feedback.js) keeps its look; it is centred with
+   margins so its untransformed box never widens a phone's viewport. */
+#policeNotice {
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  transform: translateY(-6px);
+}
+#policeNotice.show {
+  transform: none;
 }
 /* --- Narrower windows ---------------------------------------------------- */
 @media (max-width: 980px) {
@@ -4032,14 +4060,17 @@ body.no-key-hints .quickkeys {
 .touch-mode #toast {
   top: auto;
   bottom: 86px;
-  left: 50%;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
   max-width: min(420px, 50vw);
-  transform: translate(-50%, 6px);
+  transform: translateY(6px);
   font-size: 12px;
   text-align: center;
 }
 .touch-mode #toast.show {
-  transform: translate(-50%, 0);
+  transform: none;
 }
 .touch-mode #storyLine {
   bottom: 138px;
@@ -4166,13 +4197,13 @@ body.no-key-hints .quickkeys {
   }
   /* Between the mission card and the button strip: toast, dialogue, status. */
   .touch-mode #toast {
-    top: 300px;
+    top: 318px;
     bottom: auto;
     max-width: 86vw;
   }
   .touch-mode #storyLine {
     width: 86vw;
-    top: 356px;
+    top: 376px;
     bottom: auto;
   }
   .touch-mode #terrainStatus,
@@ -4184,10 +4215,10 @@ body.no-key-hints .quickkeys {
   .touch-mode #carRadio,
   .touch-mode #carRadio.open {
     top: auto;
-    right: auto;
-    left: 50%;
-    bottom: 236px;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    bottom: 300px;
   }
   .touch-mode .hud-status {
     flex-direction: column;
