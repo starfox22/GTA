@@ -9,11 +9,13 @@
      * RAILWAY
      * Three lines on their own elevated right of way, all of it on the west and
      * south of the map:
-     *   SHORE LINE  Cruise Terminal -> round Harbor Point on a sea viaduct -> down
-     *               the west sea wall (the old West Quay alignment, x = 150) ->
+     *   SHORE LINE  Cruise Terminal (on the apron street) -> an el down Garden St
+     *               and west along the avenue south of the marina (it never
+     *               crosses the basin's mouth) -> down the west sea wall (the
+     *               old West Quay alignment, x = 150) ->
      *               across Viaduct Green onto Harbor Ave -> south down Royal Ave
      *               -> Southport Airport, where it stands over the terminal
-     *               forecourt on Airport Way. The two avenue legs are an "el":
+     *               forecourt on Airport Way. The avenue legs are an "el":
      *               the deck rides the centre of the avenue on straddle bents
      *               planted on the pavements, as elevated lines do downtown.
      *   COAST LINE  Southport Airport -> a sea viaduct across the channel ->
@@ -52,10 +54,16 @@
         name: 'SHORE LINE',
         color: '#e2b766',
         route: [
-          // Buffer stops at the cruise terminal, clear of the Coral Dawn's bow.
-          [1760, -4170],
-          // Off the north shore past the marina mouth, round Harbor Point.
-          [150, -4170, 300],
+          // Buffer stops on the terminal apron street (y -3968), short of Garden
+          // Ave; the station is in front of the cruise terminal.
+          [2600, -3968],
+          // West along the apron, then an el down Garden St, well east of the
+          // marina: the basin's mouth stays open water for the superyacht and
+          // the masts, with no viaduct or piers across the channel.
+          [2176, -3968, 200],
+          [2176, -2944, 200],
+          // West along the avenue south of the marina to the sea wall.
+          [150, -2944, 200],
           // Down the west sea wall, then off it across Viaduct Green.
           [150, 3200, 330],
           // Along Harbor Ave; the Royal Ave corner is an el curve kept inside
@@ -115,7 +123,8 @@
     // the lift tower is found next to it); on the west sea wall it is on the
     // esplanade, on the avenues it is the pavement.
     const RAIL_STATIONS = [
-      { name: 'CRUISE TERMINAL', x: 1580, y: -4170, entry: { x: 1580, y: -4098 } },
+      { name: 'CRUISE TERMINAL', x: 2480, y: -3968, entry: { x: 2480, y: -3902 } },
+      { name: 'HARBOR POINT', x: 1408, y: -2944, entry: { x: 1408, y: -3014 } },
       { name: 'RECLAMATION', x: 150, y: -2176, entry: { x: 64, y: -2176 } },
       { name: 'OLD QUARTER', x: 150, y: 896, entry: { x: 64, y: 896 } },
       { name: 'WEST QUAY', x: 150, y: 2432, entry: { x: 64, y: 2432 } },

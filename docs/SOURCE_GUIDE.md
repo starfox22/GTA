@@ -108,8 +108,10 @@ distance haze, level of detail from the air) is included right after the camera 
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns, bridges and an airport.
 - The railway (transit.js, drawn by transit3d.js) runs on its own elevated right of way:
-  - SHORE LINE: Cruise Terminal (1580, -4170) -> sea viaduct round Harbor Point -> the west sea
-    wall at x 150 with Reclamation, Old Quarter and West Quay stations -> a curve across Viaduct
+  - SHORE LINE: Cruise Terminal (2480, -3968, on the apron street in front of the terminal) ->
+    an el down Garden St (x 2176) and west along the avenue at y -2944, with Harbor Point station
+    (1408, -2944) south of the marina; it never crosses the basin's mouth -> the west sea wall at
+    x 150 with Reclamation, Old Quarter and West Quay stations -> a curve across Viaduct
     Green onto Harbor Ave (Broadway station, 860, 3200) -> Royal Ave -> Southport Airport
     (1220, 4890), over the terminal forecourt on Airport Way. The avenue legs are an el on
     straddle bents planted on the pavements.

@@ -312,7 +312,7 @@
             const p = r.vertical ? { x: r.r, y: end } : { x: end, y: r.r },
               outward = end === r.start ? -1 : 1,
               a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
-            if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65)) continue;
+            if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65) || streetEndInJunction(r, p)) continue;
             if (inAirport(p.x, p.y) || inStadiumLot(p.x, p.y, 40)) continue;
             // A street that runs out at the water is finished by the esplanade
             // railing, so it gets no turning head and no barrier furniture.

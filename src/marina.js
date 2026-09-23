@@ -26,10 +26,15 @@
       basin: { x: 672, y: -4128, w: 856, h: 828 },
       quay: { x: 640, y: -3300, w: 928, h: 46 },
       club: { x: 1560, y: -3742, w: 148, h: 128 },
-      fuel: { x: 1556, y: -3486, w: 96, h: 54 },
+      // North of the club: at y -3486 the fuel berth stood in the y -3456 street.
+      fuel: { x: 1556, y: -3890, w: 96, h: 54 },
       terminal: { x: 1900, y: -4160, w: 724, h: 128 },
       terminalDoor: { x: 2262, y: -4024 },
       fingers: [760, 960, 1160, 1360].map((x) => ({ x, y: -3760, w: 17, h: 442 })),
+      // The east quay between the basin and Commons St is pedestrian: the club,
+      // the fuel berth and the jetties stand on it, so no street is laid there
+      // (Commons St used to run straight through the club house).
+      eastQuay: { x: 1518, y: -4150, w: 198, h: 646 },
     };
     /**
      * HULL FORM
@@ -82,6 +87,10 @@
         const th = (i / segments) * TAU;
         return [cu + Math.cos(th) * r, cv + Math.sin(th) * r];
       });
+    }
+    function marinaQuayAt(x, y) {
+      const q = MARINA.eastQuay;
+      return x > q.x && x < q.x + q.w && y > q.y && y < q.y + q.h;
     }
     // Moored boats: [finger index, side, distance along the finger, design]. Every
     // boat is one of a kind; `type` picks its builder in marina3d.js.
