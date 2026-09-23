@@ -105,7 +105,10 @@
       roofHelipads.length = 0;
       const hospital = PLACES.find((p) => p.kind === 'hospital'),
         fits = (b) => roofLandable(b) && Math.min(b.w, b.h) >= 130 && b.height >= 40 && b.height < 68,
-        chosen = buildings.filter((b) => fits(b) && (b.policeHQ || (hospital && b.place === hospital.id)));
+        // A financial-cluster tower planned with a pad (src/skyline.js) always keeps it.
+        chosen = buildings.filter(
+          (b) => (fits(b) && (b.policeHQ || (hospital && b.place === hospital.id))) || (b.skyline && b.skyline.helipad),
+        );
       const rest = buildings
         .filter((b) => fits(b) && !b.place && !b.policeHQ && b.x < CITY_SIZE && b.y < CITY_SIZE)
         .sort((a, b) => b.w * b.h - a.w * a.h || a.x - b.x || a.y - b.y);

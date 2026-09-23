@@ -437,6 +437,7 @@
       const roofPlantPools = new Set([pools.acUnit, pools.dish, pools.chimney, pools.skylight, pools.tank]);
       // ---- Archetype selection ------------------------------------------------------
       function archetypeFor(b) {
+        if (b.skyline) return 'skyline';
         if (b.roofBar) return 'hotel';
         if (b.style === 2) return 'warehouse';
         if (b.tropical) return b.height >= 60 ? 'decoTower' : 'deco';
@@ -834,6 +835,7 @@
           }
         }
       }
+      // @include src/skyline3d.js
       // ---- Build every building -------------------------------------------------------
       const cityStreetSouth = (b) => cityStreetAt(b.x + b.w / 2, b.y + b.h + 44, 10);
       for (let i = 0; i < buildings.length; i++) {
@@ -847,6 +849,14 @@
         group.position.set(b.x, 0, b.y);
         scene.add(group);
         batchGroups.push(group);
+        if (b.skyline) {
+          // A planned tower of the financial cluster (src/skyline3d.js).
+          const glassMaterial = buildSkylineTower(b, group);
+          roofOwner = null;
+          allBuildings.push({ b, group, height: height + (b.crownHeight || 0), materials: [glassMaterial] });
+          statics.push({ x: b.x + b.w / 2, y: b.y + b.h / 2, group, radius: Math.max(b.w, b.h) });
+          continue;
+        }
         const face = facadeMaterial(kind, i, b),
           roof = roofMaterial(kind),
           top = roof.material,
@@ -1051,5 +1061,6 @@
         beaconMaterial.color.set(Math.sin(gameTime * 2.4) > 0 ? '#ff3b2f' : '#4a1512');
         updateGlowField(night);
         updateSignage(night);
+        updateSkyline(night);
       }
       // END SUBSYSTEM: src/cityscape3d.js

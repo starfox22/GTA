@@ -392,7 +392,10 @@
             // Zone-specific ground: mirrors the block patterns chosen in buildWorld().
             const zone = districtAt(x + 177, z + 177),
               blockSeed = (bx * 31 + by * 17) % 7;
-            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
+            if (zone.includes('FINANCIAL') && skylineBlockTowers(bx, by).length) {
+              // Cluster plaza (src/skyline.js), the same inset as the game's ground canvas.
+              paintSkylinePlaza(drawingContext, x + 14, z + 14, 326, 326);
+            } else if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               drawingContext.fillStyle = '#c3bfb2';
               drawingContext.fillRect(x + 10, z + 10, 344, 160);
               drawingContext.strokeStyle = '#a8a497';

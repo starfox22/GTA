@@ -562,6 +562,7 @@
       for (let i = 0; i < HOTEL_NAMES.length; i++) hotelScriptCell(i);
       for (const style of ['neon', 'lightbox', 'channel']) for (const name of SHOP_NAMES) shopSignCell(name, style);
       for (const word of [...WINDOW_NEONS, 'VACANCY']) windowNeonCell(word);
+      for (const t of SKYLINE_TOWERS) towerNameCell(t.name);
       // Remaps a plane's UVs onto an atlas cell.
       function atlasPlane(width, height, cell, sizeX = NEON_ATLAS, sizeY = sizeX) {
         const g = new Three.PlaneGeometry(width, height),
