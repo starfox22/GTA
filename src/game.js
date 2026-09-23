@@ -3997,7 +3997,8 @@
         return;
       }
       if (!getElement('credits').classList.contains('hidden')) {
-        getElement('credits').classList.add('hidden');
+        // Close as the BACK button does, returning focus to whatever opened it.
+        getElement('closeCredits').click();
         return;
       }
       if (gameMode === 'menu' || gameMode === 'dead') return;
@@ -4183,9 +4184,11 @@
           run();
           return true;
         }
+      // Only from the second letter on: a lone first letter (G) is also a game
+      // key (the aircraft's descend) and must not be eaten on every press.
       const tail = cheatBuffer.slice(-15);
       for (const code of Object.keys(CHEAT_CODES))
-        for (let i = 1; i <= Math.min(tail.length, code.length); i++)
+        for (let i = 2; i <= Math.min(tail.length, code.length); i++)
           if (code.startsWith(tail.slice(-i))) return true;
       return false;
     }
@@ -4923,6 +4926,8 @@
         vy: player.car ? Math.round((player.car.vy || 0) * 10) / 10 : 0,
         cadence: Math.round(pedalCadence() * 100) / 100,
         effort: Math.round(pedalEffort() * 100) / 100,
+        // Aircraft: absolute altitude in map units (0 on the ground).
+        altitude: player.car ? Math.round(player.car.altitude || 0) : 0,
       }),
       // Run the simulation forward without drawing, holding the given keys (for
       // example ['KeyW']), so physics tests do not depend on the headless frame
