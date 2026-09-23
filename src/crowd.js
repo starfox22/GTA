@@ -256,6 +256,7 @@
       settledAt: null,
       settleStamp: -100,
       reports: 0,
+      honks: 0,
       incidentId: 1,
     };
     // Bus shelters register themselves here when the renderer builds them.
@@ -656,10 +657,24 @@
         for (let i = pedestrians.length - 1; i >= 0 && remove > 0; i--) {
           const p = pedestrians[i];
           if (p.leader || !streamableWalker(p) || followers.has(p)) continue;
-          if (crowdInView(p.x, p.y, 120) || distanceBetween(p, player) < 850) continue;
+          if (crowdInView(p.x, p.y, 120)) continue;
           pedestrians.splice(i, 1);
           remove--;
         }
+      }
+      // The day moves on even when the player does not: out of sight, people
+      // whose role no longer fits the hour (commuters at midnight, revellers at
+      // nine in the morning) are swapped for someone who does.
+      const weights = crowdRoleWeights(crowd.hour);
+      let swaps = 6;
+      for (const p of pedestrians) {
+        if (swaps <= 0) break;
+        if (p.leader || !streamableWalker(p) || weights[p.role] || p.role === 'casual' || p.role === 'kid') continue;
+        if (crowdInView(p.x, p.y, 120)) continue;
+        const spot = crowdSpawnSpot(false);
+        if (!spot) break;
+        placeWalker(p, spot, followers);
+        swaps--;
       }
       // The dead are left where they fell until nobody is looking.
       for (let i = pedestrians.length - 1; i >= 0; i--) {
@@ -2569,8 +2584,11 @@
         tickScene(s, step);
       }
       if (districtBustle(player.x, player.y) <= 0) return;
-      // Right after the crowd settles around a new spot, scenes may appear in view.
-      const allowInView = gameTime - crowd.settleStamp < 3;
+      // Right after the crowd settles around a new spot, or a teleport, scenes may
+      // appear in view: there was nothing on screen for them to pop into.
+      const jumped = crowd.sceneAnchor && Math.hypot(player.x - crowd.sceneAnchor.x, player.y - crowd.sceneAnchor.y) > 600;
+      crowd.sceneAnchor = { x: player.x, y: player.y };
+      const allowInView = gameTime - crowd.settleStamp < 3 || jumped;
       const count = (kind) => crowd.scenes.filter((s) => s.kind === kind).length,
         quota = { vendor: 2, busker: 1, cafe: 3, smokers: 1, delivery: 1 };
       for (const [kind, n] of Object.entries(quota)) {
@@ -2731,7 +2749,7 @@
       for (const c of [a, b]) {
         if (!c || c === player.car || !c.occupied || !c.ai || c.hp <= 0 || c.type === 'police') continue;
         if (isBoat(c) || isAircraft(c) || c.ramUntil > gameTime || c.crashStop) continue;
-        if (closing < 100) {
+        if (closing < 75) {
           c.honkAt = gameTime + randomBetween(0.2, 0.6);
           continue;
         }
@@ -2775,6 +2793,7 @@
             continue;
           }
           hornSound(c, fed ? randomBetween(0.7, 1.2) : randomChoice([0.16, 0.28, 0.4]), fed && seededRandom() < 0.4);
+          crowd.honks++;
           c.nextHonk = gameTime + (fed ? randomBetween(1.3, 2.6) : randomBetween(2.2, 4.5));
           if (fed && blocker.kind !== 'queue' && seededRandom() < 0.4) {
             c.speech = randomChoice(CROWD_LINES.honk);
@@ -2837,9 +2856,10 @@
         dogs: pedestrians.filter((p) => p.dog).length,
         busStops: BUS_STOPS.length,
         frontages: streetFrontages().length,
-        nearestFrontage: Math.round(Math.min(...streetFrontages().map((f) => distanceBetween(f, player)))),
         props: crowd.props.length,
         honking: vehicles.filter((c) => (c.blockedFor || 0) > 2).length,
+        honks: crowd.honks,
+        driversOut: pedestrians.filter((p) => p.car && p.hp > 0).length,
         nearestDoor: (() => {
           const door = doorNear(player, 250);
           return door ? { x: Math.round(door.x), y: Math.round(door.y), place: door.place?.name || null } : null;

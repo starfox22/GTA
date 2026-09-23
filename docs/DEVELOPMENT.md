@@ -84,6 +84,13 @@ something, never a generic code-evaluation hook.
 | `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and shop panes near a point, with their state |
 | `damageStats()` | Decal and debris pool use and GPU geometry/texture counts (for leak checks) |
 | `stats()` | Per-frame CPU timings, draw calls, triangles |
+| `pedestrianReport()` | Crowd summary: counts by reaction, pose, role and state, street scenes, incidents, witness reports, horns |
+| `fireShot(x, y)` | Fire the equipped weapon toward a map point as the player would (the crowd hears and reacts) |
+| `alarm(kind, x, y)` | Raise a `gunfire`, `explosion` or `crash` incident at a point without firing |
+| `stageCrash(metersPerSecond)` | Drive the player's car into an occupied car across the road ahead |
+| `lifeScene(kind)` | Stage a street scene by the player: `vendor`, `busker`, `cafe`, `smokers`, `delivery`, `hail`, `nightlife`, `busStop` |
+| `poseGallery(role)` | Line up one labelled pedestrian per pose in front of the player |
+| `closeUp(zoom)` | Inspection only: zoom past the player's limit (up to 8) to look at people |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |

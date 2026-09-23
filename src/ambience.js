@@ -4,10 +4,10 @@
      * Source: src/ambience.js
      * Scope: shared game closure.
      * Procedural Web Audio layers under the effects: the hum of traffic, the
-     * murmur of a crowd, rain, birds by day and crickets by night, horns and far
+     * murmur of a crowd, wind, birds by day and crickets by night, horns and far
      * sirens, the thump through a club wall, a busker's guitar, bus air brakes.
      * Nothing here is a sample; it is all filtered noise and oscillators, so it
-     * costs nothing in download size.
+     * costs nothing in download size. (Rain is weather.js's own layer.)
      */
     let ambience = null;
     function buildAmbience() {
@@ -56,7 +56,6 @@
         traffic: layer(brown, 'lowpass', 240),
         murmur: layer(white, 'bandpass', 700, 0.9, { type: 'lowpass', frequency: 1500 }),
         murmurHigh: layer(white, 'bandpass', 1500, 1.4),
-        rain: layer(white, 'highpass', 1400, 0.5, { type: 'lowpass', frequency: 7500 }),
         wind: layer(brown, 'lowpass', 420),
         clock: { bird: 2, cricket: 0, horn: 6, siren: 30, beat: 0, pluck: 0, bark: 0 },
         beatIndex: 0,
@@ -226,7 +225,6 @@
       const murmur = Math.min(0.07, people * 0.0022) * (0.75 + Math.random() * 0.5);
       a.murmur.gain.gain.setTargetAtTime(murmur, now, 0.12);
       a.murmurHigh.gain.gain.setTargetAtTime(murmur * 0.35 * (1 + Math.min(2, panic * 0.4)), now, 0.1);
-      a.rain.gain.gain.setTargetAtTime(weather.rain * 0.09, now, 0.8);
       a.wind.gain.gain.setTargetAtTime(Math.max(0, weather.wind - 0.35) * 0.06, now, 1.2);
       const clock = a.clock;
       for (const k in clock) clock[k] -= deltaSeconds;
