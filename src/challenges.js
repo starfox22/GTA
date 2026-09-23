@@ -372,23 +372,20 @@
           missionState.actionProgress = 0;
           missionState.timer = missionState.timeLimit = 150;
           crime(2);
+          // Down Marlow Bay, through the narrows between Battery Point and Sunset
+          // Pier, round the outside of Southport Beach (south of the fishing pier
+          // head and its swimmers) and up to the Southport speedboat dock. The old
+          // gates at (3720, 5410) and (2250, 5750) now sit on Sunset Pier and on
+          // the beach sand.
           missionState.waterRoute = [
-            {
-              x: 3720,
-              y: 5410,
-            },
-            {
-              x: 2250,
-              y: 5750,
-            },
-            {
-              x: 1550,
-              y: 5540,
-            },
-            {
-              x: 1490,
-              y: 5147,
-            },
+            { x: 3470, y: 4700 },
+            { x: 3420, y: 5000 },
+            { x: 3380, y: 5320 },
+            { x: 3150, y: 5750 },
+            { x: 2700, y: 6100 },
+            { x: 1700, y: 5700 },
+            { x: 1550, y: 5540 },
+            { x: 1490, y: 5147 },
           ];
           missionState.waterGate = 0;
           setStage(
@@ -398,7 +395,14 @@
             'elena',
             'Opening the case woke a transmitter. Get it to Rafe: he can cut the beacon.',
           );
-        } else if (missionState.stage === 2 && player.car === missionState.car && near) {
+        } else if (
+          missionState.stage === 2 &&
+          player.car === missionState.car &&
+          // Channel gates are passed at speed, so they are wider than a stop marker;
+          // the last one is the dock itself.
+          distanceBetween(player, missionState.target) <
+            (missionState.waterGate < missionState.waterRoute.length - 1 ? 110 : 55)
+        ) {
           missionState.waterGate++;
           if (missionState.waterGate < missionState.waterRoute.length)
             setStage(
