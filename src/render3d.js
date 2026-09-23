@@ -678,50 +678,82 @@
           radius: 50,
         });
       }
-      function sign(text, x, z, width, color, vertical = false) {
-        const cv = document.createElement('canvas');
-        cv.width = 1024;
-        cv.height = 256;
-        const cg = cv.getContext('2d');
-        cg.fillStyle = '#18272d';
+      /**
+       * Landmark and business signs: an enamel board with a border and lettering
+       * that light up at night. The painted face is the map; lettering and border
+       * glow through an emissive mask whose strength signage3d.js drives with the
+       * hour (and the district's power), so they bloom after dark. Street-level
+       * boards also spill their colour onto the pavement and the wet road, and
+       * `options.marquee` rings the board with chasing bulbs (signage3d.js places
+       * both once every caller has moved its sign into place).
+       */
+      const signBoards = [];
+      function sign(text, x, z, width, color, vertical = false, options = {}) {
+        const face = document.createElement('canvas'),
+          glowCanvas = document.createElement('canvas');
+        face.width = glowCanvas.width = 1024;
+        face.height = glowCanvas.height = 256;
+        const cg = face.getContext('2d'),
+          gg = glowCanvas.getContext('2d'),
+          board = cg.createLinearGradient(0, 0, 0, 256);
+        board.addColorStop(0, '#1f2f36');
+        board.addColorStop(1, '#101a1f');
+        cg.fillStyle = board;
         cg.fillRect(0, 0, 1024, 256);
+        gg.fillStyle = '#000';
+        gg.fillRect(0, 0, 1024, 256);
+        const hot = '#' + new Three.Color(color).lerp(new Three.Color('#ffffff'), 0.55).getHexString();
+        for (const g of [cg, gg]) {
+          g.font = '600 86px Arial';
+          g.textAlign = 'center';
+          g.textBaseline = 'middle';
+          g.lineJoin = 'round';
+        }
+        // Border tube and lettering on the board.
         cg.strokeStyle = color;
         cg.lineWidth = 7;
         cg.strokeRect(20, 22, 984, 212);
+        cg.fillStyle = 'rgba(0,0,0,0.5)';
+        cg.fillText(text, 516, 137, 932);
         cg.fillStyle = color;
-        cg.font = '600 86px Arial';
-        cg.textAlign = 'center';
-        cg.textBaseline = 'middle';
         cg.fillText(text, 512, 132, 932);
-        const tx = new Three.CanvasTexture(cv);
-        tx.colorSpace = Three.SRGBColorSpace;
-        tx.minFilter = Three.LinearMipmapLinearFilter;
-        tx.magFilter = Three.LinearFilter;
-        tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        // What glows: a coloured spill round both, then their hot cores.
+        gg.shadowColor = color;
+        gg.shadowBlur = 26;
+        gg.strokeStyle = color;
+        gg.lineWidth = 9;
+        gg.strokeRect(20, 22, 984, 212);
+        gg.fillStyle = color;
+        gg.fillText(text, 512, 132, 932);
+        gg.shadowBlur = 0;
+        gg.strokeStyle = hot;
+        gg.lineWidth = 3;
+        gg.strokeRect(20, 22, 984, 212);
+        gg.fillStyle = hot;
+        gg.fillText(text, 512, 132, 932);
+        const texture = (canvas) => {
+          const tx = new Three.CanvasTexture(canvas);
+          tx.colorSpace = Three.SRGBColorSpace;
+          tx.minFilter = Three.LinearMipmapLinearFilter;
+          tx.magFilter = Three.LinearFilter;
+          tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          return tx;
+        };
         const m = new Three.Mesh(
           new Three.PlaneGeometry(width, width / 4),
-          new Three.MeshBasicMaterial({
-            map: tx,
-            side: Three.DoubleSide,
-            toneMapped: false,
-            // Wins the depth test against wall panels it is mounted on.
-            polygonOffset: true,
-            polygonOffsetFactor: -2,
-            polygonOffsetUnits: -2,
-          }),
+          litSignMaterial(texture(face), texture(glowCanvas), { night: 2.6, day: 0.18, doubleSided: true }),
         );
         // Centred 23 up, but never so low that a wide board sinks into the ground
         // (a 235-wide sign is 59 tall); callers raise facade signs further.
         const signY = Math.max(23, width / 8 + 3);
         m.position.set(x, signY, z + 0.6);
         m.userData.sign = true;
+        m.receiveShadow = true;
         scene.add(m);
         m.userData.backing = box(scene, x, signY, z - 1.5, width + 5, width / 4 + 5, 3, darkMetal);
+        signBoards.push({ mesh: m, width, color, marquee: !!options.marquee });
         return m;
       }
-      sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb');
-      sign('24 HOUR', 1470, 544, 85, '#f3d394');
-      sign('FREIGHT CO.', 2880, 549, 106, '#c1d4bb');
       const ph = new Three.Group();
       ph.position.set(phone.x, 0, phone.y);
       scene.add(ph);
@@ -731,6 +763,10 @@
       box(ph, 0, 17, 0, 12, 2, 8, mat('#517c70'));
       halo(ph, 0, 14, 0, 8, '#9bdbb1');
       // @include src/cityscape3d.js
+      // Street signs (after the cityscape: their glow and spill live in signage3d.js).
+      sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb', false, { marquee: true });
+      sign('24 HOUR', 1470, 544, 85, '#f3d394');
+      sign('FREIGHT CO.', 2880, 549, 106, '#c1d4bb');
       // @include src/sidejobs3d.js
       // @include src/roadblocks3d.js
       // @include src/themepark3d.js
