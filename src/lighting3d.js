@@ -398,7 +398,7 @@
         gradeLiftDusk = new Three.Vector3(0.0, 0.002, 0.006),
         gradeGainDusk = new Three.Vector3(1.1, 1.0, 0.86),
         gradeLiftDay = new Three.Vector3(0.0, 0.0, 0.003),
-        gradeGainDay = new Three.Vector3(1.035, 1.0, 0.94);
+        gradeGainDay = new Three.Vector3(1.05, 1.0, 0.92);
       let lightingClock = performance.now();
       function updateLighting(deltaSeconds) {
         // The environment rebuild is throttled on the wall clock, not game time.
