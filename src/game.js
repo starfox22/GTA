@@ -1633,6 +1633,7 @@
         ...enemies,
         ...gangMembers,
         ...officers,
+        ...sportsTargets(),
         ...storyActors.filter(
           (p) => p.missionTag === 'flight-witness' && !p.hidden && mission?.stage >= 4,
         ),
@@ -1838,6 +1839,8 @@
         exitCar();
         return;
       }
+      // On the stadium pitch E kicks the ball at your feet (sports.js).
+      if (sportsInteract()) return;
       const place = nearestPlace();
       if (place) {
         openService(place);
@@ -2461,6 +2464,7 @@
           add(gangMembers);
           add(officers);
           addNearbyPedestrians();
+          add(sportsTargets());
         }
         add(escorts);
       } else {
@@ -2470,6 +2474,8 @@
         add(officers);
         add(escorts);
         add(rooftop);
+        // Athletes, officials and stewards at the sports venues (sports.js).
+        add(sportsTargets());
       }
       return list;
     }
@@ -3904,6 +3910,7 @@
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (distanceBetween(player, phone) < 68 && !m && missionIndex < missions.length)
           prompt = 'ANSWER PAYPHONE';
+        else if (sportsKickPrompt()) prompt = sportsKickPrompt();
         else {
           const n = nearestCar();
           if (n)
@@ -4465,8 +4472,10 @@
     // @include src/terrain.js
     // @include src/casino.js
     // @include src/renewal.js
+    // @include src/sports-fixtures.js
     // @include src/sports.js
     // @include src/sports-world.js
+    // @include src/sports-audio.js
     // @include src/transit.js
     // @include src/ecology.js
     // @include src/navigation.js
@@ -5167,6 +5176,9 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
+      // (see sports.js sportsConsole).
+      ...sportsConsole(),
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
       // pause-menu setting); returns what the renderer is now using.
       graphics(tier) {

@@ -6,11 +6,18 @@
        * Venue dimensions, ball positions and scores come from sports.js. World x/y
        * map to Three.js x/z; height always uses Three.js y. Athlete scale matches
        * ordinary pedestrians: feet at zero and hair just below 18 world units.
+       *
+       * Match day dresses the venue from the fixture: kits with their patterns on
+       * the athletes (officials in black, stewards in yellow), fans in the two
+       * clubs' colours filling the stands to the attendance, flags on the plaza,
+       * six big screens (STADIUM_SCREENS) and the court board sharing one live
+       * canvas per venue. The stands cheer a goal, and empty in a panic.
        */
       const sportsVenueModels = new Map(),
         sportsAthleteModels = new Map(),
         sportsBallModels = new Map(),
-        sportsScoreboards = [],
+        sportsBoardSurfaces = new Map(),
+        sportsScreens = [],
         stadiumStandModels = [];
       const sportsMaterials = {
         concrete: mat('#d0d0c4', 0.91),
@@ -91,97 +98,249 @@
         marker.castShadow = false;
       }
 
-      // Repaint the existing canvas only when the score changes. The texture and
-      // material remain stable across ordinary frames and new-game resets.
-      function createSportsScoreboard(
-        parent,
-        venueKind,
-        title,
-        x,
-        y,
-        height,
-        width,
-        facingDirection = 1,
-      ) {
+      /**
+       * LIVE SCOREBOARDS
+       * Every screen at a venue shows the same picture, so each venue paints one
+       * canvas and all its screens share the texture. It is repainted only when
+       * what it shows changes: the score, the match minute, the stage, the status
+       * line, or a frame of the goal animation (8 a second while it runs).
+       * Screens are MeshBasicMaterial with tone mapping off: they glow at night.
+       */
+      const SPORTS_BOARD_W = 1024,
+        SPORTS_BOARD_H = 512;
+      function sportsBoardSurface(sport) {
+        let surface = sportsBoardSurfaces.get(sport);
+        if (surface) return surface;
         const canvas = document.createElement('canvas');
-        canvas.width = 768;
-        canvas.height = 384;
+        canvas.width = SPORTS_BOARD_W;
+        canvas.height = SPORTS_BOARD_H;
         const texture = new Three.CanvasTexture(canvas);
         texture.colorSpace = Three.SRGBColorSpace;
-        const material = new Three.MeshBasicMaterial({
-          map: texture,
-          side: Three.DoubleSide,
-          toneMapped: false,
-        });
-        const display = mesh(new Three.PlaneGeometry(width, width / 2), material, parent, x, height, y);
-        display.name = venueKind + ' live scoreboard';
-        display.castShadow = false;
-        display.rotation.y = facingDirection < 0 ? Math.PI : 0;
-        // Orient the backing together with the face. The south scoreboard faces
-        // north into the pitch; its opaque casing must therefore sit to the south.
-        const backing = box(
-          parent,
-          x,
-          height,
-          y - facingDirection * 2,
-          width + 5,
-          width / 2 + 5,
-          3,
-          sportsMaterials.facade,
-        );
-        const scoreboard = {
-          venueKind,
-          title,
-          canvas,
-          texture,
-          display,
-          backing,
-          facingDirection,
-          scoreKey: null,
-          repaintCount: 0,
-        };
-        sportsScoreboards.push(scoreboard);
-        return scoreboard;
-      }
-      function repaintSportsScoreboard(scoreboard, match) {
-        const score = match.scores;
-        const scoreKey = score[0] + ':' + score[1];
-        if (scoreboard.scoreKey === scoreKey) return;
-        scoreboard.scoreKey = scoreKey;
-        scoreboard.repaintCount++;
-        const context = scoreboard.canvas.getContext('2d');
-        context.fillStyle = '#10222f';
-        context.fillRect(0, 0, 768, 384);
-        context.strokeStyle = '#91cbd9';
-        context.lineWidth = 6;
-        context.strokeRect(10, 10, 748, 364);
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.fillStyle = '#d9e8d5';
-        context.font = '600 35px Arial';
-        context.fillText(scoreboard.title, 384, 49, 710);
-        context.font = '600 34px Arial';
-        context.fillStyle = match.venue.teamColors[0];
-        context.fillText(match.venue.teamNames[0], 195, 115, 320);
-        context.fillStyle = match.venue.teamColors[1];
-        context.fillText(match.venue.teamNames[1], 573, 115, 320);
-        context.fillStyle = '#f6f4d7';
-        context.font = '700 156px Arial';
-        context.fillText(String(score[0]), 195, 235, 260);
-        context.fillText(String(score[1]), 573, 235, 260);
-        context.font = '700 57px Arial';
-        context.fillText(':', 384, 230);
-        context.font = '500 27px Arial';
-        context.fillStyle = '#9dbbbc';
-        context.fillText(
-          scoreboard.venueKind === 'basketball' ? 'RIVERSIDE 3 ON 3' : 'SOUTH COAST FOOTBALL',
-          384,
-          337,
-          700,
-        );
-        scoreboard.texture.needsUpdate = true;
+        texture.anisotropy = 4;
+        const material = new Three.MeshBasicMaterial({ map: texture, toneMapped: false });
+        surface = { sport, canvas, texture, material, key: null, repaintCount: 0 };
+        sportsBoardSurfaces.set(sport, surface);
+        return surface;
       }
 
+      /**
+       * One screen: the lit face, a casing behind it, a frame and two legs down
+       * to whatever it stands on. `screen` is a STADIUM_SCREENS entry (x, y, z,
+       * w, yaw, tilt); the face is a 2:1 plane facing +z before the yaw.
+       */
+      function createSportsScreen(parent, sport, screen) {
+        const surface = sportsBoardSurface(sport),
+          width = screen.w,
+          height = screen.w / 2,
+          holder = new Three.Group(),
+          tilted = new Three.Group();
+        holder.name = sport + ' scoreboard ' + screen.id;
+        holder.position.set(screen.x, screen.z, screen.y);
+        holder.rotation.y = screen.yaw;
+        // Lean the top back so the elevated street camera reads the face square on.
+        tilted.rotation.x = -screen.tilt;
+        holder.add(tilted);
+        parent.add(holder);
+        const face = mesh(new Three.PlaneGeometry(width, height), surface.material, tilted, 0, 0, 0.9);
+        face.castShadow = false;
+        face.name = sport + ' live scoreboard';
+        box(tilted, 0, 0, -1, width + 4, height + 4, 3.2, sportsMaterials.facade);
+        box(tilted, 0, height / 2 + 2.6, 0.2, width + 5, 1.6, 2.2, darkMetal);
+        box(tilted, 0, -height / 2 - 2.6, 0.2, width + 5, 1.6, 2.2, darkMetal);
+        // Legs from the ground (or the beam it sits on) up to the casing.
+        const base = screen.base === undefined ? 0 : screen.base;
+        if (base !== null)
+          for (const side of [-1, 1])
+            box(holder, side * width * 0.3, (base - screen.z) / 2, -3.5, 2.2, screen.z - base, 2.2, darkMetal);
+        // A soft glow round the screen after dark.
+        const glow = halo(holder, 0, 0, 3, width * 1.25, '#bcd9ff');
+        glow.material.opacity = 0;
+        const entry = { sport, screen, holder, face, glow, surface };
+        sportsScreens.push(entry);
+        return entry;
+      }
+
+      function sportsBoardKey(match) {
+        const flash = sportsGoalFlashFrame(match);
+        return [
+          match.fixture.id,
+          match.stage,
+          match.period,
+          match.scores.join(':'),
+          sportsBoardClock(match),
+          match.status,
+          match.abandoned,
+          flash,
+          match.invader ? 1 : 0,
+        ].join('|');
+      }
+
+      /* Which frame of the goal animation is showing (-1: none): five seconds at
+         8 fps for a goal, a quick flash for a basket. */
+      function sportsGoalFlashFrame(match) {
+        const flash = match.goalFlash;
+        if (!flash) return -1;
+        const age = match.time - flash.time;
+        return age >= 0 && age < (match.sport === 'basketball' ? 1.5 : 5) ? Math.floor(age * 8) : -1;
+      }
+
+      function boardText(context, text, x, y, size, color, weight = 800, maxWidth = 900, align = 'center') {
+        context.font = weight + ' ' + size + 'px Arial';
+        context.fillStyle = color;
+        context.textAlign = align;
+        context.textBaseline = 'middle';
+        context.fillText(text, x, y, maxWidth);
+      }
+
+      function paintSportsBoard(surface, match) {
+        const key = sportsBoardKey(match);
+        if (surface.key === key) return;
+        surface.key = key;
+        surface.repaintCount++;
+        const context = surface.canvas.getContext('2d'),
+          W = SPORTS_BOARD_W,
+          H = SPORTS_BOARD_H,
+          [home, away] = match.teams,
+          [homeKit, awayKit] = match.kits,
+          frame = sportsGoalFlashFrame(match);
+        // Background: a dark LED panel with a subtle scanline.
+        const sky = context.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, '#0b1a28');
+        sky.addColorStop(1, '#050b12');
+        context.fillStyle = sky;
+        context.fillRect(0, 0, W, H);
+        if (frame >= 0) {
+          paintGoalAnimation(context, match, frame);
+        } else if (match.abandoned) {
+          context.fillStyle = '#8a1620';
+          context.fillRect(0, 0, W, 110);
+          boardText(context, 'MATCH ABANDONED', W / 2, 58, 74, '#fff1ec');
+          drawSportsCrest(context, home, 150, 250, 150);
+          drawSportsCrest(context, away, W - 150, 250, 150);
+          boardText(context, match.scores[0] + ' - ' + match.scores[1], W / 2, 250, 170, '#f6f4d7');
+          boardText(context, home.short + '  v  ' + away.short, W / 2, 365, 54, '#c9d7da');
+          boardText(context, 'THE VENUE IS CLOSED · NEXT FIXTURE TOMORROW', W / 2, 450, 38, '#ffb4a8', 700);
+        } else if (['upcoming', 'warmup', 'over'].includes(match.stage)) {
+          const header = match.stage === 'warmup' ? 'WARM UP · KICK OFF SOON' : match.stage === 'over' ? 'RESULT' : 'NEXT MATCH';
+          context.fillStyle = '#16354c';
+          context.fillRect(0, 0, W, 96);
+          boardText(context, header, W / 2, 50, 58, '#e8f3f2');
+          drawSportsCrest(context, home, 170, 230, 170);
+          drawSportsCrest(context, away, W - 170, 230, 170);
+          if (match.stage === 'over') boardText(context, match.scores[0] + ' - ' + match.scores[1], W / 2, 230, 150, '#f6f4d7');
+          else boardText(context, 'v', W / 2, 230, 110, '#8fb4bd');
+          boardText(context, home.name, 250, 360, 44, lightenForBoard(homeKit.primary), 800, 460);
+          boardText(context, away.name, W - 250, 360, 44, lightenForBoard(awayKit.primary), 800, 460);
+          const day = Math.floor(match.fixture.kickoff / 1440) + 1;
+          boardText(
+            context,
+            match.stage === 'over' ? 'FULL TIME · DAY ' + day : 'KICK OFF ' + sportsKickoffText(match.fixture.kickoff) + ' · DAY ' + day,
+            W / 2,
+            450,
+            56,
+            '#ffd76a',
+          );
+        } else {
+          // Live, break or full time: the classic score layout.
+          context.fillStyle = '#12304a';
+          context.fillRect(0, 0, W, 92);
+          boardText(context, match.venue.league, 30, 48, 42, '#cfe5ea', 800, 560, 'left');
+          // The clock in its own box, top right.
+          context.fillStyle = match.stage === 'live' ? '#f2d34a' : '#e8e8e0';
+          context.fillRect(W - 300, 14, 280, 66);
+          boardText(context, sportsBoardClock(match), W - 160, 49, 48, '#101418', 900, 260);
+          for (const [team, x] of [
+            [0, 150],
+            [1, W - 150],
+          ]) {
+            const kit = match.kits[team];
+            drawSportsCrest(context, match.teams[team], x, 190, 140);
+            context.fillStyle = kit.primary;
+            context.fillRect(x - 110, 282, 220, 16);
+            context.fillStyle = kit.secondary;
+            context.fillRect(x - 110, 298, 220, 8);
+            boardText(context, match.teams[team].short, x, 350, 86, '#f4f4ec');
+          }
+          boardText(context, String(match.scores[0]), W / 2 - 130, 245, 230, '#f6f4d7', 900, 240);
+          boardText(context, String(match.scores[1]), W / 2 + 130, 245, 230, '#f6f4d7', 900, 240);
+          boardText(context, '-', W / 2, 235, 140, '#8fb4bd');
+          // Status line: who has the ball, PITCH INVADER!, HALF TIME, FULL TIME.
+          const alert = match.invader || match.status.includes('INVADER');
+          context.fillStyle = alert ? '#b3261e' : '#0f2335';
+          context.fillRect(0, 420, W, 92);
+          boardText(context, match.status, W / 2, 466, 50, alert ? '#fff4d8' : '#bfe3ef', 800, 980);
+        }
+        // LED dot texture over everything.
+        context.fillStyle = 'rgba(0,0,0,0.18)';
+        for (let y = 0; y < H; y += 4) context.fillRect(0, y, W, 1);
+        surface.texture.needsUpdate = true;
+      }
+
+      /* Light team colours stay as they are; very dark ones are lifted to read on a dark panel. */
+      function lightenForBoard(color) {
+        const value = parseInt(color.slice(1), 16),
+          r = (value >> 16) & 255,
+          g = (value >> 8) & 255,
+          b = value & 255;
+        if (r * 0.3 + g * 0.59 + b * 0.11 > 90) return color;
+        return 'rgb(' + Math.min(255, r + 110) + ',' + Math.min(255, g + 110) + ',' + Math.min(255, b + 110) + ')';
+      }
+
+      /* GOAL! flashing in the scoring side's colours, with bursting stripes. */
+      function paintGoalAnimation(context, match, frame) {
+        const W = SPORTS_BOARD_W,
+          H = SPORTS_BOARD_H,
+          flash = match.goalFlash,
+          kit = match.kits[flash.team],
+          on = frame % 4 < 2;
+        context.fillStyle = on ? kit.primary : '#0b1622';
+        context.fillRect(0, 0, W, H);
+        // Stripes fanning out from the middle, turning as the frames go.
+        context.save();
+        context.translate(W / 2, H / 2);
+        context.rotate(frame * 0.08);
+        context.fillStyle = on ? kit.secondary : kit.primary;
+        context.globalAlpha = 0.45;
+        for (let ray = 0; ray < 12; ray++) {
+          context.rotate(TAU / 12);
+          context.beginPath();
+          context.moveTo(0, 0);
+          context.lineTo(W, -60);
+          context.lineTo(W, 60);
+          context.closePath();
+          context.fill();
+        }
+        context.restore();
+        const pulse = 1 + 0.08 * Math.sin(frame * 1.3);
+        context.save();
+        context.translate(W / 2, 205);
+        context.scale(pulse, pulse);
+        context.lineWidth = 16;
+        context.strokeStyle = '#0b0f14';
+        context.font = '900 250px Arial';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.strokeText(match.sport === 'basketball' ? '+' + flash.points : 'GOAL!', 0, 0);
+        context.fillStyle = '#fff8d8';
+        context.fillText(match.sport === 'basketball' ? '+' + flash.points : 'GOAL!', 0, 0);
+        context.restore();
+        const line = flash.byPlayer
+          ? flash.friendly
+            ? 'WHAT A FINISH!'
+            : 'PITCH INVADER SCORES!'
+          : match.teams[flash.team].name;
+        context.fillStyle = 'rgba(8,12,18,0.82)';
+        context.fillRect(0, 372, W, 140);
+        boardText(context, line, W / 2, 412, 58, '#ffe27a', 900, 980);
+        boardText(
+          context,
+          match.teams[0].short + '  ' + match.scores[0] + ' - ' + match.scores[1] + '  ' + match.teams[1].short,
+          W / 2,
+          474,
+          50,
+          '#f4f4ec',
+        );
+      }
       function createBasketballHoop(parent, rimX, centerY, direction, hoopHeight, hoopRadius) {
         const supportX = rimX - direction * 7;
         box(parent, supportX, 16, centerY, 1.6, 32, 1.6, darkMetal);
@@ -280,7 +439,7 @@
           );
           createBasketballHoop(group, rimX, centerY, direction, venue.hoopHeight, venue.hoopRadius);
         }
-        createSportsScoreboard(group, 'basketball', 'RIVERSIDE COURTS', centerX, venue.y - 4, 29, 43);
+        createSportsScreen(group, 'basketball', { id: 'court', x: centerX, y: venue.y - 4, z: 29, w: 43, yaw: 0, tilt: 0.25 });
         for (const postX of [centerX - 15, centerX + 15])
           box(group, postX, 9, venue.y - 6, 1.2, 18, 1.2, darkMetal);
         sportsVenueModels.set('basketball', { group, venue, x: centerX, y: centerY, radius: 110 });
@@ -457,9 +616,21 @@
         stadiumStandModels.push({ group, stand });
       }
 
+      /**
+       * THE CROWD
+       * One instance per seat for each body part. Each seat has a random `rank`:
+       * the stands fill to the fixture's attendance lowest rank first, so a thin
+       * crowd is spread round the ground instead of packed at one end, and they
+       * empty in the same order. Fans wear the colours of the club whose end they
+       * sit in (home to the west, away to the east, a mix along the sides).
+       * Poses: seated; standing to cheer their club's goal (arms up, bouncing);
+       * in a panic, up on their feet and backing up the terrace before they go.
+       * The instance matrices are only rewritten when the picture changes.
+       */
+      let stadiumCrowd = null;
       function createStadiumCrowd(parent, seats) {
         const crowd = new Three.Group();
-        crowd.name = 'Stadium crowd (' + seats.length + ' seated spectators)';
+        crowd.name = 'Stadium crowd (' + seats.length + ' seats)';
         parent.add(crowd);
         const bodies = new Three.InstancedMesh(boxGeo, sportsMaterials.white, seats.length);
         const heads = new Three.InstancedMesh(sphereGeo, sportsMaterials.white, seats.length);
@@ -469,58 +640,134 @@
         bodies.name = 'Crowd shirts';
         heads.name = 'Crowd heads';
         benches.name = 'Individual stadium seats';
-        const transform = new Three.Object3D();
         const color = new Three.Color();
-        const shirtColors = ['#459ace', '#5cb3d1', '#e56c58', '#e3c579', '#d4e2dc', '#7583a1'];
-        function putInstance(instances, index, seat, x, height, z, scaleX, scaleY, scaleZ, lean = 0) {
-          const cosine = Math.cos(seat.facing);
-          const sine = Math.sin(seat.facing);
-          transform.position.set(
-            seat.x + x * cosine + z * sine,
-            seat.height + height,
-            seat.y - x * sine + z * cosine,
-          );
-          transform.rotation.set(0, seat.facing, lean);
-          transform.scale.set(scaleX, scaleY, scaleZ);
-          transform.updateMatrix();
-          instances.setMatrixAt(index, transform.matrix);
-        }
         seats.forEach((seat, index) => {
-          putInstance(benches, index, seat, -0.6, 2.4, 0, 4.8, 1, 6.2);
-          putInstance(bodies, index, seat, -0.6, 6, 0, 4.4, 5.6, 6);
-          putInstance(heads, index, seat, 0, 10.9, 0, 1.9, 2.4, 2);
-          putInstance(legs, index, seat, 2.2, 2, 0, 5.5, 2.2, 5.2);
-          const cheering = seat.seed % 7 === 0;
-          for (const side of [-1, 1]) {
-            putInstance(
-              arms,
-              index * 2 + (side === 1 ? 1 : 0),
-              seat,
-              cheering ? 0.3 : 0.4,
-              cheering ? 11 : 6,
-              side * 3.8,
-              1.5,
-              5.3,
-              1.6,
-              cheering ? side * 0.4 : 0.2,
-            );
-            arms.setColorAt(
-              index * 2 + (side === 1 ? 1 : 0),
-              color.set(shirtColors[seat.seed % shirtColors.length]),
-            );
-          }
-          bodies.setColorAt(index, color.set(shirtColors[seat.seed % shirtColors.length]));
-          heads.setColorAt(index, color.set(['#ca9e79', '#a77853', '#78513a'][seat.seed % 3]));
+          seat.rank = sportsHash(index, 7331) / 4294967296;
+          seat.end = seat.x < 2560 ? 0 : seat.x > 2820 ? 1 : sportsHash(index, 17) % 2;
+          seat.shade = sportsHash(index, 29) % 20;
+          seat.bounce = (sportsHash(index, 3) % 628) / 100;
+          stadiumCrowdInstance(benches, index, seat, -0.6, 2.4, 0, 4.8, 1, 6.2);
+          heads.setColorAt(index, color.set(['#ca9e79', '#a77853', '#78513a', '#e3bf9a'][seat.seed % 4]));
+          // Placeholder colours until the first fixture paints them.
+          bodies.setColorAt(index, color.set('#8a97a6'));
+          arms.setColorAt(index * 2, color);
+          arms.setColorAt(index * 2 + 1, color);
         });
         for (const instances of [bodies, heads, benches, legs, arms]) {
           instances.instanceMatrix.needsUpdate = true;
           if (instances.instanceColor) instances.instanceColor.needsUpdate = true;
           instances.receiveShadow = true;
           instances.castShadow = false;
-          instances.computeBoundingSphere();
           crowd.add(instances);
         }
+        stadiumCrowd = { group: crowd, seats, bodies, heads, legs, arms, key: '', colorKey: '' };
+        poseStadiumCrowd(null, 1, -1, 0, 0);
+        for (const instances of [bodies, heads, benches, legs, arms]) instances.computeBoundingSphere();
         return crowd;
+      }
+
+      const stadiumCrowdTransform = new Three.Object3D();
+      // Local frame of a seat: +x toward the pitch, +z along the row.
+      function stadiumCrowdInstance(instances, index, seat, x, height, z, scaleX, scaleY, scaleZ, lean = 0) {
+        const cosine = Math.cos(seat.facing);
+        const sine = Math.sin(seat.facing);
+        stadiumCrowdTransform.position.set(seat.x + x * cosine + z * sine, seat.height + height, seat.y - x * sine + z * cosine);
+        stadiumCrowdTransform.rotation.set(0, seat.facing, lean);
+        stadiumCrowdTransform.scale.set(scaleX, scaleY, scaleZ);
+        stadiumCrowdTransform.updateMatrix();
+        instances.setMatrixAt(index, stadiumCrowdTransform.matrix);
+      }
+
+      /* Fans in the fixture's colours: mostly the shirt, some the second colour, a few neutrals. */
+      function colorStadiumCrowd(match) {
+        const state = stadiumCrowd,
+          color = new Three.Color(),
+          neutrals = ['#d4e2dc', '#7583a1', '#3c4452', '#e3c579'];
+        state.seats.forEach((seat, index) => {
+          const kit = match.kits[seat.end],
+            shirt = seat.shade < 12 ? kit.primary : seat.shade < 17 ? kit.secondary : neutrals[seat.shade % 4];
+          color.set(shirt);
+          state.bodies.setColorAt(index, color);
+          // Scarves and sleeves: arms in the second colour now and then.
+          if (seat.shade % 5 === 0) color.set(kit.secondary);
+          state.arms.setColorAt(index * 2, color);
+          state.arms.setColorAt(index * 2 + 1, color);
+        });
+        state.bodies.instanceColor.needsUpdate = true;
+        state.arms.instanceColor.needsUpdate = true;
+      }
+
+      /**
+       * presence: share of seats filled (0..1). cheerTeam: whose fans are
+       * celebrating (-1 none, 2 everyone). cheerTime: seconds into it (bounce).
+       * panic: 0..1 how far the panic has gone (fans standing and backing away).
+       */
+      function poseStadiumCrowd(match, presence, cheerTeam, cheerTime, panic) {
+        const { seats, bodies, heads, legs, arms } = stadiumCrowd;
+        seats.forEach((seat, index) => {
+          if (seat.rank >= presence) {
+            for (const [instances, slot] of [
+              [bodies, index],
+              [heads, index],
+              [legs, index],
+              [arms, index * 2],
+              [arms, index * 2 + 1],
+            ])
+              stadiumCrowdInstance(instances, slot, seat, 0, -40, 0, 0.001, 0.001, 0.001);
+            return;
+          }
+          const cheering = cheerTeam === 2 || cheerTeam === seat.end,
+            standing = cheering || panic > 0;
+          if (!standing) {
+            stadiumCrowdInstance(bodies, index, seat, -0.6, 6, 0, 4.4, 5.6, 6);
+            stadiumCrowdInstance(heads, index, seat, 0, 10.9, 0, 1.9, 2.4, 2);
+            stadiumCrowdInstance(legs, index, seat, 2.2, 2, 0, 5.5, 2.2, 5.2);
+            // A few are always on their feet in spirit: one arm in the air.
+            const waving = seat.shade === 7;
+            for (const side of [-1, 1])
+              stadiumCrowdInstance(arms, index * 2 + (side === 1 ? 1 : 0), seat, waving ? 0.3 : 0.4, waving && side > 0 ? 11 : 6, side * 3.8, 1.5, 5.3, 1.6, waving ? side * 0.4 : 0.2);
+            return;
+          }
+          // On their feet: backing up the terrace in a panic, bouncing in a cheer.
+          const back = panic * 18,
+            lift = back * 0.35 + (cheering ? Math.abs(Math.sin(cheerTime * 9 + seat.bounce)) * 1.8 : 0),
+            x = -0.8 - back;
+          stadiumCrowdInstance(legs, index, seat, x, 3.3 + lift, 0, 2.6, 6.4, 5);
+          stadiumCrowdInstance(bodies, index, seat, x, 9.4 + lift, 0, 4, 5.6, 5.8);
+          stadiumCrowdInstance(heads, index, seat, x + 0.4, 14.3 + lift, 0, 1.9, 2.4, 2);
+          for (const side of [-1, 1]) {
+            const slot = index * 2 + (side === 1 ? 1 : 0);
+            if (cheering)
+              stadiumCrowdInstance(arms, slot, seat, x + 0.3, 15 + lift, side * 3.4, 1.4, 5.6, 1.5, side * (0.25 + 0.15 * Math.sin(cheerTime * 7 + seat.bounce)));
+            else stadiumCrowdInstance(arms, slot, seat, x - 0.4, 9.2 + lift, side * 3.6, 1.4, 5.3, 1.5, 0.35);
+          }
+        });
+        for (const instances of [bodies, heads, legs, arms]) instances.instanceMatrix.needsUpdate = true;
+      }
+
+      /* Once a frame: colours for a new fixture, then the pose if anything changed. */
+      function updateStadiumCrowd(match) {
+        const state = stadiumCrowd;
+        if (!state || !match) return;
+        if (state.colorKey !== match.fixture.id) {
+          state.colorKey = match.fixture.id;
+          colorStadiumCrowd(match);
+        }
+        const presence = sportsCrowdPresence(match),
+          flash = match.goalFlash,
+          cheerAge = flash ? match.time - flash.time : Infinity,
+          cheerTeam = cheerAge < 4.5 ? (flash.byPlayer ? 2 : flash.team) : match.stage === 'fulltime' && match.remaining > match.calendar.afterSeconds - 6 ? 2 : -1,
+          cheerTime = Number.isFinite(cheerAge) ? cheerAge : match.time,
+          panic = match.abandoned ? sportsLimit((match.time - match.panicAt) / 3, 0.05, 1) : 0,
+          key = [
+            Math.round(presence * 60),
+            cheerTeam,
+            cheerTeam >= 0 ? Math.floor(cheerTime * 10) : 0,
+            Math.round(panic * 12),
+          ].join('|');
+        if (key === state.key) return;
+        state.key = key;
+        poseStadiumCrowd(match, presence, cheerTeam, cheerTime, panic);
       }
 
       function createStadiumFloodlight(parent, x, y, facing) {
@@ -619,9 +866,7 @@
           [3110, 4890, -2.5],
         ])
           createStadiumFloodlight(group, x, y, facing);
-        createSportsScoreboard(group, 'soccer', 'SOUTH COAST STADIUM', centerX, 4319, 119, 130);
-        // A second board faces inward from the south side, above the entry gap.
-        createSportsScoreboard(group, 'soccer', 'SOUTH COAST STADIUM', centerX, 4878, 119, 86, -1);
+        for (const screen of STADIUM_SCREENS) createSportsScreen(group, 'soccer', screen);
         for (const x of [2653, 2725]) box(group, x, 43, 4863, 4, 86, 4, sportsMaterials.facade);
         box(group, centerX, 86, 4863, 77, 4, 5, sportsMaterials.canopy);
         sportsVenueModels.set('soccer', { group, crowd, venue, x: centerX, y: centerY, radius: 600 });
@@ -715,8 +960,12 @@
         e.flagPoles.forEach((pole, i) => {
           box(group, pole.x, 31, pole.y, 1.4, 62, 1.4, steel);
           mesh(sphereGeo, yellow, group, pole.x, 62.5, pole.y, 1.2, 1.2, 1.2);
-          const flag = box(group, pole.x + 9, 55, pole.y, 17, 9, 0.4, mat(SPORTS_VENUES.soccer.teamColors[i % 2], 0.9));
+          // Each flag gets its own material: its colour follows the day's fixture
+          // (home club on the west poles, visitors on the east).
+          const flag = box(group, pole.x + 9, 55, pole.y, 17, 9, 0.4, mat('#c9c9c0', 0.9));
           flag.userData.dynamic = true;
+          flag.userData.team = pole.x < STADIUM_ENTRANCE.x ? 0 : 1;
+          flag.userData.stripe = i % 2;
           stadiumFlags.push(flag);
         });
         // Dugouts against the north stand.
@@ -754,21 +1003,50 @@
         }
       }
 
-      // Athlete factories use fixed shared materials and primitive geometry. A reset
-      // removes stale groups without disposing resources used by the next match.
-      const sportsShirtMaterials = new Map();
-      for (const venue of Object.values(SPORTS_VENUES))
-        for (const color of venue.teamColors) sportsShirtMaterials.set(color, mat(color));
-      for (const color of ['#e5c84c', '#74c99b']) sportsShirtMaterials.set(color, mat(color));
+      // Athlete factories share one material per kit colour and primitive geometry.
+      // A new fixture replaces the athletes; stale groups are removed without
+      // disposing resources the next match reuses.
+      const sportsKitMaterials = new Map();
+      function sportsKitMaterial(color) {
+        let material = sportsKitMaterials.get(color);
+        if (!material) sportsKitMaterials.set(color, (material = mat(color, 0.78)));
+        return material;
+      }
+
+      /**
+       * The kit's pattern in the second colour over the shirt (the torso is 4.5
+       * deep along x, the way the athlete faces, and 6.5 wide along z):
+       * stripes, hoops, halves, a sash, or a chevron across the chest.
+       */
+      function addKitPattern(group, kit) {
+        const trim = sportsKitMaterial(kit.secondary);
+        if (kit.pattern === 'stripes')
+          for (const z of [-2.2, 0, 2.2]) box(group, 0, 10, z, 4.62, 6.02, 0.95, trim);
+        else if (kit.pattern === 'hoops') for (const y of [8.6, 11.2]) box(group, 0, y, 0, 4.62, 1.2, 6.62, trim);
+        else if (kit.pattern === 'halves') box(group, 0, 10, 1.64, 4.62, 6.02, 3.3, trim);
+        else if (kit.pattern === 'sash') {
+          const sash = box(group, 0, 10, 0, 4.64, 1.5, 8.2, trim);
+          sash.rotation.x = 0.72;
+        } else if (kit.pattern === 'chevron')
+          for (const side of [-1, 1]) {
+            const bar = box(group, 2.28, 11, side * 1.5, 0.12, 1.1, 3.6, trim);
+            bar.rotation.x = side * 0.55;
+          }
+      }
 
       function createSportsAthlete(athlete) {
         const group = new Three.Group();
-        group.name = athlete.sport + ' player ' + athlete.team + ':' + athlete.number;
-        const cloth = sportsShirtMaterials.get(athlete.color) || sportsMaterials.homeShirt;
-        const skin = sportsMaterials.skin[(athlete.number + athlete.team) % sportsMaterials.skin.length];
+        group.name = athlete.sport + ' ' + athlete.kind + ' ' + athlete.id;
+        const kit = athlete.kit,
+          cloth = sportsKitMaterial(kit.primary),
+          shorts = sportsKitMaterial(kit.shorts),
+          socks = sportsKitMaterial(kit.socks),
+          seed = sportsHash(athlete.id.length, athlete.number, athlete.team + 5),
+          skin = sportsMaterials.skin[seed % sportsMaterials.skin.length];
         const torso = box(group, 0, 10, 0, 4.5, 6, 6.5, cloth);
-        box(group, 2.3, 10.3, 0, 0.14, 0.8, 5.4, sportsMaterials.white);
-        box(group, 0, 7.1, 0, 4.6, 1.2, 6.6, sportsMaterials.shorts);
+        addKitPattern(group, kit);
+        if (athlete.kind === 'athlete') box(group, 2.3, 10.3, 0, 0.14, 0.8, 5.4, sportsKitMaterial(kit.secondary));
+        box(group, 0, 7.1, 0, 4.6, 1.2, 6.6, shorts);
         mesh(sphereGeo, skin, group, 0, 15.3, 0, 2, 2.5, 2.1);
         mesh(sphereGeo, sportsMaterials.hair, group, -0.5, 16.5, 0, 1.9, 1.6, 2.13);
         const parts = {};
@@ -776,21 +1054,26 @@
           const leg = new Three.Group();
           leg.position.set(0, 7, side * 1.8);
           group.add(leg);
-          box(leg, 0, -1.1, 0, 2.1, 2.4, 2.5, sportsMaterials.shorts);
-          box(leg, 0, -2.8, 0, 1.7, 1.6, 2.1, skin);
-          box(leg, 0, -4.1, 0, 1.8, 1.5, 2.2, sportsMaterials.white);
+          box(leg, 0, -1.1, 0, 2.1, 2.4, 2.5, shorts);
+          box(leg, 0, -2.8, 0, 1.7, 1.6, 2.1, athlete.kind === 'steward' ? shorts : skin);
+          box(leg, 0, -4.1, 0, 1.8, 1.5, 2.2, socks);
           box(leg, 1, -5.6, 0, 3.6, 1.3, 2.5, sportsMaterials.shoes);
           parts['leg' + side] = leg;
           const arm = new Three.Group();
           arm.position.set(0, 12, side * 4);
           group.add(arm);
           box(arm, 0, -0.9, 0, 1.8, 2, 1.9, cloth);
-          box(arm, 0, -2, 0, 1.5, 1.1, 1.6, skin);
+          box(arm, 0, -2, 0, 1.5, 1.1, 1.6, athlete.kind === 'steward' ? cloth : skin);
           const forearm = new Three.Group();
           forearm.position.set(0, -2.5, 0);
           arm.add(forearm);
           box(forearm, 0, -0.8, 0, 1.5, 2.1, 1.5, skin);
           mesh(sphereGeo, skin, forearm, 0.2, -2.1, 0, 0.9, 1.05, 0.95);
+          // The assistant referees carry their flags.
+          if (athlete.kind === 'assistant' && side > 0) {
+            box(forearm, 0.3, -3.2, 0, 0.3, 4.4, 0.3, darkMetal);
+            box(forearm, 0.3, -1.9, 1.4, 0.15, 2, 2.6, sportsKitMaterial('#f2d33a'));
+          }
           parts['arm' + side] = arm;
           parts['forearm' + side] = forearm;
         }
@@ -863,19 +1146,43 @@
 
       function poseSportsAthlete(model, athlete, match) {
         const { group, parts, torso } = model;
-        const running = athlete.walking ? Math.sin(athlete.walk) * 0.62 : 0;
-        const actionProgress =
-          athlete.actionDuration > 0 ? 1 - athlete.actionTime / athlete.actionDuration : 0;
-        const actionSwing = Math.sin(Math.max(0, Math.min(1, actionProgress)) * Math.PI);
         group.position.set(athlete.x, athlete.jump || 0, athlete.y);
         group.rotation.set(0, -athlete.a, 0);
         torso.rotation.z = 0;
+        // Down: shot, stabbed, run over. The dead stay on their backs; the
+        // knocked-down lie there until they get up.
+        if (athlete.hp <= 0 || athlete.knockedFor > 0) {
+          group.position.y = 2.3;
+          group.rotation.set(0, -athlete.a, Math.PI / 2);
+          for (const side of [-1, 1]) {
+            parts['leg' + side].rotation.z = side * 0.12;
+            parts['arm' + side].rotation.z = 2.4 + side * 0.3;
+            parts['forearm' + side].rotation.z = 0.2;
+          }
+          return;
+        }
+        // Running for their lives: long strides, arms pumping, leaning in.
+        const fleeing = athlete.fleeing || (match.abandoned && athlete.walking);
+        const stride = fleeing ? 0.9 : 0.62;
+        const running = athlete.walking ? Math.sin(athlete.walk) * stride : 0;
+        const actionProgress =
+          athlete.actionDuration > 0 ? 1 - athlete.actionTime / athlete.actionDuration : 0;
+        const actionSwing = Math.sin(Math.max(0, Math.min(1, actionProgress)) * Math.PI);
         parts.leg1.rotation.z = running;
         parts['leg-1'].rotation.z = -running;
-        parts.arm1.rotation.z = -running * 0.65;
-        parts['arm-1'].rotation.z = running * 0.65;
-        parts.forearm1.rotation.z = 0.35;
-        parts['forearm-1'].rotation.z = 0.35;
+        parts.arm1.rotation.z = -running * (fleeing ? 1.1 : 0.65);
+        parts['arm-1'].rotation.z = running * (fleeing ? 1.1 : 0.65);
+        parts.forearm1.rotation.z = fleeing ? 1.2 : 0.35;
+        parts['forearm-1'].rotation.z = fleeing ? 1.2 : 0.35;
+        if (fleeing) {
+          torso.rotation.z = -0.22;
+          return;
+        }
+        if (athlete.kind === 'assistant' && match.stage === 'live' && match.phase === 'restart') {
+          // Flag up for the restart.
+          parts.arm1.rotation.z = 2.7;
+          return;
+        }
         const ownsBall = match.ball.ownerId === athlete.id;
         if (match.sport === 'basketball') {
           if (ownsBall && athlete.action === 'dribble') {
@@ -900,7 +1207,7 @@
           } else if (athlete.action === 'rebound') {
             parts.arm1.rotation.z = 2.7;
             parts['arm-1'].rotation.z = 2.5;
-          } else if (!ownsBall && match.possessionTeam !== athlete.team) {
+          } else if (athlete.kind === 'athlete' && !ownsBall && match.possessionTeam !== athlete.team) {
             parts.arm1.rotation.z = 0.95;
             parts['arm-1'].rotation.z = 0.85;
             torso.rotation.z = -0.06;
@@ -932,15 +1239,47 @@
         }
       }
 
+      /**
+       * NIGHT MATCHES
+       * The floodlights throw the pitch into the night light map (lighting3d.js
+       * paints stadiumFloodPools() into it) while a fixture is on; when that
+       * changes the map is repainted, which happens a few times a game day.
+       */
+      let stadiumFloodlightsOn = false;
+      function stadiumFloodPools() {
+        if (!stadiumFloodlightsOn) return [];
+        const pitch = SPORTS_VENUES.soccer,
+          pools = [];
+        for (const along of [1 / 6, 0.5, 5 / 6])
+          for (const across of [0.25, 0.75])
+            pools.push({ x: pitch.x + pitch.w * along, y: pitch.y + pitch.h * across, radius: 190, strength: 0.62 });
+        return pools;
+      }
+      function updateStadiumFloodlights(match) {
+        const on = !match.abandoned && ['warmup', 'live', 'break', 'fulltime'].includes(match.stage);
+        if (on === stadiumFloodlightsOn) return;
+        stadiumFloodlightsOn = on;
+        paintLampLight();
+      }
+
       function updateSportsVisuals(deltaSeconds) {
-        for (let i = 0; i < stadiumFlags.length; i++)
-          stadiumFlags[i].rotation.y = Math.sin(gameTime * 1.7 + i) * 0.25;
+        const soccer = sportsMatches.soccer;
+        for (let i = 0; i < stadiumFlags.length; i++) {
+          const flag = stadiumFlags[i];
+          flag.rotation.y = Math.sin(gameTime * 1.7 + i) * 0.25;
+          if (soccer && flag.userData.fixture !== soccer.fixture.id) {
+            flag.userData.fixture = soccer.fixture.id;
+            const kit = soccer.kits[flag.userData.team];
+            flag.material.color.set(flag.userData.stripe ? kit.secondary : kit.primary);
+          }
+        }
         for (const h of stadiumLampHalos) h.material.opacity = 0.1 + 0.9 * nightAmount;
+        if (soccer) updateStadiumFloodlights(soccer);
         // deltaSeconds is deliberately not used as an animation clock: simulation
         // time and action timers freeze during pause and remain authoritative.
         const liveAthletes = new Set();
-        const liveMatches = new Set(Object.values(sportsMatches));
-        for (const match of liveMatches) for (const athlete of match.players) liveAthletes.add(athlete);
+        const liveMatches = new Set(Object.values(sportsMatches).filter(Boolean));
+        for (const match of liveMatches) for (const athlete of match.people) liveAthletes.add(athlete);
         for (const [athlete, model] of sportsAthleteModels) {
           if (!liveAthletes.has(athlete)) {
             scene.remove(model.group);
@@ -957,13 +1296,16 @@
           const venueModel = sportsVenueModels.get(match.sport);
           if (!venueModel) continue;
           venueModel.group.visible = entityInView(venueModel, venueModel.radius);
-          if (venueModel.crowd) venueModel.crowd.visible = viewZoom > 0.28;
-          for (const scoreboard of sportsScoreboards) {
-            if (scoreboard.venueKind === match.sport && venueModel.group.visible)
-              repaintSportsScoreboard(scoreboard, match);
+          if (venueModel.crowd) {
+            venueModel.crowd.visible = viewZoom > 0.28;
+            if (venueModel.group.visible && venueModel.crowd.visible) updateStadiumCrowd(match);
           }
-          for (const athlete of match.players) {
-            const visible = venueModel.group.visible && viewZoom > 0.22 && entityInView(athlete, 25);
+          if (venueModel.group.visible) {
+            const surface = sportsBoardSurfaces.get(match.sport);
+            if (surface) paintSportsBoard(surface, match);
+          }
+          for (const athlete of match.people) {
+            const visible = !athlete.hidden && venueModel.group.visible && viewZoom > 0.22 && entityInView(athlete, 25);
             let model = sportsAthleteModels.get(athlete);
             if (!model && !visible) continue;
             if (!model) {
@@ -992,5 +1334,12 @@
             }
           }
         }
+        // Screens glow after dark.
+        for (const screen of sportsScreens) {
+          const lit = nightAmount > 0.05 && screen.holder.parent?.visible !== false;
+          screen.glow.visible = lit;
+          if (lit) screen.glow.material.opacity = 0.35 * nightAmount;
+        }
       }
       // END SUBSYSTEM: src/sports3d.js
+
