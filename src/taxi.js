@@ -33,7 +33,7 @@
       return !!vehicle && vehicle.type === 'taxi';
     }
     function hailableTaxi() {
-      if (player.car || player.roof || player.deck || player.parachute || transitRide) return null;
+      if (player.car || playerOnRoof() || player.deck || player.parachute || transitRide) return null;
       if (taxiRide) return null;
       const c = nearestCar();
       return isTaxi(c) && c.occupied && c.hp > 0 && !vehicleIsLocked(c) ? c : null;

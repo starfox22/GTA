@@ -138,6 +138,7 @@
       clearMissionOverlays();
       player.car = null;
       player.roof = false;
+      player.buildingRoof = null;
       player.altitude = 0;
       Object.assign(player, spawn);
       cameraTarget.x = player.x;

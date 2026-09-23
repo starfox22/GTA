@@ -34,6 +34,7 @@
         return im;
       }
       function place(im, x, y, z, sx, sy, sz, yaw = 0) {
+        if (roofOwner && roofPlantPools.has(im)) roofKeepOut(x, z, sx + 2, sz + 2);
         if (im.count >= im.instanceMatrix.count) return;
         instanceDummy.position.set(x, y, z);
         instanceDummy.rotation.set(0, yaw, 0);
@@ -450,6 +451,9 @@
         crate: instanced(boxGeo, propMats.crate, 500),
         dumpster: instanced(boxGeo, propMats.dumpster, 400),
       };
+      // The building being dressed and the instanced plant that counts as roof clutter.
+      let roofOwner = null;
+      const roofPlantPools = new Set([pools.acUnit, pools.dish, pools.chimney, pools.skylight, pools.tank]);
       // ---- Archetype selection ------------------------------------------------------
       function archetypeFor(b) {
         if (b.roofBar) return 'hotel';
@@ -561,6 +565,12 @@
         };
       }
       // ---- Roof props ----------------------------------------------------------------
+      /* Roof plant is recorded on its building as `b.roofKeepOuts` (world-space
+         boxes) while the building is dressed: a helicopter will not set down on it
+         and a player on the roof walks round it (rooftops.js). */
+      function roofKeepOut(x, y, w, d) {
+        if (roofOwner) (roofOwner.roofKeepOuts || (roofOwner.roofKeepOuts = [])).push({ x, y, hx: w / 2, hy: d / 2, a: 0 });
+      }
       function acCluster(gx, top, gz, count) {
         for (let j = 0; j < count; j++) {
           const x = gx + j * 21,
@@ -571,6 +581,7 @@
         }
       }
       function waterTower(group, x, top, z) {
+        roofKeepOut(group.position.x + x, group.position.z + z, 24, 24);
         const legs = [-6, 6];
         for (const dx of legs) for (const dz of legs) box(group, x + dx, top + 8, z + dz, 1, 16, 1, darkMetal);
         box(group, x, top + 9, z, 15, 0.8, 15, darkMetal);
@@ -579,11 +590,13 @@
         for (const y of [19, 26, 32]) box(group, x, top + y, z, 0.6, 0.6, 20.2, darkMetal);
       }
       function bulkhead(group, x, top, z, w = 18, d = 14, h = 11, material = concrete) {
+        roofKeepOut(group.position.x + x, group.position.z + z, w + 3, d + 3);
         box(group, x, top + h / 2, z, w, h, d, material);
         box(group, x, top + h + 0.6, z, w + 1.5, 1.2, d + 1.5, darkMetal);
         box(group, x, top + h * 0.45, z + d / 2 + 0.3, 5, h * 0.8, 0.5, mat('#3a4247'));
       }
       function billboard(group, x, top, z, width, faceSouth = true) {
+        roofKeepOut(group.position.x + x, group.position.z + z, width + 4, 5);
         const height = width * 0.3125,
           plane = new Three.Mesh(
             new Three.PlaneGeometry(width, height),
@@ -603,28 +616,37 @@
           neonSigns.push({ sprite: halo(group, x + dx, top + 9 + height + 1, z + 4, 12, '#ffe7c2'), base: 0.8 });
         }
       }
-      function helipad(group, x, top, z) {
-        mesh(new Three.CylinderGeometry(22, 22, 0.6, 32), mat('#3f464b', 0.85), group, x, top + 0.3, z);
+      // A rooftop helipad sized for the helicopter (b.helipad, rooftops.js): the
+      // pad replaces the usual roof clutter, with one stair bulkhead in a corner.
+      function roofHelipad(group, b, top) {
+        const pad = b.helipad,
+          x = pad.x - b.x,
+          z = pad.y - b.y,
+          r = pad.r,
+          s = r / 22;
+        mesh(new Three.CylinderGeometry(r, r, 0.6, 40), mat('#3f464b', 0.85), group, x, top + 0.3, z);
         const ring = new Three.Mesh(
-          new Three.RingGeometry(17, 19, 40),
+          new Three.RingGeometry(r - 5 * s, r - 3 * s, 48),
           new Three.MeshBasicMaterial({ color: '#f1e3ad', side: Three.DoubleSide }),
         );
         ring.rotation.x = -Math.PI / 2;
         ring.position.set(x, top + 0.7, z);
         group.add(ring);
         const h = new Three.MeshBasicMaterial({ color: '#f1e3ad' });
-        box(group, x - 6, top + 0.7, z, 2.5, 0.1, 18, h);
-        box(group, x + 6, top + 0.7, z, 2.5, 0.1, 18, h);
-        box(group, x, top + 0.7, z, 12, 0.1, 2.5, h);
+        box(group, x - 6 * s, top + 0.7, z, 2.5 * s, 0.1, 18 * s, h);
+        box(group, x + 6 * s, top + 0.7, z, 2.5 * s, 0.1, 18 * s, h);
+        box(group, x, top + 0.7, z, 12 * s, 0.1, 2.5 * s, h);
         for (let k = 0; k < 8; k++) {
           const a = (k * TAU) / 8;
           neonSigns.push({
-            sprite: halo(group, x + Math.cos(a) * 21, top + 1.5, z + Math.sin(a) * 21, 6, '#a9f5c2'),
+            sprite: halo(group, x + Math.cos(a) * (r - 1), top + 1.5, z + Math.sin(a) * (r - 1), 6, '#a9f5c2'),
             base: 0.9,
           });
         }
+        bulkhead(group, 20, top, 16);
       }
       function pergola(group, x, top, z, w, d) {
+        roofKeepOut(group.position.x + x, group.position.z + z + 5, w + 4, d + 14);
         for (const dx of [-w / 2, w / 2])
           for (const dz of [-d / 2, d / 2]) box(group, x + dx, top + 5.5, z + dz, 1, 11, 1, wood);
         for (let k = -w / 2; k <= w / 2; k += 4) box(group, x + k, top + 11, z, 0.8, 0.8, d + 2, wood);
@@ -658,6 +680,10 @@
           gx = b.x,
           gz = b.y;
         if (kind === 'hotel') return;
+        if (b.helipad) {
+          roofHelipad(group, b, top);
+          return;
+        }
         if (kind === 'warehouse') {
           sawtoothRoof(group, b, top);
           if (cityRandom() < 0.6) {
@@ -679,10 +705,7 @@
           const beacon = mesh(sphereGeo, beaconMaterial, group, b.w / 2, penthouseTop + 25, b.h / 2, 1.6, 1.6, 1.6);
           beacons.push(beacon);
           neonSigns.push({ sprite: halo(group, b.w / 2, penthouseTop + 25, b.h / 2, 16, '#ff6a5c'), base: 1, beacon: true });
-          // The pad goes on the terrace the setback leaves, never inside it.
-          const terrace = Math.max(0, Math.min(b.w, b.h) * 0.11 - 6);
-          if (b.height >= 150 && terrace > 20) helipad(group, b.w - terrace, top, b.h - terrace);
-          else if (cityRandom() < 0.5) {
+          if (cityRandom() < 0.5) {
             for (let k = 0; k < 3; k++) place(pools.solar, gx + b.w - 12 - k * 11, top + 2.5, gz + b.h - 12, 9, 0.6, 16, 0.3);
           }
           for (const dx of [7, b.w - 7]) for (const dz of [7, b.h - 7]) place(pools.vent, gx + dx, top + 3, gz + dz, 1.6, 6, 1.6);
@@ -705,6 +728,7 @@
           if (cityRandom() < 0.18) pergola(group, b.w * 0.5, top, b.h * 0.55, Math.min(50, b.w * 0.4), 22);
           if (cityRandom() < 0.3) place(pools.dish, gx + b.w - 18, top + 4, gz + b.h - 20, 4.5, 2.2, 4.5);
           if (cityRandom() < 0.3) {
+            roofKeepOut(gx + 46, gz + 10, 44, 10);
             for (let k = 0; k < 3; k++) {
               place(pools.planter, gx + 30 + k * 16, top + 1.5, gz + 10, 9, 3, 6);
               place(pools.shrub, gx + 30 + k * 16, top + 5, gz + 10, 4, 3.2, 3);
@@ -731,6 +755,7 @@
           );
           sign.position.set(b.w / 2, top + 12, b.h + 0.8);
           group.add(sign);
+          roofKeepOut(gx + b.w / 2, gz + b.h - 2, Math.min(112, b.w * 0.72) + 4, 6);
           box(group, b.w / 2, top + 6, b.h - 2, Math.min(112, b.w * 0.72), 1, 1, darkMetal);
           for (const dx of [-Math.min(50, b.w * 0.3), Math.min(50, b.w * 0.3)])
             box(group, b.w / 2 + dx, top + 8, b.h - 2, 0.8, 16, 0.8, darkMetal);
@@ -821,6 +846,8 @@
         const kind = (b.archetype = archetypeFor(b)),
           height = b.height,
           group = new Three.Group();
+        roofOwner = b;
+        b.roofKeepOuts = [];
         group.position.set(b.x, 0, b.y);
         scene.add(group);
         batchGroups.push(group);
@@ -858,6 +885,7 @@
             const stepH = Math.min(52, height * (0.2 - s * 0.042));
             sw *= 0.78;
             sh *= 0.78;
+            if (s === 0) roofKeepOut(b.x + b.w / 2, b.y + b.h / 2, sw + 3, sh + 3);
             box(group, b.w / 2, level + stepH / 2, b.h / 2, sw, stepH, sh, [face, face, top, top, face, face]);
             box(group, b.w / 2, level + stepH + 1.2, b.h / 2, sw + 2, 2.4, sh + 2, trim);
             level += stepH + 1.2;
@@ -913,6 +941,7 @@
         else if (kind === 'brick' && !b.place && cityRandom() < 0.7) fireEscape(group, b);
         if (kind === 'decoTower' && !b.place) balconies(group, b, mat('#efe4d2'));
         decorateRoof(kind, b, group, i);
+        roofOwner = null;
         allBuildings.push({
           b,
           group,

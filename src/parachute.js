@@ -6,8 +6,11 @@
      * Aircraft exit, freefall, canopy controls, landing and water rescue.
      */
     /* Deliberate bailout, freefall, steerable canopy and safe ground transitions. */
+    // Height above whatever the aircraft would set down on: the ground, or the
+    // flat roof under a helicopter (`roofSite`, rooftops.js).
     function aircraftClearance(c) {
-      return Math.max(0, (c.altitude || 0) - terrainHeight(c.x, c.y));
+      const floor = c.roofSite ? Math.max(c.roofSite.height, terrainHeight(c.x, c.y)) : terrainHeight(c.x, c.y);
+      return Math.max(0, (c.altitude || 0) - floor);
     }
     function bailOut() {
       const c = player.car;

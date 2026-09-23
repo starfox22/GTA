@@ -120,7 +120,7 @@
     }
     function updateChallengeMission(missionState, deltaSeconds) {
       const near = !!missionState.target && distanceBetween(player, missionState.target) < 55,
-        ground = !player.roof && !player.parachute && (player.car?.altitude || 0) < 2,
+        ground = !playerOnRoof() && !player.parachute && (player.car?.altitude || 0) < 2,
         stopped = !player.car || Math.abs(player.car.speed) < 12,
         foot = !player.car && ground;
       if (missionState.index === 2) {
@@ -525,9 +525,10 @@
         player.car === missionState.car &&
         Math.abs(missionState.car.speed) < 15
       ) {
-        // Step off onto the Southport dock itself, on the hangar side. The generic
-        // boat exit takes the first clear side, which here is the quay across the
-        // inlet: from there Rafe is a long walk round by the street.
+        // Step off onto the Southport dock itself (DOCKS, citylife.js: the inlet's
+        // east shore). The generic boat exit takes the first clear side, which can
+        // be the quay across the inlet; from the dock's shore end it is a short
+        // walk round the head of the inlet to Rafe at the hangars.
         const c = missionState.car,
           dock = DOCKS.reduce((a, b) =>
             distanceBetween(c, { x: b.boatX, y: b.boatY }) < distanceBetween(c, { x: a.boatX, y: a.boatY }) ? b : a,

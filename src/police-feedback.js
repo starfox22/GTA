@@ -38,7 +38,7 @@
     // Report explicit delivery attempts that are waiting for a clean wanted level.
     // This does not intercept ordinary movement, combat, vehicle exits, or resprays.
     function policeBlocksMissionDelivery() {
-      if (wantedStars <= 0 || !mission?.target || player.roof || player.parachute) return false;
+      if (wantedStars <= 0 || !mission?.target || playerOnRoof() || player.parachute) return false;
       const stage = { 1: 4, 2: 3, 3: 3, 4: 3, 5: 4, 8: 3 }[mission.index];
       if (mission.stage !== stage || distanceBetween(player, mission.target) >= 60) return false;
       if (player.car && Math.abs(player.car.speed) >= 15) return false;

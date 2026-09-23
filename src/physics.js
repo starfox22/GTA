@@ -139,6 +139,7 @@
           if (!staticGrid.has(key)) staticGrid.set(key, []);
           staticGrid.get(key).push(b);
         }
+      return b;
     }
     // Numeric cell keys and a per-vehicle cache: a parked car asks for the same cells
     // 120 times a second, so the lookup is only repeated when it changes cell.
@@ -181,7 +182,9 @@
       // Pitch fence, turnstiles, booths, bollards: vehicles stop here, people use the gates.
       for (const barrier of SPORTS_VEHICLE_BARRIERS)
         addStatic(barrier.x, barrier.y, barrier.w, barrier.h, barrier.height, barrier.id || 'stadium barrier');
-      for (const b of buildings) addStatic(b.x, b.y, b.w, b.h, b.height + 22);
+      // The collider reaches 22 units above the roof; `building` lets a helicopter
+      // parked on that roof be exempt from it (rooftops.js).
+      for (const b of buildings) addStatic(b.x, b.y, b.w, b.h, b.height + 22).building = b;
       // Buildings kept outside `buildings` stop people through their own solid()
       // tests, but cars drove straight through them: the marina club, fuel dock
       // and cruise terminal, and the Sunset Pier arcade, games row, food court,
@@ -815,11 +818,13 @@
     }
     function helicopterControl(c, stepSeconds, active) {
       if (c.abandonedFlight && c !== player.car) {
-        const floor = terrainHeight(c.x, c.y);
+        // A pilotless helicopter settling onto a flat roof it fits on lands there.
+        const site = (c.roofSite = helicopterRoofSite(c)),
+          floor = site ? Math.max(site.height, terrainHeight(c.x, c.y)) : terrainHeight(c.x, c.y);
         let surface = floor,
           blocked = false;
         for (const b of nearbyStatics(c))
-          if (b.height > surface && boxContact(vehicleShape(c), b)) {
+          if (b.height > surface && (!site || b.building !== site) && boxContact(vehicleShape(c), b)) {
             surface = b.height;
             blocked = true;
           }
@@ -836,8 +841,8 @@
           c.altitude = surface;
           if (
             blocked ||
-            !groundAt(c.x, c.y, 8) ||
-            Math.hypot(slope.x, slope.y) > 0.35 ||
+            (!site && !groundAt(c.x, c.y, 8)) ||
+            (!site && Math.hypot(slope.x, slope.y) > 0.35) ||
             sink > 36 ||
             speed > 45
           )
@@ -868,7 +873,10 @@
       if (c.hp <= 0) lift = -1;
       c.av += (turn * 1.6 - c.av) * Math.min(1, stepSeconds * 4);
       c.a += c.av * stepSeconds;
-      const floor = terrainHeight(c.x, c.y),
+      // Over a flat roof that the whole airframe fits on, the roof is the floor.
+      const site = helicopterRoofSite(c),
+        floor = site ? Math.max(site.height, terrainHeight(c.x, c.y)) : terrainHeight(c.x, c.y),
+        landingClear = () => (site ? roofLandingClear(c, site) : safeLanding(c)),
         // About 1400 m, above the cloud tops (clouds3d.js).
         ceiling = 7200,
         clearance = c.altitude - floor;
@@ -885,7 +893,8 @@
       const climbRate = 75 + clamp(clearance - 400, 0, 3000) * 0.035;
       c.vz += (lift * climbRate - c.vz) * Math.min(1, stepSeconds * 3);
       let next = clamp(c.altitude + c.vz * stepSeconds, floor, ceiling);
-      if (c.hp > 0 && next < floor + 20 && clearance >= 20 && !safeLanding(c)) {
+      c.roofSite = site;
+      if (c.hp > 0 && next < floor + 20 && clearance >= 20 && !landingClear()) {
         next = floor + 20;
         c.vz = 0;
         if (controlled && physicsClock - (c.landingWarning || -100) > 3) {
@@ -893,7 +902,7 @@
           tell('Landing blocked. Slow down and find clear, open ground.', 2.5);
         }
       }
-      if (c.hp > 0 && clearance < 20 && lift < 0 && !safeLanding(c)) {
+      if (c.hp > 0 && clearance < 20 && lift < 0 && !landingClear()) {
         next = c.altitude;
         c.vz = 0;
       }
@@ -1393,7 +1402,8 @@
               isBoat(c) ||
               (b.minHeight !== undefined &&
                 entityElevation(c) + vehicleCollisionHeight(c) < b.minHeight) ||
-              (isAircraft(c) && c.altitude > b.height + 8)
+              (isAircraft(c) && c.altitude > b.height + 8) ||
+              (c.roofSite && b.building === c.roofSite)
             )
               continue;
             const hit = boxContact(vehicleShape(c), b);
@@ -1793,7 +1803,7 @@
           speed >= 40 &&
           !player.parachute &&
           !player.car &&
-          !player.roof &&
+          !playerOnRoof() &&
           sameFloor(vehicle, player) &&
           pointInCar(player.x, player.y, vehicle, 6)
         ) {

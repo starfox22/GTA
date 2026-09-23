@@ -113,7 +113,7 @@
     }
     function militaryInteract() {
       if (
-        player.roof ||
+        playerOnRoof() ||
         (player.car?.altitude || 0) > 4 ||
         distanceBetween(player, MILITARY.gate) > 125
       )
@@ -340,7 +340,7 @@
         }
         if (c.stolen) continue;
         const d = distanceBetween(c, player);
-        if (alert && d < 700 && !player.roof && sameFloor(c, player) && clearSight(c, player)) {
+        if (alert && d < 700 && !playerOnRoof() && sameFloor(c, player) && clearSight(c, player)) {
           c.turretA = headingBetween(c, player);
           if (!c.targetAcquired) {
             c.targetAcquired = gameTime + 2.8;
@@ -356,7 +356,7 @@
           continue;
         e.timer -= deltaSeconds;
         const d = distanceBetween(e, player);
-        e.aiming = alert && d < 590 && sameFloor(e, player) && !player.roof;
+        e.aiming = alert && d < 590 && sameFloor(e, player) && !playerOnRoof();
         if (e.aiming) {
           e.a = headingBetween(e, player);
           if (d > 245 && inMilitary(player.x, player.y, 220))

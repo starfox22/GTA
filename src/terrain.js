@@ -282,7 +282,7 @@
       noise(0.22, 0.14, 700);
     }
     function updateMountainFooting(deltaSeconds) {
-      if (player.car || player.roof || player.parachute || transitRide || gameMode !== 'play') {
+      if (player.car || playerOnRoof() || player.parachute || transitRide || gameMode !== 'play') {
         endTumble(false);
         return false;
       }

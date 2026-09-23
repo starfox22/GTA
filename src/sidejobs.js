@@ -262,7 +262,7 @@
         const devices = job === 1 ? missionState.bombs : missionState.substations,
           current = devices[missionState.stage];
         if (!current) return;
-        const valid = !player.car && !player.roof && distanceBetween(player, current) < 34,
+        const valid = !player.car && !playerOnRoof() && distanceBetween(player, current) < 34,
           seconds = job === 1 ? 3 : 4;
         if (holdMissionAction(missionState, deltaSeconds, valid, seconds)) {
           current.defused = true;

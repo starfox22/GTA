@@ -482,7 +482,7 @@
       const t = player.car?.offroadState,
         p = player.parachute;
       const trekking =
-        !player.car && !p && !transitRide && !player.roof && !player.coaster && terrainHeight(player.x, player.y) > 8;
+        !player.car && !p && !transitRide && !playerOnRoof() && !player.coaster && terrainHeight(player.x, player.y) > 8;
       getElement('terrainStatus').style.display =
         gameMode === 'play' && (transitRide || t?.z > 8 || p || trekking || player.coaster)
           ? 'block'

@@ -84,6 +84,14 @@
             burgundy = mat('#5d2c41');
           box(group, x, p.height + 4, p.y + p.h / 2, p.w * 0.62, 8, p.h * 0.55, ivory);
           box(group, x, p.height + 12, p.y + p.h / 2, p.w * 0.38, 8, p.h * 0.35, burgundy);
+          // The stepped roof and its corner lanterns are roof plant (rooftops.js).
+          const roof = buildings.find((b) => b.place === p.id);
+          if (roof)
+            (roof.roofKeepOuts || (roof.roofKeepOuts = [])).push(
+              { x, y: p.y + p.h / 2, hx: p.w * 0.31 + 2, hy: p.h * 0.275 + 2, a: 0 },
+              { x: x - 126, y: p.y + 30, hx: 8, hy: 8, a: 0 },
+              { x: x + 126, y: p.y + 30, hx: 8, hy: 8, a: 0 },
+            );
           for (let dx = -140; dx <= 140; dx += 28) {
             box(group, x + dx, 38, face - 2, 5, 72, 4, ivory);
             box(group, x + dx + 10, 38, face + 0.2, 14, 48, 0.5, nightGlass);

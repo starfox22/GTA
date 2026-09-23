@@ -448,7 +448,7 @@
     }
     /* Called every frame: walking onto the passerelle from the quay steps aboard. */
     function updateMarinaFooting() {
-      if (player.deck || player.car || player.roof || player.parachute || player.swimming) return;
+      if (player.deck || player.car || playerOnRoof() || player.parachute || player.swimming) return;
       if (transitRide || taxiRide || player.coaster) return;
       const { u, v } = deckLocal(SUPERYACHT, player.x, player.y),
         g = SUPERYACHT_GANGWAY;
@@ -615,7 +615,7 @@
       return true;
     }
     function boardableLiner() {
-      if (player.car || player.roof || player.parachute || transitRide || player.coaster) return null;
+      if (player.car || playerOnRoof() || player.parachute || transitRide || player.coaster) return null;
       if (taxiRide) return null;
       if (player.deck) return null;
       if (distanceBetween(player, SUPERYACHT.board) < 40) return SUPERYACHT;

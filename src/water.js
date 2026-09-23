@@ -311,7 +311,7 @@
     function updateSwimming(deltaSeconds) {
       if (
         player.car ||
-        player.roof ||
+        playerOnRoof() ||
         player.deck ||
         player.parachute ||
         transitRide ||

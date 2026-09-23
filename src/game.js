@@ -802,6 +802,8 @@
         return moveOnRoof(displacementX, displacementY, collisionRadius);
       if (body === player && player.deck)
         return moveOnDeck(displacementX, displacementY, collisionRadius);
+      if (body === player && player.buildingRoof)
+        return moveOnBuildingRoof(displacementX, displacementY, collisionRadius);
       let hit = false;
       // Vehicle test: a cheap bounding box rejects almost every vehicle before the
       // rotated point-in-car test (this runs for every pedestrian step each frame).
@@ -1133,6 +1135,8 @@
           if (bx === 2 && by === 7) {
             makeBuilding(x + 10, y + 10, 300, 145, 1);
             buildings[buildings.length - 1].height = 64;
+            // Its roof carries a helipad (rooftops.js).
+            buildings[buildings.length - 1].policeHQ = true;
             rect(x + 10, y + 170, 300, 158, '#515f68');
             label('SOUTH COAST POLICE', x + 160, y + 170, 15, '#bddfea');
             continue;
@@ -1677,8 +1681,9 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
-      if (player.roof) {
+      if (player.roof || player.buildingRoof) {
         player.roof = false;
+        player.buildingRoof = null;
         player.altitude = 0;
       }
       player.parachute = null;
@@ -1719,6 +1724,8 @@
       for (const vehicle of vehicles) {
         if (player.roof) return null;
         const d = distanceBetween(vehicle, player);
+        // A helicopter parked on a roof is reached from that roof, not the street.
+        if (isAircraft(vehicle) && Math.abs(entityElevation(vehicle) - entityElevation(player)) > 30) continue;
         if (vehicle.hp > 0 && aircraftClearance(vehicle) < 2 && d < bd) {
           best = vehicle;
           bd = d;
@@ -1734,6 +1741,19 @@
         (aircraftClearance(vehicle) > 1 || Math.hypot(vehicle.vx || 0, vehicle.vy || 0) > 12)
       ) {
         tell('Land and stop to exit, or press J to bail out with a parachute.');
+        return;
+      }
+      // Parked on a roof: out onto the roof beside it (rooftops.js).
+      if (vehicle.roofSite && isAircraft(vehicle)) {
+        if (!exitOntoRoof(vehicle, vehicle.roofSite)) {
+          tell('No room to get out on this roof.');
+          return;
+        }
+        vehicle.vx = vehicle.vy = vehicle.speed = 0;
+        player.car = null;
+        player.inv = 0.5;
+        tell('ROOFTOP · E at the helicopter to fly on', 2.5);
+        tone(160, 0.06, 0.15, 'triangle');
         return;
       }
       let found = false;
@@ -1807,6 +1827,13 @@
     }
     function interact() {
       if (gameMode !== 'play' || player.parachute) return;
+      // On a building roof the only thing to do is fly off again.
+      if (player.buildingRoof && !player.car) {
+        const c = nearestCar();
+        if (c) enterVehicle(c);
+        else tell('ROOFTOP · The helicopter is the only way down.', 2.5);
+        return;
+      }
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
       if (parkInteract()) return;
@@ -1854,6 +1881,7 @@
     /* Taking the wheel: shared by the action key, the cab hijack and the getaway
        cars missions hand you, so every entry sets the same state. */
     function enterVehicle(c) {
+        player.buildingRoof = null;
         player.car = c;
         c.ramUntil = 0;
         enforceVehicleHandgun();
@@ -2032,6 +2060,7 @@
         player.x = ROOFTOP.door.x;
         player.y = ROOFTOP.door.y;
       }
+      leaveBuildingRoof();
       enemies.length = 0;
       bullets.length = 0;
       clearPolice();
@@ -2658,6 +2687,7 @@
         if (
           !player.car &&
           !player.roof &&
+          !player.buildingRoof &&
           !player.deck &&
           !player.parachute &&
           !player.swimming &&
@@ -2683,7 +2713,7 @@
           if (
             !transitRide &&
             !player.parachute &&
-            !player.roof &&
+            !playerOnRoof() &&
             (player.car?.altitude || 0) < 2 &&
             gameTime > p.ready &&
             distanceBetween(player, p) < 27
@@ -3509,6 +3539,9 @@
         drawingContext.textAlign = 'center';
         drawingContext.fillText('H', pad.x, pad.y + 27);
       }
+      // Rooftop helipads (rooftops.js): a smaller H.
+      drawingContext.font = 'bold 64px monospace';
+      for (const pad of roofHelipads) drawingContext.fillText('H', pad.x, pad.y + 20);
       drawHarborMap(drawingContext, big);
       const target = objective();
       if (target) {
@@ -4094,6 +4127,12 @@
       player.coaster = null;
       player.parachute = null;
       player.climbing = null;
+      // Off any roof: the Blue Hour terrace or a building roof.
+      if (player.roof || player.buildingRoof) {
+        player.roof = false;
+        player.buildingRoof = null;
+        player.altitude = 0;
+      }
       // Out of the water too: otherwise the first frame at the new spot still draws
       // the swimmer's pose and wake over dry land, and the SWIMMING toast lingers.
       if (player.swimming || player.wading) {
@@ -4431,6 +4470,7 @@
     // @include src/water-audio.js
     // @include src/beach.js
     // @include src/roofmission.js
+    // @include src/rooftops.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
     // @include src/damage.js
@@ -4464,6 +4504,7 @@
     populate();
     populateStoryWorld();
     populateCounty();
+    chooseRoofHelipads();
     load();
     resize();
     drawWeapon();
@@ -4580,6 +4621,7 @@
         pedestrians: pedestrians.length,
       }),
       teleport(x, y) {
+        if (!Number.isFinite(x) || !Number.isFinite(y)) throw Error('teleport needs two finite numbers');
         teleportPlayer(x, y);
         return this.status();
       },
@@ -4916,8 +4958,38 @@
         })),
       // Southport Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
+      // Rooftop helipads, the roof the player stands on and the roof under the
+      // player's helicopter (rooftops.js); with a map point, that roof and its plant.
+      rooftops: (x, y) => ({
+        ...(x !== undefined
+          ? (() => {
+              const b = buildingRoofAt(x, y);
+              return {
+                roofAt: b
+                  ? {
+                      x: b.x, y: b.y, w: b.w, h: b.h, height: Math.round(b.height), landable: roofLandable(b), archetype: b.archetype || null,
+                      keepOuts: (b.roofKeepOuts || []).map((k) => [Math.round(k.x), Math.round(k.y), Math.round(k.hx * 2), Math.round(k.hy * 2)]),
+                    }
+                  : null,
+              };
+            })()
+          : {}),
+        helipads: roofHelipads.map((p) => ({ x: Math.round(p.x), y: Math.round(p.y), r: Math.round(p.r), z: Math.round(p.z) })),
+        onRoof: player.buildingRoof
+          ? { x: player.buildingRoof.x, y: player.buildingRoof.y, height: Math.round(player.buildingRoof.height) }
+          : null,
+        helicopter:
+          player.car?.type === 'helicopter'
+            ? {
+                altitude: Math.round(player.car.altitude),
+                roof: player.car.roofSite ? Math.round(player.car.roofSite.height) : null,
+                clearance: Math.round(aircraftClearance(player.car)),
+              }
+            : null,
+      }),
       // Place the camera/player at a map point without touching anything else.
       look(x, y, zoom) {
+        if (!Number.isFinite(x) || !Number.isFinite(y)) throw Error('look needs two finite numbers');
         teleportPlayer(x, y);
         // The zoom is applied at once (headless frames are too slow to ease into it).
         if (zoom !== undefined) {

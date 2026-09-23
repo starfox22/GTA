@@ -120,7 +120,7 @@
       );
     }
     function boardCoaster() {
-      if (player.car || player.roof || player.parachute || transitRide) return false;
+      if (player.car || playerOnRoof() || player.parachute || transitRide) return false;
       if (player.coaster) return false;
       if (distanceBetween(player, PIER.station) > 52) return false;
       if (wantedStars > 0) {

@@ -426,7 +426,7 @@
       return !!vehicle && vehicleSpec(vehicle).boat;
     }
     function nearestPlace() {
-      if (transitRide || player.roof || player.parachute) return null;
+      if (transitRide || playerOnRoof() || player.parachute) return null;
       return (
         PLACES.filter((p) => distanceBetween(player, p.door) < 52).sort(
           (a, b) => distanceBetween(player, a.door) - distanceBetween(player, b.door),
@@ -947,7 +947,7 @@
       if (o.airUnit) return !harborPoliceProtected(player.x, player.y, 30) && airCanSee(o, player);
       return (
         !harborPoliceProtected(player.x, player.y, 30) &&
-        !player.roof &&
+        !playerOnRoof() &&
         o.hp > 0 &&
         !personIncapacitated(o) &&
         !o.crewLost &&
@@ -1048,7 +1048,7 @@
             wantedStars > 0 &&
             !harborPoliceProtected(player.x, player.y, 30) &&
             (!player.car || isAircraft(player.car)) &&
-            !player.roof &&
+            !playerOnRoof() &&
             combatDistance(c, player) < 350;
         if (!c.crewDeployed && (gangClose || playerClose) && Math.abs(c.speed) < 24) deployOfficers(c);
       }
@@ -1480,7 +1480,7 @@
       timer.classList.toggle('hidden', !(wantedStars > 0 && searchActive));
       document.body?.classList.toggle('police-search-active', wantedStars > 0 && searchActive);
       getElement('policeEscapeSeconds').textContent = Math.ceil(searchRemaining) + 's';
-      if (gameMode === 'play' && !player.car && !player.roof) {
+      if (gameMode === 'play' && !player.car && !playerOnRoof()) {
         const place = nearestPlace();
         if (place) {
           getElement('interaction').style.display = 'block';

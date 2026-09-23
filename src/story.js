@@ -463,6 +463,7 @@
       if (!mission && missionIndex >= missions.length) return;
       if (transitRide) leaveTransit(transitRide.from, true);
       player.roof = false;
+      player.buildingRoof = null;
       player.altitude = 0;
       player.car = null;
       player.x = spawn.x;
@@ -601,7 +602,7 @@
             ((e.missionAggressive || e.missionTag === 'books' || e.missionTag === 'airport') &&
               d < 300);
         if (
-          !player.roof &&
+          !playerOnRoof() &&
           sameFloor(e, player) &&
           provoked &&
           d < 360 &&

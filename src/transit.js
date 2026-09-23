@@ -643,7 +643,7 @@
       return navShortestPath(nodes, nearest(a), nearest(b));
     }
     function nearestStation() {
-      return !player.car && !player.roof && !player.parachute
+      return !player.car && !playerOnRoof() && !player.parachute
         ? RAIL_STATIONS.find((s) => distanceBetween(player, s.entry) < 48)
         : null;
     }

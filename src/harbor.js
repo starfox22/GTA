@@ -433,7 +433,7 @@
       const exit = VINNY_DEPOT.exit;
       if (
         missionState.throughBuilding &&
-        !player.roof &&
+        !playerOnRoof() &&
         player.y > VINNY_DEPOT.backDoor.y + 16 &&
         Math.abs(player.x - exit.x) < 70 &&
         Math.abs(player.y - exit.y) < 60
@@ -554,7 +554,7 @@
       if (
         m &&
         m.stage === 2 &&
-        !player.roof &&
+        !playerOnRoof() &&
         HARBOR.crates.some((p) => distanceBetween(player, p) < 115)
       ) {
         const witness = [...gangMembers, ...enemies].some(
