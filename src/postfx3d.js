@@ -119,7 +119,8 @@
       }
       /**
        * AMBIENT OCCLUSION
-       * Scalable Ambient Obscurance (McGuire et al. 2012) on the depth buffer: view
+       * Obscurance in the manner of Scalable Ambient Obscurance (McGuire et al.
+       * 2012), with a cosine estimator that suits the steep street view, on the depth buffer: view
        * positions are rebuilt through the inverse projection (so it works for the
        * orthographic street camera and the perspective flight camera alike),
        * normals come from neighbouring depths, and a spiral of samples within a
@@ -176,17 +177,24 @@
             vec2 discUv = vec2( uProjection[0][0], uProjection[1][1] ) * 0.5 * uRadius * scale;
             // Interleaved gradient noise rotates the spiral per pixel; the blur removes it.
             float spin = 6.2831853 * fract( 52.9829189 * fract( dot( gl_FragCoord.xy, vec2( 0.06711056, 0.00583715 ) ) ) );
-            float radius2 = uRadius * uRadius, sum = 0.0;
+            // Two scales share the samples: even ones search the contact radius
+            // (under cars, wall bases, kerbs), odd ones four times as far for the
+            // broad shade of a street canyon or a courtyard.
+            float nearSum = 0.0, farSum = 0.0;
             for ( int i = 0; i < AO_SAMPLES; i++ ) {
               float t = ( float( i ) + 0.5 ) / float( AO_SAMPLES );
               float angle = t * 43.98 + spin; // seven turns of the spiral
-              vec2 offset = vec2( cos( angle ), sin( angle ) ) * t * discUv;
+              float wide = mod( float( i ), 2.0 ) > 0.5 ? 4.0 : 1.0;
+              float radius = uRadius * wide, radius2 = radius * radius;
+              vec2 offset = vec2( cos( angle ), sin( angle ) ) * sqrt( t ) * discUv * wide;
               vec3 v = cityViewPosition( vUv + offset ) - P;
               float vv = dot( v, v ), vn = dot( v, N );
-              float f = max( radius2 - vv, 0.0 );
-              sum += f * f * f * max( ( vn - 0.02 * uRadius ) / ( 0.01 * radius2 + vv ), 0.0 );
+              // Cosine of the angle above the surface, fading out towards the radius.
+              float term = max( ( vn - 0.02 * radius ) * inversesqrt( vv + 0.01 * radius2 ), 0.0 ) * max( 1.0 - vv / radius2, 0.0 );
+              if ( wide > 1.5 ) farSum += term; else nearSum += term;
             }
-            float ao = max( 0.0, 1.0 - sum * uIntensity * 5.0 / ( radius2 * radius2 * radius2 * float( AO_SAMPLES ) ) );
+            float perScale = 2.0 / float( AO_SAMPLES );
+            float ao = max( 0.0, 1.0 - nearSum * perScale * uIntensity ) * max( 0.0, 1.0 - farSum * perScale * uIntensity * 0.55 );
             gl_FragColor = vec4( ao, 0.0, 0.0, 1.0 );
           }`,
           aoUniforms,
@@ -300,6 +308,7 @@
        */
       const postCompositeUniforms = {
         tScene: { value: null },
+        tDepth: { value: null },
         tAo: { value: null },
         tBloom: { value: null },
         uExposure: { value: 1.14 },
@@ -313,6 +322,8 @@
         uGrain: { value: 0 },
         uTime: { value: 0 },
         uAspect: { value: 1 },
+        // Developer view: 0 the image, 1 the AO term, 2 the bloom (DeadEndCity.postView).
+        uDebugView: { value: 0 },
       };
       function makeCompositeMaterial(tier) {
         return postMaterial(
@@ -332,6 +343,8 @@
           uniform float uGrain;
           uniform float uTime;
           uniform float uAspect;
+          uniform float uDebugView;
+          uniform sampler2D tDepth;
           vec3 cityACES( vec3 color ) {
             const mat3 inputMat = mat3( vec3( 0.59719, 0.07600, 0.02840 ), vec3( 0.35458, 0.90834, 0.13383 ), vec3( 0.04823, 0.01566, 0.83777 ) );
             const mat3 outputMat = mat3( vec3( 1.60475, -0.10208, -0.00327 ), vec3( -0.53108, 1.10813, -0.07276 ), vec3( -0.07367, -0.00605, 1.07602 ) );
@@ -362,6 +375,13 @@
               vec2 v = ( vUv - 0.5 ) * vec2( uAspect, 1.0 );
               color *= 1.0 - uVignette * smoothstep( 0.35, 1.05, length( v ) );
             #endif
+            #ifdef USE_AO
+              if ( uDebugView > 0.5 && uDebugView < 1.5 ) color = vec3( texture2D( tAo, vUv ).r );
+            #endif
+            #ifdef USE_BLOOM
+              if ( uDebugView > 1.5 && uDebugView < 2.5 ) color = texture2D( tBloom, vUv ).rgb;
+            #endif
+            if ( uDebugView > 2.5 ) color = vec3( fract( texture2D( tDepth, vUv ).x * 400.0 ) );
             color = cityLinearToSRGB( clamp( color, 0.0, 1.0 ) );
             // Dither (and, when graded, a whisper of film grain) against banding.
             float n = fract( sin( dot( gl_FragCoord.xy + fract( uTime ) * 61.0, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 );
@@ -469,7 +489,15 @@
       // Draws the frame: the whole pipeline, or straight to the canvas without HDR.
       // Draw calls and triangles of the scene pass (shadow map included when it was
       // refreshed this frame) and of the whole frame, for DeadEndCity.stats().
-      const frameStats = { sceneCalls: 0, sceneTriangles: 0, shadowFrame: false, totalCalls: 0 };
+      const frameStats = { sceneCalls: 0, sceneTriangles: 0, shadowFrame: false, totalCalls: 0, viewCalls: 0, shadowCalls: 0 };
+      // Split the scene pass into camera and shadow-map calls: frames without a
+      // shadow refresh give the camera's share, the next refresh the difference.
+      function noteSceneCalls() {
+        frameStats.sceneCalls = renderer.info.render.calls;
+        frameStats.sceneTriangles = renderer.info.render.triangles;
+        if (!frameStats.shadowFrame) frameStats.viewCalls = frameStats.sceneCalls;
+        else frameStats.shadowCalls = Math.max(0, frameStats.sceneCalls - frameStats.viewCalls);
+      }
       renderer.info.autoReset = false;
       function renderFrame() {
         // Crowd impostors placed during this frame's people pass (flight-view3d.js).
@@ -480,16 +508,15 @@
           renderer.toneMappingExposure = postLook.exposure;
           renderer.setRenderTarget(null);
           renderer.render(scene, camera);
-          frameStats.sceneCalls = frameStats.totalCalls = renderer.info.render.calls;
-          frameStats.sceneTriangles = renderer.info.render.triangles;
+          noteSceneCalls();
+          frameStats.totalCalls = frameStats.sceneCalls;
           return;
         }
         const size = renderer.getDrawingBufferSize(postSizeScratch);
         if (size.x !== postWidth || size.y !== postHeight) sizePostTargets();
         renderer.setRenderTarget(sceneTarget);
         renderer.render(scene, camera);
-        frameStats.sceneCalls = renderer.info.render.calls;
-        frameStats.sceneTriangles = renderer.info.render.triangles;
+        noteSceneCalls();
         const tier = postTier;
         if (tier.ao && aoMaterial) {
           aoUniforms.tDepth.value = sceneTarget.depthTexture;
@@ -529,6 +556,7 @@
           postCompositeUniforms.tBloom.value = bloomTargets[0].texture;
         }
         postCompositeUniforms.tScene.value = sceneTarget.texture;
+        postCompositeUniforms.tDepth.value = sceneTarget.depthTexture;
         postCompositeUniforms.uExposure.value = postLook.exposure;
         postCompositeUniforms.uBloomStrength.value = postLook.bloomStrength;
         postCompositeUniforms.uSaturation.value = postLook.saturation;

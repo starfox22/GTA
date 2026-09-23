@@ -4865,6 +4865,9 @@
         if (tier !== undefined) cycleGraphicsSetting(String(tier).toLowerCase());
         return { setting: graphicsSetting, ...(city3D?.quality?.() || {}) };
       },
+      // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
+      // 'bloom'; nothing for the image) to tune the post-processing.
+      postView: (mode) => city3D?.postView?.(mode) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
@@ -4881,6 +4884,9 @@
             // Whether the shadow map was redrawn (its calls included) in that frame,
             // and calls including the post-processing passes.
             shadowFrame: info?.shadowFrame ?? null,
+            // Camera-only calls, and the shadow map's calls on its last refresh.
+            viewCalls: info?.viewCalls ?? null,
+            shadowCalls: info?.shadowCalls ?? null,
             frameCalls: info?.frameCalls ?? null,
             sceneObjects: info?.objects ?? null,
             byType: info?.byType ?? null,

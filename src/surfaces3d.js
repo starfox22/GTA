@@ -47,6 +47,14 @@
         float paveMask = smoothstep( 0.08, 0.2, groundLum ) * ( 1.0 - smoothstep( 0.42, 0.6, groundLum ) ) * ( 1.0 - grassMask );
         // Detail fades out where it would shimmer (seen from high up).
         float detailFade = 1.0 - smoothstep( 0.6, 2.5, length( fwidth( gp ) ) );
+        // Unsharp mask on the painted sheet: lane paint, kerb lines and crossings
+        // stay crisp at street zoom although the sheet is ~1.6 units per texel.
+        {
+          vec3 around = ( texture2D( map, vMapUv + vec2( cityGroundTexel.x, 0.0 ) ).rgb + texture2D( map, vMapUv - vec2( cityGroundTexel.x, 0.0 ) ).rgb
+                        + texture2D( map, vMapUv + vec2( 0.0, cityGroundTexel.y ) ).rgb + texture2D( map, vMapUv - vec2( 0.0, cityGroundTexel.y ) ).rgb ) * 0.25;
+          diffuseColor.rgb = max( diffuseColor.rgb + diffuse * ( sampledDiffuseColor.rgb - around ) * 0.8 * detailFade, 0.0 );
+          groundBase = diffuseColor.rgb;
+        }
         float grainA = cityNoise( gp * 0.9 ), grainB = cityNoise( gp * 3.1 );
         float grain = mix( 0.5, grainA * 0.6 + grainB * 0.4, detailFade );
         float tarPatch = smoothstep( 0.66, 0.7, cityNoise( gp * 0.011 + 17.0 ) );
@@ -74,10 +82,12 @@
           vec3 worldNormal = normalize( vec3( -slope.x * bump, 1.0, -slope.y * bump ) );
           normal = normalize( ( viewMatrix * vec4( worldNormal, 0.0 ) ).xyz );
         }`;
+      const groundTexel = { value: new Three.Vector2(1 / terrain.width, 1 / terrain.height) };
       function groundDetailPatch(shader) {
         cityMaterialPatch(shader);
+        shader.uniforms.cityGroundTexel = groundTexel;
         shader.fragmentShader = shader.fragmentShader
-          .replace('#include <common>', '#include <common>\n' + SURFACE_NOISE)
+          .replace('#include <common>', '#include <common>\nuniform vec2 cityGroundTexel;\n' + SURFACE_NOISE)
           .replace('#include <map_fragment>', '#include <map_fragment>\n' + GROUND_ALBEDO)
           .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + GROUND_ROUGHNESS)
           .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = 0.0;')

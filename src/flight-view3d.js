@@ -119,9 +119,11 @@
           // Street view: the orthographic camera exactly as it has always been.
           camera = streetCamera;
           camera.position.set(cameraTarget.x, 680 / worldZoom + altitude, cameraTarget.y + 560 / worldZoom);
-          camera.far = 40000;
-          camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
           const viewH = frameH / worldZoom;
+          // Just deep enough for the ground at the top of the frame: a tight depth
+          // range keeps the depth buffer precise for the ambient occlusion pass.
+          camera.far = Math.hypot(680, 560) / worldZoom + viewH * 0.7 + altitude * 1.5 + 600;
+          camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
           camera.left = (-viewH * aspect) / 2;
           camera.right = (viewH * aspect) / 2;
           camera.top = viewH / 2;
@@ -572,7 +574,9 @@
        * lighting follows the average of the buildings it stands for. Below
        * FAR_SCENERY_ZOOM (roughly 650 m up) the flight camera shows this copy instead.
        */
-      const FAR_SCENERY_ZOOM = 0.165,
+      const SHADOW_PROXY_ZOOM = 0.55,
+        SHADOW_PROXY_LAYER = 6,
+        FAR_SCENERY_ZOOM = 0.165,
         STREET_FAR_SCENERY_ZOOM = 0.2,
         FAR_PIECE_SIZE = 20,
         farBox = new Three.Box3(),
@@ -581,7 +585,9 @@
         farScenery = new Three.Group(),
         farHidden = [];
       let farClasses = [],
-        farSceneryShown = false;
+        farSceneryShown = false,
+        shadowProxyShown = false;
+      sun.shadow.camera.layers.enable(SHADOW_PROXY_LAYER);
       farScenery.visible = false;
       scene.add(farScenery);
       function farMaterialUsable(material) {
@@ -762,10 +768,19 @@
         // copy serves both cameras (the quality tier's lodBias moves the switch).
         const lod = activeTier ? activeTier.lodBias : 1,
           far = viewZoom < (flightViewActive ? FAR_SCENERY_ZOOM : STREET_FAR_SCENERY_ZOOM) * lod && farClasses.length > 0;
-        if (far !== farSceneryShown) {
+        // Between the street and the far view, the full city is drawn but its
+        // shadows come from the far copy on a layer only the sun's shadow camera
+        // renders: a few dozen merged casters instead of every building batch.
+        const proxy = !far && viewZoom < SHADOW_PROXY_ZOOM * lod && farClasses.length > 0;
+        if (far !== farSceneryShown || proxy !== shadowProxyShown) {
           farSceneryShown = far;
-          farScenery.visible = far;
-          for (const mesh of farHidden) mesh.visible = !far;
+          shadowProxyShown = proxy;
+          farScenery.visible = far || proxy;
+          for (const mesh of farScenery.children) mesh.layers.set(proxy ? SHADOW_PROXY_LAYER : 0);
+          for (const mesh of farHidden) {
+            mesh.visible = !far;
+            mesh.castShadow = !proxy;
+          }
         }
         if (!far) return;
         for (const c of farClasses) {

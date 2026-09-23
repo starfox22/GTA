@@ -427,8 +427,11 @@
           skyDome.position.copy(camera.position);
           skyDome.scale.setScalar(camera.far * 0.9);
         }
-        // Sun glints on the water follow the real sun.
+        // Sun glints on the water, cloud lighting and cloud shadows follow the real sun.
         waterUniforms.uSun.value.copy(sunDirection);
+        SUN_DIRECTION.copy(sunDirection);
+        marchUniforms.uSunDirection.value.copy(sunDirection);
+        shadeUniforms.uSunDirection.value.copy(sunDirection);
         // Night light: lamp pools, and emissive lamp heads bright enough to bloom.
         cityLightUniforms.cityLampPower.value = night * 4.2;
         cityLightUniforms.cityWet.value = weather.wet;
@@ -459,8 +462,27 @@
         }
         postLook.vignette = 0.2 + night * 0.12;
         // AO reads at street scale on the ground and grows with the view from the air.
-        postLook.aoRadius = clamp(15 / Math.max(0.2, viewZoom), 15, 70);
-        postLook.aoIntensity = 1.0;
+        postLook.aoRadius = clamp(18 / Math.max(0.25, viewZoom), 18, 72);
+        postLook.aoIntensity = 1.5;
+      }
+      /**
+       * SHADOW CASTERS
+       * A car or a person is two dozen small meshes, and every one of them was
+       * drawn again into the shadow map. Seen from the street camera their shadow
+       * is the body's: the lamps, trims, hands and gun models under it add
+       * nothing but draw calls. New models keep shadows only on parts larger
+       * than `minRadius` (world units, bounding-sphere radius).
+       */
+      const casterScale = new Three.Vector3();
+      function trimShadowCasters(root, minRadius) {
+        root.updateMatrixWorld(true);
+        root.traverse((o) => {
+          if (!o.isMesh || !o.castShadow || !o.geometry) return;
+          if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+          o.getWorldScale(casterScale);
+          const radius = o.geometry.boundingSphere.radius * Math.max(casterScale.x, casterScale.y, casterScale.z);
+          if (radius < minRadius) o.castShadow = false;
+        });
       }
       // ---- Quality tier ----------------------------------------------------------------------
       let activeTier = null;

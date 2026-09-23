@@ -16,7 +16,7 @@
      *   grade        time-of-day colour grading, vignette and film grain
      *   lodBias      multiplies the zoom thresholds where far scenery, small props
      *                and traffic impostors take over (above 1 = they take over sooner)
-     *   rain         rain streak count
+     *   rain         rain streak count (read once, when the renderer is built)
      *
      * The setting is 'auto' or a tier name and is remembered in localStorage next
      * to the other settings. 'auto' picks a tier from the GPU the browser reports

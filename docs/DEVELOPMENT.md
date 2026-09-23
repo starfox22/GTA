@@ -83,7 +83,10 @@ something, never a generic code-evaluation hook.
 | `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
 | `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and shop panes near a point, with their state |
 | `damageStats()` | Decal and debris pool use and GPU geometry/texture counts (for leak checks) |
-| `stats()` | Per-frame CPU timings, draw calls, triangles |
+| `stats()` | Per-frame CPU timings, draw calls (`viewCalls` camera, `shadowCalls` shadow map), triangles |
+| `postView(mode)` | Show the ambient-occlusion (`'ao'`) or bloom (`'bloom'`) buffer instead of the image; no argument restores it |
+| `drawProfile(top)` | Draw calls in view by object name and by 512-unit map cell (for finding unbatched scenery) |
+| `graphics(tier)` | Graphics quality: `auto`, `low`, `medium`, `high`, `ultra` (saved like the pause-menu setting); returns the active tier, GPU and shadow-map size. Headless SwiftShader auto-detects as LOW, so screenshot tours should call `graphics('high')` |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |

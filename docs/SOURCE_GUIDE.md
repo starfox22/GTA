@@ -66,6 +66,7 @@ Game closure (in include order):
 | streets.js | Street grid, painting, `STREET_NAMES`, `streetNameAt`, `benchSpots` |
 | casino.js, renewal.js, sports.js, sports-world.js, transit.js, ecology.js | Casino, parks, sports venues, railway, wildlife |
 | navigation.js, mobile.js, world-view.js, car-radio.js, garages.js | Route planning, touch, zoom, radio, garages |
+| quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check, the saved setting and its pause-menu button |
 | render3d.js | Renderer entry: lights, ground texture painting, vehicle/person models, effects, `render()` |
 
 Renderer fragments (inside `createCityRenderer()`): damage3d (deformable car bodies, decal atlas
@@ -75,8 +76,11 @@ roofs, shopfronts, street furniture, night windows), sidejobs3d (rings/devices),
 world3d (water shader, palms, airport, rooftop bar), county3d, boats3d (the boat kit),
 harbor3d (signals, depot, helicopter searchlight, the container ship), marina3d (marina,
 superyacht, terminal, liners), weather3d (rain, wet roads, overcast light), clouds3d (volumetric
-clouds and cloud shadows), helicopter3d, vehicles3d, plane3d. flight-view3d (flight camera,
-distance haze, level of detail from the air) is included right after the camera and lights.
+clouds and cloud shadows), surfaces3d (procedural ground detail, rain puddles, foliage sway),
+helicopter3d, vehicles3d, plane3d. flight-view3d (flight camera, distance haze, shadow fit,
+level of detail and impostors), postfx3d (HDR pipeline: AO, bloom, tone curve, grade, FXAA) and
+lighting3d (sun path, sky dome and environment map, night light map, headlight cones, the
+material patch, time-of-day look) are included right after the camera and lights.
 
 ## 4. The city layout
 
@@ -236,6 +240,36 @@ delivery must happen with zero wanted stars, add the stage to `policeBlocksMissi
 - Repeated props use `InstancedMesh` pools (`pools` in cityscape3d.js). Add a pool there
   rather than creating per-building meshes for small repeated objects.
 
+## 6c. Image pipeline and lighting
+
+- **HDR and post-processing** (postfx3d.js): the scene renders into a half-float target
+  (4x MSAA on HIGH/ULTRA, with a depth texture), then SAO ambient occlusion (half resolution,
+  depth-aware blur), a soft-knee bloom mip chain, and one composite pass: AO, bloom, exposure,
+  the ACES filmic curve, a time-of-day grade (saturation, contrast, lift/gain), vignette and
+  dither, then FXAA when there is no MSAA. `renderFrame()` replaces `renderer.render()`.
+  Built-in materials output scene-linear light into the target. Custom `ShaderMaterial`s that
+  compute final screen colours (the water) end with `#include <city_hdr_output>` (and include
+  `<city_hdr_pars>`), which inverts the tone curve so they look as designed; unlit
+  `MeshBasicMaterial`s with `toneMapped: false` (signs) get the same automatically.
+- **Quality tiers** (quality.js) set pixel ratio, shadow-map size and refresh cadence, MSAA,
+  AO samples, bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
+  record; the renderer's `setQuality(tier)` applies one at runtime. `DeadEndCity.graphics('high')`
+  switches from the console (tests use it, since SwiftShader auto-detects as LOW).
+- **Sun and sky** (lighting3d.js): `sunDirection` follows the clock (east, north-west at
+  noon so shadows fall towards the camera, west at dusk; the moon at night). The shadow box is
+  fitted to the camera's view each frame and texel-snapped (`placeSun`, flight-view3d.js). A
+  procedural sky shader is drawn as a dome in the flight view (stars and moon at night) and
+  filtered by PMREM into `scene.environment`, so glass, clear-coat car paint (MeshPhysical),
+  chrome, window gloss maps and wet tarmac reflect the current sky.
+- **Night light** (lighting3d.js): lamp, shop-window and neon pools are painted once into a
+  city-wide light map; `cityMaterialPatch` (installed as MeshStandardMaterial's default
+  `onBeforeCompile`) adds it to every lit surface near the ground, scaled by night, the
+  blackout job's district power and height. A material with its own `onBeforeCompile` should
+  call `cityMaterialPatch(shader)` first. Traffic headlights are instanced ground cones.
+- **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
+  (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
+  a bump, dielectric roughness and rain puddles (`weather.wet`). Leaf and palm materials sway.
+
 ## 6a. Damage and destruction
 
 Damage is data on the entity; `damage3d.js` only draws it (see the header of `damage.js`).
@@ -273,8 +307,17 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
   histogram. Use it before and after any change that touches hot loops.
 - Static scenery is merged by `batchStaticGroups()` (render3d.js): every group pushed to
   `batchGroups` has its plain single-material meshes merged per material and 1024-unit
-  cell after construction. Flag animated meshes with `userData.dynamic = true` and per-sign
-  textures with `userData.sign = true` so they are left alone.
+  cell after construction. Flag animated meshes (or a group holding them: a crane trolley, a
+  gate arm) with `userData.dynamic = true` and per-sign textures with `userData.sign = true`
+  so they are left alone. Share materials between repeated objects (palms do) or they cannot
+  merge.
+- `DeadEndCity.drawProfile()` lists the draw calls in view by object and by map cell;
+  `stats()` reports `viewCalls` (camera) and `shadowCalls` (last shadow refresh) separately.
+- Level of detail, both cameras: intact cars become instanced per-type body shells below
+  `viewZoom` 0.62 and boxes below 0.4; standing pedestrians become three instanced parts
+  below 0.52; the merged far city replaces the batches below 0.2 (street) / 0.165 (air).
+  The tier's `lodBias` scales these. Traffic signals are merged posts plus one instanced bulb
+  pool. New car and person models only cast shadows from their larger parts.
 - Buildings are bucketed in `buildingGrid` (game.js) for `solid()`/`shotBlocked()`; rail
   piers in `railPierCells()`; physics statics in `staticGrid` with a per-vehicle cache.
 - Vehicles far from the player and at rest skip contact passes; distant traffic re-plans

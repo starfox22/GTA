@@ -1478,6 +1478,8 @@
             calls: frameStats.sceneCalls,
             triangles: frameStats.sceneTriangles,
             shadowFrame: frameStats.shadowFrame,
+            viewCalls: frameStats.viewCalls,
+            shadowCalls: frameStats.shadowCalls,
             frameCalls: frameStats.totalCalls,
             objects,
             batched: api.batchReport,
@@ -1535,6 +1537,11 @@
           visit(scene);
           const sorted = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, top);
           return { total, byName: sorted(byName), byCell: sorted(byCell) };
+        },
+        // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.
+        postView(mode) {
+          postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : 0;
+          return mode || 'image';
         },
         // Switch graphics quality tier (quality.js) at runtime.
         setQuality(tier) {
@@ -1770,6 +1777,7 @@
             if (!m) {
               m = makeVehicle(c);
               carModels.set(c, m);
+              trimShadowCasters(m.group, 4);
             }
             m.group.visible = near;
             if (!near) continue;
@@ -1909,6 +1917,8 @@
             if (!m) {
               m = makePerson(p, activePlayer);
               personModels.set(p, m);
+              // Only torso-sized parts cast into the shadow map (lighting3d.js).
+              trimShadowCasters(m.group, 3.5);
             }
             m.group.visible = near && !(activePlayer && (player.car || transitRide || taxiRide));
             if (p.hidden) m.group.visible = false;
