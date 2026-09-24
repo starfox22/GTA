@@ -1256,7 +1256,10 @@
         return pools;
       }
       function updateStadiumFloodlights(match) {
-        const on = !match.abandoned && ['warmup', 'live', 'break', 'fulltime'].includes(match.stage);
+        // An abandoned match keeps its lights on until the fixture would have ended.
+        const on = match.abandoned
+          ? worldMinutes < match.fixture.kickoff + sportsMatchLength('soccer') + match.calendar.afterSeconds
+          : ['warmup', 'live', 'break', 'fulltime'].includes(match.stage);
         if (on === stadiumFloodlightsOn) return;
         stadiumFloodlightsOn = on;
         paintLampLight();
