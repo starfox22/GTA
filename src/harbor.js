@@ -152,25 +152,25 @@
         ),
       ),
     ];
+    // With the barrier down the gate is one more solid; that list is made once
+    // (solid() asks for it on every call) rather than copied every time.
+    let harborClosedSolids = null;
     function harborSolids() {
-      return harborGate < 0.82
-        ? [
-            ...harborPermanentSolids,
-            {
-              x: HARBOR.gate.x - 2,
-              y: HARBOR.gate.y - HARBOR.gate.half,
-              w: 4,
-              h: HARBOR.gate.half * 2,
-              height: 13,
-              barrier: true,
-            },
-          ]
-        : harborPermanentSolids;
+      if (harborGate >= 0.82) return harborPermanentSolids;
+      return (harborClosedSolids ||= [
+        ...harborPermanentSolids,
+        {
+          x: HARBOR.gate.x - 2,
+          y: HARBOR.gate.y - HARBOR.gate.half,
+          w: 4,
+          h: HARBOR.gate.half * 2,
+          height: 13,
+          barrier: true,
+        },
+      ]);
     }
     function harborBlocked(x, y, r = 0) {
-      return harborSolids().some(
-        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
-      );
+      return rectListBlocked(harborSolids(), x, y, r);
     }
     function harborVehicleBlocked(vehicle) {
       return harborSolids().some((b) =>

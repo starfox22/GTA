@@ -536,21 +536,37 @@
       }
       return parkPondBoxes.some((b) => x > b.x0 - reach && x < b.x1 + reach && y > b.y0 - reach && y < b.y1 + reach);
     }
+    // Inside the rotated ellipse (centre cx, cy, radii rx, ry grown by r, turn a).
+    function insidePondEllipse(x, y, r, cx, cy, rx, ry, a) {
+      const dx = x - cx,
+        dy = y - cy,
+        headingCosine = Math.cos(a),
+        headingSine = Math.sin(a);
+      return (
+        ((dx * headingCosine + dy * headingSine) / (rx + r)) ** 2 +
+          ((-dx * headingSine + dy * headingCosine) / (ry + r)) ** 2 <
+        1
+      );
+    }
+    // The pond and botanic parks' ponds, with bounds (asked by solid() for every
+    // step; the list of parks never changes once the city is laid out).
+    let parkPondCache = null;
+    function parkPondList() {
+      if (parkPondCache && parkPondCache.parks === CITY_PARKS.length) return parkPondCache.ponds;
+      const ponds = CITY_PARKS.filter((p) => p.kind === 'pond' || p.kind === 'botanic').map((p) => ({
+        cx: p.x + p.w * 0.5,
+        cy: p.y + p.h * 0.5,
+        rx: p.w * 0.17,
+        ry: p.h * 0.23,
+        reach: Math.max(p.w * 0.17, p.h * 0.23),
+      }));
+      parkPondCache = { parks: CITY_PARKS.length, ponds };
+      return ponds;
+    }
     function parkPondBlocked(x, y, r = 0) {
-      const inside = (cx, cy, rx, ry, a) => {
-        const dx = x - cx,
-          dy = y - cy,
-          headingCosine = Math.cos(a),
-          headingSine = Math.sin(a);
-        return (
-          ((dx * headingCosine + dy * headingSine) / (rx + r)) ** 2 +
-            ((-dx * headingSine + dy * headingCosine) / (ry + r)) ** 2 <
-          1
-        );
-      };
       const c = COMMONS;
       if (
-        inside(c.lake.x, c.lake.y, c.lake.rx, c.lake.ry, c.lake.a) &&
+        insidePondEllipse(x, y, r, c.lake.x, c.lake.y, c.lake.rx, c.lake.ry, c.lake.a) &&
         !(Math.abs(x - c.dock.x) + r < c.dock.w / 2 && y > c.dock.y - c.dock.h && y < c.dock.y + 12)
       )
         return true;
@@ -561,10 +577,12 @@
         y - r < c.boathouse.y + c.boathouse.h
       )
         return true;
-      return CITY_PARKS.some(
-        (p) =>
-          ['pond', 'botanic'].includes(p.kind) &&
-          inside(p.x + p.w * 0.5, p.y + p.h * 0.5, p.w * 0.17, p.h * 0.23, 0.25),
-      );
+      const ponds = parkPondList();
+      for (let i = 0; i < ponds.length; i++) {
+        const p = ponds[i];
+        if (Math.abs(x - p.cx) > p.reach + r || Math.abs(y - p.cy) > p.reach + r) continue;
+        if (insidePondEllipse(x, y, r, p.cx, p.cy, p.rx, p.ry, 0.25)) return true;
+      }
+      return false;
     }
     // END SUBSYSTEM: src/renewal.js

@@ -106,11 +106,25 @@
           };
         }),
       );
+      // Each block keeps its turn and its map-aligned bounds: sight lines, rounds
+      // in flight and boats ask these hundreds of volumes many times a frame, and
+      // the bounds reject nearly all of them before any rotation is done.
+      for (const b of blocks) {
+        b.cos = Math.cos(b.a);
+        b.sin = Math.sin(b.a);
+        const ex = Math.abs(b.cos) * b.hx + Math.abs(b.sin) * b.hy,
+          ey = Math.abs(b.sin) * b.hx + Math.abs(b.cos) * b.hy;
+        b.x0 = b.x - ex;
+        b.x1 = b.x + ex;
+        b.y0 = b.y - ey;
+        b.y1 = b.y + ey;
+      }
       return (airCoverCache = blocks);
     }
     function coverLocal(b, x, y) {
-      const headingCosine = Math.cos(b.a),
-        headingSine = Math.sin(b.a),
+      // Blocks from airCoverVolumes() carry their turn; others (rail decks) do not.
+      const headingCosine = b.cos ?? Math.cos(b.a),
+        headingSine = b.sin ?? Math.sin(b.a),
         dx = x - b.x,
         dy = y - b.y;
       return {
@@ -118,15 +132,18 @@
         y: -dx * headingSine + dy * headingCosine,
       };
     }
+    // Whether a map point lies inside a block's footprint (no allocation).
+    function inCoverFootprint(b, x, y) {
+      if (x < b.x0 || x > b.x1 || y < b.y0 || y > b.y1) return false;
+      const dx = x - b.x,
+        dy = y - b.y;
+      return Math.abs(dx * b.cos + dy * b.sin) < b.hx && Math.abs(-dx * b.sin + dy * b.cos) < b.hy;
+    }
     function underBridgeWater(x, y) {
-      return (
-        !landAt(x, y) &&
-        airCoverVolumes().some((b) => {
-          if (!b.bridge) return false;
-          const p = coverLocal(b, x, y);
-          return Math.abs(p.x) < b.hx && Math.abs(p.y) < b.hy;
-        })
-      );
+      if (landAt(x, y)) return false;
+      const blocks = airCoverVolumes();
+      for (let i = 0; i < blocks.length; i++) if (blocks[i].bridge && inCoverFootprint(blocks[i], x, y)) return true;
+      return false;
     }
     function boatSurfaceElevation(c) {
       return underBridgeWater(c.x, c.y) ? -30 : 0;
@@ -139,20 +156,38 @@
         (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
       );
     }
+    // Slab test of the segment a-b (at eye height) against each block, in the
+    // block's own frame. Blocks whose bounds miss the segment's are skipped.
     function airCoverRay(a, b) {
       const start = entityElevation(a) + 14,
-        end = entityElevation(b) + 14;
-      for (const block of airCoverVolumes()) {
-        const p = coverLocal(block, a.x, a.y),
-          q = coverLocal(block, b.x, b.y);
+        end = entityElevation(b) + 14,
+        minX = Math.min(a.x, b.x),
+        maxX = Math.max(a.x, b.x),
+        minY = Math.min(a.y, b.y),
+        maxY = Math.max(a.y, b.y),
+        lowZ = Math.min(start, end),
+        highZ = Math.max(start, end),
+        blocks = airCoverVolumes();
+      for (let i = 0; i < blocks.length; i++) {
+        const block = blocks[i];
+        if (maxX < block.x0 || minX > block.x1 || maxY < block.y0 || minY > block.y1) continue;
+        if (highZ < block.minHeight || lowZ > block.height) continue;
+        const ax = a.x - block.x,
+          ay = a.y - block.y,
+          bx = b.x - block.x,
+          by = b.y - block.y,
+          px = ax * block.cos + ay * block.sin,
+          py = -ax * block.sin + ay * block.cos,
+          qx = bx * block.cos + by * block.sin,
+          qy = -bx * block.sin + by * block.cos;
         let lo = 0,
           hi = 1,
           hit = true;
-        for (const [pos, delta, min, max] of [
-          [p.x, q.x - p.x, -block.hx, block.hx],
-          [p.y, q.y - p.y, -block.hy, block.hy],
-          [start, end - start, block.minHeight, block.height],
-        ]) {
+        for (let axis = 0; axis < 3; axis++) {
+          const pos = axis === 0 ? px : axis === 1 ? py : start,
+            delta = axis === 0 ? qx - px : axis === 1 ? qy - py : end - start,
+            min = axis === 0 ? -block.hx : axis === 1 ? -block.hy : block.minHeight,
+            max = axis === 0 ? block.hx : axis === 1 ? block.hy : block.height;
           if (Math.abs(delta) < 1e-8) {
             if (pos < min || pos > max) {
               hit = false;
@@ -161,9 +196,13 @@
           } else {
             let t1 = (min - pos) / delta,
               t2 = (max - pos) / delta;
-            if (t1 > t2) [t1, t2] = [t2, t1];
-            lo = Math.max(lo, t1);
-            hi = Math.min(hi, t2);
+            if (t1 > t2) {
+              const t = t1;
+              t1 = t2;
+              t2 = t;
+            }
+            if (t1 > lo) lo = t1;
+            if (t2 < hi) hi = t2;
             if (lo > hi) {
               hit = false;
               break;
@@ -175,11 +214,13 @@
       return false;
     }
     function airCoverStopsShot(x, y, altitude) {
-      return airCoverVolumes().some((b) => {
-        if (altitude + 10 < b.minHeight || altitude + 10 > b.height) return false;
-        const p = coverLocal(b, x, y);
-        return Math.abs(p.x) < b.hx && Math.abs(p.y) < b.hy;
-      });
+      const blocks = airCoverVolumes();
+      for (let i = 0; i < blocks.length; i++) {
+        const b = blocks[i];
+        if (altitude + 10 < b.minHeight || altitude + 10 > b.height) continue;
+        if (inCoverFootprint(b, x, y)) return true;
+      }
+      return false;
     }
     function addUnderpassColliders() {
       for (const s of RAIL_STATIONS) {

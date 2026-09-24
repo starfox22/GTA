@@ -828,12 +828,14 @@
         boardSuperyachtFromGangway();
       }
     }
+    // The club, fuel dock and terminal never move: the list is made once.
+    let marinaSolidCache = null;
     function marinaSolids() {
-      return [
+      return (marinaSolidCache ||= [
         { ...MARINA.club, height: 44 },
         { ...MARINA.fuel, height: 20 },
         { ...MARINA.terminal, height: 56 },
-      ];
+      ]);
     }
     /* Pontoons are walkable, the basin around them is not, and hulls are solid. */
     function marinaBlocked(x, y, r = 0) {
@@ -846,9 +848,7 @@
         if (!onFinger && !onSuperyachtGangway(x, y, 1) && !onDock(x, y, r)) return true;
         if (berthedHullAt(x, y, r)) return true;
       }
-      return marinaSolids().some(
-        (s) => x + r > s.x && x - r < s.x + s.w && y + r > s.y && y - r < s.y + s.h,
-      );
+      return rectListBlocked(marinaSolids(), x, y, r);
     }
     let berthCache = null;
     function marinaBoats() {

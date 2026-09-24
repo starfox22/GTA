@@ -681,23 +681,31 @@
         da = normalizeAngle(headingBetween(c, target) - c.a);
       let desired = c.panicUntil > gameTime ? 150 : 83;
       desired *= clamp(1 - Math.abs(da) * 0.55, 0.18, 1);
+      const headingCosine = Math.cos(c.a),
+        headingSine = Math.sin(c.a);
       for (const o of vehicles) {
         if (o === c || (o.altitude || 0) > 15) continue;
         const dx = o.x - c.x,
-          dy = o.y - c.y,
-          along = dx * Math.cos(c.a) + dy * Math.sin(c.a),
-          side = Math.abs(-dx * Math.sin(c.a) + dy * Math.cos(c.a));
+          dy = o.y - c.y;
+        // Only what is within the 160-unit look-ahead can matter.
+        if (dx > 200 || dx < -200 || dy > 200 || dy < -200) continue;
+        const along = dx * headingCosine + dy * headingSine,
+          side = Math.abs(-dx * headingSine + dy * headingCosine);
         if (along > 0 && along < 160 && side < (vehicleSpec(c).w + vehicleSpec(o).w) / 2 + 7)
           desired = Math.min(
             desired,
             Math.max(0, along - (vehicleSpec(c).l + vehicleSpec(o).l) / 2 - 28) * 1.2,
           );
       }
-      for (const p of [...pedestrians, ...(!player.car ? [player] : [])])
+      // People within 100 units ahead (from the crowd's grid, not a copy of everyone).
+      const yieldTo = (p) => {
         if (p.hp > 0 && distanceBetween(c, p) < 100) {
           const a = normalizeAngle(headingBetween(c, p) - c.a);
           if (Math.abs(a) < 0.45) desired = Math.min(desired, Math.max(0, distanceBetween(c, p) - 60));
         }
+      };
+      forEachPedestrianNear(c.x, c.y, 100, yieldTo);
+      if (!player.car) yieldTo(player);
       return {
         steer: clamp(da * 2.5, -1.6, 1.6),
         desired,

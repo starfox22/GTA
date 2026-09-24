@@ -22,6 +22,45 @@
         owner: c,
       };
     }
+    /**
+     * CONTACT SHAPES
+     * The contact passes test each vehicle's box many times a step (every pair
+     * and every nearby wall, in up to seven passes). contactShape() hands back
+     * the vehicle's own box record, refreshed from where it is now, instead of a
+     * new object per test. Only for tests that are done with it at once: two
+     * calls for the same vehicle return the same record.
+     */
+    function contactShape(c) {
+      const vehicleDefinition = vehicleSpec(c);
+      let shape = c.contactBox;
+      if (!shape) shape = c.contactBox = { x: 0, y: 0, a: 0, hx: 0, hy: 0 };
+      shape.x = c.x;
+      shape.y = c.y;
+      shape.a = c.a;
+      shape.hx = vehicleDefinition.l / 2;
+      shape.hy = vehicleDefinition.w / 2;
+      return shape;
+    }
+    // Bounding radius of a vehicle type's box (the broadphase asks for every car every step).
+    const specRadii = new Map();
+    function vehicleRadius(c) {
+      const spec = vehicleSpec(c);
+      let radius = specRadii.get(spec);
+      if (radius === undefined) specRadii.set(spec, (radius = Math.hypot(spec.l, spec.w) / 2));
+      return radius;
+    }
+    // Whether any corner of the vehicle's box stands off the ground (no allocation).
+    function footprintOffGround(c) {
+      const spec = vehicleSpec(c),
+        hx = spec.l / 2,
+        hy = spec.w / 2,
+        ux = Math.cos(c.a || 0),
+        uy = Math.sin(c.a || 0);
+      for (let i = -1; i <= 1; i += 2)
+        for (let j = -1; j <= 1; j += 2)
+          if (!groundAt(c.x + ux * hx * i - uy * hy * j, c.y + uy * hx * i + ux * hy * j)) return true;
+      return false;
+    }
     function axes(b) {
       const headingCosine = Math.cos(b.a || 0),
         headingSine = Math.sin(b.a || 0);
@@ -519,15 +558,23 @@
         ny = y + Math.sin(a) * BLOCK_SIZE;
       return [a, a + Math.PI / 2, a - Math.PI / 2].some((q) => trafficRoadValid(nx, ny, q, BLOCK_SIZE));
     }
+    // The next road line ahead (more than 2 units on in the direction `sign`), or
+    // undefined: the nearest such entry of `lines`, found without sorting a copy.
+    function nextRoadLine(lines, value, sign) {
+      let best;
+      for (let i = 0; i < lines.length; i++) {
+        const v = lines[i];
+        if ((v - value) * sign > 2 && (best === undefined || (v - best) * sign < 0)) best = v;
+      }
+      return best;
+    }
     function trafficSpawnValid(x, y, a) {
       const headingCosine = Math.cos(a),
         headingSine = Math.sin(a),
         vertical = Math.abs(headingSine) > 0.5,
         sign = vertical ? Math.sign(headingSine) : Math.sign(headingCosine),
         value = vertical ? y : x,
-        next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
-          .filter((v) => (v - value) * sign > 2)
-          .sort((a, b) => (a - b) * sign)[0];
+        next = nextRoadLine(vertical ? ROAD_ROWS : ROAD_CENTERS, value, sign);
       if (next === undefined) return false;
       const nx = vertical ? roadNear(x) : next,
         ny = vertical ? next : rowNear(y);
@@ -620,9 +667,7 @@
         vertical = Math.abs(headingSine) > 0.5,
         sign = vertical ? Math.sign(headingSine) : Math.sign(headingCosine),
         value = vertical ? c.y : c.x;
-      const next = (vertical ? ROAD_ROWS : ROAD_CENTERS)
-        .filter((v) => (v - value) * sign > 2)
-        .sort((a, b) => (a - b) * sign)[0];
+      const next = nextRoadLine(vertical ? ROAD_ROWS : ROAD_CENTERS, value, sign);
       let desired = c.panicUntil > gameTime ? 120 : 65 + (c.id % 4) * 7,
         target;
       if (c.panicUntil > gameTime) c.hazard = true;
@@ -741,7 +786,15 @@
             return ahead > -60 && ahead < reach + 260 && left > 6 && left < 80;
           });
       for (const o of vehicles) {
-        if (o === c || (o.altitude || 0) > 20 || isBoat(o) || distanceBetween(c, o) > 350) continue;
+        if (
+          o === c ||
+          Math.abs(o.x - c.x) > 350 ||
+          Math.abs(o.y - c.y) > 350 ||
+          (o.altitude || 0) > 20 ||
+          isBoat(o) ||
+          distanceBetween(c, o) > 350
+        )
+          continue;
         let standoff = 0;
         const dx = o.x - c.x,
           dy = o.y - c.y,
@@ -998,277 +1051,280 @@
       else c.av = 0;
     }
     const noStatics = [];
-    function physicsStep(stepSeconds, active) {
-      physicsClock += stepSeconds;
-      const pc = player.car;
-      let sectionStart = performance.now();
-      const mark = (name) => {
-        const now = performance.now();
-        profile.parts[name] = (profile.parts[name] || 0) + now - sectionStart;
-        sectionStart = now;
-      };
-      for (const c of vehicles) {
-        const vehicleDefinition = vehicleSpec(c);
-        c.stepStartX = c.x;
-        c.stepStartY = c.y;
-        c.stepStartA = c.a;
-        // A parked car a long way off with nothing driving it has nothing to
-        // integrate: skipping its control and integration is what keeps a city
-        // with hundreds of kerbside vehicles and bicycles affordable.
-        // Parked roadblock and deployed cruisers and burnt-out wrecks sleep the same way.
+    // Broadphase containers reused from step to step (see physicsStep).
+    const broadphaseCells = new Map(),
+      broadphasePairA = [],
+      broadphasePairB = [],
+      broadphaseSeen = new Set(),
+      broadphaseBarrierCars = [],
+      broadphaseBarrierBodies = [];
+    let broadphaseStamp = 0;
+    // One vehicle's controls and integration for a physics step (player input,
+    // pursuit, traffic, boats and aircraft).
+    function controlVehicle(c, pc, stepSeconds, active) {
+      const vehicleDefinition = vehicleSpec(c);
+      c.stepStartX = c.x;
+      c.stepStartY = c.y;
+      c.stepStartA = c.a;
+      // A parked car a long way off with nothing driving it has nothing to
+      // integrate: skipping its control and integration is what keeps a city
+      // with hundreds of kerbside vehicles and bicycles affordable.
+      // Parked roadblock and deployed cruisers and burnt-out wrecks sleep the same way.
+      if (
+        c.resting &&
+        c !== pc &&
+        !c.ai &&
+        !c.taxiHire &&
+        (!c.cop || c.crewDeployed || c.hp <= 0) &&
+        (c.hp > 0 || !c.damage?.burning)
+      )
+        return;
+      // Not moved by the physics yet (makeCar starts vx/vy as NaN): take the
+      // velocity from the heading and whatever speed the vehicle was given.
+      if (c.vx !== c.vx) {
+        c.vx = Math.cos(c.a) * c.speed;
+        c.vy = Math.sin(c.a) * c.speed;
+      }
+      c.av = c.av || 0;
+      if (repairJob?.car === c) {
+        c.vx = c.vy = c.av = c.speed = 0;
+      } else if (c.type === 'plane') {
+        planeControl(c, stepSeconds, active);
+      } else if (isBoat(c)) {
+        boatControl(c, stepSeconds, active);
+      } else if (c.type === 'helicopter') {
+        helicopterControl(c, stepSeconds, active);
+      } else {
         if (
-          c.resting &&
-          c !== pc &&
-          !c.ai &&
-          !c.taxiHire &&
-          (!c.cop || c.crewDeployed || c.hp <= 0) &&
-          (c.hp > 0 || !c.damage?.burning)
-        )
-          continue;
-        if (c.vx === undefined) {
-          c.vx = Math.cos(c.a) * c.speed;
-          c.vy = Math.sin(c.a) * c.speed;
+          c.cop &&
+          !c.crewDeployed &&
+          !c.blockade &&
+          active &&
+          (!player.car || isAircraft(player.car)) &&
+          wantedStars > 0
+        ) {
+          const d = distanceBetween(c, player),
+            toward = (player.x - c.x) * c.vx + (player.y - c.y) * c.vy;
+          if (d < 140 && toward > 0) {
+            const speed = Math.hypot(c.vx, c.vy),
+              limit = clamp((d - 48) * 1.2, 0, 80);
+            if (speed > limit) {
+              const f = limit / Math.max(1, speed);
+              c.vx *= f;
+              c.vy *= f;
+              c.speed = limit;
+            }
+          }
         }
-        c.av = c.av || 0;
-        if (repairJob?.car === c) {
-          c.vx = c.vy = c.av = c.speed = 0;
-        } else if (c.type === 'plane') {
-          planeControl(c, stepSeconds, active);
-        } else if (isBoat(c)) {
-          boatControl(c, stepSeconds, active);
-        } else if (c.type === 'helicopter') {
-          helicopterControl(c, stepSeconds, active);
-        } else {
+        const headingCosine = Math.cos(c.a),
+          headingSine = Math.sin(c.a),
+          along = c.vx * headingCosine + c.vy * headingSine,
+          lateral = -c.vx * headingSine + c.vy * headingCosine;
+        let acceleration = 0,
+          steer = 0,
+          grip = 7,
+          drag = 0.72;
+        if (c.hp > 0 && c === pc && active) {
+          const up = keys.KeyW || keys.ArrowUp,
+            down = keys.KeyS || keys.ArrowDown,
+            brake = keys.Space,
+            turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+          // A bicycle has no engine: holding W pedals, and the push the rider's
+          // legs give tapers off toward the top speed (pedalDrive, cycles.js).
+          const pedalled = !!vehicleDefinition.bicycle,
+            sprint = pedalled && cycleSprinting(),
+            topSpeed = vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1),
+            // A hurt engine pulls weaker, flat tyres and a bent front end cap the
+            // speed and drag the car to one side (damage.js vehicleHandling).
+            handling = vehicleHandling(c);
+          acceleration =
+            up && !pedalled
+              ? (vehicleDefinition.acc * handling.power) / (1 + (c.cargoCount || 0) * 0.1)
+              : down
+                ? along > 10
+                  ? -(vehicleDefinition.brake || 285)
+                  : -vehicleDefinition.acc * 0.6
+                : pedalled
+                  ? pedalDrive(along, topSpeed)
+                  : 0;
           if (
-            c.cop &&
-            !c.crewDeployed &&
-            !c.blockade &&
-            active &&
-            (!player.car || isAircraft(player.car)) &&
-            wantedStars > 0
-          ) {
-            const d = distanceBetween(c, player),
-              toward = (player.x - c.x) * c.vx + (player.y - c.y) * c.vy;
-            if (d < 140 && toward > 0) {
-              const speed = Math.hypot(c.vx, c.vy),
-                limit = clamp((d - 48) * 1.2, 0, 80);
-              if (speed > limit) {
-                const f = limit / Math.max(1, speed);
-                c.vx *= f;
-                c.vy *= f;
-                c.speed = limit;
-              }
-            }
+            (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * handling.top &&
+              up &&
+              !pedalled) ||
+            (along < -(pedalled ? CYCLE_REVERSE_MAX : 95) && down)
+          )
+            acceleration = 0;
+          grip = brake ? 1.9 : (vehicleDefinition.grip || 7) * handling.grip;
+          drag = pedalled
+            ? brake
+              ? 2.4
+              : 0.22
+            : brake
+              ? 2.1
+              : up || down
+                ? onRoad(c.x, c.y)
+                  ? 0.1
+                  : 0.65
+                : 0.72;
+          steer =
+            (turn *
+              vehicleDefinition.turn *
+              clamp(Math.abs(along) / 65, vehicleDefinition.tank ? 0.72 : 0, 1) *
+              Math.sign(along || 1) *
+              (brake ? 1.35 : 1)) /
+            (1 + Math.pow(Math.abs(along) / 240, 1.5));
+          steer += handling.pull * clamp(Math.abs(along) / 160, 0, 1) * Math.sign(along || 1) * 0.45;
+          if (brake && Math.abs(along) > 80 && Math.floor(physicsClock * 40) !== c.lastSkid) {
+            c.lastSkid = Math.floor(physicsClock * 40);
+            for (const side of [-1, 1])
+              skids.push({
+                x: c.x - headingSine * side * 9,
+                y: c.y + headingCosine * side * 9,
+                a: Math.atan2(c.vy, c.vx),
+                len: Math.abs(along) / 40 + 2,
+                life: 35,
+              });
           }
-          const headingCosine = Math.cos(c.a),
-            headingSine = Math.sin(c.a),
-            along = c.vx * headingCosine + c.vy * headingSine,
-            lateral = -c.vx * headingSine + c.vy * headingCosine;
-          let acceleration = 0,
-            steer = 0,
-            grip = 7,
-            drag = 0.72;
-          if (c.hp > 0 && c === pc && active) {
-            const up = keys.KeyW || keys.ArrowUp,
-              down = keys.KeyS || keys.ArrowDown,
-              brake = keys.Space,
-              turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-            // A bicycle has no engine: holding W pedals, and the push the rider's
-            // legs give tapers off toward the top speed (pedalDrive, cycles.js).
-            const pedalled = !!vehicleDefinition.bicycle,
-              sprint = pedalled && cycleSprinting(),
-              topSpeed = vehicleDefinition.max * (sprint ? CYCLE_SPRINT_TOP : 1),
-              // A hurt engine pulls weaker, flat tyres and a bent front end cap the
-              // speed and drag the car to one side (damage.js vehicleHandling).
-              handling = vehicleHandling(c);
-            acceleration =
-              up && !pedalled
-                ? (vehicleDefinition.acc * handling.power) / (1 + (c.cargoCount || 0) * 0.1)
-                : down
-                  ? along > 10
-                    ? -(vehicleDefinition.brake || 285)
-                    : -vehicleDefinition.acc * 0.6
-                  : pedalled
-                    ? pedalDrive(along, topSpeed)
-                    : 0;
-            if (
-              (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * handling.top &&
-                up &&
-                !pedalled) ||
-              (along < -(pedalled ? CYCLE_REVERSE_MAX : 95) && down)
-            )
-              acceleration = 0;
-            grip = brake ? 1.9 : (vehicleDefinition.grip || 7) * handling.grip;
-            drag = pedalled
-              ? brake
-                ? 2.4
-                : 0.22
-              : brake
-                ? 2.1
-                : up || down
-                  ? onRoad(c.x, c.y)
-                    ? 0.1
-                    : 0.65
-                  : 0.72;
-            steer =
-              (turn *
-                vehicleDefinition.turn *
-                clamp(Math.abs(along) / 65, vehicleDefinition.tank ? 0.72 : 0, 1) *
-                Math.sign(along || 1) *
-                (brake ? 1.35 : 1)) /
-              (1 + Math.pow(Math.abs(along) / 240, 1.5));
-            steer += handling.pull * clamp(Math.abs(along) / 160, 0, 1) * Math.sign(along || 1) * 0.45;
-            if (brake && Math.abs(along) > 80 && Math.floor(physicsClock * 40) !== c.lastSkid) {
-              c.lastSkid = Math.floor(physicsClock * 40);
-              for (const side of [-1, 1])
-                skids.push({
-                  x: c.x - headingSine * side * 9,
-                  y: c.y + headingCosine * side * 9,
-                  a: Math.atan2(c.vy, c.vx),
-                  len: Math.abs(along) / 40 + 2,
-                  life: 35,
-                });
-            }
-          } else if (
-            c.hp > 0 &&
-            !c.pursuitTarget &&
-            c.gangTarget?.hp > 0 &&
-            lawVehicle(c) &&
-            !c.crewLost &&
-            !c.crewDeployed &&
-            active
-          ) {
-            const target = c.gangTarget,
-              d = distanceBetween(c, target),
-              da = normalizeAngle(headingBetween(c, target) - c.a);
-            steer = clamp(da * 2.5, -1.8, 1.8);
-            const desired = clamp((d - 150) * 1.5, 0, 180);
-            acceleration = clamp((desired - along) * 4, -650, vehicleDefinition.acc);
-            drag = 0.3;
-          } else if (
-            c.hp > 0 &&
-            c.cop &&
-            !c.crewDeployed &&
-            active &&
-            wantedStars > 0 &&
-            !harborPoliceProtected(player.x, player.y, 30)
-          ) {
-            // Intercepts, PIT and boxing, search sweeps and stuck recovery (pursuit.js).
-            const control = pursuitControl(c, stepSeconds, along, vehicleDefinition);
-            steer = control.steer;
-            acceleration = control.acceleration;
-            drag = control.drag;
-          } else if (c.hp > 0 && c.ai && !c.crewDeployed) {
-            // Traffic decisions are cached: 20 Hz near the player, 4 Hz for distant cars.
-            const ai =
-              c.aiControl && physicsClock < (c.aiControlAt || 0)
-                ? c.aiControl
-                : ((c.aiControl = c.countyRoute
-                    ? countyRouteControl(c)
-                    : trafficControl(c, stepSeconds)),
-                  (c.aiControlAt = physicsClock + (c.farFromPlayer ? 0.25 : 0.05)),
-                  c.aiControl);
-            const handling = vehicleHandling(c);
-            steer = ai.steer;
-            acceleration = clamp(
-              (ai.desired * handling.top - along) * 5,
-              -400,
-              vehicleDefinition.acc * handling.power,
-            );
-            drag = 0.15;
-          } else if (c.blockade && !c.braced) {
-            // A roadblock cruiser shoved loose by a rammer slides and slews on
-            // locked wheels before it scrubs to a halt.
-            drag = 1.5;
-            grip = 2.2;
-          } else {
-            drag = c.crewDeployed ? 9 : 1.8;
-            grip = 4;
-          }
-          const terrain = roadVehicleTerrain(c);
-          if (terrain) {
-            const slope = Math.hypot(terrain.slope.x, terrain.slope.y),
-              power = terrain.traction;
-            acceleration *= power;
-            if (Math.abs(along) > terrain.limit && acceleration * along > 0) acceleration = 0;
-            grip *= terrain.four ? 0.82 : 0.48;
-            drag = Math.max(drag, terrain.trail ? 0.7 : 1.3);
-            const tractionLimit = terrain.four ? (terrain.trail ? 0.62 : 0.72) : 0.15,
-              slide = Math.max(0, slope - tractionLimit);
-            c.vx -= terrain.slope.x * (64 + slide * 150) * stepSeconds;
-            c.vy -= terrain.slope.y * (64 + slide * 150) * stepSeconds;
-          }
-          c.vx += headingCosine * acceleration * stepSeconds;
-          c.vy += headingSine * acceleration * stepSeconds;
-          // Tyres cancel sideways slip, but only up to what they can grip: about 60
-          // units/s² per point of grip. Normal cornering never reaches the limit; a car
-          // punted sideways by a T-bone or a blast skates across the lane and scrubs
-          // off instead of stopping dead as if glued to the road.
-          const lateralLimit = Math.max(grip, 5) * 62 * stepSeconds,
-            traction = clamp(lateral * (1 - Math.exp(-grip * stepSeconds)), -lateralLimit, lateralLimit);
-          c.vx += headingSine * traction;
-          c.vy -= headingCosine * traction;
-          c.vx *= Math.exp(-drag * stepSeconds);
-          c.vy *= Math.exp(-drag * stepSeconds);
-          // Rammed roadblock cruisers keep their spin a little longer: nobody is steering.
-          // So does any car just spun by an off-centre hit (resolveContact sets spinUntil).
-          const yawAuthority =
-            c.blockade && !c.braced ? 1.4 : physicsClock < (c.spinUntil || 0) ? 1.1 : 5;
-          c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
-          c.a = normalizeAngle(c.a + c.av * stepSeconds);
-          c.moveA = Math.atan2(c.vy, c.vx);
-          c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
-        }
-        if (isBoat(c)) {
-          const nx = c.x + c.vx * stepSeconds,
-            ny = c.y + c.vy * stepSeconds;
-          if (boatFits(c, nx, ny)) {
-            c.x = nx;
-            c.y = ny;
-          } else {
-            const speed = Math.hypot(c.vx, c.vy);
-            if (speed > 45 && physicsClock - (c.bankHit || -100) > 0.4) {
-              damageVehicle(c, (speed - 40) * 0.035, nx, ny);
-              c.bankHit = physicsClock;
-            }
-            if (boatFits(c, nx, c.y)) {
-              c.x = nx;
-              c.vy = 0;
-            } else if (boatFits(c, c.x, ny)) {
-              c.y = ny;
-              c.vx = 0;
-            } else {
-              c.vx *= -0.12;
-              c.vy *= -0.12;
-            }
-          }
+        } else if (
+          c.hp > 0 &&
+          !c.pursuitTarget &&
+          c.gangTarget?.hp > 0 &&
+          lawVehicle(c) &&
+          !c.crewLost &&
+          !c.crewDeployed &&
+          active
+        ) {
+          const target = c.gangTarget,
+            d = distanceBetween(c, target),
+            da = normalizeAngle(headingBetween(c, target) - c.a);
+          steer = clamp(da * 2.5, -1.8, 1.8);
+          const desired = clamp((d - 150) * 1.5, 0, 180);
+          acceleration = clamp((desired - along) * 4, -650, vehicleDefinition.acc);
+          drag = 0.3;
+        } else if (
+          c.hp > 0 &&
+          c.cop &&
+          !c.crewDeployed &&
+          active &&
+          wantedStars > 0 &&
+          !harborPoliceProtected(player.x, player.y, 30)
+        ) {
+          // Intercepts, PIT and boxing, search sweeps and stuck recovery (pursuit.js).
+          const control = pursuitControl(c, stepSeconds, along, vehicleDefinition);
+          steer = control.steer;
+          acceleration = control.acceleration;
+          drag = control.drag;
+        } else if (c.hp > 0 && c.ai && !c.crewDeployed) {
+          // Traffic decisions are cached: 20 Hz near the player, 4 Hz for distant cars.
+          const ai =
+            c.aiControl && physicsClock < (c.aiControlAt || 0)
+              ? c.aiControl
+              : ((c.aiControl = c.countyRoute
+                  ? countyRouteControl(c)
+                  : trafficControl(c, stepSeconds)),
+                (c.aiControlAt = physicsClock + (c.farFromPlayer ? 0.25 : 0.05)),
+                c.aiControl);
+          const handling = vehicleHandling(c);
+          steer = ai.steer;
+          acceleration = clamp(
+            (ai.desired * handling.top - along) * 5,
+            -400,
+            vehicleDefinition.acc * handling.power,
+          );
+          drag = 0.15;
+        } else if (c.blockade && !c.braced) {
+          // A roadblock cruiser shoved loose by a rammer slides and slews on
+          // locked wheels before it scrubs to a halt.
+          drag = 1.5;
+          grip = 2.2;
         } else {
-          c.x += c.vx * stepSeconds;
-          c.y += c.vy * stepSeconds;
+          drag = c.crewDeployed ? 9 : 1.8;
+          grip = 4;
         }
-        if (isAircraft(c) && c.altitude < terrainHeight(c.x, c.y)) {
-          if (c.type === 'plane') {
-            const slope = terrainSlope(c.x, c.y),
-              sink = Math.max(15, slope.x * c.vx + slope.y * c.vy - (c.vz || 0));
-            planeTouchdown(c, sink);
-          } else {
-            const slope = terrainSlope(c.x, c.y),
-              m = Math.hypot(slope.x, slope.y);
-            c.x = c.stepStartX;
-            c.y = c.stepStartY;
-            if (m > 0.001) {
-              const nx = slope.x / m,
-                ny = slope.y / m,
-                inward = Math.max(0, c.vx * nx + c.vy * ny);
-              c.vx -= nx * inward;
-              c.vy -= ny * inward;
-            }
-            c.altitude = Math.max(c.altitude, terrainHeight(c.x, c.y));
+        const terrain = roadVehicleTerrain(c);
+        if (terrain) {
+          const slope = Math.hypot(terrain.slope.x, terrain.slope.y),
+            power = terrain.traction;
+          acceleration *= power;
+          if (Math.abs(along) > terrain.limit && acceleration * along > 0) acceleration = 0;
+          grip *= terrain.four ? 0.82 : 0.48;
+          drag = Math.max(drag, terrain.trail ? 0.7 : 1.3);
+          const tractionLimit = terrain.four ? (terrain.trail ? 0.62 : 0.72) : 0.15,
+            slide = Math.max(0, slope - tractionLimit);
+          c.vx -= terrain.slope.x * (64 + slide * 150) * stepSeconds;
+          c.vy -= terrain.slope.y * (64 + slide * 150) * stepSeconds;
+        }
+        c.vx += headingCosine * acceleration * stepSeconds;
+        c.vy += headingSine * acceleration * stepSeconds;
+        // Tyres cancel sideways slip, but only up to what they can grip: about 60
+        // units/s² per point of grip. Normal cornering never reaches the limit; a car
+        // punted sideways by a T-bone or a blast skates across the lane and scrubs
+        // off instead of stopping dead as if glued to the road.
+        const lateralLimit = Math.max(grip, 5) * 62 * stepSeconds,
+          traction = clamp(lateral * (1 - Math.exp(-grip * stepSeconds)), -lateralLimit, lateralLimit);
+        c.vx += headingSine * traction;
+        c.vy -= headingCosine * traction;
+        c.vx *= Math.exp(-drag * stepSeconds);
+        c.vy *= Math.exp(-drag * stepSeconds);
+        // Rammed roadblock cruisers keep their spin a little longer: nobody is steering.
+        // So does any car just spun by an off-centre hit (resolveContact sets spinUntil).
+        const yawAuthority =
+          c.blockade && !c.braced ? 1.4 : physicsClock < (c.spinUntil || 0) ? 1.1 : 5;
+        c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
+        c.a = normalizeAngle(c.a + c.av * stepSeconds);
+        c.moveA = Math.atan2(c.vy, c.vx);
+        c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
+      }
+      if (isBoat(c)) {
+        const nx = c.x + c.vx * stepSeconds,
+          ny = c.y + c.vy * stepSeconds;
+        if (boatFits(c, nx, ny)) {
+          c.x = nx;
+          c.y = ny;
+        } else {
+          const speed = Math.hypot(c.vx, c.vy);
+          if (speed > 45 && physicsClock - (c.bankHit || -100) > 0.4) {
+            damageVehicle(c, (speed - 40) * 0.035, nx, ny);
+            c.bankHit = physicsClock;
           }
+          if (boatFits(c, nx, c.y)) {
+            c.x = nx;
+            c.vy = 0;
+          } else if (boatFits(c, c.x, ny)) {
+            c.y = ny;
+            c.vx = 0;
+          } else {
+            c.vx *= -0.12;
+            c.vy *= -0.12;
+          }
+        }
+      } else {
+        c.x += c.vx * stepSeconds;
+        c.y += c.vy * stepSeconds;
+      }
+      if (isAircraft(c) && c.altitude < terrainHeight(c.x, c.y)) {
+        if (c.type === 'plane') {
+          const slope = terrainSlope(c.x, c.y),
+            sink = Math.max(15, slope.x * c.vx + slope.y * c.vy - (c.vz || 0));
+          planeTouchdown(c, sink);
+        } else {
+          const slope = terrainSlope(c.x, c.y),
+            m = Math.hypot(slope.x, slope.y);
+          c.x = c.stepStartX;
+          c.y = c.stepStartY;
+          if (m > 0.001) {
+            const nx = slope.x / m,
+              ny = slope.y / m,
+              inward = Math.max(0, c.vx * nx + c.vy * ny);
+            c.vx -= nx * inward;
+            c.vy -= ny * inward;
+          }
+          c.altitude = Math.max(c.altitude, terrainHeight(c.x, c.y));
         }
       }
-      // A spatial hash provides solid contacts for every car, including stationary wrecks.
-      mark('phys:control');
+    }
+    // Rest flags, vehicle pairs, nearby walls and barriers for this step's contacts.
+    function vehicleBroadphase(pc) {
       // Vehicles that are far from the player, barely moving and untouched for a while
       // "rest": they skip static-contact passes (they cannot have moved into a wall).
       for (const c of vehicles) {
@@ -1279,55 +1335,71 @@
         c.farFromPlayer = far;
         c.resting = c.restSteps > 24 && (far || c.restSteps > 240);
       }
-      const cells = new Map(),
-        pairs = [],
-        seen = new Set();
-      for (const c of vehicles) {
-        const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 2;
+      // Broadphase: vehicles bucketed by 96-unit cell; containers are kept between
+      // steps (this runs 120 times a second) and only their contents rebuilt.
+      const cells = broadphaseCells,
+        pairA = broadphasePairA,
+        pairB = broadphasePairB,
+        seen = broadphaseSeen;
+      // Cell lists are emptied lazily: one is reset when first used in a step (its
+      // stamp is stale), so a map of thousands of cells is never swept.
+      const stamp = ++broadphaseStamp;
+      if (cells.size > 6000) cells.clear();
+      pairA.length = pairB.length = 0;
+      seen.clear();
+      for (let v = 0; v < vehicles.length; v++) {
+        const c = vehicles[v],
+          radius = vehicleRadius(c) + 2,
+          boat = !!isBoat(c),
+          level = (c.altitude || 0) + (c.groundHeight || 0);
         for (let x = Math.floor((c.x - radius) / 96); x <= Math.floor((c.x + radius) / 96); x++)
           for (let y = Math.floor((c.y - radius) / 96); y <= Math.floor((c.y + radius) / 96); y++) {
             const key = x * 65536 + y;
             let list = cells.get(key);
             if (!list) cells.set(key, (list = []));
-            for (const o of list) {
+            if (list.stamp !== stamp) {
+              list.stamp = stamp;
+              list.length = 0;
+            }
+            for (let k = 0; k < list.length; k++) {
+              const o = list[k];
               if (c.resting && o.resting) continue;
               const pk = Math.min(c.id, o.id) * 1e6 + Math.max(c.id, o.id);
               if (
                 !seen.has(pk) &&
-                !!isBoat(c) === !!isBoat(o) &&
-                Math.abs(
-                  (c.altitude || 0) + (c.groundHeight || 0) - (o.altitude || 0) - (o.groundHeight || 0),
-                ) < 19
+                boat === !!isBoat(o) &&
+                Math.abs(level - (o.altitude || 0) - (o.groundHeight || 0)) < 19
               ) {
                 seen.add(pk);
-                pairs.push([c, o]);
+                pairA.push(c);
+                pairB.push(o);
               }
             }
             list.push(c);
           }
       }
-      const staticCandidates = new Map();
-      for (const c of vehicles) {
+      for (let v = 0; v < vehicles.length; v++) {
+        const c = vehicles[v];
         if (c.resting) continue;
         // The list is gathered with 28 units to spare and reused until the car has
         // moved 8 (nearbyStatics covers 20 beyond the body; the grid is versioned).
-        const cache = c.contactStatics;
+        const cache = c.contactStatics,
+          throughShore = c === player.car && !isBoat(c) && !isAircraft(c);
         if (
           cache &&
-          cache.throughShore === (c === player.car && !isBoat(c) && !isAircraft(c)) &&
+          cache.throughShore === throughShore &&
           cache.version === staticGridVersion &&
           Math.abs(c.x - cache.x) < 8 &&
           Math.abs(c.y - cache.y) < 8
         ) {
-          staticCandidates.set(c, cache.list);
+          c.stepStatics = cache.list;
           continue;
         }
-        const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 40,
+        const radius = vehicleRadius(c) + 40,
           list = [];
         // The quay edge stops everything with a driver who ought to know better.
         // The player's own car is not stopped by it: putting one in the bay is a
         // thing you are allowed to do, and then it floods.
-        const throughShore = c === player.car && !isBoat(c) && !isAircraft(c);
         for (const b of nearbyStatics(c)) {
           if (throughShore && b.kind === 'coast') continue;
           const ca = Math.abs(Math.cos(b.a || 0)),
@@ -1338,165 +1410,208 @@
           )
             list.push(b);
         }
-        staticCandidates.set(c, list);
+        c.stepStatics = list;
         c.contactStatics = { x: c.x, y: c.y, list, throughShore, version: staticGridVersion };
       }
       // Vinny's depot shutters open and close mid-mission, so they live outside
       // the baked static grid and are resolved from this short list.
-      const blockBodies = depotBarriers().map((r, i) => ({
-        x: r.x + r.w / 2,
-        y: r.y + r.h / 2,
-        hx: r.w / 2,
-        hy: r.h / 2,
-        a: 0,
-        height: r.height,
-        kind: 'roadblock',
-        id: 'block' + i,
-      }));
+      const depot = depotBarriers(),
+        blockBodies = depot.length
+          ? depot.map((r, i) => ({
+              x: r.x + r.w / 2,
+              y: r.y + r.h / 2,
+              hx: r.w / 2,
+              hy: r.h / 2,
+              a: 0,
+              height: r.height,
+              kind: 'roadblock',
+              id: 'block' + i,
+            }))
+          : noStatics;
       // The base gate and harbor barriers, for the few vehicles near them.
-      const barrierBodies = [];
-      for (const c of vehicles) {
+      const barrierCars = broadphaseBarrierCars,
+        barrierBodies = broadphaseBarrierBodies;
+      barrierCars.length = barrierBodies.length = 0;
+      for (let v = 0; v < vehicles.length; v++) {
+        const c = vehicles[v];
         if (isBoat(c) || (c.altitude || 0) >= 20) continue;
         if (inMilitary(c.x, c.y, 130))
           for (const r of militarySolids())
-            if (r.barrier)
-              barrierBodies.push([c, { x: r.x + r.w / 2, y: r.y + r.h / 2, hx: r.w / 2, hy: r.h / 2, a: 0, height: r.height, kind: 'military', id: 'basegate' }]);
+            if (r.barrier) {
+              barrierCars.push(c);
+              barrierBodies.push({ x: r.x + r.w / 2, y: r.y + r.h / 2, hx: r.w / 2, hy: r.h / 2, a: 0, height: r.height, kind: 'military', id: 'basegate' });
+            }
         if (inHarbor(c.x, c.y, 100))
           for (const r of harborSolids())
-            if (r.barrier)
-              barrierBodies.push([c, { x: r.x + r.w / 2, y: r.y + r.h / 2, hx: r.w / 2, hy: r.h / 2, a: 0, height: r.height, kind: 'harbor', id: 'port' + r.x + ',' + r.y }]);
-        if (blockBodies.length)
-          for (const b of blockBodies)
-            if (Math.abs(c.x - b.x) <= 90 && Math.abs(c.y - b.y) <= 90) barrierBodies.push([c, b]);
+            if (r.barrier) {
+              barrierCars.push(c);
+              barrierBodies.push({ x: r.x + r.w / 2, y: r.y + r.h / 2, hx: r.w / 2, hy: r.h / 2, a: 0, height: r.height, kind: 'harbor', id: 'port' + r.x + ',' + r.y });
+            }
+        for (let k = 0; k < blockBodies.length; k++) {
+          const b = blockBodies[k];
+          if (Math.abs(c.x - b.x) <= 90 && Math.abs(c.y - b.y) <= 90) {
+            barrierCars.push(c);
+            barrierBodies.push(b);
+          }
+        }
       }
-      mark('phys:broadphase');
+    }
+    // Up to seven relaxation passes over the pairs, barriers and walls found by
+    // vehicleBroadphase().
+    function vehicleContactPasses() {
+      const pairA = broadphasePairA,
+        pairB = broadphasePairB,
+        barrierCars = broadphaseBarrierCars,
+        barrierBodies = broadphaseBarrierBodies;
       // Seven relaxation passes. The first tests everything; later passes only
       // revisit bodies a contact moved in the pass before: a body nothing pushed
       // cannot have been pushed into anything new. At five stars this is most of
       // the saving with a street full of cruisers, wrecks and parked cars.
       for (let pass = 0; pass < 7; pass++) {
         contactPass = pass + 1;
-        const active = (c) => pass === 0 || c.contactPass === pass;
-        for (const [a, b] of pairs) {
-          if (!active(a) && !active(b)) continue;
-          const radius =
-            Math.hypot(vehicleSpec(a).l, vehicleSpec(a).w) / 2 +
-            Math.hypot(vehicleSpec(b).l, vehicleSpec(b).w) / 2;
+        // A body is revisited in this pass if the pass before moved it.
+        for (let k = 0; k < pairA.length; k++) {
+          const a = pairA[k],
+            b = pairB[k];
+          if (pass !== 0 && a.contactPass !== pass && b.contactPass !== pass) continue;
+          const radius = vehicleRadius(a) + vehicleRadius(b);
           if (Math.abs(a.x - b.x) > radius || Math.abs(a.y - b.y) > radius) continue;
-          const hit = boxContact(vehicleShape(a), vehicleShape(b));
+          const hit = boxContact(contactShape(a), contactShape(b));
           if (hit) resolveContact(a, b, hit, null, pass === 0);
         }
-        for (const [c, b] of barrierBodies) {
-          if (!active(c)) continue;
-          const hit = boxContact(vehicleShape(c), b);
+        for (let k = 0; k < barrierCars.length; k++) {
+          const c = barrierCars[k];
+          if (pass !== 0 && c.contactPass !== pass) continue;
+          const b = barrierBodies[k],
+            hit = boxContact(contactShape(c), b);
           if (hit) resolveContact(c, null, hit, b, pass === 0);
         }
-        for (const c of vehicles) {
-          if (!active(c)) continue;
-          for (const b of staticCandidates.get(c) || noStatics) {
+        for (let v = 0; v < vehicles.length; v++) {
+          const c = vehicles[v];
+          if (c.resting || (pass !== 0 && c.contactPass !== pass) || isBoat(c)) continue;
+          const statics = c.stepStatics || noStatics;
+          for (let k = 0; k < statics.length; k++) {
+            const b = statics[k];
             if (
-              isBoat(c) ||
               (b.minHeight !== undefined &&
                 entityElevation(c) + vehicleCollisionHeight(c) < b.minHeight) ||
               (isAircraft(c) && c.altitude > b.height + 8) ||
               (c.roofSite && b.building === c.roofSite)
             )
               continue;
-            const hit = boxContact(vehicleShape(c), b);
+            const hit = boxContact(contactShape(c), b);
             if (hit) resolveContact(c, null, hit, b, pass === 0);
           }
         }
       }
+    }
+    // After the contacts: harbor hold, kerbs and the shore, boats kept on water,
+    // the terrain pose, and the player carried along.
+    function settleVehicle(c, pc, stepSeconds) {
+      if (
+        lawVehicle(c) &&
+        harborPoliceHold() &&
+        boxContact(vehicleShape(c), {
+          x: HARBOR.x + HARBOR.w / 2,
+          y: HARBOR.y + HARBOR.h / 2,
+          hx: HARBOR.w / 2,
+          hy: HARBOR.h / 2,
+          a: 0,
+        })
+      ) {
+        c.x = c.stepStartX;
+        c.y = c.stepStartY;
+        c.a = c.stepStartA;
+        c.vx = c.vy = c.av = 0;
+        c.route = null;
+        c.junction = null;
+        c.navAngle = undefined;
+      }
+      // Only the player's own car may leave the land: into the surf off a
+      // beach or over a quay into the bay, where it floods (water.js). A car that
+      // has not moved this step (most are parked) needs no footprint re-check.
+      // Park ponds (and the Central Garden boathouse) have a stone kerb that
+      // stops every wheeled vehicle, the player's included: a car used to drive
+      // into the Commons lake and leave its driver no dry ground to step out on.
+      const moved = c.x !== c.stepStartX || c.y !== c.stepStartY || c.a !== c.stepStartA,
+        wheeled = moved && c.type !== 'plane' && !(isAircraft(c) && c.altitude > 8) && !isBoat(c),
+        nearPond = wheeled && parkPondNear(c.x, c.y, vehicleSpec(c).l);
+      let intoPond = false;
+      if (nearPond) {
+        // More of the car over the water than at the start of the step: a car that
+        // somehow starts with a wheel over the kerb can still back off it.
+        const cornersInPond = (shape) => corners(shape).filter((p) => parkPondBlocked(p.x, p.y)).length,
+          now = cornersInPond(vehicleShape(c));
+        intoPond =
+          now > 0 && now > cornersInPond({ ...vehicleShape(c), x: c.stepStartX, y: c.stepStartY, a: c.stepStartA });
+      }
+      if (intoPond || (wheeled && c !== player.car && footprintOffGround(c))) {
+        // Hitting the pond's stone kerb at speed is a crash, not a soft stop.
+        const hitSpeed = Math.hypot(c.vx || 0, c.vy || 0);
+        // (Same severity as a wall in collisionImpact; the kerb is immovable.)
+        if (intoPond && hitSpeed > 42 && physicsClock - (c.kerbHitAt || -9) > 0.5) {
+          c.kerbHitAt = physicsClock;
+          const nx = c.vx / hitSpeed,
+            ny = c.vy / hitSpeed,
+            reach = vehicleSpec(c).l / 2;
+          damageVehicle(c, Math.pow(hitSpeed - 38, 1.12) * 0.062, c.x + nx * reach, c.y + ny * reach, null, {
+            kind: 'crash',
+            nx: -nx,
+            ny: -ny,
+            closing: hitSpeed,
+            otherMass: 0,
+          });
+          if (c === pc) shake = Math.max(shake, Math.min(10, hitSpeed / 40));
+        }
+        c.x = c.stepStartX;
+        c.y = c.stepStartY;
+        c.a = c.stepStartA;
+        c.av = 0;
+        c.vx *= -0.15;
+        c.vy *= -0.15;
+      }
+      // A moored boat that has not moved still fits where it lies.
+      if (isBoat(c) && moved && !boatFits(c)) {
+        if (c.lastWater) {
+          c.x = c.lastWater.x;
+          c.y = c.lastWater.y;
+          c.a = c.lastWater.a;
+        }
+        c.vx = c.vy = 0;
+      } else if (isBoat(c) && (moved || !c.lastWater))
+        c.lastWater = {
+          x: c.x,
+          y: c.y,
+          a: c.a,
+        };
+      terrainVehiclePose(c, stepSeconds);
+      c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
+      if (c === player.car) {
+        player.x = c.x;
+        player.y = c.y;
+        player.a = c.a;
+        player.altitude = (c.altitude || 0) + (c.groundHeight || 0);
+      }
+    }
+    function physicsStep(stepSeconds, active) {
+      physicsClock += stepSeconds;
+      const pc = player.car;
+      let sectionStart = performance.now();
+      const mark = (name) => {
+        const now = performance.now();
+        profile.parts[name] = (profile.parts[name] || 0) + now - sectionStart;
+        sectionStart = now;
+      };
+      for (let v = 0; v < vehicles.length; v++) controlVehicle(vehicles[v], pc, stepSeconds, active);
+      mark('phys:control');
+      vehicleBroadphase(pc);
+      mark('phys:broadphase');
+      vehicleContactPasses();
       // Lamp posts, hydrants, bins and benches: solid until something heavy and fast
       // enough knocks them flat (damage.js).
       streetPropContacts();
       mark('phys:contacts');
-      for (const c of vehicles) {
-        if (
-          lawVehicle(c) &&
-          harborPoliceHold() &&
-          boxContact(vehicleShape(c), {
-            x: HARBOR.x + HARBOR.w / 2,
-            y: HARBOR.y + HARBOR.h / 2,
-            hx: HARBOR.w / 2,
-            hy: HARBOR.h / 2,
-            a: 0,
-          })
-        ) {
-          c.x = c.stepStartX;
-          c.y = c.stepStartY;
-          c.a = c.stepStartA;
-          c.vx = c.vy = c.av = 0;
-          c.route = null;
-          c.junction = null;
-          c.navAngle = undefined;
-        }
-        // Only the player's own car may leave the land: into the surf off a
-        // beach or over a quay into the bay, where it floods (water.js). A car that
-        // has not moved this step (most are parked) needs no footprint re-check.
-        // Park ponds (and the Central Garden boathouse) have a stone kerb that
-        // stops every wheeled vehicle, the player's included: a car used to drive
-        // into the Commons lake and leave its driver no dry ground to step out on.
-        const moved = c.x !== c.stepStartX || c.y !== c.stepStartY || c.a !== c.stepStartA,
-          wheeled = moved && c.type !== 'plane' && !(isAircraft(c) && c.altitude > 8) && !isBoat(c),
-          nearPond = wheeled && parkPondNear(c.x, c.y, vehicleSpec(c).l),
-          footprint = wheeled && corners(vehicleShape(c)),
-          // More of the car over the water than at the start of the step: a car that
-          // somehow starts with a wheel over the kerb can still back off it.
-          cornersInPond = (shape) => corners(shape).filter((p) => parkPondBlocked(p.x, p.y)).length,
-          intoPond =
-            nearPond &&
-            footprint.some((p) => parkPondBlocked(p.x, p.y)) &&
-            cornersInPond(vehicleShape(c)) >
-              cornersInPond({ ...vehicleShape(c), x: c.stepStartX, y: c.stepStartY, a: c.stepStartA });
-        if (intoPond || (wheeled && c !== player.car && footprint.some((p) => !groundAt(p.x, p.y)))) {
-          // Hitting the pond's stone kerb at speed is a crash, not a soft stop.
-          const hitSpeed = Math.hypot(c.vx || 0, c.vy || 0);
-          // (Same severity as a wall in collisionImpact; the kerb is immovable.)
-          if (intoPond && hitSpeed > 42 && physicsClock - (c.kerbHitAt || -9) > 0.5) {
-            c.kerbHitAt = physicsClock;
-            const nx = c.vx / hitSpeed,
-              ny = c.vy / hitSpeed,
-              reach = vehicleSpec(c).l / 2;
-            damageVehicle(c, Math.pow(hitSpeed - 38, 1.12) * 0.062, c.x + nx * reach, c.y + ny * reach, null, {
-              kind: 'crash',
-              nx: -nx,
-              ny: -ny,
-              closing: hitSpeed,
-              otherMass: 0,
-            });
-            if (c === pc) shake = Math.max(shake, Math.min(10, hitSpeed / 40));
-          }
-          c.x = c.stepStartX;
-          c.y = c.stepStartY;
-          c.a = c.stepStartA;
-          c.av = 0;
-          c.vx *= -0.15;
-          c.vy *= -0.15;
-        }
-        // A moored boat that has not moved still fits where it lies.
-        if (isBoat(c) && moved && !boatFits(c)) {
-          if (c.lastWater) {
-            c.x = c.lastWater.x;
-            c.y = c.lastWater.y;
-            c.a = c.lastWater.a;
-          }
-          c.vx = c.vy = 0;
-        } else if (isBoat(c) && (moved || !c.lastWater))
-          c.lastWater = {
-            x: c.x,
-            y: c.y,
-            a: c.a,
-          };
-        terrainVehiclePose(c, stepSeconds);
-        c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
-        if (c === player.car) {
-          player.x = c.x;
-          player.y = c.y;
-          player.a = c.a;
-          player.altitude = (c.altitude || 0) + (c.groundHeight || 0);
-        }
-      }
+      for (let v = 0; v < vehicles.length; v++) settleVehicle(vehicles[v], pc, stepSeconds);
       mark('phys:post');
     }
     function personIncapacitated(p) {
@@ -1512,7 +1627,7 @@
         for (const p of list) updateKnockdown(p, deltaSeconds);
     }
     function updateKnockdown(p, deltaSeconds) {
-      p.impactCooldown = Math.max(0, (p.impactCooldown || 0) - deltaSeconds);
+      if (p.impactCooldown > 0) p.impactCooldown = Math.max(0, p.impactCooldown - deltaSeconds);
       if (p.hp <= 0) return;
       if (p.ejected) stepEjection(p, deltaSeconds);
       if (p.knockedFor > 0) {
@@ -1592,41 +1707,39 @@
       }
       return true;
     }
+    // The car at a point along its sweep: pointInCar only reads the type (for the
+    // spec), position and heading, so one scratch record stands in for a copy of
+    // the whole vehicle at every sub-step.
+    const sweepProbe = { type: null, airframe: null, x: 0, y: 0, a: 0 };
     function sweptPersonContact(person, c, from) {
       const distance = Math.hypot(c.x - from.x, c.y - from.y),
         steps = Math.min(24, Math.max(1, Math.ceil(distance / 7)));
       if (distance > 170) return pointInCar(person.x, person.y, c, 3);
+      sweepProbe.type = c.type;
+      sweepProbe.airframe = c.airframe;
+      const turn = normalizeAngle(c.a - from.a);
       for (let i = 0; i <= steps; i++) {
         const f = i / steps;
-        if (
-          pointInCar(
-            person.x,
-            person.y,
-            {
-              ...c,
-              x: from.x + (c.x - from.x) * f,
-              y: from.y + (c.y - from.y) * f,
-              a: from.a + normalizeAngle(c.a - from.a) * f,
-            },
-            3,
-          )
-        )
-          return true;
+        sweepProbe.x = from.x + (c.x - from.x) * f;
+        sweepProbe.y = from.y + (c.y - from.y) * f;
+        sweepProbe.a = from.a + turn * f;
+        if (pointInCar(person.x, person.y, sweepProbe, 3)) return true;
       }
       return false;
     }
+    const bloodTrackPrevious = { x: 0, y: 0, a: 0 },
+      bloodTrackSources = [];
     function updateBloodTracks(c, active) {
-      const prev = c.bloodTrackPoint ||
-        c.personSweepStart || {
-          x: c.x,
-          y: c.y,
-          a: c.a,
-        };
-      c.bloodTrackPoint = {
-        x: c.x,
-        y: c.y,
-        a: c.a,
-      };
+      // Where the car was last frame; the record is updated in place.
+      const last = c.bloodTrackPoint || c.personSweepStart,
+        prev = bloodTrackPrevious;
+      prev.x = last ? last.x : c.x;
+      prev.y = last ? last.y : c.y;
+      prev.a = last ? last.a : c.a;
+      if (!c.bloodTrackPoint) c.bloodTrackPoint = { x: 0, y: 0, a: 0 };
+      c.bloodTrackPoint.x = c.x;
+      c.bloodTrackPoint.y = c.y;
+      c.bloodTrackPoint.a = c.a;
       if (!active || !bloodOn || isBoat(c) || isAircraft(c) || (c.altitude || 0) > 3) {
         if (!bloodOn) c.bloodTrackRemaining = 0;
         return;
@@ -1641,14 +1754,19 @@
       // Cheap distance test first: the surface check samples the terrain, and
       // every moving car ran it for every pool in the city each frame.
       const near = distance + vehicleSpec(c).l + 30,
-        sources = bloodPools.filter(
-          (b) =>
-            !b.track &&
-            Math.abs(b.x - c.x) < near &&
-            Math.abs(b.y - c.y) < near &&
-            gameTime - b.created < 180 &&
-            Math.abs((b.surface || 0) - bloodSurface(b.x, b.y)) < 3,
-        );
+        sources = bloodTrackSources;
+      sources.length = 0;
+      for (let i = 0; i < bloodPools.length; i++) {
+        const b = bloodPools[i];
+        if (
+          !b.track &&
+          Math.abs(b.x - c.x) < near &&
+          Math.abs(b.y - c.y) < near &&
+          gameTime - b.created < 180 &&
+          Math.abs((b.surface || 0) - bloodSurface(b.x, b.y)) < 3
+        )
+          sources.push(b);
+      }
       if (!sources.length && !(c.bloodTrackRemaining > 0)) return;
       const steps = Math.ceil(distance / 2),
         ds = distance / steps,
@@ -1709,12 +1827,13 @@
       }
     }
     function updateCars(deltaSeconds, active) {
-      for (const vehicle of vehicles)
-        vehicle.personSweepStart = {
-          x: vehicle.x,
-          y: vehicle.y,
-          a: vehicle.a,
-        };
+      // Where each vehicle starts the frame (swept contacts with people), kept in place.
+      for (const vehicle of vehicles) {
+        const start = vehicle.personSweepStart || (vehicle.personSweepStart = { x: 0, y: 0, a: 0 });
+        start.x = vehicle.x;
+        start.y = vehicle.y;
+        start.a = vehicle.a;
+      }
       physicsAccumulator = Math.min(physicsAccumulator + deltaSeconds, 0.1);
       while (physicsAccumulator >= 1 / 120) {
         physicsStep(1 / 120, active);
@@ -1771,9 +1890,12 @@
           distanceBetween(vehicle, player) > 800
         )
           continue;
+        // Two contact sets per vehicle, swapped each frame: last frame's is read
+        // while this frame's is filled.
         const speed = Math.hypot(vehicle.vx || 0, vehicle.vy || 0),
-          contacts = new Set(),
+          contacts = vehicle.spareContacts || new Set(),
           reach = vehicleSpec(vehicle).l + 100;
+        contacts.clear();
         const touch = (p) => {
           if (
             p.hp > 0 &&
@@ -1794,6 +1916,7 @@
         const swept = Math.hypot(vehicle.x - vehicle.personSweepStart.x, vehicle.y - vehicle.personSweepStart.y);
         forEachPedestrianNear(vehicle.x, vehicle.y, reach + swept, touch);
         for (const list of [enemies, gangMembers, officers, sportsTargets()]) for (const p of list) touch(p);
+        vehicle.spareContacts = vehicle.pedestrianContacts || null;
         vehicle.pedestrianContacts = contacts;
         if (
           speed >= 40 &&

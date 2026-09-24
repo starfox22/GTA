@@ -225,9 +225,34 @@
       return streetEndSolidCache;
     }
     // Part of solid(): the guardrails, gate piers and railings at street ends.
+    // The guardrails bucketed by 256-unit cell (a solid can sit in several).
+    let streetEndGrid = null,
+      streetEndGridList = null;
     function streetEndBlocked(x, y, r = 0) {
-      for (const b of streetEndSolids())
+      const list = streetEndSolids();
+      if (streetEndGridList !== list || streetEndGrid.count !== list.length) {
+        streetEndGridList = list;
+        streetEndGrid = new Map();
+        streetEndGrid.count = list.length;
+        for (const b of list)
+          for (let i = Math.floor((b.x - 32) / 256); i <= Math.floor((b.x + b.w + 32) / 256); i++)
+            for (let j = Math.floor((b.y - 32) / 256); j <= Math.floor((b.y + b.h + 32) / 256); j++) {
+              const key = i * 4096 + j;
+              if (!streetEndGrid.has(key)) streetEndGrid.set(key, []);
+              streetEndGrid.get(key).push(b);
+            }
+      }
+      // Radii up to 32 are covered by the margin each solid was bucketed with.
+      if (r > 32) {
+        for (const b of list) if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+        return false;
+      }
+      const cell = streetEndGrid.get(Math.floor(x / 256) * 4096 + Math.floor(y / 256));
+      if (!cell) return false;
+      for (let i = 0; i < cell.length; i++) {
+        const b = cell[i];
         if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      }
       return false;
     }
     function cityIntersectionAt(x, y) {

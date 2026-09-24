@@ -480,13 +480,21 @@
       ).b;
       return b.a;
     }
+    // Where a station's lift stands. It depends only on the track, so it is worked
+    // out once per built track (solid() asks for every station on every call).
+    const railLiftCache = new Map();
     function railLift(s) {
       if (s.lift) return s.lift;
-      const a = railStationAngle(s);
-      return {
-        x: s.entry.x + Math.cos(a) * 35,
-        y: s.entry.y + Math.sin(a) * 35,
-      };
+      const decks = railDecks(),
+        cached = railLiftCache.get(s);
+      if (cached && cached.decks === decks) return cached.point;
+      const a = railStationAngle(s),
+        point = {
+          x: s.entry.x + Math.cos(a) * 35,
+          y: s.entry.y + Math.sin(a) * 35,
+        };
+      railLiftCache.set(s, { decks, point });
+      return point;
     }
     function railAccessEnd(s) {
       const a = railStationAngle(s),

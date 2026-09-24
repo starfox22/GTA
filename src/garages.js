@@ -71,9 +71,7 @@
       ]);
     }
     function garageBlocked(x, y, r = 8) {
-      return garageWalls().some(
-        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
-      );
+      return rectListBlocked(garageWalls(), x, y, r);
     }
     function inGarageLot(x, y, r = 0) {
       return GARAGES.some(
