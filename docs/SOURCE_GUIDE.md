@@ -147,7 +147,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
-| themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras |
+| themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras (the station roof and its sign are their own batch, cut away while the train or the ride camera is under them, `setStationRoofCut`) |
 | garage3d.js | Garage buildings, shutters, lights and service details |
 | landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
