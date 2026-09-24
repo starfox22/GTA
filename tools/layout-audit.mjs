@@ -8,7 +8,11 @@
 // buildings; station platforms on buildings; buildings on buildings, roads,
 // parks, water or the beach; roads over helipads; roads crossing other roads at
 // an oblique angle (usually a junction, sometimes a road painted over a road);
-// trees, lamps and benches standing in a carriageway. Passing a JSON path also
+// trees, lamps and benches standing in a carriageway; visible barriers (sea
+// railing, street-end guardrails, gate piers and railings) without a collider;
+// street props and fixtures in a carriageway, a building, the water, a doorway
+// or on each other; street-end guardrails in a building or another carriageway;
+// crosswalks leading into a building or a park. Passing a JSON path also
 // saves the layout, which is handy for drawing the plan. See
 // docs/audit/world-layout.md for what the last run found.
 import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
@@ -22,8 +26,30 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage({ viewport: { width: 800, height: 600 } });
 await page.goto('file://' + file + '?dev', { timeout: 300000, waitUntil: 'domcontentloaded' });
-await page.waitForFunction(() => window.DeadEndCity, null, { timeout: 180000 });
+await page.waitForFunction(() => window.DeadEndCity, null, { timeout: 900000 });
+// The props and foot obstacles are registered by the 3D renderer, which is built
+// once the game starts: start one so layout() carries them.
+await page.waitForSelector('#startBtn', { state: 'visible', timeout: 900000 });
+await page.click('#startBtn', { timeout: 900000 });
+await page.waitForFunction(() => window.DeadEndCity.layout().props.length > 0, null, { timeout: 900000, polling: 5000 }).catch(() => {});
 const L = await page.evaluate(() => window.DeadEndCity.layout());
+// Visible barriers against the collision code: every barrier line sampled every
+// 3 units must be solid() for a thin probe, and every street-end guardrail,
+// gate pier and railing solid through its footprint.
+const barrierGaps = await page.evaluate(() => {
+  const D = window.DeadEndCity, B = D.barriers(), gaps = [];
+  for (const r of B.rails) {
+    const n = Math.max(1, Math.floor(Math.hypot(r.x1 - r.x0, r.y1 - r.y0) / 3)), pts = [];
+    for (let i = 0; i <= n; i++) pts.push([r.x0 + ((r.x1 - r.x0) * i) / n, r.y0 + ((r.y1 - r.y0) * i) / n]);
+    D.solidAt(pts, 0.5).forEach((v, i) => v || gaps.push('sea railing (' + pts[i].map(Math.round) + ')'));
+  }
+  for (const b of B.streetEnds) {
+    const pts = [];
+    for (let x = b.x + 0.5; x < b.x + b.w; x += 2) for (let y = b.y + 0.5; y < b.y + b.h; y += 2) pts.push([x, y]);
+    D.solidAt(pts, 0.3).forEach((v, i) => v || gaps.push(b.kind + ' (' + pts[i].map(Math.round) + ')'));
+  }
+  return { rails: B.rails.length, ends: B.streetEnds.length, gaps };
+});
 await browser.close();
 if (process.argv[3]) fs.writeFileSync(process.argv[3], JSON.stringify(L));
 
@@ -113,8 +139,59 @@ for (const [x, y] of L.trees) if (onRoad(x, y, 3)) report('tree in carriageway',
 for (const [x, y] of L.lamps) if (onRoad(x, y, 2)) report('lamp in carriageway', x + ', ' + y);
 for (const [x, y] of L.benches) if (onRoad(x, y, 2)) report('bench in carriageway', x + ', ' + y);
 
+// Barriers drawn without a collider (see above).
+for (const g of barrierGaps.gaps) report('visible barrier without collider', g);
+// Street furniture: knockable props and registered foot obstacles must not
+// stand in a carriageway (bus stop boxes and bollards at kerbs are on the
+// pavement side), inside a building, off the land or in a doorway.
+const insideBuilding = (x, y, pad = 0) => L.buildings.find((b) => x > b.x + pad && x < b.x + b.w - pad && y > b.y + pad && y < b.y + b.h - pad);
+const onLandOrDeck = (x, y) => land(x, y) || L.docks.some((d) => x > d.x && x < d.x + d.w && y > d.y && y < d.y + d.h);
+for (const p of L.props || []) {
+  const h = Math.max(p.hx, p.hy);
+  if (onRoad(p.x, p.y, h * 0.5)) report('prop in carriageway', p.kind + ' ' + p.x + ', ' + p.y + ' ' + onRoad(p.x, p.y, h * 0.5).name);
+  if (insideBuilding(p.x, p.y, 1)) report('prop inside building', p.kind + ' ' + p.x + ', ' + p.y);
+  if (!onLandOrDeck(p.x, p.y)) report('prop in water', p.kind + ' ' + p.x + ', ' + p.y);
+  for (const d of L.doors || []) if (Math.hypot(p.x - d.x, p.y - d.y) < 10) report('prop in doorway', p.kind + ' ' + p.x + ', ' + p.y + ' at ' + d.name);
+}
+for (const o of L.footObstacles || []) {
+  const h = o.r ?? Math.max(o.hx, o.hy);
+  if (h < 12 && onRoad(o.x, o.y, 0.5)) report('fixture in carriageway', Math.round(o.x) + ', ' + Math.round(o.y) + ' ' + onRoad(o.x, o.y, 0.5).name);
+  if (insideBuilding(o.x, o.y, 2)) report('fixture inside building', Math.round(o.x) + ', ' + Math.round(o.y));
+  if (!onLandOrDeck(o.x, o.y)) report('fixture in water', Math.round(o.x) + ', ' + Math.round(o.y));
+}
+// Knockable props standing on top of each other.
+const props = L.props || [];
+for (let i = 0; i < props.length; i++)
+  for (let j = i + 1; j < props.length; j++) {
+    const a = props[i], b = props[j];
+    if (Math.abs(a.x - b.x) > 20 || Math.abs(a.y - b.y) > 20 || (a.x === b.x && a.y === b.y && a.kind === b.kind)) continue;
+    if (overlap({ x: a.x, y: a.y, hx: a.hx, hy: a.hy, a: a.a }, { x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a })) report('prop on prop', a.kind + ' ' + a.x + ', ' + a.y + ' / ' + b.kind + ' ' + b.x + ', ' + b.y);
+  }
+// Street ends: a closed end is a kerb and guardrail, never a painted circle;
+// check none sits on a building or a park, and that its guardrail is not in
+// another carriageway.
+for (const e of L.streetEnds || []) {
+  const ux = Math.round(Math.cos(e.a)), uy = Math.round(Math.sin(e.a));
+  const railBox = { x: e.x + ux * 4, y: e.y + uy * 4, hx: ux ? 2 : e.width / 2 + 2, hy: ux ? e.width / 2 + 2 : 2, a: 0 };
+  for (const b of buildings) if (overlap(railBox, b)) report('street end in building', e.x + ', ' + e.y);
+  const crossing = roadBoxes.find((r) => overlap(shrink(railBox, 1), r));
+  if (crossing) report('street end rail in carriageway', e.x + ', ' + e.y + ' ' + crossing.name);
+}
+// Crosswalks (painted where two streets cross, streets.js) must not lead into
+// a building or a park.
+for (const v of L.streets.filter((s) => s.points[0][0] === s.points[1][0]))
+  for (const h of L.streets.filter((s) => s.points[0][1] === s.points[1][1])) {
+    const x = v.points[0][0], y = h.points[0][1];
+    if (x <= h.points[0][0] + 100 || x >= h.points[1][0] - 100 || y <= v.points[0][1] + 100 || y >= v.points[1][1] - 100) continue;
+    for (const [cx, cy, hx, hy] of [[x, y - h.width / 2 - 12.5, 33, 6.5], [x, y + h.width / 2 + 12.5, 33, 6.5], [x - v.width / 2 - 12.5, y, 6.5, 33], [x + v.width / 2 + 12.5, y, 6.5, 33]]) {
+      const box = { x: cx, y: cy, hx, hy, a: 0 };
+      if (buildings.some((b) => overlap(box, b)) || L.parks.some((p) => overlap(box, rectBox(p)))) report('crosswalk into building or park', Math.round(cx) + ', ' + Math.round(cy));
+    }
+  }
+
 const counts = {};
 for (const f of found) counts[f.kind] = (counts[f.kind] || 0) + 1;
 console.log('rail:', L.rail.map((l) => l.name + ' ' + l.points.length + ' points').join(', '), '| decks', L.railDecks.length, '| piers', L.railPiers.length, '| stations', L.stations.length);
+console.log('barriers:', barrierGaps.rails, 'sea railing runs,', barrierGaps.ends, 'street-end pieces |', (L.props || []).length, 'props,', (L.footObstacles || []).length, 'foot obstacles');
 console.log(Object.keys(counts).length ? counts : 'no overlaps found');
 for (const f of found) console.log(f.kind + ': ' + f.text);

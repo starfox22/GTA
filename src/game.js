@@ -5108,6 +5108,14 @@
         trees: trees.map((t) => [Math.round(t.x), Math.round(t.y), t.r]),
         lamps: lamps.map((l) => [Math.round(l.x), Math.round(l.y)]),
         benches: benchSpots().map((b) => [Math.round(b.x), Math.round(b.y)]),
+        // Knockable street furniture as placed by the renderer (empty in 2D) and
+        // the registered foot obstacles (circles r, or boxes hx/hy turned by a).
+        props: streetProps.map((p) => ({ kind: p.kind, x: Math.round(p.x * 10) / 10, y: Math.round(p.y * 10) / 10, hx: p.hx, hy: p.hy, a: p.a })),
+        footObstacles: [...new Set([...footObstacleGrid.values()].flat())].map((o) =>
+          o.r !== undefined ? { x: o.x, y: o.y, r: o.r } : { x: o.x, y: o.y, hx: o.hx, hy: o.hy, a: Math.atan2(o.s, o.c) },
+        ),
+        streetEnds: streetEndPlan().map((e) => ({ x: e.p.x, y: e.p.y, a: e.a, width: e.width, kind: e.kind })),
+        doors: PLACES.filter((p) => p.door).map((p) => ({ name: p.name, x: p.door.x, y: p.door.y })),
         docks: DOCKS.map((d) => ({ x: d.x, y: d.y, w: d.w, h: d.h, boatX: d.boatX, boatY: d.boatY })),
         parks: CITY_PARKS.map((p) => ({ name: p.name, x: p.x, y: p.y, w: p.w, h: p.h })),
         places: PLACES.filter((p) => p.w).map((p) => ({ name: p.name, x: p.x, y: p.y, w: p.w, h: p.h })),
@@ -5279,6 +5287,24 @@
       // Walk the player on foot `distance` units toward `heading` (radians, 0 is
       // east) in small steps through the normal collision code. Headless frames
       // are far too slow to walk anywhere by holding a key.
+      // Barrier audit (tools/layout-audit.mjs): every visible barrier line as data
+      // -- the sea railing runs, the street-end guardrails, gate piers and
+      // railings -- and how many foot obstacles are registered.
+      barriers() {
+        const rails = [];
+        for (const spot of promenadeSpots())
+          for (const [a, b] of spot.rail || []) {
+            const { cx, cy, ux, uy } = spot.railLine;
+            rails.push({ x0: cx + ux * a, y0: cy + uy * a, x1: cx + ux * b, y1: cy + uy * b, nx: spot.nx, ny: spot.ny });
+          }
+        let obstacles = 0;
+        for (const list of footObstacleGrid.values()) obstacles += list.length;
+        return { rails, streetEnds: streetEndSolids(), streetEndPlan: streetEndPlan(), footObstacleCells: footObstacleGrid.size, footObstacleEntries: obstacles };
+      },
+      // solid() (and, with `foot`, the player's foot obstacles) at many points at once.
+      solidAt(points, r = 1, foot = false) {
+        return points.map(([x, y]) => solid(x, y, r) || (foot && footObstacleBlocked(x, y, r)));
+      },
       walk(heading, distance = 50) {
         for (let i = 0; i < Math.ceil(distance / 2); i++) {
           moveBody(player, Math.cos(heading) * 2, Math.sin(heading) * 2, 8);

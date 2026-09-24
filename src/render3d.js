@@ -411,11 +411,12 @@
                 drawingContext.lineTo(x + g, z + 170);
                 drawingContext.stroke();
               }
-              drawingContext.fillStyle = '#5e8a86';
-              drawingContext.beginPath();
-              drawingContext.arc(x + 32, z + 90, 14, 0, TAU);
-              drawingContext.arc(x + 322, z + 90, 14, 0, TAU);
-              drawingContext.fill();
+              // Planted beds under the plaza's two tree lines (buildWorld puts the
+              // trees there). Two teal discs used to be painted here, pools with
+              // nothing in them.
+              drawingContext.fillStyle = '#5f7a52';
+              drawingContext.fillRect(x + 18, z + 22, 36, 146);
+              drawingContext.fillRect(x + 300, z + 22, 36, 146);
             } else if (zone.includes('OLD QUARTER') || zone === 'BATTERY POINT') {
               drawingContext.fillStyle = '#3a3d3c';
               for (const ax of [115, 226]) drawingContext.fillRect(x + ax, z + 14, 13, 150);
@@ -446,24 +447,56 @@
         drawingContext.stroke();
       }
       // Avenues carry a solid double yellow centre line; local streets keep their dashes.
+      // The line stops short of every junction (at its stop line) and of the
+      // street's end, instead of running through the crossings and the box.
       for (const r of cityStreets()) {
         if (r.width < 112) continue;
-        const [a, b] = r.points;
-        drawingContext.strokeStyle = '#3b4449';
-        drawingContext.lineWidth = 7;
-        drawingContext.beginPath();
-        drawingContext.moveTo(a[0], a[1]);
-        drawingContext.lineTo(b[0], b[1]);
-        drawingContext.stroke();
-        drawingContext.strokeStyle = '#c9a94a';
-        drawingContext.lineWidth = 1.6;
-        for (const offset of [-2.4, 2.4]) {
+        const crossings = cityStreets()
+          .filter((o) => o.vertical !== r.vertical && r.r >= o.start - 6 && r.r <= o.end + 6 && o.r > r.start && o.r < r.end)
+          .map((o) => [o.r - o.width / 2 - 24, o.r + o.width / 2 + 24]);
+        const runs = [[r.start + 30, r.end - 30]];
+        for (const [c0, c1] of crossings)
+          for (let i = runs.length - 1; i >= 0; i--) {
+            const [s0, s1] = runs[i];
+            if (c1 <= s0 || c0 >= s1) continue;
+            runs.splice(i, 1, ...[[s0, c0], [c1, s1]].filter(([p, q]) => q - p > 20));
+          }
+        const at = (v, offset) => (r.vertical ? [r.r + offset, v] : [v, r.r + offset]);
+        for (const [v0, v1] of runs) {
+          drawingContext.strokeStyle = '#3b4449';
+          drawingContext.lineWidth = 7;
           drawingContext.beginPath();
-          drawingContext.moveTo(a[0] + (r.vertical ? offset : 0), a[1] + (r.vertical ? 0 : offset));
-          drawingContext.lineTo(b[0] + (r.vertical ? offset : 0), b[1] + (r.vertical ? 0 : offset));
+          drawingContext.moveTo(...at(v0, 0));
+          drawingContext.lineTo(...at(v1, 0));
           drawingContext.stroke();
+          drawingContext.strokeStyle = '#c9a94a';
+          drawingContext.lineWidth = 1.6;
+          for (const offset of [-2.4, 2.4]) {
+            drawingContext.beginPath();
+            drawingContext.moveTo(...at(v0, offset));
+            drawingContext.lineTo(...at(v1, offset));
+            drawingContext.stroke();
+          }
         }
       }
+      // Stop lines across the approach lanes at every signalled junction, just
+      // before the crossing (the same junctions harbor3d.js gives signals).
+      drawingContext.fillStyle = '#dcdccf';
+      for (const x of ROAD_CENTERS)
+        for (const z of ROAD_ROWS) {
+          if (!cityIntersectionAt(x, z) || !groundAt(x, z, 92) || inHarbor(x, z, 100)) continue;
+          const col = cityStreets().find((r) => r.vertical && r.r === x && z > r.start && z < r.end),
+            row = cityStreets().find((r) => !r.vertical && r.r === z && x > r.start && x < r.end);
+          if (!col || !row) continue;
+          const hc = col.width / 2,
+            hr = row.width / 2;
+          // Traffic keeps right: southbound stops north of the box on the west
+          // half, northbound south of it on the east half, and so on.
+          drawingContext.fillRect(x - hc, z - hr - 23, hc, 3);
+          drawingContext.fillRect(x, z + hr + 20, hc, 3);
+          drawingContext.fillRect(x + hc + 20, z - hr, 3, hr);
+          drawingContext.fillRect(x - hc - 23, z, 3, hr);
+        }
       // Patches, drains, stop lines and curb stains keep the road from reading as a flat color.
       let rseed = 47;
       const random = () => {
@@ -479,8 +512,15 @@
         drawingContext.ellipse(x, z, 12 + random() * 35, 3 + random() * 9, random() * 3, 0, TAU);
         drawingContext.fill();
       }
-      for (const r of ROAD_CENTERS)
+      // Gully grates in the gutter, only where the street really runs (they
+      // used to be stamped down every column line, across plazas and quays).
+      for (const road of cityStreets().filter((s) => s.vertical))
         for (let z = CITY_TOP + 240; z < CITY_SIZE - 150; z += 230) {
+          if (z < road.start + 20 || z > road.end - 30 || !onRoad(road.r + road.width / 2 - 4, z)) continue;
+          if (cityStreets().some((o) => !o.vertical && Math.abs(o.r - z) < o.width / 2 + 26 && road.r > o.start && road.r < o.end))
+            continue;
+          // The grate (drawn at r + 48, 5 wide) sits in the east gutter.
+          const r = road.r + road.width / 2 - 54;
           drawingContext.fillStyle = '#1d282d';
           drawingContext.fillRect(r + 48, z, 5, 11);
           drawingContext.fillStyle = '#707576';

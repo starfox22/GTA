@@ -970,7 +970,7 @@
       function clearSidewalk(x, y) {
         return landAt(x, y) && !onRoad(x, y) && !solid(x, y, 5) && !onBoulevard(x, y, 12) && !inHarbor(x, y, 20) && !inStadiumLot(x, y, 10) && !inGarageLot(x, y, 6);
       }
-      function busShelter(x, z, faceSouth) {
+      function busShelter(x, z, faceSouth, kerbZ) {
         const g = new Three.Group();
         g.position.set(x, 0, z);
         g.rotation.y = faceSouth ? 0 : Math.PI;
@@ -987,6 +987,15 @@
         box(g, -16.5, 9, 2.8, 0.8, 13, 10, darkMetal);
         box(g, 18, 9, 2, 0.8, 18, 0.8, darkMetal);
         box(g, 18, 17, 2, 6, 3, 0.4, mat('#2f5f9a'));
+        // The bus stop box painted on the carriageway in front of the shelter,
+        // a bus length along the kerb, with BUS STOP lettering in the lane.
+        if (kerbZ !== undefined) {
+          const d = Math.abs(kerbZ - z),
+            yellow = mat('#d9b845', 0.8);
+          for (const dz of [d + 1, d + 17]) box(g, 0, 0.14, dz, 84, 0.08, 1.4, yellow);
+          for (const dx of [-42, 42]) box(g, dx, 0.14, d + 9, 1.4, 0.08, 17.4, yellow);
+          for (let k = -36; k <= 36; k += 12) box(g, k, 0.15, d + 11, 5, 0.08, 1, yellow);
+        }
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
         // The back glass and the advertising panel stop people; the front is open.
@@ -1035,7 +1044,7 @@
           // Bus shelters on the wide avenues, one per block on the north sidewalk.
           const avenue = blockY(by + 1);
           if (wideRow(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
-            busShelter(x + 180, south + 6, true);
+            busShelter(x + 180, south + 6, true, avenue - 56);
         }
       for (const spot of benchSpots()) {
         const bench = placeProp('bench', pools.benchSeat, spot.x, 4.2, spot.y, 16, 1, 5);
