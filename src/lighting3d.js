@@ -684,6 +684,93 @@
           if (radius < minRadius) o.castShadow = false;
         });
       }
+      // ---- Contact shadows ---------------------------------------------------------------
+      /**
+       * CONTACT SHADOWS
+       * With sun shadows off (quality.js SHADOWS: the LOW tier's default, or the
+       * Settings choice), every car, pedestrian and figure in view sits on a soft
+       * dark blob instead, so nothing floats over the street: one instanced draw
+       * for all of them. Nothing is drawn while the shadow map is on.
+       */
+      const CONTACT_CAPACITY = 900,
+        contactCanvas = document.createElement('canvas');
+      contactCanvas.width = contactCanvas.height = 64;
+      {
+        const g = contactCanvas.getContext('2d'),
+          grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(0,0,0,1)');
+        grad.addColorStop(0.55, 'rgba(0,0,0,0.8)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 64, 64);
+      }
+      const contactShadows = new Three.InstancedMesh(
+        new Three.PlaneGeometry(1, 1).rotateX(-Math.PI / 2),
+        new Three.MeshBasicMaterial({
+          color: '#000000',
+          map: new Three.CanvasTexture(contactCanvas),
+          transparent: true,
+          // Sunlit pavement sits high on the tone curve, where halving the light
+          // only darkens it a little: the blob has to be strong to read by day.
+          opacity: 0.82,
+          depthWrite: false,
+          fog: false,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -2,
+        }),
+        CONTACT_CAPACITY,
+      );
+      contactShadows.count = 0;
+      contactShadows.visible = false;
+      contactShadows.frustumCulled = false;
+      contactShadows.renderOrder = 2;
+      contactShadows.userData.dynamic = true;
+      contactShadows.name = 'contact shadows';
+      scene.add(contactShadows);
+      const contactMatrix = new Three.Matrix4(),
+        contactPosition = new Three.Vector3(),
+        contactRotation = new Three.Quaternion(),
+        contactScale = new Three.Vector3(),
+        contactUp = new Three.Vector3(0, 1, 0);
+      let contactCount = 0;
+      function contactBlob(x, y, ground, length, width, angle) {
+        if (contactCount >= CONTACT_CAPACITY) return;
+        contactPosition.set(x, ground + 0.3, y);
+        contactRotation.setFromAxisAngle(contactUp, -angle);
+        contactScale.set(length, 1, width);
+        contactShadows.setMatrixAt(contactCount++, contactMatrix.compose(contactPosition, contactRotation, contactScale));
+      }
+      // Called every frame from render(), once the people and vehicles are placed.
+      function updateContactShadows() {
+        contactCount = 0;
+        if (!renderer.shadowMap.enabled) {
+          for (const c of vehicles) {
+            const spec = vehicleSpec(c);
+            if (spec.boat || spec.jetski) continue;
+            const ground = terrainHeight(c.x, c.y),
+              aircraft = isAircraft(c);
+            // Aircraft only on the ground.
+            if (aircraft && (c.altitude ?? 0) - ground > 3) continue;
+            if (!entityInView(c, Math.max(40, spec.l))) continue;
+            const shrink = aircraft ? 0.8 : 1;
+            contactBlob(c.x, c.y, aircraft ? ground : entityElevation(c), spec.l * 1.12 * shrink, spec.w * 1.35 * shrink, c.a || 0);
+          }
+          // People are only drawn this close in (render3d.js, crowd3d.js).
+          if (flightViewActive ? viewZoom > PEOPLE_ZOOM : worldZoom > 0.22) {
+            for (const p of pedestrians)
+              if (!p.hidden && !p.swimming && entityInView(p, 20)) contactBlob(p.x, p.y, entityElevation(p), 10, 10, 0);
+            for (const p of renderPeople) {
+              if (p.hidden || p.swimming || p.parachute) continue;
+              if (p === player && (player.car || transitRide || taxiRide)) continue;
+              if (entityInView(p, 20)) contactBlob(p.x, p.y, entityElevation(p), 10, 10, 0);
+            }
+          }
+        }
+        contactShadows.count = contactCount;
+        contactShadows.visible = contactCount > 0;
+        if (contactCount) contactShadows.instanceMatrix.needsUpdate = true;
+      }
       // ---- Quality tier ----------------------------------------------------------------------
       let activeTier = null;
       function applyRendererQuality(tier) {
@@ -691,8 +778,16 @@
         const ratio = Math.min(devicePixelRatio || 1, tier.pixelRatio);
         if (renderer.getPixelRatio() !== ratio) renderer.setPixelRatio(ratio);
         renderer.setSize(viewportWidth, viewportHeight);
-        if (sun.shadow.mapSize.x !== tier.shadowMap) {
-          sun.shadow.mapSize.set(tier.shadowMap, tier.shadowMap);
+        // Sun shadows (quality.js SHADOWS): off, a smaller map, or the tier's map.
+        // Switching them on or off changes the lights' state, so three.js relinks
+        // the lit programs once; a new size only reallocates the map.
+        const mode = shadowQuality(),
+          on = mode !== 'off',
+          size = mode === 'low' ? Math.min(tier.shadowMap, 2048) : Math.max(2048, tier.shadowMap);
+        renderer.shadowMap.enabled = on;
+        if (sun.castShadow !== on) sun.castShadow = on;
+        if (sun.shadow.mapSize.x !== size || (!on && sun.shadow.map)) {
+          sun.shadow.mapSize.set(size, size);
           if (sun.shadow.map) {
             sun.shadow.map.dispose();
             sun.shadow.map = null;

@@ -535,20 +535,20 @@
       // Draw calls and triangles of the scene pass (shadow map included when it was
       // refreshed this frame) and of the whole frame, for DeadEndCity.stats().
       const frameStats = { sceneCalls: 0, sceneTriangles: 0, shadowFrame: false, totalCalls: 0, viewCalls: 0, shadowCalls: 0 };
-      // Split the scene pass into camera and shadow-map calls: frames without a
-      // shadow refresh give the camera's share, the next refresh the difference.
+      // Split the scene pass into camera and shadow-map calls (the shadow pass
+      // counts its own, flight-view3d.js).
       function noteSceneCalls() {
         frameStats.sceneCalls = renderer.info.render.calls;
         frameStats.sceneTriangles = renderer.info.render.triangles;
-        if (!frameStats.shadowFrame) frameStats.viewCalls = frameStats.sceneCalls;
-        else frameStats.shadowCalls = Math.max(0, frameStats.sceneCalls - frameStats.viewCalls);
+        if (!frameStats.shadowFrame) frameStats.shadowCalls = 0;
+        frameStats.viewCalls = Math.max(0, frameStats.sceneCalls - frameStats.shadowCalls);
       }
       renderer.info.autoReset = false;
       function renderFrame() {
         // Crowd impostors placed during this frame's people pass (flight-view3d.js).
         endPersonImpostors();
         renderer.info.reset();
-        frameStats.shadowFrame = renderer.shadowMap.needsUpdate;
+        frameStats.shadowFrame = renderer.shadowMap.enabled && renderer.shadowMap.needsUpdate;
         if (!hdrCapable || !postTier) {
           renderer.toneMappingExposure = postLook.exposure;
           renderer.setRenderTarget(null);

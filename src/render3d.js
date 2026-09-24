@@ -2157,7 +2157,7 @@
           tier: activeTier?.name,
           gpu: graphicsGpuName,
           hdr: hdrCapable,
-          shadowMap: sun.shadow.mapSize.x,
+          shadowMap: renderer.shadowMap.enabled ? sun.shadow.mapSize.x : 0,
           pixelRatio: renderer.getPixelRatio(),
           renderScale: hdrCapable ? renderScale : 1,
         }),
@@ -2962,8 +2962,14 @@
           skidGeo.setDrawRange(0, si / 3);
           skidGeo.attributes.position.needsUpdate = true;
           skidLines.frustumCulled = false;
-          const shadowRefresh = frames++ % shadowRefreshInterval() === 0;
+          // The sun's shadow map is redrawn every frame it is on (quality.js
+          // SHADOWS): a map kept for a few frames left the shadows of the player
+          // and the traffic trailing behind them. With shadows off, contact
+          // blobs ground the cars and people instead.
+          frames++;
+          const shadowRefresh = renderer.shadowMap.enabled;
           renderer.shadowMap.needsUpdate = shadowRefresh;
+          updateContactShadows();
           lap = profileLap('r:people+fx', lap);
           // World matrices of what is shown (SCENE MATRICES), then the HDR scene,
           // AO, bloom, tone curve and grade (postfx3d.js).

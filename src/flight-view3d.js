@@ -334,8 +334,7 @@
        *    camera stops drawing below DETAIL_ZOOM, and mid-sized ones (lamp posts,
        *    signal gantries, kiosks) to a second layer dropped below FAR_DETAIL_ZOOM.
        *    Lights, sprites (the night glows) and batched scenery always stay.
-       *  - People drop out below PEOPLE_ZOOM (render3d.js) and the shadow map is
-       *    refreshed less often (static shadows stay put between refreshes).
+       *  - People drop out below PEOPLE_ZOOM (render3d.js).
        *  - Vehicle impostors: below IMPOSTOR_ZOOM, traffic other than the player's
        *    vehicle and aircraft is drawn as two instanced boxes (painted body, dark
        *    cabin) instead of a full model of twenty-odd meshes.
@@ -493,13 +492,6 @@
         impostorCount++;
         return true;
       }
-      // Frames between shadow-map refreshes: the street view's cadence, stretched in
-      // the air where everything that casts is small and far away.
-      function shadowRefreshInterval() {
-        const base = activeTier ? activeTier.shadowEvery : touchEnabled() ? 5 : 2;
-        if (!flightViewActive || viewZoom >= 0.3) return base;
-        return viewZoom < 0.15 ? base * 3 : base * 2;
-      }
       /**
        * PEOPLE AT A DISTANCE
        * A pedestrian model is a dozen meshes (torso, head, limbs, hands, gun
@@ -639,8 +631,12 @@
         renderer.shadowMap.render = function (lights, shadowScene, viewCamera) {
           const had = viewCamera.layers.isEnabled(SHADOW_PROXY_LAYER);
           viewCamera.layers.enable(SHADOW_PROXY_LAYER);
+          // Draw calls of the shadow pass, for DeadEndCity.stats() (postfx3d.js).
+          const before = renderer.info.render.calls,
+            refresh = this.enabled && this.needsUpdate && lights.length > 0;
           try {
             renderShadowMap.call(this, lights, shadowScene, viewCamera);
+            if (refresh) frameStats.shadowCalls = renderer.info.render.calls - before;
           } finally {
             if (!had) viewCamera.layers.disable(SHADOW_PROXY_LAYER);
           }

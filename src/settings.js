@@ -7,7 +7,7 @@
      * One SETTINGS screen, reached from the title menu and the pause menu, with
      * four tabs:
      *
-     *   GRAPHICS  quality tier (quality.js), frame limiter and FPS counter
+     *   GRAPHICS  quality tier and shadows (quality.js), frame limiter and FPS counter
      *             (game.js, FRAME LIMITER; 'dead-end-city-frame-limit'), character
      *             see-through: the cutaway round the player under a roof, owned
      *             by the renderer (city3D.setCharacterCutaway, which also reads
@@ -19,7 +19,7 @@
      *   CONTROLS  touch controls (mobile.js) and key remapping (controls.js)
      *
      * Everything applies the moment it changes and is saved in localStorage. The
-     * settings that already had their own keys keep them (graphics, fps, touch,
+     * settings that already had their own keys keep them (graphics, shadows, fps, touch,
      * cutaway, controls); the rest live in one JSON record under
      * 'dead-end-city-settings'.
      *
@@ -102,6 +102,18 @@
           options: GRAPHICS_ORDER.map((id) => [id, id === 'auto' ? 'AUTO' : GRAPHICS_TIERS[id].name]),
           get: () => graphicsSetting,
           set: (value) => cycleGraphicsSetting(value),
+        },
+        {
+          id: 'shadows',
+          kind: 'choice',
+          label: 'Shadows',
+          note: () =>
+            'Sun and moon shadows, redrawn every frame. OFF is fastest (soft contact shadows under cars and people); AUTO follows the graphics quality' +
+            (shadowSetting === 'auto' ? ' (now ' + shadowQuality().toUpperCase() + ')' : '') +
+            '.',
+          options: SHADOW_ORDER.map((id) => [id, id.toUpperCase()]),
+          get: () => shadowSetting,
+          set: (value) => setShadowSetting(value),
         },
         {
           id: 'frameLimit',
