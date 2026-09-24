@@ -456,18 +456,17 @@
       } else if (kind === 1) train.speed += (COASTER_STATION_SPEED - train.speed) * Math.min(1, dt * 2);
       else if (kind === 2) train.speed = Math.max(COASTER_LIFT_SPEED, train.speed + coasterAcceleration(train.speed, pull) * dt);
       else if (kind === 3) {
+        // Magnetic trims above the brake pace, drive tyres below it.
         train.speed += coasterAcceleration(train.speed, pull) * dt;
         if (train.speed > COASTER_BRAKE_SPEED) train.speed = Math.max(COASTER_BRAKE_SPEED, train.speed - 70 * dt);
-        train.speed = Math.max(train.speed, 12);
+        else train.speed += (COASTER_BRAKE_SPEED - 4 - train.speed) * Math.min(1, dt * 1.2);
       } else train.speed = Math.max(4, train.speed + coasterAcceleration(train.speed, pull) * dt);
       train.lastRise = rise;
-      const before = train.t;
       train.t += train.speed * dt;
       if (train.t >= T.length) {
         train.t -= T.length;
         train.laps++;
       }
-      if (before < COASTER_STOP + 60 && train.t >= COASTER_STOP + 60) train.laps = Math.max(train.laps, 0);
     }
     const parkScratch = {},
       parkScratch2 = {},
@@ -1775,7 +1774,8 @@
         for (let j = i + 1; j < solids.length; j++) {
           const a = solids[i],
             b = solids[j];
-          if (a.kind === 'lagoon' && b.kind === 'lagoon') continue;
+          if (a.kind === b.kind && (a.kind === 'lagoon' || a.kind === 'flume')) continue;
+          if (a.kind.startsWith('flume') && b.kind.startsWith('flume')) continue;
           if (a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h)
             overlaps.push(a.kind + ' x ' + b.kind + ' at ' + Math.round(a.x) + ',' + Math.round(a.y));
         }
