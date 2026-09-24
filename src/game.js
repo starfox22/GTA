@@ -5091,7 +5091,18 @@
       drive(type = 'sedan', altitudeMeters = 0, headingRadians = player.a) {
         if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
         if (player.car) exitCar();
-        const car = spawnClearCar(type, player.x + 60, player.y, headingRadians, false);
+        let car = null;
+        if (['speedboat', 'workboat', 'jetski'].includes(type)) {
+          // Boats go on the nearest open water (spawnClearCar wants dry land).
+          for (let r = 0; r < 600 && !car; r += 20)
+            for (let i = 0; i < (r ? 24 : 1) && !car; i++) {
+              const x = player.x + Math.cos((i * TAU) / 24) * r,
+                y = player.y + Math.sin((i * TAU) / 24) * r;
+              if (boatFits({ type, x, y, a: headingRadians })) car = makeCar(type, x, y, headingRadians, false);
+            }
+          if (!car) throw Error('No open water near the player for ' + type);
+          player.swimming = false;
+        } else car = spawnClearCar(type, player.x + 60, player.y, headingRadians, false);
         car.authorized = true;
         enterVehicle(car);
         if (altitudeMeters > 0 && isAircraft(car)) {

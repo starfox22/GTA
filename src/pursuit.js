@@ -1070,7 +1070,18 @@
         seen = c.seesPlayer || d < 260,
         base = seen ? quarry : lastSeen || quarry,
         t = clamp(d / 300, 0, 1.2),
-        target = seen ? { x: base.x + (quarry.vx || 0) * t, y: base.y + (quarry.vy || 0) * t } : base;
+        ram = Math.ceil(wantedStars) >= 3;
+      let target = seen ? { x: base.x + (quarry.vx || 0) * t, y: base.y + (quarry.vy || 0) * t } : base;
+      // Two stars: come alongside, 70 units off the beam, and let the deck crew
+      // do the work. From three stars the launch rams.
+      if (seen && !ram && d < 240) {
+        const qa = Math.atan2(quarry.vy || 0, quarry.vx || 0) || quarry.a || 0,
+          side = (c.x - quarry.x) * -Math.sin(qa) + (c.y - quarry.y) * Math.cos(qa) >= 0 ? 1 : -1;
+        target = {
+          x: quarry.x + (quarry.vx || 0) * 0.4 - Math.sin(qa) * side * 70,
+          y: quarry.y + (quarry.vy || 0) * 0.4 + Math.cos(qa) * side * 70,
+        };
+      }
       let da = normalizeAngle(headingBetween(c, target) - c.a);
       // Feel ahead for the shore: turn toward whichever side is open water.
       const ahead = (angle, dist) => boatFits(c, c.x + Math.cos(c.a + angle) * dist, c.y + Math.sin(c.a + angle) * dist, c.a + angle);
@@ -1087,9 +1098,11 @@
       else c.pinned = 0;
       if (c.pinned > 1.5) c.reverseUntil = physicsClock + 1.2;
       const reversing = physicsClock < (c.reverseUntil || 0),
-        closeIn = Math.ceil(wantedStars) >= 3 ? 0 : 70;
+        quarrySpeed = Math.hypot(quarry.vx || 0, quarry.vy || 0),
+        // Alongside at two stars: hold the runner's speed rather than overrun.
+        overrun = !ram && seen && d < 240 && along > quarrySpeed + 25;
       c.helm = {
-        up: !reversing && Math.abs(da) < 1.5 && !(d < closeIn && seen) && !(slow && Math.abs(along) > 120),
+        up: !reversing && Math.abs(da) < 1.5 && !overrun && !(slow && Math.abs(along) > 120),
         down: reversing || (slow && Math.abs(along) > 120),
         turn: Math.abs(da) < 0.06 ? 0 : clamp(da * 2, -1, 1) * (reversing ? -1 : 1),
       };
@@ -1180,6 +1193,7 @@
         seen: wantedStars > 0 && policeCanSeePlayer(),
         arrest: Math.round(arrestProgress * 100) / 100,
         pursuit: { ...pursuitStats },
+        wounds: woundReport(),
         marine: vehicles
           .filter((c) => c.marineUnit)
           .map((c) => ({ hp: Math.round(c.hp), d: Math.round(distanceBetween(c, player)), speed: Math.round(Math.hypot(c.vx || 0, c.vy || 0)), sees: !!c.seesPlayer })),

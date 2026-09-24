@@ -100,4 +100,24 @@
         b.y = p.y;
       }
     }
+    /* For policeReport(): how the dead fell and how the living are hurt. */
+    function woundReport() {
+      const r = { back: 0, faceDown: 0, spun: 0, slumped: 0, downedOfficers: 0, dragged: 0, limping: 0, crawling: 0, bleeding: bleeders.length };
+      for (const list of [pedestrians, officers, gangMembers, enemies])
+        for (const p of list) {
+          if (p.hp <= 0 && p.deathStyle) {
+            const d = p.deathStyle;
+            if (d.slump) r.slumped++;
+            else if (d.sign < 0) r.faceDown++;
+            else r.back++;
+            if (d.turn) r.spun++;
+          } else if (p.hp > 0) {
+            if (p.downed) r.downedOfficers++;
+            if (p.draggedBy || p.inCover) r.dragged++;
+            if (p.limping) r.limping++;
+            if (p.pose === 'crawl') r.crawling++;
+          }
+        }
+      return r;
+    }
     // END SUBSYSTEM: src/wounds.js
