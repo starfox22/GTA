@@ -890,7 +890,6 @@
         if (s.swing) for (const side of [-1, 1]) box(g, s.middle, 5, side * (W / 2 + 3), s.water[1] - s.water[0], 13, 3, paint('#5c6444'));
       }
       /* ---- Build ------------------------------------------------------------------- */
-      const bridgeModels = [];
       {
         const farRoot = new Three.Group();
         for (const bridge of BRIDGES) {
@@ -921,7 +920,6 @@
           kitLightCloud(kit.lights, 8);
           const extent = (s.water[1] - s.water[0]) / 2 + 120;
           statics.push({ x: c.x + f.ux * ((s.water[0] + s.water[1]) / 2), y: c.y + f.uy * ((s.water[0] + s.water[1]) / 2), group: g, radius: extent + 400 });
-          bridgeModels.push({ bridge, group: g });
           bridgeFarCopy(farRoot, bridge, s);
         }
         // The far copies merge into a couple of meshes shown only in the far view.

@@ -433,8 +433,8 @@
        seconds (1 is short, 4 or more prolonged). */
     function linerHorn(ship, blasts) {
       if (!audio || !soundOn || gameMode !== 'play' || !buildAmbience()) return;
-      const where = spatial(ship, 1600);
-      if (where.gain < 0.04) return;
+      const where = spatial(ship, 1000);
+      if (where.gain < 0.12) return;
       let start = audio.currentTime + 0.05;
       for (const length of blasts) {
         for (const [frequency, level] of [
