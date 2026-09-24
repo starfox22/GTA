@@ -119,7 +119,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy, the Blue Hour terrace landing, water rescue |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each), procedural station idents, selection, playback and saved settings |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
