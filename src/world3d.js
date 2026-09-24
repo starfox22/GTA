@@ -122,6 +122,7 @@
       const waterMaterial = new Three.ShaderMaterial({
         uniforms: waterUniforms,
         fog: true,
+        extensions: { derivatives: true },
         vertexShader: `
           varying vec3 vWorld;
           varying vec3 vNormal;
@@ -211,6 +212,14 @@
             float hx = ripples(vWorld.xz + vec2(e, 0.));
             float hz = ripples(vWorld.xz + vec2(0., e));
             float rippleScale = 0.55 + 0.45 * smoothstep(4., 120., vShore);
+            // How much sea one pixel covers. Ripples a few units across cannot be
+            // resolved from high up: left at full strength they flicker as white
+            // sub-pixel glints all over the sea (shimmer). They fade with the
+            // footprint and the sun's highlight widens instead (a rougher-looking
+            // surface at a distance, as real water reads).
+            float footprint = length(fwidth(vWorld.xz));
+            float fine = 1. - smoothstep(1.2, 6.5, footprint);
+            rippleScale *= mix(0.3, 1., fine);
             vec3 n = normalize(vNormal + vec3((h0 - hx) * 2.2, 0., (h0 - hz) * 2.2) * rippleScale);
             // Boat wakes (wakes3d.js): their waves tilt the surface so they catch the
             // sun and the sky like the swell does; their foam is mixed in below.
@@ -252,12 +261,12 @@
             color += shallow * 0.18 * clamp(vCrest, 0., 1.) * uDay;
             // Sun glitter: tight and broad specular lobes.
             vec3 reflected = reflect(-uSun, n);
-            float spec = pow(max(dot(reflected, viewDir), 0.), 320.) * 2.4
+            float spec = pow(max(dot(reflected, viewDir), 0.), mix(60., 320., fine)) * mix(0.9, 2.4, fine)
                        + pow(max(dot(reflected, viewDir), 0.), 28.) * 0.22;
             vec3 sunColor = mix(vec3(1., .96, .86), vec3(1., .62, .34), uDusk);
             color += sunColor * spec * (0.25 + 1.1 * uDay);
             // Moon path and shoreline light spill at night.
-            float sparkle = smoothstep(0.78, 0.92, vnoise(vWorld.xz * 0.9 + uTime * 0.6));
+            float sparkle = smoothstep(0.78, 0.92, vnoise(vWorld.xz * 0.9 + uTime * 0.6)) * fine;
             color += vec3(.75, .82, 1.) * sparkle * 0.08 * (1. - uDay) * (0.3 + fresnel);
             color += vec3(1., .78, .5) * sparkle * 0.14 * (1. - uDay) * (1. - smoothstep(0., 360., vShore));
             // Foam: breaking edge, retreating wash and crest whitecaps.

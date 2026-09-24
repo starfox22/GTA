@@ -52,6 +52,19 @@
         linkPropInstance(prop, im, index);
         return prop;
       }
+      /**
+       * Shared finishes for building parts (trims, plinths, bulkhead doors, fins,
+       * balconies, shopfront frames): one material per colour and finish, so the
+       * static batcher (render3d.js) merges every building's copies in a map cell
+       * into one draw instead of one per building. Nothing may change these at run
+       * time; a part that needs its own state gets its own mat().
+       */
+      const staticMats = new Map();
+      function staticMat(color, roughness = 0.7, metalness = 0) {
+        const key = color + '|' + roughness + '|' + metalness;
+        if (!staticMats.has(key)) staticMats.set(key, mat(color, roughness, metalness));
+        return staticMats.get(key);
+      }
       // ---- Procedural roof textures --------------------------------------------------
       function canvasTexture(size, paint, repeatX = 1, repeatY = 1) {
         const cv = document.createElement('canvas');
@@ -466,13 +479,15 @@
       };
       const litWindowMaterials = [],
         neonSigns = [],
-        shopGlassMaterial = new Three.MeshStandardMaterial({
-          color: '#1a2a33',
-          roughness: 0.15,
-          metalness: 0.6,
-          emissive: '#ffd6a0',
-          emissiveIntensity: 0,
-        }),
+        shopGlassMaterial = useCityGlass(
+          new Three.MeshStandardMaterial({
+            color: '#1a2a33',
+            roughness: 0.15,
+            metalness: 0.6,
+            emissive: '#ffd6a0',
+            emissiveIntensity: 0,
+          }),
+        ),
         beaconMaterial = new Three.MeshBasicMaterial({ color: '#ff3b2f' }),
         beacons = [],
         awningMaterials = ['#b7413a', '#2d6a5e', '#26426d', '#c99a2e', '#6d3f76', '#d86d4a'].map((c) =>
@@ -489,15 +504,17 @@
           map.repeat.set(repeatX, repeatY);
           lit.repeat.set(repeatX, repeatY);
           map.needsUpdate = lit.needsUpdate = true;
-          const material = new Three.MeshStandardMaterial({
-            map,
-            color: kind === 'decoTower' ? '#e9dccb' : '#cfd6dc',
-            roughness: 0.25,
-            metalness: 0.55,
-            emissive: '#ffe6bf',
-            emissiveMap: lit,
-            emissiveIntensity: 0,
-          });
+          const material = useCityGlass(
+            new Three.MeshStandardMaterial({
+              map,
+              color: kind === 'decoTower' ? '#e9dccb' : '#cfd6dc',
+              roughness: 0.25,
+              metalness: 0.55,
+              emissive: '#ffe6bf',
+              emissiveMap: lit,
+              emissiveIntensity: 0,
+            }),
+          );
           litWindowMaterials.push({ material, strength: cityRange(0.7, 1.1), phase: cityRandom() * 9, x: b.x, y: b.y });
           return material;
         }
@@ -519,6 +536,8 @@
           gloss.repeat.set(repeatX, repeatY);
           gloss.needsUpdate = true;
           material.roughnessMap = material.metalnessMap = gloss;
+          // The panes reflect sky, not the street below them (lighting3d.js).
+          useCityGlass(material);
           material.roughness = kind === 'warehouse' ? 0.65 : 1;
           material.metalness = kind === 'warehouse' ? 0.6 : 1;
         }
@@ -533,18 +552,47 @@
         }
         return material;
       }
+      // One material per roof finish, shared by every roof that uses it (they batch).
+      const roofMaterials = new Map();
       function roofMaterial(kind) {
-        const name = cityPick(ROOF_FOR[kind] || ROOF_FOR.brick),
-          tx = ROOF_TEXTURES[name].clone();
-        tx.needsUpdate = true;
-        return {
-          name,
-          material: new Three.MeshStandardMaterial({
-            map: tx,
-            roughness: name === 'metal' ? 0.45 : 0.92,
-            metalness: name === 'metal' ? 0.5 : 0.02,
-          }),
-        };
+        const name = cityPick(ROOF_FOR[kind] || ROOF_FOR.brick);
+        if (!roofMaterials.has(name))
+          roofMaterials.set(
+            name,
+            new Three.MeshStandardMaterial({
+              map: ROOF_TEXTURES[name],
+              roughness: name === 'metal' ? 0.45 : 0.92,
+              metalness: name === 'metal' ? 0.5 : 0.02,
+            }),
+          );
+        return { name, material: roofMaterials.get(name) };
+      }
+      /**
+       * A building block as two meshes: its four walls in the building's own facade
+       * material (its windows light up on their own schedule) and the roof cap in
+       * the shared roof finish, which the batcher merges across the whole cell. The
+       * underside is never seen. (A six-material box was three draws per building
+       * that the batcher could not merge at all.)
+       */
+      const blockWallsGeo = boxGeo.clone(),
+        blockRoofGeo = boxGeo.clone();
+      {
+        const index = boxGeo.index.array,
+          sides = [],
+          roof = [];
+        for (const g of boxGeo.groups)
+          for (let k = g.start; k < g.start + g.count; k++) {
+            if (g.materialIndex === 2) roof.push(index[k]);
+            else if (g.materialIndex !== 3) sides.push(index[k]);
+          }
+        blockWallsGeo.setIndex(sides);
+        blockRoofGeo.setIndex(roof);
+        blockWallsGeo.clearGroups();
+        blockRoofGeo.clearGroups();
+      }
+      function blockBox(group, x, y, z, w, h, d, face, top) {
+        mesh(blockWallsGeo, face, group, x, y, z, w, h, d);
+        mesh(blockRoofGeo, top, group, x, y, z, w, h, d);
       }
       // ---- Roof props ----------------------------------------------------------------
       /* Roof plant is recorded on its building as `b.roofKeepOuts` (world-space
@@ -575,7 +623,7 @@
         roofKeepOut(group.position.x + x, group.position.z + z, w + 3, d + 3);
         box(group, x, top + h / 2, z, w, h, d, material);
         box(group, x, top + h + 0.6, z, w + 1.5, 1.2, d + 1.5, darkMetal);
-        box(group, x, top + h * 0.45, z + d / 2 + 0.3, 5, h * 0.8, 0.5, mat('#3a4247'));
+        box(group, x, top + h * 0.45, z + d / 2 + 0.3, 5, h * 0.8, 0.5, staticMat('#3a4247'));
       }
       function billboard(group, x, top, z, width, faceSouth = true) {
         roofKeepOut(group.position.x + x, group.position.z + z, width + 4, 5);
@@ -610,7 +658,7 @@
           z = pad.y - b.y,
           r = pad.r,
           s = r / 22;
-        mesh(new Three.CylinderGeometry(r, r, 0.6, 40), mat('#3f464b', 0.85), group, x, top + 0.3, z);
+        mesh(new Three.CylinderGeometry(r, r, 0.6, 40), staticMat('#3f464b', 0.85), group, x, top + 0.3, z);
         const ring = new Three.Mesh(
           new Three.RingGeometry(r - 5 * s, r - 3 * s, 48),
           new Three.MeshBasicMaterial({ color: '#f1e3ad', side: Three.DoubleSide }),
@@ -650,7 +698,7 @@
         const rows = Math.max(1, Math.floor(b.h / 34));
         for (let r = 0; r < rows; r++) {
           const z = 17 + r * 34;
-          box(group, b.w / 2, top + 4, z + 6, b.w - 14, 8, 14, mat('#6f7c83', 0.55, 0.4));
+          box(group, b.w / 2, top + 4, z + 6, b.w - 14, 8, 14, staticMat('#6f7c83', 0.55, 0.4));
           place(pools.skylight, b.x + b.w / 2, top + 5.5, b.y + z - 4, b.w - 18, 7, 1.2);
         }
         for (let k = 0; k < Math.floor(b.w / 60); k++) {
@@ -682,7 +730,7 @@
         if (kind === 'tower') {
           // Plant sits on the finished crown, not buried inside the setbacks.
           const crownTop = top + (b.crownHeight || 0);
-          bulkhead(group, b.w / 2, crownTop, b.h / 2, b.w * 0.3, b.h * 0.28, 14 + (i % 3) * 5, mat('#8c949a', 0.6, 0.3));
+          bulkhead(group, b.w / 2, crownTop, b.h / 2, b.w * 0.3, b.h * 0.28, 14 + (i % 3) * 5, staticMat('#8c949a', 0.6, 0.3));
           const penthouseTop = crownTop + 14 + (i % 3) * 5;
           acCluster(gx + b.w * 0.2, penthouseTop, gz + b.h * 0.25, Math.max(1, Math.floor(b.w / 95)));
           box(group, b.w / 2, penthouseTop + 12, b.h / 2, 1.2, 24, 1.2, darkMetal);
@@ -752,13 +800,13 @@
         const face = b.h + 0.6,
           bays = Math.max(1, Math.floor((b.w - 16) / 46)),
           bayWidth = (b.w - 16) / bays;
-        box(group, b.w / 2, 7.5, b.h + 0.4, b.w - 2, 15, 1.2, mat('#2b3033', 0.7, 0.2));
+        box(group, b.w / 2, 7.5, b.h + 0.4, b.w - 2, 15, 1.2, staticMat('#2b3033', 0.7, 0.2));
         box(group, b.w / 2, 15.6, b.h + 1.2, b.w, 1.4, 2.6, mat(kind === 'stucco' ? '#d9c8a8' : '#4a4d50'));
         for (let k = 0; k < bays; k++) {
           const x = 8 + bayWidth * (k + 0.5),
             door = k === Math.floor(bays / 2);
           if (door) {
-            box(group, x, 6, face + 0.2, 8, 12, 0.6, mat('#3f2f28'));
+            box(group, x, 6, face + 0.2, 8, 12, 0.6, staticMat('#3f2f28'));
             box(group, x, 6, face + 0.6, 0.6, 12, 0.3, chrome);
             box(group, x, 12.6, face + 0.4, 9, 0.8, 0.6, chrome);
           } else {
@@ -773,7 +821,7 @@
               state: 0,
               hits: 0,
             });
-            box(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, mat('#5b5f63'));
+            box(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, staticMat('#5b5f63'));
             if (windowNeon) {
               const color = windowNeonColor(windowNeon);
               atlasSign(group, windowNeonCell(windowNeon), x, 8.5, face + 0.9, Math.min(14, bayWidth - 12), Math.min(14, bayWidth - 12) / 2, cityRandom() < 0.3 ? neonCutoutFlicker : neonCutout);
@@ -871,14 +919,14 @@
                   : i % 2
                     ? '#9a958d'
                     : '#7c6d63',
-          trim = mat(trimColor);
-        box(group, b.w / 2, height / 2, b.h / 2, b.w, height, b.h, [face, face, top, concrete, face, face]);
+          trim = staticMat(trimColor);
+        blockBox(group, b.w / 2, height / 2, b.h / 2, b.w, height, b.h, face, top);
         // Parapet coping and a plinth along the street.
         box(group, b.w / 2, height + 1.6, 2, b.w + 3, 3.2, 4, trim);
         box(group, b.w / 2, height + 1.6, b.h - 2, b.w + 3, 3.2, 4, trim);
         box(group, 2, height + 1.6, b.h / 2, 4, 3.2, b.h, trim);
         box(group, b.w - 2, height + 1.6, b.h / 2, 4, 3.2, b.h, trim);
-        if (kind !== 'tower') box(group, b.w / 2, 2.5, b.h + 0.8, b.w + 3, 5, 2, kind === 'stucco' || kind === 'deco' ? mat('#cbbfae') : trim);
+        if (kind !== 'tower') box(group, b.w / 2, 2.5, b.h + 0.8, b.w + 3, 5, 2, kind === 'stucco' || kind === 'deco' ? staticMat('#cbbfae') : trim);
         if (kind === 'tower' && height > 120) {
           /* Setback crown. A single step reads as an office block; the towers of
              the financial core step two or three times and carry a mast, which is
@@ -893,7 +941,7 @@
             sw *= 0.78;
             sh *= 0.78;
             if (s === 0) roofKeepOut(b.x + b.w / 2, b.y + b.h / 2, sw + 3, sh + 3);
-            box(group, b.w / 2, level + stepH / 2, b.h / 2, sw, stepH, sh, [face, face, top, top, face, face]);
+            blockBox(group, b.w / 2, level + stepH / 2, b.h / 2, sw, stepH, sh, face, top);
             box(group, b.w / 2, level + stepH + 1.2, b.h / 2, sw + 2, 2.4, sh + 2, trim);
             level += stepH + 1.2;
             crown += stepH + 1.2;
@@ -906,7 +954,7 @@
           }
           // Vertical mullion fins: the curtain wall needs relief to catch the sun.
           if (height > 260) {
-            const finMat = mat('#b6bec4', 0.45, 0.35);
+            const finMat = staticMat('#b6bec4', 0.45, 0.35);
             for (let x = 22; x < b.w - 14; x += 38) {
               box(group, x, height / 2, b.h + 0.7, 1.4, height - 10, 1.4, finMat);
               box(group, x, height / 2, -0.7, 1.4, height - 10, 1.4, finMat);
@@ -919,7 +967,7 @@
           // Glazed podium: towers meet the street on a wider base, never on a knife edge.
           if (height > 260) {
             const podium = Math.min(46, height * 0.1);
-            box(group, b.w / 2, podium / 2, b.h / 2, b.w + 22, podium, b.h + 22, [face, face, top, top, face, face]);
+            blockBox(group, b.w / 2, podium / 2, b.h / 2, b.w + 22, podium, b.h + 22, face, top);
             box(group, b.w / 2, podium + 1.4, b.h / 2, b.w + 26, 2.8, b.h + 26, trim);
           }
           b.crownHeight = crown;
@@ -946,7 +994,7 @@
         const streetSouth = cityStreetSouth(b);
         if (streetSouth && !b.place && ['brick', 'stucco', 'office', 'deco'].includes(kind)) shopfront(group, b, kind, i);
         else if (kind === 'brick' && !b.place && cityRandom() < 0.7) fireEscape(group, b);
-        if (kind === 'decoTower' && !b.place) balconies(group, b, mat('#efe4d2'));
+        if (kind === 'decoTower' && !b.place) balconies(group, b, staticMat('#efe4d2'));
         decorateRoof(kind, b, group, i);
         roofOwner = null;
         allBuildings.push({
@@ -977,7 +1025,7 @@
         g.rotation.y = faceSouth ? 0 : Math.PI;
         furnitureGroup.add(g);
         for (const dx of [-13, 13]) box(g, dx, 8, -3, 1, 16, 1, darkMetal);
-        box(g, 0, 16.2, 0, 30, 0.7, 9, mat('#6b7378', 0.4, 0.5));
+        box(g, 0, 16.2, 0, 30, 0.7, 9, staticMat('#6b7378', 0.4, 0.5));
         box(g, 0, 8.5, -3.4, 27, 12, 0.5, glass);
         box(g, 0, 4.8, -0.5, 22, 0.8, 4, propMats.benchSeat);
         for (const dx of [-9, 9]) box(g, dx, 2.4, -0.5, 0.8, 4.6, 3.4, darkMetal);
@@ -987,7 +1035,7 @@
         g.add(adPanel);
         box(g, -16.5, 9, 2.8, 0.8, 13, 10, darkMetal);
         box(g, 18, 9, 2, 0.8, 18, 0.8, darkMetal);
-        box(g, 18, 17, 2, 6, 3, 0.4, mat('#2f5f9a'));
+        box(g, 18, 17, 2, 6, 3, 0.4, staticMat('#2f5f9a'));
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
         // The roof is cut away round a player waiting under it (lighting3d.js).

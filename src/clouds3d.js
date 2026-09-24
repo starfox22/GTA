@@ -568,7 +568,7 @@
           cloudsSupported && camera === flightCamera && camera.position.y > CLOUD_BASE && coverage > 0.02;
         cloudComposite.visible = cloudDepth.visible = active;
         if (!active) return;
-        renderer.getDrawingBufferSize(cloudBuffer);
+        sceneBufferSize(cloudBuffer);
         const width = Math.max(4, Math.round((viewportWidth || cloudBuffer.x) * CLOUD_RESOLUTION)),
           height = Math.max(4, Math.round((viewportHeight || cloudBuffer.y) * CLOUD_RESOLUTION));
         if (cloudTarget.width !== width || cloudTarget.height !== height) cloudTarget.setSize(width, height);

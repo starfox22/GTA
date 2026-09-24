@@ -77,7 +77,68 @@
       return maxTexture >= 16384 ? 'high' : 'medium';
     }
     function applyGraphicsSetting() {
+      adaptive.scale = 1;
+      adaptive.slowFor = adaptive.fastFor = adaptive.cpuFor = 0;
+      adaptive.average = 0;
+      adaptive.tierDrops = 0;
+      if (city3D && city3D.setRenderScale) city3D.setRenderScale(1);
       if (city3D && city3D.setQuality) city3D.setQuality(graphicsTier());
+    }
+    /**
+     * ADAPTIVE QUALITY (AUTO only)
+     * The GPU name only says roughly what a machine can do; the frame rate says
+     * what it is doing. With the setting on AUTO, every frame feeds the time
+     * since the last one and the CPU milliseconds the game spent on it:
+     *
+     *  - GPU-bound and slow (frames averaging under ~52 FPS while the CPU work
+     *    is well inside the frame): the scene is drawn at a lower resolution,
+     *    in 10% steps down to MIN_SCALE, and upsampled by the composite pass
+     *    (postfx3d.js), so the HUD stays sharp.
+     *  - Still slow at the lowest scale, or CPU-bound (the simulation and draw
+     *    submission fill the frame): one tier down (fewer shadow refreshes, an
+     *    earlier LOD, no AO), at most twice per session.
+     *  - Comfortably fast for a while: the resolution creeps back up in 5% steps,
+     *    never sooner than 15 s after a drop, so it does not oscillate.
+     *
+     * A chosen tier (LOW..ULTRA) is never touched: tests and players who pick one
+     * get exactly that. Hidden tabs and long stalls (a tab switch, a GC pause, a
+     * loading hitch) are ignored.
+     */
+    const ADAPTIVE_MIN_SCALE = 0.6,
+      adaptive = { scale: 1, average: 0, slowFor: 0, fastFor: 0, cpuFor: 0, lastDrop: -1e9, tierDrops: 0 };
+    function adaptGraphics(frameMs, cpuMs, now) {
+      if (graphicsSetting !== 'auto' || !city3D || !city3D.setRenderScale || document.hidden) return;
+      if (!(frameMs > 0) || frameMs > 250) return;
+      adaptive.average = adaptive.average ? adaptive.average * 0.92 + frameMs * 0.08 : frameMs;
+      const seconds = frameMs / 1000,
+        slow = adaptive.average > 19.2,
+        cpuBound = cpuMs > adaptive.average * 0.75;
+      adaptive.slowFor = slow && !cpuBound ? adaptive.slowFor + seconds : 0;
+      adaptive.cpuFor = slow && cpuBound ? adaptive.cpuFor + seconds : 0;
+      adaptive.fastFor = adaptive.average < 17.4 ? adaptive.fastFor + seconds : 0;
+      const order = ['low', 'medium', 'high'],
+        tierIndex = order.indexOf(graphicsTierId());
+      const dropTier = () => {
+        if (tierIndex <= 0 || adaptive.tierDrops >= 2) return false;
+        adaptive.tierDrops++;
+        graphicsDetected = order[tierIndex - 1];
+        city3D.setQuality(graphicsTier());
+        adaptive.scale = city3D.setRenderScale(Math.max(adaptive.scale, 0.8));
+        return true;
+      };
+      if (adaptive.slowFor > 1.2) {
+        adaptive.slowFor = 0;
+        adaptive.lastDrop = now;
+        if (adaptive.scale > ADAPTIVE_MIN_SCALE + 0.01) adaptive.scale = city3D.setRenderScale(adaptive.scale - 0.1);
+        else dropTier();
+      } else if (adaptive.cpuFor > 4) {
+        adaptive.cpuFor = 0;
+        adaptive.lastDrop = now;
+        dropTier();
+      } else if (adaptive.fastFor > 6 && adaptive.scale < 1 && now - adaptive.lastDrop > 15000) {
+        adaptive.fastFor = 0;
+        adaptive.scale = city3D.setRenderScale(adaptive.scale + 0.05);
+      }
     }
     // Settings · Graphics (settings.js) passes a tier; with none the setting steps
     // AUTO -> LOW -> MEDIUM -> HIGH -> ULTRA -> AUTO.

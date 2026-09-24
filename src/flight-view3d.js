@@ -815,7 +815,7 @@
         // Zoomed right out on the street the whole city is in view too, so the far
         // copy serves both cameras (the quality tier's lodBias moves the switch).
         const lod = activeTier ? activeTier.lodBias : 1,
-          far = viewZoom < (flightViewActive ? FAR_SCENERY_ZOOM : STREET_FAR_SCENERY_ZOOM) * lod && farClasses.length > 0;
+          far = viewZoom < (flightViewActive ? FAR_SCENERY_ZOOM * lookTune.far : STREET_FAR_SCENERY_ZOOM) * lod && farClasses.length > 0; // TEMP-TUNE
         // Between the street and the far view, the full city is drawn but its
         // shadows come from the far copy on a layer only the sun's shadow camera
         // renders: a few dozen merged casters instead of every building batch.

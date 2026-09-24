@@ -906,7 +906,7 @@
         kitBalconyGlass.emissiveIntensity = night * 0.7;
         kitBridgeGlass.emissiveIntensity = night * 0.35;
         kitPoolWater.emissiveIntensity = 0.15 + night * 0.7;
-        const buffer = renderer.getDrawingBufferSize(kitSizeVector),
+        const buffer = sceneBufferSize(kitSizeVector),
           ortho = camera.isOrthographicCamera;
         const pixelsPerUnit = ortho
           ? buffer.y / Math.max(1, (camera.top - camera.bottom) / (camera.zoom || 1))

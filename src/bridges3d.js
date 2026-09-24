@@ -945,7 +945,7 @@
           m.color.setRGB(0.17, 0.19, 0.2).lerp(bridgeHue.multiplyScalar(led.strength), lit);
         }
         const pulse = 0.35 + 0.65 * Math.max(0, Math.sin(gameTime * 3.2)) ** 2;
-        const buffer = renderer.getDrawingBufferSize(kitSizeVector),
+        const buffer = sceneBufferSize(kitSizeVector),
           ortho = camera.isOrthographicCamera,
           pixelsPerUnit = ortho
             ? buffer.y / Math.max(1, (camera.top - camera.bottom) / (camera.zoom || 1))

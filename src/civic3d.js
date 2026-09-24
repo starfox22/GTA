@@ -306,16 +306,19 @@
         const light = daylight(),
           night = 1 - light,
           dusk = clamp(1 - Math.abs(light - 0.3) / 0.3, 0, 1);
-        hemi.intensity = 0.45 + light * 1.75;
+        // Sky fill is kept well under the sun (about 1 : 3 on a sunlit pavement)
+        // so shadows read at noon instead of washing out to a pale grey.
+        hemi.intensity = 0.45 + light * 1.3;
         hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, light);
         hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, light);
-        sun.intensity = 0.35 + light * 3.6;
+        // Golden hour: the low sun is a strong warm key, not a fading one.
+        sun.intensity = 0.35 + light * 3.75 + dusk * 0.9;
         sun.color.copy(SUN_NIGHT).lerp(SUN_DAY, light).lerp(SUN_DUSK, dusk * 0.85);
         fill.intensity = 0.28 + night * 0.25;
         skyScratch.copy(SKY_NIGHT).lerp(SKY_DAY, light).lerp(SKY_DUSK, dusk * 0.6);
         scene.background.copy(skyScratch);
         scene.fog.color.copy(skyScratch);
-        renderer.toneMappingExposure = 1.1 + night * 0.16 + dusk * 0.07;
+        renderer.toneMappingExposure = 1.0 + night * 0.26 + dusk * 0.06;
         const badge =
           'SOUTH COAST · ' +
           (light < 0.1

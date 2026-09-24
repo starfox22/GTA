@@ -5,7 +5,15 @@
        * Scope: createCityRenderer() closure.
        * Garage buildings, shutters, lights and service details.
        */
-      const garageRoofs = [];
+      const garageRoofs = [],
+        // Ribbed steel sheet (cityscape3d.js) rather than a flat grey slab, which
+        // read as a hole in the block from the street camera.
+        garageRoofMaterial = (() => {
+          const tx = ROOF_TEXTURES.metal.clone();
+          tx.repeat.set(3, 3);
+          tx.needsUpdate = true;
+          return new Three.MeshStandardMaterial({ map: tx, color: '#9aa6a8', roughness: 0.5, metalness: 0.45 });
+        })();
       for (const s of GARAGES) {
         const group = new Three.Group();
         scene.add(group);
@@ -53,7 +61,7 @@
               toneMapped: false,
             }),
           );
-        const roof = box(group, s.x, 49, s.y, 196, 3, 176, mat('#566b71', 0.8));
+        const roof = box(group, s.x, 49, s.y, 196, 3, 176, garageRoofMaterial);
         roof.userData.dynamic = true;
         garageRoofs.push({
           shop: s,

@@ -100,6 +100,13 @@
         bloomTargets = [],
         postWidth = 0,
         postHeight = 0,
+        // The canvas's drawing buffer the targets were sized for, and the share of
+        // it the scene is drawn at (dynamic resolution, quality.js ADAPTIVE QUALITY):
+        // the composite pass upsamples to the full canvas, so the HUD, the grade and
+        // FXAA stay sharp while the expensive scene, AO and bloom passes shrink.
+        canvasWidth = 0,
+        canvasHeight = 0,
+        renderScale = 1,
         postTier = null;
       function buildSceneTarget(width, height, samples) {
         if (sceneTarget) {
@@ -440,10 +447,12 @@
       }
       function sizePostTargets() {
         const size = renderer.getDrawingBufferSize(new Three.Vector2()),
-          width = Math.max(1, Math.floor(size.x)),
-          height = Math.max(1, Math.floor(size.y)),
+          width = Math.max(1, Math.floor(size.x * renderScale)),
+          height = Math.max(1, Math.floor(size.y * renderScale)),
           tier = postTier;
         if (!tier) return;
+        canvasWidth = size.x;
+        canvasHeight = size.y;
         postWidth = width;
         postHeight = height;
         buildSceneTarget(width, height, tier.msaa);
@@ -459,6 +468,24 @@
         if (ldrTarget) ldrTarget.dispose();
         ldrTarget = tier.msaa ? null : colorTarget(width, height, Three.UnsignedByteType);
         postCompositeUniforms.uAspect.value = width / height;
+      }
+      // Dynamic resolution: the share of the canvas the scene is drawn at (0.5..1).
+      // Resizing the targets costs a reallocation, so callers change it in steps.
+      function setRenderScale(scale) {
+        const next = clamp(Math.round(scale * 20) / 20, 0.5, 1);
+        if (next === renderScale) return renderScale;
+        renderScale = next;
+        if (hdrCapable && postTier) sizePostTargets();
+        return renderScale;
+      }
+      // Size in pixels of the buffer the scene pass draws into (the canvas, or the
+      // scaled HDR target): point sprites and screen-space lookups in scene
+      // shaders must use this rather than the canvas's drawing buffer.
+      function sceneBufferSize(target) {
+        renderer.getDrawingBufferSize(target);
+        if (hdrCapable && postTier && renderScale < 1)
+          target.set(Math.max(1, Math.floor(target.x * renderScale)), Math.max(1, Math.floor(target.y * renderScale)));
+        return target;
       }
       function setPostQuality(tier) {
         postTier = tier;
@@ -513,7 +540,7 @@
           return;
         }
         const size = renderer.getDrawingBufferSize(postSizeScratch);
-        if (size.x !== postWidth || size.y !== postHeight) sizePostTargets();
+        if (size.x !== canvasWidth || size.y !== canvasHeight) sizePostTargets();
         renderer.setRenderTarget(sceneTarget);
         renderer.render(scene, camera);
         noteSceneCalls();

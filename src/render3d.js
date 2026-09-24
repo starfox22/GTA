@@ -33,6 +33,9 @@
       try {
         city3D = createCityRenderer();
         getElement('renderBadge').textContent = 'SOUTH COAST · DUSK';
+        // The 2D fallback's ground bitmap (~21 MP) is never drawn with the 3D
+        // renderer running: free it (late paints into it are harmless no-ops).
+        groundCanvas.width = groundCanvas.height = 1;
       } catch (error) {
         console.warn('Reduced graphics mode:', error);
         getElement('renderBadge').textContent = 'REDUCED GRAPHICS';
@@ -51,6 +54,11 @@
         alpha: false,
         powerPreference: 'high-performance',
       });
+      // three.js reads back every shader's info log after compiling it, which
+      // forces the driver to finish compiling on the spot (and was most of the
+      // CPU time in profiles whenever a new material came into view). Only with
+      // ?shadercheck in the URL, for debugging a shader.
+      renderer.debug.checkShaderErrors = /[?&]shadercheck\b/.test(location.search);
       // Quality tier (quality.js): 'auto' asks the GPU what it is first.
       graphicsDetected = detectGraphicsTier(renderer.getContext());
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, graphicsTier().pixelRatio));
@@ -500,7 +508,8 @@
       }
       drawingContext.restore();
       paintDistrictGround(drawingContext);
-      paintParks(drawingContext);
+      // No painted names on the 3D lawns: labels belong to the maps.
+      paintParks(drawingContext, false);
       for (const r of SERVICE_ROADS.filter((r) => r.name.startsWith('SOUTHPORT ')))
         strokeRoad(drawingContext, r.points, r.width, '#606664');
       paintServiceForecourts(drawingContext, true);
@@ -544,7 +553,10 @@
       const blossomMat = mat('#d5a2b5');
       const leafGeo = new Three.IcosahedronGeometry(1, 2),
         trunkGeo = new Three.CylinderGeometry(0.9, 1.9, 1, 8);
-      trees.forEach((t, i) => {
+      trees.forEach((t, i) => plantTree(t, i));
+      // One tree of the plan (or a renderer-only one, landscape3d.js): a palm on the
+      // Keys, otherwise a trunk, limbs and a crown of lobes, batched with the rest.
+      function plantTree(t, i) {
         if (t.tropical ?? (onPalmKeys(t.x) && !t.county)) {
           makePalm(t.x, t.y, t.r / 17);
           return;
@@ -596,7 +608,7 @@
           group,
           radius: 40,
         });
-      });
+      }
       // Lamps, illuminated signs and street furniture.
       const haloCanvas = document.createElement('canvas');
       haloCanvas.width = haloCanvas.height = 64;
@@ -774,6 +786,7 @@
       // @include src/civic3d.js
       // @include src/air-cover3d.js
       // @include src/renewal3d.js
+      // @include src/landscape3d.js
       // @include src/sports3d.js
       // @include src/transit3d.js
       // @include src/ecology3d.js
@@ -1461,6 +1474,56 @@
         retiredGeometries.clear();
         retiredMaterials.clear();
       }
+      /**
+       * BAKED CANVAS RELEASE
+       * The painted ground sheets (the city sheet alone is ~29 megapixels, over
+       * 110 MB as a canvas; the county, Sunset Pier and Fort Sentinel tiles add
+       * ~70 MB) are uploaded to the GPU once and never repainted. Once a sheet's
+       * texture is on the GPU its canvas is shrunk to a pixel, which frees the
+       * bitmap; the texture keeps its GPU copy (nothing bumps its version again).
+       */
+      const bakedCanvases = [groundTx, roughTx, ...countyGroundMaterials.map((m) => m.map)].filter((t) => t && t.image);
+      function releaseBakedCanvases() {
+        for (let i = bakedCanvases.length - 1; i >= 0; i--) {
+          const texture = bakedCanvases[i],
+            uploaded = renderer.properties.get(texture);
+          if (!uploaded.__webglTexture || uploaded.__version !== texture.version) continue;
+          texture.image.width = texture.image.height = 1;
+          bakedCanvases.splice(i, 1);
+        }
+      }
+      /**
+       * SHADER PREWARM
+       * A material's program is otherwise compiled the first time it is drawn:
+       * a hitch each time a new district, vehicle or effect comes into view. While
+       * the title screen is up, the scene's programs are compiled a slice at a time
+       * (a few milliseconds per task, so the menu stays smooth) with the HDR target
+       * bound, so the programs match the ones the scene pass will ask for. With
+       * KHR_parallel_shader_compile the driver compiles them in the background.
+       */
+      function prewarmShaders() {
+        const queue = [...scene.children],
+          slice = new Three.Object3D();
+        const step = () => {
+          const started = performance.now(),
+            previous = renderer.getRenderTarget();
+          if (hdrCapable && postTier) renderer.setRenderTarget(sceneTarget);
+          while (queue.length && performance.now() - started < 6) {
+            // Compile ~40 top-level objects per call: compile() walks the whole
+            // scene for its lights each time.
+            slice.children = queue.splice(0, 40);
+            try {
+              renderer.compile(slice, camera, scene);
+            } catch (error) {
+              queue.length = 0;
+            }
+          }
+          slice.children = [];
+          renderer.setRenderTarget(previous);
+          if (queue.length) setTimeout(step, 30);
+        };
+        setTimeout(step, 1500);
+      }
       const viewFrustum = new Three.Frustum(),
         viewProjection = new Three.Matrix4(),
         entityBounds = new Three.Sphere();
@@ -1536,7 +1599,15 @@
                 while (root.parent && root.parent !== scene) root = root.parent;
                 if (roles.has(root)) named = { name: roles.get(root), type: '' };
                 else if (!named.name && root !== o)
-                  named = { name: 'group@' + Math.round(root.position.x) + ',' + Math.round(root.position.z), type: '' };
+                  named = {
+                    // Unnamed parts of an unnamed group: say what they are, so the
+                    // unbatched ones (transparent, multi-material, signs) stand out.
+                    name:
+                      'group@' + Math.round(root.position.x) + ',' + Math.round(root.position.z) +
+                      ' [' + (o.geometry?.type || o.type) + ' ' + (Array.isArray(o.material) ? 'multi' : o.material.type) +
+                      (o.material.transparent ? ' transparent' : '') + (o.userData.sign ? ' sign' : '') + ']',
+                    type: '',
+                  };
                 const material = Array.isArray(o.material) ? o.material[0] : o.material,
                   key =
                     (named.name || o.type + ' ' + (o.geometry?.type || '') + ' ' + material.type) +
@@ -1560,12 +1631,22 @@
           postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : 0;
           return mode || 'image';
         },
+        tune: (o) => Object.assign(lookTune, o || {}), // TEMP-TUNE
         // Switch graphics quality tier (quality.js) at runtime.
         setQuality(tier) {
           applyRendererQuality(tier);
           api.resize();
         },
-        quality: () => ({ tier: activeTier?.name, gpu: graphicsGpuName, hdr: hdrCapable, shadowMap: sun.shadow.mapSize.x, pixelRatio: renderer.getPixelRatio() }),
+        quality: () => ({
+          tier: activeTier?.name,
+          gpu: graphicsGpuName,
+          hdr: hdrCapable,
+          shadowMap: sun.shadow.mapSize.x,
+          pixelRatio: renderer.getPixelRatio(),
+          renderScale: hdrCapable ? renderScale : 1,
+        }),
+        // Dynamic resolution (quality.js ADAPTIVE QUALITY); returns the scale applied.
+        setRenderScale: (scale) => (hdrCapable ? setRenderScale(scale) : 1),
         resize() {
           renderer.setSize(viewportWidth, viewportHeight);
           const viewH = clamp(viewportHeight * 0.68, 430, 630) / worldZoom;
@@ -1703,6 +1784,8 @@
         render() {
           const deltaSeconds = Math.min(0.04, Math.max(0, gameTime - lastVisualTime));
           lastVisualTime = gameTime;
+          // Split CPU timings of the frame for DeadEndCity.stats() (`r:` parts).
+          let lap = performance.now();
           nightAmount = clamp(1 - daylight() * 1.6, 0, 1);
           updateCivicVisuals();
           // A boat passing under a road bridge is dropped 30 units below the deck
@@ -1723,11 +1806,13 @@
           );
           // Weather runs after the time-of-day pass so it modifies that day's light
           // rather than being overwritten by it; the clouds need the final camera.
+          lap = profileLap('r:camera', lap);
           updateWeatherVisuals(deltaSeconds);
           updateLighting(deltaSeconds);
           updateSurfaces(deltaSeconds);
           applyAerialFog();
           updateCloudVisuals(deltaSeconds);
+          lap = profileLap('r:sky', lap);
           updateTransitVisuals();
           updateWildlifeVisuals(deltaSeconds);
           updateSportsVisuals(deltaSeconds);
@@ -1743,6 +1828,7 @@
           updateMarinaVisuals(deltaSeconds);
           updateTrafficVisuals();
           updateMissionVisuals();
+          lap = profileLap('r:scenery', lap);
           placeSun();
           updateFarScenery();
           // Scenery groups inside the visible ground footprint (flight-view3d.js);
@@ -1755,11 +1841,13 @@
           // Anything between the camera and the player is cut away round them
           // (lighting3d.js, CUTAWAY).
           updateCutaway(altitude);
+          lap = profileLap('r:lod', lap);
           // Pedestrians are drawn by the instanced crowd (src/crowd3d.js), poses and
           // all; guards, gangs, officers, story actors and the player keep
           // individual models for their weapons and uniforms.
           const people = [...enemies, ...gangMembers, ...officers, ...storyActors, player];
           updateCrowd3D(deltaSeconds);
+          lap = profileLap('r:crowd', lap);
           pruneModels(carModels, new Set(vehicles));
           pruneModels(personModels, new Set(people));
           pruneModels(pickupModels, new Set(pickups));
@@ -1907,6 +1995,7 @@
             vehicleEffects(c, m, deltaSeconds);
           }
           endVehicleImpostors();
+          lap = profileLap('r:vehicles', lap);
           // Every craft on the water has reported in: draw the wake map (wakes3d.js).
           updateWakes(deltaSeconds);
           for (const [c, m] of carModels)
@@ -1916,6 +2005,7 @@
             }
           // Marks on vehicles, debris, knocked furniture and decal uploads (damage3d.js).
           updateDamageVisuals(deltaSeconds);
+          lap = profileLap('r:damage', lap);
           for (const p of people) {
             const activePlayer = p === player;
             let m = personModels.get(p);
@@ -2270,9 +2360,13 @@
           skidGeo.setDrawRange(0, si / 3);
           skidGeo.attributes.position.needsUpdate = true;
           skidLines.frustumCulled = false;
-          renderer.shadowMap.needsUpdate = frames++ % shadowRefreshInterval() === 0;
+          const shadowRefresh = frames++ % shadowRefreshInterval() === 0;
+          renderer.shadowMap.needsUpdate = shadowRefresh;
+          lap = profileLap('r:people+fx', lap);
           // HDR scene, AO, bloom, tone curve and grade (postfx3d.js).
           renderFrame();
+          lap = profileLap(shadowRefresh ? 'r:submit+shadow' : 'r:submit', lap);
+          if (bakedCanvases.length && frames % 30 === 0) releaseBakedCanvases();
           worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
           if (target && gameMode === 'play') {
             const p = api.project(target.x, target.y, 32 + targetAltitude);
@@ -2377,6 +2471,7 @@
       applyRendererQuality(graphicsTier());
       refreshEnvironment(true);
       api.resize();
+      prewarmShaders();
       return api;
     }
     // END SUBSYSTEM: src/render3d.js

@@ -4026,7 +4026,7 @@
       canvas.focus();
       keys = {};
       tell('Welcome to South Coast. Answer the yellow payphone, or take a ride.', 5);
-      announce('SOUTH COAST · 1997', 'OLD QUARTER', 1.8);
+      announce('SOUTH COAST · 1997', 'DEAD END CITY', 1.8);
     }
     function togglePause() {
       if (gameMode === 'arsenal') {
@@ -4148,7 +4148,7 @@
       save();
       gameMode = 'play';
       getElement('pauseMenu').classList.add('hidden');
-      announce('A FRESH START', 'OLD QUARTER', 1.8);
+      announce('A FRESH START', 'DEAD END CITY', 1.8);
       tell('Your story starts at the yellow payphone.');
       newCallNotice();
       canvas.focus();
@@ -4602,6 +4602,13 @@
       fn();
       profile.parts[name] = (profile.parts[name] || 0) + performance.now() - t0;
     }
+    // Split timing for long straight-line passes (the renderer's frame): adds the
+    // time since `t0` to `name` and returns the new mark, so no closure is made.
+    function profileLap(name, t0) {
+      const now = performance.now();
+      profile.parts[name] = (profile.parts[name] || 0) + now - t0;
+      return now;
+    }
     /**
      * FPS COUNTER
      * Optional readout switched from Settings · Graphics and remembered in
@@ -4674,9 +4681,13 @@
       }
       const drawStart = performance.now();
       drawWorld();
+      const frameEnd = performance.now();
       profile.update += drawStart - updateStart;
-      profile.draw += performance.now() - drawStart;
+      profile.draw += frameEnd - drawStart;
       profile.frames++;
+      // AUTO graphics: dynamic resolution and tier from the frame rate (quality.js).
+      if (gameMode === 'play') adaptGraphics(t - (profile.previousFrame || t), frameEnd - updateStart, frameEnd);
+      profile.previousFrame = t;
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
@@ -5379,7 +5390,12 @@
       // Settings choice); returns what the renderer is now using.
       graphics(tier) {
         if (tier !== undefined) cycleGraphicsSetting(String(tier).toLowerCase());
-        return { setting: graphicsSetting, ...(city3D?.quality?.() || {}) };
+        return {
+          setting: graphicsSetting,
+          ...(city3D?.quality?.() || {}),
+          // AUTO's frame-rate adaptation (quality.js ADAPTIVE QUALITY).
+          adaptive: { averageFrameMs: +adaptive.average.toFixed(1), tierDrops: adaptive.tierDrops },
+        };
       },
       // Everything on the settings screen (settings.js), and the HUD's saved
       // state. Pass an object to change some of it, e.g. { chatter: false,
@@ -5442,6 +5458,7 @@
       postView: (mode) => city3D?.postView?.(mode) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
+      tune: (o) => city3D?.tune?.(o) ?? null, // TEMP-TUNE
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),
@@ -5460,6 +5477,7 @@
             viewCalls: info?.viewCalls ?? null,
             shadowCalls: info?.shadowCalls ?? null,
             frameCalls: info?.frameCalls ?? null,
+            renderScale: city3D?.quality?.().renderScale ?? null,
             sceneObjects: info?.objects ?? null,
             byType: info?.byType ?? null,
             vehicles: vehicles.length,

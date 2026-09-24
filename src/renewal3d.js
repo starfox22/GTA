@@ -5,8 +5,49 @@
        * Scope: createCityRenderer() closure.
        * Benches, fountains, sports courts, pergolas, pond bridge and bicycle racks.
        */
+      /**
+       * Still water (the Garden Lake, fountain basins): a tiling ripple normal map,
+       * drifted by updateSurfaces() (surfaces3d.js), so the surface breaks up the sky
+       * and lamp reflections instead of reading as a flat plastic disc.
+       */
+      const pondRippleMaps = [];
+      const pondRipples = (() => {
+        const size = 128,
+          cv = document.createElement('canvas');
+        cv.width = cv.height = size;
+        const g = cv.getContext('2d'),
+          image = g.createImageData(size, size),
+          height = (x, y) => {
+            const u = (x / size) * TAU,
+              v = (y / size) * TAU;
+            // Whole periods only, so the tile repeats seamlessly.
+            return Math.sin(u * 3 + Math.sin(v * 2) * 1.3) * 0.5 + Math.sin(v * 5 + u * 2) * 0.3 + Math.sin(u * 7 - v * 4 + Math.cos(u * 2)) * 0.2;
+          };
+        for (let y = 0; y < size; y++)
+          for (let x = 0; x < size; x++) {
+            const dx = height(x + 1, y) - height(x - 1, y),
+              dy = height(x, y + 1) - height(x, y - 1),
+              len = Math.hypot(dx * 2.2, dy * 2.2, 1),
+              i = (y * size + x) * 4;
+            image.data[i] = ((-dx * 2.2) / len * 0.5 + 0.5) * 255;
+            image.data[i + 1] = ((-dy * 2.2) / len * 0.5 + 0.5) * 255;
+            image.data[i + 2] = (1 / len * 0.5 + 0.5) * 255;
+            image.data[i + 3] = 255;
+          }
+        g.putImageData(image, 0, 0);
+        const tx = new Three.CanvasTexture(cv);
+        tx.wrapS = tx.wrapT = Three.RepeatWrapping;
+        pondRippleMaps.push(tx);
+        return tx;
+      })();
       // Parks have distinct layouts and landmarks, all placed from CITY_PARKS.
-      const parkWater = mat('#6398a1', 0.22, 0.25),
+      const parkWater = new Three.MeshStandardMaterial({
+          color: '#3c7780',
+          roughness: 0.08,
+          metalness: 0.3,
+          normalMap: pondRipples,
+          normalScale: new Three.Vector2(0.35, 0.35),
+        }),
         parkStone = mat('#c7c5ae', 0.9),
         parkWood = mat('#aa8560', 0.8),
         parkRose = mat('#bc8399');
@@ -134,12 +175,21 @@
       function buildCommons(group) {
         const c = COMMONS,
           lakeMat = new Three.MeshStandardMaterial({
-            color: '#3f8592',
-            roughness: 0.12,
-            metalness: 0.4,
+            color: '#24606b',
+            roughness: 0.06,
+            metalness: 0.35,
             transparent: true,
-            opacity: 0.94,
-            envMapIntensity: 1.2,
+            opacity: 0.95,
+            envMapIntensity: 1.1,
+            // ShapeGeometry UVs are in world units: one ripple tile per 48.
+            normalMap: (() => {
+              const tx = pondRipples.clone();
+              tx.repeat.set(1 / 48, 1 / 48);
+              tx.needsUpdate = true;
+              pondRippleMaps.push(tx);
+              return tx;
+            })(),
+            normalScale: new Three.Vector2(0.45, 0.45),
           }),
           bronze = mat('#6f5a3a', 0.45, 0.6),
           cream = mat('#e7dfcf', 0.8),
