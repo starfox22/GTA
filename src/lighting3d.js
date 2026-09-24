@@ -198,6 +198,8 @@
         // Shop windows spill warm light across the pavement in front of them.
         for (const b of buildings)
           for (const pane of b.shopPanes || []) pool(pane.cx, pane.face + 10, Math.max(22, pane.width * 0.8), 255, 214, 160, 0.45);
+        // South Coast Stadium's floodlights while a fixture is on (sports3d.js).
+        for (const flood of stadiumFloodPools()) pool(flood.x, flood.y, flood.radius, 255, 248, 232, flood.strength);
         // Rooftop and street neon: tinted glows (their sprites carry the colour).
         for (const n of neonSigns) {
           const p = n.sprite.getWorldPosition(sunScratch);

@@ -18,6 +18,11 @@
      *   vehicles only: people walk between the bollards and through the two gates.
      * The pitch is fenced four units outside the touchlines with advertising
      * boards, leaving a 26-unit concourse between the boards and every stand.
+     * Two 26-unit openings cross the boards: the players' tunnel mouth in the
+     * middle of the north side and, straight ahead of the turnstiles, the middle
+     * of the south side, so anyone who comes through the gates can walk on to
+     * the pitch. At each end the boards step back round the goal to make room
+     * for the net (which closes the concourse behind the goals).
      */
     const PITCH_FENCE = (() => {
       const pitch = SPORTS_VENUES.soccer,
@@ -28,8 +33,33 @@
         right = pitch.x + pitch.w + inset,
         top = pitch.y - inset - thickness,
         bottom = pitch.y + pitch.h + inset,
-        span = right + thickness - left,
-        depth = bottom + thickness - top;
+        centerX = pitch.x + pitch.w / 2,
+        centerY = pitch.y + pitch.h / 2,
+        gapHalf = 13,
+        netHalf = pitch.goalWidth / 2 + 5,
+        netBack = pitch.goalDepth + 3,
+        segments = [];
+      const run = (id, x, y, w, h) => {
+        if (w > 0 && h > 0) segments.push({ id, x, y, w, h, height });
+      };
+      for (const [id, y] of [
+        ['fence-north', top],
+        ['fence-south', bottom],
+      ]) {
+        run(id, left, y, centerX - gapHalf - left, thickness);
+        run(id, centerX + gapHalf, y, right + thickness - centerX - gapHalf, thickness);
+      }
+      for (const [id, x, back] of [
+        ['fence-west', left, pitch.x - netBack - thickness],
+        ['fence-east', right, pitch.x + pitch.w + netBack],
+      ]) {
+        run(id, x, top, thickness, centerY - netHalf - top);
+        run(id, x, centerY + netHalf, thickness, bottom + thickness - centerY - netHalf);
+        // The notch: a back board behind the net and two short returns.
+        run(id, back, centerY - netHalf, thickness, netHalf * 2 + thickness);
+        run(id, Math.min(x, back), centerY - netHalf, Math.abs(x - back) + thickness, thickness);
+        run(id, Math.min(x, back), centerY + netHalf, Math.abs(x - back) + thickness, thickness);
+      }
       return {
         inset,
         thickness,
@@ -38,14 +68,32 @@
         right,
         top,
         bottom,
-        segments: [
-          { id: 'fence-north', x: left, y: top, w: span, h: thickness, height },
-          { id: 'fence-south', x: left, y: bottom, w: span, h: thickness, height },
-          { id: 'fence-west', x: left, y: top, w: thickness, h: depth, height },
-          { id: 'fence-east', x: right, y: top, w: thickness, h: depth, height },
+        gaps: [
+          { id: 'tunnel', x: centerX - gapHalf, y: top, w: gapHalf * 2 },
+          { id: 'turnstiles', x: centerX - gapHalf, y: bottom, w: gapHalf * 2 },
         ],
+        segments,
       };
     })();
+    /**
+     * BIG SCREENS: live scoreboards (drawn by sports3d.js). `z` is the height of
+     * the screen's centre, `w` its width (screens are 2:1), `yaw` turns it about
+     * the vertical (0 faces south, the way the street camera looks) and `tilt`
+     * leans the top back so the elevated camera reads it square on. `base` is
+     * where its two legs stand (0 the ground, 86 the entrance beam; null for a
+     * screen fixed flat to a wall).
+     * Inside: over the north stand and at the back of each end stand, angled at
+     * the pitch. Outside: above the entrance and on both halves of the south
+     * facade, facing the plaza.
+     */
+    const STADIUM_SCREENS = [
+      { id: 'north', inside: true, x: 2689, y: 4319, z: 119, w: 130, yaw: 0, tilt: 0.3 },
+      { id: 'west', inside: true, x: 2300, y: 4600, z: 112, w: 104, yaw: 0.62, tilt: 0.3 },
+      { id: 'east', inside: true, x: 3075, y: 4600, z: 112, w: 104, yaw: -0.62, tilt: 0.3 },
+      { id: 'entrance', inside: false, x: 2689, y: 4880, z: 121, w: 88, yaw: 0, tilt: 0.25, base: 86 },
+      { id: 'facade-west', inside: false, x: 2462, y: 4890, z: 56, w: 118, yaw: 0, tilt: 0.12, base: null },
+      { id: 'facade-east', inside: false, x: 2916, y: 4890, z: 56, w: 118, yaw: 0, tilt: 0.12, base: null },
+    ];
     // The sixty-unit gap between the south stands (x 2659..2719, y 4785..4885).
     const STADIUM_ENTRANCE = {
       x: 2659,
@@ -123,8 +171,19 @@
         { x: x - 4.5, y: y - 4.5, w: 9, h: 9, height: 144 },
         { x: x - 12.5, y: y - 12.5, w: 25, h: 25, minHeight: 140, height: 156 },
       ]),
-      { x: 2621.5, y: 4315.5, w: 135, h: 4, minHeight: 84, height: 154 },
-      { x: 2643.5, y: 4874.5, w: 91, h: 4, minHeight: 95, height: 143 },
+      // The big screens: aircraft hit them, people walk beneath.
+      ...STADIUM_SCREENS.map((screen) => {
+        const reach = (screen.w / 2) * Math.abs(Math.cos(screen.yaw)) + 3,
+          depth = (screen.w / 2) * Math.abs(Math.sin(screen.yaw)) + 3;
+        return {
+          x: screen.x - reach,
+          y: screen.y - depth,
+          w: reach * 2,
+          h: depth * 2,
+          minHeight: screen.z - screen.w / 4 - 3,
+          height: screen.z + screen.w / 4 + 3,
+        };
+      }),
       { x: 2651, y: 4861, w: 4, h: 4, height: 86 },
       { x: 2723, y: 4861, w: 4, h: 4, height: 86 },
       { x: 2650.5, y: 4860.5, w: 77, h: 5, minHeight: 84, height: 88 },
@@ -267,6 +326,10 @@
         PITCH_FENCE.right + PITCH_FENCE.thickness - PITCH_FENCE.left,
         PITCH_FENCE.bottom + PITCH_FENCE.thickness - PITCH_FENCE.top,
       );
+      // Grass inside the notches behind each goal.
+      const netHalf = pitch.goalWidth / 2 + 5;
+      context.fillRect(pitch.x - pitch.goalDepth - 5, pitch.y + pitch.h / 2 - netHalf, pitch.goalDepth + 5, netHalf * 2);
+      context.fillRect(pitch.x + pitch.w, pitch.y + pitch.h / 2 - netHalf, pitch.goalDepth + 5, netHalf * 2);
       for (let stripe = 0; stripe < 12; stripe++) {
         context.fillStyle = stripe % 2 ? '#478344' : '#55984e';
         context.fillRect(pitch.x + (stripe * pitch.w) / 12, pitch.y, pitch.w / 12, pitch.h);
@@ -292,15 +355,9 @@
           pitch.goalWidth,
         );
       }
-      // Perimeter boards around the pitch.
-      context.strokeStyle = '#1c2a36';
-      context.lineWidth = PITCH_FENCE.thickness;
-      context.strokeRect(
-        PITCH_FENCE.left + PITCH_FENCE.thickness / 2,
-        PITCH_FENCE.top + PITCH_FENCE.thickness / 2,
-        PITCH_FENCE.right - PITCH_FENCE.left,
-        PITCH_FENCE.bottom - PITCH_FENCE.top,
-      );
+      // Perimeter boards around the pitch, with their openings.
+      context.fillStyle = '#1c2a36';
+      for (const segment of PITCH_FENCE.segments) context.fillRect(segment.x, segment.y, segment.w, segment.h);
       for (const stand of STADIUM_STANDS) {
         context.fillStyle = '#263a4c';
         context.fillRect(stand.x, stand.y, stand.w, stand.h);

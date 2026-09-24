@@ -1791,7 +1791,7 @@
         // query grows by the distance it covered.
         const swept = Math.hypot(vehicle.x - vehicle.personSweepStart.x, vehicle.y - vehicle.personSweepStart.y);
         forEachPedestrianNear(vehicle.x, vehicle.y, reach + swept, touch);
-        for (const list of [enemies, gangMembers, officers]) for (const p of list) touch(p);
+        for (const list of [enemies, gangMembers, officers, sportsTargets()]) for (const p of list) touch(p);
         vehicle.pedestrianContacts = contacts;
         if (
           speed >= 40 &&
