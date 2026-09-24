@@ -515,7 +515,6 @@
         faction: 'police',
         owner: o,
         target,
-        tracer: true,
       });
       if (target !== player) {
         target.policeAggroUntil = gameTime + 15;
@@ -574,7 +573,6 @@
         faction: 'police',
         owner: o,
         target: player,
-        tracer: true,
       });
       playSample(kind.sample, 0.24, 1, o);
       if (city3D) city3D.fire(o.x, o.y, a, false, entityElevation(o));

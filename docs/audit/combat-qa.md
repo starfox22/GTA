@@ -58,3 +58,57 @@ Findings from the play-tests:
   the player's car, and 55% of the rounds that hit a car also wound the driver.
 - HUD: the body count overlapped the clock under the stars; moved into the WANTED LEVEL
   eyebrow, heat meter positioned under the stars without adding height.
+
+## Iteration 2: shooting back, fairness, dispatch
+
+- Weak: at 5 stars a pistol hit nothing for 100 rounds while standing among eight
+  officers at 70-130 units. The officers were crouched wholly behind cruiser bodies
+  (cover at the car's corner still hid them from a round fired at knee height). Fixed:
+  cover is a peek: a patrol officer crouches behind the far corner while waiting and
+  steps out past it only while holding a firing token, so they can be shot exactly when
+  they are shooting. SWAT and agents hold off the flank at rifle range.
+- Hit feedback added: a white cross over the victim (red on a kill) with a tick, a thump
+  on a kill, and HEADSHOT for a precision-rifle round on the target it was aimed at
+  (one shot, round the vest). Incoming fire shows a red arc on the side it came from,
+  with a small camera jolt.
+- Too lethal: at 3 stars, standing still in the open with 100 health and no armour, the
+  player lasted about 5 s after first contact (100, 84, 18, dead). Tuned: player damage per
+  police round (pistol 5.5, SWAT rifle 5 per round of a 3-round burst, agents 6.5, marksman
+  14, before the 2.05 lethality scale), accuracy 0.42 (1 star) to 0.6 (5 stars), firing
+  tokens 2/3/3/4/5. A first shot at a newly seen target, a fast-moving runner, range and
+  a stagger all spoil the roll; misses go visibly wide.
+- Weak: 2-star pursuit spawned one cruiser in 18 s while a sports car drove off; the
+  player was clear in ~20 s. Fixed: patrol cars already cruising within 1100 units
+  are recalled into the pursuit first; each new star sends two units in a burst; spawn
+  cadence 7/4.5/3.8/3.2/2.8 s; spawns try the five best road junctions (ahead of a
+  moving runner) instead of giving up on one blocked one.
+- Weak: 1 to 5 stars took 17 s of shooting (heat 125 by then). Thresholds are now
+  12/32/72/125 and each extra star flashes 1.5/2.5/4/6 s before it lands, so a massacre
+  still climbs one readable step at a time.
+- Law units (SWAT vans, agents' SUVs, the tank) joined city traffic after a clear. They now
+  wait where they are and are sent home once out of sight.
+- CPU at 5 stars (23 officers, 14 cruisers, 2 SWAT, 2 agents, a tank, two helicopters),
+  headless under a load average of ~30: `civic` (all police logic) 8.0 ms per step vs
+  `cars` 16.9 ms; at 0 stars on the same machine `civic` was 1.9 ms. Police parts are now
+  timed separately in `stats()` (`police:officers`, `police:wanted`, `police:roadblocks`,
+  `police:air`). `clearSight` walks the building grid and rejects the county solids by
+  bounding box instead of scanning every building.
+
+## Iteration 3: merge of the world relocation (Palm Keys west, BRIDGES in geography.js)
+
+- Merged `claude/compassionate-wright-cu2e1q`; only DEVELOPMENT.md conflicted (both
+  console tables kept). Roadblock sites already come from `BRIDGES` and the road grid.
+- Re-verified natural escalation on the merged world (Old Quarter, rifle): 2 civilians
+  1 star; 2 officers 3 stars at 12 s; 5 officers 4 stars at 16 s; 8 officers 5 stars at
+  23 s; SWAT, agents, two helicopters and two roadblocks all present at 5 stars.
+- 3-star avenue chase on Royal Ave: two cruisers ran alongside and ahead (flank and block)
+  and a third came in on the rear quarter; the sports car was boxed and down to 46/110
+  health in 8 s.
+- Weak: boxed in by cruisers with the throttle held, the player climbed from 2 to 3 stars
+  in 8 s: each shove counted as ramming a police car. Now only a real ram (closing
+  speed over 110) counts, once per cruiser per 4 s.
+- Evasion: broken contact at 2 stars and left the search area: stars cleared after 9 s.
+  Inside the area the clock runs at a fifth of the speed (`LEAVE THE SEARCH AREA`).
+- BUSTED at 1 star: one pistol shot into the air, stood still; two cruisers arrived,
+  four officers walked up with challenge lines and cuffed the player in 11 s; released at
+  Police HQ with the fine.

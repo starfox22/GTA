@@ -334,7 +334,6 @@
               faction: 'police',
               owner: c,
               target: runner ? player : t,
-              tracer: true,
             });
             playSample('rifle', 0.34, 0.9, c);
             if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
