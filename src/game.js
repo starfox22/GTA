@@ -5403,6 +5403,11 @@
           adaptive: { averageFrameMs: +adaptive.average.toFixed(1), tierDrops: adaptive.tierDrops },
         };
       },
+      // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
+      // pass). On AUTO the adaptive controller may change it again.
+      renderScale(scale) {
+        return city3D?.setRenderScale?.(Number(scale) || 1) ?? null;
+      },
       // Everything on the settings screen (settings.js), and the HUD's saved
       // state. Pass an object to change some of it, e.g. { chatter: false,
       // masterVolume: 40, minimapZoom: 2, minimapFolded: true, touch: 'on' }.

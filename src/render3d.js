@@ -799,6 +799,59 @@
       // @include src/helicopter3d.js
       // @include src/vehicles3d.js
       // @include src/plane3d.js
+      /**
+       * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
+       * shared by every car): a car was 50-odd draw calls, 32 of them its wheels.
+       * The tyre stays the wheel's first child (damage3d.js hides it on a burnt
+       * wreck) and the whole wheel group still turns, bends and sits down on a flat.
+       */
+      const carRims = new Map();
+      function carRimGeometry(side) {
+        if (carRims.has(side)) return carRims.get(side);
+        const parts = [],
+          place = (geo, x, y, z, rx, rz, sx, sy, sz) =>
+            parts.push(
+              geo.clone().applyMatrix4(
+                new Three.Matrix4().compose(
+                  new Three.Vector3(x, y, z),
+                  new Three.Quaternion().setFromEuler(new Three.Euler(rx, 0, rz)),
+                  new Three.Vector3(sx, sy, sz),
+                ),
+              ),
+            );
+        place(wheelGeo, 0, 0, side * 1.4, Math.PI / 2, 0, 2.8, 0.3, 2.8);
+        for (let s = 0; s < 5; s++) place(boxGeo, 0, 0, side * 1.65, 0, (s * Math.PI) / 5, 0.55, 5, 0.2);
+        let vertices = 0,
+          indices = 0;
+        for (const g of parts) {
+          vertices += g.attributes.position.count;
+          indices += g.index.count;
+        }
+        const position = new Float32Array(vertices * 3),
+          normal = new Float32Array(vertices * 3),
+          uv = new Float32Array(vertices * 2),
+          index = new Uint16Array(indices);
+        let vo = 0,
+          io = 0;
+        for (const g of parts) {
+          position.set(g.attributes.position.array, vo * 3);
+          normal.set(g.attributes.normal.array, vo * 3);
+          uv.set(g.attributes.uv.array, vo * 2);
+          for (let i = 0; i < g.index.count; i++) index[io++] = g.index.getX(i) + vo;
+          vo += g.attributes.position.count;
+          g.dispose();
+        }
+        const rim = new Three.BufferGeometry();
+        rim.setAttribute('position', new Three.BufferAttribute(position, 3));
+        rim.setAttribute('normal', new Three.BufferAttribute(normal, 3));
+        rim.setAttribute('uv', new Three.BufferAttribute(uv, 2));
+        rim.setIndex(new Three.BufferAttribute(index, 1));
+        rim.computeBoundingSphere();
+        // Shared by every car: never disposed with a retired model.
+        sharedGeometries.add(rim);
+        carRims.set(side, rim);
+        return rim;
+      }
       function makeVehicle(vehicle) {
         if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
         if (vehicle.type === 'plane') return makePlane(vehicle);
@@ -913,14 +966,10 @@
             });
             const tire = mesh(wheelGeo, rubber, wheel, 0, 0, 0, 4.2, 2.6, 4.2);
             tire.rotation.x = Math.PI / 2;
-            const hub = mesh(wheelGeo, chrome, wheel, 0, 0, side * 1.4, 2.8, 0.3, 2.8);
-            hub.rotation.x = Math.PI / 2;
+            // Hub and five spokes are one merged chrome rim (one draw, not six).
+            mesh(carRimGeometry(side), chrome, wheel, 0, 0, 0);
             const center = mesh(wheelGeo, darkMetal, wheel, 0, 0, side * 1.61, 1, 0.4, 1);
             center.rotation.x = Math.PI / 2;
-            for (let s = 0; s < 5; s++) {
-              const spoke = box(wheel, 0, 0, side * 1.65, 0.55, 5, 0.2, chrome);
-              spoke.rotation.z = (s * Math.PI) / 5;
-            }
           }
           lamps.push(
             {
@@ -1472,12 +1521,25 @@
        * a hitch each time a new district, vehicle or effect comes into view. While
        * the title screen is up, the scene's programs are compiled a slice at a time
        * (a few milliseconds per task, so the menu stays smooth) with the HDR target
-       * bound, so the programs match the ones the scene pass will ask for. With
-       * KHR_parallel_shader_compile the driver compiles them in the background.
+       * bound, so the programs match the ones the scene pass will ask for, and
+       * each is linked once KHR_parallel_shader_compile reports it ready, so the
+       * driver does the work in the background (only where that extension exists).
        */
       function prewarmShaders() {
         const queue = [...scene.children],
-          slice = new Three.Object3D();
+          slice = new Three.Object3D(),
+          // Programs compiled but not yet linked. compile() only starts the work:
+          // three.js links a program (the blocking part, ~0.1-0.3 s each on a
+          // software rasteriser) the first time it is drawn. Reading its uniforms
+          // here does that link now, one or two per slice while the menu is up,
+          // and with KHR_parallel_shader_compile only once the driver reports the
+          // program ready, so it never blocks at all.
+          unlinked = new Set();
+        // Without KHR_parallel_shader_compile every link blocks the main thread,
+        // and linking every material's program up front (most are never on screen
+        // together) cost far more than it saved: there, programs link when first
+        // drawn, as before.
+        if (!renderer.extensions.has('KHR_parallel_shader_compile')) return;
         const step = () => {
           const started = performance.now(),
             previous = renderer.getRenderTarget();
@@ -1487,14 +1549,23 @@
             // scene for its lights each time.
             slice.children = queue.splice(0, 40);
             try {
-              renderer.compile(slice, camera, scene);
+              for (const material of renderer.compile(slice, camera, scene)) {
+                const program = renderer.properties.get(material).currentProgram;
+                if (program) unlinked.add(program);
+              }
             } catch (error) {
               queue.length = 0;
             }
           }
           slice.children = [];
           renderer.setRenderTarget(previous);
-          if (queue.length) setTimeout(step, 30);
+          for (const program of unlinked) {
+            if (performance.now() - started > 12) break;
+            if (!program.isReady()) continue;
+            program.getUniforms();
+            unlinked.delete(program);
+          }
+          if (queue.length || unlinked.size) setTimeout(step, 30);
         };
         setTimeout(step, 1500);
       }
