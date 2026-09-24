@@ -210,6 +210,8 @@
       injured: ['Ugh… my leg…', 'Help me…', 'I’m hit… I’m hit…', 'Somebody… please…', 'Oww…'],
       helper: ['Stay with me!', 'Don’t move, help’s coming.', 'Can you hear me?', 'Breathe. Just breathe.'],
       point: ['He went that way!', 'That way, officer!', 'Over there!', 'He ran down there!'],
+      greet: ['Hey.', 'Evening.', 'Nice day for it.', 'How’s it going?', 'Morning.', 'Hey, man.', 'Alright?'],
+      relief: ['Okay… okay.', 'Thank god.', 'Jesus, man.', 'I’m going. I’m going.'],
       recover: ['Is it over?', 'I think he’s gone.', 'My heart’s still pounding.', 'Unbelievable. This city.', 'I need a drink.'],
       angryDriver: ['Look at my car!', 'You’re paying for this!', 'Where’d you learn to drive?!', 'Are you blind?!', 'Unbelievable!', 'Insurance. Now.'],
       shakenDriver: ['My neck…', 'I didn’t see him…', 'Is everyone alright?', 'I need to sit down.'],
@@ -344,6 +346,7 @@
       timers: { stream: 0, bodies: 0, aim: 0, tips: 0, scenes: 0, traffic: 0, near: 0, chat: 0 },
       playerShotAt: -100,
       lastTipAt: -100,
+      lastNodAt: -100,
       lastReportAt: -100,
       settledAt: null,
       settleStamp: -100,
@@ -1697,8 +1700,16 @@
             }
           }
           if (seededRandom() < deltaSeconds * 0.2) crowdSay(p, r.kind === 'kneel' ? 'plead' : 'handsUp', 0.8);
-          // Once the gun is off them for a moment, they go.
+          // Once the gun is off them for a moment, they go. If the player put it
+          // away altogether, they back off relieved rather than run.
           if (gameTime - (p.aimedAt || -10) > (r.kind === 'kneel' ? 2 : 1.3)) {
+            if (playerUnarmed()) {
+              releaseReactionRole(p);
+              p.react = null;
+              crowdSay(p, 'relief', 0.9);
+              startReaction(p, 'startle', randomBetween(0.6, 1), player, null, { then: 'hurry' });
+              return true;
+            }
             endReaction(p);
             return true;
           }
@@ -1971,6 +1982,12 @@
       if (crowd.timers.aim > 0) return;
       crowd.timers.aim = 0.12;
       if (player.car || gameMode !== 'play' || transitRide || taxiRide || player.swimming) return;
+      // Empty-handed, the player is just another person on the street: nobody
+      // puts their hands up, and now and then someone passing says hello.
+      if (playerUnarmed()) {
+        friendlyNods();
+        return;
+      }
       if (selectedWeaponIndex === KNIFE_INDEX || !weapons[selectedWeaponIndex]?.owned) return;
       if (!(mouse.active || touchAim !== null || gameTime - crowd.playerShotAt < 8)) return;
       const aimA = aim();
@@ -1986,6 +2003,19 @@
         startReaction(p, 'handsUp', 60, player, null);
         crowdSay(p, 'handsUp', 0.9);
       });
+    }
+    /* An unarmed player walking by calm people gets the odd nod or hello. */
+    function friendlyNods() {
+      if (gameTime - (crowd.lastNodAt ?? -100) < 7 || wantedStars > 0) return;
+      let best = null,
+        bestD = 46;
+      forPeopleNear(player.x, player.y, 46, (p, d) => {
+        if (p.hp <= 0 || p.react || p.pending || p.onDeck || personIncapacitated(p) || p.speechUntil > gameTime) return;
+        if (gameTime - (p.aimedAt ?? -100) < 60 || d >= bestD) return;
+        best = p;
+        bestD = d;
+      });
+      if (best && crowdSay(best, 'greet', 0.6)) crowd.lastNodAt = gameTime;
     }
     /**
      * TIPPING OFF THE POLICE
