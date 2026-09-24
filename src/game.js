@@ -5116,6 +5116,7 @@
           o.r !== undefined ? { x: o.x, y: o.y, r: o.r } : { x: o.x, y: o.y, hx: o.hx, hy: o.hy, a: Math.atan2(o.s, o.c) },
         ),
         streetEnds: streetEndPlan().map((e) => ({ x: e.p.x, y: e.p.y, a: e.a, width: e.width, kind: e.kind })),
+        crosswalks: cityCrosswalks(),
         doors: PLACES.filter((p) => p.door).map((p) => ({ name: p.name, x: p.door.x, y: p.door.y })),
         docks: DOCKS.map((d) => ({ x: d.x, y: d.y, w: d.w, h: d.h, boatX: d.boatX, boatY: d.boatY })),
         parks: CITY_PARKS.map((p) => ({ name: p.name, x: p.x, y: p.y, w: p.w, h: p.h })),

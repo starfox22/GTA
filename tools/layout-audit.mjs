@@ -181,29 +181,14 @@ for (const e of L.streetEnds || []) {
   const crossing = roadBoxes.find((r) => overlap(shrink(railBox, 1), r));
   if (crossing) report('street end rail in carriageway', e.x + ', ' + e.y + ' ' + crossing.name);
 }
-// Crosswalks (painted on each junction leg whose street carries on, streets.js)
-// must not lead into a building or a park; the pavement either side of each
-// must be land.
-const vStreets = L.streets.filter((s) => s.points[0][0] === s.points[1][0]).map((s) => ({ r: s.points[0][0], start: s.points[0][1], end: s.points[1][1], w: s.width / 2 }));
-const hStreets = L.streets.filter((s) => s.points[0][1] === s.points[1][1]).map((s) => ({ r: s.points[0][1], start: s.points[0][0], end: s.points[1][0], w: s.width / 2 }));
-for (const v of vStreets)
-  for (const h of hStreets) {
-    const x = v.r, y = h.r;
-    if (x < h.start - 8 || x > h.end + 8 || y < v.start - 8 || y > v.end + 8) continue;
-    const legs = { north: v.start < y - h.w - 40, south: v.end > y + h.w + 40, west: h.start < x - v.w - 40, east: h.end > x + v.w + 40 };
-    const walks = [];
-    if (legs.north) walks.push([x, y - h.w - 12.5, v.w, 6.5]);
-    if (legs.south) walks.push([x, y + h.w + 12.5, v.w, 6.5]);
-    if (legs.west) walks.push([x - v.w - 12.5, y, 6.5, h.w]);
-    if (legs.east) walks.push([x + v.w + 12.5, y, 6.5, h.w]);
-    for (const [cx, cy, hx, hy] of walks) {
-      const box = { x: cx, y: cy, hx, hy, a: 0 };
-      if (buildings.some((b) => overlap(box, b)) || L.parks.some((p) => overlap(box, rectBox(p)))) report('crosswalk into building or park', Math.round(cx) + ', ' + Math.round(cy));
-      const ends = hx > hy ? [[cx - hx - 10, cy], [cx + hx + 10, cy]] : [[cx, cy - hy - 10], [cx, cy + hy + 10]];
-      const deck = (ex, ey) => L.bridges.some((b) => { const [ax, ay] = b.a, [bx, by] = b.b, l = Math.hypot(bx - ax, by - ay), t = Math.max(0, Math.min(1, ((ex - ax) * (bx - ax) + (ey - ay) * (by - ay)) / (l * l))); return Math.hypot(ex - ax - t * (bx - ax), ey - ay - t * (by - ay)) < b.width / 2; });
-      if (ends.some(([ex, ey]) => !land(ex, ey) && !deck(ex, ey))) report('crosswalk into water', Math.round(cx) + ', ' + Math.round(cy));
-    }
-  }
+// Crosswalks (cityCrosswalks, streets.js) must not lead into a building or a
+// park, and both ends must be on land.
+for (const c of L.crosswalks || []) {
+  const box = rectBox(c), along = c.w > c.h;
+  if (buildings.some((b) => overlap(box, b)) || L.parks.some((p) => overlap(box, rectBox(p)))) report('crosswalk into building or park', at(box));
+  const ends = along ? [[c.x - 10, box.y], [c.x + c.w + 10, box.y]] : [[box.x, c.y - 10], [box.x, c.y + c.h + 10]];
+  if (ends.some(([ex, ey]) => !land(ex, ey))) report('crosswalk into water', at(box));
+}
 
 const counts = {};
 for (const f of found) counts[f.kind] = (counts[f.kind] || 0) + 1;

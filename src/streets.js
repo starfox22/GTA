@@ -327,41 +327,47 @@
           else drawingContext.fillRect(p.x, p.y - 1, 15, 2);
         }
       }
-      // Zebra crossings on every leg of every junction, T-junctions included:
-      // a leg only gets one where its street really carries on (no crossing
-      // painted across a street that is not there).
-      if (detail)
-        for (const x of ROAD_CENTERS)
-          for (const y of ROAD_ROWS) {
-            const horizontal = streets.find((r) => !r.vertical && r.r === y && x >= r.start - 8 && x <= r.end + 8),
-              vertical = streets.find((r) => r.vertical && r.r === x && y >= r.start - 8 && y <= r.end + 8);
-            if (!horizontal || !vertical) continue;
-            const hw = horizontal.width / 2,
-              vw = vertical.width / 2;
-            let north = vertical.start < y - hw - 40,
-              south = vertical.end > y + hw + 40,
-              west = horizontal.start < x - vw - 40,
-              east = horizontal.end > x + vw + 40;
-            if ((north || south) + (west || east) < 2 && !(north && south) && !(west && east)) continue;
-            // A crossing has to land on pavement at both ends (not at a bridge
-            // deck's edge over the water).
-            const kerbs = (x0, y0, x1, y1) => groundAt(x0, y0) && groundAt(x1, y1) && landAt(x0, y0) && landAt(x1, y1);
-            north &&= kerbs(x - vw - 10, y - hw - 12, x + vw + 10, y - hw - 12);
-            south &&= kerbs(x - vw - 10, y + hw + 12, x + vw + 10, y + hw + 12);
-            west &&= kerbs(x - vw - 12, y - hw - 10, x - vw - 12, y + hw + 10);
-            east &&= kerbs(x + vw + 12, y - hw - 10, x + vw + 12, y + hw + 10);
-            drawingContext.fillStyle = '#d4d6c7';
-            // Bars the full width of the carriageway they cross.
-            for (let i = -vw + 5; i <= vw - 11; i += 12) {
-              if (north) drawingContext.fillRect(x + i, y - hw - 19, 6, 13);
-              if (south) drawingContext.fillRect(x + i, y + hw + 6, 6, 13);
-            }
-            for (let i = -hw + 5; i <= hw - 11; i += 12) {
-              if (west) drawingContext.fillRect(x - vw - 19, y + i, 13, 6);
-              if (east) drawingContext.fillRect(x + vw + 6, y + i, 13, 6);
-            }
-          }
+      if (detail) {
+        drawingContext.fillStyle = '#d4d6c7';
+        for (const c of cityCrosswalks()) {
+          // Bars the full width of the carriageway crossed, across the walk.
+          const along = c.w > c.h;
+          for (let i = 5; i <= (along ? c.w : c.h) - 11; i += 12)
+            if (along) drawingContext.fillRect(c.x + i, c.y, 6, c.h);
+            else drawingContext.fillRect(c.x, c.y + i, c.w, 6);
+        }
+      }
       drawingContext.restore();
+    }
+    /* Zebra crossings on every leg of every junction, T-junctions included, as
+       rectangles {x, y, w, h} the width of the carriageway they cross. A leg gets
+       one only where its street really carries on and both ends of the crossing
+       land on pavement (not a street that is not there, not the edge of a bridge
+       deck over the water). layout() exports them for the audit. */
+    let crosswalkCache = null;
+    function cityCrosswalks() {
+      if (crosswalkCache) return crosswalkCache;
+      crosswalkCache = [];
+      const streets = cityStreets(),
+        kerbs = (x0, y0, x1, y1) => groundAt(x0, y0) && groundAt(x1, y1) && landAt(x0, y0) && landAt(x1, y1);
+      for (const x of ROAD_CENTERS)
+        for (const y of ROAD_ROWS) {
+          const horizontal = streets.find((r) => !r.vertical && r.r === y && x >= r.start - 8 && x <= r.end + 8),
+            vertical = streets.find((r) => r.vertical && r.r === x && y >= r.start - 8 && y <= r.end + 8);
+          if (!horizontal || !vertical) continue;
+          const hw = horizontal.width / 2,
+            vw = vertical.width / 2,
+            north = vertical.start < y - hw - 40,
+            south = vertical.end > y + hw + 40,
+            west = horizontal.start < x - vw - 40,
+            east = horizontal.end > x + vw + 40;
+          if ((north || south) + (west || east) < 2 && !(north && south) && !(west && east)) continue;
+          if (north && kerbs(x - vw - 10, y - hw - 12, x + vw + 10, y - hw - 12)) crosswalkCache.push({ x: x - vw, y: y - hw - 19, w: vw * 2, h: 13 });
+          if (south && kerbs(x - vw - 10, y + hw + 12, x + vw + 10, y + hw + 12)) crosswalkCache.push({ x: x - vw, y: y + hw + 6, w: vw * 2, h: 13 });
+          if (west && kerbs(x - vw - 12, y - hw - 10, x - vw - 12, y + hw + 10)) crosswalkCache.push({ x: x - vw - 19, y: y - hw, w: 13, h: hw * 2 });
+          if (east && kerbs(x + vw + 12, y - hw - 10, x + vw + 12, y + hw + 10)) crosswalkCache.push({ x: x + vw + 6, y: y - hw, w: 13, h: hw * 2 });
+        }
+      return crosswalkCache;
     }
     function coastSegments() {
       return coastCache || (coastCache = buildCoastSegments());
