@@ -82,7 +82,7 @@ something, never a generic code-evaluation hook.
 | Method | Purpose |
 | --- | --- |
 | `version` | The build version (30.0.0) |
-| `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle, renderer (`3d` or `2d`) |
+| `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle, weapon in hand, renderer (`3d` or `2d`) |
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once); lets go of any carrier |
 | `setZoom(value)` | Street zoom, eased like the mouse wheel (`look` and `closeUp` apply it at once) |
 | `drive(type, altitudeMeters, heading)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne; boats go on the nearest open water; optional heading in radians (0 = east) |
@@ -99,10 +99,10 @@ something, never a generic code-evaluation hook.
 | `boardMissionVehicle()`, `placeVehicle(x, y, heading, altitudeMeters)` | Take the mission's vehicle; move the player's vehicle (stopped, aircraft at an altitude) |
 | `defeatMissionGuards(tag)` | Put down the current mission's guards (to skip a fight already verified) |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
-| `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort) |
-| `policeReport()` | The police response: stars, heat and the next star's threshold, the incident's body count, search (active, seconds left, last sighting), arrest progress, the tier's allowances, counts by unit (patrol, swat, fed, army, air, officers, roadblocks), every unit and officer, pursuit counters (contacts, PITs, shortcuts, marine units and shots, tank and marksman rounds, arrests), marine units, and `wounds` (how the dead fell, downed and dragged officers, limping, crawling, bleeding) |
-| `nearbyPeople(radius, kind)` | Living people near the player, nearest first (`civilian`, `police`, `gang` or `all`), with line of sight: play-tests pick victims with it |
-| `arm(index)` | Own weapon `index` (0 pistol to 5 precision rifle) with full ammunition and select it |
+| `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort; in a tank the hull, turret and aim headings in degrees, the traverse rate and the ammunition) |
+| `policeReport()` | The police response: stars, heat and the next star's threshold, the incident's body count, search (active, seconds left, last sighting), arrest progress, the tier's allowances, counts by unit (patrol, swat, fed, army, air, officers, roadblocks), every unit and officer, pursuit counters (contacts, PITs, shortcuts, marine units and shots, tank and marksman rounds, arrests), marine units, and `wounds` (how the dead fell, downed and dragged officers, limping, crawling, bleeding); `crimes` (the last twelve crimes: time, heat, reporting function), `swat` (teams, shield blocks, snipers, sniper shots), counts of army units (`armyJeep`, `armyApc`, `armyTruck`), `soldiers`, `snipers` and `shields`, and unit positions |
+| `nearbyPeople(radius, kind)` | Living people near the player, nearest first (`civilian`, `police`, `gang` or `all`), with line of sight: play-tests pick victims with it; police also carry `shield`, `roof` (a rooftop sniper), `aim` (a sniper's lock, 0..1), heading and state |
+| `arm(index)` | Own weapon `index` (0 pistol to 5 precision rifle) with full ammunition and select it; 6 selects the knife, 7 no weapon (fists) |
 | `route(x, y)` | Set a map waypoint and report the GPS route from the player: status, road length, the bridges it crosses |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |

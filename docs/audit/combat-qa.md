@@ -234,15 +234,15 @@ stars) and mission air support (mission 1's cargo chase takes over the helicopte
 overhead instead of launching a second). Four and five stars now escalate on the ground and
 through the marksman instead of a second airframe.
 
-Police response by wanted level (`POLICE_TIERS`, src/pursuit.js):
+Police response by wanted level (`POLICE_TIERS`, src/pursuit.js; updated in iteration 7):
 
-| Stars | Patrols | SWAT vans | Agents' SUVs | Tank | Helicopter | Marksman lock / hit / rest | Roadblocks | Officer accuracy |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 2 | 0 | 0 | 0 | 0 | - | 0 | 0.42 (no deadly force) |
-| 2 | 4 | 0 | 0 | 0 | 0 (1 at sea) | 1.6 s / 0.85 / 2.4-3.4 s at sea | 0 | 0.46 |
-| 3 | 5 | 0 | 0 | 0 | 1 | 1.6 s / 0.85 / 2.4-3.4 s | 1 | 0.50 |
-| 4 | 5 | 2 | 0 | 0 | 1 | 1.3 s / 0.90 / 2.0-2.8 s | 2 | 0.55 |
-| 5 | 5 | 3 | 2 | 1 | 1 | 1.1 s / 0.94 / 1.7-2.4 s | 3 | 0.60 |
+| Stars | Patrols | SWAT vans (team) | Agents' SUVs | Army (5 stars) | Tank | Rooftop snipers | Helicopter | Marksman lock / hit / rest | Roadblocks | Officer accuracy | Surrender |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2 | 0 | 0 | - | 0 | 0 | 0 | - | 0 | 0.42 (no deadly force) | always arrested |
+| 2 | 4 | 0 | 0 | - | 0 | 0 | 0 (1 at sea) | 1.6 s / 0.85 / 2.4-3.4 s at sea | 0 | 0.46 | always arrested |
+| 3 | 5 | 0 | 0 | - | 0 | 0 | 1 | 1.6 s / 0.85 / 2.4-3.4 s | 1 | 0.50 | stand still: hold fire, cuff (2 officers) |
+| 4 | 5 | 2 (4: shield + stack) | 0 | - | 0 | 0 | 1 | 1.3 s / 0.90 / 2.0-2.8 s | 2 | 0.55 | stand still: hold fire, cuff (2 officers) |
+| 5 | 5 | 3 (5: shield + stack) | 2 | 2 gunner jeeps, then 1 APC (4 soldiers), 1 truck (5) | 1, after 45 s at 5 stars | 3 | 1 | 1.1 s / 0.94 / 1.7-2.4 s | 3 | 0.60 | only a player under 25 health |
 
 The hit chance is at a standstill; speed still spoils it (minus speed/500, never under
 0.3), and breaking line of sight still resets the lock.
@@ -255,6 +255,63 @@ Verified headlessly (`wanted`, `simulate`, `policeReport`):
 - Mission 1 cargo chase at 3 stars raised to 5: one air unit (the mission's), never two.
 - 4 stars in a speedboat on Palm Sound, 42 s: one air unit, which searched, gave up and
   retreated before a single replacement launched; never two on duty at once.
+
+## Iteration 7: owner requests (fists, fair heat, arrest, five stars, tank gunnery)
+
+Changes: fists (arsenal.js, controls.js, render3d.js), a friendly crowd for an unarmed
+player (crowd.js), surrender and arrest (pursuit.js), heat only from crimes (heat.js,
+crowd.js, military.js, physics.js), SWAT teams and rooftop snipers (new swat.js,
+render3d.js), the five-star army (pursuit.js), tank turret and ammunition (new armor.js),
+shell breaches (damage.js, damage3d.js). Verified headlessly on one persistent page
+(`simulate`, `policeReport`, `nearbyPeople`, `ride`, `damageStats`, synthetic key and mouse
+events).
+
+- Fists: Q from the pistol cycles KNIFE, FISTS, 9MM PISTOL, KNIFE; ` selects FISTS; the chip
+  shows the drawn fist (UNARMED · WEAPONS AWAY, PUNCH). Three punches on a civilian: 30 to
+  23 health (a combination knocks down, rarely kills), three assaults logged by
+  `meleeAttack`, 1 star. Before the damage was tuned two punches killed a civilian.
+- Unarmed crowd: sweeping the mouse over a pavement for 19 s with fists: 0 hands up, 0
+  fleeing; the same sweep with the pistol drawn: 3 hands up, 5 fleeing.
+- Arrest (the reported bug): at 3 stars in a stopped car officers kept shooting (a car was
+  only arrestable at one or two stars) and the player died; at 3 and 4 stars on foot a lone
+  officer could not cuff; every crew shouted "YOU ARE UNDER ARREST" even at 5 stars. After:
+  standing still for 1.5 s is a surrender. BUSTED at 1 star on foot in 9 s and in a car in
+  6 s, at 3 stars on foot in 3 s and in a stopped car in 21 s, at 4 stars on foot in 9 s
+  and in a car in 15 s. At 5 stars the crews shout DROP YOUR WEAPON / TARGET ENGAGED.
+- Heat without crimes: Fort Sentinel added 0.8 heat every 4 s to anyone within 600 units
+  while its alarm ran, so stars climbed with no new crime; now nothing adds heat passively.
+  Witness calls count only within 30 s of the crime (of the kill, for a body found later).
+- Pursuit without crimes: any contact of the player's car with another car was a crime
+  (`crime(0.06)`, even being rear-ended), and so was nudging a pedestrian at walking pace;
+  a scrape also made an army truck "attacked by the player" (a Fort Sentinel lockdown) and
+  a car scraped minutes earlier the player's wreck. Now only ramming an occupied car above
+  ~85 km/h closing speed, or hurting someone (20 km/h and up), is a crime. `stageCrash` on
+  an avenue at 3, 6, 12 and 45 m/s (the launch decays before contact): 0 heat; at 70 m/s:
+  1 star. A 90 s drive and walk through Northbank with no violence: 0 stars (the
+  straight-line test pilot then drove over a crowded pavement; those knock-downs are logged
+  and do count).
+- Five stars, 60 s on foot in Midtown (god mode): 2 gunner jeeps at 6 s, the APC at 12 s,
+  the truck at 24 s, the tank at 48 s; 3 SWAT teams with shields, 3 rooftop snipers (34
+  rounds in 60 s, each after a 2.4 s laser), 9 or 10 soldiers. A pistol round at a shield
+  man from in front: `shieldBlocks` 1, no wound.
+- Tank: the turret turned 0 to 142 degrees at a steady 30 deg/s with an eased start (8
+  degrees in the first half second) and stop; 40 rounds, a second shot 0.1 s after the
+  first refused, the next accepted after 5 s; the right button fires 10 MG rounds a second.
+  Three shells into a Northbank facade: 3 breaches, about 130 world decals, rubble in the
+  street, 8 windows broken, 700 debris chunks (the pool cap, recycled).
+- CPU at 5 stars (44 officers, 17 cruisers, 3 SWAT vans, 3 agents' SUVs, 4 army vehicles,
+  3 snipers, a helicopter, 3 roadblocks) under a load average of ~15: police:officers 4.8 ms
+  and police:wanted 4.3 ms per frame against cars 31 ms. Gunner and sniper sight tests are
+  staggered at about 8 Hz.
+
+Screenshots in dist/combat-qa/iteration7 (not committed): `fists-hud.png`, `swat-van.png`
+(doors open, POLICE · S.W.A.T., the stack behind the shield), `rooftop-sniper.png` (the
+laser from a roof), `tank-breach.png` (shell impacts on a facade, the reticle ring and pip,
+shell ammunition on the chip).
+
+Known limits: kiosks, bus shelters and walls are not separate breakable objects, so a shell
+only flattens the street furniture round it (lamps, benches, bins, hydrants); buildings
+never collapse. Rooftop snipers are only placed in the city grid.
 
 ## Screenshots
 

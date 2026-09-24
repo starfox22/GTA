@@ -46,7 +46,9 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 | Helicopter | T rise, G descend, W/S fly, A/D turn; land on open ground, helipads or flat roofs |
 | Plane | W/S throttle, A/D bank, T/G nose up/down |
 | Bail out / parachute; dive off a boat | J (then Space opens the canopy) |
-| Weapons | 1 to 6, Q cycle, K knife, R reload, I arsenal |
+| Weapons | 1 to 6, Q cycle (ends on FISTS, no weapon), K knife, ` or 8 fists, R reload, I arsenal |
+| Tank | the mouse (or the touch aim stick) lays the turret; F / click fires the selected gun, Q switches main gun and machine gun, right click fires the machine gun |
+| Surrender | stand still (or stop the car) with the police close, at one to four stars |
 | City map | Tab |
 | Car radio | N power, B next station |
 | Horn, mute | H, M |
