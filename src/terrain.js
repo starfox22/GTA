@@ -10,7 +10,7 @@
     /**
      * THE RIDGELINE RANGE
      * The mountains are one height field over the north of Ridgeline County
-     * (TERRAIN_FIELDS[0], x 5880..10980, y 60..2620, a 10-unit grid), plus a small
+     * (TERRAIN_FIELDS[0], x 5880..10980, y 60..3420, a 10-unit grid), plus a small
      * field for each of the two lone hills further south. A field is generated once,
      * on first use, and never changes:
      *
@@ -89,7 +89,7 @@
         [10300, 1330],
       ];
     const TERRAIN_FIELDS = [
-      { name: 'RIDGELINE RANGE', kind: 'range', x0: 5880, y0: 60, x1: 10980, y1: 2620, seed: 1997 },
+      { name: 'RIDGELINE RANGE', kind: 'range', x0: 5880, y0: 60, x1: 10980, y1: 3420, seed: 1997 },
       ...COUNTY_PEAKS.slice(2).map((p, i) => ({
         name: 'COUNTY HILL ' + i,
         kind: 'hill',
@@ -118,6 +118,7 @@
           side = k === legs ? 0 : (k % 2 ? 1 : -1) * amplitude * (1 - 0.4 * t);
         points.push([foot[0] + ax * t + px * side, foot[1] + ay * t + py * side]);
       }
+      const corners = points.slice(approach.length, -1);
       // Chaikin corner cutting, keeping the two ends where they are.
       for (let pass = 0; pass < 2; pass++) {
         const cut = [points[0]];
@@ -130,20 +131,30 @@
         cut.push(points.at(-1));
         points = cut;
       }
-      return points.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]);
+      points = points.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]);
+      // A level turning pad at each hairpin (room for a three-point turn): centred
+      // on the rounded curve where it passes closest to the leg's raw corner.
+      const hairpins = corners.map(([cx, cy]) => {
+        let best = points[0];
+        for (const p of points) if (Math.hypot(p[0] - cx, p[1] - cy) < Math.hypot(best[0] - cx, best[1] - cy)) best = p;
+        return best;
+      });
+      return { points, hairpins };
     }
+    // Turning pads are this far across (from the pad's centre).
+    const HAIRPIN_PAD = 46;
     const MOUNTAIN_TRAILS = [
       {
         name: 'MOUNT ASCENT TRAIL',
         width: 42,
-        points: switchbackTrail(COUNTY_PEAKS[0], [[7510, 1970], [7540, 1880]], 9, 540),
+        ...switchbackTrail(COUNTY_PEAKS[0], [[7510, 1970], [7540, 1880]], 9, 540),
         peak: COUNTY_PEAKS[0],
         trail: true,
       },
       {
         name: 'NEEDLE RIDGE TRAIL',
         width: 42,
-        points: switchbackTrail(COUNTY_PEAKS[1], [[9500, 2860], [9560, 2520], [9650, 2160]], 8, 450),
+        ...switchbackTrail(COUNTY_PEAKS[1], [[9500, 2860], [9560, 2520], [9650, 2160]], 8, 450),
         peak: COUNTY_PEAKS[1],
         trail: true,
       },
@@ -669,7 +680,7 @@
           band = heights[i] / 34,
           f = band - Math.floor(band),
           terrace = (Math.floor(band) + smoothStep(0.55, 1, f)) * 34;
-        heights[i] += (terrace - heights[i]) * steep * 0.3;
+        heights[i] += (terrace - heights[i]) * steep * 0.22;
       }
       const talus = 1.25 * TERRAIN_CELL;
       for (let pass = 0; pass < 6; pass++)
@@ -746,18 +757,20 @@
         // the grade allows). Between them the trail follows the relief, held inside
         // the band it can climb from the one and still reach the other.
         const total = along.at(-1),
-          end = Math.min(smoothed.at(-1) + 60, total * TRAIL_MAX_GRADE * 0.97);
+          end = Math.min(smoothed.at(-1) + 60, (total - 50) * TRAIL_MAX_GRADE * 0.97);
         profile = smoothed.map((h, i) =>
           clamp(h, Math.max(0, end - (total - along[i]) * TRAIL_MAX_GRADE), along[i] * TRAIL_MAX_GRADE),
         );
         profile[0] = 0;
-        profile[profile.length - 1] = end;
+        // The last stretch is level: it runs onto the summit platform.
+        const levelFrom = profile.findIndex((_, i) => along[i] >= total - 50);
+        for (let i = levelFrom; i < profile.length; i++) profile[i] = end;
         for (let pass = 0; pass < 2; pass++) {
-          for (let i = 1; i < profile.length - 1; i++) {
+          for (let i = 1; i < levelFrom; i++) {
             const g = (along[i] - along[i - 1]) * TRAIL_MAX_GRADE;
             profile[i] = clamp(profile[i], profile[i - 1] - g, profile[i - 1] + g);
           }
-          for (let i = profile.length - 2; i > 0; i--) {
+          for (let i = levelFrom - 1; i > 0; i--) {
             const g = (along[i + 1] - along[i]) * TRAIL_MAX_GRADE;
             profile[i] = clamp(profile[i], profile[i + 1] - g, profile[i + 1] + g);
           }
@@ -828,7 +841,12 @@
           for (let c = cMin; c <= cMax; c++) {
             const i = r * cols + c;
             if (!land[i]) continue;
-            const near = Math.sqrt(nearest[i]),
+            // A turning pad counts as carriageway out to HAIRPIN_PAD.
+            const px = x0 + c * TERRAIN_CELL,
+              py = y0 + r * TERRAIN_CELL;
+            let padReach = Infinity;
+            for (const [hx, hy] of trail.hairpins) padReach = Math.min(padReach, Math.hypot(px - hx, py - hy) - (HAIRPIN_PAD - half));
+            const near = Math.min(Math.sqrt(nearest[i]), Math.max(0, padReach)),
               far = Math.sqrt(other[i]),
               platform = Math.hypot(x0 + c * TERRAIN_CELL - top[0], y0 + r * TERRAIN_CELL - top[1]);
             let goal = target[i],
@@ -933,8 +951,10 @@
       };
     }
     function onMountainTrail(x, y) {
-      return MOUNTAIN_TRAILS.some((t) =>
-        t.points.some((p, i) => i && segmentDistance(x, y, t.points[i - 1], p) < t.width / 2),
+      return MOUNTAIN_TRAILS.some(
+        (t) =>
+          t.points.some((p, i) => i && segmentDistance(x, y, t.points[i - 1], p) < t.width / 2) ||
+          t.hairpins.some(([hx, hy]) => Math.hypot(x - hx, y - hy) < HAIRPIN_PAD),
       );
     }
     function roadVehicleTerrain(vehicle) {
@@ -1203,6 +1223,9 @@
           f *= 1 - smoothStep(0.74, 0.8, damp);
           // Thin out towards the roads and towns so the forest edge is open woodland.
           f *= smoothStep(2, 30, h) * (0.35 + 0.65 * smoothStep(60, 260, flatDistance[i]));
+          // and fades out raggedly towards the field's edge (no straight forest line).
+          const edge = Math.min(c, r, cols - 1 - c, rows - 1 - r) * TERRAIN_CELL;
+          f *= smoothStep(40, 420, edge + stands * 500);
           forest[i] = f;
         }
       return (field.bakes = { normals, ao, forest });

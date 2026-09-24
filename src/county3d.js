@@ -103,7 +103,7 @@
         // Triplanar grain for the rock: faces are textured along whichever axis they face.
         vec3 tW = pow( abs( tN ), vec3( 4.0 ) );
         tW /= tW.x + tW.y + tW.z;
-        float tGrain = terrainNoise( tP.zy * vec2( 0.09, 0.3 ) ) * tW.x + terrainNoise( tP.xz * 0.09 ) * tW.y + terrainNoise( tP.xy * vec2( 0.09, 0.3 ) ) * tW.z;
+        float tGrain = terrainNoise( tP.zy * vec2( 0.07, 0.16 ) ) * tW.x + terrainNoise( tP.xz * 0.09 ) * tW.y + terrainNoise( tP.xy * vec2( 0.07, 0.16 ) ) * tW.z;
         float tGrainFine = mix( 0.5, terrainNoise( tP.zy * 0.6 ) * tW.x + terrainNoise( tP.xz * 0.6 ) * tW.y + terrainNoise( tP.xy * 0.6 ) * tW.z, tFade );
         // Rock strata: bands in height, warped, each band its own shade, a dark ledge at its foot.
         float tStrataY = tP.y + ( terrainNoise( tP.xz * 0.004 ) - 0.5 ) * 60.0 + tMid * 14.0;
@@ -116,7 +116,7 @@
         tRock *= mix( 0.62, 1.0, smoothstep( 0.2, 0.55, 1.0 - tFlow ) ) * mix( 0.8, 1.0, smoothstep( 0.4, 0.85, tAo ) );
         float tCrack = ( 1.0 - smoothstep( 0.0, 0.05, abs( terrainNoise( tP.xz * vec2( 0.05, 0.03 ) + tP.y * 0.02 ) - 0.5 ) ) ) * tFade;
         tRock *= 1.0 - 0.35 * tCrack;
-        tRock *= ( 0.74 + 0.36 * tGrain ) * ( 0.88 + 0.24 * tGrainFine ) * ( 1.0 - 0.16 * smoothstep( 0.84, 1.0, tBandF ) * smoothstep( 0.35, 0.6, tSteep ) );
+        tRock *= ( 0.76 + 0.32 * tGrain ) * ( 0.88 + 0.24 * tGrainFine ) * ( 1.0 - 0.1 * smoothstep( 0.86, 1.0, tBandF ) * smoothstep( 0.35, 0.6, tSteep ) );
         tRock *= mix( vec3( 1.0 ), vec3( 0.92, 0.98, 0.9 ), smoothstep( 0.45, 0.7, tMacro ) );
         // Low cliffs keep a skin of moss and scrub; bare rock takes over with height.
         float tRockW = smoothstep( 0.27, 0.42, tSteep + ( tMid - 0.5 ) * 0.16 - ( 1.0 - smoothstep( 90.0, 330.0, tP.y ) ) * 0.1 );
@@ -163,7 +163,9 @@
         // shading of flat ground, so the mesh's outline on the 10-unit grid never shows.
         {
           vec2 gp = tP.xz;
-          vec3 groundBase = texture2D( terrainTile, ( gp - terrainTileRect.xy ) / terrainTileRect.zw ).rgb * terrainTileTint;
+          // (The sheet is a canvas texture, flipped: its top row is the tile's north edge.)
+          vec2 tileUv = ( gp - terrainTileRect.xy ) / terrainTileRect.zw;
+          vec3 groundBase = texture2D( terrainTile, vec2( tileUv.x, 1.0 - tileUv.y ) ).rgb * terrainTileTint;
           vec2 gr = mat2( 0.8, -0.6, 0.6, 0.8 ) * gp;
           float dry = smoothstep( 0.52, 0.8, cityNoise( gp * 0.035 + 5.0 ) * 0.6 + cityNoise( gr * 0.083 + 2.0 ) * 0.4 );
           float meadow = cityNoise( gp * 0.0045 + 3.7 ) * 0.62 + cityNoise( gr * 0.014 + 11.0 ) * 0.38;
@@ -636,11 +638,11 @@
                 float depth = smoothstep( 0.0, 45.0, mistLevel - ground );
                 vec2 drift = vec2( terrainTime * 3.0, terrainTime * 1.2 );
                 float wisps = terrainFbm( ( vMistWorld.xz + drift ) * 0.0035 + mistSeed ) ;
-                wisps = smoothstep( 0.32, 0.72, wisps + terrainNoise( ( vMistWorld.xz - drift ) * 0.012 ) * 0.25 );
+                wisps = smoothstep( 0.4, 0.85, wisps + terrainNoise( ( vMistWorld.xz - drift ) * 0.012 ) * 0.25 );
                 float edge = smoothstep( 0.0, 0.04, uv.x ) * smoothstep( 1.0, 0.96, uv.x ) * smoothstep( 0.0, 0.06, uv.y ) * smoothstep( 1.0, 0.94, uv.y );
-                float alpha = depth * wisps * edge * mistAmount;
+                float alpha = depth * wisps * edge * mistAmount * 0.3;
                 if ( alpha < 0.004 ) discard;
-                gl_FragColor = vec4( mistColor, alpha * 0.8 );
+                gl_FragColor = vec4( mistColor, alpha );
                 #include <colorspace_fragment>
               }`,
           });
@@ -684,7 +686,7 @@
         for (const sheet of mistSheets) {
           sheet.visible = amount > 0.01;
           sheet.material.uniforms.mistAmount.value = amount;
-          sheet.material.uniforms.mistColor.value.copy(scene.fog.color).lerp(sun.color, 0.25).multiplyScalar(1.15);
+          sheet.material.uniforms.mistColor.value.set('#e4e8ec').lerp(scene.fog.color, 0.4).lerp(sun.color, 0.12);
         }
       }
       // Gravel markings live on the mountain material itself; no second floating road surface.
