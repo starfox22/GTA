@@ -782,6 +782,121 @@
         parent.add(s);
         return s;
       }
+      /**
+       * VEHICLE HALOS
+       * Every lit vehicle has four halo sprites (head and tail lamps; planes their
+       * navigation lights), and each sprite was a draw call with its own material:
+       * a hundred and more at night in a busy street. The sprites stay on the
+       * models as anchors, always hidden; the lit ones are gathered during the
+       * vehicle pass and drawn as one instanced, camera-facing quad set with the
+       * same texture, colour, opacity and additive blending (the quad's size is
+       * the sprite's scale, its opacity rides in the unused w of the instance
+       * matrix's first column).
+       */
+      const VEHICLE_HALO_CAPACITY = 640,
+        vehicleHaloMaterial = new Three.ShaderMaterial({
+          // (merge() would clone the texture; the shared halo texture is set below.)
+          uniforms: { ...Three.UniformsUtils.merge([Three.UniformsLib.fog]), map: { value: haloTx } },
+          vertexShader: `
+            #include <common>
+            #include <fog_pars_vertex>
+            varying vec2 vUv;
+            varying vec3 vColor;
+            varying float vOpacity;
+            void main() {
+              vUv = uv;
+              #ifdef USE_INSTANCING_COLOR
+                vColor = instanceColor;
+              #else
+                vColor = vec3( 1.0 );
+              #endif
+              vOpacity = instanceMatrix[ 0 ].w;
+              vec4 mvPosition = modelViewMatrix * vec4( instanceMatrix[ 3 ].xyz, 1.0 );
+              mvPosition.xy += position.xy * length( instanceMatrix[ 0 ].xyz );
+              gl_Position = projectionMatrix * mvPosition;
+              #include <fog_vertex>
+            }
+          `,
+          fragmentShader: `
+            #include <common>
+            #include <fog_pars_fragment>
+            uniform sampler2D map;
+            varying vec2 vUv;
+            varying vec3 vColor;
+            varying float vOpacity;
+            void main() {
+              vec4 texel = texture2D( map, vUv );
+              gl_FragColor = vec4( vColor * texel.rgb, vOpacity * texel.a );
+              #include <tonemapping_fragment>
+              #include <colorspace_fragment>
+              #include <fog_fragment>
+            }
+          `,
+          transparent: true,
+          blending: Three.AdditiveBlending,
+          depthWrite: false,
+          fog: true,
+        }),
+        vehicleHalos = new Three.InstancedMesh(new Three.PlaneGeometry(1, 1), vehicleHaloMaterial, VEHICLE_HALO_CAPACITY),
+        vehicleHaloQueue = [],
+        vehicleHaloOpacity = [],
+        vehicleHaloPoint = new Three.Vector3(),
+        vehicleHaloMatrix = new Three.Matrix4();
+      vehicleHalos.name = 'vehicle halos';
+      vehicleHalos.frustumCulled = false;
+      vehicleHalos.count = 0;
+      vehicleHalos.userData.dynamic = true;
+      vehicleHalos.setColorAt(0, new Three.Color(1, 1, 1));
+      scene.add(vehicleHalos);
+      function queueVehicleHalo(sprite, opacity) {
+        if (vehicleHaloQueue.length >= VEHICLE_HALO_CAPACITY) return;
+        vehicleHaloQueue.push(sprite);
+        vehicleHaloOpacity.push(opacity);
+      }
+      // After the scene's matrices are current (SCENE MATRICES): place each queued
+      // halo where its sprite would have been drawn.
+      function flushVehicleHalos() {
+        const n = vehicleHaloQueue.length,
+          e = vehicleHaloMatrix.elements;
+        for (let i = 0; i < n; i++) {
+          const sprite = vehicleHaloQueue[i],
+            parent = sprite.parent,
+            pe = parent.matrixWorld.elements,
+            parentScale = Math.hypot(pe[0], pe[1], pe[2]),
+            size = sprite.scale.x * parentScale;
+          vehicleHaloPoint.copy(sprite.position).applyMatrix4(parent.matrixWorld);
+          e[0] = size;
+          e[1] = 0;
+          e[2] = 0;
+          e[3] = vehicleHaloOpacity[i];
+          e[4] = 0;
+          e[5] = size;
+          e[6] = 0;
+          e[7] = 0;
+          e[8] = 0;
+          e[9] = 0;
+          e[10] = size;
+          e[11] = 0;
+          e[12] = vehicleHaloPoint.x;
+          e[13] = vehicleHaloPoint.y;
+          e[14] = vehicleHaloPoint.z;
+          e[15] = 1;
+          vehicleHalos.setMatrixAt(i, vehicleHaloMatrix);
+          vehicleHalos.setColorAt(i, sprite.material.color);
+        }
+        vehicleHalos.count = n;
+        vehicleHalos.visible = n > 0;
+        if (n) {
+          vehicleHalos.instanceMatrix.clearUpdateRanges();
+          vehicleHalos.instanceMatrix.addUpdateRange(0, n * 16);
+          vehicleHalos.instanceMatrix.needsUpdate = true;
+          vehicleHalos.instanceColor.clearUpdateRanges();
+          vehicleHalos.instanceColor.addUpdateRange(0, n * 3);
+          vehicleHalos.instanceColor.needsUpdate = true;
+        }
+        vehicleHaloQueue.length = 0;
+        vehicleHaloOpacity.length = 0;
+      }
       // @include src/damage3d.js
       const lampGlowPending = [];
       // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
@@ -2132,11 +2247,13 @@
               m.cargo.forEach((g, i) => (g.visible = i < (c.cargoCount || 0)));
             }
             if (m.nightLights) {
+              // Drawn together by the instanced halo pass (VEHICLE HALOS), not one
+              // sprite draw call each.
               const lit = c.hp > 0 && (c.ai || c === player.car) && nightAmount > 0.25;
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
-                sprite.visible = lit && !m.lampOut?.[k];
-                if (lit) sprite.material.opacity = (k % 2 ? 0.55 : 0.85) * nightAmount;
+                sprite.visible = false;
+                if (lit && !m.lampOut?.[k]) queueVehicleHalo(sprite, (k % 2 ? 0.55 : 0.85) * nightAmount);
               }
             }
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
@@ -2641,6 +2758,7 @@
           // World matrices of what is shown (SCENE MATRICES), then the HDR scene,
           // AO, bloom, tone curve and grade (postfx3d.js).
           refreshSceneMatrices();
+          flushVehicleHalos();
           renderFrame();
           lap = profileLap(shadowRefresh ? 'r:submit+shadow' : 'r:submit', lap);
           if (bakedCanvases.length && frames % 30 === 0) releaseBakedCanvases();
