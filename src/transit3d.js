@@ -306,7 +306,7 @@
           box(platform, -76, 66, side * 43.5, 8.5, 7, 0.3, mat(['#e2b766', '#67c6bd', '#b3a1d8'][si % 3], 0.6));
           // Station name signs hanging from the canopy at both ends.
           for (const x of [-60, 60]) {
-            const nameSign = sign(s.name, 0, 0, 44, '#e9f1ea');
+            const nameSign = sign(s.name, 0, 0, 44, '#e9f1ea', false, { style: 'transit' });
             nameSign.position.set(x, 80, side * 33);
             nameSign.rotation.y = 0;
             nameSign.userData.backing.position.set(x, 80, side * 33 - 1.5);

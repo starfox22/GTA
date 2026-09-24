@@ -157,6 +157,8 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| signkit3d.js | (included by render3d.js before `sign()`) `SignKit`: the hand-built stroke font (`strokeText`), letter treatments (`tubes`, `doubleTubes`, `bulbLetters`, `blockLetters`, `stencilCut`, `decoLetters`, `pixelLetters`), canvas type effects (`fxText` with font stacks, gold and chrome fills), board shapes and materials (`boardPath`, `fillBoard`), emblems (`icon`, `tubeIcon`) |
+| signdesigns3d.js | (included by render3d.js before `sign()`) `SignArt`: sign families, the business style table (`SIGN_DESIGNS`, fallback `designFor`), `paint`, rooftop hotel names (`paintHotel`), tower names (`paintTowerName`), billboard artwork (`ADS`) |
 | signage3d.js | (included by cityscape3d.js) The glow field (`addGlow`: one instanced draw for every neon halo, bulb and beacon), wet-road streaks, sign light spill (`signSpill`), the neon/lightbox sign atlas (`signCell`, `atlasSign`), lit sign materials (`litSignMaterial`), LED ad screens, stock ticker, marquee bulbs |
 | skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
@@ -715,6 +717,54 @@ docs/audit/missions-qa.md shows the method).
   materials, so they batch; `sign()` boards (render3d.js) glow the same way. Sign
   emissive is multiplied by `cityPower()` (lighting3d.js) in the shader, so the blackout
   contract darkens them per district.
+- Sign design system (signkit3d.js, signdesigns3d.js). Every business's sign is designed
+  for its trade: a FAMILY (how the sign is built) plus parameters (colours, emblem,
+  lettering, board shape), listed by name in `SIGN_DESIGNS`. `sign(text, x, z, width,
+  color, vertical, options)` (render3d.js), the shopfront atlas (`shopSignCell`), the
+  rooftop hotel names, the tower names and the billboards all paint from it. Web fonts
+  are never loaded: character comes from a hand-built monoline stroke font (capitals,
+  lower case, digits) drawn as neon tubes, bulbs, block, stencil, Deco contrast or LED
+  pixels, and from system font stacks with sign-painter effects (condensing, skew,
+  spacing, gold/chrome fills, outlines, extrusion). Each family paints a day face and a
+  glow mask and returns how the board is built: `cutout` (shaped boards, free letters),
+  `backing` (`panel`, `raceway` for cut-out letters, `inset` behind shaped boards),
+  `lamps` (floodlit: goose-neck lamp glows over the board and a top-lit mask),
+  `marquee` (chasing bulbs), `flicker`, `light` (pavement spill colour). Masks are
+  painted for one night strength (`SIGN_NIGHT`): neon cores full, lightboxes about half,
+  floodlit boards a fifth, road signs barely (retroreflective).
+
+  | Family | Night | Used for |
+  | --- | --- | --- |
+  | `neonScript` slanted lower-case tubes, swash, tube emblem, optional block line | neon | AFTERHOURS (cut-out script, moon), COCKTAILS (martini), SUNSET MOTEL / CORAL PALMS MOTEL (Googie boards, sunset / palm), CAFÉ MARLOW, VINYL VAULT, CUTS BARBER, FLOWERS, hotel scripts |
+  | `neonBlock` capital tubes, single or double-line, zigzag or rect tube border | neon | NEON PALACE (stepped Deco board, crown), LIQUOR, PAWN SHOP, FREE FALL |
+  | `bulbs` marquee-bulb letters on painted channels, bulb frame, rays | bulbs + marquee | GOLDEN TIDE (arched, dice), SUNSET PIER / DODGEMS (scalloped, bouncing letters), SUNSET EYE |
+  | `cinema` bulb name on red, white changeable-letter strip, film reels | bulbs + marquee | ROYAL CINEMA |
+  | `diner` chrome-ribbed pill, enamel panel, script tubes, block pill | neon | THE BLUE PLATE DINER, ROSIE’S DINER |
+  | `lightbox` backlit panel in an aluminium frame, vinyl letters, bands, tabs | lightbox | hospitals (cross in a box), EMERGENCY, PALM GRILL (24 HRS tab), airports, HELIPAD, 24 HOUR, BANDSHELL, pharmacy, bail bonds, laundromat, noodle, pizza, photo |
+  | `enamel` gloss porcelain enamel, two-tone rim, serif/slab, inset pill | floodlit or `backlit` | BAYVIEW TAVERN (oval, gilt), SOUTH COAST POLICE (badge), BATTERY MOTOR WORKS (piston, pill), MARINA, OUTFITTERS, CAUSEWAY INN, transit roundel, town welcome signs, bakery, deli |
+  | `wood` weathered planks, routed or painted letters, rope border | floodlit | THE RUSTY ANCHOR (anchors, rope), county LODGEs, park and trail signs, SEAFOOD MARKET |
+  | `stencil` bridged stencil capitals on sheet or corrugated steel, rivets, hazard stripes, rust | floodlit (warning signs reflective) | SOUTH COAST ARMORY (target, crossed pistols), PALM KEYS ARMORY, SENTINEL SURPLUS, WEAPONS · AMMO · ARMOR, IRONWORKS CARGO, MORETTI FREIGHT, RESTRICTED |
+  | `deco` contrast capitals, wide tracking, rules, sunburst fan; neon or halo | neon / halo | THE BLUE HOUR, BLUE HOUR HOTEL, OCEAN DRIVE MENSWEAR (halo-lit gold), SUNSET PALACE, Deco hotel and tower names |
+  | `carved` gold leaf serif on lacquer, stone or wood | floodlit | SOUTH COAST COLLEGE (crests), PAWN & LOAN, TAILOR, BOOKS, CIGARS, banks |
+  | `customs` flames, pinstripes, chrome 3D italic, red neon rim | neon + lit flames | EASTSIDE CUSTOMS |
+  | `airbrush` Miami sunset gradient, fat italic letters | lightbox | PALM AUTO PAINT (spray gun), VIDEO WORLD (chrome, grid) |
+  | `varsity` athletic block letters, outline and drop, optional arch | floodlit or backlit | RIVERSIDE HIGH SCHOOL, SOUTH COAST STADIUM, THE FALCON, GYM |
+  | `painted` wall-painted slab letters, drop shade, sun-faded | floodlit | STONECREEK GARAGE, FREIGHT CO., HARDWARE, SHOE REPAIR |
+  | `hand` hand-lettered plywood | floodlit | safehouse ROOMS, THRIFT, beach kiosks, food trucks |
+  | `highway` retroreflective green or brown, condensed letters, arrows | reflective | underpasses, OCEANVIEW / AIRPORT, EAGLE PASS scenic route |
+  | `pixel` LED dot matrix | LEDs | ARCADE, stadium TICKETS |
+  | `tattoo` flash banner, heart, red neon rim | neon | INK & IRON TATTOO |
+  | `arabian` onion arch, gilt, crescent neon | floodlit + neon | ARABIAN NIGHTS, WADI SPLASH |
+  | `plaque` engraved brass | floodlit | Blue Hour ELEVATOR, PRIVATE LOUNGE, RESERVED |
+
+  To sign a new business add one line to `SIGN_DESIGNS` copying the nearest entry
+  (names it does not list fall back on trade keywords in `designFor`: LODGE, OUTFITTERS,
+  ARMORY, MOTEL, INN, DINER, GARAGE, HOSPITAL, BANK, CLUB, FREIGHT..., then the
+  caller's `options.style` hint: `transit`, `kiosk`, `truck`, `town`, `resort`, `trail`).
+  Billboards: each advertiser in `SignArt.ADS` has its own painter (layout,
+  illustration, lettering); the ad atlas grows by rows as ads are added. The shop atlas
+  holds one 384 x 96 cell per shop name (a chain wears one brand), about half the
+  2048 x 2048 atlas.
 - Night: facade materials carry an `emissiveMap` window mask; `updateCityscapeVisuals()`
   scales emissive intensity by night amount, hour and `sideJobPower()`. Lamps, shop glass,
   neon halos and vehicle head/tail halos follow the same night amount.

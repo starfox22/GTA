@@ -463,7 +463,7 @@
               const wheel = mesh(wheelGeo, rubber, t, dx, 4, dz, 4, 2.4, 4);
               wheel.rotation.x = Math.PI / 2;
             }
-          sign(truck.menu, truck.x + Math.cos(truck.a + Math.PI / 2) * 16, truck.y + Math.sin(truck.a + Math.PI / 2) * 16, 34, '#ffe6b0');
+          sign(truck.menu, truck.x + Math.cos(truck.a + Math.PI / 2) * 16, truck.y + Math.sin(truck.a + Math.PI / 2) * 16, 34, '#ffe6b0', false, { style: 'truck' });
           halo(t, -2, 20, -12, 26, '#ffd9a0');
         }
         sign('OUTDOOR GYM', cal.x, cal.y + cal.h / 2 + 10, 90, '#cfe6ea');
