@@ -879,6 +879,7 @@
     }
     function addCountyColliders() {
       addBeachColliders();
+      addBeachClubColliders();
       for (const b of [...countySolids(), ...militaryWalls])
         addStatic(b.x, b.y, b.w, b.h, b.height, b.kind || 'military');
       // Bridge pylons stand in the water beside the deck, tall enough to matter

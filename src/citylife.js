@@ -790,6 +790,7 @@
         !p.vendor &&
         !p.queueing &&
         !p.parkGuest &&
+        !p.club &&
         !p.parkRoute &&
         !p.leader &&
         !p.ejected &&
