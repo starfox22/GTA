@@ -19,13 +19,19 @@
      * a glass shatter when a pane actually broke in this hit, a recorded tyre
      * skid when the two were sliding across each other, and a short debris
      * settle after a really hard hit. No synthesised layers.
-     * Placement is by distance (level and a low-pass), stereo pan and, for hard
+     * The bus plays everything at CRASH_LEVEL (-3.5 dB), `heard` in the log
+     * includes it. Placement is by distance (level and a low-pass), stereo pan and, for hard
      * hits, a little reverb. A pair of vehicles makes one event per 0.7 s at most
      * (a much harder hit may break through) and no more than four crashes start
      * in the same quarter second. `crashLog` keeps the last choices for tests
      * (DeadEndCity.crashSounds()).
      */
     const CRASH_PAIR_SECONDS = 0.7,
+      // The whole crash bus sits 3.5 dB under the level the samples were
+      // matched at, so crashes stay dramatic without towering over gunfire,
+      // engines and the street (every layer is scaled alike, so a bump is still
+      // as far under a heavy crash as before).
+      CRASH_LEVEL = 0.67,
       CRASH_AUDIBLE = 1100,
       CRASH_SETS = {
         bump: ['crash-bump-1', 'crash-bump-2'],
@@ -151,7 +157,7 @@
       if (o.key) crashPairs.set(o.key, { at: now, closing: o.closing });
       if (crashPairs.size > 200) for (const [k, v] of crashPairs) if (now - v.at > 3) crashPairs.delete(k);
       const c = crashChoice(o),
-        attenuation = 1 / (1 + d / 230);
+        attenuation = (1 / (1 + d / 230)) * CRASH_LEVEL;
       crashLog.push({
         closing: Math.round(o.closing),
         metersPerSecond: +(o.closing / 5.12).toFixed(1),
