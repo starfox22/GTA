@@ -123,6 +123,11 @@
         }),
         wood = mat('#4f4037'),
         leafMats = ['#344c3c', '#4e654a', '#5b7150'].map((c) => mat(c)),
+        // Planted greenery (hedges, planters, potted palms, roof gardens): the same
+        // green as leafMats[1] but it never sways. The wind patch (surfaces3d.js) is
+        // for trees; a clipped hedge or a pot on a sheltered roof waving about read
+        // as a glitch.
+        stillLeafMat = mat('#4e654a'),
         // Palms (makePalm in world3d.js) share these so they batch together.
         palmTrunkMaterial = mat('#978266'),
         palmFrondMaterial = new Three.MeshStandardMaterial({ color: '#3e7862', roughness: 0.7, side: Three.DoubleSide });
@@ -392,7 +397,10 @@
             // Zone-specific ground: mirrors the block patterns chosen in buildWorld().
             const zone = districtAt(x + 177, z + 177),
               blockSeed = (bx * 31 + by * 17) % 7;
-            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
+            if (zone.includes('FINANCIAL') && skylineBlockTowers(bx, by).length) {
+              // Cluster plaza (src/skyline.js), the same inset as the game's ground canvas.
+              paintSkylinePlaza(drawingContext, x + 14, z + 14, 326, 326);
+            } else if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               drawingContext.fillStyle = '#c3bfb2';
               drawingContext.fillRect(x + 10, z + 10, 344, 160);
               drawingContext.strokeStyle = '#a8a497';
@@ -669,50 +677,82 @@
           radius: 50,
         });
       }
-      function sign(text, x, z, width, color, vertical = false) {
-        const cv = document.createElement('canvas');
-        cv.width = 1024;
-        cv.height = 256;
-        const cg = cv.getContext('2d');
-        cg.fillStyle = '#18272d';
+      /**
+       * Landmark and business signs: an enamel board with a border and lettering
+       * that light up at night. The painted face is the map; lettering and border
+       * glow through an emissive mask whose strength signage3d.js drives with the
+       * hour (and the district's power), so they bloom after dark. Street-level
+       * boards also spill their colour onto the pavement and the wet road, and
+       * `options.marquee` rings the board with chasing bulbs (signage3d.js places
+       * both once every caller has moved its sign into place).
+       */
+      const signBoards = [];
+      function sign(text, x, z, width, color, vertical = false, options = {}) {
+        const face = document.createElement('canvas'),
+          glowCanvas = document.createElement('canvas');
+        face.width = glowCanvas.width = 1024;
+        face.height = glowCanvas.height = 256;
+        const cg = face.getContext('2d'),
+          gg = glowCanvas.getContext('2d'),
+          board = cg.createLinearGradient(0, 0, 0, 256);
+        board.addColorStop(0, '#1f2f36');
+        board.addColorStop(1, '#101a1f');
+        cg.fillStyle = board;
         cg.fillRect(0, 0, 1024, 256);
+        gg.fillStyle = '#000';
+        gg.fillRect(0, 0, 1024, 256);
+        const hot = '#' + new Three.Color(color).lerp(new Three.Color('#ffffff'), 0.55).getHexString();
+        for (const g of [cg, gg]) {
+          g.font = '600 86px Arial';
+          g.textAlign = 'center';
+          g.textBaseline = 'middle';
+          g.lineJoin = 'round';
+        }
+        // Border tube and lettering on the board.
         cg.strokeStyle = color;
         cg.lineWidth = 7;
         cg.strokeRect(20, 22, 984, 212);
+        cg.fillStyle = 'rgba(0,0,0,0.5)';
+        cg.fillText(text, 516, 137, 932);
         cg.fillStyle = color;
-        cg.font = '600 86px Arial';
-        cg.textAlign = 'center';
-        cg.textBaseline = 'middle';
         cg.fillText(text, 512, 132, 932);
-        const tx = new Three.CanvasTexture(cv);
-        tx.colorSpace = Three.SRGBColorSpace;
-        tx.minFilter = Three.LinearMipmapLinearFilter;
-        tx.magFilter = Three.LinearFilter;
-        tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        // What glows: a coloured spill round both, then their hot cores.
+        gg.shadowColor = color;
+        gg.shadowBlur = 26;
+        gg.strokeStyle = color;
+        gg.lineWidth = 9;
+        gg.strokeRect(20, 22, 984, 212);
+        gg.fillStyle = color;
+        gg.fillText(text, 512, 132, 932);
+        gg.shadowBlur = 0;
+        gg.strokeStyle = hot;
+        gg.lineWidth = 3;
+        gg.strokeRect(20, 22, 984, 212);
+        gg.fillStyle = hot;
+        gg.fillText(text, 512, 132, 932);
+        const texture = (canvas) => {
+          const tx = new Three.CanvasTexture(canvas);
+          tx.colorSpace = Three.SRGBColorSpace;
+          tx.minFilter = Three.LinearMipmapLinearFilter;
+          tx.magFilter = Three.LinearFilter;
+          tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          return tx;
+        };
         const m = new Three.Mesh(
           new Three.PlaneGeometry(width, width / 4),
-          new Three.MeshBasicMaterial({
-            map: tx,
-            side: Three.DoubleSide,
-            toneMapped: false,
-            // Wins the depth test against wall panels it is mounted on.
-            polygonOffset: true,
-            polygonOffsetFactor: -2,
-            polygonOffsetUnits: -2,
-          }),
+          litSignMaterial(texture(face), texture(glowCanvas), { night: 2.6, day: 0.18, doubleSided: true }),
         );
         // Centred 23 up, but never so low that a wide board sinks into the ground
         // (a 235-wide sign is 59 tall); callers raise facade signs further.
         const signY = Math.max(23, width / 8 + 3);
         m.position.set(x, signY, z + 0.6);
         m.userData.sign = true;
+        m.receiveShadow = true;
         scene.add(m);
         m.userData.backing = box(scene, x, signY, z - 1.5, width + 5, width / 4 + 5, 3, darkMetal);
+        signBoards.push({ mesh: m, width, color, marquee: !!options.marquee });
         return m;
       }
-      sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb');
-      sign('24 HOUR', 1470, 544, 85, '#f3d394');
-      sign('FREIGHT CO.', 2880, 549, 106, '#c1d4bb');
       const ph = new Three.Group();
       ph.position.set(phone.x, 0, phone.y);
       scene.add(ph);
@@ -722,6 +762,10 @@
       box(ph, 0, 17, 0, 12, 2, 8, mat('#517c70'));
       halo(ph, 0, 14, 0, 8, '#9bdbb1');
       // @include src/cityscape3d.js
+      // Street signs (after the cityscape: their glow and spill live in signage3d.js).
+      sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb', false, { marquee: true });
+      sign('24 HOUR', 1470, 544, 85, '#f3d394');
+      sign('FREIGHT CO.', 2880, 549, 106, '#c1d4bb');
       // @include src/sidejobs3d.js
       // @include src/roadblocks3d.js
       // @include src/themepark3d.js
@@ -734,6 +778,7 @@
       // @include src/transit3d.js
       // @include src/ecology3d.js
       // @include src/world3d.js
+      // @include src/wakes3d.js
       // @include src/beach3d.js
       // @include src/county3d.js
       // @include src/boats3d.js
@@ -949,6 +994,33 @@
           nightLights,
         };
       }
+      /**
+       * PLAYER AT NIGHT
+       * The player's dark jacket vanished into an unlit street. After dark their
+       * model picks up a cool rim light (strongest on the faces turned away from
+       * the camera, so the silhouette reads against the ground) and a faint fill,
+       * and a soft pool of light rides at their feet (playerGlow, updated in
+       * render()). Both follow nightAmount and are gone by day.
+       */
+      const playerRim = { value: new Three.Color(0, 0, 0) },
+        PLAYER_RIM_NIGHT = new Three.Color('#5d6f8f');
+      function playerRimMaterial(material) {
+        material.onBeforeCompile = (shader) => {
+          cityMaterialPatch(shader);
+          shader.uniforms.cityPlayerRim = playerRim;
+          shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\nuniform vec3 cityPlayerRim;')
+            .replace(
+              '#include <lights_fragment_end>',
+              `#include <lights_fragment_end>
+              {
+                float rimView = 1.0 - clamp( dot( normal, geometryViewDir ), 0.0, 1.0 );
+                totalEmissiveRadiance += cityPlayerRim * ( 0.18 + 1.4 * rimView * rimView );
+              }`,
+            );
+        };
+        material.customProgramCacheKey = () => 'player-rim';
+      }
       function makePerson(person, isPlayer) {
         const group = new Three.Group();
         scene.add(group);
@@ -975,6 +1047,8 @@
           mesh(sphereGeo, skin, arm, 0.6, -4.3, 0, 1, 1.2, 1);
           parts['arm' + side] = arm;
         }
+        // Body, clothes and hair (not the guns) carry the player's night rim light.
+        if (isPlayer) group.traverse((o) => o.material?.isMeshStandardMaterial && playerRimMaterial(o.material));
         const guns = [];
         for (let slot = 0; slot < (isPlayer ? 7 : 1); slot++) {
           const gun = new Three.Group();
@@ -1096,79 +1170,33 @@
       );
       playerRing.rotation.x = -Math.PI / 2;
       scene.add(playerRing);
-      /**
-       * SWIM WAKE
-       * Two flat pieces lying on the water: a soft V that opens out behind the
-       * swimmer, and a ring that expands and fades once per stroke. Both are
-       * painted into one small canvas each, so the whole effect is two draw calls.
-       */
-      function wakeTexture(v) {
-        const size = 128,
-          cv = document.createElement('canvas');
-        cv.width = cv.height = size;
-        const g = cv.getContext('2d');
-        g.clearRect(0, 0, size, size);
-        if (v) {
-          // A widening pair of foam lines trailing the swimmer.
-          g.strokeStyle = '#ffffff';
-          g.lineCap = 'round';
-          for (const side of [-1, 1])
-            for (let i = 0; i < 3; i++) {
-              g.globalAlpha = 0.5 - i * 0.13;
-              g.lineWidth = 7 - i * 2;
-              g.beginPath();
-              g.moveTo(size * 0.62, size / 2 + side * 3);
-              g.quadraticCurveTo(
-                size * 0.34,
-                size / 2 + side * (12 + i * 9),
-                size * 0.05,
-                size / 2 + side * (30 + i * 13),
-              );
-              g.stroke();
-            }
-          g.globalAlpha = 0.5;
-          g.beginPath();
-          g.ellipse(size * 0.66, size / 2, 13, 8, 0, 0, Math.PI * 2);
-          g.fillStyle = '#ffffff';
-          g.fill();
-        } else {
-          const grad = g.createRadialGradient(size / 2, size / 2, size * 0.3, size / 2, size / 2, size / 2);
-          grad.addColorStop(0, 'rgba(255,255,255,0)');
-          grad.addColorStop(0.72, 'rgba(236,248,252,0.55)');
-          grad.addColorStop(1, 'rgba(236,248,252,0)');
-          g.fillStyle = grad;
-          g.fillRect(0, 0, size, size);
-        }
-        const tx = new Three.CanvasTexture(cv);
-        tx.colorSpace = Three.SRGBColorSpace;
-        return tx;
+      // The soft pool of light at the player's feet after dark (see PLAYER AT NIGHT).
+      const playerGlowCanvas = document.createElement('canvas');
+      playerGlowCanvas.width = playerGlowCanvas.height = 64;
+      {
+        const g = playerGlowCanvas.getContext('2d'),
+          grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(255,255,255,1)');
+        grad.addColorStop(0.45, 'rgba(255,255,255,0.45)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 64, 64);
       }
-      const swimWake = new Three.Mesh(
-        new Three.PlaneGeometry(46, 30),
+      const playerGlow = new Three.Mesh(
+        new Three.PlaneGeometry(64, 64),
         new Three.MeshBasicMaterial({
-          map: wakeTexture(true),
+          map: new Three.CanvasTexture(playerGlowCanvas),
+          color: '#b4c2e0',
           transparent: true,
-          depthWrite: false,
           opacity: 0,
+          depthWrite: false,
+          blending: Three.AdditiveBlending,
         }),
       );
-      swimWake.rotation.x = -Math.PI / 2;
-      swimWake.renderOrder = 7;
-      swimWake.visible = false;
-      scene.add(swimWake);
-      const swimRipple = new Three.Mesh(
-        new Three.PlaneGeometry(1, 1),
-        new Three.MeshBasicMaterial({
-          map: wakeTexture(false),
-          transparent: true,
-          depthWrite: false,
-          opacity: 0,
-        }),
-      );
-      swimRipple.rotation.x = -Math.PI / 2;
-      swimRipple.renderOrder = 7;
-      swimRipple.visible = false;
-      scene.add(swimRipple);
+      playerGlow.rotation.x = -Math.PI / 2;
+      playerGlow.renderOrder = 3;
+      playerGlow.visible = false;
+      scene.add(playerGlow);
       const objectiveRing = new Three.Mesh(
         new Three.RingGeometry(27, 29, 48),
         new Three.MeshBasicMaterial({
@@ -1420,6 +1448,15 @@
       const api = {
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
+        /**
+         * Settings contract: the see-through hole round the player under a roof
+         * (lighting3d.js, CUTAWAY). On by default; read at start-up from
+         * localStorage 'dead-end-city-cutaway' ('off' disables). The settings
+         * menu saves that key and calls this to apply it at once.
+         */
+        setCharacterCutaway(on) {
+          setCharacterCutaway(on);
+        },
         info() {
           let objects = 0;
           const byType = {};
@@ -1644,7 +1681,11 @@
           lastVisualTime = gameTime;
           nightAmount = clamp(1 - daylight() * 1.6, 0, 1);
           updateCivicVisuals();
-          const altitude = entityElevation(player.car || player),
+          // A boat passing under a road bridge is dropped 30 units below the deck
+          // (boatSurfaceElevation, air-cover.js) so it slips under the roadway. The
+          // camera, the shadow fit and the cutaway stay on the water: following that
+          // drop jolted the whole view down and back up again at each bridge.
+          const altitude = player.car && isBoat(player.car) ? 0 : entityElevation(player.car || player),
             flying = !!(isAircraft(player.car) || player.parachute);
           // Street (orthographic) or flight (perspective) camera, plus what it sees.
           updateFlightView(deltaSeconds, altitude, flying);
@@ -1785,14 +1826,25 @@
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
               if (m.boat) {
-                const underBridge = underBridgeWater(c.x, c.y);
-                m.group.position.y = underBridge
-                  ? entityElevation(c)
-                  : 0.6 + Math.sin(gameTime * 1.7 + c.x * 0.02) * 0.45;
+                // Under a road bridge the hull slips below the deck (air-cover.js). It
+                // starts down as soon as the bow or stern is under the roadway and eases
+                // there, instead of popping 30 units when the middle of the boat crosses.
+                const half = vehicleSpec(c).l * 0.5,
+                  ux = Math.cos(c.a) * half,
+                  uy = Math.sin(c.a) * half,
+                  underBridge =
+                    underBridgeWater(c.x, c.y) ||
+                    underBridgeWater(c.x + ux, c.y + uy) ||
+                    underBridgeWater(c.x - ux, c.y - uy),
+                  float = underBridge ? -30 : 0.6 + Math.sin(gameTime * 1.7 + c.x * 0.02) * 0.45;
+                m.float = m.float === undefined || Math.abs(float - m.float) > 60 ? float : m.float + (float - m.float) * (1 - Math.exp(-deltaSeconds * 12));
+                m.group.position.y = m.float;
                 m.body.rotation.z = Math.sin(gameTime * 2 + c.id) * 0.023;
                 m.body.rotation.x = Math.sin(gameTime * 1.3 + c.y * 0.017) * 0.028;
-                m.wake.visible = Math.abs(c.speed) > 15;
-                m.wake.scale.x = 0.5 + Math.abs(c.speed) / 180;
+                // Wake, bow wave and spray are drawn into the sea (wakes3d.js).
+                const boatSpec = vehicleSpec(c);
+                if (c.hp > 0 && (Math.abs(c.speed) > 2 || c === player.car))
+                  wakeEmit(c, c.x, c.y, c.a, c.speed, boatSpec.l, boatSpec.w, boatSpec.max || 300, !underBridge);
                 if (m.boatUpdate) m.boatUpdate(c);
               }
               for (const { wheel } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / 5;
@@ -1801,7 +1853,7 @@
               m.blood = new Three.Group();
               m.body.add(m.blood);
               const vehicleDefinition = vehicleSpec(c),
-                red = mat('#8d1325', 0.38);
+                red = mat('#7a0f1f', 0.62);
               for (let j = 0; j < 9; j++)
                 box(
                   m.blood,
@@ -1829,6 +1881,8 @@
             vehicleEffects(c, m, deltaSeconds);
           }
           endVehicleImpostors();
+          // Every craft on the water has reported in: draw the wake map (wakes3d.js).
+          updateWakes(deltaSeconds);
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;
@@ -1990,22 +2044,17 @@
           playerRing.visible =
             !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
-          // Wake: a bow wave that opens out behind the swimmer, and a ring of
-          // disturbed water around them that breathes with the stroke.
-          swimWake.visible = !!player.swimming;
-          if (swimWake.visible) {
-            const stroke = player.swimStroke || 0,
-              drive = clamp(player.swimDrive || 0, 0, 1);
-            swimWake.position.set(player.x, -1.4, player.y);
-            swimWake.rotation.z = -player.a;
-            swimWake.scale.set(1 + drive * 0.9, 0.8 + drive * 0.5, 1);
-            swimWake.material.opacity = 0.16 + drive * 0.34 + Math.sin(stroke * 2) * 0.05;
-            swimRipple.position.set(player.x, -1.5, player.y);
-            const pulse = (stroke % (Math.PI * 2)) / (Math.PI * 2);
-            swimRipple.scale.setScalar(9 + pulse * 26);
-            swimRipple.material.opacity = (1 - pulse) * 0.3 * (0.4 + drive);
+          // After dark: the rim light on the player's model and the pool at their feet.
+          playerRim.value.copy(PLAYER_RIM_NIGHT).multiplyScalar(nightAmount * 0.6);
+          playerGlow.visible = playerRing.visible && !player.hidden && nightAmount > 0.04;
+          if (playerGlow.visible) {
+            playerGlow.position.set(player.x, 0.4 + entityElevation(player), player.y);
+            playerGlow.material.opacity = nightAmount * 0.16;
           }
-          swimRipple.visible = swimWake.visible;
+          // A swimmer's wake, kick foam and the ripples round them are drawn into the
+          // sea like a boat's (wakes3d.js). The flat V and ring planes that did this
+          // sat at a fixed height, so the swell rose through them.
+          if (player.swimming) wakeEmit(player, player.x, player.y, player.a, clamp(player.swimDrive || 0, 0, 1) * 70, 16, 7, 80, false);
           for (const p of pickups) {
             let m = pickupModels.get(p);
             if (!m) {
@@ -2115,6 +2164,9 @@
           }
           if (fx.length > 620) fx.splice(0, fx.length - 620);
           let pi = 0;
+          // Sprites are unlit: blood drops, casings, glass and smoke take the scene's
+          // light level so they do not glow in the dark (flames and sparks do).
+          const spriteLight = 0.3 + 0.7 * daylight();
           for (let i = fx.length - 1; i >= 0; i--) {
             const p = fx[i];
             p.life -= deltaSeconds;
@@ -2139,6 +2191,7 @@
             const a = p.life / p.max;
             s.material.map = p.glow ? haloTx : smokeTx;
             s.material.color.set(p.color);
+            if (!p.glow) s.material.color.multiplyScalar(spriteLight);
             s.material.opacity = Math.min(p.smoke ? 0.56 : 0.96, a * 1.7);
             s.material.blending = p.glow ? Three.AdditiveBlending : Three.NormalBlending;
             let sz = p.case ? p.size : p.size * (1 + (1 - a) * 2);
@@ -2155,6 +2208,7 @@
             );
             s.material.map = p.blood ? bloodDropTx : p.flame ? flameTx : smokeTx;
             s.material.color.set(p.color);
+            if (!p.flame) s.material.color.multiplyScalar(spriteLight);
             s.material.opacity = p.blood ? 0.97 : clamp(p.life / p.max, 0, 0.7);
             s.material.blending = p.flame ? Three.AdditiveBlending : Three.NormalBlending;
             s.scale.set(p.size * (p.blood ? 1.1 : 1.6), p.size * (p.blood ? 1.8 : 1.6), 1);
@@ -2247,7 +2301,8 @@
           }
           // Pedestrian speech: short lines drawn as bubbles above the speaker.
           // Drivers shouting out of the window use the same bubble over the car.
-          for (const p of [...pedestrians, ...vehicles]) {
+          // Settings · Gameplay · NPC chatter off hides them all (settings.js).
+          for (const p of npcChatterOn() ? [...pedestrians, ...vehicles] : []) {
             if (!p.speech || p.speechUntil < gameTime || p.hp <= 0 || distanceBetween(p, cameraTarget) > 460) continue;
             const q = api.project(p.x, p.y, entityElevation(p) + (p.type ? 22 : 27));
             if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;

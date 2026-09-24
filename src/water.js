@@ -368,7 +368,7 @@
         // Pushing off from the shallows is a quiet start; everything else is a plunge.
         if (player.wading) waterEntrySound(0.6);
         else splashAt(player.x, player.y, 1.3);
-        tell('SWIMMING · Shift to swim harder · your weapons are no use here', 3.5);
+        tell('SWIMMING · ' + keyName('sprint') + ' to swim harder · your weapons are no use here', 3.5);
       }
       player.wading = 0;
       player.swimming = true;
