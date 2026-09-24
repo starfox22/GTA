@@ -122,6 +122,7 @@ something, never a generic code-evaluation hook.
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
 | `beach()` | Palm Keys Beach: crowd density for the hour, who is there and what they are doing, prop counts |
+| `beachClub(action)` | Marea Beach Club: phase, levels, people by slot kind, mode and pose, the queue and the conversation at the door, admitted/rejected/evacuated counts, the music (set, bar, section, gain, wall cutoff); `'trouble'` raises gunfire on its dance floor |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
 | `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |

@@ -818,6 +818,8 @@
         return false;
       }
       if (p.pending) {
+        // Right next to it, the crowd decides; a shot the club heard empties it;
+        // anything else is lost under the music.
         const inc = p.pending.inc;
         if (c.staff && c.slot?.kind === 'bouncer') p.pending = null;
         else if (!inc || Math.hypot(inc.x - p.x, inc.y - p.y) < 90) {
@@ -825,7 +827,7 @@
           return false;
         } else {
           p.pending = null;
-          if (c.mode !== 'evac') mareaEvacuate(p);
+          if (inc.loud && gameTime < marea.spookedUntil && c.mode !== 'evac') mareaEvacuate(p);
         }
       }
       p.walking = false;
@@ -1088,7 +1090,7 @@
       const west = mareaRandom() < 0.6;
       for (let k = 0; k < size; k++) {
         const spot = mareaQueueSpot(index + k),
-          start = instant ? spot : mareaPoint(west ? -30 - k * 10 : 430 + k * 10, 8 + k * 3),
+          start = instant ? spot : mareaPoint(west ? -220 - k * 10 : 620 + k * 10, 8 + k * 3),
           p = mareaSpawn(null, start.x, start.y, 'party');
         if (!p) break;
         p.club.group = group;
@@ -1124,10 +1126,10 @@
       const target = Math.round(3 + 13 * L.queue);
       if (L.queue > 0.02 && marea.queueClock <= 0 && gameTime > marea.spookedUntil) {
         marea.queueClock = randomBetween(4, 10) / Math.max(0.35, L.queue);
-        if (count < target) mareaQueueArrival(!marea.inView);
+        if (count < target) mareaQueueArrival(!marea.inView || marea.instant);
       }
       // Top up the line at once when nobody is looking (a teleport, a long drive).
-      if (!marea.inView && L.queue > 0.05 && count < target * 0.6 && gameTime > marea.spookedUntil) mareaQueueArrival(true);
+      if ((!marea.inView || marea.instant) && L.queue > 0.05 && count < target * 0.6 && gameTime > marea.spookedUntil) mareaQueueArrival(true);
       // The conversation at the front.
       const talk = marea.talk;
       if (talk) {
@@ -1247,8 +1249,8 @@
           marea.alarmInc = crowd.incidents[i];
           break;
         }
-      if (attacker === player || attacker === null) marea.enforceUntil = gameTime + 45;
       if (attacker === player) {
+        marea.enforceUntil = gameTime + 45;
         marea.pass = false;
         marea.vip = false;
         marea.banned = gameTime + 600;
@@ -1401,7 +1403,7 @@
       return level > slot.t;
     }
     function mareaFill(slot) {
-      const inView = crowdInView(slot.x, slot.y, 50);
+      const inView = !marea.instant && crowdInView(slot.x, slot.y, 50);
       if (inView && slot.fromQueue && marea.levels.queue > 0.05) return; // they come in from the line
       let entry = null;
       if (inView) {
@@ -1438,18 +1440,32 @@
         marea.passNight = -1;
       }
       if (!marea.near) {
+        marea.wasNear = false;
         if (marea.people.length && far > 1700) for (const p of [...marea.people]) mareaRemove(p);
         marea.queue = [];
         marea.talk = null;
         return;
       }
+      // Just arrived (a teleport, a fast drive) or the clock jumped: the club is
+      // as it should be at once instead of filling up in front of the camera.
+      const hour = crowdHour(),
+        jumped = marea.lastHour != null && Math.abs(normalizeAngle(((hour - marea.lastHour) / 24) * TAU)) > 0.08;
+      if (!marea.wasNear || jumped) marea.instantUntil = gameTime + 1.2;
+      marea.wasNear = true;
+      marea.lastHour = hour;
+      marea.instant = gameTime < marea.instantUntil;
       updateMareaPlayer();
       marea.tick -= deltaSeconds;
-      if (marea.tick > 0) return;
+      if (marea.tick > 0 && !marea.instant) return;
       const step = 0.5;
       marea.tick = step;
       const L = marea.levels,
         spooked = gameTime < marea.spookedUntil;
+      // Anyone the rest of the game took away (a mission reset, a respawn).
+      if (marea.people.length) {
+        const alive = new Set(pedestrians);
+        for (const p of [...marea.people]) if (!alive.has(p)) mareaRelease(p);
+      }
       // Alarmed people run (once, from here, so the crowd's own perception has had its say).
       for (const p of [...marea.people]) if (p.club?.alarmed && p.club.mode !== 'evac') {
         p.club.alarmed = false;
@@ -1467,7 +1483,7 @@
         p.club.pendingLine = null;
       }
       // Slots.
-      let budget = marea.inView ? 3 : 40;
+      let budget = marea.inView && !marea.instant ? 3 : 60;
       for (const slot of mareaSlots) {
         const p = slot.person;
         if (p && (!p.club || p.hp <= 0 || p.club.slot !== slot)) {
@@ -1480,7 +1496,7 @@
           budget--;
           mareaFill(slot);
         } else if (!want && p && p.club.mode === 'slot') {
-          if (!crowdInView(p.x, p.y, 40)) mareaRemove(p);
+          if (marea.instant || !crowdInView(p.x, p.y, 40)) mareaRemove(p);
           else if (mareaRandom() < (marea.phase === 'closing' ? 0.25 : 0.12)) {
             const exit = marea.phase === 'closing' && marea.taxis.length && mareaRandom() < 0.5 ? 'street' : undefined;
             mareaLeave(p, exit);
