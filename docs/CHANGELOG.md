@@ -1,6 +1,69 @@
 # Changelog
 
-## Unreleased — The islands rearranged
+## 30.0.0 — The islands rearranged, AAA pass two
+
+Settings, controls and HUD (controls.js, settings.js, hud.js)
+- A settings screen from the title and pause menus: Graphics (quality tier, FPS counter,
+  character see-through), Audio (master, effects, radio and voice volumes), Gameplay (NPC
+  chatter, minimap, control hints) and Controls (touch mode, every key rebindable with clash
+  detection and swap, reset to defaults). Everything is saved and applies live.
+- Aircraft climb and descend moved to T / G (Shift is sprint, Space the handbrake).
+- A new HUD: radio and weapon boxes rest as small chips and pop open on a change or on hover
+  with animated transitions; a foldable minimap that zooms with the wheel or a pinch;
+  context key hints; a new animated title screen. `godmode` unlocks every mission in the picker.
+
+Radio (car-radio.js)
+- Three new stations with licensed tracks: VELVET 91.5 (lounge jazz), PALMS 95.9 (island
+  grooves) and BLOCK 101.7 (lo-fi beats); stations play playlists and every station has a
+  synthesized ident. Music streams from files beside the page in the published build
+  (`tools/build.py --split-media`).
+
+Combat and police (heat.js, pursuit.js, wounds.js; docs/audit/combat-qa.md)
+- Heat from every crime and kill (civilians, officers, SWAT, soldiers, destroyed police
+  vehicles) drives the stars at 12 / 32 / 72 / 125, one flashing step at a time; a heat meter
+  and body count on the HUD; heat cools only out of sight.
+- Response per star: patrols that arrest at 1, PIT/flank/box cruisers at 2, a helicopter
+  marksman and roadblocks at 3, SWAT vans and two helicopters at 4, federal agents and a tank
+  from Fort Sentinel at 5; reinforcements arrive off-camera ahead of the player; a radar search
+  area with sight cones; police launches and a helicopter chase boats from 2 stars; cruisers
+  cut across open ground and use the county road graph.
+- BUSTED as well as WASTED; hit markers, headshots, incoming-fire arcs; hit reactions by body
+  area, limping, blood trails, directional death falls and slumps against walls, downed
+  officers dragged to cover. 5-star physics about 25% cheaper.
+
+Stadium (sports-fixtures.js, sports-audio.js)
+- Players, referees and stewards can be shot, stabbed and run over like anyone else; the match
+  is abandoned and the stands empty. Walk onto the pitch through the board gaps, dribble the
+  ball and press E to kick (Shift for power): a goal lights every board, pays out and brings
+  the stewards. Six scoreboards; 11 football clubs and 6 basketball teams with kits and crests
+  on a daily fixture list; procedural crowd sound.
+
+North Point and signage (skyline.js, skyline3d.js, signage3d.js)
+- The financial district is a Moscow-City-style cluster of 18 unique supertall towers
+  (twisting, stepped copper, twin sails, stacked blocks, curved, needle, crown, diagrid...) on
+  landscaped plazas with lit crowns and aircraft lights.
+- Signage lit as real neon, lightboxes and channel letters with bloom and flicker, LED
+  billboards that cycle ads, marquee bulbs, light spill on the street and reflections in rain.
+
+Bridges and the sailing liner (bridges3d.js)
+- Every bridge has its own design: green steel truss (Keys Bridge), causeway with a bascule
+  span (Palm Sound), white cable-stayed A-pylon (East Bay), red suspension bridge (South Bay),
+  LED network arch (Sunset Pier) and distinct county crossings, with lighting and collision.
+- The MS Meridian Star sails a 19-minute loop round the islands with a port call, wake, horn
+  and a deck the player can ride.
+
+Visual fixes
+- Blood stays dark red at every hour; the see-through cutaway only opens a small hole in a
+  roof directly over the player (and can be turned off); boats leave real Kelvin wakes, foam
+  and spray in the sea (wakes3d.js); no camera jolt under bridges; the half-screen milky veil
+  (cloud-shadow plane cut by the camera's near plane) is gone; the player gets a rim light at
+  night; Blue Hour rooftop plants no longer sway.
+
+Streets and collision (docs/audit/streets-collision-qa.md)
+- Sea railings stand on the quay edge, block people and open at ladders and gangways; street
+  ends stop square at a kerb; no painted turning circles, no district boards over the road; stop
+  lines, full-width crossings and bus stop boxes; street furniture stops the player; long
+  steps are sub-stepped so railings can't be skipped. The layout audit checks all of it.
 
 Graphics review and performance (docs/audit/graphics-review.md)
 - Daylight balanced into the tone curve (no more washed-out noon, shadows read), a warm strong

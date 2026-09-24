@@ -26,7 +26,7 @@
      */
 
     // The build's version, shown on the title menu and by DeadEndCity.version.
-    const GAME_VERSION = '29.0.0';
+    const GAME_VERSION = '30.0.0';
     const getElement = (id) => document.getElementById(id),
       canvas = getElement('game'),
       worldContext = canvas.getContext('2d', {

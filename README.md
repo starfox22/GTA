@@ -3,7 +3,7 @@
 An original, self-contained top-down crime game in the spirit of GTA 1 and 2, set on the
 South Coast in 1997. One HTML file, no server, no build step to play: open
 `dead-end-city.html` in a desktop or mobile browser and press **ENTER THE CITY**.
-Version 29.0.0 (see `docs/CHANGELOG.md`).
+Version 30.0.0 (see `docs/CHANGELOG.md`).
 
 - 16 missions: an 11-chapter story (harbor heists, a rooftop hit, a jet-ski run, car
   chases, a flight finale) followed by 5 contracts (a hot-car checkpoint run, bomb defusal

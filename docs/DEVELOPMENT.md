@@ -81,7 +81,7 @@ something, never a generic code-evaluation hook.
 
 | Method | Purpose |
 | --- | --- |
-| `version` | The build version (29.0.0) |
+| `version` | The build version (30.0.0) |
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle, renderer (`3d` or `2d`) |
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once); lets go of any carrier |
 | `setZoom(value)` | Street zoom, eased like the mouse wheel (`look` and `closeUp` apply it at once) |
