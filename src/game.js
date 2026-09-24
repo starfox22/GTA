@@ -3618,6 +3618,7 @@
           ['LITTLE HAVANA', -1900, 4150],
           ['CORAL MARINA', -1700, 4880],
           ['PALM KEYS BEACH', -1970, 5620],
+          ['MAREA BEACH CLUB', -2870, 5500],
           ['P A L M  S O U N D', -560, 2300],
           ['M A R L O W  B A Y', 4650, 2560],
           ['N O R T H  S O U N D', 1500, -4900],

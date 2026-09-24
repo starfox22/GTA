@@ -576,6 +576,9 @@
         strobe.position.set(MX + (F[0] + F[2]) / 2, 20, MY + (F[1] + F[3]) / 2);
         strobe.renderOrder = 9;
         clubLive.add(strobe);
+        // Colour buffers exist from the start, so the first night needs no new shader.
+        const black = new Three.Color(0, 0, 0);
+        for (const m of [beams, spots, lasers]) for (let i = 0; i < m.count; i++) m.setColorAt(i, black);
 
         /* ---- bars ---- */
         const bar = MAREA.bar,

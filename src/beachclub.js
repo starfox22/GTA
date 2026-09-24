@@ -973,13 +973,9 @@
       const guest = randomChoice(guests),
         gs = guest.club.slot,
         pts = mareaPath(slot.node, gs.node || 'floor').map(mareaNodePoint);
+      // Along the walkways to the guest's last approach point, or beside them.
       for (const [u, v] of gs.via || []) pts.push(mareaPoint(u, v));
-      pts.pop();
       if (!gs.via?.length) pts.push({ x: guest.x + 7, y: guest.y + 3 });
-      else {
-        const last = gs.via[gs.via.length - 1];
-        pts.push(mareaPoint(last[0], last[1]));
-      }
       c.back = [...pts].reverse();
       c.route = pts;
       c.leg = 'out';
