@@ -344,11 +344,73 @@
         if (!cell) {
           const group = new Three.Group();
           group.name = 'static batch cell';
+          group.userData.cellContainer = true;
           scene.add(group);
           cell = { group, x: (cx + 0.5) * cellSize, z: (cz + 0.5) * cellSize, half: cellSize / 2 };
           staticBatchCells.set(key, cell);
         }
         return cell;
+      }
+      /**
+       * STATIC CELLS
+       * Thousands of scenery groups (buildings, parks, props) are shown or hidden
+       * each frame by whether they fall inside the view's footprint. Once the city
+       * is built, every group that is a direct child of the scene and registered
+       * once in `statics` is moved under a 1024-unit cell group (identity
+       * transform, so nothing moves). A cell entirely out of reach is hidden in
+       * one test and its groups are skipped by the visibility loop, the matrix
+       * pass and both render passes. Groups registered twice, parented elsewhere
+       * or added later stay loose and are tested one by one as before.
+       */
+      const staticCells = [],
+        looseStatics = [];
+      let celledStatics = 0;
+      function staticInView(s) {
+        return (
+          (viewZoom > 0.28 || s.radius >= 50) &&
+          Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&
+          Math.abs(s.y - viewCenter.y) < viewReach + s.radius
+        );
+      }
+      function cellStatics(cellSize = 1024) {
+        const uses = new Map(),
+          cells = new Map(),
+          moved = new Map();
+        for (const s of statics) uses.set(s.group, (uses.get(s.group) || 0) + 1);
+        for (const s of statics) {
+          if (s.group.parent !== scene || uses.get(s.group) !== 1) {
+            looseStatics.push(s);
+            continue;
+          }
+          const key = Math.floor(s.x / cellSize) * 4096 + Math.floor(s.y / cellSize);
+          let cell = cells.get(key);
+          if (!cell) {
+            const group = new Three.Group();
+            group.name = 'static cell';
+            group.userData.cellContainer = true;
+            scene.add(group);
+            cell = {
+              group,
+              x: (Math.floor(s.x / cellSize) + 0.5) * cellSize,
+              y: (Math.floor(s.y / cellSize) + 0.5) * cellSize,
+              reach: 0,
+              entries: [],
+            };
+            cells.set(key, cell);
+            staticCells.push(cell);
+          }
+          cell.reach = Math.max(cell.reach, Math.abs(s.x - cell.x) + s.radius, Math.abs(s.y - cell.y) + s.radius);
+          cell.entries.push(s);
+          moved.set(s.group, cell.group);
+        }
+        // Re-parent in one pass (scene.remove() would splice the scene's list of
+        // ~10,000 children once per group).
+        scene.children = scene.children.filter((o) => !moved.has(o));
+        for (const [group, parent] of moved) {
+          group.parent = parent;
+          parent.children.push(group);
+        }
+        celledStatics = statics.length;
       }
       function mesh(geo, material, parent, x, y, z, sx = 1, sy = 1, sz = 1) {
         const m = new Three.Mesh(geo, material);
@@ -1918,8 +1980,10 @@
                 const calls = Array.isArray(o.material) ? Math.max(1, o.geometry.groups.length) : 1;
                 let named = o,
                   root = o;
-                while (named && !named.name && named.parent && named.parent !== scene) named = named.parent;
-                while (root.parent && root.parent !== scene) root = root.parent;
+                // (A cell group of STATIC CELLS / STATIC BATCH CELLS counts as the scene.)
+                const top = (p) => p === scene || p.userData.cellContainer;
+                while (named && !named.name && named.parent && !top(named.parent)) named = named.parent;
+                while (root.parent && !top(root.parent)) root = root.parent;
                 if (roles.has(root)) named = { name: roles.get(root), type: '' };
                 else if (!named.name && root !== o)
                   named = {
@@ -2169,12 +2233,19 @@
           placeSun();
           updateFarScenery();
           // Scenery groups inside the visible ground footprint (flight-view3d.js);
-          // small ones drop out once they would only be a few pixels across.
-          for (const s of statics)
-            s.group.visible =
-              (viewZoom > 0.28 || s.radius >= 50) &&
-              Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&
-              Math.abs(s.y - viewCenter.y) < viewReach + s.radius;
+          // small ones drop out once they would only be a few pixels across. Most
+          // hang from a cell group (STATIC CELLS): a cell out of reach is hidden
+          // whole and its groups are not visited at all.
+          for (const cell of staticCells) {
+            const show =
+              Math.abs(cell.x - viewCenter.x) < viewReach + cell.reach &&
+              Math.abs(cell.y - viewCenter.y) < viewReach + cell.reach;
+            cell.group.visible = show;
+            if (!show) continue;
+            for (const s of cell.entries) s.group.visible = staticInView(s);
+          }
+          for (const s of looseStatics) s.group.visible = staticInView(s);
+          for (let i = celledStatics; i < statics.length; i++) statics[i].group.visible = staticInView(statics[i]);
           // Whole cells of merged scenery out of reach (STATIC BATCH CELLS).
           const batchReach = viewReach + STATIC_BATCH_SHADOW_MARGIN;
           for (const cell of staticBatchCells.values())
@@ -2862,6 +2933,7 @@
       tagSceneryDetail();
       compactBuildingBlocks();
       buildFarScenery(staticBatchMeshes);
+      cellStatics();
       paintLampLight();
       applyRendererQuality(graphicsTier());
       refreshEnvironment(true);

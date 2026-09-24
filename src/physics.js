@@ -1764,8 +1764,11 @@
       }
       return false;
     }
+    // Pools a tyre can pick blood up from (not tracks themselves, under three
+    // minutes old): gathered once a frame in updateCars(), not per car.
     const bloodTrackPrevious = { x: 0, y: 0, a: 0 },
-      bloodTrackSources = [];
+      bloodTrackSources = [],
+      bloodTrackCandidates = [];
     function updateBloodTracks(c, active) {
       // Where the car was last frame; the record is updated in place.
       const last = c.bloodTrackPoint || c.personSweepStart,
@@ -1787,19 +1790,18 @@
         return;
       }
       if (distance < 0.001) return;
-      if (!bloodPools.length && !(c.bloodTrackRemaining > 0)) return;
+      if (!bloodTrackCandidates.length && !(c.bloodTrackRemaining > 0)) return;
       // Cheap distance test first: the surface check samples the terrain, and
       // every moving car ran it for every pool in the city each frame.
       const near = distance + vehicleSpec(c).l + 30,
-        sources = bloodTrackSources;
+        sources = bloodTrackSources,
+        pools = bloodTrackCandidates;
       sources.length = 0;
-      for (let i = 0; i < bloodPools.length; i++) {
-        const b = bloodPools[i];
+      for (let i = 0; i < pools.length; i++) {
+        const b = pools[i];
         if (
-          !b.track &&
           Math.abs(b.x - c.x) < near &&
           Math.abs(b.y - c.y) < near &&
-          gameTime - b.created < 180 &&
           Math.abs((b.surface || 0) - bloodSurface(b.x, b.y)) < 3
         )
           sources.push(b);
@@ -1864,6 +1866,11 @@
       }
     }
     function updateCars(deltaSeconds, active) {
+      bloodTrackCandidates.length = 0;
+      for (let i = 0; i < bloodPools.length; i++) {
+        const b = bloodPools[i];
+        if (!b.track && gameTime - b.created < 180) bloodTrackCandidates.push(b);
+      }
       // Where each vehicle starts the frame (swept contacts with people), kept in place.
       for (const vehicle of vehicles) {
         const start = vehicle.personSweepStart || (vehicle.personSweepStart = { x: 0, y: 0, a: 0 });

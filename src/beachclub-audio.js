@@ -312,7 +312,7 @@
       // The groove clock runs whether or not anyone can hear it.
       if (set) mareaGroove.bpm = set.bpm;
       if (!audible || !mareaMusicNodes()) {
-        if (mareaMusic.nodes) mareaMusic.nodes.out.gain.setTargetAtTime(0, audio.currentTime, 0.3);
+        if (mareaMusic.nodes) glideParam(mareaMusic.nodes.out.gain, 0, audio.currentTime, 0.3);
         mareaMusic.set = null;
         mareaGroove.playing = false;
         mareaGroove.beat += deltaSeconds * (mareaGroove.bpm / 60);
@@ -345,8 +345,8 @@
           cutoff = inside ? 16000 : seaSide ? 700 + 3200 / (1 + d / 160) : 260 + 900 / (1 + d / 40);
         mareaMusic.gain = gain;
         mareaMusic.cutoff = cutoff;
-        mareaMusic.nodes.out.gain.setTargetAtTime(gain, now, 0.25);
-        mareaMusic.nodes.wall.frequency.setTargetAtTime(cutoff, now, 0.25);
+        glideParam(mareaMusic.nodes.out.gain, gain, now, 0.25);
+        glideParam(mareaMusic.nodes.wall.frequency, cutoff, now, 0.25);
       }
       mareaGroove.set = setName;
       mareaGroove.bar = Math.floor(mareaGroove.beat / 4);
