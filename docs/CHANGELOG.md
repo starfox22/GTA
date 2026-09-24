@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased — The islands rearranged
+
+World layout (docs/audit/world-layout.md, SOURCE_GUIDE section 4)
+- West to east: Palm Keys (the tropical island) across Palm Sound from Northbank, Northbank
+  in the middle, Ridgeline's forest and mountains across a Marlow Bay now 2400..2700 wide.
+  The Sunset Pier amusement park has its own island north of the reclamation.
+- Palm Keys moved west and was reflected so Ocean Drive and its strand face the open sea;
+  every place, the Blue Hour, Vinny's depot, the casino, jetties, gangs and mission points
+  moved with it. The public beach (Palm Keys Beach, formerly Southport Beach) is on the
+  island's south shore, with a 400 x 300 beach-club plot reserved at its west end.
+  Northbank's south shore is a sea wall with Battery Park.
+- Sunset Pier's rides stand in the east half of the new island, turned to face the bridge;
+  a 1400 x 900 attraction ground is reserved in the west half.
+- Every link is a bridge in one list (`BRIDGES`): the Keys Bridge and Palm Sound Causeway,
+  the East Bay Crossing and South Bay Bridge (with the new Foothill Road), the Sunset Pier
+  Bridge, and the county's four. Decks, rails, pylons, roadblock cuts, cover and the route
+  graph all come from it.
+- The world box and the city frame grew west and north (`WORLD_LEFT`, `CITY_LEFT`,
+  `CITY_RIGHT`); maps, water, ground sheets and the night light map follow.
+- Fixed on the way: the airport test swallowed all of southern Palm Keys; Palm Grill was
+  never built (Palm Auto Paint's lot deleted it); collinear roads (a street over a bridge)
+  never joined in the route graph; long bridges were invisible in the 2D view.
+- Rush Hour (390 s) and Repo Man (660 s) clocks grew with the longer crossings.
+  `DeadEndCity.route(x, y)` reports the GPS route.
+
 ## 29.0.0 — West-shore railway, beach, superyacht, damage, flight view, crowd, HDR
 
 Everything since build 28.1.1 (commit 1b89eba). The audit logs in `docs/audit/`

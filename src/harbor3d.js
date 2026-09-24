@@ -455,7 +455,7 @@
       const depotGroup = new Three.Group();
       scene.add(depotGroup);
       statics.push({
-        x: 4480,
+        x: -1664,
         y: 4460,
         group: depotGroup,
         radius: 400,
@@ -467,7 +467,7 @@
       // The front roller shutter travels: it comes down behind the truck on the
       // first mission's drop.
       const shutterMat = mat('#8d9195', 0.62, 0.35);
-      const depotFrontDoor = box(depotGroup, 4480, 29, 4341, 116, 58, 4, shutterMat);
+      const depotFrontDoor = box(depotGroup, -1664, 29, 4341, 116, 58, 4, shutterMat);
       depotFrontDoor.userData.dynamic = true;
       // The back door: a steel personnel door hinged on its west jamb that swings
       // out onto the pavement, with a lintel and a lit EXIT sign on both faces.
@@ -489,15 +489,15 @@
         box(depotGroup, backDoor.x, 46, z, 12, 4, 1.5, exitSignMat);
         halo(depotGroup, backDoor.x, 46, z + (z > 4576 ? 3 : -3), 16, '#58e08a');
       }
-      const depotRoof = box(depotGroup, 4480, 66, 4460, 286, 4, 246, portSteel.clone());
-      for (let z = 4358; z < 4570; z += 35) box(depotGroup, 4480, 60, z, 274, 4, 3, cranePaint);
-      box(depotGroup, 4480, 52, 4343, 116, 17, 5, portSteel);
-      box(depotGroup, 4480, 42, 4341, 126, 3, 13, cranePaint);
-      for (const x of [4418, 4542]) {
+      const depotRoof = box(depotGroup, -1664, 66, 4460, 286, 4, 246, portSteel.clone());
+      for (let z = 4358; z < 4570; z += 35) box(depotGroup, -1664, 60, z, 274, 4, 3, cranePaint);
+      box(depotGroup, -1664, 52, 4343, 116, 17, 5, portSteel);
+      box(depotGroup, -1664, 42, 4341, 126, 3, 13, cranePaint);
+      for (const x of [-1726, -1602]) {
         box(depotGroup, x, 21, 4340, 4, 42, 5, cranePaint);
         halo(depotGroup, x, 39, 4335, 20, '#e7e0b0');
       }
-      for (const x of [4370, 4580])
+      for (const x of [-1774, -1564])
         for (const z of [4380, 4420, 4530]) {
           const g = makeCargoCrate(depotGroup, 24);
           g.position.set(x, 0, z);
@@ -505,7 +505,7 @@
       // Over the shutter header and canopy, standing proud of the roof line. At the
       // default height it hung across the vehicle doorway itself (the lettering
       // clipped by the door posts) and hid the shutter the chase ends at.
-      const morettiSign = sign('MORETTI FREIGHT', 4480, 4337, 120, '#e8ce83');
+      const morettiSign = sign('MORETTI FREIGHT', -1664, 4337, 120, '#e8ce83');
       morettiSign.position.y = morettiSign.userData.backing.position.y = 62;
       const airBeam = new Three.Mesh(
         new Three.ConeGeometry(54, 1, 32, 1, true),

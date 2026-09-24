@@ -61,16 +61,16 @@
       [2176, 2176],
       [1152, 3200],
       [2688, 3712],
-      [4224, 3200],
-      [4736, 1664],
-      [4224, 4224],
+      [-1408, 3200],
+      [-1920, 1664],
+      [-1408, 4224],
     ];
     const BOMB_SITES = [
       // `short` is the objective label ("BOMB 3 / 3 · BLUE HOUR"); the first word
       // of the name read "BLUE" and "NEON".
-      { name: 'GOLDEN TIDE CASINO', short: 'CASINO', x: 4985, y: 3120 },
-      { name: 'NEON PALACE', short: 'NEON PALACE', x: 4470, y: 4080 },
-      { name: 'BLUE HOUR HOTEL', short: 'BLUE HOUR', x: 4480, y: 2690 },
+      { name: 'GOLDEN TIDE CASINO', short: 'CASINO', x: -2183, y: 3120 },
+      { name: 'NEON PALACE', short: 'NEON PALACE', x: -1674, y: 4080 },
+      { name: 'BLUE HOUR HOTEL', short: 'BLUE HOUR', x: -1664, y: 2690 },
     ];
     const SUBSTATIONS = [
       { name: 'OLD QUARTER SUBSTATION', x: 1560, y: 1090, zone: 0 },
@@ -88,7 +88,7 @@
       [2700, 4900, 160],
     ];
     const REPO_TARGETS = [
-      ['limousine', 4736, 1900, Math.PI / 2, '#2c2f36', 'THE BLACK LIMOUSINE · OCEAN DRIVE'],
+      ['limousine', -1920, 1900, Math.PI / 2, '#2c2f36', 'THE BLACK LIMOUSINE · OCEAN DRIVE'],
       ['taxi', 1152, 3000, -Math.PI / 2, VEHICLE_DEFINITIONS.taxi.color, 'THE UNPAID TAXI · BROADWAY'],
       ['supercar', 2688, 2900, Math.PI / 2, '#d8b23a', 'THE GOLD SUPERCAR · EXCHANGE'],
       ['bus', 2176, 4224, 0, '#6a8fa6', 'THE TRANSIT BUS · SOUTH BANK'],
@@ -115,7 +115,7 @@
     // Renderer hook: 1 = powered, low values = dark. Only the blackout contract changes it.
     function sideJobPower(x, y) {
       const m = mission;
-      if (!m || sideJobIndex(m) !== 2 || x > RIVER.left) return 1;
+      if (!m || sideJobIndex(m) !== 2 || x > RIVER.left || onPalmKeys(x)) return 1;
       const zone = y < 1450 ? 0 : y < 2650 ? 1 : 2;
       return m.restored[zone] ? 1 : 0.07;
     }
@@ -139,8 +139,11 @@
         missionState.car.hp = missionState.car.maxhp = 260;
         missionState.checkpoints = RUSH_CHECKPOINTS.map(([x, y]) => sideJobPoint(x, y));
         missionState.checkpoint = 0;
-        missionState.timeLimit = 330;
-        missionState.timer = 330;
+        // The last three checkpoints and the depot are on Palm Keys, across the
+        // Palm Sound causeway (the run is about a sixth longer than when the Keys
+        // were across Marlow Bay; the clock grew with it).
+        missionState.timeLimit = 390;
+        missionState.timer = 390;
         missionState.awayTimer = 0;
         setStage(0, missionState.car, 'GET IN THE RED MUSCLE CAR', 'vinny', 'The car is hot and the buyer is waiting. Eight checkpoints, then my depot. Don’t stop for anyone.');
       }
@@ -201,8 +204,10 @@
           return { car, label, delivered: false };
         });
         missionState.repo = 0;
-        missionState.timeLimit = 540;
-        missionState.timer = 540;
+        // Vinny's depot is on Palm Keys: three of the four runs cross Palm Sound
+        // twice (a clock of 540 s was set when the Keys were across Marlow Bay).
+        missionState.timeLimit = 660;
+        missionState.timer = 660;
         setStage(0, missionState.repos[0].car, 'COLLECT ' + missionState.repos[0].label, 'vinny', 'Four rides, four deadbeats. Bring each one to my depot. Scratches come out of your cut.');
       }
     }

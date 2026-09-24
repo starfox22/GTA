@@ -62,7 +62,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | game.js | Constants, `VEHICLE_DEFINITIONS`, world build (`buildWorld`, `zoneHeight`, `makeBuilding`), `populate`, combat, `update`, `moveBody`, `exitCar`/`enterVehicle`, `teleportPlayer`, 2D fallback drawing, map (`paintMapBase`), HUD, input, startup, `window.DeadEndCity` |
 | audio.js | Web Audio effects, voices, procedural sounds; `earFilter` (a low-pass over the whole mix, dulled while swimming) |
 | physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
-| geography.js | Land polygons and the cached `landAt`, river, bridges, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
+| geography.js | Land polygons and the cached `landAt`, `BRIDGES`, reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
 | harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory and knife combat |
@@ -72,14 +72,14 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
-| themepark.js | Sunset Pier island layout, ride footprints, the rideable coaster and the park crowd |
+| themepark.js | Sunset Pier island (north of the reclamation): its ground tile, ride footprints, the rideable coaster and the park crowd |
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
 | cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
 | weather.js | Weather state machine, road wetness, wind and rain on the audio bus |
 | water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J), `parachuteSplashdown`, harbor-patrol rescue |
 | water-audio.js | Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle |
-| beach.js | Southport Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
+| beach.js | Palm Keys Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
 | roofmission.js | The Blue Hour terrace (`ROOFTOP`, `player.roof`, `moveOnRoof`), mission 2's hit (index 1); `entityElevation`, `sameFloor` |
 | rooftops.js | Helicopter landings on flat roofs (`helicopterRoofSite`, `roofLandingClear`), rooftop helipads (`chooseRoofHelipads`, `b.helipad`), the `player.buildingRoof` carrier (`exitOntoRoof`, `moveOnBuildingRoof`), `playerOnRoof()` |
 | air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft |
@@ -103,7 +103,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy, the Blue Hour terrace landing, water rescue |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Three embedded tracks, station selection, playback and saved settings |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each), procedural station idents, selection, playback and saved settings |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
@@ -154,50 +154,149 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 
 ## 4. The city layout
 
-- Northbank Island (west) is the street grid: avenue columns at `128 + i*512` (`ROAD_CENTERS`)
-  and street rows at `128 + j*512` from y -3968 to 5248 (`ROAD_ROWS`; the northern reclamation
-  has negative y). Streets are 88 wide; 1152, 2688, 3200, 4736 and the reclamation rows -1408
-  and -2944 are 112-wide avenues with double yellow centre lines. Blocks are 334 units square.
-  Streets are clipped to land, the airport, park closures, the stadium and the beach
-  (`cityStreets()` in streets.js).
+The world, west to east: **Palm Keys** (the tropical island, with the public beach), **Palm
+Sound**, **Northbank** (the main island, a Manhattan of a street grid), **Marlow Bay**, and the
+**county** (Ridgeline's forest and mountains; Oceanview, Coral Coast and Fort Sentinel to the
+south-east). The **Sunset Pier** amusement island lies north of Northbank across North Sound.
+
+```
+ y       x: -3100 .. -1144        40 .. 3420            ~5880 .. 11000
+ -7050        .                 [SUNSET PIER isle]            .
+ -4200        .                 NORTHBANK (reclamation)       .
+    50   PALM KEYS  <-Palm Sound->  NORTHBANK  <-Marlow Bay->  RIDGELINE (forest, peaks)
+  5300   PALM KEYS BEACH            Battery Park               .
+  6200+       .                     OCEANVIEW / CORAL COAST / FORT SENTINEL
+```
+
+### Frames and coordinates
+
+- `WORLD_LEFT..WORLD_SIZE` x `WORLD_TOP..WORLD_SIZE` (-5120..11264 x -8192..11264) is the world
+  box: the sea, the city map, the water shader's shore field (`SHORE_RES` 768 texels across).
+- The city frame `CITY_LEFT..CITY_RIGHT` x `CITY_TOP..CITY_SIZE` (-3584..3712 x -4224..5632) is
+  what the baked ground textures (game.js `groundCanvas`, render3d.js terrain and roughness
+  sheets), the night light map (lighting3d.js) and the street grid cover: Palm Keys, Palm Sound
+  and Northbank. Anything past `CITY_SIZE` in x or y is county (`x > CITY_SIZE || y > CITY_SIZE`
+  tests stay valid; the county starts east of x 5632). Ground outside the city frame comes in
+  tiles (`countyGroundTiles`, each `{x, y, w, h, canvas}`): three county tiles and the Sunset
+  Pier island's own tile (`PARK_TILE`, themepark.js). Open water between them is just water; the
+  bridge decks there are meshes (county3d.js) and, in the 2D view, drawn by `drawBridgeGround`.
+- Palm Keys has negative x. `onPalmKeys(x)` (x < `PALM_SOUND_X`, -500) is how code asks "is this
+  the Keys" (tropical buildings and palms, zoning, blackout power, water tint).
+
+### Northbank (main island, x 40..3420, y -4200..5476)
+
+- The street grid: avenue columns at `128 + i*512` (`ROAD_CENTERS`, i = -5..10) and street rows
+  at `128 + j*512` from y -3968 to 5248 (`ROAD_ROWS`; the northern reclamation has negative y).
+  Streets are 88 wide; the 112-wide avenues with double yellow centre lines are
+  `WIDE_COLUMNS` (x -1920, 1152, 2688, 3200) and `WIDE_ROWS` (y 1152, 2688, 3200, 4736, -1408,
+  -2944); ask `wideColumn(x)` / `wideRow(y)` (a single list could not tell column -1408 from
+  row -1408). Blocks are 334 units square; `BLOCK_COLUMNS` builds Northbank (bx 0..9) first so its
+  seeded buildings never change, then Palm Keys. Streets are clipped to land, the airport, park
+  closures, the stadium, the beach and the reserved plots (`cityStreets()` in streets.js); a
+  bridge deck counts as ground, so a row carries straight across a bridge on its line.
 - The west shore is one straight reclaimed sea wall (x 40..52). The strip between it and the
   first blocks (x 217) carries the esplanade on the sea side and the Shore Line viaduct above
   the old West Quay alignment (`RAIL_CORRIDOR_X`, no longer a street). Rows run under the
-  viaduct to the esplanade.
-- Marlow Bay (the river, x 3420..3960) separates Northbank from Palm Keys (east). Bridges at
-  y = 1152 (Union St), 3200 (Harbor Ave) and 4736 (Stadium Way), all starting on Riverbank Dr
-  (`bridgeSpan`).
-- Districts, from `districtAt()`: Harbor Point Marina, the Reclamation and North Point Financial
-  (north), Old Quarter and Ironworks Docks, Midtown, Broadway and the Exchange District, South
-  Bank, Battery Point, Southport Airport and Southport Beach (south); Palm Keys Art Deco, Ocean
-  Drive, Little Havana and Coral Marina (east). Zoning lives in `zoneHeight()` (heights) and the
-  block patterns in `buildWorld()`; the renderer picks facade/roof archetypes from the same
-  district names in `archetypeFor()`.
-- Southport Beach (`BEACH` in geography.js) is the public strand on the south shore, x 1740..3125,
-  from the Marina Rd kerb (y 5306) down to a smooth curved waterline (`smoothShoreline`, y
-  5430..5806); its top edge is a 40-wide boardwalk (`BEACH.boardwalk`) and a timber fishing pier
-  (`BEACH.pier`, part of `groundAt`) runs out from the lower sand at x 2700. No streets or blocks
-  are laid on it, the esplanade stops at either end, and its shore reads as 'beach'. Nothing
-  crosses the sand: the Oceanview Causeway leaves from the south end of Riverbank Dr (x 3200)
-  past the beach's east end and lands on Oceanview's east avenue at Beach Road (3200, 7010).
-  beach.js places the kiosks, bar, lifeguard towers, umbrellas, towels, court, buoys and people
-  on it; beach3d.js draws them.
+  viaduct to the esplanade; Union St and Harbor Ave run on across Palm Sound.
+- The south shore is a straight sea wall at y ~5460..5476 between the airport inlet and Riverbank
+  Dr: Battery Park (`SOUTH_PROMENADE`, a lawn between the Marina Rd pavement and the esplanade,
+  x 1770..3120, y 5306..5376). There is no beach on Northbank.
+- Districts, from `districtAt()`: Harbor Point Marina, Cruise Terminal, the Reclamation and North
+  Point Financial (north), Old Quarter and Ironworks Docks, Midtown, Broadway and the Exchange
+  District, South Bank, Battery Point, Battery Park and Southport Airport (south). Zoning lives
+  in `zoneHeight()` (heights) and the block patterns in `buildWorld()`; the renderer picks
+  facade/roof archetypes from the same district names in `archetypeFor()`. The stadium, the
+  marina, the Ironworks harbor and the financial district are all on Northbank.
+
+### Palm Keys (the tropical island, x -3135..-1144, y 50..5806)
+
+- Reflected east-west when it moved west (it was the eastern island at x 3960..5630): Ocean Dr
+  (x -2432) and its palm strand face the open sea on the west, Flamingo Ave (x -1920, wide) runs
+  down the middle, Collins Ave (x -1408) along the bay side. Blocks bx -5 and -4. The bay side
+  faces the city across Palm Sound: quay, esplanade, the jetties (`DOCKS`) and both bridge
+  landings. Each block kept its contents when it moved (old block 8 -> -4, x - 6144; old block
+  9 -> -5, x - 7168; points on the streets and the strands are reflected, x' = 2816 - x): the
+  Blue Hour (-4, 4), Riverside Medical, Riverside High, Bayview Tavern, Neon Palace, Coral Palms
+  Motel, Palm Grill, Ocean Drive Menswear, the Golden Tide casino (-5, 5), Palm Keys Armory,
+  Palm Auto Paint and Vinny's depot (block -4, 8, at x -1804..-1524, y 4340..4580).
+- Districts by y: Palm Keys Art Deco (< 1500), Ocean Drive (< 3100), Little Havana (< 4400),
+  Coral Marina.
+- Shores (`shoreStyle`): sand on the public beach and down the west strand (x < -1700), quay on
+  the bay side. On foot the sea can be entered only from sand.
+- **Palm Keys Beach** (`BEACH` in geography.js) is the public strand on the island's south shore,
+  x -2668..-1285, from the Marina Rd kerb (y 5306) down to a smooth curved waterline
+  (`smoothShoreline`, y 5430..5806), facing the open sea. Its top edge is a 40-wide boardwalk
+  (`BEACH.boardwalk`) and a timber fishing pier (`BEACH.pier`, part of `groundAt`) runs out from
+  the lower sand at x -1710. It is Southport Beach moved here whole (every x - 4410). No streets
+  or blocks are laid on it and the esplanade stops at either end. beach.js places the kiosks,
+  bar, lifeguard towers, umbrellas, towels, court, buoys and people; beach3d.js draws them.
+- **Reserved: the beach-club plot** `BEACH_CLUB_PLOT` = x -3070..-2670, y 5306..5606 (400 x 300)
+  at the west end of the beach: the sand on its east side, the sea on its south and west, road
+  access from Marina Rd (y 5248) along its north edge and Ocean Dr (x -2432) at its north-east
+  corner. It is painted as a levelled paved lot; `inReservedPlot` keeps streets, blocks and the
+  esplanade off it.
+
+### Sunset Pier island (x 1830..4260, y -7090..-5680)
+
+- Reached by the Sunset Pier Bridge from the north end of Riverbank Dr and `PIER ISLAND DRIVE`
+  (bridge landing -> along the south shore past the car park -> the park gate at 3898, -6145).
+- The Sunset Pier rides (`PIER`, `COASTER_TRACK` in themepark.js) stand in the east half, x
+  3420..4140, y -6725..-6005: the old lower-bay park moved whole and turned 180 degrees so the
+  gate faces the bridge (p' = (7610, -1185) - p).
+- **Reserved: the attraction ground** `THEME_PARK_RESERVE` = x 1980..3380, y -6960..-6060 (1400 x
+  900), the west half, lawn with a dashed outline and nothing on it, for the big coaster, the
+  giant wheel and new attractions. The island drive runs past its south-east corner.
+
+### Water and bridges
+
+- Channels: Palm Sound (Palm Keys - Northbank, x -1144..40, ~1200 wide), Marlow Bay (Northbank -
+  Ridgeline, x 3420..~5900, 2400..2700 wide; `RIVER`), North Sound (Northbank - Sunset Pier,
+  y -4190..-5690, ~1500), the south channel to Oceanview (~800..1000).
+- `BRIDGES` (geography.js) lists every road bridge as a straight deck `a` -> `b`, `width` wide,
+  deck at road level (`deck: 0`). Guard rails line the deck over water (`countyBridgeRails`,
+  county.js); non-causeways have two pairs of tall pylons at 0.18 of the length either side of
+  the middle (`bridgePylons`), which are colliders for aircraft and the only obstacle a boat
+  meets (boats pass under the decks). county3d.js draws every deck, rail and pylon; roadblocks.js
+  cuts the city end of each axis-aligned bridge; air-cover.js treats decks as cover; the route
+  graph joins them to the streets (collinear roads share nodes at each other's ends).
+
+| id | name | link | from | to | width | deck |
+| --- | --- | --- | --- | --- | --- | --- |
+| keys-union | KEYS BRIDGE | Palm Keys - Northbank (Union St) | -1460, 1152 | 130, 1152 | 112 | 0 |
+| keys-harbor | PALM SOUND CAUSEWAY | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 | 0 |
+| east-bay | EAST BAY CROSSING | Northbank - Ridgeline (Harbor Ave -> Ridgeline Hwy) | 3150, 3200 | 6580, 3200 | 122 | 0 |
+| south-bay | SOUTH BAY BRIDGE | Northbank - Ridgeline (Stadium Way -> Foothill Rd) | 3150, 4736 | 6420, 4736 | 112 | 0 |
+| pier-bridge | SUNSET PIER BRIDGE | Northbank - Sunset Pier (Riverbank Dr) | 3200, -3900 | 3200, -5800 | 104 | 0 |
+| oceanview | OCEANVIEW CAUSEWAY | Northbank - Oceanview | 3200, 5000 | 3200, 7010 | 128 | 0 |
+| coral-sound | CORAL SOUND BRIDGE | Oceanview - Coral Coast | 5700, 8000 | 6750, 8000 | 116 | 0 |
+| ridgeline | RIDGELINE VIADUCT | Ridgeline - Coral Coast | 7800, 5620 | 7433, 7262 | 116 | 0 |
+| sentinel | SENTINEL CAUSEWAY | Coral Coast - Fort Sentinel | 7800, 8150 | 9440, 8150 | 126 | 0 |
+
+  Rail bridges are part of the viaducts (transit.js): the Coast Line's sea viaduct over the south
+  channel and the Ridge Line's bridge across Coral Sound. No rail line crosses Palm Sound, Marlow
+  Bay or North Sound.
 - Water access (water.js): on foot the sea can be entered only across a beach shore; everywhere
-  else the edge is a wall. Swimmers climb out at beaches, rocky shores and 54 ladders (every
+  else the edge is a wall. Swimmers climb out at beaches, rocky shores and ladders (86: every
   ~420 units of quay, dock ends and the pier head, each only where a swimmer can reach the
-  foot head-on), each marked by a lifebuoy post; no coastal water is more than ~650 units
-  from a way out. The superyacht's passerelle counts as dry ground for the shoreline rule.
-- Street names are in `STREET_NAMES` (streets.js) and shown in the HUD under the district.
+  foot head-on), each marked by a lifebuoy post. The superyacht's passerelle counts as dry
+  ground for the shoreline rule.
+
+### Streets, county, railway, parks
+
+- Street names are in `STREET_NAMES` (streets.js; Palm Keys columns keyed '-2432', '-1920',
+  '-1408') and shown in the HUD under the district; off the grid, a bridge or county road gives
+  its own name.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
-  own roads, towns, bridges and an airport.
+  own roads, towns and an airport. Foothill Road climbs from the South Bay Bridge landing (6420,
+  4736) to Stonecreek's south-west corner (6720, 4224).
 - The railway (transit.js, drawn by transit3d.js) runs on its own elevated right of way:
   - SHORE LINE: Cruise Terminal (2480, -3968, on the apron street in front of the terminal) ->
     an el down Garden St (x 2176) and west along the avenue at y -2944, with Harbor Point station
     (1408, -2944) south of the marina; it never crosses the basin's mouth -> the west sea wall at
-    x 150 with Reclamation, Old Quarter and West Quay stations -> a curve across Viaduct
-    Green onto Harbor Ave (Broadway station, 860, 3200) -> Royal Ave -> Southport Airport
-    (1220, 4890), over the terminal forecourt on Airport Way. The avenue legs are an el on
-    straddle bents planted on the pavements.
+    x 150 with Reclamation, Old Quarter and West Quay stations (past the Keys Bridge and Palm
+    Sound Causeway landings) -> a curve across Viaduct Green onto Harbor Ave (Broadway station,
+    860, 3200) -> Royal Ave -> Southport Airport (1220, 4890), over the terminal forecourt on
+    Airport Way. The avenue legs are an el on straddle bents planted on the pavements.
   - COAST LINE: Southport Airport -> sea viaduct across the channel -> Oceanview (1990, 7300) ->
     Oceanview Airport, behind the terminal (4215, 8330) -> Coral Sound narrows -> Palmshore
     (6600, 8150).
@@ -214,8 +313,9 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
   vehicles, `STADIUM_VEHICLE_BARRIERS` (bollards, turnstile span) block vehicles only, and the
   two turnstile gates at x 2665..2686 and 2692..2713 (y 4845) are the only way onto the concourse.
 - `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
-  helipads, docks, ships, props, static colliders); `docs/audit/world-layout.md` describes the
-  overlap audit run on it.
+  helipads, docks, ships, props, static colliders, the bridges with their pylons and the reserved
+  plots); `docs/audit/world-layout.md` describes the overlap audit run on it.
+  `DeadEndCity.route(x, y)` reports the GPS route from the player (and which bridges it uses).
 
 ## 4b. Harbor Point, the superyacht and the boats
 

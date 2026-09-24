@@ -148,7 +148,7 @@
        */
       const LAMP_MAP_UNITS = 5,
         lampCanvas = document.createElement('canvas');
-      lampCanvas.width = Math.ceil(CITY_SIZE / LAMP_MAP_UNITS);
+      lampCanvas.width = Math.ceil(CITY_WIDTH / LAMP_MAP_UNITS);
       lampCanvas.height = Math.ceil(CITY_HEIGHT / LAMP_MAP_UNITS);
       const lampTexture = new Three.CanvasTexture(lampCanvas);
       lampTexture.colorSpace = Three.SRGBColorSpace;
@@ -159,7 +159,7 @@
       const cityLightUniforms = {
         cityLampMap: { value: lampTexture },
         // (origin x, origin z, 1 / width, 1 / height) of the map in world units.
-        cityLampRect: { value: new Three.Vector4(0, CITY_TOP, 1 / CITY_SIZE, 1 / CITY_HEIGHT) },
+        cityLampRect: { value: new Three.Vector4(CITY_LEFT, CITY_TOP, 1 / CITY_WIDTH, 1 / CITY_HEIGHT) },
         cityLampPower: { value: 0 },
         // Street power per Northbank zone (north, middle, south) for the blackout job.
         cityZonePower: { value: new Three.Vector3(1, 1, 1) },
@@ -178,7 +178,7 @@
         g.fillRect(0, 0, lampCanvas.width, lampCanvas.height);
         g.globalCompositeOperation = 'lighter';
         const pool = (x, y, radius, r, gr, b, strength) => {
-          const px = x * s,
+          const px = (x - CITY_LEFT) * s,
             py = (y - CITY_TOP) * s,
             pr = radius * s,
             grad = g.createRadialGradient(px, py, 0, px, py, pr);
@@ -234,7 +234,7 @@
         uniform float cityWet;
         // Street power at this fragment (the blackout job); signs dim with it too.
         float cityPower() {
-          return vCityWorld.x > cityRiverLeft ? 1.0
+          return vCityWorld.x > cityRiverLeft || vCityWorld.x < -500.0 ? 1.0
             : vCityWorld.z < 1450.0 ? cityZonePower.x : vCityWorld.z < 2650.0 ? cityZonePower.y : cityZonePower.z;
         }
         vec3 cityLampLight() {

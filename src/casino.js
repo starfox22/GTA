@@ -9,9 +9,9 @@
       id: 'golden-tide',
       kind: 'casino',
       name: 'GOLDEN TIDE CASINO',
-      bx: 9,
+      bx: -5,
       by: 5,
-      x: 4825,
+      x: -2343,
       y: 2790,
       w: 320,
       h: 240,
@@ -19,7 +19,7 @@
       color: '#edc887',
       symbol: 'CAS',
       door: {
-        x: 4985,
+        x: -2183,
         y: 3055,
       },
     };
@@ -219,8 +219,8 @@
       strokeRoad(
         drawingContext,
         [
-          [4985, 3060],
-          [4985, 3200],
+          [-2183, 3060],
+          [-2183, 3200],
         ],
         44,
         '#56666a',

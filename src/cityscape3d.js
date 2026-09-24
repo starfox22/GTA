@@ -992,7 +992,7 @@
         // People wait here (src/crowd.js) and buses stop for them.
         registerBusStop(x, z);
       }
-      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+      for (const bx of BLOCK_COLUMNS)
         for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
           const x = blockX(bx) + 89,
             z = blockY(by) + 89,
@@ -1028,7 +1028,7 @@
           }
           // Bus shelters on the wide avenues, one per block on the north sidewalk.
           const avenue = blockY(by + 1);
-          if (WIDE_ROADS.includes(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
+          if (wideRow(avenue) && cityRandom() < 0.6 && clearSidewalk(x + 180, south + 6))
             busShelter(x + 180, south + 6, true);
         }
       for (const spot of benchSpots()) {

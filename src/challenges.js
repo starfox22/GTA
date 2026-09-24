@@ -77,7 +77,8 @@
         setStage(0, missionState.car, 'TAKE VINNY’S ARMORED VAN');
       }
       if (missionState.index === 6) {
-        missionState.patrol = makeCar('workboat', 3740, 2520, -Math.PI / 2, false, '#d4d8cc');
+        // Patrols Palm Sound off the Blue Hour's bay side.
+        missionState.patrol = makeCar('workboat', -924, 2520, -Math.PI / 2, false, '#d4d8cc');
         missionState.patrol.mission = true;
         missionState.patrol.reconPatrol = true;
         missionState.patrolDirection = -1;
@@ -372,17 +373,17 @@
           missionState.actionProgress = 0;
           missionState.timer = missionState.timeLimit = 150;
           crime(2);
-          // Down Marlow Bay, through the narrows between Battery Point and Sunset
-          // Pier, round the outside of Southport Beach (south of the fishing pier
-          // head and its swimmers) and up to the Southport speedboat dock. The old
-          // gates at (3720, 5410) and (2250, 5750) now sit on Sunset Pier and on
-          // the beach sand.
+          // Down Palm Sound under the Palm Sound Causeway, out past the south-west
+          // corner of Northbank and round the airport's sea wall, under the Coast
+          // Line viaduct and up the inlet to the Southport speedboat dock. (It
+          // ran down Marlow Bay and round Southport Beach before Palm Keys moved
+          // west; the beach and its swimmers are well off to the west now.)
           missionState.waterRoute = [
-            { x: 3470, y: 4700 },
-            { x: 3420, y: 5000 },
-            { x: 3380, y: 5320 },
-            { x: 3150, y: 5750 },
-            { x: 2700, y: 6100 },
+            { x: -600, y: 2700 },
+            { x: -560, y: 3700 },
+            { x: -500, y: 4700 },
+            { x: -250, y: 5500 },
+            { x: 500, y: 5800 },
             { x: 1640, y: 5780 },
             { x: 1550, y: 5540 },
             // The Southport dock's boat berth (DOCKS, citylife.js).
