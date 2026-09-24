@@ -482,7 +482,7 @@
         tell('The Falcon is out on the circuit. Wait for the next train.', 3);
         return true;
       }
-      player.coaster = { kind: 'train', time: 0, car: 1, view: 0 };
+      player.coaster = { kind: 'train', time: 0, car: 0, view: 0 };
       coasterTrain.dwell = Math.min(coasterTrain.dwell, 3);
       announce('SUNSET PIER', 'THE FALCON', 2.4);
       tell('Bars down. E changes the view. 64 metres, 125 km/h.', 4);
@@ -746,6 +746,7 @@
     }
     function parkBlocked(x, y, r = 0) {
       if (y > -5690 || y < -7100 || x < 1820 || x > 4270) return false;
+      if (inLagoon(x, y, r - 4)) return true;
       const list = parkSolids(),
         cell = parkSolidGrid.get(Math.floor(x / PARK_CELL) * 4096 + Math.floor(y / PARK_CELL));
       if (!cell) return false;

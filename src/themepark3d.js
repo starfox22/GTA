@@ -504,7 +504,7 @@
             [2.4, -1.5],
             [2.4, 1.5],
           ]) {
-            const seated = r < riders && !(i === 1 && dx < 0 && dz < 0 && player.coaster?.kind === 'train' && player.coaster.view === 1);
+            const seated = r < riders && !(i === 0 && dx > 0 && dz < 0 && player.coaster?.kind === 'train' && player.coaster.view === 1);
             riderLocal.makeTranslation(dx - 0.4, 5.2, dz);
             riderMatrix.multiplyMatrices(carMatrix, riderLocal);
             if (!seated) riderMatrix.scale(ps.set(0.001, 0.001, 0.001));
@@ -1696,10 +1696,10 @@
         } else {
           const t = coasterTrain.t;
           if (ride.view === 1) {
-            // Front seat of the second car: the rider's own eyes.
-            coasterFrame3(t - COASTER_CAR_GAP - 2.6, rideA);
-            coasterFrame3(t + 20, rideB);
-            target.copy(rideA.p).addScaledVector(rideA.u, 10.5).addScaledVector(rideA.s, -1.5);
+            // Front row of the front car, over the falcon's head.
+            coasterFrame3(t + 2, rideA);
+            coasterFrame3(t + 22, rideB);
+            target.copy(rideA.p).addScaledVector(rideA.u, 9.6).addScaledVector(rideA.s, -1.5);
             look.copy(rideB.p).addScaledVector(rideB.u, 7);
             up.copy(rideA.u);
             fov = 75;
