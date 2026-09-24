@@ -280,7 +280,7 @@
             foam *= 0.55 + 0.45 * vnoise(vWorld.xz * 0.35 + uTime * 0.4);
             color = mix(color, vec3(.86, .93, .92), foam);
             // Wake: aerated water turns pale green-blue under the foam, then the foam.
-            color = mix(color, color * 0.55 + vec3(.12, .26, .27), smoothstep(0., 0.35, wakeFoam) * 0.45);
+            color = mix(color, color * 0.55 + vec3(.12, .26, .27), smoothstep(0., 0.35, wakeFoam) * 0.3);
             color = mix(color, vec3(.88, .94, .94), smoothstep(0.05, 0.9, wakeFoam) * 0.92);
             color *= 0.3 + 0.7 * uDay;
             gl_FragColor = vec4(color, 1.);

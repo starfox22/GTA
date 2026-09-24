@@ -1166,79 +1166,6 @@
       playerGlow.renderOrder = 3;
       playerGlow.visible = false;
       scene.add(playerGlow);
-      /**
-       * SWIM WAKE
-       * Two flat pieces lying on the water: a soft V that opens out behind the
-       * swimmer, and a ring that expands and fades once per stroke. Both are
-       * painted into one small canvas each, so the whole effect is two draw calls.
-       */
-      function wakeTexture(v) {
-        const size = 128,
-          cv = document.createElement('canvas');
-        cv.width = cv.height = size;
-        const g = cv.getContext('2d');
-        g.clearRect(0, 0, size, size);
-        if (v) {
-          // A widening pair of foam lines trailing the swimmer.
-          g.strokeStyle = '#ffffff';
-          g.lineCap = 'round';
-          for (const side of [-1, 1])
-            for (let i = 0; i < 3; i++) {
-              g.globalAlpha = 0.5 - i * 0.13;
-              g.lineWidth = 7 - i * 2;
-              g.beginPath();
-              g.moveTo(size * 0.62, size / 2 + side * 3);
-              g.quadraticCurveTo(
-                size * 0.34,
-                size / 2 + side * (12 + i * 9),
-                size * 0.05,
-                size / 2 + side * (30 + i * 13),
-              );
-              g.stroke();
-            }
-          g.globalAlpha = 0.5;
-          g.beginPath();
-          g.ellipse(size * 0.66, size / 2, 13, 8, 0, 0, Math.PI * 2);
-          g.fillStyle = '#ffffff';
-          g.fill();
-        } else {
-          const grad = g.createRadialGradient(size / 2, size / 2, size * 0.3, size / 2, size / 2, size / 2);
-          grad.addColorStop(0, 'rgba(255,255,255,0)');
-          grad.addColorStop(0.72, 'rgba(236,248,252,0.55)');
-          grad.addColorStop(1, 'rgba(236,248,252,0)');
-          g.fillStyle = grad;
-          g.fillRect(0, 0, size, size);
-        }
-        const tx = new Three.CanvasTexture(cv);
-        tx.colorSpace = Three.SRGBColorSpace;
-        return tx;
-      }
-      const swimWake = new Three.Mesh(
-        new Three.PlaneGeometry(46, 30),
-        new Three.MeshBasicMaterial({
-          map: wakeTexture(true),
-          transparent: true,
-          depthWrite: false,
-          opacity: 0,
-        }),
-      );
-      swimWake.rotation.x = -Math.PI / 2;
-      swimWake.renderOrder = 7;
-      swimWake.visible = false;
-      scene.add(swimWake);
-      const swimRipple = new Three.Mesh(
-        new Three.PlaneGeometry(1, 1),
-        new Three.MeshBasicMaterial({
-          map: wakeTexture(false),
-          transparent: true,
-          depthWrite: false,
-          opacity: 0,
-        }),
-      );
-      swimRipple.rotation.x = -Math.PI / 2;
-      swimRipple.renderOrder = 7;
-      swimRipple.visible = false;
-      scene.add(swimRipple);
       const objectiveRing = new Three.Mesh(
         new Three.RingGeometry(27, 29, 48),
         new Three.MeshBasicMaterial({
@@ -2093,22 +2020,10 @@
             playerGlow.position.set(player.x, 0.4 + entityElevation(player), player.y);
             playerGlow.material.opacity = nightAmount * 0.16;
           }
-          // Wake: a bow wave that opens out behind the swimmer, and a ring of
-          // disturbed water around them that breathes with the stroke.
-          swimWake.visible = !!player.swimming;
-          if (swimWake.visible) {
-            const stroke = player.swimStroke || 0,
-              drive = clamp(player.swimDrive || 0, 0, 1);
-            swimWake.position.set(player.x, -1.4, player.y);
-            swimWake.rotation.z = -player.a;
-            swimWake.scale.set(1 + drive * 0.9, 0.8 + drive * 0.5, 1);
-            swimWake.material.opacity = 0.16 + drive * 0.34 + Math.sin(stroke * 2) * 0.05;
-            swimRipple.position.set(player.x, -1.5, player.y);
-            const pulse = (stroke % (Math.PI * 2)) / (Math.PI * 2);
-            swimRipple.scale.setScalar(9 + pulse * 26);
-            swimRipple.material.opacity = (1 - pulse) * 0.3 * (0.4 + drive);
-          }
-          swimRipple.visible = swimWake.visible;
+          // A swimmer's wake, kick foam and the ripples round them are drawn into the
+          // sea like a boat's (wakes3d.js). The flat V and ring planes that did this
+          // sat at a fixed height, so the swell rose through them.
+          if (player.swimming) wakeEmit(player, player.x, player.y, player.a, clamp(player.swimDrive || 0, 0, 1) * 70, 16, 7, 80, false);
           for (const p of pickups) {
             let m = pickupModels.get(p);
             if (!m) {

@@ -119,10 +119,12 @@
           float grain = n1 * 0.62 + n2 * 0.38;
           // Propeller wash: churned water in the track, widening, then breaking up
           // into lacy patches (the threshold rises as the foam decays).
-          float washWidth = uHalfBeam * ( 0.6 + 0.3 * fraction ) + vAge * 2.4;
+          float washWidth = uHalfBeam * ( 0.45 + 0.25 * fraction ) + vAge * 2.0;
           float wash = exp( -pow( lat / washWidth, 2.0 ) ) * ( 0.25 + 0.75 * fraction ) * exp( -vAge / ( uLife * 0.5 ) );
           float lace = smoothstep( 0.2 + 0.5 * ( 1.0 - fade ), 0.75 + 0.2 * ( 1.0 - fade ), grain + 0.35 * exp( -vAge * 0.8 ) );
-          float foam = wash * mix( 1.2, lace * 1.1, clamp( vAge / 1.8, 0.0, 1.0 ) );
+          // Young wash is torn into streaks along the track; older wash into lace.
+          float streak = wakeNoise( vec2( vLat * 0.24, d * 0.02 + vAge * 0.15 ) ) * 0.7 + n2 * 0.3;
+          float foam = wash * mix( 0.45 + 0.9 * streak, lace * 1.1, clamp( vAge / 1.8, 0.0, 1.0 ) );
           // Kelvin arms: a breaking crest along each side of the V.
           float armOffset = lat - vArm;
           float arm = exp( -pow( armOffset / vArmWidth, 2.0 ) );
@@ -368,7 +370,7 @@
           vy = sin * e.speed,
           small = e.length < 40,
           // Bow sheets: both shoulders, more of it the faster and wider the hull.
-          rate = fraction * fraction * (small ? 70 : 40 + e.beam * 2.2);
+          rate = fraction * fraction * (small ? 110 : 60 + e.beam * 3.2);
         e.spray += rate * deltaSeconds;
         while (e.spray >= 1 && spray.length < SPRAY_CAPACITY) {
           e.spray -= 1;
@@ -384,7 +386,7 @@
             vz: (16 + 36 * fraction) * (0.6 + Math.random() * 0.7),
             life: 0,
             max: 0.55 + Math.random() * 0.45,
-            size: (small ? 2.2 : 3.2) + Math.random() * 2.5 + e.beam * 0.08,
+            size: ((small ? 2.2 : 3.2) + Math.random() * 2.5 + e.beam * 0.08) * 0.55,
           });
         }
         // Rooster tail: jet skis and fast runabouts throw a plume astern.
@@ -402,7 +404,7 @@
               vz: 30 + Math.random() * 40 * fraction,
               life: 0,
               max: 0.7 + Math.random() * 0.5,
-              size: 3 + Math.random() * 3,
+              size: (3 + Math.random() * 3) * 0.6,
             });
           }
         }
@@ -430,7 +432,7 @@
           sprayPositions[n * 3 + 1] = p.z;
           sprayPositions[n * 3 + 2] = p.y;
           spraySizes[n] = p.size * (0.7 + t * 1.3);
-          sprayAlphas[n] = 0.55 * (1 - t) * Math.min(1, t * 8);
+          sprayAlphas[n] = 0.42 * (1 - t) * Math.min(1, t * 8);
           n++;
         }
         sprayGeometry.setDrawRange(0, n);
