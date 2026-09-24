@@ -36,15 +36,15 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 
 | Action | Keys |
 | --- | --- |
-| Move / drive | W A S D or arrows |
+| Move / drive | W A S D or arrows (in an aircraft ↑ / ↓ climb and descend instead) |
 | Interact: enter or leave a vehicle, payphone, shops, stations, boarding | E |
 | Stadium pitch: dribble by walking into the ball; kick it the way you face | E (hold Shift for a harder, higher strike) |
 | Fire | F, Space or mouse click (on foot); F fires the pistol from a vehicle |
 | Handbrake (in a vehicle) | Space |
 | Sprint | Shift |
 | Bicycle | hold W to pedal, Shift stands on the pedals, S brakes |
-| Helicopter | T rise, G descend, W/S fly, A/D turn; land on open ground, helipads or flat roofs |
-| Plane | W/S throttle, A/D bank, T/G nose up/down |
+| Helicopter | ↑ rise, ↓ descend (T / G also work), W/S fly, A/D turn; land on open ground, helipads or flat roofs |
+| Plane | W/S throttle, A/D bank, ↑/↓ nose up/down (T / G also work) |
 | Bail out / parachute; dive off a boat | J (then Space opens the canopy) |
 | Weapons | 1 to 6, Q cycle, K knife, R reload, I arsenal |
 | City map | Tab |

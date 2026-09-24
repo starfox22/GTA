@@ -416,9 +416,15 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   share a key only when their contexts do not overlap (Space: handbrake in a car, fire on
   foot); the settings screen offers to swap on a clash. Menu keys (Escape, Enter, the map's
   arrows / + / − / 0 / C) are fixed.
-- **Aircraft** climb and descend on their own actions, `ascend` / `descend` (T / G): the
-  helicopter's lift and the plane's pitch (physics.js `helicopterControl`, aviation.js
-  `planeControl`), clear of Space (handbrake) and Shift (sprint).
+- **Aircraft** climb and descend on their own actions, `ascend` / `descend` (↑ / ↓, with
+  T / G as second keys; the virtual codes stay `KeyT` / `KeyG` through the action's `code`):
+  the helicopter's lift and the plane's pitch (physics.js `helicopterControl`, aviation.js
+  `planeControl`), clear of Space (handbrake) and Shift (sprint). The arrows are also
+  forward / back's second keys: `ascend` / `descend` declare `overrides: 'forward'` /
+  `'back'`, so `actionsForKey()` gives the key to them in the `air` context
+  (`controlContext()`) and to movement everywhere else, and `controlConflicts()` does not
+  count that pair as a clash. W / S stay throttle and fly forward / back in the air.
+  Bindings saved with the old T / G defaults move to the new ones on load.
 - **Settings** (settings.js) is one screen with four tabs built from `SETTING_ROWS`; each row
   has `get()` / `set()` and applies at once. While it is open `gameMode` is `'settings'` and
   the keydown listener hands every key to `settingsKeyDown()`. The character see-through

@@ -24,7 +24,10 @@
      * at the same time: Space is the handbrake in a car and fires on foot. Each
      * action lists the contexts it is used in (foot, drive, air, chute); two
      * actions conflict only when their contexts overlap. The settings screen
-     * warns about a conflict and offers to swap the two keys.
+     * warns about a conflict and offers to swap the two keys. The exception is
+     * an action that `overrides` another: climb and descend share the arrows
+     * with forward and back, and win inside their own context (controlContext()),
+     * so in an aircraft ↑ / ↓ climb and descend while W / S keep the throttle.
      *
      * Menu keys are fixed and not listed here: Escape (pause / back), Enter
      * (accept), and inside the city map the arrows, + / −, 0 and C.
@@ -40,7 +43,10 @@
       ['interface', 'INTERFACE'],
     ];
     /* id, label, note (one line of help), group, default keys (the first is the
-       action's virtual code), contexts. Order is the order on the settings screen. */
+       action's virtual code unless `code` names it), contexts, and `overrides`:
+       another action this one replaces on a shared key inside its own contexts
+       (so ↑ is forward on foot and in a car, but climb in an aircraft). Order is
+       the order on the settings screen. */
     const CONTROL_ACTIONS = [
       { id: 'forward', label: 'Forward', note: 'Walk, accelerate, pedal, fly forward, add throttle', group: 'move', keys: ['KeyW', 'ArrowUp'], ctx: EVERYWHERE },
       { id: 'back', label: 'Back / brake', note: 'Walk back, brake and reverse, cut throttle, flare the canopy', group: 'move', keys: ['KeyS', 'ArrowDown'], ctx: EVERYWHERE },
@@ -54,8 +60,10 @@
       { id: 'horn', label: 'Horn', note: 'Sound the horn', group: 'vehicle', keys: ['KeyH'], ctx: ['drive'] },
       { id: 'radioPower', label: 'Radio on / off', note: 'Car radio power', group: 'vehicle', keys: ['KeyN'], ctx: ['drive', 'air'] },
       { id: 'radioNext', label: 'Next station', note: 'Tune the next radio station', group: 'vehicle', keys: ['KeyB'], ctx: ['drive', 'air'] },
-      { id: 'ascend', label: 'Climb', note: 'Helicopter rise and take off · plane nose up', group: 'air', keys: ['KeyT'], ctx: ['air'] },
-      { id: 'descend', label: 'Descend', note: 'Helicopter descend and land · plane nose down', group: 'air', keys: ['KeyG'], ctx: ['air'] },
+      // The arrows climb and descend in an aircraft (they take over from forward /
+      // back there, `overrides`); T / G stay as second keys and as the virtual codes.
+      { id: 'ascend', label: 'Climb', note: 'Helicopter rise and take off · plane nose up', group: 'air', code: 'KeyT', keys: ['ArrowUp', 'KeyT'], ctx: ['air'], overrides: 'forward' },
+      { id: 'descend', label: 'Descend', note: 'Helicopter descend and land · plane nose down', group: 'air', code: 'KeyG', keys: ['ArrowDown', 'KeyG'], ctx: ['air'], overrides: 'back' },
       { id: 'bail', label: 'Bail out / dive', note: 'Jump from an aircraft; dive off a boat or out of a sinking car', group: 'air', keys: ['KeyJ'], ctx: ['drive', 'air'] },
       { id: 'divert', label: 'Divert landing', note: 'Mission 11: change the landing site once the manifest is exposed', group: 'air', keys: ['KeyV'], ctx: ['air'] },
       { id: 'reload', label: 'Reload', note: 'Reload the equipped weapon', group: 'weapons', keys: ['KeyR'], ctx: ['foot', 'drive', 'air'] },
@@ -104,6 +112,13 @@
             if (Array.isArray(slots))
               controlBindings[a.id] = [0, 1].map((i) => (validKeyCode(slots[i]) ? slots[i] : null));
           }
+        // Saved before the arrows became climb / descend (30.x): a pair still on the
+        // old T / G defaults moves to the new ones.
+        for (const [id, old] of [
+          ['ascend', 'KeyT'],
+          ['descend', 'KeyG'],
+        ])
+          if (controlBindings[id][0] === old && !controlBindings[id][1]) controlBindings[id] = [...CONTROL_ACTION[id].keys];
       } catch {}
       indexControlBindings();
     }
@@ -118,13 +133,27 @@
         for (const code of controlBindings[a.id])
           if (code) controlIndex.set(code, [...(controlIndex.get(code) || []), a.id]);
     }
-    /* The actions a physical key drives, in list order. */
+    /* Where the player is, in CONTROL_CONTEXTS terms. */
+    function controlContext() {
+      if (player.parachute) return 'chute';
+      if (isAircraft(player.car)) return 'air';
+      return player.car ? 'drive' : 'foot';
+    }
+    /* The actions a physical key drives now, in list order: an action that
+       overrides another on this key, in the current context, drops the other. */
     function actionsForKey(code) {
-      return controlIndex.get(code) || [];
+      const ids = controlIndex.get(code) || [];
+      if (ids.length < 2) return ids;
+      const context = controlContext(),
+        replaced = ids
+          .map((id) => CONTROL_ACTION[id])
+          .filter((a) => a.overrides && a.ctx.includes(context))
+          .map((a) => a.overrides);
+      return replaced.length ? ids.filter((id) => !replaced.includes(id)) : ids;
     }
     /* An action's entry in the virtual key table. */
     function actionCode(id) {
-      return CONTROL_ACTION[id].keys[0];
+      return CONTROL_ACTION[id].code || CONTROL_ACTION[id].keys[0];
     }
     function actionHeld(id) {
       return !!keys[actionCode(id)];
@@ -141,7 +170,9 @@
     /* Keyup: an action stays held while any of its keys is still down. */
     function releaseControlKey(code) {
       physicalKeysDown.delete(code);
-      for (const id of actionsForKey(code))
+      // Every action on the key, whatever the context now: it may have changed
+      // while the key was held.
+      for (const id of controlIndex.get(code) || [])
         keys[actionCode(id)] = controlBindings[id].some((k) => k && physicalKeysDown.has(k));
       // An unbound key that is not anyone's default still clears its own entry
       // (older code and tests may have set it directly).
@@ -152,7 +183,7 @@
     }
     /**
      * KEY NAMES
-     * keyLabel('ShiftLeft') -> 'L-SHIFT'; keyName('ascend') -> 'T' (the first bound
+     * keyLabel('ShiftLeft') -> 'L-SHIFT'; keyName('ascend') -> '↑' (the first bound
      * key, for prompts and help); keyNames('forward') -> 'W / ↑'.
      */
     const KEY_LABELS = {
@@ -193,9 +224,16 @@
      * clash.
      */
     function controlConflicts(id, code) {
-      const ctx = CONTROL_ACTION[id].ctx;
+      const action = CONTROL_ACTION[id],
+        ctx = action.ctx;
       return CONTROL_ACTIONS.filter(
-        (a) => a.id !== id && controlBindings[a.id].includes(code) && a.ctx.some((c) => ctx.includes(c)),
+        (a) =>
+          a.id !== id &&
+          controlBindings[a.id].includes(code) &&
+          a.ctx.some((c) => ctx.includes(c)) &&
+          // Sharing a key with the action one overrides is the point of overriding.
+          a.overrides !== id &&
+          action.overrides !== a.id,
       ).map((a) => a.id);
     }
     function bindControl(id, slot, code, swap = false) {
