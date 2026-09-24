@@ -44,6 +44,18 @@ World layout (docs/audit/world-layout.md, SOURCE_GUIDE section 4)
 - Rush Hour (390 s) and Repo Man (660 s) clocks grew with the longer crossings.
   `DeadEndCity.route(x, y)` reports the GPS route.
 
+Fort Sentinel (military.js, base3d.js)
+- The restricted base is rebuilt as a working coastal army air base: double razor-wire fence,
+  eight watch towers with night searchlights, a fortified main gate (funnel, guard booth,
+  canopy, drop arms, anti-ram bollards, sliding gates), HQ, barracks, mess hall, clinic, motor
+  pool, containers, fuel depot, ammunition bunkers, comms mast, radome, radar, water tower,
+  rifle range, obstacle course, parade ground and flags, hangars, control tower, helipads and a
+  runway, floodlights, CCTV, sandbag nests, camouflage nets and signage, on its own ground sheet.
+- Garrison life: gate MPs who challenge and then fire, tower sentries, foot patrols, patrol
+  jeeps on the perimeter road, a platoon drilling by day, range practice, supply trucks
+  checked through the gate. Alarm: siren, PA, lockdown, QRF jeeps and crewed armour respond.
+- New drivable jeep, APC and army truck; the tank model is merged into a few meshes.
+
 ## 29.0.0 — West-shore railway, beach, superyacht, damage, flight view, crowd, HDR
 
 Everything since build 28.1.1 (commit 1b89eba). The audit logs in `docs/audit/`

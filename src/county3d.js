@@ -213,8 +213,8 @@
       sign('EAGLE PASS · SCENIC ROUTE', 6650, 2460, 195, '#d5d6b9');
       sign('OCEANVIEW / AIRPORT', 3370, 6920, 190, '#c3ded5');
       sign('CORAL COAST', 7080, 7360, 165, '#f2ccae');
-      // County airport and Fort Sentinel are merged by the static batcher; the
-      // radar and the gate barrier (which move) are flagged dynamic.
+      // The county airport is merged by the static batcher; the radar (which
+      // turns) is flagged dynamic.
       const airportGroup = new Three.Group();
       scene.add(airportGroup);
       batchGroups.push(airportGroup);
@@ -263,73 +263,11 @@
         group: airportGroup,
         radius: 1800,
       });
-      const militaryGroup = new Three.Group();
-      scene.add(militaryGroup);
-      batchGroups.push(militaryGroup);
-      const armyPaint = mat('#647557', 0.85, 0.15);
-      for (const wall of militaryWalls) {
-        const cx = wall.x + wall.w / 2,
-          cz = wall.y + wall.h / 2;
-        box(militaryGroup, cx, 3, cz, wall.w, 6, wall.h, concrete);
-        box(militaryGroup, cx, 15, cz, wall.w, 20, wall.h, armyPaint);
-        const length = Math.max(wall.w, wall.h);
-        for (let d = 0; d < length; d += 42) {
-          const x = wall.w > wall.h ? wall.x + d : cx,
-            z = wall.h > wall.w ? wall.y + d : cz;
-          box(militaryGroup, x, 16, z, 2, 32, 2, countyRail);
-          for (const y of [29, 32]) {
-            const wire = mesh(
-              new Three.TorusGeometry(3.5, 0.16, 4, 7),
-              countyRail,
-              militaryGroup,
-              x,
-              y,
-              z,
-            );
-            wire.rotation.y = wall.w > wall.h ? 0 : Math.PI / 2;
-          }
-        }
-      }
-      const baseBarrier = new Three.Group();
-      baseBarrier.userData.dynamic = true;
-      baseBarrier.position.set(9303, 2, 8056);
-      militaryGroup.add(baseBarrier);
-      box(baseBarrier, 0, 5, 94, 10, 10, 188, countyCream);
-      for (let z = 8; z < 184; z += 20) {
-        const stripe = box(baseBarrier, -5.1, 5, z, 0.3, 11, 8, mat('#a34935'));
-        stripe.rotation.x = 0.3;
-      }
-      for (const [x, z] of [
-        [9328, 7800],
-        [10490, 7800],
-        [10490, 9190],
-        [9350, 9190],
-      ]) {
-        for (const sx of [-1, 1])
-          for (const sz of [-1, 1])
-            box(militaryGroup, x + sx * 15, 26, z + sz * 15, 3, 52, 3, countyRail);
-        box(militaryGroup, x, 52, z, 42, 5, 42, armyPaint);
-        box(militaryGroup, x, 66, z, 39, 25, 39, terminalGlass);
-        box(militaryGroup, x, 80, z, 47, 3, 47, armyPaint);
-        halo(militaryGroup, x, 68, z, 35, '#efb77a');
-      }
-      sign('FORT SENTINEL', 9160, 8025, 190, '#e3cba0');
-      sign('ARMED SECURITY', 9160, 8260, 175, '#e69e7b');
-      for (let x = 9720; x < 9960; x += 50)
-        for (let z = 8760; z < 8850; z += 40) {
-          box(militaryGroup, x, 6, z, 36, 12, 25, armyPaint);
-          for (let i = 0; i < 3; i++) box(militaryGroup, x - 12 + i * 12, 12.5, z, 2, 1, 25, countyRail);
-        }
-      statics.push({
-        x: 9950,
-        y: 8510,
-        group: militaryGroup,
-        radius: 1300,
-      });
+      // Fort Sentinel is drawn by base3d.js (included next).
       function updateCountyVisuals() {
-        baseBarrier.rotation.x = (-militaryGate * Math.PI) / 2;
         radar.rotation.y = gameTime * 0.7;
         updateBridgeVisuals();
+        updateBaseVisuals();
       }
       function makeTank(vehicle) {
         const model = specialVehicle(vehicle),

@@ -91,7 +91,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit |
 | damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`), the damage console helpers |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
-| military.js | Fort Sentinel security, military vehicles, barriers and combat |
+| military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
 | aviation.js | Fixed-wing flight model (`planeControl`), flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
 | challenges.js | Missions 3 to 9 (indices 2 to 8) and the interact/UI routing for all missions (`challengeMissionInteract`) |
 | sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
@@ -149,6 +149,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
 | county3d.js | County ground tiles and hills, snow, rural scenery and region visibility |
+| base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
 | bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; lamps, LEDs, aviation beacons, foam, far copies |
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
@@ -324,7 +325,23 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   '-1408') and shown in the HUD under the district; off the grid, a bridge or county road gives
   its own name.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
-  own roads, towns and an airport. Foothill Road climbs from the South Bay Bridge landing (6420,
+  own roads, towns and an airport.
+- **Fort Sentinel** (military.js `MILITARY`, `SENTINEL`; drawn by base3d.js) fills x 9300..10560,
+  y 7750..9950 of its island inside a double razor-wire fence with eight watch towers. The
+  Sentinel Causeway lands at the main gate (y 8150): jersey-barrier funnel, guard booth on a
+  centre island, per lane a drop arm (x 9272), anti-ram bollards (9290) and a sliding gate
+  (9310). Arms and bollards stop vehicles only; the sliding gate stops everyone. Military
+  traffic lifts the arms; an arm snaps for anything faster than 80, bollards only for heavy
+  armour, the sliding gate for a heavy vehicle at speed. Guards challenge anyone in the gate
+  area (halt, final warning, then fire); trespass, attacks or ramming raise the alarm: siren,
+  PA, lockdown (bollards up, gates shut), tower sentries and posts engage, the QRF jeeps drive
+  at the intruder, and the wanted level is kept up while the player stays in or near the base.
+  E at the gate forces the controls open for a few seconds (the way out without a tank).
+  Inside: HQ and flagpoles, comms mast, radome, radar and water tower (north); obstacle
+  course, parade ground (a platoon drills by day), three barracks, mess hall and clinic;
+  motor pool, containers, fuel depot, ammunition bunkers and the rifle range; two hangars,
+  control tower, helipads, apron and a 960-unit runway (south). `DeadEndCity.military()`
+  reports the security state. Foothill Road climbs from the South Bay Bridge landing (6420,
   4736) to Stonecreek's south-west corner (6720, 4224).
 - The railway (transit.js, drawn by transit3d.js) runs on its own elevated right of way:
   - SHORE LINE: Cruise Terminal (2480, -3968, on the apron street in front of the terminal) ->

@@ -840,7 +840,8 @@
       const cityStreetSouth = (b) => cityStreetAt(b.x + b.w / 2, b.y + b.h + 44, 10);
       for (let i = 0; i < buildings.length; i++) {
         const b = buildings[i];
-        if (b.depotWall) continue;
+        // Fort Sentinel's buildings are drawn by base3d.js.
+        if (b.depotWall || b.baseBuilding) continue;
         const kind = (b.archetype = archetypeFor(b)),
           height = b.height,
           group = new Three.Group();
