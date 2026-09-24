@@ -2537,7 +2537,7 @@
               bulletDamagesVehicle(b, c) &&
               !(
                 b.faction === 'police' &&
-                (lawVehicle(c) || (c === player.car && b.target !== player))
+                (lawVehicle(c) || c.airUnit || (c === player.car && b.target !== player))
               )
             )
               damageVehicle(

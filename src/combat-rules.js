@@ -124,7 +124,8 @@
       }
     }
     const AIR_SEARCH_SECONDS = 18,
-      AIR_REDISPATCH_SECONDS = 45;
+      AIR_REDISPATCH_SECONDS = 45,
+      AIR_RELAUNCH_SECONDS = 12;
     let airDispatchTimer = 0,
       airLaunchReadyAt = 0,
       sniperWarningAt = -100;
@@ -219,7 +220,9 @@
         altitude: c.altitude,
         hp: 100,
       };
-      airDispatchTimer = Math.max(airDispatchTimer, AIR_REDISPATCH_SECONDS);
+      // Stood down or shaken off, a crew can relaunch soon; only a helicopter shot
+      // down (markAirSupportDown) keeps the sky empty for the full 45 seconds.
+      airDispatchTimer = Math.max(airDispatchTimer, AIR_RELAUNCH_SECONDS);
       if (mission?.airUnit === c) mission.airUnit = null;
       if (escaped)
         tell('HELICOPTER LOST · Air support is leaving. Ground patrols may still be searching.', 5);
