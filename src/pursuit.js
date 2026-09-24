@@ -242,7 +242,8 @@
           inView = crowdInView(c.x, c.y, 200),
           // Cars the dispatcher created go home when it is over; patrol cars that
           // were recalled out of traffic stay in the city.
-          idle = wantedStars <= 0 && c.dispatched && (c.lawUnit || !c.cop);
+          // A law unit stood down by a clear (cop off) never rejoins a later chase.
+          idle = c.dispatched && !c.cop && (wantedStars <= 0 || !!c.lawUnit);
         c.stuckOffscreen = !inView && c.hp > 0 && Math.abs(c.speed || 0) < 8 && !c.crewDeployed && wantedStars > 0
           ? (c.stuckOffscreen || 0) + deltaSeconds
           : 0;
@@ -759,7 +760,13 @@
         if (c.lawUnit !== 'army' || c.hp <= 0 || c === player.car || c.stolen) continue;
         const d = distanceBetween(c, player),
           sees = wantedStars > 0 && d < 680 && d > 110 && sameFloor(c, player) && clearSight(c, player),
-          officersClose = officers.some((o) => o.hp > 0 && distanceBetween(o, player) < 110);
+          // Holds fire while its own people are inside the blast: officers on foot
+          // or any police vehicle within reach of the shell.
+          officersClose =
+            officers.some((o) => o.hp > 0 && distanceBetween(o, player) < 140) ||
+            vehicles.some(
+              (v) => v !== c && v.hp > 0 && (v.cop || v.lawUnit) && !v.airUnit && distanceBetween(v, player) < 150,
+            );
         const want = headingBetween(c, player);
         c.turretA = (c.turretA ?? c.a) + clamp(normalizeAngle(want - (c.turretA ?? c.a)), -deltaSeconds * 1.3, deltaSeconds * 1.3);
         if (!sees || officersClose) {
