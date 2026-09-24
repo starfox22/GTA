@@ -207,6 +207,9 @@
           const c = n.sprite.material.color;
           pool(p.x, p.z, 40, Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255), 0.35);
         }
+        // Neon, lightboxes and lobby glass (signage3d.js): coloured pools on the pavement.
+        for (const s of signLightPools)
+          pool(s.x, s.y, s.r, Math.round(s.color[0] * 255), Math.round(s.color[1] * 255), Math.round(s.color[2] * 255), s.strength);
         g.globalCompositeOperation = 'source-over';
         lampTexture.needsUpdate = true;
       }
@@ -235,11 +238,15 @@
         uniform vec3 cityZonePower;
         uniform float cityRiverLeft;
         uniform float cityWet;
+        // Street power at this fragment (the blackout job); signs dim with it too.
+        float cityPower() {
+          return vCityWorld.x > cityRiverLeft || vCityWorld.x < -500.0 ? 1.0
+            : vCityWorld.z < 1450.0 ? cityZonePower.x : vCityWorld.z < 2650.0 ? cityZonePower.y : cityZonePower.z;
+        }
         vec3 cityLampLight() {
           vec2 uv = ( vCityWorld.xz - cityLampRect.xy ) * cityLampRect.zw;
           if ( cityLampPower < 0.001 || uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) return vec3( 0.0 );
-          float zone = vCityWorld.x > cityRiverLeft || vCityWorld.x < -500.0 ? 1.0
-            : vCityWorld.z < 1450.0 ? cityZonePower.x : vCityWorld.z < 2650.0 ? cityZonePower.y : cityZonePower.z;
+          float zone = cityPower();
           // Lamps hang ~33 units up: full light at street level, none on the roofs.
           float height = 1.0 - smoothstep( 4.0, 42.0, vCityWorld.y );
           return texture2D( cityLampMap, uv ).rgb * ( cityLampPower * zone * height );

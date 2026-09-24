@@ -363,27 +363,7 @@
         };
       }
       const SHOP_COLORS = ['#c7463a', '#2f6b5e', '#213a63', '#c99a2e', '#6c3b73', '#1f1f24', '#a5552b'];
-      const shopAtlas = textAtlas(SHOP_NAMES, 256, 64, (g, name, w, h, i) => {
-        g.fillStyle = SHOP_COLORS[i % SHOP_COLORS.length];
-        g.fillRect(0, 0, w, h);
-        g.fillStyle = '#00000033';
-        g.fillRect(0, h - 8, w, 8);
-        g.fillStyle = i % 3 ? '#f4ead6' : '#ffd479';
-        g.font = '700 ' + (name.length > 12 ? 24 : 30) + 'px Arial';
-        g.textAlign = 'center';
-        g.textBaseline = 'middle';
-        g.fillText(name, w / 2, h / 2 - 2, w - 16);
-      });
-      const hotelAtlas = textAtlas(HOTEL_NAMES, 512, 96, (g, name, w, h, i) => {
-        g.clearRect(0, 0, w, h);
-        g.fillStyle = ['#ff7fb0', '#7fe9ff', '#ffe27a', '#b7ff9a'][i % 4];
-        g.font = 'italic 700 62px Arial';
-        g.textAlign = 'center';
-        g.textBaseline = 'middle';
-        g.shadowColor = g.fillStyle;
-        g.shadowBlur = 18;
-        g.fillText(name, w / 2, h / 2, w - 24);
-      });
+      // Kept for the stadium's perimeter boards (sports3d.js); city ads use signage3d.js.
       const adAtlas = textAtlas(AD_LINES, 512, 160, (g, [title, sub, bg, fg], w, h) => {
         g.fillStyle = bg;
         g.fillRect(0, 0, w, h);
@@ -451,11 +431,13 @@
         crate: instanced(boxGeo, propMats.crate, 500),
         dumpster: instanced(boxGeo, propMats.dumpster, 400),
       };
+      // @include src/signage3d.js
       // The building being dressed and the instanced plant that counts as roof clutter.
       let roofOwner = null;
       const roofPlantPools = new Set([pools.acUnit, pools.dish, pools.chimney, pools.skylight, pools.tank]);
       // ---- Archetype selection ------------------------------------------------------
       function archetypeFor(b) {
+        if (b.skyline) return 'skyline';
         if (b.roofBar) return 'hotel';
         if (b.style === 2) return 'warehouse';
         if (b.tropical) return b.height >= 60 ? 'decoTower' : 'deco';
@@ -598,22 +580,26 @@
       function billboard(group, x, top, z, width, faceSouth = true) {
         roofKeepOut(group.position.x + x, group.position.z + z, width + 4, 5);
         const height = width * 0.3125,
-          plane = new Three.Mesh(
-            new Three.PlaneGeometry(width, height),
-            new Three.MeshBasicMaterial({
-              map: adAtlas.cell(Math.floor(cityRandom() * AD_LINES.length)),
-              toneMapped: false,
-              side: Three.DoubleSide,
-            }),
+          led = cityRandom() < 0.45,
+          face = new Three.Mesh(
+            led ? new Three.PlaneGeometry(width, height) : adPlane(width, height, Math.floor(cityRandom() * ADS.length)),
+            led ? cityPick(adChannels).material : adBoardMaterial,
           );
-        plane.position.set(x, top + 9 + height / 2, z + (faceSouth ? 0.7 : -0.7));
-        if (!faceSouth) plane.rotation.y = Math.PI;
-        group.add(plane);
+        face.position.set(x, top + 9 + height / 2, z + (faceSouth ? 0.7 : -0.7));
+        if (!faceSouth) face.rotation.y = Math.PI;
+        face.receiveShadow = true;
+        group.add(face);
         box(group, x, top + 9 + height / 2, z, width + 2, height + 2, 1, darkMetal);
         for (const dx of [-width * 0.35, width * 0.35]) box(group, x + dx, top + 4.5, z, 0.8, 9, 0.8, darkMetal);
+        if (led) {
+          // A screen: a thin bezel and a status light, no lamps.
+          box(group, x, top + 9 + height + 0.9, z + (faceSouth ? 0.6 : -0.6), width + 2, 0.8, 0.4, chrome);
+          return;
+        }
+        // Goose-neck lamps over the board wash it at night.
         for (const dx of [-width * 0.3, 0, width * 0.3]) {
           box(group, x + dx, top + 9 + height + 2.5, z + 3, 1, 1, 6, darkMetal);
-          neonSigns.push({ sprite: halo(group, x + dx, top + 9 + height + 1, z + 4, 12, '#ffe7c2'), base: 0.8 });
+          addGroupGlow(group, x + dx, top + 9 + height + 1.4, z + (faceSouth ? 5 : -5), 9, '#ffe7c2', 1.4, {});
         }
       }
       // A rooftop helipad sized for the helicopter (b.helipad, rooftops.js): the
@@ -636,12 +622,9 @@
         box(group, x - 6 * s, top + 0.7, z, 2.5 * s, 0.1, 18 * s, h);
         box(group, x + 6 * s, top + 0.7, z, 2.5 * s, 0.1, 18 * s, h);
         box(group, x, top + 0.7, z, 12 * s, 0.1, 2.5 * s, h);
-        for (let k = 0; k < 8; k++) {
-          const a = (k * TAU) / 8;
-          neonSigns.push({
-            sprite: halo(group, x + Math.cos(a) * (r - 1), top + 1.5, z + Math.sin(a) * (r - 1), 6, '#a9f5c2'),
-            base: 0.9,
-          });
+        for (let k = 0; k < 12; k++) {
+          const a = (k * TAU) / 12;
+          addGroupGlow(group, x + Math.cos(a) * (r - 1), top + 1.5, z + Math.sin(a) * (r - 1), 6, '#a9f5c2', 1.8, { day: 0.15 });
         }
         bulkhead(group, 20, top, 16);
       }
@@ -660,7 +643,8 @@
           place(pools.planter, wx + x + k, wy + top + 1.5, wz + z + d / 2 + 5, 8, 3, 5);
           place(pools.shrub, wx + x + k, wy + top + 5, wz + z + d / 2 + 5, 4, 3, 3);
         }
-        neonSigns.push({ sprite: halo(group, x, top + 9.5, z, 26, '#ffd9a0'), base: 0.7 });
+        // Festoon bulbs along the pergola beam.
+        for (let k = -w / 2 + 3; k <= w / 2 - 3; k += 6) addGroupGlow(group, x + k, top + 9.6, z + d / 2, 3.2, '#ffd9a0', 1.3, { mode: 'pulse', phase: k * 0.01 });
       }
       function sawtoothRoof(group, b, top) {
         const rows = Math.max(1, Math.floor(b.h / 34));
@@ -704,7 +688,7 @@
           box(group, b.w / 2, penthouseTop + 12, b.h / 2, 1.2, 24, 1.2, darkMetal);
           const beacon = mesh(sphereGeo, beaconMaterial, group, b.w / 2, penthouseTop + 25, b.h / 2, 1.6, 1.6, 1.6);
           beacons.push(beacon);
-          neonSigns.push({ sprite: halo(group, b.w / 2, penthouseTop + 25, b.h / 2, 16, '#ff6a5c'), base: 1, beacon: true });
+          addGroupGlow(group, b.w / 2, penthouseTop + 25, b.h / 2, 22, '#ff3020', 5, { mode: 'beacon', day: 0.35, phase: (i % 7) / 7 });
           if (cityRandom() < 0.5) {
             for (let k = 0; k < 3; k++) place(pools.solar, gx + b.w - 12 - k * 11, top + 2.5, gz + b.h - 12, 9, 0.6, 16, 0.3);
           }
@@ -743,27 +727,28 @@
           const wide = b.w > 200;
           if (cityRandom() < 0.7) pergola(group, wide ? b.w * 0.3 : b.w / 2, top, b.h * 0.5, Math.min(46, b.w * 0.35), 20);
           if (cityRandom() < 0.5) acCluster(gx + b.w - 60, top, gz + 22, 1 + Math.floor(cityRandom() * 2));
-          const sign = new Three.Mesh(
-            new Three.PlaneGeometry(Math.min(110, b.w * 0.7), Math.min(110, b.w * 0.7) * 0.1875),
-            new Three.MeshBasicMaterial({
-              map: hotelAtlas.cell(i % HOTEL_NAMES.length),
-              transparent: true,
-              toneMapped: false,
-              side: Three.DoubleSide,
-              depthWrite: false,
-            }),
-          );
-          sign.position.set(b.w / 2, top + 12, b.h + 0.8);
-          group.add(sign);
+          const signWidth = Math.min(110, b.w * 0.7),
+            color = hotelNeonColor(i);
+          atlasSign(group, hotelScriptCell(i), b.w / 2, top + 12, b.h + 0.8, signWidth, signWidth * (84 / 384), i % 4 === 1 ? neonCutoutFlicker : neonCutout);
           roofKeepOut(gx + b.w / 2, gz + b.h - 2, Math.min(112, b.w * 0.72) + 4, 6);
           box(group, b.w / 2, top + 6, b.h - 2, Math.min(112, b.w * 0.72), 1, 1, darkMetal);
           for (const dx of [-Math.min(50, b.w * 0.3), Math.min(50, b.w * 0.3)])
             box(group, b.w / 2 + dx, top + 8, b.h - 2, 0.8, 16, 0.8, darkMetal);
-          neonSigns.push({ sprite: halo(group, b.w / 2, top + 12, b.h + 2, Math.min(110, b.w * 0.7) * 0.9, ['#ff7fb0', '#7fe9ff', '#ffe27a', '#b7ff9a'][i % 4]), base: 0.9, mesh: sign });
+          // A soft coloured haze round the letters (the bloom sharpens it).
+          for (const dx of [-0.3, 0, 0.3]) addGroupGlow(group, b.w / 2 + dx * signWidth, top + 12, b.h + 3, signWidth * 0.45, color, 0.25, {});
         }
       }
       // ---- Facade details: shopfronts, awnings, fire escapes ------------------------
+      function shopSignStyle(b) {
+        const district = districtAt(b.x + b.w / 2, b.y + b.h / 2),
+          old = district.includes('OLD QUARTER') || district.includes('IRONWORKS') || district === 'BATTERY POINT' || district === 'BROADWAY',
+          r = cityRandom();
+        if (b.tropical) return r < 0.65 ? 'neon' : 'lightbox';
+        if (old) return r < 0.5 ? 'neon' : r < 0.82 ? 'lightbox' : 'channel';
+        return r < 0.3 ? 'neon' : r < 0.68 ? 'lightbox' : 'channel';
+      }
       function shopfront(group, b, kind, i) {
+        let windowNeon = cityRandom() < 0.4 ? cityPick(WINDOW_NEONS) : null;
         const face = b.h + 0.6,
           bays = Math.max(1, Math.floor((b.w - 16) / 46)),
           bayWidth = (b.w - 16) / bays;
@@ -789,6 +774,13 @@
               hits: 0,
             });
             box(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, mat('#5b5f63'));
+            if (windowNeon) {
+              const color = windowNeonColor(windowNeon);
+              atlasSign(group, windowNeonCell(windowNeon), x, 8.5, face + 0.9, Math.min(14, bayWidth - 12), Math.min(14, bayWidth - 12) / 2, cityRandom() < 0.3 ? neonCutoutFlicker : neonCutout);
+              addGroupGlow(group, x, 8.5, face + 2, 16, color, 0.18, {});
+              // One per shop, in its first window.
+              windowNeon = null;
+            }
           }
           if (!door && cityRandom() < 0.55) {
             const awning = box(group, x, 13.2, face + 4.2, bayWidth - 6, 0.7, 8.5, cityPick(awningMaterials));
@@ -798,17 +790,22 @@
             stripe.scale.x = 0.34;
           }
         }
-        const signPlane = new Three.Mesh(
-          new Three.PlaneGeometry(Math.min(64, bayWidth * 1.4), Math.min(64, bayWidth * 1.4) / 4),
-          new Three.MeshBasicMaterial({
-            map: shopAtlas.cell((i * 7 + Math.floor(cityRandom() * 5)) % SHOP_NAMES.length),
-            toneMapped: false,
-          }),
-        );
-        signPlane.position.set(8 + bayWidth * 0.5 + (bays > 2 ? bayWidth : 0), 19.5, b.h + 1.9);
-        group.add(signPlane);
-        box(group, signPlane.position.x, 19.5, b.h + 1.2, signPlane.geometry.parameters.width + 2, signPlane.geometry.parameters.height + 2, 0.8, darkMetal);
-        neonSigns.push({ sprite: halo(group, signPlane.position.x, 19.5, b.h + 3, 30, '#ffe0b3'), base: 0.5 });
+        const style = shopSignStyle(b),
+          name = SHOP_NAMES[(i * 7 + Math.floor(cityRandom() * 5)) % SHOP_NAMES.length],
+          signWidth = Math.min(72, Math.max(44, bayWidth * 1.4)),
+          signX = 8 + bayWidth * 0.5 + (bays > 2 ? bayWidth : 0),
+          cell = shopSignCell(name, style),
+          light = shopSignLight(name, style),
+          flicker = style === 'neon' && cityRandom() < 0.14;
+        atlasSign(group, cell, signX, 19.5, b.h + 1.9, signWidth, signWidth / 4, flicker ? cityPick(neonBoardFlicker) : neonBoard);
+        box(group, signX, 19.5, b.h + 1.2, signWidth + 2, signWidth / 4 + 2, 0.8, darkMetal);
+        // Colour on the pavement and, in the rain, smeared down the wet road.
+        signSpill(b.x + signX, b.y + b.h + 14, signWidth * 0.8, light, style === 'lightbox' ? 0.3 : 0.4, {
+          width: signWidth * 0.8,
+          length: 70,
+          strength: style === 'lightbox' ? 0.7 : 1.1,
+          mode: flicker ? 'flicker' : 'steady',
+        });
       }
       function fireEscape(group, b) {
         const x = Math.max(24, b.w * 0.3),
@@ -838,6 +835,7 @@
           }
         }
       }
+      // @include src/skyline3d.js
       // ---- Build every building -------------------------------------------------------
       const cityStreetSouth = (b) => cityStreetAt(b.x + b.w / 2, b.y + b.h + 44, 10);
       for (let i = 0; i < buildings.length; i++) {
@@ -851,6 +849,14 @@
         group.position.set(b.x, 0, b.y);
         scene.add(group);
         batchGroups.push(group);
+        if (b.skyline) {
+          // A planned tower of the financial cluster (src/skyline3d.js).
+          const glassMaterial = buildSkylineTower(b, group);
+          roofOwner = null;
+          allBuildings.push({ b, group, height: height + (b.crownHeight || 0), materials: [glassMaterial] });
+          statics.push({ x: b.x + b.w / 2, y: b.y + b.h / 2, group, radius: Math.max(b.w, b.h) });
+          continue;
+        }
         const face = facadeMaterial(kind, i, b),
           roof = roofMaterial(kind),
           top = roof.material,
@@ -959,7 +965,8 @@
       const furnitureGroup = new Three.Group();
       scene.add(furnitureGroup);
       batchGroups.push(furnitureGroup);
-      const shelters = [];
+      const shelters = [],
+        adLightbox = litSignMaterial(adTexture, adTexture, { night: 1.3, day: 0.3, roughness: 0.3 });
       function clearSidewalk(x, y) {
         return landAt(x, y) && !onRoad(x, y) && !solid(x, y, 5) && !onBoulevard(x, y, 12) && !inHarbor(x, y, 20) && !inStadiumLot(x, y, 10) && !inGarageLot(x, y, 6);
       }
@@ -973,13 +980,10 @@
         box(g, 0, 8.5, -3.4, 27, 12, 0.5, glass);
         box(g, 0, 4.8, -0.5, 22, 0.8, 4, propMats.benchSeat);
         for (const dx of [-9, 9]) box(g, dx, 2.4, -0.5, 0.8, 4.6, 3.4, darkMetal);
-        const adPlane = new Three.Mesh(
-          new Three.PlaneGeometry(9, 12),
-          new Three.MeshBasicMaterial({ map: adAtlas.cell(Math.floor(cityRandom() * AD_LINES.length)), toneMapped: false }),
-        );
-        adPlane.position.set(-16.5, 9, 2.8);
-        adPlane.rotation.y = Math.PI / 2;
-        g.add(adPlane);
+        const adPanel = new Three.Mesh(adPlane(9, 12, Math.floor(cityRandom() * ADS.length)), adLightbox);
+        adPanel.position.set(-16.5, 9, 2.8);
+        adPanel.rotation.y = Math.PI / 2;
+        g.add(adPanel);
         box(g, -16.5, 9, 2.8, 0.8, 13, 10, darkMetal);
         box(g, 18, 9, 2, 0.8, 18, 0.8, darkMetal);
         box(g, 18, 17, 2, 6, 3, 0.4, mat('#2f5f9a'));
@@ -1057,5 +1061,8 @@
           if (n.mesh) n.mesh.material.opacity = (0.65 + night * 0.35) * (0.3 + 0.7 * power);
         }
         beaconMaterial.color.set(Math.sin(gameTime * 2.4) > 0 ? '#ff3b2f' : '#4a1512');
+        updateGlowField(night);
+        updateSignage(night);
+        updateSkyline(night);
       }
       // END SUBSYSTEM: src/cityscape3d.js

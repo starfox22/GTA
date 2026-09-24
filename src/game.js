@@ -1230,7 +1230,11 @@
             const zone = districtAt(x + w / 2, y + h / 2),
               blockSeed = (bx * 31 + by * 17) % 7,
               perimeterBlock = zone === 'THE RECLAMATION' || zone === 'HARBOR POINT MARINA';
-            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
+            // The financial cluster is planned block by block (src/skyline.js).
+            const skylineBlock = zone.includes('FINANCIAL') && skylineBlockTowers(bx, by).length > 0;
+            if (skylineBlock) {
+              buildSkylineBlock(bx, by, x, y, w, h);
+            } else if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               // One tower on a plaza: towers need air around them to read as towers.
               makeBuilding(x + 52, y + 12, w - 104, 140, 0);
               rect(x + 8, y + 8, 40, 150, '#8d9385');
@@ -1260,15 +1264,15 @@
               makeBuilding(x + 7, y + 7, split - 12, 146, 0);
               makeBuilding(x + split + 11, y + 7, w - split - 20, 146, 0);
             }
-            if (perimeterBlock) {
-              // Closed on all four sides above; nothing more to add.
+            if (perimeterBlock || skylineBlock) {
+              // Closed on all four sides above, or a planned plaza; nothing more to add.
             } else if (zone === 'SOUTH BANK' && blockSeed % 3 === 0) {
               // Residential slab with a courtyard instead of a parking court.
               makeBuilding(x + 7, y + 179, w - 15, 60, 1);
               rect(x + 40, y + 250, w - 80, 70, '#6f8a5c');
               for (let k = 0; k < 4; k++) drawTree(x + 60 + k * 70, y + 285, 13);
             } else makeBuilding(x + 7, y + 179, seededRandom() > 0.6 ? w - 15 : 155, 143, 1);
-            if (!perimeterBlock && buildings[buildings.length - 1].w < 200) {
+            if (!perimeterBlock && !skylineBlock && buildings[buildings.length - 1].w < 200) {
               rect(x + 181, y + 183, 145, 135, '#4b524b');
               for (let p = 0; p < 5; p++) {
                 rect(x + 194 + p * 25, y + 187, 1, 49, '#d3d1a26b');
@@ -4544,6 +4548,7 @@
     // @include src/streets.js
     // @include src/terrain.js
     // @include src/casino.js
+    // @include src/skyline.js
     // @include src/renewal.js
     // @include src/sports-fixtures.js
     // @include src/sports.js

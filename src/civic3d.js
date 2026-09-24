@@ -26,7 +26,6 @@
           radius: 90,
         });
       }
-      const civicNeon = [];
       for (const p of PLACES) {
         const color = new Three.Color(p.color),
           group = new Three.Group();
@@ -60,7 +59,10 @@
         box(group, x, 8, face + 1.8, 0.7, 16, 0.3, chrome);
         box(group, x, 18, face + 7, 38, 2, 16, mat(p.kind === 'club' ? '#332745' : '#4f6464'));
         box(group, x, 0.8, face + 10, 34, 1.6, 17, concrete);
-        halo(group, x, 16, face + 11, 30, p.color);
+        // The lit entrance: a glow under the canopy, its colour on the steps and,
+        // in the rain, down the wet road.
+        addGlow(x, 15, face + 11, 30, p.color, 0.5, {});
+        signSpill(x, face + 20, 70, p.color, 0.45, { width: 40, length: 90, strength: 0.9 });
         for (const side of [-1, 1]) {
           box(group, x + side * 17, 9, face + 13, 1.1, 18, 1.1, chrome);
           box(group, x + side * (p.w * 0.38), 1.5, face + 14, 23, 3, 10, concrete);
@@ -112,7 +114,11 @@
           box(group, x, 28, face + 18, 166, 4, 42, burgundy);
           box(group, x, 30.2, face + 20, 168, 0.7, 44, gold);
           for (let dx = -66; dx <= 66; dx += 22) box(group, x + dx, 25.7, face + 29, 7, 0.6, 3, warmLamp);
-          sign('GOLDEN TIDE', x, face + 41, 162, '#f8d78a');
+          sign('GOLDEN TIDE', x, face + 41, 162, '#f8d78a', false, { marquee: true });
+          // Marquee bulbs chase round the canopy's edge.
+          bulbRow(x - 83, 26, face + 39.5, x + 83, 26, face + 39.5, 4.5, '#ffd27a');
+          for (const side of [-1, 1]) bulbRow(x + side * 83, 26, face + 39.5, x + side * 83, 26, face + 2, 4.5, '#ffd27a');
+          signSpill(x, face + 60, 120, '#ffc862', 0.4, { width: 150, length: 110, strength: 1 });
           for (const side of [-1, 1]) {
             box(group, x + side * 149, 45, face + 1, 4, 80, 3, gold);
             box(group, x + side * 126, p.height + 7, p.y + 30, 11, 14, 11, ivory);
@@ -178,26 +184,29 @@
           }
         }
         if (p.kind === 'club') {
+          // Colour-walking neon pillars that breathe to the beat, a tube frame round
+          // the door and chasing bulbs along the canopy.
+          const pillars = neonTube(p.color, { cycle: true, pulse: 2.1 }),
+            frame = neonTube(p.color, { night: 5 });
           for (const side of [-1, 1]) {
-            const neon = box(
-              group,
-              x + side * 47,
-              18,
-              face + 2,
-              2,
-              33,
-              2,
-              new Three.MeshBasicMaterial({
-                color: p.color,
-              }),
-            );
-            civicNeon.push(neon);
-            halo(group, x + side * 47, 25, face + 10, 40, p.color);
+            box(group, x + side * 47, 18, face + 2, 2, 33, 2, pillars);
+            addGlow(x + side * 47, 24, face + 6, 36, p.color, 0.55, { mode: 'cycle', phase: side * 0.25 });
+            box(group, x + side * 11, 8, face + 1.8, 0.9, 16, 0.9, frame);
             for (let dz = 18; dz < 58; dz += 14) {
               box(group, x + side * 14, 5, face + dz, 1, 10, 1, chrome);
               box(group, x + side * 14, 9, face + dz + 6, 1, 0.8, 14, mat('#9c485a'));
             }
           }
+          box(group, x, 16.4, face + 1.8, 22.8, 0.9, 0.9, frame);
+          bulbRow(x - 19, 17, face + 15.2, x + 19, 17, face + 15.2, 3.2, p.color);
+          signSpill(x, face + 26, 90, p.color, 0.5, { width: 70, length: 110, strength: 1.3, mode: 'cycle' });
+        }
+        if (p.kind === 'sleep') {
+          // A VACANCY neon on a post by the door; it stutters.
+          box(group, x + 58, 13, face + 16, 1.2, 26, 1.2, darkMetal);
+          atlasSign(group, windowNeonCell('VACANCY'), x + 58, 29, face + 16.8, 22, 11, neonBoardFlicker[0]);
+          box(group, x + 58, 29, face + 16, 23, 12, 1, darkMetal);
+          signSpill(x + 58, face + 28, 40, '#ff4f6d', 0.35, { width: 16, length: 60, strength: 0.9, mode: 'flicker' });
         }
         if (p.kind === 'guns') {
           for (const side of [-1, 1]) {
@@ -274,10 +283,6 @@
             return m;
           },
         );
-      // Club neon keeps a fixed tint; the sky colour is a reusable scratch value.
-      civicNeon.forEach((n, i) =>
-        n.material.color.set(i % 2 ? '#c36fd6' : '#78a7d8').multiplyScalar(0.82),
-      );
       /**
        * TIME OF DAY
        * Sky, fog, sun and ambient colours follow daylight() through four keyframes:
