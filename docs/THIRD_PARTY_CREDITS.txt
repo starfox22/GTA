@@ -389,32 +389,87 @@ AUDIO EFFECTS / VOICES
 }
 
 VEHICLE CRASH SOUNDS
-Layered by src/crash-audio.js. All files mono OGG Vorbis (quality 3), 32 kHz, metadata
-stripped, loudness-normalised with ffmpeg loudnorm, a 2-4 ms fade-in.
+Played by src/crash-audio.js: one recorded crash per impact, picked by closing speed, plus
+glass only when a pane broke, the tyre loop (tires.wav) for a skid and a debris settle after
+very hard hits. All files mono OGG Vorbis (quality 4), 44.1 kHz, metadata stripped, 35 Hz
+high-pass, trimmed with a 3-60 ms fade-in and a 0.2-0.55 s fade-out, loudness-matched with
+ffmpeg (EBU R128 integrated: -18 LUFS bumps and glass, -17 medium, -16 heavy, -21 debris;
+limited to about -1.5 dBTP). Freesound pages could not be opened from the build
+environment, so each file was taken from a public copy whose own credits name the same
+author, Freesound page and licence (listed per file), and the licence was cross-checked in
+other projects' credits where possible.
 
-crash-heavy.ogg, crash-hit.ogg
-  "240713_2785-2_FR_Car_and_motorcycle_crash" by kevp888
+crash-medium-3.ogg, crash-heavy-1.ogg
+  "240713_2785-2_FR_Car_and_motorcycle_crash" by kevp888 (field recording)
   https://freesound.org/people/kevp888/sounds/746501/
   License: Creative Commons Attribution 4.0 International (CC BY 4.0)
   https://creativecommons.org/licenses/by/4.0/
   Obtained from the copy in the Corro project (kastwey/corro on GitHub,
   server/Packages/great-route/assets/sounds/accident.ogg), whose credits and embedded
   Vorbis comments carry the same author, source and license.
-  Changes: stereo 48 kHz folded to mono 32 kHz. crash-heavy.ogg is the first 2.12 s with a
-  0.37 s fade-out; crash-hit.ogg is 0.02-0.62 s (the impact and crunch) with a 0.22 s
-  fade-out. Both loudness-normalised (-14 LUFS, -1.5 dBTP).
+  Changes: stereo 48 kHz folded to mono 44.1 kHz. crash-heavy-1.ogg is 0.02-2.13 s with a
+  0.4 s fade-out; crash-medium-3.ogg is 0.02-0.95 s (the impact and crunch) with a 0.3 s
+  fade-out; loudness-matched as above.
 
-crash-metal-1.ogg (impactMetal_heavy_001), crash-metal-2.ogg (impactMetal_heavy_003),
-crash-plate-1.ogg (impactPlate_heavy_000), crash-plate-2.ogg (impactPlate_heavy_004),
-crash-glass-1.ogg (impactGlass_heavy_001), crash-glass-2.ogg (impactGlass_heavy_004),
-crash-thump.ogg (impactPunch_heavy_000), crash-tinkle.ogg (impactGlass_light_002)
-  "Impact Sounds" (1.0) by Kenney (www.kenney.nl), 2019
-  https://kenney.nl/assets/impact-sounds
+crash-medium-1.ogg, crash-bump-2.ogg, crash-debris.ogg
+  "Car Crash" by squareal (recorded foley: a metal filing cabinet struck, and a box of grit,
+  broken glass and bits)
+  https://freesound.org/people/squareal/sounds/237375/
   License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
-  Obtained from copies of the pack in public GitHub repositories (the pack's License.txt
-  read from series-ai/jam-ready-assets, kenney-impact-sounds/audio/License.txt).
-  Changes: stereo folded to mono 32 kHz, loudness-normalised (-16 LUFS, -1.5 dBTP),
-  renamed.
+  Obtained from danuker/yield-or-die on GitHub (sounds/crash/Crash237375.ogg, credited
+  "CC0" in sounds/sources.txt); CC0 also stated in tgstation's sound/attributions.txt.
+  Changes: the tyre skid before the impact removed. crash-medium-1.ogg is 0.48-1.90 s,
+  crash-bump-2.ogg the first 0.35 s of the impact (0.49-0.84 s), crash-debris.ogg the
+  settling bits at 2.35-3.65 s; mono, faded and loudness-matched as above.
+
+crash-medium-2.ogg
+  "Crash" by FxKid2
+  https://freesound.org/people/FxKid2/sounds/367624/
+  License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from danuker/yield-or-die on GitHub (sounds/crash/Crash367624.ogg, credited
+  "CC0" in sounds/sources.txt).
+  Changes: 0.085-1.25 s, mono, 0.35 s fade-out, loudness-matched.
+
+crash-heavy-2.ogg
+  "Car Crash (with Glass)" by magnuswaker (recorded foley: steel PC side panels dropped on
+  each other, with glass smashed at the peak)
+  https://freesound.org/people/magnuswaker/sounds/592388/
+  License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from auliahanifan/mbg on GitHub (public/audio/crash.ogg, made by its
+  scripts/fetch-audio.sh from this sound's Freesound preview, credited CC0 there).
+  Changes: first 2.2 s, 0.45 s fade-out, loudness-matched.
+
+crash-bump-1.ogg
+  "Metallic clunk" by michael_grinnell
+  https://freesound.org/s/512475/
+  License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from VHlearning3/Out-of-the-Depths on GitHub
+  (Assets/Sound/Doors/Door_MetalClunk_Grinnell_CC0.mp3, CC0 per Assets/Sound/CREDITS.md).
+  Changes: 0.035-0.60 s, stereo folded to mono, 0.25 s fade-out, loudness-matched.
+
+crash-scrape.ogg
+  "metallic slide scrape 2" by toddcircle
+  https://freesound.org/s/443883/
+  License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from VHlearning3/Out-of-the-Depths on GitHub
+  (Assets/Sound/Doors/Door_MetalScrapeLoop_Toddcircle_CC0.mp3, CC0 per its CREDITS.md).
+  Changes: one scrape, 2.33-3.30 s, 0.35 s fade-out, loudness-matched.
+
+crash-glass-1.ogg
+  "Window breaking.MP3" by m1a2t3z4 (a real window pane)
+  https://freesound.org/people/m1a2t3z4/sounds/112213/
+  License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from the ESC-50 dataset (karolpiczak/ESC-50 on GitHub, audio/2-112213-A-39.wav),
+  whose LICENSE lists this clip as CC0 (the dataset as a whole is CC BY-NC, but its
+  per-clip notices keep each original's licence; this clip is CC0).
+  Changes: 0.47-1.75 s of the clip, 0.35 s fade-out, loudness-matched.
+
+crash-glass-2.ogg
+  "glass-shattering_01.ogg" by C_Rogers
+  https://freesound.org/people/C_Rogers/sounds/203375/
+  License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from ESC-50 (audio/3-203375-A-39.wav), listed there as CC0.
+  Changes: first 1.45 s, 0.45 s fade-out, loudness-matched.
 
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
