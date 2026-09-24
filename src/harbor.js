@@ -250,6 +250,8 @@
     function notifyViolence(source, kind = 'gunfire', attacker = null) {
       // Palm Keys Beach scatters too (beach.js).
       beachHearsViolence(source, kind);
+      // So does the beach club next to it (beachclub.js).
+      beachClubHearsViolence(source, kind, attacker);
       // Pedestrians hear and see it through the crowd's perception (src/crowd.js).
       crowdAlarm(kind === 'explosion' ? 'explosion' : 'gunfire', source, attacker);
       for (const c of vehicles)

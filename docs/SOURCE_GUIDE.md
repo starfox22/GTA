@@ -113,6 +113,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each), procedural station idents, selection, playback and saved settings |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
+| beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
+| beachclub-audio.js | The club's procedural music on a look-ahead scheduler (day, sunset and night sets), the wall low-pass by where the listener stands, and `mareaGroove`, the beat clock the dancers and lights follow |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
 | settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, volumes (`volumeScale`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
@@ -151,6 +153,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; lamps, LEDs, aviation beacons, foam, far copies |
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
 | marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners, the sailing liner and her wake |
+| beachclub3d.js | The club's meshes (batched), sails that fade while the player is inside, and the show: LED floor, moving heads, lasers, strobe, LED wall, flames, string lights (`updateBeachClubVisuals`, called from `updateBeachVisuals`) |
 | cycles3d.js | Bike-share racks (the bicycles are ordinary vehicles) |
 | weather3d.js | Rain, wet roads, lightning and the overcast light |
 | crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
@@ -245,7 +248,14 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   at the west end of the beach: the sand on its east side, the sea on its south and west, road
   access from Marina Rd (y 5248) along its north edge and Ocean Dr (x -2432) at its north-east
   corner. It is painted as a levelled paved lot; `inReservedPlot` keeps streets, blocks and the
-  esplanade off it.
+  esplanade off it. **Marea Beach Club** stands on it (beachclub.js, beachclub3d.js): a social
+  beach club 09:30-18:30, sunset sessions to 21:45, a nightclub 21:45-04:15 (queue, bouncers,
+  $40 cover and a $250 VIP band on E at the door and the VIP rope), closing and taxis to 05:15.
+  The plan is in plot-local units (u east from x -3070, v south from y 5306): the street
+  forecourt with the snaking queue (v < 44), a low wall with the door at u 292..312, then the
+  stage and dance floor, the bars, the VIP terrace, daybeds, the pool and the deck with a gate
+  to the club's sand. The camera looks north, so anything tall hides what stands just north of
+  it: keep the street side low.
 
 ### Sunset Pier island (x 1830..4260, y -7090..-5680)
 

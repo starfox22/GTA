@@ -785,6 +785,7 @@
       // @include src/bridges3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js
+      // @include src/beachclub3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
       // @include src/crowd3d.js

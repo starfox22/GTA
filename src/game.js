@@ -800,6 +800,7 @@
         parkBlocked(x, y, r) ||
         marinaBlocked(x, y, r) ||
         beachBlocked(x, y, r) ||
+        beachClubBlocked(x, y, r) ||
         (!overWater && !groundAt(x, y, r)) ||
         (overWater && LINERS.some((ship) => linerHullAt(ship, x, y, r))) ||
         harborBlocked(x, y, r) ||
@@ -1859,6 +1860,7 @@
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
       if (parkInteract()) return;
+      if (beachClubInteract()) return;
       if (marinaInteract()) return;
       if (taxiInteract()) return;
       if (
@@ -2381,6 +2383,7 @@
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateCarjackReactions(p, deltaSeconds)) continue;
+        if (updateClubGoer(p, deltaSeconds)) continue;
         if (updateCrowdPerson(p, deltaSeconds)) continue;
         if (updateGymGoer(p, deltaSeconds)) continue;
         if (updateParkWalker(p, deltaSeconds)) continue;
@@ -2696,6 +2699,7 @@
         updateMarinaFooting();
         updateSinking(deltaSeconds);
         timed('beach', () => updateBeach(deltaSeconds));
+        timed('beachclub', () => updateBeachClub(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -3655,6 +3659,7 @@
           ['LITTLE HAVANA', -1900, 4150],
           ['CORAL MARINA', -1700, 4880],
           ['PALM KEYS BEACH', -1970, 5620],
+          ['MAREA BEACH CLUB', -2870, 5500],
           ['P A L M  S O U N D', -560, 2300],
           ['M A R L O W  B A Y', 4650, 2560],
           ['N O R T H  S O U N D', 1500, -4900],
@@ -4566,6 +4571,8 @@
     // @include src/car-radio.js
     // @include src/garages.js
     // @include src/crowd.js
+    // @include src/beachclub.js
+    // @include src/beachclub-audio.js
     // @include src/ambience.js
     // @include src/quality.js
     // @include src/settings.js
@@ -5038,6 +5045,16 @@
         })),
       // Palm Keys Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
+      // Marea Beach Club: phase, levels, who is where, the queue and the door,
+      // the music (beachclub.js). `beachClub('trouble')` raises gunfire on its
+      // dance floor as if someone fired there, for tests of the evacuation.
+      beachClub(action) {
+        if (action === 'trouble') {
+          const p = mareaPoint(205, 140);
+          notifyViolence(p, 'gunfire', null);
+        }
+        return beachClubReport();
+      },
       // Rooftop helipads, the roof the player stands on and the roof under the
       // player's helicopter (rooftops.js); with a map point, that roof and its plant.
       rooftops: (x, y) => ({
