@@ -1116,7 +1116,7 @@
     }
     const noStatics = [];
     // Broadphase containers reused from step to step (see physicsStep).
-    const broadphaseCells = new Map(),
+    const broadphaseCells = Array.from({ length: 4096 }, () => Object.assign([], { stamp: 0 })),
       broadphasePairA = [],
       broadphasePairB = [],
       broadphaseBarrierCars = [],
@@ -1398,15 +1398,15 @@
         c.farFromPlayer = far;
         c.resting = c.restSteps > 24 && (far || c.restSteps > 240);
       }
-      // Broadphase: vehicles bucketed by 96-unit cell; containers are kept between
-      // steps (this runs 120 times a second) and only their contents rebuilt.
+      // Broadphase: vehicles bucketed by 96-unit cell into a fixed 64 x 64 table
+      // (cells 6,144 units apart share a bucket; such a pair is dropped by the
+      // distance check before any contact test). The buckets are kept between
+      // steps (this runs 120 times a second) and emptied lazily: one is reset
+      // when first used in a step, its stamp being stale.
       const cells = broadphaseCells,
         pairA = broadphasePairA,
         pairB = broadphasePairB;
-      // Cell lists are emptied lazily: one is reset when first used in a step (its
-      // stamp is stale), so a map of thousands of cells is never swept.
       const stamp = ++broadphaseStamp;
-      if (cells.size > 6000) cells.clear();
       pairA.length = pairB.length = 0;
       for (let v = 0; v < vehicles.length; v++) {
         const c = vehicles[v],
@@ -1421,9 +1421,7 @@
         c.broadCellY = y0;
         for (let x = x0; x <= Math.floor((c.x + radius) / 96); x++)
           for (let y = y0; y <= Math.floor((c.y + radius) / 96); y++) {
-            const key = x * 65536 + y;
-            let list = cells.get(key);
-            if (!list) cells.set(key, (list = []));
+            const list = cells[((x & 63) << 6) | (y & 63)];
             if (list.stamp !== stamp) {
               list.stamp = stamp;
               list.length = 0;

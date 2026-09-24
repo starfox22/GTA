@@ -1034,6 +1034,7 @@
           farFromPlayer: false,
           resting: false,
           contactPass: 0,
+          impactSpeed: 0,
           broadCellX: 0,
           broadCellY: 0,
           contactStatics: null,
