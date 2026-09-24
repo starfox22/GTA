@@ -659,13 +659,15 @@
       for (const text of Object.values(MAREA_DOOR_TALK.player)) add(text);
     })();
     /* Say a line now (a scripted line interrupts idle chatter) through the crowd's speech. */
+    // Settings · Gameplay · NPC chatter off (settings.js) silences the door too;
+    // the conversations still run, so people are let in and turned away as before.
     function mareaSay(p, text) {
-      if (!p || p.hp <= 0 || !text) return false;
+      if (!p || p.hp <= 0 || !text || !npcChatterOn()) return false;
       p.speechUntil = 0;
       return crowdSay(p, 'marea ' + text, 1);
     }
     function mareaSayOne(p, kind, chance = 1) {
-      if (!p || (p.speechUntil || 0) > gameTime || mareaRandom() > chance) return false;
+      if (!p || !npcChatterOn() || (p.speechUntil || 0) > gameTime || mareaRandom() > chance) return false;
       return crowdSay(p, 'marea ' + randomChoice(MAREA_DOOR_TALK[kind]), 1);
     }
 
