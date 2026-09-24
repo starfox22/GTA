@@ -174,7 +174,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles, county ground, foliage sway |
 | helicopter3d.js | Airframe, rotor, lights and cockpit |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts |
-| plane3d.js | Courier prop plane, business jet and airliner |
+| plane3d.js | The three airframes, modelled on real types: the Serrano C200 courier (mission 11's plane; a low-wing single turboprop with a T-tail after the Pilatus PC-12), the Aurelia J8 business jet and the Meridian 220 airliner. A lofted fuselage (monotone-cubic stations, superellipse sections) wears a livery texture computed per pixel from the surface (windscreen and cockpit glass with frames, cabin windows, doors, cheatline, registration; glossy glass through a roughness / metalness map); NACA-section wings, winglets, fin and stabiliser; flaps, ailerons, elevators and rudder in hinge pivots; four-blade propeller with blur disc or lathed turbofans with spinning fans; retracting gear; navigation, strobe, beacon and landing lights. Static parts are merged per material. `animateAircraft` poses it all from the flight model each frame |
 
 `src/asset-loader.js` sits outside the closure: it decodes the media blocks and calls
 `startDeadEndCity(ASSETS)`.
