@@ -159,8 +159,9 @@
           continue;
         }
         const d = combatDistance(o, player);
-        if (gameTime >= (o.lookAt || 0)) {
-          o.lookAt = gameTime + 0.12 + seededRandom() * 0.05;
+        // Its own clock: updateOfficers keeps `lookAt` for the gang checks.
+        if (gameTime >= (o.sniperLookAt || 0)) {
+          o.sniperLookAt = gameTime + 0.12 + seededRandom() * 0.05;
           o.sightClear = d < 760 && clearSight(o, player);
         }
         const sees = o.sightClear && !playerOnRoof();
