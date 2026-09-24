@@ -4,122 +4,111 @@
      * Source: src/weather-audio.js
      * Scope: shared game closure (after weather.js).
      *
-     * Rain is built from a few looping layers made once, the first time it
-     * rains, so nothing is shipped and nothing is allocated per frame:
+     * Rain is three recorded beds, cross-faded by the rain's intensity
+     * (RAIN_BEDS; sources in docs/THIRD_PARTY_CREDITS.txt):
      *
-     *   hiss     fine, bright noise: the curtain of drops in the air
-     *   patter   thousands of individual drop impacts (short damped pings at
-     *            random pitches) painted into a buffer, a light and a dense one
-     *            cross-faded with the intensity
-     *   roar     the low body of a downpour on the whole city
-     *   roof     drumming on sheet metal: the car's roof when the player is
-     *            inside, while everything outside goes through a low-pass as if
-     *            heard through the glass
-     *   spray    tyres on a wet road: a hiss that rises with speed and wetness
+     *   light    soft rain pattering on a tile roof, drops you can pick out
+     *   steady   a steady rain heard from a half-open window, an even wash
+     *   heavy    a dense downpour, the bright hiss of a cloudburst
      *
-     * One-shots on top: gutter and awning drips (plinks at random pitches and
-     * pans, while it rains and for a while after), splashes under the player's
-     * feet in the wet, and thunder. Thunder is made per strike: a near one
-     * starts with the tearing crack of the channel, then the rolling rumble
-     * (brown noise under a low-pass, several swells as the sound of different
-     * parts of the channel arrives); the farther away, the later, lower, softer
-     * and longer it is, and a distant storm is only a low grumble.
+     * Each loops seamlessly (its seam cross-faded when it was made, looped at
+     * its exact length, LOOP_SECONDS in audio.js) from a random point. All
+     * three pass through one `cabin` low-pass: open on foot, muffled under
+     * cover (the underpass, under the railway decks and station canopies,
+     * aboard a train or a cab, in the elevator), and through the glass inside a
+     * closed vehicle, where the same recordings also drum on the roof (a
+     * resonant low band of the light and steady beds, not behind the glass).
+     * Tyres on a wet road hiss with a band of the heavy bed; a foot in a puddle
+     * splashes. The build-up before a shower (wind, far thunder) is weather.js
+     * and ambience.js. Thunder is made per strike: a near one starts with the
+     * tearing crack of the channel, then the rolling rumble (brown noise under
+     * a low-pass, several swells as the sound of different parts of the channel
+     * arrives); the farther away, the later, lower, softer and longer it is,
+     * and a distant storm is only a low grumble.
      */
+    const RAIN_BEDS = ['rain-light', 'rain-steady', 'rain-heavy'];
     let rainAudio = null;
-    // A looping buffer from a sample function; the seam is cross-faded.
-    function rainLoopBuffer(seconds, fill) {
-      const rate = audio.sampleRate,
-        n = Math.floor(rate * seconds),
-        buffer = audio.createBuffer(2, n, rate);
-      for (let ch = 0; ch < 2; ch++) {
-        const data = buffer.getChannelData(ch);
-        fill(data, rate, ch);
-        const fade = Math.floor(rate * 0.15);
-        for (let i = 0; i < fade; i++) {
-          const t = i / fade;
-          data[i] = data[i] * t + data[n - fade + i] * (1 - t);
-        }
-      }
-      return buffer;
-    }
-    // Drop impacts: each a short damped sine at a random pitch and level.
-    function paintDrops(data, rate, perSecond, low, high, decay, level) {
-      const count = Math.floor((data.length / rate) * perSecond);
-      for (let k = 0; k < count; k++) {
-        const start = Math.floor(Math.random() * data.length),
-          f = low * Math.pow(high / low, Math.random()),
-          d = decay * (0.6 + Math.random() * 0.8),
-          len = Math.min(Math.floor(rate * d * 5), data.length - start),
-          a = level * Math.pow(Math.random(), 2.2),
-          w = (TAU * f) / rate;
-        for (let i = 0; i < len; i++) data[start + i] += Math.sin(w * i) * Math.exp(-i / (rate * d)) * a;
-      }
-    }
     function buildRainAudio() {
       if (!audio || !master || rainAudio) return rainAudio;
+      if (!RAIN_BEDS.every((name) => audioBuffers[name])) return null;
       const bus = audio.createGain(),
         // Outside sounds pass through this: open on foot, the glass in a car.
         cabin = audio.createBiquadFilter();
       cabin.type = 'lowpass';
-      cabin.frequency.value = 18000;
+      cabin.frequency.value = 16000;
       cabin.Q.value = 0.4;
       bus.gain.value = 1;
       cabin.connect(bus).connect(master);
-      const hissBuffer = rainLoopBuffer(3.1, (d) => {
-          let b = 0;
-          for (let i = 0; i < d.length; i++) {
-            const w = Math.random() * 2 - 1;
-            b = b * 0.55 + w * 0.45;
-            d[i] = (w - b) * 0.5;
-          }
-        }),
-        lightBuffer = rainLoopBuffer(4.3, (d, rate) => paintDrops(d, rate, 260, 1400, 7000, 0.0035, 0.5)),
-        heavyBuffer = rainLoopBuffer(3.7, (d, rate) => {
-          paintDrops(d, rate, 2200, 900, 6500, 0.003, 0.32);
-          paintDrops(d, rate, 180, 300, 900, 0.008, 0.35);
-        }),
-        roarBuffer = rainLoopBuffer(3.3, (d) => {
-          let b = 0;
-          for (let i = 0; i < d.length; i++) {
-            b = (b + 0.03 * (Math.random() * 2 - 1)) / 1.03;
-            d[i] = b * 4;
-          }
-        }),
-        // Drops on a car roof: dull knocks with the panel's ring under them.
-        roofBuffer = rainLoopBuffer(3.9, (d, rate) => {
-          paintDrops(d, rate, 900, 160, 520, 0.012, 0.55);
-          paintDrops(d, rate, 500, 900, 2400, 0.004, 0.25);
-        });
-      const layer = (buffer, type, frequency, q, out = cabin) => {
-        const source = audio.createBufferSource(),
+      // One recorded bed through a filter and a gain into `out`.
+      const bed = (name, type, frequency, q, out = cabin) => {
+        const source = loopingSource(name),
           filter = audio.createBiquadFilter(),
           gain = audio.createGain();
-        source.buffer = buffer;
-        source.loop = true;
         filter.type = type;
         filter.frequency.value = frequency;
         filter.Q.value = q;
         gain.gain.value = 0;
         source.connect(filter).connect(gain).connect(out);
-        source.start(0, Math.random() * buffer.duration);
+        source.start(0, Math.random() * (LOOP_SECONDS[name] || 4));
         return { source, filter, gain };
       };
+      // The roof: drops on sheet metal ring low and dull. Both beds feed one
+      // resonant band so the drumming follows the rain as the street does.
+      const roofBand = audio.createBiquadFilter(),
+        roofGain = audio.createGain();
+      roofBand.type = 'peaking';
+      roofBand.frequency.value = 260;
+      roofBand.Q.value = 1.1;
+      roofBand.gain.value = 9;
+      roofGain.gain.value = 0;
+      roofBand.connect(roofGain).connect(bus);
       rainAudio = {
         bus,
         cabin,
-        hiss: layer(hissBuffer, 'highpass', 2600, 0.5),
-        light: layer(lightBuffer, 'highpass', 700, 0.5),
-        heavy: layer(heavyBuffer, 'highpass', 400, 0.5),
-        roar: layer(roarBuffer, 'lowpass', 900, 0.6),
-        // The roof and the tyres are not behind the glass.
-        roof: layer(roofBuffer, 'lowpass', 1400, 0.7, bus),
-        spray: layer(hissBuffer, 'bandpass', 1900, 0.6, bus),
-        dripClock: 1,
+        // A gentle top cut keeps the beds soft; the heavy one is the brightest.
+        light: bed('rain-light', 'lowpass', 11000, 0.5),
+        steady: bed('rain-steady', 'lowpass', 10000, 0.5),
+        heavy: bed('rain-heavy', 'lowpass', 8500, 0.5),
+        roofLight: bed('rain-light', 'lowpass', 1500, 0.7, roofBand),
+        roofSteady: bed('rain-steady', 'lowpass', 1200, 0.7, roofBand),
+        roof: { gain: roofGain },
+        // Tyres on a wet road: a band of the downpour's hiss, not behind the glass.
+        spray: bed('rain-heavy', 'bandpass', 1900, 0.8, bus),
+        shelter: 0,
         stepX: player.x,
         stepY: player.y,
       };
       return rainAudio;
     }
+    /*
+     * 1 under a roof that keeps the rain off (the Northbank underpass, beneath
+     * the railway decks and station canopies, a bridge over a swimmer, aboard a
+     * train or a cab, in the Blue Hour elevator), 0 in the open.
+     */
+    function rainShelter() {
+      if (taxiRide || transitRide || gameMode === 'elevator') return 1;
+      if (player.car) return 0;
+      const h = entityElevation(player),
+        blocks = airCoverVolumes();
+      for (let i = 0; i < blocks.length; i++) {
+        const b = blocks[i];
+        // Only overhead volumes (walls and piers start at the ground).
+        if (b.bridge ? !player.swimming : (b.minHeight || 0) < 8) continue;
+        if (h < (b.minHeight || 0) - 2 && inCoverFootprint(b, player.x, player.y)) return 1;
+      }
+      return 0;
+    }
+    /* How loud each bed is at rain intensity r (0..1), before the mix levels. */
+    function rainBedLevels(r) {
+      const ramp = (x, a, b) => clamp((x - a) / (b - a), 0, 1);
+      return {
+        light: ramp(r, 0.02, 0.3) * (1 - 0.65 * ramp(r, 0.35, 0.8)),
+        steady: ramp(r, 0.2, 0.55) * (1 - 0.4 * ramp(r, 0.75, 1)),
+        heavy: ramp(r, 0.5, 0.95),
+      };
+    }
+    // Mix level of each bed at full weight (the loops are matched at -26 dBFS RMS).
+    const RAIN_LEVEL = { light: 0.42, steady: 0.5, heavy: 0.75, roof: 0.55, spray: 0.6 };
     function updateWeatherAudio(deltaSeconds) {
       if (!audio || !master) return;
       const raining = weather.rain > 0.02 || weather.wet > 0.05;
@@ -129,60 +118,57 @@
       const now = audio.currentTime,
         on = soundOn && gameMode === 'play',
         r = on ? weather.rain : 0,
-        heavy = clamp((r - 0.45) / 0.45, 0, 1),
         c = player.car,
         spec = c ? vehicleSpec(c) : null,
         // Inside a closed vehicle: the glass muffles the street, the roof drums.
-        cabin = !!c && !spec.bike && !spec.bicycle && !spec.jetski && c.type !== 'roadster' && !(spec.boat && c.type !== 'workboat'),
-        set = (node, value, time = 0.4) => node.gain.gain.setTargetAtTime(value, now, time);
-      a.cabin.frequency.setTargetAtTime(cabin ? 620 : 16000, now, 0.15);
-      const outside = cabin ? 0.55 : 1;
-      set(a.hiss, r * 0.075 * outside);
-      set(a.light, r * (1 - heavy * 0.6) * 0.34 * outside);
-      set(a.heavy, heavy * 0.3 * outside);
-      set(a.roar, (r * 0.05 + heavy * 0.12) * outside);
-      set(a.roof, cabin ? r * (0.22 + heavy * 0.2) : 0, 0.2);
+        cabin = !!c && !spec.bike && !spec.bicycle && !spec.jetski && c.type !== 'roadster' && !(spec.boat && c.type !== 'workboat');
+      // Under cover the rain is a softer, duller wash off the edges.
+      a.shelter += (rainShelter() - a.shelter) * Math.min(1, deltaSeconds * 3);
+      glideParam(a.cabin.frequency, cabin ? 620 : 16000 - a.shelter * 13500, now, 0.15);
+      const outside = cabin ? 0.55 : 1 - a.shelter * 0.45,
+        beds = rainBedLevels(r);
+      glideParam(a.light.gain.gain, beds.light * RAIN_LEVEL.light * outside, now, 0.4);
+      glideParam(a.steady.gain.gain, beds.steady * RAIN_LEVEL.steady * outside, now, 0.4);
+      glideParam(a.heavy.gain.gain, beds.heavy * RAIN_LEVEL.heavy * outside, now, 0.4);
+      // The roof drums with the rain: the patter's band, then the wash's.
+      glideParam(a.roofLight.gain.gain, cabin ? 0.5 + beds.light * 0.5 : 0, now, 0.3);
+      glideParam(a.roofSteady.gain.gain, cabin ? beds.steady + beds.heavy * 0.8 : 0, now, 0.3);
+      glideParam(a.roof.gain.gain, cabin ? r * RAIN_LEVEL.roof : 0, now, 0.2);
       // Tyres on a wet road.
       const rolling = c && !spec.boat && !spec.jetski && !isAircraft(c) ? Math.abs(c.speed || 0) : 0;
-      set(a.spray, on ? clamp(rolling / 260, 0, 1) * weather.wet * 0.2 : 0, 0.15);
-      a.spray.filter.frequency.setTargetAtTime(1300 + rolling * 3, now, 0.2);
+      glideParam(a.spray.gain.gain, on ? clamp(rolling / 260, 0, 1) * weather.wet * RAIN_LEVEL.spray : 0, now, 0.15);
+      glideParam(a.spray.filter.frequency, 1300 + rolling * 3, now, 0.2);
       if (!on) return;
-      // Drips from gutters, awnings and trees: on foot, while it is wet.
-      a.dripClock -= deltaSeconds;
-      if (a.dripClock <= 0) {
-        a.dripClock = randomBetween(0.25, 1.4) / (0.4 + weather.wet);
-        if (!c && weather.wet > 0.25) dripSound(randomBetween(-0.8, 0.8), 0.03 + weather.wet * 0.05);
-      }
       // Splashes underfoot: one per stride through standing water.
       if (!c && !player.parachute && !player.swimming) {
         const stride = Math.hypot(player.x - a.stepX, player.y - a.stepY);
         if (stride > 26) {
           a.stepX = player.x;
           a.stepY = player.y;
-          if (weather.wet > 0.2 && stride < 120) splashSound(weather.wet);
+          if (weather.wet > 0.2 && stride < 120 && a.shelter < 0.5) splashSound(weather.wet);
         }
       } else {
         a.stepX = player.x;
         a.stepY = player.y;
       }
     }
-    // One drop off a gutter into a puddle: a plink that falls in pitch.
-    function dripSound(pan, level) {
-      const o = audio.createOscillator(),
-        g = audio.createGain(),
-        p = audio.createStereoPanner(),
-        now = audio.currentTime,
-        f = randomBetween(1300, 3400);
-      o.type = 'sine';
-      o.frequency.setValueAtTime(f, now);
-      o.frequency.exponentialRampToValueAtTime(f * 0.55, now + 0.05);
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(level, now + 0.004);
-      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
-      p.pan.value = pan;
-      o.connect(g).connect(p).connect(rainAudio ? rainAudio.cabin : master);
-      o.start(now);
-      o.stop(now + 0.1);
+    // What DeadEndCity.rainSound() reports: the beds' gains and the filters.
+    function rainReport() {
+      const a = rainAudio,
+        base = { rain: +weather.rain.toFixed(2), wet: +weather.wet.toFixed(2), targets: rainBedLevels(weather.rain) };
+      if (!a) return { ready: false, ...base };
+      const g = (layer) => +layer.gain.gain.value.toFixed(3);
+      return {
+        ready: true,
+        ...base,
+        light: g(a.light),
+        steady: g(a.steady),
+        heavy: g(a.heavy),
+        roof: g(a.roof),
+        spray: g(a.spray),
+        cabin: Math.round(a.cabin.frequency.value),
+        shelter: +a.shelter.toFixed(2),
+      };
     }
     // A foot in a puddle: a wet slap and the spray settling.
     function splashSound(wet) {

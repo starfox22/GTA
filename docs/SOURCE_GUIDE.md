@@ -103,7 +103,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
 | cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
 | weather.js | Weather state machine (`weather.next` is chosen as a state begins), the build-up before a shower (`weather.approach`: thicker cloud, rising wind, far thunder), `weather.shower` counter, road wetness, wind and gusts, lightning strikes with a place and distance (`lightningStrike`, the flash's return strokes in `lightningFlash`) and thunder queued at distance / speed of sound |
-| weather-audio.js | Rain and thunder sound: layered loops made once (hiss, light and dense drop patter, low roar), roof drumming and a glass low-pass inside a closed vehicle, tyre spray on wet roads, gutter drips and puddle splashes underfoot; `thunderSound(distance)` builds each clap (crack only when near; rumble rolls, lower and longer with distance) |
+| weather-audio.js | Rain and thunder sound: three recorded rain beds (`RAIN_BEDS`: light patter on a tile roof, a steady wash, a heavy downpour) cross-faded by intensity (`rainBedLevels`, `RAIN_LEVEL`), muffled under cover (`rainShelter()`: the underpass, beneath rail decks and station canopies, aboard a train or cab, the elevator) and through the glass inside a closed vehicle, where a resonant low band of the same recordings drums on the roof; tyre spray on wet roads (a band of the heavy bed), puddle splashes underfoot; `rainReport()` (DeadEndCity.rainSound()); `thunderSound(distance)` builds each clap (crack only when near; rumble rolls, lower and longer with distance) |
 | water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J), `parachuteSplashdown`, harbor-patrol rescue |
 | water-audio.js | Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle |
 | beach.js | Palm Keys Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
@@ -898,7 +898,8 @@ docs/audit/missions-qa.md shows the method).
   dulled glitter. Street lamps and bridge lamps smear down wet roads (signage3d.js
   streaks). A lightning strike has a place: the flash (two to four return strokes) is
   scaled by its distance, a bolt is drawn when it is near the view, and its thunder is
-  queued for distance / 1756 units per second. Cars run wipers and headlights in the rain
+  queued for distance / 1756 units per second. The rain is heard from recordings (light,
+  steady and heavy beds cross-faded by `weather.rain`; weather-audio.js). Cars run wipers and headlights in the rain
   (`vehicleLampAmount`); on LOW only the player's car wipes and there is no spray or drips.
 - **Night light hygiene**: the bloom bright pass sanitises NaN and half-float overflow
   before the mip chain (they used to blow up into 32-64 px black or white squares) and

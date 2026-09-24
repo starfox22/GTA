@@ -113,6 +113,9 @@ const embeddedAssetReferences = {
     "boat-outboard-high": "media-audio-boat-outboard-high",
     "boat-diesel": "media-audio-boat-diesel",
     "boat-jetski": "media-audio-boat-jetski",
+    "rain-light": "media-audio-rain-light",
+    "rain-steady": "media-audio-rain-steady",
+    "rain-heavy": "media-audio-rain-heavy",
     "tires": "media-audio-tires"
   }
 };

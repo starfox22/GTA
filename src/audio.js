@@ -427,6 +427,8 @@
         // The player's engine (revs, gear, load, layer rates and gains), road
         // noise, the traffic voices and a trace of the last 12 s (engine-audio.js).
         engineSound: () => engineReport(),
+        // The rain beds' gains, cover and cabin filter (weather-audio.js).
+        rainSound: () => rainReport(),
       };
     }
     // END SUBSYSTEM: src/audio.js

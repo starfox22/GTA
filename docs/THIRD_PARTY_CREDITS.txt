@@ -570,6 +570,33 @@ boat-jetski.ogg
 The turboprop and jet engines, road roar and wind are synthesised in engine-audio.js;
 the helicopter uses rotor-loop.ogg (above).
 
+RAIN
+Played by src/weather-audio.js: three beds cross-faded by rain intensity, muffled under
+cover and inside closed vehicles, where the same recordings also drum on the roof. All
+files stereo OGG Vorbis (quality 2), 32 kHz, metadata stripped, high-passed (110-140 Hz,
+removing wind rumble and traffic) and low-passed at 13-14 kHz, their seams cross-faded
+over 2 s (equal power), matched at -26 dBFS RMS and followed by 0.2 s of their own start.
+
+rain-light.ogg
+  "Soft rain on a tile roof" by richwise
+  https://freesound.org/s/466241/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from funcoder/omarchy-ambient on GitHub (sounds/rain.ogg, its loop of 1:55-6:55
+  of the recording; CREDITS.md and tools/sources.json there). Changes: 30-46 s of that loop.
+
+rain-steady.ogg
+  "Rain from Half Open Window 2" by RutgerMuller
+  https://freesound.org/s/158689/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from funcoder/omarchy-ambient (sounds/window.ogg). Changes: 20-34 s.
+
+rain-heavy.ogg
+  "Heavy_Rain_Loop.wav" by Rubaoliva
+  https://freesound.org/s/624645/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from bob6664569/open-water (site/assets/audio/weather/rain-heavy.mp3;
+  site/assets/audio/LICENSES.md). Changes: 0.2-10.4 s.
+
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
 third-party shader source is copied. The techniques follow published work:

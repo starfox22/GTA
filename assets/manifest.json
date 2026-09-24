@@ -427,5 +427,23 @@
     "file": "assets/audio/boat-jetski.ogg",
     "mime": "audio/ogg",
     "original": "src/assets/audio/boat-jetski.ogg"
+  },
+  {
+    "id": "media-audio-rain-light",
+    "file": "assets/audio/rain-light.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/rain-light.ogg"
+  },
+  {
+    "id": "media-audio-rain-steady",
+    "file": "assets/audio/rain-steady.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/rain-steady.ogg"
+  },
+  {
+    "id": "media-audio-rain-heavy",
+    "file": "assets/audio/rain-heavy.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/rain-heavy.ogg"
   }
 ]
