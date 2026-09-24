@@ -5061,6 +5061,8 @@
         }
         return this.status();
       },
+      // Fort Sentinel security: alert, lockdown, gate pieces, garrison and vehicles.
+      military: () => militaryReport(),
       // The plan as data, for layout audits: coast, streets, rail, footprints and
       // every static collider in map units. A test renders it as a debug map and
       // checks for overlaps (a road through a helipad, a viaduct over a berth).
