@@ -673,7 +673,9 @@
      * PEOPLE
      */
     function mareaSpawn(slot, x, y, style) {
-      if (pedestrians.length >= CROWD_HARD_CAP) return null;
+      // The club brings its own crowd on top of the street crowd's cap (only people on
+      // screen are drawn, and the club never holds more than its slots).
+      if (pedestrians.length >= CROWD_HARD_CAP + 260 || marea.people.length >= 260) return null;
       const p = { x, y, a: slot?.a ?? 0, hp: 30, flee: 0, timer: 5, walk: 0, state: 'club' };
       mareaDress(p, style || slot?.dress || 'mixed');
       p.club = { slot: null, route: [], mode: 'walk', since: gameTime, speed: 24 + mareaRandom() * 6 };

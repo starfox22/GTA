@@ -475,7 +475,11 @@
 
         /* ---- dance floor and truss ---- */
         const F = MAREA.floor;
-        clubPlane(F[0], F[1], F[2], F[3], 0.42, M.stage);
+        // Polished marble by day, black glass under the LEDs at night.
+        const floorMaterial = mat('#ece6da', 0.3),
+          floorDay = new Three.Color('#ece6da'),
+          floorNight = new Three.Color('#101014');
+        clubPlane(F[0], F[1], F[2], F[3], 0.42, floorMaterial);
         const tileCols = 17,
           tileRows = 9,
           tileW = (F[2] - F[0]) / tileCols,
@@ -799,6 +803,8 @@
          * THE SHOW
          */
         const PALETTE = ['#ff2fa8', '#27e3ff', '#9b4dff', '#ffb43a', '#30ff9a', '#ff4a3a'].map((c) => new Three.Color(c));
+        // Palette by bar number; bars count from just below zero when a set starts.
+        const hue = (n) => PALETTE[((n % PALETTE.length) + PALETTE.length) % PALETTE.length];
         const WHITE = new Three.Color('#ffffff'),
           scratchColor = new Three.Color(),
           clubMatrix = new Three.Matrix4(),
@@ -842,8 +848,8 @@
             c.fillText('Marea', w / 2, 38);
             return;
           }
-          const col = PALETTE[Math.floor(g.bar / 2) % PALETTE.length],
-            col2 = PALETTE[(Math.floor(g.bar / 2) + 2) % PALETTE.length];
+          const col = hue(Math.floor(g.bar / 2)),
+            col2 = hue(Math.floor(g.bar / 2) + 2);
           c.fillStyle = '#05040a';
           c.fillRect(0, 0, w, h);
           const on = Math.max(0, Math.cos(g.beat * TAU)),
@@ -885,18 +891,19 @@
             sinceDrop = gameTime - g.dropAt;
           // LEDs follow the night; the booth strips pulse on the beat.
           for (const l of clubLeds) l.m.color.copy(l.color).multiplyScalar(l.day + (1 - l.day) * night * (spooked ? 0.6 : 1));
-          if (show) LED.magenta.color.copy(PALETTE[Math.floor(bar / 4) % PALETTE.length]).multiplyScalar(0.35 + on * 0.65);
+          if (show) LED.magenta.color.copy(hue(Math.floor(bar / 4))).multiplyScalar(0.35 + on * 0.65);
           signMaterial.opacity = 0.45 + night * 0.55;
           pylonMaterial.color.setScalar(0.35 + night * 0.65);
           screenMaterial.color.setScalar(show ? 1 : 0.45 + 0.5 * (1 - night));
           M.bottle.emissiveIntensity = night * 0.8;
+        floorMaterial.color.copy(floorDay).lerp(floorNight, clamp(night * 1.4, 0, 1));
           // Pool: gently moving ripples, glowing at night.
           rippleTexture.offset.set(gameTime * 0.012, gameTime * 0.007);
           poolFloorMaterial.emissiveIntensity = night * (0.55 + Math.sin(gameTime * 1.3) * 0.05);
           waterMaterial.emissiveIntensity = night * 0.35;
           // Sails fade while the player is inside so nobody under them is hidden.
           const inside = mareaInside(player.x, player.y) && !isAircraft(player.car);
-          sailFade += ((inside ? 0.22 : 1) - sailFade) * Math.min(1, dt * 4);
+          sailFade += ((inside ? 0.1 : 1) - sailFade) * Math.min(1, dt * 4);
           sailMaterial.opacity = sailFade;
           sailMaterial.depthWrite = sailFade > 0.9;
           vipGateRope.visible = !marea.vip;
@@ -935,8 +942,8 @@
           clubWasShowing = true;
           // LED floor: a pattern per bar, palette per two bars.
           const pattern = section === 'break' ? 4 : dusk ? 5 : bar % 4,
-            colA = PALETTE[Math.floor(bar / 2) % PALETTE.length],
-            colB = PALETTE[(Math.floor(bar / 2) + 3) % PALETTE.length],
+            colA = hue(Math.floor(bar / 2)),
+            colB = hue(Math.floor(bar / 2) + 3),
             level = dusk ? 0.35 : 0.3 + e * 0.7;
           for (let j = 0; j < tileRows; j++)
             for (let i = 0; i < tileCols; i++) {
@@ -979,7 +986,7 @@
             clubScale.set(width, len, width);
             beams.setMatrixAt(i, clubMatrix.compose(clubPos, clubQuat, clubScale));
             const strobeOff = (drop || section === 'build') && hashN(i + Math.floor(g.beat * 4) * 13) < 0.25;
-            scratchColor.copy(PALETTE[(i + Math.floor(bar / 2)) % PALETTE.length]).multiplyScalar(strobeOff ? 0 : dusk ? 0.35 : 0.5 + e * 0.5);
+            scratchColor.copy(hue(i + Math.floor(bar / 2))).multiplyScalar(strobeOff ? 0 : dusk ? 0.35 : 0.5 + e * 0.5);
             beams.setColorAt(i, scratchColor);
             if (pointUp) spots.setMatrixAt(i, clubZero);
             else {

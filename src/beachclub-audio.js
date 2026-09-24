@@ -243,8 +243,8 @@
       const set = MAREA_SETS[setName],
         bar = Math.floor(n / 16),
         s = n % 16,
-        chord = set.chords[bar % 4],
-        root = set.roots[bar % 4],
+        chord = set.chords[((bar % 4) + 4) % 4],
+        root = set.roots[((bar % 4) + 4) % 4],
         sixteenth = 60 / set.bpm / 4,
         section = mareaSection(setName, bar),
         h = mareaHash(n);
