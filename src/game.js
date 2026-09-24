@@ -1922,6 +1922,10 @@
         save();
       }, 4200);
     }
+    /* The ringing payphone's reach, shared by its prompt and E (hysteresis). */
+    function payphoneInReach() {
+      return withinRange('payphone', distanceBetween(player, phone), 68, 84);
+    }
     function nearestCar() {
       if (player.parachute) return null;
       let best = null,
@@ -2065,7 +2069,7 @@
         openService(place);
         return;
       }
-      if (distanceBetween(player, phone) < 68 && !mission) {
+      if (payphoneInReach() && !mission) {
         offerMission();
         return;
       }
@@ -4294,6 +4298,8 @@
         if (c) {
           // The flight HUD shows power, speed and the warnings; the prompt only
           // says what to do about a stall, or how to get off the ground.
+          // One identity per vehicle kind: its hints change text, not pop in anew.
+          promptId = c.type === 'plane' || c.type === 'helicopter' ? c.type : 'garage';
           if (c.type === 'plane')
             prompt = c.stalled
               ? 'STALL · ' + keyName('descend') + ' NOSE DOWN + ' + keyName('forward') + ' THROTTLE'
@@ -4321,8 +4327,7 @@
         else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
-        else if (distanceBetween(player, phone) < 68 && !m && missionIndex < missions.length)
-          prompt = 'ANSWER PAYPHONE';
+        else if (payphoneInReach() && !m && missionIndex < missions.length) prompt = 'ANSWER PAYPHONE';
         else if (sportsKickPrompt()) prompt = sportsKickPrompt();
         else {
           const n = nearestCar();

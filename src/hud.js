@@ -345,6 +345,18 @@
         id: id || (key || '') + '|' + String(text).replace(/[\d.,:$]+/g, '#'),
       };
     }
+    /**
+     * Range with hysteresis for anything that shows a prompt: inside once closer
+     * than `enter`, outside again only past `exit`, remembered under `key`. The
+     * prompt and the action key ask the same question, so they always agree,
+     * and a player standing on the edge does not flip it.
+     */
+    const promptRanges = new Map();
+    function withinRange(key, distance, enter, exit = enter * 1.25) {
+      const inside = distance < (promptRanges.get(key) ? exit : enter);
+      promptRanges.set(key, inside);
+      return inside;
+    }
     function clearPromptOffer() {
       promptOffer = null;
     }

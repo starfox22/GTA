@@ -481,8 +481,14 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   the pop-in (the old writers toggled `display` none → block every pass, which restarted the
   fade-in 11 times a second: the "flickering" LOAD CARGO prompt). The HUD clock is wall time
   plus the time `DeadEndCity.simulate()` steps; `DeadEndCity.promptState()` reports it.
-  Range tests behind a prompt should have hysteresis like the loading bay (harbor.js LOADING BAY
-  RANGE: in at 85, out at 110; ready to load when stopped inside 43, until moving or past 48).
+  Range tests behind a prompt have hysteresis, asked the same way by the prompt and by E:
+  `withinRange(key, distance, enter, exit)` (hud.js) for the payphone (68 / 84), rail stations
+  (48 / 60) and the harbor barrier (110 / 130); `nearestPlace()` keeps the door already in reach
+  until 66 (enters at 52: shops, the hospital after a respawn, casino, garages' offices); the
+  loading bay has its own (harbor.js LOADING BAY RANGE: in at 85, out at 110; ready to load when
+  stopped inside 43, until moving or past 48). A vehicle's prompts share one identity
+  (`'helicopter'`, `'plane'`, `'garage'`), so TAKE OFF → RISE or DRIVE IN → RESPRAY change text
+  without a new pop-in.
 - **Centre cards** (hud.js CENTRE CARDS): the headline card (`announce()`) slides up under the
   docked prompt and shrinks after 3 s (not WASTED / BUSTED); in touch mode a toast dims after
   3 s. Reduced motion cuts the slides and pop-ins (the shell's reduced-motion block).

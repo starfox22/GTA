@@ -418,13 +418,24 @@
     function isBoat(vehicle) {
       return !!vehicle && vehicleSpec(vehicle).boat;
     }
+    /* The door in reach: within PLACE_REACH, and the one already in reach until
+       PLACE_REACH_EXIT, so the prompt (e.g. at the hospital door after a respawn)
+       and E hold steady while the player shuffles at the edge. */
+    const PLACE_REACH = 52,
+      PLACE_REACH_EXIT = 66;
+    let placeInReach = null;
     function nearestPlace() {
-      if (transitRide || playerOnRoof() || player.parachute) return null;
-      return (
-        PLACES.filter((p) => distanceBetween(player, p.door) < 52).sort(
-          (a, b) => distanceBetween(player, a.door) - distanceBetween(player, b.door),
-        )[0] || null
-      );
+      if (transitRide || playerOnRoof() || player.parachute) return (placeInReach = null);
+      let best = null,
+        bestDistance = Infinity;
+      for (const place of PLACES) {
+        const distance = distanceBetween(player, place.door);
+        if (distance < (place === placeInReach ? PLACE_REACH_EXIT : PLACE_REACH) && distance < bestDistance) {
+          best = place;
+          bestDistance = distance;
+        }
+      }
+      return (placeInReach = best);
     }
     function clockText() {
       const m = Math.floor(worldMinutes) % 1440;
@@ -1538,7 +1549,7 @@
         getElement('cargoFill').style.width =
           ((hm.collected + (hm.loading ? hm.loading.time / 2.1 : 0)) / 3) * 100 + '%';
       }
-      if (gameMode === 'play' && harborGate < 0.82 && distanceBetween(player, HARBOR.gate) < 110)
+      if (gameMode === 'play' && harborGate < 0.82 && withinRange('harbor-gate', distanceBetween(player, HARBOR.gate), 110, 130))
         offerPrompt('OPEN HARBOR BARRIER', { id: 'harbor-gate' });
       else if (gameMode === 'play') harborBayPrompt(hm);
       getElement('worldClock').textContent =

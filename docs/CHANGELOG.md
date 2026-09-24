@@ -8,6 +8,8 @@ HUD (hud.js, harbor.js, shell.html)
   `display: none` and back every UI pass, restarting its fade-in; the loading bay range and the
   ready-to-load test have hysteresis, and prompts have a minimum display time and a short grace
   before hiding. Prompts name keys from the bindings (hold prompts read "HOLD E").
+- The same fix steadies every location prompt (the hospital door after a respawn, shops,
+  payphone, stations, the harbor barrier): their ranges have hysteresis shared with E.
 - Prompts, key hints and headline cards leave the middle of the screen after 3 s: the prompt
   docks as a small chip under the navigation pill (touch: above the action buttons) and pops
   back for a new action; headlines slide up and shrink; touch toasts dim. Reduced motion

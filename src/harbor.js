@@ -349,7 +349,7 @@
         else if (!loadHarborCargo()) tell('Park in the yellow loading bay.', 3);
         return true;
       }
-      if (harborGate < 0.82 && distanceBetween(player, HARBOR.gate) < 110) {
+      if (harborGate < 0.82 && withinRange('harbor-gate', distanceBetween(player, HARBOR.gate), 110, 130)) {
         harborGateUntil = gameTime + 10;
         tell('Barrier opening · Restricted cargo terminal', 3);
         return true;
