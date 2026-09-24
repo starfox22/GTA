@@ -801,6 +801,7 @@
         marinaBlocked(x, y, r) ||
         beachBlocked(x, y, r) ||
         (!overWater && !groundAt(x, y, r)) ||
+        (overWater && LINERS.some((ship) => linerHullAt(ship, x, y, r))) ||
         harborBlocked(x, y, r) ||
         depotBlocked(x, y, r) ||
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
@@ -1230,7 +1231,11 @@
             const zone = districtAt(x + w / 2, y + h / 2),
               blockSeed = (bx * 31 + by * 17) % 7,
               perimeterBlock = zone === 'THE RECLAMATION' || zone === 'HARBOR POINT MARINA';
-            if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
+            // The financial cluster is planned block by block (src/skyline.js).
+            const skylineBlock = zone.includes('FINANCIAL') && skylineBlockTowers(bx, by).length > 0;
+            if (skylineBlock) {
+              buildSkylineBlock(bx, by, x, y, w, h);
+            } else if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               // One tower on a plaza: towers need air around them to read as towers.
               makeBuilding(x + 52, y + 12, w - 104, 140, 0);
               rect(x + 8, y + 8, 40, 150, '#8d9385');
@@ -1260,15 +1265,15 @@
               makeBuilding(x + 7, y + 7, split - 12, 146, 0);
               makeBuilding(x + split + 11, y + 7, w - split - 20, 146, 0);
             }
-            if (perimeterBlock) {
-              // Closed on all four sides above; nothing more to add.
+            if (perimeterBlock || skylineBlock) {
+              // Closed on all four sides above, or a planned plaza; nothing more to add.
             } else if (zone === 'SOUTH BANK' && blockSeed % 3 === 0) {
               // Residential slab with a courtyard instead of a parking court.
               makeBuilding(x + 7, y + 179, w - 15, 60, 1);
               rect(x + 40, y + 250, w - 80, 70, '#6f8a5c');
               for (let k = 0; k < 4; k++) drawTree(x + 60 + k * 70, y + 285, 13);
             } else makeBuilding(x + 7, y + 179, seededRandom() > 0.6 ? w - 15 : 155, 143, 1);
-            if (!perimeterBlock && buildings[buildings.length - 1].w < 200) {
+            if (!perimeterBlock && !skylineBlock && buildings[buildings.length - 1].w < 200) {
               rect(x + 181, y + 183, 145, 135, '#4b524b');
               for (let p = 0; p < 5; p++) {
                 rect(x + 194 + p * 25, y + 187, 1, 49, '#d3d1a26b');
@@ -1663,6 +1668,7 @@
         ...enemies,
         ...gangMembers,
         ...officers,
+        ...sportsTargets(),
         ...storyActors.filter(
           (p) => p.missionTag === 'flight-witness' && !p.hidden && mission?.stage >= 4,
         ),
@@ -1868,6 +1874,8 @@
         exitCar();
         return;
       }
+      // On the stadium pitch E kicks the ball at your feet (sports.js).
+      if (sportsInteract()) return;
       const place = nearestPlace();
       if (place) {
         openService(place);
@@ -2512,6 +2520,7 @@
           add(gangMembers);
           add(officers);
           addNearbyPedestrians();
+          add(sportsTargets());
         }
         add(escorts);
       } else {
@@ -2521,6 +2530,8 @@
         add(officers);
         add(escorts);
         add(rooftop);
+        // Athletes, officials and stewards at the sports venues (sports.js).
+        add(sportsTargets());
       }
       return list;
     }
@@ -2676,6 +2687,8 @@
           }
         }
         timed('transit', () => updateTransit(deltaSeconds));
+        // The Meridian Star under way (marina.js), before the player walks her deck.
+        timed('liner', () => sailLiner(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
         updateWeather(deltaSeconds);
@@ -3966,6 +3979,7 @@
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (distanceBetween(player, phone) < 68 && !m && missionIndex < missions.length)
           prompt = 'ANSWER PAYPHONE';
+        else if (sportsKickPrompt()) prompt = sportsKickPrompt();
         else {
           const n = nearestCar();
           if (n)
@@ -4537,9 +4551,12 @@
     // @include src/streets.js
     // @include src/terrain.js
     // @include src/casino.js
+    // @include src/skyline.js
     // @include src/renewal.js
+    // @include src/sports-fixtures.js
     // @include src/sports.js
     // @include src/sports-world.js
+    // @include src/sports-audio.js
     // @include src/transit.js
     // @include src/ecology.js
     // @include src/navigation.js
@@ -5074,7 +5091,7 @@
         streets: cityStreets().map((r) => ({ points: r.points, width: r.width })),
         boulevards: [...BOULEVARDS, ...SERVICE_ROADS].map((r) => ({ name: r.name, points: r.points, width: r.width })),
         countyRoads: COUNTY_ROADS.map((r) => ({ name: r.name, points: r.points, width: r.width, bridge: !!r.bridge })),
-        bridges: BRIDGES.map((b) => ({ id: b.id, name: b.name, link: b.link, a: b.a, b: b.b, width: b.width, deck: b.deck, pylons: bridgePylons(b) })),
+        bridges: BRIDGES.map((b) => ({ id: b.id, name: b.name, link: b.link, a: b.a, b: b.b, width: b.width, deck: b.deck, style: b.style, pylons: bridgePylons(b), footings: bridgeFootings(b), channels: bridgeStructure(b).channels.map(([from, to]) => [bridgePoint(b, from), bridgePoint(b, to)]) })),
         reserved: { beachClub: BEACH_CLUB_PLOT, themePark: THEME_PARK_RESERVE },
         rail: RAIL_LINES.map((l) => ({ id: l.id, name: l.name, color: l.color, points: l.points })),
         railDecks: railDecks(),
@@ -5112,6 +5129,33 @@
         for (let t = 0; t < seconds; t += 1 / 30) updateTransit(1 / 30);
         return this.trains();
       },
+      // The sailing liner: where she is, her leg of the voyage, speed (units/s
+      // and knots) and heading, and who is aboard.
+      liners: () => {
+        const ship = sailingLiner(),
+          leg = LINER_VOYAGE[linerVoyage.leg];
+        return {
+          name: ship.name,
+          x: Math.round(ship.x),
+          y: Math.round(ship.y),
+          heading: Math.round((((ship.a * 180) / Math.PI) % 360 + 360) % 360),
+          leg: linerVoyage.leg,
+          kind: leg.kind,
+          along: Math.round(linerVoyage.s),
+          legLength: leg.kind === 'call' ? leg.seconds : Math.round(leg.length || 0),
+          speed: Math.round(ship.speed * 10) / 10,
+          knots: Math.round((Math.abs(ship.speed) / 5.12) * 1.944 * 10) / 10,
+          playerAboard: player.deck === ship,
+          passengers: (ship.passengers || []).length,
+        };
+      },
+      // Run only the liner's voyage forward by `seconds` (1/30 s steps).
+      advanceLiner(seconds = 10) {
+        for (let t = 0; t < seconds; t += 1 / 30) sailLiner(1 / 30);
+        return this.liners();
+      },
+      // Sweep the liner's hull down the whole voyage: land, bridges, jetties, ships.
+      linerVoyageCheck: (step = 24) => linerVoyageCheck(step),
       // Named places the tests can visit: every PLACES entry plus the landmarks.
       places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
       // GPS: set a map waypoint and report the route the navigation graph finds
@@ -5267,6 +5311,9 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
+      // (see sports.js sportsConsole).
+      ...sportsConsole(),
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
       // Settings choice); returns what the renderer is now using.
       graphics(tier) {

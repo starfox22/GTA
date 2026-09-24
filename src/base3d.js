@@ -1732,7 +1732,7 @@
         cylinder(baseGroup, x, 22 * s, z, 6 * s, 11 * s, leafMats[0], 8, 0.3);
       }
       // One mesh of ground light pools, lit at night.
-      const glowMesh = (() => {
+      const baseGlowMesh = (() => {
         const positions = new Float32Array(glowPools.length * 12),
           colors = new Float32Array(glowPools.length * 12),
           uvs = new Float32Array(glowPools.length * 8),
@@ -1773,12 +1773,12 @@
       function updateBaseVisuals() {
         const near =
           Math.abs(viewCenter.x - 9930) < viewReach + 1500 && Math.abs(viewCenter.y - 8850) < viewReach + 1600;
-        glowMesh.visible = near && nightAmount > 0.05;
+        baseGlowMesh.visible = near && nightAmount > 0.05;
         if (!near) return;
         const night = nightAmount,
           alert = militaryAlertUntil > gameTime,
           blink = Math.sin(gameTime * 3.2) > 0.2 ? 1 : 0.15;
-        glowMesh.material.opacity = 0.42 * night;
+        baseGlowMesh.material.opacity = 0.42 * night;
         B.window.emissiveIntensity = 1.35 * night;
         for (const m of plateLit) m.emissiveIntensity = 0.05 + 0.35 * night;
         B.redLamp.color.setRGB(1, 0.23 * (0.3 + 0.7 * blink), 0.17 * (0.3 + 0.7 * blink)).multiplyScalar(0.35 + 0.65 * blink);

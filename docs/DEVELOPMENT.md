@@ -130,6 +130,10 @@ something, never a generic code-evaluation hook.
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
 | `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |
 | `walk(heading, distance)` | Walk on foot through the real collision code (headless frames are too slow for keys) |
+| `match(sport)` | A venue's fixture (`'soccer'` default, `'basketball'`): stage, clock, score, status, crowd, who is on the field, fleeing or dead, abandoned, pitch invader, the player's goals |
+| `matchDay(day, minutesFromKickoff, slot, sport)` | Set the world clock relative to a fixture's kickoff (day 1 is the first day; negative minutes are the warm-up) and start that fixture afresh |
+| `fixtures(sport, days)` | The coming fixtures |
+| `ballState()`, `ballToPlayer(distance)` | The stadium ball (position, height, mode, owner, speed, whether the player is on the pitch); put it in front of the player |
 
 ## Conventions
 

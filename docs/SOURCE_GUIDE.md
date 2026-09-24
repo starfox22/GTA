@@ -67,7 +67,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | audio.js | Web Audio effects, voices, procedural sounds; `earFilter` (a low-pass over the whole mix, dulled while swimming) |
 | physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
 | controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
-| geography.js | Land polygons and the cached `landAt`, `BRIDGES`, reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
+| geography.js | Land polygons and the cached `landAt`, `BRIDGES` and their architecture (`bridgeStructure`, `bridgeFootings`, `bridgePylons`), reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
 | harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory and knife combat |
@@ -78,7 +78,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
 | themepark.js | Sunset Pier island (north of the reclamation): its ground tile, ride footprints, the rideable coaster and the park crowd |
-| marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`) |
+| marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
 | cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
 | weather.js | Weather state machine, road wetness, wind and rain on the audio bus |
@@ -98,9 +98,12 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
 | terrain.js | Triangulated mountains, snow caps, trails, slope handling and off-road contact |
 | casino.js | Roulette layout, stakes, settlement, UI and saved cash |
+| skyline.js | North Point financial cluster plan: `SKYLINE_TOWERS` (named tower lots per block, heights, designs), `buildSkylineBlock`, `paintSkylinePlaza` |
 | renewal.js | Parks (`CENTRAL_PARK`, `COMMONS`), ponds (`parkPondBlocked`, `parkPondNear`), boardwalks, walkers, joggers, the outdoor gym |
-| sports.js | Live basketball and soccer: teams, possession, shots, scoring, restarts |
-| sports-world.js | South Coast Stadium reservation, enclosure, turnstiles, vehicle barriers, markings |
+| sports-fixtures.js | Club pools (`SPORTS_TEAMS`: names, kits, crests), `SPORTS_CALENDAR`, daily fixtures (`sportsFixtureFor`, `sportsCurrentFixture`), the match timeline (`sportsTimeline`), `drawSportsCrest` |
+| sports.js | Live basketball and soccer: match day stages, possession, shots, scoring, restarts, officials, harm and panic (`sportsTargets`, `sportsAbandon`), the player on the ball (`sportsKick`, stewards), `sportsConsole` |
+| sports-world.js | South Coast Stadium reservation, enclosure (`PITCH_FENCE` with its openings), big screens (`STADIUM_SCREENS`), turnstiles, vehicle barriers, markings |
+| sports-audio.js | Procedural stadium bed, chants, clapping, goal roars, gasps, panic screams, whistles, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
 | navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance |
@@ -126,26 +129,29 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom, ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), headlight cones, time-of-day look |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire |
-| cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts and sign atlas, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| signage3d.js | (included by cityscape3d.js) The glow field (`addGlow`: one instanced draw for every neon halo, bulb and beacon), wet-road streaks, sign light spill (`signSpill`), the neon/lightbox sign atlas (`signCell`, `atlasSign`), lit sign materials (`litSignMaterial`), LED ad screens, stock ticker, marquee bulbs |
+| skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Coaster track and train, big wheel, carousel, teacups, drop tower and midway |
 | garage3d.js | Garage buildings, shutters, lights and service details |
-| landmarks3d.js | Bridges, waterfront gardens, civic precinct and ground helipads |
+| landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
 | air-cover3d.js | Road underpass walls, roof, portals and lamps |
 | renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
-| sports3d.js | Tiered stands, crowd, floodlights, scoreboards and animated matches |
+| sports3d.js | Tiered stands, crowd in team colours (fills, cheers, panics), floodlights (`stadiumFloodPools`), live screens (`paintSportsBoard`), kits, animated matches |
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
-| county3d.js | County ground tiles and hills, snow, rural scenery, bridges and region visibility |
+| county3d.js | County ground tiles and hills, snow, rural scenery and region visibility |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
+| bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; lamps, LEDs, aviation beacons, foam, far copies |
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
-| marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal and liners |
+| marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners, the sailing liner and her wake |
 | cycles3d.js | Bike-share racks (the bicycles are ordinary vehicles) |
 | weather3d.js | Rain, wet roads, lightning and the overcast light |
 | crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
@@ -259,24 +265,40 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   Ridgeline, x 3420..~5900, 2400..2700 wide; `RIVER`), North Sound (Northbank - Sunset Pier,
   y -4190..-5690, ~1500), the south channel to Oceanview (~800..1000).
 - `BRIDGES` (geography.js) lists every road bridge as a straight deck `a` -> `b`, `width` wide,
-  deck at road level (`deck: 0`). Guard rails line the deck over water (`countyBridgeRails`,
-  county.js); non-causeways have two pairs of tall pylons at 0.18 of the length either side of
-  the middle (`bridgePylons`), which are colliders for aircraft and the only obstacle a boat
-  meets (boats pass under the decks). county3d.js draws every deck, rail and pylon; roadblocks.js
-  cuts the city end of each axis-aligned bridge; air-cover.js treats decks as cover; the route
-  graph joins them to the streets (collinear roads share nodes at each other's ends).
+  deck at road level (`deck: 0`), and its architecture (`style`). Guard rails line the deck over
+  water (`countyBridgeRails`, county.js). `bridgeStructure(bridge)` lays the design out in the
+  bridge's frame (`along` from the middle toward `b`, `across` to the right; `bridgePoint()` maps
+  it) from the style's rule in `BRIDGE_DESIGNS` and the deck's run over water: the navigation
+  `channels`, the `footings` standing in the water (piers under the deck, tower caissons, arch
+  feet, anchorages, fenders) and the `solids` rising from or spanning the deck (tower legs,
+  portals, cable fans, arches, trusses; anything over the carriageway starts at
+  `BRIDGE_CLEARANCE`, 46, above the tallest road vehicle). On the map, `bridgeFootings()` are what
+  boats steer round (`boatObstacles`, citylife.js: they pass under the deck between footings, and
+  no footing stands in a channel) and `bridgePylons()` are aircraft colliders (county.js,
+  oriented static bodies with `minHeight`). bridges3d.js draws every bridge from the same
+  structure; roadblocks.js cuts the city end of each axis-aligned bridge; air-cover.js treats
+  decks as cover; the route graph joins them to the streets (collinear roads share nodes at each
+  other's ends). `layout().bridges` carries the styles, towers, footings and channels.
 
-| id | name | link | from | to | width | deck |
+| id | name | style | link | from | to | width |
 | --- | --- | --- | --- | --- | --- | --- |
-| keys-union | KEYS BRIDGE | Palm Keys - Northbank (Union St) | -1460, 1152 | 130, 1152 | 112 | 0 |
-| keys-harbor | PALM SOUND CAUSEWAY | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 | 0 |
-| east-bay | EAST BAY CROSSING | Northbank - Ridgeline (Harbor Ave -> Ridgeline Hwy) | 3150, 3200 | 6580, 3200 | 122 | 0 |
-| south-bay | SOUTH BAY BRIDGE | Northbank - Ridgeline (Stadium Way -> Foothill Rd) | 3150, 4736 | 6420, 4736 | 112 | 0 |
-| pier-bridge | SUNSET PIER BRIDGE | Northbank - Sunset Pier (Riverbank Dr) | 3200, -3900 | 3200, -5800 | 104 | 0 |
-| oceanview | OCEANVIEW CAUSEWAY | Northbank - Oceanview | 3200, 5000 | 3200, 7010 | 128 | 0 |
-| coral-sound | CORAL SOUND BRIDGE | Oceanview - Coral Coast | 5700, 8000 | 6750, 8000 | 116 | 0 |
-| ridgeline | RIDGELINE VIADUCT | Ridgeline - Coral Coast | 7800, 5620 | 7433, 7262 | 116 | 0 |
-| sentinel | SENTINEL CAUSEWAY | Coral Coast - Fort Sentinel | 7800, 8150 | 9440, 8150 | 126 | 0 |
+| keys-union | KEYS BRIDGE | green steel camel-back through-truss on four river piers | Palm Keys - Northbank (Union St) | -1460, 1152 | 130, 1152 | 112 |
+| keys-harbor | PALM SOUND CAUSEWAY | low causeway, globe lamps, double-leaf bascule with four tender's houses | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 |
+| east-bay | EAST BAY CROSSING | white cable-stayed, one A-pylon (380) and two fans of stays, a channel each side | Northbank - Ridgeline (Harbor Ave -> Ridgeline Hwy) | 3150, 3200 | 6580, 3200 | 122 |
+| south-bay | SOUTH BAY BRIDGE | red suspension bridge, two towers (316), main cables, hangers, anchorages | Northbank - Ridgeline (Stadium Way -> Foothill Rd) | 3150, 4736 | 6420, 4736 | 112 |
+| pier-bridge | SUNSET PIER BRIDGE | leaning white network arch (rise 244) with colour-cycling LEDs | Northbank - Sunset Pier (Riverbank Dr) | 3200, -3900 | 3200, -5800 | 104 |
+| oceanview | OCEANVIEW CAUSEWAY | low precast viaduct, fishing balconies, striped channel beacons | Northbank - Oceanview | 3200, 5000 | 3200, 7010 | 128 |
+| coral-sound | CORAL SOUND BRIDGE | extradosed: four coral sail pylons, harps of stays | Oceanview - Coral Coast | 5700, 8000 | 6750, 8000 | 116 |
+| ridgeline | RIDGELINE VIADUCT | cable-stayed on two concrete H-pylons, weathering-steel girder | Ridgeline - Coral Coast | 7800, 5620 | 7433, 7262 | 116 |
+| sentinel | SENTINEL CAUSEWAY | olive plate-girder causeway, swing span on a pivot pier, floodlights | Coral Coast - Fort Sentinel | 7800, 8150 | 9440, 8150 | 126 |
+
+  bridges3d.js (after boats3d.js) builds each bridge in its own frame with the boat kit and
+  merges it into a few vertex-coloured meshes (`kitMerge`); its lamps, navigation lights and
+  cable necklaces are one points cloud; lamp heads, floodlit paint (`bridgeGlowPaint`), LED
+  strips (`bridgeLed`) and the pulsing red aviation beacons come up with `nightAmount`
+  (`updateBridgeVisuals`, called from `updateCountyVisuals`). Foam lies round every footing just
+  above the highest swell crest. A plain copy of every bridge sits in the far scenery
+  (flight-view3d.js `farScenery`/`farHidden`), shown instead when the whole city is in view.
 
   Rail bridges are part of the viaducts (transit.js): the Coast Line's sea viaduct over the south
   channel and the Ridge Line's bridge across Coral Sound. No rail line crosses Palm Sound, Marlow
@@ -334,6 +356,8 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - South Coast Stadium (sports-world.js) is enclosed: `STADIUM_ENCLOSURE` blocks people and
   vehicles, `STADIUM_VEHICLE_BARRIERS` (bollards, turnstile span) block vehicles only, and the
   two turnstile gates at x 2665..2686 and 2692..2713 (y 4845) are the only way onto the concourse.
+  The pitch boards have two 26-unit openings (x 2676..2702): the players' tunnel on the north
+  side and, straight ahead of the turnstiles, the south side. See section 4d.
 - `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
   helipads, docks, ships, props, static colliders, the bridges with their pylons and the reserved
   plots); `docs/audit/world-layout.md` describes the overlap audit run on it.
@@ -404,8 +428,26 @@ it) to board; walking back off the passerelle, or E on the swim platform, goes a
 - Cutaway: `superyachtCoverHeight()` returns the lowest deck above the player whose outline
   covers them; `updateMarinaVisuals()` hides that deck group and everything above it, and
   guests on hidden decks are flagged `hidden`.
-- The liners (`LINERS`) keep their single promenade deck (`deckPointFree`); their hull plan is
-  `LINER_FORM`.
+- The liners (`LINERS`) keep their single promenade deck (`deckPointFree`, `linerDeckFree` in
+  the ship's frame); their hull plan is `LINER_FORM`. Passengers keep ship-frame positions
+  (`du`, `dv`, heading `da`); a few lie on the lido deck's loungers.
+- **MS MERIDIAN STAR sails** (`voyage: true`). `LINER_VOYAGE` is her circuit, sailed by
+  `sailLiner()` from `update()`: a `call` riding at anchor off the cruise terminal in North Sound
+  (x 2150, y -5000; boarded from the water at her stern platform only while she is almost
+  stopped), `astern` out of the sound, then `ahead` round the west end of Sunset Pier island,
+  south down the open sea west of Palm Keys, back north inshore past Ocean Drive's strand, along
+  Northbank's sea wall and into the sound again (about 35,000 units, ~19 minutes a lap). Each
+  leg's control polygon is filleted with per-corner turning radii (500-900) and resampled with
+  a speed cap from `LINER_SPEED_ZONES` (about 8 knots in the sound, 12-13 inshore, 19 at sea),
+  the curve (`LINER_TURN_GRIP`) and a braking pass, so she accelerates and stops slowly and
+  slows for turns, with a little drift and heel. She never passes under a bridge (decks are at
+  road level). `carryLinerDeck` keeps passengers and the player (`player.deck`) where they stand
+  on deck; `clearLinerWay` shoves boats aside (`movingLinerHulls()` is also in `boatFits`) and
+  swimmers off her hull; `linerHorn` sounds the signals (one prolonged blast before weighing
+  anchor, three short going astern, one short under way ahead). The renderer moves her model,
+  her own lights cloud, bow waves, stern wash and a Kelvin wake ribbon laid along her track
+  (`updateLinerVisuals`, marina3d.js). Console: `liners()`, `advanceLiner(seconds)`,
+  `linerVoyageCheck()` (sweeps the hull down the circuit against land, bridges, jetties, ships).
 
 **Boat kit** (boats3d.js, renderer). `loftHull(spec)` lofts a hull from a sheer line, keel line
 and plan shape with bands baked into vertex colours; `hullDeck`, `hullBand`, `hullBeamAt` and
@@ -446,6 +488,65 @@ terrace and Vinny's depot walls are not landable.
   checks use: police sight, shops, stations, taxis, pickups, swimming.
 - `DeadEndCity.rooftops(x, y)` reports the pads, the player's roof and the helicopter's
   floor, and any roof's height, landability and plant.
+
+## 4d. Match day: South Coast Stadium and Riverside courts
+
+sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
+
+- **Fixtures.** `SPORTS_TEAMS` holds eleven fictional football clubs and six basketball teams
+  (name, three-letter code, crest shape, kit: primary, secondary, pattern `plain` / `stripes` /
+  `hoops` / `halves` / `sash` / `chevron`, shorts, socks, keeper). `sportsFixtureFor(sport, day,
+  slot)` is a pure hash of the day and slot, so saves and clock jumps agree on who plays; the
+  away side changes strip when the shirts clash. `SPORTS_CALENDAR`: football at 12:30 and
+  20:00 (the evening match is floodlit), two 45-minute halves of 150 world seconds each (one
+  world minute passes per second), 45 s half time; basketball at 10:00, 15:00 and 20:00 in
+  four 45 s quarters.
+- **Timeline.** Once a frame `sportsFollowSchedule` asks `sportsCurrentFixture` which fixture
+  the venue shows (the one on from its warm-up until the result comes down, else the next)
+  and `sportsTimeline` where the clock is: `upcoming`, `warmup`, `live` (period n), `break`,
+  `fulltime`, `over`. `match.stage` is that; `match.phase` is play / restart / celebrate
+  inside a live period. Teams walk out of the tunnel (`SPORTS_EXITS`) to warm up and at each
+  half, and back in at the break. Joining mid-match starts with a plausible score.
+- **People.** `match.people` = players + officials (referee, two assistants at the stadium) +
+  stewards. They carry the pedestrian fields strikePerson()/bleed() read (`hp` 30, `threat`,
+  `killedBy`, `knockedFor`...). `sportsTargets()` (the people at venues near the player,
+  rebuilt each frame) is added to the bullet, knife (arsenal.js), blast (`explode`) and
+  vehicle contact (physics.js) target lists. `sportsCheckHarm` notices a drop in `hp` or a
+  knock-down (or gunfire, a blast or a stabbing in the venue via `crowd.incidents`) and
+  `sportsAbandon`s the match: survivors run for the exits and vanish, the dead stay down, the
+  stands empty, fans stream out of the turnstiles as real pedestrians fleeing through
+  crowd.js (`sportsFansStampede`), and a player-caused casualty is a crime (`crime(0.35)` per
+  kill, a security call after 2.5 s). `sportsAbandoned` calls off the rest of that day; the
+  next day's first fixture brings a fresh match.
+- **The player on the pitch.** `sportsHumanOnField` (inside `PITCH_FENCE`, on foot). Walking
+  into the ball takes it (`ball.ownerId === SPORTS_HUMAN`, carried in front of the feet),
+  walking into a dribbler may win it; E (`sportsInteract` from `interact()`, prompt from
+  `sportsKickPrompt`) kicks along the facing, Shift for a harder, higher strike. Loose-ball
+  physics: friction, bounces, posts and crossbar (`sportsGoalFrame`), the net
+  (`sportsHoldInNet`), boards outside play (`sportsBallBoards`), out of play during it. A goal
+  is the whole ball over the line between the posts and under the bar; it counts for the side
+  attacking that end. During a match the nearest three players press, tackle
+  (`sportsContestHuman`), the keeper gets one save attempt (`sportsKeeperReach`), and after
+  28 s on the pitch (or 5 s after a goal) two stewards come; if they reach you they walk you
+  out to the plaza (`sportsEscortOff`). A goal: whistle, roar, GOAL! on every screen, $250
+  for each of the first three per match.
+- **Screens.** `STADIUM_SCREENS` (sports-world.js): over the north stand, both end stands
+  (angled at the pitch), above the entrance and on both halves of the south facade; all tilt
+  back towards the street camera. Each venue paints one 1024x512 canvas
+  (`paintSportsBoard`) shared by its screens, repainted only when its key changes: next match
+  with crests and kickoff, warm-up, live score with clock and status, half time, result,
+  MATCH ABANDONED, and an 8 fps GOAL! animation. They glow at night.
+- **Stands.** One instance per seat and body part (`createStadiumCrowd`); seats have a random
+  rank so the crowd fills to the fixture's attendance evenly; fans wear the colours of the
+  club whose end they sit in; they stand and bounce for their club's goals and back away and
+  vanish in a panic (`updateStadiumCrowd`, matrices rewritten only when the picture changes).
+  Plaza flags take the clubs' colours. While a fixture is on the floodlights are painted into
+  the night light map (`stadiumFloodPools`, repainted by `updateStadiumFloodlights`).
+- **Sound** (sports-audio.js): a crowd bed scaled by attendance and distance, chants (detuned
+  saws through a vowel formant singing terrace tunes) and clapping, goal roars with air horns,
+  an "ooh" at saves and misses, panic screams, the referee's pea whistle, the kick.
+- Developer console: `match(sport)`, `ballState()`, `matchDay(day, minutesFromKickoff, slot,
+  sport)`, `fixtures(sport, days)`, `ballToPlayer(distance)`.
 
 ## 5. Missions
 
@@ -505,10 +606,29 @@ docs/audit/missions-qa.md shows the method).
   copy of the static scenery (flight-view3d.js, FAR SCENERY) replaces the per-building
   batches. Building blocks are compacted from six draw calls to two.
 - `cityscape3d.js` builds every building: archetype (tower, office, brick, stucco,
-  warehouse, deco, decoTower, hotel; stored as `b.archetype`), procedural roof texture,
+  warehouse, deco, decoTower, hotel, skyline; stored as `b.archetype`), procedural roof texture,
   parapet, roof props (instanced, recorded as `b.roofKeepOuts`), rooftop helipads,
-  shopfront with awnings and a sign atlas, fire escapes, balconies, billboards, beacons and
-  neon hotel signs.
+  shopfront with awnings and a neon, lightbox or channel-letter sign, fire escapes,
+  balconies, billboards (lamp-lit boards or LED screens cycling ads), beacons and neon
+  hotel scripts.
+- The North Point financial cluster (`b.skyline`, planned in skyline.js) is built by
+  skyline3d.js instead: each tower is a floor plan lofted through sections (height,
+  scale, twist, offset), UV-mapped in world units so one glazing texture per design
+  serves any size, on a podium that fills its lot (the lot is the collision rectangle;
+  shafts stay inside it, crowns and spires rise above `b.height`). North Point Trust's
+  roof is a landing pad. Designs: twin sail towers (Federation), stepped copper tower
+  with a spire (Mercury), stacked rotated blocks (Capitals), a twisting tower
+  (Evolution), a curved-facade pair (Embankment), a sail roof (Imperial), chevron twins
+  with LED edges (Neva), a banded tower with a sloped crown (OKO), a tapering needle, a
+  crown of gilded fins, a finned rotunda, a penthouse tower (Meridian), stepped terraces
+  and a diagrid.
+- Signs and night light (signage3d.js): small lights are instances of one glow quad
+  (modes steady, flicker, beacon, chase, pulse, colour cycle); street-level signs add a
+  pool to the night light map (`signSpill`) and a streak on the wet road. Shop, window,
+  hotel and tower-name signs share one atlas pair (a day face and a glow mask) and a few
+  materials, so they batch; `sign()` boards (render3d.js) glow the same way. Sign
+  emissive is multiplied by `cityPower()` (lighting3d.js) in the shader, so the blackout
+  contract darkens them per district.
 - Night: facade materials carry an `emissiveMap` window mask; `updateCityscapeVisuals()`
   scales emissive intensity by night amount, hour and `sideJobPower()`. Lamps, shop glass,
   neon halos and vehicle head/tail halos follow the same night amount.
