@@ -522,6 +522,11 @@
         // Pull up short of a runner on foot so the crew can get out.
         desired = clamp((distanceBetween(c, player) - 150) * 1.5, 0, 150);
         if (distanceBetween(c, player) < 150) steer = 0;
+      } else if (player.car && !isAircraft(player.car) && (player.carStoppedFor || 0) > 0.8 && distanceBetween(c, player) < 300) {
+        // A driver who has stopped is surrounded, not rammed: pull up short so the
+        // crew can get out and make the arrest (a shove would spoil a surrender).
+        desired = clamp((distanceBetween(c, player) - 95) * 1.5, 0, 150);
+        if (distanceBetween(c, player) < 110) steer = 0;
       } else if (plan.mode === 'pit' || plan.mode === 'flank')
         desired = Math.max(desired, plan.quarrySpeed + (plan.mode === 'pit' ? 70 : 40));
       else if (plan.headOn) desired = Math.min(desired, 35);
@@ -880,7 +885,8 @@
           if (o.hp <= 0 || o.downed || personIncapacitated(o) || o.state === 'return' || o.returned) continue;
           const d = combatDistance(o, player);
           if (d < 90) near++;
-          if (d < (player.car ? 44 : 32) && (!cuffing || d < combatDistance(cuffing, player))) cuffing = o;
+          // Arm's reach, a little generous: a parked car or a kerb can keep an officer a step off.
+          if (d < (player.car ? 50 : 42) && (!cuffing || d < combatDistance(cuffing, player))) cuffing = o;
         }
       // Who the police will take alive: anyone at one or two stars; at three and
       // four a player who gives up (or is badly hurt); at five only one close to dead.
@@ -1330,6 +1336,8 @@
         search: { active: searchActive, remaining: Math.round(searchRemaining * 10) / 10, lastSeen: lastSeen ? { x: round(lastSeen.x), y: round(lastSeen.y) } : null },
         seen: wantedStars > 0 && policeCanSeePlayer(),
         arrest: Math.round(arrestProgress * 100) / 100,
+        // Surrender (standing still) and whether officers may cuff rather than shoot.
+        surrender: { seconds: Math.round(surrenderFor * 10) / 10, surrendering: playerSurrendering(), mayArrest: policeMayArrest, holdFire: policeHoldFire() },
         pursuit: { ...pursuitStats },
         swat: { ...swatStats },
         wounds: woundReport(),
