@@ -281,17 +281,53 @@
           )
             alertGang(gang.id);
     }
+    /**
+     * LOADING BAY RANGE
+     * The prompt, E and the crane share one test with hysteresis so the truck
+     * idling or creeping at the edge of a threshold cannot flip them frame to
+     * frame: the truck is at the bay inside BAY_NEAR_ENTER and stays so until
+     * BAY_NEAR_EXIT; it is ready to load once stopped (BAY_STOP_ENTER) inside
+     * BAY_LOAD_ENTER and stays ready until it moves or drifts past the limits
+     * that cancel a load in progress (BAY_STOP_EXIT, BAY_LOAD_EXIT).
+     */
+    const BAY_NEAR_ENTER = 85,
+      BAY_NEAR_EXIT = 110,
+      BAY_LOAD_ENTER = 43,
+      BAY_LOAD_EXIT = 48,
+      BAY_STOP_ENTER = 5,
+      BAY_STOP_EXIT = 7;
+    function updateBayState(m) {
+      const truck = m?.stage === 2 && player.car === m.car ? m.car : null;
+      if (!truck) {
+        if (m) m.atBay = m.bayReady = false;
+        return;
+      }
+      const distance = distanceBetween(truck, HARBOR.bay),
+        speed = Math.abs(truck.speed);
+      m.atBay = distance < (m.atBay ? BAY_NEAR_EXIT : BAY_NEAR_ENTER);
+      m.bayReady =
+        m.atBay &&
+        (m.bayReady
+          ? speed <= BAY_STOP_EXIT && distance <= BAY_LOAD_EXIT
+          : speed <= BAY_STOP_ENTER && distance <= BAY_LOAD_ENTER);
+    }
+    /* The one owner of the loading-bay prompt (offered from civicUI). */
+    function harborBayPrompt(m) {
+      if (m?.stage !== 2 || !m.atBay) return;
+      if (m.loading)
+        offerPrompt('LOADING CRATE ' + (m.collected + 1) + ' / 3 · HOLD STILL', {
+          key: null,
+          id: 'harbor-loading',
+        });
+      else
+        offerPrompt(m.bayReady ? 'LOAD CARGO' : 'LOAD CARGO · STOP IN THE YELLOW BAY', {
+          id: 'harbor-load',
+        });
+    }
     function loadHarborCargo() {
       const m = harborCargoJob();
-      if (
-        !m ||
-        m.stage !== 2 ||
-        m.loading ||
-        player.car !== m.car ||
-        Math.abs(m.car.speed) > 5 ||
-        distanceBetween(m.car, HARBOR.bay) > 43
-      )
-        return false;
+      updateBayState(m);
+      if (!m || m.stage !== 2 || m.loading || !m.bayReady) return false;
       m.loading = {
         index: m.collected,
         time: 0,
@@ -307,12 +343,13 @@
         tell('Loading cargo. Accelerate to cancel.', 2);
         return true;
       }
-      if (m?.stage === 2 && player.car === m.car && distanceBetween(player, HARBOR.bay) < 85) {
-        if (Math.abs(m.car.speed) > 5) tell('Stop the truck inside the marked loading bay.', 3);
+      updateBayState(m);
+      if (m?.atBay) {
+        if (Math.abs(m.car.speed) > BAY_STOP_EXIT) tell('Stop the truck inside the marked loading bay.', 3);
         else if (!loadHarborCargo()) tell('Park in the yellow loading bay.', 3);
         return true;
       }
-      if (harborGate < 0.82 && distanceBetween(player, HARBOR.gate) < 110) {
+      if (harborGate < 0.82 && withinRange('harbor-gate', distanceBetween(player, HARBOR.gate), 110, 130)) {
         harborGateUntil = gameTime + 10;
         tell('Barrier opening · Restricted cargo terminal', 3);
         return true;
@@ -456,6 +493,7 @@
         missionState.target = missionState.car;
         missionState.instruction = 'RETURN TO VINNY’S CARGO TRUCK';
         missionState.loading = null;
+        updateBayState(missionState);
         return;
       }
       if (missionState.stage === 1) {
@@ -464,13 +502,14 @@
         if (distanceBetween(missionState.car, HARBOR.gate) < 280) {
           harborGateUntil = gameTime + 10;
           if (harborGate > 0.82 && distanceBetween(missionState.car, HARBOR.gate) < 110)
-            setStage(2, HARBOR.bay, 'PARK IN THE LOADING BAY · E TO LOAD');
+            setStage(2, HARBOR.bay, 'PARK IN THE LOADING BAY · ' + keyName('interact') + ' TO LOAD');
         }
         return;
       }
       if (missionState.stage === 2) {
+        updateBayState(missionState);
         missionState.target = HARBOR.bay;
-        missionState.instruction = 'PARK IN THE LOADING BAY · E TO LOAD';
+        missionState.instruction = 'PARK IN THE LOADING BAY · ' + keyName('interact') + ' TO LOAD';
         if (missionState.loading) {
           if (
             Math.abs(missionState.car.speed) > 7 ||
@@ -494,6 +533,7 @@
               };
               missionState.crossedHarborGate = false;
               setStage(3, HARBOR.gate, 'LEAVE THE HARBOR WITH ALL THREE CRATES');
+              updateBayState(missionState);
               tell('Cargo secure. Leave through the harbor barrier.', 4);
             } else
               missionState.loading = {

@@ -1150,8 +1150,7 @@
     function militaryUI() {
       if (gameMode !== 'play') return;
       if (distanceBetween(player, MILITARY.gate) < 125 && militaryGateClosedToPlayer() && !isAircraft(player.car)) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent = 'E · FORCE THE GATE CONTROLS · ARMED RESPONSE';
+        offerPrompt('FORCE THE GATE CONTROLS · ARMED RESPONSE', { id: 'fort-gate' });
       }
       if (player.car?.type === 'tank') {
         getElement('weaponName').textContent = '120 MM TANK CANNON';

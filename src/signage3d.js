@@ -455,132 +455,53 @@
         gg.stroke();
       }
       const NEON_COLORS = ['#ff4fa0', '#4ff0ff', '#ffd23f', '#7dff6a', '#ff6a3d', '#b77dff', '#ff3048', '#58a6ff'];
-      /**
-       * Paints a sign face into the atlas. Styles:
-       *   neon      tube lettering and a tube border on a dark enamel board
-       *   lightbox  a translucent coloured panel lit from inside, bold lettering
-       *   channel   individual lit letters on a dark fascia (LED channel letters)
-       *   script    letters only (cut out), italic script neon: hotel roofs
-       *   window    a small neon in a shop window, tube border and word (cut out)
-       */
+      // A small neon in a shop window: a tube border and a word (cut out).
       function signCell(style, text, color, accent = color) {
-        const w = style === 'window' ? 160 : style === 'script' || style === 'letters' ? 384 : 320,
-          h = style === 'window' ? 80 : style === 'script' ? 84 : style === 'letters' ? 48 : 80;
-        return neonCell(style + '|' + text + '|' + color + '|' + accent, w, h, (dg, gg) => {
-          if (style === 'letters') {
-            // Spaced capitals standing on a stone fascia (cut out), lit from within.
-            for (const g of [dg, gg]) {
-              g.textAlign = 'center';
-              g.textBaseline = 'middle';
-              g.letterSpacing = '5px';
-              fitFont(g, text, '600', 'Georgia, serif', 30, w - 20);
-            }
-            dg.fillStyle = 'rgba(0,0,0,0.6)';
-            dg.fillText(text, w / 2 + 2, h / 2 + 3);
-            dg.fillStyle = color;
-            dg.fillText(text, w / 2, h / 2 + 1);
-            gg.shadowColor = color;
-            gg.shadowBlur = 12;
-            gg.fillStyle = neonMix(color, '#ffffff', 0.5);
-            gg.fillText(text, w / 2, h / 2 + 1);
-            for (const g of [dg, gg]) g.letterSpacing = '0px';
-          } else if (style === 'neon') {
-            const grad = dg.createLinearGradient(0, 0, 0, h);
-            grad.addColorStop(0, '#262d33');
-            grad.addColorStop(1, '#14181c');
-            dg.fillStyle = grad;
-            dg.fillRect(0, 0, w, h);
-            dg.fillStyle = 'rgba(255,255,255,0.06)';
-            dg.fillRect(0, 0, w, 3);
-            neonTubeRect(dg, gg, 7, 7, w - 14, h - 14, 12, accent);
-            neonTubeText(dg, gg, text, w / 2, h / 2 + 2, w - 36, 42, color);
-          } else if (style === 'lightbox') {
-            const grad = dg.createLinearGradient(0, 0, 0, h);
-            grad.addColorStop(0, neonMix(color, '#ffffff', 0.15));
-            grad.addColorStop(1, neonMix(color, '#000000', 0.2));
-            dg.fillStyle = grad;
-            dg.fillRect(0, 0, w, h);
-            dg.strokeStyle = '#2b2f33';
-            dg.lineWidth = 6;
-            dg.strokeRect(3, 3, w - 6, h - 6);
-            gg.fillStyle = neonMix(color, '#000000', 0.55);
-            gg.fillRect(6, 6, w - 12, h - 12);
-            for (const [g, fill] of [
-              [dg, accent],
-              [gg, neonMix(accent, '#ffffff', 0.35)],
-            ]) {
-              g.textAlign = 'center';
-              g.textBaseline = 'middle';
-              fitFont(g, text, '800', 'Arial, sans-serif', 38, w - 30);
-              g.fillStyle = fill;
-              g.fillText(text, w / 2, h / 2 + 2);
-            }
-          } else if (style === 'channel') {
-            dg.fillStyle = '#23272b';
-            dg.fillRect(0, 0, w, h);
-            dg.fillStyle = 'rgba(255,255,255,0.05)';
-            dg.fillRect(0, h - 10, w, 10);
-            for (const g of [dg, gg]) {
-              g.textAlign = 'center';
-              g.textBaseline = 'middle';
-              fitFont(g, text, '700', 'Georgia, serif', 42, w - 32);
-            }
-            dg.fillStyle = neonMix(color, '#000000', 0.45);
-            dg.fillText(text, w / 2 + 2, h / 2 + 4);
-            dg.fillStyle = color;
-            dg.fillText(text, w / 2, h / 2 + 2);
-            gg.shadowColor = color;
-            gg.shadowBlur = 16;
-            gg.fillStyle = neonMix(color, '#ffffff', 0.4);
-            gg.fillText(text, w / 2, h / 2 + 2);
-          } else if (style === 'script') {
-            // Letters only: the day face is transparent between them.
-            dg.fillStyle = '#2a2e32';
-            dg.fillRect(20, h * 0.47, w - 40, 5);
-            const family = 'Georgia, "Times New Roman", serif';
-            dg.textAlign = 'center';
-            dg.textBaseline = 'middle';
-            dg.lineJoin = 'round';
-            fitFont(dg, text, 'italic 700', family, 58, w - 24);
-            dg.lineWidth = 8;
-            dg.strokeStyle = neonMix(color, '#ffffff', 0.35);
-            dg.strokeText(text, w / 2, h / 2);
-            neonTubeText(dg, gg, text, w / 2, h / 2, w - 24, 58, color, family, 'italic 700');
-          } else {
-            neonTubeRect(dg, gg, 6, 6, w - 12, h - 12, 18, accent);
-            neonTubeText(dg, gg, text, w / 2, h / 2 + 1, w - 30, 40, color);
-          }
+        return neonCell(style + '|' + text + '|' + color + '|' + accent, 160, 80, (dg, gg, w, h) => {
+          neonTubeRect(dg, gg, 6, 6, w - 12, h - 12, 18, accent);
+          neonTubeText(dg, gg, text, w / 2, h / 2 + 1, w - 30, 40, color);
         });
       }
-      // Sign colours come from the name, so one atlas cell serves every shop of a name.
+      /**
+       * Shop, hotel and tower-name faces come from the business designs
+       * (signdesigns3d.js): one cell per name, so every branch of a business wears
+       * the same sign, and the design says what colour it throws on the pavement
+       * and whether it is neon that may stutter.
+       */
+      const shopDesigns = new Map(),
+        hotelDesigns = new Map();
+      function shopSignCell(name) {
+        return neonCell('shop|' + name, 384, 96, (dg, gg, w, h) => shopDesigns.set(name, SignArt.paint(dg, gg, w, h, name, null, null, true)));
+      }
+      // The colour a shop sign throws on the pavement, and whether it is neon.
+      function shopSignLight(name) {
+        shopSignCell(name);
+        return shopDesigns.get(name).light;
+      }
+      function shopSignIsNeon(name) {
+        shopSignCell(name);
+        return /^neon|tattoo|pixel/.test(shopDesigns.get(name).family);
+      }
+      const WINDOW_NEONS = ['OPEN', 'OPEN 24H', 'COLD BEER', 'LOTTO', 'ATM', 'ESPRESSO', 'PIZZA', 'TATTOO', 'CASH', 'LIVE MUSIC'],
+        windowNeonColor = (word) => NEON_COLORS[nameHash(word) % 8],
+        windowNeonCell = (word) => signCell('window', word, windowNeonColor(word), NEON_COLORS[(nameHash(word) >> 2) % 8]),
+        hotelScriptCell = (i) => {
+          const name = HOTEL_NAMES[i % HOTEL_NAMES.length];
+          return neonCell('hotel|' + name, 384, 84, (dg, gg, w, h) => hotelDesigns.set(name, SignArt.paintHotel(dg, gg, w, h, name, '#ff6fae')));
+        },
+        hotelNeonColor = (i) => {
+          hotelScriptCell(i);
+          return hotelDesigns.get(HOTEL_NAMES[i % HOTEL_NAMES.length]).light;
+        },
+        towerNameCell = (name) => neonCell('tower|' + name, 384, 48, (dg, gg, w, h) => SignArt.paintTowerName(dg, gg, w, h, name));
       function nameHash(text) {
         let h = 7;
         for (const c of text) h = (h * 31 + c.charCodeAt(0)) >>> 0;
         return h;
       }
-      function shopSignCell(name, style) {
-        const h = nameHash(name);
-        if (style === 'neon') return signCell('neon', name, NEON_COLORS[h % 8], NEON_COLORS[(h >> 3) % 8]);
-        if (style === 'lightbox') return signCell('lightbox', name, SHOP_COLORS[h % SHOP_COLORS.length], h % 3 ? '#fff4dc' : '#ffd479');
-        return signCell('channel', name, h % 3 ? '#ffe6bd' : NEON_COLORS[h % 8]);
-      }
-      // The colour a shop sign throws on the pavement.
-      function shopSignLight(name, style) {
-        const h = nameHash(name);
-        if (style === 'neon') return NEON_COLORS[h % 8];
-        if (style === 'lightbox') return neonMix(SHOP_COLORS[h % SHOP_COLORS.length], '#ffffff', 0.35);
-        return h % 3 ? '#ffe2b8' : NEON_COLORS[h % 8];
-      }
-      const WINDOW_NEONS = ['OPEN', 'OPEN 24H', 'COLD BEER', 'LOTTO', 'ATM', 'ESPRESSO', 'PIZZA', 'TATTOO', 'CASH', 'LIVE MUSIC'],
-        windowNeonColor = (word) => NEON_COLORS[nameHash(word) % 8],
-        windowNeonCell = (word) => signCell('window', word, windowNeonColor(word), NEON_COLORS[(nameHash(word) >> 2) % 8]),
-        HOTEL_NEON_COLORS = ['#ff6fae', '#6fefff', '#ffe066', '#a6ff8a', '#ff9a5c'],
-        hotelNeonColor = (i) => HOTEL_NEON_COLORS[(i % HOTEL_NAMES.length) % HOTEL_NEON_COLORS.length],
-        hotelScriptCell = (i) => signCell('script', HOTEL_NAMES[i % HOTEL_NAMES.length], hotelNeonColor(i)),
-        towerNameCell = (name) => signCell('letters', name, '#f3e4c2');
       // Pack the atlas kind by kind, tallest first, so each shelf holds cells of one height.
+      for (const name of SHOP_NAMES) shopSignCell(name);
       for (let i = 0; i < HOTEL_NAMES.length; i++) hotelScriptCell(i);
-      for (const style of ['neon', 'lightbox', 'channel']) for (const name of SHOP_NAMES) shopSignCell(name, style);
       for (const word of [...WINDOW_NEONS, 'VACANCY']) windowNeonCell(word);
       for (const t of SKYLINE_TOWERS) towerNameCell(t.name);
       // Remaps a plane's UVs onto an atlas cell.
@@ -654,134 +575,29 @@
       }
       /**
        * ADVERTISING
-       * One painted atlas of ads (gradients, a graphic, headline and strap) serves
-       * the lamp-lit rooftop boards and the bus shelters (UV-mapped, one shared
-       * material), and a few LED screen "channels" that cycle through the ads on
-       * their own clocks with a beat of black between spots.
+       * One painted atlas of ads serves the lamp-lit rooftop boards and the bus
+       * shelters (UV-mapped, one shared material), and a few LED screen "channels"
+       * that cycle through the ads on their own clocks with a beat of black between
+       * spots. Every advertiser has its own layout, lettering and illustration
+       * (SignArt.ADS in signdesigns3d.js), not one template.
        */
-      const ADS = [
-        ['DRINK KOLA', 'ICE COLD · SINCE 1921', '#d94b3d', '#fff2df', 'bottle'],
-        ['NEON 88.7', 'THE SOUND OF THE COAST', '#1c2f5a', '#8ff0ff', 'waves'],
-        ['GOLDEN TIDE CASINO', 'FORTUNE FAVORS THE BOLD', '#2c1d12', '#f5d27a', 'stars'],
-        ['SUNSET MOTEL', 'VACANCY · HBO · POOL', '#1f5f63', '#c9f5f0', 'sun'],
-        ['RIOT 104.5', 'LOUD. ALL NIGHT.', '#141417', '#ff6f4e', 'bolt'],
-        ['SOUTHPORT AIR', 'FLY THE KEYS DAILY', '#dfe7ea', '#1f3c52', 'plane'],
-        ['PALM AUTO PAINT', 'RESPRAYS WHILE YOU WAIT', '#f0a7b8', '#2c1e2a', 'car'],
-        ['MARLOW BAY FERRIES', 'NO LAST FERRY TONIGHT', '#22415a', '#e6e0c8', 'waves'],
-        ['VOLTA MOBILE', 'THE CITY IN YOUR POCKET', '#101a2c', '#7df7c9', 'phone'],
-        ['NORTH POINT BANK', 'YOUR MONEY. OUR TOWER.', '#0f2238', '#d8e6f5', 'tower'],
-        ['CAFÉ MARLOW', 'ESPRESSO · OPEN LATE', '#3b2417', '#ffd9a0', 'cup'],
-        ['AFTERHOURS', 'FRI · SAT · TILL DAWN', '#1d0f2e', '#ff5fd0', 'stars'],
-      ];
+      const ADS = SignArt.ADS;
       const AD_COLS = 2,
-        AD_ROWS = 6,
+        AD_ROWS = Math.ceil(ADS.length / AD_COLS),
         AD_W = 512,
         AD_H = 160,
         adCanvas = document.createElement('canvas');
       adCanvas.width = AD_COLS * AD_W;
       adCanvas.height = AD_ROWS * AD_H;
-      function paintAdArt(g, art, ax, ay, fg, bg) {
-        g.beginPath();
-        if (art === 'sun') {
-          g.arc(ax, ay + 20, 44, Math.PI, 0);
-          g.fill();
-          for (let k = 0; k < 4; k++) g.fillRect(ax - 60, ay + 30 + k * 9, 120, 4);
-        } else if (art === 'bottle') {
-          g.roundRect(ax - 16, ay - 10, 32, 70, 8);
-          g.fill();
-          g.fillRect(ax - 7, ay - 50, 14, 44);
-        } else if (art === 'waves') {
-          g.lineWidth = 6;
-          for (let k = 0; k < 3; k++) {
-            g.moveTo(ax - 70, ay - 20 + k * 20);
-            for (let x = -70; x <= 70; x += 10) g.lineTo(ax + x, ay - 20 + k * 20 + Math.sin(x * 0.09 + k) * 8);
-          }
-          g.stroke();
-        } else if (art === 'stars') {
-          for (let k = 0; k < 5; k++) {
-            const sx = ax - 60 + k * 30,
-              sy = ay + Math.sin(k * 2) * 25;
-            g.moveTo(sx, sy - 12);
-            for (let p = 1; p <= 10; p++) {
-              const a = (p * Math.PI) / 5 - Math.PI / 2,
-                r = p % 2 ? 5 : 12;
-              g.lineTo(sx + Math.cos(a) * r, sy + Math.sin(a) * r);
-            }
-          }
-          g.fill();
-        } else if (art === 'bolt') {
-          g.moveTo(ax + 10, ay - 60);
-          g.lineTo(ax - 30, ay + 5);
-          g.lineTo(ax, ay + 5);
-          g.lineTo(ax - 12, ay + 60);
-          g.lineTo(ax + 32, ay - 12);
-          g.lineTo(ax + 4, ay - 12);
-          g.fill();
-        } else if (art === 'plane') {
-          g.ellipse(ax, ay, 70, 9, -0.2, 0, TAU);
-          g.fill();
-          g.beginPath();
-          g.moveTo(ax - 10, ay);
-          g.lineTo(ax + 20, ay - 45);
-          g.lineTo(ax + 32, ay - 40);
-          g.lineTo(ax + 18, ay + 2);
-          g.fill();
-        } else if (art === 'car') {
-          g.roundRect(ax - 70, ay, 140, 30, 10);
-          g.roundRect(ax - 38, ay - 24, 70, 30, 12);
-          g.fill();
-          g.fillStyle = bg;
-          for (const dx of [-40, 40]) {
-            g.beginPath();
-            g.arc(ax + dx, ay + 32, 13, 0, TAU);
-            g.fill();
-          }
-        } else if (art === 'phone') {
-          g.roundRect(ax - 28, ay - 58, 56, 116, 10);
-          g.fill();
-          g.fillStyle = bg;
-          g.fillRect(ax - 20, ay - 46, 40, 84);
-        } else if (art === 'tower') {
-          g.moveTo(ax - 24, AD_H);
-          g.lineTo(ax - 18, 20);
-          g.lineTo(ax, 4);
-          g.lineTo(ax + 18, 20);
-          g.lineTo(ax + 24, AD_H);
-          g.fill();
-        } else if (art === 'cup') {
-          g.roundRect(ax - 34, ay - 20, 58, 56, 10);
-          g.fill();
-          g.lineWidth = 7;
-          g.beginPath();
-          g.arc(ax + 28, ay + 6, 14, -1.2, 1.2);
-          g.stroke();
-        }
-      }
       {
         const g = adCanvas.getContext('2d');
-        ADS.forEach(([title, strap, bg, fg, art], i) => {
+        ADS.forEach(([, paintAd], i) => {
           g.save();
           g.translate((i % AD_COLS) * AD_W, Math.floor(i / AD_COLS) * AD_H);
-          const grad = g.createLinearGradient(0, 0, AD_W, AD_H);
-          grad.addColorStop(0, neonMix(bg, '#ffffff', 0.12));
-          grad.addColorStop(1, neonMix(bg, '#000000', 0.25));
-          g.fillStyle = grad;
-          g.fillRect(0, 0, AD_W, AD_H);
-          g.fillStyle = g.strokeStyle = fg;
-          g.globalAlpha = 0.9;
-          paintAdArt(g, art, AD_W - 90, AD_H / 2, fg, bg);
-          g.globalAlpha = 1;
-          g.fillStyle = fg;
-          g.textAlign = 'left';
-          g.textBaseline = 'middle';
-          fitFont(g, title, '900', 'Arial, sans-serif', 52, AD_W - 200);
-          g.fillText(title, 26, AD_H / 2 - 18);
-          fitFont(g, strap, '600', 'Arial, sans-serif', 22, AD_W - 200);
-          g.globalAlpha = 0.85;
-          g.fillText(strap, 28, AD_H / 2 + 30);
-          g.globalAlpha = 1;
-          g.fillStyle = neonMix(fg, bg, 0.3);
-          g.fillRect(26, AD_H / 2 + 8, 120, 4);
+          g.beginPath();
+          g.rect(0, 0, AD_W, AD_H);
+          g.clip();
+          paintAd(g, AD_W, AD_H);
           g.restore();
         });
       }
@@ -899,6 +715,12 @@
           const p = s.mesh.getWorldPosition(new Three.Vector3()),
             h = s.width / 4;
           if (s.marquee) bulbFrame(p.x, p.y, p.z + 1.4, s.width + 6, h + 6, 4.2, '#ffd48a');
+          // Floodlit boards: goose-neck lamps along the top edge, in the board's own frame.
+          if (s.lamps)
+            for (const f of s.width > 90 ? [-0.34, 0, 0.34] : [-0.25, 0.25]) {
+              const lamp = s.mesh.localToWorld(new Three.Vector3(f * s.width, h / 2 + 2.2, 3.2));
+              addGlow(lamp.x, lamp.y, lamp.z, Math.min(16, 6 + s.width * 0.04), '#ffe2b0', 1.3, { day: 0 });
+            }
           if (p.y < 60)
             signSpill(p.x, p.z + 10, Math.max(40, s.width * 0.55), s.color, 0.3, { width: s.width * 0.7, length: 90, strength: 0.8 });
         }

@@ -578,25 +578,23 @@
       if (!missionState) return;
       if (missionState.index >= SIDE_JOB_FIRST) sideJobUI();
       if (missionState.index === 6 && [2, 3].includes(missionState.stage) && player.roof) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent = reconWindow(missionState)
-          ? 'IN VIEW · AT THE MARKER, HOLD E FOR 2.5 s'
-          : 'WATCH THE BAY · WAIT FOR THE LAUNCH TO PASS';
+        if (reconWindow(missionState))
+          offerPrompt('2.5 s AT THE MARKER · TARGET IN VIEW', { hold: true, id: 'recon' });
+        else offerPrompt('WATCH THE BAY · WAIT FOR THE LAUNCH TO PASS', { key: null, id: 'recon-wait' });
       }
       if (missionState.actionProgress > 0) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent =
-          'HOLD E · ' + missionState.actionProgress.toFixed(1) + ' s';
+        offerPrompt(missionState.actionProgress.toFixed(1) + ' s', { hold: true, id: 'hold-progress' });
       }
       if (
         missionState.index === 10 &&
         [1, 2, 3].includes(missionState.stage) &&
         missionState.compromised
       ) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent =
-          'V · SWITCH LANDING: ' +
-          (missionState.divert ? 'OCEANVIEW · LONGER GROUND ESCAPE' : 'SOUTHPORT · ARMED AMBUSH');
+        offerPrompt(
+          'SWITCH LANDING: ' +
+            (missionState.divert ? 'OCEANVIEW · LONGER GROUND ESCAPE' : 'SOUTHPORT · ARMED AMBUSH'),
+          { key: 'divert', id: 'divert' },
+        );
       }
     }
     // END SUBSYSTEM: src/challenges.js

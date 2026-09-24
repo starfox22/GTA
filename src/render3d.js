@@ -988,60 +988,27 @@
         placePropInstance(lampHeads, prop, l.x + 6, 33.5, l.y, 5, 1.2, 3);
         lampGlowPending.push({ x: l.x + 6, z: l.y, prop });
       }
+      // @include src/signkit3d.js
+      // @include src/signdesigns3d.js
       /**
-       * Landmark and business signs: an enamel board with a border and lettering
-       * that light up at night. The painted face is the map; lettering and border
-       * glow through an emissive mask whose strength signage3d.js drives with the
-       * hour (and the district's power), so they bloom after dark. Street-level
-       * boards also spill their colour onto the pavement and the wet road, and
-       * `options.marquee` rings the board with chasing bulbs (signage3d.js places
-       * both once every caller has moved its sign into place).
+       * Landmark and business signs. Each business's board is designed for its
+       * trade (signdesigns3d.js: bent neon for the clubs, marquee bulbs for the
+       * casino and cinema, a lightbox for the hospital, stencilled steel for the
+       * armory, weathered planks for the pub...). The painted face is the map;
+       * what lights up at night (tubes, bulbs, a lightbox panel, a lamp-washed
+       * board) is the emissive mask, whose strength signage3d.js drives with the
+       * hour (and the district's power), so it blooms after dark. Shaped boards
+       * and free-standing letters are cut out. Behind the face sits one backing
+       * mesh: a box for a board, a thin raceway for cut-out letters, a smaller box
+       * hidden behind an oval or arch. Street-level boards also spill their colour
+       * onto the pavement and the wet road; `options.marquee` (or the design) rings
+       * the board with chasing bulbs, and floodlit designs get lamps over the
+       * board (signage3d.js places both once every caller has moved its sign).
+       * `options.style` is a hint for names the style table does not know
+       * ('transit', 'kiosk', 'truck', 'town', 'resort', 'trail').
        */
-      const signBoards = [];
-      function sign(text, x, z, width, color, vertical = false, options = {}) {
-        const face = document.createElement('canvas'),
-          glowCanvas = document.createElement('canvas');
-        face.width = glowCanvas.width = 1024;
-        face.height = glowCanvas.height = 256;
-        const cg = face.getContext('2d'),
-          gg = glowCanvas.getContext('2d'),
-          board = cg.createLinearGradient(0, 0, 0, 256);
-        board.addColorStop(0, '#1f2f36');
-        board.addColorStop(1, '#101a1f');
-        cg.fillStyle = board;
-        cg.fillRect(0, 0, 1024, 256);
-        gg.fillStyle = '#000';
-        gg.fillRect(0, 0, 1024, 256);
-        const hot = '#' + new Three.Color(color).lerp(new Three.Color('#ffffff'), 0.55).getHexString();
-        for (const g of [cg, gg]) {
-          g.font = '600 86px Arial';
-          g.textAlign = 'center';
-          g.textBaseline = 'middle';
-          g.lineJoin = 'round';
-        }
-        // Border tube and lettering on the board.
-        cg.strokeStyle = color;
-        cg.lineWidth = 7;
-        cg.strokeRect(20, 22, 984, 212);
-        cg.fillStyle = 'rgba(0,0,0,0.5)';
-        cg.fillText(text, 516, 137, 932);
-        cg.fillStyle = color;
-        cg.fillText(text, 512, 132, 932);
-        // What glows: a coloured spill round both, then their hot cores.
-        gg.shadowColor = color;
-        gg.shadowBlur = 26;
-        gg.strokeStyle = color;
-        gg.lineWidth = 9;
-        gg.strokeRect(20, 22, 984, 212);
-        gg.fillStyle = color;
-        gg.fillText(text, 512, 132, 932);
-        gg.shadowBlur = 0;
-        gg.strokeStyle = hot;
-        gg.lineWidth = 3;
-        gg.strokeRect(20, 22, 984, 212);
-        gg.fillStyle = hot;
-        gg.fillText(text, 512, 132, 932);
-        const texture = (canvas) => {
+      const signBoards = [],
+        signTexture = (canvas) => {
           const tx = new Three.CanvasTexture(canvas);
           tx.colorSpace = Three.SRGBColorSpace;
           tx.minFilter = Three.LinearMipmapLinearFilter;
@@ -1049,10 +1016,27 @@
           tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
           return tx;
         };
-        const m = new Three.Mesh(
-          new Three.PlaneGeometry(width, width / 4),
-          litSignMaterial(texture(face), texture(glowCanvas), { night: 2.6, day: 0.18, doubleSided: true }),
-        );
+      function sign(text, x, z, width, color, vertical = false, options = {}) {
+        const face = document.createElement('canvas'),
+          glowCanvas = document.createElement('canvas');
+        face.width = glowCanvas.width = 1024;
+        face.height = glowCanvas.height = 256;
+        const cg = face.getContext('2d'),
+          gg = glowCanvas.getContext('2d');
+        gg.fillStyle = '#000';
+        gg.fillRect(0, 0, 1024, 256);
+        const design = SignArt.paint(cg, gg, 1024, 256, text, color, options.style),
+          height = width / 4,
+          m = new Three.Mesh(
+            new Three.PlaneGeometry(width, height),
+            litSignMaterial(signTexture(face), signTexture(glowCanvas), {
+              night: design.night,
+              day: design.day,
+              doubleSided: !design.cutout,
+              cutout: design.cutout,
+              flicker: design.flicker,
+            }),
+          );
         // Centred 23 up, but never so low that a wide board sinks into the ground
         // (a 235-wide sign is 59 tall); callers raise facade signs further.
         const signY = Math.max(23, width / 8 + 3);
@@ -1060,8 +1044,14 @@
         m.userData.sign = true;
         m.receiveShadow = true;
         scene.add(m);
-        m.userData.backing = box(scene, x, signY, z - 1.5, width + 5, width / 4 + 5, 3, darkMetal);
-        signBoards.push({ mesh: m, width, color, marquee: !!options.marquee });
+        const backMat = staticMat(design.backColor, 0.6, 0.3);
+        m.userData.backing =
+          design.backing === 'raceway'
+            ? box(scene, x, signY, z - 0.6, width * 0.82, Math.max(1.2, height * 0.14), 1.6, backMat)
+            : design.backing === 'inset'
+              ? box(scene, x, signY, z - 1.5, width * 0.68, height * 0.62, 3, backMat)
+              : box(scene, x, signY, z - 1.5, width + 3, height + 3, 3, backMat);
+        signBoards.push({ mesh: m, width, color: design.light || color, marquee: !!(options.marquee || design.marquee), lamps: design.lamps });
         return m;
       }
       const ph = new Three.Group();
@@ -2423,7 +2413,11 @@
             if (m.wipers) updateWipers(c, m, deltaSeconds);
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
             paintVehicle(c, m);
-            if (m.crank) m.crank.rotation.z -= deltaSeconds * c.speed * 0.13;
+            // The player's cranks turn at their pedalling cadence (still when
+            // coasting); anyone else's follow road speed.
+            if (m.crank)
+              m.crank.rotation.z -=
+                deltaSeconds * (c === player.car ? pedalCadence() * Math.PI * 2 : c.speed * 0.13);
             if (m.helicopter) {
               const running =
                 (c === player.car ||
@@ -2904,12 +2898,14 @@
           let bi = 0;
           for (const b of bullets) {
             if (bi + 6 > tracerPositions.length) break;
+            // A sniper round (combat-rules.js SNIPER FIRE) leaves a longer streak.
+            const tail = b.tracer || 0.009;
             tracerPositions[bi++] = b.x;
             tracerPositions[bi++] = 9 + (b.altitude || 0);
             tracerPositions[bi++] = b.y;
-            tracerPositions[bi++] = b.x - b.vx * 0.009;
-            tracerPositions[bi++] = 9 + (b.altitude || 0) - (b.vz || 0) * 0.009;
-            tracerPositions[bi++] = b.y - b.vy * 0.009;
+            tracerPositions[bi++] = b.x - b.vx * tail;
+            tracerPositions[bi++] = 9 + (b.altitude || 0) - (b.vz || 0) * tail;
+            tracerPositions[bi++] = b.y - b.vy * tail;
           }
           tracerGeo.setDrawRange(0, bi / 3);
           tracerGeo.attributes.position.needsUpdate = true;

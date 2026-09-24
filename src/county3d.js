@@ -192,7 +192,7 @@
       }
       // The bridges are drawn by bridges3d.js, each in its own style.
       for (const t of COUNTY_TOWNS) {
-        sign(t.name, t.x + 200, t.y - 72, 150, t.style === 'resort' ? '#e3b9b5' : '#d6d6be');
+        sign(t.name, t.x + 200, t.y - 72, 150, t.style === 'resort' ? '#e3b9b5' : '#d6d6be', false, { style: t.style === 'resort' ? 'resort' : 'town' });
         for (let j = 0; j < 5; j++) {
           const group = new Three.Group();
           scene.add(group);

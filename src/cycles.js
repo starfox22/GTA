@@ -25,13 +25,14 @@
      * its top speed (a square-root taper), so a bicycle leaps off the line,
      * builds briskly through the middle and settles gently at the top instead of
      * hitting a wall. Cadence is derived from speed and effort for the HUD and
-     * the crank sound. S brakes, then creeps backwards slowly.
+     * the crank animation; riding makes no engine note, crank tick or tyre
+     * squeal. S brakes, then creeps backwards slowly.
      */
     const CYCLE_STAMINA_MAX = 7.5,
-      CYCLE_SPRINT_TOP = 1.42,
+      CYCLE_SPRINT_TOP = 1.28,
       CYCLE_SPRINT_PUSH = 1.3,
       // Forward push at a standstill, world units per second squared.
-      CYCLE_PUSH = 68,
+      CYCLE_PUSH = 130,
       // How quickly the legs come up to full effort, and let go of it, per second.
       CYCLE_SPIN_UP = 3.2,
       CYCLE_SPIN_DOWN = 6,
@@ -41,7 +42,7 @@
       CYCLE_REVERSE_MAX = 34;
     let cycleStamina = CYCLE_STAMINA_MAX,
       cycleStandCache = null;
-    const pedal = { effort: 0, cadence: 0, crank: 0 };
+    const pedal = { effort: 0, cadence: 0 };
     function ridingBicycle() {
       return !!player.car && vehicleSpec(player.car).bicycle;
     }
@@ -80,12 +81,8 @@
         const speedShare = clamp((player.car.speed || 0) / vehicleSpec(player.car).max, 0, 1.5),
           target = pressed ? CYCLE_CADENCE_TOP * (0.35 + 0.65 * speedShare) : 0;
         pedal.cadence += (target - pedal.cadence) * Math.min(1, deltaSeconds * (pressed ? 4 : 2.5));
-        // One soft crank tick per revolution while the legs are working.
-        pedal.crank += pedal.cadence * deltaSeconds;
-        if (pedal.crank >= 1) {
-          pedal.crank -= 1;
-          if (pressed) playSample('tires', 0.035, 2.4);
-        }
+        // No crank sound: the old per-revolution tick replayed the tyre-skid
+        // sample sped up, which read as a squeak. A bicycle is near silent.
       }
       if (cycleSprinting()) cycleStamina = Math.max(0, cycleStamina - deltaSeconds);
       else cycleStamina = Math.min(CYCLE_STAMINA_MAX, cycleStamina + deltaSeconds * (riding ? 0.55 : 3));

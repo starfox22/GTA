@@ -782,17 +782,11 @@
       if (!mission || gameTime > (mission.lineUntil || 0))
         getElement('storyLine').classList.remove('show');
       if (player.roof) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent =
-          distanceBetween(player, ROOFTOP.lift) < 48
-            ? 'E · ELEVATOR TO STREET'
-            : distanceBetween(player, ROOFTOP.bar) < 43
-              ? 'E · ROOFTOP BAR'
-              : mission?.index === 6 &&
-                  [1, 4].includes(mission.stage) &&
-                  distanceBetween(player, ROOFTOP.contact) < 42
-                ? 'E · TALK TO MARA'
-                : 'THE BLUE HOUR · ROOFTOP TERRACE';
+        if (distanceBetween(player, ROOFTOP.lift) < 48) offerPrompt('ELEVATOR TO STREET', { id: 'roof-lift' });
+        else if (distanceBetween(player, ROOFTOP.bar) < 43) offerPrompt('ROOFTOP BAR', { id: 'roof-bar' });
+        else if (mission?.index === 6 && [1, 4].includes(mission.stage) && distanceBetween(player, ROOFTOP.contact) < 42)
+          offerPrompt('TALK TO MARA', { id: 'roof-mara' });
+        else offerPrompt('THE BLUE HOUR · ROOFTOP TERRACE', { key: null, id: 'roof-terrace' });
       }
       if (mission?.lastLine) getElement('storyLine').textContent = mission.lastLine;
     }

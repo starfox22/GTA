@@ -389,7 +389,7 @@
           }
           for (let i = 0; i < 6; i++) box(g, -k.w / 2 + 12 + i * 18, 4, k.h / 2 + 5, 2.5, 8, 2.5, beachPaint.darkTimber);
         }
-        sign(k.name, k.x + k.w / 2, k.y + k.h + 1, Math.min(84, k.w + 26), k.color === '#d9603f' ? '#ffd28a' : '#f5ecd6');
+        sign(k.name, k.x + k.w / 2, k.y + k.h + 1, Math.min(84, k.w + 26), k.color === '#d9603f' ? '#ffd28a' : '#f5ecd6', false, { style: 'kiosk' });
       }
       for (const t of BEACH_LAYOUT.tables) {
         const g = beachStatic(t.x, t.y);
