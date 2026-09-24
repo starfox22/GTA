@@ -356,8 +356,8 @@
           if (
             (other.type === 'police' || other.lawUnit) &&
             !other.stolen &&
-            closing > 70 &&
-            gameTime - (other.rammedByPlayerAt ?? -100) > 1.5
+            closing > 110 &&
+            gameTime - (other.rammedByPlayerAt ?? -100) > 4
           ) {
             other.rammedByPlayerAt = gameTime;
             crime(wantedStars > 0 ? 0.35 : 0.6);

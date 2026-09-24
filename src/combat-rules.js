@@ -313,6 +313,7 @@
           if (c.sniperLock >= 1.6) {
             c.sniperLock = 0;
             c.airShotTimer = randomBetween(2.4, 3.4);
+            pursuitStats.sniperShots++;
             const runner = t === player || t === player.car,
               speed = Math.hypot((player.car || t).vx || 0, (player.car || t).vy || 0) || (runner && !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) ? 110 : 0),
               chance = clamp(0.85 - speed / 500, 0.3, 0.85);

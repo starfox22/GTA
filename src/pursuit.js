@@ -39,12 +39,10 @@
     };
     const PURSUIT_SEARCH_SECONDS = [0, 6, 9, 13, 18, 24];
     // Running totals for policeReport(): pursuit contacts with the player's car.
-    const pursuitStats = { contacts: 0, pits: 0, spawned: 0 };
+    const pursuitStats = { contacts: 0, pits: 0, spawned: 0, tankShots: 0, sniperShots: 0, arrests: 0 };
     let dispatchTimer = 2,
       dispatchBurst = 0,
       arrestProgress = 0,
-      arrestOfficer = null,
-      bustedAt = -100,
       lastDispatchLine = -100,
       armorWarningAt = -100;
     function policeTier(stars = Math.ceil(wantedStars)) {
@@ -674,7 +672,6 @@
       const allowed = cuffing && tierAllows;
       if (allowed) {
         arrestProgress = Math.min(1, arrestProgress + deltaSeconds / 2);
-        arrestOfficer = cuffing;
         cuffing.state = 'arrest';
         cuffing.a = headingBetween(cuffing, player);
         if (arrestProgress > 0.05 && !cuffing.arrestSaid) {
@@ -684,7 +681,6 @@
         if (arrestProgress >= 1) bust();
       } else {
         arrestProgress = Math.max(0, arrestProgress - deltaSeconds * 1.5);
-        if (!arrestProgress) arrestOfficer = null;
       }
       const el = getElement('arrestStatus');
       if (el) {
@@ -709,7 +705,7 @@
       if (gameMode !== 'play') return;
       const stars = Math.ceil(wantedStars);
       gameMode = 'dead';
-      bustedAt = gameTime;
+      pursuitStats.arrests++;
       arrestProgress = 0;
       document.body?.classList.add('wasted', 'busted');
       announce('YOU HAVE THE RIGHT TO REMAIN SILENT', 'BUSTED', 4);
@@ -778,6 +774,7 @@
         if (c.lockTime > 2.5 && Math.abs(normalizeAngle(want - c.turretA)) < 0.08 && tankFire(c, true)) {
           c.lockTime = 0;
           c.cannonReadyAt = gameTime + 6.5;
+          pursuitStats.tankShots++;
           const shell = bullets[bullets.length - 1];
           if (shell?.owner === c) {
             shell.faction = 'police';
