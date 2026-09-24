@@ -84,6 +84,20 @@
         })),
       );
     }
+    // Corner scratch for boxContact(): x, y of the four corners, in corners() order.
+    const contactCornersA = new Float64Array(8),
+      contactCornersB = new Float64Array(8);
+    function boxCorners(b, cos, sin, out) {
+      let k = 0;
+      for (let i = -1; i <= 1; i += 2)
+        for (let j = -1; j <= 1; j += 2) {
+          out[k++] = b.x + cos * b.hx * i - sin * b.hy * j;
+          out[k++] = b.y + sin * b.hx * i + cos * b.hy * j;
+        }
+    }
+    // Separating-axis contact between two oriented boxes: the contact normal (from
+    // a towards b), depth and point, or null. Works in plain numbers; only the
+    // result is allocated (this runs for every touching pair in every pass).
     function boxContact(a, b) {
       if (
         Math.abs(a.x - b.x) > a.hx + a.hy + b.hx + b.hy ||
@@ -107,57 +121,75 @@
             Math.abs(headingCosine2) * b.hy
       )
         return null;
-      const aa = axes(a),
-        bb = axes(b),
-        delta = {
-          x: b.x - a.x,
-          y: b.y - a.y,
-        };
+      // Axes: a's (u, v) then b's; u = (cos, sin), v = (-sin, cos).
+      const deltaX = b.x - a.x,
+        deltaY = b.y - a.y;
       let depth = Infinity,
-        n;
-      for (const axis of [...aa, ...bb]) {
-        const ra =
-            a.hx * Math.abs(axis.x * aa[0].x + axis.y * aa[0].y) +
-            a.hy * Math.abs(axis.x * aa[1].x + axis.y * aa[1].y),
+        nx = 0,
+        ny = 0;
+      for (let k = 0; k < 4; k++) {
+        const axisX = k === 0 ? headingCosine : k === 1 ? -headingSine : k === 2 ? headingCosine2 : -headingSine2,
+          axisY = k === 0 ? headingSine : k === 1 ? headingCosine : k === 2 ? headingSine2 : headingCosine2,
+          ra =
+            a.hx * Math.abs(axisX * headingCosine + axisY * headingSine) +
+            a.hy * Math.abs(axisX * -headingSine + axisY * headingCosine),
           rb =
-            b.hx * Math.abs(axis.x * bb[0].x + axis.y * bb[0].y) +
-            b.hy * Math.abs(axis.x * bb[1].x + axis.y * bb[1].y),
-          d = delta.x * axis.x + delta.y * axis.y,
+            b.hx * Math.abs(axisX * headingCosine2 + axisY * headingSine2) +
+            b.hy * Math.abs(axisX * -headingSine2 + axisY * headingCosine2),
+          d = deltaX * axisX + deltaY * axisY,
           overlap = ra + rb - Math.abs(d);
         if (overlap <= 0) return null;
         if (overlap < depth) {
           depth = overlap;
-          n = {
-            x: axis.x * (d < 0 ? -1 : 1),
-            y: axis.y * (d < 0 ? -1 : 1),
-          };
+          nx = axisX * (d < 0 ? -1 : 1);
+          ny = axisY * (d < 0 ? -1 : 1);
         }
       }
-      const ac = corners(a),
-        bc = corners(b),
-        project = (p, v) => p.x * v.x + p.y * v.y,
-        t = {
-          x: -n.y,
-          y: n.x,
-        },
-        maxA = Math.max(...ac.map((p) => project(p, n))),
-        minB = Math.min(...bc.map((p) => project(p, n)));
-      const af = ac.filter((p) => maxA - project(p, n) < 0.05),
-        bf = bc.filter((p) => project(p, n) - minB < 0.05);
-      const av = af.map((p) => project(p, t)),
-        bv = bf.map((p) => project(p, t));
-      let side;
-      if (af.length === 1) side = av[0];
-      else if (bf.length === 1) side = bv[0];
-      else
-        side =
-          (Math.max(Math.min(...av), Math.min(...bv)) + Math.min(Math.max(...av), Math.max(...bv))) / 2;
-      const along = (maxA + minB) / 2;
+      const ac = contactCornersA,
+        bc = contactCornersB,
+        tx = -ny,
+        ty = nx;
+      boxCorners(a, headingCosine, headingSine, ac);
+      boxCorners(b, headingCosine2, headingSine2, bc);
+      let maxA = -Infinity,
+        minB = Infinity;
+      for (let k = 0; k < 8; k += 2) {
+        maxA = Math.max(maxA, ac[k] * nx + ac[k + 1] * ny);
+        minB = Math.min(minB, bc[k] * nx + bc[k + 1] * ny);
+      }
+      // The corners on each box's contact face, projected along the face.
+      let aCount = 0,
+        aFirst = 0,
+        aMin = Infinity,
+        aMax = -Infinity,
+        bCount = 0,
+        bFirst = 0,
+        bMin = Infinity,
+        bMax = -Infinity;
+      for (let k = 0; k < 8; k += 2) {
+        if (maxA - (ac[k] * nx + ac[k + 1] * ny) < 0.05) {
+          const along = ac[k] * tx + ac[k + 1] * ty;
+          if (!aCount) aFirst = along;
+          aCount++;
+          aMin = Math.min(aMin, along);
+          aMax = Math.max(aMax, along);
+        }
+        if (bc[k] * nx + bc[k + 1] * ny - minB < 0.05) {
+          const along = bc[k] * tx + bc[k + 1] * ty;
+          if (!bCount) bFirst = along;
+          bCount++;
+          bMin = Math.min(bMin, along);
+          bMax = Math.max(bMax, along);
+        }
+      }
+      const side =
+          aCount === 1 ? aFirst : bCount === 1 ? bFirst : (Math.max(aMin, bMin) + Math.min(aMax, bMax)) / 2,
+        along = (maxA + minB) / 2;
       return {
-        n,
+        n: { x: nx, y: ny },
         depth,
-        x: n.x * along + t.x * side,
-        y: n.y * along + t.y * side,
+        x: nx * along + tx * side,
+        y: ny * along + ty * side,
       };
     }
     function addStatic(x, y, w, h, height = 180, kind = 'building') {
@@ -1055,7 +1087,6 @@
     const broadphaseCells = new Map(),
       broadphasePairA = [],
       broadphasePairB = [],
-      broadphaseSeen = new Set(),
       broadphaseBarrierCars = [],
       broadphaseBarrierBodies = [];
     let broadphaseStamp = 0;
@@ -1339,21 +1370,25 @@
       // steps (this runs 120 times a second) and only their contents rebuilt.
       const cells = broadphaseCells,
         pairA = broadphasePairA,
-        pairB = broadphasePairB,
-        seen = broadphaseSeen;
+        pairB = broadphasePairB;
       // Cell lists are emptied lazily: one is reset when first used in a step (its
       // stamp is stale), so a map of thousands of cells is never swept.
       const stamp = ++broadphaseStamp;
       if (cells.size > 6000) cells.clear();
       pairA.length = pairB.length = 0;
-      seen.clear();
       for (let v = 0; v < vehicles.length; v++) {
         const c = vehicles[v],
           radius = vehicleRadius(c) + 2,
           boat = !!isBoat(c),
-          level = (c.altitude || 0) + (c.groundHeight || 0);
-        for (let x = Math.floor((c.x - radius) / 96); x <= Math.floor((c.x + radius) / 96); x++)
-          for (let y = Math.floor((c.y - radius) / 96); y <= Math.floor((c.y + radius) / 96); y++) {
+          level = (c.altitude || 0) + (c.groundHeight || 0),
+          x0 = Math.floor((c.x - radius) / 96),
+          y0 = Math.floor((c.y - radius) / 96);
+        // A pair sharing several cells is taken once, in the first cell they share
+        // (lowest column, then row), rather than de-duplicated through a set.
+        c.broadCellX = x0;
+        c.broadCellY = y0;
+        for (let x = x0; x <= Math.floor((c.x + radius) / 96); x++)
+          for (let y = y0; y <= Math.floor((c.y + radius) / 96); y++) {
             const key = x * 65536 + y;
             let list = cells.get(key);
             if (!list) cells.set(key, (list = []));
@@ -1364,13 +1399,8 @@
             for (let k = 0; k < list.length; k++) {
               const o = list[k];
               if (c.resting && o.resting) continue;
-              const pk = Math.min(c.id, o.id) * 1e6 + Math.max(c.id, o.id);
-              if (
-                !seen.has(pk) &&
-                boat === !!isBoat(o) &&
-                Math.abs(level - (o.altitude || 0) - (o.groundHeight || 0)) < 19
-              ) {
-                seen.add(pk);
+              if (x !== Math.max(x0, o.broadCellX) || y !== Math.max(y0, o.broadCellY)) continue;
+              if (boat === !!isBoat(o) && Math.abs(level - (o.altitude || 0) - (o.groundHeight || 0)) < 19) {
                 pairA.push(c);
                 pairB.push(o);
               }
@@ -1395,8 +1425,10 @@
           c.stepStatics = cache.list;
           continue;
         }
+        // The cache record and its list are reused when the car re-gathers.
         const radius = vehicleRadius(c) + 40,
-          list = [];
+          list = cache ? cache.list : [];
+        list.length = 0;
         // The quay edge stops everything with a driver who ought to know better.
         // The player's own car is not stopped by it: putting one in the bay is a
         // thing you are allowed to do, and then it floods.
@@ -1411,7 +1443,12 @@
             list.push(b);
         }
         c.stepStatics = list;
-        c.contactStatics = { x: c.x, y: c.y, list, throughShore, version: staticGridVersion };
+        if (cache) {
+          cache.x = c.x;
+          cache.y = c.y;
+          cache.throughShore = throughShore;
+          cache.version = staticGridVersion;
+        } else c.contactStatics = { x: c.x, y: c.y, list, throughShore, version: staticGridVersion };
       }
       // Vinny's depot shutters open and close mid-mission, so they live outside
       // the baked static grid and are resolved from this short list.

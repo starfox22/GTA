@@ -838,6 +838,15 @@
       }
       return false;
     }
+    // Whether a point lies inside a rectangle list's overall bounds.
+    function rectListNear(list, x, y) {
+      let bounds = rectListBounds.get(list);
+      if (!bounds || bounds.count !== list.length) {
+        rectListBlocked(list, x, y, 0);
+        bounds = rectListBounds.get(list);
+      }
+      return x >= bounds.x0 && x <= bounds.x1 && y >= bounds.y0 && y <= bounds.y1;
+    }
     function solid(x, y, r = 8, overWater = false) {
       if (
         sportsBlocked(x, y, r) ||
@@ -1022,6 +1031,8 @@
           farFromPlayer: false,
           resting: false,
           contactPass: 0,
+          broadCellX: 0,
+          broadCellY: 0,
           contactStatics: null,
           stepStatics: null,
           contactBox: null,
@@ -2663,21 +2674,20 @@
       lists[5] = AIRPORT_SCENERY_SOLIDS;
       for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
+        // Most rounds are nowhere near a given list's rectangles (rectListBounds).
+        if (!rectListNear(list, x, y)) continue;
         for (let k = 0; k < list.length; k++) {
           const b = list[k];
           if (altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) return true;
         }
       }
-      return (
-        buildingsNear(x, y).some(
-          (b) =>
-            altitude + 10 < b.height &&
-            x > b.x - 1 &&
-            x < b.x + b.w + 1 &&
-            y > b.y - 1 &&
-            y < b.y + b.h + 1,
-        )
-      );
+      const near = buildingsNear(x, y);
+      for (let i = 0; i < near.length; i++) {
+        const b = near[i];
+        if (altitude + 10 < b.height && x > b.x - 1 && x < b.x + b.w + 1 && y > b.y - 1 && y < b.y + b.h + 1)
+          return true;
+      }
+      return false;
     }
     // Who a bullet can hit where it is now, in the order hits are tested. The
     // short lists go in whole; pedestrians come from the crowd's neighbour grid
@@ -4237,7 +4247,11 @@
       worldContext.imageSmoothingEnabled = false;
       canvasScale =
         clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
-      if (city3D) city3D.resize();
+      if (city3D) {
+        city3D.resize();
+        // LOW caps the scene's pixel count (quality.js LOW RESOLUTION CAP).
+        applyTierResolution();
+      }
     }
     function begin() {
       if (gameMode !== 'menu') return;

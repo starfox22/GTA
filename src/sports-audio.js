@@ -69,9 +69,9 @@
       // Murmur of the crowd, swelling now and then, louder in a panic or after a goal.
       const wave = 0.75 + 0.25 * Math.sin(gameTime * 0.7) * Math.sin(gameTime * 0.23 + 1),
         level = hearing.level * (crowdFull * 0.09 * wave + sound.surge * 0.16 + (panic ? 0.12 : 0));
-      sound.gain.gain.setTargetAtTime(level, now, 0.25);
-      sound.filter.frequency.setTargetAtTime(700 + sound.surge * 900 + (panic ? 700 : 0) + wave * 150, now, 0.3);
-      sound.pan.pan.setTargetAtTime(hearing.pan, now, 0.5);
+      glideParam(sound.gain.gain, level, now, 0.25);
+      glideParam(sound.filter.frequency, 700 + sound.surge * 900 + (panic ? 700 : 0) + wave * 150, now, 0.3);
+      glideParam(sound.pan.pan, hearing.pan, now, 0.5);
       if (hearing.level < 0.03 || crowdFull < 0.1 || match.abandoned) return;
       // Chants and clapping while the teams are out.
       sound.chantClock -= deltaSeconds;

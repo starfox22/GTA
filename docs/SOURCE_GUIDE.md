@@ -48,6 +48,16 @@ Two closures matter:
   `footObstacleBlocked` (streets.js): furniture the renderer registers with
   `registerFootObstacle`, tree trunks and the standing knockable props. See
   docs/audit/streets-collision-qa.md.
+- Renderer matrices (render3d.js, SCENE MATRICES): the scene's world matrices are brought up
+  to date once a frame, just before drawing, and only for what is shown. A hidden object's
+  `matrixWorld` may be stale; code that reads one (instancing fed from hidden meshes, ray
+  tests) calls `updateWorldMatrix()` first. An object with `matrixAutoUpdate = false` is
+  re-multiplied every frame from its hand-set `matrix`, as before. Merged scenery hangs from
+  per-cell groups (STATIC BATCH CELLS) that are hidden out of the view's reach.
+- Hot simulation paths do not allocate per call (docs/audit/performance.md): grids are reused
+  with lazy per-stamp resets, `contactShape()` returns a vehicle's own box record, vehicles
+  are created with every physics field declared in `makeCar()` (add new per-step fields
+  there, with the value readers treat as "not set").
 - Timers are seconds. Physics runs in fixed 1/120 s steps. `worldMinutes` advances one game
   minute per real second; `daylight()` returns 0..1 (sun up 05:40, down 19:50).
 - Save data (`localStorage`, key `dead-end-city-v1`) holds campaign indices, cash, clock and

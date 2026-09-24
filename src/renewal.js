@@ -534,7 +534,11 @@
           ),
         ];
       }
-      return parkPondBoxes.some((b) => x > b.x0 - reach && x < b.x1 + reach && y > b.y0 - reach && y < b.y1 + reach);
+      for (let i = 0; i < parkPondBoxes.length; i++) {
+        const b = parkPondBoxes[i];
+        if (x > b.x0 - reach && x < b.x1 + reach && y > b.y0 - reach && y < b.y1 + reach) return true;
+      }
+      return false;
     }
     // Inside the rotated ellipse (centre cx, cy, radii rx, ry grown by r, turn a).
     function insidePondEllipse(x, y, r, cx, cy, rx, ry, a) {

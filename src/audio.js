@@ -194,6 +194,31 @@
           },
         );
     }
+    /**
+     * Per-frame audio parameters (engine, ambience, surf, stadium roar...) glide
+     * toward a target with setTargetAtTime. Re-sending the same target every
+     * frame only piles automation events onto the parameter, so a call whose
+     * target is (nearly) the one already set is skipped; it is re-sent at least
+     * twice a second in case something else moved the parameter.
+     */
+    const glideTargets = new WeakMap();
+    function glideParam(param, target, startTime, timeConstant) {
+      const last = glideTargets.get(param),
+        now = audio ? audio.currentTime : 0;
+      if (
+        last &&
+        now - last.at < 0.5 &&
+        last.constant === timeConstant &&
+        Math.abs(last.target - target) <= Math.max(1e-4, Math.abs(target) * 0.004)
+      )
+        return;
+      param.setTargetAtTime(target, startTime, timeConstant);
+      if (last) {
+        last.target = target;
+        last.at = now;
+        last.constant = timeConstant;
+      } else glideTargets.set(param, { target, at: now, constant: timeConstant });
+    }
     function soundUpdate(deltaSeconds) {
       syncCarRadio(false, deltaSeconds);
       if (!audio) return;
@@ -214,13 +239,13 @@
                 : t.truck
                   ? 0.5 + ((ratio * 5) % 1) * 0.3 + gear * 0.03
                   : 0.65 + ((ratio * 5) % 1) * 0.65 + gear * 0.07;
-        en.source.playbackRate.setTargetAtTime(rpm, audio.currentTime, 0.13);
-        en.gain.gain.setTargetAtTime(
+        glideParam(en.source.playbackRate, rpm, audio.currentTime, 0.13);
+        glideParam(en.gain.gain, 
           active && c && !t.bicycle && c.type !== 'helicopter' && c.hp > 0 ? 0.11 + speed * 0.00038 : 0,
           audio.currentTime,
           0.1,
         );
-        en.filter.frequency.setTargetAtTime(900 + speed * 7, audio.currentTime, 0.15);
+        glideParam(en.filter.frequency, 900 + speed * 7, audio.currentTime, 0.15);
       }
       const tires = audioLoops.tires;
       if (tires) {
@@ -230,7 +255,7 @@
           !vehicleSpec(c).boat &&
           Math.abs(c.speed) > 70 &&
           (keys.Space || Math.abs(normalizeAngle(c.a - (c.moveA ?? c.a))) > 0.14);
-        tires.gain.gain.setTargetAtTime(active && slipping ? 0.19 : 0, audio.currentTime, 0.08);
+        glideParam(tires.gain.gain, active && slipping ? 0.19 : 0, audio.currentTime, 0.08);
       }
       const siren = audioLoops.siren;
       if (siren) {
@@ -238,12 +263,12 @@
         for (const car of vehicles)
           if (car.hp > 0 && ((car.cop && wantedStars > 0) || car.gangTarget))
             d = Math.min(d, distanceBetween(car, player));
-        siren.gain.gain.setTargetAtTime(
+        glideParam(siren.gain.gain, 
           active ? clamp(1 - d / 700, 0, 1) * 0.18 : 0,
           audio.currentTime,
           0.2,
         );
-        siren.filter.frequency.setTargetAtTime(clamp(6500 - d * 7, 800, 6500), audio.currentTime, 0.2);
+        glideParam(siren.filter.frequency, clamp(6500 - d * 7, 800, 6500), audio.currentTime, 0.2);
       }
       const rotor = audioLoops['rotor-loop'];
       if (rotor) {
@@ -252,7 +277,7 @@
               ? c
               : vehicles.find((v) => v.airUnit && v.hp > 0 && distanceBetween(v, player) < 700),
           flying = !!chopper;
-        rotor.gain.gain.setTargetAtTime(
+        glideParam(rotor.gain.gain, 
           active && flying
             ? chopper === c
               ? 0.25
@@ -261,7 +286,7 @@
           audio.currentTime,
           0.45,
         );
-        rotor.source.playbackRate.setTargetAtTime(
+        glideParam(rotor.source.playbackRate, 
           flying
             ? 0.82 + Math.min(chopper.altitude / 300, 0.15) + Math.abs(chopper.speed) * 0.0003
             : 0.8,

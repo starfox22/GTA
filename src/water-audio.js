@@ -361,20 +361,20 @@
         swell = 0.18 + 0.82 * Math.max(crash, second),
         near = clamp(1 - shoreEars.beach / 700, 0, 1),
         surfLevel = active ? Math.pow(near, 1.6) * (0.16 + 0.1 * Math.min(1, worldZoom)) * swell * high * cabin + (inWater ? 0.04 * swell : 0) : 0;
-      amb.surf.gain.gain.setTargetAtTime(surfLevel, t, 0.08);
-      amb.surf.filters[0].frequency.setTargetAtTime(420 + 1500 * crash * near + (muffled ? -150 : 0), t, 0.1);
+      glideParam(amb.surf.gain.gain, surfLevel, t, 0.08);
+      glideParam(amb.surf.filters[0].frequency, 420 + 1500 * crash * near + (muffled ? -150 : 0), t, 0.1);
       // Lapping: around a swimmer, and against walls when you stand at the edge.
       const lapNear = clamp(1 - shoreEars.quay / 140, 0, 1),
         lapBeat = 0.55 + 0.45 * Math.sin(gameTime * 4.4) * Math.sin(gameTime * 1.7 + 1),
         lapLevel = active ? (inWater ? 0.12 : 0.045 * lapNear * cabin) * lapBeat * high : 0;
-      amb.lap.gain.gain.setTargetAtTime(lapLevel, t, 0.06);
-      amb.lap.filters[0].frequency.setTargetAtTime(300 + 140 * Math.sin(gameTime * 2.3), t, 0.1);
+      glideParam(amb.lap.gain.gain, lapLevel, t, 0.06);
+      glideParam(amb.lap.filters[0].frequency, 300 + 140 * Math.sin(gameTime * 2.3), t, 0.1);
       // Crowd: the murmur of a busy beach, with the odd rise of a voice.
       const crowd = active ? beachCrowdLevel(ear.x, ear.y) : 0;
       amb.crowdLevel += (crowd - amb.crowdLevel) * Math.min(1, deltaSeconds * 1.5);
       const syllables = 0.6 + 0.4 * Math.abs(Math.sin(gameTime * 5.3) * Math.sin(gameTime * 3.1 + 2));
-      amb.crowd.gain.gain.setTargetAtTime(amb.crowdLevel * 0.07 * syllables * cabin * high, t, 0.05);
-      amb.crowd.filters[0].frequency.setTargetAtTime(460 + 200 * Math.abs(Math.sin(gameTime * 2.2)), t, 0.07);
+      glideParam(amb.crowd.gain.gain, amb.crowdLevel * 0.07 * syllables * cabin * high, t, 0.05);
+      glideParam(amb.crowd.filters[0].frequency, 460 + 200 * Math.abs(Math.sin(gameTime * 2.2)), t, 0.07);
       // Ears at the waterline: the whole mix dulls while you swim.
       if (earFilter) {
         const open = muffled ? 5200 : 20000;
