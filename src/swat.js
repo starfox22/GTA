@@ -1,0 +1,208 @@
+    // BEGIN SUBSYSTEM: src/swat.js — SWAT teams, riot shields and rooftop snipers
+    /**
+     * SWAT teams, riot shields and rooftop snipers
+     * Source: src/swat.js
+     * Scope: shared game closure.
+     *
+     * TEAMS: a SWAT van (pursuit.js, four stars and up) stops, throws its rear
+     * doors open (the renderer swings them, render3d.js) and its team files out of
+     * the back: four operators at four stars, five at five. The first carries a
+     * ballistic shield and a pistol and leads; the rest form a stack behind the
+     * shield in pairs, rifles up, and keep formation until the lead is within
+     * about 150 units of the player, when they fan out to flank as before. A
+     * shield stops rounds from the front (sparks, no wound); flank or rear hits
+     * land. If the shield man goes down the stack breaks up.
+     *
+     * ROOFTOP SNIPERS: at five stars, two or three police marksmen take up
+     * positions on the roofs round the player (a roof 30-200 units high, 220-650
+     * away, with a clear line to the street). Each one telegraphs: a red laser
+     * line from the rifle to the player and a glint on the scope while it lines
+     * up for SNIPER_AIM_SECONDS, then one heavy round, then a pause. Breaking
+     * the line resets the aim. They can be shot like anyone else (rounds climb
+     * to their roof); they stand down when the level drops.
+     */
+    const SWAT_STACK_SPACING = 13,
+      SWAT_STACK_BREAK = 150,
+      ROOF_SNIPERS_MAX = 3,
+      SNIPER_AIM_SECONDS = 2.4,
+      SNIPER_REST = [1.6, 2.4];
+    let roofSniperTimer = 4,
+      roofSniperWarningAt = -100;
+    const swatStats = { teams: 0, shieldBlocks: 0, snipers: 0, sniperShots: 0 };
+    function swatCrewSize(stars = Math.ceil(wantedStars)) {
+      return stars >= 5 ? 5 : 4;
+    }
+    /* Where each operator climbs out: in pairs behind the van's rear doors. */
+    function swatDeploySpots(c, size) {
+      const spec = vehicleSpec(c),
+        back = spec.l / 2 + 9,
+        spots = [];
+      for (let i = 0; i < size; i++) {
+        const row = Math.floor(i / 2),
+          side = i % 2 ? 1 : -1;
+        for (const extra of [0, 14, 28, -40]) {
+          const along = -(back + row * 11 + extra),
+            lateral = side * 7 + (extra < 0 ? side * (spec.w / 2 + 12) : 0),
+            p = {
+              x: c.x + Math.cos(c.a) * along - Math.sin(c.a) * lateral,
+              y: c.y + Math.sin(c.a) * along + Math.cos(c.a) * lateral,
+            };
+          if (!solid(p.x, p.y, 7) && !vehicles.some((o) => o !== c && pointInCar(p.x, p.y, o, 7))) {
+            spots.push(p);
+            break;
+          }
+        }
+      }
+      return spots;
+    }
+    /* Called by deployOfficers (citylife.js) for each operator of a SWAT van. */
+    function equipSwatOperator(o, index, team) {
+      if (index === 0) {
+        // The point man: shield and pistol.
+        o.shield = true;
+        o.rifle = false;
+        o.teamLead = true;
+        team.lead = o;
+        swatStats.teams++;
+      } else {
+        o.stackLeader = team.lead || null;
+        o.stackSlot = index;
+      }
+    }
+    /* The slot behind the shield, or null once the stack has broken up. */
+    function swatStackSpot(o) {
+      const lead = o.stackLeader;
+      if (!lead || lead === o || lead.hp <= 0 || lead.downed || lead.returned || personIncapacitated(lead)) return null;
+      if (distanceBetween(lead, player) < SWAT_STACK_BREAK) return null;
+      const toward = headingBetween(lead, player),
+        row = Math.ceil(o.stackSlot / 2),
+        side = o.stackSlot % 2 ? 1 : -1,
+        back = row * SWAT_STACK_SPACING,
+        lateral = side * 6,
+        spot = {
+          x: lead.x - Math.cos(toward) * back - Math.sin(toward) * lateral,
+          y: lead.y - Math.sin(toward) * back + Math.cos(toward) * lateral,
+        };
+      return solid(spot.x, spot.y, 7) ? null : spot;
+    }
+    /* The shield man walks straight at the player, to a short range. */
+    function swatLeadSpot(o, d) {
+      if (!o.shield) return null;
+      const toward = headingBetween(player, o),
+        r = clamp(d - 30, 55, 140),
+        spot = { x: player.x + Math.cos(toward) * r, y: player.y + Math.sin(toward) * r };
+      return solid(spot.x, spot.y, 7) ? null : spot;
+    }
+    /* A round from the front stops on the shield. */
+    function shieldBlocks(p, b) {
+      if (!p.shield || p.hp <= 0 || p.downed || personIncapacitated(p)) return false;
+      const from = Math.atan2(-(b.vy || 0), -(b.vx || 0));
+      if (Math.abs(normalizeAngle(from - p.a)) > 0.95) return false;
+      swatStats.shieldBlocks++;
+      return true;
+    }
+
+    /* ---- Rooftop snipers ------------------------------------------------------------- */
+    function roofSniperSite() {
+      const sites = [];
+      for (const b of buildings) {
+        if (b.depotWall || b.height < 30 || b.height > 200) continue;
+        const cx = b.x + b.w / 2,
+          cy = b.y + b.h / 2;
+        if (Math.abs(cx - player.x) > 800 || Math.abs(cy - player.y) > 800) continue;
+        // The corner of the roof nearest the player, inside the parapet.
+        const inset = 9,
+          x = clamp(player.x, b.x + inset, b.x + b.w - inset),
+          y = clamp(player.y, b.y + inset, b.y + b.h - inset),
+          d = Math.hypot(x - player.x, y - player.y);
+        if (d < 220 || d > 650) continue;
+        if (officers.some((o) => o.roofSniper && o.hp > 0 && Math.hypot(o.x - x, o.y - y) < 260)) continue;
+        const spot = { x, y, altitude: b.height };
+        if (!clearSight(spot, player)) continue;
+        sites.push({ ...spot, b, score: Math.abs(d - 420) + seededRandom() * 120 });
+      }
+      sites.sort((p, q) => p.score - q.score);
+      return sites[0] || null;
+    }
+    function spawnRoofSniper() {
+      const site = roofSniperSite();
+      if (!site) return null;
+      const o = makeOfficer(site.x, site.y, headingBetween(site, player), 'sniper', {
+        altitude: site.altitude,
+        roofSniper: true,
+        roof: site.b,
+        hold: true,
+        sniperLock: 0,
+        sniperRestUntil: gameTime + 1.5,
+      });
+      officers.push(o);
+      swatStats.snipers++;
+      if (gameTime - lastDispatchLine > 5) dispatchCaption('POLICE SNIPERS ON THE ROOFTOPS', null);
+      return o;
+    }
+    function updateRoofSnipers(deltaSeconds) {
+      const stars = Math.ceil(wantedStars),
+        wanted = stars >= 5 && !playerAtSea() && player.x < CITY_SIZE && player.y < CITY_SIZE;
+      let live = 0;
+      for (const o of officers) {
+        if (!o.roofSniper) continue;
+        o.sniperAim = 0;
+        if (o.hp <= 0 || o.returned) continue;
+        // Stood down (or left far behind out of sight): they pack up.
+        if (!wanted || (distanceBetween(o, player) > 1100 && !crowdInView(o.x, o.y, 80))) {
+          o.returned = true;
+          continue;
+        }
+        live++;
+        if (o.downed || personIncapacitated(o)) {
+          o.sniperLock = 0;
+          continue;
+        }
+        const d = combatDistance(o, player),
+          sees = d < 760 && !playerOnRoof() && clearSight(o, player);
+        o.seesPlayer = sees;
+        o.a = headingBetween(o, player);
+        o.aiming = sees;
+        if (!sees || policeHoldFire() || gameTime < o.sniperRestUntil) {
+          o.sniperLock = Math.max(0, o.sniperLock - deltaSeconds * 2);
+          continue;
+        }
+        o.sniperLock += deltaSeconds;
+        o.sniperAim = clamp(o.sniperLock / SNIPER_AIM_SECONDS, 0, 1);
+        if (o.sniperLock > 0.4 && gameTime - roofSniperWarningAt > 7) {
+          roofSniperWarningAt = gameTime;
+          tell('SNIPER ON THE ROOFTOPS · GET INTO COVER', 2.4);
+          tone(1400, 0.05, 0.08, 'square', 1500);
+        }
+        if (o.sniperLock < SNIPER_AIM_SECONDS) continue;
+        // The round: sure against a target standing still, spoiled by speed.
+        o.sniperLock = 0;
+        o.sniperRestUntil = gameTime + randomBetween(...SNIPER_REST);
+        swatStats.sniperShots++;
+        const speed = player.car ? Math.hypot(player.car.vx || 0, player.car.vy || 0) : keys.ShiftLeft ? 150 : keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD ? 90 : 0,
+          chance = clamp(0.85 - speed / 400, 0.25, 0.85);
+        let a = headingBetween(o, player);
+        if (seededRandom() > chance) a += (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.03, 0.07);
+        const origin = { x: o.x + Math.cos(a) * 12, y: o.y + Math.sin(a) * 12, altitude: entityElevation(o) };
+        bullets.push({
+          ...origin,
+          ...shotVelocity(origin, player, 1500, a),
+          life: 0.8,
+          dmg: 60,
+          playerDmg: 14,
+          enemy: true,
+          faction: 'police',
+          owner: o,
+          target: player,
+        });
+        playSample('pistol', 0.5, 0.6, o);
+        if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
+      }
+      if (!wanted) return;
+      roofSniperTimer -= deltaSeconds;
+      if (roofSniperTimer <= 0) {
+        roofSniperTimer = 5;
+        if (live < Math.min(ROOF_SNIPERS_MAX, policeTier().snipers || 0)) spawnRoofSniper();
+      }
+    }
+    // END SUBSYSTEM: src/swat.js

@@ -150,7 +150,8 @@
       };
     }
     function killCategory(victim) {
-      if (victim.police) return victim.unit === 'swat' ? 'swat' : victim.unit === 'fed' ? 'fed' : 'cop';
+      if (victim.police)
+        return victim.unit === 'swat' ? 'swat' : victim.unit === 'fed' ? 'fed' : victim.unit === 'soldier' ? 'soldier' : 'cop';
       if (victim.military) return 'soldier';
       if (enemies.includes(victim)) return 'hostile';
       if (victim.faction) return 'gang';
@@ -215,6 +216,7 @@
         heat = 26;
         tell('POLICE HELICOPTER DOWN', 2);
       } else if (vehicle.type === 'tank' || vehicle.military) heat = 30;
+      else if (vehicle.armyUnit) heat = 16;
       else if (vehicle.lawUnit === 'swat') heat = 14;
       else if (vehicle.type === 'police' || vehicle.lawUnit) heat = 9;
       else heat = vehicle.ai || vehicle.occupied ? 3.5 : 1.5;

@@ -2669,6 +2669,12 @@
             if (Math.hypot(b.x - p.x, b.y - p.y) >= 10) continue;
             // A precision-rifle round on the target it was aimed at is a headshot:
             // one shot, whatever the vest.
+            // A riot shield stops a round from the front: sparks, no wound (swat.js).
+            if (shieldBlocks(p, b)) {
+              impact = true;
+              hitKind = 'metal';
+              break;
+            }
             const headshot = !b.enemy && b.headshotTarget === p;
             strikePerson(
               p,
@@ -4660,6 +4666,7 @@
     // @include src/arsenal.js
     // @include src/citylife.js
     // @include src/pursuit.js
+    // @include src/swat.js
     // @include src/wounds.js
     // @include src/story.js
     // @include src/campaign.js
@@ -5154,6 +5161,8 @@
                 hp: Math.round(p.hp),
                 d: Math.round(distanceBetween(p, player)),
                 sight: clearSight(player, p),
+                // Police extras: a riot shield (swat.js), a rooftop post, their heading.
+                ...(p.police ? { shield: !!p.shield, roof: !!p.roofSniper, aim: +(p.sniperAim || 0).toFixed(2), a: +(p.a || 0).toFixed(2), state: p.state } : {}),
               });
         return found.sort((a, b) => a.d - b.d).slice(0, 40);
       },

@@ -996,24 +996,34 @@
       );
     }
     function deployOfficers(c) {
-      if (c.crewDeployed || c.crewLost || c.hp <= 0 || c.lawUnit === 'army') return;
+      // The tank and the army jeeps keep their crews aboard (pursuit.js).
+      if (c.crewDeployed || c.crewLost || c.hp <= 0 || c.lawUnit === 'army' || c.lawUnit === 'armyJeep') return;
       c.crewDeployed = true;
       c.ai = false;
       c.vx = c.vy = c.speed = c.av = 0;
       c.crew = [];
-      // A patrol car carries two, an agents' SUV three, a SWAT van four
-      // (pursuit.js); they climb out on both sides, the rest from the back.
-      const unit = c.lawUnit === 'swat' ? 'swat' : c.lawUnit === 'fed' ? 'fed' : 'patrol',
+      // A patrol car carries two, an agents' SUV three (they climb out on both
+      // sides), a SWAT van four or five who file out of the rear doors behind a
+      // shield (swat.js), an army APC four soldiers and a truck five (pursuit.js).
+      const swat = c.lawUnit === 'swat',
+        army = c.lawUnit === 'armyApc' || c.lawUnit === 'armyTruck',
+        unit = swat ? 'swat' : c.lawUnit === 'fed' ? 'fed' : army ? 'soldier' : 'patrol',
         size = c.crewSize || 2,
         doors = [
           [-1, 0],
           [1, 0],
           [-1, -0.3],
           [1, -0.3],
-        ].slice(0, size);
-      for (const [side, back] of doors) {
-        let spawnPoint = null;
-        for (const radius of [25, 35, 47]) {
+          [-1, -0.55],
+          [1, -0.55],
+        ].slice(0, size),
+        rear = swat || army ? swatDeploySpots(c, size) : null,
+        team = {};
+      if (swat) c.doorsOpenAt = gameTime;
+      for (const [index, [side, back]] of doors.entries()) {
+        let spawnPoint = rear ? rear[index] || null : null;
+        // Patrol and agents' crews: the nearest free spot beside their door.
+        for (const radius of rear ? [] : [25, 35, 47]) {
           const a = c.a + (side * Math.PI) / 2,
             p = {
               x: c.x + Math.cos(a) * radius + Math.cos(c.a) * back * 60,
@@ -1043,6 +1053,7 @@
         });
         // Patrol officers wear a light vest; at four stars and up a heavier one.
         if (unit === 'patrol' && wantedStars >= 4) o.vest = 60;
+        if (swat) equipSwatOperator(o, c.crew.length, team);
         officers.push(o);
         c.crew.push(o);
       }
@@ -1136,6 +1147,8 @@
           }
           continue;
         }
+        // Rooftop marksmen hold their roof and shoot on their own clock (swat.js).
+        if (o.roofSniper) continue;
         if (look || o.seesPlayer === undefined) o.seesPlayer = wantedStars > 0 && policeSees(o);
         const seesPlayer = wantedStars > 0 && o.seesPlayer,
           gang = o.gangTarget,
@@ -1229,8 +1242,10 @@
             continue;
           }
           o.state = 'pursue';
-          if (distanceBetween(o, chase) > 20)
-            footStepTowards(o, chase, deltaSeconds, target === player && player.car ? 96 : kind.run);
+          // A SWAT stack moves up in file behind its shield (swat.js).
+          const goal = (target === player && swatStackSpot(o)) || chase;
+          if (distanceBetween(o, goal) > (goal === chase ? 20 : 4))
+            footStepTowards(o, goal, deltaSeconds, target === player && player.car ? 96 : kind.run);
         }
       }
       for (let i = officers.length - 1; i >= 0; i--) if (officers[i].returned) officers.splice(i, 1);
