@@ -492,17 +492,23 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **Centre cards** (hud.js CENTRE CARDS): the headline card (`announce()`) slides up under the
   docked prompt and shrinks after 3 s (not WASTED / BUSTED); in touch mode a toast dims after
   3 s. Reduced motion cuts the slides and pop-ins (the shell's reduced-motion block).
-- **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft two
-  columns frame the aircraft either side of the middle of the screen, leaving the centre
-  clear: an attitude indicator (pitch ladder, bank scale and pointer), the airspeed tape with
-  its stall band and the power block (engine power fill, throttle lever tick, flaps and gear
-  chips) on the left; the altitude tape with the ground band and a vertical-speed scale, then
-  AGL, vertical speed and g on the right; a heading strip with the objective's bearing on
-  top, and one warning at a time under it (STALL, PULL UP, GEAR, STALL WARNING, ENGINE
-  DAMAGE). The instruments are 2D canvases redrawn every frame (`updateFlightHud` from the
-  game loop) from `flightData()` (aviation.js); `#flightHud.on` fades and slides it in. The
-  helicopter shows the slim version (no attitude, flaps or gear; ROTOR for power). It scales
-  down on small screens and keeps only the tapes and heading on phones.
+- **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft the
+  instruments hug the screen edges so the view stays clear: a column on the left edge
+  (attitude indicator with pitch ladder and bank scale, the airspeed tape with its stall band,
+  the power block with engine fill, throttle tick, flaps and gear chips), a column on the
+  right edge standing on the vehicle card (the altitude tape with the ground band and a
+  vertical-speed scale, then AGL, vertical speed and g), a thin heading strip with the
+  objective's bearing at the top under the navigation pill, and one warning at a time under
+  it (STALL, PULL UP, GEAR, STALL WARNING, ENGINE DAMAGE). The canvases are drawn at full
+  size and scaled as groups by `--fh-scale` (0.78, 0.68 and 0.56 on smaller screens); they
+  are redrawn every frame (`updateFlightHud`) from `flightData()` (aviation.js), and
+  `#flightHud.on` fades and slides them in from the edges. The helicopter shows the slim
+  version (no attitude, flaps or gear; ROTOR for power). Phones keep the tapes and heading;
+  touch phones show only the warnings (the thumbs own both sides and the vehicle card reads
+  speed and altitude). **Settings · Gameplay · Flight HUD** (`hudState.flightHud`, saved,
+  on by default) turns the instruments off (`.instruments-off`); the warnings still flash
+  when they apply, because STALL and PULL UP decide whether a landing ends in a crash. The
+  docked interaction prompt sits under the heading strip in flight (`placeDockLine`).
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
   advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,

@@ -4723,14 +4723,18 @@ body.no-key-hints .quickkeys {
   }
 }
 /* --- Flight HUD (hud.js, FLIGHT HUD) -----------------------------------------
-   Shown only in an aircraft. Two columns frame the aircraft either side of the
-   middle of the screen (attitude, airspeed and power on the left; altitude,
-   vertical speed, AGL and g on the right) and a heading strip sits above; the
-   centre, where the aircraft is, stays clear. The instruments are canvases
-   redrawn every frame; the rest is text. It slides in from the sides. */
+   Shown only in an aircraft, compact and against the screen edges so the view
+   stays clear: attitude, airspeed and power in a column on the left edge;
+   altitude, vertical speed, AGL and g on the right edge above the vehicle card;
+   a thin heading strip at the top under the navigation pill, with one warning
+   at a time under it. The instruments are canvases redrawn every frame, drawn
+   at full size and scaled down as a group (--fh-scale). They slide in from the
+   edges. Settings · Gameplay · Flight HUD off (.instruments-off) leaves only the
+   warnings. */
 #flightHud {
   --fh-line: #e9efe6;
   --fh-accent: #7fe3ee;
+  --fh-scale: 0.78;
   position: fixed;
   inset: 0;
   z-index: 8;
@@ -4752,47 +4756,54 @@ body.no-key-hints .quickkeys {
 }
 #flightHud .fh-frame {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0;
-  height: 0;
-  transform: scale(var(--fh-scale, 1));
+  inset: 0;
 }
 #flightHud .fh-col {
   position: absolute;
-  top: -222px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 124px;
   transition: transform 0.45s var(--ui-ease);
 }
+/* Left edge, vertically centred between the location block and the minimap. */
 #flightHud .fh-left {
-  right: 258px;
-  width: 124px;
-  align-items: flex-end;
-  transform: translateX(-40px);
+  left: var(--hud-edge);
+  top: 50%;
+  translate: 0 -50%;
+  align-items: flex-start;
+  transform-origin: 0 50%;
+  transform: translateX(-60px) scale(var(--fh-scale));
 }
+/* Right edge, standing on the vehicle card (below the radio box). */
 #flightHud .fh-right {
-  top: -90px;
-  left: 258px;
-  width: 124px;
-  transform: translateX(40px);
+  right: var(--hud-edge);
+  bottom: 176px;
+  align-items: flex-end;
+  transform-origin: 100% 100%;
+  transform: translateX(60px) scale(var(--fh-scale));
 }
 #flightHud .fh-top {
   position: absolute;
-  top: -262px;
-  left: -176px;
-  width: 352px;
+  top: 70px;
+  left: 50%;
+  translate: -50% 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  transform: translateY(-24px);
+  transform-origin: 50% 0;
+  transform: translateY(-24px) scale(var(--fh-scale));
   transition: transform 0.45s var(--ui-ease);
 }
 #flightHud.on .fh-col,
 #flightHud.on .fh-top {
-  transform: none;
+  transform: scale(var(--fh-scale));
+}
+/* Instruments off: only a warning, when there is one. */
+#flightHud.instruments-off .fh-col,
+#flightHud.instruments-off #fhHeading {
+  display: none;
 }
 #flightHud canvas {
   display: block;
@@ -4943,30 +4954,46 @@ body.no-key-hints .quickkeys {
 #flightHud.heli .fh-chips {
   display: none;
 }
-#flightHud.heli .fh-col {
-  top: -90px;
-}
 @media (max-width: 1180px), (max-height: 760px) {
-  #flightHud {
-    --fh-scale: 0.84;
-  }
-}
-@media (max-width: 900px), (max-height: 620px) {
   #flightHud {
     --fh-scale: 0.68;
   }
 }
-/* Phones: the heading strip and the two tapes only. */
+@media (max-width: 900px), (max-height: 620px) {
+  #flightHud {
+    --fh-scale: 0.56;
+  }
+  #flightHud .fh-top {
+    top: 62px;
+  }
+}
+/* Phones and touch: the heading strip and the two tapes only, both tapes at
+   mid-height against the edges (the thumb buttons own the lower corners). */
 @media (max-width: 640px) {
   #flightHud .fh-adi,
   #flightHud .fh-block {
     display: none;
   }
-  #flightHud .fh-left {
-    right: 150px;
+}
+.touch-mode #flightHud .fh-adi,
+.touch-mode #flightHud .fh-block {
+  display: none;
+}
+.touch-mode #flightHud .fh-right {
+  bottom: auto;
+  top: 50%;
+  translate: 0 -50%;
+  transform-origin: 100% 50%;
+}
+/* Touch phones: the thumbs own both sides and the vehicle card already reads
+   speed and altitude, so only the warnings show, under the aircraft. */
+@media (max-height: 520px), (max-width: 640px) {
+  .touch-mode #flightHud .fh-col,
+  .touch-mode #flightHud #fhHeading {
+    display: none;
   }
-  #flightHud .fh-right {
-    left: 150px;
+  .touch-mode #flightHud .fh-top {
+    top: calc(50% + 48px);
   }
 }
 /* --- Reduced motion: keep the states, drop the movement -------------------- */

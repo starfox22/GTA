@@ -5483,6 +5483,7 @@
         for (const [key, value] of Object.entries(data))
           out[key] = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
         out.hud = !!document.getElementById('flightHud')?.classList.contains('on');
+        out.instruments = hudState.flightHud;
         return out;
       },
       // What the vehicle under the player is actually doing.
@@ -5934,6 +5935,7 @@
           if (changes.frameLimit !== undefined) setFrameLimit(changes.frameLimit === 0 ? 'unlimited' : changes.frameLimit);
           if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
+          if (typeof changes.flightHud === 'boolean') setFlightHud(changes.flightHud);
           if (typeof changes.gps === 'boolean') setGps(changes.gps);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
@@ -5957,6 +5959,7 @@
           minimapFolded: hudState.minimapFolded,
           minimapZoom: +hudState.minimapZoom.toFixed(2),
           keyHints: hudState.keyHints,
+          flightHud: hudState.flightHud,
           gps: hudState.gps,
           gpsRoute: gpsRoute.points.length,
           touch: touchMode,

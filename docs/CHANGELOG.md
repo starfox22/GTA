@@ -14,6 +14,9 @@ HUD (hud.js, harbor.js, shell.html)
   docks as a small chip under the navigation pill (touch: above the action buttons) and pops
   back for a new action; headlines slide up and shrink; touch toasts dim. Reduced motion
   respected.
+- The flight HUD is compact and against the screen edges (speed, attitude and power on the
+  left, altitude on the right, a thin heading strip at the top), so the centre is clear; a
+  new Settings · Gameplay · Flight HUD switch turns the instruments off (warnings stay).
 
 ## 30.0.0 — The islands rearranged, AAA pass two
 

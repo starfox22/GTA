@@ -42,6 +42,8 @@
       keyHints: true,
       // GPS route on the minimap (Settings · Gameplay, navigation.js).
       gps: true,
+      // The flight instruments (Settings · Gameplay); warnings show either way.
+      flightHud: true,
     };
     try {
       const saved = JSON.parse(localStorage.getItem(HUD_STORAGE));
@@ -49,6 +51,7 @@
         hudState.minimapFolded = saved.minimapFolded === true;
         hudState.keyHints = saved.keyHints !== false;
         hudState.gps = saved.gps !== false;
+        hudState.flightHud = saved.flightHud !== false;
         if (Number.isFinite(saved.minimapZoom))
           hudState.minimapZoom = clamp(saved.minimapZoom, MINIMAP_ZOOM_MIN, MINIMAP_ZOOM_MAX);
       }
@@ -216,6 +219,15 @@
       hudState.gps = !!on;
       saveHudState();
     }
+    /* Off hides the tapes, attitude, power and heading strip; STALL / PULL UP and
+       the other warnings still flash, briefly and only when they apply, because
+       they are the difference between a landing and a crash. */
+    function setFlightHud(on) {
+      hudState.flightHud = !!on;
+      getElement('flightHud').classList.toggle('instruments-off', !hudState.flightHud);
+      saveHudState();
+    }
+    setFlightHud(hudState.flightHud);
     /**
      * KEY HINTS
      * The strip follows the context; it is rebuilt only when the context or the
@@ -425,9 +437,12 @@
       const nav = getElement('navigation'),
         shown = nav.style.display !== 'none',
         box = shown ? nav.getBoundingClientRect() : null;
-      dockNavShown = shown;
+      dockNavShown = dockLineKey();
+      let bottom = box && box.height ? box.bottom : 12;
+      // In an aircraft: below the heading strip and its warning line.
+      if (flightHud.shown) bottom = Math.max(bottom, flightHud.root.querySelector('.fh-top').getBoundingClientRect().bottom);
       const root = document.documentElement.style;
-      root.setProperty('--hud-dock-top', Math.round((box && box.height ? box.bottom : 12) + 8) + 'px');
+      root.setProperty('--hud-dock-top', Math.round(bottom + 8) + 'px');
       // Touch: above the column of action buttons on the right.
       if (document.body.classList.contains('touch-mode')) {
         const buttons = [...document.querySelectorAll('.touch-actions button')]
@@ -441,9 +456,14 @@
         }
       }
     }
+    function dockLineKey() {
+      return (
+        (getElement('navigation').style.display !== 'none' ? 'nav' : '') +
+        (flightHud.shown ? (hudState.flightHud ? '|flight' : '|warnings') : '')
+      );
+    }
     function watchDockLine() {
-      const shown = getElement('navigation').style.display !== 'none';
-      if (shown !== dockNavShown && (promptView.docked || getElement('announcement').classList.contains('docked')))
+      if (dockLineKey() !== dockNavShown && (promptView.docked || getElement('announcement').classList.contains('docked')))
         placeDockLine();
     }
     /* What the prompt shows, for DeadEndCity.promptState(). */
@@ -876,6 +896,27 @@
       }
       if (!show) return;
       const heli = data.type === 'helicopter';
+      // Instruments off: only the warning line below is kept up to date.
+      if (hudState.flightHud) drawFlightInstruments(data, heli);
+      // One warning at a time, the most urgent first.
+      const pullUp = data.agl < 90 && data.vs < -14 && data.agl > 2,
+        warning = data.stall
+          ? 'STALL'
+          : pullUp
+            ? 'PULL UP'
+            : data.gearWarning
+              ? 'GEAR'
+              : data.stallWarning
+                ? 'STALL WARNING'
+                : data.hp < 0.3
+                  ? 'ENGINE DAMAGE'
+                  : '';
+      const box = flightHud.text.fhWarning;
+      fhSetText('fhWarning', warning);
+      box.classList.toggle('show', !!warning);
+      box.classList.toggle('caution', warning === 'STALL WARNING' || warning === 'ENGINE DAMAGE');
+    }
+    function drawFlightInstruments(data, heli) {
       flightHud.root.classList.toggle('heli', heli);
       const { attitude, speed, altitude, heading } = flightHud.canvases;
       if (!heli) drawAttitude(attitude.context, attitude.width, data.pitch, data.bank);
@@ -919,23 +960,6 @@
         gear.classList.toggle('moving', data.gear === 'TRANSIT' && !data.gearWarning);
         gear.classList.toggle('alert', data.gearWarning);
       }
-      // One warning at a time, the most urgent first.
-      const pullUp = data.agl < 90 && data.vs < -14 && data.agl > 2,
-        warning = data.stall
-          ? 'STALL'
-          : pullUp
-            ? 'PULL UP'
-            : data.gearWarning
-              ? 'GEAR'
-              : data.stallWarning
-                ? 'STALL WARNING'
-                : data.hp < 0.3
-                  ? 'ENGINE DAMAGE'
-                  : '';
-      const box = flightHud.text.fhWarning;
-      fhSetText('fhWarning', warning);
-      box.classList.toggle('show', !!warning);
-      box.classList.toggle('caution', warning === 'STALL WARNING' || warning === 'ENGINE DAMAGE');
     }
     /**
      * TITLE MENU
