@@ -10,9 +10,11 @@
       // Regional ground is tiled separately so the original city's ground detail stays sharp.
       // Their materials get the same procedural ground detail as the city sheet
       // (surfaces3d.js), or the county is a flat, textureless pastel.
-      const countyGroundMaterials = [];
+      const countyGroundMaterials = [],
+        countyTileTextures = [];
       for (const tile of countyGroundTiles) {
         const tx = new Three.CanvasTexture(tile.canvas);
+        countyTileTextures.push({ tile, texture: tx });
         tx.colorSpace = Three.SRGBColorSpace;
         tx.anisotropy = 8;
         const m = new Three.Mesh(
@@ -93,6 +95,7 @@
         vec3 tN = normalize( vTerrainNormal );
         float tAo = vTerrainData.x, tFlow = vTerrainData.y, tTrail = vTerrainData.z, tForest = vTerrainData.w;
         float tSteep = 1.0 - tN.y;
+        float tFoot = 0.0;
         float tFade = 1.0 - smoothstep( 0.9, 5.0, length( fwidth( tP.xz ) ) );
         float tMacro = terrainFbm( tP.xz * 0.0011 );
         float tMid = terrainFbm( tP.xz * 0.009 + 3.1 );
@@ -155,7 +158,25 @@
         // Ambient occlusion also darkens the albedo a little in the deepest folds.
         tCol *= mix( 0.72, 1.0, smoothstep( 0.35, 0.95, tAo ) );
         // At the foot the colour meets the painted county ground it rises from.
-        tCol = mix( tCol, terrainSrgb( vec3( 0.34, 0.43, 0.3 ) ) * ( 0.9 + 0.2 * tMid ), ( 1.0 - smoothstep( 0.5, 14.0, tP.y ) ) * ( 1.0 - tTrail ) );
+        // At the foot the colour becomes the county sheet it rises from, with the
+        // same grass detail the sheet's own shader adds (surfaces3d.js) and the
+        // shading of flat ground, so the mesh's outline on the 10-unit grid never shows.
+        {
+          vec2 gp = tP.xz;
+          vec3 groundBase = texture2D( terrainTile, ( gp - terrainTileRect.xy ) / terrainTileRect.zw ).rgb * terrainTileTint;
+          vec2 gr = mat2( 0.8, -0.6, 0.6, 0.8 ) * gp;
+          float dry = smoothstep( 0.52, 0.8, cityNoise( gp * 0.035 + 5.0 ) * 0.6 + cityNoise( gr * 0.083 + 2.0 ) * 0.4 );
+          float meadow = cityNoise( gp * 0.0045 + 3.7 ) * 0.62 + cityNoise( gr * 0.014 + 11.0 ) * 0.38;
+          dry = max( dry, smoothstep( 0.62, 0.9, meadow ) * 0.7 );
+          float blades = cityNoise( gr * 0.35 ) * 0.55 + cityNoise( gp * 0.93 + 7.0 ) * 0.45;
+          float groundFade = 1.0 - smoothstep( 0.6, 2.5, length( fwidth( gp ) ) );
+          vec3 grass = groundBase * mix( 1.0, 0.84 + 0.32 * blades, groundFade ) * ( 0.84 + 0.3 * meadow ) * mix( vec3( 1.0 ), vec3( 1.14, 1.06, 0.8 ), dry );
+          grass = max( mix( vec3( dot( grass, vec3( 0.2126, 0.7152, 0.0722 ) ) ), grass, 1.15 ) * vec3( 0.84, 0.9, 0.84 ), 0.0 );
+          // Only green paint is grass to the sheet's shader; kerbs and verges stay as painted.
+          grass = mix( groundBase, grass, smoothstep( 0.004, 0.03, groundBase.g - max( groundBase.r, groundBase.b ) ) );
+          tFoot = 1.0 - smoothstep( 0.3, 16.0, tP.y + tTrail * 16.0 );
+          tCol = mix( tCol, grass, tFoot );
+        }
         tCol *= 1.0 - 0.3 * cityWet;
         diffuseColor.rgb = tCol;`;
       const TERRAIN_ROUGHNESS = `
@@ -174,10 +195,12 @@
           vec2 dh = vec2( dFdx( bumpHeight ), dFdy( bumpHeight ) );
           vec3 grad = sign( det ) * ( dh.x * r1 + dh.y * r2 );
           normal = normalize( abs( det ) * normal - grad );
+          // The foot is lit like the flat sheet beside it.
+          normal = normalize( mix( normal, ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz, tFoot ) );
         }`;
       const TERRAIN_AO = `
         {
-          float terrainOcclusion = mix( 0.35, 1.0, smoothstep( 0.3, 0.95, tAo ) );
+          float terrainOcclusion = mix( mix( 0.35, 1.0, smoothstep( 0.3, 0.95, tAo ) ), 1.0, tFoot );
           reflectedLight.indirectDiffuse *= terrainOcclusion;
           reflectedLight.indirectSpecular *= terrainOcclusion;
         }`;
@@ -205,8 +228,9 @@
         shader.fragmentShader = shader.fragmentShader
           .replace(
             '#include <common>',
-            '#include <common>\nvarying vec4 vTerrainData;\nvarying vec3 vTerrainNormal;\nuniform float terrainTime;\nuniform vec3 terrainSun;\nuniform float terrainSunPower;\nuniform float terrainSnowLine;\nuniform float terrainTreeLine;\n' +
-              TERRAIN_NOISE,
+            '#include <common>\nvarying vec4 vTerrainData;\nvarying vec3 vTerrainNormal;\nuniform sampler2D terrainTile;\nuniform vec4 terrainTileRect;\nuniform vec3 terrainTileTint;\nuniform float terrainTime;\nuniform vec3 terrainSun;\nuniform float terrainSunPower;\nuniform float terrainSnowLine;\nuniform float terrainTreeLine;\n' +
+              TERRAIN_NOISE +
+              SURFACE_NOISE,
           )
           .replace('#include <color_fragment>', '#include <color_fragment>\n' + TERRAIN_ALBEDO)
           .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + TERRAIN_ROUGHNESS)
@@ -215,10 +239,29 @@
           .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n' + TERRAIN_AO)
           .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' + TERRAIN_SPARKLE);
       }
-      const terrainMaterial = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.95 });
-      terrainMaterial.onBeforeCompile = terrainPatch;
-      terrainMaterial.customProgramCacheKey = () => 'ridgeline-terrain';
+      // One material per county sheet a field stands on (they differ only in the
+      // sheet their foot blends into). The patch reads SURFACE_NOISE (surfaces3d.js)
+      // when the program is first compiled, long after that file has run.
+      const terrainMaterials = new Map();
+      function terrainMaterialAt(x, y) {
+        const found = countyTileTextures.find(({ tile }) => x >= tile.x && x < tile.x + tile.w && y >= tile.y && y < tile.y + tile.h);
+        if (terrainMaterials.has(found)) return terrainMaterials.get(found);
+        const material = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.95 }),
+          uniforms = {
+            terrainTile: { value: found.texture },
+            terrainTileRect: { value: new Three.Vector4(found.tile.x, found.tile.y, found.tile.w, found.tile.h) },
+            terrainTileTint: { value: new Three.Color('#e2e4de') },
+          };
+        material.onBeforeCompile = (shader) => {
+          terrainPatch(shader);
+          Object.assign(shader.uniforms, uniforms);
+        };
+        material.customProgramCacheKey = () => 'ridgeline-terrain';
+        terrainMaterials.set(found, material);
+        return material;
+      }
       for (const field of TERRAIN_FIELDS) {
+        const terrainMaterial = terrainMaterialAt((field.x0 + field.x1) / 2, (field.y0 + field.y1) / 2);
         const { cols, rows, nx, ny, heights, triangles, flow, trailMask, x0, y0 } = terrainField(field),
           { normals, ao, forest } = terrainBakes(field);
         for (let cz = 0; cz < ny; cz += TERRAIN_CHUNK)

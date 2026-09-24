@@ -553,7 +553,7 @@
           }
         }
       // Everything the plan lays on the ground stays at street level.
-      for (const road of [...COUNTY_ROADS, ...SERVICE_ROADS]) rasterizePolyline(flat, field, road.points, road.width / 2 + 14);
+      for (const road of [...COUNTY_ROADS, ...SERVICE_ROADS]) rasterizePolyline(flat, field, road.points, road.width / 2 + 26);
       for (const line of RAIL_LINES) rasterizePolyline(flat, field, line.route, 40);
       for (const t of COUNTY_TOWNS) rasterizeRect(flat, field, t.x - 90, t.y - 90, BLOCK_SIZE * 2 + 180, BLOCK_SIZE * 2 + 180);
       rasterizePolyline(flat, field, [[FLIGHT.pickup.x, FLIGHT.pickup.y], [FLIGHT.pickup.x, FLIGHT.pickup.y]], 150);
