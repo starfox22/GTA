@@ -107,6 +107,9 @@
         stall: 140,
         rotate: 165,
         assist: 0.55,
+        // Engine spool, fraction of full power per second (up, down).
+        spoolUp: 0.9,
+        spoolDown: 1.3,
       },
       jet: {
         name: 'AURELIA J8 PRIVATE JET',
@@ -123,6 +126,8 @@
         stall: 155,
         rotate: 183,
         assist: 0.46,
+        spoolUp: 0.38,
+        spoolDown: 0.55,
       },
       airliner: {
         name: 'MERIDIAN 220 AIRLINER',
@@ -139,6 +144,8 @@
         stall: 170,
         rotate: 205,
         assist: 0.32,
+        spoolUp: 0.3,
+        spoolDown: 0.45,
       },
     };
     function populateAircraft() {
@@ -173,11 +180,15 @@
         Math.max(0, Math.abs(c.pitch) - 0.23) * 180;
       let damage = unsafe + (aligned ? 0 : dry ? 35 + Math.max(0, c.airspeed - 160) * 0.35 : c.maxhp);
       if (!aircraftClear(c)) damage += 90;
+      // Wheels not down and locked: a belly landing.
+      const belly = dry && (c.gearPos ?? 1) < 0.9;
+      if (belly) damage += 45 + Math.max(0, (c.airspeed || 0) - 120) * 0.3;
       if (damage > 0) damageVehicle(c, damage, c.x, c.y);
       c.altitude = terrainHeight(c.x, c.y);
       c.vz = 0;
       c.landedAt = aligned ? runway.name : null;
       c.throttle = Math.min(c.throttle, 0.2);
+      c.pitchRate = c.bankRate = 0;
       c.bank = 0;
       c.pitch = 0;
       c.stalled = false;
@@ -185,20 +196,82 @@
         tell(
           !dry
             ? 'DITCHING · Aircraft lost'
-            : damage > 20
+            : belly
+              ? 'BELLY LANDING · Gear was up'
+              : damage > 20
               ? 'HARD LANDING · Aircraft damaged'
               : 'TOUCHDOWN · Hold S to brake',
           4,
         );
     }
+    /**
+     * FLIGHT CONTROLS
+     * The pilot's inputs go through the airframe the way they would in a real
+     * light aircraft, on top of the lift / drag / stall model below:
+     *   - The throttle lever (W / S) sets `throttle`; the engine's `power` spools
+     *     after it (the turboprop in about a second, turbofans in two to three).
+     *   - Pitch and bank are damped springs with inertia (`pitchRate`,
+     *     `bankRate`): the nose and the wings follow the stick smoothly and
+     *     settle, and control authority grows with airspeed. Turns are
+     *     auto-coordinated: bank turns the flight path through the lift vector and
+     *     the fuselage follows its slip angle.
+     *   - Flaps (X extends a notch, Z retracts: UP, 1, 2, FULL) add lift and drag
+     *     and lower the stall and rotation speeds; they travel at a finite rate.
+     *   - The landing gear (L) retracts and extends over a few seconds; it cannot
+     *     retract on the ground, adds drag when down, and a gear-up touchdown is a
+     *     belly landing. A horn sounds when low, slow and descending with it up.
+     *   - A stall warning (horn and HUD) comes on a little before the stall; the
+     *     buffet (`buffet`, shaking the airframe and the camera) grows into it.
+     *   - On the ground A / D steer the nosewheel (less at speed) and S at idle
+     *     power brakes.
+     * `ctrlPitch`, `ctrlRoll`, `ctrlYaw` (-1..1) are the smoothed stick and pedal
+     * positions the 3D model deflects its elevators, ailerons and rudder by.
+     */
+    const FLAP_NOTCHES = ['UP', '1', '2', 'FULL'],
+      GEAR_TRAVEL_SECONDS = 4.5,
+      FLAP_RATE = 0.4;
+    function flightSetup(aircraft) {
+      if (aircraft.flightReady) return;
+      aircraft.flightReady = true;
+      aircraft.flaps = aircraft.flaps || 0;
+      aircraft.flapPos = aircraft.flapPos || 0;
+      aircraft.gearDown = aircraft.gearDown ?? true;
+      aircraft.gearPos = aircraft.gearPos ?? (aircraft.gearDown ? 1 : 0);
+      aircraft.power = aircraft.power ?? aircraft.throttle ?? 0;
+      aircraft.pitchRate = 0;
+      aircraft.bankRate = 0;
+      aircraft.gLoad = 1;
+      aircraft.buffet = 0;
+      aircraft.ctrlPitch = aircraft.ctrlRoll = aircraft.ctrlYaw = 0;
+    }
+    function setPlaneFlaps(aircraft, step) {
+      flightSetup(aircraft);
+      const next = clamp(aircraft.flaps + step, 0, FLAP_NOTCHES.length - 1);
+      if (next === aircraft.flaps) return false;
+      aircraft.flaps = next;
+      if (aircraft === player.car) tell('FLAPS ' + FLAP_NOTCHES[next], 1.5);
+      return true;
+    }
+    function togglePlaneGear(aircraft) {
+      flightSetup(aircraft);
+      const airborne = aircraft.altitude > terrainHeight(aircraft.x, aircraft.y) + 1e-7;
+      if (aircraft.gearDown && !airborne) {
+        if (aircraft === player.car) tell('GEAR LOCKED DOWN · Weight on wheels', 2);
+        return false;
+      }
+      aircraft.gearDown = !aircraft.gearDown;
+      if (aircraft === player.car) tell(aircraft.gearDown ? 'GEAR DOWN' : 'GEAR UP', 1.5);
+      return true;
+    }
     function planeControl(aircraft, stepSeconds, active) {
+      flightSetup(aircraft);
       const controlled = aircraft === player.car && active,
         up = controlled && (keys.KeyW || keys.ArrowUp),
         down = controlled && (keys.KeyS || keys.ArrowDown),
         turn = controlled
           ? (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)
           : 0;
-      // Nose up / down share the helicopter's climb and descend keys (controls.js).
+      // Nose up / down are the climb and descend actions (↑ / ↓, controls.js).
       const pull = controlled && actionHeld('ascend'),
         push = controlled && actionHeld('descend'),
         airframeProfile = AIRFRAME_SPECS[aircraft.airframe || 'courier'],
@@ -217,6 +290,17 @@
         0,
         1,
       );
+      // Engine spool: the power follows the lever at the engine's own pace.
+      const spool = aircraft.throttle > aircraft.power ? airframeProfile.spoolUp : airframeProfile.spoolDown;
+      aircraft.power += clamp(aircraft.throttle - aircraft.power, -spool * stepSeconds, spool * stepSeconds);
+      // Flaps and gear run toward their levers.
+      const flapTarget = aircraft.flaps / (FLAP_NOTCHES.length - 1);
+      aircraft.flapPos += clamp(flapTarget - aircraft.flapPos, -FLAP_RATE * stepSeconds, FLAP_RATE * stepSeconds);
+      aircraft.gearPos = clamp(aircraft.gearPos + ((aircraft.gearDown ? 1 : -1) * stepSeconds) / GEAR_TRAVEL_SECONDS, 0, 1);
+      // Stick and pedals, smoothed, for the control surfaces on the model.
+      const ease = 1 - Math.exp(-stepSeconds * 7);
+      aircraft.ctrlPitch += ((pull ? 1 : push ? -1 : 0) - aircraft.ctrlPitch) * ease;
+      aircraft.ctrlRoll += (turn - aircraft.ctrlRoll) * ease;
       if (aircraft.hp <= 0) {
         aircraft.throttle = 0;
         const wreckFloor = terrainHeight(aircraft.x, aircraft.y);
@@ -226,8 +310,13 @@
         }
         aircraft.vx *= Math.exp(-stepSeconds * 0.3);
         aircraft.vy *= Math.exp(-stepSeconds * 0.3);
+        aircraft.stalled = aircraft.stallWarning = aircraft.gearWarning = false;
+        aircraft.buffet = 0;
         return;
       }
+      const flaps = aircraft.flapPos,
+        stallSpeed = airframeProfile.stall * (1 - 0.16 * flaps),
+        rotateSpeed = airframeProfile.rotate * (1 - 0.12 * flaps);
       const horizontalSpeed = Math.hypot(aircraft.vx, aircraft.vy),
         speed = Math.hypot(horizontalSpeed, aircraft.vz),
         airborne = aircraft.altitude > terrainHeight(aircraft.x, aircraft.y) + 1e-7,
@@ -237,7 +326,8 @@
       const authority = clamp(horizontalSpeed / 190, 0.08, 1),
         trim = clamp(
           (flightModel.gravity / Math.max(1, liftScale) / Math.max(0.5, Math.cos(aircraft.bank)) -
-            0.22) /
+            0.22 -
+            0.3 * flaps) /
             4.6 -
             0.04,
           -0.085,
@@ -260,36 +350,73 @@
       if (airborne && ceiling > 0)
         pitchTarget = Math.min(pitchTarget, trim * (1 - ceiling) - 0.1 * ceiling);
       pitchTarget = clamp(pitchTarget, -0.7, 0.39);
-      aircraft.pitch +=
-        (pitchTarget - aircraft.pitch) * (1 - Math.exp(-stepSeconds * 1.65 * authority));
-      aircraft.bank +=
-        ((airborne
+      // Pitch and roll are damped springs: the airframe has inertia, and the
+      // controls bite harder as the airspeed builds.
+      const pitchOmega = 3 * Math.sqrt(authority),
+        rollOmega = airframeProfile.roll * 1.25 * Math.sqrt(authority),
+        bankTarget = airborne
           ? turn * airframeProfile.bank * (0.65 + 0.35 * clamp((horizontalSpeed - 170) / 90, 0, 1))
-          : 0) -
-          aircraft.bank) *
-        (1 - Math.exp(-stepSeconds * airframeProfile.roll * authority));
+          : 0;
+      aircraft.pitchRate +=
+        (pitchOmega * pitchOmega * (pitchTarget - aircraft.pitch) - 2 * 0.85 * pitchOmega * aircraft.pitchRate) *
+        stepSeconds;
+      aircraft.pitch += aircraft.pitchRate * stepSeconds;
+      if (airborne) {
+        aircraft.bankRate +=
+          (rollOmega * rollOmega * (bankTarget - aircraft.bank) - 2 * 0.8 * rollOmega * aircraft.bankRate) * stepSeconds;
+        aircraft.bank += aircraft.bankRate * stepSeconds;
+      } else {
+        aircraft.bankRate = 0;
+        aircraft.bank *= Math.exp(-stepSeconds * 6);
+      }
       const angleOfAttack = aircraft.pitch - flightPathAngle + 0.04,
         stallAngleExcess = Math.max(0, Math.abs(angleOfAttack) - flightModel.stallAngle);
-      aircraft.stalled =
-        airborne && (stallAngleExcess > 0.015 || horizontalSpeed < airframeProfile.stall);
+      aircraft.stalled = airborne && (stallAngleExcess > 0.015 || horizontalSpeed < stallSpeed);
+      // The warning comes on a few degrees and a few knots before the stall.
+      aircraft.stallWarning =
+        airborne &&
+        (aircraft.stalled ||
+          Math.abs(angleOfAttack) > flightModel.stallAngle - 0.05 ||
+          horizontalSpeed < stallSpeed * 1.1);
       aircraft.angleOfAttack = angleOfAttack;
-      const attached = clamp(0.22 + angleOfAttack * 4.6, -1.1, 1.46),
+      aircraft.stallSpeed = stallSpeed;
+      const attached = clamp(0.22 + 0.3 * flaps + angleOfAttack * 4.6, -1.1, 1.46 + 0.3 * flaps),
         liftCoefficient =
           attached * (stallAngleExcess > 0 ? Math.max(0.18, Math.exp(-stallAngleExcess * 9)) : 1);
       const lift = liftScale * liftCoefficient,
         drag =
-          liftScale * (0.3 + 0.068 * liftCoefficient * liftCoefficient + stallAngleExcess * 0.85) +
-          (airborne ? 0 : 5);
+          liftScale *
+            (0.3 +
+              0.068 * liftCoefficient * liftCoefficient +
+              stallAngleExcess * 0.85 +
+              0.06 * flaps +
+              (airborne ? 0.04 * aircraft.gearPos : 0)) +
+          (airborne ? 0 : 5) +
+          // No wheels under it: the belly scrapes along.
+          (!airborne && aircraft.gearPos < 0.5 ? 160 : 0);
       const thrust =
-          aircraft.throttle * airframeProfile.thrust * clamp(aircraft.hp / aircraft.maxhp, 0.3, 1),
+          aircraft.power * airframeProfile.thrust * clamp(aircraft.hp / aircraft.maxhp, 0.3, 1),
         pathA = horizontalSpeed > 1 ? Math.atan2(aircraft.vy, aircraft.vx) : aircraft.a;
+      // Buffet: shakes in as the wing nears the stall, hard once it has let go;
+      // on the ground a light rumble from the runway.
+      const buffetTarget = airborne
+        ? clamp(
+            (Math.abs(angleOfAttack) - (flightModel.stallAngle - 0.05)) * 8 + (aircraft.stalled ? 0.45 : 0),
+            0,
+            1,
+          )
+        : clamp((horizontalSpeed - 60) / 900, 0, 0.12) * (aircraft.gearPos < 0.5 ? 6 : 1);
+      aircraft.buffet += (buffetTarget - aircraft.buffet) * (1 - Math.exp(-stepSeconds * 6));
+      aircraft.gLoad +=
+        ((airborne ? (lift * Math.cos(angleOfAttack)) / flightModel.gravity : 1) - aircraft.gLoad) *
+        (1 - Math.exp(-stepSeconds * 5));
       // Lift rotates the velocity vector; the fuselage follows its slip angle instead of snapping velocity.
       if (airborne) {
         const yawRate = clamp(
             ((lift * Math.sin(aircraft.bank)) / Math.max(50, horizontalSpeed)) *
               (1 +
                 airframeProfile.assist *
-                  clamp((horizontalSpeed - airframeProfile.stall) / 70, 0, 1) *
+                  clamp((horizontalSpeed - stallSpeed) / 70, 0, 1) *
                   (aircraft.stalled ? 0.3 : 1)),
             -0.7,
             0.7,
@@ -318,6 +445,8 @@
           aircraft.a + normalizeAngle(nextA - aircraft.a) * (1 - Math.exp(-stepSeconds * 4)),
         );
         aircraft.av = normalizeAngle(aircraft.a - old) / stepSeconds;
+        // The rudder the auto-coordination feeds in, for the model.
+        aircraft.ctrlYaw += (clamp(aircraft.av * 2.2, -1, 1) - aircraft.ctrlYaw) * ease;
         if (aircraft.stalled) {
           aircraft.pitch -= clamp(stallAngleExcess * 1.3 + 0.04, 0, 0.3) * stepSeconds;
           aircraft.bank += Math.sin(physicsClock * 12) * stallAngleExcess * 0.2 * stepSeconds;
@@ -331,30 +460,90 @@
           0,
           aircraft.vx * Math.cos(aircraft.a) + aircraft.vy * Math.sin(aircraft.a),
         );
-        along = Math.max(0, along + (thrust - drag - (down ? 95 : 0)) * stepSeconds);
+        // Wheel brakes: S with the power at idle brakes hard; with power on it
+        // pulls the lever back and drags a little.
+        const braking = down && aircraft.throttle < 0.05 ? (aircraft.gearPos > 0.5 ? 150 : 40) : down ? 60 : 0;
+        along = Math.max(0, along + (thrust - drag - braking) * stepSeconds);
+        // Nosewheel steering: full lock at taxi speed, tapering off as the rudder
+        // takes over on the take-off roll.
         aircraft.av +=
-          ((turn * 0.5 * clamp(along / 60, 0, 1)) / (1 + along / 120) - aircraft.av) *
-          (1 - Math.exp(-stepSeconds * 4));
+          ((turn * 0.55 * clamp(along / 50, 0, 1)) / (1 + along / 110) - aircraft.av) *
+          (1 - Math.exp(-stepSeconds * 5));
+        aircraft.ctrlYaw += (turn - aircraft.ctrlYaw) * ease;
         aircraft.a = normalizeAngle(aircraft.a + aircraft.av * stepSeconds);
         aircraft.vx = Math.cos(aircraft.a) * along;
         aircraft.vy = Math.sin(aircraft.a) * along;
         aircraft.vz = 0;
-        if (lift > flightModel.gravity * 1.02 && pull && along > airframeProfile.rotate) {
+        if (lift > flightModel.gravity * 1.02 && pull && along > rotateSpeed) {
           aircraft.vz = 2;
           aircraft.altitude = terrainHeight(aircraft.x, aircraft.y) + 0.1;
           aircraft.landedAt = null;
         }
         if (!landAt(aircraft.x, aircraft.y)) {
           damageVehicle(aircraft, aircraft.maxhp, aircraft.x, aircraft.y);
-          aircraft.throttle = 0;
+          aircraft.throttle = aircraft.power = 0;
         }
       }
       aircraft.airspeed = Math.hypot(aircraft.vx, aircraft.vy, aircraft.vz);
       aircraft.speed = aircraft.vx * Math.cos(aircraft.a) + aircraft.vy * Math.sin(aircraft.a);
-      if (controlled && aircraft.stalled && physicsClock - (aircraft.stallWarning || -100) > 4) {
-        aircraft.stallWarning = physicsClock;
-        tell('STALL · Release Space, lower nose with Shift, add W throttle', 4);
+      if (controlled) planeWarnings(aircraft);
+      else aircraft.gearWarning = false;
+    }
+    /* Cockpit warnings for the player's aircraft: the stall horn, and a gear
+       horn when low, slow and descending with the wheels up. */
+    function planeWarnings(aircraft) {
+      const clearance = aircraftClearance(aircraft),
+        gearWarning =
+          aircraft.gearPos < 1 && clearance > 1 && clearance < 320 && aircraft.vz < -8 && aircraft.power < 0.45;
+      aircraft.gearWarning = gearWarning;
+      if (aircraft.stallWarning && physicsClock - (aircraft.hornAt || -100) > 0.42) {
+        aircraft.hornAt = physicsClock;
+        tone(aircraft.stalled ? 880 : 760, 0.32, 0.22, 'square');
+      } else if (gearWarning && physicsClock - (aircraft.hornAt || -100) > 0.9) {
+        aircraft.hornAt = physicsClock;
+        tone(520, 0.5, 0.16, 'square');
       }
+      if (aircraft.stalled && physicsClock - (aircraft.stallToldAt || -100) > 4) {
+        aircraft.stallToldAt = physicsClock;
+        tell(
+          'STALL · Release ' + keyName('ascend') + ', lower the nose with ' + keyName('descend') + ', add ' +
+            keyName('forward') + ' throttle',
+          4,
+        );
+      }
+    }
+    /* Instrument readings for the flight HUD (hud.js) and DeadEndCity.flight():
+       airspeed in km/h, altitudes in metres (above sea level and above what the
+       aircraft would land on), vertical speed in m/s, heading in compass degrees
+       (0 = north), attitude in degrees (bank positive right wing down). */
+    function flightData(c) {
+      if (!isAircraft(c)) return null;
+      const plane = c.type === 'plane',
+        toDegrees = 180 / Math.PI;
+      return {
+        type: plane ? c.airframe || 'courier' : 'helicopter',
+        airspeed: worldMeters(plane ? c.airspeed || 0 : Math.hypot(c.vx || 0, c.vy || 0)) * 3.6,
+        altitude: worldMeters(c.altitude || 0),
+        agl: worldMeters(aircraftClearance(c)),
+        vs: worldMeters(c.vz || 0),
+        heading: (((c.a * toDegrees + 90) % 360) + 360) % 360,
+        pitch: plane ? (c.pitch || 0) * toDegrees : 0,
+        bank: plane ? (c.bank || 0) * toDegrees : 0,
+        throttle: plane ? c.throttle || 0 : c.rotorSpeed || 0,
+        power: plane ? c.power ?? c.throttle ?? 0 : c.rotorSpeed || 0,
+        flaps: plane ? FLAP_NOTCHES[c.flaps || 0] : null,
+        flapPos: plane ? c.flapPos || 0 : 0,
+        gear: plane ? ((c.gearPos ?? 1) >= 1 ? 'DOWN' : (c.gearPos ?? 1) <= 0 ? 'UP' : 'TRANSIT') : null,
+        gearPos: plane ? c.gearPos ?? 1 : 1,
+        g: plane ? c.gLoad ?? 1 : 1,
+        aoa: plane ? (c.angleOfAttack || 0) * toDegrees : 0,
+        stallSpeed: plane ? worldMeters(c.stallSpeed || AIRFRAME_SPECS[c.airframe || 'courier'].stall) * 3.6 : 0,
+        stall: !!c.stalled,
+        stallWarning: !!c.stallWarning,
+        gearWarning: !!c.gearWarning,
+        buffet: c.buffet || 0,
+        hp: c.hp / c.maxhp,
+      };
     }
     function flightMissionStart(missionState) {
       if (missionState.index === 9) {
@@ -577,7 +766,8 @@
           );
           tell(
             keyName('left') + '/' + keyName('right') + ' banks · ' + keyName('ascend') + ' raises nose · ' + keyName('descend') +
-              ' lowers nose · Release pitch to trim · Slow + flare gently to land',
+              ' lowers nose · ' + keyName('flapsDown') + '/' + keyName('flapsUp') + ' flaps · ' + keyName('gear') +
+              ' gear · Slow + flare gently to land',
             11,
           );
         } else if (
@@ -621,7 +811,8 @@
                     y: 9884,
                   }
                 : FLIGHT.arrival,
-              'LAND ' + missionState.landingName + ' · REDUCE POWER · LEVEL WINGS · FLARE · S BRAKES',
+              'LAND ' + missionState.landingName + ' · GEAR DOWN (' + keyName('gear') + ') · FLAPS · REDUCE POWER · FLARE · ' +
+                keyName('back') + ' BRAKES',
             );
           }
         } else if (missionState.stage === 4) {

@@ -66,6 +66,9 @@
         flightDistance = 0,
         viewAgl = 0,
         flightBank = 0,
+        // A plane's speed pulls the view back a little (smoothed), so fast flight
+        // shows more of what is ahead.
+        flightSpeedWiden = 0,
         flightViewActive = false;
       // What the renderer can see this frame, for culling and level of detail:
       // viewCenter is the ground point in the middle of the frame, viewReach the
@@ -163,6 +166,7 @@
           scene.fog.near = setBack + distance + viewH * 1.2;
           scene.fog.density = STREET_FOG_DENSITY * Math.min(1, worldZoom);
           flightBank = 0;
+          flightSpeedWiden = 0;
           return;
         }
         camera = flightCamera;
@@ -170,11 +174,13 @@
           tilt = clamp(viewAgl / 2600, 0, 1),
           fov = GROUND_FOV + (AIR_FOV - GROUND_FOV) * widen - (AIR_FOV - HIGH_FOV) * clamp((viewAgl - 3000) / 3600, 0, 1),
           pitch = STREET_PITCH + (HIGH_PITCH - STREET_PITCH) * tilt * tilt * (3 - 2 * tilt),
-          frame = (frameH * (1 + 0.3 * clamp(viewAgl / 3000, 0, 1))) / worldZoom,
+          frame = (frameH * (1 + 0.3 * clamp(viewAgl / 3000, 0, 1)) * (1 + flightSpeedWiden)) / worldZoom,
           distance = frame / 2 / Math.tan((fov * Math.PI) / 360);
         // Bank a little into turns, more as the view opens up.
         const craft = player.car,
-          turnRate = craft && isAircraft(craft) ? craft.av || 0 : 0;
+          turnRate = craft && isAircraft(craft) ? craft.av || 0 : 0,
+          planeSpeed = craft?.type === 'plane' ? craft.airspeed || 0 : 0;
+        flightSpeedWiden += (clamp((planeSpeed - 150) / 600, 0, 0.22) - flightSpeedWiden) * (1 - Math.exp(-deltaSeconds * 0.8));
         flightBank += (clamp(-turnRate * 0.045, -0.06, 0.06) * widen - flightBank) * (1 - Math.exp(-deltaSeconds * 2.5));
         flightDistance = distance;
         flightCamera.fov = fov;
@@ -184,6 +190,10 @@
           flightAltitude + Math.sin(pitch) * distance,
           cameraTarget.y + Math.cos(pitch) * distance,
         );
+        // Stall buffet shakes the view a little (aviation.js sets craft.buffet).
+        const buffet = craft?.type === 'plane' && (craft.buffet || 0) > 0.05 ? craft.buffet * distance * 0.0022 : 0;
+        if (buffet) flightCamera.position.x += Math.sin(gameTime * 41) * buffet;
+        if (buffet) flightCamera.position.y += Math.sin(gameTime * 53 + 1.3) * buffet;
         flightCamera.lookAt(cameraTarget.x, flightAltitude, cameraTarget.y);
         flightCamera.rotateZ(flightBank);
         flightCamera.near = Math.max(20, distance * 0.2);

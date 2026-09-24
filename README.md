@@ -44,7 +44,7 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 | Sprint | Shift |
 | Bicycle | hold W to pedal, Shift stands on the pedals, S brakes |
 | Helicopter | ↑ rise, ↓ descend (T / G also work), W/S fly, A/D turn; land on open ground, helipads or flat roofs |
-| Plane | W/S throttle, A/D bank, ↑/↓ nose up/down (T / G also work) |
+| Plane | W/S throttle (the engine spools up), A/D bank (steer on the ground), ↑/↓ nose up/down (T / G also work), X / Z flaps down / up, L landing gear, S at idle brakes on the ground |
 | Bail out / parachute; dive off a boat | J (then Space opens the canopy) |
 | Weapons | 1 to 6, Q cycle, K knife, R reload, I arsenal |
 | City map | Tab |

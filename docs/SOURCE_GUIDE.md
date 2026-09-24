@@ -102,7 +102,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | crash-audio.js | `crashSound`: one layered, positioned sound per vehicle impact (from `collisionImpact` and street props): body thump, a recorded crunch (whole crash for hard hits), metal and sheet-metal layers, plastic bumper grains, glass only when a pane broke, debris, tyre scrub; lower for heavy vehicles; one event per pair per 0.7 s |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
 | military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
-| aviation.js | Fixed-wing flight model (`planeControl`), flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
+| aviation.js | Fixed-wing flight model (`planeControl`) and its controls (FLIGHT CONTROLS: engine spool, pitch and roll springs with inertia and auto-coordination, flaps, retracting gear and belly landings, stall and gear warnings with buffet, nosewheel steering and brakes), `flightData()` for the HUD and the console, flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
 | challenges.js | Missions 3 to 9 (indices 2 to 8) and the interact/UI routing for all missions (`challengeMissionInteract`) |
 | sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
@@ -424,7 +424,11 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   `'back'`, so `actionsForKey()` gives the key to them in the `air` context
   (`controlContext()`) and to movement everywhere else, and `controlConflicts()` does not
   count that pair as a clash. W / S stay throttle and fly forward / back in the air.
-  Bindings saved with the old T / G defaults move to the new ones on load.
+  Bindings saved with the old T / G defaults move to the new ones on load. Planes also
+  have `flapsDown` / `flapsUp` (X / Z) and `gear` (L), handled on keydown in game.js
+  (`setPlaneFlaps`, `togglePlaneGear`, aviation.js). In a plane the camera leads the
+  aircraft along its smoothed velocity (`planeCameraLead`, game.js), pulls back a little
+  with airspeed and shakes with the stall buffet (flight-view3d.js).
 - **Settings** (settings.js) is one screen with four tabs built from `SETTING_ROWS`; each row
   has `get()` / `set()` and applies at once. While it is open `gameMode` is `'settings'` and
   the keydown listener hands every key to `settingsKeyDown()`. The character see-through

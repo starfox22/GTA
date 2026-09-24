@@ -218,6 +218,9 @@
         x: spawn.x,
         y: spawn.y,
       },
+      // In a plane the camera leads the aircraft along its velocity, smoothed so a
+      // turn swings the view round gently instead of whipping it (updateGame).
+      planeCameraLead = { x: 0, y: 0 },
       vehicles = [],
       pedestrians = [],
       bullets = [],
@@ -2886,8 +2889,19 @@
       const look = player.car ? player.car.speed * 0.35 : 0,
         // A coaster outruns the usual trailing camera; stay with the train.
         follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
-      cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
-      cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
+      if (player.car?.type === 'plane') {
+        const lead = 1 - Math.exp(-deltaSeconds * 1.4);
+        planeCameraLead.x += ((player.car.vx || 0) * 0.42 - planeCameraLead.x) * lead;
+        planeCameraLead.y += ((player.car.vy || 0) * 0.42 - planeCameraLead.y) * lead;
+        const hold = Math.min(1, deltaSeconds * 7);
+        cameraTarget.x += (player.x + planeCameraLead.x - cameraTarget.x) * hold;
+        cameraTarget.y += (player.y + planeCameraLead.y - cameraTarget.y) * hold;
+      } else {
+        planeCameraLead.x = Math.cos(player.a) * look;
+        planeCameraLead.y = Math.sin(player.a) * look;
+        cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
+        cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
+      }
       timed('sound', () => {
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);
@@ -4461,6 +4475,12 @@
         toggleCarRadio();
         return;
       }
+      // Plane flaps and landing gear (aviation.js, FLIGHT CONTROLS).
+      if (player.car?.type === 'plane' && player.car.hp > 0 && (is('flapsDown') || is('flapsUp') || is('gear'))) {
+        if (is('gear')) togglePlaneGear(player.car);
+        else setPlaneFlaps(player.car, is('flapsDown') ? 1 : -1);
+        return;
+      }
       if ((player.car || player.coaster) && is('radioNext')) {
         tuneCarRadio(carRadioStation + 1);
         return;
@@ -5090,6 +5110,18 @@
         type: player.car ? player.car.type : null,
         speed: player.car ? Math.round((player.car.speed || 0) * 10) / 10 : 0,
         vx: player.car ? Math.round((player.car.vx || 0) * 10) / 10 : 0,
+      // The player's aircraft instruments as the flight HUD shows them (aviation.js
+      // flightData): airspeed km/h, altitude and AGL m, vertical speed m/s, heading,
+      // pitch, bank, throttle and spooled power, flaps, gear, g, stall warnings.
+      flight() {
+        const data = flightData(player.car);
+        if (!data) return null;
+        const out = {};
+        for (const [key, value] of Object.entries(data))
+          out[key] = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
+        out.hud = !!document.getElementById('flightHud')?.classList.contains('on');
+        return out;
+      },
         vy: player.car ? Math.round((player.car.vy || 0) * 10) / 10 : 0,
         cadence: Math.round(pedalCadence() * 100) / 100,
         effort: Math.round(pedalEffort() * 100) / 100,
@@ -5153,6 +5185,10 @@
         return this.status();
       },
       // The player and the water: swimming, wading, stamina, shore type and the
+            // Cruising: gear up, cruise power.
+            car.gearDown = false;
+            car.gearPos = 0;
+            car.throttle = car.power = 0.75;
       // nearest way out (see water.js).
       swim: () => swimStatus(),
       // Every ladder out of the sea: foot in the water, top on the quay.

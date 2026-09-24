@@ -64,6 +64,9 @@
       // back there, `overrides`); T / G stay as second keys and as the virtual codes.
       { id: 'ascend', label: 'Climb', note: 'Helicopter rise and take off · plane nose up', group: 'air', code: 'KeyT', keys: ['ArrowUp', 'KeyT'], ctx: ['air'], overrides: 'forward' },
       { id: 'descend', label: 'Descend', note: 'Helicopter descend and land · plane nose down', group: 'air', code: 'KeyG', keys: ['ArrowDown', 'KeyG'], ctx: ['air'], overrides: 'back' },
+      { id: 'flapsDown', label: 'Flaps down', note: 'Plane: extend the flaps a notch (UP, 1, 2, FULL) for take-off and landing', group: 'air', keys: ['KeyX'], ctx: ['air'] },
+      { id: 'flapsUp', label: 'Flaps up', note: 'Plane: retract the flaps a notch', group: 'air', keys: ['KeyZ'], ctx: ['air'] },
+      { id: 'gear', label: 'Landing gear', note: 'Plane: raise or lower the landing gear (it cannot retract on the ground)', group: 'air', keys: ['KeyL'], ctx: ['air'] },
       { id: 'bail', label: 'Bail out / dive', note: 'Jump from an aircraft; dive off a boat or out of a sinking car', group: 'air', keys: ['KeyJ'], ctx: ['drive', 'air'] },
       { id: 'divert', label: 'Divert landing', note: 'Mission 11: change the landing site once the manifest is exposed', group: 'air', keys: ['KeyV'], ctx: ['air'] },
       { id: 'reload', label: 'Reload', note: 'Reload the equipped weapon', group: 'weapons', keys: ['KeyR'], ctx: ['foot', 'drive', 'air'] },

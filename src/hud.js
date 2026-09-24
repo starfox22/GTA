@@ -237,7 +237,7 @@
       bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['back', 'BRAKE'], ['interact', 'EXIT']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
-      plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['bail', 'BAIL OUT']],
+      plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['flapsDown', 'FLAPS'], ['gear', 'GEAR'], ['bail', 'BAIL OUT']],
       chute: [['handbrake', 'OPEN'], ['move', 'STEER']],
       // Sunset Pier rides: E changes the view (and steps off), the radio plays.
       ride: [['interact', 'VIEW'], ['radioPower', 'RADIO'], ['radioNext', 'STATION']],
