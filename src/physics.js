@@ -951,15 +951,17 @@
     function boatControl(c, stepSeconds, active) {
       const vehicleDefinition = vehicleSpec(c),
         controlled = c === player.car && active,
-        up = controlled && (keys.KeyW || keys.ArrowUp),
-        down = controlled && (keys.KeyS || keys.ArrowDown),
-        turn = controlled
-          ? (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)
-          : 0,
-        brake = controlled && keys.Space,
         headingCosine = Math.cos(c.a),
         headingSine = Math.sin(c.a),
-        along = c.vx * headingCosine + c.vy * headingSine;
+        along = c.vx * headingCosine + c.vy * headingSine,
+        // A police launch in a water pursuit steers itself (pursuit.js).
+        helm = !controlled && active && c.marineUnit && c.cop && c.hp > 0 && wantedStars > 0 ? marineBoatInput(c, along) : null,
+        up = controlled ? keys.KeyW || keys.ArrowUp : !!helm?.up,
+        down = controlled ? keys.KeyS || keys.ArrowDown : !!helm?.down,
+        turn = controlled
+          ? (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)
+          : helm?.turn || 0,
+        brake = controlled && keys.Space;
       let force = up
         ? vehicleDefinition.acc
         : down
@@ -1304,7 +1306,20 @@
       const staticCandidates = new Map();
       for (const c of vehicles) {
         if (c.resting) continue;
-        const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 12,
+        // The list is gathered with 28 units to spare and reused until the car has
+        // moved 8 (nearbyStatics covers 20 beyond the body; the grid is versioned).
+        const cache = c.contactStatics;
+        if (
+          cache &&
+          cache.throughShore === (c === player.car && !isBoat(c) && !isAircraft(c)) &&
+          cache.version === staticGridVersion &&
+          Math.abs(c.x - cache.x) < 8 &&
+          Math.abs(c.y - cache.y) < 8
+        ) {
+          staticCandidates.set(c, cache.list);
+          continue;
+        }
+        const radius = Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2 + 40,
           list = [];
         // The quay edge stops everything with a driver who ought to know better.
         // The player's own car is not stopped by it: putting one in the bay is a
@@ -1321,6 +1336,7 @@
             list.push(b);
         }
         staticCandidates.set(c, list);
+        c.contactStatics = { x: c.x, y: c.y, list, throughShore, version: staticGridVersion };
       }
       // Vinny's depot shutters open and close mid-mission, so they live outside
       // the baked static grid and are resolved from this short list.

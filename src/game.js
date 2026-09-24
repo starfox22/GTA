@@ -2137,7 +2137,7 @@
         chaseTarget.x > CITY_SIZE ||
         chaseTarget.y > CITY_SIZE
       )
-        return countyCopRoute(c, chaseTarget);
+        return policeNavRoute(c, chaseTarget);
       const start = {
           x: ROAD_CENTERS.indexOf(roadNear(c.x)),
           y: ROAD_ROWS.indexOf(rowNear(c.y)),
