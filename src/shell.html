@@ -2018,43 +2018,6 @@ kbd {
   height: 14px;
   margin: -7px 0 0 -7px;
 }
-#hitMarker {
-  position: absolute;
-  z-index: 7;
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
-  pointer-events: none;
-  opacity: 0;
-  font: 900 11px Arial, sans-serif;
-  letter-spacing: 1px;
-  color: #ff5448;
-  white-space: nowrap;
-  text-indent: 26px;
-  line-height: 22px;
-}
-#hitMarker::before,
-#hitMarker::after {
-  content: '';
-  position: absolute;
-  left: 10px;
-  top: 0;
-  width: 2px;
-  height: 22px;
-  background: #f4f4ec;
-  box-shadow: 0 0 3px #000;
-  transform: rotate(45deg);
-}
-#hitMarker::after {
-  transform: rotate(-45deg);
-}
-#hitMarker.kill::before,
-#hitMarker.kill::after {
-  background: #ff4136;
-}
-#hitMarker.show {
-  opacity: 1;
-}
 /* WASTED and BUSTED: the world drains of colour in slow motion. */
 body.wasted #scene,
 body.wasted #game {
@@ -5090,7 +5053,6 @@ body.no-key-hints .quickkeys {
       <div class="meter"><i id="arrestFill"></i></div>
     </div>
     <div id="damageArc" aria-hidden="true"></div>
-    <div id="hitMarker" aria-hidden="true"></div>
     <div id="tankReticle" class="hidden" aria-hidden="true"><i id="tankAimRing"></i><i id="tankBarrelPip"></i></div>
     <div id="stealthStatus" style="display: none">
       <span id="stealthLabel"></span>

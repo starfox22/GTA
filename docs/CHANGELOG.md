@@ -18,6 +18,10 @@ HUD (hud.js, harbor.js, shell.html)
   left, altitude on the right, a thin heading strip at the top), so the centre is clear; a
   new Settings · Gameplay · Flight HUD switch turns the instruments off (warnings stay).
 
+Combat (pursuit.js)
+- No more crosses over the people you hit and no HEADSHOT caption: blood, the victim's
+  reaction and a faint tick (a thump for a kill) are the only hit feedback.
+
 ## 30.0.0 — The islands rearranged, AAA pass two
 
 Settings, controls and HUD (controls.js, settings.js, hud.js)

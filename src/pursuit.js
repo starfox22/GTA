@@ -1091,26 +1091,9 @@
       clearTimeout(damageArcTimer);
       damageArcTimer = setTimeout(() => el.classList.remove('show'), 700);
     }
-    /* A hit on someone: a white cross where they stand, red for a kill, with a
-       tick (or a thump for a kill) and HEADSHOT for a precision-rifle one-shot. */
-    let hitMarkerTimer = null;
-    function playerHitMarker(victim, killed, headshot) {
-      const el = getElement('hitMarker');
-      if (!el) return;
-      const q = city3D
-        ? city3D.project(victim.x, victim.y, entityElevation(victim) + 12)
-        : {
-            x: (victim.x - cameraTarget.x) * canvasScale + viewportWidth / 2,
-            y: (victim.y - cameraTarget.y) * canvasScale + viewportHeight / 2,
-          };
-      el.style.left = q.x.toFixed(0) + 'px';
-      el.style.top = q.y.toFixed(0) + 'px';
-      el.className = killed ? 'kill' : '';
-      el.textContent = headshot ? 'HEADSHOT' : '';
-      void el.offsetWidth;
-      el.classList.add('show');
-      clearTimeout(hitMarkerTimer);
-      hitMarkerTimer = setTimeout(() => el.classList.remove('show'), killed ? 520 : 260);
+    /* A hit on someone: no marker on screen (blood and the victim's reaction
+       show it), only a faint tick, or a thump for a kill. */
+    function playerHitConfirm(victim, killed) {
       if (killed) tone(150, 0.08, 0.13, 'triangle', 90);
       else tone(1700, 0.025, 0.04, 'square');
     }

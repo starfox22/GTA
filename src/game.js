@@ -2878,7 +2878,7 @@
             if (!b.enemy) {
               if (p.police) crime(0.3);
               if (p.hp <= 0) cash += enemies.includes(p) ? 100 : 10;
-              playerHitMarker(p, p.hp <= 0, headshot);
+              playerHitConfirm(p, p.hp <= 0);
             }
             impact = true;
             hitKind = 'flesh';

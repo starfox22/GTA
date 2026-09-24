@@ -216,7 +216,7 @@
         // Assault: a punch is a smaller crime than a stabbing, but still a crime.
         crime(target.police ? (fists ? 0.5 : 0.6) : fists ? 0.12 : 0.2);
         if (target.hp <= 0) cash += enemies.includes(target) ? 100 : 10;
-        playerHitMarker(target, target.hp <= 0, false);
+        playerHitConfirm(target, target.hp <= 0);
       }
       if (fists) noise(0.05, 0.18, haymaker ? 160 : 230);
       else noise(0.06, 0.12, 360);
