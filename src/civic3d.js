@@ -67,7 +67,7 @@
           for (let j = 0; j < 3; j++)
             mesh(
               sphereGeo,
-              leafMats[1],
+              stillLeafMat,
               group,
               x + side * (p.w * 0.38) + j * 5 - 5,
               6,
@@ -252,7 +252,12 @@
               new Three.MeshStandardMaterial({
                 map: bloodMaps[0],
                 color: '#ffffff',
-                roughness: 0.27,
+                // Satin, not a mirror. The street camera looks north-down at one fixed
+                // angle, so on a mid-morning sun (east-north-east, ~45 degrees up) every
+                // flat glossy surface in view sits right on the sun's mirror angle: at
+                // roughness 0.27 the whole pool turned into a pale pink-white highlight.
+                roughness: 0.62,
+                envMapIntensity: 0.5,
                 transparent: true,
                 opacity: 0.97,
                 depthWrite: false,

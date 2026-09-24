@@ -155,6 +155,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Species geometry, gait animation, culling and material cleanup.
   src/world3d.js: World scenery meshes
     Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery.
+  src/wakes3d.js: Boat wakes and spray
+    Kelvin wake, propeller wash and hull collar drawn into a wake map the water samples; bow spray.
   src/beach3d.js: Palm Keys Beach meshes
     Sand, swash ribbon, pier, props, ladders and instanced beachgoers.
   src/county3d.js: County and mountain meshes
@@ -215,8 +217,9 @@ AUDIT CONTRACTS
   through damageVehicle(), whose `detail` shapes the dent (damage.js).
 - Cameras: orthographic on the street, perspective in the air (flight-view3d.js).
   Cull and pick level of detail with viewCenter, viewReach and viewZoom, not
-  cameraTarget/worldZoom. Nothing lays a uniform wash over the frame; scenery
-  over the player is cleared by the dithered cutaway (lighting3d.js), not fades.
+  cameraTarget/worldZoom. Nothing lays a uniform wash over the frame. A roof
+  over the player (and only a roof) gets a small dithered hole round them
+  (lighting3d.js, CUTAWAY); nothing else is ever faded or cut.
 - Browser localStorage holds campaign/audio/graphics settings; there is no server.
 - window.DeadEndCity (end of src/game.js) is the only test surface: explicit named
   methods, never a code-evaluation hook.

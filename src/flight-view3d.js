@@ -96,6 +96,14 @@
         footprintRay.at(distance, out);
         return distance;
       }
+      // Height above the street the street camera's near plane must clear: the
+      // tallest roof (masts and plant included) and the cloud-shadow plane.
+      let streetCeilingHeight = 0;
+      function streetCeiling() {
+        if (!streetCeilingHeight)
+          streetCeilingHeight = Math.max(shadeHeight, ...allBuildings.map((b) => b.height || 0)) + 60;
+        return streetCeilingHeight;
+      }
       function streetFrameHeight() {
         return clamp(viewportHeight * 0.68, 430, 630);
       }
@@ -116,13 +124,25 @@
         const frameH = streetFrameHeight(),
           aspect = viewportWidth / viewportHeight;
         if (!flightViewActive) {
-          // Street view: the orthographic camera exactly as it has always been.
+          // Street view: the orthographic camera, looking down the same line as it
+          // always has. An orthographic image does not change as the camera slides
+          // back along that line, only what the near plane clips does; so the
+          // camera stands far enough back that the bottom edge of its near plane
+          // clears the tallest roof and the cloud-shadow plane over the city. Closer
+          // in, zoomed to street level, the near plane sliced the tops off towers
+          // south of the player and cut the cloud-shadow plane across the frame,
+          // leaving a pale veil with a hard edge over the top half of the screen.
           camera = streetCamera;
-          camera.position.set(cameraTarget.x, 680 / worldZoom + altitude, cameraTarget.y + 560 / worldZoom);
-          const viewH = frameH / worldZoom;
+          const viewH = frameH / worldZoom,
+            distance = Math.hypot(680, 560) / worldZoom,
+            sinPitch = 680 / Math.hypot(680, 560),
+            cosPitch = 560 / Math.hypot(680, 560),
+            clear = Math.max(distance, (streetCeiling() + (viewH / 2) * cosPitch) / sinPitch),
+            setBack = clear - distance;
+          camera.position.set(cameraTarget.x, clear * sinPitch + altitude, cameraTarget.y + clear * cosPitch);
           // Just deep enough for the ground at the top of the frame: a tight depth
           // range keeps the depth buffer precise for the ambient occlusion pass.
-          camera.far = Math.hypot(680, 560) / worldZoom + viewH * 0.7 + altitude * 1.5 + 600;
+          camera.far = distance + setBack + viewH * 0.7 + altitude * 1.5 + 600;
           camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
           camera.left = (-viewH * aspect) / 2;
           camera.right = (viewH * aspect) / 2;
@@ -133,8 +153,14 @@
           viewCenter.y = cameraTarget.y;
           viewReach = Math.max(920, viewH * Math.max(1, aspect) * 0.95);
           viewZoom = worldZoom;
-          viewGroundDistance = Math.hypot(680, 560) / worldZoom;
-          scene.fog.near = 0;
+          viewGroundDistance = distance;
+          // No haze in the street view. Measured from a camera looking down at 50
+          // degrees, the top of the frame is only a little farther away than the
+          // bottom, so distance haze there was no depth cue, just a pale gradient
+          // over the top half of the screen (in rain, whose haze is 3.6 times
+          // denser, a milky veil over the upper half). The haze starts beyond the
+          // farthest ground in frame; the flight camera sets its own.
+          scene.fog.near = setBack + distance + viewH * 1.2;
           scene.fog.density = STREET_FOG_DENSITY * Math.min(1, worldZoom);
           flightBank = 0;
           return;
@@ -184,7 +210,13 @@
         // camera would have stood and the street fog comes out unchanged.
         const high = clamp(viewAgl / 1200, 0, 1),
           streetDistance = Math.hypot(680, 560) / worldZoom;
-        scene.fog.near = Math.max(viewGroundDistance - streetDistance, viewGroundDistance * 0.72 * high);
+        // Just off the ground there is no haze, as in the street view; it gathers
+        // over the first ~60 m of the climb.
+        const lifted = clamp(viewAgl / 300, 0, 1);
+        scene.fog.near = Math.max(
+          viewGroundDistance - streetDistance + (streetDistance + frame * 1.2) * (1 - lifted),
+          viewGroundDistance * 0.72 * high,
+        );
         scene.fog.density = STREET_FOG_DENSITY * (1 + high * 0.6);
       }
       // Weather and time of day adjust `density`; the shader reads far = 1 / density.

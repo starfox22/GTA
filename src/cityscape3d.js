@@ -404,7 +404,7 @@
         skylight: new Three.MeshStandardMaterial({ color: '#86a9bd', roughness: 0.18, metalness: 0.6 }),
         dish: mat('#d5d8d6', 0.5, 0.3),
         planter: mat('#8e5a44', 0.85),
-        shrub: leafMats[1],
+        shrub: stillLeafMat,
         solar: new Three.MeshStandardMaterial({ color: '#1d2f57', roughness: 0.2, metalness: 0.7 }),
         hatch: mat('#4b4f52', 0.7, 0.4),
         chimney: mat('#7d5245', 0.9),
@@ -985,6 +985,8 @@
         box(g, 18, 17, 2, 6, 3, 0.4, mat('#2f5f9a'));
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
+        // The roof is cut away round a player waiting under it (lighting3d.js).
+        registerCutawayRoof(x, z, 16, 6.5, 0, 15, 18);
         // People wait here (src/crowd.js) and buses stop for them.
         registerBusStop(x, z);
       }

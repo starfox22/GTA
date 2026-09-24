@@ -111,6 +111,11 @@
         // 1 while the perspective flight camera is active: view vectors then run
         // from each fragment to the camera instead of along one fixed direction.
         uPerspective: { value: 0 },
+        // Boat wakes (wakes3d.js): foam in red, wave crest and trough in green and
+        // blue, over (origin x, origin z, 1 / span, 1 / map size).
+        uWake: { value: null },
+        uWakeRect: { value: new Three.Vector4(0, 0, 1 / 2048, 1 / 1024) },
+        uWakeOn: { value: 0 },
         // Distance haze (flight-view3d.js) so open sea fades like the land does.
         ...Three.UniformsUtils.clone(Three.UniformsLib.fog),
       };
@@ -182,6 +187,9 @@
           uniform vec3 uViewDir;
           uniform float uPerspective;
           uniform vec3 uSun;
+          uniform sampler2D uWake;
+          uniform vec4 uWakeRect;
+          uniform float uWakeOn;
           #include <fog_pars_fragment>
           #include <city_hdr_pars>
           float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -204,6 +212,21 @@
             float hz = ripples(vWorld.xz + vec2(0., e));
             float rippleScale = 0.55 + 0.45 * smoothstep(4., 120., vShore);
             vec3 n = normalize(vNormal + vec3((h0 - hx) * 2.2, 0., (h0 - hz) * 2.2) * rippleScale);
+            // Boat wakes (wakes3d.js): their waves tilt the surface so they catch the
+            // sun and the sky like the swell does; their foam is mixed in below.
+            float wakeFoam = 0.;
+            if (uWakeOn > 0.5) {
+              vec2 wuv = (vWorld.xz - uWakeRect.xy) * uWakeRect.z;
+              float inMap = smoothstep(0., 0.03, min(min(wuv.x, wuv.y), min(1. - wuv.x, 1. - wuv.y)));
+              if (inMap > 0.) {
+                vec3 w0 = texture2D(uWake, wuv).rgb;
+                vec3 wx = texture2D(uWake, wuv + vec2(uWakeRect.w, 0.)).rgb;
+                vec3 wz = texture2D(uWake, wuv + vec2(0., uWakeRect.w)).rgb;
+                float wh = w0.g - w0.b;
+                n = normalize(n + vec3(wh - (wx.g - wx.b), 0., wh - (wz.g - wz.b)) * 1.6 * inMap);
+                wakeFoam = clamp(w0.r, 0., 1.) * inMap;
+              }
+            }
             vec3 viewDir = normalize(mix(uViewDir, normalize(cameraPosition - vWorld), uPerspective));
             float facing = max(dot(viewDir, n), 0.);
             float fresnel = 0.04 + 0.96 * pow(1. - facing, 4.);
@@ -255,6 +278,9 @@
             float foam = clamp(edge * 0.9 + wash * 0.65 + caps * 0.4 + breaker * 0.9 + trail, 0., 1.);
             foam *= 0.55 + 0.45 * vnoise(vWorld.xz * 0.35 + uTime * 0.4);
             color = mix(color, vec3(.86, .93, .92), foam);
+            // Wake: aerated water turns pale green-blue under the foam, then the foam.
+            color = mix(color, color * 0.55 + vec3(.12, .26, .27), smoothstep(0., 0.35, wakeFoam) * 0.3);
+            color = mix(color, vec3(.88, .94, .94), smoothstep(0.05, 0.9, wakeFoam) * 0.92);
             color *= 0.3 + 0.7 * uDay;
             gl_FragColor = vec4(color, 1.);
             #include <fog_fragment>
@@ -734,7 +760,7 @@
           for (let i = 0; i < steps; i++)
             mesh(
               sphereGeo,
-              leafMats[1],
+              stillLeafMat,
               roofGroup,
               along ? p.x - ROOFTOP.x + 4 + i * 8 : x,
               20,
@@ -830,7 +856,7 @@
         box(roofGroup, x, 22, z, 1.5, 31, 1.5, wood);
         for (let k = 0; k < 6; k++) {
           const a = (k * TAU) / 6,
-            leaf = box(roofGroup, x + Math.cos(a) * 7, 38, z + Math.sin(a) * 7, 15, 1.4, 3, leafMats[1]);
+            leaf = box(roofGroup, x + Math.cos(a) * 7, 38, z + Math.sin(a) * 7, 15, 1.4, 3, stillLeafMat);
           leaf.rotation.y = -a;
           leaf.rotation.z = 0.18;
         }

@@ -139,6 +139,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
+| wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
 | county3d.js | County ground tiles and hills, snow, rural scenery, bridges and region visibility |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
@@ -474,7 +475,8 @@ docs/audit/missions-qa.md shows the method).
 - Distance haze is `scene.fog`, a linear Fog whose shader chunk is replaced with an
   aerial-perspective curve: clear out to `fog.near`, exponential-squared beyond it with
   `fog.far = 1 / fog.density`. Keep adjusting `fog.density` and `fog.color`; `fog.near`
-  belongs to the flight camera. Nothing may lay a uniform wash over the frame.
+  belongs to `updateFlightView` (beyond the frame on the street, where there is no haze).
+  Nothing may lay a uniform wash over the frame, or over part of it.
 - Clouds (clouds3d.js) are a ray-marched cumulus layer at 600-950 m over a GPU-generated
   3D noise volume, drawn at half resolution only when the flight camera is above the cloud
   base and composited behind the player's aircraft. Coverage follows `weather.cloud`, drift
@@ -534,12 +536,25 @@ docs/audit/missions-qa.md shows the method).
   `onBeforeCompile`) adds it to every lit surface near the ground, scaled by night, the
   blackout job's district power and height. A material with its own `onBeforeCompile` should
   call `cityMaterialPatch(shader)` first. Traffic headlights are instanced ground cones.
-- **Cutaway** (lighting3d.js, `updateCutaway`): the same patch dithers away, in a soft disc
-  round the player, any fragment above their head that is well in front of them (a tower
-  south of them, a tree crown, a viaduct deck), so nothing needs per-building fading.
+- **Cutaway** (lighting3d.js, `updateCutaway`): only when the player stands strictly under a
+  roof (`airCoverVolumes()`: the underpass, rail decks, station canopies; a building they are
+  inside; roofs registered with `registerCutawayRoof`: Vinny's depot, bus shelters) does the
+  same patch dither a small hole, about the player's size, through that roof. Only fragments
+  inside the covering structure's own volume and in front of the player are cut, so vehicles,
+  people, trees and props never are; in the open there is no cutaway. `city3D.
+  setCharacterCutaway(on)` switches it; localStorage `dead-end-city-cutaway` = `'off'` is
+  read at start-up.
+- **Street camera clearance** (flight-view3d.js): the orthographic street camera stands far
+  enough back along its view line that its near plane clears the tallest roof and the
+  cloud-shadow plane (`streetCeiling()`); the image is unchanged. The street view has no
+  distance haze (from a camera looking down at 50 degrees it was only a pale gradient over
+  the top of the frame); the flight camera's haze gathers over the first ~60 m of a climb.
+- **Wakes** (wakes3d.js): boats call `wakeEmit()` each frame; trails and hull collars are
+  drawn into a wake map (foam, wave crest, trough) round the view that the water shader
+  samples for foam and for its normal. Spray is one `Points` object.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
-  a bump, dielectric roughness and rain puddles (`weather.wet`). Leaf and palm materials sway.
+  a bump, dielectric roughness and rain puddles (`weather.wet`). Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
 
 ## 6a. Damage and destruction
 
