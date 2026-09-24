@@ -411,16 +411,18 @@
       }
       /**
        * CUTAWAY
-       * Only when the player is strictly under a roof (the underpass, a rail
-       * viaduct deck, a station canopy, a bus shelter, Vinny's depot, a building
-       * they are inside) is a small hole, about their own size, dithered through
-       * that roof with a 4x4 ordered screen-door pattern so they stay in view.
+       * When the player is under a roof (the underpass, a rail viaduct deck, a
+       * station canopy, a bus shelter, Vinny's depot, a building they are
+       * inside), or hidden from the camera behind a building or a deck (a ray
+       * from their middle or head towards the camera passes through its box,
+       * findOccluders), a small hole, about their own size, is dithered through
+       * that structure with a 4x4 ordered screen-door pattern so they stay in view.
        * Nothing else is ever cut: only fragments inside the covering structure's
        * own volume (its footprint, from its underside, or from above head height
        * for the walls of an enclosure, up to its top) and in front of the
        * player, so traffic, people, trees, props and towers that merely stand
-       * between the camera and the player stay whole. In the open there is no
-       * cutaway at all; shadows are never affected. A road vehicle in a tunnel
+       * between the camera and the player stay whole. With the player in plain
+       * view there is no cutaway at all; shadows are never affected. A road vehicle in a tunnel
        * or the depot gets a hole its own size. Players can switch it off
        * (`setCharacterCutaway`; the settings menu saves localStorage
        * 'dead-end-city-cutaway' = 'off').
@@ -464,6 +466,84 @@
             cutawayCovers.push({ x: b.x + b.w / 2, y: b.y + b.h / 2, hx: b.w / 2 + 2, hy: b.h / 2 + 2, a: 0, bottom: head, top: b.height + 14 });
         return cutawayCovers.sort((p, q) => p.bottom - q.bottom);
       }
+      /* Occluders: buildings, and decks or roofs over the street (airCoverVolumes),
+         that stand between the camera and the player, found by casting rays from
+         the player's middle and head towards the camera through each one's box
+         (grown by `margin`, so the hole opens just before the player is lost). */
+      const occluderRay = { x: 0, y: 0, z: 0 };
+      function rayHitsBox(px, py, pz, localX, localZ, hx, hz, bottom, top) {
+        // Slab test in the box's own frame: px/pz and localX/localZ are the ray's
+        // origin and direction already turned into it; y is shared.
+        let near = 0.5,
+          far = 1e9;
+        const axes = [
+          [px, localX, hx],
+          [pz, localZ, hz],
+        ];
+        for (const [origin, direction, half] of axes) {
+          if (Math.abs(direction) < 1e-6) {
+            if (Math.abs(origin) > half) return false;
+            continue;
+          }
+          let t0 = (-half - origin) / direction,
+            t1 = (half - origin) / direction;
+          if (t0 > t1) [t0, t1] = [t1, t0];
+          near = Math.max(near, t0);
+          far = Math.min(far, t1);
+          if (near > far) return false;
+        }
+        // Height: the ray climbs, so it is inside the box's span between these.
+        const dy = occluderRay.y;
+        if (dy > 1e-6) {
+          near = Math.max(near, (bottom - py) / dy);
+          far = Math.min(far, (top - py) / dy);
+        } else if (py < bottom || py > top) return false;
+        return near < far;
+      }
+      function findOccluders(x, y, heights, margin, list) {
+        const ray = occluderRay;
+        if (camera.isPerspectiveCamera) {
+          ray.x = camera.position.x - x;
+          ray.y = camera.position.y - heights[0];
+          ray.z = camera.position.z - y;
+        } else {
+          camera.getWorldDirection(cutawayEdge);
+          ray.x = -cutawayEdge.x;
+          ray.y = -cutawayEdge.y;
+          ray.z = -cutawayEdge.z;
+        }
+        const length = Math.hypot(ray.x, ray.y, ray.z) || 1;
+        ray.x /= length;
+        ray.y /= length;
+        ray.z /= length;
+        if (ray.y < 0.05) return;
+        // How far a ray can travel sideways before it clears the tallest roof.
+        const reach = ((streetCeiling() - heights[0]) / ray.y) * Math.hypot(ray.x, ray.z) + margin;
+        for (const o of allBuildings) {
+          const b = o.b;
+          if (o.height <= heights[0]) continue;
+          if (b.x > x + reach || b.x + b.w < x - reach || b.y > y + reach || b.y + b.h < y - reach) continue;
+          // The player inside this building is coversOver()'s case.
+          if (x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) continue;
+          const cx = b.x + b.w / 2,
+            cy = b.y + b.h / 2;
+          if (!heights.some((h) => rayHitsBox(x - cx, h, y - cy, ray.x, ray.z, b.w / 2 + margin, b.h / 2 + margin, -60, o.height))) continue;
+          list.push({ x: cx, y: cy, hx: b.w / 2 + 2, hy: b.h / 2 + 2, a: 0, bottom: -60, top: o.height + 24, near: Math.hypot(cx - x, cy - y) });
+        }
+        for (const b of airCoverVolumes()) {
+          if (b.height <= heights[0] || b.minHeight <= heights[0] + 4) continue;
+          if (Math.abs(b.x - x) > reach + b.hx + b.hy || Math.abs(b.y - y) > reach + b.hx + b.hy) continue;
+          const local = coverLocal(b, x, y),
+            cos = b.cos ?? Math.cos(b.a),
+            sin = b.sin ?? Math.sin(b.a),
+            localX = ray.x * cos + ray.z * sin,
+            localZ = -ray.x * sin + ray.z * cos;
+          if (!heights.some((h) => rayHitsBox(local.x, h, local.y, localX, localZ, b.hx + margin, b.hy + margin, b.minHeight, b.height))) continue;
+          list.push({ x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a, bottom: b.minHeight - 8, top: b.height + 2, near: Math.hypot(b.x - x, b.y - y) });
+        }
+        list.sort((p, q) => p.near - q.near);
+      }
+      const cutawayOccluders = [];
       function setCutBox(box, span, cover) {
         if (!cover) {
           box.set(0, 0, 0, 0);
@@ -483,6 +563,13 @@
           bodyHeight = car ? (spec.truck ? 32 : 18) : 18,
           radius = car ? Math.hypot(spec.l, spec.w) / 2 + 6 : CUTAWAY_RADIUS_ON_FOOT,
           covers = coversOver(player.x, player.y, elevation + bodyHeight, elevation, car ? 0 : 3, !!car);
+        // Anything standing between the camera and the player (a tower south of
+        // them, a viaduct deck): only when no roof over them already takes both slots.
+        cutawayOccluders.length = 0;
+        if (covers.length < 2) {
+          findOccluders(player.x, player.y, [elevation + bodyHeight * 0.45, elevation + bodyHeight], radius * 0.4, cutawayOccluders);
+          for (const o of cutawayOccluders) if (covers.length < 2) covers.push(o);
+        }
         if (!covers.length) return;
         setCutBox(u.cityCutBoxA.value, u.cityCutSpanA.value, covers[0]);
         setCutBox(u.cityCutBoxB.value, u.cityCutSpanB.value, covers[1]);
