@@ -55,6 +55,10 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 | Minimap zoom | mouse wheel or pinch over the minimap; its − button folds it away |
 | Pause | Escape |
 
+Typing `godmode` during play toggles god mode: every weapon, invulnerability, every
+mission open in the mission picker, and there a time-of-day chooser (presets from dawn to
+3 AM, a slider over the whole day) and the weather, applied at once.
+
 Every key can be rebound in **Settings · Controls** (from the title menu or the pause
 menu), which also warns about clashes and offers to swap. Settings has four tabs:
 GRAPHICS (quality tier, FPS counter, character see-through), AUDIO (sound on/off; master,

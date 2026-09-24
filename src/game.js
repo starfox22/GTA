@@ -4224,7 +4224,7 @@
           player.hp = 100;
           player.armor = 100;
           announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
-          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · click the map to teleport', 5);
+          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · pick the time of day and weather in the mission picker · click the map to teleport', 5);
         } else {
           announce('SOUTH COAST', 'GODMODE OFF', 1.8);
           tell('GODMODE OFF', 2.5);

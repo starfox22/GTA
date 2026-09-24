@@ -437,7 +437,11 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   moves to the top so the thumbs have the lower corners.
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
-  advance the campaign.
+  advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
+  campaign.js): presets (dawn 06:00, morning 09:00, noon, golden hour 19:00, dusk 20:30,
+  night 23:00, 03:00), a slider over the day in five-minute steps, and the weather (AUTO
+  hands the sky back to the weather machine); each applies at once through `worldMinutes`
+  and `setWeather`.
 
 ## 4b. Harbor Point, the superyacht and the boats
 
