@@ -12,8 +12,11 @@ Version 29.0.0 (see `docs/CHANGELOG.md`).
   gather in street scenes, and react to what they see and hear (cower, flee, film, call the
   police); traffic that obeys signals and gets out of the car to argue after a crash; a
   wanted system with helicopters and rammable roadblocks; gangs, wildlife, sports matches,
-  a casino and a Sunset Pier theme park.
-- Southport Beach with swimmers, lifeguards and a fishing pier; you can swim from the sand
+  a casino and a Sunset Pier theme park on its own island north of the city.
+- Four islands and long bridges: Northbank's street grid in the middle, tropical Palm Keys to
+  the west across Palm Sound, the forest and mountains of Ridgeline east across Marlow Bay,
+  and the Sunset Pier amusement island to the north.
+- Palm Keys Beach with swimmers, lifeguards and a fishing pier; you can swim from the sand
   and climb out at beaches, rocks and ladders on the quays.
 - Harbor Point marina with sixteen unique yachts and M/Y AURELIA, a 105 m superyacht you can
   walk aboard deck by deck; cruise liners, a freighter, boats and jet skis to drive.

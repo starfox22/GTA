@@ -13,13 +13,13 @@
       const roads = [];
       for (const vertical of [false, true])
         for (const r of vertical ? ROAD_CENTERS : ROAD_ROWS) {
-          const width = WIDE_ROADS.includes(r) ? 112 : 88;
+          const width = (vertical ? wideColumn(r) : wideRow(r)) ? 112 : 88;
           let start = null;
           const valid = (v) => {
             const x = vertical ? r : v,
               y = vertical ? v : r;
             if (inAirport(x, y) || parkStreetClosed(x, y) || inStadiumLot(x, y, 56)) return false;
-            if (onSunsetIsle(x, y) || onBeach(x, y) || marinaQuayAt(x, y)) return false;
+            if (onSunsetIsle(x, y) || onBeach(x, y) || marinaQuayAt(x, y) || inReservedPlot(x, y, 20)) return false;
             // West Quay (x = 128) is not a street: the strip between the sea wall
             // and the first blocks is the esplanade and the Shore Line viaduct.
             if (vertical && r === RAIL_CORRIDOR_X) return false;
@@ -32,7 +32,7 @@
               landAt(x - (vertical ? 0 : 25), y - (vertical ? 25 : 0))
             );
           };
-          const from = vertical ? CITY_TOP + 64 : 64;
+          const from = vertical ? CITY_TOP + 64 : CITY_LEFT + 64;
           for (let v = from; v <= CITY_SIZE - 32; v += 16) {
             if (v <= CITY_SIZE - 48 && valid(v)) {
               if (start === null) start = v;
@@ -68,6 +68,10 @@
      */
     const STREET_NAMES = {
       vertical: {
+        // Palm Keys: Ocean Dr on the sea side, Bayshore Dr on the bay side.
+        '-2432': 'OCEAN DR',
+        '-1920': 'FLAMINGO AVE',
+        '-1408': 'COLLINS AVE',
         128: 'WEST QUAY',
         640: 'SUNSET BLVD',
         1152: 'ROYAL AVE',
@@ -75,10 +79,6 @@
         2176: 'GARDEN ST',
         2688: 'GARDEN AVE',
         3200: 'RIVERBANK DR',
-        3712: 'PALM AVE',
-        4224: 'COLLINS AVE',
-        4736: 'FLAMINGO AVE',
-        5248: 'OCEAN DR',
       },
       horizontal: {
         128: 'NORTH SHORE RD',
@@ -264,22 +264,30 @@
     function coastSegments() {
       return coastCache || (coastCache = buildCoastSegments());
     }
-    // Southport Beach is the one sandy stretch of Northbank's shore; its sand runs
-    // down to the water, so the esplanade stops at either end of it and the
-    // boardwalk along the top of the beach carries the walk across.
+    // Palm Keys Beach's sand runs down to the water, so the esplanade stops at
+    // either end of it and the boardwalk along the top of the beach carries the
+    // walk across.
     function beachShore(e) {
-      return e.region === 'northbank' && regionContains(BEACH, e.x, e.y);
+      return e.region === 'palmkeys' && regionContains(BEACH, e.x, e.y);
     }
     // The Riverside helipad stands on the quay itself, so the esplanade stops at
     // its fence instead of being painted across half of the landing square.
     function esplanadeGivesWay(e) {
       const p = esplanadePoint(e);
-      return beachShore(e) || HELIPADS.some((pad) => Math.abs(p.x - pad.x) < 64 && Math.abs(p.y - pad.y) < 64);
+      return (
+        beachShore(e) ||
+        inReservedPlot(p.x, p.y, 10) ||
+        HELIPADS.some((pad) => Math.abs(p.x - pad.x) < 64 && Math.abs(p.y - pad.y) < 64)
+      );
     }
+    // Palm Keys: sand on the public beach and down Ocean Drive's open-sea (west)
+    // shore; the bay shore facing the city is a quay.
     function shoreStyle(e) {
-      return e.region === 'palmkeys' || beachShore(e) || COUNTY_REGIONS.find((r) => r.id === e.region)?.beach
+      return beachShore(e) ||
+        (e.region === 'palmkeys' && e.x < -1700) ||
+        COUNTY_REGIONS.find((r) => r.id === e.region)?.beach
         ? 'beach'
-        : ['northbank', 'airport'].includes(e.region)
+        : ['northbank', 'airport', 'palmkeys', 'sunsetisle'].includes(e.region)
           ? 'quay'
           : 'rock';
     }

@@ -92,7 +92,25 @@
             ex = t.b.x - t.a.x,
             ey = t.b.y - t.a.y,
             den = dx * ey - dy * ex;
-          if (Math.abs(den) < 0.001) continue;
+          if (Math.abs(den) < 0.001) {
+            // Collinear roads that overlap (a street carried across a bridge and
+            // the bridge deck itself) share nodes at each other's ends, or the
+            // two would run side by side without ever joining.
+            const along = (seg, p) => {
+              const len2 = (seg.b.x - seg.a.x) ** 2 + (seg.b.y - seg.a.y) ** 2,
+                u = ((p.x - seg.a.x) * (seg.b.x - seg.a.x) + (p.y - seg.a.y) * (seg.b.y - seg.a.y)) / len2;
+              return u > 0 && u < 1 && segmentDistance(p.x, p.y, [seg.a.x, seg.a.y], [seg.b.x, seg.b.y]) < 0.5 ? u : null;
+            };
+            for (const [seg, other] of [
+              [s, t],
+              [t, s],
+            ])
+              for (const p of [other.a, other.b]) {
+                const u = along(seg, p);
+                if (u !== null) seg.cuts.push(u);
+              }
+            continue;
+          }
           const qx = t.a.x - s.a.x,
             qy = t.a.y - s.a.y,
             u = (qx * ey - qy * ex) / den,
@@ -265,7 +283,7 @@
     }
     function setWaypoint(x, y) {
       userWaypoint = {
-        x: clamp(x, 0, WORLD_SIZE),
+        x: clamp(x, WORLD_LEFT, WORLD_SIZE),
         y: clamp(y, WORLD_TOP, WORLD_SIZE),
       };
       calculateUserRoute();
@@ -363,7 +381,7 @@
       };
     }
     function mapWorldPoint(p) {
-      const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
+      const s = Math.min(800 / WORLD_WIDTH, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
       return {
         x: mapCenter.x + (p.x - 400) / s,
         y: mapCenter.y + (p.y - 330) / s,
@@ -414,9 +432,9 @@
           dy = p.y - mapGesture.start.y;
         if (Math.hypot(dx, dy) > 5) mapGesture.drag = true;
         if (mapGesture.drag) {
-          const s = Math.min(800 / WORLD_SIZE, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
+          const s = Math.min(800 / WORLD_WIDTH, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
           mapCenter = {
-            x: clamp(mapGesture.center.x - dx / s, 0, WORLD_SIZE),
+            x: clamp(mapGesture.center.x - dx / s, WORLD_LEFT, WORLD_SIZE),
             y: clamp(mapGesture.center.y - dy / s, WORLD_TOP, WORLD_SIZE),
           };
         }

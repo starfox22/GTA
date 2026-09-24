@@ -246,7 +246,7 @@
       getElement('mapKeyHint').textContent = keyName('map');
       getElement('cycleKeyHint').textContent = keyName('cycleWeapon');
       getElement('pagerHint').textContent = keyName('missionCard');
-      getElement('radioNext').textContent = keyName('radioNext') + ' ▸';
+      getElement('radioNext').textContent = keyName('radioNext') + ' · NEXT';
     }
     /* HOW TO PLAY: the key grid, built from the bindings when the card opens. */
     function renderControlsHelp() {

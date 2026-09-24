@@ -97,6 +97,7 @@ something, never a generic code-evaluation hook.
 | `defeatMissionGuards(tag)` | Put down the current mission's guards (to skip a fight already verified) |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort) |
+| `route(x, y)` | Set a map waypoint and report the GPS route from the player: status, road length, the bridges it crosses |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
@@ -123,7 +124,7 @@ something, never a generic code-evaluation hook.
 | `bindings(changes)` | Key bindings as `{ action: [primary, secondary] }`; `{ ascend: 'KeyY' }` binds a primary key (a clash swaps), `'reset'` restores the defaults |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
-| `beach()` | Southport Beach: crowd density for the hour, who is there and what they are doing, prop counts |
+| `beach()` | Palm Keys Beach: crowd density for the hour, who is there and what they are doing, prop counts |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
 | `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |

@@ -337,7 +337,7 @@
                 // Beer's law with a softened tail (multiple scattering keeps deep
                 // cloud from going black) and "powder" darkening on thin edges.
                 float sun = max(exp(-od), exp(-od * 0.25) * 0.3) * (1. - exp(-d * 4.)) * 1.2;
-                float city = smoothstep(-900., 400., p.x) * smoothstep(6200., 5200., p.x)
+                float city = smoothstep(-3900., -2700., p.x) * smoothstep(4600., 3600., p.x)
                            * smoothstep(-4700., -3800., p.z) * smoothstep(6200., 5300., p.z);
                 // Ambient: open sky above, fading into the shadowed body; a little
                 // light bounced up from the ground under the base.

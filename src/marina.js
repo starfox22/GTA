@@ -134,7 +134,8 @@
       {
         id: 'meridian',
         name: 'MS MERIDIAN STAR',
-        x: 2460,
+        // Anchored clear of the Sunset Pier Bridge (x 3200) to her east.
+        x: 2220,
         y: -5136,
         a: 0.21,
         l: 1360,

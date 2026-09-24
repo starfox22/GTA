@@ -149,7 +149,7 @@
         id: 'glass',
         name: 'GLASSHOUSE CREW',
         color: '#b19bcc',
-        x: 4736,
+        x: -1920,
         y: 3712,
       },
     ];
@@ -163,11 +163,11 @@
         y: 1086,
       },
       motel: {
-        x: 4985,
+        x: -2183,
         y: 1990,
       },
       warehouse: {
-        x: 4736,
+        x: -1920,
         y: 3200,
       },
       hangar: {
@@ -179,7 +179,7 @@
         y: 5005,
       },
       waterCase: {
-        x: 3715,
+        x: -899,
         y: 2070,
       },
     };
@@ -242,13 +242,13 @@
             walk: 0,
           });
         }
-      // Rival patrols face one another by the southern causeway.
+      // Rival patrols face one another at the Palm Keys end of the Palm Sound causeway.
       for (const [id, x, color] of [
-        ['harbor', 4200, '#b66951'],
-        ['glass', 4380, '#b19bcc'],
+        ['harbor', -1330, '#b66951'],
+        ['glass', -1530, '#b19bcc'],
       ])
         for (let i = 0; i < 2; i++) {
-          const p = findStreetPoint(x, 4736 + (i ? 32 : -32));
+          const p = findStreetPoint(x, 3200 + (i ? 32 : -32));
           gangMembers.push({
             ...p,
             a: 0,
