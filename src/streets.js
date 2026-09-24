@@ -464,12 +464,14 @@
         drawingContext.stroke();
         drawingContext.strokeStyle = '#9a9a8d';
         drawingContext.lineWidth = 0.8;
+        // One path for the segment's ticks: a stroke each was seconds of start-up
+        // on the big ground sheet.
+        drawingContext.beginPath();
         for (let d = -half; d < half; d += 11) {
-          drawingContext.beginPath();
           drawingContext.moveTo(d, ESPLANADE_SEAWARD - 14);
           drawingContext.lineTo(d, ESPLANADE_SEAWARD - 4);
-          drawingContext.stroke();
         }
+        drawingContext.stroke();
         drawingContext.restore();
       }
       drawingContext.restore();
