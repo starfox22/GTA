@@ -301,7 +301,10 @@
         name: 'CITY CYCLE',
         l: 28,
         w: 9,
-        max: 112,
+        // Pedal-limited: cruises clearly quicker than a sprint on foot (158 u/s)
+        // and below every car's top speed; pedalDrive (cycles.js) tapers the
+        // legs' push toward it, and standing on the pedals raises it.
+        max: 215,
         acc: 40,
         turn: 3.9,
         hp: 85,
