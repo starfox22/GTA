@@ -5046,9 +5046,9 @@
           .map((b) => ({ x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a, kind: b.kind })),
       }),
       // Sunset Pier: ride states, the coaster's numbers, shows, guests and an overlap check.
-      park: () => parkReport(),
+      themePark: () => parkReport(),
       // Board the Falcon ('coaster') or the Sunset Eye ('wheel') from its platform.
-      ride(kind = 'coaster') {
+      boardRide(kind = 'coaster') {
         rideAttraction(kind);
         return parkReport().riding;
       },

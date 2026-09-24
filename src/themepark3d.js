@@ -129,9 +129,9 @@
         pq.setFromUnitVectors(upAxis, d.normalize());
         return pm.compose(ps.addVectors(a, b).multiplyScalar(0.5), pq, new Three.Vector3(r, len, r));
       }
-      const tubeGeo = new Three.CylinderGeometry(1, 1, 1, 10, 1, true),
-        thinGeo = new Three.CylinderGeometry(1, 1, 1, 6, 1, true),
-        domeGeo = new Three.SphereGeometry(1, 16, 8, 0, TAU, 0, Math.PI / 2),
+      const parkTubeGeo = new Three.CylinderGeometry(1, 1, 1, 10, 1, true),
+        parkThinGeo = new Three.CylinderGeometry(1, 1, 1, 6, 1, true),
+        parkDomeGeo = new Three.SphereGeometry(1, 16, 8, 0, TAU, 0, Math.PI / 2),
         parkConeGeo = new Three.ConeGeometry(1, 1, 16);
       /* A tube swept through a list of frames {p, a, b} (three coords), `sides` round. */
       function sweptTube(frames, radius, sides, closed) {
@@ -310,7 +310,7 @@
           for (const side of [-1, 1]) {
             a.copy(f.p).addScaledVector(f.s, side * COASTER_GAUGE).addScaledVector(f.u, -1);
             b.copy(f.p).addScaledVector(f.u, -SPINE_DROP);
-            track.add(parkMats.gold, thinGeo, between(a, b, 0.45));
+            track.add(parkMats.gold, parkThinGeo, between(a, b, 0.45));
           }
         }
         // Lift hill: chain and catwalk with a handrail beside the track.
@@ -322,7 +322,7 @@
           if (i % 6 === 0) {
             a.copy(f.p).addScaledVector(f.s, -8.2);
             b.copy(a).addScaledVector(f.u, 4);
-            track.add(parkMats.darkSteel, thinGeo, between(a, b, 0.25));
+            track.add(parkMats.darkSteel, parkThinGeo, between(a, b, 0.25));
           }
         }
         // Supports: white columns on concrete footings; banked and inverted track is
@@ -332,12 +332,12 @@
           a.set(f.x, 0, f.y);
           b.set(f.x, f.top, f.y);
           const r = 1.5 + Math.min(2.2, f.top * 0.008);
-          track.add(parkMats.white, tubeGeo, between(a, b, r));
+          track.add(parkMats.white, parkTubeGeo, between(a, b, r));
           track.box(parkMats.concrete, parkPlaced(f.x, f.y, 1.5, r * 3.4, 3, r * 3.4));
           if (f.side) {
             b.set(f.x, f.top, f.y);
             a.set(top.x, top.z, top.y);
-            track.add(parkMats.white, tubeGeo, between(b, a, r * 0.8));
+            track.add(parkMats.white, parkTubeGeo, between(b, a, r * 0.8));
           }
           // Tall columns get a second, raking leg for stiffness.
           if (f.top > 130) {
@@ -345,7 +345,7 @@
               reach = f.top * 0.22;
             a.set(f.x + Math.cos(d) * reach, 0, f.y + Math.sin(d) * reach);
             b.set(f.x, f.top * 0.7, f.y);
-            track.add(parkMats.white, tubeGeo, between(a, b, r * 0.7));
+            track.add(parkMats.white, parkTubeGeo, between(a, b, r * 0.7));
             track.box(parkMats.concrete, parkPlaced(a.x, a.z, 1.5, r * 3, 3, r * 3));
           }
         }
@@ -376,8 +376,8 @@
             [-6452, -1],
             [-6408, 1],
           ]) {
-            b.add(parkMats.white, tubeGeo, between(P3(x, z, 0), P3(x, z, 50), 1.4));
-            b.add(parkMats.white, tubeGeo, between(P3(x, z, 50), P3(x, -6430, 60), 1));
+            b.add(parkMats.white, parkTubeGeo, between(P3(x, z, 0), P3(x, z, 50), 1.4));
+            b.add(parkMats.white, parkTubeGeo, between(P3(x, z, 50), P3(x, -6430, 60), 1));
           }
         }
         for (const [z0, z1] of [
@@ -406,14 +406,14 @@
         // Queue hall: a shade canopy on posts over the switchback rails.
         b.box(parkMats.canvasWhite, parkPlaced(2600, -6375, 30, 200, 1.2, 50));
         for (let x = 2505; x <= 2695; x += 38)
-          for (const y of [-6398, -6352]) b.add(parkMats.gold, tubeGeo, between(P3(x, y, 0), P3(x, y, 30), 0.8));
+          for (const y of [-6398, -6352]) b.add(parkMats.gold, parkTubeGeo, between(P3(x, y, 0), P3(x, y, 30), 0.8));
         for (const [y, x0q, x1q] of [
           [-6388, 2505, 2640],
           [-6373, 2520, 2690],
           [-6358, 2505, 2690],
         ]) {
-          b.add(parkMats.steel, thinGeo, between(P3(x0q, y, 4), P3(x1q, y, 4), 0.35));
-          for (let x = x0q; x <= x1q; x += 15) b.add(parkMats.steel, thinGeo, between(P3(x, y, 0), P3(x, y, 4), 0.3));
+          b.add(parkMats.steel, parkThinGeo, between(P3(x0q, y, 4), P3(x1q, y, 4), 0.35));
+          for (let x = x0q; x <= x1q; x += 15) b.add(parkMats.steel, parkThinGeo, between(P3(x, y, 0), P3(x, y, 4), 0.3));
         }
         b.flush(coasterGroup, 'falcon station');
         for (let i = 0; i < 12; i++) parkBulbs.add(x0 + 6 + i * 13, -6400, 49, 3, i % 2 ? '#ffd79a' : '#ffb35c');
@@ -465,7 +465,7 @@
       const riderBodyGeo = (() => {
         const b = partsBuilder();
         b.box(parkMats.white, parkPlaced(0, 0, 1.6, 1.4, 3.2, 2));
-        for (const z of [-1.2, 1.2]) b.add(parkMats.white, thinGeo, between(P3(0, z, 2.8), P3(0.5, z * 1.6, 6.2), 0.4));
+        for (const z of [-1.2, 1.2]) b.add(parkMats.white, parkThinGeo, between(P3(0, z, 2.8), P3(0.5, z * 1.6, 6.2), 0.4));
         const m = b.flush(new Three.Group(), 'rider')[0];
         return m.geometry;
       })();
@@ -591,7 +591,7 @@
         const b = partsBuilder(),
           hub = (z) => new Three.Vector3(EYE.x, EYE.hub, EYE.y + z);
         b.add(parkMats.gold, new Three.CylinderGeometry(8, 8, 1, 20), between(hub(-44), hub(44), 1).scale(ps.set(1, 1, 1)));
-        for (const z of [-44, 44]) b.add(parkMats.gold, domeGeo, parkPlaced(EYE.x, EYE.y + z * 1.02, EYE.hub, 8, 8, 8));
+        for (const z of [-44, 44]) b.add(parkMats.gold, parkDomeGeo, parkPlaced(EYE.x, EYE.y + z * 1.02, EYE.hub, 8, 8, 8));
         for (const [fx, fy] of wheelFeet()) {
           const side = fy < EYE.y ? -1 : 1,
             top = hub(side * 40),
@@ -942,7 +942,7 @@
         // Crown: a gold dome on a drum over the arch, and minaret-like finials.
         const crown = { x: cx, y: cy - radius };
         b.add(parkMats.cream, new Three.CylinderGeometry(1, 1, 1, 24), parkPlaced(crown.x, crown.y, H.height + 14, 34, 24, 34));
-        b.add(parkMats.gold, domeGeo, parkPlaced(crown.x, crown.y, H.height + 26, 34, 34, 34));
+        b.add(parkMats.gold, parkDomeGeo, parkPlaced(crown.x, crown.y, H.height + 26, 34, 34, 34));
         b.add(parkMats.gold, parkConeGeo, parkPlaced(crown.x, crown.y, H.height + 68, 4, 20, 4));
         for (const side of [-1, 1]) {
           const a = -Math.PI / 2 + side * span * 0.28,
@@ -950,7 +950,7 @@
             y = cy + Math.sin(a) * radius,
             t = H.height - 32;
           b.add(parkMats.cream, new Three.CylinderGeometry(1, 1, 1, 12), parkPlaced(x, y, t + 20, 12, 40, 12));
-          b.add(parkMats.gold, domeGeo, parkPlaced(x, y, t + 40, 12, 16, 12));
+          b.add(parkMats.gold, parkDomeGeo, parkPlaced(x, y, t + 40, 12, 16, 12));
         }
         // Entrance canopy and fountain court in front of the arch.
         b.box(parkMats.gold, parkPlaced(crown.x, crown.y + depth / 2 + 16, 22, 90, 3, 30));
@@ -1006,7 +1006,7 @@
           const x = g.x + side * 77;
           b.box(parkMats.cream, parkPlaced(x, g.y - 15, 55, 45, 110, 30));
           b.box(parkMats.gold, parkPlaced(x, g.y - 15, 112, 49, 4, 34));
-          b.add(parkMats.gold, domeGeo, parkPlaced(x, g.y - 15, 114, 20, 24, 20));
+          b.add(parkMats.gold, parkDomeGeo, parkPlaced(x, g.y - 15, 114, 20, 24, 20));
           b.add(parkMats.gold, parkConeGeo, parkPlaced(x, g.y - 15, 146, 2, 14, 2));
           // Pointed arch niches.
           for (const dz of [-1, 1]) b.box(parkMats.turquoise, parkPlaced(x, g.y - 15 + dz * 15.2, 45, 18, 50, 0.6));
@@ -1152,7 +1152,7 @@
             const a = (k / 4) * TAU + Math.PI / 4;
             b.add(parkMats.gold, parkThinGeo, between(P3(DT.x + Math.cos(a) * 9, DT.y + Math.sin(a) * 9, y), P3(DT.x + Math.cos(a + Math.PI / 2) * 9, DT.y + Math.sin(a + Math.PI / 2) * 9, y + 24), 0.5));
           }
-        b.add(parkMats.gold, domeGeo, parkPlaced(DT.x, DT.y, H, 14, 12, 14));
+        b.add(parkMats.gold, parkDomeGeo, parkPlaced(DT.x, DT.y, H, 14, 12, 14));
         b.add(parkMats.gold, parkConeGeo, parkPlaced(DT.x, DT.y, H + 22, 2, 26, 2));
         b.add(parkMats.stone, new Three.CylinderGeometry(1, 1, 1, 24), parkPlaced(DT.x, DT.y, 2, 22, 4, 22));
         b.flush(parkRoot, 'drop tower');
@@ -1291,7 +1291,7 @@
         for (const dx of [-60, 0, 60]) {
           b.box(parkMats.seat, parkPlaced(cx + dx, front + 1.2, 16, 22, 32, 1));
           b.add(parkMats.gold, new Three.TorusGeometry(12, 1.6, 6, 20, Math.PI * 1.25), parkPlaced(cx + dx, front + 1.6, 31, 1, 1, 1).multiply(new Three.Matrix4().makeRotationZ(-Math.PI * 0.125)));
-          b.add(parkMats.turquoise, domeGeo, parkPlaced(cx + dx, d.y + d.h / 2, 52, 20, 24, 20));
+          b.add(parkMats.turquoise, parkDomeGeo, parkPlaced(cx + dx, d.y + d.h / 2, 52, 20, 24, 20));
         }
         // Towers with onion domes at the corners of the facade.
         for (const dx of [-d.w / 2 - 4, d.w / 2 + 4]) {
@@ -1382,7 +1382,7 @@
           const x = f.x + 16 + i * ((f.w - 32) / 6);
           b.box(parkMats.seat, parkPlaced(x, f.y + f.h + 0.6, 11, 16, 22, 1));
           b.box(i % 2 ? parkMats.canvasRed : parkMats.canvasWhite, parkPlaced(x, f.y + f.h + 7, 23, 22, 1, 14));
-          if (i % 2 === 0) b.add(parkMats.turquoise, domeGeo, parkPlaced(x, f.y + f.h / 2, 30, 14, 14, 14));
+          if (i % 2 === 0) b.add(parkMats.turquoise, parkDomeGeo, parkPlaced(x, f.y + f.h / 2, 30, 14, 14, 14));
         }
         for (const k of parkKiosks()) {
           const games = k.kind === 'games',

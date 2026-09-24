@@ -1202,9 +1202,9 @@
         [3050, -6580],
         [3290, -6580],
       ]) {
-        bed(x, y, 36, 14, '#6e8f4e');
-        bed(x, y, 28, 9, '#c8453c');
-        bed(x, y, 16, 5, '#e2b53c');
+        bed(x, y, 36, 14, '#5f7f45');
+        bed(x, y, 30, 10, '#8f5a4a');
+        for (let k = 0; k < 14; k++) bed(x - 26 + k * 4, y + Math.sin(k) * 4, 2.2, 2.2, k % 2 ? '#d8a23a' : '#c05a48');
       }
       // Map labels (the 2D view and the city map).
       g.fillStyle = '#5a4a2c';
