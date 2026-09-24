@@ -5,7 +5,8 @@
 // Boots the build headlessly, reads DeadEndCity.layout() (the plan as data) and
 // reports structures that overlap where they should not: rail decks over
 // buildings, helipads, ships, docks or marina berths; piers in roads or
-// buildings; station platforms on buildings; buildings on buildings, roads,
+// buildings; bridge footings on docks, ships or rail piers and bridge towers
+// through rail decks or buildings; station platforms on buildings; buildings on buildings, roads,
 // parks, water or the beach; roads over helipads; roads crossing other roads at
 // an oblique angle (usually a junction, sometimes a road painted over a road);
 // trees, lamps and benches standing in a carriageway. Passing a JSON path also
@@ -82,6 +83,18 @@ for (const p of L.railPiers) {
   const P = rectBox(p);
   for (const r of roadBoxes) if (overlap(P, r)) report('rail pier in road', at(P) + ' ' + r.name);
   for (const b of buildings) if (overlap(P, b)) report('rail pier in building', at(P));
+}
+// Bridge footings in the water and towers over the deck (bridgeStructure).
+for (const br of L.bridges || []) {
+  for (const f of br.footings || []) {
+    for (const k of L.docks) if (overlap(f, rectBox(k, 4))) report('bridge footing on dock', br.name + ' ' + at(f));
+    for (const s of L.ships) if (overlap(f, s)) report('bridge footing on ship', br.name + ' ' + s.name);
+    for (const p of L.railPiers) if (overlap(f, rectBox(p))) report('bridge footing on rail pier', br.name + ' ' + at(f));
+  }
+  for (const t of br.pylons || []) {
+    for (const d of L.railDecks) if (overlap(t, d)) report('bridge tower through rail deck', br.name + ' ' + at(t));
+    for (const b of buildings) if (overlap(t, b)) report('bridge tower in building', br.name + ' ' + at(t));
+  }
 }
 for (const s of L.stations) {
   const d = L.railDecks.reduce((best, d) => (Math.hypot(d.x - s.x, d.y - s.y) < Math.hypot(best.x - s.x, best.y - s.y) ? d : best));

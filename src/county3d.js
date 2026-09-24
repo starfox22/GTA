@@ -3,7 +3,8 @@
        * County and mountain meshes
        * Source: src/county3d.js
        * Scope: createCityRenderer() closure.
-       * Terrain surface, snow colors, rural scenery, bridges and region visibility.
+       * Terrain surface, snow colors, rural scenery and region visibility (the
+       * bridges are bridges3d.js).
        */
       // Regional ground is tiled separately so the original city's ground detail stays sharp.
       // Their materials get the same procedural ground detail as the city sheet
@@ -30,7 +31,6 @@
       const countyStone = mat('#778078', 0.96),
         countyRock = mat('#6b7468', 0.97),
         countyRail = mat('#a5b2b0', 0.64, 0.4),
-        countyAsphalt = mat('#485356', 0.94),
         countyCream = mat('#d6cbb3', 0.86);
       for (const peak of COUNTY_PEAKS) {
         const surface = mountainSurface(peak),
@@ -187,59 +187,7 @@
           radius: 65,
         });
       }
-      for (const bridge of BRIDGES) {
-        const dx = bridge.b[0] - bridge.a[0],
-          dz = bridge.b[1] - bridge.a[1],
-          length = Math.hypot(dx, dz),
-          group = new Three.Group(),
-          a = Math.atan2(dz, dx);
-        group.position.set((bridge.a[0] + bridge.b[0]) / 2, 0, (bridge.a[1] + bridge.b[1]) / 2);
-        group.rotation.y = -a;
-        scene.add(group);
-        batchGroups.push(group);
-        box(group, 0, -3, 0, length, 6, bridge.width + 6, concrete);
-        box(group, 0, 0.2, 0, length, 0.4, bridge.width, countyAsphalt);
-        for (let x = -length / 2 + 25; x < length / 2; x += 48) {
-          box(group, x, 0.5, 0, 23, 0.1, 2.7, countyCream);
-        }
-        for (const part of countyBridgeRails(bridge)) {
-          box(
-            group,
-            part.localX,
-            7,
-            part.side * (bridge.width / 2 - 1),
-            part.hx * 2,
-            1.5,
-            1.8,
-            countyRail,
-          );
-          box(group, part.localX, 3.6, part.side * (bridge.width / 2 - 1), 1, 7, 1, countyRail);
-        }
-        for (const side of [-1, 1])
-          box(group, 0, 0.6, side * (bridge.width / 2 - 8), length, 0.1, 2, countyCream);
-        for (const x of [...new Set(bridgePylons(bridge).map((p) => p.along))]) {
-          for (const side of [-1, 1]) {
-            box(group, x, 69, side * (bridge.width / 2 + 9), 13, 140, 14, countyStone);
-            for (let k = -5; k <= 5; k++) {
-              const end = x + (k * length) / 22;
-              rod(
-                group,
-                new Three.Vector3(x, 135, side * (bridge.width / 2 + 9)),
-                new Three.Vector3(end, 8, side * (bridge.width / 2 - 2)),
-                0.8,
-                countyRail,
-              );
-            }
-          }
-          box(group, x, 129, 0, 13, 8, bridge.width + 30, countyStone);
-        }
-        statics.push({
-          x: group.position.x,
-          y: group.position.z,
-          group,
-          radius: length / 2 + 150,
-        });
-      }
+      // The bridges are drawn by bridges3d.js, each in its own style.
       for (const t of COUNTY_TOWNS) {
         sign(t.name, t.x + 200, t.y - 72, 150, t.style === 'resort' ? '#e3b9b5' : '#d6d6be');
         for (let j = 0; j < 5; j++) {
@@ -381,6 +329,7 @@
       function updateCountyVisuals() {
         baseBarrier.rotation.x = (-militaryGate * Math.PI) / 2;
         radar.rotation.y = gameTime * 0.7;
+        updateBridgeVisuals();
       }
       function makeTank(vehicle) {
         const model = specialVehicle(vehicle),

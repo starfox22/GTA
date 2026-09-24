@@ -881,32 +881,31 @@
       addBeachColliders();
       for (const b of [...countySolids(), ...militaryWalls])
         addStatic(b.x, b.y, b.w, b.h, b.height, b.kind || 'military');
-      // Bridge pylons stand in the water beside the deck, tall enough to matter
-      // to a low helicopter.
+      // Towers, pylons, arches, trusses and cable fans (bridgeStructure,
+      // geography.js): solid to aircraft. Whatever spans the carriageway starts
+      // at BRIDGE_CLEARANCE, so road traffic passes underneath.
       for (const bridge of BRIDGES)
-        for (const p of bridgePylons(bridge)) addStatic(p.x - 7, p.y - 7, 14, 14, 140, 'tower');
+        for (const p of bridgePylons(bridge)) addBridgeBody({ ...p, kind: 'bridge ' + p.kind });
       for (const bridge of BRIDGES)
-        for (const piece of countyBridgeRails(bridge)) {
-          const b = {
-            ...piece,
-            id: 'county' + staticBodies.length,
-            kind: 'rail',
-            height: 8,
-          };
-          staticBodies.push(b);
-          const cs = corners(b),
-            minx = Math.min(...cs.map((p) => p.x)),
-            maxx = Math.max(...cs.map((p) => p.x)),
-            miny = Math.min(...cs.map((p) => p.y)),
-            maxy = Math.max(...cs.map((p) => p.y));
-          for (let x = Math.floor(minx / 256); x <= Math.floor(maxx / 256); x++)
-            for (let y = Math.floor(miny / 256); y <= Math.floor(maxy / 256); y++) {
-              // Numeric cell keys, as physics.js uses: string keys were never
-              // looked up, so traffic drove through the bridge guard rails.
-              const key = x * 4096 + y;
-              if (!staticGrid.has(key)) staticGrid.set(key, []);
-              staticGrid.get(key).push(b);
-            }
+        for (const piece of countyBridgeRails(bridge)) addBridgeBody({ ...piece, kind: 'rail', height: 8 });
+    }
+    // An oriented static body, filed in every grid cell its corners reach.
+    function addBridgeBody(piece) {
+      const b = { ...piece, id: 'county' + staticBodies.length };
+      if (!b.minHeight) delete b.minHeight;
+      staticBodies.push(b);
+      const cs = corners(b),
+        minx = Math.min(...cs.map((p) => p.x)),
+        maxx = Math.max(...cs.map((p) => p.x)),
+        miny = Math.min(...cs.map((p) => p.y)),
+        maxy = Math.max(...cs.map((p) => p.y));
+      for (let x = Math.floor(minx / 256); x <= Math.floor(maxx / 256); x++)
+        for (let y = Math.floor(miny / 256); y <= Math.floor(maxy / 256); y++) {
+          // Numeric cell keys, as physics.js uses: string keys were never
+          // looked up, so traffic drove through the bridge guard rails.
+          const key = x * 4096 + y;
+          if (!staticGrid.has(key)) staticGrid.set(key, []);
+          staticGrid.get(key).push(b);
         }
     }
     function countyBridgeRails(bridge) {
