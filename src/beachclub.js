@@ -72,6 +72,12 @@
         [240, 60, 260, 80],
       ],
       floor: [120, 96, 292, 184],
+      truss: [
+        [118, 94],
+        [294, 94],
+        [118, 186],
+        [294, 186],
+      ],
       bar: [44, 104, 54, 190],
       backBar: [6, 104, 16, 190],
       barRoof: [0, 92, 112, 200],
@@ -112,9 +118,9 @@
     ])
       MAREA.sunbeds.push({ u, v });
     MAREA.palms.push(
-      [22, 22], [70, 18], [118, 22], [354, 20], [392, 24],
-      [104, 214], [330, 196], [30, 204], [52, 290], [336, 294], [392, 196],
-      [196, 318], [246, 330], [100, 318], [340, 330],
+      [22, 22], [70, 20], [118, 22],
+      [20, 204], [340, 194], [392, 194], [50, 292], [330, 292], [392, 290],
+      [100, 342], [246, 346], [340, 340], [60, 330], [160, 350],
     );
     function mareaPoint(u, v) {
       return { x: MAREA.plot.x + u, y: MAREA.plot.y + v };
@@ -131,18 +137,24 @@
     (function planMareaSolids() {
       const S = (r, kind, height) => MAREA_SOLIDS.push(mareaRect(r, kind, height));
       const d = MAREA.door;
-      S([0, 44, d[0], 52], 'wall', 22);
-      S([d[2], 44, 400, 52], 'wall', 22);
+      // A low wall on the street side: the camera looks north, so anything tall
+      // here would hide the queue on the pavement behind it.
+      S([0, 44, d[0], 52], 'wall', 10);
+      S([d[2], 44, 400, 52], 'wall', 10);
+      S([284, 43, 290, 53], 'portal', 30);
+      S([314, 43, 320, 53], 'portal', 30);
+      S([403, 26, 409, 34], 'pylon', 70);
       S([0, 52, 5, 262], 'wall', 16);
       S([0, 262, 4, 300], 'glass', 5);
       S([395, 52, 400, 200], 'wall', 16);
       S([396, 200, 400, 300], 'glass', 5);
       S([0, 296, MAREA.gate[0], 300], 'glass', 5);
       S([MAREA.gate[2], 296, 400, 300], 'glass', 5);
-      S(MAREA.staff, 'staff', 28);
-      S(MAREA.restrooms, 'restrooms', 22);
+      S(MAREA.staff, 'staff', 16);
+      S(MAREA.restrooms, 'restrooms', 14);
       S(MAREA.cashier, 'kiosk', 14);
-      S(MAREA.screen, 'screen', 52);
+      S(MAREA.screen, 'screen', 40);
+      for (const [u, v] of MAREA.truss) S([u - 2, v - 2, u + 2, v + 2], 'truss', 50);
       S(MAREA.booth, 'booth', 9);
       for (const r of MAREA.speakers) S(r, 'speaker', 26);
       S(MAREA.bar, 'bar', 10);
@@ -341,28 +353,29 @@
     function buildMareaCast() {
       if (marea.built) return;
       marea.built = true;
-      const N = Math.PI / 2,
-        S = -Math.PI / 2;
+      // Headings: +y is south (towards the sea), -y north (towards the street).
+      const FACE_SOUTH = Math.PI / 2,
+        FACE_NORTH = -Math.PI / 2;
       // Staff: bartenders behind the main bar, the pool bar, waiters, the DJ, the door.
       for (const [v, mode] of [[122, 'staffDay'], [150, 'staffDay'], [176, 'staffNight'], [134, 'staffNight'], [164, 'staffNight']])
         mareaSlot('bartender', mode, 30, v, 0, { dress: 'barStaff', pose: 'bartend', entry: 'bar', pace: 7 });
-      mareaSlot('bartender', 'staffDay', 367, 198, N, { dress: 'barStaff', pose: 'bartend', node: 'e192', via: [[367, 196]], pace: 5 });
-      mareaSlot('bartender', 'staffNight', 367, 198, N, { dress: 'barStaff', pose: 'bartend', node: 'e192', via: [[367, 196]], pace: 5 });
+      mareaSlot('bartender', 'staffDay', 367, 198, FACE_SOUTH, { dress: 'barStaff', pose: 'bartend', node: 'e192', via: [[367, 196]], pace: 5 });
+      mareaSlot('bartender', 'staffNight', 367, 198, FACE_SOUTH, { dress: 'barStaff', pose: 'bartend', node: 'e192', via: [[367, 196]], pace: 5 });
       for (let i = 0; i < 3; i++) mareaSlot('waiter', 'staffDay', 70, 120 + i * 20, 0, { dress: 'waiter', pose: 'tray', node: 'wn', entry: 'staff', t: i * 0.2 });
       for (let i = 0; i < 3; i++) mareaSlot('waiter', 'staffNight', 70, 128 + i * 20, 0, { dress: 'waiter', pose: 'tray', node: 'wn', entry: 'staff', t: i * 0.2 });
-      mareaSlot('dj', 'dj', 200, 74, N, { dress: 'dj', pose: 'dj', z: 9, entry: 'booth', t: 0 });
-      mareaSlot('mc', 'night', 224, 70, N, { dress: 'party', pose: 'dance', z: 9, entry: 'booth', t: 0.35, style: 2 });
-      mareaSlot('dancerBooth', 'night', 176, 70, N, { dress: 'party', pose: 'dance', z: 9, entry: 'booth', t: 0.55, style: 5 });
+      mareaSlot('dj', 'dj', 200, 74, FACE_SOUTH, { dress: 'dj', pose: 'dj', z: 9, entry: 'booth', t: 0 });
+      mareaSlot('mc', 'night', 224, 70, FACE_SOUTH, { dress: 'party', pose: 'dance', z: 9, entry: 'booth', t: 0.35, style: 2 });
+      mareaSlot('dancerBooth', 'night', 176, 70, FACE_SOUTH, { dress: 'party', pose: 'dance', z: 9, entry: 'booth', t: 0.55, style: 5 });
       // The door: head bouncer, his partner, the host with the list; by day a greeter.
-      mareaSlot('bouncer', 'door', 313, 33, Math.PI, { dress: 'bouncer', pose: 'arms', node: 'out', via: [[313, 33]], t: 0, head: true, staff: true });
-      mareaSlot('bouncer', 'door', 324, 38, S, { dress: 'bouncer', pose: 'arms', node: 'out', via: [[324, 38]], t: 0, staff: true });
+      mareaSlot('bouncer', 'door', 316, 38, 0, { dress: 'bouncer', pose: 'arms', node: 'out', via: [[316, 38]], t: 0, head: true, staff: true });
+      mareaSlot('bouncer', 'door', 287, 38, FACE_NORTH, { dress: 'bouncer', pose: 'arms', node: 'out', via: [[287, 38]], t: 0, staff: true });
       mareaSlot('bouncer', 'door', 312, 150, Math.PI, { dress: 'bouncer', pose: 'arms', node: 'vipGate', via: [[312, 150]], t: 0.2, vipGuard: true, staff: true });
-      mareaSlot('bouncer', 'staffNight', 290, 190, S, { dress: 'bouncer', pose: 'arms', node: 'e192', t: 0.4, staff: true });
-      mareaSlot('host', 'door', 334, 28, Math.PI, { dress: 'host', pose: 'wait', node: 'out', via: [[334, 28]], t: 0, staff: true, clipboard: true });
-      mareaSlot('host', 'staffDay', 322, 30, S, { dress: 'host', pose: 'wait', node: 'out', via: [[322, 30]], t: 0, staff: true, greeter: true });
-      mareaSlot('bouncer', 'staffDay', 290, 64, S, { dress: 'bouncer', pose: 'arms', node: 'in', via: [[290, 64]], t: 0.3, staff: true });
+      mareaSlot('bouncer', 'staffNight', 290, 190, FACE_NORTH, { dress: 'bouncer', pose: 'arms', node: 'e192', t: 0.4, staff: true });
+      mareaSlot('host', 'door', 314, 25, 0, { dress: 'host', pose: 'wait', node: 'out', via: [[314, 25]], t: 0, staff: true, clipboard: true });
+      mareaSlot('host', 'staffDay', 316, 36, FACE_NORTH, { dress: 'host', pose: 'wait', node: 'out', via: [[316, 36]], t: 0, staff: true, greeter: true });
+      mareaSlot('bouncer', 'staffDay', 290, 64, FACE_NORTH, { dress: 'bouncer', pose: 'arms', node: 'in', via: [[290, 64]], t: 0.3, staff: true });
       // Smokers outside the door at night.
-      for (const [u, a] of [[364, 0], [372, Math.PI], [382, 0.4]]) mareaSlot('smoker', 'night', u, 28, a, { dress: 'party', pose: 'smoke', node: 'out', via: [[u, 28]], t: 0.3 + mareaRandom() * 0.5 });
+      for (const [u, a] of [[262, 0], [270, Math.PI], [276, 2.2]]) mareaSlot('smoker', 'night', u, 30, a, { dress: 'party', pose: 'smoke', node: 'out', via: [[u, 30]], t: 0.3 + mareaRandom() * 0.5 });
       // The dance floor: denser near the booth, facing the DJ.
       const floor = MAREA.floor;
       for (let v = floor[1] + 8; v < floor[3] - 4; v += 9.5)
@@ -410,7 +423,7 @@
         beds.forEach((r, i) => {
           for (const k of [0, 1]) {
             const v = r[1] + 3 + k * 6;
-            mareaSlot('lounger', 'day', r[2] - 3, v, 0, {
+            mareaSlot('lounger', 'day', r[2] - 10, v, 0, {
               dress: 'swim',
               pose: 'lounge',
               z: 4.2,
@@ -425,7 +438,7 @@
       bedRow(MAREA.southDaybeds, 271, 'm272');
       // Cabanas: a lounger and a friend sitting up.
       for (const r of MAREA.cabanas) {
-        mareaSlot('lounger', 'day', r[2] - 4, r[1] + 8, 0, { dress: 'swim', pose: 'lounge', z: 4.5, node: 'w216', via: [[51, r[1] + 13]], t: mareaRandom() * 0.7 });
+        mareaSlot('lounger', 'day', r[2] - 14, r[1] + 8, 0, { dress: 'swim', pose: 'lounge', z: 4.2, node: 'w216', via: [[51, r[1] + 13]], t: mareaRandom() * 0.7 });
         mareaSlot('lounger', 'day', r[2] - 4, r[1] + 18, Math.PI, { dress: 'resort', pose: 'sit', z: 1.2, node: 'w216', via: [[51, r[1] + 13]], t: mareaRandom() });
       }
       // Swimmers in the pool (day), and one or two at night.
@@ -436,7 +449,7 @@
         mareaSlot('swimmer', i < 12 ? 'pool' : 'night', u, v, mareaRandom() * TAU, {
           dress: 'swim',
           pose: 'swim',
-          z: -8.4,
+          z: -12,
           node: v < 244 ? 'w216' : 'm272',
           via: [[u, v < 244 ? 216 : 271]],
           swim: true,
@@ -445,7 +458,7 @@
       }
       // The pool bar: stools on the south side (sitting), both day and night.
       for (let u = 350; u <= 386; u += 9)
-        mareaSlot('stool', 'both', u, 228, N * -1, { dress: 'mixed', pose: 'sit', z: 3.6, node: 'e216', via: [[u, 229]], t: mareaRandom(), carry: 'cocktail' });
+        mareaSlot('stool', 'both', u, 226, FACE_NORTH, { dress: 'mixed', pose: 'sit', z: 3.6, node: 'e216', via: [[u, 229]], t: mareaRandom(), carry: 'cocktail' });
       // The sunken fire lounge.
       const l = MAREA.lounge;
       for (let i = 0; i < 7; i++) {
@@ -455,20 +468,20 @@
         mareaSlot('loungeGuest', 'both', u, v, ang + Math.PI, { dress: 'mixed', pose: 'sit', z: -1.4, node: 'e272', via: [[329, v]], t: mareaRandom(), carry: mareaRandom() < 0.6 ? 'cocktail' : null });
       }
       // VIP terrace: sofas along the wall, standing by the rail at night.
-      for (let v = 112; v < 178; v += 11) mareaSlot('vip', 'both', 371, v, Math.PI, { dress: 'vip', pose: 'sit', z: 1.4, node: 'vipIn', t: mareaRandom(), carry: 'cocktail' });
-      for (let u = 336; u < 368; u += 10) mareaSlot('vip', 'both', u, 116, N, { dress: 'vip', pose: 'sit', z: 1.4, node: 'vipIn', t: mareaRandom() });
+      for (let v = 112; v < 178; v += 11) mareaSlot('vip', 'both', 382, v, Math.PI, { dress: 'vip', pose: 'sit', z: 1.4, node: 'vipIn', t: mareaRandom(), carry: 'cocktail' });
+      for (let u = 336; u < 368; u += 10) mareaSlot('vip', 'both', u, 108, FACE_SOUTH, { dress: 'vip', pose: 'sit', z: 1.4, node: 'vipIn', t: mareaRandom() });
       for (let i = 0; i < 8; i++) {
         const u = 332 + mareaRandom() * 30,
           v = 124 + mareaRandom() * 56;
         mareaSlot('vip', 'night', u, v, faceTo(u, v, 200, 90) + (mareaRandom() - 0.5), { dress: 'vip', pose: mareaRandom() < 0.6 ? 'dance' : 'drink', node: 'vipIn', t: mareaRandom(), style: Math.floor(mareaRandom() * 7), carry: 'cocktail' });
       }
-      mareaSlot('bottleGirl', 'night', 352, 146, S, { dress: 'host', pose: 'sparkler', node: 'vipIn', t: 0.5, carry: 'sparkler' });
+      mareaSlot('bottleGirl', 'night', 352, 146, FACE_NORTH, { dress: 'host', pose: 'sparkler', node: 'vipIn', t: 0.5, carry: 'sparkler' });
       // Pool edge at night: standing and chatting along the walkways.
       for (let i = 0; i < 16; i++) {
         const top = i % 2 === 0,
           u = 70 + mareaRandom() * 240,
           v = top ? 216 : 271;
-        mareaSlot('poolside', i < 5 ? 'both' : 'night', u, v + (mareaRandom() - 0.5) * 4, top ? S : N, {
+        mareaSlot('poolside', i < 5 ? 'both' : 'night', u, v + (mareaRandom() - 0.5) * 4, top ? FACE_SOUTH : FACE_NORTH, {
           dress: 'mixed',
           pose: ['chat', 'drink', 'dance', 'drink'][i % 4],
           node: top ? (u < 190 ? 'w216' : 'e216') : 'm272',
@@ -480,9 +493,9 @@
       }
       // The club's own sunbeds out on the sand (day).
       for (const b of MAREA.sunbeds)
-        mareaSlot('lounger', 'day', b.u + 10, b.v, 0, { dress: 'swim', pose: 'lounge', z: 2.6, node: 'beach', via: [[b.u + 16, b.v]], t: mareaRandom() });
+        mareaSlot('lounger', 'day', b.u + 11, b.v, 0, { dress: 'swim', pose: 'lounge', z: 2.6, node: 'beach', via: [[b.u + 16, b.v]], t: mareaRandom() });
       // Sunset setup crew carrying crates from the staff door to the booth and bars.
-      for (let i = 0; i < 3; i++) mareaSlot('crew', 'setup', 150 + i * 30, 104, N, { dress: 'crew', pose: 'carry', node: 'floor', entry: 'staff', t: i * 0.25, carry: 'box', crew: true });
+      for (let i = 0; i < 3; i++) mareaSlot('crew', 'setup', 150 + i * 30, 104, FACE_SOUTH, { dress: 'crew', pose: 'carry', node: 'floor', entry: 'staff', t: i * 0.25, carry: 'box', crew: true });
       // Morning cleaners.
       for (let i = 0; i < 2; i++) mareaSlot('cleaner', 'cleaners', 150 + i * 90, 150, 0, { dress: 'crew', pose: 'sweep', node: 'floor', entry: 'staff', t: 0, wanderFloor: true });
     }
@@ -1022,7 +1035,7 @@
         }
         return true;
       }
-      const door = slot.head ? mareaPoint(300, 40) : slot.vipGuard ? { x: slot.x, y: slot.y } : mareaPoint(305, 40);
+      const door = slot.head ? mareaPoint(298, 40) : slot.vipGuard ? { x: slot.x, y: slot.y } : mareaPoint(306, 40);
       if (Math.hypot(door.x - p.x, door.y - p.y) > 2) {
         c.route = [door];
         p.pose = null;
@@ -1046,9 +1059,14 @@
      * door end. The head bouncer (with the host) talks to the front group, then
      * lets them in or sends them off.
      */
+    /* The line snakes along the ropes east of the door: row A (v 33) runs from
+       the door east, row B (v 22) comes back west; people face the way it moves. */
     function mareaQueueSpot(i) {
-      const p = mareaPoint(284 - i * 9.5, 31 + (i % 2) * 1.6);
-      p.a = 0;
+      const rowA = i < 8,
+        u = rowA ? 324 + i * 9.4 : 390 - (i - 8) * 9.4,
+        p = mareaPoint(u, rowA ? 33 : 22.5);
+      p.a = rowA ? Math.PI : 0;
+      p.row = rowA ? 'A' : 'B';
       return p;
     }
     function mareaQueueCount() {
@@ -1066,7 +1084,7 @@
       const size = mareaRandom() < 0.45 ? 1 : mareaRandom() < 0.7 ? 2 : 3,
         group = { id: marea.groupId++, members: [], lads: false };
       const index = mareaQueueCount();
-      if (index + size > 17) return;
+      if (index + size > 16) return;
       const west = mareaRandom() < 0.6;
       for (let k = 0; k < size; k++) {
         const spot = mareaQueueSpot(index + k),
@@ -1076,7 +1094,9 @@
         p.club.group = group;
         p.club.spot = spot;
         p.club.mode = instant ? 'queue' : 'queueWalk';
-        p.club.route = instant ? [] : [mareaPoint(west ? 20 : 390, 10), spot];
+        // Along the kerb to the rope, round its east end for row A.
+        const along = spot.row === 'A' ? [mareaPoint(398, 10), mareaPoint(398, 28)] : [mareaPoint(spot.x - MAREA.plot.x, 10)];
+        p.club.route = instant ? [] : [mareaPoint(west ? 20 : 400, 10), ...along, spot];
         group.members.push(p);
       }
       group.lads = group.members.length >= 2 && group.members.every((m) => !m.look.skirt && m.look.hairStyle !== 2);
@@ -1142,7 +1162,7 @@
             }
             mareaAssign(m, slot);
             mareaRouteTo(m, 'out', slot);
-            m.club.route.unshift(mareaPoint(302, 30));
+            m.club.route.unshift(mareaPoint(310, 35));
           }
         } else {
           marea.rejected += group.members.length;
@@ -1151,7 +1171,7 @@
             m.club.group = null;
             m.club.mode = 'leave';
             const west = mareaRandom() < 0.5;
-            m.club.route = [mareaPoint(260 + (mareaRandom() - 0.5) * 20, 10), mareaPoint(west ? -40 : 440, 6 + mareaRandom() * 6)];
+            m.club.route = [mareaPoint(318, 30), mareaPoint(314, 12), mareaPoint(west ? -40 : 440, 6 + mareaRandom() * 6)];
           }
           // Their parting shot comes once the bouncer's last word has faded.
           speaker.club.pendingLine = 'walkOff';
