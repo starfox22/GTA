@@ -490,6 +490,16 @@
         halo(depotGroup, backDoor.x, 46, z + (z > 4576 ? 3 : -3), 16, '#58e08a');
       }
       const depotRoof = box(depotGroup, -1664, 66, 4460, 286, 4, 246, portSteel.clone());
+      // Inside, the roof and the walls above head height are the player's cutaway (lighting3d.js).
+      registerCutawayRoof(
+        VINNY_DEPOT.x + VINNY_DEPOT.w / 2,
+        VINNY_DEPOT.y + VINNY_DEPOT.h / 2,
+        VINNY_DEPOT.w / 2 + 3,
+        VINNY_DEPOT.h / 2 + 3,
+        0,
+        20,
+        72,
+      );
       for (let z = 4358; z < 4570; z += 35) box(depotGroup, -1664, 60, z, 274, 4, 3, cranePaint);
       box(depotGroup, -1664, 52, 4343, 116, 17, 5, portSteel);
       box(depotGroup, -1664, 42, 4341, 126, 3, 13, cranePaint);

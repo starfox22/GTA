@@ -86,12 +86,18 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Triangulated mountains, snow caps, trails, slope handling and off-road contact.
   src/casino.js: Casino roulette
     Roulette layout, stakes, settlement, UI and saved cash.
+  src/skyline.js: North Point financial cluster plan
+    Named tower lots per block (SKYLINE_TOWERS), plaza ground and planting.
   src/renewal.js: Parks and recreation
     Park layouts, ponds and their kerbs, boardwalks, walkers, joggers, outdoor gym.
+  src/sports-fixtures.js: Teams, kits, crests and the fixture calendar
+    Club pools, kit patterns, crests, daily fixtures, match timeline and clock.
   src/sports.js: Live basketball and soccer matches
-    Live basketball and soccer: teams, possession, shots, scoring, restarts.
+    Match day, possession, shots, scoring, restarts, officials, harm and panic, the player on the ball.
   src/sports-world.js: City sports venue layout
-    South Coast Stadium reservation, enclosure, turnstiles, vehicle barriers, markings.
+    South Coast Stadium reservation, enclosure with pitch openings, big screens, turnstiles, barriers, markings.
+  src/sports-audio.js: Crowd chants, roars and whistles
+    Procedural stadium bed, chants, clapping, goal roars, gasps, panic, whistles and kicks.
   src/transit.js: Public railway simulation
     Shore, Coast and Ridge lines: filleted track, 13 stations, boarding, rides, scenic trains.
   src/ecology.js: Wildlife behavior
@@ -131,6 +137,10 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire.
   src/cityscape3d.js: Building archetypes, roofs, shopfronts and street furniture
     Facade archetypes, roof textures and plant (roof keep-outs), rooftop helipads, shopfronts, lit windows, street furniture.
+  src/signage3d.js: Night glows, neon and wet-street reflections (included by cityscape3d.js)
+    Instanced glow field, neon/lightbox sign atlas, LED ad screens, ticker, marquee bulbs, sign light spill.
+  src/skyline3d.js: North Point financial cluster towers (included by cityscape3d.js)
+    Lofted tower shafts, glazing per design, LED crowns, beacons, podiums and plazas.
   src/sidejobs3d.js: Contract mission meshes
     Sky rings, bomb and substation devices.
   src/roadblocks3d.js: Police roadblock meshes
@@ -148,13 +158,15 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/renewal3d.js: Park meshes
     Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks.
   src/sports3d.js: Sports stadium and match meshes
-    Tiered stands, crowd, floodlights, scoreboards and animated matches.
+    Tiered stands, crowd in team colours, floodlights, live screens, kits and animated matches.
   src/transit3d.js: Railway meshes
     Swept viaduct, sleepers, masts, piers and bents, stations and moving trains.
   src/ecology3d.js: Wildlife meshes
     Species geometry, gait animation, culling and material cleanup.
   src/world3d.js: World scenery meshes
     Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery.
+  src/wakes3d.js: Boat wakes and spray
+    Kelvin wake, propeller wash and hull collar drawn into a wake map the water samples; bow spray.
   src/beach3d.js: Palm Keys Beach meshes
     Sand, swash ribbon, pier, props, ladders and instanced beachgoers.
   src/county3d.js: County and mountain meshes
@@ -217,8 +229,9 @@ AUDIT CONTRACTS
   through damageVehicle(), whose `detail` shapes the dent (damage.js).
 - Cameras: orthographic on the street, perspective in the air (flight-view3d.js).
   Cull and pick level of detail with viewCenter, viewReach and viewZoom, not
-  cameraTarget/worldZoom. Nothing lays a uniform wash over the frame; scenery
-  over the player is cleared by the dithered cutaway (lighting3d.js), not fades.
+  cameraTarget/worldZoom. Nothing lays a uniform wash over the frame. A roof
+  over the player (and only a roof) gets a small dithered hole round them
+  (lighting3d.js, CUTAWAY); nothing else is ever faded or cut.
 - Browser localStorage holds campaign/audio/graphics settings; there is no server.
 - window.DeadEndCity (end of src/game.js) is the only test surface: explicit named
   methods, never a code-evaluation hook.

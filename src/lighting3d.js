@@ -166,10 +166,14 @@
         cityRiverLeft: { value: RIVER.left },
         cityWet: { value: 0 },
         // Cutaway round the player (see CUTAWAY below): screen x, y and radius in
-        // drawing-buffer pixels, then the player's view depth; and the height
-        // below which nothing is cut.
+        // drawing-buffer pixels, then the player's view depth; and up to two
+        // roof volumes that may be cut, each as (centre x, centre z, half length,
+        // half width) and (cos, sin of its heading, bottom, top).
         cityCutaway: { value: new Three.Vector4(0, 0, 0, 0) },
-        cityCutawayFloor: { value: 0 },
+        cityCutBoxA: { value: new Three.Vector4(0, 0, 0, 0) },
+        cityCutSpanA: { value: new Three.Vector4(1, 0, 0, 0) },
+        cityCutBoxB: { value: new Three.Vector4(0, 0, 0, 0) },
+        cityCutSpanB: { value: new Three.Vector4(1, 0, 0, 0) },
       };
       function paintLampLight() {
         const g = lampCanvas.getContext('2d'),
@@ -194,6 +198,8 @@
         // Shop windows spill warm light across the pavement in front of them.
         for (const b of buildings)
           for (const pane of b.shopPanes || []) pool(pane.cx, pane.face + 10, Math.max(22, pane.width * 0.8), 255, 214, 160, 0.45);
+        // South Coast Stadium's floodlights while a fixture is on (sports3d.js).
+        for (const flood of stadiumFloodPools()) pool(flood.x, flood.y, flood.radius, 255, 248, 232, flood.strength);
         // Rooftop and street neon: tinted glows (their sprites carry the colour).
         for (const n of neonSigns) {
           const p = n.sprite.getWorldPosition(sunScratch);
@@ -201,6 +207,9 @@
           const c = n.sprite.material.color;
           pool(p.x, p.z, 40, Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255), 0.35);
         }
+        // Neon, lightboxes and lobby glass (signage3d.js): coloured pools on the pavement.
+        for (const s of signLightPools)
+          pool(s.x, s.y, s.r, Math.round(s.color[0] * 255), Math.round(s.color[1] * 255), Math.round(s.color[2] * 255), s.strength);
         g.globalCompositeOperation = 'source-over';
         lampTexture.needsUpdate = true;
       }
@@ -229,21 +238,33 @@
         uniform vec3 cityZonePower;
         uniform float cityRiverLeft;
         uniform float cityWet;
+        // Street power at this fragment (the blackout job); signs dim with it too.
+        float cityPower() {
+          return vCityWorld.x > cityRiverLeft || vCityWorld.x < -500.0 ? 1.0
+            : vCityWorld.z < 1450.0 ? cityZonePower.x : vCityWorld.z < 2650.0 ? cityZonePower.y : cityZonePower.z;
+        }
         vec3 cityLampLight() {
           vec2 uv = ( vCityWorld.xz - cityLampRect.xy ) * cityLampRect.zw;
           if ( cityLampPower < 0.001 || uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) return vec3( 0.0 );
-          float zone = vCityWorld.x > cityRiverLeft || vCityWorld.x < -500.0 ? 1.0
-            : vCityWorld.z < 1450.0 ? cityZonePower.x : vCityWorld.z < 2650.0 ? cityZonePower.y : cityZonePower.z;
+          float zone = cityPower();
           // Lamps hang ~33 units up: full light at street level, none on the roofs.
           float height = 1.0 - smoothstep( 4.0, 42.0, vCityWorld.y );
           return texture2D( cityLampMap, uv ).rgb * ( cityLampPower * zone * height );
         }
-        uniform vec4 cityCutaway;
-        uniform float cityCutawayFloor;
+        uniform vec4 cityCutaway, cityCutBoxA, cityCutSpanA, cityCutBoxB, cityCutSpanB;
         float cityBayer2( vec2 a ) { return mod( 2.0 * a.x + 3.0 * a.y, 4.0 ); }
+        bool cityInsideCut( vec4 box, vec4 span ) {
+          if ( box.z <= 0.0 || vCityWorld.y < span.z || vCityWorld.y > span.w ) return false;
+          vec2 d = vCityWorld.xz - box.xy;
+          vec2 local = vec2( d.x * span.x + d.y * span.y, d.y * span.x - d.x * span.y );
+          return abs( local.x ) < box.z && abs( local.y ) < box.w;
+        }
         void cityCutawayClip() {
-          if ( cityCutaway.z <= 0.0 || vCityWorld.y < cityCutawayFloor || -vViewPosition.z > cityCutaway.w ) return;
-          float cut = ( 1.0 - smoothstep( 0.4, 1.0, length( gl_FragCoord.xy - cityCutaway.xy ) / cityCutaway.z ) ) * 0.9;
+          if ( cityCutaway.z <= 0.0 || -vViewPosition.z > cityCutaway.w ) return;
+          float reach = length( gl_FragCoord.xy - cityCutaway.xy ) / cityCutaway.z;
+          if ( reach >= 1.0 ) return;
+          if ( !cityInsideCut( cityCutBoxA, cityCutSpanA ) && !cityInsideCut( cityCutBoxB, cityCutSpanB ) ) return;
+          float cut = 1.0 - smoothstep( 0.62, 1.0, reach );
           vec2 cell = mod( floor( gl_FragCoord.xy ), 4.0 );
           float threshold = ( cityBayer2( mod( cell, 2.0 ) ) * 4.0 + cityBayer2( floor( cell * 0.5 ) ) + 0.5 ) / 16.0;
           if ( threshold < cut ) discard;
@@ -269,38 +290,99 @@
       }
       /**
        * CUTAWAY
-       * Whatever stands between the camera and the player (the tower south of
-       * them, a tree crown, the deck of a viaduct they walk under) is dithered
-       * away in a soft disc round the player with a 4x4 ordered screen-door
-       * pattern. This replaced fading a building's own three materials to 28%
-       * opacity, which left its shared pieces (glass bands, roof plant, parapet
-       * trim) solid and floating, showed every tier of a tower through the next,
-       * and recompiled the materials each time. Only fragments above the
-       * player's head (above the roof of their vehicle) and well in front of
-       * them are cut, so the street, people and the player's own car never are;
-       * shadows are unaffected.
+       * Only when the player is strictly under a roof (the underpass, a rail
+       * viaduct deck, a station canopy, a bus shelter, Vinny's depot, a building
+       * they are inside) is a small hole, about their own size, dithered through
+       * that roof with a 4x4 ordered screen-door pattern so they stay in view.
+       * Nothing else is ever cut: only fragments inside the covering structure's
+       * own volume (its footprint, from its underside, or from above head height
+       * for the walls of an enclosure, up to its top) and in front of the
+       * player, so traffic, people, trees, props and towers that merely stand
+       * between the camera and the player stay whole. In the open there is no
+       * cutaway at all; shadows are never affected. A road vehicle in a tunnel
+       * or the depot gets a hole its own size. Players can switch it off
+       * (`setCharacterCutaway`; the settings menu saves localStorage
+       * 'dead-end-city-cutaway' = 'off').
+       * (It used to be a 96-unit disc that cut everything above head height in
+       * front of the player, tree crowns, buses and whole tower faces included.)
        */
       const cutawayPoint = new Three.Vector3(),
         cutawayEdge = new Three.Vector3(),
         cutawaySize = new Three.Vector2(),
-        CUTAWAY_RADIUS = 96;
+        cutawayCovers = [],
+        // Roofs only the renderer knows about: {x, y, hx, hy, a, bottom, top}.
+        cutawayRoofs = [],
+        // World radius of the hole on foot: the player's size plus a small margin.
+        CUTAWAY_RADIUS_ON_FOOT = 18;
+      let characterCutaway = true;
+      try {
+        characterCutaway = localStorage.getItem('dead-end-city-cutaway') !== 'off';
+      } catch {
+        // Storage blocked (private window): keep the default.
+      }
+      function registerCutawayRoof(x, y, hx, hy, a, bottom, top) {
+        cutawayRoofs.push({ x, y, hx, hy, a, bottom, top });
+      }
+      // The roofs right over (x, y) whose underside is above `head`, lowest first.
+      function coversOver(x, y, head, elevation, margin, vehicleHead) {
+        cutawayCovers.length = 0;
+        const inside = (b) => {
+          const p = coverLocal(b, x, y);
+          return Math.abs(p.x) < b.hx - margin && Math.abs(p.y) < b.hy - margin;
+        };
+        for (const b of airCoverVolumes())
+          if (b.minHeight > head && b.minHeight - elevation < 120 && inside(b))
+            cutawayCovers.push({ x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a, bottom: b.minHeight - 8, top: b.height + 2 });
+        for (const b of cutawayRoofs)
+          if (b.bottom > elevation + 4 && b.top > head - 4 && b.bottom - elevation < 120 && inside(b))
+            cutawayCovers.push({ ...b, bottom: Math.max(b.bottom, vehicleHead ? head : elevation + 2) });
+        // A building the player stands inside, below its roof: the walls in front of
+        // them count as well as the roof, so the cut starts at head height.
+        for (const b of buildingsNear(x, y))
+          if (x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h && b.height > head + 6)
+            cutawayCovers.push({ x: b.x + b.w / 2, y: b.y + b.h / 2, hx: b.w / 2 + 2, hy: b.h / 2 + 2, a: 0, bottom: head, top: b.height + 14 });
+        return cutawayCovers.sort((p, q) => p.bottom - q.bottom);
+      }
+      function setCutBox(box, span, cover) {
+        if (!cover) {
+          box.set(0, 0, 0, 0);
+          return;
+        }
+        box.set(cover.x, cover.y, cover.hx + 1, cover.hy + 1);
+        span.set(Math.cos(cover.a || 0), Math.sin(cover.a || 0), cover.bottom, cover.top);
+      }
       function updateCutaway(elevation) {
-        const u = cityLightUniforms;
+        const u = cityLightUniforms,
+          car = player.car;
+        u.cityCutaway.value.z = 0;
+        // Never in the air, on or in the water, on the map, or when switched off.
+        if (!characterCutaway || gameMode === 'map' || player.parachute || player.swimming || player.hidden) return;
+        if (transitRide || taxiRide || (car && (isAircraft(car) || isBoat(car)))) return;
+        const spec = car ? vehicleSpec(car) : null,
+          bodyHeight = car ? (spec.truck ? 32 : 18) : 18,
+          radius = car ? Math.hypot(spec.l, spec.w) / 2 + 6 : CUTAWAY_RADIUS_ON_FOOT,
+          covers = coversOver(player.x, player.y, elevation + bodyHeight, elevation, car ? 0 : 3, !!car);
+        if (!covers.length) return;
+        setCutBox(u.cityCutBoxA.value, u.cityCutSpanA.value, covers[0]);
+        setCutBox(u.cityCutBoxB.value, u.cityCutSpanB.value, covers[1]);
         renderer.getDrawingBufferSize(cutawaySize);
-        cutawayPoint.set(player.x, elevation + 8, player.y).applyMatrix4(camera.matrixWorldInverse);
+        const middle = elevation + bodyHeight * 0.5;
+        cutawayPoint.set(player.x, middle, player.y).applyMatrix4(camera.matrixWorldInverse);
         const depth = -cutawayPoint.z;
-        cutawayPoint.set(player.x, elevation + 8, player.y).project(camera);
-        cutawayEdge.set(player.x + CUTAWAY_RADIUS, elevation + 8, player.y).project(camera);
-        const radius = Math.hypot((cutawayEdge.x - cutawayPoint.x) * cutawaySize.x, (cutawayEdge.y - cutawayPoint.y) * cutawaySize.y) / 2,
-          onScreen = Math.abs(cutawayPoint.x) < 1.2 && Math.abs(cutawayPoint.y) < 1.2 && cutawayPoint.z < 1;
+        cutawayPoint.set(player.x, middle, player.y).project(camera);
+        cutawayEdge.set(player.x + radius, middle, player.y).project(camera);
+        const pixels = Math.hypot((cutawayEdge.x - cutawayPoint.x) * cutawaySize.x, (cutawayEdge.y - cutawayPoint.y) * cutawaySize.y) / 2;
+        if (Math.abs(cutawayPoint.x) > 1.2 || Math.abs(cutawayPoint.y) > 1.2 || cutawayPoint.z > 1) return;
         u.cityCutaway.value.set(
           (cutawayPoint.x * 0.5 + 0.5) * cutawaySize.x,
           (cutawayPoint.y * 0.5 + 0.5) * cutawaySize.y,
-          onScreen && gameMode !== 'map' ? radius : 0,
-          // Clear of the player's own vehicle: a bus is 70 long, a rotor 82 across.
-          depth - (player.car ? 70 : 30),
+          pixels,
+          // Only what stands between the camera and the player.
+          depth - (car ? spec.l * 0.3 : 4),
         );
-        u.cityCutawayFloor.value = elevation + (player.car ? (isAircraft(player.car) ? 48 : 34) : 9);
+      }
+      function setCharacterCutaway(on) {
+        characterCutaway = !!on;
       }
       Three.MeshStandardMaterial.prototype.onBeforeCompile = cityMaterialPatch;
       // Unlit materials that opted out of tone mapping (signs, ad panels, screens)

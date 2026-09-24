@@ -98,9 +98,12 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
 | terrain.js | Triangulated mountains, snow caps, trails, slope handling and off-road contact |
 | casino.js | Roulette layout, stakes, settlement, UI and saved cash |
+| skyline.js | North Point financial cluster plan: `SKYLINE_TOWERS` (named tower lots per block, heights, designs), `buildSkylineBlock`, `paintSkylinePlaza` |
 | renewal.js | Parks (`CENTRAL_PARK`, `COMMONS`), ponds (`parkPondBlocked`, `parkPondNear`), boardwalks, walkers, joggers, the outdoor gym |
-| sports.js | Live basketball and soccer: teams, possession, shots, scoring, restarts |
-| sports-world.js | South Coast Stadium reservation, enclosure, turnstiles, vehicle barriers, markings |
+| sports-fixtures.js | Club pools (`SPORTS_TEAMS`: names, kits, crests), `SPORTS_CALENDAR`, daily fixtures (`sportsFixtureFor`, `sportsCurrentFixture`), the match timeline (`sportsTimeline`), `drawSportsCrest` |
+| sports.js | Live basketball and soccer: match day stages, possession, shots, scoring, restarts, officials, harm and panic (`sportsTargets`, `sportsAbandon`), the player on the ball (`sportsKick`, stewards), `sportsConsole` |
+| sports-world.js | South Coast Stadium reservation, enclosure (`PITCH_FENCE` with its openings), big screens (`STADIUM_SCREENS`), turnstiles, vehicle barriers, markings |
+| sports-audio.js | Procedural stadium bed, chants, clapping, goal roars, gasps, panic screams, whistles, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
 | navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance |
@@ -126,7 +129,9 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom, ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), headlight cones, time-of-day look |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire |
-| cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts and sign atlas, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| signage3d.js | (included by cityscape3d.js) The glow field (`addGlow`: one instanced draw for every neon halo, bulb and beacon), wet-road streaks, sign light spill (`signSpill`), the neon/lightbox sign atlas (`signCell`, `atlasSign`), lit sign materials (`litSignMaterial`), LED ad screens, stock ticker, marquee bulbs |
+| skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Coaster track and train, big wheel, carousel, teacups, drop tower and midway |
@@ -135,10 +140,11 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
 | air-cover3d.js | Road underpass walls, roof, portals and lamps |
 | renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
-| sports3d.js | Tiered stands, crowd, floodlights, scoreboards and animated matches |
+| sports3d.js | Tiered stands, crowd in team colours (fills, cheers, panics), floodlights (`stadiumFloodPools`), live screens (`paintSportsBoard`), kits, animated matches |
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
+| wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
 | county3d.js | County ground tiles and hills, snow, rural scenery and region visibility |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
@@ -333,6 +339,8 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - South Coast Stadium (sports-world.js) is enclosed: `STADIUM_ENCLOSURE` blocks people and
   vehicles, `STADIUM_VEHICLE_BARRIERS` (bollards, turnstile span) block vehicles only, and the
   two turnstile gates at x 2665..2686 and 2692..2713 (y 4845) are the only way onto the concourse.
+  The pitch boards have two 26-unit openings (x 2676..2702): the players' tunnel on the north
+  side and, straight ahead of the turnstiles, the south side. See section 4d.
 - `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
   helipads, docks, ships, props, static colliders, the bridges with their pylons and the reserved
   plots); `docs/audit/world-layout.md` describes the overlap audit run on it.
@@ -464,6 +472,65 @@ terrace and Vinny's depot walls are not landable.
 - `DeadEndCity.rooftops(x, y)` reports the pads, the player's roof and the helicopter's
   floor, and any roof's height, landability and plant.
 
+## 4d. Match day: South Coast Stadium and Riverside courts
+
+sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
+
+- **Fixtures.** `SPORTS_TEAMS` holds eleven fictional football clubs and six basketball teams
+  (name, three-letter code, crest shape, kit: primary, secondary, pattern `plain` / `stripes` /
+  `hoops` / `halves` / `sash` / `chevron`, shorts, socks, keeper). `sportsFixtureFor(sport, day,
+  slot)` is a pure hash of the day and slot, so saves and clock jumps agree on who plays; the
+  away side changes strip when the shirts clash. `SPORTS_CALENDAR`: football at 12:30 and
+  20:00 (the evening match is floodlit), two 45-minute halves of 150 world seconds each (one
+  world minute passes per second), 45 s half time; basketball at 10:00, 15:00 and 20:00 in
+  four 45 s quarters.
+- **Timeline.** Once a frame `sportsFollowSchedule` asks `sportsCurrentFixture` which fixture
+  the venue shows (the one on from its warm-up until the result comes down, else the next)
+  and `sportsTimeline` where the clock is: `upcoming`, `warmup`, `live` (period n), `break`,
+  `fulltime`, `over`. `match.stage` is that; `match.phase` is play / restart / celebrate
+  inside a live period. Teams walk out of the tunnel (`SPORTS_EXITS`) to warm up and at each
+  half, and back in at the break. Joining mid-match starts with a plausible score.
+- **People.** `match.people` = players + officials (referee, two assistants at the stadium) +
+  stewards. They carry the pedestrian fields strikePerson()/bleed() read (`hp` 30, `threat`,
+  `killedBy`, `knockedFor`...). `sportsTargets()` (the people at venues near the player,
+  rebuilt each frame) is added to the bullet, knife (arsenal.js), blast (`explode`) and
+  vehicle contact (physics.js) target lists. `sportsCheckHarm` notices a drop in `hp` or a
+  knock-down (or gunfire, a blast or a stabbing in the venue via `crowd.incidents`) and
+  `sportsAbandon`s the match: survivors run for the exits and vanish, the dead stay down, the
+  stands empty, fans stream out of the turnstiles as real pedestrians fleeing through
+  crowd.js (`sportsFansStampede`), and a player-caused casualty is a crime (`crime(0.35)` per
+  kill, a security call after 2.5 s). `sportsAbandoned` calls off the rest of that day; the
+  next day's first fixture brings a fresh match.
+- **The player on the pitch.** `sportsHumanOnField` (inside `PITCH_FENCE`, on foot). Walking
+  into the ball takes it (`ball.ownerId === SPORTS_HUMAN`, carried in front of the feet),
+  walking into a dribbler may win it; E (`sportsInteract` from `interact()`, prompt from
+  `sportsKickPrompt`) kicks along the facing, Shift for a harder, higher strike. Loose-ball
+  physics: friction, bounces, posts and crossbar (`sportsGoalFrame`), the net
+  (`sportsHoldInNet`), boards outside play (`sportsBallBoards`), out of play during it. A goal
+  is the whole ball over the line between the posts and under the bar; it counts for the side
+  attacking that end. During a match the nearest three players press, tackle
+  (`sportsContestHuman`), the keeper gets one save attempt (`sportsKeeperReach`), and after
+  28 s on the pitch (or 5 s after a goal) two stewards come; if they reach you they walk you
+  out to the plaza (`sportsEscortOff`). A goal: whistle, roar, GOAL! on every screen, $250
+  for each of the first three per match.
+- **Screens.** `STADIUM_SCREENS` (sports-world.js): over the north stand, both end stands
+  (angled at the pitch), above the entrance and on both halves of the south facade; all tilt
+  back towards the street camera. Each venue paints one 1024x512 canvas
+  (`paintSportsBoard`) shared by its screens, repainted only when its key changes: next match
+  with crests and kickoff, warm-up, live score with clock and status, half time, result,
+  MATCH ABANDONED, and an 8 fps GOAL! animation. They glow at night.
+- **Stands.** One instance per seat and body part (`createStadiumCrowd`); seats have a random
+  rank so the crowd fills to the fixture's attendance evenly; fans wear the colours of the
+  club whose end they sit in; they stand and bounce for their club's goals and back away and
+  vanish in a panic (`updateStadiumCrowd`, matrices rewritten only when the picture changes).
+  Plaza flags take the clubs' colours. While a fixture is on the floodlights are painted into
+  the night light map (`stadiumFloodPools`, repainted by `updateStadiumFloodlights`).
+- **Sound** (sports-audio.js): a crowd bed scaled by attendance and distance, chants (detuned
+  saws through a vowel formant singing terrace tunes) and clapping, goal roars with air horns,
+  an "ooh" at saves and misses, panic screams, the referee's pea whistle, the kick.
+- Developer console: `match(sport)`, `ballState()`, `matchDay(day, minutesFromKickoff, slot,
+  sport)`, `fixtures(sport, days)`, `ballToPlayer(distance)`.
+
 ## 5. Missions
 
 `missions[]` is the ordered list. Indices 0..10 are the story (story.js, harbor.js,
@@ -509,7 +576,8 @@ docs/audit/missions-qa.md shows the method).
 - Distance haze is `scene.fog`, a linear Fog whose shader chunk is replaced with an
   aerial-perspective curve: clear out to `fog.near`, exponential-squared beyond it with
   `fog.far = 1 / fog.density`. Keep adjusting `fog.density` and `fog.color`; `fog.near`
-  belongs to the flight camera. Nothing may lay a uniform wash over the frame.
+  belongs to `updateFlightView` (beyond the frame on the street, where there is no haze).
+  Nothing may lay a uniform wash over the frame, or over part of it.
 - Clouds (clouds3d.js) are a ray-marched cumulus layer at 600-950 m over a GPU-generated
   3D noise volume, drawn at half resolution only when the flight camera is above the cloud
   base and composited behind the player's aircraft. Coverage follows `weather.cloud`, drift
@@ -521,10 +589,29 @@ docs/audit/missions-qa.md shows the method).
   copy of the static scenery (flight-view3d.js, FAR SCENERY) replaces the per-building
   batches. Building blocks are compacted from six draw calls to two.
 - `cityscape3d.js` builds every building: archetype (tower, office, brick, stucco,
-  warehouse, deco, decoTower, hotel; stored as `b.archetype`), procedural roof texture,
+  warehouse, deco, decoTower, hotel, skyline; stored as `b.archetype`), procedural roof texture,
   parapet, roof props (instanced, recorded as `b.roofKeepOuts`), rooftop helipads,
-  shopfront with awnings and a sign atlas, fire escapes, balconies, billboards, beacons and
-  neon hotel signs.
+  shopfront with awnings and a neon, lightbox or channel-letter sign, fire escapes,
+  balconies, billboards (lamp-lit boards or LED screens cycling ads), beacons and neon
+  hotel scripts.
+- The North Point financial cluster (`b.skyline`, planned in skyline.js) is built by
+  skyline3d.js instead: each tower is a floor plan lofted through sections (height,
+  scale, twist, offset), UV-mapped in world units so one glazing texture per design
+  serves any size, on a podium that fills its lot (the lot is the collision rectangle;
+  shafts stay inside it, crowns and spires rise above `b.height`). North Point Trust's
+  roof is a landing pad. Designs: twin sail towers (Federation), stepped copper tower
+  with a spire (Mercury), stacked rotated blocks (Capitals), a twisting tower
+  (Evolution), a curved-facade pair (Embankment), a sail roof (Imperial), chevron twins
+  with LED edges (Neva), a banded tower with a sloped crown (OKO), a tapering needle, a
+  crown of gilded fins, a finned rotunda, a penthouse tower (Meridian), stepped terraces
+  and a diagrid.
+- Signs and night light (signage3d.js): small lights are instances of one glow quad
+  (modes steady, flicker, beacon, chase, pulse, colour cycle); street-level signs add a
+  pool to the night light map (`signSpill`) and a streak on the wet road. Shop, window,
+  hotel and tower-name signs share one atlas pair (a day face and a glow mask) and a few
+  materials, so they batch; `sign()` boards (render3d.js) glow the same way. Sign
+  emissive is multiplied by `cityPower()` (lighting3d.js) in the shader, so the blackout
+  contract darkens them per district.
 - Night: facade materials carry an `emissiveMap` window mask; `updateCityscapeVisuals()`
   scales emissive intensity by night amount, hour and `sideJobPower()`. Lamps, shop glass,
   neon halos and vehicle head/tail halos follow the same night amount.
@@ -569,12 +656,25 @@ docs/audit/missions-qa.md shows the method).
   `onBeforeCompile`) adds it to every lit surface near the ground, scaled by night, the
   blackout job's district power and height. A material with its own `onBeforeCompile` should
   call `cityMaterialPatch(shader)` first. Traffic headlights are instanced ground cones.
-- **Cutaway** (lighting3d.js, `updateCutaway`): the same patch dithers away, in a soft disc
-  round the player, any fragment above their head that is well in front of them (a tower
-  south of them, a tree crown, a viaduct deck), so nothing needs per-building fading.
+- **Cutaway** (lighting3d.js, `updateCutaway`): only when the player stands strictly under a
+  roof (`airCoverVolumes()`: the underpass, rail decks, station canopies; a building they are
+  inside; roofs registered with `registerCutawayRoof`: Vinny's depot, bus shelters) does the
+  same patch dither a small hole, about the player's size, through that roof. Only fragments
+  inside the covering structure's own volume and in front of the player are cut, so vehicles,
+  people, trees and props never are; in the open there is no cutaway. `city3D.
+  setCharacterCutaway(on)` switches it; localStorage `dead-end-city-cutaway` = `'off'` is
+  read at start-up.
+- **Street camera clearance** (flight-view3d.js): the orthographic street camera stands far
+  enough back along its view line that its near plane clears the tallest roof and the
+  cloud-shadow plane (`streetCeiling()`); the image is unchanged. The street view has no
+  distance haze (from a camera looking down at 50 degrees it was only a pale gradient over
+  the top of the frame); the flight camera's haze gathers over the first ~60 m of a climb.
+- **Wakes** (wakes3d.js): boats call `wakeEmit()` each frame; trails and hull collars are
+  drawn into a wake map (foam, wave crest, trough) round the view that the water shader
+  samples for foam and for its normal. Spray is one `Points` object.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
-  a bump, dielectric roughness and rain puddles (`weather.wet`). Leaf and palm materials sway.
+  a bump, dielectric roughness and rain puddles (`weather.wet`). Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
 
 ## 6a. Damage and destruction
 

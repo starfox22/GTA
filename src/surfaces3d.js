@@ -120,20 +120,30 @@
         m.customProgramCacheKey = () => (m.vertexColors ? 'county-hill' : 'county-ground');
       }
       // ---- Wind in the foliage -----------------------------------------------------------------
+      // The sway is a world-space offset added after the model transform. It used
+      // to be added to the mesh's own vertices, so on any crown or frond left as a
+      // scaled mesh rather than merged into a static batch (a unit sphere or box
+      // blown up 10-15 times, like the potted palms on the Blue Hour terrace) the
+      // scale multiplied it: leaves swung metres off their stems in a breeze.
       const SWAY_VERTEX = `
         {
-          vec4 swayWorld = modelMatrix * vec4( transformed, 1.0 );
+          vec4 swayWorld = vec4( transformed, 1.0 );
+          #ifdef USE_INSTANCING
+            swayWorld = instanceMatrix * swayWorld;
+          #endif
+          swayWorld = modelMatrix * swayWorld;
           float lift = smoothstep( 8.0, 42.0, swayWorld.y );
           float phase = cityWindTime * 1.25 + swayWorld.x * 0.021 + swayWorld.z * 0.017;
-          transformed.x += ( sin( phase ) + 0.4 * sin( phase * 2.7 + 1.3 ) ) * lift * cityWindAmp;
-          transformed.z += cos( phase * 0.8 + 0.7 ) * lift * cityWindAmp * 0.6;
+          vec3 sway = vec3( sin( phase ) + 0.4 * sin( phase * 2.7 + 1.3 ), 0.0, cos( phase * 0.8 + 0.7 ) * 0.6 ) * lift * cityWindAmp;
+          mvPosition.xyz += ( viewMatrix * vec4( sway, 0.0 ) ).xyz;
+          gl_Position = projectionMatrix * mvPosition;
         }`;
       function foliagePatch(shader) {
         cityMaterialPatch(shader);
         Object.assign(shader.uniforms, surfaceUniforms);
         shader.vertexShader = shader.vertexShader
           .replace('#include <common>', '#include <common>\nuniform float cityWindTime;\nuniform float cityWindAmp;')
-          .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + SWAY_VERTEX);
+          .replace('#include <project_vertex>', '#include <project_vertex>\n' + SWAY_VERTEX);
       }
       for (const m of [...leafMats, blossomMat, palmFrondMaterial]) {
         m.onBeforeCompile = foliagePatch;
@@ -141,6 +151,7 @@
       }
       function updateSurfaces(deltaSeconds) {
         surfaceUniforms.cityWindTime.value += deltaSeconds * (1 + weather.wind * 1.5);
-        surfaceUniforms.cityWindAmp.value = 0.35 + weather.wind * 1.3 + weather.rain * 0.4;
+        // Subtle: a crown moves a few inches in a breeze, a foot or so in a gale.
+        surfaceUniforms.cityWindAmp.value = 0.25 + weather.wind * 0.9 + weather.rain * 0.3;
       }
       // END SUBSYSTEM: src/surfaces3d.js

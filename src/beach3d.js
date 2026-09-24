@@ -25,7 +25,7 @@
         beachGroup = new Three.Group();
       beachGroup.name = 'Palm Keys Beach';
       scene.add(beachGroup);
-      const BEACH_NO_SHADOW = ['swim zone buoys', 'surfboards', 'pedal boats and jet skis', 'boat seats', 'ladder rails', 'ladder rungs', 'ladder grab rails', 'ladder lifebuoys', 'lifebuoy posts and edge paint', 'jet ski wakes', 'beach towels'];
+      const BEACH_NO_SHADOW = ['swim zone buoys', 'surfboards', 'pedal boats and jet skis', 'boat seats', 'ladder rails', 'ladder rungs', 'ladder grab rails', 'ladder lifebuoys', 'lifebuoy posts and edge paint', 'beach towels'];
       const beachInstanced = (geo, material, count, name) => {
         const m = new Three.InstancedMesh(geo, material, Math.max(1, count));
         m.name = name;
@@ -675,10 +675,7 @@
         beachGroup.add(rope);
       }
       const hulls = beachInstanced(boxGeo, mat('#ffffff', 0.4), L.pedalos.length * 2 + L.jetskis.length, 'pedal boats and jet skis'),
-        seats = beachInstanced(boxGeo, mat('#f2efe6', 0.6), L.pedalos.length + L.jetskis.length, 'boat seats'),
-        // The swimmer's V-wake texture (render3d.js), stretched out behind each jet ski.
-        wakes = beachInstanced(new Three.PlaneGeometry(1, 1), new Three.MeshBasicMaterial({ map: wakeTexture(true), transparent: true, opacity: 0.85, depthWrite: false }), L.jetskis.length, 'jet ski wakes');
-      wakes.castShadow = false;
+        seats = beachInstanced(boxGeo, mat('#f2efe6', 0.6), L.pedalos.length + L.jetskis.length, 'boat seats');
       L.pedalos.forEach((b, i) => {
         hulls.setColorAt(i * 2, bc.set(b.color));
         hulls.setColorAt(i * 2 + 1, bc.set(b.color));
@@ -714,17 +711,16 @@
           if (!on) {
             hulls.setMatrixAt(k, beachZero);
             seats.setMatrixAt(L.pedalos.length + i, beachZero);
-            wakes.setMatrixAt(i, beachZero);
             return;
           }
           const h = -2 + Math.sin(gameTime * 3 + i) * 0.3;
           placeInstance(hulls, k, b.x, h, b.y, b.a, 16, 3, 6, Math.sin(gameTime * 4 + i) * 0.04);
           placeInstance(seats, L.pedalos.length + i, b.x - Math.cos(b.a) * 2, h + 2.4, b.y - Math.sin(b.a) * 2, b.a, 8, 1.8, 3.4);
-          bq.setFromAxisAngle(yAxis, -b.a).multiply(bq2.setFromAxisAngle(xAxis, -Math.PI / 2));
-          bm.compose(bv.set(b.x - Math.cos(b.a) * 11, -1.5, b.y - Math.sin(b.a) * 11), bq, bs.set(70, 46, 1));
-          wakes.setMatrixAt(i, bm);
+          // Wake, bow wave and spray go into the sea (wakes3d.js): a leisure jet ski
+          // circling at a third of a racing one's speed.
+          wakeEmit(b, b.x, b.y, b.a, Math.abs(b.speed * b.r), 16, 6, 140);
         });
-        hulls.instanceMatrix.needsUpdate = seats.instanceMatrix.needsUpdate = wakes.instanceMatrix.needsUpdate = true;
+        hulls.instanceMatrix.needsUpdate = seats.instanceMatrix.needsUpdate = true;
       }
       hulls.instanceColor.needsUpdate = seats.instanceColor.needsUpdate = true;
       // Ladders: two rails, rungs down into the water and grab handles over the edge.
