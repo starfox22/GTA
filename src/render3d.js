@@ -104,6 +104,7 @@
       // @include src/flight-view3d.js
       // @include src/postfx3d.js
       // @include src/lighting3d.js
+      // @include src/searchlight3d.js
       const allBuildings = [],
         statics = [],
         carModels = new Map(),
@@ -1315,7 +1316,8 @@
         }
         if (vehicle.type === 'taxi') box(body, -1, roof + 1.5, 0, 6, 2.2, 4, mat('#d1c5a2'));
         coachDetails(vehicle, body, l, w, h, roof, paint);
-        const strobes = [];
+        const strobes = [],
+          rearDoors = vehicle.lawUnit === 'swat' ? swatVanDetails(body, l, w, h, roof, paint, strobes) : null;
         // Patrol cars, SWAT vans and agents' SUVs carry a light bar (pursuit.js).
         if (vehicle.type === 'police' || vehicle.lawUnit === 'swat' || vehicle.lawUnit === 'fed') {
           box(body, -1, roof + 1.2, 0, 3, 1, w * 0.73, darkMetal);
@@ -1360,7 +1362,121 @@
           lamps,
           damageVersion: -1,
           nightLights,
+          rearDoors,
         };
+      }
+      /**
+       * SNIPER SIGHTS (swat.js): while a rooftop marksman lines up, a red laser runs
+       * from his rifle to the player, brightening as the aim settles, and the scope
+       * glints. Three beams and glints, made once and reused.
+       */
+      const sniperSights = [];
+      function sniperSightPool() {
+        if (sniperSights.length) return sniperSights;
+        const glow = document.createElement('canvas');
+        glow.width = glow.height = 64;
+        const g = glow.getContext('2d'),
+          gradient = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255,255,255,1)');
+        gradient.addColorStop(0.25, 'rgba(255,240,220,0.8)');
+        gradient.addColorStop(1, 'rgba(255,200,160,0)');
+        g.fillStyle = gradient;
+        g.fillRect(0, 0, 64, 64);
+        const glintTexture = new Three.CanvasTexture(glow);
+        for (let i = 0; i < 3; i++) {
+          const beam = new Three.Mesh(
+            cylinderGeo,
+            new Three.MeshBasicMaterial({ color: '#ff2020', transparent: true, opacity: 0.5, depthWrite: false, blending: Three.AdditiveBlending }),
+          );
+          beam.visible = false;
+          beam.renderOrder = 5;
+          scene.add(beam);
+          const glint = new Three.Sprite(
+            new Three.SpriteMaterial({ map: glintTexture, color: '#ffffff', transparent: true, depthWrite: false, blending: Three.AdditiveBlending }),
+          );
+          glint.visible = false;
+          scene.add(glint);
+          sharedMaterials.add(beam.material);
+          sharedMaterials.add(glint.material);
+          sniperSights.push({ beam, glint });
+        }
+        return sniperSights;
+      }
+      const sniperFrom = new Three.Vector3(),
+        sniperTo = new Three.Vector3(),
+        sniperAxis = new Three.Vector3(0, 1, 0);
+      function updateSniperSights() {
+        let n = 0;
+        const aiming = officers.filter((o) => o.roofSniper && o.hp > 0 && o.sniperAim > 0);
+        if (!aiming.length && !sniperSights.length) return;
+        const pool = sniperSightPool();
+        for (const o of aiming) {
+          if (n >= pool.length) break;
+          const { beam, glint } = pool[n++],
+            muzzle = o.a || 0;
+          sniperFrom.set(o.x + Math.cos(muzzle) * 9, entityElevation(o) + 11, o.y + Math.sin(muzzle) * 9);
+          sniperTo.set(player.x, entityElevation(player) + 9, player.y);
+          const length = sniperFrom.distanceTo(sniperTo);
+          beam.position.copy(sniperFrom).add(sniperTo).multiplyScalar(0.5);
+          beam.quaternion.setFromUnitVectors(sniperAxis, sniperTo.clone().sub(sniperFrom).normalize());
+          const width = 0.6 + o.sniperAim * 0.7;
+          beam.scale.set(width, length, width);
+          beam.material.opacity = 0.25 + o.sniperAim * 0.55;
+          beam.visible = true;
+          glint.position.copy(sniperFrom);
+          const flicker = 0.75 + 0.25 * Math.sin(gameTime * 23 + n);
+          glint.scale.setScalar((10 + o.sniperAim * 12) * flicker);
+          glint.visible = true;
+        }
+        for (let i = n; i < pool.length; i++) pool[i].beam.visible = pool[i].glint.visible = false;
+      }
+      /**
+       * SWAT VAN (pursuit.js, swat.js): the tactical van is the ordinary van body in
+       * navy with armour on it: a push bar, window grilles, roof rails and a wide
+       * light bar, S.W.A.T. in big letters on the roof (the top-down camera reads it
+       * first) and POLICE · SWAT down both sides, and two rear doors on hinges that
+       * swing open when the team deploys. Returns the two door pivots.
+       */
+      function swatVanDetails(body, l, w, h, roof, paint, strobes) {
+        const armor = mat('#10151d', 0.6, 0.35),
+          side = plateMaterial('POLICE · S.W.A.T.', { bg: '#141b27', fg: '#eef0ea', w: 768, h: 128 }),
+          top = plateMaterial('S.W.A.T.', { bg: '#141b27', fg: '#f4f4ee', w: 512, h: 160 }),
+          back = l * 0.435,
+          half = w * 0.415,
+          mid = (roof + h) / 2;
+        paint.color.set('#1b2433');
+        // Roof: lettering readable from above, rails, a long light bar.
+        const roofSign = plate(body, -l * 0.17, roof + 1.05, 0, l * 0.44, w * 0.62, top, 0);
+        roofSign.rotation.set(-Math.PI / 2, 0, 0);
+        for (const s of [-1, 1]) box(body, -l * 0.17, roof + 1.2, s * w * 0.38, l * 0.5, 0.8, 0.8, armor);
+        box(body, l * 0.02, roof + 1.2, 0, 3, 1, w * 0.86, armor);
+        for (const s of [-1, 1])
+          for (const k of [0.18, 0.34]) {
+            const strobe = box(body, l * 0.02, roof + 2, s * w * k, 3, 1.5, 4, new Three.MeshBasicMaterial({ color: s > 0 ? '#5186fa' : '#f24632' }));
+            strobes.push(strobe);
+          }
+        // Sides: POLICE · S.W.A.T. and a grey band.
+        for (const s of [-1, 1]) {
+          plate(body, -l * 0.17, mid - 1.5, s * (half + 0.3), l * 0.46, 4.2, side, s > 0 ? 0 : Math.PI);
+          box(body, -l * 0.17, h + 1.4, s * (half + 0.2), l * 0.5, 1, 0.3, mat('#6d7684'));
+          // Grilles over the cab's side windows.
+          for (let k = 0; k < 4; k++) box(body, l * 0.14 + k * 1.6, roof - 4, s * w * 0.44, 0.35, 6, 0.3, armor);
+        }
+        // Push bar on the nose.
+        box(body, l * 0.52, 7.5, 0, 1.4, 7, w * 0.82, armor);
+        for (const s of [-1, 1]) box(body, l * 0.5, 7.5, s * w * 0.3, 3, 7, 1.2, armor);
+        // Rear doors, hinged at the outer edges; the team comes out between them.
+        const doors = [];
+        for (const s of [-1, 1]) {
+          const pivot = new Three.Group();
+          pivot.position.set(-back - 0.6, mid, s * half);
+          body.add(pivot);
+          box(pivot, 0, 0, -s * half * 0.5, 0.8, roof - h - 1, half * 0.98, paint);
+          box(pivot, -0.5, 2.5, -s * half * 0.5, 0.3, 4, half * 0.6, mat('#0c1118', 0.2, 0.6));
+          plate(pivot, -0.5, -3, -s * half * 0.5, half * 0.8, 1.6, plateMaterial('SWAT', { bg: '#141b27', fg: '#eef0ea', w: 256, h: 64 }), -Math.PI / 2);
+          doors.push({ pivot, side: s });
+        }
+        return doors;
       }
       /**
        * PLAYER AT NIGHT
@@ -1437,6 +1553,13 @@
             box(gun, 2.5, -1.8, 0, 1, 2.6, 0.9, darkMetal);
             const barrel = mesh(cylinderGeo, darkMetal, gun, 8.5, 0, 0, 0.3, 5, 0.3);
             barrel.rotation.z = Math.PI / 2;
+            // A rooftop marksman's rifle: a long barrel and a scope (swat.js).
+            if (person.unit === 'sniper') {
+              const long = mesh(cylinderGeo, darkMetal, gun, 13, 0, 0, 0.26, 7, 0.26);
+              long.rotation.z = Math.PI / 2;
+              const scope = mesh(cylinderGeo, darkMetal, gun, 3.5, 1.6, 0, 0.62, 5, 0.62);
+              scope.rotation.z = Math.PI / 2;
+            }
           } else if (slot === 0) {
             box(gun, 2, 0, 0, 4.5, 1.1, 0.9, darkMetal);
             box(gun, 0.8, -1, 0, 1, 2, 0.8, rubber);
@@ -1474,12 +1597,27 @@
             box(gun, 4, 1.6, 0, 2, 1, 0.6, darkMetal);
           }
         }
-        if (person.police && person.unit === 'swat') {
+        if (person.police && (person.unit === 'swat' || person.unit === 'sniper')) {
           // Helmet, plate carrier with a pale POLICE panel.
           mesh(sphereGeo, mat('#15191e', 0.5, 0.2), group, 0, 16.3, 0, 2.5, 2.1, 2.55);
           box(group, 0.2, 10.3, 0, 5.2, 5.2, 7, mat('#23292f'));
           box(group, -2.7, 11, 0, 0.2, 1.6, 4.6, mat('#c9d3da'));
           box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
+          if (person.shield) {
+            // Ballistic shield carried on the left arm: black, a viewport, POLICE.
+            const shield = new Three.Group();
+            shield.position.set(5.6, 9.5, -1.6);
+            group.add(shield);
+            box(shield, 0, 0, 0, 0.9, 15, 8.5, mat('#161a20', 0.45, 0.3));
+            box(shield, 0.5, 4.6, 0, 0.3, 2.2, 4.6, mat('#3d5566', 0.1, 0.6));
+            plate(shield, 0.5, -1.5, 0, 7, 1.8, plateMaterial('POLICE', { bg: '#161a20', fg: '#f2f2ea', w: 256, h: 64 }), Math.PI / 2);
+            parts.shield = shield;
+          }
+        } else if (person.police && person.unit === 'soldier') {
+          // Army: olive helmet and plate carrier.
+          mesh(sphereGeo, mat('#4b5635', 0.8, 0.1), group, 0, 16.3, 0, 2.55, 2.1, 2.6);
+          box(group, 0.2, 10.3, 0, 5.2, 5.2, 7, mat('#56603f'));
+          box(group, 0, 7.5, 0, 5, 1, 6.7, mat('#3a4130'));
         } else if (person.police && person.unit === 'fed') {
           // Windbreaker with the yellow back panel.
           box(group, -2.35, 11, 0, 0.25, 2, 4.8, mat('#d9b93c'));
@@ -2347,12 +2485,8 @@
               m.damageVersion = c.damageVersion;
               applyVehicleDamage(c, m);
             }
-            if (m.plane) {
-              if (m.prop)
-                m.prop.rotation.x += deltaSeconds * (c.hp > 0 ? 7 + (c.throttle || 0) * 80 : 0);
-              m.body.rotation.set(c.bank || 0, 0, c.pitch || 0, 'ZYX');
-              for (const { wheel } of m.wheels) wheel.visible = true;
-            }
+            // Control surfaces, gear, propeller, lights and buffet (plane3d.js).
+            if (m.plane) animateAircraft(c, m, deltaSeconds);
             if (m.tank) {
               m.turret.rotation.y = -normalizeAngle((c.turretA ?? c.a) - c.a);
               m.barrel.position.x = (-Math.max(0, (c.cannonRecoilUntil || 0) - gameTime) / 0.25) * 4;
@@ -2406,6 +2540,11 @@
                 );
             }
             if (m.blood) m.blood.visible = c.bloodyUntil > gameTime;
+            // SWAT van rear doors swing open for the team and stay open (swat.js).
+            if (m.rearDoors) {
+              const open = c.doorsOpenAt ? clamp((gameTime - c.doorsOpenAt) / 0.7, 0, 1) : 0;
+              for (const { pivot, side } of m.rearDoors) pivot.rotation.y = side * open * 1.85;
+            }
             for (let i = 0; i < m.strobes.length; i++)
               m.strobes[i].material.color.copy(
                 cachedColor(
@@ -2432,6 +2571,7 @@
           // Marks on vehicles, debris, knocked furniture and decal uploads (damage3d.js).
           updateDamageVisuals(deltaSeconds);
           lap = profileLap('r:damage', lap);
+          updateSniperSights();
           for (const p of people) {
             const activePlayer = p === player;
             let m = personModels.get(p);
@@ -2589,6 +2729,24 @@
                 : selectedWeaponIndex > 0
                   ? 0.9
                   : step * 0.5;
+              // Fists: arms swing loose while walking; for a few seconds after a
+              // punch they come up in a guard and the punching arm snaps out.
+              if (selectedWeaponIndex === FISTS_INDEX && !player.parachute) {
+                const guard = gameTime - (player.punchAt ?? -100) < 2.5,
+                  punch = Math.sin(clamp(1 - ((player.punchUntil || 0) - gameTime) / 0.26, 0, 1) * Math.PI) *
+                    ((player.punchUntil || 0) > gameTime ? 1 : 0),
+                  lead = player.punchHand === -1 ? 'arm-1' : 'arm1',
+                  rear = lead === 'arm1' ? 'arm-1' : 'arm1';
+                if (guard) {
+                  m.parts[lead].rotation.z = 0.85 + punch * 0.75;
+                  m.parts[rear].rotation.z = 0.85;
+                  m.torso.rotation.y = (lead === 'arm1' ? -1 : 1) * punch * 0.25;
+                } else {
+                  m.parts.arm1.rotation.z = -step * 0.5;
+                  m.parts['arm-1'].rotation.z = step * 0.5;
+                  m.torso.rotation.y = 0;
+                }
+              } else m.torso.rotation.y = 0;
               if (player.parachute) {
                 m.parts.arm1.rotation.z = 2.6;
                 m.parts['arm-1'].rotation.z = 2.6;
@@ -2891,14 +3049,20 @@
           }
           // Pedestrian speech: short lines drawn as bubbles above the speaker.
           // Drivers shouting out of the window use the same bubble over the car.
-          // Settings · Gameplay · NPC chatter off hides them all (settings.js).
-          for (const p of npcChatterOn() ? [...pedestrians, ...vehicles, ...gangMembers] : []) {
-            if (!p.speech || p.speechUntil < gameTime || p.hp <= 0 || distanceBetween(p, cameraTarget) > 460) continue;
+          // speechBubbles() (crowd.js) picks at most two, most important first, and
+          // returns none with Settings · Gameplay · NPC chatter off. A second bubble
+          // that would overlap the first rises clear above it.
+          const bubbleRects = [];
+          for (const p of speechBubbles()) {
             const q = api.project(p.x, p.y, entityElevation(p) + (p.type ? 22 : 27));
             if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;
             worldContext.font = '600 10px Arial';
             const tw = worldContext.measureText(p.speech).width + 12,
               fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1);
+            for (const r of bubbleRects)
+              if (Math.abs(q.x - r.x) < (tw + r.w) / 2 + 4 && Math.abs(q.y - r.y) < 20)
+                q.y = r.y - 20;
+            bubbleRects.push({ x: q.x, y: q.y, w: tw });
             worldContext.globalAlpha = fade;
             worldContext.fillStyle = '#f4efe2';
             worldContext.beginPath();

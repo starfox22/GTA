@@ -14,7 +14,17 @@
      * 'swat' (tactical van, four armoured officers with rifles), 'fed' (black SUV,
      * three agents with rifles) and 'army' (a Fort Sentinel tank, no crew on
      * foot). Patrol cars keep `type === 'police'` and no `lawUnit`.
+     *
+     * FIVE STARS brings the army in stages: first the light units, army jeeps
+     * with a roof gunner ('armyJeep'), an APC with a turret gun and four soldiers
+     * ('armyApc') and a truck with five ('armyTruck'); the tank ('army') only rolls
+     * once the player has survived TANK_AFTER_SECONDS at five stars. Army units
+     * carry `armyUnit` (not `military`, which is Fort Sentinel's own garrison).
      */
+    // `air` is the helicopter the tier sends: never more than one at a time
+    // (AIR_UNITS_MAX, combat-rules.js), so the top tiers escalate on the ground and
+    // with a sharper `marksman` in that one helicopter (lock-on seconds, hit chance
+    // at a standstill, seconds between rounds).
     const POLICE_TIERS = [
       null,
       // 1 star: the nearest patrols investigate and try to make an arrest.
@@ -22,12 +32,17 @@
       // 2: several cruisers, contact tactics (PIT, box), officers shoot.
       { patrols: 4, swat: 0, feds: 0, tanks: 0, every: 4.5, air: 0, roadblocks: 0, ram: true, accuracy: 0.46, deadly: true },
       // 3: more units, a helicopter with a marksman, a roadblock ahead.
-      { patrols: 5, swat: 0, feds: 0, tanks: 0, every: 3.8, air: 1, roadblocks: 1, ram: true, accuracy: 0.5, deadly: true },
-      // 4: SWAT vans with armoured rifle teams, two helicopters, two roadblocks.
-      { patrols: 4, swat: 2, feds: 0, tanks: 0, every: 3.2, air: 2, roadblocks: 2, ram: true, accuracy: 0.55, deadly: true },
-      // 5: federal agents and the army: a tank from Fort Sentinel, three roadblocks.
-      { patrols: 4, swat: 2, feds: 2, tanks: 1, every: 2.8, air: 2, roadblocks: 3, ram: true, accuracy: 0.6, deadly: true },
+      { patrols: 5, swat: 0, feds: 0, tanks: 0, every: 3.8, air: 1, roadblocks: 1, ram: true, accuracy: 0.5, deadly: true, marksman: { lock: 1.6, hit: 0.85, rest: [2.4, 3.4] } },
+      // 4: SWAT vans with armoured rifle teams, an extra cruiser, two roadblocks, and a
+      // police sniper in the helicopter who lines up faster and misses less.
+      { patrols: 5, swat: 2, feds: 0, tanks: 0, every: 3.2, air: 1, roadblocks: 2, ram: true, accuracy: 0.55, deadly: true, marksman: { lock: 1.3, hit: 0.9, rest: [2.0, 2.8] } },
+      // 5: federal agents, SWAT in five-strong teams and snipers on the rooftops
+      // (swat.js), three roadblocks, the helicopter's sharpest marksman, and the army:
+      // jeeps with gunners, an APC and a troop truck first, the tank later.
+      { patrols: 5, swat: 3, feds: 2, tanks: 1, jeeps: 2, apcs: 1, trucks: 1, snipers: 3, every: 2.8, air: 1, roadblocks: 3, ram: true, accuracy: 0.6, deadly: true, marksman: { lock: 1.1, hit: 0.94, rest: [1.7, 2.4] } },
     ];
+    // Seconds at five stars before the tank is sent: the light army units come first.
+    const TANK_AFTER_SECONDS = 45;
     // How each kind of officer fights. `dmg` is against NPCs, `playerDmg` against
     // the player (before the lethality scale in combat-rules.js, so 5.5 is about 11
     // health: an unarmoured player survives eight or nine pistol hits).
@@ -36,6 +51,10 @@
       road: { hp: 85, vest: 40, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 230, run: 100, sample: 'pistol' },
       swat: { hp: 110, vest: 120, color: '#1b2026', rate: [1.5, 2.1], burst: 3, dmg: 20, playerDmg: 5, speed: 820, range: 270, run: 118, sample: 'automatic', rifle: true },
       fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 6.5, speed: 780, range: 250, run: 122, sample: 'automatic', rifle: true },
+      // Army riflemen out of an APC or a truck at five stars.
+      soldier: { hp: 100, vest: 90, color: '#4a5638', rate: [1.3, 1.8], burst: 3, dmg: 19, playerDmg: 5, speed: 800, range: 260, run: 115, sample: 'automatic', rifle: true },
+      // A police marksman on a roof (swat.js fires the rounds).
+      sniper: { hp: 90, vest: 60, color: '#1b2026', rate: [2, 3], burst: 1, dmg: 60, playerDmg: 14, speed: 1500, range: 760, run: 0, sample: 'pistol', rifle: true },
     };
     const PURSUIT_SEARCH_SECONDS = [0, 6, 9, 13, 18, 24];
     // Running totals for policeReport(): pursuit contacts with the player's car.
@@ -67,7 +86,7 @@
       'SHOTS FIRED · ALL UNITS PURSUE · USE OF FORCE AUTHORISED',
       'AIR UNIT LAUNCHED · MARKSMAN ON BOARD · ROADBLOCKS GOING UP',
       'SWAT DEPLOYED · SECOND AIR UNIT UP · CLOSE THE AVENUES',
-      'FEDERAL RESPONSE · FORT SENTINEL ARMOR ROLLING · SHOOT ON SIGHT',
+      'FEDERAL RESPONSE · ARMY UNITS ROLLING · SNIPERS UP · SHOOT ON SIGHT',
     ];
     function dispatchCaption(text, sample = null) {
       const el = getElement('radioCaption');
@@ -98,6 +117,7 @@
       } else if (kind === 'unit-down') dispatchCaption('UNIT DOWN · SUSPECT IS ARMED AND DANGEROUS', null);
       else if (kind === 'swat') dispatchCaption('SWAT TEAM ON SCENE · DEPLOYING', null);
       else if (kind === 'tank') dispatchCaption('ARMOR ON SCENE · CIVILIANS CLEAR THE AREA', null);
+      else if (kind === 'army') dispatchCaption('ARMY UNITS INBOUND · GUNNERS WEAPONS FREE', null);
       else if (kind === 'lost') dispatchCaption('LOST VISUAL · UNITS SEARCH THE AREA', null);
     }
 
@@ -125,10 +145,16 @@
     }
     const UNIT_BUILDS = {
       patrol: { type: 'police', color: undefined, hp: 1, crew: 2 },
-      swat: { type: 'van', color: '#1d242b', hp: 1.9, crew: 4 },
+      swat: { type: 'van', color: '#1b2433', hp: 1.9, crew: 4 },
       fed: { type: 'suv', color: '#121417', hp: 1.5, crew: 3 },
       army: { type: 'tank', color: undefined, hp: 1, crew: 0 },
+      armyJeep: { type: 'jeep', color: '#56613f', hp: 1.3, crew: 0, gunner: true },
+      armyApc: { type: 'apc', color: '#56613f', hp: 1, crew: 4, gunner: true },
+      armyTruck: { type: 'armytruck', color: '#56613f', hp: 1, crew: 5 },
     };
+    function armyUnitKind(kind) {
+      return kind === 'army' || kind === 'armyJeep' || kind === 'armyApc' || kind === 'armyTruck';
+    }
     function spawnPursuitUnit(kind) {
       if (player.x > CITY_SIZE || player.y > CITY_SIZE) {
         if (kind === 'patrol') spawnCountyCop();
@@ -150,7 +176,11 @@
         pursuitUnit: true,
         dispatched: true,
         lawUnit: kind === 'patrol' ? null : kind,
-        crewSize: build.crew,
+        // A SWAT van carries four operators at four stars, five at five (swat.js).
+        crewSize: kind === 'swat' ? swatCrewSize() : build.crew,
+        armyUnit: armyUnitKind(kind),
+        gunner: !!build.gunner,
+        crewed: kind === 'army' || !!build.gunner,
         speed: 120,
         interceptor: count % 2 === 1,
         spawnedAt: physicsClock,
@@ -165,6 +195,7 @@
       pursuitStats.spawned++;
       if (kind === 'swat') policeRadioEvent('swat', c);
       if (kind === 'army') policeRadioEvent('tank', c);
+      else if (armyUnitKind(kind)) policeRadioEvent('army', c);
       return c;
     }
     function dispatchPolice(deltaSeconds) {
@@ -175,7 +206,7 @@
       // While the police are searching they send fewer new units, unless the
       // search has nobody in it at all.
       const units = vehicles.filter((c) => c.cop && c.hp > 0 && !c.blockade && !c.airUnit && c !== player.car),
-        have = { patrol: 0, swat: 0, fed: 0, army: 0 };
+        have = { patrol: 0, swat: 0, fed: 0, army: 0, armyJeep: 0, armyApc: 0, armyTruck: 0 };
       for (const c of units) {
         const kind = pursuitUnitKind(c);
         if (kind in have) have[kind]++;
@@ -219,16 +250,21 @@
           return;
         }
       }
-      // Heaviest missing unit first: the tier's character arrives early.
+      // Heaviest missing unit first: the tier's character arrives early. At five
+      // stars the army's light units lead; the tank waits until the player has
+      // lasted TANK_AFTER_SECONDS.
       const order = [
-        ['army', tier.tanks],
+        ['armyJeep', tier.jeeps || 0],
         ['swat', tier.swat],
+        ['armyApc', tier.apcs || 0],
         ['fed', tier.feds],
+        ['armyTruck', tier.trucks || 0],
+        ['army', tier.tanks],
         ['patrol', tier.patrols],
       ];
       for (const [kind, cap] of order)
         if (have[kind] < cap) {
-          if (kind === 'army' && starElapsed < 20) continue;
+          if (kind === 'army' && starElapsed < TANK_AFTER_SECONDS) continue;
           if (spawnPursuitUnit(kind)) return;
           dispatchTimer = 1;
           return;
@@ -486,6 +522,11 @@
         // Pull up short of a runner on foot so the crew can get out.
         desired = clamp((distanceBetween(c, player) - 150) * 1.5, 0, 150);
         if (distanceBetween(c, player) < 150) steer = 0;
+      } else if (player.car && !isAircraft(player.car) && (player.carStoppedFor || 0) > 0.8 && distanceBetween(c, player) < 300) {
+        // A driver who has stopped is surrounded, not rammed: pull up short so the
+        // crew can get out and make the arrest (a shove would spoil a surrender).
+        desired = clamp((distanceBetween(c, player) - 95) * 1.5, 0, 150);
+        if (distanceBetween(c, player) < 110) steer = 0;
       } else if (plan.mode === 'pit' || plan.mode === 'flank')
         desired = Math.max(desired, plan.quarrySpeed + (plan.mode === 'pit' ? 70 : 40));
       else if (plan.headOn) desired = Math.min(desired, 35);
@@ -553,6 +594,7 @@
     }
     function officerMayShoot(o, target) {
       if (target !== player) return true;
+      if (policeHoldFire()) return false;
       return policeTier().deadly || playerResisting() || o.hp < (o.maxhp || officerKind(o).hp);
     }
     function officerShoot(o, target, deltaSeconds) {
@@ -625,7 +667,7 @@
       if (reshuffle) tokenShuffleAt = gameTime + 2;
       const shooters = [];
       for (const o of officers) {
-        if (o.hp <= 0 || o.downed || o.dragging || !o.seesPlayer || o.state === 'return' || personIncapacitated(o)) {
+        if (o.hp <= 0 || o.downed || o.dragging || o.roofSniper || !o.seesPlayer || o.state === 'return' || personIncapacitated(o)) {
           o.fireToken = false;
           continue;
         }
@@ -641,7 +683,7 @@
     }
     /* Suppressive fire at the corner the runner ducked behind. */
     function officerSuppress(o, deltaSeconds) {
-      if (!lastSeen || gameTime - (o.lastSawPlayerAt ?? -100) > 3.5 || !policeTier().deadly) return false;
+      if (!lastSeen || gameTime - (o.lastSawPlayerAt ?? -100) > 3.5 || !policeTier().deadly || policeHoldFire()) return false;
       if (distanceBetween(o, lastSeen) > officerKind(o).range * 1.2) return false;
       o.timer -= deltaSeconds * 0.5;
       if (o.timer > 0) return true;
@@ -674,6 +716,9 @@
      */
     function officerPosition(o, target, d, advancing = false) {
       if (target !== player || o.blockade) return null;
+      // A SWAT team: the shield walks at the player, the stack keeps file (swat.js).
+      const stack = swatLeadSpot(o, d) || swatStackSpot(o);
+      if (stack) return stack;
       if (!o.flankSide) o.flankSide = seededRandom() < 0.5 ? -1 : 1;
       const car = o.car,
         free = (spot, margin) => !solid(spot.x, spot.y, 8) && distanceBetween(o, spot) > margin;
@@ -772,18 +817,28 @@
     }
     /**
      * ARREST
-     * An officer who reaches a player on foot who is not fighting back cuffs
-     * them: the bar fills over about two seconds while an officer is within
-     * arm's reach; firing, driving off or running clear breaks it. At three
-     * stars it takes two officers close by (or a badly hurt player); at five,
-     * only a player close to dead is taken alive.
+     * An officer who reaches a player who is not fighting back cuffs them: the
+     * bar fills over about two seconds while an officer is within arm's reach;
+     * firing, striking, driving off or running clear breaks it.
+     *
+     * SURRENDER: from one to four stars, a player who stands still (on foot, or
+     * in a stopped car on the ground) without firing for a moment is giving up.
+     * Officers then hold their fire (so does the helicopter marksman), walk up
+     * and make the arrest, exactly as their "YOU ARE UNDER ARREST" calls promise.
+     * At three and four stars they want two officers close before they cuff.
+     * At five stars the response shoots on sight and only a player close to dead
+     * is taken alive; the callouts there never promise an arrest.
      */
-    let policeMayArrest = false;
+    const SURRENDER_SECONDS = 1.5;
+    let policeMayArrest = false,
+      surrenderAnchor = null,
+      surrenderFor = 0;
     function arrestable() {
-      // A driver sitting still at one or two stars is pulled out of the car.
       const car = player.car,
-        caughtInCar =
-          car && !isAircraft(car) && !isBoat(car) && Math.abs(car.speed || 0) < 10 && wantedStars <= 2;
+        // A driver sitting still is pulled out of the car: at one or two stars
+        // straight away, up to four once they have clearly given up.
+        stopped = car && !isAircraft(car) && !isBoat(car) && Math.abs(car.speed || 0) < 10,
+        caughtInCar = stopped && (wantedStars <= 2 || (wantedStars <= 4 && surrenderFor >= SURRENDER_SECONDS));
       return (
         gameMode === 'play' &&
         wantedStars > 0 &&
@@ -800,26 +855,47 @@
         !harborPoliceProtected(player.x, player.y, 30)
       );
     }
+    /* Standing (or sitting in a stopped car) still, not fighting: giving up. */
+    function trackSurrender(deltaSeconds) {
+      const fought = Math.min(gameTime - (player.lastShotAt ?? -100), gameTime - (player.lastStrikeAt ?? -100)) < 3,
+        afloat = isAircraft(player.car) || (player.car && isBoat(player.car));
+      if (!surrenderAnchor || distanceBetween(player, surrenderAnchor) > 6 || fought || afloat || wantedStars <= 0) {
+        surrenderAnchor = { x: player.x, y: player.y };
+        surrenderFor = 0;
+        return;
+      }
+      surrenderFor += deltaSeconds;
+    }
+    function playerSurrendering() {
+      return surrenderFor >= SURRENDER_SECONDS && Math.ceil(wantedStars) <= 4 && arrestable();
+    }
+    /* Police (officers and the air marksman) hold fire on a player giving up. */
+    function policeHoldFire() {
+      return policeMayArrest && playerSurrendering();
+    }
     function updateArrest(deltaSeconds) {
-      const stars = Math.ceil(wantedStars);
+      trackSurrender(deltaSeconds);
+      const stars = Math.ceil(wantedStars),
+        surrendering = playerSurrendering(),
+        calm = gameTime - (player.lastShotAt ?? -100) > 2.5 && gameTime - (player.lastStrikeAt ?? -100) > 2.5;
       let cuffing = null,
         near = 0;
-      if (arrestable() && gameTime - (player.lastShotAt ?? -100) > 2.5 && gameTime - (player.lastStrikeAt ?? -100) > 2.5)
+      if (arrestable() && calm)
         for (const o of officers) {
           if (o.hp <= 0 || o.downed || personIncapacitated(o) || o.state === 'return' || o.returned) continue;
           const d = combatDistance(o, player);
           if (d < 90) near++;
-          if (d < (player.car ? 44 : 32) && (!cuffing || d < combatDistance(cuffing, player))) cuffing = o;
+          // Arm's reach, a little generous: a parked car or a kerb can keep an officer a step off.
+          if (d < (player.car ? 50 : 42) && (!cuffing || d < combatDistance(cuffing, player))) cuffing = o;
         }
-      const tierAllows = (stars <= 2 || near >= 2 || player.hp < 35) && (stars < 5 || player.hp < 25);
+      // Who the police will take alive: anyone at one or two stars; at three and
+      // four a player who gives up (or is badly hurt); at five only one close to dead.
+      const tierAllows =
+        stars <= 2 || (stars <= 4 && (surrendering || near >= 2 || player.hp < 35)) || (stars >= 5 && player.hp < 25);
       // Officers close by move in to cuff rather than shoot (updateOfficers).
-      policeMayArrest =
-        arrestable() &&
-        gameTime - (player.lastShotAt ?? -100) > 2.5 &&
-        gameTime - (player.lastStrikeAt ?? -100) > 2.5 &&
-        (stars <= 2 || near >= 2 || player.hp < 35) &&
-        (stars < 5 || player.hp < 25);
-      const allowed = cuffing && tierAllows;
+      policeMayArrest = arrestable() && calm && tierAllows;
+      // At three and four stars the cuffs go on once a second officer covers.
+      const allowed = cuffing && policeMayArrest && (stars <= 2 || stars >= 5 || near >= 2 || player.hp < 35);
       if (allowed) {
         arrestProgress = Math.min(1, arrestProgress + deltaSeconds / 2);
         cuffing.state = 'arrest';
@@ -834,11 +910,21 @@
       }
       const el = getElement('arrestStatus');
       if (el) {
-        el.classList.toggle('show', arrestProgress > 0.02 && gameMode === 'play');
-        if (arrestProgress > 0.02) {
+        const show = (arrestProgress > 0.02 || (surrendering && policeMayArrest)) && gameMode === 'play';
+        el.classList.toggle('show', show);
+        if (show) {
+          const label = getElement('arrestLabel');
+          if (label)
+            label.textContent =
+              arrestProgress > 0.02 ? 'BEING ARRESTED · FIGHT OR RUN' : 'SURRENDERING · STAY STILL';
           getElement('arrestFill').style.width = Math.round(arrestProgress * 100) + '%';
         }
       }
+    }
+    /* What officers shout as they get out: an arrest only when one can happen. */
+    function policeChallengeLine() {
+      if (Math.ceil(wantedStars) >= 5 && !policeMayArrest) return randomChoice(['police-drop-weapon', 'target-engaged']);
+      return randomChoice(['police-hands-on-head', 'police-drop-weapon', 'police-get-down', 'police-challenge', 'police-under-arrest']);
     }
     function policeRespawnPoint() {
       const hq = HELIPADS.find((h) => /POLICE/.test(h.name)) || HELIPADS[0];
@@ -916,7 +1002,8 @@
               (v) => v !== c && v.hp > 0 && (v.cop || v.lawUnit) && !v.airUnit && distanceBetween(v, player) < 150,
             );
         const want = headingBetween(c, player);
-        c.turretA = (c.turretA ?? c.a) + clamp(normalizeAngle(want - (c.turretA ?? c.a)), -deltaSeconds * 1.3, deltaSeconds * 1.3);
+        // A real traverse (armor.js), a little quicker than the player's: the crew is waiting for it.
+        traverseTurret(c, want, deltaSeconds, 0.7, 1.4);
         if (!sees || officersClose) {
           c.lockTime = Math.max(0, (c.lockTime || 0) - deltaSeconds);
           continue;
@@ -940,6 +1027,53 @@
       }
     }
 
+    /**
+     * ARMY GUNNERS (5 stars): the jeeps' roof guns and the APC's turret gun track
+     * the player at a real traverse rate and fire bursts of five when they have a
+     * clear line within 480 units. Their rounds are police rounds, so they never
+     * hit officers or police vehicles.
+     */
+    function updateArmyGunners(deltaSeconds) {
+      for (const c of vehicles) {
+        if (!c.armyUnit || !c.gunner || c.hp <= 0 || c === player.car || c.stolen || !c.cop) continue;
+        const d = combatDistance(c, player),
+          want = headingBetween(c, player);
+        traverseTurret(c, want, deltaSeconds, c.type === 'apc' ? 0.9 : 1.6, 3);
+        // Line of sight is looked up about eight times a second, like the other units.
+        if (gameTime >= (c.gunnerLookAt || 0)) {
+          c.gunnerLookAt = gameTime + 0.12 + seededRandom() * 0.05;
+          c.gunnerSees = d < 480 && sameFloor(c, player) && clearSight(c, player);
+        }
+        const sees = wantedStars >= 5 && c.gunnerSees && !playerOnRoof() && !policeHoldFire();
+        if (!sees) {
+          c.targetAcquired = 0;
+          continue;
+        }
+        if (!c.targetAcquired) c.targetAcquired = gameTime + 1.2;
+        if (gameTime < c.targetAcquired || gameTime < (c.gunReadyAt || 0) || Math.abs(normalizeAngle(want - c.turretA)) > 0.12)
+          continue;
+        c.burst = (c.burst || 0) + 1;
+        c.gunReadyAt = gameTime + (c.burst % 5 ? 0.11 : 1.3);
+        const speed = Math.hypot(player.car?.vx || 0, player.car?.vy || 0),
+          chance = policeTier().accuracy * clamp(1.15 - d / 480, 0.4, 1) * clamp(1 - speed / 450, 0.4, 1);
+        let a = c.turretA + randomBetween(-0.02, 0.02);
+        if (seededRandom() > chance) a += (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.06, 0.14);
+        const origin = { x: c.x + Math.cos(a) * 22, y: c.y + Math.sin(a) * 22, altitude: entityElevation(c) + 16 };
+        bullets.push({
+          ...origin,
+          ...shotVelocity(origin, player, 760, a),
+          life: 0.8,
+          dmg: 16,
+          playerDmg: 5,
+          enemy: true,
+          faction: 'police',
+          owner: c,
+          target: player,
+        });
+        playSample('automatic', 0.3, 0.82, c);
+        if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
+      }
+    }
     /* Being hit: a jolt of the camera, a thud, and a red arc on the side the
        shot came from, so the player can tell where the fire is. */
     let damageArcTimer = null;
@@ -1121,6 +1255,8 @@
           : 0;
       recyclePursuitUnits(deltaSeconds);
       updatePursuitArmor(deltaSeconds);
+      updateArmyGunners(deltaSeconds);
+      updateRoofSnipers(deltaSeconds);
       updateMarineUnits(deltaSeconds);
       updateArrest(deltaSeconds);
     }
@@ -1175,6 +1311,8 @@
           kind: c.airUnit ? 'air' : pursuitUnitKind(c) || c.type,
           hp: round(c.hp),
           d: round(distanceBetween(c, player)),
+          x: round(c.x),
+          y: round(c.y),
           speed: round(c.speed || 0),
           mode: c.airUnit ? c.airState : c.blockade ? 'roadblock' : c.crewDeployed ? 'deployed' : c.pursuitPlan?.mode || 'route',
           sees: !!c.seesPlayer,
@@ -1193,11 +1331,15 @@
         heat: Math.round(wantedHeat * 10) / 10,
         nextStarAt: HEAT_STARS[Math.min(5, Math.ceil(wantedStars) + 1)] ?? null,
         unreported: Math.round(unreportedHeat * 10) / 10,
+        crimes: crimeLog.slice(),
         rampage: { ...rampage },
         search: { active: searchActive, remaining: Math.round(searchRemaining * 10) / 10, lastSeen: lastSeen ? { x: round(lastSeen.x), y: round(lastSeen.y) } : null },
         seen: wantedStars > 0 && policeCanSeePlayer(),
         arrest: Math.round(arrestProgress * 100) / 100,
+        // Surrender (standing still) and whether officers may cuff rather than shoot.
+        surrender: { seconds: Math.round(surrenderFor * 10) / 10, surrendering: playerSurrendering(), mayArrest: policeMayArrest, holdFire: policeHoldFire() },
         pursuit: { ...pursuitStats },
+        swat: { ...swatStats },
         wounds: woundReport(),
         marine: vehicles
           .filter((c) => c.marineUnit)
@@ -1208,6 +1350,12 @@
           swat: units.filter((u) => u.kind === 'swat' && u.hp > 0).length,
           fed: units.filter((u) => u.kind === 'fed' && u.hp > 0).length,
           army: units.filter((u) => u.kind === 'army' && u.hp > 0).length,
+          armyJeep: units.filter((u) => u.kind === 'armyJeep' && u.hp > 0).length,
+          armyApc: units.filter((u) => u.kind === 'armyApc' && u.hp > 0).length,
+          armyTruck: units.filter((u) => u.kind === 'armyTruck' && u.hp > 0).length,
+          soldiers: foot.filter((o) => o.unit === 'soldier' && o.hp > 0).length,
+          snipers: foot.filter((o) => o.unit === 'sniper' && o.hp > 0).length,
+          shields: officers.filter((o) => o.shield && o.hp > 0).length,
           air: units.filter((u) => u.kind === 'air' && u.hp > 0 && u.mode !== 'retreating').length,
           officers: foot.filter((o) => o.hp > 0).length,
           roadblocks: roadblocks.length,

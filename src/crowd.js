@@ -210,6 +210,8 @@
       injured: ['Ugh… my leg…', 'Help me…', 'I’m hit… I’m hit…', 'Somebody… please…', 'Oww…'],
       helper: ['Stay with me!', 'Don’t move, help’s coming.', 'Can you hear me?', 'Breathe. Just breathe.'],
       point: ['He went that way!', 'That way, officer!', 'Over there!', 'He ran down there!'],
+      greet: ['Hey.', 'Evening.', 'Nice day for it.', 'How’s it going?', 'Morning.', 'Hey, man.', 'Alright?'],
+      relief: ['Okay… okay.', 'Thank god.', 'Jesus, man.', 'I’m going. I’m going.'],
       recover: ['Is it over?', 'I think he’s gone.', 'My heart’s still pounding.', 'Unbelievable. This city.', 'I need a drink.'],
       angryDriver: ['Look at my car!', 'You’re paying for this!', 'Where’d you learn to drive?!', 'Are you blind?!', 'Unbelievable!', 'Insurance. Now.'],
       shakenDriver: ['My neck…', 'I didn’t see him…', 'Is everyone alright?', 'I need to sit down.'],
@@ -231,7 +233,99 @@
       if (!lines) return false;
       p.speech = randomChoice(lines) + extra;
       p.speechUntil = gameTime + 2.6;
+      // What kind of line this is, for the bubble priority (speechBubbles).
+      p.speechKind = kind;
+      p.speechKindText = p.speech;
       return true;
+    }
+
+    /**
+     * SPEECH BUBBLES ON SCREEN
+     * Street speech sets `p.speech` / `p.speechUntil` on a pedestrian, a driver or
+     * a gang member or soldier, from many places. The renderer asks
+     * speechBubbles() which of those lines to draw: never more than
+     * SPEECH_BUBBLES_MAX at once, so they can be read. A bubble keeps its slot
+     * until its line ends, and every shown line stays up long enough to read
+     * (speechReadSeconds). Free slots go to the most important waiting line:
+     * soldiers, police and mission characters first, then lines aimed at the
+     * player (hands up, pleading, a carjacked or rammed driver, anyone speaking
+     * right beside them), then the nearest. A command or a line to the player
+     * takes the slot of an idle remark. A line that finds no slot waits up to
+     * SPEECH_QUEUE_SECONDS and is then dropped. Mission and contact dialogue
+     * (the dialogue box, the Blue Hour boss) is drawn elsewhere and not counted.
+     */
+    const SPEECH_BUBBLES_MAX = 2,
+      SPEECH_QUEUE_SECONDS = 2.5,
+      SPEECH_RANGE = 460,
+      SPEECH_TO_PLAYER = new Set(['handsUp', 'plead', 'fist', 'angryDriver', 'shout', 'point', 'dodge', 'carjack']);
+    let speechShown = [];
+    function speechReadSeconds(text) {
+      return clamp(1.5 + text.length * 0.065, 2.4, 6);
+    }
+    function speechPriority(p) {
+      if (p.military || p.police || p.missionTag || p.ally) return 3;
+      const kind = p.speechKindText === p.speech ? p.speechKind : '';
+      if (SPEECH_TO_PLAYER.has(kind) || distanceBetween(p, player) < 70) return 2;
+      return 1;
+    }
+    function speechLive(p) {
+      return !!p.speech && p.speechUntil >= gameTime && p.hp > 0 && distanceBetween(p, cameraTarget) <= SPEECH_RANGE;
+    }
+    // The bubbles to draw this frame, most important first: at most SPEECH_BUBBLES_MAX.
+    function speechBubbles() {
+      if (!npcChatterOn()) {
+        speechShown = [];
+        return [];
+      }
+      // A holder keeps its bubble while the line it was given is still running.
+      speechShown = speechShown.filter((p) => speechLive(p) && p.speechShownText === p.speech);
+      const waiting = [],
+        labels = [];
+      for (const list of [pedestrians, vehicles, gangMembers])
+        for (const p of list) {
+          if (!p.speech || p.speechUntil < gameTime) continue;
+          if (p.speechHeard !== p.speech) {
+            // A new line: note when it was said, so it can only wait so long.
+            p.speechHeard = p.speech;
+            p.speechSaidAt = gameTime;
+          }
+          // The pose gallery's labels (a console tool) are not speech: all shown.
+          if (p.posed && p.speech === p.posed) {
+            if (speechLive(p)) labels.push(p);
+            continue;
+          }
+          if (speechShown.includes(p) || !speechLive(p)) continue;
+          waiting.push(p);
+        }
+      if (waiting.length) {
+        for (const p of waiting) {
+          p.speechRank = speechPriority(p);
+          p.speechDistance = distanceBetween(p, player);
+        }
+        waiting.sort((a, b) => b.speechRank - a.speechRank || a.speechDistance - b.speechDistance);
+        for (const p of waiting) {
+          if (speechShown.length >= SPEECH_BUBBLES_MAX) {
+            // An important line bumps the least important idle remark on screen.
+            const weakest = speechShown.reduce((w, q) => (!w || speechPriority(q) < speechPriority(w) ? q : w), null);
+            if (p.speechRank >= 2 && speechPriority(weakest) < p.speechRank) {
+              weakest.speechUntil = gameTime;
+              speechShown = speechShown.filter((q) => q !== weakest);
+            }
+          }
+          if (speechShown.length < SPEECH_BUBBLES_MAX) {
+            speechShown.push(p);
+            p.speechShownText = p.speech;
+            p.speechUntil = Math.max(p.speechUntil, gameTime + speechReadSeconds(p.speech));
+          } else if (gameTime - (p.speechSaidAt ?? gameTime) < SPEECH_QUEUE_SECONDS)
+            // Hold the line a moment for a free slot; after that it lapses unheard.
+            p.speechUntil = Math.max(p.speechUntil, gameTime + 0.05);
+        }
+      }
+      return speechShown
+        .map((p) => ({ p, rank: speechPriority(p) }))
+        .sort((a, b) => b.rank - a.rank)
+        .map((e) => e.p)
+        .concat(labels);
     }
 
     /**
@@ -252,6 +346,7 @@
       timers: { stream: 0, bodies: 0, aim: 0, tips: 0, scenes: 0, traffic: 0, near: 0, chat: 0 },
       playerShotAt: -100,
       lastTipAt: -100,
+      lastNodAt: -100,
       lastReportAt: -100,
       settledAt: null,
       settleStamp: -100,
@@ -1647,8 +1742,16 @@
             }
           }
           if (seededRandom() < deltaSeconds * 0.2) crowdSay(p, r.kind === 'kneel' ? 'plead' : 'handsUp', 0.8);
-          // Once the gun is off them for a moment, they go.
+          // Once the gun is off them for a moment, they go. If the player put it
+          // away altogether, they back off relieved rather than run.
           if (gameTime - (p.aimedAt || -10) > (r.kind === 'kneel' ? 2 : 1.3)) {
+            if (playerUnarmed()) {
+              releaseReactionRole(p);
+              p.react = null;
+              crowdSay(p, 'relief', 0.9);
+              startReaction(p, 'startle', randomBetween(0.6, 1), player, null, { then: 'hurry' });
+              return true;
+            }
             endReaction(p);
             return true;
           }
@@ -1851,12 +1954,19 @@
      * while they are already searching, a caller who can see you tells them
      * where you are. Stop the caller (or scare them off) and the call never ends.
      */
+    const WITNESS_REPORT_WINDOW = 30;
     function crowdReport(caller, inc) {
       if (!inc || inc.reported) return;
       inc.reported = true;
       crowd.reports++;
       crowd.lastReportAt = gameTime;
       if (inc.attacker !== player || gameMode !== 'play' || distanceBetween(inc, player) > 1800) return;
+      // A call is prompt or it is nothing: a witness who rings in half a minute
+      // after the last shot (or the killing, for a body) no longer brings the
+      // police, so stars never rise long after the player stopped.
+      // A body keeps drawing onlookers for minutes; what counts is when it fell.
+      const crimeAt = inc.kind === 'body' ? (inc.focus?.deadTime ?? inc.start) : inc.time;
+      if (gameTime - crimeAt > WITNESS_REPORT_WINDOW) return;
       if (wantedStars <= 0) {
         const amount = { gunfire: 0.5, explosion: 0.6, knock: 0.45, crash: 0.25, body: 0.45, melee: 0.4 }[inc.kind] || 0.3;
         crime(amount);
@@ -1914,6 +2024,12 @@
       if (crowd.timers.aim > 0) return;
       crowd.timers.aim = 0.12;
       if (player.car || gameMode !== 'play' || transitRide || taxiRide || player.swimming) return;
+      // Empty-handed, the player is just another person on the street: nobody
+      // puts their hands up, and now and then someone passing says hello.
+      if (playerUnarmed()) {
+        friendlyNods();
+        return;
+      }
       if (selectedWeaponIndex === KNIFE_INDEX || !weapons[selectedWeaponIndex]?.owned) return;
       if (!(mouse.active || touchAim !== null || gameTime - crowd.playerShotAt < 8)) return;
       const aimA = aim();
@@ -1929,6 +2045,19 @@
         startReaction(p, 'handsUp', 60, player, null);
         crowdSay(p, 'handsUp', 0.9);
       });
+    }
+    /* An unarmed player walking by calm people gets the odd nod or hello. */
+    function friendlyNods() {
+      if (gameTime - (crowd.lastNodAt ?? -100) < 7 || wantedStars > 0) return;
+      let best = null,
+        bestD = 46;
+      forPeopleNear(player.x, player.y, 46, (p, d) => {
+        if (p.hp <= 0 || p.react || p.pending || p.onDeck || personIncapacitated(p) || p.speechUntil > gameTime) return;
+        if (gameTime - (p.aimedAt ?? -100) < 60 || d >= bestD) return;
+        best = p;
+        bestD = d;
+      });
+      if (best && crowdSay(best, 'greet', 0.6)) crowd.lastNodAt = gameTime;
     }
     /**
      * TIPPING OFF THE POLICE
@@ -2805,8 +2934,11 @@
     function crowdCrash(a, b, hit, closing) {
       if (closing < 70 || !hit) return;
       if (Math.abs(hit.x - player.x) > 1400 || Math.abs(hit.y - player.y) > 1400) return;
+      // The player is the culprit only for ramming someone hard, not for being hit.
       const other = a === player.car ? b : b === player.car ? a : null,
-        culprit = other && other.occupied && closing > 150 ? player : null;
+        playerFaster =
+          !!other && (player.car?.impactSpeed || 0) > (other.impactSpeed || 0),
+        culprit = other && other.occupied && playerFaster && closing > RECKLESS_CRASH_SPEED ? player : null;
       const inc = crowdAlarm('crash', hit, culprit, clamp(closing / 160, 0.5, 2));
       for (const c of [a, b]) {
         if (!c || c === player.car || !c.occupied || !c.ai || c.hp <= 0 || c.type === 'police') continue;
@@ -2919,6 +3051,17 @@
         busStops: BUS_STOPS.length,
         frontages: streetFrontages().length,
         props: crowd.props.length,
+        // The speech bubbles on screen (at most SPEECH_BUBBLES_MAX) and the lines
+        // still live but not shown (waiting for a slot, or out of range).
+        bubbles: speechShown.map((p) => ({
+          text: p.speech,
+          rank: speechPriority(p),
+          seconds: +(p.speechUntil - gameTime).toFixed(1),
+          d: Math.round(distanceBetween(p, player)),
+        })),
+        unshownLines: [...pedestrians, ...vehicles, ...gangMembers].filter(
+          (p) => p.speech && p.speechUntil >= gameTime && !speechShown.includes(p) && !(p.posed && p.speech === p.posed),
+        ).length,
         honking: vehicles.filter((c) => (c.blockedFor || 0) > 2).length,
         honks: crowd.honks,
         driversOut: pedestrians.filter((p) => p.car && p.hp > 0).length,

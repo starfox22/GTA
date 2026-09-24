@@ -119,8 +119,20 @@
         }
       } else escalateSeconds = 0;
     }
+    /* The last few crimes, for policeReport(): when, how much heat, and which
+       function reported it (read off the call stack; this is diagnostics only). */
+    const crimeLog = [];
+    function logCrime(amount) {
+      let by = '';
+      try {
+        by = (new Error().stack || '').split('\n')[3]?.trim().replace(/^at /, '').split(' ')[0] || '';
+      } catch {}
+      crimeLog.push({ at: Math.round(gameTime * 10) / 10, heat: Math.round(amount * CRIME_HEAT * 100) / 100, by });
+      if (crimeLog.length > 12) crimeLog.shift();
+    }
     function crime(amount = 1) {
       if (harborPoliceProtected(player.x, player.y, 40)) return;
+      logCrime(amount);
       addHeat(Math.max(0, amount) * CRIME_HEAT + unreportedHeat);
       unreportedHeat = 0;
       if (wantedStars <= 0) {
@@ -138,7 +150,8 @@
       };
     }
     function killCategory(victim) {
-      if (victim.police) return victim.unit === 'swat' ? 'swat' : victim.unit === 'fed' ? 'fed' : 'cop';
+      if (victim.police)
+        return victim.unit === 'swat' ? 'swat' : victim.unit === 'fed' ? 'fed' : victim.unit === 'soldier' ? 'soldier' : 'cop';
       if (victim.military) return 'soldier';
       if (enemies.includes(victim)) return 'hostile';
       if (victim.faction) return 'gang';
@@ -166,7 +179,7 @@
         policeRadioEvent('officer-down', victim);
       }
       // A quiet kill with nobody watching waits for a witness to call it in.
-      if (wantedStars <= 0 && kind === 'melee' && !lawman && !policeCanSeePlayer()) {
+      if (wantedStars <= 0 && (kind === 'melee' || kind === 'punch') && !lawman && !policeCanSeePlayer()) {
         unreportedHeat = Math.min(HEAT_MAX, unreportedHeat + heat);
         return;
       }
@@ -203,6 +216,7 @@
         heat = 26;
         tell('POLICE HELICOPTER DOWN', 2);
       } else if (vehicle.type === 'tank' || vehicle.military) heat = 30;
+      else if (vehicle.armyUnit) heat = 16;
       else if (vehicle.lawUnit === 'swat') heat = 14;
       else if (vehicle.type === 'police' || vehicle.lawUnit) heat = 9;
       else heat = vehicle.ai || vehicle.occupied ? 3.5 : 1.5;

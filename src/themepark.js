@@ -485,7 +485,7 @@
       player.coaster = { kind: 'train', time: 0, car: 0, view: 0 };
       coasterTrain.dwell = Math.min(coasterTrain.dwell, 3);
       announce('SUNSET PIER', 'THE FALCON', 2.4);
-      tell('Bars down. E changes the view. 64 metres, 125 km/h.', 4);
+      tell('Bars down. ' + keyName('interact') + ' changes the view, ' + keyName('radioPower') + ' / ' + keyName('radioNext') + ' the radio. 64 metres, 125 km/h.', 4);
       return true;
     }
     function leaveCoaster() {
@@ -546,7 +546,7 @@
       }
       player.coaster = { kind: 'wheel', capsule: best, time: 0, view: 0 };
       announce('SUNSET PIER', 'THE SUNSET EYE', 2.4);
-      tell('One turn, four minutes, 110 metres up. E at the bottom to step off.', 4);
+      tell('One turn, four minutes, 110 metres up. ' + keyName('radioPower') + ' / ' + keyName('radioNext') + ' the radio, ' + keyName('interact') + ' at the bottom to step off.', 4);
       return true;
     }
     function updateWheelRide(deltaSeconds) {
@@ -667,7 +667,7 @@
               vz: randomBetween(230, 300),
               vx: randomBetween(-18, 18),
               vy: randomBetween(-18, 18),
-              burstAt: randomBetween(330, 560),
+              burstAt: randomBetween(210, 400),
               hue: seededRandom(),
               style: Math.floor(seededRandom() * 4),
               born: gameTime,

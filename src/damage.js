@@ -381,6 +381,26 @@
       return { x: r.x + r.w, y: clamp(b.y, r.y, r.y + r.h), nx: 1, ny: 0 };
     }
     /**
+     * A rocket or a main-gun round that struck a building face: where on the face
+     * it hit (so the blast goes off outside the wall, not inside it), and for a
+     * tank shell a breach in the facade (damage3d.js shellImpact). Returns the
+     * point to detonate at, or null when it did not hit a building.
+     */
+    function heavyRoundHitsBuilding(b) {
+      const altitude = b.altitude || 0;
+      for (const building of buildingsNear(b.x, b.y)) {
+        if (altitude + 4 > building.height || building.depotWall) continue;
+        if (b.x < building.x - 2 || b.x > building.x + building.w + 2 || b.y < building.y - 2 || b.y > building.y + building.h + 2)
+          continue;
+        const face = wallFace(building, b),
+          z = clamp(altitude + 10, 6, building.height - 3);
+        if (b.shell && city3D && distanceBetween(face, cameraTarget) < 1400)
+          city3D.shellImpact(face.x, face.y, z, face.nx, face.ny, building, b.blastPower || 1);
+        return { x: face.x + face.nx * 4, y: face.y + face.ny * 4 };
+      }
+      return null;
+    }
+    /**
      * A round stopped by scenery (shotBlocked said so): leave a chip in the wall it hit,
      * a star or a hole in a shop window, or a scuff in the ground. Returns the impact
      * kind for the effect: 'wall', 'glass' or 'dust'.
@@ -802,6 +822,9 @@
         });
       if (distanceBetween(prop, player) < 600) {
         noise(0.12 + kind.give * 0.2, clamp(0.06 + kind.give * 0.25, 0.06, 0.3), kind.give > 0.3 ? 520 : 1400);
+        // Metal furniture (a hydrant, a lamp post, a bin) also clangs and scatters.
+        if (kind.give > 0.3)
+          crashSound({ x: hit.x, y: hit.y, closing, mass: spec.mass || 1.25, other: 'prop', glass: 0, sliding: 0, key: 'prop' + vehicle.id });
         if (vehicle === player.car) shake = Math.max(shake, kind.give * 5);
       }
       if (city3D) city3D.impact(hit.x, hit.y, kind.give > 0.3 ? 'metal' : 'dust', entityElevation(vehicle));

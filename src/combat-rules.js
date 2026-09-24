@@ -4,7 +4,8 @@
      * Source: src/combat-rules.js
      * Scope: shared game closure.
      * Elevation-aware shots, vehicle handgun rules, tank armor and the police helicopters
-     * (one at three stars, two at four and five; each carries a marksman).
+     * (never more than one at a time, from three stars or a chase at sea; its marksman
+     * sharpens at four and five stars).
      */
     /* All gunfire travels through the same three-dimensional world. */
 
@@ -116,6 +117,7 @@
         player.car &&
         player.car.type !== 'tank' &&
         selectedWeaponIndex !== 0 &&
+        selectedWeaponIndex !== FISTS_INDEX &&
         weaponIsEquipped(0)
       ) {
         selectedWeaponIndex = 0;
@@ -123,7 +125,11 @@
         drawWeapon();
       }
     }
-    const AIR_SEARCH_SECONDS = 18,
+    // One hostile helicopter at a time, whatever calls it: the wanted tiers, a
+    // pursuit at sea or a mission's air support (a mission takes over the one
+    // already overhead rather than bringing a second).
+    const AIR_UNITS_MAX = 1,
+      AIR_SEARCH_SECONDS = 18,
       AIR_REDISPATCH_SECONDS = 45,
       AIR_RELAUNCH_SECONDS = 12;
     let airDispatchTimer = 0,
@@ -140,6 +146,11 @@
     function airSupportUnit() {
       return vehicles.find((c) => c.airUnit && c.hp > 0 && c !== player.car);
     }
+    // Hostile helicopters on duty (arriving, searching or tracking), not those
+    // flying home.
+    function activeAirUnits() {
+      return vehicles.filter((c) => c.airUnit && c.hp > 0 && c !== player.car && !c.airRetreat);
+    }
     function airCanSee(c, t) {
       return (
         c.hp > 0 &&
@@ -151,15 +162,17 @@
         clearSight(c, t)
       );
     }
-    function requestAirSupport(target, missionScoped = false, extra = false) {
+    function requestAirSupport(target, missionScoped = false) {
       for (const lost of vehicles)
         if (lost.airUnit && lost.hp <= 0 && !lost.airDown) markAirSupportDown(lost);
-      let c = extra ? null : airSupportUnit();
+      // The helicopter already on duty is the one that answers (a mission takes it
+      // over); a new one launches only when the sky is empty.
+      let c = activeAirUnits()[0] || airSupportUnit();
       if (airDispatchTimer > 0 && (!c || c.airRetreat)) return null;
       if (c && !missionScoped) return c;
       if (!c) {
-        // A second helicopter comes in from the other side of the city.
-        const a = player.a + Math.PI * (extra ? -0.6 : 0.7),
+        // The helicopter comes in from across the city.
+        const a = player.a + Math.PI * 0.7,
           x = target.x + Math.cos(a) * 900,
           y = target.y + Math.sin(a) * 900;
         c = makeCar(
@@ -198,14 +211,8 @@
         airShotTimer: 2,
         rotorSpeed: 1,
       });
-      if (extra) c.airArrival = 12;
       radio('call-backup');
-      tell(
-        extra
-          ? 'SECOND AIR UNIT INBOUND · Two helicopters now hunting you.'
-          : 'AIR SUPPORT CALLED · Head for a railway underpass, towers, or a bridge by boat.',
-        6,
-      );
+      tell('AIR SUPPORT CALLED · Head for a railway underpass, towers, or a bridge by boat.', 6);
       return c;
     }
     function retireAirSupport(c, escaped = false) {
@@ -242,22 +249,22 @@
       airDispatchTimer = Math.max(0, airDispatchTimer - deltaSeconds);
       // Destruction is processed before dispatch, so a kill cannot immediately spawn its replacement.
       for (const c of vehicles) if (c.airUnit && c.hp <= 0 && !c.airDown) markAirSupportDown(c);
-      // Three stars bring one helicopter, four and five bring two (pursuit.js).
+      // Three stars and up bring the helicopter, and so does a chase at sea from two
+      // stars (pursuit.js); never more than AIR_UNITS_MAX at once.
       const airCap =
           wantedStars > 0 && !harborPoliceProtected(player.x, player.y, 100)
-            ? Math.max(policeTier().air, wantedStars >= 2 && playerAtSea() ? 1 : 0)
+            ? Math.min(AIR_UNITS_MAX, Math.max(policeTier().air, wantedStars >= 2 && playerAtSea() ? 1 : 0))
             : 0,
         wanted = airCap > 0;
-      const live = vehicles
-        .filter((c) => c.airUnit && c.hp > 0 && c !== player.car && !c.airRetreat)
-        .sort((a, b) => Number(!!b.missionPursuit) - Number(!!a.missionPursuit) || a.id - b.id);
-      const general = live.filter((c) => !c.missionPursuit);
-      if (general.length < airCap && airDispatchTimer <= 0 && gameTime >= airLaunchReadyAt) {
-        requestAirSupport(player, false, general.length > 0);
+      // A mission's helicopter counts first: it is the one that stays.
+      const live = activeAirUnits().sort(
+        (a, b) => Number(!!b.missionPursuit) - Number(!!a.missionPursuit) || a.id - b.id,
+      );
+      if (!live.length && airCap > 0 && airDispatchTimer <= 0 && gameTime >= airLaunchReadyAt) {
+        requestAirSupport(player, false);
         airLaunchReadyAt = gameTime + 12;
       }
-      for (const c of live.filter((c) => c.missionPursuit).slice(1)) retireAirSupport(c);
-      for (const c of general.slice(Math.max(airCap, 0))) retireAirSupport(c);
+      for (const c of live.slice(AIR_UNITS_MAX)) retireAirSupport(c);
       for (let i = vehicles.length - 1; i >= 0; i--) {
         const c = vehicles[i];
         if (!c.airUnit || c === player.car) continue;
@@ -309,19 +316,22 @@
         }
         // The marksman: lines up for a second and a half (the HUD warns), then
         // one aimed round. Moving fast, or breaking sight, spoils the shot.
-        if (seen && combatDistance(c, t) < 560 && c.airShotTimer <= 0) {
+        // The higher the wanted level, the quicker and surer the marksman.
+        const marksman = policeTier(Math.max(3, Math.ceil(wantedStars))).marksman;
+        // A player giving up (pursuit.js) is not shot at while officers move in.
+        if (seen && combatDistance(c, t) < 560 && c.airShotTimer <= 0 && !(t === player && policeHoldFire())) {
           c.sniperLock = (c.sniperLock || 0) + deltaSeconds;
           if (c.sniperLock > 0.3 && t === player && gameTime - sniperWarningAt > 5) {
             sniperWarningAt = gameTime;
             tone(1250, 0.05, 0.08, 'square', 1400);
           }
-          if (c.sniperLock >= 1.6) {
+          if (c.sniperLock >= marksman.lock) {
             c.sniperLock = 0;
-            c.airShotTimer = randomBetween(2.4, 3.4);
+            c.airShotTimer = randomBetween(...marksman.rest);
             pursuitStats.sniperShots++;
             const runner = t === player || t === player.car,
               speed = Math.hypot((player.car || t).vx || 0, (player.car || t).vy || 0) || (runner && !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) ? 110 : 0),
-              chance = clamp(0.85 - speed / 500, 0.3, 0.85);
+              chance = clamp(marksman.hit - speed / 500, 0.3, marksman.hit);
             let a = headingBetween(c, t);
             if (seededRandom() > chance) a += (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.05, 0.1);
             const origin = {

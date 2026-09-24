@@ -269,6 +269,9 @@
         x: spawn.x,
         y: spawn.y,
       },
+      // In a plane the camera leads the aircraft along its velocity, smoothed so a
+      // turn swings the view round gently instead of whipping it (updateGame).
+      planeCameraLead = { x: 0, y: 0 },
       vehicles = [],
       pedestrians = [],
       bullets = [],
@@ -2113,8 +2116,15 @@
           );
           radio('call-backup');
         } else if (c.type === 'tank') {
-          militaryAlarm();
-          tell('TRACKED ARMOR · W/S drive · A/D pivot · F cannon · Mouse aim optional', 6);
+          // Taking one of Fort Sentinel's tanks raises the base; a pursuit tank
+          // taken off the army is a crime of its own.
+          if (c.military) militaryAlarm();
+          else if (c.lawUnit) crime(2);
+          tell(
+            'TRACKED ARMOR · ' + keyName('forward') + '/' + keyName('back') + ' drive · ' + keyName('left') + '/' + keyName('right') +
+              ' pivot · the mouse lays the turret · ' + keyName('fire') + ' fire · ' + keyName('cycleWeapon') + ' main gun / MG · right click MG',
+            7,
+          );
         } else if (isBoat(c))
           tell(
             keyName('forward') + '/' + keyName('back') + ' throttle · ' + keyName('left') + '/' + keyName('right') + ' steer · ' +
@@ -2188,8 +2198,8 @@
       if (player.parachute || transitRide) return;
       enforceVehicleHandgun();
       if (gameMode === 'play' && player.car?.type === 'tank') {
-        player.car.turretA = aim();
-        tankFire(player.car);
+        // The gun fires where the turret is laid, not where the mouse is (armor.js).
+        tankPlayerFire(player.car);
         return;
       }
       if (
@@ -2201,6 +2211,8 @@
         !weaponIsEquipped(selectedWeaponIndex)
       )
         return;
+      // Empty-handed at the wheel: fire draws the pistol.
+      if (player.car && player.car.type !== 'tank' && selectedWeaponIndex === FISTS_INDEX && weapons[0]?.owned) selectWeapon(0);
       if (player.car && player.car.type !== 'tank' && selectedWeaponIndex !== 0) {
         tell('Carry the 9mm pistol to fire from a vehicle.');
         shotCooldownSeconds = 0.5;
@@ -2208,7 +2220,7 @@
       }
       const w = currentWeapon();
       if (w.melee) {
-        attackWithKnife();
+        meleeAttack();
         return;
       }
       if (w.ammo <= 0) {
@@ -2841,6 +2853,12 @@
             if (Math.hypot(b.x - p.x, b.y - p.y) >= 10) continue;
             // A precision-rifle round on the target it was aimed at is a headshot:
             // one shot, whatever the vest.
+            // A riot shield stops a round from the front: sparks, no wound (swat.js).
+            if (shieldBlocks(p, b)) {
+              impact = true;
+              hitKind = 'metal';
+              break;
+            }
             const headshot = !b.enemy && b.headshotTarget === p;
             strikePerson(
               p,
@@ -2876,6 +2894,12 @@
         b.life -= deltaSeconds;
         if (b.rocket && seededRandom() < 0.8) particle(b.x, b.y, '#cbc4a0', 1, 15, 5);
         if (impact || b.life <= 0) {
+          // A rocket or shell into a facade goes off against the wall, outside it.
+          const face = b.rocket && impact && hitKind === 'wall' ? heavyRoundHitsBuilding(b) : null;
+          if (face) {
+            b.x = face.x;
+            b.y = face.y;
+          }
           if (b.rocket)
             explode(
               b.x,
@@ -3022,9 +3046,13 @@
         timed('civic', () => updateCivic(deltaSeconds));
         timed('roofencounter', () => updateRoofEncounter(deltaSeconds));
         timed('military', () => updateMilitary(deltaSeconds));
+        updatePlayerArmor(deltaSeconds);
         timed('combat', () => updateCombat(deltaSeconds));
         timed('mission', () => missionUpdate(deltaSeconds));
-        timed('waypoint', () => updateWaypoint(deltaSeconds));
+        timed('waypoint', () => {
+          updateWaypoint(deltaSeconds);
+          updateGpsRoute(deltaSeconds);
+        });
       }
       for (let i = particles.length - 1; i >= 0; i--) {
         let p = particles[i];
@@ -3064,12 +3092,25 @@
       const look = player.car ? player.car.speed * 0.35 : 0,
         // A coaster outruns the usual trailing camera; stay with the train.
         follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
-      cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
-      cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
+      if (player.car?.type === 'plane') {
+        const lead = 1 - Math.exp(-deltaSeconds * 1.4);
+        planeCameraLead.x += ((player.car.vx || 0) * 0.42 - planeCameraLead.x) * lead;
+        planeCameraLead.y += ((player.car.vy || 0) * 0.42 - planeCameraLead.y) * lead;
+        const hold = Math.min(1, deltaSeconds * 7);
+        cameraTarget.x += (player.x + planeCameraLead.x - cameraTarget.x) * hold;
+        cameraTarget.y += (player.y + planeCameraLead.y - cameraTarget.y) * hold;
+      } else {
+        planeCameraLead.x = Math.cos(player.a) * look;
+        planeCameraLead.y = Math.sin(player.a) * look;
+        cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
+        cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
+      }
       timed('sound', () => {
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);
       });
+      // The flight instruments move every frame (hud.js, FLIGHT HUD).
+      timed('flighthud', updateFlightHud);
       uiTime += deltaSeconds;
       if (uiTime > 0.09) {
         uiTime = 0;
@@ -3457,7 +3498,7 @@
       worldContext.fillRect(-1, -3, 3, 6);
       if (
         !personIncapacitated(person) &&
-        ((isPlayer && !(player.disguised && rooftopJob() && !rooftopJob().weaponDrawn)) ||
+        ((isPlayer && selectedWeaponIndex !== FISTS_INDEX && !(player.disguised && rooftopJob() && !rooftopJob().weaponDrawn)) ||
           (isEnemy && (!person.missionTag || person.aiming)))
       ) {
         worldContext.fillStyle = '#c2b48f';
@@ -3829,14 +3870,17 @@
       drawHarborMap(drawingContext, big);
       const target = objective();
       if (target) {
-        drawingContext.strokeStyle = '#f3d791aa';
-        drawingContext.lineWidth = big ? 9 : 8;
-        drawingContext.setLineDash([22, 19]);
-        drawingContext.beginPath();
-        drawingContext.moveTo(player.x, player.y);
-        drawingContext.lineTo(target.x, target.y);
-        drawingContext.stroke();
-        drawingContext.setLineDash([]);
+        // On the minimap the GPS draws the road route instead (navigation.js).
+        if (big || !gpsRouteShown()) {
+          drawingContext.strokeStyle = '#f3d791aa';
+          drawingContext.lineWidth = big ? 9 : 8;
+          drawingContext.setLineDash([22, 19]);
+          drawingContext.beginPath();
+          drawingContext.moveTo(player.x, player.y);
+          drawingContext.lineTo(target.x, target.y);
+          drawingContext.stroke();
+          drawingContext.setLineDash([]);
+        }
         drawingContext.fillStyle = '#f2d485';
         drawingContext.beginPath();
         drawingContext.arc(target.x, target.y, 36, 0, TAU);
@@ -3844,7 +3888,8 @@
       }
       drawTransitMap(drawingContext, scale, big);
       drawSportsMap(drawingContext, scale, big);
-      drawUserRoute(drawingContext, scale);
+      drawUserRoute(drawingContext, scale, big);
+      if (!big) drawGpsRoutes(drawingContext, scale);
       drawCountyMap(drawingContext, scale, big);
       drawGarageMap(drawingContext, scale);
       drawAirCoverMap(drawingContext, scale);
@@ -3918,9 +3963,60 @@
       drawPlayerMapMarker(drawingContext, width, height, scale, cx, cy, big);
     }
     function drawWeapon() {
+      // In a tank the chip shows the main gun or the MG (armor.js tankHud).
+      if (player.car?.type === 'tank') {
+        delete getElement('weaponArt').dataset.tankIcon;
+        return;
+      }
       drawWeaponIcon(getElement('weaponArt'), selectedWeaponIndex);
     }
+    /* No weapon: a clenched fist seen from the side, knuckles forward (the way the
+       gun icons point), drawn procedurally at any canvas size. */
+    function drawFistIcon(targetCanvas) {
+      const g = targetCanvas.getContext('2d');
+      g.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+      g.save();
+      const scale = Math.min(targetCanvas.width / 130, targetCanvas.height / 74);
+      g.translate(targetCanvas.width / 2, targetCanvas.height / 2);
+      g.scale(scale, scale);
+      g.lineJoin = 'round';
+      const block = (x, y, w, h, r, fill, line = '#2b1f17', width = 2.6) => {
+        g.beginPath();
+        g.moveTo(x + r, y);
+        g.arcTo(x + w, y, x + w, y + h, r);
+        g.arcTo(x + w, y + h, x, y + h, r);
+        g.arcTo(x, y + h, x, y, r);
+        g.arcTo(x, y, x + w, y, r);
+        g.closePath();
+        g.fillStyle = fill;
+        g.fill();
+        if (line) {
+          g.strokeStyle = line;
+          g.lineWidth = width;
+          g.stroke();
+        }
+      };
+      // Jacket cuff and wrist.
+      block(-60, -16, 20, 34, 3, '#3d4a57');
+      block(-44, -13, 14, 28, 5, '#c9a07a');
+      // Back of the hand.
+      block(-34, -24, 42, 46, 12, '#d8b08a');
+      // Four curled fingers, the little finger a little shorter.
+      for (let i = 0; i < 4; i++) block(2, -24 + i * 11.5, i === 3 ? 27 : 31, 11.5, 5.5, '#e6c29c');
+      // Knuckle highlights.
+      g.fillStyle = '#f6dcbd';
+      for (let i = 0; i < 4; i++) g.fillRect(i === 3 ? 21 : 25, -21 + i * 11.5, 5, 3);
+      // Thumb folded across the fingers.
+      block(-22, 8, 36, 13, 6.5, '#cfa47d');
+      g.fillStyle = '#f0d3b4';
+      g.fillRect(6, 11, 5, 3);
+      g.restore();
+    }
     function drawWeaponIcon(targetCanvas, weaponIndex) {
+      if (weaponIndex === FISTS_INDEX) {
+        drawFistIcon(targetCanvas);
+        return;
+      }
       const atlas = visualAssets.arsenal;
       if (atlas && atlas.width > 0 && atlas.height > 0) {
         const context = targetCanvas.getContext('2d');
@@ -4090,16 +4186,20 @@
               ? 'HIDE UNTIL THE TIMER ENDS'
               : 'POLICE PURSUIT'
             : 'NO ARMOR';
-      getElement('weaponSlot').textContent = w.melee
+      getElement('weaponSlot').textContent = w.fists
+        ? 'UNARMED · WEAPONS AWAY'
+        : w.melee
         ? 'KNIFE · ALWAYS CARRIED'
         : 'EQUIPPED · ' + equippedWeaponIndices().length + ' WEAPONS';
       getElement('weaponName').textContent = w.name;
-      getElement('ammo').textContent = w.melee
+      getElement('ammo').textContent = w.fists
+        ? '—'
+        : w.melee
         ? '∞'
         : reloadSecondsRemaining > 0
           ? '··'
           : String(w.ammo).padStart(2, '0');
-      getElement('reserve').textContent = w.melee ? 'NO AMMO NEEDED' : '/ ' + w.reserve;
+      getElement('reserve').textContent = w.fists ? 'PUNCH' : w.melee ? 'NO AMMO NEEDED' : '/ ' + w.reserve;
       getElement('reloadHint').textContent = w.melee
         ? keyName('fire')
         : reloadSecondsRemaining > 0
@@ -4186,12 +4286,15 @@
       let prompt = '';
       if (gameMode === 'play') {
         if (c) {
+          // The flight HUD shows power, speed and the warnings; the prompt only
+          // says what to do about a stall, or how to get off the ground.
           if (c.type === 'plane')
             prompt = c.stalled
               ? 'STALL · ' + keyName('descend') + ' NOSE DOWN + ' + keyName('forward') + ' THROTTLE'
-              : keyName('forward') + '/' + keyName('back') + ' THROTTLE ' +
-                Math.round((c.throttle || 0) * 100) +
-                '% · ' + keyName('ascend') + '/' + keyName('descend') + ' PITCH · ' + keyName('bail') + ' PARACHUTE';
+              : aircraftClearance(c) < 1 && Math.abs(c.speed) < 40
+                ? keyName('forward') + ' THROTTLE · ' + keyName('ascend') + ' ROTATE · ' + keyName('flapsDown') + ' FLAPS · ' +
+                  keyName('interact') + ' EXIT'
+                : '';
           else if (c.type === 'helicopter')
             prompt =
               aircraftClearance(c) > 1
@@ -4236,6 +4339,12 @@
       updateExplorationUI();
       updateTouchUI();
       updateHud();
+      // In a tank the weapon chip shows the main gun and the MG (armor.js).
+      if (c?.type === 'tank') tankHud(c);
+      else if (getElement('weaponArt').dataset.tankIcon) {
+        delete getElement('weaponArt').dataset.tankIcon;
+        drawWeapon();
+      }
     }
     function resize() {
       viewportWidth = innerWidth;
@@ -4409,7 +4518,7 @@
           player.hp = 100;
           player.armor = 100;
           announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
-          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · click the map to teleport', 5);
+          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · pick the time of day and weather in the mission picker · click the map to teleport', 5);
         } else {
           announce('SOUTH COAST', 'GODMODE OFF', 1.8);
           tell('GODMODE OFF', 2.5);
@@ -4531,9 +4640,9 @@
           cycleWeapon();
           updateUI();
           renderArsenal(selectedWeaponIndex);
-        } else if (!e.repeat && (is('knife') || weaponSlotKey(actions) >= 0)) {
+        } else if (!e.repeat && (is('knife') || is('fists') || weaponSlotKey(actions) >= 0)) {
           e.preventDefault();
-          selectArsenalWeapon(is('knife') ? KNIFE_INDEX : weaponSlotKey(actions));
+          selectArsenalWeapon(is('knife') ? KNIFE_INDEX : is('fists') ? FISTS_INDEX : weaponSlotKey(actions));
         }
         return;
       }
@@ -4634,11 +4743,18 @@
         deployParachute();
         return;
       }
-      if (player.car && is('radioPower')) {
+      // Plane flaps and landing gear (aviation.js, FLIGHT CONTROLS).
+      if (player.car?.type === 'plane' && player.car.hp > 0 && (is('flapsDown') || is('flapsUp') || is('gear'))) {
+        if (is('gear')) togglePlaneGear(player.car);
+        else setPlaneFlaps(player.car, is('flapsDown') ? 1 : -1);
+        return;
+      }
+      // The radio plays in vehicles and on the Sunset Pier rides (car-radio.js).
+      if ((player.car || player.coaster) && is('radioPower')) {
         toggleCarRadio();
         return;
       }
-      if (player.car && is('radioNext')) {
+      if ((player.car || player.coaster) && is('radioNext')) {
         tuneCarRadio(carRadioStation + 1);
         return;
       }
@@ -4649,6 +4765,7 @@
       if (is('reload')) startReload();
       if (is('arsenal')) openArsenal();
       if (is('knife')) selectWeapon(KNIFE_INDEX);
+      if (is('fists')) selectWeapon(FISTS_INDEX);
       if (weaponSlotKey(actions) >= 0) selectWeapon(weaponSlotKey(actions));
       if (is('cycleWeapon')) cycleWeapon();
       if (is('missionCard')) toggleMissionCard();
@@ -4715,6 +4832,8 @@
     });
     canvas.addEventListener('mousedown', (e) => {
       if (performance.now() < worldTouchUntil || e.sourceCapabilities?.firesTouchEvents) return;
+      // The right button fires a tank's machine gun (armor.js).
+      if (e.button === 2 && gameMode === 'play') mouse.alt = true;
       if (e.button === 0 && gameMode === 'play') {
         mouse.down = true;
         mouse.active = true;
@@ -4724,7 +4843,7 @@
         shoot();
       }
     });
-    window.addEventListener('mouseup', () => (mouse.down = false));
+    window.addEventListener('mouseup', () => (mouse.down = mouse.alt = false));
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     getElement('creditsBtn').onclick = () => openCredits(getElement('creditsBtn'));
     getElement('closeCredits').onclick = () => {
@@ -4765,6 +4884,7 @@
     // @include src/arsenal.js
     // @include src/citylife.js
     // @include src/pursuit.js
+    // @include src/swat.js
     // @include src/wounds.js
     // @include src/story.js
     // @include src/campaign.js
@@ -4784,8 +4904,10 @@
     // @include src/air-cover.js
     // @include src/combat-rules.js
     // @include src/damage.js
+    // @include src/crash-audio.js
     // @include src/county.js
     // @include src/military.js
+    // @include src/armor.js
     // @include src/aviation.js
     // @include src/challenges.js
     // @include src/sidejobs.js
@@ -4969,6 +5091,7 @@
       }
       const drawStart = performance.now();
       drawWorld();
+      updateTankReticle();
       const frameEnd = performance.now();
       profile.update += drawStart - updateStart;
       profile.draw += frameEnd - drawStart;
@@ -4999,6 +5122,7 @@
         mission: mission ? missions[mission.index].title : null,
         completed,
         vehicle: player.car ? player.car.type : null,
+        weapon: currentWeapon().name,
         clock: clockText(),
         renderer: city3D ? '3d' : '2d',
         vehicles: vehicles.length,
@@ -5269,6 +5393,13 @@
       // Combat tests: own weapon `index` (0 pistol ... 5 precision rifle) with a
       // full clip and reserve, and select it. Returns its name.
       arm(index = 4) {
+        // 6 the knife, 7 no weapon (fists): selected as they are.
+        if (index === KNIFE_INDEX || index === FISTS_INDEX) {
+          selectedWeaponIndex = index;
+          reloadSecondsRemaining = 0;
+          drawWeapon();
+          return currentWeapon().name;
+        }
         const w = weapons[index];
         if (!w) return null;
         w.owned = true;
@@ -5299,6 +5430,8 @@
                 hp: Math.round(p.hp),
                 d: Math.round(distanceBetween(p, player)),
                 sight: clearSight(player, p),
+                // Police extras: a riot shield (swat.js), a rooftop post, their heading.
+                ...(p.police ? { shield: !!p.shield, roof: !!p.roofSniper, aim: +(p.sniperAim || 0).toFixed(2), a: +(p.a || 0).toFixed(2), state: p.state } : {}),
               });
         return found.sort((a, b) => a.d - b.d).slice(0, 40);
       },
@@ -5312,6 +5445,18 @@
         weather.locked = true;
         return setWeather(id);
       },
+      // The player's aircraft instruments as the flight HUD shows them (aviation.js
+      // flightData): airspeed km/h, altitude and AGL m, vertical speed m/s, heading,
+      // pitch, bank, throttle and spooled power, flaps, gear, g, stall warnings.
+      flight() {
+        const data = flightData(player.car);
+        if (!data) return null;
+        const out = {};
+        for (const [key, value] of Object.entries(data))
+          out[key] = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
+        out.hud = !!document.getElementById('flightHud')?.classList.contains('on');
+        return out;
+      },
       // What the vehicle under the player is actually doing.
       ride: () => ({
         type: player.car ? player.car.type : null,
@@ -5322,6 +5467,17 @@
         effort: Math.round(pedalEffort() * 100) / 100,
         // Aircraft: absolute altitude in map units (0 on the ground).
         altitude: player.car ? Math.round(player.car.altitude || 0) : 0,
+        // Tanks: hull and turret headings (degrees), where the gunner is aiming,
+        // the traverse rate (deg/s) and the ammunition (armor.js).
+        ...(player.car?.type === 'tank'
+          ? {
+              hull: Math.round((player.car.a * 180) / Math.PI),
+              turret: Math.round(((player.car.turretA ?? player.car.a) * 180) / Math.PI),
+              aim: Math.round(((player.car.turretAim ?? player.car.a) * 180) / Math.PI),
+              traverse: Math.round(((player.car.turretRate || 0) * 180) / Math.PI),
+              arms: { ...tankArms(player.car), reload: Math.max(0, Math.round(((player.car.cannonReadyAt || 0) - gameTime) * 10) / 10) },
+            }
+          : {}),
       }),
       // Run the simulation forward without drawing, holding the given keys (for
       // example ['KeyW']), so physics tests do not depend on the headless frame
@@ -5375,6 +5531,10 @@
           if (car.type === 'plane') {
             car.vx = Math.cos(car.a) * 420;
             car.vy = Math.sin(car.a) * 420;
+            // Cruising: gear up, cruise power.
+            car.gearDown = false;
+            car.gearPos = 0;
+            car.throttle = car.power = 0.75;
           }
         }
         return this.status();
@@ -5745,6 +5905,7 @@
           if (changes.frameLimit !== undefined) setFrameLimit(changes.frameLimit === 0 ? 'unlimited' : changes.frameLimit);
           if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
+          if (typeof changes.gps === 'boolean') setGps(changes.gps);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
@@ -5767,6 +5928,8 @@
           minimapFolded: hudState.minimapFolded,
           minimapZoom: +hudState.minimapZoom.toFixed(2),
           keyHints: hudState.keyHints,
+          gps: hudState.gps,
+          gpsRoute: gpsRoute.points.length,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,
         };

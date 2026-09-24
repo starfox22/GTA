@@ -241,5 +241,65 @@
     "file": "assets/audio/tires.wav",
     "mime": "audio/wav",
     "original": "src/assets/audio/tires.wav"
+  },
+  {
+    "id": "media-audio-crash-heavy",
+    "file": "assets/audio/crash-heavy.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-heavy.ogg"
+  },
+  {
+    "id": "media-audio-crash-hit",
+    "file": "assets/audio/crash-hit.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-hit.ogg"
+  },
+  {
+    "id": "media-audio-crash-metal-1",
+    "file": "assets/audio/crash-metal-1.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-metal-1.ogg"
+  },
+  {
+    "id": "media-audio-crash-metal-2",
+    "file": "assets/audio/crash-metal-2.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-metal-2.ogg"
+  },
+  {
+    "id": "media-audio-crash-plate-1",
+    "file": "assets/audio/crash-plate-1.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-plate-1.ogg"
+  },
+  {
+    "id": "media-audio-crash-plate-2",
+    "file": "assets/audio/crash-plate-2.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-plate-2.ogg"
+  },
+  {
+    "id": "media-audio-crash-glass-1",
+    "file": "assets/audio/crash-glass-1.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-glass-1.ogg"
+  },
+  {
+    "id": "media-audio-crash-glass-2",
+    "file": "assets/audio/crash-glass-2.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-glass-2.ogg"
+  },
+  {
+    "id": "media-audio-crash-thump",
+    "file": "assets/audio/crash-thump.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-thump.ogg"
+  },
+  {
+    "id": "media-audio-crash-tinkle",
+    "file": "assets/audio/crash-tinkle.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/crash-tinkle.ogg"
   }
 ]

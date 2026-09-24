@@ -20,6 +20,8 @@
     function pickHitZone(kind) {
       if (kind === 'headshot') return 'head';
       if (kind === 'blast' || kind === 'impact' || kind === 'melee') return 'torso';
+      // A punch lands on the jaw or the body.
+      if (kind === 'punch') return seededRandom() < 0.4 ? 'head' : 'torso';
       const r = seededRandom();
       return r < 0.12 ? 'head' : r < 0.7 ? 'torso' : 'leg';
     }

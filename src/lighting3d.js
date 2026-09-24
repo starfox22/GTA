@@ -672,5 +672,6 @@
           }
         }
         setPostQuality(tier);
+        setSearchlightQuality(tier);
       }
       // END SUBSYSTEM: src/lighting3d.js

@@ -366,10 +366,10 @@
         for (let i = 0; i < n; i += 3) {
           const f = frames[i];
           if (T.kind[i] !== 2 || f.p.y < 26) continue;
-          basis.makeBasis(f.t, f.u, f.s).scale(ps.set(6.2, 0.4, 4)).setPosition(parkV.copy(f.p).addScaledVector(f.u, -1.2).addScaledVector(f.s, -6.2));
-          track.box(parkMats.darkSteel, basis);
+          basis.makeBasis(f.t, f.u, f.s).scale(ps.set(6.2, 0.3, 2.6)).setPosition(parkV.copy(f.p).addScaledVector(f.u, -1.2).addScaledVector(f.s, -5.6));
+          track.box(parkMats.steel, basis);
           if (i % 6 === 0) {
-            a.copy(f.p).addScaledVector(f.s, -8.2);
+            a.copy(f.p).addScaledVector(f.s, -7);
             b.copy(a).addScaledVector(f.u, 4);
             track.add(parkMats.darkSteel, parkThinGeo, parkBetween(a, b, 0.25));
           }
@@ -409,6 +409,7 @@
         }
       }
       // ---- The Falcon: station and queue hall ----------------------------------------
+      const stationRoofMeshes = [];
       {
         const b = parkParts(),
           st = PIER.station,
@@ -418,15 +419,17 @@
         b.box(parkMats.concrete, parkPlaced((x0 + x1) / 2, -6450, 9, x1 - x0, 18, 20));
         b.box(parkMats.stone, parkPlaced((x0 + x1) / 2, -6412, 10, x1 - x0, 20, 12));
         b.box(parkMats.cream, parkPlaced((x0 + x1) / 2, -6405, 21, x1 - x0, 2, 26));
-        // Wing-shaped roof: gold panels rising to a peak over the track.
+        // Wing-shaped roof: gold panels rising to a peak over the track. Its own
+        // batch, so the ride camera can cut it away (setStationRoofCut).
+        const roof = parkParts();
         for (let i = 0; i < 8; i++) {
           const x = x0 + 8 + i * ((x1 - x0 - 16) / 7);
           for (const [z, dz] of [
             [-6452, -1],
             [-6408, 1],
           ]) {
-            b.add(parkMats.white, parkTubeGeo, parkBetween(parkP3(x, z, 0), parkP3(x, z, 50), 1.4));
-            b.add(parkMats.white, parkTubeGeo, parkBetween(parkP3(x, z, 50), parkP3(x, -6430, 60), 1));
+            roof.add(parkMats.white, parkTubeGeo, parkBetween(parkP3(x, z, 0), parkP3(x, z, 50), 1.4));
+            roof.add(parkMats.white, parkTubeGeo, parkBetween(parkP3(x, z, 50), parkP3(x, -6430, 60), 1));
           }
         }
         for (const [z0, z1] of [
@@ -444,14 +447,15 @@
             new Three.Quaternion().setFromEuler(new Three.Euler(dirY > 0 ? -Math.PI / 2 + tilt : -Math.PI / 2 - tilt, 0, 0)),
             new Three.Vector3(x1 - x0 + 10, len, 1),
           );
-          b.add(parkMats.gold, panel, m);
+          roof.add(parkMats.gold, panel, m);
           m.compose(
             parkP3((x0 + x1) / 2, (z0 + z1) / 2, 55.6),
             new Three.Quaternion().setFromEuler(new Three.Euler(dirY > 0 ? Math.PI / 2 + tilt : Math.PI / 2 - tilt, 0, 0)),
             new Three.Vector3(x1 - x0 + 10, len, 1),
           );
-          b.add(parkMats.white, panel, m);
+          roof.add(parkMats.white, panel, m);
         }
+        stationRoofMeshes.push(...roof.flush(coasterGroup, 'falcon station roof'));
         // Queue hall: a shade canopy on posts over the switchback rails.
         b.box(parkMats.canvasWhite, parkPlaced(2600, -6375, 30, 200, 1.2, 50));
         for (let x = 2505; x <= 2695; x += 38)
@@ -469,6 +473,8 @@
         const s = sign('THE FALCON', st.x, -6397, 80, '#f3cf7a');
         s.position.y = 40;
         s.userData.backing.position.y = 40;
+        // The sign hangs from the roof and goes with it.
+        stationRoofMeshes.push(s, s.userData.backing);
       }
       // ---- The Falcon: train -----------------------------------------------------------
       /* One car: gold and white shell, four seats with lap bars, bogies on the rails.
@@ -515,7 +521,7 @@
       const riderBodyGeo = (() => {
         const b = parkParts();
         b.box(parkMats.white, parkPlaced(0, 0, 1.6, 1.4, 3.2, 2));
-        for (const z of [-1.2, 1.2]) b.add(parkMats.white, parkThinGeo, parkBetween(parkP3(0, z, 2.8), parkP3(0.5, z * 1.6, 6.2), 0.4));
+        for (const z of [-1.1, 1.1]) b.add(parkMats.white, parkThinGeo, parkBetween(parkP3(0, z, 2.8), parkP3(0.4, z * 1.35, 5.4), 0.28));
         const m = b.flush(new Three.Group(), 'rider')[0];
         return m.geometry;
       })();
@@ -1619,7 +1625,7 @@
             const t = (k + 0.5) / count,
               inc = Math.acos(1 - 2 * t),
               az = k * 2.39996 + r.hue * 10,
-              speed = r.style === 2 ? 110 : 150,
+              speed = r.style === 2 ? 190 : 270,
               dx = Math.sin(inc) * Math.cos(az),
               dy = Math.sin(inc) * Math.sin(az),
               dz = r.style === 1 ? 0.1 * Math.cos(inc) : Math.cos(inc),
@@ -1627,7 +1633,7 @@
               fall = age * age * (r.style === 2 ? 30 : 18);
             attr.position.setXYZ(i, r.x + dx * speed * drag, r.z + dz * speed * drag - fall, r.y + dy * speed * drag);
             const twinkle = r.style === 3 && Math.sin(gameTime * 30 + k) > 0.3 ? 0.2 : 1;
-            attr.size.setX(i, (age < 0.08 ? 16 : 6) * fade * twinkle);
+            attr.size.setX(i, (age < 0.08 ? 22 : 9) * fade * twinkle);
             const white = Math.max(0, 1 - age * 4);
             attr.color.setXYZ(i, sparkColor.r + white, sparkColor.g + white, sparkColor.b + white);
           }
@@ -1725,10 +1731,22 @@
           [2000, -5900, 30],
           [2800, -5780, 40],
         ];
+      // The Falcon station roof (THE FALCON: STATION): x st.x-70..st.x+80 over the
+      // track on y -6430, posts at -6452 / -6408, eaves 50, ridge 62. A ride camera
+      // inside or just over it would show the roof panels instead of the train, so
+      // the roof and its posts are cut away while the camera or the train is there.
+      function coasterUnderStationRoof(p) {
+        const st = PIER.station;
+        return p.x > st.x - 90 && p.x < st.x + 100 && p.z > -6475 && p.z < -6385 && p.y < 90;
+      }
+      function setStationRoofCut(cut) {
+        for (const m of stationRoofMeshes) m.visible = !cut;
+      }
       function updateParkCamera(deltaSeconds) {
         const ride = player.coaster;
         if (!ride) {
           rideCam.ready = false;
+          setStationRoofCut(false);
           return false;
         }
         const target = new Three.Vector3(),
@@ -1755,9 +1773,9 @@
           const t = coasterTrain.t;
           if (ride.view === 1) {
             // Front row of the front car, over the falcon's head.
-            coasterFrame3(t + 2, rideA);
-            coasterFrame3(t + 22, rideB);
-            target.copy(rideA.p).addScaledVector(rideA.u, 9.6).addScaledVector(rideA.s, -1.5);
+            coasterFrame3(t + 6, rideA);
+            coasterFrame3(t + 28, rideB);
+            target.copy(rideA.p).addScaledVector(rideA.u, 11.5);
             look.copy(rideB.p).addScaledVector(rideB.u, 7);
             up.copy(rideA.u);
             fov = 75;
@@ -1787,6 +1805,11 @@
             fov = 68;
           }
         }
+        // Cut the station roof away while the train (or the camera) is under it.
+        if (ride.kind === 'train') {
+          coasterFrame3(coasterTrain.t - COASTER_CAR_GAP * (ride.car || 0), rideB);
+          setStationRoofCut(coasterUnderStationRoof(rideB.p) || coasterUnderStationRoof(target) || coasterUnderStationRoof(rideCam.pos));
+        } else setStationRoofCut(false);
         if (!rideCam.ready || rideCam.pos.distanceTo(target) > 400) {
           rideCam.pos.copy(target);
           rideCam.look.copy(look);
