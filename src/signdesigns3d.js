@@ -26,16 +26,19 @@
        *   marquee   chasing bulbs round the board (signage3d.js)
        *   flicker   old neon that stutters now and then
        *   light     the colour thrown on the pavement
-       * Glow masks are painted for one night strength (SIGN_NIGHT): neon cores run
+       * Glow masks are painted for one night strength (SIGN_NIGHT; neon boards use
+       * the cooler NEON_NIGHT): neon cores run
        * at full white, lightboxes at about half, floodlit boards at a fifth, and
        * reflective road signs barely glow.
        */
-      const SIGN_NIGHT = 3;
+      // Neon boards run cooler than the rest: big script tubes otherwise bloom into a blur.
+      const SIGN_NIGHT = 3,
+        NEON_NIGHT = 1.9;
       const SignArt = (() => {
         const K = SignKit,
           FULL_TURN = Math.PI * 2;
         const spec = (s) =>
-          Object.assign({ cutout: false, backing: 'panel', backColor: '#1d2226', flicker: 0, lamps: false, marquee: false, light: '#ffe6c0', day: 0.14 }, s);
+          Object.assign({ cutout: false, backing: 'panel', backColor: '#1d2226', flicker: 0, lamps: false, marquee: false, light: '#ffe6c0', day: 0.14, night: SIGN_NIGHT }, s);
         const linesOf = (text, P) => P.lines || [text];
         // Rows of text stacked in a vertical band: returns each row's centre and cap height.
         function rows(count, top, bottom, ratio = null) {
@@ -153,7 +156,7 @@
                 [0.02, 0.1, 0.04],
               ])
                 K.tubeIcon(dg, gg, 'star', Math.min(w - 8 * u, sr.left + sr.width + dx * h), h * sy, h * r * 2, P.stars, Math.max(1.5, 1.8 * u));
-            return spec({ cutout: cut, backing: cut ? 'raceway' : 'panel', backColor: cut ? '#2a2d31' : K.shade(P.board, 0.5), flicker: P.flicker ? 1 : 0, light: P.tube });
+            return spec({ cutout: cut, backing: cut ? 'raceway' : 'panel', backColor: cut ? '#2a2d31' : K.shade(P.board, 0.5), flicker: P.flicker ? 1 : 0, light: P.tube, night: NEON_NIGHT });
           },
           /** Block-capital neon on a lacquer board, single or double-line tubes, tube borders. */
           neonBlock(dg, gg, w, h, text, P) {
@@ -189,7 +192,7 @@
               if (P.inline) K.doubleTubes(dg, gg, run.lines, Math.max(1.5, run.size * 0.055), i && P.tube2 ? P.tube2 : P.tube, board);
               else K.tubes(dg, gg, run.lines, Math.max(2, run.size * 0.1), i && P.tube2 ? P.tube2 : P.tube);
             });
-            return spec({ cutout: cut, backing: cut ? 'inset' : 'panel', backColor: K.shade(board, 0.3), flicker: P.flicker ? 1 : 0, light: P.tube });
+            return spec({ cutout: cut, backing: cut ? 'inset' : 'panel', backColor: K.shade(board, 0.3), flicker: P.flicker ? 1 : 0, light: P.tube, night: NEON_NIGHT });
           },
           /**
            * Marquee bulbs: letters of bulbs on painted channels, a bulb-studded frame,
@@ -1014,7 +1017,7 @@
             gg.roundRect(px, h * 0.68, pw, h * 0.2, h * 0.1);
             gg.fill();
             K.fxText(gg, P.block, (x0 + x1) / 2, h * 0.785, { font: 'black', weight: '900', size: h * 0.15, maxW: pw * 0.8, spacing: 0.4, fill: '#000' });
-            return spec({ cutout: true, backing: 'inset', backColor: '#5a6168', light: P.tube });
+            return spec({ cutout: true, backing: 'inset', backColor: '#5a6168', light: P.tube, night: NEON_NIGHT });
           },
           /** A Moorish onion arch: gold filigree rim, a crescent and stars in neon. */
           arabian(dg, gg, w, h, text, P) {

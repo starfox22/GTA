@@ -1030,7 +1030,7 @@
           m = new Three.Mesh(
             new Three.PlaneGeometry(width, height),
             litSignMaterial(signTexture(face), signTexture(glowCanvas), {
-              night: SIGN_NIGHT,
+              night: design.night,
               day: design.day,
               doubleSided: !design.cutout,
               cutout: design.cutout,

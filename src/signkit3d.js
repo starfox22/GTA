@@ -368,16 +368,18 @@
           gg.save();
           gg.shadowColor = color;
           gg.shadowBlur = t * 3.2;
-          gg.strokeStyle = rgba(color, 0.55 * k);
+          gg.strokeStyle = rgba(color, 0.45 * k);
           gg.lineWidth = t * 2.3;
           tracePath(gg, lines);
           gg.stroke();
           gg.restore();
-          gg.strokeStyle = rgba(color, k);
+          // Kept below white: at the sign's HDR night strength a white core blooms
+          // the letters into a blur, a tinted one still reads as the tube's colour.
+          gg.strokeStyle = rgba(shade(color, 0.12), 0.85 * k);
           gg.lineWidth = t;
           tracePath(gg, lines);
           gg.stroke();
-          gg.strokeStyle = rgba(mix(color, '#ffffff', 0.72), k);
+          gg.strokeStyle = rgba(mix(color, '#ffffff', 0.4), 0.9 * k);
           gg.lineWidth = t * 0.42;
           tracePath(gg, lines);
           gg.stroke();
