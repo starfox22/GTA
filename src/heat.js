@@ -178,7 +178,7 @@
         policeRadioEvent('officer-down', victim);
       }
       // A quiet kill with nobody watching waits for a witness to call it in.
-      if (wantedStars <= 0 && kind === 'melee' && !lawman && !policeCanSeePlayer()) {
+      if (wantedStars <= 0 && (kind === 'melee' || kind === 'punch') && !lawman && !policeCanSeePlayer()) {
         unreportedHeat = Math.min(HEAT_MAX, unreportedHeat + heat);
         return;
       }

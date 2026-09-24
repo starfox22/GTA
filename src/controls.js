@@ -60,6 +60,7 @@
       { id: 'divert', label: 'Divert landing', note: 'Mission 11: change the landing site once the manifest is exposed', group: 'air', keys: ['KeyV'], ctx: ['air'] },
       { id: 'reload', label: 'Reload', note: 'Reload the equipped weapon', group: 'weapons', keys: ['KeyR'], ctx: ['foot', 'drive', 'air'] },
       { id: 'cycleWeapon', label: 'Next weapon', note: 'Cycle through equipped weapons', group: 'weapons', keys: ['KeyQ'], ctx: ['foot', 'drive', 'air'] },
+      { id: 'fists', label: 'Fists (no weapon)', note: 'Put every weapon away and fight with your fists', group: 'weapons', keys: ['Backquote', 'Digit8'], ctx: ['foot', 'drive', 'air'] },
       { id: 'knife', label: 'Knife', note: 'Equip the knife (no ammunition)', group: 'weapons', keys: ['KeyK', 'Digit7'], ctx: ['foot', 'drive', 'air'] },
       { id: 'weapon1', label: 'Pistol', note: 'Equip the pistol (slot 1)', group: 'weapons', keys: ['Digit1'], ctx: ['foot', 'drive', 'air'] },
       { id: 'weapon2', label: 'Machine pistol', note: 'Equip the machine pistol (slot 2)', group: 'weapons', keys: ['Digit2'], ctx: ['foot', 'drive', 'air'] },

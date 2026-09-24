@@ -441,7 +441,7 @@
       return hour >= 20 || hour < 5;
     }
     function selectWeapon(index) {
-      if (player.car && player.car.type !== 'tank' && index !== 0) {
+      if (player.car && player.car.type !== 'tank' && index !== 0 && index !== FISTS_INDEX) {
         tell('Only an owned 9mm pistol can be fired while driving or piloting.', 3);
         return false;
       }
@@ -456,8 +456,10 @@
       return true;
     }
     function cycleWeapon() {
+      // In a vehicle: the pistol or nothing in hand.
       if (player.car && player.car.type !== 'tank') {
-        if (weaponIsEquipped(0)) selectWeapon(0);
+        if (selectedWeaponIndex !== FISTS_INDEX) selectWeapon(FISTS_INDEX);
+        else if (weaponIsEquipped(0)) selectWeapon(0);
         else tell('Purchase a 9mm pistol to fire from a vehicle.');
         return;
       }

@@ -2263,6 +2263,24 @@
                 : selectedWeaponIndex > 0
                   ? 0.9
                   : step * 0.5;
+              // Fists: arms swing loose while walking; for a few seconds after a
+              // punch they come up in a guard and the punching arm snaps out.
+              if (selectedWeaponIndex === FISTS_INDEX && !player.parachute) {
+                const guard = gameTime - (player.punchAt ?? -100) < 2.5,
+                  punch = Math.sin(clamp(1 - ((player.punchUntil || 0) - gameTime) / 0.26, 0, 1) * Math.PI) *
+                    ((player.punchUntil || 0) > gameTime ? 1 : 0),
+                  lead = player.punchHand === -1 ? 'arm-1' : 'arm1',
+                  rear = lead === 'arm1' ? 'arm-1' : 'arm1';
+                if (guard) {
+                  m.parts[lead].rotation.z = 0.85 + punch * 0.75;
+                  m.parts[rear].rotation.z = 0.85;
+                  m.torso.rotation.y = (lead === 'arm1' ? -1 : 1) * punch * 0.25;
+                } else {
+                  m.parts.arm1.rotation.z = -step * 0.5;
+                  m.parts['arm-1'].rotation.z = step * 0.5;
+                  m.torso.rotation.y = 0;
+                }
+              } else m.torso.rotation.y = 0;
               if (player.parachute) {
                 m.parts.arm1.rotation.z = 2.6;
                 m.parts['arm-1'].rotation.z = 2.6;

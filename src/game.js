@@ -2021,6 +2021,8 @@
         !weaponIsEquipped(selectedWeaponIndex)
       )
         return;
+      // Empty-handed at the wheel: fire draws the pistol.
+      if (player.car && player.car.type !== 'tank' && selectedWeaponIndex === FISTS_INDEX && weapons[0]?.owned) selectWeapon(0);
       if (player.car && player.car.type !== 'tank' && selectedWeaponIndex !== 0) {
         tell('Carry the 9mm pistol to fire from a vehicle.');
         shotCooldownSeconds = 0.5;
@@ -2028,7 +2030,7 @@
       }
       const w = currentWeapon();
       if (w.melee) {
-        attackWithKnife();
+        meleeAttack();
         return;
       }
       if (w.ammo <= 0) {
@@ -3276,7 +3278,7 @@
       worldContext.fillRect(-1, -3, 3, 6);
       if (
         !personIncapacitated(person) &&
-        ((isPlayer && !(player.disguised && rooftopJob() && !rooftopJob().weaponDrawn)) ||
+        ((isPlayer && selectedWeaponIndex !== FISTS_INDEX && !(player.disguised && rooftopJob() && !rooftopJob().weaponDrawn)) ||
           (isEnemy && (!person.missionTag || person.aiming)))
       ) {
         worldContext.fillStyle = '#c2b48f';
@@ -3739,7 +3741,53 @@
     function drawWeapon() {
       drawWeaponIcon(getElement('weaponArt'), selectedWeaponIndex);
     }
+    /* No weapon: a clenched fist seen from the side, knuckles forward (the way the
+       gun icons point), drawn procedurally at any canvas size. */
+    function drawFistIcon(targetCanvas) {
+      const g = targetCanvas.getContext('2d');
+      g.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+      g.save();
+      const scale = Math.min(targetCanvas.width / 130, targetCanvas.height / 74);
+      g.translate(targetCanvas.width / 2, targetCanvas.height / 2);
+      g.scale(scale, scale);
+      g.lineJoin = 'round';
+      const block = (x, y, w, h, r, fill, line = '#2b1f17', width = 2.6) => {
+        g.beginPath();
+        g.moveTo(x + r, y);
+        g.arcTo(x + w, y, x + w, y + h, r);
+        g.arcTo(x + w, y + h, x, y + h, r);
+        g.arcTo(x, y + h, x, y, r);
+        g.arcTo(x, y, x + w, y, r);
+        g.closePath();
+        g.fillStyle = fill;
+        g.fill();
+        if (line) {
+          g.strokeStyle = line;
+          g.lineWidth = width;
+          g.stroke();
+        }
+      };
+      // Jacket cuff and wrist.
+      block(-60, -16, 20, 34, 3, '#3d4a57');
+      block(-44, -13, 14, 28, 5, '#c9a07a');
+      // Back of the hand.
+      block(-34, -24, 42, 46, 12, '#d8b08a');
+      // Four curled fingers, the little finger a little shorter.
+      for (let i = 0; i < 4; i++) block(2, -24 + i * 11.5, i === 3 ? 27 : 31, 11.5, 5.5, '#e6c29c');
+      // Knuckle highlights.
+      g.fillStyle = '#f6dcbd';
+      for (let i = 0; i < 4; i++) g.fillRect(i === 3 ? 21 : 25, -21 + i * 11.5, 5, 3);
+      // Thumb folded across the fingers.
+      block(-22, 8, 36, 13, 6.5, '#cfa47d');
+      g.fillStyle = '#f0d3b4';
+      g.fillRect(6, 11, 5, 3);
+      g.restore();
+    }
     function drawWeaponIcon(targetCanvas, weaponIndex) {
+      if (weaponIndex === FISTS_INDEX) {
+        drawFistIcon(targetCanvas);
+        return;
+      }
       const atlas = visualAssets.arsenal;
       if (atlas && atlas.width > 0 && atlas.height > 0) {
         const context = targetCanvas.getContext('2d');
@@ -3909,16 +3957,20 @@
               ? 'HIDE UNTIL THE TIMER ENDS'
               : 'POLICE PURSUIT'
             : 'NO ARMOR';
-      getElement('weaponSlot').textContent = w.melee
+      getElement('weaponSlot').textContent = w.fists
+        ? 'UNARMED · WEAPONS AWAY'
+        : w.melee
         ? 'KNIFE · ALWAYS CARRIED'
         : 'EQUIPPED · ' + equippedWeaponIndices().length + ' WEAPONS';
       getElement('weaponName').textContent = w.name;
-      getElement('ammo').textContent = w.melee
+      getElement('ammo').textContent = w.fists
+        ? '—'
+        : w.melee
         ? '∞'
         : reloadSecondsRemaining > 0
           ? '··'
           : String(w.ammo).padStart(2, '0');
-      getElement('reserve').textContent = w.melee ? 'NO AMMO NEEDED' : '/ ' + w.reserve;
+      getElement('reserve').textContent = w.fists ? 'PUNCH' : w.melee ? 'NO AMMO NEEDED' : '/ ' + w.reserve;
       getElement('reloadHint').textContent = w.melee
         ? keyName('fire')
         : reloadSecondsRemaining > 0
@@ -4346,9 +4398,9 @@
           cycleWeapon();
           updateUI();
           renderArsenal(selectedWeaponIndex);
-        } else if (!e.repeat && (is('knife') || weaponSlotKey(actions) >= 0)) {
+        } else if (!e.repeat && (is('knife') || is('fists') || weaponSlotKey(actions) >= 0)) {
           e.preventDefault();
-          selectArsenalWeapon(is('knife') ? KNIFE_INDEX : weaponSlotKey(actions));
+          selectArsenalWeapon(is('knife') ? KNIFE_INDEX : is('fists') ? FISTS_INDEX : weaponSlotKey(actions));
         }
         return;
       }
@@ -4464,6 +4516,7 @@
       if (is('reload')) startReload();
       if (is('arsenal')) openArsenal();
       if (is('knife')) selectWeapon(KNIFE_INDEX);
+      if (is('fists')) selectWeapon(FISTS_INDEX);
       if (weaponSlotKey(actions) >= 0) selectWeapon(weaponSlotKey(actions));
       if (is('cycleWeapon')) cycleWeapon();
       if (is('missionCard')) toggleMissionCard();
@@ -4764,6 +4817,7 @@
         mission: mission ? missions[mission.index].title : null,
         completed,
         vehicle: player.car ? player.car.type : null,
+        weapon: currentWeapon().name,
         clock: clockText(),
         renderer: city3D ? '3d' : '2d',
         vehicles: vehicles.length,
@@ -5034,6 +5088,13 @@
       // Combat tests: own weapon `index` (0 pistol ... 5 precision rifle) with a
       // full clip and reserve, and select it. Returns its name.
       arm(index = 4) {
+        // 6 the knife, 7 no weapon (fists): selected as they are.
+        if (index === KNIFE_INDEX || index === FISTS_INDEX) {
+          selectedWeaponIndex = index;
+          reloadSecondsRemaining = 0;
+          drawWeapon();
+          return currentWeapon().name;
+        }
         const w = weapons[index];
         if (!w) return null;
         w.owned = true;

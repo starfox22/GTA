@@ -117,6 +117,7 @@
         player.car &&
         player.car.type !== 'tank' &&
         selectedWeaponIndex !== 0 &&
+        selectedWeaponIndex !== FISTS_INDEX &&
         weaponIsEquipped(0)
       ) {
         selectedWeaponIndex = 0;
