@@ -6,7 +6,7 @@
        * Businesses, rooftop party, service signs and animated city lighting.
        */
       // The island ends at masonry seawalls, with open water beyond every coast.
-      const coast = mat('#727d7b', 0.88),
+      const coast = staticMat('#727d7b', 0.88),
         serviceRings = [];
       for (const d of DOCKS) {
         const group = new Three.Group();
@@ -80,10 +80,10 @@
             );
         }
         if (p.kind === 'casino') {
-          const gold = mat('#bd9654', 0.3, 0.65),
-            ivory = mat('#d9c7a5'),
-            nightGlass = mat('#203d48', 0.18, 0.65),
-            burgundy = mat('#5d2c41');
+          const gold = staticMat('#bd9654', 0.3, 0.65),
+            ivory = staticMat('#d9c7a5'),
+            nightGlass = staticMat('#203d48', 0.18, 0.65),
+            burgundy = staticMat('#5d2c41');
           box(group, x, p.height + 4, p.y + p.h / 2, p.w * 0.62, 8, p.h * 0.55, ivory);
           box(group, x, p.height + 12, p.y + p.h / 2, p.w * 0.38, 8, p.h * 0.35, burgundy);
           // The stepped roof and its corner lanterns are roof plant (rooftops.js).
@@ -125,10 +125,10 @@
           }
         }
         if (p.kind === 'hospital') {
-          const red = mat('#a6313b');
+          const red = staticMat('#a6313b');
           box(group, p.x + 34, p.height - 15, face + 2, 7, 24, 1.5, red);
           box(group, p.x + 34, p.height - 15, face + 2, 24, 7, 1.5, red);
-          box(group, x, 22, face + 24, 88, 3, 37, mat('#b1ccca'));
+          box(group, x, 22, face + 24, 88, 3, 37, staticMat('#b1ccca'));
           for (const side of [-1, 1]) box(group, x + side * 40, 11, face + 37, 2, 22, 2, concrete);
           sign('EMERGENCY · 24H', x, face + 43, 90, '#e5a0a0');
           for (let dx = -95; dx <= 95; dx += 38) {
@@ -138,10 +138,10 @@
         }
         if (p.kind === 'school') {
           box(group, p.x + 40, 32, face + 3, 1, 64, 1, chrome);
-          box(group, p.x + 48, 56, face + 3, 16, 9, 0.5, mat('#c8b894'));
+          box(group, p.x + 48, 56, face + 3, 16, 9, 0.5, staticMat('#c8b894'));
           const cx = p.x + p.w * 0.62,
             cz = face + 57;
-          box(group, cx, 0.1, cz, 102, 0.2, 62, mat('#667e75'));
+          box(group, cx, 0.1, cz, 102, 0.2, 62, staticMat('#667e75'));
           for (const dz of [-30, 30]) box(group, cx, 0.3, cz + dz, 102, 0.3, 1, concrete);
           for (const dx of [-50, 50]) {
             box(group, cx + dx, 0.3, cz, 1, 0.3, 60, concrete);
@@ -149,7 +149,7 @@
             box(group, cx + dx, 25, cz, 1, 9, 15, concrete);
             const hoop = mesh(
               new Three.TorusGeometry(3, 0.25, 5, 16),
-              mat('#ad583c'),
+              staticMat('#ad583c'),
               group,
               cx + dx + (dx > 0 ? -4 : 4),
               23,
@@ -180,7 +180,7 @@
               box(group, xx + dx, 2, zz, 1, 4, 1, chrome);
             }
             box(group, xx, 15, zz, 1, 30, 1, chrome);
-            mesh(new Three.ConeGeometry(16, 5, 8), mat('#956459'), group, xx, 30, zz);
+            mesh(new Three.ConeGeometry(16, 5, 8), staticMat('#956459'), group, xx, 30, zz);
           }
         }
         if (p.kind === 'club') {
@@ -194,7 +194,7 @@
             box(group, x + side * 11, 8, face + 1.8, 0.9, 16, 0.9, frame);
             for (let dz = 18; dz < 58; dz += 14) {
               box(group, x + side * 14, 5, face + dz, 1, 10, 1, chrome);
-              box(group, x + side * 14, 9, face + dz + 6, 1, 0.8, 14, mat('#9c485a'));
+              box(group, x + side * 14, 9, face + dz + 6, 1, 0.8, 14, staticMat('#9c485a'));
             }
           }
           box(group, x, 16.4, face + 1.8, 22.8, 0.9, 0.9, frame);
@@ -218,7 +218,7 @@
         }
         if (p.kind === 'sleep')
           for (let dx = 30; dx < p.w; dx += 45) {
-            box(group, p.x + dx, 9, face + 1, 14, 18, 1, mat('#4c7477'));
+            box(group, p.x + dx, 9, face + 1, 14, 18, 1, staticMat('#4c7477'));
             box(group, p.x + dx, 11, face + 1.6, 8, 4, 0.4, glass);
           }
         statics.push({
@@ -312,7 +312,9 @@
         // on a sunlit pavement) so shadows read. Exposure stays where it was, so
         // display-referred shaders (water, signs, sky) look as designed.
         const daylightScale = 1 - 0.29 * light;
-        hemi.intensity = 0.45 + light * 0.5;
+        // (More sky fill through twilight, or roofs facing away from the low sun
+        // went black against the lit streets.)
+        hemi.intensity = 0.45 + light * 0.5 + dusk * 0.35;
         hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, light);
         hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, light);
         // Golden hour: the low sun is a strong warm key, not a fading one.

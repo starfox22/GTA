@@ -649,8 +649,7 @@
         return s;
       }
       // @include src/damage3d.js
-      const lampHalos = [],
-        lampGlows = [];
+      const lampGlowPending = [];
       // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
       // without unbatching the street; each is a street prop in damage.js.
       const lampPosts = lamps.length,
@@ -665,41 +664,17 @@
         scene.add(pool);
       }
       // Every lamp is drawn (only every second one used to be, which left most
-      // streets dark at night); their halos are hidden by day (updateStreetLighting).
+      // streets dark at night). Its pool of light is in the night light map
+      // (lighting3d.js) and its halo in the glow field (below), so a lamp is three
+      // instances and nothing else: the per-lamp group, halo sprite and hidden
+      // ground-glow plane (a mesh and a material for each of ~1000 lamps) are gone.
       for (let i = 0; i < lamps.length; i++) {
         const l = lamps[i],
-          group = new Three.Group(),
           prop = registerStreetProp('lamp', l.x, l.y);
-        group.position.set(l.x, 0, l.y);
-        scene.add(group);
         placePropInstance(lampPoles, prop, l.x, 17, l.y, 1.1, 34, 1.1);
         placePropInstance(lampArms, prop, l.x + 3, 34, l.y, 7, 1, 1);
         placePropInstance(lampHeads, prop, l.x + 6, 33.5, l.y, 5, 1.2, 3);
-        prop.halo = halo(group, 6, 33, 0, 14);
-        lampHalos.push({ sprite: prop.halo, x: l.x, y: l.y, prop });
-        const glow = new Three.Mesh(
-          new Three.PlaneGeometry(65, 65),
-          new Three.MeshBasicMaterial({
-            map: haloTx,
-            color: '#ffbf73',
-            transparent: true,
-            opacity: 0.16,
-            depthWrite: false,
-            blending: Three.AdditiveBlending,
-          }),
-        );
-        glow.rotation.x = -Math.PI / 2;
-        glow.position.set(6, 0.1, 0);
-        glow.userData.dynamic = true;
-        group.add(glow);
-        prop.glow = glow;
-        lampGlows.push({ mesh: glow, x: l.x, y: l.y });
-        statics.push({
-          x: l.x,
-          y: l.y,
-          group,
-          radius: 50,
-        });
+        lampGlowPending.push({ x: l.x + 6, z: l.y, prop });
       }
       /**
        * Landmark and business signs: an enamel board with a border and lettering
@@ -786,6 +761,10 @@
       box(ph, 0, 17, 0, 12, 2, 8, mat('#517c70'));
       halo(ph, 0, 14, 0, 8, '#9bdbb1');
       // @include src/cityscape3d.js
+      // Street lamp halos in the glow field: lit after dark, dimmed with the district's
+      // power, switched off while a car has the lamp down (damage3d.js sets `visible`).
+      for (const p of lampGlowPending) p.prop.halo = glowHandle(addGlow(p.x, 33, p.z, 24, '#ffd99b', 0.55, { day: 0, phase: 0 }));
+      lampGlowPending.length = 0;
       // Street signs (after the cityscape: their glow and spill live in signage3d.js).
       sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb', false, { marquee: true });
       sign('24 HOUR', 1470, 544, 85, '#f3d394');
@@ -1436,23 +1415,6 @@
       let muzzleUntil = 0,
         frames = 0,
         nightAmount = 0;
-      function updateStreetLighting() {
-        const glow = 0.1 + 0.9 * nightAmount,
-          size = 14 + nightAmount * 12;
-        // By day a halo is invisible anyway: skip its draw call.
-        const lit = nightAmount > 0.03;
-        for (const h of lampHalos) {
-          h.sprite.visible = lit && !(h.prop && h.prop.down);
-          if (!h.sprite.visible) continue;
-          const power = sideJobPower(h.x, h.y);
-          h.sprite.material.opacity = glow * power;
-          h.sprite.scale.set(size, size, 1);
-        }
-        // The pools of light on the ground now come from the night light map
-        // (lighting3d.js), which lights whatever stands in them; the old additive
-        // glow planes would double them, so they stay hidden.
-        for (const g of lampGlows) g.mesh.visible = false;
-      }
       // Dynamic models own their cloned/new resources; the initial world and factory primitives persist.
       const sharedGeometries = new Set([boxGeo, sphereGeo, wheelGeo, cylinderGeo]),
         sharedMaterials = new Set();
@@ -1623,8 +1585,17 @@
                       (o.material.color ? ' #' + o.material.color.getHexString() : '') + ']',
                     type: '',
                   };
-                const material = Array.isArray(o.material) ? o.material[0] : o.material,
-                  key =
+                const material = Array.isArray(o.material) ? o.material[0] : o.material;
+                // Static batches by what they are made of (which materials fail to share).
+                if (o.name === 'static batch' || o.name === 'far scenery')
+                  named = {
+                    name:
+                      o.name + ' [' + material.type + (material.color ? ' #' + material.color.getHexString() : '') +
+                      (material.map ? ' map' : '') + (material.emissiveMap ? ' lit' : '') +
+                      (material.vertexColors ? ' vc' : '') + ']',
+                    type: '',
+                  };
+                const key =
                     (named.name || o.type + ' ' + (o.geometry?.type || '') + ' ' + material.type) +
                     (named === o ? '' : ' in ' + (named.name || named.type)) +
                     (o.isSprite ? ' (sprite)' : ''),
@@ -1839,7 +1810,6 @@
           updateGarageVisuals();
           updateWorldVisuals();
           updateCityscapeVisuals();
-          updateStreetLighting();
           updateSideJobVisuals();
           updateRoadblockVisuals();
           updateParkVisuals();

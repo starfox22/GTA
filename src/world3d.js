@@ -339,17 +339,17 @@
         batchGroups.push(group);
         const outward = -Math.sin(e.a) * nx + Math.cos(e.a) * ny;
         if (style === 'quay') {
-          box(group, 0, 2.3, 0, e.length + 1, 5, 5, mat('#727e80'));
+          box(group, 0, 2.3, 0, e.length + 1, 5, 5, staticMat('#727e80'));
           box(group, 0, 5.2, 0, e.length + 1, 0.9, 7, concrete);
-          box(group, 0, 0.6, outward * 3.4, e.length + 1, 4, 2.2, mat('#5d6668', 0.95));
+          box(group, 0, 0.6, outward * 3.4, e.length + 1, 4, 2.2, staticMat('#5d6668', 0.95));
           if (Math.round(e.x + e.y) % 3 === 0) {
             mesh(cylinderGeo, darkMetal, group, 0, 6.6, -outward * 1.4, 1.5, 3.4, 1.5);
             mesh(sphereGeo, darkMetal, group, 0, 8.3, -outward * 1.4, 1.9, 1.1, 1.9);
           }
         } else {
           // A low sand bank so the beach meets the water with a lip, not an edge.
-          box(group, 0, 0.45, -outward * 5, e.length + 1, 1.2, 12, mat('#c8b68e', 0.97));
-          box(group, 0, 0.18, -outward * 13, e.length + 1, 0.9, 10, mat('#b8a884', 0.97));
+          box(group, 0, 0.45, -outward * 5, e.length + 1, 1.2, 12, staticMat('#c8b68e', 0.97));
+          box(group, 0, 0.18, -outward * 13, e.length + 1, 0.9, 10, staticMat('#b8a884', 0.97));
         }
         statics.push({
           x: e.x,
@@ -366,10 +366,10 @@
        * bridge or a boulevard are junctions, not ends, and are skipped.
        */
       function buildStreetEnds() {
-        const railMat = mat('#cfd3cd', 0.7),
-          chevron = mat('#e9e3d0', 0.75),
-          stripe = mat('#c14c3c', 0.7),
-          kerb = mat('#a9a89b', 0.92);
+        const railMat = staticMat('#cfd3cd', 0.7),
+          chevron = staticMat('#e9e3d0', 0.75),
+          stripe = staticMat('#c14c3c', 0.7),
+          kerb = staticMat('#a9a89b', 0.92);
         // One plate texture shared by every end: a canvas per sign would cost
         // more memory than the rest of the street furniture put together.
         const plate = document.createElement('canvas');
@@ -411,8 +411,8 @@
               gate.rotation.y = -a;
               scene.add(gate);
               batchGroups.push(gate);
-              const pier = mat('#a8a396', 0.9),
-                gateIron = mat('#3f4744', 0.5, 0.5);
+              const pier = staticMat('#a8a396', 0.9),
+                gateIron = staticMat('#3f4744', 0.5, 0.5);
               for (const side of [-1, 1]) {
                 const z = side * (r.width / 2 + 16);
                 box(gate, 52, 13, z, 13, 26, 13, pier);
@@ -461,7 +461,7 @@
             if (r.width > 100) {
               mesh(new Three.CylinderGeometry(15, 16, 2.4, 18), kerb, group, 0, 1.2, 0);
               mesh(new Three.CylinderGeometry(13, 13, 1.2, 18), leafMats[1], group, 0, 2.4, 0);
-              rod(group, new Three.Vector3(0, 2, 0), new Three.Vector3(0, 20, 0), 1.6, mat('#6b5442'));
+              rod(group, new Three.Vector3(0, 2, 0), new Three.Vector3(0, 20, 0), 1.6, staticMat('#6b5442'));
               mesh(sphereGeo, leafMats[0], group, 0, 26, 0, 13, 10, 13);
             }
             statics.push({
@@ -481,12 +481,12 @@
        * strolling it walk exactly where the furniture is.
        */
       function buildPromenade() {
-        const railMetal = mat('#b9bcb4', 0.4, 0.55),
-          walkStone = mat('#b7b4a6', 0.9),
-          seatWood = mat('#9c7b52', 0.85),
-          lampPost = mat('#42484a', 0.6, 0.35),
+        const railMetal = staticMat('#b9bcb4', 0.4, 0.55),
+          walkStone = staticMat('#b7b4a6', 0.9),
+          seatWood = staticMat('#9c7b52', 0.85),
+          lampPost = staticMat('#42484a', 0.6, 0.35),
           lampGlass = new Three.MeshBasicMaterial({ color: '#ffe9bd' }),
-          planter = mat('#8c8779', 0.9);
+          planter = staticMat('#8c8779', 0.9);
         let group = null,
           groupAt = null,
           count = 0;
@@ -525,7 +525,7 @@
             for (const side of [-1, 1]) box(inner, side * 8, 2, 6, 1.4, 4.4, 5.4, lampPost);
           } else if (spot.kind === 'tree') {
             mesh(new Three.CylinderGeometry(9, 9.6, 3, 12), planter, inner, 0, 1.5, -22);
-            rod(inner, new Three.Vector3(0, 3, -22), new Three.Vector3(0, 17, -22), 1.3, mat('#6b5442'));
+            rod(inner, new Three.Vector3(0, 3, -22), new Three.Vector3(0, 17, -22), 1.3, staticMat('#6b5442'));
             mesh(sphereGeo, leafMats[0], inner, 0, 22, -22, 11, 9, 11);
           }
         }
@@ -598,11 +598,11 @@
         if (b.w > 220) {
           const px = b.x + b.w / 2,
             pz = b.y + b.h + 47;
-          box(group, px, 0.18, pz, 99, 0.35, 40, mat('#c9c1a7'));
-          box(group, px, 0.4, pz, 86, 0.4, 29, mat('#65b8b7', 0.15, 0.3));
+          box(group, px, 0.18, pz, 99, 0.35, 40, staticMat('#c9c1a7'));
+          box(group, px, 0.4, pz, 86, 0.4, 29, staticMat('#65b8b7', 0.15, 0.3));
           for (const side of [-1, 1])
             for (let j = -1; j <= 1; j++)
-              box(group, px + j * 29, 1.8, pz + side * 25, 15, 2, 5, mat('#d1ddd4'));
+              box(group, px + j * 29, 1.8, pz + side * 25, 15, 2, 5, staticMat('#d1ddd4'));
         }
         statics.push({
           x: b.x + b.w / 2,
@@ -621,7 +621,7 @@
         box(group, x, 9, z, 0.8, 18, 0.8, wood);
         mesh(new Three.ConeGeometry(12, 5, 10), mat(z % 360 ? '#dca48f' : '#92bbbd'), group, x, 18, z);
         for (const side of [-1, 1]) {
-          box(group, x + side * 13, 1.4, z + 10, 5, 2, 15, mat('#e5dac6'));
+          box(group, x + side * 13, 1.4, z + 10, 5, 2, 15, staticMat('#e5dac6'));
         }
         statics.push({
           x,
@@ -638,8 +638,8 @@
       const ag = new Three.Group();
       scene.add(ag);
       batchGroups.push(ag);
-      const terminalGlass = mat('#446875', 0.16, 0.55),
-        airWhite = mat('#d8dfdc', 0.36, 0.3);
+      const terminalGlass = staticMat('#446875', 0.16, 0.55),
+        airWhite = staticMat('#d8dfdc', 0.36, 0.3);
       box(
         ag,
         AIRPORT.x + AIRPORT.w / 2,
@@ -676,7 +676,7 @@
           halo(ag, x, 2, y, 8, '#e8dca5');
         }
       for (const z of [4790, 5110]) box(ag, 806, 14, z, 108, 15, 12, airWhite);
-      for (let x = 840; x < 1070; x += 30) box(ag, x, 3, 5140, 21, 6, 12, mat('#91836d'));
+      for (let x = 840; x < 1070; x += 30) box(ag, x, 3, 5140, 21, 6, 12, staticMat('#91836d'));
       statics.push({
         x: 750,
         y: 4900,
@@ -690,11 +690,11 @@
       roofGroup.position.set(ROOFTOP.x, ROOFTOP.height, ROOFTOP.y);
       const rw = ROOFTOP.w,
         rh = ROOFTOP.h,
-        deckMat = mat('#a4917d'),
-        ivory = mat('#e4d8bd'),
-        navy = mat('#264354'),
-        brass = mat('#bd9960', 0.35, 0.65),
-        cushion = mat('#e5dbce'),
+        deckMat = staticMat('#a4917d'),
+        ivory = staticMat('#e4d8bd'),
+        navy = staticMat('#264354'),
+        brass = staticMat('#bd9960', 0.35, 0.65),
+        cushion = staticMat('#e5dbce'),
         poolMat = new Three.MeshStandardMaterial({
           color: '#48aeb7',
           roughness: 0.17,
@@ -702,13 +702,13 @@
           emissive: '#15515a',
           emissiveIntensity: 0.25,
         }),
-        wine = mat('#812e45', 0.25),
-        bottleMats = [mat('#527e68', 0.22), mat('#b89463', 0.23), mat('#7796a2', 0.22)];
+        wine = staticMat('#812e45', 0.25),
+        bottleMats = [staticMat('#527e68', 0.22), staticMat('#b89463', 0.23), staticMat('#7796a2', 0.22)];
       box(roofGroup, rw / 2, 1.3, rh / 2, rw - 8, 2.6, rh - 8, deckMat);
       for (let z = 12; z < rh - 12; z += 12)
-        box(roofGroup, rw / 2, 2.65, z, rw - 24, 0.08, 0.4, mat('#796954'));
-      box(roofGroup, 84, 2.75, 161, 140, 0.12, 96, mat('#aa826a'));
-      box(roofGroup, 285, 2.75, 122, 98, 0.12, 123, mat('#516574'));
+        box(roofGroup, rw / 2, 2.65, z, rw - 24, 0.08, 0.4, staticMat('#796954'));
+      box(roofGroup, 84, 2.75, 161, 140, 0.12, 96, staticMat('#aa826a'));
+      box(roofGroup, 285, 2.75, 122, 98, 0.12, 123, staticMat('#516574'));
       box(roofGroup, 195, 2.75, 247, 100, 0.12, 90, navy);
       for (const z of [6, rh - 6]) {
         box(roofGroup, rw / 2, 6, z, rw - 10, 9, 1, glass);
@@ -730,7 +730,7 @@
           box(roofGroup, x, 3, z, p.w, 1.6, p.h, ivory);
           roofPool = box(roofGroup, x, 3.9, z, p.w - 12, 0.35, p.h - 12, poolMat);
           for (let i = -1; i <= 1; i++)
-            box(roofGroup, x + i * 29, 4.11, z, 1, 0.06, p.h - 13, mat('#94d9d7'));
+            box(roofGroup, x + i * 29, 4.11, z, 1, 0.06, p.h - 13, staticMat('#94d9d7'));
           for (const side of [-1, 1]) {
             rod(
               roofGroup,
@@ -922,11 +922,11 @@
       const rescueBuoy = new Three.Group();
       rescueBuoy.position.set(LOC.waterCase.x, 0, LOC.waterCase.y);
       scene.add(rescueBuoy);
-      mesh(cylinderGeo, mat('#cfa74c'), rescueBuoy, 0, 1, 0, 8, 5, 8);
+      mesh(cylinderGeo, staticMat('#cfa74c'), rescueBuoy, 0, 1, 0, 8, 5, 8);
       box(rescueBuoy, 0, 11, 0, 1, 20, 1, chrome);
-      box(rescueBuoy, 0, 19, 0, 9, 7, 1, mat('#e0c56e'));
+      box(rescueBuoy, 0, 19, 0, 9, 7, 1, staticMat('#e0c56e'));
       halo(rescueBuoy, 0, 23, 0, 10, '#efd197');
-      box(rescueBuoy, 8, 3, 1, 8, 5, 6, mat('#353f43'));
+      box(rescueBuoy, 8, 3, 1, 8, 5, 6, staticMat('#353f43'));
       statics.push({
         x: LOC.waterCase.x,
         y: LOC.waterCase.y,

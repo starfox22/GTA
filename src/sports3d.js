@@ -20,25 +20,25 @@
         sportsScreens = [],
         stadiumStandModels = [];
       const sportsMaterials = {
-        concrete: mat('#d0d0c4', 0.91),
-        facade: mat('#283c50', 0.73, 0.2),
-        canopy: mat('#a8b3c0', 0.49, 0.4),
-        seat: mat('#407b99', 0.77),
-        field: mat('#397b48', 0.94),
-        fieldStripe: mat('#458955', 0.96),
-        court: mat('#326a77', 0.93),
-        courtKey: mat('#b5714b', 0.9),
-        white: mat('#ececdb', 0.79),
-        rim: mat('#ee7840', 0.48, 0.2),
-        basketball: mat('#db8239', 0.88),
-        soccer: mat('#f4eee0', 0.82),
+        concrete: staticMat('#d0d0c4', 0.91),
+        facade: staticMat('#283c50', 0.73, 0.2),
+        canopy: staticMat('#a8b3c0', 0.49, 0.4),
+        seat: staticMat('#407b99', 0.77),
+        field: staticMat('#397b48', 0.94),
+        fieldStripe: staticMat('#458955', 0.96),
+        court: staticMat('#326a77', 0.93),
+        courtKey: staticMat('#b5714b', 0.9),
+        white: staticMat('#ececdb', 0.79),
+        rim: staticMat('#ee7840', 0.48, 0.2),
+        basketball: staticMat('#db8239', 0.88),
+        soccer: staticMat('#f4eee0', 0.82),
         skin: ['#d6af88', '#b88964', '#875e43', '#67452f'].map((color) => mat(color)),
-        hair: mat('#302821'),
-        shoes: mat('#202630'),
-        shorts: mat('#233a4b'),
-        homeShirt: mat('#3caae1'),
-        awayShirt: mat('#e76854'),
-        goalkeeperShirt: mat('#e9c34c'),
+        hair: staticMat('#302821'),
+        shoes: staticMat('#202630'),
+        shorts: staticMat('#233a4b'),
+        homeShirt: staticMat('#3caae1'),
+        awayShirt: staticMat('#e76854'),
+        goalkeeperShirt: staticMat('#e9c34c'),
       };
       const sportsNetMaterial = new Three.LineBasicMaterial({
         color: '#ecefdf',
@@ -885,10 +885,10 @@
         group.name = 'Stadium enclosure';
         scene.add(group);
         batchGroups.push(group);
-        const boardMat = mat('#1c2a36', 0.6, 0.3),
-          steel = mat('#8d979e', 0.45, 0.6),
-          yellow = mat('#e0b545', 0.5, 0.3),
-          booth = mat('#2f4a5e', 0.7, 0.2),
+        const boardMat = staticMat('#1c2a36', 0.6, 0.3),
+          steel = staticMat('#8d979e', 0.45, 0.6),
+          yellow = staticMat('#e0b545', 0.5, 0.3),
+          booth = staticMat('#2f4a5e', 0.7, 0.2),
           f = PITCH_FENCE,
           e = STADIUM_ENTRANCE;
         // Perimeter fence with advertising boards (shared sign atlas from cityscape3d).
@@ -1078,6 +1078,9 @@
           parts['forearm' + side] = forearm;
         }
         scene.add(group);
+        // As for the crowd's people: only torso-sized parts go into the shadow map
+        // (22 players were ~500 extra shadow draws, their shadow unchanged).
+        trimShadowCasters(group, 3.5);
         return { group, torso, parts };
       }
 
@@ -1141,6 +1144,7 @@
           }
         }
         group.scale.setScalar(match.ball.radius);
+        trimShadowCasters(group, 0.8);
         return { group };
       }
 

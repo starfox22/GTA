@@ -2,6 +2,19 @@
 
 ## Unreleased — The islands rearranged
 
+Graphics review and performance (docs/audit/graphics-review.md)
+- Daylight balanced into the tone curve (no more washed-out noon, shadows read), a warm strong
+  sun at golden hour, glass towers that reflect the sky, richer lawns, rippling park water,
+  a calmer sea from the air, trees and flower beds along Battery Park, picnics on the Great
+  Lawn, steel garage roofs, no map labels painted on the lawns.
+- The district name appears once: a gold reveal on the location block top left.
+- Draw calls: shared facade materials, merged building parts and instanced theme park rides
+  (a Midtown street view ~350 draws instead of up to ~1700); match-day players cast torso
+  shadows only.
+- AUTO graphics adapts to the frame rate (dynamic resolution, then a tier down); shader
+  compile stalls removed (no info-log read-back, programs compiled behind the title
+  screen); ~250 MB of baked canvas bitmaps freed after upload; faster boot.
+
 Marea Beach Club (beachclub.js, beachclub-audio.js, beachclub3d.js; SOURCE_GUIDE section 4)
 - On the beach-club plot at the west end of Palm Keys Beach: a street forecourt with a
   snaking roped queue, red carpet, bronze portal and neon sign; a stage with an LED wall and

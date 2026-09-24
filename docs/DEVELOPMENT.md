@@ -48,6 +48,9 @@ node tools/layout-audit.mjs dist/game.html            # overlaps in the city pla
 sh tools/check.sh dead && node tools/dead-code.mjs    # functions and bindings nothing uses
 ```
 
+Shader compile errors are not read back by default (it stalls the driver); open the page
+with `?shadercheck` in the URL to have three.js report them.
+
 Tours and tests that look at the image should call `DeadEndCity.graphics('high')` first:
 headless SwiftShader auto-detects as LOW. Booting takes a minute or more headless, so for
 long investigations keep one page open and send it console calls (a small Playwright
@@ -118,10 +121,10 @@ something, never a generic code-evaluation hook.
 | `lifeScene(kind)` | Stage a street scene by the player: `vendor`, `busker`, `cafe`, `smokers`, `delivery`, `hail`, `nightlife`, `busStop` |
 | `poseGallery(role)` | Line up one labelled pedestrian per pose in front of the player |
 | `closeUp(zoom)` | Inspection only: zoom past the player's limit (up to 8) to look at people |
-| `stats()` | Per-frame CPU timings, draw calls (`viewCalls` camera, `shadowCalls` shadow map), triangles |
+| `stats()` | Per-frame CPU timings (`parts`, the renderer's split as `r:` parts), draw calls (`viewCalls` camera, `shadowCalls` shadow map), triangles, linked shader `programs`, the dynamic `renderScale` |
 | `postView(mode)` | Show the ambient-occlusion (`'ao'`) or bloom (`'bloom'`) buffer instead of the image; no argument restores it |
-| `drawProfile(top)` | Draw calls in view by object name and by 512-unit map cell (for finding unbatched scenery) |
-| `graphics(tier)` | Graphics quality: `auto`, `low`, `medium`, `high`, `ultra` (saved like the Settings choice); returns the active tier, GPU and shadow-map size. Headless SwiftShader auto-detects as LOW, so screenshot tours should call `graphics('high')` |
+| `drawProfile(top)` | Draw calls in view by object name and by 512-unit map cell (for finding unbatched scenery; unnamed parts of anonymous groups are listed with geometry, material and colour), and linked shader programs by kind |
+| `graphics(tier)` | Graphics quality: `auto`, `low`, `medium`, `high`, `ultra` (saved like the Settings choice); returns the active tier, GPU, shadow-map size, render scale and AUTO's adaptive state (`averageFrameMs`, `tierDrops`). Headless SwiftShader auto-detects as LOW, so screenshot tours should call `graphics('high')` (a chosen tier is never adapted) |
 | `settings(changes)` | Every setting (graphics, fps, cutaway, sound, the four volumes, voices, NPC chatter, minimap fold and zoom, touch mode); pass an object such as `{ chatter: false, minimapZoom: 2 }` to change some |
 | `openSettings(tab)` | Open the settings screen on `graphics`, `audio`, `gameplay` or `controls` (over the pause menu during play) |
 | `bindings(changes)` | Key bindings as `{ action: [primary, secondary] }`; `{ ascend: 'KeyY' }` binds a primary key (a clash swaps), `'reset'` restores the defaults |

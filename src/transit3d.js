@@ -17,13 +17,13 @@
        * station groups are pushed to `statics` for distance culling and to
        * `batchGroups` so their small meshes are merged after construction.
        */
-      const railConcrete = mat('#8b948f', 0.9),
-        railSteel = mat('#5f7079', 0.45, 0.65),
+      const railConcrete = staticMat('#8b948f', 0.9),
+        railSteel = staticMat('#5f7079', 0.45, 0.65),
         // Worn rail heads: a glint, not a mirror. Polished (0.25 rough, 0.8 metal)
         // they caught the sun along whole curves from the air and bloomed into a
         // white streak over the viaduct.
-        railTrack = mat('#b4bcbf', 0.42, 0.7),
-        railWood = mat('#5c5346'),
+        railTrack = staticMat('#b4bcbf', 0.42, 0.7),
+        railWood = staticMat('#5c5346'),
         railGlassCanopy = new Three.MeshStandardMaterial({
           color: '#9fc7d6',
           roughness: 0.15,
@@ -259,10 +259,10 @@
         box(g, 0, seated ? 6.5 : 9.5, 0, 4.2, seated ? 5 : 6.5, 5.5, cloth);
         mesh(sphereGeo, mat(['#d6af88', '#b88964', '#875e43'][i % 3]), g, 0, seated ? 11.5 : 14.5, 0, 2, 2.4, 2);
         if (seated) {
-          box(g, 2.6, 3.2, 0, 4, 1.8, 5, mat('#343b44'));
+          box(g, 2.6, 3.2, 0, 4, 1.8, 5, staticMat('#343b44'));
         } else {
-          box(g, 0, 3, 1.3, 2, 6, 2.2, mat('#343b44'));
-          box(g, 0, 3, -1.3, 2, 6, 2.2, mat('#343b44'));
+          box(g, 0, 3, 1.3, 2, 6, 2.2, staticMat('#343b44'));
+          box(g, 0, 3, -1.3, 2, 6, 2.2, staticMat('#343b44'));
         }
       }
       for (const [si, s] of RAIL_STATIONS.entries()) {
@@ -281,8 +281,8 @@
         for (const side of [-1, 1]) {
           // Platform slab, tactile edge strip, yellow line, canopy with glass roof.
           box(platform, 0, 56.5, side * 33, 168, 5, 20, railConcrete);
-          box(platform, 0, 59.2, side * 24.5, 162, 0.5, 2.2, mat('#d8b64a', 0.8));
-          box(platform, 0, 59.15, side * 27.5, 162, 0.4, 3, mat('#9a9f9a', 0.95));
+          box(platform, 0, 59.2, side * 24.5, 162, 0.5, 2.2, staticMat('#d8b64a', 0.8));
+          box(platform, 0, 59.15, side * 27.5, 162, 0.4, 3, staticMat('#9a9f9a', 0.95));
           for (const x of [-70, -35, 0, 35, 70]) {
             box(platform, x, 74, side * 40, 1.8, 30, 1.8, railSteel);
             box(platform, x, 88.5, side * 33, 1.4, 1.4, 24, railSteel);
@@ -301,8 +301,8 @@
             box(platform, x, 64, side * 43, 16, 4, 0.8, railWood);
             for (const dx of [-6.5, 6.5]) box(platform, x + dx, 60.2, side * 41, 1, 2.4, 4, darkMetal);
           }
-          mesh(cylinderGeo, mat('#3f5a4a', 0.7, 0.3), platform, 76, 62, side * 41, 2.4, 5.5, 2.4);
-          box(platform, -76, 66, side * 43, 10, 9, 0.8, mat('#e8e2d2', 0.8));
+          mesh(cylinderGeo, staticMat('#3f5a4a', 0.7, 0.3), platform, 76, 62, side * 41, 2.4, 5.5, 2.4);
+          box(platform, -76, 66, side * 43, 10, 9, 0.8, staticMat('#e8e2d2', 0.8));
           box(platform, -76, 66, side * 43.5, 8.5, 7, 0.3, mat(['#e2b766', '#67c6bd', '#b3a1d8'][si % 3], 0.6));
           // Station name signs hanging from the canopy at both ends.
           for (const x of [-60, 60]) {
@@ -326,19 +326,19 @@
         }
         // Clocks on the central canopy posts.
         for (const x of [-35, 35]) {
-          mesh(new Three.CylinderGeometry(3.2, 3.2, 0.8, 20), mat('#f4f1e8'), platform, x, 82, 0).rotation.z = Math.PI / 2;
+          mesh(new Three.CylinderGeometry(3.2, 3.2, 0.8, 20), staticMat('#f4f1e8'), platform, x, 82, 0).rotation.z = Math.PI / 2;
           box(platform, x + 0.5, 82, 0, 0.2, 2.2, 0.4, darkMetal);
           box(platform, x + 0.5, 82.6, 0.8, 0.2, 0.4, 1.6, darkMetal);
         }
         // Street-level access: stair and lift tower, footbridge to the platform, turnstiles.
         const ex = lift.x,
           ez = lift.y,
-          towerMat = mat('#a6bab6', 0.4, 0.35);
+          towerMat = staticMat('#a6bab6', 0.4, 0.35);
         box(group, ex, 30, ez, 18, 60, 18, towerMat);
         for (let y = 8; y < 56; y += 12) box(group, ex, y, ez + 9.2, 12, 6, 0.5, glass);
         box(group, ex, 61, ez, 22, 2, 22, railConcrete);
         box(group, ex, 62.5, ez, 8, 1.4, 8, railSteel);
-        box(group, ex + 12, 6, ez, 6, 12, 8, mat('#2d3b44', 0.6, 0.3));
+        box(group, ex + 12, 6, ez, 6, 12, 8, staticMat('#2d3b44', 0.6, 0.3));
         for (let step = 0; step < 6; step++) box(group, ex + 10, 1 + step * 2, ez - 6 - step * 2.2, 8, 2, 2.2, railConcrete);
         const entranceSign = sign('M · ' + s.name, ex, ez - 13, 105, '#b7e5d5');
         entranceSign.position.y = entranceSign.userData.backing.position.y = 24;
@@ -362,17 +362,17 @@
         }
         box(bridge, 0, 66, 0, len, 0.6, 16, railGlassCanopy).userData.dynamic = true;
         // Kiosk on the access-side platform end.
-        box(platform, 88 * -accessSide, 63.5, accessSide * 33, 10, 9, 8, mat('#b7413a', 0.7));
-        box(platform, 88 * -accessSide, 68.5, accessSide * 33, 12, 1, 10, mat('#efe6d3', 0.9));
+        box(platform, 88 * -accessSide, 63.5, accessSide * 33, 10, 9, 8, staticMat('#b7413a', 0.7));
+        box(platform, 88 * -accessSide, 68.5, accessSide * 33, 12, 1, 10, staticMat('#efe6d3', 0.9));
         statics.push({ x: s.x, y: s.y, group, radius: 240 });
       }
       // ---- Trains ----------------------------------------------------------------
       function makeRailTrain(t) {
         const group = new Three.Group();
         scene.add(group);
-        const bodyMat = mat('#dfe3e1', 0.35, 0.5),
+        const bodyMat = staticMat('#dfe3e1', 0.35, 0.5),
           stripe = mat(t.color, 0.4, 0.4),
-          dark = mat('#1f2f3a', 0.24, 0.6),
+          dark = staticMat('#1f2f3a', 0.24, 0.6),
           windowMat = new Three.MeshStandardMaterial({
             color: '#243a48',
             roughness: 0.15,
@@ -388,7 +388,7 @@
           cars.push(car);
           box(car, 0, 9.5, 0, 54, 13, 22, bodyMat);
           box(car, 0, 4.2, 0, 54, 2.6, 21, dark);
-          box(car, 0, 16.8, 0, 50, 1.6, 20, mat('#aeb5b3', 0.5, 0.4));
+          box(car, 0, 16.8, 0, 50, 1.6, 20, staticMat('#aeb5b3', 0.5, 0.4));
           box(car, 0, 7.4, 0, 54.2, 2.2, 22.4, stripe);
           for (const z of [-11.3, 11.3]) {
             box(car, 0, 11.5, z, 46, 5.5, 0.6, windowMat);
@@ -396,8 +396,8 @@
             for (const x of [-12, 0, 12]) box(car, x, 11.5, z + 0.1, 0.8, 6, 0.9, bodyMat);
           }
           // Roof equipment and bogies.
-          box(car, -8, 18.2, 0, 14, 1.6, 9, mat('#7e8a8c', 0.5, 0.5));
-          box(car, 14, 18, 0, 6, 1.2, 6, mat('#7e8a8c', 0.5, 0.5));
+          box(car, -8, 18.2, 0, 14, 1.6, 9, staticMat('#7e8a8c', 0.5, 0.5));
+          box(car, 14, 18, 0, 6, 1.2, 6, staticMat('#7e8a8c', 0.5, 0.5));
           for (const x of [-17, 17]) {
             box(car, x, 2.6, 0, 12, 2.4, 16, dark);
             for (const z of [-8.5, 8.5]) {

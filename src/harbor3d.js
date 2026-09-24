@@ -188,8 +188,8 @@
       gateRoot.position.set(HARBOR.gate.x, 10, HARBOR.gate.y - 68);
       harborGroup.add(gateRoot);
       box(harborGroup, HARBOR.gate.x, 7, HARBOR.gate.y - 72, 11, 14, 11, cranePaint);
-      box(gateRoot, 0, 0, 68, 3, 3, 136, mat('#d5d4bc'));
-      for (let z = 8; z < 136; z += 16) box(gateRoot, 0.05, 0.1, z, 3.3, 3.3, 8, mat('#a94e39'));
+      box(gateRoot, 0, 0, 68, 3, 3, 136, staticMat('#d5d4bc'));
+      for (let z = 8; z < 136; z += 16) box(gateRoot, 0.05, 0.1, z, 3.3, 3.3, 8, staticMat('#a94e39'));
       const gateLamp = box(
         harborGroup,
         HARBOR.gate.x,
@@ -466,7 +466,7 @@
       }
       // The front roller shutter travels: it comes down behind the truck on the
       // first mission's drop.
-      const shutterMat = mat('#8d9195', 0.62, 0.35);
+      const shutterMat = staticMat('#8d9195', 0.62, 0.35);
       const depotFrontDoor = box(depotGroup, -1664, 29, 4341, 116, 58, 4, shutterMat);
       depotFrontDoor.userData.dynamic = true;
       // The back door: a steel personnel door hinged on its west jamb that swings
@@ -481,7 +481,7 @@
       depotBackHinge.position.set(doorWest, 0, 4576);
       depotBackHinge.userData.dynamic = true;
       depotGroup.add(depotBackHinge);
-      box(depotBackHinge, doorWidth / 2, 20.5, 0, doorWidth - 1, 41, 3, mat('#5f6e62', 0.55, 0.4));
+      box(depotBackHinge, doorWidth / 2, 20.5, 0, doorWidth - 1, 41, 3, staticMat('#5f6e62', 0.55, 0.4));
       box(depotBackHinge, doorWidth - 5, 20, 2, 3, 1.5, 2.5, portSteel);
       depotBackHinge.traverse((o) => (o.userData.dynamic = true));
       const exitSignMat = new Three.MeshBasicMaterial({ color: '#58e08a' });

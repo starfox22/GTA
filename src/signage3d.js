@@ -164,6 +164,26 @@
       function addGroupGlow(group, x, y, z, size, color, strength, options) {
         return addGlow(group.position.x + x, group.position.y + y, group.position.z + z, size, color, strength, options);
       }
+      /**
+       * A glow that can be switched off and on again (a street lamp a car knocks
+       * down): `handle.visible = false` zeroes its strength, `true` restores it,
+       * the way a sprite's `visible` would.
+       */
+      function glowHandle(index) {
+        const strength = index >= 0 ? glowParams[index * 4 + 3] : 0;
+        let shown = true;
+        return {
+          get visible() {
+            return shown;
+          },
+          set visible(on) {
+            if (index < 0 || !!on === shown) return;
+            shown = !!on;
+            glowParams[index * 4 + 3] = shown ? strength : 0;
+            glowMesh.geometry.attributes.glowParams.needsUpdate = true;
+          },
+        };
+      }
       // ---- Wet-street streaks ----------------------------------------------------------
       const streakCenters = new Float32Array(STREAK_CAPACITY * 3),
         streakColors = new Float32Array(STREAK_CAPACITY * 3),
