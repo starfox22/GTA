@@ -394,33 +394,26 @@
         a,
       };
       if (hullTouchesLand(shape)) return false;
-      const obstacles = DOCKS.map((d) => ({
-        x: d.x + d.w / 2,
-        y: d.y + d.h / 2,
-        hx: d.w / 2,
-        hy: d.h / 2,
-        a: 0,
-      }));
-      // Boats pass under the bridge decks; only the pylons stand in the water.
-      for (const bridge of BRIDGES)
-        for (const p of bridgePylons(bridge))
-          obstacles.push({
-            x: p.x,
-            y: p.y,
-            hx: 12,
-            hy: 12,
-            a: 0,
-          });
-      obstacles.push({
-        x: HARBOR.ship.x,
-        y: HARBOR.ship.y,
-        hx: HARBOR.ship.w / 2,
-        hy: HARBOR.ship.l / 2,
-        a: 0,
-      });
-      // Liners, moored yachts, the superyacht and the marina pontoons.
-      obstacles.push(...marinaObstacles());
-      return !obstacles.some((b) => boxContact(shape, b));
+      const reach = shape.hx + shape.hy;
+      for (const b of boatObstacles())
+        if (Math.abs(b.x - x) < reach + b.reach && Math.abs(b.y - y) < reach + b.reach && boxContact(shape, b)) return false;
+      // The sailing liner moves, so her hull is asked for where she is now.
+      for (const hull of movingLinerHulls()) if (boxContact(shape, hull)) return false;
+      return true;
+    }
+    /* Everything fixed that a boat steers round, as oriented boxes with a reach
+       for a cheap distance test: the jetties, the Ironworks freighter, the
+       footings of every bridge (boats pass under the decks between them; see
+       bridgeStructure), and the marina (moored liner, yachts, pontoons). */
+    let boatObstacleCache = null;
+    function boatObstacles() {
+      if (boatObstacleCache) return boatObstacleCache;
+      const list = DOCKS.map((d) => ({ x: d.x + d.w / 2, y: d.y + d.h / 2, hx: d.w / 2, hy: d.h / 2, a: 0 }));
+      for (const bridge of BRIDGES) list.push(...bridgeFootings(bridge));
+      list.push({ x: HARBOR.ship.x, y: HARBOR.ship.y, hx: HARBOR.ship.w / 2, hy: HARBOR.ship.l / 2, a: 0 });
+      list.push(...marinaObstacles());
+      for (const b of list) b.reach = b.hx + b.hy;
+      return (boatObstacleCache = list);
     }
     function isBoat(vehicle) {
       return !!vehicle && vehicleSpec(vehicle).boat;
@@ -790,6 +783,7 @@
         !p.vendor &&
         !p.queueing &&
         !p.parkGuest &&
+        !p.club &&
         !p.parkRoute &&
         !p.leader &&
         !p.ejected &&

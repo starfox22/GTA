@@ -67,7 +67,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | audio.js | Web Audio effects, voices, procedural sounds; `earFilter` (a low-pass over the whole mix, dulled while swimming) |
 | physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
 | controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
-| geography.js | Land polygons and the cached `landAt`, `BRIDGES`, reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
+| geography.js | Land polygons and the cached `landAt`, `BRIDGES` and their architecture (`bridgeStructure`, `bridgeFootings`, `bridgePylons`), reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
 | harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
 | heat.js | Heat and wanted stars: `crime(amount)` (heat by severity), `recordKill` / `recordVehicleKill` (by victim, with a spree bonus), `HEAT_STARS`, the escalation delay, `heatUI()` (stars, pending star, heat meter, body count) |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
@@ -79,8 +79,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
-| themepark.js | Sunset Pier island (north of the reclamation): its ground tile, ride footprints, the rideable coaster and the park crowd |
-| marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`) |
+| themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
+| marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
 | cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
 | weather.js | Weather state machine, road wetness, wind and rain on the audio bus |
@@ -93,7 +93,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit |
 | damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`), the damage console helpers |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
-| military.js | Fort Sentinel security, military vehicles, barriers and combat |
+| military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
 | aviation.js | Fixed-wing flight model (`planeControl`), flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
 | challenges.js | Missions 3 to 9 (indices 2 to 8) and the interact/UI routing for all missions (`challengeMissionInteract`) |
 | sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
@@ -115,6 +115,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each), procedural station idents, selection, playback and saved settings |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
+| beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
+| beachclub-audio.js | The club's procedural music on a look-ahead scheduler (day, sunset and night sets), the wall low-pass by where the listener stands, and `mareaGroove`, the beat clock the dancers and lights follow |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
 | settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, volumes (`volumeScale`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
@@ -136,9 +138,9 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
-| themepark3d.js | Coaster track and train, big wheel, carousel, teacups, drop tower and midway |
+| themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras |
 | garage3d.js | Garage buildings, shutters, lights and service details |
-| landmarks3d.js | Bridges, waterfront gardens, civic precinct and ground helipads |
+| landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
 | air-cover3d.js | Road underpass walls, roof, portals and lamps |
 | renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
@@ -148,10 +150,13 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
-| county3d.js | County ground tiles and hills, snow, rural scenery, bridges and region visibility |
+| county3d.js | County ground tiles and hills, snow, rural scenery and region visibility |
+| base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
+| bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; lamps, LEDs, aviation beacons, foam, far copies |
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
-| marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal and liners |
+| marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners, the sailing liner and her wake |
+| beachclub3d.js | The club's meshes (batched), sails that fade while the player is inside, and the show: LED floor, moving heads, lasers, strobe, LED wall, flames, string lights (`updateBeachClubVisuals`, called from `updateBeachVisuals`) |
 | cycles3d.js | Bike-share racks (the bicycles are ordinary vehicles) |
 | weather3d.js | Rain, wet roads, lightning and the overcast light |
 | crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
@@ -246,18 +251,44 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   at the west end of the beach: the sand on its east side, the sea on its south and west, road
   access from Marina Rd (y 5248) along its north edge and Ocean Dr (x -2432) at its north-east
   corner. It is painted as a levelled paved lot; `inReservedPlot` keeps streets, blocks and the
-  esplanade off it.
+  esplanade off it. **Marea Beach Club** stands on it (beachclub.js, beachclub3d.js): a social
+  beach club 09:30-18:30, sunset sessions to 21:45, a nightclub 21:45-04:15 (queue, bouncers,
+  $40 cover and a $250 VIP band on E at the door and the VIP rope), closing and taxis to 05:15.
+  The plan is in plot-local units (u east from x -3070, v south from y 5306): the street
+  forecourt with the snaking queue (v < 44), a low wall with the door at u 292..312, then the
+  stage and dance floor, the bars, the VIP terrace, daybeds, the pool and the deck with a gate
+  to the club's sand. The camera looks north, so anything tall hides what stands just north of
+  it: keep the street side low.
 
 ### Sunset Pier island (x 1830..4260, y -7090..-5680)
 
-- Reached by the Sunset Pier Bridge from the north end of Riverbank Dr and `PIER ISLAND DRIVE`
-  (bridge landing -> along the south shore past the car park -> the park gate at 3898, -6145).
-- The Sunset Pier rides (`PIER`, `COASTER_TRACK` in themepark.js) stand in the east half, x
-  3420..4140, y -6725..-6005: the old lower-bay park moved whole and turned 180 degrees so the
-  gate faces the bridge (p' = (7610, -1185) - p).
-- **Reserved: the attraction ground** `THEME_PARK_RESERVE` = x 1980..3380, y -6960..-6060 (1400 x
-  900), the west half, lawn with a dashed outline and nothing on it, for the big coaster, the
-  giant wheel and new attractions. The island drive runs past its south-east corner.
+- A Gulf-style resort and theme park (themepark.js lays it out and simulates it,
+  themepark3d.js draws it; `PIER` holds every position). The Sunset Pier Bridge lands at the
+  main gate (3200, -6030); `PIER ISLAND DRIVE` runs east past the bus bay (3266, -5838), the car
+  park and the Sunset Eye to the east gate.
+- **The Falcon** fills the west half (the old `THEME_PARK_RESERVE`) and runs out over the west
+  and north shores: `COASTER_ELEMENTS` is the circuit authored as eased track elements (lift to
+  64 m, a 72-degree first drop, loop, camelback, overbanked turn, heartline roll, corkscrew,
+  helix, bunny hop, brakes) walked into a closed, banked curve (`coasterCircuit()`, 2-unit
+  samples; `coasterFrame(s)` gives position, tangent and up). The train (`coasterTrain`, `t` =
+  front car's arc length) runs all day on gravity with lift, trim and station sections; the
+  station is at (2575, -6430), queue hall to its south. Supports come from
+  `coasterFootings()`, which keeps them off paths, the lagoon and buildings.
+- **The Sunset Eye** (hub 3600, -6050, 300 up, rim radius 240, 48 capsules, one turn in 240 s;
+  `wheelCapsule(k)`) with its terminal underneath. **Fountain Lagoon** (3170, -6370) with the
+  show schedule (`fountainShowAt`) and fireworks (`fireworksTonight`), the **Sunset Palace**
+  crescent hotel (3530, -6770), the beach club on the north shore, and in the east the
+  carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
+  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
+- Riding: `player.coaster` is the carrier for both rides (`{ kind: 'train' | 'wheel' }`), so the
+  existing teleport, death and mission-reset hooks let go of either. The ride camera
+  (`updateParkCamera`, called from render3d.js right after `updateFlightView`) puts the
+  perspective camera on the ride.
+- Collision: `parkSolids()` (rectangles, used by `parkBlocked` for people through a 128-unit grid
+  and by physics.js for vehicles) and `parkAirSolids()` (minHeight bodies: the Eye's disc and
+  the high track, for aircraft). Paths are `PARK_PATHS`, joined into the graph the park crowd
+  walks (`parkPathGraph`, queues in `PARK_QUEUES`); guests exist only while the player is within
+  ~2.9 km. `DeadEndCity.themePark()` reports rides, shows, guests and an overlap self-check.
 
 ### Water and bridges
 
@@ -265,24 +296,40 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   Ridgeline, x 3420..~5900, 2400..2700 wide; `RIVER`), North Sound (Northbank - Sunset Pier,
   y -4190..-5690, ~1500), the south channel to Oceanview (~800..1000).
 - `BRIDGES` (geography.js) lists every road bridge as a straight deck `a` -> `b`, `width` wide,
-  deck at road level (`deck: 0`). Guard rails line the deck over water (`countyBridgeRails`,
-  county.js); non-causeways have two pairs of tall pylons at 0.18 of the length either side of
-  the middle (`bridgePylons`), which are colliders for aircraft and the only obstacle a boat
-  meets (boats pass under the decks). county3d.js draws every deck, rail and pylon; roadblocks.js
-  cuts the city end of each axis-aligned bridge; air-cover.js treats decks as cover; the route
-  graph joins them to the streets (collinear roads share nodes at each other's ends).
+  deck at road level (`deck: 0`), and its architecture (`style`). Guard rails line the deck over
+  water (`countyBridgeRails`, county.js). `bridgeStructure(bridge)` lays the design out in the
+  bridge's frame (`along` from the middle toward `b`, `across` to the right; `bridgePoint()` maps
+  it) from the style's rule in `BRIDGE_DESIGNS` and the deck's run over water: the navigation
+  `channels`, the `footings` standing in the water (piers under the deck, tower caissons, arch
+  feet, anchorages, fenders) and the `solids` rising from or spanning the deck (tower legs,
+  portals, cable fans, arches, trusses; anything over the carriageway starts at
+  `BRIDGE_CLEARANCE`, 46, above the tallest road vehicle). On the map, `bridgeFootings()` are what
+  boats steer round (`boatObstacles`, citylife.js: they pass under the deck between footings, and
+  no footing stands in a channel) and `bridgePylons()` are aircraft colliders (county.js,
+  oriented static bodies with `minHeight`). bridges3d.js draws every bridge from the same
+  structure; roadblocks.js cuts the city end of each axis-aligned bridge; air-cover.js treats
+  decks as cover; the route graph joins them to the streets (collinear roads share nodes at each
+  other's ends). `layout().bridges` carries the styles, towers, footings and channels.
 
-| id | name | link | from | to | width | deck |
+| id | name | style | link | from | to | width |
 | --- | --- | --- | --- | --- | --- | --- |
-| keys-union | KEYS BRIDGE | Palm Keys - Northbank (Union St) | -1460, 1152 | 130, 1152 | 112 | 0 |
-| keys-harbor | PALM SOUND CAUSEWAY | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 | 0 |
-| east-bay | EAST BAY CROSSING | Northbank - Ridgeline (Harbor Ave -> Ridgeline Hwy) | 3150, 3200 | 6580, 3200 | 122 | 0 |
-| south-bay | SOUTH BAY BRIDGE | Northbank - Ridgeline (Stadium Way -> Foothill Rd) | 3150, 4736 | 6420, 4736 | 112 | 0 |
-| pier-bridge | SUNSET PIER BRIDGE | Northbank - Sunset Pier (Riverbank Dr) | 3200, -3900 | 3200, -5800 | 104 | 0 |
-| oceanview | OCEANVIEW CAUSEWAY | Northbank - Oceanview | 3200, 5000 | 3200, 7010 | 128 | 0 |
-| coral-sound | CORAL SOUND BRIDGE | Oceanview - Coral Coast | 5700, 8000 | 6750, 8000 | 116 | 0 |
-| ridgeline | RIDGELINE VIADUCT | Ridgeline - Coral Coast | 7800, 5620 | 7433, 7262 | 116 | 0 |
-| sentinel | SENTINEL CAUSEWAY | Coral Coast - Fort Sentinel | 7800, 8150 | 9440, 8150 | 126 | 0 |
+| keys-union | KEYS BRIDGE | green steel camel-back through-truss on four river piers | Palm Keys - Northbank (Union St) | -1460, 1152 | 130, 1152 | 112 |
+| keys-harbor | PALM SOUND CAUSEWAY | low causeway, globe lamps, double-leaf bascule with four tender's houses | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 |
+| east-bay | EAST BAY CROSSING | white cable-stayed, one A-pylon (380) and two fans of stays, a channel each side | Northbank - Ridgeline (Harbor Ave -> Ridgeline Hwy) | 3150, 3200 | 6580, 3200 | 122 |
+| south-bay | SOUTH BAY BRIDGE | red suspension bridge, two towers (316), main cables, hangers, anchorages | Northbank - Ridgeline (Stadium Way -> Foothill Rd) | 3150, 4736 | 6420, 4736 | 112 |
+| pier-bridge | SUNSET PIER BRIDGE | leaning white network arch (rise 244) with colour-cycling LEDs | Northbank - Sunset Pier (Riverbank Dr) | 3200, -3900 | 3200, -5800 | 104 |
+| oceanview | OCEANVIEW CAUSEWAY | low precast viaduct, fishing balconies, striped channel beacons | Northbank - Oceanview | 3200, 5000 | 3200, 7010 | 128 |
+| coral-sound | CORAL SOUND BRIDGE | extradosed: four coral sail pylons, harps of stays | Oceanview - Coral Coast | 5700, 8000 | 6750, 8000 | 116 |
+| ridgeline | RIDGELINE VIADUCT | cable-stayed on two concrete H-pylons, weathering-steel girder | Ridgeline - Coral Coast | 7800, 5620 | 7433, 7262 | 116 |
+| sentinel | SENTINEL CAUSEWAY | olive plate-girder causeway, swing span on a pivot pier, floodlights | Coral Coast - Fort Sentinel | 7800, 8150 | 9440, 8150 | 126 |
+
+  bridges3d.js (after boats3d.js) builds each bridge in its own frame with the boat kit and
+  merges it into a few vertex-coloured meshes (`kitMerge`); its lamps, navigation lights and
+  cable necklaces are one points cloud; lamp heads, floodlit paint (`bridgeGlowPaint`), LED
+  strips (`bridgeLed`) and the pulsing red aviation beacons come up with `nightAmount`
+  (`updateBridgeVisuals`, called from `updateCountyVisuals`). Foam lies round every footing just
+  above the highest swell crest. A plain copy of every bridge sits in the far scenery
+  (flight-view3d.js `farScenery`/`farHidden`), shown instead when the whole city is in view.
 
   Rail bridges are part of the viaducts (transit.js): the Coast Line's sea viaduct over the south
   channel and the Ridge Line's bridge across Coral Sound. No rail line crosses Palm Sound, Marlow
@@ -299,7 +346,23 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   '-1408') and shown in the HUD under the district; off the grid, a bridge or county road gives
   its own name.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
-  own roads, towns and an airport. Foothill Road climbs from the South Bay Bridge landing (6420,
+  own roads, towns and an airport.
+- **Fort Sentinel** (military.js `MILITARY`, `SENTINEL`; drawn by base3d.js) fills x 9300..10560,
+  y 7750..9950 of its island inside a double razor-wire fence with eight watch towers. The
+  Sentinel Causeway lands at the main gate (y 8150): jersey-barrier funnel, guard booth on a
+  centre island, per lane a drop arm (x 9272), anti-ram bollards (9290) and a sliding gate
+  (9310). Arms and bollards stop vehicles only; the sliding gate stops everyone. Military
+  traffic lifts the arms; an arm snaps for anything faster than 80, bollards only for heavy
+  armour, the sliding gate for a heavy vehicle at speed. Guards challenge anyone in the gate
+  area (halt, final warning, then fire); trespass, attacks or ramming raise the alarm: siren,
+  PA, lockdown (bollards up, gates shut), tower sentries and posts engage, the QRF jeeps drive
+  at the intruder, and the wanted level is kept up while the player stays in or near the base.
+  E at the gate forces the controls open for a few seconds (the way out without a tank).
+  Inside: HQ and flagpoles, comms mast, radome, radar and water tower (north); obstacle
+  course, parade ground (a platoon drills by day), three barracks, mess hall and clinic;
+  motor pool, containers, fuel depot, ammunition bunkers and the rifle range; two hangars,
+  control tower, helipads, apron and a 960-unit runway (south). `DeadEndCity.military()`
+  reports the security state. Foothill Road climbs from the South Bay Bridge landing (6420,
   4736) to Stonecreek's south-west corner (6720, 4224).
 - The railway (transit.js, drawn by transit3d.js) runs on its own elevated right of way:
   - SHORE LINE: Cruise Terminal (2480, -3968, on the apron street in front of the terminal) ->
@@ -396,8 +459,26 @@ it) to board; walking back off the passerelle, or E on the swim platform, goes a
 - Cutaway: `superyachtCoverHeight()` returns the lowest deck above the player whose outline
   covers them; `updateMarinaVisuals()` hides that deck group and everything above it, and
   guests on hidden decks are flagged `hidden`.
-- The liners (`LINERS`) keep their single promenade deck (`deckPointFree`); their hull plan is
-  `LINER_FORM`.
+- The liners (`LINERS`) keep their single promenade deck (`deckPointFree`, `linerDeckFree` in
+  the ship's frame); their hull plan is `LINER_FORM`. Passengers keep ship-frame positions
+  (`du`, `dv`, heading `da`); a few lie on the lido deck's loungers.
+- **MS MERIDIAN STAR sails** (`voyage: true`). `LINER_VOYAGE` is her circuit, sailed by
+  `sailLiner()` from `update()`: a `call` riding at anchor off the cruise terminal in North Sound
+  (x 2150, y -5000; boarded from the water at her stern platform only while she is almost
+  stopped), `astern` out of the sound, then `ahead` round the west end of Sunset Pier island,
+  south down the open sea west of Palm Keys, back north inshore past Ocean Drive's strand, along
+  Northbank's sea wall and into the sound again (about 35,000 units, ~19 minutes a lap). Each
+  leg's control polygon is filleted with per-corner turning radii (500-900) and resampled with
+  a speed cap from `LINER_SPEED_ZONES` (about 8 knots in the sound, 12-13 inshore, 19 at sea),
+  the curve (`LINER_TURN_GRIP`) and a braking pass, so she accelerates and stops slowly and
+  slows for turns, with a little drift and heel. She never passes under a bridge (decks are at
+  road level). `carryLinerDeck` keeps passengers and the player (`player.deck`) where they stand
+  on deck; `clearLinerWay` shoves boats aside (`movingLinerHulls()` is also in `boatFits`) and
+  swimmers off her hull; `linerHorn` sounds the signals (one prolonged blast before weighing
+  anchor, three short going astern, one short under way ahead). The renderer moves her model,
+  her own lights cloud, bow waves, stern wash and a Kelvin wake ribbon laid along her track
+  (`updateLinerVisuals`, marina3d.js). Console: `liners()`, `advanceLiner(seconds)`,
+  `linerVoyageCheck()` (sweeps the hull down the circuit against land, bridges, jetties, ships).
 
 **Boat kit** (boats3d.js, renderer). `loftHull(spec)` lofts a hull from a sheer line, keel line
 and plan shape with bands baked into vertex colours; `hullDeck`, `hullBand`, `hullBeamAt` and

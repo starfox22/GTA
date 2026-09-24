@@ -187,15 +187,11 @@
       for (const b of buildings) addStatic(b.x, b.y, b.w, b.h, b.height + 22).building = b;
       // Buildings kept outside `buildings` stop people through their own solid()
       // tests, but cars drove straight through them: the marina club, fuel dock
-      // and cruise terminal, and the Sunset Pier arcade, games row, food court,
-      // big wheel and carousel.
+      // and cruise terminal, and the Sunset Pier rides, buildings and supports
+      // (themepark.js parkSolids; parkAirSolids are only in an aircraft's way).
       for (const b of marinaSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'marina');
       for (const b of parkSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier');
-      for (const [ride, radius, height] of [
-        [PIER.wheel, 16, 90],
-        [PIER.carousel, 12, 18],
-      ])
-        addStatic(ride.x - radius, ride.y - radius, radius * 2, radius * 2, height, 'pier');
+      for (const b of parkAirSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier').minHeight = b.minHeight;
       // Water contact follows the same irregular shores as the visible terrain.
       for (const e of buildCoastSegments()) {
         if (e.opening) continue;

@@ -781,9 +781,12 @@
       // @include src/wakes3d.js
       // @include src/beach3d.js
       // @include src/county3d.js
+      // @include src/base3d.js
       // @include src/boats3d.js
+      // @include src/bridges3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js
+      // @include src/beachclub3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
       // @include src/crowd3d.js
@@ -795,7 +798,8 @@
       function makeVehicle(vehicle) {
         if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
         if (vehicle.type === 'plane') return makePlane(vehicle);
-        if (vehicleSpec(vehicle).tank) return makeTank(vehicle);
+        if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
+        if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
         if (vehicle.type === 'helicopter') return makeHelicopter(vehicle);
         if (vehicleSpec(vehicle).bike) return makeMotorcycle(vehicle);
         if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
@@ -1132,7 +1136,7 @@
           parts.cup = cup;
         }
         parts.guns = guns;
-        return {
+        const model = {
           group,
           parts,
           torso,
@@ -1140,6 +1144,9 @@
           cloth,
           pants,
         };
+        // Fort Sentinel soldiers: helmet, plate carrier, carbine (base3d.js).
+        if (person.military) dressSoldier(person, model);
+        return model;
       }
       const chuteModel = new Three.Group();
       chuteModel.name = 'Player parachute';
@@ -1706,6 +1713,8 @@
             flying = !!(isAircraft(player.car) || player.parachute);
           // Street (orthographic) or flight (perspective) camera, plus what it sees.
           updateFlightView(deltaSeconds, altitude, flying);
+          // Riding the Falcon or the Eye: the ride camera takes over (themepark3d.js).
+          updateParkCamera(deltaSeconds);
           camera.position.x += (Math.random() - 0.5) * shake * 0.35;
           camera.position.y += (Math.random() - 0.5) * shake * 0.2;
           camera.updateMatrixWorld(true);
@@ -1949,6 +1958,7 @@
               m.parts.arm1.rotation.z = p.aiming ? 1.12 : -step * 0.5;
               m.parts['arm-1'].rotation.z = p.aiming ? 0.9 : step * 0.5;
             }
+            if (p.military) poseSoldier(p, m, incapacitated);
             if (p.police && !incapacitated) {
               m.parts.guns[0].visible = p.hp > 0;
               const aiming = p.state === 'aim' || p.state === 'suppress';
@@ -2298,6 +2308,8 @@
               p.boss ||
               p.hidden ||
               p.hp <= 0 ||
+              // Soldiers going about their duties are not labelled until they engage.
+              (p.military && !p.aiming) ||
               !sameFloor(p, player) ||
               distanceBetween(p, player) > (p.ally ? 400 : 230)
             )
@@ -2320,7 +2332,7 @@
           // Pedestrian speech: short lines drawn as bubbles above the speaker.
           // Drivers shouting out of the window use the same bubble over the car.
           // Settings · Gameplay · NPC chatter off hides them all (settings.js).
-          for (const p of npcChatterOn() ? [...pedestrians, ...vehicles] : []) {
+          for (const p of npcChatterOn() ? [...pedestrians, ...vehicles, ...gangMembers] : []) {
             if (!p.speech || p.speechUntil < gameTime || p.hp <= 0 || distanceBetween(p, cameraTarget) > 460) continue;
             const q = api.project(p.x, p.y, entityElevation(p) + (p.type ? 22 : 27));
             if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;

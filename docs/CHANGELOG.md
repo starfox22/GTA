@@ -2,6 +2,41 @@
 
 ## Unreleased — The islands rearranged
 
+Marea Beach Club (beachclub.js, beachclub-audio.js, beachclub3d.js; SOURCE_GUIDE section 4)
+- On the beach-club plot at the west end of Palm Keys Beach: a street forecourt with a
+  snaking roped queue, red carpet, bronze portal and neon sign; a stage with an LED wall and
+  speaker stacks; an LED dance floor under a lighting truss; the main bar under white sails;
+  a roped VIP terrace; daybeds and cabanas; an infinity pool with a swim-up bar; a sunken fire
+  lounge; a deck with a gate onto the club's own sand, sunbeds and parasols.
+- Social club 09:30-18:30 (loungers, swimmers, bar guests, waiters with trays, a balearic
+  set), sunset sessions with a setup crew, a nightclub 21:45-04:15 (a packed floor dancing to
+  the beat, DJ and MC on stage, moving heads, lasers, strobe, searchlights), closing with
+  taxis at the kerb, cleaners at dawn. Procedural music on a look-ahead scheduler, muffled
+  by the wall from the street and open inside.
+- The door: bouncers and a host work the line with spoken exchanges (let in, turned away,
+  people walking off complaining); the player pays $40 cover or buys a $250 VIP band with E.
+  Gunfire empties the club through the door and the beach gate; the bouncers hold the door,
+  call it in and shove the shooter away.
+- Crowd: seven beat-synced dance styles and a floor-wide jump on the drop; swim, lounge, DJ,
+  bartend, tray, drink, sparkler, sweep, stop and shove poses; cocktail, tray and bottle props.
+  `DeadEndCity.beachClub()` reports the club.
+
+Sunset Pier resort (SOURCE_GUIDE section 4)
+- The island is a Gulf-style resort: main gate at the bridge, the Fountain Lagoon with a
+  musical fountain show (three choreographies to procedural Hijaz-mode music, hourly after
+  dark), fireworks two nights in three at 21:00, the crescent Sunset Palace hotel, a beach
+  club, palm promenades, a bus bay by the car park.
+- The Falcon: a 1.47 km, 64 m steel coaster (125 km/h) with a lift, a 72-degree first drop over
+  the shore, loop, camelback, overbanked turn, heartline roll, corkscrew and helix, banked for
+  the speed the train really carries, with supports, station, queue hall and a seven-car
+  train of riders running all day. Ride it from the platform (E); E cycles chase, front seat
+  and trackside cameras.
+- The Sunset Eye: a 110 m observation wheel on twin A-frame legs with cable spokes, 48 level
+  glass capsules and LED shows at night; ride one turn from the terminal.
+- Swing ride, drop tower, carousel, teacups, dodgems, the Arabian Nights dark ride, the Wadi
+  Splash log flume with splashes, a souk food court and kiosks; guests walk the promenades and
+  queue for the rides; riders scream (procedural voices).
+
 World layout (docs/audit/world-layout.md, SOURCE_GUIDE section 4)
 - West to east: Palm Keys (the tropical island) across Palm Sound from Northbank, Northbank
   in the middle, Ridgeline's forest and mountains across a Marlow Bay now 2400..2700 wide.
@@ -24,6 +59,18 @@ World layout (docs/audit/world-layout.md, SOURCE_GUIDE section 4)
   never joined in the route graph; long bridges were invisible in the 2D view.
 - Rush Hour (390 s) and Repo Man (660 s) clocks grew with the longer crossings.
   `DeadEndCity.route(x, y)` reports the GPS route.
+
+Fort Sentinel (military.js, base3d.js)
+- The restricted base is rebuilt as a working coastal army air base: double razor-wire fence,
+  eight watch towers with night searchlights, a fortified main gate (funnel, guard booth,
+  canopy, drop arms, anti-ram bollards, sliding gates), HQ, barracks, mess hall, clinic, motor
+  pool, containers, fuel depot, ammunition bunkers, comms mast, radome, radar, water tower,
+  rifle range, obstacle course, parade ground and flags, hangars, control tower, helipads and a
+  runway, floodlights, CCTV, sandbag nests, camouflage nets and signage, on its own ground sheet.
+- Garrison life: gate MPs who challenge and then fire, tower sentries, foot patrols, patrol
+  jeeps on the perimeter road, a platoon drilling by day, range practice, supply trucks
+  checked through the gate. Alarm: siren, PA, lockdown, QRF jeeps and crewed armour respond.
+- New drivable jeep, APC and army truck; the tank model is merged into a few meshes.
 
 ## 29.0.0 — West-shore railway, beach, superyacht, damage, flight view, crowd, HDR
 

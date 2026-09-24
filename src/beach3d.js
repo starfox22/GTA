@@ -980,6 +980,8 @@
       let beachWasNear = true;
       /* Per-frame: called from updateWorldVisuals (world3d.js). */
       function updateBeachVisuals() {
+        // The Marea beach club at the west end of the strand (beachclub3d.js).
+        updateBeachClubVisuals();
         const near = Math.abs(cameraTarget.x + 2010) < 1900 && Math.abs(cameraTarget.y - 5620) < 1500;
         beachGroup.visible = near;
         for (const h of beachHalos) {

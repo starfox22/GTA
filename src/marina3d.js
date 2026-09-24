@@ -1380,12 +1380,20 @@
       }
       const linerClass = buildLinerClass(LINERS[0]);
       kitMerge(linerClass.group);
+      const sailingLinerModel = { ship: null, group: null, statics: null, lights: kitLightList() };
       for (const ship of LINERS) {
         const g = new Three.Group();
         g.position.set(ship.x, 0, ship.y);
         g.rotation.y = -ship.a;
         scene.add(g);
-        statics.push({ x: ship.x, y: ship.y, group: g, radius: 760 });
+        const culling = { x: ship.x, y: ship.y, group: g, radius: 760 };
+        statics.push(culling);
+        // The ship under way carries her own lights (they move with her).
+        if (ship.voyage) {
+          g.userData.lightCloud = true;
+          Object.assign(sailingLinerModel, { ship, group: g, statics: culling });
+        }
+        const shipLights = ship.voyage ? sailingLinerModel.lights : marinaLights;
         for (const part of linerClass.group.children.filter((c) => c.isMesh)) {
           const copy = new Three.Mesh(part.geometry, part.material);
           copy.castShadow = copy.receiveShadow = true;
@@ -1402,7 +1410,7 @@
         nameShip(ship.name.replace('MS ', ''), ship.l / 2 - 250, 1);
         nameShip(ship.name.replace('MS ', ''), ship.l / 2 - 250, -1);
         kitNameBoard(g, ship.name.replace('MS ', ''), 'HARBOR POINT', '#f2f2ee', 110, -ship.l / 2 - 0.5, ship.deck - 12, 0, -Math.PI / 2);
-        for (const l of linerClass.lights) kitLight(marinaLights, g, l.position.x, l.position.y, l.position.z, '#' + l.color.getHexString());
+        for (const l of linerClass.lights) kitLight(shipLights, g, l.position.x, l.position.y, l.position.z, '#' + l.color.getHexString());
         // Stern boarding platform, and a gangway when the ship lies alongside.
         if (ship.berthed) {
           const gate = deckLocal(ship, ship.board.x, ship.board.y);
@@ -1411,12 +1419,35 @@
         }
       }
       kitLightCloud(marinaLights, 7);
+      kitLightCloud(sailingLinerModel.lights, 7);
 
-      /* Per-frame: the superyacht's cutaway and radars, and the shared night lights. */
+      /**
+       * THE SAILING LINER
+       * Her model and lights follow the voyage (sailLiner, marina.js), heeling a
+       * little in the turns. Her wake is drawn into the sea by the boat wake
+       * system (wakes3d.js) like every hull on the water, scaled to her 265 m
+       * length and 36 m beam: the Kelvin V, a long-lived propeller wash, the bow
+       * wave and the collar round her waterline. At anchor she only laps.
+       */
+      function updateLinerVisuals() {
+        const model = sailingLinerModel,
+          ship = model.ship;
+        if (!ship) return;
+        model.group.position.set(ship.x, 0, ship.y);
+        model.group.rotation.set(linerVoyage.heel, -ship.a, 0, 'YXZ');
+        model.statics.x = ship.x;
+        model.statics.y = ship.y;
+        // Her top speed at sea is about 50 units/s; no spray off a liner's bow.
+        wakeEmit(ship, ship.x, ship.y, ship.a, ship.speed || 0, ship.l, ship.w, 55, false);
+      }
+
+      /* Per-frame: the superyacht's cutaway and radars, the sailing liner and her
+         wake, and the shared night lights. */
       function updateMarinaVisuals(deltaSeconds) {
         const cover = superyachtCoverHeight();
         for (const d of superyachtDecks) d.group.visible = d.z < cover;
         for (const [i, r] of superyachtRadars.entries()) r.rotation.y += deltaSeconds * (i ? 2.1 : 1.4);
+        updateLinerVisuals();
         updateBoatKitVisuals();
       }
       // END SUBSYSTEM: src/marina3d.js

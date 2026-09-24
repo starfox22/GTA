@@ -761,7 +761,9 @@
         parkBlocked(x, y, r) ||
         marinaBlocked(x, y, r) ||
         beachBlocked(x, y, r) ||
+        beachClubBlocked(x, y, r) ||
         (!overWater && !groundAt(x, y, r)) ||
+        (overWater && LINERS.some((ship) => linerHullAt(ship, x, y, r))) ||
         harborBlocked(x, y, r) ||
         depotBlocked(x, y, r) ||
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
@@ -1821,6 +1823,7 @@
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
       if (parkInteract()) return;
+      if (beachClubInteract()) return;
       if (marinaInteract()) return;
       if (taxiInteract()) return;
       if (
@@ -2347,6 +2350,7 @@
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateCarjackReactions(p, deltaSeconds)) continue;
+        if (updateClubGoer(p, deltaSeconds)) continue;
         if (updateCrowdPerson(p, deltaSeconds)) continue;
         if (updateGymGoer(p, deltaSeconds)) continue;
         if (updateParkWalker(p, deltaSeconds)) continue;
@@ -2683,6 +2687,8 @@
           }
         }
         timed('transit', () => updateTransit(deltaSeconds));
+        // The Meridian Star under way (marina.js), before the player walks her deck.
+        timed('liner', () => sailLiner(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
         updateWeather(deltaSeconds);
@@ -2690,6 +2696,7 @@
         updateMarinaFooting();
         updateSinking(deltaSeconds);
         timed('beach', () => updateBeach(deltaSeconds));
+        timed('beachclub', () => updateBeachClub(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -3649,6 +3656,7 @@
           ['LITTLE HAVANA', -1900, 4150],
           ['CORAL MARINA', -1700, 4880],
           ['PALM KEYS BEACH', -1970, 5620],
+          ['MAREA BEACH CLUB', -2870, 5500],
           ['P A L M  S O U N D', -560, 2300],
           ['M A R L O W  B A Y', 4650, 2560],
           ['N O R T H  S O U N D', 1500, -4900],
@@ -4562,6 +4570,8 @@
     // @include src/car-radio.js
     // @include src/garages.js
     // @include src/crowd.js
+    // @include src/beachclub.js
+    // @include src/beachclub-audio.js
     // @include src/ambience.js
     // @include src/quality.js
     // @include src/settings.js
@@ -5072,6 +5082,16 @@
         })),
       // Palm Keys Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
+      // Marea Beach Club: phase, levels, who is where, the queue and the door,
+      // the music (beachclub.js). `beachClub('trouble')` raises gunfire on its
+      // dance floor as if someone fired there, for tests of the evacuation.
+      beachClub(action) {
+        if (action === 'trouble') {
+          const p = mareaPoint(205, 140);
+          notifyViolence(p, 'gunfire', null);
+        }
+        return beachClubReport();
+      },
       // Rooftop helipads, the roof the player stands on and the roof under the
       // player's helicopter (rooftops.js); with a map point, that roof and its plant.
       rooftops: (x, y) => ({
@@ -5112,6 +5132,8 @@
         }
         return this.status();
       },
+      // Fort Sentinel security: alert, lockdown, gate pieces, garrison and vehicles.
+      military: () => militaryReport(),
       // The plan as data, for layout audits: coast, streets, rail, footprints and
       // every static collider in map units. A test renders it as a debug map and
       // checks for overlaps (a road through a helipad, a viaduct over a berth).
@@ -5123,7 +5145,7 @@
         streets: cityStreets().map((r) => ({ points: r.points, width: r.width })),
         boulevards: [...BOULEVARDS, ...SERVICE_ROADS].map((r) => ({ name: r.name, points: r.points, width: r.width })),
         countyRoads: COUNTY_ROADS.map((r) => ({ name: r.name, points: r.points, width: r.width, bridge: !!r.bridge })),
-        bridges: BRIDGES.map((b) => ({ id: b.id, name: b.name, link: b.link, a: b.a, b: b.b, width: b.width, deck: b.deck, pylons: bridgePylons(b) })),
+        bridges: BRIDGES.map((b) => ({ id: b.id, name: b.name, link: b.link, a: b.a, b: b.b, width: b.width, deck: b.deck, style: b.style, pylons: bridgePylons(b), footings: bridgeFootings(b), channels: bridgeStructure(b).channels.map(([from, to]) => [bridgePoint(b, from), bridgePoint(b, to)]) })),
         reserved: { beachClub: BEACH_CLUB_PLOT, themePark: THEME_PARK_RESERVE },
         rail: RAIL_LINES.map((l) => ({ id: l.id, name: l.name, color: l.color, points: l.points })),
         railDecks: railDecks(),
@@ -5146,6 +5168,13 @@
           .filter((b) => b.kind !== 'coast' && b.kind !== 'building')
           .map((b) => ({ x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a, kind: b.kind })),
       }),
+      // Sunset Pier: ride states, the coaster's numbers, shows, guests and an overlap check.
+      themePark: () => parkReport(),
+      // Board the Falcon ('coaster') or the Sunset Eye ('wheel') from its platform.
+      boardRide(kind = 'coaster') {
+        rideAttraction(kind);
+        return parkReport().riding;
+      },
       // Every train on the network: where it is, how fast, and whether it carries the player.
       trains: () =>
         railTrains.map((t) => ({
@@ -5161,6 +5190,33 @@
         for (let t = 0; t < seconds; t += 1 / 30) updateTransit(1 / 30);
         return this.trains();
       },
+      // The sailing liner: where she is, her leg of the voyage, speed (units/s
+      // and knots) and heading, and who is aboard.
+      liners: () => {
+        const ship = sailingLiner(),
+          leg = LINER_VOYAGE[linerVoyage.leg];
+        return {
+          name: ship.name,
+          x: Math.round(ship.x),
+          y: Math.round(ship.y),
+          heading: Math.round((((ship.a * 180) / Math.PI) % 360 + 360) % 360),
+          leg: linerVoyage.leg,
+          kind: leg.kind,
+          along: Math.round(linerVoyage.s),
+          legLength: leg.kind === 'call' ? leg.seconds : Math.round(leg.length || 0),
+          speed: Math.round(ship.speed * 10) / 10,
+          knots: Math.round((Math.abs(ship.speed) / 5.12) * 1.944 * 10) / 10,
+          playerAboard: player.deck === ship,
+          passengers: (ship.passengers || []).length,
+        };
+      },
+      // Run only the liner's voyage forward by `seconds` (1/30 s steps).
+      advanceLiner(seconds = 10) {
+        for (let t = 0; t < seconds; t += 1 / 30) sailLiner(1 / 30);
+        return this.liners();
+      },
+      // Sweep the liner's hull down the whole voyage: land, bridges, jetties, ships.
+      linerVoyageCheck: (step = 24) => linerVoyageCheck(step),
       // Named places the tests can visit: every PLACES entry plus the landmarks.
       places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
       // GPS: set a map waypoint and report the route the navigation graph finds

@@ -125,12 +125,15 @@ something, never a generic code-evaluation hook.
 | `settings(changes)` | Every setting (graphics, fps, cutaway, sound, the four volumes, voices, NPC chatter, minimap fold and zoom, touch mode); pass an object such as `{ chatter: false, minimapZoom: 2 }` to change some |
 | `openSettings(tab)` | Open the settings screen on `graphics`, `audio`, `gameplay` or `controls` (over the pause menu during play) |
 | `bindings(changes)` | Key bindings as `{ action: [primary, secondary] }`; `{ ascend: 'KeyY' }` binds a primary key (a clash swaps), `'reset'` restores the defaults |
+| `military()` | Fort Sentinel: alert, lockdown, gate challenge level, each lane's arm, bollards and sliding gate (and what is broken), soldiers on duty by role, military vehicles and their roles, the supply run and the drill |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
 | `beach()` | Palm Keys Beach: crowd density for the hour, who is there and what they are doing, prop counts |
+| `beachClub(action)` | Marea Beach Club: phase, levels, people by slot kind, mode and pose, the queue and the conversation at the door, admitted/rejected/evacuated counts, the music (set, bar, section, gain, wall cutoff); `'trouble'` raises gunfire on its dance floor |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
 | `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |
+| `themePark()`, `boardRide(kind)` | Sunset Pier: the Falcon's numbers and train, the Eye, fountain and fireworks state, guests, an overlap self-check; board `'coaster'` or `'wheel'` (then `interact()` cycles the ride camera) |
 | `walk(heading, distance)` | Walk on foot through the real collision code (headless frames are too slow for keys) |
 | `match(sport)` | A venue's fixture (`'soccer'` default, `'basketball'`): stage, clock, score, status, crowd, who is on the field, fleeing or dead, abandoned, pitch invader, the player's goals |
 | `matchDay(day, minutesFromKickoff, slot, sport)` | Set the world clock relative to a fixture's kickoff (day 1 is the first day; negative minutes are the warm-up) and start that fixture afresh |
