@@ -376,7 +376,22 @@
     // occupied car is a reported crime (collisionImpact here, crowdCrash in crowd.js).
     const RECKLESS_CRASH_SPEED = 120;
     function collisionImpact(a, b, hit, closing, key, staticBody = null) {
-      if (closing < 42) return;
+      if (closing < 42) {
+        // Too soft to damage anything, but a parking knock is still heard (quietly).
+        const heavier = Math.max(vehicleSpec(a).mass || 1.25, b ? vehicleSpec(b).mass || 1.25 : 0);
+        if (closing >= 12)
+          crashSound({
+            x: hit.x,
+            y: hit.y,
+            closing,
+            mass: heavier,
+            other: b ? (heavier < 0.6 ? 'prop' : 'car') : 'wall',
+            glass: 0,
+            sliding: 0,
+            key,
+          });
+        return;
+      }
       const last = impactContacts.get(key);
       if (last && physicsClock - last.time < 0.24) return;
       impactContacts.set(key, {

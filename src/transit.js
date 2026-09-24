@@ -652,7 +652,7 @@
     }
     function nearestStation() {
       return !player.car && !playerOnRoof() && !player.parachute
-        ? RAIL_STATIONS.find((s) => distanceBetween(player, s.entry) < 48)
+        ? RAIL_STATIONS.find((s, i) => withinRange('station' + i, distanceBetween(player, s.entry), 48, 60))
         : null;
     }
     function openTransit(s) {

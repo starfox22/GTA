@@ -2440,7 +2440,11 @@
             if (m.wipers) updateWipers(c, m, deltaSeconds);
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
             paintVehicle(c, m);
-            if (m.crank) m.crank.rotation.z -= deltaSeconds * c.speed * 0.13;
+            // The player's cranks turn at their pedalling cadence (still when
+            // coasting); anyone else's follow road speed.
+            if (m.crank)
+              m.crank.rotation.z -=
+                deltaSeconds * (c === player.car ? pedalCadence() * Math.PI * 2 : c.speed * 0.13);
             if (m.helicopter) {
               const running =
                 (c === player.car ||
@@ -2927,12 +2931,14 @@
           let bi = 0;
           for (const b of bullets) {
             if (bi + 6 > tracerPositions.length) break;
+            // A sniper round (combat-rules.js SNIPER FIRE) leaves a longer streak.
+            const tail = b.tracer || 0.009;
             tracerPositions[bi++] = b.x;
             tracerPositions[bi++] = 9 + (b.altitude || 0);
             tracerPositions[bi++] = b.y;
-            tracerPositions[bi++] = b.x - b.vx * 0.009;
-            tracerPositions[bi++] = 9 + (b.altitude || 0) - (b.vz || 0) * 0.009;
-            tracerPositions[bi++] = b.y - b.vy * 0.009;
+            tracerPositions[bi++] = b.x - b.vx * tail;
+            tracerPositions[bi++] = 9 + (b.altitude || 0) - (b.vz || 0) * tail;
+            tracerPositions[bi++] = b.y - b.vy * tail;
           }
           tracerGeo.setDrawRange(0, bi / 3);
           tracerGeo.attributes.position.needsUpdate = true;

@@ -301,7 +301,10 @@
         name: 'CITY CYCLE',
         l: 28,
         w: 9,
-        max: 112,
+        // Pedal-limited: cruises clearly quicker than a sprint on foot (158 u/s)
+        // and below every car's top speed; pedalDrive (cycles.js) tapers the
+        // legs' push toward it, and standing on the pedals raises it.
+        max: 215,
         acc: 40,
         turn: 3.9,
         hp: 85,
@@ -757,12 +760,14 @@
     function tell(text, duration = 3) {
       getElement('toast').textContent = text;
       getElement('toast').classList.add('show');
+      freshToast();
       toastTime = duration;
     }
     function announce(small, big, t = 3) {
       getElement('announceSmall').textContent = small;
       getElement('announceBig').textContent = big;
       getElement('announcement').classList.add('show');
+      freshAnnouncement();
       announceTime = t;
     }
     // @include src/heat.js
@@ -1920,6 +1925,10 @@
         save();
       }, 4200);
     }
+    /* The ringing payphone's reach, shared by its prompt and E (hysteresis). */
+    function payphoneInReach() {
+      return withinRange('payphone', distanceBetween(player, phone), 68, 84);
+    }
     function nearestCar() {
       if (player.parachute) return null;
       let best = null,
@@ -2063,7 +2072,7 @@
         openService(place);
         return;
       }
-      if (distanceBetween(player, phone) < 68 && !mission) {
+      if (payphoneInReach() && !mission) {
         offerMission();
         return;
       }
@@ -2820,8 +2829,10 @@
               !['tank', 'bus', 'truck', 'flatbed'].includes(c.type) &&
               !isAircraft(c) &&
               seededRandom() < 0.55
-            )
-              hurt((b.playerDmg ?? b.dmg) * 0.6);
+            ) {
+              if (b.damageKind === 'sniper') sniperFireStats.carHits++;
+              hurt((b.playerDmg ?? b.dmg) * 0.6, b.damageKind);
+            }
             // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
             hitKind = bulletHitVehicle(c, b);
             break;
@@ -2872,7 +2883,7 @@
             if (!b.enemy) {
               if (p.police) crime(0.3);
               if (p.hp <= 0) cash += enemies.includes(p) ? 100 : 10;
-              playerHitMarker(p, p.hp <= 0, headshot);
+              playerHitConfirm(p, p.hp <= 0);
             }
             impact = true;
             hitKind = 'flesh';
@@ -2886,7 +2897,8 @@
             (b.faction !== 'police' || b.target === player) &&
             Math.hypot(b.x - player.x, b.y - player.y) < 10
           ) {
-            hurt(b.playerDmg ?? b.dmg);
+            if (b.damageKind === 'sniper') sniperFireStats.hits++;
+            hurt(b.playerDmg ?? b.dmg, b.damageKind);
             playerHitFeedback(b);
             impact = true;
             hitKind = 'flesh';
@@ -4165,6 +4177,8 @@
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.
     function updateUI() {
       enforceVehicleHandgun();
+      // Every system offers its prompt during the pass; hud.js commitPrompt() shows one.
+      clearPromptOffer();
       const d = district(),
         w = currentWeapon(),
         c = player.car;
@@ -4272,7 +4286,7 @@
         getElement('missionTitle').textContent =
           missionIndex === 0 ? 'Every city has an opening.' : 'Another call. Another score.';
         getElement('missionText').textContent =
-          'Find the ringing payphone and press E to take a job.';
+          'Find the ringing payphone and press ' + keyName('interact') + ' to take a job.';
       }
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
@@ -4284,11 +4298,14 @@
             ? 'FREE ROAM · ' + completed + ' JOBS COMPLETE'
             : 'ANSWER THE RINGING PAYPHONE',
       );
-      let prompt = '';
+      let prompt = '',
+        promptId;
       if (gameMode === 'play') {
         if (c) {
           // The flight HUD shows power, speed and the warnings; the prompt only
           // says what to do about a stall, or how to get off the ground.
+          // One identity per vehicle kind: its hints change text, not pop in anew.
+          promptId = c.type === 'plane' || c.type === 'helicopter' ? c.type : 'garage';
           if (c.type === 'plane')
             prompt = c.stalled
               ? 'STALL · ' + keyName('descend') + ' NOSE DOWN + ' + keyName('forward') + ' THROTTLE'
@@ -4316,21 +4333,23 @@
         else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
-        else if (distanceBetween(player, phone) < 68 && !m && missionIndex < missions.length)
-          prompt = 'ANSWER PAYPHONE';
+        else if (payphoneInReach() && !m && missionIndex < missions.length) prompt = 'ANSWER PAYPHONE';
         else if (sportsKickPrompt()) prompt = sportsKickPrompt();
         else {
           const n = nearestCar();
+          promptId = 'vehicle';
           if (n)
             prompt = vehicleIsLocked(n)
               ? 'LOCKED · BREAK THE WINDOW'
               : (n.occupied ? 'PULL OUT THE DRIVER · ' : 'ENTER ') + vehicleSpec(n).name;
         }
       }
-      getElement('interaction').style.display = prompt ? 'block' : 'none';
-      getElement('interaction').innerHTML = prompt
-        ? (isAircraft(c) ? '' : '<kbd>' + keyName('interact') + '</kbd> ') + prompt
-        : '';
+      // Aircraft prompts name their own keys; passing cars share one identity so
+      // walking along a row of them changes the name without a new pop-in.
+      offerPrompt(prompt, {
+        key: isAircraft(c) ? null : 'interact',
+        id: promptId,
+      });
       if (!hudState.minimapFolded) drawMap(minimapContext, getElement('minimap').width, getElement('minimap').height);
       if (mapOpen) drawMap(cityMapContext, 800, 660, true);
       drawWeapon();
@@ -5168,6 +5187,9 @@
         notifyCargoPolice(m);
         return { stage: m.stage, instruction: m.instruction, ...this.status() };
       },
+      // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
+      // visible, text, identity, docked, seconds since it popped in, this pass's offer.
+      promptState: () => promptReport(),
       // Where the current mission stands, including Vinny's depot doors.
       missionState: () =>
         mission
@@ -5467,6 +5489,7 @@
         for (const [key, value] of Object.entries(data))
           out[key] = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
         out.hud = !!document.getElementById('flightHud')?.classList.contains('on');
+        out.instruments = hudState.flightHud;
         return out;
       },
       // What the vehicle under the player is actually doing.
@@ -5502,6 +5525,7 @@
           if (gameMode === 'elevator') updateElevator(1 / 30);
           else if (gameMode === 'play') update(1 / 30);
           else break;
+          hudClockOffset += 1 / 30; // HUD timers (prompt docking) follow the stepped time
         }
         for (const code of held) keys[code] = false;
         return this.ride();
@@ -5917,6 +5941,7 @@
           if (changes.frameLimit !== undefined) setFrameLimit(changes.frameLimit === 0 ? 'unlimited' : changes.frameLimit);
           if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
+          if (typeof changes.flightHud === 'boolean') setFlightHud(changes.flightHud);
           if (typeof changes.gps === 'boolean') setGps(changes.gps);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
@@ -5940,6 +5965,7 @@
           minimapFolded: hudState.minimapFolded,
           minimapZoom: +hudState.minimapZoom.toFixed(2),
           keyHints: hudState.keyHints,
+          flightHud: hudState.flightHud,
           gps: hudState.gps,
           gpsRoute: gpsRoute.points.length,
           touch: touchMode,

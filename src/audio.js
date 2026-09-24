@@ -253,6 +253,8 @@
           c &&
           !isAircraft(c) &&
           !vehicleSpec(c).boat &&
+          // Narrow bicycle tyres do not howl through a turn.
+          !vehicleSpec(c).bicycle &&
           Math.abs(c.speed) > 70 &&
           (keys.Space || Math.abs(normalizeAngle(c.a - (c.moveA ?? c.a))) > 0.14);
         glideParam(tires.gain.gain, active && slipping ? 0.19 : 0, audio.currentTime, 0.08);

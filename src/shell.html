@@ -2022,43 +2022,6 @@ kbd {
   height: 14px;
   margin: -7px 0 0 -7px;
 }
-#hitMarker {
-  position: absolute;
-  z-index: 7;
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
-  pointer-events: none;
-  opacity: 0;
-  font: 900 11px Arial, sans-serif;
-  letter-spacing: 1px;
-  color: #ff5448;
-  white-space: nowrap;
-  text-indent: 26px;
-  line-height: 22px;
-}
-#hitMarker::before,
-#hitMarker::after {
-  content: '';
-  position: absolute;
-  left: 10px;
-  top: 0;
-  width: 2px;
-  height: 22px;
-  background: #f4f4ec;
-  box-shadow: 0 0 3px #000;
-  transform: rotate(45deg);
-}
-#hitMarker::after {
-  transform: rotate(-45deg);
-}
-#hitMarker.kill::before,
-#hitMarker.kill::after {
-  background: #ff4136;
-}
-#hitMarker.show {
-  opacity: 1;
-}
 /* WASTED and BUSTED: the world drains of colour in slow motion. */
 body.wasted #scene,
 body.wasted #game {
@@ -2406,15 +2369,25 @@ kbd {
   pointer-events: none;
   opacity: 0;
   transform: translateY(8px) scale(0.98);
+  transform-origin: 50% 0;
   transition:
     opacity 0.45s,
-    transform 0.6s var(--ui-ease);
+    transform 0.6s var(--ui-ease),
+    top 0.7s var(--ui-ease);
   text-shadow: 0 4px 28px #000, 0 1px 3px #000;
   font-family: var(--ui-font);
 }
 #announcement.show {
   opacity: 1;
   transform: none;
+}
+/* After a few seconds on screen (hud.js CENTRE CARDS) the headline slides up
+   out of the middle and shrinks, under the navigation pill and the docked
+   prompt. */
+#announcement.show.docked {
+  top: calc(var(--hud-dock-top, 72px) + 40px);
+  opacity: 0.92;
+  transform: scale(0.62);
 }
 #announcement small {
   display: block;
@@ -2441,16 +2414,41 @@ kbd {
     filter: blur(6px);
   }
 }
-/* Context prompt just under the player. */
+/* A marksman lining up on the player (hud.js SNIPER WARNING): a red glow on
+   the screen edge toward the shooter that grows as the lock closes. */
+#sniperWarning {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--sniper-x, 50%) var(--sniper-y, 0%),
+    #ff2a1ef0 0,
+    #ff2a1e88 12%,
+    #ff2a1e00 36%
+  );
+  transition: opacity 0.2s;
+}
+#sniperWarning.on {
+  opacity: var(--sniper-aim, 0.4);
+}
+/* Context prompt (hud.js INTERACTION PROMPT): pops in just under the player,
+   then after a few seconds docks as a compact chip under the navigation pill so
+   the middle of the screen stays clear. Shown and hidden with visibility and
+   opacity, never display, so a style flush cannot restart the pop-in. */
 #interaction {
   position: absolute;
+  z-index: 10;
   top: calc(50% + 58px);
   left: 0;
   right: 0;
   margin-inline: auto;
   width: max-content;
   max-width: calc(100vw - 32px);
-  display: none;
+  visibility: hidden;
+  opacity: 0;
+  transform-origin: 50% 0;
   padding: 7px 14px 7px 8px;
   border-radius: 99px;
   border: 1px solid #d7f97055;
@@ -2461,8 +2459,37 @@ kbd {
     800 11px/1.3 var(--ui-font);
   letter-spacing: 0.12em;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   pointer-events: none;
+  transition:
+    opacity 0.25s,
+    visibility 0s linear 0.25s,
+    top 0.6s var(--ui-ease),
+    transform 0.6s var(--ui-ease);
+}
+#interaction.show {
+  visibility: visible;
+  opacity: 1;
+  transition:
+    opacity 0.18s,
+    visibility 0s,
+    top 0.6s var(--ui-ease),
+    transform 0.6s var(--ui-ease);
+}
+#interaction.pop {
   animation: promptIn 0.25s var(--ui-ease);
+}
+/* A new prompt appears in place: no slide back from the docked spot. */
+#interaction.snap {
+  transition: none;
+}
+#interaction.docked {
+  top: var(--hud-dock-top, 72px);
+  transform: scale(0.88);
+}
+#interaction.show.docked {
+  opacity: 0.9;
 }
 #interaction kbd {
   margin-right: 6px;
@@ -4470,6 +4497,26 @@ body.no-key-hints .quickkeys {
 .touch-mode #interaction {
   top: calc(50% + 40px);
 }
+/* Touch: dock on the right just above the action buttons (hud.js measures
+   them into --touch-dock-top / --touch-dock-right), fading in there. */
+.touch-mode #interaction.docked {
+  top: var(--touch-dock-top, 40%);
+  left: auto;
+  right: var(--touch-dock-right, 16px);
+  margin: 0;
+  max-width: 42vw;
+  transform: scale(0.9);
+  transform-origin: 100% 100%;
+  translate: 0 -100%;
+  transition:
+    opacity 0.18s,
+    visibility 0s;
+  animation: promptIn 0.3s var(--ui-ease);
+}
+/* A toast that has been read dims so it does not sit over the play. */
+.touch-mode #toast.settled {
+  opacity: 0.72;
+}
 .touch-mode #radioCaption {
   top: 96px;
 }
@@ -4662,14 +4709,18 @@ body.no-key-hints .quickkeys {
   }
 }
 /* --- Flight HUD (hud.js, FLIGHT HUD) -----------------------------------------
-   Shown only in an aircraft. Two columns frame the aircraft either side of the
-   middle of the screen (attitude, airspeed and power on the left; altitude,
-   vertical speed, AGL and g on the right) and a heading strip sits above; the
-   centre, where the aircraft is, stays clear. The instruments are canvases
-   redrawn every frame; the rest is text. It slides in from the sides. */
+   Shown only in an aircraft, compact and against the screen edges so the view
+   stays clear: attitude, airspeed and power in a column on the left edge;
+   altitude, vertical speed, AGL and g on the right edge above the vehicle card;
+   a thin heading strip at the top under the navigation pill, with one warning
+   at a time under it. The instruments are canvases redrawn every frame, drawn
+   at full size and scaled down as a group (--fh-scale). They slide in from the
+   edges. Settings · Gameplay · Flight HUD off (.instruments-off) leaves only the
+   warnings. */
 #flightHud {
   --fh-line: #e9efe6;
   --fh-accent: #7fe3ee;
+  --fh-scale: 0.78;
   position: fixed;
   inset: 0;
   z-index: 8;
@@ -4691,47 +4742,54 @@ body.no-key-hints .quickkeys {
 }
 #flightHud .fh-frame {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0;
-  height: 0;
-  transform: scale(var(--fh-scale, 1));
+  inset: 0;
 }
 #flightHud .fh-col {
   position: absolute;
-  top: -222px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 124px;
   transition: transform 0.45s var(--ui-ease);
 }
+/* Left edge, vertically centred between the location block and the minimap. */
 #flightHud .fh-left {
-  right: 258px;
-  width: 124px;
-  align-items: flex-end;
-  transform: translateX(-40px);
+  left: var(--hud-edge);
+  top: 50%;
+  translate: 0 -50%;
+  align-items: flex-start;
+  transform-origin: 0 50%;
+  transform: translateX(-60px) scale(var(--fh-scale));
 }
+/* Right edge, standing on the vehicle card (below the radio box). */
 #flightHud .fh-right {
-  top: -90px;
-  left: 258px;
-  width: 124px;
-  transform: translateX(40px);
+  right: var(--hud-edge);
+  bottom: 176px;
+  align-items: flex-end;
+  transform-origin: 100% 100%;
+  transform: translateX(60px) scale(var(--fh-scale));
 }
 #flightHud .fh-top {
   position: absolute;
-  top: -262px;
-  left: -176px;
-  width: 352px;
+  top: 70px;
+  left: 50%;
+  translate: -50% 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  transform: translateY(-24px);
+  transform-origin: 50% 0;
+  transform: translateY(-24px) scale(var(--fh-scale));
   transition: transform 0.45s var(--ui-ease);
 }
 #flightHud.on .fh-col,
 #flightHud.on .fh-top {
-  transform: none;
+  transform: scale(var(--fh-scale));
+}
+/* Instruments off: only a warning, when there is one. */
+#flightHud.instruments-off .fh-col,
+#flightHud.instruments-off #fhHeading {
+  display: none;
 }
 #flightHud canvas {
   display: block;
@@ -4882,30 +4940,46 @@ body.no-key-hints .quickkeys {
 #flightHud.heli .fh-chips {
   display: none;
 }
-#flightHud.heli .fh-col {
-  top: -90px;
-}
 @media (max-width: 1180px), (max-height: 760px) {
-  #flightHud {
-    --fh-scale: 0.84;
-  }
-}
-@media (max-width: 900px), (max-height: 620px) {
   #flightHud {
     --fh-scale: 0.68;
   }
 }
-/* Phones: the heading strip and the two tapes only. */
+@media (max-width: 900px), (max-height: 620px) {
+  #flightHud {
+    --fh-scale: 0.56;
+  }
+  #flightHud .fh-top {
+    top: 62px;
+  }
+}
+/* Phones and touch: the heading strip and the two tapes only, both tapes at
+   mid-height against the edges (the thumb buttons own the lower corners). */
 @media (max-width: 640px) {
   #flightHud .fh-adi,
   #flightHud .fh-block {
     display: none;
   }
-  #flightHud .fh-left {
-    right: 150px;
+}
+.touch-mode #flightHud .fh-adi,
+.touch-mode #flightHud .fh-block {
+  display: none;
+}
+.touch-mode #flightHud .fh-right {
+  bottom: auto;
+  top: 50%;
+  translate: 0 -50%;
+  transform-origin: 100% 50%;
+}
+/* Touch phones: the thumbs own both sides and the vehicle card already reads
+   speed and altitude, so only the warnings show, under the aircraft. */
+@media (max-height: 520px), (max-width: 640px) {
+  .touch-mode #flightHud .fh-col,
+  .touch-mode #flightHud #fhHeading {
+    display: none;
   }
-  #flightHud .fh-right {
-    left: 150px;
+  .touch-mode #flightHud .fh-top {
+    top: calc(50% + 48px);
   }
 }
 /* --- Reduced motion: keep the states, drop the movement -------------------- */
@@ -4942,6 +5016,7 @@ body.no-key-hints .quickkeys {
   #carRadio,
   #toast,
   #announcement,
+  #interaction,
   .menu-item,
   .menu-item::before,
   .settings-tabs button::after,
@@ -5001,7 +5076,6 @@ body.no-key-hints .quickkeys {
       <div class="meter"><i id="arrestFill"></i></div>
     </div>
     <div id="damageArc" aria-hidden="true"></div>
-    <div id="hitMarker" aria-hidden="true"></div>
     <div id="tankReticle" class="hidden" aria-hidden="true"><i id="tankAimRing"></i><i id="tankBarrelPip"></i></div>
     <div id="stealthStatus" style="display: none">
       <span id="stealthLabel"></span>
@@ -5045,6 +5119,7 @@ body.no-key-hints .quickkeys {
       <small id="announceSmall"></small><strong id="announceBig"></strong>
     </div>
     <div id="interaction"></div>
+    <div id="sniperWarning" aria-hidden="true"></div>
     <!-- Flight HUD (hud.js, FLIGHT HUD): shown in an aircraft only. -->
     <div id="flightHud" aria-hidden="true">
       <div class="fh-frame">
@@ -5606,9 +5681,9 @@ body.no-key-hints .quickkeys {
             <a href="https://freesound.org/people/kevp888/sounds/746501/" target="_blank" rel="noopener"
               >kevp888</a
             >
-            (CC BY 4.0) and
-            <a href="https://kenney.nl/assets/impact-sounds" target="_blank" rel="noopener">Kenney</a>
-            Impact Sounds (CC0 1.0); trimmed, converted to mono and level-adjusted.
+            (CC BY 4.0), with CC0 1.0 recordings by squareal, magnuswaker, FxKid2,
+            michael_grinnell, toddcircle, m1a2t3z4 and C_Rogers (Freesound); trimmed, converted
+            to mono and level-adjusted.
           </p>
           <p>
             <strong>Driving radio</strong> — six licensed music stations. Tracks are

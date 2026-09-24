@@ -22,7 +22,7 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
   walk aboard deck by deck; cruise liners, a freighter, boats and jet skis to drive.
 - Three railway lines along the west shore and across the county, 13 stations to ride
   between.
-- Cars that crumple (with layered, recorded crash sounds), lose panels, glass and lamps,
+- Cars that crumple (with recorded crash sounds matched to the impact), lose panels, glass and lamps,
   burst tyres, catch fire and explode;
   bullet holes, broken shop windows and street furniture you can flatten.
 - Helicopters and three detailed airframes of plane (flaps, retracting gear, working control

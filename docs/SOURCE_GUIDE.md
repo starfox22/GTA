@@ -91,7 +91,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory, knife combat and FISTS (index 7, no weapon: `meleeAttack` throws a left-right combination with a haymaker, `punchReaction`; `playerUnarmed()` tells the crowd the player is harmless) |
 | citylife.js | Clock, `PLACES` (businesses), `DOCKS` (boat jetties and their boats), officers, police routing and sight (`policeSees`), wanted search, `clearPolice`, `daylight()` |
 | pursuit.js | Police response: `POLICE_TIERS` (what each star sends), `OFFICER_KINDS` (patrol, road, swat, fed), `dispatchPolice` / `spawnPursuitUnit` (off-camera road spawns, bursts on a new star), `pursuitControl` (lead pursuit, PIT, flank, block, route-following search, off-road shortcuts across open ground, whiskers, stuck recovery), `policeNavRoute` (county pursuits on the GPS road graph), marine units (`spawnMarineUnit`, `marineBoatInput` for boatControl), downed-officer drags, officer fire and positioning, arrest, surrender (`trackSurrender`, `policeHoldFire`: standing still at one to four stars ends in BUSTED) and `bust()`, `policeChallengeLine` (arrest lines only when an arrest can happen), the pursuit tank, the five-star army (`armyJeep`, `armyApc`, `armyTruck` before the tank after `TANK_AFTER_SECONDS`; `updateArmyGunners`), dispatch captions, the radar search area, `policeReportData` |
-| swat.js | SWAT teams and rooftop snipers: the rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen at five stars (`roofSniperSite`, `updateRoofSnipers`: laser telegraph, one heavy round, rest), `swatStats` |
+| swat.js | SWAT teams and rooftop snipers: the rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen now and then at five stars (`roofSniperSite`, `updateRoofSnipers`: one at a time, a second only after 150 s at five stars, first roll 25-45 s in and then every 60-90 s on a 65% chance; laser telegraph, two led rounds, then it packs up), `swatStats` |
 | wounds.js | Wounds: `woundPerson` (hit zone, flinch, limp, blood trail, downed officers and bystanders), `chooseDeathFall` (backwards, face down, spun, slumped against a wall), `deathFallAmount` (the half-second fall), `hitFlinch`, `woundReport` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
 | campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
@@ -110,9 +110,9 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | roofmission.js | The Blue Hour terrace (`ROOFTOP`, `player.roof`, `moveOnRoof`), mission 2's hit (index 1); `entityElevation`, `sameFloor` |
 | rooftops.js | Helicopter landings on flat roofs (`helicopterRoofSite`, `roofLandingClear`), rooftop helipads (`chooseRoofHelipads`, `b.helipad`), the `player.buildingRoof` carrier (`exitOntoRoof`, `moveOnBuildingRoof`), `playerOnRoof()` |
 | air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft |
-| combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and helicopter pursuit (`AIR_UNITS_MAX`: one hostile helicopter at a time from stars, a chase at sea or a mission; its marksman sharpens with the stars) |
+| combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and helicopter pursuit (`AIR_UNITS_MAX`: one hostile helicopter at a time from stars, a chase at sea or a mission; its marksman sharpens with the stars); SNIPER FIRE, shared by the rooftop snipers and the marksman: a lock of 2 s or more with a laser (rooftop), a rising beep and a red screen-edge glow toward the shooter (`noteSniperLock`, `sniperThreat`, hud.js SNIPER WARNING), then one visible tracer round (`fireSniperRound`) aimed at where the player is guessed to be (measured velocity, `trackPlayerMotion`, led by a random 0.3..skill of the flight time), so standing still is a hit and running or turning usually a miss; a hit is `'sniper'` damage, 50 before armour, never lethal from full health |
 | damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`), the damage console helpers |
-| crash-audio.js | `crashSound`: one layered, positioned sound per vehicle impact (from `collisionImpact` and street props): body thump, a recorded crunch (whole crash for hard hits), metal and sheet-metal layers, plastic bumper grains, glass only when a pane broke, debris, tyre scrub; lower for heavy vehicles; one event per pair per 0.7 s |
+| crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
 | military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
 | armor.js | The player's tank: `traverseTurret` (30°/s, eased, stabilised; also used by the pursuit tank and army gunners), `updatePlayerArmor`, ammunition (`tankArms`: 40 main-gun rounds, 5 s reload, coaxial MG belts; `noCoax` tanks), `tankPlayerFire`, `toggleTankWeapon`, the weapon chip in a tank (`tankHud`, `drawShellIcon`) and the reticle (`updateTankReticle`) |
@@ -468,17 +468,49 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   player or the target moves; in the air, on the water or on a ride it keeps the straight
   line. The big map is unchanged. In touch mode the bottom row
   moves to the top so the thumbs have the lower corners.
-- **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft two
-  columns frame the aircraft either side of the middle of the screen, leaving the centre
-  clear: an attitude indicator (pitch ladder, bank scale and pointer), the airspeed tape with
-  its stall band and the power block (engine power fill, throttle lever tick, flaps and gear
-  chips) on the left; the altitude tape with the ground band and a vertical-speed scale, then
-  AGL, vertical speed and g on the right; a heading strip with the objective's bearing on
-  top, and one warning at a time under it (STALL, PULL UP, GEAR, STALL WARNING, ENGINE
-  DAMAGE). The instruments are 2D canvases redrawn every frame (`updateFlightHud` from the
-  game loop) from `flightData()` (aviation.js); `#flightHud.on` fades and slides it in. The
-  helicopter shows the slim version (no attitude, flaps or gear; ROTOR for power). It scales
-  down on small screens and keeps only the tapes and heading on phones.
+- **Interaction prompt** (hud.js INTERACTION PROMPT, `#interaction`): one owner. Systems never
+  write the element; during an `updateUI()` pass they call `offerPrompt(text, { key, hold, id })`
+  (`key` is a control action named with `keyName()`, `null` for none; `hold` reads "HOLD E";
+  `id` keeps the prompt's identity while its text changes, e.g. `'vehicle'` for passing cars,
+  `'harbor-load'`). The last offer of the pass wins (mission prompts come after the generic
+  vehicle / payphone one), and `commitPrompt()` at the end of the pass applies the rules: a
+  new prompt pops in at once under the player; the same id only refreshes its text; a different
+  id replaces it after `PROMPT_SWAP_AFTER`; with no offer it stays `PROMPT_HIDE_GRACE` (and
+  `PROMPT_MIN_SHOW` in all) and fades. After `PROMPT_DOCK_AFTER` (3 s) it slides into a compact
+  chip under the navigation pill (`--hud-dock-top`, measured when it docks; touch: above the
+  action buttons on the right) and pops back to full size for a new action or on coming back
+  into range. Visibility is a class (`.show`), never `display`, so a style flush cannot restart
+  the pop-in (the old writers toggled `display` none → block every pass, which restarted the
+  fade-in 11 times a second: the "flickering" LOAD CARGO prompt). The HUD clock is wall time
+  plus the time `DeadEndCity.simulate()` steps; `DeadEndCity.promptState()` reports it.
+  Range tests behind a prompt have hysteresis, asked the same way by the prompt and by E:
+  `withinRange(key, distance, enter, exit)` (hud.js) for the payphone (68 / 84), rail stations
+  (48 / 60) and the harbor barrier (110 / 130); `nearestPlace()` keeps the door already in reach
+  until 66 (enters at 52: shops, the hospital after a respawn, casino, garages' offices); the
+  loading bay has its own (harbor.js LOADING BAY RANGE: in at 85, out at 110; ready to load when
+  stopped inside 43, until moving or past 48). A vehicle's prompts share one identity
+  (`'helicopter'`, `'plane'`, `'garage'`), so TAKE OFF → RISE or DRIVE IN → RESPRAY change text
+  without a new pop-in.
+- **Centre cards** (hud.js CENTRE CARDS): the headline card (`announce()`) slides up under the
+  docked prompt and shrinks after 3 s (not WASTED / BUSTED); in touch mode a toast dims after
+  3 s. Reduced motion cuts the slides and pop-ins (the shell's reduced-motion block).
+- **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft the
+  instruments hug the screen edges so the view stays clear: a column on the left edge
+  (attitude indicator with pitch ladder and bank scale, the airspeed tape with its stall band,
+  the power block with engine fill, throttle tick, flaps and gear chips), a column on the
+  right edge standing on the vehicle card (the altitude tape with the ground band and a
+  vertical-speed scale, then AGL, vertical speed and g), a thin heading strip with the
+  objective's bearing at the top under the navigation pill, and one warning at a time under
+  it (STALL, PULL UP, GEAR, STALL WARNING, ENGINE DAMAGE). The canvases are drawn at full
+  size and scaled as groups by `--fh-scale` (0.78, 0.68 and 0.56 on smaller screens); they
+  are redrawn every frame (`updateFlightHud`) from `flightData()` (aviation.js), and
+  `#flightHud.on` fades and slides them in from the edges. The helicopter shows the slim
+  version (no attitude, flaps or gear; ROTOR for power). Phones keep the tapes and heading;
+  touch phones show only the warnings (the thumbs own both sides and the vehicle card reads
+  speed and altitude). **Settings · Gameplay · Flight HUD** (`hudState.flightHud`, saved,
+  on by default) turns the instruments off (`.instruments-off`); the warnings still flash
+  when they apply, because STALL and PULL UP decide whether a landing ends in a crash. The
+  docked interaction prompt sits under the heading strip in flight (`placeDockLine`).
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
   advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,

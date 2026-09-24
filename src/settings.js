@@ -189,7 +189,17 @@
             'Draw the road route to the mission objective (gold) and your map waypoint (cyan) on the minimap, with arrows showing the way. Off, the minimap shows a straight line to the objective.',
           get: () => hudState.gps,
           set: (on) => setGps(on),
-        },        {
+        },
+        {
+          id: 'flightHud',
+          kind: 'toggle',
+          label: 'Flight HUD',
+          note: () =>
+            'The instruments at the screen edges while flying: airspeed, altitude, attitude, power and heading. Off, only STALL, PULL UP and the other warnings still flash when they apply.',
+          get: () => hudState.flightHud,
+          set: (on) => setFlightHud(on),
+        },
+        {
           id: 'keyHints',
           kind: 'toggle',
           label: 'Control hints',

@@ -23,10 +23,104 @@
         // A headshot (precision rifle on its aimed target) goes round the vest.
         headshot: 0,
         ballistic: 0.74,
+        // A police sniper round on the player (SNIPER FIRE below): its damage is
+        // already the share of health it takes, so no lethality factor; armour
+        // soaks part of it.
+        sniper: 0.6,
         melee: 0.55,
         blast: 0.45,
         impact: 0,
       };
+    /**
+     * SNIPER FIRE
+     * The rooftop snipers (swat.js) and the helicopter marksman share these
+     * rules so the player always gets a chance to dodge:
+     *   - a lock of two seconds or more, telegraphed by a laser (rooftop), a
+     *     rising beep that quickens with the lock and a red glow on the screen
+     *     edge toward the shooter (hud.js SNIPER WARNING, via sniperThreat);
+     *   - one visible, fast tracer round (not a hitscan) fired at where the
+     *     shooter guesses the player will be: the player's measured velocity,
+     *     led by a random fraction of the flight time (SNIPER_LEAD, capped by the
+     *     shooter's skill). Standing still is a hit; running, turning or ducking
+     *     behind something is usually a miss;
+     *   - a hit takes SNIPER_DAMAGE (half of full health, armour soaks part of
+     *     it: 'sniper' damage), so one round never kills from full health;
+     *   - the shooter then rests for several seconds.
+     */
+    const SNIPER_DAMAGE = 50,
+      SNIPER_LEAD = 0.3,
+      SNIPER_JITTER = 4;
+    const playerMotion = { x: 0, y: 0, vx: 0, vy: 0, ready: false };
+    // The strongest lock on the player this frame: what the edge warning shows.
+    const sniperThreat = { aim: 0, x: 0, y: 0, altitude: 0, at: -100 };
+    let sniperBeepAt = -100;
+    // Rounds fired at the player and rounds that struck (policeReport().sniperFire).
+    const sniperFireStats = { rooftopShots: 0, airShots: 0, hits: 0, carHits: 0 };
+    /* The player's ground velocity, smoothed, whatever carries them. */
+    function trackPlayerMotion(deltaSeconds) {
+      if (deltaSeconds <= 0) return;
+      if (!playerMotion.ready) {
+        Object.assign(playerMotion, { x: player.x, y: player.y, vx: 0, vy: 0, ready: true });
+        return;
+      }
+      const vx = (player.x - playerMotion.x) / deltaSeconds,
+        vy = (player.y - playerMotion.y) / deltaSeconds,
+        blend = Math.min(1, deltaSeconds * 8);
+      // A teleport or a respawn is not a velocity.
+      if (Math.hypot(vx, vy) > 2500) playerMotion.vx = playerMotion.vy = 0;
+      else {
+        playerMotion.vx += (vx - playerMotion.vx) * blend;
+        playerMotion.vy += (vy - playerMotion.vy) * blend;
+      }
+      playerMotion.x = player.x;
+      playerMotion.y = player.y;
+    }
+    /* A shooter lining up on the player: `aim` is 0..1 of the lock. */
+    function noteSniperLock(shooter, aim) {
+      if (aim <= 0) return;
+      if (aim >= sniperThreat.aim || gameTime - sniperThreat.at > 0.1)
+        Object.assign(sniperThreat, { aim, x: shooter.x, y: shooter.y, altitude: entityElevation(shooter), at: gameTime });
+      // The beep rises in pitch and quickens as the lock closes.
+      if (gameTime - sniperBeepAt > 0.5 - aim * 0.36) {
+        sniperBeepAt = gameTime;
+        tone(760 + aim * 900, 0.045, 0.05 + aim * 0.05, 'square');
+      }
+    }
+    /* One aimed round at the player from `origin`, led by up to `skill` of the
+       flight time. Returns the bullet. */
+    function fireSniperRound(shooter, origin, speed, skill, npcDamage) {
+      const target = player.car || player,
+        distance = combatDistance(origin, target),
+        flight = distance / speed,
+        lead = randomBetween(SNIPER_LEAD, Math.max(SNIPER_LEAD, skill)),
+        jitter = randomBetween(0, SNIPER_JITTER),
+        jitterAngle = randomBetween(0, TAU),
+        aimPoint = {
+          x: target.x + playerMotion.vx * flight * lead + Math.cos(jitterAngle) * jitter,
+          y: target.y + playerMotion.vy * flight * lead + Math.sin(jitterAngle) * jitter,
+          altitude: entityElevation(target),
+        },
+        a = headingBetween(origin, aimPoint),
+        bullet = {
+          ...origin,
+          ...shotVelocity(origin, aimPoint, speed, a),
+          // Long enough to pass the aim point, not to cross the city.
+          life: flight * 1.6 + 0.1,
+          dmg: npcDamage,
+          playerDmg: SNIPER_DAMAGE,
+          damageKind: 'sniper',
+          tracer: 0.05,
+          enemy: true,
+          faction: 'police',
+          owner: shooter,
+          target: player,
+        };
+      bullets.push(bullet);
+      sniperThreat.aim = 0;
+      if (shooter.roofSniper) sniperFireStats.rooftopShots++;
+      else sniperFireStats.airShots++;
+      return bullet;
+    }
     function vestOf(person) {
       return Math.max(0, person === player ? player.armor : person.vest || 0);
     }
@@ -37,7 +131,9 @@
     function ballisticDamage(person, damage, kind = 'ballistic') {
       let d =
         damage *
-        (kind === 'ballistic' || kind === 'headshot'
+        (kind === 'sniper'
+          ? 1
+          : kind === 'ballistic' || kind === 'headshot'
           ? BALLISTIC_LETHALITY
           : kind === 'melee'
             ? MELEE_LETHALITY
@@ -314,42 +410,43 @@
             continue;
           }
         }
-        // The marksman: lines up for a second and a half (the HUD warns), then
-        // one aimed round. Moving fast, or breaking sight, spoils the shot.
-        // The higher the wanted level, the quicker and surer the marksman.
+        // The marksman (SNIPER FIRE above): lines up for two seconds or more
+        // (beep, screen-edge warning), then one led tracer round the player can
+        // step out of. Breaking sight spoils the lock. The higher the wanted
+        // level, the quicker and the better the lead.
         const marksman = policeTier(Math.max(3, Math.ceil(wantedStars))).marksman;
         // A player giving up (pursuit.js) is not shot at while officers move in.
         if (seen && combatDistance(c, t) < 560 && c.airShotTimer <= 0 && !(t === player && policeHoldFire())) {
           c.sniperLock = (c.sniperLock || 0) + deltaSeconds;
-          if (c.sniperLock > 0.3 && t === player && gameTime - sniperWarningAt > 5) {
-            sniperWarningAt = gameTime;
-            tone(1250, 0.05, 0.08, 'square', 1400);
-          }
+          const runner = t === player || t === player.car;
+          if (runner) noteSniperLock(c, clamp(c.sniperLock / marksman.lock, 0, 1));
+          if (c.sniperLock > 0.3 && runner && gameTime - sniperWarningAt > 5) sniperWarningAt = gameTime;
           if (c.sniperLock >= marksman.lock) {
             c.sniperLock = 0;
             c.airShotTimer = randomBetween(...marksman.rest);
             pursuitStats.sniperShots++;
-            const runner = t === player || t === player.car,
-              speed = Math.hypot((player.car || t).vx || 0, (player.car || t).vy || 0) || (runner && !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) ? 110 : 0),
-              chance = clamp(marksman.hit - speed / 500, 0.3, marksman.hit);
-            let a = headingBetween(c, t);
-            if (seededRandom() > chance) a += (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.05, 0.1);
-            const origin = {
-              x: c.x + Math.cos(a) * 27,
-              y: c.y + Math.sin(a) * 27,
-              altitude: entityElevation(c),
-            };
-            bullets.push({
-              ...origin,
-              ...shotVelocity(origin, t, 1100, a),
-              life: 1,
-              dmg: 40,
-              playerDmg: 14,
-              enemy: true,
-              faction: 'police',
-              owner: c,
-              target: runner ? player : t,
-            });
+            const a0 = headingBetween(c, t),
+              origin = {
+                x: c.x + Math.cos(a0) * 27,
+                y: c.y + Math.sin(a0) * 27,
+                altitude: entityElevation(c),
+              };
+            let a = a0;
+            if (runner) {
+              const round = fireSniperRound(c, origin, 1000, marksman.lead, 40);
+              a = Math.atan2(round.vy, round.vx);
+            } else
+              bullets.push({
+                ...origin,
+                ...shotVelocity(origin, t, 1100, a),
+                life: 1,
+                dmg: 40,
+                playerDmg: 14,
+                enemy: true,
+                faction: 'police',
+                owner: c,
+                target: t,
+              });
             playSample('rifle', 0.34, 0.9, c);
             if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
           }

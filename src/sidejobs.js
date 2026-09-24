@@ -396,16 +396,18 @@
       if (!missionState) return;
       const job = sideJobIndex(missionState);
       if (job === 0 && missionState.stage > 0 && player.car !== missionState.car) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent =
-          'GET BACK IN THE CAR · ' + Math.max(0, 25 - missionState.awayTimer).toFixed(0) + ' s';
+        offerPrompt('GET BACK IN THE CAR · ' + Math.max(0, 25 - missionState.awayTimer).toFixed(0) + ' s', {
+          key: null,
+          id: 'sidejob-away',
+        });
       }
       if (job === 3 && missionState.stage >= 1 && missionState.stage <= 8 && player.car === missionState.car) {
         const ring = missionState.rings[missionState.ring],
           diff = ring.altitude - (missionState.car.altitude || 0);
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent =
-          Math.abs(diff) < 40 ? 'ON ALTITUDE · HOLD IT' : diff > 0 ? 'CLIMB ' + Math.round(diff / 5.12) + ' M' : 'DESCEND ' + Math.round(-diff / 5.12) + ' M';
+        offerPrompt(
+          Math.abs(diff) < 40 ? 'ON ALTITUDE · HOLD IT' : diff > 0 ? 'CLIMB ' + Math.round(diff / 5.12) + ' M' : 'DESCEND ' + Math.round(-diff / 5.12) + ' M',
+          { key: null, id: 'sidejob-altitude' },
+        );
       }
     }
     // END SUBSYSTEM: src/sidejobs.js
