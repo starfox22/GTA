@@ -104,7 +104,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
 | military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
 | armor.js | The player's tank: `traverseTurret` (30°/s, eased, stabilised; also used by the pursuit tank and army gunners), `updatePlayerArmor`, ammunition (`tankArms`: 40 main-gun rounds, 5 s reload, coaxial MG belts; `noCoax` tanks), `tankPlayerFire`, `toggleTankWeapon`, the weapon chip in a tank (`tankHud`, `drawShellIcon`) and the reticle (`updateTankReticle`) |
-| aviation.js | Fixed-wing flight model (`planeControl`), flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
+| aviation.js | Fixed-wing flight model (`planeControl`) and its controls (FLIGHT CONTROLS: engine spool, pitch and roll springs with inertia and auto-coordination, flaps, retracting gear and belly landings, stall and gear warnings with buffet, nosewheel steering and brakes), `flightData()` for the HUD and the console, flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
 | challenges.js | Missions 3 to 9 (indices 2 to 8) and the interact/UI routing for all missions (`challengeMissionInteract`) |
 | sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
@@ -118,11 +118,11 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sports-audio.js | Procedural stadium bed, chants, clapping, goal roars, gasps, panic screams, whistles, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
-| navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance |
+| navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance; the minimap GPS (road routes to the objective and the waypoint with direction chevrons, `updateGpsRoute`, `drawGpsRoutes`) |
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy, the Blue Hour terrace landing, water rescue |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends) |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: soldiers, police and mission characters first, then lines at the player, then the nearest; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
@@ -149,7 +149,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
-| themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras |
+| themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras (the station roof and its sign are their own batch, cut away while the train or the ride camera is under them, `setStationRoofCut`) |
 | garage3d.js | Garage buildings, shutters, lights and service details |
 | landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
@@ -176,7 +176,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles, county ground, foliage sway |
 | helicopter3d.js | Airframe, rotor, lights and cockpit |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts |
-| plane3d.js | Courier prop plane, business jet and airliner |
+| plane3d.js | The three airframes, modelled on real types: the Serrano C200 courier (mission 11's plane; a low-wing single turboprop with a T-tail after the Pilatus PC-12), the Aurelia J8 business jet and the Meridian 220 airliner. A lofted fuselage (monotone-cubic stations, superellipse sections) wears a livery texture computed per pixel from the surface (windscreen and cockpit glass with frames, cabin windows, doors, cheatline, registration; glossy glass through a roughness / metalness map); NACA-section wings, winglets, fin and stabiliser; flaps, ailerons, elevators and rudder in hinge pivots; four-blade propeller with blur disc or lathed turbofans with spinning fans; retracting gear; navigation, strobe, beacon and landing lights. Static parts are merged per material. `animateAircraft` poses it all from the flight model each frame |
 
 `src/asset-loader.js` sits outside the closure: it decodes the media blocks and calls
 `startDeadEndCity(ASSETS)`.
@@ -418,9 +418,19 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   share a key only when their contexts do not overlap (Space: handbrake in a car, fire on
   foot); the settings screen offers to swap on a clash. Menu keys (Escape, Enter, the map's
   arrows / + / − / 0 / C) are fixed.
-- **Aircraft** climb and descend on their own actions, `ascend` / `descend` (T / G): the
-  helicopter's lift and the plane's pitch (physics.js `helicopterControl`, aviation.js
-  `planeControl`), clear of Space (handbrake) and Shift (sprint).
+- **Aircraft** climb and descend on their own actions, `ascend` / `descend` (↑ / ↓, with
+  T / G as second keys; the virtual codes stay `KeyT` / `KeyG` through the action's `code`):
+  the helicopter's lift and the plane's pitch (physics.js `helicopterControl`, aviation.js
+  `planeControl`), clear of Space (handbrake) and Shift (sprint). The arrows are also
+  forward / back's second keys: `ascend` / `descend` declare `overrides: 'forward'` /
+  `'back'`, so `actionsForKey()` gives the key to them in the `air` context
+  (`controlContext()`) and to movement everywhere else, and `controlConflicts()` does not
+  count that pair as a clash. W / S stay throttle and fly forward / back in the air.
+  Bindings saved with the old T / G defaults move to the new ones on load. Planes also
+  have `flapsDown` / `flapsUp` (X / Z) and `gear` (L), handled on keydown in game.js
+  (`setPlaneFlaps`, `togglePlaneGear`, aviation.js). In a plane the camera leads the
+  aircraft along its smoothed velocity (`planeCameraLead`, game.js), pulls back a little
+  with airspeed and shakes with the stall buffet (flight-view3d.js).
 - **Settings** (settings.js) is one screen with four tabs built from `SETTING_ROWS`; each row
   has `get()` / `set()` and applies at once. While it is open `gameMode` is `'settings'` and
   the keydown listener hands every key to `settingsKeyDown()`. The character see-through
@@ -436,8 +446,24 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   weapon boxes are `.hud-pop` elements: compact until `hudPop(id)` (station change, weapon
   change, firing, reloading) or hover opens their `.hud-more` rows. The minimap zooms with
   the wheel or a pinch over it (`minimapZoom()` scales the cached base layer in
-  `drawMap`), folds with its button, and both are saved. In touch mode the bottom row
+  `drawMap`), folds with its button, and both are saved. With **GPS route on minimap**
+  (Settings · Gameplay, `hudState.gps`, on by default) the minimap draws the A* road route
+  to the mission objective (gold) and to the map waypoint (cyan) with chevrons pointing the
+  way (navigation.js, GPS ON THE MINIMAP), refreshed every couple of seconds once the
+  player or the target moves; in the air, on the water or on a ride it keeps the straight
+  line. The big map is unchanged. In touch mode the bottom row
   moves to the top so the thumbs have the lower corners.
+- **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft two
+  columns frame the aircraft either side of the middle of the screen, leaving the centre
+  clear: an attitude indicator (pitch ladder, bank scale and pointer), the airspeed tape with
+  its stall band and the power block (engine power fill, throttle lever tick, flaps and gear
+  chips) on the left; the altitude tape with the ground band and a vertical-speed scale, then
+  AGL, vertical speed and g on the right; a heading strip with the objective's bearing on
+  top, and one warning at a time under it (STALL, PULL UP, GEAR, STALL WARNING, ENGINE
+  DAMAGE). The instruments are 2D canvases redrawn every frame (`updateFlightHud` from the
+  game loop) from `flightData()` (aviation.js); `#flightHud.on` fades and slides it in. The
+  helicopter shows the slim version (no attitude, flaps or gear; ROTOR for power). It scales
+  down on small screens and keeps only the tapes and heading on phones.
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
   advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,

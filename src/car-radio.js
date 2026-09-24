@@ -168,10 +168,15 @@
       });
       return true;
     }
+    /* Somewhere with a radio: a working vehicle (a bicycle has none), or a Sunset
+       Pier ride, the Falcon's train or an Eye capsule (themepark.js), which play
+       the same stations through the same player. */
+    function radioAboard() {
+      return gameMode === 'play' && ((player.car?.hp > 0 && !ridingBicycle()) || !!player.coaster);
+    }
     function syncCarRadio(gesture = false, deltaSeconds = 0) {
       const party = gameMode === 'play' && player.roof && !document.hidden,
-        // A bicycle has no radio to play.
-        riding = gameMode === 'play' && player.car?.hp > 0 && !ridingBicycle() && !document.hidden,
+        riding = radioAboard() && !document.hidden,
         wants = (party || (riding && carRadioEnabled)) && soundOn,
         // The Blue Hour rooftop party always plays the synth track, whatever is tuned.
         loadKey = party ? RADIO_PARTY : MUSIC_STATIONS[carRadioStation].id + '/' + stationTrackKey(),
@@ -262,7 +267,7 @@
       updateCarRadioUI();
     }
     function updateCarRadioUI() {
-      const riding = gameMode === 'play' && player.car?.hp > 0 && !ridingBicycle();
+      const riding = radioAboard();
       getElement('carRadio').classList.toggle('hidden', !riding);
       const station = MUSIC_STATIONS[carRadioStation],
         track = radioTrack();

@@ -218,6 +218,9 @@
         x: spawn.x,
         y: spawn.y,
       },
+      // In a plane the camera leads the aircraft along its velocity, smoothed so a
+      // turn swings the view round gently instead of whipping it (updateGame).
+      planeCameraLead = { x: 0, y: 0 },
       vehicles = [],
       pedestrians = [],
       bullets = [],
@@ -2865,7 +2868,10 @@
         updatePlayerArmor(deltaSeconds);
         timed('combat', () => updateCombat(deltaSeconds));
         timed('mission', () => missionUpdate(deltaSeconds));
-        timed('waypoint', () => updateWaypoint(deltaSeconds));
+        timed('waypoint', () => {
+          updateWaypoint(deltaSeconds);
+          updateGpsRoute(deltaSeconds);
+        });
       }
       for (let i = particles.length - 1; i >= 0; i--) {
         let p = particles[i];
@@ -2905,12 +2911,25 @@
       const look = player.car ? player.car.speed * 0.35 : 0,
         // A coaster outruns the usual trailing camera; stay with the train.
         follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
-      cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
-      cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
+      if (player.car?.type === 'plane') {
+        const lead = 1 - Math.exp(-deltaSeconds * 1.4);
+        planeCameraLead.x += ((player.car.vx || 0) * 0.42 - planeCameraLead.x) * lead;
+        planeCameraLead.y += ((player.car.vy || 0) * 0.42 - planeCameraLead.y) * lead;
+        const hold = Math.min(1, deltaSeconds * 7);
+        cameraTarget.x += (player.x + planeCameraLead.x - cameraTarget.x) * hold;
+        cameraTarget.y += (player.y + planeCameraLead.y - cameraTarget.y) * hold;
+      } else {
+        planeCameraLead.x = Math.cos(player.a) * look;
+        planeCameraLead.y = Math.sin(player.a) * look;
+        cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
+        cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
+      }
       timed('sound', () => {
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);
       });
+      // The flight instruments move every frame (hud.js, FLIGHT HUD).
+      timed('flighthud', updateFlightHud);
       uiTime += deltaSeconds;
       if (uiTime > 0.09) {
         uiTime = 0;
@@ -3670,14 +3689,17 @@
       drawHarborMap(drawingContext, big);
       const target = objective();
       if (target) {
-        drawingContext.strokeStyle = '#f3d791aa';
-        drawingContext.lineWidth = big ? 9 : 8;
-        drawingContext.setLineDash([22, 19]);
-        drawingContext.beginPath();
-        drawingContext.moveTo(player.x, player.y);
-        drawingContext.lineTo(target.x, target.y);
-        drawingContext.stroke();
-        drawingContext.setLineDash([]);
+        // On the minimap the GPS draws the road route instead (navigation.js).
+        if (big || !gpsRouteShown()) {
+          drawingContext.strokeStyle = '#f3d791aa';
+          drawingContext.lineWidth = big ? 9 : 8;
+          drawingContext.setLineDash([22, 19]);
+          drawingContext.beginPath();
+          drawingContext.moveTo(player.x, player.y);
+          drawingContext.lineTo(target.x, target.y);
+          drawingContext.stroke();
+          drawingContext.setLineDash([]);
+        }
         drawingContext.fillStyle = '#f2d485';
         drawingContext.beginPath();
         drawingContext.arc(target.x, target.y, 36, 0, TAU);
@@ -3685,7 +3707,8 @@
       }
       drawTransitMap(drawingContext, scale, big);
       drawSportsMap(drawingContext, scale, big);
-      drawUserRoute(drawingContext, scale);
+      drawUserRoute(drawingContext, scale, big);
+      if (!big) drawGpsRoutes(drawingContext, scale);
       drawCountyMap(drawingContext, scale, big);
       drawGarageMap(drawingContext, scale);
       drawAirCoverMap(drawingContext, scale);
@@ -4082,12 +4105,15 @@
       let prompt = '';
       if (gameMode === 'play') {
         if (c) {
+          // The flight HUD shows power, speed and the warnings; the prompt only
+          // says what to do about a stall, or how to get off the ground.
           if (c.type === 'plane')
             prompt = c.stalled
               ? 'STALL · ' + keyName('descend') + ' NOSE DOWN + ' + keyName('forward') + ' THROTTLE'
-              : keyName('forward') + '/' + keyName('back') + ' THROTTLE ' +
-                Math.round((c.throttle || 0) * 100) +
-                '% · ' + keyName('ascend') + '/' + keyName('descend') + ' PITCH · ' + keyName('bail') + ' PARACHUTE';
+              : aircraftClearance(c) < 1 && Math.abs(c.speed) < 40
+                ? keyName('forward') + ' THROTTLE · ' + keyName('ascend') + ' ROTATE · ' + keyName('flapsDown') + ' FLAPS · ' +
+                  keyName('interact') + ' EXIT'
+                : '';
           else if (c.type === 'helicopter')
             prompt =
               aircraftClearance(c) > 1
@@ -4532,11 +4558,18 @@
         deployParachute();
         return;
       }
-      if (player.car && is('radioPower')) {
+      // Plane flaps and landing gear (aviation.js, FLIGHT CONTROLS).
+      if (player.car?.type === 'plane' && player.car.hp > 0 && (is('flapsDown') || is('flapsUp') || is('gear'))) {
+        if (is('gear')) togglePlaneGear(player.car);
+        else setPlaneFlaps(player.car, is('flapsDown') ? 1 : -1);
+        return;
+      }
+      // The radio plays in vehicles and on the Sunset Pier rides (car-radio.js).
+      if ((player.car || player.coaster) && is('radioPower')) {
         toggleCarRadio();
         return;
       }
-      if (player.car && is('radioNext')) {
+      if ((player.car || player.coaster) && is('radioNext')) {
         tuneCarRadio(carRadioStation + 1);
         return;
       }
@@ -5176,6 +5209,18 @@
         weather.locked = true;
         return setWeather(id);
       },
+      // The player's aircraft instruments as the flight HUD shows them (aviation.js
+      // flightData): airspeed km/h, altitude and AGL m, vertical speed m/s, heading,
+      // pitch, bank, throttle and spooled power, flaps, gear, g, stall warnings.
+      flight() {
+        const data = flightData(player.car);
+        if (!data) return null;
+        const out = {};
+        for (const [key, value] of Object.entries(data))
+          out[key] = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
+        out.hud = !!document.getElementById('flightHud')?.classList.contains('on');
+        return out;
+      },
       // What the vehicle under the player is actually doing.
       ride: () => ({
         type: player.car ? player.car.type : null,
@@ -5250,6 +5295,10 @@
           if (car.type === 'plane') {
             car.vx = Math.cos(car.a) * 420;
             car.vy = Math.sin(car.a) * 420;
+            // Cruising: gear up, cruise power.
+            car.gearDown = false;
+            car.gearPos = 0;
+            car.throttle = car.power = 0.75;
           }
         }
         return this.status();
@@ -5618,6 +5667,7 @@
           if (typeof changes.fps === 'boolean' && changes.fps !== fpsMeter.shown) toggleFpsCounter();
           if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
+          if (typeof changes.gps === 'boolean') setGps(changes.gps);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
@@ -5639,6 +5689,8 @@
           minimapFolded: hudState.minimapFolded,
           minimapZoom: +hudState.minimapZoom.toFixed(2),
           keyHints: hudState.keyHints,
+          gps: hudState.gps,
+          gpsRoute: gpsRoute.points.length,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,
         };

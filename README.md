@@ -25,8 +25,10 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 - Cars that crumple (with layered, recorded crash sounds), lose panels, glass and lamps,
   burst tyres, catch fire and explode;
   bullet holes, broken shop windows and street furniture you can flatten.
-- Helicopters and three airframes of plane with a perspective flight camera, volumetric
-  clouds, and helicopter landings on helipads and flat roofs.
+- Helicopters and three detailed airframes of plane (flaps, retracting gear, working control
+  surfaces) with a perspective flight camera, a glass-cockpit flight HUD (attitude, airspeed
+  and altitude tapes, vertical speed, heading, power, flaps, gear, g, stall warnings),
+  volumetric clouds, and helicopter landings on helipads and flat roofs.
 - A 3D renderer (Three.js r160, embedded): HDR post-processing (ambient occlusion, bloom,
   filmic grade), a sun that follows the clock, sky reflections, a night light map for every
   lamp and shop, weather, and four graphics quality tiers. Without WebGL a 2D renderer
@@ -36,21 +38,21 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 
 | Action | Keys |
 | --- | --- |
-| Move / drive | W A S D or arrows |
+| Move / drive | W A S D or arrows (in an aircraft ↑ / ↓ climb and descend instead) |
 | Interact: enter or leave a vehicle, payphone, shops, stations, boarding | E |
 | Stadium pitch: dribble by walking into the ball; kick it the way you face | E (hold Shift for a harder, higher strike) |
 | Fire | F, Space or mouse click (on foot); F fires the pistol from a vehicle |
 | Handbrake (in a vehicle) | Space |
 | Sprint | Shift |
 | Bicycle | hold W to pedal, Shift stands on the pedals, S brakes |
-| Helicopter | T rise, G descend, W/S fly, A/D turn; land on open ground, helipads or flat roofs |
-| Plane | W/S throttle, A/D bank, T/G nose up/down |
+| Helicopter | ↑ rise, ↓ descend (T / G also work), W/S fly, A/D turn; land on open ground, helipads or flat roofs |
+| Plane | W/S throttle (the engine spools up), A/D bank (steer on the ground), ↑/↓ nose up/down (T / G also work), X / Z flaps down / up, L landing gear, S at idle brakes on the ground |
 | Bail out / parachute; dive off a boat | J (then Space opens the canopy) |
 | Weapons | 1 to 6, Q cycle (ends on FISTS, no weapon), K knife, ` or 8 fists, R reload, I arsenal |
 | Tank | the mouse (or the touch aim stick) lays the turret; F / click fires the selected gun, Q switches main gun and machine gun, right click fires the machine gun |
 | Surrender | stand still (or stop the car) with the police close, at one to four stars |
 | City map | Tab |
-| Car radio | N power, B next station |
+| Car radio (also on the Falcon coaster and the Sunset Eye) | N power, B next station |
 | Horn, mute | H, M |
 | Show the mission card again | O (or click the objective strip) |
 | Street zoom | mouse wheel or pinch; + / − and 0 |
@@ -65,7 +67,7 @@ Every key can be rebound in **Settings · Controls** (from the title menu or the
 menu), which also warns about clashes and offers to swap. Settings has four tabs:
 GRAPHICS (quality tier, FPS counter, character see-through), AUDIO (sound on/off; master,
 effects, radio music and voice volumes; radio voices), GAMEPLAY (NPC chatter, minimap,
-control hints) and CONTROLS (touch controls, key bindings). Touch controls appear
+GPS route on the minimap, control hints) and CONTROLS (touch controls, key bindings). Touch controls appear
 automatically on phones and tablets. Progress and every setting save to the browser's
 local storage. The game runs offline; nothing is fetched from the network.
 

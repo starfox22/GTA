@@ -13,7 +13,8 @@
      *             localStorage 'dead-end-city-cutaway' at startup: 'off' = off)
      *   AUDIO     sound on/off, master / effects / radio music / voice volumes,
      *             radio voices (police and dispatch callouts)
-     *   GAMEPLAY  NPC chatter (street speech bubbles), minimap, control hints
+     *   GAMEPLAY  NPC chatter (street speech bubbles), minimap, GPS route on the
+     *             minimap, control hints
      *   CONTROLS  touch controls (mobile.js) and key remapping (controls.js)
      *
      * Everything applies the moment it changes and is saved in localStorage. The
@@ -165,6 +166,14 @@
           set: (on) => setMinimapFolded(!on),
         },
         {
+          id: 'gps',
+          kind: 'toggle',
+          label: 'GPS route on minimap',
+          note: () =>
+            'Draw the road route to the mission objective (gold) and your map waypoint (cyan) on the minimap, with arrows showing the way. Off, the minimap shows a straight line to the objective.',
+          get: () => hudState.gps,
+          set: (on) => setGps(on),
+        },        {
           id: 'keyHints',
           kind: 'toggle',
           label: 'Control hints',

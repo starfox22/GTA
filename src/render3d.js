@@ -2161,12 +2161,8 @@
               m.damageVersion = c.damageVersion;
               applyVehicleDamage(c, m);
             }
-            if (m.plane) {
-              if (m.prop)
-                m.prop.rotation.x += deltaSeconds * (c.hp > 0 ? 7 + (c.throttle || 0) * 80 : 0);
-              m.body.rotation.set(c.bank || 0, 0, c.pitch || 0, 'ZYX');
-              for (const { wheel } of m.wheels) wheel.visible = true;
-            }
+            // Control surfaces, gear, propeller, lights and buffet (plane3d.js).
+            if (m.plane) animateAircraft(c, m, deltaSeconds);
             if (m.tank) {
               m.turret.rotation.y = -normalizeAngle((c.turretA ?? c.a) - c.a);
               m.barrel.position.x = (-Math.max(0, (c.cannonRecoilUntil || 0) - gameTime) / 0.25) * 4;
