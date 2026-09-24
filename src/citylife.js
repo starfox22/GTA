@@ -1538,20 +1538,9 @@
         getElement('cargoFill').style.width =
           ((hm.collected + (hm.loading ? hm.loading.time / 2.1 : 0)) / 3) * 100 + '%';
       }
-      if (gameMode === 'play' && harborGate < 0.82 && distanceBetween(player, HARBOR.gate) < 110) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').innerHTML = '<kbd>E</kbd> OPEN HARBOR BARRIER';
-      } else if (
-        gameMode === 'play' &&
-        hm?.stage === 2 &&
-        player.car === hm.car &&
-        distanceBetween(player, HARBOR.bay) < 85
-      ) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').innerHTML = hm.loading
-          ? 'LOADING · ACCELERATE TO CANCEL'
-          : '<kbd>E</kbd> LOAD CARGO · STOP IN THE BAY';
-      }
+      if (gameMode === 'play' && harborGate < 0.82 && distanceBetween(player, HARBOR.gate) < 110)
+        offerPrompt('OPEN HARBOR BARRIER', { id: 'harbor-gate' });
+      else if (gameMode === 'play') harborBayPrompt(hm);
       getElement('worldClock').textContent =
         'DAY ' + (Math.floor(worldMinutes / 1440) + 1) + ' · ' + clockText();
       const nav = navigationState();
@@ -1586,10 +1575,7 @@
       getElement('policeEscapeSeconds').textContent = Math.ceil(searchRemaining) + 's';
       if (gameMode === 'play' && !player.car && !playerOnRoof()) {
         const place = nearestPlace();
-        if (place) {
-          getElement('interaction').style.display = 'block';
-          getElement('interaction').innerHTML = '<kbd>E</kbd> ' + place.name;
-        }
+        if (place) offerPrompt(place.name, { id: 'place|' + place.name });
       }
       roofMissionUI();
       militaryUI();

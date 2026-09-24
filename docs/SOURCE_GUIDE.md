@@ -466,6 +466,26 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   player or the target moves; in the air, on the water or on a ride it keeps the straight
   line. The big map is unchanged. In touch mode the bottom row
   moves to the top so the thumbs have the lower corners.
+- **Interaction prompt** (hud.js INTERACTION PROMPT, `#interaction`): one owner. Systems never
+  write the element; during an `updateUI()` pass they call `offerPrompt(text, { key, hold, id })`
+  (`key` is a control action named with `keyName()`, `null` for none; `hold` reads "HOLD E";
+  `id` keeps the prompt's identity while its text changes, e.g. `'vehicle'` for passing cars,
+  `'harbor-load'`). The last offer of the pass wins (mission prompts come after the generic
+  vehicle / payphone one), and `commitPrompt()` at the end of the pass applies the rules: a
+  new prompt pops in at once under the player; the same id only refreshes its text; a different
+  id replaces it after `PROMPT_SWAP_AFTER`; with no offer it stays `PROMPT_HIDE_GRACE` (and
+  `PROMPT_MIN_SHOW` in all) and fades. After `PROMPT_DOCK_AFTER` (3 s) it slides into a compact
+  chip under the navigation pill (`--hud-dock-top`, measured when it docks; touch: above the
+  action buttons on the right) and pops back to full size for a new action or on coming back
+  into range. Visibility is a class (`.show`), never `display`, so a style flush cannot restart
+  the pop-in (the old writers toggled `display` none → block every pass, which restarted the
+  fade-in 11 times a second: the "flickering" LOAD CARGO prompt). The HUD clock is wall time
+  plus the time `DeadEndCity.simulate()` steps; `DeadEndCity.promptState()` reports it.
+  Range tests behind a prompt should have hysteresis like the loading bay (harbor.js LOADING BAY
+  RANGE: in at 85, out at 110; ready to load when stopped inside 43, until moving or past 48).
+- **Centre cards** (hud.js CENTRE CARDS): the headline card (`announce()`) slides up under the
+  docked prompt and shrinks after 3 s (not WASTED / BUSTED); in touch mode a toast dims after
+  3 s. Reduced motion cuts the slides and pop-ins (the shell's reduced-motion block).
 - **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft two
   columns frame the aircraft either side of the middle of the screen, leaving the centre
   clear: an attitude indicator (pitch ladder, bank scale and pointer), the airspeed tape with

@@ -863,32 +863,38 @@
                 : 'GUEST DISGUISE · WATCH THE PATROLS';
         getElement('stealthFill').style.width = missionState.suspicion + '%';
         if (!missionState.alarm && missionState.boss.hp > 0) {
-          getElement('interaction').style.display = 'block';
-          getElement('interaction').textContent = missionState.poisoned
-            ? ({
+          if (missionState.poisoned)
+            offerPrompt(
+              ({
                 approach: 'VESCARI IS GOING TO HIS DRINK',
                 sip: 'THE TOAST',
                 sick: 'SOMETHING IS WRONG…',
                 collapse: 'KEEP YOUR COVER',
-              }[missionState.poisonPhase] || 'GLASS PREPARED') + ' · E AT THE ELEVATOR TO LEAVE'
-            : distanceBetween(player, ROOF_HIT.drink) < 36
-              ? poisonWitness(missionState)
+              }[missionState.poisonPhase] || 'GLASS PREPARED') +
+                ' · ' +
+                keyName('interact') +
+                ' AT THE ELEVATOR TO LEAVE',
+              { key: null, id: 'roof-poisoned' },
+            );
+          else if (distanceBetween(player, ROOF_HIT.drink) < 36 && !poisonWitness(missionState))
+            offerPrompt('PREPARE THE RESERVED GLASS', { key: 'poison', id: 'roof-glass' });
+          else
+            offerPrompt(
+              distanceBetween(player, ROOF_HIT.drink) < 36
                 ? 'BODYGUARD WATCHING · WAIT FOR AN OPENING'
-                : 'P · PREPARE THE RESERVED GLASS'
-              : 'VIP LOUNGE · FIND VESCARI’S RESERVED GLASS';
+                : 'VIP LOUNGE · FIND VESCARI’S RESERVED GLASS',
+              { key: null },
+            );
         }
         if (canSilentHit(missionState)) {
-          getElement('interaction').style.display = 'block';
-          getElement('interaction').textContent = 'HOLD E · SILENT TAKEDOWN';
+          offerPrompt('SILENT TAKEDOWN', { hold: true, id: 'takedown' });
         }
       }
       if (missionState && player.roof && distanceBetween(player, ROOFTOP.lift) < 48) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent = 'E · ELEVATOR TO STREET';
+        offerPrompt('ELEVATOR TO STREET', { id: 'roof-lift' });
       }
       if (missionState?.stage === 0 && !player.car && distanceBetween(player, ROOF_HIT.outfit) < 58) {
-        getElement('interaction').style.display = 'block';
-        getElement('interaction').textContent = 'E · CHANGE INTO GUEST CLOTHES';
+        offerPrompt('CHANGE INTO GUEST CLOTHES', { id: 'roof-outfit' });
       }
     }
     function roofSpeechBubble(p, x, y, scale = 1) {

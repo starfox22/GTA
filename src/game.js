@@ -757,12 +757,14 @@
     function tell(text, duration = 3) {
       getElement('toast').textContent = text;
       getElement('toast').classList.add('show');
+      freshToast();
       toastTime = duration;
     }
     function announce(small, big, t = 3) {
       getElement('announceSmall').textContent = small;
       getElement('announceBig').textContent = big;
       getElement('announcement').classList.add('show');
+      freshAnnouncement();
       announceTime = t;
     }
     // @include src/heat.js
@@ -4165,6 +4167,8 @@
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.
     function updateUI() {
       enforceVehicleHandgun();
+      // Every system offers its prompt during the pass; hud.js commitPrompt() shows one.
+      clearPromptOffer();
       const d = district(),
         w = currentWeapon(),
         c = player.car;
@@ -4272,7 +4276,7 @@
         getElement('missionTitle').textContent =
           missionIndex === 0 ? 'Every city has an opening.' : 'Another call. Another score.';
         getElement('missionText').textContent =
-          'Find the ringing payphone and press E to take a job.';
+          'Find the ringing payphone and press ' + keyName('interact') + ' to take a job.';
       }
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
@@ -4284,7 +4288,8 @@
             ? 'FREE ROAM · ' + completed + ' JOBS COMPLETE'
             : 'ANSWER THE RINGING PAYPHONE',
       );
-      let prompt = '';
+      let prompt = '',
+        promptId;
       if (gameMode === 'play') {
         if (c) {
           // The flight HUD shows power, speed and the warnings; the prompt only
@@ -4321,16 +4326,19 @@
         else if (sportsKickPrompt()) prompt = sportsKickPrompt();
         else {
           const n = nearestCar();
+          promptId = 'vehicle';
           if (n)
             prompt = vehicleIsLocked(n)
               ? 'LOCKED · BREAK THE WINDOW'
               : (n.occupied ? 'PULL OUT THE DRIVER · ' : 'ENTER ') + vehicleSpec(n).name;
         }
       }
-      getElement('interaction').style.display = prompt ? 'block' : 'none';
-      getElement('interaction').innerHTML = prompt
-        ? (isAircraft(c) ? '' : '<kbd>' + keyName('interact') + '</kbd> ') + prompt
-        : '';
+      // Aircraft prompts name their own keys; passing cars share one identity so
+      // walking along a row of them changes the name without a new pop-in.
+      offerPrompt(prompt, {
+        key: isAircraft(c) ? null : 'interact',
+        id: promptId,
+      });
       if (!hudState.minimapFolded) drawMap(minimapContext, getElement('minimap').width, getElement('minimap').height);
       if (mapOpen) drawMap(cityMapContext, 800, 660, true);
       drawWeapon();
@@ -5168,6 +5176,9 @@
         notifyCargoPolice(m);
         return { stage: m.stage, instruction: m.instruction, ...this.status() };
       },
+      // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
+      // visible, text, identity, docked, seconds since it popped in, this pass's offer.
+      promptState: () => promptReport(),
       // Where the current mission stands, including Vinny's depot doors.
       missionState: () =>
         mission
@@ -5502,6 +5513,7 @@
           if (gameMode === 'elevator') updateElevator(1 / 30);
           else if (gameMode === 'play') update(1 / 30);
           else break;
+          hudClockOffset += 1 / 30; // HUD timers (prompt docking) follow the stepped time
         }
         for (const code of held) keys[code] = false;
         return this.ride();

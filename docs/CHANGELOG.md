@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased — prompts out of the way
+
+HUD (hud.js, harbor.js, shell.html)
+- The mission 1 LOAD CARGO prompt no longer flickers: every system now offers its prompt to one
+  owner (`offerPrompt`, hud.js) instead of writing `#interaction`, which the old code set to
+  `display: none` and back every UI pass, restarting its fade-in; the loading bay range and the
+  ready-to-load test have hysteresis, and prompts have a minimum display time and a short grace
+  before hiding. Prompts name keys from the bindings (hold prompts read "HOLD E").
+- Prompts, key hints and headline cards leave the middle of the screen after 3 s: the prompt
+  docks as a small chip under the navigation pill (touch: above the action buttons) and pops
+  back for a new action; headlines slide up and shrink; touch toasts dim. Reduced motion
+  respected.
+
 ## 30.0.0 — The islands rearranged, AAA pass two
 
 Settings, controls and HUD (controls.js, settings.js, hud.js)

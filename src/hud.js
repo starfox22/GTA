@@ -286,8 +286,200 @@
         grid.append(section);
       }
     }
+    /**
+     * INTERACTION PROMPT (#interaction)
+     * One owner for the context prompt under the player. During an updateUI()
+     * pass every system that has something to say calls offerPrompt(); the
+     * last offer of the pass wins (the specific mission prompts are offered
+     * after the generic vehicle / payphone one, as before). commitPrompt() at
+     * the end of the pass decides what is on screen:
+     *
+     *   - a new prompt shows at once, with the pop-in, in the middle under the
+     *     player;
+     *   - the same prompt (same `id`) only has its text refreshed, so a
+     *     counter or a car name changing never restarts the animation;
+     *   - a different prompt replaces it only after PROMPT_SWAP_AFTER, so two
+     *     systems flipping at a range edge cannot strobe it;
+     *   - when nobody offers it any more it stays PROMPT_HIDE_GRACE, and at
+     *     least PROMPT_MIN_SHOW in all, then fades (visibility, not display,
+     *     so the pop-in is never re-triggered by a style flush);
+     *   - after PROMPT_DOCK_AFTER it slides out of the middle into a compact
+     *     chip under the navigation pill (touch: between the thumb clusters),
+     *     and comes back to full size when the action changes or the player
+     *     comes newly into range.
+     *
+     * Keys are named from the bindings (keyName), never spelled literally.
+     * Wall-clock time drives it, like the pop boxes.
+     */
+    /* The HUD's clock in seconds: wall time, plus the time DeadEndCity.simulate()
+       has stepped (it runs many updates within one wall-clock moment). */
+    let hudClockOffset = 0;
+    function hudNow() {
+      return performance.now() / 1000 + hudClockOffset;
+    }
+    const PROMPT_MIN_SHOW = 0.8,
+      PROMPT_HIDE_GRACE = 0.35,
+      PROMPT_SWAP_AFTER = 0.35,
+      PROMPT_DOCK_AFTER = 3;
+    let promptOffer = null;
+    const promptView = {
+      id: null,
+      html: '',
+      text: '',
+      freshAt: 0,
+      seenAt: 0,
+      docked: false,
+    };
+    /**
+     * Offer the prompt for this pass. `key` is a control action id whose key
+     * leads the prompt (null for none), `hold` says "HOLD <key>", `id` keeps
+     * the prompt's identity when its text changes (defaults to the text with
+     * its numbers taken out).
+     */
+    function offerPrompt(text, { key = 'interact', hold = false, id } = {}) {
+      if (!text) return;
+      promptOffer = {
+        text,
+        key,
+        hold,
+        id: id || (key || '') + '|' + String(text).replace(/[\d.,:$]+/g, '#'),
+      };
+    }
+    function clearPromptOffer() {
+      promptOffer = null;
+    }
+    function promptText(offer) {
+      return (offer.key ? (offer.hold ? 'HOLD ' : '') + keyName(offer.key) + ' ' : '') + offer.text;
+    }
+    function promptMarkup(offer) {
+      const escape = (s) =>
+        String(s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
+      const keyText = offer.key ? (offer.hold ? 'HOLD ' : '') + keyName(offer.key) : '';
+      return (keyText ? '<kbd>' + escape(keyText) + '</kbd>' : '') + '<span>' + escape(offer.text) + '</span>';
+    }
+    function commitPrompt() {
+      const el = getElement('interaction'),
+        now = hudNow(),
+        view = promptView,
+        offer = gameMode === 'play' ? promptOffer : null;
+      if (offer) {
+        const html = promptMarkup(offer);
+        if (view.id === null || (offer.id !== view.id && now - view.freshAt >= PROMPT_SWAP_AFTER)) {
+          // A new action (or newly in range): full size in the middle, pop in.
+          view.id = offer.id;
+          view.freshAt = now;
+          view.docked = false;
+          view.html = html;
+          view.text = promptText(offer);
+          el.innerHTML = html;
+          // Jump to the middle without sliding, then pop in (the one place
+          // the animation is restarted, on purpose).
+          el.classList.add('snap');
+          el.classList.remove('docked', 'pop');
+          void el.offsetWidth;
+          el.classList.remove('snap');
+          el.classList.add('show', 'pop');
+          el.dataset.prompt = offer.id;
+        } else if (offer.id === view.id && html !== view.html) {
+          view.html = html;
+          view.text = promptText(offer);
+          el.innerHTML = html;
+        }
+        view.seenAt = now;
+      } else if (
+        view.id !== null &&
+        (gameMode !== 'play' ||
+          (now - view.seenAt >= PROMPT_HIDE_GRACE && now - view.freshAt >= PROMPT_MIN_SHOW))
+      ) {
+        view.id = null;
+        el.classList.remove('show');
+        delete el.dataset.prompt;
+      }
+      const dock = view.id !== null && now - view.freshAt >= PROMPT_DOCK_AFTER;
+      if (dock !== view.docked) {
+        view.docked = dock;
+        if (dock) placeDockLine();
+        el.classList.toggle('docked', dock);
+      }
+    }
+    /**
+     * The docked prompt sits just under the navigation pill, and a settled
+     * headline under that (CSS --hud-dock-top). The pill moves with the layout
+     * and comes and goes, so it is measured when something docks and when the
+     * pill is shown or hidden, not every pass.
+     */
+    let dockNavShown = null;
+    function placeDockLine() {
+      const nav = getElement('navigation'),
+        shown = nav.style.display !== 'none',
+        box = shown ? nav.getBoundingClientRect() : null;
+      dockNavShown = shown;
+      const root = document.documentElement.style;
+      root.setProperty('--hud-dock-top', Math.round((box && box.height ? box.bottom : 12) + 8) + 'px');
+      // Touch: above the column of action buttons on the right.
+      if (document.body.classList.contains('touch-mode')) {
+        const buttons = [...document.querySelectorAll('.touch-actions button')]
+          .map((button) => button.getBoundingClientRect())
+          .filter((r) => r.width > 0);
+        if (buttons.length) {
+          const top = Math.min(...buttons.map((r) => r.top)),
+            right = Math.max(...buttons.map((r) => r.right));
+          root.setProperty('--touch-dock-top', Math.round(top - 8) + 'px');
+          root.setProperty('--touch-dock-right', Math.round(Math.max(8, innerWidth - right)) + 'px');
+        }
+      }
+    }
+    function watchDockLine() {
+      const shown = getElement('navigation').style.display !== 'none';
+      if (shown !== dockNavShown && (promptView.docked || getElement('announcement').classList.contains('docked')))
+        placeDockLine();
+    }
+    /* What the prompt shows, for DeadEndCity.promptState(). */
+    function promptReport() {
+      return {
+        visible: promptView.id !== null,
+        text: promptView.id !== null ? promptView.text : '',
+        id: promptView.id,
+        docked: promptView.docked,
+        age: promptView.id !== null ? +(hudNow() - promptView.freshAt).toFixed(2) : 0,
+        offered: promptOffer ? promptOffer.text : null,
+      };
+    }
+    /**
+     * CENTRE CARDS
+     * The headline card (#announcement) and, in touch mode, the toast settle
+     * after CARD_SETTLE_AFTER seconds on screen: the headline slides up and
+     * shrinks out of the middle, the touch toast dims. WASTED / BUSTED stay
+     * put (the round is over). announce() and tell() (game.js) reset them.
+     */
+    const CARD_SETTLE_AFTER = 3;
+    const centreCards = { announceAt: 0, toastAt: 0 };
+    function freshAnnouncement() {
+      centreCards.announceAt = hudNow();
+      getElement('announcement').classList.remove('docked');
+    }
+    function freshToast() {
+      centreCards.toastAt = hudNow();
+      getElement('toast').classList.remove('settled');
+    }
+    function settleCentreCards() {
+      const now = hudNow(),
+        card = getElement('announcement'),
+        toastBox = getElement('toast'),
+        roundOver = document.body.classList.contains('wasted') || document.body.classList.contains('busted');
+      const settle = card.classList.contains('show') && !roundOver && now - centreCards.announceAt >= CARD_SETTLE_AFTER;
+      if (settle && !card.classList.contains('docked')) placeDockLine();
+      card.classList.toggle('docked', settle);
+      toastBox.classList.toggle(
+        'settled',
+        toastBox.classList.contains('show') && now - centreCards.toastAt >= CARD_SETTLE_AFTER,
+      );
+    }
     /* Called at the end of updateUI(). */
     function updateHud() {
+      commitPrompt();
+      settleCentreCards();
+      watchDockLine();
       updateFlightHud();
       watchWeaponBox();
       watchRadioBox();
