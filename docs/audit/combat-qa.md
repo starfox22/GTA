@@ -112,3 +112,66 @@ Findings from the play-tests:
 - BUSTED at 1 star: one pistol shot into the air, stood still; two cruisers arrived,
   four officers walked up with challenge lines and cuffed the player in 11 s; released at
   Police HQ with the fine.
+
+## Iteration 4: second merge (v30 HUD, controls, stadium), chase fairness, CPU
+
+- Merged the lead branch again: the v30 HUD draws stars through `renderStars()`
+  (hud.js); it now takes the pending star (flashing red) and the search state (earned
+  stars grey and pulse), and the heat meter and body count sit under the stars in the
+  new status column. Stadium kills by the player now go through `recordKill` (a
+  civilian death in the heat model) instead of a flat `crime(0.35)`.
+- Weak: 3-star avenue run in a muscle car: cruisers coming the other way drove nose to
+  nose into it at full speed (160 to 100 health in one hit), then five spin-outs in 15 s.
+  Fixed: a cruiser facing the runner head-on brakes to a crawl and angles across the lane
+  (a rolling block to swerve round); after any spin-out no unit tries contact for 3.5 s.
+  Re-run: the same run met a Union St roadblock at full speed, stopped dead (a muscle car
+  cannot shove a braced cruiser) and the cut's crew shot the car apart: working as
+  designed; a runner has to turn off.
+- Weak: the tank at 5 stars killed its own SWAT and agents (S3 F2 to S1 F1 in 6 s). It now
+  holds fire while any officer or police vehicle is within 150 units of the player.
+- Weak: after a clear, police helicopters could not relaunch for 45 s, so a player who
+  stole a helicopter at 4 stars in a new incident flew away unopposed in 21 s. A
+  stand-down now costs 12 s; only a helicopter shot down costs 45. Re-run: first air
+  unit on scene in ~9 s, second at ~15 s, the marksman hit the player's helicopter
+  (220 to 112 in 12 s). Police rounds no longer hit their own helicopters.
+- Weak: two quick civilian kills out of sight in Palm Keys (the relocated district)
+  stayed at 1 star: the search cooled the heat below the second star's threshold during
+  the 1.5 s escalation. Fresh heat (last 8 s) is no longer cooled. Re-run: 2 stars 1.5 s
+  after the second kill, four cruisers and five officers in Palm Keys within 8 s.
+- Law units stood down by a clear were counted again by a later incident and never sent
+  home; recalled traffic patrols vanished after a clear. Both fixed.
+- WASTED/BUSTED: 4.2 s slow-motion sequence (grey world, red WASTED / blue BUSTED title
+  above the v30 HUD styles). Headless screenshots cannot catch it (a capture takes longer
+  than the sequence); verified from the page's computed styles at the moment of death.
+- CPU, idle machine: police logic at 5 stars (23 officers, 16 cruisers, 2 SWAT vans,
+  2 agents' SUVs, a tank, 2 helicopters, 3 roadblocks) was 7.7 ms per step, mostly
+  line-of-sight tests every frame for every unit. Sight and gang checks are now staggered
+  at about 7 Hz per unit: 2.3 ms per step (vehicle physics is 14.7 ms of a 24 ms step).
+- No-god run through Broadway with the assault rifle: 3 civilians 1 star; 3 officers
+  2 stars at 8 s (the next stars land after their escalation delays); 9 officers 4 stars;
+  10 officers 5 stars at 23 s; dead at 25 s under two helicopters, SWAT and agents. A
+  second run in Midtown reached 5 stars alive with 32 health.
+- Harbor: the Ironworks guards stand behind cargo stacks that stop rounds but not the
+  sight test used by the play-test helper, so the scripted harbor fight could not land
+  hits; not a combat bug, noted for anyone scripting harbor tests.
+
+## Screenshots
+
+Taken with `graphics('high')` on the persistent headless page and copied to
+`dist/combat-qa/` (git-ignored): `star2-onfoot.png` (2 stars, patrol crews out),
+`star2-palmkeys.png` (v30 HUD with heat meter and body count), `star3-carchase.png`
+(flank and PIT cruisers on Royal Ave, roadblock notice), `star4-swat-onfoot.png` (SWAT
+vans, searchlight, marksman warning), `star5-tank-feds.png` (tank, agents' SUVs, SWAT,
+two helicopters), `busted.png`.
+
+## Honest assessment (end of this pass)
+
+- Escalation: proportional and legible. Stars follow the body count and who died; each
+  new star flashes before it lands and brings a visibly different response.
+- Combat on foot: fair and readable (firing tokens, peeking cover, hit markers, damage
+  direction arc, staggers, headshots); limited by the top-down aim and by the crowd
+  renderer's pose set (no crawl or limp animation for the wounded).
+- Chase: cruisers intercept, flank, block, PIT, recover when stuck and search the
+  area; roadblocks, helicopters with a marksman, SWAT and a tank arrive by tier. Still
+  grid-bound: no off-road shortcuts, county roads use the simpler county router, and
+  there is no police boat.

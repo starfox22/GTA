@@ -42,7 +42,8 @@
       // Heat from crimes nobody has reported yet (a silent knife kill with no
       // police around); the next witness call or crime adds it.
       unreportedHeat = 0,
-      escalateSeconds = 0;
+      escalateSeconds = 0,
+      lastHeatAt = -100;
     // What the player has done since the police were last cleared.
     const rampage = {
       civilians: 0,
@@ -83,6 +84,7 @@
     function addHeat(points) {
       if (points <= 0) return;
       wantedHeat = Math.min(HEAT_MAX, wantedHeat + points);
+      lastHeatAt = gameTime;
     }
     function updateStarProgress(deltaSeconds) {
       let visible = Math.ceil(wantedStars);
@@ -100,7 +102,9 @@
       starElapsed += deltaSeconds;
       // Out of sight the surplus above the current star cools off, so a runner who
       // broke contact is not bumped up a star the moment they are seen again.
-      if (searchActive)
+      // Fresh heat (the last eight seconds) always lands: two quick kills out of
+      // sight still make the second star.
+      if (searchActive && gameTime - lastHeatAt > 8)
         wantedHeat = Math.max(HEAT_STARS[visible], wantedHeat - deltaSeconds * 1.5);
       const earned = starsForHeat(wantedHeat);
       if (earned > visible && visible < 5) {
