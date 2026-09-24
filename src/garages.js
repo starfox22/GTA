@@ -18,7 +18,7 @@
       {
         id: 'palm',
         name: 'PALM AUTO PAINT',
-        x: 4900,
+        x: -2268,
         y: 2530,
         roadY: 2688,
         color: '#e5ab9d',

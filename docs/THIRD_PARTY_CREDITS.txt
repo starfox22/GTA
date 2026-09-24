@@ -418,3 +418,53 @@ https://opengameart.org/content/midnight-cruiser
 https://opengameart.org/users/zane-little-music
 License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
 Loudness normalized to -18 LUFS target and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
+
+Martini Sunset — Kevin MacLeod (Velvet 91.5)
+https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Martini%20Sunset.mp3
+https://incompetech.com/
+License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+Dedicated to the public domain through FreePD (freepd.com, "Free Public Domain Music, Creative Commons 0",
+now offline); retrieved from the SoundSafari CC0-1.0-Music mirror of FreePD linked above.
+Leading silence trimmed, loudness normalized to -18 LUFS target and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
+
+Patron Saint of Heists — Bryan Teoh (Velvet 91.5)
+https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Patron%20Saint%20of%20Heists.mp3
+https://bryanteoh.bandcamp.com/
+License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+Released through FreePD; the file's own tag reads "This piece was composed and dedicated to the Public Domain in 2020."
+Loudness normalized to -18 LUFS target, resampled from 48 kHz and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
+
+Sunday Dub — Kevin MacLeod (Palms 95.9)
+https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Sunday%20Dub.mp3
+https://incompetech.com/
+License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+Dedicated to the public domain through FreePD; retrieved from the mirror linked above.
+Loudness normalized to -18 LUFS target and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
+
+Piña Colada — Alexander Nakarada (CreatorChords) (Palms 95.9)
+https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Pina%20Colada.mp3
+https://alexandernakarada.bandcamp.com/album/complete-discography-creative-commons-by-40
+License: CC-BY-4.0 (https://creativecommons.org/licenses/by/4.0/)
+Distributed through FreePD, but the artist publishes his catalogue under CC BY 4.0 (the file's album tag reads
+"Complete Discography (CC BY Attribution 4.0)"), so it is used and credited under CC BY 4.0.
+Leading silence trimmed, loudness normalized to -18 LUFS target and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
+
+Hooptie With The Windows Down — HoliznaCC0 (Block 101.7)
+https://freemusicarchive.org/music/holiznacc0/city-slacker/hooptie-with-the-windows-down/
+https://freemusicarchive.org/music/holiznacc0/
+License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+From the beat tape "City Slacker"; retrieved from
+https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freemusicarchive.org/HoliznaCC0%20-%20Hooptie%20With%20The%20Windows%20Down.mp3
+Fourteen seconds of trailing silence removed under a short fade, loudness normalized to -18 LUFS target, resampled from
+48 kHz and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
+
+Lost On The Freeway — HoliznaCC0 (Block 101.7)
+https://freemusicarchive.org/music/holiznacc0/lost/lost-on-the-freeway/
+https://freemusicarchive.org/music/holiznacc0/
+License: CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+From the album "Lost"; retrieved from
+https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freemusicarchive.org/HoliznaCC0%20-%20Lost%20On%20The%20Freeway.mp3
+Loudness normalized to -18 LUFS target, resampled from 48 kHz and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
+
+Station idents (the tuning static and jingle heard on changing station) are synthesized at run time
+in src/car-radio.js and contain no recorded material.

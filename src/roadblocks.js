@@ -8,7 +8,7 @@
     /**
      * CONTAINMENT
      * Dispatch does not only follow: once the alert is serious it starts closing
-     * the map. The river bridges and the four wide avenues are the only places
+     * the map. The bridge approaches and the wide avenues are the only places
      * worth cutting, so those are the catalogue. A blockade is placed ahead of
      * the runner and out of sight, never in front of their bumper, which is what
      * makes it read as police getting somewhere first rather than spawning in.
@@ -32,9 +32,6 @@
     let roadblockSiteCache = null,
       containmentTimer = 3,
       roadblockNotice = 0;
-    function bridgeName(y) {
-      return y === BRIDGES[0] ? 'UNION ST' : y === BRIDGES[1] ? 'HARBOR AVE' : 'STADIUM WAY';
-    }
     function roadblockSiteUsable(x, y) {
       return (
         groundAt(x, y, 46) &&
@@ -48,28 +45,37 @@
     function roadblockSites() {
       if (roadblockSiteCache) return roadblockSiteCache;
       const sites = [];
-      // Bridge approaches. Cutting one of these separates Northbank from the Keys.
-      // The block goes on the approach road, clear of the deck: a causeway is walled
-      // by its own railings and there is no room to park two cars across it.
-      for (const y of BRIDGES) {
-        const [west, east] = bridgeSpan(y);
-        for (const [x, side] of [
-          [west - 74, 'WEST'],
-          [east + 74, 'EAST'],
-        ])
+      // Bridge approaches. Cutting these separates the islands: Palm Keys from
+      // Northbank, Northbank from Ridgeline or the Sunset Pier island. The block
+      // goes on the approach road just off the deck: a bridge is walled by its own
+      // railings and there is no room to park two cars across it. Only ends on a
+      // city street qualify (county ends are left to the county patrols).
+      for (const bridge of BRIDGES) {
+        const f = bridgeFrame(bridge),
+          horizontal = Math.abs(f.ux) > 0.9,
+          vertical = Math.abs(f.uy) > 0.9;
+        if (!horizontal && !vertical) continue;
+        for (const [end, dir] of [
+          [bridge.a, -1],
+          [bridge.b, 1],
+        ]) {
+          const x = end[0] + f.ux * dir * 74,
+            y = end[1] + f.uy * dir * 74,
+            side = horizontal ? ((f.ux * dir > 0) ? 'EAST' : 'WEST') : f.uy * dir > 0 ? 'SOUTH' : 'NORTH';
           if (roadblockSiteUsable(x, y))
             sites.push({
               x,
               y,
-              axis: 'x',
+              axis: horizontal ? 'x' : 'y',
               bridge: true,
-              name: bridgeName(y) + ' BRIDGE · ' + side + ' APPROACH',
+              name: bridge.name + ' · ' + side + ' APPROACH',
             });
+        }
       }
-      // Mid-block cuts on the four avenues: a junction block is simply driven around.
+      // Mid-block cuts on the wide avenues: a junction block is simply driven around.
       for (let i = 0; i < ROAD_CENTERS.length - 1; i++) {
         const mid = (ROAD_CENTERS[i] + ROAD_CENTERS[i + 1]) / 2;
-        for (const avenue of WIDE_ROADS)
+        for (const avenue of WIDE_ROWS)
           if (roadblockSiteUsable(mid, avenue))
             sites.push({
               x: mid,
@@ -80,7 +86,7 @@
       }
       for (let i = 0; i < ROAD_ROWS.length - 1; i++) {
         const mid = (ROAD_ROWS[i] + ROAD_ROWS[i + 1]) / 2;
-        for (const avenue of WIDE_ROADS)
+        for (const avenue of WIDE_COLUMNS)
           if (roadblockSiteUsable(avenue, mid))
             sites.push({
               x: avenue,

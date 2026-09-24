@@ -5,78 +5,7 @@
        * Scope: createCityRenderer() closure.
        * Distinctive buildings, waterfront and landmark details.
        */
-      // Suspension bridges, waterside gardens and a civic precinct give the city its landmarks.
-      const bridgeSteel = mat('#78534b', 0.55, 0.6),
-        cableMat = mat('#b8b5a7', 0.4, 0.6);
-      for (let bridgeIndex = 0; bridgeIndex < BRIDGES.length; bridgeIndex++) {
-        const z = BRIDGES[bridgeIndex],
-          left = RIVER.left,
-          right = RIVER.right,
-          group = new Three.Group();
-        scene.add(group);
-        batchGroups.push(group);
-        for (const side of [-1, 1]) {
-          box(group, (left + right) / 2, 3, z + side * 61, right - left, 6, 5, concrete);
-          box(group, (left + right) / 2, 9, z + side * 61, right - left, 1.4, 1.3, cableMat);
-          for (let x = left + 5; x < right; x += 27)
-            box(group, x, 6, z + side * 61, 1.5, 6, 1.5, cableMat);
-          for (const x of [left + 115, right - 115]) {
-            box(group, x, 49, z + side * 69, 10, 98, 11, bridgeSteel);
-            box(group, x, 99, z + side * 69, 14, 3, 15, chrome);
-            box(group, x, 1, z + side * 69, 23, 4, 24, concrete);
-          }
-          for (let x = left; x < right; x += 18) {
-            const arch = (q) =>
-              q < left + 115
-                ? 12 + ((q - left) / 115) * 80
-                : q > right - 115
-                  ? 12 + ((right - q) / 115) * 80
-                  : 35 + 57 * ((q - (left + right) / 2) / 155) ** 2;
-            const x2 = Math.min(right, x + 18),
-              y = arch(x),
-              y2 = arch(x2);
-            rod(
-              group,
-              new Three.Vector3(x, y, z + side * 69),
-              new Three.Vector3(x2, y2, z + side * 69),
-              0.9,
-              cableMat,
-            );
-            if (x > left + 115 && x < right - 115)
-              rod(
-                group,
-                new Three.Vector3(x, 7, z + side * 61),
-                new Three.Vector3(x, y, z + side * 69),
-                0.42,
-                cableMat,
-              );
-          }
-        }
-        for (const x of [left + 115, right - 115]) {
-          box(group, x, 85, z, 6, 6, 146, bridgeSteel);
-          for (const side of [-1, 1])
-            rod(
-              group,
-              new Three.Vector3(x, 62, z + side * 65),
-              new Three.Vector3(x, 84, z + side * 40),
-              2,
-              bridgeSteel,
-            );
-        }
-        statics.push({
-          x: (left + right) / 2,
-          y: z,
-          group,
-          radius: 350,
-        });
-        sign(
-          ['MARLOW BRIDGE', 'UNION BRIDGE', 'SOUTH BAY BRIDGE'][bridgeIndex],
-          left - 80,
-          z - 65,
-          110,
-          '#c5d8c2',
-        );
-      }
+      // The bridges are drawn with the county bridges (county3d.js, from BRIDGES).
       // Police entrance, flag poles, parking markings, and two clearly marked stealable aircraft.
       sign('SOUTH COAST POLICE', 1400, 3958, 206, '#aed7ef');
       box(scene, 1400, 22, 3966, 65, 3, 25, mat('#4a687d', 0.4, 0.55));

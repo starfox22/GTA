@@ -234,12 +234,7 @@
       );
       for (const b of harborSolids()) if (!b.barrier) addStatic(b.x, b.y, b.w, b.h, b.height, 'harbor');
       for (const d of DOCKS) addStatic(d.x, d.y, d.w, d.h, 2, 'dock');
-      for (const bridge of BRIDGES) {
-        for (const x of [RIVER.left + 115, RIVER.right - 115])
-          for (const side of [-1, 1]) addStatic(x - 5, bridge + side * 69 - 5.5, 10, 11, 102, 'tower');
-        for (const [a, b] of bridgeRailSpans(bridge))
-          for (const side of [-1, 1]) addStatic(a, bridge + side * 55 - 2, b - a, 4, 7, 'rail');
-      }
+      // Bridge rails and pylons are added with the county colliders (county.js).
     }
     function pointInCar(x, y, vehicle, margin = 0) {
       const dx = x - vehicle.x,

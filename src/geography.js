@@ -70,23 +70,14 @@
           [3350, 2730],
           [3420, 3300],
           [3420, 4400],
-          // South shore: the sweep of Southport Beach between Marina Rd and the
-          // water (see BEACH below), wide enough for a proper public strand. The
-          // strand is one smooth curve, not a string of corners: a beach is
-          // shaped by the swell, and the surf, the wet sand and the swash all
-          // follow this line.
+          // South shore: Battery Park, a lawn and the esplanade between Marina Rd
+          // and a straight sea wall (see SOUTH_PROMENADE). Southport Beach used
+          // to bulge out here; the city's public beach is on Palm Keys now.
           [3300, 5020],
-          ...smoothShoreline(
-            [
-              [3150, 5420],
-              [2890, 5672],
-              [2420, 5806],
-              [2010, 5758],
-              [1836, 5572],
-              [1800, 5430],
-            ],
-            9,
-          ),
+          [3150, 5460],
+          [2600, 5476],
+          [2000, 5470],
+          [1800, 5460],
           [1380, 5030],
           [980, 4630],
           [430, 4270],
@@ -108,43 +99,81 @@
         ],
       },
       {
+        // The tropical island west of Northbank across Palm Sound (about 1200
+        // units of water). It was the old eastern island, reflected east-west
+        // when it moved: Ocean Drive and its palm strand face the open sea on
+        // the west, the bay side with its jetties and the two bridge landings
+        // faces the city. Its south shore is the public beach (BEACH) with the
+        // reserved beach-club plot (BEACH_CLUB_PLOT) at its west end.
         id: 'palmkeys',
         name: 'PALM KEYS',
         color: '#93a897',
         polygon: [
-          [4040, 180],
-          [4700, 50],
-          [5280, 150],
-          [5540, 780],
-          [5620, 1690],
-          [5540, 2590],
-          [5630, 3290],
-          [5520, 4090],
-          [5300, 5080],
-          [4700, 5500],
-          [4200, 5160],
-          [3980, 4430],
-          [3960, 3730],
-          [4020, 2820],
-          [3960, 2020],
-          [3960, 540],
+          [-2464, 150],
+          [-1884, 50],
+          [-1224, 180],
+          [-1144, 540],
+          [-1144, 2020],
+          [-1204, 2820],
+          [-1144, 3730],
+          [-1164, 4430],
+          [-1150, 4900],
+          [-1190, 5250],
+          // The public beach: Southport Beach's strand, moved here whole. One
+          // smooth curve shaped by the swell; the surf, the wet sand and the
+          // swash all follow it (beach.js finds its end points by value).
+          ...smoothShoreline(
+            [
+              [-1260, 5420],
+              [-1520, 5672],
+              [-1990, 5806],
+              [-2400, 5758],
+              [-2574, 5572],
+              [-2610, 5430],
+            ],
+            9,
+          ),
+          // The beach-club plot's point, then Ocean Drive's west strand.
+          [-2660, 5670],
+          [-2860, 5710],
+          [-3100, 5670],
+          [-3135, 5420],
+          [-3095, 5200],
+          [-2900, 5000],
+          [-2790, 4600],
+          [-2704, 4090],
+          [-2814, 3290],
+          [-2724, 2590],
+          [-2804, 1690],
+          [-2724, 780],
         ],
       },
       {
-        // Reclaimed sand bar in the lower bay, bought and built as a pleasure pier.
+        // The amusement island north of the reclamation across North Sound,
+        // reached by the Sunset Pier Bridge from the north end of Riverbank Dr.
+        // The Sunset Pier rides stand in its east half; THEME_PARK_RESERVE (the
+        // west half) is kept clear for the big attractions.
         id: 'sunsetisle',
         name: 'SUNSET PIER',
         color: '#8e9b84',
-        polygon: [
-          [3560, 4850],
-          [3930, 4820],
-          [4130, 4980],
-          [4170, 5270],
-          [3990, 5490],
-          [3690, 5530],
-          [3490, 5340],
-          [3470, 5040],
-        ],
+        polygon: smoothShoreline(
+          [
+            [2300, -5700],
+            [1920, -5820],
+            [1830, -6400],
+            [1930, -6960],
+            [2500, -7090],
+            [3300, -7090],
+            [3990, -7050],
+            [4260, -6730],
+            [4260, -6080],
+            [4010, -5760],
+            [3450, -5680],
+            [2900, -5680],
+            [2300, -5700],
+          ],
+          4,
+        ).slice(0, -1),
       },
       {
         id: 'airport',
@@ -163,6 +192,27 @@
         ],
       },
     ];
+    // Ocean Drive's strand: the open-sea (west) shore of Palm Keys, sand from the
+    // north tip down to the beach-club point (painted by paintDistrictGround;
+    // shoreStyle reads it as beach).
+    const KEYS_WEST_STRAND = [
+      [-2464, 150],
+      [-2724, 780],
+      [-2804, 1690],
+      [-2724, 2590],
+      [-2814, 3290],
+      [-2704, 4090],
+      [-2790, 4600],
+      [-2900, 5000],
+    ];
+    // Palm Keys is everything west of the middle of Palm Sound.
+    const PALM_SOUND_X = -500;
+    function onPalmKeys(x) {
+      return x < PALM_SOUND_X;
+    }
+    // Battery Park, the lawn on Northbank's south shore between the Marina Rd
+    // pavement and the esplanade (where Southport Beach used to be).
+    const SOUTH_PROMENADE = { x: 1770, y: 5306, w: 1350, h: 70 };
     const COUNTY_LAKES = [
       {
         id: 'lake',
@@ -185,42 +235,60 @@
     // the strip between the sea wall and the first blocks, inland of the esplanade.
     const RAIL_CORRIDOR_X = 128;
     /**
-     * SOUTHPORT BEACH
-     * The city's public strand on Northbank's south shore, between the airport
-     * fence (x 1740) and the Battery Point sea wall (x 3125): sand from the
-     * Marina Rd kerb down to the water, 250..460 units deep and 1400 long. It is
+     * PALM KEYS BEACH
+     * The city's public strand, on the south shore of Palm Keys between the
+     * beach-club plot (x -2670) and the south-east sea wall (x -1285): sand from
+     * the Marina Rd kerb (y 5306) down to the water, 250..500 units deep and
+     * 1400 long, facing the open sea. It was Southport Beach on Northbank's
+     * south shore and moved here whole (every coordinate x - 4410). It is
      * reserved ground: no street or block is laid on it (cityStreets,
      * validCityBlock), the esplanade gives way to the boardwalk along its top
      * edge, and its shore reads as 'beach' so the water meets the sand rather
-     * than a quay wall, and only here can someone on foot walk into the sea.
-     * Nothing crosses the sand: the Oceanview Causeway leaves from the end of
-     * Riverbank Dr, east of the sea wall, and the Coast Line viaduct passes well
-     * to the west. The polygon runs out past the waterline and `onBeach` clips
-     * it to land. Beach life, the props and the pier are built on this data by
-     * beach.js and beach3d.js.
+     * than a quay wall. Ocean Drive's strand on the island's west shore is sand
+     * too (shoreStyle); everywhere else someone on foot meets a quay. The
+     * polygon runs out past the waterline and `onBeach` clips it to land. Beach
+     * life, the props and the pier are built on this data by beach.js and
+     * beach3d.js.
      *
      * The fishing pier runs out from the lower sand into the swim zone: a
      * walkable deck (part of `groundAt`, like the docks) that is a wall to
      * anyone on foot and a roof to swimmers, who pass under it between the piles.
      */
     const BEACH = {
-      name: 'SOUTHPORT BEACH',
+      name: 'PALM KEYS BEACH',
       polygon: [
-        [1740, 5306],
-        [3125, 5306],
-        [3125, 5960],
-        [1650, 5960],
-        [1650, 5440],
+        [-2668, 5306],
+        [-1285, 5306],
+        [-1285, 5960],
+        [-2668, 5960],
       ],
       // The promenade along the top of the sand: a 40-unit boardwalk just south
-      // of the Marina Rd pavement, from the airport fence to the sea wall.
-      boardwalk: { x0: 1760, x1: 3110, y: 5326, width: 40 },
+      // of the Marina Rd pavement, from the club plot to the sea wall.
+      boardwalk: { x0: -2650, x1: -1300, y: 5326, width: 40 },
       // Stem from the lower sand out past the breakers, and the T of the head.
       pier: [
-        { x: 2683, y: 5688, w: 34, h: 300 },
-        { x: 2636, y: 5950, w: 128, h: 40 },
+        { x: -1727, y: 5688, w: 34, h: 300 },
+        { x: -1774, y: 5950, w: 128, h: 40 },
       ],
     };
+    /**
+     * RESERVED PLOTS (kept clear for later builds; nothing is generated on them)
+     * - BEACH_CLUB_PLOT: 400 x 300 on the beachfront at the west end of Palm Keys
+     *   Beach, with the sand on its east side and the sea on its south and west.
+     *   Road access from Marina Rd (y 5248) along its north edge and from Ocean
+     *   Dr (x -2432) at its north-east corner.
+     * - THEME_PARK_RESERVE: 1400 x 900 in the west half of the Sunset Pier island
+     *   for the big attractions (a large coaster, a giant wheel). The island road
+     *   from the bridge runs along its east edge; the Sunset Pier rides stand
+     *   east of it.
+     */
+    const BEACH_CLUB_PLOT = { x: -3070, y: 5306, w: 400, h: 300 },
+      THEME_PARK_RESERVE = { x: 1980, y: -6960, w: 1400, h: 900 };
+    function inReservedPlot(x, y, margin = 0) {
+      return [BEACH_CLUB_PLOT, THEME_PARK_RESERVE].some(
+        (p) => x > p.x - margin && x < p.x + p.w + margin && y > p.y - margin && y < p.y + p.h + margin,
+      );
+    }
     function onBeachPier(x, y, r = 0) {
       return BEACH.pier.some((d) => x - r >= d.x && x + r <= d.x + d.w && y - r >= d.y && y + r <= d.y + d.h);
     }
@@ -257,8 +325,8 @@
         name: 'GOLDEN TIDE APPROACH',
         width: 44,
         points: [
-          [4985, 3060],
-          [4985, 3200],
+          [-2183, 3060],
+          [-2183, 3200],
         ],
       },
     );
@@ -331,28 +399,30 @@
         (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
       );
     }
+    // Block (-4, 4) of Palm Keys, on Flamingo Ave with the bay and the city
+    // skyline to the east.
     const ROOFTOP = {
       id: 'skyline',
       name: 'THE BLUE HOUR',
-      x: 4300,
+      x: -1844,
       y: 2250,
       w: 360,
       h: 350,
       height: 135,
       door: {
-        x: 4480,
+        x: -1664,
         y: 2622,
       },
       lift: {
-        x: 4336,
+        x: -1808,
         y: 2556,
       },
       bar: {
-        x: 4550,
+        x: -1594,
         y: 2317,
       },
       contact: {
-        x: 4618,
+        x: -1526,
         y: 2543,
       },
     };
@@ -474,7 +544,7 @@
       return land;
     }
     function inAirport(x, y) {
-      return y > 4120 && y < 5632 && x < 1400;
+      return y > 4120 && y < 5632 && x > 40 && x < 1400;
     }
     function segmentDistance(x, y, a, b) {
       const dx = b[0] - a[0],
@@ -496,32 +566,161 @@
         [x + w / 2, y + h / 2],
       ].every((p) => landAt(...p));
     }
-    // Each crossing starts on Riverbank Dr (x = 3200). Stadium Way's used to start
-    // at x 3050, so its deck and guard rails ran through the stadium's east stand.
-    function bridgeSpan(y) {
-      return y === 4736 ? [3150, 4390] : y === 3200 ? [3160, 4260] : [3150, 4170];
+    /**
+     * BRIDGES
+     * Every road bridge in the world, as a straight deck from `a` to `b`
+     * (map points) `width` wide. Decks are at road level (`deck`: 0, the same
+     * surface height as the quays they land on); boats pass under them and only
+     * the pylons (bridgePylons) stand in the water. Guard rails line the deck
+     * wherever it is over water (countyBridgeRails, county.js). A deck on a
+     * city grid line carries that street across (cityStreets treats bridge
+     * decks as ground), so Union St and Harbor Ave run on from Palm Keys to
+     * Northbank; county roads join at the ends through the route graph.
+     * `link` names the two shores; `id` is stable for other code and the docs.
+     *
+     * Palm Sound (Palm Keys - Northbank, ~1200 of water):
+     *   keys-union   Union St at y 1152, x -1460..130
+     *   keys-harbor  Harbor Ave at y 3200, x -1460..130
+     * Marlow Bay (Northbank - Ridgeline, ~2400..2700 of water):
+     *   east-bay     Harbor Ave at y 3200, x 3150..6580, onto the Ridgeline Hwy
+     *   south-bay    Stadium Way at y 4736, x 3150..6420, onto Foothill Rd
+     * North Sound (Northbank - Sunset Pier island, ~1700 of water):
+     *   pier-bridge  Riverbank Dr at x 3200, y -3900..-5800
+     * South channel and the county: oceanview (Northbank - Oceanview), coral
+     * sound, ridgeline viaduct, sentinel causeway.
+     */
+    const BRIDGES = [
+      {
+        id: 'keys-union',
+        name: 'KEYS BRIDGE',
+        link: 'PALM KEYS - NORTHBANK',
+        width: 112,
+        deck: 0,
+        a: [-1460, 1152],
+        b: [130, 1152],
+      },
+      {
+        id: 'keys-harbor',
+        name: 'PALM SOUND CAUSEWAY',
+        link: 'PALM KEYS - NORTHBANK',
+        width: 112,
+        deck: 0,
+        a: [-1460, 3200],
+        b: [130, 3200],
+      },
+      {
+        id: 'east-bay',
+        name: 'EAST BAY CROSSING',
+        link: 'NORTHBANK - RIDGELINE',
+        width: 122,
+        deck: 0,
+        a: [3150, 3200],
+        b: [6580, 3200],
+      },
+      {
+        id: 'south-bay',
+        name: 'SOUTH BAY BRIDGE',
+        link: 'NORTHBANK - RIDGELINE',
+        width: 112,
+        deck: 0,
+        a: [3150, 4736],
+        b: [6420, 4736],
+      },
+      {
+        id: 'pier-bridge',
+        name: 'SUNSET PIER BRIDGE',
+        link: 'NORTHBANK - SUNSET PIER',
+        width: 104,
+        deck: 0,
+        a: [3200, -3900],
+        b: [3200, -5800],
+      },
+      {
+        // Leaves Northbank from the south end of Riverbank Dr down the Battery
+        // Point sea wall and lands on Oceanview's east avenue where Beach Road
+        // starts.
+        id: 'oceanview',
+        name: 'OCEANVIEW CAUSEWAY',
+        link: 'NORTHBANK - OCEANVIEW',
+        width: 128,
+        deck: 0,
+        a: [3200, 5000],
+        b: [3200, 7010],
+      },
+      {
+        id: 'coral-sound',
+        name: 'CORAL SOUND BRIDGE',
+        link: 'OCEANVIEW - CORAL COAST',
+        width: 116,
+        deck: 0,
+        a: [5700, 8000],
+        b: [6750, 8000],
+      },
+      {
+        id: 'ridgeline',
+        name: 'RIDGELINE VIADUCT',
+        link: 'RIDGELINE - CORAL COAST',
+        width: 116,
+        deck: 0,
+        a: [7800, 5620],
+        b: [7433.016, 7262.254],
+      },
+      {
+        id: 'sentinel',
+        name: 'SENTINEL CAUSEWAY',
+        link: 'CORAL COAST - FORT SENTINEL',
+        width: 126,
+        deck: 0,
+        a: [7800, 8150],
+        b: [9440, 8150],
+      },
+    ];
+    function bridgeFrame(bridge) {
+      if (bridge.frame) return bridge.frame;
+      const dx = bridge.b[0] - bridge.a[0],
+        dy = bridge.b[1] - bridge.a[1],
+        length = Math.hypot(dx, dy);
+      return (bridge.frame = { length, a: Math.atan2(dy, dx), ux: dx / length, uy: dy / length });
     }
-    function bridgeRailSpans(y) {
-      let spans = [bridgeSpan(y)];
-      for (const x of ROAD_CENTERS)
-        spans = spans.flatMap(([a, b]) =>
-          x + 85 <= a || x - 85 >= b
-            ? [[a, b]]
-            : [
-                [a, Math.min(b, x - 85)],
-                [Math.max(a, x + 85), b],
-              ].filter(([lo, hi]) => hi > lo),
+    /* The pairs of tall pylons that carry a bridge's main span: at 0.18 of the
+       length either side of the middle, one each side of the deck, and only
+       where that point is over water (a causeway has none). Shared by the
+       renderer (county3d.js), aircraft collision and the boats. */
+    function bridgePylons(bridge) {
+      if (bridge.pylons) return bridge.pylons;
+      const f = bridgeFrame(bridge),
+        cx = (bridge.a[0] + bridge.b[0]) / 2,
+        cy = (bridge.a[1] + bridge.b[1]) / 2,
+        list = [];
+      if (!bridge.name.includes('CAUSEWAY'))
+        for (const along of [-f.length * 0.18, f.length * 0.18]) {
+          const px = cx + f.ux * along,
+            py = cy + f.uy * along;
+          if (landAt(px, py)) continue;
+          for (const side of [-1, 1])
+            list.push({
+              along,
+              side,
+              x: px - f.uy * side * (bridge.width / 2 + 9),
+              y: py + f.ux * side * (bridge.width / 2 + 9),
+            });
+        }
+      return (bridge.pylons = list);
+    }
+    function onBridgeDeck(x, y, r = 0) {
+      return BRIDGES.some((b) => {
+        const pad = b.width / 2 - r;
+        return (
+          x >= Math.min(b.a[0], b.b[0]) - pad &&
+          x <= Math.max(b.a[0], b.b[0]) + pad &&
+          y >= Math.min(b.a[1], b.b[1]) - pad &&
+          y <= Math.max(b.a[1], b.b[1]) + pad &&
+          segmentDistance(x, y, b.a, b.b) <= pad
         );
-      return spans;
+      });
     }
     function onBridge(x, y, r = 0) {
-      return (
-        onCountyBridge(x, y, r) ||
-        BRIDGES.some((z) => {
-          const [a, b] = bridgeSpan(z);
-          return x - r >= a && x + r <= b && Math.abs(y - z) <= 56 - r;
-        })
-      );
+      return onBridgeDeck(x, y, r);
     }
     function groundAt(x, y, r = 0) {
       if (onBridge(x, y, r) || onDock(x, y, r) || onBeachPier(x, y, r)) return true;
@@ -558,18 +757,22 @@
       drawingContext.closePath();
       if (reg.id === 'ridgeline') appendLakePaths(drawingContext);
     }
+    /* Bridge decks on the flat ground layers (2D view, minimap and map): the
+       deck, its kerb lines and the centre dashes. */
     function drawBridgeGround(drawingContext) {
-      for (const z of BRIDGES) {
-        const [a, b] = bridgeSpan(z);
+      for (const bridge of BRIDGES) {
+        const f = bridgeFrame(bridge);
+        drawingContext.save();
+        drawingContext.translate(bridge.a[0], bridge.a[1]);
+        drawingContext.rotate(f.a);
         drawingContext.fillStyle = '#444f57';
-        drawingContext.fillRect(a, z - 56, b - a, 112);
+        drawingContext.fillRect(0, -bridge.width / 2, f.length, bridge.width);
         drawingContext.fillStyle = '#b6b8af';
-        for (const [lo, hi] of bridgeRailSpans(z)) {
-          drawingContext.fillRect(lo, z - 57, hi - lo, 5);
-          drawingContext.fillRect(lo, z + 52, hi - lo, 5);
-        }
+        drawingContext.fillRect(0, -bridge.width / 2 - 1, f.length, 5);
+        drawingContext.fillRect(0, bridge.width / 2 - 4, f.length, 5);
         drawingContext.fillStyle = '#e3c98b';
-        for (let x = a; x < b; x += 31) drawingContext.fillRect(x, z - 1, 15, 2);
+        for (let x = 0; x < f.length; x += 31) drawingContext.fillRect(x, -1, 15, 2);
+        drawingContext.restore();
       }
     }
     function strokeRoad(drawingContext, points, width, color) {
@@ -587,22 +790,38 @@
       drawingContext.clip();
       for (const r of LAND_REGIONS) {
         regionPath(drawingContext, r);
-        drawingContext.strokeStyle = r.id === 'palmkeys' ? '#d5c49f' : '#929897';
-        drawingContext.lineWidth = r.id === 'palmkeys' ? 125 : 22;
+        drawingContext.strokeStyle = '#929897';
+        drawingContext.lineWidth = 22;
         drawingContext.stroke();
       }
-      // Broad sandy strands and turquoise shallows belong to the eastern island.
+      // Ocean Drive's broad sandy strand runs down the open-sea (west) shore of
+      // Palm Keys; the bay shore facing the city is a quay like Northbank's.
       drawingContext.save();
       regionPath(drawingContext, LAND_REGIONS[1]);
       drawingContext.clip();
       drawingContext.strokeStyle = '#d8c89e';
       drawingContext.lineWidth = 150;
+      drawingContext.lineJoin = 'round';
       drawingContext.beginPath();
-      LAND_REGIONS[1].polygon
-        .slice(1, 11)
-        .forEach(([x, y], i) => (i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y)));
+      KEYS_WEST_STRAND.forEach(([x, y], i) => (i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y)));
       drawingContext.stroke();
       drawingContext.restore();
+      // Battery Park: a lawn between Marina Rd and the south sea wall where
+      // Southport Beach used to be; the esplanade runs along its water side.
+      const park = SOUTH_PROMENADE;
+      drawingContext.fillStyle = '#6f8a5c';
+      drawingContext.fillRect(park.x, park.y, park.w, park.h);
+      drawingContext.fillStyle = '#b8b3a2';
+      for (let x = park.x + 140; x < park.x + park.w - 60; x += 280) drawingContext.fillRect(x, park.y, 16, park.h);
+      // The beach-club plot on Palm Keys: levelled, paved and fenced off.
+      const club = BEACH_CLUB_PLOT;
+      drawingContext.fillStyle = '#b9ae94';
+      drawingContext.fillRect(club.x, club.y, club.w, club.h);
+      drawingContext.strokeStyle = '#8c826b';
+      drawingContext.lineWidth = 3;
+      drawingContext.setLineDash([14, 10]);
+      drawingContext.strokeRect(club.x + 6, club.y + 6, club.w - 12, club.h - 12);
+      drawingContext.setLineDash([]);
       regionPath(drawingContext, LAND_REGIONS[2]);
       drawingContext.fillStyle = '#8a9386';
       drawingContext.fill();
@@ -661,19 +880,20 @@
       paintPromenades(drawingContext);
       drawBridgeGround(drawingContext);
     }
-    /* Southport Beach: dry sand, a damp band and darker wet sand at the waterline,
+    /* Palm Keys Beach: dry sand, a damp band and darker wet sand at the waterline,
        and the boardwalk along the top. The speckle uses a local hash so painting
        the map never disturbs the seeded world. */
     function paintBeach(drawingContext, detail) {
-      const northbank = LAND_REGIONS[0];
+      const keys = LAND_REGIONS[1],
+        box = BEACH.bounds || (regionContains(BEACH, 0, 0), BEACH.bounds);
       drawingContext.save();
       drawingContext.beginPath();
       BEACH.polygon.forEach(([x, y], i) => (i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y)));
       drawingContext.closePath();
       drawingContext.clip();
       drawingContext.fillStyle = '#dccb9f';
-      drawingContext.fillRect(1600, 5290, 1750, 700);
-      regionPath(drawingContext, northbank);
+      drawingContext.fillRect(box.minx - 50, box.miny - 16, box.maxx - box.minx + 100, box.maxy - box.miny + 60);
+      regionPath(drawingContext, keys);
       drawingContext.lineJoin = 'round';
       drawingContext.strokeStyle = '#c3b187';
       drawingContext.lineWidth = 150;
@@ -688,7 +908,7 @@
             k = Math.sin(i * 78.233) * 12543.1234,
             v = k - Math.floor(k);
           drawingContext.fillStyle = i % 3 ? '#e8dab4' : '#bba981';
-          drawingContext.fillRect(1650 + u * 1650, 5300 + v * 650, 2 + (i % 4), 1.2);
+          drawingContext.fillRect(box.minx - 40 + u * 1480, 5300 + v * 650, 2 + (i % 4), 1.2);
         }
       }
       const walk = BEACH.boardwalk;
@@ -768,7 +988,7 @@
       if (inAirport(x, y) && landAt(x, y)) return 'SOUTHPORT AIRPORT';
       if (onSunsetIsle(x, y)) return 'SUNSET PIER';
       if (onBeach(x, y)) return BEACH.name;
-      if (x > RIVER.right && landAt(x, y))
+      if (onPalmKeys(x) && landAt(x, y))
         return y < 1500
           ? 'PALM KEYS · ART DECO'
           : y < 3100
@@ -778,12 +998,16 @@
               : 'CORAL MARINA';
       if (!landAt(x, y) && regionContains(BEACH, x, y) && !onBridge(x, y)) return BEACH.name;
       if (!landAt(x, y)) {
-        if (onBridge(x, y)) return 'MARLOW BAY CAUSEWAY';
+        const deck = BRIDGES.find((b) => segmentDistance(x, y, b.a, b.b) <= b.width / 2);
+        if (deck) return deck.name;
         // Every stretch of water used to read MARLOW BAY, the marina basin and the
         // open sea off the west wall included.
         const basin = MARINA.basin;
         if (x > basin.x && x < basin.x + basin.w && y > basin.y && y < basin.y + basin.h) return 'HARBOR POINT MARINA';
-        return x > RIVER.left - 120 && x < RIVER.right + 120 && y > 0 && y < 5600 ? 'MARLOW BAY' : 'OPEN SEA';
+        if (x > RIVER.left - 120 && x < RIVER.right && y > -600 && y < 5600) return 'MARLOW BAY';
+        if (x > -1250 && x < 60 && y > 0 && y < 5000) return 'PALM SOUND';
+        if (y < -4150 && y > -5750 && x > 400 && x < 4200) return 'NORTH SOUND';
+        return 'OPEN SEA';
       }
       if (x > 1718 && x < 2638 && y > 2794 && y < 3664) return 'CENTRAL GARDEN';
       if (y < 0) {
@@ -796,17 +1020,25 @@
       if (y < 2650) return 'MIDTOWN';
       if (y < 3700) return x < 1800 ? 'BROADWAY' : 'EXCHANGE DISTRICT';
       if (y < 4650) return 'SOUTH BANK';
+      if (y > SOUTH_PROMENADE.y - 20 && x > SOUTH_PROMENADE.x && x < SOUTH_PROMENADE.x + SOUTH_PROMENADE.w)
+        return 'BATTERY PARK';
       return 'BATTERY POINT';
     }
     function validCityBlock(x, y, w = 334, h = 334) {
       return (
         landRect(x - 8, y - 8, w + 16, h + 16) &&
         !inAirport(x + w / 2, y + h / 2) &&
-        !regionContains(BEACH, x + w / 2, y + h + 8)
+        ![
+          [x, y],
+          [x + w, y],
+          [x, y + h],
+          [x + w, y + h],
+          [x + w / 2, y + h + 8],
+        ].some(([px, py]) => regionContains(BEACH, px, py) || inReservedPlot(px, py, 8))
       );
     }
     function drawWater2D() {
-      worldContext.fillStyle = cameraTarget.x > 3700 ? '#267581' : '#1d4d67';
+      worldContext.fillStyle = cameraTarget.x < -600 ? '#267581' : '#1d4d67';
       worldContext.fillRect(0, 0, viewportWidth, viewportHeight);
       worldContext.save();
       worldContext.translate(viewportWidth / 2, viewportHeight / 2);
@@ -883,9 +1115,10 @@
       return result;
     }
     function drawDistrictScenery2D() {
-      if (cameraTarget.x > 4400) {
+      if (cameraTarget.x < -1500) {
+        // Ocean Drive's palms, down both kerbs of the avenue on the sea side.
         for (let y = 740; y < 4550; y += 145) {
-          const x = y < 1900 ? 5250 : y < 3200 ? 5260 : 5170;
+          const x = y < 1900 ? -2434 : y < 3200 ? -2444 : -2354;
           if (
             !visible(
               {
@@ -921,7 +1154,7 @@
           }
         }
       }
-      if (cameraTarget.x < 1800 && cameraTarget.y > 4000) {
+      if (cameraTarget.x > -400 && cameraTarget.x < 1800 && cameraTarget.y > 4000) {
         for (const [x, y, a, s] of [
           [680, 4800, -Math.PI / 2, 0.9],
           [680, 5110, -Math.PI / 2, 1],
