@@ -462,7 +462,7 @@
         );
         // Wheel brakes: S with the power at idle brakes hard; with power on it
         // pulls the lever back and drags a little.
-        const braking = down && aircraft.throttle < 0.05 ? (aircraft.gearPos > 0.5 ? 150 : 40) : down ? 60 : 0;
+        const braking = down && aircraft.throttle < 0.05 ? (aircraft.gearPos > 0.5 ? 85 : 30) : down ? 45 : 0;
         along = Math.max(0, along + (thrust - drag - braking) * stepSeconds);
         // Nosewheel steering: full lock at taxi speed, tapering off as the rudder
         // takes over on the take-off roll.
