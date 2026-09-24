@@ -146,6 +146,7 @@
         occupied: false,
         locked: false,
         pursuitUnit: true,
+        dispatched: true,
         lawUnit: kind === 'patrol' ? null : kind,
         crewSize: build.crew,
         speed: 120,
@@ -239,7 +240,9 @@
         if (!c.pursuitUnit || c === player.car || c.blockade || c.stolen) continue;
         const d = distanceBetween(c, player),
           inView = crowdInView(c.x, c.y, 200),
-          idle = wantedStars <= 0 && (c.lawUnit || !c.cop);
+          // Cars the dispatcher created go home when it is over; patrol cars that
+          // were recalled out of traffic stay in the city.
+          idle = wantedStars <= 0 && c.dispatched && (c.lawUnit || !c.cop);
         c.stuckOffscreen = !inView && c.hp > 0 && Math.abs(c.speed || 0) < 8 && !c.crewDeployed && wantedStars > 0
           ? (c.stuckOffscreen || 0) + deltaSeconds
           : 0;
