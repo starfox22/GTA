@@ -312,7 +312,8 @@
       militaryChallenge = { level: 0, since: 0, spokeAt: -100, leftAt: -100 },
       militarySupplyAt = 90,
       militaryRespawnAt = 0,
-      militaryAnnounceAt = -100;
+      militaryAnnounceAt = -100,
+      militaryWantedAt = -100;
     function inMilitary(x, y, margin = 0) {
       return (
         x > MILITARY.x - margin &&
@@ -956,6 +957,11 @@
       updateMilitarySiren(deltaSeconds);
       updateSupplyRun();
       const alert = militaryAlertUntil > gameTime;
+      // A base at war with the player keeps the wanted level from lapsing.
+      if (alert && inMilitary(player.x, player.y, 600) && gameTime - militaryWantedAt > 4) {
+        militaryWantedAt = gameTime;
+        crime(0.2);
+      }
       if (alert && gameTime - militaryAnnounceAt > 14 && inMilitary(player.x, player.y, 600)) {
         militaryAnnounceAt = gameTime;
         tell(

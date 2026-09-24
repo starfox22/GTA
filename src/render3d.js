@@ -2247,7 +2247,7 @@
               p.hidden ||
               p.hp <= 0 ||
               // Soldiers going about their duties are not labelled until they engage.
-              (p.military && !p.aiming && !p.aimingOnly) ||
+              (p.military && !p.aiming) ||
               !sameFloor(p, player) ||
               distanceBetween(p, player) > (p.ally ? 400 : 230)
             )

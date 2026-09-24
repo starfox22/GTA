@@ -135,6 +135,7 @@
         dirt: mat('#7a6a4e', 0.98),
         sandbag: mat('#9c8c66', 0.98),
         canvasTop: mat('#66684a', 0.96),
+        wood,
         tank: mat('#d4d1c3', 0.55, 0.2),
         glassBlue: new Three.MeshStandardMaterial({ color: '#2c4450', roughness: 0.1, metalness: 0.6 }),
         cladding: new Three.MeshStandardMaterial({ color: '#8e958e', roughness: 0.5, metalness: 0.55, map: ribTx }),
@@ -720,11 +721,14 @@
           g.fillStyle = (x / 20) % 2 ? '#ffffff0a' : '#0000000c';
           g.fillRect(x, 8040, 10, 58);
         }
-        // Outside the fence: tidy the verge the sheet covers.
+        // Outside the fence: tidy the verge the sheet covers (one path: each
+        // destination-in fill clears everything outside itself).
         g.globalCompositeOperation = 'destination-in';
         g.fillStyle = '#000';
-        g.fillRect(X0 - 12, Y0 - 12, X1 - X0 + 24, Y1 - Y0 + 24);
-        g.fillRect(G.x, gate.opening[0] - 45, X0 - G.x + 1, gate.opening[1] - gate.opening[0] + 90);
+        g.beginPath();
+        g.rect(X0 - 12, Y0 - 12, X1 - X0 + 24, Y1 - Y0 + 24);
+        g.rect(G.x, gate.opening[0] - 45, X0 - G.x + 1, gate.opening[1] - gate.opening[0] + 90);
+        g.fill();
         g.globalCompositeOperation = 'source-over';
       })();
       {
@@ -912,20 +916,23 @@
         box(grp, bx, 21.5, bz, 10, 3, 6, B.steel);
         box(grp, bx + 12, 5, bz + g.booth.h / 2 + 0.3, 7, 10, 0.4, B.oliveDark);
         plate(grp, bx, 16.5, bz + g.booth.h / 2 + 0.8, 18, 4.5, plateMaterial('MILITARY POLICE', { bg: '#182338', fg: '#f0e6c8' }), 0);
-        // Canopy over both lanes with lights underneath.
+        // Canopy over both lanes: an open steel frame (a solid roof would hide the
+        // booth and barriers from the camera), with light bars under the beams.
         const cp = g.canopy,
           ccx = (cp.x0 + cp.x1) / 2,
           ccz = (cp.y0 + cp.y1) / 2;
         for (const x of [cp.x0 + 6, cp.x1 - 6])
           for (const z of [cp.y0 + 4, 8150, cp.y1 - 4]) box(grp, x, cp.height / 2, z, 3.5, cp.height, 3.5, B.white);
-        box(grp, ccx, cp.height + 1.5, ccz, cp.x1 - cp.x0, 3, cp.y1 - cp.y0, B.white);
-        box(grp, ccx, cp.height + 4.5, ccz, cp.x1 - cp.x0 + 2, 3, cp.y1 - cp.y0 + 2, B.olive);
+        for (const x of [cp.x0 + 1.5, cp.x1 - 1.5]) box(grp, x, cp.height + 2, ccz, 3, 4, cp.y1 - cp.y0, B.olive);
+        for (const z of [cp.y0 + 1.5, cp.y1 - 1.5]) box(grp, ccx, cp.height + 2, z, cp.x1 - cp.x0, 4, 3, B.olive);
+        for (let z = cp.y0 + 20; z < cp.y1 - 10; z += 20) box(grp, ccx, cp.height + 1, z, cp.x1 - cp.x0 - 2, 2, 1.6, B.white);
+        box(grp, ccx, cp.height + 1, 8150, cp.x1 - cp.x0 - 2, 2.4, 3, B.white);
         plate(grp, cp.x0 - 1.2, cp.height + 3, 8150, 150, 6, plateMaterial('FORT SENTINEL · MAIN GATE · ALL VEHICLES SUBJECT TO SEARCH', { w: 1024, h: 48, bg: '#2b3527', fg: '#efe3c0' }), -Math.PI / 2);
         plate(grp, ccx, cp.height + 3, cp.y1 + 1.3, cp.x1 - cp.x0 - 6, 5, plateMaterial('FORT SENTINEL · MAIN GATE', { w: 512, h: 32, bg: '#2b3527', fg: '#efe3c0' }), 0);
         for (const lane of g.lanes) {
           const lz = (lane.y0 + lane.y1) / 2;
           for (const x of [cp.x0 + 20, ccx, cp.x1 - 20]) {
-            const l = box(grp, x, cp.height - 0.2, lz, 12, 0.5, 30, B.lamp);
+            const l = box(grp, x, cp.height - 0.2, lz, 3, 0.5, 14, B.lamp);
             l.castShadow = false;
           }
           glowPool(ccx, lz, 70, '#fff0d0', 1.2);
