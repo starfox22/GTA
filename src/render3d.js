@@ -2450,7 +2450,11 @@
             if (m.wipers) updateWipers(c, m, deltaSeconds);
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
             paintVehicle(c, m);
-            if (m.crank) m.crank.rotation.z -= deltaSeconds * c.speed * 0.13;
+            // The player's cranks turn at their pedalling cadence (still when
+            // coasting); anyone else's follow road speed.
+            if (m.crank)
+              m.crank.rotation.z -=
+                deltaSeconds * (c === player.car ? pedalCadence() * Math.PI * 2 : c.speed * 0.13);
             if (m.helicopter) {
               const running =
                 (c === player.car ||
