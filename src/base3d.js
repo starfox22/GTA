@@ -871,23 +871,9 @@
         const lens = mesh(cylinderGeo, B.lamp, lampBody, 4.1, 0, 0, 2.3, 0.3, 2.3);
         lens.rotation.z = Math.PI / 2;
         lens.castShadow = false;
-        const beam = new Three.Mesh(
-          (() => {
-            const geo = new Three.CylinderGeometry(0.08, 1, 1, 18, 1, true);
-            geo.translate(0, -0.5, 0);
-            return geo;
-          })(),
-          new Three.MeshBasicMaterial({ color: '#fff2cf', transparent: true, opacity: 0.1, blending: Three.AdditiveBlending, depthWrite: false, side: Three.DoubleSide }),
-        );
-        beam.visible = false;
-        baseDynamic.add(beam);
-        const spot = new Three.Mesh(
-          new Three.PlaneGeometry(1, 1),
-          new Three.MeshBasicMaterial({ map: haloTx, color: '#fff0c8', transparent: true, opacity: 0.6, blending: Three.AdditiveBlending, depthWrite: false }),
-        );
-        spot.rotation.x = -Math.PI / 2;
-        spot.visible = false;
-        baseDynamic.add(spot);
+        // Light shaft and ground pool (searchlight3d.js), placed by the night pass.
+        const beam = createSearchBeam('#fff1d6'),
+          spot = createSearchPool('#fff0c8');
         const beamHalo = baseHalo(x, floor + 20, z, 26, '#fff4d8');
         searchlights.push({ tower: t, head, lampBody, beam, spot, halo: beamHalo, phase: i * 1.7, aim: t.a, target: null });
       }
@@ -1768,13 +1754,16 @@
         return m;
       })();
       /* ---- Per frame -------------------------------------------------------------------- */
-      const searchBeamDirection = new Three.Vector3(),
-        searchBeamDown = new Three.Vector3(0, -1, 0);
+      const searchLens = new Three.Vector3(),
+        searchAim = new Three.Vector3();
       function updateBaseVisuals() {
         const near =
           Math.abs(viewCenter.x - 9930) < viewReach + 1500 && Math.abs(viewCenter.y - 8850) < viewReach + 1600;
         baseGlowMesh.visible = near && nightAmount > 0.05;
-        if (!near) return;
+        if (!near) {
+          for (const s of searchlights) s.beam.mesh.visible = s.spot.visible = false;
+          return;
+        }
         const night = nightAmount,
           alert = militaryAlertUntil > gameTime,
           blink = Math.sin(gameTime * 3.2) > 0.2 ? 1 : 0.15;
@@ -1844,18 +1833,26 @@
             origin = s.head.position;
           s.head.rotation.y = -s.aim;
           s.lampBody.rotation.z = -Math.atan2(origin.y + 2.5, s.reach);
-          s.beam.visible = s.spot.visible = lit;
+          s.beam.mesh.visible = s.spot.visible = lit;
           if (!lit) continue;
-          searchBeamDirection.set(tx - origin.x, -(origin.y + 2.5), tz - origin.z);
-          const length = searchBeamDirection.length();
-          searchBeamDirection.normalize();
-          s.beam.position.set(origin.x, origin.y + 2.5, origin.z);
-          s.beam.quaternion.setFromUnitVectors(searchBeamDown, searchBeamDirection);
-          s.beam.scale.set(16, length, 16);
-          s.beam.material.opacity = 0.08 * night * (alert ? 1.4 : 1);
-          s.spot.position.set(tx, 1.2, tz);
-          s.spot.scale.set(52, 52, 1);
-          s.spot.material.opacity = 0.75 * night;
+          // The lens sits 4 units out along the lamp's aim.
+          const ground = terrainHeight(tx, tz),
+            drop = origin.y + 2.5 - ground,
+            slant = Math.hypot(s.reach, drop);
+          searchLens.set(
+            origin.x + (Math.cos(s.aim) * 4.1 * s.reach) / slant,
+            origin.y + 2.5 - (4.1 * drop) / slant,
+            origin.z + (Math.sin(s.aim) * 4.1 * s.reach) / slant,
+          );
+          searchAim.set(tx, ground, tz);
+          s.beam.set(searchLens, searchAim, 23, 1.3, ground);
+          s.beam.uniforms.uIntensity.value = night * (alert ? 2.1 : 1.6) * (1 + weather.rain * 0.7);
+          // The pool stretches along the beam where it grazes the ground.
+          const grazing = Math.min(3, slant / Math.max(1, drop));
+          s.spot.position.set(tx, ground + 0.6, tz);
+          s.spot.rotation.set(0, -s.aim, 0);
+          s.spot.scale.set(50 * grazing, 1, 50);
+          s.spot.material.color.copy(s.spot.userData.baseColor).multiplyScalar(night * (alert ? 1.25 : 0.85));
         }
       }
       /* ---- Military vehicle models ------------------------------------------------------ */
