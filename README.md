@@ -25,8 +25,10 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 - Cars that crumple (with layered, recorded crash sounds), lose panels, glass and lamps,
   burst tyres, catch fire and explode;
   bullet holes, broken shop windows and street furniture you can flatten.
-- Helicopters and three airframes of plane with a perspective flight camera, volumetric
-  clouds, and helicopter landings on helipads and flat roofs.
+- Helicopters and three detailed airframes of plane (flaps, retracting gear, working control
+  surfaces) with a perspective flight camera, a glass-cockpit flight HUD (attitude, airspeed
+  and altitude tapes, vertical speed, heading, power, flaps, gear, g, stall warnings),
+  volumetric clouds, and helicopter landings on helipads and flat roofs.
 - A 3D renderer (Three.js r160, embedded): HDR post-processing (ambient occlusion, bloom,
   filmic grade), a sun that follows the clock, sky reflections, a night light map for every
   lamp and shop, weather, and four graphics quality tiers. Without WebGL a 2D renderer

@@ -451,6 +451,17 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   player or the target moves; in the air, on the water or on a ride it keeps the straight
   line. The big map is unchanged. In touch mode the bottom row
   moves to the top so the thumbs have the lower corners.
+- **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft two
+  columns frame the aircraft either side of the middle of the screen, leaving the centre
+  clear: an attitude indicator (pitch ladder, bank scale and pointer), the airspeed tape with
+  its stall band and the power block (engine power fill, throttle lever tick, flaps and gear
+  chips) on the left; the altitude tape with the ground band and a vertical-speed scale, then
+  AGL, vertical speed and g on the right; a heading strip with the objective's bearing on
+  top, and one warning at a time under it (STALL, PULL UP, GEAR, STALL WARNING, ENGINE
+  DAMAGE). The instruments are 2D canvases redrawn every frame (`updateFlightHud` from the
+  game loop) from `flightData()` (aviation.js); `#flightHud.on` fades and slides it in. The
+  helicopter shows the slim version (no attitude, flaps or gear; ROTOR for power). It scales
+  down on small screens and keeps only the tapes and heading on phones.
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
   advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,

@@ -2906,6 +2906,8 @@
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);
       });
+      // The flight instruments move every frame (hud.js, FLIGHT HUD).
+      timed('flighthud', updateFlightHud);
       uiTime += deltaSeconds;
       if (uiTime > 0.09) {
         uiTime = 0;
@@ -4026,12 +4028,15 @@
       let prompt = '';
       if (gameMode === 'play') {
         if (c) {
+          // The flight HUD shows power, speed and the warnings; the prompt only
+          // says what to do about a stall, or how to get off the ground.
           if (c.type === 'plane')
             prompt = c.stalled
               ? 'STALL · ' + keyName('descend') + ' NOSE DOWN + ' + keyName('forward') + ' THROTTLE'
-              : keyName('forward') + '/' + keyName('back') + ' THROTTLE ' +
-                Math.round((c.throttle || 0) * 100) +
-                '% · ' + keyName('ascend') + '/' + keyName('descend') + ' PITCH · ' + keyName('bail') + ' PARACHUTE';
+              : aircraftClearance(c) < 1 && Math.abs(c.speed) < 40
+                ? keyName('forward') + ' THROTTLE · ' + keyName('ascend') + ' ROTATE · ' + keyName('flapsDown') + ' FLAPS · ' +
+                  keyName('interact') + ' EXIT'
+                : '';
           else if (c.type === 'helicopter')
             prompt =
               aircraftClearance(c) > 1
@@ -4470,15 +4475,15 @@
         deployParachute();
         return;
       }
-      // The radio plays in vehicles and on the Sunset Pier rides (car-radio.js).
-      if ((player.car || player.coaster) && is('radioPower')) {
-        toggleCarRadio();
-        return;
-      }
       // Plane flaps and landing gear (aviation.js, FLIGHT CONTROLS).
       if (player.car?.type === 'plane' && player.car.hp > 0 && (is('flapsDown') || is('flapsUp') || is('gear'))) {
         if (is('gear')) togglePlaneGear(player.car);
         else setPlaneFlaps(player.car, is('flapsDown') ? 1 : -1);
+        return;
+      }
+      // The radio plays in vehicles and on the Sunset Pier rides (car-radio.js).
+      if ((player.car || player.coaster) && is('radioPower')) {
+        toggleCarRadio();
         return;
       }
       if ((player.car || player.coaster) && is('radioNext')) {
@@ -5105,11 +5110,6 @@
         weather.locked = true;
         return setWeather(id);
       },
-      // What the vehicle under the player is actually doing.
-      ride: () => ({
-        type: player.car ? player.car.type : null,
-        speed: player.car ? Math.round((player.car.speed || 0) * 10) / 10 : 0,
-        vx: player.car ? Math.round((player.car.vx || 0) * 10) / 10 : 0,
       // The player's aircraft instruments as the flight HUD shows them (aviation.js
       // flightData): airspeed km/h, altitude and AGL m, vertical speed m/s, heading,
       // pitch, bank, throttle and spooled power, flaps, gear, g, stall warnings.
@@ -5122,6 +5122,11 @@
         out.hud = !!document.getElementById('flightHud')?.classList.contains('on');
         return out;
       },
+      // What the vehicle under the player is actually doing.
+      ride: () => ({
+        type: player.car ? player.car.type : null,
+        speed: player.car ? Math.round((player.car.speed || 0) * 10) / 10 : 0,
+        vx: player.car ? Math.round((player.car.vx || 0) * 10) / 10 : 0,
         vy: player.car ? Math.round((player.car.vy || 0) * 10) / 10 : 0,
         cadence: Math.round(pedalCadence() * 100) / 100,
         effort: Math.round(pedalEffort() * 100) / 100,
@@ -5180,15 +5185,15 @@
           if (car.type === 'plane') {
             car.vx = Math.cos(car.a) * 420;
             car.vy = Math.sin(car.a) * 420;
+            // Cruising: gear up, cruise power.
+            car.gearDown = false;
+            car.gearPos = 0;
+            car.throttle = car.power = 0.75;
           }
         }
         return this.status();
       },
       // The player and the water: swimming, wading, stamina, shore type and the
-            // Cruising: gear up, cruise power.
-            car.gearDown = false;
-            car.gearPos = 0;
-            car.throttle = car.power = 0.75;
       // nearest way out (see water.js).
       swim: () => swimStatus(),
       // Every ladder out of the sea: foot in the water, top on the quay.
