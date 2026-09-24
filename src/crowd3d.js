@@ -522,14 +522,40 @@
         T[J_HIP[1]] = -sway * 0.04;
         T[J_HEAD_YAW] = Math.sin(t * 0.31 + seed * 2) * Math.max(0, Math.sin(t * 0.13 + seed)) * 0.7;
         if (p.hp <= 0) {
-          T[J_FALL] = 1;
           T[J_LOCO] = 0;
+          T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+          T[J_HEAD_YAW] = 0;
           const k = seed % 1;
-          setArm(T, 0, 0.4, 1.1 + k * 0.6, 0.3);
-          setArm(T, 1, -0.2, 0.3 + k, 0.6);
-          T[J_HIP[0]] = 0.3 * k;
+          if (p.deathStyle?.slump) {
+            // Slid down a wall: sitting, legs out, head dropped, arms slack.
+            T[J_FALL] = 0;
+            T[J_DROP] = -3.6;
+            T[J_HIP[0]] = T[J_HIP[1]] = 1.45;
+            T[J_KNEE[0]] = -0.25 - k * 0.5;
+            T[J_KNEE[1]] = -0.1;
+            T[J_SPREAD] = 0.3;
+            T[J_LEAN] = 0.35;
+            T[J_ROLL] = (k - 0.5) * 0.4;
+            T[J_HEAD_PITCH] = 0.75;
+            setArm(T, 0, 0.15, 0.4, 0.2);
+            setArm(T, 1, 0.3, 0.2 + k * 0.4, 0.4);
+            return;
+          }
+          T[J_FALL] = 1;
+          if ((p.deathStyle?.sign ?? 1) < 0) {
+            // Face down: arms thrown forward, one leg drawn up.
+            setArm(T, 0, 2.6 - k * 0.6, 0.5, 0.3);
+            setArm(T, 1, 1.6 + k * 0.8, 0.9, 0.6);
+            T[J_HIP[1]] = 0.7 * k;
+            T[J_KNEE[1]] = -1.1 * k;
+          } else {
+            setArm(T, 0, 0.4, 1.1 + k * 0.6, 0.3);
+            setArm(T, 1, -0.2, 0.3 + k, 0.6);
+            T[J_HIP[0]] = 0.3 * k;
+            T[J_KNEE[1]] = -0.5 * k;
+          }
           T[J_SPREAD] = 0.25;
-          T[J_KNEE[1]] = -0.5 * k;
+          T[J_HEAD_YAW] = (k - 0.5) * 1.2;
           return;
         }
         let pose = p.pose;
@@ -702,6 +728,21 @@
             if (p.sipping) setArm(T, 1, 1.0, 0.25, 2.45);
             else if (carry === 'coffee') setArm(T, 1, 0.75, 0.1, 1.5);
             break;
+          case 'crawl': {
+            // Prone, hauling themselves along on alternate elbows, legs dragging.
+            const c = Math.sin(t * 5 + seed);
+            T[J_LOCO] = 0;
+            T[J_FALL] = 1;
+            setArm(T, 0, 2.5 + c * 0.45, 0.35, 1.2 - c * 0.5);
+            setArm(T, 1, 2.5 - c * 0.45, 0.35, 1.2 + c * 0.5);
+            T[J_HIP[0]] = 0.15 + Math.max(0, c) * 0.45;
+            T[J_KNEE[0]] = -0.3 - Math.max(0, c) * 0.9;
+            T[J_HIP[1]] = 0.05;
+            T[J_KNEE[1]] = -0.15;
+            T[J_ROLL] = c * 0.1;
+            T[J_HEAD_PITCH] = -0.5;
+            break;
+          }
           case 'lie':
             T[J_LOCO] = 0;
             T[J_FALL] = 1;
@@ -917,6 +958,25 @@
           T[J_LEAN] -= p.illness * 0.3;
           setArm(T, 0, 0.85, 0.2, 1.2);
         }
+        // A fresh hit (wounds.js): the torso snaps away from the round, a head
+        // hit throws the head back, a leg hit buckles that knee.
+        const flinch = hitFlinch(p);
+        if (flinch > 0) {
+          const rel = normalizeAngle((p.hitDir || 0) - (p.a || 0)),
+            along = Math.cos(rel),
+            across = Math.sin(rel);
+          T[J_LEAN] += -along * 0.5 * flinch;
+          T[J_ROLL] += across * 0.3 * flinch;
+          if (p.hitZone === 'head') T[J_HEAD_PITCH] -= 0.8 * flinch;
+          else if (p.hitZone === 'leg') {
+            const side = across > 0 ? 1 : 0;
+            T[J_DROP] -= 1.3 * flinch;
+            T[J_KNEE[side]] -= 1.1 * flinch;
+          } else {
+            setArm(T, 0, 0.9 * flinch, 0.5, 1.6 * flinch);
+            setArm(T, 1, 0.9 * flinch, 0.5, 1.6 * flinch);
+          }
+        }
         const fall = p.poisonCollapse ?? personFallAmount(p);
         if (fall > 0) {
           T[J_FALL] = Math.max(T[J_FALL], fall);
@@ -954,7 +1014,7 @@
         // Ease the base pose.
         const k = 1 - Math.exp(-deltaSeconds * (p.react ? 13 : 9));
         for (let i = 0; i < J_COUNT; i++) J[i] += (T[i] - J[i]) * (deltaSeconds > 0 ? k : 1);
-        if (T[J_FALL] >= 1 && p.hp <= 0) J[J_FALL] = Math.max(J[J_FALL], personFallAmount(p));
+        if (p.hp <= 0 && !p.deathStyle?.slump) J[J_FALL] = personFallAmount(p);
         // Heading: turn toward the facing the game gives, faster when running.
         const yawRate = s.speed > 45 ? 12 : 8;
         s.yaw += clamp(normalizeAngle((p.a || 0) - s.yaw), -yawRate * deltaSeconds, yawRate * deltaSeconds) || 0;
@@ -996,9 +1056,11 @@
           const along = Math.abs(Math.sin(s.yaw));
           s.fallTurn = along > 0.6 ? (s.seed % 2 < 1 ? 1 : -1) * (0.7 + (s.seed % 0.4)) : 0;
         }
-        const fallYaw = (s.fallTurn || 0) * fall;
-        // Root: position, heading, then the fall (a rotation about the lateral axis).
-        crowdJoint(mRoot, mIdentity, p.x, elevation + fall * 1.5 * height, p.y, (fall * Math.PI) / 2, p.ejected ? p.ejectRoll || 0 : 0, -(s.yaw + fallYaw));
+        const fallSign = p.hp <= 0 ? (p.deathStyle?.sign ?? 1) : p.pose === 'crawl' ? -1 : 1,
+          fallYaw = ((s.fallTurn || 0) + (p.hp <= 0 ? p.deathStyle?.turn || 0 : 0)) * fall;
+        // Root: position, heading, then the fall (a rotation about the lateral axis):
+        // over backwards, or face down for fallSign -1.
+        crowdJoint(mRoot, mIdentity, p.x, elevation + fall * 1.5 * height, p.y, (fallSign * fall * Math.PI) / 2, p.ejected ? p.ejectRoll || 0 : 0, -(s.yaw + fallYaw));
         mRoot.scale(crowdScale.set(height, height, height));
         crowdJoint(mHips, mRoot, 0, CROWD_HIP + J[J_DROP] + bob, 0, 0, roll * 0.4, 0);
         crowdJoint(mTorso, mHips, 0, 0.7, 0, lean, roll, twist);

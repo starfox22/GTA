@@ -444,9 +444,9 @@
       return [...countyStaticSolids, ...AIRPORT_SCENERY_SOLIDS];
     }
     function countyBlocked(x, y, r = 8) {
-      return countySolids().some(
-        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
-      );
+      // solid() asks this for every point outside the city: no array spread.
+      const hit = (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h;
+      return countyStaticSolids.some(hit) || AIRPORT_SCENERY_SOLIDS.some(hit);
     }
     function paintCountyGround(drawingContext, detail = true) {
       for (const reg of COUNTY_REGIONS) {

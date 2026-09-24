@@ -1059,6 +1059,7 @@
     }
     function footStepTowards(o, target, deltaSeconds, speed) {
       if (personIncapacitated(o)) return;
+      if (o.limping) speed *= 0.6;
       let a = headingBetween(o, target),
         dx = Math.cos(a) * speed * deltaSeconds,
         dy = Math.sin(a) * speed * deltaSeconds;
@@ -1107,6 +1108,21 @@
           o.state = 'stunned';
           continue;
         }
+        // Down but alive: no more shooting, a slow crawl for the car (or out of
+        // the way once the police are gone), unless a partner is dragging them.
+        if (o.downed) {
+          o.state = 'downed';
+          o.fireToken = false;
+          o.seesPlayer = false;
+          if (wantedStars <= 0 && !crowdInView(o.x, o.y, 60)) o.returned = true;
+          else if (!o.draggedBy && !o.inCover) {
+            const cover = officerCoverSpot(o);
+            if (cover && distanceBetween(o, cover) > 10) footStepTowards(o, cover, deltaSeconds, 9);
+            else o.inCover = true;
+          }
+          continue;
+        }
+        if (o.dragging && updateOfficerDrag(o, deltaSeconds)) continue;
         const look = gameTime >= (o.lookAt || 0);
         if (look) {
           o.lookAt = gameTime + 0.12 + seededRandom() * 0.06;
@@ -1458,6 +1474,8 @@
       if (stopped) particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
       else if (showBlood) bleed(person, Math.min(2, dealt / 38), a);
       scream(person);
+      // Where it landed, the flinch, a limp, a blood trail, the fall (wounds.js).
+      if (dealt > 0) woundPerson(person, dealt, a, kind);
       if (person.hp <= 0) {
         person.deadTime = gameTime;
         // Witnesses who find the body later report whoever did it.
@@ -1477,6 +1495,7 @@
       updateDepotDoors(deltaSeconds);
       updateCrowdDensity(deltaSeconds);
       timed('police:air', () => updateAirPolice(deltaSeconds));
+      updateWounds();
       for (let i = bloodPools.length - 1; i >= 0; i--)
         if (gameTime - bloodPools[i].created > 240) bloodPools.splice(i, 1);
     }

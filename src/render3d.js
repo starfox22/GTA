@@ -1937,13 +1937,28 @@
             m.group.visible = near && !(activePlayer && (player.car || transitRide || taxiRide));
             if (p.hidden) m.group.visible = false;
             if (!m.group.visible) continue;
-            const fallen = p.hp <= 0 ? 1 : (p.poisonCollapse ?? personFallAmount(p)),
-              incapacitated = personIncapacitated(p);
-            m.group.position.set(p.x, entityElevation(p) + fallen * 1.5, p.y);
+            // Wounds (wounds.js): the dead fall over half a second, backwards, face
+            // down or spun, or sit slumped against a wall; a downed officer lies
+            // prone and crawls; a fresh hit tilts the body away from the round.
+            const death = p.hp <= 0 ? p.deathStyle : null,
+              downed = p.hp > 0 && !!p.downed,
+              slump = !!death?.slump,
+              fallen = slump ? 0 : p.hp <= 0 ? personFallAmount(p) : downed ? 1 : (p.poisonCollapse ?? personFallAmount(p)),
+              fallSign = death ? death.sign : downed ? -1 : 1,
+              flinch = hitFlinch(p),
+              flinchAlong = flinch ? Math.cos(normalizeAngle((p.hitDir || 0) - (p.a || 0))) : 0,
+              incapacitated = personIncapacitated(p) || downed;
+            m.group.position.set(
+              p.x,
+              entityElevation(p) + fallen * 1.5 - (slump ? 4.5 : 0) - (p.hitZone === 'leg' ? flinch * 1.5 : 0),
+              p.y,
+            );
             m.group.rotation.set(
               p.ejected ? p.ejectRoll || 0 : 0,
-              -(activePlayer && (mouse.active || touchAim !== null) ? aim() : p.a),
-              (fallen * Math.PI) / 2 +
+              -(activePlayer && (mouse.active || touchAim !== null) ? aim() : p.a) - (death?.turn || 0) * fallen,
+              (fallSign * fallen * Math.PI) / 2 +
+                (slump ? 0.5 : 0) -
+                flinchAlong * 0.35 * flinch +
                 (p.hp > 0 && p.dazedFor > 0 ? Math.sin(gameTime * 8) * 0.055 : 0),
             );
             const step =
@@ -1964,6 +1979,26 @@
               const aiming = p.state === 'aim' || p.state === 'suppress';
               m.parts.arm1.rotation.z = aiming ? 1.12 : 0.3;
               m.parts['arm-1'].rotation.z = aiming ? 0.9 : -step * 0.5;
+            }
+            if (downed) {
+              // Hauling along on the elbows, weapon dropped.
+              const c = Math.sin((p.walk || 0) * 0.8);
+              m.parts.guns[0].visible = false;
+              m.parts.arm1.rotation.z = 2.5 + c * 0.45;
+              m.parts['arm-1'].rotation.z = 2.5 - c * 0.45;
+              m.parts.leg1.rotation.z = Math.max(0, c) * 0.4;
+              m.parts['leg-1'].rotation.z = 0;
+            } else if (slump) {
+              m.parts.leg1.rotation.z = 1.45;
+              m.parts['leg-1'].rotation.z = 1.3;
+              m.parts.arm1.rotation.z = 0.15;
+              m.parts['arm-1'].rotation.z = 0.35;
+            } else if (p.hp <= 0 && fallSign < 0) {
+              m.parts.arm1.rotation.z = 2.4;
+              m.parts['arm-1'].rotation.z = 1.7;
+            } else if (p.limping && p.hp > 0) {
+              // Favour one leg: a short stride on it.
+              m.parts['leg-1'].rotation.z *= 0.35;
             }
             if (m.parts.cup) m.parts.cup.visible = !!p.drinking && p.hp > 0;
             if (p.hp > 0 && p.dancing) {

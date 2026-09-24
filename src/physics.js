@@ -361,8 +361,13 @@
         }
       }
     }
+    // Which contact pass last touched a body: passes after the first only revisit
+    // bodies a contact moved in the pass before (physicsStep).
+    let contactPass = 0;
     function resolveContact(a, b, hit, staticBody = null, record = true) {
       const n = hit.n;
+      a.contactPass = contactPass;
+      if (b) b.contactPass = contactPass;
       let inverseMassA = 1 / (vehicleSpec(a).mass || 1.25),
         inverseMassB = b ? 1 / (vehicleSpec(b).mass || 1.25) : 0;
       // A braced roadblock cruiser is an anchor for this contact unless the other
@@ -1005,7 +1010,16 @@
         // A parked car a long way off with nothing driving it has nothing to
         // integrate: skipping its control and integration is what keeps a city
         // with hundreds of kerbside vehicles and bicycles affordable.
-        if (c.resting && c !== pc && !c.ai && !c.cop && !c.taxiHire && c.hp > 0) continue;
+        // Parked roadblock and deployed cruisers and burnt-out wrecks sleep the same way.
+        if (
+          c.resting &&
+          c !== pc &&
+          !c.ai &&
+          !c.taxiHire &&
+          (!c.cop || c.crewDeployed || c.hp <= 0) &&
+          (c.hp > 0 || !c.damage?.burning)
+        )
+          continue;
         if (c.vx === undefined) {
           c.vx = Math.cos(c.a) * c.speed;
           c.vy = Math.sin(c.a) * c.speed;
@@ -1320,9 +1334,32 @@
         kind: 'roadblock',
         id: 'block' + i,
       }));
+      // The base gate and harbor barriers, for the few vehicles near them.
+      const barrierBodies = [];
+      for (const c of vehicles) {
+        if (isBoat(c) || (c.altitude || 0) >= 20) continue;
+        if (inMilitary(c.x, c.y, 130))
+          for (const r of militarySolids())
+            if (r.barrier)
+              barrierBodies.push([c, { x: r.x + r.w / 2, y: r.y + r.h / 2, hx: r.w / 2, hy: r.h / 2, a: 0, height: r.height, kind: 'military', id: 'basegate' }]);
+        if (inHarbor(c.x, c.y, 100))
+          for (const r of harborSolids())
+            if (r.barrier)
+              barrierBodies.push([c, { x: r.x + r.w / 2, y: r.y + r.h / 2, hx: r.w / 2, hy: r.h / 2, a: 0, height: r.height, kind: 'harbor', id: 'port' + r.x + ',' + r.y }]);
+        if (blockBodies.length)
+          for (const b of blockBodies)
+            if (Math.abs(c.x - b.x) <= 90 && Math.abs(c.y - b.y) <= 90) barrierBodies.push([c, b]);
+      }
       mark('phys:broadphase');
+      // Seven relaxation passes. The first tests everything; later passes only
+      // revisit bodies a contact moved in the pass before: a body nothing pushed
+      // cannot have been pushed into anything new. At five stars this is most of
+      // the saving with a street full of cruisers, wrecks and parked cars.
       for (let pass = 0; pass < 7; pass++) {
+        contactPass = pass + 1;
+        const active = (c) => pass === 0 || c.contactPass === pass;
         for (const [a, b] of pairs) {
+          if (!active(a) && !active(b)) continue;
           const radius =
             Math.hypot(vehicleSpec(a).l, vehicleSpec(a).w) / 2 +
             Math.hypot(vehicleSpec(b).l, vehicleSpec(b).w) / 2;
@@ -1330,50 +1367,13 @@
           const hit = boxContact(vehicleShape(a), vehicleShape(b));
           if (hit) resolveContact(a, b, hit, null, pass === 0);
         }
-        for (const c of vehicles) {
-          if (!isBoat(c) && (c.altitude || 0) < 20 && inMilitary(c.x, c.y, 130))
-            for (const r of militarySolids().filter((r) => r.barrier)) {
-              const b = {
-                x: r.x + r.w / 2,
-                y: r.y + r.h / 2,
-                hx: r.w / 2,
-                hy: r.h / 2,
-                a: 0,
-                height: r.height,
-                kind: 'military',
-                id: 'basegate',
-              };
-              const hit = boxContact(vehicleShape(c), b);
-              if (hit) resolveContact(c, null, hit, b, pass === 0);
-            }
+        for (const [c, b] of barrierBodies) {
+          if (!active(c)) continue;
+          const hit = boxContact(vehicleShape(c), b);
+          if (hit) resolveContact(c, null, hit, b, pass === 0);
         }
         for (const c of vehicles) {
-          if (!isBoat(c) && (c.altitude || 0) < 20 && inHarbor(c.x, c.y, 100))
-            for (const r of harborSolids().filter((r) => r.barrier)) {
-              const b = {
-                x: r.x + r.w / 2,
-                y: r.y + r.h / 2,
-                hx: r.w / 2,
-                hy: r.h / 2,
-                a: 0,
-                height: r.height,
-                kind: 'harbor',
-                id: 'port' + r.x + ',' + r.y,
-              };
-              const hit = boxContact(vehicleShape(c), b);
-              if (hit) resolveContact(c, null, hit, b, pass === 0);
-            }
-        }
-        if (blockBodies.length)
-          for (const c of vehicles) {
-            if (isBoat(c) || (c.altitude || 0) >= 20) continue;
-            for (const b of blockBodies) {
-              if (Math.abs(c.x - b.x) > 90 || Math.abs(c.y - b.y) > 90) continue;
-              const hit = boxContact(vehicleShape(c), b);
-              if (hit) resolveContact(c, null, hit, b, pass === 0);
-            }
-          }
-        for (const c of vehicles)
+          if (!active(c)) continue;
           for (const b of staticCandidates.get(c) || noStatics) {
             if (
               isBoat(c) ||
@@ -1386,6 +1386,7 @@
             const hit = boxContact(vehicleShape(c), b);
             if (hit) resolveContact(c, null, hit, b, pass === 0);
           }
+        }
       }
       // Lamp posts, hydrants, bins and benches: solid until something heavy and fast
       // enough knocks them flat (damage.js).
@@ -1483,7 +1484,8 @@
       return p.hp > 0 && ((p.knockedFor || 0) > 0 || (p.dazedFor || 0) > 0);
     }
     function personFallAmount(p) {
-      return p.hp <= 0 ? 1 : clamp((p.knockedFor || 0) / 0.55, 0, 1);
+      // The dead go down over half a second (wounds.js); the knocked-down at once.
+      return p.hp <= 0 ? deathFallAmount(p) : clamp((p.knockedFor || 0) / 0.55, 0, 1);
     }
     function updateKnockdowns(deltaSeconds) {
       // Walk the four lists in place rather than copying ~700 people every frame.

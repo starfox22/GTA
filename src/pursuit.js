@@ -408,7 +408,9 @@
     function pursuitControl(c, stepSeconds, along, spec) {
       c.routeTime = (c.routeTime || 0) - stepSeconds;
       if (!c.pursuitPlan || physicsClock >= (c.pursuitPlanAt || 0)) {
-        c.pursuitPlanAt = physicsClock + 0.1;
+        // Ten plans a second near the player, three for units a long way off.
+        const far = Math.abs(c.x - player.x) > 800 || Math.abs(c.y - player.y) > 800;
+        c.pursuitPlanAt = physicsClock + (far ? 0.3 : 0.1);
         planPursuit(c, spec, along);
       }
       const plan = c.pursuitPlan,
@@ -557,12 +559,13 @@
     const FIRE_TOKENS = [0, 2, 3, 3, 4, 5];
     let tokenShuffleAt = 0;
     function assignFireTokens() {
+      assignOfficerDrags();
       const cap = FIRE_TOKENS[clamp(Math.ceil(wantedStars), 0, 5)],
         reshuffle = gameTime >= tokenShuffleAt;
       if (reshuffle) tokenShuffleAt = gameTime + 2;
       const shooters = [];
       for (const o of officers) {
-        if (o.hp <= 0 || !o.seesPlayer || o.state === 'return' || personIncapacitated(o)) {
+        if (o.hp <= 0 || o.downed || o.dragging || !o.seesPlayer || o.state === 'return' || personIncapacitated(o)) {
           o.fireToken = false;
           continue;
         }
@@ -641,6 +644,72 @@
       return null;
     }
 
+    /* Behind the officer's own car, on the side away from the player. */
+    function officerCoverSpot(o) {
+      const car = o.car;
+      if (!car || car.hp <= 0 || car === player.car || distanceBetween(o, car) > 260) return null;
+      const away = headingBetween(player, car),
+        spot = { x: car.x + Math.cos(away) * 28, y: car.y + Math.sin(away) * 28 };
+      return solid(spot.x, spot.y, 8) ? null : spot;
+    }
+    /**
+     * A partner drags a downed officer behind their car: runs over, then walks
+     * backwards to cover towing the wounded along the ground. Only a partner
+     * without a firing token and within 220 units takes it on; returns true
+     * while the drag owns this officer's turn.
+     */
+    function assignOfficerDrags() {
+      for (const hurt of officers) {
+        if (!hurt.downed || hurt.hp <= 0 || hurt.draggedBy || hurt.inCover || !hurt.car) continue;
+        const partner = (hurt.car.crew || []).find(
+          (o) =>
+            o !== hurt &&
+            o.hp > 0 &&
+            !o.downed &&
+            !o.dragging &&
+            !o.fireToken &&
+            !personIncapacitated(o) &&
+            distanceBetween(o, hurt) < 220,
+        );
+        if (!partner || !officerCoverSpot(hurt)) continue;
+        partner.dragging = hurt;
+        hurt.draggedBy = partner;
+        radio('call-backup', partner);
+      }
+    }
+    function updateOfficerDrag(o, deltaSeconds) {
+      const hurt = o.dragging,
+        cover = hurt && officerCoverSpot(hurt);
+      if (!hurt || hurt.hp <= 0 || !cover || wantedStars <= 0) {
+        if (hurt) hurt.draggedBy = null;
+        o.dragging = null;
+        return false;
+      }
+      o.state = 'drag';
+      if (distanceBetween(o, hurt) > 13) {
+        footStepTowards(o, hurt, deltaSeconds, 120);
+        return true;
+      }
+      if (distanceBetween(o, cover) < 9) {
+        hurt.inCover = true;
+        hurt.draggedBy = null;
+        o.dragging = null;
+        return false;
+      }
+      footStepTowards(o, cover, deltaSeconds, 42);
+      // Walking backwards with the wounded in tow, facing the threat.
+      o.a = headingBetween(o, player);
+      const behind = headingBetween(cover, o) + Math.PI;
+      const x = o.x - Math.cos(behind) * 12,
+        y = o.y - Math.sin(behind) * 12;
+      if (!solid(x, y, 6)) {
+        hurt.x = x;
+        hurt.y = y;
+      }
+      hurt.a = behind + Math.PI;
+      hurt.walk = (hurt.walk || 0) + deltaSeconds * 4;
+      return true;
+    }
     /**
      * ARREST
      * An officer who reaches a player on foot who is not fighting back cuffs
@@ -677,7 +746,7 @@
         near = 0;
       if (arrestable() && gameTime - (player.lastShotAt ?? -100) > 2.5 && gameTime - (player.lastStrikeAt ?? -100) > 2.5)
         for (const o of officers) {
-          if (o.hp <= 0 || personIncapacitated(o) || o.state === 'return' || o.returned) continue;
+          if (o.hp <= 0 || o.downed || personIncapacitated(o) || o.state === 'return' || o.returned) continue;
           const d = combatDistance(o, player);
           if (d < 90) near++;
           if (d < (player.car ? 44 : 32) && (!cuffing || d < combatDistance(cuffing, player))) cuffing = o;
