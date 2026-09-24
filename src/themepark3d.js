@@ -10,7 +10,7 @@
        * cars, the gate, kiosks, palms and lamps; night light (bulbs, a light-pool
        * overlay on the ground), fireworks, and the ride cameras.
        *
-       * Static scenery is merged here into one mesh per material (partsBuilder),
+       * Static scenery is merged here into one mesh per material (parkParts),
        * so the whole island is a few dozen draw calls; what moves (the train, the
        * wheel, the rides, jets, sparks) is instanced or grouped per ride. Motion
        * is read from themepark.js so what is drawn is what the game simulates.
@@ -19,7 +19,7 @@
       parkRoot.name = 'sunset pier';
       scene.add(parkRoot);
       statics.push({ x: 3050, y: -6380, group: parkRoot, radius: 1500 });
-      const P3 = (x, y, z = 0) => new Three.Vector3(x, z, y);
+      const parkP3 = (x, y, z = 0) => new Three.Vector3(x, z, y);
       // ---- Materials (shared; night levels are set in updateParkVisuals) --------------
       const parkMats = {
         white: mat('#f1eee6', 0.42, 0.25),
@@ -50,7 +50,7 @@
        * material when flushed; the result is added to `parent`. This is what keeps
        * several thousand track ties, supports and fittings to a handful of draws.
        */
-      function partsBuilder() {
+      function parkParts() {
         const byMaterial = new Map(),
           v = new Three.Vector3(),
           nm = new Three.Matrix3();
@@ -116,17 +116,17 @@
         pq = new Three.Quaternion(),
         parkV = new Three.Vector3(),
         ps = new Three.Vector3(),
-        upAxis = new Three.Vector3(0, 1, 0);
+        parkUpAxis = new Three.Vector3(0, 1, 0);
       // Matrix for a unit primitive: at (x, height, y), scaled, turned `yaw` about the vertical.
       function parkPlaced(x, y, z, sx, sy, sz, yaw = 0) {
-        pq.setFromAxisAngle(upAxis, -yaw);
+        pq.setFromAxisAngle(parkUpAxis, -yaw);
         return pm.compose(parkV.set(x, z, y), pq, ps.set(sx, sy, sz));
       }
       // Matrix for a unit cylinder (height along +y) running from a to b (three coords).
-      function between(a, b, r) {
+      function parkBetween(a, b, r) {
         const d = parkV.subVectors(b, a),
           len = d.length();
-        pq.setFromUnitVectors(upAxis, d.normalize());
+        pq.setFromUnitVectors(parkUpAxis, d.normalize());
         return pm.compose(ps.addVectors(a, b).multiplyScalar(0.5), pq, new Three.Vector3(r, len, r));
       }
       const parkTubeGeo = new Three.CylinderGeometry(1, 1, 1, 10, 1, true),
@@ -134,7 +134,7 @@
         parkDomeGeo = new Three.SphereGeometry(1, 16, 8, 0, TAU, 0, Math.PI / 2),
         parkConeGeo = new Three.ConeGeometry(1, 1, 16);
       /* A tube swept through a list of frames {p, a, b} (three coords), `sides` round. */
-      function sweptTube(frames, radius, sides, closed) {
+      function parkSweptTube(frames, radius, sides, closed) {
         const n = frames.length,
           pos = new Float32Array(n * sides * 3),
           nor = new Float32Array(n * sides * 3),
@@ -187,8 +187,8 @@
        * perspective flight/ride view), in HDR so the bright ones bloom. One draw
        * per set. `intensity` scales the whole set (the night level).
        */
-      const glowViewport = new Three.Vector2();
-      function glowMaterial() {
+      const parkGlowViewport = new Three.Vector2();
+      function parkGlowMaterial() {
         return new Three.ShaderMaterial({
           uniforms: { uHalfHeight: { value: 400 }, uIntensity: { value: 1 }, uTime: { value: 0 } },
           vertexShader: `
@@ -221,15 +221,15 @@
           blending: Three.AdditiveBlending,
         });
       }
-      const glowSets = [];
-      function glowPoints(capacity, name, parent = parkRoot) {
+      const parkGlowSets = [];
+      function parkGlowPoints(capacity, name, parent = parkRoot) {
         const geo = new Three.BufferGeometry();
         geo.setAttribute('position', new Three.BufferAttribute(new Float32Array(capacity * 3), 3).setUsage(Three.DynamicDrawUsage));
         geo.setAttribute('color', new Three.BufferAttribute(new Float32Array(capacity * 3), 3).setUsage(Three.DynamicDrawUsage));
         geo.setAttribute('size', new Three.BufferAttribute(new Float32Array(capacity), 1).setUsage(Three.DynamicDrawUsage));
         geo.setAttribute('phase', new Three.BufferAttribute(new Float32Array(capacity), 1));
         geo.setDrawRange(0, 0);
-        const points = new Three.Points(geo, glowMaterial());
+        const points = new Three.Points(geo, parkGlowMaterial());
         points.frustumCulled = false;
         points.userData.dynamic = true;
         points.name = name;
@@ -255,11 +255,11 @@
           },
         };
         parent.add(points);
-        glowSets.push(set);
+        parkGlowSets.push(set);
         return set;
       }
       // Static bulbs (festoons, lamp heads, ride lights): lit by night only.
-      const parkBulbs = glowPoints(6000, 'park bulbs'),
+      const parkBulbs = parkGlowPoints(6000, 'park bulbs'),
         parkLampSpots = [];
       // ---- The Falcon: track ---------------------------------------------------------
       const coasterGroup = new Three.Group();
@@ -280,24 +280,24 @@
         out.kind = cf.kind;
         return out;
       }
-      const newFrame3 = () => ({ p: new Three.Vector3(), t: new Three.Vector3(), u: new Three.Vector3(), s: new Three.Vector3() });
+      const parkNewFrame3 = () => ({ p: new Three.Vector3(), t: new Three.Vector3(), u: new Three.Vector3(), s: new Three.Vector3() });
       {
         const T = coasterCircuit(),
           n = T.count,
           frames = [];
-        for (let i = 0; i < n; i++) frames.push(coasterFrame3(i * T.ds, newFrame3()));
+        for (let i = 0; i < n; i++) frames.push(coasterFrame3(i * T.ds, parkNewFrame3()));
         const offsetFrames = (du, ds) =>
           frames.map((f) => ({
             p: f.p.clone().addScaledVector(f.u, du).addScaledVector(f.s, ds),
             a: f.u,
             b: f.s,
           }));
-        const track = partsBuilder(),
+        const track = parkParts(),
           ident = new Three.Matrix4();
         // Running rails and the box spine under them, swept along the circuit.
-        track.add(parkMats.steel, sweptTube(offsetFrames(0, COASTER_GAUGE), 0.62, 8, true), ident);
-        track.add(parkMats.steel, sweptTube(offsetFrames(0, -COASTER_GAUGE), 0.62, 8, true), ident);
-        track.add(parkMats.gold, sweptTube(offsetFrames(-SPINE_DROP, 0), 1.9, 12, true), ident);
+        track.add(parkMats.steel, parkSweptTube(offsetFrames(0, COASTER_GAUGE), 0.62, 8, true), ident);
+        track.add(parkMats.steel, parkSweptTube(offsetFrames(0, -COASTER_GAUGE), 0.62, 8, true), ident);
+        track.add(parkMats.gold, parkSweptTube(offsetFrames(-SPINE_DROP, 0), 1.9, 12, true), ident);
         // Ties every 4 units: a flat bar under both rails and a V down to the spine.
         const basis = new Three.Matrix4(),
           a = new Three.Vector3(),
@@ -310,7 +310,7 @@
           for (const side of [-1, 1]) {
             a.copy(f.p).addScaledVector(f.s, side * COASTER_GAUGE).addScaledVector(f.u, -1);
             b.copy(f.p).addScaledVector(f.u, -SPINE_DROP);
-            track.add(parkMats.gold, parkThinGeo, between(a, b, 0.45));
+            track.add(parkMats.gold, parkThinGeo, parkBetween(a, b, 0.45));
           }
         }
         // Lift hill: chain and catwalk with a handrail beside the track.
@@ -322,7 +322,7 @@
           if (i % 6 === 0) {
             a.copy(f.p).addScaledVector(f.s, -8.2);
             b.copy(a).addScaledVector(f.u, 4);
-            track.add(parkMats.darkSteel, parkThinGeo, between(a, b, 0.25));
+            track.add(parkMats.darkSteel, parkThinGeo, parkBetween(a, b, 0.25));
           }
         }
         // Supports: white columns on concrete footings; banked and inverted track is
@@ -332,12 +332,12 @@
           a.set(f.x, 0, f.y);
           b.set(f.x, f.top, f.y);
           const r = 1.5 + Math.min(2.2, f.top * 0.008);
-          track.add(parkMats.white, parkTubeGeo, between(a, b, r));
+          track.add(parkMats.white, parkTubeGeo, parkBetween(a, b, r));
           track.box(parkMats.concrete, parkPlaced(f.x, f.y, 1.5, r * 3.4, 3, r * 3.4));
           if (f.side) {
             b.set(f.x, f.top, f.y);
             a.set(top.x, top.z, top.y);
-            track.add(parkMats.white, parkTubeGeo, between(b, a, r * 0.8));
+            track.add(parkMats.white, parkTubeGeo, parkBetween(b, a, r * 0.8));
           }
           // Tall columns get a second, raking leg for stiffness.
           if (f.top > 130) {
@@ -345,7 +345,7 @@
               reach = f.top * 0.22;
             a.set(f.x + Math.cos(d) * reach, 0, f.y + Math.sin(d) * reach);
             b.set(f.x, f.top * 0.7, f.y);
-            track.add(parkMats.white, parkTubeGeo, between(a, b, r * 0.7));
+            track.add(parkMats.white, parkTubeGeo, parkBetween(a, b, r * 0.7));
             track.box(parkMats.concrete, parkPlaced(a.x, a.z, 1.5, r * 3, 3, r * 3));
           }
         }
@@ -361,7 +361,7 @@
       }
       // ---- The Falcon: station and queue hall ----------------------------------------
       {
-        const b = partsBuilder(),
+        const b = parkParts(),
           st = PIER.station,
           x0 = st.x - 70,
           x1 = st.x + 80;
@@ -376,8 +376,8 @@
             [-6452, -1],
             [-6408, 1],
           ]) {
-            b.add(parkMats.white, parkTubeGeo, between(P3(x, z, 0), P3(x, z, 50), 1.4));
-            b.add(parkMats.white, parkTubeGeo, between(P3(x, z, 50), P3(x, -6430, 60), 1));
+            b.add(parkMats.white, parkTubeGeo, parkBetween(parkP3(x, z, 0), parkP3(x, z, 50), 1.4));
+            b.add(parkMats.white, parkTubeGeo, parkBetween(parkP3(x, z, 50), parkP3(x, -6430, 60), 1));
           }
         }
         for (const [z0, z1] of [
@@ -391,13 +391,13 @@
           const len = Math.hypot(dirY, 12),
             tilt = Math.atan2(12, Math.abs(dirY));
           m.compose(
-            P3((x0 + x1) / 2, (z0 + z1) / 2, 56),
+            parkP3((x0 + x1) / 2, (z0 + z1) / 2, 56),
             new Three.Quaternion().setFromEuler(new Three.Euler(dirY > 0 ? -Math.PI / 2 + tilt : -Math.PI / 2 - tilt, 0, 0)),
             new Three.Vector3(x1 - x0 + 10, len, 1),
           );
           b.add(parkMats.gold, panel, m);
           m.compose(
-            P3((x0 + x1) / 2, (z0 + z1) / 2, 55.6),
+            parkP3((x0 + x1) / 2, (z0 + z1) / 2, 55.6),
             new Three.Quaternion().setFromEuler(new Three.Euler(dirY > 0 ? Math.PI / 2 + tilt : Math.PI / 2 - tilt, 0, 0)),
             new Three.Vector3(x1 - x0 + 10, len, 1),
           );
@@ -406,14 +406,14 @@
         // Queue hall: a shade canopy on posts over the switchback rails.
         b.box(parkMats.canvasWhite, parkPlaced(2600, -6375, 30, 200, 1.2, 50));
         for (let x = 2505; x <= 2695; x += 38)
-          for (const y of [-6398, -6352]) b.add(parkMats.gold, parkTubeGeo, between(P3(x, y, 0), P3(x, y, 30), 0.8));
+          for (const y of [-6398, -6352]) b.add(parkMats.gold, parkTubeGeo, parkBetween(parkP3(x, y, 0), parkP3(x, y, 30), 0.8));
         for (const [y, x0q, x1q] of [
           [-6388, 2505, 2640],
           [-6373, 2520, 2690],
           [-6358, 2505, 2690],
         ]) {
-          b.add(parkMats.steel, parkThinGeo, between(P3(x0q, y, 4), P3(x1q, y, 4), 0.35));
-          for (let x = x0q; x <= x1q; x += 15) b.add(parkMats.steel, parkThinGeo, between(P3(x, y, 0), P3(x, y, 4), 0.3));
+          b.add(parkMats.steel, parkThinGeo, parkBetween(parkP3(x0q, y, 4), parkP3(x1q, y, 4), 0.35));
+          for (let x = x0q; x <= x1q; x += 15) b.add(parkMats.steel, parkThinGeo, parkBetween(parkP3(x, y, 0), parkP3(x, y, 4), 0.3));
         }
         b.flush(coasterGroup, 'falcon station');
         for (let i = 0; i < 12; i++) parkBulbs.add(x0 + 6 + i * 13, -6400, 49, 3, i % 2 ? '#ffd79a' : '#ffb35c');
@@ -426,7 +426,7 @@
          +x is forward, +y up, z across; the front car wears the falcon's head. */
       function coasterCar(front) {
         const g = new Three.Group(),
-          b = partsBuilder();
+          b = parkParts();
         b.box(parkMats.darkSteel, parkPlaced(0, 0, 1.7, 11, 1.2, 5.6));
         // The tub: tapered white sides and a gold belt.
         b.box(parkMats.white, parkPlaced(0, 0, 3.6, 11.6, 3, 6.8));
@@ -463,9 +463,9 @@
       const coasterCarModels = Array.from({ length: COASTER_CARS }, (_, i) => coasterCar(i === 0));
       // Riders: instanced torsos (with raised arms) and heads, four to a car.
       const riderBodyGeo = (() => {
-        const b = partsBuilder();
+        const b = parkParts();
         b.box(parkMats.white, parkPlaced(0, 0, 1.6, 1.4, 3.2, 2));
-        for (const z of [-1.2, 1.2]) b.add(parkMats.white, parkThinGeo, between(P3(0, z, 2.8), P3(0.5, z * 1.6, 6.2), 0.4));
+        for (const z of [-1.2, 1.2]) b.add(parkMats.white, parkThinGeo, parkBetween(parkP3(0, z, 2.8), parkP3(0.5, z * 1.6, 6.2), 0.4));
         const m = b.flush(new Three.Group(), 'rider')[0];
         return m.geometry;
       })();
@@ -483,7 +483,7 @@
           shirts = ['#d8453c', '#2f6db3', '#f2d25a', '#ffffff', '#2d9a6a', '#e07b39', '#8b4fc2', '#222831'];
         for (let i = 0; i < RIDERS; i++) riderBodies.setColorAt(i, c.set(shirts[(i * 5) % shirts.length]));
       }
-      const trainFrame = newFrame3(),
+      const trainFrame = parkNewFrame3(),
         carMatrix = new Three.Matrix4(),
         riderMatrix = new Three.Matrix4(),
         riderLocal = new Three.Matrix4();
@@ -535,11 +535,11 @@
       eyeGroup.position.set(EYE.x, EYE.hub, EYE.y);
       eyeGroup.userData.dynamic = true;
       parkRoot.add(eyeGroup);
-      const eyeLeds = glowPoints(3200, 'eye leds', eyeGroup),
+      const eyeLeds = parkGlowPoints(3200, 'eye leds', eyeGroup),
         eyeLedAngle = [];
       {
         const R = EYE.r,
-          b = partsBuilder(),
+          b = parkParts(),
           ring = new Three.TorusGeometry(R, 2.4, 8, 240),
           outer = new Three.TorusGeometry(R + 10, 1.6, 6, 240),
           ident = new Three.Matrix4();
@@ -550,15 +550,15 @@
         for (let k = 0; k < 96; k++) {
           const a = (k / 96) * TAU,
             a2 = ((k + 1) / 96) * TAU;
-          b.add(parkMats.white, parkThinGeo, between(at(a, R, -11), at(a, R, 11), 0.9));
-          b.add(parkMats.white, parkThinGeo, between(at(a, R, -11), at(a2, R, 11), 0.6));
-          b.add(parkMats.steel, parkThinGeo, between(at(a, R, 0), at(a, R + 10, 0), 0.7));
+          b.add(parkMats.white, parkThinGeo, parkBetween(at(a, R, -11), at(a, R, 11), 0.9));
+          b.add(parkMats.white, parkThinGeo, parkBetween(at(a, R, -11), at(a2, R, 11), 0.6));
+          b.add(parkMats.steel, parkThinGeo, parkBetween(at(a, R, 0), at(a, R + 10, 0), 0.7));
         }
         // Cable spokes to the spindle ends: 32 a side, crossing like a bicycle wheel.
         for (let k = 0; k < 32; k++) {
           const a = (k / 32) * TAU;
-          b.add(parkMats.steel, parkThinGeo, between(at(a, R, 11), at(a + 0.3, 9, 36), 0.35));
-          b.add(parkMats.steel, parkThinGeo, between(at(a + TAU / 64, R, -11), at(a + TAU / 64 - 0.3, 9, -36), 0.35));
+          b.add(parkMats.steel, parkThinGeo, parkBetween(at(a, R, 11), at(a + 0.3, 9, 36), 0.35));
+          b.add(parkMats.steel, parkThinGeo, parkBetween(at(a + TAU / 64, R, -11), at(a + TAU / 64 - 0.3, 9, -36), 0.35));
           // LED pixels down each spoke (rotating with the wheel).
           for (let d = 0.12; d < 0.98; d += 0.07) {
             for (const [a0, z0, z1, off] of [
@@ -588,15 +588,15 @@
       }
       {
         // Static: spindle, the A-frames, the terminal.
-        const b = partsBuilder(),
+        const b = parkParts(),
           hub = (z) => new Three.Vector3(EYE.x, EYE.hub, EYE.y + z);
-        b.add(parkMats.gold, new Three.CylinderGeometry(8, 8, 1, 20), between(hub(-44), hub(44), 1).scale(ps.set(1, 1, 1)));
+        b.add(parkMats.gold, new Three.CylinderGeometry(8, 8, 1, 20), parkBetween(hub(-44), hub(44), 1).scale(ps.set(1, 1, 1)));
         for (const z of [-44, 44]) b.add(parkMats.gold, parkDomeGeo, parkPlaced(EYE.x, EYE.y + z * 1.02, EYE.hub, 8, 8, 8));
         for (const [fx, fy] of wheelFeet()) {
           const side = fy < EYE.y ? -1 : 1,
             top = hub(side * 40),
             foot = new Three.Vector3(fx, 0, fy);
-          b.add(parkMats.white, parkTubeGeo, between(foot, top, 6));
+          b.add(parkMats.white, parkTubeGeo, parkBetween(foot, top, 6));
           b.box(parkMats.concrete, parkPlaced(fx, fy, 3, 26, 6, 26));
         }
         // Cross ties between the two legs of each A-frame and between the frames.
@@ -605,7 +605,7 @@
           for (const h of [0.35, 0.62]) {
             const l = new Three.Vector3(EYE.x - 130, 0, y).lerp(hub(side * 40), h),
               r = new Three.Vector3(EYE.x + 130, 0, y).lerp(hub(side * 40), h);
-            b.add(parkMats.white, parkTubeGeo, between(l, r, 2.6));
+            b.add(parkMats.white, parkTubeGeo, parkBetween(l, r, 2.6));
           }
         }
         // Terminal: a glass pavilion with a floating white roof and a boarding deck.
@@ -644,7 +644,7 @@
             pq.setFromEuler(new Three.Euler(0, Math.PI / 2, 0));
             eyeCradles.setMatrixAt(
               k * 2 + s,
-              podMatrix.compose(parkV.set(podSpot.x, podSpot.z, podSpot.y + (s ? 9 : -9)), pq.setFromAxisAngle(upAxis, 0), ps.set(10.8, 9.2, 10)),
+              podMatrix.compose(parkV.set(podSpot.x, podSpot.z, podSpot.y + (s ? 9 : -9)), pq.setFromAxisAngle(parkUpAxis, 0), ps.set(10.8, 9.2, 10)),
             );
           }
         }
@@ -694,7 +694,7 @@
         water.name = 'lagoon';
         parkRoot.add(water);
         // Coping stones round the edge.
-        const b = partsBuilder();
+        const b = parkParts();
         for (let i = 0; i < 96; i++) {
           const a = (i / 96) * TAU,
             x = LAG.x + Math.cos(a) * (LAG.rx + 4),
@@ -763,8 +763,8 @@
       jets.renderOrder = 4;
       jets.setColorAt(0, new Three.Color());
       parkRoot.add(jets);
-      const jetSpray = glowPoints(JETS.length * 3, 'fountain spray'),
-        jetLights = glowPoints(JETS.length, 'fountain lights');
+      const jetSpray = parkGlowPoints(JETS.length * 3, 'fountain spray'),
+        jetLights = parkGlowPoints(JETS.length, 'fountain lights');
       for (let i = 0; i < JETS.length * 3; i++) jetSpray.add(0, 0, -100, 10, '#ffffff');
       for (const j of JETS) jetLights.add(j.x, j.y, 2.6, 7, '#ffffff');
       jetSpray.done();
@@ -772,7 +772,7 @@
       const jetColor = new Three.Color(),
         jetMatrix = new Three.Matrix4();
       /* The choreography: heights and colours of every jet at show time t. */
-      function jetState(j, show, t, night) {
+      function parkJetState(j, show, t, night) {
         const beat = (t * show.bpm) / 60,
           bar = Math.floor(beat / 8) % 4,
           pulse = Math.pow(1 - (beat % 1), 3),
@@ -810,7 +810,7 @@
         jetLights.points.material.uniforms.uIntensity.value = night * 2.5;
         for (let i = 0; i < JETS.length; i++) {
           const j = JETS[i],
-            h = jetState(j, show, show.t, night > 0.2),
+            h = parkJetState(j, show, show.t, night > 0.2),
             w = 1 + h / 120;
           jets.setMatrixAt(i, jetMatrix.compose(parkV.set(j.x, 2.2, j.y), pq.identity(), ps.set(w, Math.max(0.01, h), w)));
           jets.setColorAt(i, jetColor);
@@ -830,7 +830,7 @@
       }
       // ---- Facades --------------------------------------------------------------------
       /* A window-grid texture (and the matching night emissive map) for the hotel. */
-      function facadeTextures(cols, rows, base, frame, glass) {
+      function parkFacadeTextures(cols, rows, base, frame, glass) {
         const c = document.createElement('canvas'),
           e = document.createElement('canvas');
         c.width = e.width = 256;
@@ -869,7 +869,7 @@
         };
         return { map: make(c), emissiveMap: make(e) };
       }
-      const hotelTex = facadeTextures(4, 4, '#e9c3a4', '#c89f82', '#3d5f78'),
+      const hotelTex = parkFacadeTextures(4, 4, '#e9c3a4', '#c89f82', '#3d5f78'),
         hotelFacade = new Three.MeshStandardMaterial({
           map: hotelTex.map,
           emissiveMap: hotelTex.emissiveMap,
@@ -879,7 +879,7 @@
           metalness: 0.05,
         });
       /* A quad with world-scaled UVs (one texture tile per `tile` units). */
-      function facadeQuad(b, material, p0, p1, p2, p3, tileU, tileV) {
+      function parkFacadeQuad(b, material, p0, p1, p2, p3, tileU, tileV) {
         const g = new Three.BufferGeometry(),
           wu = p0.distanceTo(p1) / tileU,
           wv = p0.distanceTo(p3) / tileV,
@@ -897,7 +897,7 @@
        */
       {
         const H = PIER.hotel,
-          b = partsBuilder(),
+          b = parkParts(),
           cx = H.x,
           cy = H.y + 420,
           radius = 460,
@@ -916,27 +916,27 @@
             outer = radius + depth / 2,
             q = (a, r, z) => new Three.Vector3(cx + Math.cos(a) * r, z, cy + Math.sin(a) * r);
           // Front (south, the concave side) and back faces, and the ends of each tier.
-          facadeQuad(b, hotelFacade, q(a0, inner, bottom), q(a1, inner, bottom), q(a1, inner, top), q(a0, inner, top), 14, 12);
-          facadeQuad(b, hotelFacade, q(a1, outer, bottom), q(a0, outer, bottom), q(a0, outer, top), q(a1, outer, top), 14, 12);
+          parkFacadeQuad(b, hotelFacade, q(a0, inner, bottom), q(a1, inner, bottom), q(a1, inner, top), q(a0, inner, top), 14, 12);
+          parkFacadeQuad(b, hotelFacade, q(a1, outer, bottom), q(a0, outer, bottom), q(a0, outer, top), q(a1, outer, top), 14, 12);
           b.add(parkMats.cream, boxGeo, parkPlaced((q(a0, radius, 0).x + q(a1, radius, 0).x) / 2, (q(a0, radius, 0).z + q(a1, radius, 0).z) / 2, top + 2, (a1 - a0) * radius + 1, 4, depth + 4, a0 + (a1 - a0) / 2 + Math.PI / 2));
           if (arch) b.add(parkMats.gold, boxGeo, parkPlaced((q(a0, radius, 0).x + q(a1, radius, 0).x) / 2, (q(a0, radius, 0).z + q(a1, radius, 0).z) / 2, bottom - 2, (a1 - a0) * radius + 1, 4, depth + 2, a0 + (a1 - a0) / 2 + Math.PI / 2));
           if (i === 0 || i === segs - 1) {
             const a = i === 0 ? a0 : a1;
-            facadeQuad(b, hotelFacade, q(a, outer, 0), q(a, inner, 0), q(a, inner, top), q(a, outer, top), 14, 12);
-            if (i === 0) facadeQuad(b, hotelFacade, q(a, inner, 0), q(a, outer, 0), q(a, outer, top), q(a, inner, top), 14, 12);
+            parkFacadeQuad(b, hotelFacade, q(a, outer, 0), q(a, inner, 0), q(a, inner, top), q(a, outer, top), 14, 12);
+            if (i === 0) parkFacadeQuad(b, hotelFacade, q(a, inner, 0), q(a, outer, 0), q(a, outer, top), q(a, inner, top), 14, 12);
           }
           const prevTop = H.height - Math.floor((Math.abs(i - 0.5 - segs / 2 + 1) / (segs / 2)) * 4) * 32;
           if (i > 0 && prevTop !== top) {
             const lo = Math.min(prevTop, top),
               hi = Math.max(prevTop, top);
-            facadeQuad(b, hotelFacade, q(a0, inner, lo), q(a0, outer, lo), q(a0, outer, hi), q(a0, inner, hi), 14, 12);
-            facadeQuad(b, hotelFacade, q(a0, outer, lo), q(a0, inner, lo), q(a0, inner, hi), q(a0, outer, hi), 14, 12);
+            parkFacadeQuad(b, hotelFacade, q(a0, inner, lo), q(a0, outer, lo), q(a0, outer, hi), q(a0, inner, hi), 14, 12);
+            parkFacadeQuad(b, hotelFacade, q(a0, outer, lo), q(a0, inner, lo), q(a0, inner, hi), q(a0, outer, hi), 14, 12);
           }
           // Arch sides.
           if (arch && Math.abs(i + 0.5 - segs / 2) > 0.6) {
             const a = i < segs / 2 ? a0 : a1;
-            facadeQuad(b, parkMats.cream, q(a, inner, 0), q(a, outer, 0), q(a, outer, bottom), q(a, inner, bottom), 20, 20);
-            facadeQuad(b, parkMats.cream, q(a, outer, 0), q(a, inner, 0), q(a, inner, bottom), q(a, outer, bottom), 20, 20);
+            parkFacadeQuad(b, parkMats.cream, q(a, inner, 0), q(a, outer, 0), q(a, outer, bottom), q(a, inner, bottom), 20, 20);
+            parkFacadeQuad(b, parkMats.cream, q(a, outer, 0), q(a, inner, 0), q(a, inner, bottom), q(a, outer, bottom), 20, 20);
           }
         }
         // Crown: a gold dome on a drum over the arch, and minaret-like finials.
@@ -954,7 +954,7 @@
         }
         // Entrance canopy and fountain court in front of the arch.
         b.box(parkMats.gold, parkPlaced(crown.x, crown.y + depth / 2 + 16, 22, 90, 3, 30));
-        for (const dx of [-40, 40]) b.add(parkMats.white, parkTubeGeo, between(P3(crown.x + dx, crown.y + depth / 2 + 28, 0), P3(crown.x + dx, crown.y + depth / 2 + 28, 21), 1.4));
+        for (const dx of [-40, 40]) b.add(parkMats.white, parkTubeGeo, parkBetween(parkP3(crown.x + dx, crown.y + depth / 2 + 28, 0), parkP3(crown.x + dx, crown.y + depth / 2 + 28, 21), 1.4));
         b.flush(parkRoot, 'sunset palace');
         for (let i = 0; i < 40; i++) {
           const a = -Math.PI / 2 - span / 2 + (i / 39) * span;
@@ -968,7 +968,7 @@
       // ---- The beach club -------------------------------------------------------------
       {
         const c = PIER.beachClub,
-          b = partsBuilder();
+          b = parkParts();
         // Deck, infinity pool, cabanas, loungers and umbrellas, the club house.
         b.box(parkMats.cream, parkPlaced(c.x + c.w / 2, c.y + 105, 1.2, c.w, 2.4, 90));
         const pool = new Three.Mesh(new Three.PlaneGeometry(300, 44), parkMats.pool);
@@ -981,14 +981,14 @@
             y = c.y + 20;
           b.box(parkMats.canvasWhite, parkPlaced(x, y, 9, 20, 1, 20));
           b.add(parkMats.canvasWhite, parkConeGeo, parkPlaced(x, y, 15, 14, 12, 14, Math.PI / 4));
-          for (const dx of [-9, 9]) for (const dy of [-9, 9]) b.add(parkMats.wood, parkThinGeo, between(P3(x + dx, y + dy, 0), P3(x + dx, y + dy, 9), 0.5));
+          for (const dx of [-9, 9]) for (const dy of [-9, 9]) b.add(parkMats.wood, parkThinGeo, parkBetween(parkP3(x + dx, y + dy, 0), parkP3(x + dx, y + dy, 9), 0.5));
         }
         for (let i = 0; i < 18; i++) {
           const x = c.x + 20 + i * 26,
             y = c.y + 140;
           b.box(parkMats.white, parkPlaced(x, y, 1.5, 5, 1.2, 12));
           if (i % 2 === 0) {
-            b.add(parkMats.wood, parkThinGeo, between(P3(x + 6, y, 0), P3(x + 6, y, 14), 0.4));
+            b.add(parkMats.wood, parkThinGeo, parkBetween(parkP3(x + 6, y, 0), parkP3(x + 6, y, 14), 0.4));
             b.add(i % 4 ? parkMats.canvasRed : parkMats.canvasWhite, parkConeGeo, parkPlaced(x + 6, y, 15.5, 10, 3, 10));
           }
         }
@@ -1001,7 +1001,7 @@
       // ---- The gate ------------------------------------------------------------------
       {
         const g = PIER.gate,
-          b = partsBuilder();
+          b = parkParts();
         for (const side of [-1, 1]) {
           const x = g.x + side * 77;
           b.box(parkMats.cream, parkPlaced(x, g.y - 15, 55, 45, 110, 30));
@@ -1034,7 +1034,7 @@
       const carouselHorses = [];
       {
         const R = PIER.carousel.r,
-          b = partsBuilder();
+          b = parkParts();
         b.add(parkMats.wood, new Three.CylinderGeometry(1, 1, 1, 32), parkPlaced(0, 0, 2, R, 4, R));
         b.add(parkMats.gold, new Three.CylinderGeometry(1, 1, 1, 16), parkPlaced(0, 0, 18, 6, 32, 6));
         b.add(parkMats.cream, new Three.CylinderGeometry(1, 1, 1, 32, 1, true), parkPlaced(0, 0, 31, R + 4, 6, R + 4));
@@ -1049,7 +1049,7 @@
           const a = (i / 12) * TAU,
             r = R - 9,
             horse = new Three.Group(),
-            hb = partsBuilder();
+            hb = parkParts();
           hb.box(i % 2 ? parkMats.white : parkMats.cream, parkPlaced(0, 0, 0, 12, 5.5, 4.2));
           hb.box(i % 2 ? parkMats.white : parkMats.cream, parkPlaced(5.5, 0, 4, 4, 7, 3.4));
           hb.box(parkMats.gold, parkPlaced(0, 0, 3, 5, 1.2, 4.6));
@@ -1071,14 +1071,14 @@
         swingTop = new Three.Group(),
         swingSeats = [];
       {
-        const b = partsBuilder();
+        const b = parkParts();
         b.add(parkMats.white, new Three.CylinderGeometry(3.5, 6, 1, 16), parkPlaced(SW.x, SW.y, 45, 1, 90, 1));
         b.add(parkMats.stone, new Three.CylinderGeometry(1, 1, 1, 32), parkPlaced(SW.x, SW.y, 1.5, SW.r, 3, SW.r));
         b.flush(parkRoot, 'swing tower');
         swingTop.position.set(SW.x, 84, SW.y);
         swingTop.userData.dynamic = true;
         parkRoot.add(swingTop);
-        const tb = partsBuilder();
+        const tb = parkParts();
         for (let i = 0; i < 16; i++) {
           const gore = new Three.ConeGeometry(34, 10, 2, 1, true, (i / 16) * TAU, TAU / 16);
           tb.add(i % 2 ? parkMats.turquoise : parkMats.gold, gore, parkPlaced(0, 0, 8, 1, 1, 1));
@@ -1091,7 +1091,7 @@
           arm.position.set(Math.cos(a) * 30, 0, Math.sin(a) * 30);
           arm.rotation.y = -a;
           swingTop.add(arm);
-          const seat = partsBuilder();
+          const seat = parkParts();
           seat.add(parkMats.steel, parkThinGeo, parkPlaced(0, 0, -21, 0.25, 42, 0.25));
           seat.box(parkMats.seat, parkPlaced(0, 0, -43, 3.4, 1, 3.4));
           seat.box(i % 3 ? parkMats.white : parkMats.red, parkPlaced(0, -1.6, -41, 1.6, 3.2, 1.2));
@@ -1111,7 +1111,7 @@
       teacups.userData.dynamic = true;
       parkRoot.add(teacups);
       {
-        const b = partsBuilder();
+        const b = parkParts();
         b.add(parkMats.cream, new Three.CylinderGeometry(1, 1, 1, 32), parkPlaced(0, 0, 1.2, PIER.teacups.r, 2.4, PIER.teacups.r));
         b.add(parkMats.gold, new Three.CylinderGeometry(1, 1, 1, 16), parkPlaced(0, 0, 4, 8, 6, 8));
         b.flush(teacups, 'teacup deck');
@@ -1132,7 +1132,7 @@
           const m = new Three.Mesh(cup, [parkMats.turquoise, parkMats.canvasRed, parkMats.gold][i % 3]);
           m.castShadow = true;
           g.add(m);
-          const riders = partsBuilder();
+          const riders = parkParts();
           for (const d of [-3, 3]) riders.add(parkMats.skin, sphereGeo, parkPlaced(d, 0, 9.5, 1, 1.2, 1));
           riders.flush(g, 'cup riders');
           teacups.add(g);
@@ -1144,13 +1144,13 @@
         dropCar = new Three.Group(),
         dropLeds = [];
       {
-        const b = partsBuilder(),
+        const b = parkParts(),
           H = 300;
         b.add(parkMats.white, new Three.CylinderGeometry(1, 1, 1, 16), parkPlaced(DT.x, DT.y, H / 2, 9, H, 9));
         for (let y = 0; y < H; y += 24)
           for (let k = 0; k < 4; k++) {
             const a = (k / 4) * TAU + Math.PI / 4;
-            b.add(parkMats.gold, parkThinGeo, between(P3(DT.x + Math.cos(a) * 9, DT.y + Math.sin(a) * 9, y), P3(DT.x + Math.cos(a + Math.PI / 2) * 9, DT.y + Math.sin(a + Math.PI / 2) * 9, y + 24), 0.5));
+            b.add(parkMats.gold, parkThinGeo, parkBetween(parkP3(DT.x + Math.cos(a) * 9, DT.y + Math.sin(a) * 9, y), parkP3(DT.x + Math.cos(a + Math.PI / 2) * 9, DT.y + Math.sin(a + Math.PI / 2) * 9, y + 24), 0.5));
           }
         b.add(parkMats.gold, parkDomeGeo, parkPlaced(DT.x, DT.y, H, 14, 12, 14));
         b.add(parkMats.gold, parkConeGeo, parkPlaced(DT.x, DT.y, H + 22, 2, 26, 2));
@@ -1161,7 +1161,7 @@
         }
         dropCar.userData.dynamic = true;
         parkRoot.add(dropCar);
-        const c = partsBuilder();
+        const c = parkParts();
         c.add(parkMats.turquoise, new Three.CylinderGeometry(16, 16, 5, 24, 1, true), parkPlaced(0, 0, 0, 1, 1, 1));
         c.add(parkMats.gold, new Three.CylinderGeometry(17, 17, 1.5, 24), parkPlaced(0, 0, 3, 1, 1, 1));
         for (let i = 0; i < 12; i++) {
@@ -1177,11 +1177,11 @@
       }
       // ---- Log flume ------------------------------------------------------------------
       const flumeBoats = [],
-        flumeSplash = glowPoints(160, 'flume splash'),
+        flumeSplash = parkGlowPoints(160, 'flume splash'),
         splashParticles = [];
       {
         const F = flumeCircuit(),
-          b = partsBuilder(),
+          b = parkParts(),
           n = F.pts.length;
         for (let i = 0; i < n; i++) {
           const a = F.pts[i],
@@ -1204,7 +1204,7 @@
             for (const dz of [-5, 5]) {
               const px = mid[0] - Math.sin(yaw) * dz,
                 py = mid[1] + Math.cos(yaw) * dz;
-              b.add(parkMats.wood, parkThinGeo, between(P3(px, py, 0), P3(px, py, mid[2]), 0.8));
+              b.add(parkMats.wood, parkThinGeo, parkBetween(parkP3(px, py, 0), parkP3(px, py, mid[2]), 0.8));
             }
         }
         // Splash pool, station hut with a thatched roof, rock work round the drop.
@@ -1215,7 +1215,7 @@
         b.flush(parkRoot, 'log flume');
         for (let k = 0; k < FLUME_BOATS; k++) {
           const g = new Three.Group(),
-            bb = partsBuilder();
+            bb = parkParts();
           bb.box(parkMats.wood, parkPlaced(0, 0, 2.5, 16, 4, 8));
           bb.box(parkMats.wood, parkPlaced(7, 0, 4.5, 3, 4, 7.6));
           for (let r = 0; r < 3; r++) {
@@ -1281,7 +1281,7 @@
       // ---- Dark ride: Arabian Nights ---------------------------------------------------
       {
         const d = PIER.darkRide,
-          b = partsBuilder(),
+          b = parkParts(),
           cx = d.x + d.w / 2,
           front = d.y + d.h;
         b.box(parkMats.sand, parkPlaced(cx, d.y + d.h / 2, 26, d.w, 52, d.h));
@@ -1313,7 +1313,7 @@
         bumperPoles = new Three.InstancedMesh(parkThinGeo, parkMats.steel, BUMPERS),
         bumperState = [];
       {
-        const b = partsBuilder(),
+        const b = parkParts(),
           cx = BC.x + BC.w / 2,
           cy = BC.y + BC.h / 2;
         b.box(parkMats.darkSteel, parkPlaced(cx, cy, 0.8, BC.w - 6, 1.6, BC.h - 6));
@@ -1325,7 +1325,7 @@
           [0, -1],
           [0, 1],
         ])
-          b.add(parkMats.gold, parkTubeGeo, between(P3(cx + dx * (BC.w / 2 - 3), cy + dy * (BC.h / 2 - 3), 0), P3(cx + dx * (BC.w / 2 - 3), cy + dy * (BC.h / 2 - 3), 30), 1.6));
+          b.add(parkMats.gold, parkTubeGeo, parkBetween(parkP3(cx + dx * (BC.w / 2 - 3), cy + dy * (BC.h / 2 - 3), 0), parkP3(cx + dx * (BC.w / 2 - 3), cy + dy * (BC.h / 2 - 3), 30), 1.6));
         b.box(parkMats.canvasWhite, parkPlaced(cx, cy, 31, BC.w + 6, 2, BC.h + 6));
         b.box(parkMats.turquoise, parkPlaced(cx, cy, 34, BC.w - 20, 4, BC.h - 20));
         b.box(parkMats.red, parkPlaced(cx, BC.y + BC.h + 2, 26, BC.w + 6, 8, 1));
@@ -1367,7 +1367,7 @@
               o.a -= Math.PI * 0.7;
             }
           }
-          bumperCars.setMatrixAt(i, jetMatrix.compose(parkV.set(s.x, 3.4, s.y), pq.setFromAxisAngle(upAxis, -s.a), ps.set(1, 1, 1)));
+          bumperCars.setMatrixAt(i, jetMatrix.compose(parkV.set(s.x, 3.4, s.y), pq.setFromAxisAngle(parkUpAxis, -s.a), ps.set(1, 1, 1)));
           bumperPoles.setMatrixAt(i, jetMatrix.compose(parkV.set(s.x - Math.cos(s.a) * 3, 18, s.y - Math.sin(s.a) * 3), pq.identity(), ps.set(0.3, 28, 0.3)));
         }
         bumperCars.instanceMatrix.needsUpdate = true;
@@ -1376,7 +1376,7 @@
       // ---- Food court (souk), kiosks and stalls --------------------------------------
       {
         const f = PIER.foodCourt,
-          b = partsBuilder();
+          b = parkParts();
         b.box(parkMats.sand, parkPlaced(f.x + f.w / 2, f.y + f.h / 2, 15, f.w, 30, f.h));
         for (let i = 0; i < 7; i++) {
           const x = f.x + 16 + i * ((f.w - 32) / 6);
@@ -1397,8 +1397,8 @@
         const bs = PIER.busStop;
         b.box(parkMats.glassDark, parkPlaced(bs.x, bs.y - 6, 7, 30, 14, 1));
         b.box(parkMats.white, parkPlaced(bs.x, bs.y, 15, 34, 1.2, 14));
-        for (const dx of [-15, 15]) b.add(parkMats.steel, parkThinGeo, between(P3(bs.x + dx, bs.y + 5, 0), P3(bs.x + dx, bs.y + 5, 15), 0.6));
-        b.add(parkMats.steel, parkThinGeo, between(P3(bs.x + 20, bs.y + 6, 0), P3(bs.x + 20, bs.y + 6, 22), 0.5));
+        for (const dx of [-15, 15]) b.add(parkMats.steel, parkThinGeo, parkBetween(parkP3(bs.x + dx, bs.y + 5, 0), parkP3(bs.x + dx, bs.y + 5, 15), 0.6));
+        b.add(parkMats.steel, parkThinGeo, parkBetween(parkP3(bs.x + 20, bs.y + 6, 0), parkP3(bs.x + 20, bs.y + 6, 22), 0.5));
         b.box(parkMats.gold, parkPlaced(bs.x + 20, bs.y + 6, 22, 6, 6, 0.6));
         b.flush(parkRoot, 'souk and kiosks');
       }
@@ -1411,7 +1411,7 @@
         const tp = trunkGeo.attributes.position;
         for (let i = 0; i < tp.count; i++) tp.setX(i, tp.getX(i) + Math.pow(tp.getY(i) / 30, 2) * 3);
         trunkGeo.computeVertexNormals();
-        const crown = partsBuilder();
+        const crown = parkParts();
         for (let k = 0; k < 9; k++) {
           const a = (k / 9) * TAU,
             verts = [];
@@ -1435,7 +1435,7 @@
           crowns = crownMeshes.map((m) => new Three.InstancedMesh(m.geometry, m.material, palms.length)),
           m4 = new Three.Matrix4();
         palms.forEach((p, i) => {
-          m4.compose(parkV.set(p.x, 0, p.y), pq.setFromAxisAngle(upAxis, (p.x * 13 + p.y * 7) % TAU), ps.set(p.s, p.s, p.s));
+          m4.compose(parkV.set(p.x, 0, p.y), pq.setFromAxisAngle(parkUpAxis, (p.x * 13 + p.y * 7) % TAU), ps.set(p.s, p.s, p.s));
           trunks.setMatrixAt(i, m4);
           for (const c of crowns) c.setMatrixAt(i, m4);
         });
@@ -1529,7 +1529,7 @@
       parkBulbs.done();
       // ---- Fireworks -------------------------------------------------------------------
       const FIREWORK_SPARKS = 2400,
-        fireworkSparks = glowPoints(FIREWORK_SPARKS, 'fireworks'),
+        fireworkSparks = parkGlowPoints(FIREWORK_SPARKS, 'fireworks'),
         sparkSeen = new Map(),
         sparkColor = new Three.Color();
       for (let i = 0; i < FIREWORK_SPARKS; i++) fireworkSparks.add(0, 0, -500, 0, '#ffffff');
@@ -1585,9 +1585,9 @@
         parkLastTime = gameTime;
         if (!parkRoot.visible) return;
         const night = nightAmount;
-        renderer.getDrawingBufferSize(glowViewport);
-        for (const s of glowSets) {
-          s.points.material.uniforms.uHalfHeight.value = glowViewport.y / 2;
+        renderer.getDrawingBufferSize(parkGlowViewport);
+        for (const s of parkGlowSets) {
+          s.points.material.uniforms.uHalfHeight.value = parkGlowViewport.y / 2;
           s.points.material.uniforms.uTime.value = gameTime;
         }
         parkBulbs.points.material.uniforms.uIntensity.value = night * 2.2;
@@ -1654,9 +1654,9 @@
        * street/flight camera is set up each frame (render3d.js).
        */
       const rideCam = { pos: new Three.Vector3(), look: new Three.Vector3(), up: new Three.Vector3(0, 1, 0), ready: false },
-        rideA = newFrame3(),
-        rideB = newFrame3(),
-        worldUp = new Three.Vector3(0, 1, 0),
+        rideA = parkNewFrame3(),
+        rideB = parkNewFrame3(),
+        parkWorldUp = new Three.Vector3(0, 1, 0),
         TRACKSIDE = [
           [2300, -6250, 60],
           [1790, -6600, 40],
@@ -1692,7 +1692,7 @@
             look.set(podSpot.x + Math.sin(pan) * 400, podSpot.z - 110, podSpot.y + Math.cos(pan) * 400 + 200);
             fov = 65;
           }
-          up.copy(worldUp);
+          up.copy(parkWorldUp);
         } else {
           const t = coasterTrain.t;
           if (ride.view === 1) {
@@ -1717,15 +1717,15 @@
             }
             target.set(best[0], best[2], best[1]);
             look.copy(rideA.p);
-            up.copy(worldUp);
+            up.copy(parkWorldUp);
             fov = clamp(8000 / Math.max(80, bestD), 25, 70);
           } else {
             // Chase: behind and above the front of the train.
             coasterFrame3(t - COASTER_CAR_GAP * COASTER_CARS - 26, rideA);
             coasterFrame3(t + 30, rideB);
-            target.copy(rideA.p).addScaledVector(rideA.u, 22).addScaledVector(worldUp, 8);
+            target.copy(rideA.p).addScaledVector(rideA.u, 22).addScaledVector(parkWorldUp, 8);
             look.copy(rideB.p).addScaledVector(rideB.u, 6);
-            up.copy(rideA.u).lerp(worldUp, 0.5).normalize();
+            up.copy(rideA.u).lerp(parkWorldUp, 0.5).normalize();
             fov = 68;
           }
         }
