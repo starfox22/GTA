@@ -139,6 +139,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | flight-view3d.js | Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom, ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), headlight cones, time-of-day look |
+| searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
 | signage3d.js | (included by cityscape3d.js) The glow field (`addGlow`: one instanced draw for every neon halo, bulb and beacon), wet-road streaks, sign light spill (`signSpill`), the neon/lightbox sign atlas (`signCell`, `atlasSign`), lit sign materials (`litSignMaterial`), LED ad screens, stock ticker, marquee bulbs |
@@ -727,6 +728,17 @@ docs/audit/missions-qa.md shows the method).
   `onBeforeCompile`) adds it to every lit surface near the ground, scaled by night, the
   blackout job's district power and height. A material with its own `onBeforeCompile` should
   call `cityMaterialPatch(shader)` first. Traffic headlights are instanced ground cones.
+- **Searchlights** (searchlight3d.js): a shaft is a cone whose front faces march the view
+  ray through the cone (exit solved analytically): soft radial profile with a hot core,
+  denser towards the lamp, forward scattering, drifting haze noise (MEDIUM and up), a soft
+  fade into the ground plane and a soft shoulder so a beam seen end-on never blows out. The
+  police helicopter's pool is one real SpotLight (always in the scene, intensity 0 when idle,
+  so no program changes) with a cookie map; it casts shadows on HIGH/ULTRA (switched only on
+  a tier change). Rain streaks inside its cone are lit (one GPU-animated LineSegments). The
+  aim is a critically damped spring fed with the target's velocity: it lags and wobbles while
+  tracking, sweeps a widening figure round the last sighting while searching, and snaps on
+  with a flare when the player is found again. The Fort Sentinel watch towers use the same
+  shaft with a cookie decal on the ground. Faint by day, strong at night and in rain.
 - **Cutaway** (lighting3d.js, `updateCutaway`): only when the player stands strictly under a
   roof (`airCoverVolumes()`: the underpass, rail decks, station canopies; a building they are
   inside; roofs registered with `registerCutawayRoof`: Vinny's depot, bus shelters) does the

@@ -517,32 +517,6 @@
       // clipped by the door posts) and hid the shutter the chase ends at.
       const morettiSign = sign('MORETTI FREIGHT', -1664, 4337, 120, '#e8ce83');
       morettiSign.position.y = morettiSign.userData.backing.position.y = 62;
-      const airBeam = new Three.Mesh(
-        new Three.ConeGeometry(54, 1, 32, 1, true),
-        new Three.MeshBasicMaterial({
-          color: '#d7eaff',
-          transparent: true,
-          opacity: 0.07,
-          side: Three.DoubleSide,
-          depthWrite: false,
-        }),
-      );
-      scene.add(airBeam);
-      airBeam.visible = false;
-      const airPool = new Three.Mesh(
-        new Three.CircleGeometry(54, 40),
-        new Three.MeshBasicMaterial({
-          color: '#d8eaff',
-          transparent: true,
-          opacity: 0.11,
-          depthWrite: false,
-        }),
-      );
-      airPool.rotation.x = -Math.PI / 2;
-      airPool.visible = false;
-      scene.add(airPool);
-      const airLight = new Three.SpotLight('#dceaff', 0, 600, 0.4, 0.7, 1);
-      scene.add(airLight, airLight.target);
       const guardCones = Array.from(
         {
           length: 3,
@@ -566,10 +540,6 @@
           return g;
         },
       );
-      const beamTop = new Three.Vector3(),
-        beamBottom = new Three.Vector3(),
-        beamAxis = new Three.Vector3(),
-        beamUp = new Three.Vector3(0, 1, 0);
       function updateMissionVisuals() {
         depotRoof.visible = distanceBetween(player, VINNY_DEPOT.inside) > 330;
         // The shutter slides up into its housing; 0 is open, 1 is fully down.
@@ -577,25 +547,8 @@
         depotFrontDoor.position.y = 29 + (1 - depotFrontShutter) * 59;
         // Closed is flush with the wall; open swings the leaf out ~100 degrees.
         depotBackHinge.rotation.y = -(1 - depotBackDoor) * 1.75;
-        // With two police helicopters up, the beam belongs to the one nearest the camera.
-        let h = null;
-        for (const c of vehicles)
-          if (c.airUnit && c.hp > 0 && !c.airRetreat && (!h || distanceBetween(c, cameraTarget) < distanceBetween(h, cameraTarget)))
-            h = c;
-        const t = airSearchPoint(h);
-        airBeam.visible = airPool.visible = !!t && distanceBetween(h, cameraTarget) < 950;
-        if (t) {
-          const top = beamTop.set(h.x, h.altitude + 9, h.y),
-            bottom = beamBottom.set(t.x, entityElevation(t) + 1, t.y),
-            d = beamAxis.copy(top).sub(bottom);
-          airBeam.position.copy(top).add(bottom).multiplyScalar(0.5);
-          airBeam.scale.set(1, d.length(), 1);
-          airBeam.quaternion.setFromUnitVectors(beamUp, d.normalize());
-          airPool.position.copy(bottom);
-          airLight.position.copy(top);
-          airLight.target.position.copy(bottom);
-          airLight.intensity = 1200;
-        } else airLight.intensity = 0;
+        // The police helicopter's searchlight (searchlight3d.js).
+        updateHelicopterSearchlight();
         const missionState = rooftopJob(),
           guards = enemies.filter((e) => e.guard && e.hp > 0 && e.missionTag === 'rooftop-hit');
         guardCones.forEach((g, i) => {

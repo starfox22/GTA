@@ -104,6 +104,7 @@
       // @include src/flight-view3d.js
       // @include src/postfx3d.js
       // @include src/lighting3d.js
+      // @include src/searchlight3d.js
       const allBuildings = [],
         statics = [],
         carModels = new Map(),
