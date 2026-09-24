@@ -832,6 +832,8 @@
         } else {
           p.pending = null;
           if (inc.loud && gameTime < marea.spookedUntil && c.mode !== 'evac') mareaEvacuate(p);
+          // People on the pavement are handed straight to the crowd to flee.
+          if (!p.club) return false;
         }
       }
       p.walking = false;
