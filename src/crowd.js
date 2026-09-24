@@ -1909,7 +1909,7 @@
       crowd.lastReportAt = gameTime;
       if (inc.attacker !== player || gameMode !== 'play' || distanceBetween(inc, player) > 1800) return;
       // A call is prompt or it is nothing: a witness who rings in half a minute
-      // after the last shot (or the last sight of the body) no longer brings the
+      // after the last shot (or the killing, for a body) no longer brings the
       // police, so stars never rise long after the player stopped.
       // A body keeps drawing onlookers for minutes; what counts is when it fell.
       const crimeAt = inc.kind === 'body' ? (inc.focus?.deadTime ?? inc.start) : inc.time;
@@ -2862,8 +2862,11 @@
     function crowdCrash(a, b, hit, closing) {
       if (closing < 70 || !hit) return;
       if (Math.abs(hit.x - player.x) > 1400 || Math.abs(hit.y - player.y) > 1400) return;
+      // The player is the culprit only for ramming someone hard, not for being hit.
       const other = a === player.car ? b : b === player.car ? a : null,
-        culprit = other && other.occupied && closing > 150 ? player : null;
+        playerFaster =
+          !!other && (player.car?.impactSpeed || 0) > (other.impactSpeed || 0),
+        culprit = other && other.occupied && playerFaster && closing > RECKLESS_CRASH_SPEED ? player : null;
       const inc = crowdAlarm('crash', hit, culprit, clamp(closing / 160, 0.5, 2));
       for (const c of [a, b]) {
         if (!c || c === player.car || !c.occupied || !c.ai || c.hp <= 0 || c.type === 'police') continue;
