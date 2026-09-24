@@ -163,7 +163,7 @@
           emissiveMap: lit,
           emissiveIntensity: 0,
         });
-        litWindowMaterials.push({ material, strength: 0.55 + skyRandom() * 0.2, phase: skyRandom() * 9, x: b.x, y: b.y });
+        litWindowMaterials.push({ material, strength: 0.45 + skyRandom() * 0.15, phase: skyRandom() * 9, x: b.x, y: b.y });
         skyGlassMaterials.set(key, material);
         return material;
       }
@@ -925,13 +925,13 @@
           const H = T.b.height,
             glass = skyGlass('crown', T.b),
             plan = planRect(T.W - 12, T.D - 12, 26),
-            gold = skyLed('#ffcf7a', 3.2);
+            gold = skyLed('#ffcf7a', 2.2);
           skyPodium(T, 44);
           skyLoft(T, plan, [{ y: 40 }, { y: H }], glass);
           skyFins(T, plan, { y: 40 }, 46, H - 4, 26, 2.6, 1.2, skyBronze);
           // A crown of gilded fins round a lit lantern.
           skyFins(T, plan, { y: H }, H, H + 86, 13, 4, 1.6, gold);
-          skyLoft(T, planRect(T.W * 0.45, T.D * 0.45, 12), [{ y: H }, { y: H + 62 }], skyLed('#ffe2a8', 2.2));
+          skyLoft(T, planRect(T.W * 0.45, T.D * 0.45, 12), [{ y: H }, { y: H + 62 }], skyLed('#ffe2a8', 1.3));
           skyBand(T, plan, { y: H }, H - 1, H + 3, 1.6, skyBronze);
           mesh(cylinderGeo, skySteel, T.group, T.cx, H + 90, T.cz, 1.2, 56, 1.2);
           skyBeacon(T, T.cx, H + 120, T.cz, 0.35);
