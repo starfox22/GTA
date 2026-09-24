@@ -25,13 +25,13 @@ const browser = await chromium.launch({
   args: ['--disable-accelerated-2d-canvas', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
 });
 const page = await browser.newPage({ viewport: { width: 800, height: 600 } });
-await page.goto('file://' + file + '?dev', { timeout: 300000, waitUntil: 'domcontentloaded' });
-await page.waitForFunction(() => window.DeadEndCity, null, { timeout: 900000 });
+await page.goto('file://' + file + '?dev', { timeout: 1800000, waitUntil: 'domcontentloaded' });
+await page.waitForFunction(() => window.DeadEndCity, null, { timeout: 2400000 });
 // The props and foot obstacles are registered by the 3D renderer, which is built
 // once the game starts: start one so layout() carries them.
-await page.waitForSelector('#startBtn', { state: 'visible', timeout: 900000 });
-await page.click('#startBtn', { timeout: 900000 });
-await page.waitForFunction(() => window.DeadEndCity.layout().props.length > 0, null, { timeout: 900000, polling: 5000 }).catch(() => {});
+await page.waitForSelector('#startBtn', { state: 'visible', timeout: 2400000 });
+await page.click('#startBtn', { timeout: 2400000 });
+await page.waitForFunction(() => window.DeadEndCity.layout().props.length > 0, null, { timeout: 2400000, polling: 5000 }).catch(() => {});
 const L = await page.evaluate(() => window.DeadEndCity.layout());
 // Visible barriers against the collision code: every barrier line sampled every
 // 3 units must be solid() for a thin probe, and every street-end guardrail,

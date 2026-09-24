@@ -337,8 +337,8 @@
               vertical = streets.find((r) => r.vertical && r.r === x && y >= r.start - 8 && y <= r.end + 8);
             if (!horizontal || !vertical) continue;
             const hw = horizontal.width / 2,
-              vw = vertical.width / 2,
-              north = vertical.start < y - hw - 40,
+              vw = vertical.width / 2;
+            let north = vertical.start < y - hw - 40,
               south = vertical.end > y + hw + 40,
               west = horizontal.start < x - vw - 40,
               east = horizontal.end > x + vw + 40;
