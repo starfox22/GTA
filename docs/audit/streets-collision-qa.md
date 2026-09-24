@@ -18,6 +18,11 @@ the Palm Keys streets.
   runs, 22 street-end pieces, 0 gaps, 0 walk-throughs (the 7 end points past a rail line were
   all at openings: the superyacht passerelle, jetties, a bridge landing, and walks along a
   bent sea wall past the end of the sample's line).
+- After merging the lead branch (beach club, bridges, theme park, Fort Sentinel, combat): 709
+  railing runs, 0 gaps; 5 end points past a rail line, all openings or bends (passerelle, the
+  Keys Bridge and Palm Sound Causeway landings, the beach end, a kink in the Palm Keys north
+  sea wall, still on land); 721 furniture walks and 363 corner walks, none through. The
+  layout audit is clean apart from the 28 known oblique junctions.
 - Furniture and corners (second probe): 741 walks straight through the centre of lamps,
   benches, bins, hydrants, mailboxes, signals, dumpsters and registered fixtures from four
   sides (0 got through), and 363 diagonal and skewed walks into the corners of every tenth
