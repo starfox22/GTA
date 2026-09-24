@@ -122,6 +122,7 @@ something, never a generic code-evaluation hook.
 | `settings(changes)` | Every setting (graphics, fps, cutaway, sound, the four volumes, voices, NPC chatter, minimap fold and zoom, touch mode); pass an object such as `{ chatter: false, minimapZoom: 2 }` to change some |
 | `openSettings(tab)` | Open the settings screen on `graphics`, `audio`, `gameplay` or `controls` (over the pause menu during play) |
 | `bindings(changes)` | Key bindings as `{ action: [primary, secondary] }`; `{ ascend: 'KeyY' }` binds a primary key (a clash swaps), `'reset'` restores the defaults |
+| `military()` | Fort Sentinel: alert, lockdown, gate challenge level, each lane's arm, bollards and sliding gate (and what is broken), soldiers on duty by role, military vehicles and their roles, the supply run and the drill |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
 | `beach()` | Palm Keys Beach: crowd density for the hour, who is there and what they are doing, prop counts |
