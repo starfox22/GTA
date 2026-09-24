@@ -84,7 +84,7 @@ for (const step of steps) {
     }
   }
   const name = String(index).padStart(2, '0') + '-' + (step.name || 'step');
-  if (step.shot !== false) await page.screenshot({ path: path.join(out, name + '.png') });
+  if (step.shot !== false) await page.screenshot({ path: path.join(out, name + '.png'), timeout: 180000 });
   console.log(name, result === undefined ? '' : JSON.stringify(result).slice(0, 600));
 }
 console.log(`errors: ${errors.length}`);
