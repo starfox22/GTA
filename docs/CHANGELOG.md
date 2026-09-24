@@ -2,6 +2,22 @@
 
 ## Unreleased — The islands rearranged
 
+Sunset Pier resort (SOURCE_GUIDE section 4)
+- The island is a Gulf-style resort: main gate at the bridge, the Fountain Lagoon with a
+  musical fountain show (three choreographies to procedural Hijaz-mode music, hourly after
+  dark), fireworks two nights in three at 21:00, the crescent Sunset Palace hotel, a beach
+  club, palm promenades, a bus bay by the car park.
+- The Falcon: a 1.47 km, 64 m steel coaster (125 km/h) with a lift, a 72-degree first drop over
+  the shore, loop, camelback, overbanked turn, heartline roll, corkscrew and helix, banked for
+  the speed the train really carries, with supports, station, queue hall and a seven-car
+  train of riders running all day. Ride it from the platform (E); E cycles chase, front seat
+  and trackside cameras.
+- The Sunset Eye: a 110 m observation wheel on twin A-frame legs with cable spokes, 48 level
+  glass capsules and LED shows at night; ride one turn from the terminal.
+- Swing ride, drop tower, carousel, teacups, dodgems, the Arabian Nights dark ride, the Wadi
+  Splash log flume with splashes, a souk food court and kiosks; guests walk the promenades and
+  queue for the rides; riders scream (procedural voices).
+
 World layout (docs/audit/world-layout.md, SOURCE_GUIDE section 4)
 - West to east: Palm Keys (the tropical island) across Palm Sound from Northbank, Northbank
   in the middle, Ridgeline's forest and mountains across a Marlow Bay now 2400..2700 wide.

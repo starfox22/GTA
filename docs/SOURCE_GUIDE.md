@@ -77,7 +77,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
-| themepark.js | Sunset Pier island (north of the reclamation): its ground tile, ride footprints, the rideable coaster and the park crowd |
+| themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
 | cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
@@ -134,7 +134,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
-| themepark3d.js | Coaster track and train, big wheel, carousel, teacups, drop tower and midway |
+| themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras |
 | garage3d.js | Garage buildings, shutters, lights and service details |
 | landmarks3d.js | Bridges, waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
@@ -248,14 +248,33 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 
 ### Sunset Pier island (x 1830..4260, y -7090..-5680)
 
-- Reached by the Sunset Pier Bridge from the north end of Riverbank Dr and `PIER ISLAND DRIVE`
-  (bridge landing -> along the south shore past the car park -> the park gate at 3898, -6145).
-- The Sunset Pier rides (`PIER`, `COASTER_TRACK` in themepark.js) stand in the east half, x
-  3420..4140, y -6725..-6005: the old lower-bay park moved whole and turned 180 degrees so the
-  gate faces the bridge (p' = (7610, -1185) - p).
-- **Reserved: the attraction ground** `THEME_PARK_RESERVE` = x 1980..3380, y -6960..-6060 (1400 x
-  900), the west half, lawn with a dashed outline and nothing on it, for the big coaster, the
-  giant wheel and new attractions. The island drive runs past its south-east corner.
+- A Gulf-style resort and theme park (themepark.js lays it out and simulates it,
+  themepark3d.js draws it; `PIER` holds every position). The Sunset Pier Bridge lands at the
+  main gate (3200, -6030); `PIER ISLAND DRIVE` runs east past the bus bay (3266, -5838), the car
+  park and the Sunset Eye to the east gate.
+- **The Falcon** fills the west half (the old `THEME_PARK_RESERVE`) and runs out over the west
+  and north shores: `COASTER_ELEMENTS` is the circuit authored as eased track elements (lift to
+  64 m, a 72-degree first drop, loop, camelback, overbanked turn, heartline roll, corkscrew,
+  helix, bunny hop, brakes) walked into a closed, banked curve (`coasterCircuit()`, 2-unit
+  samples; `coasterFrame(s)` gives position, tangent and up). The train (`coasterTrain`, `t` =
+  front car's arc length) runs all day on gravity with lift, trim and station sections; the
+  station is at (2575, -6430), queue hall to its south. Supports come from
+  `coasterFootings()`, which keeps them off paths, the lagoon and buildings.
+- **The Sunset Eye** (hub 3600, -6050, 300 up, rim radius 240, 48 capsules, one turn in 240 s;
+  `wheelCapsule(k)`) with its terminal underneath. **Fountain Lagoon** (3170, -6370) with the
+  show schedule (`fountainShowAt`) and fireworks (`fireworksTonight`), the **Sunset Palace**
+  crescent hotel (3530, -6770), the beach club on the north shore, and in the east the
+  carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
+  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
+- Riding: `player.coaster` is the carrier for both rides (`{ kind: 'train' | 'wheel' }`), so the
+  existing teleport, death and mission-reset hooks let go of either. The ride camera
+  (`updateParkCamera`, called from render3d.js right after `updateFlightView`) puts the
+  perspective camera on the ride.
+- Collision: `parkSolids()` (rectangles, used by `parkBlocked` for people through a 128-unit grid
+  and by physics.js for vehicles) and `parkAirSolids()` (minHeight bodies: the Eye's disc and
+  the high track, for aircraft). Paths are `PARK_PATHS`, joined into the graph the park crowd
+  walks (`parkPathGraph`, queues in `PARK_QUEUES`); guests exist only while the player is within
+  ~2.9 km. `DeadEndCity.themePark()` reports rides, shows, guests and an overlap self-check.
 
 ### Water and bridges
 
