@@ -1083,9 +1083,13 @@
     function updateOfficers(deltaSeconds) {
       assignFireTokens(deltaSeconds);
       for (const c of vehicles) {
-        if (c.cop) c.seesPlayer = !c.crewDeployed && policeSees(c);
+        // Sight and gang checks are staggered: each unit looks about seven times
+        // a second, which reads the same and costs a fraction at five stars.
+        const look = gameTime >= (c.lookAt || 0);
+        if (look) c.lookAt = gameTime + 0.12 + seededRandom() * 0.06;
+        if (c.cop && (look || c.crewDeployed)) c.seesPlayer = !c.crewDeployed && policeSees(c);
         if (!lawVehicle(c)) continue;
-        c.gangTarget = c.pursuitTarget ? null : policeGangTarget(c);
+        if (look) c.gangTarget = c.pursuitTarget ? null : policeGangTarget(c);
         // The crew gets out for a runner on foot, and for a driver who has
         // stopped: a car sitting still is surrounded (pursuit.js).
         const onFoot = !player.car || isAircraft(player.car),
@@ -1109,7 +1113,11 @@
           o.state = 'stunned';
           continue;
         }
-        o.gangTarget = policeGangTarget(o);
+        const look = gameTime >= (o.lookAt || 0);
+        if (look) {
+          o.lookAt = gameTime + 0.12 + seededRandom() * 0.06;
+          o.gangTarget = policeGangTarget(o);
+        }
         if (
           ((wantedStars <= 0 || harborPoliceProtected(player.x, player.y, 30)) && !o.gangTarget) ||
           (o.state === 'return' && !o.gangTarget)
@@ -1123,10 +1131,10 @@
           }
           continue;
         }
-        const seesPlayer = wantedStars > 0 && policeSees(o),
+        if (look || o.seesPlayer === undefined) o.seesPlayer = wantedStars > 0 && policeSees(o);
+        const seesPlayer = wantedStars > 0 && o.seesPlayer,
           gang = o.gangTarget,
           kind = officerKind(o);
-        o.seesPlayer = seesPlayer;
         if (seesPlayer) {
           o.sightTime = (o.sightTime || 0) + deltaSeconds;
           o.lastSawPlayerAt = gameTime;
