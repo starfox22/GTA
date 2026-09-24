@@ -310,7 +310,6 @@
      */
     const FLIGHT_HUD_FONT = "'Helvetica Neue', Arial, Helvetica, sans-serif",
       FH_LINE = '#e9efe6',
-      FH_DIM = '#9ea79d',
       FH_ACCENT = '#7fe3ee',
       FH_GOLD = '#e2c897',
       FH_DANGER = '#f08672',
