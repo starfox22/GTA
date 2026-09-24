@@ -332,7 +332,8 @@ docs/audit/missions-qa.md shows the method).
 - Distance haze is `scene.fog`, a linear Fog whose shader chunk is replaced with an
   aerial-perspective curve: clear out to `fog.near`, exponential-squared beyond it with
   `fog.far = 1 / fog.density`. Keep adjusting `fog.density` and `fog.color`; `fog.near`
-  belongs to the flight camera. Nothing may lay a uniform wash over the frame.
+  belongs to `updateFlightView` (beyond the frame on the street, where there is no haze).
+  Nothing may lay a uniform wash over the frame, or over part of it.
 - Clouds (clouds3d.js) are a ray-marched cumulus layer at 600-950 m over a GPU-generated
   3D noise volume, drawn at half resolution only when the flight camera is above the cloud
   base and composited behind the player's aircraft. Coverage follows `weather.cloud`, drift
