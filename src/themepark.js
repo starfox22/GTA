@@ -1748,6 +1748,12 @@
     }
     /* DeadEndCity.ride('coaster' | 'wheel'): walk the player to the ride and board it. */
     function rideAttraction(kind) {
+      // A test may call this from the air: set the aircraft down where it is first.
+      const craft = player.car;
+      if (craft && isAircraft(craft)) {
+        craft.altitude = terrainHeight(craft.x, craft.y);
+        craft.vx = craft.vy = craft.speed = 0;
+      }
       if (kind === 'wheel') {
         teleportPlayer(PIER.terminal.x - 10, PIER.wheel.y);
         return boardWheel();
