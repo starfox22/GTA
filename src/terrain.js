@@ -3,9 +3,48 @@
      * Mountains and off-road contact
      * Source: src/terrain.js
      * Scope: shared game closure.
-     * Shared triangulated elevation, snowy summits, trails, slope handling and services.
+     * The Ridgeline Range: a generated, eroded coastal mountain range on one shared
+     * triangulated height surface (rendering, collision, elevation), its 4x4 trails,
+     * slope handling, the scenery placement the renderer plants on it, and services.
      */
-    /* One height surface drives mountain scenery, vehicle grip, foot elevation and aircraft clearance. */
+    /**
+     * THE RIDGELINE RANGE
+     * The mountains are one height field over the north of Ridgeline County
+     * (TERRAIN_FIELDS[0], x 5880..10980, y 60..2620, a 10-unit grid), plus a small
+     * field for each of the two lone hills further south. A field is generated once,
+     * on first use, and never changes:
+     *
+     *   1. Macro form. A main crest runs west to east parallel to the north coast,
+     *      through MOUNT ASCENT (a broad, rugged summit) and NEEDLE RIDGE (a row of
+     *      rock needles), with a low saddle between them above Clearwater Reservoir.
+     *      Spurs branch off it: short and steep to the sea on the north side, long
+     *      down to the valleys on the south. Each ridge is a crest line with a
+     *      cross-section, so faces meet in valleys and gullies between the spurs.
+     *   2. Relief. Domain-warped ridged multifractal noise (sharp crests, rounded
+     *      valleys) and a derivative-damped fBm (IQ's "erosion" noise: detail fades
+     *      on steep ground, so slopes read as worn, not bumpy).
+     *   3. Erosion on the grid. A few passes of stream-power incision (D8 flow
+     *      accumulation: each cell cuts in proportion to sqrt(catchment) x slope,
+     *      which grows a dendritic network of ravines), terraced rock strata on
+     *      steep faces, then thermal erosion (material slides off anything steeper
+     *      than the angle of repose, leaving scree fans and softer crests).
+     *   4. The plan wins. Heights are capped by distance fields: to a road, a rail
+     *      line, a town or a helipad the ground rises no faster than a graded
+     *      embankment (and is exactly flat on and beside it); to the reservoir
+     *      a gentle shore; to the sea a sea cliff; and to the field's edge nothing.
+     *      Caps meet the relief through a smooth minimum, so valleys open out
+     *      naturally where the roads run.
+     *   5. Trails. Each 4x4 trail is sampled over the relief, smoothed and held to a
+     *      drivable grade (TRAIL_MAX_GRADE), then cut and filled into the surface
+     *      with graded shoulders, ending in a level summit platform.
+     *
+     * Rendering and contact heights use the field's exact Float32 vertices and the
+     * same triangle diagonal (sampleTerrainField); the generator is only ever a
+     * construction source, never a second collision surface. Per-vertex data the
+     * renderer needs (ambient occlusion, water flow, trail mask, forest density) is
+     * baked here too, and so is the placement of the forest, the boulders and the
+     * alpine meadows (mountainScenery), so the 2D map and the 3D view agree.
+     */
     COUNTY_PEAKS.splice(
       0,
       8,
@@ -13,204 +52,879 @@
         name: 'MOUNT ASCENT',
         x: 7760,
         y: 1090,
-        rx: 1010,
-        ry: 690,
-        r: 1010,
-        h: 1180,
+        r: 900,
+        h: 1000,
       },
       {
         name: 'NEEDLE RIDGE',
         x: 9760,
         y: 1230,
-        rx: 760,
-        ry: 680,
-        r: 760,
-        h: 980,
+        r: 700,
+        h: 820,
       },
     );
     countyStaticSolids.length = 0;
-    // Mountain bounds, made on first use (mountainBounds below).
-    let terrainBounds = null;
-    const MOUNTAIN_TRAILS = COUNTY_PEAKS.slice(0, 2).map((p, i) => {
-      const points = Array.from(
-        {
-          length: 73,
-        },
-        (_, j) => {
-          const q = 1 - j / 72,
-            a = Math.PI / 2 + q * 4 * Math.PI;
-          return [p.x + Math.cos(a) * (p.rx || p.r) * q, p.y + Math.sin(a) * (p.ry || p.r) * q];
-        },
-      );
-      points.unshift(i ? [9500, 2860] : [7510, 1970]);
-      return {
-        name: p.name + ' TRAIL',
-        width: 42,
-        points,
+    const TERRAIN_CELL = 10,
+      // Steepest grade a 4x4 trail is graded to (height per unit of ground, ~16 deg).
+      TRAIL_MAX_GRADE = 0.28,
+      // Main crest of the range, west coast to east coast: [x, y, crest height, half-width].
+      RANGE_CREST = [
+        [5930, 1180, 100, 260],
+        [6260, 1050, 300, 430],
+        [6700, 960, 440, 520],
+        [7200, 1030, 650, 620],
+        [7760, 1090, 1150, 820],
+        [8180, 1010, 720, 640],
+        [8560, 1060, 520, 560],
+        [8900, 1080, 390, 520],
+        [9280, 1140, 600, 560],
+        [9760, 1230, 900, 660],
+        [10180, 1290, 720, 560],
+        [10560, 1470, 420, 480],
+        [10920, 1640, 100, 300],
+      ],
+      // Where Needle Ridge's rock needles stand: along the crest east and west of the overlook.
+      NEEDLE_SPAN = [
+        [9380, 1150],
+        [10300, 1330],
+      ];
+    const TERRAIN_FIELDS = [
+      { name: 'RIDGELINE RANGE', kind: 'range', x0: 5880, y0: 60, x1: 10980, y1: 2620, seed: 1997 },
+      ...COUNTY_PEAKS.slice(2).map((p, i) => ({
+        name: 'COUNTY HILL ' + i,
+        kind: 'hill',
         peak: p,
-        trail: true,
-      };
-    });
-    function mountainAt(x, y) {
-      // Outside the mountains' bounds (the whole city) there is no mountain.
-      const bounds = mountainBounds();
-      if (x < bounds.x0 || x > bounds.x1 || y < bounds.y0 || y > bounds.y1) return undefined;
-      return COUNTY_PEAKS.find(
-        (p) => ((x - p.x) / (p.rx || p.r)) ** 2 + ((y - p.y) / (p.ry || p.r)) ** 2 < 1,
-      );
-    }
-    function terrainBaseHeight(x, y) {
-      if (COUNTY_LAKES.some((r) => regionContains(r, x, y))) return 0;
-      let z = 0;
-      for (const p of COUNTY_PEAKS) {
-        const dx = (x - p.x) / (p.rx || p.r),
-          dy = (y - p.y) / (p.ry || p.r),
-          d = dx * dx + dy * dy;
-        if (d < 1) z = Math.max(z, p.h * (1 - d) ** 2);
+        x0: Math.floor((p.x - p.r * 1.45) / TERRAIN_CELL) * TERRAIN_CELL,
+        y0: Math.floor((p.y - p.r * 1.45) / TERRAIN_CELL) * TERRAIN_CELL,
+        x1: Math.ceil((p.x + p.r * 1.45) / TERRAIN_CELL) * TERRAIN_CELL,
+        y1: Math.ceil((p.y + p.r * 1.45) / TERRAIN_CELL) * TERRAIN_CELL,
+        seed: 311 + i * 17,
+      })),
+    ];
+    // A switchback trail: from the trailhead along `approach`, then zigzag legs up the
+    // mountain's south face to the summit, `legs` of them swinging `amplitude` either
+    // side of the line (narrowing towards the top), with the hairpins rounded off.
+    function switchbackTrail(peak, approach, legs, amplitude) {
+      const foot = approach.at(-1),
+        ax = peak.x - foot[0],
+        ay = peak.y - foot[1],
+        length = Math.hypot(ax, ay),
+        px = -ay / length,
+        py = ax / length;
+      let points = [...approach];
+      for (let k = 1; k <= legs; k++) {
+        // Legs bunch up towards the top, where the face is steepest.
+        const t = 1 - (1 - k / legs) ** 1.3,
+          side = k === legs ? 0 : (k % 2 ? 1 : -1) * amplitude * (1 - 0.4 * t);
+        points.push([foot[0] + ax * t + px * side, foot[1] + ay * t + py * side]);
       }
-      return z;
+      // Chaikin corner cutting, keeping the two ends where they are.
+      for (let pass = 0; pass < 2; pass++) {
+        const cut = [points[0]];
+        for (let i = 0; i < points.length - 1; i++) {
+          const [x0, y0] = points[i],
+            [x1, y1] = points[i + 1];
+          if (i) cut.push([x0 * 0.75 + x1 * 0.25, y0 * 0.75 + y1 * 0.25]);
+          if (i < points.length - 2) cut.push([x0 * 0.25 + x1 * 0.75, y0 * 0.25 + y1 * 0.75]);
+        }
+        cut.push(points.at(-1));
+        points = cut;
+      }
+      return points.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]);
     }
-    for (const trail of MOUNTAIN_TRAILS)
-      trail.heights = trail.points.map((p) => terrainBaseHeight(...p));
-    function terrainAnalyticHeight(x, y) {
-      const base = terrainBaseHeight(x, y);
-      if (base < 0.001) return 0;
-      let nearest = 34,
-        height = base;
-      for (const t of MOUNTAIN_TRAILS) {
-        if (
-          Math.abs(x - t.peak.x) > (t.peak.rx || t.peak.r) + 40 ||
-          Math.abs(y - t.peak.y) > (t.peak.ry || t.peak.r) + 40
-        )
-          continue;
-        for (let i = 1; i < t.points.length; i++) {
-          const a = t.points[i - 1],
-            b = t.points[i],
-            dx = b[0] - a[0],
-            dy = b[1] - a[1],
-            u = clamp(((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy), 0, 1),
-            d = Math.hypot(x - a[0] - dx * u, y - a[1] - dy * u);
-          if (d < nearest) {
-            nearest = d;
-            height = t.heights[i - 1] + (t.heights[i] - t.heights[i - 1]) * u;
+    const MOUNTAIN_TRAILS = [
+      {
+        name: 'MOUNT ASCENT TRAIL',
+        width: 42,
+        points: switchbackTrail(COUNTY_PEAKS[0], [[7510, 1970], [7540, 1880]], 9, 540),
+        peak: COUNTY_PEAKS[0],
+        trail: true,
+      },
+      {
+        name: 'NEEDLE RIDGE TRAIL',
+        width: 42,
+        points: switchbackTrail(COUNTY_PEAKS[1], [[9500, 2860], [9560, 2520], [9650, 2160]], 8, 450),
+        peak: COUNTY_PEAKS[1],
+        trail: true,
+      },
+    ];
+    /* ---- Deterministic noise ------------------------------------------------------------ */
+    function terrainHash(ix, iy, seed) {
+      let h = (Math.imul(ix, 374761393) + Math.imul(iy, 668265263) + Math.imul(seed, 1274126177)) | 0;
+      h = Math.imul(h ^ (h >>> 13), 1103515245);
+      h ^= h >>> 16;
+      return (h >>> 0) / 4294967296;
+    }
+    // A 256 x 256 lattice of random values in -1..1 (a table lookup is several
+    // times faster than hashing each corner; seeds offset into it).
+    const NOISE_LATTICE = new Float32Array(65536);
+    for (let i = 0; i < 65536; i++) NOISE_LATTICE[i] = terrainHash(i & 255, i >> 8, 77) * 2 - 1;
+    // Quintic value noise in -1..1 with its analytic derivatives, written into `out`.
+    const noiseOut = new Float64Array(3);
+    function terrainNoise(x, y, seed) {
+      const ix = Math.floor(x),
+        iy = Math.floor(y),
+        fx = x - ix,
+        fy = y - iy,
+        ux = fx * fx * fx * (fx * (fx * 6 - 15) + 10),
+        uy = fy * fy * fy * (fy * (fy * 6 - 15) + 10),
+        dux = 30 * fx * fx * (fx * (fx - 2) + 1),
+        duy = 30 * fy * fy * (fy * (fy - 2) + 1),
+        sx = ix + seed * 131,
+        sy = iy + seed * 71,
+        a = NOISE_LATTICE[(sx & 255) | ((sy & 255) << 8)],
+        b = NOISE_LATTICE[((sx + 1) & 255) | ((sy & 255) << 8)],
+        c = NOISE_LATTICE[(sx & 255) | (((sy + 1) & 255) << 8)],
+        d = NOISE_LATTICE[((sx + 1) & 255) | (((sy + 1) & 255) << 8)],
+        k1 = b - a,
+        k2 = c - a,
+        k4 = a - b - c + d;
+      noiseOut[0] = a + k1 * ux + k2 * uy + k4 * ux * uy;
+      noiseOut[1] = dux * (k1 + k4 * uy);
+      noiseOut[2] = duy * (k2 + k4 * ux);
+      return noiseOut[0];
+    }
+    // Each octave is rotated (~37 deg) and doubled so the lattice never lines up.
+    function terrainFbm(x, y, octaves, seed) {
+      let sum = 0,
+        amp = 0.5,
+        px = x,
+        py = y;
+      for (let i = 0; i < octaves; i++) {
+        sum += terrainNoise(px, py, seed + i) * amp;
+        const rx = 1.6 * px - 1.2 * py,
+          ry = 1.2 * px + 1.6 * py;
+        px = rx;
+        py = ry;
+        amp *= 0.5;
+      }
+      return sum;
+    }
+    // Ridged multifractal: sharp crests, each octave weighted by the one above it.
+    function terrainRidged(x, y, octaves, seed) {
+      let sum = 0,
+        amp = 0.55,
+        weight = 1,
+        px = x,
+        py = y;
+      for (let i = 0; i < octaves; i++) {
+        let n = 1 - Math.abs(terrainNoise(px, py, seed + i));
+        n *= n;
+        sum += n * amp * weight;
+        weight = clamp(n * 1.6, 0, 1);
+        const rx = 1.6 * px - 1.2 * py,
+          ry = 1.2 * px + 1.6 * py;
+        px = rx;
+        py = ry;
+        amp *= 0.5;
+      }
+      return sum;
+    }
+    // Derivative-damped fBm: steep ground (a large accumulated gradient) gets less detail.
+    function terrainErodedFbm(x, y, octaves, seed) {
+      let sum = 0,
+        amp = 0.5,
+        dx = 0,
+        dy = 0,
+        px = x,
+        py = y;
+      for (let i = 0; i < octaves; i++) {
+        const n = terrainNoise(px, py, seed + i);
+        dx += noiseOut[1];
+        dy += noiseOut[2];
+        sum += (amp * n) / (1 + dx * dx + dy * dy);
+        const rx = 1.6 * px - 1.2 * py,
+          ry = 1.2 * px + 1.6 * py;
+        px = rx;
+        py = ry;
+        amp *= 0.5;
+      }
+      return sum;
+    }
+    function smoothMin(a, b, k) {
+      const h = Math.max(k - Math.abs(a - b), 0) / k;
+      return Math.min(a, b) - h * h * k * 0.25;
+    }
+    function smoothStep(a, b, x) {
+      const t = clamp((x - a) / (b - a), 0, 1);
+      return t * t * (3 - 2 * t);
+    }
+    /* ---- Macro form ------------------------------------------------------------------- */
+    // The ridge network: the main crest's segments plus spurs, each a segment with a
+    // crest height and half-width at either end. Spurs are seeded from the crest.
+    function rangeRidges(seed) {
+      const ridges = [];
+      for (let i = 1; i < RANGE_CREST.length; i++) {
+        const [ax, ay, ah, aw] = RANGE_CREST[i - 1],
+          [bx, by, bh, bw] = RANGE_CREST[i];
+        ridges.push({ ax, ay, ah, aw, bx, by, bh, bw });
+      }
+      let s = seed;
+      const random = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
+      for (let i = 1; i < RANGE_CREST.length - 1; i++) {
+        const [cx, cy, ch, cw] = RANGE_CREST[i];
+        // Two spurs south (to the valleys), one or two north (down to the sea cliffs).
+        for (const [side, count, reach] of [
+          [1, 2, 820],
+          [-1, 1 + (i % 2), 480],
+        ])
+          for (let k = 0; k < count; k++) {
+            const along = (random() - 0.5) * 360,
+              angle = (side > 0 ? Math.PI / 2 : -Math.PI / 2) + (random() - 0.5) * 1.1,
+              ox = cx + along,
+              oy = cy + (along / 500) * 40,
+              length = reach * (0.65 + random() * 0.55) * (0.6 + (ch / 1300) * 0.5),
+              ex = ox + Math.cos(angle) * length,
+              ey = oy + Math.sin(angle) * length;
+            ridges.push({
+              ax: ox,
+              ay: oy,
+              ah: ch * (0.78 + random() * 0.1),
+              aw: cw * 0.7,
+              bx: ex,
+              by: ey,
+              bh: ch * (0.12 + random() * 0.14),
+              bw: cw * 0.45,
+            });
+          }
+      }
+      // Eagle Pass and Clearwater foothills: low rounded ridges south of the crest.
+      for (const [ax, ay, bx, by, h] of [
+        [6900, 2050, 8200, 2240, 170],
+        [9550, 1850, 10500, 2200, 260],
+        [10350, 2200, 10600, 2550, 150],
+        [6150, 1600, 6300, 2300, 130],
+      ])
+        ridges.push({ ax, ay, ah: h, aw: 320, bx, by, bh: h * 0.7, bw: 280 });
+      for (const r of ridges) {
+        const w = Math.max(r.aw, r.bw);
+        Object.assign(r, { minx: Math.min(r.ax, r.bx) - w, maxx: Math.max(r.ax, r.bx) + w, miny: Math.min(r.ay, r.by) - w, maxy: Math.max(r.ay, r.by) + w });
+      }
+      return ridges;
+    }
+    function ridgeHeight(ridges, x, y) {
+      let best = 0,
+        second = 0;
+      for (const r of ridges) {
+        if (x < r.minx || x > r.maxx || y < r.miny || y > r.maxy) continue;
+        const dx = r.bx - r.ax,
+          dy = r.by - r.ay,
+          t = clamp(((x - r.ax) * dx + (y - r.ay) * dy) / (dx * dx + dy * dy), 0, 1),
+          d = Math.hypot(x - r.ax - dx * t, y - r.ay - dy * t),
+          w = r.aw + (r.bw - r.aw) * t;
+        if (d >= w) continue;
+        // Concave-up flanks (steep near the crest, easing into the valley floor).
+        const u = 1 - d / w,
+          h = (r.ah + (r.bh - r.ah) * t) * u * u * (1.6 - 0.6 * u);
+        if (h > best) {
+          second = best;
+          best = h;
+        } else if (h > second) second = h;
+      }
+      // Where two ridges overlap they join in a smooth saddle, not a crease.
+      const k = 90,
+        h = Math.max(k - (best - second), 0) / k;
+      return best + h * h * k * 0.18;
+    }
+    /* ---- Field generation --------------------------------------------------------------- */
+    // Exact 1D squared-distance transform (Felzenszwalb and Huttenlocher), in place.
+    function distanceTransform1D(f, n, v, z, d) {
+      let k = 0;
+      v[0] = 0;
+      z[0] = -Infinity;
+      z[1] = Infinity;
+      for (let q = 1; q < n; q++) {
+        let s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+        while (s <= z[k]) {
+          k--;
+          s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+        }
+        k++;
+        v[k] = q;
+        z[k] = s;
+        z[k + 1] = Infinity;
+      }
+      k = 0;
+      for (let q = 0; q < n; q++) {
+        while (z[k + 1] < q) k++;
+        d[q] = (q - v[k]) * (q - v[k]) + f[v[k]];
+      }
+    }
+    // Distance in world units from every vertex to the nearest vertex where mask is set.
+    function gridDistance(mask, cols, rows, cell) {
+      const big = 1e12,
+        grid = new Float64Array(cols * rows),
+        n = Math.max(cols, rows),
+        f = new Float64Array(n),
+        d = new Float64Array(n),
+        v = new Int32Array(n),
+        z = new Float64Array(n + 1);
+      for (let i = 0; i < grid.length; i++) grid[i] = mask[i] ? 0 : big;
+      for (let x = 0; x < cols; x++) {
+        for (let y = 0; y < rows; y++) f[y] = grid[y * cols + x];
+        distanceTransform1D(f, rows, v, z, d);
+        for (let y = 0; y < rows; y++) grid[y * cols + x] = d[y];
+      }
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) f[x] = grid[y * cols + x];
+        distanceTransform1D(f, cols, v, z, d);
+        for (let x = 0; x < cols; x++) grid[y * cols + x] = d[x];
+      }
+      const out = new Float32Array(cols * rows);
+      for (let i = 0; i < out.length; i++) out[i] = Math.sqrt(grid[i]) * cell;
+      return out;
+    }
+    // Mark every vertex within `radius` of a polyline.
+    function rasterizePolyline(mask, field, points, radius) {
+      const { x0, y0, cols, rows } = field;
+      for (let i = 1; i < points.length; i++) {
+        const a = points[i - 1],
+          b = points[i],
+          c0 = Math.max(0, Math.floor((Math.min(a[0], b[0]) - radius - x0) / TERRAIN_CELL)),
+          c1 = Math.min(cols - 1, Math.ceil((Math.max(a[0], b[0]) + radius - x0) / TERRAIN_CELL)),
+          r0 = Math.max(0, Math.floor((Math.min(a[1], b[1]) - radius - y0) / TERRAIN_CELL)),
+          r1 = Math.min(rows - 1, Math.ceil((Math.max(a[1], b[1]) + radius - y0) / TERRAIN_CELL));
+        for (let r = r0; r <= r1; r++)
+          for (let c = c0; c <= c1; c++)
+            if (segmentDistance(x0 + c * TERRAIN_CELL, y0 + r * TERRAIN_CELL, a, b) <= radius) mask[r * cols + c] = 1;
+      }
+    }
+    function rasterizeRect(mask, field, x, y, w, h) {
+      const { x0, y0, cols, rows } = field;
+      for (let r = Math.max(0, Math.floor((y - y0) / TERRAIN_CELL)); r <= Math.min(rows - 1, Math.ceil((y + h - y0) / TERRAIN_CELL)); r++)
+        for (let c = Math.max(0, Math.floor((x - x0) / TERRAIN_CELL)); c <= Math.min(cols - 1, Math.ceil((x + w - x0) / TERRAIN_CELL)); c++)
+          mask[r * cols + c] = 1;
+    }
+    const D8 = [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+      [1, 1],
+      [-1, 1],
+      [1, -1],
+      [-1, -1],
+    ];
+    /**
+     * Depression filling (priority flood, Barnes et al.): water in a hollow rises
+     * until it spills, so routing over the filled surface carries every catchment
+     * on to the sea or the reservoir instead of stopping in the first pit. Flats
+     * get a tiny gradient towards their outlet. The filled copy is only used to
+     * route flow; the surface itself keeps its hollows.
+     */
+    function fillDepressions(heights, wet, cols, rows) {
+      const count = cols * rows,
+        filled = new Float32Array(heights),
+        done = new Uint8Array(count),
+        heap = new Int32Array(count),
+        key = new Float32Array(count),
+        // Cells in the order they leave the queue: lowest filled height first,
+        // which is also a valid drainage order (nothing drains uphill of it).
+        order = new Uint32Array(count);
+      let size = 0,
+        popped = 0;
+      const push = (i, h) => {
+          let k = size++;
+          while (k > 0) {
+            const parent = (k - 1) >> 1;
+            if (key[parent] <= h) break;
+            heap[k] = heap[parent];
+            key[k] = key[parent];
+            k = parent;
+          }
+          heap[k] = i;
+          key[k] = h;
+        },
+        pop = () => {
+          const top = heap[0],
+            lastIndex = heap[--size],
+            lastKey = key[size];
+          let k = 0;
+          for (;;) {
+            let child = 2 * k + 1;
+            if (child >= size) break;
+            if (child + 1 < size && key[child + 1] < key[child]) child++;
+            if (key[child] >= lastKey) break;
+            heap[k] = heap[child];
+            key[k] = key[child];
+            k = child;
+          }
+          heap[k] = lastIndex;
+          key[k] = lastKey;
+          return top;
+        };
+      // Seeds: the water and the field's rim.
+      for (let i = 0; i < count; i++) {
+        const c = i % cols,
+          r = (i - c) / cols;
+        if (wet[i] || !c || !r || c === cols - 1 || r === rows - 1) {
+          done[i] = 1;
+          push(i, filled[i]);
+        }
+      }
+      while (size) {
+        const i = pop(),
+          c = i % cols,
+          r = (i - c) / cols,
+          h = filled[i];
+        order[popped++] = i;
+        for (let j = 0; j < 8; j++) {
+          const nc = c + D8[j][0],
+            nr = r + D8[j][1];
+          if (nc < 0 || nr < 0 || nc >= cols || nr >= rows) continue;
+          const n = nr * cols + nc;
+          if (done[n]) continue;
+          done[n] = 1;
+          if (filled[n] <= h) filled[n] = h + 0.002;
+          push(n, filled[n]);
+        }
+      }
+      return { filled, order };
+    }
+    // Catchment area (in cells) draining through each vertex, steepest-descent (D8),
+    // visiting cells highest first (`order`).
+    function accumulateFlow(heights, order, wet, cols, rows) {
+      const count = cols * rows,
+        area = new Float32Array(count);
+      for (let i = 0; i < count; i++) area[i] = wet[i] ? 0 : 1;
+      for (let k = 0; k < count; k++) {
+        const i = order[k];
+        if (wet[i]) continue;
+        const x = i % cols,
+          y = (i - x) / cols,
+          h = heights[i];
+        let best = -1,
+          drop = 0;
+        for (let j = 0; j < 8; j++) {
+          const nx = x + D8[j][0],
+            ny = y + D8[j][1];
+          if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
+          const n = ny * cols + nx,
+            s = (h - heights[n]) / (j < 4 ? 1 : Math.SQRT2);
+          if (s > drop) {
+            drop = s;
+            best = n;
           }
         }
+        if (best >= 0) area[best] += area[i];
       }
-      const t = clamp((34 - nearest) / 20, 0, 1),
-        blend = t * t * (3 - 2 * t);
-      return base + (height - base) * blend;
+      return area;
     }
-    // Rendering and contact heights use these exact Float32 vertices and the same diagonal.
-    // The analytical surface is only a construction source, never a second collision surface.
-    const mountainSurfaceCache = new Map(),
-      TERRAIN_CELL = 10;
-    function mountainSurface(peak) {
-      if (mountainSurfaceCache.has(peak)) return mountainSurfaceCache.get(peak);
-      const rx = peak.rx || peak.r,
-        ry = peak.ry || peak.r,
-        nx = Math.ceil((rx * 2) / TERRAIN_CELL),
-        ny = Math.ceil((ry * 2) / TERRAIN_CELL),
-        stride = nx + 1;
-      const xs = new Float32Array(stride),
-        zs = new Float32Array(ny + 1),
-        positions = new Float32Array(stride * (ny + 1) * 3),
-        uvs = new Float32Array(stride * (ny + 1) * 2),
-        land = new Uint8Array(stride * (ny + 1)),
-        triangles = new Uint8Array(nx * ny * 2),
-        indices = [];
-      for (let x = 0; x <= nx; x++) xs[x] = -rx + (x * rx * 2) / nx;
-      for (let z = 0; z <= ny; z++) zs[z] = -ry + (z * ry * 2) / ny;
-      for (let z = 0; z <= ny; z++)
-        for (let x = 0; x <= nx; x++) {
-          const i = z * stride + x,
-            wx = peak.x + xs[x],
-            wz = peak.y + zs[z];
-          positions[i * 3] = xs[x];
-          positions[i * 3 + 1] = terrainAnalyticHeight(wx, wz);
-          positions[i * 3 + 2] = zs[z];
-          uvs[i * 2] = x / nx;
-          uvs[i * 2 + 1] = 1 - z / ny;
-          land[i] = landAt(wx, wz) ? 1 : 0;
+    // Over the raw surface (the erosion passes: pits simply collect).
+    function flowAccumulation(heights, wet, cols, rows) {
+      const count = cols * rows,
+        packed = new Float64Array(count),
+        order = new Uint32Array(count);
+      // Height (in 1/64 units) and index packed into one float so a native numeric
+      // sort orders them: a comparator sort took ~100 ms per pass.
+      for (let i = 0; i < count; i++) packed[i] = Math.round((heights[i] + 4096) * 64) * 262144 + i;
+      packed.sort();
+      for (let i = 0; i < count; i++) order[i] = packed[count - 1 - i] % 262144;
+      return accumulateFlow(heights, order, wet, cols, rows);
+    }
+    // Over the depression-filled surface, whose flood order is the drainage order:
+    // every catchment reaches the sea or the reservoir. Returns the routing surface too.
+    function routedFlow(heights, wet, cols, rows) {
+      const { filled, order } = fillDepressions(heights, wet, cols, rows);
+      return { routed: filled, area: accumulateFlow(filled, order.reverse(), wet, cols, rows) };
+    }
+    function generateTerrainField(field) {
+      const cols = Math.round((field.x1 - field.x0) / TERRAIN_CELL) + 1,
+        rows = Math.round((field.y1 - field.y0) / TERRAIN_CELL) + 1,
+        count = cols * rows,
+        { x0, y0, seed } = field;
+      Object.assign(field, { cols, rows, nx: cols - 1, ny: rows - 1 });
+      const started = performance.now(),
+        lap = (name) => (field.timing[name] = Math.round(performance.now() - started));
+      field.timing = {};
+      const land = new Uint8Array(count),
+        lake = new Uint8Array(count),
+        sea = new Uint8Array(count),
+        flat = new Uint8Array(count);
+      for (let r = 0; r < rows; r++)
+        for (let c = 0; c < cols; c++) {
+          const i = r * cols + c,
+            x = x0 + c * TERRAIN_CELL,
+            y = y0 + r * TERRAIN_CELL;
+          land[i] = landAt(x, y) ? 1 : 0;
+          if (!land[i]) {
+            if (COUNTY_LAKES.some((l) => regionContains(l, x, y))) lake[i] = 1;
+            else sea[i] = 1;
+          }
         }
-      for (let z = 0; z < ny; z++)
-        for (let x = 0; x < nx; x++) {
-          const a = z * stride + x,
-            b = a + stride,
-            c = b + 1,
-            d = a + 1;
-          for (const [side, ids] of [
-            [0, [a, b, d]],
-            [1, [b, c, d]],
-          ])
-            if (ids.every((i) => land[i]) && ids.some((i) => positions[i * 3 + 1] > 0.001)) {
-              triangles[(z * nx + x) * 2 + side] = 1;
-              indices.push(...ids);
+      // Everything the plan lays on the ground stays at street level.
+      for (const road of [...COUNTY_ROADS, ...SERVICE_ROADS]) rasterizePolyline(flat, field, road.points, road.width / 2 + 14);
+      for (const line of RAIL_LINES) rasterizePolyline(flat, field, line.route, 40);
+      for (const t of COUNTY_TOWNS) rasterizeRect(flat, field, t.x - 90, t.y - 90, BLOCK_SIZE * 2 + 180, BLOCK_SIZE * 2 + 180);
+      rasterizePolyline(flat, field, [[FLIGHT.pickup.x, FLIGHT.pickup.y], [FLIGHT.pickup.x, FLIGHT.pickup.y]], 150);
+      lap('masks');
+      const flatDistance = gridDistance(flat, cols, rows, TERRAIN_CELL),
+        seaDistance = gridDistance(sea, cols, rows, TERRAIN_CELL),
+        lakeDistance = gridDistance(lake, cols, rows, TERRAIN_CELL),
+        edgeDistance = new Float32Array(count);
+      for (let i = 0; i < count; i++) {
+        const c = i % cols,
+          r = (i - c) / cols;
+        edgeDistance[i] = Math.min(c, r, cols - 1 - c, rows - 1 - r) * TERRAIN_CELL;
+      }
+      lap('distances');
+      // 1-2. Macro form and relief.
+      let heights = new Float32Array(count);
+      const ridges = field.kind === 'range' ? rangeRidges(seed) : null,
+        peak = field.peak;
+      const step = 4,
+        coarseCols = Math.ceil((cols - 1) / step) + 1,
+        coarseRows = Math.ceil((rows - 1) / step) + 1,
+        warpX = new Float32Array(coarseCols * coarseRows),
+        warpY = new Float32Array(coarseCols * coarseRows),
+        rollingGrid = new Float32Array(coarseCols * coarseRows);
+      for (let r = 0; r < coarseRows; r++)
+        for (let c = 0; c < coarseCols; c++) {
+          const x = x0 + c * step * TERRAIN_CELL,
+            y = y0 + r * step * TERRAIN_CELL;
+          warpX[r * coarseCols + c] = terrainFbm(x / 900, y / 900, 3, seed + 40) * 190;
+          warpY[r * coarseCols + c] = terrainFbm(x / 900 + 7.3, y / 900 - 3.1, 3, seed + 50) * 190;
+          rollingGrid[r * coarseCols + c] = terrainFbm(x / 480, y / 480, 2, seed + 300);
+        }
+      const coarse = (grid, c, r) => {
+        const fc = c / step,
+          fr = r / step,
+          c0 = Math.min(coarseCols - 2, Math.floor(fc)),
+          r0 = Math.min(coarseRows - 2, Math.floor(fr)),
+          u = fc - c0,
+          v = fr - r0,
+          i = r0 * coarseCols + c0;
+        return (grid[i] * (1 - u) + grid[i + 1] * u) * (1 - v) + (grid[i + coarseCols] * (1 - u) + grid[i + coarseCols + 1] * u) * v;
+      };
+      const [[needleX0, needleY0], [needleX1, needleY1]] = NEEDLE_SPAN,
+        needleDX = needleX1 - needleX0,
+        needleDY = needleY1 - needleY0,
+        needleLength2 = needleDX * needleDX + needleDY * needleDY;
+      for (let r = 0; r < rows; r++)
+        for (let c = 0; c < cols; c++) {
+          const i = r * cols + c,
+            x = x0 + c * TERRAIN_CELL,
+            y = y0 + r * TERRAIN_CELL,
+            // Domain warp: bends the ridges and valleys off straight lines (smooth,
+            // so it is read from a coarse grid).
+            wx = x + coarse(warpX, c, r),
+            wy = y + coarse(warpY, c, r);
+          let macro;
+          if (ridges) macro = ridgeHeight(ridges, wx, wy);
+          else {
+            const d = Math.hypot(wx - peak.x, wy - peak.y) / (peak.r * 1.25);
+            macro = d < 1 ? peak.h * (1 - d * d) ** 1.6 : 0;
+          }
+          const scale = macro / 1000,
+            ridged = terrainRidged(wx / 620, wy / 620, 5, seed + 100),
+            eroded = terrainErodedFbm(wx / 300, wy / 300, 4, seed + 200),
+            rolling = coarse(rollingGrid, c, r);
+          let h = macro * (0.62 + 0.5 * ridged) + eroded * (60 + 260 * scale) + rolling * 70 + 40;
+          if (ridges) {
+            // The summit horns stand exactly over the named peaks (the warp moves the
+            // crest about; a summit must stay where its trail ends).
+            for (let k = 0; k < 2; k++) {
+              const p = COUNTY_PEAKS[k],
+                d = Math.hypot(x - p.x, y - p.y) / (k ? 320 : 420);
+              if (d < 1) h += (k ? 140 : 330) * (1 - d) ** 1.7;
+            }
+            // Needle Ridge: a row of rock needles along the crest.
+            const t = clamp(((x - needleX0) * needleDX + (y - needleY0) * needleDY) / needleLength2, 0, 1),
+              k = Math.round(t * 11),
+              cx = needleX0 + needleDX * (k / 11) + (terrainHash(k, 1, seed) - 0.5) * 60,
+              cy = needleY0 + needleDY * (k / 11) + (terrainHash(k, 2, seed) - 0.5) * 70,
+              radius = 55 + terrainHash(k, 3, seed) * 45,
+              d = Math.hypot(x - cx, y - cy) / radius;
+            if (d < 1 && Math.hypot(cx - COUNTY_PEAKS[1].x, cy - COUNTY_PEAKS[1].y) > 90)
+              h += (150 + terrainHash(k, 4, seed) * 230) * (1 - d) ** 1.35 * (0.85 + 0.3 * terrainNoise(x / 25, y / 25, seed + 5));
+          }
+          heights[i] = h;
+        }
+      lap('relief');
+      // 3. Erosion: stream-power incision, strata, thermal settling.
+      const wet = new Uint8Array(count);
+      for (let i = 0; i < count; i++) wet[i] = land[i] ? 0 : 1;
+      for (let pass = 0; pass < 2; pass++) {
+        const area = flowAccumulation(heights, wet, cols, rows),
+          next = new Float32Array(heights);
+        for (let r = 1; r < rows - 1; r++)
+          for (let c = 1; c < cols - 1; c++) {
+            const i = r * cols + c;
+            if (wet[i]) continue;
+            const gx = (heights[i + 1] - heights[i - 1]) / (2 * TERRAIN_CELL),
+              gy = (heights[i + cols] - heights[i - cols]) / (2 * TERRAIN_CELL),
+              slope = Math.min(Math.hypot(gx, gy), 1.5);
+            next[i] -= Math.min(1.25 * Math.sqrt(area[i]) * slope, 36);
+          }
+        heights = next;
+      }
+      for (let i = 0; i < count; i++) {
+        // Strata: steep ground steps into ledges 34 units apart.
+        const c = i % cols,
+          r = (i - c) / cols;
+        if (!c || !r || c === cols - 1 || r === rows - 1) continue;
+        const gx = (heights[i + 1] - heights[i - 1]) / (2 * TERRAIN_CELL),
+          gy = (heights[i + cols] - heights[i - cols]) / (2 * TERRAIN_CELL),
+          steep = smoothStep(0.8, 1.4, Math.hypot(gx, gy)),
+          band = heights[i] / 34,
+          f = band - Math.floor(band),
+          terrace = (Math.floor(band) + smoothStep(0.55, 1, f)) * 34;
+        heights[i] += (terrace - heights[i]) * steep * 0.3;
+      }
+      const talus = 1.25 * TERRAIN_CELL;
+      for (let pass = 0; pass < 6; pass++)
+        for (let r = 1; r < rows - 1; r++)
+          for (let c = 1; c < cols - 1; c++) {
+            const i = r * cols + c;
+            for (let j = 0; j < 4; j++) {
+              const n = i + D8[j][0] + D8[j][1] * cols,
+                diff = heights[i] - heights[n];
+              if (diff > talus) {
+                const move = (diff - talus) * 0.25;
+                heights[i] -= move;
+                heights[n] += move;
+              }
+            }
+          }
+      lap('erosion');
+      // 4. The plan's caps: embankments, shores, sea cliffs, the field's edge.
+      for (let i = 0; i < count; i++) {
+        const c = i % cols,
+          r = (i - c) / cols,
+          // The distances are bent by noise away from the feature itself, and the
+          // steepness wanders, so valley sides and shores are never planes or rings.
+          bend = terrainFbm(c / 21, r / 21, 3, seed + 11) * 110,
+          wander = 0.72 + 0.56 * (terrainNoise(c / 27, r / 27, seed + 9) * 0.5 + 0.5),
+          fd = Math.max(0, flatDistance[i] - 6),
+          sd = Math.max(0, seaDistance[i] - 16),
+          ld = Math.max(0, lakeDistance[i] - 14),
+          ed = Math.max(0, edgeDistance[i] - 20),
+          fb = Math.max(0, fd + bend * smoothStep(0, 160, fd)),
+          sb = Math.max(0, sd + bend * smoothStep(60, 200, sd)),
+          lb = Math.max(0, ld + bend * smoothStep(0, 160, ld)),
+          cap = Math.min(
+            (fb * 0.4 + fb * fb * 0.0009) * wander,
+            sd < 70 ? sd * 2.6 : 182 + (sb - 70) * 1.7 * wander,
+            (lb * 0.36 + lb * lb * 0.0006) * wander,
+            ed * 0.5 + ed * ed * 0.001,
+          );
+        heights[i] = land[i] ? Math.max(0, smoothMin(heights[i], cap, 60)) : 0;
+      }
+      // 5. Trails: graded, cut and filled, with a level platform at the top.
+      const trailMask = new Float32Array(count);
+      for (const trail of MOUNTAIN_TRAILS) {
+        const { points } = trail;
+        if (points.every(([x, y]) => x < x0 || x > field.x1 || y < y0 || y > field.y1)) continue;
+        // Resample every ~12 units, read the relief under it, smooth, then grade.
+        const path = [];
+        for (let i = 1; i < points.length; i++) {
+          const [ax, ay] = points[i - 1],
+            [bx, by] = points[i],
+            n = Math.max(1, Math.ceil(Math.hypot(bx - ax, by - ay) / 12));
+          for (let k = i === 1 ? 0 : 1; k <= n; k++) path.push([ax + ((bx - ax) * k) / n, ay + ((by - ay) * k) / n]);
+        }
+        const along = [0];
+        for (let i = 1; i < path.length; i++) along.push(along[i - 1] + Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]));
+        const read = (x, y) => {
+          const c = clamp(Math.round((x - x0) / TERRAIN_CELL), 0, cols - 1),
+            r = clamp(Math.round((y - y0) / TERRAIN_CELL), 0, rows - 1);
+          return heights[r * cols + c];
+        };
+        let profile = path.map(([x, y]) => read(x, y));
+        // Moving average over ~250 units of trail.
+        const smoothed = profile.map((_, i) => {
+          let sum = 0,
+            n = 0;
+          for (let j = Math.max(0, i - 10); j <= Math.min(profile.length - 1, i + 10); j++) {
+            sum += profile[j];
+            n++;
+          }
+          return sum / n;
+        });
+        trail.natural = smoothed.slice();
+        // Two ends are fixed: street level at the trailhead and the summit (as high as
+        // the grade allows). Between them the trail follows the relief, held inside
+        // the band it can climb from the one and still reach the other.
+        const total = along.at(-1),
+          end = Math.min(smoothed.at(-1) + 60, total * TRAIL_MAX_GRADE * 0.97);
+        profile = smoothed.map((h, i) =>
+          clamp(h, Math.max(0, end - (total - along[i]) * TRAIL_MAX_GRADE), along[i] * TRAIL_MAX_GRADE),
+        );
+        profile[0] = 0;
+        profile[profile.length - 1] = end;
+        for (let pass = 0; pass < 2; pass++) {
+          for (let i = 1; i < profile.length - 1; i++) {
+            const g = (along[i] - along[i - 1]) * TRAIL_MAX_GRADE;
+            profile[i] = clamp(profile[i], profile[i - 1] - g, profile[i - 1] + g);
+          }
+          for (let i = profile.length - 2; i > 0; i--) {
+            const g = (along[i + 1] - along[i]) * TRAIL_MAX_GRADE;
+            profile[i] = clamp(profile[i], profile[i + 1] - g, profile[i + 1] + g);
+          }
+        }
+        trail.path = path;
+        trail.profile = profile;
+        trail.summit = profile.at(-1);
+        // Carve: flat across the carriageway, easing into the slope over the shoulders.
+        // The shoulders widen with the depth of the cut or the height of the fill,
+        // so a cutting's walls and an embankment's sides stand at about 42 degrees.
+        // Between two legs of the zigzag the ground is a ramp from the edge of one
+        // carriageway to the edge of the other (so the nearest-leg choice never
+        // leaves a wall along the line where it switches); elsewhere the shoulders
+        // widen with the depth of the cut or the height of the fill, so a cutting's
+        // walls and an embankment's sides stand at about 42 degrees.
+        const half = trail.width / 2,
+          reach = half + 150,
+          target = new Float32Array(count),
+          nearest = new Float32Array(count).fill(1e9),
+          nearestSegment = new Int32Array(count),
+          other = new Float32Array(count).fill(1e9),
+          otherTarget = new Float32Array(count),
+          top = path.at(-1);
+        let cMin = cols,
+          cMax = 0,
+          rMin = rows,
+          rMax = 0;
+        for (let s = 1; s < path.length; s++) {
+          const a = path[s - 1],
+            b = path[s],
+            c0 = Math.max(0, Math.floor((Math.min(a[0], b[0]) - reach - x0) / TERRAIN_CELL)),
+            c1 = Math.min(cols - 1, Math.ceil((Math.max(a[0], b[0]) + reach - x0) / TERRAIN_CELL)),
+            r0 = Math.max(0, Math.floor((Math.min(a[1], b[1]) - reach - y0) / TERRAIN_CELL)),
+            r1 = Math.min(rows - 1, Math.ceil((Math.max(a[1], b[1]) + reach - y0) / TERRAIN_CELL)),
+            dx = b[0] - a[0],
+            dy = b[1] - a[1],
+            len2 = dx * dx + dy * dy || 1;
+          cMin = Math.min(cMin, c0);
+          cMax = Math.max(cMax, c1);
+          rMin = Math.min(rMin, r0);
+          rMax = Math.max(rMax, r1);
+          for (let r = r0; r <= r1; r++)
+            for (let c = c0; c <= c1; c++) {
+              const ex = x0 + c * TERRAIN_CELL - a[0],
+                ey = y0 + r * TERRAIN_CELL - a[1],
+                u = clamp((ex * dx + ey * dy) / len2, 0, 1),
+                qx = ex - dx * u,
+                qy = ey - dy * u,
+                d2 = qx * qx + qy * qy,
+                i = r * cols + c,
+                h = profile[s - 1] + (profile[s] - profile[s - 1]) * u;
+              if (d2 < nearest[i]) {
+                // The old nearest becomes the other leg if it was far along the trail.
+                if (Math.abs(nearestSegment[i] - s) > 16 && nearest[i] < other[i]) {
+                  other[i] = nearest[i];
+                  otherTarget[i] = target[i];
+                }
+                nearest[i] = d2;
+                nearestSegment[i] = s;
+                target[i] = h;
+              } else if (d2 < other[i] && Math.abs(nearestSegment[i] - s) > 16) {
+                other[i] = d2;
+                otherTarget[i] = h;
+              }
             }
         }
-      const surface = {
-        peak,
-        rx,
-        ry,
-        nx,
-        ny,
-        stride,
-        xs,
-        zs,
-        positions,
-        uvs,
-        triangles,
-        indices: new Uint32Array(indices),
-      };
-      mountainSurfaceCache.set(peak, surface);
-      return surface;
+        for (let r = rMin; r <= rMax; r++)
+          for (let c = cMin; c <= cMax; c++) {
+            const i = r * cols + c;
+            if (!land[i]) continue;
+            const near = Math.sqrt(nearest[i]),
+              far = Math.sqrt(other[i]),
+              platform = Math.hypot(x0 + c * TERRAIN_CELL - top[0], y0 + r * TERRAIN_CELL - top[1]);
+            let goal = target[i],
+              w = 0;
+            if (near > half && near < reach && far < reach) {
+              // Ramp across the gap between the two carriageways.
+              const u = clamp((near - half) / Math.max(1, near + far - 2 * half), 0, 0.5);
+              goal = target[i] + (otherTarget[i] - target[i]) * u;
+              w = 1 - smoothStep(reach * 0.7, reach, far);
+            }
+            // The summit platform, but only for ground the trail's last stretch
+            // reaches (a lower leg passing close by keeps its own grade).
+            if (platform < 60 && (near > half + 4 || nearestSegment[i] > path.length - 14)) {
+              const p = 1 - smoothStep(40, 60, platform);
+              goal = goal + (trail.summit - goal) * p;
+              w = Math.max(w, p);
+            }
+            if (near >= reach && w === 0) continue;
+            const shoulder = Math.min(reach, half + 24 + Math.abs(heights[i] - goal) * 1.1);
+            w = Math.max(w, 1 - smoothStep(half + 4, shoulder, near));
+            if (w > 0) {
+              heights[i] += (goal - heights[i]) * w;
+              trailMask[i] = Math.max(trailMask[i], 1 - smoothStep(half - 6, half + 6, near), platform < 44 && w > 0.9 ? 1 : 0);
+            }
+          }
+      }
+      lap('trails');
+      // The surface: exact Float32 vertices; a triangle exists where all three
+      // corners are land and one is above street level.
+      field.heights = heights;
+      field.land = land;
+      field.trailMask = trailMask;
+      field.lakeDistance = lakeDistance;
+      field.flatDistance = flatDistance;
+      const triangles = new Uint8Array(field.nx * field.ny * 2);
+      for (let r = 0; r < field.ny; r++)
+        for (let c = 0; c < field.nx; c++) {
+          const a = r * cols + c,
+            b = a + cols,
+            cc = b + 1,
+            d = a + 1;
+          if (land[a] && land[b] && land[d] && (heights[a] > 0.001 || heights[b] > 0.001 || heights[d] > 0.001))
+            triangles[(r * field.nx + c) * 2] = 1;
+          if (land[b] && land[cc] && land[d] && (heights[b] > 0.001 || heights[cc] > 0.001 || heights[d] > 0.001))
+            triangles[(r * field.nx + c) * 2 + 1] = 1;
+        }
+      field.triangles = triangles;
+      field.maxHeight = heights.reduce((m, h) => Math.max(m, h), 0);
+      // Water that gathers in the ravines (final surface), for streams, gullies and snow.
+      const { routed, area: flow } = routedFlow(heights, wet, cols, rows);
+      field.area = flow;
+      field.routed = routed;
+      field.flow = new Float32Array(count);
+      for (let i = 0; i < count; i++) field.flow[i] = clamp(Math.log2(1 + flow[i]) / 11, 0, 1);
+      lap('total');
+      field.ready = true;
+      return field;
     }
-    function sampleMountainSurface(surface, x, y) {
-      const { peak, rx, ry, nx, ny, stride, xs, zs, positions, triangles } = surface,
-        lx = x - peak.x,
-        lz = y - peak.y;
-      if (lx < -rx || lx > rx || lz < -ry || lz > ry) return 0;
-      let ix = Math.min(nx - 1, Math.max(0, Math.floor(((lx + rx) / (rx * 2)) * nx))),
-        iz = Math.min(ny - 1, Math.max(0, Math.floor(((lz + ry) / (ry * 2)) * ny)));
-      // Account for rounded Float32 grid coordinates at cell boundaries.
-      if (ix > 0 && lx < xs[ix]) ix--;
-      else if (ix < nx - 1 && lx > xs[ix + 1]) ix++;
-      if (iz > 0 && lz < zs[iz]) iz--;
-      else if (iz < ny - 1 && lz > zs[iz + 1]) iz++;
-      const u = clamp((lx - xs[ix]) / (xs[ix + 1] - xs[ix]), 0, 1),
-        v = clamp((lz - zs[iz]) / (zs[iz + 1] - zs[iz]), 0, 1),
+    function terrainField(field) {
+      return field.ready ? field : generateTerrainField(field);
+    }
+    // Height on a field's triangles: the same corners and diagonal the mesh draws.
+    function sampleTerrainField(field, x, y) {
+      const { x0, y0, nx, ny, cols, heights, triangles } = terrainField(field),
+        lx = (x - x0) / TERRAIN_CELL,
+        lz = (y - y0) / TERRAIN_CELL;
+      if (lx < 0 || lz < 0 || lx > nx || lz > ny) return 0;
+      const ix = Math.min(nx - 1, Math.floor(lx)),
+        iz = Math.min(ny - 1, Math.floor(lz)),
+        u = lx - ix,
+        v = lz - iz,
         side = u + v <= 1 ? 0 : 1;
       if (!triangles[(iz * nx + ix) * 2 + side]) return 0;
-      const a = iz * stride + ix,
-        h00 = positions[a * 3 + 1],
-        h10 = positions[(a + 1) * 3 + 1],
-        h01 = positions[(a + stride) * 3 + 1],
-        h11 = positions[(a + stride + 1) * 3 + 1];
-      return side === 0
-        ? h00 * (1 - u - v) + h10 * u + h01 * v
-        : h11 * (u + v - 1) + h01 * (1 - u) + h10 * (1 - v);
+      const a = iz * cols + ix,
+        h00 = heights[a],
+        h10 = heights[a + 1],
+        h01 = heights[a + cols],
+        h11 = heights[a + cols + 1];
+      return side === 0 ? h00 * (1 - u - v) + h10 * u + h01 * v : h11 * (u + v - 1) + h01 * (1 - u) + h10 * (1 - v);
     }
-    // Bounds of all the mountains together: the city and the sea (nearly every
-    // call) answer 0 without looking at a peak. The peaks are fixed once this
-    // file has run (the splice at the top).
-    function mountainBounds() {
-      if (terrainBounds) return terrainBounds;
-      const bounds = { x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity };
-      for (const peak of COUNTY_PEAKS) {
-        bounds.x0 = Math.min(bounds.x0, peak.x - (peak.rx || peak.r));
-        bounds.x1 = Math.max(bounds.x1, peak.x + (peak.rx || peak.r));
-        bounds.y0 = Math.min(bounds.y0, peak.y - (peak.ry || peak.r));
-        bounds.y1 = Math.max(bounds.y1, peak.y + (peak.ry || peak.r));
-      }
-      return (terrainBounds = bounds);
+    // The field a point is in (fields never overlap), or null for the city and the sea.
+    function terrainFieldAt(x, y) {
+      for (const f of TERRAIN_FIELDS) if (x >= f.x0 && x <= f.x1 && y >= f.y0 && y <= f.y1) return f;
+      return null;
     }
     function terrainHeight(x, y) {
-      const bounds = mountainBounds();
-      if (x < bounds.x0 || x > bounds.x1 || y < bounds.y0 || y > bounds.y1) return 0;
-      let z = 0;
-      for (const peak of COUNTY_PEAKS)
-        if (Math.abs(x - peak.x) <= (peak.rx || peak.r) && Math.abs(y - peak.y) <= (peak.ry || peak.r))
-          z = Math.max(z, sampleMountainSurface(mountainSurface(peak), x, y));
-      return z;
+      const f = terrainFieldAt(x, y);
+      return f ? sampleTerrainField(f, x, y) : 0;
+    }
+    // The named summit a point on the range belongs to (for the SUMMIT REACHED call).
+    function mountainAt(x, y) {
+      if (!terrainFieldAt(x, y)) return undefined;
+      let best;
+      for (const p of COUNTY_PEAKS)
+        if (Math.hypot(x - p.x, y - p.y) < p.r && (!best || Math.hypot(x - p.x, y - p.y) < Math.hypot(x - best.x, y - best.y))) best = p;
+      return best;
     }
     function terrainSlope(x, y) {
       return {
@@ -414,221 +1128,331 @@
         g.setLineDash([]);
       }
     }
-    function snowAmount(peak, x, y, height, slope = 0) {
-      if (peak.h < 600) return 0;
-      // Drifts, plus gullies: tongues of snow reaching down the slope at irregular
-      // angles, so the snow line zigzags instead of capping the hill like icing.
-      const around = Math.atan2(y - peak.y, x - peak.x),
-        gully = Math.sin(around * 11 + Math.sin(around * 3 + peak.x) * 1.6) * 0.055 + Math.sin(around * 23 + peak.y) * 0.03,
-        drift = Math.sin(x * 0.018 + y * 0.011) * 0.025 + Math.sin(y * 0.034 - x * 0.006) * 0.025 + gully;
-      return clamp((height / peak.h - 0.56 - drift) / 0.17, 0, 1) * clamp(1 - slope * 0.85, 0.24, 1);
-    }
-    function paintMountainTexture(drawingContext, peak, size = 1024) {
-      const rx = peak.rx || peak.r,
-        ry = peak.ry || peak.r;
-      // A near-white base: the mesh's vertex colours carry the hue (ground, stone,
-      // snow), this texture only the grain, strata and trails on top of it.
-      drawingContext.fillStyle = '#f2f3ec';
-      drawingContext.fillRect(0, 0, size, size);
-      let randomSeed = Math.round(peak.x * 13 + peak.y * 7);
-      const random = () => {
-        randomSeed = (randomSeed * 1664525 + 1013904223) >>> 0;
-        return randomSeed / 4294967296;
-      };
-      // Snow drifts as a coarse mask scaled up with smoothing. (Overlapping 9-pixel
-      // squares on an 8-pixel grid doubled the alpha along every seam, which drew
-      // a grid over the snowfield and a staircase along the snow line.)
-      const cells = size / 8,
-        snowCanvas = document.createElement('canvas');
-      snowCanvas.width = snowCanvas.height = cells;
-      const snowContext = snowCanvas.getContext('2d'),
-        snowImage = snowContext.createImageData(cells, cells);
-      for (let y = 0; y < cells; y++)
-        for (let x = 0; x < cells; x++) {
-          const wx = peak.x - rx + ((x + 0.5) / cells) * rx * 2,
-            wy = peak.y - ry + ((y + 0.5) / cells) * ry * 2,
-            o = (y * cells + x) * 4;
-          snowImage.data[o] = 240;
-          snowImage.data[o + 1] = 247;
-          snowImage.data[o + 2] = 248;
-          snowImage.data[o + 3] = Math.round(snowAmount(peak, wx, wy, terrainHeight(wx, wy)) * 255);
+    /**
+     * BAKED TERRAIN DATA
+     * What the renderer and the 2D map read per vertex, made once per field:
+     *   normal    central differences over the whole field (chunk seams match)
+     *   ao        sky visibility: the highest horizon in 8 directions out to ~300
+     *             units, so ravines, cirques and the foot of cliffs darken
+     *   forest    tree cover 0..1: below a ragged treeline, off cliffs, trails,
+     *             roads and shores, clumped into stands with meadow clearings,
+     *             thicker along the damp valley floors
+     */
+    const TERRAIN_TREELINE = 430,
+      TERRAIN_SNOWLINE = 560;
+    function terrainBakes(field) {
+      if (field.bakes) return field.bakes;
+      terrainField(field);
+      const { cols, rows, heights, land, flow, trailMask, x0, y0, seed, flatDistance, lakeDistance } = field,
+        count = cols * rows,
+        normals = new Float32Array(count * 3),
+        ao = new Float32Array(count),
+        forest = new Float32Array(count),
+        at = (c, r) => heights[clamp(r, 0, rows - 1) * cols + clamp(c, 0, cols - 1)];
+      for (let r = 0; r < rows; r++)
+        for (let c = 0; c < cols; c++) {
+          const i = r * cols + c,
+            nx = at(c - 1, r) - at(c + 1, r),
+            nz = at(c, r - 1) - at(c, r + 1),
+            ny = 2 * TERRAIN_CELL,
+            n = Math.hypot(nx, ny, nz);
+          normals[i * 3] = nx / n;
+          normals[i * 3 + 1] = ny / n;
+          normals[i * 3 + 2] = nz / n;
         }
-      snowContext.putImageData(snowImage, 0, 0);
-      drawingContext.imageSmoothingEnabled = true;
-      drawingContext.drawImage(snowCanvas, 0, 0, size, size);
-      // Fine rock grain and broken strata prevent smooth hills from looking like molded cones.
-      for (let i = 0; i < 8000; i++) {
-        const x = random() * size,
-          y = random() * size;
-        drawingContext.fillStyle = i % 3 ? '#edf0d319' : '#24332824';
-        drawingContext.fillRect(x, y, 1 + random() * 5, 0.6 + random() * 2);
-      }
-      drawingContext.save();
-      drawingContext.scale(size / (rx * 2), size / (ry * 2));
-      drawingContext.translate(rx - peak.x, ry - peak.y);
-      for (let i = 0; i < 95; i++) {
-        const a = random() * TAU,
-          r = 0.2 + random() * 0.7,
-          x = peak.x + Math.cos(a) * rx * r,
-          y = peak.y + Math.sin(a) * ry * r;
-        drawingContext.strokeStyle = i % 2 ? '#e4dfc329' : '#34463b35';
-        drawingContext.lineWidth = 1.3 + random() * 3;
-        drawingContext.beginPath();
-        drawingContext.moveTo(x, y);
-        drawingContext.lineTo(x + 8 + random() * 32, y - 6 - random() * 20);
-        drawingContext.stroke();
-      }
-      for (const t of MOUNTAIN_TRAILS)
-        if (t.peak === peak) {
-          strokeRoad(drawingContext, t.points, t.width + 5, '#726c4f');
-          strokeRoad(drawingContext, t.points, t.width, '#c2a67e');
-          for (const side of [-1, 1]) {
-            const points = t.points.map((p, i) => {
-              const q = t.points[Math.min(i + 1, t.points.length - 1)],
-                r = i ? q : t.points[1],
-                a =
-                  i === t.points.length - 1
-                    ? Math.atan2(p[1] - t.points[i - 1][1], p[0] - t.points[i - 1][0])
-                    : Math.atan2(r[1] - p[1], r[0] - p[0]);
-              return [p[0] - Math.sin(a) * side * 7, p[1] + Math.cos(a) * side * 7];
-            });
-            strokeRoad(drawingContext, points, 2.5, '#907b5b66');
+      // Horizon samples: 8 directions x 4 distances, as grid offsets and the
+      // inverse of their length (so the rise is a slope).
+      const probes = [];
+      for (let k = 0; k < 8; k++)
+        for (const step of [3, 9, 20, 32]) {
+          const dc = Math.round(Math.cos((k * Math.PI) / 4) * step),
+            dr = Math.round(Math.sin((k * Math.PI) / 4) * step);
+          probes.push(dc, dr, 1 / (Math.hypot(dc, dr) * TERRAIN_CELL));
+        }
+      for (let r = 0; r < rows; r++)
+        for (let c = 0; c < cols; c++) {
+          const i = r * cols + c,
+            h = heights[i],
+            inside = c >= 32 && r >= 32 && c < cols - 32 && r < rows - 32;
+          let open = 0;
+          for (let p = 0; p < probes.length; p += 12) {
+            let horizon = 0;
+            for (let q = p; q < p + 12; q += 3) {
+              const n = inside ? i + probes[q + 1] * cols + probes[q] : clamp(r + probes[q + 1], 0, rows - 1) * cols + clamp(c + probes[q], 0, cols - 1),
+                rise = (heights[n] - h) * probes[q + 2];
+              if (rise > horizon) horizon = rise;
+            }
+            open += 1 - horizon / Math.sqrt(1 + horizon * horizon);
           }
+          ao[i] = open / 8;
         }
-      drawingContext.restore();
+      for (let r = 0; r < rows; r++)
+        for (let c = 0; c < cols; c++) {
+          const i = r * cols + c,
+            h = heights[i];
+          if (!land[i] || trailMask[i] > 0.01 || flatDistance[i] < 50 || lakeDistance[i] < 30) continue;
+          const x = x0 + c * TERRAIN_CELL,
+            y = y0 + r * TERRAIN_CELL,
+            steep = 1 - normals[i * 3 + 1],
+            treeline = TERRAIN_TREELINE + terrainFbm(x / 260, y / 260, 3, seed + 60) * 110,
+            stands = terrainFbm(x / 330, y / 330, 4, seed + 70),
+            damp = flow[i];
+          let f = smoothStep(-0.28, 0.12, stands + damp * 0.45) * (1 - smoothStep(treeline - 70, treeline, h));
+          // Nothing grows on a cliff or in a stream bed; the foot of the slopes is thinner.
+          f *= 1 - smoothStep(0.25, 0.4, steep);
+          f *= 1 - smoothStep(0.74, 0.8, damp);
+          // Thin out towards the roads and towns so the forest edge is open woodland.
+          f *= smoothStep(2, 30, h) * (0.35 + 0.65 * smoothStep(60, 260, flatDistance[i]));
+          forest[i] = f;
+        }
+      return (field.bakes = { normals, ao, forest });
     }
+    /**
+     * MOUNTAIN SCENERY
+     * Instances the renderer plants (landscaping only: no collision, like the park
+     * trees in landscape3d.js), placed on the field's own triangles:
+     *   trees     jittered 17-unit grid, kept by the forest density; conifers
+     *             dominate with height, broadleaf trees in the lower valleys, and
+     *             trees shrink towards the treeline (krummholz)
+     *   rocks     boulders on scree slopes, below cliffs and scattered in the
+     *             alpine meadows
+     * Each entry is [x, y, ground height, size, variant, heading]; flat Float32Arrays.
+     */
+    let mountainSceneryCache = null;
+    function mountainScenery() {
+      if (mountainSceneryCache) return mountainSceneryCache;
+      const conifers = [],
+        broadleaf = [],
+        rocks = [];
+      for (const field of TERRAIN_FIELDS) {
+        const { cols, rows, heights, land, x0, y0, seed, trailMask, flatDistance } = terrainField(field),
+          { normals, forest } = terrainBakes(field),
+          spacing = 17;
+        for (let y = y0 + spacing / 2; y < field.y1; y += spacing)
+          for (let x = x0 + spacing / 2; x < field.x1; x += spacing) {
+            const jx = x + (terrainHash(Math.round(x), Math.round(y), seed + 1) - 0.5) * spacing * 0.9,
+              jy = y + (terrainHash(Math.round(x), Math.round(y), seed + 2) - 0.5) * spacing * 0.9,
+              c = Math.round((jx - x0) / TERRAIN_CELL),
+              r = Math.round((jy - y0) / TERRAIN_CELL);
+            if (c < 0 || r < 0 || c >= cols || r >= rows) continue;
+            const i = r * cols + c,
+              roll = terrainHash(Math.round(jx * 3), Math.round(jy * 3), seed + 3);
+            if (roll < forest[i] * 0.92) {
+              const ground = sampleTerrainField(field, jx, jy);
+              if (ground < 2) continue;
+              const alpine = smoothStep(TERRAIN_TREELINE - 180, TERRAIN_TREELINE, ground),
+                size = (13 + terrainHash(c, r, seed + 4) * 11) * (1 - alpine * 0.45),
+                conifer = terrainHash(c, r, seed + 5) < 0.5 + smoothStep(40, 260, ground) * 0.48;
+              (conifer ? conifers : broadleaf).push(jx, jy, ground, size, terrainHash(c, r, seed + 6), roll * TAU * 7);
+            } else if (roll > 0.962 && land[i] && trailMask[i] < 0.01 && flatDistance[i] > 40) {
+              // Boulders: scree and cliff feet, and some out in the meadows.
+              const steep = 1 - normals[i * 3 + 1],
+                h = heights[i];
+              if (h < 25 || steep > 0.45 || (steep < 0.12 && roll < 0.99 && h < TERRAIN_TREELINE)) continue;
+              rocks.push(jx, jy, sampleTerrainField(field, jx, jy), 3 + terrainHash(c, r, seed + 8) * (steep > 0.15 ? 13 : 7), terrainHash(c, r, seed + 9), roll * TAU * 11);
+            }
+          }
+      }
+      return (mountainSceneryCache = {
+        conifers: new Float32Array(conifers),
+        broadleaf: new Float32Array(broadleaf),
+        rocks: new Float32Array(rocks),
+      });
+    }
+    /**
+     * STREAMS AND WATERFALLS
+     * The ravines' water, traced down the final surface: every vertex whose
+     * catchment passes STREAM_AREA starts or continues a stream, which follows
+     * steepest descent to the sea, the reservoir or a flat valley floor. Each is
+     * a polyline of [x, y, height, width, steepness] the renderer turns into a
+     * ribbon; where it drops faster than 1:1 it is drawn as a waterfall.
+     */
+    const STREAM_AREA = 900;
+    let terrainStreamCache = null;
+    function terrainStreams() {
+      if (terrainStreamCache) return terrainStreamCache;
+      const streams = [];
+      for (const field of TERRAIN_FIELDS) {
+        const { cols, rows, heights, land, x0, y0, trailMask } = terrainField(field),
+          count = cols * rows,
+          wet = new Uint8Array(count);
+        for (let i = 0; i < count; i++) wet[i] = land[i] ? 0 : 1;
+        const area = field.area,
+          routed = field.routed,
+          next = new Int32Array(count).fill(-1),
+          taken = new Uint8Array(count);
+        for (let i = 0; i < count; i++) {
+          if (wet[i] || area[i] < STREAM_AREA) continue;
+          const c = i % cols,
+            r = (i - c) / cols;
+          let best = -1,
+            drop = 0;
+          for (let j = 0; j < 8; j++) {
+            const nc = c + D8[j][0],
+              nr = r + D8[j][1];
+            if (nc < 0 || nr < 0 || nc >= cols || nr >= rows) continue;
+            const n = nr * cols + nc,
+              s = (routed[i] - routed[n]) / (j < 4 ? 1 : Math.SQRT2);
+            if (s > drop) {
+              drop = s;
+              best = n;
+            }
+          }
+          next[i] = best;
+        }
+        // Heads: stream vertices nothing upstream flows into; trace each down until
+        // it joins a traced stream, leaves the land or flattens out.
+        const fed = new Uint8Array(count);
+        for (let i = 0; i < count; i++) if (next[i] >= 0) fed[next[i]] = 1;
+        for (let head = 0; head < count; head++) {
+          if (next[head] < 0 || fed[head] || taken[head]) continue;
+          const line = [];
+          for (let i = head, guard = 0; i >= 0 && guard < 2000; i = next[i], guard++) {
+            const c = i % cols,
+              r = (i - c) / cols,
+              h = heights[i],
+              down = next[i] >= 0 ? h - heights[next[i]] : 0;
+            // A stream running over a trail goes under it in a culvert.
+            if (h < 1.5 || trailMask[i] > 0.5) break;
+            line.push([x0 + c * TERRAIN_CELL, y0 + r * TERRAIN_CELL, h, 5 + Math.sqrt(area[i]) * 0.16, down / TERRAIN_CELL]);
+            if (taken[i]) break;
+            taken[i] = 1;
+          }
+          if (line.length > 4) streams.push(line);
+        }
+      }
+      return (terrainStreamCache = streams);
+    }
+    // Snow cover the 2D map shows (the 3D shader draws its own, softer version).
+    function terrainSnowAmount(x, y, height, steep, flow) {
+      const line = TERRAIN_SNOWLINE + terrainFbm(x / 800, y / 800, 3, 5) * 90 - flow * 90;
+      return clamp((height - line) / 70, 0, 1) * (1 - smoothStep(0.28, 0.45, steep));
+    }
+    /**
+     * The fields painted into the county ground sheets (2D view and map): relief
+     * colour by height, forest, rock, snow and streams, hill-shaded from the south
+     * west, with a contour every 100 units. One pixel per vertex, scaled up with
+     * smoothing; vertices at street level are left transparent so the painted
+     * region shows through.
+     */
     const mountainGroundCache = new Map();
     function paintMountainGround(drawingContext) {
-      for (const peak of COUNTY_PEAKS) {
-        const surface = mountainSurface(peak),
-          { rx, ry, positions, indices } = surface;
-        let canvas = mountainGroundCache.get(peak);
+      for (const field of TERRAIN_FIELDS) {
+        let canvas = mountainGroundCache.get(field);
         if (!canvas) {
-          // Rasterized straight into pixels: filling tens of thousands of tiny
-          // canvas paths one by one took minutes on software-rendered canvases.
-          const size = 768,
-            sx = size / (rx * 2),
-            sy = size / (ry * 2);
+          const { cols, rows, heights, land, x0, y0, flow, trailMask } = terrainField(field),
+            { normals, forest, ao } = terrainBakes(field);
           canvas = document.createElement('canvas');
-          canvas.width = canvas.height = size;
-          const c = canvas.getContext('2d'),
-            image = c.createImageData(size, size),
+          canvas.width = cols;
+          canvas.height = rows;
+          const context = canvas.getContext('2d'),
+            image = context.createImageData(cols, rows),
             pixels = image.data;
-          for (let j = 0; j < indices.length; j += 3) {
-            const a = indices[j] * 3,
-              b = indices[j + 1] * 3,
-              d = indices[j + 2] * 3,
-              ux = positions[b] - positions[a],
-              uy = positions[b + 1] - positions[a + 1],
-              uz = positions[b + 2] - positions[a + 2],
-              vx = positions[d] - positions[a],
-              vy = positions[d + 1] - positions[a + 1],
-              vz = positions[d + 2] - positions[a + 2],
-              nx = uy * vz - uz * vy,
-              ny = uz * vx - ux * vz,
-              nz = ux * vy - uy * vx,
-              n = Math.hypot(nx, ny, nz) || 1;
-            const elevation = (positions[a + 1] + positions[b + 1] + positions[d + 1]) / (3 * peak.h),
-              slope = 1 - Math.abs(ny / n),
-              stone = clamp(slope * 1.5 + (elevation - 0.35) * 0.8, 0, 1),
-              mottle =
-                Math.sin((positions[a] + peak.x) * 0.027 + (positions[a + 2] + peak.y) * 0.011) * 4 +
-                Math.sin((positions[a] + peak.x) * 0.061 - (positions[a + 2] + peak.y) * 0.039) * 3,
-              shade = clamp(
-                0.86 + ((nx / n) * -0.4 + Math.abs(ny / n) * 0.8 + (nz / n) * -0.3) * 0.22,
-                0.6,
-                1.1,
-              );
-            const snow = snowAmount(
-              peak,
-              positions[a] + peak.x,
-              positions[a + 2] + peak.y,
-              elevation * peak.h,
-              slope,
-            );
-            const base = [81 + stone * 87, 107 + stone * 60, 72 + stone * 82],
-              rgb = [0, 1, 2].map((k) =>
-                Math.round(clamp(((base[k] + mottle) * (1 - snow) + [222, 237, 242][k] * snow) * shade, 0, 255)),
-              );
-            // Triangle corners in pixel space, then a bounding-box scan with edge
-            // functions. The half-pixel slack closes hairline seams between faces.
-            const x0 = (positions[a] + rx) * sx,
-              y0 = (positions[a + 2] + ry) * sy,
-              x1 = (positions[b] + rx) * sx,
-              y1 = (positions[b + 2] + ry) * sy,
-              x2 = (positions[d] + rx) * sx,
-              y2 = (positions[d + 2] + ry) * sy,
-              area = (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0);
-            if (Math.abs(area) < 1e-9) continue;
-            const sign = area > 0 ? 1 : -1,
-              slack = 0.5 * Math.hypot(1, 1),
-              e0 = Math.hypot(x2 - x1, y2 - y1) * slack,
-              e1 = Math.hypot(x0 - x2, y0 - y2) * slack,
-              e2 = Math.hypot(x1 - x0, y1 - y0) * slack,
-              minX = Math.max(0, Math.floor(Math.min(x0, x1, x2) - 1)),
-              maxX = Math.min(size - 1, Math.ceil(Math.max(x0, x1, x2) + 1)),
-              minY = Math.max(0, Math.floor(Math.min(y0, y1, y2) - 1)),
-              maxY = Math.min(size - 1, Math.ceil(Math.max(y0, y1, y2) + 1));
-            for (let py = minY; py <= maxY; py++)
-              for (let px = minX; px <= maxX; px++) {
-                const cx = px + 0.5,
-                  cy = py + 0.5,
-                  w0 = sign * ((x2 - x1) * (cy - y1) - (y2 - y1) * (cx - x1)),
-                  w1 = sign * ((x0 - x2) * (cy - y2) - (y0 - y2) * (cx - x2)),
-                  w2 = sign * ((x1 - x0) * (cy - y0) - (y1 - y0) * (cx - x0));
-                if (w0 < -e0 || w1 < -e1 || w2 < -e2) continue;
-                const o = (py * size + px) * 4;
-                pixels[o] = rgb[0];
-                pixels[o + 1] = rgb[1];
-                pixels[o + 2] = rgb[2];
-                pixels[o + 3] = 255;
-              }
+          for (let i = 0; i < cols * rows; i++) {
+            const h = heights[i];
+            if (!land[i] || h < 0.5) continue;
+            const c = i % cols,
+              r = (i - c) / cols,
+              nx = normals[i * 3],
+              ny = normals[i * 3 + 1],
+              nz = normals[i * 3 + 2],
+              steep = 1 - ny,
+              shade = clamp(0.62 + (nx * -0.55 + ny * 0.62 + nz * 0.58) * 0.5, 0.45, 1.25) * (0.75 + ao[i] * 0.3),
+              rock = smoothStep(0.2, 0.4, steep),
+              alpine = smoothStep(TERRAIN_TREELINE - 50, TERRAIN_TREELINE + 60, h),
+              snow = terrainSnowAmount(x0 + c * TERRAIN_CELL, y0 + r * TERRAIN_CELL, h, steep, flow[i]),
+              foot = 1 - smoothStep(0.5, 14, h);
+            let rgb = [
+              82 + alpine * 44 - forest[i] * 38,
+              105 + alpine * 18 - forest[i] * 34,
+              74 + alpine * 10 - forest[i] * 36,
+            ];
+            rgb = rgb.map((v, k) => v + ([128, 122, 112][k] - v) * rock);
+            if (flow[i] > 0.8 && steep < 0.5) rgb = [70, 104, 118];
+            rgb = rgb.map((v, k) => v + ([236, 241, 245][k] - v) * snow);
+            rgb = rgb.map((v, k) => v + ([180, 158, 118][k] - v) * trailMask[i]);
+            const contour =
+              c < cols - 1 && r < rows - 1 && (Math.floor(h / 100) !== Math.floor(heights[i + 1] / 100) || Math.floor(h / 100) !== Math.floor(heights[i + cols] / 100));
+            const o = i * 4;
+            for (let k = 0; k < 3; k++) {
+              const lit = rgb[k] * shade * (contour ? 0.84 : 1);
+              pixels[o + k] = clamp(Math.round(lit + ([82, 105, 74][k] - lit) * foot), 0, 255);
+            }
+            pixels[o + 3] = Math.round(255 * (1 - foot * 0.9));
           }
-          c.putImageData(image, 0, 0);
-          mountainGroundCache.set(peak, canvas);
+          context.putImageData(image, 0, 0);
+          mountainGroundCache.set(field, canvas);
         }
-        drawingContext.drawImage(canvas, peak.x - rx, peak.y - ry, rx * 2, ry * 2);
+        drawingContext.save();
+        drawingContext.imageSmoothingEnabled = true;
+        drawingContext.drawImage(
+          canvas,
+          field.x0 - TERRAIN_CELL / 2,
+          field.y0 - TERRAIN_CELL / 2,
+          field.cols * TERRAIN_CELL,
+          field.rows * TERRAIN_CELL,
+        );
+        drawingContext.restore();
       }
     }
+    function terrainReport() {
+      const scenery = mountainScenery();
+      return {
+        fields: TERRAIN_FIELDS.map((f) => {
+          terrainField(f);
+          return { name: f.name, grid: [f.cols, f.rows], maxHeight: Math.round(f.maxHeight), buildMs: f.timing };
+        }),
+        peaks: COUNTY_PEAKS.slice(0, 2).map((p) => ({ name: p.name, x: p.x, y: p.y, height: Math.round(terrainHeight(p.x, p.y)) })),
+        trails: MOUNTAIN_TRAILS.map((t) => {
+          let steepest = 0;
+          for (let i = 1; i < t.path.length; i++) {
+            const run = Math.hypot(t.path[i][0] - t.path[i - 1][0], t.path[i][1] - t.path[i - 1][1]);
+            steepest = Math.max(steepest, Math.abs(terrainHeight(...t.path[i]) - terrainHeight(...t.path[i - 1])) / run);
+          }
+          return {
+            name: t.name,
+            length: Math.round(t.path.length * 12),
+            summit: Math.round(t.summit),
+            steepestGrade: +steepest.toFixed(3),
+            start: t.points[0],
+            startHeight: +terrainHeight(...t.points[0]).toFixed(2),
+            points: t.points,
+          };
+        }),
+        conifers: scenery.conifers.length / 6,
+        broadleaf: scenery.broadleaf.length / 6,
+        boulders: scenery.rocks.length / 6,
+        streams: terrainStreams().length,
+        outcrops: MOUNTAIN_OUTCROPS.map((r) => ({
+          x: r.x,
+          y: r.y,
+          ground: Math.round(terrainHeight(r.x, r.y)),
+          trailClearance: Math.round(Math.min(...MOUNTAIN_TRAILS.flatMap((t) => t.points.map((p, i) => (i ? segmentDistance(r.x, r.y, t.points[i - 1], p) : Infinity))))),
+        })),
+      };
+    }
+    // Rock outcrops: solid (they stop vehicles and people), sat on the surface.
+    // Placed where the range is steep but open, well clear of the trails.
     const MOUNTAIN_OUTCROPS = [
-      {
-        x: 8400,
-        y: 1100,
-        w: 34,
-        h: 30,
-        rise: 25,
-      },
-      {
-        x: 7500,
-        y: 750,
-        w: 38,
-        h: 30,
-        rise: 31,
-      },
-      {
-        x: 7090,
-        y: 1250,
-        w: 30,
-        h: 34,
-        rise: 23,
-      },
-      {
-        x: 10200,
-        y: 1450,
-        w: 34,
-        h: 30,
-        rise: 28,
-      },
+      { x: 8400, y: 1180, w: 34, h: 30, rise: 25 },
+      { x: 7330, y: 820, w: 38, h: 30, rise: 31 },
+      { x: 7090, y: 1300, w: 30, h: 34, rise: 23 },
+      { x: 10200, y: 1520, w: 34, h: 30, rise: 28 },
     ];
-    for (const rock of MOUNTAIN_OUTCROPS)
-      countyStaticSolids.push({
-        x: rock.x - rock.w / 2,
-        y: rock.y - rock.h / 2,
-        w: rock.w,
-        h: rock.h,
-        height: terrainHeight(rock.x, rock.y) + rock.rise,
-        kind: 'rock',
-      });
+    let mountainOutcropsPlaced = false;
+    function placeMountainOutcrops() {
+      if (mountainOutcropsPlaced) return;
+      mountainOutcropsPlaced = true;
+      for (const rock of MOUNTAIN_OUTCROPS)
+        countyStaticSolids.push({
+          x: rock.x - rock.w / 2,
+          y: rock.y - rock.h / 2,
+          w: rock.w,
+          h: rock.h,
+          height: terrainHeight(rock.x, rock.y) + rock.rise,
+          kind: 'rock',
+        });
+    }
     function paintServiceForecourts(drawingContext, cityOnly = false) {
       drawingContext.save();
       coastPath(drawingContext);

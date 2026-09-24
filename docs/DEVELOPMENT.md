@@ -95,6 +95,7 @@ something, never a generic code-evaluation hook.
 | `skipToDepotDelivery()` | Mission 1: crates loaded, player in the truck outside Vinny's warehouse with the police alerted |
 | `missionTargets()` | The current mission in full: target with altitude, timer, mission vehicles (health, fire), guards, armed hostiles aiming nearby, actors, and each job's point lists (gates, checkpoints, rings, repos...) |
 | `probe(x, y, r)` | What occupies a map point: land/water, solid, road, rail, beach, whether a car or a jet ski fits |
+| `terrain()` | The Ridgeline Range: each height field's grid, highest point and build time per stage (ms), the two summits' heights, each 4x4 trail's length, summit, steepest graded pitch and trailhead height, forest / boulder / stream counts, and each rock outcrop's ground height and clearance from the trails |
 | `steerTo(x, y, seconds, radius, passThrough)` | Drive the current road vehicle or boat toward a point through the real physics (straight-line pilot, backs off walls); `passThrough` counts the point at speed |
 | `interact()` | Press the action key once, as E would |
 | `boardMissionVehicle()`, `placeVehicle(x, y, heading, altitudeMeters)` | Take the mission's vehicle; move the player's vehicle (stopped, aircraft at an altitude) |
