@@ -1046,16 +1046,7 @@
         c.crewDeployed = false;
         return;
       }
-      radio(
-        randomChoice([
-          'police-hands-on-head',
-          'police-drop-weapon',
-          'police-get-down',
-          'police-challenge',
-          'police-under-arrest',
-        ]),
-        c,
-      );
+      radio(policeChallengeLine(), c);
     }
     function footStepTowards(o, target, deltaSeconds, speed) {
       if (personIncapacitated(o)) return;
@@ -1208,7 +1199,7 @@
             if (o.state !== 'arrest') o.state = 'approach';
             if (d > 22) footStepTowards(o, player, deltaSeconds, 85);
             o.a = headingBetween(o, player);
-            if (!o.challengeSaid && d < 200) o.challengeSaid = radio('police-challenge', o);
+            if (!o.challengeSaid && d < 200) o.challengeSaid = radio(policeMayArrest ? 'police-under-arrest' : 'police-challenge', o);
             continue;
           }
           o.state = 'aim';

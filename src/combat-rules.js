@@ -317,7 +317,8 @@
         // one aimed round. Moving fast, or breaking sight, spoils the shot.
         // The higher the wanted level, the quicker and surer the marksman.
         const marksman = policeTier(Math.max(3, Math.ceil(wantedStars))).marksman;
-        if (seen && combatDistance(c, t) < 560 && c.airShotTimer <= 0) {
+        // A player giving up (pursuit.js) is not shot at while officers move in.
+        if (seen && combatDistance(c, t) < 560 && c.airShotTimer <= 0 && !(t === player && policeHoldFire())) {
           c.sniperLock = (c.sniperLock || 0) + deltaSeconds;
           if (c.sniperLock > 0.3 && t === player && gameTime - sniperWarningAt > 5) {
             sniperWarningAt = gameTime;

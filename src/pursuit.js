@@ -559,6 +559,7 @@
     }
     function officerMayShoot(o, target) {
       if (target !== player) return true;
+      if (policeHoldFire()) return false;
       return policeTier().deadly || playerResisting() || o.hp < (o.maxhp || officerKind(o).hp);
     }
     function officerShoot(o, target, deltaSeconds) {
@@ -647,7 +648,7 @@
     }
     /* Suppressive fire at the corner the runner ducked behind. */
     function officerSuppress(o, deltaSeconds) {
-      if (!lastSeen || gameTime - (o.lastSawPlayerAt ?? -100) > 3.5 || !policeTier().deadly) return false;
+      if (!lastSeen || gameTime - (o.lastSawPlayerAt ?? -100) > 3.5 || !policeTier().deadly || policeHoldFire()) return false;
       if (distanceBetween(o, lastSeen) > officerKind(o).range * 1.2) return false;
       o.timer -= deltaSeconds * 0.5;
       if (o.timer > 0) return true;
@@ -778,18 +779,28 @@
     }
     /**
      * ARREST
-     * An officer who reaches a player on foot who is not fighting back cuffs
-     * them: the bar fills over about two seconds while an officer is within
-     * arm's reach; firing, driving off or running clear breaks it. At three
-     * stars it takes two officers close by (or a badly hurt player); at five,
-     * only a player close to dead is taken alive.
+     * An officer who reaches a player who is not fighting back cuffs them: the
+     * bar fills over about two seconds while an officer is within arm's reach;
+     * firing, striking, driving off or running clear breaks it.
+     *
+     * SURRENDER: from one to four stars, a player who stands still (on foot, or
+     * in a stopped car on the ground) without firing for a moment is giving up.
+     * Officers then hold their fire (so does the helicopter marksman), walk up
+     * and make the arrest, exactly as their "YOU ARE UNDER ARREST" calls promise.
+     * At three and four stars they want two officers close before they cuff.
+     * At five stars the response shoots on sight and only a player close to dead
+     * is taken alive; the callouts there never promise an arrest.
      */
-    let policeMayArrest = false;
+    const SURRENDER_SECONDS = 1.5;
+    let policeMayArrest = false,
+      surrenderAnchor = null,
+      surrenderFor = 0;
     function arrestable() {
-      // A driver sitting still at one or two stars is pulled out of the car.
       const car = player.car,
-        caughtInCar =
-          car && !isAircraft(car) && !isBoat(car) && Math.abs(car.speed || 0) < 10 && wantedStars <= 2;
+        // A driver sitting still is pulled out of the car: at one or two stars
+        // straight away, up to four once they have clearly given up.
+        stopped = car && !isAircraft(car) && !isBoat(car) && Math.abs(car.speed || 0) < 10,
+        caughtInCar = stopped && (wantedStars <= 2 || (wantedStars <= 4 && surrenderFor >= SURRENDER_SECONDS));
       return (
         gameMode === 'play' &&
         wantedStars > 0 &&
@@ -806,26 +817,46 @@
         !harborPoliceProtected(player.x, player.y, 30)
       );
     }
+    /* Standing (or sitting in a stopped car) still, not fighting: giving up. */
+    function trackSurrender(deltaSeconds) {
+      const fought = Math.min(gameTime - (player.lastShotAt ?? -100), gameTime - (player.lastStrikeAt ?? -100)) < 3,
+        afloat = isAircraft(player.car) || (player.car && isBoat(player.car));
+      if (!surrenderAnchor || distanceBetween(player, surrenderAnchor) > 6 || fought || afloat || wantedStars <= 0) {
+        surrenderAnchor = { x: player.x, y: player.y };
+        surrenderFor = 0;
+        return;
+      }
+      surrenderFor += deltaSeconds;
+    }
+    function playerSurrendering() {
+      return surrenderFor >= SURRENDER_SECONDS && Math.ceil(wantedStars) <= 4 && arrestable();
+    }
+    /* Police (officers and the air marksman) hold fire on a player giving up. */
+    function policeHoldFire() {
+      return policeMayArrest && playerSurrendering();
+    }
     function updateArrest(deltaSeconds) {
-      const stars = Math.ceil(wantedStars);
+      trackSurrender(deltaSeconds);
+      const stars = Math.ceil(wantedStars),
+        surrendering = playerSurrendering(),
+        calm = gameTime - (player.lastShotAt ?? -100) > 2.5 && gameTime - (player.lastStrikeAt ?? -100) > 2.5;
       let cuffing = null,
         near = 0;
-      if (arrestable() && gameTime - (player.lastShotAt ?? -100) > 2.5 && gameTime - (player.lastStrikeAt ?? -100) > 2.5)
+      if (arrestable() && calm)
         for (const o of officers) {
           if (o.hp <= 0 || o.downed || personIncapacitated(o) || o.state === 'return' || o.returned) continue;
           const d = combatDistance(o, player);
           if (d < 90) near++;
           if (d < (player.car ? 44 : 32) && (!cuffing || d < combatDistance(cuffing, player))) cuffing = o;
         }
-      const tierAllows = (stars <= 2 || near >= 2 || player.hp < 35) && (stars < 5 || player.hp < 25);
+      // Who the police will take alive: anyone at one or two stars; at three and
+      // four a player who gives up (or is badly hurt); at five only one close to dead.
+      const tierAllows =
+        stars <= 2 || (stars <= 4 && (surrendering || near >= 2 || player.hp < 35)) || (stars >= 5 && player.hp < 25);
       // Officers close by move in to cuff rather than shoot (updateOfficers).
-      policeMayArrest =
-        arrestable() &&
-        gameTime - (player.lastShotAt ?? -100) > 2.5 &&
-        gameTime - (player.lastStrikeAt ?? -100) > 2.5 &&
-        (stars <= 2 || near >= 2 || player.hp < 35) &&
-        (stars < 5 || player.hp < 25);
-      const allowed = cuffing && tierAllows;
+      policeMayArrest = arrestable() && calm && tierAllows;
+      // At three and four stars the cuffs go on once a second officer covers.
+      const allowed = cuffing && policeMayArrest && (stars <= 2 || stars >= 5 || near >= 2 || player.hp < 35);
       if (allowed) {
         arrestProgress = Math.min(1, arrestProgress + deltaSeconds / 2);
         cuffing.state = 'arrest';
@@ -840,11 +871,21 @@
       }
       const el = getElement('arrestStatus');
       if (el) {
-        el.classList.toggle('show', arrestProgress > 0.02 && gameMode === 'play');
-        if (arrestProgress > 0.02) {
+        const show = (arrestProgress > 0.02 || (surrendering && policeMayArrest)) && gameMode === 'play';
+        el.classList.toggle('show', show);
+        if (show) {
+          const label = getElement('arrestLabel');
+          if (label)
+            label.textContent =
+              arrestProgress > 0.02 ? 'BEING ARRESTED · FIGHT OR RUN' : 'SURRENDERING · STAY STILL';
           getElement('arrestFill').style.width = Math.round(arrestProgress * 100) + '%';
         }
       }
+    }
+    /* What officers shout as they get out: an arrest only when one can happen. */
+    function policeChallengeLine() {
+      if (Math.ceil(wantedStars) >= 5 && !policeMayArrest) return randomChoice(['police-drop-weapon', 'target-engaged']);
+      return randomChoice(['police-hands-on-head', 'police-drop-weapon', 'police-get-down', 'police-challenge', 'police-under-arrest']);
     }
     function policeRespawnPoint() {
       const hq = HELIPADS.find((h) => /POLICE/.test(h.name)) || HELIPADS[0];
