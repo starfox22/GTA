@@ -367,9 +367,19 @@
     }
 
     /* Rough camera footprint in map units, used to keep spawning off screen. */
+    // Asked for every pedestrian every frame: the footprint is recomputed only
+    // when the viewport or the zoom changes, and the same record is returned.
+    const crowdView = { w: 0, h: 0, width: -1, height: -1, zoom: -1 };
     function crowdViewHalf() {
-      const viewH = clamp(viewportHeight * 0.68, 430, 630) / Math.max(0.2, worldZoom);
-      return { w: (viewH * viewportWidth) / viewportHeight / 2 + 40, h: viewH * 0.75 + 40 };
+      if (crowdView.width !== viewportWidth || crowdView.height !== viewportHeight || crowdView.zoom !== worldZoom) {
+        const viewH = clamp(viewportHeight * 0.68, 430, 630) / Math.max(0.2, worldZoom);
+        crowdView.w = (viewH * viewportWidth) / viewportHeight / 2 + 40;
+        crowdView.h = viewH * 0.75 + 40;
+        crowdView.width = viewportWidth;
+        crowdView.height = viewportHeight;
+        crowdView.zoom = worldZoom;
+      }
+      return crowdView;
     }
     function crowdInView(x, y, margin = 0) {
       const v = crowdViewHalf();
@@ -509,10 +519,10 @@
     function buildCrowdGrid() {
       // Cell arrays are reused frame to frame; empty ones are swept now and then.
       const sweep = ++crowd.gridStamp % 120 === 0;
-      for (const [k, cell] of crowd.grid) {
-        if (sweep && !cell.length) crowd.grid.delete(k);
-        cell.length = 0;
+      if (sweep) {
+        for (const [k, cell] of crowd.grid) if (!cell.length) crowd.grid.delete(k);
       }
+      for (const cell of crowd.grid.values()) cell.length = 0;
       crowd.gridX = player.x;
       crowd.gridY = player.y;
       for (const p of pedestrians) {
@@ -542,8 +552,40 @@
           }
         return;
       }
-      for (let i = 0; i < pedestrians.length; i++) fn(pedestrians[i]);
+      // Far from the player (distant traffic yielding to walkers): a second grid of
+      // everyone, dead included as the old full scan was, built at most once a frame.
+      const far = crowdFarGrid;
+      if (far.stamp !== crowd.gridStamp || far.count !== pedestrians.length) {
+        far.stamp = crowd.gridStamp;
+        far.count = pedestrians.length;
+        const build = ++far.build;
+        if (far.cells.size > 4000) far.cells.clear();
+        for (let i = 0; i < pedestrians.length; i++) {
+          const p = pedestrians[i],
+            k = crowdKey(p.x, p.y);
+          let cell = far.cells.get(k);
+          if (!cell) far.cells.set(k, (cell = []));
+          // Reset lazily: a cell with an old build number is empty.
+          if (cell.build !== build) {
+            cell.build = build;
+            cell.length = 0;
+          }
+          cell.push(p);
+        }
+      }
+      // People move a little between the grid being built and this query: widen it.
+      const reachFar = r + 24,
+        x0 = Math.floor((x - reachFar) / CROWD_CELL),
+        x1 = Math.floor((x + reachFar) / CROWD_CELL),
+        y0 = Math.floor((y - reachFar) / CROWD_CELL),
+        y1 = Math.floor((y + reachFar) / CROWD_CELL);
+      for (let i = x0; i <= x1; i++)
+        for (let j = y0; j <= y1; j++) {
+          const cell = far.cells.get(i * 65536 + j);
+          if (cell && cell.build === far.build) for (let k = 0; k < cell.length; k++) fn(cell[k]);
+        }
     }
+    const crowdFarGrid = { stamp: -1, count: -1, build: 0, cells: new Map() };
     function forPeopleNear(x, y, r, fn) {
       const x0 = Math.floor((x - r) / CROWD_CELL),
         x1 = Math.floor((x + r) / CROWD_CELL),

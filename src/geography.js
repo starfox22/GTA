@@ -395,9 +395,7 @@
       }),
     ];
     function airportSceneryBlocked(x, y, r = 0) {
-      return AIRPORT_SCENERY_SOLIDS.some(
-        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
-      );
+      return rectListBlocked(AIRPORT_SCENERY_SOLIDS, x, y, r);
     }
     // Block (-4, 4) of Palm Keys, on Flamingo Ave with the bay and the city
     // skyline to the east.
@@ -429,8 +427,12 @@
     function pointInPolygon(x, y, poly) {
       let inside = false;
       for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-        const [ax, ay] = poly[i],
-          [bx, by] = poly[j];
+        const a = poly[i],
+          b = poly[j],
+          ax = a[0],
+          ay = a[1],
+          bx = b[0],
+          by = b[1];
         if (ay > y !== by > y && x < ((bx - ax) * (y - ay)) / (by - ay) + ax) inside = !inside;
       }
       return inside;
@@ -453,10 +455,9 @@
       return regionContains(SUNSET_ISLE, x, y);
     }
     function landAtExact(x, y) {
-      return (
-        !COUNTY_LAKES.some((r) => regionContains(r, x, y)) &&
-        LAND_REGIONS.some((r) => regionContains(r, x, y))
-      );
+      for (let i = 0; i < COUNTY_LAKES.length; i++) if (regionContains(COUNTY_LAKES[i], x, y)) return false;
+      for (let i = 0; i < LAND_REGIONS.length; i++) if (regionContains(LAND_REGIONS[i], x, y)) return true;
+      return false;
     }
     /**
      * LAND CELL CACHE
@@ -983,15 +984,18 @@
       return onBridgeDeck(x, y, r);
     }
     function groundAt(x, y, r = 0) {
-      if (onBridge(x, y, r) || onDock(x, y, r) || onBeachPier(x, y, r)) return true;
-      return (
+      // Solid land (the usual answer, from the land cell cache) is tested first;
+      // the bridge, dock and pier lists only matter where it fails.
+      if (
         landAt(x, y) &&
         (!r ||
           (landAt(x - r, y - r) &&
             landAt(x + r, y - r) &&
             landAt(x - r, y + r) &&
             landAt(x + r, y + r)))
-      );
+      )
+        return true;
+      return onBridge(x, y, r) || onDock(x, y, r) || onBeachPier(x, y, r);
     }
     function appendLakePaths(g) {
       for (const lake of COUNTY_LAKES) {

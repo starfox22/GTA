@@ -204,7 +204,7 @@
         active = gameMode === 'play' && soundOn,
         inside = !!(taxiRide || transitRide),
         city = inCityGrid(player.x, player.y);
-      a.bus.gain.setTargetAtTime(active ? (inside ? 0.45 : 1) : 0, now, 0.4);
+      glideParam(a.bus.gain, active ? (inside ? 0.45 : 1) : 0, now, 0.4);
       if (!active) return;
       // Traffic hum follows the moving cars around you; the city never falls silent.
       let moving = 0;
@@ -213,7 +213,7 @@
       const hour = crowdHour(),
         light = daylight(),
         night = hour > 22 || hour < 5.5;
-      a.traffic.gain.gain.setTargetAtTime((city ? 0.05 : 0.015) + Math.min(0.1, moving * 0.006), now, 0.8);
+      glideParam(a.traffic.gain.gain, (city ? 0.05 : 0.015) + Math.min(0.1, moving * 0.006), now, 0.8);
       // Crowd murmur: louder with more people close by, jittered like speech.
       let people = 0,
         panic = 0;
@@ -223,9 +223,9 @@
         if (p.react && ['flee', 'cower'].includes(p.react.kind)) panic++;
       });
       const murmur = Math.min(0.07, people * 0.0022) * (0.75 + Math.random() * 0.5);
-      a.murmur.gain.gain.setTargetAtTime(murmur, now, 0.12);
-      a.murmurHigh.gain.gain.setTargetAtTime(murmur * 0.35 * (1 + Math.min(2, panic * 0.4)), now, 0.1);
-      a.wind.gain.gain.setTargetAtTime(Math.max(0, weather.wind - 0.35) * 0.06, now, 1.2);
+      glideParam(a.murmur.gain.gain, murmur, now, 0.12);
+      glideParam(a.murmurHigh.gain.gain, murmur * 0.35 * (1 + Math.min(2, panic * 0.4)), now, 0.1);
+      glideParam(a.wind.gain.gain, Math.max(0, weather.wind - 0.35) * 0.06, now, 1.2);
       const clock = a.clock;
       for (const k in clock) clock[k] -= deltaSeconds;
       // Birds by day (more in parks and near trees), crickets by night.

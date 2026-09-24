@@ -29,6 +29,8 @@
       },
     );
     countyStaticSolids.length = 0;
+    // Mountain bounds, made on first use (mountainBounds below).
+    let terrainBounds = null;
     const MOUNTAIN_TRAILS = COUNTY_PEAKS.slice(0, 2).map((p, i) => {
       const points = Array.from(
         {
@@ -50,6 +52,9 @@
       };
     });
     function mountainAt(x, y) {
+      // Outside the mountains' bounds (the whole city) there is no mountain.
+      const bounds = mountainBounds();
+      if (x < bounds.x0 || x > bounds.x1 || y < bounds.y0 || y > bounds.y1) return undefined;
       return COUNTY_PEAKS.find(
         (p) => ((x - p.x) / (p.rx || p.r)) ** 2 + ((y - p.y) / (p.ry || p.r)) ** 2 < 1,
       );
@@ -184,7 +189,23 @@
         ? h00 * (1 - u - v) + h10 * u + h01 * v
         : h11 * (u + v - 1) + h01 * (1 - u) + h10 * (1 - v);
     }
+    // Bounds of all the mountains together: the city and the sea (nearly every
+    // call) answer 0 without looking at a peak. The peaks are fixed once this
+    // file has run (the splice at the top).
+    function mountainBounds() {
+      if (terrainBounds) return terrainBounds;
+      const bounds = { x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity };
+      for (const peak of COUNTY_PEAKS) {
+        bounds.x0 = Math.min(bounds.x0, peak.x - (peak.rx || peak.r));
+        bounds.x1 = Math.max(bounds.x1, peak.x + (peak.rx || peak.r));
+        bounds.y0 = Math.min(bounds.y0, peak.y - (peak.ry || peak.r));
+        bounds.y1 = Math.max(bounds.y1, peak.y + (peak.ry || peak.r));
+      }
+      return (terrainBounds = bounds);
+    }
     function terrainHeight(x, y) {
+      const bounds = mountainBounds();
+      if (x < bounds.x0 || x > bounds.x1 || y < bounds.y0 || y > bounds.y1) return 0;
       let z = 0;
       for (const peak of COUNTY_PEAKS)
         if (Math.abs(x - peak.x) <= (peak.rx || peak.r) && Math.abs(y - peak.y) <= (peak.ry || peak.r))

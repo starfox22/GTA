@@ -765,26 +765,41 @@
     // standing furniture. Far away nothing is watching and traffic keeps to the road.
     function streetPropContacts() {
       if (!streetProps.length) return;
-      for (const c of vehicles) {
+      for (let v = 0; v < vehicles.length; v++) {
+        const c = vehicles[v];
         if (c.resting || isBoat(c) || (isAircraft(c) && aircraftClearance(c) > 4)) continue;
         if (Math.abs(c.x - player.x) > 1400 || Math.abs(c.y - player.y) > 1400) continue;
+        // A car standing still (queued at a light, parked) cannot have run into
+        // anything since the last step; most of the traffic near the player is.
+        if (Math.abs(c.vx || 0) + Math.abs(c.vy || 0) < 0.6 && Math.abs(c.av || 0) < 0.02) continue;
         const spec = vehicleSpec(c),
           reach = (spec.l + spec.w) / 2 + 10;
-        let shape = null;
-        propsNear(c.x, c.y, reach, (prop) => {
-          if (prop.down || Math.abs(prop.x - c.x) > reach || Math.abs(prop.y - c.y) > reach) return;
-          shape = shape || vehicleShape(c);
-          const body = { x: prop.x, y: prop.y, hx: prop.hx, hy: prop.hy, a: prop.a, id: prop.id, kind: 'prop' },
-            hit = boxContact(shape, body);
-          if (!hit) return;
-          const closing = (c.vx || 0) * hit.n.x + (c.vy || 0) * hit.n.y,
-            kind = STREET_PROP_KINDS[prop.kind];
-          if (closing * (spec.mass || 1.25) >= kind.toughness) knockStreetProp(prop, c, closing, hit);
-          else {
-            resolveContact(c, null, hit, body, true);
-            shape = null;
+        const i0 = Math.floor((c.x - reach) / PROP_CELL),
+          i1 = Math.floor((c.x + reach) / PROP_CELL),
+          j0 = Math.floor((c.y - reach) / PROP_CELL),
+          j1 = Math.floor((c.y + reach) / PROP_CELL);
+        for (let i = i0; i <= i1; i++)
+          for (let j = j0; j <= j1; j++) {
+            const list = streetPropGrid.get(i * 4096 + j);
+            if (!list) continue;
+            for (let k = 0; k < list.length; k++) {
+              const prop = list[k];
+              if (prop.down || Math.abs(prop.x - c.x) > reach || Math.abs(prop.y - c.y) > reach) continue;
+              const shape = contactShape(c);
+              // The prop's collision box, made once (props never move while standing).
+              const body =
+                  prop.body ||
+                  (prop.body = { x: prop.x, y: prop.y, hx: prop.hx, hy: prop.hy, a: prop.a, id: prop.id, kind: 'prop' }),
+                hit = boxContact(shape, body);
+              if (!hit) continue;
+              const closing = (c.vx || 0) * hit.n.x + (c.vy || 0) * hit.n.y,
+                kind = STREET_PROP_KINDS[prop.kind];
+              if (closing * (spec.mass || 1.25) >= kind.toughness) knockStreetProp(prop, c, closing, hit);
+              else {
+                resolveContact(c, null, hit, body, true);
+              }
+            }
           }
-        });
       }
     }
     function knockStreetProp(prop, vehicle, closing, hit) {

@@ -76,6 +76,29 @@
       if (/intel|uhd|hd graphics|radeon graphics|vega \d|mali|adreno/.test(name)) return 'medium';
       return maxTexture >= 16384 ? 'high' : 'medium';
     }
+    /**
+     * LOW RESOLUTION CAP
+     * LOW is meant to be smooth on integrated graphics, whose cost is mostly the
+     * pixels shaded. On a large canvas (a 1440p or 4K monitor) LOW draws the scene
+     * at no more than about a 1080p frame's worth of pixels and the composite
+     * pass upsamples it; the HUD stays sharp. Other tiers draw at full size
+     * (AUTO's adaptive scale still applies on top of this).
+     */
+    const LOW_TIER_PIXELS = 1920 * 1080;
+    function tierBaseScale() {
+      const tier = graphicsTier();
+      if (tier.name !== 'LOW') return 1;
+      const ratio = Math.min(devicePixelRatio || 1, tier.pixelRatio),
+        pixels = viewportWidth * ratio * viewportHeight * ratio;
+      return pixels > LOW_TIER_PIXELS ? clamp(Math.sqrt(LOW_TIER_PIXELS / pixels), 0.5, 1) : 1;
+    }
+    // Called on a tier change and when the window is resized (game.js resize()).
+    function applyTierResolution() {
+      if (!city3D || !city3D.setRenderScale) return;
+      // A chosen tier gets exactly its base scale; AUTO keeps any lower adaptive scale.
+      const base = tierBaseScale();
+      adaptive.scale = city3D.setRenderScale(graphicsSetting === 'auto' ? Math.min(adaptive.scale, base) : base);
+    }
     function applyGraphicsSetting() {
       adaptive.scale = 1;
       adaptive.slowFor = adaptive.fastFor = adaptive.cpuFor = 0;
@@ -83,6 +106,7 @@
       adaptive.tierDrops = 0;
       if (city3D && city3D.setRenderScale) city3D.setRenderScale(1);
       if (city3D && city3D.setQuality) city3D.setQuality(graphicsTier());
+      applyTierResolution();
     }
     /**
      * ADAPTIVE QUALITY (AUTO only)
@@ -90,8 +114,9 @@
      * what it is doing. With the setting on AUTO, every frame feeds the time
      * since the last one and the CPU milliseconds the game spent on it:
      *
-     *  - GPU-bound and slow (frames averaging under ~52 FPS while the CPU work
-     *    is well inside the frame): the scene is drawn at a lower resolution,
+     *  - GPU-bound and slow (frames averaging 15% over the budget, i.e. under
+     *    ~52 FPS, or under ~26 FPS with the frame limiter at 30, while the CPU
+     *    work is well inside the frame): the scene is drawn at a lower resolution,
      *    in 10% steps down to MIN_SCALE, and upsampled by the composite pass
      *    (postfx3d.js), so the HUD stays sharp.
      *  - Still slow at the lowest scale, or CPU-bound (the simulation and draw
@@ -110,12 +135,16 @@
       if (graphicsSetting !== 'auto' || !city3D || !city3D.setRenderScale || document.hidden) return;
       if (!(frameMs > 0) || frameMs > 250) return;
       adaptive.average = adaptive.average ? adaptive.average * 0.92 + frameMs * 0.08 : frameMs;
-      const seconds = frameMs / 1000,
-        slow = adaptive.average > 19.2,
+      // The frame budget: 60 FPS, or the frame limiter's cap below that (a 30 FPS
+      // cap's 33 ms frames are on time, not slow). A cap above 60 does not make
+      // AUTO trade image quality for more than 60 FPS.
+      const budget = 1000 / Math.min(60, frameLimit() || 60),
+        seconds = frameMs / 1000,
+        slow = adaptive.average > budget * 1.15,
         cpuBound = cpuMs > adaptive.average * 0.75;
       adaptive.slowFor = slow && !cpuBound ? adaptive.slowFor + seconds : 0;
       adaptive.cpuFor = slow && cpuBound ? adaptive.cpuFor + seconds : 0;
-      adaptive.fastFor = adaptive.average < 17.4 ? adaptive.fastFor + seconds : 0;
+      adaptive.fastFor = adaptive.average < budget * 1.045 ? adaptive.fastFor + seconds : 0;
       const order = ['low', 'medium', 'high'],
         tierIndex = order.indexOf(graphicsTierId());
       const dropTier = () => {
@@ -123,7 +152,7 @@
         adaptive.tierDrops++;
         graphicsDetected = order[tierIndex - 1];
         city3D.setQuality(graphicsTier());
-        adaptive.scale = city3D.setRenderScale(Math.max(adaptive.scale, 0.8));
+        adaptive.scale = city3D.setRenderScale(Math.min(tierBaseScale(), Math.max(adaptive.scale, 0.8)));
         return true;
       };
       if (adaptive.slowFor > 1.2) {
@@ -135,9 +164,9 @@
         adaptive.cpuFor = 0;
         adaptive.lastDrop = now;
         dropTier();
-      } else if (adaptive.fastFor > 6 && adaptive.scale < 1 && now - adaptive.lastDrop > 15000) {
+      } else if (adaptive.fastFor > 6 && adaptive.scale < tierBaseScale() && now - adaptive.lastDrop > 15000) {
         adaptive.fastFor = 0;
-        adaptive.scale = city3D.setRenderScale(adaptive.scale + 0.05);
+        adaptive.scale = city3D.setRenderScale(Math.min(tierBaseScale(), adaptive.scale + 0.05));
       }
     }
     // Settings · Graphics (settings.js) passes a tier; with none the setting steps

@@ -27,7 +27,58 @@
 
     // The build's version, shown on the title menu and by DeadEndCity.version.
     const GAME_VERSION = '30.0.0';
-    const getElement = (id) => document.getElementById(id),
+    /**
+     * HUD WRITE GUARD
+     * The HUD is refreshed ~11 times a second and sets forty-odd texts whether or
+     * not they changed. Writing textContent or innerHTML always replaces the
+     * element's children, which dirties style and layout for the whole overlay
+     * even when the text is the same. Elements fetched through getElement() get
+     * instance setters that skip a write whose value is already on screen (read
+     * back from the DOM, so a change made any other way is never masked).
+     */
+    const textContentProperty = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent'),
+      innerHtmlProperty = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML'),
+      guardedElements = new WeakSet();
+    function guardElementWrites(el) {
+      guardedElements.add(el);
+      if (!textContentProperty?.set || !innerHtmlProperty?.set) return el;
+      let lastHtml = null,
+        lastSerialized = null;
+      Object.defineProperty(el, 'textContent', {
+        configurable: true,
+        get() {
+          return textContentProperty.get.call(this);
+        },
+        set(value) {
+          const text = value === null || value === undefined ? '' : String(value);
+          // Same text held as one plain text node (or nothing at all): no change.
+          const nodes = this.childNodes;
+          if (
+            text === '' ? nodes.length === 0 : nodes.length === 1 && nodes[0].nodeType === 3 && nodes[0].data === text
+          )
+            return;
+          textContentProperty.set.call(this, text);
+        },
+      });
+      Object.defineProperty(el, 'innerHTML', {
+        configurable: true,
+        get() {
+          return innerHtmlProperty.get.call(this);
+        },
+        set(value) {
+          const html = value === null || value === undefined ? '' : String(value);
+          if (html === lastHtml && innerHtmlProperty.get.call(this) === lastSerialized) return;
+          innerHtmlProperty.set.call(this, html);
+          lastHtml = html;
+          lastSerialized = innerHtmlProperty.get.call(this);
+        },
+      });
+      return el;
+    }
+    const getElement = (id) => {
+        const el = document.getElementById(id);
+        return el && !guardedElements.has(el) ? guardElementWrites(el) : el;
+      },
       canvas = getElement('game'),
       worldContext = canvas.getContext('2d', {
         alpha: true,
@@ -603,13 +654,23 @@
         color: '#e0dfc7',
       },
     };
+    // A plane's spec is the base plane with its airframe's numbers on top. The
+    // merged record is made once per airframe: this is asked many times per car
+    // per physics step, and a fresh copy each time was a steady stream of garbage.
+    const airframeSpecCache = new Map();
     function vehicleSpec(vehicle) {
-      return vehicle?.type === 'plane' && vehicle.airframe
-        ? {
+      if (vehicle?.type === 'plane' && vehicle.airframe) {
+        let spec = airframeSpecCache.get(vehicle.airframe);
+        if (!spec) {
+          spec = {
             ...VEHICLE_DEFINITIONS.plane,
             ...AIRFRAME_SPECS[vehicle.airframe],
-          }
-        : VEHICLE_DEFINITIONS[vehicle?.type];
+          };
+          airframeSpecCache.set(vehicle.airframe, spec);
+        }
+        return spec;
+      }
+      return VEHICLE_DEFINITIONS[vehicle?.type];
     }
     // Conservative vertical envelope, including an aircraft's tail fin.
     function vehicleCollisionHeight(vehicle) {
@@ -753,6 +814,42 @@
       if (!buildingGrid.size) return buildings;
       return buildingGrid.get(Math.floor(x / BUILDING_CELL) * 4096 + Math.floor(y / BUILDING_CELL)) || noBuildings;
     }
+    /**
+     * RECTANGLE LISTS
+     * Many of solid()'s tests are "is this point (grown by r) inside any of these
+     * map rectangles": the harbor, marina, garages, airport scenery. The lists are
+     * fixed, so each one's overall bounds are worked out once (keyed by the list)
+     * and a point outside them answers at once, without walking the list.
+     */
+    const rectListBounds = new WeakMap();
+    function rectListBlocked(list, x, y, r = 0) {
+      let bounds = rectListBounds.get(list);
+      if (!bounds || bounds.count !== list.length) {
+        bounds = { count: list.length, x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+        for (const b of list) {
+          bounds.x0 = Math.min(bounds.x0, b.x);
+          bounds.y0 = Math.min(bounds.y0, b.y);
+          bounds.x1 = Math.max(bounds.x1, b.x + b.w);
+          bounds.y1 = Math.max(bounds.y1, b.y + b.h);
+        }
+        rectListBounds.set(list, bounds);
+      }
+      if (x + r <= bounds.x0 || x - r >= bounds.x1 || y + r <= bounds.y0 || y - r >= bounds.y1) return false;
+      for (let i = 0; i < list.length; i++) {
+        const b = list[i];
+        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      }
+      return false;
+    }
+    // Whether a point lies inside a rectangle list's overall bounds.
+    function rectListNear(list, x, y) {
+      let bounds = rectListBounds.get(list);
+      if (!bounds || bounds.count !== list.length) {
+        rectListBlocked(list, x, y, 0);
+        bounds = rectListBounds.get(list);
+      }
+      return x >= bounds.x0 && x <= bounds.x1 && y >= bounds.y0 && y <= bounds.y1;
+    }
     function solid(x, y, r = 8, overWater = false) {
       if (
         sportsBlocked(x, y, r) ||
@@ -796,6 +893,66 @@
         }
       return false;
     }
+    /**
+     * VEHICLE GRID
+     * Every walking person asks, for each short step, whether a vehicle is in
+     * the way; that used to test every vehicle in the city (~200) per step. The
+     * vehicles are bucketed into 128-unit cells once per simulation frame (and
+     * again whenever vehicles are added or removed) and a step only asks the
+     * cells around it, with a margin for a car that moves later in the frame.
+     */
+    const VEHICLE_CELL = 128,
+      vehicleGrid = new Map(),
+      vehicleGridState = { time: NaN, count: -1, stamp: 0 };
+    function refreshVehicleGrid() {
+      if (vehicleGridState.time === gameTime && vehicleGridState.count === vehicles.length) return;
+      vehicleGridState.time = gameTime;
+      vehicleGridState.count = vehicles.length;
+      // Cells are reset lazily (stale stamp = empty), never swept.
+      const stamp = ++vehicleGridState.stamp;
+      if (vehicleGrid.size > 4000) vehicleGrid.clear();
+      for (let i = 0; i < vehicles.length; i++) {
+        const c = vehicles[i],
+          key = Math.floor(c.x / VEHICLE_CELL) * 4096 + Math.floor(c.y / VEHICLE_CELL);
+        let cell = vehicleGrid.get(key);
+        if (!cell) vehicleGrid.set(key, (cell = []));
+        if (cell.stamp !== stamp) {
+          cell.stamp = stamp;
+          cell.length = 0;
+        }
+        cell.push(c);
+      }
+    }
+    // Whether a vehicle blocks a foot step to (x, y); `reach` bounds the test.
+    function footStepVehicleBlocked(x, y, collisionRadius, reach) {
+      refreshVehicleGrid();
+      const span = reach + 64,
+        i0 = Math.floor((x - span) / VEHICLE_CELL),
+        i1 = Math.floor((x + span) / VEHICLE_CELL),
+        j0 = Math.floor((y - span) / VEHICLE_CELL),
+        j1 = Math.floor((y + span) / VEHICLE_CELL);
+      for (let i = i0; i <= i1; i++)
+        for (let j = j0; j <= j1; j++) {
+          const cell = vehicleGrid.get(i * 4096 + j);
+          if (!cell || cell.stamp !== vehicleGridState.stamp) continue;
+          for (let k = 0; k < cell.length; k++) {
+            const c = cell[k];
+            if (c.x - x > reach || x - c.x > reach || c.y - y > reach || y - c.y > reach) continue;
+            if ((!isAircraft(c) || aircraftClearance(c) < 20) && pointInCar(x, y, c, collisionRadius)) return true;
+          }
+        }
+      return false;
+    }
+    function footStepBlocked(body, x, y, collisionRadius, swimmer, onFoot, reach) {
+      if (solid(x, y, collisionRadius, swimmer)) return true;
+      // Where the player may cross the shoreline (beaches, ladders): water.js.
+      if (swimmer && shoreStepBlocked(body.x, body.y, x, y, collisionRadius)) return true;
+      if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
+      // Street furniture, tree trunks, park fixtures and shelters stop the
+      // player on foot (streets.js); the crowd keeps to its own paths round them.
+      if (onFoot && footObstacleBlocked(x, y, 4.5)) return true;
+      return footStepVehicleBlocked(x, y, collisionRadius, reach);
+    }
     function moveBody(body, displacementX, displacementY, collisionRadius) {
       if (body === player && player.roof)
         return moveOnRoof(displacementX, displacementY, collisionRadius);
@@ -812,23 +969,7 @@
           body === player && !player.car && !player.roof && !player.deck && !player.parachute,
         reach = 90 + collisionRadius,
         // Out of a car or off a teleport onto a bench, step off it rather than stick.
-        onFoot = swimmer && !player.swimming && !footObstacleBlocked(body.x, body.y, 4.5),
-        blocked = (x, y) => {
-          if (solid(x, y, collisionRadius, swimmer)) return true;
-          // Where the player may cross the shoreline (beaches, ladders): water.js.
-          if (swimmer && shoreStepBlocked(body.x, body.y, x, y, collisionRadius)) return true;
-          if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
-          // Street furniture, tree trunks, park fixtures and shelters stop the
-          // player on foot (streets.js); the crowd keeps to its own paths round them.
-          if (onFoot && footObstacleBlocked(x, y, 4.5)) return true;
-          for (let i = 0; i < vehicles.length; i++) {
-            const c = vehicles[i];
-            if (c.x - x > reach || x - c.x > reach || c.y - y > reach || y - c.y > reach) continue;
-            if ((!isAircraft(c) || aircraftClearance(c) < 20) && pointInCar(x, y, c, collisionRadius))
-              return true;
-          }
-          return false;
-        };
+        onFoot = swimmer && !player.swimming && !footObstacleBlocked(body.x, body.y, 4.5);
       // A long step (a sprint over a slow frame, a car's knock-back of 25 units)
       // is taken in short ones, so it cannot hop over a railing or a guardrail
       // thinner than the step.
@@ -836,9 +977,9 @@
         stepX = displacementX / steps,
         stepY = displacementY / steps;
       for (let i = 0; i < steps; i++) {
-        if (!blocked(body.x + stepX, body.y)) body.x += stepX;
+        if (!footStepBlocked(body, body.x + stepX, body.y, collisionRadius, swimmer, onFoot, reach)) body.x += stepX;
         else hit = true;
-        if (!blocked(body.x, body.y + stepY)) body.y += stepY;
+        if (!footStepBlocked(body, body.x, body.y + stepY, collisionRadius, swimmer, onFoot, reach)) body.y += stepY;
         else hit = true;
       }
       return hit;
@@ -878,6 +1019,46 @@
           damage: freshDamage(),
           dents: [],
           damageVersion: 0,
+          // Fields the physics step writes on every vehicle, declared up front in
+          // one order so every vehicle shares one object layout (V8 keeps property
+          // access fast and doubles unboxed). Each starts at the value its readers
+          // already treat as "not set yet": vx/vy are NaN until the first step
+          // derives them from the heading and speed (physicsStep).
+          vx: NaN,
+          vy: NaN,
+          stepStartX: x,
+          stepStartY: y,
+          stepStartA: headingRadians,
+          moveA: headingRadians,
+          restSteps: 0,
+          farFromPlayer: false,
+          resting: false,
+          contactPass: 0,
+          impactSpeed: 0,
+          broadCellX: 0,
+          broadCellY: 0,
+          contactStatics: null,
+          stepStatics: null,
+          contactBox: null,
+          aiControl: null,
+          aiControlAt: 0,
+          personSweepStart: null,
+          bloodTrackPoint: null,
+          pedestrianContacts: null,
+          spareContacts: null,
+          poseX: NaN,
+          poseY: NaN,
+          poseA: NaN,
+          groundHeight: 0,
+          slopePitch: 0,
+          slopeRoll: 0,
+          offroadState: null,
+          loadSpeed: null,
+          loadPitch: 0,
+          loadRoll: 0,
+          junction: null,
+          hazard: false,
+          spinUntil: 0,
         };
       vehicles.push(vehicle);
       if (autonomous) assignDriver(vehicle);
@@ -2506,21 +2687,20 @@
       lists[5] = AIRPORT_SCENERY_SOLIDS;
       for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
+        // Most rounds are nowhere near a given list's rectangles (rectListBounds).
+        if (!rectListNear(list, x, y)) continue;
         for (let k = 0; k < list.length; k++) {
           const b = list[k];
           if (altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) return true;
         }
       }
-      return (
-        buildingsNear(x, y).some(
-          (b) =>
-            altitude + 10 < b.height &&
-            x > b.x - 1 &&
-            x < b.x + b.w + 1 &&
-            y > b.y - 1 &&
-            y < b.y + b.h + 1,
-        )
-      );
+      const near = buildingsNear(x, y);
+      for (let i = 0; i < near.length; i++) {
+        const b = near[i];
+        if (altitude + 10 < b.height && x > b.x - 1 && x < b.x + b.w + 1 && y > b.y - 1 && y < b.y + b.h + 1)
+          return true;
+      }
+      return false;
     }
     // Who a bullet can hit where it is now, in the order hits are tested. The
     // short lists go in whole; pedestrians come from the crowd's neighbour grid
@@ -2528,34 +2708,36 @@
     // pedestrians (plus everyone else) into a fresh array.
     const bulletTargetList = [],
       bulletVehicleList = [];
+    function addBulletTargets(list, people) {
+      for (let k = 0; k < people.length; k++) list.push(people[k]);
+    }
+    function pushBulletTarget(p) {
+      bulletTargetList.push(p);
+    }
     function bulletTargets(b, escorts, rooftop) {
-      const list = bulletTargetList,
-        add = (people) => {
-          for (let k = 0; k < people.length; k++) list.push(people[k]);
-        },
-        addNearbyPedestrians = () => forEachPedestrianNear(b.x, b.y, 16, (p) => list.push(p));
+      const list = bulletTargetList;
       list.length = 0;
       if (b.enemy) {
         if (b.faction === 'police') {
-          add(enemies);
-          add(gangMembers);
+          addBulletTargets(list, enemies);
+          addBulletTargets(list, gangMembers);
         } else if (b.faction) {
-          add(enemies);
-          add(gangMembers);
-          add(officers);
-          addNearbyPedestrians();
-          add(sportsTargets());
+          addBulletTargets(list, enemies);
+          addBulletTargets(list, gangMembers);
+          addBulletTargets(list, officers);
+          forEachPedestrianNear(b.x, b.y, 16, pushBulletTarget);
+          addBulletTargets(list, sportsTargets());
         }
-        add(escorts);
+        addBulletTargets(list, escorts);
       } else {
-        add(enemies);
-        add(gangMembers);
-        addNearbyPedestrians();
-        add(officers);
-        add(escorts);
-        add(rooftop);
+        addBulletTargets(list, enemies);
+        addBulletTargets(list, gangMembers);
+        forEachPedestrianNear(b.x, b.y, 16, pushBulletTarget);
+        addBulletTargets(list, officers);
+        addBulletTargets(list, escorts);
+        addBulletTargets(list, rooftop);
         // Athletes, officials and stewards at the sports venues (sports.js).
-        add(sportsTargets());
+        addBulletTargets(list, sportsTargets());
       }
       return list;
     }
@@ -4175,7 +4357,11 @@
       worldContext.imageSmoothingEnabled = false;
       canvasScale =
         clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
-      if (city3D) city3D.resize();
+      if (city3D) {
+        city3D.resize();
+        // LOW caps the scene's pixel count (quality.js LOW RESOLUTION CAP).
+        applyTierResolution();
+      }
     }
     function begin() {
       if (gameMode !== 'menu') return;
@@ -4820,10 +5006,61 @@
       fpsMeter.since = t;
     }
     applyFpsSetting();
+    /**
+     * FRAME LIMITER
+     * Settings · Graphics caps the frame rate at 30, 60 or 120 FPS, or leaves it
+     * UNLIMITED (the display's refresh rate; the default). Remembered in
+     * localStorage under 'dead-end-city-frame-limit'. requestAnimationFrame still
+     * fires every display refresh; a frame is only simulated and drawn once the
+     * cap's interval has come round. The next due time advances by exactly one
+     * interval per drawn frame (so the average is the cap), a frame arriving a
+     * little early (vsync jitter, up to a fifth of the interval) still counts,
+     * so 60 on a 60 Hz display stays 60 rather than falling to 30, and after a
+     * stall the schedule restarts from now instead of racing to catch up. Skipped
+     * refreshes do nothing at all: the next drawn frame's time step covers them.
+     */
+    const FRAME_LIMITS = [30, 60, 120, 0],
+      frameLimiter = { limit: 0, next: 0 };
+    try {
+      const saved = localStorage.getItem('dead-end-city-frame-limit');
+      if (saved === 'unlimited') frameLimiter.limit = 0;
+      else if (FRAME_LIMITS.includes(Number(saved))) frameLimiter.limit = Number(saved);
+    } catch {}
+    // 30, 60, 120, or 0 for unlimited.
+    function frameLimit() {
+      return frameLimiter.limit;
+    }
+    function setFrameLimit(value) {
+      const limit = value === 'unlimited' ? 0 : Number(value);
+      if (!FRAME_LIMITS.includes(limit)) return frameLimiter.limit;
+      frameLimiter.limit = limit;
+      frameLimiter.next = 0;
+      try {
+        localStorage.setItem('dead-end-city-frame-limit', limit ? String(limit) : 'unlimited');
+      } catch {}
+      return limit;
+    }
+    // Whether the frame at time t is to be drawn (and, if so, books the next one).
+    function frameDue(t) {
+      const limit = frameLimiter.limit;
+      if (!limit) return true;
+      const interval = 1000 / limit;
+      if (!frameLimiter.next || t - frameLimiter.next > interval * 3) frameLimiter.next = t;
+      if (t < frameLimiter.next - interval * 0.2) return false;
+      frameLimiter.next += interval;
+      if (frameLimiter.next < t) frameLimiter.next = t;
+      return true;
+    }
     function frame(t) {
+      if (!frameDue(t)) {
+        requestAnimationFrame(frame);
+        return;
+      }
       syncTouchInput();
       updateFpsCounter(t);
-      const deltaSeconds = Math.min(0.033, Math.max(0, (t - lastTime) / 1000));
+      // At a 30 FPS cap a frame is 33.3 ms: the step limit allows it, so the
+      // simulation keeps real time rather than running 1% slow.
+      const deltaSeconds = Math.min(frameLimiter.limit === 30 ? 0.04 : 0.033, Math.max(0, (t - lastTime) / 1000));
       // Headline cards run on the wall clock: a phone call or pause that opens
       // right after one must not leave it frozen across the middle of the screen.
       if (announceTime > 0) {
@@ -5676,6 +5913,8 @@
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
           if (typeof changes.voices === 'boolean' && changes.voices !== voicesOn) toggleVoices();
           if (typeof changes.fps === 'boolean' && changes.fps !== fpsMeter.shown) toggleFpsCounter();
+          // 30, 60, 120, or 'unlimited' (0 also means unlimited).
+          if (changes.frameLimit !== undefined) setFrameLimit(changes.frameLimit === 0 ? 'unlimited' : changes.frameLimit);
           if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
           if (typeof changes.gps === 'boolean') setGps(changes.gps);
@@ -5688,6 +5927,7 @@
         }
         return {
           graphics: graphicsSetting,
+          frameLimit: frameLimit() || 'unlimited',
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,
           sound: soundOn,

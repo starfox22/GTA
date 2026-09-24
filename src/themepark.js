@@ -1729,8 +1729,8 @@
         level = riding ? 0.5 : parkDistanceGain(front.x, front.y, 300);
       // The roar: rumble of wheels on steel, brighter with speed.
       const roar = parkAudio.roar;
-      roar.gain.gain.setTargetAtTime(near ? clamp(speed / 180, 0, 1) * 0.5 * level : 0, audio.currentTime, 0.1);
-      roar.filter.frequency.setTargetAtTime(200 + speed * 6, audio.currentTime, 0.1);
+      glideParam(roar.gain.gain, near ? clamp(speed / 180, 0, 1) * 0.5 * level : 0, audio.currentTime, 0.1);
+      glideParam(roar.filter.frequency, 200 + speed * 6, audio.currentTime, 0.1);
       // The lift chain's anti-rollback clack.
       if (coasterTrain.running && front.kind === 2 && gameTime > parkAudio.clackAt && level > 0.05) {
         parkAudio.clackAt = gameTime + 0.16;
