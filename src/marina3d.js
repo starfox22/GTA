@@ -1422,81 +1422,13 @@
       kitLightCloud(sailingLinerModel.lights, 7);
 
       /**
-       * THE LINER'S WAKE
-       * A ribbon laid along where her stern has been: each point remembers when
-       * it was dropped and how fast she was going, so the wake widens behind her
-       * at the Kelvin angle (about 19.5 degrees each side), its foam arms and the
-       * churned propeller wash fading with age. Plus a bow wave curling off each
-       * side of the stem and white water under the stern when she is working her
-       * engines. It lies just above the highest swell crest, like every boat wake.
+       * THE SAILING LINER
+       * Her model and lights follow the voyage (sailLiner, marina.js), heeling a
+       * little in the turns. Her wake is drawn into the sea by the boat wake
+       * system (wakes3d.js) like every hull on the water, scaled to her 265 m
+       * length and 36 m beam: the Kelvin V, a long-lived propeller wash, the bow
+       * wave and the collar round her waterline. At anchor she only laps.
        */
-      const LINER_WAKE_POINTS = 110,
-        linerWakeTrail = [];
-      const linerWakeTexture = (() => {
-        const w = 128,
-          h = 256,
-          cv = document.createElement('canvas');
-        cv.width = w;
-        cv.height = h;
-        const g = cv.getContext('2d');
-        let seed = 5;
-        const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-        // Across (x): foam arms at both edges, turbulent wash down the middle.
-        // Along (y): the wash thins out away from the stern; the arms carry on.
-        for (let i = 0; i < 5200; i++) {
-          const y = rnd() * h,
-            along = y / h,
-            arm = rnd() < 0.55,
-            x = arm ? (rnd() < 0.5 ? 2 + rnd() * 14 : w - 2 - rnd() * 14) : w / 2 + (rnd() - 0.5) * w * (0.25 + along * 0.45),
-            alpha = arm ? 0.45 : 0.55 * (1 - along * 0.85);
-          g.fillStyle = `rgba(255,255,255,${alpha * (0.4 + rnd() * 0.6)})`;
-          g.beginPath();
-          g.arc(x, y, 0.8 + rnd() * (arm ? 2.2 : 3.2), 0, Math.PI * 2);
-          g.fill();
-        }
-        const tx = new Three.CanvasTexture(cv);
-        tx.colorSpace = Three.SRGBColorSpace;
-        return tx;
-      })();
-      const linerWakeGeometry = new Three.BufferGeometry(),
-        linerWakePositions = new Float32Array(LINER_WAKE_POINTS * 2 * 3),
-        linerWakeColors = new Float32Array(LINER_WAKE_POINTS * 2 * 4),
-        linerWakeUvs = new Float32Array(LINER_WAKE_POINTS * 2 * 2),
-        linerWakeIndex = [];
-      for (let i = 0; i < LINER_WAKE_POINTS - 1; i++) {
-        const a = i * 2;
-        linerWakeIndex.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-      }
-      linerWakeGeometry.setAttribute('position', new Three.BufferAttribute(linerWakePositions, 3).setUsage(Three.DynamicDrawUsage));
-      linerWakeGeometry.setAttribute('color', new Three.BufferAttribute(linerWakeColors, 4).setUsage(Three.DynamicDrawUsage));
-      linerWakeGeometry.setAttribute('uv', new Three.BufferAttribute(linerWakeUvs, 2).setUsage(Three.DynamicDrawUsage));
-      linerWakeGeometry.setIndex(linerWakeIndex);
-      linerWakeGeometry.setDrawRange(0, 0);
-      const linerWake = new Three.Mesh(
-        linerWakeGeometry,
-        new Three.MeshBasicMaterial({ map: linerWakeTexture, vertexColors: true, transparent: true, depthWrite: false, color: '#eef8f6' }),
-      );
-      linerWake.frustumCulled = false;
-      linerWake.renderOrder = 7;
-      linerWake.userData.dynamic = true;
-      scene.add(linerWake);
-      // Bow waves and stern wash ride with the ship.
-      const linerFoam = (width, depth, x, z, rotation) => {
-        const m = new Three.Mesh(
-          new Three.PlaneGeometry(width, depth),
-          new Three.MeshBasicMaterial({ map: haloTx, color: '#f2fbfa', transparent: true, opacity: 0, depthWrite: false }),
-        );
-        m.rotation.set(-Math.PI / 2, 0, rotation);
-        m.position.set(x, 1.3, z);
-        m.renderOrder = 7;
-        m.userData.dynamic = true;
-        sailingLinerModel.group?.add(m);
-        return m;
-      };
-      const linerBow = sailingLinerModel.group
-        ? [-1, 1].map((side) => linerFoam(220, 44, LINERS[0].l / 2 - 120, side * 96, side * 0.12))
-        : [];
-      const linerChurn = sailingLinerModel.group ? linerFoam(260, 150, -LINERS[0].l / 2 - 90, 0, 0) : null;
       function updateLinerVisuals() {
         const model = sailingLinerModel,
           ship = model.ship;
@@ -1505,49 +1437,8 @@
         model.group.rotation.set(linerVoyage.heel, -ship.a, 0, 'YXZ');
         model.statics.x = ship.x;
         model.statics.y = ship.y;
-        const speed = Math.abs(ship.speed || 0),
-          stern = deckWorld(ship, (ship.speed < 0 ? 1 : -1) * (ship.l / 2 - 20), 0),
-          last = linerWakeTrail[0];
-        for (const m of linerBow) m.material.opacity = clamp(ship.speed / 45, 0, 1) * 0.75;
-        if (linerChurn) {
-          linerChurn.material.opacity = clamp(speed / 12, 0, 1) * 0.6;
-          linerChurn.position.x = (ship.speed < 0 ? 1 : -1) * (ship.l / 2 + 60);
-        }
-        // Drop a new trail point every 26 units the stern moves.
-        if (!last || Math.hypot(stern.x - last.x, stern.y - last.y) > 26) {
-          linerWakeTrail.unshift({ x: stern.x, y: stern.y, time: gameTime, strength: clamp(speed / 40, 0, 1) });
-          if (linerWakeTrail.length > LINER_WAKE_POINTS) linerWakeTrail.pop();
-        }
-        // The newest point follows the stern exactly, so the ribbon never lags.
-        if (linerWakeTrail.length) Object.assign(linerWakeTrail[0], { x: stern.x, y: stern.y });
-        const n = linerWakeTrail.length;
-        let distance = 0;
-        for (let i = 0; i < n; i++) {
-          const p = linerWakeTrail[i],
-            q = linerWakeTrail[Math.min(n - 1, i + 1)],
-            o = linerWakeTrail[Math.max(0, i - 1)];
-          if (i) distance += Math.hypot(p.x - o.x, p.y - o.y);
-          const dx = q.x - o.x,
-            dy = q.y - o.y,
-            len = Math.hypot(dx, dy) || 1,
-            nx = -dy / len,
-            ny = dx / len,
-            half = ship.w * 0.42 + distance * 0.354,
-            age = gameTime - p.time,
-            fade = p.strength * Math.exp(-age / 70) * (1 - i / n) * clamp(distance / 40 + 0.2, 0, 1);
-          for (const [k, side] of [
-            [0, -1],
-            [1, 1],
-          ]) {
-            const v = i * 2 + k;
-            linerWakePositions.set([p.x + nx * half * side, 1.05, p.y + ny * half * side], v * 3);
-            linerWakeColors.set([1, 1, 1, clamp(fade, 0, 1) * 0.9], v * 4);
-            linerWakeUvs.set([k, Math.min(1, distance / 2600)], v * 2);
-          }
-        }
-        linerWakeGeometry.setDrawRange(0, Math.max(0, n - 1) * 6);
-        for (const name of ['position', 'color', 'uv']) linerWakeGeometry.attributes[name].needsUpdate = true;
-        linerWake.visible = n > 1;
+        // Her top speed at sea is about 50 units/s; no spray off a liner's bow.
+        wakeEmit(ship, ship.x, ship.y, ship.a, ship.speed || 0, ship.l, ship.w, 55, false);
       }
 
       /* Per-frame: the superyacht's cutaway and radars, the sailing liner and her
