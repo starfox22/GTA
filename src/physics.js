@@ -426,6 +426,16 @@
           kickB = Math.abs(normalTorqueArmB * impulse * inverseInertiaB);
         if (kickA > 0.55) a.spinUntil = physicsClock + clamp(kickA * 0.32, 0.25, 1.1);
         if (b && kickB > 0.55) b.spinUntil = physicsClock + clamp(kickB * 0.32, 0.25, 1.1);
+        // A chasing cruiser that spun the player's car out: a PIT (policeReport()).
+        if (b && player.car && (a === player.car ? b : b === player.car ? a : null)?.pursuitPlan) {
+          const runner = a === player.car ? a : b,
+            kick = a === player.car ? kickA : kickB;
+          if (kick > 0.55 && physicsClock - (runner.pitCountedAt ?? -100) > 2) {
+            runner.pitCountedAt = physicsClock;
+            pursuitStats.spinouts++;
+            contactHoldUntil = gameTime + 3.5;
+          }
+        }
         // Sheet metal on sheet metal grips harder than a tyre-scuffed wall face.
         const friction = b ? 0.3 : 0.23,
           tx = -n.y,

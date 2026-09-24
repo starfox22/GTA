@@ -39,7 +39,9 @@
     };
     const PURSUIT_SEARCH_SECONDS = [0, 6, 9, 13, 18, 24];
     // Running totals for policeReport(): pursuit contacts with the player's car.
-    const pursuitStats = { contacts: 0, pits: 0, spawned: 0, tankShots: 0, sniperShots: 0, arrests: 0 };
+    const pursuitStats = { contacts: 0, pits: 0, spinouts: 0, spawned: 0, tankShots: 0, sniperShots: 0, arrests: 0 };
+    // Until then no cruiser tries contact (set when one spins the runner out).
+    let contactHoldUntil = 0;
     let dispatchTimer = 2,
       dispatchBurst = 0,
       arrestProgress = 0,
@@ -326,7 +328,8 @@
             fy = Math.sin(qa),
             side = (c.x - quarry.x) * -fy + (c.y - quarry.y) * fx >= 0 ? 1 : -1,
             qspec = vehicleSpec(quarry) || { l: 40, w: 20 };
-          if (tier.ram && d < 170 && qspeed > 40) {
+          // After a spin-out the pack gives the runner a few seconds to recover.
+          if (tier.ram && d < 170 && qspeed > 40 && gameTime >= contactHoldUntil) {
             if (c.role === 'pit' || c.role === undefined) {
               // Rear quarter panel, pushed through.
               target = {
@@ -362,6 +365,21 @@
         target = routeToward(c, null);
         // The last leg: straight at the runner once there is a clear line.
         if (d < 380 && c.seesPlayer) target = quarry;
+      }
+      // Coming at the runner nose to nose: no suicide rams. Brake hard and angle
+      // across the lane to make a rolling block the runner has to swerve round.
+      plan.headOn = false;
+      if (!onFoot && plan.mode !== 'search' && d < 260 && qspeed > 40) {
+        const cvx = Math.cos(c.a),
+          cvy = Math.sin(c.a),
+          facing = (cvx * qvx + cvy * qvy) / qspeed,
+          toward = ((quarry.x - c.x) * cvx + (quarry.y - c.y) * cvy) / Math.max(1, d);
+        if (facing < -0.5 && toward > 0.6) {
+          plan.headOn = true;
+          plan.mode = 'block';
+          const side = c.role === 'flank' ? 1 : -1;
+          target = { x: c.x - qvy / qspeed * side * 60 + cvx * 20, y: c.y + qvx / qspeed * side * 60 + cvy * 20 };
+        }
       }
       plan.target = target;
       plan.distance = d;
@@ -408,8 +426,9 @@
         if (distanceBetween(c, player) < 150) steer = 0;
       } else if (plan.mode === 'pit' || plan.mode === 'flank')
         desired = Math.max(desired, plan.quarrySpeed + (plan.mode === 'pit' ? 70 : 40));
+      else if (plan.headOn) desired = Math.min(desired, 35);
       else if (plan.mode === 'block') desired = Math.max(desired, plan.quarrySpeed + 90);
-      else if (plan.mode === 'chase' && !policeTier().ram && plan.distance < 110)
+      else if (plan.mode === 'chase' && (!policeTier().ram || gameTime < contactHoldUntil) && plan.distance < 110)
         // One star: tail the runner, do not ram them.
         desired = Math.min(desired, plan.quarrySpeed * 0.95);
       // Yaw needs rolling wheels: a stopped car cannot spin on the spot.
