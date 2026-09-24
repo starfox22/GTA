@@ -81,6 +81,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/county.js: Outlying districts
     County roads, towns, buildings, scenery, traffic, regional police and bridges.
   src/military.js: Fort Sentinel
+  src/armor.js: The player's tank: turret traverse, ammunition, reticle
     Base plan (SENTINEL), fences and gate (arms, bollards, sliding gates, ramming), challenge,
     alarm and lockdown, siren, garrison posts/patrols/drill/range, supply runs, military vehicles, combat.
   src/aviation.js: Fixed-wing flight and flight missions
@@ -1958,6 +1959,59 @@ kbd {
   to {
     opacity: 0;
   }
+}
+/* Tank gunnery (armor.js): a ring where the gunner wants the gun, a pip where
+   the barrel is laid (green when a round is loaded). */
+#tankReticle {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+#tankReticle i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+}
+#tankAimRing {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 2px dashed rgba(244, 244, 236, 0.75);
+  border-radius: 50%;
+}
+#tankBarrelPip {
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border: 2px solid #e8913a;
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+#tankBarrelPip::before,
+#tankBarrelPip::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-color: inherit;
+}
+#tankBarrelPip::before {
+  left: 8px;
+  top: 8px;
+  width: 2px;
+  height: 2px;
+  border: 1px solid;
+  border-color: inherit;
+}
+#tankBarrelPip.ready {
+  border-color: #6ee07a;
+}
+#tankBarrelPip.mg {
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
 }
 #hitMarker {
   position: absolute;
@@ -4689,6 +4743,7 @@ body.no-key-hints .quickkeys {
     </div>
     <div id="damageArc" aria-hidden="true"></div>
     <div id="hitMarker" aria-hidden="true"></div>
+    <div id="tankReticle" class="hidden" aria-hidden="true"><i id="tankAimRing"></i><i id="tankBarrelPip"></i></div>
     <div id="stealthStatus" style="display: none">
       <span id="stealthLabel"></span>
       <div class="meter"><i id="stealthFill"></i></div>

@@ -1933,8 +1933,15 @@
           );
           radio('call-backup');
         } else if (c.type === 'tank') {
-          militaryAlarm();
-          tell('TRACKED ARMOR · W/S drive · A/D pivot · F cannon · Mouse aim optional', 6);
+          // Taking one of Fort Sentinel's tanks raises the base; a pursuit tank
+          // taken off the army is a crime of its own.
+          if (c.military) militaryAlarm();
+          else if (c.lawUnit) crime(2);
+          tell(
+            'TRACKED ARMOR · ' + keyName('forward') + '/' + keyName('back') + ' drive · ' + keyName('left') + '/' + keyName('right') +
+              ' pivot · the mouse lays the turret · ' + keyName('fire') + ' fire · ' + keyName('cycleWeapon') + ' main gun / MG · right click MG',
+            7,
+          );
         } else if (isBoat(c))
           tell(
             keyName('forward') + '/' + keyName('back') + ' throttle · ' + keyName('left') + '/' + keyName('right') + ' steer · ' +
@@ -2008,8 +2015,8 @@
       if (player.parachute || transitRide) return;
       enforceVehicleHandgun();
       if (gameMode === 'play' && player.car?.type === 'tank') {
-        player.car.turretA = aim();
-        tankFire(player.car);
+        // The gun fires where the turret is laid, not where the mouse is (armor.js).
+        tankPlayerFire(player.car);
         return;
       }
       if (
@@ -2849,6 +2856,7 @@
         timed('civic', () => updateCivic(deltaSeconds));
         timed('roofencounter', () => updateRoofEncounter(deltaSeconds));
         timed('military', () => updateMilitary(deltaSeconds));
+        updatePlayerArmor(deltaSeconds);
         timed('combat', () => updateCombat(deltaSeconds));
         timed('mission', () => missionUpdate(deltaSeconds));
         timed('waypoint', () => updateWaypoint(deltaSeconds));
@@ -3745,6 +3753,11 @@
       drawPlayerMapMarker(drawingContext, width, height, scale, cx, cy, big);
     }
     function drawWeapon() {
+      // In a tank the chip shows the main gun or the MG (armor.js tankHud).
+      if (player.car?.type === 'tank') {
+        delete getElement('weaponArt').dataset.tankIcon;
+        return;
+      }
       drawWeaponIcon(getElement('weaponArt'), selectedWeaponIndex);
     }
     /* No weapon: a clenched fist seen from the side, knuckles forward (the way the
@@ -4113,6 +4126,12 @@
       updateExplorationUI();
       updateTouchUI();
       updateHud();
+      // In a tank the weapon chip shows the main gun and the MG (armor.js).
+      if (c?.type === 'tank') tankHud(c);
+      else if (getElement('weaponArt').dataset.tankIcon) {
+        delete getElement('weaponArt').dataset.tankIcon;
+        drawWeapon();
+      }
     }
     function resize() {
       viewportWidth = innerWidth;
@@ -4589,6 +4608,8 @@
     });
     canvas.addEventListener('mousedown', (e) => {
       if (performance.now() < worldTouchUntil || e.sourceCapabilities?.firesTouchEvents) return;
+      // The right button fires a tank's machine gun (armor.js).
+      if (e.button === 2 && gameMode === 'play') mouse.alt = true;
       if (e.button === 0 && gameMode === 'play') {
         mouse.down = true;
         mouse.active = true;
@@ -4598,7 +4619,7 @@
         shoot();
       }
     });
-    window.addEventListener('mouseup', () => (mouse.down = false));
+    window.addEventListener('mouseup', () => (mouse.down = mouse.alt = false));
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     getElement('creditsBtn').onclick = () => openCredits(getElement('creditsBtn'));
     getElement('closeCredits').onclick = () => {
@@ -4661,6 +4682,7 @@
     // @include src/crash-audio.js
     // @include src/county.js
     // @include src/military.js
+    // @include src/armor.js
     // @include src/aviation.js
     // @include src/challenges.js
     // @include src/sidejobs.js
@@ -4793,6 +4815,7 @@
       }
       const drawStart = performance.now();
       drawWorld();
+      updateTankReticle();
       const frameEnd = performance.now();
       profile.update += drawStart - updateStart;
       profile.draw += frameEnd - drawStart;
@@ -5154,6 +5177,17 @@
         effort: Math.round(pedalEffort() * 100) / 100,
         // Aircraft: absolute altitude in map units (0 on the ground).
         altitude: player.car ? Math.round(player.car.altitude || 0) : 0,
+        // Tanks: hull and turret headings (degrees), where the gunner is aiming,
+        // the traverse rate (deg/s) and the ammunition (armor.js).
+        ...(player.car?.type === 'tank'
+          ? {
+              hull: Math.round((player.car.a * 180) / Math.PI),
+              turret: Math.round(((player.car.turretA ?? player.car.a) * 180) / Math.PI),
+              aim: Math.round(((player.car.turretAim ?? player.car.a) * 180) / Math.PI),
+              traverse: Math.round(((player.car.turretRate || 0) * 180) / Math.PI),
+              arms: { ...tankArms(player.car), reload: Math.max(0, Math.round(((player.car.cannonReadyAt || 0) - gameTime) * 10) / 10) },
+            }
+          : {}),
       }),
       // Run the simulation forward without drawing, holding the given keys (for
       // example ['KeyW']), so physics tests do not depend on the headless frame

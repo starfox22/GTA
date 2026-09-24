@@ -678,7 +678,8 @@
       for (const x of [9665, 9715]) park('armytruck', x, 8950, north);
       for (const x of [9780, 9830]) park('apc', x, 8950, north);
       park('tank', 9490, 9080, north, { crewed: true });
-      park('tank', 9565, 9080, north, { crewed: true });
+      // The second tank is an older variant without the coaxial MG (armor.js).
+      park('tank', 9565, 9080, north, { crewed: true, noCoax: true });
       park('apc', 9645, 9080, north, { crewed: true, gunner: true });
       for (const x of [9715, 9765]) park('armytruck', x, 9080, north);
       for (const x of [9835, 9880, 9925]) park('jeep', x, 9080, north);
@@ -983,10 +984,8 @@
       // Vehicles: crewed armour and gunner jeeps engage; the QRF drives at the intruder.
       for (const c of vehicles) {
         if (!c.military || c.hp <= 0) continue;
-        if (c === player.car) {
-          c.turretA = aim();
-          continue;
-        }
+        // The player's turret traverses in armor.js.
+        if (c === player.car) continue;
         if (c.stolen || isAircraft(c)) continue;
         const d = distanceBetween(c, player),
           canEngage = alert && !playerOnRoof() && sameFloor(c, threat),

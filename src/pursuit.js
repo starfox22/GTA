@@ -963,7 +963,8 @@
               (v) => v !== c && v.hp > 0 && (v.cop || v.lawUnit) && !v.airUnit && distanceBetween(v, player) < 150,
             );
         const want = headingBetween(c, player);
-        c.turretA = (c.turretA ?? c.a) + clamp(normalizeAngle(want - (c.turretA ?? c.a)), -deltaSeconds * 1.3, deltaSeconds * 1.3);
+        // A real traverse (armor.js), a little quicker than the player's: the crew is waiting for it.
+        traverseTurret(c, want, deltaSeconds, 0.7, 1.4);
         if (!sees || officersClose) {
           c.lockTime = Math.max(0, (c.lockTime || 0) - deltaSeconds);
           continue;

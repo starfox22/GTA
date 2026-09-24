@@ -456,6 +456,8 @@
       return true;
     }
     function cycleWeapon() {
+      // In a tank the switch is between the main gun and the coaxial MG (armor.js).
+      if (toggleTankWeapon()) return;
       // In a vehicle: the pistol or nothing in hand.
       if (player.car && player.car.type !== 'tank') {
         if (selectedWeaponIndex !== FISTS_INDEX) selectWeapon(FISTS_INDEX);

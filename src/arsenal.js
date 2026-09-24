@@ -237,7 +237,8 @@
       } else if (civilian) target.dazedFor = Math.max(target.dazedFor || 0, 0.6);
       else target.staggerUntil = Math.max(target.staggerUntil || 0, gameTime + 0.45);
     }
-    getElement('weaponButton').onclick = openArsenal;
+    // In a tank the weapon chip switches between the main gun and the MG (armor.js).
+    getElement('weaponButton').onclick = () => (player.car?.type === 'tank' ? toggleTankWeapon() : openArsenal());
     getElement('closeArsenal').onclick = closeArsenal;
 
     function trapArsenalFocus(event) {
