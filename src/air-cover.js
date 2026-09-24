@@ -61,20 +61,7 @@
         minHeight: b.minHeight ?? 0,
         height: b.height,
       }));
-      for (const y of BRIDGES) {
-        const [a, b] = bridgeSpan(y);
-        blocks.push({
-          x: (a + b) / 2,
-          y,
-          hx: (b - a) / 2,
-          hy: 56,
-          a: 0,
-          minHeight: -7,
-          height: 0.8,
-          bridge: true,
-        });
-      }
-      for (const b of COUNTY_BRIDGES)
+      for (const b of BRIDGES)
         blocks.push({
           x: (b.a[0] + b.b[0]) / 2,
           y: (b.a[1] + b.b[1]) / 2,

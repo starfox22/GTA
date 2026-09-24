@@ -37,11 +37,13 @@
       CITY_SIZE = 5632,
       BLOCK_SIZE = 512,
       // Avenues run north-south at these x. The column plan never changed.
+      // Palm Keys (west of Northbank since the islands were rearranged) carries
+      // the negative columns: Ocean Dr -2432, Collins Ave... see STREET_NAMES.
       ROAD_CENTERS = Array.from(
         {
-          length: 11,
+          length: 16,
         },
-        (_, i) => 128 + i * BLOCK_SIZE,
+        (_, i) => 128 + (i - 5) * BLOCK_SIZE,
       ),
       /**
        * NORTH RECLAMATION
@@ -59,17 +61,40 @@
         },
         (_, i) => 128 + (i - NORTH_ROWS) * BLOCK_SIZE,
       ),
-      // Boulevard-width streets. Columns and rows share one list; the negative
-      // entries only ever match rows in the northern reclamation.
-      WIDE_ROADS = [1152, 2688, 3200, 4736, -1408, -2944],
+      // Boulevard-width streets: 112 wide with a double yellow centre line.
+      // Columns (x) and rows (y) are listed apart since Palm Keys moved west of
+      // Northbank and its avenues took negative x.
+      WIDE_COLUMNS = [-1920, 1152, 2688, 3200],
+      WIDE_ROWS = [1152, 2688, 3200, 4736, -1408, -2944],
+      /**
+       * FRAMES
+       * The city frame (CITY_LEFT..CITY_RIGHT, CITY_TOP..CITY_SIZE) is what the
+       * baked ground textures, the night light map and the street grid cover:
+       * Palm Keys in the west (negative x), Northbank and the northern
+       * reclamation. Beyond it, the county south and east (x or y past
+       * CITY_SIZE, county.js) and the theme-park island north of the reclamation
+       * (themepark.js) carry their own ground tiles. The world box
+       * (WORLD_LEFT..WORLD_SIZE, WORLD_TOP..WORLD_SIZE) bounds the sea, the map
+       * and the water shader's shore field.
+       */
       CITY_TOP = -4224,
+      CITY_LEFT = -3584,
+      CITY_RIGHT = 3712,
+      CITY_WIDTH = CITY_RIGHT - CITY_LEFT,
       CITY_HEIGHT = CITY_SIZE - CITY_TOP,
-      WORLD_TOP = -5632,
+      WORLD_TOP = -8192,
+      WORLD_LEFT = -5120,
+      WORLD_WIDTH = WORLD_SIZE - WORLD_LEFT,
       WORLD_HEIGHT = WORLD_SIZE - WORLD_TOP;
+    const wideColumn = (x) => WIDE_COLUMNS.includes(x),
+      wideRow = (y) => WIDE_ROWS.includes(y);
     const blockX = (bx) => 128 + bx * BLOCK_SIZE,
       blockY = (by) => 128 + by * BLOCK_SIZE,
-      BLOCK_X_MIN = 0,
+      BLOCK_X_MIN = -6,
       BLOCK_X_MAX = 9,
+      // Block columns in world-building order: Northbank first, as it always
+      // was, so the seeded buildings there are unchanged, then Palm Keys.
+      BLOCK_COLUMNS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -6, -5, -4, -3, -2, -1],
       BLOCK_Y_MIN = -NORTH_ROWS,
       BLOCK_Y_MAX = 9;
     const METERS_PER_UNIT = 100 / BLOCK_SIZE;
@@ -112,7 +137,7 @@
       nextVehicleId = 1;
     let mapZoom = 1,
       mapCenter = {
-        x: WORLD_SIZE / 2,
+        x: (WORLD_LEFT + WORLD_SIZE) / 2,
         y: (WORLD_TOP + WORLD_SIZE) / 2,
       };
     let cash = 0,
@@ -124,11 +149,13 @@
       missionIndex = 0,
       mission = null,
       completed = 0;
+    // Marlow Bay: the water between Northbank's east shore and Ridgeline's
+    // west shore (it was the narrow river before Palm Keys moved west).
     const RIVER = {
         left: 3420,
-        right: 3960,
+        right: 5880,
       },
-      BRIDGES = [1152, 3200, 4736],
+
       HELIPADS = [
         {
           x: 1420,
@@ -151,10 +178,10 @@
         [2, 5],
         [4, 7],
         [1, 8],
-        [8, 2],
-        [8, 5],
-        [9, 8],
-        [8, 9],
+        [-4, 2],
+        [-4, 5],
+        [-5, 8],
+        [-4, 9],
         [0, 7],
         [0, -2],
         [4, -4],
@@ -883,11 +910,11 @@
     // 4096-square texture's so the bitmap does not grow with the city.
     const GROUND_PIXELS_PER_UNIT = 3072 / CITY_SIZE;
     const groundCanvas = document.createElement('canvas');
-    groundCanvas.width = 3072;
+    groundCanvas.width = Math.ceil(CITY_WIDTH * GROUND_PIXELS_PER_UNIT);
     groundCanvas.height = Math.ceil(CITY_HEIGHT * GROUND_PIXELS_PER_UNIT);
     const groundContext = groundCanvas.getContext('2d');
     groundContext.scale(GROUND_PIXELS_PER_UNIT, GROUND_PIXELS_PER_UNIT);
-    groundContext.translate(0, -CITY_TOP);
+    groundContext.translate(-CITY_LEFT, -CITY_TOP);
     function rect(x, y, w, h, c) {
       groundContext.fillStyle = c;
       groundContext.fillRect(x, y, w, h);
@@ -912,9 +939,10 @@
       const cx = x + w / 2,
         vary = ((index * 7919) % 100) / 100;
       if (style === 2) return 34 + vary * 22;
-      if (x > RIVER.right) {
+      if (onPalmKeys(x)) {
         if (y < 1500) return 24 + vary * 26;
-        if (y < 3100) return cx > 5050 ? 54 + vary * 46 : 34 + vary * 30;
+        // The tall hotels line Ocean Dr (x -2432) on the island's sea side.
+        if (y < 3100) return cx < -2150 ? 54 + vary * 46 : 34 + vary * 30;
         if (y < 4400) return 22 + vary * 20;
         return 20 + vary * 18;
       }
@@ -947,7 +975,7 @@
         ].some((p) => onBoulevard(p[0], p[1], 28))
       )
         return null;
-      const tropical = x > RIVER.right;
+      const tropical = onPalmKeys(x);
       const b = {
         x,
         y,
@@ -1056,16 +1084,25 @@
       groundContext.save();
       coastPath(groundContext);
       groundContext.clip();
-      rect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT, '#334a48');
+      rect(CITY_LEFT, CITY_TOP, CITY_WIDTH, CITY_HEIGHT, '#334a48');
+      // The speckle keeps its old sweep over Northbank first so the seeded
+      // sequence (and every building drawn after it) is unchanged, then covers
+      // the western part of the frame with a local generator.
       for (let x = 0; x < CITY_SIZE; x += 32)
         for (let y = CITY_TOP; y < CITY_SIZE; y += 26) {
           if (seededRandom() > 0.6)
             rect(x + seededRandom() * 20, y, randomBetween(5, 16), 1, '#7795812b');
         }
-      rect(48, CITY_TOP + 48, CITY_SIZE - 112, CITY_HEIGHT - 112, '#696d60');
+      for (let x = CITY_LEFT, k = 0; x < 0; x += 32)
+        for (let y = CITY_TOP; y < CITY_SIZE; y += 26, k++) {
+          const h = Math.sin(k * 12.9898) * 43758.5453,
+            u = h - Math.floor(h);
+          if (u > 0.6) rect(x + (u - 0.6) * 50, y, 5 + (u - 0.6) * 27, 1, '#7795812b');
+        }
+      rect(CITY_LEFT + 48, CITY_TOP + 48, CITY_WIDTH - 112, CITY_HEIGHT - 112, '#696d60');
       paintCityStreets(groundContext, true);
       paintMarina(groundContext);
-      for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+      for (const bx of BLOCK_COLUMNS)
         for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
           const x = blockX(bx) + 89,
             y = blockY(by) + 89,
@@ -1143,7 +1180,7 @@
                 rect(x + 220 + (j % 2) * 52 + k, y + 210 + ((j / 2) | 0) * 33, 1, 23, '#191f2433');
             }
           } else {
-            if (bx >= 7) {
+            if (bx >= 7 || bx < 0) {
               makeBuilding(x + 28, y + 30, 262, 108, 0);
               if (by % 2 === 0) makeBuilding(x + 65, y + 205, 205, 94, 1);
               for (let z = 165; z < 335; z += 65) drawTree(x + 18, y + z, 16);
@@ -1221,17 +1258,8 @@
             rect(x + w + 16, y + 17 + s * 150, 3, 3, '#3f453a');
           }
         }
-      // Waterfront promenades, continuous river and three navigable crossings.
+      // Waterfront promenades (the bridge decks come with paintDistrictGround).
       paintPromenades(groundContext);
-      for (const bridge of BRIDGES) {
-        rect(RIVER.left - 140, bridge - 56, RIVER.right - RIVER.left + 280, 112, '#3b4248');
-        rect(RIVER.left, bridge - 65, RIVER.right - RIVER.left, 9, '#bbb19b');
-        rect(RIVER.left, bridge + 56, RIVER.right - RIVER.left, 9, '#bbb19b');
-        for (let x = RIVER.left - 120; x < RIVER.right + 120; x += 31) {
-          rect(x, bridge - 2, 15, 1, '#c3af72');
-          rect(x, bridge + 2, 15, 1, '#c3af72');
-        }
-      }
       for (const pad of HELIPADS) {
         rect(pad.x - 49, pad.y - 49, 98, 98, '#52656a');
         groundContext.strokeStyle = '#e1d8ac';
@@ -1336,7 +1364,7 @@
       makeCar('roadster', 1040, 704, 0);
       makeCar('rally', 1300, 704, 0);
       makeCar('hotrod', 1510, 576, 0);
-      makeCar('limousine', 4530, 1728, 0);
+      makeCar('limousine', -1614, 1728, 0);
       for (const d of DOCKS) makeCar(d.type, d.boatX, d.boatY, Math.PI / 2, false);
       for (const p of PLACES)
         if (p.kind === 'hospital') makeCar('ambulance', p.door.x + 94, p.door.y + 18, 0, false);
@@ -1350,7 +1378,7 @@
           y: 1177,
         },
         {
-          x: 4590,
+          x: -1554,
           y: 3225,
         },
       ]) {
@@ -1364,7 +1392,7 @@
           r = randomChoice(vert ? ROAD_CENTERS : ROAD_ROWS),
           v = vert
             ? randomBetween(CITY_TOP + 170, CITY_SIZE - 260)
-            : randomBetween(170, CITY_SIZE - 260),
+            : randomBetween(CITY_LEFT + 170, CITY_SIZE - 260),
           dir = seededRandom() > 0.5 ? 1 : -1,
           x = vert ? r - dir * 25 : v,
           y = vert ? v : r + dir * 25,
@@ -1408,7 +1436,7 @@
       }
       for (let i = 0; i < 70; i++) {
         const r = randomChoice(ROAD_ROWS),
-          v = randomBetween(240, CITY_SIZE - 260),
+          v = randomBetween(CITY_LEFT + 240, CITY_SIZE - 260),
           side = randomChoice([-1, 1]),
           x = v,
           y = r + side * 64,
@@ -1445,7 +1473,7 @@
           r = randomChoice(vertical ? ROAD_CENTERS : ROAD_ROWS),
           v = vertical
             ? randomBetween(CITY_TOP + 180, CITY_SIZE - 260)
-            : randomBetween(180, CITY_SIZE - 260),
+            : randomBetween(CITY_LEFT + 180, CITY_SIZE - 260),
           x = vertical ? r + randomChoice([-67, 67]) : v,
           y = vertical ? v : r + randomChoice([-67, 67]);
         if (!solid(x, y, 5) && !inHarbor(x, y, 8) && !vehicles.some((c) => pointInCar(x, y, c, 10))) {
@@ -2044,7 +2072,7 @@
     }
     function aheadOf(t, seconds) {
       return {
-        x: clamp(t.x + (t.vx || 0) * seconds, 40, WORLD_SIZE - 40),
+        x: clamp(t.x + (t.vx || 0) * seconds, WORLD_LEFT + 40, WORLD_SIZE - 40),
         y: clamp(t.y + (t.vy || 0) * seconds, WORLD_TOP + 40, WORLD_SIZE - 40),
       };
     }
@@ -3227,14 +3255,14 @@
       );
       worldContext.scale(canvasScale, canvasScale);
       worldContext.translate(-cameraTarget.x, -cameraTarget.y);
-      const sx = clamp(cameraTarget.x - viewportWidth / canvasScale / 2 - 20, 0, CITY_SIZE),
+      const sx = clamp(cameraTarget.x - viewportWidth / canvasScale / 2 - 20, CITY_LEFT, CITY_RIGHT),
         sy = clamp(cameraTarget.y - viewportHeight / canvasScale / 2 - 20, CITY_TOP, CITY_SIZE),
-        sw = Math.min(viewportWidth / canvasScale + 40, CITY_SIZE - sx),
+        sw = Math.min(viewportWidth / canvasScale + 40, CITY_RIGHT - sx),
         sh = Math.min(viewportHeight / canvasScale + 40, CITY_SIZE - sy);
       if (sw > 0 && sh > 0)
         worldContext.drawImage(
           groundCanvas,
-          sx * GROUND_PIXELS_PER_UNIT,
+          (sx - CITY_LEFT) * GROUND_PIXELS_PER_UNIT,
           (sy - CITY_TOP) * GROUND_PIXELS_PER_UNIT,
           sw * GROUND_PIXELS_PER_UNIT,
           sh * GROUND_PIXELS_PER_UNIT,
@@ -3475,7 +3503,7 @@
     }
     function drawMap(drawingContext, width, height, big = false) {
       const scale = big
-          ? Math.min(width / WORLD_SIZE, height / WORLD_HEIGHT) * 0.92 * mapZoom
+          ? Math.min(width / WORLD_WIDTH, height / WORLD_HEIGHT) * 0.92 * mapZoom
           : MINIMAP_SCALE,
         cx = big ? mapCenter.x : player.x,
         cy = big ? mapCenter.y : player.y;
@@ -3572,16 +3600,20 @@
           ['THE RECLAMATION', 1420, -760],
           ['N O R T H B A N K', 1580, 540],
           ['CENTRAL GARDEN', 2176, 3224],
-          ['SUNSET PIER', 3810, 5190],
+          ['SUNSET PIER', 3000, -6400],
           ['EXCHANGE DISTRICT', 2680, 2890],
           ['BROADWAY', 1330, 3390],
           ['BATTERY POINT', 2480, 5140],
+          ['BATTERY PARK', 2440, 5420],
           ['SOUTHPORT', 640, 5450],
-          ['P A L M  K E Y S', 4720, 535],
-          ['OCEAN DRIVE', 4800, 2770],
-          ['LITTLE HAVANA', 4820, 4150],
-          ['CORAL MARINA', 4620, 4880],
-          ['M A R L O W  B A Y', 3670, 2560],
+          ['P A L M  K E Y S', -1900, 535],
+          ['OCEAN DRIVE', -2200, 2770],
+          ['LITTLE HAVANA', -1900, 4150],
+          ['CORAL MARINA', -1700, 4880],
+          ['PALM KEYS BEACH', -1970, 5620],
+          ['P A L M  S O U N D', -560, 2300],
+          ['M A R L O W  B A Y', 4650, 2560],
+          ['N O R T H  S O U N D', 1500, -4900],
         ];
         for (const [label, x, y] of labels) {
           drawingContext.font = 'bold 11px Arial';
@@ -3590,7 +3622,7 @@
           const px = width / 2 + (x - cx) * scale,
             py = height / 2 + (y - cy) * scale;
           drawingContext.strokeText(label, px, py);
-          drawingContext.fillStyle = label.includes('B A Y') ? '#a3d1d5' : '#ede6d2';
+          drawingContext.fillStyle = /B A Y|S O U N D/.test(label) ? '#a3d1d5' : '#ede6d2';
           drawingContext.fillText(label, px, py);
         }
         drawingContext.fillStyle = '#a6c4cb';
@@ -4204,14 +4236,14 @@
         if (mapZoom === 1 || code === 'Digit0') {
           mapZoom = 1;
           mapCenter = {
-            x: WORLD_SIZE / 2,
+            x: (WORLD_LEFT + WORLD_SIZE) / 2,
             y: (WORLD_TOP + WORLD_SIZE) / 2,
           };
         } else {
           const step = 500 / mapZoom;
           mapCenter.x = clamp(
             mapCenter.x + (code === 'ArrowRight' ? step : code === 'ArrowLeft' ? -step : 0),
-            0,
+            WORLD_LEFT,
             WORLD_SIZE,
           );
           mapCenter.y = clamp(
@@ -4580,7 +4612,7 @@
      * `DeadEndCity` on window is a small, documented debugging surface used by
      * tools/smoke.mjs and by anyone maintaining the game from the browser
      * console. It reads and writes the same state the game itself uses; it is
-     * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(4300, 2600).
+     * not a cheat menu wired into the UI. Example: DeadEndCity.teleport(-1844, 2600).
      */
     window.DeadEndCity = Object.freeze({
       version: "29.0.0",
@@ -4630,8 +4662,8 @@
         for (const p of m.packages) p.got = true;
         m.collected = 3;
         m.loading = null;
-        teleportPlayer(4480, 4180);
-        Object.assign(m.car, { x: 4480, y: 4232, a: Math.PI / 2, vx: 0, vy: 0, av: 0, speed: 0 });
+        teleportPlayer(-1664, 4180);
+        Object.assign(m.car, { x: -1664, y: 4232, a: Math.PI / 2, vx: 0, vy: 0, av: 0, speed: 0 });
         m.car.cargoCount = 3;
         enterVehicle(m.car);
         setStage(3, HARBOR.delivery, 'LEAVE THE HARBOR WITH ALL THREE CRATES');
@@ -4973,7 +5005,7 @@
           y: Math.round(l.y),
           top: { x: Math.round(l.top.x), y: Math.round(l.top.y) },
         })),
-      // Southport Beach: how busy it is and what everyone is doing (beach.js).
+      // Palm Keys Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
       // Rooftop helipads, the roof the player stands on and the roof under the
       // player's helicopter (rooftops.js); with a map point, that roof and its plant.
@@ -5026,7 +5058,8 @@
         streets: cityStreets().map((r) => ({ points: r.points, width: r.width })),
         boulevards: [...BOULEVARDS, ...SERVICE_ROADS].map((r) => ({ name: r.name, points: r.points, width: r.width })),
         countyRoads: COUNTY_ROADS.map((r) => ({ name: r.name, points: r.points, width: r.width, bridge: !!r.bridge })),
-        bridges: BRIDGES.map((y) => ({ y, span: bridgeSpan(y) })),
+        bridges: BRIDGES.map((b) => ({ id: b.id, name: b.name, link: b.link, a: b.a, b: b.b, width: b.width, deck: b.deck, pylons: bridgePylons(b) })),
+        reserved: { beachClub: BEACH_CLUB_PLOT, themePark: THEME_PARK_RESERVE },
         rail: RAIL_LINES.map((l) => ({ id: l.id, name: l.name, color: l.color, points: l.points })),
         railDecks: railDecks(),
         railPiers: railPiers.map((p) => ({ x: p.x, y: p.y, w: p.w, h: p.h })),
@@ -5065,6 +5098,21 @@
       },
       // Named places the tests can visit: every PLACES entry plus the landmarks.
       places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
+      // GPS: set a map waypoint and report the route the navigation graph finds
+      // from the player (status, road length, the islands it passes through).
+      route(x, y) {
+        setWaypoint(x, y);
+        let length = 0;
+        for (let i = 1; i < userRoute.length; i++) length += distanceBetween(userRoute[i - 1], userRoute[i]);
+        return {
+          status: routeStatus,
+          points: userRoute.length,
+          length: Math.round(length),
+          bridges: [...new Set(userRoute.map((p) => BRIDGES.find((b) => segmentDistance(p.x, p.y, b.a, b.b) <= b.width / 2)?.id).filter(Boolean))],
+          first: userRoute[0] || null,
+          last: userRoute.at(-1) || null,
+        };
+      },
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
       cab(x, y) {
         const car = spawnClearCar('taxi', player.x + 44, player.y, 0, true);

@@ -14,7 +14,7 @@
         tx.colorSpace = Three.SRGBColorSpace;
         tx.anisotropy = 8;
         const m = new Three.Mesh(
-          new Three.PlaneGeometry(CITY_SIZE, CITY_SIZE),
+          new Three.PlaneGeometry(tile.w, tile.h),
           new Three.MeshStandardMaterial({
             map: tx,
             roughness: 0.94,
@@ -23,7 +23,7 @@
         );
         countyGroundMaterials.push(m.material);
         m.rotation.x = -Math.PI / 2;
-        m.position.set(tile.x + CITY_SIZE / 2, 0.025, tile.y + CITY_SIZE / 2);
+        m.position.set(tile.x + tile.w / 2, 0.025, tile.y + tile.h / 2);
         m.receiveShadow = true;
         scene.add(m);
       }
@@ -187,7 +187,7 @@
           radius: 65,
         });
       }
-      for (const bridge of COUNTY_BRIDGES) {
+      for (const bridge of BRIDGES) {
         const dx = bridge.b[0] - bridge.a[0],
           dz = bridge.b[1] - bridge.a[1],
           length = Math.hypot(dx, dz),
@@ -217,9 +217,7 @@
         }
         for (const side of [-1, 1])
           box(group, 0, 0.6, side * (bridge.width / 2 - 8), length, 0.1, 2, countyCream);
-        for (const x of (bridge.name.includes('CAUSEWAY') ? [] : [-length * 0.18, length * 0.18]).filter(
-          (x) => !landAt(group.position.x + Math.cos(a) * x, group.position.z + Math.sin(a) * x),
-        )) {
+        for (const x of [...new Set(bridgePylons(bridge).map((p) => p.along))]) {
           for (const side of [-1, 1]) {
             box(group, x, 69, side * (bridge.width / 2 + 9), 13, 140, 14, countyStone);
             for (let k = -5; k <= 5; k++) {

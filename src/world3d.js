@@ -15,8 +15,8 @@
        */
       // The world box is taller than it is wide since the northern reclamation, so
       // the distance field is too; texels stay square, which the chamfer pass needs.
-      const SHORE_RES = 512,
-        SHORE_ROWS = Math.round((SHORE_RES * WORLD_HEIGHT) / WORLD_SIZE),
+      const SHORE_RES = 768,
+        SHORE_ROWS = Math.round((SHORE_RES * WORLD_HEIGHT) / WORLD_WIDTH),
         SHORE_UNIT_SCALE = 4; // texel value 255 = 1020 world units from land
       function buildShoreDistanceTexture() {
         const maskCanvas = document.createElement('canvas');
@@ -25,8 +25,8 @@
         const mc = maskCanvas.getContext('2d', { willReadFrequently: true });
         mc.fillStyle = '#000';
         mc.fillRect(0, 0, SHORE_RES, SHORE_ROWS);
-        mc.scale(SHORE_RES / WORLD_SIZE, SHORE_RES / WORLD_SIZE);
-        mc.translate(0, -WORLD_TOP);
+        mc.scale(SHORE_RES / WORLD_WIDTH, SHORE_RES / WORLD_WIDTH);
+        mc.translate(-WORLD_LEFT, -WORLD_TOP);
         coastPath(mc);
         mc.fillStyle = '#fff';
         mc.fill();
@@ -61,12 +61,12 @@
           }
         // Green channel: how close the water is to an open-sea beach, so the
         // shader knows where to draw sandy shallows and rolling breakers. Beach
-        // shores up the bay and the river mouth are sheltered and left out.
+        // shores in a sheltered sound would be left out; every sand shore faces open sea.
         mc.setTransform(1, 0, 0, 1, 0, 0);
         mc.fillStyle = '#000';
         mc.fillRect(0, 0, SHORE_RES, SHORE_ROWS);
-        mc.scale(SHORE_RES / WORLD_SIZE, SHORE_RES / WORLD_SIZE);
-        mc.translate(0, -WORLD_TOP);
+        mc.scale(SHORE_RES / WORLD_WIDTH, SHORE_RES / WORLD_WIDTH);
+        mc.translate(-WORLD_LEFT, -WORLD_TOP);
         mc.filter = 'blur(3px)';
         mc.strokeStyle = 'rgba(255,255,255,0.6)';
         mc.lineWidth = 460;
@@ -74,7 +74,6 @@
         mc.beginPath();
         for (const e of coastSegments()) {
           if (e.opening || shoreStyle(e) !== 'beach') continue;
-          if (e.x > RIVER.left - 200 && e.x < RIVER.right + 200 && e.y < 4750) continue;
           const dx = (Math.cos(e.a) * e.length) / 2,
             dy = (Math.sin(e.a) * e.length) / 2;
           mc.moveTo(e.x - dx, e.y - dy);
@@ -84,7 +83,7 @@
         mc.filter = 'none';
         const beachMask = mc.getImageData(0, 0, SHORE_RES, SHORE_ROWS).data;
         const data = new Uint8Array(n * 4),
-          unitsPerTexel = WORLD_SIZE / SHORE_RES;
+          unitsPerTexel = WORLD_WIDTH / SHORE_RES;
         for (let i = 0; i < n; i++) {
           const units = (dist[i] / 3) * unitsPerTexel,
             v = Math.round(Math.min(255, units / SHORE_UNIT_SCALE));
@@ -106,8 +105,8 @@
         uSun: { value: new Three.Vector3(-0.45, 0.76, -0.23).normalize() },
         uShore: { value: buildShoreDistanceTexture() },
         uWorldSize: { value: WORLD_SIZE },
-        uWorldOrigin: { value: new Three.Vector2(0, WORLD_TOP) },
-        uWorldExtent: { value: new Three.Vector2(WORLD_SIZE, WORLD_HEIGHT) },
+        uWorldOrigin: { value: new Three.Vector2(WORLD_LEFT, WORLD_TOP) },
+        uWorldExtent: { value: new Three.Vector2(WORLD_WIDTH, WORLD_HEIGHT) },
         uShoreScale: { value: 255 * SHORE_UNIT_SCALE },
         // 1 while the perspective flight camera is active: view vectors then run
         // from each fragment to the camera instead of along one fixed direction.
@@ -209,7 +208,7 @@
             float facing = max(dot(viewDir, n), 0.);
             float fresnel = 0.04 + 0.96 * pow(1. - facing, 4.);
             // Regional palettes: turquoise Keys and county reefs, cold slate in Marlow Bay.
-            float tropical = smoothstep(3500., 4600., vWorld.x) + smoothstep(5400., 6400., vWorld.z);
+            float tropical = 1. - smoothstep(-1700., -300., vWorld.x) + smoothstep(5400., 6400., vWorld.z);
             tropical = clamp(tropical, 0., 1.);
             vec3 deep = mix(vec3(.018, .10, .19), vec3(.02, .26, .32), tropical);
             vec3 shallow = mix(vec3(.10, .40, .48), vec3(.22, .68, .66), tropical);
@@ -294,8 +293,8 @@
        */
       for (const e of coastSegments()) {
         if (e.opening) continue;
-        // Southport Beach's waterline is drawn by beach3d.js (sand, wet sand, swash).
-        if (shoreStyle(e) === 'beach' && e.region === 'northbank') continue;
+        // Palm Keys Beach's waterline is drawn by beach3d.js (sand, wet sand, swash).
+        if (beachShore(e)) continue;
         const group = new Three.Group(),
           style = shoreStyle(e),
           { nx, ny } = shoreNormal(e);
@@ -540,12 +539,13 @@
         });
         return g;
       }
-      // The keys trade brick canyons for pastel hotels, pools, palms and beach furniture.
+      // The keys trade brick canyons for pastel hotels, pools, palms and beach
+      // furniture. Palms line both kerbs of Ocean Dr (x -2432) on the sea side.
       for (let z = 730; z < 4550; z += 145) {
-        const x = z < 1900 ? 5250 : z < 3200 ? 5260 : 5170;
+        const x = z < 1900 ? -2434 : z < 3200 ? -2444 : -2354;
         if (landAt(x, z)) {
-          makePalm(x - 62, z, 1.15);
-          makePalm(x + 67, z + 20, 1);
+          makePalm(x + 62, z, 1.15);
+          makePalm(x - 67, z + 20, 1);
         }
       }
       const resortColors = ['#e3b7a6', '#a7cbc5', '#d8cba8', '#aebbd8'];
@@ -576,8 +576,9 @@
           radius: 230,
         });
       }
+      // Beach umbrellas on Ocean Drive's strand.
       for (let z = 1100; z < 4200; z += 180) {
-        const x = z < 2600 ? 5400 : 5390;
+        const x = z < 2600 ? -2584 : -2574;
         if (!landAt(x, z)) continue;
         const group = new Three.Group();
         scene.add(group);
@@ -594,9 +595,10 @@
           radius: 30,
         });
       }
-      sign('OCEAN DRIVE', 5170, 1620, 125, '#b7ece1');
-      sign('PALM KEYS', 4180, 1110, 150, '#eab7bc');
-      sign('NORTHBANK', 3200, 1090, 125, '#d1d9ce');
+      sign('OCEAN DRIVE', -2354, 1620, 125, '#b7ece1');
+      // At the Palm Keys end of the Keys Bridge, and at its Northbank end.
+      sign('PALM KEYS', -1364, 1090, 150, '#eab7bc');
+      sign('NORTHBANK', 330, 1090, 125, '#d1d9ce');
       // A terminal, gate arms, control tower, service equipment and parked aircraft.
       const ag = new Three.Group();
       scene.add(ag);
@@ -879,32 +881,9 @@
         waterSurface.position.z = Math.round(viewCenter.y / 25) * 25;
         farWater.material.color
           .set('#061421')
-          .lerp(new Three.Color(cameraTarget.x > 3900 ? '#0c5a68' : '#0f3a52'), light);
+          .lerp(new Three.Color(cameraTarget.x < -600 ? '#0c5a68' : '#0f3a52'), light);
       }
 
-      // Causeway railings match the complete collision spans, including the wider southern bay.
-      for (const z of BRIDGES) {
-        const [start, end] = bridgeSpan(z),
-          group = new Three.Group();
-        scene.add(group);
-        batchGroups.push(group);
-        for (const [a, b] of bridgeRailSpans(z).flatMap(([a, b]) => [
-          [a, Math.min(b, RIVER.left)],
-          [Math.max(a, RIVER.right), b],
-        ]))
-          if (b > a)
-            for (const side of [-1, 1]) {
-              box(group, (a + b) / 2, 4, z + side * 55, b - a, 7, 4, concrete);
-              box(group, (a + b) / 2, 8, z + side * 55, b - a, 1.1, 1.5, chrome);
-              for (let x = a + 18; x < b; x += 68) box(group, x, 3, z + side * 55, 2, 9, 5, chrome);
-            }
-        statics.push({
-          x: (start + end) / 2,
-          y: z,
-          group,
-          radius: (end - start) / 2 + 100,
-        });
-      }
       const rescueBuoy = new Three.Group();
       rescueBuoy.position.set(LOC.waterCase.x, 0, LOC.waterCase.y);
       scene.add(rescueBuoy);

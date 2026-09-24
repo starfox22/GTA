@@ -100,6 +100,7 @@ something, never a generic code-evaluation hook.
 | `policeReport()` | The police response: stars, heat and the next star's threshold, the incident's body count, search (active, seconds left, last sighting), arrest progress, the tier's allowances, counts by unit (patrol, swat, fed, army, air, officers, roadblocks), every unit and officer, pursuit contacts and PITs |
 | `nearbyPeople(radius, kind)` | Living people near the player, nearest first (`civilian`, `police`, `gang` or `all`), with line of sight: play-tests pick victims with it |
 | `arm(index)` | Own weapon `index` (0 pistol to 5 precision rifle) with full ammunition and select it |
+| `route(x, y)` | Set a map waypoint and report the GPS route from the player: status, road length, the bridges it crosses |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
@@ -123,7 +124,7 @@ something, never a generic code-evaluation hook.
 | `graphics(tier)` | Graphics quality: `auto`, `low`, `medium`, `high`, `ultra` (saved like the pause-menu setting); returns the active tier, GPU and shadow-map size. Headless SwiftShader auto-detects as LOW, so screenshot tours should call `graphics('high')` |
 | `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
-| `beach()` | Southport Beach: crowd density for the hour, who is there and what they are doing, prop counts |
+| `beach()` | Palm Keys Beach: crowd density for the hour, who is there and what they are doing, prop counts |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
 | `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |
