@@ -62,15 +62,101 @@
         bridgeLedMaterials.push(m);
         return m;
       }
-      // Additive pools of lamp light on the deck and foam round the footings.
-      const bridgePoolMaterial = new Three.MeshBasicMaterial({
-        map: haloTx,
-        color: '#ffc47a',
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-        blending: Three.AdditiveBlending,
-      });
+      /* Lamp light on the deck. Each bridge paints its lamps' pools into a small
+         light map of its own deck (along x across, about 2 units a texel) once it
+         is built, and the carriageway, footways and kerbs add it as light in
+         their shader, as the city streets do with the night light map
+         (lighting3d.js): lit by their own albedo, with a sheen on wet tarmac.
+         (Additive halo planes lying on the deck read as orange fog over black
+         asphalt and were cut off by the kerbs.) Each lamp also smears down the
+         wet road in the rain (signage3d.js streaks). */
+      const bridgeDeckLampPower = { value: 0 };
+      function bridgeDeckLight(length, halfWidth) {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.min(2048, Math.ceil(length / 2));
+        canvas.height = 64;
+        const texture = new Three.CanvasTexture(canvas);
+        texture.colorSpace = Three.SRGBColorSpace;
+        texture.generateMipmaps = false;
+        texture.minFilter = Three.LinearFilter;
+        texture.flipY = false;
+        return { canvas, texture, length, halfWidth };
+      }
+      // Paint the pools ({x along from the middle, z across, size}) into the map.
+      function paintBridgeDeckLight(light, from, pools) {
+        const g = light.canvas.getContext('2d'),
+          sx = light.canvas.width / light.length,
+          sz = light.canvas.height / (light.halfWidth * 2);
+        g.fillStyle = '#000';
+        g.fillRect(0, 0, light.canvas.width, light.canvas.height);
+        g.globalCompositeOperation = 'lighter';
+        for (const p of pools) {
+          const u = (p.x - from) * sx,
+            v = (p.z + light.halfWidth) * sz,
+            r = p.size;
+          g.save();
+          g.translate(u, v);
+          g.scale(sx, sz);
+          const grad = g.createRadialGradient(0, 0, 0, 0, 0, r);
+          grad.addColorStop(0, 'rgba(255,205,150,0.95)');
+          grad.addColorStop(0.3, 'rgba(255,196,135,0.6)');
+          grad.addColorStop(0.65, 'rgba(255,186,120,0.18)');
+          grad.addColorStop(1, 'rgba(255,180,110,0)');
+          g.fillStyle = grad;
+          g.fillRect(-r, -r, r * 2, r * 2);
+          g.restore();
+        }
+        g.globalCompositeOperation = 'source-over';
+        light.texture.needsUpdate = true;
+      }
+      // A lamp's pool at (x, z) in the bridge's frame, and its smear on the wet road.
+      function bridgePool(g, x, z, size) {
+        g.updateMatrixWorld(true);
+        const p = g.localToWorld(new Three.Vector3(x, 0, z));
+        addStreak(p.x, p.z, size * 0.22, size * 1.5, '#ffcf96', 0.9, { phase: Math.random() });
+        return { x, z, size };
+      }
+      const BRIDGE_DECK_LIGHT_PARS = `
+        varying vec2 vDeckUv;
+        uniform sampler2D deckLampMap;
+        uniform float deckLampPower;
+        uniform float deckFrom;
+        uniform float deckLength;
+        uniform float deckHalfWidth;`;
+      const BRIDGE_DECK_LIGHT_APPLY = `
+        {
+          vec2 lampUv = vec2( ( vDeckUv.x - deckFrom ) / deckLength, vDeckUv.y / ( deckHalfWidth * 2.0 ) + 0.5 );
+          vec3 deckLamp = texture2D( deckLampMap, lampUv ).rgb * deckLampPower;
+          reflectedLight.directDiffuse += deckLamp * material.diffuseColor;
+          reflectedLight.directSpecular += deckLamp * 0.7 * ( 1.0 - material.roughness ) * ( 1.0 - material.roughness );
+        }`;
+      // Uniforms for a material of this bridge's deck.
+      function bridgeDeckUniforms(light) {
+        return {
+          deckLampMap: { value: light.texture },
+          deckLampPower: bridgeDeckLampPower,
+          deckFrom: { value: 0 },
+          deckLength: { value: light.length },
+          deckHalfWidth: { value: light.halfWidth },
+        };
+      }
+      // Footways and kerbs: their own colour, lit by the deck's lamps.
+      function bridgeLitMaterial(base, light) {
+        const m = new Three.MeshStandardMaterial({ color: base.color, roughness: base.roughness, metalness: base.metalness }),
+          uniforms = bridgeDeckUniforms(light);
+        m.onBeforeCompile = (shader) => {
+          cityMaterialPatch(shader);
+          Object.assign(shader.uniforms, uniforms);
+          shader.vertexShader = shader.vertexShader
+            .replace('#include <common>', '#include <common>\nvarying vec2 vDeckUv;')
+            .replace('#include <uv_vertex>', '#include <uv_vertex>\nvDeckUv = uv;');
+          shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\n' + BRIDGE_DECK_LIGHT_PARS)
+            .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + BRIDGE_DECK_LIGHT_APPLY);
+        };
+        m.customProgramCacheKey = () => 'bridge-walk';
+        return m;
+      }
       /* Foam round a footing: a ring of broken white water fading outward, painted
          once. It lies just above the highest swell crest so waves never poke
          through it (world3d.js: flat overlays under the surface did). */
@@ -191,12 +277,138 @@
           ];
         mesh(prismGeometry(outline, outline, bottom, top, true), material, parent, 0, 0, 0);
       }
+      /* ---- Carriageway surface ------------------------------------------------------ */
+      /**
+       * The road on every deck is one shaded surface rather than a flat grey box
+       * with boxes of paint on it: the markings are drawn in the shader with
+       * pixel-footprint antialiasing (crisp at any zoom, no z-fighting, no
+       * shimmering dashes), and the asphalt carries the wear a real bridge deck
+       * shows: aggregate grain and stone chips, polished tyre paths down every
+       * lane, tar-sealed longitudinal seams, repair patches, oil drips, a gutter
+       * of grime along each kerb with drain grates, and worn paint. When it rains
+       * the surface darkens, the tyre ruts and gutters hold water and the paint
+       * and puddles go glossy (weather.wet, via cityWet), so lamps and headlights
+       * streak in it like the city streets.
+       * The geometry's uv is (distance from the deck's start, across the deck to
+       * the right), both in world units; one material per bridge carries its
+       * half-width and length, all sharing one program.
+       */
+      const BRIDGE_ROAD_VERTEX = `
+        vDeckUv = uv;`;
+      const BRIDGE_ROAD_ALBEDO = `
+        vec2 dUv = vDeckUv;
+        vec2 wp = vCityWorld.xz;
+        float acr = abs( dUv.y );
+        float footprint = length( fwidth( dUv ) );
+        float detail = 1.0 - smoothstep( 0.6, 2.5, footprint );
+        float laneW = deckHalfRoad * 0.5;
+        // Aggregate: two octaves of grain, broad tonal drift and pale stone chips.
+        float g1 = cityNoise( wp * 1.7 ), g2 = cityNoise( wp * 4.3 + 7.0 ), g3 = cityNoise( wp * 0.045 + 3.0 );
+        float grain = mix( 0.5, g1 * 0.55 + g2 * 0.45, detail );
+        vec3 roadColor = vec3( 0.043, 0.047, 0.05 ) * ( 0.86 + 0.28 * grain ) * ( 0.88 + 0.24 * g3 );
+        roadColor += vec3( 0.014 ) * step( 0.9, cityHash( floor( wp * 2.6 ) ) ) * detail;
+        // Tyre paths: two polished, slightly darker bands down every lane.
+        float laneOffset = abs( mod( acr, laneW ) - laneW * 0.5 );
+        float track = 1.0 - smoothstep( 1.0, 3.4, abs( laneOffset - laneW * 0.19 ) );
+        track *= step( acr, deckHalfRoad - 1.0 );
+        roadColor *= 1.0 - 0.16 * track;
+        // Oil drips down the middle of each lane.
+        float oil = smoothstep( 0.62, 0.8, cityNoise( vec2( dUv.x * 0.09, dUv.y * 0.7 ) + 19.0 ) ) * ( 1.0 - smoothstep( 1.5, 4.0, laneOffset ) );
+        roadColor *= 1.0 - 0.3 * oil * detail;
+        // Repair patches: rectangles of fresher or older tar, one lane wide or less.
+        vec2 cellSize = vec2( 70.0, laneW );
+        vec2 cell = floor( dUv / cellSize ), cf = fract( dUv / cellSize );
+        float pick = cityHash( cell + 13.7 );
+        vec2 lo = vec2( 0.1 + 0.3 * cityHash( cell + 2.1 ), 0.08 + 0.2 * cityHash( cell + 5.3 ) );
+        vec2 hi = lo + vec2( 0.2 + 0.35 * cityHash( cell + 8.9 ), 0.45 + 0.25 * cityHash( cell + 4.4 ) );
+        vec2 cfw = fwidth( cf ) + 1e-4;
+        vec2 inside = smoothstep( lo - cfw, lo + cfw, cf ) * ( 1.0 - smoothstep( hi - cfw, hi + cfw, cf ) );
+        float repair = inside.x * inside.y * step( 0.8, pick );
+        vec2 edgeDist = min( abs( cf - lo ), abs( cf - hi ) ) * cellSize;
+        float repairSeam = repair * ( 1.0 - smoothstep( 0.0, 0.5 + footprint, min( edgeDist.x, edgeDist.y ) ) );
+        roadColor = mix( roadColor, roadColor * ( pick > 0.9 ? 0.72 : 1.18 ), repair );
+        roadColor *= 1.0 - 0.35 * repairSeam * detail;
+        // Tar-sealed seams where the lanes were laid, and hairline cracks.
+        float wobble = ( cityNoise( vec2( dUv.x * 0.05, 3.0 ) ) - 0.5 ) * 0.8;
+        float seam = ( 1.0 - smoothstep( 0.15, 0.45 + footprint, abs( acr - laneW + wobble ) ) ) * detail;
+        float crack = ( 1.0 - smoothstep( 0.0, 0.016, abs( cityNoise( wp * 0.06 + 3.0 ) - 0.5 ) ) )
+                    * smoothstep( 0.55, 0.75, cityNoise( wp * 0.011 + 9.0 ) ) * detail;
+        roadColor *= ( 1.0 - 0.45 * seam ) * ( 1.0 - 0.45 * crack );
+        // Gutter: grime along the kerb and a drain grate every 36 units.
+        float gutter = smoothstep( deckHalfRoad - 3.5, deckHalfRoad - 0.2, acr );
+        roadColor = mix( roadColor, roadColor * vec3( 0.78, 0.76, 0.72 ) + vec3( 0.012, 0.011, 0.009 ), gutter * ( 0.6 + 0.4 * g2 ) );
+        float grateAlong = abs( mod( dUv.x, 36.0 ) - 18.0 ), grateAcross = deckHalfRoad - 1.4 - acr;
+        float grate = step( grateAlong, 2.2 ) * step( abs( grateAcross ), 1.1 );
+        float slots = step( 0.5, fract( dUv.x * 1.6 ) );
+        roadColor = mix( roadColor, vec3( 0.03, 0.032, 0.034 ) * ( 0.55 + 0.9 * slots ), grate );
+        // Paint: edge lines, broken lane lines and the double yellow, antialiased.
+        float fwA = max( fwidth( acr ), 1e-3 );
+        float edgeLine = 1.0 - smoothstep( 0.55 - fwA, 0.55 + fwA, abs( acr - ( deckHalfRoad - 3.0 ) ) );
+        float centreLine = 1.0 - smoothstep( 0.45 - fwA, 0.45 + fwA, abs( acr - 1.3 ) );
+        float dashPos = mod( dUv.x - 1.0, 48.0 ), fwD = max( fwidth( dUv.x ), 1e-3 );
+        float dashOn = smoothstep( -fwD, fwD, dashPos ) * ( 1.0 - smoothstep( 22.0 - fwD, 22.0 + fwD, dashPos ) )
+                     * step( 10.0, dUv.x ) * step( dUv.x, deckRoadLength - 10.0 );
+        float laneLine = ( 1.0 - smoothstep( 0.5 - fwA, 0.5 + fwA, abs( acr - laneW ) ) ) * dashOn;
+        float wear = smoothstep( 0.45, 0.85, cityNoise( wp * 0.7 + 5.0 ) * 0.65 + g2 * 0.35 + track * 0.25 ) * detail;
+        float white = max( edgeLine, laneLine ) * ( 1.0 - 0.55 * wear );
+        float yellow = centreLine * ( 1.0 - 0.5 * wear );
+        float paint = max( white, yellow );
+        roadColor = mix( roadColor, vec3( 0.66, 0.66, 0.62 ) * ( 0.92 + 0.12 * g1 ), white );
+        roadColor = mix( roadColor, vec3( 0.64, 0.42, 0.08 ) * ( 0.92 + 0.12 * g1 ), yellow );
+        // Rain: the whole deck darkens as it soaks, ruts and gutters hold water.
+        float deckWet = cityWet;
+        float puddle = smoothstep( 0.56, 0.64, cityNoise( wp * 0.03 + 41.0 ) * 0.8 + track * 0.14 + gutter * 0.3 + g1 * 0.04 )
+                     * smoothstep( 0.2, 0.8, deckWet ) * ( 1.0 - paint * 0.7 ) * ( 1.0 - grate );
+        roadColor *= 1.0 - 0.32 * deckWet - 0.3 * puddle;
+        diffuseColor.rgb = roadColor;`;
+      const BRIDGE_ROAD_ROUGHNESS = `
+        roughnessFactor = mix( 0.9 - 0.14 * track - 0.06 * repair + 0.05 * grain, 0.62, paint );
+        roughnessFactor = mix( roughnessFactor, roughnessFactor * 0.42, deckWet );
+        roughnessFactor = mix( roughnessFactor, 0.11, puddle );`;
+      const BRIDGE_ROAD_NORMAL = `
+        {
+          float e = 0.25, h0 = cityNoise( wp * 4.3 );
+          vec2 slope = vec2( cityNoise( ( wp + vec2( e, 0.0 ) ) * 4.3 ) - h0, cityNoise( ( wp + vec2( 0.0, e ) ) * 4.3 ) - h0 ) / e;
+          float bump = 0.1 * ( 1.0 - puddle ) * ( 1.0 - 0.6 * paint ) * detail;
+          vec3 worldNormal = normalize( vec3( -slope.x * bump, 1.0, -slope.y * bump ) );
+          normal = normalize( ( viewMatrix * vec4( worldNormal, 0.0 ) ).xyz );
+        }`;
+      function bridgeRoadMaterial(halfRoad, length, light) {
+        const m = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, metalness: 0 }),
+          uniforms = { deckHalfRoad: { value: halfRoad }, deckRoadLength: { value: length }, ...bridgeDeckUniforms(light) };
+        m.onBeforeCompile = (shader) => {
+          cityMaterialPatch(shader);
+          Object.assign(shader.uniforms, uniforms);
+          shader.vertexShader = shader.vertexShader
+            .replace('#include <common>', '#include <common>\nvarying vec2 vDeckUv;')
+            .replace('#include <uv_vertex>', '#include <uv_vertex>\n' + BRIDGE_ROAD_VERTEX);
+          shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\nuniform float deckHalfRoad;\nuniform float deckRoadLength;\n' + BRIDGE_DECK_LIGHT_PARS + SURFACE_NOISE)
+            .replace('#include <color_fragment>', '#include <color_fragment>\n' + BRIDGE_ROAD_ALBEDO)
+            .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + BRIDGE_ROAD_ROUGHNESS)
+            .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = 0.0;')
+            .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + BRIDGE_ROAD_NORMAL)
+            .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + BRIDGE_DECK_LIGHT_APPLY.replace('* deckLampPower', '* deckLampPower * 1.7'));
+        };
+        m.customProgramCacheKey = () => 'bridge-road';
+        return m;
+      }
+      // The carriageway slab, its uv laid out as bridgeRoadMaterial expects.
+      // `across` is where the box's centre line sits across the deck.
+      function bridgeRoadGeometry(length, width, thickness, across = 0) {
+        const geo = new Three.BoxGeometry(length, thickness, width),
+          pos = geo.attributes.position,
+          uv = geo.attributes.uv;
+        for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i) + length / 2, pos.getZ(i) + across);
+        return geo;
+      }
       /* ---- Shared deck ------------------------------------------------------------- */
       /**
        * The deck over the water (and a little onto each shore): structural slab and
-       * fascia, carriageway, raised sidewalks, markings, expansion joints over the
-       * piers, abutments, and the guard rails in the bridge's own look where
-       * countyBridgeRails (the collision) has them.
+       * fascia, carriageway (bridgeRoadMaterial: asphalt and markings), raised
+       * sidewalks on kerbs, modular expansion joints over the piers, abutments,
+       * and the guard rails in the bridge's own look where countyBridgeRails (the
+       * collision) has them.
        */
       function bridgeDeck(g, bridge, s, look) {
         const W = bridge.width,
@@ -206,19 +418,30 @@
           mid = (from + to) / 2,
           road = W - 22;
         box(g, mid, -3.3, 0, L, 6.6, W + 4, look.fascia || BRIDGE_KIT.concrete);
-        box(g, mid, 0.2, 0, L, 0.4, road, BRIDGE_KIT.asphalt);
+        // The deck's lamp light map; the builder's lamps are painted in after it (Build).
+        const light = bridgeDeckLight(L, W / 2 + 2),
+          walk = bridgeLitMaterial(look.walk || BRIDGE_KIT.walk, light),
+          kerb = bridgeLitMaterial(BRIDGE_KIT.kerb, light);
+        g.userData.deckLight = { light, from };
+        mesh(bridgeRoadGeometry(L, road, 0.4), bridgeRoadMaterial(road / 2, L, light), g, mid, 0.2, 0);
         for (const side of [-1, 1]) {
-          box(g, mid, 0.55, side * (W / 2 - 5.5), L, 1.1, 11, look.walk || BRIDGE_KIT.walk);
-          box(g, mid, 0.62, side * (road / 2 + 0.4), L, 1.24, 0.8, BRIDGE_KIT.kerb);
-          // Edge line inside each kerb.
-          box(g, mid, 0.42, side * (road / 2 - 3), L, 0.06, 1.1, BRIDGE_KIT.white);
-          // Lane dashes between the two lanes each way.
-          for (let x = from + 12; x < to - 12; x += 48) box(g, x, 0.42, side * (road / 4), 22, 0.06, 1, BRIDGE_KIT.white);
-          // A double yellow centre line.
-          box(g, mid, 0.42, side * 1.3, L, 0.06, 0.9, BRIDGE_KIT.yellow);
+          mesh(bridgeRoadGeometry(L, 11, 1.1, side * (W / 2 - 5.5)), walk, g, mid, 0.55, side * (W / 2 - 5.5));
+          mesh(bridgeRoadGeometry(L, 0.8, 1.24, side * (road / 2 + 0.4)), kerb, g, mid, 0.62, side * (road / 2 + 0.4));
+          // A pale arris along the kerb's top edge catches the light.
+          box(g, mid, 1.26, side * (road / 2 + 0.12), L, 0.06, 0.25, BRIDGE_KIT.white);
         }
-        // Expansion joints: a steel finger strip across the road over every pier.
-        for (const f of s.footings) box(g, f.along, 0.43, 0, 1.6, 0.1, road, BRIDGE_KIT.joint);
+        /* Modular expansion joints over every pier: two steel edge beams either side
+           of a dark rubber seal, right across the carriageway and both footways,
+           finished flush with the road (a hair proud so they never flicker). */
+        const joints = new Set();
+        for (const f of s.footings) {
+          const key = Math.round(f.along);
+          if (f.along < from + 4 || f.along > to - 4 || joints.has(key)) continue;
+          joints.add(key);
+          box(g, f.along, 0.42, 0, 1.0, 0.06, road, BRIDGE_KIT.joint);
+          for (const dx of [-0.85, 0.85]) box(g, f.along + dx, 0.43, 0, 0.7, 0.06, road, BRIDGE_KIT.darkSteel);
+          for (const side of [-1, 1]) box(g, f.along, 1.12, side * (W / 2 - 5.5), 1.4, 0.06, 11, BRIDGE_KIT.darkSteel);
+        }
         // Abutments where the deck lands on each shore.
         for (const [x, dir] of [
           [from, -1],
@@ -283,13 +506,7 @@
             box(g, hx, hy, hz, sx, sy, sz, bridgeLampMaterial);
             kitLight(lights, g, hx, hy - 1.5, hz, '#ffd7a0');
           },
-          pool = (px, pz, size) => {
-            const m = new Three.Mesh(new Three.PlaneGeometry(size, size), bridgePoolMaterial);
-            m.rotation.x = -Math.PI / 2;
-            m.position.set(px, 0.7, pz);
-            g.add(m);
-            pools.push(m);
-          };
+          pool = (px, pz, size) => pools.push(bridgePool(g, px, pz, size));
         if (kind === 'globe') {
           // Ornamental: fluted cast-iron post, two arms, glass globes.
           box(g, x, 1.5, z, 3.2, 3, 3.2, pole);
@@ -340,13 +557,43 @@
             kitLight(lights, g, (c0 + c1) / 2, -1.2, side * (W / 2 + 2.6), '#f4f6ff');
           }
       }
-      // Foam round everything standing in the water.
-      function footingFoam(g, s) {
+      /* Foam round everything standing in the water. It lies above the swell
+         crests, which is above the road (the deck is at sea level), so it is cut
+         away wherever the deck covers it: whole rings drawn under the deck used to
+         show on the carriageway as white smears round every pier. */
+      function footingFoam(g, bridge, s) {
+        const cover = bridge.width / 2 + 2.5,
+          deck0 = s.water[0] - 36,
+          deck1 = s.water[1] + 36;
         for (const f of s.footings) {
-          const m = new Three.Mesh(new Three.PlaneGeometry(f.hx * 2 + 26, f.hy * 2 + 26), bridgeFoamMaterial);
-          m.rotation.x = -Math.PI / 2;
-          m.position.set(f.along, 1.1, f.across);
-          g.add(m);
+          const x0 = f.along - f.hx - 13,
+            x1 = f.along + f.hx + 13,
+            z0 = f.across - f.hy - 13,
+            z1 = f.across + f.hy + 13,
+            pieces = [];
+          if (x1 <= deck0 || x0 >= deck1) pieces.push([x0, x1, z0, z1]);
+          else {
+            // Past either end of the deck the ring stays whole.
+            if (x0 < deck0) pieces.push([x0, deck0, z0, z1]);
+            if (x1 > deck1) pieces.push([deck1, x1, z0, z1]);
+            const a0 = Math.max(x0, deck0),
+              a1 = Math.min(x1, deck1);
+            if (z0 < -cover) pieces.push([a0, a1, z0, Math.min(z1, -cover)]);
+            if (z1 > cover) pieces.push([a0, a1, Math.max(z0, cover), z1]);
+          }
+          for (const [p0, p1, q0, q1] of pieces) {
+            if (p1 - p0 < 0.5 || q1 - q0 < 0.5) continue;
+            const u = (x) => (x - x0) / (x1 - x0),
+              v = (z) => (z - z0) / (z1 - z0),
+              geo = new Three.BufferGeometry();
+            geo.setAttribute('position', new Three.Float32BufferAttribute([p0, 0, q0, p0, 0, q1, p1, 0, q0, p1, 0, q1], 3));
+            geo.setAttribute('normal', new Three.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
+            geo.setAttribute('uv', new Three.Float32BufferAttribute([u(p0), v(q0), u(p0), v(q1), u(p1), v(q0), u(p1), v(q1)], 2));
+            geo.setIndex([0, 1, 2, 2, 1, 3]);
+            const m = new Three.Mesh(geo, bridgeFoamMaterial);
+            m.position.y = 1.1;
+            g.add(m);
+          }
         }
       }
       // The plain under-deck piers (approach bents): a cap with rounded noses.
@@ -436,10 +683,7 @@
                 bridgeMember(g, V3(x, 28, side * plane), V3(x, 28, side * (plane - 9)), 0.7, 0.7, green);
                 box(g, x, 27.4, side * (plane - 10), 3, 1, 5, bridgeLampMaterial);
                 kitLight(kit.lights, g, x, 26, side * (plane - 10), '#ffd7a0');
-                const pool = new Three.Mesh(new Three.PlaneGeometry(42, 42), bridgePoolMaterial);
-                pool.rotation.x = -Math.PI / 2;
-                pool.position.set(x, 0.7, side * (plane - 16));
-                g.add(pool);
+                kit.pools.push(bridgePool(g, x, side * (plane - 16), 42));
               }
           }
           // Portal plaques over each end of the truss.
@@ -638,8 +882,10 @@
           const W = bridge.width,
             a = s.arch,
             pearl = bridgeGlowPaint('#eef1f4', '#ffffff', 0.12, 'pearl'),
-            led = bridgeLed('#ff4fd8', 2.4, 1),
-            hangerLed = bridgeLed('#5ff0ff', 1.1, 1),
+            // Kept below saturation: at full strength the ribs and the dense crossing
+            // hangers bloomed into one blinding curtain of colour at night.
+            led = bridgeLed('#ff4fd8', 1.3, 1),
+            hangerLed = bridgeLed('#5ff0ff', 0.38, 1),
             deckLed = bridgeLed('#6fe7ff', 1.8, 0);
           bridgeDeck(g, bridge, s, { fascia: tint('#dfe3e6', 'satin'), rail: guardGlass(tint('#d6dbde', 'metal'), deckLed) });
           for (const x of s.approach) {
@@ -906,7 +1152,8 @@
           scene.add(g);
           BRIDGE_BUILDERS[bridge.style](g, bridge, s, kit);
           channelLights(g, bridge, s, kit.lights);
-          footingFoam(g, s);
+          footingFoam(g, bridge, s);
+          if (g.userData.deckLight) paintBridgeDeckLight(g.userData.deckLight.light, g.userData.deckLight.from, kit.pools);
           const merged = kitMerge(g);
           for (const m of merged) {
             if (m.material.transparent) {
@@ -935,8 +1182,7 @@
         const night = nightAmount,
           lit = clamp(night * 1.3 - 0.1, 0, 1);
         bridgeLampMaterial.color.copy(bridgeLampDay).lerp(bridgeLampNight, lit);
-        bridgePoolMaterial.opacity = lit * 0.32;
-        bridgePoolMaterial.visible = lit > 0.02;
+        bridgeDeckLampPower.value = lit * 3.4;
         for (const m of bridgeGlowMaterials) m.emissiveIntensity = lit * m.userData.glow;
         for (const m of bridgeLedMaterials) {
           const led = m.userData.led;
