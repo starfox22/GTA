@@ -942,20 +942,22 @@
         },
         /**
          * Crash test on open ground: the player takes a fresh `type` pointing east and
-         * a parked `targetType` waits 150 units ahead, turned so that its `side`
+         * a parked `targetType` waits `gap` units ahead, turned so that its `side`
          * ('front', 'rear', 'left', 'right') faces the oncoming car; the player's car
          * is launched at `metersPerSecond` and the world runs for `seconds`. `offset`
-         * shifts the target sideways for an off-centre hit. Returns both damage
-         * reports. Pass targetType null to drive at whatever is ahead.
+         * shifts the target sideways for an off-centre hit. `throttle` false lets the
+         * car coast instead of flooring it; with a short `gap` (150 by default) that
+         * gives a true low-speed bump. Returns both damage reports. Pass targetType
+         * null to drive at whatever is ahead.
          */
-        crashTest(type = 'sedan', targetType = 'sedan', side = 'left', metersPerSecond = 30, seconds = 1.5, offset = 0) {
+        crashTest(type = 'sedan', targetType = 'sedan', side = 'left', metersPerSecond = 30, seconds = 1.5, offset = 0, throttle = true, gap = 150) {
           if (player.car) exitCar();
           const car = spawnClearCar(type, player.x, player.y, 0, false);
           car.authorized = true;
           let target = null;
           if (targetType) {
             const heading = { front: Math.PI, rear: 0, left: -Math.PI / 2, right: Math.PI / 2 }[side] ?? 0;
-            target = makeCar(targetType, car.x + 150, car.y + offset, heading, false);
+            target = makeCar(targetType, car.x + gap, car.y + offset, heading, false);
           }
           enterVehicle(car);
           const speed = (metersPerSecond * BLOCK_SIZE) / 100;
@@ -964,7 +966,7 @@
           car.speed = speed;
           // Foot down all the way in, as a driver ramming something would.
           const steps = Math.round(clamp(seconds, 0, 20) * 30);
-          keys.KeyW = true;
+          keys.KeyW = !!throttle;
           for (let i = 0; i < steps && gameMode === 'play'; i++) update(1 / 30);
           keys.KeyW = false;
           return { car: damageReport(car), target: damageReport(target) };
@@ -997,6 +999,8 @@
         },
         // Decal, debris and GPU memory counters from the renderer (damage3d.js).
         damageStats: () => (city3D ? city3D.damageInfo() : null),
+        // The last crash sounds chosen (crash-audio.js): sample, set, gain, rate, layers.
+        crashSounds: () => crashLog.slice(),
       };
     }
     // END SUBSYSTEM: src/damage.js
