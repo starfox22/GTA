@@ -840,7 +840,7 @@
           marea.evacuated++;
           const from = marea.alarmSource;
           mareaRelease(p);
-          startReaction(p, 'flee', randomBetween(5, 9), from, marea.alarmInc);
+          startReaction(p, 'flee', randomBetween(5, 9), from, mareaAlarmIncident());
         }
         return true;
       }
@@ -1004,7 +1004,7 @@
      */
     function updateMareaBouncer(p, slot, deltaSeconds) {
       const c = p.club,
-        trouble = gameTime < marea.enforceUntil;
+        trouble = gameTime < marea.enforceUntil || gameTime < marea.spookedUntil - 90;
       if (!trouble) {
         if (Math.hypot(slot.x - p.x, slot.y - p.y) > 2) {
           c.route = [{ x: slot.x, y: slot.y }];
@@ -1018,7 +1018,7 @@
       }
       // Trouble: go for the player if they are on foot and close, else hold the door.
       const d = distanceBetween(p, player),
-        chase = !player.car && d < 170 && !slot.vipGuard && mareaDistance(player.x, player.y) < 140 && player.hp > 0;
+        chase = gameTime < marea.enforceUntil && !player.car && d < 170 && !slot.vipGuard && mareaDistance(player.x, player.y) < 140 && player.hp > 0;
       if (chase) {
         p.a = headingBetween(p, player);
         p.pose = null;
@@ -1047,7 +1047,7 @@
         p.pose = slot.head && gameTime - (c.calledAt ?? -100) < 8 ? 'phone' : 'stop';
         if (mareaRandom() < deltaSeconds * 0.15) mareaSayOne(p, 'bouncerAlarm');
       }
-      if (slot.head && (c.calledAt ?? -100) < marea.spookedUntil - 150 && marea.alarmInc) {
+      if (slot.head && (c.calledAt ?? -100) < marea.spookStart && mareaAlarmIncident()) {
         c.calledAt = gameTime;
         mareaSay(p, randomChoice(MAREA_DOOR_TALK.bouncerCall));
         crowdReport(p, marea.alarmInc);
@@ -1241,14 +1241,12 @@
       const d = mareaDistance(source.x, source.y);
       if (d > (kind === 'explosion' ? 700 : 480)) return;
       const first = gameTime > marea.spookedUntil;
+      if (first) marea.spookStart = gameTime;
       marea.spookedUntil = gameTime + 150;
       marea.alarmSource = { x: source.x, y: source.y };
+      // The crowd records the incident just after this call (notifyViolence);
+      // mareaAlarmIncident() picks it up.
       marea.alarmInc = null;
-      for (let i = crowd.incidents.length - 1; i >= 0; i--)
-        if (Math.hypot(crowd.incidents[i].x - source.x, crowd.incidents[i].y - source.y) < 120) {
-          marea.alarmInc = crowd.incidents[i];
-          break;
-        }
       if (attacker === player) {
         marea.enforceUntil = gameTime + 45;
         marea.pass = false;
@@ -1257,6 +1255,17 @@
       }
       marea.talk = null;
       if (first) for (const p of marea.people) if (p.club && !p.club.staff && p.club.slot?.kind !== 'bouncer') p.club.alarmed = true;
+    }
+    /* The crowd incident behind the current alarm (for witness calls and flight). */
+    function mareaAlarmIncident() {
+      const src = marea.alarmSource;
+      if (!marea.alarmInc && src)
+        for (let i = crowd.incidents.length - 1; i >= 0; i--)
+          if (Math.hypot(crowd.incidents[i].x - src.x, crowd.incidents[i].y - src.y) < 120) {
+            marea.alarmInc = crowd.incidents[i];
+            break;
+          }
+      return marea.alarmInc;
     }
     /* Run for the nearest way out: the door, or the beach gate (thrown open). */
     function mareaEvacuate(p) {
@@ -1277,7 +1286,7 @@
       const here = slot?.node || mareaNearestNode(p.x, p.y);
       if (c.mode === 'queue' || c.mode === 'queueWalk' || !mareaInside(p.x, p.y)) {
         mareaRelease(p);
-        startReaction(p, 'flee', randomBetween(5, 9), marea.alarmSource, marea.alarmInc);
+        startReaction(p, 'flee', randomBetween(5, 9), marea.alarmSource, mareaAlarmIncident());
         return;
       }
       const toDoor = mareaPath(here, 'street'),
@@ -1475,7 +1484,7 @@
         for (const g of marea.queue)
           for (const m of [...g.members]) {
             mareaRelease(m);
-            startReaction(m, 'flee', randomBetween(4, 8), marea.alarmSource, marea.alarmInc);
+            startReaction(m, 'flee', randomBetween(4, 8), marea.alarmSource, mareaAlarmIncident());
           }
       if (spooked) marea.queue = [];
       for (const p of marea.people) if (p.club?.pendingLine && p.club.mode === 'leave' && (p.speechUntil || 0) < gameTime) {
