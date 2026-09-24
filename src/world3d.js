@@ -487,6 +487,12 @@
             }
           }
           if (spot.crossing) continue;
+          // Each piece is also a foot obstacle, at its place in the map.
+          const yaw = promenadeYaw(spot),
+            at = (lx, lz) => [spot.x + lx * Math.cos(yaw) - lz * Math.sin(yaw), spot.y + lx * Math.sin(yaw) + lz * Math.cos(yaw)];
+          if (spot.kind === 'lamp') registerFootObstacle(...at(0, 14), 3);
+          else if (spot.kind === 'bench') registerFootObstacle(...at(0, 5), 10, 3.5, yaw);
+          else if (spot.kind === 'tree') registerFootObstacle(...at(0, -22), 9.6);
           if (spot.kind === 'lamp') {
             box(inner, 0, 15, 14, 2.6, 30, 2.6, lampPost);
             box(inner, 0, 2, 14, 7, 4, 7, lampPost);
@@ -514,6 +520,7 @@
         const trunk = palmTrunkMaterial,
           palm = palmFrondMaterial;
         rod(g, new Three.Vector3(0, 0, 0), new Three.Vector3(2 * size, 28 * size, 0), 1.5 * size, trunk);
+        registerFootObstacle(x, z, 2 * size);
         for (let k = 0; k < 7; k++) {
           const a = (k * TAU) / 7,
             verts = [];

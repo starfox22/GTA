@@ -989,6 +989,10 @@
         box(g, 18, 17, 2, 6, 3, 0.4, mat('#2f5f9a'));
         shelters.push(g);
         statics.push({ x, y: z, group: g, radius: 40 });
+        // The back glass and the advertising panel stop people; the front is open.
+        const back = faceSouth ? 1 : -1;
+        registerFootObstacle(x, z - back * 3.4, 14, 1);
+        registerFootObstacle(x - back * 16.5, z + back * 2.8, 1, 5.5);
         // The roof is cut away round a player waiting under it (lighting3d.js).
         registerCutawayRoof(x, z, 16, 6.5, 0, 15, 18);
         // People wait here (src/crowd.js) and buses stop for them.

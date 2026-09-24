@@ -669,6 +669,8 @@
           addGlow(fx + Math.cos(a) * 17, 3.6, fz + Math.sin(a) * 17, 10, '#9fe8ff', 1.2, { mode: 'pulse', phase: k / 6 });
         }
         signSpill(fx, fz, 46, '#a8e6ff', 0.3);
+        registerFootObstacle(fx, fz, 25);
+        for (const dx of [-44, 44]) registerFootObstacle(fx + dx, fz, 8, 2.8);
         for (const dx of [-44, 44]) {
           place(pools.benchSeat, fx + dx, 4.2, fz, 16, 1, 5);
           place(pools.benchLeg, fx + dx - 6.5, 2, fz, 1, 4, 4.6);

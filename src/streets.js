@@ -531,6 +531,53 @@
         }
       return false;
     }
+    /**
+     * FOOT OBSTACLES
+     * Things on the pavement that a person walks round: tree trunks, lamp posts,
+     * benches, planters, fountains, statues, kiosks, shelters. The renderer
+     * registers each piece as it places it (`registerFootObstacle`, a circle when
+     * `hy` is omitted, else an oriented box of half extents hx, hy turned by `a`)
+     * and `footObstacleBlocked` stops the player on foot against them and against
+     * the standing knockable furniture (damage.js). Tree trunks come from the
+     * game's own `trees` list.
+     */
+    const FOOT_CELL = 128,
+      footObstacleGrid = new Map();
+    let footTreesAdded = false;
+    function registerFootObstacle(x, y, hx, hy, a = 0) {
+      const o = hy === undefined ? { x, y, r: hx } : { x, y, hx, hy, c: Math.cos(a), s: Math.sin(a) },
+        // Filed in every cell within reach of a walker's radius too, so a lookup
+        // of the one cell under the walker finds it.
+        reach = (hy === undefined ? hx : Math.hypot(hx, hy)) + 6;
+      for (let i = Math.floor((x - reach) / FOOT_CELL); i <= Math.floor((x + reach) / FOOT_CELL); i++)
+        for (let j = Math.floor((y - reach) / FOOT_CELL); j <= Math.floor((y + reach) / FOOT_CELL); j++) {
+          const key = i * 4096 + j;
+          if (!footObstacleGrid.has(key)) footObstacleGrid.set(key, []);
+          footObstacleGrid.get(key).push(o);
+        }
+      return o;
+    }
+    function footObstacleHit(o, x, y, r) {
+      const dx = x - o.x,
+        dy = y - o.y;
+      if (o.r !== undefined) return dx * dx + dy * dy < (o.r + r) * (o.r + r);
+      return Math.abs(dx * o.c + dy * o.s) < o.hx + r && Math.abs(-dx * o.s + dy * o.c) < o.hy + r;
+    }
+    function footObstacleBlocked(x, y, r) {
+      if (!footTreesAdded) {
+        footTreesAdded = true;
+        // A trunk is a couple of units across whatever the crown.
+        for (const t of trees) registerFootObstacle(t.x, t.y, 2.2);
+      }
+      const list = footObstacleGrid.get(Math.floor(x / FOOT_CELL) * 4096 + Math.floor(y / FOOT_CELL));
+      if (list) for (const o of list) if (footObstacleHit(o, x, y, r)) return true;
+      let hit = false;
+      propsNear(x, y, r + 10, (prop) => {
+        if (hit || prop.down || prop.kind === 'cone') return;
+        hit = footObstacleHit({ x: prop.x, y: prop.y, hx: prop.hx, hy: prop.hy, c: Math.cos(prop.a), s: Math.sin(prop.a) }, x, y, r);
+      });
+      return hit;
+    }
     /* Strollers work along the esplanade spot list, so they keep to the walk and
        turn at its ends instead of wandering into the road or the water. */
     function populatePromenade() {

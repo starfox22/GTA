@@ -32,9 +32,12 @@
             x = p.x + (j % 2 ? 55 : p.w - 55);
           parkBench(group, x, z, j % 2 ? Math.PI / 2 : -Math.PI / 2);
           box(group, x + 15, 14, z, 1, 28, 1, darkMetal);
+          registerFootObstacle(x, z, 3.5, 10);
+          registerFootObstacle(x + 15, z, 1.5);
           box(group, x + 15, 28, z, 5, 1.5, 5, warmLamp);
         }
         if (p.kind === 'square') {
+          registerFootObstacle(cx, cz, 39);
           mesh(new Three.CylinderGeometry(35, 39, 5, 32), parkStone, group, cx, 2.5, cz);
           mesh(new Three.CylinderGeometry(31, 31, 1, 32), parkWater, group, cx, 5.2, cz);
           mesh(new Three.CylinderGeometry(3, 6, 14, 12), parkStone, group, cx, 11, cz);
@@ -45,6 +48,7 @@
             const x = p.x + 80 + j * 83,
               z = p.y + 155;
             box(group, x, 4, z, 30, 8, 30, parkStone);
+            registerFootObstacle(x, z, 15, 15);
             const sculpture = mesh(
               new Three.TorusGeometry(17, 3, 7, 20),
               j % 2 ? chrome : parkRose,
@@ -197,6 +201,7 @@
         for (const dx of [-c.dock.w / 2, c.dock.w / 2])
           for (let z = c.dock.y - c.dock.h + 4; z < c.dock.y; z += 22) box(group, c.dock.x + dx, 2.5, z, 1.4, 5, 1.4, parkWood);
         // Station plaza fountain.
+        registerFootObstacle(c.fountain.x, c.fountain.y, 28);
         mesh(new Three.CylinderGeometry(26, 28, 3, 32), parkStone, group, c.fountain.x, 1.5, c.fountain.y);
         mesh(new Three.CylinderGeometry(23, 23, 1, 32), parkWater, group, c.fountain.x, 3.4, c.fountain.y);
         mesh(new Three.CylinderGeometry(3, 6, 12, 12), parkStone, group, c.fountain.x, 9, c.fountain.y);
@@ -204,6 +209,10 @@
         halo(group, c.fountain.x, 15, c.fountain.y, 22, '#cfeff2');
         // Bandshell: stage, half-dome shell, footlights and lawn seating.
         const bs = c.bandshell;
+        // The stage and its shell; the lawn benches in front of it.
+        registerFootObstacle(bs.x, bs.y - 20.5, 48, 25.5);
+        for (let row = 0; row < 5; row++)
+          for (let k = -3; k <= 3; k++) registerFootObstacle(bs.x + k * 22, bs.y + 30 + row * 20, 8, 2.8);
         mesh(new Three.CylinderGeometry(46, 48, 4, 32, 1, false, Math.PI, Math.PI), cream, group, bs.x, 2, bs.y);
         box(group, bs.x, 2, bs.y + 2, 92, 4, 6, cream);
         const shell = new Three.Mesh(
@@ -275,6 +284,7 @@
         // Statue of the city's founder on the Great Lawn axis.
         const st = c.statue;
         box(group, st.x, 4, st.y, 22, 8, 22, parkStone);
+        registerFootObstacle(st.x, st.y, 11, 11);
         box(group, st.x, 10, st.y, 14, 4, 14, parkStone);
         box(group, st.x, 18, st.y, 5, 12, 6, bronze);
         mesh(sphereGeo, bronze, group, st.x, 26.5, st.y, 2.4, 2.8, 2.4);
@@ -282,6 +292,7 @@
         box(group, st.x - 4.5, 21, st.y, 2, 9, 2, bronze);
         // Kiosks: ice-cream cart by the plaza, a coffee stand by the lawn.
         for (const { x, y: z, color } of c.kiosks) {
+          registerFootObstacle(x, z, 7.5, 4.5);
           box(group, x, 4.5, z, 14, 9, 8, mat(color, 0.6));
           box(group, x, 9.2, z, 15, 0.5, 9, chrome);
           mesh(new Three.ConeGeometry(12, 4, 12), mat(color === '#e8b1c2' ? '#f3f0e6' : '#d9c15f', 0.9), group, x, 16, z);
@@ -381,6 +392,8 @@
         for (const dx of [6, 56]) box(group, cal.x + dx, 1.4, cal.y + 30, 34, 1.4, 20, matMat);
         // Food trucks: body, cab, serving hatch, awning, wheels and a menu board.
         for (const truck of c.foodTrucks) {
+          // Body and cab run from 23 behind to 33 ahead of the truck's point.
+          registerFootObstacle(truck.x + Math.cos(truck.a) * 5, truck.y + Math.sin(truck.a) * 5, 28, 9.5, truck.a);
           const t = new Three.Group();
           t.position.set(truck.x, 0, truck.y);
           t.rotation.y = -truck.a;

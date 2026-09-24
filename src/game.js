@@ -830,11 +830,16 @@
       const swimmer =
           body === player && !player.car && !player.roof && !player.deck && !player.parachute,
         reach = 90 + collisionRadius,
+        // Out of a car or off a teleport onto a bench, step off it rather than stick.
+        onFoot = swimmer && !player.swimming && !footObstacleBlocked(body.x, body.y, 4.5),
         blocked = (x, y) => {
           if (solid(x, y, collisionRadius, swimmer)) return true;
           // Where the player may cross the shoreline (beaches, ladders): water.js.
           if (swimmer && shoreStepBlocked(body.x, body.y, x, y, collisionRadius)) return true;
           if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
+          // Street furniture, tree trunks, park fixtures and shelters stop the
+          // player on foot (streets.js); the crowd keeps to its own paths round them.
+          if (onFoot && footObstacleBlocked(x, y, 4.5)) return true;
           for (let i = 0; i < vehicles.length; i++) {
             const c = vehicles[i];
             if (c.x - x > reach || x - c.x > reach || c.y - y > reach || y - c.y > reach) continue;
@@ -843,10 +848,18 @@
           }
           return false;
         };
-      if (!blocked(body.x + displacementX, body.y)) body.x += displacementX;
-      else hit = true;
-      if (!blocked(body.x, body.y + displacementY)) body.y += displacementY;
-      else hit = true;
+      // A long step (a sprint over a slow frame, a car's knock-back of 25 units)
+      // is taken in short ones, so it cannot hop over a railing or a guardrail
+      // thinner than the step.
+      const steps = Math.max(1, Math.ceil(Math.max(Math.abs(displacementX), Math.abs(displacementY)) / 5)),
+        stepX = displacementX / steps,
+        stepY = displacementY / steps;
+      for (let i = 0; i < steps; i++) {
+        if (!blocked(body.x + stepX, body.y)) body.x += stepX;
+        else hit = true;
+        if (!blocked(body.x, body.y + stepY)) body.y += stepY;
+        else hit = true;
+      }
       return hit;
     }
     function roadNear(v) {
