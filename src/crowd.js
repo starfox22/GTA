@@ -1665,10 +1665,17 @@
           }
           break;
         }
-        case 'groan':
-          p.pose = 'lie';
+        case 'groan': {
+          // Close to the danger and able to: crawl away, leaving a trail
+          // (wounds.js); otherwise lie there and writhe.
+          const from = r.from || p.threat;
+          if (from && p.hp > 5 && r.t < 7 && distanceBetween(p, from) < 260) {
+            p.pose = 'crawl';
+            crowdStep(p, headingBetween(from, p), 8, deltaSeconds);
+          } else p.pose = 'lie';
           if (seededRandom() < deltaSeconds * 0.25) crowdSay(p, 'injured', 1);
           break;
+        }
         case 'argue':
           updateArgument(p, r, deltaSeconds);
           break;

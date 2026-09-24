@@ -244,7 +244,9 @@
       for (const c of vehicles) if (c.airUnit && c.hp <= 0 && !c.airDown) markAirSupportDown(c);
       // Three stars bring one helicopter, four and five bring two (pursuit.js).
       const airCap =
-          wantedStars > 0 && !harborPoliceProtected(player.x, player.y, 100) ? policeTier().air : 0,
+          wantedStars > 0 && !harborPoliceProtected(player.x, player.y, 100)
+            ? Math.max(policeTier().air, wantedStars >= 2 && playerAtSea() ? 1 : 0)
+            : 0,
         wanted = airCap > 0;
       const live = vehicles
         .filter((c) => c.airUnit && c.hp > 0 && c !== player.car && !c.airRetreat)

@@ -39,7 +39,7 @@
     };
     const PURSUIT_SEARCH_SECONDS = [0, 6, 9, 13, 18, 24];
     // Running totals for policeReport(): pursuit contacts with the player's car.
-    const pursuitStats = { contacts: 0, pits: 0, spinouts: 0, spawned: 0, tankShots: 0, sniperShots: 0, arrests: 0 };
+    const pursuitStats = { contacts: 0, pits: 0, spinouts: 0, spawned: 0, tankShots: 0, sniperShots: 0, arrests: 0, shortcuts: 0, marine: 0, marineShots: 0 };
     // Until then no cruiser tries contact (set when one spins the runner out).
     let contactHoldUntil = 0;
     let dispatchTimer = 2,
@@ -265,6 +265,36 @@
     }
 
     /**
+     * COUNTY ROUTES
+     * Outside the street grid a pursuit follows the same road graph as the
+     * map's GPS (navigation.js): county roads, boulevards, service roads, trails
+     * and the bridges, with A* between the nearest connected nodes.
+     */
+    function policeNavRoute(from, to) {
+      const nodes = navigationGraph();
+      if (!nodes.length) return [];
+      const nearest = (p) => {
+        let best = -1,
+          bestD = Infinity;
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i];
+          if (!n.links.length) continue;
+          const d = (n.x - p.x) ** 2 + (n.y - p.y) ** 2;
+          if (d < bestD) {
+            bestD = d;
+            best = i;
+          }
+        }
+        return best;
+      };
+      const start = nearest(from),
+        end = nearest(to);
+      if (start < 0 || end < 0) return [];
+      const route = navShortestPath(nodes, start, end);
+      if (route.length && distanceBetween(from, route[0]) < 55) route.shift();
+      return route;
+    }
+    /**
      * PURSUIT DRIVING
      * Called from physicsStep for every chasing unit. The plan (where to aim,
      * how fast, which role) is refreshed ten times a second; steering and
@@ -281,9 +311,38 @@
        or where an interceptor expects them): straight there when it is close and
        in plain sight, otherwise the next junction of a road-network route, which
        is refreshed every two seconds or when the destination moves. */
+    /**
+     * OFF-ROAD SHORTCUTS
+     * Whether a car could drive straight from `a` to `b`: open ground all the
+     * way (parks, plazas, lots, verges), nothing solid, no water. Sampled every
+     * 24 units; the answer is kept for half a second per car and destination.
+     */
+    function drivableLine(a, b) {
+      const d = distanceBetween(a, b),
+        steps = Math.ceil(d / 24);
+      for (let i = 1; i < steps; i++) {
+        const t = i / steps,
+          x = a.x + (b.x - a.x) * t,
+          y = a.y + (b.y - a.y) * t;
+        if (!groundAt(x, y, 12) || solid(x, y, 12)) return false;
+      }
+      return true;
+    }
+    function shortcutTo(c, to) {
+      const d = distanceBetween(c, to);
+      if (d > 700 || d < 60) return false;
+      const memo = c.shortcut;
+      if (memo && physicsClock < memo.until && Math.abs(memo.x - to.x) < 40 && Math.abs(memo.y - to.y) < 40) return memo.ok;
+      const ok = drivableLine(c, to);
+      c.shortcut = { x: to.x, y: to.y, ok, until: physicsClock + 0.5 };
+      if (ok) pursuitStats.shortcuts++;
+      return ok;
+    }
     function routeToward(c, destination) {
       if (destination && distanceBetween(c, destination) < 420 && clearSight(c, destination))
         return destination;
+      // Straight across open ground when the whole line is drivable.
+      if (destination && shortcutTo(c, destination)) return destination;
       const moved =
         destination && (!c.routeFor || Math.hypot(c.routeFor.x - destination.x, c.routeFor.y - destination.y) > 90);
       if ((c.routeTime || 0) <= 0 || !c.route?.length || moved) {
@@ -363,8 +422,9 @@
         target = routeToward(c, c.searchPoint);
       } else {
         target = routeToward(c, null);
-        // The last leg: straight at the runner once there is a clear line.
-        if (d < 380 && c.seesPlayer) target = quarry;
+        // The last leg: straight at the runner once there is a clear line, or
+        // across a park or plaza when the ground between is open.
+        if ((d < 380 && c.seesPlayer) || shortcutTo(c, quarry)) target = quarry;
       }
       // Coming at the runner nose to nose: no suicide rams. Brake hard and angle
       // across the lane to make a rolling block the runner has to swerve round.
@@ -408,7 +468,9 @@
     function pursuitControl(c, stepSeconds, along, spec) {
       c.routeTime = (c.routeTime || 0) - stepSeconds;
       if (!c.pursuitPlan || physicsClock >= (c.pursuitPlanAt || 0)) {
-        c.pursuitPlanAt = physicsClock + 0.1;
+        // Ten plans a second near the player, three for units a long way off.
+        const far = Math.abs(c.x - player.x) > 800 || Math.abs(c.y - player.y) > 800;
+        c.pursuitPlanAt = physicsClock + (far ? 0.3 : 0.1);
         planPursuit(c, spec, along);
       }
       const plan = c.pursuitPlan,
@@ -557,12 +619,13 @@
     const FIRE_TOKENS = [0, 2, 3, 3, 4, 5];
     let tokenShuffleAt = 0;
     function assignFireTokens() {
+      assignOfficerDrags();
       const cap = FIRE_TOKENS[clamp(Math.ceil(wantedStars), 0, 5)],
         reshuffle = gameTime >= tokenShuffleAt;
       if (reshuffle) tokenShuffleAt = gameTime + 2;
       const shooters = [];
       for (const o of officers) {
-        if (o.hp <= 0 || !o.seesPlayer || o.state === 'return' || personIncapacitated(o)) {
+        if (o.hp <= 0 || o.downed || o.dragging || !o.seesPlayer || o.state === 'return' || personIncapacitated(o)) {
           o.fireToken = false;
           continue;
         }
@@ -641,6 +704,72 @@
       return null;
     }
 
+    /* Behind the officer's own car, on the side away from the player. */
+    function officerCoverSpot(o) {
+      const car = o.car;
+      if (!car || car.hp <= 0 || car === player.car || distanceBetween(o, car) > 260) return null;
+      const away = headingBetween(player, car),
+        spot = { x: car.x + Math.cos(away) * 28, y: car.y + Math.sin(away) * 28 };
+      return solid(spot.x, spot.y, 8) ? null : spot;
+    }
+    /**
+     * A partner drags a downed officer behind their car: runs over, then walks
+     * backwards to cover towing the wounded along the ground. Only a partner
+     * without a firing token and within 220 units takes it on; returns true
+     * while the drag owns this officer's turn.
+     */
+    function assignOfficerDrags() {
+      for (const hurt of officers) {
+        if (!hurt.downed || hurt.hp <= 0 || hurt.draggedBy || hurt.inCover || !hurt.car) continue;
+        const partner = (hurt.car.crew || []).find(
+          (o) =>
+            o !== hurt &&
+            o.hp > 0 &&
+            !o.downed &&
+            !o.dragging &&
+            !o.fireToken &&
+            !personIncapacitated(o) &&
+            distanceBetween(o, hurt) < 220,
+        );
+        if (!partner || !officerCoverSpot(hurt)) continue;
+        partner.dragging = hurt;
+        hurt.draggedBy = partner;
+        radio('call-backup', partner);
+      }
+    }
+    function updateOfficerDrag(o, deltaSeconds) {
+      const hurt = o.dragging,
+        cover = hurt && officerCoverSpot(hurt);
+      if (!hurt || hurt.hp <= 0 || !cover || wantedStars <= 0) {
+        if (hurt) hurt.draggedBy = null;
+        o.dragging = null;
+        return false;
+      }
+      o.state = 'drag';
+      if (distanceBetween(o, hurt) > 13) {
+        footStepTowards(o, hurt, deltaSeconds, 120);
+        return true;
+      }
+      if (distanceBetween(o, cover) < 9) {
+        hurt.inCover = true;
+        hurt.draggedBy = null;
+        o.dragging = null;
+        return false;
+      }
+      footStepTowards(o, cover, deltaSeconds, 42);
+      // Walking backwards with the wounded in tow, facing the threat.
+      o.a = headingBetween(o, player);
+      const behind = headingBetween(cover, o) + Math.PI;
+      const x = o.x - Math.cos(behind) * 12,
+        y = o.y - Math.sin(behind) * 12;
+      if (!solid(x, y, 6)) {
+        hurt.x = x;
+        hurt.y = y;
+      }
+      hurt.a = behind + Math.PI;
+      hurt.walk = (hurt.walk || 0) + deltaSeconds * 4;
+      return true;
+    }
     /**
      * ARREST
      * An officer who reaches a player on foot who is not fighting back cuffs
@@ -677,7 +806,7 @@
         near = 0;
       if (arrestable() && gameTime - (player.lastShotAt ?? -100) > 2.5 && gameTime - (player.lastStrikeAt ?? -100) > 2.5)
         for (const o of officers) {
-          if (o.hp <= 0 || personIncapacitated(o) || o.state === 'return' || o.returned) continue;
+          if (o.hp <= 0 || o.downed || personIncapacitated(o) || o.state === 'return' || o.returned) continue;
           const d = combatDistance(o, player);
           if (d < 90) near++;
           if (d < (player.car ? 44 : 32) && (!cuffing || d < combatDistance(cuffing, player))) cuffing = o;
@@ -851,6 +980,139 @@
       if (killed) tone(150, 0.08, 0.13, 'triangle', 90);
       else tone(1700, 0.025, 0.04, 'square');
     }
+    /**
+     * MARINE UNITS
+     * A runner who takes to the water at two stars or more is chased by police
+     * launches (one at two stars, two at three, three from four) launched out of
+     * sight on open water, and by a helicopter. A launch steers for where the
+     * boat will be, feels ahead for the shore and backs off it, rams from three
+     * stars, and its crew fires from the deck.
+     */
+    const MARINE_CAP = [0, 0, 1, 2, 3, 3];
+    let marineTimer = 3;
+    function playerAtSea() {
+      return (!!player.car && isBoat(player.car)) || !!player.swimming;
+    }
+    function spawnMarineUnit() {
+      // Ahead of a boat under way (they come out of a marina in its path),
+      // anywhere around a swimmer or a boat lying still.
+      const boat = player.car && isBoat(player.car) ? player.car : null,
+        speed = boat ? Math.hypot(boat.vx || 0, boat.vy || 0) : 0,
+        course = speed > 60 ? Math.atan2(boat.vy, boat.vx) : null;
+      for (let tries = 0; tries < 32; tries++) {
+        const a = course !== null && tries < 20 ? course + randomBetween(-1, 1) : randomBetween(0, TAU),
+          r = randomBetween(520, 980),
+          x = player.x + Math.cos(a) * r,
+          y = player.y + Math.sin(a) * r;
+        if (crowdInView(x, y, 120)) continue;
+        const heading = headingBetween({ x, y }, player);
+        if (!boatFits({ type: 'speedboat', x, y, a: heading })) continue;
+        if (vehicles.some((c) => Math.abs(c.x - x) < 80 && Math.abs(c.y - y) < 80)) continue;
+        const c = makeCar('speedboat', x, y, heading, false, '#e4ebf0');
+        Object.assign(c, {
+          cop: true,
+          ai: false,
+          occupied: false,
+          locked: false,
+          pursuitUnit: true,
+          dispatched: true,
+          lawUnit: 'marine',
+          marineUnit: true,
+          crewSize: 0,
+          shotTimer: 2,
+        });
+        c.maxhp = c.hp = Math.round(c.hp * 1.4);
+        pursuitStats.marine++;
+        if (gameTime - lastDispatchLine > 5) dispatchCaption('MARINE UNIT LAUNCHED · SUSPECT ON THE WATER', 'call-backup');
+        return c;
+      }
+      return null;
+    }
+    function updateMarineUnits(deltaSeconds) {
+      const stars = Math.ceil(wantedStars),
+        atSea = playerAtSea(),
+        cap = atSea ? MARINE_CAP[clamp(stars, 0, 5)] : 0;
+      marineTimer -= deltaSeconds;
+      if (cap && marineTimer <= 0) {
+        marineTimer = 5;
+        const live = vehicles.filter((c) => c.marineUnit && c.hp > 0).length;
+        if (live < cap) spawnMarineUnit();
+      }
+      for (const c of vehicles) {
+        if (!c.marineUnit || c.hp <= 0 || c === player.car || c.stolen) continue;
+        c.shotTimer = (c.shotTimer || 0) - deltaSeconds;
+        if (!c.seesPlayer || c.shotTimer > 0 || stars < 2) continue;
+        const d = combatDistance(c, player);
+        if (d > 330) continue;
+        c.shotTimer = randomBetween(1.1, 1.6);
+        const speed = Math.hypot(player.car?.vx || 0, player.car?.vy || 0),
+          chance = policeTier().accuracy * clamp(1.2 - d / 420, 0.4, 1) * clamp(1 - speed / 450, 0.4, 1);
+        let a = headingBetween(c, player);
+        if (seededRandom() > chance) a += (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.07, 0.15);
+        const origin = { x: c.x + Math.cos(a) * 24, y: c.y + Math.sin(a) * 24, altitude: entityElevation(c) };
+        bullets.push({
+          ...origin,
+          ...shotVelocity(origin, player, 700, a),
+          life: 0.8,
+          dmg: 18,
+          playerDmg: 5.5,
+          enemy: true,
+          faction: 'police',
+          owner: c,
+          target: player,
+        });
+        pursuitStats.marineShots++;
+        playSample('automatic', 0.26, 1, c);
+        if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
+      }
+    }
+    /* Throttle and helm for a police launch (boatControl, physics.js). */
+    function marineBoatInput(c, along) {
+      if (physicsClock < (c.helmAt || 0) && c.helm) return c.helm;
+      c.helmAt = physicsClock + 0.1;
+      const quarry = player.car && isBoat(player.car) ? player.car : player,
+        d = distanceBetween(c, quarry),
+        seen = c.seesPlayer || d < 260,
+        base = seen ? quarry : lastSeen || quarry,
+        t = clamp(d / 300, 0, 1.2),
+        ram = Math.ceil(wantedStars) >= 3;
+      let target = seen ? { x: base.x + (quarry.vx || 0) * t, y: base.y + (quarry.vy || 0) * t } : base;
+      // Two stars: come alongside, 70 units off the beam, and let the deck crew
+      // do the work. From three stars the launch rams.
+      if (seen && !ram && d < 240) {
+        const qa = Math.atan2(quarry.vy || 0, quarry.vx || 0) || quarry.a || 0,
+          side = (c.x - quarry.x) * -Math.sin(qa) + (c.y - quarry.y) * Math.cos(qa) >= 0 ? 1 : -1;
+        target = {
+          x: quarry.x + (quarry.vx || 0) * 0.4 - Math.sin(qa) * side * 70,
+          y: quarry.y + (quarry.vy || 0) * 0.4 + Math.cos(qa) * side * 70,
+        };
+      }
+      let da = normalizeAngle(headingBetween(c, target) - c.a);
+      // Feel ahead for the shore: turn toward whichever side is open water.
+      const ahead = (angle, dist) => boatFits(c, c.x + Math.cos(c.a + angle) * dist, c.y + Math.sin(c.a + angle) * dist, c.a + angle);
+      const reach = clamp(Math.abs(along) * 0.6, 40, 140);
+      let slow = false;
+      if (!ahead(0, reach)) {
+        const left = ahead(-0.6, reach * 0.8),
+          right = ahead(0.6, reach * 0.8);
+        da = left && !right ? -1 : right && !left ? 1 : da > 0 ? 1 : -1;
+        slow = true;
+      }
+      // Pinned against a quay: back off with the helm over.
+      if (Math.abs(along) < 10 && d > 60) c.pinned = (c.pinned || 0) + 0.1;
+      else c.pinned = 0;
+      if (c.pinned > 1.5) c.reverseUntil = physicsClock + 1.2;
+      const reversing = physicsClock < (c.reverseUntil || 0),
+        quarrySpeed = Math.hypot(quarry.vx || 0, quarry.vy || 0),
+        // Alongside at two stars: hold the runner's speed rather than overrun.
+        overrun = !ram && seen && d < 240 && along > quarrySpeed + 25;
+      c.helm = {
+        up: !reversing && Math.abs(da) < 1.5 && !overrun && !(slow && Math.abs(along) > 120),
+        down: reversing || (slow && Math.abs(along) > 120),
+        turn: Math.abs(da) < 0.06 ? 0 : clamp(da * 2, -1, 1) * (reversing ? -1 : 1),
+      };
+      return c.helm;
+    }
     /* The per-frame pursuit update (called from updateWanted). */
     function updatePursuit(deltaSeconds) {
       player.carStoppedFor =
@@ -859,6 +1121,7 @@
           : 0;
       recyclePursuitUnits(deltaSeconds);
       updatePursuitArmor(deltaSeconds);
+      updateMarineUnits(deltaSeconds);
       updateArrest(deltaSeconds);
     }
     function policeSearchRadius(stars = wantedStars) {
@@ -935,6 +1198,10 @@
         seen: wantedStars > 0 && policeCanSeePlayer(),
         arrest: Math.round(arrestProgress * 100) / 100,
         pursuit: { ...pursuitStats },
+        wounds: woundReport(),
+        marine: vehicles
+          .filter((c) => c.marineUnit)
+          .map((c) => ({ hp: Math.round(c.hp), d: Math.round(distanceBetween(c, player)), speed: Math.round(Math.hypot(c.vx || 0, c.vy || 0)), sees: !!c.seesPlayer })),
         tier: wantedStars > 0 ? policeTier() : null,
         counts: {
           patrol: units.filter((u) => u.kind === 'patrol' && u.hp > 0).length,

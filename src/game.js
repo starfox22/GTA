@@ -771,11 +771,26 @@
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
       )
         return true;
-      // Radii above 8 can straddle a cell edge; fall back to the full list for those rare calls.
-      const candidates = r > 8 ? buildings : buildingsNear(x, y);
-      for (const b of candidates) {
-        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      if (r <= 8 || !buildingGrid.size) {
+        const candidates = r > 8 ? buildings : buildingsNear(x, y);
+        for (const b of candidates)
+          if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+        return false;
       }
+      // Larger radii can straddle a cell edge: test every grid cell the box
+      // touches (pursuit whiskers and spawn checks call this many times a frame;
+      // it used to scan the whole city).
+      const x0 = Math.floor((x - r - 8) / BUILDING_CELL),
+        x1 = Math.floor((x + r + 8) / BUILDING_CELL),
+        y0 = Math.floor((y - r - 8) / BUILDING_CELL),
+        y1 = Math.floor((y + r + 8) / BUILDING_CELL);
+      for (let i = x0; i <= x1; i++)
+        for (let j = y0; j <= y1; j++) {
+          const cell = buildingGrid.get(i * 4096 + j);
+          if (cell)
+            for (const b of cell)
+              if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+        }
       return false;
     }
     function moveBody(body, displacementX, displacementY, collisionRadius) {
@@ -2134,7 +2149,7 @@
         chaseTarget.x > CITY_SIZE ||
         chaseTarget.y > CITY_SIZE
       )
-        return countyCopRoute(c, chaseTarget);
+        return policeNavRoute(c, chaseTarget);
       const start = {
           x: ROAD_CENTERS.indexOf(roadNear(c.x)),
           y: ROAD_ROWS.indexOf(rowNear(c.y)),
@@ -2439,6 +2454,7 @@
           worldContext.restore();
         }
     }
+    const shotSolidLists = [null, null, null, null, null, null];
     function shotBlocked(x, y, altitude = 0) {
       if (airCoverStopsShot(x, y, altitude) || (landAt(x, y) && altitude + 10 < terrainHeight(x, y)))
         return true;
@@ -2461,16 +2477,23 @@
         )
       )
         return true;
+      // Called for every 7-unit sub-step of every round in flight: the lists are
+      // walked in place (they used to be spread into one new array per call).
+      const lists = shotSolidLists;
+      lists[0] = garageWalls();
+      lists[1] = harborSolids();
+      lists[2] = depotSolids();
+      lists[3] = militarySolids();
+      lists[4] = countyStaticSolids;
+      lists[5] = AIRPORT_SCENERY_SOLIDS;
+      for (let i = 0; i < lists.length; i++) {
+        const list = lists[i];
+        for (let k = 0; k < list.length; k++) {
+          const b = list[k];
+          if (altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) return true;
+        }
+      }
       return (
-        [
-          ...garageWalls(),
-          ...harborSolids(),
-          ...depotSolids(),
-          ...militarySolids(),
-          ...countySolids(),
-        ].some(
-          (b) => altitude + 10 < b.height && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h,
-        ) ||
         buildingsNear(x, y).some(
           (b) =>
             altitude + 10 < b.height &&
@@ -2485,7 +2508,8 @@
     // short lists go in whole; pedestrians come from the crowd's neighbour grid
     // around the bullet. Every sub-step of every bullet used to copy all ~650
     // pedestrians (plus everyone else) into a fresh array.
-    const bulletTargetList = [];
+    const bulletTargetList = [],
+      bulletVehicleList = [];
     function bulletTargets(b, escorts, rooftop) {
       const list = bulletTargetList,
         add = (people) => {
@@ -2528,6 +2552,15 @@
         let impact = false,
           hitKind = 'wall';
         const steps = Math.max(1, Math.ceil((Math.hypot(b.vx, b.vy, b.vz || 0) * deltaSeconds) / 7));
+        // Only vehicles near this frame's flight segment can be hit by it.
+        const reach = 70,
+          minX = Math.min(b.x, b.x + b.vx * deltaSeconds) - reach,
+          maxX = Math.max(b.x, b.x + b.vx * deltaSeconds) + reach,
+          minY = Math.min(b.y, b.y + b.vy * deltaSeconds) - reach,
+          maxY = Math.max(b.y, b.y + b.vy * deltaSeconds) + reach,
+          nearVehicles = bulletVehicleList;
+        nearVehicles.length = 0;
+        for (const c of vehicles) if (c.x > minX && c.x < maxX && c.y > minY && c.y < maxY) nearVehicles.push(c);
         for (let j = 0; j < steps && !impact; j++) {
           // Where this sub-step started: damage.js traces the entry face from it.
           b.px = b.x;
@@ -2539,7 +2572,7 @@
             impact = true;
             break;
           }
-          for (const c of vehicles) {
+          for (const c of nearVehicles) {
             if (
               c === b.owner ||
               (b.faction === 'military' && c.military && !c.stolen) ||
@@ -4541,6 +4574,7 @@
     // @include src/arsenal.js
     // @include src/citylife.js
     // @include src/pursuit.js
+    // @include src/wounds.js
     // @include src/story.js
     // @include src/campaign.js
     // @include src/chase.js
@@ -5069,7 +5103,18 @@
       drive(type = 'sedan', altitudeMeters = 0, headingRadians = player.a) {
         if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
         if (player.car) exitCar();
-        const car = spawnClearCar(type, player.x + 60, player.y, headingRadians, false);
+        let car = null;
+        if (['speedboat', 'workboat', 'jetski'].includes(type)) {
+          // Boats go on the nearest open water (spawnClearCar wants dry land).
+          for (let r = 0; r < 600 && !car; r += 20)
+            for (let i = 0; i < (r ? 24 : 1) && !car; i++) {
+              const x = player.x + Math.cos((i * TAU) / 24) * r,
+                y = player.y + Math.sin((i * TAU) / 24) * r;
+              if (boatFits({ type, x, y, a: headingRadians })) car = makeCar(type, x, y, headingRadians, false);
+            }
+          if (!car) throw Error('No open water near the player for ' + type);
+          player.swimming = false;
+        } else car = spawnClearCar(type, player.x + 60, player.y, headingRadians, false);
         car.authorized = true;
         enterVehicle(car);
         if (altitudeMeters > 0 && isAircraft(car)) {

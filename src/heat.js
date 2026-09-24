@@ -153,7 +153,8 @@
       else if (category === 'gang') rampage.gang++;
       else if (category === 'soldier') rampage.soldiers++;
       else if (category !== 'hostile') rampage.police++;
-      let heat = KILL_HEAT[category] || 0;
+      // Someone already shot down (recordWounding) only adds the remainder.
+      let heat = Math.max(0, (KILL_HEAT[category] || 0) - (victim.woundHeat || 0));
       if (!heat) return;
       // A spree: every kill within eight seconds of the last adds 15% (up to 60%).
       rampage.streak = gameTime - rampage.lastKillAt < 8 ? rampage.streak + 1 : 0;
@@ -180,6 +181,16 @@
           searchRemaining = policeSearchSeconds();
         }
       }
+    }
+    /* Somebody the player shot down but did not kill (wounds.js): most of a
+       kill's heat, none of the body count. A later death adds the rest. */
+    function recordWounding(victim) {
+      const heat = (KILL_HEAT[killCategory(victim)] || 0) * 0.7;
+      if (!heat || harborPoliceProtected(player.x, player.y, 40)) return;
+      victim.woundHeat = heat;
+      addHeat(heat);
+      if (wantedStars <= 0) crime(0);
+      else lastSeen = { x: player.x, y: player.y };
     }
     /* A vehicle the player damaged last has blown up (updateCars). */
     function recordVehicleKill(vehicle) {

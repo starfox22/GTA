@@ -155,6 +155,77 @@ Findings from the play-tests:
   sight test used by the play-test helper, so the scripted harbor fight could not land
   hits; not a combat bug, noted for anyone scripting harbor tests.
 
+## Iteration 5: wounds, pursuit off the grid, five-star CPU
+
+Wounded bodies (new `src/wounds.js`, poses in crowd3d.js and render3d.js):
+
+- Every damaging hit records a zone (head 12%, torso 58%, legs 30%; a precision-rifle
+  headshot is always the head) and the direction of the round. Pedestrians and the box
+  models of officers, gangs and guards play a 0.4 s flinch: the torso knocked away from
+  the round (forward when shot from behind), a head snap for a head hit, a buckled knee
+  for a leg hit. A leg hit (or dropping under 30% health) leaves a limp: officers move at
+  60% speed with a short stride on one leg; pedestrians use the existing limp gait.
+- Deaths used to snap flat in one frame, all the same way. They now fall over 0.55 s
+  (accelerating) along the line of the shot: over backwards when facing the shooter,
+  face down with the arms thrown forward when facing away, one in three spun round as
+  they drop; with a wall within 30 units behind them they stagger back into it and slide
+  down into a sitting slump. A blast or a car throws the body; a round only knocks it
+  back a step.
+- About one fatal-looking body hit in three leaves an officer (one in four a bystander)
+  alive on the ground instead, for most of a kill's heat and none of the body count
+  (a later death adds the rest). Downed officers stop shooting and crawl for their
+  cruiser on their elbows; a partner without a firing token runs over and drags them
+  backwards into cover behind the car, facing the threat. Downed bystanders crawl away
+  from the shooter for a few seconds (prone crawl pose) and then lie groaning.
+- Anyone wounded who keeps moving leaves a trail of drops (one every 13 units, for 40 s).
+- Play-test (Old Quarter, pistol, 2 to 5 stars, 10 officers shot): `wounds` in
+  `policeReport()` showed 19 dead on their backs, 3 face down, 6 spun, one officer downed
+  and dragged into cover by his partner, limping and bleeding officers. No slumps in that
+  street fight (the shooting was mid-road, walls over 30 units away).
+
+Pursuit off the grid:
+
+- Off-road shortcuts: a cruiser drives straight at the runner or its search point when
+  the whole line within 700 units is open ground (sampled every 24 units: land, nothing
+  solid), across parks, plazas and lots. The escalation test counted 16 shortcuts in
+  28 s of city pursuit; the county test 10 in 24 s.
+- County roads use the map's GPS graph (`navigationGraph` and A*, navigation.js) instead
+  of the old county node BFS. Stonecreek test: a shot fired, 2 stars; four cruisers came
+  in from 700-840 units along the county roads and deployed eight officers within 9 s.
+- Water pursuits: police launches (1 at two stars, 2 at three, 3 from four) spawn out of
+  sight on open water, ahead of a boat under way; they lead the boat, feel ahead for the
+  shore and turn to open water, back off a quay when pinned, run 15% faster than a
+  speedboat, come alongside 70 units off the beam at two stars and ram from three, and
+  the deck crew fires (5.5 per round to the player). A helicopter joins from two stars on
+  the water. Marlow Bay test at full throttle: the first run (launch spawned behind) let
+  the speedboat escape in 12 s; after spawning launches ahead, the helicopter and launch
+  kept contact for the whole 30 s run and the launch closed to 290 units and fired.
+
+Five-star CPU (the coordinator measured vehicle physics at 14.7 ms of a 24 ms step):
+
+- Contact relaxation ran all seven passes over every pair and every static candidate.
+  Passes after the first now revisit only bodies a contact moved in the pass before.
+  Parked roadblock and deployed cruisers and cold wrecks sleep like parked cars. Barrier
+  bodies are built once per step instead of per vehicle per pass. Static contact
+  candidates are cached per car until it moves 8 units.
+- Each bullet tested every vehicle on every 7-unit sub-step, and `shotBlocked` spread
+  five solid lists into a new array per sub-step. Bullets now test only vehicles near
+  their flight segment and walk the lists in place.
+- `solid()` with a radius above 8 (pursuit whiskers, spawn checks) scanned every building
+  in the city; it now walks the building grid cells the box touches. `countyBlocked`
+  no longer spreads arrays. Cruisers over 800 units away plan at 3 Hz instead of 10.
+- Same 5-star scene (16 cruisers, 2 SWAT, 2 agents, 2 helicopters, 3 roadblocks, ~20
+  officers, 212 vehicles), same load band (load average 13-18 on 4 shared cores):
+  before, 20.2 ms per step with `cars` 11.0 ms (contacts 4.0, control 2.9, broadphase
+  1.1) and `bullets` 2.1 to 8.1; after, 15.0 ms per step with `cars` 7.6 ms (contacts
+  1.1, control 2.5, broadphase 1.5) and `bullets` 0.5. Later samples on the same page
+  swung between 20 and 45 ms as other agents' browsers loaded the machine, but contacts
+  stayed at a quarter to a third of control time (before: 1.4 times it).
+
+Re-verified natural escalation on this build (Old Quarter, rifle, god mode): 2 civilians
+1 star; 3 officers 2 stars at 6 s; 5 officers 3 stars at 11 s; 4 stars at 17 s; 5 stars
+at 21 s with SWAT, agents, two helicopters and three roadblocks.
+
 ## Screenshots
 
 Taken with `graphics('high')` on the persistent headless page and copied to
@@ -162,16 +233,24 @@ Taken with `graphics('high')` on the persistent headless page and copied to
 `star2-palmkeys.png` (v30 HUD with heat meter and body count), `star3-carchase.png`
 (flank and PIT cruisers on Royal Ave, roadblock notice), `star4-swat-onfoot.png` (SWAT
 vans, searchlight, marksman warning), `star5-tank-feds.png` (tank, agents' SUVs, SWAT,
-two helicopters), `busted.png`.
+two helicopters), `busted.png`. Iteration 5 adds
+`wounds-closeup.png` and `wounds-falls.png` (bodies down after a pavement shooting, the
+pending second star flashing red, LEAVE THE SEARCH AREA).
 
-## Honest assessment (end of this pass)
+## Honest assessment (end of iteration 5)
 
-- Escalation: proportional and legible. Stars follow the body count and who died; each
-  new star flashes before it lands and brings a visibly different response.
-- Combat on foot: fair and readable (firing tokens, peeking cover, hit markers, damage
-  direction arc, staggers, headshots); limited by the top-down aim and by the crowd
-  renderer's pose set (no crawl or limp animation for the wounded).
-- Chase: cruisers intercept, flank, block, PIT, recover when stuck and search the
-  area; roadblocks, helicopters with a marksman, SWAT and a tank arrive by tier. Still
-  grid-bound: no off-road shortcuts, county roads use the simpler county router, and
-  there is no police boat.
+- Escalation: AAA. Stars follow the body count and who died, wounding counts as well as
+  killing, each new star flashes before it lands and brings a visibly different response
+  (patrols, contact tactics, air and roadblocks, SWAT, federal agents and armor).
+- Chase: close to AAA. Cruisers intercept, flank, block, PIT, recover from spins and
+  walls, cut across open ground, search the area around the last sighting, follow the
+  county roads, and the water is no longer an escape hatch (launches and a helicopter).
+  Still missing: police motorbikes, cruisers that shoot from the window while driving,
+  and launches have no light bar of their own (boats3d draws them as white speedboats).
+- Combat on foot: good, not quite AAA. Fair incoming fire, firing tokens, peeking cover,
+  hit markers, directional damage arc, staggers, zone flinches, limps, varied falls,
+  crawling wounded and dragged officers all read well; the limit is the top-down aim and
+  the box-model officers (no real ragdoll: falls are procedural rotations, so a body never
+  folds over a car bonnet or tumbles down steps).
+- Performance: five stars no longer dominated by contact passes or bullets; the whole
+  police layer costs about as much as the pedestrian crowd.

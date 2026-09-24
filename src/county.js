@@ -444,9 +444,9 @@
       return [...countyStaticSolids, ...AIRPORT_SCENERY_SOLIDS];
     }
     function countyBlocked(x, y, r = 8) {
-      return countySolids().some(
-        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
-      );
+      // solid() asks this for every point outside the city: no array spread.
+      const hit = (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h;
+      return countyStaticSolids.some(hit) || AIRPORT_SCENERY_SOLIDS.some(hit);
     }
     function paintCountyGround(drawingContext, detail = true) {
       for (const reg of COUNTY_REGIONS) {
@@ -997,33 +997,6 @@
           }
         }
       return (countyPoliceGraph = nodes);
-    }
-    function countyCopRoute(c, target) {
-      const nodes = countyPoliceNodes();
-      if (!nodes.length) return [];
-      const nearest = (p) =>
-        nodes.reduce((a, b) => (distanceBetween(a, p) < distanceBetween(b, p) ? a : b));
-      const start = nodes.indexOf(nearest(c)),
-        end = nodes.indexOf(nearest(target)),
-        queue = [start],
-        parent = new Map([[start, -1]]);
-      for (let i = 0; i < queue.length; i++) {
-        const n = queue[i];
-        if (n === end) break;
-        for (const next of nodes[n].links)
-          if (!parent.has(next)) {
-            parent.set(next, n);
-            queue.push(next);
-          }
-      }
-      if (!parent.has(end)) return [];
-      const route = [];
-      for (let n = end; n !== -1; n = parent.get(n))
-        route.unshift({
-          x: nodes[n].x,
-          y: nodes[n].y,
-        });
-      return route;
     }
     function spawnCountyCop() {
       const points = countyPoliceNodes().filter((p) => {
