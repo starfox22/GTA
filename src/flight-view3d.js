@@ -643,7 +643,8 @@
           !!material &&
           material.isMeshStandardMaterial &&
           !material.transparent &&
-          !material.vertexColors &&
+          // Shared facades (cityscape3d.js) carry their tint as vertex colours.
+          (!material.vertexColors || material.userData.cityFacade) &&
           !material.alphaTest &&
           !material.normalMap
         );
@@ -785,9 +786,10 @@
                   uvs[o * 2] = uvPoint.x;
                   uvs[o * 2 + 1] = uvPoint.y;
                 }
-                colors[o * 3] = Math.round(m.color.r * 255);
-                colors[o * 3 + 1] = Math.round(m.color.g * 255);
-                colors[o * 3 + 2] = Math.round(m.color.b * 255);
+                const tint = geo.attributes.color;
+                colors[o * 3] = Math.round(m.color.r * (tint ? tint.getX(i) : 1) * 255);
+                colors[o * 3 + 1] = Math.round(m.color.g * (tint ? tint.getY(i) : 1) * 255);
+                colors[o * 3 + 2] = Math.round(m.color.b * (tint ? tint.getZ(i) : 1) * 255);
               }
             }
             const geometry = new Three.BufferGeometry();
@@ -815,7 +817,7 @@
         // Zoomed right out on the street the whole city is in view too, so the far
         // copy serves both cameras (the quality tier's lodBias moves the switch).
         const lod = activeTier ? activeTier.lodBias : 1,
-          far = viewZoom < (flightViewActive ? FAR_SCENERY_ZOOM * lookTune.far : STREET_FAR_SCENERY_ZOOM) * lod && farClasses.length > 0; // TEMP-TUNE
+          far = viewZoom < (flightViewActive ? FAR_SCENERY_ZOOM : STREET_FAR_SCENERY_ZOOM) * lod && farClasses.length > 0;
         // Between the street and the far view, the full city is drawn but its
         // shadows come from the far copy on a layer only the sun's shadow camera
         // renders: a few dozen merged casters instead of every building batch.

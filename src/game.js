@@ -912,7 +912,13 @@
     // One texture covers the whole city including the northern reclamation, so it
     // is taller than it is wide. The pixels-per-unit ratio is held below the old
     // 4096-square texture's so the bitmap does not grow with the city.
-    const GROUND_PIXELS_PER_UNIT = 3072 / CITY_SIZE;
+    // This bitmap is only drawn by the 2D fallback renderer. When WebGL 2 and
+    // three.js are there the 3D renderer paints its own sheet, so this one is
+    // painted at a quarter of the resolution (a sixteenth of the pixels): it
+    // still serves if the 3D renderer fails, and it no longer costs seconds of
+    // canvas rasterisation at start-up.
+    const GROUND_PIXELS_PER_UNIT =
+      (typeof THREE !== 'undefined' && typeof WebGL2RenderingContext !== 'undefined' ? 768 : 3072) / CITY_SIZE;
     const groundCanvas = document.createElement('canvas');
     groundCanvas.width = Math.ceil(CITY_WIDTH * GROUND_PIXELS_PER_UNIT);
     groundCanvas.height = Math.ceil(CITY_HEIGHT * GROUND_PIXELS_PER_UNIT);
@@ -5458,7 +5464,6 @@
       postView: (mode) => city3D?.postView?.(mode) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
-      tune: (o) => city3D?.tune?.(o) ?? null, // TEMP-TUNE
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),
@@ -5479,6 +5484,7 @@
             frameCalls: info?.frameCalls ?? null,
             renderScale: city3D?.quality?.().renderScale ?? null,
             sceneObjects: info?.objects ?? null,
+            programs: info?.programs ?? null,
             byType: info?.byType ?? null,
             vehicles: vehicles.length,
             pedestrians: pedestrians.length,

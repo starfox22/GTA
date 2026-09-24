@@ -625,8 +625,8 @@
         postLook.exposure = renderer.toneMappingExposure * (1 + night * 0.22);
         postLook.bloomThreshold = 2.2 - night * 1.35 - dusk * 0.3;
         postLook.bloomStrength = 0.22 + night * 0.3 + dusk * 0.1;
-        postLook.saturation = (1.12 + dusk * 0.08 - night * 0.22) * (1 - overcast * 0.14 - rain * 0.06);
-        postLook.contrast = 1.1 + dusk * 0.03 - overcast * 0.05;
+        postLook.saturation = (1.16 + dusk * 0.06 - night * 0.26) * (1 - overcast * 0.14 - rain * 0.06);
+        postLook.contrast = 1.14 + dusk * 0.02 - overcast * 0.06;
         postLook.lift.copy(gradeLiftDay).lerp(gradeLiftDusk, dusk).lerp(gradeLiftNight, night);
         postLook.gain.copy(gradeGainDay).lerp(gradeGainDusk, dusk).lerp(gradeGainNight, night);
         if (rain > 0.05) {
@@ -637,11 +637,7 @@
         // AO reads at street scale on the ground and grows with the view from the air.
         postLook.aoRadius = clamp(18 / Math.max(0.25, viewZoom), 18, 72);
         postLook.aoIntensity = 1.5;
-        // TEMP-TUNE
-        postLook.exposure *= lookTune.exposure; hemi.intensity *= lookTune.hemi; sun.intensity *= lookTune.sun;
-        postLook.saturation += lookTune.saturation; postLook.contrast += lookTune.contrast; postLook.bloomStrength *= lookTune.bloom;
       }
-      const lookTune = { exposure: 1, hemi: 1, sun: 1, saturation: 0, contrast: 0, bloom: 1, far: 1 }; // TEMP-TUNE
       /**
        * SHADOW CASTERS
        * A car or a person is two dozen small meshes, and every one of them was

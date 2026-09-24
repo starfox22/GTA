@@ -261,7 +261,7 @@
             color += shallow * 0.18 * clamp(vCrest, 0., 1.) * uDay;
             // Sun glitter: tight and broad specular lobes.
             vec3 reflected = reflect(-uSun, n);
-            float spec = pow(max(dot(reflected, viewDir), 0.), mix(60., 320., fine)) * mix(0.9, 2.4, fine)
+            float spec = pow(max(dot(reflected, viewDir), 0.), mix(110., 320., fine)) * mix(0.4, 2.4, fine * fine)
                        + pow(max(dot(reflected, viewDir), 0.), 28.) * 0.22;
             vec3 sunColor = mix(vec3(1., .96, .86), vec3(1., .62, .34), uDusk);
             color += sunColor * spec * (0.25 + 1.1 * uDay);

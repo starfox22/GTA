@@ -189,7 +189,7 @@
               pondRippleMaps.push(tx);
               return tx;
             })(),
-            normalScale: new Three.Vector2(0.45, 0.45),
+            normalScale: new Three.Vector2(0.3, 0.3),
           }),
           bronze = mat('#6f5a3a', 0.45, 0.6),
           cream = mat('#e7dfcf', 0.8),

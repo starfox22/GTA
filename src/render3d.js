@@ -195,7 +195,14 @@
           const positions = new Float32Array(b.vertices * 3),
             normals = new Float32Array(b.vertices * 3),
             uvs = new Float32Array(b.vertices * 2),
-            indices = new Uint32Array(b.indices);
+            indices = new Uint32Array(b.indices),
+            // Other attributes every part carries (a shared facade's tint and window
+            // light, cityscape3d.js SHARED FACADES) are copied along as they are.
+            first = b.parts[0].geo.attributes,
+            extras = Object.keys(first)
+              .filter((name) => !['position', 'normal', 'uv'].includes(name))
+              .filter((name) => b.parts.every(({ geo }) => geo.attributes[name]?.itemSize === first[name].itemSize))
+              .map((name) => ({ name, size: first[name].itemSize, array: new Float32Array(b.vertices * first[name].itemSize) }));
           let vo = 0,
             io = 0;
           for (const { geo, matrix } of b.parts) {
@@ -218,6 +225,10 @@
                 uvs[(vo + i) * 2] = uv.getX(i);
                 uvs[(vo + i) * 2 + 1] = uv.getY(i);
               }
+              for (const extra of extras) {
+                const source = geo.attributes[extra.name];
+                for (let k = 0; k < extra.size; k++) extra.array[(vo + i) * extra.size + k] = source.getComponent(i, k);
+              }
             }
             if (geo.index) {
               const idx = geo.index;
@@ -233,6 +244,7 @@
           merged.setAttribute('position', new Three.BufferAttribute(positions, 3));
           merged.setAttribute('normal', new Three.BufferAttribute(normals, 3));
           merged.setAttribute('uv', new Three.BufferAttribute(uvs, 2));
+          for (const extra of extras) merged.setAttribute(extra.name, new Three.BufferAttribute(extra.array, extra.size));
           merged.setIndex(new Three.BufferAttribute(indices, 1));
           merged.computeBoundingSphere();
           const m = new Three.Mesh(merged, b.material);
@@ -1563,6 +1575,8 @@
             frameCalls: frameStats.totalCalls,
             objects,
             batched: api.batchReport,
+            // Linked shader programs (each one is a compile hitch the first time).
+            programs: renderer.info.programs?.length ?? null,
           };
         },
         /**
@@ -1605,7 +1619,8 @@
                     name:
                       'group@' + Math.round(root.position.x) + ',' + Math.round(root.position.z) +
                       ' [' + (o.geometry?.type || o.type) + ' ' + (Array.isArray(o.material) ? 'multi' : o.material.type) +
-                      (o.material.transparent ? ' transparent' : '') + (o.userData.sign ? ' sign' : '') + ']',
+                      (o.material.transparent ? ' transparent' : '') + (o.userData.sign ? ' sign' : '') +
+                      (o.material.color ? ' #' + o.material.color.getHexString() : '') + ']',
                     type: '',
                   };
                 const material = Array.isArray(o.material) ? o.material[0] : o.material,
@@ -1624,14 +1639,19 @@
           };
           visit(scene);
           const sorted = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, top);
-          return { total, byName: sorted(byName), byCell: sorted(byCell) };
+          // Shader programs by material type (fewer variants, fewer compile hitches).
+          const programs = new Map();
+          for (const p of renderer.info.programs || []) {
+            const kind = p.name || String(p.cacheKey).split(',')[0].slice(0, 40);
+            programs.set(kind, (programs.get(kind) || 0) + 1);
+          }
+          return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
         },
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.
         postView(mode) {
           postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : 0;
           return mode || 'image';
         },
-        tune: (o) => Object.assign(lookTune, o || {}), // TEMP-TUNE
         // Switch graphics quality tier (quality.js) at runtime.
         setQuality(tier) {
           applyRendererQuality(tier);

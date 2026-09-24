@@ -82,7 +82,7 @@
         vec3 grass = groundBase * mix( 1.0, 0.84 + 0.32 * blades, detailFade ) * ( 0.84 + 0.3 * meadow )
                    * mix( vec3( 1.0 ), vec3( 1.14, 1.06, 0.8 ), dry );
         // Lawns read lush rather than pastel: a deeper, more saturated green.
-        grass = max( mix( vec3( dot( grass, vec3( 0.2126, 0.7152, 0.0722 ) ) ), grass, 1.3 ) * 0.88, 0.0 );
+        grass = max( mix( vec3( dot( grass, vec3( 0.2126, 0.7152, 0.0722 ) ) ), grass, 1.15 ) * vec3( 0.84, 0.9, 0.84 ), 0.0 );
         diffuseColor.rgb = mix( mix( mix( groundBase * ( 0.94 + 0.12 * grain ), paving, paveMask ), asphalt, roadMask ), grass, grassMask );
         // Rain: everything darkens as it soaks; low spots in the tarmac hold water.
         float puddle = smoothstep( 0.6, 0.66, cityNoise( gp * 0.017 + 41.0 ) + grainA * 0.05 ) * roadMask * smoothstep( 0.2, 0.8, cityWet );

@@ -306,19 +306,23 @@
         const light = daylight(),
           night = 1 - light,
           dusk = clamp(1 - Math.abs(light - 0.3) / 0.3, 0, 1);
-        // Sky fill is kept well under the sun (about 1 : 3 on a sunlit pavement)
-        // so shadows read at noon instead of washing out to a pale grey.
-        hemi.intensity = 0.45 + light * 1.3;
+        // Daylight is kept inside the tone curve's range: the pale pavements and
+        // roofs used to sit on its shoulder at noon, so the city read washed out and
+        // shadows grey. The sky fill is also kept well under the sun (about 1 : 3
+        // on a sunlit pavement) so shadows read. Exposure stays where it was, so
+        // display-referred shaders (water, signs, sky) look as designed.
+        const daylightScale = 1 - 0.29 * light;
+        hemi.intensity = 0.45 + light * 0.5;
         hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, light);
         hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, light);
         // Golden hour: the low sun is a strong warm key, not a fading one.
-        sun.intensity = 0.35 + light * 3.75 + dusk * 0.9;
+        sun.intensity = (0.35 + light * 3.75 + dusk * 0.9) * daylightScale;
         sun.color.copy(SUN_NIGHT).lerp(SUN_DAY, light).lerp(SUN_DUSK, dusk * 0.85);
         fill.intensity = 0.28 + night * 0.25;
         skyScratch.copy(SKY_NIGHT).lerp(SKY_DAY, light).lerp(SKY_DUSK, dusk * 0.6);
         scene.background.copy(skyScratch);
         scene.fog.color.copy(skyScratch);
-        renderer.toneMappingExposure = 1.0 + night * 0.26 + dusk * 0.06;
+        renderer.toneMappingExposure = 1.1 + night * 0.16 + dusk * 0.07;
         const badge =
           'SOUTH COAST · ' +
           (light < 0.1

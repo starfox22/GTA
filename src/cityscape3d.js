@@ -494,63 +494,126 @@
           mat(c, 0.9),
         ),
         awningStripe = mat('#efe6d3', 0.9);
+      /**
+       * SHARED FACADES
+       * Every building used to have its own facade material (its own texture
+       * repeat, tint and window-light schedule), so every building's walls were a
+       * draw call of their own that the batcher could not merge: most of the
+       * several hundred static draws in any city view. Now a facade is one of a
+       * few shared materials (a wall texture and a window-light mask) and what was
+       * per building lives in the building's wall geometry:
+       *
+       *  - the texture repeat is baked into its UVs,
+       *  - its tint is a vertex colour,
+       *  - its window light (strength, phase) is the `cityLit` attribute, which
+       *    the facade shader multiplies into the emissive together with the
+       *    street power at the fragment (the blackout job, cityPower()).
+       *
+       * The materials' emissive intensity is the city-wide night level
+       * (updateCityscapeVisuals), so the far copy of the city (flight-view3d.js)
+       * lights up with them. The batcher carries the extra attributes along.
+       */
+      const facadeMaterials = new Map(),
+        facadeClock = { value: 0 };
+      function cityFacadePatch(shader) {
+        cityGlassPatch(shader);
+        shader.uniforms.cityClock = facadeClock;
+        shader.vertexShader = shader.vertexShader
+          .replace('#include <common>', '#include <common>\nattribute vec2 cityLit;\nvarying vec2 vCityLit;')
+          .replace('#include <begin_vertex>', '#include <begin_vertex>\nvCityLit = cityLit;');
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <common>', '#include <common>\nvarying vec2 vCityLit;\nuniform float cityClock;')
+          .replace(
+            '#include <emissivemap_fragment>',
+            '#include <emissivemap_fragment>\ntotalEmissiveRadiance *= vCityLit.x * ( 0.92 + 0.08 * sin( cityClock * 0.7 + vCityLit.y ) ) * cityPower();',
+          );
+      }
+      function sharedFacade(key, make) {
+        if (!facadeMaterials.has(key)) {
+          const material = make();
+          material.vertexColors = true;
+          material.emissiveIntensity = 0;
+          material.userData.cityFacade = true;
+          material.onBeforeCompile = cityFacadePatch;
+          material.customProgramCacheKey = () => 'cityFacade';
+          facadeMaterials.set(key, material);
+        }
+        return facadeMaterials.get(key);
+      }
+      // A building's facade: the shared material plus what its wall geometry carries.
       function facadeMaterial(kind, index, b) {
         if (kind === 'tower' || kind === 'decoTower') {
-          const wall = curtainWalls[index % curtainWalls.length],
-            map = wall.map.clone(),
-            lit = wall.lit.clone(),
-            repeatX = Math.max(1, Math.round(b.w / 36)),
-            repeatY = Math.max(1, Math.round(b.height / 34));
-          map.repeat.set(repeatX, repeatY);
-          lit.repeat.set(repeatX, repeatY);
-          map.needsUpdate = lit.needsUpdate = true;
-          const material = useCityGlass(
-            new Three.MeshStandardMaterial({
-              map,
-              color: kind === 'decoTower' ? '#e9dccb' : '#cfd6dc',
-              roughness: 0.25,
-              metalness: 0.55,
-              emissive: '#ffe6bf',
-              emissiveMap: lit,
-              emissiveIntensity: 0,
-            }),
-          );
-          litWindowMaterials.push({ material, strength: cityRange(0.7, 1.1), phase: cityRandom() * 9, x: b.x, y: b.y });
-          return material;
+          const which = index % curtainWalls.length,
+            wall = curtainWalls[which],
+            material = sharedFacade('curtain' + which, () =>
+              useCityGlass(
+                new Three.MeshStandardMaterial({
+                  map: wall.map,
+                  roughness: 0.25,
+                  metalness: 0.55,
+                  emissive: '#ffe6bf',
+                  emissiveMap: wall.lit,
+                }),
+              ),
+            );
+          return {
+            material,
+            tint: new Three.Color(kind === 'decoTower' ? '#e9dccb' : '#cfd6dc'),
+            repeatX: Math.max(1, Math.round(b.w / 36)),
+            repeatY: Math.max(1, Math.round(b.height / 34)),
+            strength: cityRange(0.7, 1.1),
+            phase: cityRandom() * 9,
+          };
         }
         const quadrant = kind === 'brick' ? 0 : kind === 'office' ? 1 : kind === 'warehouse' ? 2 : 3,
-          wall = wallTextures[quadrant].clone(),
-          repeatX = Math.max(1, Math.round(b.w / 34) / 4),
-          repeatY = Math.max(0.5, Math.round(b.height / 18) / 4);
-        wall.repeat.set(repeatX, repeatY);
-        wall.needsUpdate = true;
-        const tints = FACADE_TINTS[kind === 'deco' ? 'stucco' : kind] || FACADE_TINTS.stucco,
-          material = new Three.MeshStandardMaterial({
-            map: wall,
-            color: tints[index % tints.length],
-            roughness: kind === 'warehouse' ? 0.6 : 0.9,
-            metalness: kind === 'warehouse' ? 0.35 : 0,
+          tints = FACADE_TINTS[kind === 'deco' ? 'stucco' : kind] || FACADE_TINTS.stucco,
+          mask = windowMasks[quadrant] ? cityPick(windowMasks[quadrant]) : null,
+          material = sharedFacade(kind + '|' + quadrant + '|' + (mask ? mask.uuid : ''), () => {
+            const m = new Three.MeshStandardMaterial({
+              map: wallTextures[quadrant],
+              roughness: kind === 'warehouse' ? 0.6 : 0.9,
+              metalness: kind === 'warehouse' ? 0.35 : 0,
+            });
+            if (windowGloss[quadrant]) {
+              m.roughnessMap = m.metalnessMap = windowGloss[quadrant];
+              m.roughness = kind === 'warehouse' ? 0.65 : 1;
+              m.metalness = kind === 'warehouse' ? 0.6 : 1;
+            }
+            if (mask) {
+              m.emissive = new Three.Color('#ffd9a6');
+              m.emissiveMap = mask;
+            }
+            return m;
           });
-        if (windowGloss[quadrant]) {
-          const gloss = windowGloss[quadrant].clone();
-          gloss.repeat.set(repeatX, repeatY);
-          gloss.needsUpdate = true;
-          material.roughnessMap = material.metalnessMap = gloss;
-          // The panes reflect sky, not the street below them (lighting3d.js).
-          useCityGlass(material);
-          material.roughness = kind === 'warehouse' ? 0.65 : 1;
-          material.metalness = kind === 'warehouse' ? 0.6 : 1;
+        return {
+          material,
+          tint: new Three.Color(tints[index % tints.length]),
+          repeatX: Math.max(1, Math.round(b.w / 34) / 4),
+          repeatY: Math.max(0.5, Math.round(b.height / 18) / 4),
+          strength: mask ? cityRange(0.6, 1.0) : 0,
+          phase: mask ? cityRandom() * 9 : 0,
+        };
+      }
+      // The building's own copy of the wall box: repeat in the UVs, tint and window
+      // light as vertex attributes (see SHARED FACADES).
+      function facadeGeometry(face) {
+        if (face.geometry) return face.geometry;
+        const geo = blockWallsGeo.clone(),
+          uv = geo.attributes.uv,
+          count = uv.count,
+          colors = new Float32Array(count * 3),
+          lit = new Float32Array(count * 2);
+        for (let i = 0; i < count; i++) {
+          uv.setXY(i, uv.getX(i) * face.repeatX, uv.getY(i) * face.repeatY);
+          colors[i * 3] = face.tint.r;
+          colors[i * 3 + 1] = face.tint.g;
+          colors[i * 3 + 2] = face.tint.b;
+          lit[i * 2] = face.strength;
+          lit[i * 2 + 1] = face.phase;
         }
-        if (windowMasks[quadrant]) {
-          const lit = cityPick(windowMasks[quadrant]).clone();
-          lit.repeat.set(repeatX, repeatY);
-          lit.needsUpdate = true;
-          material.emissive = new Three.Color('#ffd9a6');
-          material.emissiveMap = lit;
-          material.emissiveIntensity = 0;
-          litWindowMaterials.push({ material, strength: cityRange(0.6, 1.0), phase: cityRandom() * 9, x: b.x, y: b.y });
-        }
-        return material;
+        geo.setAttribute('color', new Three.BufferAttribute(colors, 3));
+        geo.setAttribute('cityLit', new Three.BufferAttribute(lit, 2));
+        return (face.geometry = geo);
       }
       // One material per roof finish, shared by every roof that uses it (they batch).
       const roofMaterials = new Map();
@@ -591,7 +654,7 @@
         blockRoofGeo.clearGroups();
       }
       function blockBox(group, x, y, z, w, h, d, face, top) {
-        mesh(blockWallsGeo, face, group, x, y, z, w, h, d);
+        mesh(facadeGeometry(face), face.material, group, x, y, z, w, h, d);
         mesh(blockRoofGeo, top, group, x, y, z, w, h, d);
       }
       // ---- Roof props ----------------------------------------------------------------
@@ -1001,7 +1064,9 @@
           b,
           group,
           height: height + (b.crownHeight || 0),
-          materials: [face, top, trim],
+          materials: [face.material, top, trim],
+          // The facade's own colour (damage3d.js tints debris with it).
+          tint: face.tint,
         });
         statics.push({
           x: b.x + b.w / 2,
@@ -1097,6 +1162,8 @@
           night = clamp(1 - light * 1.6, 0, 1),
           hour = (worldMinutes % 1440) / 60,
           lateNight = hour > 1 && hour < 5 ? 0.45 : 1;
+        facadeClock.value = gameTime;
+        for (const material of facadeMaterials.values()) material.emissiveIntensity = night * lateNight * 1.35;
         for (const w of litWindowMaterials) {
           const flicker = 0.92 + 0.08 * Math.sin(gameTime * 0.7 + w.phase);
           w.material.emissiveIntensity =
