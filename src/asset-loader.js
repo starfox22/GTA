@@ -27,6 +27,36 @@ const embeddedAssetReferences = {
       "title": "Midnight Cruiser",
       "artist": "Zane Little Music",
       "src": "media-music-oddball"
+    },
+    "lounge-martini": {
+      "title": "Martini Sunset",
+      "artist": "Kevin MacLeod",
+      "src": "media-music-lounge-martini"
+    },
+    "lounge-heists": {
+      "title": "Patron Saint of Heists",
+      "artist": "Bryan Teoh",
+      "src": "media-music-lounge-heists"
+    },
+    "island-dub": {
+      "title": "Sunday Dub",
+      "artist": "Kevin MacLeod",
+      "src": "media-music-island-dub"
+    },
+    "island-colada": {
+      "title": "Piña Colada",
+      "artist": "Alexander Nakarada",
+      "src": "media-music-island-colada"
+    },
+    "lofi-hooptie": {
+      "title": "Hooptie With The Windows Down",
+      "artist": "HoliznaCC0",
+      "src": "media-music-lofi-hooptie"
+    },
+    "lofi-freeway": {
+      "title": "Lost On The Freeway",
+      "artist": "HoliznaCC0",
+      "src": "media-music-lofi-freeway"
     }
   },
   "audio": {

@@ -63,6 +63,48 @@
     "stream": true
   },
   {
+    "id": "media-music-lounge-martini",
+    "file": "assets/music/lounge-martini.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/lounge-martini.mp3",
+    "stream": true
+  },
+  {
+    "id": "media-music-lounge-heists",
+    "file": "assets/music/lounge-heists.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/lounge-heists.mp3",
+    "stream": true
+  },
+  {
+    "id": "media-music-island-dub",
+    "file": "assets/music/island-dub.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/island-dub.mp3",
+    "stream": true
+  },
+  {
+    "id": "media-music-island-colada",
+    "file": "assets/music/island-colada.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/island-colada.mp3",
+    "stream": true
+  },
+  {
+    "id": "media-music-lofi-hooptie",
+    "file": "assets/music/lofi-hooptie.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/lofi-hooptie.mp3",
+    "stream": true
+  },
+  {
+    "id": "media-music-lofi-freeway",
+    "file": "assets/music/lofi-freeway.mp3",
+    "mime": "audio/mpeg",
+    "original": "src/assets/music/lofi-freeway.mp3",
+    "stream": true
+  },
+  {
     "id": "media-audio-automatic",
     "file": "assets/audio/automatic.wav",
     "mime": "audio/wav",

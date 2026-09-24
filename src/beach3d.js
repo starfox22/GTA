@@ -1,6 +1,6 @@
-      // BEGIN SUBSYSTEM: src/beach3d.js — Southport Beach meshes
+      // BEGIN SUBSYSTEM: src/beach3d.js — Palm Keys Beach meshes
       /**
-       * Southport Beach meshes
+       * Palm Keys Beach meshes
        * Source: src/beach3d.js
        * Scope: createCityRenderer() closure.
        * The sand, the swash, the boardwalk, the pier, the beach furniture, the
@@ -21,9 +21,9 @@
        * Nothing animates unless the camera is near the beach.
        */
       buildBeachLayout();
-      const BEACH_BOX = { x: 1630, y: 5286, w: 1520, h: 630 },
+      const BEACH_BOX = { x: -2780, y: 5286, w: 1520, h: 630 },
         beachGroup = new Three.Group();
-      beachGroup.name = 'Southport Beach';
+      beachGroup.name = 'Palm Keys Beach';
       scene.add(beachGroup);
       const BEACH_NO_SHADOW = ['swim zone buoys', 'surfboards', 'pedal boats and jet skis', 'boat seats', 'ladder rails', 'ladder rungs', 'ladder grab rails', 'ladder lifebuoys', 'lifebuoy posts and edge paint', 'beach towels'];
       const beachInstanced = (geo, material, count, name) => {
@@ -75,7 +75,7 @@
         let seed = 5150;
         const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
         g.save();
-        regionPath(g, LAND_REGIONS[0]);
+        regionPath(g, LAND_REGIONS[1]);
         g.clip();
         g.beginPath();
         BEACH.polygon.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
@@ -187,7 +187,7 @@
       sand.rotation.x = -Math.PI / 2;
       sand.position.set(BEACH_BOX.x + BEACH_BOX.w / 2, 0.06, BEACH_BOX.y + BEACH_BOX.h / 2);
       sand.receiveShadow = true;
-      sand.name = 'Southport Beach sand';
+      sand.name = 'Palm Keys Beach sand';
       beachGroup.add(sand);
       /**
        * SWASH
@@ -293,7 +293,7 @@
             `,
           }),
         );
-        m.name = 'Southport Beach swash';
+        m.name = 'Palm Keys Beach swash';
         m.renderOrder = 2;
         m.userData.dynamic = true;
         beachGroup.add(m);
@@ -490,11 +490,11 @@
       }
       // Palms by the bar and the kiosks.
       for (const [x, y, size] of [
-        [2310, 5378, 0.9],
-        [2476, 5382, 1],
-        [1995, 5374, 0.85],
-        [2805, 5376, 0.9],
-        [3080, 5380, 0.8],
+        [-2100, 5378, 0.9],
+        [-1934, 5382, 1],
+        [-2415, 5374, 0.85],
+        [-1605, 5376, 0.9],
+        [-1330, 5380, 0.8],
       ])
         makePalm(x, y, size);
       /**
@@ -980,7 +980,7 @@
       let beachWasNear = true;
       /* Per-frame: called from updateWorldVisuals (world3d.js). */
       function updateBeachVisuals() {
-        const near = Math.abs(cameraTarget.x - 2400) < 1900 && Math.abs(cameraTarget.y - 5620) < 1500;
+        const near = Math.abs(cameraTarget.x + 2010) < 1900 && Math.abs(cameraTarget.y - 5620) < 1500;
         beachGroup.visible = near;
         for (const h of beachHalos) {
           h.sprite.visible = near && nightAmount > 0.05 && (!h.string || nightAmount > 0.1);

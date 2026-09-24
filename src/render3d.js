@@ -313,11 +313,11 @@
       // the texture's memory close to the old 4096-square sheet's.
       const terrainPixelsPerUnit = (touchEnabled() ? 2560 : 3584) / CITY_SIZE;
       const terrain = document.createElement('canvas');
-      terrain.width = Math.round(CITY_SIZE * terrainPixelsPerUnit);
+      terrain.width = Math.round(CITY_WIDTH * terrainPixelsPerUnit);
       terrain.height = Math.ceil(CITY_HEIGHT * terrainPixelsPerUnit);
       const drawingContext = terrain.getContext('2d');
       drawingContext.scale(terrainPixelsPerUnit, terrainPixelsPerUnit);
-      drawingContext.translate(0, -CITY_TOP);
+      drawingContext.translate(-CITY_LEFT, -CITY_TOP);
       function pattern(q, scale) {
         const tile = document.createElement('canvas');
         tile.width = tile.height = scale;
@@ -347,9 +347,9 @@
       coastPath(drawingContext);
       drawingContext.clip();
       drawingContext.fillStyle = '#263e4d';
-      drawingContext.fillRect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT);
+      drawingContext.fillRect(CITY_LEFT, CITY_TOP, CITY_WIDTH, CITY_HEIGHT);
       drawingContext.fillStyle = paving;
-      drawingContext.fillRect(48, CITY_TOP + 45, CITY_SIZE - 112, CITY_HEIGHT - 112);
+      drawingContext.fillRect(CITY_LEFT + 48, CITY_TOP + 45, CITY_WIDTH - 112, CITY_HEIGHT - 112);
       paintCityStreets(drawingContext, true);
       const curbGroup = new Three.Group();
       curbGroup.name = 'kerbs';
@@ -365,7 +365,7 @@
             stadiumOverlap(x, z, 354, 354)
           )
             continue;
-          if (bx === 8 && by === 4) {
+          if (bx === -4 && by === 4) {
             drawingContext.fillStyle = paving;
             drawingContext.fillRect(ROOFTOP.x - 14, ROOFTOP.y - 14, ROOFTOP.w + 28, ROOFTOP.h + 44);
             continue;
@@ -431,7 +431,7 @@
         }
       // Manhole covers and utility plates scattered along the roadway.
       for (let i = 0; i < 260; i++) {
-        const mx = 100 + ((i * 7919) % (CITY_SIZE - 200)),
+        const mx = CITY_LEFT + 100 + ((i * 7919) % (CITY_WIDTH - 200)),
           mz = 100 + ((i * 104729) % (CITY_SIZE - 200));
         if (!onRoad(mx, mz) || onBridge(mx, mz)) continue;
         drawingContext.fillStyle = '#2b3134';
@@ -468,7 +468,7 @@
         return rseed / 4294967296;
       };
       for (let i = 0; i < 330; i++) {
-        const x = 80 + random() * (CITY_SIZE - 240),
+        const x = CITY_LEFT + 80 + random() * (CITY_WIDTH - 240),
           z = 80 + random() * (CITY_SIZE - 240);
         if (!onRoad(x, z)) continue;
         drawingContext.fillStyle = 'rgba(12,17,23,' + (0.12 + random() * 0.12) + ')';
@@ -485,15 +485,6 @@
         }
       // A broad river separates the old city from the garden borough.
       paintPromenades(drawingContext);
-      for (const bridge of BRIDGES) {
-        drawingContext.fillStyle = asphalt;
-        drawingContext.fillRect(RIVER.left - 140, bridge - 56, RIVER.right - RIVER.left + 280, 112);
-        for (let x = RIVER.left - 140; x < RIVER.right + 140; x += 31) {
-          drawingContext.fillStyle = '#c3af72';
-          drawingContext.fillRect(x, bridge - 2, 15, 1.4);
-          drawingContext.fillRect(x, bridge + 2, 15, 1.4);
-        }
-      }
       drawingContext.fillStyle = tarmac;
       drawingContext.fillRect(1250, 3971, 300, 158);
       for (let x = 1254; x < 1540; x += 53) {
@@ -519,19 +510,19 @@
       groundTx.colorSpace = Three.SRGBColorSpace;
       groundTx.anisotropy = 8;
       const roughCanvas = document.createElement('canvas');
-      roughCanvas.width = 896;
+      roughCanvas.width = Math.ceil((896 * CITY_WIDTH) / CITY_SIZE);
       roughCanvas.height = Math.ceil((896 * CITY_HEIGHT) / CITY_SIZE);
       const rg = roughCanvas.getContext('2d');
       rg.scale(896 / CITY_SIZE, 896 / CITY_SIZE);
-      rg.translate(0, -CITY_TOP);
+      rg.translate(-CITY_LEFT, -CITY_TOP);
       rg.fillStyle = '#e9e9e9';
-      rg.fillRect(0, CITY_TOP, CITY_SIZE, CITY_HEIGHT);
+      rg.fillRect(CITY_LEFT, CITY_TOP, CITY_WIDTH, CITY_HEIGHT);
       rg.fillStyle = '#737373';
       for (const r of ROAD_CENTERS) rg.fillRect(r - 56, CITY_TOP + 48, 112, CITY_HEIGHT - 112);
-      for (const r of ROAD_ROWS) rg.fillRect(51, r - 56, CITY_SIZE - 112, 112);
+      for (const r of ROAD_ROWS) rg.fillRect(CITY_LEFT + 51, r - 56, CITY_WIDTH - 112, 112);
       const roughTx = new Three.CanvasTexture(roughCanvas);
       const groundMesh = new Three.Mesh(
-        new Three.PlaneGeometry(CITY_SIZE, CITY_HEIGHT),
+        new Three.PlaneGeometry(CITY_WIDTH, CITY_HEIGHT),
         new Three.MeshStandardMaterial({
           map: groundTx,
           roughnessMap: roughTx,
@@ -542,7 +533,7 @@
         }),
       );
       groundMesh.rotation.x = -Math.PI / 2;
-      groundMesh.position.set(CITY_SIZE / 2, 0.02, (CITY_TOP + CITY_SIZE) / 2);
+      groundMesh.position.set((CITY_LEFT + CITY_RIGHT) / 2, 0.02, (CITY_TOP + CITY_SIZE) / 2);
       groundMesh.receiveShadow = true;
       scene.add(groundMesh);
       // Buildings are constructed by src/cityscape3d.js (included below, after the halo helper).
@@ -551,7 +542,7 @@
       const leafGeo = new Three.IcosahedronGeometry(1, 2),
         trunkGeo = new Three.CylinderGeometry(0.9, 1.9, 1, 8);
       trees.forEach((t, i) => {
-        if (t.tropical ?? (t.x > RIVER.right && !t.county)) {
+        if (t.tropical ?? (onPalmKeys(t.x) && !t.county)) {
           makePalm(t.x, t.y, t.r / 17);
           return;
         }

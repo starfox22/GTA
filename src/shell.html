@@ -23,7 +23,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/physics.js: Vehicle and pedestrian physics
     Fixed 1/120 s steps, oriented collision boxes, contact impulses, traffic AI, helicopter/boat control, knockdowns.
   src/geography.js: Coastlines and land regions
-    Land polygons, the cached land test, bridges, coast segments, districtAt, 2D water, Southport Beach outline.
+    Land polygons, the cached land test, BRIDGES, reserved plots, coast segments, districtAt, 2D water, Palm Keys Beach outline.
   src/harbor.js: Ironworks cargo terminal
     Terminal geometry, crane loading, gates, guards, Vinny's depot drop and mission 1 rules.
   src/police-feedback.js: Police action feedback
@@ -43,7 +43,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/carjack.js: Carjacking and driver reactions
     Occupied traffic, locked doors, the ejection throw and what drivers do next.
   src/themepark.js: Sunset Pier amusement park
-    Sunset Pier island layout, ride footprints, the rideable coaster and the park crowd.
+    Sunset Pier island (north of the city) ground tile, ride footprints, the rideable coaster and the park crowd.
   src/marina.js: Harbor Point marina, the superyacht and the cruise liners
     Harbor Point basin, hull-form math, the boardable superyacht deck plan, liner decks and guests.
   src/taxi.js: Yellow cabs
@@ -56,8 +56,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Swimming, wading, sinking cars, beach-only entry (shoreStepBlocked), ladders, dive/splashdown, rescue.
   src/water-audio.js: Water and beach sound
     Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle.
-  src/beach.js: Southport Beach life
-    Southport Beach furniture plan, beachgoers by hour, games, panic and kiosks.
+  src/beach.js: Palm Keys Beach life
+    Palm Keys Beach furniture plan, beachgoers by hour, games, panic and kiosks.
   src/roofmission.js: Blue Hour rooftop mission
     Blue Hour terrace (player.roof), guests, disguise, poison sequence, guards, escape; entityElevation.
   src/rooftops.js: Building roofs: helipads, helicopter landings, walking on a roof
@@ -151,7 +151,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery.
   src/wakes3d.js: Boat wakes and spray
     Kelvin wake, propeller wash and hull collar drawn into a wake map the water samples; bow spray.
-  src/beach3d.js: Southport Beach meshes
+  src/beach3d.js: Palm Keys Beach meshes
     Sand, swash ribbon, pier, props, ladders and instanced beachgoers.
   src/county3d.js: County and mountain meshes
     County ground tiles and hills, snow, rural scenery, bridges and region visibility.
@@ -2147,10 +2147,22 @@ h1 {
   color: #b7c9c7;
   overflow: hidden;
 }
+/* Six presets in two rows of four slots; B · NEXT takes the last two. */
 .radio-presets {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
   margin-top: 8px;
+}
+#carRadio .radio-presets button {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 11px;
+  padding: 5px 3px;
+}
+#radioNext {
+  grid-column: span 2;
 }
 #carRadio .selected {
   background: #a5d9c8;
@@ -2175,6 +2187,10 @@ h1 {
   #carRadio button {
     padding: 5px;
     font-size: 11px;
+  }
+  #carRadio .radio-presets button {
+    padding: 5px 2px;
+    font-size: 10px;
   }
 }
 @media (max-width: 590px) {
@@ -3711,6 +3727,12 @@ body:not(.touch-mode).police-search-active #carRadio {
           NEON</button
         ><button id="radioPreset2" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
           RIOT</button
+        ><button id="radioPreset3" aria-label="Tune Velvet 91.5, lounge jazz" aria-pressed="false">
+          VELVET</button
+        ><button id="radioPreset4" aria-label="Tune Palms 95.9, island grooves" aria-pressed="false">
+          PALMS</button
+        ><button id="radioPreset5" aria-label="Tune Block 101.7, lo-fi beats" aria-pressed="false">
+          BLOCK</button
         ><button id="radioNext" aria-label="Next radio station">B · NEXT</button>
       </div>
     </aside>
@@ -4264,8 +4286,8 @@ body:not(.touch-mode).police-search-active #carRadio {
             mono and level-adjusted.
           </p>
           <p>
-            <strong>Driving radio</strong> — three licensed music stations. Tracks are
-            loudness-normalized and transcoded to stereo MP3.
+            <strong>Driving radio</strong> — six licensed music stations. Tracks are
+            loudness-normalized and transcoded to stereo MP3; station idents are procedural.
           </p>
           <p>
             Retroracing One more round —
@@ -4306,6 +4328,120 @@ body:not(.touch-mode).police-search-active #carRadio {
             >.
             <a
               href="https://opengameart.org/content/midnight-cruiser"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Martini Sunset (Velvet 91.5) —
+            <a href="https://incompetech.com/" target="_blank" rel="noopener"
+              >Kevin MacLeod</a
+            >.
+            <a
+              href="https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Martini%20Sunset.mp3"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Patron Saint of Heists (Velvet 91.5) —
+            <a href="https://bryanteoh.bandcamp.com/" target="_blank" rel="noopener"
+              >Bryan Teoh</a
+            >.
+            <a
+              href="https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Patron%20Saint%20of%20Heists.mp3"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Sunday Dub (Palms 95.9) —
+            <a href="https://incompetech.com/" target="_blank" rel="noopener"
+              >Kevin MacLeod</a
+            >.
+            <a
+              href="https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Sunday%20Dub.mp3"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Piña Colada (Palms 95.9) —
+            <a
+              href="https://alexandernakarada.bandcamp.com/album/complete-discography-creative-commons-by-40"
+              target="_blank"
+              rel="noopener"
+              >Alexander Nakarada (CreatorChords)</a
+            >.
+            <a
+              href="https://github.com/SoundSafari/CC0-1.0-Music/blob/main/freepd.com/Pina%20Colada.mp3"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener"
+              >CC-BY-4.0</a
+            >.
+          </p>
+          <p>
+            Hooptie With The Windows Down (Block 101.7) —
+            <a href="https://freemusicarchive.org/music/holiznacc0/" target="_blank" rel="noopener"
+              >HoliznaCC0</a
+            >.
+            <a
+              href="https://freemusicarchive.org/music/holiznacc0/city-slacker/hooptie-with-the-windows-down/"
+              target="_blank"
+              rel="noopener"
+              >Original track</a
+            >
+            ·
+            <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/"
+              target="_blank"
+              rel="noopener"
+              >CC0-1.0</a
+            >.
+          </p>
+          <p>
+            Lost On The Freeway (Block 101.7) —
+            <a href="https://freemusicarchive.org/music/holiznacc0/" target="_blank" rel="noopener"
+              >HoliznaCC0</a
+            >.
+            <a
+              href="https://freemusicarchive.org/music/holiznacc0/lost/lost-on-the-freeway/"
               target="_blank"
               rel="noopener"
               >Original track</a

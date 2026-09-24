@@ -12,16 +12,16 @@
       scene.add(parkStatic);
       batchGroups.push(parkStatic);
       statics.push({
-        x: 3820,
-        y: 5180,
+        x: 3790,
+        y: -6365,
         group: parkStatic,
         radius: 640,
       });
       const parkGroup = new Three.Group();
       scene.add(parkGroup);
       statics.push({
-        x: 3820,
-        y: 5180,
+        x: 3790,
+        y: -6365,
         group: parkGroup,
         radius: 640,
       });
@@ -239,7 +239,7 @@
           const a = (i * TAU) / 8;
           box(dropCar, Math.cos(a) * 12, -4, Math.sin(a) * 12, 5, 8, 5, rideTeal);
         }
-        sign('THE PLUNGE', d.x, d.y + 22, 60, '#ffd9a0');
+        sign('THE PLUNGE', d.x, d.y - 22, 60, '#ffd9a0');
       }
       // ---- Midway buildings, stalls and the entrance arch ---------------------------
       for (const b of parkSolids()) {
@@ -247,9 +247,10 @@
         box(parkStatic, b.x + b.w / 2, b.height / 2, b.y + b.h / 2, b.w, b.height, b.h, rideWhite);
         box(parkStatic, b.x + b.w / 2, b.height + 2, b.y + b.h / 2, b.w + 8, 4, b.h + 8, rideSteel);
         for (let x = b.x + 14; x < b.x + b.w - 8; x += 28) {
-          const awning = box(parkStatic, x, b.height * 0.55, b.y + b.h + 7, 24, 0.8, 14, (x / 28) % 2 ? rideSteel : rideTeal);
-          awning.rotation.x = 0.36;
-          parkBulb(x, b.height * 0.66, b.y + b.h + 12, '#ffd79a');
+          // Shopfronts face north, onto the midway.
+          const awning = box(parkStatic, x, b.height * 0.55, b.y - 7, 24, 0.8, 14, (x / 28) % 2 ? rideSteel : rideTeal);
+          awning.rotation.x = -0.36;
+          parkBulb(x, b.height * 0.66, b.y - 12, '#ffd79a');
         }
       }
       {
@@ -262,12 +263,12 @@
         for (let i = -4; i <= 4; i++) parkBulb(g.x + i * 13, 64, g.y, i % 2 ? '#ffd79a' : '#7fe9ff');
       }
       // Boardwalk edging and string lights down the midway.
-      for (let z = 4930; z < 5470; z += 46) {
-        for (const x of [3668, 3760]) box(parkStatic, x, 1.4, z, 6, 2.8, 42, boardWalk);
-        parkBulb(3668, 22, z, '#ffd79a');
-        parkBulb(3760, 22, z, '#ffd79a');
-        box(parkStatic, 3668, 12, z, 1.6, 24, 1.6, rideSteel);
-        box(parkStatic, 3760, 12, z, 1.6, 24, 1.6, rideSteel);
+      for (let z = -6655; z < -6115; z += 46) {
+        for (const x of [3850, 3942]) box(parkStatic, x, 1.4, z, 6, 2.8, 42, boardWalk);
+        parkBulb(3850, 22, z, '#ffd79a');
+        parkBulb(3942, 22, z, '#ffd79a');
+        box(parkStatic, 3850, 12, z, 1.6, 24, 1.6, rideSteel);
+        box(parkStatic, 3942, 12, z, 1.6, 24, 1.6, rideSteel);
       }
       // ---- Coaster train -----------------------------------------------------------
       const coasterCars = Array.from({ length: 5 }, (_, i) => {

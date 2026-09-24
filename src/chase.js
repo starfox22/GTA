@@ -7,30 +7,30 @@
      */
     /* Harbor dispatch gives a head start; repainting the cargo truck breaks its identification. */
     const VINNY_DEPOT = {
-      x: 4340,
+      x: -1804,
       y: 4340,
       w: 280,
       h: 240,
       door: {
-        x: 4480,
+        x: -1664,
         y: 4340,
       },
       inside: {
-        x: 4480,
+        x: -1664,
         y: 4450,
       },
       // A personnel door in the back wall: too narrow for any vehicle, locked
       // while the truck is brought in, opened once the front shutter is down.
       // After the drop it is the only way out, and it has to be walked.
       backDoor: {
-        x: 4478,
+        x: -1666,
         y: 4576,
         half: 14,
       },
       // Just outside the back door, on the Stadium Way pavement: reaching this on
       // foot from inside the building completes the first mission.
       exit: {
-        x: 4478,
+        x: -1666,
         y: 4624,
       },
       height: 64,
@@ -39,38 +39,38 @@
     // rather than overlapping, so the coplanar roofs do not flicker at the corners.
     const depotWalls = [
       {
-        x: 4340,
+        x: -1804,
         y: 4340,
         w: 8,
         h: 240,
       },
       {
-        x: 4612,
+        x: -1532,
         y: 4340,
         w: 8,
         h: 240,
       },
-      // Back wall, either side of the 28-unit personnel door at x 4464..4492.
+      // Back wall, either side of the 28-unit personnel door at x -1680..-1652.
       {
-        x: 4348,
+        x: -1796,
         y: 4572,
         w: 116,
         h: 8,
       },
       {
-        x: 4492,
+        x: -1652,
         y: 4572,
         w: 120,
         h: 8,
       },
       {
-        x: 4348,
+        x: -1796,
         y: 4340,
         w: 74,
         h: 8,
       },
       {
-        x: 4538,
+        x: -1606,
         y: 4340,
         w: 74,
         h: 8,
@@ -85,12 +85,12 @@
       depotBackTarget = 1;
     // The front doorway, where a closing shutter must not come down on anything.
     // It stops short of where truckInsideDepot() counts a truck as inside.
-    const DEPOT_DOORWAY = { x: 4422, y: 4318, w: 116, h: 32 };
+    const DEPOT_DOORWAY = { x: -1722, y: 4318, w: 116, h: 32 };
     function depotSolids() {
       const list = [];
       if (depotFrontShutter > 0.2)
         list.push({
-          x: 4422,
+          x: -1722,
           y: 4338,
           w: 116,
           h: 7,
@@ -143,13 +143,13 @@
       );
     }
     function depotBlocked(x, y, r = 0) {
-      if (x < 4400 || x > 4560 || y < 4320 || y > 4590) return false;
+      if (x < -1744 || x > -1584 || y < 4320 || y > 4590) return false;
       return depotSolids().some(
         (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
       );
     }
     function depotBarriers() {
-      return Math.abs(player.x - 4480) < 900 && Math.abs(player.y - 4460) < 900 ? depotSolids() : [];
+      return Math.abs(player.x + 1664) < 900 && Math.abs(player.y - 4460) < 900 ? depotSolids() : [];
     }
     // Snap both doors to their idle state: shutter up, back door shut. Used when
     // a mission starts, fails or is restarted, so no run inherits a closed depot.
@@ -203,21 +203,21 @@
       }
     }
     function depotOverlap(x, y, w, h) {
-      return x + w > 4315 && x < 4645 && y + h > 4250 && y < 4605;
+      return x + w > -1829 && x < -1499 && y + h > 4250 && y < 4605;
     }
     function paintDepotGround(drawingContext) {
       drawingContext.save();
       drawingContext.fillStyle = '#626d72';
-      drawingContext.fillRect(4320, 4280, 320, 320);
+      drawingContext.fillRect(-1824, 4280, 320, 320);
       drawingContext.fillStyle = '#4b545c';
-      drawingContext.fillRect(4422, 4224, 116, 360);
+      drawingContext.fillRect(-1722, 4224, 116, 360);
       drawingContext.fillStyle = '#8b8980';
-      drawingContext.fillRect(4348, 4348, 264, 224);
+      drawingContext.fillRect(-1796, 4348, 264, 224);
       drawingContext.strokeStyle = '#d4bc70';
       drawingContext.lineWidth = 3;
-      drawingContext.strokeRect(4430, 4364, 100, 180);
+      drawingContext.strokeRect(-1714, 4364, 100, 180);
       drawingContext.setLineDash([12, 9]);
-      for (const x of [4435, 4525]) {
+      for (const x of [-1709, -1619]) {
         drawingContext.beginPath();
         drawingContext.moveTo(x, 4240);
         drawingContext.lineTo(x, 4330);
@@ -227,7 +227,7 @@
       drawingContext.font = 'bold 17px monospace';
       drawingContext.textAlign = 'center';
       drawingContext.fillStyle = '#e9d294';
-      drawingContext.fillText('MORETTI FREIGHT', 4480, 4310);
+      drawingContext.fillText('MORETTI FREIGHT', -1664, 4310);
       drawingContext.restore();
     }
     function buildVinnyDepot() {
@@ -487,14 +487,14 @@
       worldContext.lineWidth = 2;
       worldContext.strokeRect(v.x, v.y, v.w, v.h);
       worldContext.fillStyle = '#172631';
-      if (depotFrontShutter > 0.2) worldContext.fillRect(4422, 4340, 116, 7);
-      if (depotBackDoor > 0.2) worldContext.fillRect(4464, 4572, 28, 8);
+      if (depotFrontShutter > 0.2) worldContext.fillRect(-1722, 4340, 116, 7);
+      if (depotBackDoor > 0.2) worldContext.fillRect(-1680, 4572, 28, 8);
       worldContext.fillStyle = '#ebd68e';
       worldContext.font = 'bold 16px monospace';
       worldContext.textAlign = 'center';
-      worldContext.fillText('VINNY’S WAREHOUSE', 4480, 4326);
+      worldContext.fillText('VINNY’S WAREHOUSE', -1664, 4326);
       worldContext.fillStyle = '#bc9364';
-      for (const x of [4370, 4580])
+      for (const x of [-1774, -1564])
         for (let y = 4380; y < 4550; y += 34) worldContext.fillRect(x - 10, y - 10, 20, 20);
       if (cargoChase()) marker(VINNY_DEPOT.inside, '#d7ef97', '↓');
     }
