@@ -667,7 +667,7 @@
               vz: randomBetween(230, 300),
               vx: randomBetween(-18, 18),
               vy: randomBetween(-18, 18),
-              burstAt: randomBetween(330, 560),
+              burstAt: randomBetween(210, 400),
               hue: seededRandom(),
               style: Math.floor(seededRandom() * 4),
               born: gameTime,

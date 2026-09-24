@@ -366,10 +366,10 @@
         for (let i = 0; i < n; i += 3) {
           const f = frames[i];
           if (T.kind[i] !== 2 || f.p.y < 26) continue;
-          basis.makeBasis(f.t, f.u, f.s).scale(ps.set(6.2, 0.4, 4)).setPosition(parkV.copy(f.p).addScaledVector(f.u, -1.2).addScaledVector(f.s, -6.2));
-          track.box(parkMats.darkSteel, basis);
+          basis.makeBasis(f.t, f.u, f.s).scale(ps.set(6.2, 0.3, 2.6)).setPosition(parkV.copy(f.p).addScaledVector(f.u, -1.2).addScaledVector(f.s, -5.6));
+          track.box(parkMats.steel, basis);
           if (i % 6 === 0) {
-            a.copy(f.p).addScaledVector(f.s, -8.2);
+            a.copy(f.p).addScaledVector(f.s, -7);
             b.copy(a).addScaledVector(f.u, 4);
             track.add(parkMats.darkSteel, parkThinGeo, parkBetween(a, b, 0.25));
           }
@@ -515,7 +515,7 @@
       const riderBodyGeo = (() => {
         const b = parkParts();
         b.box(parkMats.white, parkPlaced(0, 0, 1.6, 1.4, 3.2, 2));
-        for (const z of [-1.2, 1.2]) b.add(parkMats.white, parkThinGeo, parkBetween(parkP3(0, z, 2.8), parkP3(0.5, z * 1.6, 6.2), 0.4));
+        for (const z of [-1.1, 1.1]) b.add(parkMats.white, parkThinGeo, parkBetween(parkP3(0, z, 2.8), parkP3(0.4, z * 1.35, 5.4), 0.28));
         const m = b.flush(new Three.Group(), 'rider')[0];
         return m.geometry;
       })();
@@ -1619,7 +1619,7 @@
             const t = (k + 0.5) / count,
               inc = Math.acos(1 - 2 * t),
               az = k * 2.39996 + r.hue * 10,
-              speed = r.style === 2 ? 110 : 150,
+              speed = r.style === 2 ? 190 : 270,
               dx = Math.sin(inc) * Math.cos(az),
               dy = Math.sin(inc) * Math.sin(az),
               dz = r.style === 1 ? 0.1 * Math.cos(inc) : Math.cos(inc),
@@ -1627,7 +1627,7 @@
               fall = age * age * (r.style === 2 ? 30 : 18);
             attr.position.setXYZ(i, r.x + dx * speed * drag, r.z + dz * speed * drag - fall, r.y + dy * speed * drag);
             const twinkle = r.style === 3 && Math.sin(gameTime * 30 + k) > 0.3 ? 0.2 : 1;
-            attr.size.setX(i, (age < 0.08 ? 16 : 6) * fade * twinkle);
+            attr.size.setX(i, (age < 0.08 ? 22 : 9) * fade * twinkle);
             const white = Math.max(0, 1 - age * 4);
             attr.color.setXYZ(i, sparkColor.r + white, sparkColor.g + white, sparkColor.b + white);
           }
@@ -1755,9 +1755,9 @@
           const t = coasterTrain.t;
           if (ride.view === 1) {
             // Front row of the front car, over the falcon's head.
-            coasterFrame3(t + 2, rideA);
-            coasterFrame3(t + 22, rideB);
-            target.copy(rideA.p).addScaledVector(rideA.u, 9.6).addScaledVector(rideA.s, -1.5);
+            coasterFrame3(t + 6, rideA);
+            coasterFrame3(t + 28, rideB);
+            target.copy(rideA.p).addScaledVector(rideA.u, 11.5);
             look.copy(rideB.p).addScaledVector(rideB.u, 7);
             up.copy(rideA.u);
             fov = 75;
