@@ -4456,11 +4456,12 @@
         deployParachute();
         return;
       }
-      if (player.car && is('radioPower')) {
+      // The radio plays in vehicles and on the Sunset Pier rides (car-radio.js).
+      if ((player.car || player.coaster) && is('radioPower')) {
         toggleCarRadio();
         return;
       }
-      if (player.car && is('radioNext')) {
+      if ((player.car || player.coaster) && is('radioNext')) {
         tuneCarRadio(carRadioStation + 1);
         return;
       }

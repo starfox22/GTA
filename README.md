@@ -48,7 +48,7 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 | Bail out / parachute; dive off a boat | J (then Space opens the canopy) |
 | Weapons | 1 to 6, Q cycle, K knife, R reload, I arsenal |
 | City map | Tab |
-| Car radio | N power, B next station |
+| Car radio (also on the Falcon coaster and the Sunset Eye) | N power, B next station |
 | Horn, mute | H, M |
 | Show the mission card again | O (or click the objective strip) |
 | Street zoom | mouse wheel or pinch; + / − and 0 |

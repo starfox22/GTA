@@ -223,6 +223,7 @@
     function hudContext() {
       const c = player.car;
       if (player.parachute) return 'chute';
+      if (player.coaster) return 'ride';
       if (!c) return player.swimming ? 'swim' : 'foot';
       if (c.type === 'helicopter') return 'heli';
       if (c.type === 'plane') return 'plane';
@@ -238,6 +239,8 @@
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
       plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['bail', 'BAIL OUT']],
       chute: [['handbrake', 'OPEN'], ['move', 'STEER']],
+      // Sunset Pier rides: E changes the view (and steps off), the radio plays.
+      ride: [['interact', 'VIEW'], ['radioPower', 'RADIO'], ['radioNext', 'STATION']],
     };
     function hintKey(id) {
       return id === 'move' ? moveKeysName() : keyName(id);
