@@ -93,6 +93,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
 | terrain.js | Triangulated mountains, snow caps, trails, slope handling and off-road contact |
 | casino.js | Roulette layout, stakes, settlement, UI and saved cash |
+| skyline.js | North Point financial cluster plan: `SKYLINE_TOWERS` (named tower lots per block, heights, designs), `buildSkylineBlock`, `paintSkylinePlaza` |
 | renewal.js | Parks (`CENTRAL_PARK`, `COMMONS`), ponds (`parkPondBlocked`, `parkPondNear`), boardwalks, walkers, joggers, the outdoor gym |
 | sports.js | Live basketball and soccer: teams, possession, shots, scoring, restarts |
 | sports-world.js | South Coast Stadium reservation, enclosure, turnstiles, vehicle barriers, markings |
@@ -119,7 +120,9 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom, ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), headlight cones, time-of-day look |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire |
-| cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts and sign atlas, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| signage3d.js | (included by cityscape3d.js) The glow field (`addGlow`: one instanced draw for every neon halo, bulb and beacon), wet-road streaks, sign light spill (`signSpill`), the neon/lightbox sign atlas (`signCell`, `atlasSign`), lit sign materials (`litSignMaterial`), LED ad screens, stock ticker, marquee bulbs |
+| skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Coaster track and train, big wheel, carousel, teacups, drop tower and midway |
@@ -343,10 +346,29 @@ docs/audit/missions-qa.md shows the method).
   copy of the static scenery (flight-view3d.js, FAR SCENERY) replaces the per-building
   batches. Building blocks are compacted from six draw calls to two.
 - `cityscape3d.js` builds every building: archetype (tower, office, brick, stucco,
-  warehouse, deco, decoTower, hotel; stored as `b.archetype`), procedural roof texture,
+  warehouse, deco, decoTower, hotel, skyline; stored as `b.archetype`), procedural roof texture,
   parapet, roof props (instanced, recorded as `b.roofKeepOuts`), rooftop helipads,
-  shopfront with awnings and a sign atlas, fire escapes, balconies, billboards, beacons and
-  neon hotel signs.
+  shopfront with awnings and a neon, lightbox or channel-letter sign, fire escapes,
+  balconies, billboards (lamp-lit boards or LED screens cycling ads), beacons and neon
+  hotel scripts.
+- The North Point financial cluster (`b.skyline`, planned in skyline.js) is built by
+  skyline3d.js instead: each tower is a floor plan lofted through sections (height,
+  scale, twist, offset), UV-mapped in world units so one glazing texture per design
+  serves any size, on a podium that fills its lot (the lot is the collision rectangle;
+  shafts stay inside it, crowns and spires rise above `b.height`). North Point Trust's
+  roof is a landing pad. Designs: twin sail towers (Federation), stepped copper tower
+  with a spire (Mercury), stacked rotated blocks (Capitals), a twisting tower
+  (Evolution), a curved-facade pair (Embankment), a sail roof (Imperial), chevron twins
+  with LED edges (Neva), a banded tower with a sloped crown (OKO), a tapering needle, a
+  crown of gilded fins, a finned rotunda, a penthouse tower (Meridian), stepped terraces
+  and a diagrid.
+- Signs and night light (signage3d.js): small lights are instances of one glow quad
+  (modes steady, flicker, beacon, chase, pulse, colour cycle); street-level signs add a
+  pool to the night light map (`signSpill`) and a streak on the wet road. Shop, window,
+  hotel and tower-name signs share one atlas pair (a day face and a glow mask) and a few
+  materials, so they batch; `sign()` boards (render3d.js) glow the same way. Sign
+  emissive is multiplied by `cityPower()` (lighting3d.js) in the shader, so the blackout
+  contract darkens them per district.
 - Night: facade materials carry an `emissiveMap` window mask; `updateCityscapeVisuals()`
   scales emissive intensity by night amount, hour and `sideJobPower()`. Lamps, shop glass,
   neon halos and vehicle head/tail halos follow the same night amount.
