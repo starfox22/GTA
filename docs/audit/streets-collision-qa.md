@@ -18,10 +18,16 @@ the Palm Keys streets.
   runs, 22 street-end pieces, 0 gaps, 0 walk-throughs (the 7 end points past a rail line were
   all at openings: the superyacht passerelle, jetties, a bridge landing, and walks along a
   bent sea wall past the end of the sample's line).
+- Furniture and corners (second probe): 741 walks straight through the centre of lamps,
+  benches, bins, hydrants, mailboxes, signals, dumpsters and registered fixtures from four
+  sides (0 got through), and 363 diagonal and skewed walks into the corners of every tenth
+  building (0 ended inside).
 - Every vehicle static collider probed with `solid()` at its centre: all block people except
   the intended ones (rail-deck cover volumes overhead, walkable docks, bridge guard rails at
   the deck edge where the deck edge already stops you, the stadium's vehicle-only bollards).
-- `node tools/layout-audit.mjs` with the new checks (below).
+- `node tools/layout-audit.mjs` with the new checks (below): 710 railing runs, 22 street-end
+  pieces, 2437 props, 2148 foot obstacles; no findings apart from the 28 oblique road contacts
+  that were already listed (all county and airport junctions). No console errors.
 
 ## Found and fixed
 
@@ -61,7 +67,9 @@ street-end pieces as data) and `solidAt(points, r, foot)`; `layout()` now also c
 
 Scratch paths (`scratchpad/streets/shots/`): `before-northbank-sign` / `after-northbank-sign`,
 `before-marina-quay` / `after-marina-quay`, `before-deadend-airport` / `after-deadend-airport`,
-`after-west-esplanade`, `after-marina-east`, `after-gate-garden`, `after-battery-park`.
+`before-gate-garden` could not be taken (the machine was overloaded); after only:
+`after-west-esplanade`, `after-marina-east`, `after-gate-garden`, `after-battery-park`,
+`after-ocean-drive`, `after-palmkeys-quay`.
 
 ## Known, not changed
 
