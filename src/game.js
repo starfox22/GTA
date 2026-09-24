@@ -2843,7 +2843,10 @@
         timed('military', () => updateMilitary(deltaSeconds));
         timed('combat', () => updateCombat(deltaSeconds));
         timed('mission', () => missionUpdate(deltaSeconds));
-        timed('waypoint', () => updateWaypoint(deltaSeconds));
+        timed('waypoint', () => {
+          updateWaypoint(deltaSeconds);
+          updateGpsRoute(deltaSeconds);
+        });
       }
       for (let i = particles.length - 1; i >= 0; i--) {
         let p = particles[i];
@@ -3648,14 +3651,17 @@
       drawHarborMap(drawingContext, big);
       const target = objective();
       if (target) {
-        drawingContext.strokeStyle = '#f3d791aa';
-        drawingContext.lineWidth = big ? 9 : 8;
-        drawingContext.setLineDash([22, 19]);
-        drawingContext.beginPath();
-        drawingContext.moveTo(player.x, player.y);
-        drawingContext.lineTo(target.x, target.y);
-        drawingContext.stroke();
-        drawingContext.setLineDash([]);
+        // On the minimap the GPS draws the road route instead (navigation.js).
+        if (big || !gpsRouteShown()) {
+          drawingContext.strokeStyle = '#f3d791aa';
+          drawingContext.lineWidth = big ? 9 : 8;
+          drawingContext.setLineDash([22, 19]);
+          drawingContext.beginPath();
+          drawingContext.moveTo(player.x, player.y);
+          drawingContext.lineTo(target.x, target.y);
+          drawingContext.stroke();
+          drawingContext.setLineDash([]);
+        }
         drawingContext.fillStyle = '#f2d485';
         drawingContext.beginPath();
         drawingContext.arc(target.x, target.y, 36, 0, TAU);
@@ -3663,7 +3669,8 @@
       }
       drawTransitMap(drawingContext, scale, big);
       drawSportsMap(drawingContext, scale, big);
-      drawUserRoute(drawingContext, scale);
+      drawUserRoute(drawingContext, scale, big);
+      if (!big) drawGpsRoutes(drawingContext, scale);
       drawCountyMap(drawingContext, scale, big);
       drawGarageMap(drawingContext, scale);
       drawAirCoverMap(drawingContext, scale);
@@ -5508,6 +5515,7 @@
           if (typeof changes.fps === 'boolean' && changes.fps !== fpsMeter.shown) toggleFpsCounter();
           if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
+          if (typeof changes.gps === 'boolean') setGps(changes.gps);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
@@ -5529,6 +5537,8 @@
           minimapFolded: hudState.minimapFolded,
           minimapZoom: +hudState.minimapZoom.toFixed(2),
           keyHints: hudState.keyHints,
+          gps: hudState.gps,
+          gpsRoute: gpsRoute.points.length,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,
         };

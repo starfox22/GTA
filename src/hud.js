@@ -14,6 +14,7 @@
      *               presets and the arsenal stay one click away. The motion is CSS
      *               (.hud-pop.open, .hud-more), cut under prefers-reduced-motion.
      *   MINIMAP     Stays up; its fold button tucks it into a small chip. The
+     *               GPS setting draws the road route on it (navigation.js). The
      *               mouse wheel and a two-finger pinch zoom it (MINIMAP_ZOOM_MIN..MAX,
      *               never the street camera). Both are saved in localStorage
      *               under 'dead-end-city-hud'.
@@ -38,12 +39,15 @@
       minimapZoom: 1,
       // The key-hint strip under the mission card (Settings · Gameplay).
       keyHints: true,
+      // GPS route on the minimap (Settings · Gameplay, navigation.js).
+      gps: true,
     };
     try {
       const saved = JSON.parse(localStorage.getItem(HUD_STORAGE));
       if (saved && typeof saved === 'object') {
         hudState.minimapFolded = saved.minimapFolded === true;
         hudState.keyHints = saved.keyHints !== false;
+        hudState.gps = saved.gps !== false;
         if (Number.isFinite(saved.minimapZoom))
           hudState.minimapZoom = clamp(saved.minimapZoom, MINIMAP_ZOOM_MIN, MINIMAP_ZOOM_MAX);
       }
@@ -207,6 +211,10 @@
       saveHudState();
     }
     setKeyHints(hudState.keyHints);
+    function setGps(on) {
+      hudState.gps = !!on;
+      saveHudState();
+    }
     /**
      * KEY HINTS
      * The strip follows the context; it is rebuilt only when the context or the

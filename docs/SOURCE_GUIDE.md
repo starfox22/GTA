@@ -116,7 +116,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sports-audio.js | Procedural stadium bed, chants, clapping, goal roars, gasps, panic screams, whistles, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
-| navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance |
+| navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance; the minimap GPS (road routes to the objective and the waypoint with direction chevrons, `updateGpsRoute`, `drawGpsRoutes`) |
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy, the Blue Hour terrace landing, water rescue |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
@@ -440,7 +440,12 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   weapon boxes are `.hud-pop` elements: compact until `hudPop(id)` (station change, weapon
   change, firing, reloading) or hover opens their `.hud-more` rows. The minimap zooms with
   the wheel or a pinch over it (`minimapZoom()` scales the cached base layer in
-  `drawMap`), folds with its button, and both are saved. In touch mode the bottom row
+  `drawMap`), folds with its button, and both are saved. With **GPS route on minimap**
+  (Settings · Gameplay, `hudState.gps`, on by default) the minimap draws the A* road route
+  to the mission objective (gold) and to the map waypoint (cyan) with chevrons pointing the
+  way (navigation.js, GPS ON THE MINIMAP), refreshed every couple of seconds once the
+  player or the target moves; in the air, on the water or on a ride it keeps the straight
+  line. The big map is unchanged. In touch mode the bottom row
   moves to the top so the thumbs have the lower corners.
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not

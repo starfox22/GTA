@@ -63,7 +63,7 @@ Every key can be rebound in **Settings · Controls** (from the title menu or the
 menu), which also warns about clashes and offers to swap. Settings has four tabs:
 GRAPHICS (quality tier, FPS counter, character see-through), AUDIO (sound on/off; master,
 effects, radio music and voice volumes; radio voices), GAMEPLAY (NPC chatter, minimap,
-control hints) and CONTROLS (touch controls, key bindings). Touch controls appear
+GPS route on the minimap, control hints) and CONTROLS (touch controls, key bindings). Touch controls appear
 automatically on phones and tablets. Progress and every setting save to the browser's
 local storage. The game runs offline; nothing is fetched from the network.
 

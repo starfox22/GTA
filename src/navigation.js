@@ -341,17 +341,21 @@
         name: routeStatus || 'YOUR DESTINATION',
       };
     }
-    function drawUserRoute(drawingContext, scale) {
+    // `line` false draws only the waypoint's marker (the minimap draws its own
+    // route line when GPS is on, and none when it is off).
+    function drawUserRoute(drawingContext, scale, line = true) {
       if (!userWaypoint) return;
       drawingContext.save();
-      drawingContext.strokeStyle = '#73edf0';
-      drawingContext.lineWidth = 3 / scale;
-      drawingContext.lineJoin = 'round';
-      drawingContext.beginPath();
-      userRoute.forEach((p, i) =>
-        i ? drawingContext.lineTo(p.x, p.y) : drawingContext.moveTo(p.x, p.y),
-      );
-      drawingContext.stroke();
+      if (line) {
+        drawingContext.strokeStyle = '#73edf0';
+        drawingContext.lineWidth = 3 / scale;
+        drawingContext.lineJoin = 'round';
+        drawingContext.beginPath();
+        userRoute.forEach((p, i) =>
+          i ? drawingContext.lineTo(p.x, p.y) : drawingContext.moveTo(p.x, p.y),
+        );
+        drawingContext.stroke();
+      }
       drawingContext.fillStyle = '#103843';
       drawingContext.strokeStyle = '#8effed';
       drawingContext.lineWidth = 2 / scale;
@@ -364,6 +368,117 @@
       drawingContext.arc(userWaypoint.x, userWaypoint.y, 3 / scale, 0, TAU);
       drawingContext.fill();
       drawingContext.restore();
+    }
+    /**
+     * GPS ON THE MINIMAP
+     * With the GPS setting on (Settings · Gameplay, on by default, hudState.gps in
+     * hud.js) the minimap draws the road route to the map waypoint (cyan) and to
+     * the mission objective or the ringing payphone (gold), each a bright line
+     * with chevrons pointing the way, instead of the straight dashed line. The
+     * objective route is the same A* over the road graph as the waypoint's; it is
+     * worked out again every couple of seconds once the player or the target has
+     * moved, and trimmed as its points are passed. In an aircraft, on a boat or on
+     * a ride there is no road to follow and the straight line stays. The big map
+     * is unaffected.
+     */
+    const gpsRoute = { points: [], target: null, origin: null, timer: 0 };
+    function gpsRoadless() {
+      return (
+        !!player.parachute ||
+        !!player.coaster ||
+        !!transitRide ||
+        isAircraft(player.car) ||
+        isBoat(player.car) ||
+        !!player.swimming
+      );
+    }
+    function updateGpsRoute(deltaSeconds) {
+      const target = objective();
+      if (!hudState.gps || !target || gpsRoadless() || !groundAt(target.x, target.y)) {
+        gpsRoute.points = [];
+        gpsRoute.target = null;
+        return;
+      }
+      gpsRoute.timer -= deltaSeconds;
+      const moved =
+        !gpsRoute.target ||
+        distanceBetween(gpsRoute.target, target) > 60 ||
+        distanceBetween(gpsRoute.origin, player) > 100;
+      if ((moved && gpsRoute.timer <= 0) || !gpsRoute.points.length && gpsRoute.timer <= 0) {
+        gpsRoute.timer = 2;
+        gpsRoute.target = { x: target.x, y: target.y };
+        gpsRoute.origin = { x: player.x, y: player.y };
+        const nodes = navigationGraph();
+        gpsRoute.points = [];
+        if (nodes.length && distanceBetween(player, target) > 90) {
+          const path = navShortestPath(nodes, closestNavNode(player, nodes), closestNavNode(target, nodes));
+          if (path.length) {
+            if (navSegmentClear(path.at(-1), target)) path.push({ x: target.x, y: target.y });
+            gpsRoute.points = path;
+          }
+        }
+      }
+      while (gpsRoute.points.length > 1 && distanceBetween(player, gpsRoute.points[0]) < 65) gpsRoute.points.shift();
+    }
+    /* True when the minimap shows a road route to the objective (it then skips
+       the straight dashed line). */
+    function gpsRouteShown() {
+      return hudState.gps && gpsRoute.points.length > 1;
+    }
+    // One route: a dark casing, the coloured line from the player along the road
+    // points, and chevrons every ~26 screen pixels pointing along it.
+    function drawGpsLine(drawingContext, scale, points, color) {
+      if (points.length < 1) return;
+      const line = [{ x: player.x, y: player.y }, ...points];
+      drawingContext.save();
+      drawingContext.lineJoin = 'round';
+      drawingContext.lineCap = 'round';
+      const trace = () => {
+        drawingContext.beginPath();
+        line.forEach((p, i) => (i ? drawingContext.lineTo(p.x, p.y) : drawingContext.moveTo(p.x, p.y)));
+        drawingContext.stroke();
+      };
+      drawingContext.strokeStyle = 'rgba(6, 18, 26, 0.85)';
+      drawingContext.lineWidth = 7.5 / scale;
+      trace();
+      drawingContext.strokeStyle = color;
+      drawingContext.lineWidth = 4.5 / scale;
+      trace();
+      // Chevrons, only as far as the minimap can show.
+      const spacing = 26 / scale,
+        size = 3 / scale,
+        reach = 190 / scale;
+      drawingContext.strokeStyle = '#0b1c24';
+      drawingContext.lineWidth = 1.6 / scale;
+      let carry = spacing * 0.5;
+      for (let i = 1; i < line.length; i++) {
+        const a = line[i - 1],
+          b = line[i],
+          length = distanceBetween(a, b);
+        if (length < 1e-3) continue;
+        const ux = (b.x - a.x) / length,
+          uy = (b.y - a.y) / length;
+        for (let d = carry; d < length; d += spacing) {
+          const x = a.x + ux * d,
+            y = a.y + uy * d;
+          if (Math.abs(x - player.x) < reach && Math.abs(y - player.y) < reach) {
+            drawingContext.beginPath();
+            drawingContext.moveTo(x - ux * size - uy * size, y - uy * size + ux * size);
+            drawingContext.lineTo(x + ux * size * 0.6, y + uy * size * 0.6);
+            drawingContext.lineTo(x - ux * size + uy * size, y - uy * size - ux * size);
+            drawingContext.stroke();
+          }
+        }
+        carry = (carry - length) % spacing;
+        if (carry < 0) carry += spacing;
+      }
+      drawingContext.restore();
+    }
+    /* Minimap only (drawMap): the objective's road route and the waypoint's. */
+    function drawGpsRoutes(drawingContext, scale) {
+      if (!hudState.gps) return;
+      if (gpsRoute.points.length > 1) drawGpsLine(drawingContext, scale, gpsRoute.points, '#f5c64a');
+      if (userWaypoint && userRoute.length && !gpsRoadless()) drawGpsLine(drawingContext, scale, userRoute, '#5ef0f2');
     }
     function mapLocalPoint(e) {
       const r = getElement('bigmap').getBoundingClientRect(),
