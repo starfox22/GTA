@@ -2,7 +2,7 @@
     /**
      * Graphics quality tiers
      * Source: src/quality.js
-     * Scope: shared game closure (read by the renderer, switched from the pause menu).
+     * Scope: shared game closure (read by the renderer, switched from Settings · Graphics).
      *
      * Four tiers trade frame time for image quality. Each is a plain record the
      * renderer reads when it is built and again whenever the setting changes:
@@ -76,16 +76,11 @@
       if (/intel|uhd|hd graphics|radeon graphics|vega \d|mali|adreno/.test(name)) return 'medium';
       return maxTexture >= 16384 ? 'high' : 'medium';
     }
-    function graphicsLabel() {
-      const tier = graphicsTier().name;
-      return 'GRAPHICS: ' + (graphicsSetting === 'auto' ? 'AUTO (' + tier + ')' : tier);
-    }
     function applyGraphicsSetting() {
-      const button = getElement('graphicsBtn');
-      if (button) button.textContent = graphicsLabel();
       if (city3D && city3D.setQuality) city3D.setQuality(graphicsTier());
     }
-    // Pause-menu button: AUTO -> LOW -> MEDIUM -> HIGH -> ULTRA -> AUTO.
+    // Settings · Graphics (settings.js) passes a tier; with none the setting steps
+    // AUTO -> LOW -> MEDIUM -> HIGH -> ULTRA -> AUTO.
     function cycleGraphicsSetting(to) {
       graphicsSetting = GRAPHICS_ORDER.includes(to)
         ? to
@@ -95,5 +90,4 @@
       } catch {}
       applyGraphicsSetting();
     }
-    if (getElement('graphicsBtn')) getElement('graphicsBtn').onclick = () => cycleGraphicsSetting();
     // END SUBSYSTEM: src/quality.js

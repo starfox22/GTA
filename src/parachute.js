@@ -51,7 +51,8 @@
             : 'You abandoned the aircraft needed for this mission.',
         );
       tell(
-        'PARACHUTE · Space to open · A/D steer · W glide · S flare · Opens automatically near ground',
+        'PARACHUTE · ' + keyName('handbrake') + ' to open · ' + keyName('left') + '/' + keyName('right') + ' steer · ' +
+          keyName('forward') + ' glide · ' + keyName('back') + ' flare · Opens automatically near ground',
         7,
       );
       if (aircraftClearance(c) < 240) deployParachute();

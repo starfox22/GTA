@@ -161,6 +161,7 @@
         ...gangMembers,
         ...officers,
         ...pedestrians,
+        ...sportsTargets(),
         ...storyActors.filter(
           (person) => !person.hidden && ['rooftop-hit', 'flight-witness'].includes(person.missionTag),
         ),

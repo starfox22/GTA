@@ -114,61 +114,17 @@
       /**
        * Drivable boats. Hulls are lofted by the boat kit (boats3d.js) and painted
        * in the vehicle's colour through `model.paint`, so wear and burn-out still
-       * show; stripes, boot tops and trim are kit tints. A foam V-wake trails the
-       * stern and a bow spray and planing trim come in with speed (boatUpdate).
+       * show; stripes, boot tops and trim are kit tints. The planing trim comes in
+       * with speed (boatUpdate); the wake, bow wave and spray are drawn into the
+       * sea by wakes3d.js.
        */
-      const boatWakeTexture = wakeTexture(true),
-        boatScreenGlass = new Three.MeshStandardMaterial({
+      const boatScreenGlass = new Three.MeshStandardMaterial({
           color: '#5d7c8c',
           roughness: 0.05,
           metalness: 0.5,
           transparent: true,
           opacity: 0.55,
         });
-      function boatWake(model, length, width, sternX) {
-        const wake = new Three.Group();
-        wake.position.set(sternX, 0.35, 0);
-        wake.userData.dynamic = true;
-        model.body.add(wake);
-        const trail = new Three.Mesh(
-          new Three.PlaneGeometry(length * 2.2, width * 2.6),
-          new Three.MeshBasicMaterial({ map: boatWakeTexture, transparent: true, opacity: 0.55, depthWrite: false }),
-        );
-        trail.rotation.x = -Math.PI / 2;
-        // The texture's V opens toward -x; its apex sits near the stern.
-        trail.position.x = -length * 0.3;
-        trail.renderOrder = 7;
-        wake.add(trail);
-        const churn = new Three.Mesh(
-          new Three.PlaneGeometry(width * 1.1, width * 0.9),
-          new Three.MeshBasicMaterial({ map: haloTx, color: '#e9f6f4', transparent: true, opacity: 0.5, depthWrite: false }),
-        );
-        churn.rotation.x = -Math.PI / 2;
-        churn.position.x = -width * 0.25;
-        churn.renderOrder = 7;
-        wake.add(churn);
-        model.wake = wake;
-        model.wakeMaterials = [trail.material, churn.material];
-        return wake;
-      }
-      // White water thrown off either side of the bow once the boat is moving.
-      function boatSpray(model, x, width) {
-        const spray = new Three.Group();
-        spray.userData.dynamic = true;
-        model.body.add(spray);
-        for (const side of [-1, 1]) {
-          const m = new Three.Mesh(
-            new Three.PlaneGeometry(width * 0.9, width * 0.5),
-            new Three.MeshBasicMaterial({ map: haloTx, color: '#f4fbfa', transparent: true, opacity: 0.5, depthWrite: false }),
-          );
-          m.rotation.x = -Math.PI / 2;
-          m.position.set(x, 0.6, side * width * 0.42);
-          m.renderOrder = 7;
-          spray.add(m);
-        }
-        model.spray = spray;
-        return spray;
-      }
       function boatDynamics(model, plane = 0.07) {
         model.boatUpdate = (c) => {
           const speed = Math.abs(c.speed || 0),
@@ -176,11 +132,6 @@
             f = clamp(speed / max, 0, 1);
           // Planing: the bow lifts as she gets on the plane, then settles a little.
           model.body.rotation.z += plane * Math.sin(Math.min(1, f * 1.6) * Math.PI * 0.62);
-          for (const m of model.wakeMaterials) m.opacity = 0.2 + f * 0.55;
-          if (model.spray) {
-            model.spray.visible = f > 0.18 && c.hp > 0;
-            model.spray.scale.setScalar(0.6 + f * 0.9);
-          }
         };
       }
       function makeBoat(vehicle) {
@@ -258,8 +209,6 @@
             box(b, l * 0.22, 9, side * w * 0.36, 1.6, 0.6, 0.8, chrome);
           }
           box(b, l * 0.47, 11.2, 0, 0.8, 1, 1.6, warmLamp);
-          boatWake(model, l, w, -l / 2);
-          boatSpray(model, l * 0.22, w);
           boatDynamics(model, 0.075);
         } else {
           // HARBOR LAUNCH: round-bilged workboat, wheelhouse, tyre fenders, tow bitt.
@@ -307,8 +256,6 @@
             railing(b, hullEdge(spec, 9.6, -l * 0.46, -l * 0.16, 1, 8).map(([u, v]) => [u, side * v]), 9.6, 4, { spacing: 8 });
           }
           box(b, l * 0.46, 15, 0, 1, 1, 1.4, warmLamp);
-          boatWake(model, l, w, -l / 2);
-          boatSpray(model, l * 0.28, w);
           boatDynamics(model, 0.04);
         }
         kitMerge(b);
@@ -454,17 +401,6 @@
           rod(rider, new Three.Vector3(-5, 9, side * 2), new Three.Vector3(-2, 5, side * 4), 1.1, mat('#28343f'));
         }
         model.rider = rider;
-        boatWake(model, 34, 13, -14.5);
-        boatSpray(model, 4, 13);
-        // A rooster tail of spray kicked up astern at speed.
-        const tail = new Three.Mesh(
-          new Three.PlaneGeometry(22, 8),
-          new Three.MeshBasicMaterial({ map: haloTx, color: '#f4fbfa', transparent: true, opacity: 0.55, depthWrite: false }),
-        );
-        tail.rotation.x = -Math.PI / 2;
-        tail.position.set(-8, 1.4, 0);
-        model.wake.add(tail);
-        model.wakeMaterials.push(tail.material);
         boatDynamics(model, 0.06);
         kitMerge(b);
         return model;

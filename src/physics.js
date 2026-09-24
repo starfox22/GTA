@@ -859,7 +859,9 @@
       if (controlled) {
         forward = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
         turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-        lift = (keys.Space ? 1 : 0) - (keys.ShiftLeft || keys.ShiftRight ? 1 : 0);
+        // Climb and descend have their own keys (T / G by default, controls.js),
+        // clear of Space (handbrake) and Shift (sprint).
+        lift = (actionHeld('ascend') ? 1 : 0) - (actionHeld('descend') ? 1 : 0);
       }
       if (c.hp <= 0) lift = -1;
       c.av += (turn * 1.6 - c.av) * Math.min(1, stepSeconds * 4);
@@ -1785,7 +1787,7 @@
         // query grows by the distance it covered.
         const swept = Math.hypot(vehicle.x - vehicle.personSweepStart.x, vehicle.y - vehicle.personSweepStart.y);
         forEachPedestrianNear(vehicle.x, vehicle.y, reach + swept, touch);
-        for (const list of [enemies, gangMembers, officers]) for (const p of list) touch(p);
+        for (const list of [enemies, gangMembers, officers, sportsTargets()]) for (const p of list) touch(p);
         vehicle.pedestrianContacts = contacts;
         if (
           speed >= 40 &&
