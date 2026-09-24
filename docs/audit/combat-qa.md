@@ -226,6 +226,36 @@ Re-verified natural escalation on this build (Old Quarter, rifle, god mode): 2 c
 1 star; 3 officers 2 stars at 6 s; 5 officers 3 stars at 11 s; 4 stars at 17 s; 5 stars
 at 21 s with SWAT, agents, two helicopters and three roadblocks.
 
+## Iteration 6: one helicopter at a time
+
+Owner request: never more than one helicopter chasing the player. `AIR_UNITS_MAX = 1` in
+`src/combat-rules.js` caps every source: the wanted tiers, the chase at sea (from two
+stars) and mission air support (mission 1's cargo chase takes over the helicopter already
+overhead instead of launching a second). Four and five stars now escalate on the ground and
+through the marksman instead of a second airframe.
+
+Police response by wanted level (`POLICE_TIERS`, src/pursuit.js):
+
+| Stars | Patrols | SWAT vans | Agents' SUVs | Tank | Helicopter | Marksman lock / hit / rest | Roadblocks | Officer accuracy |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2 | 0 | 0 | 0 | 0 | - | 0 | 0.42 (no deadly force) |
+| 2 | 4 | 0 | 0 | 0 | 0 (1 at sea) | 1.6 s / 0.85 / 2.4-3.4 s at sea | 0 | 0.46 |
+| 3 | 5 | 0 | 0 | 0 | 1 | 1.6 s / 0.85 / 2.4-3.4 s | 1 | 0.50 |
+| 4 | 5 | 2 | 0 | 0 | 1 | 1.3 s / 0.90 / 2.0-2.8 s | 2 | 0.55 |
+| 5 | 5 | 3 | 2 | 1 | 1 | 1.1 s / 0.94 / 1.7-2.4 s | 3 | 0.60 |
+
+The hit chance is at a standstill; speed still spoils it (minus speed/500, never under
+0.3), and breaking line of sight still resets the lock.
+
+Verified headlessly (`wanted`, `simulate`, `policeReport`):
+
+- 5 stars on foot in the Old Quarter, 64 s sampled every 8 s: exactly one air unit
+  throughout (arriving at 0 s, tracking from 8 s) alongside 17 cruisers, 3 SWAT vans,
+  2-3 agents' SUVs, the tank and 3 roadblocks.
+- Mission 1 cargo chase at 3 stars raised to 5: one air unit (the mission's), never two.
+- 4 stars in a speedboat on Palm Sound, 42 s: one air unit, which searched, gave up and
+  retreated before a single replacement launched; never two on duty at once.
+
 ## Screenshots
 
 Taken with `graphics('high')` on the persistent headless page and copied to
@@ -233,7 +263,7 @@ Taken with `graphics('high')` on the persistent headless page and copied to
 `star2-palmkeys.png` (v30 HUD with heat meter and body count), `star3-carchase.png`
 (flank and PIT cruisers on Royal Ave, roadblock notice), `star4-swat-onfoot.png` (SWAT
 vans, searchlight, marksman warning), `star5-tank-feds.png` (tank, agents' SUVs, SWAT,
-two helicopters), `busted.png`. Iteration 5 adds
+two helicopters before iteration 6), `busted.png`. Iteration 5 adds
 `wounds-closeup.png` and `wounds-falls.png` (bodies down after a pavement shooting, the
 pending second star flashing red, LEAVE THE SEARCH AREA).
 
