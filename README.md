@@ -37,23 +37,30 @@ Version 29.0.0 (see `docs/CHANGELOG.md`).
 | --- | --- |
 | Move / drive | W A S D or arrows |
 | Interact: enter or leave a vehicle, payphone, shops, stations, boarding | E |
+| Stadium pitch: dribble by walking into the ball; kick it the way you face | E (hold Shift for a harder, higher strike) |
 | Fire | F, Space or mouse click (on foot); F fires the pistol from a vehicle |
 | Handbrake (in a vehicle) | Space |
 | Sprint | Shift |
 | Bicycle | hold W to pedal, Shift stands on the pedals, S brakes |
-| Helicopter | Space rise, Shift descend, W/S fly, A/D turn; land on open ground, helipads or flat roofs |
-| Plane | W/S throttle, A/D bank, Space/Shift nose up/down |
+| Helicopter | T rise, G descend, W/S fly, A/D turn; land on open ground, helipads or flat roofs |
+| Plane | W/S throttle, A/D bank, T/G nose up/down |
 | Bail out / parachute; dive off a boat | J (then Space opens the canopy) |
 | Weapons | 1 to 6, Q cycle, K knife, R reload, I arsenal |
 | City map | Tab |
 | Car radio | N power, B next station |
 | Horn, mute | H, M |
 | Show the mission card again | O (or click the objective strip) |
-| Pause: sound, touch controls, FPS counter, graphics quality, mission select | Escape |
+| Street zoom | mouse wheel or pinch; + / − and 0 |
+| Minimap zoom | mouse wheel or pinch over the minimap; its − button folds it away |
+| Pause | Escape |
 
-Touch controls appear automatically on phones and tablets. Progress, audio, FPS-counter and
-graphics settings save to the browser's local storage. The game runs offline; nothing is
-fetched from the network.
+Every key can be rebound in **Settings · Controls** (from the title menu or the pause
+menu), which also warns about clashes and offers to swap. Settings has four tabs:
+GRAPHICS (quality tier, FPS counter, character see-through), AUDIO (sound on/off; master,
+effects, radio music and voice volumes; radio voices), GAMEPLAY (NPC chatter, minimap,
+control hints) and CONTROLS (touch controls, key bindings). Touch controls appear
+automatically on phones and tablets. Progress and every setting save to the browser's
+local storage. The game runs offline; nothing is fetched from the network.
 
 ## Repository layout
 

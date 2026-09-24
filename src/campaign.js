@@ -7,6 +7,11 @@
      */
     /* Campaign frontier is independent from the mission currently selected for replay. */
     let missionMenuOrigin = 'menu';
+    /* Jobs the picker offers: everything up to the frontier, or every job while
+       the godmode cheat is on. */
+    function missionUnlocked(index) {
+      return index <= completed || !!player.godMode;
+    }
     const initialAmmo = [96, 150, 36, 8, 150, 30];
     function campaignCount(value) {
       return typeof value === 'number' && Number.isFinite(value)
@@ -57,8 +62,6 @@
           if (Array.isArray(s.reserve)) w.reserve = savedSupply(s.reserve[i], w.reserve, 999999);
         });
         restoreWeaponSelection(s.selectedWeaponIndex);
-        if (completed > 0 || missionIndex > 0)
-          getElement('startBtn').innerHTML = 'CONTINUE YOUR STORY <span>↗</span>';
       } catch {}
     }
     function clearMissionOverlays() {
@@ -90,9 +93,13 @@
       const list = getElement('missionChoices');
       list.replaceChildren();
       getElement('campaignProgress').textContent =
-        completed + ' / ' + missions.length + ' MISSIONS COMPLETED';
+        completed + ' / ' + missions.length + ' MISSIONS COMPLETED' + (player.godMode ? ' · GOD MODE: ALL JOBS OPEN' : '');
+      getElement('missionSelect').classList.toggle('god-mode', !!player.godMode);
+      getElement('missionSelectNote').textContent = player.godMode
+        ? 'God mode: every job is open. A job played ahead of the story does not skip it.'
+        : 'Replay a completed job or continue your story. Future jobs stay secret.';
       for (let i = 0; i < missions.length; i++) {
-        const unlocked = i <= completed,
+        const unlocked = missionUnlocked(i),
           b = document.createElement('button');
         b.className = 'mission-choice' + (unlocked ? '' : ' locked');
         b.disabled = !unlocked;
@@ -109,7 +116,11 @@
           (unlocked ? missions[i].title : '???') +
           '</b><small>' +
           (unlocked
-            ? (i < completed ? 'COMPLETED · REPLAY' : 'CURRENT ' + (i >= SIDE_JOB_FIRST ? 'CONTRACT' : 'MISSION')) +
+            ? (i < completed
+                ? 'COMPLETED · REPLAY'
+                : i > completed
+                  ? 'GOD MODE · UNLOCKED'
+                  : 'CURRENT ' + (i >= SIDE_JOB_FIRST ? 'CONTRACT' : 'MISSION')) +
               (i >= SIDE_JOB_FIRST ? ' · ' + CHARACTERS[missions[i].contact].name.split(' ')[0].toUpperCase() : '')
             : 'LOCKED · KEEP PLAYING') +
           '</small></span><span class="mission-lock">' +
@@ -127,10 +138,13 @@
       gameMode = missionMenuOrigin;
       keys = {};
       if (gameMode === 'play') canvas.focus();
-      else getElement(gameMode === 'pause' ? 'chooseMissionPause' : 'chooseMissionStart').focus();
+      else {
+        if (gameMode === 'menu') updateTitleMenu();
+        getElement(gameMode === 'pause' ? 'chooseMissionPause' : 'chooseMissionStart').focus();
+      }
     }
     function chooseMission(index) {
-      if (!Number.isInteger(index) || index < 0 || index >= missions.length || index > completed)
+      if (!Number.isInteger(index) || index < 0 || index >= missions.length || !missionUnlocked(index))
         return false;
       initAudio();
       resetMissionState();
@@ -151,7 +165,8 @@
       return true;
     }
     function finishCampaignMission(missionState) {
-      completed = Math.max(completed, missionState.index + 1);
+      // A job played ahead of the story under god mode does not skip the story.
+      if (missionState.index <= completed) completed = Math.max(completed, missionState.index + 1);
       missionIndex = completed;
     }
     function resetCampaign() {

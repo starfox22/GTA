@@ -363,7 +363,7 @@
         holding = !party && performance.now() < carRadioHoldUntil;
       if (!carRadioPlayer.paused && !holding)
         carRadioGain = clamp(carRadioGain + (deltaSeconds || 0.016) * RADIO_FADE_IN, 0, 1);
-      carRadioPlayer.volume = clamp(target * carRadioGain, 0, 1);
+      carRadioPlayer.volume = clamp(target * carRadioGain * volumeScale('radio'), 0, 1);
       if (gesture) carRadioBlocked = false;
       if (carRadioPlayer.paused && !carRadioPending && !carRadioBlocked) {
         const revision = carRadioRevision;
@@ -385,6 +385,8 @@
       }
     }
     function tuneCarRadio(index) {
+      // The radio box pops open to show the new station, then tucks away (hud.js).
+      hudPop('carRadio');
       const next = (index + MUSIC_STATIONS.length) % MUSIC_STATIONS.length,
         changed = next !== carRadioStation || !carRadioEnabled;
       carRadioStation = next;
@@ -399,11 +401,14 @@
         carRadioTaglineUntil = performance.now() + Math.max(RADIO_TAGLINE_MS, seconds * 1000);
         clearTimeout(carRadioTaglineTimer);
         carRadioTaglineTimer = setTimeout(updateCarRadioUI, carRadioTaglineUntil - performance.now() + 50);
+        // Keep the radio box open while the DJ line shows, and a moment after.
+        hudPop('carRadio', carRadioTaglineUntil - performance.now() + 1500);
       }
       syncCarRadio(true);
       updateCarRadioUI();
     }
     function toggleCarRadio() {
+      hudPop('carRadio');
       if (carRadioBlocked && carRadioEnabled) {
         carRadioBlocked = false;
         if (carRadioUnavailable) carRadioLoaded = null;
@@ -423,17 +428,17 @@
       getElement('radioTrack').textContent = !carRadioEnabled
         ? 'Radio off'
         : !soundOn
-          ? 'Game sound muted · M to unmute'
+          ? 'Game sound muted · ' + keyName('mute') + ' to unmute'
           : carRadioUnavailable
-            ? 'Track unavailable · N to retry'
+            ? 'Track unavailable · ' + keyName('radioPower') + ' to retry'
             : carRadioBlocked
-              ? 'Press N to start playback'
+              ? 'Press ' + keyName('radioPower') + ' to start playback'
               : performance.now() < carRadioTaglineUntil
                 ? '“' + station.tagline + '”'
                 : track
                   ? track.title + ' · ' + track.artist
                   : 'Tuning…';
-      getElement('radioPower').textContent = 'N · ' + (carRadioEnabled ? 'ON' : 'OFF');
+      getElement('radioPower').textContent = keyName('radioPower') + ' · ' + (carRadioEnabled ? 'ON' : 'OFF');
       getElement('radioPower').setAttribute?.('aria-pressed', String(carRadioEnabled));
       getElement('carRadio').classList.toggle('radio-off', !carRadioEnabled);
       for (let i = 0; i < MUSIC_STATIONS.length; i++) {

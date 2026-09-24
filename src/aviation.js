@@ -198,8 +198,9 @@
         turn = controlled
           ? (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)
           : 0;
-      const pull = controlled && keys.Space,
-        push = controlled && (keys.ShiftLeft || keys.ShiftRight),
+      // Nose up / down share the helicopter's climb and descend keys (controls.js).
+      const pull = controlled && actionHeld('ascend'),
+        push = controlled && actionHeld('descend'),
         airframeProfile = AIRFRAME_SPECS[aircraft.airframe || 'courier'],
         flightModel = {
           ...PLANE_FLIGHT,
@@ -539,7 +540,11 @@
             'elena',
             'Daniel kept the original accounts. Vale’s men are holding him beside the pad. Land, get out and free him.',
           );
-          tell('Space climbs · Shift descends · W/S flies · A/D turns', 7);
+          tell(
+            keyName('ascend') + ' climbs · ' + keyName('descend') + ' descends · ' + keyName('forward') + '/' + keyName('back') +
+              ' flies · ' + keyName('left') + '/' + keyName('right') + ' turns',
+            7,
+          );
         } else if (
           missionState.stage === 1 &&
           distanceBetween(missionState.car, FLIGHT.pickup) < 60 &&
@@ -566,12 +571,13 @@
           setStage(
             1,
             missionState.gates[0],
-            'W THROTTLE · SPACE ROTATE · FOLLOW THE COAST MARKERS',
+            keyName('forward') + ' THROTTLE · ' + keyName('ascend') + ' ROTATE · FOLLOW THE COAST MARKERS',
             'rafe',
             'Daniel authenticates the ledger. Southport has a protected connection out, provided the clearance holds.',
           );
           tell(
-            'A/D banks · Space raises nose · Shift lowers nose · Release pitch to trim · Slow + flare gently to land',
+            keyName('left') + '/' + keyName('right') + ' banks · ' + keyName('ascend') + ' raises nose · ' + keyName('descend') +
+              ' lowers nose · Release pitch to trim · Slow + flare gently to land',
             11,
           );
         } else if (

@@ -1390,7 +1390,7 @@
       let windowsBroken = 0;
       function blowWindows(building, px, py, ny, reach, base) {
         const kind = building.archetype;
-        if (ny < 0.5 || kind === 'tower' || kind === 'decoTower') return;
+        if (ny < 0.5 || kind === 'tower' || kind === 'decoTower' || kind === 'skyline') return;
         const grid = WINDOW_GRIDS[kind === 'brick' ? 0 : kind === 'office' ? 1 : kind === 'warehouse' ? 2 : 3];
         if (!grid) return;
         // The same repeats facadeMaterial() gives the wall texture.

@@ -42,9 +42,7 @@
       // Heat from crimes nobody has reported yet (a silent knife kill with no
       // police around); the next witness call or crime adds it.
       unreportedHeat = 0,
-      escalateSeconds = 0,
-      heatFlashUntil = 0,
-      heatUIKey = '';
+      escalateSeconds = 0;
     // What the player has done since the police were last cleared.
     const rampage = {
       civilians: 0,
@@ -112,7 +110,6 @@
           wantedStars = visible + 1;
           wantedLevel = visible + 1;
           starElapsed = 0;
-          heatFlashUntil = gameTime + 2.5;
           searchRemaining = Math.max(searchRemaining, policeSearchSeconds());
           announceWantedLevel(wantedLevel);
         }
@@ -127,7 +124,6 @@
         wantedLevel = 1;
         starElapsed = 0;
         rampage.startedAt = gameTime;
-        heatFlashUntil = gameTime + 2.5;
         announceWantedLevel(1);
       }
       searchActive = false;
@@ -206,23 +202,8 @@
     function heatUI() {
       const stars = Math.ceil(wantedStars),
         earned = starsForHeat(wantedHeat),
-        pending = stars > 0 && earned > stars ? stars + 1 : 0,
-        flashing = gameTime < heatFlashUntil,
-        key = stars + '|' + pending + '|' + searchActive + '|' + flashing;
-      if (key !== heatUIKey) {
-        heatUIKey = key;
-        let html = '';
-        for (let n = 1; n <= 5; n++)
-          html +=
-            n <= stars
-              ? '<span class="star on' + (flashing && n === stars ? ' fresh' : '') + '">★</span>'
-              : n === pending
-                ? '<span class="star next">★</span>'
-                : '<span class="star">☆</span>';
-        const el = getElement('stars');
-        el.innerHTML = html;
-        el.classList.toggle('searching', stars > 0 && searchActive);
-      }
+        pending = stars > 0 && earned > stars ? stars + 1 : 0;
+      renderStars(stars, pending, searchActive);
       const meter = getElement('heatFill');
       if (meter) {
         const lo = HEAT_STARS[Math.min(5, stars)] || 0,
