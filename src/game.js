@@ -4926,6 +4926,7 @@
     // @include src/combat-rules.js
     // @include src/damage.js
     // @include src/crash-audio.js
+    // @include src/engine-audio.js
     // @include src/county.js
     // @include src/military.js
     // @include src/armor.js
@@ -5906,6 +5907,8 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Sound: audioMix(), engineSound(), rainSound() (see audio.js audioConsole).
+      ...audioConsole(),
       // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
       // (see sports.js sportsConsole).
       ...sportsConsole(),

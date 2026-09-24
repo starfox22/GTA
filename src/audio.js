@@ -11,8 +11,7 @@
       // through it. Its level is the Sound on/off switch times the master and
       // effects volumes (settings.js); `voiceBus` carries the callouts.
       master = null,
-      voiceBus = null,
-      engine = null;
+      voiceBus = null;
     let audioBuffers = {},
       audioLoops = {},
       reverb = null,
@@ -67,7 +66,7 @@
             .decodeAudioData(bytes.buffer)
             .then((buffer) => {
               audioBuffers[name] = buffer;
-              if (['engine', 'tires', 'siren', 'rotor-loop'].includes(name)) startLoop(name);
+              if (['tires', 'siren', 'rotor-loop'].includes(name)) startLoop(name);
             })
             .catch(() => {});
         }
@@ -83,7 +82,7 @@
       s.buffer = audioBuffers[name];
       s.loop = true;
       filter.type = 'lowpass';
-      filter.frequency.value = name === 'engine' ? 2200 : 4800;
+      filter.frequency.value = 4800;
       g.gain.value = 0;
       s.connect(filter).connect(g).connect(master);
       s.start();
@@ -92,6 +91,51 @@
         gain: g,
         filter,
       };
+    }
+    /*
+     * Exact loop lengths (seconds) of the recorded loops made for this game
+     * (engines, boats, tank tracks, rain). Each file carries its loop plus the
+     * loop's own first 0.2 s, and plays with loopEnd at this length, so an
+     * encoder's padding or trimming at the end of the file never reaches the
+     * seam (Vorbis ends are not sample-exact across decoders).
+     */
+    const LOOP_SECONDS = {
+      'boat-diesel': 2.325646,
+      'boat-jetski': 0.696259,
+      'boat-outboard-high': 2.02424,
+      'boat-outboard-low': 1.994603,
+      'engine-compact-high': 2.592925,
+      'engine-compact-idle': 2.003379,
+      'engine-compact-low': 0.837596,
+      'engine-compact-mid': 2.186939,
+      'engine-diesel-high': 2.22966,
+      'engine-diesel-idle': 3.678912,
+      'engine-diesel-mid': 2.62771,
+      'engine-sport-high': 1.403016,
+      'engine-sport-idle': 1.575669,
+      'engine-sport-low': 1.408707,
+      'engine-sport-mid': 0.760499,
+      'engine-twin-idle': 2.055692,
+      'engine-v8-idle': 1.920431,
+      'engine-v8-low': 0.592948,
+      'engine-v8-mid': 0.686576,
+      'rain-heavy': 10.2,
+      'rain-light': 16.0,
+      'rain-steady': 14.0,
+      'tank-tracks': 5.3,
+    };
+    /* A looping source for a decoded buffer, looped at its exact length. */
+    function loopingSource(name) {
+      const source = audio.createBufferSource(),
+        buffer = audioBuffers[name],
+        seconds = LOOP_SECONDS[name];
+      source.buffer = buffer;
+      source.loop = true;
+      if (seconds && seconds < buffer.duration) {
+        source.loopStart = 0;
+        source.loopEnd = seconds;
+      }
+      return source;
     }
     // Output levels of the two buses (0.62 is the mix's nominal level).
     function effectsLevel() {
@@ -224,29 +268,8 @@
       if (!audio) return;
       const active = gameMode === 'play' && soundOn,
         c = player.car;
-      const en = audioLoops.engine;
-      if (en) {
-        const speed = c ? Math.abs(c.speed) : 0,
-          t = c ? vehicleSpec(c) : {},
-          ratio = c ? clamp(speed / t.max, 0, 1) : 0,
-          gear = Math.min(5, Math.floor(ratio * 5)),
-          rpm = t.plane
-            ? 0.75 + (c.throttle || 0) * 0.9
-            : t.boat
-              ? 0.65 + ratio * 0.7
-              : t.bike
-                ? 1 + ((ratio * 5) % 1) * 0.6 + gear * 0.07
-                : t.truck
-                  ? 0.5 + ((ratio * 5) % 1) * 0.3 + gear * 0.03
-                  : 0.65 + ((ratio * 5) % 1) * 0.65 + gear * 0.07;
-        glideParam(en.source.playbackRate, rpm, audio.currentTime, 0.13);
-        glideParam(en.gain.gain, 
-          active && c && !t.bicycle && c.type !== 'helicopter' && c.hp > 0 ? 0.11 + speed * 0.00038 : 0,
-          audio.currentTime,
-          0.1,
-        );
-        glideParam(en.filter.frequency, 900 + speed * 7, audio.currentTime, 0.15);
-      }
+      // Engines, road noise and traffic (engine-audio.js).
+      updateEngineAudio(deltaSeconds);
       const tires = audioLoops.tires;
       if (tires) {
         const slipping =
@@ -384,5 +407,26 @@
     function toggleVoices() {
       voicesOn = !voicesOn;
       saveSettings();
+    }
+    // Developer console (DeadEndCity.audioMix()): the live mix for tests.
+    function audioConsole() {
+      return {
+        audioMix: () => ({
+          context: audio ? audio.state : null,
+          time: audio ? +audio.currentTime.toFixed(2) : 0,
+          soundOn,
+          master: master ? +master.gain.value.toFixed(3) : null,
+          buffers: Object.keys(audioBuffers).length,
+          loops: Object.fromEntries(
+            Object.entries(audioLoops).map(([k, l]) => [
+              k,
+              { gain: +l.gain.gain.value.toFixed(4), rate: +l.source.playbackRate.value.toFixed(3), filter: Math.round(l.filter.frequency.value) },
+            ]),
+          ),
+        }),
+        // The player's engine (revs, gear, load, layer rates and gains), road
+        // noise, the traffic voices and a trace of the last 12 s (engine-audio.js).
+        engineSound: () => engineReport(),
+      };
     }
     // END SUBSYSTEM: src/audio.js
