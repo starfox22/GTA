@@ -118,6 +118,55 @@
         ps = new Three.Vector3(),
         parkUpAxis = new Three.Vector3(0, 1, 0);
       // Matrix for a unit primitive: at (x, height, y), scaled, turned `yaw` about the vertical.
+      /**
+       * INSTANCED RIDE PARTS
+       * Rides move many copies of one small model: carousel horses, swing seats,
+       * teacups, flume boats, the Falcon's cars. Each copy is a group of merged
+       * meshes, one per material, so each copy cost that many draw calls (well
+       * over a hundred for the park, twice with the shadow map). Once built, the
+       * copies' meshes are hidden and drawn as instances instead: one
+       * InstancedMesh per (part, material), fed each frame from the hidden meshes'
+       * world matrices, so the ride code still animates the plain groups.
+       * parkRoot sits at the origin, so world matrices are instance matrices.
+       */
+      const rideInstanceSets = [];
+      function instanceRideParts(groups, name) {
+        const sets = new Map();
+        for (const g of groups) {
+          const meshes = [];
+          g.traverse((o) => o.isMesh && !o.isInstancedMesh && meshes.push(o));
+          meshes.forEach((m, k) => {
+            const key = k + '|' + m.material.uuid + '|' + m.geometry.attributes.position.count;
+            if (!sets.has(key)) sets.set(key, { geometry: m.geometry, material: m.material, sources: [], owners: [] });
+            sets.get(key).sources.push(m);
+            sets.get(key).owners.push(g);
+            m.visible = false;
+          });
+        }
+        for (const set of sets.values()) {
+          const im = new Three.InstancedMesh(set.geometry, set.material, set.sources.length);
+          im.name = name;
+          im.castShadow = im.receiveShadow = true;
+          im.frustumCulled = false;
+          im.userData.dynamic = true;
+          parkRoot.add(im);
+          rideInstanceSets.push({ im, roots: groups, sources: set.sources, owners: set.owners });
+        }
+      }
+      const hiddenRidePart = new Three.Matrix4().makeScale(0, 0, 0);
+      function syncRideInstances() {
+        const refreshed = new Set();
+        for (const set of rideInstanceSets) {
+          for (const root of set.roots)
+            if (!refreshed.has(root)) {
+              refreshed.add(root);
+              root.updateWorldMatrix(true, true);
+            }
+          // A copy its ride code hides (a coaster car off the track) collapses to nothing.
+          for (let i = 0; i < set.sources.length; i++) set.im.setMatrixAt(i, set.owners[i].visible ? set.sources[i].matrixWorld : hiddenRidePart);
+          set.im.instanceMatrix.needsUpdate = true;
+        }
+      }
       function parkPlaced(x, y, z, sx, sy, sz, yaw = 0) {
         pq.setFromAxisAngle(parkUpAxis, -yaw);
         return pm.compose(parkV.set(x, z, y), pq, ps.set(sx, sy, sz));
@@ -461,6 +510,7 @@
         return g;
       }
       const coasterCarModels = Array.from({ length: COASTER_CARS }, (_, i) => coasterCar(i === 0));
+      instanceRideParts(coasterCarModels, 'falcon cars');
       // Riders: instanced torsos (with raised arms) and heads, four to a car.
       const riderBodyGeo = (() => {
         const b = parkParts();
@@ -1061,6 +1111,7 @@
           carousel.add(horse);
           carouselHorses.push(horse);
         }
+        instanceRideParts(carouselHorses, 'carousel horses');
         for (let i = 0; i < 24; i++) {
           const a = (i / 24) * TAU;
           parkBulbs.add(PIER.carousel.x + Math.cos(a) * (R + 5), PIER.carousel.y + Math.sin(a) * (R + 5), 34, 3, i % 2 ? '#ffd79a' : '#ff9fc4', i);
@@ -1099,6 +1150,7 @@
           seat.flush(arm, 'swing seat');
           swingSeats.push(arm);
         }
+        instanceRideParts(swingSeats, 'swing seats');
         for (let i = 0; i < 20; i++) {
           const a = (i / 20) * TAU;
           parkBulbs.add(SW.x + Math.cos(a) * 34, SW.y + Math.sin(a) * 34, 85, 3, i % 2 ? '#8fe8ff' : '#ffd79a', i);
@@ -1138,6 +1190,7 @@
           teacups.add(g);
           teacupCups.push(g);
         }
+        instanceRideParts(teacupCups, 'teacups');
       }
       // ---- Drop tower ----------------------------------------------------------------
       const DT = PIER.dropTower,
@@ -1227,6 +1280,10 @@
           parkRoot.add(g);
           flumeBoats.push({ g, wasHigh: false });
         }
+        instanceRideParts(
+          flumeBoats.map((boat) => boat.g),
+          'flume boats',
+        );
         for (let i = 0; i < 160; i++) flumeSplash.add(0, 0, -100, 4, '#e8f6ff');
         flumeSplash.done();
         const s = sign('WADI SPLASH', 4025, -6458, 50, '#9fe6ff');
@@ -1585,7 +1642,7 @@
         parkLastTime = gameTime;
         if (!parkRoot.visible) return;
         const night = nightAmount;
-        renderer.getDrawingBufferSize(parkGlowViewport);
+        sceneBufferSize(parkGlowViewport);
         for (const s of parkGlowSets) {
           s.points.material.uniforms.uHalfHeight.value = parkGlowViewport.y / 2;
           s.points.material.uniforms.uTime.value = gameTime;
@@ -1640,6 +1697,7 @@
         }
         updateFlume(dt);
         updateBumpers(dt);
+        syncRideInstances();
         updateFountain(night);
         updateFireworks();
       }

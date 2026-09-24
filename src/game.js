@@ -942,7 +942,13 @@
     // One texture covers the whole city including the northern reclamation, so it
     // is taller than it is wide. The pixels-per-unit ratio is held below the old
     // 4096-square texture's so the bitmap does not grow with the city.
-    const GROUND_PIXELS_PER_UNIT = 3072 / CITY_SIZE;
+    // This bitmap is only drawn by the 2D fallback renderer. When WebGL 2 and
+    // three.js are there the 3D renderer paints its own sheet, so this one is
+    // painted at a quarter of the resolution (a sixteenth of the pixels): it
+    // still serves if the 3D renderer fails, and it no longer costs seconds of
+    // canvas rasterisation at start-up.
+    const GROUND_PIXELS_PER_UNIT =
+      (typeof THREE !== 'undefined' && typeof WebGL2RenderingContext !== 'undefined' ? 768 : 3072) / CITY_SIZE;
     const groundCanvas = document.createElement('canvas');
     groundCanvas.width = Math.ceil(CITY_WIDTH * GROUND_PIXELS_PER_UNIT);
     groundCanvas.height = Math.ceil(CITY_HEIGHT * GROUND_PIXELS_PER_UNIT);
@@ -4071,7 +4077,7 @@
       canvas.focus();
       keys = {};
       tell('Welcome to South Coast. Answer the yellow payphone, or take a ride.', 5);
-      announce('SOUTH COAST · 1997', 'OLD QUARTER', 1.8);
+      announce('SOUTH COAST · 1997', 'DEAD END CITY', 1.8);
     }
     function togglePause() {
       if (gameMode === 'arsenal') {
@@ -4193,7 +4199,7 @@
       save();
       gameMode = 'play';
       getElement('pauseMenu').classList.add('hidden');
-      announce('A FRESH START', 'OLD QUARTER', 1.8);
+      announce('A FRESH START', 'DEAD END CITY', 1.8);
       tell('Your story starts at the yellow payphone.');
       newCallNotice();
       canvas.focus();
@@ -4648,6 +4654,13 @@
       fn();
       profile.parts[name] = (profile.parts[name] || 0) + performance.now() - t0;
     }
+    // Split timing for long straight-line passes (the renderer's frame): adds the
+    // time since `t0` to `name` and returns the new mark, so no closure is made.
+    function profileLap(name, t0) {
+      const now = performance.now();
+      profile.parts[name] = (profile.parts[name] || 0) + now - t0;
+      return now;
+    }
     /**
      * FPS COUNTER
      * Optional readout switched from Settings · Graphics and remembered in
@@ -4720,9 +4733,13 @@
       }
       const drawStart = performance.now();
       drawWorld();
+      const frameEnd = performance.now();
       profile.update += drawStart - updateStart;
-      profile.draw += performance.now() - drawStart;
+      profile.draw += frameEnd - drawStart;
       profile.frames++;
+      // AUTO graphics: dynamic resolution and tier from the frame rate (quality.js).
+      if (gameMode === 'play') adaptGraphics(t - (profile.previousFrame || t), frameEnd - updateStart, frameEnd);
+      profile.previousFrame = t;
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
@@ -5464,7 +5481,17 @@
       // Settings choice); returns what the renderer is now using.
       graphics(tier) {
         if (tier !== undefined) cycleGraphicsSetting(String(tier).toLowerCase());
-        return { setting: graphicsSetting, ...(city3D?.quality?.() || {}) };
+        return {
+          setting: graphicsSetting,
+          ...(city3D?.quality?.() || {}),
+          // AUTO's frame-rate adaptation (quality.js ADAPTIVE QUALITY).
+          adaptive: { averageFrameMs: +adaptive.average.toFixed(1), tierDrops: adaptive.tierDrops },
+        };
+      },
+      // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
+      // pass). On AUTO the adaptive controller may change it again.
+      renderScale(scale) {
+        return city3D?.setRenderScale?.(Number(scale) || 1) ?? null;
       },
       // Everything on the settings screen (settings.js), and the HUD's saved
       // state. Pass an object to change some of it, e.g. { chatter: false,
@@ -5545,7 +5572,9 @@
             viewCalls: info?.viewCalls ?? null,
             shadowCalls: info?.shadowCalls ?? null,
             frameCalls: info?.frameCalls ?? null,
+            renderScale: city3D?.quality?.().renderScale ?? null,
             sceneObjects: info?.objects ?? null,
+            programs: info?.programs ?? null,
             byType: info?.byType ?? null,
             vehicles: vehicles.length,
             pedestrians: pedestrians.length,

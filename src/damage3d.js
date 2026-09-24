@@ -508,7 +508,7 @@
       }
       function facadeColor(building) {
         const entry = building && allBuildings.find((o) => o.b === building);
-        return entry ? '#' + entry.materials[0].color.getHexString() : '#a39b90';
+        return entry ? '#' + (entry.tint || entry.materials[0].color).getHexString() : '#a39b90';
       }
 
       // ---- Debris: rubble chunks and torn-off panels -------------------------------------

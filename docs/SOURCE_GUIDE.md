@@ -151,6 +151,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
 | air-cover3d.js | Road underpass walls, roof, portals and lamps |
 | renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
+| landscape3d.js | Renderer-only planting on open lawns: Battery Park trees and flower beds, Great Lawn picnic blankets |
 | sports3d.js | Tiered stands, crowd in team colours (fills, cheers, panics), floodlights (`stadiumFloodPools`), live screens (`paintSportsBoard`), kits, animated matches |
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
@@ -682,6 +683,15 @@ docs/audit/missions-qa.md shows the method).
   the land polygons drives shallow colour, foam bands and swell damping. Four Gerstner waves
   displace the mesh; noise ripples add fine normals; sun glitter and moon sparkle are
   view-dependent.
+- Facades (cityscape3d.js, SHARED FACADES) are a handful of shared materials: a building's
+  texture repeat is baked into its wall UVs, its tint is a vertex colour and its window
+  light (strength, phase) the `cityLit` attribute, which the facade shader multiplies into
+  the emissive with `cityPower()`. Building blocks are walls plus a roof cap in a shared
+  roof finish; trims and other building parts use `staticMat()` (one material per finish).
+  A new building part should use those, never a per-building `mat()`, or it costs a draw
+  call per building.
+- Glass (lighting3d.js, GLASS REFLECTIONS): `useCityGlass(material)` folds the reflection up
+  into the sky and darkens it towards the street; use it for facade glass.
 - Repeated props use `InstancedMesh` pools (`pools` in cityscape3d.js). Add a pool there
   rather than creating per-building meshes for small repeated objects.
 
@@ -696,6 +706,12 @@ docs/audit/missions-qa.md shows the method).
   compute final screen colours (the water) end with `#include <city_hdr_output>` (and include
   `<city_hdr_pars>`), which inverts the tone curve so they look as designed; unlit
   `MeshBasicMaterial`s with `toneMapped: false` (signs) get the same automatically.
+- **Adaptive quality** (quality.js, ADAPTIVE QUALITY): on AUTO the frame loop feeds each
+  frame's interval and CPU time to `adaptGraphics()`; GPU-bound and slow, the scene is drawn
+  at a lower share of the canvas (`setRenderScale`, postfx3d.js; the composite upsamples),
+  CPU-bound or still slow at 60%, one tier down. Scene shaders that need the scene buffer's
+  pixel size (point sprites, screen-space lookups) must use `sceneBufferSize()`, not the
+  canvas's drawing buffer.
 - **Quality tiers** (quality.js) set pixel ratio, shadow-map size and refresh cadence, MSAA,
   AO samples, bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
   record; the renderer's `setQuality(tier)` applies one at runtime. `DeadEndCity.graphics('high')`
@@ -772,6 +788,11 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
   gate arm) with `userData.dynamic = true` and per-sign textures with `userData.sign = true`
   so they are left alone. Share materials between repeated objects (palms do) or they cannot
   merge.
+- Theme park rides (themepark3d.js, INSTANCED RIDE PARTS): copies of a ride model are drawn
+  as instances fed from the animated groups' world matrices.
+- The baked ground canvases are released once uploaded (`releaseBakedCanvases`, render3d.js);
+  nothing may repaint them after start-up. Programs are compiled behind the title screen
+  (`prewarmShaders`).
 - `DeadEndCity.drawProfile()` lists the draw calls in view by object and by map cell;
   `stats()` reports `viewCalls` (camera) and `shadowCalls` (last shadow refresh) separately.
 - Level of detail, both cameras: intact cars become instanced per-type body shells below

@@ -154,15 +154,17 @@
         const spec = SKY_GLAZING[key],
           lit = glazingLit(spec);
         lit.repeat.set(0.5, 0.25);
-        const material = new Three.MeshStandardMaterial({
-          map: glazingMap(spec),
-          color: '#ffffff',
-          roughness: 0.1,
-          metalness: 0.72,
-          emissive: '#ffe8c4',
-          emissiveMap: lit,
-          emissiveIntensity: 0,
-        });
+        const material = useCityGlass(
+          new Three.MeshStandardMaterial({
+            map: glazingMap(spec),
+            color: '#ffffff',
+            roughness: 0.1,
+            metalness: 0.72,
+            emissive: '#ffe8c4',
+            emissiveMap: lit,
+            emissiveIntensity: 0,
+          }),
+        );
         litWindowMaterials.push({ material, strength: 0.45 + skyRandom() * 0.15, phase: skyRandom() * 9, x: b.x, y: b.y });
         skyGlassMaterials.set(key, material);
         return material;
@@ -189,14 +191,16 @@
         skyRoof = new Three.MeshStandardMaterial({ map: ROOF_TEXTURES.gravel, color: '#6f7479', roughness: 0.92, metalness: 0.02 }),
         skyLouver = new Three.MeshStandardMaterial({ map: ROOF_TEXTURES.metal, color: '#5d666c', roughness: 0.55, metalness: 0.5 }),
         skyGreenRoof = new Three.MeshStandardMaterial({ map: ROOF_TEXTURES.green, roughness: 0.95 }),
-        skyLobby = new Three.MeshStandardMaterial({
-          color: '#26343c',
-          roughness: 0.08,
-          metalness: 0.7,
-          emissive: '#ffdcaa',
-          emissiveMap: skyWhite,
-          emissiveIntensity: 0,
-        });
+        skyLobby = useCityGlass(
+          new Three.MeshStandardMaterial({
+            color: '#26343c',
+            roughness: 0.08,
+            metalness: 0.7,
+            emissive: '#ffdcaa',
+            emissiveMap: skyWhite,
+            emissiveIntensity: 0,
+          }),
+        );
       /**
        * LED lighting that blooms at night (crowns, outlines, strips). By day it is
        * pale metal. `base` is its night intensity as HDR light; `cycle` walks the

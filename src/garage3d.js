@@ -5,15 +5,23 @@
        * Scope: createCityRenderer() closure.
        * Garage buildings, shutters, lights and service details.
        */
-      const garageRoofs = [];
+      const garageRoofs = [],
+        // Ribbed steel sheet (cityscape3d.js) rather than a flat grey slab, which
+        // read as a hole in the block from the street camera.
+        garageRoofMaterial = (() => {
+          const tx = ROOF_TEXTURES.metal.clone();
+          tx.repeat.set(3, 3);
+          tx.needsUpdate = true;
+          return new Three.MeshStandardMaterial({ map: tx, color: '#9aa6a8', roughness: 0.5, metalness: 0.45 });
+        })();
       for (const s of GARAGES) {
         const group = new Three.Group();
         scene.add(group);
         // Merged by the static batcher; the roof (hidden while you are inside) stays live.
         batchGroups.push(group);
-        const wall = mat('#aaa999', 0.86),
+        const wall = staticMat('#aaa999', 0.86),
           trim = mat(s.color, 0.5, 0.3),
-          bayFloor = mat('#717b78', 0.8);
+          bayFloor = staticMat('#717b78', 0.8);
         box(
           group,
           s.x,
@@ -22,7 +30,7 @@
           216,
           0.4,
           s.roadY - 56 - (s.y - 98),
-          mat('#505d60'),
+          staticMat('#505d60'),
         );
         box(group, s.x, 0.6, s.y, 172, 0.6, 157, bayFloor);
         for (const b of garageWalls().filter(
@@ -31,7 +39,7 @@
           box(group, b.x + b.w / 2, b.height / 2, b.y + b.h / 2, b.w, b.height, b.h, wall);
         for (const side of [-1, 1]) {
           box(group, s.x + side * 87, 22, s.y + 79, 4, 44, 6, trim);
-          box(group, s.x + side * 76, 7, s.y - 59, 12, 14, 24, mat('#a75544'));
+          box(group, s.x + side * 76, 7, s.y - 59, 12, 14, 24, staticMat('#a75544'));
           for (let i = 0; i < 3; i++)
             box(group, s.x + side * 76, 4 + i * 4, s.y - 45.8, 10, 0.7, 0.6, chrome);
         }
@@ -53,14 +61,14 @@
               toneMapped: false,
             }),
           );
-        const roof = box(group, s.x, 49, s.y, 196, 3, 176, mat('#566b71', 0.8));
+        const roof = box(group, s.x, 49, s.y, 196, 3, 176, garageRoofMaterial);
         roof.userData.dynamic = true;
         garageRoofs.push({
           shop: s,
           roof,
         });
-        for (const side of [-1, 1]) box(group, s.x + side * 67, 1, s.y, 2, 0.2, 122, mat('#d7bd7e'));
-        box(group, s.x, 1, s.y - 61, 134, 0.2, 2, mat('#d7bd7e'));
+        for (const side of [-1, 1]) box(group, s.x + side * 67, 1, s.y, 2, 0.2, 122, staticMat('#d7bd7e'));
+        box(group, s.x, 1, s.y - 61, 134, 0.2, 2, staticMat('#d7bd7e'));
         const title = sign(s.name, s.x, s.y + 88, 182, s.color);
         title.position.y = title.userData.backing.position.y = 57;
         statics.push({

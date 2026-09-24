@@ -306,18 +306,19 @@
        * pier and the court's net posts: plain groups, merged by the batcher.
        */
       const beachPaint = {
-        white: mat('#f2efe6', 0.6),
-        red: mat('#d23b33', 0.55),
-        yellow: mat('#efc93c', 0.5),
-        timber: mat('#9b7a55', 0.85),
-        darkTimber: mat('#6c533b', 0.9),
-        sandCastle: mat('#cdb487', 0.98),
+        white: staticMat('#f2efe6', 0.6),
+        red: staticMat('#d23b33', 0.55),
+        yellow: staticMat('#efc93c', 0.5),
+        timber: staticMat('#9b7a55', 0.85),
+        darkTimber: staticMat('#6c533b', 0.9),
+        sandCastle: staticMat('#cdb487', 0.98),
         net: new Three.MeshStandardMaterial({ color: '#f4f4ee', transparent: true, opacity: 0.55, side: Three.DoubleSide, roughness: 0.9 }),
-        steel: mat('#9aa3a6', 0.35, 0.7),
+        steel: staticMat('#9aa3a6', 0.35, 0.7),
         lampGlass: new Three.MeshBasicMaterial({ color: '#ffe4b0' }),
         window: new Three.MeshStandardMaterial({ color: '#2a3a44', emissive: '#ffcf8a', emissiveIntensity: 0, roughness: 0.3 }),
       };
-      const beachHalos = [];
+      // Lamp and string-light halos are glow-field instances (signage3d.js): one
+      // draw for all of them, lit after dark.
       function beachStatic(x, y, a = 0) {
         const g = new Three.Group();
         g.position.set(x, 0, y);
@@ -378,7 +379,7 @@
           box(g, 0, 21, 0, 3, 6, 3, beachPaint.red);
           box(g, 0, 21, 0, 8, 2, 3.1, beachPaint.white);
         }
-        if (k.kind === 'icecream') mesh(sphereGeo, mat('#f6c9d8', 0.6), g, 0, 22, 0, 5, 5, 5);
+        if (k.kind === 'icecream') mesh(sphereGeo, staticMat('#f6c9d8', 0.6), g, 0, 22, 0, 5, 5, 5);
         if (k.kind === 'bar') {
           // A timber deck with tables in front, lights strung above it.
           box(g, 0, 0.6, k.h / 2 + 40, k.w + 30, 1.2, 76, beachPaint.timber);
@@ -407,7 +408,7 @@
       }
       for (const b of BEACH_LAYOUT.bins) {
         const g = beachStatic(b.x, b.y);
-        mesh(cylinderGeo, mat('#2f6a58', 0.6), g, 0, 3.5, 0, 3, 7, 3);
+        mesh(cylinderGeo, staticMat('#2f6a58', 0.6), g, 0, 3.5, 0, 3, 7, 3);
         mesh(cylinderGeo, beachPaint.white, g, 0, 7.2, 0, 3.2, 0.5, 3.2);
       }
       for (const r of BEACH_LAYOUT.racks) {
@@ -445,9 +446,9 @@
         box(g, 0, 15, 0, 1, 30, 1, darkMetal);
         box(g, 0, 30.5, -2.5, 1, 1, 6, darkMetal);
         box(g, 0, 30, -5, 3.5, 1.4, 3.5, beachPaint.lampGlass);
-        beachHalos.push({ sprite: halo(scene, l.x, 29.5, l.y - 5, 18, '#ffd9a0'), x: l.x, y: l.y });
+        addGlow(l.x, 29.5, l.y - 5, 18, '#ffd9a0', 0.45, { day: 0, phase: 0 });
       }
-      for (const l of barStringLights) beachHalos.push({ sprite: halo(scene, l.x, l.z, l.y, 6, '#ffc27a'), x: l.x, y: l.y, string: true });
+      for (const l of barStringLights) addGlow(l.x, l.z, l.y, 6, '#ffc27a', 0.5, { day: 0, phase: 0 });
       // Volleyball: two posts and a net across the middle of the court.
       {
         const c = BEACH_LAYOUT.court,
@@ -486,7 +487,7 @@
         ])
           mesh(new Three.ConeGeometry(1.8 * c.size, 5.5 * c.size, 6), beachPaint.sandCastle, g, dx * c.size, 2.6 * c.size, dz * c.size);
         mesh(new Three.ConeGeometry(2.4 * c.size, 7 * c.size, 6), beachPaint.sandCastle, g, 0, 5.8 * c.size, 0);
-        box(g, 8 * c.size, 1, 0, 3, 2, 2, mat('#e04a3f', 0.6));
+        box(g, 8 * c.size, 1, 0, 3, 2, 2, staticMat('#e04a3f', 0.6));
       }
       // Palms by the bar and the kiosks.
       for (const [x, y, size] of [
@@ -561,14 +562,14 @@
         for (const x of [head.x + 14, head.x + head.w - 14]) {
           box(g, x - ox, deck + 10, head.y + head.h - 3 - oz, 0.9, 20, 0.9, darkMetal);
           box(g, x - ox, deck + 20.5, head.y + head.h - 3 - oz, 3, 1.4, 3, beachPaint.lampGlass);
-          beachHalos.push({ sprite: halo(scene, x, deck + 20, head.y + head.h - 3, 14, '#ffd9a0'), x, y: head.y + head.h });
+          addGlow(x, deck + 20, head.y + head.h - 3, 14, '#ffd9a0', 0.45, { day: 0, phase: 0 });
         }
         for (const x of [head.x + 40, head.x + head.w - 40]) box(g, x - ox, deck + 2.2, head.y + head.h - 8 - oz, 18, 1, 4, beachPaint.timber);
         // Lamps down the stem.
         for (let y = stem.y + 70; y < head.y - 10; y += 80) {
           box(g, stem.x + stem.w - 2 - ox, deck + 10, y - oz, 0.9, 20, 0.9, darkMetal);
           box(g, stem.x + stem.w - 4 - ox, deck + 20, y - oz, 4, 1.2, 2.4, beachPaint.lampGlass);
-          beachHalos.push({ sprite: halo(scene, stem.x + stem.w - 4, deck + 19.5, y, 13, '#ffd9a0'), x: stem.x, y });
+          addGlow(stem.x + stem.w - 4, deck + 19.5, y, 13, '#ffd9a0', 0.45, { day: 0, phase: 0 });
         }
       }
       /**
@@ -642,7 +643,7 @@
         towelCast = beachgoers[0];
         for (const p of beachgoers) if (L.towels.includes(p.anchor)) towelOwners.set(p.anchor, [...(towelOwners.get(p.anchor) || []), p]);
       }
-      const loungerBeds = beachInstanced(boxGeo, mat('#f1efe8', 0.7), L.loungers.length * 2, 'beach loungers');
+      const loungerBeds = beachInstanced(boxGeo, staticMat('#f1efe8', 0.7), L.loungers.length * 2, 'beach loungers');
       L.loungers.forEach((t, i) => {
         // Bed along the heading (feet to the sea), backrest raised at the landward end.
         placeInstance(loungerBeds, i * 2, t.x, 2.6, t.y, t.a, 20, 1.2, 8);
@@ -660,12 +661,12 @@
         );
         loungerBeds.setColorAt(i * 2 + 1, bc.set(t.color));
       });
-      const boards = beachInstanced(sphereGeo, mat('#ffffff', 0.35), L.boards.length, 'surfboards');
+      const boards = beachInstanced(sphereGeo, staticMat('#ffffff', 0.35), L.boards.length, 'surfboards');
       L.boards.forEach((b, i) => {
         placeInstance(boards, i, b.x, 11, b.y, b.a, 0.9, 11, 3.2);
         boards.setColorAt(i, bc.set(b.color));
       });
-      const buoys = beachInstanced(sphereGeo, mat('#ffffff', 0.45), L.buoys.length, 'swim zone buoys');
+      const buoys = beachInstanced(sphereGeo, staticMat('#ffffff', 0.45), L.buoys.length, 'swim zone buoys');
       L.buoys.forEach((b, i) => buoys.setColorAt(i, bc.set(b.big ? '#f4c430' : i % 2 ? '#f6f3ea' : '#f07a2a')));
       {
         // The rope between the buoys.
@@ -674,8 +675,8 @@
         rope.userData.dynamic = true;
         beachGroup.add(rope);
       }
-      const hulls = beachInstanced(boxGeo, mat('#ffffff', 0.4), L.pedalos.length * 2 + L.jetskis.length, 'pedal boats and jet skis'),
-        seats = beachInstanced(boxGeo, mat('#f2efe6', 0.6), L.pedalos.length + L.jetskis.length, 'boat seats');
+      const hulls = beachInstanced(boxGeo, staticMat('#ffffff', 0.4), L.pedalos.length * 2 + L.jetskis.length, 'pedal boats and jet skis'),
+        seats = beachInstanced(boxGeo, staticMat('#f2efe6', 0.6), L.pedalos.length + L.jetskis.length, 'boat seats');
       L.pedalos.forEach((b, i) => {
         hulls.setColorAt(i * 2, bc.set(b.color));
         hulls.setColorAt(i * 2 + 1, bc.set(b.color));
@@ -731,7 +732,7 @@
         ladderGrabs = beachInstanced(boxGeo, beachPaint.yellow, ladders.length * 2, 'ladder grab rails');
       // Beside every ladder, a lifebuoy on a post and a yellow band on the edge,
       // so a swimmer looking for a way out can spot one from a distance.
-      const lifebuoys = beachInstanced(new Three.TorusGeometry(2.6, 0.9, 6, 14), mat('#e2412f', 0.6), ladders.length, 'ladder lifebuoys'),
+      const lifebuoys = beachInstanced(new Three.TorusGeometry(2.6, 0.9, 6, 14), staticMat('#e2412f', 0.6), ladders.length, 'ladder lifebuoys'),
         buoyPosts = beachInstanced(boxGeo, beachPaint.white, ladders.length * 2, 'lifebuoy posts and edge paint');
       ladders.forEach((l, i) => {
         const px = l.top.x - Math.sin(l.a) * 9 - Math.cos(l.a) * 8,
@@ -971,7 +972,7 @@
         setPart(rig.arms, i * 2, 0, 12.8, -3.6, outL, armL, 0, -3.0, 1.5, 6.0, 1.5);
         setPart(rig.arms, i * 2 + 1, 0, 12.8, 3.6, -outR, armR, 0, -3.0, 1.5, 6.0, 1.5);
       }
-      const beachBallMesh = mesh(sphereGeo, mat('#f5f1e6', 0.5), beachGroup, 0, -50, 0, 2.2, 2.2, 2.2),
+      const beachBallMesh = mesh(sphereGeo, staticMat('#f5f1e6', 0.5), beachGroup, 0, -50, 0, 2.2, 2.2, 2.2),
         discMeshes = beachDiscs.map((d) =>
           mesh(d.ball ? sphereGeo : cylinderGeo, mat(d.ball ? '#e7473c' : '#f6d23a', 0.5), beachGroup, 0, -50, 0, d.ball ? 2 : 3, d.ball ? 2 : 0.5, d.ball ? 2 : 3),
         );
@@ -984,10 +985,6 @@
         updateBeachClubVisuals();
         const near = Math.abs(cameraTarget.x + 2010) < 1900 && Math.abs(cameraTarget.y - 5620) < 1500;
         beachGroup.visible = near;
-        for (const h of beachHalos) {
-          h.sprite.visible = near && nightAmount > 0.05 && (!h.string || nightAmount > 0.1);
-          if (h.sprite.visible) h.sprite.material.opacity = Math.min(1, nightAmount * 1.3) * (h.string ? 0.9 : 0.8);
-        }
         if (!near) {
           beachWasNear = false;
           return;

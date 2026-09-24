@@ -762,12 +762,19 @@
     function updateStoryWorld(deltaSeconds) {
       const d = districtAt(player.x, player.y);
       if (d !== lastDistrict) {
+        // The location block (top left) plays its reveal; restarting the CSS
+        // animation needs the class off for one layout.
+        const location = getElement('hudLocation');
         lastDistrict = d;
-        districtNoticeUntil = gameTime + 2.5;
-        getElement('districtBanner').textContent = d;
-        getElement('districtBanner').classList.add('show');
+        districtNoticeUntil = gameTime + 2.8;
+        location.classList.remove('entering');
+        void location.offsetWidth;
+        location.classList.add('entering');
       }
-      if (gameTime > districtNoticeUntil) getElement('districtBanner').classList.remove('show');
+      if (districtNoticeUntil && gameTime > districtNoticeUntil) {
+        districtNoticeUntil = 0;
+        getElement('hudLocation').classList.remove('entering');
+      }
     }
     function storyUI() {
       const contact = missions[mission?.index ?? missionIndex]?.contact || 'vinny';

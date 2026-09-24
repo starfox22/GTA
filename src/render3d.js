@@ -33,6 +33,9 @@
       try {
         city3D = createCityRenderer();
         getElement('renderBadge').textContent = 'SOUTH COAST · DUSK';
+        // The 2D fallback's ground bitmap (~21 MP) is never drawn with the 3D
+        // renderer running: free it (late paints into it are harmless no-ops).
+        groundCanvas.width = groundCanvas.height = 1;
       } catch (error) {
         console.warn('Reduced graphics mode:', error);
         getElement('renderBadge').textContent = 'REDUCED GRAPHICS';
@@ -51,6 +54,11 @@
         alpha: false,
         powerPreference: 'high-performance',
       });
+      // three.js reads back every shader's info log after compiling it, which
+      // forces the driver to finish compiling on the spot (and was most of the
+      // CPU time in profiles whenever a new material came into view). Only with
+      // ?shadercheck in the URL, for debugging a shader.
+      renderer.debug.checkShaderErrors = /[?&]shadercheck\b/.test(location.search);
       // Quality tier (quality.js): 'auto' asks the GPU what it is first.
       graphicsDetected = detectGraphicsTier(renderer.getContext());
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, graphicsTier().pixelRatio));
@@ -187,7 +195,14 @@
           const positions = new Float32Array(b.vertices * 3),
             normals = new Float32Array(b.vertices * 3),
             uvs = new Float32Array(b.vertices * 2),
-            indices = new Uint32Array(b.indices);
+            indices = new Uint32Array(b.indices),
+            // Other attributes every part carries (a shared facade's tint and window
+            // light, cityscape3d.js SHARED FACADES) are copied along as they are.
+            first = b.parts[0].geo.attributes,
+            extras = Object.keys(first)
+              .filter((name) => !['position', 'normal', 'uv'].includes(name))
+              .filter((name) => b.parts.every(({ geo }) => geo.attributes[name]?.itemSize === first[name].itemSize))
+              .map((name) => ({ name, size: first[name].itemSize, array: new Float32Array(b.vertices * first[name].itemSize) }));
           let vo = 0,
             io = 0;
           for (const { geo, matrix } of b.parts) {
@@ -210,6 +225,10 @@
                 uvs[(vo + i) * 2] = uv.getX(i);
                 uvs[(vo + i) * 2 + 1] = uv.getY(i);
               }
+              for (const extra of extras) {
+                const source = geo.attributes[extra.name];
+                for (let k = 0; k < extra.size; k++) extra.array[(vo + i) * extra.size + k] = source.getComponent(i, k);
+              }
             }
             if (geo.index) {
               const idx = geo.index;
@@ -225,6 +244,7 @@
           merged.setAttribute('position', new Three.BufferAttribute(positions, 3));
           merged.setAttribute('normal', new Three.BufferAttribute(normals, 3));
           merged.setAttribute('uv', new Three.BufferAttribute(uvs, 2));
+          for (const extra of extras) merged.setAttribute(extra.name, new Three.BufferAttribute(extra.array, extra.size));
           merged.setIndex(new Three.BufferAttribute(indices, 1));
           merged.computeBoundingSphere();
           const m = new Three.Mesh(merged, b.material);
@@ -585,7 +605,10 @@
       const blossomMat = mat('#d5a2b5');
       const leafGeo = new Three.IcosahedronGeometry(1, 2),
         trunkGeo = new Three.CylinderGeometry(0.9, 1.9, 1, 8);
-      trees.forEach((t, i) => {
+      trees.forEach((t, i) => plantTree(t, i));
+      // One tree of the plan (or a renderer-only one, landscape3d.js): a palm on the
+      // Keys, otherwise a trunk, limbs and a crown of lobes, batched with the rest.
+      function plantTree(t, i) {
         if (t.tropical ?? (onPalmKeys(t.x) && !t.county)) {
           makePalm(t.x, t.y, t.r / 17);
           return;
@@ -637,7 +660,7 @@
           group,
           radius: 40,
         });
-      });
+      }
       // Lamps, illuminated signs and street furniture.
       const haloCanvas = document.createElement('canvas');
       haloCanvas.width = haloCanvas.height = 64;
@@ -666,8 +689,7 @@
         return s;
       }
       // @include src/damage3d.js
-      const lampHalos = [],
-        lampGlows = [];
+      const lampGlowPending = [];
       // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
       // without unbatching the street; each is a street prop in damage.js.
       const lampPosts = lamps.length,
@@ -682,41 +704,17 @@
         scene.add(pool);
       }
       // Every lamp is drawn (only every second one used to be, which left most
-      // streets dark at night); their halos are hidden by day (updateStreetLighting).
+      // streets dark at night). Its pool of light is in the night light map
+      // (lighting3d.js) and its halo in the glow field (below), so a lamp is three
+      // instances and nothing else: the per-lamp group, halo sprite and hidden
+      // ground-glow plane (a mesh and a material for each of ~1000 lamps) are gone.
       for (let i = 0; i < lamps.length; i++) {
         const l = lamps[i],
-          group = new Three.Group(),
           prop = registerStreetProp('lamp', l.x, l.y);
-        group.position.set(l.x, 0, l.y);
-        scene.add(group);
         placePropInstance(lampPoles, prop, l.x, 17, l.y, 1.1, 34, 1.1);
         placePropInstance(lampArms, prop, l.x + 3, 34, l.y, 7, 1, 1);
         placePropInstance(lampHeads, prop, l.x + 6, 33.5, l.y, 5, 1.2, 3);
-        prop.halo = halo(group, 6, 33, 0, 14);
-        lampHalos.push({ sprite: prop.halo, x: l.x, y: l.y, prop });
-        const glow = new Three.Mesh(
-          new Three.PlaneGeometry(65, 65),
-          new Three.MeshBasicMaterial({
-            map: haloTx,
-            color: '#ffbf73',
-            transparent: true,
-            opacity: 0.16,
-            depthWrite: false,
-            blending: Three.AdditiveBlending,
-          }),
-        );
-        glow.rotation.x = -Math.PI / 2;
-        glow.position.set(6, 0.1, 0);
-        glow.userData.dynamic = true;
-        group.add(glow);
-        prop.glow = glow;
-        lampGlows.push({ mesh: glow, x: l.x, y: l.y });
-        statics.push({
-          x: l.x,
-          y: l.y,
-          group,
-          radius: 50,
-        });
+        lampGlowPending.push({ x: l.x + 6, z: l.y, prop });
       }
       /**
        * Landmark and business signs: an enamel board with a border and lettering
@@ -803,6 +801,10 @@
       box(ph, 0, 17, 0, 12, 2, 8, mat('#517c70'));
       halo(ph, 0, 14, 0, 8, '#9bdbb1');
       // @include src/cityscape3d.js
+      // Street lamp halos in the glow field: lit after dark, dimmed with the district's
+      // power, switched off while a car has the lamp down (damage3d.js sets `visible`).
+      for (const p of lampGlowPending) p.prop.halo = glowHandle(addGlow(p.x, 33, p.z, 24, '#ffd99b', 0.55, { day: 0, phase: 0 }));
+      lampGlowPending.length = 0;
       // Street signs (after the cityscape: their glow and spill live in signage3d.js).
       sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb', false, { marquee: true });
       sign('24 HOUR', 1470, 544, 85, '#f3d394');
@@ -815,6 +817,7 @@
       // @include src/civic3d.js
       // @include src/air-cover3d.js
       // @include src/renewal3d.js
+      // @include src/landscape3d.js
       // @include src/sports3d.js
       // @include src/transit3d.js
       // @include src/ecology3d.js
@@ -836,6 +839,59 @@
       // @include src/helicopter3d.js
       // @include src/vehicles3d.js
       // @include src/plane3d.js
+      /**
+       * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
+       * shared by every car): a car was 50-odd draw calls, 32 of them its wheels.
+       * The tyre stays the wheel's first child (damage3d.js hides it on a burnt
+       * wreck) and the whole wheel group still turns, bends and sits down on a flat.
+       */
+      const carRims = new Map();
+      function carRimGeometry(side) {
+        if (carRims.has(side)) return carRims.get(side);
+        const parts = [],
+          place = (geo, x, y, z, rx, rz, sx, sy, sz) =>
+            parts.push(
+              geo.clone().applyMatrix4(
+                new Three.Matrix4().compose(
+                  new Three.Vector3(x, y, z),
+                  new Three.Quaternion().setFromEuler(new Three.Euler(rx, 0, rz)),
+                  new Three.Vector3(sx, sy, sz),
+                ),
+              ),
+            );
+        place(wheelGeo, 0, 0, side * 1.4, Math.PI / 2, 0, 2.8, 0.3, 2.8);
+        for (let s = 0; s < 5; s++) place(boxGeo, 0, 0, side * 1.65, 0, (s * Math.PI) / 5, 0.55, 5, 0.2);
+        let vertices = 0,
+          indices = 0;
+        for (const g of parts) {
+          vertices += g.attributes.position.count;
+          indices += g.index.count;
+        }
+        const position = new Float32Array(vertices * 3),
+          normal = new Float32Array(vertices * 3),
+          uv = new Float32Array(vertices * 2),
+          index = new Uint16Array(indices);
+        let vo = 0,
+          io = 0;
+        for (const g of parts) {
+          position.set(g.attributes.position.array, vo * 3);
+          normal.set(g.attributes.normal.array, vo * 3);
+          uv.set(g.attributes.uv.array, vo * 2);
+          for (let i = 0; i < g.index.count; i++) index[io++] = g.index.getX(i) + vo;
+          vo += g.attributes.position.count;
+          g.dispose();
+        }
+        const rim = new Three.BufferGeometry();
+        rim.setAttribute('position', new Three.BufferAttribute(position, 3));
+        rim.setAttribute('normal', new Three.BufferAttribute(normal, 3));
+        rim.setAttribute('uv', new Three.BufferAttribute(uv, 2));
+        rim.setIndex(new Three.BufferAttribute(index, 1));
+        rim.computeBoundingSphere();
+        // Shared by every car: never disposed with a retired model.
+        sharedGeometries.add(rim);
+        carRims.set(side, rim);
+        return rim;
+      }
       function makeVehicle(vehicle) {
         if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
         if (vehicle.type === 'plane') return makePlane(vehicle);
@@ -950,14 +1006,10 @@
             });
             const tire = mesh(wheelGeo, rubber, wheel, 0, 0, 0, 4.2, 2.6, 4.2);
             tire.rotation.x = Math.PI / 2;
-            const hub = mesh(wheelGeo, chrome, wheel, 0, 0, side * 1.4, 2.8, 0.3, 2.8);
-            hub.rotation.x = Math.PI / 2;
+            // Hub and five spokes are one merged chrome rim (one draw, not six).
+            mesh(carRimGeometry(side), chrome, wheel, 0, 0, 0);
             const center = mesh(wheelGeo, darkMetal, wheel, 0, 0, side * 1.61, 1, 0.4, 1);
             center.rotation.x = Math.PI / 2;
-            for (let s = 0; s < 5; s++) {
-              const spoke = box(wheel, 0, 0, side * 1.65, 0.55, 5, 0.2, chrome);
-              spoke.rotation.z = (s * Math.PI) / 5;
-            }
           }
           lamps.push(
             {
@@ -1452,23 +1504,6 @@
       let muzzleUntil = 0,
         frames = 0,
         nightAmount = 0;
-      function updateStreetLighting() {
-        const glow = 0.1 + 0.9 * nightAmount,
-          size = 14 + nightAmount * 12;
-        // By day a halo is invisible anyway: skip its draw call.
-        const lit = nightAmount > 0.03;
-        for (const h of lampHalos) {
-          h.sprite.visible = lit && !(h.prop && h.prop.down);
-          if (!h.sprite.visible) continue;
-          const power = sideJobPower(h.x, h.y);
-          h.sprite.material.opacity = glow * power;
-          h.sprite.scale.set(size, size, 1);
-        }
-        // The pools of light on the ground now come from the night light map
-        // (lighting3d.js), which lights whatever stands in them; the old additive
-        // glow planes would double them, so they stay hidden.
-        for (const g of lampGlows) g.mesh.visible = false;
-      }
       // Dynamic models own their cloned/new resources; the initial world and factory primitives persist.
       const sharedGeometries = new Set([boxGeo, sphereGeo, wheelGeo, cylinderGeo]),
         sharedMaterials = new Set();
@@ -1501,6 +1536,78 @@
         for (const material of retiredMaterials) if (!liveMaterials.has(material)) material.dispose();
         retiredGeometries.clear();
         retiredMaterials.clear();
+      }
+      /**
+       * BAKED CANVAS RELEASE
+       * The painted ground sheets (the city sheet alone is ~29 megapixels, over
+       * 110 MB as a canvas; the county, Sunset Pier and Fort Sentinel tiles add
+       * ~70 MB) are uploaded to the GPU once and never repainted. Once a sheet's
+       * texture is on the GPU its canvas is shrunk to a pixel, which frees the
+       * bitmap; the texture keeps its GPU copy (nothing bumps its version again).
+       */
+      const bakedCanvases = [groundTx, roughTx, ...countyGroundMaterials.map((m) => m.map)].filter((t) => t && t.image);
+      function releaseBakedCanvases() {
+        for (let i = bakedCanvases.length - 1; i >= 0; i--) {
+          const texture = bakedCanvases[i],
+            uploaded = renderer.properties.get(texture);
+          if (!uploaded.__webglTexture || uploaded.__version !== texture.version) continue;
+          texture.image.width = texture.image.height = 1;
+          bakedCanvases.splice(i, 1);
+        }
+      }
+      /**
+       * SHADER PREWARM
+       * A material's program is otherwise compiled the first time it is drawn:
+       * a hitch each time a new district, vehicle or effect comes into view. While
+       * the title screen is up, the scene's programs are compiled a slice at a time
+       * (a few milliseconds per task, so the menu stays smooth) with the HDR target
+       * bound, so the programs match the ones the scene pass will ask for, and
+       * each is linked once KHR_parallel_shader_compile reports it ready, so the
+       * driver does the work in the background (only where that extension exists).
+       */
+      function prewarmShaders() {
+        const queue = [...scene.children],
+          slice = new Three.Object3D(),
+          // Programs compiled but not yet linked. compile() only starts the work:
+          // three.js links a program (the blocking part, ~0.1-0.3 s each on a
+          // software rasteriser) the first time it is drawn. Reading its uniforms
+          // here does that link now, one or two per slice while the menu is up,
+          // and with KHR_parallel_shader_compile only once the driver reports the
+          // program ready, so it never blocks at all.
+          unlinked = new Set();
+        // Without KHR_parallel_shader_compile every link blocks the main thread,
+        // and linking every material's program up front (most are never on screen
+        // together) cost far more than it saved: there, programs link when first
+        // drawn, as before.
+        if (!renderer.extensions.has('KHR_parallel_shader_compile')) return;
+        const step = () => {
+          const started = performance.now(),
+            previous = renderer.getRenderTarget();
+          if (hdrCapable && postTier) renderer.setRenderTarget(sceneTarget);
+          while (queue.length && performance.now() - started < 6) {
+            // Compile ~40 top-level objects per call: compile() walks the whole
+            // scene for its lights each time.
+            slice.children = queue.splice(0, 40);
+            try {
+              for (const material of renderer.compile(slice, camera, scene)) {
+                const program = renderer.properties.get(material).currentProgram;
+                if (program) unlinked.add(program);
+              }
+            } catch (error) {
+              queue.length = 0;
+            }
+          }
+          slice.children = [];
+          renderer.setRenderTarget(previous);
+          for (const program of unlinked) {
+            if (performance.now() - started > 12) break;
+            if (!program.isReady()) continue;
+            program.getUniforms();
+            unlinked.delete(program);
+          }
+          if (queue.length || unlinked.size) setTimeout(step, 30);
+        };
+        setTimeout(step, 1500);
       }
       const viewFrustum = new Three.Frustum(),
         viewProjection = new Three.Matrix4(),
@@ -1541,6 +1648,8 @@
             frameCalls: frameStats.totalCalls,
             objects,
             batched: api.batchReport,
+            // Linked shader programs (each one is a compile hitch the first time).
+            programs: renderer.info.programs?.length ?? null,
           };
         },
         /**
@@ -1577,9 +1686,27 @@
                 while (root.parent && root.parent !== scene) root = root.parent;
                 if (roles.has(root)) named = { name: roles.get(root), type: '' };
                 else if (!named.name && root !== o)
-                  named = { name: 'group@' + Math.round(root.position.x) + ',' + Math.round(root.position.z), type: '' };
-                const material = Array.isArray(o.material) ? o.material[0] : o.material,
-                  key =
+                  named = {
+                    // Unnamed parts of an unnamed group: say what they are, so the
+                    // unbatched ones (transparent, multi-material, signs) stand out.
+                    name:
+                      'group@' + Math.round(root.position.x) + ',' + Math.round(root.position.z) +
+                      ' [' + (o.geometry?.type || o.type) + ' ' + (Array.isArray(o.material) ? 'multi' : o.material.type) +
+                      (o.material.transparent ? ' transparent' : '') + (o.userData.sign ? ' sign' : '') +
+                      (o.material.color ? ' #' + o.material.color.getHexString() : '') + ']',
+                    type: '',
+                  };
+                const material = Array.isArray(o.material) ? o.material[0] : o.material;
+                // Static batches by what they are made of (which materials fail to share).
+                if (o.name === 'static batch' || o.name === 'far scenery')
+                  named = {
+                    name:
+                      o.name + ' [' + material.type + (material.color ? ' #' + material.color.getHexString() : '') +
+                      (material.map ? ' map' : '') + (material.emissiveMap ? ' lit' : '') +
+                      (material.vertexColors ? ' vc' : '') + ']',
+                    type: '',
+                  };
+                const key =
                     (named.name || o.type + ' ' + (o.geometry?.type || '') + ' ' + material.type) +
                     (named === o ? '' : ' in ' + (named.name || named.type)) +
                     (o.isSprite ? ' (sprite)' : ''),
@@ -1594,7 +1721,13 @@
           };
           visit(scene);
           const sorted = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, top);
-          return { total, byName: sorted(byName), byCell: sorted(byCell) };
+          // Shader programs by material type (fewer variants, fewer compile hitches).
+          const programs = new Map();
+          for (const p of renderer.info.programs || []) {
+            const kind = p.name || String(p.cacheKey).split(',')[0].slice(0, 40);
+            programs.set(kind, (programs.get(kind) || 0) + 1);
+          }
+          return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
         },
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.
         postView(mode) {
@@ -1606,7 +1739,16 @@
           applyRendererQuality(tier);
           api.resize();
         },
-        quality: () => ({ tier: activeTier?.name, gpu: graphicsGpuName, hdr: hdrCapable, shadowMap: sun.shadow.mapSize.x, pixelRatio: renderer.getPixelRatio() }),
+        quality: () => ({
+          tier: activeTier?.name,
+          gpu: graphicsGpuName,
+          hdr: hdrCapable,
+          shadowMap: sun.shadow.mapSize.x,
+          pixelRatio: renderer.getPixelRatio(),
+          renderScale: hdrCapable ? renderScale : 1,
+        }),
+        // Dynamic resolution (quality.js ADAPTIVE QUALITY); returns the scale applied.
+        setRenderScale: (scale) => (hdrCapable ? setRenderScale(scale) : 1),
         resize() {
           renderer.setSize(viewportWidth, viewportHeight);
           const viewH = clamp(viewportHeight * 0.68, 430, 630) / worldZoom;
@@ -1744,6 +1886,8 @@
         render() {
           const deltaSeconds = Math.min(0.04, Math.max(0, gameTime - lastVisualTime));
           lastVisualTime = gameTime;
+          // Split CPU timings of the frame for DeadEndCity.stats() (`r:` parts).
+          let lap = performance.now();
           nightAmount = clamp(1 - daylight() * 1.6, 0, 1);
           updateCivicVisuals();
           // A boat passing under a road bridge is dropped 30 units below the deck
@@ -1764,18 +1908,19 @@
           );
           // Weather runs after the time-of-day pass so it modifies that day's light
           // rather than being overwritten by it; the clouds need the final camera.
+          lap = profileLap('r:camera', lap);
           updateWeatherVisuals(deltaSeconds);
           updateLighting(deltaSeconds);
           updateSurfaces(deltaSeconds);
           applyAerialFog();
           updateCloudVisuals(deltaSeconds);
+          lap = profileLap('r:sky', lap);
           updateTransitVisuals();
           updateWildlifeVisuals(deltaSeconds);
           updateSportsVisuals(deltaSeconds);
           updateGarageVisuals();
           updateWorldVisuals();
           updateCityscapeVisuals();
-          updateStreetLighting();
           updateSideJobVisuals();
           updateRoadblockVisuals();
           updateParkVisuals();
@@ -1784,6 +1929,7 @@
           updateMarinaVisuals(deltaSeconds);
           updateTrafficVisuals();
           updateMissionVisuals();
+          lap = profileLap('r:scenery', lap);
           placeSun();
           updateFarScenery();
           // Scenery groups inside the visible ground footprint (flight-view3d.js);
@@ -1796,11 +1942,13 @@
           // Anything between the camera and the player is cut away round them
           // (lighting3d.js, CUTAWAY).
           updateCutaway(altitude);
+          lap = profileLap('r:lod', lap);
           // Pedestrians are drawn by the instanced crowd (src/crowd3d.js), poses and
           // all; guards, gangs, officers, story actors and the player keep
           // individual models for their weapons and uniforms.
           const people = [...enemies, ...gangMembers, ...officers, ...storyActors, player];
           updateCrowd3D(deltaSeconds);
+          lap = profileLap('r:crowd', lap);
           pruneModels(carModels, new Set(vehicles));
           pruneModels(personModels, new Set(people));
           pruneModels(pickupModels, new Set(pickups));
@@ -1948,6 +2096,7 @@
             vehicleEffects(c, m, deltaSeconds);
           }
           endVehicleImpostors();
+          lap = profileLap('r:vehicles', lap);
           // Every craft on the water has reported in: draw the wake map (wakes3d.js).
           updateWakes(deltaSeconds);
           for (const [c, m] of carModels)
@@ -1957,6 +2106,7 @@
             }
           // Marks on vehicles, debris, knocked furniture and decal uploads (damage3d.js).
           updateDamageVisuals(deltaSeconds);
+          lap = profileLap('r:damage', lap);
           for (const p of people) {
             const activePlayer = p === player;
             let m = personModels.get(p);
@@ -2346,9 +2496,13 @@
           skidGeo.setDrawRange(0, si / 3);
           skidGeo.attributes.position.needsUpdate = true;
           skidLines.frustumCulled = false;
-          renderer.shadowMap.needsUpdate = frames++ % shadowRefreshInterval() === 0;
+          const shadowRefresh = frames++ % shadowRefreshInterval() === 0;
+          renderer.shadowMap.needsUpdate = shadowRefresh;
+          lap = profileLap('r:people+fx', lap);
           // HDR scene, AO, bloom, tone curve and grade (postfx3d.js).
           renderFrame();
+          lap = profileLap(shadowRefresh ? 'r:submit+shadow' : 'r:submit', lap);
+          if (bakedCanvases.length && frames % 30 === 0) releaseBakedCanvases();
           worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
           if (target && gameMode === 'play') {
             const p = api.project(target.x, target.y, 32 + targetAltitude);
@@ -2453,6 +2607,7 @@
       applyRendererQuality(graphicsTier());
       refreshEnvironment(true);
       api.resize();
+      prewarmShaders();
       return api;
     }
     // END SUBSYSTEM: src/render3d.js

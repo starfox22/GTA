@@ -5,11 +5,52 @@
        * Scope: createCityRenderer() closure.
        * Benches, fountains, sports courts, pergolas, pond bridge and bicycle racks.
        */
+      /**
+       * Still water (the Garden Lake, fountain basins): a tiling ripple normal map,
+       * drifted by updateSurfaces() (surfaces3d.js), so the surface breaks up the sky
+       * and lamp reflections instead of reading as a flat plastic disc.
+       */
+      const pondRippleMaps = [];
+      const pondRipples = (() => {
+        const size = 128,
+          cv = document.createElement('canvas');
+        cv.width = cv.height = size;
+        const g = cv.getContext('2d'),
+          image = g.createImageData(size, size),
+          height = (x, y) => {
+            const u = (x / size) * TAU,
+              v = (y / size) * TAU;
+            // Whole periods only, so the tile repeats seamlessly.
+            return Math.sin(u * 3 + Math.sin(v * 2) * 1.3) * 0.5 + Math.sin(v * 5 + u * 2) * 0.3 + Math.sin(u * 7 - v * 4 + Math.cos(u * 2)) * 0.2;
+          };
+        for (let y = 0; y < size; y++)
+          for (let x = 0; x < size; x++) {
+            const dx = height(x + 1, y) - height(x - 1, y),
+              dy = height(x, y + 1) - height(x, y - 1),
+              len = Math.hypot(dx * 2.2, dy * 2.2, 1),
+              i = (y * size + x) * 4;
+            image.data[i] = ((-dx * 2.2) / len * 0.5 + 0.5) * 255;
+            image.data[i + 1] = ((-dy * 2.2) / len * 0.5 + 0.5) * 255;
+            image.data[i + 2] = (1 / len * 0.5 + 0.5) * 255;
+            image.data[i + 3] = 255;
+          }
+        g.putImageData(image, 0, 0);
+        const tx = new Three.CanvasTexture(cv);
+        tx.wrapS = tx.wrapT = Three.RepeatWrapping;
+        pondRippleMaps.push(tx);
+        return tx;
+      })();
       // Parks have distinct layouts and landmarks, all placed from CITY_PARKS.
-      const parkWater = mat('#6398a1', 0.22, 0.25),
-        parkStone = mat('#c7c5ae', 0.9),
-        parkWood = mat('#aa8560', 0.8),
-        parkRose = mat('#bc8399');
+      const parkWater = new Three.MeshStandardMaterial({
+          color: '#3c7780',
+          roughness: 0.08,
+          metalness: 0.3,
+          normalMap: pondRipples,
+          normalScale: new Three.Vector2(0.35, 0.35),
+        }),
+        parkStone = staticMat('#c7c5ae', 0.9),
+        parkWood = staticMat('#aa8560', 0.8),
+        parkRose = staticMat('#bc8399');
       function parkBench(g, x, z, a = 0) {
         const b = new Three.Group();
         b.position.set(x, 0, z);
@@ -138,18 +179,27 @@
       function buildCommons(group) {
         const c = COMMONS,
           lakeMat = new Three.MeshStandardMaterial({
-            color: '#3f8592',
-            roughness: 0.12,
-            metalness: 0.4,
+            color: '#24606b',
+            roughness: 0.06,
+            metalness: 0.35,
             transparent: true,
-            opacity: 0.94,
-            envMapIntensity: 1.2,
+            opacity: 0.95,
+            envMapIntensity: 1.1,
+            // ShapeGeometry UVs are in world units: one ripple tile per 48.
+            normalMap: (() => {
+              const tx = pondRipples.clone();
+              tx.repeat.set(1 / 48, 1 / 48);
+              tx.needsUpdate = true;
+              pondRippleMaps.push(tx);
+              return tx;
+            })(),
+            normalScale: new Three.Vector2(0.3, 0.3),
           }),
-          bronze = mat('#6f5a3a', 0.45, 0.6),
-          cream = mat('#e7dfcf', 0.8),
-          navyCanvas = mat('#2c4a63', 0.9),
-          redCanvas = mat('#b7413a', 0.9),
-          sand = mat('#d9c9a2', 0.95);
+          bronze = staticMat('#6f5a3a', 0.45, 0.6),
+          cream = staticMat('#e7dfcf', 0.8),
+          navyCanvas = staticMat('#2c4a63', 0.9),
+          redCanvas = staticMat('#b7413a', 0.9),
+          sand = staticMat('#d9c9a2', 0.95);
         // Lake surface.
         const lakeShape = new Three.Shape();
         lakeShape.absellipse(0, 0, c.lake.rx, c.lake.ry, 0, TAU, false, 0);
@@ -188,14 +238,14 @@
         }
         // Lake fountain: stone base, jet and spray halo.
         mesh(new Three.CylinderGeometry(8, 9, 2, 20), parkStone, group, c.lake.x, 1.2, c.lake.y);
-        mesh(new Three.ConeGeometry(2.4, 26, 10), mat('#d9f1f3', 0.1, 0.1), group, c.lake.x, 14, c.lake.y);
+        mesh(new Three.ConeGeometry(2.4, 26, 10), staticMat('#d9f1f3', 0.1, 0.1), group, c.lake.x, 14, c.lake.y);
         halo(group, c.lake.x, 22, c.lake.y, 30, '#cfeff2');
         // Boathouse with a plank dock reaching into the lake.
         const bh = c.boathouse;
-        box(group, bh.x + bh.w / 2, 9, bh.y + bh.h / 2, bh.w, 18, bh.h, mat('#7a5f47', 0.85));
-        box(group, bh.x + bh.w / 2, 19.5, bh.y + bh.h / 2, bh.w + 6, 3, bh.h + 6, mat('#4c3b2e', 0.9));
-        box(group, bh.x + bh.w / 2, 22, bh.y + bh.h / 2, bh.w * 0.7, 2.5, bh.h * 0.6, mat('#4c3b2e', 0.9));
-        box(group, bh.x + bh.w / 2, 7, bh.y - 0.4, 22, 14, 0.8, mat('#2c3a42', 0.6, 0.4));
+        box(group, bh.x + bh.w / 2, 9, bh.y + bh.h / 2, bh.w, 18, bh.h, staticMat('#7a5f47', 0.85));
+        box(group, bh.x + bh.w / 2, 19.5, bh.y + bh.h / 2, bh.w + 6, 3, bh.h + 6, staticMat('#4c3b2e', 0.9));
+        box(group, bh.x + bh.w / 2, 22, bh.y + bh.h / 2, bh.w * 0.7, 2.5, bh.h * 0.6, staticMat('#4c3b2e', 0.9));
+        box(group, bh.x + bh.w / 2, 7, bh.y - 0.4, 22, 14, 0.8, staticMat('#2c3a42', 0.6, 0.4));
         for (let z = c.dock.y - c.dock.h; z < c.dock.y + 8; z += 5)
           box(group, c.dock.x, 1.4, z + 2, c.dock.w, 0.9, 4.4, parkWood);
         for (const dx of [-c.dock.w / 2, c.dock.w / 2])
@@ -225,7 +275,7 @@
         group.add(shell);
         for (let i = -3; i <= 3; i++) {
           box(group, bs.x + i * 12, 4.6, bs.y + 4, 4, 1, 1.5, warmLamp);
-          lampHalos.push({ sprite: halo(group, bs.x + i * 12, 6, bs.y + 4, 12, '#ffe1b3'), x: bs.x, y: bs.y });
+          addGroupGlow(group, bs.x + i * 12, 6, bs.y + 4, 16, '#ffe1b3', 0.45, { day: 0, phase: 0 });
         }
         for (let row = 0; row < 5; row++)
           for (let k = -3; k <= 3; k++) {
@@ -254,9 +304,9 @@
         box(group, pg.x - 18, 16, pg.y, 26, 1.2, 1.2, redCanvas);
         for (const dx of [-25, -11]) {
           for (const dz of [-1.5, 1.5]) rod(group, new Three.Vector3(pg.x + dx, 16, pg.y + dz), new Three.Vector3(pg.x + dx, 5, pg.y + dz), 0.2, chrome);
-          box(group, pg.x + dx, 5, pg.y, 5, 0.6, 3.2, mat('#2f2f33'));
+          box(group, pg.x + dx, 5, pg.y, 5, 0.6, 3.2, staticMat('#2f2f33'));
         }
-        const slide = box(group, pg.x + 22, 7, pg.y - 8, 22, 0.8, 6, mat('#e0b23b', 0.4, 0.3));
+        const slide = box(group, pg.x + 22, 7, pg.y - 8, 22, 0.8, 6, staticMat('#e0b23b', 0.4, 0.3));
         slide.rotation.z = -0.55;
         box(group, pg.x + 33, 6.5, pg.y - 8, 6, 13, 6, navyCanvas);
         for (let k = 0; k < 4; k++) box(group, pg.x + 36.2, 2 + k * 3, pg.y - 8, 0.5, 0.5, 5, chrome);
@@ -278,9 +328,9 @@
           box(group, gz.x + Math.cos(a) * 27, 6, gz.y + Math.sin(a) * 27, 1.2, 0.8, 1.2, cream);
         }
         mesh(new Three.CylinderGeometry(31, 31, 2, 8), cream, group, gz.x, 23, gz.y);
-        mesh(new Three.ConeGeometry(34, 14, 8), mat('#5c7f6f', 0.85), group, gz.x, 31, gz.y);
-        halo(group, gz.x, 20, gz.y, 40, '#ffe1b3');
-        lampHalos.push({ sprite: halo(group, gz.x, 21, gz.y, 18, '#ffe1b3'), x: gz.x, y: gz.y });
+        mesh(new Three.ConeGeometry(34, 14, 8), staticMat('#5c7f6f', 0.85), group, gz.x, 31, gz.y);
+        addGroupGlow(group, gz.x, 20, gz.y, 40, '#ffe1b3', 0.35, { day: 0, phase: 0 });
+        addGroupGlow(group, gz.x, 21, gz.y, 22, '#ffe1b3', 0.55, { day: 0, phase: 0 });
         // Statue of the city's founder on the Great Lawn axis.
         const st = c.statue;
         box(group, st.x, 4, st.y, 22, 8, 22, parkStone);
@@ -312,14 +362,14 @@
             if (parkPondBlocked(x, z, 3)) continue;
             box(group, x, 9, z, 0.9, 18, 0.9, darkMetal);
             box(group, x, 18.5, z, 3, 3, 3, warmLamp);
-            lampHalos.push({ sprite: halo(group, x, 19, z, 14, '#ffe1b3'), x, y: z });
+            addGroupGlow(group, x, 19, z, 22, '#ffe1b3', 0.55, { day: 0, phase: 0 });
           }
         }
         // Outdoor gym: pull-up ladder, dip station, rings, parallel bars and mats.
         const cal = c.calisthenics,
-          rigPaint = mat('#3f6f74', 0.55, 0.45),
-          matMat = mat('#39566b', 0.95);
-        box(group, cal.x, 0.5, cal.y, cal.w, 1, cal.h, mat('#4b4f52', 0.96));
+          rigPaint = staticMat('#3f6f74', 0.55, 0.45),
+          matMat = staticMat('#39566b', 0.95);
+        box(group, cal.x, 0.5, cal.y, cal.w, 1, cal.h, staticMat('#4b4f52', 0.96));
         for (const dx of [-84, -2]) {
           for (const dz of [-34, -14]) box(group, cal.x + dx, 20, cal.y + dz, 2.6, 40, 2.6, rigPaint);
           rod(
@@ -373,7 +423,7 @@
             new Three.Vector3(cal.x + 62, 42, cal.y + dz),
             new Three.Vector3(cal.x + 62, 26, cal.y + dz),
             0.25,
-            mat('#d9cba6', 0.9),
+            staticMat('#d9cba6', 0.9),
           );
           const ring = mesh(new Three.TorusGeometry(3, 0.7, 6, 14), parkWood, group, cal.x + 62, 24, cal.y + dz);
           ring.rotation.x = Math.PI / 2;
@@ -400,14 +450,14 @@
           group.add(t);
           const paint = mat(truck.color, 0.55, 0.25);
           box(t, 0, 13, 0, 46, 20, 19, paint);
-          box(t, 26, 10, 0, 14, 14, 17, mat('#e8e4d7', 0.5, 0.3));
+          box(t, 26, 10, 0, 14, 14, 17, staticMat('#e8e4d7', 0.5, 0.3));
           box(t, 32, 13, 0, 3, 7, 14, glass);
-          box(t, 0, 24, 0, 44, 2, 18, mat('#dfd9c8', 0.8));
+          box(t, 0, 24, 0, 44, 2, 18, staticMat('#dfd9c8', 0.8));
           // Serving hatch and awning on the kerb side.
-          box(t, -2, 15, -9.8, 26, 9, 1, mat('#20272b', 0.4, 0.5));
-          const awning = box(t, -2, 22, -15, 26, 0.8, 12, mat('#efe6d0', 0.85));
+          box(t, -2, 15, -9.8, 26, 9, 1, staticMat('#20272b', 0.4, 0.5));
+          const awning = box(t, -2, 22, -15, 26, 0.8, 12, staticMat('#efe6d0', 0.85));
           awning.rotation.x = 0.32;
-          box(t, -2, 9, -10.6, 24, 2.4, 2.6, mat('#c9c2ad', 0.8));
+          box(t, -2, 9, -10.6, 24, 2.4, 2.6, staticMat('#c9c2ad', 0.8));
           for (const dx of [-15, 15])
             for (const dz of [-9.5, 9.5]) {
               const wheel = mesh(wheelGeo, rubber, t, dx, 4, dz, 4, 2.4, 4);

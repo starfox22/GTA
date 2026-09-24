@@ -8,9 +8,9 @@
        */
       const ROADBLOCK_POOL = 4,
         ROADBLOCK_CONES = 8;
-      const coneMat = mat('#e0662f', 0.7),
-        coneStripe = mat('#eeeae0', 0.45),
-        coneBaseMat = mat('#2a2c2e', 0.9),
+      const coneMat = staticMat('#e0662f', 0.7),
+        coneStripe = staticMat('#eeeae0', 0.45),
+        coneBaseMat = staticMat('#2a2c2e', 0.9),
         coneGeo = new Three.ConeGeometry(1, 1, 12),
         flareMat = new Three.MeshBasicMaterial({
           color: '#ff9a4a',

@@ -18,6 +18,9 @@
           new Three.PlaneGeometry(tile.w, tile.h),
           new Three.MeshStandardMaterial({
             map: tx,
+            // The county sheets are painted in paler greens than the city sheet;
+            // toned down so the land matches across the bridges.
+            color: '#e2e4de',
             roughness: 0.94,
             alphaTest: 0.5,
           }),
@@ -28,10 +31,10 @@
         m.receiveShadow = true;
         scene.add(m);
       }
-      const countyStone = mat('#778078', 0.96),
-        countyRock = mat('#6b7468', 0.97),
-        countyRail = mat('#a5b2b0', 0.64, 0.4),
-        countyCream = mat('#d6cbb3', 0.86);
+      const countyStone = staticMat('#778078', 0.96),
+        countyRock = staticMat('#6b7468', 0.97),
+        countyRail = staticMat('#a5b2b0', 0.64, 0.4),
+        countyCream = staticMat('#d6cbb3', 0.86);
       for (const peak of COUNTY_PEAKS) {
         const surface = mountainSurface(peak),
           geo = new Three.BufferGeometry();
@@ -105,7 +108,7 @@
         const p = trail.peak,
           h = terrainHeight(p.x, p.y);
         box(group, p.x, h + 18, p.y, 1.3, 36, 1.3, chrome);
-        box(group, p.x + 10, h + 31, p.y, 19, 10, 0.8, mat('#eab876'));
+        box(group, p.x + 10, h + 31, p.y, 19, 10, 0.8, staticMat('#eab876'));
         // Small stone viewpoint details sit beyond the end of the driving line.
         for (const [dx, dz] of [
           [26, -18],
@@ -132,9 +135,9 @@
           boardZ = p.y - 27,
           boardY = terrainHeight(boardX, boardZ);
         for (const side of [-1, 1]) box(group, boardX + side * 6, boardY + 5, boardZ, 1.2, 10, 1.2, wood);
-        const board = box(group, boardX, boardY + 10, boardZ, 17, 1.5, 10, mat('#9e9c79'));
+        const board = box(group, boardX, boardY + 10, boardZ, 17, 1.5, 10, staticMat('#9e9c79'));
         board.rotation.x = -0.22;
-        box(group, boardX, boardY + 11, boardZ, 12, 0.3, 6, mat('#506d64'));
+        box(group, boardX, boardY + 11, boardZ, 12, 0.3, 6, staticMat('#506d64'));
         sign(
           trail.peak.name + ' · 4×4 TRAIL',
           trail.points[0][0] + 55,
@@ -274,7 +277,7 @@
           b = model.body;
         model.tank = true;
         const armor = model.paint,
-          track = mat('#29352c', 0.9, 0.3);
+          track = staticMat('#29352c', 0.9, 0.3);
         box(b, 0, 10, 0, 79, 15, 41, armor);
         const bow = box(b, 30, 17, 0, 20, 9, 40, armor);
         bow.rotation.z = -0.23;

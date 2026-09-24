@@ -289,6 +289,48 @@
           .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + CITY_LIGHT_APPLY);
       }
       /**
+       * GLASS REFLECTIONS
+       * Both city cameras look down on the facades, so a mirror-true reflection
+       * off a vertical pane points at the ground below the horizon, and every
+       * curtain wall came out as one flat grey (the environment's dim "ground").
+       * Glass facades use this patch instead: the reflection is folded up into
+       * the sky, as a pane seen from street level reflects it, and it darkens
+       * towards the foot of the building, where a real facade mirrors the street
+       * canyon rather than open sky. A slow world-space variation stands in for
+       * the neighbouring towers and clouds a real curtain wall would show, so
+       * adjacent panels and faces never read as one uniform sheet.
+       */
+      const CITY_GLASS_IBL = `
+        vec3 getIBLRadiance( const in vec3 viewDir, const in vec3 normal, const in float roughness ) {
+          #ifdef ENVMAP_TYPE_CUBE_UV
+            vec3 reflectVec = reflect( - viewDir, normal );
+            reflectVec = normalize( mix( reflectVec, normal, roughness * roughness ) );
+            reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
+            reflectVec.y = abs( reflectVec.y ) * 0.72 + 0.05;
+            reflectVec = normalize( reflectVec );
+            vec4 envMapColor = textureCubeUV( envMap, reflectVec, roughness );
+            float canyon = mix( 0.42, 1.08, smoothstep( 6.0, 240.0, vCityWorld.y ) );
+            vec2 drift = vCityWorld.xz * 0.0041 + vec2( vCityWorld.y * 0.0063, -vCityWorld.y * 0.0021 );
+            float neighbours = 0.8 + 0.2 * sin( drift.x * 2.3 + sin( drift.y * 1.7 ) * 1.9 ) * cos( drift.y * 1.3 - drift.x * 0.6 );
+            return envMapColor.rgb * envMapIntensity * canyon * neighbours;
+          #else
+            return vec3( 0.0 );
+          #endif
+        }`;
+      function cityGlassPatch(shader) {
+        cityMaterialPatch(shader);
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <envmap_physical_pars_fragment>',
+          Three.ShaderChunk.envmap_physical_pars_fragment.replace(/vec3 getIBLRadiance\([\s\S]*?\n\t}\n/, CITY_GLASS_IBL + '\n'),
+        );
+      }
+      // Marks a material as facade glass (see GLASS REFLECTIONS).
+      function useCityGlass(material) {
+        material.onBeforeCompile = cityGlassPatch;
+        material.customProgramCacheKey = () => 'cityGlass';
+        return material;
+      }
+      /**
        * CUTAWAY
        * Only when the player is strictly under a roof (the underpass, a rail
        * viaduct deck, a station canopy, a bus shelter, Vinny's depot, a building
@@ -365,7 +407,7 @@
         if (!covers.length) return;
         setCutBox(u.cityCutBoxA.value, u.cityCutSpanA.value, covers[0]);
         setCutBox(u.cityCutBoxB.value, u.cityCutSpanB.value, covers[1]);
-        renderer.getDrawingBufferSize(cutawaySize);
+        sceneBufferSize(cutawaySize);
         const middle = elevation + bodyHeight * 0.5;
         cutawayPoint.set(player.x, middle, player.y).applyMatrix4(camera.matrixWorldInverse);
         const depth = -cutawayPoint.z;
@@ -583,8 +625,8 @@
         postLook.exposure = renderer.toneMappingExposure * (1 + night * 0.22);
         postLook.bloomThreshold = 2.2 - night * 1.35 - dusk * 0.3;
         postLook.bloomStrength = 0.22 + night * 0.3 + dusk * 0.1;
-        postLook.saturation = (1.06 + dusk * 0.08 - night * 0.2) * (1 - overcast * 0.14 - rain * 0.06);
-        postLook.contrast = 1.05 + dusk * 0.03 - overcast * 0.04;
+        postLook.saturation = (1.16 + dusk * 0.06 - night * 0.26) * (1 - overcast * 0.14 - rain * 0.06);
+        postLook.contrast = 1.14 + dusk * 0.02 - overcast * 0.06;
         postLook.lift.copy(gradeLiftDay).lerp(gradeLiftDusk, dusk).lerp(gradeLiftNight, night);
         postLook.gain.copy(gradeGainDay).lerp(gradeGainDusk, dusk).lerp(gradeGainNight, night);
         if (rain > 0.05) {

@@ -10,9 +10,9 @@
       const tunnelGroup = new Three.Group();
       scene.add(tunnelGroup);
       batchGroups.push(tunnelGroup);
-      const tunnelConcrete = mat('#788a89', 0.95),
-        tunnelTrim = mat('#c1b07f'),
-        tunnelRoofMat = mat('#70867b', 0.95);
+      const tunnelConcrete = staticMat('#788a89', 0.95),
+        tunnelTrim = staticMat('#c1b07f'),
+        tunnelRoofMat = staticMat('#70867b', 0.95);
       for (const b of UNDERPASS_WALLS)
         box(tunnelGroup, b.x + b.w / 2, b.height / 2, b.y + b.h / 2, b.w, b.height, b.h, tunnelConcrete);
       box(tunnelGroup, 2688, 55.5, 2940, 152, 7, 320, tunnelRoofMat);

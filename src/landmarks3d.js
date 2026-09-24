@@ -8,11 +8,11 @@
       // The bridges are drawn by bridges3d.js (every one in BRIDGES, in its own style).
       // Police entrance, flag poles, parking markings, and two clearly marked stealable aircraft.
       sign('SOUTH COAST POLICE', 1400, 3958, 206, '#aed7ef');
-      box(scene, 1400, 22, 3966, 65, 3, 25, mat('#4a687d', 0.4, 0.55));
+      box(scene, 1400, 22, 3966, 65, 3, 25, staticMat('#4a687d', 0.4, 0.55));
       for (const side of [-1, 1]) box(scene, 1400 + side * 28, 11, 3973, 2, 22, 2, chrome);
       for (const x of [1260, 1550]) {
         box(scene, x, 28, 3968, 1, 56, 1, chrome);
-        box(scene, x + 9, 49, 3968, 17, 10, 0.3, mat('#70909e'));
+        box(scene, x + 9, 49, 3968, 17, 10, 0.3, staticMat('#70909e'));
       }
       for (const pad of HELIPADS) {
         const ring = new Three.Mesh(

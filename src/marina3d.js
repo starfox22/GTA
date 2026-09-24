@@ -14,10 +14,10 @@
       scene.add(marinaStatic);
       batchGroups.push(marinaStatic);
       statics.push({ x: 1600, y: -3800, group: marinaStatic, radius: 2600 });
-      const deckWood = mat('#a8895f', 0.9),
-        pileWood = mat('#6d5a45', 0.95),
-        glassBlue = mat('#9fc4d6', 0.15, 0.6),
-        shedGrey = mat('#7b8486', 0.8);
+      const deckWood = staticMat('#a8895f', 0.9),
+        pileWood = staticMat('#6d5a45', 0.95),
+        glassBlue = staticMat('#9fc4d6', 0.15, 0.6),
+        shedGrey = staticMat('#7b8486', 0.8);
       const marinaLights = kitLightList();
       // Shared paint and trim for everything built here.
       const kitWhite = tint('#f5f5f1'),
@@ -42,8 +42,8 @@
             box(marinaStatic, f.x + f.w / 2 + side * (f.w / 2 + 2), 7, f.y + d, 2.6, 18, 2.6, pileWood);
         // Service pedestals (water and shore power) and a low light at each one.
         for (let d = 60; d < f.h - 20; d += 110) {
-          box(marinaStatic, f.x + f.w / 2, 8, f.y + d, 4, 9, 4, mat('#e9e7e0', 0.5));
-          box(marinaStatic, f.x + f.w / 2, 12.8, f.y + d, 4.6, 1, 4.6, mat('#2f5f86', 0.5));
+          box(marinaStatic, f.x + f.w / 2, 8, f.y + d, 4, 9, 4, staticMat('#e9e7e0', 0.5));
+          box(marinaStatic, f.x + f.w / 2, 12.8, f.y + d, 4.6, 1, 4.6, staticMat('#2f5f86', 0.5));
           kitLight(marinaLights, scene, f.x + f.w / 2, 13.5, f.y + d, '#ffe2b0');
         }
       }
@@ -1141,11 +1141,11 @@
       {
         const c = MARINA.club;
         box(marinaStatic, c.x + c.w / 2, 20, c.y + c.h / 2, c.w, 40, c.h, shedGrey);
-        box(marinaStatic, c.x + c.w / 2, 42, c.y + c.h / 2, c.w + 10, 3, c.h + 10, mat('#5b6360', 0.8));
+        box(marinaStatic, c.x + c.w / 2, 42, c.y + c.h / 2, c.w + 10, 3, c.h + 10, staticMat('#5b6360', 0.8));
         box(marinaStatic, c.x + c.w / 2, 24, c.y + 3, c.w - 26, 14, 3, glassBlue);
         const f = MARINA.fuel;
-        box(marinaStatic, f.x + f.w / 2, 10, f.y + f.h / 2, f.w, 20, f.h, mat('#69706a', 0.85));
-        box(marinaStatic, f.x + f.w / 2, 23, f.y + f.h / 2, f.w + 14, 3, f.h + 14, mat('#3e4744', 0.8));
+        box(marinaStatic, f.x + f.w / 2, 10, f.y + f.h / 2, f.w, 20, f.h, staticMat('#69706a', 0.85));
+        box(marinaStatic, f.x + f.w / 2, 23, f.y + f.h / 2, f.w + 14, 3, f.h + 14, staticMat('#3e4744', 0.8));
         buildCruiseTerminal();
       }
 
