@@ -957,10 +957,14 @@
       updateMilitarySiren(deltaSeconds);
       updateSupplyRun();
       const alert = militaryAlertUntil > gameTime;
-      // A base at war with the player keeps the wanted level from lapsing.
-      if (alert && inMilitary(player.x, player.y, 600) && gameTime - militaryWantedAt > 4) {
+      // A base at war with an intruder still inside it keeps the police on them:
+      // the search is refreshed, but no heat is added (heat only comes from new
+      // crimes, heat.js). Once over the fence and away, the search runs down.
+      if (alert && wantedStars > 0 && inMilitary(player.x, player.y) && gameTime - militaryWantedAt > 4) {
         militaryWantedAt = gameTime;
-        crime(0.2);
+        lastSeen = { x: player.x, y: player.y };
+        searchActive = false;
+        searchRemaining = Math.max(searchRemaining, policeSearchSeconds());
       }
       if (alert && gameTime - militaryAnnounceAt > 14 && inMilitary(player.x, player.y, 600)) {
         militaryAnnounceAt = gameTime;

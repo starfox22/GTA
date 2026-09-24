@@ -119,8 +119,20 @@
         }
       } else escalateSeconds = 0;
     }
+    /* The last few crimes, for policeReport(): when, how much heat, and which
+       function reported it (read off the call stack; this is diagnostics only). */
+    const crimeLog = [];
+    function logCrime(amount) {
+      let by = '';
+      try {
+        by = (new Error().stack || '').split('\n')[3]?.trim().replace(/^at /, '').split(' ')[0] || '';
+      } catch {}
+      crimeLog.push({ at: Math.round(gameTime * 10) / 10, heat: Math.round(amount * CRIME_HEAT * 100) / 100, by });
+      if (crimeLog.length > 12) crimeLog.shift();
+    }
     function crime(amount = 1) {
       if (harborPoliceProtected(player.x, player.y, 40)) return;
+      logCrime(amount);
       addHeat(Math.max(0, amount) * CRIME_HEAT + unreportedHeat);
       unreportedHeat = 0;
       if (wantedStars <= 0) {

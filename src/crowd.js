@@ -1901,12 +1901,19 @@
      * while they are already searching, a caller who can see you tells them
      * where you are. Stop the caller (or scare them off) and the call never ends.
      */
+    const WITNESS_REPORT_WINDOW = 30;
     function crowdReport(caller, inc) {
       if (!inc || inc.reported) return;
       inc.reported = true;
       crowd.reports++;
       crowd.lastReportAt = gameTime;
       if (inc.attacker !== player || gameMode !== 'play' || distanceBetween(inc, player) > 1800) return;
+      // A call is prompt or it is nothing: a witness who rings in half a minute
+      // after the last shot (or the last sight of the body) no longer brings the
+      // police, so stars never rise long after the player stopped.
+      // A body keeps drawing onlookers for minutes; what counts is when it fell.
+      const crimeAt = inc.kind === 'body' ? (inc.focus?.deadTime ?? inc.start) : inc.time;
+      if (gameTime - crimeAt > WITNESS_REPORT_WINDOW) return;
       if (wantedStars <= 0) {
         const amount = { gunfire: 0.5, explosion: 0.6, knock: 0.45, crash: 0.25, body: 0.45, melee: 0.4 }[inc.kind] || 0.3;
         crime(amount);

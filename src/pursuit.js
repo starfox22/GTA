@@ -1240,6 +1240,7 @@
         heat: Math.round(wantedHeat * 10) / 10,
         nextStarAt: HEAT_STARS[Math.min(5, Math.ceil(wantedStars) + 1)] ?? null,
         unreported: Math.round(unreportedHeat * 10) / 10,
+        crimes: crimeLog.slice(),
         rampage: { ...rampage },
         search: { active: searchActive, remaining: Math.round(searchRemaining * 10) / 10, lastSeen: lastSeen ? { x: round(lastSeen.x), y: round(lastSeen.y) } : null },
         seen: wantedStars > 0 && policeCanSeePlayer(),
