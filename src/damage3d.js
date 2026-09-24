@@ -1584,6 +1584,8 @@
           };
         if (prop.halo) prop.halo.visible = false;
         if (prop.glow) prop.glow.visible = false;
+        // A lamp's pool goes out with it (lighting3d.js).
+        lampLightSwitch(prop, false);
         if (fall.shatter) {
           // A crate bursts into boards.
           spawnChunks(prop.x, visual.ground + 3, prop.y, Math.cos(prop.fallA), Math.sin(prop.fallA), 10, '#8a6a45', 0.5, false);
@@ -1630,6 +1632,7 @@
         }
         if (prop.halo) prop.halo.visible = true;
         if (prop.glow) prop.glow.visible = true;
+        lampLightSwitch(prop, true);
       }
       // A sheared hydrant: a column of spray, mist, and a spreading puddle.
       function sprayHydrant(prop, visual, deltaSeconds) {

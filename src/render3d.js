@@ -1928,7 +1928,6 @@
           updateCountyVisuals();
           updateHarborVisuals();
           updateMarinaVisuals(deltaSeconds);
-          updateTrafficVisuals();
           updateMissionVisuals();
           lap = profileLap('r:scenery', lap);
           placeSun();
@@ -1940,6 +1939,10 @@
               (viewZoom > 0.28 || s.radius >= 50) &&
               Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&
               Math.abs(s.y - viewCenter.y) < viewReach + s.radius;
+          // Signals are re-placed from their groups' visibility: after the cull, or a
+          // junction coming into view drew its posts and bulbs a frame late (lights
+          // popping in at the edge of the frame as the camera moved).
+          updateTrafficVisuals();
           // Anything between the camera and the player is cut away round them
           // (lighting3d.js, CUTAWAY).
           updateCutaway(altitude);

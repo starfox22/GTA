@@ -175,13 +175,33 @@
         cityCutBoxB: { value: new Three.Vector4(0, 0, 0, 0) },
         cityCutSpanB: { value: new Three.Vector4(1, 0, 0, 0) },
       };
-      function paintLampLight() {
+      /* Street lamps a car has knocked flat (damage3d.js): their pools are left out
+         of the map until the lamp is stood up again, so no pool of light lies on
+         the pavement with nothing above it. Keyed by the lamp's map position. */
+      const lampLightOut = new Set();
+      function lampLightSwitch(prop, on) {
+        if (prop.kind !== 'lamp') return;
+        const key = prop.x + ',' + prop.y;
+        if (on === !lampLightOut.has(key)) return;
+        if (on) lampLightOut.delete(key);
+        else lampLightOut.add(key);
+        paintLampLight({ x: prop.x + 6, y: prop.y + 6, r: 70 });
+      }
+      // Paints the whole map, or only the pools touching `region` ({x, y, r}).
+      function paintLampLight(region = null) {
         const g = lampCanvas.getContext('2d'),
           s = 1 / LAMP_MAP_UNITS;
+        g.save();
+        if (region) {
+          g.beginPath();
+          g.rect((region.x - region.r - CITY_LEFT) * s, (region.y - region.r - CITY_TOP) * s, region.r * 2 * s, region.r * 2 * s);
+          g.clip();
+        }
         g.fillStyle = '#000';
         g.fillRect(0, 0, lampCanvas.width, lampCanvas.height);
         g.globalCompositeOperation = 'lighter';
         const pool = (x, y, radius, r, gr, b, strength) => {
+          if (region && (Math.abs(x - region.x) > region.r + radius || Math.abs(y - region.y) > region.r + radius)) return;
           const px = (x - CITY_LEFT) * s,
             py = (y - CITY_TOP) * s,
             pr = radius * s,
@@ -194,7 +214,7 @@
         };
         // Street lamps (render3d.js draws one post per entry of `lamps`); the
         // lantern hangs 6 units out from the post.
-        for (const l of lamps) pool(l.x + 6, l.y + 6, 62, 255, 196, 128, 0.85);
+        for (const l of lamps) if (!lampLightOut.has(l.x + ',' + l.y)) pool(l.x + 6, l.y + 6, 62, 255, 196, 128, 0.85);
         // Shop windows spill warm light across the pavement in front of them.
         for (const b of buildings)
           for (const pane of b.shopPanes || []) pool(pane.cx, pane.face + 10, Math.max(22, pane.width * 0.8), 255, 214, 160, 0.45);
@@ -211,6 +231,7 @@
         for (const s of signLightPools)
           pool(s.x, s.y, s.r, Math.round(s.color[0] * 255), Math.round(s.color[1] * 255), Math.round(s.color[2] * 255), s.strength);
         g.globalCompositeOperation = 'source-over';
+        g.restore();
         lampTexture.needsUpdate = true;
       }
       /**

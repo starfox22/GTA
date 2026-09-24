@@ -252,6 +252,15 @@
         uThreshold: { value: 1.6 },
         uKnee: { value: 0.6 },
       };
+      /* The bright-pass is where bad pixels are stopped before the mip chain can
+         spread them. A NaN or infinity in the scene buffer (a degenerate normal
+         in some shader, stacked additive glows overflowing half float) used to be
+         blurred into a black or white square the size of the lowest bloom level,
+         32 to 64 pixels across, popping in and out at night: every tap is now
+         sanitised. The four taps are then averaged with Karis weights
+         (1 / (1 + brightness)), so one sub-pixel specular sparkle (a clear-coat
+         glint, a lamp caught by a wet puddle) cannot outweigh its neighbours and
+         flicker as a "firefly" as it crawls from pixel to pixel. */
       const bloomPrefilter = postMaterial(
         `
         varying vec2 vUv;
@@ -259,10 +268,16 @@
         uniform vec2 uTexel;
         uniform float uThreshold;
         uniform float uKnee;
+        vec3 safeTap( vec2 o ) {
+          vec3 c = texture2D( tSource, vUv + uTexel * o ).rgb;
+          if ( any( isnan( c ) ) ) return vec3( 0.0 );
+          return clamp( c, vec3( 0.0 ), vec3( 48.0 ) );
+        }
+        float karis( vec3 c ) { return 1.0 / ( 1.0 + max( c.r, max( c.g, c.b ) ) ); }
         void main() {
-          vec3 c = ( texture2D( tSource, vUv + uTexel * vec2( -0.5, -0.5 ) ).rgb + texture2D( tSource, vUv + uTexel * vec2( 0.5, -0.5 ) ).rgb
-                   + texture2D( tSource, vUv + uTexel * vec2( -0.5, 0.5 ) ).rgb + texture2D( tSource, vUv + uTexel * vec2( 0.5, 0.5 ) ).rgb ) * 0.25;
-          c = min( c, vec3( 64.0 ) );
+          vec3 a = safeTap( vec2( -0.5, -0.5 ) ), b = safeTap( vec2( 0.5, -0.5 ) ), d = safeTap( vec2( -0.5, 0.5 ) ), e = safeTap( vec2( 0.5, 0.5 ) );
+          float wa = karis( a ), wb = karis( b ), wd = karis( d ), we = karis( e );
+          vec3 c = ( a * wa + b * wb + d * wd + e * we ) / ( wa + wb + wd + we );
           float bright = max( c.r, max( c.g, c.b ) );
           float soft = clamp( bright - uThreshold + uKnee, 0.0, 2.0 * uKnee );
           soft = soft * soft / ( 4.0 * uKnee + 1e-4 );
@@ -365,6 +380,9 @@
           }
           void main() {
             vec3 color = texture2D( tScene, vUv ).rgb;
+            // A NaN pixel would come out of the tone curve black, an overflowed one
+            // (half float infinity) as NaN too: show them as nothing and as white.
+            color = any( isnan( color ) ) ? vec3( 0.0 ) : clamp( color, vec3( 0.0 ), vec3( 6.0e4 ) );
             #ifdef USE_AO
               float ao = texture2D( tAo, vUv ).r;
               float lum = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
