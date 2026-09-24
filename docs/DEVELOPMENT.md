@@ -122,12 +122,13 @@ something, never a generic code-evaluation hook.
 | `settings(changes)` | Every setting (graphics, fps, cutaway, sound, the four volumes, voices, NPC chatter, minimap fold and zoom, touch mode); pass an object such as `{ chatter: false, minimapZoom: 2 }` to change some |
 | `openSettings(tab)` | Open the settings screen on `graphics`, `audio`, `gameplay` or `controls` (over the pause menu during play) |
 | `bindings(changes)` | Key bindings as `{ action: [primary, secondary] }`; `{ ascend: 'KeyY' }` binds a primary key (a clash swaps), `'reset'` restores the defaults |
-| `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, colliders) for overlap audits |
+| `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, foot obstacles, street ends, doors, colliders) for overlap audits |
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
 | `beach()` | Palm Keys Beach: crowd density for the hour, who is there and what they are doing, prop counts |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
 | `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |
+| `barriers()`, `solidAt(points, r, foot)` | Barrier audit: every sea railing run, street-end guardrail, gate pier and railing as data (what the renderer draws and `solid()` blocks); `solid()` at many `[x, y]` points at once (`foot` adds the player's foot obstacles: furniture, trunks, fixtures) |
 | `walk(heading, distance)` | Walk on foot through the real collision code (headless frames are too slow for keys) |
 | `match(sport)` | A venue's fixture (`'soccer'` default, `'basketball'`): stage, clock, score, status, crowd, who is on the field, fleeing or dead, abandoned, pitch invader, the player's goals |
 | `matchDay(day, minutesFromKickoff, slot, sport)` | Set the world clock relative to a fixture's kickoff (day 1 is the first day; negative minutes are the warm-up) and start that fixture afresh |

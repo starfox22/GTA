@@ -173,9 +173,9 @@ Causeway crosses it at x 2176; the Coast Line passes ~400 units to the west on i
 viaduct, never over the sand. Props and beach life are left for the beach pass.
 
 ### Noted, not changed
-- Street ends at the airport fence (Sunset Blvd, Royal Ave, Stadium Way) keep their round
-  turning heads; from above the painted ring can read like a helipad. The Shore Line passes over
-  Royal Ave's.
+- (Changed since: street ends stop square at a kerb and guardrail, see
+  streets-collision-qa.md.) Street ends at the airport fence (Sunset Blvd, Royal Ave, Stadium
+  Way) kept round turning heads that read like helipads.
 - County junctions meet at shallow angles in places, and the Ridgeline Highway runs on the same
   alignment as Northridge's y = 2600 avenue for one block (coincident, not crossing).
 - The Oceanview Causeway road crosses Southport Beach at ground level, splitting the strand.

@@ -41,7 +41,13 @@ Two closures matter:
   or the water (`player.swimming`, `player.wading`, `player.climbing`). `teleportPlayer()`
   lets go of all of them; anything that moves the player must go through it.
 - `solid(x, y, r, overWater)` is the one collision test for people; vehicles collide with
-  `staticBodies` (`addStatic`, looked up through the numeric-keyed `staticGrid`).
+  `staticBodies` (`addStatic`, looked up through the numeric-keyed `staticGrid`). Barriers
+  come from one plan each that both the renderer and the colliders read: the quay railing
+  (`promenadeSpots()` rail runs, `promenadeRailBlocked`) and the street ends
+  (`streetEndPlan()` / `streetEndSolids()`). The player on foot is also stopped by
+  `footObstacleBlocked` (streets.js): furniture the renderer registers with
+  `registerFootObstacle`, tree trunks and the standing knockable props. See
+  docs/audit/streets-collision-qa.md.
 - Timers are seconds. Physics runs in fixed 1/120 s steps. `worldMinutes` advances one game
   minute per real second; `daylight()` returns 0..1 (sun up 05:40, down 19:50).
 - Save data (`localStorage`, key `dead-end-city-v1`) holds campaign indices, cash, clock and
