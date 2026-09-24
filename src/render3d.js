@@ -179,7 +179,11 @@
             const e = o.matrixWorld.elements,
               key = o.material.uuid + '|' + Math.floor(e[12] / cellSize) + '|' + Math.floor(e[14] / cellSize);
             let b = buckets.get(key);
-            if (!b) buckets.set(key, (b = { material: o.material, parts: [], vertices: 0, indices: 0 }));
+            if (!b)
+              buckets.set(
+                key,
+                (b = { material: o.material, parts: [], vertices: 0, indices: 0, cx: Math.floor(e[12] / cellSize), cz: Math.floor(e[14] / cellSize) }),
+              );
             const geo = o.geometry,
               count = geo.attributes.position.count;
             b.parts.push({ geo, matrix: o.matrixWorld.clone() });
@@ -251,10 +255,100 @@
           m.castShadow = true;
           m.receiveShadow = true;
           m.name = 'static batch';
-          scene.add(m);
+          staticBatchCell(b.cx, b.cz, cellSize).group.add(m);
           staticBatchMeshes.push(m);
         }
         return { merged: removed, batches: buckets.size };
+      }
+      /**
+       * SCENE MATRICES
+       * three.js recomputes every object's local and world matrix on every render
+       * (the scene's matrixAutoUpdate forces the whole tree), ~15,000 objects in a
+       * city view, visible or not. The scene's own update is switched off and this
+       * pass runs once a frame instead, with the same results for everything that
+       * is drawn:
+       *  - a local matrix is recomposed only when position, rotation or scale
+       *    changed since it was last composed (a matrixAutoUpdate = false object
+       *    keeps its hand-set matrix and is always re-multiplied, as before);
+       *  - a world matrix is re-multiplied only when its local matrix or an
+       *    ancestor's world matrix changed, or it was flagged matrixWorldNeedsUpdate;
+       *  - a hidden subtree is skipped and marked stale, so it is brought up to date
+       *    on the frame it is shown again.
+       * Code that reads a hidden object's matrixWorld must bring it up to date itself
+       * (updateWorldMatrix), which the ride and signal instancing already do.
+       */
+      scene.matrixWorldAutoUpdate = false;
+      function refreshObjectMatrices(o, parentMoved) {
+        let moved = parentMoved || o.matrixWorldNeedsUpdate || o.matrixStale === true || o.matrixParent !== o.parent;
+        if (o.matrixAutoUpdate) {
+          const p = o.position,
+            q = o.quaternion,
+            s = o.scale;
+          let c = o.matrixSource;
+          if (!c) c = o.matrixSource = new Float64Array(10).fill(NaN);
+          if (
+            c[0] !== p.x || c[1] !== p.y || c[2] !== p.z ||
+            c[3] !== q._x || c[4] !== q._y || c[5] !== q._z || c[6] !== q._w ||
+            c[7] !== s.x || c[8] !== s.y || c[9] !== s.z
+          ) {
+            c[0] = p.x;
+            c[1] = p.y;
+            c[2] = p.z;
+            c[3] = q._x;
+            c[4] = q._y;
+            c[5] = q._z;
+            c[6] = q._w;
+            c[7] = s.x;
+            c[8] = s.y;
+            c[9] = s.z;
+            o.matrix.compose(p, q, s);
+            moved = true;
+          }
+        } else moved = true;
+        if (moved) {
+          if (o.parent) o.matrixWorld.multiplyMatrices(o.parent.matrixWorld, o.matrix);
+          else o.matrixWorld.copy(o.matrix);
+          o.matrixWorldNeedsUpdate = false;
+          o.matrixParent = o.parent;
+          o.matrixStale = false;
+        }
+        const children = o.children;
+        for (let i = 0; i < children.length; i++) {
+          const child = children[i];
+          if (child.matrixWorldAutoUpdate !== true) continue;
+          if (!child.visible) {
+            // Whatever happens to it (or above it) while hidden, recompute it when shown.
+            if (child.matrixStale !== true) child.matrixStale = true;
+            continue;
+          }
+          refreshObjectMatrices(child, moved);
+        }
+      }
+      function refreshSceneMatrices() {
+        refreshObjectMatrices(scene, false);
+      }
+      /**
+       * STATIC BATCH CELLS
+       * The merged batches (a few thousand across the map) hang from one group per
+       * batching cell, so the camera and shadow passes skip a whole far cell in one
+       * visibility test instead of testing each batch against the frustum. A cell
+       * is shown while it is within the view's reach plus a margin for the shadows
+       * of tall buildings standing just outside the view (see render()).
+       */
+      const staticBatchCells = new Map(),
+        // Beyond the view's reach: long shadows of towers just outside the frame.
+        STATIC_BATCH_SHADOW_MARGIN = 700;
+      function staticBatchCell(cx, cz, cellSize) {
+        const key = cx * 4096 + cz;
+        let cell = staticBatchCells.get(key);
+        if (!cell) {
+          const group = new Three.Group();
+          group.name = 'static batch cell';
+          scene.add(group);
+          cell = { group, x: (cx + 0.5) * cellSize, z: (cz + 0.5) * cellSize, half: cellSize / 2 };
+          staticBatchCells.set(key, cell);
+        }
+        return cell;
       }
       function mesh(geo, material, parent, x, y, z, sx = 1, sy = 1, sz = 1) {
         const m = new Three.Mesh(geo, material);
@@ -1510,25 +1604,52 @@
       function collectResources(root, geometries, materials) {
         root.traverse((o) => {
           if (o.geometry) geometries.add(o.geometry);
-          if (o.material)
-            for (const material of Array.isArray(o.material) ? o.material : [o.material])
-              materials.add(material);
+          if (Array.isArray(o.material)) for (const material of o.material) materials.add(material);
+          else if (o.material) materials.add(o.material);
         });
       }
       collectResources(scene, sharedGeometries, sharedMaterials);
       const retiredGeometries = new Set(),
         retiredMaterials = new Set();
-      function pruneModels(models, active) {
+      // Models whose entity is no longer in `list` are retired. The check set is
+      // reused frame to frame rather than built afresh.
+      const pruneActive = new Set();
+      // Parsed colours for the effect sprites: a CSS colour string is parsed once,
+      // not for every sprite on every frame.
+      const parsedColors = new Map();
+      function cachedColor(value) {
+        let color = parsedColors.get(value);
+        if (!color) {
+          color = new Three.Color(value);
+          if (parsedColors.size < 512) parsedColors.set(value, color);
+        }
+        return color;
+      }
+      // New vehicle and person models built per frame (see the vehicle pass).
+      const NEW_MODELS_PER_FRAME = 6;
+      let newModelsThisFrame = 0;
+      // Individually modelled people this frame (reused list).
+      const renderPeople = [];
+      function pruneModels(models, list) {
+        pruneActive.clear();
+        for (let i = 0; i < list.length; i++) pruneActive.add(list[i]);
         for (const [entity, model] of models)
-          if (!active.has(entity)) {
+          if (!pruneActive.has(entity)) {
             const group = model.group || model;
             scene.remove(group);
             collectResources(group, retiredGeometries, retiredMaterials);
             models.delete(entity);
           }
       }
+      // Finding what is still in use walks the whole scene (~15,000 objects), so
+      // retired models are let go in batches every few seconds rather than on the
+      // frame each car or person is removed (traffic comes and goes constantly).
+      let lastModelDisposal = -Infinity;
       function disposeRetiredModels() {
         if (!retiredGeometries.size && !retiredMaterials.size) return;
+        const now = performance.now();
+        if (now - lastModelDisposal < 3000 && retiredGeometries.size + retiredMaterials.size < 400) return;
+        lastModelDisposal = now;
         const liveGeometries = new Set(sharedGeometries),
           liveMaterials = new Set(sharedMaterials);
         collectResources(scene, liveGeometries, liveMaterials);
@@ -1939,6 +2060,12 @@
               (viewZoom > 0.28 || s.radius >= 50) &&
               Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&
               Math.abs(s.y - viewCenter.y) < viewReach + s.radius;
+          // Whole cells of merged scenery out of reach (STATIC BATCH CELLS).
+          const batchReach = viewReach + STATIC_BATCH_SHADOW_MARGIN;
+          for (const cell of staticBatchCells.values())
+            cell.group.visible =
+              Math.abs(cell.x - viewCenter.x) < batchReach + cell.half &&
+              Math.abs(cell.z - viewCenter.y) < batchReach + cell.half;
           // Anything between the camera and the player is cut away round them
           // (lighting3d.js, CUTAWAY).
           updateCutaway(altitude);
@@ -1946,12 +2073,16 @@
           // Pedestrians are drawn by the instanced crowd (src/crowd3d.js), poses and
           // all; guards, gangs, officers, story actors and the player keep
           // individual models for their weapons and uniforms.
-          const people = [...enemies, ...gangMembers, ...officers, ...storyActors, player];
+          const people = renderPeople;
+          people.length = 0;
+          for (const list of [enemies, gangMembers, officers, storyActors]) for (let i = 0; i < list.length; i++) people.push(list[i]);
+          people.push(player);
           updateCrowd3D(deltaSeconds);
           lap = profileLap('r:crowd', lap);
-          pruneModels(carModels, new Set(vehicles));
-          pruneModels(personModels, new Set(people));
-          pruneModels(pickupModels, new Set(pickups));
+          pruneModels(carModels, vehicles);
+          pruneModels(personModels, people);
+          pruneModels(pickupModels, pickups);
+          newModelsThisFrame = 0;
           beginVehicleImpostors();
           for (const c of vehicles) {
             let m = carModels.get(c);
@@ -1965,6 +2096,11 @@
             }
             if (!m && !near) continue;
             if (!m) {
+              // Building a car is a few dozen meshes: a view full of new traffic (a
+              // teleport, a fast drive into a new street) is spread over a few
+              // frames instead of one long one. The player's own is never held back.
+              if (newModelsThisFrame >= NEW_MODELS_PER_FRAME && c !== player.car) continue;
+              newModelsThisFrame++;
               m = makeVehicle(c);
               carModels.set(c, m);
               trimShadowCasters(m.group, 4);
@@ -2082,16 +2218,17 @@
                 );
             }
             if (m.blood) m.blood.visible = c.bloodyUntil > gameTime;
-            m.strobes.forEach((s, i) => {
-              s.material.color.set(
-                ((c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.type === 'ambulance') &&
-                  Math.sin(gameTime * 17 + i * 3) > 0
-                  ? i
-                    ? '#78aefa'
-                    : '#ff6751'
-                  : '#3c4147',
+            for (let i = 0; i < m.strobes.length; i++)
+              m.strobes[i].material.color.copy(
+                cachedColor(
+                  ((c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.type === 'ambulance') &&
+                    Math.sin(gameTime * 17 + i * 3) > 0
+                    ? i
+                      ? '#78aefa'
+                      : '#ff6751'
+                    : '#3c4147',
+                ),
               );
-            });
             // Engine smoke, fire and the burning wreck (damage3d.js).
             vehicleEffects(c, m, deltaSeconds);
           }
@@ -2120,6 +2257,8 @@
             }
             if (!m && !near) continue;
             if (!m) {
+              if (newModelsThisFrame >= NEW_MODELS_PER_FRAME + 4 && !activePlayer) continue;
+              newModelsThisFrame++;
               m = makePerson(p, activePlayer);
               personModels.set(p, m);
               // Only torso-sized parts cast into the shadow map (lighting3d.js).
@@ -2444,7 +2583,7 @@
             s.position.set(p.x, p.y, p.z);
             const a = p.life / p.max;
             s.material.map = p.glow ? haloTx : smokeTx;
-            s.material.color.set(p.color);
+            s.material.color.copy(cachedColor(p.color));
             if (!p.glow) s.material.color.multiplyScalar(spriteLight);
             s.material.opacity = Math.min(p.smoke ? 0.56 : 0.96, a * 1.7);
             s.material.blending = p.glow ? Three.AdditiveBlending : Three.NormalBlending;
@@ -2461,7 +2600,7 @@
               p.y,
             );
             s.material.map = p.blood ? bloodDropTx : p.flame ? flameTx : smokeTx;
-            s.material.color.set(p.color);
+            s.material.color.copy(cachedColor(p.color));
             if (!p.flame) s.material.color.multiplyScalar(spriteLight);
             s.material.opacity = p.blood ? 0.97 : clamp(p.life / p.max, 0, 0.7);
             s.material.blending = p.flame ? Three.AdditiveBlending : Three.NormalBlending;
@@ -2499,7 +2638,9 @@
           const shadowRefresh = frames++ % shadowRefreshInterval() === 0;
           renderer.shadowMap.needsUpdate = shadowRefresh;
           lap = profileLap('r:people+fx', lap);
-          // HDR scene, AO, bloom, tone curve and grade (postfx3d.js).
+          // World matrices of what is shown (SCENE MATRICES), then the HDR scene,
+          // AO, bloom, tone curve and grade (postfx3d.js).
+          refreshSceneMatrices();
           renderFrame();
           lap = profileLap(shadowRefresh ? 'r:submit+shadow' : 'r:submit', lap);
           if (bakedCanvases.length && frames % 30 === 0) releaseBakedCanvases();

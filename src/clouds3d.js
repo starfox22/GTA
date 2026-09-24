@@ -569,8 +569,11 @@
         cloudComposite.visible = cloudDepth.visible = active;
         if (!active) return;
         sceneBufferSize(cloudBuffer);
-        const width = Math.max(4, Math.round((viewportWidth || cloudBuffer.x) * CLOUD_RESOLUTION)),
-          height = Math.max(4, Math.round((viewportHeight || cloudBuffer.y) * CLOUD_RESOLUTION));
+        // The LOW tier marches the layer at the phones' resolution (a third of the
+        // screen rather than a half: under half the fragments), with no recompile.
+        const resolution = graphicsTier().name === 'LOW' ? Math.min(CLOUD_RESOLUTION, 0.34) : CLOUD_RESOLUTION,
+          width = Math.max(4, Math.round((viewportWidth || cloudBuffer.x) * resolution)),
+          height = Math.max(4, Math.round((viewportHeight || cloudBuffer.y) * resolution));
         if (cloudTarget.width !== width || cloudTarget.height !== height) cloudTarget.setSize(width, height);
         compositeUniforms.uResolution.value.copy(cloudBuffer);
         marchUniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
