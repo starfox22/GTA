@@ -1116,41 +1116,28 @@
     }
     function drawDistrictScenery2D() {
       if (cameraTarget.x < -1500) {
-        // Ocean Drive's palms, down both kerbs of the avenue on the sea side.
-        for (let y = 740; y < 4550; y += 145) {
-          const x = y < 1900 ? -2434 : y < 3200 ? -2444 : -2354;
-          if (
-            !visible(
-              {
-                x,
-                y,
-              },
-              100,
-            )
-          )
-            continue;
-          for (const side of [-1, 1]) {
-            const px = x + side * 64;
-            worldContext.strokeStyle = '#99876c';
-            worldContext.lineWidth = 4;
+        // Ocean Drive's palms, down both pavements (oceanDrivePalms, streets.js).
+        for (const { x: px, y } of oceanDrivePalms()) {
+          if (!visible({ x: px, y }, 100)) continue;
+          worldContext.strokeStyle = '#99876c';
+          worldContext.lineWidth = 4;
+          worldContext.beginPath();
+          worldContext.moveTo(px, y);
+          worldContext.lineTo(px + 4, y - 20);
+          worldContext.stroke();
+          worldContext.strokeStyle = '#417d64';
+          worldContext.lineWidth = 5;
+          for (let i = 0; i < 7; i++) {
+            const a = (i * TAU) / 7;
             worldContext.beginPath();
-            worldContext.moveTo(px, y);
-            worldContext.lineTo(px + 4, y - 20);
+            worldContext.moveTo(px + 4, y - 20);
+            worldContext.quadraticCurveTo(
+              px + 4 + Math.cos(a) * 15,
+              y - 20 + Math.sin(a) * 15 - 5,
+              px + 4 + Math.cos(a) * 23,
+              y - 20 + Math.sin(a) * 23,
+            );
             worldContext.stroke();
-            worldContext.strokeStyle = '#417d64';
-            worldContext.lineWidth = 5;
-            for (let i = 0; i < 7; i++) {
-              const a = (i * TAU) / 7;
-              worldContext.beginPath();
-              worldContext.moveTo(px + 4, y - 20);
-              worldContext.quadraticCurveTo(
-                px + 4 + Math.cos(a) * 15,
-                y - 20 + Math.sin(a) * 15 - 5,
-                px + 4 + Math.cos(a) * 23,
-                y - 20 + Math.sin(a) * 23,
-              );
-              worldContext.stroke();
-            }
           }
         }
       }

@@ -556,13 +556,7 @@
       }
       // The keys trade brick canyons for pastel hotels, pools, palms and beach
       // furniture. Palms line both kerbs of Ocean Dr (x -2432) on the sea side.
-      for (let z = 730; z < 4550; z += 145) {
-        const x = z < 1900 ? -2434 : z < 3200 ? -2444 : -2354;
-        if (landAt(x, z)) {
-          makePalm(x + 62, z, 1.15);
-          makePalm(x - 67, z + 20, 1);
-        }
-      }
+      for (const p of oceanDrivePalms()) makePalm(p.x, p.y, p.size);
       const resortColors = ['#e3b7a6', '#a7cbc5', '#d8cba8', '#aebbd8'];
       for (const b of buildings.filter((b) => b.tropical && !b.place && !b.roofBar)) {
         const group = new Three.Group();

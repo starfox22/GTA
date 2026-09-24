@@ -1393,7 +1393,8 @@
         );
       for (let i = trees.length - 1; i >= 0; i--) {
         const t = trees[i];
-        if (cityStreetAt(t.x, t.y, 2) || onServiceRoad(t.x, t.y) || railBlocked(t.x, t.y, 6)) trees.splice(i, 1);
+        // ... nor in the sea (the kerb pattern ran past the south-west sea wall).
+        if (cityStreetAt(t.x, t.y, 2) || onServiceRoad(t.x, t.y) || railBlocked(t.x, t.y, 6) || !groundAt(t.x, t.y, 3)) trees.splice(i, 1);
       }
       // Lamp posts likewise (the head overhangs 6 units towards +x).
       for (let i = lamps.length - 1; i >= 0; i--) {
@@ -5111,7 +5112,7 @@
         // Knockable street furniture as placed by the renderer (empty in 2D) and
         // the registered foot obstacles (circles r, or boxes hx/hy turned by a).
         props: streetProps.map((p) => ({ kind: p.kind, x: Math.round(p.x * 10) / 10, y: Math.round(p.y * 10) / 10, hx: p.hx, hy: p.hy, a: p.a })),
-        footObstacles: [...new Set([...footObstacleGrid.values()].flat())].map((o) =>
+        footObstacles: addFootTrees() || [...new Set([...footObstacleGrid.values()].flat())].map((o) =>
           o.r !== undefined ? { x: o.x, y: o.y, r: o.r } : { x: o.x, y: o.y, hx: o.hx, hy: o.hy, a: Math.atan2(o.s, o.c) },
         ),
         streetEnds: streetEndPlan().map((e) => ({ x: e.p.x, y: e.p.y, a: e.a, width: e.width, kind: e.kind })),
@@ -5297,6 +5298,7 @@
             const { cx, cy, ux, uy } = spot.railLine;
             rails.push({ x0: cx + ux * a, y0: cy + uy * a, x1: cx + ux * b, y1: cy + uy * b, nx: spot.nx, ny: spot.ny });
           }
+        addFootTrees();
         let obstacles = 0;
         for (const list of footObstacleGrid.values()) obstacles += list.length;
         return { rails, streetEnds: streetEndSolids(), streetEndPlan: streetEndPlan(), footObstacleCells: footObstacleGrid.size, footObstacleEntries: obstacles };

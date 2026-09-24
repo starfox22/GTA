@@ -138,6 +138,10 @@ const onRoad = (x, y, h) => roadBoxes.find((r) => overlap(square(x, y, h), r));
 for (const [x, y] of L.trees) if (onRoad(x, y, 3)) report('tree in carriageway', x + ', ' + y + ' ' + onRoad(x, y, 3).name);
 for (const [x, y] of L.lamps) if (onRoad(x, y, 2)) report('lamp in carriageway', x + ', ' + y);
 for (const [x, y] of L.benches) if (onRoad(x, y, 2)) report('bench in carriageway', x + ', ' + y);
+for (const [x, y] of L.trees) {
+  if (!land(x, y) && !(L.docks || []).some((d) => x > d.x && x < d.x + d.w && y > d.y && y < d.y + d.h)) report('tree in water', x + ', ' + y);
+  if (L.buildings.some((b) => x > b.x + 2 && x < b.x + b.w - 2 && y > b.y + 2 && y < b.y + b.h - 2)) report('tree inside building', x + ', ' + y);
+}
 
 // Barriers drawn without a collider (see above).
 for (const g of barrierGaps.gaps) report('visible barrier without collider', g);
@@ -177,15 +181,27 @@ for (const e of L.streetEnds || []) {
   const crossing = roadBoxes.find((r) => overlap(shrink(railBox, 1), r));
   if (crossing) report('street end rail in carriageway', e.x + ', ' + e.y + ' ' + crossing.name);
 }
-// Crosswalks (painted where two streets cross, streets.js) must not lead into
-// a building or a park.
-for (const v of L.streets.filter((s) => s.points[0][0] === s.points[1][0]))
-  for (const h of L.streets.filter((s) => s.points[0][1] === s.points[1][1])) {
-    const x = v.points[0][0], y = h.points[0][1];
-    if (x <= h.points[0][0] + 100 || x >= h.points[1][0] - 100 || y <= v.points[0][1] + 100 || y >= v.points[1][1] - 100) continue;
-    for (const [cx, cy, hx, hy] of [[x, y - h.width / 2 - 12.5, 33, 6.5], [x, y + h.width / 2 + 12.5, 33, 6.5], [x - v.width / 2 - 12.5, y, 6.5, 33], [x + v.width / 2 + 12.5, y, 6.5, 33]]) {
+// Crosswalks (painted on each junction leg whose street carries on, streets.js)
+// must not lead into a building or a park; the pavement either side of each
+// must be land.
+const vStreets = L.streets.filter((s) => s.points[0][0] === s.points[1][0]).map((s) => ({ r: s.points[0][0], start: s.points[0][1], end: s.points[1][1], w: s.width / 2 }));
+const hStreets = L.streets.filter((s) => s.points[0][1] === s.points[1][1]).map((s) => ({ r: s.points[0][1], start: s.points[0][0], end: s.points[1][0], w: s.width / 2 }));
+for (const v of vStreets)
+  for (const h of hStreets) {
+    const x = v.r, y = h.r;
+    if (x < h.start - 8 || x > h.end + 8 || y < v.start - 8 || y > v.end + 8) continue;
+    const legs = { north: v.start < y - h.w - 40, south: v.end > y + h.w + 40, west: h.start < x - v.w - 40, east: h.end > x + v.w + 40 };
+    const walks = [];
+    if (legs.north) walks.push([x, y - h.w - 12.5, v.w, 6.5]);
+    if (legs.south) walks.push([x, y + h.w + 12.5, v.w, 6.5]);
+    if (legs.west) walks.push([x - v.w - 12.5, y, 6.5, h.w]);
+    if (legs.east) walks.push([x + v.w + 12.5, y, 6.5, h.w]);
+    for (const [cx, cy, hx, hy] of walks) {
       const box = { x: cx, y: cy, hx, hy, a: 0 };
       if (buildings.some((b) => overlap(box, b)) || L.parks.some((p) => overlap(box, rectBox(p)))) report('crosswalk into building or park', Math.round(cx) + ', ' + Math.round(cy));
+      const ends = hx > hy ? [[cx - hx - 10, cy], [cx + hx + 10, cy]] : [[cx, cy - hy - 10], [cx, cy + hy + 10]];
+      const deck = (ex, ey) => L.bridges.some((b) => { const [ax, ay] = b.a, [bx, by] = b.b, l = Math.hypot(bx - ax, by - ay), t = Math.max(0, Math.min(1, ((ex - ax) * (bx - ax) + (ey - ay) * (by - ay)) / (l * l))); return Math.hypot(ex - ax - t * (bx - ax), ey - ay - t * (by - ay)) < b.width / 2; });
+      if (ends.some(([ex, ey]) => !land(ex, ey) && !deck(ex, ey))) report('crosswalk into water', Math.round(cx) + ', ' + Math.round(cy));
     }
   }
 

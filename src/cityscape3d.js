@@ -968,7 +968,8 @@
       const shelters = [],
         adLightbox = litSignMaterial(adTexture, adTexture, { night: 1.3, day: 0.3, roughness: 0.3 });
       function clearSidewalk(x, y) {
-        return landAt(x, y) && !onRoad(x, y) && !solid(x, y, 5) && !onBoulevard(x, y, 12) && !inHarbor(x, y, 20) && !inStadiumLot(x, y, 10) && !inGarageLot(x, y, 6);
+        return landAt(x, y) && !onRoad(x, y) && !solid(x, y, 5) && !onBoulevard(x, y, 12) &&
+          !SERVICE_ROADS.some((r) => r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + 4)) && !inHarbor(x, y, 20) && !inStadiumLot(x, y, 10) && !inGarageLot(x, y, 6);
       }
       function busShelter(x, z, faceSouth, kerbZ) {
         const g = new Three.Group();

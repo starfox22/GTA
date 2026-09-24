@@ -20,6 +20,10 @@
               y = vertical ? v : r;
             if (inAirport(x, y) || parkStreetClosed(x, y) || inStadiumLot(x, y, 56)) return false;
             if (onSunsetIsle(x, y) || onBeach(x, y) || marinaQuayAt(x, y) || inReservedPlot(x, y, 20)) return false;
+            // Battery Park's lawn and the esplanade below it: the avenues end at
+            // Marina Rd instead of running on under the lawn to the sea wall.
+            const park = SOUTH_PROMENADE;
+            if (vertical && y > park.y - 10 && x > park.x && x < park.x + park.w) return false;
             // West Quay (x = 128) is not a street: the strip between the sea wall
             // and the first blocks is the esplanade and the Shore Line viaduct.
             if (vertical && r === RAIL_CORRIDOR_X) return false;
@@ -116,6 +120,22 @@
       if (boulevard) return boulevard.name;
       // Off the road: name the nearer of the two bounding streets.
       return (Math.abs(x - nearestX) < Math.abs(y - nearestY) ? v : h) || '';
+    }
+    /* Ocean Dr's palms, down both pavements (the 3D and 2D views share the list).
+       The rows used to shift east south of y 3200, which stood one line of palms
+       in the carriageway and the other inside the hotels, and both rows ran on
+       across every side street. */
+    let oceanPalmCache = null;
+    function oceanDrivePalms() {
+      if (oceanPalmCache) return oceanPalmCache;
+      oceanPalmCache = [];
+      for (let y = 730; y < 4550; y += 145)
+        for (const [x, dy, size] of [[-2372, 0, 1.15], [-2501, 20, 1]]) {
+          const py = y + dy;
+          if (!landAt(x, py) || cityStreetAt(x, py, 8) || solid(x, py, 4)) continue;
+          oceanPalmCache.push({ x, y: py, size });
+        }
+      return oceanPalmCache;
     }
     /* Bench positions are shared by the renderer (which draws them) and by pedestrians (who sit on them). */
     let benchCache = null;
@@ -307,22 +327,38 @@
           else drawingContext.fillRect(p.x, p.y - 1, 15, 2);
         }
       }
+      // Zebra crossings on every leg of every junction, T-junctions included:
+      // a leg only gets one where its street really carries on (no crossing
+      // painted across a street that is not there).
       if (detail)
         for (const x of ROAD_CENTERS)
           for (const y of ROAD_ROWS) {
-            const horizontal = streets.find(
-                (r) => !r.vertical && r.r === y && x > r.start + 100 && x < r.end - 100,
-              ),
-              vertical = streets.find(
-                (r) => r.vertical && r.r === x && y > r.start + 100 && y < r.end - 100,
-              );
+            const horizontal = streets.find((r) => !r.vertical && r.r === y && x >= r.start - 8 && x <= r.end + 8),
+              vertical = streets.find((r) => r.vertical && r.r === x && y >= r.start - 8 && y <= r.end + 8);
             if (!horizontal || !vertical) continue;
+            const hw = horizontal.width / 2,
+              vw = vertical.width / 2,
+              north = vertical.start < y - hw - 40,
+              south = vertical.end > y + hw + 40,
+              west = horizontal.start < x - vw - 40,
+              east = horizontal.end > x + vw + 40;
+            if ((north || south) + (west || east) < 2 && !(north && south) && !(west && east)) continue;
+            // A crossing has to land on pavement at both ends (not at a bridge
+            // deck's edge over the water).
+            const kerbs = (x0, y0, x1, y1) => groundAt(x0, y0) && groundAt(x1, y1) && landAt(x0, y0) && landAt(x1, y1);
+            north &&= kerbs(x - vw - 10, y - hw - 12, x + vw + 10, y - hw - 12);
+            south &&= kerbs(x - vw - 10, y + hw + 12, x + vw + 10, y + hw + 12);
+            west &&= kerbs(x - vw - 12, y - hw - 10, x - vw - 12, y + hw + 10);
+            east &&= kerbs(x + vw + 12, y - hw - 10, x + vw + 12, y + hw + 10);
             drawingContext.fillStyle = '#d4d6c7';
-            for (let i = -30; i <= 30; i += 12) {
-              drawingContext.fillRect(x + i, y - horizontal.width / 2 - 19, 6, 13);
-              drawingContext.fillRect(x + i, y + horizontal.width / 2 + 6, 6, 13);
-              drawingContext.fillRect(x - vertical.width / 2 - 19, y + i, 13, 6);
-              drawingContext.fillRect(x + vertical.width / 2 + 6, y + i, 13, 6);
+            // Bars the full width of the carriageway they cross.
+            for (let i = -vw + 5; i <= vw - 11; i += 12) {
+              if (north) drawingContext.fillRect(x + i, y - hw - 19, 6, 13);
+              if (south) drawingContext.fillRect(x + i, y + hw + 6, 6, 13);
+            }
+            for (let i = -hw + 5; i <= hw - 11; i += 12) {
+              if (west) drawingContext.fillRect(x - vw - 19, y + i, 13, 6);
+              if (east) drawingContext.fillRect(x + vw + 6, y + i, 13, 6);
             }
           }
       drawingContext.restore();
@@ -563,12 +599,14 @@
       if (o.r !== undefined) return dx * dx + dy * dy < (o.r + r) * (o.r + r);
       return Math.abs(dx * o.c + dy * o.s) < o.hx + r && Math.abs(-dx * o.s + dy * o.c) < o.hy + r;
     }
+    function addFootTrees() {
+      if (footTreesAdded || !trees.length) return;
+      footTreesAdded = true;
+      // A trunk is a couple of units across whatever the crown.
+      for (const t of trees) registerFootObstacle(t.x, t.y, 2.2);
+    }
     function footObstacleBlocked(x, y, r) {
-      if (!footTreesAdded) {
-        footTreesAdded = true;
-        // A trunk is a couple of units across whatever the crown.
-        for (const t of trees) registerFootObstacle(t.x, t.y, 2.2);
-      }
+      addFootTrees();
       const list = footObstacleGrid.get(Math.floor(x / FOOT_CELL) * 4096 + Math.floor(y / FOOT_CELL));
       if (list) for (const o of list) if (footObstacleHit(o, x, y, r)) return true;
       let hit = false;
