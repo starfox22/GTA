@@ -224,6 +224,11 @@
       delivery: ['Sign here.', 'Last one on this street.', 'Who orders forty kilos of rice?'],
       bus: ['Finally.', 'Twenty minutes late.', 'Is this the 12?'],
       cafe: ['This coffee is terrible. I love it.', 'Check, please.', 'Another round?', 'So then he says…'],
+      // The weather (weather.js): a shower building, arriving, and gone.
+      rainComing: ['Looks like rain is coming.', 'Smell that? Rain.', 'Those clouds look nasty.', 'Here comes the rain.', 'Did you hear thunder?', 'I should have brought an umbrella.'],
+      rainStart: ['Great. Just great.', 'Here it comes!', 'Run for it!', 'My hair!', 'It’s pouring!', 'Of course it’s raining.'],
+      rainUmbrella: ['Told you to bring one.', 'Good thing I checked the forecast.', 'Stay under here.'],
+      rainStop: ['Finally.', 'Think it’s done?', 'Smells like rain.', 'Look at those puddles.'],
     };
     function crowdSay(p, kind, chance = 1, extra = '') {
       if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return false;
@@ -804,7 +809,7 @@
       let s = crowd.tempo.speed * (p.pace || 1);
       if (p.shakenUntil > gameTime) s *= 1.35;
       if (p.injured) s *= 0.45;
-      if (weather.rain > 0.3 && !p.look?.umbrella && p.role !== 'jogger') s *= 1.2;
+      if (weather.rain > 0.3 && !p.look?.umbrella && p.role !== 'jogger') s *= p.rainRun ? 2.9 : 1.25;
       return s;
     }
     /* Step a person along a heading at a speed; returns true when something stopped them. */
@@ -833,6 +838,11 @@
       for (let i = crowd.indoors.length - 1; i >= 0; i--) {
         const stay = crowd.indoors[i];
         if (gameTime < stay.until) continue;
+        // Sheltering from a shower: wait until it has eased off.
+        if (stay.why === 'rain' && weather.rain > 0.3) {
+          stay.until = gameTime + 8;
+          continue;
+        }
         // Nobody comes out while shooting is still going on nearby.
         if (crowd.incidents.some((inc) => inc.loud && gameTime - inc.time < 12 && distanceBetween(inc, stay.door) < 380)) {
           stay.until = gameTime + 6;
@@ -857,10 +867,52 @@
         }
       }
     }
+    /**
+     * RAIN ON THE STREET
+     * Ahead of a shower (weather.approach) people look up and remark on it. When
+     * it starts (once per shower, `weather.shower`), those with an umbrella open
+     * it (crowd3d.js) and walk on; of the rest some duck into the nearest door
+     * and wait it out, some run for it and the others hurry, heads down. When it
+     * stops someone may say so. Lines go through crowdSay, so the chatter
+     * setting and the two-bubble limit apply.
+     */
+    function rainReaction(p, deltaSeconds) {
+      if (p.hp <= 0 || p.react || p.role === 'jogger' || p.military || p.police) return false;
+      const near = distanceBetween(p, cameraTarget) < 480;
+      if (weather.approach > 0.1 && weather.rain < 0.25 && near && seededRandom() < deltaSeconds * 0.01 * weather.approach) crowdSay(p, 'rainComing');
+      if (weather.rain > 0.3 && p.rainShower !== weather.shower) {
+        p.rainShower = weather.shower;
+        p.rainRun = false;
+        if (p.look?.umbrella) {
+          if (near) crowdSay(p, 'rainUmbrella', 0.05);
+          return false;
+        }
+        const roll = seededRandom();
+        if (near) crowdSay(p, 'rainStart', 0.12);
+        if (roll < 0.35 && (p.state === 'walk' || p.state === 'idle' || p.state === 'phone')) {
+          const door = doorNear(p, 200);
+          if (door && !/hospital|school|guns/.test(door.place?.kind || '')) {
+            p.state = 'enter';
+            p.enterDoor = door;
+            p.atDoorFront = false;
+            p.rainShelter = true;
+            p.walking = true;
+            return true;
+          }
+        }
+        p.rainRun = roll < 0.75;
+      }
+      if (weather.rain < 0.12 && p.rainRun) {
+        p.rainRun = false;
+        if (near) crowdSay(p, 'rainStop', 0.08);
+      }
+      return false;
+    }
     function updateStreetWalker(p, deltaSeconds) {
       const tempo = crowd.tempo;
       p.timer -= deltaSeconds;
       p.pose = null;
+      if (!p.leader && rainReaction(p, deltaSeconds)) return;
       // Walking pairs: the follower keeps a shoulder offset from the leader.
       if (p.leader) {
         const leader = p.leader;
@@ -923,7 +975,8 @@
         const target = p.atDoorFront ? door : door.out;
         if (p.atDoorFront && distanceBetween(p, door) < 4) {
           p.atDoorFront = false;
-          goIndoors(p, door, randomBetween(18, 75), 'shop');
+          goIndoors(p, door, p.rainShelter ? randomBetween(40, 120) : randomBetween(18, 75), p.rainShelter ? 'rain' : 'shop');
+          p.rainShelter = false;
           return;
         }
         if (crowdStep(p, headingBetween(p, target), walkerSpeed(p) * 0.8, deltaSeconds)) {
@@ -935,7 +988,8 @@
             // The door is flush with the wall: arriving against it counts.
             p.atDoorFront = false;
             p.blocked = 0;
-            goIndoors(p, door, randomBetween(18, 75), 'shop');
+            goIndoors(p, door, p.rainShelter ? randomBetween(40, 120) : randomBetween(18, 75), p.rainShelter ? 'rain' : 'shop');
+            p.rainShelter = false;
           }
         }
         return;

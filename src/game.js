@@ -4591,6 +4591,7 @@
     // @include src/taxi.js
     // @include src/cycles.js
     // @include src/weather.js
+    // @include src/weather-audio.js
     // @include src/water.js
     // @include src/water-audio.js
     // @include src/beach.js
@@ -5076,6 +5077,16 @@
         }
         weather.locked = true;
         return setWeather(id);
+      },
+      // The weather machine's state: sky, next step, rain, wetness, wind, the
+      // build-up to a shower (approach), strikes so far and thunder on its way.
+      weather: () => weatherReport(),
+      // Bring a shower in: overcast now, rain after `seconds` (the machine runs on).
+      weatherFront: (seconds) => weatherFront(seconds),
+      // A lightning strike `distance` map units from the player (thunder follows).
+      lightning: (distance = 900) => {
+        const s = lightningStrike(distance);
+        return { x: Math.round(s.x), y: Math.round(s.y), distance: Math.round(s.distance), thunderIn: +(s.distance / THUNDER_SPEED).toFixed(2) };
       },
       // What the vehicle under the player is actually doing.
       ride: () => ({

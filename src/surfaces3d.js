@@ -25,6 +25,9 @@
       const surfaceUniforms = {
         cityWindTime: { value: 0 },
         cityWindAmp: { value: 0.4 },
+        // Rain on the puddles: its strength and a clock for the rings.
+        cityRain: { value: 0 },
+        cityRainTime: { value: 0 },
       };
       const SURFACE_NOISE = `
         float cityHash( vec2 p ) {
@@ -37,6 +40,20 @@
           f = f * f * ( 3.0 - 2.0 * f );
           return mix( mix( cityHash( i ), cityHash( i + vec2( 1.0, 0.0 ) ), f.x ),
                       mix( cityHash( i + vec2( 0.0, 1.0 ) ), cityHash( i + vec2( 1.0, 1.0 ) ), f.x ), f.y );
+        }`;
+      // Expanding rings from raindrops on still water, as a normal tilt (x, z):
+      // one drop per `cell` square, each at a random spot and time.
+      const RAIN_RINGS = `
+        vec2 cityRainRings( vec2 p, float t, float cell ) {
+          vec2 c = floor( p / cell ), f = p / cell - c;
+          float h = cityHash( c );
+          vec2 centre = vec2( cityHash( c + 3.1 ), cityHash( c + 7.7 ) ) * 0.6 + 0.2;
+          float life = fract( t * 1.3 + h );
+          vec2 d = ( f - centre ) * cell;
+          float dist = length( d );
+          float w = dist - life * cell * 0.45;
+          float slope = -6.0 * w * exp( -w * w * 3.0 ) * ( 1.0 - life );
+          return d / max( dist, 1e-3 ) * slope;
         }`;
       const GROUND_ALBEDO = `
         vec2 gp = vCityWorld.xz;
@@ -90,13 +107,28 @@
       const GROUND_ROUGHNESS = `
         roughnessFactor = mix( 0.92, mix( 0.8 + 0.14 * grain, 0.62, tarPatch ), roadMask );
         roughnessFactor = mix( roughnessFactor, roughnessFactor * 0.45, cityWet );
-        roughnessFactor = mix( roughnessFactor, 0.05, puddle );`;
+        // Not a perfect mirror: at 0.05 the sun's reflection in a puddle was a blinding
+        // blob that bloomed across the street from the air.
+        roughnessFactor = mix( roughnessFactor, 0.11, puddle );`;
       const GROUND_NORMAL = `
         {
           float e = 0.3, h0 = cityNoise( gp * 3.1 );
           vec2 slope = vec2( cityNoise( ( gp + vec2( e, 0.0 ) ) * 3.1 ) - h0, cityNoise( ( gp + vec2( 0.0, e ) ) * 3.1 ) - h0 ) / e;
           float bump = ( roadMask * 0.12 + paveMask * 0.06 ) * ( 1.0 - puddle ) * detailFade;
           vec3 worldNormal = normalize( vec3( -slope.x * bump, 1.0, -slope.y * bump ) );
+          // Rain landing in the puddles: the mirror-smooth water shivers, so the
+          // lamps and signs it reflects break up. Close up (a unit covers a few
+          // pixels) it is rings spreading from each drop; farther out, where rings
+          // would only alias into sparkles, a slow wobble a dozen units across.
+          if ( cityRain > 0.01 && puddle > 0.02 ) {
+            float footprint = length( fwidth( gp ) );
+            float ringsResolve = 1.0 - smoothstep( 0.3, 0.8, footprint );
+            vec2 tilt = vec2( cityNoise( gp * 0.09 + vec2( cityRainTime * 0.7, 0.0 ) ), cityNoise( gp * 0.09 + vec2( 5.3, cityRainTime * 0.6 ) ) ) - 0.5;
+            tilt *= 0.35 * ( 1.0 - ringsResolve );
+            if ( ringsResolve > 0.01 )
+              tilt += ( cityRainRings( gp, cityRainTime, 9.0 ) + cityRainRings( gp + 3.7, cityRainTime * 1.13 + 0.5, 7.0 ) ) * 0.35 * ringsResolve;
+            worldNormal = normalize( worldNormal + vec3( tilt.x, 0.0, tilt.y ) * cityRain * puddle );
+          }
           normal = normalize( ( viewMatrix * vec4( worldNormal, 0.0 ) ).xyz );
         }`;
       const groundTexel = { value: new Three.Vector2(1 / terrain.width, 1 / terrain.height) };
@@ -106,8 +138,10 @@
         cityMaterialPatch(shader);
         shader.uniforms.cityGroundTexel = texel;
         const hill = colorChunk !== '#include <map_fragment>' ? '#define CITY_HILL\n' : '';
+        shader.uniforms.cityRain = surfaceUniforms.cityRain;
+        shader.uniforms.cityRainTime = surfaceUniforms.cityRainTime;
         shader.fragmentShader = shader.fragmentShader
-          .replace('#include <common>', '#include <common>\n' + hill + 'uniform vec2 cityGroundTexel;\n' + SURFACE_NOISE)
+          .replace('#include <common>', '#include <common>\n' + hill + 'uniform vec2 cityGroundTexel;\nuniform float cityRain;\nuniform float cityRainTime;\n' + SURFACE_NOISE + RAIN_RINGS)
           .replace(colorChunk, colorChunk + '\n' + GROUND_ALBEDO)
           .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + GROUND_ROUGHNESS)
           .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = 0.0;')
@@ -152,6 +186,8 @@
         m.customProgramCacheKey = () => 'city-foliage';
       }
       function updateSurfaces(deltaSeconds) {
+        surfaceUniforms.cityRain.value = weather.rain;
+        surfaceUniforms.cityRainTime.value = (surfaceUniforms.cityRainTime.value + deltaSeconds) % 1000;
         surfaceUniforms.cityWindTime.value += deltaSeconds * (1 + weather.wind * 1.5);
         // Subtle: a crown moves a few inches in a breeze, a foot or so in a gale.
         surfaceUniforms.cityWindAmp.value = 0.25 + weather.wind * 0.9 + weather.rain * 0.3;

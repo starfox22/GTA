@@ -532,7 +532,10 @@
       function updateHeadlightBeams() {
         let heads = 0,
           tails = 0;
-        const night = nightAmount;
+        // Lamps are on at night and in a downpour (weather3d.js); wet tarmac
+        // stretches and brightens the beams.
+        const night = vehicleLampAmount(),
+          wetBoost = 1 + weather.wet * 0.5;
         if (night > 0.2)
           for (const c of vehicles) {
             if (heads >= BEAM_CAPACITY) break;
@@ -551,7 +554,7 @@
               beamPosition.set(c.x + cos * spec.l * 0.48, ground, c.y + sin * spec.l * 0.48);
               beamScale.set(spec.truck ? 120 : 95, 1, spec.truck ? 62 : 52);
               headBeams.setMatrixAt(heads, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
-              headBeams.setColorAt(heads, beamColor.setScalar(night * share * 0.55));
+              headBeams.setColorAt(heads, beamColor.setScalar(night * share * 0.55 * wetBoost));
               heads++;
             }
             beamPosition.set(c.x - cos * (spec.l * 0.5 + 9), ground, c.y - sin * (spec.l * 0.5 + 9));
@@ -635,8 +638,9 @@
           warmLampBase = warmLamp.color.clone();
           tailLampBase = tailLamp.color.clone();
         }
-        warmLamp.color.copy(warmLampBase).multiplyScalar(1 + night * 3.5);
-        tailLamp.color.copy(tailLampBase).multiplyScalar(1 + night * 2.5);
+        const lampsOn = vehicleLampAmount();
+        warmLamp.color.copy(warmLampBase).multiplyScalar(1 + lampsOn * 3.5);
+        tailLamp.color.copy(tailLampBase).multiplyScalar(1 + lampsOn * 2.5);
         updateHeadlightBeams();
         // Moonlight and sky light strong enough to read the streets by at night.
         sun.intensity += night * 0.55;
@@ -658,6 +662,8 @@
         // AO reads at street scale on the ground and grows with the view from the air.
         postLook.aoRadius = clamp(18 / Math.max(0.25, viewZoom), 18, 72);
         postLook.aoIntensity = 1.5;
+        // Rain and lightning on top of the time of day (weather3d.js).
+        weatherGrade();
       }
       /**
        * SHADOW CASTERS

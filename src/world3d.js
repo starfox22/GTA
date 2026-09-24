@@ -116,6 +116,8 @@
         uWake: { value: null },
         uWakeRect: { value: new Three.Vector4(0, 0, 1 / 2048, 1 / 1024) },
         uWakeOn: { value: 0 },
+        // Rain on the sea: rings from the drops, the glitter dulled (weather.rain).
+        uRain: { value: 0 },
         // Distance haze (flight-view3d.js) so open sea fades like the land does.
         ...Three.UniformsUtils.clone(Three.UniformsLib.fog),
       };
@@ -191,6 +193,18 @@
           uniform sampler2D uWake;
           uniform vec4 uWakeRect;
           uniform float uWakeOn;
+          uniform float uRain;
+          vec2 rainRings(vec2 p, float t, float cell){
+            vec2 c = floor(p / cell), f = p / cell - c;
+            float h = fract(sin(dot(c, vec2(127.1, 311.7))) * 43758.5453);
+            vec2 centre = vec2(fract(sin(dot(c + 3.1, vec2(127.1, 311.7))) * 43758.5453), fract(sin(dot(c + 7.7, vec2(127.1, 311.7))) * 43758.5453)) * 0.6 + 0.2;
+            float life = fract(t * 1.3 + h);
+            vec2 d = (f - centre) * cell;
+            float dist = length(d);
+            float w = dist - life * cell * 0.45;
+            float slope = -6. * w * exp(-w * w * 3.) * (1. - life);
+            return d / max(dist, 1e-3) * slope;
+          }
           #include <fog_pars_fragment>
           #include <city_hdr_pars>
           float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -221,6 +235,13 @@
             float fine = 1. - smoothstep(1.2, 6.5, footprint);
             rippleScale *= mix(0.3, 1., fine);
             vec3 n = normalize(vNormal + vec3((h0 - hx) * 2.2, 0., (h0 - hz) * 2.2) * rippleScale);
+            // Rain: rings from the drops wherever they land (only where they resolve).
+            // Rings only where a unit spans a few pixels; any coarser and they alias.
+            float ringsResolve = 1. - smoothstep(0.3, 0.8, footprint);
+            if (uRain > 0.01 && ringsResolve > 0.01) {
+              vec2 rr = rainRings(vWorld.xz, uTime, 9.) + rainRings(vWorld.xz + 4.3, uTime * 1.17 + 0.3, 7.);
+              n = normalize(n + vec3(rr.x, 0., rr.y) * 0.35 * uRain * ringsResolve);
+            }
             // Boat wakes (wakes3d.js): their waves tilt the surface so they catch the
             // sun and the sky like the swell does; their foam is mixed in below.
             float wakeFoam = 0.;
@@ -264,7 +285,9 @@
             float spec = pow(max(dot(reflected, viewDir), 0.), mix(110., 320., fine)) * mix(0.4, 2.4, fine * fine)
                        + pow(max(dot(reflected, viewDir), 0.), 28.) * 0.22;
             vec3 sunColor = mix(vec3(1., .96, .86), vec3(1., .62, .34), uDusk);
-            color += sunColor * spec * (0.25 + 1.1 * uDay);
+            color += sunColor * spec * (0.25 + 1.1 * uDay) * (1. - uRain * 0.75);
+            // A shower greys the sea and roughens it into a pale sheen.
+            color = mix(color, color * 0.82 + sky * 0.1, uRain * 0.5);
             // Moon path and shoreline light spill at night.
             float sparkle = smoothstep(0.78, 0.92, vnoise(vWorld.xz * 0.9 + uTime * 0.6)) * fine;
             color += vec3(.75, .82, 1.) * sparkle * 0.08 * (1. - uDay) * (0.3 + fresnel);
@@ -885,6 +908,7 @@
         drinkLabel.visible = drinkLabel.userData.backing.visible =
           !!rooftopJob() && player.roof && !rooftopJob().killRegistered;
         const light = daylight();
+        waterUniforms.uRain.value = weather.rain;
         waterUniforms.uTime.value = gameTime;
         waterUniforms.uDay.value = 0.12 + 0.88 * light;
         waterUniforms.uDusk.value = clamp(1 - Math.abs(light - 0.3) / 0.28, 0, 1);

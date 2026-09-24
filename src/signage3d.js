@@ -27,7 +27,7 @@
        * (paintLampLight), so a neon sign tints the pavement and the facade under it.
        */
       const GLOW_CAPACITY = 9000,
-        STREAK_CAPACITY = 1400,
+        STREAK_CAPACITY = 3400,
         glowCenters = new Float32Array(GLOW_CAPACITY * 3),
         glowColors = new Float32Array(GLOW_CAPACITY * 3),
         glowParams = new Float32Array(GLOW_CAPACITY * 4),

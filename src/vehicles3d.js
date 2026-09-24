@@ -332,6 +332,9 @@
         }
         box(b, l * 0.49, 6.5, 0, 2, 3, w * 0.9, chrome);
         box(b, l * 0.475, 11, 0, 1, 4, w * 0.43, darkMetal);
+        // Wipers on the upright windscreen (bus: 17-29, cab: 15.5-22.5).
+        if (bus) addWipers(model, b, l * 0.466 + 0.4, 17.2, l * 0.466 + 0.4, 28, w * 0.44);
+        else addWipers(model, b, l * 0.447 + 0.4, 15.6, l * 0.447 + 0.4, 22, w * 0.415);
         if (ambulance)
           for (const side of [-1, 1])
             model.strobes.push(
@@ -349,6 +352,81 @@
               ),
             );
         return model;
+      }
+      /**
+       * WINDSCREEN WIPERS
+       * Every car, van, truck and bus carries a tandem pair on its windscreen,
+       * parked along the bottom of the glass. In the rain they sweep with the
+       * intensity: an intermittent wipe in a drizzle, a steady beat in rain,
+       * fast in a downpour (and on for a moment after the rain stops), each car
+       * on its own phase. Traffic runs them on MEDIUM and up; on LOW only the
+       * player's car does. They are hidden (no draw calls) when it is dry.
+       * `addWipers` works in the body's frame from the glass's bottom edge
+       * (x0, y0) to its top edge (x1, y1), `halfWidth` across.
+       */
+      const wiperGeometry = (() => {
+        // Unit length along +z from the pivot: the arm, and the rubber blade on its outer part.
+        const arm = new Three.BoxGeometry(0.34, 0.3, 1).translate(0, 0.15, 0.5),
+          blade = new Three.BoxGeometry(0.62, 0.42, 0.8).translate(0, 0.28, 0.56),
+          merged = new Three.BufferGeometry();
+        for (const name of ['position', 'normal', 'uv'])
+          merged.setAttribute(
+            name,
+            new Three.BufferAttribute(new Float32Array([...arm.attributes[name].array, ...blade.attributes[name].array]), arm.attributes[name].itemSize),
+          );
+        const offset = arm.attributes.position.count;
+        merged.setIndex([...arm.index.array, ...blade.index.array].map((v, i) => (i < arm.index.count ? v : v + offset)));
+        merged.computeBoundingSphere();
+        return merged;
+      })();
+      const wiperUp = new Three.Vector3(),
+        wiperNormal = new Three.Vector3(),
+        wiperAcross = new Three.Vector3(),
+        wiperBasis = new Three.Matrix4();
+      function addWipers(model, body, x0, y0, x1, y1, halfWidth) {
+        const plane = new Three.Group();
+        // The glass's own frame: x up the glass, y out of it, z across.
+        wiperUp.set(x1 - x0, y1 - y0, 0).normalize();
+        wiperNormal.set(wiperUp.y, -wiperUp.x, 0);
+        if (wiperNormal.x < 0) wiperNormal.negate();
+        wiperAcross.crossVectors(wiperUp, wiperNormal);
+        plane.quaternion.setFromRotationMatrix(wiperBasis.makeBasis(wiperUp, wiperNormal, wiperAcross));
+        plane.position.set(x0 - wiperUp.x * 0.3, y0 + 0.4, 0);
+        body.add(plane);
+        const length = halfWidth * 0.95,
+          arms = [];
+        // Tandem: both park towards the same side and sweep up together.
+        for (const z of [-halfWidth * 0.94, -halfWidth * 0.02]) {
+          const arm = new Three.Mesh(wiperGeometry, darkMetal);
+          arm.position.set(0.2, 0.15, z);
+          arm.scale.set(1, 1, length);
+          arm.castShadow = arm.receiveShadow = false;
+          plane.add(arm);
+          arms.push(arm);
+        }
+        plane.visible = false;
+        model.wipers = { plane, arms, phase: Math.random(), angle: 0 };
+      }
+      function updateWipers(c, m, deltaSeconds) {
+        const w = m.wipers,
+          tier = activeTier || graphicsTier(),
+          driven = c.hp > 0 && (c === player.car || (c.ai && tier.name !== 'LOW')),
+          rain = weather.rain,
+          on = driven && (rain > 0.06 || (w.angle > 0.01 && weather.wet > 0.3));
+        w.plane.visible = on || w.angle > 0.01;
+        if (!w.plane.visible) return;
+        // Sweeps per second and the pause between them.
+        const rate = rain > 0.7 ? 1.35 : rain > 0.3 ? 0.9 : 0.55,
+          pause = rain > 0.3 ? 0 : 2.4;
+        if (on || w.phase % 1 > 0.001) w.phase += deltaSeconds * rate;
+        const cycle = 1 + pause * rate,
+          u = w.phase % cycle,
+          sweep = u < 1 ? Math.sin(u * Math.PI) : 0,
+          // Ease at the ends like a real wiper motor's crank.
+          angle = 1.72 * (sweep * sweep * (3 - 2 * sweep));
+        if (!on && u >= 1) w.phase = 0;
+        w.angle = angle;
+        for (const arm of w.arms) arm.rotation.y = angle;
       }
       function makeJetSki(vehicle) {
         const model = specialVehicle(vehicle),

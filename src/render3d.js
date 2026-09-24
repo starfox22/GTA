@@ -804,7 +804,11 @@
       // @include src/cityscape3d.js
       // Street lamp halos in the glow field: lit after dark, dimmed with the district's
       // power, switched off while a car has the lamp down (damage3d.js sets `visible`).
-      for (const p of lampGlowPending) p.prop.halo = glowHandle(addGlow(p.x, 33, p.z, 24, '#ffd99b', 0.55, { day: 0, phase: 0 }));
+      for (const p of lampGlowPending) {
+        p.prop.halo = glowHandle(addGlow(p.x, 33, p.z, 24, '#ffd99b', 0.55, { day: 0, phase: 0 }));
+        // Its reflection smeared down the wet street towards the camera (signage3d.js).
+        addStreak(p.x, p.z + 8, 8, 64, '#ffcf96', 0.55);
+      }
       lampGlowPending.length = 0;
       // Street signs (after the cityscape: their glow and spill live in signage3d.js).
       sign('ROYAL CINEMA', 948, 1056, 106, '#f6b9cb', false, { marquee: true });
@@ -1069,7 +1073,12 @@
         }
         const hood = box(body, l * 0.34, h + 0.05, 0, l * 0.25, 0.4, w * 0.67, paint);
         const bumperOrigins = bumpers.map((b) => b.position.clone());
+        // Wipers along the foot of the windscreen (vehicles3d.js); the glass runs from
+        // the cowl (0.27 l, h) up to the roof's leading edge.
+        const wiperHost = {};
+        if (!open && !rodCar) addWipers(wiperHost, body, l * 0.27, h - 0.5, l * (van || rally || limo ? 0.13 : 0.07), roof, w * 0.4);
         return {
+          wipers: wiperHost.wipers,
           group,
           body,
           paint,
@@ -2000,13 +2009,17 @@
               m.cargo.forEach((g, i) => (g.visible = i < (c.cargoCount || 0)));
             }
             if (m.nightLights) {
-              const lit = c.hp > 0 && (c.ai || c === player.car) && nightAmount > 0.25;
+              // Lamps on at night and in heavy rain (weather3d.js).
+              const lampsOn = vehicleLampAmount(),
+                lit = c.hp > 0 && (c.ai || c === player.car) && lampsOn > 0.25;
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
                 sprite.visible = lit && !m.lampOut?.[k];
-                if (lit) sprite.material.opacity = (k % 2 ? 0.55 : 0.85) * nightAmount;
+                if (lit) sprite.material.opacity = (k % 2 ? 0.55 : 0.85) * lampsOn;
               }
             }
+            // Windscreen wipers in the rain (vehicles3d.js).
+            if (m.wipers) updateWipers(c, m, deltaSeconds);
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
             paintVehicle(c, m);
             if (m.crank) m.crank.rotation.z -= deltaSeconds * c.speed * 0.13;
