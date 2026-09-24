@@ -18,7 +18,13 @@ HUD (hud.js, harbor.js, shell.html)
   left, altitude on the right, a thin heading strip at the top), so the centre is clear; a
   new Settings · Gameplay · Flight HUD switch turns the instruments off (warnings stay).
 
-Combat (pursuit.js)
+Combat (swat.js, combat-rules.js, pursuit.js)
+- Snipers give a fair chance: rooftop snipers and the helicopter marksman lock for 2 s or
+  more with a rising beep and a red glow on the screen edge toward them, then fire one
+  visible tracer at where they guess you will be; keep moving and it usually misses. A hit
+  takes half your health (armour soaks some), never all of it from full, and they rest
+  4-9 s between rounds. Rooftop snipers are rare: one at a time, now and then at five stars,
+  two rounds each before they pack up.
 - No more crosses over the people you hit and no HEADSHOT caption: blood, the victim's
   reaction and a faint tick (a thump for a kill) are the only hit feedback.
 

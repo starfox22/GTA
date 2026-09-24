@@ -23,8 +23,10 @@
      */
     // `air` is the helicopter the tier sends: never more than one at a time
     // (AIR_UNITS_MAX, combat-rules.js), so the top tiers escalate on the ground and
-    // with a sharper `marksman` in that one helicopter (lock-on seconds, hit chance
-    // at a standstill, seconds between rounds).
+    // with a sharper `marksman` in that one helicopter (lock-on seconds, the most
+    // of the player's motion it leads, seconds between rounds; combat-rules.js
+    // SNIPER FIRE). `snipers` is the most rooftop marksmen at once (swat.js: one,
+    // a second only deep into a long five-star chase).
     const POLICE_TIERS = [
       null,
       // 1 star: the nearest patrols investigate and try to make an arrest.
@@ -32,14 +34,14 @@
       // 2: several cruisers, contact tactics (PIT, box), officers shoot.
       { patrols: 4, swat: 0, feds: 0, tanks: 0, every: 4.5, air: 0, roadblocks: 0, ram: true, accuracy: 0.46, deadly: true },
       // 3: more units, a helicopter with a marksman, a roadblock ahead.
-      { patrols: 5, swat: 0, feds: 0, tanks: 0, every: 3.8, air: 1, roadblocks: 1, ram: true, accuracy: 0.5, deadly: true, marksman: { lock: 1.6, hit: 0.85, rest: [2.4, 3.4] } },
+      { patrols: 5, swat: 0, feds: 0, tanks: 0, every: 3.8, air: 1, roadblocks: 1, ram: true, accuracy: 0.5, deadly: true, marksman: { lock: 2.6, lead: 0.75, rest: [5, 7] } },
       // 4: SWAT vans with armoured rifle teams, an extra cruiser, two roadblocks, and a
-      // police sniper in the helicopter who lines up faster and misses less.
-      { patrols: 5, swat: 2, feds: 0, tanks: 0, every: 3.2, air: 1, roadblocks: 2, ram: true, accuracy: 0.55, deadly: true, marksman: { lock: 1.3, hit: 0.9, rest: [2.0, 2.8] } },
-      // 5: federal agents, SWAT in five-strong teams and snipers on the rooftops
+      // police sniper in the helicopter who lines up faster and leads better.
+      { patrols: 5, swat: 2, feds: 0, tanks: 0, every: 3.2, air: 1, roadblocks: 2, ram: true, accuracy: 0.55, deadly: true, marksman: { lock: 2.4, lead: 0.85, rest: [4.5, 6.5] } },
+      // 5: federal agents, SWAT in five-strong teams, now and then a rooftop sniper
       // (swat.js), three roadblocks, the helicopter's sharpest marksman, and the army:
       // jeeps with gunners, an APC and a troop truck first, the tank later.
-      { patrols: 5, swat: 3, feds: 2, tanks: 1, jeeps: 2, apcs: 1, trucks: 1, snipers: 3, every: 2.8, air: 1, roadblocks: 3, ram: true, accuracy: 0.6, deadly: true, marksman: { lock: 1.1, hit: 0.94, rest: [1.7, 2.4] } },
+      { patrols: 5, swat: 3, feds: 2, tanks: 1, jeeps: 2, apcs: 1, trucks: 1, snipers: 2, every: 2.8, air: 1, roadblocks: 3, ram: true, accuracy: 0.6, deadly: true, marksman: { lock: 2.2, lead: 0.9, rest: [4, 6] } },
     ];
     // Seconds at five stars before the tank is sent: the light army units come first.
     const TANK_AFTER_SECONDS = 45;
@@ -1323,6 +1325,8 @@
         surrender: { seconds: Math.round(surrenderFor * 10) / 10, surrendering: playerSurrendering(), mayArrest: policeMayArrest, holdFire: policeHoldFire() },
         pursuit: { ...pursuitStats },
         swat: { ...swatStats },
+        // Sniper rounds at the player (rooftop and helicopter) and how many struck.
+        sniperFire: { ...sniperFireStats },
         wounds: woundReport(),
         marine: vehicles
           .filter((c) => c.marineUnit)

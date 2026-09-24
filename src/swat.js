@@ -13,20 +13,32 @@
      * shield stops rounds from the front (sparks, no wound); flank or rear hits
      * land. If the shield man goes down the stack breaks up.
      *
-     * ROOFTOP SNIPERS: at five stars, two or three police marksmen take up
-     * positions on the roofs round the player (a roof 30-200 units high, 220-650
-     * away, with a clear line to the street). Each one telegraphs: a red laser
-     * line from the rifle to the player and a glint on the scope while it lines
-     * up for SNIPER_AIM_SECONDS, then one heavy round, then a pause. Breaking
-     * the line resets the aim. They can be shot like anyone else (rounds climb
+     * ROOFTOP SNIPERS: only now and then at five stars. The first may come
+     * ROOF_SNIPER_FIRST seconds into the five-star chase, then one every
+     * ROOF_SNIPER_EVERY seconds on a ROOF_SNIPER_CHANCE roll; one on the roofs at
+     * a time, a second only after ROOF_SNIPER_SECOND_AFTER seconds at five stars
+     * (and never both brought in together). A marksman takes a roof round the
+     * player (30-200 units high, 220-650 away, a clear line to the street) and
+     * telegraphs: a red laser from the rifle to the player, a glint on the scope,
+     * the rising beep and the screen-edge warning (combat-rules.js SNIPER FIRE)
+     * while it lines up for SNIPER_AIM_SECONDS, then one led tracer round the
+     * player can dodge, then SNIPER_REST. Breaking the line resets the aim.
+     * After ROOF_SNIPER_SHOTS rounds, or once the player is far away, it packs
+     * up (gone when out of view). They can be shot like anyone else (rounds climb
      * to their roof); they stand down when the level drops.
      */
     const SWAT_STACK_SPACING = 13,
       SWAT_STACK_BREAK = 150,
-      ROOF_SNIPERS_MAX = 3,
       SNIPER_AIM_SECONDS = 2.4,
-      SNIPER_REST = [1.6, 2.4];
-    let roofSniperTimer = 4,
+      SNIPER_REST = [6, 9],
+      ROOF_SNIPER_FIRST = [25, 45],
+      ROOF_SNIPER_EVERY = [60, 90],
+      ROOF_SNIPER_CHANCE = 0.65,
+      ROOF_SNIPER_SECOND_AFTER = 150,
+      ROOF_SNIPER_SHOTS = 2,
+      ROOF_SNIPER_FAR = 900;
+    let roofSniperTimer = 30,
+      roofSniperChase = 0,
       roofSniperWarningAt = -100;
     const swatStats = { teams: 0, shieldBlocks: 0, snipers: 0, sniperShots: 0 };
     function swatCrewSize(stars = Math.ceil(wantedStars)) {
@@ -141,6 +153,7 @@
       return o;
     }
     function updateRoofSnipers(deltaSeconds) {
+      trackPlayerMotion(deltaSeconds);
       const stars = Math.ceil(wantedStars),
         wanted = stars >= 5 && !playerAtSea() && player.x < CITY_SIZE && player.y < CITY_SIZE;
       let live = 0;
@@ -148,9 +161,13 @@
         if (!o.roofSniper) continue;
         o.sniperAim = 0;
         if (o.hp <= 0 || o.returned) continue;
-        // Stood down (or left far behind out of sight): they pack up.
-        if (!wanted || (distanceBetween(o, player) > 1100 && !crowdInView(o.x, o.y, 80))) {
-          o.returned = true;
+        // Stood down, done shooting or left far behind: they pack up, and are
+        // gone once nobody is looking at their roof.
+        if (!wanted || o.sniperShots >= ROOF_SNIPER_SHOTS || distanceBetween(o, player) > ROOF_SNIPER_FAR) {
+          o.sniperDone = true;
+          o.aiming = false;
+          o.sniperLock = 0;
+          if (!crowdInView(o.x, o.y, 80) || gameTime - (o.sniperDoneAt ??= gameTime) > 20) o.returned = true;
           continue;
         }
         live++;
@@ -174,40 +191,35 @@
         }
         o.sniperLock += deltaSeconds;
         o.sniperAim = clamp(o.sniperLock / SNIPER_AIM_SECONDS, 0, 1);
+        noteSniperLock(o, o.sniperAim);
         if (o.sniperLock > 0.4 && gameTime - roofSniperWarningAt > 7) {
           roofSniperWarningAt = gameTime;
-          tell('SNIPER ON THE ROOFTOPS · GET INTO COVER', 2.4);
-          tone(1400, 0.05, 0.08, 'square', 1500);
+          tell('SNIPER ON THE ROOFTOPS · KEEP MOVING OR GET INTO COVER', 2.4);
         }
         if (o.sniperLock < SNIPER_AIM_SECONDS) continue;
-        // The round: sure against a target standing still, spoiled by speed.
+        // The round: a tracer at where the marksman guesses the player will be.
         o.sniperLock = 0;
         o.sniperRestUntil = gameTime + randomBetween(...SNIPER_REST);
+        o.sniperShots = (o.sniperShots || 0) + 1;
         swatStats.sniperShots++;
-        const speed = player.car ? Math.hypot(player.car.vx || 0, player.car.vy || 0) : keys.ShiftLeft ? 150 : keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD ? 90 : 0,
-          chance = clamp(0.85 - speed / 400, 0.25, 0.85);
-        let a = headingBetween(o, player);
-        if (seededRandom() > chance) a += (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.03, 0.07);
-        const origin = { x: o.x + Math.cos(a) * 12, y: o.y + Math.sin(a) * 12, altitude: entityElevation(o) };
-        bullets.push({
-          ...origin,
-          ...shotVelocity(origin, player, 1500, a),
-          life: 0.8,
-          dmg: 60,
-          playerDmg: 14,
-          enemy: true,
-          faction: 'police',
-          owner: o,
-          target: player,
-        });
+        const a0 = headingBetween(o, player),
+          origin = { x: o.x + Math.cos(a0) * 12, y: o.y + Math.sin(a0) * 12, altitude: entityElevation(o) },
+          round = fireSniperRound(o, origin, 1100, 0.9, 60),
+          a = Math.atan2(round.vy, round.vx);
         playSample('pistol', 0.5, 0.6, o);
         if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
       }
-      if (!wanted) return;
-      roofSniperTimer -= deltaSeconds;
-      if (roofSniperTimer <= 0) {
-        roofSniperTimer = 5;
-        if (live < Math.min(ROOF_SNIPERS_MAX, policeTier().snipers || 0)) spawnRoofSniper();
+      if (!wanted) {
+        roofSniperChase = 0;
+        roofSniperTimer = randomBetween(...ROOF_SNIPER_FIRST);
+        return;
       }
+      roofSniperChase += deltaSeconds;
+      roofSniperTimer -= deltaSeconds;
+      if (roofSniperTimer > 0) return;
+      // Now and then, never two in quick succession.
+      roofSniperTimer = randomBetween(...ROOF_SNIPER_EVERY);
+      const allowed = Math.min(policeTier().snipers || 0, roofSniperChase >= ROOF_SNIPER_SECOND_AFTER ? 2 : 1);
+      if (live < allowed && seededRandom() < ROOF_SNIPER_CHANCE && !spawnRoofSniper()) roofSniperTimer = 8;
     }
     // END SUBSYSTEM: src/swat.js

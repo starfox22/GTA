@@ -2937,12 +2937,14 @@
           let bi = 0;
           for (const b of bullets) {
             if (bi + 6 > tracerPositions.length) break;
+            // A sniper round (combat-rules.js SNIPER FIRE) leaves a longer streak.
+            const tail = b.tracer || 0.009;
             tracerPositions[bi++] = b.x;
             tracerPositions[bi++] = 9 + (b.altitude || 0);
             tracerPositions[bi++] = b.y;
-            tracerPositions[bi++] = b.x - b.vx * 0.009;
-            tracerPositions[bi++] = 9 + (b.altitude || 0) - (b.vz || 0) * 0.009;
-            tracerPositions[bi++] = b.y - b.vy * 0.009;
+            tracerPositions[bi++] = b.x - b.vx * tail;
+            tracerPositions[bi++] = 9 + (b.altitude || 0) - (b.vz || 0) * tail;
+            tracerPositions[bi++] = b.y - b.vy * tail;
           }
           tracerGeo.setDrawRange(0, bi / 3);
           tracerGeo.attributes.position.needsUpdate = true;

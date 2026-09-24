@@ -2410,6 +2410,25 @@ kbd {
     filter: blur(6px);
   }
 }
+/* A marksman lining up on the player (hud.js SNIPER WARNING): a red glow on
+   the screen edge toward the shooter that grows as the lock closes. */
+#sniperWarning {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--sniper-x, 50%) var(--sniper-y, 0%),
+    #ff2a1ef0 0,
+    #ff2a1e88 12%,
+    #ff2a1e00 36%
+  );
+  transition: opacity 0.2s;
+}
+#sniperWarning.on {
+  opacity: var(--sniper-aim, 0.4);
+}
 /* Context prompt (hud.js INTERACTION PROMPT): pops in just under the player,
    then after a few seconds docks as a compact chip under the navigation pill so
    the middle of the screen stays clear. Shown and hidden with visibility and
@@ -5096,6 +5115,7 @@ body.no-key-hints .quickkeys {
       <small id="announceSmall"></small><strong id="announceBig"></strong>
     </div>
     <div id="interaction"></div>
+    <div id="sniperWarning" aria-hidden="true"></div>
     <!-- Flight HUD (hud.js, FLIGHT HUD): shown in an aircraft only. -->
     <div id="flightHud" aria-hidden="true">
       <div class="fh-frame">

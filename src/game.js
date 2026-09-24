@@ -2826,8 +2826,10 @@
               !['tank', 'bus', 'truck', 'flatbed'].includes(c.type) &&
               !isAircraft(c) &&
               seededRandom() < 0.55
-            )
-              hurt((b.playerDmg ?? b.dmg) * 0.6);
+            ) {
+              if (b.damageKind === 'sniper') sniperFireStats.carHits++;
+              hurt((b.playerDmg ?? b.dmg) * 0.6, b.damageKind);
+            }
             // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
             hitKind = bulletHitVehicle(c, b);
             break;
@@ -2892,7 +2894,8 @@
             (b.faction !== 'police' || b.target === player) &&
             Math.hypot(b.x - player.x, b.y - player.y) < 10
           ) {
-            hurt(b.playerDmg ?? b.dmg);
+            if (b.damageKind === 'sniper') sniperFireStats.hits++;
+            hurt(b.playerDmg ?? b.dmg, b.damageKind);
             playerHitFeedback(b);
             impact = true;
             hitKind = 'flesh';

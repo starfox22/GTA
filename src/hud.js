@@ -507,9 +507,41 @@
         toastBox.classList.contains('show') && now - centreCards.toastAt >= CARD_SETTLE_AFTER,
       );
     }
+    /**
+     * SNIPER WARNING
+     * While a rooftop sniper or the helicopter marksman locks on (combat-rules.js
+     * sniperThreat), the screen edge toward the shooter glows red, stronger as
+     * the lock closes. The direction is taken on screen (the camera is tilted,
+     * so a helicopter overhead shows above the player), or on the map without
+     * the 3D view.
+     */
+    function updateSniperWarning() {
+      const box = getElement('sniperWarning'),
+        on = gameMode === 'play' && gameTime - sniperThreat.at < 0.25 && sniperThreat.aim > 0;
+      box.classList.toggle('on', on);
+      if (!on) return;
+      let dx = sniperThreat.x - player.x,
+        dy = sniperThreat.y - player.y;
+      if (city3D) {
+        const from = city3D.project(player.x, player.y, entityElevation(player) + 20),
+          to = city3D.project(sniperThreat.x, sniperThreat.y, sniperThreat.altitude + 20);
+        if (Number.isFinite(to.x) && Number.isFinite(to.y) && Math.hypot(to.x - from.x, to.y - from.y) > 1) {
+          dx = to.x - from.x;
+          dy = to.y - from.y;
+        }
+      }
+      const a = Math.atan2(dy, dx),
+        c = Math.cos(a),
+        s = Math.sin(a),
+        k = 1 / Math.max(Math.abs(c), Math.abs(s));
+      box.style.setProperty('--sniper-x', (50 + 50 * c * k).toFixed(1) + '%');
+      box.style.setProperty('--sniper-y', (50 + 50 * s * k).toFixed(1) + '%');
+      box.style.setProperty('--sniper-aim', (0.35 + 0.65 * sniperThreat.aim).toFixed(2));
+    }
     /* Called at the end of updateUI(). */
     function updateHud() {
       commitPrompt();
+      updateSniperWarning();
       settleCentreCards();
       watchDockLine();
       updateFlightHud();
