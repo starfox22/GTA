@@ -2,6 +2,25 @@
 
 ## Unreleased — The islands rearranged
 
+Marea Beach Club (beachclub.js, beachclub-audio.js, beachclub3d.js; SOURCE_GUIDE section 4)
+- On the beach-club plot at the west end of Palm Keys Beach: a street forecourt with a
+  snaking roped queue, red carpet, bronze portal and neon sign; a stage with an LED wall and
+  speaker stacks; an LED dance floor under a lighting truss; the main bar under white sails;
+  a roped VIP terrace; daybeds and cabanas; an infinity pool with a swim-up bar; a sunken fire
+  lounge; a deck with a gate onto the club's own sand, sunbeds and parasols.
+- Social club 09:30-18:30 (loungers, swimmers, bar guests, waiters with trays, a balearic
+  set), sunset sessions with a setup crew, a nightclub 21:45-04:15 (a packed floor dancing to
+  the beat, DJ and MC on stage, moving heads, lasers, strobe, searchlights), closing with
+  taxis at the kerb, cleaners at dawn. Procedural music on a look-ahead scheduler, muffled
+  by the wall from the street and open inside.
+- The door: bouncers and a host work the line with spoken exchanges (let in, turned away,
+  people walking off complaining); the player pays $40 cover or buys a $250 VIP band with E.
+  Gunfire empties the club through the door and the beach gate; the bouncers hold the door,
+  call it in and shove the shooter away.
+- Crowd: seven beat-synced dance styles and a floor-wide jump on the drop; swim, lounge, DJ,
+  bartend, tray, drink, sparkler, sweep, stop and shove poses; cocktail, tray and bottle props.
+  `DeadEndCity.beachClub()` reports the club.
+
 World layout (docs/audit/world-layout.md, SOURCE_GUIDE section 4)
 - West to east: Palm Keys (the tropical island) across Palm Sound from Northbank, Northbank
   in the middle, Ridgeline's forest and mountains across a Marlow Bay now 2400..2700 wide.
