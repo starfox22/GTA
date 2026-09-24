@@ -566,7 +566,7 @@
         const LASERS = 12,
           lasers = new Three.InstancedMesh(
             laserGeo,
-            new Three.MeshBasicMaterial({ toneMapped: false, transparent: true, opacity: 0.85, blending: Three.AdditiveBlending, depthWrite: false }),
+            new Three.MeshBasicMaterial({ toneMapped: false, transparent: true, opacity: 0.55, blending: Three.AdditiveBlending, depthWrite: false }),
             LASERS,
           );
         lasers.frustumCulled = false;
@@ -805,8 +805,7 @@
         const PALETTE = ['#ff2fa8', '#27e3ff', '#9b4dff', '#ffb43a', '#30ff9a', '#ff4a3a'].map((c) => new Three.Color(c));
         // Palette by bar number; bars count from just below zero when a set starts.
         const hue = (n) => PALETTE[((n % PALETTE.length) + PALETTE.length) % PALETTE.length];
-        const WHITE = new Three.Color('#ffffff'),
-          scratchColor = new Three.Color(),
+        const scratchColor = new Three.Color(),
           clubMatrix = new Three.Matrix4(),
           clubQuat = new Three.Quaternion(),
           clubDown = new Three.Vector3(0, -1, 0),
@@ -1028,13 +1027,13 @@
             for (let i = 0; i < LASERS; i++) {
               const s = i / (LASERS - 1) - 0.5,
                 a = Math.PI / 2 + s * fan * 2 + Math.sin(g.beat * Math.PI * 0.5) * 0.35,
-                tilt = -0.1 - 0.04 * Math.sin(g.beat * Math.PI + i);
+                tilt = -0.13 - 0.03 * Math.sin(g.beat * Math.PI + i);
               clubPos.set(MX + 200, 16, MY + 84);
               clubDir.set(Math.cos(a), tilt, Math.sin(a)).normalize();
               clubQuat.setFromUnitVectors(clubX, clubDir);
-              clubScale.set(170, 0.35, 0.35);
+              clubScale.set(104, 0.28, 0.28);
               lasers.setMatrixAt(i, clubMatrix.compose(clubPos, clubQuat, clubScale));
-              lasers.setColorAt(i, scratchColor.copy(i % 3 === 0 ? WHITE : laserCol).multiplyScalar(blink));
+              lasers.setColorAt(i, scratchColor.copy(i % 3 === 0 ? hue(Math.floor(bar / 4) + 1) : laserCol).multiplyScalar(blink));
             }
             lasers.instanceMatrix.needsUpdate = true;
             lasers.instanceColor.needsUpdate = true;
