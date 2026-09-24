@@ -56,7 +56,8 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 
 Every key can be rebound in **Settings · Controls** (from the title menu or the pause
 menu), which also warns about clashes and offers to swap. Settings has four tabs:
-GRAPHICS (quality tier, FPS counter, character see-through), AUDIO (sound on/off; master,
+GRAPHICS (quality tier, frame limiter at 30 / 60 / 120 FPS or unlimited, FPS counter,
+character see-through), AUDIO (sound on/off; master,
 effects, radio music and voice volumes; radio voices), GAMEPLAY (NPC chatter, minimap,
 control hints) and CONTROLS (touch controls, key bindings). Touch controls appear
 automatically on phones and tablets. Progress and every setting save to the browser's

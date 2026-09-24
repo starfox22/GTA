@@ -63,7 +63,8 @@ Two closures matter:
 - Save data (`localStorage`, key `dead-end-city-v1`) holds campaign indices, cash, clock and
   weapons. Settings have their own keys: `dead-end-city-settings` (volumes, sound, radio
   voices, NPC chatter), `-controls` (key bindings), `-hud` (minimap fold and zoom),
-  `-graphics`, `-fps`, `-touch`, `-cutaway` and `-radio-v2`. Adding missions needs no schema
+  `-graphics`, `-frame-limit` (30, 60, 120 or unlimited: the frame loop's cap,
+  game.js FRAME LIMITER), `-fps`, `-touch`, `-cutaway` and `-radio-v2`. Adding missions needs no schema
   change.
 - Input goes through named actions (section 4d): `keys.KeyW` means "the forward action is
   held", whatever key the player bound to it.

@@ -7,7 +7,8 @@
      * One SETTINGS screen, reached from the title menu and the pause menu, with
      * four tabs:
      *
-     *   GRAPHICS  quality tier (quality.js), FPS counter (game.js), character
+     *   GRAPHICS  quality tier (quality.js), frame limiter and FPS counter
+     *             (game.js, FRAME LIMITER; 'dead-end-city-frame-limit'), character
      *             see-through: the cutaway round the player under a roof, owned
      *             by the renderer (city3D.setCharacterCutaway, which also reads
      *             localStorage 'dead-end-city-cutaway' at startup: 'off' = off)
@@ -100,6 +101,21 @@
           options: GRAPHICS_ORDER.map((id) => [id, id === 'auto' ? 'AUTO' : GRAPHICS_TIERS[id].name]),
           get: () => graphicsSetting,
           set: (value) => cycleGraphicsSetting(value),
+        },
+        {
+          id: 'frameLimit',
+          kind: 'choice',
+          label: 'Frame limiter',
+          note: () =>
+            'Cap the frame rate to save power or keep it steady. UNLIMITED follows the display\u2019s refresh rate.',
+          options: [
+            ['30', '30'],
+            ['60', '60'],
+            ['120', '120'],
+            ['unlimited', 'UNLIMITED'],
+          ],
+          get: () => (frameLimit() ? String(frameLimit()) : 'unlimited'),
+          set: (value) => setFrameLimit(value),
         },
         {
           id: 'fps',

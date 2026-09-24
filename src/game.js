@@ -4882,10 +4882,61 @@
       fpsMeter.since = t;
     }
     applyFpsSetting();
+    /**
+     * FRAME LIMITER
+     * Settings · Graphics caps the frame rate at 30, 60 or 120 FPS, or leaves it
+     * UNLIMITED (the display's refresh rate; the default). Remembered in
+     * localStorage under 'dead-end-city-frame-limit'. requestAnimationFrame still
+     * fires every display refresh; a frame is only simulated and drawn once the
+     * cap's interval has come round. The next due time advances by exactly one
+     * interval per drawn frame (so the average is the cap), a frame arriving a
+     * little early (vsync jitter, up to a fifth of the interval) still counts,
+     * so 60 on a 60 Hz display stays 60 rather than falling to 30, and after a
+     * stall the schedule restarts from now instead of racing to catch up. Skipped
+     * refreshes do nothing at all: the next drawn frame's time step covers them.
+     */
+    const FRAME_LIMITS = [30, 60, 120, 0],
+      frameLimiter = { limit: 0, next: 0 };
+    try {
+      const saved = localStorage.getItem('dead-end-city-frame-limit');
+      if (saved === 'unlimited') frameLimiter.limit = 0;
+      else if (FRAME_LIMITS.includes(Number(saved))) frameLimiter.limit = Number(saved);
+    } catch {}
+    // 30, 60, 120, or 0 for unlimited.
+    function frameLimit() {
+      return frameLimiter.limit;
+    }
+    function setFrameLimit(value) {
+      const limit = value === 'unlimited' ? 0 : Number(value);
+      if (!FRAME_LIMITS.includes(limit)) return frameLimiter.limit;
+      frameLimiter.limit = limit;
+      frameLimiter.next = 0;
+      try {
+        localStorage.setItem('dead-end-city-frame-limit', limit ? String(limit) : 'unlimited');
+      } catch {}
+      return limit;
+    }
+    // Whether the frame at time t is to be drawn (and, if so, books the next one).
+    function frameDue(t) {
+      const limit = frameLimiter.limit;
+      if (!limit) return true;
+      const interval = 1000 / limit;
+      if (!frameLimiter.next || t - frameLimiter.next > interval * 3) frameLimiter.next = t;
+      if (t < frameLimiter.next - interval * 0.2) return false;
+      frameLimiter.next += interval;
+      if (frameLimiter.next < t) frameLimiter.next = t;
+      return true;
+    }
     function frame(t) {
+      if (!frameDue(t)) {
+        requestAnimationFrame(frame);
+        return;
+      }
       syncTouchInput();
       updateFpsCounter(t);
-      const deltaSeconds = Math.min(0.033, Math.max(0, (t - lastTime) / 1000));
+      // At a 30 FPS cap a frame is 33.3 ms: the step limit allows it, so the
+      // simulation keeps real time rather than running 1% slow.
+      const deltaSeconds = Math.min(frameLimiter.limit === 30 ? 0.04 : 0.033, Math.max(0, (t - lastTime) / 1000));
       // Headline cards run on the wall clock: a phone call or pause that opens
       // right after one must not leave it frozen across the middle of the screen.
       if (announceTime > 0) {
@@ -5690,6 +5741,8 @@
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
           if (typeof changes.voices === 'boolean' && changes.voices !== voicesOn) toggleVoices();
           if (typeof changes.fps === 'boolean' && changes.fps !== fpsMeter.shown) toggleFpsCounter();
+          // 30, 60, 120, or 'unlimited' (0 also means unlimited).
+          if (changes.frameLimit !== undefined) setFrameLimit(changes.frameLimit === 0 ? 'unlimited' : changes.frameLimit);
           if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
@@ -5701,6 +5754,7 @@
         }
         return {
           graphics: graphicsSetting,
+          frameLimit: frameLimit() || 'unlimited',
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,
           sound: soundOn,

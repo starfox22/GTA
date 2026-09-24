@@ -114,8 +114,9 @@
      * what it is doing. With the setting on AUTO, every frame feeds the time
      * since the last one and the CPU milliseconds the game spent on it:
      *
-     *  - GPU-bound and slow (frames averaging under ~52 FPS while the CPU work
-     *    is well inside the frame): the scene is drawn at a lower resolution,
+     *  - GPU-bound and slow (frames averaging 15% over the budget, i.e. under
+     *    ~52 FPS, or under ~26 FPS with the frame limiter at 30, while the CPU
+     *    work is well inside the frame): the scene is drawn at a lower resolution,
      *    in 10% steps down to MIN_SCALE, and upsampled by the composite pass
      *    (postfx3d.js), so the HUD stays sharp.
      *  - Still slow at the lowest scale, or CPU-bound (the simulation and draw
@@ -134,12 +135,16 @@
       if (graphicsSetting !== 'auto' || !city3D || !city3D.setRenderScale || document.hidden) return;
       if (!(frameMs > 0) || frameMs > 250) return;
       adaptive.average = adaptive.average ? adaptive.average * 0.92 + frameMs * 0.08 : frameMs;
-      const seconds = frameMs / 1000,
-        slow = adaptive.average > 19.2,
+      // The frame budget: 60 FPS, or the frame limiter's cap below that (a 30 FPS
+      // cap's 33 ms frames are on time, not slow). A cap above 60 does not make
+      // AUTO trade image quality for more than 60 FPS.
+      const budget = 1000 / Math.min(60, frameLimit() || 60),
+        seconds = frameMs / 1000,
+        slow = adaptive.average > budget * 1.15,
         cpuBound = cpuMs > adaptive.average * 0.75;
       adaptive.slowFor = slow && !cpuBound ? adaptive.slowFor + seconds : 0;
       adaptive.cpuFor = slow && cpuBound ? adaptive.cpuFor + seconds : 0;
-      adaptive.fastFor = adaptive.average < 17.4 ? adaptive.fastFor + seconds : 0;
+      adaptive.fastFor = adaptive.average < budget * 1.045 ? adaptive.fastFor + seconds : 0;
       const order = ['low', 'medium', 'high'],
         tierIndex = order.indexOf(graphicsTierId());
       const dropTier = () => {
