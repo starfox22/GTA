@@ -1475,7 +1475,7 @@
       else if (showBlood) bleed(person, Math.min(2, dealt / 38), a);
       scream(person);
       // Where it landed, the flinch, a limp, a blood trail, the fall (wounds.js).
-      if (dealt > 0) woundPerson(person, dealt, a, kind);
+      if (dealt > 0) woundPerson(person, dealt, a, kind, source);
       if (person.hp <= 0) {
         person.deadTime = gameTime;
         // Witnesses who find the body later report whoever did it.

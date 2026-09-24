@@ -970,7 +970,8 @@
             : -vehicleDefinition.acc * 0.55
           : 0;
       if (
-        (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) && up) ||
+        // Police launches are tuned a little quicker than anything they chase.
+        (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * (c.marineUnit ? 1.15 : 1) && up) ||
         (along < -65 && down)
       )
         force = 0;

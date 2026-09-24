@@ -994,8 +994,13 @@
       return (!!player.car && isBoat(player.car)) || !!player.swimming;
     }
     function spawnMarineUnit() {
-      for (let tries = 0; tries < 24; tries++) {
-        const a = randomBetween(0, TAU),
+      // Ahead of a boat under way (they come out of a marina in its path),
+      // anywhere around a swimmer or a boat lying still.
+      const boat = player.car && isBoat(player.car) ? player.car : null,
+        speed = boat ? Math.hypot(boat.vx || 0, boat.vy || 0) : 0,
+        course = speed > 60 ? Math.atan2(boat.vy, boat.vx) : null;
+      for (let tries = 0; tries < 32; tries++) {
+        const a = course !== null && tries < 20 ? course + randomBetween(-1, 1) : randomBetween(0, TAU),
           r = randomBetween(520, 980),
           x = player.x + Math.cos(a) * r,
           y = player.y + Math.sin(a) * r;

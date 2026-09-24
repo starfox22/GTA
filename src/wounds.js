@@ -24,10 +24,25 @@
       return r < 0.12 ? 'head' : r < 0.7 ? 'torso' : 'leg';
     }
     /* Called by strikePerson for every hit that did damage. */
-    function woundPerson(person, dealt, a, kind) {
+    function woundPerson(person, dealt, a, kind, source = null) {
       person.hitAt = gameTime;
       person.hitDir = a;
       person.hitZone = pickHitZone(kind);
+      // Not every fatal-looking round kills outright: a body hit (not the head,
+      // not a blast) leaves an officer down about one time in three and a
+      // bystander about one time in four, alive on the ground, crawling.
+      if (
+        person.hp <= 0 &&
+        kind === 'ballistic' &&
+        person.hitZone !== 'head' &&
+        !person.woundedDown &&
+        (person.police || pedestrians.includes(person)) &&
+        seededRandom() < (person.police ? 0.35 : 0.25)
+      ) {
+        person.hp = person.police ? 9 : 7;
+        person.woundedDown = true;
+        if (source === player) recordWounding(person);
+      }
       if (person.hp <= 0) {
         chooseDeathFall(person, a, kind);
         return;
@@ -50,22 +65,28 @@
     }
     /**
      * How a body goes down. It lands along the line of the shot: facing the
-     * shooter it goes over backwards, facing away it pitches forward; one in
-     * four spins round as it drops, and with a wall close behind it slides down
+     * shooter it goes over backwards, facing away it pitches forward; about one
+     * in three spins round as it drops, and with a wall a few steps behind it
+     * staggers back into it and slides down
      * into a sitting slump instead. The heading is turned so the renderers,
      * which tip a body over backwards about its own heading, land it right.
      */
     function chooseDeathFall(person, a, kind) {
-      const back = { x: person.x + Math.cos(a) * 16, y: person.y + Math.sin(a) * 16 },
-        facingShooter = Math.cos(normalizeAngle((person.a || 0) - (a + Math.PI))) > 0,
+      const facingShooter = Math.cos(normalizeAngle((person.a || 0) - (a + Math.PI))) > 0,
         style = { sign: 1, turn: 0, slump: false };
-      if (kind !== 'blast' && kind !== 'impact' && solid(back.x, back.y, 5) && seededRandom() < 0.75) {
+      // A wall within a couple of steps behind: stagger back into it.
+      let wall = 0;
+      if (kind !== 'blast' && kind !== 'impact')
+        for (let d = 6; d <= 30 && !wall; d += 4)
+          if (solid(person.x + Math.cos(a) * d, person.y + Math.sin(a) * d, 4)) wall = d;
+      if (wall && seededRandom() < 0.75) {
         style.slump = true;
         person.a = a + Math.PI;
+        if (wall > 9) moveBody(person, Math.cos(a) * (wall - 9), Math.sin(a) * (wall - 9), 6);
       } else {
         style.sign = kind === 'headshot' || kind === 'blast' || facingShooter ? 1 : -1;
         person.a = style.sign > 0 ? a + Math.PI : a;
-        if (kind !== 'headshot' && seededRandom() < 0.25) style.turn = (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.7, 1.4);
+        if (kind !== 'headshot' && seededRandom() < 0.35) style.turn = (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.7, 1.4);
       }
       // A blast or a car throws the body; a round only knocks it back a step.
       if (kind !== 'blast' && kind !== 'impact' && !style.slump) moveBody(person, Math.cos(a) * 5, Math.sin(a) * 5, 6);
