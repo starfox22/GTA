@@ -1681,7 +1681,7 @@
         if (isAircraft(player.car)) player.car.abandonedFlight = true;
         player.car = null;
       }
-      announce('THE CITY ALWAYS COLLECTS', 'WASTED', 4);
+      announce('THE CITY ALWAYS COLLECTS', 'WASTED', 4.6);
       document.body?.classList.add('wasted');
       noise(0.3, 0.4);
       setTimeout(() => {
@@ -1699,7 +1699,7 @@
         if (mission) failMission('Hospital bill: $250. Your job is ready to retry.');
         else tell('Back on your feet. Hospital bill: $250.', 4);
         save();
-      }, 2600);
+      }, 4200);
     }
     function nearestCar() {
       if (player.parachute) return null;

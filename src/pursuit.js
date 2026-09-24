@@ -729,7 +729,7 @@
       pursuitStats.arrests++;
       arrestProgress = 0;
       document.body?.classList.add('wasted', 'busted');
-      announce('YOU HAVE THE RIGHT TO REMAIN SILENT', 'BUSTED', 4);
+      announce('YOU HAVE THE RIGHT TO REMAIN SILENT', 'BUSTED', 4.6);
       noise(0.2, 0.3, 500);
       const fine = 100 + stars * 150;
       setTimeout(() => {
@@ -765,7 +765,7 @@
         if (mission) failMission(note);
         else tell(note, 5);
         save();
-      }, 2800);
+      }, 4200);
     }
 
     /**
