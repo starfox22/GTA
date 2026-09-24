@@ -158,8 +158,12 @@
           o.sniperLock = 0;
           continue;
         }
-        const d = combatDistance(o, player),
-          sees = d < 760 && !playerOnRoof() && clearSight(o, player);
+        const d = combatDistance(o, player);
+        if (gameTime >= (o.lookAt || 0)) {
+          o.lookAt = gameTime + 0.12 + seededRandom() * 0.05;
+          o.sightClear = d < 760 && clearSight(o, player);
+        }
+        const sees = o.sightClear && !playerOnRoof();
         o.seesPlayer = sees;
         o.a = headingBetween(o, player);
         o.aiming = sees;

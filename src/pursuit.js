@@ -1033,8 +1033,12 @@
         const d = combatDistance(c, player),
           want = headingBetween(c, player);
         traverseTurret(c, want, deltaSeconds, c.type === 'apc' ? 0.9 : 1.6, 3);
-        const sees =
-          wantedStars >= 5 && d < 480 && sameFloor(c, player) && !playerOnRoof() && !policeHoldFire() && clearSight(c, player);
+        // Line of sight is looked up about eight times a second, like the other units.
+        if (gameTime >= (c.gunnerLookAt || 0)) {
+          c.gunnerLookAt = gameTime + 0.12 + seededRandom() * 0.05;
+          c.gunnerSees = d < 480 && sameFloor(c, player) && clearSight(c, player);
+        }
+        const sees = wantedStars >= 5 && c.gunnerSees && !playerOnRoof() && !policeHoldFire();
         if (!sees) {
           c.targetAcquired = 0;
           continue;
