@@ -336,7 +336,6 @@
     let promptOffer = null;
     const promptView = {
       id: null,
-      html: '',
       text: '',
       freshAt: 0,
       seenAt: 0,
@@ -372,14 +371,23 @@
     function clearPromptOffer() {
       promptOffer = null;
     }
-    function promptText(offer) {
-      return (offer.key ? (offer.hold ? 'HOLD ' : '') + keyName(offer.key) + ' ' : '') + offer.text;
+    function promptKeyText(offer) {
+      return offer.key ? (offer.hold ? 'HOLD ' : '') + keyName(offer.key) : '';
     }
-    function promptMarkup(offer) {
-      const escape = (s) =>
-        String(s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
-      const keyText = offer.key ? (offer.hold ? 'HOLD ' : '') + keyName(offer.key) : '';
-      return (keyText ? '<kbd>' + escape(keyText) + '</kbd>' : '') + '<span>' + escape(offer.text) + '</span>';
+    function promptText(offer) {
+      const keyText = promptKeyText(offer);
+      return (keyText ? keyText + ' ' : '') + offer.text;
+    }
+    /* The key cap and the words, as text nodes (place names never become markup). */
+    function renderPrompt(el, offer) {
+      const keyText = promptKeyText(offer),
+        words = document.createElement('span');
+      words.textContent = offer.text;
+      if (keyText) {
+        const cap = document.createElement('kbd');
+        cap.textContent = keyText;
+        el.replaceChildren(cap, words);
+      } else el.replaceChildren(words);
     }
     function commitPrompt() {
       const el = getElement('interaction'),
@@ -387,15 +395,14 @@
         view = promptView,
         offer = gameMode === 'play' ? promptOffer : null;
       if (offer) {
-        const html = promptMarkup(offer);
+        const text = promptText(offer);
         if (view.id === null || (offer.id !== view.id && now - view.freshAt >= PROMPT_SWAP_AFTER)) {
           // A new action (or newly in range): full size in the middle, pop in.
           view.id = offer.id;
           view.freshAt = now;
           view.docked = false;
-          view.html = html;
-          view.text = promptText(offer);
-          el.innerHTML = html;
+          view.text = text;
+          renderPrompt(el, offer);
           // Jump to the middle without sliding, then pop in (the one place
           // the animation is restarted, on purpose).
           el.classList.add('snap');
@@ -404,10 +411,9 @@
           el.classList.remove('snap');
           el.classList.add('show', 'pop');
           el.dataset.prompt = offer.id;
-        } else if (offer.id === view.id && html !== view.html) {
-          view.html = html;
-          view.text = promptText(offer);
-          el.innerHTML = html;
+        } else if (offer.id === view.id && text !== view.text) {
+          view.text = text;
+          renderPrompt(el, offer);
         }
         view.seenAt = now;
       } else if (
