@@ -185,7 +185,24 @@
         if (on === !lampLightOut.has(key)) return;
         if (on) lampLightOut.delete(key);
         else lampLightOut.add(key);
-        paintLampLight({ x: prop.x + 6, y: prop.y + 6, r: 70 });
+        paintLampLight({ x: prop.x + 6, y: prop.y + 6, r: LAMP_POOL_RADIUS + 8 });
+      }
+      // Reach of a street lamp's pool on the ground (world units; ~19 m).
+      const LAMP_POOL_RADIUS = 100,
+        LAMP_SODIUM = [255, 164, 78],
+        LAMP_LED = [212, 224, 255],
+        LAMP_WARM = [255, 204, 146];
+      // A lamp's colour by district, worked out once per lamp.
+      function lampTint(lamp) {
+        if (!lamp.lightTint) {
+          const district = districtAt(lamp.x, lamp.y);
+          lamp.lightTint = /IRONWORKS|OLD QUARTER|RECLAMATION|CRUISE|SOUTH BANK|AIRPORT/.test(district)
+            ? LAMP_SODIUM
+            : /FINANCIAL|MIDTOWN|EXCHANGE|BROADWAY/.test(district)
+              ? LAMP_LED
+              : LAMP_WARM;
+        }
+        return lamp.lightTint;
       }
       // Paints the whole map, or only the pools touching `region` ({x, y, r}).
       function paintLampLight(region = null) {
@@ -212,9 +229,29 @@
           g.fillStyle = grad;
           g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
         };
-        // Street lamps (render3d.js draws one post per entry of `lamps`); the
-        // lantern hangs 6 units out from the post.
-        for (const l of lamps) if (!lampLightOut.has(l.x + ',' + l.y)) pool(l.x + 6, l.y + 6, 62, 255, 196, 128, 0.85);
+        /* Street lamps (render3d.js draws one post per entry of `lamps`); the
+           lantern hangs 6 units out from the post. A real lamp's pool is a bright
+           core under the head with a long, soft tail (inverse square over the
+           head's height), wide enough that neighbouring lamps overlap and light
+           the whole street and pavement rather than leaving dark gaps. Colour by
+           district (lampTint): sodium orange in the docks and the Old Quarter,
+           cool white LED in the financial core, warm white elsewhere. */
+        const lampPool = (x, y, tint) => {
+          if (region && (Math.abs(x - region.x) > region.r + LAMP_POOL_RADIUS || Math.abs(y - region.y) > region.r + LAMP_POOL_RADIUS)) return;
+          const px = (x - CITY_LEFT) * s,
+            py = (y - CITY_TOP) * s,
+            pr = LAMP_POOL_RADIUS * s,
+            grad = g.createRadialGradient(px, py, 0, px, py, pr),
+            rgb = tint.join(',');
+          grad.addColorStop(0, `rgba(${rgb},0.95)`);
+          grad.addColorStop(0.16, `rgba(${rgb},0.72)`);
+          grad.addColorStop(0.4, `rgba(${rgb},0.34)`);
+          grad.addColorStop(0.7, `rgba(${rgb},0.12)`);
+          grad.addColorStop(1, `rgba(${rgb},0)`);
+          g.fillStyle = grad;
+          g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
+        };
+        for (const l of lamps) if (!lampLightOut.has(l.x + ',' + l.y)) lampPool(l.x + 6, l.y + 6, lampTint(l));
         // Shop windows spill warm light across the pavement in front of them.
         for (const b of buildings)
           for (const pane of b.shopPanes || []) pool(pane.cx, pane.face + 10, Math.max(22, pane.width * 0.8), 255, 214, 160, 0.45);
@@ -251,6 +288,9 @@
           cityWorld = instanceMatrix * cityWorld;
         #endif
         vCityWorld = ( modelMatrix * cityWorld ).xyz;`;
+      // The drive light map (DRIVE LIGHT MAP below) stores road levels offset so
+      // that 0, the clear value, means "no beam".
+      const DRIVE_LEVEL_OFFSET = 600;
       const CITY_LIGHT_PARS = `
         varying vec3 vCityWorld;
         uniform sampler2D cityLampMap;
@@ -264,13 +304,30 @@
           return vCityWorld.x > cityRiverLeft || vCityWorld.x < -500.0 ? 1.0
             : vCityWorld.z < 1450.0 ? cityZonePower.x : vCityWorld.z < 2650.0 ? cityZonePower.y : cityZonePower.z;
         }
-        vec3 cityLampLight() {
+        uniform sampler2D cityDriveMap;
+        uniform vec4 cityDriveRect;
+        uniform float cityDrivePower;
+        // Street lamps (the painted map) at this fragment. Lamps hang ~33 units
+        // up: full light at street level; ground-facing surfaces (roofs, awnings)
+        // stop catching it by ~40 units, walls take the spill higher up the facade.
+        // \`up\` is how much the surface faces the sky (0 wall, 1 roof).
+        vec3 cityLampLight( float up ) {
           vec2 uv = ( vCityWorld.xz - cityLampRect.xy ) * cityLampRect.zw;
           if ( cityLampPower < 0.001 || uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) return vec3( 0.0 );
           float zone = cityPower();
-          // Lamps hang ~33 units up: full light at street level, none on the roofs.
-          float height = 1.0 - smoothstep( 4.0, 42.0, vCityWorld.y );
+          float height = 1.0 - smoothstep( mix( 30.0, 8.0, up ), mix( 78.0, 42.0, up ), vCityWorld.y );
           return texture2D( cityLampMap, uv ).rgb * ( cityLampPower * zone * height );
+        }
+        // Vehicle head and tail lights (the drive light map, redrawn every frame
+        // round the view): the road, kerbs, cars, people and walls ahead of a car.
+        vec3 cityDriveLight() {
+          vec2 uv = ( vCityWorld.xz - cityDriveRect.xy ) * cityDriveRect.zw;
+          if ( cityDrivePower < 0.001 || uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) return vec3( 0.0 );
+          vec4 drive = texture2D( cityDriveMap, uv );
+          // Alpha: the road level the beam lies on, plus DRIVE_LEVEL_OFFSET.
+          float above = vCityWorld.y - ( drive.a - ${DRIVE_LEVEL_OFFSET.toFixed(1)} );
+          float height = ( 1.0 - smoothstep( 8.0, 30.0, above ) ) * step( -6.0, above );
+          return drive.rgb * ( cityDrivePower * height );
         }
         uniform vec4 cityCutaway, cityCutBoxA, cityCutSpanA, cityCutBoxB, cityCutSpanB;
         float cityBayer2( vec2 a ) { return mod( 2.0 * a.x + 3.0 * a.y, 4.0 ); }
@@ -292,9 +349,10 @@
         }`;
       const CITY_LIGHT_APPLY = `
         {
-          vec3 lampLight = cityLampLight();
           vec3 upView = normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz );
-          float facing = 0.3 + 0.7 * max( dot( normal, upView ), 0.0 );
+          float up = max( dot( normal, upView ), 0.0 );
+          vec3 lampLight = cityLampLight( up ) + cityDriveLight();
+          float facing = 0.42 + 0.58 * up;
           reflectedLight.directDiffuse += lampLight * facing * material.diffuseColor;
           // Glossy surfaces (wet tarmac, paint, glass) catch a sheen of it too.
           reflectedLight.directSpecular += lampLight * facing * 0.5 * ( 1.0 - material.roughness ) * ( 1.0 - material.roughness );
@@ -464,61 +522,122 @@
           return this.toneMapped ? 'tone' : 'display';
         };
       }
-      // ---- Headlight cones -----------------------------------------------------------------
+      // ---- Vehicle lights ------------------------------------------------------------------
       /**
-       * Each lit car throws a cone of light down the road ahead and a faint red
-       * wash behind: two instanced, additively blended ground decals (two draw
-       * calls for all traffic). The player's own car keeps its real spotlight.
+       * DRIVE LIGHT MAP
+       * Each lit car throws its low beams down the road ahead and a red wash from
+       * its tail lamps behind. Both are drawn every night frame, as instanced
+       * quads seen from straight above, into a small HDR light map over the view
+       * (cityDriveMap, texel-snapped so it does not crawl), and every lit material
+       * adds that light like the street-lamp map (CITY_LIGHT_PARS): tarmac, kerbs,
+       * the car ahead, pedestrians crossing and the wall at the end of the street
+       * are lit through their own albedo, with the beam's falloff, instead of a
+       * flat glow painted over the ground. The alpha channel keeps the highest
+       * road level a beam lies on (max blending), so a beam lights what stands on
+       * its own road and fades out a few metres above it. Two draw calls into a
+       * 1024-texel target for all traffic; the player's car keeps its real
+       * spotlight on top.
        */
-      function beamTexture(paint) {
+      function beamTexture(width, paint) {
         const c = document.createElement('canvas');
-        c.width = c.height = 128;
-        paint(c.getContext('2d'));
+        c.width = width;
+        c.height = 128;
+        paint(c.getContext('2d'), width);
         const t = new Three.CanvasTexture(c);
         t.colorSpace = Three.SRGBColorSpace;
         return t;
       }
-      const headBeamTexture = beamTexture((g) => {
-        // Apex at the left edge (the bumper), widening and fading to the right.
-        for (let x = 0; x < 128; x++) {
-          const u = x / 127,
-            half = 10 + u * 50,
-            fade = Math.pow(1 - u, 1.4) * Math.min(1, u * 9);
+      const headBeamTexture = beamTexture(256, (g, width) => {
+        // Apex at the left edge (the bumper), spreading and fading to the right:
+        // a bright zone a few metres ahead, then a long tail out to ~35 m.
+        for (let x = 0; x < width; x++) {
+          const u = x / (width - 1),
+            half = 12 + u * 50,
+            hot = 1 + 0.7 * Math.exp(-Math.pow((u - 0.22) / 0.16, 2)),
+            fade = Math.min(1, Math.min(1, u * 14) * Math.pow(1 - u, 1.5) * hot * 0.62);
           const grad = g.createLinearGradient(0, 64 - half, 0, 64 + half);
-          grad.addColorStop(0, 'rgba(255,236,200,0)');
-          grad.addColorStop(0.5, `rgba(255,236,200,${fade})`);
-          grad.addColorStop(1, 'rgba(255,236,200,0)');
+          grad.addColorStop(0, 'rgba(255,240,218,0)');
+          grad.addColorStop(0.25, `rgba(255,240,218,${fade * 0.45})`);
+          grad.addColorStop(0.5, `rgba(255,240,218,${fade})`);
+          grad.addColorStop(0.75, `rgba(255,240,218,${fade * 0.45})`);
+          grad.addColorStop(1, 'rgba(255,240,218,0)');
           g.fillStyle = grad;
           g.fillRect(x, 64 - half, 1, half * 2);
         }
       });
-      const tailGlowTexture = beamTexture((g) => {
+      const tailGlowTexture = beamTexture(128, (g) => {
         const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-        grad.addColorStop(0, 'rgba(255,60,40,0.9)');
-        grad.addColorStop(1, 'rgba(255,60,40,0)');
+        grad.addColorStop(0, 'rgba(255,44,28,0.9)');
+        grad.addColorStop(0.4, 'rgba(255,44,28,0.35)');
+        grad.addColorStop(1, 'rgba(255,44,28,0)');
         g.fillStyle = grad;
         g.fillRect(0, 0, 128, 128);
       });
-      const BEAM_CAPACITY = 120,
-        beamGeometry = new Three.PlaneGeometry(1, 1).rotateX(-Math.PI / 2).translate(0.5, 0, 0);
+      const BEAM_CAPACITY = 160,
+        DRIVE_MAP_SIZE = 1024,
+        // Scene light at the brightest point of a beam, before the surface's albedo.
+        DRIVE_LIGHT_POWER = 4.5,
+        beamGeometry = new Three.PlaneGeometry(1, 1).rotateX(-Math.PI / 2).translate(0.5, 0, 0),
+        driveScene = new Three.Scene(),
+        driveCamera = new Three.OrthographicCamera(-1, 1, 1, -1, 1, 12000),
+        driveTarget = new Three.WebGLRenderTarget(DRIVE_MAP_SIZE, DRIVE_MAP_SIZE, {
+          type: hdrCapable ? Three.HalfFloatType : Three.UnsignedByteType,
+          depthBuffer: false,
+          minFilter: Three.LinearFilter,
+          magFilter: Three.LinearFilter,
+        });
+      driveTarget.texture.generateMipmaps = false;
+      // Looking straight down with north (-z) up the image, so the map's v runs
+      // north from the rect's south edge (see cityDriveRect).
+      driveCamera.up.set(0, 0, -1);
+      Object.assign(cityLightUniforms, {
+        cityDriveMap: { value: driveTarget.texture },
+        // (west x, south z, 1 / width, -1 / height) of the map in world units.
+        cityDriveRect: { value: new Three.Vector4(0, 0, 0, 0) },
+        cityDrivePower: { value: 0 },
+      });
       function beamPool(map) {
         const m = new Three.InstancedMesh(
           beamGeometry,
-          new Three.MeshBasicMaterial({
-            map,
-            transparent: true,
+          new Three.ShaderMaterial({
+            uniforms: { map: { value: map } },
+            depthTest: false,
             depthWrite: false,
-            blending: Three.AdditiveBlending,
-            fog: false,
+            blending: Three.CustomBlending,
+            blendEquation: Three.AddEquation,
+            blendSrc: Three.OneFactor,
+            blendDst: Three.OneFactor,
+            blendEquationAlpha: Three.MaxEquation,
+            blendSrcAlpha: Three.OneFactor,
+            blendDstAlpha: Three.OneFactor,
+            vertexShader: `
+              varying vec2 vUv;
+              varying vec3 vStrength;
+              varying float vLevel;
+              void main() {
+                vUv = uv;
+                vStrength = instanceColor;
+                vec4 world = modelMatrix * instanceMatrix * vec4( position, 1.0 );
+                vLevel = world.y + ${DRIVE_LEVEL_OFFSET.toFixed(1)};
+                gl_Position = projectionMatrix * viewMatrix * world;
+              }`,
+            fragmentShader: `
+              uniform sampler2D map;
+              varying vec2 vUv;
+              varying vec3 vStrength;
+              varying float vLevel;
+              void main() {
+                vec4 t = texture2D( map, vUv );
+                vec3 light = t.rgb * t.a * vStrength;
+                gl_FragColor = vec4( light, dot( light, vec3( 1.0 ) ) > 0.002 ? vLevel : 0.0 );
+              }`,
           }),
           BEAM_CAPACITY,
         );
         m.count = 0;
         m.frustumCulled = false;
-        m.renderOrder = 4;
-        m.userData.dynamic = true;
         m.setColorAt(0, new Three.Color());
-        scene.add(m);
+        driveScene.add(m);
         return m;
       }
       const headBeams = beamPool(headBeamTexture),
@@ -528,21 +647,24 @@
         beamPosition = new Three.Vector3(),
         beamScale = new Three.Vector3(),
         beamColor = new Three.Color(),
-        headBeamUp = new Three.Vector3(0, 1, 0);
+        headBeamUp = new Three.Vector3(0, 1, 0),
+        driveClearColor = new Three.Color();
       function updateHeadlightBeams() {
         let heads = 0,
           tails = 0;
         // Lamps are on at night and in a downpour (weather3d.js); wet tarmac
-        // stretches and brightens the beams.
+        // brightens the beams.
         const night = vehicleLampAmount(),
-          wetBoost = 1 + weather.wet * 0.5;
+          wetBoost = 1 + weather.wet * 0.35;
         if (night > 0.2)
           for (const c of vehicles) {
             if (heads >= BEAM_CAPACITY) break;
             if (c.hp <= 0 || !(c.ai || c === player.car) || isAircraft(c)) continue;
             const spec = vehicleSpec(c);
             if (spec.boat || spec.jetski || spec.bicycle || c.type === 'bicycle') continue;
-            if (!entityInView(c, 90)) continue;
+            // A beam reaches ~35 m past the bumper: lit cars just outside the frame
+            // still light the street inside it.
+            if (!entityInView(c, 200)) continue;
             const model = carModels.get(c),
               out = model?.lampOut || [],
               share = ((out[0] ? 0 : 1) + (out[2] ? 0 : 1)) / 2;
@@ -551,37 +673,59 @@
               sin = Math.sin(c.a);
             beamQuaternion.setFromAxisAngle(headBeamUp, -c.a);
             if (share > 0) {
-              beamPosition.set(c.x + cos * spec.l * 0.48, ground, c.y + sin * spec.l * 0.48);
-              beamScale.set(spec.truck ? 120 : 95, 1, spec.truck ? 62 : 52);
+              beamPosition.set(c.x + cos * spec.l * 0.46, ground, c.y + sin * spec.l * 0.46);
+              beamScale.set(spec.truck ? 200 : 178, 1, spec.truck ? 112 : 96);
               headBeams.setMatrixAt(heads, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
-              headBeams.setColorAt(heads, beamColor.setScalar(night * share * 0.55 * wetBoost));
+              headBeams.setColorAt(heads, beamColor.setScalar(night * share * wetBoost));
               heads++;
             }
-            beamPosition.set(c.x - cos * (spec.l * 0.5 + 9), ground, c.y - sin * (spec.l * 0.5 + 9));
-            beamScale.set(18, 1, spec.w * 1.1);
-            beamQuaternion.setFromAxisAngle(headBeamUp, -c.a);
-            beamPosition.x -= cos * 9;
-            beamPosition.z -= sin * 9;
+            // Tail lamps: a red wash on the road just behind the bumper.
+            beamPosition.set(c.x - cos * (spec.l * 0.5 + 16), ground, c.y - sin * (spec.l * 0.5 + 16));
+            beamScale.set(26, 1, spec.w * 1.5);
             tailGlows.setMatrixAt(tails, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
-            tailGlows.setColorAt(tails, beamColor.setScalar(night * 0.18));
+            tailGlows.setColorAt(tails, beamColor.setScalar(night * 0.32 * wetBoost));
             tails++;
           }
         headBeams.count = heads;
         tailGlows.count = tails;
+        const u = cityLightUniforms;
+        u.cityDrivePower.value = heads + tails ? DRIVE_LIGHT_POWER : 0;
+        if (!heads && !tails) return;
         for (const m of [headBeams, tailGlows])
           if (m.count) {
             m.instanceMatrix.needsUpdate = true;
             m.instanceColor.needsUpdate = true;
           }
+        // The map covers the view and the reach of beams from just outside it.
+        const half = Math.max(400, Math.min(viewReach + 220, 2600)),
+          texel = (2 * half) / DRIVE_MAP_SIZE,
+          cx = Math.round(viewCenter.x / texel) * texel,
+          cz = Math.round(viewCenter.y / texel) * texel;
+        driveCamera.left = driveCamera.bottom = -half;
+        driveCamera.right = driveCamera.top = half;
+        driveCamera.position.set(cx, 6000, cz);
+        driveCamera.lookAt(cx, 0, cz);
+        driveCamera.updateProjectionMatrix();
+        driveCamera.updateMatrixWorld();
+        u.cityDriveRect.value.set(cx - half, cz + half, 1 / (2 * half), -1 / (2 * half));
+        const previousTarget = renderer.getRenderTarget(),
+          previousAlpha = renderer.getClearAlpha();
+        renderer.getClearColor(driveClearColor);
+        renderer.setClearColor(0x000000, 0);
+        renderer.setRenderTarget(driveTarget);
+        renderer.clear(true, false, false);
+        renderer.render(driveScene, driveCamera);
+        renderer.setRenderTarget(previousTarget);
+        renderer.setClearColor(driveClearColor, previousAlpha);
       }
       // ---- Time-of-day look ------------------------------------------------------------------
       const SKY_KEYS = {
         // [zenith, horizon, ground, glow] in scene-linear sRGB hex.
         day: ['#5b87bd', '#c4d2dc', '#5c5a52', '#ffe2b8'],
         dusk: ['#4a5a8a', '#f0a070', '#453c3a', '#ff9a50'],
-        // Brighter than a real night sky on purpose: it is the moonlit ambient
-        // that keeps the streets readable between the lamp pools.
-        night: ['#3c4862', '#4b5468', '#25272d', '#3a3050'],
+        // A blue-hour night, brighter than a real one on purpose: the moonlit sky
+        // is the ambient that keeps streets readable between the lamp pools.
+        night: ['#43557a', '#5f6a88', '#2b2e37', '#463d5e'],
         overcast: ['#8a949e', '#b3b9bf', '#4a4d50', '#d0d0d0'],
       };
       const skyKeyColors = Object.fromEntries(
@@ -590,7 +734,24 @@
       // Lamp materials are declared after this file; their day colours are read on first use.
       let warmLampBase = null,
         tailLampBase = null;
-      const gradeLiftNight = new Three.Vector3(0.0, 0.003, 0.01),
+      /**
+       * NIGHT LOOK
+       * A readable blue-hour night rather than an ink-black one: moonlight and a
+       * cool sky fill strong enough that roads, buildings, people and cars read
+       * everywhere, blacks lifted slightly towards blue, less contrast than by
+       * day, and exposure opened up. Lamps, neon and headlights stay far brighter
+       * than this ambient, so they still pop and pool. (No light follows the
+       * player: they are lit like everyone else.)
+       */
+      const NIGHT_LOOK = {
+        moon: 0.75, // added to the moon's (the sun light's) night intensity
+        sky: 1.5, // added to the hemisphere sky fill
+        exposure: 0.3, // extra exposure share at full night
+        saturation: 0.2, // saturation lost at full night
+        contrast: 0.08, // contrast lost at full night
+        lampPower: 3.6, // street-lamp map strength
+      };
+      const gradeLiftNight = new Three.Vector3(0.012, 0.02, 0.036),
         gradeGainNight = new Three.Vector3(1.05, 1.0, 0.95),
         gradeLiftDusk = new Three.Vector3(0.0, 0.002, 0.006),
         gradeGainDusk = new Three.Vector3(1.1, 1.0, 0.86),
@@ -630,7 +791,7 @@
         marchUniforms.uSunDirection.value.copy(sunDirection);
         shadeUniforms.uSunDirection.value.copy(sunDirection);
         // Night light: lamp pools, and emissive lamp heads bright enough to bloom.
-        cityLightUniforms.cityLampPower.value = night * 4.2;
+        cityLightUniforms.cityLampPower.value = night * NIGHT_LOOK.lampPower;
         cityLightUniforms.cityWet.value = weather.wet;
         const blackout = cityLightUniforms.cityZonePower.value;
         blackout.set(sideJobPower(100, 100), sideJobPower(100, 2000), sideJobPower(100, 3000));
@@ -643,22 +804,22 @@
         tailLamp.color.copy(tailLampBase).multiplyScalar(1 + lampsOn * 2.5);
         updateHeadlightBeams();
         // Moonlight and sky light strong enough to read the streets by at night.
-        sun.intensity += night * 0.55;
-        hemi.intensity += night * 0.75;
+        sun.intensity += night * NIGHT_LOOK.moon;
+        hemi.intensity += night * NIGHT_LOOK.sky;
         // Post look: exposure, bloom and grade (postfx3d.js).
         // A touch more exposure at night: legibility first, darkness second.
-        postLook.exposure = renderer.toneMappingExposure * (1 + night * 0.22);
+        postLook.exposure = renderer.toneMappingExposure * (1 + night * NIGHT_LOOK.exposure);
         postLook.bloomThreshold = 2.2 - night * 1.35 - dusk * 0.3;
         postLook.bloomStrength = 0.22 + night * 0.3 + dusk * 0.1;
-        postLook.saturation = (1.16 + dusk * 0.06 - night * 0.26) * (1 - overcast * 0.14 - rain * 0.06);
-        postLook.contrast = 1.14 + dusk * 0.02 - overcast * 0.06;
+        postLook.saturation = (1.16 + dusk * 0.06 - night * NIGHT_LOOK.saturation) * (1 - overcast * 0.14 - rain * 0.06);
+        postLook.contrast = 1.14 + dusk * 0.02 - night * NIGHT_LOOK.contrast - overcast * 0.06;
         postLook.lift.copy(gradeLiftDay).lerp(gradeLiftDusk, dusk).lerp(gradeLiftNight, night);
         postLook.gain.copy(gradeGainDay).lerp(gradeGainDusk, dusk).lerp(gradeGainNight, night);
         if (rain > 0.05) {
           postLook.lift.lerp(gradeLiftNight, rain * 0.3);
           postLook.gain.lerp(gradeGainDay, rain * 0.5);
         }
-        postLook.vignette = 0.2 + night * 0.12;
+        postLook.vignette = 0.2 + night * 0.06;
         // AO reads at street scale on the ground and grows with the view from the air.
         postLook.aoRadius = clamp(18 / Math.max(0.25, viewZoom), 18, 72);
         postLook.aoIntensity = 1.5;
