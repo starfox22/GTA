@@ -2697,6 +2697,12 @@
         b.life -= deltaSeconds;
         if (b.rocket && seededRandom() < 0.8) particle(b.x, b.y, '#cbc4a0', 1, 15, 5);
         if (impact || b.life <= 0) {
+          // A rocket or shell into a facade goes off against the wall, outside it.
+          const face = b.rocket && impact && hitKind === 'wall' ? heavyRoundHitsBuilding(b) : null;
+          if (face) {
+            b.x = face.x;
+            b.y = face.y;
+          }
           if (b.rocket)
             explode(
               b.x,

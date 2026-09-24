@@ -833,6 +833,8 @@
         life: 1.7,
         dmg: 155,
         rocket: true,
+        // A main-gun round: it breaches facades it hits (damage3d.js shellImpact).
+        shell: true,
         blastPower: 1.35,
         enemy,
         faction: enemy ? 'military' : undefined,
