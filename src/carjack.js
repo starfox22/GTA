@@ -31,6 +31,9 @@
       if (!lines || (person.speechUntil || 0) > gameTime) return;
       person.speech = randomChoice(lines);
       person.speechUntil = gameTime + 2.8;
+      // Said to the player: first claim on a speech bubble (crowd.js speechBubbles).
+      person.speechKind = 'carjack';
+      person.speechKindText = person.speech;
     }
     /* Ordinary traffic has somebody behind the wheel and a door that may be locked. */
     function assignDriver(vehicle) {

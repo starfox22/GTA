@@ -152,7 +152,7 @@
           kind: 'toggle',
           label: 'NPC chatter',
           note: () =>
-            'Speech bubbles from people and drivers in the street. Mission and contact dialogue always shows.',
+            'Speech bubbles from people and drivers in the street, two at a time. Mission and contact dialogue always shows.',
           get: () => settings.npcChatter,
           set: (on) => (settings.npcChatter = on),
         },
