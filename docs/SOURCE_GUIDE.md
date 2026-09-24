@@ -90,7 +90,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
 | cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
-| weather.js | Weather state machine, road wetness, wind and rain on the audio bus |
+| weather.js | Weather state machine (`weather.next` is chosen as a state begins), the build-up before a shower (`weather.approach`: thicker cloud, rising wind, far thunder), `weather.shower` counter, road wetness, wind and gusts, lightning strikes with a place and distance (`lightningStrike`, the flash's return strokes in `lightningFlash`) and thunder queued at distance / speed of sound |
+| weather-audio.js | Rain and thunder sound: layered loops made once (hiss, light and dense drop patter, low roar), roof drumming and a glass low-pass inside a closed vehicle, tyre spray on wet roads, gutter drips and puddle splashes underfoot; `thunderSound(distance)` builds each clap (crack only when near; rumble rolls, lower and longer with distance) |
 | water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J), `parachuteSplashdown`, harbor-patrol rescue |
 | water-audio.js | Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle |
 | beach.js | Palm Keys Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
@@ -117,12 +118,12 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
 | navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance |
-| parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy, the Blue Hour terrace landing, water rescue |
+| parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
 | car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
-| crowd.js | Pedestrian life: `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: soldiers, police and mission characters first, then lines at the player, then the nearest; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
+| crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: soldiers, police and mission characters first, then lines at the player, then the nearest; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
 | beachclub-audio.js | The club's procedural music on a look-ahead scheduler (day, sunset and night sets), the wall low-pass by where the listener stands, and `mareaGroove`, the beat clock the dancers and lights follow |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
@@ -138,7 +139,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | File | Role |
 | --- | --- |
 | flight-view3d.js | Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city |
-| postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom, ACES tone curve, grade, FXAA |
+| postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), headlight cones, time-of-day look |
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire |
@@ -163,18 +164,19 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | county3d.js | County ground tiles and hills, snow, rural scenery and region visibility |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
-| bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; lamps, LEDs, aviation beacons, foam, far copies |
+| bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; the shaded carriageway (`bridgeRoadMaterial`: asphalt wear and antialiased markings in the shader), expansion joints, each deck's lamp light map (`bridgeDeckLight`), lamps, LEDs, aviation beacons, foam cut round the deck, far copies |
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
 | marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners, the sailing liner and her wake |
 | beachclub3d.js | The club's meshes (batched), sails that fade while the player is inside, and the show: LED floor, moving heads, lasers, strobe, LED wall, flames, string lights (`updateBeachClubVisuals`, called from `updateBeachVisuals`) |
 | cycles3d.js | Bike-share racks (the bicycles are ordinary vehicles) |
-| weather3d.js | Rain, wet roads, lightning and the overcast light |
+| weather3d.js | GPU rain streaks (world-anchored, three depth layers, wind slant, lit by the night light map), splashes, roof and awning drips, spray behind cars, wet roads, lightning bolts and flashes, `vehicleLampAmount()` (headlights in heavy rain), the storm grade (`weatherGrade`) |
 | crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
 | clouds3d.js | Ray-marched cumulus at 600-950 m over a 3D noise volume, and their shadows on the city |
-| surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles, county ground, foliage sway |
+| surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
 | helicopter3d.js | Airframe, rotor, lights and cockpit |
-| vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts |
+| vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
 | plane3d.js | Courier prop plane, business jet and airliner |
+| parachute3d.js | The ram-air parachute: nine-cell canopy rebuilt per frame (inflation, pillows, brakes, trailing-edge flutter), lines, risers, slider, pilot chute and bridle, the pack; `poseParachutist` (freefall box position, hanging pendulum, toggles), collapse and pack-up after landing |
 
 `src/asset-loader.js` sits outside the closure: it decodes the media blocks and calls
 `startDeadEndCity(ASSETS)`.
@@ -763,6 +765,33 @@ docs/audit/missions-qa.md shows the method).
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
   a bump, dielectric roughness and rain puddles (`weather.wet`). Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
+
+- **Weather** (weather.js, weather3d.js, weather-audio.js): the next state is picked when a
+  state starts, so an overcast spell that will turn to rain announces it over its last
+  34 s (`weather.approach`): the deck thickens, the wind rises and gusts, far lightning
+  rumbles and pedestrians remark on it (crowd.js). Rain, splashes, drips and road spray
+  are GPU-animated from uniforms (weather3d.js); the drops, drips and splashes sample the
+  city night light map so they glitter under lamps and neon. Puddles shiver in the rain
+  (rings close up, a slow wobble where rings would alias); the sea gets rain rings and a
+  dulled glitter. Street lamps and bridge lamps smear down wet roads (signage3d.js
+  streaks). A lightning strike has a place: the flash (two to four return strokes) is
+  scaled by its distance, a bolt is drawn when it is near the view, and its thunder is
+  queued for distance / 1756 units per second. Cars run wipers and headlights in the rain
+  (`vehicleLampAmount`); on LOW only the player's car wipes and there is no spray or drips.
+- **Night light hygiene**: the bloom bright pass sanitises NaN and half-float overflow
+  before the mip chain (they used to blow up into 32-64 px black or white squares) and
+  weights its taps by 1 / (1 + brightness) against fireflies; the composite does the same
+  per pixel. Traffic signals are placed after the statics cull (they popped in a frame
+  late). A lamp knocked flat takes its pool out of the night light map
+  (`lampLightSwitch`, a region repaint), so no pool lies under a missing lamp.
+- **Bridge decks** (bridges3d.js): the carriageway is one shaded surface
+  (`bridgeRoadMaterial`): aggregate grain, polished tyre paths, lane seams, repair
+  patches, oil drips, gutters with grates, worn paint, and in the rain darker tarmac,
+  puddles in the ruts and gutters and glossy paint. Markings are drawn in the shader,
+  antialiased by the pixel footprint. Footing foam is cut away where the deck covers it
+  (it lies above the road, so whole rings showed through as white smears on every
+  deck). Each deck has a lamp light map its road, footways and kerbs add like the city
+  light map.
 
 ## 6a. Damage and destruction
 

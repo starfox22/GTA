@@ -89,6 +89,7 @@ something, never a generic code-evaluation hook.
 | `simulate(seconds, heldKeys)` | Run the simulation forward without drawing while holding keys (e.g. `['KeyW']`, `['KeyE']` for hold-E objectives, `['KeyT']` to climb in an aircraft); also steps a Blue Hour elevator ride; returns `ride()`. Physics tests use it because headless frames are slow. The codes are the actions' virtual codes (their default keys, controls.js), so they mean the same whatever the player has rebound |
 | `places()` | Named businesses and landmarks with coordinates |
 | `setClock(hours)`, `sky(id)` | Time of day; weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`) |
+| `weather()`, `weatherFront(seconds)`, `lightning(distance)` | The weather machine's state (sky, next step, rain, wet, wind, `approach`, showers, strikes, thunder pending); bring a shower in after `seconds` (overcast now, the build-up, then rain; unlocks the sky); a lightning strike `distance` map units from the player (returns where, and when its thunder arrives) |
 | `startMission(i)`, `missions()` | Jump into a mission |
 | `missionState()` | Current mission stage, instruction, objective target and Vinny's depot door state; with no mission, how the last one ended |
 | `skipToDepotDelivery()` | Mission 1: crates loaded, player in the truck outside Vinny's warehouse with the police alerted |
