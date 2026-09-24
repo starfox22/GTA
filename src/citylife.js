@@ -394,33 +394,26 @@
         a,
       };
       if (hullTouchesLand(shape)) return false;
-      const obstacles = DOCKS.map((d) => ({
-        x: d.x + d.w / 2,
-        y: d.y + d.h / 2,
-        hx: d.w / 2,
-        hy: d.h / 2,
-        a: 0,
-      }));
-      // Boats pass under the bridge decks; only the pylons stand in the water.
-      for (const bridge of BRIDGES)
-        for (const p of bridgePylons(bridge))
-          obstacles.push({
-            x: p.x,
-            y: p.y,
-            hx: 12,
-            hy: 12,
-            a: 0,
-          });
-      obstacles.push({
-        x: HARBOR.ship.x,
-        y: HARBOR.ship.y,
-        hx: HARBOR.ship.w / 2,
-        hy: HARBOR.ship.l / 2,
-        a: 0,
-      });
-      // Liners, moored yachts, the superyacht and the marina pontoons.
-      obstacles.push(...marinaObstacles());
-      return !obstacles.some((b) => boxContact(shape, b));
+      const reach = shape.hx + shape.hy;
+      for (const b of boatObstacles())
+        if (Math.abs(b.x - x) < reach + b.reach && Math.abs(b.y - y) < reach + b.reach && boxContact(shape, b)) return false;
+      // The sailing liner moves, so her hull is asked for where she is now.
+      for (const hull of movingLinerHulls()) if (boxContact(shape, hull)) return false;
+      return true;
+    }
+    /* Everything fixed that a boat steers round, as oriented boxes with a reach
+       for a cheap distance test: the jetties, the Ironworks freighter, the
+       footings of every bridge (boats pass under the decks between them; see
+       bridgeStructure), and the marina (moored liner, yachts, pontoons). */
+    let boatObstacleCache = null;
+    function boatObstacles() {
+      if (boatObstacleCache) return boatObstacleCache;
+      const list = DOCKS.map((d) => ({ x: d.x + d.w / 2, y: d.y + d.h / 2, hx: d.w / 2, hy: d.h / 2, a: 0 }));
+      for (const bridge of BRIDGES) list.push(...bridgeFootings(bridge));
+      list.push({ x: HARBOR.ship.x, y: HARBOR.ship.y, hx: HARBOR.ship.w / 2, hy: HARBOR.ship.l / 2, a: 0 });
+      list.push(...marinaObstacles());
+      for (const b of list) b.reach = b.hx + b.hy;
+      return (boatObstacleCache = list);
     }
     function isBoat(vehicle) {
       return !!vehicle && vehicleSpec(vehicle).boat;
@@ -790,6 +783,7 @@
         !p.vendor &&
         !p.queueing &&
         !p.parkGuest &&
+        !p.club &&
         !p.parkRoute &&
         !p.leader &&
         !p.ejected &&
@@ -804,13 +798,12 @@
     }
     /**
      * ESCAPE WINDOW
-     * How long you have to stay out of sight before the search is called off.
-     * It scales with the heat you are carrying but is capped: ten seconds out of
-     * sight is the longest any level of wanted will ever hold you.
+     * How long you have to stay out of sight before the search is called off:
+     * six seconds at one star up to twenty-four at five (pursuit.js). Any unit
+     * that sees you, on the ground or in the air, starts it again.
      */
-    const POLICE_SEARCH_MAX = 10;
     function policeSearchSeconds(stars = wantedStars) {
-      return Math.min(POLICE_SEARCH_MAX, 5 + Math.ceil(clamp(stars, 0, 5)));
+      return pursuitSearchSeconds(stars);
     }
     function clearPolice(notifyEscape = false) {
       clearRoadblocks();
@@ -818,20 +811,26 @@
       if (notifyEscape && wasWanted) policeClearedNotice();
       // Losing the police means losing all of them. A respray used to leave the
       // helicopter overhead, which is the one unit a change of paint fools best.
-      const air = airSupportUnit();
-      if (air) retireAirSupport(air, notifyEscape && wasWanted);
+      let announced = false;
+      for (const air of vehicles)
+        if (air.airUnit && air.hp > 0 && !air.airRetreat && air !== player.car) {
+          retireAirSupport(air, notifyEscape && wasWanted && !announced);
+          announced = true;
+        }
       wantedStars = 0;
-      wantedPressure = 0;
-      wantedLevel = 0;
-      starElapsed = 0;
+      resetHeat();
       searchRemaining = 0;
       searchActive = false;
       copSpawn = 5;
+      dispatchTimer = 3;
+      arrestProgress = 0;
       for (const o of officers) if (o.hp > 0 && !o.gangTarget) o.state = 'return';
       for (const c of vehicles)
         if (c.cop) {
           c.cop = false;
-          c.ai = !c.crewDeployed && !c.crewLost;
+          // Patrol cars go back to patrolling; SWAT vans, agents and the tank wait
+          // where they are until they are out of sight and sent home (pursuit.js).
+          c.ai = !c.crewDeployed && !c.crewLost && !c.lawUnit;
           c.route = null;
           c.junction = null;
           c.navAngle = undefined;
@@ -850,7 +849,7 @@
     }
     function lawVehicle(vehicle) {
       return (
-        vehicle.type === 'police' &&
+        (vehicle.type === 'police' || !!vehicle.lawUnit) &&
         vehicle.hp > 0 &&
         !vehicle.crewLost &&
         !vehicle.stolen &&
@@ -891,6 +890,34 @@
         ? old
         : null;
     }
+    /* Does the segment a->b (heights start->start+dz) pass through a block? A slab
+       test in x, y and height, with a 2-unit skin so rays do not graze corners. */
+    function sightBlockedBy(block, ax, ay, start, dx, dy, dz) {
+      let lo = 0,
+        hi = 1;
+      for (let axis = 0; axis < 3; axis++) {
+        const pos = axis === 0 ? ax : axis === 1 ? ay : start,
+          delta = axis === 0 ? dx : axis === 1 ? dy : dz,
+          min = axis === 0 ? block.x - 2 : axis === 1 ? block.y - 2 : -10,
+          max = axis === 0 ? block.x + block.w + 2 : axis === 1 ? block.y + block.h + 2 : block.height + 2;
+        if (Math.abs(delta) < 1e-8) {
+          if (pos < min || pos > max) return false;
+        } else {
+          let t1 = (min - pos) / delta,
+            t2 = (max - pos) / delta;
+          if (t1 > t2) [t1, t2] = [t2, t1];
+          if (t1 > lo) lo = t1;
+          if (t2 < hi) hi = t2;
+          if (lo > hi) return false;
+        }
+      }
+      return hi > 0.0001 && lo < 0.9999;
+    }
+    let sightStamp = 0;
+    /* Line of sight between two entities. Every officer, cruiser and helicopter
+       asks this every frame at five stars, so buildings come from the building
+       grid cells the segment's bounding box covers (each tested once) rather
+       than from the whole city. */
     function clearSight(a, b) {
       if (airCoverRay(a, b)) return false;
       const start = entityElevation(a) + 14,
@@ -905,41 +932,50 @@
           if (terrainHeight(a.x + dx * t, a.y + dy * t) > start + dz * t) return false;
         }
       }
-      for (const block of [
-        ...buildings,
-        ...garageWalls(),
-        ...militarySolids(),
-        ...countySolids(),
-        ...harborSolids().filter((s) => s.height > 14),
-        ...depotSolids(),
-      ]) {
-        let lo = 0,
-          hi = 1,
-          hit = true;
-        for (const [pos, delta, min, max] of [
-          [a.x, dx, block.x - 2, block.x + block.w + 2],
-          [a.y, dy, block.y - 2, block.y + block.h + 2],
-          [start, dz, -10, block.height + 2],
-        ]) {
-          if (Math.abs(delta) < 1e-8) {
-            if (pos < min || pos > max) {
-              hit = false;
-              break;
-            }
-          } else {
-            let t1 = (min - pos) / delta,
-              t2 = (max - pos) / delta;
-            if (t1 > t2) [t1, t2] = [t2, t1];
-            lo = Math.max(lo, t1);
-            hi = Math.min(hi, t2);
-            if (lo > hi) {
-              hit = false;
-              break;
+      if (buildingGrid.size) {
+        const stamp = ++sightStamp,
+          x0 = Math.floor((Math.min(a.x, b.x) - 8) / BUILDING_CELL),
+          x1 = Math.floor((Math.max(a.x, b.x) + 8) / BUILDING_CELL),
+          y0 = Math.floor((Math.min(a.y, b.y) - 8) / BUILDING_CELL),
+          y1 = Math.floor((Math.max(a.y, b.y) + 8) / BUILDING_CELL);
+        for (let i = x0; i <= x1; i++)
+          for (let j = y0; j <= y1; j++) {
+            const cell = buildingGrid.get(i * 4096 + j);
+            if (!cell) continue;
+            for (const block of cell) {
+              if (block.sightStamp === stamp) continue;
+              block.sightStamp = stamp;
+              if (sightBlockedBy(block, a.x, a.y, start, dx, dy, dz)) return false;
             }
           }
-        }
-        if (hit && hi > 0.0001 && lo < 0.9999) return false;
-      }
+      } else
+        for (const block of buildings)
+          if (sightBlockedBy(block, a.x, a.y, start, dx, dy, dz)) return false;
+      // The other solids: a bounding-box reject first (the county lists are long).
+      const minX = Math.min(a.x, b.x) - 4,
+        maxX = Math.max(a.x, b.x) + 4,
+        minY = Math.min(a.y, b.y) - 4,
+        maxY = Math.max(a.y, b.y) + 4;
+      const lists = [
+        garageWalls(),
+        militarySolids(),
+        countyStaticSolids,
+        AIRPORT_SCENERY_SOLIDS,
+        depotSolids(),
+        harborSolids(),
+      ];
+      for (let i = 0; i < lists.length; i++)
+        for (const block of lists[i])
+          if (
+            block.x <= maxX &&
+            block.x + block.w >= minX &&
+            block.y <= maxY &&
+            block.y + block.h >= minY &&
+            // Low harbor clutter (bollards, crates) does not block a line of sight.
+            (i < 5 || block.height > 14) &&
+            sightBlockedBy(block, a.x, a.y, start, dx, dy, dz)
+          )
+            return false;
       return true;
     }
     function policeSees(o) {
@@ -956,18 +992,28 @@
       );
     }
     function deployOfficers(c) {
-      if (c.crewDeployed || c.crewLost || c.hp <= 0) return;
+      if (c.crewDeployed || c.crewLost || c.hp <= 0 || c.lawUnit === 'army') return;
       c.crewDeployed = true;
       c.ai = false;
       c.vx = c.vy = c.speed = c.av = 0;
       c.crew = [];
-      for (const side of [-1, 1]) {
+      // A patrol car carries two, an agents' SUV three, a SWAT van four
+      // (pursuit.js); they climb out on both sides, the rest from the back.
+      const unit = c.lawUnit === 'swat' ? 'swat' : c.lawUnit === 'fed' ? 'fed' : 'patrol',
+        size = c.crewSize || 2,
+        doors = [
+          [-1, 0],
+          [1, 0],
+          [-1, -0.3],
+          [1, -0.3],
+        ].slice(0, size);
+      for (const [side, back] of doors) {
         let spawnPoint = null;
         for (const radius of [25, 35, 47]) {
           const a = c.a + (side * Math.PI) / 2,
             p = {
-              x: c.x + Math.cos(a) * radius,
-              y: c.y + Math.sin(a) * radius,
+              x: c.x + Math.cos(a) * radius + Math.cos(c.a) * back * 60,
+              y: c.y + Math.sin(a) * radius + Math.sin(c.a) * back * 60,
             };
           if (
             !harborPoliceProtected(p.x, p.y, 12) &&
@@ -984,23 +1030,15 @@
           }
         }
         if (!spawnPoint) continue;
-        const o = {
-          ...spawnPoint,
-          a: c.a,
-          hp: 85,
-          // Patrol officers wear a vest; the tactical units at high alert wear a heavier one.
-          vest: wantedStars >= 4 ? 90 : 55,
-          color: '#2d455e',
-          police: true,
+        const o = makeOfficer(spawnPoint.x, spawnPoint.y, c.a, unit, {
           car: c,
-          state: 'pursue',
-          walk: 0,
-          timer: 0.8,
-          engagedSaid: false,
+          timer: 0.8 + c.crew.length * 0.2,
           gangTarget: c.gangTarget || null,
           gangSeenAt: gameTime,
           gangLastSeen: c.gangLastSeen,
-        };
+        });
+        // Patrol officers wear a light vest; at four stars and up a heavier one.
+        if (unit === 'patrol' && wantedStars >= 4) o.vest = 60;
         officers.push(o);
         c.crew.push(o);
       }
@@ -1037,18 +1075,26 @@
       o.walk += deltaSeconds * 12;
     }
     function updateOfficers(deltaSeconds) {
+      assignFireTokens(deltaSeconds);
       for (const c of vehicles) {
-        if (c.cop) c.seesPlayer = !c.crewDeployed && policeSees(c);
+        // Sight and gang checks are staggered: each unit looks about seven times
+        // a second, which reads the same and costs a fraction at five stars.
+        const look = gameTime >= (c.lookAt || 0);
+        if (look) c.lookAt = gameTime + 0.12 + seededRandom() * 0.06;
+        if (c.cop && (look || c.crewDeployed)) c.seesPlayer = !c.crewDeployed && policeSees(c);
         if (!lawVehicle(c)) continue;
-        c.gangTarget = c.pursuitTarget ? null : policeGangTarget(c);
-        const gangClose = c.gangTarget && distanceBetween(c, c.gangTarget) < 300,
+        if (look) c.gangTarget = c.pursuitTarget ? null : policeGangTarget(c);
+        // The crew gets out for a runner on foot, and for a driver who has
+        // stopped: a car sitting still is surrounded (pursuit.js).
+        const onFoot = !player.car || isAircraft(player.car),
+          gangClose = c.gangTarget && distanceBetween(c, c.gangTarget) < 300,
           playerClose =
             c.cop &&
             wantedStars > 0 &&
             !harborPoliceProtected(player.x, player.y, 30) &&
-            (!player.car || isAircraft(player.car)) &&
             !playerOnRoof() &&
-            combatDistance(c, player) < 350;
+            (onFoot || (player.carStoppedFor || 0) > 1.2) &&
+            combatDistance(c, player) < (onFoot ? 350 : 240);
         if (!c.crewDeployed && (gangClose || playerClose) && Math.abs(c.speed) < 24) deployOfficers(c);
       }
       for (const o of officers) {
@@ -1061,7 +1107,11 @@
           o.state = 'stunned';
           continue;
         }
-        o.gangTarget = policeGangTarget(o);
+        const look = gameTime >= (o.lookAt || 0);
+        if (look) {
+          o.lookAt = gameTime + 0.12 + seededRandom() * 0.06;
+          o.gangTarget = policeGangTarget(o);
+        }
         if (
           ((wantedStars <= 0 || harborPoliceProtected(player.x, player.y, 30)) && !o.gangTarget) ||
           (o.state === 'return' && !o.gangTarget)
@@ -1075,8 +1125,14 @@
           }
           continue;
         }
-        const seesPlayer = wantedStars > 0 && policeSees(o),
-          gang = o.gangTarget;
+        if (look || o.seesPlayer === undefined) o.seesPlayer = wantedStars > 0 && policeSees(o);
+        const seesPlayer = wantedStars > 0 && o.seesPlayer,
+          gang = o.gangTarget,
+          kind = officerKind(o);
+        if (seesPlayer) {
+          o.sightTime = (o.sightTime || 0) + deltaSeconds;
+          o.lastSawPlayerAt = gameTime;
+        } else o.sightTime = 0;
         const target =
           gang && (!seesPlayer || distanceBetween(o, gang) < distanceBetween(o, player) * 1.2)
             ? gang
@@ -1099,61 +1155,71 @@
           footStepTowards(o, o.post, deltaSeconds, 72);
           continue;
         }
+        // The runner drove off: back to the car and after them.
+        if (
+          target === player &&
+          !o.blockade &&
+          player.car &&
+          !isAircraft(player.car) &&
+          Math.abs(player.car.speed || 0) > 70 &&
+          distanceBetween(o, player) > 190 &&
+          o.car?.hp > 0 &&
+          !o.car.stolen &&
+          o.car !== player.car
+        ) {
+          o.state = 'remount';
+          footStepTowards(o, o.car, deltaSeconds, kind.run * 1.15);
+          if (distanceBetween(o, o.car) < 32) o.returned = true;
+          continue;
+        }
         const seen = target === player ? seesPlayer : clearSight(o, target),
           d = distanceBetween(o, target),
           changed = o.target !== target;
         o.target = target;
         const chase = seen ? target : target === player ? lastSeen : o.gangLastSeen || target;
         o.a = headingBetween(o, chase);
-        o.timer -= deltaSeconds;
-        if (
-          seen &&
-          combatDistance(o, target) <
-            (isAircraft(player.car) && target === player ? 330 : target === player ? 180 : 210)
-        ) {
-          if (o.state !== 'aim' || changed) {
+        const range =
+          target === player ? (isAircraft(player.car) ? 330 : kind.range) : 210;
+        if (seen && combatDistance(o, target) < range) {
+          if (!['aim', 'approach', 'arrest'].includes(o.state) || changed) {
             o.state = 'aim';
             o.timer = Math.max(0.65, o.timer);
             o.engagedSaid = false;
           }
+          // One star, or a runner who has stopped fighting with officers close
+          // by: walk up and make the arrest (pursuit.js).
+          if (target === player && (!officerMayShoot(o, player) || (policeMayArrest && d < 120))) {
+            if (o.state !== 'arrest') o.state = 'approach';
+            if (d > 22) footStepTowards(o, player, deltaSeconds, 85);
+            o.a = headingBetween(o, player);
+            if (!o.challengeSaid && d < 200) o.challengeSaid = radio('police-challenge', o);
+            continue;
+          }
+          o.state = 'aim';
           if (target === player && !o.engagedSaid && radio('target-engaged', o)) o.engagedSaid = true;
+          if (gameTime < (o.staggerUntil || 0)) continue;
           if (d < 42)
             moveBody(o, -Math.cos(o.a) * 35 * deltaSeconds, -Math.sin(o.a) * 35 * deltaSeconds, 8);
-          if (o.timer <= 0) {
-            o.timer = 0.95 + seededRandom() * 0.55;
-            const a = o.a + randomBetween(-0.045, 0.045);
-            bullets.push({
-              x: o.x + Math.cos(a) * 14,
-              y: o.y + Math.sin(a) * 14,
-              altitude: entityElevation(o),
-              ...shotVelocity(
-                {
-                  x: o.x + Math.cos(a) * 14,
-                  y: o.y + Math.sin(a) * 14,
-                  altitude: entityElevation(o),
-                },
-                target,
-                500,
-                a,
-              ),
-              life: 0.7,
-              dmg: 17,
-              enemy: true,
-              faction: 'police',
-              owner: o,
-              target,
-            });
-            if (target !== player) {
-              target.policeAggroUntil = gameTime + 15;
-              target.policeThreatUntil = gameTime + 15;
+          else {
+            const spot = officerPosition(o, target, d, !o.fireToken && target === player);
+            if (spot) {
+              footStepTowards(o, spot, deltaSeconds, kind.run * (o.fireToken ? 0.65 : 0.9));
+              o.a = headingBetween(o, target);
             }
-            playSample('pistol', 0.3, 1, o);
-            if (city3D) city3D.fire(o.x, o.y, a, false, entityElevation(o));
           }
+          // Only the officers holding a firing token shoot at the player; the
+          // rest hold aim and move up (pursuit.js assignFireTokens).
+          if (target !== player || o.fireToken) officerShoot(o, target, deltaSeconds);
         } else {
+          if (target === player && !seen && officerSuppress(o, deltaSeconds)) {
+            o.state = 'suppress';
+            if (distanceBetween(o, lastSeen) > 90) footStepTowards(o, lastSeen, deltaSeconds, 45);
+            o.a = headingBetween(o, lastSeen);
+            continue;
+          }
           o.state = 'pursue';
           if (distanceBetween(o, chase) > 20)
-            footStepTowards(o, chase, deltaSeconds, target === player && player.car ? 96 : 112);
+            footStepTowards(o, chase, deltaSeconds, target === player && player.car ? 96 : kind.run);
         }
       }
       for (let i = officers.length - 1; i >= 0; i--) if (officers[i].returned) officers.splice(i, 1);
@@ -1166,12 +1232,13 @@
             c.gangTarget = null;
           }
           c.crewDeployed = false;
-          c.ai = !c.crewLost && wantedStars <= 0 && c.hp > 0 && !c.stolen;
+          c.ai = !c.crewLost && wantedStars <= 0 && c.hp > 0 && !c.stolen && !c.lawUnit;
           c.crew = [];
         }
     }
     function updateWanted(deltaSeconds) {
       updateStarProgress(deltaSeconds);
+      updatePursuit(deltaSeconds);
       if (mission?.index === 2 && [1, 2].includes(mission.stage)) {
         wantedStars = Math.max(1, wantedStars);
         searchActive = false;
@@ -1205,8 +1272,9 @@
         return;
       }
       const seen =
-        officers.some((o) => o.state !== 'return' && policeSees(o)) ||
-        vehicles.some((c) => c.cop && !c.crewDeployed && policeSees(c));
+        // Sight was worked out this frame by updateOfficers (and the air units).
+        officers.some((o) => o.state !== 'return' && o.hp > 0 && o.seesPlayer) ||
+        vehicles.some((c) => c.cop && !c.crewDeployed && c.hp > 0 && c.seesPlayer);
       if (seen) {
         lastSeen = {
           x: player.x,
@@ -1218,18 +1286,18 @@
         if (!searchActive) {
           searchActive = true;
           searchRemaining = policeSearchSeconds();
+          if (wantedStars >= 2) policeRadioEvent('lost');
         }
-        searchRemaining = Math.max(0, searchRemaining - deltaSeconds);
+        // Inside the search area (the circle on the radar) the clock barely
+        // moves: the police are combing those streets. Get out of it.
+        const inZone = distanceBetween(player, lastSeen) < policeSearchRadius();
+        searchRemaining = Math.max(0, searchRemaining - deltaSeconds * (inZone ? 0.2 : 1));
         if (searchRemaining === 0) {
           clearPolice(true);
           return;
         }
       }
-      copSpawn -= deltaSeconds;
-      if (copSpawn <= 0 && (!searchActive || (!vehicles.some((c) => c.cop) && !officers.length))) {
-        copSpawn = 5;
-        spawnCop();
-      }
+      dispatchPolice(deltaSeconds);
     }
     const BLOOD_LIMIT = 240,
       BLOOD_TRACK_DISTANCE = BLOCK_SIZE * 0.07,
@@ -1380,6 +1448,11 @@
       if (person.faction && source?.police) person.policeAggroUntil = gameTime + 15;
       person.hp -= dealt;
       person.flee = 8;
+      // A hit officer staggers: a half-second with no aimed fire, shoved back.
+      if (person.police && person.hp > 0 && dealt > 4) {
+        person.staggerUntil = gameTime + (kind === 'blast' ? 1.2 : 0.45);
+        moveBody(person, Math.cos(a) * 6, Math.sin(a) * 6, 8);
+      }
       // A round the vest ate sparks off the plate instead of opening a wound.
       const stopped = dealt < damage * 0.4 && wearingVest(person);
       if (stopped) particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
@@ -1390,18 +1463,20 @@
         // Witnesses who find the body later report whoever did it.
         person.killedBy = source;
         if (showBlood) bleed(person, 2, a);
+        if (source === player) recordKill(person, kind);
       }
     }
     function updateCivic(deltaSeconds) {
       worldMinutes += deltaSeconds;
       updateHarbor(deltaSeconds);
       updateStoryWorld(deltaSeconds);
-      updateOfficers(deltaSeconds);
-      updateWanted(deltaSeconds);
-      updateRoadblocks(deltaSeconds);
+      // Police parts are timed on their own so stats() shows the cost of a chase.
+      timed('police:officers', () => updateOfficers(deltaSeconds));
+      timed('police:wanted', () => updateWanted(deltaSeconds));
+      timed('police:roadblocks', () => updateRoadblocks(deltaSeconds));
       updateDepotDoors(deltaSeconds);
       updateCrowdDensity(deltaSeconds);
-      updateAirPolice(deltaSeconds);
+      timed('police:air', () => updateAirPolice(deltaSeconds));
       for (let i = bloodPools.length - 1; i >= 0; i--)
         if (gameTime - bloodPools[i].created > 240) bloodPools.splice(i, 1);
     }
@@ -1468,13 +1543,14 @@
             ? 'COPS TRACKING TRUCK · RESPRAY AT R'
             : wantedStars > 0
               ? searchActive
-                ? 'OUT OF SIGHT · STAY HIDDEN'
+                ? distanceBetween(player, lastSeen) < policeSearchRadius()
+                  ? 'LEAVE THE SEARCH AREA'
+                  : 'OUT OF SIGHT · STAY HIDDEN'
                 : 'POLICE HAVE EYES ON YOU'
               : '';
       const airText = airPursuitStatus();
       if (airText) getElement('chaseStatus').textContent += '\n' + airText;
       getElement('chaseStatus').classList.toggle('searching', searchActive);
-      getElement('stars').classList.toggle('searching', searchActive);
       const timer = getElement('policeEscapeTimer');
       timer.classList.toggle('hidden', !(wantedStars > 0 && searchActive));
       document.body?.classList.toggle('police-search-active', wantedStars > 0 && searchActive);
@@ -1537,6 +1613,7 @@
       return units;
     }
     function drawPoliceMap(drawingContext, scale) {
+      drawPoliceSearch(drawingContext, scale);
       // Markers retain a readable screen size on both the local radar and city map.
       for (const { unit: u, kind, alerted } of policeMapUnits()) {
         drawingContext.save();

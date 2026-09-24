@@ -187,15 +187,11 @@
       for (const b of buildings) addStatic(b.x, b.y, b.w, b.h, b.height + 22).building = b;
       // Buildings kept outside `buildings` stop people through their own solid()
       // tests, but cars drove straight through them: the marina club, fuel dock
-      // and cruise terminal, and the Sunset Pier arcade, games row, food court,
-      // big wheel and carousel.
+      // and cruise terminal, and the Sunset Pier rides, buildings and supports
+      // (themepark.js parkSolids; parkAirSolids are only in an aircraft's way).
       for (const b of marinaSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'marina');
       for (const b of parkSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier');
-      for (const [ride, radius, height] of [
-        [PIER.wheel, 16, 90],
-        [PIER.carousel, 12, 18],
-      ])
-        addStatic(ride.x - radius, ride.y - radius, radius * 2, radius * 2, height, 'pier');
+      for (const b of parkAirSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier').minHeight = b.minHeight;
       // Water contact follows the same irregular shores as the visible terrain.
       for (const e of buildCoastSegments()) {
         if (e.opening) continue;
@@ -341,6 +337,30 @@
         hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075), 'impact');
         if (closing > 130) radio('look-out');
         if (b && !a.cop && !b.cop) crime(0.06);
+        // Whoever was going faster did the ramming: the wreck is theirs, and
+        // ramming a police car is assault on an officer (heat.js).
+        const other = a === player.car ? b : a;
+        // Contact from a chasing unit (PIT, box, ram): counted for policeReport().
+        if (other?.cop && other.pursuitPlan && !other.blockade) {
+          pursuitStats.contacts++;
+          if (other.pursuitPlan.mode === 'pit') pursuitStats.pits++;
+        }
+        if (
+          other &&
+          Math.hypot(player.car?.vx || 0, player.car?.vy || 0) > Math.hypot(other.vx || 0, other.vy || 0)
+        ) {
+          other.lastAttacker = player;
+          other.lastDamagedAt = gameTime;
+          if (
+            (other.type === 'police' || other.lawUnit) &&
+            !other.stolen &&
+            closing > 110 &&
+            gameTime - (other.rammedByPlayerAt ?? -100) > 4
+          ) {
+            other.rammedByPlayerAt = gameTime;
+            crime(wantedStars > 0 ? 0.35 : 0.6);
+          }
+        }
       }
     }
     function resolveContact(a, b, hit, staticBody = null, record = true) {
@@ -404,6 +424,16 @@
           kickB = Math.abs(normalTorqueArmB * impulse * inverseInertiaB);
         if (kickA > 0.55) a.spinUntil = physicsClock + clamp(kickA * 0.32, 0.25, 1.1);
         if (b && kickB > 0.55) b.spinUntil = physicsClock + clamp(kickB * 0.32, 0.25, 1.1);
+        // A chasing cruiser that spun the player's car out: a PIT (policeReport()).
+        if (b && player.car && (a === player.car ? b : b === player.car ? a : null)?.pursuitPlan) {
+          const runner = a === player.car ? a : b,
+            kick = a === player.car ? kickA : kickB;
+          if (kick > 0.55 && physicsClock - (runner.pitCountedAt ?? -100) > 2) {
+            runner.pitCountedAt = physicsClock;
+            pursuitStats.spinouts++;
+            contactHoldUntil = gameTime + 3.5;
+          }
+        }
         // Sheet metal on sheet metal grips harder than a tyre-scuffed wall face.
         const friction = b ? 0.3 : 0.23,
           tx = -n.y,
@@ -1106,61 +1136,11 @@
             wantedStars > 0 &&
             !harborPoliceProtected(player.x, player.y, 30)
           ) {
-            c.routeTime = (c.routeTime || 0) - stepSeconds;
-            let target;
-            if (
-              c.pursuitTarget &&
-              distanceBetween(c, c.pursuitTarget) < 330 &&
-              clearSight(c, c.pursuitTarget)
-            )
-              target = c.pursuitTarget;
-            else if (!c.pursuitTarget && c.seesPlayer && distanceBetween(c, player) < 370)
-              target = player;
-            else if (searchActive) target = lastSeen;
-            else {
-              if (c.routeTime <= 0 || !c.route?.length) {
-                c.route = copRoute(c);
-                c.routeTime = 2;
-              }
-              if (c.route.length && distanceBetween(c, c.route[0]) < 45) c.route.shift();
-              target = c.route[0] || {
-                x: roadNear(player.x),
-                y: rowNear(player.y),
-              };
-            }
-            const da = normalizeAngle(headingBetween(c, target) - c.a);
-            steer = clamp(da * 3, -2.1, 2.1);
-            let desired = Math.abs(da) > 1 ? 60 : Math.min(305, 185 + wantedStars * 22);
-            if (
-              !c.pursuitTarget &&
-              (!player.car || isAircraft(player.car)) &&
-              distanceBetween(c, player) < 310
-            ) {
-              desired = clamp((distanceBetween(c, player) - 160) * 1.5, 0, 150);
-              if (distanceBetween(c, player) < 150) steer = 0;
-            }
-            const quarry = c.pursuitTarget?.hp > 0 ? c.pursuitTarget : player.car;
-            if (
-              wantedStars >= 4 &&
-              quarry &&
-              quarry !== c &&
-              !isAircraft(quarry) &&
-              distanceBetween(c, quarry) < 200
-            ) {
-              // Contact tactics: aim a car length ahead of the quarter panel and push.
-              const lead = {
-                x: quarry.x + (quarry.vx || 0) * 0.32,
-                y: quarry.y + (quarry.vy || 0) * 0.32,
-              };
-              steer = clamp(normalizeAngle(headingBetween(c, lead) - c.a) * 3.4, -2.3, 2.3);
-              desired = Math.max(desired, Math.hypot(quarry.vx || 0, quarry.vy || 0) + 75);
-            }
-            acceleration = clamp(
-              (desired - along) * 3,
-              -(!player.car ? 620 : 300),
-              vehicleDefinition.acc,
-            );
-            drag = 0.2;
+            // Intercepts, PIT and boxing, search sweeps and stuck recovery (pursuit.js).
+            const control = pursuitControl(c, stepSeconds, along, vehicleDefinition);
+            steer = control.steer;
+            acceleration = control.acceleration;
+            drag = control.drag;
           } else if (c.hp > 0 && c.ai && !c.crewDeployed) {
             // Traffic decisions are cached: 20 Hz near the player, 4 Hz for distant cars.
             const ai =
@@ -1727,6 +1707,7 @@
           vehicle.ai = false;
           vehicle.cop = false;
           vehicle.sprite = null;
+          if (vehicle.lastAttacker === player && vehicle !== player.car) recordVehicleKill(vehicle);
           if (!vehicleSpec(vehicle).bicycle)
             explode(
               vehicle.x,

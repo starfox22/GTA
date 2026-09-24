@@ -3,7 +3,8 @@
      * Aerial combat and pursuit rules
      * Source: src/combat-rules.js
      * Scope: shared game closure.
-     * Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
+     * Elevation-aware shots, vehicle handgun rules, tank armor and the police helicopters
+     * (one at three stars, two at four and five; each carries a marksman).
      */
     /* All gunfire travels through the same three-dimensional world. */
 
@@ -18,6 +19,8 @@
     const BALLISTIC_LETHALITY = 2.05,
       MELEE_LETHALITY = 1.45,
       VEST_SHARE = {
+        // A headshot (precision rifle on its aimed target) goes round the vest.
+        headshot: 0,
         ballistic: 0.74,
         melee: 0.55,
         blast: 0.45,
@@ -33,7 +36,11 @@
     function ballisticDamage(person, damage, kind = 'ballistic') {
       let d =
         damage *
-        (kind === 'ballistic' ? BALLISTIC_LETHALITY : kind === 'melee' ? MELEE_LETHALITY : 1);
+        (kind === 'ballistic' || kind === 'headshot'
+          ? BALLISTIC_LETHALITY
+          : kind === 'melee'
+            ? MELEE_LETHALITY
+            : 1);
       const share = VEST_SHARE[kind] || 0,
         vest = vestOf(person);
       if (vest > 0 && share > 0) {
@@ -91,6 +98,8 @@
           score = Math.abs(normalizeAngle(headingBetween(player, p) - a));
           if (score > (mouse.active ? 0.12 : touchAim !== null ? 0.32 : 0.8)) continue;
           score += distanceBetween(player, p) * 0.00008;
+          // Auto-aim prefers the gunmen on the ground to a helicopter overhead.
+          if (isAircraft(p)) score += 0.3;
         }
         if (score < best) {
           best = score;
@@ -115,8 +124,11 @@
       }
     }
     const AIR_SEARCH_SECONDS = 18,
-      AIR_REDISPATCH_SECONDS = 45;
-    let airDispatchTimer = 0;
+      AIR_REDISPATCH_SECONDS = 45,
+      AIR_RELAUNCH_SECONDS = 12;
+    let airDispatchTimer = 0,
+      airLaunchReadyAt = 0,
+      sniperWarningAt = -100;
     function airTargetSnapshot(t) {
       return {
         x: t.x,
@@ -139,14 +151,15 @@
         clearSight(c, t)
       );
     }
-    function requestAirSupport(target, missionScoped = false) {
+    function requestAirSupport(target, missionScoped = false, extra = false) {
       for (const lost of vehicles)
         if (lost.airUnit && lost.hp <= 0 && !lost.airDown) markAirSupportDown(lost);
-      let c = airSupportUnit();
+      let c = extra ? null : airSupportUnit();
       if (airDispatchTimer > 0 && (!c || c.airRetreat)) return null;
       if (c && !missionScoped) return c;
       if (!c) {
-        const a = player.a + Math.PI * 0.7,
+        // A second helicopter comes in from the other side of the city.
+        const a = player.a + Math.PI * (extra ? -0.6 : 0.7),
           x = target.x + Math.cos(a) * 900,
           y = target.y + Math.sin(a) * 900;
         c = makeCar(
@@ -185,8 +198,14 @@
         airShotTimer: 2,
         rotorSpeed: 1,
       });
+      if (extra) c.airArrival = 12;
       radio('call-backup');
-      tell('AIR SUPPORT CALLED · Head for a railway underpass, towers, or a bridge by boat.', 7);
+      tell(
+        extra
+          ? 'SECOND AIR UNIT INBOUND · Two helicopters now hunting you.'
+          : 'AIR SUPPORT CALLED · Head for a railway underpass, towers, or a bridge by boat.',
+        6,
+      );
       return c;
     }
     function retireAirSupport(c, escaped = false) {
@@ -201,7 +220,9 @@
         altitude: c.altitude,
         hp: 100,
       };
-      airDispatchTimer = Math.max(airDispatchTimer, AIR_REDISPATCH_SECONDS);
+      // Stood down or shaken off, a crew can relaunch soon; only a helicopter shot
+      // down (markAirSupportDown) keeps the sky empty for the full 45 seconds.
+      airDispatchTimer = Math.max(airDispatchTimer, AIR_RELAUNCH_SECONDS);
       if (mission?.airUnit === c) mission.airUnit = null;
       if (escaped)
         tell('HELICOPTER LOST · Air support is leaving. Ground patrols may still be searching.', 5);
@@ -221,12 +242,20 @@
       airDispatchTimer = Math.max(0, airDispatchTimer - deltaSeconds);
       // Destruction is processed before dispatch, so a kill cannot immediately spawn its replacement.
       for (const c of vehicles) if (c.airUnit && c.hp <= 0 && !c.airDown) markAirSupportDown(c);
-      const wanted = Math.ceil(wantedStars) >= 4 && !harborPoliceProtected(player.x, player.y, 100);
-      if (wanted && !airSupportUnit() && airDispatchTimer <= 0) requestAirSupport(player);
+      // Three stars bring one helicopter, four and five bring two (pursuit.js).
+      const airCap =
+          wantedStars > 0 && !harborPoliceProtected(player.x, player.y, 100) ? policeTier().air : 0,
+        wanted = airCap > 0;
       const live = vehicles
         .filter((c) => c.airUnit && c.hp > 0 && c !== player.car && !c.airRetreat)
         .sort((a, b) => Number(!!b.missionPursuit) - Number(!!a.missionPursuit) || a.id - b.id);
-      for (const c of live.slice(1)) retireAirSupport(c);
+      const general = live.filter((c) => !c.missionPursuit);
+      if (general.length < airCap && airDispatchTimer <= 0 && gameTime >= airLaunchReadyAt) {
+        requestAirSupport(player, false, general.length > 0);
+        airLaunchReadyAt = gameTime + 12;
+      }
+      for (const c of live.filter((c) => c.missionPursuit).slice(1)) retireAirSupport(c);
+      for (const c of general.slice(Math.max(airCap, 0))) retireAirSupport(c);
       for (let i = vehicles.length - 1; i >= 0; i--) {
         const c = vehicles[i];
         if (!c.airUnit || c === player.car) continue;
@@ -276,27 +305,43 @@
             continue;
           }
         }
-        if (seen && c.airShotTimer <= 0 && combatDistance(c, t) < 540) {
-          c.airShotTimer = 1.5;
-          const a = headingBetween(c, t) + randomBetween(-0.035, 0.035),
-            origin = {
+        // The marksman: lines up for a second and a half (the HUD warns), then
+        // one aimed round. Moving fast, or breaking sight, spoils the shot.
+        if (seen && combatDistance(c, t) < 560 && c.airShotTimer <= 0) {
+          c.sniperLock = (c.sniperLock || 0) + deltaSeconds;
+          if (c.sniperLock > 0.3 && t === player && gameTime - sniperWarningAt > 5) {
+            sniperWarningAt = gameTime;
+            tone(1250, 0.05, 0.08, 'square', 1400);
+          }
+          if (c.sniperLock >= 1.6) {
+            c.sniperLock = 0;
+            c.airShotTimer = randomBetween(2.4, 3.4);
+            pursuitStats.sniperShots++;
+            const runner = t === player || t === player.car,
+              speed = Math.hypot((player.car || t).vx || 0, (player.car || t).vy || 0) || (runner && !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) ? 110 : 0),
+              chance = clamp(0.85 - speed / 500, 0.3, 0.85);
+            let a = headingBetween(c, t);
+            if (seededRandom() > chance) a += (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.05, 0.1);
+            const origin = {
               x: c.x + Math.cos(a) * 27,
               y: c.y + Math.sin(a) * 27,
               altitude: entityElevation(c),
             };
-          bullets.push({
-            ...origin,
-            ...shotVelocity(origin, t, 650, a),
-            life: 1,
-            dmg: 12,
-            enemy: true,
-            faction: 'police',
-            owner: c,
-            target: t === player || t === player.car ? player : t,
-          });
-          playSample('pistol', 0.22, 1, c);
-          if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
-        }
+            bullets.push({
+              ...origin,
+              ...shotVelocity(origin, t, 1100, a),
+              life: 1,
+              dmg: 40,
+              playerDmg: 14,
+              enemy: true,
+              faction: 'police',
+              owner: c,
+              target: runner ? player : t,
+            });
+            playSample('rifle', 0.34, 0.9, c);
+            if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
+          }
+        } else c.sniperLock = Math.max(0, (c.sniperLock || 0) - deltaSeconds * 2);
       }
     }
     function airPursuitStatus() {
@@ -309,8 +354,10 @@
             ? 'AIR SEARCH · ' +
               Math.ceil(Math.max(0, AIR_SEARCH_SECONDS - (c.airLostFor || 0))) +
               's · STAY HIDDEN'
-            : 'HELICOPTER · ' + Math.ceil((c.hp / c.maxhp) * 100) + '% · FIND COVER';
-      return wantedStars >= 4 && airDispatchTimer > 0
+            : (c.sniperLock || 0) > 0.3
+              ? 'MARKSMAN LINING UP · MOVE!'
+              : 'HELICOPTER · ' + Math.ceil((c.hp / c.maxhp) * 100) + '% · FIND COVER';
+      return wantedStars >= 3 && airDispatchTimer > 0
         ? 'NO AIR SUPPORT · ' + Math.ceil(airDispatchTimer) + 's'
         : '';
     }

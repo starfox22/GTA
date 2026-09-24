@@ -1575,8 +1575,9 @@
           person.deadTime = person.deadTime || gameTime;
           match.casualties++;
           sportsRecordEvent(match, 'casualty', person, person.kind);
-          // A killing in front of thousands of witnesses.
-          if (byPlayer) crime(0.35);
+          // A killing in front of thousands of witnesses: a civilian death in the
+          // heat model (heat.js), counted once even if strikePerson already did.
+          if (byPlayer) recordKill(person);
         }
         if (byPlayer && match.policeCallAt === null) match.policeCallAt = match.time + 2.5;
         sportsAbandon(match, person.threat || person, byPlayer ? player : null);

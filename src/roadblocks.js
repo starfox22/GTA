@@ -176,32 +176,16 @@
         const x = site.x + lane.x * offset + along.x * behind * 54,
           y = site.y + lane.y * offset + along.y * behind * 54;
         if (solid(x, y, 8)) continue;
-        const o = {
-          x,
-          y,
-          a: headingBetween(
-            {
-              x,
-              y,
-            },
-            site,
-          ),
-          hp: 85,
-          vest: wantedStars >= 4 ? 90 : 55,
-          color: '#2d455e',
-          police: true,
+        // From four stars the cut is held by a SWAT team with rifles (pursuit.js).
+        const o = makeOfficer(x, y, headingBetween({ x, y }, site), wantedStars >= 4 ? 'swat' : 'road', {
           car: block.cars[0],
           blockade: block,
           post: {
             x,
             y,
           },
-          state: 'pursue',
-          walk: 0,
           timer: 0.9,
-          engagedSaid: false,
-          gangTarget: null,
-        };
+        });
         officers.push(o);
         block.crew.push(o);
       }
@@ -251,8 +235,7 @@
     function containmentBudget() {
       const cargo = cargoChase();
       if (cargo?.policeArrived) return 2;
-      const stars = Math.ceil(wantedStars);
-      return stars >= 5 ? 3 : stars >= 4 ? 1 : 0;
+      return wantedStars > 0 ? policeTier().roadblocks : 0;
     }
     function planPoliceContainment(deltaSeconds) {
       containmentTimer -= deltaSeconds;

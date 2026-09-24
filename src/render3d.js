@@ -822,9 +822,12 @@
       // @include src/wakes3d.js
       // @include src/beach3d.js
       // @include src/county3d.js
+      // @include src/base3d.js
       // @include src/boats3d.js
+      // @include src/bridges3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js
+      // @include src/beachclub3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
       // @include src/crowd3d.js
@@ -836,7 +839,8 @@
       function makeVehicle(vehicle) {
         if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
         if (vehicle.type === 'plane') return makePlane(vehicle);
-        if (vehicleSpec(vehicle).tank) return makeTank(vehicle);
+        if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
+        if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
         if (vehicle.type === 'helicopter') return makeHelicopter(vehicle);
         if (vehicleSpec(vehicle).bike) return makeMotorcycle(vehicle);
         if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
@@ -989,7 +993,8 @@
         if (vehicle.type === 'taxi') box(body, -1, roof + 1.5, 0, 6, 2.2, 4, mat('#d1c5a2'));
         coachDetails(vehicle, body, l, w, h, roof, paint);
         const strobes = [];
-        if (vehicle.type === 'police') {
+        // Patrol cars, SWAT vans and agents' SUVs carry a light bar (pursuit.js).
+        if (vehicle.type === 'police' || vehicle.lawUnit === 'swat' || vehicle.lawUnit === 'fed') {
           box(body, -1, roof + 1.2, 0, 3, 1, w * 0.73, darkMetal);
           for (const side of [-1, 1]) {
             const model = box(
@@ -1102,7 +1107,14 @@
             box(gun, 2, 0, 0, 0.35, 1.7, 1.3, darkMetal);
             box(gun, 4, 0, 0, 3.8, 0.22, 0.9, mat('#cbd6dd', 0.25, 0.8));
           }
-          if (slot === 0) {
+          if (slot === 0 && !isPlayer && person.rifle) {
+            // SWAT and agents carry carbines (pursuit.js).
+            box(gun, 3, 0, 0, 7, 1.3, 1.1, darkMetal);
+            box(gun, -1.5, -0.4, 0, 3.5, 1.4, 1.1, rubber);
+            box(gun, 2.5, -1.8, 0, 1, 2.6, 0.9, darkMetal);
+            const barrel = mesh(cylinderGeo, darkMetal, gun, 8.5, 0, 0, 0.3, 5, 0.3);
+            barrel.rotation.z = Math.PI / 2;
+          } else if (slot === 0) {
             box(gun, 2, 0, 0, 4.5, 1.1, 0.9, darkMetal);
             box(gun, 0.8, -1, 0, 1, 2, 0.8, rubber);
           }
@@ -1139,7 +1151,17 @@
             box(gun, 4, 1.6, 0, 2, 1, 0.6, darkMetal);
           }
         }
-        if (person.police) {
+        if (person.police && person.unit === 'swat') {
+          // Helmet, plate carrier with a pale POLICE panel.
+          mesh(sphereGeo, mat('#15191e', 0.5, 0.2), group, 0, 16.3, 0, 2.5, 2.1, 2.55);
+          box(group, 0.2, 10.3, 0, 5.2, 5.2, 7, mat('#23292f'));
+          box(group, -2.7, 11, 0, 0.2, 1.6, 4.6, mat('#c9d3da'));
+          box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
+        } else if (person.police && person.unit === 'fed') {
+          // Windbreaker with the yellow back panel.
+          box(group, -2.35, 11, 0, 0.25, 2, 4.8, mat('#d9b93c'));
+          box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
+        } else if (person.police) {
           mesh(wheelGeo, mat('#20354b'), group, 0, 17.7, 0, 2.5, 1, 2.5);
           box(group, 1.5, 17.4, 0, 3, 0.4, 4, mat('#162332'));
           box(group, 2.35, 11.5, -1.5, 0.3, 1.8, 1.4, mat('#c7b57a'));
@@ -1155,7 +1177,7 @@
           parts.cup = cup;
         }
         parts.guns = guns;
-        return {
+        const model = {
           group,
           parts,
           torso,
@@ -1163,6 +1185,9 @@
           cloth,
           pants,
         };
+        // Fort Sentinel soldiers: helmet, plate carrier, carbine (base3d.js).
+        if (person.military) dressSoldier(person, model);
+        return model;
       }
       const chuteModel = new Three.Group();
       chuteModel.name = 'Player parachute';
@@ -1729,6 +1754,8 @@
             flying = !!(isAircraft(player.car) || player.parachute);
           // Street (orthographic) or flight (perspective) camera, plus what it sees.
           updateFlightView(deltaSeconds, altitude, flying);
+          // Riding the Falcon or the Eye: the ride camera takes over (themepark3d.js).
+          updateParkCamera(deltaSeconds);
           camera.position.x += (Math.random() - 0.5) * shake * 0.35;
           camera.position.y += (Math.random() - 0.5) * shake * 0.2;
           camera.updateMatrixWorld(true);
@@ -1972,10 +1999,12 @@
               m.parts.arm1.rotation.z = p.aiming ? 1.12 : -step * 0.5;
               m.parts['arm-1'].rotation.z = p.aiming ? 0.9 : step * 0.5;
             }
+            if (p.military) poseSoldier(p, m, incapacitated);
             if (p.police && !incapacitated) {
               m.parts.guns[0].visible = p.hp > 0;
-              m.parts.arm1.rotation.z = p.state === 'aim' ? 1.12 : 0.3;
-              m.parts['arm-1'].rotation.z = p.state === 'aim' ? 0.9 : -step * 0.5;
+              const aiming = p.state === 'aim' || p.state === 'suppress';
+              m.parts.arm1.rotation.z = aiming ? 1.12 : 0.3;
+              m.parts['arm-1'].rotation.z = aiming ? 0.9 : -step * 0.5;
             }
             if (m.parts.cup) m.parts.cup.visible = !!p.drinking && p.hp > 0;
             if (p.hp > 0 && p.dancing) {
@@ -2320,6 +2349,8 @@
               p.boss ||
               p.hidden ||
               p.hp <= 0 ||
+              // Soldiers going about their duties are not labelled until they engage.
+              (p.military && !p.aiming) ||
               !sameFloor(p, player) ||
               distanceBetween(p, player) > (p.ally ? 400 : 230)
             )
@@ -2342,7 +2373,7 @@
           // Pedestrian speech: short lines drawn as bubbles above the speaker.
           // Drivers shouting out of the window use the same bubble over the car.
           // Settings · Gameplay · NPC chatter off hides them all (settings.js).
-          for (const p of npcChatterOn() ? [...pedestrians, ...vehicles] : []) {
+          for (const p of npcChatterOn() ? [...pedestrians, ...vehicles, ...gangMembers] : []) {
             if (!p.speech || p.speechUntil < gameTime || p.hp <= 0 || distanceBetween(p, cameraTarget) > 460) continue;
             const q = api.project(p.x, p.y, entityElevation(p) + (p.type ? 22 : 27));
             if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;

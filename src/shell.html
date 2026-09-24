@@ -20,6 +20,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Constants, vehicle definitions, world build, population, combat, 2D fallback drawing, map, HUD, input, frame loop, developer console.
   src/audio.js: Effects and voice audio
     Embedded samples, Web Audio lifecycle, spatial volume, procedural sound and the ear filter.
+  src/heat.js: Heat and wanted stars
+    crime(), heat by severity, kills by victim with a spree bonus, stars from heat, the wanted HUD.
   src/physics.js: Vehicle and pedestrian physics
     Fixed 1/120 s steps, oriented collision boxes, contact impulses, traffic AI, helicopter/boat control, knockdowns.
   src/controls.js: Key bindings
@@ -34,6 +36,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Ownership-driven equipment, mystery weapon cards, icon inventory and knife combat.
   src/citylife.js: Civic services and police
     Clock, businesses (PLACES), docks, officers, police routing, wanted search and injury effects.
+  src/pursuit.js: Police response and pursuit tactics
+    Per-star tiers, reinforcements, pursuit driving (PIT, box, search), officer combat, arrest, armor, radar search area.
   src/story.js: Story characters and mission stages
     Characters, STORY missions, dialogue, setStage, start/restart/win/fail, the mission card.
   src/campaign.js: Campaign saves and replay
@@ -44,8 +48,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Chokepoint catalogue, blockade planning, braced cruisers a heavy vehicle can ram loose, cones.
   src/carjack.js: Carjacking and driver reactions
     Occupied traffic, locked doors, the ejection throw and what drivers do next.
-  src/themepark.js: Sunset Pier amusement park
-    Sunset Pier island (north of the city) ground tile, ride footprints, the rideable coaster and the park crowd.
+  src/themepark.js: Sunset Pier resort and theme park
+    Island layout, the Falcon coaster and the Sunset Eye (both rideable), show schedules, colliders, crowd, sound.
   src/marina.js: Harbor Point marina, the superyacht and the cruise liners
     Harbor Point basin, hull-form math, the boardable superyacht deck plan, liner decks and guests.
   src/taxi.js: Yellow cabs
@@ -73,7 +77,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/county.js: Outlying districts
     County roads, towns, buildings, scenery, traffic, regional police and bridges.
   src/military.js: Fort Sentinel
-    Fort Sentinel security, military vehicles, barriers and combat.
+    Base plan (SENTINEL), fences and gate (arms, bollards, sliding gates, ramming), challenge,
+    alarm and lockdown, siren, garrison posts/patrols/drill/range, supply runs, military vehicles, combat.
   src/aviation.js: Fixed-wing flight and flight missions
     Three airframes, stall/lift/bank model, takeoff and landing, flight missions 10 and 11.
   src/challenges.js: Mission-specific encounters
@@ -116,6 +121,10 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Repair bays, vehicle fit, paint, repairs and pursuit clearance.
   src/crowd.js: Crowd life, perception and reactions
     Appearance and roles by hour, crowd streaming, sidewalk walking, perception, reactions, witnesses, scenes.
+  src/beachclub.js: Marea Beach Club
+    The club on the beach-club plot: plan and colliders, cast of slots by hour, door queue and bouncer talk, trouble, player cover and VIP band.
+  src/beachclub-audio.js: Marea Beach Club music
+    Look-ahead Web Audio sets (day, sunset, night house), wall low-pass by listener position, the groove clock dancers follow.
   src/ambience.js: City soundscape
     Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker.
   src/quality.js: Graphics quality tiers
@@ -145,8 +154,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Sky rings, bomb and substation devices.
   src/roadblocks3d.js: Police roadblock meshes
     Loose traffic cones and burning flares.
-  src/themepark3d.js: Sunset Pier ride meshes
-    Coaster track and train, big wheel, carousel, teacups, drop tower and midway.
+  src/themepark3d.js: Sunset Pier resort meshes
+    Falcon track and train, Sunset Eye, fountain, hotel, rides, flume, palms, night lights, fireworks, ride cameras.
   src/garage3d.js: Garage meshes
     Garage buildings, shutters, lights and service details.
   src/landmarks3d.js: City landmark meshes
@@ -170,13 +179,20 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/beach3d.js: Palm Keys Beach meshes
     Sand, swash ribbon, pier, props, ladders and instanced beachgoers.
   src/county3d.js: County and mountain meshes
-    County ground tiles and hills, snow, rural scenery, bridges and region visibility.
+    County ground tiles and hills, snow, rural scenery and region visibility.
+  src/base3d.js: Fort Sentinel meshes
+    Base ground sheet, fences, towers and searchlights, the gate, buildings, airfield, depots,
+    night lights, military vehicle models and soldier kit.
   src/boats3d.js: Boat kit: lofted hulls and shared yacht parts
     Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging.
+  src/bridges3d.js: Bridges: one architecture per crossing
+    Every bridge from bridgeStructure(): truss, bascule, cable-stayed, suspension, arch and county designs; lamps, LEDs, beacons, foam, far copies.
   src/harbor3d.js: Cargo terminal meshes
     Cranes, the container ship, containers, depot, signals and helicopter searchlight.
   src/marina3d.js: Marina, superyacht and cruise liner meshes
-    Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal and liners.
+    Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners and the sailing liner's wake.
+  src/beachclub3d.js: Marea Beach Club meshes and show lighting
+    Forecourt, stage, LED wall, truss, bars, sails, pool, daybeds, sand; LED floor, moving heads, lasers, strobe, flames.
   src/cycles3d.js: Bike-share stand meshes
     Bike-share racks (the bicycles are ordinary vehicles).
   src/weather3d.js: Weather and sky visuals
@@ -1839,6 +1855,153 @@ kbd {
   .arsenal-card {
     transition: none;
   }
+}
+
+/* Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while
+   dispatch escalates, earned stars grey out during a search, a thin meter under
+   the stars shows the climb to the next one, the body count sits below it. */
+.hud-stars i.next {
+  color: #ff5f4f;
+  text-shadow: 0 0 8px #ff3b2f;
+  animation: starNext 0.36s steps(2) infinite;
+}
+.hud-stars.searching i.on {
+  color: #b8bdb2;
+  text-shadow: none;
+  animation: starSearch 0.6s ease-in-out infinite alternate;
+}
+@keyframes starNext {
+  50% {
+    opacity: 0.15;
+  }
+}
+@keyframes starSearch {
+  to {
+    opacity: 0.45;
+  }
+}
+#heatMeter {
+  width: 106px;
+  height: 3px;
+  background: #ffffff21;
+}
+#heatMeter i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #f0b54d, #ff4e3d);
+  transition: width 0.3s;
+}
+#heatMeter.hidden {
+  display: none;
+}
+#bodyCount {
+  font: 700 10px/1.4 var(--ui-font, monospace);
+  letter-spacing: 0.12em;
+  color: #ec978b;
+}
+#bodyCount:empty {
+  display: none;
+}
+#arrestStatus {
+  position: absolute;
+  left: 50%;
+  bottom: 26%;
+  transform: translateX(-50%);
+  width: 260px;
+  padding: 8px 12px;
+  background: #0b1320d9;
+  border: 1px solid #6fb6ff88;
+  color: #cfe6ff;
+  font: 700 12px monospace;
+  letter-spacing: 1.5px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+#arrestStatus.show {
+  opacity: 1;
+}
+#arrestStatus .meter {
+  margin-top: 6px;
+}
+#arrestStatus .meter i {
+  background: #6fb6ff;
+}
+#damageArc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border-top: 9px solid #ff3a2edd;
+  filter: blur(2px);
+  pointer-events: none;
+  opacity: 0;
+}
+#damageArc.show {
+  animation: damagearc 0.7s ease-out forwards;
+}
+@keyframes damagearc {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+#hitMarker {
+  position: absolute;
+  z-index: 7;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  pointer-events: none;
+  opacity: 0;
+  font: 900 11px Arial, sans-serif;
+  letter-spacing: 1px;
+  color: #ff5448;
+  white-space: nowrap;
+  text-indent: 26px;
+  line-height: 22px;
+}
+#hitMarker::before,
+#hitMarker::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  width: 2px;
+  height: 22px;
+  background: #f4f4ec;
+  box-shadow: 0 0 3px #000;
+  transform: rotate(45deg);
+}
+#hitMarker::after {
+  transform: rotate(-45deg);
+}
+#hitMarker.kill::before,
+#hitMarker.kill::after {
+  background: #ff4136;
+}
+#hitMarker.show {
+  opacity: 1;
+}
+/* WASTED and BUSTED: the world drains of colour in slow motion. */
+body.wasted #scene,
+body.wasted #game {
+  filter: grayscale(0.85) contrast(1.15) brightness(0.8);
+  transition: filter 1.4s;
+}
+body.wasted #announcement #announceBig {
+  color: #e0463c;
+  font-size: clamp(46px, 7vw, 104px);
+  letter-spacing: 0.04em;
+}
+body.busted #announcement #announceBig {
+  color: #6fb6ff;
 }
 /* ==========================================================================
    INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
@@ -4357,6 +4520,8 @@ body.no-key-hints .quickkeys {
       <div class="hud-status">
         <strong id="cash" class="hud-cash">$000000</strong>
         <div id="stars" class="hud-stars" role="img" aria-label="Wanted level 0 of 5"></div>
+        <div id="heatMeter" class="hidden"><i id="heatFill"></i></div>
+        <span id="bodyCount"></span>
         <div id="worldClock">DAY 1 · 17:20</div>
       </div>
       <button id="pauseBtn" class="icon-btn" aria-label="Pause game" title="Pause (Escape)">
@@ -4376,6 +4541,12 @@ body.no-key-hints .quickkeys {
       </div>
     </div>
     <div id="policeNotice" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="arrestStatus" aria-live="polite">
+      BEING ARRESTED · FIGHT OR RUN
+      <div class="meter"><i id="arrestFill"></i></div>
+    </div>
+    <div id="damageArc" aria-hidden="true"></div>
+    <div id="hitMarker" aria-hidden="true"></div>
     <div id="stealthStatus" style="display: none">
       <span id="stealthLabel"></span>
       <div class="meter"><i id="stealthFill"></i></div>

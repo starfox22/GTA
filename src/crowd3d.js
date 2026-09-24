@@ -215,6 +215,28 @@
           { geo: at(unitBox, 0, 0.2, -4.2, 0, 0, 0, 0.5, 0.35, 5.6), color: '#3b2618' },
           { geo: at(unitBox, 0, 0.2, -7.3, 0, 0, 0, 0.7, 0.4, 1.1), color: '#1d1410' },
         ]), crowdPropMaterial, 12, true, false),
+        // Beach club things in hand (beachclub.js): a cocktail, a waiter's tray,
+        // a champagne bottle with a sparkler, a broom.
+        cocktail: crowdPart('cocktail', crowdMerge([
+          { geo: at(new Three.CylinderGeometry(0.62, 0.3, 1.2, 8), 0.15, -0.4, 0), color: '#e8f4f6' },
+          { geo: at(new Three.CylinderGeometry(0.55, 0.32, 0.8, 8), 0.15, -0.55, 0), color: '#ff7a4a' },
+          { geo: at(unitBox, 0.3, 0.3, 0.1, 0, 0, 0.3, 0.1, 1.4, 0.1), color: '#2fbf8f' },
+        ]), crowdPropMaterial, 320, false, false),
+        tray: crowdPart('tray', crowdMerge([
+          { geo: at(unitCylinder, 0, 0.2, 0, 0, 0, 0, 2.6, 0.2, 2.6), color: '#c9ccc9' },
+          { geo: at(unitCylinder, 0.9, 0.9, 0.6, 0, 0, 0, 0.4, 1.2, 0.4), color: '#ff7a4a' },
+          { geo: at(unitCylinder, -0.8, 0.9, 0.5, 0, 0, 0, 0.4, 1.2, 0.4), color: '#f2d24a' },
+          { geo: at(unitCylinder, 0, 0.9, -0.9, 0, 0, 0, 0.4, 1.2, 0.4), color: '#6fd0e0' },
+        ]), crowdPropMaterial, 24, false, false),
+        bottle: crowdPart('bottle', crowdMerge([
+          { geo: at(unitCylinder, 0.2, 0.2, 0, 0, 0, 0, 0.55, 2.4, 0.55), color: '#1d3a28' },
+          { geo: at(unitCylinder, 0.2, 1.7, 0, 0, 0, 0, 0.22, 0.9, 0.22), color: '#d4b24a' },
+        ]), crowdPropMaterial, 12, false, false),
+        spark: crowdPart('spark', new Three.OctahedronGeometry(1, 0), crowdEmberMaterial, 60, false, false),
+        broom: crowdPart('broom', crowdMerge([
+          { geo: at(unitCylinder, 0, -2.5, 0, 0, 0, 0, 0.18, 7.5, 0.18), color: '#8a6d4a' },
+          { geo: at(unitBox, 0, -6.4, 0, 0, 0, 0, 0.8, 0.9, 3.4), color: '#3a3430' },
+        ]), crowdPropMaterial, 12, false, false),
         dogBody: crowdPart('dog', crowdMerge([
           { geo: at(unitBox, 0, 3.3, 0, 0, 0, 0, 4.6, 2.1, 1.8) },
           { geo: at(unitBox, 2.4, 4.4, 0, 0, 0, -0.35, 1.5, 1.9, 1.6) },
@@ -389,6 +411,96 @@
         T[J_SH[side]] = swing;
         T[J_AB[side]] = abduct;
         T[J_EL[side]] = elbow;
+      }
+      /**
+       * DANCING
+       * Club dancers move to the club's musical clock (`mareaGroove`, beachclub-
+       * audio.js): one cycle per beat, a style per person, bigger with the set's
+       * energy, and the whole floor jumps with its hands up for a few seconds when
+       * the drop lands. Anyone else dancing (the rooftop party, the yacht deck)
+       * keeps a steady 120 BPM of their own.
+       */
+      function crowdDancePose(p, s, T, seed) {
+        const club = !!p.club,
+          g = mareaGroove,
+          beat = club ? g.beat + ((seed * 0.37) % 0.12) - 0.06 : gameTime * 2 + (p.phase || seed),
+          ph = beat * TAU,
+          e = club ? Math.max(0.2, g.energy) : 0.7,
+          on = Math.max(0, Math.cos(ph)),
+          half = Math.sin(ph / 2);
+        let style = (p.danceStyle ?? Math.floor(seed)) % 7;
+        // In a breakdown most people drop to a sway; after the drop, everyone jumps.
+        if (club && g.section === 'break' && seed % 3 > 1) style = 3;
+        const jump = club && gameTime - g.dropAt < 4 && (seed % 5 > 0.8 || gameTime - g.dropAt < 1.5);
+        T[J_LOCO] = 0;
+        T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+        // A bounce under everything: knees give on the beat.
+        T[J_DROP] = -on * 0.55 * e;
+        T[J_KNEE[0]] = T[J_KNEE[1]] = -0.12 - on * 0.4 * e;
+        T[J_HIP[0]] = T[J_HIP[1]] = 0.06 + on * 0.2 * e;
+        T[J_HEAD_PITCH] = 0.1 * on * e;
+        if (jump) {
+          const up = Math.max(0, Math.sin(ph));
+          T[J_DROP] = up * 2.6 - on * 0.5;
+          T[J_KNEE[0]] = T[J_KNEE[1]] = -0.2 - up * 0.5;
+          setArm(T, 0, 2.85, 0.35 + up * 0.2, 0.2);
+          setArm(T, 1, 2.85, 0.35 + up * 0.2, 0.2);
+          T[J_HEAD_PITCH] = -0.3;
+          return;
+        }
+        switch (style) {
+          case 0: // bounce with forearms pumping
+            setArm(T, 0, 0.55 + on * 0.25 * e, 0.3, 1.45 + on * 0.3);
+            setArm(T, 1, 0.55 + on * 0.25 * e, 0.3, 1.45 + on * 0.3);
+            break;
+          case 1: // fist pump
+            setArm(T, 1, 2.35 + Math.sin(ph) * 0.35 * e, 0.2, 0.35 + on * 0.6);
+            setArm(T, 0, 0.3, 0.3, 1.3);
+            T[J_LEAN] = -0.08;
+            break;
+          case 2: // hands up, swaying at half time
+            setArm(T, 0, 2.7, 0.45 + half * 0.25, 0.35);
+            setArm(T, 1, 2.7, 0.45 - half * 0.25, 0.35);
+            T[J_ROLL] = half * 0.08;
+            T[J_HEAD_PITCH] = -0.2;
+            break;
+          case 3: // hip sway, loose arms
+            T[J_ROLL] = half * 0.1;
+            T[J_TWIST] = half * 0.22;
+            T[J_HIP[0]] = 0.1 + half * 0.2;
+            T[J_HIP[1]] = 0.1 - half * 0.2;
+            setArm(T, 0, 0.45 + half * 0.35, 0.35, 1.3);
+            setArm(T, 1, 0.45 - half * 0.35, 0.35, 1.3);
+            break;
+          case 4: {
+            // two-step: a step to each side on alternate beats
+            const side = Math.floor(beat) % 2,
+              lift = Math.max(0, Math.sin(ph)) * e;
+            T[J_HIP[side]] = 0.15 + lift * 0.6;
+            T[J_KNEE[side]] = -0.2 - lift * 1.0;
+            T[J_ROLL] = (side ? 1 : -1) * 0.06;
+            setArm(T, 0, 0.4 + (side ? 0.5 : -0.1), 0.35, 1.2);
+            setArm(T, 1, 0.4 + (side ? -0.1 : 0.5), 0.35, 1.2);
+            break;
+          }
+          case 5: // waving arms overhead, side to side
+            setArm(T, 0, 2.35, 0.95 + half * 0.5, 0.55);
+            setArm(T, 1, 2.35, 0.95 - half * 0.5, 0.55);
+            T[J_ROLL] = half * 0.12;
+            break;
+          default: {
+            // shuffle: quick alternating heel steps on the eighths
+            const q = Math.sin(ph * 2);
+            T[J_HIP[0]] = 0.1 + Math.max(0, q) * 0.55 * e;
+            T[J_HIP[1]] = 0.1 + Math.max(0, -q) * 0.55 * e;
+            T[J_KNEE[0]] = -0.15 - Math.max(0, q) * 0.9 * e;
+            T[J_KNEE[1]] = -0.15 - Math.max(0, -q) * 0.9 * e;
+            setArm(T, 0, 0.6 - q * 0.5, 0.25, 1.6);
+            setArm(T, 1, 0.6 + q * 0.5, 0.25, 1.6);
+            T[J_LEAN] = -0.1;
+            break;
+          }
+        }
       }
       /* Base pose targets. `side` 0 is left, 1 is right. */
       function crowdPoseTargets(p, s, T, t) {
@@ -675,15 +787,105 @@
             T[J_HIP[0]] = 0.7;
             T[J_HIP[1]] = -0.5;
             break;
-          case 'dance': {
-            const beat = gameTime * 4 + (p.phase || seed);
-            T[J_ROLL] = Math.sin(beat) * 0.07;
-            setArm(T, 0, 0.7 + Math.sin(beat) * 0.5, 0.3, 1.2);
-            setArm(T, 1, 0.7 - Math.sin(beat) * 0.5, 0.3, 1.2);
-            T[J_HIP[0]] = Math.sin(beat) * 0.22;
-            T[J_HIP[1]] = -Math.sin(beat) * 0.22;
+          case 'dance':
+            crowdDancePose(p, s, T, seed);
+            break;
+          case 'swim': {
+            // Treading water: arms sculling at the surface, a slow kick.
+            T[J_LOCO] = 0;
+            const scull = Math.sin(t * 2.6 + seed);
+            setArm(T, 0, 1.35, 0.75 + scull * 0.35, 0.35);
+            setArm(T, 1, 1.35, 0.75 - scull * 0.35, 0.35);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            T[J_HIP[0]] = 0.35 + Math.sin(t * 3.1 + seed) * 0.3;
+            T[J_HIP[1]] = 0.35 - Math.sin(t * 3.1 + seed) * 0.3;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.6;
+            T[J_LEAN] = 0.15;
+            T[J_HEAD_PITCH] = -0.2;
             break;
           }
+          case 'lounge': {
+            // Stretched out on a daybed: one arm behind the head, a knee up.
+            T[J_LOCO] = 0;
+            T[J_FALL] = 0.94;
+            T[J_HEAD_PITCH] = 0.35;
+            T[J_HEAD_YAW] = Math.sin(t * 0.2 + seed) * 0.3;
+            const knee = seed % 2 < 1,
+              both = seed % 3 < 1.5;
+            T[J_HIP[knee ? 0 : 1]] = 0.75;
+            T[J_KNEE[knee ? 0 : 1]] = -1.5;
+            setArm(T, 0, 2.7, 0.7, 2.3);
+            setArm(T, 1, both ? 2.7 : 0.35, both ? 0.7 : 0.35, both ? 2.3 : 0.6);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          }
+          case 'dj': {
+            // Hands on the decks, head nodding on the beat; a hand to the
+            // headphones now and then, a fist in the air on the drop.
+            const g = mareaGroove,
+              ph = g.beat * TAU,
+              bar = Math.floor(g.beat / 4);
+            T[J_LOCO] = 0;
+            T[J_LEAN] = 0.22;
+            T[J_HEAD_PITCH] = 0.25 + Math.max(0, Math.cos(ph)) * 0.25;
+            T[J_DROP] = -Math.max(0, Math.cos(ph)) * 0.35;
+            setArm(T, 0, 0.95, 0.15, 1.1 + Math.sin(t * 1.3) * 0.2);
+            setArm(T, 1, 0.95, 0.15, 1.1 + Math.sin(t * 1.7 + 1) * 0.2);
+            if (bar % 4 === 1) setArm(T, 1, 0.75, 0.55, 2.55);
+            if (gameTime - g.dropAt < 3 || (g.section === 'drop' && bar % 8 === 0)) setArm(T, 0, 2.75 + Math.sin(ph) * 0.2, 0.2, 0.3);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          }
+          case 'bartend': {
+            // Shaking a cocktail at chest height, then pouring.
+            const pour = (t + seed) % 9 > 6.5;
+            setArm(T, 1, pour ? 1.3 : 1.0 + Math.sin(t * 19) * 0.22, pour ? 0.3 : 0.25, pour ? 0.6 : 1.9);
+            setArm(T, 0, pour ? 0.9 : 1.0 + Math.sin(t * 19) * 0.22, pour ? 0.1 : 0.25, pour ? 1.3 : 1.9);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            T[J_HEAD_PITCH] = pour ? 0.3 : 0.05;
+            break;
+          }
+          case 'tray':
+            // A waiter's tray held flat at the shoulder; the other arm swings.
+            setArm(T, 1, 0.3, 0.7, 2.25);
+            T[J_ARMFREE[1]] = 0;
+            break;
+          case 'drink':
+            setArm(T, 1, p.sipping ? 1.0 : 0.45, 0.2, p.sipping ? 2.45 : 1.55);
+            T[J_ARMFREE[1]] = 0.1;
+            if (seed % 2 < 1) setArm(T, 0, -0.15, 0.55, 1.35);
+            T[J_ROLL] = Math.sin(mareaGroove.beat * Math.PI + seed) * 0.03;
+            break;
+          case 'sparkler':
+            setArm(T, 1, 2.75, 0.3, 0.35);
+            setArm(T, 0, 0.4, 0.2, 1.2);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            T[J_HEAD_PITCH] = -0.15;
+            break;
+          case 'sweep': {
+            const stroke = Math.sin(t * 2.2 + seed);
+            setArm(T, 1, 0.8 + stroke * 0.3, -0.25, 0.6);
+            setArm(T, 0, 1.1 + stroke * 0.3, -0.35, 1.1);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            T[J_LEAN] = 0.2;
+            T[J_TWIST] = stroke * 0.15;
+            break;
+          }
+          case 'stop':
+            // The bouncer's flat palm: nobody in.
+            T[J_LOCO] = 0;
+            setArm(T, 1, 1.5, 0.05, 0.1);
+            setArm(T, 0, -0.1, 0.6, 1.5);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            T[J_HEAD_YAW] = 0;
+            break;
+          case 'shove':
+            T[J_LOCO] = 0;
+            T[J_LEAN] = 0.25;
+            setArm(T, 0, 1.5, 0.1, 0.05);
+            setArm(T, 1, 1.5, 0.1, 0.05);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
           case 'exercise': {
             const e = p.exercise;
             T[J_LOCO] = 0;
@@ -830,7 +1032,7 @@
           crowdJoint(mHip[side], mHips, 0, 0, sign * 1.12 * build, hip, -sign * J[J_SPREAD], 0);
           crowdEmit(P.thigh, mHip[side], build, 1, build, legColor);
           crowdJoint(mKnee[side], mHip[side], 0, -CROWD_THIGH, 0, knee);
-          crowdEmit(P.shin, mKnee[side], 1, 1, 1, skirt ? colors.skin : colors.pants);
+          crowdEmit(P.shin, mKnee[side], 1, 1, 1, skirt || look.shorts ? colors.skin : colors.pants);
           // Keep the foot roughly flat on the ground through the stride.
           crowdJoint(mFoot, mKnee[side], 0, -CROWD_SHIN, 0, -(hip + knee) * (fall > 0.5 ? 0.3 : 0.85));
           crowdEmit(P.shoe, mFoot, 1, 1, 1, colors.shoes);
@@ -846,6 +1048,26 @@
             crowdEmit(P.shopping, right, p.carry === 'handbag' ? 0.75 : 1, p.carry === 'handbag' ? 0.8 : 1, 1, p.carry === 'handbag' ? colors.bag : colors.paper);
           if ((p.carry === 'coffee' || p.carry === 'food') && p.hp > 0 && !PHONE_POSES.has(pose)) crowdEmit(P.cup, right, 1, 1, 1);
           if (s.ember) crowdEmit(P.ember, right, 1, 1, 1);
+          if (p.hp > 0 && p.club) {
+            const pose = p.pose;
+            if (p.carry === 'cocktail' && pose !== 'dj' && pose !== 'swim' && pose !== 'lounge') crowdEmit(P.cocktail, right, 1, 1, 1);
+            if (p.carry === 'sparkler') {
+              crowdEmit(P.bottle, right, 1, 1, 1);
+              const e = right.elements;
+              for (let k = 0; k < 3; k++) {
+                const f = Math.sin(gameTime * 40 + k * 2.1) * 0.5 + 0.6;
+                crowdJoint(mOut, mIdentity, e[12] + Math.sin(gameTime * 23 + k) * 0.9, e[13] + 2.6 + k * 0.5, e[14] + Math.cos(gameTime * 29 + k) * 0.9);
+                crowdEmit(P.spark, mOut, f * 0.4, f * 0.4, f * 0.4);
+              }
+            }
+            if (pose === 'sweep') crowdEmit(P.broom, right, 1, 1, 1);
+          }
+        }
+        if (p.carry === 'tray' && p.hp > 0 && p.pose === 'tray') {
+          // The tray stays flat whatever the wrist is doing.
+          const e = right.elements;
+          crowdJoint(mOut, mIdentity, e[12], e[13] + 0.3, e[14], 0, 0, -s.yaw);
+          crowdEmit(P.tray, mOut, height, height, height);
         }
         if (p.carry === 'box' && p.hp > 0) {
           crowdJoint(mOut, mTorso, 2.6, 1.9, 0);

@@ -701,46 +701,7 @@
       getElement('announcement').classList.add('show');
       announceTime = t;
     }
-    let wantedPressure = 0,
-      wantedLevel = 0,
-      starElapsed = 0;
-    function updateStarProgress(deltaSeconds) {
-      const visible = Math.ceil(wantedStars);
-      if (visible !== wantedLevel) {
-        wantedLevel = visible;
-        wantedPressure = Math.max(wantedPressure, visible);
-        starElapsed = 0;
-      }
-      if (!visible) return;
-      starElapsed += deltaSeconds;
-      const delay = [0, 16, 20, 24, 28][visible] || 28;
-      if (visible < 5 && wantedPressure >= visible + 0.75 && starElapsed >= delay) {
-        wantedStars = visible + 1;
-        wantedLevel = visible + 1;
-        starElapsed = 0;
-        tell('DISPATCH ESCALATING · ' + wantedLevel + ' STARS', 3);
-      }
-    }
-    function crime(amount = 1) {
-      if (harborPoliceProtected(player.x, player.y, 40)) return;
-      if (wantedStars <= 0) {
-        wantedStars = 1;
-        wantedLevel = 1;
-        wantedPressure = 1;
-        starElapsed = 0;
-      }
-      wantedPressure = clamp(
-        Math.max(wantedPressure, Math.ceil(wantedStars)) + Math.max(0, amount) * 0.35,
-        0,
-        5.75,
-      );
-      searchActive = false;
-      searchRemaining = policeSearchSeconds();
-      lastSeen = {
-        x: player.x,
-        y: player.y,
-      };
-    }
+    // @include src/heat.js
     /**
      * BUILDING GRID
      * solid() and shotBlocked() run thousands of times per frame (every pedestrian
@@ -802,7 +763,9 @@
         beachBlocked(x, y, r) ||
         promenadeRailBlocked(x, y, r) ||
         streetEndBlocked(x, y, r) ||
+        beachClubBlocked(x, y, r) ||
         (!overWater && !groundAt(x, y, r)) ||
+        (overWater && LINERS.some((ship) => linerHullAt(ship, x, y, r))) ||
         harborBlocked(x, y, r) ||
         depotBlocked(x, y, r) ||
         ((x > CITY_SIZE || y > CITY_SIZE) && (countyBlocked(x, y, r) || militaryBlocked(x, y, r)))
@@ -1732,9 +1695,11 @@
         if (isAircraft(player.car)) player.car.abandonedFlight = true;
         player.car = null;
       }
-      announce('THE CITY ALWAYS COLLECTS', 'WASTED', 4);
+      announce('THE CITY ALWAYS COLLECTS', 'WASTED', 4.6);
+      document.body?.classList.add('wasted');
       noise(0.3, 0.4);
       setTimeout(() => {
+        document.body?.classList.remove('wasted');
         if (gameMode !== 'dead') return;
         cash = Math.max(0, cash - 250);
         player.hp = 100;
@@ -1748,7 +1713,7 @@
         if (mission) failMission('Hospital bill: $250. Your job is ready to retry.');
         else tell('Back on your feet. Hospital bill: $250.', 4);
         save();
-      }, 2600);
+      }, 4200);
     }
     function nearestCar() {
       if (player.parachute) return null;
@@ -1870,6 +1835,7 @@
       if (policeBlocksMissionDelivery()) return;
       if (transitInteract()) return;
       if (parkInteract()) return;
+      if (beachClubInteract()) return;
       if (marinaInteract()) return;
       if (taxiInteract()) return;
       if (
@@ -2082,12 +2048,14 @@
           dmg: w.dmg,
           rocket: w.rocket,
           enemy: false,
+          headshotTarget: selectedWeaponIndex === 5 && shotTarget && !shotTarget.type ? shotTarget : null,
         });
       }
       particle(ox, oy, '#f4d990', 5, 70, 4);
       weaponSound(selectedWeaponIndex, ox, oy);
       if (city3D) city3D.fire(ox, oy, a, w.rocket, entityElevation(player));
       player.recoilUntil = gameTime + 0.12;
+      player.lastShotAt = gameTime;
       notifyViolence(player, 'gunfire', player);
       crime(w.rocket ? 0.4 : 0.075);
       shake = Math.max(shake, w.rocket ? 5 : 1.4);
@@ -2153,11 +2121,13 @@
         y: clamp(t.y + (t.vy || 0) * seconds, WORLD_TOP + 40, WORLD_SIZE - 40),
       };
     }
-    function copRoute(c) {
+    function copRoute(c, destination = null) {
       // An interceptor routes to where the runner will be, not to where they are:
-      // half the patrol chases, the other half tries to be there first.
+      // half the patrol chases, the other half tries to be there first. A search
+      // passes its own destination (pursuit.js).
       const quarry = c.pursuitTarget || player.car || player,
-        chaseTarget = c.interceptor ? aheadOf(quarry, 3.4) : c.pursuitTarget || player;
+        chaseTarget =
+          destination || (c.interceptor ? aheadOf(quarry, 3.4) : c.pursuitTarget || player);
       if (
         c.x > CITY_SIZE ||
         c.y > CITY_SIZE ||
@@ -2392,6 +2362,7 @@
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateCarjackReactions(p, deltaSeconds)) continue;
+        if (updateClubGoer(p, deltaSeconds)) continue;
         if (updateCrowdPerson(p, deltaSeconds)) continue;
         if (updateGymGoer(p, deltaSeconds)) continue;
         if (updateParkWalker(p, deltaSeconds)) continue;
@@ -2582,7 +2553,7 @@
               bulletDamagesVehicle(b, c) &&
               !(
                 b.faction === 'police' &&
-                (lawVehicle(c) || (c === player.car && b.target !== player))
+                (lawVehicle(c) || c.airUnit || (c === player.car && b.target !== player))
               )
             )
               damageVehicle(
@@ -2591,7 +2562,13 @@
                 // truck's steel cage, Vinny's armored van): gang small-arms fire
                 // does 40% damage to them, or a crew opening up on the loading
                 // truck wrecks it before the third crate is aboard.
-                b.enemy && c.mission && b.faction !== 'police' && !b.rocket ? b.dmg * 0.4 : b.dmg,
+                b.enemy && c.mission && b.faction !== 'police' && !b.rocket
+                  ? b.dmg * 0.4
+                  : // Police rounds are meant for the driver: they chew a car up
+                    // slowly rather than wrecking it in a dozen hits.
+                    b.faction === 'police' && c === player.car && !b.rocket
+                    ? b.dmg * 0.45
+                    : b.dmg,
                 b.x,
                 b.y,
                 b.owner || (!b.enemy ? player : null),
@@ -2600,6 +2577,18 @@
                 },
               );
             impact = true;
+            // Rounds aimed at the driver come through the glass and the doors: a
+            // car is cover, not armour. Heavy vehicles and aircraft keep it out.
+            if (
+              c === player.car &&
+              b.enemy &&
+              b.target === player &&
+              !b.rocket &&
+              !['tank', 'bus', 'truck', 'flatbed'].includes(c.type) &&
+              !isAircraft(c) &&
+              seededRandom() < 0.55
+            )
+              hurt((b.playerDmg ?? b.dmg) * 0.6);
             // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
             hitKind = bulletHitVehicle(c, b);
             break;
@@ -2630,10 +2619,21 @@
             )
               continue;
             if (Math.hypot(b.x - p.x, b.y - p.y) >= 10) continue;
-            strikePerson(p, b.dmg, Math.atan2(b.vy, b.vx), b.owner || (!b.enemy ? player : null));
+            // A precision-rifle round on the target it was aimed at is a headshot:
+            // one shot, whatever the vest.
+            const headshot = !b.enemy && b.headshotTarget === p;
+            strikePerson(
+              p,
+              headshot ? 400 : b.dmg,
+              Math.atan2(b.vy, b.vx),
+              b.owner || (!b.enemy ? player : null),
+              true,
+              headshot ? 'headshot' : 'ballistic',
+            );
             if (!b.enemy) {
               if (p.police) crime(0.3);
               if (p.hp <= 0) cash += enemies.includes(p) ? 100 : 10;
+              playerHitMarker(p, p.hp <= 0, headshot);
             }
             impact = true;
             hitKind = 'flesh';
@@ -2647,7 +2647,8 @@
             (b.faction !== 'police' || b.target === player) &&
             Math.hypot(b.x - player.x, b.y - player.y) < 10
           ) {
-            hurt(b.dmg);
+            hurt(b.playerDmg ?? b.dmg);
+            playerHitFeedback(b);
             impact = true;
             hitKind = 'flesh';
           }
@@ -2698,6 +2699,8 @@
           }
         }
         timed('transit', () => updateTransit(deltaSeconds));
+        // The Meridian Star under way (marina.js), before the player walks her deck.
+        timed('liner', () => sailLiner(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
         updateWeather(deltaSeconds);
@@ -2705,6 +2708,7 @@
         updateMarinaFooting();
         updateSinking(deltaSeconds);
         timed('beach', () => updateBeach(deltaSeconds));
+        timed('beachclub', () => updateBeachClub(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -3664,6 +3668,7 @@
           ['LITTLE HAVANA', -1900, 4150],
           ['CORAL MARINA', -1700, 4880],
           ['PALM KEYS BEACH', -1970, 5620],
+          ['MAREA BEACH CLUB', -2870, 5500],
           ['P A L M  S O U N D', -560, 2300],
           ['M A R L O W  B A Y', 4650, 2560],
           ['N O R T H  S O U N D', 1500, -4900],
@@ -3850,7 +3855,8 @@
       getElement('mapDistrict').textContent = d;
       getElement('streetName').textContent = streetNameAt(player.x, player.y);
       getElement('cash').textContent = '$' + String(Math.floor(visibleCash())).padStart(6, '0');
-      renderStars(Math.ceil(wantedStars));
+      // Stars, the pending star, heat meter and body count (heat.js, hud.js).
+      heatUI();
       getElement('healthValue').textContent = Math.max(0, Math.ceil(player.hp));
       getElement('healthFill').style.width = clamp(player.hp, 0, 100) + '%';
       getElement('armorFill').style.width = clamp(player.armor, 0, 100) + '%';
@@ -4534,6 +4540,7 @@
     // @include src/police-feedback.js
     // @include src/arsenal.js
     // @include src/citylife.js
+    // @include src/pursuit.js
     // @include src/story.js
     // @include src/campaign.js
     // @include src/chase.js
@@ -4575,6 +4582,8 @@
     // @include src/car-radio.js
     // @include src/garages.js
     // @include src/crowd.js
+    // @include src/beachclub.js
+    // @include src/beachclub-audio.js
     // @include src/ambience.js
     // @include src/quality.js
     // @include src/settings.js
@@ -4662,14 +4671,15 @@
       updateCasino(deltaSeconds);
       updateElevator(deltaSeconds);
       const updateStart = performance.now();
-      // The city keeps living behind the title menu, and behind settings opened from it.
+      // The city keeps living behind the title menu, and behind settings opened
+      // from it. WASTED and BUSTED play out in slow motion.
       if (
         gameMode === 'play' ||
         gameMode === 'menu' ||
-        gameMode === 'dead' ||
         (gameMode === 'settings' && settingsOrigin === 'menu')
       )
         update(deltaSeconds);
+      else if (gameMode === 'dead') update(deltaSeconds * 0.35);
       else {
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);
@@ -4955,10 +4965,7 @@
         // Clearing reports the escape exactly like losing them in play would.
         if (n <= 0) clearPolice(true);
         else {
-          wantedStars = n;
-          wantedLevel = n;
-          wantedPressure = n;
-          starElapsed = 0;
+          setWantedLevel(n);
           searchActive = false;
           searchRemaining = policeSearchSeconds(n);
           lastSeen = {
@@ -4967,6 +4974,46 @@
           };
         }
         return this.status();
+      },
+      // The police response as data: stars, heat and the next star's threshold,
+      // the incident's body count, the search, arrest progress, the tier's
+      // allowances and every unit (patrol, swat, fed, army, air) and officer.
+      policeReport: () => policeReportData(),
+      // Combat tests: own weapon `index` (0 pistol ... 5 precision rifle) with a
+      // full clip and reserve, and select it. Returns its name.
+      arm(index = 4) {
+        const w = weapons[index];
+        if (!w) return null;
+        w.owned = true;
+        w.ammo = w.clip;
+        w.reserve = Math.max(w.reserve, w.clip * 8);
+        selectedWeaponIndex = index;
+        reloadSecondsRemaining = 0;
+        drawWeapon();
+        return w.name;
+      },
+      // Living people near the player, nearest first, for play-tests that pick a
+      // victim: kind 'civilian', 'police', 'gang' or 'all' (default).
+      nearbyPeople(radius = 500, kind = 'all') {
+        const lists = {
+          civilian: [pedestrians],
+          police: [officers],
+          gang: [gangMembers, enemies],
+          all: [pedestrians, officers, gangMembers, enemies],
+        }[kind] || [];
+        const found = [];
+        for (const list of lists)
+          for (const p of list)
+            if (p.hp > 0 && !p.hidden && distanceBetween(p, player) < radius)
+              found.push({
+                kind: p.police ? 'police:' + (p.unit || 'patrol') : p.faction ? 'gang:' + p.faction : 'civilian',
+                x: Math.round(p.x),
+                y: Math.round(p.y),
+                hp: Math.round(p.hp),
+                d: Math.round(distanceBetween(p, player)),
+                sight: clearSight(player, p),
+              });
+        return found.sort((a, b) => a.d - b.d).slice(0, 40);
       },
       // Force the sky: clear, fair, cloudy, overcast, rain, storm. Passing nothing
       // hands the sky back to the weather machine.
@@ -5047,6 +5094,16 @@
         })),
       // Palm Keys Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
+      // Marea Beach Club: phase, levels, who is where, the queue and the door,
+      // the music (beachclub.js). `beachClub('trouble')` raises gunfire on its
+      // dance floor as if someone fired there, for tests of the evacuation.
+      beachClub(action) {
+        if (action === 'trouble') {
+          const p = mareaPoint(205, 140);
+          notifyViolence(p, 'gunfire', null);
+        }
+        return beachClubReport();
+      },
       // Rooftop helipads, the roof the player stands on and the roof under the
       // player's helicopter (rooftops.js); with a map point, that roof and its plant.
       rooftops: (x, y) => ({
@@ -5087,6 +5144,8 @@
         }
         return this.status();
       },
+      // Fort Sentinel security: alert, lockdown, gate pieces, garrison and vehicles.
+      military: () => militaryReport(),
       // The plan as data, for layout audits: coast, streets, rail, footprints and
       // every static collider in map units. A test renders it as a debug map and
       // checks for overlaps (a road through a helipad, a viaduct over a berth).
@@ -5098,7 +5157,7 @@
         streets: cityStreets().map((r) => ({ points: r.points, width: r.width })),
         boulevards: [...BOULEVARDS, ...SERVICE_ROADS].map((r) => ({ name: r.name, points: r.points, width: r.width })),
         countyRoads: COUNTY_ROADS.map((r) => ({ name: r.name, points: r.points, width: r.width, bridge: !!r.bridge })),
-        bridges: BRIDGES.map((b) => ({ id: b.id, name: b.name, link: b.link, a: b.a, b: b.b, width: b.width, deck: b.deck, pylons: bridgePylons(b) })),
+        bridges: BRIDGES.map((b) => ({ id: b.id, name: b.name, link: b.link, a: b.a, b: b.b, width: b.width, deck: b.deck, style: b.style, pylons: bridgePylons(b), footings: bridgeFootings(b), channels: bridgeStructure(b).channels.map(([from, to]) => [bridgePoint(b, from), bridgePoint(b, to)]) })),
         reserved: { beachClub: BEACH_CLUB_PLOT, themePark: THEME_PARK_RESERVE },
         rail: RAIL_LINES.map((l) => ({ id: l.id, name: l.name, color: l.color, points: l.points })),
         railDecks: railDecks(),
@@ -5130,6 +5189,13 @@
           .filter((b) => b.kind !== 'coast' && b.kind !== 'building')
           .map((b) => ({ x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a, kind: b.kind })),
       }),
+      // Sunset Pier: ride states, the coaster's numbers, shows, guests and an overlap check.
+      themePark: () => parkReport(),
+      // Board the Falcon ('coaster') or the Sunset Eye ('wheel') from its platform.
+      boardRide(kind = 'coaster') {
+        rideAttraction(kind);
+        return parkReport().riding;
+      },
       // Every train on the network: where it is, how fast, and whether it carries the player.
       trains: () =>
         railTrains.map((t) => ({
@@ -5145,6 +5211,33 @@
         for (let t = 0; t < seconds; t += 1 / 30) updateTransit(1 / 30);
         return this.trains();
       },
+      // The sailing liner: where she is, her leg of the voyage, speed (units/s
+      // and knots) and heading, and who is aboard.
+      liners: () => {
+        const ship = sailingLiner(),
+          leg = LINER_VOYAGE[linerVoyage.leg];
+        return {
+          name: ship.name,
+          x: Math.round(ship.x),
+          y: Math.round(ship.y),
+          heading: Math.round((((ship.a * 180) / Math.PI) % 360 + 360) % 360),
+          leg: linerVoyage.leg,
+          kind: leg.kind,
+          along: Math.round(linerVoyage.s),
+          legLength: leg.kind === 'call' ? leg.seconds : Math.round(leg.length || 0),
+          speed: Math.round(ship.speed * 10) / 10,
+          knots: Math.round((Math.abs(ship.speed) / 5.12) * 1.944 * 10) / 10,
+          playerAboard: player.deck === ship,
+          passengers: (ship.passengers || []).length,
+        };
+      },
+      // Run only the liner's voyage forward by `seconds` (1/30 s steps).
+      advanceLiner(seconds = 10) {
+        for (let t = 0; t < seconds; t += 1 / 30) sailLiner(1 / 30);
+        return this.liners();
+      },
+      // Sweep the liner's hull down the whole voyage: land, bridges, jetties, ships.
+      linerVoyageCheck: (step = 24) => linerVoyageCheck(step),
       // Named places the tests can visit: every PLACES entry plus the landmarks.
       places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
       // GPS: set a map waypoint and report the route the navigation graph finds

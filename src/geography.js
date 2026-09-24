@@ -588,10 +588,16 @@
      *   pier-bridge  Riverbank Dr at x 3200, y -3900..-5800
      * South channel and the county: oceanview (Northbank - Oceanview), coral
      * sound, ridgeline viaduct, sentinel causeway.
+     *
+     * `style` picks each bridge's architecture (BRIDGE_DESIGNS below): where its
+     * piers, towers, cables and navigation channels are. The renderer
+     * (bridges3d.js), aircraft collision (county.js) and the boats (boatFits)
+     * all read that one description.
      */
     const BRIDGES = [
       {
         id: 'keys-union',
+        style: 'truss',
         name: 'KEYS BRIDGE',
         link: 'PALM KEYS - NORTHBANK',
         width: 112,
@@ -601,6 +607,7 @@
       },
       {
         id: 'keys-harbor',
+        style: 'bascule',
         name: 'PALM SOUND CAUSEWAY',
         link: 'PALM KEYS - NORTHBANK',
         width: 112,
@@ -610,6 +617,7 @@
       },
       {
         id: 'east-bay',
+        style: 'cablestay',
         name: 'EAST BAY CROSSING',
         link: 'NORTHBANK - RIDGELINE',
         width: 122,
@@ -619,6 +627,7 @@
       },
       {
         id: 'south-bay',
+        style: 'suspension',
         name: 'SOUTH BAY BRIDGE',
         link: 'NORTHBANK - RIDGELINE',
         width: 112,
@@ -628,6 +637,7 @@
       },
       {
         id: 'pier-bridge',
+        style: 'arch',
         name: 'SUNSET PIER BRIDGE',
         link: 'NORTHBANK - SUNSET PIER',
         width: 104,
@@ -640,6 +650,7 @@
         // Point sea wall and lands on Oceanview's east avenue where Beach Road
         // starts.
         id: 'oceanview',
+        style: 'segmental',
         name: 'OCEANVIEW CAUSEWAY',
         link: 'NORTHBANK - OCEANVIEW',
         width: 128,
@@ -649,6 +660,7 @@
       },
       {
         id: 'coral-sound',
+        style: 'extradosed',
         name: 'CORAL SOUND BRIDGE',
         link: 'OCEANVIEW - CORAL COAST',
         width: 116,
@@ -658,6 +670,7 @@
       },
       {
         id: 'ridgeline',
+        style: 'hpylon',
         name: 'RIDGELINE VIADUCT',
         link: 'RIDGELINE - CORAL COAST',
         width: 116,
@@ -667,6 +680,7 @@
       },
       {
         id: 'sentinel',
+        style: 'swing',
         name: 'SENTINEL CAUSEWAY',
         link: 'CORAL COAST - FORT SENTINEL',
         width: 126,
@@ -682,30 +696,276 @@
         length = Math.hypot(dx, dy);
       return (bridge.frame = { length, a: Math.atan2(dy, dx), ux: dx / length, uy: dy / length });
     }
-    /* The pairs of tall pylons that carry a bridge's main span: at 0.18 of the
-       length either side of the middle, one each side of the deck, and only
-       where that point is over water (a causeway has none). Shared by the
-       renderer (county3d.js), aircraft collision and the boats. */
-    function bridgePylons(bridge) {
-      if (bridge.pylons) return bridge.pylons;
+    /**
+     * BRIDGE ARCHITECTURE
+     * bridgeStructure(bridge) lays out a bridge's design in its own frame:
+     * `along` is the distance from the middle of the deck toward `b`, `across`
+     * the offset to the right of a -> b (a map point is bridgePoint()). It is
+     * built once from the style's rule in BRIDGE_DESIGNS and the stretch of the
+     * deck that is over water, so a bridge follows its shores if they move.
+     *   water     [from, to]: the longest run of the deck over water
+     *   channels  [[from, to], ...]: navigation spans, clear of every footing
+     *   footings  what stands in the water: piers under the deck, the bases of
+     *             towers, arch feet, anchorages and fenders, as boxes
+     *             {along, across, hx, hy} (half extents along and across the
+     *             deck). Boats steer round them (they pass under the deck
+     *             between them); the renderer draws them and their foam.
+     *   solids    what rises from or spans over the deck: tower legs, portals,
+     *             cable fans, arches and trusses, as boxes {along, across, hx,
+     *             hy, minHeight, height} for aircraft. Anything over the
+     *             carriageway starts at minHeight 46 or higher, clear of the
+     *             tallest road vehicle (32).
+     *   ...the style's own dimensions for the renderer (tower heights, cable
+     *   anchor points, the arch rise, span lengths).
+     * Heights are above the deck (road level, 0).
+     */
+    const BRIDGE_CLEARANCE = 46;
+    function bridgePoint(bridge, along, across = 0) {
       const f = bridgeFrame(bridge),
-        cx = (bridge.a[0] + bridge.b[0]) / 2,
-        cy = (bridge.a[1] + bridge.b[1]) / 2,
-        list = [];
-      if (!bridge.name.includes('CAUSEWAY'))
-        for (const along of [-f.length * 0.18, f.length * 0.18]) {
-          const px = cx + f.ux * along,
-            py = cy + f.uy * along;
-          if (landAt(px, py)) continue;
-          for (const side of [-1, 1])
-            list.push({
-              along,
-              side,
-              x: px - f.uy * side * (bridge.width / 2 + 9),
-              y: py + f.ux * side * (bridge.width / 2 + 9),
-            });
+        cx = (bridge.a[0] + bridge.b[0]) / 2 + f.ux * along,
+        cy = (bridge.a[1] + bridge.b[1]) / 2 + f.uy * along;
+      return { x: cx - f.uy * across, y: cy + f.ux * across };
+    }
+    // The longest stretch of the centre line over water, in `along` units.
+    function bridgeWaterSpan(bridge) {
+      const f = bridgeFrame(bridge);
+      let best = [0, 0],
+        start = null;
+      for (let s = 0; s <= f.length + 8; s += 8) {
+        const t = Math.min(s, f.length),
+          wet = s <= f.length && !landAt(bridge.a[0] + f.ux * t, bridge.a[1] + f.uy * t);
+        if (wet && start === null) start = t;
+        if (!wet && start !== null) {
+          if (t - 8 - start > best[1] - best[0]) best = [start, t - 8];
+          start = null;
         }
-      return (bridge.pylons = list);
+      }
+      return [best[0] - f.length / 2, best[1] - f.length / 2];
+    }
+    // Evenly spaced approach piers between a main structure at `from` and the
+    // shore at `to` (exclusive of both ends: the shore end is an abutment).
+    function approachPiers(from, to, spacing) {
+      const n = Math.max(1, Math.round(Math.abs(to - from) / spacing)),
+        step = (to - from) / n,
+        list = [];
+      for (let k = 1; k < n; k++) list.push(from + step * k);
+      return list;
+    }
+    // A cable fan, arch or truss over the deck as a run of aircraft boxes, each
+    // as tall as the highest point of the envelope along it.
+    function spanSolids(list, from, to, heightAt, halfWidth, kind, step = 60) {
+      const n = Math.max(1, Math.ceil(Math.abs(to - from) / step)),
+        d = (to - from) / n;
+      for (let k = 0; k < n; k++) {
+        const s0 = from + d * k,
+          s1 = s0 + d,
+          height = Math.max(heightAt(s0), heightAt((s0 + s1) / 2), heightAt(s1));
+        if (height > BRIDGE_CLEARANCE + 4)
+          list.push({ along: (s0 + s1) / 2, across: 0, hx: Math.abs(d) / 2, hy: halfWidth, minHeight: BRIDGE_CLEARANCE, height, kind });
+      }
+    }
+    const BRIDGE_DESIGNS = {
+      /* Keys Bridge: a steel through-truss. A camel-back main span over the
+         channel between two side spans on four river piers, concrete approach
+         spans to the shores. */
+      truss(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          main = 200,
+          side = 220;
+        s.truss = { ends: [m - main - side, m + main + side], piers: [m - main - side, m - main, m + main, m + main + side], plane: W / 2 + 4 };
+        // Top chord: 72 over the river piers rising to 112 mid-channel, 54 at the ends.
+        s.chord = (along) => {
+          const d = Math.abs(along - m);
+          return d <= main ? 72 + 40 * (1 - (d / main) ** 2) : 72 - (18 * Math.min(side, d - main)) / side;
+        };
+        s.channels = [[m - main + 18, m + main - 18]];
+        for (const p of s.truss.piers) s.footings.push({ along: p, across: 0, hx: 16, hy: W / 2 + 12, kind: 'river pier' });
+        s.approach = [...approachPiers(s.truss.ends[0], w0, 140), ...approachPiers(s.truss.ends[1], w1, 140)];
+        spanSolids(s.solids, s.truss.ends[0], s.truss.ends[1], s.chord, W / 2 + 7, 'truss');
+        // The truss walls along both edges, from the deck up.
+        for (const side2 of [-1, 1])
+          s.solids.push({ along: m, across: side2 * s.truss.plane, hx: main + side, hy: 3, minHeight: 0, height: 56, kind: 'truss' });
+      },
+      /* Palm Sound Causeway: a low concrete causeway on bents every 110 with a
+         double-leaf bascule over the channel, its leaves hinged on two big
+         piers that carry the four tender's houses. */
+      bascule(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          leaf = 100;
+        s.bascule = { leaf, piers: [m - leaf - 24, m + leaf + 24], houses: [] };
+        s.channels = [[m - leaf + 6, m + leaf - 6]];
+        for (const p of s.bascule.piers) {
+          s.footings.push({ along: p, across: 0, hx: 24, hy: W / 2 + 24, kind: 'bascule pier' });
+          for (const side of [-1, 1]) {
+            s.bascule.houses.push({ along: p, across: side * (W / 2 + 13) });
+            s.solids.push({ along: p, across: side * (W / 2 + 13), hx: 12, hy: 10, minHeight: 0, height: 48, kind: 'tender house' });
+          }
+        }
+        s.approach = [...approachPiers(m - leaf - 24, w0, 110), ...approachPiers(m + leaf + 24, w1, 110)];
+      },
+      /* East Bay Crossing: a white cable-stayed bridge on a single A-pylon in
+         mid-bay, two fans of stays to each edge of the deck, two navigation
+         channels either side of the pylon. */
+      cablestay(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          reach = 780,
+          height = 380;
+        s.pylon = { along: m, height, legBase: W / 2 + 28, headFrom: 252, reach, first: 70, stays: 16 };
+        s.channels = [
+          [m - reach + 10, m - 52],
+          [m + 52, m + reach - 10],
+        ];
+        s.footings.push({ along: m, across: 0, hx: 36, hy: W / 2 + 48, kind: 'pylon footing' });
+        for (const dir of [-1, 1]) s.footings.push({ along: m + dir * (reach + 22), across: 0, hx: 12, hy: W / 2 + 6, kind: 'back pier' });
+        s.approach = [...approachPiers(m - reach - 22, w0, 170), ...approachPiers(m + reach + 22, w1, 170)];
+        for (const side of [-1, 1])
+          s.solids.push({ along: m, across: side * s.pylon.legBase, hx: 14, hy: 14, minHeight: 0, height: 150, kind: 'pylon' });
+        s.solids.push({ along: m, across: 0, hx: 14, hy: W / 2 + 30, minHeight: BRIDGE_CLEARANCE + 50, height: height + 12, kind: 'pylon' });
+        const fan = (along) => 24 + (height - 16) * Math.max(0, 1 - Math.abs(along - m) / (reach + 10));
+        spanSolids(s.solids, m - reach - 10, m - 16, fan, W / 2 + 4, 'stays');
+        spanSolids(s.solids, m + 16, m + reach + 10, fan, W / 2 + 4, 'stays');
+      },
+      /* South Bay Bridge: a red suspension bridge. Two towers either side of the
+         channel, main cables from anchorages at each shore sagging to just over
+         the deck mid-span, hangers down to both edges. */
+      suspension(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          half = 560,
+          top = 316,
+          low = 16;
+        s.towers = { at: [m - half, m + half], top, legs: W / 2 + 17, struts: [118, 206, 292] };
+        s.anchorages = [w0 + 90, w1 - 90];
+        s.cable = (along) => {
+          const d = along - m;
+          if (Math.abs(d) <= half) return low + (top - 6 - low) * (d / half) ** 2;
+          const anchor = d < 0 ? s.anchorages[0] : s.anchorages[1],
+            t = clamp((along - anchor) / (m + Math.sign(d) * half - anchor), 0, 1);
+          return 24 + (top - 6 - 24) * t ** 1.5;
+        };
+        s.channels = [[m - half + 34, m + half - 34]];
+        for (const at of s.towers.at) {
+          s.footings.push({ along: at, across: 0, hx: 30, hy: W / 2 + 44, kind: 'tower caisson' });
+          for (const side of [-1, 1])
+            s.solids.push({ along: at, across: side * s.towers.legs, hx: 12, hy: 12, minHeight: 0, height: top + 6, kind: 'tower' });
+          s.solids.push({ along: at, across: 0, hx: 9, hy: W / 2 + 18, minHeight: s.towers.struts[0] - 10, height: top + 6, kind: 'tower' });
+        }
+        for (const at of s.anchorages) {
+          s.footings.push({ along: at, across: 0, hx: 60, hy: W / 2 + 44, kind: 'anchorage' });
+          for (const side of [-1, 1])
+            s.solids.push({ along: at, across: side * (W / 2 + 26), hx: 56, hy: 18, minHeight: 0, height: 46, kind: 'anchorage' });
+        }
+        s.approach = [...approachPiers(s.anchorages[0], w0, 150), ...approachPiers(s.anchorages[1], w1, 150)];
+        spanSolids(s.solids, s.anchorages[0], s.anchorages[1], s.cable, W / 2 + 18, 'cables');
+      },
+      /* Sunset Pier Bridge: a sleek basket-handle steel arch, its two ribs leaning
+         in to meet over the crown, hangers to both edges, LED-lit at night. */
+      arch(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          half = 520,
+          rise = 244;
+        s.arch = { from: m - half, to: m + half, rise, foot: W / 2 + 24, crown: 10 };
+        s.archHeight = (along) => rise * Math.max(0, 1 - ((along - m) / half) ** 2);
+        s.channels = [[m - half + 34, m + half - 34]];
+        for (const dir of [-1, 1]) {
+          s.footings.push({ along: m + dir * half, across: 0, hx: 40, hy: W / 2 + 54, kind: 'arch foot' });
+          for (const side of [-1, 1])
+            s.solids.push({ along: m + dir * (half - 30), across: side * s.arch.foot, hx: 34, hy: 14, minHeight: 0, height: 96, kind: 'arch' });
+        }
+        s.approach = [...approachPiers(m - half, w0, 150), ...approachPiers(m + half, w1, 150)];
+        spanSolids(s.solids, m - half, m + half, (along) => s.archHeight(along) + 10, W / 2 + 26, 'arch');
+      },
+      /* Oceanview Causeway: a long, low precast viaduct on hammerhead piers with
+         a deeper haunched girder over the navigation span. */
+      segmental(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          half = 150;
+        s.navigation = [m - half, m + half];
+        s.channels = [[m - half + 16, m + half - 16]];
+        for (const p of s.navigation) s.footings.push({ along: p, across: 0, hx: 14, hy: W / 2 + 12, kind: 'main pier' });
+        s.approach = [...approachPiers(m - half, w0, 130), ...approachPiers(m + half, w1, 130)];
+      },
+      /* Coral Sound Bridge: extradosed. Four short sail-shaped pylons at the deck
+         edges and flat harps of stays fanning both ways. */
+      extradosed(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          half = 150,
+          height = 116;
+        s.sails = { at: [m - half, m + half], height, across: W / 2 + 9, reach: 150 };
+        s.channels = [[m - half + 30, m + half - 30]];
+        for (const at of s.sails.at) {
+          s.footings.push({ along: at, across: 0, hx: 26, hy: W / 2 + 30, kind: 'pylon footing' });
+          for (const side of [-1, 1])
+            s.solids.push({ along: at, across: side * s.sails.across, hx: 10, hy: 7, minHeight: 0, height: height + 6, kind: 'pylon' });
+        }
+        s.approach = [...approachPiers(m - half, w0, 110), ...approachPiers(m + half, w1, 110)];
+      },
+      /* Ridgeline Viaduct: cable-stayed on two concrete H-pylons, semi-harp stays,
+         a weathering-steel box girder. */
+      hpylon(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          half = 250,
+          height = 250,
+          reach = 230;
+        s.hpylons = { at: [m - half, m + half], height, legs: W / 2 + 15, reach, first: 36, stays: 9, beam: 222 };
+        s.channels = [[m - half + 30, m + half - 30]];
+        for (const at of s.hpylons.at) {
+          s.footings.push({ along: at, across: 0, hx: 26, hy: W / 2 + 36, kind: 'pylon footing' });
+          for (const side of [-1, 1])
+            s.solids.push({ along: at, across: side * s.hpylons.legs, hx: 11, hy: 11, minHeight: 0, height: height + 6, kind: 'pylon' });
+          s.solids.push({ along: at, across: 0, hx: 9, hy: W / 2 + 16, minHeight: s.hpylons.beam - 12, height: s.hpylons.beam + 14, kind: 'pylon' });
+          const fan = (along) => 22 + (height - 40) * Math.max(0, 1 - Math.abs(along - at) / (reach + 10));
+          spanSolids(s.solids, at - reach - 10, at - 14, fan, W / 2 + 4, 'stays');
+          spanSolids(s.solids, at + 14, at + reach + 10, fan, W / 2 + 4, 'stays');
+        }
+        s.approach = [...approachPiers(m - half, w0, 150), ...approachPiers(m + half, w1, 150)].filter(
+          (p) => Math.abs(Math.abs(p - m) - half) > 40,
+        );
+      },
+      /* Sentinel Causeway: an olive-drab military causeway of steel plate girders
+         with a swing span on a pivot pier; its long fender guards the two
+         channels either side, floodlight masts at the rest piers. */
+      swing(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          half = 130;
+        s.swing = { pivot: m, half, rests: [m - half, m + half], fender: 132 };
+        s.channels = [
+          [m - half + 16, m - 34],
+          [m + 34, m + half - 16],
+        ];
+        s.footings.push({ along: m, across: 0, hx: 26, hy: s.swing.fender, kind: 'pivot pier' });
+        for (const p of s.swing.rests) {
+          s.footings.push({ along: p, across: 0, hx: 12, hy: W / 2 + 8, kind: 'rest pier' });
+          for (const side of [-1, 1])
+            s.solids.push({ along: p, across: side * (W / 2 + 6), hx: 3, hy: 3, minHeight: 0, height: 96, kind: 'floodlight' });
+        }
+        s.solids.push({ along: m, across: -(W / 2 + 40), hx: 16, hy: 14, minHeight: 0, height: 54, kind: 'control house' });
+        s.approach = [...approachPiers(m - half, w0, 100), ...approachPiers(m + half, w1, 100)];
+      },
+    };
+    function bridgeStructure(bridge) {
+      if (bridge.structure) return bridge.structure;
+      const water = bridgeWaterSpan(bridge),
+        m = Math.round((water[0] + water[1]) / 2),
+        s = { style: bridge.style, water, middle: m, channels: [], footings: [], solids: [], approach: [] };
+      BRIDGE_DESIGNS[bridge.style](bridge, water, m, s);
+      // Approach piers are plain bents under the deck, wherever they stand in water.
+      s.approach = s.approach.filter((along) => !landAt(bridgePoint(bridge, along).x, bridgePoint(bridge, along).y));
+      for (const along of s.approach) s.footings.push({ along, across: 0, hx: 6, hy: bridge.width / 2 + 4, kind: 'approach pier' });
+      return (bridge.structure = s);
+    }
+    // A structure box on the map: an oriented box with the bridge's heading.
+    function bridgeBox(bridge, b) {
+      const p = bridgePoint(bridge, b.along, b.across);
+      return { ...b, x: p.x, y: p.y, a: bridgeFrame(bridge).a };
+    }
+    /* Everything of a bridge that rises above the deck, on the map (tower legs,
+       portals, cable fans, arches, trusses): aircraft collide with these. */
+    function bridgePylons(bridge) {
+      return (bridge.pylons ||= bridgeStructure(bridge).solids.map((b) => bridgeBox(bridge, b)));
+    }
+    // Everything of a bridge standing in the water, on the map: boats steer round these.
+    function bridgeFootings(bridge) {
+      return (bridge.footingBoxes ||= bridgeStructure(bridge).footings.map((b) => bridgeBox(bridge, b)));
     }
     function onBridgeDeck(x, y, r = 0) {
       return BRIDGES.some((b) => {

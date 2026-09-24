@@ -80,7 +80,7 @@
       });
     }
     /* What changed since the last HUD refresh, to decide what pops. */
-    const hudSeen = { weapon: -1, ammo: -1, reserve: -1, reloading: false, radioShown: false, stars: -1, keys: '' };
+    const hudSeen = { weapon: -1, ammo: -1, reserve: -1, reloading: false, radioShown: false, stars: -1, pendingStar: 0, keys: '' };
     function watchWeaponBox() {
       const w = currentWeapon(),
         reloading = reloadSecondsRemaining > 0;
@@ -106,20 +106,25 @@
       hudSeen.radioShown = shown;
     }
     /* Five stars; lit ones flash as they are earned (CSS .gained). */
-    function renderStars(level) {
-      if (level === hudSeen.stars) return;
-      const el = getElement('stars'),
-        gained = level > hudSeen.stars && hudSeen.stars >= 0;
+    // `pending` is the star dispatch is about to add (it flashes red, heat.js);
+    // `searching` greys the earned stars while the police have lost sight.
+    function renderStars(level, pending = 0, searching = false) {
+      const el = getElement('stars');
+      el.classList.toggle('searching', level > 0 && searching);
+      if (level === hudSeen.stars && pending === hudSeen.pendingStar) return;
+      const gained = level > hudSeen.stars && hudSeen.stars >= 0;
       el.replaceChildren();
       for (let i = 0; i < 5; i++) {
         const star = document.createElement('i');
         star.textContent = '★';
         if (i < level) star.className = 'on' + (gained && i >= hudSeen.stars ? ' gained' : '');
+        else if (i === pending - 1) star.className = 'next';
         el.append(star);
       }
       el.classList.toggle('wanted', level > 0);
       el.setAttribute('aria-label', 'Wanted level ' + level + ' of 5');
       hudSeen.stars = level;
+      hudSeen.pendingStar = pending;
     }
     /**
      * MINIMAP FOLD AND ZOOM

@@ -577,8 +577,12 @@
         depotFrontDoor.position.y = 29 + (1 - depotFrontShutter) * 59;
         // Closed is flush with the wall; open swings the leaf out ~100 degrees.
         depotBackHinge.rotation.y = -(1 - depotBackDoor) * 1.75;
-        const h = vehicles.find((c) => c.airUnit && c.hp > 0 && !c.airRetreat),
-          t = airSearchPoint(h);
+        // With two police helicopters up, the beam belongs to the one nearest the camera.
+        let h = null;
+        for (const c of vehicles)
+          if (c.airUnit && c.hp > 0 && !c.airRetreat && (!h || distanceBetween(c, cameraTarget) < distanceBetween(h, cameraTarget)))
+            h = c;
+        const t = airSearchPoint(h);
         airBeam.visible = airPool.visible = !!t && distanceBetween(h, cameraTarget) < 950;
         if (t) {
           const top = beamTop.set(h.x, h.altitude + 9, h.y),

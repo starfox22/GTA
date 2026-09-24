@@ -5,7 +5,7 @@
        * Scope: createCityRenderer() closure.
        * Distinctive buildings, waterfront and landmark details.
        */
-      // The bridges are drawn with the county bridges (county3d.js, from BRIDGES).
+      // The bridges are drawn by bridges3d.js (every one in BRIDGES, in its own style).
       // Police entrance, flag poles, parking markings, and two clearly marked stealable aircraft.
       sign('SOUTH COAST POLICE', 1400, 3958, 206, '#aed7ef');
       box(scene, 1400, 22, 3966, 65, 3, 25, mat('#4a687d', 0.4, 0.55));
