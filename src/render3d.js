@@ -1695,6 +1695,8 @@
             flying = !!(isAircraft(player.car) || player.parachute);
           // Street (orthographic) or flight (perspective) camera, plus what it sees.
           updateFlightView(deltaSeconds, altitude, flying);
+          // Riding the Falcon or the Eye: the ride camera takes over (themepark3d.js).
+          updateParkCamera(deltaSeconds);
           camera.position.x += (Math.random() - 0.5) * shake * 0.35;
           camera.position.y += (Math.random() - 0.5) * shake * 0.2;
           camera.updateMatrixWorld(true);
