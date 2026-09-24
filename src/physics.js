@@ -234,6 +234,8 @@
       );
       for (const b of harborSolids()) if (!b.barrier) addStatic(b.x, b.y, b.w, b.h, b.height, 'harbor');
       for (const d of DOCKS) addStatic(d.x, d.y, d.w, d.h, 2, 'dock');
+      // Guardrails, gate piers and railings at the street ends (streets.js).
+      for (const b of streetEndSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, b.kind);
       // Bridge rails and pylons are added with the county colliders (county.js).
     }
     function pointInCar(x, y, vehicle, margin = 0) {

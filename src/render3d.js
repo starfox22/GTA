@@ -500,7 +500,8 @@
       }
       drawingContext.restore();
       paintDistrictGround(drawingContext);
-      paintParks(drawingContext);
+      // No park names painted across the lawns: the map and the HUD name them.
+      paintParks(drawingContext, false);
       for (const r of SERVICE_ROADS.filter((r) => r.name.startsWith('SOUTHPORT ')))
         strokeRoad(drawingContext, r.points, r.width, '#606664');
       paintServiceForecourts(drawingContext, true);

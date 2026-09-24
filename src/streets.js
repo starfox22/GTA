@@ -144,6 +144,72 @@
         (o) => o.vertical !== r.vertical && segmentDistance(p.x, p.y, o.points[0], o.points[1]) <= o.width / 2 + 6,
       );
     }
+    /**
+     * STREET ENDS
+     * The ends of grid streets that neither meet another street, a bridge, a
+     * boulevard nor the shore: `closed` ends (a kerb and a guardrail across the
+     * carriageway, the footways carrying on round it) and `gate` ends at a park
+     * or the stadium (piers and railings either side of a forecourt). The
+     * renderer (world3d.js) draws the pieces from this plan and `streetEndSolids`
+     * gives each piece its collider, for people (solid) and vehicles (statics).
+     * Local frame per end: +x out past the end point, z across the street.
+     */
+    const STREET_END_RAIL = { x: 4, depth: 4, plateX: -40, plateZ: 10 },
+      STREET_END_GATE = { offset: 16, pierX: 52, pier: 13, railFrom: 6, railTo: 46 };
+    let streetEndCache = null;
+    function streetEndPlan() {
+      if (streetEndCache) return streetEndCache;
+      streetEndCache = [];
+      for (const r of cityStreets())
+        for (const end of [r.start, r.end]) {
+          const p = r.vertical ? { x: r.r, y: end } : { x: end, y: r.r },
+            outward = end === r.start ? -1 : 1,
+            a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
+          if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65) || streetEndInJunction(r, p)) continue;
+          if (inAirport(p.x, p.y) || inStadiumLot(p.x, p.y, 40)) continue;
+          // A street that runs out at the water is finished by the esplanade.
+          if (streetEndAtShore(p.x, p.y, a)) continue;
+          streetEndCache.push({ p, a, width: r.width, kind: streetEndAtGate(p.x, p.y, a) ? 'gate' : 'closed' });
+        }
+      return streetEndCache;
+    }
+    let streetEndSolidCache = null;
+    function streetEndSolids() {
+      if (streetEndSolidCache) return streetEndSolidCache;
+      streetEndSolidCache = [];
+      for (const { p, a, width, kind } of streetEndPlan()) {
+        const ux = Math.round(Math.cos(a)),
+          uy = Math.round(Math.sin(a)),
+          half = width / 2;
+        // A local rectangle (x0..x1 along, z0..z1 across) as a map rectangle.
+        const rect = (x0, x1, z0, z1, height, what) => {
+          const xs = [x0, x1].flatMap((u) => [z0, z1].map((v) => p.x + u * ux - v * uy)),
+            ys = [x0, x1].flatMap((u) => [z0, z1].map((v) => p.y + u * uy + v * ux)),
+            x = Math.min(...xs),
+            y = Math.min(...ys);
+          streetEndSolidCache.push({ x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y, height, kind: what });
+        };
+        if (kind === 'gate') {
+          const g = STREET_END_GATE;
+          for (const side of [-1, 1]) {
+            const z = side * (half + g.offset);
+            rect(g.pierX - g.pier / 2, g.pierX + g.pier / 2, z - g.pier / 2, z + g.pier / 2, 30, 'gate pier');
+            rect(g.railFrom, g.railTo, z - 1.2, z + 1.2, 12, 'gate railing');
+          }
+        } else {
+          const g = STREET_END_RAIL;
+          rect(g.x - g.depth / 2, g.x + g.depth / 2, -half - 2, half + 2, 14, 'street end rail');
+          rect(g.plateX - 1, g.plateX + 1, -half - g.plateZ - 1, -half - g.plateZ + 1, 22, 'sign post');
+        }
+      }
+      return streetEndSolidCache;
+    }
+    // Part of solid(): the guardrails, gate piers and railings at street ends.
+    function streetEndBlocked(x, y, r = 0) {
+      for (const b of streetEndSolids())
+        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      return false;
+    }
     function cityIntersectionAt(x, y) {
       return (
         cityStreets().some((r) => !r.vertical && r.r === y && x > r.start + 100 && x < r.end - 100) &&
@@ -219,17 +285,17 @@
             drawingContext.restore();
             continue;
           }
-          drawingContext.fillStyle = '#4b5659';
-          drawingContext.beginPath();
-          drawingContext.arc(p.x, p.y, r.width * 0.5, 0, TAU);
-          drawingContext.fill();
-          if (detail) {
-            drawingContext.strokeStyle = '#d3cfb3';
-            drawingContext.lineWidth = 2;
-            drawingContext.beginPath();
-            drawingContext.arc(p.x, p.y, r.width * 0.38, 0, TAU);
-            drawingContext.stroke();
-          }
+          // A closed end (at the airport fence, the marina quay): the carriageway
+          // stops square at a kerb and the footway wraps round the end. It used to
+          // swell into a painted turning circle that read like a helipad.
+          drawingContext.save();
+          drawingContext.translate(p.x, p.y);
+          drawingContext.rotate(a);
+          drawingContext.fillStyle = '#9b9d90';
+          drawingContext.fillRect(0, -r.width / 2 - 14, r.width / 2 + 14, r.width + 28);
+          drawingContext.fillStyle = '#c3c2b6';
+          drawingContext.fillRect(0, -r.width / 2, 2.5, r.width);
+          drawingContext.restore();
         }
         if (!detail) continue;
         drawingContext.fillStyle = '#d0c39a';
@@ -330,9 +396,20 @@
       return false;
     }
     const PROMENADE_REGIONS = ['northbank', 'palmkeys'];
-    // Wide enough for two people abreast and a bicycle past them.
-    const ESPLANADE_LANDWARD = 40,
-      ESPLANADE_SEAWARD = 32;
+    // Wide enough for two people abreast and a bicycle past them: the walk runs
+    // from the quay edge (40 seaward of the esplanade point) 72 units inland.
+    const ESPLANADE_LANDWARD = 32,
+      ESPLANADE_SEAWARD = 40,
+      // The sea railing stands on the quay coping, 3 units in from the edge.
+      ESPLANADE_RAIL_Z = 37;
+    /* The yaw whose local +z points out to sea at a promenade spot (or coast
+       segment with its normal). The coast heading alone does not say which side
+       the sea is on: it depends on how the land polygon is wound, and on every
+       Northbank and Palm Keys quay it pointed inland, so the sea railing stood on
+       the landward edge of the walk, across every street mouth. */
+    function promenadeYaw(spot) {
+      return Math.atan2(-spot.nx, spot.ny);
+    }
     function esplanadePoint(e) {
       const { nx, ny } = shoreNormal(e),
         inset = shoreStyle(e) === 'beach' ? 92 : 40;
@@ -359,6 +436,7 @@
           x: p.x,
           y: p.y,
           a: p.a,
+          length: e.length,
           nx: p.nx,
           ny: p.ny,
           crossing,
@@ -375,7 +453,83 @@
                   : 'rail',
         });
       }
+      addPromenadeRailRuns(promenadeCache);
       return promenadeCache;
+    }
+    /**
+     * SEA RAILING
+     * Each quay spot carries a length of railing on the coping (`spot.rail`, runs
+     * [u0, u1] along the spot's local x). It breaks where people really cross
+     * the quay edge: the swimmers' ladders, the marina's finger pontoons, the
+     * superyacht's passerelle. The same runs are the railing's collider
+     * (`promenadeRailBlocked`), so what you see is what stops you.
+     */
+    let promenadeRailGrid = null;
+    function addPromenadeRailRuns(spots) {
+      const gaps = [];
+      for (const f of MARINA.fingers) gaps.push({ x: f.x + f.w / 2, y: MARINA.quay.y - 10, half: f.w / 2 + 5 });
+      const g = SUPERYACHT_GANGWAY,
+        board = deckWorld(SUPERYACHT, g.u0, (g.v0 + g.v1) / 2);
+      gaps.push({ x: board.x, y: board.y, half: (g.v1 - g.v0) / 2 + 5 });
+      // The ladders are placed from the coast alone (water.js), never from the rail.
+      for (const l of ladderList()) if (l.kind === 'quay') gaps.push({ x: l.edge.x, y: l.edge.y, half: 9 });
+      promenadeRailGrid = new Map();
+      for (const spot of spots) {
+        spot.rail = [];
+        if (spot.beach) continue;
+        const yaw = promenadeYaw(spot),
+          ux = Math.cos(yaw),
+          uy = Math.sin(yaw),
+          // The rail line's middle, on the coping.
+          cx = spot.x + spot.nx * ESPLANADE_RAIL_Z,
+          cy = spot.y + spot.ny * ESPLANADE_RAIL_Z,
+          half = spot.length / 2 + 0.5;
+        let runs = [[-half, half]];
+        for (const gap of gaps) {
+          const dx = gap.x - cx,
+            dy = gap.y - cy,
+            u = dx * ux + dy * uy,
+            across = -dx * uy + dy * ux;
+          if (Math.abs(across) > 24 || Math.abs(u) > half + gap.half) continue;
+          runs = runs.flatMap(([a, b]) =>
+            [
+              [a, Math.min(b, u - gap.half)],
+              [Math.max(a, u + gap.half), b],
+            ].filter(([p, q]) => q - p > 1),
+          );
+        }
+        spot.rail = runs;
+        spot.railLine = { cx, cy, ux, uy };
+        if (!runs.length) continue;
+        const key = Math.floor(cx / 128) * 4096 + Math.floor(cy / 128);
+        if (!promenadeRailGrid.has(key)) promenadeRailGrid.set(key, []);
+        promenadeRailGrid.get(key).push(spot);
+      }
+    }
+    // Part of solid(): the sea railing along the quays stops people on foot.
+    function promenadeRailBlocked(x, y, r = 0) {
+      // Built with the spots (first asked for by populate(), once the world is
+      // built); until then, and while the ladders they make room for are being
+      // placed (which tests solid()), there is no railing yet.
+      const grid = promenadeRailGrid;
+      if (!grid) return false;
+      const i0 = Math.floor(x / 128),
+        j0 = Math.floor(y / 128);
+      for (let i = i0 - 1; i <= i0 + 1; i++)
+        for (let j = j0 - 1; j <= j0 + 1; j++) {
+          const list = grid.get(i * 4096 + j);
+          if (!list) continue;
+          for (const spot of list) {
+            const { cx, cy, ux, uy } = spot.railLine,
+              dx = x - cx,
+              dy = y - cy,
+              across = -dx * uy + dy * ux;
+            if (Math.abs(across) > r + 1) continue;
+            const u = dx * ux + dy * uy;
+            for (const [a, b] of spot.rail) if (u > a - r && u < b + r) return true;
+          }
+        }
+      return false;
     }
     /* Strollers work along the esplanade spot list, so they keep to the walk and
        turn at its ends instead of wandering into the road or the water. */
@@ -447,7 +601,8 @@
         if (!groundAt(p.x, p.y, 10)) continue;
         drawingContext.save();
         drawingContext.translate(p.x, p.y);
-        drawingContext.rotate(e.a);
+        // Local +y out to sea (see promenadeYaw).
+        drawingContext.rotate(promenadeYaw(p));
         // A cycle strip on the landward side, the walk itself, a band of setts
         // against the buildings and a kerb line at the sea rail.
         drawingContext.fillStyle = beach ? '#bba889' : '#b0ada0';

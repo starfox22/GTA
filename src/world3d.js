@@ -385,83 +385,57 @@
           toneMapped: false,
         });
         const plateGeometry = new Three.PlaneGeometry(34, 8.5);
-        for (const r of cityStreets()) {
-          for (const end of [r.start, r.end]) {
-            const p = r.vertical ? { x: r.r, y: end } : { x: end, y: r.r },
-              outward = end === r.start ? -1 : 1,
-              a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
-            if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65) || streetEndInJunction(r, p)) continue;
-            if (inAirport(p.x, p.y) || inStadiumLot(p.x, p.y, 40)) continue;
-            // A street that runs out at the water is finished by the esplanade
-            // railing, so it gets no turning head and no barrier furniture.
-            if (streetEndAtShore(p.x, p.y, a)) continue;
-            // One that stops at a park or the stadium gets its gates instead.
-            if (streetEndAtGate(p.x, p.y, a)) {
-              const gate = new Three.Group();
-              gate.position.set(p.x, terrainHeight(p.x, p.y), p.y);
-              gate.rotation.y = -a;
-              scene.add(gate);
-              batchGroups.push(gate);
-              const pier = mat('#a8a396', 0.9),
-                gateIron = mat('#3f4744', 0.5, 0.5);
-              for (const side of [-1, 1]) {
-                const z = side * (r.width / 2 + 16);
-                box(gate, 52, 13, z, 13, 26, 13, pier);
-                box(gate, 52, 27.5, z, 16, 3, 16, pier);
-                // A length of railing running back from each pier to the kerb.
-                box(gate, 26, 8, z, 40, 1.8, 1.8, gateIron);
-                box(gate, 26, 4, z, 40, 1.4, 1.4, gateIron);
-                for (const d of [10, 26, 42]) box(gate, d, 6, z, 1.6, 12, 1.6, gateIron);
-                box(gate, 52, 32, z, 2.4, 10, 2.4, gateIron);
-              }
-              statics.push({ x: p.x, y: p.y, group: gate, radius: 120 });
-              continue;
-            }
-            const group = new Three.Group();
-            group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
-            group.rotation.y = -a;
-            scene.add(group);
-            batchGroups.push(group);
-            const half = r.width * 0.5;
-            // Kerb ring around the turning head.
-            const ring = mesh(new Three.TorusGeometry(half + 4, 2.4, 6, 26), kerb, group, 0, 1.6, 0);
-            ring.rotation.x = Math.PI / 2;
-            // Guardrail across the closed end.
-            for (let i = -3; i <= 3; i++) {
-              const z = (i * (r.width + 20)) / 7;
-              box(group, half + 7, 7, z, 3.4, 14, 3.4, railMat);
-            }
-            box(group, half + 7, 12, 0, 3, 3.6, r.width + 24, railMat);
-            box(group, half + 7, 6.4, 0, 3, 3, r.width + 24, railMat);
-            // Chevron boards facing the road, red and white.
+        // Where each piece stands comes from streetEndPlan() (streets.js), which
+        // also gives the pieces their colliders, so a rail you see is a rail that
+        // stops you. Local frame: +x out past the end, z across the street.
+        for (const end of streetEndPlan()) {
+          const { p, a, width } = end,
+            half = width / 2,
+            group = new Three.Group();
+          group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
+          group.rotation.y = -a;
+          scene.add(group);
+          batchGroups.push(group);
+          statics.push({ x: p.x, y: p.y, group, radius: 120 });
+          if (end.kind === 'gate') {
+            // Gate piers either side of the forecourt with a length of railing
+            // running back from each pier along the edge of the footway.
+            const pier = mat('#a8a396', 0.9),
+              gateIron = mat('#3f4744', 0.5, 0.5),
+              g = STREET_END_GATE;
             for (const side of [-1, 1]) {
-              const z = side * (r.width * 0.24);
-              box(group, half + 2, 9.5, z, 1.6, 13, 26, chevron);
-              for (let k = -2; k <= 2; k++)
-                box(group, half + 1.2, 9.5, z + k * 5.2, 0.8, 13, 2.6, stripe);
-              box(group, half + 2, 2, z, 4, 4, 28, railMat);
+              const z = side * (half + g.offset);
+              box(group, g.pierX, 13, z, g.pier, 26, g.pier, pier);
+              box(group, g.pierX, 27.5, z, g.pier + 3, 3, g.pier + 3, pier);
+              const length = g.railTo - g.railFrom,
+                mid = (g.railFrom + g.railTo) / 2;
+              box(group, mid, 8, z, length, 1.8, 1.8, gateIron);
+              box(group, mid, 4, z, length, 1.4, 1.4, gateIron);
+              for (let d = g.railFrom + 1; d < g.railTo; d += 16) box(group, d, 6, z, 1.6, 12, 1.6, gateIron);
+              box(group, g.pierX, 32, z, 2.4, 10, 2.4, gateIron);
             }
-            // NO THROUGH ROAD plate on a post, set back on the kerb.
-            box(group, half - 8, 11, -half + 8, 1.8, 22, 1.8, railMat);
-            const boardMesh = new Three.Mesh(plateGeometry, plateMaterial);
-            boardMesh.position.set(half - 8, 22, -half + 8);
-            boardMesh.rotation.y = -Math.PI / 2;
-            boardMesh.userData.sign = true;
-            group.add(boardMesh);
-            // A planted island in the middle of a wide head.
-            if (r.width > 100) {
-              mesh(new Three.CylinderGeometry(15, 16, 2.4, 18), kerb, group, 0, 1.2, 0);
-              mesh(new Three.CylinderGeometry(13, 13, 1.2, 18), leafMats[1], group, 0, 2.4, 0);
-              rod(group, new Three.Vector3(0, 2, 0), new Three.Vector3(0, 20, 0), 1.6, mat('#6b5442'));
-              mesh(sphereGeo, leafMats[0], group, 0, 26, 0, 13, 10, 13);
-            }
-            statics.push({
-              x: p.x,
-              y: p.y,
-              group,
-              radius: 110,
-            });
+            continue;
           }
+          // A closed end: the carriageway stops square at a kerb, a guardrail
+          // with chevron boards spans it, and the footways carry on round it.
+          const g = STREET_END_RAIL;
+          box(group, 0.2, 1.4, 0, 3, 2.8, width, kerb);
+          for (let i = 0; i <= 6; i++) box(group, g.x, 7, -half + (i * width) / 6, 3.4, 14, 3.4, railMat);
+          box(group, g.x, 12, 0, 3, 3.6, width + 4, railMat);
+          box(group, g.x, 6.4, 0, 3, 3, width + 4, railMat);
+          // Chevron boards facing the road, red and white.
+          for (const side of [-1, 1]) {
+            const z = side * (width * 0.24);
+            box(group, g.x - 2.6, 9.5, z, 1.6, 13, 26, chevron);
+            for (let k = -2; k <= 2; k++) box(group, g.x - 3.4, 9.5, z + k * 5.2, 0.8, 13, 2.6, stripe);
+          }
+          // NO THROUGH ROAD plate on a post at the kerb, a car length before the end.
+          box(group, g.plateX, 11, -half - g.plateZ, 1.8, 22, 1.8, railMat);
+          const boardMesh = new Three.Mesh(plateGeometry, plateMaterial);
+          boardMesh.position.set(g.plateX, 22, -half - g.plateZ);
+          boardMesh.rotation.y = -Math.PI / 2;
+          boardMesh.userData.sign = true;
+          group.add(boardMesh);
         }
       }
       buildStreetEnds();
@@ -492,17 +466,25 @@
             count = 0;
           }
           count++;
+          // Local +z points out to sea whichever way the coast polygon is wound
+          // (the coast heading alone put the railing on the landward edge of the
+          // walk on every Northbank and Palm Keys quay, beside the road).
           const inner = new Three.Group();
           inner.position.set(spot.x, terrainHeight(spot.x, spot.y), spot.y);
-          inner.rotation.y = -spot.a;
+          inner.rotation.y = -promenadeYaw(spot);
           group.add(inner);
           if (!spot.beach) {
-            // Seaward railing, carried straight across a street mouth so the walk
-            // never stops and nothing drives off the end of the road.
-            for (const side of [-1, 1]) box(inner, side * 20, 6, 28, 2, 12, 2, railMetal);
-            box(inner, 0, 11, 28, 46, 1.8, 1.8, railMetal);
-            box(inner, 0, 6.5, 28, 46, 1.4, 1.4, railMetal);
-            box(inner, 0, 1.2, 28, 46, 2.4, 5, walkStone);
+            // Sea railing on the quay coping, carried straight across a street
+            // mouth; it breaks for ladders and gangways (promenadeRailRuns).
+            for (const run of spot.rail) {
+              const length = run[1] - run[0],
+                mid = (run[0] + run[1]) / 2;
+              if (length < 2) continue;
+              for (const u of [run[0] + 1, run[1] - 1]) box(inner, u, 6, ESPLANADE_RAIL_Z, 2, 12, 2, railMetal);
+              box(inner, mid, 11, ESPLANADE_RAIL_Z, length, 1.8, 1.8, railMetal);
+              box(inner, mid, 6.5, ESPLANADE_RAIL_Z, length, 1.4, 1.4, railMetal);
+              box(inner, mid, 1.2, ESPLANADE_RAIL_Z, length, 2.4, 3, walkStone);
+            }
           }
           if (spot.crossing) continue;
           if (spot.kind === 'lamp') {
@@ -621,10 +603,9 @@
           radius: 30,
         });
       }
-      sign('OCEAN DRIVE', -2354, 1620, 125, '#b7ece1');
-      // At the Palm Keys end of the Keys Bridge, and at its Northbank end.
-      sign('PALM KEYS', -1364, 1090, 150, '#eab7bc');
-      sign('NORTHBANK', 330, 1090, 125, '#d1d9ce');
+      // No district or street name boards over the carriageway (OCEAN DRIVE,
+      // PALM KEYS and NORTHBANK used to hang over Ocean Dr and both ends of the
+      // Keys Bridge): district names belong to the HUD and the map.
       // A terminal, gate arms, control tower, service equipment and parked aircraft.
       const ag = new Three.Group();
       scene.add(ag);

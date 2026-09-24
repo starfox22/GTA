@@ -800,6 +800,8 @@
         parkBlocked(x, y, r) ||
         marinaBlocked(x, y, r) ||
         beachBlocked(x, y, r) ||
+        promenadeRailBlocked(x, y, r) ||
+        streetEndBlocked(x, y, r) ||
         (!overWater && !groundAt(x, y, r)) ||
         harborBlocked(x, y, r) ||
         depotBlocked(x, y, r) ||
@@ -1350,12 +1352,8 @@
       buildings[buildings.length - 1].height = 42;
       makeBuilding(AIRPORT.hangar.x, AIRPORT.hangar.y, AIRPORT.hangar.w, AIRPORT.hangar.h, 2, true);
       groundContext.restore();
-      label('H A R B O R   A V E N U E', 2175, 3194, 13, '#a6af9770');
-      groundContext.save();
-      groundContext.translate(640, 2230);
-      groundContext.rotate(-Math.PI / 2);
-      label('S U N S E T   B O U L E V A R D', 0, 0, 13, '#a6af9770');
-      groundContext.restore();
+      // Street names are not painted along the carriageway (HARBOR AVENUE and
+      // SUNSET BOULEVARD used to be); the HUD names the street underfoot.
       paintParks(groundContext);
       seedParkTrees();
       buildHarbor();
