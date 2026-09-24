@@ -1481,6 +1481,76 @@
               if (k > 0.2) blowWindows(b, px, py, ny, reach * 0.6 * k, altitude);
             }
       }
+      /**
+       * A main-gun round into a facade (damage.js heavyRoundHitsBuilding): a breach
+       * blown through the wall (a dark hole in a ring of stripped plaster, cracks
+       * running out of it, soot above), a burst of masonry thrown into the street,
+       * rubble raining down the face onto the pavement and heaping at its foot, a
+       * dust cloud, and the windows and shop glass around it gone. Everything comes
+       * from the shared decal ring and debris pools, so a long bombardment only
+       * recycles the oldest marks. structureBlast() then adds the scorch and craters
+       * of the explosion itself.
+       */
+      let shellBreaches = 0;
+      function shellImpact(x, y, z, nx, ny, building, power = 1) {
+        shellBreaches++;
+        const color = facadeColor(building),
+          off = wallOffset(building, ny, z),
+          tx = -ny,
+          ty = nx,
+          size = 22 * power;
+        // Stripped render round the hole, then the hole, then cracks and soot.
+        addDecal(DECAL.crater, x, z, y, nx, 0, ny, size * 1.9, size * 1.7, Math.random() * TAU, 0.97, null, off + 0.12);
+        addDecal(DECAL.hole, x, z, y, nx, 0, ny, size * 1.25, size * 1.1, Math.random() * TAU, 1, null, off + 0.2);
+        for (let i = 0; i < 3; i++) {
+          const a = Math.random() * TAU,
+            r = size * (0.8 + Math.random() * 0.5),
+            cz = z + Math.sin(a) * r;
+          if (cz < 2 || cz > building.height - 2) continue;
+          addDecal(DECAL.crack, x + tx * Math.cos(a) * r, cz, y + ty * Math.cos(a) * r, nx, 0, ny, size * 0.9, size * 0.9, a, 0.9, null, off + 0.1);
+        }
+        if (building.height - z > 20)
+          addDecal(DECAL.soot, x, Math.min(building.height - 8, z + 26 * power), y, nx, 0, ny, 26 * power, Math.min(building.height - z - 4, 60), 0, 0.55, null, off + 0.25);
+        // Masonry thrown out into the street...
+        spawnChunks(x + nx * (off + 2), z, y + ny * (off + 2), nx, ny, Math.round(24 * power), color, 1.25);
+        // ...and more that tumbles down the face and piles on the pavement.
+        for (let i = 0; i < Math.round(20 * power); i++) {
+          const along = (Math.random() - 0.5) * size * 1.2;
+          newDebris(chunks, 700, {
+            x: x + nx * (off + 1.5) + tx * along,
+            y: z + (Math.random() - 0.5) * size * 0.6,
+            z: y + ny * (off + 1.5) + ty * along,
+            vx: nx * (8 + Math.random() * 26) + tx * (Math.random() - 0.5) * 20,
+            vy: Math.random() * 25,
+            vz: ny * (8 + Math.random() * 26) + ty * (Math.random() - 0.5) * 20,
+            size: 1 + Math.random() * 3.2,
+            color: rubbleColor(new Three.Color(color)),
+          });
+        }
+        const foot = wallOffset(building, ny, 2);
+        spawnRubble(x + nx * foot, y + ny * foot, nx, ny, Math.round(22 * power), color, size * 0.7);
+        addDecal(DECAL.rubble, x + nx * (foot + 10), terrainHeight(x, y) + 0.15, y + ny * (foot + 10), 0, 1, 0, size * 2.4, size * 1.5, Math.atan2(nx, ny), 0.92);
+        // A dust cloud rolling off the wall.
+        for (let j = 0; j < 16; j++)
+          fx.push({
+            x: x + nx * (off + 4) + tx * (Math.random() - 0.5) * size,
+            y: z + (Math.random() - 0.5) * size * 0.6,
+            z: y + ny * (off + 4) + ty * (Math.random() - 0.5) * size,
+            vx: nx * (14 + Math.random() * 26) + tx * (Math.random() - 0.5) * 24,
+            vy: -4 + Math.random() * 12,
+            vz: ny * (14 + Math.random() * 26) + ty * (Math.random() - 0.5) * 24,
+            life: 2.4 + Math.random() * 1.6,
+            max: 4,
+            color: '#a79d8e',
+            size: 16 + Math.random() * 10,
+            smoke: true,
+          });
+        const pane = ny > 0.5 && z < 16 ? shopPaneAt(building, x) : null;
+        if (pane) shatterShopPane(pane);
+        if (building.shopPanes && ny > 0.5)
+          for (const p of building.shopPanes) if (Math.abs(p.cx - x) < 60 * power) shatterShopPane(p);
+        blowWindows(building, x, y, ny, 70 * power, z - 10);
+      }
       function groundStain(x, y, elevation, kind, size) {
         addDecal(DECAL[kind] ?? DECAL.oil, x, elevation + 0.12, y, 0, 1, 0, size, size * (0.7 + Math.random() * 0.3), Math.random() * TAU, 0.85);
       }
@@ -1719,6 +1789,7 @@
         bulletHole,
         structureBlast,
         structureImpact,
+        shellImpact,
         groundStain,
         sparks,
         damageInfo: () => ({
@@ -1729,6 +1800,7 @@
           panels: panels.length,
           knockedProps: knockedProps.length,
           windowsBroken,
+          shellBreaches,
           geometries: renderer.info.memory.geometries,
           textures: renderer.info.memory.textures,
         }),

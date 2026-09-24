@@ -37,6 +37,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/citylife.js: Civic services and police
     Clock, businesses (PLACES), docks, officers, police routing, wanted search and injury effects.
   src/pursuit.js: Police response and pursuit tactics
+  src/swat.js: SWAT teams, riot shields and rooftop snipers
     Per-star tiers, reinforcements, pursuit driving (PIT, box, search, off-road shortcuts, county routes), marine units, officer combat, arrest, armor, radar search area.
   src/wounds.js: Wounds, hit reactions and death falls
     Hit zones, flinches, limps, blood trails, directional death falls and wall slumps, downed officers and civilians.
@@ -83,6 +84,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/county.js: Outlying districts
     County roads, towns, buildings, scenery, traffic, regional police and bridges.
   src/military.js: Fort Sentinel
+  src/armor.js: The player's tank: turret traverse, ammunition, reticle
     Base plan (SENTINEL), fences and gate (arms, bollards, sliding gates, ramming), challenge,
     alarm and lockdown, siren, garrison posts/patrols/drill/range, supply runs, military vehicles, combat.
   src/aviation.js: Fixed-wing flight and flight missions
@@ -1962,6 +1964,59 @@ kbd {
   to {
     opacity: 0;
   }
+}
+/* Tank gunnery (armor.js): a ring where the gunner wants the gun, a pip where
+   the barrel is laid (green when a round is loaded). */
+#tankReticle {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+#tankReticle i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+}
+#tankAimRing {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 2px dashed rgba(244, 244, 236, 0.75);
+  border-radius: 50%;
+}
+#tankBarrelPip {
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border: 2px solid #e8913a;
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+#tankBarrelPip::before,
+#tankBarrelPip::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-color: inherit;
+}
+#tankBarrelPip::before {
+  left: 8px;
+  top: 8px;
+  width: 2px;
+  height: 2px;
+  border: 1px solid;
+  border-color: inherit;
+}
+#tankBarrelPip.ready {
+  border-color: #6ee07a;
+}
+#tankBarrelPip.mg {
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
 }
 #hitMarker {
   position: absolute;
@@ -4602,6 +4657,253 @@ body.no-key-hints .quickkeys {
     padding-bottom: 8px;
   }
 }
+/* --- Flight HUD (hud.js, FLIGHT HUD) -----------------------------------------
+   Shown only in an aircraft. Two columns frame the aircraft either side of the
+   middle of the screen (attitude, airspeed and power on the left; altitude,
+   vertical speed, AGL and g on the right) and a heading strip sits above; the
+   centre, where the aircraft is, stays clear. The instruments are canvases
+   redrawn every frame; the rest is text. It slides in from the sides. */
+#flightHud {
+  --fh-line: #e9efe6;
+  --fh-accent: #7fe3ee;
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.35s var(--ui-ease),
+    visibility 0s linear 0.35s;
+}
+#flightHud.on {
+  visibility: visible;
+  opacity: 1;
+  transition:
+    opacity 0.35s var(--ui-ease),
+    visibility 0s;
+}
+#flightHud .fh-frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: scale(var(--fh-scale, 1));
+}
+#flightHud .fh-col {
+  position: absolute;
+  top: -222px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.45s var(--ui-ease);
+}
+#flightHud .fh-left {
+  right: 258px;
+  width: 124px;
+  align-items: flex-end;
+  transform: translateX(-40px);
+}
+#flightHud .fh-right {
+  top: -90px;
+  left: 258px;
+  width: 124px;
+  transform: translateX(40px);
+}
+#flightHud .fh-top {
+  position: absolute;
+  top: -262px;
+  left: -176px;
+  width: 352px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transform: translateY(-24px);
+  transition: transform 0.45s var(--ui-ease);
+}
+#flightHud.on .fh-col,
+#flightHud.on .fh-top {
+  transform: none;
+}
+#flightHud canvas {
+  display: block;
+}
+#flightHud .fh-adi {
+  width: 124px;
+  height: 124px;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px var(--ui-line-strong),
+    var(--ui-shadow);
+}
+#flightHud .fh-tape {
+  position: relative;
+  padding: 16px 0 0;
+}
+#flightHud .fh-cap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--ui-dim);
+  text-align: center;
+  white-space: nowrap;
+}
+#flightHud .fh-block {
+  width: 124px;
+  padding: 7px 10px 8px;
+  box-sizing: border-box;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-line);
+  background: var(--ui-panel);
+  box-shadow: var(--ui-shadow);
+}
+#flightHud .fh-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ui-dim);
+  line-height: 1.6;
+}
+#flightHud .fh-row b {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--ui-text);
+  font-variant-numeric: tabular-nums;
+}
+#flightHud .fh-bar {
+  position: relative;
+  height: 6px;
+  margin: 3px 0 7px;
+  border-radius: 3px;
+  background: #ffffff1a;
+}
+#flightHud .fh-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #7fe3ee, #e2c897);
+}
+#flightHud .fh-bar em {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 12px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--ui-text);
+  box-shadow: 0 0 4px #000a;
+}
+#flightHud .fh-chips {
+  display: flex;
+  gap: 5px;
+}
+#flightHud .fh-chip {
+  flex: 1;
+  padding: 3px 0;
+  border-radius: 5px;
+  border: 1px solid var(--ui-line);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: var(--ui-dim);
+  white-space: nowrap;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+#flightHud .fh-chip.set {
+  color: #0d1418;
+  border-color: transparent;
+  background: var(--fh-accent);
+}
+#flightHud .fh-chip.moving {
+  color: var(--ui-gold);
+  border-color: #e2c89788;
+  animation: fhBlink 0.6s steps(2) infinite;
+}
+#flightHud .fh-chip.alert {
+  color: #1a0b08;
+  border-color: transparent;
+  background: var(--ui-danger);
+  animation: fhBlink 0.5s steps(2) infinite;
+}
+#flightHud .fh-warning {
+  min-height: 24px;
+  padding: 0 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  line-height: 24px;
+  color: #1a0b08;
+  background: var(--ui-danger);
+  box-shadow: 0 0 22px #f0867288;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.2s,
+    transform 0.2s var(--ui-ease);
+}
+#flightHud .fh-warning.show {
+  opacity: 1;
+  transform: none;
+  animation: fhBlink 0.7s steps(2) infinite;
+}
+#flightHud .fh-warning.caution {
+  color: #1a1408;
+  background: var(--ui-gold);
+  box-shadow: 0 0 18px #e2c89766;
+}
+@keyframes fhBlink {
+  50% {
+    opacity: 0.55;
+  }
+}
+/* The helicopter shows the slim version: no attitude ball, flaps or gear. */
+#flightHud.heli .fh-adi,
+#flightHud.heli .fh-chips {
+  display: none;
+}
+#flightHud.heli .fh-col {
+  top: -90px;
+}
+@media (max-width: 1180px), (max-height: 760px) {
+  #flightHud {
+    --fh-scale: 0.84;
+  }
+}
+@media (max-width: 900px), (max-height: 620px) {
+  #flightHud {
+    --fh-scale: 0.68;
+  }
+}
+/* Phones: the heading strip and the two tapes only. */
+@media (max-width: 640px) {
+  #flightHud .fh-adi,
+  #flightHud .fh-block {
+    display: none;
+  }
+  #flightHud .fh-left {
+    right: 150px;
+  }
+  #flightHud .fh-right {
+    left: 150px;
+  }
+}
 /* --- Reduced motion: keep the states, drop the movement -------------------- */
 @media (prefers-reduced-motion: reduce) {
   .title-art,
@@ -4626,7 +4928,8 @@ body.no-key-hints .quickkeys {
   .radio-eq i,
   #healthbox.low .vital.health i,
   .binding-key.listening,
-  .bindings-clash {
+  .bindings-clash,
+  #flightHud * {
     animation: none !important;
   }
   #topbar *,
@@ -4640,7 +4943,9 @@ body.no-key-hints .quickkeys {
   .settings-tabs button::after,
   .settings-switch i::after,
   .minimap-box,
-  .minimap-frame {
+  .minimap-frame,
+  #flightHud,
+  #flightHud * {
     transition-duration: 0.01ms !important;
   }
 }
@@ -4688,11 +4993,12 @@ body.no-key-hints .quickkeys {
     </div>
     <div id="policeNotice" role="status" aria-live="polite" aria-atomic="true"></div>
     <div id="arrestStatus" aria-live="polite">
-      BEING ARRESTED · FIGHT OR RUN
+      <span id="arrestLabel">BEING ARRESTED · FIGHT OR RUN</span>
       <div class="meter"><i id="arrestFill"></i></div>
     </div>
     <div id="damageArc" aria-hidden="true"></div>
     <div id="hitMarker" aria-hidden="true"></div>
+    <div id="tankReticle" class="hidden" aria-hidden="true"><i id="tankAimRing"></i><i id="tankBarrelPip"></i></div>
     <div id="stealthStatus" style="display: none">
       <span id="stealthLabel"></span>
       <div class="meter"><i id="stealthFill"></i></div>
@@ -4735,6 +5041,32 @@ body.no-key-hints .quickkeys {
       <small id="announceSmall"></small><strong id="announceBig"></strong>
     </div>
     <div id="interaction"></div>
+    <!-- Flight HUD (hud.js, FLIGHT HUD): shown in an aircraft only. -->
+    <div id="flightHud" aria-hidden="true">
+      <div class="fh-frame">
+        <div class="fh-top">
+          <canvas id="fhHeading"></canvas>
+          <div id="fhWarning" class="fh-warning" role="status" aria-live="assertive"></div>
+        </div>
+        <div class="fh-col fh-left">
+          <canvas id="fhAttitude" class="fh-adi"></canvas>
+          <div class="fh-tape"><span class="fh-cap">IAS · KM/H</span><canvas id="fhSpeed"></canvas></div>
+          <div class="fh-block">
+            <div class="fh-row"><span id="fhPowerLabel">PWR</span><b id="fhPower">0%</b></div>
+            <div class="fh-bar"><i id="fhPowerFill"></i><em id="fhThrottleMark"></em></div>
+            <div class="fh-chips"><span id="fhFlaps" class="fh-chip">FLAPS UP</span><span id="fhGear" class="fh-chip">GEAR ▼</span></div>
+          </div>
+        </div>
+        <div class="fh-col fh-right">
+          <div class="fh-tape"><span class="fh-cap">ALT · M</span><canvas id="fhAltitude"></canvas></div>
+          <div class="fh-block">
+            <div class="fh-row"><span>AGL</span><b id="fhAgl">0 m</b></div>
+            <div class="fh-row"><span>V/S</span><b id="fhVs">0.0 m/s</b></div>
+            <div class="fh-row"><span>LOAD</span><b id="fhG">1.0 g</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="bottom">
       <section class="minimap-box" id="minimapBox">
         <div class="minimap-frame" id="minimapFrame">
@@ -5130,8 +5462,10 @@ body.no-key-hints .quickkeys {
           changes landing destination after the manifest is exposed. Escape in the van and drive
           inside Vinny’s warehouse. Flyable courier planes, private jets and a large airliner wait
           at the airports. The larger airliner needs Oceanview’s long runway. Hold W to accelerate,
-          then T (climb) to rotate. Excessive nose-up pitch or too little speed causes a stall: release
-          T, lower the nose with G (descend), add W throttle. On approach keep a little power, reduce
+          then ↑ (climb) to rotate; a notch of flaps (X extends, Z retracts) shortens the take-off
+          roll, and L raises the gear once airborne. Excessive nose-up pitch or too little speed causes
+          a stall (the HUD and a horn warn first): release ↑, lower the nose with ↓ (descend), add W
+          throttle. Lower the gear (L) before landing. On approach keep a little power, reduce
           descent and briefly raise the nose just before touchdown. Pinch the game view or scroll to
           zoom out over the city; +/− zoom and 0 resets the view. Only one police helicopter follows
           you. Hide in the U railway underpass in Northbank, take a boat beneath a bridge, or break

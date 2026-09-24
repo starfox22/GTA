@@ -14,9 +14,11 @@
      *               presets and the arsenal stay one click away. The motion is CSS
      *               (.hud-pop.open, .hud-more), cut under prefers-reduced-motion.
      *   MINIMAP     Stays up; its fold button tucks it into a small chip. The
+     *               GPS setting draws the road route on it (navigation.js). The
      *               mouse wheel and a two-finger pinch zoom it (MINIMAP_ZOOM_MIN..MAX,
      *               never the street camera). Both are saved in localStorage
      *               under 'dead-end-city-hud'.
+     *   FLIGHT HUD  Instruments framing the aircraft while flying (below).
      *   KEY HINTS   The strip under the mission card, the interaction prompt and
      *               the HOW TO PLAY grid name the player's own bindings
      *               (controls.js), and the strip follows what they are doing:
@@ -38,12 +40,15 @@
       minimapZoom: 1,
       // The key-hint strip under the mission card (Settings · Gameplay).
       keyHints: true,
+      // GPS route on the minimap (Settings · Gameplay, navigation.js).
+      gps: true,
     };
     try {
       const saved = JSON.parse(localStorage.getItem(HUD_STORAGE));
       if (saved && typeof saved === 'object') {
         hudState.minimapFolded = saved.minimapFolded === true;
         hudState.keyHints = saved.keyHints !== false;
+        hudState.gps = saved.gps !== false;
         if (Number.isFinite(saved.minimapZoom))
           hudState.minimapZoom = clamp(saved.minimapZoom, MINIMAP_ZOOM_MIN, MINIMAP_ZOOM_MAX);
       }
@@ -207,6 +212,10 @@
       saveHudState();
     }
     setKeyHints(hudState.keyHints);
+    function setGps(on) {
+      hudState.gps = !!on;
+      saveHudState();
+    }
     /**
      * KEY HINTS
      * The strip follows the context; it is rebuilt only when the context or the
@@ -215,6 +224,7 @@
     function hudContext() {
       const c = player.car;
       if (player.parachute) return 'chute';
+      if (player.coaster) return 'ride';
       if (!c) return player.swimming ? 'swim' : 'foot';
       if (c.type === 'helicopter') return 'heli';
       if (c.type === 'plane') return 'plane';
@@ -228,8 +238,10 @@
       bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['back', 'BRAKE'], ['interact', 'EXIT']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
-      plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['bail', 'BAIL OUT']],
+      plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['flapsDown', 'FLAPS'], ['gear', 'GEAR'], ['bail', 'BAIL OUT']],
       chute: [['handbrake', 'OPEN'], ['move', 'STEER']],
+      // Sunset Pier rides: E changes the view (and steps off), the radio plays.
+      ride: [['interact', 'VIEW'], ['radioPower', 'RADIO'], ['radioNext', 'STATION']],
     };
     function hintKey(id) {
       return id === 'move' ? moveKeysName() : keyName(id);
@@ -276,11 +288,450 @@
     }
     /* Called at the end of updateUI(). */
     function updateHud() {
+      updateFlightHud();
       watchWeaponBox();
       watchRadioBox();
       updateHudPops();
       renderQuickKeys();
       getElement('bottom').dataset.context = hudContext();
+    }
+    /**
+     * FLIGHT HUD
+     * In an aircraft (flightData(), aviation.js) a glass-cockpit HUD frames the
+     * aircraft without covering it: an attitude indicator (pitch ladder, bank
+     * scale), the airspeed tape with its stall band, and the power lever / engine
+     * power, flaps and gear on the left; the altitude tape with the ground band
+     * and a vertical-speed scale, AGL, vertical speed and g on the right; a
+     * heading strip with the objective's bearing above; and STALL / GEAR / PULL
+     * UP warnings under it. The helicopter gets the slim version (no attitude,
+     * flaps or gear; ROTOR for power). The instruments are 2D canvases redrawn
+     * every frame (updateFlightHud, from the game loop); showing and hiding is a
+     * CSS transition on #flightHud.on.
+     */
+    const FLIGHT_HUD_FONT = "'Helvetica Neue', Arial, Helvetica, sans-serif",
+      FH_LINE = '#e9efe6',
+      FH_ACCENT = '#7fe3ee',
+      FH_GOLD = '#e2c897',
+      FH_DANGER = '#f08672',
+      FH_PANEL = 'rgba(11, 16, 21, 0.62)';
+    const flightHud = {
+      root: getElement('flightHud'),
+      shown: false,
+      canvases: {},
+      text: {},
+    };
+    // Canvases are sized once for the device pixel ratio; drawing is in CSS pixels.
+    for (const [key, id, width, height] of [
+      ['attitude', 'fhAttitude', 124, 124],
+      ['speed', 'fhSpeed', 92, 200],
+      ['altitude', 'fhAltitude', 124, 200],
+      ['heading', 'fhHeading', 352, 34],
+    ]) {
+      const canvasElement = getElement(id),
+        ratio = Math.min(2, window.devicePixelRatio || 1);
+      canvasElement.width = Math.round(width * ratio);
+      canvasElement.height = Math.round(height * ratio);
+      canvasElement.style.width = width + 'px';
+      canvasElement.style.height = height + 'px';
+      const context = canvasElement.getContext('2d');
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      flightHud.canvases[key] = { context, width, height };
+    }
+    for (const id of ['fhPower', 'fhPowerLabel', 'fhPowerFill', 'fhThrottleMark', 'fhFlaps', 'fhGear', 'fhAgl', 'fhVs', 'fhG', 'fhWarning'])
+      flightHud.text[id] = getElement(id);
+    function fhSetText(id, value) {
+      const el = flightHud.text[id];
+      if (el.textContent !== value) el.textContent = value;
+    }
+    function fhRoundedRect(g, x, y, w, h, r) {
+      g.beginPath();
+      g.moveTo(x + r, y);
+      g.arcTo(x + w, y, x + w, y + h, r);
+      g.arcTo(x + w, y + h, x, y + h, r);
+      g.arcTo(x, y + h, x, y, r);
+      g.arcTo(x, y, x + w, y, r);
+      g.closePath();
+    }
+    /* A vertical tape: `value` at the middle, `scale` pixels per unit, a tick every
+       `minor`, a label every `major`; `side` is where the readout points ('right'
+       for the airspeed on the left of the screen, 'left' for the altitude). */
+    function drawFlightTape(g, w, h, value, scale, minor, major, side, format, bands) {
+      g.clearRect(0, 0, w, h);
+      g.save();
+      fhRoundedRect(g, 0, 0, w, h, 9);
+      g.fillStyle = FH_PANEL;
+      g.fill();
+      g.strokeStyle = 'rgba(255, 255, 255, 0.11)';
+      g.lineWidth = 1;
+      g.stroke();
+      g.clip();
+      const mid = h / 2,
+        edge = side === 'right' ? w : 0,
+        dir = side === 'right' ? -1 : 1,
+        valueAt = (v) => mid - (v - value) * scale;
+      // Coloured bands along the pointer edge (stall, ground).
+      for (const band of bands || []) {
+        const top = clamp(valueAt(band.to), -10, h + 10),
+          bottom = clamp(valueAt(band.from), -10, h + 10);
+        if (bottom <= top) continue;
+        g.fillStyle = band.color;
+        g.fillRect(side === 'right' ? w - band.width : 0, top, band.width, bottom - top);
+      }
+      const span = h / 2 / scale,
+        first = Math.floor((value - span) / minor) * minor;
+      g.font = '600 11px ' + FLIGHT_HUD_FONT;
+      g.textBaseline = 'middle';
+      g.textAlign = side === 'right' ? 'right' : 'left';
+      for (let v = first; v <= value + span + minor; v += minor) {
+        const y = valueAt(v),
+          isMajor = Math.abs(v / major - Math.round(v / major)) < 1e-6;
+        g.strokeStyle = isMajor ? FH_LINE : 'rgba(233, 239, 230, 0.55)';
+        g.lineWidth = isMajor ? 1.4 : 1;
+        g.beginPath();
+        g.moveTo(edge, y);
+        g.lineTo(edge + dir * (isMajor ? 12 : 7), y);
+        g.stroke();
+        const label = isMajor ? format(v) : '';
+        if (label) {
+          g.fillStyle = FH_LINE;
+          g.fillText(label, edge + dir * 17, y);
+        }
+      }
+      // Fade the ends so the scale reads as a drum.
+      const fade = g.createLinearGradient(0, 0, 0, h);
+      fade.addColorStop(0, 'rgba(11, 16, 21, 0.85)');
+      fade.addColorStop(0.18, 'rgba(11, 16, 21, 0)');
+      fade.addColorStop(0.82, 'rgba(11, 16, 21, 0)');
+      fade.addColorStop(1, 'rgba(11, 16, 21, 0.85)');
+      g.fillStyle = fade;
+      g.fillRect(0, 0, w, h);
+      g.restore();
+      // The readout box, pointing at the aircraft.
+      const boxW = w - 16,
+        boxH = 28,
+        boxX = side === 'right' ? 4 : 12,
+        tip = side === 'right' ? w : 0;
+      g.save();
+      g.beginPath();
+      if (side === 'right') {
+        g.moveTo(boxX, mid - boxH / 2);
+        g.lineTo(boxX + boxW - 2, mid - boxH / 2);
+        g.lineTo(tip, mid);
+        g.lineTo(boxX + boxW - 2, mid + boxH / 2);
+        g.lineTo(boxX, mid + boxH / 2);
+      } else {
+        g.moveTo(boxX + boxW, mid - boxH / 2);
+        g.lineTo(boxX + 2, mid - boxH / 2);
+        g.lineTo(tip, mid);
+        g.lineTo(boxX + 2, mid + boxH / 2);
+        g.lineTo(boxX + boxW, mid + boxH / 2);
+      }
+      g.closePath();
+      g.fillStyle = '#081015';
+      g.fill();
+      g.strokeStyle = FH_ACCENT;
+      g.lineWidth = 1.5;
+      g.stroke();
+      g.fillStyle = '#ffffff';
+      g.font = '700 17px ' + FLIGHT_HUD_FONT;
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.fillText(format(value, true), boxX + boxW / 2 + (side === 'right' ? -3 : 3), mid + 1);
+      g.restore();
+    }
+    function drawAttitude(g, size, pitchDeg, bankDeg) {
+      const r = size / 2,
+        pxPerDeg = 2.3;
+      g.clearRect(0, 0, size, size);
+      g.save();
+      g.beginPath();
+      g.arc(r, r, r - 1, 0, TAU);
+      g.clip();
+      g.translate(r, r);
+      g.rotate((-bankDeg * Math.PI) / 180);
+      const horizon = clamp(pitchDeg, -40, 40) * pxPerDeg;
+      const sky = g.createLinearGradient(0, -size, 0, horizon);
+      sky.addColorStop(0, '#1f4f7c');
+      sky.addColorStop(1, '#6fb3dc');
+      g.fillStyle = sky;
+      g.fillRect(-size, -size * 1.5, size * 2, size * 1.5 + horizon);
+      const ground = g.createLinearGradient(0, horizon, 0, size);
+      ground.addColorStop(0, '#8a6139');
+      ground.addColorStop(1, '#3a2716');
+      g.fillStyle = ground;
+      g.fillRect(-size, horizon, size * 2, size * 1.5);
+      g.strokeStyle = '#ffffff';
+      g.lineWidth = 1.6;
+      g.beginPath();
+      g.moveTo(-size, horizon);
+      g.lineTo(size, horizon);
+      g.stroke();
+      // Pitch ladder every 5 degrees, labelled every 10.
+      g.font = '700 9px ' + FLIGHT_HUD_FONT;
+      g.textBaseline = 'middle';
+      g.fillStyle = '#ffffff';
+      g.lineWidth = 1.1;
+      for (let d = -30; d <= 30; d += 5) {
+        if (!d) continue;
+        const y = horizon - d * pxPerDeg;
+        if (Math.abs(y) > r - 8) continue;
+        const half = d % 10 ? 9 : 18;
+        g.beginPath();
+        g.moveTo(-half, y);
+        g.lineTo(half, y);
+        g.stroke();
+        if (!(d % 10)) {
+          g.textAlign = 'right';
+          g.fillText(String(Math.abs(d)), -half - 3, y);
+          g.textAlign = 'left';
+          g.fillText(String(Math.abs(d)), half + 3, y);
+        }
+      }
+      g.restore();
+      // Bank scale (fixed) and pointer (turns with the horizon).
+      g.save();
+      g.translate(r, r);
+      g.strokeStyle = '#ffffff';
+      g.lineWidth = 1.4;
+      g.beginPath();
+      g.arc(0, 0, r - 12, (-150 * Math.PI) / 180, (-30 * Math.PI) / 180);
+      g.stroke();
+      for (const d of [-60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60]) {
+        const a = ((d - 90) * Math.PI) / 180,
+          long = d % 30 === 0;
+        g.beginPath();
+        g.moveTo(Math.cos(a) * (r - 12), Math.sin(a) * (r - 12));
+        g.lineTo(Math.cos(a) * (r - (long ? 3 : 7)), Math.sin(a) * (r - (long ? 3 : 7)));
+        g.stroke();
+      }
+      g.rotate((-bankDeg * Math.PI) / 180);
+      g.fillStyle = Math.abs(bankDeg) > 45 ? FH_DANGER : FH_GOLD;
+      g.beginPath();
+      g.moveTo(0, -r + 13);
+      g.lineTo(-5, -r + 22);
+      g.lineTo(5, -r + 22);
+      g.closePath();
+      g.fill();
+      g.restore();
+      // The aircraft symbol, fixed.
+      g.save();
+      g.translate(r, r);
+      g.strokeStyle = '#0b0f12';
+      g.lineWidth = 5;
+      g.lineCap = 'round';
+      g.lineJoin = 'round';
+      const wings = () => {
+        g.beginPath();
+        g.moveTo(-34, 0);
+        g.lineTo(-13, 0);
+        g.lineTo(-7, 6);
+        g.moveTo(34, 0);
+        g.lineTo(13, 0);
+        g.lineTo(7, 6);
+        g.stroke();
+      };
+      wings();
+      g.strokeStyle = FH_GOLD;
+      g.lineWidth = 2.6;
+      wings();
+      g.fillStyle = FH_GOLD;
+      g.beginPath();
+      g.arc(0, 0, 2.6, 0, TAU);
+      g.fill();
+      g.restore();
+      g.beginPath();
+      g.arc(r, r, r - 1, 0, TAU);
+      g.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      g.lineWidth = 1.5;
+      g.stroke();
+    }
+    function drawHeadingStrip(g, w, h, heading, bearing) {
+      g.clearRect(0, 0, w, h);
+      g.save();
+      fhRoundedRect(g, 0, 6, w, h - 6, 8);
+      g.fillStyle = FH_PANEL;
+      g.fill();
+      g.strokeStyle = 'rgba(255, 255, 255, 0.11)';
+      g.stroke();
+      g.clip();
+      const pxPerDeg = 3.1,
+        mid = w / 2,
+        names = { 0: 'N', 45: 'NE', 90: 'E', 135: 'SE', 180: 'S', 225: 'SW', 270: 'W', 315: 'NW' };
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      const first = Math.floor((heading - mid / pxPerDeg) / 5) * 5;
+      for (let d = first; d <= heading + mid / pxPerDeg + 5; d += 5) {
+        const x = mid + (d - heading) * pxPerDeg,
+          compass = ((d % 360) + 360) % 360,
+          major = compass % 15 === 0;
+        g.strokeStyle = major ? FH_LINE : 'rgba(233, 239, 230, 0.5)';
+        g.lineWidth = major ? 1.3 : 1;
+        g.beginPath();
+        g.moveTo(x, h);
+        g.lineTo(x, h - (major ? 8 : 5));
+        g.stroke();
+        if (compass % 45 === 0 || compass % 30 === 0) {
+          const name = names[compass];
+          g.font = (name ? '800 12px ' : '600 10px ') + FLIGHT_HUD_FONT;
+          g.fillStyle = name ? FH_GOLD : FH_LINE;
+          g.fillText(name || String(compass / 10).padStart(2, '0'), x, h - 16);
+        }
+      }
+      // The objective's bearing, a gold marker (clamped to the ends when off-strip).
+      if (bearing !== null) {
+        const off = ((bearing - heading + 540) % 360) - 180,
+          x = clamp(mid + off * pxPerDeg, 8, w - 8);
+        g.fillStyle = FH_GOLD;
+        g.beginPath();
+        g.moveTo(x, h - 3);
+        g.lineTo(x - 5, h - 10);
+        g.lineTo(x + 5, h - 10);
+        g.closePath();
+        g.fill();
+      }
+      const fade = g.createLinearGradient(0, 0, w, 0);
+      fade.addColorStop(0, 'rgba(11, 16, 21, 0.9)');
+      fade.addColorStop(0.16, 'rgba(11, 16, 21, 0)');
+      fade.addColorStop(0.84, 'rgba(11, 16, 21, 0)');
+      fade.addColorStop(1, 'rgba(11, 16, 21, 0.9)');
+      g.fillStyle = fade;
+      g.fillRect(0, 0, w, h);
+      g.restore();
+      // Lubber box with the heading.
+      g.save();
+      fhRoundedRect(g, mid - 25, 0, 50, 21, 5);
+      g.fillStyle = '#081015';
+      g.fill();
+      g.strokeStyle = FH_ACCENT;
+      g.lineWidth = 1.5;
+      g.stroke();
+      g.fillStyle = '#ffffff';
+      g.font = '700 13px ' + FLIGHT_HUD_FONT;
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.fillText(String(Math.round(heading) % 360).padStart(3, '0') + '°', mid, 11);
+      g.fillStyle = FH_ACCENT;
+      g.beginPath();
+      g.moveTo(mid, 26);
+      g.lineTo(mid - 4, 21);
+      g.lineTo(mid + 4, 21);
+      g.closePath();
+      g.fill();
+      g.restore();
+    }
+    // Altitude tape plus a vertical-speed scale down its right edge (+-10 m/s).
+    function drawAltitudeTape(g, w, h, data) {
+      const tapeW = w - 14,
+        ground = data.altitude - data.agl;
+      drawFlightTape(g, tapeW, h, data.altitude, 0.8, 10, 50, 'left', (v, box) => (box || v >= 0 ? String(Math.round(v)) : ''), [
+        { from: ground - 400, to: ground, color: 'rgba(160, 110, 60, 0.55)', width: 10 },
+      ]);
+      g.save();
+      const x = tapeW + 4,
+        mid = h / 2,
+        range = 10,
+        pxPer = (h / 2 - 16) / range;
+      g.clearRect(tapeW, 0, w - tapeW, h);
+      g.strokeStyle = 'rgba(233, 239, 230, 0.5)';
+      g.lineWidth = 1;
+      for (const v of [-10, -5, 0, 5, 10]) {
+        const y = mid - v * pxPer;
+        g.beginPath();
+        g.moveTo(x, y);
+        g.lineTo(x + (v ? 5 : 9), y);
+        g.stroke();
+      }
+      const vs = clamp(data.vs, -range, range),
+        y = mid - vs * pxPer;
+      g.strokeStyle = data.vs < -8 && data.agl < 150 ? FH_DANGER : FH_ACCENT;
+      g.lineWidth = 3;
+      g.lineCap = 'round';
+      g.beginPath();
+      g.moveTo(x + 2, mid);
+      g.lineTo(x + 2, y);
+      g.stroke();
+      g.beginPath();
+      g.moveTo(x - 1, y);
+      g.lineTo(x + 9, y);
+      g.stroke();
+      g.restore();
+    }
+    function objectiveBearing() {
+      const target = userWaypoint || objective();
+      if (!target) return null;
+      return (((headingBetween(player, target) * 180) / Math.PI + 90) % 360 + 360) % 360;
+    }
+    function updateFlightHud() {
+      const c = player.car,
+        data = (gameMode === 'play' || gameMode === 'pause') && c?.hp > 0 ? flightData(c) : null,
+        show = !!data;
+      if (show !== flightHud.shown) {
+        flightHud.shown = show;
+        flightHud.root.classList.toggle('on', show);
+        flightHud.root.setAttribute('aria-hidden', String(!show));
+      }
+      if (!show) return;
+      const heli = data.type === 'helicopter';
+      flightHud.root.classList.toggle('heli', heli);
+      const { attitude, speed, altitude, heading } = flightHud.canvases;
+      if (!heli) drawAttitude(attitude.context, attitude.width, data.pitch, data.bank);
+      drawFlightTape(
+        speed.context,
+        speed.width,
+        speed.height,
+        data.airspeed,
+        1.5,
+        10,
+        20,
+        'right',
+        // No labels below zero on the scale; the readout never shows a negative.
+        (v, box) => (box ? String(Math.max(0, Math.round(v))) : v < 0 ? '' : String(Math.round(v))),
+        heli
+          ? []
+          : [
+              { from: -100, to: data.stallSpeed, color: 'rgba(240, 134, 114, 0.85)', width: 6 },
+              { from: data.stallSpeed, to: data.stallSpeed * 1.1, color: 'rgba(226, 200, 151, 0.85)', width: 6 },
+            ],
+      );
+      drawAltitudeTape(altitude.context, altitude.width, altitude.height, data);
+      drawHeadingStrip(heading.context, heading.width, heading.height, data.heading, objectiveBearing());
+      // Power: the fill is the engine, the tick is the lever.
+      fhSetText('fhPowerLabel', heli ? 'ROTOR' : 'PWR');
+      fhSetText('fhPower', Math.round(data.power * 100) + '%');
+      flightHud.text.fhPowerFill.style.width = (data.power * 100).toFixed(1) + '%';
+      flightHud.text.fhThrottleMark.style.left = (data.throttle * 100).toFixed(1) + '%';
+      fhSetText('fhAgl', Math.round(data.agl) + ' m');
+      fhSetText('fhVs', (data.vs >= 0 ? '+' : '−') + Math.abs(data.vs).toFixed(1) + ' m/s');
+      fhSetText('fhG', data.g.toFixed(1) + ' g');
+      if (!heli) {
+        const flapsMoving = Math.abs(data.flapPos - ['UP', '1', '2', 'FULL'].indexOf(data.flaps) / 3) > 0.02,
+          flaps = flightHud.text.fhFlaps,
+          gear = flightHud.text.fhGear;
+        fhSetText('fhFlaps', 'FLAPS ' + data.flaps);
+        flaps.classList.toggle('set', data.flaps !== 'UP' && !flapsMoving);
+        flaps.classList.toggle('moving', flapsMoving);
+        fhSetText('fhGear', data.gear === 'DOWN' ? 'GEAR ▼' : data.gear === 'UP' ? 'GEAR ▲' : 'GEAR ···');
+        gear.classList.toggle('set', data.gear === 'DOWN');
+        gear.classList.toggle('moving', data.gear === 'TRANSIT' && !data.gearWarning);
+        gear.classList.toggle('alert', data.gearWarning);
+      }
+      // One warning at a time, the most urgent first.
+      const pullUp = data.agl < 90 && data.vs < -14 && data.agl > 2,
+        warning = data.stall
+          ? 'STALL'
+          : pullUp
+            ? 'PULL UP'
+            : data.gearWarning
+              ? 'GEAR'
+              : data.stallWarning
+                ? 'STALL WARNING'
+                : data.hp < 0.3
+                  ? 'ENGINE DAMAGE'
+                  : '';
+      const box = flightHud.text.fhWarning;
+      fhSetText('fhWarning', warning);
+      box.classList.toggle('show', !!warning);
+      box.classList.toggle('caution', warning === 'STALL WARNING' || warning === 'ENGINE DAMAGE');
     }
     /**
      * TITLE MENU

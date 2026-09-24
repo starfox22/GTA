@@ -301,6 +301,9 @@
       vehicle.deadTime = 0;
       vehicle.sprite = null;
     }
+    // Closing speed (units/s, about 85 km/h) above which the player ramming an
+    // occupied car is a reported crime (collisionImpact here, crowdCrash in crowd.js).
+    const RECKLESS_CRASH_SPEED = 120;
     function collisionImpact(a, b, hit, closing, key, staticBody = null) {
       if (closing < 42) return;
       const last = impactContacts.get(key);
@@ -355,19 +358,24 @@
         shake = Math.min(10, closing * 0.022);
         hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075), 'impact');
         if (closing > 130) radio('look-out');
-        if (b && !a.cop && !b.cop) crime(0.06);
         // Whoever was going faster did the ramming: the wreck is theirs, and
         // ramming a police car is assault on an officer (heat.js).
-        const other = a === player.car ? b : a;
+        const other = a === player.car ? b : a,
+          playerFaster =
+            !!other && (player.car?.impactSpeed || 0) > (other.impactSpeed || 0);
+        // Only a reckless crash is a crime: the player rammed an occupied car hard.
+        // Scrapes, parking knocks and being hit by someone else are not
+        // (a light bump never brings the police, heat.js).
+        if (other && playerFaster && closing > RECKLESS_CRASH_SPEED && (other.occupied || other.ai) && !other.cop)
+          crime(0.06);
         // Contact from a chasing unit (PIT, box, ram): counted for policeReport().
         if (other?.cop && other.pursuitPlan && !other.blockade) {
           pursuitStats.contacts++;
           if (other.pursuitPlan.mode === 'pit') pursuitStats.pits++;
         }
-        if (
-          other &&
-          Math.hypot(player.car?.vx || 0, player.car?.vy || 0) > Math.hypot(other.vx || 0, other.vy || 0)
-        ) {
+        // A nudge in traffic does not make the other car the player's to answer
+        // for (its later fire, a soldier's truck, a cruiser).
+        if (other && playerFaster && closing > 90) {
           other.lastAttacker = player;
           other.lastDamagedAt = gameTime;
           if (
@@ -433,6 +441,11 @@
             normalTorqueArmB * normalTorqueArmB * inverseInertiaB,
           restitution = normal < -60 ? 0.12 : 0,
           impulse = (-(1 + restitution) * normal) / denom;
+        // Speeds going in, so collisionImpact can tell who rammed whom.
+        if (record) {
+          a.impactSpeed = Math.hypot(a.vx, a.vy);
+          if (b) b.impactSpeed = Math.hypot(b.vx, b.vy);
+        }
         a.vx -= n.x * impulse * inverseMassA;
         a.vy -= n.y * impulse * inverseMassA;
         a.av -= normalTorqueArmA * impulse * inverseInertiaA;
@@ -1575,7 +1588,7 @@
           c.bloodTrackRemaining = BLOOD_TRACK_DISTANCE;
           c.bloodTrackSides = [-1, 1];
         }
-      } else if (person.faction && source === player) alertGang(person.faction);
+      } else if (person.faction && !person.military && source === player) alertGang(person.faction);
       if (person.hp > 0) {
         person.knockedFor = 3.5 + Math.min(1.5, kph / 30);
         person.dazedFor = 0;
@@ -1604,8 +1617,11 @@
           break;
         }
       // Everyone who saw it reacts: gasps, onlookers, someone to help, a call.
-      crowdAlarm('knock', person, c === player.car ? player : null, person.hp <= 0 ? 2 : 1.3);
-      if (c === player.car) {
+      // Nudging someone at walking pace is an accident, not a crime: only a hit
+      // that hurts (20 km/h and up) makes the player the culprit.
+      const culpable = c === player.car && damage > 0;
+      crowdAlarm('knock', person, culpable ? player : null, person.hp <= 0 ? 2 : 1.3);
+      if (culpable) {
         crime(person.hp <= 0 ? 0.35 : 0.08);
         if (person.hp <= 0) cash += 25;
       }
@@ -1745,13 +1761,16 @@
           vehicle.ai = false;
           vehicle.cop = false;
           vehicle.sprite = null;
-          if (vehicle.lastAttacker === player && vehicle !== player.car) recordVehicleKill(vehicle);
+          // Only a wreck the player caused recently is theirs: a car they scraped
+          // a minute ago that burns out later is not a crime.
+          const byPlayer = vehicle.lastAttacker === player && gameTime - (vehicle.lastDamagedAt ?? -100) < 30;
+          if (byPlayer && vehicle !== player.car) recordVehicleKill(vehicle);
           if (!vehicleSpec(vehicle).bicycle)
             explode(
               vehicle.x,
               vehicle.y,
               0.65,
-              vehicle.lastAttacker || 'world',
+              vehicle.lastAttacker === player && !byPlayer ? 'world' : vehicle.lastAttacker || 'world',
               entityElevation(vehicle),
             );
           if (vehicle === player.car) {
