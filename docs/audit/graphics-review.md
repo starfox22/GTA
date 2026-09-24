@@ -187,3 +187,19 @@ errors or warnings other than three.js's own deprecation notice.
 
 Scratch paths from the tour (not committed): before `b-*.png`, after `c-*.png`, `a2-*.png`,
 `d-*.png`, `e-*.png`, `f-*.png` in the session scratchpad `shots/` directory.
+
+## Follow-up: night readability, shadows, ULTRA lines, see-through
+
+Owner feedback after version 30, handled on the lighting branch:
+
+| Request | Cause | Change |
+| --- | --- | --- |
+| Night too dark to see; remove the light circle round the player | Moonlight and sky fill were weak against the tone curve; a pool of light followed the player | `NIGHT_LOOK` (lighting3d.js) and the civic3d.js night keyframes give a readable blue-hour night (moon +0.75, sky fill +1.5, exposure +30%, lifted blue blacks, less contrast loss); the foot pool is gone, only a faint moonlit rim on the model's silhouette remains |
+| Street and vehicle lighting should reach farther and look real | Lamp pools were 62 units with a hard fall-off; headlights were a flat additive glow on the ground | Lamp pools ~100 units with a long soft tail, lighting facades, tinted by district; head and tail lamps drawn into a per-frame HDR light map (DRIVE LIGHT MAP) that every lit material adds as light |
+| Shadows lag behind the character on LOW / MEDIUM | The shadow map was refreshed every 4th (LOW), 3rd (MEDIUM) or 2nd (HIGH) frame while the shadow box and the casters moved every frame | Redrawn every frame whenever on; LOW defaults to no shadow map with contact blobs under cars and people; Settings · Graphics · Shadows (AUTO / OFF / LOW / HIGH) |
+| Horizontal lines on ULTRA | Not reproduced under headless SwiftShader (day, dusk, night, zoom 0.55 and 1, helicopter, 2x pixel ratio). Two ULTRA-only defects found and fixed: the AO spiral degenerated to one line per pixel at 14 samples, and the composite dither's sin() hash loses precision at 2x pixel ratio | Golden-angle AO spiral; sin-free dither hash |
+| Character see-through did nothing behind buildings | The cutaway only opened under a roof | Rays from the player to the camera find buildings and decks in the way (`findOccluders`); a player-sized dithered hole opens in that structure only |
+
+Cost: with shadows on, the shadow pass (`stats().shadowCalls`, typically 250-650 draws in the
+city) now runs every frame on MEDIUM and HIGH instead of every third or second; LOW skips it
+entirely. The drive light map is two instanced draws into a 1024-texel target at night.
