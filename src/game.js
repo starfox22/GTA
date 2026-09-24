@@ -4599,6 +4599,7 @@
     // @include src/air-cover.js
     // @include src/combat-rules.js
     // @include src/damage.js
+    // @include src/crash-audio.js
     // @include src/county.js
     // @include src/military.js
     // @include src/aviation.js

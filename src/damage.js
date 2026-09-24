@@ -787,6 +787,9 @@
         });
       if (distanceBetween(prop, player) < 600) {
         noise(0.12 + kind.give * 0.2, clamp(0.06 + kind.give * 0.25, 0.06, 0.3), kind.give > 0.3 ? 520 : 1400);
+        // Metal furniture (a hydrant, a lamp post, a bin) also clangs and scatters.
+        if (kind.give > 0.3)
+          crashSound({ x: hit.x, y: hit.y, closing, mass: spec.mass || 1.25, other: 'prop', glass: 0, sliding: 0, key: 'prop' + vehicle.id });
         if (vehicle === player.car) shake = Math.max(shake, kind.give * 5);
       }
       if (city3D) city3D.impact(hit.x, hit.y, kind.give > 0.3 ? 'metal' : 'dust', entityElevation(vehicle));
