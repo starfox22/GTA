@@ -129,9 +129,95 @@
         if (unlocked) b.onclick = () => chooseMission(i);
         list.appendChild(b);
       }
+      renderGodWorld();
       getElement('missionSelect').classList.remove('hidden');
       list.children[Math.min(completed, missions.length - 1)]?.focus();
     }
+    /**
+     * GOD MODE · TIME OF DAY
+     * With the godmode cheat on, the mission picker also sets the clock and the
+     * sky. Presets jump to a time, the slider (the day drawn as a sky gradient)
+     * picks any five minutes, and the weather row locks a sky or hands it back to
+     * the weather machine (AUTO). Everything applies at once; the clock keeps
+     * running from the chosen time. Arrow keys step through a row or the slider.
+     */
+    const GOD_TIMES = [
+      [360, 'DAWN'],
+      [540, 'MORNING'],
+      [720, 'NOON'],
+      [1140, 'GOLDEN HOUR'],
+      [1230, 'DUSK'],
+      [1380, 'NIGHT'],
+      [180, '3 AM'],
+    ];
+    const GOD_WEATHER = [
+      ['auto', 'AUTO'],
+      ['clear', 'CLEAR'],
+      ['fair', 'FAIR'],
+      ['cloudy', 'CLOUDY'],
+      ['overcast', 'OVERCAST'],
+      ['rain', 'RAIN'],
+      ['storm', 'STORM'],
+    ];
+    function godTimeName(minute) {
+      const h = minute / 60;
+      return h < 4.5 || h >= 22 ? 'NIGHT' : h < 7 ? 'DAWN' : h < 11 ? 'MORNING' : h < 14 ? 'NOON' : h < 18 ? 'AFTERNOON' : h < 20 ? 'GOLDEN HOUR' : 'DUSK';
+    }
+    function setGodTime(minute) {
+      minute = clamp(Math.round(minute), 0, 1439);
+      worldMinutes = Math.floor(worldMinutes / 1440) * 1440 + minute;
+      save();
+      renderGodWorld();
+      updateUI();
+    }
+    function setGodWeather(id) {
+      if (id === 'auto') weather.locked = false;
+      else {
+        weather.locked = true;
+        setWeather(id);
+      }
+      renderGodWorld();
+      updateUI();
+    }
+    // A radio row: one button per option, the current one checked; arrows step.
+    function godChoiceRow(group, options, current, pick) {
+      const focused = group.contains(document.activeElement);
+      group.replaceChildren();
+      options.forEach(([id, label], i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', String(id === current));
+        b.tabIndex = id === current || (current === null && i === 0) ? 0 : -1;
+        b.onclick = () => pick(id);
+        b.onkeydown = (e) => {
+          const step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+          if (!step) return;
+          e.preventDefault();
+          e.stopPropagation();
+          pick(options[(i + step + options.length) % options.length][0]);
+          group.querySelector('[aria-checked="true"]')?.focus();
+        };
+        group.appendChild(b);
+      });
+      if (focused) (group.querySelector('[aria-checked="true"]') || group.firstChild)?.focus();
+    }
+    function renderGodWorld() {
+      const panel = getElement('godWorld');
+      panel.classList.toggle('hidden', !player.godMode);
+      if (!player.godMode) return;
+      const minute = Math.floor(worldMinutes) % 1440,
+        preset = GOD_TIMES.find(([m]) => m === minute);
+      getElement('godClock').textContent = clockText();
+      getElement('godClockName').textContent = preset ? preset[1] : godTimeName(minute);
+      godChoiceRow(getElement('godTimePresets'), GOD_TIMES, preset ? preset[0] : null, setGodTime);
+      godChoiceRow(getElement('godWeather'), GOD_WEATHER, weather.locked ? weatherState().id : 'auto', setGodWeather);
+      const slider = getElement('godTimeSlider');
+      if (document.activeElement !== slider) slider.value = String(minute - (minute % 5));
+      slider.setAttribute('aria-valuetext', clockText() + ', ' + getElement('godClockName').textContent.toLowerCase());
+    }
+    getElement('godTimeSlider').oninput = (e) => setGodTime(Number(e.target.value));
     function closeMissionSelect() {
       if (gameMode !== 'missions') return;
       getElement('missionSelect').classList.add('hidden');

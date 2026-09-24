@@ -114,7 +114,7 @@ something, never a generic code-evaluation hook.
 | `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
 | `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and shop panes near a point, with their state |
 | `damageStats()` | Decal and debris pool use and GPU geometry/texture counts (for leak checks) |
-| `pedestrianReport()` | Crowd summary: counts by reaction, pose, role and state, street scenes, incidents, witness reports, horns |
+| `pedestrianReport()` | Crowd summary: counts by reaction, pose, role and state, street scenes, incidents, witness reports, horns, the speech `bubbles` on screen (at most two, with rank and seconds left) and `unshownLines` |
 | `fireShot(x, y)` | Fire the equipped weapon toward a map point as the player would (the crowd hears and reacts) |
 | `alarm(kind, x, y)` | Raise a `gunfire`, `explosion` or `crash` incident at a point without firing |
 | `stageCrash(metersPerSecond)` | Drive the player's car into an occupied car across the road ahead |

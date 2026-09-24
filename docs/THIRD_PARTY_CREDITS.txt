@@ -388,6 +388,34 @@ AUDIO EFFECTS / VOICES
   }
 }
 
+VEHICLE CRASH SOUNDS
+Layered by src/crash-audio.js. All files mono OGG Vorbis (quality 3), 32 kHz, metadata
+stripped, loudness-normalised with ffmpeg loudnorm, a 2-4 ms fade-in.
+
+crash-heavy.ogg, crash-hit.ogg
+  "240713_2785-2_FR_Car_and_motorcycle_crash" by kevp888
+  https://freesound.org/people/kevp888/sounds/746501/
+  License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+  https://creativecommons.org/licenses/by/4.0/
+  Obtained from the copy in the Corro project (kastwey/corro on GitHub,
+  server/Packages/great-route/assets/sounds/accident.ogg), whose credits and embedded
+  Vorbis comments carry the same author, source and license.
+  Changes: stereo 48 kHz folded to mono 32 kHz. crash-heavy.ogg is the first 2.12 s with a
+  0.37 s fade-out; crash-hit.ogg is 0.02-0.62 s (the impact and crunch) with a 0.22 s
+  fade-out. Both loudness-normalised (-14 LUFS, -1.5 dBTP).
+
+crash-metal-1.ogg (impactMetal_heavy_001), crash-metal-2.ogg (impactMetal_heavy_003),
+crash-plate-1.ogg (impactPlate_heavy_000), crash-plate-2.ogg (impactPlate_heavy_004),
+crash-glass-1.ogg (impactGlass_heavy_001), crash-glass-2.ogg (impactGlass_heavy_004),
+crash-thump.ogg (impactPunch_heavy_000), crash-tinkle.ogg (impactGlass_light_002)
+  "Impact Sounds" (1.0) by Kenney (www.kenney.nl), 2019
+  https://kenney.nl/assets/impact-sounds
+  License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from copies of the pack in public GitHub repositories (the pack's License.txt
+  read from series-ai/jam-ready-assets, kenney-impact-sounds/audio/License.txt).
+  Changes: stereo folded to mono 32 kHz, loudness-normalised (-16 LUFS, -1.5 dBTP),
+  renamed.
+
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
 third-party shader source is copied. The techniques follow published work:

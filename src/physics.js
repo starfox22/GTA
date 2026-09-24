@@ -320,6 +320,13 @@
         closing,
         otherMass: other ? vehicleSpec(other).mass || 1.25 : 0,
       });
+      // Panes already broken, so the crash sound knows whether this hit broke glass.
+      const brokenGlass = () =>
+        [a, b].reduce(
+          (n, v) => n + (v?.damage?.glass ? Object.values(v.damage.glass).filter((g) => g === 2).length : 0),
+          0,
+        ),
+        glassBefore = brokenGlass();
       for (const [self, other, sign] of b ? [[a, b, 1], [b, a, -1]] : [[a, null, 1]]) {
         const amount =
           self.type === 'plane' && self.altitude > 2 ? Math.max(severity, closing * 0.9) : severity;
@@ -330,8 +337,20 @@
       if (distanceBetween(a, player) < 650) {
         particle(hit.x, hit.y, '#ddd1b4', clamp(closing / 18, 3, 16), 85, 3);
         if (city3D) city3D.impact(hit.x, hit.y, 'metal');
-        noise(0.09 + closing * 0.0002, clamp(closing * 0.0008, 0.08, 0.32), 950);
       }
+      const massA = vehicleSpec(a).mass || 1.25,
+        massB = b ? vehicleSpec(b).mass || 1.25 : 0;
+      crashSound({
+        x: hit.x,
+        y: hit.y,
+        closing,
+        mass: Math.max(massA, massB),
+        // Two bicycles or motorbikes knocking together are not a car crash.
+        other: b ? (Math.max(massA, massB) < 0.6 ? 'prop' : 'car') : staticBody?.building || staticBody?.kind === 'building' ? 'building' : 'wall',
+        glass: brokenGlass() - glassBefore,
+        sliding: Math.abs(((b?.vx || 0) - a.vx) * -hit.n.y + ((b?.vy || 0) - a.vy) * hit.n.x),
+        key,
+      });
       if (a === player.car || b === player.car) {
         shake = Math.min(10, closing * 0.022);
         hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075), 'impact');

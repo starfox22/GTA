@@ -22,7 +22,8 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
   walk aboard deck by deck; cruise liners, a freighter, boats and jet skis to drive.
 - Three railway lines along the west shore and across the county, 13 stations to ride
   between.
-- Cars that crumple, lose panels, glass and lamps, burst tyres, catch fire and explode;
+- Cars that crumple (with layered, recorded crash sounds), lose panels, glass and lamps,
+  burst tyres, catch fire and explode;
   bullet holes, broken shop windows and street furniture you can flatten.
 - Helicopters and three airframes of plane with a perspective flight camera, volumetric
   clouds, and helicopter landings on helipads and flat roofs.
@@ -53,6 +54,10 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 | Street zoom | mouse wheel or pinch; + / − and 0 |
 | Minimap zoom | mouse wheel or pinch over the minimap; its − button folds it away |
 | Pause | Escape |
+
+Typing `godmode` during play toggles god mode: every weapon, invulnerability, every
+mission open in the mission picker, and there a time-of-day chooser (presets from dawn to
+3 AM, a slider over the whole day) and the weather, applied at once.
 
 Every key can be rebound in **Settings · Controls** (from the title menu or the pause
 menu), which also warns about clashes and offers to swap. Settings has four tabs:

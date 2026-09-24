@@ -231,7 +231,99 @@
       if (!lines) return false;
       p.speech = randomChoice(lines) + extra;
       p.speechUntil = gameTime + 2.6;
+      // What kind of line this is, for the bubble priority (speechBubbles).
+      p.speechKind = kind;
+      p.speechKindText = p.speech;
       return true;
+    }
+
+    /**
+     * SPEECH BUBBLES ON SCREEN
+     * Street speech sets `p.speech` / `p.speechUntil` on a pedestrian, a driver or
+     * a gang member or soldier, from many places. The renderer asks
+     * speechBubbles() which of those lines to draw: never more than
+     * SPEECH_BUBBLES_MAX at once, so they can be read. A bubble keeps its slot
+     * until its line ends, and every shown line stays up long enough to read
+     * (speechReadSeconds). Free slots go to the most important waiting line:
+     * soldiers, police and mission characters first, then lines aimed at the
+     * player (hands up, pleading, a carjacked or rammed driver, anyone speaking
+     * right beside them), then the nearest. A command or a line to the player
+     * takes the slot of an idle remark. A line that finds no slot waits up to
+     * SPEECH_QUEUE_SECONDS and is then dropped. Mission and contact dialogue
+     * (the dialogue box, the Blue Hour boss) is drawn elsewhere and not counted.
+     */
+    const SPEECH_BUBBLES_MAX = 2,
+      SPEECH_QUEUE_SECONDS = 2.5,
+      SPEECH_RANGE = 460,
+      SPEECH_TO_PLAYER = new Set(['handsUp', 'plead', 'fist', 'angryDriver', 'shout', 'point', 'dodge', 'carjack']);
+    let speechShown = [];
+    function speechReadSeconds(text) {
+      return clamp(1.5 + text.length * 0.065, 2.4, 6);
+    }
+    function speechPriority(p) {
+      if (p.military || p.police || p.missionTag || p.ally) return 3;
+      const kind = p.speechKindText === p.speech ? p.speechKind : '';
+      if (SPEECH_TO_PLAYER.has(kind) || distanceBetween(p, player) < 70) return 2;
+      return 1;
+    }
+    function speechLive(p) {
+      return !!p.speech && p.speechUntil >= gameTime && p.hp > 0 && distanceBetween(p, cameraTarget) <= SPEECH_RANGE;
+    }
+    // The bubbles to draw this frame, most important first: at most SPEECH_BUBBLES_MAX.
+    function speechBubbles() {
+      if (!npcChatterOn()) {
+        speechShown = [];
+        return [];
+      }
+      // A holder keeps its bubble while the line it was given is still running.
+      speechShown = speechShown.filter((p) => speechLive(p) && p.speechShownText === p.speech);
+      const waiting = [],
+        labels = [];
+      for (const list of [pedestrians, vehicles, gangMembers])
+        for (const p of list) {
+          if (!p.speech || p.speechUntil < gameTime) continue;
+          if (p.speechHeard !== p.speech) {
+            // A new line: note when it was said, so it can only wait so long.
+            p.speechHeard = p.speech;
+            p.speechSaidAt = gameTime;
+          }
+          // The pose gallery's labels (a console tool) are not speech: all shown.
+          if (p.posed && p.speech === p.posed) {
+            if (speechLive(p)) labels.push(p);
+            continue;
+          }
+          if (speechShown.includes(p) || !speechLive(p)) continue;
+          waiting.push(p);
+        }
+      if (waiting.length) {
+        for (const p of waiting) {
+          p.speechRank = speechPriority(p);
+          p.speechDistance = distanceBetween(p, player);
+        }
+        waiting.sort((a, b) => b.speechRank - a.speechRank || a.speechDistance - b.speechDistance);
+        for (const p of waiting) {
+          if (speechShown.length >= SPEECH_BUBBLES_MAX) {
+            // An important line bumps the least important idle remark on screen.
+            const weakest = speechShown.reduce((w, q) => (!w || speechPriority(q) < speechPriority(w) ? q : w), null);
+            if (p.speechRank >= 2 && speechPriority(weakest) < p.speechRank) {
+              weakest.speechUntil = gameTime;
+              speechShown = speechShown.filter((q) => q !== weakest);
+            }
+          }
+          if (speechShown.length < SPEECH_BUBBLES_MAX) {
+            speechShown.push(p);
+            p.speechShownText = p.speech;
+            p.speechUntil = Math.max(p.speechUntil, gameTime + speechReadSeconds(p.speech));
+          } else if (gameTime - (p.speechSaidAt ?? gameTime) < SPEECH_QUEUE_SECONDS)
+            // Hold the line a moment for a free slot; after that it lapses unheard.
+            p.speechUntil = Math.max(p.speechUntil, gameTime + 0.05);
+        }
+      }
+      return speechShown
+        .map((p) => ({ p, rank: speechPriority(p) }))
+        .sort((a, b) => b.rank - a.rank)
+        .map((e) => e.p)
+        .concat(labels);
     }
 
     /**
@@ -2877,6 +2969,17 @@
         busStops: BUS_STOPS.length,
         frontages: streetFrontages().length,
         props: crowd.props.length,
+        // The speech bubbles on screen (at most SPEECH_BUBBLES_MAX) and the lines
+        // still live but not shown (waiting for a slot, or out of range).
+        bubbles: speechShown.map((p) => ({
+          text: p.speech,
+          rank: speechPriority(p),
+          seconds: +(p.speechUntil - gameTime).toFixed(1),
+          d: Math.round(distanceBetween(p, player)),
+        })),
+        unshownLines: [...pedestrians, ...vehicles, ...gangMembers].filter(
+          (p) => p.speech && p.speechUntil >= gameTime && !speechShown.includes(p) && !(p.posed && p.speech === p.posed),
+        ).length,
         honking: vehicles.filter((c) => (c.blockedFor || 0) > 2).length,
         honks: crowd.honks,
         driversOut: pedestrians.filter((p) => p.car && p.hp > 0).length,
