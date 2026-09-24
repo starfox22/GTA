@@ -9,8 +9,8 @@ Graphics review and performance (docs/audit/graphics-review.md)
   Lawn, steel garage roofs, no map labels painted on the lawns.
 - The district name appears once: a gold reveal on the location block top left.
 - Draw calls: shared facade materials, merged building parts and instanced theme park rides
-  (a Midtown street view ~350 draws instead of up to ~1700); match-day players cast torso
-  shadows only.
+  (a third fewer draws from the helicopter and at Sunset Pier); match-day players cast torso
+  shadows only (the stadium's shadow pass halved); car wheels merged.
 - AUTO graphics adapts to the frame rate (dynamic resolution, then a tier down); shader
   compile stalls removed (no info-log read-back, programs compiled behind the title
   screen); ~250 MB of baked canvas bitmaps freed after upload; faster boot.

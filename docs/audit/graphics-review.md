@@ -113,24 +113,77 @@ the HUD's legibility over bright scenes once the image was darker, the sky dome 
 
 ### Before / after
 
-PERF_TABLE
+HIGH tier, 1280 x 800, each scene on a freshly booted page, stats() over six frames after
+four settling frames. "Before" is the lead branch at `b6f9735`; "after" is this pass.
+`view` = camera-pass draw calls, `shadow` = shadow-map draw calls on its last refresh, `draw`
+= CPU ms per frame for the renderer (SwiftShader: comparable only with each other).
+
+| Scene | view before | view after | shadow before | shadow after | triangles before | after | draw ms before | after |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| North Point towers, zoom 0.5, noon | 397 | 394 | 400 | 400 | 1.53 M | 0.97 M | 57.3 | 37.2 |
+| Marea Beach Club, 23:30 | 284 | 223 | 265 | 179 | 1.45 M | 1.42 M | 47.2 | 33.7 |
+| Stadium, match in play | 902 | 857 | 1077 | 484 | 2.05 M | 1.87 M | 52.4 | 32.5 |
+| Sunset Pier, zoom 0.5 | 459 | 279 | 366 | 232 | 1.82 M | 1.83 M | 36.9 | 28.9 |
+| Midtown, rain at 22:00, zoom 0.8 | 382 | 320 | 502 | 441 | 1.33 M | 1.44 M | 48.0 | 31.7 |
+| Midtown, 5-star chase (`wanted(5)`) | 212 | 210 | 380 | 330 | 1.23 M | 1.29 M | 39.1 | 30.8 |
+| Helicopter 400 m over North Point | 959 | 637 | 433 | 433 | 2.24 M | 1.43 M | 58.4 | 37.4 |
+| Helicopter 900 m over North Point | 568 | 592 | 755 | 622 | 2.68 M | 1.28 M | 42.1 | 41.9 |
+
+Where the counts did not move much (North Point at street zoom, the chase) the view is
+dominated by vehicles and the crowd, not scenery (see Known issues). Simulation CPU
+(`updateMs`) is unchanged within noise (22-35 ms headless in both builds): the crowd,
+traffic and physics loops already had distance LOD and staggered updates, and they belong
+to the combat and streets work running in parallel. The adaptive resolution is the lever
+for GPU-bound machines; on a mid-range laptop GPU the HIGH tier at 1080p is fill-bound in
+the scene pass (MSAA 4x at pixel ratio 1.5), which AUTO now scales down before it drops a
+tier.
 
 ### Boot
 
-BOOT_TABLE
+CPU profile of the page load, split publish build (`dist/publish/index.html`, 9.6 MB),
+headless with `--disable-accelerated-2d-canvas`, machine load 7-8:
+
+| Build | Title screen ready | Start clicked -> playing |
+| --- | --- | --- |
+| Lead branch (`13d11de`, fetched as an archive) | 46.8 s | 9.4 s |
+| This pass | 32.0 s | 2.5 s |
+
+The ~804 s the lead measured was on a machine at load ~13 and could not be reproduced (the
+lead build took 47 s here); the hot spots in both profiles were the same: three.js's
+shader info-log read-back and program linking on the first frame (30.6 s self time in the
+lead build, 13.3 s now), the 2D fallback's ground bitmap (the `rect` and tree painting of
+`buildWorld`, ~4 s, now painted at a sixteenth of the pixels) and `paintPromenades`
+(2.7 s, now one path per coast segment). What remains of the first frame is linking the
+programs actually in view, which a real GPU with KHR_parallel_shader_compile does in the
+background during the title screen (`prewarmShaders`); on SwiftShader, without the
+extension, forcing every material's link up front cost ~90 s of main-thread time and was
+dropped there.
+
+The split build's `index.html` is 9.6 MB (limit 15.5 MB) and boots with no console
+errors or warnings other than three.js's own deprecation notice.
 
 ## Known issues
 
-- Vehicles are now the largest share of street-level draws (each car model is a dozen or
-  more meshes; ~120 draws in a busy Midtown view). Instanced body shells take over below
-  zoom 0.62; merging each car's static parts into one mesh per material would roughly
-  halve the rest. Left alone here (vehicle damage re-poses the panels individually).
+- Vehicles are now the largest share of street-level draws: a car is still ~30 meshes
+  after its wheel rims were merged (~80 draws in a busy Midtown view). Instanced body
+  shells take over below zoom 0.62; merging each car's static trim into one mesh per
+  material would roughly halve the rest, but vehicle damage re-poses bumpers, doors, lamps
+  and glass individually, so it needs care.
 - Match-day players are still ~22 draws each in the camera pass (person models belong to
   the animation work going on in parallel; only their shadows were trimmed).
-- `paintPromenades` (streets.js) is ~2.6 s of the headless boot: a coastline clip plus a
-  separate stroke per hatch tick on the 29 MP sheet. Batching the ticks into one path per
-  segment would halve it; streets.js was left to the streets review.
-- The first frame still links every visible program at once (18 s of the headless boot on
-  SwiftShader, typically well under a second on a real GPU).
+- The first frame still links every program in view at once where the browser lacks
+  KHR_parallel_shader_compile (13 s of the headless boot on SwiftShader; typically well
+  under a second on a real GPU). About 140 programs are linked in a city view; custom
+  ShaderMaterials (glows, water, sky, clouds, wakes, the park's point lights) are a third
+  of them.
+- The helicopter at 900 m draws slightly more than before in the camera pass (the far
+  copy now carries the facades' tint and window light, one class per shared facade).
 - The beach club's white sails and flat roof slabs are very bright at noon.
 - The Garden Lake has no reflection at night beyond the dark sky.
+- The lead branch (`claude/compassionate-wright-cu2e1q`) could not be merged into this
+  worktree from here; the numbers above are for this branch.
+
+## Screenshots
+
+Scratch paths from the tour (not committed): before `b-*.png`, after `c-*.png`, `a2-*.png`,
+`d-*.png`, `e-*.png`, `f-*.png` in the session scratchpad `shots/` directory.
