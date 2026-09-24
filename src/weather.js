@@ -195,6 +195,7 @@
           thunderSound(clap.distance, clap.strength, clap);
         }
       updateWeatherAudio(deltaSeconds);
+      updateParachuteWind();
     }
     // Slower going in the wet: tyres let go earlier and stopping takes longer.
     function wetGrip() {

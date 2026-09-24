@@ -1251,40 +1251,7 @@
         if (person.military) dressSoldier(person, model);
         return model;
       }
-      const chuteModel = new Three.Group();
-      chuteModel.name = 'Player parachute';
-      scene.add(chuteModel);
-      const canopy = mesh(
-        new Three.SphereGeometry(34, 24, 12, 0, TAU, 0, Math.PI / 2),
-        new Three.MeshStandardMaterial({
-          color: '#dc8757',
-          roughness: 0.7,
-          side: Three.DoubleSide,
-        }),
-        chuteModel,
-        0,
-        48,
-        0,
-        1,
-        0.36,
-        0.7,
-      );
-      for (const a of [
-        0,
-        Math.PI / 3,
-        (Math.PI * 2) / 3,
-        Math.PI,
-        (Math.PI * 4) / 3,
-        (Math.PI * 5) / 3,
-      ])
-        rod(
-          chuteModel,
-          new Three.Vector3(0, 16, Math.sin(a) > 0 ? 4 : -4),
-          new Three.Vector3(Math.cos(a) * 32, 48, Math.sin(a) * 23),
-          0.22,
-          chrome,
-        );
-      chuteModel.visible = false;
+      // @include src/parachute3d.js
       const playerRing = new Three.Mesh(
         new Three.RingGeometry(10, 11.2, 36),
         new Three.MeshBasicMaterial({
@@ -2304,14 +2271,12 @@
                 m.torso.rotation.z = 0.14 + Math.sin(stroke * 2) * 0.06;
                 m.parts.guns.forEach((gun) => (gun.visible = false));
               }
+              // Freefall and canopy poses (parachute3d.js); resets the spread limbs after.
+              poseParachutist(m, deltaSeconds);
             }
           }
-          chuteModel.visible = !!player.parachute && player.parachute.stage === 'canopy';
-          if (chuteModel.visible) {
-            chuteModel.position.set(player.x, player.altitude, player.y);
-            chuteModel.rotation.y = -player.a;
-            chuteModel.scale.setScalar(Math.max(0.01, player.parachute.opening));
-          }
+          // The parachute hangs from the harness point the person pass just posed.
+          updateParachute3D(deltaSeconds);
           playerRing.visible =
             !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);

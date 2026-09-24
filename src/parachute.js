@@ -70,6 +70,7 @@
       if (!p || p.stage !== 'freefall') return false;
       p.stage = 'canopy';
       p.opening = 0;
+      parachuteOpeningSound();
       tell('CANOPY OPEN · Steer toward clear ground · Hold S to slow your landing', 4);
       return true;
     }
@@ -149,7 +150,7 @@
       const agl = player.altitude - terrainHeight(player.x, player.y);
       if (p.stage === 'freefall' && (keys.Space || agl < 230)) deployParachute();
       const canopy = p.stage === 'canopy';
-      if (canopy) p.opening = Math.min(1, p.opening + deltaSeconds / 0.7);
+      if (canopy) p.opening = Math.min(1, p.opening + deltaSeconds / 1.0);
       const speed = canopy ? (flare ? 33 : fast ? 100 : 70) : 75,
         response = 1 - Math.exp(-deltaSeconds * (canopy ? 2.6 : 0.65));
       p.vx += (Math.cos(p.heading) * speed - p.vx) * response;
@@ -231,6 +232,87 @@
           p.vy *= 0.6;
         }
       if (player.altitude <= terrainHeight(player.x, player.y) + 1) parachuteLanding();
+    }
+    /* ---- Sound ------------------------------------------------------------------
+       Freefall is loud: a roar of wind that rises with the fall rate, buffeting
+       and flapping the jumpsuit. Under the canopy it drops to the flutter of the
+       wing's tail. One looping band of noise does both through a band-pass whose
+       gain, centre and wobble follow the stage; the opening is a rustle of the
+       bag, the crack of the slider and the thump of the canopy taking the load. */
+    let chuteWindSource = null,
+      chuteWindGain = null,
+      chuteWindFilter = null;
+    function startParachuteWind() {
+      const seconds = 2.5,
+        n = Math.floor(audio.sampleRate * seconds),
+        buffer = audio.createBuffer(1, n, audio.sampleRate),
+        data = buffer.getChannelData(0);
+      let low = 0,
+        mid = 0;
+      for (let i = 0; i < n; i++) {
+        const white = Math.random() * 2 - 1;
+        low = low * 0.97 + white * 0.03;
+        mid = mid * 0.7 + white * 0.3;
+        data[i] = low * 5 + mid * 0.8;
+      }
+      const fade = Math.floor(audio.sampleRate * 0.2);
+      for (let i = 0; i < fade; i++) {
+        const t = i / fade;
+        data[i] = data[i] * t + data[n - fade + i] * (1 - t);
+      }
+      chuteWindSource = audio.createBufferSource();
+      chuteWindGain = audio.createGain();
+      chuteWindFilter = audio.createBiquadFilter();
+      chuteWindSource.buffer = buffer;
+      chuteWindSource.loop = true;
+      chuteWindFilter.type = 'bandpass';
+      chuteWindFilter.Q.value = 0.7;
+      chuteWindFilter.frequency.value = 600;
+      chuteWindGain.gain.value = 0;
+      chuteWindSource.connect(chuteWindFilter).connect(chuteWindGain).connect(master);
+      chuteWindSource.start();
+    }
+    function updateParachuteWind() {
+      if (!audio || !master) return;
+      const p = player.parachute;
+      if (!chuteWindSource) {
+        if (!p || !soundOn) return;
+        startParachuteWind();
+      }
+      const now = audio.currentTime;
+      let level = 0,
+        centre = 500;
+      if (p && soundOn && gameMode === 'play') {
+        if (p.stage === 'freefall') {
+          const rate = clamp(-p.vz / 200, 0, 1);
+          // Buffeting: the level and colour wander a few times a second.
+          const buffet = 0.8 + 0.2 * Math.sin(gameTime * 7.3) * Math.sin(gameTime * 3.1 + 1);
+          level = (0.08 + rate * 0.3) * buffet;
+          centre = 380 + rate * 900 + Math.sin(gameTime * 5.7) * 120;
+        } else {
+          // The tail flutters; the brakes and speed change its pitch.
+          const flap = 0.75 + 0.25 * Math.sin(gameTime * 23) * Math.sin(gameTime * 4.3);
+          level = 0.05 * flap * (0.5 + 0.5 * p.opening);
+          centre = 900 + Math.hypot(p.vx, p.vy) * 4;
+        }
+      }
+      chuteWindGain.gain.setTargetAtTime(level, now, 0.12);
+      chuteWindFilter.frequency.setTargetAtTime(centre, now, 0.1);
+    }
+    function parachuteOpeningSound() {
+      if (!audio || !soundOn) return;
+      // Bag off the back and the lines paying out...
+      noise(0.35, 0.12, 2400);
+      // ...the slider cracks down and the canopy takes the load.
+      setTimeout(() => {
+        if (player.parachute) {
+          noise(0.18, 0.26, 900);
+          tone(70, 0.3, 0.3, 'sine', 42);
+        }
+      }, 520);
+      setTimeout(() => {
+        if (player.parachute) noise(0.4, 0.1, 500);
+      }, 760);
     }
     function drawParachute2D() {
       const p = player.parachute;
