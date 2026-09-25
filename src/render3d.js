@@ -1111,6 +1111,7 @@
       // @include src/surfaces3d.js
       // @include src/helicopter3d.js
       // @include src/vehicles3d.js
+      // @include src/police3d.js
       // @include src/plane3d.js
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
@@ -1175,6 +1176,11 @@
         if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
         if (vehicleSpec(vehicle).boat) return makeBoat(vehicle);
         if (vehicleSpec(vehicle).truck) return makeTruck(vehicle);
+        // Patrol cars, roadblock cruisers, the SWAT truck and agents' SUVs (police3d.js).
+        if (vehicle.type === 'police' || vehicle.lawUnit === 'swat' || vehicle.lawUnit === 'fed' || vehicle.policeLook) {
+          const look = policeLookFor(vehicle);
+          if (look) return makePoliceVehicle(vehicle, look);
+        }
         const group = new Three.Group(),
           body = new Three.Group();
         group.add(body);
@@ -1317,29 +1323,6 @@
         }
         if (vehicle.type === 'taxi') box(body, -1, roof + 1.5, 0, 6, 2.2, 4, mat('#d1c5a2'));
         coachDetails(vehicle, body, l, w, h, roof, paint);
-        const strobes = [],
-          rearDoors = vehicle.lawUnit === 'swat' ? swatVanDetails(body, l, w, h, roof, paint, strobes) : null;
-        // Patrol cars, SWAT vans and agents' SUVs carry a light bar (pursuit.js).
-        if (vehicle.type === 'police' || vehicle.lawUnit === 'swat' || vehicle.lawUnit === 'fed') {
-          box(body, -1, roof + 1.2, 0, 3, 1, w * 0.73, darkMetal);
-          for (const side of [-1, 1]) {
-            const model = box(
-              body,
-              -1,
-              roof + 2,
-              side * 4,
-              3,
-              1.5,
-              5,
-              new Three.MeshBasicMaterial({
-                color: side === 1 ? '#5186fa' : '#f24632',
-              }),
-            );
-            strobes.push(model);
-          }
-          for (const side of [-1, 1])
-            box(body, 0, h - 2, side * w * 0.501, l * 0.4, 3, 0.22, mat('#d8d3c7'));
-        }
         const hood = box(body, l * 0.34, h + 0.05, 0, l * 0.25, 0.4, w * 0.67, paint);
         const bumperOrigins = bumpers.map((b) => b.position.clone());
         // Wipers along the foot of the windscreen (vehicles3d.js); the glass runs from
@@ -1352,7 +1335,7 @@
           body,
           paint,
           color: vehicle.color,
-          strobes,
+          strobes: [],
           dead: false,
           car: true,
           dims: { l, w, h, roof, van },
@@ -1368,7 +1351,7 @@
           lamps,
           damageVersion: -1,
           nightLights,
-          rearDoors,
+          rearDoors: null,
         };
       }
       /**
@@ -1435,54 +1418,6 @@
           glint.visible = true;
         }
         for (let i = n; i < pool.length; i++) pool[i].beam.visible = pool[i].glint.visible = false;
-      }
-      /**
-       * SWAT VAN (pursuit.js, swat.js): the tactical van is the ordinary van body in
-       * navy with armour on it: a push bar, window grilles, roof rails and a wide
-       * light bar, S.W.A.T. in big letters on the roof (the top-down camera reads it
-       * first) and POLICE · SWAT down both sides, and two rear doors on hinges that
-       * swing open when the team deploys. Returns the two door pivots.
-       */
-      function swatVanDetails(body, l, w, h, roof, paint, strobes) {
-        const armor = mat('#10151d', 0.6, 0.35),
-          side = plateMaterial('POLICE · S.W.A.T.', { bg: '#141b27', fg: '#eef0ea', w: 768, h: 128 }),
-          top = plateMaterial('S.W.A.T.', { bg: '#141b27', fg: '#f4f4ee', w: 512, h: 160 }),
-          back = l * 0.435,
-          half = w * 0.415,
-          mid = (roof + h) / 2;
-        paint.color.set('#1b2433');
-        // Roof: lettering readable from above, rails, a long light bar.
-        const roofSign = plate(body, -l * 0.17, roof + 1.05, 0, l * 0.44, w * 0.62, top, 0);
-        roofSign.rotation.set(-Math.PI / 2, 0, 0);
-        for (const s of [-1, 1]) box(body, -l * 0.17, roof + 1.2, s * w * 0.38, l * 0.5, 0.8, 0.8, armor);
-        box(body, l * 0.02, roof + 1.2, 0, 3, 1, w * 0.86, armor);
-        for (const s of [-1, 1])
-          for (const k of [0.18, 0.34]) {
-            const strobe = box(body, l * 0.02, roof + 2, s * w * k, 3, 1.5, 4, new Three.MeshBasicMaterial({ color: s > 0 ? '#5186fa' : '#f24632' }));
-            strobes.push(strobe);
-          }
-        // Sides: POLICE · S.W.A.T. and a grey band.
-        for (const s of [-1, 1]) {
-          plate(body, -l * 0.17, mid - 1.5, s * (half + 0.3), l * 0.46, 4.2, side, s > 0 ? 0 : Math.PI);
-          box(body, -l * 0.17, h + 1.4, s * (half + 0.2), l * 0.5, 1, 0.3, mat('#6d7684'));
-          // Grilles over the cab's side windows.
-          for (let k = 0; k < 4; k++) box(body, l * 0.14 + k * 1.6, roof - 4, s * w * 0.44, 0.35, 6, 0.3, armor);
-        }
-        // Push bar on the nose.
-        box(body, l * 0.52, 7.5, 0, 1.4, 7, w * 0.82, armor);
-        for (const s of [-1, 1]) box(body, l * 0.5, 7.5, s * w * 0.3, 3, 7, 1.2, armor);
-        // Rear doors, hinged at the outer edges; the team comes out between them.
-        const doors = [];
-        for (const s of [-1, 1]) {
-          const pivot = new Three.Group();
-          pivot.position.set(-back - 0.6, mid, s * half);
-          body.add(pivot);
-          box(pivot, 0, 0, -s * half * 0.5, 0.8, roof - h - 1, half * 0.98, paint);
-          box(pivot, -0.5, 2.5, -s * half * 0.5, 0.3, 4, half * 0.6, mat('#0c1118', 0.2, 0.6));
-          plate(pivot, -0.5, -3, -s * half * 0.5, half * 0.8, 1.6, plateMaterial('SWAT', { bg: '#141b27', fg: '#eef0ea', w: 256, h: 64 }), -Math.PI / 2);
-          doors.push({ pivot, side: s });
-        }
-        return doors;
       }
       /**
        * PLAYER AT NIGHT
@@ -2510,6 +2445,8 @@
               const open = c.doorsOpenAt ? clamp((gameTime - c.doorsOpenAt) / 0.7, 0, 1) : 0;
               for (const { pivot, side } of m.rearDoors) pivot.rotation.y = side * open * 1.85;
             }
+            // Flash patterns, wig-wag, halos (police3d.js).
+            if (m.police) animatePoliceVehicle(c, m);
             for (let i = 0; i < m.strobes.length; i++)
               m.strobes[i].material.color.copy(
                 cachedColor(

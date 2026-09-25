@@ -199,7 +199,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 
 Renderer closure (inside `createCityRenderer()` in render3d.js, in include order;
 flight-view3d, postfx3d and lighting3d come first, right after the cameras and lights,
-and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
+and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 
 | File | Role |
 | --- | --- |
@@ -244,6 +244,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
 | helicopter3d.js | Airframe, rotor, lights and cockpit |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
+| police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
 | plane3d.js | The three airframes, modelled on real types: the Serrano C200 courier (mission 11's plane; a low-wing single turboprop with a T-tail after the Pilatus PC-12), the Aurelia J8 business jet and the Meridian 220 airliner. A lofted fuselage (monotone-cubic stations, superellipse sections) wears a livery texture computed per pixel from the surface (windscreen and cockpit glass with frames, cabin windows, doors, cheatline, registration; glossy glass through a roughness / metalness map); NACA-section wings, winglets, fin and stabiliser; flaps, ailerons, elevators and rudder in hinge pivots; four-blade propeller with blur disc or lathed turbofans with spinning fans; retracting gear; navigation, strobe, beacon and landing lights. Static parts are merged per material. `animateAircraft` poses it all from the flight model each frame |
 | parachute3d.js | The ram-air parachute: nine-cell canopy rebuilt per frame (inflation, pillows, brakes, trailing-edge flutter), lines, risers, slider, pilot chute and bridle, the pack; `poseParachutist` (freefall box position, hanging pendulum, toggles), collapse and pack-up after landing |
 

@@ -409,7 +409,10 @@
        * and glasshouse (damage3d.js caches them by size), so all the cars of one
        * type in view are two instanced draws, the body tinted per car, under the
        * same clear-coat paint. The pool for a type is made from the first full
-       * model of that type; until one exists the car is drawn normally.
+       * model of that type; until one exists the car is drawn normally. Police
+       * vehicles pool per body and livery (police3d.js): shell, glass, hood and
+       * panels under the livery paint, the trim, and the lightbar's red and blue
+       * halves as beacons whose instance colour flashes with each car's pattern.
        */
       const BODY_IMPOSTOR_ZOOM = 0.62,
         BODY_POOL_CAPACITY = 160,
@@ -417,8 +420,12 @@
         bodyPaint = new Three.MeshPhysicalMaterial({ roughness: 0.42, metalness: 0.55, clearcoat: 1, clearcoatRoughness: 0.1 }),
         bodyGroupMatrix = new Three.Matrix4(),
         bodyPartMatrix = new Three.Matrix4();
+      // Police vehicles pool by body and livery, with their panels, trim and the
+      // lightbar's beacons (police3d.js `impostorParts`); other cars by type.
+      const impostorBeaconMaterial = new Three.MeshBasicMaterial({ vertexColors: true });
       function bodyPoolFor(c) {
-        let pool = bodyPools.get(c.type);
+        const key = policeImpostorKey(c) || c.type;
+        let pool = bodyPools.get(key);
         if (pool !== undefined) return pool;
         const m = carModels.get(c);
         if (!m) return null;
@@ -427,28 +434,39 @@
         pool = false;
         // Only a closed body (not the roadster's open cockpit) makes a pool.
         if (m.car && m.cabin && m.cabinBase) {
-          m.body.updateMatrix();
-          m.shell.updateMatrix();
-          m.cabin.updateMatrix();
-          const make = (geometry, material) => {
-            const im = new Three.InstancedMesh(geometry, material, BODY_POOL_CAPACITY);
-            im.count = 0;
-            im.castShadow = im.receiveShadow = true;
-            im.frustumCulled = false;
-            im.userData.dynamic = true;
-            scene.add(im);
-            return im;
-          };
+          m.body.updateMatrixWorld(true);
+          const bodyInverse = new Three.Matrix4().copy(m.body.matrixWorld).invert(),
+            make = (geometry, material, shadow) => {
+              const im = new Three.InstancedMesh(geometry, material, BODY_POOL_CAPACITY);
+              im.count = 0;
+              im.castShadow = !!shadow;
+              im.receiveShadow = true;
+              im.frustumCulled = false;
+              im.userData.dynamic = true;
+              scene.add(im);
+              return im;
+            },
+            specs = m.impostorParts || [
+              { mesh: m.shell, material: null, tint: true, shadow: true },
+              { mesh: m.cabin, material: m.cabin.material, shadow: true },
+            ];
           pool = {
-            shell: make(m.shell.geometry, bodyPaint),
-            cabin: make(m.cabin.geometry, m.cabin.material),
-            shellLocal: m.shell.matrix.clone(),
-            cabinLocal: m.cabin.matrix.clone(),
+            parts: specs.map((spec) => {
+              const part = {
+                mesh: make(spec.mesh ? spec.mesh.geometry : spec.geometry, spec.beacon ? impostorBeaconMaterial : spec.material || bodyPaint, spec.shadow),
+                // Relative to the body, whatever hinge or pivot the part hangs from.
+                local: spec.mesh ? new Three.Matrix4().multiplyMatrices(bodyInverse, spec.mesh.matrixWorld) : new Three.Matrix4(),
+                tint: !!spec.tint,
+                beacon: spec.beacon || null,
+              };
+              if (part.tint || part.beacon) part.mesh.setColorAt(0, impostorColor);
+              return part;
+            }),
+            police: !!m.police,
             count: 0,
           };
-          pool.shell.setColorAt(0, impostorColor);
         }
-        bodyPools.set(c.type, pool);
+        bodyPools.set(key, pool);
         return pool;
       }
       function bodyImpostor(c) {
@@ -457,9 +475,16 @@
         impostorRotation.setFromAxisAngle(impostorUp, -c.a);
         impostorPosition.set(c.x, 0.1 + entityElevation(c), c.y);
         bodyGroupMatrix.compose(impostorPosition, impostorRotation, impostorScale.set(1, 1, 1));
-        pool.shell.setMatrixAt(pool.count, bodyPartMatrix.multiplyMatrices(bodyGroupMatrix, pool.shellLocal));
-        pool.cabin.setMatrixAt(pool.count, bodyPartMatrix.multiplyMatrices(bodyGroupMatrix, pool.cabinLocal));
-        pool.shell.setColorAt(pool.count, impostorColor.set(c.color || '#888888'));
+        const beacons = pool.police ? policeBeaconLevels(c) : null,
+          tint = pool.police ? policeLookFor(c).paint : c.color || '#888888';
+        for (const part of pool.parts) {
+          part.mesh.setMatrixAt(pool.count, bodyPartMatrix.multiplyMatrices(bodyGroupMatrix, part.local));
+          if (part.tint) part.mesh.setColorAt(pool.count, impostorColor.set(tint));
+          else if (part.beacon) {
+            const level = part.beacon === 'left' ? beacons.left : beacons.right;
+            part.mesh.setColorAt(pool.count, impostorColor.setScalar(0.22 + level * policeLightGain.value));
+          }
+        }
         pool.count++;
         return true;
       }
@@ -549,10 +574,11 @@
       function endVehicleImpostors() {
         for (const pool of bodyPools.values()) {
           if (!pool) continue;
-          pool.shell.count = pool.cabin.count = pool.count;
-          if (pool.count) {
-            pool.shell.instanceMatrix.needsUpdate = pool.cabin.instanceMatrix.needsUpdate = true;
-            pool.shell.instanceColor.needsUpdate = true;
+          for (const part of pool.parts) {
+            part.mesh.count = pool.count;
+            if (!pool.count) continue;
+            part.mesh.instanceMatrix.needsUpdate = true;
+            if (part.mesh.instanceColor) part.mesh.instanceColor.needsUpdate = true;
           }
           pool.count = 0;
         }

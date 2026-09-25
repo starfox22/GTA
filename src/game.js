@@ -6178,6 +6178,28 @@
           adaptive: { averageFrameMs: +adaptive.average.toFixed(1), tierDrops: adaptive.tierDrops },
         };
       },
+      // Police vehicle review (police3d.js): parks every police model and livery in
+      // a column from (x, y), `spacing` apart, facing `heading`, with their lights
+      // on (`lights`: true parked at a scene, 'pursuit' running hot, false off).
+      // Parked, empty and unarmed; returns the ids and looks.
+      policeLineup(x = player.x + 60, y = player.y - 160, heading = 0, lights = true, spacing = 40) {
+        const LOOKS = [
+          ['police', 'charger', 'bw'],
+          ['police', 'utility', 'bw'],
+          ['police', 'crownvic', 'bw'],
+          ['police', 'charger', 'modern'],
+          ['police', 'utility', 'modern'],
+          ['police', 'crownvic', 'sheriff'],
+          ['police', 'charger', 'unmarked'],
+          ['suv', 'tahoe', 'unmarked'],
+          ['van', 'bearcat', 'swat'],
+        ];
+        return LOOKS.map(([type, body, livery], i) => {
+          const c = makeCar(type, x - Math.sin(heading) * i * spacing, y + Math.cos(heading) * i * spacing, heading, false, type === 'suv' ? '#121417' : undefined);
+          Object.assign(c, { policeLook: { body, livery }, showLights: lights });
+          return { id: c.id, type, body, livery };
+        });
+      },
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
       // pass). On AUTO the adaptive controller may change it again.
       renderScale(scale) {
