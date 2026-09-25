@@ -1061,7 +1061,22 @@
           fallYaw = ((s.fallTurn || 0) + (p.hp <= 0 ? p.deathStyle?.turn || 0 : 0)) * fall;
         // Root: position, heading, then the fall (a rotation about the lateral axis):
         // over backwards, or face down for fallSign -1.
-        crowdJoint(mRoot, mIdentity, p.x, elevation + fall * 1.5 * height, p.y, (fallSign * fall * Math.PI) / 2, p.ejected ? p.ejectRoll || 0 : 0, -(s.yaw + fallYaw));
+        const thrown = p.ejected?.rider ? p.ejected : null;
+        if (thrown) {
+          // Thrown off a bike (riders.js): somersaulting about the hips along the flight.
+          const hips = 8.5 * height,
+            along = -hips * Math.sin(thrown.pitch);
+          crowdJoint(
+            mRoot,
+            mIdentity,
+            p.x + Math.cos(thrown.heading) * along,
+            elevation + thrown.z - hips * Math.cos(thrown.pitch) + 1.5,
+            p.y + Math.sin(thrown.heading) * along,
+            -thrown.pitch,
+            0,
+            -thrown.heading,
+          );
+        } else crowdJoint(mRoot, mIdentity, p.x, elevation + fall * 1.5 * height, p.y, (fallSign * fall * Math.PI) / 2, p.ejected ? p.ejectRoll || 0 : 0, -(s.yaw + fallYaw));
         mRoot.scale(crowdScale.set(height, height, height));
         crowdJoint(mHips, mRoot, 0, CROWD_HIP + J[J_DROP] + bob, 0, 0, roll * 0.4, 0);
         crowdJoint(mTorso, mHips, 0, 0.7, 0, lean, roll, twist);

@@ -129,6 +129,13 @@ something, never a generic code-evaluation hook.
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)`, `clearRoadblocks()` | Build a police cut at a chokepoint (nearest to the player if omitted); take every cut down (repeatable ram tests) |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
+| `turnTest(type, kmh, options)` | Steer a fresh vehicle on the strip by the Oceanview runway through the real step and measure: radius (m, fitted over 20-110 degrees of the turn) and kerb-to-kerb circle, lateral g, the run to 90 degrees from a straight entry (forward / sideways m, seconds), heading turned, end speed, slip, whether anything was touched. Options: `dir` (1 right, -1 left), `seconds`, `mode` (`cruise` holds the speed on and off the throttle, `coast`, `throttle`, `brake`, `handbrake`), `wet` (0..1), `entry` (seconds straight first), `trace` (samples) |
+| `pose()` | The player's vehicle as the physics sees it: position, heading, yaw rate, km/h, slip angle, hp, drawbridge lift / air |
+| `aiDriving(reset)` | Traffic and police since the last reset: crashes and slides (counts, per minute), wetness and grip, moving traffic near the player and its mean speed, the last closing speeds |
+| `rideInto(type, kmh, target, gapMetres, seconds)` | Ride a fresh motorbike or bicycle east on the runway strip at `kmh`, throttle held, into a parked `target` (`'none'` for open road) turned across the way; returns `riderReport()` |
+| `riderReport()` | The player's throw off a bike now (phase, height, peak, speed, somersault, hurt, hits, bounces, slide) and the last six throws (player and traffic riders) |
+| `bridgeJump(degrees, kmh, type, seconds)` | The drawbridge jump: leaves held at `degrees`, a fresh vehicle at `kmh` 3 m short of the west trunnion, throttle held; returns the outcome (`clears`, `falls short`, `strikes the far leaf`, `can't climb`), gap and tip height (m), speed at the tip, flight length, landing speed, hit points lost |
+| `holdSimulation(on)` | Stop the frame loop's simulation while it keeps drawing, so a screenshot sequence can be stepped with `simulate()` |
 | `crashTest(type, targetType, side, metersPerSecond, seconds)` | Drive a fresh car east into a parked one turned to show `side` (`front`, `rear`, `left`, `right`), throttle held; returns both damage reports |
 | `park(type, dx, dy, heading)`, `vehicleAt(x, y)` | Park an empty vehicle beside the player (returns its id); find the nearest vehicle |
 | `shootAt(x, y, weaponIndex)` | Fire one round (or one shotgun load) from the player at a map point |
