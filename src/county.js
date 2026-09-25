@@ -528,6 +528,7 @@
       paintMilitaryGround(drawingContext);
     }
     function buildCounty() {
+      placeMountainOutcrops();
       const oldSeed = randomSeed;
       randomSeed = 94197;
       for (const t of COUNTY_TOWNS)
@@ -842,23 +843,7 @@
         drawingContext.arc(t.x, t.y, t.r * 2, 0, TAU);
         drawingContext.fill();
       }
-      for (const p of COUNTY_PEAKS) {
-        drawingContext.strokeStyle = '#b7b89566';
-        drawingContext.lineWidth = 1 / scale;
-        for (let i = 1; i < 5; i++) {
-          drawingContext.beginPath();
-          drawingContext.ellipse(
-            p.x,
-            p.y,
-            (p.rx || p.r) * (1 - i * 0.15),
-            (p.ry || p.r) * (1 - i * 0.15),
-            0,
-            0,
-            TAU,
-          );
-          drawingContext.stroke();
-        }
-      }
+      // Relief (contours, hill shading, snow) is painted into the county sheets by paintMountainGround.
       drawingContext.font = 'bold ' + 10 / scale + 'px Arial';
       drawingContext.textAlign = 'center';
       drawingContext.lineWidth = 3 / scale;

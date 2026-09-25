@@ -5229,6 +5229,10 @@
           district: districtAt(x, y),
         };
       },
+      // The Ridgeline Range (terrain.js): each field's grid, top and build time,
+      // each trail's length, summit and steepest graded pitch, scenery counts and
+      // the outcrops' footing. Terrain tests read it alongside probe().
+      terrain: () => terrainReport(),
       // The current mission in full: target (with altitude), timer, the mission
       // vehicles, its guards and actors, and each job's own list of points.
       missionTargets() {
