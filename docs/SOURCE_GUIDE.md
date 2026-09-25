@@ -216,6 +216,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras (the station roof and its sign are their own batch, cut away while the train or the ride camera is under them, `setStationRoofCut`) |
+| unicorn3d.js | (included by themepark3d.js) The Unicorn Fountain in the forecourt (`PIER.unicorn`): Aurora, a rearing unicorn sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) in pearlescent marble with a gilded horn and hooves; tiered plinth with a bronze plaque, basin, eight arcing jets and spray; night uplights as a shader term on her marble (UPLIGHTS), the horn's pastel glow; `updateUnicornFountain` each frame |
 | garage3d.js | Garage buildings, shutters, lights and service details |
 | landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
@@ -358,7 +359,10 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **The Sunset Eye** (hub 3600, -6050, 300 up, rim radius 240, 48 capsules, one turn in 240 s;
   `wheelCapsule(k)`) with its terminal underneath. **Fountain Lagoon** (3170, -6370) with the
   show schedule (`fountainShowAt`) and fireworks (`fireworksTonight`), the **Sunset Palace**
-  crescent hotel (3530, -6770), the beach club on the north shore, and in the east the
+  crescent hotel (3530, -6770), the **Unicorn Fountain** in the forecourt between the drive and
+  the gate (`PIER.unicorn`, 3200, -5987: a round basin with Aurora, a rearing marble unicorn, on a
+  plinth; solid to people and cars, guests stop round it to take photos), the beach club on the
+  north shore, and in the east the
   carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
   food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
 - Riding: `player.coaster` is the carrier for both rides (`{ kind: 'train' | 'wheel' }`), so the

@@ -1081,6 +1081,7 @@
         s.position.y = 93;
         s.userData.backing.position.y = 93;
       }
+      // @include src/unicorn3d.js
       // ---- Carousel ------------------------------------------------------------------
       const carousel = new Three.Group();
       carousel.position.set(PIER.carousel.x, 0, PIER.carousel.y);
@@ -1571,6 +1572,7 @@
         pool(PIER.darkRide.x + 100, PIER.darkRide.y + PIER.darkRide.h + 20, 130, 'rgba(255,150,80,A)', 0.45);
         pool(PIER.bumper.x + 75, PIER.bumper.y + 50, 110, 'rgba(160,120,255,A)', 0.45);
         pool(PIER.gate.x, PIER.gate.y, 170, 'rgba(255,215,150,A)', 0.55);
+        pool(PIER.unicorn.x, PIER.unicorn.y, 70, 'rgba(255,200,150,A)', 0.4);
         pool(PIER.wheel.x, PIER.wheel.y, 200, 'rgba(140,220,255,A)', 0.3);
         pool(PIER.station.x, PIER.station.y, 140, 'rgba(255,200,120,A)', 0.4);
         pool(PIER.beachClub.x + 240, PIER.beachClub.y + 100, 220, 'rgba(120,230,255,A)', 0.3);
@@ -1705,6 +1707,7 @@
         updateBumpers(dt);
         syncRideInstances();
         updateFountain(night);
+        updateUnicornFountain(night);
         updateFireworks();
       }
       // ---- Ride cameras ----------------------------------------------------------------
