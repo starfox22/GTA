@@ -81,7 +81,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | File | Role |
 | --- | --- |
 | game.js | Constants, `VEHICLE_DEFINITIONS`, world build (`buildWorld`, `zoneHeight`, `makeBuilding`), `populate`, combat, `update`, `moveBody`, `exitCar`/`enterVehicle`, `teleportPlayer`, 2D fallback drawing, map (`paintMapBase`), HUD, input, startup, `window.DeadEndCity` |
-| audio.js | Web Audio effects, voices, procedural sounds; `earFilter` (a low-pass over the whole mix, dulled while swimming) |
+| audio.js | Web Audio effects, voices, procedural sounds; `earFilter` (a low-pass over the whole mix, dulled while swimming); `LOOP_SECONDS` and `loopingSource()` (recorded loops play to their exact length: each file carries 0.2 s of its own start past the seam); the tyre, siren and rotor loops; `audioConsole()` (DeadEndCity.audioMix(), engineSound(), rainSound()) |
 | physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
 | controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
 | geography.js | Land polygons and the cached `landAt`, `BRIDGES` and their architecture (`bridgeStructure`, `bridgeFootings`, `bridgePylons`), reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
@@ -91,7 +91,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory, knife combat and FISTS (index 7, no weapon: `meleeAttack` throws a left-right combination with a haymaker, `punchReaction`; `playerUnarmed()` tells the crowd the player is harmless) |
 | citylife.js | Clock, `PLACES` (businesses), `DOCKS` (boat jetties and their boats), officers, police routing and sight (`policeSees`), wanted search, `clearPolice`, `daylight()` |
 | pursuit.js | Police response: `POLICE_TIERS` (what each star sends), `OFFICER_KINDS` (patrol, road, swat, fed), `dispatchPolice` / `spawnPursuitUnit` (off-camera road spawns, bursts on a new star), `pursuitControl` (lead pursuit, PIT, flank, block, route-following search, off-road shortcuts across open ground, whiskers, stuck recovery), `policeNavRoute` (county pursuits on the GPS road graph), marine units (`spawnMarineUnit`, `marineBoatInput` for boatControl), downed-officer drags, officer fire and positioning, arrest, surrender (`trackSurrender`, `policeHoldFire`: standing still at one to four stars ends in BUSTED) and `bust()`, `policeChallengeLine` (arrest lines only when an arrest can happen), the pursuit tank, the five-star army (`armyJeep`, `armyApc`, `armyTruck` before the tank after `TANK_AFTER_SECONDS`; `updateArmyGunners`), dispatch captions, the radar search area, `policeReportData` |
-| swat.js | SWAT teams and rooftop snipers: the rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen at five stars (`roofSniperSite`, `updateRoofSnipers`: laser telegraph, one heavy round, rest), `swatStats` |
+| swat.js | SWAT teams and rooftop snipers: the rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen now and then at five stars (`roofSniperSite`, `updateRoofSnipers`: one at a time, a second only after 150 s at five stars, first roll 25-45 s in and then every 60-90 s on a 65% chance; laser telegraph, two led rounds, then it packs up), `swatStats` |
 | wounds.js | Wounds: `woundPerson` (hit zone, flinch, limp, blood trail, downed officers and bystanders), `chooseDeathFall` (backwards, face down, spun, slumped against a wall), `deathFallAmount` (the half-second fall), `hitFlinch`, `woundReport` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
 | campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
@@ -103,16 +103,17 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
 | cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
 | weather.js | Weather state machine (`weather.next` is chosen as a state begins), the build-up before a shower (`weather.approach`: thicker cloud, rising wind, far thunder), `weather.shower` counter, road wetness, wind and gusts, lightning strikes with a place and distance (`lightningStrike`, the flash's return strokes in `lightningFlash`) and thunder queued at distance / speed of sound |
-| weather-audio.js | Rain and thunder sound: layered loops made once (hiss, light and dense drop patter, low roar), roof drumming and a glass low-pass inside a closed vehicle, tyre spray on wet roads, gutter drips and puddle splashes underfoot; `thunderSound(distance)` builds each clap (crack only when near; rumble rolls, lower and longer with distance) |
+| weather-audio.js | Rain and thunder sound: three recorded rain beds (`RAIN_BEDS`: light patter on a tile roof, a steady wash, a heavy downpour) cross-faded by intensity (`rainBedLevels`, `RAIN_LEVEL`), muffled under cover (`rainShelter()`: the underpass, beneath rail decks and station canopies, aboard a train or cab, the elevator) and through the glass inside a closed vehicle, where a resonant low band of the same recordings drums on the roof; tyre spray on wet roads (a band of the heavy bed), puddle splashes underfoot; `rainReport()` (DeadEndCity.rainSound()); `thunderSound(distance)` builds each clap (crack only when near; rumble rolls, lower and longer with distance) |
 | water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J), `parachuteSplashdown`, harbor-patrol rescue |
 | water-audio.js | Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle |
 | beach.js | Palm Keys Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
 | roofmission.js | The Blue Hour terrace (`ROOFTOP`, `player.roof`, `moveOnRoof`), mission 2's hit (index 1); `entityElevation`, `sameFloor` |
 | rooftops.js | Helicopter landings on flat roofs (`helicopterRoofSite`, `roofLandingClear`), rooftop helipads (`chooseRoofHelipads`, `b.helipad`), the `player.buildingRoof` carrier (`exitOntoRoof`, `moveOnBuildingRoof`), `playerOnRoof()` |
 | air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft |
-| combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and helicopter pursuit (`AIR_UNITS_MAX`: one hostile helicopter at a time from stars, a chase at sea or a mission; its marksman sharpens with the stars) |
+| combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and helicopter pursuit (`AIR_UNITS_MAX`: one hostile helicopter at a time from stars, a chase at sea or a mission; its marksman sharpens with the stars); SNIPER FIRE, shared by the rooftop snipers and the marksman: a lock of 2 s or more with a laser (rooftop), a rising beep and a red screen-edge glow toward the shooter (`noteSniperLock`, `sniperThreat`, hud.js SNIPER WARNING), then one visible tracer round (`fireSniperRound`) aimed at where the player is guessed to be (measured velocity, `trackPlayerMotion`, led by a random 0.3..skill of the flight time), so standing still is a hit and running or turning usually a miss; a hit is `'sniper'` damage, 50 before armour, never lethal from full health |
 | damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`), the damage console helpers |
-| crash-audio.js | `crashSound`: one layered, positioned sound per vehicle impact (from `collisionImpact` and street props): body thump, a recorded crunch (whole crash for hard hits), metal and sheet-metal layers, plastic bumper grains, glass only when a pane broke, debris, tyre scrub; lower for heavy vehicles; one event per pair per 0.7 s |
+| crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; the whole bus plays at `CRASH_LEVEL` (-3.5 dB, under gunfire and engines); one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
+| engine-audio.js | Engine sound: `ENGINE_SETS` (recorded loops per class with the revs each was recorded at: compact, sport, V8, diesel, bike, cruiser, tank, outboard, marine diesel, jet ski) and `ENGINE_OF_TYPE` (vehicle type to set, pitch, level); the player's engine simulation (`engineSimulate`: idle, clutch slip pulling away, automatic gearbox with a throttle cut on upshifts and a blip on downshifts, throttle load), layers pitched by rpm / recorded rpm and cross-faded in the middle of each gap (`engineLayerWeights`), a recorded starter on getting in, overrun burble (V8, sport), misfires when badly hurt; tyre roar, gravel off-road and tank tracks (tank-tracks.ogg), wind on open vehicles; synthesised turboprop and turbofan (`updateJetVoice`: whine, roar, hiss, blade buzz); the nearest four driven traffic vehicles get one voice each with distance, pan and Doppler (`updateTrafficEngines`); `engineReport()` (DeadEndCity.engineSound(): revs, gear, load, layer rates and gains, traffic, a trace) |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
 | military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
 | armor.js | The player's tank: `traverseTurret` (30°/s, eased, stabilised; also used by the pursuit tank and army gunners), `updatePlayerArmor`, ammunition (`tankArms`: 40 main-gun rounds, 5 s reload, coaxial MG belts; `noCoax` tanks), `tankPlayerFire`, `toggleTankWeapon`, the weapon chip in a tank (`tankHud`, `drawShellIcon`) and the reticle (`updateTankReticle`) |
@@ -157,6 +158,8 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
+| signkit3d.js | (included by render3d.js before `sign()`) `SignKit`: the hand-built stroke font (`strokeText`), letter treatments (`tubes`, `doubleTubes`, `bulbLetters`, `blockLetters`, `stencilCut`, `decoLetters`, `pixelLetters`), canvas type effects (`fxText` with font stacks, gold and chrome fills), board shapes and materials (`boardPath`, `fillBoard`), emblems (`icon`, `tubeIcon`) |
+| signdesigns3d.js | (included by render3d.js before `sign()`) `SignArt`: sign families, the business style table (`SIGN_DESIGNS`, fallback `designFor`), `paint`, rooftop hotel names (`paintHotel`), tower names (`paintTowerName`), billboard artwork (`ADS`) |
 | signage3d.js | (included by cityscape3d.js) The glow field (`addGlow`: one instanced draw for every neon halo, bulb and beacon), wet-road streaks, sign light spill (`signSpill`), the neon/lightbox sign atlas (`signCell`, `atlasSign`), lit sign materials (`litSignMaterial`), LED ad screens, stock ticker, marquee bulbs |
 | skyline3d.js | (included by cityscape3d.js) The financial cluster's towers: plans, lofting (`skyLoft`), glazing per design, LED crowns, beacons, podiums, plazas (`buildSkylineTower`) |
 | sidejobs3d.js | Sky rings, bomb and substation devices |
@@ -487,17 +490,49 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   player or the target moves; in the air, on the water or on a ride it keeps the straight
   line. The big map is unchanged. In touch mode the bottom row
   moves to the top so the thumbs have the lower corners.
-- **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft two
-  columns frame the aircraft either side of the middle of the screen, leaving the centre
-  clear: an attitude indicator (pitch ladder, bank scale and pointer), the airspeed tape with
-  its stall band and the power block (engine power fill, throttle lever tick, flaps and gear
-  chips) on the left; the altitude tape with the ground band and a vertical-speed scale, then
-  AGL, vertical speed and g on the right; a heading strip with the objective's bearing on
-  top, and one warning at a time under it (STALL, PULL UP, GEAR, STALL WARNING, ENGINE
-  DAMAGE). The instruments are 2D canvases redrawn every frame (`updateFlightHud` from the
-  game loop) from `flightData()` (aviation.js); `#flightHud.on` fades and slides it in. The
-  helicopter shows the slim version (no attitude, flaps or gear; ROTOR for power). It scales
-  down on small screens and keeps only the tapes and heading on phones.
+- **Interaction prompt** (hud.js INTERACTION PROMPT, `#interaction`): one owner. Systems never
+  write the element; during an `updateUI()` pass they call `offerPrompt(text, { key, hold, id })`
+  (`key` is a control action named with `keyName()`, `null` for none; `hold` reads "HOLD E";
+  `id` keeps the prompt's identity while its text changes, e.g. `'vehicle'` for passing cars,
+  `'harbor-load'`). The last offer of the pass wins (mission prompts come after the generic
+  vehicle / payphone one), and `commitPrompt()` at the end of the pass applies the rules: a
+  new prompt pops in at once under the player; the same id only refreshes its text; a different
+  id replaces it after `PROMPT_SWAP_AFTER`; with no offer it stays `PROMPT_HIDE_GRACE` (and
+  `PROMPT_MIN_SHOW` in all) and fades. After `PROMPT_DOCK_AFTER` (3 s) it slides into a compact
+  chip under the navigation pill (`--hud-dock-top`, measured when it docks; touch: above the
+  action buttons on the right) and pops back to full size for a new action or on coming back
+  into range. Visibility is a class (`.show`), never `display`, so a style flush cannot restart
+  the pop-in (the old writers toggled `display` none → block every pass, which restarted the
+  fade-in 11 times a second: the "flickering" LOAD CARGO prompt). The HUD clock is wall time
+  plus the time `DeadEndCity.simulate()` steps; `DeadEndCity.promptState()` reports it.
+  Range tests behind a prompt have hysteresis, asked the same way by the prompt and by E:
+  `withinRange(key, distance, enter, exit)` (hud.js) for the payphone (68 / 84), rail stations
+  (48 / 60) and the harbor barrier (110 / 130); `nearestPlace()` keeps the door already in reach
+  until 66 (enters at 52: shops, the hospital after a respawn, casino, garages' offices); the
+  loading bay has its own (harbor.js LOADING BAY RANGE: in at 85, out at 110; ready to load when
+  stopped inside 43, until moving or past 48). A vehicle's prompts share one identity
+  (`'helicopter'`, `'plane'`, `'garage'`), so TAKE OFF → RISE or DRIVE IN → RESPRAY change text
+  without a new pop-in.
+- **Centre cards** (hud.js CENTRE CARDS): the headline card (`announce()`) slides up under the
+  docked prompt and shrinks after 3 s (not WASTED / BUSTED); in touch mode a toast dims after
+  3 s. Reduced motion cuts the slides and pop-ins (the shell's reduced-motion block).
+- **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft the
+  instruments hug the screen edges so the view stays clear: a column on the left edge
+  (attitude indicator with pitch ladder and bank scale, the airspeed tape with its stall band,
+  the power block with engine fill, throttle tick, flaps and gear chips), a column on the
+  right edge standing on the vehicle card (the altitude tape with the ground band and a
+  vertical-speed scale, then AGL, vertical speed and g), a thin heading strip with the
+  objective's bearing at the top under the navigation pill, and one warning at a time under
+  it (STALL, PULL UP, GEAR, STALL WARNING, ENGINE DAMAGE). The canvases are drawn at full
+  size and scaled as groups by `--fh-scale` (0.78, 0.68 and 0.56 on smaller screens); they
+  are redrawn every frame (`updateFlightHud`) from `flightData()` (aviation.js), and
+  `#flightHud.on` fades and slides them in from the edges. The helicopter shows the slim
+  version (no attitude, flaps or gear; ROTOR for power). Phones keep the tapes and heading;
+  touch phones show only the warnings (the thumbs own both sides and the vehicle card reads
+  speed and altitude). **Settings · Gameplay · Flight HUD** (`hudState.flightHud`, saved,
+  on by default) turns the instruments off (`.instruments-off`); the warnings still flash
+  when they apply, because STALL and PULL UP decide whether a landing ends in a crash. The
+  docked interaction prompt sits under the heading strip in flight (`placeDockLine`).
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
   advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
@@ -736,6 +771,54 @@ docs/audit/missions-qa.md shows the method).
   materials, so they batch; `sign()` boards (render3d.js) glow the same way. Sign
   emissive is multiplied by `cityPower()` (lighting3d.js) in the shader, so the blackout
   contract darkens them per district.
+- Sign design system (signkit3d.js, signdesigns3d.js). Every business's sign is designed
+  for its trade: a FAMILY (how the sign is built) plus parameters (colours, emblem,
+  lettering, board shape), listed by name in `SIGN_DESIGNS`. `sign(text, x, z, width,
+  color, vertical, options)` (render3d.js), the shopfront atlas (`shopSignCell`), the
+  rooftop hotel names, the tower names and the billboards all paint from it. Web fonts
+  are never loaded: character comes from a hand-built monoline stroke font (capitals,
+  lower case, digits) drawn as neon tubes, bulbs, block, stencil, Deco contrast or LED
+  pixels, and from system font stacks with sign-painter effects (condensing, skew,
+  spacing, gold/chrome fills, outlines, extrusion). Each family paints a day face and a
+  glow mask and returns how the board is built: `cutout` (shaped boards, free letters),
+  `backing` (`panel`, `raceway` for cut-out letters, `inset` behind shaped boards),
+  `lamps` (floodlit: goose-neck lamp glows over the board and a top-lit mask),
+  `marquee` (chasing bulbs), `flicker`, `light` (pavement spill colour). Masks are
+  painted for one night strength (`SIGN_NIGHT`): neon cores full, lightboxes about half,
+  floodlit boards a fifth, road signs barely (retroreflective).
+
+  | Family | Night | Used for |
+  | --- | --- | --- |
+  | `neonScript` slanted lower-case tubes, swash, tube emblem, optional block line | neon | AFTERHOURS (cut-out script, moon), COCKTAILS (martini), SUNSET MOTEL / CORAL PALMS MOTEL (Googie boards, sunset / palm), CAFÉ MARLOW, VINYL VAULT, CUTS BARBER, FLOWERS, hotel scripts |
+  | `neonBlock` capital tubes, single or double-line, zigzag or rect tube border | neon | NEON PALACE (stepped Deco board, crown), LIQUOR, PAWN SHOP, FREE FALL |
+  | `bulbs` marquee-bulb letters on painted channels, bulb frame, rays | bulbs + marquee | GOLDEN TIDE (arched, dice), SUNSET PIER / DODGEMS (scalloped, bouncing letters), SUNSET EYE |
+  | `cinema` bulb name on red, white changeable-letter strip, film reels | bulbs + marquee | ROYAL CINEMA |
+  | `diner` chrome-ribbed pill, enamel panel, script tubes, block pill | neon | THE BLUE PLATE DINER, ROSIE’S DINER |
+  | `lightbox` backlit panel in an aluminium frame, vinyl letters, bands, tabs | lightbox | hospitals (cross in a box), EMERGENCY, PALM GRILL (24 HRS tab), airports, HELIPAD, 24 HOUR, BANDSHELL, pharmacy, bail bonds, laundromat, noodle, pizza, photo |
+  | `enamel` gloss porcelain enamel, two-tone rim, serif/slab, inset pill | floodlit or `backlit` | BAYVIEW TAVERN (oval, gilt), SOUTH COAST POLICE (badge), BATTERY MOTOR WORKS (piston, pill), MARINA, OUTFITTERS, CAUSEWAY INN, transit roundel, town welcome signs, bakery, deli |
+  | `wood` weathered planks, routed or painted letters, rope border | floodlit | THE RUSTY ANCHOR (anchors, rope), county LODGEs, park and trail signs, SEAFOOD MARKET |
+  | `stencil` bridged stencil capitals on sheet or corrugated steel, rivets, hazard stripes, rust | floodlit (warning signs reflective) | SOUTH COAST ARMORY (target, crossed pistols), PALM KEYS ARMORY, SENTINEL SURPLUS, WEAPONS · AMMO · ARMOR, IRONWORKS CARGO, MORETTI FREIGHT, RESTRICTED |
+  | `deco` contrast capitals, wide tracking, rules, sunburst fan; neon or halo | neon / halo | THE BLUE HOUR, BLUE HOUR HOTEL, OCEAN DRIVE MENSWEAR (halo-lit gold), SUNSET PALACE, Deco hotel and tower names |
+  | `carved` gold leaf serif on lacquer, stone or wood | floodlit | SOUTH COAST COLLEGE (crests), PAWN & LOAN, TAILOR, BOOKS, CIGARS, banks |
+  | `customs` flames, pinstripes, chrome 3D italic, red neon rim | neon + lit flames | EASTSIDE CUSTOMS |
+  | `airbrush` Miami sunset gradient, fat italic letters | lightbox | PALM AUTO PAINT (spray gun), VIDEO WORLD (chrome, grid) |
+  | `varsity` athletic block letters, outline and drop, optional arch | floodlit or backlit | RIVERSIDE HIGH SCHOOL, SOUTH COAST STADIUM, THE FALCON, GYM |
+  | `painted` wall-painted slab letters, drop shade, sun-faded | floodlit | STONECREEK GARAGE, FREIGHT CO., HARDWARE, SHOE REPAIR |
+  | `hand` hand-lettered plywood | floodlit | safehouse ROOMS, THRIFT, beach kiosks, food trucks |
+  | `highway` retroreflective green or brown, condensed letters, arrows | reflective | underpasses, OCEANVIEW / AIRPORT, EAGLE PASS scenic route |
+  | `pixel` LED dot matrix | LEDs | ARCADE, stadium TICKETS |
+  | `tattoo` flash banner, heart, red neon rim | neon | INK & IRON TATTOO |
+  | `arabian` onion arch, gilt, crescent neon | floodlit + neon | ARABIAN NIGHTS, WADI SPLASH |
+  | `plaque` engraved brass | floodlit | Blue Hour ELEVATOR, PRIVATE LOUNGE, RESERVED |
+
+  To sign a new business add one line to `SIGN_DESIGNS` copying the nearest entry
+  (names it does not list fall back on trade keywords in `designFor`: LODGE, OUTFITTERS,
+  ARMORY, MOTEL, INN, DINER, GARAGE, HOSPITAL, BANK, CLUB, FREIGHT..., then the
+  caller's `options.style` hint: `transit`, `kiosk`, `truck`, `town`, `resort`, `trail`).
+  Billboards: each advertiser in `SignArt.ADS` has its own painter (layout,
+  illustration, lettering); the ad atlas grows by rows as ads are added. The shop atlas
+  holds one 384 x 96 cell per shop name (a chain wears one brand), about half the
+  2048 x 2048 atlas.
 - Night: facade materials carry an `emissiveMap` window mask; `updateCityscapeVisuals()`
   scales emissive intensity by night amount, hour and `sideJobPower()`. Lamps, shop glass,
   neon halos and vehicle head/tail halos follow the same night amount.
@@ -836,7 +919,8 @@ docs/audit/missions-qa.md shows the method).
   dulled glitter. Street lamps and bridge lamps smear down wet roads (signage3d.js
   streaks). A lightning strike has a place: the flash (two to four return strokes) is
   scaled by its distance, a bolt is drawn when it is near the view, and its thunder is
-  queued for distance / 1756 units per second. Cars run wipers and headlights in the rain
+  queued for distance / 1756 units per second. The rain is heard from recordings (light,
+  steady and heavy beds cross-faded by `weather.rain`; weather-audio.js). Cars run wipers and headlights in the rain
   (`vehicleLampAmount`); on LOW only the player's car wipes and there is no spray or drips.
 - **Night light hygiene**: the bloom bright pass sanitises NaN and half-float overflow
   before the mip chain (they used to blow up into 32-64 px black or white squares) and

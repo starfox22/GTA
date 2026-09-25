@@ -375,9 +375,11 @@
           },
         };
       }
-      const SHOP_COLORS = ['#c7463a', '#2f6b5e', '#213a63', '#c99a2e', '#6c3b73', '#1f1f24', '#a5552b'];
-      // Kept for the stadium's perimeter boards (sports3d.js); city ads use signage3d.js.
+      // The stadium's perimeter boards (sports3d.js): the advertisers' own artwork
+      // (signdesigns3d.js), the same as on the city's billboards.
       const adAtlas = textAtlas(AD_LINES, 512, 160, (g, [title, sub, bg, fg], w, h) => {
+        const art = SignArt.ADS.find(([name]) => name === title);
+        if (art) return art[1](g, w, h);
         g.fillStyle = bg;
         g.fillRect(0, 0, w, h);
         g.fillStyle = fg;
@@ -905,9 +907,9 @@
           name = SHOP_NAMES[(i * 7 + Math.floor(cityRandom() * 5)) % SHOP_NAMES.length],
           signWidth = Math.min(72, Math.max(44, bayWidth * 1.4)),
           signX = 8 + bayWidth * 0.5 + (bays > 2 ? bayWidth : 0),
-          cell = shopSignCell(name, style),
-          light = shopSignLight(name, style),
-          flicker = style === 'neon' && cityRandom() < 0.14;
+          cell = shopSignCell(name),
+          light = shopSignLight(name),
+          flicker = shopSignIsNeon(name) && cityRandom() < 0.14;
         atlasSign(group, cell, signX, 19.5, b.h + 1.9, signWidth, signWidth / 4, flicker ? cityPick(neonBoardFlicker) : neonBoard);
         box(group, signX, 19.5, b.h + 1.2, signWidth + 2, signWidth / 4 + 2, 0.8, darkMetal);
         // Colour on the pavement and, in the rain, smeared down the wet road.

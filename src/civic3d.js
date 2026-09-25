@@ -52,8 +52,13 @@
           continue;
         }
         const face = p.y + p.h;
-        if (p.kind !== 'rooftop')
-          sign(p.name, p.x + p.w / 2, face + 2, Math.min(220, p.w * 0.85), p.color);
+        if (p.kind !== 'rooftop') {
+          // The fascia board sits above the entrance canopy (top at 19) so the
+          // canopy does not hide the lower line of a two-line design.
+          const width = Math.min(220, p.w * 0.85),
+            board = sign(p.name, p.x + p.w / 2, face + 2, width, p.color);
+          board.position.y = board.userData.backing.position.y = Math.max(board.position.y, 21 + width / 8);
+        }
         // Recessed glass doors, lit entrances, steps and weather canopies.
         box(group, x, 8, face + 1, 17, 16, 1.2, glass);
         box(group, x, 8, face + 1.8, 0.7, 16, 0.3, chrome);

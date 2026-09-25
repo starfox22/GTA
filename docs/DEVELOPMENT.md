@@ -34,6 +34,9 @@ music) is marked `"stream": true` in the manifest: `dead-end-city.html` still em
 those files beside it in `dist/publish/media/`. That split build is what gets published as
 the claude.ai artifact, whose page is capped at 16 MB (each extra file at 15 MB). Keep the
 split page under ~15.5 MB; prefer procedural textures and small media (WebP, MP3/OGG).
+A recorded loop (engines, rain) ends with 0.2 s of its own start and is listed with its
+exact loop length in `LOOP_SECONDS` (audio.js); play it with `loopingSource(name)`, because
+Vorbis decoders disagree by up to a few hundred samples about where a file ends.
 
 ## Test
 
@@ -91,6 +94,7 @@ something, never a generic code-evaluation hook.
 | `setClock(hours)`, `sky(id)` | Time of day; weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`) |
 | `weather()`, `weatherFront(seconds)`, `lightning(distance)` | The weather machine's state (sky, next step, rain, wet, wind, `approach`, showers, strikes, thunder pending); bring a shower in after `seconds` (overcast now, the build-up, then rain; unlocks the sky); a lightning strike `distance` map units from the player (returns where, and when its thunder arrives) |
 | `startMission(i)`, `missions()` | Jump into a mission |
+| `promptState()` | The interaction prompt as shown: visible, text (with its key), identity, docked, seconds since it popped in, and this pass's offer |
 | `missionState()` | Current mission stage, instruction, objective target and Vinny's depot door state; with no mission, how the last one ended |
 | `skipToDepotDelivery()` | Mission 1: crates loaded, player in the truck outside Vinny's warehouse with the police alerted |
 | `missionTargets()` | The current mission in full: target with altitude, timer, mission vehicles (health, fire), guards, armed hostiles aiming nearby, actors, and each job's point lists (gates, checkpoints, rings, repos...) |
@@ -102,10 +106,10 @@ something, never a generic code-evaluation hook.
 | `defeatMissionGuards(tag)` | Put down the current mission's guards (to skip a fight already verified) |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort; in a tank the hull, turret and aim headings in degrees, the traverse rate and the ammunition) |
-| `policeReport()` | The police response: stars, heat and the next star's threshold, the incident's body count, search (active, seconds left, last sighting), arrest progress, the tier's allowances, counts by unit (patrol, swat, fed, army, air, officers, roadblocks), every unit and officer, pursuit counters (contacts, PITs, shortcuts, marine units and shots, tank and marksman rounds, arrests), marine units, and `wounds` (how the dead fell, downed and dragged officers, limping, crawling, bleeding); `crimes` (the last twelve crimes: time, heat, reporting function), `swat` (teams, shield blocks, snipers, sniper shots), counts of army units (`armyJeep`, `armyApc`, `armyTruck`), `soldiers`, `snipers` and `shields`, and unit positions |
+| `policeReport()` | The police response: stars, heat and the next star's threshold, the incident's body count, search (active, seconds left, last sighting), arrest progress, the tier's allowances, counts by unit (patrol, swat, fed, army, air, officers, roadblocks), every unit and officer, pursuit counters (contacts, PITs, shortcuts, marine units and shots, tank and marksman rounds, arrests), marine units, and `wounds` (how the dead fell, downed and dragged officers, limping, crawling, bleeding); `crimes` (the last twelve crimes: time, heat, reporting function), `swat` (teams, shield blocks, snipers, sniper shots), `sniperFire` (sniper rounds at the player from roofs and the helicopter, hits on foot and through a car), counts of army units (`armyJeep`, `armyApc`, `armyTruck`), `soldiers`, `snipers` and `shields`, and unit positions |
 | `nearbyPeople(radius, kind)` | Living people near the player, nearest first (`civilian`, `police`, `gang` or `all`), with line of sight: play-tests pick victims with it; police also carry `shield`, `roof` (a rooftop sniper), `aim` (a sniper's lock, 0..1), heading and state |
 | `arm(index)` | Own weapon `index` (0 pistol to 5 precision rifle) with full ammunition and select it; 6 selects the knife, 7 no weapon (fists) |
-| `flight()` | The player's aircraft instruments as the flight HUD shows them: airspeed km/h, altitude and AGL m, vertical speed m/s, heading, pitch, bank, throttle lever and spooled power, flaps, gear, g, angle of attack, stall speed, stall / gear warnings, buffet, and whether the HUD is up (`null` outside an aircraft). Flaps and gear are keydown actions: press X / Z / L through the page keyboard |
+| `flight()` | The player's aircraft instruments as the flight HUD shows them: airspeed km/h, altitude and AGL m, vertical speed m/s, heading, pitch, bank, throttle lever and spooled power, flaps, gear, g, angle of attack, stall speed, stall / gear warnings, buffet, whether the HUD is up and whether its instruments are on (`instruments`, the Flight HUD setting) (`null` outside an aircraft). Flaps and gear are keydown actions: press X / Z / L through the page keyboard |
 | `route(x, y)` | Set a map waypoint and report the GPS route from the player: status, road length, the bridges it crosses |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |
@@ -124,12 +128,14 @@ something, never a generic code-evaluation hook.
 | `lifeScene(kind)` | Stage a street scene by the player: `vendor`, `busker`, `cafe`, `smokers`, `delivery`, `hail`, `nightlife`, `busStop` |
 | `poseGallery(role)` | Line up one labelled pedestrian per pose in front of the player |
 | `closeUp(zoom)` | Inspection only: zoom past the player's limit (up to 8) to look at people |
+| `audioMix()`, `engineSound()` | The audio context and the fixed loops (tyres, siren, rotor) with their gains; the player's engine: set, revs, gear, throttle, load, output gain and tone, each layer's rate and gain, road / wind / track levels, the jet voice, the traffic voices (`nearbyDriven`, the nearest four with loop, distance, revs, rate, level) and `trace` (the last 12 s at 0.1 s: speed, revs, gear, load, gain and the audible layers). `simulate()` drives it, so a test can hold `KeyW` from a standstill and read the gear shifts |
+| `rainSound()` | The rain beds: `rain` and `wet`, each bed's target weight (`targets`) and live gain (`light`, `steady`, `heavy`), the roof drumming and tyre spray gains, the `cabin` low-pass (16 kHz in the open, 2.5 kHz under cover, 620 Hz in a closed vehicle) and `shelter` (0 open, 1 under cover) |
 | `stats()` | Per-frame CPU timings (`parts`, the renderer's split as `r:` parts), draw calls (`viewCalls` camera, `shadowCalls` shadow map), triangles, linked shader `programs`, the dynamic `renderScale` |
 | `postView(mode)` | Show the ambient-occlusion (`'ao'`) or bloom (`'bloom'`) buffer instead of the image; no argument restores it |
 | `drawProfile(top)` | Draw calls in view by object name and by 512-unit map cell (for finding unbatched scenery; unnamed parts of anonymous groups are listed with geometry, material and colour), and linked shader programs by kind |
 | `graphics(tier)` | Graphics quality: `auto`, `low`, `medium`, `high`, `ultra` (saved like the Settings choice); returns the active tier, GPU, shadow-map size, render scale and AUTO's adaptive state (`averageFrameMs`, `tierDrops`). Headless SwiftShader auto-detects as LOW, so screenshot tours should call `graphics('high')` (a chosen tier is never adapted) |
 | `renderScale(scale)` | Draw the scene at `scale` (0.5..1) of the canvas, as AUTO's dynamic resolution does; returns the scale applied |
-| `settings(changes)` | Every setting (graphics, frameLimit (30, 60, 120 or `'unlimited'`), fps, cutaway, sound, the four volumes, voices, NPC chatter, minimap fold and zoom, `gps` and the points in the minimap's objective route `gpsRoute`, touch mode); pass an object such as `{ chatter: false, minimapZoom: 2, gps: false }` to change some |
+| `settings(changes)` | Every setting (graphics, frameLimit (30, 60, 120 or `'unlimited'`), fps, cutaway, sound, the four volumes, voices, NPC chatter, minimap fold and zoom, `flightHud` (the flight instruments), `gps` and the points in the minimap's objective route `gpsRoute`, touch mode); pass an object such as `{ chatter: false, minimapZoom: 2, gps: false }` to change some |
 | `openSettings(tab)` | Open the settings screen on `graphics`, `audio`, `gameplay` or `controls` (over the pause menu during play) |
 | `bindings(changes)` | Key bindings as `{ action: [primary, secondary] }`; `{ ascend: 'KeyY' }` binds a primary key (a clash swaps), `'reset'` restores the defaults |
 | `military()` | Fort Sentinel: alert, lockdown, gate challenge level, each lane's arm, bollards and sliding gate (and what is broken), soldiers on duty by role, military vehicles and their roles, the supply run and the drill |

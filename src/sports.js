@@ -1839,7 +1839,7 @@
       const ball = match.ball;
       if (ball.ownerId !== SPORTS_HUMAN && (Math.hypot(ball.x - player.x, ball.y - player.y) > 15 || ball.z > 8 || sportsCarrier(match)))
         return '';
-      return 'KICK THE BALL · SHIFT FOR POWER';
+      return 'KICK THE BALL · ' + keyName('sprint') + ' FOR POWER';
     }
 
     /* E on the pitch: a kick when the ball is at your feet. */

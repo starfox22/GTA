@@ -236,16 +236,22 @@ through the marksman instead of a second airframe.
 
 Police response by wanted level (`POLICE_TIERS`, src/pursuit.js; updated in iteration 7):
 
-| Stars | Patrols | SWAT vans (team) | Agents' SUVs | Army (5 stars) | Tank | Rooftop snipers | Helicopter | Marksman lock / hit / rest | Roadblocks | Officer accuracy | Surrender |
+| Stars | Patrols | SWAT vans (team) | Agents' SUVs | Army (5 stars) | Tank | Rooftop snipers | Helicopter | Marksman lock / lead / rest | Roadblocks | Officer accuracy | Surrender |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 2 | 0 | 0 | - | 0 | 0 | 0 | - | 0 | 0.42 (no deadly force) | always arrested |
 | 2 | 4 | 0 | 0 | - | 0 | 0 | 0 (1 at sea) | 1.6 s / 0.85 / 2.4-3.4 s at sea | 0 | 0.46 | always arrested |
-| 3 | 5 | 0 | 0 | - | 0 | 0 | 1 | 1.6 s / 0.85 / 2.4-3.4 s | 1 | 0.50 | stand still: hold fire, cuff (2 officers) |
-| 4 | 5 | 2 (4: shield + stack) | 0 | - | 0 | 0 | 1 | 1.3 s / 0.90 / 2.0-2.8 s | 2 | 0.55 | stand still: hold fire, cuff (2 officers) |
-| 5 | 5 | 3 (5: shield + stack) | 2 | 2 gunner jeeps, then 1 APC (4 soldiers), 1 truck (5) | 1, after 45 s at 5 stars | 3 | 1 | 1.1 s / 0.94 / 1.7-2.4 s | 3 | 0.60 | only a player under 25 health |
+| 3 | 5 | 0 | 0 | - | 0 | 0 | 1 | 2.6 s / 0.75 / 5-7 s | 1 | 0.50 | stand still: hold fire, cuff (2 officers) |
+| 4 | 5 | 2 (4: shield + stack) | 0 | - | 0 | 0 | 1 | 2.4 s / 0.85 / 4.5-6.5 s | 2 | 0.55 | stand still: hold fire, cuff (2 officers) |
+| 5 | 5 | 3 (5: shield + stack) | 2 | 2 gunner jeeps, then 1 APC (4 soldiers), 1 truck (5) | 1, after 45 s at 5 stars | 1 now and then (2 after 150 s) | 1 | 2.2 s / 0.90 / 4-6 s | 3 | 0.60 | only a player under 25 health |
 
-The hit chance is at a standstill; speed still spoils it (minus speed/500, never under
-0.3), and breaking line of sight still resets the lock.
+Since the prompts-and-HUD pass the marksman and the rooftop snipers fire a visible tracer at
+where they guess the player will be (`lead`: the most of the player's motion over the flight
+time they lead, drawn from 0.3 upwards), so standing still is a hit and running, zigzagging
+or turning usually a miss; breaking line of sight still resets the lock. A hit takes 50
+health before armour (combat-rules.js SNIPER FIRE). Headless, 3 stars, helicopter marksman,
+90 s each (god mode): standing 8/8 hits, running in circles 0/10, zigzag sprint 0/7,
+walking straight 3/6. A 3-minute five-star run: one rooftop sniper (at most one on the
+roofs), two rounds, then gone.
 
 Verified headlessly (`wanted`, `simulate`, `policeReport`):
 
