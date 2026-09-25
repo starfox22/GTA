@@ -6241,6 +6241,7 @@
       // 'controls'); during play it opens over the pause menu. Screenshot tours use it.
       openSettings(tab = 'graphics') {
         if (gameMode === 'play') togglePause();
+        syncGodSettingsTab(); // GOD PANEL: 'god' is a tab while god mode is on
         openSettings(SETTINGS_TABS.some((t) => t[0] === tab) ? tab : 'graphics');
         return gameMode;
       },
