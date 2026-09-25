@@ -1518,9 +1518,9 @@
        */
       function makePoliceVehicle(vehicle, look) {
         claimPoliceResources();
-        const spec = vehicleSpec(vehicle),
-          l = spec.l,
-          w = spec.w * 0.87,
+        const design = designSize(vehicle),
+          l = design.l,
+          w = design.w * 0.87,
           body = POLICE_BODIES[look.body],
           kit = policeKit(look, body, l, w),
           g = body.glass,

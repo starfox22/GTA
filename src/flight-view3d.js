@@ -301,7 +301,8 @@
           cx = Math.round((minX + maxX) / 2 / texel) * texel,
           cy = Math.round((minY + maxY) / 2 / texel) * texel;
         // Anchor the light on the sun-ward side of the view, in the fixed frame.
-        const lift = Math.max(700, casterTop + 200),
+        // Deep enough towards the sun for the tallest tower's top to cast.
+        const lift = Math.max(700, casterTop + 200, streetCeiling() + 100),
           anchorD = maxD + lift + 200;
         shadowAnchor
           .copy(shadowAxisX)
@@ -463,6 +464,8 @@
               return part;
             }),
             police: !!m.police,
+            // The model's drawn scale (render3d.js DESIGN SIZE): the parts are in design units.
+            scale: m.group.scale.clone(),
             count: 0,
           };
         }
@@ -474,7 +477,7 @@
         if (!pool || pool.count >= BODY_POOL_CAPACITY) return false;
         impostorRotation.setFromAxisAngle(impostorUp, -c.a);
         impostorPosition.set(c.x, 0.1 + entityElevation(c), c.y);
-        bodyGroupMatrix.compose(impostorPosition, impostorRotation, impostorScale.set(1, 1, 1));
+        bodyGroupMatrix.compose(impostorPosition, impostorRotation, impostorScale.copy(pool.scale));
         const beacons = pool.police ? policeBeaconLevels(c) : null,
           tint = pool.police ? policeLookFor(c).paint : c.color || '#888888';
         for (const part of pool.parts) {
@@ -502,7 +505,8 @@
         const spec = vehicleSpec(c),
           length = spec.l,
           width = spec.w * 0.9,
-          tall = spec.truck ? 22 : spec.bike || spec.bicycle ? 6 : 10,
+          // Body and cabin about a real car's 1.5 m, a truck's 3 m, a bike's 1.1 m.
+          tall = spec.truck ? 20 : spec.bike || spec.bicycle ? 5 : 8,
           ground = entityElevation(c);
         impostorRotation.setFromAxisAngle(impostorUp, -c.a);
         impostorPosition.set(c.x, ground + tall / 2 + 1, c.y);
@@ -512,7 +516,7 @@
         // Cabin: a darker block set back from the nose (skipped for bikes).
         const cabin = spec.bike || spec.bicycle ? 0 : 1;
         impostorPosition.set(c.x - Math.cos(c.a) * length * 0.08, ground + tall + 2.5, c.y - Math.sin(c.a) * length * 0.08);
-        impostorScale.set(length * 0.45 * cabin + 0.001, 5 * cabin + 0.001, width * 0.8);
+        impostorScale.set(length * 0.45 * cabin + 0.001, 4 * cabin + 0.001, width * 0.8);
         impostorCabins.setMatrixAt(impostorCount, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
         impostorCount++;
         return true;
@@ -546,18 +550,20 @@
         if (viewZoom >= PERSON_IMPOSTOR_ZOOM * lod || personImpostorCount >= PERSON_IMPOSTOR_CAPACITY) return false;
         if (p.hp <= 0 || p.hidden || p.sitting || p.swimming || p.parachute || p.ejected || p.illness) return false;
         if (p.poisonCollapse !== undefined || p.drinking || personIncapacitated(p)) return false;
+        // Sized like the rigs (17.4 units) and drawn at the person's height (PERSON_SCALE).
         const i = personImpostorCount++,
-          ground = entityElevation(p);
+          ground = entityElevation(p),
+          k = PERSON_SCALE * (p.look?.height || 1);
         impostorRotation.setFromAxisAngle(impostorUp, -p.a);
-        impostorPosition.set(p.x, ground + 3.6, p.y);
-        impostorScale.set(2.6, 7.2, 5);
+        impostorPosition.set(p.x, ground + 3.6 * k, p.y);
+        impostorScale.set(2.6 * k, 7.2 * k, 5 * k);
         personImpostorLegs.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
-        impostorPosition.y = ground + 10.2;
-        impostorScale.set(4.6, 6.4, 8.2);
+        impostorPosition.y = ground + 10.2 * k;
+        impostorScale.set(4.6 * k, 6.4 * k, 8.2 * k);
         personImpostorTorso.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
         personImpostorTorso.setColorAt(i, impostorColor.set(p.color || '#6b5965'));
-        impostorPosition.y = ground + 15.3;
-        impostorScale.set(2.1, 2.5, 2.1);
+        impostorPosition.y = ground + 15.3 * k;
+        impostorScale.set(2.1 * k, 2.5 * k, 2.1 * k);
         personImpostorHead.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
         return true;
       }

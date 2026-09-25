@@ -145,6 +145,13 @@
           { geo: at(new Three.SphereGeometry(1, 12, 6, 0, TAU, 0, Math.PI / 2), 0, 3.0, 0, 0, 0, 0.12, 1.9, 1.25, 1.8) },
           { geo: at(unitCylinder, 1.5, 3.05, 0, 0, 0, -0.08, 1.35, 0.16, 1.45) },
         ]);
+      /* The rig standing straight at look.height 1, soles to crown (hair or not):
+         hips, the torso's rise, the neck and the head's top. The world-scale audit
+         reads it (DeadEndCity.scaleReport). */
+      function crowdRigHeight() {
+        if (!crowdHeadGeometry.boundingBox) crowdHeadGeometry.computeBoundingBox();
+        return CROWD_HIP + 0.7 + 4.8 + crowdHeadGeometry.boundingBox.max.y;
+      }
       const crowdParts = {};
       function crowdPart(name, geometry, material, capacity, shadow = true, colored = true) {
         const mesh = new Three.InstancedMesh(geometry, material, capacity);
@@ -272,9 +279,10 @@
           { geo: at(unitCylinder, 0, 3.2, 0, 0, 0, 0, 0.35, 6.2, 0.35), color: '#2c2f33' },
           { geo: at(unitCylinder, 0, 0.2, 0, 0, 0, 0, 1.6, 0.35, 1.6), color: '#2c2f33' },
           ...[-1, 1].flatMap((s) => [
-            { geo: at(unitBox, s * 7.5, 4.3, 0, 0, 0, 0, 3.2, 0.5, 3.2), color: '#8a5a32' },
-            { geo: at(unitBox, s * 9.1, 6.9, 0, 0, 0, 0, 0.5, 4.8, 3.2), color: '#7a4e2a' },
-            { geo: at(unitBox, s * 7.5, 2.1, 0, 0, 0, 0, 2.6, 4.2, 2.6), color: '#3a3430' },
+            // Chairs: a 0.45 m seat, where a seated person's hips come to (PERSON_SCALE).
+            { geo: at(unitBox, s * 7.5, 3.6, 0, 0, 0, 0, 3.2, 0.5, 3.2), color: '#8a5a32' },
+            { geo: at(unitBox, s * 9.1, 6.2, 0, 0, 0, 0, 0.5, 4.8, 3.2), color: '#7a4e2a' },
+            { geo: at(unitBox, s * 7.5, 1.75, 0, 0, 0, 0, 2.6, 3.5, 2.6), color: '#3a3430' },
           ]),
         ]),
         menuBoard: crowdMerge([
@@ -1046,7 +1054,8 @@
           J[J_EL[0]] + moving * J[J_ARMFREE[0]] * (0.2 + run * 1.0),
           J[J_EL[1]] + moving * J[J_ARMFREE[1]] * (0.2 + run * 1.0),
         ];
-        const height = look.height || 1,
+        // The rig is 17.4 units to the crown; PERSON_SCALE draws it at 1.75 m.
+        const height = (look.height || 1) * PERSON_SCALE,
           build = look.build || 1,
           elevation = entityElevation(p),
           fall = J[J_FALL];
