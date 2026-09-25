@@ -585,7 +585,6 @@
       // and the fronds sway (surfaces3d.js). A palm is a breakable prop (damage.js):
       // drawn as two instances, trunk and crown (render3d.js BREAKABLE SCENERY), it
       // snaps and falls when a vehicle brings enough energy. Returns the prop.
-      const PALM_LIFT = 42;
       function makePalm(x, z, size = 1) {
         const prop = registerStreetProp('palm', x, z, 0, { half: [2 * size, 2 * size], size: 12 * size });
         const g = new Three.Group();

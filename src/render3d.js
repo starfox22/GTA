@@ -838,6 +838,10 @@
       // A palm's seven fronds as one geometry at size 1 (makePalm, world3d.js,
       // scales the whole palm), made on first use.
       let palmFrondGeometry = null;
+      // Trees' heights over their plan radius (plantTree) and a palm's trunk past its
+      // crown's design height (world3d.js makePalm): set before the trees are planted.
+      const TREE_RISE = 1.6,
+        PALM_LIFT = 42;
       // Street trees with proper trunks and layered crowns.
       const blossomMat = mat('#d5a2b5');
       // A crown lobe: 80 smooth-shaded faces read as foliage at street zoom (five
@@ -850,7 +854,6 @@
       // One tree of the plan (or a renderer-only one, landscape3d.js): a palm on the
       // Keys, otherwise a trunk, limbs and a crown of lobes; a breakable prop drawn
       // as instances (BREAKABLE SCENERY).
-      const TREE_RISE = 1.6;
       function plantTree(t, i) {
         if (t.tropical ?? (onPalmKeys(t.x) && !t.county)) {
           t.prop = makePalm(t.x, t.y, t.r / 17);
