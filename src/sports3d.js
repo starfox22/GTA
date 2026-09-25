@@ -10,7 +10,7 @@
        * Match day dresses the venue from the fixture: kits with their patterns on
        * the athletes (officials in black, stewards in yellow), fans in the two
        * clubs' colours filling the stands to the attendance, flags on the plaza,
-       * six big screens (STADIUM_SCREENS) and the court board sharing one live
+       * four big screens (STADIUM_SCREENS) and the court board sharing one live
        * canvas per venue. The stands cheer a goal, and empty in a panic.
        */
       const sportsVenueModels = new Map(),

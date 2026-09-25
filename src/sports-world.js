@@ -82,14 +82,15 @@
      * leans the top back so the elevated camera reads it square on. `base` is
      * where its two legs stand (0 the ground, 86 the entrance beam; null for a
      * screen fixed flat to a wall).
-     * Inside: over the north stand and at the back of each end stand, angled at
-     * the pitch. Outside: above the entrance and on both halves of the south
-     * facade, facing the plaza.
+     * Only where a real ground has them and the camera, which looks down from the
+     * south, can read them: inside, the big screen over the north stand facing
+     * the pitch; outside, the display board on the entrance beam and a screen on
+     * each half of the south facade, facing the plaza and the street. Each leans
+     * back no more than a real wall-hung screen (0.12-0.3 rad). No screens stand
+     * at the ends: they would face the pitch sideways and read edge-on from above.
      */
     const STADIUM_SCREENS = [
       { id: 'north', inside: true, x: 2689, y: 4319, z: 119, w: 130, yaw: 0, tilt: 0.3 },
-      { id: 'west', inside: true, x: 2300, y: 4600, z: 112, w: 104, yaw: 0.62, tilt: 0.3 },
-      { id: 'east', inside: true, x: 3075, y: 4600, z: 112, w: 104, yaw: -0.62, tilt: 0.3 },
       { id: 'entrance', inside: false, x: 2689, y: 4880, z: 121, w: 88, yaw: 0, tilt: 0.25, base: 86 },
       { id: 'facade-west', inside: false, x: 2462, y: 4890, z: 56, w: 118, yaw: 0, tilt: 0.12, base: null },
       { id: 'facade-east', inside: false, x: 2916, y: 4890, z: 56, w: 118, yaw: 0, tilt: 0.12, base: null },
