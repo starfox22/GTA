@@ -26,7 +26,7 @@
       }
       const bus = audio.createGain();
       bus.gain.value = 0;
-      bus.connect(master);
+      bus.connect(ambienceBus);
       // One looping noise source feeding a filter and a gain: a layer.
       const layer = (buffer, type, frequency, q = 0.7, second) => {
         const source = audio.createBufferSource(),

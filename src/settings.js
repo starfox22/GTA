@@ -12,8 +12,10 @@
      *             see-through: the cutaway round the player under a roof, owned
      *             by the renderer (city3D.setCharacterCutaway, which also reads
      *             localStorage 'dead-end-city-cutaway' at startup: 'off' = off)
-     *   AUDIO     sound on/off, master / effects / radio music / voice volumes,
-     *             radio voices (police and dispatch callouts)
+     *   AUDIO     sound on/off, a slider per mix bus (AUDIO_VOLUMES: master,
+     *             radio & music, engines & vehicles, effects, voices, ambience,
+     *             sirens; audio.js THE MIX), radio voices (police and dispatch
+     *             callouts), and a reset to the default mix
      *   GAMEPLAY  NPC chatter (street speech bubbles), minimap, GPS route on the
      *             minimap, control hints
      *   CONTROLS  touch controls (mobile.js) and key remapping (controls.js)
@@ -28,19 +30,40 @@
      * change values, Q / E (or Page Up / Down) switch tabs, Escape goes back.
      */
     const SETTINGS_STORAGE = 'dead-end-city-settings';
+    /* The volume sliders, in the order Settings · Audio shows them: the setting's
+       key, its mix channel (audio.js busLevel / volumeScale), the default and
+       the row's text. `master` is the whole mix. Engines default to 65: about
+       3.7 dB under the level they had when they shared the effects slider, so
+       they no longer swamp the radio (100 restores it). */
+    const AUDIO_VOLUMES = [
+      { key: 'masterVolume', channel: 'master', value: 80, label: 'Master volume', note: 'Everything the game plays.' },
+      { key: 'radioVolume', channel: 'radio', value: 80, label: 'Radio & music', note: 'The car radio, the rooftop bar and the beach club; the same level as the slider in the radio box.' },
+      { key: 'engineVolume', channel: 'engine', value: 65, label: 'Engines & vehicles', note: 'Your engine, traffic, aircraft and boats, tyres and road noise, rotors.' },
+      { key: 'soundVolume', channel: 'sound', value: 100, label: 'Effects', note: 'Gunfire, impacts, crashes, explosions, footsteps and interface sounds.' },
+      { key: 'voiceVolume', channel: 'voice', value: 100, label: 'Voices', note: 'Police challenges and dispatch and mission radio callouts.' },
+      { key: 'ambienceVolume', channel: 'ambience', value: 100, label: 'Ambience', note: 'The street, weather, rain and thunder, the sea, the stadium and the pier rides.' },
+      { key: 'sirenVolume', channel: 'siren', value: 100, label: 'Sirens', note: 'Police sirens and the Fort Sentinel alarm.' },
+    ];
+    const AUDIO_VOLUME_OF = Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.channel, v]));
     const settings = {
-      masterVolume: 80,
-      soundVolume: 100,
-      radioVolume: 80,
-      voiceVolume: 100,
+      ...Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.key, v.value])),
+      // What the radio box's speaker unmutes to (car-radio.js RADIO VOLUME).
+      radioUnmute: 80,
       npcChatter: true,
       cutaway: true,
     };
     try {
       const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE));
       if (saved && typeof saved === 'object') {
-        for (const key of ['masterVolume', 'soundVolume', 'radioVolume', 'voiceVolume'])
+        for (const { key } of AUDIO_VOLUMES)
           if (Number.isFinite(saved[key])) settings[key] = clamp(Math.round(saved[key]), 0, 100);
+        // Saved when one slider was 'Effects & ambience' (engines included): the
+        // new ambience and engine sliders start from it.
+        if (Number.isFinite(saved.soundVolume) && !Number.isFinite(saved.ambienceVolume)) {
+          settings.ambienceVolume = settings.soundVolume;
+          settings.engineVolume = Math.round((AUDIO_VOLUME_OF.engine.value * settings.soundVolume) / 100);
+        }
+        if (Number.isFinite(saved.radioUnmute)) settings.radioUnmute = clamp(Math.round(saved.radioUnmute), 5, 100);
         if (typeof saved.npcChatter === 'boolean') settings.npcChatter = saved.npcChatter;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
         if (typeof saved.voicesOn === 'boolean') voicesOn = saved.voicesOn;
@@ -52,10 +75,8 @@
         localStorage.setItem(
           SETTINGS_STORAGE,
           JSON.stringify({
-            masterVolume: settings.masterVolume,
-            soundVolume: settings.soundVolume,
-            radioVolume: settings.radioVolume,
-            voiceVolume: settings.voiceVolume,
+            ...Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.key, settings[v.key]])),
+            radioUnmute: settings.radioUnmute,
             npcChatter: settings.npcChatter,
             soundOn,
             voicesOn,
@@ -64,11 +85,24 @@
         localStorage.setItem('dead-end-city-cutaway', settings.cutaway ? 'on' : 'off');
       } catch {}
     }
-    /* 0..1 gain for a mix channel: 'sound' (effects and ambience), 'radio' (car
-       music) or 'voice' (radio callouts), each scaled by the master volume. */
+    /* A channel's own slider, 0..1 ('sound' is effects; see AUDIO_VOLUMES). */
+    function channelVolume(channel) {
+      return settings[(AUDIO_VOLUME_OF[channel] || AUDIO_VOLUME_OF.sound).key] / 100;
+    }
+    /* 0..1 for a channel with the master volume applied: for sound outside the
+       Web Audio mix (the car radio's <audio> element). */
     function volumeScale(channel) {
-      const own = channel === 'radio' ? settings.radioVolume : channel === 'voice' ? settings.voiceVolume : settings.soundVolume;
-      return (settings.masterVolume / 100) * (own / 100);
+      return (settings.masterVolume / 100) * channelVolume(channel);
+    }
+    function audioVolumesAreDefault() {
+      return AUDIO_VOLUMES.every((v) => settings[v.key] === v.value);
+    }
+    /* Settings · Audio · RESET: every slider back to its default. */
+    function resetAudioVolumes() {
+      for (const v of AUDIO_VOLUMES) settings[v.key] = v.value;
+      settings.radioUnmute = AUDIO_VOLUME_OF.radio.value;
+      applyVolumes();
+      saveSettings();
     }
     function npcChatterOn() {
       return settings.npcChatter;
@@ -160,10 +194,7 @@
             if (on !== soundOn) mute();
           },
         },
-        { id: 'masterVolume', kind: 'slider', label: 'Master volume', note: () => 'Everything the game plays.' },
-        { id: 'soundVolume', kind: 'slider', label: 'Effects & ambience', note: () => 'Engines, gunfire, the street, weather and the sea.' },
-        { id: 'radioVolume', kind: 'slider', label: 'Radio music', note: () => 'The car radio stations and the rooftop bar.' },
-        { id: 'voiceVolume', kind: 'slider', label: 'Voices', note: () => 'Police and dispatch radio callouts.' },
+        ...AUDIO_VOLUMES.map((v) => ({ id: v.key, kind: 'slider', label: v.label, note: () => v.note })),
         {
           id: 'voices',
           kind: 'toggle',
@@ -172,6 +203,18 @@
           get: () => voicesOn,
           set: (on) => {
             if (on !== voicesOn) toggleVoices();
+          },
+        },
+        {
+          id: 'audioReset',
+          kind: 'action',
+          label: 'Default mix',
+          note: () => 'Every volume back to its default (engines a little under the effects, radio and master at 80).',
+          button: 'RESET AUDIO TO DEFAULTS',
+          disabled: audioVolumesAreDefault,
+          run: () => {
+            resetAudioVolumes();
+            tell('Audio volumes reset to defaults', 2);
           },
         },
       ],
@@ -248,12 +291,30 @@
           applyVolumes();
         };
       }
-    /* Push the volumes into the live mix: effects bus, voice bus and radio. */
+    /* Push the volumes into the live mix (every bus, audio.js THE MIX) and the
+       radio, and redraw the radio box's slider (it shows the same radio level). */
     function applyVolumes() {
-      if (audio && master) master.gain.setTargetAtTime(effectsLevel(), audio.currentTime, 0.05);
-      if (audio && voiceBus) voiceBus.gain.setTargetAtTime(voiceLevel(), audio.currentTime, 0.05);
+      applyMixLevels();
       syncCarRadio();
+      renderRadioVolume();
     }
+    /* The radio music level, one value for Settings · Audio and the radio box
+       (car-radio.js RADIO VOLUME). `from` is the level a slide started at: a
+       slide down to nothing remembers it for the speaker's unmute. */
+    function setRadioVolume(value, { from = null, save = true } = {}) {
+      const next = clamp(Math.round(value), 0, 100);
+      if (next === 0 && from > 0) settings.radioUnmute = from;
+      settings.radioVolume = next;
+      applyVolumes();
+      if (save) saveSettings();
+    }
+    function toggleRadioMute() {
+      if (settings.radioVolume > 0) {
+        settings.radioUnmute = settings.radioVolume;
+        setRadioVolume(0);
+      } else setRadioVolume(settings.radioUnmute >= 5 ? settings.radioUnmute : 80);
+    }
+    renderRadioVolume();
     let settingsOrigin = 'menu',
       settingsTab = 'graphics',
       // The binding being listened for: { id, slot } or null; and a clash waiting
@@ -343,6 +404,18 @@
         button.onclick = () => changeSetting(row, !row.get());
         return button;
       }
+      if (row.kind === 'action') {
+        const button = settingsElement('button', 'settings-reset', row.button);
+        button.type = 'button';
+        button.dataset.focus = row.id;
+        button.dataset.nav = '';
+        button.disabled = !!row.disabled?.();
+        button.onclick = () => {
+          row.run();
+          renderSettings(row.id);
+        };
+        return button;
+      }
       if (row.kind === 'slider') {
         const wrap = settingsElement('label', 'settings-slider'),
           input = document.createElement('input'),
@@ -361,7 +434,11 @@
           readout.textContent = input.value;
           input.style.setProperty('--fill', input.value + '%');
         };
-        input.onchange = saveSettings;
+        input.onchange = () => {
+          saveSettings();
+          const reset = getElement('settingsBody').querySelector('[data-focus="audioReset"]');
+          if (reset) reset.disabled = audioVolumesAreDefault();
+        };
         wrap.append(input, readout);
         return wrap;
       }

@@ -81,10 +81,15 @@ Two closures matter:
   `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats, the
   flight HUD, metres in prompts, the map's scale bar, the Falcon's and the Eye's figures) comes
   from it.
-- **On foot** (game.js `FOOT_WALK` 5.5, `FOOT_JOG` 11, `FOOT_SPRINT` 24 km/h): the player jogs;
-  Shift sprints, C (`walk`, controls.js) walks. Swimming 3.5 / 5 km/h. Pedestrians walk 4-6 km/h
-  (`cityTempo`), flee at 17-21, officers run 16-19 (`OFFICER_KINDS.run`), so a sprinting player
-  outruns them. Legs keep pace with the ground through `strideCycle(speed)` / `strideRate(speed)`
+- **On foot** (game.js `FOOT_WALK` 5.4, `FOOT_RUN` 20 km/h, `footPace()`): the player runs by
+  default and walks while Shift (`walk`, controls.js, "Walk (hold)") is held; there is no separate
+  sprint. The Blue Hour terrace is always walked (a stealth party). `footPace()` is read by the
+  movement, mountain footing (terrain.js), footsteps (audio.js) and the police's aim (pursuit.js);
+  the player's legs swing wider and lean in at the run (render3d.js `playerRunAmount`, from the
+  model's measured travel). Swimming crawls hard by default (5 km/h, breath drains 1.7/s) and
+  eases into breaststroke (3.5 km/h, 1/s) with Shift or once breath is under 30%
+  (water.js `swimHard`). Pedestrians walk 4-6 km/h (`cityTempo`), flee at 17-21, officers run
+  16-19 (`OFFICER_KINDS.run`), so the default run outpaces them. Legs keep pace with the ground through `strideCycle(speed)` / `strideRate(speed)`
   (one stride = 10 units + 0.3 s of travel), used by crowd3d.js and every `walk` phase.
 - **Road vehicles** are specified in real units in `VEHICLE_DEFINITIONS`: `topKmh`, `zeroTo`
   ([km/h, s], usually 0-100), `brakeG`, `cornerG` (sideways grip the steering may use) and
@@ -186,14 +191,14 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends) |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends); RADIO VOLUME, the radio box's speaker and slider (section 4d); `radioReport()` |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: soldiers, police and mission characters first, then lines at the player, then the nearest; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
 | beachclub-audio.js | The club's procedural music on a look-ahead scheduler (day, sunset and night sets), the wall low-pass by where the listener stands, and `mareaGroove`, the beat clock the dancers and lights follow |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
-| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, volumes (`volumeScale`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
+| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
 | hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
 
@@ -589,7 +594,7 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **Aircraft** climb and descend on their own actions, `ascend` / `descend` (↑ / ↓, with
   T / G as second keys; the virtual codes stay `KeyT` / `KeyG` through the action's `code`):
   the helicopter's lift and the plane's pitch (physics.js `helicopterControl`, aviation.js
-  `planeControl`), clear of Space (handbrake) and Shift (sprint). The arrows are also
+  `planeControl`), clear of Space (handbrake) and Shift (walk on foot, pedal hard on a bicycle). The arrows are also
   forward / back's second keys: `ascend` / `descend` declare `overrides: 'forward'` /
   `'back'`, so `actionsForKey()` gives the key to them in the `air` context
   (`controlContext()`) and to movement everywhere else, and `controlConflicts()` does not
@@ -605,9 +610,29 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   switch writes `dead-end-city-cutaway` and calls `city3D.setCharacterCutaway(on)` (owned by
   the renderer). NPC chatter off hides the street speech bubbles (render3d.js); mission
   dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected.
-- **Audio buses**: `master` carries effects and ambience at `effectsLevel()`, `voiceBus` the
-  radio callouts at `voiceLevel()`; the car radio element's volume is scaled by
-  `volumeScale('radio')`. `applyVolumes()` pushes a change into the live mix.
+- **Audio buses** (audio.js THE MIX): one gain per category, each set by its Settings · Audio
+  slider (settings.js `AUDIO_VOLUMES`; `busLevel(channel)` = 0.62 x the slider): `master`
+  (effects: weapons, impacts, crashes, UI; the historical name, so anything connected to
+  `master` is an effect), `engineBus` (engine-audio.js, the tyre and rotor loops), `ambienceBus`
+  (ambience.js and everything on `ambience.bus`, weather, water, the pier rides, the drawbridge,
+  parachute wind), `sirenBus` (the police siren loop, Fort Sentinel's siren), `musicBus` (the
+  beach club, at the radio level) and `voiceBus` (callouts). All but the voices pass the
+  ride-skip `duckBus`, then the ear filter, then `mixBus` (master volume x the Sound switch) and
+  the limiter. Engines default to 65 (about 3.7 dB under their old level on the shared effects
+  slider); a save from before the split starts ambience at its old effects value and engines at
+  65% of it. The car radio is an `<audio>` element scaled by `volumeScale('radio')` (master x
+  radio). `applyVolumes()` pushes every change into the live mix and the radio box's slider;
+  RESET AUDIO TO DEFAULTS (an `action` row) restores the default mix.
+- **Radio volume** (car-radio.js RADIO VOLUME): the radio box's open rows carry a speaker (mute
+  / unmute to `settings.radioUnmute`), a slider and the level: the same value as Settings ·
+  Audio · Radio & music, set through `setRadioVolume()` (settings.js) and redrawn by
+  `renderRadioVolume()` whoever changes it. Drag, click, the wheel anywhere over the box (open or
+  resting), a tap on touch (the box opens first), the focused slider's own keys, and
+  `radioQuieter` / `radioLouder` (`,` / `.`, remappable) in a vehicle. The row stops pointer,
+  click and key events so nothing reaches the canvas (fire, aim, zoom) or the window's keydown
+  (arrows, Space); the box stays open while a drag lasts and gives focus back to the canvas
+  after a mouse drag or click. Muted, the resting chip's bars lie flat with a crossed speaker.
+  `DeadEndCity.radio()` reports it.
 - **HUD** (shell.html DOM and the INTERFACE 30 stylesheet section; hud.js): top-left
   location, top-right cash / stars / clock, a waypoint pill top centre, bottom row minimap
   with health and armour bars, the mission card and the equipment column. The radio and
@@ -826,7 +851,7 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
 - **The player on the pitch.** `sportsHumanOnField` (inside `PITCH_FENCE`, on foot). Walking
   into the ball takes it (`ball.ownerId === SPORTS_HUMAN`, carried in front of the feet),
   walking into a dribbler may win it; E (`sportsInteract` from `interact()`, prompt from
-  `sportsKickPrompt`) kicks along the facing, Shift for a harder, higher strike. Loose-ball
+  `sportsKickPrompt`) kicks along the facing: a full, lofted strike, or with Shift (walking) a softer pass along the ground. Loose-ball
   physics: friction, bounces, posts and crossbar (`sportsGoalFrame`), the net
   (`sportsHoldInNet`), boards outside play (`sportsBallBoards`), out of play during it. A goal
   is the whole ball over the line between the posts and under the bar; it counts for the side

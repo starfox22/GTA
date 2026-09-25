@@ -64,6 +64,8 @@
       { id: 'horn', label: 'Horn', note: 'Sound the horn', group: 'vehicle', keys: ['KeyH'], ctx: ['drive'] },
       { id: 'radioPower', label: 'Radio on / off', note: 'Car radio power', group: 'vehicle', keys: ['KeyN'], ctx: ['drive', 'air'] },
       { id: 'radioNext', label: 'Next station', note: 'Tune the next radio station', group: 'vehicle', keys: ['KeyB'], ctx: ['drive', 'air'] },
+      { id: 'radioQuieter', label: 'Radio volume down', note: 'Turn the radio down (the radio box shows the level; the same as Settings · Audio)', group: 'vehicle', keys: ['Comma'], ctx: ['drive', 'air'] },
+      { id: 'radioLouder', label: 'Radio volume up', note: 'Turn the radio up', group: 'vehicle', keys: ['Period'], ctx: ['drive', 'air'] },
       // A passenger is on foot as far as contexts go (controlContext()).
       { id: 'skipRide', label: 'Skip the ride', note: 'Riding a cab, a train or the liner: fade out and arrive (the cab fare is charged)', group: 'vehicle', keys: ['KeyY'], ctx: ['foot'] },
       { id: 'skipStop', label: 'Skip to another stop', note: 'On a train: choose the station the skip takes you to', group: 'vehicle', keys: ['KeyU'], ctx: ['foot'] },

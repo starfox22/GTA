@@ -52,7 +52,7 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 | Tank | the mouse (or the touch aim stick) lays the turret; F / click fires the selected gun, Q switches main gun and machine gun, right click fires the machine gun |
 | Surrender | stand still (or stop the car) with the police close, at one to four stars |
 | City map | Tab |
-| Car radio (also on the Falcon coaster and the Sunset Eye) | N power, B next station |
+| Car radio (also on the Falcon coaster and the Sunset Eye) | N power, B next station, `,` / `.` volume; the radio box has a volume slider (drag, wheel, speaker mutes) |
 | Horn, mute | H, M |
 | Show the mission card again | O (or click the objective strip) |
 | Street zoom | mouse wheel or pinch; + / − and 0 |
@@ -66,8 +66,8 @@ mission open in the mission picker, and there a time-of-day chooser (presets fro
 Every key can be rebound in **Settings · Controls** (from the title menu or the pause
 menu), which also warns about clashes and offers to swap. Settings has four tabs:
 GRAPHICS (quality tier, frame limiter at 30 / 60 / 120 FPS or unlimited, FPS counter,
-character see-through), AUDIO (sound on/off; master,
-effects, radio music and voice volumes; radio voices), GAMEPLAY (NPC chatter, minimap,
+character see-through), AUDIO (sound on/off; master, radio & music, engines & vehicles,
+effects, voices, ambience and sirens volumes; radio voices; reset to the default mix), GAMEPLAY (NPC chatter, minimap,
 GPS route on the minimap, control hints) and CONTROLS (touch controls, key bindings). Touch controls appear
 automatically on phones and tablets. Progress and every setting save to the browser's
 local storage. The game runs offline; nothing is fetched from the network.

@@ -129,7 +129,7 @@
       body.Q.value = 0.8;
       body.gain.value = 3;
       out.gain.value = 0;
-      tone.connect(body).connect(out).connect(master);
+      tone.connect(body).connect(out).connect(engineBus);
       const noise = engineNoiseBuffer(),
         noiseLayer = (type, frequency, q) => {
           const source = audio.createBufferSource(),
@@ -141,7 +141,7 @@
           filter.frequency.value = frequency;
           filter.Q.value = q;
           gain.gain.value = 0;
-          source.connect(filter).connect(gain).connect(master);
+          source.connect(filter).connect(gain).connect(engineBus);
           source.start(0, Math.random() * 1.5);
           return { source, filter, gain };
         };
@@ -329,12 +329,12 @@
       wobble.frequency.value = 1.3;
       wobbleDepth.gain.value = 0;
       for (const g of [roarGain, hissGain, whineGain, propGain]) g.gain.value = 0;
-      roar.connect(roarFilter).connect(roarGain).connect(master);
-      hiss.connect(hissFilter).connect(hissGain).connect(master);
+      roar.connect(roarFilter).connect(roarGain).connect(engineBus);
+      hiss.connect(hissFilter).connect(hissGain).connect(engineBus);
       whine.connect(whineGain);
       whine2.connect(whineGain);
-      whineGain.connect(master);
-      prop.connect(propFilter).connect(propGain).connect(master);
+      whineGain.connect(engineBus);
+      prop.connect(propFilter).connect(propGain).connect(engineBus);
       // The blades beat slowly against the airframe: a gentle wobble on the buzz.
       wobble.connect(wobbleDepth).connect(propGain.gain);
       roar.start(0, 0.3);
@@ -433,7 +433,7 @@
           filter.type = 'lowpass';
           filter.frequency.value = 3000;
           gain.gain.value = 0;
-          source.connect(filter).connect(pan).connect(gain).connect(master);
+          source.connect(filter).connect(pan).connect(gain).connect(engineBus);
           source.start(0, Math.random() * (LOOP_SECONDS[name] || 0.5));
           a.traffic.push({ car: w.c, kind: w.kind, name, root, layer: index, source, filter, pan, gain, lastSpeed: speed, rpm, rate: 1, level: 0 });
         }
@@ -540,7 +540,7 @@
         const source = loopingSource('tank-tracks'),
           gain = audio.createGain();
         gain.gain.value = 0;
-        source.connect(gain).connect(master);
+        source.connect(gain).connect(engineBus);
         source.start();
         a.gravel = { source, gain };
       }

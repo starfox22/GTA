@@ -3407,6 +3407,181 @@ kbd {
   background: var(--acid);
   color: #111;
 }
+/* Radio volume: speaker (mute), slider, level. The row lights up under the
+   pointer; the thumb grows on hover and while dragging. */
+.radio-volume {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 8px -6px 0 -4px;
+  padding: 3px 8px 3px 3px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.radio-volume:hover,
+.radio-volume:focus-within {
+  background: #ffffff10;
+  border-color: var(--ui-line);
+}
+.radio-volume.dragging {
+  background: #ffffff14;
+  border-color: var(--ui-line-strong);
+}
+#carRadio #radioMute {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ui-text);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+#carRadio #radioMute:hover {
+  background: #ffffff16;
+  border-color: var(--ui-line-strong);
+}
+#carRadio #radioMute:focus-visible,
+#radioVolume:focus-visible {
+  outline: 2px solid var(--acid);
+  outline-offset: 2px;
+}
+#radioMute svg,
+.radio-chip-muted {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#radioMute .spk,
+.radio-chip-muted .spk {
+  fill: currentColor;
+  stroke-width: 1;
+}
+#radioMute .cross {
+  display: none;
+  stroke: var(--ui-danger);
+}
+.radio-volume.muted #radioMute {
+  color: var(--ui-dim);
+}
+.radio-volume.muted #radioMute .wave,
+.radio-volume.quiet #radioMute .w2 {
+  display: none;
+}
+.radio-volume.muted #radioMute .cross {
+  display: inline;
+}
+#radioVolume {
+  --fill: 80%;
+  flex: 1;
+  min-width: 0;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  touch-action: none;
+}
+#radioVolume::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--acid) var(--fill), #ffffff26 var(--fill));
+}
+#radioVolume::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--acid) var(--fill), #ffffff26 var(--fill));
+}
+#radioVolume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px #0009;
+  transition:
+    transform 0.18s var(--ui-ease),
+    box-shadow 0.18s;
+}
+#radioVolume::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px #0009;
+}
+.radio-volume:hover #radioVolume::-webkit-slider-thumb,
+#radioVolume:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.25);
+  box-shadow:
+    0 1px 4px #0009,
+    0 0 0 4px color-mix(in srgb, var(--acid) 30%, transparent);
+}
+.radio-volume.dragging #radioVolume::-webkit-slider-thumb {
+  transform: scale(1.4);
+  box-shadow:
+    0 1px 4px #0009,
+    0 0 0 5px color-mix(in srgb, var(--acid) 40%, transparent);
+}
+.radio-volume.muted #radioVolume::-webkit-slider-runnable-track {
+  background: #ffffff1c;
+}
+.radio-volume.muted #radioVolume::-moz-range-track {
+  background: #ffffff1c;
+}
+#radioVolumeValue {
+  flex-shrink: 0;
+  min-width: 22px;
+  text-align: right;
+  font:
+    800 10px/1 var(--ui-font);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-dim);
+  transition: color 0.2s;
+}
+.radio-volume:hover #radioVolumeValue,
+.radio-volume:focus-within #radioVolumeValue,
+.radio-volume.dragging #radioVolumeValue {
+  color: var(--acid);
+}
+.radio-volume.muted #radioVolumeValue {
+  color: var(--ui-danger);
+}
+/* Muted: the chip's bars lie flat and a crossed speaker sits at its end, so
+   the resting chip says so too. */
+.radio-chip-muted {
+  display: none;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  color: var(--ui-danger);
+}
+#carRadio.radio-muted .radio-chip-muted {
+  display: block;
+}
+#carRadio.radio-muted .radio-eq i {
+  animation: none;
+  transform: scaleY(0.2);
+}
 body:not(.touch-mode).police-search-active #carRadio {
   top: 290px;
 }
@@ -4657,6 +4832,18 @@ body.no-key-hints .quickkeys {
 .touch-mode #carRadio.open {
   width: 250px;
 }
+.touch-mode #radioVolume {
+  height: 30px;
+}
+.touch-mode #radioVolume::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+}
+.touch-mode #carRadio #radioMute {
+  width: 34px;
+  height: 30px;
+}
 /* Portrait phones: the mission card drops under the minimap / weapon row. */
 @media (max-width: 600px) {
   .touch-mode .hud-location {
@@ -5160,6 +5347,9 @@ body.no-key-hints .quickkeys {
       <div class="radio-chip">
         <span class="radio-eq" aria-hidden="true"><i></i><i></i><i></i></span>
         <strong id="radioStation">ODDBALL 99.3</strong>
+        <svg class="radio-chip-muted" viewBox="0 0 20 20" aria-hidden="true">
+          <path class="spk" d="M3 7.5h3.2L10.5 4v12L6.2 12.5H3z" /><path d="M13.2 7.6l4.8 4.8M18 7.6l-4.8 4.8" />
+        </svg>
       </div>
       <div class="hud-more">
         <div class="hud-more-inner">
@@ -5168,6 +5358,23 @@ body.no-key-hints .quickkeys {
             ><button id="radioPower" aria-label="Toggle car radio" aria-pressed="true">N · ON</button>
           </div>
           <div id="radioTrack" aria-live="polite"></div>
+          <!-- The radio volume: the same value as Settings · Audio · Radio music
+               (car-radio.js RADIO VOLUME). -->
+          <div class="radio-volume" id="radioVolumeRow">
+            <button id="radioMute" type="button" aria-label="Mute radio" aria-pressed="false" title="Mute radio">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path class="spk" d="M3 7.5h3.2L10.5 4v12L6.2 12.5H3z" />
+                <path class="wave w1" d="M13 7.4a3.6 3.6 0 0 1 0 5.2" />
+                <path class="wave w2" d="M15.3 5.2a6.8 6.8 0 0 1 0 9.6" />
+                <path class="cross" d="M13.2 7.6l4.8 4.8M18 7.6l-4.8 4.8" />
+              </svg></button
+            ><input id="radioVolume" type="range" min="0" max="100" step="5" value="80" aria-label="Radio volume" /><output
+              id="radioVolumeValue"
+              for="radioVolume"
+              aria-hidden="true"
+              >80</output
+            >
+          </div>
           <div class="radio-presets">
             <button id="radioPreset0" aria-label="Tune Oddball 99.3, after-hours mix" aria-pressed="true">
               ODDBALL</button

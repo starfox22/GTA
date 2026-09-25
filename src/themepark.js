@@ -1519,7 +1519,7 @@
       if (parkAudio.bus) return parkAudio.bus;
       const bus = audio.createGain();
       bus.gain.value = 1;
-      bus.connect(master);
+      bus.connect(ambienceBus);
       parkAudio.bus = bus;
       // Train roar: looping noise through a low-pass; gain follows speed and distance.
       const n = audio.sampleRate * 2,

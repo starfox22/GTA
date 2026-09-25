@@ -4954,6 +4954,10 @@
         tuneCarRadio(carRadioStation + 1);
         return;
       }
+      if (radioAboard() && (is('radioLouder') || is('radioQuieter'))) {
+        stepRadioVolume(is('radioLouder') ? 1 : -1);
+        return;
+      }
       // Skip the ride, or pick the train's stop for it (ride-skip.js). Off a ride
       // the keys fall through and do nothing.
       if ((is('skipRide') && rideSkipKey('skip')) || (is('skipStop') && rideSkipKey('cycle'))) return;
@@ -6184,8 +6188,9 @@
       // masterVolume: 40, minimapZoom: 2, minimapFolded: true, touch: 'on' }.
       settings(changes) {
         if (changes && typeof changes === 'object') {
-          for (const key of ['masterVolume', 'soundVolume', 'radioVolume', 'voiceVolume'])
+          for (const { key } of AUDIO_VOLUMES)
             if (Number.isFinite(changes[key])) settings[key] = clamp(Math.round(changes[key]), 0, 100);
+          if (changes.audioReset === true) resetAudioVolumes();
           if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
           if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
@@ -6213,10 +6218,10 @@
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,
           sound: soundOn,
-          masterVolume: settings.masterVolume,
-          soundVolume: settings.soundVolume,
-          radioVolume: settings.radioVolume,
-          voiceVolume: settings.voiceVolume,
+          // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
+          // radioVolume, engineVolume, soundVolume (effects), voiceVolume,
+          // ambienceVolume, sirenVolume.
+          ...Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.key, settings[v.key]])),
           voices: voicesOn,
           chatter: settings.npcChatter,
           minimapFolded: hudState.minimapFolded,
@@ -6229,6 +6234,8 @@
           screen: gameMode === 'settings' ? settingsTab : null,
         };
       },
+      // The car radio and the radio box's volume row (car-radio.js RADIO VOLUME).
+      radio: () => radioReport(),
       // Open the settings screen on a tab ('graphics', 'audio', 'gameplay',
       // 'controls'); during play it opens over the pause menu. Screenshot tours use it.
       openSettings(tab = 'graphics') {
