@@ -72,6 +72,8 @@ const embeddedAssetReferences = {
     "crash-glass-1": "media-audio-crash-glass-1",
     "crash-glass-2": "media-audio-crash-glass-2",
     "crash-debris": "media-audio-crash-debris",
+    "stadium-goal-cheer": "media-audio-stadium-goal-cheer",
+    "stadium-goal-groan": "media-audio-stadium-goal-groan",
     "call-backup": "media-audio-call-backup",
     "civilian-scream-female-1": "media-audio-civilian-scream-female-1",
     "civilian-scream-female-2": "media-audio-civilian-scream-female-2",

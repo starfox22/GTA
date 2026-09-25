@@ -458,6 +458,34 @@ crash-glass-2.ogg
   Obtained from ESC-50 (audio/3-203375-A-39.wav), listed there as CC0.
   Changes: first 1.45 s, 0.45 s fade-out, loudness-matched.
 
+STADIUM GOAL CHEER AND GROAN
+Played by src/sports-audio.js only when a goal is scored at South Coast Stadium: the cheer
+from the scoring club's end, the groan from the other. Both come from one pack recorded at
+one football ground, so they sit together. Freesound could not be opened from the build
+environment; the files were taken from a public GitHub copy of the pack that includes
+Freesound's own _readme_and_license.txt, which lists every sound in the pack as CC0.
+
+Pack: "Soccer match stadium sounds" by Sandermotions
+  https://freesound.org/people/Sandermotions/packs/27815/
+  License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from eventanilha82/arena-ai on GitHub, retrieved 2026-09-25:
+  assets/sounds/runtime_assets/goal_crowd_cc0.wav and crowd_near_miss_01.wav (SHA-256
+  2bb6f6e1... and e666102e..., matching that repo's assets/sounds/audio_manifest.json, which
+  gives their origin as pack 27815 sounds 494352 and 494359), with the pack licence in
+  assets/sounds/candidates/freesound/sandermotions_soccer_match_stadium_sounds_pack_27815/
+  _readme_and_license.txt.
+
+stadium-goal-cheer.ogg
+  "goal" by Sandermotions, https://freesound.org/s/494352/ (CC0 1.0)
+  Changes: 4.75-12.75 s of the recording (the crowd going up for the goal, the roar and
+  its decay), stereo folded to mono, 70 Hz high-pass, 0.12 s fade-in, 2.6 s fade-out,
+  limited to -1 dBFS, 32 kHz OGG Vorbis quality 3 (68 KB).
+
+stadium-goal-groan.ogg
+  "soccer-stadium-booohh" by Sandermotions, https://freesound.org/s/494359/ (CC0 1.0)
+  Changes: the whole 3.4 s, stereo folded to mono, 70 Hz high-pass, 0.8 s fade-out,
+  +13 dB and limited to -1 dBFS, 32 kHz OGG Vorbis quality 3 (30 KB).
+
 ENGINE, BOAT AND TANK SOUNDS
 Played by src/engine-audio.js: per class, loops recorded at known revs are pitched by the
 simulated RPM and cross-faded (the player's vehicle), one loop per nearby traffic vehicle.
