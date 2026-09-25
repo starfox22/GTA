@@ -2139,6 +2139,8 @@
           }
           return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
         },
+        // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
+        searchlight: (options) => searchlightReport(options),
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.
         postView(mode) {
           postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : 0;

@@ -230,7 +230,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | flight-view3d.js | Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
-| searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
+| searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie textures and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light (`AIR_LIGHT`, `HELI_SEARCHLIGHT_MOUNT`), lens flare and crew aim (`updateHelicopterSearchlight`), `searchlightReport` |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
 | signkit3d.js | (included by render3d.js before `sign()`) `SignKit`: the hand-built stroke font (`strokeText`), letter treatments (`tubes`, `doubleTubes`, `bulbLetters`, `blockLetters`, `stencilCut`, `decoLetters`, `pixelLetters`), canvas type effects (`fxText` with font stacks, gold and chrome fills), board shapes and materials (`boardPath`, `fillBoard`), emblems (`icon`, `tubeIcon`) |
@@ -1166,14 +1166,31 @@ docs/audit/missions-qa.md shows the method).
 - **Searchlights** (searchlight3d.js): a shaft is a cone whose front faces march the view
   ray through the cone (exit solved analytically): soft radial profile with a hot core,
   denser towards the lamp, forward scattering, drifting haze noise (MEDIUM and up), a soft
-  fade into the ground plane and a soft shoulder so a beam seen end-on never blows out. The
-  police helicopter's pool is one real SpotLight (always in the scene, intensity 0 when idle,
-  so no program changes) with a cookie map; it casts shadows on HIGH/ULTRA while sun shadows are
-  HIGH (switched only on a tier or shadow setting change). Rain streaks inside its cone are lit (one GPU-animated LineSegments). The
-  aim is a critically damped spring fed with the target's velocity: it lags and wobbles while
-  tracking, sweeps a widening figure round the last sighting while searching, and snaps on
-  with a flare when the player is found again. The Fort Sentinel watch towers use the same
-  shaft with a cookie decal on the ground. Faint by day, strong at night and in rain.
+  fade into the ground plane and a soft shoulder (`uCap`) so a beam seen end-on never blows
+  out. The Fort Sentinel watch towers use that shaft with a soft cookie decal on the ground.
+- **Police helicopter searchlight** (searchlight3d.js, HELICOPTER SEARCHLIGHT LOOK,
+  `AIR_LIGHT`): the pool is light, not an overlay. One real SpotLight (always in the scene,
+  intensity 0 when idle, so no program changes) in cool xenon white (`#d8e5ff`) with a crisp
+  cookie (hot centre, even plateau, faint caustic ring, narrow penumbra, a whisper of spill,
+  slightly oval) lights the ground, cars, facades and the player through their own
+  materials, so the player is lit from above with their own colour and detail and casts a
+  sharp shadow away from the helicopter (HIGH/ULTRA while sun shadows are HIGH, switched only
+  on a tier or shadow setting change). Its brightness is set as exposed light (divided by
+  `postLook.exposure`): pale paving comes out near white without clipping, asphalt a clear
+  mid grey, and dark ground stays under the night bloom threshold. The shaft is a garnish,
+  drawn on HIGH/ULTRA only: faint in clear air, fuller in rain and murk, thinned over its last
+  stretch (`uTail`) and cleared round the lit point (`uClear`, 1.25 pool radii) so it never
+  lies over the target; rain streaks in the cone dim at head height. LOW/MEDIUM have the pool
+  alone. The aim is a critically damped spring fed with most of the target's velocity (a fast
+  car leads the pool slightly), with the operator's sway and the airframe's buzz on top; it
+  sweeps a widening figure round the last sighting while searching (the player under cover)
+  and snaps on with a flare when they are found again. The lamp's place on the airframe is
+  `HELI_SEARCHLIGHT_MOUNT` (forward / side / up from the helicopter's position): the only
+  thing it takes from the helicopter model. Why: the old shaft was integrated down to the
+  ground through the player (the march cannot read the depth buffer it is drawn into) and
+  saturated at 2.2 HDR seen end-on from the street camera, and the pool was about 4x brighter,
+  clipping pale paving and blooming over the player: a white veil (player vs pool contrast
+  -0.03, now about -0.7). `DeadEndCity.searchlight()` reports it and switches shaft / pool.
 - **Cutaway** (lighting3d.js, `updateCutaway`): when a building or a deck stands between the
   camera and the player (rays from their middle and head towards the camera hit its box,
   `findOccluders`), a player-sized hole is dithered through that structure alone. Also when the

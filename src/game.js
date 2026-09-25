@@ -6389,6 +6389,8 @@
       // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
       // 'bloom'; nothing for the image) to tune the post-processing.
       postView: (mode) => city3D?.postView?.(mode) ?? null,
+      // The helicopter searchlight's state, screen points and shaft / pool switches.
+      searchlight: (options) => city3D?.searchlight?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
