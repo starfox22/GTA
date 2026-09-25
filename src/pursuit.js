@@ -44,15 +44,15 @@
     ];
     // Seconds at five stars before the tank is sent: the light army units come first.
     const TANK_AFTER_SECONDS = 45;
-    // How each kind of officer fights; `run` is the pace on foot (a sprinting
-    // player, 24 km/h, can outrun every one of them). `dmg` is against NPCs, `playerDmg` against
+    // How each kind of officer fights; `run` is the pace on foot (the player's
+    // default run, game.js FOOT_RUN 20 km/h, outpaces every one of them). `dmg` is against NPCs, `playerDmg` against
     // the player (before the lethality scale in combat-rules.js, so 5.5 is about 11
     // health: an unarmoured player survives eight or nine pistol hits).
     const OFFICER_KINDS = {
       patrol: { hp: 85, vest: 25, color: '#2d455e', rate: [1.05, 1.5], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 210, run: 18 * KMH, sample: 'pistol' },
       road: { hp: 85, vest: 40, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 230, run: 17 * KMH, sample: 'pistol' },
       swat: { hp: 110, vest: 120, color: '#1b2026', rate: [1.5, 2.1], burst: 3, dmg: 20, playerDmg: 5, speed: 820, range: 270, run: 16 * KMH, sample: 'automatic', rifle: true },
-      fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 6.5, speed: 780, range: 250, run: 19 * KMH, sample: 'automatic', rifle: true },
+      fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 6.5, speed: 780, range: 250, run: 18 * KMH, sample: 'automatic', rifle: true },
       // Army riflemen out of an APC or a truck at five stars.
       soldier: { hp: 100, vest: 90, color: '#4a5638', rate: [1.3, 1.8], burst: 3, dmg: 19, playerDmg: 5, speed: 800, range: 260, run: 18 * KMH, sample: 'automatic', rifle: true },
       // A police marksman on a roof (swat.js fires the rounds).
@@ -621,11 +621,9 @@
         // fast, range and a stagger all spoil the aim. A miss goes visibly wide.
         const speed = player.car
             ? Math.hypot(player.car.vx || 0, player.car.vy || 0)
-            : keys.ShiftLeft || keys.ShiftRight
-              ? 150
-              : keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD
-                ? 90
-                : 0,
+            : keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD
+              ? footPace() * 3
+              : 0,
           d = combatDistance(o, player);
         let chance = policeTier().accuracy * (o.rifle ? 1.08 : 1);
         chance *= clamp(1.25 - d / 420, 0.45, 1.1);

@@ -568,7 +568,7 @@
         panner = audio.createStereoPanner();
       out.gain.value = level;
       panner.pan.value = clamp(pan, -0.85, 0.85);
-      out.connect(panner).connect(master);
+      out.connect(panner).connect(ambienceBus);
       build(out, audio.currentTime);
     }
     /* A warning bell: one strike, a few inharmonic partials ringing down (a
@@ -676,7 +676,7 @@
         whineGain.gain.value = 0.25;
         hum.connect(filter);
         whine.connect(whineGain).connect(filter);
-        filter.connect(gain).connect(master);
+        filter.connect(gain).connect(ambienceBus);
         hum.start();
         whine.start();
         d.motor = { gain, whine, sources: [hum, whine] };

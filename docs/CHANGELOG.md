@@ -65,6 +65,80 @@ Fort Sentinel's AH-64 Apache (apache.js, apache3d.js)
   A wrecked or lost Apache is back on its pad four minutes later, out of sight.
 - Console: `apache()`, `apacheAim(x, y)`, `apacheReset()`.
 
+## Unreleased — God mode settings
+
+While the `godmode` cheat is on, **Settings** has a fifth tab, **GOD MODE** (god-panel.js; the
+tab is hidden and out of the Q / E cycle otherwise, so the screen without god mode is as before):
+- **Time of day**: the mission picker's presets (dawn, morning, noon, golden hour, dusk, night,
+  3 am) as chips and a 24 h sky slider in five-minute steps, applied live behind the menu (the
+  backdrop is lighter on this tab so the change is seen); **Freeze time** holds the world clock
+  (and the weather machine) until it is switched off or god mode ends.
+- **Weather**: AUTO / CLEAR / FAIR / CLOUDY / OVERCAST / RAIN / STORM through the picker's
+  `setGodWeather` (a sky locks the weather machine, AUTO releases it). There is no fog state.
+- **Refill all ammo**: every weapon owned with a full clip and at least the godmode reserve
+  (clip x 9, rockets x 5), health and armour 100; in a vehicle it is mended and a tank gets its
+  40 shells and full coax belt back.
+- **Lose police**: the stars to zero through `clearPolice(true)`, the escape path (POLICE
+  CLEARED chip, units stand down and head home, the helicopter leaves, roadblocks lift); witness
+  calls already made are dropped and Fort Sentinel's alarm ends. Mission state is untouched.
+- **Teleport · pick on map**: closes the menus and opens the city map in pick mode (gold frame,
+  crosshair, "Click anywhere to teleport · Esc to cancel", a live line saying what a click there
+  would do; zoom, pan and pinch as usual). Esc / Tab / CLOSE go back to the tab.
+- The teleport (`godTeleport`, also behind the plain god-mode tap on the map, which used to drop
+  the player at the raw point, inside buildings or in the sea) resolves the point safely: on
+  foot the nearest walkable ground (a roof or building interior lands in the street outside,
+  24 units clear of walls where possible); open water gets a speedboat (or jet ski) to board;
+  a car, bike or tank comes along to the nearest clear stretch of road lined up with it; a boat
+  comes along on water and stays behind for a click on land; an aircraft comes along airborne
+  (at least 50 m, a plane 120 m at cruise speed). Then the other carriers are let go
+  (`teleportPlayer`, a train ride too), the ground height is set, the camera snaps and the crowd
+  resettles round the spot.
+- Console: `godPanel()`, `godTeleport(x, y)`, `godRefill()`, `godLosePolice()`,
+  `godFreeze(on)`, `mapScreenPoint(x, y)`.
+
+## Unreleased — run by default, the radio volume slider and the audio mixer
+
+On foot (game.js `FOOT_WALK` / `FOOT_RUN`, `footPace()`; controls.js)
+- The player runs by default at 20 km/h (was a jog at 11) and walks while Shift is held
+  (5.4 km/h; the action is now "Walk (hold)"). The separate sprint (24 km/h) and the C walk key
+  are gone; a save with walk still on C moves to Shift. Measured with `simulate` on Southport's
+  runway: 19.95 km/h running, 5.40 km/h with Shift.
+- The run still outpaces every officer on foot (16-19 km/h, pursuit.js), and the police's aim
+  now reads the real pace (a runner is harder to hit than a walker, as the sprint was).
+- Swimming crawls hard by default (5 km/h) and eases into breaststroke with Shift, or by itself
+  once breath is under 30%, so the default never spends the last of it.
+- The stadium kick is a full, lofted strike; with Shift (walking) a softer pass. The Blue Hour
+  terrace stays a walk (a stealth party), so "running near the detail" no longer applies.
+- Footsteps and mountain footing follow the pace; the player's legs swing wider and lean in at
+  the run (render3d.js `playerRunAmount`). The bicycle keeps Shift as "Pedal hard"; Shift in
+  vehicles is unchanged.
+- Hints: the bar reads SHIFT WALK on foot and SHIFT EASY STROKE swimming; the on-foot, swimming
+  and kick prompts, the remap menu and HOW TO PLAY follow. Touch: the RUN button is a held WALK,
+  and a gentle push of the move stick (under half-way) walks.
+
+Radio volume slider (car-radio.js RADIO VOLUME, shell.html)
+- The radio box's open rows gain a speaker (click mutes, again unmutes to the level it had), a
+  slider and the level. It is the same value as Settings · Audio · Radio & music (one setting,
+  saved, redrawn both ways). Hover lights the row and grows the thumb; dragging holds the box
+  open even when the pointer leaves it; the wheel anywhere over the box steps it by 5, open or
+  resting; muted, the resting chip's bars lie flat with a red crossed speaker.
+- Nothing reaches the game: the row stops pointer, click and key events, so a click on the
+  slider never fires or turns the camera and the focused slider's arrows never steer. After a
+  mouse drag the keys go back to the game.
+- Keyboard: `,` / `.` (Radio volume down / up, remappable) in a vehicle, and the focused
+  slider's own keys. Touch: a tap opens the box, then the slider drags (a bigger thumb).
+- Console: `DeadEndCity.radio()`.
+
+Audio mixer (audio.js THE MIX, settings.js `AUDIO_VOLUMES`)
+- Each category has its own gain and slider in Settings · Audio: Master, Radio & music,
+  Engines & vehicles, Effects, Voices, Ambience, Sirens, and RESET AUDIO TO DEFAULTS. Every
+  slider applies live and is saved. Engines (engine-audio.js, tyres, rotors) default to 65:
+  about 3.7 dB quieter than before. The ride-skip duck still dips everything but the radio and
+  the callouts; the master volume and the Sound switch moved to one gain after the ear filter.
+  A save from before starts ambience at its old "Effects & ambience" value and engines at 65% of
+  it.
+- Console: `audioMix().buses`, `settings()` with the seven volumes and `audioReset`.
+
 ## Unreleased — realistic runways
 
 Aircraft performance (aviation.js AIRFRAME_SPECS, FLIGHT CONTROLS)
