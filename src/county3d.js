@@ -842,11 +842,7 @@
         box(airportGroup, x, 17, 8900, 20, 25, 360, countyCream);
         box(airportGroup, x, 23, 9080, 32, 30, 32, terminalGlass);
       }
-      for (let x = 3620; x < 6070; x += 75)
-        for (const z of [9793, 9976]) {
-          box(airportGroup, x, 1.5, z, 3, 3, 3, warmLamp);
-          halo(airportGroup, x, 2, z, 10, '#e6dab1');
-        }
+      // The runway, its lights and markings are airfields3d.js.
       for (let i = 0; i < 8; i++) {
         box(airportGroup, 4730 + i * 36, 5, 8910, 24, 10, 14, mat(i % 2 ? '#bea077' : '#90a4a2'));
       }
@@ -861,6 +857,7 @@
         radar.rotation.y = gameTime * 0.7;
         updateBridgeVisuals();
         updateBaseVisuals();
+        updateAirfieldVisuals();
         updateTerrainVisuals();
       }
       function makeTank(vehicle) {

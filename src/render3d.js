@@ -1092,6 +1092,7 @@
       // @include src/beach3d.js
       // @include src/county3d.js
       // @include src/base3d.js
+      // @include src/airfields3d.js
       // @include src/boats3d.js
       // @include src/drawbridge3d.js
       // @include src/bridges3d.js

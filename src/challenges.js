@@ -371,19 +371,24 @@
           )
         ) {
           missionState.actionProgress = 0;
-          missionState.timer = missionState.timeLimit = 150;
+          // (150 s before the route went round the runway pier, ~20 s longer.)
+          missionState.timer = missionState.timeLimit = 170;
           crime(2);
           // Down Palm Sound under the Palm Sound Causeway, out past the south-west
-          // corner of Northbank and round the airport's sea wall, under the Coast
-          // Line viaduct and up the inlet to the Southport speedboat dock. (It
-          // ran down Marlow Bay and round Southport Beach before Palm Keys moved
-          // west; the beach and its swimmers are well off to the west now.)
+          // corner of Northbank, round the end of Southport's runway pier, under
+          // the Coast Line viaduct and up the inlet to the Southport speedboat
+          // dock. (It ran down Marlow Bay and round Southport Beach before Palm
+          // Keys moved west; the beach and its swimmers are well off to the west
+          // now. It cut straight across below the airport before the runway ran
+          // out to sea.)
           missionState.waterRoute = [
             { x: -600, y: 2700 },
             { x: -560, y: 3700 },
             { x: -500, y: 4700 },
             { x: -250, y: 5500 },
-            { x: 500, y: 5800 },
+            { x: 0, y: 8000 },
+            { x: 480, y: 8520 },
+            { x: 1100, y: 7600 },
             { x: 1640, y: 5780 },
             { x: 1550, y: 5540 },
             // The Southport dock's boat berth (DOCKS, citylife.js).

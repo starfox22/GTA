@@ -339,11 +339,13 @@
         x: 1180,
         y: 4890,
       },
+      // Runway 18/36 (airfields.js RUNWAYS has the whole plan): 460 m, most of
+      // it on the reclaimed pier south of the airport.
       runway: {
         x: 300,
         y: 4280,
         w: 236,
-        h: 1010,
+        h: 3680,
       },
       hangar: {
         x: 760,
@@ -374,10 +376,11 @@
         height: 152,
         kind: 'tower',
       },
+      // Southport is a GA strip now: three parked couriers (their fuselages).
       ...[
-        [680, 4800, true, 0.9],
-        [680, 5110, true, 1],
-        [1000, 5400, false, 0.65],
+        [800, 4650, false, 0.89],
+        [800, 4930, false, 0.89],
+        [1000, 5420, true, 0.89],
         [4100, 9160, true, 1.8],
         [4460, 9160, true, 1.6],
         [5710, 9300, false, 1.4],
@@ -545,7 +548,7 @@
       return land;
     }
     function inAirport(x, y) {
-      return y > 4120 && y < 5632 && x > 40 && x < 1400;
+      return (y > 4120 && y < 5632 && x > 40 && x < 1400) || (y >= 5632 && y < 8300 && x > 150 && x < 800);
     }
     function segmentDistance(x, y, a, b) {
       const dx = b[0] - a[0],
@@ -1132,49 +1135,20 @@
         strokeRoad(drawingContext, road.points, 2, '#d4ba75');
         drawingContext.setLineDash([]);
       }
-      const r = AIRPORT.runway;
-      drawingContext.fillStyle = '#333e47';
-      drawingContext.fillRect(r.x, r.y, r.w, r.h);
-      drawingContext.strokeStyle = '#d5d6c4';
-      drawingContext.lineWidth = 2;
-      drawingContext.strokeRect(r.x + 6, r.y + 6, r.w - 12, r.h - 12);
-      drawingContext.fillStyle = '#ece8d7';
-      for (let y = r.y + 75; y < r.y + r.h - 65; y += 54)
-        drawingContext.fillRect(r.x + r.w / 2 - 2, y, 4, 24);
-      for (const y of [r.y + 18, r.y + r.h - 48])
-        for (let x = r.x + 16; x < r.x + r.w - 10; x += 13) drawingContext.fillRect(x, y, 6, 28);
+      // The apron from the terminal to the taxiway, then the runway, its pier,
+      // taxiways and markings (airfields.js).
       strokeRoad(
         drawingContext,
         [
-          [r.x + r.w + 55, r.y + 100],
-          [r.x + r.w + 55, 5330],
-          [1060, 5330],
-        ],
-        45,
-        '#58616a',
-      );
-      strokeRoad(
-        drawingContext,
-        [
-          [530, 4890],
+          [700, 4890],
           [825, 4890],
           [825, 5110],
           [1150, 5110],
         ],
         110,
-        '#717971',
+        '#9a9c96',
       );
-      if (detail) {
-        drawingContext.fillStyle = '#e2ddc8';
-        drawingContext.font = 'bold 32px monospace';
-        drawingContext.textAlign = 'center';
-        drawingContext.fillText('18', r.x + r.w / 2, r.y + 80);
-        drawingContext.save();
-        drawingContext.translate(r.x + r.w / 2, r.y + r.h - 76);
-        drawingContext.rotate(Math.PI);
-        drawingContext.fillText('36', 0, 0);
-        drawingContext.restore();
-      }
+      paintAirfieldGround(drawingContext, detail);
       paintBeach(drawingContext, detail);
       drawingContext.restore();
       paintPromenades(drawingContext);
@@ -1275,6 +1249,9 @@
     }
     function districtAt(x, y) {
       if (COUNTY_LAKES.some((r) => regionContains(r, x, y))) return 'CLEARWATER RESERVOIR';
+      // The runway piers (airfields.js) belong to their airports.
+      const pier = runwayPierAt(x, y);
+      if (pier) return pier.airport;
       const reg = countyRegionAt(x, y);
       if (reg) {
         if (inMilitary(x, y)) return MILITARY.name;

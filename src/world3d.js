@@ -369,6 +369,15 @@
             mesh(cylinderGeo, darkMetal, group, 0, 6.6, -outward * 1.4, 1.5, 3.4, 1.5);
             mesh(sphereGeo, darkMetal, group, 0, 8.3, -outward * 1.4, 1.9, 1.1, 1.9);
           }
+        } else if (RUNWAY_PIERS.some((p) => p.id === e.region)) {
+          // A runway pier's rock armour: a sloping band of grey armour stone into
+          // the water under a concrete coping.
+          box(group, 0, 0.5, 0, e.length + 1, 1.6, 4, concrete);
+          box(group, 0, -0.6, outward * 5, e.length + 1, 3.2, 7, staticMat('#6f6d66', 0.97));
+          box(group, 0, -2.2, outward * 10, e.length + 2, 3, 6, staticMat('#5c5a54', 0.98));
+          for (let k = -1; k <= 1; k++)
+            if ((Math.round(e.x * 0.7 + e.y * 1.3) + k) % 2 === 0)
+              box(group, k * e.length * 0.3, -0.2, outward * (6 + k), e.length * 0.28, 2.4, 3.2, staticMat('#7b786f', 0.96));
         } else {
           // A low sand bank so the beach meets the water with a lip, not an edge.
           box(group, 0, 0.45, -outward * 5, e.length + 1, 1.2, 12, staticMat('#c8b68e', 0.97));
@@ -672,15 +681,20 @@
         ag.add(group);
         buildAircraft(kind, group, { color: kind === 'airliner' ? '#e6ebe8' : '#dfe3e0', accent: kind === 'airliner' ? '#2c6f8e' : '#8a3b46' });
       }
-      parkedJet(680, 4800, -Math.PI / 2, 0.9);
-      parkedJet(680, 5110, -Math.PI / 2, 1);
-      parkedJet(1000, 5400, 0, 0.65);
-      for (let y = 4300; y < 5290; y += 55)
-        for (const x of [294, 542]) {
-          box(ag, x, 1, y, 2, 2, 2, warmLamp);
-          halo(ag, x, 2, y, 8, '#e8dca5');
-        }
-      for (const z of [4790, 5110]) box(ag, 806, 14, z, 108, 15, 12, airWhite);
+      // Southport is a GA strip (airfields.js): light aircraft on its apron
+      // (AIRPORT_SCENERY_SOLIDS). The runway, its lights and markings are
+      // airfields3d.js.
+      for (const [x, z, a, color, accent] of [
+        [800, 4650, 0, '#e8e2d2', '#8a3b46'],
+        [800, 4930, 0, '#dfe6ea', '#2c6f8e'],
+        [1000, 5420, Math.PI / 2, '#ece4c8', '#3d6b4a'],
+      ]) {
+        const group = new Three.Group();
+        group.position.set(x, 0, z);
+        group.rotation.y = a;
+        ag.add(group);
+        buildAircraft('courier', group, { color, accent });
+      }
       for (let x = 840; x < 1070; x += 30) box(ag, x, 3, 5140, 21, 6, 12, staticMat('#91836d'));
       statics.push({
         x: 750,

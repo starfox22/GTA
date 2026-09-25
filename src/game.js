@@ -5094,6 +5094,7 @@
     // @include src/crash-audio.js
     // @include src/engine-audio.js
     // @include src/county.js
+    // @include src/airfields.js
     // @include src/military.js
     // @include src/armor.js
     // @include src/aviation.js
@@ -5723,9 +5724,11 @@
       // Spawn a vehicle of any VEHICLE_DEFINITIONS type beside the player and put
       // them at the controls. Aircraft can be lifted straight to an altitude in
       // metres above the ground so tests can look at the flight view. An optional
-      // heading (radians, 0 = east) points it down a chosen road.
-      drive(type = 'sedan', altitudeMeters = 0, headingRadians = player.a) {
+      // heading (radians, 0 = east) points it down a chosen road. A plane takes
+      // an optional airframe ('courier' default, 'jet', 'airliner').
+      drive(type = 'sedan', altitudeMeters = 0, headingRadians = player.a, airframe) {
         if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+        if (airframe && (type !== 'plane' || !AIRFRAME_SPECS[airframe])) throw Error('Unknown airframe ' + airframe);
         if (player.car) exitCar();
         let car = null;
         if (['speedboat', 'workboat', 'jetski'].includes(type)) {
@@ -5739,6 +5742,10 @@
           if (!car) throw Error('No open water near the player for ' + type);
           player.swimming = false;
         } else car = spawnClearCar(type, player.x + 60, player.y, headingRadians, false);
+        if (airframe) {
+          car.airframe = airframe;
+          car.hp = car.maxhp = vehicleSpec(car).hp;
+        }
         car.authorized = true;
         enterVehicle(car);
         if (altitudeMeters > 0 && isAircraft(car)) {
@@ -5754,6 +5761,9 @@
         }
         return this.status();
       },
+      // Runways, their thresholds, lights and PAPI indications, the piers and
+      // where every plane is (airfields.js).
+      airfields: () => airfieldReport(),
       // The player and the water: swimming, wading, stamina, shore type and the
       // nearest way out (see water.js).
       swim: () => swimStatus(),

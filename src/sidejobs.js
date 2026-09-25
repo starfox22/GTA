@@ -78,7 +78,8 @@
       { name: 'EXCHANGE SUBSTATION', x: 2600, y: 3290, zone: 2 },
     ];
     const SKY_RINGS = [
-      [418, 3900, 140],
+      // Straight ahead off runway 36, high enough for a steady climb-out.
+      [418, 3500, 220],
       [1150, 3200, 210],
       [2176, 2400, 270],
       [3690, 1700, 230],
@@ -184,10 +185,12 @@
             vehicles[i].type === 'plane' &&
             vehicles[i] !== player.car &&
             Math.abs(vehicles[i].x - 418) < 200 &&
-            vehicles[i].y > 4900
+            vehicles[i].y > 4200
           )
             vehicles.splice(i, 1);
-        missionState.car = makeCar('plane', 418, 5150, -Math.PI / 2, false, '#e8d6a8');
+        // Lined up on runway 36 at the south end of the pier: the whole 460 m
+        // ahead (the courier lifts off in 230-300 m).
+        missionState.car = makeCar('plane', 418, 7820, -Math.PI / 2, false, '#e8d6a8');
         missionState.car.mission = true;
         missionState.car.authorized = true;
         missionState.rings = SKY_RINGS.map(([x, y, altitude]) => ({ x, y, altitude, passed: false }));
@@ -329,7 +332,7 @@
             missionState.ring++;
             tone(880 + missionState.ring * 60, 0.12, 0.2);
             if (missionState.ring >= 8)
-              setStage(9, { x: 418, y: 4790, altitude: 0 }, 'LAND ON THE SOUTHPORT RUNWAY AND STOP', 'rafe', 'Clean lap. Now the hard part: put it down gently.');
+              setStage(9, { x: 418, y: 6100, altitude: 0 }, 'LAND ON THE SOUTHPORT RUNWAY AND STOP', 'rafe', 'Clean lap. Now the hard part: put it down gently.');
             else
               setStage(
                 missionState.ring + 1,

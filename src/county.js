@@ -410,11 +410,13 @@
         x: 4080,
         y: 8730,
       },
+      // Runway 09/27 (airfields.js RUNWAYS has the whole plan): 1,280 m, the
+      // west part on a reclaimed pier out into the sea.
       runway: {
-        x: 3600,
-        y: 9800,
-        w: 2480,
-        h: 168,
+        x: -4040,
+        y: 9764,
+        w: 10240,
+        h: 240,
       },
       terminal: {
         x: 3880,
@@ -480,24 +482,14 @@
       drawingContext.fillRect(ap.x, ap.y, ap.w, ap.h);
       drawingContext.fillStyle = '#a6a69a';
       drawingContext.fillRect(ap.x + 40, ap.y + 130, ap.w - 100, 730);
-      drawingContext.fillStyle = '#454e50';
-      drawingContext.fillRect(ap.runway.x, ap.runway.y, ap.runway.w, ap.runway.h);
-      drawingContext.fillStyle = '#dfdcc6';
-      for (let x = ap.runway.x + 170; x < ap.runway.x + ap.runway.w - 130; x += 95)
-        drawingContext.fillRect(x, ap.runway.y + 82, 50, 4);
-      for (const x of [ap.runway.x + 40, ap.runway.x + ap.runway.w - 100])
-        for (let y = ap.runway.y + 16; y < ap.runway.y + 155; y += 20)
-          drawingContext.fillRect(x, y, 60, 9);
-      drawingContext.fillStyle = '#d9d4b6';
-      drawingContext.font = 'bold 42px monospace';
-      drawingContext.fillText('09', ap.runway.x + 125, ap.runway.y + 100);
-      drawingContext.fillText('27', ap.runway.x + ap.runway.w - 175, ap.runway.y + 100);
+      // The runway, its piers and taxiway stubs (airfields.js); the stubs'
+      // links up to the apron.
+      paintAirfieldGround(drawingContext, detail);
       drawingContext.strokeStyle = '#d7b973';
       drawingContext.lineWidth = 3;
       for (const x of [3750, 4500, 5260, 5910]) {
         drawingContext.beginPath();
-        drawingContext.moveTo(x, ap.runway.y);
-        drawingContext.lineTo(x, ap.runway.y - 260);
+        drawingContext.moveTo(x, 9400);
         drawingContext.lineTo(x - 80, ap.y + 330);
         drawingContext.stroke();
       }
@@ -518,7 +510,9 @@
           if (
             !countyRegionAt(x, y) ||
             onCountyRoad(x, y, 15) ||
-            (y > 8400 && x > 3400 && x < 6250 && y < 10220)
+            (y > 8400 && x > 3400 && x < 6250 && y < 10220) ||
+            runwayPierAt(x, y) ||
+            (y > 9600 && y < 10100 && x < 6500)
           )
             continue;
           drawingContext.fillStyle = i % 3 ? '#a2b38b22' : '#233f292b';
@@ -628,6 +622,8 @@
           !countyRegionAt(x, y) ||
           onCountyRoad(x, y, 85) ||
           (x > 3400 && x < 6350 && y > 8320) ||
+          // Clear of the runway strip and its approaches.
+          (y > 9450 && y < 10250) ||
           buildings.some(
             (b) => x > b.x - 35 && x < b.x + b.w + 35 && y > b.y - 35 && y < b.y + b.h + 35,
           )
@@ -669,6 +665,20 @@
           h: CITY_SIZE,
           canvas,
         });
+      }
+      // The west half of Oceanview's runway pier lies out at sea, beyond every
+      // county sheet: it gets a strip of its own at the same resolution.
+      {
+        const tile = { x: -4480, y: 9472, w: 4480, h: 768 },
+          canvas = document.createElement('canvas'),
+          pixelsPerUnit = 2048 / CITY_SIZE;
+        canvas.width = Math.ceil(tile.w * pixelsPerUnit);
+        canvas.height = Math.ceil(tile.h * pixelsPerUnit);
+        const drawingContext = canvas.getContext('2d');
+        drawingContext.scale(pixelsPerUnit, pixelsPerUnit);
+        drawingContext.translate(-tile.x, -tile.y);
+        paintAirfieldGround(drawingContext, true);
+        countyGroundTiles.push({ ...tile, canvas });
       }
     }
     function countyRouteControl(c) {
@@ -786,7 +796,7 @@
       makeCar('supercar', 4200, 8740, 0);
       makeCar('bus', 4400, 8760, 0);
       makeCar('helicopter', 8130, 2740, 0);
-      makeCar('plane', FLIGHT.plane.x, FLIGHT.plane.y, 0);
+      makeCar('plane', FLIGHT.parked.x, FLIGHT.parked.y, 0);
       populateMilitary();
       spawnTrailVehicles();
       populateRecreation();

@@ -8,26 +8,24 @@
     /* Fixed-wing flight and two additional campaign chapters. Coordinates share the playable map. */
     const isAircraft = (vehicle) =>
       !!vehicle && (vehicle.type === 'helicopter' || vehicle.type === 'plane');
+    // Where a plane may land: every runway in airfields.js (RUNWAYS), plus Fort
+    // Sentinel's short strip (military.js). `a` is the runway's axis.
     const AIRFIELDS = [
-      {
-        name: 'OCEANVIEW',
-        x: 3600,
-        y: 9800,
-        w: 2480,
-        h: 168,
-        a: 0,
-      },
-      {
-        name: 'SOUTHPORT',
-        ...AIRPORT.runway,
-        a: Math.PI / 2,
-      },
+      ...RUNWAYS.map((r) => ({ name: r.name, ...runwayRect(r), a: r.axis === 'x' ? 0 : Math.PI / 2 })),
+      { name: 'FORT SENTINEL', ...SENTINEL.runway, a: 0 },
     ];
     const FLIGHT = {
+      // Mission 11's plane lines up on Oceanview's runway 09 at the west
+      // stub, 1,000 m of runway ahead of it (the courier needs about 300).
       plane: {
-        x: 3800,
+        x: 3000,
         y: 9884,
         a: 0,
+      },
+      // The courier parked on Oceanview's apron in free roam.
+      parked: {
+        x: 5000,
+        y: 9300,
       },
       heli: {
         x: 3690,
@@ -37,14 +35,10 @@
         x: 8130,
         y: 2740,
       },
+      // Southport's touchdown zone on runway 36 (landing northbound).
       arrival: {
         x: 418,
-        y: 4670,
-      },
-      approach: {
-        x: 418,
-        y: 5520,
-        altitude: 80,
+        y: 7300,
       },
     };
     missions.push(
@@ -101,11 +95,16 @@
         w: 100,
         hp: 250,
         flightMass: 1450,
-        // Wing and drag sized for a lift-off near 115 km/h and about 400 km/h
-        // flat out; `drag0` is the parasitic drag coefficient.
+        // Wing and drag sized for a lift-off near 115-140 km/h and about 400 km/h
+        // flat out; `drag0` is the parasitic drag coefficient. Take-off thrust
+        // is a loaded turboprop's share of its weight over the roll (a PC-12's
+        // is about 0.3), and `drag0` came down with it so the top speed held:
+        // the take-off roll is 230-300 m (AIRFRAME PERFORMANCE below).
+        // `brake` is the wheel brakes' best, in g.
         wing: 20.3,
-        drag0: 0.108,
-        thrust: 1.15 * GRAVITY,
+        drag0: 0.0263,
+        thrust: 0.28 * GRAVITY,
+        brake: 0.45,
         roll: 2.7,
         bank: 1,
         // Clean stall and rotation speeds (flaps lower both).
@@ -124,10 +123,12 @@
         hp: 320,
         mass: 5.2,
         flightMass: 2400,
-        // Lift-off near 180 km/h, about 740 km/h flat out.
+        // Lift-off near 180-200 km/h, about 740 km/h flat out; a light
+        // business jet's thrust-to-weight over the roll (0.3): 500-600 m.
         wing: 13.7,
-        drag0: 0.066,
-        thrust: 1.0 * GRAVITY,
+        drag0: 0.0198,
+        thrust: 0.3 * GRAVITY,
+        brake: 0.45,
         roll: 2.35,
         bank: 0.92,
         stall: 157 * KMH,
@@ -144,10 +145,12 @@
         hp: 520,
         mass: 14,
         flightMass: 4300,
-        // Lift-off near 210 km/h, about 830 km/h flat out.
+        // Lift-off near 210-230 km/h, about 830 km/h flat out; a regional
+        // jet's thrust-to-weight over the roll (0.26): 800-950 m.
         wing: 18.3,
-        drag0: 0.06,
-        thrust: 0.85 * GRAVITY,
+        drag0: 0.0184,
+        thrust: 0.26 * GRAVITY,
+        brake: 0.42,
         roll: 1.55,
         bank: 0.78,
         stall: 183 * KMH,
@@ -158,10 +161,12 @@
       },
     };
     function populateAircraft() {
+      // Both jets and the airliner live at Oceanview: Southport's 460 m strip is
+      // for the courier (a jet needs 500-600 m to lift off).
       for (const [airframe, x, y, a] of [
         ['jet', 5530, 9500, 0],
         ['airliner', 4880, 9520, 0],
-        ['jet', 690, 5390, -Math.PI / 2],
+        ['jet', 3790, 9230, 0],
       ]) {
         const vehicle = makeCar('plane', x, y, a, false, airframe === 'jet' ? '#e1e4db' : '#d0dfde');
         vehicle.airframe = airframe;
@@ -238,7 +243,13 @@
      */
     const FLAP_NOTCHES = ['UP', '1', '2', 'FULL'],
       GEAR_TRAVEL_SECONDS = 4.5,
-      FLAP_RATE = 0.4;
+      FLAP_RATE = 0.4,
+      // Drag coefficients added by full flap and by the gear down, on top of
+      // `drag0` (a real airframe's gear adds about a third of its clean drag).
+      FLAP_DRAG = 0.03,
+      GEAR_DRAG = 0.012,
+      // Tyres on a paved runway: about 0.025 g of rolling resistance.
+      ROLLING_RESISTANCE = 0.025 * GRAVITY;
     function flightSetup(aircraft) {
       if (aircraft.flightReady) return;
       aircraft.flightReady = true;
@@ -398,9 +409,9 @@
             ((airframeProfile.drag0 ?? 0.3) +
               0.068 * liftCoefficient * liftCoefficient +
               stallAngleExcess * 0.85 +
-              0.06 * flaps +
-              (airborne ? 0.04 * aircraft.gearPos : 0)) +
-          (airborne ? 0 : 0.1 * GRAVITY) +
+              FLAP_DRAG * flaps +
+              (airborne ? GEAR_DRAG * aircraft.gearPos : 0)) +
+          (airborne ? 0 : ROLLING_RESISTANCE) +
           // No wheels under it: the belly scrapes along.
           (!airborne && aircraft.gearPos < 0.5 ? 3.2 * GRAVITY : 0);
       const thrust =
@@ -471,7 +482,14 @@
         );
         // Wheel brakes: S with the power at idle brakes hard; with power on it
         // pulls the lever back and drags a little.
-        const braking = (down && aircraft.throttle < 0.05 ? (aircraft.gearPos > 0.5 ? 1.7 : 0.6) : down ? 0.9 : 0) * GRAVITY;
+        const braking =
+          (down && aircraft.throttle < 0.05
+            ? aircraft.gearPos > 0.5
+              ? airframeProfile.brake ?? 0.45
+              : 0.6
+            : down
+              ? 0.25
+              : 0) * GRAVITY;
         along = Math.max(0, along + (thrust - drag - braking) * stepSeconds);
         // Nosewheel steering: full lock at taxi speed, tapering off as the rudder
         // takes over on the take-off roll.
@@ -552,7 +570,15 @@
         gearWarning: !!c.gearWarning,
         buffet: c.buffet || 0,
         hp: c.hp / c.maxhp,
+        // On the ground on a runway: its designation this way and the metres left.
+        runway: plane && aircraftClearance(c) < 2 ? runwayInfo(c) : null,
       };
+    }
+    function runwayInfo(c) {
+      const under = runwayUnder(c.x, c.y, c.a);
+      return under
+        ? { name: under.runway.name, designation: under.designation, remaining: Math.round(worldMeters(under.remaining)) }
+        : null;
     }
     function flightMissionStart(missionState) {
       if (missionState.index === 9) {
@@ -616,37 +642,40 @@
       m.divert = divert;
       m.landingName = divert ? 'OCEANVIEW' : 'SOUTHPORT';
       m.approach = divert
-        ? {
-            x: 2750,
+        ? // Runway 27, landing westbound: in over the sea past Coral Coast.
+          {
+            x: 8500,
             y: 9884,
-            altitude: 120,
+            altitude: 200,
           }
-        : {
+        : // Runway 36, landing northbound: in over the sea south of the pier.
+          {
             x: 418,
-            y: 6000,
-            altitude: 120,
+            y: 10400,
+            altitude: 200,
           };
       setStage(
         2,
         m.approach,
         divert
-          ? 'DIVERT OCEANVIEW · APPROACH EASTBOUND · V SWITCH'
+          ? 'DIVERT OCEANVIEW · APPROACH WESTBOUND · V SWITCH'
           : 'SOUTHPORT EXPOSED · APPROACH NORTHBOUND · V DIVERT',
       );
     }
     function beginFlightEscape(missionState) {
       const c = missionState.car;
       missionState.aircraft = c;
+      // Southport: the van waits on the parallel taxiway beside the plane.
       const spot = missionState.divert
         ? {
             x: 3750,
             y: 9520,
           }
         : {
-            x: 1180,
-            y: 5005,
+            x: 700,
+            y: clamp(c.y, 4420, 7820),
           };
-      missionState.car = spawnClearCar('van', spot.x, spot.y, Math.PI / 2, false, '#829da1');
+      missionState.car = spawnClearCar('van', spot.x, spot.y, missionState.divert ? Math.PI / 2 : -Math.PI / 2, false, '#829da1');
       missionState.car.mission = true;
       missionState.car.authorized = true;
       missionState.escapeHeat = missionState.divert ? 2 : 3;
@@ -816,7 +845,7 @@
               3,
               missionState.divert
                 ? {
-                    x: 5100,
+                    x: 5400,
                     y: 9884,
                   }
                 : FLIGHT.arrival,

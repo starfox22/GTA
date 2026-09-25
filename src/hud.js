@@ -949,10 +949,12 @@
                 : data.hp < 0.3
                   ? 'ENGINE DAMAGE'
                   : '';
+      // On a runway with nothing more urgent: which runway and how much is left.
+      const runway = !warning && data.runway ? 'RWY ' + data.runway.designation + ' · ' + data.runway.remaining + ' M LEFT' : '';
       const box = flightHud.text.fhWarning;
-      fhSetText('fhWarning', warning);
-      box.classList.toggle('show', !!warning);
-      box.classList.toggle('caution', warning === 'STALL WARNING' || warning === 'ENGINE DAMAGE');
+      fhSetText('fhWarning', warning || runway);
+      box.classList.toggle('show', !!(warning || runway));
+      box.classList.toggle('caution', warning === 'STALL WARNING' || warning === 'ENGINE DAMAGE' || !!runway);
     }
     function drawFlightInstruments(data, heli) {
       flightHud.root.classList.toggle('heli', heli);

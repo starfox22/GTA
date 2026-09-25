@@ -92,7 +92,8 @@
       engineTrace = [];
     function engineKind(car) {
       if (!car) return null;
-      if (car.type === 'plane') return car.airframe === 'courier' ? 'turboprop' : 'turbofan';
+      // A plane without an airframe is the courier (makeCar's default plane).
+      if (car.type === 'plane') return (car.airframe || 'courier') === 'courier' ? 'turboprop' : 'turbofan';
       if (car.type === 'helicopter' || car.type === 'bicycle') return null;
       return ENGINE_OF_TYPE[car.type] ? ENGINE_OF_TYPE[car.type][0] : 'compact';
     }
