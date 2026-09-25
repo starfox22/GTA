@@ -1,5 +1,70 @@
 # Changelog
 
+## Unreleased — no snipers, an unarmed police helicopter, the Apache
+
+Police (swat.js, combat-rules.js, pursuit.js)
+- **Rooftop snipers are off**: `SNIPERS_ENABLED = false` (swat.js) is the one switch.
+  `spawnRoofSniper` refuses whoever asks, any marksman already up packs up, and their whole
+  telegraph is gated with it: the red laser and scope glint (render3d.js SNIPER SIGHTS), the
+  rising lock beep and the red screen-edge glow toward the shooter (hud.js SNIPER WARNING),
+  the "SNIPER ON THE ROOFTOPS" and "POLICE SNIPERS" captions. Set it to true to bring them
+  back unchanged. The five-star dispatch line no longer says SNIPERS UP.
+- **The police helicopter never fires.** Its marksman is gone (the `marksman` entries of
+  `POLICE_TIERS`, the lock-on, the led rounds, "MARKSMAN LINING UP"); the red glow players saw
+  from the helicopter before a shot was that lock warning. It still pursues, holds the player
+  in its searchlight, counts as a unit with eyes on the suspect (the search does not run down
+  while it sees you) and radios the sighting to the ground units. Still one at a time.
+- **Overhead cover hides you from the air** (air-cover.js `overheadCover(x, y, elevation)`):
+  the underpass, the rail decks and station canopies, bus shelters, the Falcon's queue canopy
+  and station roof, shop awnings, club and hotel entrance canopies, the cruise terminal's
+  drop-off canopy, Vinny's depot, building interiors, a bridge over a boat or swimmer. The
+  helicopter loses sight, sweeps its light round the last sighting and circles there; unless a
+  ground unit sees you the lose-police timer runs. The HUD's air line reads HIDDEN FROM AIR ·
+  UNDER COVER. One grid index over existing cover data plus `registerOverheadCover()` for the
+  renderer's roofs (every cutaway roof registers itself).
+- **No shots from off screen** (combat-rules.js ON-SCREEN RULE, `shooterInView`): police
+  officers (aimed and suppressive fire), army roof and turret gunners, the pursuit tank, marine
+  launches and Fort Sentinel's soldiers and armour only fire at a player on the ground while
+  they are inside the street view round the player. The long guns (roof gunners 480 units,
+  the tank 680, base towers 650) hold fire until they close in. Off in the air.
+- `DeadEndCity.shotLog()` lists every hostile round aimed at the player by source (unit kind),
+  with hits, damage, the shooter's distance and whether it was on screen;
+  `DeadEndCity.heal()` restores health for long tests with god mode off;
+  `DeadEndCity.cover(x, y)` reports the cover at a point.
+
+Measured headless: 140 s at five stars, god mode off (health restored under 70), police
+helicopter overhead the whole time: 1,877 rounds at the player, none from off screen, from
+army jeep roof gunners (647), SWAT (446), the APC turret (355), soldiers (220), agents (96)
+and patrol officers (113); zero rooftop-sniper or helicopter rounds, zero snipers spawned.
+Under the Falcon queue canopy, a bus shelter, a club entrance canopy and the cruise terminal
+canopy the helicopter went blind within a second (searching, searchlight on the last
+sighting) and, with no ground unit in sight, the lose-police timer ran.
+
+Fort Sentinel's AH-64 Apache (apache.js, apache3d.js)
+- A parked AH-64D-style attack helicopter on the airfield's west helipad (10200, 9365, nose
+  south; the olive Maverick keeps the east pad). Tandem stepped cockpit, lofted fuselage with
+  sponsons and high engine nacelles, stub wings with a 19-tube rocket pod and a four-missile
+  Hellfire launcher on each, chin 30 mm turret, TADS/PNVS nose, four-blade rotor under a
+  Longbow dome, swept fin with the scissor tail rotor on the port side, olive drab and dark
+  grey, low-visibility markings, red / green / white nav lights and a red beacon in flight.
+- Never flown by AI and never sent in a pursuit. It is a `helicopter` with
+  `airframe: 'apache'` (vehicleSpec merges HELICOPTER_AIRFRAMES), so it flies with the
+  helicopter flight model and controls.
+- Stealing it raises the base alarm (as a tank does) and the heat to the top of the scale:
+  the stars climb to five, the military response, at the normal pace. No snipers.
+- **Chin gun** (Fire: F / left click): the turret follows the mouse like the tank turret
+  (120°/s, 110° either side of the nose) and fires where it is laid, down to the ground
+  point under the mouse; 320 rounds, 600 rounds a minute, tracers, sparks, a small splash.
+- **Rockets** (new action `rockets`: Space / right click, remappable, listed in the controls
+  card and settings): salvos of four rippled from the pods along the nose to the aim's
+  range; 38 rockets. They explode through `explode()` (cars wrecked, blast effects, the
+  explosion sound) and breach facades like tank rounds.
+- The weapon chip shows rounds and rockets; the tank reticle serves as the gun sight.
+  Landed on a Fort Sentinel helipad it rearms over about twenty seconds (REARMING); the base
+  is hostile, and the airframe takes 30% of small-arms damage (rockets and shells in full).
+  A wrecked or lost Apache is back on its pad four minutes later, out of sight.
+- Console: `apache()`, `apacheAim(x, y)`, `apacheReset()`.
+
 ## Unreleased — realistic runways
 
 Aircraft performance (aviation.js AIRFRAME_SPECS, FLIGHT CONTROLS)
