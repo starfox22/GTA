@@ -283,7 +283,7 @@
           for (let x = b.x + 6 + Math.random() * 10; x < b.x + b.w - 4; x += 16 + Math.random() * 14) add(x, b.height - 0.5, b.y + b.h + 1.2);
           // Shop awnings drip in a row along their front edge.
           for (const pane of b.shopPanes || [])
-            for (let k = -pane.width / 2 + 2; k < pane.width / 2; k += 5 + Math.random() * 4) add(pane.cx + k, 15.5, pane.face + 9);
+            for (let k = -pane.width / 2 + 2; k < pane.width / 2; k += 5 + Math.random() * 4) add(pane.cx + k, SHOP_FLOOR * 0.72 - 2.3, pane.face + 10.5);
         }
         dripGeometry.setDrawRange(0, n * 2);
         dripGeometry.attributes.aEmit.needsUpdate = true;
