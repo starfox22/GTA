@@ -53,7 +53,7 @@
       patrol: { hp: 85, vest: 25, color: '#2d455e', rate: [1.05, 1.5], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 210, run: 18 * KMH, sample: 'pistol' },
       road: { hp: 85, vest: 40, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 230, run: 17 * KMH, sample: 'pistol' },
       swat: { hp: 110, vest: 120, color: '#1b2026', rate: [1.5, 2.1], burst: 3, dmg: 20, playerDmg: 5, speed: 820, range: 270, run: 16 * KMH, sample: 'automatic', rifle: true },
-      fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 6.5, speed: 780, range: 250, run: 19 * KMH, sample: 'automatic', rifle: true },
+      fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 6.5, speed: 780, range: 250, run: 18 * KMH, sample: 'automatic', rifle: true },
       // Army riflemen out of an APC or a truck at five stars.
       soldier: { hp: 100, vest: 90, color: '#4a5638', rate: [1.3, 1.8], burst: 3, dmg: 19, playerDmg: 5, speed: 800, range: 260, run: 18 * KMH, sample: 'automatic', rifle: true },
       // A police marksman on a roof (swat.js fires the rounds).
