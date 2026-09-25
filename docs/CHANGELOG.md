@@ -1,5 +1,32 @@
 # Changelog
 
+## Unreleased — a 90s volume knob, the radio at 100 by default
+
+Radio volume (car-radio.js RADIO VOLUME, shell.html, settings.js)
+- **The radio box's slider is now a 90s car-stereo volume knob**: a ribbed black-rubber knob with
+  a machined aluminium cap (concentric turning marks, a fixed anisotropic sheen), an engraved
+  pointer and a lit amber dot, a specular spot and a drop shadow; around it 20 amber LED
+  segments over 270 degrees (one per 5 steps, the last partly lit, the top three hot) and beside
+  it an LCD readout in slanted seven-segment digits over their ghost 8s (`OFF` at 0, a blinking
+  MUTE annunciator). All CSS gradients and inline SVG: crisp at any DPI, redrawn only when the
+  level changes.
+- Drag it: straight movement counts right / up as louder (`dx - dy`, 1.6 px a step, 160 px for
+  the whole range, Shift four times finer); a drag that circles the centre switches to turning
+  with the pointer (270 degrees = the range). Measured from 50: up 10 / 20 / 40 / 80 px -> 56 / 63
+  / 75 / 100; down 40 px -> 25; with Shift up 80 px -> 63; pressing on the rim and circling
+  clockwise 90 / 120 / 180 degrees -> 62 / 73 / 94, anticlockwise 180 -> 12. A double-click on the
+  knob mutes / unmutes (the speaker button stays), the wheel and the focused knob's arrow, Page,
+  Home and End keys work, `,` / `.` still step it in a vehicle. Keys and the wheel go to the next
+  5-step mark; each mark ticks softly on the effects bus. A soft amber glow while dragging; the
+  pointer is captured and nothing reaches the canvas (no shots, no aiming). On touch the knob is
+  76 px with a 12 px wider hit area.
+- **The radio defaults to 100** (was 80), RESET AUDIO TO DEFAULTS included. A save still at the
+  old 80, or without a radio level, moves to 100 once and is written back; a save at any other
+  level (0 = muted included) keeps it. From now on every change the player makes marks the save
+  (`radioVolumeSet`), so a deliberate 80 stays 80.
+- `DeadEndCity.radio()` reports `volumeSet` and `knob` (value, angle, lit LEDs, readout, drag mode,
+  the last drag) in place of `slider`.
+
 ## Unreleased — ramming roadblocks, crash physics, breakable trees and furniture
 
 Roadblocks (roadblocks.js, physics.js)
