@@ -551,7 +551,11 @@
           }
           if (spot.crossing) continue;
           // Lamp standards, benches and planters are breakable props; standing,
-          // they are also what stops people on foot (footObstacleBlocked).
+          // they are also what stops people on foot (footObstacleBlocked). A piece
+          // whose place falls in the mouth of a street (the spot itself is just
+          // clear of it) is left out.
+          const pieceAt = spot.kind === 'lamp' ? at(0, 14) : spot.kind === 'bench' ? at(0, 5) : at(0, -22);
+          if (spot.kind !== 'rail' && cityStreetAt(pieceAt[0], pieceAt[1], 4)) continue;
           if (spot.kind === 'lamp') {
             const g = piece(),
               prop = registerStreetProp('lantern', ...at(0, 14), -yaw, { half: [3, 3] });
