@@ -391,7 +391,7 @@
       if (focusId) body.querySelector('[data-focus="' + focusId + '"]')?.focus();
     }
     function settingControl(row) {
-      const value = row.get();
+      const value = row.get?.();
       if (row.kind === 'toggle') {
         const button = settingsElement('button', 'settings-switch');
         button.type = 'button';
