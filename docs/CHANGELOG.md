@@ -2,6 +2,30 @@
 
 ## Unreleased — prompts out of the way
 
+Drawbridge (drawbridge.js, drawbridge3d.js, geography.js, physics.js, navigation.js)
+- The Palm Sound Causeway is now a working double-leaf trunnion bascule. It opens at 00:50,
+  05:30, 10:15, 15:00 and 20:40 for the ketch ALBATROSS, whose masts are too tall for the
+  deck: bells and flashing red lamps, the signals go amber then red, striped barrier arms come
+  down on both approaches (entry arms first, and never onto a car), the tender waits for an
+  empty span, the locks clank, both leaves swing up eased to 78°, the ketch crosses to her
+  other anchorage, and it all runs back. About ninety seconds of play.
+- Traffic queues at the stop lines and moves off when the arms rise; pedestrians wait behind
+  the sidewalk arms. Police can ram through the arms but stop at the gap. Arms snap for
+  anything faster than about 50 km/h and leave their boom on the road.
+- The leaves are ramps. While they are only slightly open a fast car can launch off the
+  rising leaf and jump the gap; land on the far leaf (hard landings hurt) or fall short into
+  the Sound, where the car floods as usual. Past about 40° a leaf is a wall.
+- The GPS weighs the crossing by how long the bridge will stay closed: short trips wait, long
+  ones go round by the Keys Bridge. The minimap and map show the span, the gap and a state
+  icon (white down, amber closing, red up).
+- The model: steel leaves with open-grid decking over the joint and a finger lock, girders,
+  floor beams, bracing, trunnion shafts and counterweights swinging into the pier pits;
+  granite piers, four limestone tender's houses with lit lookouts (the control house with a
+  red / green vessel signal mast and horn), timber fenders with red-lit dolphins, traffic
+  signals, wig-wags and DRAWBRIDGE AHEAD flashers, red / green lanterns on the leaf tips.
+- Console: `DeadEndCity.drawbridge('status' | 'open' | 'close' | 'hold', degrees | 'snap',
+  degrees)`, `drawbridgeLook(spot, zoom)`, `drawbridgeTraffic(count)`.
+
 HUD (hud.js, harbor.js, shell.html)
 - The mission 1 LOAD CARGO prompt no longer flickers: every system now offers its prompt to one
   owner (`offerPrompt`, hud.js) instead of writing `#interaction`, which the old code set to

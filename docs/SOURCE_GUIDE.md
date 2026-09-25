@@ -85,6 +85,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
 | controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
 | geography.js | Land polygons and the cached `landAt`, `BRIDGES` and their architecture (`bridgeStructure`, `bridgeFootings`, `bridgePylons`), reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
+| drawbridge.js | The Palm Sound drawbridge: `DRAWBRIDGE_OPENINGS`, the opening phases (`updateDrawbridge`), barrier arms and ramming, traffic held at the stop lines (`drawbridgeTrafficLimit`), `drawbridgeKeepsOff`, `drawbridgeFootBlocked`, leaves as ramps and vehicle jumps (`drawbridgeSurface`, `drawbridgeSlopeDrive`, `drawbridgeFlight`, `drawbridgeSettle`), the ketch ALBATROSS, GPS pricing (`drawbridgeRouteDelay`), `drawDrawbridgeMap`, bells, motors and horns, the console report |
 | harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
 | heat.js | Heat and wanted stars: `crime(amount)` (heat by severity; the only way heat rises, nothing adds it passively), `recordKill` / `recordVehicleKill` (by victim, with a spree bonus), `HEAT_STARS`, the escalation delay, `heatUI()` (stars, pending star, heat meter, body count), `crimeLog` (the last crimes, for `policeReport().crimes`) |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
@@ -179,6 +180,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | county3d.js | County ground tiles and hills, snow, rural scenery and region visibility |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
+| drawbridge3d.js | The Palm Sound drawbridge in 3D (`buildDrawbridge`, the bascule builder): hinged leaves with grid decking, girders and counterweights, piers and tender houses, fenders, barrier gates, signals and lamps (switched lenses and halos), the ketch; `updateDrawbridgeVisuals` each frame |
 | bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; the shaded carriageway (`bridgeRoadMaterial`: asphalt wear and antialiased markings in the shader), expansion joints, each deck's lamp light map (`bridgeDeckLight`), lamps, LEDs, aviation beacons, foam cut round the deck, far copies |
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
 | marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners, the sailing liner and her wake |
@@ -341,7 +343,7 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 | id | name | style | link | from | to | width |
 | --- | --- | --- | --- | --- | --- | --- |
 | keys-union | KEYS BRIDGE | green steel camel-back through-truss on four river piers | Palm Keys - Northbank (Union St) | -1460, 1152 | 130, 1152 | 112 |
-| keys-harbor | PALM SOUND CAUSEWAY | low causeway, globe lamps, double-leaf bascule with four tender's houses | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 |
+| keys-harbor | PALM SOUND CAUSEWAY | low causeway, globe lamps, a working double-leaf trunnion bascule (drawbridge.js): tender's houses, fenders, barrier gates | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 |
 | east-bay | EAST BAY CROSSING | white cable-stayed, one A-pylon (380) and two fans of stays, a channel each side | Northbank - Ridgeline (Harbor Ave -> Ridgeline Hwy) | 3150, 3200 | 6580, 3200 | 122 |
 | south-bay | SOUTH BAY BRIDGE | red suspension bridge, two towers (316), main cables, hangers, anchorages | Northbank - Ridgeline (Stadium Way -> Foothill Rd) | 3150, 4736 | 6420, 4736 | 112 |
 | pier-bridge | SUNSET PIER BRIDGE | leaning white network arch (rise 244) with colour-cycling LEDs | Northbank - Sunset Pier (Riverbank Dr) | 3200, -3900 | 3200, -5800 | 104 |
@@ -361,6 +363,65 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   Rail bridges are part of the viaducts (transit.js): the Coast Line's sea viaduct over the south
   channel and the Ridge Line's bridge across Coral Sound. No rail line crosses Palm Sound, Marlow
   Bay or North Sound.
+- **The Palm Sound drawbridge** (drawbridge.js, drawn by drawbridge3d.js). The Palm Sound
+  Causeway (`keys-harbor`, `movable: true`) is a working double-leaf trunnion bascule. Its
+  layout is `bridgeStructure(bridge).bascule`: `leaf` 100 (trunnion to the joint mid-channel),
+  `drop` 8 (the trunnion axis below the road), `trunnions`, `piers` (64 long, the counterweight
+  pits; four tender's houses, the south-east one the control house), `fenders`, and the `gates`
+  and `stops` (barrier and stop lines on the approach spans). The phase clock is game seconds
+  (an in-game minute each), so an opening lasts about ninety seconds of play:
+  `warning` (bells, signals amber then red) → `gates` (entry arms, then exit arms; an arm waits
+  while a vehicle is under it) → `clearing` (the tender waits until the span is empty; horn and
+  a HUD line if the player is on it; a stalled car nobody is watching is towed after 20 s) →
+  `unlock` → `raising` (eased, ≤ 4.2°/s, to 78°) → `open` (until the ketch is through, 8-45 s)
+  → `lowering` → `seating` → `lifting` → `idle`. Openings start at `DRAWBRIDGE_OPENINGS`
+  (00:50, 05:30, 10:15, 15:00, 20:40) for the ketch ALBATROSS, whose masts clear 30 m: she lies
+  at anchor 720 units off the deck on one side, sounds for the bridge, waits at the hold point
+  (330) and crosses in the `open` phase to the other anchorage (her hull is in `boatFits`).
+  - Traffic: `trafficControl` brakes to the stop line (`drawbridgeTrafficLimit`; a car too close
+    at the first amber carries on) and, past it, to the trunnion while the span is not seated.
+    `drawbridgeKeepsOff` (settleVehicle) keeps every vehicle but the player's off an unseated
+    span, so cops that ram through the arms stop at the gap. Arms are barrier bodies for the
+    contact passes (`drawbridgeBarrierBodies`) and snap above 70 u/s (`updateDrawbridgeRamming`,
+    replaced once the bridge is down and the player is 800 away). People: `drawbridgeFootBlocked`
+    (footStepBlocked) refuses inward steps past a lowered sidewalk arm or onto an unseated span.
+  - Leaves as ramps: `drawbridgeSurface(u)` is the road height and slope at a point (null over
+    the gap); the open gap is not deck (`onBridgeDeck`), so it is water to water.js. A road
+    vehicle on a leaf carries `deckLift` (added by `entityElevation`), `deckLeaf`, `deckSlope`
+    and `slopePitch`; `drawbridgeSlopeDrive` (controlVehicle) adds gravity along the slope
+    (`DRAWBRIDGE_GRAVITY` 300 u/s²) and caps the tyres at `DRAWBRIDGE_GRIP` 0.84 (no climbing
+    past ~40°). Off a tip the vehicle is airborne (`deckAir`, `deckVz`; controlVehicle runs
+    `drawbridgeFlight`: no grip or steering, the nose drops); `drawbridgeSettle` lands it on the
+    far leaf or the deck beyond (damage from the speed into the surface above 70 u/s, a BRIDGE
+    JUMP headline), bounces it off the far tip if it comes in low, or drops it into the Sound
+    where `updateSinking` floods it. Above `DRAWBRIDGE_WALL_ANGLE` (40°) each leaf is a wall.
+    An airborne car clears rails lower than it (vehicleContactPasses).
+  - GPS: route links across the span carry `drawbridge`; `navShortestPath` adds
+    `drawbridgeRouteDelay()` (seconds until traffic moves × 230) to them, so short trips wait
+    and long ones go round by the Keys Bridge. The graph itself is built as if the bridge were
+    down (`drawbridge.routing`).
+  - Map: the baked ground layers leave the moving span out (`drawBridgeGround`; the 2D view
+    passes `live`); `drawDrawbridgeMap` draws it (deck, or leaves foreshortened over water),
+    red bars at the gates and a state icon (white down, amber closing, red up; BRIDGE UP on
+    the city map), and the ketch on the city map.
+  - 3D (drawbridge3d.js): each leaf is a group hinged at its trunnion (`drop` below the road):
+    carriageway and footways in the deck's own materials (`bridgeDeck` takes `look.gap` and
+    keeps its materials in `g.userData.deckMaterials`; `bridgeRoadGeometry` takes a `start`
+    so markings run on), open steel grid decking over the joint (alpha-tested), a finger lock,
+    ornamental railings, tapered fascia and main girders, floor beams, stringers, bracing, the
+    trunnion shaft and counterweight, red / green tip lanterns. Granite piers with house
+    platforms and balustrades, four limestone tender's houses with lit lookouts and copper
+    roofs, the control house's vessel signal mast (red / green each way up the channel) and
+    horn, timber fenders with red-lit dolphins, per approach two kerb cabinets with striped
+    arms (lamps along them), sidewalk arms, wig-wag lamps, a mast-arm signal with a STOP HERE
+    ON RED sign, a stop line and an advance DRAWBRIDGE AHEAD sign with amber flashers. Lenses
+    are shared materials switched each frame; lit ones get halos. A snapped arm keeps its stub
+    and leaves its boom on the road. The ketch is built with the boat kit the first frame she
+    is needed. Sounds (short procedural voices through the effects bus): bells, motor hum,
+    lock clanks, horns.
+  - Console: `DeadEndCity.drawbridge('status' | 'open' | 'close' | 'hold', degrees |
+    'snap', degrees)`, `drawbridgeLook(spot, zoom)` ('channel', 'west', 'east', 'north',
+    'south', 'tower'), `drawbridgeTraffic(count)`.
 - Water access (water.js): on foot the sea can be entered only across a beach shore; everywhere
   else the edge is a wall. Swimmers climb out at beaches, rocky shores and ladders (86: every
   ~420 units of quay, dock ends and the pier head, each only where a swimmer can reach the

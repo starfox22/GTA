@@ -1,5 +1,36 @@
 # Audit report: world layout, railway, county, parks, harbor, sports, streets
 
+## Palm Sound drawbridge pass
+
+The Palm Sound Causeway (`keys-harbor`) was turned into a working bascule without moving
+anything else: the deck, its ends, the approach piers and the channel are where they were.
+The bascule layout changed inside the bridge's own frame (bridgeStructure 's.bascule'):
+the piers are 64 long (the counterweight pits), the tender's houses stand 16 off the deck
+edge, a timber fender (its own footing, so boats steer round it) runs 110..190 out from each
+pier face, and the gates and stop lines stand on the approach spans 26 and 44 behind the
+piers. The Keys Bridge, East Bay Crossing and every other bridge keep their designs.
+
+Verified (headless, `DeadEndCity` console):
+- `tools/layout-audit.mjs`: only the 28 oblique county junction notes it reported before; no
+  overlap at the drawbridge (houses, fenders, gates or signals).
+- A scheduled opening runs every phase; the ketch waits at her hold point, crosses at the
+  `open` phase and anchors on the far side; the leaves come down and the arms lift.
+- Traffic spawned on both approaches (`drawbridgeTraffic`) queues at the stop lines while
+  the bridge is up (9 of 9 held) and moves off afterwards.
+- On foot: stopped at a lowered sidewalk arm and at the span's edge; someone caught on the
+  span can always walk off it. The tender waits (and sounds the horn) while the player stands
+  on the span.
+- Jumps: at 15-16° a car at ~330 u/s clears the gap (53 m, hard landing, damage); at 32° a
+  car coasting at 47-52 u/s leaves the tip and falls into the gap, floods and sinks; below
+  that it rolls back down the leaf.
+- GPS: with the bridge up, a trip across the Sound goes round by the Keys Bridge; with it
+  down, straight over.
+
+Noted, not changed:
+- Boats still pass "under" every other deck (the decks are at road level); only the ketch
+  uses the drawbridge's channel as a real opening.
+- The 2D fallback view draws the span only while the leaves are down.
+
 ## Island rearrangement pass (Palm Keys west, Sunset Pier north, wider bays)
 
 ### The new geography
