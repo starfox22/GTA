@@ -710,24 +710,59 @@
 
     // ---- Street furniture ----------------------------------------------------------
     /**
-     * `toughness` is the momentum (vehicle mass × closing speed in units/s) needed to
-     * knock a piece over; below it the prop is solid. `give` is its mass in the same
-     * units as vehicle masses: a lamp post takes about a third of a saloon's speed with
-     * it, a bin nothing. `harm` is the damage the vehicle takes going through it.
+     * BREAKABLE FURNITURE AND TREES
+     * Every knockable piece is a standing prop: a small oriented box that stops a
+     * vehicle like a wall until the vehicle brings enough energy to break it. The
+     * energy is the vehicle's kinetic energy along the contact normal, 0.5 m v^2
+     * (tonnes and m/s give kJ). Per kind:
+     *   breakKJ   energy that snaps, bends, uproots or smashes it
+     *   massKg    what it weighs; `carry` is the share the car pushes along once it
+     *             has broken (a tree's crown falls on its own, a bin goes with you)
+     *   material  metal, wood, plastic, glass, stone or fabric: sound and debris
+     *   harm      extra hit points for the vehicle going through (a trunk, a post)
+     * Going through, the car loses the energy it took to break the piece and then
+     * shares its momentum with what it carries (knockStreetProp). A hit below
+     * breakKJ is a crash into something solid (resolveContact, collisionImpact) and
+     * strains the piece: half the energy is remembered, so a second or third ram
+     * brings down what the first could not. A tank crushes anything it leans on.
+     *
+     * What that means at the wheel (sedan 1.45 t, box truck 6.8 t, tank 55 t):
+     *   bins, cones, crates, news boxes, loungers, umbrellas: nothing stops you
+     *   benches (8-10 kJ): anything above ~12 km/h; a truck at walking pace
+     *   railings (25 kJ): a sedan from ~21 km/h, so the quay rail does not keep a
+     *     car out of the harbour (the water then does what it does, water.js)
+     *   hydrants, lamps, signals (25-90 kJ): a sedan from 21 / 33 / 40 km/h
+     *   young street trees and palms (120-150 kJ): a sedan from ~47 km/h, a truck
+     *     from ~22; mature trees (400 kJ) a sedan from ~85, a truck from ~39
+     *   big old trees (1200 kJ): a sedan needs ~150 km/h (and is wrecked), a
+     *     truck ~68, a bus ~52; the tank simply pushes them over
+     *   steel bollards (600 kJ): stop a sedan below ~100 km/h, a truck below ~48
      */
     const STREET_PROP_KINDS = {
-      lamp: { half: [1.3, 1.3], toughness: 120, give: 0.55, harm: 10 },
-      signal: { half: [1.4, 1.4], toughness: 150, give: 0.6, harm: 14 },
-      hydrant: { half: [1.7, 1.7], toughness: 100, give: 0.45, harm: 8 },
-      trash: { half: [2.6, 2.6], toughness: 12, give: 0.06, harm: 0 },
-      news: { half: [1.8, 1.6], toughness: 22, give: 0.1, harm: 0 },
-      mailbox: { half: [2, 2], toughness: 45, give: 0.18, harm: 2 },
-      meter: { half: [0.8, 0.8], toughness: 35, give: 0.12, harm: 1 },
-      bollard: { half: [0.9, 0.9], toughness: 230, give: 0.7, harm: 12 },
-      cone: { half: [1.5, 1.5], toughness: 3, give: 0.01, harm: 0 },
-      bench: { half: [8.5, 2.6], toughness: 55, give: 0.25, harm: 3 },
-      crate: { half: [3, 3], toughness: 10, give: 0.05, harm: 0 },
-      dumpster: { half: [8, 4], toughness: 150, give: 0.8, harm: 6 },
+      cone: { half: [1.5, 1.5], breakKJ: 0.05, massKg: 3, carry: 1, material: 'plastic', harm: 0 },
+      trash: { half: [2.6, 2.6], breakKJ: 1, massKg: 40, carry: 1, material: 'plastic', harm: 0 },
+      crate: { half: [3, 3], breakKJ: 0.8, massKg: 25, carry: 1, material: 'wood', harm: 0 },
+      news: { half: [1.8, 1.6], breakKJ: 2, massKg: 60, carry: 1, material: 'metal', harm: 0 },
+      meter: { half: [0.8, 0.8], breakKJ: 5, massKg: 40, carry: 0.5, material: 'metal', harm: 1 },
+      mailbox: { half: [2, 2], breakKJ: 6, massKg: 110, carry: 1, material: 'metal', harm: 2 },
+      umbrella: { half: [1.2, 1.2], breakKJ: 0.3, massKg: 15, carry: 1, material: 'fabric', harm: 0 },
+      lounger: { half: [10, 4], breakKJ: 0.6, massKg: 18, carry: 1, material: 'plastic', harm: 0 },
+      bench: { half: [8.5, 2.6], breakKJ: 8, massKg: 80, carry: 1, material: 'wood', harm: 3 },
+      // The esplanade's timber benches on cast-iron ends.
+      seat: { half: [10, 3], breakKJ: 10, massKg: 90, carry: 1, material: 'wood', harm: 3 },
+      railing: { half: [10, 1.5], breakKJ: 25, massKg: 90, carry: 0.6, material: 'metal', harm: 4 },
+      hydrant: { half: [1.7, 1.7], breakKJ: 25, massKg: 150, carry: 0.4, material: 'metal', harm: 8 },
+      dumpster: { half: [8, 4], breakKJ: 45, massKg: 900, carry: 1, material: 'metal', harm: 6 },
+      // The esplanade's lamp standards: a cast post and a glass globe.
+      lantern: { half: [2.2, 2.2], breakKJ: 45, massKg: 200, carry: 0.4, material: 'glass', harm: 8 },
+      lamp: { half: [1.3, 1.3], breakKJ: 60, massKg: 250, carry: 0.4, material: 'metal', harm: 10 },
+      signal: { half: [1.4, 1.4], breakKJ: 90, massKg: 350, carry: 0.4, material: 'metal', harm: 14 },
+      palm: { half: [2, 2], breakKJ: 150, massKg: 700, carry: 0.2, material: 'wood', harm: 16, tree: true },
+      // A concrete tub with a young tree in it (the esplanade planters).
+      planter: { half: [9, 9], breakKJ: 200, massKg: 1400, carry: 0.5, material: 'stone', harm: 25 },
+      // Street and park trees: sized per tree by treeProp().
+      tree: { half: [2.2, 2.2], breakKJ: 120, massKg: 900, carry: 0.2, material: 'wood', harm: 18, tree: true },
+      bollard: { half: [0.9, 0.9], breakKJ: 600, massKg: 250, carry: 0.3, material: 'metal', harm: 12 },
     };
     const streetProps = [],
       streetPropGrid = new Map(),
@@ -736,8 +771,9 @@
       BROKEN_BENCH = { hp: 1, broken: true };
     const PROP_CELL = 128;
     // Called by the renderer as it places each knockable piece; returns the record it
-    // animates. `yaw` turns the collision box with the model.
-    function registerStreetProp(kind, x, y, yaw = 0) {
+    // animates. `yaw` turns the collision box with the model; `options` may size the
+    // piece (half extents, breakKJ, massKg, harm, size).
+    function registerStreetProp(kind, x, y, yaw = 0, options = null) {
       const spec = STREET_PROP_KINDS[kind],
         prop = {
           id: 'p' + streetProps.length,
@@ -745,29 +781,72 @@
           x,
           y,
           a: -yaw,
-          hx: spec.half[0],
-          hy: spec.half[1],
+          hx: options?.half ? options.half[0] : spec.half[0],
+          hy: options?.half ? options.half[1] : spec.half[1],
+          breakKJ: options?.breakKJ ?? spec.breakKJ,
+          massKg: options?.massKg ?? spec.massKg,
+          harm: options?.harm ?? spec.harm,
+          // A tree's crown radius (map units): how tall it falls, how big the stump.
+          size: options?.size ?? 0,
           down: false,
           knockedAt: 0,
           fallA: 0,
           fallSpeed: 0,
           sprayUntil: 0,
+          // Energy (kJ) of earlier hits that did not break it, and when the last came.
+          strain: 0,
+          strainAt: -9,
+          body: null,
+          // The last contact pass that looked at it (streetPropContacts), and the
+          // last propsNear() query.
+          visited: 0,
+          nearStamp: 0,
         };
       streetProps.push(prop);
-      const key = Math.floor(x / PROP_CELL) * 4096 + Math.floor(y / PROP_CELL);
-      if (!streetPropGrid.has(key)) streetPropGrid.set(key, []);
-      streetPropGrid.get(key).push(prop);
+      // Filed in every cell the box reaches (a railing run can be longer than a cell).
+      const reach = Math.hypot(prop.hx, prop.hy);
+      for (let i = Math.floor((x - reach) / PROP_CELL); i <= Math.floor((x + reach) / PROP_CELL); i++)
+        for (let j = Math.floor((y - reach) / PROP_CELL); j <= Math.floor((y + reach) / PROP_CELL); j++) {
+          const key = i * 4096 + j;
+          if (!streetPropGrid.has(key)) streetPropGrid.set(key, []);
+          streetPropGrid.get(key).push(prop);
+        }
       return prop;
     }
+    // A tree as a breakable prop, by its crown radius `r` (the plan's `t.r`): a young
+    // street tree snaps, a mature one needs a heavy or fast vehicle, a big old one
+    // stops a car dead and falls only to a truck, a bus or the tank at speed.
+    function treeProp(t) {
+      const r = t.r || 12,
+        conifer = t.pine ? 1.3 : 1,
+        grade = r >= 22 ? 2 : r >= 16 ? 1 : 0;
+      return registerStreetProp('tree', t.x, t.y, 0, {
+        half: [[2.2, 2.6, 3.2][grade], [2.2, 2.6, 3.2][grade]],
+        breakKJ: [120, 400, 1200][grade] * conifer,
+        massKg: [900, 2000, 4500][grade] * conifer,
+        harm: [18, 30, 45][grade],
+        size: r,
+      });
+    }
+    // Each prop once, though a long one is filed in several cells.
+    let propNearStamp = 0;
     function propsNear(x, y, reach, visit) {
+      const stamp = ++propNearStamp;
       for (let i = Math.floor((x - reach) / PROP_CELL); i <= Math.floor((x + reach) / PROP_CELL); i++)
         for (let j = Math.floor((y - reach) / PROP_CELL); j <= Math.floor((y + reach) / PROP_CELL); j++) {
           const list = streetPropGrid.get(i * 4096 + j);
-          if (list) for (const prop of list) visit(prop);
+          if (list)
+            for (const prop of list)
+              if (prop.nearStamp !== stamp) {
+                prop.nearStamp = stamp;
+                visit(prop);
+              }
         }
     }
     // Once per physics step, after the contact passes: vehicles near the player against
     // standing furniture. Far away nothing is watching and traffic keeps to the road.
+    // Each pair is met once per step even where a long prop sits in two cells.
+    let propContactStamp = 0;
     function streetPropContacts() {
       if (!streetProps.length) return;
       for (let v = 0; v < vehicles.length; v++) {
@@ -778,7 +857,8 @@
         // anything since the last step; most of the traffic near the player is.
         if (Math.abs(c.vx || 0) + Math.abs(c.vy || 0) < 0.6 && Math.abs(c.av || 0) < 0.02) continue;
         const spec = vehicleSpec(c),
-          reach = (spec.l + spec.w) / 2 + 10;
+          reach = (spec.l + spec.w) / 2 + 10,
+          stamp = ++propContactStamp;
         const i0 = Math.floor((c.x - reach) / PROP_CELL),
           i1 = Math.floor((c.x + reach) / PROP_CELL),
           j0 = Math.floor((c.y - reach) / PROP_CELL),
@@ -788,51 +868,89 @@
             const list = streetPropGrid.get(i * 4096 + j);
             if (!list) continue;
             for (let k = 0; k < list.length; k++) {
-              const prop = list[k];
-              if (prop.down || Math.abs(prop.x - c.x) > reach || Math.abs(prop.y - c.y) > reach) continue;
-              const shape = contactShape(c);
+              const prop = list[k],
+                far = reach + prop.hx + prop.hy;
+              if (prop.down || prop.visited === stamp || Math.abs(prop.x - c.x) > far || Math.abs(prop.y - c.y) > far) continue;
+              prop.visited = stamp;
               // The prop's collision box, made once (props never move while standing).
               const body =
                   prop.body ||
-                  (prop.body = { x: prop.x, y: prop.y, hx: prop.hx, hy: prop.hy, a: prop.a, id: prop.id, kind: 'prop' }),
-                hit = boxContact(shape, body);
+                  (prop.body = {
+                    x: prop.x,
+                    y: prop.y,
+                    hx: prop.hx,
+                    hy: prop.hy,
+                    a: prop.a,
+                    id: prop.id,
+                    kind: 'prop',
+                    material: STREET_PROP_KINDS[prop.kind].material,
+                  }),
+                hit = boxContact(contactShape(c), body);
               if (!hit) continue;
               const closing = (c.vx || 0) * hit.n.x + (c.vy || 0) * hit.n.y,
-                kind = STREET_PROP_KINDS[prop.kind];
-              if (closing * (spec.mass || 1.25) >= kind.toughness) knockStreetProp(prop, c, closing, hit);
+                metres = closing / UNITS_PER_METRE,
+                // Kinetic energy along the normal, kJ (tonnes x (m/s)^2 / 2).
+                energy = closing > 0 ? 0.5 * (spec.mass || 1.25) * metres * metres : 0;
+              if (closing > 0 && (energy + prop.strain >= prop.breakKJ || (spec.tank && closing > UNITS_PER_METRE)))
+                knockStreetProp(prop, c, closing, hit, energy);
               else {
+                // Solid: a crash into it. A real hit (over ~11 km/h) strains it.
+                if (metres > 3 && physicsClock - prop.strainAt > 0.3) {
+                  prop.strain += energy * 0.5;
+                  prop.strainAt = physicsClock;
+                }
                 resolveContact(c, null, hit, body, true);
               }
             }
           }
       }
     }
-    function knockStreetProp(prop, vehicle, closing, hit) {
+    function knockStreetProp(prop, vehicle, closing, hit, energy) {
       const kind = STREET_PROP_KINDS[prop.kind],
         spec = vehicleSpec(vehicle),
         mass = spec.mass || 1.25,
-        // Momentum shared with the prop along the contact normal.
-        taken = (closing * kind.give) / (kind.give + mass);
+        speed = closing / UNITS_PER_METRE,
+        // The energy the break takes out of the car, then the momentum it shares
+        // with what it carries on (tonnes).
+        absorbed = Math.min(energy, Math.max(0, prop.breakKJ - prop.strain)),
+        carried = (kind.carry * prop.massKg) / 1000,
+        after = (Math.sqrt(Math.max(0, speed * speed - (2 * absorbed) / mass)) * mass) / (mass + carried),
+        taken = Math.max(0, speed - after) * UNITS_PER_METRE;
       vehicle.vx -= hit.n.x * taken;
       vehicle.vy -= hit.n.y * taken;
       const moving = Math.hypot(vehicle.vx || 0, vehicle.vy || 0) > 5;
       topple(prop, moving ? Math.atan2(vehicle.vy, vehicle.vx) : Math.atan2(hit.n.y, hit.n.x), closing);
-      if (kind.harm)
-        damageVehicle(vehicle, kind.harm * clamp(closing / 150, 0.5, 2), hit.x, hit.y, null, {
+      // The crumple the speed change buys (physics.js CRASH SEVERITY) or the piece's
+      // own bite (a trunk, a post), whichever is worse.
+      const amount = Math.max(prop.harm * clamp(closing / 150, 0.5, 2) * (spec.tank ? 0.1 : 1), crashSeverity(vehicle, taken));
+      if (amount > 0.2)
+        damageVehicle(vehicle, amount, hit.x, hit.y, null, {
           kind: 'crash',
           nx: -hit.n.x,
           ny: -hit.n.y,
-          closing: 36 + (closing - 36) * 0.55,
-          otherMass: kind.give,
+          closing: 36 + Math.max(0, closing - 36) * clamp(prop.massKg / 1500, 0.15, 0.8),
+          otherMass: prop.massKg / 1000,
         });
-      if (distanceBetween(prop, player) < 600) {
-        noise(0.12 + kind.give * 0.2, clamp(0.06 + kind.give * 0.25, 0.06, 0.3), kind.give > 0.3 ? 520 : 1400);
-        // Metal furniture (a hydrant, a lamp post, a bin) also clangs and scatters.
-        if (kind.give > 0.3)
-          crashSound({ x: hit.x, y: hit.y, closing, mass: spec.mass || 1.25, other: 'prop', glass: 0, sliding: 0, key: 'prop' + vehicle.id });
-        if (vehicle === player.car) shake = Math.max(shake, kind.give * 5);
+      if (vehicle === player.car) {
+        shake = Math.max(shake, clamp(taken / 25, prop.massKg > 300 ? 1.5 : 0.3, 8));
+        hurt(crashInjury(vehicle, taken), 'impact');
       }
-      if (city3D) city3D.impact(hit.x, hit.y, kind.give > 0.3 ? 'metal' : 'dust', entityElevation(vehicle));
+      if (distanceBetween(prop, player) < 900) {
+        crashSound({
+          x: hit.x,
+          y: hit.y,
+          closing,
+          mass,
+          other: 'prop',
+          material: kind.material,
+          propKg: prop.massKg,
+          tree: !!kind.tree,
+          glass: kind.material === 'glass' || prop.kind === 'lamp' || prop.kind === 'signal' ? 1 : 0,
+          sliding: 0,
+          key: 'prop' + vehicle.id,
+        });
+        if (city3D) city3D.propDebris(prop, hit.x, hit.y, kind.material, entityElevation(vehicle), closing);
+      }
     }
     function topple(prop, heading, speed) {
       prop.down = true;
@@ -852,6 +970,9 @@
         }
         prop.bench.taken = BROKEN_BENCH;
       }
+      // A tree coming down: everyone near looks up and gets out from under it.
+      if (STREET_PROP_KINDS[prop.kind].tree && gameMode === 'play')
+        crowdAlarm('crash', { x: prop.x + Math.cos(heading) * prop.size, y: prop.y + Math.sin(heading) * prop.size }, null, 1.2);
       if (!knockedProps.includes(prop)) knockedProps.push(prop);
     }
     function blastStreetProps(x, y, power) {
@@ -859,16 +980,23 @@
       propsNear(x, y, reach, (prop) => {
         const distance = Math.hypot(prop.x - x, prop.y - y);
         if (prop.down || distance > reach) return;
+        // A blast that would not have broken it only strains it.
+        const push = 900 * power * (1 - distance / reach);
+        if (push + prop.strain < prop.breakKJ) {
+          prop.strain += push * 0.5;
+          return;
+        }
         topple(prop, Math.atan2(prop.y - y, prop.x - x), 260 * power * (1 - distance / reach));
       });
     }
-    // The city puts its furniture back once nobody is looking.
+    // The city puts its furniture back (and replants its trees) once nobody is looking.
     function restoreStreetProps() {
       for (let i = knockedProps.length - 1; i >= 0; i--) {
         const prop = knockedProps[i];
         if (gameTime - prop.knockedAt < 240 || distanceBetween(prop, cameraTarget) < 1100) continue;
         prop.down = false;
         prop.sprayUntil = 0;
+        prop.strain = 0;
         if (prop.bench && prop.bench.taken === BROKEN_BENCH) prop.bench.taken = null;
         knockedProps.splice(i, 1);
       }
@@ -989,9 +1117,23 @@
           const out = [];
           propsNear(x, y, radius, (p) => {
             if (Math.hypot(p.x - x, p.y - y) <= radius)
-              out.push({ kind: p.kind, x: Math.round(p.x), y: Math.round(p.y), down: p.down });
+              out.push({
+                id: p.id,
+                kind: p.kind,
+                x: Math.round(p.x),
+                y: Math.round(p.y),
+                a: Math.round(p.a * 100) / 100,
+                half: [p.hx, p.hy],
+                breakKJ: p.breakKJ,
+                strain: Math.round(p.strain),
+                size: p.size,
+                down: p.down,
+              });
           });
-          return { total: streetProps.length, knocked: knockedProps.length, near: out };
+          out.sort((p, q) => Math.hypot(p.x - x, p.y - y) - Math.hypot(q.x - x, q.y - y));
+          const kinds = {};
+          for (const p of streetProps) kinds[p.kind] = (kinds[p.kind] || 0) + 1;
+          return { total: streetProps.length, knocked: knockedProps.length, kinds, near: out };
         },
         // Shop windows (ground-floor panes) within `radius` of a point and their state.
         shopWindows(x = player.x, y = player.y, radius = 400) {

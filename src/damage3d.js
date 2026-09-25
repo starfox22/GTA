@@ -1614,9 +1614,12 @@
       function linkPropInstance(prop, im, index) {
         (prop.instances || (prop.instances = [])).push({ im, index });
       }
-      // How each kind goes over: tip angle, how far it skids, how long the fall takes.
+      // How each kind goes over: tip angle, how far it skids, how long the fall takes,
+      // how high it bounces; `pivot` raises the hinge (a trunk breaks above a stump),
+      // `stump` leaves one behind, `yaw` slews it round as it goes.
       const PROP_FALLS = {
         lamp: { tip: 1.5, slide: 0.02, time: 0.85, lift: 0.6 },
+        lantern: { tip: 1.5, slide: 0.02, time: 0.85, lift: 0.6 },
         signal: { tip: 1.5, slide: 0.02, time: 0.9, lift: 0.6 },
         hydrant: { tip: 1.45, slide: 0.08, time: 0.4, lift: 1.4 },
         trash: { tip: 1.57, slide: 0.3, time: 0.8, lift: 2.4 },
@@ -1626,8 +1629,16 @@
         meter: { tip: 1.25, slide: 0, time: 0.4, lift: 0.3 },
         bollard: { tip: 1.1, slide: 0, time: 0.35, lift: 0.3 },
         bench: { tip: 1.5, slide: 0.15, time: 0.6, lift: 2 },
+        seat: { tip: 1.5, slide: 0.18, time: 0.6, lift: 2 },
+        railing: { tip: 1.35, slide: 0.22, time: 0.45, lift: 0.6 },
+        umbrella: { tip: 1.57, slide: 0.45, time: 0.7, lift: 2 },
+        lounger: { tip: 0.45, slide: 0.55, time: 0.6, lift: 1.5, yaw: 1.2 },
+        planter: { tip: 1.35, slide: 0.1, time: 1, lift: 0.4 },
         dumpster: { tip: 0.12, slide: 0.25, time: 1, lift: 0, yaw: 0.7 },
         crate: { tip: 0, slide: 0, time: 0.1, lift: 0, shatter: true },
+        // A trunk goes over slowly, gathering speed, and lands with a thump.
+        tree: { tip: 1.5, slide: 0, time: 2.1, lift: 0, pivot: 2.5, stump: true },
+        palm: { tip: 1.52, slide: 0, time: 1.7, lift: 0, pivot: 1.8, stump: true },
       };
       const propVisuals = new Map(),
         propAxis = new Three.Vector3(),
@@ -1636,26 +1647,67 @@
         propYaw = new Three.Matrix4(),
         propToPivot = new Three.Matrix4(),
         propFromPivot = new Three.Matrix4(),
-        propScratch = new Three.Matrix4();
+        propScratch = new Three.Matrix4(),
+        propZero = new Three.Matrix4().makeScale(0, 0, 0);
+      // Stumps left by felled trees and palms: one pooled instanced mesh, every
+      // slot scaled to nothing until a trunk breaks above it.
+      const STUMP_SLOTS = 48,
+        stumpMesh = new Three.InstancedMesh(new Three.CylinderGeometry(0.85, 1.15, 1, 9), mat('#5a4636', 0.9), STUMP_SLOTS),
+        stumpOwners = new Array(STUMP_SLOTS).fill(null);
+      let stumpNext = 0;
+      stumpMesh.name = 'tree stumps';
+      stumpMesh.castShadow = true;
+      stumpMesh.receiveShadow = true;
+      stumpMesh.frustumCulled = false;
+      stumpMesh.userData.dynamic = true;
+      for (let i = 0; i < STUMP_SLOTS; i++) stumpMesh.setMatrixAt(i, propZero);
+      scene.add(stumpMesh);
+      function placeStump(prop, visual) {
+        const slot = stumpNext++ % STUMP_SLOTS,
+          previous = stumpOwners[slot];
+        if (previous && propVisuals.get(previous)) propVisuals.get(previous).stump = -1;
+        stumpOwners[slot] = prop;
+        const radius = prop.hx * 0.95,
+          height = visual.fall.pivot + 0.6;
+        propDummy.position.set(prop.x, visual.ground + height / 2, prop.y);
+        propDummy.rotation.set(0, Math.random() * TAU, 0);
+        propDummy.scale.set(radius, height, radius);
+        propDummy.updateMatrix();
+        stumpMesh.setMatrixAt(slot, propDummy.matrix);
+        stumpMesh.instanceMatrix.needsUpdate = true;
+        return slot;
+      }
+      function clearStump(prop, visual) {
+        if (visual.stump < 0 || stumpOwners[visual.stump] !== prop) return;
+        stumpOwners[visual.stump] = null;
+        stumpMesh.setMatrixAt(visual.stump, propZero);
+        stumpMesh.instanceMatrix.needsUpdate = true;
+      }
       function startPropFall(prop) {
         const fall = PROP_FALLS[prop.kind] || PROP_FALLS.trash,
-          visual = {
-            fall,
-            originals: (prop.instances || []).map(({ im, index }) => {
-              const m0 = new Three.Matrix4();
-              im.getMatrixAt(index, m0);
-              return m0;
-            }),
-            groupPose: prop.group ? { position: prop.group.position.clone(), quaternion: prop.group.quaternion.clone() } : null,
-            ground: terrainHeight(prop.x, prop.y),
-            slide: Math.min(80, (prop.fallSpeed || 60) * fall.slide),
-            puddles: 0,
-            done: false,
-          };
+          instances = prop.instances || [],
+          originals = [];
+        for (let i = 0; i < instances.length; i++) {
+          const m0 = new Three.Matrix4();
+          instances[i].im.getMatrixAt(instances[i].index, m0);
+          originals.push(m0);
+        }
+        const visual = {
+          fall,
+          originals,
+          groupPose: prop.group ? { position: prop.group.position.clone(), quaternion: prop.group.quaternion.clone() } : null,
+          ground: terrainHeight(prop.x, prop.y),
+          slide: Math.min(80, (prop.fallSpeed || 60) * fall.slide),
+          puddles: 0,
+          done: false,
+          landed: false,
+          stump: -1,
+        };
         if (prop.halo) prop.halo.visible = false;
         if (prop.glow) prop.glow.visible = false;
         // A lamp's pool goes out with it (lighting3d.js).
         lampLightSwitch(prop, false);
+        if (fall.stump) visual.stump = placeStump(prop, visual);
         if (fall.shatter) {
           // A crate bursts into boards.
           spawnChunks(prop.x, visual.ground + 3, prop.y, Math.cos(prop.fallA), Math.sin(prop.fallA), 10, '#8a6a45', 0.5, false);
@@ -1671,31 +1723,48 @@
           slide = visual.slide * (1 - (1 - t) * (1 - t)),
           dx = Math.cos(prop.fallA),
           dz = Math.sin(prop.fallA),
+          pivot = fall.pivot || 0,
           lift = fall.lift * Math.sin((tip / Math.max(0.01, fall.tip)) * Math.PI * 0.5);
-        // Tip about the base toward the fall direction: axis = up × direction.
+        // Tip about the base (or the break above the stump) toward the fall
+        // direction: axis = up x direction.
         propAxis.set(dz, 0, -dx);
         propRotation.makeRotationAxis(propAxis, tip);
         if (fall.yaw) propRotation.multiply(propYaw.makeRotationY(fall.yaw * t * (prop.id.length % 2 ? 1 : -1)));
-        propToPivot.makeTranslation(-prop.x, -visual.ground, -prop.y);
-        propFromPivot.makeTranslation(prop.x + dx * slide, visual.ground + lift, prop.y + dz * slide);
+        propToPivot.makeTranslation(-prop.x, -visual.ground - pivot, -prop.y);
+        propFromPivot.makeTranslation(prop.x + dx * slide, visual.ground + pivot + lift, prop.y + dz * slide);
         propMatrix.multiplyMatrices(propFromPivot, propRotation).multiply(propToPivot);
-        (prop.instances || []).forEach(({ im, index }, i) => {
-          if (fall.shatter) propScratch.makeScale(0, 0, 0);
-          else propScratch.multiplyMatrices(propMatrix, visual.originals[i]);
-          im.setMatrixAt(index, propScratch);
-          im.instanceMatrix.needsUpdate = true;
-        });
+        const instances = prop.instances;
+        if (instances)
+          for (let i = 0; i < instances.length; i++) {
+            if (fall.shatter) propScratch.copy(propZero);
+            else propScratch.multiplyMatrices(propMatrix, visual.originals[i]);
+            instances[i].im.setMatrixAt(instances[i].index, propScratch);
+            instances[i].im.instanceMatrix.needsUpdate = true;
+          }
         if (prop.group && visual.groupPose) {
           prop.group.quaternion.setFromAxisAngle(propAxis, tip);
           prop.group.position.set(visual.groupPose.position.x + dx * slide, visual.groupPose.position.y + lift, visual.groupPose.position.z + dz * slide);
         }
         visual.done = t >= 1;
+        // A tree hitting the ground: a burst of leaves and dust along the crown.
+        if (visual.done && !visual.landed && fall.stump) {
+          visual.landed = true;
+          const reach = (prop.size || 12) * 1.9;
+          for (let k = 0; k < 3; k++) {
+            const along = reach * (0.55 + k * 0.3);
+            impactEffect(prop.x + dx * along, prop.y + dz * along, 'dust', visual.ground);
+          }
+          spawnChunks(prop.x + dx * reach, visual.ground + 4, prop.y + dz * reach, dx, dz, 12, '#4e654a', 0.35, false);
+          addDecal(DECAL.litter, prop.x + dx * reach, visual.ground + 0.12, prop.y + dz * reach, 0, 1, 0, reach * 0.9, reach * 0.7, prop.fallA, 0.7);
+        }
       }
       function restoreProp(prop, visual) {
-        (prop.instances || []).forEach(({ im, index }, i) => {
-          im.setMatrixAt(index, visual.originals[i]);
-          im.instanceMatrix.needsUpdate = true;
-        });
+        const instances = prop.instances;
+        if (instances)
+          for (let i = 0; i < instances.length; i++) {
+            instances[i].im.setMatrixAt(instances[i].index, visual.originals[i]);
+            instances[i].im.instanceMatrix.needsUpdate = true;
+          }
         if (prop.group && visual.groupPose) {
           prop.group.position.copy(visual.groupPose.position);
           prop.group.quaternion.copy(visual.groupPose.quaternion);
@@ -1703,6 +1772,43 @@
         if (prop.halo) prop.halo.visible = true;
         if (prop.glow) prop.glow.visible = true;
         lampLightSwitch(prop, true);
+        clearStump(prop, visual);
+      }
+      /* The debris of a piece going down, by what it is made of (called by
+         damage.js knockStreetProp): splinters, sparks, glitter, chips, scraps. */
+      const PROP_DEBRIS_COLOURS = {
+        trash: '#3d5a45',
+        cone: '#e2702c',
+        news: '#b8312a',
+        mailbox: '#2e4d7a',
+        lounger: '#f1efe8',
+        umbrella: '#e0c24a',
+      };
+      function propDebris(prop, x, z, material, altitude, closing) {
+        const dx = Math.cos(prop.fallA || 0),
+          dz = Math.sin(prop.fallA || 0),
+          speed = clamp(closing / 180, 0.35, 1.3),
+          ground = terrainHeight(prop.x, prop.y),
+          big = prop.massKg > 500;
+        if (material === 'wood') {
+          spawnChunks(x, ground + 3, z, dx, dz, big ? 16 : 8, '#8a6a45', speed, false);
+          if (big) spawnChunks(x, ground + 6, z, dx, dz, 8, '#4e654a', speed * 0.6, false);
+          impactEffect(x, z, 'dust', ground);
+        } else if (material === 'stone') {
+          spawnChunks(x, ground + 2, z, dx, dz, 14, '#8c8779', speed * 0.8, true);
+          spawnRubble(prop.x, prop.y, dx, dz, 10, '#8c8779', 8);
+          impactEffect(x, z, 'dust', ground);
+        } else if (material === 'glass') {
+          impactEffect(x, z, 'glass', ground + 12);
+          impactEffect(x, z, 'metal', ground);
+          spawnChunks(x, ground + 3, z, dx, dz, 5, '#42484a', speed, false);
+        } else if (material === 'plastic' || material === 'fabric') {
+          spawnChunks(x, ground + 2, z, dx, dz, 6, PROP_DEBRIS_COLOURS[prop.kind] || '#c9c4b8', speed * 0.8, false);
+        } else {
+          impactEffect(x, z, 'metal', altitude);
+          if (prop.kind === 'lamp' || prop.kind === 'signal') impactEffect(x, z, 'glass', ground + 25);
+          spawnChunks(x, ground + 2, z, dx, dz, big ? 8 : 4, '#5d6264', speed, false);
+        }
       }
       // A sheared hydrant: a column of spray, mist, and a spreading puddle.
       function sprayHydrant(prop, visual, deltaSeconds) {
@@ -1750,11 +1856,12 @@
           if (!visual.done) posePropFall(prop, visual);
           if (prop.kind === 'hydrant') sprayHydrant(prop, visual, deltaSeconds);
         }
-        for (const [prop, visual] of propVisuals)
-          if (!prop.down) {
-            restoreProp(prop, visual);
-            propVisuals.delete(prop);
-          }
+        if (propVisuals.size > knockedProps.length)
+          for (const [prop, visual] of propVisuals)
+            if (!prop.down) {
+              restoreProp(prop, visual);
+              propVisuals.delete(prop);
+            }
       }
 
       // ---- Frame -------------------------------------------------------------------------
@@ -1790,6 +1897,7 @@
         structureBlast,
         structureImpact,
         shellImpact,
+        propDebris,
         groundStain,
         sparks,
         damageInfo: () => ({

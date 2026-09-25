@@ -19,6 +19,11 @@
      * a glass shatter when a pane actually broke in this hit, a recorded tyre
      * skid when the two were sliding across each other, and a short debris
      * settle after a really hard hit. No synthesised layers.
+     * Street furniture (damage.js) passes its `material`: metal knocks and crashes
+     * as before; wood, plastic and fabric play the light knock higher and softer,
+     * with the debris settle for splintered timber; stone and trees use the
+     * medium or heavy crash a little lower, and a tree adds the thud of the trunk
+     * landing a second and a half later (`tree`).
      * The bus plays everything at CRASH_LEVEL (-3.5 dB), `heard` in the log
      * includes it. Placement is by distance (level and a low-pass), stereo pan and, for hard
      * hits, a little reverb. A pair of vehicles makes one event per 0.7 s at most
@@ -97,9 +102,27 @@
         // Heavier bodies ring lower: a truck about 10 % down, a tank 14 %.
         body = heavyVehicle ? 1 - clamp((mass - 4) / 14, 0, 1) * 0.06 - 0.08 : 1,
         solid = o.other === 'building' || o.other === 'wall';
-      let set, gain;
-      if (o.other === 'prop') {
-        // A bollard, hydrant or bin: a knock, or a real crash if it was hit fast.
+      let set,
+        gain,
+        tone = 1;
+      const material = o.material || 'metal';
+      if (o.other === 'prop' && o.tree) {
+        // A trunk snapping: a real crash, lower than sheet metal.
+        set = closing < 110 ? 'medium' : 'heavy';
+        gain = set === 'medium' ? 0.5 : 0.78;
+        tone = 0.86;
+      } else if (o.other === 'prop' && material === 'stone') {
+        set = closing < 90 ? 'bump' : 'medium';
+        gain = set === 'bump' ? 0.3 : 0.55;
+        tone = 0.85;
+      } else if (o.other === 'prop' && (material === 'wood' || material === 'plastic' || material === 'fabric')) {
+        // A bench, a bin, a lounger: a light knock, higher and softer than metal.
+        set = 'bump';
+        const light = material === 'wood' ? 1 : material === 'plastic' ? 0.7 : 0.45;
+        gain = (0.12 + clamp((closing - 30) / 120, 0, 1) * 0.2) * light;
+        tone = material === 'wood' ? 1.18 : material === 'plastic' ? 1.32 : 1.45;
+      } else if (o.other === 'prop') {
+        // A bollard, hydrant or lamp post: a knock, or a real crash if it was hit fast.
         set = closing < 140 ? 'bump' : 'medium';
         gain = set === 'bump' ? 0.18 + clamp((closing - 40) / 100, 0, 1) * 0.22 : 0.45;
       } else if (closing < 75 && !(heavyVehicle && closing >= 60)) {
@@ -121,7 +144,7 @@
         set,
         sample,
         gain: gain * randomBetween(0.9, 1.05),
-        rate: body * randomBetween(0.95, 1.05) * (sample === 'crash-medium-2' && set === 'heavy' ? 0.94 : 1),
+        rate: body * tone * randomBetween(0.95, 1.05) * (sample === 'crash-medium-2' && set === 'heavy' ? 0.94 : 1),
         // Glass only when a pane broke in this very hit (the second heavy crash
         // carries its own glass, so the shatter under it is kept low).
         glass:
@@ -131,14 +154,22 @@
         // A recorded tyre skid while the two slide across each other.
         skid: (o.sliding || 0) > 110 && set !== 'scrape' ? { gain: clamp(o.sliding / 1600, 0.04, 0.13), length: clamp(o.sliding / 500, 0.25, 0.6) } : null,
         // Bits settling after a really hard hit.
-        debris: closing >= 130 && o.other !== 'prop' ? { gain: 0.14 + energy * 0.14 } : null,
+        debris:
+          closing >= 130 && o.other !== 'prop'
+            ? { gain: 0.14 + energy * 0.14 }
+            : o.other === 'prop' && (material === 'wood' || material === 'stone')
+              ? { gain: 0.1 + energy * 0.12, early: true }
+              : null,
+        // The trunk landing: a deep thud once the tree has toppled.
+        fall: o.tree ? { sample: crashPick('bump'), delay: randomBetween(1.35, 1.7), gain: 0.42 + clamp(((o.propKg || 900) - 900) / 3600, 0, 1) * 0.25 } : null,
       };
     }
     /**
      * `o`: { x, y, closing (units/s along the contact normal), mass (heavier of the
      * two, 1.25 = a coupe), other ('car', 'wall', 'building', 'prop'), glass (panes
      * broken by this hit), sliding (units/s across the contact), key (pair id for
-     * the cooldown) }.
+     * the cooldown), and for furniture material ('metal', 'wood', 'plastic',
+     * 'fabric', 'glass', 'stone'), tree and propKg }.
      */
     function crashSound(o) {
       if (gameMode !== 'play') return;
@@ -171,6 +202,8 @@
         glass: c.glass ? c.glass.sample : null,
         skid: !!c.skid,
         debris: !!c.debris,
+        material: o.material || null,
+        fall: !!c.fall,
         played: !!(audio && soundOn),
       });
       if (crashLog.length > 20) crashLog.shift();
@@ -191,12 +224,17 @@
         const tyres = audioBuffers.tires;
         if (tyres) crashLayer(bus, 'tires', 0.03, c.skid.gain, randomBetween(0.92, 1.05), Math.random() * Math.max(0, tyres.duration - 0.7), c.skid.length);
       }
-      if (c.debris) crashLayer(bus, 'crash-debris', randomBetween(0.45, 0.7), c.debris.gain, c.rate * randomBetween(0.97, 1.05));
+      if (c.debris)
+        crashLayer(bus, 'crash-debris', c.debris.early ? randomBetween(0.05, 0.12) : randomBetween(0.45, 0.7), c.debris.gain, c.rate * randomBetween(0.97, 1.05));
+      if (c.fall) {
+        crashLayer(bus, c.fall.sample, c.fall.delay, c.fall.gain, randomBetween(0.52, 0.6));
+        crashLayer(bus, 'crash-debris', c.fall.delay + 0.08, c.fall.gain * 0.5, randomBetween(0.8, 0.9));
+      }
       // Tear the event's nodes down once its longest layer has finished.
       setTimeout(() => {
         bus.disconnect();
         tone.disconnect();
         pan.disconnect();
-      }, 3500);
+      }, c.fall ? 5000 : 3500);
     }
     // END SUBSYSTEM: src/crash-audio.js

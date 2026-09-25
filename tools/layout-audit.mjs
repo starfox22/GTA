@@ -164,7 +164,8 @@ for (const g of barrierGaps.gaps) report('visible barrier without collider', g);
 const insideBuilding = (x, y, pad = 0) => L.buildings.find((b) => x > b.x + pad && x < b.x + b.w - pad && y > b.y + pad && y < b.y + b.h - pad);
 const onLandOrDeck = (x, y) => land(x, y) || L.docks.some((d) => x > d.x && x < d.x + d.w && y > d.y && y < d.y + d.h);
 for (const p of L.props || []) {
-  const h = Math.max(p.hx, p.hy);
+  // Half the narrow side: a long railing run or bench is tested by its width.
+  const h = Math.min(p.hx, p.hy);
   if (onRoad(p.x, p.y, h * 0.5)) report('prop in carriageway', p.kind + ' ' + p.x + ', ' + p.y + ' ' + onRoad(p.x, p.y, h * 0.5).name);
   if (insideBuilding(p.x, p.y, 1)) report('prop inside building', p.kind + ' ' + p.x + ', ' + p.y);
   if (!onLandOrDeck(p.x, p.y)) report('prop in water', p.kind + ' ' + p.x + ', ' + p.y);
@@ -182,6 +183,8 @@ for (let i = 0; i < props.length; i++)
   for (let j = i + 1; j < props.length; j++) {
     const a = props[i], b = props[j];
     if (Math.abs(a.x - b.x) > 20 || Math.abs(a.y - b.y) > 20 || (a.x === b.x && a.y === b.y && a.kind === b.kind)) continue;
+    // Consecutive runs of the sea railing meet (and cross) at the quay's bends.
+    if (a.kind === 'railing' && b.kind === 'railing') continue;
     if (overlap({ x: a.x, y: a.y, hx: a.hx, hy: a.hy, a: a.a }, { x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a })) report('prop on prop', a.kind + ' ' + a.x + ', ' + a.y + ' / ' + b.kind + ' ' + b.x + ', ' + b.y);
   }
 // Street ends: a closed end is a kerb and guardrail, never a painted circle;

@@ -434,11 +434,16 @@
           g = beachStatic((w.x0 + w.x1) / 2, w.y);
         box(g, 0, 0.8, w.width / 2 - 1, w.x1 - w.x0, 1.6, 2, beachPaint.darkTimber);
         for (let x = w.x0 + 24; x < w.x1; x += 48) box(g, x - (w.x0 + w.x1) / 2, 1.8, w.width / 2 - 1, 1.6, 3.6, 2.4, beachPaint.darkTimber);
+        // The benches are breakable (damage.js), drawn as instances (render3d.js
+        // BREAKABLE SCENERY).
         for (let x = w.x0 + 90; x < w.x1 - 40; x += 190) {
-          const bx = x - (w.x0 + w.x1) / 2;
-          box(g, bx, 3.5, -w.width / 2 + 5, 20, 1, 5, beachPaint.timber);
-          box(g, bx, 6.5, -w.width / 2 + 2.8, 20, 4, 0.8, beachPaint.timber);
-          for (const side of [-1, 1]) box(g, bx + side * 8, 1.8, -w.width / 2 + 5, 1, 3.5, 4, darkMetal);
+          const bench = new Three.Group(),
+            prop = registerStreetProp('seat', x, w.y - w.width / 2 + 4.5, 0, { half: [10, 3.2] });
+          bench.position.set(x, 0, w.y);
+          box(bench, 0, 3.5, -w.width / 2 + 5, 20, 1, 5, beachPaint.timber);
+          box(bench, 0, 6.5, -w.width / 2 + 2.8, 20, 4, 0.8, beachPaint.timber);
+          for (const side of [-1, 1]) box(bench, side * 8, 1.8, -w.width / 2 + 5, 1, 3.5, 4, darkMetal);
+          breakableGroup(prop, bench);
         }
       }
       for (const l of BEACH_LAYOUT.lamps) {
@@ -599,10 +604,18 @@
         canopyColour = beachInstanced(canopyGeometry(0), new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.75, side: Three.DoubleSide }), L.umbrellas.length, 'beach umbrella canopies'),
         canopyWhite = beachInstanced(canopyGeometry(1), new Three.MeshStandardMaterial({ color: '#f6f2e8', roughness: 0.75, side: Three.DoubleSide }), L.umbrellas.length, 'beach umbrella canopies (white)');
       L.umbrellas.forEach((u, i) => canopyColour.setColorAt(i, bc.set(u.color)));
+      // Each umbrella is a breakable prop (damage.js): a car flattens it and it
+      // tumbles away until the beach is tidied (restoreStreetProps).
+      const umbrellaProps = L.umbrellas.map((u, i) => {
+        const prop = registerStreetProp('umbrella', u.x, u.y);
+        for (const m of [umbrellaPoles, canopyColour, canopyWhite]) linkPropInstance(prop, m, i);
+        return prop;
+      });
       let umbrellasOpen = null;
       function setUmbrellas(open) {
         umbrellasOpen = open;
         L.umbrellas.forEach((u, i) => {
+          if (umbrellaProps[i].down) return;
           placeInstance(umbrellaPoles, i, u.x, 13, u.y, 0, 0.45, 26, 0.45, u.tilt, u.tilt * 0.5);
           // Open: a wide shallow cone; furled: a tall thin one tied to the pole.
           const r = open ? 17 : 2.4,
@@ -660,6 +673,10 @@
           -0.75,
         );
         loungerBeds.setColorAt(i * 2 + 1, bc.set(t.color));
+        // A breakable prop (damage.js), turned with the bed.
+        const prop = registerStreetProp('lounger', t.x - Math.cos(t.a) * 3, t.y - Math.sin(t.a) * 3, -t.a, { half: [11.5, 4] });
+        linkPropInstance(prop, loungerBeds, i * 2);
+        linkPropInstance(prop, loungerBeds, i * 2 + 1);
       });
       const boards = beachInstanced(sphereGeo, staticMat('#ffffff', 0.35), L.boards.length, 'surfboards');
       L.boards.forEach((b, i) => {

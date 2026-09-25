@@ -1238,7 +1238,8 @@
         for (const prop of crowd.props) {
           const part = propParts[prop.kind];
           if (!part || !entityInView(prop, 30)) continue;
-          crowdJoint(mOut, mIdentity, prop.x, terrainHeight(prop.x, prop.y), prop.y, 0, 0, -(prop.a || 0));
+          // A piece a car has knocked over lies tipped on its side (crowd.js).
+          crowdJoint(mOut, mIdentity, prop.x, terrainHeight(prop.x, prop.y), prop.y, 0, prop.tip || 0, -(prop.a || 0));
           if (part.n < part.capacity) {
             part.mesh.setMatrixAt(part.n, mOut);
             part.n++;

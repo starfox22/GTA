@@ -492,7 +492,9 @@
           seatWood = staticMat('#9c7b52', 0.85),
           lampPost = staticMat('#42484a', 0.6, 0.35),
           lampGlass = new Three.MeshBasicMaterial({ color: '#ffe9bd' }),
-          planter = staticMat('#8c8779', 0.9);
+          planter = staticMat('#8c8779', 0.9),
+          planterTrunk = staticMat('#6b5442'),
+          planterGeo = new Three.CylinderGeometry(9, 9.6, 3, 12);
         let group = null,
           groupAt = null,
           count = 0;
@@ -514,86 +516,107 @@
           inner.position.set(spot.x, terrainHeight(spot.x, spot.y), spot.y);
           inner.rotation.y = -promenadeYaw(spot);
           group.add(inner);
+          // A breakable piece (damage.js) is modelled in its own throwaway group
+          // placed like `inner` and drawn as instances (render3d.js BREAKABLE SCENERY).
+          const yaw = promenadeYaw(spot),
+            at = (lx, lz) => [spot.x + lx * Math.cos(yaw) - lz * Math.sin(yaw), spot.y + lx * Math.sin(yaw) + lz * Math.cos(yaw)],
+            piece = () => {
+              const g = new Three.Group();
+              g.position.copy(inner.position);
+              g.rotation.y = inner.rotation.y;
+              return g;
+            };
           if (!spot.beach) {
             // Sea railing on the quay coping, carried straight across a street
-            // mouth; it breaks for ladders and gangways (promenadeRailRuns).
+            // mouth; it breaks for ladders and gangways (promenadeRailRuns). Each
+            // run is a breakable railing: a pedestrian rail does not stop a car,
+            // and where one is broken the quay edge is open (promenadeRailBlocked).
+            spot.railProps = [];
             for (const run of spot.rail) {
               const length = run[1] - run[0],
                 mid = (run[0] + run[1]) / 2;
-              if (length < 2) continue;
-              for (const u of [run[0] + 1, run[1] - 1]) box(inner, u, 6, ESPLANADE_RAIL_Z, 2, 12, 2, railMetal);
-              box(inner, mid, 11, ESPLANADE_RAIL_Z, length, 1.8, 1.8, railMetal);
-              box(inner, mid, 6.5, ESPLANADE_RAIL_Z, length, 1.4, 1.4, railMetal);
+              if (length < 2) {
+                spot.railProps.push(null);
+                continue;
+              }
               box(inner, mid, 1.2, ESPLANADE_RAIL_Z, length, 2.4, 3, walkStone);
+              const g = piece(),
+                prop = registerStreetProp('railing', ...at(mid, ESPLANADE_RAIL_Z), -yaw, { half: [length / 2, 1.5] });
+              for (const u of [run[0] + 1, run[1] - 1]) box(g, u, 6, ESPLANADE_RAIL_Z, 2, 12, 2, railMetal);
+              box(g, mid, 11, ESPLANADE_RAIL_Z, length, 1.8, 1.8, railMetal);
+              box(g, mid, 6.5, ESPLANADE_RAIL_Z, length, 1.4, 1.4, railMetal);
+              breakableGroup(prop, g);
+              spot.railProps.push(prop);
             }
           }
           if (spot.crossing) continue;
-          // Each piece is also a foot obstacle, at its place in the map.
-          const yaw = promenadeYaw(spot),
-            at = (lx, lz) => [spot.x + lx * Math.cos(yaw) - lz * Math.sin(yaw), spot.y + lx * Math.sin(yaw) + lz * Math.cos(yaw)];
-          if (spot.kind === 'lamp') registerFootObstacle(...at(0, 14), 3);
-          else if (spot.kind === 'bench') registerFootObstacle(...at(0, 5), 10, 3.5, yaw);
-          else if (spot.kind === 'tree') registerFootObstacle(...at(0, -22), 9.6);
+          // Lamp standards, benches and planters are breakable props; standing,
+          // they are also what stops people on foot (footObstacleBlocked).
           if (spot.kind === 'lamp') {
-            box(inner, 0, 15, 14, 2.6, 30, 2.6, lampPost);
-            box(inner, 0, 2, 14, 7, 4, 7, lampPost);
-            const globe = mesh(sphereGeo, lampGlass, inner, 0, 32, 14, 3.4, 4.2, 3.4);
-            globe.castShadow = false;
+            const g = piece(),
+              prop = registerStreetProp('lantern', ...at(0, 14), -yaw, { half: [3, 3] });
+            box(g, 0, 15, 14, 2.6, 30, 2.6, lampPost);
+            box(g, 0, 2, 14, 7, 4, 7, lampPost);
+            mesh(sphereGeo, lampGlass, g, 0, 32, 14, 3.4, 4.2, 3.4);
+            breakableGroup(prop, g);
           } else if (spot.kind === 'bench') {
-            box(inner, 0, 4.4, 6, 20, 1.6, 6, seatWood);
-            box(inner, 0, 7.6, 3.6, 20, 5.4, 1.4, seatWood);
-            for (const side of [-1, 1]) box(inner, side * 8, 2, 6, 1.4, 4.4, 5.4, lampPost);
+            const g = piece(),
+              prop = registerStreetProp('seat', ...at(0, 5), -yaw, { half: [10, 3.5] });
+            box(g, 0, 4.4, 6, 20, 1.6, 6, seatWood);
+            box(g, 0, 7.6, 3.6, 20, 5.4, 1.4, seatWood);
+            for (const side of [-1, 1]) box(g, side * 8, 2, 6, 1.4, 4.4, 5.4, lampPost);
+            breakableGroup(prop, g);
           } else if (spot.kind === 'tree') {
-            mesh(new Three.CylinderGeometry(9, 9.6, 3, 12), planter, inner, 0, 1.5, -22);
-            rod(inner, new Three.Vector3(0, 3, -22), new Three.Vector3(0, 17, -22), 1.3, staticMat('#6b5442'));
-            mesh(sphereGeo, leafMats[0], inner, 0, 22, -22, 11, 9, 11);
+            const g = piece(),
+              prop = registerStreetProp('planter', ...at(0, -22), -yaw, { half: [9, 9], size: 11 });
+            mesh(planterGeo, planter, g, 0, 1.5, -22);
+            rod(g, new Three.Vector3(0, 3, -22), new Three.Vector3(0, 17, -22), 1.3, planterTrunk);
+            mesh(sphereGeo, leafMats[0], g, 0, 22, -22, 11, 9, 11);
+            breakableGroup(prop, g);
           }
         }
       }
       buildPromenade();
       // palmTrunkMaterial / palmFrondMaterial (render3d.js) are shared by every palm
-      // so the static batcher can merge them; the fronds sway (surfaces3d.js).
+      // and the fronds sway (surfaces3d.js). A palm is a breakable prop (damage.js):
+      // drawn as two instances, trunk and crown (render3d.js BREAKABLE SCENERY), it
+      // snaps and falls when a vehicle brings enough energy. Returns the prop.
       function makePalm(x, z, size = 1) {
+        const prop = registerStreetProp('palm', x, z, 0, { half: [2 * size, 2 * size], size: 12 * size });
         const g = new Three.Group();
         g.position.set(x, 0, z);
-        scene.add(g);
-        batchGroups.push(g);
-        const trunk = palmTrunkMaterial,
-          palm = palmFrondMaterial;
-        rod(g, new Three.Vector3(0, 0, 0), new Three.Vector3(2 * size, 28 * size, 0), 1.5 * size, trunk);
-        registerFootObstacle(x, z, 2 * size);
-        for (let k = 0; k < 7; k++) {
-          const a = (k * TAU) / 7,
-            verts = [];
-          for (let j = 0; j < 7; j++) {
-            const d = (j / 6) * 19 * size,
-              h = 31 * size + Math.sin((j / 6) * Math.PI) * 4 * size - (j / 6) * 8 * size,
-              w = Math.sin((j / 6) * Math.PI) * 3 * size;
-            verts.push(
-              2 * size + Math.cos(a) * d - Math.sin(a) * w,
-              h,
-              Math.sin(a) * d + Math.cos(a) * w,
-              2 * size + Math.cos(a) * d + Math.sin(a) * w,
-              h,
-              Math.sin(a) * d - Math.cos(a) * w,
-            );
+        g.scale.setScalar(size);
+        rod(g, new Three.Vector3(0, 0, 0), new Three.Vector3(2, 28, 0), 1.5, palmTrunkMaterial);
+        if (!palmFrondGeometry) {
+          const verts = [],
+            idx = [];
+          for (let k = 0; k < 7; k++) {
+            const a = (k * TAU) / 7,
+              base = verts.length / 3;
+            for (let j = 0; j < 7; j++) {
+              const d = (j / 6) * 19,
+                h = 31 + Math.sin((j / 6) * Math.PI) * 4 - (j / 6) * 8,
+                w = Math.sin((j / 6) * Math.PI) * 3;
+              verts.push(
+                2 + Math.cos(a) * d - Math.sin(a) * w,
+                h,
+                Math.sin(a) * d + Math.cos(a) * w,
+                2 + Math.cos(a) * d + Math.sin(a) * w,
+                h,
+                Math.sin(a) * d - Math.cos(a) * w,
+              );
+            }
+            for (let j = 0; j < 6; j++)
+              idx.push(base + j * 2, base + j * 2 + 1, base + j * 2 + 2, base + j * 2 + 1, base + j * 2 + 3, base + j * 2 + 2);
           }
-          const geo = new Three.BufferGeometry();
-          geo.setAttribute('position', new Three.Float32BufferAttribute(verts, 3));
-          const idx = [];
-          for (let j = 0; j < 6; j++)
-            idx.push(j * 2, j * 2 + 1, j * 2 + 2, j * 2 + 1, j * 2 + 3, j * 2 + 2);
-          geo.setIndex(idx);
-          geo.computeVertexNormals();
-          mesh(geo, palm, g, 0, 0, 0);
+          palmFrondGeometry = new Three.BufferGeometry();
+          palmFrondGeometry.setAttribute('position', new Three.Float32BufferAttribute(verts, 3));
+          palmFrondGeometry.setIndex(idx);
+          palmFrondGeometry.computeVertexNormals();
         }
-        statics.push({
-          x,
-          y: z,
-          group: g,
-          radius: 35,
-        });
-        return g;
+        mesh(palmFrondGeometry, palmFrondMaterial, g, 0, 0, 0);
+        breakableGroup(prop, g);
+        return prop;
       }
       // The keys trade brick canyons for pastel hotels, pools, palms and beach
       // furniture. Palms line both kerbs of Ocean Dr (x -2432) on the sea side.

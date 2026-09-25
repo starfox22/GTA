@@ -758,22 +758,81 @@
       groundMesh.receiveShadow = true;
       scene.add(groundMesh);
       // Buildings are constructed by src/cityscape3d.js (included below, after the halo helper).
+      /**
+       * BREAKABLE SCENERY
+       * Trees, palms and the esplanade's furniture can be knocked down by a vehicle
+       * (damage.js BREAKABLE FURNITURE AND TREES), so they cannot be merged into the
+       * static batches: a merged tree could never fall. Each piece is modelled as
+       * before, in a throwaway group, and `breakableGroup(prop, group)` files every
+       * mesh of it as one instance of an InstancedMesh per (map cell, geometry,
+       * material). `flushBreakables()` (just before the static batching) builds
+       * those meshes under the static batch cells, so they are culled with the
+       * cell and hidden by the far city like the batches (flight-view3d.js), whose
+       * copy still gets every piece (noteFarScenery). The prop's instances are
+       * linked so damage3d.js can topple them by rewriting their matrices; nothing
+       * is allocated per frame. Geometry must be shared between pieces
+       * (boxGeo, cylinderGeo, leafGeo...) or each would be its own draw.
+       */
+      const BREAKABLE_CELL = 1024,
+        breakableBuckets = new Map();
+      let breakablesFlushed = false;
+      function breakableGroup(prop, group, castShadow = true) {
+        group.updateMatrixWorld(true);
+        const e = group.matrixWorld.elements,
+          cx = Math.floor(e[12] / BREAKABLE_CELL),
+          cz = Math.floor(e[14] / BREAKABLE_CELL);
+        group.traverse((o) => {
+          if (!o.isMesh) return;
+          const key = cx + '|' + cz + '|' + o.geometry.uuid + '|' + o.material.uuid;
+          let bucket = breakableBuckets.get(key);
+          if (!bucket) breakableBuckets.set(key, (bucket = { geometry: o.geometry, material: o.material, cx, cz, parts: [], castShadow }));
+          bucket.parts.push({ matrix: o.matrixWorld.clone(), prop, source: o });
+        });
+      }
+      function flushBreakables() {
+        if (breakablesFlushed) return;
+        breakablesFlushed = true;
+        for (const bucket of breakableBuckets.values()) {
+          const im = new Three.InstancedMesh(bucket.geometry, bucket.material, bucket.parts.length);
+          im.name = 'breakable scenery';
+          im.castShadow = bucket.castShadow;
+          im.receiveShadow = true;
+          bucket.parts.forEach((part, i) => {
+            im.setMatrixAt(i, part.matrix);
+            if (part.prop) linkPropInstance(part.prop, im, i);
+            // The far city keeps an intact copy of every piece.
+            noteFarScenery(part.source);
+          });
+          im.instanceMatrix.needsUpdate = true;
+          // Culled by its own bounds, padded for a tree lying across the street.
+          im.computeBoundingSphere();
+          im.boundingSphere.radius += 90;
+          staticBatchCell(bucket.cx, bucket.cz, BREAKABLE_CELL).group.add(im);
+          farHidden.push(im);
+        }
+        breakableBuckets.clear();
+      }
+      // A palm's seven fronds as one geometry at size 1 (makePalm, world3d.js,
+      // scales the whole palm), made on first use.
+      let palmFrondGeometry = null;
       // Street trees with proper trunks and layered crowns.
       const blossomMat = mat('#d5a2b5');
       const leafGeo = new Three.IcosahedronGeometry(1, 2),
-        trunkGeo = new Three.CylinderGeometry(0.9, 1.9, 1, 8);
+        trunkGeo = new Three.CylinderGeometry(0.9, 1.9, 1, 8),
+        // A pine's tiers are one unit cone scaled per tier (one draw for them all).
+        pineTierGeo = new Three.ConeGeometry(1, 1, 8);
       trees.forEach((t, i) => plantTree(t, i));
       // One tree of the plan (or a renderer-only one, landscape3d.js): a palm on the
-      // Keys, otherwise a trunk, limbs and a crown of lobes, batched with the rest.
+      // Keys, otherwise a trunk, limbs and a crown of lobes; a breakable prop drawn
+      // as instances (BREAKABLE SCENERY).
       function plantTree(t, i) {
         if (t.tropical ?? (onPalmKeys(t.x) && !t.county)) {
-          makePalm(t.x, t.y, t.r / 17);
+          t.prop = makePalm(t.x, t.y, t.r / 17);
           return;
         }
         const group = new Three.Group();
         group.position.set(t.x, terrainHeight(t.x, t.y), t.y);
-        scene.add(group);
-        batchGroups.push(group);
+        t.prop = treeProp(t);
         // Tapered trunk with a root flare, two main limbs, and a layered crown of
         // five offset lobes so the canopy reads as foliage rather than a ball.
         mesh(trunkGeo, wood, group, 0, t.r * 0.8, 0, 1, t.r * 1.6, 1);
@@ -788,12 +847,15 @@
           const a = j * 2.399 + i * 0.7;
           if (t.pine)
             mesh(
-              new Three.ConeGeometry(t.r * (0.95 - j * 0.16), t.r * 1.2, 8),
+              pineTierGeo,
               leafMats[(i + j) % 3],
               group,
               0,
               t.r * (1.3 + j * 0.55),
               0,
+              t.r * (0.95 - j * 0.16),
+              t.r * 1.2,
+              t.r * (0.95 - j * 0.16),
             );
           else {
             const spread = j === 0 ? 0 : t.r * 0.42,
@@ -811,12 +873,7 @@
             );
           }
         }
-        statics.push({
-          x: t.x,
-          y: t.y,
-          group,
-          radius: 40,
-        });
+        breakableGroup(t.prop, group);
       }
       // Lamps, illuminated signs and street furniture.
       const haloCanvas = document.createElement('canvas');
@@ -3044,6 +3101,7 @@
           }
         },
       };
+      flushBreakables();
       const batchReport = batchStaticGroups();
       api.batchReport = batchReport;
       tagSceneryDetail();

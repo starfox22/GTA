@@ -1744,10 +1744,18 @@
         // ... nor in the sea (the kerb pattern ran past the south-west sea wall).
         if (cityStreetAt(t.x, t.y, 2) || onServiceRoad(t.x, t.y) || railBlocked(t.x, t.y, 6) || !groundAt(t.x, t.y, 3)) trees.splice(i, 1);
       }
-      // Lamp posts likewise (the head overhangs 6 units towards +x).
+      // Lamp posts likewise (the head overhangs 6 units towards +x). Where a block's
+      // kerb lamp lands on the next block's kerb tree the post stood inside the
+      // trunk; the tree keeps the spot (both are knockable props, damage.js).
       for (let i = lamps.length - 1; i >= 0; i--) {
         const l = lamps[i];
-        if (cityStreetAt(l.x, l.y, 2) || onServiceRoad(l.x, l.y) || railBlocked(l.x, l.y, 6)) lamps.splice(i, 1);
+        if (
+          cityStreetAt(l.x, l.y, 2) ||
+          onServiceRoad(l.x, l.y) ||
+          railBlocked(l.x, l.y, 6) ||
+          trees.some((t) => Math.abs(t.x - l.x) < 6 && Math.abs(t.y - l.y) < 6)
+        )
+          lamps.splice(i, 1);
       }
     }
     function populate() {

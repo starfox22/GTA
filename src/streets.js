@@ -132,7 +132,8 @@
       for (let y = 730; y < 4550; y += 145)
         for (const [x, dy, size] of [[-2372, 0, 1.15], [-2501, 20, 1]]) {
           const py = y + dy;
-          if (!landAt(x, py) || cityStreetAt(x, py, 8) || solid(x, py, 4)) continue;
+          // Not in a street, nor on the corner of a junction where its signal stands.
+          if (!landAt(x, py) || cityStreetAt(x, py, 8) || cityStreetAt(x, py - 26) || cityStreetAt(x, py + 26) || solid(x, py, 4)) continue;
           oceanPalmCache.push({ x, y: py, size });
         }
       return oceanPalmCache;
@@ -593,7 +594,9 @@
               across = -dx * uy + dy * ux;
             if (Math.abs(across) > r + 1) continue;
             const u = dx * ux + dy * uy;
-            for (const [a, b] of spot.rail) if (u > a - r && u < b + r) return true;
+            // A run a vehicle has knocked down (damage.js) leaves the edge open.
+            for (let k = 0; k < spot.rail.length; k++)
+              if (u > spot.rail[k][0] - r && u < spot.rail[k][1] + r && !spot.railProps?.[k]?.down) return true;
           }
         }
       return false;
@@ -633,8 +636,10 @@
     function addFootTrees() {
       if (footTreesAdded || !trees.length) return;
       footTreesAdded = true;
-      // A trunk is a couple of units across whatever the crown.
-      for (const t of trees) registerFootObstacle(t.x, t.y, 2.2);
+      // A trunk is a couple of units across whatever the crown. A tree the 3D
+      // renderer made a breakable prop (t.prop) is already solid to walkers while
+      // it stands (below), and not once it has been knocked down.
+      for (const t of trees) if (!t.prop) registerFootObstacle(t.x, t.y, 2.2);
     }
     function footObstacleBlocked(x, y, r) {
       addFootTrees();
