@@ -1,5 +1,76 @@
 # Changelog
 
+## Unreleased — ramming roadblocks, crash physics, breakable trees and furniture
+
+Roadblocks (roadblocks.js, physics.js)
+- **Bug: a truck stopped dead at a bridge roadblock.** Braced cruisers were infinite-mass
+  anchors unless the rammer passed a gate tuned before the real-scale retune: at least 2.2 t
+  and mass x closing speed of a box truck at 55 km/h. A pickup (2.7 t) needed 138 km/h, an SUV
+  163, a box truck at 50 km/h hit a wall. Now a braced cruiser is an ordinary 1.6 t body on
+  locked brakes (`parkedFriction`, 0.8 g) and momentum decides. The V overlaps past the centre
+  line so a rammer meets a flank; "ROADBLOCK BUSTED" only when the player comes out the far side.
+- Measured (bridge approaches, throttle held from 90 units out; speed going in -> coming out):
+
+| Vehicle | Before | After |
+| --- | --- | --- |
+| Box truck 50 km/h | stopped dead (2-4 km/h) | through, 48 -> 35-40 km/h |
+| Box truck 30 km/h | stopped dead | through, 30 -> 25 km/h, pushing the cruisers aside |
+| Box truck 70 / 90 km/h | through, -20 / -25 km/h | through, 74 -> 63 / 90 -> 69 km/h |
+| Bus 45-60 km/h | through | through, loses 5-8 km/h |
+| Pickup 60-90 km/h | stopped dead | through, 60 -> 32-41 km/h |
+| SUV 50-80 km/h | stopped dead | through, 52 -> 27-33 km/h |
+| Sedan 30-80 km/h | stopped dead | shoves the first cruiser, crumples, stalls in the V |
+| Tank 30-50 km/h | through (-15 km/h) | through, loses 1-3 km/h |
+
+Crash physics (physics.js CRASH SEVERITY, measured headless)
+- Damage follows each body's delta-v (mass ratio), not the closing speed, and driver injury
+  likewise; restitution 0.3 for a parking knock down to 0.08 in a real crash; spin cap 5 rad/s.
+- Sedan head-on into a building face, hit points lost of 150 (before -> after): 30 km/h 2 -> 4,
+  50 km/h 9 -> 12, 80 km/h 15 -> 33, 120 km/h 27 -> 66, 160 km/h 46 -> 82. Box truck (of 420):
+  50 km/h 7 -> 39, 120 km/h 27 -> 169, 160 km/h 39 -> 293. No penetration at 250 / 330 km/h.
+- Side impacts (T-bone into a parked car, speeds just after contact; momentum is conserved to
+  1-4%): truck 48 km/h into a sedan -> truck 38.5, sedan 44; the truck took 0 hit points (was 7,
+  the same as the sedan), the sedan 9. Sedan into a truck at 48 -> 3.5 / 9, sedan 9, truck 0.
+  Two sedans at 100 -> 14 each (was 21). Tank into a sedan: tank 0, sedan 9.
+- Tunnelling: a motorbike at 250 km/h into a big tree stops at the trunk; a supercar at 250 /
+  330 km/h into a wall or the bridge rail stays out.
+- Masses: tank 55 t (was 18), bus 11.5 t (was 9). Unattended vehicles slide on Coulomb
+  friction (brakes 0.8 g, parked 0.35 g, sideways 0.85 g).
+
+Handling (physics.js FRICTION CIRCLE AND BALANCE)
+- Friction circle, weight transfer under braking, per-class `balance` (trucks push wide,
+  muscle cars and roadsters step out under power), rain on every tyre force, kerb strikes,
+  and damage: a bent front end steers up to 25% less, flat tyres brake up to 50% worse.
+- Measured (sedan): braking while steering at 100 km/h now pulls 0.63 g sideways (was 0.97 g on
+  top of a full 1 g stop); 100-0 dry 34.5 m, wet 45.8 m (rain had no effect before); steady
+  cornering 1.22 g dry, 0.89 g wet; box truck 0.71 / 0.52 g. Handbrake turns unchanged in
+  the dry (112 degrees in 1.5 s from 60 km/h), softer in the wet.
+
+Breakable furniture and trees (damage.js, render3d.js, world3d.js, beach3d.js, damage3d.js)
+- Props break by kinetic energy along the contact normal against `breakKJ`: cones, bins,
+  crates, news boxes, umbrellas, loungers 0.05-2 kJ; benches 8-10; sea railing 25; hydrants 25;
+  lamp standards 45-60; signals 90; young trees 120 (a sedan from ~47 km/h), palms 150,
+  planters 200, mature trees 400, big old trees 1200 (a sedan bounces off below ~150 km/h, a
+  box truck fells it from ~68, a bus from ~52, the tank always); steel bollards 600 (a sedan
+  below ~100 km/h stops). A hit that holds strains the piece for the next one.
+- Measured: sedan 45 km/h into a young tree: held, 10 hp; a third ram fells it. Box truck 80
+  into a big tree: fells it, leaves at 34 km/h, 52 hp. Bus 60: fells it, 22 km/h. Sedan 250:
+  fells it, 112 km/h, 124 hp. Sedan 30 km/h through an esplanade bench: 28 -> 25 km/h, 1 hp.
+  Sedan 30 through the sea railing: through (and into the harbour if it keeps going).
+- New breakables: every street and park tree, palms, the esplanade's benches, lamp
+  standards, planters and sea railing, the beach umbrellas, loungers and boardwalk benches;
+  street-scene furniture (carts, cafe tables, menu boards, cases, boxes) is thrown aside.
+- Felled trees leave a stump, leaves and dust where the crown lands, and people near them
+  scatter; props come back after four minutes out of view. Sounds and debris by material.
+- Performance: the breakable scenery is instanced per 2048-unit cell (no per-frame
+  allocation; crown lobes 80 faces, limbs share the trunk's geometry). Headless (SwiftShader,
+  graphics high, 25 s settle, same views, before -> after): draw calls downtown 228 -> 218,
+  esplanade 222 -> 208, Ocean Dr 198 -> 215, park block 255 -> 274, zoomed out (0.35)
+  627 -> 629; triangles +6-17%; simulation CPU per frame unchanged within noise (10-33 ms
+  before, 12-21 ms after on a shared machine).
+- Plan fixes found by the layout audit: kerb lamps planted inside kerb trees, an Ocean Dr palm
+  on a junction signal.
+
 ## Unreleased — run by default, the radio volume slider and the audio mixer
 
 On foot (game.js `FOOT_WALK` / `FOOT_RUN`, `footPace()`; controls.js)

@@ -104,6 +104,23 @@ Two closures matter:
   taken at 30-40 km/h (or on the handbrake) and a wide bend at 150. The same numbers feed the
   AI: traffic and police clamp their throttle to `engineAcceleration` and their braking to
   `spec.brake`.
+- **Tyres and balance** (physics.js FRICTION CIRCLE AND BALANCE, the player's car): driving,
+  braking and cornering share one grip budget, so braking flat out in a bend ploughs wide and a
+  car at the cornering limit cannot also accelerate hard. Braking loads the nose (it turns in
+  harder, the tail lightens); `balance` per class (VEHICLE_DEFINITIONS, -1..1) makes trucks,
+  buses, vans and SUVs push wide at the limit and muscle cars and roadsters step the tail out
+  under power. Rain (`wetGrip()`, weather.js: down to 0.72 on a soaked road) scales traction,
+  brakes, handbrake and cornering: a sedan's 100-0 grows from 34.5 m to 45.8 m and its steady
+  cornering from 1.22 g to 0.89 g. `vehicleHandling` adds `steer` (a bent front end) and
+  `brake` (flat tyres). `kerbStrike` jolts the body and scrubs 1-5% of the speed on mounting
+  or dropping off a kerb above 25 km/h. Traffic and police AI keep their dry-road limits.
+- **Crashes** (physics.js CRASH SEVERITY): every vehicle is a body of its real `mass` (tonnes;
+  the tank 55, the bus 11.5). Damage follows each body's delta-v, closing x M / (m + M) (a
+  wall is M = infinity): the share of hit points is ((delta-v - 10 km/h) / 190 km/h)^1.5, a
+  tenth for the tank, 2.5x for a car under a tank. Driver injury (`crashInjury`) follows the
+  same delta-v. Restitution is 0.3 for a parking knock down to 0.08 from 55 km/h. A vehicle
+  nobody drives slides on Coulomb friction (`parkedFriction`: locked brakes 0.8 g, parked in
+  gear 0.35 g, 0.85 g sideways) instead of an exponential drag.
 - **Targets** (measured with `simulate`, see CHANGELOG): everyday cars 150-205 km/h and 0-100
   in 6.5-13 s, sports and supercars 230-330 km/h in 2.9-5 s, trucks 115-120, the bus 100, the
   tank 55; motorbikes 180-225; the patrol car 230 km/h (0-100 in 6.3 s) so it catches anything
@@ -150,7 +167,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
 | campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
 | chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
-| roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. `roadblockHolds()` (called from `resolveContact`) lets a heavy vehicle with enough momentum shove a cruiser loose; lighter cars just stop |
+| roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. A braced cruiser is an ordinary 1.6 t body on locked brakes (`parkedFriction`), so the rammer's momentum decides: a truck, bus or the tank shoves through, a sedan crumples and stalls in the V. A cruiser moved over a metre is knocked loose (`roadblockShoved`); the cut is busted when the player's car comes out the far side (`watchRoadblockBreach`) |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
 | themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
@@ -165,8 +182,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | rooftops.js | Helicopter landings on flat roofs (`helicopterRoofSite`, `roofLandingClear`), rooftop helipads (`chooseRoofHelipads`, `b.helipad`), the `player.buildingRoof` carrier (`exitOntoRoof`, `moveOnBuildingRoof`), `playerOnRoof()` |
 | air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft |
 | combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and helicopter pursuit (`AIR_UNITS_MAX`: one hostile helicopter at a time from stars, a chase at sea or a mission; its marksman sharpens with the stars); SNIPER FIRE, shared by the rooftop snipers and the marksman: a lock of 2 s or more with a laser (rooftop), a rising beep and a red screen-edge glow toward the shooter (`noteSniperLock`, `sniperThreat`, hud.js SNIPER WARNING), then one visible tracer round (`fireSniperRound`) aimed at where the player is guessed to be (measured velocity, `trackPlayerMotion`, led by a random 0.3..skill of the flight time), so standing still is a hit and running or turning usually a miss; a hit is `'sniper'` damage, 50 before armour, never lethal from full health |
-| damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`), the damage console helpers |
-| crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; the whole bus plays at `CRASH_LEVEL` (-3.5 dB, under gunfire and engines); one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
+| damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture and trees by impact energy (`STREET_PROP_KINDS`, `registerStreetProp`, `treeProp`, `streetPropContacts`, `knockStreetProp`), the damage console helpers |
+| crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; street furniture passes its `material` (wood, plastic and fabric knock higher and softer with a splinter settle, stone and trees crash lower, a tree adds the thud of the trunk landing); the whole bus plays at `CRASH_LEVEL` (-3.5 dB, under gunfire and engines); one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
 | engine-audio.js | Engine sound: `ENGINE_SETS` (recorded loops per class with the revs each was recorded at: compact, sport, V8, diesel, bike, cruiser, tank, outboard, marine diesel, jet ski) and `ENGINE_OF_TYPE` (vehicle type to set, pitch, level); the player's engine simulation (`engineSimulate`: idle, clutch slip pulling away, automatic gearbox with a throttle cut on upshifts and a blip on downshifts, throttle load), layers pitched by rpm / recorded rpm and cross-faded in the middle of each gap (`engineLayerWeights`), a recorded starter on getting in, overrun burble (V8, sport), misfires when badly hurt; tyre roar, gravel off-road and tank tracks (tank-tracks.ogg), wind on open vehicles; synthesised turboprop and turbofan (`updateJetVoice`: whine, roar, hiss, blade buzz); the nearest four driven traffic vehicles get one voice each with distance, pan and Doppler (`updateTrafficEngines`); `engineReport()` (DeadEndCity.engineSound(): revs, gear, load, layer rates and gains, traffic, a trace) |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
 | airfields.js | The runway plan (section 4, "Airfields"): `RUNWAYS`, `TAXIWAYS`, `RUNWAY_PIERS` (reclaimed land, pushed onto `LAND_REGIONS`), `runwayRect` / `runwayPoint` / `runwayUnder` / `runwayPierAt`, PAPI units and `papiShowsWhite`, `paintAirfieldGround` (the flat runways for the 2D view, the maps and the ground sheets), `airfieldReport()` (DeadEndCity.airfields()) |
@@ -1183,11 +1200,29 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
 - Physics: tyre side-force is capped so hit cars slide; off-centre impulses set `spinUntil`
   (the car spins out); explosions shove, spin and bounce vehicles (`blastEffects`, `c.hop`);
   `resolveContact` records scrapes for sparks and paint scores.
-- Street furniture registers itself as it is placed (`registerStreetProp(kind, x, y, yaw)` from
-  cityscape3d, the lamp loop in render3d and the signals in harbor3d). Standing props are solid
-  boxes for vehicles; mass times closing speed above the kind's `toughness` knocks one down
-  (it stops being solid) and takes momentum off the car. They stand up again after four
-  minutes out of view. Hydrants spray, benches turn their sitter out.
+- Street furniture and trees register themselves as they are placed (`registerStreetProp(kind,
+  x, y, yaw, options)` from cityscape3d, the lamp loop and `plantTree` in render3d, `makePalm`
+  and the esplanade in world3d, beach3d, the signals in harbor3d). A standing prop is a solid
+  box for vehicles (and for walkers, `footObstacleBlocked`). It breaks when the vehicle's
+  kinetic energy along the contact normal (0.5 m v^2, kJ) plus the strain of earlier hits
+  reaches its `breakKJ` (damage.js BREAKABLE FURNITURE AND TREES has the table and what it
+  means per vehicle); the car then loses that energy and shares momentum with the part it
+  carries on, and takes the worse of the piece's `harm` and the crash severity. Below the
+  threshold the hit is an ordinary crash and half its energy is kept as strain. A tank crushes
+  anything. Trees come in three grades by crown radius (120 / 400 / 1200 kJ), palms 150,
+  planters 200, the sea railing 25 (a broken run also opens the quay edge to walkers,
+  `promenadeRailBlocked`), steel bollards 600. A falling tree alarms the crowd round it
+  (`crowdAlarm('crash')`). Props stand up again after four minutes out of view. Hydrants spray,
+  benches turn their sitter out. Street-scene furniture (crowd.js KNOCKED SCENE FURNITURE:
+  carts, cafe tables, menu boards) is loose and is thrown ahead of the car.
+- Breakable scenery keeps instancing (render3d.js BREAKABLE SCENERY): trees, palms and the
+  esplanade pieces are modelled once into a throwaway group that `breakableGroup(prop,
+  group)` files as instances of an InstancedMesh per (2048-unit cell, geometry, material),
+  built by `flushBreakables()` under the static batch cells and hidden by the far city
+  (which keeps an intact copy). damage3d.js topples a prop by rewriting its instances'
+  matrices (`PROP_FALLS`: tip, pivot, slide, stump), leaves a stump from a pooled instanced
+  mesh, bursts leaves and dust where the crown lands and throws debris by material
+  (`propDebris`). Nothing is allocated per frame.
 - Decals: one 4×4 procedural atlas; `worldDecals` (a 2400-slot ring buffer: wall chips,
   shop-glass stars and shattered panes, scorch, soot, craters, rubble, scuffs, oil, puddles)
   and `vehicleDecals` (rebuilt each frame from `damage.marks`, anchored by a ray along the

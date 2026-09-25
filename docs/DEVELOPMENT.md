@@ -118,14 +118,14 @@ something, never a generic code-evaluation hook.
 | `airfields()` | The runways (airfields.js): designations, length, width and blast pads in metres, thresholds, aiming point and touchdown zone, approach lights, what each PAPI shows the player's aircraft (`'RRWW'`, nearest the runway first; on-slope with nobody flying), the runway piers, the taxiway count and every plane (airframe, position, district, hp) |
 | `route(x, y)` | Set a map waypoint and report the GPS route from the player: status, road length, the bridges it crosses |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
-| `roadblock(siteIndex)` | Build a police cut at a chokepoint (nearest to the player if omitted) |
+| `roadblock(siteIndex)`, `clearRoadblocks()` | Build a police cut at a chokepoint (nearest to the player if omitted); take every cut down (repeatable ram tests) |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
 | `crashTest(type, targetType, side, metersPerSecond, seconds)` | Drive a fresh car east into a parked one turned to show `side` (`front`, `rear`, `left`, `right`), throttle held; returns both damage reports |
 | `park(type, dx, dy, heading)`, `vehicleAt(x, y)` | Park an empty vehicle beside the player (returns its id); find the nearest vehicle |
 | `shootAt(x, y, weaponIndex)` | Fire one round (or one shotgun load) from the player at a map point |
 | `blast(x, y, power)` | Detonate at a map point (1 = a rocket) |
 | `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
-| `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and shop panes near a point, with their state |
+| `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and trees near a point, nearest first (id, kind, box, `breakKJ`, strain, size, down) plus counts by kind; shop panes and their state |
 | `damageStats()` | Decal and debris pool use and GPU geometry/texture counts (for leak checks) |
 | `pedestrianReport()` | Crowd summary: counts by reaction, pose, role and state, street scenes, incidents, witness reports, horns, the speech `bubbles` on screen (at most two, with rank and seconds left) and `unshownLines` |
 | `fireShot(x, y)` | Fire the equipped weapon toward a map point as the player would (the crowd hears and reacts) |
