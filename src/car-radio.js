@@ -172,7 +172,9 @@
        Pier ride, the Falcon's train or an Eye capsule (themepark.js), which play
        the same stations through the same player. */
     function radioAboard() {
-      return gameMode === 'play' && ((player.car?.hp > 0 && !ridingBicycle()) || !!player.coaster);
+      // A hired cab has the driver's radio on (taxi.js), and it plays on through
+      // a skipped ride's fade (ride-skip.js ducks the effects bus, not the radio).
+      return gameMode === 'play' && ((player.car?.hp > 0 && !ridingBicycle()) || !!player.coaster || !!taxiRide);
     }
     function syncCarRadio(gesture = false, deltaSeconds = 0) {
       const party = gameMode === 'play' && player.roof && !document.hidden,

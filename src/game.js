@@ -2190,7 +2190,7 @@
       tone(160, 0.06, 0.15, 'triangle');
     }
     function interact() {
-      if (gameMode !== 'play' || player.parachute) return;
+      if (gameMode !== 'play' || player.parachute || rideSkipActive()) return;
       // On a building roof the only thing to do is fly off again.
       if (player.buildingRoof && !player.car) {
         const c = nearestCar();
@@ -3087,6 +3087,9 @@
     function update(deltaSeconds) {
       const active = gameMode === 'play';
       gameTime += deltaSeconds;
+      // A skipped ride's fade (ride-skip.js): runs on this step's time, so a
+      // pause holds it; death or the title menu cancels it.
+      updateRideSkip(deltaSeconds);
       if (toastTime > 0) {
         toastTime -= deltaSeconds;
         if (toastTime <= 0) getElement('toast').classList.remove('show');
@@ -4464,8 +4467,16 @@
             : 'ANSWER THE RINGING PAYPHONE',
       );
       let prompt = '',
-        promptId;
-      if (gameMode === 'play') {
+        promptId,
+        promptKey = 'interact';
+      // A passenger ride that can be skipped offers that first (ride-skip.js).
+      const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
+      if (gameMode === 'play' && rideSkipActive()) prompt = '';
+      else if (skip) {
+        prompt = skip.prompt;
+        promptId = skip.id;
+        promptKey = 'skipRide';
+      } else if (gameMode === 'play') {
         if (c) {
           // The flight HUD shows power, speed and the warnings; the prompt only
           // says what to do about a stall, or how to get off the ground.
@@ -4491,7 +4502,7 @@
                 : 'RESPRAY & REPAIR · $250';
           else if (GARAGES.some((s) => distanceBetween(c, s) < 200))
             prompt = 'DRIVE FULLY INTO THE OPEN REPAIR BAY';
-        } else if (taxiRide) prompt = 'STOP HERE · $' + taxiRide.fare;
+        } else if (taxiRide) prompt = taxiRide.arrival > 0 ? '' : 'STOP HERE · $' + taxiRide.fare;
         else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
         else if (player.deck)
           prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : '';
@@ -4512,7 +4523,7 @@
       // Aircraft prompts name their own keys; passing cars share one identity so
       // walking along a row of them changes the name without a new pop-in.
       offerPrompt(prompt, {
-        key: isAircraft(c) ? null : 'interact',
+        key: isAircraft(c) ? null : promptKey,
         id: promptId,
       });
       if (!hudState.minimapFolded) drawMap(minimapContext, getElement('minimap').width, getElement('minimap').height);
@@ -4631,7 +4642,7 @@
       if (gameMode === 'play') canvas.focus();
     }
     function toggleMap() {
-      if (gameMode !== 'play' && !mapOpen) return;
+      if ((gameMode !== 'play' || rideSkipActive()) && !mapOpen) return;
       clearMapGesture();
       clearTouchInput();
       mapOpen = !mapOpen;
@@ -4649,6 +4660,7 @@
     }
     function newGame() {
       initAudio();
+      cancelRideSkip();
       worldZoom = worldZoomTarget = 1;
       airDispatchTimer = 0;
       casinoRound = null;
@@ -4901,6 +4913,8 @@
         else if (gameMode === 'help') closeHelp();
         return;
       }
+      // Under a ride-skip fade only Escape (pause) and mute do anything.
+      if (gameMode === 'play' && rideSkipActive() && !is('mute')) return;
       if (is('map')) {
         toggleMap();
         return;
@@ -4934,15 +4948,19 @@
         else setPlaneFlaps(player.car, is('flapsDown') ? 1 : -1);
         return;
       }
-      // The radio plays in vehicles and on the Sunset Pier rides (car-radio.js).
-      if ((player.car || player.coaster) && is('radioPower')) {
+      // The radio plays in vehicles, in a hired cab and on the Sunset Pier rides
+      // (car-radio.js).
+      if ((player.car || player.coaster || taxiRide) && is('radioPower')) {
         toggleCarRadio();
         return;
       }
-      if ((player.car || player.coaster) && is('radioNext')) {
+      if ((player.car || player.coaster || taxiRide) && is('radioNext')) {
         tuneCarRadio(carRadioStation + 1);
         return;
       }
+      // Skip the ride, or pick the train's stop for it (ride-skip.js). Off a ride
+      // the keys fall through and do nothing.
+      if ((is('skipRide') && rideSkipKey('skip')) || (is('skipStop') && rideSkipKey('cycle'))) return;
       holdActions(actions);
       if (is('fire') || (is('handbrake') && !player.car)) shoot();
       if (is('interact')) interact();
@@ -5110,6 +5128,7 @@
     // @include src/sports-world.js
     // @include src/sports-audio.js
     // @include src/transit.js
+    // @include src/ride-skip.js
     // @include src/ecology.js
     // @include src/navigation.js
     // @include src/parachute.js
@@ -5950,6 +5969,38 @@
           first: userRoute[0] || null,
           last: userRoute.at(-1) || null,
         };
+      },
+      // Board a City Rail train at station `from` bound for `to` (names, as
+      // RAIL_STATIONS spells them, or indices), as the platform menu would.
+      boardTrain(from = 'CRUISE TERMINAL', to = 'SOUTHPORT AIRPORT') {
+        const find = (k) => (typeof k === 'number' ? RAIL_STATIONS[k] : RAIL_STATIONS.find((s) => s.name === String(k).toUpperCase()));
+        const a = find(from),
+          b = find(to);
+        if (!a || !b || a === b) throw Error('Unknown or identical stations');
+        teleportPlayer(a.entry.x, a.entry.y);
+        openTransit(a);
+        return { boarded: boardTransit(b), from: a.name, to: b.name, trains: this.trains() };
+      },
+      // Skip the current passenger ride (cab, train, the sailing liner) as the
+      // skip key would: the fade starts, and the jump happens at full black
+      // (simulate(2.5) runs it through). Returns rideSkip().
+      skipRide() {
+        rideSkipKey('skip');
+        return rideSkipReport();
+      },
+      // On a train: move the skip to the next choice of stop (the skipStop key).
+      skipStop() {
+        rideSkipKey('cycle');
+        return rideSkipReport();
+      },
+      // The skip on offer (prompt, allowed or why not, destination, fare, ride
+      // seconds, the train's choices), the fade in progress, and the last skip:
+      // ride seconds, game clock before / after, cash before / after, from / to.
+      rideSkip: () => rideSkipReport(),
+      // Set the cash in the player's pocket (fares, shops); returns it.
+      setCash(dollars = 1000) {
+        cash = clamp(Math.round(Number(dollars) || 0), 0, 99999999);
+        return cash;
       },
       // Put a cab at the kerb and ride it somewhere, without hunting for one.
       cab(x, y) {

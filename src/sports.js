@@ -700,7 +700,8 @@
         match.ball.vx = into * Math.max(40, Math.abs(match.ball.vx) * 0.5);
         match.ball.vy *= 0.3;
         sportsWhistle(match, 'short');
-        sportsCrowdRoar(match, byPlayer ? 1.4 : 1);
+        // The player's goal has the whole ground up; otherwise the scorers' end.
+        sportsCrowdRoar(match, byPlayer ? 1.2 : 1, byPlayer ? null : team);
       } else match.ball.mode = 'scored';
       if (byPlayer) sportsHumanGoal(match);
     }
@@ -770,7 +771,6 @@
       if (insideGoal) sportsScore(match, flight.team, 1, source);
       else {
         sportsRecordEvent(match, 'wide', source);
-        sportsCrowdGasp(match);
         const restartPoint = sportsPoint(match, 1 - flight.team, 0.075, 0.5);
         sportsBeginRestart(match, 1 - flight.team, restartPoint, 'GOAL KICK', 1.3);
       }
@@ -953,7 +953,6 @@
             ball.lastTouchTeam = keeper.team;
             sportsSetAction(keeper, 'save', 0.9);
             sportsRecordEvent(match, 'save', keeper);
-            sportsCrowdGasp(match);
             if (ball.z < 12 && sportsRandom(match) > 0.4) {
               sportsGivePossession(match, keeper);
               sportsSetAction(keeper, 'save', 0.8);
@@ -1084,7 +1083,7 @@
       if (!byPlayer) return;
       match.freeGoals++;
       match.goalFlash = { time: match.time, team, byPlayer: true, points: 1, friendly: true };
-      sportsCrowdRoar(match, sportsCrowdPresence(match) > 0.05 ? 1 : 0.25);
+      sportsCrowdRoar(match, 1, null);
       tell(
         sportsCrowdPresence(match) > 0.05
           ? 'GOAL! The fans are loving the warm-up act.'
@@ -1128,7 +1127,6 @@
           match.stats.saves++;
           sportsSetAction(keeper, 'save', 0.9);
           sportsRecordEvent(match, 'save', keeper, 'invader');
-          sportsCrowdGasp(match);
           ball.lastTouch = keeper.id;
           ball.lastTouchTeam = keeper.team;
           if (speed < 260 && sportsRandom(match) < 0.5) {
@@ -1474,7 +1472,6 @@
         // The winners applaud their fans; everyone heads off.
         const winner = match.scores[0] === match.scores[1] ? -1 : match.scores[0] > match.scores[1] ? 0 : 1;
         for (const athlete of match.players) if (athlete.team === winner) sportsSetAction(athlete, 'celebrate', 3);
-        if (!fresh && sportsCrowdPresence(match) > 0.1) sportsCrowdRoar(match, 0.6);
       }
       for (const person of everyone) person.leaving = !person.hidden;
       if (fresh) for (const person of everyone) person.hidden = true;
@@ -2234,6 +2231,18 @@
           }
           return this.ballState();
         },
+        // Score a goal for `team` (0 home, 1 away) in the stadium's fixture now, as
+        // the match would (whistle, cheer, boards); `byPlayer` scores it as the
+        // pitch invader. Returns the match and what the stadium is playing.
+        stadiumGoal(team = 0, byPlayer = false) {
+          const match = sportsMatches.soccer;
+          if (!match || match.abandoned || (team !== 0 && team !== 1)) return null;
+          sportsScore(match, team, 1, null, !!byPlayer);
+          return { match: summary('soccer'), sound: stadiumSoundReport() };
+        },
+        // The stadium's sound: goal reactions playing, the last goal's voices and
+        // their distance-based gains (sports-audio.js).
+        stadiumSound: () => stadiumSoundReport(),
       };
     }
 

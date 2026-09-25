@@ -48,6 +48,54 @@ Runways (airfields.js, airfields3d.js; SOURCE_GUIDE 4, "Airfields")
 - The flight HUD shows the runway and the metres left while on it (RWY 27 · 1070 M LEFT).
 - Console: `drive('plane', altitude, heading, airframe)`, `airfields()`, `flight().runway`.
 
+## Unreleased — stadium sound and screens
+
+Stadium sound (sports-audio.js, sports.js)
+- The continuous crowd bed (looping white noise through a wandering band-pass), the synthetic
+  chants and clapping, the "ooh" at saves and misses and the full-time roar are gone: from
+  the street the bed read as white noise. The stands are now silent between goals.
+- A goal plays a recorded football crowd (`stadium-goal-cheer.ogg`, 68 KB, 8 s: the swell,
+  the roar, the decay) from the scoring club's end with the other end's groan
+  (`stadium-goal-groan.ogg`, 30 KB) under it; the player's goal (and a kickabout goal in front
+  of a crowd) has the whole ground cheering. Both are from Sandermotions' "Soccer match
+  stadium sounds" pack (Freesound, CC0 1.0; credits in THIRD_PARTY_CREDITS). The level is
+  the attendance times the player's distance to the stadium lot (full inside and on the
+  plaza, half at 280 units, silent past 1700), and each voice keeps following the player
+  (gain, pan, a distance low-pass) through the ambience bus: the effects volume, silent while
+  paused. The air horns and noise bursts of the old roar and the panic noise bursts are gone
+  (panic keeps its recorded screams).
+- Console: `stadiumGoal(team, byPlayer)`, `stadiumSound()`.
+
+Stadium screens (sports-world.js)
+- The two end-stand screens, turned towards the pitch and tilted up at the sky, are removed.
+  The north stand's screen, the entrance board and the two south facade screens facing the
+  plaza and the street stay (live score, lit at night).
+
+## Unreleased — skip the ride
+
+- Taxi, train and liner passengers can skip the ride (ride-skip.js), as in GTA IV / V: Y
+  (`skipRide`, remappable in Settings · Controls, in the help card and a SKIP RIDE touch
+  button). The screen fades to black in 0.6 s with an arrival card (destination, fare, the
+  clock on arrival), the world moves on, and it fades back in at the destination.
+  - Taxi: SKIP RIDE · $fare while a drop-off is set. The cab stops at the drop-off kerb facing
+    along the road; the full fare is paid (no surcharge). Refused with a wanted level, during
+    a timed job, in a damaged (under 60% health) or burning cab, or without the fare.
+  - Train: SKIP TO <destination>; U (`skipStop`) picks any call on the way instead. The train
+    stands at that platform and you step off as on any arrival. City rail stays free.
+  - Liner: aboard the Meridian Star at sea, SKIP THE VOYAGE puts her at anchor off the cruise
+    terminal with you where you stood on deck. The Falcon and the Eye cannot be skipped.
+- The clock moves by the ride's own length at the game's rate (a game minute per ride
+  second), so a skip lands at the hour riding would. Measured: the hired cab averages 34-85
+  units a second over 1.4-9 km (holding for traffic and people), so a skip uses half its
+  65 km/h cruise (about 32 km/h); a train's estimate from its speed profile is within 3% of a
+  ridden trip (Cruise Terminal to Oceanview 204 s estimated, 198 s ridden; Harbor Point to
+  Broadway 114 / 111 s).
+- Across the gap the weather machine steps second by second (no sudden sky), the scenic
+  trains and the liner keep their timetables, and the street is filled under the black. The
+  fade runs on simulation time, so pausing holds it; engines, rain and ambience duck under it
+  while the radio plays on. The radio now plays in a hired cab (N / B work there).
+- Console: `skipRide()`, `skipStop()`, `rideSkip()`, `boardTrain(from, to)`, `setCash(dollars)`.
+
 ## Unreleased — real speeds
 
 World scale (game.js WORLD SCALE, SOURCE_GUIDE 2a)

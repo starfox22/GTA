@@ -152,6 +152,7 @@
       ['touchPoison', poisonDrink],
       ['touchJump', bailOut],
       ['touchDivert', () => chooseFlightLanding(!mission?.divert)],
+      ['touchSkip', () => rideSkipKey('skip')],
       ['touchMap', toggleMap],
       ['touchRadio', toggleCarRadio],
       ['touchStation', () => tuneCarRadio(carRadioStation + 1)],
@@ -183,6 +184,8 @@
       getElement('touchControls').classList.toggle('hidden', !active);
       document.body?.classList.toggle('touch-mode', enabled);
       if (!active) return;
+      // Skip the ride (ride-skip.js), on a cab, a train or the liner at sea.
+      getElement('touchSkip').classList.toggle('hidden', !rideSkipPrompt());
       if (transitRide) {
         for (const id of [
           'moveStick',

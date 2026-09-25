@@ -303,6 +303,18 @@
     "original": "src/assets/audio/crash-debris.ogg"
   },
   {
+    "id": "media-audio-stadium-goal-cheer",
+    "file": "assets/audio/stadium-goal-cheer.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/stadium-goal-cheer.ogg"
+  },
+  {
+    "id": "media-audio-stadium-goal-groan",
+    "file": "assets/audio/stadium-goal-groan.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/stadium-goal-groan.ogg"
+  },
+  {
     "id": "media-audio-engine-start",
     "file": "assets/audio/engine-start.ogg",
     "mime": "audio/ogg",

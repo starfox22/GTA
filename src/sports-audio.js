@@ -1,186 +1,152 @@
-    // BEGIN SUBSYSTEM: src/sports-audio.js — Crowd chants, roars and whistles
+    // BEGIN SUBSYSTEM: src/sports-audio.js — Stadium goal cheers and whistles
     /**
-     * Crowd chants, roars and whistles
+     * Stadium goal cheers and whistles
      * Source: src/sports-audio.js
      * Scope: shared game closure (uses ambience.js's bus, voice() and noiseBurst()).
      *
-     * All procedural Web Audio, like the rest of the soundscape:
-     * - The stadium bed: a band of filtered noise that rises and falls like a
-     *   crowd, as loud as the stands are full and as close as the player is.
-     * - Chants between the noise: a few dozen detuned sawtooth "voices" through
-     *   a vowel formant singing a terrace tune, or rhythmic clapping.
-     * - Goal roars (a swelling noise wave and air horns), the "ooh" of a save or a
-     *   near miss, screams when the stands panic.
+     * The stadium is quiet between goals: there is no crowd bed, no chanting and
+     * no clapping (a filtered-noise bed read as white noise from the street).
+     * - A goal: the recorded roar of a real football crowd (`stadium-goal-cheer`,
+     *   8 s: a swell, the roar, the decay) from the scoring club's end, and the
+     *   other end's groan (`stadium-goal-groan`) under it; a goal the player puts
+     *   in (or a kickabout goal in front of the fans) has the whole ground cheering.
+     *   How loud is the fixture's attendance times the player's distance to the
+     *   stadium (`stadiumAudibility`): full inside and on the plaza, faint a few
+     *   blocks away, silent beyond STADIUM_CHEER_SILENT. Each voice follows the
+     *   player while it plays (level, stereo side, a low-pass that dulls with
+     *   distance) and goes through the ambience bus, so it is on the effects
+     *   volume and falls silent while the game is paused.
+     * - Screams when the stands panic (the recorded civilian screams).
      * - The referee's whistle (a trilled pea whistle) and the thud of a kick.
      */
     const STADIUM_SOUND_CENTRE = { x: 2689, y: 4579 };
-    // Terrace tunes as [semitones from the root, beats]; the root is a low G.
-    const SPORTS_CHANTS = [
-      // "Here we go, here we go, here we go"
-      [[0, 1], [0, 1], [0, 1], [2, 0.5], [0, 0.5], [-3, 2], [0, 1], [0, 1], [0, 1], [2, 0.5], [0, 0.5], [-3, 2]],
-      // A rising "o-le, o-le, o-le-e" style tune.
-      [[0, 1.5], [4, 0.5], [7, 2], [0, 1.5], [4, 0.5], [7, 2], [9, 1], [7, 1], [4, 1], [0, 2]],
-      // Two long calls of a club name.
-      [[0, 0.5], [0, 0.5], [3, 1.5], [0, 0.5], [0, 0.5], [3, 1.5], [5, 0.5], [3, 0.5], [0, 2]],
+    // Where each club's fans sit (sports3d.js seat.end: team 0 west, team 1 east).
+    const STADIUM_ENDS = [
+      { x: 2420, y: 4579 },
+      { x: 2960, y: 4579 },
     ];
-    let sportsSound = null;
+    // Map units from the stadium lot's edge: the level halves at STADIUM_CHEER_REACH
+    // and is gone at STADIUM_CHEER_SILENT (a city block is ~500 units).
+    const STADIUM_CHEER_REACH = 280,
+      STADIUM_CHEER_FADE = 1100,
+      STADIUM_CHEER_SILENT = 1700;
+    // Playing goal reactions (updated each frame) and the last one started, for tests.
+    const stadiumCheers = [];
+    let stadiumCheerLog = null;
 
     function sportsSoundReady() {
       return !!(audio && soundOn && gameMode === 'play' && buildAmbience());
     }
 
-    function buildSportsSound() {
-      if (sportsSound || !sportsSoundReady()) return sportsSound;
-      // The bed: looping white noise through a band-pass that wanders like voices.
-      const source = audio.createBufferSource(),
-        filter = audio.createBiquadFilter(),
-        gain = audio.createGain(),
-        pan = audio.createStereoPanner();
-      source.buffer = ambience.white;
-      source.loop = true;
-      filter.type = 'bandpass';
-      filter.frequency.value = 800;
-      filter.Q.value = 0.7;
-      gain.gain.value = 0;
-      source.connect(filter).connect(gain).connect(pan).connect(ambience.bus);
-      source.start(0, Math.random() * 2);
-      sportsSound = { filter, gain, pan, chantClock: 6, clapClock: 12, surge: 0 };
-      return sportsSound;
+    /**
+     * How well the player hears the stadium (0..1): 1 inside the lot and on the
+     * forecourt, then an inverse-power fall-off with distance from the lot's edge
+     * that fades to nothing between STADIUM_CHEER_FADE and STADIUM_CHEER_SILENT.
+     */
+    function stadiumAudibility(listener = player) {
+      const lot = STADIUM_LOT,
+        dx = Math.max(lot.x - listener.x, 0, listener.x - (lot.x + lot.w)),
+        dy = Math.max(lot.y - listener.y, 0, listener.y - (STADIUM_FORECOURT.y + STADIUM_FORECOURT.h)),
+        distance = Math.hypot(dx, dy),
+        falloff = 1 / (1 + (distance / STADIUM_CHEER_REACH) ** 1.7),
+        edge = clamp((STADIUM_CHEER_SILENT - distance) / (STADIUM_CHEER_SILENT - STADIUM_CHEER_FADE), 0, 1);
+      return { distance, level: falloff * edge * edge * (3 - 2 * edge) };
     }
 
-    /* How loud the stadium is where the player stands (0..1) and its stereo side. */
-    function stadiumHearing() {
-      const d = Math.hypot(player.x - STADIUM_SOUND_CENTRE.x, player.y - STADIUM_SOUND_CENTRE.y);
+    /* Level, stereo side and brightness of a stand-side source for the player. */
+    function stadiumCheerMix(source, gain) {
+      const hearing = stadiumAudibility(),
+        // Inside the ground the two ends are left and right; from the street the
+        // whole stadium is one direction.
+        spread = clamp(hearing.distance / 400, 0, 1),
+        from = { x: source.x + (STADIUM_SOUND_CENTRE.x - source.x) * spread, y: source.y },
+        pan = clamp((from.x - player.x) / 500, -0.85, 0.85);
       return {
-        level: clamp(1.2 - d / 1100, 0, 1) ** 1.6,
-        pan: clamp((STADIUM_SOUND_CENTRE.x - player.x) / 700, -0.8, 0.8),
+        gain: gain * hearing.level,
+        pan,
+        cutoff: 14000 / (1 + hearing.distance / 260),
+        distance: hearing.distance,
+        level: hearing.level,
       };
     }
 
-    function updateSportsAudio(deltaSeconds) {
-      if (!sportsSoundReady() || !buildSportsSound()) return;
-      const sound = sportsSound,
-        match = sportsMatches.soccer,
-        now = audio.currentTime,
-        hearing = stadiumHearing(),
-        crowdFull = sportsCrowdPresence(match),
-        panic = match.abandoned && match.time - match.panicAt < 12;
-      sound.surge = Math.max(0, sound.surge - deltaSeconds * 0.25);
-      // Murmur of the crowd, swelling now and then, louder in a panic or after a goal.
-      const wave = 0.75 + 0.25 * Math.sin(gameTime * 0.7) * Math.sin(gameTime * 0.23 + 1),
-        level = hearing.level * (crowdFull * 0.09 * wave + sound.surge * 0.16 + (panic ? 0.12 : 0));
-      glideParam(sound.gain.gain, level, now, 0.25);
-      glideParam(sound.filter.frequency, 700 + sound.surge * 900 + (panic ? 700 : 0) + wave * 150, now, 0.3);
-      glideParam(sound.pan.pan, hearing.pan, now, 0.5);
-      if (hearing.level < 0.03 || crowdFull < 0.1 || match.abandoned) return;
-      // Chants and clapping while the teams are out.
-      sound.chantClock -= deltaSeconds;
-      sound.clapClock -= deltaSeconds;
-      if (sound.chantClock <= 0) {
-        sound.chantClock = randomBetween(14, 26);
-        sportsChant(hearing.level * crowdFull, hearing.pan);
-      }
-      if (sound.clapClock <= 0) {
-        sound.clapClock = randomBetween(18, 34);
-        sportsClapping(hearing.level * crowdFull, hearing.pan);
-      }
-    }
-
-    /* A few thousand voices on one note: detuned saws through an "oh" formant. */
-    function sportsSing(frequency, start, length, peak, pan) {
-      const formant = audio.createBiquadFilter(),
-        body = audio.createBiquadFilter(),
-        gain = audio.createGain(),
-        panner = audio.createStereoPanner();
-      formant.type = 'bandpass';
-      formant.frequency.value = 620;
-      formant.Q.value = 1.4;
-      body.type = 'lowpass';
-      body.frequency.value = 1500;
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(peak, start + Math.min(0.08, length * 0.3));
-      gain.gain.setValueAtTime(peak, start + length * 0.75);
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
-      panner.pan.value = pan;
-      formant.connect(body).connect(gain).connect(panner).connect(ambience.bus);
-      const voices = [];
-      for (let k = 0; k < 6; k++) {
-        const o = audio.createOscillator();
-        o.type = 'sawtooth';
-        // Octave doubling and a crowd's worth of pitch spread.
-        o.frequency.value = frequency * (k % 3 === 2 ? 2 : 1) * (1 + (Math.random() - 0.5) * 0.03);
-        o.connect(formant);
-        o.start(start);
-        o.stop(start + length + 0.05);
-        voices.push(o);
-      }
-      voices[0].onended = () => {
-        for (const o of voices) o.disconnect();
-        formant.disconnect();
-        body.disconnect();
-        gain.disconnect();
-        panner.disconnect();
+    /* One recorded reaction from a stand, followed round by updateSportsAudio. */
+    function playStadiumCrowd(name, source, gain) {
+      const buffer = audioBuffers[name];
+      if (!buffer) return null;
+      const mix = stadiumCheerMix(source, gain);
+      if (mix.gain < 0.004) return { name, gain: 0, distance: mix.distance, skipped: true };
+      const node = audio.createBufferSource(),
+        filter = audio.createBiquadFilter(),
+        level = audio.createGain(),
+        pan = audio.createStereoPanner();
+      node.buffer = buffer;
+      node.playbackRate.value = randomBetween(0.97, 1.03);
+      filter.type = 'lowpass';
+      filter.frequency.value = Math.max(700, mix.cutoff);
+      filter.Q.value = 0.5;
+      level.gain.value = mix.gain;
+      pan.pan.value = mix.pan;
+      node.connect(filter).connect(level).connect(pan).connect(ambience.bus);
+      node.start();
+      const cheer = { name, source, gain, node, filter, level, pan, mix };
+      stadiumCheers.push(cheer);
+      node.onended = () => {
+        node.disconnect();
+        filter.disconnect();
+        level.disconnect();
+        pan.disconnect();
+        const index = stadiumCheers.indexOf(cheer);
+        if (index >= 0) stadiumCheers.splice(index, 1);
       };
+      return { name, gain: +mix.gain.toFixed(4), pan: +mix.pan.toFixed(2), distance: Math.round(mix.distance), level: +mix.level.toFixed(3) };
     }
 
-    function sportsChant(level, pan) {
-      const tune = randomChoice(SPORTS_CHANTS),
-        beat = 0.36,
-        root = 98 * 2 ** (randomBetween(-1, 2) / 12);
-      let t = audio.currentTime + 0.05;
-      for (const [semitones, beats] of tune) {
-        sportsSing(root * 2 ** (semitones / 12), t, beats * beat * 0.95, 0.05 * level, pan);
-        t += beats * beat;
-      }
-    }
-
-    /* Clap, clap, clap-clap-clap. */
-    function sportsClapping(level, pan) {
-      const start = audio.currentTime + 0.05,
-        pattern = [0, 0.5, 1, 1.25, 1.5];
-      for (let bar = 0; bar < 3; bar++)
-        for (const beat of pattern)
-          noiseBurst(start + bar * 2.1 + beat * 0.55, 0.09, 0.06 * level, 'bandpass', 1300, pan, 0.9);
-    }
-
-    /* The whole ground erupts: a noise wave and a couple of air horns. */
-    function sportsCrowdRoar(match, strength = 1) {
-      if (!sportsSoundReady() || !buildSportsSound()) return;
-      const hearing = stadiumHearing(),
-        present = match.sport === 'soccer' ? Math.max(0.15, sportsCrowdPresence(match)) : 0.3,
-        level = Math.max(hearing.level, match.sport === 'soccer' ? 0 : 0.2) * present * strength,
-        now = audio.currentTime;
-      if (level < 0.02) return;
-      sportsSound.surge = Math.min(1.4, sportsSound.surge + strength);
-      noiseBurst(now, 3.2, 0.22 * level, 'bandpass', 900, hearing.pan, 0.5);
-      noiseBurst(now + 0.15, 2.6, 0.12 * level, 'bandpass', 2100, hearing.pan, 0.7);
-      for (let k = 0; k < 3; k++) {
-        voice('square', 466, now + 0.4 + k * 0.5, 0.35, 0.03 * level, 0, hearing.pan, 1800);
-        voice('square', 587, now + 0.4 + k * 0.5, 0.35, 0.025 * level, 0, hearing.pan, 1800);
-      }
-    }
-
-    /* "Ooh" from the stands: a save, a shot wide, a post. */
-    function sportsCrowdGasp(match) {
-      if (match.sport !== 'soccer' || !sportsSoundReady() || !buildSportsSound()) return;
-      const hearing = stadiumHearing(),
-        level = hearing.level * sportsCrowdPresence(match);
-      if (level < 0.03) return;
+    /* Each playing cheer tracks the player's distance from the stadium. */
+    function updateSportsAudio() {
+      if (!audio || !stadiumCheers.length) return;
       const now = audio.currentTime;
-      noiseBurst(now, 1.3, 0.1 * level, 'bandpass', 520, hearing.pan, 2.2);
-      sportsSing(110, now, 1.1, 0.03 * level, hearing.pan);
+      for (const cheer of stadiumCheers) {
+        const mix = (cheer.mix = stadiumCheerMix(cheer.source, cheer.gain));
+        glideParam(cheer.level.gain, mix.gain, now, 0.15);
+        glideParam(cheer.pan.pan, mix.pan, now, 0.2);
+        glideParam(cheer.filter.frequency, Math.max(700, mix.cutoff), now, 0.2);
+      }
+    }
+
+    /**
+     * A goal at the stadium. `team` scored (null when everyone cheers: the
+     * player's goal, a kickabout); the strength scales the whole reaction.
+     */
+    function sportsCrowdRoar(match, strength = 1, team = null) {
+      if (match.sport !== 'soccer' || !sportsSoundReady()) return;
+      const present = sportsCrowdPresence(match);
+      if (present < 0.05) return;
+      const crowd = (0.35 + 0.65 * Math.min(1, present)) * strength,
+        home = team === 0,
+        played = [];
+      if (team === null) played.push(playStadiumCrowd('stadium-goal-cheer', STADIUM_SOUND_CENTRE, 0.62 * crowd));
+      else {
+        // The scorers' end goes up; the other end groans (the home crowd is the louder).
+        played.push(playStadiumCrowd('stadium-goal-cheer', STADIUM_ENDS[team], (home ? 0.62 : 0.5) * crowd));
+        played.push(playStadiumCrowd('stadium-goal-groan', STADIUM_ENDS[1 - team], (home ? 0.22 : 0.38) * crowd));
+      }
+      stadiumCheerLog = {
+        time: +gameTime.toFixed(1),
+        team,
+        crowd: +present.toFixed(2),
+        audibility: +stadiumAudibility().level.toFixed(3),
+        voices: played.filter(Boolean),
+      };
     }
 
     /* Screaming in the stands as everyone runs for the exits. */
     function sportsCrowdPanicSound(match) {
-      if (!sportsSoundReady() || !buildSportsSound()) return;
-      const where = match.sport === 'soccer' ? stadiumHearing() : { level: 1 / (1 + distanceBetween(player, match.venue) / 300), pan: 0 },
-        now = audio.currentTime;
-      if (where.level < 0.03) return;
-      sportsSound.surge = Math.min(1.4, sportsSound.surge + 0.8);
-      for (let k = 0; k < 6; k++)
-        noiseBurst(now + k * randomBetween(0.2, 0.5), randomBetween(0.5, 0.9), 0.08 * where.level, 'bandpass', randomBetween(1800, 3200), where.pan + randomBetween(-0.2, 0.2), 3);
-      playSample(randomChoice(['civilian-scream-female-1', 'civilian-scream-male-1']), 0.5 * where.level, 1, player);
+      if (!sportsSoundReady()) return;
+      const level = match.sport === 'soccer' ? stadiumAudibility().level : 1 / (1 + distanceBetween(player, match.venue) / 300);
+      if (level < 0.03) return;
+      playSample('civilian-scream-female-1', 0.45 * level, randomBetween(0.95, 1.05), player);
+      playSample('civilian-scream-male-1', 0.4 * level, randomBetween(0.95, 1.05), player);
     }
 
     /* The referee: short (kickoff, goal), double (break), triple (full time), long. */
@@ -205,5 +171,31 @@
         now = audio.currentTime;
       voice('sine', 150, now, 0.12, 0.12 * where.gain * strength, 55, where.pan);
       noiseBurst(now, 0.05, 0.05 * where.gain * strength, 'bandpass', 1200, where.pan, 1);
+    }
+
+    /* DeadEndCity.stadiumSound(): what the stadium is playing (for tests). */
+    function stadiumSoundReport() {
+      const hearing = stadiumAudibility();
+      return {
+        // There is no continuous stadium layer any more; only goal reactions play.
+        bed: null,
+        distance: Math.round(hearing.distance),
+        audibility: +hearing.level.toFixed(3),
+        bus: ambience ? +ambience.bus.gain.value.toFixed(3) : null,
+        // The street murmur of pedestrians nearby (ambience.js), for comparison.
+        streetMurmur: ambience ? +ambience.murmur.gain.gain.value.toFixed(4) : null,
+        // Each voice's target for where the player is now (`gain`, `pan`,
+        // `cutoff`) and the live parameter (`gainNow`) gliding towards it.
+        playing: stadiumCheers.map((cheer) => ({
+          name: cheer.name,
+          gain: +cheer.mix.gain.toFixed(4),
+          gainNow: +cheer.level.gain.value.toFixed(4),
+          pan: +cheer.mix.pan.toFixed(2),
+          cutoff: Math.round(Math.max(700, cheer.mix.cutoff)),
+          distance: Math.round(cheer.mix.distance),
+        })),
+        lastGoal: stadiumCheerLog,
+        samples: ['stadium-goal-cheer', 'stadium-goal-groan'].filter((name) => audioBuffers[name]),
+      };
     }
     // END SUBSYSTEM: src/sports-audio.js

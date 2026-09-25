@@ -178,8 +178,9 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sports-fixtures.js | Club pools (`SPORTS_TEAMS`: names, kits, crests), `SPORTS_CALENDAR`, daily fixtures (`sportsFixtureFor`, `sportsCurrentFixture`), the match timeline (`sportsTimeline`), `drawSportsCrest` |
 | sports.js | Live basketball and soccer: match day stages, possession, shots, scoring, restarts, officials, harm and panic (`sportsTargets`, `sportsAbandon`), the player on the ball (`sportsKick`, stewards), `sportsConsole` |
 | sports-world.js | South Coast Stadium reservation, enclosure (`PITCH_FENCE` with its openings), big screens (`STADIUM_SCREENS`), turnstiles, vehicle barriers, markings |
-| sports-audio.js | Procedural stadium bed, chants, clapping, goal roars, gasps, panic screams, whistles, kicks |
+| sports-audio.js | Stadium goal reactions only (no crowd bed): the recorded cheer from the scoring end and groan from the other, attenuated by the player's distance to the stadium (`stadiumAudibility`); panic screams, the referee's whistle, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
+| ride-skip.js | Skip the ride: the offer and prompt (`rideSkipOffer`, `rideSkipPrompt`) for a cab, a train or the sailing liner, the `skipRide` / `skipStop` keys (`rideSkipKey`), the fade on simulation time (`updateRideSkip`), the jump (`performRideSkip`: `catchUpWorld`, `placeCabAtKerb`, `placeTrainAtPlatform`, `placeLinerAtAnchor`), `rideSkipReport` |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
 | navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance; the minimap GPS (road routes to the objective and the waypoint with direction chevrons, `updateGpsRoute`, `drawGpsRoutes`) |
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
@@ -663,6 +664,38 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   on by default) turns the instruments off (`.instruments-off`); the warnings still flash
   when they apply, because STALL and PULL UP decide whether a landing ends in a crash. The
   docked interaction prompt sits under the heading strip in flight (`placeDockLine`).
+- **Skip the ride** (ride-skip.js). A passenger can skip a ride the GTA way with `skipRide`
+  (Y; remappable, listed under VEHICLES): the taxi (with a drop-off set: SKIP RIDE · $fare),
+  the train (SKIP TO <station>: the destination first, `skipStop` (U) cycles through the calls
+  on the way) and the Meridian Star under way (SKIP THE VOYAGE, back at her anchorage). The
+  prompt is the ordinary interaction prompt (`offerPrompt` with `key: 'skipRide'`), offered
+  first in `updateUI()`; the cab's also names E for STOP HERE. Refused (with a toast on the
+  key) at any wanted level, during a timed job (`mission.timeLimit`), in a cab below 60%
+  health or burning, and without the cab fare in cash; not offered with under 60 m to go.
+  The Falcon and the Eye are never skipped. Pressing it fades `#rideSkip` (shell.html, z 15:
+  over the HUD, under the menus) to black over 0.6 s with an arrival card (where, what it
+  costs, the arrival clock), then at full black: the clock moves by the ride's own seconds
+  at the game's rate (a game minute per second, so skipping lands at the hour riding would):
+  the cab's remaining route over `TAXI_SKIP_PACE` (half of `TAXI_SPEED`, about 32 km/h,
+  measured), the train's hops over its speed profile (`railHopSeconds` plus
+  `RAIL_PASSENGER_CALL` at each call; within 3% of a ridden trip), the liner's remaining
+  circuit over her speed caps. `catchUpWorld` steps the weather machine across the gap in
+  one-second steps (weather.js `stepWeatherMachine`, the easing without lightning or sound),
+  runs the scenic trains and the liner along their timetables, then the ride is put at its
+  end: the cab at the drop-off kerb facing along the road (stepped back if the spot is
+  taken; the full fare paid, `ride.prepaid`), the train standing at the platform
+  (`transitRide.alight`: head on the station point, stopped), the liner at anchor with the
+  player where they stood on deck. The camera snaps, the crowd streamer is told to settle
+  (`crowd.settledAt = null`) and at least 0.8 s and six frames are drawn under the black
+  before a 0.6 s fade back in; the passenger then stays aboard 0.9 s and steps off as on any
+  arrival. The fade runs on `update()` time, so a pause freezes it (the pause menu draws
+  over it) and death or the title menu cancels it; input other than Escape and mute is
+  ignored under it and the player is invulnerable. The effects bus is ducked to 0.2
+  (audio.js `setMixDuck`, a gain between `master` and the ear filter): engines, rain and
+  the street dip, the radio (which now plays in a hired cab, car-radio.js `radioAboard`) and
+  the callouts do not. Wanted state is never touched; `save()` runs once after the jump.
+  City rail and the liner are free, so only the cab charges. Console: `skipRide()`,
+  `skipStop()`, `rideSkip()`, `boardTrain(from, to)`, `setCash(dollars)`.
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
   advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
@@ -800,11 +833,13 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
   attacking that end. During a match the nearest three players press, tackle
   (`sportsContestHuman`), the keeper gets one save attempt (`sportsKeeperReach`), and after
   28 s on the pitch (or 5 s after a goal) two stewards come; if they reach you they walk you
-  out to the plaza (`sportsEscortOff`). A goal: whistle, roar, GOAL! on every screen, $250
-  for each of the first three per match.
-- **Screens.** `STADIUM_SCREENS` (sports-world.js): over the north stand, both end stands
-  (angled at the pitch), above the entrance and on both halves of the south facade; all tilt
-  back towards the street camera. Each venue paints one 1024x512 canvas
+  out to the plaza (`sportsEscortOff`). A goal: whistle, the whole ground's cheer, GOAL! on
+  every screen, $250 for each of the first three per match.
+- **Screens.** `STADIUM_SCREENS` (sports-world.js): only where a real ground has them and the
+  top-down camera can read them: over the north stand facing the pitch, the display board on
+  the entrance beam and a screen on each half of the south facade facing the plaza and the
+  street, each leaning back a modest 0.12-0.3 rad. There are no end-stand screens (they faced
+  the pitch sideways and were tilted up at the sky). Each venue paints one 1024x512 canvas
   (`paintSportsBoard`) shared by its screens, repainted only when its key changes: next match
   with crests and kickoff, warm-up, live score with clock and status, half time, result,
   MATCH ABANDONED, and an 8 fps GOAL! animation. They glow at night.
@@ -814,9 +849,21 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
   vanish in a panic (`updateStadiumCrowd`, matrices rewritten only when the picture changes).
   Plaza flags take the clubs' colours. While a fixture is on the floodlights are painted into
   the night light map (`stadiumFloodPools`, repainted by `updateStadiumFloodlights`).
-- **Sound** (sports-audio.js): a crowd bed scaled by attendance and distance, chants (detuned
-  saws through a vowel formant singing terrace tunes) and clapping, goal roars with air horns,
-  an "ooh" at saves and misses, panic screams, the referee's pea whistle, the kick.
+- **Sound** (sports-audio.js): the stands are silent between goals (no crowd bed, chants,
+  clapping or "ooh": the old filtered-noise bed read as white noise). A goal plays the
+  recorded cheer of a real football crowd (`stadium-goal-cheer`, 8 s: swell, roar, decay;
+  Sandermotions, CC0) from the scoring club's end and the other end's groan
+  (`stadium-goal-groan`) under it, the home crowd louder (`sportsCrowdRoar(match, strength,
+  team)`); the player's goal, or a kickabout goal in front of a crowd, has the whole ground
+  cheering. The level is the attendance times `stadiumAudibility()`: 1 inside the lot and on
+  the forecourt, half at 280 units (about half a block) from the lot's edge, fading to
+  silence between 1100 and 1700 units. Each voice follows the player while it plays (gain,
+  pan, a low-pass that dulls with distance) through the ambience bus, so it is on the
+  effects volume and silent while paused. Also panic screams (recorded), the referee's pea
+  whistle and the kick.
+- Developer console: `stadiumGoal(team, byPlayer)` scores for team 0 (home) or 1 (away) now;
+  `stadiumSound()` reports the goal reactions playing, the last goal's voices with their
+  distance-based gains, the player's distance and audibility, and `bed: null`.
 - Developer console: `match(sport)`, `ballState()`, `matchDay(day, minutesFromKickoff, slot,
   sport)`, `fixtures(sport, days)`, `ballToPlayer(distance)`.
 
