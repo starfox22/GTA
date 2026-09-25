@@ -1,5 +1,53 @@
 # Changelog
 
+## Unreleased — realistic runways
+
+Aircraft performance (aviation.js AIRFRAME_SPECS, FLIGHT CONTROLS)
+- Take-off thrust is now a real share of the weight over the roll (courier 0.28, jet 0.30,
+  airliner 0.26; it was 1.15 / 1.0 / 0.85 g) and the parasitic drag came down by the same
+  factor, so top speeds hold (measured 392, 713+ and 760+ km/h after two minutes flat out).
+  Rolling resistance 0.025 g (was 0.1), wheel brakes 0.42-0.45 g (were 1.7 g), flap and gear
+  drag scaled with the airframe. Initial climbs are 6-11 m/s.
+- The courier played a turbofan: planes without an airframe are couriers (engine-audio.js).
+
+Measured headless through `simulate` (full throttle from a standstill, rotating at the
+airframe's rotation speed; landing roll = touchdown at that speed, idle, full brakes; the old
+airliner figure is the flight model replayed offline, its runway was too short to measure)
+
+| Aircraft | Take-off roll, old -> new (flaps 1) | To 15 m | Landing roll, old -> new | Runway it uses, old -> new |
+| --- | --- | --- | --- | --- |
+| Serrano C200 courier | 70-85 m -> 236 m (223-258 m flaps 2-0; 280 m nose held up from the start) | 336 m | 27-32 m -> 103 m (85 m after a flown approach) | Southport 126 m -> 460 m (1.8x) |
+| Aurelia J8 jet | 171-187 m -> 504 m (475-556 m; 598 m) | 646 m | 65 m -> 253 m (233 m) | Southport 126 m (could not lift off) -> Oceanview 1,280 m (2.3x) |
+| Meridian 220 airliner | ~267 m -> 794 m (748-888 m; 1,034 m) | 975 m | 92 m -> 368 m (333 m) | Oceanview 310 m (could not lift off) -> 1,280 m (1.44x) |
+
+Runways (airfields.js, airfields3d.js; SOURCE_GUIDE 4, "Airfields")
+- **Southport 18/36**: 460 m x 29.5 m, GA strip for the courier. It runs south from the
+  airport over the sea on a reclaimed pier (x 196..760, y 5300..8240) with a parallel
+  taxiway and four connectors; blast pads 15 / 30 m. The Southport jet moved to Oceanview and
+  the apron's two parked airliners and a jet became three couriers (a jet needs 500-600 m).
+- **Oceanview 09/27**: 1,280 m x 30 m. The island has room for 550 m, so the runway runs west
+  over a reclaimed pier into the open sea (x -4320..2250) plus a short one at the east end;
+  blast pads 30 m, turn pad at the west end. The old runway lies under its east part.
+- A 1,800-2,500 m airliner runway fits nowhere: the whole map is about 2 km across. 1,280 m is
+  London City's class; the airliner's figures are a regional jet's at a light weight.
+- Markings (shader, ICAO Annex 14 for the length): threshold stripes, designations matching
+  the headings (decals read from the approach), centre line, aiming point (150 / 300 m),
+  touchdown zone bars, side stripes, yellow blast pad chevrons, taxiway centre lines and
+  runway-holding positions with red holding-position signs; rubber in the touchdown zones,
+  paving lanes, wet sheen in the rain.
+- Lights in the glow field (one draw call, lit after dark): white edge lights every 50-60 m,
+  green threshold / red end rows, approach lights on piles over the sea at both Oceanview
+  ends (barrettes, a crossbar, sequenced flashers), blue taxiway edges, PAPIs that turn red or
+  white by the player's glide path (two and two on 3 degrees), windsocks that swing with the
+  wind, a green / white beacon on each tower. The piers have a rock revetment.
+- Missions: mission 11's plane lines up on 09 at the west stub (400 m ahead, lifts off in
+  ~250); the Southport approach fix moved out to sea (418, 10400) and the Oceanview diversion
+  is now a westbound approach to 27; the escape van waits on Southport's taxiway beside the
+  plane. Ring Run starts at the south end of 36 and its first ring moved to 27 m over
+  (418, 3500). Saltwater Accounting's (mission 8) boat run goes round the end of Southport's pier (170 s, was 150).
+- The flight HUD shows the runway and the metres left while on it (RWY 27 · 1070 M LEFT).
+- Console: `drive('plane', altitude, heading, airframe)`, `airfields()`, `flight().runway`.
+
 ## Unreleased — real speeds
 
 World scale (game.js WORLD SCALE, SOURCE_GUIDE 2a)

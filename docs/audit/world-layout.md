@@ -1,5 +1,24 @@
 # Audit report: world layout, railway, county, parks, harbor, sports, streets
 
+## Runway piers pass
+
+Southport's runway was extended south over the sea to 460 m on a reclaimed pier
+(`southport-pier`) and Oceanview's west over the sea to 1,280 m (`oceanview-pier`,
+`oceanview-pier-east`); see SOURCE_GUIDE section 4, "Airfields".
+
+Verified (headless):
+- `tools/layout-audit.mjs`: the same 28 oblique county junction notes as before and nothing
+  else; 10 fewer foot obstacles (the tropical trees that stood on the new runway strip).
+- A runway check over `DeadEndCity.layout()` (runway and blast pads, the runway strip 30 m
+  either side, Southport's taxiway) against buildings, trees, lamps, static colliders, roads,
+  rail, rail piers, bridges and helipads: no overlap; every paved point is land.
+- Nothing else was moved: no bridge, rail pier, road, the drawbridge or the mountains are
+  touched. The Saltwater Accounting boat run now goes round the end of Southport's pier.
+
+Noted, not changed:
+- Southport 36's approach and Oceanview's west pier cross (the pier passes 170 m south of
+  Southport's pier end): a plane on a 3 degree path to 36 crosses it at about 11 m.
+
 ## Palm Sound drawbridge pass
 
 The Palm Sound Causeway (`keys-harbor`) was turned into a working bascule without moving

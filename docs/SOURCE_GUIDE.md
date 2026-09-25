@@ -106,9 +106,14 @@ Two closures matter:
   sprint at 38. Traffic keeps to 40-55 km/h in town and 70-85 on the long bridges, follows at
   about 0.8 s and stops for reds at about half a g; county traffic 60. Boats: speedboat 55
   knots, jet ski 50, harbor launch 14, police launches 15% quicker; the liner 19 knots at sea.
-  Trains 100 km/h at 1.3 m/s²; the cab 65 km/h. The helicopter cruises at about 240 km/h;
-  the courier plane lifts off at 120-145 km/h in 560-720 units (Southport's roll from the
-  mission start is 870) and tops out near 400 km/h.
+  Trains 100 km/h at 1.3 m/s²; the cab 65 km/h. The helicopter cruises at about 240 km/h.
+- **Aircraft** (aviation.js AIRFRAME_SPECS): take-off thrust is a real share of the weight
+  (courier 0.28, jet 0.30, airliner 0.26 g) with the parasitic drag scaled to it, so top
+  speeds stay near 400 / 740 / 830 km/h while the take-off roll, climb (6-11 m/s initially)
+  and deceleration are real. Rolling resistance 0.025 g, wheel brakes 0.42-0.45 g. Measured
+  rolls, flaps 1, rotating at the airframe's speed: courier 236 m (lift-off ~116 km/h), jet
+  504 m (~180), airliner 794 m (~207); landing rolls from touchdown at that speed with full
+  brakes 103 / 253 / 368 m. The runways (section 4, "Airfields") are sized from these.
 - **Camera**: from about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js,
   to 0.68 of the player's zoom by 220 km/h) and the look-ahead is about 0.45 s of travel.
 
@@ -159,6 +164,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; the whole bus plays at `CRASH_LEVEL` (-3.5 dB, under gunfire and engines); one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
 | engine-audio.js | Engine sound: `ENGINE_SETS` (recorded loops per class with the revs each was recorded at: compact, sport, V8, diesel, bike, cruiser, tank, outboard, marine diesel, jet ski) and `ENGINE_OF_TYPE` (vehicle type to set, pitch, level); the player's engine simulation (`engineSimulate`: idle, clutch slip pulling away, automatic gearbox with a throttle cut on upshifts and a blip on downshifts, throttle load), layers pitched by rpm / recorded rpm and cross-faded in the middle of each gap (`engineLayerWeights`), a recorded starter on getting in, overrun burble (V8, sport), misfires when badly hurt; tyre roar, gravel off-road and tank tracks (tank-tracks.ogg), wind on open vehicles; synthesised turboprop and turbofan (`updateJetVoice`: whine, roar, hiss, blade buzz); the nearest four driven traffic vehicles get one voice each with distance, pan and Doppler (`updateTrafficEngines`); `engineReport()` (DeadEndCity.engineSound(): revs, gear, load, layer rates and gains, traffic, a trace) |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
+| airfields.js | The runway plan (section 4, "Airfields"): `RUNWAYS`, `TAXIWAYS`, `RUNWAY_PIERS` (reclaimed land, pushed onto `LAND_REGIONS`), `runwayRect` / `runwayPoint` / `runwayUnder` / `runwayPierAt`, PAPI units and `papiShowsWhite`, `paintAirfieldGround` (the flat runways for the 2D view, the maps and the ground sheets), `airfieldReport()` (DeadEndCity.airfields()) |
 | military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
 | armor.js | The player's tank: `traverseTurret` (30°/s, eased, stabilised; also used by the pursuit tank and army gunners), `updatePlayerArmor`, ammunition (`tankArms`: 40 main-gun rounds, 5 s reload, coaxial MG belts; `noCoax` tanks), `tankPlayerFire`, `toggleTankWeapon`, the weapon chip in a tank (`tankHud`, `drawShellIcon`) and the reticle (`updateTankReticle`) |
 | aviation.js | Fixed-wing flight model (`planeControl`) and its controls (FLIGHT CONTROLS: engine spool, pitch and roll springs with inertia and auto-coordination, flaps, retracting gear and belly landings, stall and gear warnings with buffet, nosewheel steering and brakes), `flightData()` for the HUD and the console, flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
@@ -222,6 +228,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
 | county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests and boulders (near / far LOD per 2048-unit cell), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
+| airfields3d.js | Runways and taxiways over the ground sheets: one quad each with a patched standard material that paints the markings from metre uv (threshold, centre line, aiming point, touchdown zone, side stripes, blast pad chevrons, holding positions, rubber, rain), designation decals, holding-position signs; edge, threshold / end, approach (sequenced flashers), taxiway and obstruction lights as glow-field instances on batched fixtures; PAPI lenses and windsocks updated per frame (`updateAirfieldVisuals`, called from `updateCountyVisuals`) |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
 | drawbridge3d.js | The Palm Sound drawbridge in 3D (`buildDrawbridge`, the bascule builder): hinged leaves with grid decking, girders and counterweights, piers and tender houses, fenders, barrier gates, signals and lamps (switched lenses and halos), the ketch; `updateDrawbridgeVisuals` each frame |
@@ -479,6 +486,25 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   its own name.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns and an airport.
+- **Airfields** (airfields.js, drawn by airfields3d.js). Two runways, sized from the measured
+  take-off rolls (section 2a) at 1.4-1.8x plus blast pads:
+  - SOUTHPORT 18/36, 460 m x 29.5 m (x 300..536, y 4280..7960; blast pads 15 m north, 30 m
+    south), a GA strip for the courier. Most of it lies on a reclaimed pier running south
+    into the sea (`southport-pier`, x 196..760, y 5300..8240) with a parallel taxiway at
+    x 700 and connectors at y 4340, 5330 (to the hangars), 6120 and 7900.
+  - OCEANVIEW 09/27, 1,280 m x 30 m (y 9764..10004, x -4040..6200; blast pads 30 m), the
+    jet and airliner runway. The island only had room for 550 m: the runway runs west out
+    to sea on `oceanview-pier` (x -4320..2250, turn pad at the west end) with a small
+    `oceanview-pier-east`. Taxiway stubs at x 3750, 4500, 5260 and 5910 lead to the apron.
+  A full-length (1,800-2,500 m) airliner runway fits nowhere in a world about 2 km across; the
+  airliner's figures are a regional jet's at a light weight. The piers are land regions with
+  a rock revetment (world3d.js), their own ground (`paintAirfieldGround`; the west pier has
+  its own county tile) and district names (`districtAt`). Southport's 36 approach passes
+  low over Oceanview's west pier: the two runways' extended centre lines cross. Both jets and
+  the airliner park at Oceanview; Southport has three couriers. Fort Sentinel's 120 m strip
+  (military.js) is a landing area for helicopters; `AIRFIELDS` (aviation.js) lists it so a
+  landing there counts as on a runway. `DeadEndCity.airfields()` reports the plan, what each
+  PAPI shows the player's aircraft and where every plane is.
 - **The Ridgeline Range** (terrain.js, drawn by county3d.js) fills the north of Ridgeline between
   the north coast and Eagle Pass / the Ridgeline Highway: one height field over x 5880..10980,
   y 60..2620 on a 10-unit grid (`TERRAIN_FIELDS[0]`), plus a small field for each of the two lone
