@@ -61,6 +61,9 @@
       { id: 'horn', label: 'Horn', note: 'Sound the horn', group: 'vehicle', keys: ['KeyH'], ctx: ['drive'] },
       { id: 'radioPower', label: 'Radio on / off', note: 'Car radio power', group: 'vehicle', keys: ['KeyN'], ctx: ['drive', 'air'] },
       { id: 'radioNext', label: 'Next station', note: 'Tune the next radio station', group: 'vehicle', keys: ['KeyB'], ctx: ['drive', 'air'] },
+      // A passenger is on foot as far as contexts go (controlContext()).
+      { id: 'skipRide', label: 'Skip the ride', note: 'Riding a cab, a train or the liner: fade out and arrive (the cab fare is charged)', group: 'vehicle', keys: ['KeyY'], ctx: ['foot'] },
+      { id: 'skipStop', label: 'Skip to another stop', note: 'On a train: choose the station the skip takes you to', group: 'vehicle', keys: ['KeyU'], ctx: ['foot'] },
       // The arrows climb and descend in an aircraft (they take over from forward /
       // back there, `overrides`); T / G stay as second keys and as the virtual codes.
       { id: 'ascend', label: 'Climb', note: 'Helicopter rise and take off · plane nose up', group: 'air', code: 'KeyT', keys: ['ArrowUp', 'KeyT'], ctx: ['air'], overrides: 'forward' },

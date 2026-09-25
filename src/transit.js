@@ -795,13 +795,25 @@
       });
     }
     // Scenic trains dwell at every station; a passenger's train pauses briefly.
-    const RAIL_DWELL = 4;
+    const RAIL_DWELL = 4,
+      RAIL_PASSENGER_CALL = 1.2;
     function updateTransit(deltaSeconds) {
       if (transitRide?.blockedStop) {
         leaveTransit(transitRide.blockedStop);
         if (transitRide?.blockedStop) return;
       }
+      // A skipped ride (ride-skip.js) stands at the chosen platform while the
+      // picture comes back, then lets the passenger off there.
+      const alight = transitRide?.alight;
+      if (alight) {
+        alight.timer -= deltaSeconds;
+        if (alight.timer <= 0) {
+          transitRide.alight = null;
+          leaveTransit(alight.station);
+        }
+      }
       for (const t of railTrains) {
+        if (transitRide?.train === t && transitRide.alight) continue;
         if (transitRide?.train === t && transitRide.boarding > 0) {
           transitRide.boarding -= deltaSeconds;
           continue;
@@ -856,7 +868,7 @@
                 ended = true;
                 break;
               }
-              t.wait = 1.2;
+              t.wait = RAIL_PASSENGER_CALL;
               t.speed = 0;
               break;
             }

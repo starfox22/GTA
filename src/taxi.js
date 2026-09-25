@@ -157,7 +157,8 @@
       }
       player.altitude = terrainHeight(player.x, player.y);
       player.inv = Math.max(player.inv, 0.6);
-      if (paid) {
+      // A skipped ride (ride-skip.js) was paid for under the fade.
+      if (paid && !ride.prepaid) {
         const due = Math.min(cash, ride.fare);
         cash -= due;
         tell(
@@ -180,8 +181,19 @@
       }
       const node = ride.route[ride.index];
       if (!node) {
+        // After a skip the cab waits at the kerb until the picture is back.
+        if (ride.arrival > 0) {
+          ride.arrival -= deltaSeconds;
+          car.speed = ride.speed = 0;
+          player.x = car.x;
+          player.y = car.y;
+          player.a = car.a;
+          player.altitude = (car.groundHeight || 0) + 4;
+          return;
+        }
         endTaxiRide(true);
-        tell('"That is you. Mind how you go."', 3);
+        // A skipped ride's arrival card already said where and what it cost.
+        if (!ride.prepaid) tell('"That is you. Mind how you go."', 3);
         return;
       }
       // Aim for the right-hand lane rather than the centre line the graph uses.

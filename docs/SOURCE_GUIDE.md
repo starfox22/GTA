@@ -174,6 +174,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sports-world.js | South Coast Stadium reservation, enclosure (`PITCH_FENCE` with its openings), big screens (`STADIUM_SCREENS`), turnstiles, vehicle barriers, markings |
 | sports-audio.js | Procedural stadium bed, chants, clapping, goal roars, gasps, panic screams, whistles, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
+| ride-skip.js | Skip the ride: the offer and prompt (`rideSkipOffer`, `rideSkipPrompt`) for a cab, a train or the sailing liner, the `skipRide` / `skipStop` keys (`rideSkipKey`), the fade on simulation time (`updateRideSkip`), the jump (`performRideSkip`: `catchUpWorld`, `placeCabAtKerb`, `placeTrainAtPlatform`, `placeLinerAtAnchor`), `rideSkipReport` |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
 | navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance; the minimap GPS (road routes to the objective and the waypoint with direction chevrons, `updateGpsRoute`, `drawGpsRoutes`) |
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
@@ -637,6 +638,38 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   on by default) turns the instruments off (`.instruments-off`); the warnings still flash
   when they apply, because STALL and PULL UP decide whether a landing ends in a crash. The
   docked interaction prompt sits under the heading strip in flight (`placeDockLine`).
+- **Skip the ride** (ride-skip.js). A passenger can skip a ride the GTA way with `skipRide`
+  (Y; remappable, listed under VEHICLES): the taxi (with a drop-off set: SKIP RIDE · $fare),
+  the train (SKIP TO <station>: the destination first, `skipStop` (U) cycles through the calls
+  on the way) and the Meridian Star under way (SKIP THE VOYAGE, back at her anchorage). The
+  prompt is the ordinary interaction prompt (`offerPrompt` with `key: 'skipRide'`), offered
+  first in `updateUI()`; the cab's also names E for STOP HERE. Refused (with a toast on the
+  key) at any wanted level, during a timed job (`mission.timeLimit`), in a cab below 60%
+  health or burning, and without the cab fare in cash; not offered with under 60 m to go.
+  The Falcon and the Eye are never skipped. Pressing it fades `#rideSkip` (shell.html, z 15:
+  over the HUD, under the menus) to black over 0.6 s with an arrival card (where, what it
+  costs, the arrival clock), then at full black: the clock moves by the ride's own seconds
+  at the game's rate (a game minute per second, so skipping lands at the hour riding would):
+  the cab's remaining route over `TAXI_SKIP_PACE` (half of `TAXI_SPEED`, about 32 km/h,
+  measured), the train's hops over its speed profile (`railHopSeconds` plus
+  `RAIL_PASSENGER_CALL` at each call; within 3% of a ridden trip), the liner's remaining
+  circuit over her speed caps. `catchUpWorld` steps the weather machine across the gap in
+  one-second steps (weather.js `stepWeatherMachine`, the easing without lightning or sound),
+  runs the scenic trains and the liner along their timetables, then the ride is put at its
+  end: the cab at the drop-off kerb facing along the road (stepped back if the spot is
+  taken; the full fare paid, `ride.prepaid`), the train standing at the platform
+  (`transitRide.alight`: head on the station point, stopped), the liner at anchor with the
+  player where they stood on deck. The camera snaps, the crowd streamer is told to settle
+  (`crowd.settledAt = null`) and at least 0.8 s and six frames are drawn under the black
+  before a 0.6 s fade back in; the passenger then stays aboard 0.9 s and steps off as on any
+  arrival. The fade runs on `update()` time, so a pause freezes it (the pause menu draws
+  over it) and death or the title menu cancels it; input other than Escape and mute is
+  ignored under it and the player is invulnerable. The effects bus is ducked to 0.2
+  (audio.js `setMixDuck`, a gain between `master` and the ear filter): engines, rain and
+  the street dip, the radio (which now plays in a hired cab, car-radio.js `radioAboard`) and
+  the callouts do not. Wanted state is never touched; `save()` runs once after the jump.
+  City rail and the liner are free, so only the cab charges. Console: `skipRide()`,
+  `skipStop()`, `rideSkip()`, `boardTrain(from, to)`, `setCash(dollars)`.
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
   advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
