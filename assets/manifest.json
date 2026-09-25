@@ -141,12 +141,6 @@
     "original": "src/assets/audio/civilian-scream-male-2.ogg"
   },
   {
-    "id": "media-audio-engine",
-    "file": "assets/audio/engine.wav",
-    "mime": "audio/wav",
-    "original": "src/assets/audio/engine.wav"
-  },
-  {
     "id": "media-audio-explosion",
     "file": "assets/audio/explosion.mp3",
     "mime": "audio/mpeg",
@@ -307,5 +301,149 @@
     "file": "assets/audio/crash-debris.ogg",
     "mime": "audio/ogg",
     "original": "src/assets/audio/crash-debris.ogg"
+  },
+  {
+    "id": "media-audio-engine-start",
+    "file": "assets/audio/engine-start.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-start.ogg"
+  },
+  {
+    "id": "media-audio-engine-compact-idle",
+    "file": "assets/audio/engine-compact-idle.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-compact-idle.ogg"
+  },
+  {
+    "id": "media-audio-engine-compact-low",
+    "file": "assets/audio/engine-compact-low.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-compact-low.ogg"
+  },
+  {
+    "id": "media-audio-engine-compact-mid",
+    "file": "assets/audio/engine-compact-mid.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-compact-mid.ogg"
+  },
+  {
+    "id": "media-audio-engine-compact-high",
+    "file": "assets/audio/engine-compact-high.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-compact-high.ogg"
+  },
+  {
+    "id": "media-audio-engine-sport-idle",
+    "file": "assets/audio/engine-sport-idle.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-sport-idle.ogg"
+  },
+  {
+    "id": "media-audio-engine-sport-low",
+    "file": "assets/audio/engine-sport-low.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-sport-low.ogg"
+  },
+  {
+    "id": "media-audio-engine-sport-mid",
+    "file": "assets/audio/engine-sport-mid.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-sport-mid.ogg"
+  },
+  {
+    "id": "media-audio-engine-sport-high",
+    "file": "assets/audio/engine-sport-high.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-sport-high.ogg"
+  },
+  {
+    "id": "media-audio-engine-v8-idle",
+    "file": "assets/audio/engine-v8-idle.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-v8-idle.ogg"
+  },
+  {
+    "id": "media-audio-engine-v8-low",
+    "file": "assets/audio/engine-v8-low.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-v8-low.ogg"
+  },
+  {
+    "id": "media-audio-engine-v8-mid",
+    "file": "assets/audio/engine-v8-mid.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-v8-mid.ogg"
+  },
+  {
+    "id": "media-audio-engine-diesel-idle",
+    "file": "assets/audio/engine-diesel-idle.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-diesel-idle.ogg"
+  },
+  {
+    "id": "media-audio-engine-diesel-mid",
+    "file": "assets/audio/engine-diesel-mid.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-diesel-mid.ogg"
+  },
+  {
+    "id": "media-audio-engine-diesel-high",
+    "file": "assets/audio/engine-diesel-high.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-diesel-high.ogg"
+  },
+  {
+    "id": "media-audio-engine-twin-idle",
+    "file": "assets/audio/engine-twin-idle.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/engine-twin-idle.ogg"
+  },
+  {
+    "id": "media-audio-tank-tracks",
+    "file": "assets/audio/tank-tracks.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/tank-tracks.ogg"
+  },
+  {
+    "id": "media-audio-boat-outboard-low",
+    "file": "assets/audio/boat-outboard-low.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/boat-outboard-low.ogg"
+  },
+  {
+    "id": "media-audio-boat-outboard-high",
+    "file": "assets/audio/boat-outboard-high.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/boat-outboard-high.ogg"
+  },
+  {
+    "id": "media-audio-boat-diesel",
+    "file": "assets/audio/boat-diesel.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/boat-diesel.ogg"
+  },
+  {
+    "id": "media-audio-boat-jetski",
+    "file": "assets/audio/boat-jetski.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/boat-jetski.ogg"
+  },
+  {
+    "id": "media-audio-rain-light",
+    "file": "assets/audio/rain-light.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/rain-light.ogg"
+  },
+  {
+    "id": "media-audio-rain-steady",
+    "file": "assets/audio/rain-steady.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/rain-steady.ogg"
+  },
+  {
+    "id": "media-audio-rain-heavy",
+    "file": "assets/audio/rain-heavy.ogg",
+    "mime": "audio/ogg",
+    "original": "src/assets/audio/rain-heavy.ogg"
   }
 ]
