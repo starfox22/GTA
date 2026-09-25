@@ -140,7 +140,8 @@
       return Math.abs(dx * b.cos + dy * b.sin) < b.hx && Math.abs(-dx * b.sin + dy * b.cos) < b.hy;
     }
     function underBridgeWater(x, y) {
-      if (landAt(x, y)) return false;
+      // Open sky between a raised drawbridge's leaves: nothing overhead.
+      if (landAt(x, y) || drawbridgeOpenGap(x, y, 30)) return false;
       const blocks = airCoverVolumes();
       for (let i = 0; i < blocks.length; i++) if (blocks[i].bridge && inCoverFootprint(blocks[i], x, y)) return true;
       return false;

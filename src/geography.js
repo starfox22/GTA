@@ -609,6 +609,8 @@
       {
         id: 'keys-harbor',
         style: 'bascule',
+        // A working drawbridge: its leaves open on a timetable (drawbridge.js).
+        movable: true,
         name: 'PALM SOUND CAUSEWAY',
         link: 'PALM KEYS - NORTHBANK',
         width: 112,
@@ -788,21 +790,41 @@
           s.solids.push({ along: m, across: side2 * s.truss.plane, hx: main + side, hy: 3, minHeight: 0, height: 56, kind: 'truss' });
       },
       /* Palm Sound Causeway: a low concrete causeway on bents every 110 with a
-         double-leaf bascule over the channel, its leaves hinged on two big
-         piers that carry the four tender's houses. */
+         working double-leaf trunnion bascule over the channel (drawbridge.js
+         opens it; drawbridge3d.js draws it). Each leaf swings about a trunnion
+         `drop` below the road at the channel face of its pier; the pier behind
+         it holds the counterweight pit and carries two tender's houses, the
+         south-east one the control house. Timber fenders guard the pier faces
+         up and down the channel; the gate and stop lines stand on the approach
+         spans behind the piers. */
       bascule(bridge, [w0, w1], m, s) {
         const W = bridge.width,
-          leaf = 100;
-        s.bascule = { leaf, piers: [m - leaf - 24, m + leaf + 24], houses: [] };
-        s.channels = [[m - leaf + 6, m + leaf - 6]];
-        for (const p of s.bascule.piers) {
-          s.footings.push({ along: p, across: 0, hx: 24, hy: W / 2 + 24, kind: 'bascule pier' });
+          leaf = 100,
+          pier = 64;
+        s.bascule = {
+          leaf,
+          drop: 8,
+          trunnions: [m - leaf, m + leaf],
+          pier,
+          piers: [m - leaf - pier / 2 + 1, m + leaf + pier / 2 - 1],
+          gates: [m - leaf - pier - 26, m + leaf + pier + 26],
+          stops: [m - leaf - pier - 44, m + leaf + pier + 44],
+          houses: [],
+          fenders: [],
+        };
+        s.channels = [[m - leaf + 8, m + leaf - 8]];
+        s.bascule.piers.forEach((p, i) => {
+          s.footings.push({ along: p, across: 0, hx: pier / 2 + 1, hy: W / 2 + 28, kind: 'bascule pier' });
           for (const side of [-1, 1]) {
-            s.bascule.houses.push({ along: p, across: side * (W / 2 + 13) });
-            s.solids.push({ along: p, across: side * (W / 2 + 13), hx: 12, hy: 10, minHeight: 0, height: 48, kind: 'tender house' });
+            const main = i === 1 && side > 0;
+            s.bascule.houses.push({ along: p, across: side * (W / 2 + 16), main });
+            s.solids.push({ along: p, across: side * (W / 2 + 16), hx: main ? 17 : 12, hy: main ? 12 : 10, minHeight: 0, height: main ? 64 : 48, kind: main ? 'control house' : 'tender house' });
+            const face = i ? m + leaf - 4 : m - leaf + 4;
+            s.bascule.fenders.push({ along: face, across: side * (W / 2 + 110) });
+            s.footings.push({ along: face, across: side * (W / 2 + 110), hx: 3, hy: 80, kind: 'fender' });
           }
-        }
-        s.approach = [...approachPiers(m - leaf - 24, w0, 110), ...approachPiers(m + leaf + 24, w1, 110)];
+        });
+        s.approach = [...approachPiers(m - leaf - pier, w0, 110), ...approachPiers(m + leaf + pier, w1, 110)];
       },
       /* East Bay Crossing: a white cable-stayed bridge on a single A-pylon in
          mid-bay, two fans of stays to each edge of the deck, two navigation
@@ -976,7 +998,9 @@
           x <= Math.max(b.a[0], b.b[0]) + pad &&
           y >= Math.min(b.a[1], b.b[1]) - pad &&
           y <= Math.max(b.a[1], b.b[1]) + pad &&
-          segmentDistance(x, y, b.a, b.b) <= pad
+          segmentDistance(x, y, b.a, b.b) <= pad &&
+          // A raised drawbridge leaves open water between its leaf tips.
+          !(b.movable && drawbridgeOpenGap(x, y, r))
         );
       });
     }
@@ -1022,20 +1046,32 @@
       if (reg.id === 'ridgeline') appendLakePaths(drawingContext);
     }
     /* Bridge decks on the flat ground layers (2D view, minimap and map): the
-       deck, its kerb lines and the centre dashes. */
-    function drawBridgeGround(drawingContext) {
+       deck, its kerb lines and the centre dashes. The drawbridge's moving span is
+       left out of the baked layers (the 3D ground would show it across the open
+       gap; the maps draw it live, drawDrawbridgeMap); `live` (the 2D view, drawn
+       every frame) paints it while the leaves are down. */
+    function drawBridgeGround(drawingContext, live = false) {
       for (const bridge of BRIDGES) {
-        const f = bridgeFrame(bridge);
+        const f = bridgeFrame(bridge),
+          pieces = [[0, f.length]];
+        if (bridge.movable && !(live && drawbridge.angle < 0.004)) {
+          const s = bridgeStructure(bridge),
+            h0 = f.length / 2 + s.bascule.trunnions[0],
+            h1 = f.length / 2 + s.bascule.trunnions[1];
+          pieces.splice(0, 1, [0, h0], [h1, f.length]);
+        }
         drawingContext.save();
         drawingContext.translate(bridge.a[0], bridge.a[1]);
         drawingContext.rotate(f.a);
-        drawingContext.fillStyle = '#444f57';
-        drawingContext.fillRect(0, -bridge.width / 2, f.length, bridge.width);
-        drawingContext.fillStyle = '#b6b8af';
-        drawingContext.fillRect(0, -bridge.width / 2 - 1, f.length, 5);
-        drawingContext.fillRect(0, bridge.width / 2 - 4, f.length, 5);
-        drawingContext.fillStyle = '#e3c98b';
-        for (let x = 0; x < f.length; x += 31) drawingContext.fillRect(x, -1, 15, 2);
+        for (const [x0, x1] of pieces) {
+          drawingContext.fillStyle = '#444f57';
+          drawingContext.fillRect(x0, -bridge.width / 2, x1 - x0, bridge.width);
+          drawingContext.fillStyle = '#b6b8af';
+          drawingContext.fillRect(x0, -bridge.width / 2 - 1, x1 - x0, 5);
+          drawingContext.fillRect(x0, bridge.width / 2 - 4, x1 - x0, 5);
+          drawingContext.fillStyle = '#e3c98b';
+          for (let x = x0; x < x1 - 15; x += 31) drawingContext.fillRect(x, -1, 15, 2);
+        }
         drawingContext.restore();
       }
     }

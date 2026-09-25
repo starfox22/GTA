@@ -399,6 +399,8 @@
         if (Math.abs(b.x - x) < reach + b.reach && Math.abs(b.y - y) < reach + b.reach && boxContact(shape, b)) return false;
       // The sailing liner moves, so her hull is asked for where she is now.
       for (const hull of movingLinerHulls()) if (boxContact(shape, hull)) return false;
+      // So does the ketch that works the Palm Sound drawbridge (drawbridge.js).
+      for (const hull of drawbridgeVesselHulls()) if (boxContact(shape, hull)) return false;
       return true;
     }
     /* Everything fixed that a boat steers round, as oriented boxes with a reach

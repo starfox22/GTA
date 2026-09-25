@@ -58,6 +58,15 @@
     function navigationGraph() {
       const gateState = navigationGateState();
       if (routeGraph && routeGraphGates === gateState) return routeGraph;
+      // Built as if the drawbridge were down; its links are priced when searched.
+      drawbridge.routing = true;
+      try {
+        return buildNavigationGraph(gateState);
+      } finally {
+        drawbridge.routing = false;
+      }
+    }
+    function buildNavigationGraph(gateState) {
       const roads = [
           ...cityStreets(),
           ...BOULEVARDS,
@@ -152,14 +161,18 @@
             }
             const id = add(p);
             if (previous !== null && id !== previous && navSegmentClear(nodes[previous], p)) {
-              const cost = distanceBetween(nodes[previous], p) * (s.trail ? 1.25 : 1);
+              const cost = distanceBetween(nodes[previous], p) * (s.trail ? 1.25 : 1),
+                // Across the drawbridge's span: priced by its opening (navShortestPath).
+                overBridge = drawbridgeLinkCrosses(nodes[previous], p);
               nodes[previous].links.push({
                 id,
                 cost,
+                drawbridge: overBridge,
               });
               nodes[id].links.push({
                 id: previous,
                 cost,
+                drawbridge: overBridge,
               });
             }
             previous = id;
@@ -220,6 +233,9 @@
         cost = new Map([[start, 0]]),
         prev = new Map(),
         closed = new Set();
+      // While the drawbridge is up, crossing it costs the wait (drawbridge.js):
+      // a short trip waits for it, a long one goes round by the Keys Bridge.
+      const bridgeDelay = drawbridgeRouteDelay();
       push(start, distanceBetween(nodes[start], nodes[end]));
       while (heap.length) {
         const { id } = pop();
@@ -235,7 +251,7 @@
         }
         closed.add(id);
         for (const link of nodes[id].links) {
-          const next = cost.get(id) + link.cost;
+          const next = cost.get(id) + link.cost + (link.drawbridge ? bridgeDelay : 0);
           if (next < (cost.get(link.id) ?? Infinity)) {
             cost.set(link.id, next);
             prev.set(link.id, id);

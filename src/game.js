@@ -956,6 +956,8 @@
       // Street furniture, tree trunks, park fixtures and shelters stop the
       // player on foot (streets.js); the crowd keeps to its own paths round them.
       if (onFoot && footObstacleBlocked(x, y, 4.5)) return true;
+      // Behind the drawbridge's sidewalk arms, and never onto a raised span.
+      if (drawbridgeFootBlocked(body, x, y, collisionRadius)) return true;
       return footStepVehicleBlocked(x, y, collisionRadius, reach);
     }
     function moveBody(body, displacementX, displacementY, collisionRadius) {
@@ -2958,6 +2960,8 @@
         timed('transit', () => updateTransit(deltaSeconds));
         // The Meridian Star under way (marina.js), before the player walks her deck.
         timed('liner', () => sailLiner(deltaSeconds));
+        // The Palm Sound drawbridge: timetable, gates, leaves and the ketch (drawbridge.js).
+        timed('drawbridge', () => updateDrawbridge(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
         updateWeather(deltaSeconds);
@@ -3906,6 +3910,7 @@
       drawCountyMap(drawingContext, scale, big);
       drawGarageMap(drawingContext, scale);
       drawAirCoverMap(drawingContext, scale);
+      drawDrawbridgeMap(drawingContext, scale, big);
       drawAviationMap(drawingContext, scale);
       drawPoliceMap(drawingContext, scale);
       drawingContext.restore();
@@ -4899,6 +4904,7 @@
     window.addEventListener('resize', resize);
     // @include src/controls.js
     // @include src/geography.js
+    // @include src/drawbridge.js
     // @include src/harbor.js
     // @include src/police-feedback.js
     // @include src/arsenal.js
@@ -5640,6 +5646,19 @@
       },
       // Fort Sentinel security: alert, lockdown, gate pieces, garrison and vehicles.
       military: () => militaryReport(),
+      // The Palm Sound drawbridge (drawbridge.js): 'status', 'open' (start an opening
+      // now), 'close' (bring it down, lift the arms), 'hold' with degrees (arms down,
+      // leaves held there until 'close'), 'snap' with degrees (leaves there at once).
+      drawbridge: (action, degrees) => drawbridgeCommand(action, degrees),
+      // Put `count` traffic cars on each approach, heading onto the drawbridge.
+      drawbridgeTraffic: (count) => drawbridgeSpawnTraffic(count),
+      // Stand at a drawbridge viewpoint ('channel', 'west', 'east', 'north', 'south',
+      // 'tower') at a zoom; returns the point and the bridge's state.
+      drawbridgeLook(spot = 'channel', zoom) {
+        const p = drawbridgeViewpoint(spot);
+        this.look(p.x, p.y, zoom);
+        return { x: Math.round(p.x), y: Math.round(p.y), ...drawbridgeReport() };
+      },
       // The plan as data, for layout audits: coast, streets, rail, footprints and
       // every static collider in map units. A test renders it as a debug map and
       // checks for overlaps (a road through a helipad, a viaduct over a berth).

@@ -966,6 +966,8 @@
       if (!player.car) yieldTo(player);
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
       desired = Math.min(desired, curbsideStop(c));
+      // Held at the drawbridge's stop line while it opens (src/drawbridge.js).
+      desired = drawbridgeTrafficLimit(c, desired);
       // Steer for a point shifted away from whatever was easing us across the lane.
       const steerA = ease.amount
         ? normalizeAngle(
@@ -1172,6 +1174,9 @@
         boatControl(c, stepSeconds, active);
       } else if (c.type === 'helicopter') {
         helicopterControl(c, stepSeconds, active);
+      } else if (c.deckAir) {
+        // Off the tip of a drawbridge leaf: ballistic until drawbridgeSettle lands it.
+        drawbridgeFlight(c, stepSeconds);
       } else {
         if (
           c.cop &&
@@ -1332,6 +1337,8 @@
           c.vx -= terrain.slope.x * (64 + slide * 150) * stepSeconds;
           c.vy -= terrain.slope.y * (64 + slide * 150) * stepSeconds;
         }
+        // On a raised drawbridge leaf: gravity down the slope, grip up to ~40 degrees.
+        if (c.deckLeaf) acceleration = drawbridgeSlopeDrive(c, acceleration, stepSeconds);
         c.vx += headingCosine * acceleration * stepSeconds;
         c.vy += headingSine * acceleration * stepSeconds;
         // Tyres cancel sideways slip, but only up to what they can grip: about 60
@@ -1537,6 +1544,8 @@
           }
         }
       }
+      // The drawbridge's barrier arms and any leaf raised steeper than a ramp.
+      drawbridgeBarrierBodies(barrierCars, barrierBodies);
     }
     // Up to seven relaxation passes over the pairs, barriers and walls found by
     // vehicleBroadphase().
@@ -1578,6 +1587,7 @@
               (b.minHeight !== undefined &&
                 entityElevation(c) + vehicleCollisionHeight(c) < b.minHeight) ||
               (isAircraft(c) && c.altitude > b.height + 8) ||
+              (c.deckAir && c.deckLift > b.height + 1) ||
               (c.roofSite && b.building === c.roofSite)
             )
               continue;
@@ -1627,7 +1637,7 @@
         intoPond =
           now > 0 && now > cornersInPond({ ...vehicleShape(c), x: c.stepStartX, y: c.stepStartY, a: c.stepStartA });
       }
-      if (intoPond || (wheeled && c !== player.car && footprintOffGround(c))) {
+      if (intoPond || (wheeled && c !== player.car && (footprintOffGround(c) || drawbridgeKeepsOff(c)))) {
         // Hitting the pond's stone kerb at speed is a crash, not a soft stop.
         const hitSpeed = Math.hypot(c.vx || 0, c.vy || 0);
         // (Same severity as a wall in collisionImpact; the kerb is immovable.)
@@ -1667,6 +1677,8 @@
           a: c.a,
         };
       terrainVehiclePose(c, stepSeconds);
+      // Drawbridge leaves as ramps, take-off, landing and the gap (drawbridge.js).
+      drawbridgeSettle(c, stepSeconds);
       c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
       if (c === player.car) {
         player.x = c.x;

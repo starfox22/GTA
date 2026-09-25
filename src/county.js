@@ -804,7 +804,7 @@
         )
           worldContext.drawImage(t.canvas, t.x, t.y, t.w, t.h);
       // Long bridges run over open water that no baked ground sheet covers.
-      drawBridgeGround(worldContext);
+      drawBridgeGround(worldContext, true);
       for (const b of buildings)
         if (
           b.county &&

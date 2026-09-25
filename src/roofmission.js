@@ -143,8 +143,9 @@
       if (e.type && vehicleSpec(e)) {
         if (isAircraft(e)) return e.altitude ?? 0;
         if (isBoat(e)) return boatSurfaceElevation(e);
-        // A flooded car settles under the surface and takes its occupants with it.
-        return terrainHeight(e.x, e.y) - (e.sinkDepth || 0);
+        // A flooded car settles under the surface and takes its occupants with it;
+        // one on (or flying off) a drawbridge leaf rides above the road (drawbridge.js).
+        return terrainHeight(e.x, e.y) - (e.sinkDepth || 0) + (e.deckLift || 0);
       }
       return e.altitude ?? terrainHeight(e.x, e.y);
     }
