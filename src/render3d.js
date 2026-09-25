@@ -1413,7 +1413,8 @@
         sniperAxis = new Three.Vector3(0, 1, 0);
       function updateSniperSights() {
         let n = 0;
-        const aiming = officers.filter((o) => o.roofSniper && o.hp > 0 && o.sniperAim > 0);
+        // No laser sights while the snipers are switched off (swat.js SNIPERS_ENABLED).
+        const aiming = SNIPERS_ENABLED ? officers.filter((o) => o.roofSniper && o.hp > 0 && o.sniperAim > 0) : [];
         if (!aiming.length && !sniperSights.length) return;
         const pool = sniperSightPool();
         for (const o of aiming) {

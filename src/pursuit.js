@@ -22,26 +22,25 @@
      * carry `armyUnit` (not `military`, which is Fort Sentinel's own garrison).
      */
     // `air` is the helicopter the tier sends: never more than one at a time
-    // (AIR_UNITS_MAX, combat-rules.js), so the top tiers escalate on the ground and
-    // with a sharper `marksman` in that one helicopter (lock-on seconds, the most
-    // of the player's motion it leads, seconds between rounds; combat-rules.js
-    // SNIPER FIRE). `snipers` is the most rooftop marksmen at once (swat.js: one,
-    // a second only deep into a long five-star chase).
+    // (AIR_UNITS_MAX, combat-rules.js), and unarmed (it tracks, lights and reports;
+    // it never fires), so the top tiers escalate on the ground. `snipers` is the
+    // most rooftop marksmen at once (swat.js: one, a second only deep into a long
+    // five-star chase) and only counts while swat.js SNIPERS_ENABLED is true
+    // (off for now: no snipers at any level).
     const POLICE_TIERS = [
       null,
       // 1 star: the nearest patrols investigate and try to make an arrest.
       { patrols: 2, swat: 0, feds: 0, tanks: 0, every: 7, air: 0, roadblocks: 0, ram: false, accuracy: 0.42, deadly: false },
       // 2: several cruisers, contact tactics (PIT, box), officers shoot.
       { patrols: 4, swat: 0, feds: 0, tanks: 0, every: 4.5, air: 0, roadblocks: 0, ram: true, accuracy: 0.46, deadly: true },
-      // 3: more units, a helicopter with a marksman, a roadblock ahead.
-      { patrols: 5, swat: 0, feds: 0, tanks: 0, every: 3.8, air: 1, roadblocks: 1, ram: true, accuracy: 0.5, deadly: true, marksman: { lock: 2.6, lead: 0.75, rest: [5, 7] } },
-      // 4: SWAT vans with armoured rifle teams, an extra cruiser, two roadblocks, and a
-      // police sniper in the helicopter who lines up faster and leads better.
-      { patrols: 5, swat: 2, feds: 0, tanks: 0, every: 3.2, air: 1, roadblocks: 2, ram: true, accuracy: 0.55, deadly: true, marksman: { lock: 2.4, lead: 0.85, rest: [4.5, 6.5] } },
-      // 5: federal agents, SWAT in five-strong teams, now and then a rooftop sniper
-      // (swat.js), three roadblocks, the helicopter's sharpest marksman, and the army:
+      // 3: more units, the (unarmed) police helicopter, a roadblock ahead.
+      { patrols: 5, swat: 0, feds: 0, tanks: 0, every: 3.8, air: 1, roadblocks: 1, ram: true, accuracy: 0.5, deadly: true },
+      // 4: SWAT vans with armoured rifle teams, an extra cruiser, two roadblocks.
+      { patrols: 5, swat: 2, feds: 0, tanks: 0, every: 3.2, air: 1, roadblocks: 2, ram: true, accuracy: 0.55, deadly: true },
+      // 5: federal agents, SWAT in five-strong teams, three roadblocks and the army:
       // jeeps with gunners, an APC and a troop truck first, the tank later.
-      { patrols: 5, swat: 3, feds: 2, tanks: 1, jeeps: 2, apcs: 1, trucks: 1, snipers: 2, every: 2.8, air: 1, roadblocks: 3, ram: true, accuracy: 0.6, deadly: true, marksman: { lock: 2.2, lead: 0.9, rest: [4, 6] } },
+      // (`snipers`: rooftop marksmen, only while swat.js SNIPERS_ENABLED.)
+      { patrols: 5, swat: 3, feds: 2, tanks: 1, jeeps: 2, apcs: 1, trucks: 1, snipers: 2, every: 2.8, air: 1, roadblocks: 3, ram: true, accuracy: 0.6, deadly: true },
     ];
     // Seconds at five stars before the tank is sent: the light army units come first.
     const TANK_AFTER_SECONDS = 45;
@@ -87,9 +86,9 @@
       '',
       'ALL UNITS · REPORT OF A DISTURBANCE · NEAREST PATROL RESPOND',
       'SHOTS FIRED · ALL UNITS PURSUE · USE OF FORCE AUTHORISED',
-      'AIR UNIT LAUNCHED · MARKSMAN ON BOARD · ROADBLOCKS GOING UP',
-      'SWAT DEPLOYED · SECOND AIR UNIT UP · CLOSE THE AVENUES',
-      'FEDERAL RESPONSE · ARMY UNITS ROLLING · SNIPERS UP · SHOOT ON SIGHT',
+      'AIR UNIT LAUNCHED · SPOTLIGHT ON THE SUSPECT · ROADBLOCKS GOING UP',
+      'SWAT DEPLOYED · AIR UNIT DIRECTING · CLOSE THE AVENUES',
+      'FEDERAL RESPONSE · ARMY UNITS ROLLING · SHOOT ON SIGHT',
     ];
     function dispatchCaption(text, sample = null) {
       const el = getElement('radioCaption');
@@ -826,7 +825,7 @@
      *
      * SURRENDER: from one to four stars, a player who stands still (on foot, or
      * in a stopped car on the ground) without firing for a moment is giving up.
-     * Officers then hold their fire (so does the helicopter marksman), walk up
+     * Officers then hold their fire, walk up
      * and make the arrest, exactly as their "YOU ARE UNDER ARREST" calls promise.
      * At three and four stars they want two officers close before they cuff.
      * At five stars the response shoots on sight and only a player close to dead
@@ -872,7 +871,7 @@
     function playerSurrendering() {
       return surrenderFor >= SURRENDER_SECONDS && Math.ceil(wantedStars) <= 4 && arrestable();
     }
-    /* Police (officers and the air marksman) hold fire on a player giving up. */
+    /* Police officers hold fire on a player giving up. */
     function policeHoldFire() {
       return policeMayArrest && playerSurrendering();
     }

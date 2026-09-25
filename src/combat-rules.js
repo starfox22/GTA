@@ -3,9 +3,11 @@
      * Aerial combat and pursuit rules
      * Source: src/combat-rules.js
      * Scope: shared game closure.
-     * Elevation-aware shots, vehicle handgun rules, tank armor and the police helicopters
-     * (never more than one at a time, from three stars or a chase at sea; its marksman
-     * sharpens at four and five stars).
+     * Elevation-aware shots, vehicle handgun rules, tank armor and the police helicopter
+     * (never more than one at a time, from three stars or a chase at sea). The police
+     * helicopter is unarmed, as real police helicopters are: it pursues, lights the
+     * player with its searchlight and reports where they are so the ground units
+     * converge, but it never fires (POLICE HELICOPTER below).
      */
     /* All gunfire travels through the same three-dimensional world. */
 
@@ -33,7 +35,7 @@
       };
     /**
      * SNIPER FIRE
-     * The rooftop snipers (swat.js) and the helicopter marksman share these
+     * The rooftop snipers (swat.js; switched off by SNIPERS_ENABLED) follow these
      * rules so the player always gets a chance to dodge:
      *   - a lock of two seconds or more, telegraphed by a laser (rooftop), a
      *     rising beep that quickens with the lock and a red glow on the screen
@@ -120,6 +122,61 @@
       if (shooter.roofSniper) sniperFireStats.rooftopShots++;
       else sniperFireStats.airShots++;
       return bullet;
+    }
+    /**
+     * SHOT LOG
+     * Every hostile round is classified once, the first frame it flies
+     * (updateBullets, game.js), by who fired it: which police unit, army gunner,
+     * base soldier, gang or mission gunman. `DeadEndCity.shotLog()` reports the
+     * rounds aimed at the player by source (with the shooter's distance and
+     * whether the shooter was on screen), so a test can prove nothing shoots the
+     * player unseen: no rooftop snipers, no helicopter gun.
+     */
+    const shotLog = { bySource: {}, recent: [], total: 0, offscreen: 0 };
+    function shotSource(b) {
+      const o = b.owner;
+      if (!o || typeof o !== 'object') return 'unknown';
+      if (o.roofSniper) return 'police-rooftop-sniper';
+      if (o.airUnit) return 'police-helicopter';
+      if (o.type) {
+        // A vehicle's own gun.
+        if (o.lawUnit === 'army') return 'army-tank';
+        if (o.armyUnit) return 'army-' + o.type + '-gunner';
+        if (o.marineUnit) return 'police-marine-launch';
+        if (o.military) return 'fort-sentinel-' + o.type;
+        return (o.lawUnit || o.type) + '-vehicle';
+      }
+      if (o.police) return 'police-' + (o.unit || 'officer');
+      if (o.military) return 'fort-sentinel-' + (o.role || 'soldier');
+      return (o.faction || 'hostile') + (o.missionTag ? '-' + o.missionTag : '');
+    }
+    function logHostileShot(b) {
+      b.logged = true;
+      // Rounds that can hurt the player: police rounds only when aimed at them,
+      // anyone else's whenever they are flying (game.js updateBullets).
+      const atPlayer =
+        b.target === player ||
+        (!!player.car && b.target === player.car) ||
+        (b.faction !== 'police' && !b.target && b.owner?.role !== 'range');
+      if (!atPlayer) return;
+      const source = shotSource(b),
+        o = b.owner && typeof b.owner === 'object' ? b.owner : b,
+        distance = Math.round(combatDistance(o, player)),
+        onScreen = crowdInView(o.x, o.y, 20);
+      shotLog.total++;
+      if (!onScreen) shotLog.offscreen++;
+      const entry = (shotLog.bySource[source] ??= { shots: 0, offscreen: 0, nearest: Infinity, farthest: 0 });
+      entry.shots++;
+      if (!onScreen) entry.offscreen++;
+      entry.nearest = Math.min(entry.nearest, distance);
+      entry.farthest = Math.max(entry.farthest, distance);
+      shotLog.recent.push({ t: +gameTime.toFixed(1), source, distance, onScreen, stars: Math.ceil(wantedStars), rocket: !!b.rocket });
+      if (shotLog.recent.length > 40) shotLog.recent.shift();
+    }
+    function shotLogReport(reset = false) {
+      const report = JSON.parse(JSON.stringify(shotLog));
+      if (reset) Object.assign(shotLog, { bySource: {}, recent: [], total: 0, offscreen: 0 });
+      return report;
     }
     function vestOf(person) {
       return Math.max(0, person === player ? player.armor : person.vest || 0);
@@ -221,16 +278,25 @@
         drawWeapon();
       }
     }
-    // One hostile helicopter at a time, whatever calls it: the wanted tiers, a
-    // pursuit at sea or a mission's air support (a mission takes over the one
-    // already overhead rather than bringing a second).
+    /**
+     * POLICE HELICOPTER
+     * One police helicopter at a time, whatever calls it: the wanted tiers, a
+     * pursuit at sea or a mission's air support (a mission takes over the one
+     * already overhead rather than bringing a second). It carries no weapon and
+     * no marksman: it follows the player, holds them in the searchlight and, while
+     * it can see them, counts as a unit with eyes on the suspect (policeSees,
+     * citylife.js), so the last known position it reports keeps the ground units
+     * converging and the search from running down. Fort Sentinel's armed
+     * helicopter (apache.js) is never flown by AI.
+     */
     const AIR_UNITS_MAX = 1,
       AIR_SEARCH_SECONDS = 18,
       AIR_REDISPATCH_SECONDS = 45,
       AIR_RELAUNCH_SECONDS = 12;
     let airDispatchTimer = 0,
       airLaunchReadyAt = 0,
-      sniperWarningAt = -100;
+      // When the crew last radioed that they have the suspect in sight.
+      airVisualCallAt = -100;
     function airTargetSnapshot(t) {
       return {
         x: t.x,
@@ -304,7 +370,6 @@
         airRetreat: false,
         airDown: false,
         altitude: Math.max(c.altitude, terrainHeight(c.x, c.y) + 280, entityElevation(target) + 120),
-        airShotTimer: 2,
         rotorSpeed: 1,
       });
       radio('call-backup');
@@ -390,7 +455,6 @@
         }
         const seen = airCanSee(c, t);
         c.seesPlayer = seen;
-        c.airShotTimer = Math.max(0, (c.airShotTimer || 0) - deltaSeconds);
         if (seen) {
           c.airLostFor = 0;
           c.airState = 'tracking';
@@ -410,47 +474,12 @@
             continue;
           }
         }
-        // The marksman (SNIPER FIRE above): lines up for two seconds or more
-        // (beep, screen-edge warning), then one led tracer round the player can
-        // step out of. Breaking sight spoils the lock. The higher the wanted
-        // level, the quicker and the better the lead.
-        const marksman = policeTier(Math.max(3, Math.ceil(wantedStars))).marksman;
-        // A player giving up (pursuit.js) is not shot at while officers move in.
-        if (seen && combatDistance(c, t) < 560 && c.airShotTimer <= 0 && !(t === player && policeHoldFire())) {
-          c.sniperLock = (c.sniperLock || 0) + deltaSeconds;
-          const runner = t === player || t === player.car;
-          if (runner) noteSniperLock(c, clamp(c.sniperLock / marksman.lock, 0, 1));
-          if (c.sniperLock > 0.3 && runner && gameTime - sniperWarningAt > 5) sniperWarningAt = gameTime;
-          if (c.sniperLock >= marksman.lock) {
-            c.sniperLock = 0;
-            c.airShotTimer = randomBetween(...marksman.rest);
-            pursuitStats.sniperShots++;
-            const a0 = headingBetween(c, t),
-              origin = {
-                x: c.x + Math.cos(a0) * 27,
-                y: c.y + Math.sin(a0) * 27,
-                altitude: entityElevation(c),
-              };
-            let a = a0;
-            if (runner) {
-              const round = fireSniperRound(c, origin, 1000, marksman.lead, 40);
-              a = Math.atan2(round.vy, round.vx);
-            } else
-              bullets.push({
-                ...origin,
-                ...shotVelocity(origin, t, 1100, a),
-                life: 1,
-                dmg: 40,
-                playerDmg: 14,
-                enemy: true,
-                faction: 'police',
-                owner: c,
-                target: t,
-              });
-            playSample('rifle', 0.34, 0.9, c);
-            if (city3D) city3D.fire(origin.x, origin.y, a, false, origin.altitude);
-          }
-        } else c.sniperLock = Math.max(0, (c.sniperLock || 0) - deltaSeconds * 2);
+        // No gun, no marksman: the crew only watches and reports. A fresh
+        // sighting goes out over the radio to the units on the ground.
+        if (seen && t === player && gameTime - airVisualCallAt > 25 && gameTime - lastDispatchLine > 5) {
+          airVisualCallAt = gameTime;
+          dispatchCaption('AIR UNIT HAS THE SUSPECT IN SIGHT · ALL UNITS CONVERGE ON THE SPOTLIGHT', null);
+        }
       }
     }
     function airPursuitStatus() {
@@ -463,9 +492,7 @@
             ? 'AIR SEARCH · ' +
               Math.ceil(Math.max(0, AIR_SEARCH_SECONDS - (c.airLostFor || 0))) +
               's · STAY HIDDEN'
-            : (c.sniperLock || 0) > 0.3
-              ? 'MARKSMAN LINING UP · MOVE!'
-              : 'HELICOPTER · ' + Math.ceil((c.hp / c.maxhp) * 100) + '% · FIND COVER';
+            : 'HELICOPTER · ' + Math.ceil((c.hp / c.maxhp) * 100) + '% · BREAK ITS LINE OF SIGHT';
       return wantedStars >= 3 && airDispatchTimer > 0
         ? 'NO AIR SUPPORT · ' + Math.ceil(airDispatchTimer) + 's'
         : '';

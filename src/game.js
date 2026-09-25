@@ -2910,6 +2910,8 @@
         rooftopTargets = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && !p.hidden);
       for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
+        // Who is shooting at the player (combat-rules.js SHOT LOG).
+        if (b.enemy && !b.logged) logHostileShot(b);
         let impact = false,
           hitKind = 'wall';
         const steps = Math.max(1, Math.ceil((Math.hypot(b.vx, b.vy, b.vz || 0) * deltaSeconds) / 7));
@@ -5613,6 +5615,10 @@
       // the incident's body count, the search, arrest progress, the tier's
       // allowances and every unit (patrol, swat, fed, army, air) and officer.
       policeReport: () => policeReportData(),
+      // Hostile rounds aimed at the player since the last reset, by source, with
+      // the shooter's distance and whether it was on screen (combat-rules.js SHOT
+      // LOG); `reset` clears the log after reading it.
+      shotLog: (reset = false) => shotLogReport(reset),
       // Combat tests: own weapon `index` (0 pistol ... 5 precision rifle) with a
       // full clip and reserve, and select it. Returns its name.
       arm(index = 4) {
