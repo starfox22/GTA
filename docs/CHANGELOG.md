@@ -24,7 +24,10 @@ Drawbridge (drawbridge.js, drawbridge3d.js, geography.js, physics.js, navigation
   red / green vessel signal mast and horn), timber fenders with red-lit dolphins, traffic
   signals, wig-wags and DRAWBRIDGE AHEAD flashers, red / green lanterns on the leaf tips.
 - Console: `DeadEndCity.drawbridge('status' | 'open' | 'close' | 'hold', degrees | 'snap',
-  degrees)`, `drawbridgeLook(spot, zoom)`, `drawbridgeTraffic(count)`.
+  degrees)` (the report lists every vehicle on the causeway), `drawbridgeLook(spot, zoom)`,
+  `drawbridgeTraffic(count)`.
+- Traffic no longer stops at phantom signals out on the Palm Sound bridges: grid columns
+  -896 and -384 cross the water, and trafficControl planned junctions there.
 
 HUD (hud.js, harbor.js, shell.html)
 - The mission 1 LOAD CARGO prompt no longer flickers: every system now offers its prompt to one

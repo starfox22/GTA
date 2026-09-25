@@ -759,7 +759,9 @@
       ) {
         const x = vertical ? roadNear(c.x) : next,
           y = vertical ? next : rowNear(c.y);
-        c.junction = planJunction(c, x, y, nav);
+        // Grid lines run on over the water (columns -896 and -384 cross Palm
+        // Sound): no junction, and no signal to wait at, out on a bridge.
+        if (landAt(x, y)) c.junction = planJunction(c, x, y, nav);
       }
       const j = c.junction;
       if (j) {

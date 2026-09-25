@@ -679,7 +679,11 @@
         d.motor = { gain, whine, sources: [hum, whine] };
       }
       const g = drawbridgeGeometry();
-      d.motor.gain.gain.setTargetAtTime(level * drawbridgeSoundLevel(g.channel.x, g.channel.y) * 0.1, audio.currentTime, 0.2);
+      // Held only while refreshed: if the game stops updating (paused), it dies away.
+      const now = audio.currentTime;
+      d.motor.gain.gain.cancelScheduledValues(now);
+      d.motor.gain.gain.setTargetAtTime(level * drawbridgeSoundLevel(g.channel.x, g.channel.y) * 0.1, now, 0.2);
+      d.motor.gain.gain.setTargetAtTime(0, now + 0.4, 0.25);
       d.motor.whine.frequency.setTargetAtTime(180 + 90 * level, audio.currentTime, 0.2);
     }
     /* ---- The ketch ------------------------------------------------------------------ */
@@ -835,7 +839,7 @@
           const exitDown = d.timer > 3 ? moveDrawbridgeArms(false, 1, deltaSeconds) : false;
           if (entryDown && exitDown) {
             drawbridgeClank(g.channel.x, g.channel.y, 0.4);
-            d.phase = d.held !== null ? 'unlock' : 'clearing';
+            d.phase = 'clearing';
             d.timer = 0;
           }
           break;
@@ -1028,8 +1032,10 @@
         }
       } else if (action === 'hold') {
         d.held = clamp(((Number.isFinite(degrees) ? degrees : 15) * Math.PI) / 180, 0, DRAWBRIDGE_MAX_ANGLE);
+        // Arms straight down, then the usual wait for an empty span (or straight on
+        // to the new angle if the leaves are already up).
         for (const arm of d.arms) arm.pos = arm.broken ? arm.pos : 1;
-        d.phase = 'raising';
+        d.phase = d.angle > 0.004 ? 'raising' : 'clearing';
         d.timer = 0;
       } else if (action === 'close') {
         d.held = null;
@@ -1070,6 +1076,10 @@
         routeDelay: Math.round(drawbridgeRouteDelay()),
         occupants: (({ player, people, vehicles: list }) => ({ player, people, vehicles: list.length }))(drawbridgeSpanOccupants()),
         queued: vehicles.filter((c) => c.ai && drawbridgeNear(c.x, c.y) && Math.abs(c.speed || 0) < 3 && Math.abs(drawbridgeLocal(c.x, c.y).v) < g.half).length,
+        // Every road vehicle on the causeway: where, how fast, what traffic AI wants.
+        traffic: vehicles
+          .filter((c) => !isBoat(c) && !isAircraft(c) && drawbridgeNear(c.x, c.y) && Math.abs(drawbridgeLocal(c.x, c.y).v) < g.half)
+          .map((c) => ({ id: c.id, type: c.type, x: Math.round(c.x), y: Math.round(c.y), speed: Math.round(c.speed || 0), ai: !!c.ai, desired: c.aiControl ? Math.round(c.aiControl.desired) : null, hp: Math.round(c.hp), crashed: !!c.crashStop })),
         vessel: v ? { leg: v.leg, x: Math.round(v.x), y: Math.round(v.y), across: Math.round(v.across), speed: +v.speed.toFixed(1) } : null,
         openings: d.openings,
         jumps: d.jumps.map((j) => ({ speed: j.speed, angle: j.angle, crossed: j.crossed, landed: j.landed ?? null, splash: !!j.splash, distance: j.distance ?? null, impact: j.impact ?? null })),
