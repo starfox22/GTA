@@ -1237,6 +1237,51 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
   contacts in `updateCars`, bullet targets (`bulletTargets`), the hired cab's look-ahead
   (`forEachPedestrianNear`) and near misses query it instead of scanning every pedestrian.
 
+## 6c. Police vehicles
+
+Every police vehicle is built by `src/police3d.js` (`makePoliceVehicle`, called from
+`makeVehicle` for `type === 'police'`, `lawUnit` `'swat'` / `'fed'`, or a `policeLook`).
+The collision sizes stay the vehicle types' own (patrol 45 × 23, van 48 × 26, SUV 49 × 26):
+the models are drawn inside them and nothing in the physics changed.
+
+- **Looks** (`pickPoliceLook`, cached per vehicle in a WeakMap, never stored on the
+  vehicle): city patrol units are a pursuit sedan (Charger), a utility (Explorer PIU) or a
+  Crown Vic, in black and white (`bw`: SOUTH COAST POLICE, gold star) or `modern` (white,
+  navy and sky-blue swoosh, reflective line); one in nine is an unmarked car with dash,
+  grille and rear-deck lights only; units built in the county are the green and white
+  `sheriff`. Agents (`fed`) drive an unmarked Tahoe; SWAT the armoured BearCat (roof hatch
+  and turret ring with shield plates, ram bumper with winch, armoured glass, gun ports,
+  hinged rear doors, POLICE / S.W.A.T.). The roof carries the unit number (aerial ID)
+  read along the car; the trunk and rear fenders repeat it.
+- **Damage contract**: the shell is a lofted section per body (`policeShellGeometry`) and
+  the glasshouse five curved panes in `PANE_ORDER` (`policeCabinGeometry`), both shared
+  until dented and crumpled by damage3d.js like the generic car. The model supplies hooks
+  damage3d.js reads: `liveryMap` / `liveryColor` / `finish` (paint restored after the soot,
+  satin not metallic), `bumperMaterial` (black plastic), `panelGeometry` / `trunkGeometry`
+  (sprung door and trunk panels sample the livery's swatches), `glass`. Lamps keep their
+  keys, `lit` materials (tail lamps swap to `brakeLamp`) and `nightLights` in head, tail
+  pairs per side.
+- **Liveries** are one canvas per livery and body, painted in the shell's UV space (u
+  along the car, v round the section); the bottom eighth holds solid swatches that the
+  hood, roof panel, pillars and damage panels sample, so the whole paint is one material.
+- **Draw calls**: per model the static parts are merged per material (livery panels,
+  vertex-coloured trim, bright metal, lights, number decals); with shell, glass, hood, two
+  bumpers, four lamps and four wheels (tyre + rim) a patrol car is ~22 draws against ~26 for
+  the old box-built cruiser, fewer shadow casters, and no per-model textures (livery,
+  glyph atlas and kits are shared by body and livery). Below `BODY_IMPOSTOR_ZOOM` police
+  vehicles pool by body and livery (`policeImpostorKey`): shell, glass, hood, panels,
+  trim and the lightbar's two halves, flashing through the instance colour.
+- **Lights**: every emitter of a model is one mesh whose vertices carry a light channel;
+  `policeLightLevels(c, levels, time)` writes eight channel levels from the pattern
+  (pursuit: quad flashes side to side, criss-cross double flashes and a sweep, cycling every
+  4.2 s; parked at a scene or a roadblock: slow double flashes and steady takedowns).
+  Responding cars wig-wag their headlamps. `animatePoliceVehicle` queues halos for lit
+  segments (VEHICLE HALOS) and lighting3d.js draws red and blue pools on the road from
+  `policeRoadGlow` into the drive light map at night. Lights run when
+  `(c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.showLights`.
+- `DeadEndCity.policeLineup(x, y, heading, lights, spacing)` parks one of each model and
+  livery for review.
+
 ## 7. Build, check, test
 
 ```
