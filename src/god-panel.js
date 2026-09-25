@@ -294,7 +294,7 @@
     function renderGodTeleportRow(body) {
       const row = godRow('godTeleport', 'god-action-row'),
         playing = settingsOrigin === 'pause',
-        button = godActionButton('godTeleport', 'TELEPORT · PICK ON MAP', godStartTeleportPick);
+        button = godActionButton('godTeleport', 'PICK ON MAP', godStartTeleportPick);
       button.classList.add('god-action-map');
       button.disabled = !playing;
       row.append(
