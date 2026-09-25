@@ -331,8 +331,9 @@
                 K.icon(dg, kind, x, y, s * 0.9, P.iconColor || P.ink, P.iconColor2 || P.panel);
               });
             if (P.tab) {
+              // A pill's rounded end would cut the tab's corners off: keep it inside the curve.
               const tw = Math.min(box.span * 0.36, h * 1.3),
-                tx = box.x1 - tw;
+                tx = box.x1 - tw - (P.shape === 'pill' ? Math.max(0, h * 0.42 - pad) : 0);
               dg.fillStyle = P.tabColor || P.ink;
               dg.beginPath();
               dg.roundRect(tx, h * 0.18, tw, h * 0.64, 6 * u);
