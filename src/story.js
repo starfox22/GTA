@@ -619,7 +619,7 @@
         e.aiming = true;
         e.a = headingBetween(e, target);
         e.walk += deltaSeconds * 8;
-        if (best > 165) footStepTowards(e, target, deltaSeconds, 48);
+        if (best > 165) footStepTowards(e, target, deltaSeconds, 9 * KMH);
         if (e.timer <= 0 && best < 335 && clearSight(e, target)) {
           e.timer = 0.8 + seededRandom() * 0.85;
           e.lastShotAt = gameTime;

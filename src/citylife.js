@@ -784,15 +784,16 @@
      */
     function cityTempo() {
       const hour = (worldMinutes / 60) % 24;
-      if (hour < 2) return { name: 'AFTER MIDNIGHT', speed: 26, idle: 0.1, shop: 0.05, bench: 0.1, out: 0.36 };
-      if (hour < 5.5) return { name: 'NIGHT', speed: 27, idle: 0.06, shop: 0.03, bench: 0.08, out: 0.17 };
-      if (hour < 9.5) return { name: 'MORNING RUSH', speed: 31, idle: 0.04, shop: 0.07, bench: 0.1, out: 1 };
-      if (hour < 11.5) return { name: 'MORNING', speed: 22, idle: 0.12, shop: 0.26, bench: 0.34, out: 0.86 };
-      if (hour < 14.5) return { name: 'LUNCH', speed: 21, idle: 0.15, shop: 0.34, bench: 0.5, out: 1 };
-      if (hour < 17.5) return { name: 'AFTERNOON', speed: 22, idle: 0.11, shop: 0.27, bench: 0.38, out: 0.88 };
-      if (hour < 19.5) return { name: 'EVENING RUSH', speed: 30, idle: 0.05, shop: 0.1, bench: 0.14, out: 1 };
-      if (hour < 23) return { name: 'EVENING', speed: 23, idle: 0.17, shop: 0.24, bench: 0.4, out: 0.82 };
-      return { name: 'LATE', speed: 28, idle: 0.08, shop: 0.07, bench: 0.12, out: 0.42 };
+      // Walking pace, 4-6 km/h: brisk in the rush hours, an amble at lunch.
+      if (hour < 2) return { name: 'AFTER MIDNIGHT', speed: 4.7 * KMH, idle: 0.1, shop: 0.05, bench: 0.1, out: 0.36 };
+      if (hour < 5.5) return { name: 'NIGHT', speed: 4.9 * KMH, idle: 0.06, shop: 0.03, bench: 0.08, out: 0.17 };
+      if (hour < 9.5) return { name: 'MORNING RUSH', speed: 5.6 * KMH, idle: 0.04, shop: 0.07, bench: 0.1, out: 1 };
+      if (hour < 11.5) return { name: 'MORNING', speed: 4.4 * KMH, idle: 0.12, shop: 0.26, bench: 0.34, out: 0.86 };
+      if (hour < 14.5) return { name: 'LUNCH', speed: 4.2 * KMH, idle: 0.15, shop: 0.34, bench: 0.5, out: 1 };
+      if (hour < 17.5) return { name: 'AFTERNOON', speed: 4.4 * KMH, idle: 0.11, shop: 0.27, bench: 0.38, out: 0.88 };
+      if (hour < 19.5) return { name: 'EVENING RUSH', speed: 5.4 * KMH, idle: 0.05, shop: 0.1, bench: 0.14, out: 1 };
+      if (hour < 23) return { name: 'EVENING', speed: 4.5 * KMH, idle: 0.17, shop: 0.24, bench: 0.4, out: 0.82 };
+      return { name: 'LATE', speed: 5.1 * KMH, idle: 0.08, shop: 0.07, bench: 0.12, out: 0.42 };
     }
     function ordinaryWalker(p) {
       return (
@@ -1092,7 +1093,7 @@
         }
       }
       o.a = a;
-      o.walk += deltaSeconds * 12;
+      o.walk += deltaSeconds * strideRate(speed);
     }
     function updateOfficers(deltaSeconds) {
       assignFireTokens(deltaSeconds);
@@ -1136,7 +1137,7 @@
           if (wantedStars <= 0 && !crowdInView(o.x, o.y, 60)) o.returned = true;
           else if (!o.draggedBy && !o.inCover) {
             const cover = officerCoverSpot(o);
-            if (cover && distanceBetween(o, cover) > 10) footStepTowards(o, cover, deltaSeconds, 9);
+            if (cover && distanceBetween(o, cover) > 10) footStepTowards(o, cover, deltaSeconds, 4 * KMH);
             else o.inCover = true;
           }
           continue;
@@ -1154,7 +1155,7 @@
           o.state = 'return';
           o.target = null;
           if (o.car?.hp > 0 && o.car !== player.car && !o.car.stolen && distanceBetween(o, o.car) > 28)
-            footStepTowards(o, o.car, deltaSeconds, 60);
+            footStepTowards(o, o.car, deltaSeconds, 11 * KMH);
           else {
             o.returned = true;
           }
@@ -1189,7 +1190,7 @@
         ) {
           o.state = 'post';
           o.target = null;
-          footStepTowards(o, o.post, deltaSeconds, 72);
+          footStepTowards(o, o.post, deltaSeconds, 13 * KMH);
           continue;
         }
         // The runner drove off: back to the car and after them.
@@ -1227,7 +1228,7 @@
           // by: walk up and make the arrest (pursuit.js).
           if (target === player && (!officerMayShoot(o, player) || (policeMayArrest && d < 120))) {
             if (o.state !== 'arrest') o.state = 'approach';
-            if (d > 22) footStepTowards(o, player, deltaSeconds, 85);
+            if (d > 22) footStepTowards(o, player, deltaSeconds, 9 * KMH);
             o.a = headingBetween(o, player);
             if (!o.challengeSaid && d < 200) o.challengeSaid = radio(policeMayArrest ? 'police-under-arrest' : 'police-challenge', o);
             continue;
@@ -1236,7 +1237,7 @@
           if (target === player && !o.engagedSaid && radio('target-engaged', o)) o.engagedSaid = true;
           if (gameTime < (o.staggerUntil || 0)) continue;
           if (d < 42)
-            moveBody(o, -Math.cos(o.a) * 35 * deltaSeconds, -Math.sin(o.a) * 35 * deltaSeconds, 8);
+            moveBody(o, -Math.cos(o.a) * 5 * KMH * deltaSeconds, -Math.sin(o.a) * 5 * KMH * deltaSeconds, 8);
           else {
             const spot = officerPosition(o, target, d, !o.fireToken && target === player);
             if (spot) {
@@ -1250,7 +1251,7 @@
         } else {
           if (target === player && !seen && officerSuppress(o, deltaSeconds)) {
             o.state = 'suppress';
-            if (distanceBetween(o, lastSeen) > 90) footStepTowards(o, lastSeen, deltaSeconds, 45);
+            if (distanceBetween(o, lastSeen) > 90) footStepTowards(o, lastSeen, deltaSeconds, 8 * KMH);
             o.a = headingBetween(o, lastSeen);
             continue;
           }
@@ -1258,7 +1259,7 @@
           // A SWAT stack moves up in file behind its shield (swat.js).
           const goal = (target === player && swatStackSpot(o)) || chase;
           if (distanceBetween(o, goal) > (goal === chase ? 20 : 4))
-            footStepTowards(o, goal, deltaSeconds, target === player && player.car ? 96 : kind.run);
+            footStepTowards(o, goal, deltaSeconds, target === player && player.car ? 18 * KMH : kind.run);
         }
       }
       for (let i = officers.length - 1; i >= 0; i--) if (officers[i].returned) officers.splice(i, 1);

@@ -405,7 +405,7 @@
         beachPerson('jogger', shoreAt(beachBetween(100, length - 100), 26), {
           s: beachBetween(100, length - 100),
           dir: beachRandom() < 0.5 ? 1 : -1,
-          speed: beachBetween(78, 108),
+          speed: beachBetween(9, 12) * KMH,
           lane: beachBetween(18, 34),
           threshold: beachBetween(0, 0.5),
         });
@@ -413,7 +413,7 @@
         beachPerson('stroller', shoreAt(beachBetween(100, length - 100), 40), {
           s: beachBetween(100, length - 100),
           dir: beachRandom() < 0.5 ? 1 : -1,
-          speed: beachBetween(22, 32),
+          speed: beachBetween(3.5, 5) * KMH,
           lane: beachBetween(30, 60),
           // The boardwalk walkers are the last to go home: a few are out at night.
           threshold: i >= 8 ? beachBetween(0, 0.12) : beachBetween(0, 0.8),
@@ -625,7 +625,7 @@
             p.mode = beachPick(['swim', 'swim', 'float', 'tread']);
             p.timer = beachBetween(8, 22);
           }
-          const speed = p.mode === 'swim' ? 14 : p.mode === 'float' ? 3 : 0;
+          const speed = p.mode === 'swim' ? 2.5 * KMH : p.mode === 'float' ? 0.5 * KMH : 0;
           if (speed && !landAt(p.goal.x, p.goal.y)) {
             const d = Math.hypot(p.goal.x - p.x, p.goal.y - p.y);
             if (d > 4) {
@@ -674,7 +674,7 @@
             if (p.x < w.x0 + 20 || p.x > w.x1 - 20) p.dir *= -1;
             p.y = w.y + (p.dir > 0 ? 8 : -8);
             p.a = p.dir > 0 ? 0 : Math.PI;
-            p.phase += deltaSeconds * 7;
+            p.phase += deltaSeconds * strideRate(p.speed);
             p.z = 0;
             break;
           }
@@ -699,7 +699,7 @@
           p.y = q.y;
           p.z = 0;
           p.pose = p.kind === 'jogger' ? 'run' : 'walk';
-          p.phase += deltaSeconds * (p.kind === 'jogger' ? 12 : 6.5);
+          p.phase += deltaSeconds * strideRate(p.speed);
           if (p.kind === 'stroller' && p.timer <= 0) {
             p.timer = beachBetween(15, 40);
             p.pause = beachBetween(3, 9);

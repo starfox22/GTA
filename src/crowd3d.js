@@ -1003,8 +1003,8 @@
           s.seen = true;
         } else if (deltaSeconds > 0) {
           s.speed += (moved / deltaSeconds - s.speed) * (1 - Math.exp(-deltaSeconds * 10));
-          const run = clamp((s.speed - 40) / 30, 0, 1),
-            cycle = 17 + s.speed * 0.14 + run * 4;
+          // One stride per strideCycle (game.js): feet keep pace with the ground.
+          const cycle = strideCycle(s.speed);
           s.phase += (moved / cycle) * TAU * (p.injured ? 0.8 : 1);
         }
         s.umbrella = weather.rain > 0.25 && !!look.umbrella && !p.react && !p.sitting && p.hp > 0 && !p.scene;
@@ -1016,12 +1016,13 @@
         for (let i = 0; i < J_COUNT; i++) J[i] += (T[i] - J[i]) * (deltaSeconds > 0 ? k : 1);
         if (p.hp <= 0 && !p.deathStyle?.slump) J[J_FALL] = personFallAmount(p);
         // Heading: turn toward the facing the game gives, faster when running.
-        const yawRate = s.speed > 45 ? 12 : 8;
+        const yawRate = s.speed > 20 ? 12 : 8;
         s.yaw += clamp(normalizeAngle((p.a || 0) - s.yaw), -yawRate * deltaSeconds, yawRate * deltaSeconds) || 0;
         if (deltaSeconds === 0) s.yaw = p.a || 0;
         // Locomotion layer.
-        const moving = clamp(s.speed / 8, 0, 1) * J[J_LOCO],
-          run = clamp((s.speed - 40) / 30, 0, 1),
+        // Walk below about 8 km/h, a full running gait from 13.
+        const moving = clamp(s.speed / 6, 0, 1) * J[J_LOCO],
+          run = clamp((s.speed - 18) / 11, 0, 1),
           phi = s.phase,
           hipAmp = (0.42 + run * 0.5) * (p.role === 'kid' ? 1.15 : 1),
           kneeAmp = 0.7 + run * 0.9,

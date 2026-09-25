@@ -699,8 +699,8 @@
       }
       p.a = headingBetween(p, target);
       p.walking = true;
-      p.walk += deltaSeconds * 6;
       const speed = cityTempo().speed * 0.82;
+      p.walk += deltaSeconds * strideRate(speed);
       moveBody(p, Math.cos(p.a) * speed * deltaSeconds, Math.sin(p.a) * speed * deltaSeconds, 5);
       pedSay(p, 'shore', 0.0015);
       return true;

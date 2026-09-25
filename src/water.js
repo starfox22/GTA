@@ -36,8 +36,9 @@
      * still inside with it. `SINK_SECONDS` is the window to get out. Beach
      * shallows only slow a car down: it takes deep water to drown one.
      */
-    const SWIM_SPEED = 52,
-      SWIM_SPRINT = 74,
+    // Breaststroke and a hard crawl, about 3.5 and 5 km/h.
+    const SWIM_SPEED = 3.5 * KMH,
+      SWIM_SPRINT = 5 * KMH,
       SWIM_BREATH = 30,
       SINK_SECONDS = 3.2,
       SINK_DEPTH = 42,

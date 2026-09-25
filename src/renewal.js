@@ -417,8 +417,8 @@
       if (d > 5) {
         person.a = headingBetween(person, station);
         person.walking = true;
-        person.walk += deltaSeconds * 7;
-        moveBody(person, Math.cos(person.a) * 34 * deltaSeconds, Math.sin(person.a) * 34 * deltaSeconds, 5);
+        person.walk += deltaSeconds * strideRate(5 * KMH);
+        moveBody(person, Math.cos(person.a) * 5 * KMH * deltaSeconds, Math.sin(person.a) * 5 * KMH * deltaSeconds, 5);
         return true;
       }
       person.a = station.kind === 'mat' ? person.a : -Math.PI / 2;
@@ -447,8 +447,8 @@
       if (distanceBetween(person, target) < 12)
         person.parkIndex = (person.parkIndex + 1) % route.length;
       person.a = headingBetween(person, target);
-      const speed = person.jogger ? 52 : 22;
-      person.walk += deltaSeconds * (person.jogger ? 13 : 6);
+      const speed = (person.jogger ? 10 : 4.5) * KMH;
+      person.walk += deltaSeconds * strideRate(speed);
       if (
         moveBody(
           person,

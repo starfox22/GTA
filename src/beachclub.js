@@ -680,7 +680,7 @@
       if (pedestrians.length >= CROWD_HARD_CAP + 260 || marea.people.length >= 260) return null;
       const p = { x, y, a: slot?.a ?? 0, hp: 30, flee: 0, timer: 5, walk: 0, state: 'club' };
       mareaDress(p, style || slot?.dress || 'mixed');
-      p.club = { slot: null, route: [], mode: 'walk', since: gameTime, speed: 24 + mareaRandom() * 6 };
+      p.club = { slot: null, route: [], mode: 'walk', since: gameTime, speed: (4.3 + mareaRandom() * 1.2) * KMH };
       p.phase = mareaRandom() * 10;
       pedestrians.push(p);
       marea.people.push(p);
@@ -1025,7 +1025,7 @@
         p.a = headingBetween(p, player);
         p.pose = null;
         if (d > 10) {
-          const step = Math.min(d - 9, 104 * deltaSeconds);
+          const step = Math.min(d - 9, 18 * KMH * deltaSeconds);
           moveBody(p, Math.cos(p.a) * step, Math.sin(p.a) * step, 5);
         } else if ((c.shoveAt || -10) < gameTime - 1.6) {
           c.shoveAt = gameTime;

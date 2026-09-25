@@ -156,12 +156,12 @@
         person.a = headingBetween(person, chase);
         person.walking = true;
         person.sitting = false;
-        person.walk += deltaSeconds * 13;
+        person.walk += deltaSeconds * strideRate(17 * KMH);
         if (distanceBetween(person, chase) > 26)
           moveBody(
             person,
-            Math.cos(person.a) * 96 * deltaSeconds,
-            Math.sin(person.a) * 96 * deltaSeconds,
+            Math.cos(person.a) * 17 * KMH * deltaSeconds,
+            Math.sin(person.a) * 17 * KMH * deltaSeconds,
             5,
           );
         if (seededRandom() < deltaSeconds * 0.5) driverTalk(person, person.mood === 'defiant' ? 'defiant' : 'angry');

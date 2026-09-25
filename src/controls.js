@@ -53,6 +53,7 @@
       { id: 'left', label: 'Left', note: 'Walk or steer left, bank or turn left', group: 'move', keys: ['KeyA', 'ArrowLeft'], ctx: EVERYWHERE },
       { id: 'right', label: 'Right', note: 'Walk or steer right, bank or turn right', group: 'move', keys: ['KeyD', 'ArrowRight'], ctx: EVERYWHERE },
       { id: 'sprint', label: 'Sprint', note: 'Run on foot, swim harder, stand on the bicycle pedals', group: 'move', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['foot', 'drive'] },
+      { id: 'walk', label: 'Walk', note: 'Hold to walk on foot instead of jogging', group: 'move', keys: ['KeyC'], ctx: ['foot'] },
       { id: 'interact', label: 'Interact', note: 'Enter or leave a vehicle, payphones, shops, stations, boarding; hold for objectives', group: 'combat', keys: ['KeyE'], ctx: EVERYWHERE },
       { id: 'fire', label: 'Fire', note: 'Fire the equipped weapon; the handgun from a vehicle', group: 'combat', keys: ['KeyF'], ctx: ['foot', 'drive', 'air'] },
       { id: 'handbrake', label: 'Handbrake / alt fire', note: 'Handbrake in a vehicle, fires on foot, opens the parachute', group: 'combat', keys: ['Space'], ctx: ['foot', 'drive', 'chute'] },

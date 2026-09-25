@@ -1026,8 +1026,8 @@
     function startTumble(downhill, grade) {
       if (player.tumble) return;
       player.tumble = {
-        vx: downhill.x * (40 + grade * 90),
-        vy: downhill.y * (40 + grade * 90),
+        vx: downhill.x * (12 + grade * 25),
+        vy: downhill.y * (12 + grade * 25),
         time: 0,
         peak: 0,
         hurtClock: 0.35,
@@ -1056,24 +1056,26 @@
       if (player.tumble) {
         const t = player.tumble;
         t.time += deltaSeconds;
-        t.vx -= slope.x * 900 * deltaSeconds;
-        t.vy -= slope.y * 900 * deltaSeconds;
-        const drag = Math.exp(-1.5 * deltaSeconds);
+        // Gravity down the face, a body's bouncing drag against it: at most
+        // about 10 m/s down a 45-degree slope.
+        t.vx -= slope.x * 1.2 * GRAVITY * deltaSeconds;
+        t.vy -= slope.y * 1.2 * GRAVITY * deltaSeconds;
+        const drag = Math.exp(-1.2 * deltaSeconds);
         t.vx *= drag;
         t.vy *= drag;
         const speed = Math.hypot(t.vx, t.vy);
         t.peak = Math.max(t.peak, speed);
         player.a = speed > 4 ? Math.atan2(t.vy, t.vx) : player.a;
-        player.tumbleRoll = (player.tumbleRoll || 0) + speed * deltaSeconds * 0.05;
+        player.tumbleRoll = (player.tumbleRoll || 0) + speed * deltaSeconds * 0.15;
         const blocked = moveBody(player, t.vx * deltaSeconds, t.vy * deltaSeconds, 8);
         t.hurtClock -= deltaSeconds;
-        if (t.hurtClock <= 0 && speed > 120) {
+        if (t.hurtClock <= 0 && speed > 40) {
           t.hurtClock = 0.8;
-          hurt(3 + speed * 0.022, 'impact');
+          hurt(3 + speed * 0.06, 'impact');
           particle(player.x, player.y, '#a59a7e', 5, 60, 3);
         }
-        if (blocked && speed > 220) hurt(speed * 0.03, 'impact');
-        if ((grade < 0.3 && speed < 55) || t.time > 14 || (blocked && speed < 90)) endTumble();
+        if (blocked && speed > 70) hurt(speed * 0.1, 'impact');
+        if ((grade < 0.3 && speed < 15) || t.time > 14 || (blocked && speed < 30)) endTumble();
         return true;
       }
       const right = keys.KeyD || keys.ArrowRight,
@@ -1096,15 +1098,15 @@
         if (!trail && grade > SLIP_GRADE)
           moveBody(
             player,
-            downhill.x * (grade - SLIP_GRADE) * 130 * deltaSeconds,
-            downhill.y * (grade - SLIP_GRADE) * 130 * deltaSeconds,
+            downhill.x * (grade - SLIP_GRADE) * 36 * deltaSeconds,
+            downhill.y * (grade - SLIP_GRADE) * 36 * deltaSeconds,
             8,
           );
         return true;
       }
       const a = Math.atan2(iy, ix),
         climb = Math.cos(a) * slope.x + Math.sin(a) * slope.y;
-      let speed = keys.ShiftLeft || keys.ShiftRight ? 158 : 100;
+      let speed = keys.ShiftLeft || keys.ShiftRight ? FOOT_SPRINT : actionHeld('walk') ? FOOT_WALK : FOOT_JOG;
       if (trail) {
         // A graded path: steady going, uphill a little slower than down.
         speed *= clamp(1 - Math.max(0, climb) * TRAIL_GRADE * 2.2, 0.46, 1);
@@ -1121,15 +1123,15 @@
         if (grade > SLIP_GRADE) {
           moveBody(
             player,
-            downhill.x * (grade - SLIP_GRADE) * 150 * deltaSeconds,
-            downhill.y * (grade - SLIP_GRADE) * 150 * deltaSeconds,
+            downhill.x * (grade - SLIP_GRADE) * 40 * deltaSeconds,
+            downhill.y * (grade - SLIP_GRADE) * 40 * deltaSeconds,
             8,
           );
         }
       }
       player.a = a;
       if (speed > 0) {
-        player.walk += deltaSeconds * (keys.ShiftLeft ? 15 : 10) * clamp(speed / 100, 0.3, 1.6);
+        player.walk += deltaSeconds * strideRate(speed);
         moveBody(
           player,
           (ix / Math.hypot(ix, iy)) * speed * deltaSeconds,

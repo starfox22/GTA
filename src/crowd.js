@@ -861,7 +861,7 @@
     function crowdStep(p, heading, speed, deltaSeconds, radius = 5) {
       p.a = heading;
       p.walking = speed > 0.5;
-      p.walk += deltaSeconds * (speed > 60 ? 15 : 7);
+      p.walk += deltaSeconds * strideRate(speed);
       return moveBody(p, Math.cos(heading) * speed * deltaSeconds, Math.sin(heading) * speed * deltaSeconds, radius);
     }
     function faceToward(p, target, deltaSeconds, rate = 6) {
@@ -975,7 +975,7 @@
         p.walking = d > 2;
         p.pose = ['chat', 'phone', 'idle', 'sit', 'wait'].includes(leader.pose) || !leader.walking ? 'idle' : null;
         if (d > 2) {
-          const speed = Math.min(p.role === 'kid' ? 75 : 60, 20 + d * 2.5);
+          const speed = Math.min((p.role === 'kid' ? 14 : 12) * KMH, 4.5 * KMH + d * 1.2);
           crowdStep(p, Math.atan2(ty - p.y, tx - p.x), speed, deltaSeconds);
         } else p.a += normalizeAngle(leader.a - p.a) * Math.min(1, deltaSeconds * 5);
         return;
@@ -1619,7 +1619,8 @@
           heading += vertical ? -correction * Math.sign(Math.sin(heading)) : correction * Math.sign(Math.cos(heading));
         }
       }
-      const top = p.injured ? 34 : p.role === 'elder' ? 46 : p.role === 'kid' ? 60 : 72 + (p.nerve || 0) * 8,
+      // Running for it: 17-21 km/h for most, slower for the old, the young and the hurt.
+      const top = (p.injured ? 7 : p.role === 'elder' ? 10 : p.role === 'kid' ? 13 : 17 + (p.nerve || 0) * 2.5) * KMH,
         speed = top * clamp(r.t / 0.35, 0.35, 1);
       if (crowdStep(p, heading, speed, deltaSeconds)) {
         r.stuck = (r.stuck || 0) + deltaSeconds;
@@ -1814,7 +1815,7 @@
         case 'dodge': {
           p.pose = 'dodge';
           if (r.t < 0.42) {
-            const speed = 95 * (1 - r.t / 0.42) + 15;
+            const speed = 55 * (1 - r.t / 0.42) + 10;
             moveBody(p, Math.cos(r.leap) * speed * deltaSeconds, Math.sin(r.leap) * speed * deltaSeconds, 5);
           }
           break;

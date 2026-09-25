@@ -335,7 +335,8 @@
           keys.ArrowDown ||
           keys.ArrowRight);
       if (walking && footstepClock <= 0) {
-        footstepClock = keys.ShiftLeft ? 0.22 : 0.34;
+        // One footfall per step at the pace the legs are going (game.js strideRate).
+        footstepClock = Math.PI / strideRate(keys.ShiftLeft || keys.ShiftRight ? FOOT_SPRINT : actionHeld('walk') ? FOOT_WALK : FOOT_JOG);
         if (player.wading) {
           // Striding through the shallows: slower steps, each one a swish.
           footstepClock *= 1.35;
