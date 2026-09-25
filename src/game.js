@@ -818,16 +818,19 @@
     // A plane's spec is the base plane with its airframe's numbers on top. The
     // merged record is made once per airframe: this is asked many times per car
     // per physics step, and a fresh copy each time was a steady stream of garbage.
+    // A helicopter's airframe (Fort Sentinel's Apache, apache.js HELICOPTER_AIRFRAMES)
+    // is merged over the helicopter the same way.
     const airframeSpecCache = new Map();
     function vehicleSpec(vehicle) {
-      if (vehicle?.type === 'plane' && vehicle.airframe) {
-        let spec = airframeSpecCache.get(vehicle.airframe);
+      if (vehicle?.airframe && (vehicle.type === 'plane' || vehicle.type === 'helicopter')) {
+        const key = vehicle.type + ':' + vehicle.airframe;
+        let spec = airframeSpecCache.get(key);
         if (!spec) {
           spec = {
-            ...VEHICLE_DEFINITIONS.plane,
-            ...AIRFRAME_SPECS[vehicle.airframe],
+            ...VEHICLE_DEFINITIONS[vehicle.type],
+            ...(vehicle.type === 'plane' ? AIRFRAME_SPECS : HELICOPTER_AIRFRAMES)[vehicle.airframe],
           };
-          airframeSpecCache.set(vehicle.airframe, spec);
+          airframeSpecCache.set(key, spec);
         }
         return spec;
       }
@@ -2285,6 +2288,8 @@
             7,
           );
           radio('call-backup');
+          // Fort Sentinel's attack helicopter: theft of military hardware (apache.js).
+          if (isApache(c)) apacheBoarded(c);
         } else if (c.type === 'tank') {
           // Taking one of Fort Sentinel's tanks raises the base; a pursuit tank
           // taken off the army is a crime of its own.
@@ -2367,6 +2372,11 @@
     function shoot() {
       if (player.parachute || transitRide) return;
       enforceVehicleHandgun();
+      if (gameMode === 'play' && isApache(player.car)) {
+        // The Apache's chin gun, laid by the mouse (apache.js).
+        if (player.car.hp > 0) apacheGun(player.car);
+        return;
+      }
       if (gameMode === 'play' && player.car?.type === 'tank') {
         // The gun fires where the turret is laid, not where the mouse is (armor.js).
         tankPlayerFire(player.car);
@@ -2918,6 +2928,8 @@
         rooftopTargets = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && !p.hidden);
       for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
+        // Who is shooting at the player (combat-rules.js SHOT LOG).
+        if (b.enemy && !b.logged) logHostileShot(b);
         let impact = false,
           hitKind = 'wall';
         const steps = Math.max(1, Math.ceil((Math.hypot(b.vx, b.vy, b.vz || 0) * deltaSeconds) / 7));
@@ -2963,14 +2975,17 @@
                 // The vehicles missions hand you are built for the job (the cargo
                 // truck's steel cage, Vinny's armored van): gang small-arms fire
                 // does 40% damage to them, or a crew opening up on the loading
-                // truck wrecks it before the third crate is aboard.
-                b.enemy && c.mission && b.faction !== 'police' && !b.rocket
-                  ? b.dmg * 0.4
-                  : // Police rounds are meant for the driver: they chew a car up
-                    // slowly rather than wrecking it in a dozen hits.
-                    b.faction === 'police' && c === player.car && !b.rocket
-                    ? b.dmg * 0.45
-                    : b.dmg,
+                // truck wrecks it before the third crate is aboard. An armoured
+                // airframe (the Apache) shrugs off most small-arms fire
+                // (combat-rules.js vehicleArmorShare).
+                vehicleArmorShare(c, b) *
+                  (b.enemy && c.mission && b.faction !== 'police' && !b.rocket
+                    ? b.dmg * 0.4
+                    : // Police rounds are meant for the driver: they chew a car up
+                      // slowly rather than wrecking it in a dozen hits.
+                      b.faction === 'police' && c === player.car && !b.rocket
+                      ? b.dmg * 0.45
+                      : b.dmg),
                 b.x,
                 b.y,
                 b.owner || (!b.enemy ? player : null),
@@ -2992,6 +3007,7 @@
             ) {
               if (b.damageKind === 'sniper') sniperFireStats.carHits++;
               hurt((b.playerDmg ?? b.dmg) * 0.6, b.damageKind);
+              shotLogHit(b);
             }
             // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
             hitKind = bulletHitVehicle(c, b);
@@ -3059,6 +3075,7 @@
           ) {
             if (b.damageKind === 'sniper') sniperFireStats.hits++;
             hurt(b.playerDmg ?? b.dmg, b.damageKind);
+            shotLogHit(b);
             playerHitFeedback(b);
             impact = true;
             hitKind = 'flesh';
@@ -3087,6 +3104,8 @@
             particle(b.x, b.y, hitKind === 'metal' ? '#dbd8a7' : '#aaa89e', 3, 40);
             if (city3D) city3D.impact(b.x, b.y, hitKind, b.altitude || 0);
           } else if (!impact) bulletSpent(b);
+          // The Apache's 30 mm rounds burst where they strike (apache.js).
+          if (b.heavyRound && impact) apacheRoundImpact(b);
           bullets.splice(i, 1);
         }
       }
@@ -3218,6 +3237,7 @@
         timed('roofencounter', () => updateRoofEncounter(deltaSeconds));
         timed('military', () => updateMilitary(deltaSeconds));
         updatePlayerArmor(deltaSeconds);
+        updatePlayerApache(deltaSeconds);
         timed('combat', () => updateCombat(deltaSeconds));
         timed('mission', () => missionUpdate(deltaSeconds));
         timed('waypoint', () => {
@@ -4136,8 +4156,9 @@
       drawPlayerMapMarker(drawingContext, width, height, scale, cx, cy, big);
     }
     function drawWeapon() {
-      // In a tank the chip shows the main gun or the MG (armor.js tankHud).
-      if (player.car?.type === 'tank') {
+      // In a tank the chip shows the main gun or the MG (armor.js tankHud), in the
+      // Apache its gun and rockets (apache.js apacheHud).
+      if (player.car?.type === 'tank' || isApache(player.car)) {
         delete getElement('weaponArt').dataset.tankIcon;
         return;
       }
@@ -4533,6 +4554,7 @@
       updateHud();
       // In a tank the weapon chip shows the main gun and the MG (armor.js).
       if (c?.type === 'tank') tankHud(c);
+      else if (isApache(c)) apacheHud(c);
       else if (getElement('weaponArt').dataset.tankIcon) {
         delete getElement('weaponArt').dataset.tankIcon;
         drawWeapon();
@@ -4653,6 +4675,7 @@
         drawMap(cityMapContext, 800, 660, true);
         getElement('closeMap').focus();
       } else canvas.focus();
+      godMapToggled(); // GOD PANEL: the teleport pick mode (god-panel.js)
     }
     function newGame() {
       initAudio();
@@ -4711,7 +4734,7 @@
           player.hp = 100;
           player.armor = 100;
           announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
-          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · pick the time of day and weather in the mission picker · click the map to teleport', 5);
+          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · time, weather, ammo and teleport in Settings · God mode · click the map to teleport', 5);
         } else {
           announce('SOUTH COAST', 'GODMODE OFF', 1.8);
           tell('GODMODE OFF', 2.5);
@@ -5115,6 +5138,7 @@
     // @include src/airfields.js
     // @include src/military.js
     // @include src/armor.js
+    // @include src/apache.js
     // @include src/aviation.js
     // @include src/challenges.js
     // @include src/sidejobs.js
@@ -5142,6 +5166,7 @@
     // @include src/ambience.js
     // @include src/quality.js
     // @include src/settings.js
+    // @include src/god-panel.js
     // @include src/hud.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
@@ -5588,10 +5613,19 @@
           }
         return n;
       },
+      // Restore the player's health (and optionally armour) without god mode, so a
+      // long test under fire can go on while every hit still lands and is logged.
+      heal(armor = 0) {
+        player.hp = 100;
+        player.armor = clamp(armor, 0, 100) || player.armor;
+        return { hp: player.hp, armor: player.armor };
+      },
       god(on = true) {
         player.godMode = !!on;
         return player.godMode;
       },
+      // GOD PANEL: godPanel(), godTeleport(x, y), godRefill(), godLosePolice(), godFreeze(on), mapScreenPoint(x, y) (god-panel.js).
+      ...godPanelConsole(),
       // Set the wanted level directly. Useful for looking at containment and air
       // support without having to earn them.
       wanted(stars = 5) {
@@ -5613,6 +5647,46 @@
       // the incident's body count, the search, arrest progress, the tier's
       // allowances and every unit (patrol, swat, fed, army, air) and officer.
       policeReport: () => policeReportData(),
+      // Hostile rounds aimed at the player since the last reset, by source, with
+      // the shooter's distance and whether it was on screen (combat-rules.js SHOT
+      // LOG); `reset` clears the log after reading it.
+      shotLog: (reset = false) => shotLogReport(reset),
+      // Fort Sentinel's Apache (apache.js): position, pad, ammunition, turret, aim
+      // and a clearance check of its parked footprint.
+      apache: () => apacheReport(),
+      // Overhead cover (air-cover.js OVERHEAD COVER) at a map point (default: the
+      // player): the cover over it or null, whether the player is hidden from the
+      // police helicopter, and how many covers of each kind are registered (with
+      // one example point each, for tests).
+      cover(x = player.x, y = player.y) {
+        const c = overheadCover(x, y, x === player.x && y === player.y ? entityElevation(player.car || player) : terrainHeight(x, y)),
+          kinds = {};
+        for (const k of overheadCovers) {
+          const entry = (kinds[k.kind] ??= { count: 0, example: [Math.round(k.x), Math.round(k.y)] });
+          entry.count++;
+        }
+        return {
+          x: Math.round(x),
+          y: Math.round(y),
+          cover: c ? { kind: c.kind, bottom: Math.round(c.bottom), top: Math.round(c.top) } : null,
+          playerHiddenFromAir: hiddenFromAir(player.car || player),
+          registered: kinds,
+        };
+      },
+      // Fix the Apache's aim point on the ground (map x, y) as the mouse would;
+      // no arguments hands the aim back to the mouse. Returns apache().
+      // Put a fresh Apache back on its pad (the old one, wrecked or not, is removed
+      // unless the player is aboard). Returns apache().
+      apacheReset() {
+        for (let i = vehicles.length - 1; i >= 0; i--)
+          if (isApache(vehicles[i]) && vehicles[i] !== player.car) vehicles.splice(i, 1);
+        if (!isApache(player.car)) parkApache();
+        return apacheReport();
+      },
+      apacheAim(x, y) {
+        apacheAimOverride = Number.isFinite(x) && Number.isFinite(y) ? { x, y } : null;
+        return apacheReport();
+      },
       // Combat tests: own weapon `index` (0 pistol ... 5 precision rifle) with a
       // full clip and reserve, and select it. Returns its name.
       arm(index = 4) {
@@ -6262,6 +6336,7 @@
       // 'controls'); during play it opens over the pause menu. Screenshot tours use it.
       openSettings(tab = 'graphics') {
         if (gameMode === 'play') togglePause();
+        syncGodSettingsTab(); // GOD PANEL: 'god' is a tab while god mode is on
         openSettings(SETTINGS_TABS.some((t) => t[0] === tab) ? tab : 'graphics');
         return gameMode;
       },

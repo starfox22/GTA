@@ -26,7 +26,17 @@
      * After ROOF_SNIPER_SHOTS rounds, or once the player is far away, it packs
      * up (gone when out of view). They can be shot like anyone else (rounds climb
      * to their roof); they stand down when the level drops.
+     *
+     * SNIPERS_ENABLED (below) switches the rooftop snipers off: with it false no
+     * marksman is ever brought in (spawnRoofSniper refuses, whoever asks), any
+     * already on a roof packs up at once, and their telegraph (laser, beep,
+     * screen-edge warning, 'SNIPER' messages) never shows. The code is kept
+     * whole so they can come back by setting the flag to true.
      */
+    // Rooftop police snipers. Off at the owner's request (30.x): players were
+    // being killed from off screen during five-star chases. Set to true to bring
+    // them back exactly as they were (POLICE_TIERS `snipers` caps how many).
+    const SNIPERS_ENABLED = false;
     const SWAT_STACK_SPACING = 13,
       SWAT_STACK_BREAK = 150,
       SNIPER_AIM_SECONDS = 2.4,
@@ -137,6 +147,7 @@
       return sites[0] || null;
     }
     function spawnRoofSniper() {
+      if (!SNIPERS_ENABLED) return null;
       const site = roofSniperSite();
       if (!site) return null;
       const o = makeOfficer(site.x, site.y, headingBetween(site, player), 'sniper', {
@@ -155,7 +166,7 @@
     function updateRoofSnipers(deltaSeconds) {
       trackPlayerMotion(deltaSeconds);
       const stars = Math.ceil(wantedStars),
-        wanted = stars >= 5 && !playerAtSea() && player.x < CITY_SIZE && player.y < CITY_SIZE;
+        wanted = SNIPERS_ENABLED && stars >= 5 && !playerAtSea() && player.x < CITY_SIZE && player.y < CITY_SIZE;
       let live = 0;
       for (const o of officers) {
         if (!o.roofSniper) continue;

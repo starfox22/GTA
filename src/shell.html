@@ -91,6 +91,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     RUNWAYS / TAXIWAYS / RUNWAY_PIERS plan, runway lookup, PAPI angles, flat ground painting.
   src/military.js: Fort Sentinel
   src/armor.js: The player's tank: turret traverse, ammunition, reticle
+  src/apache.js: Fort Sentinel's AH-64 attack helicopter (player only): chin gun, rockets, rearm
     Base plan (SENTINEL), fences and gate (arms, bollards, sliding gates, ramming), challenge,
     alarm and lockdown, siren, garrison posts/patrols/drill/range, supply runs, military vehicles, combat.
   src/aviation.js: Fixed-wing flight and flight missions
@@ -147,6 +148,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     LOW / MEDIUM / HIGH / ULTRA records, GPU capability check and the saved setting.
   src/settings.js: Settings menu
     Graphics, audio, gameplay and controls tabs; volumes, NPC chatter, see-through, key remapping screen.
+  src/god-panel.js: God mode settings
+    The GOD MODE settings tab (time, freeze, weather, refill, lose police, teleport) and the safe map teleport.
   src/hud.js: HUD behaviour and the title menu
     Pop-open radio and weapon boxes, minimap fold and zoom, context key hints, stars, the title menu.
   src/render3d.js: Three.js renderer and resource lifecycle
@@ -231,6 +234,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/surfaces3d.js: Procedural surface detail
     Ground shader detail (asphalt, paving, grass), rain puddles, county ground, foliage sway.
   src/helicopter3d.js: Helicopter meshes
+  src/apache3d.js: The AH-64 attack helicopter model (lofted airframe, pods, Hellfires, chin gun)
     Airframe, rotor, lights and cockpit.
   src/vehicles3d.js: Vehicle meshes
     Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts.
@@ -4194,6 +4198,186 @@ body:not(.touch-mode).police-search-active #carRadio {
     height: 40px;
   }
 }
+/* --- GOD PANEL: the GOD MODE settings tab and the map's teleport pick ------ */
+/* (god-panel.js). The tab is gold, the world shows through the backdrop while
+   it is open so time and weather changes are seen as they happen. */
+.settings-tabs .settings-tab-god {
+  color: #e8c46a;
+}
+.settings-tabs .settings-tab-god::after {
+  background: var(--ui-gold);
+}
+.settings-tabs .settings-tab-god[aria-selected='true'] {
+  color: var(--ui-gold);
+}
+#settingsOverlay:has(#settingsBody[data-tab='god']) {
+  background: #05080c70;
+  backdrop-filter: none;
+}
+.god-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #f0c45a55;
+  background: linear-gradient(90deg, #f0c45a1c, #f0c45a05);
+}
+.god-head-badge {
+  padding: 4px 9px;
+  border-radius: 99px;
+  background: var(--ui-gold);
+  color: #16120a;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+.god-head-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #d9d2bc;
+}
+.god-head-clock {
+  margin-left: auto;
+}
+/* The seven presets get the row's full width under the label. */
+.god-time-row {
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+.god-time-row .god-choice {
+  flex: 1 1 100%;
+  flex-wrap: nowrap;
+}
+.god-time-row .god-choice button {
+  padding-left: 6px;
+  padding-right: 6px;
+  white-space: nowrap;
+}
+.god-scrub-row .god-slider {
+  flex: 0 1 470px;
+  margin-top: 0;
+}
+.god-action-side {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.god-action {
+  min-width: 190px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 99px;
+  background: var(--acid);
+  color: #111;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  transition:
+    transform 0.2s var(--ui-ease),
+    filter 0.2s;
+}
+.god-action:hover {
+  filter: brightness(1.08);
+}
+.god-action:active {
+  transform: scale(0.97);
+}
+.god-action.god-action-map {
+  background: var(--ui-gold);
+}
+.god-action.idle {
+  background: #ffffff1a;
+  color: #cfd5ca;
+}
+.god-action:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.god-done {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  color: var(--acid);
+  opacity: 0;
+}
+.god-done.show {
+  animation: godDone 2.6s var(--ui-ease) both;
+}
+@keyframes godDone {
+  0% {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+  12%,
+  75% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* The map in pick mode: a crosshair, a gold frame and the hint over the top. */
+#mapOverlay.god-pick .map-panel {
+  position: relative;
+  border-color: var(--ui-gold);
+}
+#mapOverlay.god-pick #bigmap {
+  cursor: crosshair;
+  outline: 2px solid #f0c45a88;
+  outline-offset: -2px;
+}
+#mapOverlay.god-pick #mapRouteStatus,
+#mapOverlay.god-pick #clearRoute {
+  display: none;
+}
+.god-pick-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin: 0 0 8px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: #f0c45a;
+  color: #16120a;
+  font-family: var(--ui-font);
+  text-align: center;
+  animation: rowIn 0.3s var(--ui-ease);
+}
+.god-pick-banner b {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.god-pick-banner small {
+  min-height: 1.2em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+@media (max-width: 700px) {
+  .god-time-row .god-choice {
+    flex-wrap: wrap;
+  }
+  .god-scrub-row .god-slider {
+    flex-basis: 100%;
+  }
+  .god-action {
+    min-width: 0;
+  }
+  .god-head-clock {
+    margin-left: 0;
+  }
+}
+/* --- END GOD PANEL --------------------------------------------------------- */
 .mission-choice {
   border-radius: 10px;
   transition:
