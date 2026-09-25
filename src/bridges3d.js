@@ -9,8 +9,8 @@
        * the same piers, towers, cables and channels that aircraft and boats collide
        * with, in the bridge's own style:
        *   truss       Keys Bridge: a green steel camel-back through-truss
-       *   bascule     Palm Sound Causeway: a low causeway, globe lamps, a
-       *               double-leaf bascule with four tender's houses
+       *   bascule     Palm Sound Causeway: a low causeway, globe lamps and a working
+       *               double-leaf trunnion bascule (drawbridge3d.js)
        *   cablestay   East Bay Crossing: a white A-pylon and two fans of stays
        *   suspension  South Bay Bridge: red towers, main cables and hangers
        *   arch        Sunset Pier Bridge: a leaning network arch in LED colours
@@ -394,12 +394,14 @@
         return m;
       }
       // The carriageway slab, its uv laid out as bridgeRoadMaterial expects.
-      // `across` is where the box's centre line sits across the deck.
-      function bridgeRoadGeometry(length, width, thickness, across = 0) {
+      // `across` is where the box's centre line sits across the deck; `start` is
+      // how far along the deck the piece begins (a deck in several pieces, the
+      // drawbridge's leaves), so the markings and lamp light run on across them.
+      function bridgeRoadGeometry(length, width, thickness, across = 0, start = 0) {
         const geo = new Three.BoxGeometry(length, thickness, width),
           pos = geo.attributes.position,
           uv = geo.attributes.uv;
-        for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i) + length / 2, pos.getZ(i) + across);
+        for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i) + length / 2 + start, pos.getZ(i) + across);
         return geo;
       }
       /* ---- Shared deck ------------------------------------------------------------- */
@@ -408,35 +410,50 @@
        * fascia, carriageway (bridgeRoadMaterial: asphalt and markings), raised
        * sidewalks on kerbs, modular expansion joints over the piers, abutments,
        * and the guard rails in the bridge's own look where countyBridgeRails (the
-       * collision) has them.
+       * collision) has them. `look.gap` [from, to] leaves a stretch out (the
+       * drawbridge's moving span, drawn with its leaves); the deck's materials are
+       * kept in g.userData.deckMaterials for pieces drawn elsewhere.
        */
       function bridgeDeck(g, bridge, s, look) {
         const W = bridge.width,
           from = s.water[0] - 36,
           to = s.water[1] + 36,
           L = to - from,
-          mid = (from + to) / 2,
-          road = W - 22;
-        box(g, mid, -3.3, 0, L, 6.6, W + 4, look.fascia || BRIDGE_KIT.concrete);
+          road = W - 22,
+          pieces = look.gap
+            ? [
+                [from, look.gap[0]],
+                [look.gap[1], to],
+              ]
+            : [[from, to]];
         // The deck's lamp light map; the builder's lamps are painted in after it (Build).
         const light = bridgeDeckLight(L, W / 2 + 2),
           walk = bridgeLitMaterial(look.walk || BRIDGE_KIT.walk, light),
-          kerb = bridgeLitMaterial(BRIDGE_KIT.kerb, light);
+          kerb = bridgeLitMaterial(BRIDGE_KIT.kerb, light),
+          roadMaterial = bridgeRoadMaterial(road / 2, L, light);
         g.userData.deckLight = { light, from };
-        mesh(bridgeRoadGeometry(L, road, 0.4), bridgeRoadMaterial(road / 2, L, light), g, mid, 0.2, 0);
-        for (const side of [-1, 1]) {
-          mesh(bridgeRoadGeometry(L, 11, 1.1, side * (W / 2 - 5.5)), walk, g, mid, 0.55, side * (W / 2 - 5.5));
-          mesh(bridgeRoadGeometry(L, 0.8, 1.24, side * (road / 2 + 0.4)), kerb, g, mid, 0.62, side * (road / 2 + 0.4));
-          // A pale arris along the kerb's top edge catches the light.
-          box(g, mid, 1.26, side * (road / 2 + 0.12), L, 0.06, 0.25, BRIDGE_KIT.white);
+        g.userData.deckMaterials = { road: roadMaterial, walk, kerb, from, length: L };
+        for (const [p0, p1] of pieces) {
+          const length = p1 - p0,
+            mid = (p0 + p1) / 2,
+            start = p0 - from;
+          box(g, mid, -3.3, 0, length, 6.6, W + 4, look.fascia || BRIDGE_KIT.concrete);
+          mesh(bridgeRoadGeometry(length, road, 0.4, 0, start), roadMaterial, g, mid, 0.2, 0);
+          for (const side of [-1, 1]) {
+            mesh(bridgeRoadGeometry(length, 11, 1.1, side * (W / 2 - 5.5), start), walk, g, mid, 0.55, side * (W / 2 - 5.5));
+            mesh(bridgeRoadGeometry(length, 0.8, 1.24, side * (road / 2 + 0.4), start), kerb, g, mid, 0.62, side * (road / 2 + 0.4));
+            // A pale arris along the kerb's top edge catches the light.
+            box(g, mid, 1.26, side * (road / 2 + 0.12), length, 0.06, 0.25, BRIDGE_KIT.white);
+          }
         }
+        const inGap = (x, pad = 0) => look.gap && x > look.gap[0] - pad && x < look.gap[1] + pad;
         /* Modular expansion joints over every pier: two steel edge beams either side
            of a dark rubber seal, right across the carriageway and both footways,
            finished flush with the road (a hair proud so they never flicker). */
         const joints = new Set();
         for (const f of s.footings) {
           const key = Math.round(f.along);
-          if (f.along < from + 4 || f.along > to - 4 || joints.has(key)) continue;
+          if (f.along < from + 4 || f.along > to - 4 || joints.has(key) || inGap(f.along, 4) || Math.abs(f.across) > W / 2) continue;
           joints.add(key);
           box(g, f.along, 0.42, 0, 1.0, 0.06, road, BRIDGE_KIT.joint);
           for (const dx of [-0.85, 0.85]) box(g, f.along + dx, 0.43, 0, 0.7, 0.06, road, BRIDGE_KIT.darkSteel);
@@ -451,7 +468,18 @@
           for (const side of [-1, 1]) box(g, x + dir * 2, 2.5, side * (W / 2 + 6), 26, 5, 5, BRIDGE_KIT.concreteDark);
         }
         const rail = look.rail || guardSteel(BRIDGE_KIT.steel);
-        for (const part of countyBridgeRails(bridge)) rail(g, part.localX, part.side * (W / 2 - 1), part.hx * 2, part.side);
+        for (const part of countyBridgeRails(bridge)) {
+          if (!look.gap) {
+            rail(g, part.localX, part.side * (W / 2 - 1), part.hx * 2, part.side);
+            continue;
+          }
+          // Cut round the gap: the leaves carry their own railings.
+          for (const [p0, p1] of pieces) {
+            const a = Math.max(p0, part.localX - part.hx),
+              b = Math.min(p1, part.localX + part.hx);
+            if (b - a > 1) rail(g, (a + b) / 2, part.side * (W / 2 - 1), b - a, part.side);
+          }
+        }
       }
       // Guard rail looks: each is (group, along, across, length, side).
       function guardSteel(material, height = 7) {
@@ -549,6 +577,8 @@
       /* Channel marks for shipping: a green light on one side of each navigation
          span and red on the other, both deck edges, plus a white centre light. */
       function channelLights(g, bridge, s, lights) {
+        // A drawbridge shows its own: red on the fenders, red or green on the leaf tips (drawbridge3d.js).
+        if (bridge.movable) return;
         const W = bridge.width;
         for (const [c0, c1] of s.channels)
           for (const side of [-1, 1]) {
@@ -698,59 +728,9 @@
           const crown = s.middle;
           aviationBeacons(g, [V3(crown, s.chord(crown) + 1, -plane), V3(crown, s.chord(crown) + 1, plane)]);
         },
+        // The Palm Sound drawbridge: a working trunnion bascule (drawbridge3d.js).
         bascule(g, bridge, s, kit) {
-          const W = bridge.width,
-            b = s.bascule,
-            m = s.middle,
-            iron = tint('#1f2a2a', 'satin'),
-            copper = tint('#5f9583', 'matte'),
-            leafPaint = tint('#48635a', 'satin');
-          bridgeDeck(g, bridge, s, { fascia: BRIDGE_KIT.concrete, rail: guardBalustrade(BRIDGE_KIT.white, BRIDGE_KIT.kerb) });
-          for (const p of s.approach) approachPier(g, bridge, p, BRIDGE_KIT.concrete);
-          for (const p of b.piers) cutwaterPier(g, p, 24, W / 2 + 24, -14, -0.8, BRIDGE_KIT.stone);
-          // The two leaves: steel grid decking with the gap between them, girders along the sides.
-          for (const dir of [-1, 1]) {
-            const x0 = m + dir * 1.2,
-              x1 = m + dir * b.leaf;
-            box(g, (x0 + x1) / 2, 0.47, 0, Math.abs(x1 - x0), 0.1, W - 22, tint('#4d5456', 'metal'));
-            for (let z = -W / 2 + 14; z < W / 2 - 12; z += 4) box(g, (x0 + x1) / 2, 0.53, z, Math.abs(x1 - x0), 0.04, 0.5, BRIDGE_KIT.joint);
-            for (const side of [-1, 1]) box(g, (x0 + x1) / 2, 3.6, side * (W / 2 + 1), Math.abs(x1 - x0), 7.2, 2, leafPaint);
-            // Traffic gates at the landward end of each leaf, raised.
-            for (const side of [-1, 1]) {
-              const gx = m + dir * (b.leaf + 12);
-              box(g, gx, 4, side * (W / 2 - 13), 2, 8, 2, BRIDGE_KIT.white);
-              bridgeMember(g, V3(gx, 8, side * (W / 2 - 13)), V3(gx, 36, side * (W / 2 - 15)), 0.8, 0.8, tint('#d8392c', 'gloss'));
-              box(g, gx, 13, side * (W / 2 - 13), 1.6, 2.4, 4, tint('#b7272a', 'gloss'));
-            }
-          }
-          box(g, m, 0.55, 0, 1.2, 0.14, W - 22, BRIDGE_KIT.joint);
-          // The four tender's houses on the bascule piers.
-          for (const h of b.houses) {
-            const out = Math.sign(h.across);
-            box(g, h.along, 11, h.across, 22, 22, 18, BRIDGE_KIT.white);
-            box(g, h.along, 27, h.across, 20, 10, 16, BRIDGE_KIT.glass);
-            for (const dx of [-9.5, 9.5]) box(g, h.along + dx, 27, h.across, 1, 10, 16.4, BRIDGE_KIT.white);
-            box(g, h.along, 32.4, h.across, 23, 1, 19, BRIDGE_KIT.kerb);
-            mesh(new Three.ConeGeometry(15, 12, 4, 1), copper, g, h.along, 39, h.across, 1, 1, 1).rotation.y = Math.PI / 4;
-            box(g, h.along, 46, h.across, 0.6, 4, 0.6, iron);
-            kitLight(kit.lights, g, h.along + 10.5, 27, h.across, '#ffcf8c');
-            kitLight(kit.lights, g, h.along - 10.5, 27, h.across, '#ffcf8c');
-            // Bridge signals facing the water: a red and green lamp on the outer wall.
-            box(g, h.along, 16, h.across + out * 9.2, 5, 3, 0.4, iron);
-          }
-          bridgeLamps(g, bridge, s, kit.lights, kit.pools, 56, 'globe', iron, [
-            [b.piers[0] - 30, b.piers[0] + 30],
-            [b.piers[1] - 30, b.piers[1] + 30],
-          ]);
-          for (const [x, rot] of [
-            [s.water[0] - 20, -Math.PI / 2],
-            [s.water[1] + 20, Math.PI / 2],
-          ])
-            for (const side of [-1, 1]) {
-              box(g, x, 5, side * (W / 2 + 6), 5, 10, 5, BRIDGE_KIT.stone);
-              if (side > 0) bridgePlaque(g, 'PALM SOUND', 'CAUSEWAY · 1926', '#e9e3d0', '#39463f', 20, x + (rot < 0 ? -2.6 : 2.6), 6, side * (W / 2 + 6), rot);
-            }
-          aviationBeacons(g, b.houses.map((h) => V3(h.along, 48.5, h.across)));
+          buildDrawbridge(g, bridge, s, kit);
         },
         cablestay(g, bridge, s, kit) {
           const W = bridge.width,
@@ -1203,5 +1183,7 @@
         }
         bridgeFoamTexture.offset.set(Math.sin(gameTime * 0.4) * 0.012, Math.cos(gameTime * 0.33) * 0.012);
         bridgeFoamMaterial.opacity = 0.55 + 0.15 * Math.sin(gameTime * 0.9);
+        // The drawbridge's leaves, arms, signals and the ketch (drawbridge3d.js).
+        updateDrawbridgeVisuals();
       }
       // END SUBSYSTEM: src/bridges3d.js
