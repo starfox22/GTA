@@ -172,7 +172,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sports-fixtures.js | Club pools (`SPORTS_TEAMS`: names, kits, crests), `SPORTS_CALENDAR`, daily fixtures (`sportsFixtureFor`, `sportsCurrentFixture`), the match timeline (`sportsTimeline`), `drawSportsCrest` |
 | sports.js | Live basketball and soccer: match day stages, possession, shots, scoring, restarts, officials, harm and panic (`sportsTargets`, `sportsAbandon`), the player on the ball (`sportsKick`, stewards), `sportsConsole` |
 | sports-world.js | South Coast Stadium reservation, enclosure (`PITCH_FENCE` with its openings), big screens (`STADIUM_SCREENS`), turnstiles, vehicle barriers, markings |
-| sports-audio.js | Procedural stadium bed, chants, clapping, goal roars, gasps, panic screams, whistles, kicks |
+| sports-audio.js | Stadium goal reactions only (no crowd bed): the recorded cheer from the scoring end and groan from the other, attenuated by the player's distance to the stadium (`stadiumAudibility`); panic screams, the referee's whistle, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
 | navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance; the minimap GPS (road routes to the objective and the waypoint with direction chevrons, `updateGpsRoute`, `drawGpsRoutes`) |
@@ -774,11 +774,13 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
   attacking that end. During a match the nearest three players press, tackle
   (`sportsContestHuman`), the keeper gets one save attempt (`sportsKeeperReach`), and after
   28 s on the pitch (or 5 s after a goal) two stewards come; if they reach you they walk you
-  out to the plaza (`sportsEscortOff`). A goal: whistle, roar, GOAL! on every screen, $250
-  for each of the first three per match.
-- **Screens.** `STADIUM_SCREENS` (sports-world.js): over the north stand, both end stands
-  (angled at the pitch), above the entrance and on both halves of the south facade; all tilt
-  back towards the street camera. Each venue paints one 1024x512 canvas
+  out to the plaza (`sportsEscortOff`). A goal: whistle, the whole ground's cheer, GOAL! on
+  every screen, $250 for each of the first three per match.
+- **Screens.** `STADIUM_SCREENS` (sports-world.js): only where a real ground has them and the
+  top-down camera can read them: over the north stand facing the pitch, the display board on
+  the entrance beam and a screen on each half of the south facade facing the plaza and the
+  street, each leaning back a modest 0.12-0.3 rad. There are no end-stand screens (they faced
+  the pitch sideways and were tilted up at the sky). Each venue paints one 1024x512 canvas
   (`paintSportsBoard`) shared by its screens, repainted only when its key changes: next match
   with crests and kickoff, warm-up, live score with clock and status, half time, result,
   MATCH ABANDONED, and an 8 fps GOAL! animation. They glow at night.
@@ -788,9 +790,21 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
   vanish in a panic (`updateStadiumCrowd`, matrices rewritten only when the picture changes).
   Plaza flags take the clubs' colours. While a fixture is on the floodlights are painted into
   the night light map (`stadiumFloodPools`, repainted by `updateStadiumFloodlights`).
-- **Sound** (sports-audio.js): a crowd bed scaled by attendance and distance, chants (detuned
-  saws through a vowel formant singing terrace tunes) and clapping, goal roars with air horns,
-  an "ooh" at saves and misses, panic screams, the referee's pea whistle, the kick.
+- **Sound** (sports-audio.js): the stands are silent between goals (no crowd bed, chants,
+  clapping or "ooh": the old filtered-noise bed read as white noise). A goal plays the
+  recorded cheer of a real football crowd (`stadium-goal-cheer`, 8 s: swell, roar, decay;
+  Sandermotions, CC0) from the scoring club's end and the other end's groan
+  (`stadium-goal-groan`) under it, the home crowd louder (`sportsCrowdRoar(match, strength,
+  team)`); the player's goal, or a kickabout goal in front of a crowd, has the whole ground
+  cheering. The level is the attendance times `stadiumAudibility()`: 1 inside the lot and on
+  the forecourt, half at 280 units (about half a block) from the lot's edge, fading to
+  silence between 1100 and 1700 units. Each voice follows the player while it plays (gain,
+  pan, a low-pass that dulls with distance) through the ambience bus, so it is on the
+  effects volume and silent while paused. Also panic screams (recorded), the referee's pea
+  whistle and the kick.
+- Developer console: `stadiumGoal(team, byPlayer)` scores for team 0 (home) or 1 (away) now;
+  `stadiumSound()` reports the goal reactions playing, the last goal's voices with their
+  distance-based gains, the player's distance and audibility, and `bed: null`.
 - Developer console: `match(sport)`, `ballState()`, `matchDay(day, minutesFromKickoff, slot,
   sport)`, `fixtures(sport, days)`, `ballToPlayer(distance)`.
 

@@ -155,6 +155,7 @@ something, never a generic code-evaluation hook.
 | `matchDay(day, minutesFromKickoff, slot, sport)` | Set the world clock relative to a fixture's kickoff (day 1 is the first day; negative minutes are the warm-up) and start that fixture afresh |
 | `fixtures(sport, days)` | The coming fixtures |
 | `ballState()`, `ballToPlayer(distance)` | The stadium ball (position, height, mode, owner, speed, whether the player is on the pitch); put it in front of the player |
+| `stadiumGoal(team, byPlayer)`, `stadiumSound()` | Score a goal for team 0 (home) or 1 (away) at the stadium now, optionally as the pitch invader (whistle, cheer, boards); the stadium's sound: goal reactions playing (target gain, pan and cutoff for where the player is now, and `gainNow`, the live gain gliding to it), the last goal's voices with their distance-based gains, the player's distance and audibility, `bed` (always `null`: there is no crowd bed) |
 
 ## Conventions
 

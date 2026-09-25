@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased — stadium sound and screens
+
+Stadium sound (sports-audio.js, sports.js)
+- The continuous crowd bed (looping white noise through a wandering band-pass), the synthetic
+  chants and clapping, the "ooh" at saves and misses and the full-time roar are gone: from
+  the street the bed read as white noise. The stands are now silent between goals.
+- A goal plays a recorded football crowd (`stadium-goal-cheer.ogg`, 68 KB, 8 s: the swell,
+  the roar, the decay) from the scoring club's end with the other end's groan
+  (`stadium-goal-groan.ogg`, 30 KB) under it; the player's goal (and a kickabout goal in front
+  of a crowd) has the whole ground cheering. Both are from Sandermotions' "Soccer match
+  stadium sounds" pack (Freesound, CC0 1.0; credits in THIRD_PARTY_CREDITS). The level is
+  the attendance times the player's distance to the stadium lot (full inside and on the
+  plaza, half at 280 units, silent past 1700), and each voice keeps following the player
+  (gain, pan, a distance low-pass) through the ambience bus: the effects volume, silent while
+  paused. The air horns and noise bursts of the old roar and the panic noise bursts are gone
+  (panic keeps its recorded screams).
+- Console: `stadiumGoal(team, byPlayer)`, `stadiumSound()`.
+
+Stadium screens (sports-world.js)
+- The two end-stand screens, turned towards the pitch and tilted up at the sky, are removed.
+  The north stand's screen, the entrance board and the two south facade screens facing the
+  plaza and the street stay (live score, lit at night).
+
 ## Unreleased — real speeds
 
 World scale (game.js WORLD SCALE, SOURCE_GUIDE 2a)
