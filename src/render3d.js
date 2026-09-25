@@ -145,6 +145,11 @@
         }),
         tailLamp = new Three.MeshBasicMaterial({
           color: '#e6614f',
+        }),
+        // Tail lamps swap to this while the vehicle brakes (c.braking, physics.js):
+        // bright enough to bloom by day as well as at night.
+        brakeLamp = new Three.MeshBasicMaterial({
+          color: '#ff2a1c',
         });
       /**
        * STATIC BATCHER
@@ -2414,13 +2419,25 @@
               // Drawn together by the instanced halo pass (VEHICLE HALOS), not one
               // sprite draw call each.
               // Lamps on at night and in heavy rain (weather3d.js).
+              // Brake lights glow by day too: from above the lamp itself is a sliver.
               const lampsOn = vehicleLampAmount(),
-                lit = c.hp > 0 && (c.ai || c === player.car) && lampsOn > 0.25;
+                driven = c.hp > 0 && (c.ai || c === player.car),
+                lit = driven && lampsOn > 0.25,
+                braking = driven && !!c.braking;
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
                 sprite.visible = false;
-                if (lit && !m.lampOut?.[k]) queueVehicleHalo(sprite, (k % 2 ? 0.55 : 0.85) * lampsOn);
+                if (m.lampOut?.[k]) continue;
+                if (k % 2 && braking) queueVehicleHalo(sprite, Math.max(0.75, lampsOn));
+                else if (lit) queueVehicleHalo(sprite, (k % 2 ? 0.55 : 0.85) * lampsOn);
               }
+            }
+            // Brake lights: tail lamps that aren't broken swap material while braking.
+            const braking = !!c.braking && c.hp > 0;
+            if (m.lamps && m.brakeLit !== braking) {
+              m.brakeLit = braking;
+              for (const lamp of m.lamps)
+                if (lamp.lit === tailLamp && !c.damage?.lights?.[lamp.key]) lamp.mesh.material = braking ? brakeLamp : tailLamp;
             }
             // Windscreen wipers in the rain (vehicles3d.js).
             if (m.wipers) updateWipers(c, m, deltaSeconds);
@@ -2447,6 +2464,7 @@
               // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js).
               m.damageVersion = c.damageVersion;
               applyVehicleDamage(c, m);
+              m.brakeLit = null; // lamp materials were reset: re-apply brake lights
             }
             // Control surfaces, gear, propeller, lights and buffet (plane3d.js).
             if (m.plane) animateAircraft(c, m, deltaSeconds);

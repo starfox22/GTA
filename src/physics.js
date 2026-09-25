@@ -1240,12 +1240,16 @@
         let acceleration = 0,
           steer = 0,
           grip = 7,
-          drag = 0.72;
+          drag = 0.72,
+          // Brake lights (render3d.js): the player's brake pedal, or a driver
+          // slowing hard or holding the car at a stop.
+          braking = false;
         if (c.hp > 0 && c === pc && active) {
           const up = keys.KeyW || keys.ArrowUp,
             down = keys.KeyS || keys.ArrowDown,
             brake = keys.Space,
             turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+          braking = !!down && along > 10;
           // A bicycle has no engine: holding W pedals, and the push the rider's
           // legs give tapers off toward the top speed (pedalDrive, cycles.js).
           const pedalled = !!vehicleDefinition.bicycle,
@@ -1367,6 +1371,9 @@
           drag = c.crewDeployed ? 9 : 1.8;
           grip = 4;
         }
+        if (c !== pc && c.hp > 0 && (c.ai || c.cop) && !c.crewDeployed)
+          braking = along > 2 * KMH ? acceleration < -0.12 * GRAVITY : along > -2 * KMH && acceleration <= 0;
+        c.braking = braking;
         const terrain = roadVehicleTerrain(c);
         if (terrain) {
           const slope = Math.hypot(terrain.slope.x, terrain.slope.y),
