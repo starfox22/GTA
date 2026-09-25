@@ -193,6 +193,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | beachclub-audio.js | The club's procedural music on a look-ahead scheduler (day, sunset and night sets), the wall low-pass by where the listener stands, and `mareaGroove`, the beat clock the dancers and lights follow |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
+| god-panel.js | God mode settings: the GOD MODE settings tab (time presets and slider, freeze time, weather, refill, lose police, teleport), the map's teleport pick mode and the safe teleport `godTeleport` (section 4d, God mode) |
 | settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, volumes (`volumeScale`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
 | hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
@@ -703,6 +704,40 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   night 23:00, 03:00), a slider over the day in five-minute steps, and the weather (AUTO
   hands the sky back to the weather machine); each applies at once through `worldMinutes`
   and `setWeather`.
+- **God mode settings** (god-panel.js): with god mode on, Settings has a GOD MODE tab after
+  CONTROLS. `syncGodSettingsTab()` (called by `openSettings`) shows its button and puts `'god'`
+  in `SETTINGS_TABS` only while `player.godMode` is set, so Q / E and the arrows skip it
+  otherwise. Its rows are `SETTING_ROWS.god`: freeze (a toggle) and weather (a choice over
+  `GOD_WEATHER`) are ordinary rows; the clock header, the preset chips (`GOD_TIMES`), the 24 h
+  slider and the action buttons draw themselves (a row with `render(body)`, which
+  `renderSettings` calls instead of building the row). Time goes through campaign.js
+  `setGodTime`, weather through `setGodWeather`. **Freeze time** makes `godTimeFrozen()` true,
+  which citylife.js `updateCivic` asks before advancing `worldMinutes`. **Refill**
+  (`godRefill`): every weapon owned, full clip, reserve at least clip x 9 (rockets x 5), health
+  and armour 100, the vehicle mended (`repairVehicle`) and a tank's `tankArms` restocked.
+  **Lose police** (`godLosePolice`): `clearPolice(true)`, the player's crowd incidents marked
+  reported (a call already in progress would otherwise re-raise a star) and the Fort Sentinel
+  alarm and lockdown ended; the mission is left alone. **Teleport**: from the pause menu's
+  settings only; `godStartTeleportPick` closes the menus, resumes and opens the map with
+  `godPick.active`; `godMapToggled()` (called at the end of `toggleMap`) adds `.god-pick`
+  (crosshair, gold frame, the `.god-pick-banner` hint with a live preview of what a click
+  would do) and, when the map closes without a pick, reopens the pause menu on the GOD MODE
+  tab. The map click (navigation.js `endMapPointer`) goes to `godMapClick()` first, whenever
+  god mode is on (pick mode or a plain TAB map; a waiting cab still takes a plain map's tap).
+- **`godTeleport(x, y)`** is the safe god-mode move. On foot: the point if walkable
+  (`solid`, foot obstacles, parked cars), else rings outward for the nearest spot 24 units
+  clear (then 8): a roof or building interior lands in the street outside, the sea on the
+  nearest shore unless a boat fits. Open water: a speedboat (a jet ski where only that fits)
+  is spawned at the nearest spot it floats (`boatFits`) and boarded. A road vehicle comes along
+  (`godRoadSpot`): candidates step along the nearest centre lines of `cityStreets()`,
+  `BOULEVARDS`, `COUNTY_ROADS` and `BRIDGES` and across their lanes, nearest first; the first
+  where `canSpawnCar` passes (the vehicle itself moved out of the way for the test) wins, heading
+  along the road the way the vehicle faced. A boat comes along on water (else it stays and the
+  player goes ashore); an aircraft comes along airborne at its clearance (at least 50 m, a
+  plane 120 m and cruise speed). A wreck is left behind. Then `teleportPlayer` lets go of the
+  other carriers (a train ride through `leaveTransit`), `player.altitude` takes the ground
+  height, the camera snaps (`cameraTarget`), the crowd resettles (`crowd.settledAt = null`)
+  and the player has a second's grace. The result is kept for `DeadEndCity.godPanel()`.
 
 ## 4b. Harbor Point, the superyacht and the boats
 
@@ -1227,7 +1262,8 @@ game time is clamped per frame, which is why toasts and banners look "stuck" in 
 
 The **developer console** `window.DeadEndCity` (game.js, after the frame loop) exposes
 `status()`, `teleport(x, y)`, `setClock(hours)`, `setZoom(v)`, `startMission(index)`,
-`missions()` and `god(on)`, plus test helpers such as `simulate(seconds, keys)`,
+`missions()` and `god(on)` (with the god mode tab: `godPanel()`, `godTeleport(x, y)`,
+`godRefill()`, `godLosePolice()`, `godFreeze(on)`, `mapScreenPoint(x, y)`), plus test helpers such as `simulate(seconds, keys)`,
 `missionTargets()`, `steerTo()`, `walk()`, `probe()`, `rooftops()` and `graphics(tier)`; the
 full list is in `docs/DEVELOPMENT.md`. Test scripts use it; players can too from the
 browser console. Screenshot tests call `graphics('high')` first (SwiftShader auto-detects

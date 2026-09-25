@@ -1,5 +1,36 @@
 # Changelog
 
+## Unreleased — God mode settings
+
+While the `godmode` cheat is on, **Settings** has a fifth tab, **GOD MODE** (god-panel.js; the
+tab is hidden and out of the Q / E cycle otherwise, so the screen without god mode is as before):
+- **Time of day**: the mission picker's presets (dawn, morning, noon, golden hour, dusk, night,
+  3 am) as chips and a 24 h sky slider in five-minute steps, applied live behind the menu (the
+  backdrop is lighter on this tab so the change is seen); **Freeze time** holds the world clock
+  (and the weather machine) until it is switched off or god mode ends.
+- **Weather**: AUTO / CLEAR / FAIR / CLOUDY / OVERCAST / RAIN / STORM through the picker's
+  `setGodWeather` (a sky locks the weather machine, AUTO releases it). There is no fog state.
+- **Refill all ammo**: every weapon owned with a full clip and at least the godmode reserve
+  (clip x 9, rockets x 5), health and armour 100; in a vehicle it is mended and a tank gets its
+  40 shells and full coax belt back.
+- **Lose police**: the stars to zero through `clearPolice(true)`, the escape path (POLICE
+  CLEARED chip, units stand down and head home, the helicopter leaves, roadblocks lift); witness
+  calls already made are dropped and Fort Sentinel's alarm ends. Mission state is untouched.
+- **Teleport · pick on map**: closes the menus and opens the city map in pick mode (gold frame,
+  crosshair, "Click anywhere to teleport · Esc to cancel", a live line saying what a click there
+  would do; zoom, pan and pinch as usual). Esc / Tab / CLOSE go back to the tab.
+- The teleport (`godTeleport`, also behind the plain god-mode tap on the map, which used to drop
+  the player at the raw point, inside buildings or in the sea) resolves the point safely: on
+  foot the nearest walkable ground (a roof or building interior lands in the street outside,
+  24 units clear of walls where possible); open water gets a speedboat (or jet ski) to board;
+  a car, bike or tank comes along to the nearest clear stretch of road lined up with it; a boat
+  comes along on water and stays behind for a click on land; an aircraft comes along airborne
+  (at least 50 m, a plane 120 m at cruise speed). Then the other carriers are let go
+  (`teleportPlayer`, a train ride too), the ground height is set, the camera snaps and the crowd
+  resettles round the spot.
+- Console: `godPanel()`, `godTeleport(x, y)`, `godRefill()`, `godLosePolice()`,
+  `godFreeze(on)`, `mapScreenPoint(x, y)`.
+
 ## Unreleased — realistic runways
 
 Aircraft performance (aviation.js AIRFRAME_SPECS, FLIGHT CONTROLS)

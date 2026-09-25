@@ -271,6 +271,7 @@
       getElement('pauseMenu').classList.add('hidden');
       getElement('menu').classList.add('settings-behind');
       getElement('settingsOverlay').classList.remove('hidden');
+      syncGodSettingsTab(); // GOD PANEL: the GOD MODE tab only while god mode is on (god-panel.js)
       renderSettings(null, true);
       focusSettingsTab();
     }
@@ -316,6 +317,11 @@
           renderKeyBindings(body);
           continue;
         }
+        // GOD PANEL: a row that draws itself (god-panel.js).
+        if (row.render) {
+          row.render(body);
+          continue;
+        }
         const el = settingsElement('div', 'settings-row row-' + row.kind);
         el.dataset.row = row.id;
         const text = settingsElement('div', 'settings-label');
@@ -326,7 +332,9 @@
       getElement('settingsHint').textContent =
         settingsTab === 'controls'
           ? 'Select a key, then press the new key. Delete clears it. Escape cancels.'
-          : 'Changes apply at once and are saved on this browser.';
+          : settingsTab === 'god' // GOD PANEL
+            ? godSettingsHint()
+            : 'Changes apply at once and are saved on this browser.';
       if (focusId) body.querySelector('[data-focus="' + focusId + '"]')?.focus();
     }
     function settingControl(row) {

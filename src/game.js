@@ -4657,6 +4657,7 @@
         drawMap(cityMapContext, 800, 660, true);
         getElement('closeMap').focus();
       } else canvas.focus();
+      godMapToggled(); // GOD PANEL: the teleport pick mode (god-panel.js)
     }
     function newGame() {
       initAudio();
@@ -4715,7 +4716,7 @@
           player.hp = 100;
           player.armor = 100;
           announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
-          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · pick the time of day and weather in the mission picker · click the map to teleport', 5);
+          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · time, weather, ammo and teleport in Settings · God mode · click the map to teleport', 5);
         } else {
           announce('SOUTH COAST', 'GODMODE OFF', 1.8);
           tell('GODMODE OFF', 2.5);
@@ -5142,6 +5143,7 @@
     // @include src/ambience.js
     // @include src/quality.js
     // @include src/settings.js
+    // @include src/god-panel.js
     // @include src/hud.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
@@ -5592,6 +5594,8 @@
         player.godMode = !!on;
         return player.godMode;
       },
+      // GOD PANEL: godPanel(), godTeleport(x, y), godRefill(), godLosePolice(), godFreeze(on), mapScreenPoint(x, y) (god-panel.js).
+      ...godPanelConsole(),
       // Set the wanted level directly. Useful for looking at containment and air
       // support without having to earn them.
       wanted(stars = 5) {

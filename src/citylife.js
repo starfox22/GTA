@@ -1509,7 +1509,7 @@
       }
     }
     function updateCivic(deltaSeconds) {
-      worldMinutes += deltaSeconds;
+      if (!godTimeFrozen()) worldMinutes += deltaSeconds; // GOD PANEL: freeze time (god-panel.js)
       updateHarbor(deltaSeconds);
       updateStoryWorld(deltaSeconds);
       // Police parts are timed on their own so stats() shows the cost of a chase.

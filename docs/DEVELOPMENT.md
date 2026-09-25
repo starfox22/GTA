@@ -107,6 +107,10 @@ something, never a generic code-evaluation hook.
 | `boardMissionVehicle()`, `placeVehicle(x, y, heading, altitudeMeters)` | Take the mission's vehicle; move the player's vehicle (stopped, aircraft at an altitude) |
 | `defeatMissionGuards(tag)` | Put down the current mission's guards (to skip a fight already verified) |
 | `wanted(stars)`, `god(on)` | Police level; invulnerability |
+| `godPanel()` | The GOD MODE settings tab (god-panel.js): god mode, whether the tab is shown, the tab list, freeze, clock, weather and lock, pick mode, and the last teleport, refill and lose-police reports |
+| `godTeleport(x, y)` | The god-mode teleport as a map click does it (safe ground, a boat on open water, the vehicle to the nearest road, aircraft airborne); returns where the player ended up: `asked`, `to`, `kind` (`foot`, `boat`, `road`, `aircraft`), `snapped`, district, elevation, vehicle (type, heading, on a road), swimming, `solidHere` |
+| `godRefill()`, `godLosePolice()`, `godFreeze(on)` | The tab's REFILL ALL AMMO (returns weapons, health, armour and vehicle before / after), LOSE POLICE (stars and pursuing units before / after) and Freeze time |
+| `mapScreenPoint(x, y)` | While the city map is open, the client pixel of map point (x, y) (null off the map): tests click the map with it |
 | `bike()`, `cab(x, y)`, `ride()` | Bicycle, taxi ride, current vehicle telemetry (speed, pedal cadence and effort; in a tank the hull, turret and aim headings in degrees, the traverse rate and the ammunition) |
 | `boardTrain(from, to)` | Board a City Rail train at station `from` for `to` (names as in `RAIL_STATIONS`, or indices), as the platform menu would |
 | `skipRide()`, `skipStop()`, `rideSkip()` | Skip the ride as the skip key (Y) would: cab, train or the liner under way (the jump happens at full black; `simulate(2.5)` runs the fade through); on a train move the skip to the next stop choice (U); the report: the offer (prompt, allowed or why not, destination, fare, ride seconds, the train's choices), the fade in progress and the last skip (ride seconds, game clock before / after in minutes, cash before / after, from / to) |
