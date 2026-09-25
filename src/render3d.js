@@ -769,16 +769,20 @@
        * (damage.js BREAKABLE FURNITURE AND TREES), so they cannot be merged into the
        * static batches: a merged tree could never fall. Each piece is modelled as
        * before, in a throwaway group, and `breakableGroup(prop, group)` files every
-       * mesh of it as one instance of an InstancedMesh per (map cell, geometry,
-       * material). `flushBreakables()` (just before the static batching) builds
-       * those meshes under the static batch cells, so they are culled with the
-       * cell and hidden by the far city like the batches (flight-view3d.js), whose
+       * mesh of it as one instance of an InstancedMesh per (2048-unit map cell,
+       * geometry, material). `flushBreakables()` (just before the static batching)
+       * builds those meshes under cell groups kept with the static batch cells, so
+       * they are culled with the cell (and by their own bounds) and hidden by the
+       * far city like the batches (flight-view3d.js), whose
        * copy still gets every piece (noteFarScenery). The prop's instances are
        * linked so damage3d.js can topple them by rewriting their matrices; nothing
        * is allocated per frame. Geometry must be shared between pieces
        * (boxGeo, cylinderGeo, leafGeo...) or each would be its own draw.
        */
-      const BREAKABLE_CELL = 1024,
+      // Cells twice the batches' size: an instanced piece costs a draw per
+      // geometry and material in each cell, so fewer, larger cells keep the
+      // count near what the merged batches cost.
+      const BREAKABLE_CELL = 2048,
         breakableBuckets = new Map();
       let breakablesFlushed = false;
       function breakableGroup(prop, group, castShadow = true) {
@@ -793,6 +797,20 @@
           if (!bucket) breakableBuckets.set(key, (bucket = { geometry: o.geometry, material: o.material, cx, cz, parts: [], castShadow }));
           bucket.parts.push({ matrix: o.matrixWorld.clone(), prop, source: o });
         });
+      }
+      // A cell group shown and hidden by the static batch cell loop (render()).
+      function breakableCell(cx, cz) {
+        const key = 'breakable ' + cx + ',' + cz;
+        let cell = staticBatchCells.get(key);
+        if (!cell) {
+          const group = new Three.Group();
+          group.name = 'breakable cell';
+          group.userData.cellContainer = true;
+          scene.add(group);
+          cell = { group, x: (cx + 0.5) * BREAKABLE_CELL, z: (cz + 0.5) * BREAKABLE_CELL, half: BREAKABLE_CELL / 2 };
+          staticBatchCells.set(key, cell);
+        }
+        return cell;
       }
       function flushBreakables() {
         if (breakablesFlushed) return;
@@ -812,7 +830,7 @@
           // Culled by its own bounds, padded for a tree lying across the street.
           im.computeBoundingSphere();
           im.boundingSphere.radius += 90;
-          staticBatchCell(bucket.cx, bucket.cz, BREAKABLE_CELL).group.add(im);
+          breakableCell(bucket.cx, bucket.cz).group.add(im);
           farHidden.push(im);
         }
         breakableBuckets.clear();
@@ -822,7 +840,9 @@
       let palmFrondGeometry = null;
       // Street trees with proper trunks and layered crowns.
       const blossomMat = mat('#d5a2b5');
-      const leafGeo = new Three.IcosahedronGeometry(1, 2),
+      // A crown lobe: 80 smooth-shaded faces read as foliage at street zoom (five
+      // per tree, every tree drawn from instanced cells, BREAKABLE SCENERY).
+      const leafGeo = new Three.IcosahedronGeometry(1, 1),
         trunkGeo = new Three.CylinderGeometry(0.9, 1.9, 1, 8),
         // A pine's tiers are one unit cone scaled per tier (one draw for them all).
         pineTierGeo = new Three.ConeGeometry(1, 1, 8);
@@ -843,7 +863,8 @@
         mesh(trunkGeo, wood, group, 0, t.r * 0.8, 0, 1, t.r * 1.6, 1);
         if (!t.pine) {
           for (const a of [0.7, 3.4]) {
-            const limb = mesh(cylinderGeo, wood, group, Math.cos(a) * t.r * 0.25, t.r * 1.45, Math.sin(a) * t.r * 0.25, 0.7, t.r * 0.9, 0.7);
+            // The trunk's tapered cylinder, so trunk and limbs are one draw.
+            const limb = mesh(trunkGeo, wood, group, Math.cos(a) * t.r * 0.25, t.r * 1.45, Math.sin(a) * t.r * 0.25, 0.45, t.r * 0.9, 0.45);
             limb.rotation.set(Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5);
           }
         }
