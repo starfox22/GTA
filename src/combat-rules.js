@@ -133,6 +133,20 @@
      * whether the shooter was on screen), so a test can prove nothing shoots the
      * player unseen: no rooftop snipers, no helicopter gun.
      */
+    /**
+     * ON-SCREEN RULE
+     * Nobody shoots the player from outside the view: police, army and base
+     * shooters only fire at a player on the ground while they themselves are on
+     * screen (the street view round the player, a little inset), so every round
+     * that lands comes from someone the player can see. Long-range guns (army
+     * roof gunners 480, the tank 680, base towers 650) hold fire until they
+     * close in. In the air the flight camera shows far more, and the rule is off.
+     */
+    function shooterInView(shooter, inset = 20) {
+      if (isAircraft(player.car) || player.parachute) return true;
+      const view = crowdViewHalf();
+      return Math.abs(shooter.x - player.x) < view.w - 40 - inset && Math.abs(shooter.y - player.y) < view.h - 40 - inset;
+    }
     const shotLog = { bySource: {}, recent: [], total: 0, offscreen: 0 };
     // (hits and damage per source are the rounds that struck, before armour.)
     function shotSource(b) {
@@ -165,9 +179,8 @@
         o = b.owner && typeof b.owner === 'object' ? b.owner : b,
         distance = Math.round(combatDistance(o, player)),
         // On screen: inside the street view round the player (the camera follows
-        // them; simulate() steps without moving the camera).
-        view = crowdViewHalf(),
-        onScreen = Math.abs(o.x - player.x) < view.w - 20 && Math.abs(o.y - player.y) < view.h - 20;
+        // them; simulate() steps without moving the camera). No inset here.
+        onScreen = shooterInView(o, 0);
       shotLog.total++;
       if (!onScreen) shotLog.offscreen++;
       b.shotSource = source;

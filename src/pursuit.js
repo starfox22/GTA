@@ -604,6 +604,8 @@
         stars = Math.ceil(wantedStars);
       o.timer -= deltaSeconds;
       if (o.timer > 0) return;
+      // Never from off screen (combat-rules.js ON-SCREEN RULE).
+      if (target === player && !shooterInView(o)) return;
       if (o.burstLeft > 0) {
         o.burstLeft--;
         o.timer = o.burstLeft > 0 ? 0.11 : randomBetween(kind.rate[0], kind.rate[1]);
@@ -685,7 +687,7 @@
     }
     /* Suppressive fire at the corner the runner ducked behind. */
     function officerSuppress(o, deltaSeconds) {
-      if (!lastSeen || gameTime - (o.lastSawPlayerAt ?? -100) > 3.5 || !policeTier().deadly || policeHoldFire()) return false;
+      if (!lastSeen || gameTime - (o.lastSawPlayerAt ?? -100) > 3.5 || !policeTier().deadly || policeHoldFire() || !shooterInView(o)) return false;
       if (distanceBetween(o, lastSeen) > officerKind(o).range * 1.2) return false;
       o.timer -= deltaSeconds * 0.5;
       if (o.timer > 0) return true;
@@ -995,7 +997,7 @@
       for (const c of vehicles) {
         if (c.lawUnit !== 'army' || c.hp <= 0 || c === player.car || c.stolen) continue;
         const d = distanceBetween(c, player),
-          sees = wantedStars > 0 && d < 680 && d > 110 && sameFloor(c, player) && clearSight(c, player),
+          sees = wantedStars > 0 && d < 680 && d > 110 && sameFloor(c, player) && shooterInView(c) && clearSight(c, player),
           // Holds fire while its own people are inside the blast: officers on foot
           // or any police vehicle within reach of the shell.
           officersClose =
@@ -1046,7 +1048,7 @@
           c.gunnerLookAt = gameTime + 0.12 + seededRandom() * 0.05;
           c.gunnerSees = d < 480 && sameFloor(c, player) && clearSight(c, player);
         }
-        const sees = wantedStars >= 5 && c.gunnerSees && !playerOnRoof() && !policeHoldFire();
+        const sees = wantedStars >= 5 && c.gunnerSees && !playerOnRoof() && !policeHoldFire() && shooterInView(c);
         if (!sees) {
           c.targetAcquired = 0;
           continue;
@@ -1160,7 +1162,7 @@
       for (const c of vehicles) {
         if (!c.marineUnit || c.hp <= 0 || c === player.car || c.stolen) continue;
         c.shotTimer = (c.shotTimer || 0) - deltaSeconds;
-        if (!c.seesPlayer || c.shotTimer > 0 || stars < 2) continue;
+        if (!c.seesPlayer || c.shotTimer > 0 || stars < 2 || !shooterInView(c)) continue;
         const d = combatDistance(c, player);
         if (d > 330) continue;
         c.shotTimer = randomBetween(1.1, 1.6);
@@ -1310,6 +1312,7 @@
         vest: round(o.vest || 0),
         d: round(distanceBetween(o, player)),
         state: o.state,
+        sees: !!o.seesPlayer,
       }));
       return {
         stars: Math.ceil(wantedStars),

@@ -1017,7 +1017,8 @@
           }
         }
         if (!gun || (!c.crewed && !c.gunner)) continue;
-        if (canEngage && d < (c.type === 'tank' ? 700 : 480) && clearSight(c, threat)) {
+        // Only on screen (combat-rules.js ON-SCREEN RULE).
+        if (canEngage && d < (c.type === 'tank' ? 700 : 480) && shooterInView(c) && clearSight(c, threat)) {
           c.turretA = headingBetween(c, player);
           if (!c.targetAcquired) c.targetAcquired = gameTime + (c.type === 'tank' ? 2.8 : 1.4);
           if (gameTime > c.targetAcquired) {
@@ -1055,7 +1056,7 @@
             footStepTowards(e, player, deltaSeconds, 9 * KMH);
             e.walking = true;
           }
-          if (e.timer <= 0 && clearSight(e, threat)) {
+          if (e.timer <= 0 && shooterInView(e) && clearSight(e, threat)) {
             e.timer = 0.55 + seededRandom() * 0.35;
             const a = e.a + randomBetween(-0.055, 0.055),
               v = shotVelocity(e, threat, 680, a);
