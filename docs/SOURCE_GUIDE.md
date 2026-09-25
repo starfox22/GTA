@@ -81,7 +81,7 @@ Two closures matter:
   `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats, the
   flight HUD, metres in prompts, the map's scale bar, the Falcon's and the Eye's figures) comes
   from it.
-- **On foot** (game.js `FOOT_WALK` 5.4, `FOOT_RUN` 20 km/h, `footPace()`): the player runs by
+- **On foot** (game.js `FOOT_WALK` 5.4, `FOOT_RUN` 25 km/h, `footPace()`): the player runs by
   default and walks while Shift (`walk`, controls.js, "Walk (hold)") is held; there is no separate
   sprint. The Blue Hour terrace is always walked (a stealth party). `footPace()` is read by the
   movement, mountain footing (terrain.js), footsteps (audio.js) and the police's aim (pursuit.js);
@@ -124,8 +124,8 @@ Two closures matter:
 - **Targets** (measured with `simulate`, see CHANGELOG): everyday cars 150-205 km/h and 0-100
   in 6.5-13 s, sports and supercars 230-330 km/h in 2.9-5 s, trucks 115-120, the bus 100, the
   tank 55; motorbikes 180-225; the patrol car 230 km/h (0-100 in 6.3 s) so it catches anything
-  but a sports car on an open road; the police helicopter 260 km/h. Bicycles cruise at 22 and
-  sprint at 38. Traffic keeps to 40-55 km/h in town and 70-85 on the long bridges, follows at
+  but a sports car on an open road; the police helicopter 260 km/h. Bicycles cruise at 27 and
+  sprint at 43. Traffic keeps to 40-55 km/h in town and 70-85 on the long bridges, follows at
   about 0.8 s and stops for reds at about half a g; county traffic 60. Boats: speedboat 55
   knots, jet ski 50, harbor launch 14, police launches 15% quicker; the liner 19 knots at sea.
   Trains 100 km/h at 1.3 m/s²; the cab 65 km/h. The helicopter cruises at about 240 km/h.

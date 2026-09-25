@@ -25,8 +25,8 @@
      * squeal. S brakes, then creeps backwards slowly.
      */
     const CYCLE_STAMINA_MAX = 7.5,
-      // Standing on the pedals: about 38 km/h against a 22 km/h cruise.
-      CYCLE_SPRINT_TOP = 1.73,
+      // Standing on the pedals: about 43 km/h against a 27 km/h cruise.
+      CYCLE_SPRINT_TOP = 43 / 27,
       CYCLE_SPRINT_PUSH = 1.7,
       // Forward push at a standstill (about 2 m/s²), world units per second squared.
       CYCLE_PUSH = 0.2 * GRAVITY,
