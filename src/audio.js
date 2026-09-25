@@ -11,7 +11,12 @@
       // through it. Its level is the Sound on/off switch times the master and
       // effects volumes (settings.js); `voiceBus` carries the callouts.
       master = null,
-      voiceBus = null;
+      voiceBus = null,
+      // A duck on the effects bus alone, between `master` and the ear filter:
+      // the ride-skip fade (ride-skip.js) dips engines, rain and the street
+      // under the black while the radio (its own element) and the callouts
+      // play on. `setMixDuck()` moves it.
+      duckBus = null;
     let audioBuffers = {},
       audioLoops = {},
       reverb = null,
@@ -40,7 +45,8 @@
         earFilter.type = 'lowpass';
         earFilter.frequency.value = 20000;
         earFilter.Q.value = 0.5;
-        master.connect(earFilter).connect(limiter).connect(audio.destination);
+        duckBus = audio.createGain();
+        master.connect(duckBus).connect(earFilter).connect(limiter).connect(audio.destination);
         voiceBus = audio.createGain();
         voiceBus.gain.value = voiceLevel();
         voiceBus.connect(earFilter);
@@ -140,6 +146,12 @@
     // Output levels of the two buses (0.62 is the mix's nominal level).
     function effectsLevel() {
       return soundOn ? 0.62 * volumeScale('sound') : 0;
+    }
+    /* Duck the effects bus to `level` (1 = open) over about `seconds`. */
+    function setMixDuck(level, seconds = 0.3) {
+      if (!audio || !duckBus) return;
+      duckBus.gain.cancelScheduledValues(audio.currentTime);
+      duckBus.gain.setTargetAtTime(clamp(level, 0, 1), audio.currentTime, Math.max(0.01, seconds / 3));
     }
     function voiceLevel() {
       return soundOn ? 0.62 * volumeScale('voice') : 0;
@@ -417,6 +429,7 @@
           time: audio ? +audio.currentTime.toFixed(2) : 0,
           soundOn,
           master: master ? +master.gain.value.toFixed(3) : null,
+          duck: duckBus ? +duckBus.gain.value.toFixed(3) : null,
           buffers: Object.keys(audioBuffers).length,
           loops: Object.fromEntries(
             Object.entries(audioLoops).map(([k, l]) => [

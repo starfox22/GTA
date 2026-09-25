@@ -159,6 +159,32 @@
       return f * s.strength;
     }
     function updateWeather(deltaSeconds) {
+      stepWeatherMachine(deltaSeconds);
+      weather.gust = Math.max(0, Math.sin(gameTime * 0.9) * Math.sin(gameTime * 0.37 + 1.3)) * clamp(weather.wind - 0.5, 0, 1);
+      weather.windAngle += Math.sin(gameTime * 0.07) * deltaSeconds * 0.05;
+      // Lightning: near and often in a storm, far off in steady rain or ahead of a front.
+      const strikeRate = weather.rain > 0.75 ? 0.11 : weather.rain > 0.35 ? 0.025 : weather.approach * 0.035;
+      if (gameMode === 'play' && seededRandom() < deltaSeconds * strikeRate) {
+        const near = weather.rain > 0.75 ? seededRandom() < 0.45 : weather.rain > 0.35 && seededRandom() < 0.15;
+        lightningStrike(near ? randomBetween(250, 1600) : randomBetween(2400, 11000));
+      }
+      weather.flash = lightningFlash();
+      for (let i = weather.thunder.length - 1; i >= 0; i--)
+        if (gameTime >= weather.thunder[i].at) {
+          const clap = weather.thunder.splice(i, 1)[0];
+          thunderSound(clap.distance, clap.strength, clap);
+        }
+      updateWeatherAudio(deltaSeconds);
+      updateParachuteWind();
+    }
+    /**
+     * The weather machine itself, with no sound or lightning: the state moves on
+     * when its time is up, then cloud, rain, standing water, the build-up and the
+     * wind ease toward it. updateWeather() runs it every frame; a skipped ride
+     * (ride-skip.js) runs it in one-second steps across the time it jumps, so the
+     * sky after the fade is the one the clock would have brought.
+     */
+    function stepWeatherMachine(deltaSeconds) {
       if (!weather.until) enterWeather(weather.index);
       if (!weather.locked && worldMinutes > weather.until) advanceWeather();
       const target = weatherState(),
@@ -180,22 +206,6 @@
       // The wind rises ahead of the rain and gusts while it blows hard.
       const windTarget = 0.3 + weather.rain * 0.9 + weather.approach * 0.55;
       weather.wind += (windTarget - weather.wind) * (1 - Math.exp(-deltaSeconds / (weather.approach > 0.05 ? 12 : 30)));
-      weather.gust = Math.max(0, Math.sin(gameTime * 0.9) * Math.sin(gameTime * 0.37 + 1.3)) * clamp(weather.wind - 0.5, 0, 1);
-      weather.windAngle += Math.sin(gameTime * 0.07) * deltaSeconds * 0.05;
-      // Lightning: near and often in a storm, far off in steady rain or ahead of a front.
-      const strikeRate = weather.rain > 0.75 ? 0.11 : weather.rain > 0.35 ? 0.025 : weather.approach * 0.035;
-      if (gameMode === 'play' && seededRandom() < deltaSeconds * strikeRate) {
-        const near = weather.rain > 0.75 ? seededRandom() < 0.45 : weather.rain > 0.35 && seededRandom() < 0.15;
-        lightningStrike(near ? randomBetween(250, 1600) : randomBetween(2400, 11000));
-      }
-      weather.flash = lightningFlash();
-      for (let i = weather.thunder.length - 1; i >= 0; i--)
-        if (gameTime >= weather.thunder[i].at) {
-          const clap = weather.thunder.splice(i, 1)[0];
-          thunderSound(clap.distance, clap.strength, clap);
-        }
-      updateWeatherAudio(deltaSeconds);
-      updateParachuteWind();
     }
     // Slower going in the wet: tyres let go earlier and stopping takes longer.
     function wetGrip() {

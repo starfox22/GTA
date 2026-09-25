@@ -117,6 +117,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Recorded goal cheer and groan by distance to the stadium (no crowd bed), panic, whistles and kicks.
   src/transit.js: Public railway simulation
     Shore, Coast and Ridge lines: filleted track, 13 stations, boarding, rides, scenic trains.
+  src/ride-skip.js: Skip the ride
+    Fade, clock and world catch-up, arrival for cab, train and liner passengers; the skip prompt and keys.
   src/ecology.js: Wildlife behavior
     Habitats, harmless animals, bear warning/attack and 2D drawing.
   src/navigation.js: City map and route planning
@@ -1044,7 +1046,8 @@ kbd {
     bottom: 290px;
     right: 16px;
   }
-  .touch-mode #touchDivert {
+  .touch-mode #touchDivert,
+  .touch-mode #touchSkip {
     position: fixed;
     bottom: 290px;
     left: 16px;
@@ -2419,6 +2422,66 @@ kbd {
     opacity: 0;
     filter: blur(6px);
   }
+}
+/* Skip the ride (ride-skip.js): black over the world and the HUD, under the
+   menus, faded by the script on simulation time (a pause holds it). The card
+   follows --card: it comes in after the black starts and leaves first. */
+#rideSkip {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 45%, #0a0e12 0, #030405 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  --card: 0;
+}
+.ride-skip-card {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 0 24px;
+  max-width: min(640px, calc(100vw - 32px));
+  text-align: center;
+  font-family: var(--ui-font);
+  opacity: var(--card);
+  transform: translateY(calc((1 - var(--card)) * 10px));
+}
+.ride-skip-card small {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.42em;
+  color: var(--ui-dim);
+}
+.ride-skip-card strong {
+  font:
+    900 italic clamp(26px, 3.4vw, 46px) / 1.05 var(--ui-font);
+  letter-spacing: -0.01em;
+  color: var(--ui-gold);
+  overflow-wrap: anywhere;
+}
+.ride-skip-card span {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--ui-text);
+}
+.ride-skip-bar {
+  display: block;
+  width: min(220px, 60vw);
+  height: 2px;
+  margin-top: 10px;
+  background: var(--ui-line);
+  overflow: hidden;
+}
+.ride-skip-bar b {
+  display: block;
+  height: 100%;
+  background: var(--ui-gold);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
 }
 /* A marksman lining up on the player (hud.js SNIPER WARNING): a red glow on
    the screen edge toward the shooter that grows as the lock closes. */
@@ -5125,6 +5188,13 @@ body.no-key-hints .quickkeys {
       <small id="announceSmall"></small><strong id="announceBig"></strong>
     </div>
     <div id="interaction"></div>
+    <!-- Skip the ride (ride-skip.js): the fade to black and the arrival card. -->
+    <div id="rideSkip" class="hidden" aria-live="polite">
+      <div class="ride-skip-card">
+        <small id="rideSkipKicker"></small><strong id="rideSkipTitle"></strong
+        ><span id="rideSkipDetail"></span><i class="ride-skip-bar"><b id="rideSkipBar"></b></i>
+      </div>
+    </div>
     <div id="sniperWarning" aria-hidden="true"></div>
     <!-- Flight HUD (hud.js, FLIGHT HUD): shown in an aircraft only. -->
     <div id="flightHud" aria-hidden="true">
@@ -5262,6 +5332,7 @@ body.no-key-hints .quickkeys {
       </div>
       <div class="touch-actions">
         <button id="touchPoison">POISON</button><button id="touchDivert">DIVERT</button
+        ><button id="touchSkip" class="hidden">SKIP RIDE</button
         ><button id="touchJump" class="touch-special">PARACHUTE</button
         ><button id="touchAction">ACTION</button><button id="touchFire">FIRE</button
         ><button id="touchUp">NOSE UP</button><button id="touchDown">NOSE DOWN</button
@@ -5561,8 +5632,11 @@ body.no-key-hints .quickkeys {
           still pursue you. Vehicle gunfire is handgun-only; tank armor blocks ordinary bullets.
           Find CAS on Palm Keys for roulette. Map: C or FIND ME centers on you. Tap or click any
           destination for a cyan road route; drag to pan, pinch or use +/− to zoom, and CLEAR ROUTE
-          to remove it. City rail: look for M on the map. Press E at a station to choose any of 14
-          destinations; E on the train requests the next stop. Rail viaducts and station platforms
+          to remove it. City rail: look for M on the map. Press E at a station to choose any other
+          station; E on the train requests the next stop. Riding a cab or a train (or the
+          Meridian Star at sea), Y skips the ride: the screen fades, the clock moves on as far as
+          the ride would have taken, and you arrive; a cab charges its full fare, and on a train U
+          picks a different stop to skip to. Rail viaducts and station platforms
           provide real overhead cover. Central Commons has a walking circuit and a separate green
           cycle loop. Free bicycles wait by park racks and mountain trailheads: hold W to pedal, S
           brakes, A/D steers. Deer and rabbits flee noise; foxes can approach quietly. Bears warn before
