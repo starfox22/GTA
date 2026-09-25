@@ -1189,6 +1189,7 @@
         }
         // Drop-off canopy on the street side, on slender posts.
         deckSlab(g, rectOutline(-hw + 40, hw - 40, hd + 2, hd + 50), 30, 2, white, white);
+        registerOverheadCover(cx, cz + hd + 26, hw - 40, 24, 0, 29, 32, 'drop-off canopy');
         for (let x = -hw + 50; x < hw - 40; x += 80) box(g, x, 14.5, hd + 46, 2, 29, 2, kitSteel);
         kitNameBoard(g, 'CRUISE TERMINAL', 'HARBOR POINT', '#f4efe0', 120, 0, 36, hd + 3.5, 0);
         // Boarding bridge from the upper floor out to the liner's gangway.

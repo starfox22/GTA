@@ -447,6 +447,8 @@
       }
       function registerCutawayRoof(x, y, hx, hy, a, bottom, top) {
         cutawayRoofs.push({ x, y, hx, hy, a, bottom, top });
+        // A roof over the player is also cover from the police helicopter (air-cover.js).
+        registerOverheadCover(x, y, hx, hy, a, bottom, top, 'shelter');
       }
       // The roofs right over (x, y) whose underside is above `head`, lowest first.
       function coversOver(x, y, head, elevation, margin, vehicleHead) {
