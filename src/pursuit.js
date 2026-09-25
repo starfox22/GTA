@@ -45,7 +45,7 @@
     // Seconds at five stars before the tank is sent: the light army units come first.
     const TANK_AFTER_SECONDS = 45;
     // How each kind of officer fights; `run` is the pace on foot (the player's
-    // default run, game.js FOOT_RUN 20 km/h, outpaces every one of them). `dmg` is against NPCs, `playerDmg` against
+    // default run, game.js FOOT_RUN 25 km/h, outpaces every one of them). `dmg` is against NPCs, `playerDmg` against
     // the player (before the lethality scale in combat-rules.js, so 5.5 is about 11
     // health: an unarmoured player survives eight or nine pistol hits).
     const OFFICER_KINDS = {
