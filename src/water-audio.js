@@ -71,7 +71,7 @@
       g.gain.linearRampToValueAtTime(level, t + (o.attack || 0.01));
       g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
       p.pan.value = clamp((o.pan || 0) + place.pan, -1, 1);
-      s.connect(f).connect(g).connect(p).connect(master);
+      s.connect(f).connect(g).connect(p).connect(ambienceBus);
       if (o.wet) p.connect(reverbSend || reverb);
       // Start somewhere random in the noise, leaving room for the whole burst.
       s.start(t, Math.random() * Math.max(0, 2.9 - dur));
@@ -110,7 +110,7 @@
         tail = f;
       }
       p.pan.value = clamp((o.pan || 0) + place.pan, -1, 1);
-      tail.connect(p).connect(master);
+      tail.connect(p).connect(ambienceBus);
       osc.start(t);
       osc.stop(t + dur + 0.02);
       osc.onended = () => {
@@ -289,7 +289,7 @@
       for (const f of chain) node = node.connect(f);
       const g = audio.createGain();
       g.gain.value = 0;
-      node.connect(g).connect(master);
+      node.connect(g).connect(ambienceBus);
       s.start(0, Math.random() * 2);
       return { source: s, gain: g, filters: chain };
     }

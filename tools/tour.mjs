@@ -8,7 +8,9 @@
 //     "keys": [["KeyW", 1200]], "shot": true }
 // `js` runs in the page (it only sees window globals such as window.DeadEndCity,
 // which is the game's developer console). `keys` holds [code, milliseconds]
-// pairs pressed one after another. A step screenshots unless "shot": false.
+// pairs pressed one after another. `hold` lists key codes kept down through the
+// wait and the screenshot (e.g. a brake held while the shot is taken).
+// A step screenshots unless "shot": false.
 // The script prints each step's js result and every console error.
 import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
 import path from 'node:path';
@@ -75,6 +77,7 @@ for (const step of steps) {
     await page.waitForTimeout(ms);
     await page.keyboard.up(code);
   }
+  for (const code of step.hold || []) await page.keyboard.down(code);
   await page.waitForTimeout(step.wait ?? 1200);
   if (step.after) {
     try {
@@ -85,6 +88,7 @@ for (const step of steps) {
   }
   const name = String(index).padStart(2, '0') + '-' + (step.name || 'step');
   if (step.shot !== false) await page.screenshot({ path: path.join(out, name + '.png'), timeout: 180000 });
+  for (const code of step.hold || []) await page.keyboard.up(code);
   console.log(name, result === undefined ? '' : JSON.stringify(result).slice(0, 600));
 }
 console.log(`errors: ${errors.length}`);
