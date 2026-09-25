@@ -244,8 +244,8 @@
       return c.type === 'bicycle' ? 'bike' : 'car';
     }
     const QUICK_KEYS = {
-      foot: [['move', 'MOVE'], ['sprint', 'RUN'], ['interact', 'INTERACT'], ['fire', 'FIRE'], ['help', 'CONTROLS']],
-      swim: [['move', 'SWIM'], ['sprint', 'HARDER'], ['help', 'CONTROLS']],
+      foot: [['move', 'RUN'], ['walk', 'WALK'], ['interact', 'INTERACT'], ['fire', 'FIRE'], ['help', 'CONTROLS']],
+      swim: [['move', 'SWIM'], ['walk', 'EASY STROKE'], ['help', 'CONTROLS']],
       car: [['move', 'DRIVE'], ['handbrake', 'HANDBRAKE'], ['interact', 'EXIT'], ['radioNext', 'STATION'], ['help', 'CONTROLS']],
       bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['back', 'BRAKE'], ['interact', 'EXIT']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],
@@ -515,15 +515,15 @@
     }
     /**
      * SNIPER WARNING
-     * While a rooftop sniper or the helicopter marksman locks on (combat-rules.js
-     * sniperThreat), the screen edge toward the shooter glows red, stronger as
-     * the lock closes. The direction is taken on screen (the camera is tilted,
-     * so a helicopter overhead shows above the player), or on the map without
-     * the 3D view.
+     * While a rooftop sniper locks on (combat-rules.js sniperThreat), the screen
+     * edge toward the shooter glows red, stronger as the lock closes. The
+     * direction is taken on screen (the camera is tilted), or on the map without
+     * the 3D view. Never shown while the snipers are switched off
+     * (swat.js SNIPERS_ENABLED); the police helicopter no longer shoots.
      */
     function updateSniperWarning() {
       const box = getElement('sniperWarning'),
-        on = gameMode === 'play' && gameTime - sniperThreat.at < 0.25 && sniperThreat.aim > 0;
+        on = SNIPERS_ENABLED && gameMode === 'play' && gameTime - sniperThreat.at < 0.25 && sniperThreat.aim > 0;
       box.classList.toggle('on', on);
       if (!on) return;
       let dx = sniperThreat.x - player.x,

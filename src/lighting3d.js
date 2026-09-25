@@ -447,6 +447,8 @@
       }
       function registerCutawayRoof(x, y, hx, hy, a, bottom, top) {
         cutawayRoofs.push({ x, y, hx, hy, a, bottom, top });
+        // A roof over the player is also cover from the police helicopter (air-cover.js).
+        registerOverheadCover(x, y, hx, hy, a, bottom, top, 'shelter');
       }
       // The roofs right over (x, y) whose underside is above `head`, lowest first.
       function coversOver(x, y, head, elevation, margin, vehicleHead) {
@@ -662,7 +664,17 @@
         g.fillStyle = grad;
         g.fillRect(0, 0, 128, 128);
       });
+      // Police lights on the road: a soft white pool tinted per instance.
+      const strobeGlowTexture = beamTexture(128, (g) => {
+        const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+        grad.addColorStop(0, 'rgba(255,255,255,0.85)');
+        grad.addColorStop(0.45, 'rgba(255,255,255,0.3)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 128, 128);
+      });
       const BEAM_CAPACITY = 160,
+        STROBE_GLOW_CAPACITY = 64,
         DRIVE_MAP_SIZE = 1024,
         // Scene light at the brightest point of a beam, before the surface's albedo.
         DRIVE_LIGHT_POWER = 4.5,
@@ -731,6 +743,7 @@
       }
       const headBeams = beamPool(headBeamTexture),
         tailGlows = beamPool(tailGlowTexture),
+        strobeGlows = beamPool(strobeGlowTexture),
         beamMatrix = new Three.Matrix4(),
         beamQuaternion = new Three.Quaternion(),
         beamPosition = new Three.Vector3(),
@@ -740,7 +753,8 @@
         driveClearColor = new Three.Color();
       function updateHeadlightBeams() {
         let heads = 0,
-          tails = 0;
+          tails = 0,
+          strobes = 0;
         // Lamps are on at night and in a downpour (weather3d.js); wet tarmac
         // brightens the beams.
         const night = vehicleLampAmount(),
@@ -748,7 +762,30 @@
         if (night > 0.2)
           for (const c of vehicles) {
             if (heads >= BEAM_CAPACITY) break;
-            if (c.hp <= 0 || !(c.ai || c === player.car) || isAircraft(c)) continue;
+            if (c.hp <= 0 || isAircraft(c)) continue;
+            // A flashing police car washes the road either side red and blue
+            // (police3d.js), parked at a roadblock or not.
+            const policeModel = c.cop || c.showLights ? carModels.get(c) : null;
+            if (policeModel?.police && policeModel.group.visible && strobes < STROBE_GLOW_CAPACITY - 1)
+              for (const side of [-1, 1]) {
+                const level = policeRoadGlow(policeModel, side);
+                if (level < 0.05) continue;
+                const spec = vehicleSpec(c),
+                  size = 110,
+                  sin = Math.sin(c.a),
+                  cos = Math.cos(c.a),
+                  // Centre off the car's side, the quad's apex a half size back.
+                  cx = c.x + side * -sin * spec.w * 1.9 - cos * size * 0.5,
+                  cz = c.y + side * cos * spec.w * 1.9 - sin * size * 0.5,
+                  strength = level * night * 0.11 * wetBoost;
+                beamQuaternion.setFromAxisAngle(headBeamUp, -c.a);
+                beamPosition.set(cx, entityElevation(c) + 0.35, cz);
+                beamScale.set(size, 1, size);
+                strobeGlows.setMatrixAt(strobes, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
+                strobeGlows.setColorAt(strobes, side < 0 ? beamColor.setRGB(strength, strength * 0.07, strength * 0.05) : beamColor.setRGB(strength * 0.1, strength * 0.26, strength));
+                strobes++;
+              }
+            if (!(c.ai || c === player.car)) continue;
             const spec = vehicleSpec(c);
             if (spec.boat || spec.jetski || spec.bicycle || c.type === 'bicycle') continue;
             // A beam reaches ~35 m past the bumper: lit cars just outside the frame
@@ -777,10 +814,11 @@
           }
         headBeams.count = heads;
         tailGlows.count = tails;
+        strobeGlows.count = strobes;
         const u = cityLightUniforms;
-        u.cityDrivePower.value = heads + tails ? DRIVE_LIGHT_POWER : 0;
-        if (!heads && !tails) return;
-        for (const m of [headBeams, tailGlows])
+        u.cityDrivePower.value = heads + tails + strobes ? DRIVE_LIGHT_POWER : 0;
+        if (!heads && !tails && !strobes) return;
+        for (const m of [headBeams, tailGlows, strobeGlows])
           if (m.count) {
             m.instanceMatrix.needsUpdate = true;
             m.instanceColor.needsUpdate = true;

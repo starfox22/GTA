@@ -63,6 +63,7 @@
         box(group, x, 8, face + 1, 17, 16, 1.2, glass);
         box(group, x, 8, face + 1.8, 0.7, 16, 0.3, chrome);
         box(group, x, 18, face + 7, 38, 2, 16, mat(p.kind === 'club' ? '#332745' : '#4f6464'));
+        registerOverheadCover(x, face + 7, 19, 8, 0, 17, 19, 'entrance canopy');
         box(group, x, 0.8, face + 10, 34, 1.6, 17, concrete);
         // The lit entrance: a glow under the canopy, its colour on the steps and,
         // in the rain, down the wet road.

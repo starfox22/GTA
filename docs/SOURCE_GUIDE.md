@@ -81,10 +81,15 @@ Two closures matter:
   `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats, the
   flight HUD, metres in prompts, the map's scale bar, the Falcon's and the Eye's figures) comes
   from it.
-- **On foot** (game.js `FOOT_WALK` 5.5, `FOOT_JOG` 11, `FOOT_SPRINT` 24 km/h): the player jogs;
-  Shift sprints, C (`walk`, controls.js) walks. Swimming 3.5 / 5 km/h. Pedestrians walk 4-6 km/h
-  (`cityTempo`), flee at 17-21, officers run 16-19 (`OFFICER_KINDS.run`), so a sprinting player
-  outruns them. Legs keep pace with the ground through `strideCycle(speed)` / `strideRate(speed)`
+- **On foot** (game.js `FOOT_WALK` 5.4, `FOOT_RUN` 20 km/h, `footPace()`): the player runs by
+  default and walks while Shift (`walk`, controls.js, "Walk (hold)") is held; there is no separate
+  sprint. The Blue Hour terrace is always walked (a stealth party). `footPace()` is read by the
+  movement, mountain footing (terrain.js), footsteps (audio.js) and the police's aim (pursuit.js);
+  the player's legs swing wider and lean in at the run (render3d.js `playerRunAmount`, from the
+  model's measured travel). Swimming crawls hard by default (5 km/h, breath drains 1.7/s) and
+  eases into breaststroke (3.5 km/h, 1/s) with Shift or once breath is under 30%
+  (water.js `swimHard`). Pedestrians walk 4-6 km/h (`cityTempo`), flee at 17-21, officers run
+  16-19 (`OFFICER_KINDS.run`), so the default run outpaces them. Legs keep pace with the ground through `strideCycle(speed)` / `strideRate(speed)`
   (one stride = 10 units + 0.3 s of travel), used by crowd3d.js and every `walk` phase.
 - **Road vehicles** are specified in real units in `VEHICLE_DEFINITIONS`: `topKmh`, `zeroTo`
   ([km/h, s], usually 0-100), `brakeG`, `cornerG` (sideways grip the steering may use) and
@@ -140,7 +145,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory, knife combat and FISTS (index 7, no weapon: `meleeAttack` throws a left-right combination with a haymaker, `punchReaction`; `playerUnarmed()` tells the crowd the player is harmless) |
 | citylife.js | Clock, `PLACES` (businesses), `DOCKS` (boat jetties and their boats), officers, police routing and sight (`policeSees`), wanted search, `clearPolice`, `daylight()` |
 | pursuit.js | Police response: `POLICE_TIERS` (what each star sends), `OFFICER_KINDS` (patrol, road, swat, fed), `dispatchPolice` / `spawnPursuitUnit` (off-camera road spawns, bursts on a new star), `pursuitControl` (lead pursuit, PIT, flank, block, route-following search, off-road shortcuts across open ground, whiskers, stuck recovery), `policeNavRoute` (county pursuits on the GPS road graph), marine units (`spawnMarineUnit`, `marineBoatInput` for boatControl), downed-officer drags, officer fire and positioning, arrest, surrender (`trackSurrender`, `policeHoldFire`: standing still at one to four stars ends in BUSTED) and `bust()`, `policeChallengeLine` (arrest lines only when an arrest can happen), the pursuit tank, the five-star army (`armyJeep`, `armyApc`, `armyTruck` before the tank after `TANK_AFTER_SECONDS`; `updateArmyGunners`), dispatch captions, the radar search area, `policeReportData` |
-| swat.js | SWAT teams and rooftop snipers: the rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen now and then at five stars (`roofSniperSite`, `updateRoofSnipers`: one at a time, a second only after 150 s at five stars, first roll 25-45 s in and then every 60-90 s on a 65% chance; laser telegraph, two led rounds, then it packs up), `swatStats` |
+| swat.js | SWAT teams and rooftop snipers. **`SNIPERS_ENABLED = false`**: the snipers are switched off (no spawn from any caller, their laser, beep, screen-edge glow and captions gated too); set it to true to restore them as described here. The rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen now and then at five stars (`roofSniperSite`, `updateRoofSnipers`: one at a time, a second only after 150 s at five stars, first roll 25-45 s in and then every 60-90 s on a 65% chance; laser telegraph, two led rounds, then it packs up), `swatStats` |
 | wounds.js | Wounds: `woundPerson` (hit zone, flinch, limp, blood trail, downed officers and bystanders), `chooseDeathFall` (backwards, face down, spun, slumped against a wall), `deathFallAmount` (the half-second fall), `hitFlinch`, `woundReport` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
 | campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
@@ -158,14 +163,15 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | beach.js | Palm Keys Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
 | roofmission.js | The Blue Hour terrace (`ROOFTOP`, `player.roof`, `moveOnRoof`), mission 2's hit (index 1); `entityElevation`, `sameFloor` |
 | rooftops.js | Helicopter landings on flat roofs (`helicopterRoofSite`, `roofLandingClear`), rooftop helipads (`chooseRoofHelipads`, `b.helipad`), the `player.buildingRoof` carrier (`exitOntoRoof`, `moveOnBuildingRoof`), `playerOnRoof()` |
-| air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft |
-| combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor and helicopter pursuit (`AIR_UNITS_MAX`: one hostile helicopter at a time from stars, a chase at sea or a mission; its marksman sharpens with the stars); SNIPER FIRE, shared by the rooftop snipers and the marksman: a lock of 2 s or more with a laser (rooftop), a rising beep and a red screen-edge glow toward the shooter (`noteSniperLock`, `sniperThreat`, hud.js SNIPER WARNING), then one visible tracer round (`fireSniperRound`) aimed at where the player is guessed to be (measured velocity, `trackPlayerMotion`, led by a random 0.3..skill of the flight time), so standing still is a hit and running or turning usually a miss; a hit is `'sniper'` damage, 50 before armour, never lethal from full health |
+| air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft; OVERHEAD COVER: `overheadCover(x, y, elevation)` (one grid of the overhead volumes, the roofs registered with `registerOverheadCover()` by the renderer: every cutaway roof, the Falcon queue canopy and station roof, shop awnings, entrance canopies, the cruise terminal canopy; building interiors; bridges over the water) and `hiddenFromAir(t)`, which blinds the police helicopter |
+| combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor (`vehicleArmorShare`: the Apache takes 30% of small arms) and the POLICE HELICOPTER (`AIR_UNITS_MAX`: one at a time from stars, a chase at sea or a mission; unarmed: it tracks, lights and reports, never fires; blind to a player under overhead cover, `airCanSee`; HUD line `airPursuitStatus`, HIDDEN FROM AIR); ON-SCREEN RULE (`shooterInView`: police, army and base shooters fire at a player on the ground only from inside the view); SHOT LOG (`logHostileShot`, `DeadEndCity.shotLog()`: every hostile round at the player by source, hits, distance, on screen); SNIPER FIRE, used only by the rooftop snipers (off): a lock of 2 s or more with a laser (rooftop), a rising beep and a red screen-edge glow toward the shooter (`noteSniperLock`, `sniperThreat`, hud.js SNIPER WARNING), then one visible tracer round (`fireSniperRound`) aimed at where the player is guessed to be (measured velocity, `trackPlayerMotion`, led by a random 0.3..skill of the flight time), so standing still is a hit and running or turning usually a miss; a hit is `'sniper'` damage, 50 before armour, never lethal from full health |
 | damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture (`registerStreetProp`, `streetPropContacts`), the damage console helpers |
 | crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; the whole bus plays at `CRASH_LEVEL` (-3.5 dB, under gunfire and engines); one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
 | engine-audio.js | Engine sound: `ENGINE_SETS` (recorded loops per class with the revs each was recorded at: compact, sport, V8, diesel, bike, cruiser, tank, outboard, marine diesel, jet ski) and `ENGINE_OF_TYPE` (vehicle type to set, pitch, level); the player's engine simulation (`engineSimulate`: idle, clutch slip pulling away, automatic gearbox with a throttle cut on upshifts and a blip on downshifts, throttle load), layers pitched by rpm / recorded rpm and cross-faded in the middle of each gap (`engineLayerWeights`), a recorded starter on getting in, overrun burble (V8, sport), misfires when badly hurt; tyre roar, gravel off-road and tank tracks (tank-tracks.ogg), wind on open vehicles; synthesised turboprop and turbofan (`updateJetVoice`: whine, roar, hiss, blade buzz); the nearest four driven traffic vehicles get one voice each with distance, pan and Doppler (`updateTrafficEngines`); `engineReport()` (DeadEndCity.engineSound(): revs, gear, load, layer rates and gains, traffic, a trace) |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
 | airfields.js | The runway plan (section 4, "Airfields"): `RUNWAYS`, `TAXIWAYS`, `RUNWAY_PIERS` (reclaimed land, pushed onto `LAND_REGIONS`), `runwayRect` / `runwayPoint` / `runwayUnder` / `runwayPierAt`, PAPI units and `papiShowsWhite`, `paintAirfieldGround` (the flat runways for the 2D view, the maps and the ground sheets), `airfieldReport()` (DeadEndCity.airfields()) |
 | military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
+| apache.js | Fort Sentinel's AH-64 Apache, player only: parked on the west helipad (`parkApache`, `APACHE_PAD`), a `helicopter` with `airframe: 'apache'` (`HELICOPTER_AIRFRAMES`, merged by vehicleSpec), theft (`apacheBoarded`: base alarm, heat to the top), the chin gun laid by the mouse (`apacheAimPoint`, `traverseTurret`, `apacheGun`, `apacheRoundImpact`), rocket salvos (`apacheSalvo`, `apacheRocket`: `rocket` + `shell` rounds through `explode()`), ammunition and rearming on the base helipads (`updateApacheRearm`), respawn, the weapon chip (`apacheHud`, `drawRocketIcon`), the reticle (`updateApacheReticle`), `apacheReport()` |
 | armor.js | The player's tank: `traverseTurret` (30°/s, eased, stabilised; also used by the pursuit tank and army gunners), `updatePlayerArmor`, ammunition (`tankArms`: 40 main-gun rounds, 5 s reload, coaxial MG belts; `noCoax` tanks), `tankPlayerFire`, `toggleTankWeapon`, the weapon chip in a tank (`tankHud`, `drawShellIcon`) and the reticle (`updateTankReticle`) |
 | aviation.js | Fixed-wing flight model (`planeControl`) and its controls (FLIGHT CONTROLS: engine spool, pitch and roll springs with inertia and auto-coordination, flaps, retracting gear and belly landings, stall and gear warnings with buffet, nosewheel steering and brakes), `flightData()` for the HUD and the console, flight missions 10 and 11 (indices 9 and 10), Daniel the witness (`followWitness`, `witnessStep`) |
 | challenges.js | Missions 3 to 9 (indices 2 to 8) and the interact/UI routing for all missions (`challengeMissionInteract`) |
@@ -186,20 +192,21 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends) |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends); RADIO VOLUME, the radio box's speaker and slider (section 4d); `radioReport()` |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: soldiers, police and mission characters first, then lines at the player, then the nearest; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
 | beachclub-audio.js | The club's procedural music on a look-ahead scheduler (day, sunset and night sets), the wall low-pass by where the listener stands, and `mareaGroove`, the beat clock the dancers and lights follow |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
-| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, volumes (`volumeScale`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
+| god-panel.js | God mode settings: the GOD MODE settings tab (time presets and slider, freeze time, weather, refill, lose police, teleport), the map's teleport pick mode and the safe teleport `godTeleport` (section 4d, God mode) |
+| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
 | hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
 
 Renderer closure (inside `createCityRenderer()` in render3d.js, in include order;
 flight-view3d, postfx3d and lighting3d come first, right after the cameras and lights,
-and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
+and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 
 | File | Role |
 | --- | --- |
@@ -244,7 +251,9 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
 | helicopter3d.js | Airframe, rotor, lights and cockpit |
+| apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
+| police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
 | plane3d.js | The three airframes, modelled on real types: the Serrano C200 courier (mission 11's plane; a low-wing single turboprop with a T-tail after the Pilatus PC-12), the Aurelia J8 business jet and the Meridian 220 airliner. A lofted fuselage (monotone-cubic stations, superellipse sections) wears a livery texture computed per pixel from the surface (windscreen and cockpit glass with frames, cabin windows, doors, cheatline, registration; glossy glass through a roughness / metalness map); NACA-section wings, winglets, fin and stabiliser; flaps, ailerons, elevators and rudder in hinge pivots; four-blade propeller with blur disc or lathed turbofans with spinning fans; retracting gear; navigation, strobe, beacon and landing lights. Static parts are merged per material. `animateAircraft` poses it all from the flight model each frame |
 | parachute3d.js | The ram-air parachute: nine-cell canopy rebuilt per frame (inflation, pillows, brakes, trailing-edge flutter), lines, risers, slider, pilot chute and bridle, the pack; `poseParachutist` (freefall box position, hanging pendulum, toggles), collapse and pack-up after landing |
 
@@ -545,7 +554,10 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   Inside: HQ and flagpoles, comms mast, radome, radar and water tower (north); obstacle
   course, parade ground (a platoon drills by day), three barracks, mess hall and clinic;
   motor pool, containers, fuel depot, ammunition bunkers and the rifle range; two hangars,
-  control tower, helipads, apron and a 960-unit runway (south). `DeadEndCity.military()`
+  control tower, helipads, apron and a 960-unit runway (south). The west helipad (10200, 9365)
+  holds the AH-64 Apache (apache.js; nose south, rotor disc clear of the east pad's olive
+  Maverick and the control tower), which only the player ever flies; stealing it is handled
+  like taking a tank, plus heat to the top of the scale. `DeadEndCity.military()`
   reports the security state. Foothill Road climbs from the South Bay Bridge landing (6420,
   4736) to Stonecreek's south-west corner (6720, 4224).
 - The railway (transit.js, drawn by transit3d.js) runs on its own elevated right of way:
@@ -593,7 +605,7 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **Aircraft** climb and descend on their own actions, `ascend` / `descend` (↑ / ↓, with
   T / G as second keys; the virtual codes stay `KeyT` / `KeyG` through the action's `code`):
   the helicopter's lift and the plane's pitch (physics.js `helicopterControl`, aviation.js
-  `planeControl`), clear of Space (handbrake) and Shift (sprint). The arrows are also
+  `planeControl`), clear of Space (handbrake) and Shift (walk on foot, pedal hard on a bicycle). The arrows are also
   forward / back's second keys: `ascend` / `descend` declare `overrides: 'forward'` /
   `'back'`, so `actionsForKey()` gives the key to them in the `air` context
   (`controlContext()`) and to movement everywhere else, and `controlConflicts()` does not
@@ -609,9 +621,29 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   switch writes `dead-end-city-cutaway` and calls `city3D.setCharacterCutaway(on)` (owned by
   the renderer). NPC chatter off hides the street speech bubbles (render3d.js); mission
   dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected.
-- **Audio buses**: `master` carries effects and ambience at `effectsLevel()`, `voiceBus` the
-  radio callouts at `voiceLevel()`; the car radio element's volume is scaled by
-  `volumeScale('radio')`. `applyVolumes()` pushes a change into the live mix.
+- **Audio buses** (audio.js THE MIX): one gain per category, each set by its Settings · Audio
+  slider (settings.js `AUDIO_VOLUMES`; `busLevel(channel)` = 0.62 x the slider): `master`
+  (effects: weapons, impacts, crashes, UI; the historical name, so anything connected to
+  `master` is an effect), `engineBus` (engine-audio.js, the tyre and rotor loops), `ambienceBus`
+  (ambience.js and everything on `ambience.bus`, weather, water, the pier rides, the drawbridge,
+  parachute wind), `sirenBus` (the police siren loop, Fort Sentinel's siren), `musicBus` (the
+  beach club, at the radio level) and `voiceBus` (callouts). All but the voices pass the
+  ride-skip `duckBus`, then the ear filter, then `mixBus` (master volume x the Sound switch) and
+  the limiter. Engines default to 65 (about 3.7 dB under their old level on the shared effects
+  slider); a save from before the split starts ambience at its old effects value and engines at
+  65% of it. The car radio is an `<audio>` element scaled by `volumeScale('radio')` (master x
+  radio). `applyVolumes()` pushes every change into the live mix and the radio box's slider;
+  RESET AUDIO TO DEFAULTS (an `action` row) restores the default mix.
+- **Radio volume** (car-radio.js RADIO VOLUME): the radio box's open rows carry a speaker (mute
+  / unmute to `settings.radioUnmute`), a slider and the level: the same value as Settings ·
+  Audio · Radio & music, set through `setRadioVolume()` (settings.js) and redrawn by
+  `renderRadioVolume()` whoever changes it. Drag, click, the wheel anywhere over the box (open or
+  resting), a tap on touch (the box opens first), the focused slider's own keys, and
+  `radioQuieter` / `radioLouder` (`,` / `.`, remappable) in a vehicle. The row stops pointer,
+  click and key events so nothing reaches the canvas (fire, aim, zoom) or the window's keydown
+  (arrows, Space); the box stays open while a drag lasts and gives focus back to the canvas
+  after a mouse drag or click. Muted, the resting chip's bars lie flat with a crossed speaker.
+  `DeadEndCity.radio()` reports it.
 - **HUD** (shell.html DOM and the INTERFACE 30 stylesheet section; hud.js): top-left
   location, top-right cash / stars / clock, a waypoint pill top centre, bottom row minimap
   with health and armour bars, the mission card and the equipment column. The radio and
@@ -707,6 +739,40 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   night 23:00, 03:00), a slider over the day in five-minute steps, and the weather (AUTO
   hands the sky back to the weather machine); each applies at once through `worldMinutes`
   and `setWeather`.
+- **God mode settings** (god-panel.js): with god mode on, Settings has a GOD MODE tab after
+  CONTROLS. `syncGodSettingsTab()` (called by `openSettings`) shows its button and puts `'god'`
+  in `SETTINGS_TABS` only while `player.godMode` is set, so Q / E and the arrows skip it
+  otherwise. Its rows are `SETTING_ROWS.god`: freeze (a toggle) and weather (a choice over
+  `GOD_WEATHER`) are ordinary rows; the clock header, the preset chips (`GOD_TIMES`), the 24 h
+  slider and the action buttons draw themselves (a row with `render(body)`, which
+  `renderSettings` calls instead of building the row). Time goes through campaign.js
+  `setGodTime`, weather through `setGodWeather`. **Freeze time** makes `godTimeFrozen()` true,
+  which citylife.js `updateCivic` asks before advancing `worldMinutes`. **Refill**
+  (`godRefill`): every weapon owned, full clip, reserve at least clip x 9 (rockets x 5), health
+  and armour 100, the vehicle mended (`repairVehicle`) and a tank's `tankArms` restocked.
+  **Lose police** (`godLosePolice`): `clearPolice(true)`, the player's crowd incidents marked
+  reported (a call already in progress would otherwise re-raise a star) and the Fort Sentinel
+  alarm and lockdown ended; the mission is left alone. **Teleport**: from the pause menu's
+  settings only; `godStartTeleportPick` closes the menus, resumes and opens the map with
+  `godPick.active`; `godMapToggled()` (called at the end of `toggleMap`) adds `.god-pick`
+  (crosshair, gold frame, the `.god-pick-banner` hint with a live preview of what a click
+  would do) and, when the map closes without a pick, reopens the pause menu on the GOD MODE
+  tab. The map click (navigation.js `endMapPointer`) goes to `godMapClick()` first, whenever
+  god mode is on (pick mode or a plain TAB map; a waiting cab still takes a plain map's tap).
+- **`godTeleport(x, y)`** is the safe god-mode move. On foot: the point if walkable
+  (`solid`, foot obstacles, parked cars), else rings outward for the nearest spot 24 units
+  clear (then 8): a roof or building interior lands in the street outside, the sea on the
+  nearest shore unless a boat fits. Open water: a speedboat (a jet ski where only that fits)
+  is spawned at the nearest spot it floats (`boatFits`) and boarded. A road vehicle comes along
+  (`godRoadSpot`): candidates step along the nearest centre lines of `cityStreets()`,
+  `BOULEVARDS`, `COUNTY_ROADS` and `BRIDGES` and across their lanes, nearest first; the first
+  where `canSpawnCar` passes (the vehicle itself moved out of the way for the test) wins, heading
+  along the road the way the vehicle faced. A boat comes along on water (else it stays and the
+  player goes ashore); an aircraft comes along airborne at its clearance (at least 50 m, a
+  plane 120 m and cruise speed). A wreck is left behind. Then `teleportPlayer` lets go of the
+  other carriers (a train ride through `leaveTransit`), `player.altitude` takes the ground
+  height, the camera snaps (`cameraTarget`), the crowd resettles (`crowd.settledAt = null`)
+  and the player has a second's grace. The result is kept for `DeadEndCity.godPanel()`.
 
 ## 4b. Harbor Point, the superyacht and the boats
 
@@ -830,7 +896,7 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
 - **The player on the pitch.** `sportsHumanOnField` (inside `PITCH_FENCE`, on foot). Walking
   into the ball takes it (`ball.ownerId === SPORTS_HUMAN`, carried in front of the feet),
   walking into a dribbler may win it; E (`sportsInteract` from `interact()`, prompt from
-  `sportsKickPrompt`) kicks along the facing, Shift for a harder, higher strike. Loose-ball
+  `sportsKickPrompt`) kicks along the facing: a full, lofted strike, or with Shift (walking) a softer pass along the ground. Loose-ball
   physics: friction, bounces, posts and crossbar (`sportsGoalFrame`), the net
   (`sportsHoldInNet`), boards outside play (`sportsBallBoards`), out of play during it. A goal
   is the whole ball over the line between the posts and under the bar; it counts for the side
@@ -1215,6 +1281,51 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
   contacts in `updateCars`, bullet targets (`bulletTargets`), the hired cab's look-ahead
   (`forEachPedestrianNear`) and near misses query it instead of scanning every pedestrian.
 
+## 6c. Police vehicles
+
+Every police vehicle is built by `src/police3d.js` (`makePoliceVehicle`, called from
+`makeVehicle` for `type === 'police'`, `lawUnit` `'swat'` / `'fed'`, or a `policeLook`).
+The collision sizes stay the vehicle types' own (patrol 45 × 23, van 48 × 26, SUV 49 × 26):
+the models are drawn inside them and nothing in the physics changed.
+
+- **Looks** (`pickPoliceLook`, cached per vehicle in a WeakMap, never stored on the
+  vehicle): city patrol units are a pursuit sedan (Charger), a utility (Explorer PIU) or a
+  Crown Vic, in black and white (`bw`: SOUTH COAST POLICE, gold star) or `modern` (white,
+  navy and sky-blue swoosh, reflective line); one in nine is an unmarked car with dash,
+  grille and rear-deck lights only; units built in the county are the green and white
+  `sheriff`. Agents (`fed`) drive an unmarked Tahoe; SWAT the armoured BearCat (roof hatch
+  and turret ring with shield plates, ram bumper with winch, armoured glass, gun ports,
+  hinged rear doors, POLICE / S.W.A.T.). The roof carries the unit number (aerial ID)
+  read along the car; the trunk and rear fenders repeat it.
+- **Damage contract**: the shell is a lofted section per body (`policeShellGeometry`) and
+  the glasshouse five curved panes in `PANE_ORDER` (`policeCabinGeometry`), both shared
+  until dented and crumpled by damage3d.js like the generic car. The model supplies hooks
+  damage3d.js reads: `liveryMap` / `liveryColor` / `finish` (paint restored after the soot,
+  satin not metallic), `bumperMaterial` (black plastic), `panelGeometry` / `trunkGeometry`
+  (sprung door and trunk panels sample the livery's swatches), `glass`. Lamps keep their
+  keys, `lit` materials (tail lamps swap to `brakeLamp`) and `nightLights` in head, tail
+  pairs per side.
+- **Liveries** are one canvas per livery and body, painted in the shell's UV space (u
+  along the car, v round the section); the bottom eighth holds solid swatches that the
+  hood, roof panel, pillars and damage panels sample, so the whole paint is one material.
+- **Draw calls**: per model the static parts are merged per material (livery panels,
+  vertex-coloured trim, bright metal, lights, number decals); with shell, glass, hood, two
+  bumpers, four lamps and four wheels (tyre + rim) a patrol car is ~22 draws against ~26 for
+  the old box-built cruiser, fewer shadow casters, and no per-model textures (livery,
+  glyph atlas and kits are shared by body and livery). Below `BODY_IMPOSTOR_ZOOM` police
+  vehicles pool by body and livery (`policeImpostorKey`): shell, glass, hood, panels,
+  trim and the lightbar's two halves, flashing through the instance colour.
+- **Lights**: every emitter of a model is one mesh whose vertices carry a light channel;
+  `policeLightLevels(c, levels, time)` writes eight channel levels from the pattern
+  (pursuit: quad flashes side to side, criss-cross double flashes and a sweep, cycling every
+  4.2 s; parked at a scene or a roadblock: slow double flashes and steady takedowns).
+  Responding cars wig-wag their headlamps. `animatePoliceVehicle` queues halos for lit
+  segments (VEHICLE HALOS) and lighting3d.js draws red and blue pools on the road from
+  `policeRoadGlow` into the drive light map at night. Lights run when
+  `(c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.showLights`.
+- `DeadEndCity.policeLineup(x, y, heading, lights, spacing)` parks one of each model and
+  livery for review.
+
 ## 7. Build, check, test
 
 ```
@@ -1231,7 +1342,8 @@ game time is clamped per frame, which is why toasts and banners look "stuck" in 
 
 The **developer console** `window.DeadEndCity` (game.js, after the frame loop) exposes
 `status()`, `teleport(x, y)`, `setClock(hours)`, `setZoom(v)`, `startMission(index)`,
-`missions()` and `god(on)`, plus test helpers such as `simulate(seconds, keys)`,
+`missions()` and `god(on)` (with the god mode tab: `godPanel()`, `godTeleport(x, y)`,
+`godRefill()`, `godLosePolice()`, `godFreeze(on)`, `mapScreenPoint(x, y)`), plus test helpers such as `simulate(seconds, keys)`,
 `missionTargets()`, `steerTo()`, `walk()`, `probe()`, `rooftops()` and `graphics(tier)`; the
 full list is in `docs/DEVELOPMENT.md`. Test scripts use it; players can too from the
 browser console. Screenshot tests call `graphics('high')` first (SwiftShader auto-detects

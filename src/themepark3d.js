@@ -458,6 +458,9 @@
         stationRoofMeshes.push(...roof.flush(coasterGroup, 'falcon station roof'));
         // Queue hall: a shade canopy on posts over the switchback rails.
         b.box(parkMats.canvasWhite, parkPlaced(2600, -6375, 30, 200, 1.2, 50));
+        // Both roofs hide whoever is under them from the police helicopter (air-cover.js).
+        registerOverheadCover(2600, -6375, 100, 25, 0, 29, 31, 'queue canopy');
+        registerOverheadCover((x0 + x1) / 2, -6430, (x1 - x0) / 2 + 5, 30, 0, 50, 62, 'station roof');
         for (let x = 2505; x <= 2695; x += 38)
           for (const y of [-6398, -6352]) b.add(parkMats.gold, parkTubeGeo, parkBetween(parkP3(x, y, 0), parkP3(x, y, 30), 0.8));
         for (const [y, x0q, x1q] of [

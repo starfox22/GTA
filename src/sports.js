@@ -30,7 +30,7 @@
      * THE PLAYER ON THE PITCH (soccer)
      * - Gaps in the perimeter boards (sports-world.js) lead from the concourse on
      *   to the grass. Walking into the ball dribbles it (ownerId SPORTS_HUMAN);
-     *   E kicks it the way you face (sprint while kicking for a harder, higher
+     *   E kicks it the way you face (hold Shift, walking, for a softer, lower
      *   strike): sportsKick(). The ball rolls with friction, bounces off posts,
      *   the bar and the boards, and a goal is the whole ball crossing the line
      *   between the posts and under the bar.
@@ -1791,7 +1791,8 @@
 
     /**
      * The kick (E near the ball, see interact() in game.js): a strike along the
-     * way you face. Sprinting (Shift) hits it harder and higher.
+     * way you face: a full, lofted strike, or a softer pass along the ground
+     * while walking (the walk action, Shift).
      */
     function sportsKick() {
       const match = sportsMatches.soccer;
@@ -1805,9 +1806,9 @@
         if (match.phase === 'celebrate') return false;
       }
       if (gameTime < sportsHuman.kickLock) return true;
-      const sprinting = keys.ShiftLeft || keys.ShiftRight,
-        power = sprinting ? 430 : 330,
-        lift = sprinting ? 34 : 17,
+      const strike = !actionHeld('walk'),
+        power = strike ? 430 : 330,
+        lift = strike ? 34 : 17,
         heading = player.a;
       if (match.phase === 'restart') {
         match.phase = 'play';
@@ -1821,7 +1822,7 @@
       sportsHuman.kickLock = gameTime + 0.3;
       sportsHuman.touchLock = gameTime + 0.35;
       player.kickUntil = gameTime + 0.3;
-      sportsKickSound(ball, sprinting ? 1.3 : 1);
+      sportsKickSound(ball, strike ? 1.3 : 1);
       if (match.stage === 'live' && match.phase === 'play') {
         const goalward = Math.cos(heading) * (ball.x < match.venue.x + match.venue.w / 2 ? -1 : 1) > 0.5;
         match.status = goalward ? 'THE INVADER SHOOTS!' : 'THE INVADER PLAYS IT ON';
@@ -1836,7 +1837,7 @@
       const ball = match.ball;
       if (ball.ownerId !== SPORTS_HUMAN && (Math.hypot(ball.x - player.x, ball.y - player.y) > 15 || ball.z > 8 || sportsCarrier(match)))
         return '';
-      return 'KICK THE BALL · ' + keyName('sprint') + ' FOR POWER';
+      return 'KICK THE BALL · HOLD ' + keyName('walk') + ' FOR A SOFT PASS';
     }
 
     /* E on the pitch: a kick when the ball is at your feet. */

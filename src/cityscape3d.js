@@ -901,6 +901,8 @@
             const stripe = box(group, x, 13.2, face + 4.2, bayWidth - 6, 0.75, 8.5, awningStripe);
             stripe.rotation.x = 0.42;
             stripe.scale.x = 0.34;
+            // Someone standing under it is out of sight of the helicopter (air-cover.js).
+            registerOverheadCover(b.x + x, b.y + face + 4.4, (bayWidth - 6) / 2, 4.4, 0, 11.5, 15, 'awning');
           }
         }
         const style = shopSignStyle(b),

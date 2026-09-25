@@ -704,16 +704,7 @@
       const m = rooftopJob();
       if (!m) return;
       const guards = enemies.filter((e) => e.missionTag === 'rooftop-hit' && e.hp > 0),
-        guests = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && p.hp > 0 && !p.hidden),
-        moving =
-          keys.KeyW ||
-          keys.KeyA ||
-          keys.KeyS ||
-          keys.KeyD ||
-          keys.ArrowUp ||
-          keys.ArrowDown ||
-          keys.ArrowLeft ||
-          keys.ArrowRight;
+        guests = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && p.hp > 0 && !p.hidden);
       for (const p of [m.boss, ...guests])
         if (p.speechFor > 0) {
           p.speechFor -= deltaSeconds;
@@ -743,10 +734,10 @@
             }
           }
           if (player.roof && roofSees(e, player, 132)) {
-            const d = distanceBetween(e, player),
-              sprinting = moving && (keys.ShiftLeft || keys.ShiftRight);
-            // Crowding the detail, running, or lingering inside the cordon all read wrong.
-            if (d < 34 || sprinting || m.partyPanic) suspicious = true;
+            // Crowding the detail or lingering inside the cordon reads wrong (the
+            // terrace is always walked, game.js footPace, so nobody runs here).
+            const d = distanceBetween(e, player);
+            if (d < 34 || m.partyPanic) suspicious = true;
             else if (d < 96) e.lingering = (e.lingering || 0) + deltaSeconds;
             if ((e.lingering || 0) > 1.6) suspicious = true;
           } else e.lingering = Math.max(0, (e.lingering || 0) - deltaSeconds * 1.6);

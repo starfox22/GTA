@@ -40,6 +40,8 @@
     const SWIM_SPEED = 3.5 * KMH,
       SWIM_SPRINT = 5 * KMH,
       SWIM_BREATH = 30,
+      // Below this share of breath the default crawl eases into breaststroke.
+      SWIM_EASE_BELOW = 0.3,
       SINK_SECONDS = 3.2,
       SINK_DEPTH = 42,
       // Distance out from a beach waterline where your feet leave the bottom.
@@ -281,8 +283,14 @@
         2.6,
       );
     }
+    /* The swimmer crawls hard by default, like the run on land, and eases into
+       breaststroke while the walk action (Shift) is held or once breath runs low
+       (SWIM_EASE_BELOW), so the default never spends the last of it. */
+    function swimHard() {
+      return !actionHeld('walk') && breathFraction() > SWIM_EASE_BELOW;
+    }
     function swimSpeed() {
-      return (keys.ShiftLeft || keys.ShiftRight ? SWIM_SPRINT : SWIM_SPEED) * (swimBreath > 0 ? 1 : 0.55);
+      return (swimHard() ? SWIM_SPRINT : SWIM_SPEED) * (swimBreath > 0 ? 1 : 0.55);
     }
     /* Walking pace in the shallows: knee deep is a slog, waist deep a crawl. */
     function wadeFactor() {
@@ -369,18 +377,18 @@
         // Pushing off from the shallows is a quiet start; everything else is a plunge.
         if (player.wading) waterEntrySound(0.6);
         else splashAt(player.x, player.y, 1.3);
-        tell('SWIMMING · ' + keyName('sprint') + ' to swim harder · your weapons are no use here', 3.5);
+        tell('SWIMMING · hold ' + keyName('walk') + ' for an easy stroke that saves breath · your weapons are no use here', 3.5);
       }
       player.wading = 0;
       player.swimming = true;
       // Riding the surface: the body floats just awash, the back clear of it.
       const driving = playerDriving(),
-        hard = driving && (keys.ShiftLeft || keys.ShiftRight);
+        hard = driving && swimHard();
       player.swimDrive += ((driving ? (hard ? 1 : 0.62) : 0) - player.swimDrive) * Math.min(1, deltaSeconds * 4);
       // One arm cycle per stroke: slow and long while floating, quick when driving.
       player.swimStroke += deltaSeconds * (1.5 + player.swimDrive * 5.2);
       player.altitude = SWIM_ALTITUDE + Math.sin(player.swimStroke) * 0.5 + Math.sin(gameTime * 1.3) * 0.4;
-      // Treading water tires you slowly, swimming properly faster, sprinting fastest.
+      // Treading water tires you slowly, breaststroke faster, the hard crawl fastest.
       swimBreath -= deltaSeconds * (hard ? 1.7 : driving ? 1 : 0.4);
       if (Math.floor(player.swimStroke / Math.PI) !== player.swimBeat) {
         player.swimBeat = Math.floor(player.swimStroke / Math.PI);
