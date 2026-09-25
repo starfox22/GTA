@@ -304,11 +304,13 @@
       }
       for (const line of RAIL_LINES) line.points = railTrackGeometry(line.route, held);
     }
-    const RAIL_TOP_SPEED = 530;
+    // Rapid transit: 100 km/h flat out, pulling away and braking at 1.3 m/s².
+    const RAIL_TOP_SPEED = 100 * KMH,
+      RAIL_ACCELERATION = 1.3 * UNITS_PER_METRE;
     // How far the train can run before it must be stopped: to the next station on
     // its path, or to the end of the line, whichever comes first. Path points are
     // marked as stops once when the path is built, so this walk is just addition.
-    const RAIL_LOOKAHEAD = 1600;
+    const RAIL_LOOKAHEAD = 3200;
     function railStopDistance(t) {
       let total = 0,
         from = t;
@@ -813,8 +815,8 @@
         // a run of points 30-60 units apart and the train takes it at speed.
         t.speed = Math.min(
           RAIL_TOP_SPEED,
-          Math.sqrt(Math.max(0, railStopDistance(t)) * 300),
-          t.speed + 150 * deltaSeconds,
+          Math.sqrt(Math.max(0, railStopDistance(t)) * 2 * RAIL_ACCELERATION),
+          t.speed + RAIL_ACCELERATION * deltaSeconds,
         );
         // Run on through as many track points as this frame's travel covers, so a
         // slow frame never holds the train back to one point per frame.

@@ -6,6 +6,10 @@
      * Aircraft exit, freefall, canopy controls, landing and water rescue.
      */
     /* Deliberate bailout, freefall, steerable canopy and safe ground transitions. */
+    // Belly-to-earth freefall at about 50 m/s; the canopy opens itself 85 m up
+    // (it takes a second to open and some 35 m to bite).
+    const PARACHUTE_TERMINAL = 50 * UNITS_PER_METRE,
+      PARACHUTE_AUTO_OPEN = 85 * UNITS_PER_METRE;
     // Height above whatever the aircraft would set down on: the ground, or the
     // flat roof under a helicopter (`roofSite`, rooftops.js).
     function aircraftClearance(c) {
@@ -55,7 +59,7 @@
           keyName('forward') + ' glide · ' + keyName('back') + ' flare · Opens automatically near ground',
         7,
       );
-      if (aircraftClearance(c) < 240) deployParachute();
+      if (aircraftClearance(c) < PARACHUTE_AUTO_OPEN) deployParachute();
       if (requiredAircraft)
         tell(
           'JOB FAILED · ' +
@@ -148,16 +152,17 @@
       );
       player.a = p.heading;
       const agl = player.altitude - terrainHeight(player.x, player.y);
-      if (p.stage === 'freefall' && (keys.Space || agl < 230)) deployParachute();
+      if (p.stage === 'freefall' && (keys.Space || agl < PARACHUTE_AUTO_OPEN)) deployParachute();
       const canopy = p.stage === 'canopy';
       if (canopy) p.opening = Math.min(1, p.opening + deltaSeconds / 1.0);
-      const speed = canopy ? (flare ? 33 : fast ? 100 : 70) : 75,
+      // Canopy forward speed: about 15 km/h flared, 31 trimmed, 45 with the risers pulled.
+      const speed = (canopy ? (flare ? 15 : fast ? 45 : 31) : 34) * KMH,
         response = 1 - Math.exp(-deltaSeconds * (canopy ? 2.6 : 0.65));
       p.vx += (Math.cos(p.heading) * speed - p.vx) * response;
       p.vy += (Math.sin(p.heading) * speed - p.vy) * response;
       p.vz = canopy
-        ? p.vz + ((flare ? -17 : -28) - p.vz) * (1 - Math.exp(-deltaSeconds * 4 * p.opening))
-        : Math.max(-200, p.vz - 65 * deltaSeconds);
+        ? p.vz + ((flare ? -2.1 : -3.5) * UNITS_PER_METRE - p.vz) * (1 - Math.exp(-deltaSeconds * 4 * p.opening))
+        : Math.max(-PARACHUTE_TERMINAL, p.vz - GRAVITY * deltaSeconds);
       // Aircraft can fly over open ocean; a bailout keeps that position until landing.
       player.x += p.vx * deltaSeconds;
       player.y += p.vy * deltaSeconds;
@@ -284,7 +289,7 @@
         centre = 500;
       if (p && soundOn && gameMode === 'play') {
         if (p.stage === 'freefall') {
-          const rate = clamp(-p.vz / 200, 0, 1);
+          const rate = clamp(-p.vz / PARACHUTE_TERMINAL, 0, 1);
           // Buffeting: the level and colour wander a few times a second.
           const buffet = 0.8 + 0.2 * Math.sin(gameTime * 7.3) * Math.sin(gameTime * 3.1 + 1);
           level = (0.08 + rate * 0.3) * buffet;

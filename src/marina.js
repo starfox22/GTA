@@ -176,7 +176,7 @@
           [2150, -5000],
           [820, -5000],
         ],
-        top: 12,
+        top: 4.5 * KNOTS,
       },
       {
         kind: 'ahead',
@@ -192,18 +192,19 @@
           [-700, -5000, 800],
           [2150, -5000],
         ],
-        top: 50,
+        top: 19 * KNOTS,
       },
     ];
-    // Speed limits by area, units per second (5.12 = 1 m/s; 50 is about 19 knots).
+    // Speed limits by area, in knots: dead slow in the sound, moderate inshore.
     const LINER_SPEED_ZONES = [
-      { x0: -300, x1: 3300, y0: -6000, y1: -4000, top: 20 },
-      { x0: -1500, x1: 200, y0: -5200, y1: 600, top: 32 },
-      { x0: -3950, x1: -2300, y0: -1600, y1: 5600, top: 34 },
+      { x0: -300, x1: 3300, y0: -6000, y1: -4000, top: 7.6 * KNOTS },
+      { x0: -1500, x1: 200, y0: -5200, y1: 600, top: 12 * KNOTS },
+      { x0: -3950, x1: -2300, y0: -1600, y1: 5600, top: 13 * KNOTS },
     ];
-    const LINER_TURN_GRIP = 1.3,
-      LINER_ACCELERATION = 0.7,
-      LINER_BRAKING = 0.45;
+    // Lateral grip, acceleration and braking in m/s², as map units.
+    const LINER_TURN_GRIP = 0.25 * UNITS_PER_METRE,
+      LINER_ACCELERATION = 0.14 * UNITS_PER_METRE,
+      LINER_BRAKING = 0.09 * UNITS_PER_METRE;
     /* A leg's path: the control polygon with filleted corners, resampled every 8
        units into {x, y, a (heading of travel), k (curvature)} and a speed cap per
        sample that already allows for braking into slower water and the stop. */

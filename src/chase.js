@@ -441,7 +441,9 @@
         dx = target.x - vehicle.x,
         dy = target.y - vehicle.y,
         d = Math.hypot(dx, dy),
-        speed = Math.min(300, d * 1.1);
+        // A police helicopter tops out at about 260 km/h: only a sports car on
+        // an open road outruns it.
+        speed = Math.min(260 * KMH, d * 1.1);
       vehicle.vx += ((dx / Math.max(d, 1)) * speed - vehicle.vx) * Math.min(1, stepSeconds * 1.8);
       vehicle.vy += ((dy / Math.max(d, 1)) * speed - vehicle.vy) * Math.min(1, stepSeconds * 1.8);
       const desired = headingBetween(vehicle, t),

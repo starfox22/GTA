@@ -53,9 +53,9 @@
       DRAWBRIDGE_RATE = (4.2 * Math.PI) / 180, // top swing speed, radians a second
       DRAWBRIDGE_SWING_ACCEL = (1.4 * Math.PI) / 180, // how fast the swing speeds up and slows
       DRAWBRIDGE_WALL_ANGLE = (40 * Math.PI) / 180,
-      DRAWBRIDGE_GRAVITY = 300, // units/s², matched to the game's driving speeds
+      DRAWBRIDGE_GRAVITY = GRAVITY, // real gravity: a car off a leaf flies a true arc
       DRAWBRIDGE_GRIP = 0.84, // tyre friction on the steel: no climbing past ~40 degrees
-      DRAWBRIDGE_ARM_SNAP = 70,
+      DRAWBRIDGE_ARM_SNAP = 50 * KMH, // barrier arms snap for anything faster
       DRAWBRIDGE_ARM_SECONDS = 5.5;
     const drawbridge = {
       phase: 'idle',
@@ -355,7 +355,7 @@
        units at a typical driving speed (0 while the bridge is open to traffic). */
     function drawbridgeRouteDelay() {
       if (drawbridge.phase === 'idle') return 0;
-      return drawbridgeSecondsToTraffic() * 230;
+      return drawbridgeSecondsToTraffic() * 45 * KMH;
     }
     // Roughly how long until traffic can cross again.
     function drawbridgeSecondsToTraffic() {
@@ -473,13 +473,14 @@
           c.deckLift = ground;
           c.deckVz = surfaceVz;
           if (jump) jump.crossed = (p.u - g.m) * jump.leaf < 0;
-          if (into > 70) {
-            const hit = (into - 70) * 0.22;
+          // Coming down faster than 5 m/s (a fall of about 1.3 m) bends things.
+          if (into > 5 * UNITS_PER_METRE) {
+            const hit = (into - 5 * UNITS_PER_METRE) * 0.4;
             damageVehicle(c, hit, c.x, c.y, null, { kind: 'crash', nx: 0, ny: 0, closing: into, otherMass: 0 });
-            playSample(into > 180 ? 'crash-heavy-2' : 'crash-medium-1', clamp(into / 260, 0.25, 0.9), 1, c);
-            if (c === player.car) shake = Math.max(shake, Math.min(10, into / 30));
+            playSample(into > 12 * UNITS_PER_METRE ? 'crash-heavy-2' : 'crash-medium-1', clamp(into / (17 * UNITS_PER_METRE), 0.25, 0.9), 1, c);
+            if (c === player.car) shake = Math.max(shake, Math.min(10, into / 12));
           } else playSample('crash-bump-1', 0.35, 1, c);
-          const keep = into > 140 ? 0.8 : 0.93;
+          const keep = into > 10 * UNITS_PER_METRE ? 0.8 : 0.93;
           c.vx *= keep;
           c.vy *= keep;
           if (jump) {
@@ -691,7 +692,8 @@
        She lies at anchor on one side of the causeway and each opening takes her
        through the channel to the other. `across` is her distance from the deck's
        centre line (+ is the right of a -> b, south here). */
-    const DRAWBRIDGE_VESSEL = { length: 132, beam: 32, anchor: 720, hold: 330, cruise: 46, approach: 24 };
+    // The ketch under power: about 7 knots, 4 through the bridge.
+    const DRAWBRIDGE_VESSEL = { length: 132, beam: 32, anchor: 720, hold: 330, cruise: 7 * KNOTS, approach: 4 * KNOTS };
     function drawbridgeVessel() {
       if (drawbridge.vessel) return drawbridge.vessel;
       // `dir` is the way she goes next: +1 toward +across.

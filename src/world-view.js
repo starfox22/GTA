@@ -8,6 +8,8 @@
     /* World gestures are independent from navigation-map gestures and touch sticks. */
     let worldZoom = 1,
       worldZoomTarget = 1,
+      // Pulled back while driving fast (speedZoomTarget), on top of the player's zoom.
+      speedZoom = 1,
       worldTouchUntil = 0,
       worldPinch = null,
       worldSafariGesture = null,
@@ -26,9 +28,19 @@
         resetWorldGesture();
         return;
       }
-      worldZoom += (worldZoomTarget - worldZoom) * (1 - Math.exp(-deltaSeconds * 12));
+      speedZoom += (speedZoomTarget() - speedZoom) * (1 - Math.exp(-deltaSeconds * 0.8));
+      worldZoom += (worldZoomTarget * speedZoom - worldZoom) * (1 - Math.exp(-deltaSeconds * 12));
       canvasScale = clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
       incomingCallRemaining = Math.max(0, incomingCallRemaining - deltaSeconds);
+    }
+    /* At real speeds a car covers the street view in a few seconds: from about
+       60 km/h the camera eases back, to about 0.68 of the player's zoom by 220
+       km/h (boats too; aircraft have their own flight view). */
+    function speedZoomTarget() {
+      const c = player.car;
+      if (!c || isAircraft(c)) return 1;
+      const v = Math.hypot(c.vx || 0, c.vy || 0);
+      return 1 / (1 + clamp((v - 60 * KMH) / (160 * KMH), 0, 1) * 0.47);
     }
     function newCallNotice() {
       if (missionIndex < missions.length) incomingCallRemaining = 8;

@@ -29,17 +29,18 @@
      * squeal. S brakes, then creeps backwards slowly.
      */
     const CYCLE_STAMINA_MAX = 7.5,
-      CYCLE_SPRINT_TOP = 1.28,
-      CYCLE_SPRINT_PUSH = 1.3,
-      // Forward push at a standstill, world units per second squared.
-      CYCLE_PUSH = 130,
+      // Standing on the pedals: about 38 km/h against a 22 km/h cruise.
+      CYCLE_SPRINT_TOP = 1.73,
+      CYCLE_SPRINT_PUSH = 1.6,
+      // Forward push at a standstill (about 1.5 m/s²), world units per second squared.
+      CYCLE_PUSH = 0.15 * GRAVITY,
       // How quickly the legs come up to full effort, and let go of it, per second.
       CYCLE_SPIN_UP = 3.2,
       CYCLE_SPIN_DOWN = 6,
       // Crank revolutions per second at top speed in the normal gear (~95 rpm).
       CYCLE_CADENCE_TOP = 1.6,
       // Reverse is a walk-it-backwards shuffle, not a gear.
-      CYCLE_REVERSE_MAX = 34;
+      CYCLE_REVERSE_MAX = 5 * KMH;
     let cycleStamina = CYCLE_STAMINA_MAX,
       cycleStandCache = null;
     const pedal = { effort: 0, cadence: 0 };

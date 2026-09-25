@@ -62,7 +62,7 @@
      * After resampling at even arc length the circuit is banked so every turn is
      * felt straight down through the seat at the speed the train really carries
      * there (see coasterSpeedProfile), the authored rolls added on top.
-     * Heights are in world units above the ground (512 units = 100 m).
+     * Heights are in world units above the ground (UNITS_PER_METRE to the metre).
      */
     const COASTER_START = { x: 2640, y: -6430, z: 22, yaw: Math.PI },
       COASTER_ELEMENTS = [
@@ -108,11 +108,12 @@
       ];
     const COASTER_SAMPLE = 2,
       COASTER_KINDS = { track: 0, station: 1, lift: 2, brake: 3 },
-      COASTER_G = 50.2,
-      COASTER_LIFT_SPEED = 34,
-      COASTER_STATION_SPEED = 10,
-      COASTER_BRAKE_SPEED = 40,
-      // Seven cars of four riders, 15.5 units (3 m) apart, front car first.
+      // Real gravity; the chain, station tyres and brake pace in metres a second.
+      COASTER_G = GRAVITY,
+      COASTER_LIFT_SPEED = 6.6 * UNITS_PER_METRE,
+      COASTER_STATION_SPEED = 2 * UNITS_PER_METRE,
+      COASTER_BRAKE_SPEED = 7.8 * UNITS_PER_METRE,
+      // Seven cars of four riders, 15.5 units apart, front car first.
       COASTER_CARS = 7,
       COASTER_CAR_GAP = 15.5,
       // Where the front car stops in the station (arc length from the circuit start).
@@ -272,7 +273,8 @@
     }
     /* Along-track acceleration: gravity on the gradient less rolling and air losses. */
     function coasterAcceleration(speed, rise) {
-      return -COASTER_G * rise - 0.9 - 0.000012 * speed * speed;
+      // Wheel losses of about 0.18 m/s², air drag growing with the square of the speed.
+      return -COASTER_G * rise - 0.18 * UNITS_PER_METRE - (0.0000614 / UNITS_PER_METRE) * speed * speed;
     }
     /* The speed a train carries round the circuit from a dispatch (for banking). */
     function coasterSpeedProfile(T) {
@@ -284,8 +286,8 @@
           rise = (T.Z[(i + 1) % n] - T.Z[i]) / T.ds;
         if (k === 1) speed = COASTER_STATION_SPEED;
         else if (k === 2) speed = Math.max(COASTER_LIFT_SPEED, Math.sqrt(Math.max(1, speed * speed - 2 * COASTER_G * rise * T.ds)));
-        else if (k === 3) speed = Math.max(COASTER_BRAKE_SPEED, speed - (120 * T.ds) / Math.max(speed, 1));
-        else speed = Math.sqrt(Math.max(16, speed * speed + 2 * coasterAcceleration(speed, rise) * T.ds));
+        else if (k === 3) speed = Math.max(COASTER_BRAKE_SPEED, speed - (23.4 * UNITS_PER_METRE * T.ds) / Math.max(speed, 1));
+        else speed = Math.sqrt(Math.max((0.78 * UNITS_PER_METRE) ** 2, speed * speed + 2 * coasterAcceleration(speed, rise) * T.ds));
         v[i] = speed;
       }
       return v;
@@ -421,7 +423,7 @@
         train.dwell -= dt;
         if (train.dwell <= 0) {
           train.running = true;
-          train.speed = 2;
+          train.speed = 0.4 * UNITS_PER_METRE;
           train.riders = player.coaster?.kind === 'train' ? 27 : 18 + Math.floor(seededRandom() * 10);
           parkCrowdBoard('coaster', 6);
         }
@@ -442,7 +444,7 @@
       const toStop = (COASTER_STOP - train.t + T.length) % T.length;
       if (kind === 1 && train.laps > 0 && toStop < 200) {
         // Home: the station tyres ease the train onto its mark.
-        train.speed = Math.max(1.5, Math.min(train.speed, Math.sqrt(2 * 9 * Math.max(0, toStop))));
+        train.speed = Math.max(0.3 * UNITS_PER_METRE, Math.min(train.speed, Math.sqrt(2 * 1.76 * UNITS_PER_METRE * Math.max(0, toStop))));
         if (toStop < 0.8 || toStop > 190) {
           train.running = false;
           train.t = COASTER_STOP;
@@ -458,9 +460,9 @@
       else if (kind === 3) {
         // Magnetic trims above the brake pace, drive tyres below it.
         train.speed += coasterAcceleration(train.speed, pull) * dt;
-        if (train.speed > COASTER_BRAKE_SPEED) train.speed = Math.max(COASTER_BRAKE_SPEED, train.speed - 70 * dt);
+        if (train.speed > COASTER_BRAKE_SPEED) train.speed = Math.max(COASTER_BRAKE_SPEED, train.speed - 13.7 * UNITS_PER_METRE * dt);
         else train.speed += (COASTER_BRAKE_SPEED - 4 - train.speed) * Math.min(1, dt * 1.2);
-      } else train.speed = Math.max(4, train.speed + coasterAcceleration(train.speed, pull) * dt);
+      } else train.speed = Math.max(0.78 * UNITS_PER_METRE, train.speed + coasterAcceleration(train.speed, pull) * dt);
       train.lastRise = rise;
       train.t += train.speed * dt;
       if (train.t >= T.length) {
@@ -485,7 +487,7 @@
       player.coaster = { kind: 'train', time: 0, car: 0, view: 0 };
       coasterTrain.dwell = Math.min(coasterTrain.dwell, 3);
       announce('SUNSET PIER', 'THE FALCON', 2.4);
-      tell('Bars down. ' + keyName('interact') + ' changes the view, ' + keyName('radioPower') + ' / ' + keyName('radioNext') + ' the radio. 64 metres, 125 km/h.', 4);
+      tell('Bars down. ' + keyName('interact') + ' changes the view, ' + keyName('radioPower') + ' / ' + keyName('radioNext') + ' the radio. ' + coasterBanner() + '.', 4);
       return true;
     }
     function leaveCoaster() {
@@ -546,7 +548,7 @@
       }
       player.coaster = { kind: 'wheel', capsule: best, time: 0, view: 0 };
       announce('SUNSET PIER', 'THE SUNSET EYE', 2.4);
-      tell('One turn, four minutes, 110 metres up. ' + keyName('radioPower') + ' / ' + keyName('radioNext') + ' the radio, ' + keyName('interact') + ' at the bottom to step off.', 4);
+      tell('One turn, four minutes, ' + Math.round(worldMeters(PIER.wheel.hub + WHEEL_CAPSULE_RADIUS + 12)) + ' metres up. ' + keyName('radioPower') + ' / ' + keyName('radioNext') + ' the radio, ' + keyName('interact') + ' at the bottom to step off.', 4);
       return true;
     }
     function updateWheelRide(deltaSeconds) {
@@ -1490,7 +1492,7 @@
       person.a = headingBetween(person, goal);
       person.walking = true;
       person.walk += deltaSeconds * 6;
-      if (moveBody(person, Math.cos(person.a) * 26 * deltaSeconds, Math.sin(person.a) * 26 * deltaSeconds, 5)) {
+      if (moveBody(person, Math.cos(person.a) * 4.5 * KMH * deltaSeconds, Math.sin(person.a) * 4.5 * KMH * deltaSeconds, 5)) {
         person.stuck = (person.stuck || 0) + deltaSeconds;
         if (person.stuck > 2) {
           person.parkRoute = null;
@@ -1764,6 +1766,17 @@
       coasterTrain.t = COASTER_STOP;
       coasterTrain.dwell = 1;
       return boardCoaster();
+    }
+    // The Falcon's height and top speed as a rider is told them (from the circuit itself).
+    function coasterBanner() {
+      const T = coasterCircuit();
+      let maxZ = 0,
+        maxV = 0;
+      for (let i = 0; i < T.count; i++) {
+        maxZ = Math.max(maxZ, T.Z[i]);
+        maxV = Math.max(maxV, T.speed[i]);
+      }
+      return Math.round(worldMeters(maxZ)) + ' metres, ' + Math.round(speedKmh(maxV)) + ' km/h';
     }
     // ---- Console report --------------------------------------------------------------
     /* DeadEndCity.park(): ride states, coaster numbers and an overlap self-check. */

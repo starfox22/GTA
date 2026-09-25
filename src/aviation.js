@@ -91,7 +91,8 @@
         )
       );
     }
-    // Assisted light-aircraft model. Speeds/forces are converted from metres to world units.
+    // Assisted light-aircraft model. Speeds and forces are real (km/h, m/s, g) and
+    // converted to world units through UNITS_PER_METRE, so the instruments read true.
     // Pitch sets angle of attack; lift acts normal to the flight path and banks into a turn.
     const AIRFRAME_SPECS = {
       courier: {
@@ -100,12 +101,16 @@
         w: 100,
         hp: 250,
         flightMass: 1450,
-        wing: 14,
-        thrust: 95,
+        // Wing and drag sized for a lift-off near 115 km/h and about 400 km/h
+        // flat out; `drag0` is the parasitic drag coefficient.
+        wing: 20.3,
+        drag0: 0.108,
+        thrust: 1.15 * GRAVITY,
         roll: 2.7,
         bank: 1,
-        stall: 140,
-        rotate: 165,
+        // Clean stall and rotation speeds (flaps lower both).
+        stall: 100 * KMH,
+        rotate: 115 * KMH,
         assist: 0.55,
         // Engine spool, fraction of full power per second (up, down).
         spoolUp: 0.9,
@@ -119,12 +124,14 @@
         hp: 320,
         mass: 5.2,
         flightMass: 2400,
-        wing: 22,
-        thrust: 112,
+        // Lift-off near 180 km/h, about 740 km/h flat out.
+        wing: 13.7,
+        drag0: 0.066,
+        thrust: 1.0 * GRAVITY,
         roll: 2.35,
         bank: 0.92,
-        stall: 155,
-        rotate: 183,
+        stall: 157 * KMH,
+        rotate: 180 * KMH,
         assist: 0.46,
         spoolUp: 0.38,
         spoolDown: 0.55,
@@ -137,12 +144,14 @@
         hp: 520,
         mass: 14,
         flightMass: 4300,
-        wing: 35,
-        thrust: 108,
+        // Lift-off near 210 km/h, about 830 km/h flat out.
+        wing: 18.3,
+        drag0: 0.06,
+        thrust: 0.85 * GRAVITY,
         roll: 1.55,
         bank: 0.78,
-        stall: 170,
-        rotate: 205,
+        stall: 183 * KMH,
+        rotate: 210 * KMH,
         assist: 0.32,
         spoolUp: 0.3,
         spoolDown: 0.45,
@@ -161,12 +170,12 @@
       }
     }
     const PLANE_FLIGHT = {
-      gravity: 9.81 / METERS_PER_UNIT,
+      gravity: GRAVITY,
       mass: 1450,
       wing: 14,
       stallAngle: 0.27,
-      // About 1300-1400 m: room to climb through the cloud layer (clouds3d.js,
-      // 600-950 m) and fly above the tops.
+      // About 825-900 m: room to climb through the cloud layer (clouds3d.js,
+      // 385-610 m) and fly above the tops.
       ceilingStart: 6600,
       ceiling: 7200,
     };
@@ -175,14 +184,14 @@
         dry = corners(vehicleShape(c)).every((p) => landAt(p.x, p.y));
       const aligned = runway && Math.abs(Math.sin(c.a - runway.a)) < 0.22;
       const unsafe =
-        Math.max(0, sink - 13) * 3 +
+        Math.max(0, sink / UNITS_PER_METRE - 2.5) * 15 +
         Math.max(0, Math.abs(c.bank) - 0.18) * 180 +
         Math.max(0, Math.abs(c.pitch) - 0.23) * 180;
-      let damage = unsafe + (aligned ? 0 : dry ? 35 + Math.max(0, c.airspeed - 160) * 0.35 : c.maxhp);
+      let damage = unsafe + (aligned ? 0 : dry ? 35 + Math.max(0, c.airspeed / UNITS_PER_METRE - 31) * 1.8 : c.maxhp);
       if (!aircraftClear(c)) damage += 90;
       // Wheels not down and locked: a belly landing.
       const belly = dry && (c.gearPos ?? 1) < 0.9;
-      if (belly) damage += 45 + Math.max(0, (c.airspeed || 0) - 120) * 0.3;
+      if (belly) damage += 45 + Math.max(0, (c.airspeed || 0) / UNITS_PER_METRE - 23) * 1.5;
       if (damage > 0) damageVehicle(c, damage, c.x, c.y);
       c.altitude = terrainHeight(c.x, c.y);
       c.vz = 0;
@@ -323,7 +332,7 @@
         flightPathAngle = Math.atan2(aircraft.vz, Math.max(1, horizontalSpeed));
       const q = 0.5 * 1.225 * Math.pow(speed * METERS_PER_UNIT, 2),
         liftScale = (q * flightModel.wing) / flightModel.mass / METERS_PER_UNIT;
-      const authority = clamp(horizontalSpeed / 190, 0.08, 1),
+      const authority = clamp(horizontalSpeed / (37 * UNITS_PER_METRE), 0.08, 1),
         trim = clamp(
           (flightModel.gravity / Math.max(1, liftScale) / Math.max(0.5, Math.cos(aircraft.bank)) -
             0.22 -
@@ -336,7 +345,7 @@
       let pitchTarget = airborne
         ? clamp(trim + (pull ? 0.21 : push ? -0.16 : 0), -0.24, 0.39)
         : pull
-          ? 0.11
+          ? 0.2
           : 0;
       if (airborne && push) pitchTarget = Math.min(pitchTarget, -0.16);
       if (airborne && aircraft.stalled && !pull)
@@ -355,7 +364,7 @@
       const pitchOmega = 3 * Math.sqrt(authority),
         rollOmega = airframeProfile.roll * 1.25 * Math.sqrt(authority),
         bankTarget = airborne
-          ? turn * airframeProfile.bank * (0.65 + 0.35 * clamp((horizontalSpeed - 170) / 90, 0, 1))
+          ? turn * airframeProfile.bank * (0.65 + 0.35 * clamp((horizontalSpeed - 33 * UNITS_PER_METRE) / (17.6 * UNITS_PER_METRE), 0, 1))
           : 0;
       aircraft.pitchRate +=
         (pitchOmega * pitchOmega * (pitchTarget - aircraft.pitch) - 2 * 0.85 * pitchOmega * aircraft.pitchRate) *
@@ -386,14 +395,14 @@
       const lift = liftScale * liftCoefficient,
         drag =
           liftScale *
-            (0.3 +
+            ((airframeProfile.drag0 ?? 0.3) +
               0.068 * liftCoefficient * liftCoefficient +
               stallAngleExcess * 0.85 +
               0.06 * flaps +
               (airborne ? 0.04 * aircraft.gearPos : 0)) +
-          (airborne ? 0 : 5) +
+          (airborne ? 0 : 0.1 * GRAVITY) +
           // No wheels under it: the belly scrapes along.
-          (!airborne && aircraft.gearPos < 0.5 ? 160 : 0);
+          (!airborne && aircraft.gearPos < 0.5 ? 3.2 * GRAVITY : 0);
       const thrust =
           aircraft.power * airframeProfile.thrust * clamp(aircraft.hp / aircraft.maxhp, 0.3, 1),
         pathA = horizontalSpeed > 1 ? Math.atan2(aircraft.vy, aircraft.vx) : aircraft.a;
@@ -405,7 +414,7 @@
             0,
             1,
           )
-        : clamp((horizontalSpeed - 60) / 900, 0, 0.12) * (aircraft.gearPos < 0.5 ? 6 : 1);
+        : clamp((horizontalSpeed - 11.7 * UNITS_PER_METRE) / (176 * UNITS_PER_METRE), 0, 0.12) * (aircraft.gearPos < 0.5 ? 6 : 1);
       aircraft.buffet += (buffetTarget - aircraft.buffet) * (1 - Math.exp(-stepSeconds * 6));
       aircraft.gLoad +=
         ((airborne ? (lift * Math.cos(angleOfAttack)) / flightModel.gravity : 1) - aircraft.gLoad) *
@@ -413,10 +422,10 @@
       // Lift rotates the velocity vector; the fuselage follows its slip angle instead of snapping velocity.
       if (airborne) {
         const yawRate = clamp(
-            ((lift * Math.sin(aircraft.bank)) / Math.max(50, horizontalSpeed)) *
+            ((lift * Math.sin(aircraft.bank)) / Math.max(9.8 * UNITS_PER_METRE, horizontalSpeed)) *
               (1 +
                 airframeProfile.assist *
-                  clamp((horizontalSpeed - stallSpeed) / 70, 0, 1) *
+                  clamp((horizontalSpeed - stallSpeed) / (13.7 * UNITS_PER_METRE), 0, 1) *
                   (aircraft.stalled ? 0.3 : 1)),
             -0.7,
             0.7,
@@ -432,7 +441,7 @@
             thrust * Math.sin(aircraft.pitch - flightPathAngle) -
             flightModel.gravity * Math.cos(flightPathAngle);
         const nextGamma = clamp(
-          flightPathAngle + (normalAccel / Math.max(60, speed)) * stepSeconds,
+          flightPathAngle + (normalAccel / Math.max(11.7 * UNITS_PER_METRE, speed)) * stepSeconds,
           -1.4,
           1.1,
         );
@@ -462,12 +471,12 @@
         );
         // Wheel brakes: S with the power at idle brakes hard; with power on it
         // pulls the lever back and drags a little.
-        const braking = down && aircraft.throttle < 0.05 ? (aircraft.gearPos > 0.5 ? 85 : 30) : down ? 45 : 0;
+        const braking = (down && aircraft.throttle < 0.05 ? (aircraft.gearPos > 0.5 ? 1.7 : 0.6) : down ? 0.9 : 0) * GRAVITY;
         along = Math.max(0, along + (thrust - drag - braking) * stepSeconds);
         // Nosewheel steering: full lock at taxi speed, tapering off as the rudder
         // takes over on the take-off roll.
         aircraft.av +=
-          ((turn * 0.55 * clamp(along / 50, 0, 1)) / (1 + along / 110) - aircraft.av) *
+          ((turn * 0.55 * clamp(along / (9.8 * UNITS_PER_METRE), 0, 1)) / (1 + along / (21.5 * UNITS_PER_METRE)) - aircraft.av) *
           (1 - Math.exp(-stepSeconds * 5));
         aircraft.ctrlYaw += (turn - aircraft.ctrlYaw) * ease;
         aircraft.a = normalizeAngle(aircraft.a + aircraft.av * stepSeconds);
@@ -475,7 +484,7 @@
         aircraft.vy = Math.sin(aircraft.a) * along;
         aircraft.vz = 0;
         if (lift > flightModel.gravity * 1.02 && pull && along > rotateSpeed) {
-          aircraft.vz = 2;
+          aircraft.vz = 0.4 * UNITS_PER_METRE;
           aircraft.altitude = terrainHeight(aircraft.x, aircraft.y) + 0.1;
           aircraft.landedAt = null;
         }
@@ -494,7 +503,7 @@
     function planeWarnings(aircraft) {
       const clearance = aircraftClearance(aircraft),
         gearWarning =
-          aircraft.gearPos < 1 && clearance > 1 && clearance < 320 && aircraft.vz < -8 && aircraft.power < 0.45;
+          aircraft.gearPos < 1 && clearance > 1 && clearance < 320 && aircraft.vz < -1.5 * UNITS_PER_METRE && aircraft.power < 0.45;
       aircraft.gearWarning = gearWarning;
       if (aircraft.stallWarning && physicsClock - (aircraft.hornAt || -100) > 0.42) {
         aircraft.hornAt = physicsClock;
@@ -685,7 +694,7 @@
         if (Math.hypot(p.x - x, p.y - y) > step * 0.4) break;
       }
       p.a = a;
-      p.walk += deltaSeconds * 12;
+      p.walk += deltaSeconds * strideRate(speed);
     }
     function followWitness(missionState, deltaSeconds) {
       const p = missionState.witnessActor;
@@ -712,7 +721,7 @@
         let reached = -1;
         for (let i = 0; i < trail.length - 1; i++) if (distanceBetween(p, trail[i]) < 16) reached = i;
         if (reached >= 0) trail.splice(0, reached + 1);
-        if (distanceBetween(p, player) > 30) witnessStep(p, trail[0] || player, deltaSeconds, 118);
+        if (distanceBetween(p, player) > 30) witnessStep(p, trail[0] || player, deltaSeconds, 26 * KMH);
       } else if (missionState.stage === 5) p.hidden = true;
     }
     function flightMissionUpdate(missionState, deltaSeconds) {

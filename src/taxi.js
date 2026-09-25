@@ -19,7 +19,8 @@
       taxiPicking = null;
     const TAXI_BASE_FARE = 14,
       TAXI_PER_BLOCK = 4,
-      TAXI_SPEED = 260;
+      // A brisk cab through town: about 65 km/h.
+      TAXI_SPEED = 65 * KMH;
     const TAXI_SMALLTALK = [
       'Traffic was murder on the causeway today.',
       'You see the liner come in this morning?',
@@ -195,13 +196,13 @@
       const distance = distanceBetween(car, target),
         remaining = ride.route.length - ride.index,
         // Ease off into the final stop and through tight corners.
-        cruise = Math.min(TAXI_SPEED, remaining < 2 ? Math.sqrt(distance * 180) + 18 : TAXI_SPEED),
+        cruise = Math.min(TAXI_SPEED, remaining < 2 ? Math.sqrt(distance * 2 * 2.5 * UNITS_PER_METRE) + 8 : TAXI_SPEED),
         blocked = taxiPathBlocked(ride, deltaSeconds),
         desired = blocked ? 0 : Math.min(cruise, Math.sqrt(Math.max(0, distance) * 220) + 26);
       // The cab's pace lives on the ride: the physics step recomputes car.speed
       // from vx/vy (zero for a car driven along its route like this) before this
       // runs, so accumulating on car.speed left the cab crawling at ~6 units/s.
-      ride.speed = Math.max(0, (ride.speed || 0) + clamp(desired - (ride.speed || 0), -340 * deltaSeconds, 180 * deltaSeconds));
+      ride.speed = Math.max(0, (ride.speed || 0) + clamp(desired - (ride.speed || 0), -0.5 * GRAVITY * deltaSeconds, 0.28 * GRAVITY * deltaSeconds));
       car.speed = ride.speed;
       const heading = headingBetween(car, target),
         turn = normalizeAngle(heading - car.a);
