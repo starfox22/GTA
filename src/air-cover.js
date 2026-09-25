@@ -311,4 +311,79 @@
       drawingContext.fillText('U', 2688, 2940 + 4 / scale);
       drawingContext.restore();
     }
+    /**
+     * OVERHEAD COVER
+     * `overheadCover(x, y, elevation)` answers one question for everyone: is
+     * there a roof over this point, above a person standing at `elevation`? It
+     * returns that cover ({ kind, bottom, top, ... }) or null. The police
+     * helicopter cannot see a player under cover (combat-rules.js airCanSee), so
+     * with the ground units out of sight too the lose-police timer runs.
+     *
+     * What counts, from data that already exists wherever possible:
+     *   - the overhead blocks of airCoverVolumes(): the Northbank underpass roof
+     *     and portals, the elevated railway decks and the station canopies;
+     *   - roofs registered with registerOverheadCover() by whoever builds them:
+     *     every cutaway roof (lighting3d.js registerCutawayRoof: bus shelters,
+     *     Vinny's depot), the Falcon's queue hall canopy and station roof
+     *     (themepark3d.js), shop awnings (cityscape3d.js), club and hotel
+     *     entrance canopies (civic3d.js) and the cruise terminal's drop-off
+     *     canopy (marina3d.js);
+     *   - the inside of a building, below its roof (Vinny's depot, a garage bay);
+     *   - a road bridge over someone on the water (underBridgeWater).
+     * Trees do not count. Registered and volume covers live in one grid of
+     * OVERHEAD_CELL-unit cells (built on first use, rebuilt after a
+     * registration), so the query is a cell lookup and a few footprint tests.
+     */
+    const OVERHEAD_CELL = 256,
+      overheadCovers = [];
+    let overheadGrid = null;
+    function registerOverheadCover(x, y, hx, hy, a = 0, bottom = 12, top = bottom + 2, kind = 'roof') {
+      const c = { x, y, hx, hy, a, bottom, top, kind, cos: Math.cos(a), sin: Math.sin(a) },
+        ex = Math.abs(c.cos) * hx + Math.abs(c.sin) * hy,
+        ey = Math.abs(c.sin) * hx + Math.abs(c.cos) * hy;
+      Object.assign(c, { x0: x - ex, x1: x + ex, y0: y - ey, y1: y + ey });
+      overheadCovers.push(c);
+      overheadGrid = null;
+      return c;
+    }
+    function overheadCoverGrid() {
+      if (overheadGrid) return overheadGrid;
+      overheadGrid = new Map();
+      const volumes = airCoverVolumes()
+        .filter((b) => !b.bridge && (b.minHeight || 0) >= 8)
+        .map((b) => ({ ...b, bottom: b.minHeight, top: b.height, kind: b.rail ? 'railway' : 'underpass' }));
+      for (const c of [...volumes, ...overheadCovers])
+        for (let i = Math.floor(c.x0 / OVERHEAD_CELL); i <= Math.floor(c.x1 / OVERHEAD_CELL); i++)
+          for (let j = Math.floor(c.y0 / OVERHEAD_CELL); j <= Math.floor(c.y1 / OVERHEAD_CELL); j++) {
+            const key = i * 4096 + j;
+            if (!overheadGrid.has(key)) overheadGrid.set(key, []);
+            overheadGrid.get(key).push(c);
+          }
+      return overheadGrid;
+    }
+    const buildingCover = { kind: 'building', bottom: 0, top: 0 },
+      bridgeCover = { kind: 'bridge', bottom: 0, top: 30 };
+    function overheadCover(x, y, elevation = terrainHeight(x, y)) {
+      // Under it means its underside is above a standing person's head, and not
+      // so far above that it no longer hides them.
+      const cell = overheadCoverGrid().get(Math.floor(x / OVERHEAD_CELL) * 4096 + Math.floor(y / OVERHEAD_CELL));
+      if (cell)
+        for (let i = 0; i < cell.length; i++) {
+          const c = cell[i];
+          if (c.bottom < elevation + 10 || c.bottom > elevation + 170) continue;
+          if (inCoverFootprint(c, x, y)) return c;
+        }
+      for (const b of buildingsNear(x, y))
+        if (!b.depotWall && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h && elevation < b.height - 12) {
+          buildingCover.bottom = buildingCover.top = b.height;
+          return buildingCover;
+        }
+      if (elevation < 4 && underBridgeWater(x, y)) return bridgeCover;
+      return null;
+    }
+    /* Hidden from the air: the target (the player, or the vehicle they are in)
+       is under overhead cover. */
+    function hiddenFromAir(t) {
+      return !!t && !!overheadCover(t.x, t.y, entityElevation(t));
+    }
     // END SUBSYSTEM: src/air-cover.js

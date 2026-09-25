@@ -949,7 +949,8 @@
             bumper.position.y -= half * Math.sin(drop);
             bumper.position.z += side * half * (1 - Math.cos(drop));
           }
-          bumper.material = damage.burnt ? burntMetal : chrome;
+          // Police bumpers are black plastic (police3d.js).
+          bumper.material = damage.burnt ? burntMetal : m.bumperMaterial || chrome;
         });
         // Doors swing out on a bent hinge; torn off, the dark opening is left.
         for (const side of [-1, 1]) {
@@ -964,6 +965,8 @@
             m.body.add(pivot);
             const panel = box(pivot, -l * 0.13, (4.8 + h) / 2 + 0.2, side * 0.25, l * 0.26, h - 4.4, 0.45, m.paint),
               opening = box(m.body, l * 0.07, (4.8 + h) / 2, side * (w * 0.5 + 0.04), l * 0.24, h - 5, 0.3, engineBay);
+            // A livery samples its door colour through the panel's UVs (police3d.js).
+            if (m.panelGeometry) panel.geometry = m.panelGeometry;
             door = m.doors[side] = { pivot, panel, opening };
           }
           door.pivot.rotation.set(0, side * (state === 1 ? 0.95 : 0), state === 1 ? -0.09 : 0);
@@ -976,19 +979,21 @@
           m.trunk = new Three.Group();
           m.trunk.position.set(-l * 0.3, m.hoodBaseY, 0);
           m.body.add(m.trunk);
-          box(m.trunk, -l * 0.09, 0, 0, l * 0.18, 0.4, w * 0.67, m.paint);
+          const lid = box(m.trunk, -l * 0.09, 0, 0, l * 0.18, 0.4, w * 0.67, m.paint);
+          if (m.trunkGeometry) lid.geometry = m.trunkGeometry;
         }
         if (m.trunk) m.trunk.rotation.z = parts.trunk ? -0.85 : 0;
         // Glass: one material per pane once any pane is damaged.
         const glass = damage.glass,
-          paneMaterial = (state) => (state === 2 ? brokenGlass : state === 1 ? crackedGlass : carGlass);
+          // `m.glass`: a model's own intact glass (police3d.js).
+          paneMaterial = (state) => (state === 2 ? brokenGlass : state === 1 ? crackedGlass : m.glass || carGlass);
         if (m.cabinBase) {
           const hurt = damage.burnt || glass.front || glass.rear || glass.left || glass.right;
           if (hurt) {
-            m.paneMaterials = m.paneMaterials || [carGlass, carGlass, carGlass, carGlass, carGlass];
+            m.paneMaterials = m.paneMaterials || [carGlass, carGlass, carGlass, carGlass, carGlass].map(() => m.glass || carGlass);
             PANE_ORDER.forEach((pane, i) => (m.paneMaterials[i] = paneMaterial(pane === 'roof' ? (damage.burnt ? 2 : 0) : glass[pane])));
             m.cabin.material = m.paneMaterials;
-          } else m.cabin.material = carGlass;
+          } else m.cabin.material = m.glass || carGlass;
         } else m.cabin.material = paneMaterial(glass.front);
         // Wheels: bent inward on a crumpled side; a flat tyre sits down on its rim.
         m.wheels.forEach(({ wheel, side }) => {
@@ -1091,8 +1096,9 @@
         }
         if (m.charred) {
           m.charred = false;
-          m.paint.map = null;
-          m.paint.emissiveMap = null;
+          // A police livery comes back with the repair (police3d.js).
+          m.paint.map = m.liveryMap || null;
+          m.paint.emissiveMap = m.liveryMap || null;
           m.paint.emissive.setRGB(0, 0, 0);
           m.paint.needsUpdate = true;
           m.paintWear = -1;
@@ -1102,13 +1108,15 @@
           key = wear + heat * 10;
         if (m.paintWear === key) return;
         m.paintWear = key;
-        m.paint.color.set(c.color).lerp(grime, wear * 0.22).lerp(sootColor, heat);
+        m.paint.color.set(m.liveryColor || c.color).lerp(grime, wear * 0.22).lerp(sootColor, heat);
         m.paint.roughness = 0.3 + wear * 0.6;
         m.paint.metalness = 0.63 - wear * 0.42;
         // Scuffed and dented panels lose the gloss of their clear coat.
         if (m.paint.isMeshPhysicalMaterial) {
-          m.paint.roughness = 0.42 + wear * 0.5;
-          m.paint.metalness = 0.55 - wear * 0.35;
+          // `finish`: a model's own paint (police liveries are satin, not metallic).
+          const finish = m.finish;
+          m.paint.roughness = (finish ? finish.roughness : 0.42) + wear * 0.5;
+          m.paint.metalness = finish ? finish.metalness * (1 - wear * 0.6) : 0.55 - wear * 0.35;
           m.paint.clearcoat = 1 - wear * 0.8;
           m.paint.clearcoatRoughness = 0.08 + wear * 0.5;
         }

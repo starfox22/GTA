@@ -458,6 +458,9 @@
         stationRoofMeshes.push(...roof.flush(coasterGroup, 'falcon station roof'));
         // Queue hall: a shade canopy on posts over the switchback rails.
         b.box(parkMats.canvasWhite, parkPlaced(2600, -6375, 30, 200, 1.2, 50));
+        // Both roofs hide whoever is under them from the police helicopter (air-cover.js).
+        registerOverheadCover(2600, -6375, 100, 25, 0, 29, 31, 'queue canopy');
+        registerOverheadCover((x0 + x1) / 2, -6430, (x1 - x0) / 2 + 5, 30, 0, 50, 62, 'station roof');
         for (let x = 2505; x <= 2695; x += 38)
           for (const y of [-6398, -6352]) b.add(parkMats.gold, parkTubeGeo, parkBetween(parkP3(x, y, 0), parkP3(x, y, 30), 0.8));
         for (const [y, x0q, x1q] of [
@@ -1081,6 +1084,7 @@
         s.position.y = 93;
         s.userData.backing.position.y = 93;
       }
+      // @include src/unicorn3d.js
       // ---- Carousel ------------------------------------------------------------------
       const carousel = new Three.Group();
       carousel.position.set(PIER.carousel.x, 0, PIER.carousel.y);
@@ -1571,6 +1575,7 @@
         pool(PIER.darkRide.x + 100, PIER.darkRide.y + PIER.darkRide.h + 20, 130, 'rgba(255,150,80,A)', 0.45);
         pool(PIER.bumper.x + 75, PIER.bumper.y + 50, 110, 'rgba(160,120,255,A)', 0.45);
         pool(PIER.gate.x, PIER.gate.y, 170, 'rgba(255,215,150,A)', 0.55);
+        pool(PIER.unicorn.x, PIER.unicorn.y, 70, 'rgba(255,200,150,A)', 0.4);
         pool(PIER.wheel.x, PIER.wheel.y, 200, 'rgba(140,220,255,A)', 0.3);
         pool(PIER.station.x, PIER.station.y, 140, 'rgba(255,200,120,A)', 0.4);
         pool(PIER.beachClub.x + 240, PIER.beachClub.y + 100, 220, 'rgba(120,230,255,A)', 0.3);
@@ -1705,6 +1710,7 @@
         updateBumpers(dt);
         syncRideInstances();
         updateFountain(night);
+        updateUnicornFountain(night);
         updateFireworks();
       }
       // ---- Ride cameras ----------------------------------------------------------------
