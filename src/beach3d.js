@@ -157,13 +157,8 @@
           g.fillStyle = rnd() < 0.7 ? 'rgba(92,86,56,0.55)' : 'rgba(236,228,210,0.7)';
           g.fillRect(p.x, p.y, 1.2 + rnd() * 2.4, 0.8);
         }
-        // Volleyball court: raked sand inside blue boundary ropes.
-        const c = BEACH_LAYOUT.court;
-        g.fillStyle = 'rgba(245,232,200,0.5)';
-        g.fillRect(c.x - c.w / 2, c.y - c.h / 2, c.w, c.h);
-        g.strokeStyle = '#2d69b3';
-        g.lineWidth = 1.4;
-        g.strokeRect(c.x - c.w / 2, c.y - c.h / 2, c.w, c.h);
+        // Volleyball court (beachvolley.js): a raked sand pit, blue boundary tapes.
+        paintVolleyCourt(g, rnd);
         // Boardwalk planks.
         const w = BEACH.boardwalk;
         g.fillStyle = '#8f7457';
@@ -454,32 +449,8 @@
         addGlow(l.x, 29.5, l.y - 5, 18, '#ffd9a0', 0.45, { day: 0, phase: 0 });
       }
       for (const l of barStringLights) addGlow(l.x, l.z, l.y, 6, '#ffc27a', 0.5, { day: 0, phase: 0 });
-      // Volleyball: two posts and a net across the middle of the court.
-      {
-        const c = BEACH_LAYOUT.court,
-          g = beachStatic(c.x, c.y);
-        for (const dz of [-c.h / 2 - 4, c.h / 2 + 4]) box(g, 0, 8.5, dz, 1, 17, 1, beachPaint.steel);
-        const netCanvas = document.createElement('canvas');
-        netCanvas.width = 64;
-        netCanvas.height = 16;
-        const ng = netCanvas.getContext('2d');
-        ng.strokeStyle = '#fff';
-        ng.lineWidth = 1;
-        for (let x = 0; x <= 64; x += 4) ng.strokeRect(x, 0, 0.5, 16);
-        for (let y = 0; y <= 16; y += 4) ng.strokeRect(0, y, 64, 0.5);
-        ng.fillStyle = '#fff';
-        ng.fillRect(0, 0, 64, 2);
-        const netTexture = new Three.CanvasTexture(netCanvas);
-        netTexture.wrapS = Three.RepeatWrapping;
-        const net = new Three.Mesh(
-          new Three.PlaneGeometry(c.h + 8, 6),
-          new Three.MeshBasicMaterial({ map: netTexture, transparent: true, side: Three.DoubleSide, depthWrite: false }),
-        );
-        net.rotation.y = Math.PI / 2;
-        net.position.set(c.x, 13, c.y);
-        net.userData.dynamic = true;
-        beachGroup.add(net);
-      }
+      // Volleyball: the poles, net, anchors and scoreboard (beachvolley3d.js).
+      buildVolleyCourt();
       for (const c of BEACH_LAYOUT.castles) {
         // A keep and four towers, a little lopsided.
         const g = beachStatic(c.x, c.y, c.a);
@@ -948,6 +919,43 @@
             armL = armR = 2.85;
             outL = outR = 0.12;
             break;
+          // Volleyball (beachvolley.js): the touches and the celebrations.
+          case 'bump':
+            ry = -1.6;
+            lean = -0.35;
+            legL = legR = 0.45;
+            armL = armR = 1.15;
+            outL = outR = -0.12;
+            break;
+          case 'dig':
+            ry = -3.2;
+            lean = -0.6;
+            legL = 0.9;
+            legR = -0.3;
+            armL = armR = 1.35;
+            outL = outR = -0.1;
+            break;
+          case 'set':
+            armL = armR = 2.55;
+            outL = outR = 0.4;
+            lean = 0.05;
+            break;
+          case 'spike':
+            armR = 3.0 + Math.sin(t * 9) * 0.3;
+            armL = 1.6;
+            legL = legR = 0.45;
+            lean = 0.15;
+            break;
+          case 'serve':
+            armL = 2.4;
+            armR = 2.9;
+            lean = 0.1;
+            legL = 0.25;
+            break;
+          case 'cheer':
+            armL = armR = 2.75 + Math.sin(t * 8) * 0.15;
+            outL = outR = 0.55;
+            break;
           case 'throw':
             armR = 1.5;
             armL = -0.4;
@@ -1044,6 +1052,7 @@
         for (const m of Object.values(rig)) m.instanceMatrix.needsUpdate = true;
         beachBallMesh.visible = beachBall.active;
         if (beachBall.active) beachBallMesh.position.set(beachBall.x, beachBall.z, beachBall.y);
+        updateVolleyVisuals();
         beachDiscs.forEach((d, i) => {
           discMeshes[i].visible = !!d.active;
           if (d.active) discMeshes[i].position.set(d.x, d.z, d.y);

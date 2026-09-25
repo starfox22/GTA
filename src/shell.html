@@ -69,6 +69,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Swimming, wading, sinking cars, beach-only entry (shoreStepBlocked), ladders, dive/splashdown, rescue.
   src/water-audio.js: Water and beach sound
     Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle.
+  src/beachvolley.js: Beach volleyball on Palm Keys Beach
+    Regulation court plan, 2 v 2 rally scoring with a physics ball and AI touches, the player joining and hitting, the hint card.
   src/beach.js: Palm Keys Beach life
     Palm Keys Beach furniture plan, beachgoers by hour, games, panic and kiosks.
   src/roofmission.js: Blue Hour rooftop mission
@@ -141,6 +143,12 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/beachclub.js: Marea Beach Club
     The club on the beach-club plot: plan and colliders, cast of slots by hour, door queue and bouncer talk, trouble, player cover and VIP band.
   src/beachclub-audio.js: Marea Beach Club music
+  src/clubpool.js: Marea pool: in, swim, out
+    Dive into the club pool, swim inside its bounds with the sea's stroke and breath, climb out onto the deck, drips.
+  src/clubtalk.js: Conversations with Marea club-goers
+    Personality scripts by day and night, alternating player / club-goer bubbles, no repeats, gestures, goodbyes.
+  src/leisure.js: Beach and club leisure: prompt and action key
+    One dispatcher for the E prompt of volleyball, the pool and the conversations.
     Look-ahead Web Audio sets (day, sunset, night house), wall low-pass by listener position, the groove clock dancers follow.
   src/ambience.js: City soundscape
     Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker.
@@ -204,6 +212,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery.
   src/wakes3d.js: Boat wakes and spray
     Kelvin wake, propeller wash and hull collar drawn into a wake map the water samples; bow spray.
+  src/beachvolley3d.js: Beach volleyball court meshes
+    Pit and tapes in the sand texture, poles, net, antennas, scoreboard, ball shadow and landing ring.
   src/beach3d.js: Palm Keys Beach meshes
     Sand, swash ribbon, pier, props, ladders and instanced beachgoers.
   src/county3d.js: County and mountain meshes

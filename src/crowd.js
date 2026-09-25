@@ -268,7 +268,7 @@
       return clamp(1.5 + text.length * 0.065, 2.4, 6);
     }
     function speechPriority(p) {
-      if (p.military || p.police || p.missionTag || p.ally) return 3;
+      if (p.military || p.police || p.missionTag || p.ally || p.inConversation) return 3;
       const kind = p.speechKindText === p.speech ? p.speechKind : '';
       if (SPEECH_TO_PLAYER.has(kind) || distanceBetween(p, player) < 70) return 2;
       return 1;
@@ -286,7 +286,8 @@
       speechShown = speechShown.filter((p) => speechLive(p) && p.speechShownText === p.speech);
       const waiting = [],
         labels = [];
-      for (const list of [pedestrians, vehicles, gangMembers])
+      // clubTalkSpeakers(): the player, while talking with a club-goer (clubtalk.js).
+      for (const list of [pedestrians, vehicles, gangMembers, clubTalkSpeakers()])
         for (const p of list) {
           if (!p.speech || p.speechUntil < gameTime) continue;
           if (p.speechHeard !== p.speech) {
