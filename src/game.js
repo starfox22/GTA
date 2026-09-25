@@ -174,10 +174,18 @@
       KMH = UNITS_PER_METRE / 3.6,
       KNOTS = UNITS_PER_METRE * 0.514444,
       GRAVITY = 9.81 * UNITS_PER_METRE;
-    // On foot: a walk, a jog (the default) and a sprint, in map units a second.
-    const FOOT_WALK = 5.5 * KMH,
-      FOOT_JOG = 11 * KMH,
-      FOOT_SPRINT = 24 * KMH;
+    /* On foot, in map units a second: the player runs by default (FOOT_RUN, the
+       full running gait) and walks while the walk action is held (Shift,
+       controls.js). There is no separate sprint: the run outpaces every officer
+       on foot (pursuit.js OFFICER_KINDS, 16-19 km/h). The Blue Hour terrace is
+       always walked (a stealth party, roofmission.js). */
+    const FOOT_WALK = 5.4 * KMH,
+      FOOT_RUN = 20 * KMH;
+    /* The pace the player's legs are going on foot now; the movement, mountain
+       footing (terrain.js), footsteps (audio.js) and the police's aim read it. */
+    function footPace() {
+      return player.roof || actionHeld('walk') ? FOOT_WALK : FOOT_RUN;
+    }
     /* People's legs: one stride (two steps) covers 10 units plus 0.3 s of travel,
        so a walk steps about twice a second and a sprint four times. strideCycle
        is in map units (crowd3d.js advances its phase by distance over it);
@@ -2186,7 +2194,7 @@
       }
       player.car = null;
       player.inv = 0.5;
-      tell('On foot · ' + keyName('fire') + ' to fire · ' + keyName('sprint') + ' to sprint', 1.8);
+      tell('On foot · ' + keyName('fire') + ' to fire · hold ' + keyName('walk') + ' to walk', 1.8);
       tone(160, 0.06, 0.15, 'triangle');
     }
     function interact() {
@@ -3138,20 +3146,8 @@
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
           if (x || y) {
             player.a = Math.atan2(y, x);
-            // On foot the player jogs; Shift sprints and the walk key (C) walks.
-            // The Blue Hour terrace is walked, or jogged with Shift.
-            const sprinting = keys.ShiftLeft || keys.ShiftRight;
-            let s = player.swimming
-              ? swimSpeed()
-              : player.roof
-                ? sprinting
-                  ? FOOT_JOG
-                  : FOOT_WALK
-                : sprinting
-                  ? FOOT_SPRINT
-                  : actionHeld('walk')
-                    ? FOOT_WALK
-                    : FOOT_JOG;
+            // On foot the player runs; holding the walk action (Shift) walks.
+            let s = player.swimming ? swimSpeed() : footPace();
             if (player.wading) s *= wadeFactor();
             player.walk += deltaSeconds * strideRate(s);
             moveBody(
@@ -4959,6 +4955,10 @@
         tuneCarRadio(carRadioStation + 1);
         return;
       }
+      if (radioAboard() && (is('radioLouder') || is('radioQuieter'))) {
+        stepRadioVolume(is('radioLouder') ? 1 : -1);
+        return;
+      }
       // Skip the ride, or pick the train's stop for it (ride-skip.js). Off a ride
       // the keys fall through and do nothing.
       if ((is('skipRide') && rideSkipKey('skip')) || (is('skipStop') && rideSkipKey('cycle'))) return;
@@ -6192,8 +6192,9 @@
       // masterVolume: 40, minimapZoom: 2, minimapFolded: true, touch: 'on' }.
       settings(changes) {
         if (changes && typeof changes === 'object') {
-          for (const key of ['masterVolume', 'soundVolume', 'radioVolume', 'voiceVolume'])
+          for (const { key } of AUDIO_VOLUMES)
             if (Number.isFinite(changes[key])) settings[key] = clamp(Math.round(changes[key]), 0, 100);
+          if (changes.audioReset === true) resetAudioVolumes();
           if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
           if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
@@ -6221,10 +6222,10 @@
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,
           sound: soundOn,
-          masterVolume: settings.masterVolume,
-          soundVolume: settings.soundVolume,
-          radioVolume: settings.radioVolume,
-          voiceVolume: settings.voiceVolume,
+          // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
+          // radioVolume, engineVolume, soundVolume (effects), voiceVolume,
+          // ambienceVolume, sirenVolume.
+          ...Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.key, settings[v.key]])),
           voices: voicesOn,
           chatter: settings.npcChatter,
           minimapFolded: hudState.minimapFolded,
@@ -6237,6 +6238,8 @@
           screen: gameMode === 'settings' ? settingsTab : null,
         };
       },
+      // The car radio and the radio box's volume row (car-radio.js RADIO VOLUME).
+      radio: () => radioReport(),
       // Open the settings screen on a tab ('graphics', 'audio', 'gameplay',
       // 'controls'); during play it opens over the pause menu. Screenshot tours use it.
       openSettings(tab = 'graphics') {

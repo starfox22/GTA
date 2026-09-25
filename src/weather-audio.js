@@ -38,7 +38,7 @@
       cabin.frequency.value = 16000;
       cabin.Q.value = 0.4;
       bus.gain.value = 1;
-      cabin.connect(bus).connect(master);
+      cabin.connect(bus).connect(ambienceBus);
       // One recorded bed through a filter and a gain into `out`.
       const bed = (name, type, frequency, q, out = cabin) => {
         const source = loopingSource(name),
@@ -188,7 +188,7 @@
       f.frequency.value = randomBetween(900, 1600);
       f.Q.value = 0.8;
       g.gain.value = 0.05 + wet * 0.09;
-      s.connect(f).connect(g).connect(master);
+      s.connect(f).connect(g).connect(ambienceBus);
       s.start(now);
     }
     /**

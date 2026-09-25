@@ -310,4 +310,130 @@
         tuneCarRadio(i);
         canvas.focus();
       };
+    /**
+     * RADIO VOLUME
+     * The speaker, slider and level in the radio box set the same value as
+     * Settings · Audio · Radio music: settings.radioVolume, through
+     * setRadioVolume() (settings.js), which redraws this row through
+     * applyVolumes() whoever changed it, and saves it. The speaker mutes (0)
+     * and unmutes to the level it had (settings.radioUnmute). The row works by
+     * mouse (drag, click, the wheel anywhere over the radio box), touch (a tap
+     * opens the box, hud.js), the keyboard when focused (a native range input)
+     * and the radioQuieter / radioLouder keys (, / .) in a vehicle.
+     *
+     * The box floats over the game canvas, whose own listeners fire, aim and
+     * zoom, and the window's keydown listener reads the arrows and Space as
+     * driving and firing: the row stops its events so none of them reach the
+     * game. The box is held open while a drag lasts (the pointer may leave it).
+     */
+    const RADIO_VOLUME_STEP = 5,
+      radioVolumeRow = getElement('radioVolumeRow'),
+      radioVolumeInput = getElement('radioVolume');
+    let radioSlideFrom = null,
+      radioWheelCarry = 0;
+    function renderRadioVolume() {
+      const value = settings.radioVolume,
+        muted = value === 0;
+      radioVolumeInput.value = String(value);
+      radioVolumeInput.style.setProperty('--fill', value + '%');
+      radioVolumeInput.setAttribute('aria-valuetext', muted ? 'Muted' : value + '%');
+      radioVolumeInput.title = 'Radio volume · ' + keyName('radioQuieter') + ' / ' + keyName('radioLouder');
+      getElement('radioVolumeValue').textContent = String(value);
+      radioVolumeRow.classList.toggle('muted', muted);
+      radioVolumeRow.classList.toggle('quiet', value > 0 && value < 50);
+      getElement('carRadio').classList.toggle('radio-muted', muted);
+      const mute = getElement('radioMute');
+      mute.setAttribute('aria-pressed', String(muted));
+      mute.setAttribute('aria-label', muted ? 'Unmute radio' : 'Mute radio');
+      mute.title = muted ? 'Unmute radio' : 'Mute radio';
+    }
+    /* A step up or down (the keys, the wheel), showing the box while it changes. */
+    function stepRadioVolume(steps) {
+      if (!steps) return;
+      const from = settings.radioVolume;
+      setRadioVolume(from + steps * RADIO_VOLUME_STEP, { from });
+      hudPop('carRadio');
+    }
+    // Not mouseup: the window's listener must still see a fire button let go over the box.
+    for (const type of ['pointerdown', 'mousedown', 'click', 'dblclick', 'contextmenu', 'touchstart'])
+      radioVolumeRow.addEventListener(type, (e) => e.stopPropagation());
+    getElement('radioMute').addEventListener('click', (e) => {
+      toggleRadioMute();
+      hudPop('carRadio');
+      // A mouse click hands the keys back to the game, like the other radio buttons.
+      if (e.detail > 0) canvas.focus();
+    });
+    radioVolumeInput.addEventListener('pointerdown', (e) => {
+      radioSlideFrom = settings.radioVolume;
+      radioVolumeRow.classList.add('dragging');
+      hudPop('carRadio', 600000);
+      const release = () => {
+        window.removeEventListener('pointerup', release, true);
+        window.removeEventListener('pointercancel', release, true);
+        radioVolumeRow.classList.remove('dragging');
+        saveSettings();
+        radioSlideFrom = null;
+        hudPop('carRadio', e.pointerType === 'mouse' ? HUD_POP_MS : 6000);
+        if (e.pointerType === 'mouse') canvas.focus();
+      };
+      window.addEventListener('pointerup', release, true);
+      window.addEventListener('pointercancel', release, true);
+    });
+    radioVolumeInput.addEventListener('input', () => {
+      setRadioVolume(Number(radioVolumeInput.value), { from: radioSlideFrom ?? settings.radioVolume, save: false });
+      if (!radioVolumeRow.classList.contains('dragging')) hudPop('carRadio');
+    });
+    radioVolumeInput.addEventListener('change', saveSettings);
+    radioVolumeRow.addEventListener('keydown', (e) => {
+      // The slider's own keys, and Space / Enter on the speaker, stay here.
+      const sliderKey = e.target === radioVolumeInput && /^(Arrow|Home$|End$|Page)/.test(e.code),
+        buttonKey = e.target !== radioVolumeInput && ['Space', 'Enter', 'NumpadEnter'].includes(e.code);
+      if (sliderKey || buttonKey) {
+        e.stopPropagation();
+        hudPop('carRadio');
+      }
+    });
+    // The wheel anywhere over the radio box (open or resting) steps the volume;
+    // a trackpad's small deltas add up to whole steps.
+    getElement('carRadio').addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const scale = e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 400 : 1,
+          amount = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : -e.deltaY;
+        radioWheelCarry = clamp(radioWheelCarry + amount * scale, -400, 400);
+        // One wheel notch (about 100) is one step.
+        const steps = Math.trunc(radioWheelCarry / 90);
+        radioWheelCarry -= steps * 90;
+        stepRadioVolume(steps);
+        if (!steps) hudPop('carRadio');
+      },
+      { passive: false },
+    );
+    // Console (DeadEndCity.radio()): the radio and its volume row as shown.
+    function radioReport() {
+      const box = getElement('carRadio');
+      return {
+        shown: !box.classList.contains('hidden'),
+        open: box.classList.contains('open') || box.matches(':hover, :focus-within'),
+        station: MUSIC_STATIONS[carRadioStation].name,
+        enabled: carRadioEnabled,
+        playing: !!carRadioPlayer && !carRadioPlayer.paused,
+        volume: settings.radioVolume,
+        muted: settings.radioVolume === 0,
+        unmuteTo: settings.radioUnmute,
+        master: settings.masterVolume,
+        // The element's volume: level for the moment x fade-in x volumeScale('radio').
+        elementVolume: carRadioPlayer ? +carRadioPlayer.volume.toFixed(4) : null,
+        scale: +volumeScale('radio').toFixed(4),
+        slider: {
+          value: Number(radioVolumeInput.value),
+          fill: radioVolumeInput.style.getPropertyValue('--fill'),
+          readout: getElement('radioVolumeValue').textContent,
+          valueText: radioVolumeInput.getAttribute('aria-valuetext'),
+          dragging: radioVolumeRow.classList.contains('dragging'),
+        },
+      };
+    }
     // END SUBSYSTEM: src/car-radio.js

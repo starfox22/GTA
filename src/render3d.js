@@ -1511,6 +1511,17 @@
         };
         material.customProgramCacheKey = () => 'player-rim';
       }
+      /* 0 at a walk .. 1 at the full run (game.js FOOT_WALK / FOOT_RUN), from how
+         fast the player's model has actually been moving. */
+      function playerRunAmount(m, p, deltaSeconds) {
+        const moved = Math.hypot(p.x - (m.lastX ?? p.x), p.y - (m.lastY ?? p.y));
+        m.lastX = p.x;
+        m.lastY = p.y;
+        if (moved > 40) m.pace = 0;
+        else if (deltaSeconds > 0)
+          m.pace = (m.pace || 0) + (moved / deltaSeconds - (m.pace || 0)) * (1 - Math.exp(-deltaSeconds * 8));
+        return clamp(((m.pace || 0) - FOOT_WALK * 1.3) / (FOOT_RUN * 0.85 - FOOT_WALK * 1.3), 0, 1);
+      }
       function makePerson(person, isPlayer) {
         const group = new Three.Group();
         scene.add(group);
@@ -2589,8 +2600,13 @@
                 flinchAlong * 0.35 * flinch +
                 (p.hp > 0 && p.dazedFor > 0 ? Math.sin(gameTime * 8) * 0.055 : 0),
             );
-            const step =
-              p.hp > 0 && !incapacitated && p.walking !== false ? Math.sin(p.walk || 0) * 0.5 : 0;
+            // The player's legs swing wider at a run than at a walk; the pace is
+            // measured from the model's own travel, so every footing agrees.
+            const playerRun = activePlayer ? playerRunAmount(m, p, deltaSeconds) : 0,
+              step =
+                p.hp > 0 && !incapacitated && p.walking !== false
+                  ? Math.sin(p.walk || 0) * (activePlayer ? 0.4 + 0.42 * playerRun : 0.5)
+                  : 0;
             m.torso.rotation.z = 0;
             m.parts.leg1.rotation.z = step;
             m.parts['leg-1'].rotation.z = -step;
@@ -2678,7 +2694,8 @@
               m.pants.color.set(player.disguised ? '#252a33' : '#536273');
               const holstered = !!rooftopJob() && player.disguised && !rooftopJob().weaponDrawn;
               const recoil = Math.max(0, ((player.recoilUntil || 0) - gameTime) / 0.12);
-              m.torso.rotation.z = -recoil * 0.12;
+              // Leaning into the run.
+              m.torso.rotation.z = -recoil * 0.12 - playerRun * 0.14;
               m.parts.guns.forEach((gun, i) => {
                 gun.visible = i === selectedWeaponIndex && !holstered && !player.parachute;
                 gun.position.x = 5 - recoil * 1.8;

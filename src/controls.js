@@ -52,8 +52,11 @@
       { id: 'back', label: 'Back / brake', note: 'Walk back, brake and reverse, cut throttle, flare the canopy', group: 'move', keys: ['KeyS', 'ArrowDown'], ctx: EVERYWHERE },
       { id: 'left', label: 'Left', note: 'Walk or steer left, bank or turn left', group: 'move', keys: ['KeyA', 'ArrowLeft'], ctx: EVERYWHERE },
       { id: 'right', label: 'Right', note: 'Walk or steer right, bank or turn right', group: 'move', keys: ['KeyD', 'ArrowRight'], ctx: EVERYWHERE },
-      { id: 'sprint', label: 'Sprint', note: 'Run on foot, swim harder, stand on the bicycle pedals', group: 'move', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['foot', 'drive'] },
-      { id: 'walk', label: 'Walk', note: 'Hold to walk on foot instead of jogging', group: 'move', keys: ['KeyC'], ctx: ['foot'] },
+      // On foot the player runs; Shift held walks (game.js footPace). Its virtual
+      // code is not a key, so it never collides with the bicycle's use of Shift.
+      { id: 'walk', label: 'Walk (hold)', note: 'On foot you run; hold to walk, and to swim an easy stroke that saves breath', group: 'move', code: 'Walk', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['foot'] },
+      // The id stays 'sprint' so saved bindings keep their place.
+      { id: 'sprint', label: 'Pedal hard', note: 'Bicycle: stand on the pedals for speed (uses stamina)', group: 'move', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['drive'] },
       { id: 'interact', label: 'Interact', note: 'Enter or leave a vehicle, payphones, shops, stations, boarding; hold for objectives', group: 'combat', keys: ['KeyE'], ctx: EVERYWHERE },
       { id: 'fire', label: 'Fire', note: 'Fire the equipped weapon; the handgun from a vehicle', group: 'combat', keys: ['KeyF'], ctx: ['foot', 'drive', 'air'] },
       { id: 'handbrake', label: 'Handbrake / alt fire', note: 'Handbrake in a vehicle, fires on foot, opens the parachute', group: 'combat', keys: ['Space'], ctx: ['foot', 'drive', 'chute'] },
@@ -61,6 +64,8 @@
       { id: 'horn', label: 'Horn', note: 'Sound the horn', group: 'vehicle', keys: ['KeyH'], ctx: ['drive'] },
       { id: 'radioPower', label: 'Radio on / off', note: 'Car radio power', group: 'vehicle', keys: ['KeyN'], ctx: ['drive', 'air'] },
       { id: 'radioNext', label: 'Next station', note: 'Tune the next radio station', group: 'vehicle', keys: ['KeyB'], ctx: ['drive', 'air'] },
+      { id: 'radioQuieter', label: 'Radio volume down', note: 'Turn the radio down (the radio box shows the level; the same as Settings · Audio)', group: 'vehicle', keys: ['Comma'], ctx: ['drive', 'air'] },
+      { id: 'radioLouder', label: 'Radio volume up', note: 'Turn the radio up', group: 'vehicle', keys: ['Period'], ctx: ['drive', 'air'] },
       // A passenger is on foot as far as contexts go (controlContext()).
       { id: 'skipRide', label: 'Skip the ride', note: 'Riding a cab, a train or the liner: fade out and arrive (the cab fare is charged)', group: 'vehicle', keys: ['KeyY'], ctx: ['foot'] },
       { id: 'skipStop', label: 'Skip to another stop', note: 'On a train: choose the station the skip takes you to', group: 'vehicle', keys: ['KeyU'], ctx: ['foot'] },
@@ -121,10 +126,12 @@
               controlBindings[a.id] = [0, 1].map((i) => (validKeyCode(slots[i]) ? slots[i] : null));
           }
         // Saved before the arrows became climb / descend (30.x): a pair still on the
-        // old T / G defaults moves to the new ones.
+        // old T / G defaults moves to the new ones. Likewise walk, once C before
+        // running became the default and Shift the walk key.
         for (const [id, old] of [
           ['ascend', 'KeyT'],
           ['descend', 'KeyG'],
+          ['walk', 'KeyC'],
         ])
           if (controlBindings[id][0] === old && !controlBindings[id][1]) controlBindings[id] = [...CONTROL_ACTION[id].keys];
       } catch {}

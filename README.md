@@ -38,12 +38,12 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 
 | Action | Keys |
 | --- | --- |
-| Move / drive | W A S D or arrows (in an aircraft ↑ / ↓ climb and descend instead) |
+| Move / drive (on foot you run) | W A S D or arrows (in an aircraft ↑ / ↓ climb and descend instead) |
 | Interact: enter or leave a vehicle, payphone, shops, stations, boarding | E |
-| Stadium pitch: dribble by walking into the ball; kick it the way you face | E (hold Shift for a harder, higher strike) |
+| Stadium pitch: dribble by walking into the ball; kick it the way you face | E (a full strike; hold Shift for a softer pass) |
 | Fire | F, Space or mouse click (on foot); F fires the pistol from a vehicle |
 | Handbrake (in a vehicle) | Space |
-| Sprint | Shift |
+| Walk (hold) · easy swimming stroke | Shift |
 | Bicycle | hold W to pedal, Shift stands on the pedals, S brakes |
 | Helicopter | ↑ rise, ↓ descend (T / G also work), W/S fly, A/D turn; land on open ground, helipads or flat roofs |
 | Plane | W/S throttle (the engine spools up), A/D bank (steer on the ground), ↑/↓ nose up/down (T / G also work), X / Z flaps down / up, L landing gear, S at idle brakes on the ground |
@@ -52,7 +52,7 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 | Tank | the mouse (or the touch aim stick) lays the turret; F / click fires the selected gun, Q switches main gun and machine gun, right click fires the machine gun |
 | Surrender | stand still (or stop the car) with the police close, at one to four stars |
 | City map | Tab |
-| Car radio (also on the Falcon coaster and the Sunset Eye) | N power, B next station |
+| Car radio (also on the Falcon coaster and the Sunset Eye) | N power, B next station, `,` / `.` volume; the radio box has a volume slider (drag, wheel, speaker mutes) |
 | Horn, mute | H, M |
 | Show the mission card again | O (or click the objective strip) |
 | Street zoom | mouse wheel or pinch; + / − and 0 |
@@ -66,8 +66,8 @@ mission open in the mission picker, and there a time-of-day chooser (presets fro
 Every key can be rebound in **Settings · Controls** (from the title menu or the pause
 menu), which also warns about clashes and offers to swap. Settings has four tabs:
 GRAPHICS (quality tier, frame limiter at 30 / 60 / 120 FPS or unlimited, FPS counter,
-character see-through), AUDIO (sound on/off; master,
-effects, radio music and voice volumes; radio voices), GAMEPLAY (NPC chatter, minimap,
+character see-through), AUDIO (sound on/off; master, radio & music, engines & vehicles,
+effects, voices, ambience and sirens volumes; radio voices; reset to the default mix), GAMEPLAY (NPC chatter, minimap,
 GPS route on the minimap, control hints) and CONTROLS (touch controls, key bindings). Touch controls appear
 automatically on phones and tablets. Progress and every setting save to the browser's
 local storage. The game runs offline; nothing is fetched from the network.

@@ -409,7 +409,7 @@
           gain.gain.value = 0;
           o.connect(filter);
           o2.connect(filter);
-          filter.connect(gain).connect(master);
+          filter.connect(gain).connect(sirenBus);
           o.start();
           o2.start();
           militarySiren = { o, o2, filter, gain, phase: 0 };

@@ -101,6 +101,8 @@
           if (!player.car && !player.parachute) {
             if (y > radius * 0.24) list.push('KeyS');
             if (y < -radius * 0.24) list.push('KeyW');
+            // A gentle push walks; past half-way the player runs, as with the keys.
+            if (m < radius * 0.5) list.push(actionCode('walk'));
           }
         }
       } else if (stick.aim) touchAim = null;
@@ -132,7 +134,8 @@
       // elsewhere the up button is the handbrake (and opens the parachute).
       ['touchUp', () => [isAircraft(player.car) ? actionCode('ascend') : actionCode('handbrake')]],
       ['touchDown', () => [actionCode('descend')]],
-      ['touchRun', () => ['ShiftLeft']],
+      // On foot the player runs; the WALK button holds the walk action.
+      ['touchRun', () => [actionCode('walk')]],
       ['touchFire', () => ['KeyF']],
       ['touchAction', () => ['KeyE']],
     ];

@@ -1106,7 +1106,7 @@
       }
       const a = Math.atan2(iy, ix),
         climb = Math.cos(a) * slope.x + Math.sin(a) * slope.y;
-      let speed = keys.ShiftLeft || keys.ShiftRight ? FOOT_SPRINT : actionHeld('walk') ? FOOT_WALK : FOOT_JOG;
+      let speed = footPace();
       if (trail) {
         // A graded path: steady going, uphill a little slower than down.
         speed *= clamp(1 - Math.max(0, climb) * TRAIL_GRADE * 2.2, 0.46, 1);
