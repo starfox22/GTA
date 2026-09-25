@@ -79,7 +79,8 @@
     }
     /* A shooter lining up on the player: `aim` is 0..1 of the lock. */
     function noteSniperLock(shooter, aim) {
-      if (aim <= 0) return;
+      // No lock beep or red screen-edge glow while the snipers are off (swat.js).
+      if (aim <= 0 || !SNIPERS_ENABLED) return;
       if (aim >= sniperThreat.aim || gameTime - sniperThreat.at > 0.1)
         Object.assign(sniperThreat, { aim, x: shooter.x, y: shooter.y, altitude: entityElevation(shooter), at: gameTime });
       // The beep rises in pitch and quickens as the lock closes.
@@ -133,6 +134,7 @@
      * player unseen: no rooftop snipers, no helicopter gun.
      */
     const shotLog = { bySource: {}, recent: [], total: 0, offscreen: 0 };
+    // (hits and damage per source are the rounds that struck, before armour.)
     function shotSource(b) {
       const o = b.owner;
       if (!o || typeof o !== 'object') return 'unknown';
@@ -162,16 +164,27 @@
       const source = shotSource(b),
         o = b.owner && typeof b.owner === 'object' ? b.owner : b,
         distance = Math.round(combatDistance(o, player)),
-        onScreen = crowdInView(o.x, o.y, 20);
+        // On screen: inside the street view round the player (the camera follows
+        // them; simulate() steps without moving the camera).
+        view = crowdViewHalf(),
+        onScreen = Math.abs(o.x - player.x) < view.w - 20 && Math.abs(o.y - player.y) < view.h - 20;
       shotLog.total++;
       if (!onScreen) shotLog.offscreen++;
-      const entry = (shotLog.bySource[source] ??= { shots: 0, offscreen: 0, nearest: Infinity, farthest: 0 });
+      b.shotSource = source;
+      const entry = (shotLog.bySource[source] ??= { shots: 0, hits: 0, damage: 0, offscreen: 0, nearest: Infinity, farthest: 0 });
       entry.shots++;
       if (!onScreen) entry.offscreen++;
       entry.nearest = Math.min(entry.nearest, distance);
       entry.farthest = Math.max(entry.farthest, distance);
       shotLog.recent.push({ t: +gameTime.toFixed(1), source, distance, onScreen, stars: Math.ceil(wantedStars), rocket: !!b.rocket });
       if (shotLog.recent.length > 40) shotLog.recent.shift();
+    }
+    /* A logged round struck the player (updateBullets): count it for its source. */
+    function shotLogHit(b) {
+      const entry = b.shotSource && shotLog.bySource[b.shotSource];
+      if (!entry) return;
+      entry.hits++;
+      entry.damage = Math.round(entry.damage + (b.playerDmg ?? b.dmg));
     }
     function shotLogReport(reset = false) {
       const report = JSON.parse(JSON.stringify(shotLog));
@@ -262,6 +275,12 @@
       }
       return target;
     }
+    /* The share of a round's damage a vehicle takes: the Apache's armoured
+       airframe (apache.js APACHE_SMALL_ARMS_SHARE) takes a fraction of small-arms
+       fire; rockets and shells in full. */
+    function vehicleArmorShare(vehicle, b) {
+      return isApache(vehicle) && !b.rocket && !b.antiTank ? APACHE_SMALL_ARMS_SHARE : 1;
+    }
     function bulletDamagesVehicle(b, vehicle) {
       return vehicle.type !== 'tank' || !!(b.rocket || b.antiTank);
     }
@@ -286,8 +305,12 @@
      * no marksman: it follows the player, holds them in the searchlight and, while
      * it can see them, counts as a unit with eyes on the suspect (policeSees,
      * citylife.js), so the last known position it reports keeps the ground units
-     * converging and the search from running down. Fort Sentinel's armed
-     * helicopter (apache.js) is never flown by AI.
+     * converging and the search from running down. Under any overhead cover
+     * (a canopy, a shelter, a deck, the underpass, a building: air-cover.js
+     * OVERHEAD COVER) the player is hidden from it: the searchlight sweeps round
+     * the last sighting, the helicopter circles there, and unless a ground unit
+     * sees them the lose-police timer runs; the HUD reads HIDDEN FROM AIR.
+     * Fort Sentinel's armed helicopter (apache.js) is never flown by AI.
      */
     const AIR_UNITS_MAX = 1,
       AIR_SEARCH_SECONDS = 18,
@@ -321,6 +344,8 @@
         !c.airRetreat &&
         c.airOnScene !== false &&
         combatDistance(c, t) < 620 &&
+        // Any roof over the target hides it from the air (air-cover.js OVERHEAD COVER).
+        !hiddenFromAir(t) &&
         clearSight(c, t)
       );
     }
@@ -484,6 +509,8 @@
     }
     function airPursuitStatus() {
       const c = vehicles.find((c) => c.airUnit && c.hp > 0 && !c.airRetreat && c !== player.car);
+      if (c && c.airState !== 'arriving' && hiddenFromAir(player.car || player))
+        return 'HIDDEN FROM AIR · UNDER COVER' + (c.airState === 'searching' ? ' · ' + Math.ceil(Math.max(0, AIR_SEARCH_SECONDS - (c.airLostFor || 0))) + 's' : '');
       if (c)
         return c.airState === 'arriving'
           ? 'AIR SUPPORT ' +

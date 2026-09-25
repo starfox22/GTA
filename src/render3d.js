@@ -1110,6 +1110,7 @@
       // @include src/clouds3d.js
       // @include src/surfaces3d.js
       // @include src/helicopter3d.js
+      // @include src/apache3d.js
       // @include src/vehicles3d.js
       // @include src/plane3d.js
       /**
@@ -1170,7 +1171,7 @@
         if (vehicle.type === 'plane') return makePlane(vehicle);
         if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
         if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
-        if (vehicle.type === 'helicopter') return makeHelicopter(vehicle);
+        if (vehicle.type === 'helicopter') return vehicle.airframe === 'apache' ? makeApache(vehicle) : makeHelicopter(vehicle);
         if (vehicleSpec(vehicle).bike) return makeMotorcycle(vehicle);
         if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
         if (vehicleSpec(vehicle).boat) return makeBoat(vehicle);
@@ -2160,6 +2161,33 @@
             return Math.atan2(hitPoint.z - player.y, hitPoint.x - player.x);
           return player.a;
         },
+        // The map point under the screen point (mx, my) on a level plane at
+        // `elevation` (the Apache's aim, apache.js); null when the ray misses it.
+        groundPoint(mx, my, elevation = 0) {
+          ray.setFromCamera(new Three.Vector2((mx / viewportWidth) * 2 - 1, (-my / viewportHeight) * 2 + 1), camera);
+          groundPlane.constant = -elevation;
+          return ray.ray.intersectPlane(groundPlane, hitPoint) ? { x: hitPoint.x, y: hitPoint.z } : null;
+        },
+        // A rocket motor's flame and a puff of its smoke trail at a point in the
+        // air (apache.js; `motor` 1 while it burns, less as it coasts).
+        smokePuff(x, z, altitude = 0, motor = 1) {
+          const y = altitude + 9;
+          if (motor >= 1)
+            fx.push({ x, y, z, vx: 0, vy: 0, vz: 0, life: 0.06, max: 0.06, color: '#ffd28a', size: 7, glow: true });
+          fx.push({
+            x: x + randomBetween(-1.5, 1.5),
+            y,
+            z: z + randomBetween(-1.5, 1.5),
+            vx: randomBetween(-4, 4),
+            vy: randomBetween(2, 7),
+            vz: randomBetween(-4, 4),
+            life: 1.4 * motor + 0.4,
+            max: 1.4 * motor + 0.4,
+            color: '#c9c6bb',
+            size: 4 + motor * 2,
+            smoke: true,
+          });
+        },
         fire(x, z, a, rocket, altitude = 0) {
           muzzleUntil = gameTime + 0.055;
           muzzleLight.position.set(x, 11 + altitude, z);
@@ -2445,6 +2473,8 @@
               m.body.rotation.z = clamp(-c.speed * 0.00035, -0.13, 0.13);
               m.body.rotation.x = clamp(c.av * 0.065, -0.1, 0.1);
               m.canopy.material.roughness = 0.12 + wear * 0.65;
+              // The Apache's chin gun and lights (apache3d.js).
+              if (m.apache) animateApache(c, m);
             } else if (m.damageVersion !== c.damageVersion) {
               // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js).
               m.damageVersion = c.damageVersion;

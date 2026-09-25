@@ -725,6 +725,8 @@
         [10340, 9365, Math.PI],
       ])
         park('helicopter', x, y, a, { color: '#4d5641' });
+      // The attack helicopter on the other pad: only ever flown by the player (apache.js).
+      parkApache();
       // Posts.
       const g = SENTINEL.gate;
       soldier(g.island.x + 8, 8150, Math.PI, 'gate');
