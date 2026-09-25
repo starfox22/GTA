@@ -169,13 +169,28 @@
           uniform float uPerspective;
           ${AO_COMMON}
           void main() {
-            float depth = texture2D( tDepth, vUv ).x;
+            // This pass is half the depth buffer's size, so the centre of each of
+            // its pixels (vUv) falls exactly on the corner between four depth
+            // texels, and so do the one-texel neighbours below. The depth texture
+            // is sampled nearest, and which of the four a corner fetch returns
+            // flipped with sub-ULP rounding of the interpolated vUv: one way above
+            // the middle row of the screen (vUv.y = 0.5, where the float exponent
+            // changes) and on one side of the full-screen quad's diagonal, the
+            // other way elsewhere. Where a pixel and its neighbour read the same
+            // texel the rebuilt normal faced the camera instead of the sky, half
+            // the samples on flat ground counted as occluders, and the AO printed
+            // rows of faint stripes and a darker band with a hard horizontal edge
+            // across the middle of the frame, right under the player (the ULTRA
+            // "horizontal lines"). Every depth read now starts from the centre of
+            // a texel of its own: the top-left one of this pixel's 2x2 block.
+            vec2 uv = ( floor( gl_FragCoord.xy ) * 2.0 + 0.5 ) * uDepthTexel;
+            float depth = texture2D( tDepth, uv ).x;
             if ( depth >= 0.99999 ) { gl_FragColor = vec4( 1.0 ); return; }
-            vec3 P = cityViewPosition( vUv );
+            vec3 P = cityViewPosition( uv );
             // Normal from the flatter of the two neighbours on each axis, so an
             // edge pixel takes the surface it belongs to rather than the step.
-            vec3 px0 = cityViewPosition( vUv - vec2( uDepthTexel.x, 0.0 ) ), px1 = cityViewPosition( vUv + vec2( uDepthTexel.x, 0.0 ) );
-            vec3 py0 = cityViewPosition( vUv - vec2( 0.0, uDepthTexel.y ) ), py1 = cityViewPosition( vUv + vec2( 0.0, uDepthTexel.y ) );
+            vec3 px0 = cityViewPosition( uv - vec2( uDepthTexel.x, 0.0 ) ), px1 = cityViewPosition( uv + vec2( uDepthTexel.x, 0.0 ) );
+            vec3 py0 = cityViewPosition( uv - vec2( 0.0, uDepthTexel.y ) ), py1 = cityViewPosition( uv + vec2( 0.0, uDepthTexel.y ) );
             vec3 dx = abs( px1.z - P.z ) < abs( P.z - px0.z ) ? px1 - P : P - px0;
             vec3 dy = abs( py1.z - P.z ) < abs( P.z - py0.z ) ? py1 - P : P - py0;
             vec3 N = normalize( cross( dx, dy ) );
@@ -200,7 +215,7 @@
               float wide = mod( float( i ), 2.0 ) > 0.5 ? 4.0 : 1.0;
               float radius = uRadius * wide, radius2 = radius * radius;
               vec2 offset = vec2( cos( angle ), sin( angle ) ) * sqrt( t ) * discUv * wide;
-              vec3 v = cityViewPosition( vUv + offset ) - P;
+              vec3 v = cityViewPosition( uv + offset ) - P;
               float vv = dot( v, v ), vn = dot( v, N );
               // Cosine of the angle above the surface, fading out towards the radius.
               float term = max( ( vn - 0.02 * radius ) * inversesqrt( vv + 0.01 * radius2 ), 0.0 ) * max( 1.0 - vv / radius2, 0.0 );
@@ -221,6 +236,7 @@
         uInvProjection: aoUniforms.uInvProjection,
         uDirection: { value: new Three.Vector2() },
         uRadius: aoUniforms.uRadius,
+        uDepthTexel: aoUniforms.uDepthTexel,
       };
       const aoBlurMaterial = postMaterial(
         `
@@ -229,12 +245,15 @@
         uniform vec2 uDirection;
         uniform float uRadius;
         ${AO_COMMON}
+        uniform vec2 uDepthTexel;
         void main() {
-          float centreZ = cityViewZ( texture2D( tDepth, vUv ).x );
+          // Depth read at texel centres, as in the AO pass (see there).
+          vec2 depthUv = ( floor( gl_FragCoord.xy ) * 2.0 + 0.5 ) * uDepthTexel;
+          float centreZ = cityViewZ( texture2D( tDepth, depthUv ).x );
           float total = 0.0, weights = 0.0;
           for ( int i = -3; i <= 3; i++ ) {
             vec2 uv = vUv + uDirection * float( i );
-            float z = cityViewZ( texture2D( tDepth, uv ).x );
+            float z = cityViewZ( texture2D( tDepth, depthUv + uDirection * float( i ) ).x );
             float w = ( 1.0 - abs( float( i ) ) / 4.0 ) * max( 0.0, 1.0 - abs( z - centreZ ) / ( uRadius * 0.6 ) );
             total += texture2D( tAo, uv ).r * w;
             weights += w;
