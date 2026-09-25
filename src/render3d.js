@@ -2066,6 +2066,13 @@
          * name of its nearest named ancestor and by 512-unit cell. For hunting
          * unbatched scenery; DeadEndCity.drawProfile() prints the top entries.
          */
+        // Every helicopter model built: look, spool, draw calls, shadow casters,
+        // triangles and crew shown (helicopter3d.js; DeadEndCity.helicopterModels()).
+        helicopterModels() {
+          const out = [];
+          for (const [c, m] of carModels) if (c.type === 'helicopter') out.push(helicopterModelReport(c, m));
+          return out;
+        },
         drawProfile(top = 15) {
           const byName = new Map(),
             byCell = new Map(),
@@ -2490,7 +2497,10 @@
             if (m.crank)
               m.crank.rotation.z -=
                 deltaSeconds * (c === player.car ? pedalCadence() * Math.PI * 2 : c.speed * 0.13);
-            if (m.helicopter) {
+            if (m.heli) {
+              // Spool, rotor blur, attitude, crew, Nightsun and lights (helicopter3d.js).
+              animateHelicopter(c, m, deltaSeconds, wear);
+            } else if (m.helicopter) {
               const running =
                 (c === player.car ||
                   c.airUnit ||
