@@ -150,7 +150,8 @@
       const unused = (t) => !clubTalk.used.has(t.id);
       let pool = CLUB_TALKS.filter((t) => t.persona === persona && fits(t) && unused(t));
       if (!pool.length) pool = CLUB_TALKS.filter((t) => t.persona === 'any' && fits(t) && unused(t));
-      if (!pool.length) pool = CLUB_TALKS.filter((t) => fits(t) && unused(t) && t.persona !== 'swimmer');
+      // Then another guest's (staff and swimmers' scripts only fit them).
+      if (!pool.length) pool = CLUB_TALKS.filter((t) => fits(t) && unused(t) && !['swimmer', 'bouncer', 'bartender'].includes(t.persona));
       if (!pool.length) {
         // Everything for this hour has been heard: start the round again.
         for (const t of CLUB_TALKS) if (fits(t)) clubTalk.used.delete(t.id);
@@ -354,31 +355,24 @@
         bubbles: speechBubbles().map((p) => ({ who: p === player ? 'player' : p.club ? 'club-goer' : 'other', text: p.speech })),
       };
     }
-    /* Developer console: stand beside someone at the club who can talk (the nearest). */
+    /* Developer console: stand beside someone at the club who can talk (the nearest with room beside them). */
     function clubTalkApproach() {
-      let best = null,
-        bd = Infinity;
-      for (const p of marea.people) {
-        if (!clubTalkable(p) || p.club.slot.swim || p.club.slot.pose === 'lounge') continue;
-        const d = distanceBetween(p, player);
-        if (d < bd) {
-          bd = d;
-          best = p;
-        }
-      }
-      if (!best) return null;
-      // A free spot a couple of metres away, on the club's floor.
-      for (let k = 0; k < 16; k++) {
-        const a = (k / 16) * TAU,
-          x = best.x + Math.cos(a) * 14,
-          y = best.y + Math.sin(a) * 14;
-        if (solid(x, y, 8) || !mareaInside(x, y)) continue;
-        teleportPlayer(x, y);
-        player.a = Math.atan2(best.y - y, best.x - x);
-        clubTalk.last.x = x;
-        clubTalk.last.y = y;
-        return { kind: best.club.slot.kind, x: Math.round(best.x), y: Math.round(best.y), persona: clubPersona(best) };
-      }
+      const people = marea.people
+        .filter((p) => clubTalkable(p) && !p.club.slot.swim && p.club.slot.pose !== 'lounge' && (p.talkedAt ?? -1e9) < gameTime - CLUB_TALK.againAfter)
+        .sort((a, b) => distanceBetween(a, player) - distanceBetween(b, player));
+      for (const p of people.slice(0, 40))
+        for (const r of [14, 18])
+          for (let k = 0; k < 16; k++) {
+            const a = (k / 16) * TAU,
+              x = p.x + Math.cos(a) * r,
+              y = p.y + Math.sin(a) * r;
+            if (solid(x, y, 8) || !mareaInside(x, y)) continue;
+            teleportPlayer(x, y);
+            player.a = Math.atan2(p.y - y, p.x - x);
+            clubTalk.last.x = x;
+            clubTalk.last.y = y;
+            return { kind: p.club.slot.kind, x: Math.round(p.x), y: Math.round(p.y), persona: clubPersona(p) };
+          }
       return null;
     }
     // END SUBSYSTEM: src/clubtalk.js

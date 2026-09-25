@@ -35,6 +35,9 @@
         g.strokeStyle = '#2d69b3';
         g.lineWidth = 1.1;
         g.strokeRect(c.x - c.w / 2, c.y - c.h / 2, c.w, c.h);
+        // The net's shadow line across the middle.
+        g.fillStyle = 'rgba(70,58,36,0.35)';
+        g.fillRect(c.x - 0.5, c.y - c.poleOffset, 1, c.poleOffset * 2);
         // Sand kicked up round the net where the play is.
         g.fillStyle = 'rgba(170,146,104,0.25)';
         for (let i = 0; i < 90; i++) g.fillRect(c.x + (rnd() - 0.5) * 30, c.y + (rnd() - 0.5) * c.h, 1 + rnd() * 2, 0.6);
@@ -80,6 +83,10 @@
         net.position.set(c.x, c.net - UNITS_PER_METRE / 2, c.y);
         net.userData.dynamic = true;
         beachGroup.add(net);
+        // The tape and the bottom cord as solid lines, so the net reads from above too.
+        const cords = beachStatic(c.x, c.y);
+        box(cords, 0, c.net - 0.3, 0, 0.5, 0.7, c.poleOffset * 2, beachPaint.white);
+        box(cords, 0, c.net - UNITS_PER_METRE, 0, 0.3, 0.3, c.poleOffset * 2, rope);
         // Antennas over the sidelines, striped red and white.
         const red = staticMat('#d23b33', 0.5);
         for (const s of [-1, 1]) {
