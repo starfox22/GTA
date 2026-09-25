@@ -81,19 +81,6 @@ AUDIO EFFECTS / VOICES
       "changes": "Converted to 32 kHz mono; loudness normalized; shortened to 3.8 s; stored as 80 kbps MP3."
     },
     {
-      "file": "engine-loop.wav",
-      "meaning": "Car engine loop",
-      "creator": "domasx2",
-      "source": "https://opengameart.org/content/racing-car-engine-sound-loops",
-      "download": "https://opengameart.org/sites/default/files/loop_0.wav",
-      "license": "CC0 1.0 Universal",
-      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "notes": "Source says made from public domain car recording with pitch adjustment. Page discussion explicitly states assets were remade from public domain source after an earlier license concern. Quiet sample; normalize or apply gain.",
-      "bytes": 76332,
-      "duration_seconds": 0.864082,
-      "changes": "Converted to 32 kHz mono PCM; loudness normalized; explosion shortened to 3.8 s; siren excerpt selected."
-    },
-    {
       "file": "tire-skid.wav",
       "meaning": "Car tire squeal / skid loop",
       "creator": "audible-edge (Tom Haigh); edited by qubodup",
@@ -470,6 +457,145 @@ crash-glass-2.ogg
   License: Creative Commons Zero (CC0 1.0) http://creativecommons.org/publicdomain/zero/1.0/
   Obtained from ESC-50 (audio/3-203375-A-39.wav), listed there as CC0.
   Changes: first 1.45 s, 0.45 s fade-out, loudness-matched.
+
+ENGINE, BOAT AND TANK SOUNDS
+Played by src/engine-audio.js: per class, loops recorded at known revs are pitched by the
+simulated RPM and cross-faded (the player's vehicle), one loop per nearby traffic vehicle.
+All files mono OGG Vorbis (quality 4), 44.1 kHz, metadata stripped. Each loop was cut from
+a steady stretch of its source (revs measured from the harmonic spacing), high-passed at
+28 Hz and low-passed at 7-12 kHz, its seam cross-faded (the end point moved within one
+engine cycle to where the waveform best matches the start; equal-power when it does not),
+set to -20 to -22 dBFS RMS, and followed by 0.2 s of its own start (the game loops at the
+exact length). Freesound pages could not be opened from the build environment, so each
+file was taken from a public copy whose own licence file names the same author, Freesound
+page and licence (listed per file; SHA-256 of the copies matched their manifests where
+given).
+
+engine-compact-idle.ogg, engine-compact-low.ogg, engine-compact-mid.ogg, engine-compact-high.ogg
+  "Mazda 121 engine EXT" by J.Zazvurek
+  https://freesound.org/people/J.Zazvurek/sounds/244935/
+  License: Creative Commons Zero (CC0 1.0) https://creativecommons.org/publicdomain/zero/1.0/
+  Obtained from nbobby07/RaceEngineer on GitHub (art_source/audio/sources/mazda121-244935.mp3,
+  the Freesound HQ preview; source-manifest.json and AudioCredits.txt give author, page and
+  licence). Changes: 18.40-20.40 s (idle, ~880 rpm), 26.80-27.62 s (~2640 rpm),
+  31.00-33.20 s (~3460 rpm), 10.80-13.40 s (~4900 rpm); looped as above.
+
+engine-sport-idle.ogg, engine-sport-low.ogg, engine-sport-mid.ogg
+  "BMW 320 1988..wav" by ninebilly
+  https://freesound.org/people/ninebilly/sounds/173005/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from nbobby07/RaceEngineer (art_source/audio/expansion/bmw320-173005.mp3; same
+  manifests). Changes: 23.30-24.90 s (idle), 8.20-9.60 s (~2330 rpm), 17.85-18.60 s
+  (~3010 rpm).
+
+engine-sport-high.ogg
+  "4A-GE Engine Loop 1" by qopsinonstudios
+  https://freesound.org/people/qopsinonstudios/sounds/509626/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from nbobby07/RaceEngineer (art_source/audio/sources/4age-loop1-509626.mp3).
+  Changes: 0.15-1.55 s (~7800 rpm), attenuated 6 dB before filtering (the preview clips).
+
+engine-v8-idle.ogg
+  "V8 Lotus_Sports Car Auto Engine Revs.wav" by jimmygu3, edited from "Idle and Rev -
+  Engine.wav" by wikusv
+  https://freesound.org/people/jimmygu3/sounds/369486/
+  https://freesound.org/people/wikusv/sounds/232272/
+  License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+  https://creativecommons.org/licenses/by/4.0/
+  Obtained from nbobby07/RaceEngineer (art_source/audio/expansion/lotus-v8-repaired-369486.mp3;
+  its manifest credits both). Changes: 15.60-17.60 s of the idle (~660 rpm).
+
+engine-v8-low.ogg, engine-v8-mid.ogg
+  "Acceleration sounds of Ford V8 5 Liter engine" by noiseloop
+  https://freesound.org/people/noiseloop/sounds/455926/
+  License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+  https://creativecommons.org/licenses/by/3.0/
+  Obtained from nbobby07/RaceEngineer (art_source/audio/expansion/ford-v8-accel.mp3).
+  Changes: 7.75-8.35 s (~1720 rpm), 6.05-6.75 s (~2320 rpm).
+
+engine-start.ogg
+  "Starting of Ford V8 5 Liter engine" by noiseloop
+  https://freesound.org/people/noiseloop/sounds/455925/
+  License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+  Obtained from nbobby07/RaceEngineer (art_source/audio/expansion/ford-v8-idle.mp3).
+  Changes: the starter and catch, 0-2.6 s, 0.6 s fade-out; played for every vehicle at a
+  class pitch.
+
+engine-diesel-idle.ogg, engine-diesel-mid.ogg, engine-diesel-high.ogg
+  "Engine loop (heavy vehicle/tank)" by Nayckron, submitted by qubodup
+  https://opengameart.org/content/engine-loop-heavy-vehicletank
+  License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+  Obtained from J-992/GGStudio on GitHub (zombie-motorworks/public/assets/audio/engine-idle.ogg,
+  engine-mid.ogg, engine-high.ogg; LICENSES.md there names the pack, author and licence).
+  Changes: stereo folded to mono, 0-3.6 s / 0-2.6 s / 0-2.2 s re-looped. Trucks, buses and
+  (pitched down) the tank.
+
+engine-twin-idle.ogg
+  "XSR700 tickover loop.wav" by richwise
+  https://freesound.org/people/richwise/sounds/432304/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from nicodais/barr on GitHub (public/audio/twin.mp3; public/audio/CREDITS.md).
+  Changes: 0.10-2.10 s re-looped. Motorbike idle.
+
+tank-tracks.ogg
+  "Driving Tank Engine" by qubodup (from a US government public-domain recording),
+  filtered toward the tread-and-sand texture by the Zombie Motorworks authors
+  https://freesound.org/people/qubodup/sounds/187676/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from J-992/GGStudio (zombie-motorworks/public/assets/audio/surface-sand-loop.ogg).
+  Changes: stereo folded to mono, 60 Hz high-pass, 0-5.3 s re-looped. The tank's tracks and
+  gravel under tyres off the road.
+
+boat-outboard-low.ogg, boat-outboard-high.ogg
+  "speed boat outboard motor medium engine throb2 muffled" by kyles
+  https://freesound.org/s/454197/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from bob6664569/open-water on GitHub (site/assets/audio/engines/zefiro-low.mp3,
+  zefiro-high.mp3; site/assets/audio/LICENSES.md). Changes: 0.9-2.9 s / 0.2-2.2 s re-looped.
+
+boat-diesel.ogg
+  "Marine diesel engine" by AugustSandberg
+  https://freesound.org/s/264864/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from bob6664569/open-water (site/assets/audio/engines/yacht-low.mp3).
+  Changes: 0.1-2.4 s re-looped. The harbor launch.
+
+boat-jetski.ogg
+  "Jetski.wav" (Sea-Doo two-stroke) by wjauch
+  https://freesound.org/s/212441/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from bob6664569/open-water (site/assets/audio/engines/seadoo-high.wav).
+  Changes: 0-0.7 s re-looped.
+
+The turboprop and jet engines, road roar and wind are synthesised in engine-audio.js;
+the helicopter uses rotor-loop.ogg (above).
+
+RAIN
+Played by src/weather-audio.js: three beds cross-faded by rain intensity, muffled under
+cover and inside closed vehicles, where the same recordings also drum on the roof. All
+files stereo OGG Vorbis (quality 2), 32 kHz, metadata stripped, high-passed (110-140 Hz,
+removing wind rumble and traffic) and low-passed at 13-14 kHz, their seams cross-faded
+over 2 s (equal power), matched at -26 dBFS RMS and followed by 0.2 s of their own start.
+
+rain-light.ogg
+  "Soft rain on a tile roof" by richwise
+  https://freesound.org/s/466241/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from funcoder/omarchy-ambient on GitHub (sounds/rain.ogg, its loop of 1:55-6:55
+  of the recording; CREDITS.md and tools/sources.json there). Changes: 30-46 s of that loop.
+
+rain-steady.ogg
+  "Rain from Half Open Window 2" by RutgerMuller
+  https://freesound.org/s/158689/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from funcoder/omarchy-ambient (sounds/window.ogg). Changes: 20-34 s.
+
+rain-heavy.ogg
+  "Heavy_Rain_Loop.wav" by Rubaoliva
+  https://freesound.org/s/624645/
+  License: Creative Commons Zero (CC0 1.0)
+  Obtained from bob6664569/open-water (site/assets/audio/weather/rain-heavy.mp3;
+  site/assets/audio/LICENSES.md). Changes: 0.2-10.4 s.
 
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no

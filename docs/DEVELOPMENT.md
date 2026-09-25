@@ -34,6 +34,9 @@ music) is marked `"stream": true` in the manifest: `dead-end-city.html` still em
 those files beside it in `dist/publish/media/`. That split build is what gets published as
 the claude.ai artifact, whose page is capped at 16 MB (each extra file at 15 MB). Keep the
 split page under ~15.5 MB; prefer procedural textures and small media (WebP, MP3/OGG).
+A recorded loop (engines, rain) ends with 0.2 s of its own start and is listed with its
+exact loop length in `LOOP_SECONDS` (audio.js); play it with `loopingSource(name)`, because
+Vorbis decoders disagree by up to a few hundred samples about where a file ends.
 
 ## Test
 
@@ -124,6 +127,8 @@ something, never a generic code-evaluation hook.
 | `lifeScene(kind)` | Stage a street scene by the player: `vendor`, `busker`, `cafe`, `smokers`, `delivery`, `hail`, `nightlife`, `busStop` |
 | `poseGallery(role)` | Line up one labelled pedestrian per pose in front of the player |
 | `closeUp(zoom)` | Inspection only: zoom past the player's limit (up to 8) to look at people |
+| `audioMix()`, `engineSound()` | The audio context and the fixed loops (tyres, siren, rotor) with their gains; the player's engine: set, revs, gear, throttle, load, output gain and tone, each layer's rate and gain, road / wind / track levels, the jet voice, the traffic voices (`nearbyDriven`, the nearest four with loop, distance, revs, rate, level) and `trace` (the last 12 s at 0.1 s: speed, revs, gear, load, gain and the audible layers). `simulate()` drives it, so a test can hold `KeyW` from a standstill and read the gear shifts |
+| `rainSound()` | The rain beds: `rain` and `wet`, each bed's target weight (`targets`) and live gain (`light`, `steady`, `heavy`), the roof drumming and tyre spray gains, the `cabin` low-pass (16 kHz in the open, 2.5 kHz under cover, 620 Hz in a closed vehicle) and `shelter` (0 open, 1 under cover) |
 | `stats()` | Per-frame CPU timings (`parts`, the renderer's split as `r:` parts), draw calls (`viewCalls` camera, `shadowCalls` shadow map), triangles, linked shader `programs`, the dynamic `renderScale` |
 | `postView(mode)` | Show the ambient-occlusion (`'ao'`) or bloom (`'bloom'`) buffer instead of the image; no argument restores it |
 | `drawProfile(top)` | Draw calls in view by object name and by 512-unit map cell (for finding unbatched scenery; unnamed parts of anonymous groups are listed with geometry, material and colour), and linked shader programs by kind |

@@ -46,12 +46,13 @@
       )
         return;
       vehicle.occupied = true;
-      vehicle.locked = seededRandom() < 0.32;
+      // Motorbikes have no doors to lock: the rider can always be pulled off.
+      vehicle.locked = !vehicleSpec(vehicle).bike && seededRandom() < 0.32;
       vehicle.driverMood = randomChoice(DRIVER_MOODS);
       vehicle.driverColor = randomChoice(DRIVER_COLORS);
     }
     function vehicleIsLocked(vehicle) {
-      return !!vehicle?.locked && !vehicle.lockBroken && vehicle.hp > 0 && vehicle.occupied !== false;
+      return !!vehicle?.locked && !vehicleSpec(vehicle).bike && !vehicle.lockBroken && vehicle.hp > 0 && vehicle.occupied !== false;
     }
     function driverDoor(vehicle) {
       const spec = vehicleSpec(vehicle),
