@@ -174,10 +174,18 @@
       KMH = UNITS_PER_METRE / 3.6,
       KNOTS = UNITS_PER_METRE * 0.514444,
       GRAVITY = 9.81 * UNITS_PER_METRE;
-    // On foot: a walk, a jog (the default) and a sprint, in map units a second.
-    const FOOT_WALK = 5.5 * KMH,
-      FOOT_JOG = 11 * KMH,
-      FOOT_SPRINT = 24 * KMH;
+    /* On foot, in map units a second: the player runs by default (FOOT_RUN, the
+       full running gait) and walks while the walk action is held (Shift,
+       controls.js). There is no separate sprint: the run outpaces every officer
+       on foot (pursuit.js OFFICER_KINDS, 16-19 km/h). The Blue Hour terrace is
+       always walked (a stealth party, roofmission.js). */
+    const FOOT_WALK = 5.4 * KMH,
+      FOOT_RUN = 20 * KMH;
+    /* The pace the player's legs are going on foot now; the movement, mountain
+       footing (terrain.js), footsteps (audio.js) and the police's aim read it. */
+    function footPace() {
+      return player.roof || actionHeld('walk') ? FOOT_WALK : FOOT_RUN;
+    }
     /* People's legs: one stride (two steps) covers 10 units plus 0.3 s of travel,
        so a walk steps about twice a second and a sprint four times. strideCycle
        is in map units (crowd3d.js advances its phase by distance over it);
@@ -2186,7 +2194,7 @@
       }
       player.car = null;
       player.inv = 0.5;
-      tell('On foot · ' + keyName('fire') + ' to fire · ' + keyName('sprint') + ' to sprint', 1.8);
+      tell('On foot · ' + keyName('fire') + ' to fire · hold ' + keyName('walk') + ' to walk', 1.8);
       tone(160, 0.06, 0.15, 'triangle');
     }
     function interact() {
@@ -3138,20 +3146,8 @@
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
           if (x || y) {
             player.a = Math.atan2(y, x);
-            // On foot the player jogs; Shift sprints and the walk key (C) walks.
-            // The Blue Hour terrace is walked, or jogged with Shift.
-            const sprinting = keys.ShiftLeft || keys.ShiftRight;
-            let s = player.swimming
-              ? swimSpeed()
-              : player.roof
-                ? sprinting
-                  ? FOOT_JOG
-                  : FOOT_WALK
-                : sprinting
-                  ? FOOT_SPRINT
-                  : actionHeld('walk')
-                    ? FOOT_WALK
-                    : FOOT_JOG;
+            // On foot the player runs; holding the walk action (Shift) walks.
+            let s = player.swimming ? swimSpeed() : footPace();
             if (player.wading) s *= wadeFactor();
             player.walk += deltaSeconds * strideRate(s);
             moveBody(

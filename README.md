@@ -38,12 +38,12 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 
 | Action | Keys |
 | --- | --- |
-| Move / drive | W A S D or arrows (in an aircraft ↑ / ↓ climb and descend instead) |
+| Move / drive (on foot you run) | W A S D or arrows (in an aircraft ↑ / ↓ climb and descend instead) |
 | Interact: enter or leave a vehicle, payphone, shops, stations, boarding | E |
-| Stadium pitch: dribble by walking into the ball; kick it the way you face | E (hold Shift for a harder, higher strike) |
+| Stadium pitch: dribble by walking into the ball; kick it the way you face | E (a full strike; hold Shift for a softer pass) |
 | Fire | F, Space or mouse click (on foot); F fires the pistol from a vehicle |
 | Handbrake (in a vehicle) | Space |
-| Sprint | Shift |
+| Walk (hold) · easy swimming stroke | Shift |
 | Bicycle | hold W to pedal, Shift stands on the pedals, S brakes |
 | Helicopter | ↑ rise, ↓ descend (T / G also work), W/S fly, A/D turn; land on open ground, helipads or flat roofs |
 | Plane | W/S throttle (the engine spools up), A/D bank (steer on the ground), ↑/↓ nose up/down (T / G also work), X / Z flaps down / up, L landing gear, S at idle brakes on the ground |

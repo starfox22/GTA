@@ -244,8 +244,8 @@
       return c.type === 'bicycle' ? 'bike' : 'car';
     }
     const QUICK_KEYS = {
-      foot: [['move', 'MOVE'], ['sprint', 'RUN'], ['interact', 'INTERACT'], ['fire', 'FIRE'], ['help', 'CONTROLS']],
-      swim: [['move', 'SWIM'], ['sprint', 'HARDER'], ['help', 'CONTROLS']],
+      foot: [['move', 'RUN'], ['walk', 'WALK'], ['interact', 'INTERACT'], ['fire', 'FIRE'], ['help', 'CONTROLS']],
+      swim: [['move', 'SWIM'], ['walk', 'EASY STROKE'], ['help', 'CONTROLS']],
       car: [['move', 'DRIVE'], ['handbrake', 'HANDBRAKE'], ['interact', 'EXIT'], ['radioNext', 'STATION'], ['help', 'CONTROLS']],
       bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['back', 'BRAKE'], ['interact', 'EXIT']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],

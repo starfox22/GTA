@@ -45,8 +45,8 @@
     ];
     // Seconds at five stars before the tank is sent: the light army units come first.
     const TANK_AFTER_SECONDS = 45;
-    // How each kind of officer fights; `run` is the pace on foot (a sprinting
-    // player, 24 km/h, can outrun every one of them). `dmg` is against NPCs, `playerDmg` against
+    // How each kind of officer fights; `run` is the pace on foot (the player's
+    // default run, game.js FOOT_RUN 20 km/h, outpaces every one of them). `dmg` is against NPCs, `playerDmg` against
     // the player (before the lethality scale in combat-rules.js, so 5.5 is about 11
     // health: an unarmoured player survives eight or nine pistol hits).
     const OFFICER_KINDS = {
@@ -620,11 +620,9 @@
         // fast, range and a stagger all spoil the aim. A miss goes visibly wide.
         const speed = player.car
             ? Math.hypot(player.car.vx || 0, player.car.vy || 0)
-            : keys.ShiftLeft || keys.ShiftRight
-              ? 150
-              : keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD
-                ? 90
-                : 0,
+            : keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD
+              ? footPace() * 3
+              : 0,
           d = combatDistance(o, player);
         let chance = policeTier().accuracy * (o.rifle ? 1.08 : 1);
         chance *= clamp(1.25 - d / 420, 0.45, 1.1);
