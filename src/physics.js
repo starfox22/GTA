@@ -1071,8 +1071,8 @@
       const acceleration = clamp((desired - along) * 1.8, -0.6 * GRAVITY, VEHICLE_DEFINITIONS.helicopter.acc);
       c.vx += Math.cos(c.a) * acceleration * stepSeconds;
       c.vy += Math.sin(c.a) * acceleration * stepSeconds;
-      c.vx *= Math.exp(-stepSeconds * 0.08);
-      c.vy *= Math.exp(-stepSeconds * 0.08);
+      c.vx *= Math.exp(-stepSeconds * 0.04);
+      c.vy *= Math.exp(-stepSeconds * 0.04);
       // The rotor disc tilts into a turn: sideways drift dies away in a second or two.
       const drift = (-c.vx * Math.sin(c.a) + c.vy * Math.cos(c.a)) * (1 - Math.exp(-stepSeconds * 1.2));
       c.vx += Math.sin(c.a) * drift;
@@ -1119,11 +1119,12 @@
           ? (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)
           : helm?.turn || 0,
         brake = controlled && keys.Space;
-      // Thrust fades as the hull meets its top speed (water resistance grows with
-      // the square of the speed); astern is reverse thrust, not brakes.
+      // Thrust fades as the hull nears its top speed (water resistance grows with
+      // the square of the speed, balancing it 15% past the cap below); astern is
+      // reverse thrust, not brakes.
       const topSpeed = vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * (c.marineUnit ? 1.15 : 1);
       let force = up
-        ? vehicleDefinition.acc * (1 - Math.min(1, (Math.max(0, along) / topSpeed) ** 2))
+        ? vehicleDefinition.acc * (1 - Math.min(1, (Math.max(0, along) / (topSpeed * 1.15)) ** 2))
         : down
           ? along > 8
             ? -0.35 * GRAVITY
@@ -1145,7 +1146,7 @@
       c.vx += headingSine * lateral * grip;
       c.vy -= headingCosine * lateral * grip;
       // Off the throttle a planing hull settles and slows quickly.
-      const drag = Math.exp(-(brake ? 2.5 * road : up ? 0.03 : 0.3) * stepSeconds);
+      const drag = Math.exp(-(brake ? 2.5 * road : up ? 0 : 0.3) * stepSeconds);
       c.vx *= drag;
       c.vy *= drag;
       c.av +=

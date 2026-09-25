@@ -205,9 +205,11 @@
         });
         missionState.repo = 0;
         // Vinny's depot is on Palm Keys: three of the four runs cross Palm Sound
-        // twice (a clock of 540 s was set when the Keys were across Marlow Bay).
-        missionState.timeLimit = 660;
-        missionState.timer = 660;
+        // twice, about 39,500 units of road in all (~12 minutes at a town
+        // average of 45 km/h with the car changes; the clock was 660 s when
+        // cars ran at two to three times real speed).
+        missionState.timeLimit = 780;
+        missionState.timer = 780;
         setStage(0, missionState.repos[0].car, 'COLLECT ' + missionState.repos[0].label, 'vinny', 'Four rides, four deadbeats. Bring each one to my depot. Scratches come out of your cut.');
       }
     }

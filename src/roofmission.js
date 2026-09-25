@@ -625,7 +625,7 @@
             b.speech = '';
             tell('Vescari abandoned his drink. Stop him and reach the elevator.', 4);
           } else {
-            roofStep(b, ROOF_HIT.seat, deltaSeconds, 23);
+            roofStep(b, ROOF_HIT.seat, deltaSeconds, 4.5 * KMH);
             if (distanceBetween(b, ROOF_HIT.seat) < 3 && m.phaseTime >= 2.4) {
               m.poisonPhase = 'sip';
               m.phaseTime = 0;
@@ -728,14 +728,14 @@
               ROOF_HIT.seat.x - ROOFTOP.x + (e.patrol - 1) * 23,
               ROOF_HIT.seat.y - ROOFTOP.y + 31,
             );
-            if (distanceBetween(e, goal) > 4) roofStep(e, goal, deltaSeconds, 25);
+            if (distanceBetween(e, goal) > 4) roofStep(e, goal, deltaSeconds, 5 * KMH);
             else e.a = headingBetween(e, m.boss);
           } else if (e.patrolWait > 0) {
             e.patrolWait -= deltaSeconds;
             e.a += Math.sin(gameTime * 0.65 + e.patrol) * deltaSeconds * 0.45;
           } else {
             const goal = e.patrolRoute[e.patrolIndex];
-            roofStep(e, goal, deltaSeconds, 17);
+            roofStep(e, goal, deltaSeconds, 4 * KMH);
             if (distanceBetween(e, goal) < 3) {
               e.patrolIndex = (e.patrolIndex + 1) % e.patrolRoute.length;
               e.patrolWait = 3 + e.patrol;
@@ -778,7 +778,7 @@
         e.a = headingBetween(e, player);
         e.aiming = seen;
         e.timer -= deltaSeconds;
-        if (!seen || distanceBetween(e, player) > 120) roofStep(e, player, deltaSeconds, 46);
+        if (!seen || distanceBetween(e, player) > 120) roofStep(e, player, deltaSeconds, 9 * KMH);
         if (seen && e.timer <= 0) {
           e.timer = 0.72 + seededRandom() * 0.34;
           const a = e.a + randomBetween(-0.038, 0.038);
@@ -813,7 +813,7 @@
             p.recoiling = true;
           } else {
             p.recoiling = false;
-            roofStep(p, roofAt(71, 303), deltaSeconds, m.alarm ? 42 : 30);
+            roofStep(p, roofAt(71, 303), deltaSeconds, (m.alarm ? 12 : 6) * KMH);
             if (distanceBetween(p, roofAt(71, 303)) < 9) p.hidden = true;
           }
         } else if (p.role === 'dance') {
@@ -830,7 +830,7 @@
                 };
               p.idleTarget = roofPointFree(c.x, c.y, 8) ? c : p.home;
             }
-            roofStep(p, p.idleTarget, deltaSeconds, p.staff ? 14 : 9);
+            roofStep(p, p.idleTarget, deltaSeconds, (p.staff ? 4 : 3) * KMH);
             if (distanceBetween(p, p.idleTarget) < 3) {
               p.idleWait = 3 + (p.phase % 5);
               p.idleTarget = null;

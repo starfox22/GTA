@@ -31,9 +31,9 @@
     const CYCLE_STAMINA_MAX = 7.5,
       // Standing on the pedals: about 38 km/h against a 22 km/h cruise.
       CYCLE_SPRINT_TOP = 1.73,
-      CYCLE_SPRINT_PUSH = 1.6,
-      // Forward push at a standstill (about 1.5 m/s²), world units per second squared.
-      CYCLE_PUSH = 0.15 * GRAVITY,
+      CYCLE_SPRINT_PUSH = 1.7,
+      // Forward push at a standstill (about 2 m/s²), world units per second squared.
+      CYCLE_PUSH = 0.2 * GRAVITY,
       // How quickly the legs come up to full effort, and let go of it, per second.
       CYCLE_SPIN_UP = 3.2,
       CYCLE_SPIN_DOWN = 6,

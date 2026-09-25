@@ -1231,7 +1231,7 @@
         pedSay(p, 'deck', 0.16);
       }
       // Walk in the ship's frame, so a moving deck carries the stroll with it.
-      const speed = 26,
+      const speed = 4.5 * KMH,
         nu = p.du + Math.cos(p.da) * speed * deltaSeconds,
         nv = p.dv + Math.sin(p.da) * speed * deltaSeconds;
       if (linerDeckFree(ship, nu, nv, 7)) {
@@ -1272,7 +1272,7 @@
         return true;
       }
       p.walking = true;
-      const speed = p.flee > 0 ? 60 : 22,
+      const speed = (p.flee > 0 ? 15 : 4.5) * KMH,
         nx = p.x + Math.cos(p.a) * speed * deltaSeconds,
         ny = p.y + Math.sin(p.a) * speed * deltaSeconds,
         { u, v } = deckLocal(SUPERYACHT, nx, ny);

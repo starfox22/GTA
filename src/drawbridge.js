@@ -473,9 +473,11 @@
           c.deckLift = ground;
           c.deckVz = surfaceVz;
           if (jump) jump.crossed = (p.u - g.m) * jump.leaf < 0;
-          // Coming down faster than 5 m/s (a fall of about 1.3 m) bends things.
+          // Coming down faster than 5 m/s (a fall of about 1.3 m) bends things; a
+          // flat landing from a long flight (14 m/s, a ten-metre drop) costs a sedan
+          // about a third of its health.
           if (into > 5 * UNITS_PER_METRE) {
-            const hit = (into - 5 * UNITS_PER_METRE) * 0.4;
+            const hit = (into - 5 * UNITS_PER_METRE) * 0.7;
             damageVehicle(c, hit, c.x, c.y, null, { kind: 'crash', nx: 0, ny: 0, closing: into, otherMass: 0 });
             playSample(into > 12 * UNITS_PER_METRE ? 'crash-heavy-2' : 'crash-medium-1', clamp(into / (17 * UNITS_PER_METRE), 0.25, 0.9), 1, c);
             if (c === player.car) shake = Math.max(shake, Math.min(10, into / 12));
