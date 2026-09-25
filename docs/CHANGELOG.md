@@ -29,6 +29,25 @@ Drawbridge (drawbridge.js, drawbridge3d.js, geography.js, physics.js, navigation
 - Traffic no longer stops at phantom signals out on the Palm Sound bridges: grid columns
   -896 and -384 cross the water, and trafficControl planned junctions there.
 
+Mountains (terrain.js, county3d.js, county.js)
+- The two elliptical bumps are replaced by the Ridgeline Range: a generated coastal range
+  (ridge network, domain-warped ridged and "erosion" noise, stream-power incision over
+  depression-filled drainage, strata, thermal settling) with Mount Ascent's summit horn, the
+  rock needles of Needle Ridge, spurs, ravines, sea cliffs on the north coast and foothills that
+  run down to Eagle Pass, the reservoir and Northridge. Roads, rail, towns and the helipad stay
+  flat, with the ground rising off them as embankments. It is still one shared triangulated
+  surface for rendering and contact; it builds in about 1.3 s headless.
+- Both 4x4 trails are graded switchbacks up the south faces (at most 0.28), with turning pads
+  at the hairpins and a level summit platform. An SUV drives each one to the top.
+- A new terrain material: forest floor, meadow, alpine turf, dirt, scree, banded rock with
+  triplanar grain and cracks, snow above a ragged snowline (lingering in the gullies, blown off
+  the ridges, glinting in the sun), baked AO, bump detail. The foot of the slopes blends
+  seamlessly into the county sheet. The terrain is drawn as 64-cell chunks with a
+  half-resolution far LOD and skirts.
+- About 12,700 instanced conifers and broadleaf trees below a ragged treeline, ~730 boulders,
+  stream ribbons with white water on the steep drops, and valley mist at dawn. The 2D map gets
+  hill shading, contours, forest and snow. New `DeadEndCity.terrain()` report.
+
 HUD (hud.js, harbor.js, shell.html)
 - The mission 1 LOAD CARGO prompt no longer flickers: every system now offers its prompt to one
   owner (`offerPrompt`, hud.js) instead of writing `#interaction`, which the old code set to

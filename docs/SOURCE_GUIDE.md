@@ -122,7 +122,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | challenges.js | Missions 3 to 9 (indices 2 to 8) and the interact/UI routing for all missions (`challengeMissionInteract`) |
 | sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
-| terrain.js | Triangulated mountains, snow caps, trails, slope handling and off-road contact |
+| terrain.js | The Ridgeline Range: generated, eroded height fields (one shared triangulated surface for rendering, collision and elevation), switchback 4x4 trails, baked AO / flow / forest data, forest, boulder and stream placement, the 2D relief paint, slope handling and off-road contact, `terrainReport` |
 | casino.js | Roulette layout, stakes, settlement, UI and saved cash |
 | skyline.js | North Point financial cluster plan: `SKYLINE_TOWERS` (named tower lots per block, heights, designs), `buildSkylineBlock`, `paintSkylinePlaza` |
 | renewal.js | Parks (`CENTRAL_PARK`, `COMMONS`), ponds (`parkPondBlocked`, `parkPondNear`), boardwalks, walkers, joggers, the outdoor gym |
@@ -155,7 +155,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | --- | --- |
 | flight-view3d.js | Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
-| lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), headlight cones, time-of-day look |
+| lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
@@ -178,7 +178,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
-| county3d.js | County ground tiles and hills, snow, rural scenery and region visibility |
+| county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests and boulders (near / far LOD per 2048-unit cell), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
 | drawbridge3d.js | The Palm Sound drawbridge in 3D (`buildDrawbridge`, the bascule builder): hinged leaves with grid decking, girders and counterweights, piers and tender houses, fenders, barrier gates, signals and lamps (switched lenses and halos), the ketch; `updateDrawbridgeVisuals` each frame |
@@ -436,6 +436,27 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   its own name.
 - The county (Ridgeline, Oceanview, Coral Coast, Fort Sentinel) is defined in county.js with its
   own roads, towns and an airport.
+- **The Ridgeline Range** (terrain.js, drawn by county3d.js) fills the north of Ridgeline between
+  the north coast and Eagle Pass / the Ridgeline Highway: one height field over x 5880..10980,
+  y 60..2620 on a 10-unit grid (`TERRAIN_FIELDS[0]`), plus a small field for each of the two lone
+  hills further south (6800, 5300 and 4330, 6740). A main crest (`RANGE_CREST`) runs west to east
+  through **MOUNT ASCENT** (7760, 1090; a rugged summit horn, ~145 m) and **NEEDLE RIDGE** (9760,
+  1230; an overlook in a notch between a row of rock needles), with a low saddle above Clearwater
+  Reservoir; spurs run short and steep to sea cliffs on the north, long down to the valleys on the
+  south; low foothill ridges fill the Eagle Pass loop and the country east of the reservoir. The
+  field is generated once, on first use (deterministic, typed arrays): ridge network + domain-warped
+  ridged multifractal and derivative-damped ("erosion") fBm, three passes of stream-power incision
+  over depression-filled D8 flow, terraced strata on steep faces, thermal settling, then caps from
+  distance fields (exact distance transforms): flat on and beside every county road, service road,
+  rail line, town block and the Northridge helipad, rising no faster than a noisy embankment;
+  gentle shores on the reservoir; sea cliffs on the coast; nothing at the field's edge. The two
+  4x4 trails are switchbacks up the south faces (`switchbackTrail`), graded to at most
+  `TRAIL_MAX_GRADE` (0.28) between street level at the trailhead and a level summit platform, cut
+  and filled into the surface with shoulders that widen with the cut. `terrainHeight` samples the
+  field's exact Float32 vertices with the mesh's own diagonal (`sampleTerrainField`); the renderer
+  draws those same vertices (near LOD), so contact and picture agree. `DeadEndCity.terrain()`
+  reports the fields (grid, top, build timings), peak and trail figures, scenery counts and the
+  outcrops' footing.
 - **Fort Sentinel** (military.js `MILITARY`, `SENTINEL`; drawn by base3d.js) fills x 9300..10560,
   y 7750..9950 of its island inside a double razor-wire fence with eight watch towers. The
   Sentinel Causeway lands at the main gate (y 8150): jersey-barrier funnel, guard booth on a
@@ -903,7 +924,14 @@ docs/audit/missions-qa.md shows the method).
   CPU-bound or still slow at 60%, one tier down. Scene shaders that need the scene buffer's
   pixel size (point sprites, screen-space lookups) must use `sceneBufferSize()`, not the
   canvas's drawing buffer.
-- **Quality tiers** (quality.js) set pixel ratio, shadow-map size and refresh cadence, MSAA,
+- **Shadows** (quality.js SHADOWS): the sun (moon) shadow map is redrawn every frame whenever
+  it is on; a map kept for two to four frames on the lower tiers left the shadows of the player
+  and the traffic trailing behind them. Settings · Graphics · Shadows is AUTO (LOW off, MEDIUM
+  low, HIGH/ULTRA high), OFF, LOW (a map of at most 2048) or HIGH (the tier's map), saved as
+  `dead-end-city-shadows` and applied live (switching on/off relinks the lit shaders once).
+  With shadows off, cars and people stand on soft contact blobs (lighting3d.js CONTACT
+  SHADOWS, one instanced draw). The shadow box stays texel-snapped (`placeSun`).
+- **Quality tiers** (quality.js) set pixel ratio, default shadows and shadow-map size, MSAA,
   AO samples, bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
   record; the renderer's `setQuality(tier)` applies one at runtime. `DeadEndCity.graphics('high')`
   switches from the console (tests use it, since SwiftShader auto-detects as LOW).
@@ -917,26 +945,43 @@ docs/audit/missions-qa.md shows the method).
   city-wide light map; `cityMaterialPatch` (installed as MeshStandardMaterial's default
   `onBeforeCompile`) adds it to every lit surface near the ground, scaled by night, the
   blackout job's district power and height. A material with its own `onBeforeCompile` should
-  call `cityMaterialPatch(shader)` first. Traffic headlights are instanced ground cones.
+  call `cityMaterialPatch(shader)` first. A street lamp's pool is ~100 units across with a
+  bright core and a long soft tail, so neighbouring lamps overlap into lit streets; it climbs
+  the facades beside it (ground-facing surfaces stop catching it by ~40 units, walls ~78) and is
+  tinted by district (`lampTint`: sodium in the docks and Old Quarter, cool LED in the
+  financial core and Midtown, warm white elsewhere).
+- **Vehicle lights** (lighting3d.js DRIVE LIGHT MAP): every lit car's low beams (~35 m, wide)
+  and tail-lamp wash are drawn each night frame as instanced quads into a 1024-texel HDR map
+  over the view (texel-snapped; alpha keeps the road level), and the same material patch adds
+  it as light, so the road, kerbs, cars, people and walls ahead are lit through their own
+  colour. The player's car keeps its real spotlight on top.
+- **Night look** (lighting3d.js `NIGHT_LOOK`, civic3d.js night keyframes): a readable
+  blue-hour night: stronger moonlight and cool sky fill, a brighter night sky, opened exposure,
+  slightly lifted blue blacks and less contrast and saturation loss than before; lamps, neon and
+  headlights stay far above that ambient. No light follows the player (the foot pool is gone;
+  only a faint moonlit rim on their model's silhouette edges remains).
 - **Searchlights** (searchlight3d.js): a shaft is a cone whose front faces march the view
   ray through the cone (exit solved analytically): soft radial profile with a hot core,
   denser towards the lamp, forward scattering, drifting haze noise (MEDIUM and up), a soft
   fade into the ground plane and a soft shoulder so a beam seen end-on never blows out. The
   police helicopter's pool is one real SpotLight (always in the scene, intensity 0 when idle,
-  so no program changes) with a cookie map; it casts shadows on HIGH/ULTRA (switched only on
-  a tier change). Rain streaks inside its cone are lit (one GPU-animated LineSegments). The
+  so no program changes) with a cookie map; it casts shadows on HIGH/ULTRA while sun shadows are
+  HIGH (switched only on a tier or shadow setting change). Rain streaks inside its cone are lit (one GPU-animated LineSegments). The
   aim is a critically damped spring fed with the target's velocity: it lags and wobbles while
   tracking, sweeps a widening figure round the last sighting while searching, and snaps on
   with a flare when the player is found again. The Fort Sentinel watch towers use the same
   shaft with a cookie decal on the ground. Faint by day, strong at night and in rain.
-- **Cutaway** (lighting3d.js, `updateCutaway`): only when the player stands strictly under a
+- **Cutaway** (lighting3d.js, `updateCutaway`): when a building or a deck stands between the
+  camera and the player (rays from their middle and head towards the camera hit its box,
+  `findOccluders`), a player-sized hole is dithered through that structure alone. Also when the
+  player stands strictly under a
   roof (`airCoverVolumes()`: the underpass, rail decks, station canopies; a building they are
   inside; roofs registered with `registerCutawayRoof`: Vinny's depot, bus shelters) does the
   same patch dither a small hole, about the player's size, through that roof. Only fragments
   inside the covering structure's own volume and in front of the player are cut, so vehicles,
-  people, trees and props never are; in the open there is no cutaway. `city3D.
-  setCharacterCutaway(on)` switches it; localStorage `dead-end-city-cutaway` = `'off'` is
-  read at start-up.
+  people, trees and props never are; with the player in plain view there is no cutaway.
+  Settings · Graphics · Character see-through (`city3D.setCharacterCutaway(on)`) switches it
+  live; localStorage `dead-end-city-cutaway` = `'off'` is read at start-up.
 - **Street camera clearance** (flight-view3d.js): the orthographic street camera stands far
   enough back along its view line that its near plane clears the tallest roof and the
   cloud-shadow plane (`streetCeiling()`); the image is unchanged. The street view has no

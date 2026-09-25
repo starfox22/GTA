@@ -190,7 +190,13 @@
             float nearSum = 0.0, farSum = 0.0;
             for ( int i = 0; i < AO_SAMPLES; i++ ) {
               float t = ( float( i ) + 0.5 ) / float( AO_SAMPLES );
-              float angle = t * 43.98 + spin; // seven turns of the spiral
+              // Golden-angle spiral: every sample count spreads round the disc, and
+              // so do the even (near) and odd (far) halves. (The spiral used to make
+              // seven turns over the samples; at ULTRA's 14 that stepped exactly one
+              // turn between samples of a half, so each pixel searched along a
+              // single line and the rotation noise printed in rows as horizontal
+              // bands across the ground.)
+              float angle = float( i ) * 2.3999632 + spin;
               float wide = mod( float( i ), 2.0 ) > 0.5 ? 4.0 : 1.0;
               float radius = uRadius * wide, radius2 = radius * radius;
               vec2 offset = vec2( cos( angle ), sin( angle ) ) * sqrt( t ) * discUv * wide;
@@ -408,8 +414,13 @@
             #endif
             if ( uDebugView > 2.5 ) color = vec3( fract( texture2D( tDepth, vUv ).x * 400.0 ) );
             color = cityLinearToSRGB( clamp( color, 0.0, 1.0 ) );
-            // Dither (and, when graded, a whisper of film grain) against banding.
-            float n = fract( sin( dot( gl_FragCoord.xy + fract( uTime ) * 61.0, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 );
+            // Dither (and, when graded, a whisper of film grain) against banding. An
+            // arithmetic hash: the old fract( sin( dot( ... ) ) * 43758 ) one fed sin()
+            // arguments in the hundreds of thousands on large canvases, where GPUs'
+            // sin() loses precision and the "noise" turns into rows of lines.
+            vec3 p3 = fract( vec3( gl_FragCoord.xyx + fract( uTime ) * 61.0 ) * 0.1031 );
+            p3 += dot( p3, p3.yzx + 33.33 );
+            float n = fract( ( p3.x + p3.y ) * p3.z );
             color += ( n - 0.5 ) * ( 1.5 / 255.0 + uGrain );
             gl_FragColor = vec4( color, 1.0 );
           }`,
@@ -535,20 +546,20 @@
       // Draw calls and triangles of the scene pass (shadow map included when it was
       // refreshed this frame) and of the whole frame, for DeadEndCity.stats().
       const frameStats = { sceneCalls: 0, sceneTriangles: 0, shadowFrame: false, totalCalls: 0, viewCalls: 0, shadowCalls: 0 };
-      // Split the scene pass into camera and shadow-map calls: frames without a
-      // shadow refresh give the camera's share, the next refresh the difference.
+      // Split the scene pass into camera and shadow-map calls (the shadow pass
+      // counts its own, flight-view3d.js).
       function noteSceneCalls() {
         frameStats.sceneCalls = renderer.info.render.calls;
         frameStats.sceneTriangles = renderer.info.render.triangles;
-        if (!frameStats.shadowFrame) frameStats.viewCalls = frameStats.sceneCalls;
-        else frameStats.shadowCalls = Math.max(0, frameStats.sceneCalls - frameStats.viewCalls);
+        if (!frameStats.shadowFrame) frameStats.shadowCalls = 0;
+        frameStats.viewCalls = Math.max(0, frameStats.sceneCalls - frameStats.shadowCalls);
       }
       renderer.info.autoReset = false;
       function renderFrame() {
         // Crowd impostors placed during this frame's people pass (flight-view3d.js).
         endPersonImpostors();
         renderer.info.reset();
-        frameStats.shadowFrame = renderer.shadowMap.needsUpdate;
+        frameStats.shadowFrame = renderer.shadowMap.enabled && renderer.shadowMap.needsUpdate;
         if (!hdrCapable || !postTier) {
           renderer.toneMappingExposure = postLook.exposure;
           renderer.setRenderTarget(null);

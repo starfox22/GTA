@@ -5235,6 +5235,10 @@
           district: districtAt(x, y),
         };
       },
+      // The Ridgeline Range (terrain.js): each field's grid, top and build time,
+      // each trail's length, summit and steepest graded pitch, scenery counts and
+      // the outcrops' footing. Terrain tests read it alongside probe().
+      terrain: () => terrainReport(),
       // The current mission in full: target (with altitude), timer, the mission
       // vehicles, its guards and actors, and each job's own list of points.
       missionTargets() {
@@ -5938,6 +5942,9 @@
         return {
           setting: graphicsSetting,
           ...(city3D?.quality?.() || {}),
+          // Sun shadows in force ('off', 'low', 'high') and the setting behind them.
+          shadows: shadowQuality(),
+          shadowSetting,
           // AUTO's frame-rate adaptation (quality.js ADAPTIVE QUALITY).
           adaptive: { averageFrameMs: +adaptive.average.toFixed(1), tierDrops: adaptive.tierDrops },
         };
@@ -5956,6 +5963,8 @@
             if (Number.isFinite(changes[key])) settings[key] = clamp(Math.round(changes[key]), 0, 100);
           if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
           if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
+          // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
+          if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
           if (typeof changes.voices === 'boolean' && changes.voices !== voicesOn) toggleVoices();
           if (typeof changes.fps === 'boolean' && changes.fps !== fpsMeter.shown) toggleFpsCounter();
@@ -5974,6 +5983,7 @@
         }
         return {
           graphics: graphicsSetting,
+          shadows: shadowSetting,
           frameLimit: frameLimit() || 'unlimited',
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,

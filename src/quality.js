@@ -9,7 +9,10 @@
      *
      *   pixelRatio   cap on device pixels per CSS pixel for the 3D canvas
      *   shadowMap    sun shadow map size (texels per side)
-     *   shadowEvery  frames between shadow-map refreshes (1 = every frame)
+     *   shadows      default sun shadows: 'off' (contact blobs under cars and
+     *                people instead), 'low' (a smaller map) or 'high' (shadowMap);
+     *                Settings · Graphics · Shadows can override it. The map is
+     *                redrawn every frame whenever shadows are on (see SHADOWS)
      *   msaa         multisample count of the HDR scene target (0 = FXAA instead)
      *   ao           screen-space ambient occlusion samples (0 = off)
      *   bloom        bloom mip levels (0 = off)
@@ -23,10 +26,10 @@
      * (see detectGraphicsTier); phones and tablets start at LOW or MEDIUM.
      */
     const GRAPHICS_TIERS = {
-      low: { name: 'LOW', pixelRatio: 1, shadowMap: 1024, shadowEvery: 4, msaa: 0, ao: 0, bloom: 0, grade: false, lodBias: 1.35, rain: 900 },
-      medium: { name: 'MEDIUM', pixelRatio: 1.25, shadowMap: 2048, shadowEvery: 3, msaa: 0, ao: 0, bloom: 4, grade: true, lodBias: 1.1, rain: 1600 },
-      high: { name: 'HIGH', pixelRatio: 1.5, shadowMap: 3072, shadowEvery: 2, msaa: 4, ao: 8, bloom: 5, grade: true, lodBias: 1, rain: 2600 },
-      ultra: { name: 'ULTRA', pixelRatio: 2, shadowMap: 4096, shadowEvery: 1, msaa: 4, ao: 14, bloom: 6, grade: true, lodBias: 0.85, rain: 3200 },
+      low: { name: 'LOW', pixelRatio: 1, shadowMap: 1024, shadows: 'off', msaa: 0, ao: 0, bloom: 0, grade: false, lodBias: 1.35, rain: 900 },
+      medium: { name: 'MEDIUM', pixelRatio: 1.25, shadowMap: 2048, shadows: 'low', msaa: 0, ao: 0, bloom: 4, grade: true, lodBias: 1.1, rain: 1600 },
+      high: { name: 'HIGH', pixelRatio: 1.5, shadowMap: 3072, shadows: 'high', msaa: 4, ao: 8, bloom: 5, grade: true, lodBias: 1, rain: 2600 },
+      ultra: { name: 'ULTRA', pixelRatio: 2, shadowMap: 4096, shadows: 'high', msaa: 4, ao: 14, bloom: 6, grade: true, lodBias: 0.85, rain: 3200 },
     };
     const GRAPHICS_ORDER = ['auto', 'low', 'medium', 'high', 'ultra'];
     let graphicsSetting = 'auto',
@@ -120,7 +123,7 @@
      *    in 10% steps down to MIN_SCALE, and upsampled by the composite pass
      *    (postfx3d.js), so the HUD stays sharp.
      *  - Still slow at the lowest scale, or CPU-bound (the simulation and draw
-     *    submission fill the frame): one tier down (fewer shadow refreshes, an
+     *    submission fill the frame): one tier down (smaller or no shadows, an
      *    earlier LOD, no AO), at most twice per session.
      *  - Comfortably fast for a while: the resolution creeps back up in 5% steps,
      *    never sooner than 15 s after a drop, so it does not oscillate.
@@ -168,6 +171,35 @@
         adaptive.fastFor = 0;
         adaptive.scale = city3D.setRenderScale(Math.min(tierBaseScale(), adaptive.scale + 0.05));
       }
+    }
+    /**
+     * SHADOWS
+     * Sun shadows follow the tier ('auto': LOW none, MEDIUM low, HIGH/ULTRA
+     * high) unless Settings · Graphics · Shadows picks OFF, LOW or HIGH, saved
+     * under 'dead-end-city-shadows'. Whenever they are on, the shadow map is
+     * redrawn every frame: it used to be refreshed every second to fourth frame
+     * on the lower tiers while the player and traffic moved every frame, so
+     * shadows trailed behind whatever cast them. With shadows off, cars and
+     * people sit on soft contact blobs instead (lighting3d.js CONTACT SHADOWS).
+     * Switching them on or off relinks the lit shaders once (a short hitch).
+     */
+    const SHADOW_ORDER = ['auto', 'off', 'low', 'high'];
+    let shadowSetting = 'auto';
+    try {
+      const saved = localStorage.getItem('dead-end-city-shadows');
+      if (SHADOW_ORDER.includes(saved)) shadowSetting = saved;
+    } catch {}
+    // The shadow quality in force: 'off', 'low' or 'high'.
+    function shadowQuality() {
+      return shadowSetting === 'auto' ? graphicsTier().shadows : shadowSetting;
+    }
+    function setShadowSetting(to) {
+      if (!SHADOW_ORDER.includes(to)) return;
+      shadowSetting = to;
+      try {
+        localStorage.setItem('dead-end-city-shadows', shadowSetting);
+      } catch {}
+      if (city3D && city3D.setQuality) city3D.setQuality(graphicsTier());
     }
     // Settings · Graphics (settings.js) passes a tier; with none the setting steps
     // AUTO -> LOW -> MEDIUM -> HIGH -> ULTRA -> AUTO.
