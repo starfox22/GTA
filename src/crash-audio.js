@@ -8,13 +8,13 @@
      * threshold too) and by damage.js for street props.
      *
      * Each impact plays ONE recorded crash, picked by the closing speed (units/s;
-     * 5.12 units = 1 m/s), with a small random pitch (+-5 %) and gain spread:
-     *   12-75 u/s (~2-15 m/s)    a light bump (a dull metal knock) at low gain, or a
+     * UNITS_PER_METRE, 8 units = 1 m/s), with a small random pitch (+-5 %) and gain spread:
+     *   12-75 u/s (~5-34 km/h)   a light bump (a dull metal knock) at low gain, or a
      *                            metal scrape when the contact is mostly sideways;
-     *   75-160 u/s (~15-31 m/s)  one of three medium crashes;
+     *   75-160 u/s (~34-72 km/h) one of three medium crashes;
      *   over 160 u/s             a heavy crash (the one with glass in it only when
      *                            a pane broke).
-     * Trucks, buses and tanks (mass 4 and up) use the heavy set from 60 u/s and
+     * Trucks, buses and tanks (mass 4 and up) use the heavy set from 60 u/s (27 km/h) and
      * play a little lower. Extra layers are added only when something happened:
      * a glass shatter when a pane actually broke in this hit, a recorded tyre
      * skid when the two were sliding across each other, and a short debris
@@ -104,7 +104,7 @@
         gain = set === 'bump' ? 0.18 + clamp((closing - 40) / 100, 0, 1) * 0.22 : 0.45;
       } else if (closing < 75 && !(heavyVehicle && closing >= 60)) {
         set = glancing ? 'scrape' : 'bump';
-        // 12 u/s (2.3 m/s) is barely a tap; 75 u/s a solid knock.
+        // 12 u/s (1.5 m/s) is barely a tap; 75 u/s (34 km/h) a solid knock.
         gain = 0.06 + clamp((closing - 12) / 63, 0, 1) * 0.32;
         if (glancing) gain *= 0.8;
       } else if (closing < 160 && !heavyVehicle) {
@@ -160,7 +160,7 @@
         attenuation = (1 / (1 + d / 230)) * CRASH_LEVEL;
       crashLog.push({
         closing: Math.round(o.closing),
-        metersPerSecond: +(o.closing / 5.12).toFixed(1),
+        metersPerSecond: +worldMeters(o.closing).toFixed(1),
         mass: o.mass,
         other: o.other,
         set: c.set,

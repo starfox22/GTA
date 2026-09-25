@@ -545,9 +545,10 @@
       }
       if (a.gravel) {
         const tank = car?.type === 'tank' && alive,
-          crunch = tank ? 0.1 + 0.3 * clamp(road / 150, 0, 1) : offRoad ? 0.12 * clamp(road / 200, 0, 1) : 0;
+          trackTop = spec?.max || 120,
+          crunch = tank ? 0.1 + 0.3 * clamp(road / (trackTop * 0.77), 0, 1) : offRoad ? 0.12 * clamp(road / 200, 0, 1) : 0;
         glideParam(a.gravel.gain.gain, on ? crunch : 0, now, 0.15);
-        glideParam(a.gravel.source.playbackRate, tank ? 0.75 + clamp(road / 195, 0, 1) * 0.5 : 0.9 + roll * 0.4, now, 0.2);
+        glideParam(a.gravel.source.playbackRate, tank ? 0.75 + clamp(road / trackTop, 0, 1) * 0.5 : 0.9 + roll * 0.4, now, 0.2);
       }
       updateJetVoice(a, car, kind, on && alive, now);
       updateTrafficEngines(a, on, now, dt);

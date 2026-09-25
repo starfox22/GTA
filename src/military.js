@@ -189,12 +189,14 @@
         offroad: true,
         l: 52,
         w: 29,
-        max: 295,
-        acc: 160,
+        topKmh: 110,
+        zeroTo: [80, 13],
+        brakeG: 0.8,
+        cornerG: 1.0,
+        tractionG: 0.5,
         turn: 1.9,
         hp: 380,
         mass: 3,
-        brake: 240,
         grip: 7,
         color: '#5c6547',
         militaryModel: 'jeep',
@@ -204,12 +206,14 @@
         offroad: true,
         l: 76,
         w: 34,
-        max: 240,
-        acc: 115,
+        topKmh: 100,
+        zeroTo: [60, 12],
+        brakeG: 0.7,
+        cornerG: 0.85,
+        tractionG: 0.4,
         turn: 1.25,
         hp: 950,
         mass: 11,
-        brake: 220,
         grip: 8,
         color: '#5b6548',
         militaryModel: 'apc',
@@ -220,17 +224,20 @@
         truck: true,
         l: 88,
         w: 32,
-        max: 225,
-        acc: 95,
+        topKmh: 90,
+        zeroTo: [60, 20],
+        brakeG: 0.65,
+        cornerG: 0.8,
+        tractionG: 0.3,
         turn: 1.05,
         hp: 480,
         mass: 7.5,
-        brake: 170,
         grip: 6,
         color: '#58624a',
         militaryModel: 'truck',
       },
     });
+    ['jeep', 'apc', 'armytruck'].forEach((type) => roadPerformance(VEHICLE_DEFINITIONS[type]));
     /* ---- Colliders ------------------------------------------------------------------
        `militaryWalls` holds every fixed solid of the base: people and vehicles both
        collide with them (vehicles through addStatic in county.js) unless the entry
@@ -791,7 +798,8 @@
         return false;
       }
       d.a = headingBetween(d, target);
-      const step = Math.min(dist, 24 * deltaSeconds);
+      // Quick time: about 5.5 km/h (the platoon follows at up to 7 to keep station).
+      const step = Math.min(dist, 5.5 * KMH * deltaSeconds);
       d.x += Math.cos(d.a) * step;
       d.y += Math.sin(d.a) * step;
       return true;
@@ -1042,7 +1050,7 @@
         if (e.aiming) {
           e.a = headingBetween(e, player);
           if (!e.hold && d > 245 && inMilitary(player.x, player.y, 220)) {
-            footStepTowards(e, player, deltaSeconds, 49);
+            footStepTowards(e, player, deltaSeconds, 9 * KMH);
             e.walking = true;
           }
           if (e.timer <= 0 && clearSight(e, threat)) {
@@ -1090,7 +1098,7 @@
           continue;
         }
         let goal = null,
-          speed = 22;
+          speed = 4.8 * KMH;
         if (e.role === 'drill' || e.role === 'sergeant') {
           if (drilling) {
             if (e.role === 'drill') goal = drillSlot(e.slot);
@@ -1104,7 +1112,7 @@
                 militarySpeak(e, gameTime < militaryDrill.pauseUntil ? 'PLATOON... HALT!' : ['LEFT!', 'LEFT! RIGHT!', 'LEFT, RIGHT, LEFT!', 'SOUND OFF!'][militaryDrill.step], 1.6);
               }
             }
-            speed = 34;
+            speed = 7 * KMH;
           } else goal = e.barracksHome;
           if (goal && distanceBetween(e, goal) < 2.5) {
             if (drilling) e.a = militaryDrill.a;

@@ -10,7 +10,7 @@
 
     /**
      * SHARED DATA CONTRACTS
-     * Map coordinates are (x, y), measured in world units: 512 units = 100 meters.
+     * Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
      * Heading `a` is radians. vx/vy are world units per second; av is radians/second.
      * In Three.js, a map point becomes (x, elevation, y); model yaw is -a.
      * Entity fields retain their established compact data keys for interoperability:
@@ -150,8 +150,43 @@
       BLOCK_COLUMNS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -6, -5, -4, -3, -2, -1],
       BLOCK_Y_MIN = -NORTH_ROWS,
       BLOCK_Y_MAX = 9;
-    const METERS_PER_UNIT = 100 / BLOCK_SIZE;
+    /**
+     * WORLD SCALE
+     * The one constant that ties map units to metres. It was measured from the
+     * models the player judges speed against:
+     *   a sedan (REGENT) is 43 units long, a real one about 4.5 m   -> 9.6 u/m
+     *   a person stands 17.4 units to the crown, about 1.75 m       -> 9.9 u/m
+     *   a traffic lane (kerb to centre line) is 44 units; 3.5 m of
+     *     lane plus 2.5 m of gutter and parking                     -> 7.3 u/m
+     *   the courier plane is 112 long (14.4 m), the helicopter 86
+     *     (12 m with the rotor), the speedboat 58 (7.5 m)           -> 7..8 u/m
+     *   a shop door is 12 units high (2.1 m), a storey 14-16 (3.2 m) -> 4.7..5.7 u/m
+     * People and cars are drawn a little large and buildings a little squat, as
+     * top-down games do; 8 units to the metre sits between them (it is the
+     * geometric mean of the five reference measures) and matches the roads,
+     * boats and aircraft. A city block (512) is 64 m. Every speed, gravity and
+     * readout (speedometer, flight instruments, knots, metres) derives from it;
+     * write real speeds as `50 * KMH`, accelerations as `0.8 * GRAVITY`.
+     */
+    const UNITS_PER_METRE = 8,
+      METERS_PER_UNIT = 1 / UNITS_PER_METRE,
+      // Map units per second in one km/h, in one knot; one g in map units per second squared.
+      KMH = UNITS_PER_METRE / 3.6,
+      KNOTS = UNITS_PER_METRE * 0.514444,
+      GRAVITY = 9.81 * UNITS_PER_METRE;
+    // On foot: a walk, a jog (the default) and a sprint, in map units a second.
+    const FOOT_WALK = 5.5 * KMH,
+      FOOT_JOG = 11 * KMH,
+      FOOT_SPRINT = 24 * KMH;
+    /* People's legs: one stride (two steps) covers 10 units plus 0.3 s of travel,
+       so a walk steps about twice a second and a sprint four times. strideCycle
+       is in map units (crowd3d.js advances its phase by distance over it);
+       strideRate is the same in radians a second for the simple `walk` phases. */
+    const strideCycle = (speed) => 10 + 0.3 * Math.abs(speed),
+      strideRate = (speed) => (TAU * Math.abs(speed)) / strideCycle(speed);
     const worldMeters = (units) => units * METERS_PER_UNIT,
+      // Map units a second -> km/h, the one conversion every speed readout uses.
+      speedKmh = (unitsPerSecond) => (unitsPerSecond / KMH),
       distanceLabel = (units) => Math.round(worldMeters(units)) + ' m';
     const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value)),
       distanceBetween = (firstPoint, secondPoint) =>
@@ -301,15 +336,16 @@
         name: 'CITY CYCLE',
         l: 28,
         w: 9,
-        // Pedal-limited: cruises clearly quicker than a sprint on foot (158 u/s)
-        // and below every car's top speed; pedalDrive (cycles.js) tapers the
-        // legs' push toward it, and standing on the pedals raises it.
-        max: 215,
-        acc: 40,
+        // Pedal-limited: a brisk city cruise of about 22 km/h, a little quicker
+        // than a sprint on foot; pedalDrive (cycles.js) tapers the legs' push
+        // toward it, and standing on the pedals raises it to about 38 km/h.
+        max: 22 * KMH,
+        acc: 0.16 * GRAVITY,
         turn: 3.9,
         hp: 85,
         mass: 0.12,
-        brake: 170,
+        brake: 0.6 * GRAVITY,
+        cornerG: 0.9,
         grip: 11,
         bike: true,
         bicycle: true,
@@ -320,8 +356,9 @@
         name: 'SERRANO C200 COURIER',
         l: 112,
         w: 100,
-        max: 520,
-        acc: 115,
+        // Only the engine note reads these: the flight model is aviation.js.
+        max: 500 * KMH,
+        acc: 0.3 * GRAVITY,
         turn: 0.8,
         hp: 250,
         mass: 2.8,
@@ -333,12 +370,14 @@
         offroad: true,
         l: 84,
         w: 53,
-        max: 195,
-        acc: 110,
+        topKmh: 55,
+        zeroTo: [30, 6.5],
+        brakeG: 0.6,
+        cornerG: 0.75,
+        tractionG: 0.35,
         turn: 1.35,
         hp: 1600,
         mass: 18,
-        brake: 280,
         grip: 13,
         tank: true,
         color: '#657652',
@@ -347,12 +386,14 @@
         name: 'ATLAS CARGO FLATBED',
         l: 94,
         w: 30,
-        max: 220,
-        acc: 98,
+        topKmh: 120,
+        zeroTo: [100, 22],
+        brakeG: 0.7,
+        cornerG: 0.85,
+        tractionG: 0.35,
         turn: 1.1,
         hp: 370,
         mass: 5.8,
-        brake: 190,
         grip: 6,
         truck: true,
         color: '#b69b68',
@@ -361,12 +402,14 @@
         name: 'SOLSTICE SPIDER',
         l: 42,
         w: 22,
-        max: 435,
-        acc: 218,
+        topKmh: 250,
+        zeroTo: [100, 4.8],
+        brakeG: 1.1,
+        cornerG: 1.55,
+        tractionG: 0.8,
         turn: 2.7,
         hp: 120,
         mass: 1.12,
-        brake: 325,
         grip: 8.4,
         color: '#b85b48',
       },
@@ -374,12 +417,14 @@
         name: 'KODIAK RS',
         l: 39,
         w: 23,
-        max: 385,
-        acc: 242,
+        topKmh: 230,
+        zeroTo: [100, 4.0],
+        brakeG: 1.1,
+        cornerG: 1.5,
+        tractionG: 0.95,
         turn: 2.65,
         hp: 175,
         mass: 1.38,
-        brake: 330,
         grip: 11,
         color: '#557bb3',
       },
@@ -387,12 +432,14 @@
         name: 'SOVEREIGN STRETCH',
         l: 76,
         w: 25,
-        max: 280,
-        acc: 113,
+        topKmh: 190,
+        zeroTo: [100, 9.5],
+        brakeG: 0.9,
+        cornerG: 1.05,
+        tractionG: 0.5,
         turn: 1.18,
         hp: 290,
         mass: 3.4,
-        brake: 198,
         grip: 5.8,
         color: '#222b37',
       },
@@ -400,12 +447,14 @@
         name: 'HELLFIRE CUSTOM',
         l: 46,
         w: 24,
-        max: 405,
-        acc: 270,
+        topKmh: 235,
+        zeroTo: [100, 4.3],
+        brakeG: 0.95,
+        cornerG: 1.15,
+        tractionG: 0.75,
         turn: 1.95,
         hp: 145,
         mass: 1.5,
-        brake: 250,
         grip: 5.2,
         color: '#943d42',
       },
@@ -413,12 +462,14 @@
         name: 'VORTEX 900',
         l: 30,
         w: 10,
-        max: 455,
-        acc: 260,
+        topKmh: 225,
+        zeroTo: [100, 3.2],
+        brakeG: 1.0,
+        cornerG: 1.35,
+        tractionG: 0.95,
         turn: 3.1,
         hp: 85,
         mass: 0.3,
-        brake: 360,
         grip: 9,
         bike: true,
         color: '#c4483c',
@@ -427,12 +478,14 @@
         name: 'NOMAD CRUISER',
         l: 34,
         w: 12,
-        max: 330,
-        acc: 180,
+        topKmh: 180,
+        zeroTo: [100, 5.0],
+        brakeG: 0.9,
+        cornerG: 1.25,
+        tractionG: 0.75,
         turn: 2.3,
         hp: 110,
         mass: 0.44,
-        brake: 275,
         grip: 7,
         bike: true,
         color: '#313f4b',
@@ -441,12 +494,14 @@
         name: 'V12 TEMPEST',
         l: 45,
         w: 23,
-        max: 510,
-        acc: 275,
+        topKmh: 330,
+        zeroTo: [100, 2.9],
+        brakeG: 1.2,
+        cornerG: 1.75,
+        tractionG: 1.05,
         turn: 2.5,
         hp: 130,
         mass: 1.35,
-        brake: 350,
         grip: 9,
         color: '#d9b753',
       },
@@ -454,12 +509,14 @@
         name: 'MONARCH V12',
         l: 52,
         w: 25,
-        max: 335,
-        acc: 165,
+        topKmh: 250,
+        zeroTo: [100, 5.0],
+        brakeG: 1.1,
+        cornerG: 1.4,
+        tractionG: 0.75,
         turn: 1.7,
         hp: 205,
         mass: 2.05,
-        brake: 250,
         grip: 6,
         color: '#283b4c',
       },
@@ -468,12 +525,14 @@
         offroad: true,
         l: 49,
         w: 26,
-        max: 285,
-        acc: 150,
+        topKmh: 175,
+        zeroTo: [100, 9.0],
+        brakeG: 0.95,
+        cornerG: 1.2,
+        tractionG: 0.6,
         turn: 1.8,
         hp: 250,
         mass: 2.3,
-        brake: 230,
         grip: 6,
         color: '#54684f',
       },
@@ -481,12 +540,14 @@
         name: 'WORKHORSE',
         l: 59,
         w: 26,
-        max: 270,
-        acc: 126,
+        topKmh: 165,
+        zeroTo: [100, 10.0],
+        brakeG: 0.9,
+        cornerG: 1.15,
+        tractionG: 0.55,
         turn: 1.6,
         hp: 280,
         mass: 2.7,
-        brake: 205,
         truck: true,
         color: '#70899a',
       },
@@ -494,12 +555,14 @@
         name: 'ATLAS BOX TRUCK',
         l: 86,
         w: 31,
-        max: 225,
-        acc: 82,
+        topKmh: 115,
+        zeroTo: [100, 21],
+        brakeG: 0.7,
+        cornerG: 0.85,
+        tractionG: 0.35,
         turn: 1.05,
         hp: 420,
         mass: 6.8,
-        brake: 145,
         grip: 5,
         truck: true,
         color: '#b4b9ad',
@@ -508,12 +571,14 @@
         name: 'METRO CITY BUS',
         l: 96,
         w: 31,
-        max: 195,
-        acc: 68,
+        topKmh: 100,
+        zeroTo: [50, 9],
+        brakeG: 0.65,
+        cornerG: 0.8,
+        tractionG: 0.3,
         turn: 0.88,
         hp: 480,
         mass: 9,
-        brake: 130,
         grip: 5,
         truck: true,
         color: '#b78b45',
@@ -522,12 +587,14 @@
         name: 'PARAMEDIC',
         l: 59,
         w: 27,
-        max: 300,
-        acc: 143,
+        topKmh: 155,
+        zeroTo: [100, 12],
+        brakeG: 0.85,
+        cornerG: 1.1,
+        tractionG: 0.5,
         turn: 1.7,
         hp: 265,
         mass: 2.9,
-        brake: 230,
         truck: true,
         color: '#dfdfd3',
       },
@@ -535,8 +602,9 @@
         name: 'STINGRAY SPEEDBOAT',
         l: 58,
         w: 25,
-        max: 310,
-        acc: 140,
+        // A 7.5 m sport boat: about 55 knots flat out.
+        max: 55 * KNOTS,
+        acc: 0.36 * GRAVITY,
         turn: 1.45,
         hp: 180,
         mass: 1.4,
@@ -547,8 +615,9 @@
         name: 'HARBOR LAUNCH',
         l: 72,
         w: 30,
-        max: 170,
-        acc: 70,
+        // A 9 m displacement launch: about 14 knots.
+        max: 14 * KNOTS,
+        acc: 0.09 * GRAVITY,
         turn: 0.95,
         hp: 300,
         mass: 4.2,
@@ -560,8 +629,11 @@
         name: 'VOLT COUPE',
         l: 40,
         w: 20,
-        max: 355,
-        acc: 177,
+        topKmh: 205,
+        zeroTo: [100, 6.5],
+        brakeG: 1.05,
+        cornerG: 1.45,
+        tractionG: 0.7,
         turn: 2.5,
         hp: 130,
         color: '#8dbdb7',
@@ -571,8 +643,11 @@
         name: 'DUKE V8',
         l: 47,
         w: 23,
-        max: 390,
-        acc: 196,
+        topKmh: 245,
+        zeroTo: [100, 5.0],
+        brakeG: 1.0,
+        cornerG: 1.3,
+        tractionG: 0.8,
         turn: 2.05,
         hp: 160,
         color: '#b55142',
@@ -582,8 +657,11 @@
         name: 'CITY CAB',
         l: 43,
         w: 23,
-        max: 300,
-        acc: 151,
+        topKmh: 175,
+        zeroTo: [100, 9.5],
+        brakeG: 1.0,
+        cornerG: 1.25,
+        tractionG: 0.6,
         turn: 2.15,
         hp: 145,
         color: '#d9ac3e',
@@ -593,8 +671,11 @@
         name: 'MULE VAN',
         l: 48,
         w: 26,
-        max: 235,
-        acc: 121,
+        topKmh: 150,
+        zeroTo: [100, 13],
+        brakeG: 0.85,
+        cornerG: 1.1,
+        tractionG: 0.5,
         turn: 1.6,
         hp: 240,
         color: '#b8b8a0',
@@ -604,8 +685,11 @@
         name: 'COMET GT',
         l: 42,
         w: 21,
-        max: 460,
-        acc: 230,
+        topKmh: 290,
+        zeroTo: [100, 3.8],
+        brakeG: 1.15,
+        cornerG: 1.65,
+        tractionG: 0.95,
         turn: 2.8,
         hp: 110,
         color: '#cf806d',
@@ -615,8 +699,11 @@
         name: 'REGENT',
         l: 43,
         w: 22,
-        max: 290,
-        acc: 146,
+        topKmh: 180,
+        zeroTo: [100, 9.0],
+        brakeG: 1.0,
+        cornerG: 1.3,
+        tractionG: 0.6,
         turn: 2.15,
         hp: 150,
         color: '#bdbdb3',
@@ -625,8 +712,8 @@
         name: 'RIPTIDE JET SKI',
         l: 29,
         w: 13,
-        max: 380,
-        acc: 220,
+        max: 50 * KNOTS,
+        acc: 0.55 * GRAVITY,
         turn: 2.5,
         hp: 110,
         mass: 0.45,
@@ -638,8 +725,9 @@
         name: 'MAVERICK HELICOPTER',
         l: 86,
         w: 34,
-        max: 340,
-        acc: 130,
+        // Cruise flat out at about 240 km/h (helicopterControl).
+        max: 250 * KMH,
+        acc: 0.5 * GRAVITY,
         turn: 1.6,
         hp: 220,
         mass: 2.2,
@@ -650,13 +738,75 @@
         name: 'PATROL UNIT',
         l: 45,
         w: 23,
-        max: 370,
-        acc: 205,
+        topKmh: 230,
+        zeroTo: [100, 6.3],
+        brakeG: 1.1,
+        cornerG: 1.45,
+        tractionG: 0.75,
         turn: 2.5,
         hp: 180,
         color: '#e0dfc7',
       },
     };
+    /**
+     * ROAD PERFORMANCE
+     * Road vehicles are specified in real units: `topKmh`, `zeroTo` ([km/h,
+     * seconds], usually 0-100), `brakeG`, `cornerG` (the sideways grip the
+     * steering may use, in g) and `tractionG` (what the driven wheels can push
+     * off the line). roadPerformance() turns those into the map-unit fields the
+     * physics reads: `max` (u/s), `acc` (u/s², off the line), `brake` (u/s²) and
+     * `power`, found by bisection so the car really does the stated 0-100 time
+     * through engineAcceleration(). The engine pulls at the tyres' limit until
+     * its power takes over (power / speed), and air and rolling resistance
+     * (growing with the square of the speed) meet it at the top speed.
+     */
+    // Air and rolling resistance at `v`: it would balance the engine at 15% past
+    // the top speed, so the car still pulls when it reaches `max`, where the
+    // physics caps it (a governed top speed rather than an endless crawl up to it).
+    function airResistance(spec, v) {
+      if (!spec.power) return 0;
+      const balance = spec.max * 1.15;
+      return Math.min(spec.acc, spec.power / balance) * (v / balance) * (v / balance);
+    }
+    function engineAcceleration(spec, along) {
+      if (!spec.power) return spec.acc || 0;
+      const v = Math.max(0, along);
+      return Math.min(spec.acc, spec.power / Math.max(v, 1)) - airResistance(spec, v);
+    }
+    // Resistance a rolling vehicle feels with no throttle: air, tyres and the
+    // engine holding it back in gear (about 1 m/s² at town speeds).
+    function coastDeceleration(spec, speed) {
+      const v = Math.abs(speed);
+      return airResistance(spec, v) + (spec.bicycle ? 0.025 : 0.1) * GRAVITY * Math.min(1, v / (15 * KMH));
+    }
+    function roadPerformance(spec) {
+      if (!spec.topKmh || spec.power) return spec;
+      spec.max = spec.topKmh * KMH;
+      spec.acc = (spec.tractionG || 0.6) * GRAVITY;
+      spec.brake = (spec.brakeG || 1) * GRAVITY;
+      const [targetKmh, seconds] = spec.zeroTo || [100, 10],
+        target = targetKmh * KMH,
+        timeTo = (power) => {
+          spec.power = power;
+          let v = 0,
+            t = 0;
+          while (v < target && t < 120) {
+            v = Math.min(spec.max, v + engineAcceleration(spec, v) * 0.01);
+            t += 0.01;
+          }
+          return t;
+        };
+      let low = 1,
+        high = 4e6;
+      for (let i = 0; i < 60; i++) {
+        const mid = Math.sqrt(low * high);
+        if (timeTo(mid) > seconds) low = mid;
+        else high = mid;
+      }
+      spec.power = high;
+      return spec;
+    }
+    Object.values(VEHICLE_DEFINITIONS).forEach(roadPerformance);
     // A plane's spec is the base plane with its airframe's numbers on top. The
     // merged record is made once per airframe: this is asked many times per car
     // per physics step, and a fresh copy each time was a steady stream of garbage.
@@ -2985,17 +3135,22 @@
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
           if (x || y) {
             player.a = Math.atan2(y, x);
-            player.walk += deltaSeconds * (keys.ShiftLeft ? 15 : 10);
+            // On foot the player jogs; Shift sprints and the walk key (C) walks.
+            // The Blue Hour terrace is walked, or jogged with Shift.
+            const sprinting = keys.ShiftLeft || keys.ShiftRight;
             let s = player.swimming
               ? swimSpeed()
               : player.roof
-                ? keys.ShiftLeft || keys.ShiftRight
-                  ? 68
-                  : 42
-                : keys.ShiftLeft || keys.ShiftRight
-                  ? 158
-                  : 100;
+                ? sprinting
+                  ? FOOT_JOG
+                  : FOOT_WALK
+                : sprinting
+                  ? FOOT_SPRINT
+                  : actionHeld('walk')
+                    ? FOOT_WALK
+                    : FOOT_JOG;
             if (player.wading) s *= wadeFactor();
+            player.walk += deltaSeconds * strideRate(s);
             moveBody(
               player,
               (x / Math.hypot(x, y)) * s * deltaSeconds,
@@ -3106,7 +3261,8 @@
       }
       shake *= Math.pow(0.008, deltaSeconds);
       flash = Math.max(0, flash - deltaSeconds);
-      const look = player.car ? player.car.speed * 0.35 : 0,
+      // Look ahead of a moving vehicle: about 0.45 s of travel, up to 300 units.
+      const look = player.car ? clamp(player.car.speed * 0.45, -80, 300) : 0,
         // A coaster outruns the usual trailing camera; stay with the train.
         follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
       if (player.car?.type === 'plane') {
@@ -3930,7 +4086,7 @@
         drawingContext.stroke();
         drawingContext.font = '11px Arial';
         drawingContext.textAlign = 'left';
-        drawingContext.fillText('100 m · 1 block', 28, 65);
+        drawingContext.fillText(distanceLabel(BLOCK_SIZE) + ' · 1 block', 28, 65);
         drawingContext.restore();
         drawingContext.textAlign = 'center';
         const labels = [
@@ -4240,8 +4396,10 @@
         ? Math.round(breathFraction() * 100)
         : c
           ? Math.round(
-              worldMeters(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : Math.abs(c.speed)) *
-                3.6,
+              // Boats read knots; everything else km/h (both from UNITS_PER_METRE).
+              isBoat(c)
+                ? Math.hypot(c.vx || 0, c.vy || 0) / KNOTS
+                : speedKmh(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : Math.abs(c.speed)),
             )
           : '';
       getElement('speedUnit').textContent = swimming
@@ -4255,7 +4413,9 @@
                 ' RPM · LEGS ' +
                 Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) +
                 '%'
-              : 'KM/H'
+              : isBoat(c)
+                ? 'KNOTS'
+                : 'KM/H'
           : '';
       getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
       getElement('vehicleStats').classList.toggle('damaged', !!c && c.hp < c.maxhp * 0.3);
@@ -5139,6 +5299,14 @@
      */
     window.DeadEndCity = Object.freeze({
       version: GAME_VERSION,
+      // The world scale (game.js WORLD SCALE): map units to the metre.
+      unitsPerMetre: UNITS_PER_METRE,
+      // Mend the player's vehicle as a repair bay would (for repeatable physics tests).
+      repair() {
+        if (!player.car) return null;
+        repairVehicle(player.car);
+        return this.damageReport();
+      },
       status: () => ({
         mode: gameMode,
         x: Math.round(player.x),
@@ -5382,7 +5550,7 @@
         if (!c) return null;
         Object.assign(c, { x, y, a: heading, vx: 0, vy: 0, vz: 0, av: 0, speed: 0 });
         if (isAircraft(c))
-          c.altitude = altitudeMeters > 0 ? terrainHeight(x, y) + (altitudeMeters * BLOCK_SIZE) / 100 : terrainHeight(x, y);
+          c.altitude = altitudeMeters > 0 ? terrainHeight(x, y) + altitudeMeters * UNITS_PER_METRE : terrainHeight(x, y);
         player.x = x;
         player.y = y;
         cameraTarget.x = x;
@@ -5574,10 +5742,10 @@
         car.authorized = true;
         enterVehicle(car);
         if (altitudeMeters > 0 && isAircraft(car)) {
-          car.altitude = terrainHeight(car.x, car.y) + (altitudeMeters * BLOCK_SIZE) / 100;
+          car.altitude = terrainHeight(car.x, car.y) + altitudeMeters * UNITS_PER_METRE;
           if (car.type === 'plane') {
-            car.vx = Math.cos(car.a) * 420;
-            car.vy = Math.sin(car.a) * 420;
+            car.vx = Math.cos(car.a) * 295 * KMH;
+            car.vy = Math.sin(car.a) * 295 * KMH;
             // Cruising: gear up, cruise power.
             car.gearDown = false;
             car.gearPos = 0;
@@ -5744,7 +5912,7 @@
           along: Math.round(linerVoyage.s),
           legLength: leg.kind === 'call' ? leg.seconds : Math.round(leg.length || 0),
           speed: Math.round(ship.speed * 10) / 10,
-          knots: Math.round((Math.abs(ship.speed) / 5.12) * 1.944 * 10) / 10,
+          knots: Math.round((Math.abs(ship.speed) / KNOTS) * 10) / 10,
           playerAboard: player.deck === ship,
           passengers: (ship.passengers || []).length,
         };
@@ -5819,7 +5987,7 @@
       launch(metersPerSecond = 20) {
         const c = player.car;
         if (!c) return null;
-        const speed = (metersPerSecond * BLOCK_SIZE) / 100;
+        const speed = metersPerSecond * UNITS_PER_METRE;
         c.vx = Math.cos(c.a) * speed;
         c.vy = Math.sin(c.a) * speed;
         c.speed = speed;

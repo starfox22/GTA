@@ -645,7 +645,7 @@
           g.lineTo(rg.targetsX, rg.y + i * 20);
           g.stroke();
         }
-        for (let x = rg.x + 90; x < rg.targetsX; x += 60) text(String(Math.round((x - rg.x - 40) / 5.12 / 25) * 25), x, rg.y - 7, 9, '#e2dfcf');
+        for (let x = rg.x + 90; x < rg.targetsX; x += 60) text(String(Math.round(worldMeters(x - rg.x - 40) / 25) * 25), x, rg.y - 7, 9, '#e2dfcf');
         const fb = SENTINEL.fuel.bund;
         slab({ x: fb.x - 6, y: fb.y - 6, w: fb.w + 12, h: fb.h + 12 }, '#8a877d', 1000);
         g.fillStyle = '#958e7c';

@@ -45,16 +45,17 @@
     ];
     // Seconds at five stars before the tank is sent: the light army units come first.
     const TANK_AFTER_SECONDS = 45;
-    // How each kind of officer fights. `dmg` is against NPCs, `playerDmg` against
+    // How each kind of officer fights; `run` is the pace on foot (a sprinting
+    // player, 24 km/h, can outrun every one of them). `dmg` is against NPCs, `playerDmg` against
     // the player (before the lethality scale in combat-rules.js, so 5.5 is about 11
     // health: an unarmoured player survives eight or nine pistol hits).
     const OFFICER_KINDS = {
-      patrol: { hp: 85, vest: 25, color: '#2d455e', rate: [1.05, 1.5], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 210, run: 112, sample: 'pistol' },
-      road: { hp: 85, vest: 40, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 230, run: 100, sample: 'pistol' },
-      swat: { hp: 110, vest: 120, color: '#1b2026', rate: [1.5, 2.1], burst: 3, dmg: 20, playerDmg: 5, speed: 820, range: 270, run: 118, sample: 'automatic', rifle: true },
-      fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 6.5, speed: 780, range: 250, run: 122, sample: 'automatic', rifle: true },
+      patrol: { hp: 85, vest: 25, color: '#2d455e', rate: [1.05, 1.5], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 210, run: 18 * KMH, sample: 'pistol' },
+      road: { hp: 85, vest: 40, color: '#2d455e', rate: [1.0, 1.4], burst: 1, dmg: 17, playerDmg: 5.5, speed: 560, range: 230, run: 17 * KMH, sample: 'pistol' },
+      swat: { hp: 110, vest: 120, color: '#1b2026', rate: [1.5, 2.1], burst: 3, dmg: 20, playerDmg: 5, speed: 820, range: 270, run: 16 * KMH, sample: 'automatic', rifle: true },
+      fed: { hp: 95, vest: 90, color: '#15171b', rate: [0.8, 1.15], burst: 1, dmg: 22, playerDmg: 6.5, speed: 780, range: 250, run: 19 * KMH, sample: 'automatic', rifle: true },
       // Army riflemen out of an APC or a truck at five stars.
-      soldier: { hp: 100, vest: 90, color: '#4a5638', rate: [1.3, 1.8], burst: 3, dmg: 19, playerDmg: 5, speed: 800, range: 260, run: 115, sample: 'automatic', rifle: true },
+      soldier: { hp: 100, vest: 90, color: '#4a5638', rate: [1.3, 1.8], burst: 3, dmg: 19, playerDmg: 5, speed: 800, range: 260, run: 18 * KMH, sample: 'automatic', rifle: true },
       // A police marksman on a roof (swat.js fires the rounds).
       sniper: { hp: 90, vest: 60, color: '#1b2026', rate: [2, 3], burst: 1, dmg: 60, playerDmg: 14, speed: 1500, range: 760, run: 0, sample: 'pistol', rifle: true },
     };
@@ -550,8 +551,8 @@
       }
       return {
         steer,
-        acceleration: clamp((desired - along) * 3, -(plan.onFoot ? 620 : 380), spec.acc),
-        drag: 0.2,
+        acceleration: clamp((desired - along) * 3, -spec.brake * (plan.onFoot ? 1.2 : 1.05), engineAcceleration(spec, along)),
+        drag: 0,
       };
     }
 
@@ -794,7 +795,7 @@
       }
       o.state = 'drag';
       if (distanceBetween(o, hurt) > 13) {
-        footStepTowards(o, hurt, deltaSeconds, 120);
+        footStepTowards(o, hurt, deltaSeconds, 18 * KMH);
         return true;
       }
       if (distanceBetween(o, cover) < 9) {
@@ -803,7 +804,7 @@
         o.dragging = null;
         return false;
       }
-      footStepTowards(o, cover, deltaSeconds, 42);
+      footStepTowards(o, cover, deltaSeconds, 4 * KMH);
       // Walking backwards with the wounded in tow, facing the threat.
       o.a = headingBetween(o, player);
       const behind = headingBetween(cover, o) + Math.PI;

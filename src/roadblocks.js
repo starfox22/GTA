@@ -26,8 +26,9 @@
       // pickups, trucks, buses, the tank) can shove a braced cruiser at all...
       ROADBLOCK_RAM_MASS = 2.2,
       // ...and only with this much momentum, mass x closing speed along the contact
-      // normal: a truck needs ~55 km/h, a bus ~40, an SUV close to its top speed.
-      ROADBLOCK_RAM_MOMENTUM = 520;
+      // normal: a box truck (mass 6.8) needs ~55 km/h, a bus ~40, an SUV close to
+      // its top speed.
+      ROADBLOCK_RAM_MOMENTUM = 6.8 * 55 * KMH;
     const roadblocks = [];
     let roadblockSiteCache = null,
       containmentTimer = 3,

@@ -200,7 +200,7 @@
         py = ly,
         z = 6;
       if (kind === 'crash') {
-        // The crumple a closing speed buys: 150 units/s (about 100 km/h) into a wall
+        // The crumple a closing speed buys: 150 units/s (about 68 km/h) into a wall
         // folds the nose in by about 5.7 units (a tenth of the car), capped at 30%.
         const inward = vehicleLocalDirection(vehicle, detail.nx, detail.ny),
           mass = spec.mass || 1.25,
@@ -960,7 +960,7 @@
             target = makeCar(targetType, car.x + gap, car.y + offset, heading, false);
           }
           enterVehicle(car);
-          const speed = (metersPerSecond * BLOCK_SIZE) / 100;
+          const speed = metersPerSecond * UNITS_PER_METRE;
           car.vx = speed;
           car.vy = 0;
           car.speed = speed;

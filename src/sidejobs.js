@@ -332,7 +332,7 @@
               setStage(
                 missionState.ring + 1,
                 missionState.rings[missionState.ring],
-                'RING ' + (missionState.ring + 1) + ' / 8 · ALTITUDE ' + Math.round(missionState.rings[missionState.ring].altitude / 5.12) + ' M',
+                'RING ' + (missionState.ring + 1) + ' / 8 · ALTITUDE ' + Math.round(worldMeters(missionState.rings[missionState.ring].altitude)) + ' M',
               );
           }
         } else if (
@@ -405,7 +405,7 @@
         const ring = missionState.rings[missionState.ring],
           diff = ring.altitude - (missionState.car.altitude || 0);
         offerPrompt(
-          Math.abs(diff) < 40 ? 'ON ALTITUDE · HOLD IT' : diff > 0 ? 'CLIMB ' + Math.round(diff / 5.12) + ' M' : 'DESCEND ' + Math.round(-diff / 5.12) + ' M',
+          Math.abs(diff) < 40 ? 'ON ALTITUDE · HOLD IT' : diff > 0 ? 'CLIMB ' + Math.round(worldMeters(diff)) + ' M' : 'DESCEND ' + Math.round(worldMeters(-diff)) + ' M',
           { key: null, id: 'sidejob-altitude' },
         );
       }

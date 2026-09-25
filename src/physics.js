@@ -372,11 +372,12 @@
       vehicle.deadTime = 0;
       vehicle.sprite = null;
     }
-    // Closing speed (units/s, about 85 km/h) above which the player ramming an
-    // occupied car is a reported crime (collisionImpact here, crowdCrash in crowd.js).
-    const RECKLESS_CRASH_SPEED = 120;
+    // Closing speed (about 55 km/h) above which the player ramming an occupied
+    // car is a reported crime (collisionImpact here, crowdCrash in crowd.js).
+    const RECKLESS_CRASH_SPEED = 55 * KMH;
     function collisionImpact(a, b, hit, closing, key, staticBody = null) {
-      if (closing < 42) {
+      // Below about 19 km/h nothing bends.
+      if (closing < 19 * KMH) {
         // Too soft to damage anything, but a parking knock is still heard (quietly).
         const heavier = Math.max(vehicleSpec(a).mass || 1.25, b ? vehicleSpec(b).mass || 1.25 : 0);
         if (closing >= 12)
@@ -747,14 +748,18 @@
         sign = vertical ? Math.sign(headingSine) : Math.sign(headingCosine),
         value = vertical ? c.y : c.x;
       const next = nextRoadLine(vertical ? ROAD_ROWS : ROAD_CENTERS, value, sign);
-      let desired = c.panicUntil > gameTime ? 120 : 65 + (c.id % 4) * 7,
+      // City traffic keeps to about 40-55 km/h (a few drivers quicker than
+      // others), 70-85 out on the long bridges; a panicking driver floors it.
+      let desired =
+          (c.panicUntil > gameTime ? 75 : onBridgeDeck(c.x, c.y) ? 70 + (c.id % 4) * 5 : 40 + (c.id % 4) * 5) * KMH,
         target;
       if (c.panicUntil > gameTime) c.hazard = true;
       else c.hazard = false;
       if (
         !c.junction &&
         next !== undefined &&
-        Math.abs(next - value) < 190 &&
+        // Planned early enough to stop for a red from town speed.
+        Math.abs(next - value) < 330 &&
         Math.abs(next - value) > 90
       ) {
         const x = vertical ? roadNear(c.x) : next,
@@ -793,15 +798,22 @@
               (vehicleDefinition.l + vehicleSpec(o).l) / 2 + 22
           );
         });
-        if (!j.committed && gap < 25 && signal === 'green' && !occupied && !exitBlocked)
-          j.committed = true;
+        // A green light with the box and the exit clear is driven through at
+        // speed, committing about half a second out; anything else is a stop
+        // at the line, braked for at about half a g.
+        const proceed = signal === 'green' && !occupied && !exitBlocked;
+        if (!j.committed && gap < 25 + Math.max(0, c.speed || 0) * 0.5 && proceed) j.committed = true;
         if (!j.committed) {
-          desired = Math.min(
-            desired,
-            Math.sqrt(2 * 230 * Math.max(0, gap - 3)) * 0.82,
-            Math.max(0, gap - 6) * 1.25,
-          );
-          if (gap < 3) desired = 0;
+          if (!proceed) {
+            desired = Math.min(
+              desired,
+              Math.sqrt(2 * 0.45 * GRAVITY * Math.max(0, gap - 3)) * 0.9,
+              Math.max(0, gap - 6) * 1.25,
+            );
+            if (gap < 3) desired = 0;
+          }
+          // Slowing for the corner ahead before the turn itself.
+          if (j.turn) desired = Math.min(desired, Math.sqrt((20 * KMH) ** 2 + 2 * 0.4 * GRAVITY * Math.max(0, gap)));
           target = {
             x: c.x + headingCosine * 75 + (vertical ? roadNear(c.x) - sign * 25 - c.x : 0),
             y: c.y + headingSine * 75 + (!vertical ? rowNear(c.y) + sign * 25 - c.y : 0),
@@ -809,7 +821,7 @@
         } else {
           while (j.index < j.points.length - 1 && distanceBetween(c, j.points[j.index]) < 24) j.index++;
           target = j.points[j.index];
-          if (j.turn) desired = Math.min(desired, vehicleDefinition.truck ? 34 : 46);
+          if (j.turn) desired = Math.min(desired, (vehicleDefinition.truck ? 15 : 20) * KMH);
           if (distanceBetween(c, j.points[j.points.length - 1]) < 26) {
             c.navAngle = normalizeAngle(j.exit);
             c.junction = null;
@@ -940,12 +952,14 @@
           // Waiting for the oncoming lane to clear: hold back far enough to pull out.
           if (intrusion < 38 && laneLateral > -12) standoff = 40;
         }
+        // Follow at about 0.8 s behind the car ahead (plus a car's length of
+        // slack), never faster than lets us stop behind it if it brakes.
         const gap = along - half - ol - 12 - standoff,
           lead = Math.max(0, (o.vx || 0) * headingCosine2 + (o.vy || 0) * headingSine2);
         desired = Math.min(
           desired,
-          Math.sqrt(2 * 250 * Math.max(0, gap)) * 0.72,
-          lead + Math.max(0, gap - 8) * 1.25,
+          Math.sqrt(lead * lead + 2 * 0.8 * GRAVITY * Math.max(0, gap)) * 0.8,
+          lead + Math.max(0, gap - 8 - lead * 0.8) * 1.25,
         );
       }
       // Give crossing pedestrians and an innocent player time to clear the lane.
@@ -955,16 +969,16 @@
         if (p.hp <= 0 || p.roof) return;
         const dx = p.x - c.x,
           dy = p.y - c.y;
-        if (dx > 150 || dx < -150 || dy > 150 || dy < -150) return;
+        if (dx > 210 || dx < -210 || dy > 210 || dy < -210) return;
         const along = dx * headingCosine2 + dy * headingSine2,
           lateral = Math.abs(dx * rx + dy * ry);
         // Only people out on the carriageway: mid-turn the look-ahead box sweeps
         // across the pavement, and a bus used to wait for ever on walkers who
         // were themselves waiting at the kerb for it to clear.
-        if (along > 0 && along < 140 && lateral < side + 11 && cityStreetAt(p.x, p.y))
-          desired = Math.min(desired, Math.sqrt(2 * 260 * Math.max(0, along - half - 22)) * 0.7);
+        if (along > 0 && along < 200 && lateral < side + 11 && cityStreetAt(p.x, p.y))
+          desired = Math.min(desired, Math.sqrt(2 * 0.7 * GRAVITY * Math.max(0, along - half - 22)) * 0.8);
       };
-      forEachPedestrianNear(c.x, c.y, 160, yieldTo);
+      forEachPedestrianNear(c.x, c.y, 220, yieldTo);
       if (!player.car) yieldTo(player);
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
       desired = Math.min(desired, curbsideStop(c));
@@ -1053,11 +1067,16 @@
       const flying = clearance > 1 || lift > 0,
         desired = flying ? forward * VEHICLE_DEFINITIONS.helicopter.max : 0,
         along = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
-      const acceleration = clamp((desired - along) * 1.8, -140, 140);
+      // Nose-down acceleration of about half a g; flat out it settles near 240 km/h.
+      const acceleration = clamp((desired - along) * 1.8, -0.6 * GRAVITY, VEHICLE_DEFINITIONS.helicopter.acc);
       c.vx += Math.cos(c.a) * acceleration * stepSeconds;
       c.vy += Math.sin(c.a) * acceleration * stepSeconds;
-      c.vx *= Math.exp(-stepSeconds * 0.45);
-      c.vy *= Math.exp(-stepSeconds * 0.45);
+      c.vx *= Math.exp(-stepSeconds * 0.08);
+      c.vy *= Math.exp(-stepSeconds * 0.08);
+      // The rotor disc tilts into a turn: sideways drift dies away in a second or two.
+      const drift = (-c.vx * Math.sin(c.a) + c.vy * Math.cos(c.a)) * (1 - Math.exp(-stepSeconds * 1.2));
+      c.vx += Math.sin(c.a) * drift;
+      c.vy -= Math.cos(c.a) * drift;
       // Climb and descent quicken once well clear of the rooftops, so the cloud
       // layer is a half-minute climb rather than a minute; low flying is unchanged.
       const climbRate = 75 + clamp(clearance - 400, 0, 3000) * 0.035;
@@ -1100,17 +1119,20 @@
           ? (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)
           : helm?.turn || 0,
         brake = controlled && keys.Space;
+      // Thrust fades as the hull meets its top speed (water resistance grows with
+      // the square of the speed); astern is reverse thrust, not brakes.
+      const topSpeed = vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * (c.marineUnit ? 1.15 : 1);
       let force = up
-        ? vehicleDefinition.acc
+        ? vehicleDefinition.acc * (1 - Math.min(1, (Math.max(0, along) / topSpeed) ** 2))
         : down
           ? along > 8
-            ? -120
+            ? -0.35 * GRAVITY
             : -vehicleDefinition.acc * 0.55
           : 0;
       if (
         // Police launches are tuned a little quicker than anything they chase.
-        (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * (c.marineUnit ? 1.15 : 1) && up) ||
-        (along < -65 && down)
+        (along > topSpeed && up) ||
+        (along < -8 * KNOTS && down)
       )
         force = 0;
       if (c.hp <= 0) force = 0;
@@ -1122,7 +1144,8 @@
         grip = 1 - Math.exp(-stepSeconds * 2.4 * road);
       c.vx += headingSine * lateral * grip;
       c.vy -= headingCosine * lateral * grip;
-      const drag = Math.exp(-(brake ? 2.5 * road : 0.3) * stepSeconds);
+      // Off the throttle a planing hull settles and slows quickly.
+      const drag = Math.exp(-(brake ? 2.5 * road : up ? 0.03 : 0.3) * stepSeconds);
       c.vx *= drag;
       c.vy *= drag;
       c.av +=
@@ -1143,6 +1166,14 @@
     let broadphaseStamp = 0;
     // One vehicle's controls and integration for a physics step (player input,
     // pursuit, traffic, boats and aircraft).
+    // Reverse gear tops out at about 25 km/h; steering reaches full lock by 30 km/h.
+    const REVERSE_TOP = 25 * KMH,
+      STEER_FULL_SPEED = 30 * KMH;
+    /* The yaw rate (radians a second) the tyres' sideways grip allows at `along`:
+       lateral acceleration is speed times yaw rate, capped at cornerG. */
+    function corneringLimit(spec, along) {
+      return ((spec.cornerG || 1.2) * GRAVITY) / Math.max(Math.abs(along), 20 * KMH);
+    }
     function controlVehicle(c, pc, stepSeconds, active) {
       const vehicleDefinition = vehicleSpec(c);
       c.stepStartX = c.x;
@@ -1222,13 +1253,15 @@
             // A hurt engine pulls weaker, flat tyres and a bent front end cap the
             // speed and drag the car to one side (damage.js vehicleHandling).
             handling = vehicleHandling(c);
+          // The engine's pull at this speed (game.js ROAD PERFORMANCE); a bicycle's
+          // push comes from the rider's legs instead.
           acceleration =
             up && !pedalled
-              ? (vehicleDefinition.acc * handling.power) / (1 + (c.cargoCount || 0) * 0.1)
+              ? (engineAcceleration(vehicleDefinition, along) * handling.power) / (1 + (c.cargoCount || 0) * 0.1)
               : down
                 ? along > 10
-                  ? -(vehicleDefinition.brake || 285)
-                  : -vehicleDefinition.acc * 0.6
+                  ? -(vehicleDefinition.brake || GRAVITY)
+                  : -vehicleDefinition.acc * 0.5
                 : pedalled
                   ? pedalDrive(along, topSpeed)
                   : 0;
@@ -1236,28 +1269,32 @@
             (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * handling.top &&
               up &&
               !pedalled) ||
-            (along < -(pedalled ? CYCLE_REVERSE_MAX : 95) && down)
+            (along < -(pedalled ? CYCLE_REVERSE_MAX : REVERSE_TOP) && down)
           )
             acceleration = 0;
+          // Rolling with nothing pressed (or pedalling): air, tyres and engine braking.
+          if (!up && !down) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, coastDeceleration(vehicleDefinition, along));
+          // The handbrake locks the rear wheels: a sliding stop at about half a g.
+          if (brake) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY);
+          // Off the tarmac (verges, lawns, dirt): more rolling resistance.
+          if ((up || down) && !pedalled && !onRoad(c.x, c.y))
+            acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (vehicleDefinition.offroad ? 0.05 : 0.14) * GRAVITY);
           grip = brake ? 1.9 : (vehicleDefinition.grip || 7) * handling.grip;
-          drag = pedalled
-            ? brake
-              ? 2.4
-              : 0.22
-            : brake
-              ? 2.1
-              : up || down
-                ? onRoad(c.x, c.y)
-                  ? 0.1
-                  : 0.65
-                : 0.72;
+          // Resistance is in engineAcceleration / coastDeceleration; drag here only
+          // scrubs a handbrake slide (and a bicycle's brake).
+          drag = pedalled ? (brake ? 0.6 : 0.03) : brake ? 0.25 : 0;
+          // Full lock at walking pace; above that the tyres' sideways grip is the
+          // limit (cornerG): the yaw rate a speed allows is grip / speed, so a car
+          // takes a city corner at 30-40 km/h and sweeps a wide bend at 150. The
+          // handbrake swings the tail past that limit.
           steer =
-            (turn *
-              vehicleDefinition.turn *
-              clamp(Math.abs(along) / 65, vehicleDefinition.tank ? 0.72 : 0, 1) *
-              Math.sign(along || 1) *
-              (brake ? 1.35 : 1)) /
-            (1 + Math.pow(Math.abs(along) / 240, 1.5));
+            turn *
+            vehicleDefinition.turn *
+            clamp(Math.abs(along) / STEER_FULL_SPEED, vehicleDefinition.tank ? 0.72 : 0, 1) *
+            Math.sign(along || 1) *
+            (brake ? 1.35 : 1);
+          const cornerLimit = (corneringLimit(vehicleDefinition, along) * handling.grip * (brake ? 1.6 : 1));
+          steer = clamp(steer, -cornerLimit, cornerLimit);
           steer += handling.pull * clamp(Math.abs(along) / 160, 0, 1) * Math.sign(along || 1) * 0.45;
           if (brake && Math.abs(along) > 80 && Math.floor(physicsClock * 40) !== c.lastSkid) {
             c.lastSkid = Math.floor(physicsClock * 40);
@@ -1282,10 +1319,11 @@
           const target = c.gangTarget,
             d = distanceBetween(c, target),
             da = normalizeAngle(headingBetween(c, target) - c.a);
-          steer = clamp(da * 2.5, -1.8, 1.8);
-          const desired = clamp((d - 150) * 1.5, 0, 180);
-          acceleration = clamp((desired - along) * 4, -650, vehicleDefinition.acc);
-          drag = 0.3;
+          const desired = clamp((d - 150) * 1.5, 0, 80 * KMH),
+            corner = corneringLimit(vehicleDefinition, along);
+          steer = clamp(da * 2.5, -Math.min(1.8, corner), Math.min(1.8, corner));
+          acceleration = clamp((desired - along) * 4, -vehicleDefinition.brake * 1.1, engineAcceleration(vehicleDefinition, along));
+          drag = 0.05;
         } else if (
           c.hp > 0 &&
           c.cop &&
@@ -1295,8 +1333,9 @@
           !harborPoliceProtected(player.x, player.y, 30)
         ) {
           // Intercepts, PIT and boxing, search sweeps and stuck recovery (pursuit.js).
-          const control = pursuitControl(c, stepSeconds, along, vehicleDefinition);
-          steer = control.steer;
+          const control = pursuitControl(c, stepSeconds, along, vehicleDefinition),
+            corner = corneringLimit(vehicleDefinition, along) * 1.1;
+          steer = clamp(control.steer, -corner, corner);
           acceleration = control.acceleration;
           drag = control.drag;
         } else if (c.hp > 0 && c.ai && !c.crewDeployed) {
@@ -1309,14 +1348,15 @@
                   : trafficControl(c, stepSeconds)),
                 (c.aiControlAt = physicsClock + (c.farFromPlayer ? 0.25 : 0.05)),
                 c.aiControl);
-          const handling = vehicleHandling(c);
-          steer = ai.steer;
+          const handling = vehicleHandling(c),
+            corner = corneringLimit(vehicleDefinition, along);
+          steer = clamp(ai.steer, -corner, corner);
           acceleration = clamp(
             (ai.desired * handling.top - along) * 5,
-            -400,
-            vehicleDefinition.acc * handling.power,
+            -vehicleDefinition.brake,
+            engineAcceleration(vehicleDefinition, along) * handling.power,
           );
-          drag = 0.15;
+          drag = 0;
         } else if (c.blockade && !c.braced) {
           // A roadblock cruiser shoved loose by a rammer slides and slews on
           // locked wheels before it scrubs to a halt.
@@ -1336,18 +1376,20 @@
           drag = Math.max(drag, terrain.trail ? 0.7 : 1.3);
           const tractionLimit = terrain.four ? (terrain.trail ? 0.62 : 0.72) : 0.15,
             slide = Math.max(0, slope - tractionLimit);
-          c.vx -= terrain.slope.x * (64 + slide * 150) * stepSeconds;
-          c.vy -= terrain.slope.y * (64 + slide * 150) * stepSeconds;
+          c.vx -= terrain.slope.x * GRAVITY * (1 + slide * 2.3) * stepSeconds;
+          c.vy -= terrain.slope.y * GRAVITY * (1 + slide * 2.3) * stepSeconds;
         }
         // On a raised drawbridge leaf: gravity down the slope, grip up to ~40 degrees.
         if (c.deckLeaf) acceleration = drawbridgeSlopeDrive(c, acceleration, stepSeconds);
         c.vx += headingCosine * acceleration * stepSeconds;
         c.vy += headingSine * acceleration * stepSeconds;
-        // Tyres cancel sideways slip, but only up to what they can grip: about 60
-        // units/s² per point of grip. Normal cornering never reaches the limit; a car
-        // punted sideways by a T-bone or a blast skates across the lane and scrubs
-        // off instead of stopping dead as if glued to the road.
-        const lateralLimit = Math.max(grip, 5) * 62 * stepSeconds,
+        // Tyres cancel sideways slip, but only up to what they can grip: a little
+        // past the cornering grip (cornerG) at full grip. Normal cornering never
+        // reaches the limit; a car punted sideways by a T-bone or a blast skates
+        // across the lane and scrubs off instead of stopping dead as if glued to the road.
+        const lateralLimit =
+            (((vehicleDefinition.cornerG || 1.2) * 1.25 * GRAVITY * Math.max(grip, 5)) / Math.max(vehicleDefinition.grip || 7, 5)) *
+            stepSeconds,
           traction = clamp(lateral * (1 - Math.exp(-grip * stepSeconds)), -lateralLimit, lateralLimit);
         c.vx += headingSine * traction;
         c.vy -= headingCosine * traction;
@@ -1392,7 +1434,7 @@
       if (isAircraft(c) && c.altitude < terrainHeight(c.x, c.y)) {
         if (c.type === 'plane') {
           const slope = terrainSlope(c.x, c.y),
-            sink = Math.max(15, slope.x * c.vx + slope.y * c.vy - (c.vz || 0));
+            sink = Math.max(2.9 * UNITS_PER_METRE, slope.x * c.vx + slope.y * c.vy - (c.vz || 0));
           planeTouchdown(c, sink);
         } else {
           const slope = terrainSlope(c.x, c.y),
