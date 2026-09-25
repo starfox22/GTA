@@ -25,7 +25,8 @@ Two closures matter:
 
 ## 2. Data contracts (read before touching physics or rendering)
 
-- Map coordinates are `(x, y)` in world units. **512 units = 100 m.** `WORLD_SIZE` is 11264,
+- Map coordinates are `(x, y)` in world units. **`UNITS_PER_METRE` = 8: 512 units (a block) =
+  64 m** (section 2a). `WORLD_SIZE` is 11264,
   the city proper (`CITY_SIZE`) is 5632; the county lies beyond.
 - Heading `a` is radians. Velocity `vx/vy` is units per second, `av` radians per second.
 - In Three.js a map point becomes `(x, elevation, y)`; model yaw is `-a`.
@@ -68,6 +69,48 @@ Two closures matter:
   change.
 - Input goes through named actions (section 4d): `keys.KeyW` means "the forward action is
   held", whatever key the player bound to it.
+
+## 2a. World scale, speeds and handling
+
+- **One scale.** `UNITS_PER_METRE` (game.js WORLD SCALE) is 8, measured from the models: a sedan
+  is 43 units (4.5 m), a person 17.4 units to the crown (1.75 m), a lane with its gutter 44
+  (6 m), the courier plane 112 (14.4 m), a shop door 12 (2.1 m) and a storey 14-16 (3.2 m).
+  People and cars are drawn a little large and buildings a little squat; 8 sits between them.
+  Derived: `METERS_PER_UNIT`, `KMH` (map units a second in one km/h), `KNOTS`, `GRAVITY`
+  (9.81 m/s² in map units), `worldMeters()`, `distanceLabel()`, `speedKmh()`. Write speeds as
+  `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats, the
+  flight HUD, metres in prompts, the map's scale bar, the Falcon's and the Eye's figures) comes
+  from it.
+- **On foot** (game.js `FOOT_WALK` 5.5, `FOOT_JOG` 11, `FOOT_SPRINT` 24 km/h): the player jogs;
+  Shift sprints, C (`walk`, controls.js) walks. Swimming 3.5 / 5 km/h. Pedestrians walk 4-6 km/h
+  (`cityTempo`), flee at 17-21, officers run 16-19 (`OFFICER_KINDS.run`), so a sprinting player
+  outruns them. Legs keep pace with the ground through `strideCycle(speed)` / `strideRate(speed)`
+  (one stride = 10 units + 0.3 s of travel), used by crowd3d.js and every `walk` phase.
+- **Road vehicles** are specified in real units in `VEHICLE_DEFINITIONS`: `topKmh`, `zeroTo`
+  ([km/h, s], usually 0-100), `brakeG`, `cornerG` (sideways grip the steering may use) and
+  `tractionG` (what the driven wheels push off the line). `roadPerformance()` turns them into
+  `max`, `acc`, `brake` and `power` (bisected so the car really makes its 0-100 time).
+  `engineAcceleration(spec, v)` is the pull at a speed: the tyres' limit, then power / speed,
+  less air and rolling resistance that would balance it 15% past `max` (the physics caps the
+  car at `max`). `coastDeceleration` is the roll-down with nothing pressed; the handbrake adds
+  a sliding half-g and drops the grip. Steering reaches full lock by 30 km/h
+  (`STEER_FULL_SPEED`); above that `corneringLimit(spec, v)` caps the yaw rate at
+  `cornerG * GRAVITY / v`, for the player, traffic and pursuit cars alike, so a city corner is
+  taken at 30-40 km/h (or on the handbrake) and a wide bend at 150. The same numbers feed the
+  AI: traffic and police clamp their throttle to `engineAcceleration` and their braking to
+  `spec.brake`.
+- **Targets** (measured with `simulate`, see CHANGELOG): everyday cars 150-205 km/h and 0-100
+  in 6.5-13 s, sports and supercars 230-330 km/h in 2.9-5 s, trucks 115-120, the bus 100, the
+  tank 55; motorbikes 180-225; the patrol car 230 km/h (0-100 in 6.3 s) so it catches anything
+  but a sports car on an open road; the police helicopter 260 km/h. Bicycles cruise at 22 and
+  sprint at 38. Traffic keeps to 40-55 km/h in town and 70-85 on the long bridges, follows at
+  about 0.8 s and stops for reds at about half a g; county traffic 60. Boats: speedboat 55
+  knots, jet ski 50, harbor launch 14, police launches 15% quicker; the liner 19 knots at sea.
+  Trains 100 km/h at 1.3 m/s²; the cab 65 km/h. The helicopter cruises at about 240 km/h;
+  the courier plane lifts off at 120-145 km/h in 560-720 units (Southport's roll from the
+  mission start is 870) and tops out near 400 km/h.
+- **Camera**: from about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js,
+  to 0.68 of the player's zoom by 220 km/h) and the look-ahead is about 0.45 s of travel.
 
 ## 3. Subsystem map
 
@@ -189,7 +232,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | cycles3d.js | Bike-share racks (the bicycles are ordinary vehicles) |
 | weather3d.js | GPU rain streaks (world-anchored, three depth layers, wind slant, lit by the night light map), splashes, roof and awning drips, spray behind cars, wet roads, lightning bolts and flashes, `vehicleLampAmount()` (headlights in heavy rain), the storm grade (`weatherGrade`) |
 | crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
-| clouds3d.js | Ray-marched cumulus at 600-950 m over a 3D noise volume, and their shadows on the city |
+| clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
 | helicopter3d.js | Airframe, rotor, lights and cockpit |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
@@ -298,7 +341,7 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   park and the Sunset Eye to the east gate.
 - **The Falcon** fills the west half (the old `THEME_PARK_RESERVE`) and runs out over the west
   and north shores: `COASTER_ELEMENTS` is the circuit authored as eased track elements (lift to
-  64 m, a 72-degree first drop, loop, camelback, overbanked turn, heartline roll, corkscrew,
+  41 m, a 72-degree first drop, loop, camelback, overbanked turn, heartline roll, corkscrew,
   helix, bunny hop, brakes) walked into a closed, banked curve (`coasterCircuit()`, 2-unit
   samples; `coasterFrame(s)` gives position, tangent and up). The train (`coasterTrain`, `t` =
   front car's arc length) runs all day on gravity with lift, trim and station sections; the
@@ -318,7 +361,7 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   and by physics.js for vehicles) and `parkAirSolids()` (minHeight bodies: the Eye's disc and
   the high track, for aircraft). Paths are `PARK_PATHS`, joined into the graph the park crowd
   walks (`parkPathGraph`, queues in `PARK_QUEUES`); guests exist only while the player is within
-  ~2.9 km. `DeadEndCity.themePark()` reports rides, shows, guests and an overlap self-check.
+  ~1.9 km. `DeadEndCity.themePark()` reports rides, shows, guests and an overlap self-check.
 
 ### Water and bridges
 
@@ -376,24 +419,24 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   a HUD line if the player is on it; a stalled car nobody is watching is towed after 20 s) →
   `unlock` → `raising` (eased, ≤ 4.2°/s, to 78°) → `open` (until the ketch is through, 8-45 s)
   → `lowering` → `seating` → `lifting` → `idle`. Openings start at `DRAWBRIDGE_OPENINGS`
-  (00:50, 05:30, 10:15, 15:00, 20:40) for the ketch ALBATROSS, whose masts clear 30 m: she lies
+  (00:50, 05:30, 10:15, 15:00, 20:40) for the ketch ALBATROSS, whose masts clear 19 m: she lies
   at anchor 720 units off the deck on one side, sounds for the bridge, waits at the hold point
   (330) and crosses in the `open` phase to the other anchorage (her hull is in `boatFits`).
   - Traffic: `trafficControl` brakes to the stop line (`drawbridgeTrafficLimit`; a car too close
     at the first amber carries on) and, past it, to the trunnion while the span is not seated.
     `drawbridgeKeepsOff` (settleVehicle) keeps every vehicle but the player's off an unseated
     span, so cops that ram through the arms stop at the gap. Arms are barrier bodies for the
-    contact passes (`drawbridgeBarrierBodies`) and snap above 70 u/s (`updateDrawbridgeRamming`,
+    contact passes (`drawbridgeBarrierBodies`) and snap above 50 km/h (`updateDrawbridgeRamming`,
     replaced once the bridge is down and the player is 800 away). People: `drawbridgeFootBlocked`
     (footStepBlocked) refuses inward steps past a lowered sidewalk arm or onto an unseated span.
   - Leaves as ramps: `drawbridgeSurface(u)` is the road height and slope at a point (null over
     the gap); the open gap is not deck (`onBridgeDeck`), so it is water to water.js. A road
     vehicle on a leaf carries `deckLift` (added by `entityElevation`), `deckLeaf`, `deckSlope`
     and `slopePitch`; `drawbridgeSlopeDrive` (controlVehicle) adds gravity along the slope
-    (`DRAWBRIDGE_GRAVITY` 300 u/s²) and caps the tyres at `DRAWBRIDGE_GRIP` 0.84 (no climbing
+    (`DRAWBRIDGE_GRAVITY`, real gravity) and caps the tyres at `DRAWBRIDGE_GRIP` 0.84 (no climbing
     past ~40°). Off a tip the vehicle is airborne (`deckAir`, `deckVz`; controlVehicle runs
     `drawbridgeFlight`: no grip or steering, the nose drops); `drawbridgeSettle` lands it on the
-    far leaf or the deck beyond (damage from the speed into the surface above 70 u/s, a BRIDGE
+    far leaf or the deck beyond (damage from the speed into the surface above 5 m/s, a BRIDGE
     JUMP headline), bounces it off the far tip if it comes in low, or drops it into the Sound
     where `updateSinking` floods it. Above `DRAWBRIDGE_WALL_ANGLE` (40°) each leaf is a wall.
     An airborne car clears rails lower than it (vehicleContactPasses).
@@ -440,7 +483,7 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   the north coast and Eagle Pass / the Ridgeline Highway: one height field over x 5880..10980,
   y 60..2620 on a 10-unit grid (`TERRAIN_FIELDS[0]`), plus a small field for each of the two lone
   hills further south (6800, 5300 and 4330, 6740). A main crest (`RANGE_CREST`) runs west to east
-  through **MOUNT ASCENT** (7760, 1090; a rugged summit horn, ~145 m) and **NEEDLE RIDGE** (9760,
+  through **MOUNT ASCENT** (7760, 1090; a rugged summit horn, ~93 m) and **NEEDLE RIDGE** (9760,
   1230; an overlook in a notch between a row of rock needles), with a low saddle above Clearwater
   Reservoir; spurs run short and steep to sea cliffs on the north, long down to the valleys on the
   south; low foothill ridges fill the Eagle Pass loop and the country east of the reservoir. The
@@ -612,7 +655,7 @@ explorer, dayCruiser, catamaran, sportfisher, ketch, centerConsole, megayacht, s
 racer, commuter, runabout. To add a boat, add a berth with a new design and, if needed, a
 builder; names are painted on the transom automatically.
 
-**M/Y AURELIA** (`SUPERYACHT`, marina.js) is a 105 m superyacht moored stern-to the west quay at
+**M/Y AURELIA** (`SUPERYACHT`, marina.js) is a 67 m superyacht moored stern-to the west quay at
 (970, -3950), bow east. Walk east along the quay at y -3950 onto the passerelle (or press E by
 it) to board; walking back off the passerelle, or E on the swim platform, goes ashore.
 
@@ -639,7 +682,7 @@ it) to board; walking back off the passerelle, or E on the swim platform, goes a
   (x 2150, y -5000; boarded from the water at her stern platform only while she is almost
   stopped), `astern` out of the sound, then `ahead` round the west end of Sunset Pier island,
   south down the open sea west of Palm Keys, back north inshore past Ocean Drive's strand, along
-  Northbank's sea wall and into the sound again (about 35,000 units, ~19 minutes a lap). Each
+  Northbank's sea wall and into the sound again (about 35,000 units, ~13 minutes a lap). Each
   leg's control polygon is filleted with per-corner turning radii (500-900) and resampled with
   a speed cap from `LINER_SPEED_ZONES` (about 8 knots in the sound, 12-13 inshore, 19 at sea),
   the curve (`LINER_TURN_GRIP`) and a braking pass, so she accelerates and stops slowly and
@@ -788,8 +831,8 @@ docs/audit/missions-qa.md shows the method).
 - On the street the camera is orthographic, looking north-down at roughly 50 degrees, so roofs
   and south-facing facades carry the look. In an aircraft or on a parachute a perspective
   camera takes over (flight-view3d.js): it keeps the aircraft framed like the street view (a
-  dolly zoom from a 3 degree lens on the ground to 40 degrees by ~140 m, pitching down to 74
-  degrees by ~500 m), so the ground falls away, towers show parallax and the aircraft's shadow
+  dolly zoom from a 3 degree lens on the ground to 40 degrees by ~90 m, pitching down to 74
+  degrees by ~320 m), so the ground falls away, towers show parallax and the aircraft's shadow
   drops away from it. `camera` is whichever camera is active; use `viewCenter`, `viewReach`
   and `viewZoom` (the ground footprint and its scale, `viewZoom` meaning what `worldZoom`
   means on the street) for culling and level of detail rather than `cameraTarget`/`worldZoom`.
@@ -798,11 +841,11 @@ docs/audit/missions-qa.md shows the method).
   `fog.far = 1 / fog.density`. Keep adjusting `fog.density` and `fog.color`; `fog.near`
   belongs to `updateFlightView` (beyond the frame on the street, where there is no haze).
   Nothing may lay a uniform wash over the frame, or over part of it.
-- Clouds (clouds3d.js) are a ray-marched cumulus layer at 600-950 m over a GPU-generated
+- Clouds (clouds3d.js) are a ray-marched cumulus layer at 385-610 m over a GPU-generated
   3D noise volume, drawn at half resolution only when the flight camera is above the cloud
   base and composited behind the player's aircraft. Coverage follows `weather.cloud`, drift
   follows the wind, light follows the scene's sun, sky and ground colours. Cloud shadows on
-  the city come from the same density field. Aircraft ceilings are ~1400 m so the layer can
+  the city come from the same density field. Aircraft ceilings are ~900 m so the layer can
   be climbed through.
 - From the air: small props move to detail layers the flight camera drops as `viewZoom`
   falls, traffic becomes instanced impostors, and below `viewZoom` 0.2 a merged far
@@ -950,7 +993,7 @@ docs/audit/missions-qa.md shows the method).
   the facades beside it (ground-facing surfaces stop catching it by ~40 units, walls ~78) and is
   tinted by district (`lampTint`: sodium in the docks and Old Quarter, cool LED in the
   financial core and Midtown, warm white elsewhere).
-- **Vehicle lights** (lighting3d.js DRIVE LIGHT MAP): every lit car's low beams (~35 m, wide)
+- **Vehicle lights** (lighting3d.js DRIVE LIGHT MAP): every lit car's low beams (~22 m, wide)
   and tail-lamp wash are drawn each night frame as instanced quads into a 1024-texel HDR map
   over the view (texel-snapped; alpha keeps the road level), and the same material patch adds
   it as light, so the road, kerbs, cars, people and walls ahead are lit through their own
@@ -986,7 +1029,7 @@ docs/audit/missions-qa.md shows the method).
   enough back along its view line that its near plane clears the tallest roof and the
   cloud-shadow plane (`streetCeiling()`); the image is unchanged. The street view has no
   distance haze (from a camera looking down at 50 degrees it was only a pale gradient over
-  the top of the frame); the flight camera's haze gathers over the first ~60 m of a climb.
+  the top of the frame); the flight camera's haze gathers over the first ~40 m of a climb.
 - **Wakes** (wakes3d.js): boats call `wakeEmit()` each frame; trails and hull collars are
   drawn into a wake map (foam, wave crest, trough) round the view that the water shader
   samples for foam and for its normal. Spray is one `Points` object.

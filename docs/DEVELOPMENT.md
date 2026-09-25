@@ -85,6 +85,8 @@ something, never a generic code-evaluation hook.
 | Method | Purpose |
 | --- | --- |
 | `version` | The build version (30.0.0) |
+| `unitsPerMetre` | The world scale, map units to the metre (8) |
+| `repair()` | Mend the player's vehicle as a repair bay would (repeatable physics tests); returns `damageReport()` |
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle, weapon in hand, renderer (`3d` or `2d`) |
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once); lets go of any carrier |
 | `setZoom(value)` | Street zoom, eased like the mouse wheel (`look` and `closeUp` apply it at once) |
@@ -158,7 +160,9 @@ something, never a generic code-evaluation hook.
 
 - Keep code readable: descriptive names, a short comment on anything non-obvious, the
   same idiom as the surrounding file. No minification, packing or `eval`.
-- Map coordinates are `(x, y)`; 512 units = 100 m. Three.js position is `(x, elevation, y)`.
+- Map coordinates are `(x, y)`; `UNITS_PER_METRE` = 8 (512 units = 64 m). Write speeds and
+  accelerations in real units (`50 * KMH`, `0.8 * GRAVITY`, game.js WORLD SCALE). Three.js
+  position is `(x, elevation, y)`.
 - `solid()` is the one collision test; `entityElevation()` the one height comparison;
   `teleportPlayer()` the one way to move the player.
 - `dead-end-city.html` is only ever rebuilt from source, never hand-edited; feature

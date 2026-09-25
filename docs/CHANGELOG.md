@@ -1,5 +1,94 @@
 # Changelog
 
+## Unreleased — real speeds
+
+World scale (game.js WORLD SCALE, SOURCE_GUIDE 2a)
+- Measured from the models: `UNITS_PER_METRE` = 8 (a sedan is 43 units = 4.5 m, a person 17.4
+  = 1.75 m, a lane with its gutter 44 = 6 m; aircraft and boats agree; doors and storeys are
+  drawn squat). It replaces "512 units = 100 m" (5.12 u/m), which made everything read 1.6x
+  too fast and too far. `KMH`, `KNOTS`, `GRAVITY` and `speedKmh()` derive from it, and every
+  readout uses them: the speedometer (boats now read knots), the flight HUD, metres in
+  prompts, the map's scale bar ("64 m · 1 block"), the Falcon (41 m, its own top speed) and
+  the Sunset Eye.
+
+Speeds, measured headless with `simulate` (old = u/s and what the old HUD showed, then true
+km/h at 8 u/m; new = km/h and 0-100 s)
+
+| Vehicle | Old top (u/s · shown · true) | Old 0-100 shown | New top | New 0-100 |
+| --- | --- | --- | --- | --- |
+| Walk / jog / sprint | 100 / 100 / 158 · 70 / 70 / 111 · 45 / 45 / 71 | | 5.4 / 11.0 / 24.1 | |
+| Swim / hard | 52 / 58 · 37 / 41 · 23 / 26 | | 3.6 / 5.0 | |
+| Bicycle cruise / standing | 192 / 246 · 135 / 173 · 86 / 111 | 2.0 s | 22 / 38 | |
+| Sedan (REGENT) | 291 · 205 · 131 | 1.1 s | 180 | 9.1 s |
+| Taxi | 301 · 212 · 135 | 1.0 s | 175 | 9.6 s |
+| Coupe | 356 · 250 · 160 | 0.9 s | 205 | 6.6 s |
+| Van | 236 · 166 · 106 | 1.3 s | 150 | 13.1 s |
+| SUV | 286 · 201 · 129 | 1.0 s | 175 | 9.1 s |
+| Pickup | 271 · 190 · 122 | 1.2 s | 165 | 10.0 s |
+| Limousine | 281 · 197 · 126 | 1.4 s | 190 | 9.6 s |
+| Luxury V12 | 336 · 236 · 151 | 1.0 s | 250 | 5.1 s |
+| Muscle | 391 · 275 · 176 | 0.8 s | 245 | 5.1 s |
+| Hot rod | 407 · 286 · 183 | 0.6 s | 235 | 4.4 s |
+| Rally | 387 · 272 · 174 | 0.7 s | 230 | 4.1 s |
+| Roadster | 436 · 307 · 196 | 0.7 s | 250 | 4.9 s |
+| Sport (COMET GT) | 460 · 324 · 207 | 0.7 s | 290 | 3.9 s |
+| Supercar | 510 · 359 · 230 | 0.6 s | 330 | 3.0 s |
+| Motorbike / cruiser | 456 / 330 · 321 / 232 · 205 / 149 | 0.6 / 0.9 s | 225 / 180 | 3.3 / 5.1 s |
+| Patrol car | 370 · 260 · 167 | 0.8 s | 230 | 6.4 s |
+| Ambulance | 301 · 212 · 135 | 1.1 s | 155 | 12.1 s |
+| Box truck / flatbed | 213 / 207 · 150 / 146 · 96 / 93 | 2.0 / 1.6 s | 115 / 120 | 21 / 22 s |
+| Bus | 189 · 133 · 85 | 2.5 s | 100 | 0-50 in 9.1 s |
+| Tank | 195 · 137 · 88 | 1.6 s | 55 | 0-50 in 22 s |
+| Army jeep / APC / truck | 295 / 240 / 225 (spec) | | 110 / 100 / 90 | 0-50 in 5 / 8 / 14 s |
+| Speedboat / jet ski / launch | 310 / 381 / 170 · 218 / 268 / 120 km/h | | 55 / 50 / 14 knots | 0-30 kn 4.8 / 3.2 s |
+| Helicopter | 272 · 191 · 122 | | 245 | 0-200 in 15 s |
+| Courier plane | lift-off 173-183 km/h, roll 410-463 u, top 368 | | lift-off 126-146, roll 556-719 u, top 396 | |
+| Train | 530 · 373 · 239 | | 100 (75 between close stations) | 1.3 m/s² |
+
+Handling (game.js ROAD PERFORMANCE, physics.js)
+- Road vehicles are specified by top speed, 0-100, braking, cornering and traction grip;
+  `roadPerformance()` bisects the engine power so each makes its 0-100. The engine pulls at
+  the tyres' limit, then power / speed, against air and rolling resistance; coasting and
+  handbrake decelerations are real (the handbrake is a sliding half-g with the grip let go).
+- Steering reaches full lock by 30 km/h; above that the tyres' sideways grip caps the yaw
+  rate (`corneringLimit`), for the player, traffic and police alike: corners at 30-40 km/h or
+  on the handbrake, sweeping bends at speed.
+- The street camera eases back from 60 km/h (to 0.68 of your zoom at 220) and looks about
+  0.45 s ahead.
+
+Rebalanced for the new speeds
+- Traffic: 40-55 km/h in town, 70-85 on the long bridges, 60 on county roads; follows at about
+  0.8 s, brakes for reds at about half a g and drives through greens at speed (it used to
+  slow at every junction); junctions are planned from 330 units out.
+- Police: patrol cars 230 km/h (the pursuit tiers run them at 84-98%), SWAT vans 150, feds'
+  SUVs 175, the police helicopter up to 260; braking and throttle follow the car's own
+  numbers. Measured on the Oceanview causeway at two stars: a sedan fleeing at 150 km/h had a
+  unit close from 1300 to 690 units in 5 s and was PIT-ted on the East Bay Crossing within
+  25 s; a supercar at 250 km/h opened the gap from 260 to 920 units in 5 s and broke sight.
+- People: pedestrians walk 4-6 km/h (by the hour), flee at 17-21, officers run 16-19 (a
+  sprinting player outruns them, a jogging one does not), park and beach joggers 9-12, club
+  guests and park visitors 4.5; strides and footsteps follow the pace. New walk key (C).
+- Collisions: damage from 19 km/h, a reckless-driving report above 55 km/h closing; the
+  crash-sound bands are documented in km/h (bump to 34, medium to 72, heavy above).
+  Roadblock ramming by momentum: a box truck needs ~55 km/h, a bus ~40.
+- Drawbridge: real gravity on and off the leaves; the arms snap above 50 km/h; landings hurt
+  above 5 m/s. At 15° every sedan from 60 km/h up clears the 1.4 m gap; the faster it goes the
+  farther it flies (23 m at 60, 101 m at 150) and the harder it lands (27-49 damage of 150).
+  At 30° (4.4 m gap, tips 6 m up) landings reach 14-25 m/s.
+- Parachute: freefall at up to 50 m/s under real gravity; the canopy opens itself 85 m up and
+  descends at 3.5 m/s (2.1 flared). Mountain tumbles and scree slides use real gravity.
+- Aircraft: the flight model is in m/s and g; the courier's wing and drag were resized so it
+  lifts off at 120-145 km/h inside Southport's 870-unit roll and tops out near 400 (measured);
+  the jet and the airliner are sized for lift-off near 180 and 210 km/h.
+- The Falcon runs on real gravity (41 m, quoted from the circuit); the liner keeps 19 knots;
+  the ketch motors at 7 knots; trains 100 km/h at 1.3 m/s²; the cab 65 km/h.
+- Mission clocks: route lengths from the GPS against a pessimistic stop-at-every-corner
+  pilot (35 km/h average; old cars averaged 115): No Last Ferry 9,800 units in 210 s, Rush
+  Hour 18,200 in 390 s, Fireworks 9,400 (plus three fights) in 360 s, the jet-ski run 6,000 in
+  150 s, Paper Trail 460 on foot in 95 s, Ring Run in 300 s all keep their clocks. Repo Man
+  (39,500 units and seven car changes) goes from 660 to 780 s.
+- Console: `unitsPerMetre`, `repair()`.
+
 ## Unreleased — prompts out of the way
 
 Drawbridge (drawbridge.js, drawbridge3d.js, geography.js, physics.js, navigation.js)
