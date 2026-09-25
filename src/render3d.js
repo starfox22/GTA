@@ -2408,12 +2408,17 @@
               // Drawn together by the instanced halo pass (VEHICLE HALOS), not one
               // sprite draw call each.
               // Lamps on at night and in heavy rain (weather3d.js).
+              // Brake lights glow by day too: from above the lamp itself is a sliver.
               const lampsOn = vehicleLampAmount(),
-                lit = c.hp > 0 && (c.ai || c === player.car) && lampsOn > 0.25;
+                driven = c.hp > 0 && (c.ai || c === player.car),
+                lit = driven && lampsOn > 0.25,
+                braking = driven && !!c.braking;
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
                 sprite.visible = false;
-                if (lit && !m.lampOut?.[k]) queueVehicleHalo(sprite, (k % 2 ? (c.braking ? 1 : 0.55) : 0.85) * lampsOn);
+                if (m.lampOut?.[k]) continue;
+                if (k % 2 && braking) queueVehicleHalo(sprite, Math.max(0.75, lampsOn));
+                else if (lit) queueVehicleHalo(sprite, (k % 2 ? 0.55 : 0.85) * lampsOn);
               }
             }
             // Brake lights: tail lamps that aren't broken swap material while braking.
