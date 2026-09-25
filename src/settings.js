@@ -255,6 +255,28 @@
           set: (on) => setFlightHud(on),
         },
         {
+          id: 'units',
+          kind: 'choice',
+          label: 'Speed units',
+          note: () =>
+            'Kilometres or miles an hour for every speed the game shows: the speed box, the flight HUD\u2019s airspeed and the rides. Boats keep knots; distances stay in metres.',
+          options: [
+            ['kmh', 'KM/H'],
+            ['mph', 'MPH'],
+          ],
+          get: () => hudState.units,
+          set: (value) => setSpeedUnits(value),
+        },
+        {
+          id: 'footSpeed',
+          kind: 'toggle',
+          label: 'Speed box on foot',
+          note: () =>
+            'Show your speed walking, running, swimming and falling, with what you are doing (WALKING, RUNNING, SWIMMING, FALLING). Swimming always shows your breath.',
+          get: () => hudState.footSpeed,
+          set: (on) => setFootSpeed(on),
+        },
+        {
           id: 'keyHints',
           kind: 'toggle',
           label: 'Control hints',

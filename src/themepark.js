@@ -598,8 +598,8 @@
         return 'THE SUNSET EYE · ' + Math.round(worldMeters(player.altitude)) + ' m · ' + Math.max(0, Math.ceil(WHEEL_PERIOD - ride.time)) + ' s';
       return (
         'THE FALCON · ' +
-        Math.round(worldMeters(coasterTrain.speed) * 3.6) +
-        ' KM/H · ' +
+        speedText(coasterTrain.speed) +
+        ' · ' +
         Math.round(worldMeters(player.altitude)) +
         ' m'
       );
@@ -1835,7 +1835,7 @@
         maxZ = Math.max(maxZ, T.Z[i]);
         maxV = Math.max(maxV, T.speed[i]);
       }
-      return Math.round(worldMeters(maxZ)) + ' metres, ' + Math.round(speedKmh(maxV)) + ' km/h';
+      return Math.round(worldMeters(maxZ)) + ' metres, ' + speedText(maxV).toLowerCase();
     }
     // ---- Console report --------------------------------------------------------------
     /* DeadEndCity.park(): ride states, coaster numbers and an overlap self-check. */

@@ -44,6 +44,10 @@
       gps: true,
       // The flight instruments (Settings · Gameplay); warnings show either way.
       flightHud: true,
+      // Speed readouts in km/h or mph (Settings · Gameplay · Speed units).
+      units: 'kmh',
+      // The speed box on foot, swimming and falling (Settings · Gameplay).
+      footSpeed: true,
     };
     try {
       const saved = JSON.parse(localStorage.getItem(HUD_STORAGE));
@@ -52,6 +56,8 @@
         hudState.keyHints = saved.keyHints !== false;
         hudState.gps = saved.gps !== false;
         hudState.flightHud = saved.flightHud !== false;
+        hudState.units = saved.units === 'mph' ? 'mph' : 'kmh';
+        hudState.footSpeed = saved.footSpeed !== false;
         if (Number.isFinite(saved.minimapZoom))
           hudState.minimapZoom = clamp(saved.minimapZoom, MINIMAP_ZOOM_MIN, MINIMAP_ZOOM_MAX);
       }
@@ -228,6 +234,161 @@
       saveHudState();
     }
     setFlightHud(hudState.flightHud);
+    /**
+     * SPEED BOX (#vehicleStats)
+     * One readout for however the player is moving, written by updateSpeedBox()
+     * on every updateUI() pass: the vehicle's name and speed (knots on a boat,
+     * km/h or mph everywhere else), and on foot the movement state (STANDING,
+     * WALKING, RUNNING, WADING, CLIMBING, SWIMMING, FALLING under a parachute)
+     * over the same big figure. The figure on foot is the player's measured
+     * ground speed (trackPlayerPace, every simulation step: what the legs
+     * actually cover, walls and slopes included), eased over PACE_SMOOTHING so
+     * footsteps and a scrape along a wall do not make it jitter, and snapped to
+     * a clean 0 once the player stands. The thin meter under it is the vehicle's
+     * condition in a vehicle and the breath while swimming (the old breath
+     * figure moved there, so the number is always a speed); on foot there is no
+     * stamina to show, so it folds away. The units (Settings · Gameplay · Speed
+     * units, `hudState.units`) apply to every speed the game prints: this box,
+     * the flight HUD's airspeed tape and the Falcon's ride card.
+     */
+    const SPEED_UNITS = {
+        kmh: { label: 'KM/H', perUnit: KMH },
+        mph: { label: 'MPH', perUnit: KMH * 1.609344 },
+      },
+      // Seconds for the on-foot figure to settle (an exponential ease).
+      PACE_SMOOTHING = 0.35,
+      // Under this (map units a second) the player is standing: the figure reads 0.
+      PACE_STANDING = 0.6 * KMH;
+    function speedUnits() {
+      return SPEED_UNITS[hudState.units] || SPEED_UNITS.kmh;
+    }
+    function speedUnitLabel() {
+      return speedUnits().label;
+    }
+    // Map units a second in the chosen unit.
+    function speedReading(unitsPerSecond) {
+      return Math.abs(unitsPerSecond) / speedUnits().perUnit;
+    }
+    // A figure already in km/h (the flight data, the Falcon) in the chosen unit.
+    function kmhReading(kmh) {
+      return hudState.units === 'mph' ? kmh / 1.609344 : kmh;
+    }
+    // Rounded, with its unit: "37 KM/H" (the bike-share and ride copy use it).
+    function speedText(unitsPerSecond) {
+      return Math.round(speedReading(unitsPerSecond)) + ' ' + speedUnitLabel();
+    }
+    function setSpeedUnits(units) {
+      hudState.units = units === 'mph' ? 'mph' : 'kmh';
+      getElement('fhSpeedCap').textContent = 'IAS · ' + speedUnitLabel();
+      saveHudState();
+    }
+    setSpeedUnits(hudState.units);
+    function setFootSpeed(on) {
+      hudState.footSpeed = !!on;
+      saveHudState();
+    }
+    /* The player's own ground speed on foot or in the water, measured from where
+       each simulation step leaves them. Carriers (a vehicle, a train, a cab, a
+       ride) and jumps (teleports, a respawn) reset it instead of reading as a
+       sprint. `shown` is the whole number on screen, changed only when the eased
+       speed has moved most of a unit away from it. */
+    const paceMeter = { x: 0, y: 0, ready: false, speed: 0, shown: 0 };
+    function trackPlayerPace(deltaSeconds) {
+      if (!(deltaSeconds > 0)) return;
+      const carried = !!(player.car || transitRide || taxiRide || player.coaster || player.parachute),
+        dx = player.x - paceMeter.x,
+        dy = player.y - paceMeter.y;
+      paceMeter.x = player.x;
+      paceMeter.y = player.y;
+      if (carried || !paceMeter.ready) {
+        paceMeter.ready = !carried;
+        paceMeter.speed = 0;
+        return;
+      }
+      const raw = Math.hypot(dx, dy) / deltaSeconds;
+      // Faster than anything on foot can go (a deck under way tops out far below).
+      if (raw > 80 * KMH) return;
+      paceMeter.speed += (raw - paceMeter.speed) * (1 - Math.exp(-deltaSeconds / PACE_SMOOTHING));
+      if (paceMeter.speed < PACE_STANDING && raw < PACE_STANDING) paceMeter.speed = 0;
+    }
+    function paceFigure() {
+      const value = speedReading(paceMeter.speed);
+      if (value < 0.5) paceMeter.shown = 0;
+      else if (Math.abs(value - paceMeter.shown) >= 0.75) paceMeter.shown = Math.round(value);
+      return paceMeter.shown;
+    }
+    /* What the player is doing on foot, as the box names it. */
+    function footMovement() {
+      const moving = paceMeter.speed >= PACE_STANDING;
+      if (player.climbing) return 'CLIMBING';
+      if (player.swimming)
+        return moving ? (swimHard() ? 'SWIMMING · CRAWL' : 'SWIMMING · BREASTSTROKE') : 'SWIMMING · TREADING WATER';
+      if (!moving) return 'STANDING';
+      if (player.wading) return 'WADING';
+      // The legs' pace decides, with the measured speed as the check: blocked
+      // by a wall at a run reads as standing, not running.
+      return footPace() === FOOT_RUN && paceMeter.speed > (FOOT_WALK + FOOT_RUN) / 2.6 ? 'RUNNING' : 'WALKING';
+    }
+    function updateSpeedBox() {
+      const c = player.car,
+        box = getElement('vehicleStats'),
+        chute = !c && player.parachute,
+        swimming = !c && !chute && !!player.swimming,
+        // On foot in the open: not a passenger, not on a ride.
+        onFoot = !c && !chute && !transitRide && !taxiRide && !player.coaster && gameMode !== 'elevator',
+        units = speedUnitLabel();
+      let name = '',
+        figure = '',
+        unit = '',
+        meter = null,
+        meterKind = '';
+      if (transitRide) name = 'CITY RAIL';
+      else if (c) {
+        name = vehicleSpec(c).name;
+        if (isBoat(c)) {
+          figure = Math.round(Math.hypot(c.vx || 0, c.vy || 0) / KNOTS);
+          unit = 'KNOTS';
+        } else {
+          figure = Math.round(speedReading(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : c.speed));
+          unit = isAircraft(c)
+            ? units + ' · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
+            : ridingBicycle()
+              ? units + ' · ' + Math.round(pedalCadence() * 60) + ' RPM · LEGS ' + Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) + '%'
+              : units;
+        }
+        meter = c.hp / c.maxhp;
+        meterKind = 'condition';
+      } else if (chute && hudState.footSpeed) {
+        // Freefall and canopy: the speed through the air, the rate of descent and
+        // the height left.
+        const p = player.parachute;
+        name = p.stage === 'freefall' ? 'FALLING · FREEFALL' : 'FALLING · CANOPY';
+        figure = Math.round(speedReading(Math.hypot(p.vx || 0, p.vy || 0, p.vz || 0)));
+        unit =
+          units + ' · ↓ ' + Math.round(speedReading(Math.min(0, p.vz || 0))) + ' · ' +
+          Math.round(worldMeters(Math.max(0, (player.altitude || 0) - terrainHeight(player.x, player.y)))) + ' m';
+      } else if (swimming || (onFoot && hudState.footSpeed)) {
+        name = footMovement();
+        figure = paceFigure();
+        unit = units;
+        if (swimming) {
+          // The breath gauge, as a bar and in words (it used to be the big figure).
+          meter = breathFraction();
+          meterKind = 'breath';
+          unit = units + ' · BREATH ' + Math.round(meter * 100) + '%';
+        }
+      }
+      const active = !!name;
+      getElement('vehicleName').textContent = name || 'ON FOOT';
+      getElement('speed').textContent = figure;
+      getElement('speedUnit').textContent = unit;
+      getElement('carFill').style.width = meter === null ? '0%' : clamp(meter * 100, 0, 100).toFixed(1) + '%';
+      box.classList.toggle('active', active);
+      box.classList.toggle('no-meter', meter === null);
+      box.classList.toggle('breath', meterKind === 'breath');
+      box.classList.toggle('damaged', meterKind === 'condition' ? meter < 0.3 : meterKind === 'breath' && meter < 0.3);
+      box.dataset.mode = c ? 'vehicle' : chute ? 'falling' : swimming ? 'swim' : transitRide ? 'rail' : 'foot';
+    }
     /**
      * KEY HINTS
      * The strip follows the context; it is rebuilt only when the context or the
@@ -964,7 +1125,7 @@
         speed.context,
         speed.width,
         speed.height,
-        data.airspeed,
+        kmhReading(data.airspeed),
         1.5,
         10,
         20,
@@ -974,8 +1135,8 @@
         heli
           ? []
           : [
-              { from: -100, to: data.stallSpeed, color: 'rgba(240, 134, 114, 0.85)', width: 6 },
-              { from: data.stallSpeed, to: data.stallSpeed * 1.1, color: 'rgba(226, 200, 151, 0.85)', width: 6 },
+              { from: -100, to: kmhReading(data.stallSpeed), color: 'rgba(240, 134, 114, 0.85)', width: 6 },
+              { from: kmhReading(data.stallSpeed), to: kmhReading(data.stallSpeed) * 1.1, color: 'rgba(226, 200, 151, 0.85)', width: 6 },
             ],
       );
       drawAltitudeTape(altitude.context, altitude.width, altitude.height, data);

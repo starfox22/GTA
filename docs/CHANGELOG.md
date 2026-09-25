@@ -1,5 +1,45 @@
 # Changelog
 
+## Unreleased — speed box on foot, km/h / mph, South Coast Cycle bike share
+
+Speed box (hud.js SPEED BOX)
+- The vehicle speed box now also shows on foot, swimming and under a parachute, in the same
+  style: the movement state (STANDING, WALKING, RUNNING, WADING, CLIMBING, SWIMMING · CRAWL /
+  BREASTSTROKE / TREADING WATER, FALLING · FREEFALL / CANOPY) over the speed. On foot it is the
+  measured ground speed (`trackPlayerPace`), eased over 0.35 s and held to whole numbers with a
+  0.75 hysteresis, so it does not jitter; standing reads 0. Under a parachute: airspeed, rate of
+  descent and height.
+- Swimming, the big figure used to be the breath percentage; it is now the swimming speed, with
+  the breath as the bar under it and in the unit line (BREATH 74%), red under 30%. On foot the
+  bar folds away (there is no stamina on foot). A bicycle still shows cadence and LEGS %.
+- Settings · Gameplay: **Speed units** (KM/H or MPH) and **Speed box on foot** (on by default;
+  the water always shows the breath). The units apply to every speed shown: the speed box, the
+  flight HUD's airspeed tape, its stall band and caption, the Falcon's ride card and banner.
+  Boats keep knots, distances stay metric. Saved with the HUD state; `DeadEndCity.settings({
+  units, footSpeed })`, `DeadEndCity.speedBox()`.
+
+South Coast Cycle bike share (cycles.js, cycles3d.js)
+- The free bike stands become docked bike-share stations: a steel dock rack of 4-8 teal and
+  white city bikes (step-through frame, mudguards, chain case, front carrier with the brand
+  panel, dynamo lamps) and a payment totem with a backlit station map, a RENT A BIKE screen, the
+  SOUTH COAST CYCLE header and a lit canopy strip, a night glow and a light pool on the pavement.
+- Placed beside every payphone (`phone`, a district's `PAYPHONES`, PLACES of kind 'payphone'), at
+  every job's first destination (`missions[i].start`, else `MISSION_STARTS`), at the rail
+  stations and where the old stands were (park gates, marina, pier, Exchange, esplanade), on
+  kerb-side pavement with a walkway kept behind the bikes, off carriageways, crosswalks, doors,
+  rail entrances, the payphone's reach, trees, lamps, benches, colliders, parked vehicles,
+  runways, taxiways and helipads; the renderer settles each against the furniture it placed.
+- RENT BIKE · $5 on foot undocks a bike and puts you on it (an ordinary bicycle in the livery);
+  DOCK BIKE · $2 BACK riding a share bike slowly up to any station with a free dock racks it.
+  Stations restock one bike about every 150 s while you are away. Teal bicycle icons on the
+  minimap and map (grey when empty), BIKE SHARE in the map legend.
+- Rack, totem and bikes are breakable props (`bikerack` 35 kJ, `biketotem` 60 kJ, `sharebike`
+  1.2 kJ): bikes go over at walking pace, the rack from ~25 km/h in a sedan, the totem from ~33;
+  a fallen rack takes its bikes down; the city stands them up again. Drawn as instanced
+  breakables from merged vertex-coloured parts (one instance per bike), a handful of draws per
+  map cell. Every size follows the bicycle's length (`SHARE_BIKE_LENGTH`) or the metre.
+- `DeadEndCity.bikeShare()` (network, nearest station, rent/dock log), `DeadEndCity.bikeStation(id)`.
+
 ## Unreleased — ramming roadblocks, crash physics, breakable trees and furniture
 
 Roadblocks (roadblocks.js, physics.js)

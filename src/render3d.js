@@ -2360,6 +2360,7 @@
           updateCityscapeVisuals();
           updateSideJobVisuals();
           updateRoadblockVisuals();
+          updateBikeShareVisuals();
           updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();

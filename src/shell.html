@@ -558,6 +558,10 @@ kbd {
 .purple {
   background: #cf92e9;
 }
+.bikeshare-key {
+  background: #12948f;
+  box-shadow: 0 0 0 1px #eef6f2;
+}
 .blue {
   background: #77cbe5;
 }
@@ -3148,6 +3152,16 @@ kbd {
 #vehicleStats.damaged #carFill {
   background: var(--ui-danger);
 }
+/* On foot there is no gauge under the figure; swimming it is the breath. */
+#vehicleStats.no-meter .meter {
+  display: none;
+}
+#vehicleStats.breath #carFill {
+  background: linear-gradient(90deg, #5fb3d9, #a9e1f2);
+}
+#vehicleStats.breath.damaged #carFill {
+  background: var(--ui-danger);
+}
 /* Pop boxes (hud.js): .hud-more rows fold to nothing until .open or hover. */
 .hud-pop .hud-more {
   display: grid;
@@ -5604,7 +5618,7 @@ body.no-key-hints .quickkeys {
         </div>
         <div class="fh-col fh-left">
           <canvas id="fhAttitude" class="fh-adi"></canvas>
-          <div class="fh-tape"><span class="fh-cap">IAS · KM/H</span><canvas id="fhSpeed"></canvas></div>
+          <div class="fh-tape"><span class="fh-cap" id="fhSpeedCap">IAS · KM/H</span><canvas id="fhSpeed"></canvas></div>
           <div class="fh-block">
             <div class="fh-row"><span id="fhPowerLabel">PWR</span><b id="fhPower">0%</b></div>
             <div class="fh-bar"><i id="fhPowerFill"></i><em id="fhThrottleMark"></em></div>
@@ -6073,6 +6087,7 @@ body.no-key-hints .quickkeys {
         <div class="legend">
           <span><i class="yellow"></i> JOB / PAYPHONE</span><span><i class="green"></i> HEALTH</span
           ><span><i class="purple"></i> AMMO</span><span><i class="blue"></i> RESPRAY</span
+          ><span><i class="bikeshare-key"></i> BIKE SHARE · $5</span
           ><span><i class="police-map-key"></i> POLICE · FLASHING = PURSUIT</span
           ><span>⊕ POLICE HELICOPTER</span><span>H HELIPAD</span><span>U RAILWAY UNDERPASS</span
           ><span>M RAIL STATION</span><span>GUN ARMORY</span><span>ZZ SLEEP</span

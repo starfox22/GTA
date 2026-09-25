@@ -172,7 +172,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
-| cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
+| cycles.js | South Coast Cycle bike share (section 4d, Bike share): the station plan (`bikeStationPlan`, `MISSION_STARTS`, `settleBikeStations`), docks (`setDockBike`, `bikeShareVersion`), RENT BIKE / DOCK BIKE (`bikeShareOffer`, `bikeShareInteract`), restocking (`updateBikeShare`), the map icon (`drawBikeShareMap`), `bikeShareReport`; hold-W pedalling and the rider's legs |
 | weather.js | Weather state machine (`weather.next` is chosen as a state begins), the build-up before a shower (`weather.approach`: thicker cloud, rising wind, far thunder), `weather.shower` counter, road wetness, wind and gusts, lightning strikes with a place and distance (`lightningStrike`, the flash's return strokes in `lightningFlash`) and thunder queued at distance / speed of sound |
 | weather-audio.js | Rain and thunder sound: three recorded rain beds (`RAIN_BEDS`: light patter on a tile roof, a steady wash, a heavy downpour) cross-faded by intensity (`rainBedLevels`, `RAIN_LEVEL`), muffled under cover (`rainShelter()`: the underpass, beneath rail decks and station canopies, aboard a train or cab, the elevator) and through the glass inside a closed vehicle, where a resonant low band of the same recordings drums on the roof; tyre spray on wet roads (a band of the heavy bed), puddle splashes underfoot; `rainReport()` (DeadEndCity.rainSound()); `thunderSound(distance)` builds each clap (crack only when near; rumble rolls, lower and longer with distance) |
 | water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J), `parachuteSplashdown`, harbor-patrol rescue |
@@ -218,7 +218,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
 | god-panel.js | God mode settings: the GOD MODE settings tab (time presets and slider, freeze time, weather, refill, lose police, teleport), the map's teleport pick mode and the safe teleport `godTeleport` (section 4d, God mode) |
 | settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
-| hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
+| hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), the SPEED BOX (`updateSpeedBox`, `trackPlayerPace`, the km/h / mph units: `speedReading`, `speedText`, `kmhReading`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
 
 Renderer closure (inside `createCityRenderer()` in render3d.js, in include order;
@@ -262,7 +262,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
 | marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners, the sailing liner and her wake |
 | beachclub3d.js | The club's meshes (batched), sails that fade while the player is inside, and the show: LED floor, moving heads, lasers, strobe, LED wall, flames, string lights (`updateBeachClubVisuals`, called from `updateBeachVisuals`) |
-| cycles3d.js | Bike-share racks (the bicycles are ordinary vehicles) |
+| cycles3d.js | Bike-share stations: dock racks, docked share bikes and payment totems as instanced breakable props (merged vertex-coloured parts, `shareGeometry`), the totem's lit map, screen and brand faces, night glow and pool; the ridden share bike (`makeShareBicycle`); empty docks hidden (`updateBikeShareVisuals`) |
 | weather3d.js | GPU rain streaks (world-anchored, three depth layers, wind slant, lit by the night light map), splashes, roof and awning drips, spray behind cars, wet roads, lightning bolts and flashes, `vehicleLampAmount()` (headlights in heavy rain), the storm grade (`weatherGrade`) |
 | crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
@@ -700,6 +700,51 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **Centre cards** (hud.js CENTRE CARDS): the headline card (`announce()`) slides up under the
   docked prompt and shrinks after 3 s (not WASTED / BUSTED); in touch mode a toast dims after
   3 s. Reduced motion cuts the slides and pop-ins (the shell's reduced-motion block).
+- **Speed box** (hud.js SPEED BOX, `#vehicleStats`): one readout however the player moves.
+  In a vehicle: its name, the speed (knots on a boat), altitude in an aircraft, cadence and legs
+  on a bicycle, and the condition bar. On foot (Settings · Gameplay · **Speed box on foot**,
+  `hudState.footSpeed`, on by default): the movement state (STANDING, WALKING, RUNNING, WADING,
+  CLIMBING, SWIMMING · CRAWL / BREASTSTROKE / TREADING WATER) over the measured ground speed
+  (`trackPlayerPace`, every step from where the step leaves the player, eased over 0.35 s, 0 once
+  under 0.6 km/h, the whole number only changing when the eased speed has moved 0.75 away); under
+  a parachute FALLING · FREEFALL / CANOPY with the airspeed, the rate of descent and the height.
+  The bar is the breath while swimming (the old breath figure; always shown in the water) and
+  folds away on foot (`.no-meter`). **Speed units** (Settings · Gameplay, `hudState.units`, `'kmh'`
+  or `'mph'`): every printed speed goes through `speedReading` / `speedText` / `kmhReading`: this
+  box, the flight HUD's airspeed tape and its caption (`#fhSpeedCap`), the Falcon's card and
+  banner. Boats keep knots and distances stay metric. `DeadEndCity.speedBox()` reports it;
+  `DeadEndCity.settings({ units: 'mph', footSpeed: true })` sets both.
+- **Bike share** (cycles.js BIKE SHARE, cycles3d.js): South Coast Cycle stations, a dock rack
+  of 4-8 share bikes and a payment totem, stand beside every payphone (8 docks) and at every
+  place a job first sends you (6 docks). The network is data-driven: payphones are `phone`, any
+  `PAYPHONES` array a district declares and PLACES of kind `'payphone'` (`payphoneAnchors`); a
+  job's start is `missions[i].start` when its entry has one, else `MISSION_STARTS` (the
+  `setStage(0)` target of each start function; keep it in step when a job's opening moves); other
+  systems can call `addBikeShareAnchor({ x, y, label })` before the city is populated. Also at
+  the rail stations and Southport terminal (8)
+  and where the old free racks were (park gates 5, marina / pier / Exchange 6, esplanade 4). An
+  anchor within `BIKE_SHARE.spacing` (21 m) of a station is served by it (`serves`). Placement
+  tries kerb-side pavement spots along the surrounding streets (dock posts `kerbGap` back from
+  the kerb, the bikes' tails toward the buildings), then open ground in rings, and takes the
+  first whose footprint is dry open pavement (no carriageway + 4, rail, building, collider,
+  quay railing, street end, beach, harbor, airport; off crosswalks + 2 m, trees, lamps and
+  benches) with the walkway behind it (1.8 m) clear, and 3 m from doors, 6 m from rail entrances
+  and 7.5 m from the payphone. The renderer settles the plan against the furniture it placed
+  (`settleBikeStations`: props and foot obstacles), moving a station to its next candidate.
+  Every size follows the bicycle (`SHARE_BIKE_LENGTH` = `VEHICLE_DEFINITIONS.bicycle.l`: the
+  dock pitch, bike positions, footprint, prop boxes; the share bike model is drawn to that length)
+  or the metre (rack and totem). On foot within 3.2 m, RENT BIKE · $5 (`offerPrompt`, id
+  `bikeshare`) undocks the nearest bike as an ordinary bicycle with `shareBike` set and puts the
+  player on it; riding a share bike below 12 km/h within 4.2 m of a station with a free dock,
+  DOCK BIKE · $2 BACK racks it (the vehicle is removed). The offer is one function
+  (`bikeShareOffer`) asked by the prompt and by E, with `withinRange` hysteresis; stations are
+  found through a 256-unit grid. A station restocks one bike about every 150 s while the player
+  is 32 m or more away. The rack (`bikerack`, 35 kJ), totem (`biketotem`, 60 kJ) and bikes
+  (`sharebike`, 1.2 kJ) are breakable props (damage.js); a fallen rack topples its bikes, and an
+  empty dock's bike prop is laid down and its instances zeroed (`updateBikeShareVisuals`, on a
+  `bikeShareVersion` change). Map and minimap show a teal bicycle chip per station (grey-teal
+  when empty) and the big map's legend has BIKE SHARE. `DeadEndCity.bikeShare()` lists the
+  network and the nearest station; `DeadEndCity.bikeStation(id)` stands the player at one.
 - **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft the
   instruments hug the screen edges so the view stays clear: a column on the left edge
   (attitude indicator with pitch ladder and bank scale, the airspeed tape with its stall band,
