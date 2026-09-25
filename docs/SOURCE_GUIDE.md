@@ -154,7 +154,7 @@ and helicopter3d, vehicles3d and plane3d last, before `makeVehicle`):
 | --- | --- |
 | flight-view3d.js | Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
-| lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), headlight cones, time-of-day look |
+| lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
@@ -842,7 +842,14 @@ docs/audit/missions-qa.md shows the method).
   CPU-bound or still slow at 60%, one tier down. Scene shaders that need the scene buffer's
   pixel size (point sprites, screen-space lookups) must use `sceneBufferSize()`, not the
   canvas's drawing buffer.
-- **Quality tiers** (quality.js) set pixel ratio, shadow-map size and refresh cadence, MSAA,
+- **Shadows** (quality.js SHADOWS): the sun (moon) shadow map is redrawn every frame whenever
+  it is on; a map kept for two to four frames on the lower tiers left the shadows of the player
+  and the traffic trailing behind them. Settings · Graphics · Shadows is AUTO (LOW off, MEDIUM
+  low, HIGH/ULTRA high), OFF, LOW (a map of at most 2048) or HIGH (the tier's map), saved as
+  `dead-end-city-shadows` and applied live (switching on/off relinks the lit shaders once).
+  With shadows off, cars and people stand on soft contact blobs (lighting3d.js CONTACT
+  SHADOWS, one instanced draw). The shadow box stays texel-snapped (`placeSun`).
+- **Quality tiers** (quality.js) set pixel ratio, default shadows and shadow-map size, MSAA,
   AO samples, bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
   record; the renderer's `setQuality(tier)` applies one at runtime. `DeadEndCity.graphics('high')`
   switches from the console (tests use it, since SwiftShader auto-detects as LOW).
@@ -856,26 +863,43 @@ docs/audit/missions-qa.md shows the method).
   city-wide light map; `cityMaterialPatch` (installed as MeshStandardMaterial's default
   `onBeforeCompile`) adds it to every lit surface near the ground, scaled by night, the
   blackout job's district power and height. A material with its own `onBeforeCompile` should
-  call `cityMaterialPatch(shader)` first. Traffic headlights are instanced ground cones.
+  call `cityMaterialPatch(shader)` first. A street lamp's pool is ~100 units across with a
+  bright core and a long soft tail, so neighbouring lamps overlap into lit streets; it climbs
+  the facades beside it (ground-facing surfaces stop catching it by ~40 units, walls ~78) and is
+  tinted by district (`lampTint`: sodium in the docks and Old Quarter, cool LED in the
+  financial core and Midtown, warm white elsewhere).
+- **Vehicle lights** (lighting3d.js DRIVE LIGHT MAP): every lit car's low beams (~35 m, wide)
+  and tail-lamp wash are drawn each night frame as instanced quads into a 1024-texel HDR map
+  over the view (texel-snapped; alpha keeps the road level), and the same material patch adds
+  it as light, so the road, kerbs, cars, people and walls ahead are lit through their own
+  colour. The player's car keeps its real spotlight on top.
+- **Night look** (lighting3d.js `NIGHT_LOOK`, civic3d.js night keyframes): a readable
+  blue-hour night: stronger moonlight and cool sky fill, a brighter night sky, opened exposure,
+  slightly lifted blue blacks and less contrast and saturation loss than before; lamps, neon and
+  headlights stay far above that ambient. No light follows the player (the foot pool is gone;
+  only a faint moonlit rim on their model's silhouette edges remains).
 - **Searchlights** (searchlight3d.js): a shaft is a cone whose front faces march the view
   ray through the cone (exit solved analytically): soft radial profile with a hot core,
   denser towards the lamp, forward scattering, drifting haze noise (MEDIUM and up), a soft
   fade into the ground plane and a soft shoulder so a beam seen end-on never blows out. The
   police helicopter's pool is one real SpotLight (always in the scene, intensity 0 when idle,
-  so no program changes) with a cookie map; it casts shadows on HIGH/ULTRA (switched only on
-  a tier change). Rain streaks inside its cone are lit (one GPU-animated LineSegments). The
+  so no program changes) with a cookie map; it casts shadows on HIGH/ULTRA while sun shadows are
+  HIGH (switched only on a tier or shadow setting change). Rain streaks inside its cone are lit (one GPU-animated LineSegments). The
   aim is a critically damped spring fed with the target's velocity: it lags and wobbles while
   tracking, sweeps a widening figure round the last sighting while searching, and snaps on
   with a flare when the player is found again. The Fort Sentinel watch towers use the same
   shaft with a cookie decal on the ground. Faint by day, strong at night and in rain.
-- **Cutaway** (lighting3d.js, `updateCutaway`): only when the player stands strictly under a
+- **Cutaway** (lighting3d.js, `updateCutaway`): when a building or a deck stands between the
+  camera and the player (rays from their middle and head towards the camera hit its box,
+  `findOccluders`), a player-sized hole is dithered through that structure alone. Also when the
+  player stands strictly under a
   roof (`airCoverVolumes()`: the underpass, rail decks, station canopies; a building they are
   inside; roofs registered with `registerCutawayRoof`: Vinny's depot, bus shelters) does the
   same patch dither a small hole, about the player's size, through that roof. Only fragments
   inside the covering structure's own volume and in front of the player are cut, so vehicles,
-  people, trees and props never are; in the open there is no cutaway. `city3D.
-  setCharacterCutaway(on)` switches it; localStorage `dead-end-city-cutaway` = `'off'` is
-  read at start-up.
+  people, trees and props never are; with the player in plain view there is no cutaway.
+  Settings · Graphics · Character see-through (`city3D.setCharacterCutaway(on)`) switches it
+  live; localStorage `dead-end-city-cutaway` = `'off'` is read at start-up.
 - **Street camera clearance** (flight-view3d.js): the orthographic street camera stands far
   enough back along its view line that its near plane clears the tallest roof and the
   cloud-shadow plane (`streetCeiling()`); the image is unchanged. The street view has no

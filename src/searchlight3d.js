@@ -639,7 +639,8 @@
       /**
        * LOW: a short march without noise, no shadow, fewer lit raindrops.
        * MEDIUM adds the dust; HIGH/ULTRA march further and give the helicopter's
-       * spot a shadow (a program change for lit materials, so only on a tier change).
+       * spot a shadow while sun shadows are HIGH (a program change for lit
+       * materials, so only on a tier or shadow setting change).
        */
       function setSearchlightQuality(tier) {
         const steps = tier.ao >= 14 ? 22 : tier.ao > 0 ? 16 : tier.bloom > 0 ? 10 : 6,
@@ -652,7 +653,7 @@
             beam.mesh.material.needsUpdate = true;
           }
         }
-        const shadows = tier.shadowMap >= 3072,
+        const shadows = tier.shadowMap >= 3072 && shadowQuality() === 'high',
           shadowSize = tier.shadowMap >= 4096 ? 2048 : 1024;
         if (airSpot.castShadow !== shadows || airSpot.shadow.mapSize.x !== shadowSize) {
           airSpot.castShadow = shadows;

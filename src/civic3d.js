@@ -291,18 +291,18 @@
       /**
        * TIME OF DAY
        * Sky, fog, sun and ambient colours follow daylight() through four keyframes:
-       * night (cool moonlight), dawn/dusk (amber horizon, long warm shadows), day.
+       * night (a blue-hour moonlight, see NIGHT LOOK in lighting3d.js), dawn/dusk (amber horizon, long warm shadows), day.
        * The dusk weight peaks when daylight is near 0.3 so sunsets read as sunsets.
        */
-      const SKY_NIGHT = new Three.Color('#0d1524'),
+      const SKY_NIGHT = new Three.Color('#1a2740'),
         SKY_DAY = new Three.Color('#9fc0d8'),
         SKY_DUSK = new Three.Color('#c07a55'),
-        SUN_NIGHT = new Three.Color('#7d93c4'),
+        SUN_NIGHT = new Three.Color('#9aaed8'),
         SUN_DUSK = new Three.Color('#ffa564'),
         SUN_DAY = new Three.Color('#fff4de'),
-        HEMI_SKY_NIGHT = new Three.Color('#2f3d5e'),
+        HEMI_SKY_NIGHT = new Three.Color('#4a5c84'),
         HEMI_SKY_DAY = new Three.Color('#cfe0f2'),
-        HEMI_GROUND_NIGHT = new Three.Color('#1c1a22'),
+        HEMI_GROUND_NIGHT = new Three.Color('#2c2b35'),
         // Daylight bounces off pavement and planting, not off bare earth.
         HEMI_GROUND_DAY = new Three.Color('#6d6a52'),
         skyScratch = new Three.Color();
