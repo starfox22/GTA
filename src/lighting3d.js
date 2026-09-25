@@ -190,7 +190,7 @@
       // Reach of a street lamp's pool on the ground (world units; ~19 m).
       const LAMP_POOL_RADIUS = 100,
         LAMP_SODIUM = [255, 164, 78],
-        LAMP_LED = [212, 224, 255],
+        LAMP_LED = [196, 210, 244],
         LAMP_WARM = [255, 204, 146];
       // A lamp's colour by district, worked out once per lamp.
       function lampTint(lamp) {
@@ -243,10 +243,12 @@
             pr = LAMP_POOL_RADIUS * s,
             grad = g.createRadialGradient(px, py, 0, px, py, pr),
             rgb = tint.join(',');
-          grad.addColorStop(0, `rgba(${rgb},0.95)`);
-          grad.addColorStop(0.16, `rgba(${rgb},0.72)`);
-          grad.addColorStop(0.4, `rgba(${rgb},0.34)`);
-          grad.addColorStop(0.7, `rgba(${rgb},0.12)`);
+          // (A softer core than the old 62-unit pool: pale pavement under a
+          // lamp head clipped to white and bloomed into a blob.)
+          grad.addColorStop(0, `rgba(${rgb},0.78)`);
+          grad.addColorStop(0.16, `rgba(${rgb},0.58)`);
+          grad.addColorStop(0.4, `rgba(${rgb},0.3)`);
+          grad.addColorStop(0.7, `rgba(${rgb},0.11)`);
           grad.addColorStop(1, `rgba(${rgb},0)`);
           g.fillStyle = grad;
           g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
