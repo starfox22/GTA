@@ -1347,12 +1347,16 @@
           // The share of the tyres' sideways hold available (rain, power, braking).
           lateralScale = 1,
           // Nobody driving: the vehicle slides on locked or parked wheels (parkedFriction).
-          unattended = 0;
+          unattended = 0,
+          // Brake lights (render3d.js): the player's brake pedal, or a driver
+          // slowing hard or holding the car at a stop.
+          braking = false;
         if (c.hp > 0 && c === pc && active) {
           const up = keys.KeyW || keys.ArrowUp,
             down = keys.KeyS || keys.ArrowDown,
             brake = keys.Space,
             turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+          braking = !!down && along > 10;
           // A bicycle has no engine: holding W pedals, and the push the rider's
           // legs give tapers off toward the top speed (pedalDrive, cycles.js).
           const pedalled = !!vehicleDefinition.bicycle,
@@ -1412,7 +1416,7 @@
             longLimit = acceleration > 0 ? vehicleDefinition.acc : vehicleDefinition.brake || GRAVITY;
           if (!pedalled && acceleration) acceleration *= Math.sqrt(Math.max(0.2, 1 - lateralUse * lateralUse));
           const longUse = pedalled ? 0 : clamp(Math.abs(acceleration) / Math.max(1, longLimit), 0, 1),
-            braking = acceleration < 0 && along > 10,
+            slowing = acceleration < 0 && along > 10,
             // How hard the driver is asking the driven wheels to push (a strong
             // engine at low speed asks for more than the tyres can give).
             throttle =
@@ -1420,7 +1424,7 @@
                 ? clamp((engineAcceleration(vehicleDefinition, along) * handling.power) / Math.max(1, vehicleDefinition.acc), 0, 1)
                 : 0;
           let cornerShare = Math.sqrt(Math.max(0.3, 1 - longUse * longUse));
-          if (braking) cornerShare *= 1 + 0.12 * longUse;
+          if (slowing) cornerShare *= 1 + 0.12 * longUse;
           if (balance < 0) cornerShare *= 1 + balance * 0.15 * lateralUse;
           if (balance > 0) cornerShare *= 1 + balance * 0.25 * lateralUse * throttle;
           // Sideways hold: the tail lets go under power in a tail-happy car, and
@@ -1428,7 +1432,7 @@
           lateralScale =
             surface *
             (1 - (balance > 0 ? balance * 0.4 * lateralUse * throttle : 0)) *
-            (1 - (braking ? Math.max(0, balance + 0.5) * 0.12 * longUse * lateralUse : 0));
+            (1 - (slowing ? Math.max(0, balance + 0.5) * 0.12 * longUse * lateralUse : 0));
           // Full lock at walking pace; above that the tyres' sideways grip is the
           // limit (cornerG): the yaw rate a speed allows is grip / speed, so a car
           // takes a city corner at 30-40 km/h and sweeps a wide bend at 150. The
@@ -1515,6 +1519,9 @@
           drag = 0;
           grip = 0;
         }
+        if (c !== pc && c.hp > 0 && (c.ai || c.cop) && !c.crewDeployed)
+          braking = along > 2 * KMH ? acceleration < -0.12 * GRAVITY : along > -2 * KMH && acceleration <= 0;
+        c.braking = braking;
         const terrain = roadVehicleTerrain(c);
         if (terrain) {
           const slope = Math.hypot(terrain.slope.x, terrain.slope.y),

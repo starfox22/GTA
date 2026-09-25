@@ -95,7 +95,7 @@
       feedback.gain.value = 0.38;
       echo.gain.value = 1;
       verb.gain.value = 0.35;
-      input.connect(tone).connect(wall).connect(out).connect(master);
+      input.connect(tone).connect(wall).connect(out).connect(musicBus);
       echo.connect(delay);
       delay.connect(feedback).connect(delay);
       delay.connect(tone);

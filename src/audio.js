@@ -5,18 +5,41 @@
      * Scope: shared game closure.
      * Embedded samples, Web Audio lifecycle, spatial volume and procedural sound.
      */
+    /**
+     * THE MIX
+     * One gain per category, each set by its Settings · Audio slider
+     * (settings.js AUDIO_BUSES, `busLevel()`):
+     *
+     *   master       effects: weapons, impacts, crashes, explosions, UI tones.
+     *                The historical name: anything connected to `master` is an
+     *                effect.
+     *   engineBus    engines and vehicles: engine-audio.js (the player's engine,
+     *                road and wind noise, traffic, jets, boats, tank tracks), the
+     *                tyre and rotor loops
+     *   ambienceBus  the city (ambience.js), weather, the sea and swimming, the
+     *                stadium, the pier rides, the drawbridge, parachute wind
+     *   sirenBus     police sirens and Fort Sentinel's air-raid siren
+     *   musicBus     music played in the world (the beach club) at the radio
+     *                level; the car radio is its own <audio> element, scaled by
+     *                volumeScale('radio')
+     *   voiceBus     the police and dispatch callouts
+     *
+     * The first five meet in `duckBus` (the ride-skip fade, ride-skip.js, dips
+     * them under the black while the radio and the callouts play on;
+     * `setMixDuck()` moves it), then the ear filter (dulled while swimming),
+     * where the callouts join; `mixBus` (the master volume and the Sound switch)
+     * and the limiter follow.
+     */
     let soundOn = true,
       audio = null,
-      // `master` is the effects bus: everything but the radio callouts goes
-      // through it. Its level is the Sound on/off switch times the master and
-      // effects volumes (settings.js); `voiceBus` carries the callouts.
       master = null,
+      engineBus = null,
+      ambienceBus = null,
+      sirenBus = null,
+      musicBus = null,
       voiceBus = null,
-      // A duck on the effects bus alone, between `master` and the ear filter:
-      // the ride-skip fade (ride-skip.js) dips engines, rain and the street
-      // under the black while the radio (its own element) and the callouts
-      // play on. `setMixDuck()` moves it.
-      duckBus = null;
+      duckBus = null,
+      mixBus = null;
     let audioBuffers = {},
       audioLoops = {},
       reverb = null,
@@ -39,17 +62,26 @@
         limiter.ratio.value = 5;
         limiter.attack.value = 0.003;
         limiter.release.value = 0.22;
-        master = audio.createGain();
-        master.gain.value = effectsLevel();
         earFilter = audio.createBiquadFilter();
         earFilter.type = 'lowpass';
         earFilter.frequency.value = 20000;
         earFilter.Q.value = 0.5;
         duckBus = audio.createGain();
-        master.connect(duckBus).connect(earFilter).connect(limiter).connect(audio.destination);
-        voiceBus = audio.createGain();
-        voiceBus.gain.value = voiceLevel();
-        voiceBus.connect(earFilter);
+        mixBus = audio.createGain();
+        mixBus.gain.value = mixLevel();
+        duckBus.connect(earFilter).connect(mixBus).connect(limiter).connect(audio.destination);
+        const bus = (channel, into = duckBus) => {
+          const node = audio.createGain();
+          node.gain.value = busLevel(channel);
+          node.connect(into);
+          return node;
+        };
+        master = bus('sound');
+        engineBus = bus('engine');
+        ambienceBus = bus('ambience');
+        sirenBus = bus('siren');
+        musicBus = bus('radio');
+        voiceBus = bus('voice', earFilter);
         reverb = audio.createConvolver();
         const n = Math.floor(audio.sampleRate * 1.3),
           ir = audio.createBuffer(2, n, audio.sampleRate);
@@ -90,7 +122,8 @@
       filter.type = 'lowpass';
       filter.frequency.value = 4800;
       g.gain.value = 0;
-      s.connect(filter).connect(g).connect(master);
+      // The tyres and the rotor are vehicles; the siren has its own slider.
+      s.connect(filter).connect(g).connect(name === 'siren' ? sirenBus : engineBus);
       s.start();
       audioLoops[name] = {
         source: s,
@@ -143,18 +176,34 @@
       }
       return source;
     }
-    // Output levels of the two buses (0.62 is the mix's nominal level).
-    function effectsLevel() {
-      return soundOn ? 0.62 * volumeScale('sound') : 0;
+    // A category bus's gain: its slider (0.62 is the mix's nominal level). The
+    // master volume and the Sound switch are on `mixBus`.
+    function busLevel(channel) {
+      return 0.62 * channelVolume(channel);
+    }
+    function mixLevel() {
+      return soundOn ? settings.masterVolume / 100 : 0;
+    }
+    /* Push every slider into the live mix (settings.js applyVolumes). */
+    function applyMixLevels() {
+      if (!audio || !mixBus) return;
+      const now = audio.currentTime;
+      mixBus.gain.setTargetAtTime(mixLevel(), now, 0.05);
+      for (const [node, channel] of [
+        [master, 'sound'],
+        [engineBus, 'engine'],
+        [ambienceBus, 'ambience'],
+        [sirenBus, 'siren'],
+        [musicBus, 'radio'],
+        [voiceBus, 'voice'],
+      ])
+        node.gain.setTargetAtTime(busLevel(channel), now, 0.05);
     }
     /* Duck the effects bus to `level` (1 = open) over about `seconds`. */
     function setMixDuck(level, seconds = 0.3) {
       if (!audio || !duckBus) return;
       duckBus.gain.cancelScheduledValues(audio.currentTime);
       duckBus.gain.setTargetAtTime(clamp(level, 0, 1), audio.currentTime, Math.max(0.01, seconds / 3));
-    }
-    function voiceLevel() {
-      return soundOn ? 0.62 * volumeScale('voice') : 0;
     }
     function playSample(name, volume = 0.5, rate = 1, position = null, bus = master) {
       if (!audio || !soundOn) return;
@@ -348,7 +397,7 @@
           keys.ArrowRight);
       if (walking && footstepClock <= 0) {
         // One footfall per step at the pace the legs are going (game.js strideRate).
-        footstepClock = Math.PI / strideRate(keys.ShiftLeft || keys.ShiftRight ? FOOT_SPRINT : actionHeld('walk') ? FOOT_WALK : FOOT_JOG);
+        footstepClock = Math.PI / strideRate(footPace());
         if (player.wading) {
           // Striding through the shallows: slower steps, each one a swish.
           footstepClock *= 1.35;
@@ -428,6 +477,21 @@
           context: audio ? audio.state : null,
           time: audio ? +audio.currentTime.toFixed(2) : 0,
           soundOn,
+          // Each bus's live gain (THE MIX above): `mix` is the master volume
+          // and the Sound switch, the rest are the category sliders x 0.62.
+          buses: mixBus
+            ? Object.fromEntries(
+                [
+                  ['mix', mixBus],
+                  ['effects', master],
+                  ['engines', engineBus],
+                  ['ambience', ambienceBus],
+                  ['sirens', sirenBus],
+                  ['music', musicBus],
+                  ['voices', voiceBus],
+                ].map(([k, node]) => [k, +node.gain.value.toFixed(4)]),
+              )
+            : null,
           master: master ? +master.gain.value.toFixed(3) : null,
           duck: duckBus ? +duckBus.gain.value.toFixed(3) : null,
           buffers: Object.keys(audioBuffers).length,

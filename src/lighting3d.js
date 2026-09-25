@@ -772,7 +772,7 @@
             beamPosition.set(c.x - cos * (spec.l * 0.5 + 16), ground, c.y - sin * (spec.l * 0.5 + 16));
             beamScale.set(26, 1, spec.w * 1.5);
             tailGlows.setMatrixAt(tails, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
-            tailGlows.setColorAt(tails, beamColor.setScalar(night * 0.32 * wetBoost));
+            tailGlows.setColorAt(tails, beamColor.setScalar(night * (c.braking ? 0.75 : 0.32) * wetBoost));
             tails++;
           }
         headBeams.count = heads;
@@ -822,7 +822,8 @@
       );
       // Lamp materials are declared after this file; their day colours are read on first use.
       let warmLampBase = null,
-        tailLampBase = null;
+        tailLampBase = null,
+        brakeLampBase = null;
       /**
        * NIGHT LOOK
        * A readable blue-hour night rather than an ink-black one: moonlight and a
@@ -887,10 +888,12 @@
         if (!warmLampBase) {
           warmLampBase = warmLamp.color.clone();
           tailLampBase = tailLamp.color.clone();
+          brakeLampBase = brakeLamp.color.clone();
         }
         const lampsOn = vehicleLampAmount();
         warmLamp.color.copy(warmLampBase).multiplyScalar(1 + lampsOn * 3.5);
         tailLamp.color.copy(tailLampBase).multiplyScalar(1 + lampsOn * 2.5);
+        brakeLamp.color.copy(brakeLampBase).multiplyScalar(3 + lampsOn * 3);
         updateHeadlightBeams();
         // Moonlight and sky light strong enough to read the streets by at night.
         sun.intensity += night * NIGHT_LOOK.moon;

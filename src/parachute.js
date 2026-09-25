@@ -274,7 +274,7 @@
       chuteWindFilter.Q.value = 0.7;
       chuteWindFilter.frequency.value = 600;
       chuteWindGain.gain.value = 0;
-      chuteWindSource.connect(chuteWindFilter).connect(chuteWindGain).connect(master);
+      chuteWindSource.connect(chuteWindFilter).connect(chuteWindGain).connect(ambienceBus);
       chuteWindSource.start();
     }
     function updateParachuteWind() {

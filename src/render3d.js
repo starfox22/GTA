@@ -145,6 +145,11 @@
         }),
         tailLamp = new Three.MeshBasicMaterial({
           color: '#e6614f',
+        }),
+        // Tail lamps swap to this while the vehicle brakes (c.braking, physics.js):
+        // bright enough to bloom by day as well as at night.
+        brakeLamp = new Three.MeshBasicMaterial({
+          color: '#ff2a1c',
         });
       /**
        * STATIC BATCHER
@@ -1563,6 +1568,17 @@
         };
         material.customProgramCacheKey = () => 'player-rim';
       }
+      /* 0 at a walk .. 1 at the full run (game.js FOOT_WALK / FOOT_RUN), from how
+         fast the player's model has actually been moving. */
+      function playerRunAmount(m, p, deltaSeconds) {
+        const moved = Math.hypot(p.x - (m.lastX ?? p.x), p.y - (m.lastY ?? p.y));
+        m.lastX = p.x;
+        m.lastY = p.y;
+        if (moved > 40) m.pace = 0;
+        else if (deltaSeconds > 0)
+          m.pace = (m.pace || 0) + (moved / deltaSeconds - (m.pace || 0)) * (1 - Math.exp(-deltaSeconds * 8));
+        return clamp(((m.pace || 0) - FOOT_WALK * 1.3) / (FOOT_RUN * 0.85 - FOOT_WALK * 1.3), 0, 1);
+      }
       function makePerson(person, isPlayer) {
         const group = new Three.Group();
         scene.add(group);
@@ -2460,13 +2476,25 @@
               // Drawn together by the instanced halo pass (VEHICLE HALOS), not one
               // sprite draw call each.
               // Lamps on at night and in heavy rain (weather3d.js).
+              // Brake lights glow by day too: from above the lamp itself is a sliver.
               const lampsOn = vehicleLampAmount(),
-                lit = c.hp > 0 && (c.ai || c === player.car) && lampsOn > 0.25;
+                driven = c.hp > 0 && (c.ai || c === player.car),
+                lit = driven && lampsOn > 0.25,
+                braking = driven && !!c.braking;
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
                 sprite.visible = false;
-                if (lit && !m.lampOut?.[k]) queueVehicleHalo(sprite, (k % 2 ? 0.55 : 0.85) * lampsOn);
+                if (m.lampOut?.[k]) continue;
+                if (k % 2 && braking) queueVehicleHalo(sprite, Math.max(0.75, lampsOn));
+                else if (lit) queueVehicleHalo(sprite, (k % 2 ? 0.55 : 0.85) * lampsOn);
               }
+            }
+            // Brake lights: tail lamps that aren't broken swap material while braking.
+            const braking = !!c.braking && c.hp > 0;
+            if (m.lamps && m.brakeLit !== braking) {
+              m.brakeLit = braking;
+              for (const lamp of m.lamps)
+                if (lamp.lit === tailLamp && !c.damage?.lights?.[lamp.key]) lamp.mesh.material = braking ? brakeLamp : tailLamp;
             }
             // Windscreen wipers in the rain (vehicles3d.js).
             if (m.wipers) updateWipers(c, m, deltaSeconds);
@@ -2493,6 +2521,7 @@
               // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js).
               m.damageVersion = c.damageVersion;
               applyVehicleDamage(c, m);
+              m.brakeLit = null; // lamp materials were reset: re-apply brake lights
             }
             // Control surfaces, gear, propeller, lights and buffet (plane3d.js).
             if (m.plane) animateAircraft(c, m, deltaSeconds);
@@ -2628,8 +2657,13 @@
                 flinchAlong * 0.35 * flinch +
                 (p.hp > 0 && p.dazedFor > 0 ? Math.sin(gameTime * 8) * 0.055 : 0),
             );
-            const step =
-              p.hp > 0 && !incapacitated && p.walking !== false ? Math.sin(p.walk || 0) * 0.5 : 0;
+            // The player's legs swing wider at a run than at a walk; the pace is
+            // measured from the model's own travel, so every footing agrees.
+            const playerRun = activePlayer ? playerRunAmount(m, p, deltaSeconds) : 0,
+              step =
+                p.hp > 0 && !incapacitated && p.walking !== false
+                  ? Math.sin(p.walk || 0) * (activePlayer ? 0.4 + 0.42 * playerRun : 0.5)
+                  : 0;
             m.torso.rotation.z = 0;
             m.parts.leg1.rotation.z = step;
             m.parts['leg-1'].rotation.z = -step;
@@ -2717,7 +2751,8 @@
               m.pants.color.set(player.disguised ? '#252a33' : '#536273');
               const holstered = !!rooftopJob() && player.disguised && !rooftopJob().weaponDrawn;
               const recoil = Math.max(0, ((player.recoilUntil || 0) - gameTime) / 0.12);
-              m.torso.rotation.z = -recoil * 0.12;
+              // Leaning into the run.
+              m.torso.rotation.z = -recoil * 0.12 - playerRun * 0.14;
               m.parts.guns.forEach((gun, i) => {
                 gun.visible = i === selectedWeaponIndex && !holstered && !player.parachute;
                 gun.position.x = 5 - recoil * 1.8;

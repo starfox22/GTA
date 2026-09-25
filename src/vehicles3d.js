@@ -86,7 +86,9 @@
           rod(b, new Three.Vector3(7, 14, 0), new Three.Vector3(7, 17, 0), 0.5, chrome);
         }
         box(b, 10, 12, 0, 1.2, 2.4, 3, warmLamp);
-        box(b, -13, 10, 0, 1, 1.4, 2, tailLamp);
+        model.lamps.push({ mesh: box(b, -13, 10, 0, 1, 1.4, 2, tailLamp), key: 'tailLeft', lit: tailLamp });
+        // Head and tail glow, in the [head, tail] order the halo pass expects (render3d.js).
+        model.nightLights = [halo(b, 10.6, 12, 0, 9, '#ffe9bd'), halo(b, -13.6, 10, 0, 6, '#ff5a44')];
         const rider = new Three.Group();
         b.add(rider);
         box(rider, -2, 17, 0, 4.5, 7, 6, mat('#343e47'));
