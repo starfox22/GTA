@@ -180,7 +180,7 @@
        on foot (pursuit.js OFFICER_KINDS, 16-19 km/h). The Blue Hour terrace is
        always walked (a stealth party, roofmission.js). */
     const FOOT_WALK = 5.4 * KMH,
-      FOOT_RUN = 20 * KMH;
+      FOOT_RUN = 25 * KMH; // a strong runner's pace, quick for a game but humanly possible
     /* The pace the player's legs are going on foot now; the movement, mountain
        footing (terrain.js), footsteps (audio.js) and the police's aim read it. */
     function footPace() {
@@ -344,10 +344,10 @@
         name: 'CITY CYCLE',
         l: 28,
         w: 9,
-        // Pedal-limited: a brisk city cruise of about 22 km/h, a little quicker
-        // than a sprint on foot; pedalDrive (cycles.js) tapers the legs' push
-        // toward it, and standing on the pedals raises it to about 38 km/h.
-        max: 22 * KMH,
+        // Pedal-limited: a fit rider's city cruise of about 27 km/h, a little
+        // quicker than the run on foot; pedalDrive (cycles.js) tapers the legs'
+        // push toward it, and standing on the pedals raises it to about 43 km/h.
+        max: 27 * KMH,
         acc: 0.16 * GRAVITY,
         turn: 3.9,
         hp: 85,
