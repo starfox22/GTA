@@ -377,12 +377,14 @@
         tractionG: 0.35,
         turn: 1.35,
         hp: 1600,
-        mass: 18,
+        // A main battle tank weighs 55-65 t: nothing on the road moves it.
+        mass: 55,
         grip: 13,
         tank: true,
         color: '#657652',
       },
       flatbed: {
+        balance: -0.7,
         name: 'ATLAS CARGO FLATBED',
         l: 94,
         w: 30,
@@ -399,6 +401,7 @@
         color: '#b69b68',
       },
       roadster: {
+        balance: 0.5,
         name: 'SOLSTICE SPIDER',
         l: 42,
         w: 22,
@@ -414,6 +417,7 @@
         color: '#b85b48',
       },
       rally: {
+        balance: 0.1,
         name: 'KODIAK RS',
         l: 39,
         w: 23,
@@ -429,6 +433,7 @@
         color: '#557bb3',
       },
       limousine: {
+        balance: -0.5,
         name: 'SOVEREIGN STRETCH',
         l: 76,
         w: 25,
@@ -444,6 +449,7 @@
         color: '#222b37',
       },
       hotrod: {
+        balance: 0.7,
         name: 'HELLFIRE CUSTOM',
         l: 46,
         w: 24,
@@ -491,6 +497,7 @@
         color: '#313f4b',
       },
       supercar: {
+        balance: 0.2,
         name: 'V12 TEMPEST',
         l: 45,
         w: 23,
@@ -521,6 +528,7 @@
         color: '#283b4c',
       },
       suv: {
+        balance: -0.4,
         name: 'RANGER 4X4',
         offroad: true,
         l: 49,
@@ -537,6 +545,7 @@
         color: '#54684f',
       },
       pickup: {
+        balance: -0.4,
         name: 'WORKHORSE',
         l: 59,
         w: 26,
@@ -552,6 +561,7 @@
         color: '#70899a',
       },
       truck: {
+        balance: -0.7,
         name: 'ATLAS BOX TRUCK',
         l: 86,
         w: 31,
@@ -568,6 +578,7 @@
         color: '#b4b9ad',
       },
       bus: {
+        balance: -0.8,
         name: 'METRO CITY BUS',
         l: 96,
         w: 31,
@@ -578,12 +589,14 @@
         tractionG: 0.3,
         turn: 0.88,
         hp: 480,
-        mass: 9,
+        // A twelve-metre city bus, empty.
+        mass: 11.5,
         grip: 5,
         truck: true,
         color: '#b78b45',
       },
       ambulance: {
+        balance: -0.5,
         name: 'PARAMEDIC',
         l: 59,
         w: 27,
@@ -625,6 +638,7 @@
         color: '#729b9c',
       },
       coupe: {
+        balance: 0.1,
         mass: 1.25,
         name: 'VOLT COUPE',
         l: 40,
@@ -639,6 +653,7 @@
         color: '#8dbdb7',
       },
       muscle: {
+        balance: 0.6,
         mass: 1.65,
         name: 'DUKE V8',
         l: 47,
@@ -667,6 +682,7 @@
         color: '#d9ac3e',
       },
       van: {
+        balance: -0.5,
         mass: 2.35,
         name: 'MULE VAN',
         l: 48,
@@ -681,6 +697,7 @@
         color: '#b8b8a0',
       },
       sport: {
+        balance: 0.2,
         mass: 1.1,
         name: 'COMET GT',
         l: 42,
@@ -750,10 +767,12 @@
     };
     /**
      * ROAD PERFORMANCE
-     * Road vehicles are specified in real units: `topKmh`, `zeroTo` ([km/h,
-     * seconds], usually 0-100), `brakeG`, `cornerG` (the sideways grip the
-     * steering may use, in g) and `tractionG` (what the driven wheels can push
-     * off the line). roadPerformance() turns those into the map-unit fields the
+     * Road vehicles are specified in real units: `mass` (tonnes), `topKmh`,
+     * `zeroTo` ([km/h, seconds], usually 0-100), `brakeG`, `cornerG` (the
+     * sideways grip the steering may use, in g), `tractionG` (what the driven
+     * wheels can push off the line) and `balance` (-1..1, how the class behaves
+     * at the limit: negative pushes wide, positive steps the tail out; physics.js
+     * FRICTION CIRCLE AND BALANCE). roadPerformance() turns those into the map-unit fields the
      * physics reads: `max` (u/s), `acc` (u/s², off the line), `brake` (u/s²) and
      * `power`, found by bisection so the car really does the stated 0-100 time
      * through engineAcceleration(). The engine pulls at the tyres' limit until
@@ -1216,6 +1235,10 @@
           junction: null,
           hazard: false,
           spinUntil: 0,
+          // Road or pavement under the middle last step (kerbStrike), and the
+          // vehicle that last hit a braced roadblock cruiser (roadblocks.js).
+          onTarmac: null,
+          rammedBy: null,
         };
       vehicles.push(vehicle);
       if (autonomous) assignDriver(vehicle);
@@ -6043,6 +6066,11 @@
         return block
           ? { name: site.name, x: site.x, y: site.y, axis: site.axis, cars: block.cars.length }
           : null;
+      },
+      // Take down every police cut at once (repeatable ram tests).
+      clearRoadblocks() {
+        clearRoadblocks();
+        return roadblocks.length;
       },
       // Set the current vehicle moving along its heading at `metersPerSecond`.
       launch(metersPerSecond = 20) {

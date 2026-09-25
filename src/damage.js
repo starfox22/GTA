@@ -34,7 +34,7 @@
       BURN_THRESHOLD = 0.25,
       // A mission vehicle's engine fire goes out on its own at this share of health.
       MISSION_FIRE_FLOOR = 0.08,
-      NEUTRAL_HANDLING = Object.freeze({ power: 1, top: 1, grip: 1, pull: 0 });
+      NEUTRAL_HANDLING = Object.freeze({ power: 1, top: 1, grip: 1, pull: 0, steer: 1, brake: 1 });
     function freshDamage() {
       return {
         front: 0,
@@ -519,7 +519,8 @@
     // ---- Handling ------------------------------------------------------------------
     /**
      * How the damage drives: `power` scales the engine's pull, `top` the top speed,
-     * `grip` the tyres' sideways hold and `pull` (-1..1) the drift to one side.
+     * `grip` the tyres' sideways hold, `pull` (-1..1) the drift to one side,
+     * `steer` the steering's reach and `brake` the brakes' bite.
      * Recomputed only when the damage or hit points change.
      */
     function vehicleHandling(vehicle) {
@@ -539,6 +540,10 @@
         top: clamp(1 - flats * 0.11 - damage.front * 0.2, 0.45, 1),
         grip: 1 - flats * 0.12,
         pull: clamp(damage.pull + (flatRight - flatLeft) * 0.22, -0.8, 0.8),
+        // A bent front end (track rods, a wheel knocked back) steers less; flat
+        // tyres brake worse.
+        steer: clamp(1 - damage.front * 0.25 - flats * 0.04, 0.6, 1),
+        brake: clamp(1 - flats * 0.12, 0.5, 1),
       };
       vehicle.handlingVersion = vehicle.damageVersion;
       vehicle.handlingHp = vehicle.hp;

@@ -375,6 +375,43 @@
     // Closing speed (about 55 km/h) above which the player ramming an occupied
     // car is a reported crime (collisionImpact here, crowdCrash in crowd.js).
     const RECKLESS_CRASH_SPEED = 55 * KMH;
+    /**
+     * CRASH SEVERITY
+     * What a crash costs each body follows the speed change it suffers (delta-v,
+     * the measure accident investigators use), not the closing speed: in a
+     * perfectly plastic collision a body of mass m hit by one of mass M changes
+     * speed by closing x M / (m + M). A wall or anything immovable is M = infinity,
+     * so the car loses all of it; two equal cars each lose half (a head-on at a
+     * 100 km/h closing speed is two 50 km/h wall crashes); a sedan struck by a box
+     * truck takes nearly the whole closing speed while the truck barely notices,
+     * and a tank shrugs off what flattens the car. The share of the vehicle's hit
+     * points is ((delta-v - 10 km/h) / 190 km/h)^1.5: a sedan into a wall loses
+     * about 10% at 50 km/h, a quarter at 80, half at 120 and is burning by 160.
+     */
+    const CRASH_DAMAGE_FLOOR = 10 * KMH,
+      CRASH_DAMAGE_SCALE = 190 * KMH;
+    function crashDeltaV(self, other, closing) {
+      if (!other) return closing;
+      const m = vehicleSpec(self).mass || 1.25,
+        otherMass = vehicleSpec(other).mass || 1.25;
+      return (closing * otherMass) / (m + otherMass);
+    }
+    function crashSeverity(vehicle, deltaV) {
+      if (deltaV <= CRASH_DAMAGE_FLOOR) return 0;
+      const share = Math.min(1.2, Math.pow((deltaV - CRASH_DAMAGE_FLOOR) / CRASH_DAMAGE_SCALE, 1.5)),
+        spec = vehicleSpec(vehicle);
+      // Armour: a tank's crash damage is a tenth of a car's share.
+      return share * (vehicle.maxhp || spec.hp || 150) * (spec.tank ? 0.1 : 1);
+    }
+    // What a crash does to the driver: belted and airbagged, a 50 km/h delta-v is a
+    // few points and 120 km/h about a third of a life; a rider takes twice that,
+    // a truck cab or bus seat less, a tank's crew next to nothing.
+    function crashInjury(vehicle, deltaV) {
+      const kmh = deltaV / KMH;
+      if (kmh <= 25) return 0;
+      const spec = vehicleSpec(vehicle) || {};
+      return Math.pow(kmh - 25, 1.5) * 0.03 * (spec.bike ? 2 : spec.tank ? 0.1 : spec.mass >= 4 ? 0.6 : 1);
+    }
     function collisionImpact(a, b, hit, closing, key, staticBody = null) {
       // Below about 19 km/h nothing bends.
       if (closing < 19 * KMH) {
@@ -399,10 +436,9 @@
         time: physicsClock,
       });
       crowdCrash(a, b, hit, closing);
-      const severity = Math.pow(Math.max(0, closing - 38), 1.12) * 0.062;
       // The contact normal points from a to b, so each body is crushed back along it
       // toward its own middle; how far depends on the closing speed and on how heavy
-      // the other side is (a wall or a braced cruiser counts as immovable).
+      // the other side is (a wall counts as immovable).
       const crash = (self, other, sign) => ({
         kind: 'crash',
         nx: -hit.n.x * sign,
@@ -418,6 +454,9 @@
         ),
         glassBefore = brokenGlass();
       for (const [self, other, sign] of b ? [[a, b, 1], [b, a, -1]] : [[a, null, 1]]) {
+        let severity = crashSeverity(self, crashDeltaV(self, other, closing));
+        // Under a tank's tracks a car is crushed, not merely dented.
+        if (other && vehicleSpec(other).tank && !vehicleSpec(self).tank) severity *= 2.5;
         const amount =
           self.type === 'plane' && self.altitude > 2 ? Math.max(severity, closing * 0.9) : severity;
         if (self.hp > 0) damageVehicle(self, amount, hit.x, hit.y, null, crash(self, other, sign));
@@ -427,6 +466,9 @@
       if (distanceBetween(a, player) < 650) {
         particle(hit.x, hit.y, '#ddd1b4', clamp(closing / 18, 3, 16), 85, 3);
         if (city3D) city3D.impact(hit.x, hit.y, 'metal');
+        // Bark and splinters off a trunk that held, chips off a concrete planter.
+        if (city3D && staticBody?.material && staticBody.material !== 'metal')
+          city3D.impact(hit.x, hit.y, 'dust', entityElevation(a));
       }
       const massA = vehicleSpec(a).mass || 1.25,
         massB = b ? vehicleSpec(b).mass || 1.25 : 0;
@@ -437,13 +479,20 @@
         mass: Math.max(massA, massB),
         // Two bicycles or motorbikes knocking together are not a car crash.
         other: b ? (Math.max(massA, massB) < 0.6 ? 'prop' : 'car') : staticBody?.building || staticBody?.kind === 'building' ? 'building' : 'wall',
+        // A tree, bollard or planter that held (damage.js): the crash is the car's,
+        // the settle is splintered wood or stone.
+        material: staticBody?.material || null,
         glass: brokenGlass() - glassBefore,
         sliding: Math.abs(((b?.vx || 0) - a.vx) * -hit.n.y + ((b?.vy || 0) - a.vy) * hit.n.x),
         key,
       });
       if (a === player.car || b === player.car) {
-        shake = Math.min(10, closing * 0.022);
-        hurt(severity * (VEHICLE_DEFINITIONS[player.car?.type]?.bike ? 0.4 : 0.075), 'impact');
+        const own = player.car;
+        if (own) {
+          const deltaV = crashDeltaV(own, own === a ? b : a, closing);
+          shake = Math.min(10, deltaV * 0.03);
+          hurt(crashInjury(own, deltaV), 'impact');
+        }
         if (closing > 130) radio('look-out');
         // Whoever was going faster did the ramming: the wreck is theirs, and
         // ramming a police car is assault on an officer (heat.js).
@@ -484,17 +533,14 @@
       const n = hit.n;
       a.contactPass = contactPass;
       if (b) b.contactPass = contactPass;
-      let inverseMassA = 1 / (vehicleSpec(a).mass || 1.25),
+      // Every vehicle is a body of its real mass, roadblock cruisers included: a
+      // braced cruiser resists through its locked wheels (parkedFriction), not by
+      // being immovable, so the rammer's momentum decides (roadblocks.js).
+      const inverseMassA = 1 / (vehicleSpec(a).mass || 1.25),
         inverseMassB = b ? 1 / (vehicleSpec(b).mass || 1.25) : 0;
-      // A braced roadblock cruiser is an anchor for this contact unless the other
-      // vehicle hits it hard and heavy enough to knock it loose (roadblocks.js).
-      if (b && !!a.braced !== !!b.braced) {
-        const anchor = a.braced ? a : b,
-          closing = -(((b.vx || 0) - (a.vx || 0)) * n.x + ((b.vy || 0) - (a.vy || 0)) * n.y);
-        if (roadblockHolds(anchor, anchor === a ? b : a, closing)) {
-          if (anchor === a) inverseMassA = 0;
-          else inverseMassB = 0;
-        }
+      if (record && b && (a.braced || b.braced)) {
+        if (a.braced) a.rammedBy = b;
+        if (b.braced) b.rammedBy = a;
       }
       const inverseInertiaA = (inverseMassA * 12) / (vehicleSpec(a).l ** 2 + vehicleSpec(a).w ** 2),
         inverseInertiaB = b ? (inverseMassB * 12) / (vehicleSpec(b).l ** 2 + vehicleSpec(b).w ** 2) : 0;
@@ -526,7 +572,11 @@
             inverseMassB +
             normalTorqueArmA * normalTorqueArmA * inverseInertiaA +
             normalTorqueArmB * normalTorqueArmB * inverseInertiaB,
-          restitution = normal < -60 ? 0.12 : 0,
+          // Bumpers spring back from a parking knock (about 0.3 at 10 km/h); a real
+          // crash is nearly plastic (0.08 from 55 km/h). Nothing bounces from a
+          // resting touch, so stacked contacts do not jitter.
+          closingKmh = -normal / KMH,
+          restitution = closingKmh < 2 ? 0 : clamp(0.36 - closingKmh * 0.005, 0.08, 0.3),
           impulse = (-(1 + restitution) * normal) / denom;
         // Speeds going in, so collisionImpact can tell who rammed whom.
         if (record) {
@@ -602,8 +652,9 @@
         b.x += n.x * correction * inverseMassB;
         b.y += n.y * correction * inverseMassB;
       }
-      a.av = clamp(a.av, -3, 3);
-      if (b) b.av = clamp(b.av, -3, 3);
+      // A hard off-centre hit can spin a car at nearly a turn a second.
+      a.av = clamp(a.av, -5, 5);
+      if (b) b.av = clamp(b.av, -5, 5);
     }
     function trafficSignal(x, y) {
       const phase =
@@ -1175,6 +1226,58 @@
     function corneringLimit(spec, along) {
       return ((spec.cornerG || 1.2) * GRAVITY) / Math.max(Math.abs(along), 20 * KMH);
     }
+    /* Coulomb friction for a vehicle nobody is driving: `mu` along the wheels
+       (locked brakes 0.8, a parked car in gear 0.35), 0.85 of the road across
+       them (tyres scrubbing sideways), scaled by the wet. Unlike an exponential
+       drag this is a constant deceleration, so a cruiser shoved at 40 km/h slides
+       a few metres, and one merely leant on does not creep. The spin is braked by
+       the same friction acting about the middle of the footprint. */
+    function parkedFriction(c, spec, mu, stepSeconds) {
+      const surface = wetGrip(),
+        headingCosine = Math.cos(c.a),
+        headingSine = Math.sin(c.a);
+      let along = c.vx * headingCosine + c.vy * headingSine,
+        lateral = -c.vx * headingSine + c.vy * headingCosine;
+      const alongStep = mu * surface * GRAVITY * stepSeconds,
+        lateralStep = 0.85 * surface * GRAVITY * stepSeconds;
+      along -= Math.sign(along) * Math.min(Math.abs(along), alongStep);
+      lateral -= Math.sign(lateral) * Math.min(Math.abs(lateral), lateralStep);
+      c.vx = along * headingCosine - lateral * headingSine;
+      c.vy = along * headingSine + lateral * headingCosine;
+      // Friction spread over the footprint brakes the yaw: about mu g over the
+      // radius of gyration.
+      const spinStep = ((Math.max(mu, 0.6) * surface * GRAVITY) / (Math.hypot(spec.l, spec.w) * 0.29)) * stepSeconds;
+      c.av -= Math.sign(c.av) * Math.min(Math.abs(c.av), spinStep);
+      // A shoved car leaves rubber on the road.
+      const sliding = Math.hypot(c.vx, c.vy);
+      if (sliding > 45 && Math.floor(physicsClock * 20) !== c.lastSkid && Math.abs(c.x - player.x) < 900 && Math.abs(c.y - player.y) < 900) {
+        c.lastSkid = Math.floor(physicsClock * 20);
+        skids.push({ x: c.x, y: c.y, a: Math.atan2(c.vy, c.vx), len: sliding / 40 + 2, life: 35 });
+      }
+    }
+    /* Kerb strike (the player's car): mounting or dropping off a kerb at speed
+       jolts the body, scrubs a little speed and, hard enough, knocks the wheel
+       out of line. */
+    function kerbStrike(c, along) {
+      const spec = vehicleSpec(c);
+      if (spec.bicycle || spec.tank || isAircraft(c) || isBoat(c)) return;
+      const onTarmac = onRoad(c.x, c.y);
+      if (c.onTarmac === onTarmac) return;
+      const was = c.onTarmac;
+      c.onTarmac = onTarmac;
+      const speed = Math.abs(along);
+      if (was === null || was === undefined || speed < 25 * KMH) return;
+      const scrub = clamp(speed / (400 * KMH), 0.01, 0.05) * (spec.offroad ? 0.5 : 1);
+      c.vx *= 1 - scrub;
+      c.vy *= 1 - scrub;
+      if (!c.hop) c.hop = { z: 0, vz: clamp(speed * 0.18, 14, 45), pitch: 0, vp: (onTarmac ? -1 : 1) * 1.2, roll: 0, vr: (Math.random() - 0.5) * 1.6 };
+      if (speed > 110 * KMH && !spec.offroad && Math.random() < 0.35) {
+        const damage = ensureDamage(c);
+        damage.pull = clamp(damage.pull + (Math.random() < 0.5 ? -1 : 1) * 0.04, -0.6, 0.6);
+        c.damageVersion = (c.damageVersion || 0) + 1;
+      }
+      if (c === player.car) shake = Math.max(shake, clamp(speed / 120, 0.6, 2.2));
+    }
     function controlVehicle(c, pc, stepSeconds, active) {
       const vehicleDefinition = vehicleSpec(c);
       c.stepStartX = c.x;
@@ -1240,7 +1343,11 @@
         let acceleration = 0,
           steer = 0,
           grip = 7,
-          drag = 0.72;
+          drag = 0.72,
+          // The share of the tyres' sideways hold available (rain, power, braking).
+          lateralScale = 1,
+          // Nobody driving: the vehicle slides on locked or parked wheels (parkedFriction).
+          unattended = 0;
         if (c.hp > 0 && c === pc && active) {
           const up = keys.KeyW || keys.ArrowUp,
             down = keys.KeyS || keys.ArrowDown,
@@ -1256,13 +1363,18 @@
             handling = vehicleHandling(c);
           // The engine's pull at this speed (game.js ROAD PERFORMANCE); a bicycle's
           // push comes from the rider's legs instead.
+          // Wet tarmac: every tyre force (drive, brakes, cornering) shrinks together.
+          const surface = pedalled ? 1 : wetGrip();
           acceleration =
             up && !pedalled
-              ? (engineAcceleration(vehicleDefinition, along) * handling.power) / (1 + (c.cargoCount || 0) * 0.1)
+              ? Math.min(
+                  (engineAcceleration(vehicleDefinition, along) * handling.power) / (1 + (c.cargoCount || 0) * 0.1),
+                  vehicleDefinition.acc * surface,
+                )
               : down
                 ? along > 10
-                  ? -(vehicleDefinition.brake || GRAVITY)
-                  : -vehicleDefinition.acc * 0.5
+                  ? -(vehicleDefinition.brake || GRAVITY) * surface * handling.brake
+                  : -vehicleDefinition.acc * 0.5 * surface
                 : pedalled
                   ? pedalDrive(along, topSpeed)
                   : 0;
@@ -1276,7 +1388,7 @@
           // Rolling with nothing pressed (or pedalling): air, tyres and engine braking.
           if (!up && !down) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, coastDeceleration(vehicleDefinition, along));
           // The handbrake locks the rear wheels: a sliding stop at about half a g.
-          if (brake) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY);
+          if (brake) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY * surface);
           // Off the tarmac (verges, lawns, dirt): more rolling resistance.
           if ((up || down) && !pedalled && !onRoad(c.x, c.y))
             acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (vehicleDefinition.offroad ? 0.05 : 0.14) * GRAVITY);
@@ -1284,6 +1396,39 @@
           // Resistance is in engineAcceleration / coastDeceleration; drag here only
           // scrubs a handbrake slide (and a bicycle's brake).
           drag = pedalled ? (brake ? 0.6 : 0.03) : brake ? 0.25 : 0;
+          /* FRICTION CIRCLE AND BALANCE
+             A tyre has one budget of grip for driving, braking and cornering
+             together. Cornering at the limit leaves nothing to accelerate or brake
+             with, and braking flat out leaves little to turn with (the car ploughs
+             on: understeer). Last step's yaw says how much of the budget the
+             corner is using. Weight moves too: braking loads the nose (it turns
+             in harder) and lightens the tail; power loads the tail. `balance`
+             (VEHICLE_DEFINITIONS) is the class's character: trucks, vans and SUVs
+             push wide at the limit (negative), muscle cars and roadsters step the
+             tail out under power (positive). */
+          const cornerG = (vehicleDefinition.cornerG || 1.2) * GRAVITY * surface * handling.grip,
+            lateralUse = pedalled ? 0 : clamp(Math.abs(along * c.av) / cornerG, 0, 1),
+            balance = vehicleDefinition.balance || 0,
+            longLimit = acceleration > 0 ? vehicleDefinition.acc : vehicleDefinition.brake || GRAVITY;
+          if (!pedalled && acceleration) acceleration *= Math.sqrt(Math.max(0.2, 1 - lateralUse * lateralUse));
+          const longUse = pedalled ? 0 : clamp(Math.abs(acceleration) / Math.max(1, longLimit), 0, 1),
+            braking = acceleration < 0 && along > 10,
+            // How hard the driver is asking the driven wheels to push (a strong
+            // engine at low speed asks for more than the tyres can give).
+            throttle =
+              up && !pedalled && acceleration > 0
+                ? clamp((engineAcceleration(vehicleDefinition, along) * handling.power) / Math.max(1, vehicleDefinition.acc), 0, 1)
+                : 0;
+          let cornerShare = Math.sqrt(Math.max(0.3, 1 - longUse * longUse));
+          if (braking) cornerShare *= 1 + 0.12 * longUse;
+          if (balance < 0) cornerShare *= 1 + balance * 0.15 * lateralUse;
+          if (balance > 0) cornerShare *= 1 + balance * 0.25 * lateralUse * throttle;
+          // Sideways hold: the tail lets go under power in a tail-happy car, and
+          // lightens under braking in anything that is not a push-wide truck.
+          lateralScale =
+            surface *
+            (1 - (balance > 0 ? balance * 0.4 * lateralUse * throttle : 0)) *
+            (1 - (braking ? Math.max(0, balance + 0.5) * 0.12 * longUse * lateralUse : 0));
           // Full lock at walking pace; above that the tyres' sideways grip is the
           // limit (cornerG): the yaw rate a speed allows is grip / speed, so a car
           // takes a city corner at 30-40 km/h and sweeps a wide bend at 150. The
@@ -1291,11 +1436,14 @@
           steer =
             turn *
             vehicleDefinition.turn *
+            handling.steer *
             clamp(Math.abs(along) / STEER_FULL_SPEED, vehicleDefinition.tank ? 0.72 : 0, 1) *
             Math.sign(along || 1) *
             (brake ? 1.35 : 1);
-          const cornerLimit = (corneringLimit(vehicleDefinition, along) * handling.grip * (brake ? 1.6 : 1));
+          const cornerLimit =
+            corneringLimit(vehicleDefinition, along) * handling.grip * surface * (pedalled ? 1 : cornerShare) * (brake ? 1.6 : 1);
           steer = clamp(steer, -cornerLimit, cornerLimit);
+          kerbStrike(c, along);
           steer += handling.pull * clamp(Math.abs(along) / 160, 0, 1) * Math.sign(along || 1) * 0.45;
           if (brake && Math.abs(along) > 80 && Math.floor(physicsClock * 40) !== c.lastSkid) {
             c.lastSkid = Math.floor(physicsClock * 40);
@@ -1358,14 +1506,14 @@
             engineAcceleration(vehicleDefinition, along) * handling.power,
           );
           drag = 0;
-        } else if (c.blockade && !c.braced) {
-          // A roadblock cruiser shoved loose by a rammer slides and slews on
-          // locked wheels before it scrubs to a halt.
-          drag = 1.5;
-          grip = 2.2;
         } else {
-          drag = c.crewDeployed ? 9 : 1.8;
-          grip = 4;
+          // Nobody driving: a roadblock or deployed cruiser sits on locked brakes,
+          // a parked car in gear with the handbrake on, a wreck on burst tyres.
+          // Shoved, it slides against that friction (parkedFriction) instead of
+          // being an immovable post or gliding on.
+          unattended = c.blockade ? 0.8 : c.crewDeployed ? 0.75 : c.hp <= 0 ? 0.6 : 0.35;
+          drag = 0;
+          grip = 0;
         }
         const terrain = roadVehicleTerrain(c);
         if (terrain) {
@@ -1390,17 +1538,21 @@
         // across the lane and scrubs off instead of stopping dead as if glued to the road.
         const lateralLimit =
             (((vehicleDefinition.cornerG || 1.2) * 1.25 * GRAVITY * Math.max(grip, 5)) / Math.max(vehicleDefinition.grip || 7, 5)) *
+            lateralScale *
             stepSeconds,
           traction = clamp(lateral * (1 - Math.exp(-grip * stepSeconds)), -lateralLimit, lateralLimit);
         c.vx += headingSine * traction;
         c.vy -= headingCosine * traction;
         c.vx *= Math.exp(-drag * stepSeconds);
         c.vy *= Math.exp(-drag * stepSeconds);
-        // Rammed roadblock cruisers keep their spin a little longer: nobody is steering.
-        // So does any car just spun by an off-centre hit (resolveContact sets spinUntil).
-        const yawAuthority =
-          c.blockade && !c.braced ? 1.4 : physicsClock < (c.spinUntil || 0) ? 1.1 : 5;
-        c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
+        if (unattended) parkedFriction(c, vehicleDefinition, unattended, stepSeconds);
+        // A car just spun by an off-centre hit keeps its spin a moment: the driver
+        // cannot cancel it at once (resolveContact sets spinUntil). With nobody at
+        // the wheel only the tyres' friction slows the spin (parkedFriction).
+        else {
+          const yawAuthority = physicsClock < (c.spinUntil || 0) ? 1.1 : 5;
+          c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
+        }
         c.a = normalizeAngle(c.a + c.av * stepSeconds);
         c.moveA = Math.atan2(c.vy, c.vx);
         c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
@@ -1691,7 +1843,7 @@
           const nx = c.vx / hitSpeed,
             ny = c.vy / hitSpeed,
             reach = vehicleSpec(c).l / 2;
-          damageVehicle(c, Math.pow(hitSpeed - 38, 1.12) * 0.062, c.x + nx * reach, c.y + ny * reach, null, {
+          damageVehicle(c, crashSeverity(c, hitSpeed), c.x + nx * reach, c.y + ny * reach, null, {
             kind: 'crash',
             nx: -nx,
             ny: -ny,

@@ -15,20 +15,24 @@
      *
      * A cut is cruisers and cones, nothing else. Two cruisers park across the
      * carriageway in a staggered V and one more sits on each pavement, so no gap
-     * is wide enough for a car. The parked cruisers are braced (brakes on, wheels
-     * turned): an ordinary car simply stops against them. A heavy vehicle with
-     * enough momentum shoves one loose instead -- see roadblockHolds() -- and it
-     * spins away under the ordinary vehicle physics. Cones are loose props that
-     * scatter when anything drives through them.
+     * is wide enough for a car. The parked cruisers are braced: brakes locked,
+     * wheels turned, nobody inside. They are ordinary 1.6 t bodies in the contact
+     * physics (resolveContact), held only by the friction of their locked tyres
+     * (parkedFriction, 0.8 g along and 0.85 g across), so momentum decides what a
+     * ram does. A box truck (6.8 t) at 50 km/h keeps about 80% of its speed
+     * through the first cruiser and shoves it aside; a bus or the tank (55 t)
+     * barely slows. A sedan (1.45 t) shares its momentum half and half, crumples
+     * and has to keep pushing a locked car with an engine that cannot out-pull
+     * the brakes, so it stalls in the V unless it came in very fast. A cruiser
+     * shoved more than a metre or so is no longer braced (updateRoadblocks):
+     * the cut is breached. Cones are loose props that scatter when anything
+     * drives through them.
      */
     const ROADBLOCK_LIFETIME = 165,
-      // Only vehicles at least this heavy (VEHICLE_DEFINITIONS mass: SUVs, vans,
-      // pickups, trucks, buses, the tank) can shove a braced cruiser at all...
-      ROADBLOCK_RAM_MASS = 2.2,
-      // ...and only with this much momentum, mass x closing speed along the contact
-      // normal: a box truck (mass 6.8) needs ~55 km/h, a bus ~40, an SUV close to
-      // its top speed.
-      ROADBLOCK_RAM_MOMENTUM = 6.8 * 55 * KMH;
+      // A braced cruiser moved this far from where it was parked, or sliding this
+      // fast, has been knocked loose (units, units/s).
+      ROADBLOCK_SHOVE_DISTANCE = 1.2 * UNITS_PER_METRE,
+      ROADBLOCK_SHOVE_SPEED = 8 * KMH;
     const roadblocks = [];
     let roadblockSiteCache = null,
       containmentTimer = 3,
@@ -127,6 +131,10 @@
         crew: [],
         cones: [],
         announced: false,
+        breached: false,
+        // Which side of the line the player's car is on (-1, 1), to see them
+        // come through it (updateRoadblocks).
+        playerSide: 0,
       };
       const park = (x, y, a) => {
         if (!canSpawnCar('police', x, y, a, 2)) return false;
@@ -137,8 +145,10 @@
           blockade: block,
           // Parked across the carriageway: the cop driving branch must leave these alone.
           crewDeployed: true,
-          // Anchored until a heavy enough rammer knocks it loose (roadblockHolds).
+          // Parked on locked brakes until shoved loose (updateRoadblocks).
           braced: true,
+          parkX: x,
+          parkY: y,
           vx: 0,
           vy: 0,
           speed: 0,
@@ -147,12 +157,14 @@
         block.cars.push(c);
         return true;
       };
-      // Both carriageway cruisers reach just past the centre line, so the V has
-      // no slot to thread; the along-road stagger keeps them out of each other.
-      for (const offset of [-28, 28])
+      // Both carriageway cruisers reach well past the centre line (they overlap
+      // by about six units seen down the road), so the V has no slot to thread
+      // and a rammer aimed at the middle meets a flank, not two nose tips that
+      // pivot out of the way; the along-road stagger keeps them out of each other.
+      for (const offset of [-22, 22])
         park(
-          site.x + lane.x * offset + along.x * offset * 0.72,
-          site.y + lane.y * offset + along.y * offset * 0.72,
+          site.x + lane.x * offset + along.x * offset,
+          site.y + lane.y * offset + along.y * offset,
           across + (offset < 0 ? -0.34 : 0.34),
         );
       // A site can be tight for the pair but fine for one car on the centre line.
@@ -288,37 +300,45 @@
         radio('call-backup');
       }
     }
-    /* Called by resolveContact (physics.js) when a vehicle meets a braced
-       roadblock cruiser. Returns true while the cruiser holds, which makes it an
-       immovable anchor for this contact; returns false once it has been knocked
-       loose, and from then on it is an ordinary 1.6-mass car that the rammer's
-       momentum shoves, spins and dents like any other. */
-    function roadblockHolds(cruiser, rammer, closing) {
-      const mass = vehicleSpec(rammer).mass || 1.25;
-      if (closing <= 0 || mass < ROADBLOCK_RAM_MASS || mass * closing < ROADBLOCK_RAM_MOMENTUM)
-        return true;
+    /* A braced cruiser that a rammer has shoved out of its place is knocked
+       loose: the cut is open. The shove itself (momentum shared, the cruiser
+       slewing round on its locked wheels, both crumpled) is ordinary contact
+       physics; this only notices it and tells the player. */
+    function roadblockShoved(cruiser) {
       cruiser.braced = false;
       cruiser.rammedAt = gameTime;
-      const attacker = rammer === player.car ? player : rammer;
-      damageVehicle(cruiser, 26 + closing * 0.22, rammer.x, rammer.y, attacker);
-      // The locked wheels bite at one end, so a shoved cruiser slews round.
-      cruiser.av += (seededRandom() < 0.5 ? -1 : 1) * clamp(closing / 55, 1.2, 2.6);
+      const rammer = cruiser.rammedBy;
       if (distanceBetween(cruiser, player) < 650) {
         particle(cruiser.x, cruiser.y, '#ddd1b4', 14, 110, 3);
-        noise(0.4, 0.3, 240);
         playSample('tires', 0.45, 0.8, cruiser);
       }
-      if (rammer === player.car) {
-        shake = Math.max(shake, 8);
+      if (rammer && rammer === player.car) {
+        shake = Math.max(shake, 5);
         crime(0.4);
-        const block = cruiser.blockade;
-        if (block && !block.breached) {
-          block.breached = true;
-          tell('ROADBLOCK BUSTED · ' + block.site.name, 3);
-          radio('look-out');
-        }
       }
-      return false;
+    }
+    /* The cut counts as busted once the player's car, having shoved a cruiser
+       out of its place, comes out on the far side of the line. A car that
+       shoves a cruiser a metre and stalls against it has not got through. */
+    function watchRoadblockBreach(block) {
+      const car = player.car;
+      if (!car || block.breached) return;
+      const alongX = block.axis === 'x' ? 1 : 0,
+        alongY = 1 - alongX,
+        down = (car.x - block.x) * alongX + (car.y - block.y) * alongY,
+        across = Math.abs((car.x - block.x) * alongY - (car.y - block.y) * alongX),
+        side = Math.abs(down) < 50 ? block.playerSide : Math.sign(down);
+      if (
+        block.playerSide &&
+        side !== block.playerSide &&
+        across < 110 &&
+        block.cars.some((c) => !c.braced && c.rammedBy === car)
+      ) {
+        block.breached = true;
+        tell('ROADBLOCK BUSTED · ' + block.site.name, 3);
+        radio('look-out');
+      }
+      block.playerSide = side;
     }
     /* Cones are loose: whatever drives through one flicks it ahead and to the
        side, where it tumbles over and slides to a stop. */
@@ -370,12 +390,18 @@
           continue;
         }
         for (const c of block.cars) {
-          // A cruiser the player climbs into is theirs to drive, not an anchor.
+          // A cruiser the player climbs into is theirs to drive, not parked.
           if (c === player.car) c.braced = false;
           if (c.hp <= 0 || c === player.car) continue;
           c.cop = true;
-          if (c.braced) c.vx = c.vy = c.speed = c.av = 0;
+          if (
+            c.braced &&
+            (Math.hypot(c.x - c.parkX, c.y - c.parkY) > ROADBLOCK_SHOVE_DISTANCE ||
+              Math.hypot(c.vx || 0, c.vy || 0) > ROADBLOCK_SHOVE_SPEED)
+          )
+            roadblockShoved(c);
         }
+        watchRoadblockBreach(block);
         updateRoadblockCones(block, deltaSeconds);
         if (!block.announced && distanceBetween(block, player) < 320) {
           block.announced = true;
