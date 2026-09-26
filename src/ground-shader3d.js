@@ -236,6 +236,8 @@
                   float through = smoothstep( worn - 0.08, worn + 0.08, gAggregate * 0.55 + cityNoise( gp * 0.37 + seed * 9.0 ) * 0.45 + 0.08 );
                   through = mix( 1.0 - worn * 0.5, through, groundFade( 0.35, fp ) );
                   cover *= through * ( 0.9 + 0.1 * seed );
+                  // Car park bay lines (wear 3): faded, and only on the tarmac.
+                  if ( wear > 2.5 ) cover *= 0.6 * gRoad;
                   vec3 paintCol = paint < 0.5 ? vec3( 0.6, 0.6, 0.57 ) : paint < 1.5 ? vec3( 0.58, 0.53, 0.4 ) : vec3( 0.58, 0.4, 0.08 );
                   paintCol *= 0.86 + 0.14 * cityNoise( gp * 0.8 + 3.0 );
                   // Grime settles on old paint.
@@ -250,7 +252,7 @@
                 float r = length( d ), R = A.z;
                 float ring = 1.0 - smoothstep( R + 1.3 - 0.5 * aa, R + 1.3 + 0.5 * aa, r );
                 gColour = mix( gColour, gColour * 0.78, ring * gRoad );
-                float seam = ( 1.0 - smoothstep( 0.18, 0.18 + aa, abs( r - R - 1.3 ) ) ) * gRoad;
+                float seam = ( 1.0 - smoothstep( 0.18, 0.18 + aa, abs( r - R - 1.3 ) ) ) * gRoad * min( 1.0, 0.36 / aa );
                 gColour *= 1.0 - 0.4 * seam;
                 float lid = 1.0 - smoothstep( R - 0.5 * aa, R + 0.5 * aa, r );
                 if ( lid > 0.0 ) {
@@ -309,6 +311,22 @@
                   gRough = mix( gRough, mix( 0.97, 0.55, grille ), inside );
                   gMetal = mix( gMetal, 0.3 * grille * ( 1.0 - step( 0.5, gStyle ) * step( gStyle, 1.5 ) ), inside );
                   gSoil = max( gSoil, inside * ( 1.0 - grille ) );
+                }
+              } else if ( kind > 6.5 ) {
+                // A dropped kerb at a crossing: the kerb ramps down to the road and
+                // a pad of tactile paving (truncated domes) warns of the edge.
+                float sd = groundBox( q, A.zw );
+                float inside = 1.0 - smoothstep( -0.5 * aa, 0.5 * aa, sd );
+                if ( inside > 0.0 ) {
+                  vec2 dq = abs( fract( q / 0.75 ) - 0.5 ) * 0.75;
+                  float dome = ( 1.0 - smoothstep( 0.16, 0.24, length( dq ) ) ) * groundFade( 0.5, fp );
+                  float rim = smoothstep( -0.45, -0.25, sd );
+                  vec3 pad = vec3( 0.42, 0.3, 0.07 ) * ( 0.85 + 0.2 * cityNoise( gp * 0.9 ) ) * ( 1.0 + 0.25 * dome - 0.3 * rim );
+                  pad = mix( pad, gColour * 0.9, 0.15 );
+                  gColour = mix( gColour, pad, inside );
+                  gHeight = mix( gHeight, 0.25 + 0.2 * dome - 0.2 * rim, inside );
+                  gRough = mix( gRough, 0.7, inside );
+                  gPorous = mix( gPorous, 0.5, inside );
                 }
               } else {
                 // Oil dripped under idling cars: a soft, glossy stain.
@@ -379,6 +397,13 @@
         float looseMask = smoothstep( 0.3, 0.5, warmth ) * smoothstep( 0.03, 0.07, lum ) * ( 1.0 - grassMask ) * ( 1.0 - roadMask ) * ( 1.0 - rubberMask );
         // Palm Keys and Monarch Isle pave in warm, light stone: not gravel.
         if ( ( gStyle > 3.5 && gStyle < 5.5 ) ) looseMask *= 1.0 - smoothstep( 0.2, 0.3, lum ) * ( 1.0 - smoothstep( 0.55, 0.7, warmth ) );
+        // County roads have no kerbs: their painted verge is a gravel shoulder
+        // that frays into the grass.
+        if ( gStyle > 5.5 && gStyle < 6.5 && gKerb > -0.5 && gKerb < 6.5 + 1.5 * cityNoise( gp * 0.3 ) ) {
+          float shoulder = 1.0 - roadMask;
+          looseMask = max( looseMask, shoulder );
+          grassMask *= 1.0 - shoulder;
+        }
         float paveMask = max( 1.0 - roadMask - grassMask - looseMask, 0.0 );
         #ifdef CITY_HILL
           // A hillside is grass, rock and snow: no slab joints or tarmac there.
@@ -397,7 +422,9 @@
         float macro = cityNoise( gp * 0.013 + 3.1 ) * 0.6 + cityNoise( gp * 0.047 + 1.7 ) * 0.4;
         vec3 gColour = sheet;
         float gHeight = 0.0, gRough = 0.9, gPorous = 1.0;
-        bool gRich = cityGroundDetail > 0.5;
+        // Seen from high up (a pixel over 8 units: the flight view) every detail
+        // has faded to its average: the cheap path gives the same tones for less.
+        bool gRich = cityGroundDetail > 0.5 && fp < 8.0;
         // The kerb: its stone on the pavement side of the field's zero line and
         // its face just inside the road, where the sheet has paving beyond it.
         float kerbW = ( gStyle > 0.5 && gStyle < 1.5 ) || gStyle > 4.5 && gStyle < 5.5 ? 2.0 : 1.7;
@@ -412,8 +439,25 @@
           }
         #endif
         if ( !gRich ) {
-          // LOW: the sheet with a light grain, the kerb line and the marks.
-          gColour = sheet * ( 0.94 + 0.12 * grain );
+          // LOW: the sheet with one detail sample for what it is (the photographed
+          // aggregate, concrete grain, grass, gravel), the kerb line and the marks.
+          float lowDetail = 1.0;
+          if ( roadMask > 0.5 ) lowDetail = 0.8 + 0.4 * groundLayer( gp, 0.0, 12.0, gpx, gpy ).r;
+          else if ( grassMask > 0.5 ) lowDetail = dot( groundLayer( gp, 1.0, 10.0, gpx, gpy ).rgb, vec3( 0.667 ) );
+          else if ( looseMask > 0.5 ) lowDetail = 0.8 + 0.4 * groundLayer( gp, 3.0, 6.0, gpx, gpy ).g;
+          else lowDetail = ( 0.86 + 0.28 * groundLayer( gp, 2.0, 8.0, gpx, gpy ).r ) * ( 1.0 - 0.2 * max( groundJoints( gp.x, 12.0, 0.15, fp ), groundJoints( gp.y, 12.0, 0.15, fp ) ) );
+          gColour = sheet * lowDetail * ( 0.96 + 0.08 * grain );
+          // The sheet's blue-grey road paint as neutral asphalt, as the full path does.
+          gColour = mix( gColour, mix( vec3( dot( gColour, vec3( 0.2126, 0.7152, 0.0722 ) ) ), gColour, 0.42 ) * vec3( 1.04, 1.0, 0.95 ), roadMask );
+          // Lawns with the full path's broad lush and sunburnt swathes (they are
+          // what makes open ground read as land from the air), graded the same.
+          if ( grassMask > 0.001 ) {
+            vec2 gr = mat2( 0.8, -0.6, 0.6, 0.8 ) * gp;
+            float meadow = cityNoise( gp * 0.0045 + 3.7 ) * 0.62 + cityNoise( gr * 0.014 + 11.0 ) * 0.38;
+            float dryL = max( smoothstep( 0.52, 0.8, cityNoise( gp * 0.035 + 5.0 ) * 0.6 + cityNoise( gr * 0.083 + 2.0 ) * 0.4 ), smoothstep( 0.62, 0.9, meadow ) * 0.7 );
+            gColour = mix( gColour, gColour * ( 0.84 + 0.3 * meadow ) * mix( vec3( 1.0 ), vec3( 1.14, 1.06, 0.8 ), dryL ), grassMask );
+          }
+          gColour = mix( gColour, max( mix( vec3( dot( gColour, vec3( 0.2126, 0.7152, 0.0722 ) ) ), gColour, 1.06 ) * vec3( 0.85, 0.9, 0.84 ), 0.0 ), grassMask );
           gColour = mix( gColour, vec3( 0.36, 0.355, 0.34 ), gKerbStone );
           gColour = mix( gColour, gColour * 0.55, gKerbFace );
           gRough = mix( 0.92, 0.84, roadMask );
@@ -451,20 +495,22 @@
             vec2 rp = gKerb < 90.0 && gLaneW > 1.0 ? vec2( dot( gp, vec2( -rn.y, rn.x ) ), dot( gp, rn ) ) : gp;
             vec2 pc = floor( rp / 40.0 );
             float patchM = 0.0, seam = 0.0;
-            if ( cityHash( pc + 91.0 ) > 0.88 - 0.1 * age ) {
+            if ( cityHash( pc + 91.0 ) > 0.91 - 0.07 * age ) {
               vec2 hsz = vec2( 3.0, 2.5 ) + vec2( cityHash( pc + 3.0 ), cityHash( pc + 5.0 ) ) * vec2( 14.0, 9.0 );
               if ( cityHash( pc + 13.0 ) > 0.5 ) hsz = hsz.yx;
               vec2 centre = pc * 40.0 + 20.0 + ( vec2( cityHash( pc + 7.0 ), cityHash( pc + 9.0 ) ) - 0.5 ) * max( 40.0 - 2.0 * hsz - 2.0, 0.0 );
               float sd = groundBox( rp - centre, hsz ) + ( cityNoise( gp * 0.8 ) - 0.5 ) * 0.25;
               patchM = 1.0 - smoothstep( -0.5 * fp, 0.5 * fp, sd );
-              seam = 1.0 - smoothstep( 0.22, 0.22 + fp, abs( sd ) );
+              // (A line's band widens with the footprint: scale it back to the
+              // line's true share of the pixel.)
+              seam = ( 1.0 - smoothstep( 0.3, 0.3 + fp, abs( sd ) ) ) * min( 1.0, 0.6 / fp );
             }
             tarPatch = patchM;
             // Sealed cracks: long tar lines in some stretches; hairline cracks.
             float crackArea = smoothstep( 0.7 - 0.2 * age, 0.86 - 0.2 * age, cityNoise( gp * 0.008 + 9.0 ) );
             float cn = cityNoise( gp * 0.021 + 3.0 ) + ( cityNoise( gp * 0.11 ) - 0.5 ) * 0.07;
             float sealW = 0.13 * 0.021 * 1.4;
-            float sealLine = ( 1.0 - smoothstep( sealW, sealW + fp * 0.03, abs( cn - 0.5 ) ) ) * crackArea;
+            float sealLine = ( 1.0 - smoothstep( sealW, sealW + fp * 0.03, abs( cn - 0.5 ) ) ) * crackArea * min( 1.0, 0.25 / fp );
             float hn = cityNoise( gp * 0.07 + 11.0 ) + ( cityNoise( gp * 0.5 ) - 0.5 ) * 0.08;
             float hairW = 0.07 * 0.07 * 1.4;
             float hair = ( 1.0 - smoothstep( hairW, hairW + fp * 0.1, abs( hn - 0.5 ) ) ) * smoothstep( 0.5, 0.75, cityNoise( gp * 0.02 + 4.0 ) ) * groundFade( 0.35, fp ) * ( 0.4 + 0.8 * age );
@@ -508,6 +554,14 @@
               float litter = smoothstep( 0.8, 0.86, cityNoise( gp * 1.4 + 3.3 ) ) * ( 1.0 - smoothstep( 0.0, 1.8, inRoad ) ) * groundFade( 0.4, fp );
               asphalt = mix( asphalt, vec3( 0.12, 0.09, 0.05 ), litter * 0.7 );
               asphalt *= 1.0 - 0.3 * ( 1.0 - smoothstep( 0.0, 1.3, inRoad ) );
+            }
+            // County roads: a white edge line inside each edge (not across junctions).
+            if ( gStyle > 5.5 && gStyle < 6.5 && gLaneW > 1.0 ) {
+              float edgeLine = groundBand( inRoad - 3.2, 0.6, fp ) * ( 0.85 + 0.15 * ag.r );
+              edgeLine *= smoothstep( 0.2, 0.3, ag.r * 0.5 + cityNoise( gp * 0.4 ) * 0.5 );
+              asphalt = mix( asphalt, vec3( 0.52, 0.52, 0.49 ), edgeLine );
+              h += 0.15 * edgeLine;
+              rough = mix( rough, 0.62, edgeLine );
             }
             gColour = mix( gColour, asphalt, roadMask );
             gHeight += h * roadMask;
@@ -577,7 +631,14 @@
             } else if ( gStyle < 2.5 ) {
               // Polished granite slabs 2 x 1 m in running bond, a band of dark
               // granite along the kerb.
+              // Along the kerbs 2 x 1 m in running bond; on the plazas the 2 m
+              // grid the tower plazas are set out on (skyline.js: joints at 9
+              // modulo 16 units).
               vec3 sb = groundBond( fr, 16.0, 8.0 );
+              if ( !byKerb ) {
+                vec2 f = mod( fr - 9.0, 16.0 );
+                sb = vec3( floor( ( fr - 9.0 ) / 16.0 ), min( min( f.x, 16.0 - f.x ), min( f.y, 16.0 - f.y ) ) );
+              }
               joint = 1.0 - smoothstep( 0.12, 0.12 + fp, sb.z );
               joint = mix( 0.03, joint, groundFade( 0.5, fp ) );
               float tone = cityHash( sb.xy + 4.0 );
@@ -772,7 +833,7 @@
               float grassA = smoothstep( 0.003, 0.012, gEdgeA.g - max( gEdgeA.r, gEdgeA.b ) ), grassB = smoothstep( 0.003, 0.012, gEdgeB.g - max( gEdgeB.r, gEdgeB.b ) );
               if ( gEdgeTrust > 0.3 && abs( grassA - grassB ) > 0.5 ) {
                 float dist = ( gEdgeS - 0.5 ) * gTexelUnits * ( grassA > grassB ? 1.0 : -1.0 );
-                float edging = ( 1.0 - smoothstep( 0.16, 0.16 + fp, abs( dist - 0.22 ) ) ) * gEdgeTrust;
+                float edging = ( 1.0 - smoothstep( 0.16, 0.16 + fp, abs( dist - 0.22 ) ) ) * gEdgeTrust * min( 1.0, 0.32 / fp );
                 loose = mix( loose, vec3( 0.05, 0.045, 0.04 ), edging );
                 h = mix( h, 0.25, edging );
                 rough = mix( rough, 0.5, edging );

@@ -548,18 +548,9 @@
           if (park) {
             continue;
           } else {
+            // The block's car park (its bay lines are marks, ground-data3d.js cityLotRecords).
             drawingContext.fillStyle = tarmac;
             drawingContext.fillRect(x + 18, z + 170, 318, 165);
-            drawingContext.strokeStyle = '#bebeb044';
-            drawingContext.lineWidth = 1;
-            for (let px = x + 20; px < x + 340; px += 26) {
-              drawingContext.beginPath();
-              drawingContext.moveTo(px, z + 178);
-              drawingContext.lineTo(px, z + 218);
-              drawingContext.moveTo(px, z + 291);
-              drawingContext.lineTo(px, z + 330);
-              drawingContext.stroke();
-            }
             // Zone-specific ground: mirrors the block patterns chosen in buildWorld().
             const zone = districtAt(x + 177, z + 177),
               blockSeed = (bx * 31 + by * 17) % 7;
@@ -567,16 +558,9 @@
               // Cluster plaza (src/skyline.js), the same inset as the game's ground canvas.
               paintSkylinePlaza(drawingContext, x + 14, z + 14, 326, 326);
             } else if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
+              // A granite forecourt (the ground shader lays its slabs).
               drawingContext.fillStyle = '#c3bfb2';
               drawingContext.fillRect(x + 10, z + 10, 344, 160);
-              drawingContext.strokeStyle = '#a8a497';
-              drawingContext.lineWidth = 1.2;
-              for (let g = 10; g <= 344; g += 24) {
-                drawingContext.beginPath();
-                drawingContext.moveTo(x + g, z + 10);
-                drawingContext.lineTo(x + g, z + 170);
-                drawingContext.stroke();
-              }
               // Planted beds under the plaza's two tree lines (buildWorld puts the
               // trees there). Two teal discs used to be painted here, pools with
               // nothing in them.

@@ -1,5 +1,41 @@
 # Changelog
 
+## Unreleased — streets and parks drawn at screen resolution, and a closer camera
+
+The ground used to be the painted sheets (1.6 units a texel in the city, 2.8 in the county) with
+the ground atlas's photos squeezed into them: soft and blotchy past the default zoom. The sheets
+now only say what lies where; the ground shader draws the surfaces themselves, crisp at any zoom
+(ground-shader3d.js, ground-data3d.js, grass3d.js; SOURCE_GUIDE "Ground materials").
+
+- **Streets**: asphalt from the photographed aggregate at its true scale with binder mottling,
+  utility patches with tar-sealed seams, sealed and hairline cracks, polished wheel paths and an
+  oil strip down each lane, oil stains behind the stop lines; a kerb stone along every
+  carriageway (bevelled arris, a face that takes the sun, joints, scuffs) and a gutter pan
+  (concrete, or granite setts in the Old Quarter and on Monarch Isle), both from a signed
+  distance field of the carriageways, so they stay sharp.
+- **Markings and street furniture** drawn exactly from data instead of painted: lane dashes,
+  zebras, stop lines, the avenues' double yellow, boulevard, county and Monarch Isle lines, with
+  ragged worn edges and the aggregate showing through; cast iron manhole covers in a ring of
+  newer asphalt; gully grates; tree pits with grilles, mulch rings under park trees, sand under
+  the palms.
+- **Pavements by district**: concrete slabs with broom finish, cracks, stains and gum (city);
+  flagstones and cobble setts (Old Quarter, Battery Point); polished granite with a dark band at
+  the kerb (North Point); worn concrete panels with rust and oil (docks); herringbone pavers
+  (Palm Keys); limestone ashlar (Monarch Isle); weathered slabs with grass in the joints
+  (county). Joints follow the kerb.
+- **Parks**: photographed grass with clumps, clover, lush and dry patches, mowing stripes, flower
+  beds in bloom, gravel paths with steel edging, wet margins at the ponds; on HIGH / ULTRA, zoomed
+  in, real grass tufts sway on the lawns. Sand gets wind ripples and footprints.
+- Painted edges (lawns, paths, plazas) are re-cut crisp where the sheet is magnified; everything
+  finer than a couple of pixels fades to its average, so nothing shimmers zoomed out or moving.
+  Height and roughness per material feed the sun, the lamp pools and the wet reflections;
+  puddles gather in the gutters, between setts and in the grates.
+- **Camera**: the street view starts at zoom 1.6 (was 1.2) and the wheel reaches 3.0 (was 1.8);
+  the reset key returns to 1.6. At speed the camera still pulls back to the old view (0.82 by
+  220 km/h).
+- LOW keeps a cheap path (the sheet, one detail sample, the kerb, the marks).
+  `DeadEndCity.groundDetail()` reports the ground data and the tufts.
+
 ## Unreleased — the car and motorbike redesign, and the flagships
 
 Civilian cars (cars3d.js) and motorbikes (motorbikes3d.js), rebuilt at real size to the police

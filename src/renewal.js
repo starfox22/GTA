@@ -224,9 +224,11 @@
       // Station plaza with paver grid and the fountain basin.
       g.fillStyle = '#c3bfb2';
       g.fillRect(c.plaza.x, c.plaza.y, c.plaza.w, c.plaza.h);
+      // (With the 3D renderer its ground shader lays the slabs, game.js
+      // VECTOR_GROUND_MARKINGS.)
       g.strokeStyle = '#a9a598';
       g.lineWidth = 1;
-      for (let x = c.plaza.x; x <= c.plaza.x + c.plaza.w; x += 20) {
+      for (let x = c.plaza.x; x <= c.plaza.x + c.plaza.w && !VECTOR_GROUND_MARKINGS; x += 20) {
         g.beginPath();
         g.moveTo(x, c.plaza.y);
         g.lineTo(x, c.plaza.y + c.plaza.h);

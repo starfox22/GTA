@@ -1488,11 +1488,61 @@ docs/audit/missions-qa.md shows the method).
 - **Wakes** (wakes3d.js): boats call `wakeEmit()` each frame; trails and hull collars are
   drawn into a wake map (foam, wave crest, trough) round the view that the water shader
   samples for foam and for its normal. Spray is one `Points` object.
-- **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
-  (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
-  a bump and dielectric roughness. (The painted sheet no longer carries the 330 dark
-  "patch" ellipses it used to: from the street camera they read as long shadows with nothing
-  casting them, fixed to the tarmac whatever the time of day.)
+- **Ground materials** (ground-shader3d.js, ground-data3d.js, surfaces3d.js). The painted
+  ground sheets are 1.6 (city) to 2.8 (county) units a texel, soft at street zoom; they now only
+  say what lies where, and the ground shader draws the surfaces in world space at the screen's
+  resolution:
+  - *Sheet magnification*: where a sheet texel covers more than ~1.3 pixels, the bilinear
+    sample is re-cut along the colour gradient into the two pure colours either side, at the
+    edge's true position, antialiased to a pixel (`groundSheetSharp`). Lawn, path and plaza
+    edges stay crisp; lawn against lawn stays soft. The sheets are painted in flat fills (the
+    ground atlas's photos used to be squeezed into them as 4.7 m slabs and blotchy tarmac).
+  - *Classes* from the crisp colour: asphalt (dark neutral), lawn (green over its brightness),
+    loose ground (warm tan: gravel, sand, clay, soil), coloured surfacing (teal and blue) and
+    paving (the rest). Palm Keys and Monarch Isle read warm light stone as paving.
+  - *Carriageway field* (`buildGroundField`): the signed distance to the nearest kerb line
+    (negative on the carriageway) from the streets' own geometry (city grid and boulevards,
+    county and service roads, Monarch Isle's streets, roundabouts and bridge approaches), a
+    half-float texture at 4 units a texel (6 in the county). A distance filters exactly, so the
+    kerb stone (`kerbW` 1.7-2.0 units, bevelled arris, a 0.9-unit face that takes the sun,
+    joints, scuffs), the gutter pan (concrete; granite setts in the Old Quarter and on
+    Monarch Isle), the lanes' wheel paths and oil strip (from the info texture's lane width;
+    not in junction boxes) and the pavement joints that run with the kerb are crisp at any zoom.
+    The info texture (16 units a texel) carries the district's paving style (`GROUND_STYLE`),
+    the lane width and park lawns.
+  - *Materials* (each fades what it cannot resolve: the detail layers by their mipmaps, the
+    procedural patterns by the pixel footprint `fp`, so nothing shimmers far away or in motion):
+    asphalt (photographed aggregate at 1.5 m a tile, twice and turned against tiling; binder
+    mottling; utility patches aligned with the road, tar-sealed; sealed and hairline cracks;
+    polish; district age: the Old Quarter patched, the docks cracked, downtown fresh, Palm
+    Keys bleached, the county a pale chip seal), paving by style (city concrete slabs 1.5 m with
+    broom finish, cracked slabs, stains and gum; Old Quarter flagstones along the kerbs and
+    cobble setts elsewhere; financial polished granite 2 x 1 m with a dark granite band along
+    the kerb; docks 3 m concrete panels, rust, oil, exposed aggregate; Palm Keys herringbone
+    pavers 40 x 20 cm, sand-swept; Monarch limestone ashlar; county slabs with grass in the
+    joints), lawns (photographed grass, clumps, clover, lush and dry patches, mowing stripes in
+    the parks, flower beds as blooms), loose ground (gravel with steel edging along the lawns
+    and a wet margin by the ponds; sand with wind ripples and footprints).
+  - *Marks* (`buildGroundMarks`, MARK_KIND): lane dashes, zebras, stop lines, the avenues'
+    double yellow, boulevard, county and Monarch Isle paint, manhole covers, gully grates,
+    tree bases (a pit with a grille in the pavement, setts round it in the Old Quarter; a mulch
+    ring on a lawn; sand under a palm) and oil stains behind the stop lines, as records filed in
+    a 32-unit grid over the world (at most 10 a cell). The shader draws each exactly: paint box
+    filtered (`groundBand`), with ragged worn edges and the aggregate showing through, worn in
+    the wheel paths; cast iron with a diamond tread in a ring of newer asphalt. The shapes are
+    the same data the maps paint (streets.js ROAD MARKINGS: `cityMarkingShapes`,
+    `countyMarkingShapes`); with the 3D renderer available (`VECTOR_GROUND_MARKINGS`) the 3D
+    sheets and tiles leave the paint out. Trees are the plan's `trees` (whatever their model).
+  - *Relief*: each material has a height (aggregate, joints, cracks, domed setts, paint, the
+    kerb's face) turned into the normal by screen-space derivatives, and a roughness (polished
+    wheel paths and tar seams smoother, granite honed, grass rough) with metal on the covers,
+    so low sun, the lamp pools and the wet reflections read the surface.
+  - *Tiers*: LOW draws the sheet with a light grain, the kerb and the marks; MEDIUM the full
+    materials with one detail sample; HIGH / ULTRA two samples against tiling, and the grass
+    tufts (grass3d.js) past street zoom ~1.75. `DeadEndCity.groundDetail()` reports the data
+    (build ms, bytes, records) and the tufts.
+  (The painted sheet no longer carries the 330 dark "patch" ellipses it used to: from the
+  street camera they read as long shadows with nothing casting them.)
 - **Wet roads** (surfaces3d.js WET ROADS, lighting3d.js WET SURFACES, postfx3d.js WET
   REFLECTIONS, weather3d.js WET GROUND), all from `weather.wet` (rises in the rain, dries over a
   few minutes after). A shared GLSL pattern decides where water stands: `cityWetLow` (dips in
@@ -1507,8 +1557,9 @@ docs/audit/missions-qa.md shows the method).
     camera: the night light map read at six points up the view direction and high-passed
     across it, so only the bright cores of the pools come through as narrow streaks in the
     lamps' colours (`citySheenDir`, `WET_STREAK_GAIN`).
-  - HIGH / ULTRA: plus standing water in the dips and in the gutters (paving a few units from
-    the tarmac in the painted sheet), nearly a mirror, with three layers of rain rings
+  - HIGH / ULTRA: plus standing water in the dips, in the gutters (the carriageway field's
+    last 5 units before the kerb), in the gaps between setts and in the grates, nearly a
+    mirror (granite and paint shed water, covers do not soak), with three layers of rain rings
     (`cityPuddleRipples`), and the wet reflections pass: the wet ground writes its
     reflectivity into the HDR target's alpha as a negative number (nothing else writes one); a
     half-resolution pass traces each wet pixel's mirror ray through the depth buffer (20 steps

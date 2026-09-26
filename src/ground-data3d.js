@@ -487,7 +487,7 @@
        *        pattern: dash length * 4 * 4096 + period * 4)
        * Paint: 0 white, 1 lane cream, 2 yellow. Wear 0..3.
        */
-      const MARK_KIND = { solid: 1, dash: 2, manhole: 3, grate: 4, tree: 5, stain: 6 },
+      const MARK_KIND = { solid: 1, dash: 2, manhole: 3, grate: 4, tree: 5, stain: 6, tactile: 7 },
         MARK_PAINT = { white: 0, lane: 1, yellow: 2 },
         MARK_CELL = 32,
         MARK_MAX_PER_CELL = 10;
@@ -576,6 +576,12 @@
               }
             });
           }
+        // Dropped kerbs with tactile paving where each zebra meets the pavement.
+        for (const c of cityCrosswalks()) {
+          if (c.w > c.h)
+            for (const x of [c.x - 2.2, c.x + c.w + 2.2]) out.push(markRecord(MARK_KIND.tactile, x, c.y + c.h / 2, c.h / 2 + 1, 3.2, 0, 1));
+          else for (const z of [c.y - 2.2, c.y + c.h + 2.2]) out.push(markRecord(MARK_KIND.tactile, c.x + c.w / 2, z, c.w / 2 + 1, 3.2, 1, 0));
+        }
         // Manhole covers and utility plates along the roadway.
         for (let i = 0; i < 260; i++) {
           const mx = CITY_LEFT + 100 + ((i * 7919) % (CITY_WIDTH - 200)),
@@ -610,6 +616,27 @@
             phase += len;
           }
         }
+        return out;
+      }
+      // The bay lines of each city block's car park (render3d.js paints the
+      // tarmac): 1 unit wide, every 26, in two rows. Faded, and only where the
+      // tarmac still shows (wear 3).
+      function cityLotRecords() {
+        const out = [];
+        for (let bx = BLOCK_X_MIN; bx <= BLOCK_X_MAX; bx++)
+          for (let by = BLOCK_Y_MIN; by <= BLOCK_Y_MAX; by++) {
+            const x = blockX(bx) + 79,
+              z = blockY(by) + 79;
+            if (!validCityBlock(x + 10, z + 10) || harborOverlap(x, z, 354, 354) || stadiumOverlap(x, z, 354, 354)) continue;
+            if ((bx === -4 && by === 4) || isPark(bx, by)) continue;
+            let last = x + 20;
+            while (last + 26 < x + 340) last += 26;
+            for (const [z0, z1] of [
+              [178, 218],
+              [291, 330],
+            ])
+              out.push(markRecord(MARK_KIND.dash, (x + 19.5 + last + 0.5) / 2, z + (z0 + z1) / 2, (last + 0.5 - x - 19.5) / 2, (z1 - z0) / 2, 1, 0, MARK_PAINT.white, 3, 1, 26));
+          }
         return out;
       }
       // Monarch Isle's paint: centre dashes on the plain streets, edge lines on
@@ -742,8 +769,10 @@
         };
       }
       // ---- Build everything the ground materials need -----------------------------------------------
-      const groundBuildStart = performance.now();
+      const groundBuildStart = performance.now(),
+        groundBuildLaps = {};
       const groundDetail = buildDetailLayers();
+      groundBuildLaps.detail = Math.round(performance.now() - groundBuildStart);
       const cityFrame = { x: CITY_LEFT, y: CITY_TOP, w: CITY_WIDTH, h: CITY_HEIGHT };
       const cityParks = [...CITY_PARKS, SOUTH_PROMENADE];
       const cityField = buildGroundField(
@@ -769,17 +798,20 @@
           () => GROUND_STYLE.county,
           () => false,
         );
+      groundBuildLaps.fields = Math.round(performance.now() - groundBuildStart) - groundBuildLaps.detail;
       const groundMarks = buildGroundMarks([
         ...cityMarkingShapes()
           .filter((m) => !m.avenue)
           .map((m) => shapeRecord(m)),
         ...countyMarkingShapes().map((m) => shapeRecord(m, 2)),
         ...cityStreetRecords(),
+        ...cityLotRecords(),
         ...monarchRecords(),
         ...treeRecords(),
       ]);
       const groundDataReport = {
         ms: Math.round(performance.now() - groundBuildStart),
+        laps: groundBuildLaps,
         detailBytes: Math.round(DETAIL_SIZE * DETAIL_SIZE * 4 * DETAIL_LAYERS * 1.333),
         fieldBytes: cityField.bytes + monarchField.bytes + countyField.bytes,
         marks: { records: groundMarks.records, filed: groundMarks.filed, dropped: groundMarks.dropped, bytes: groundMarks.bytes },
