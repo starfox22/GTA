@@ -1200,6 +1200,7 @@
       // @include src/cars3d.js
       // @include src/motorbikes3d.js
       // @include src/offroad3d.js
+      // @include src/mountain-village3d.js
       // @include src/plane3d.js
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
@@ -1908,6 +1909,8 @@
         ...damageApi,
         // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
         offroadInfo: () => offroadEffectsInfo(),
+        // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
+        mountainInfo: () => mountainVillageInfo(),
         /**
          * Settings contract: the see-through hole round the player under a roof
          * (lighting3d.js, CUTAWAY). On by default; read at start-up from
