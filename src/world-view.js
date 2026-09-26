@@ -64,7 +64,7 @@
       return Math.min(proportional, toFar);
     }
     function newCallNotice() {
-      if (missionIndex < missions.length) incomingCallRemaining = 8;
+      if (storyCallWaiting()) incomingCallRemaining = 8;
     }
     canvas.addEventListener('pointerdown', (e) => {
       if (e.pointerType !== 'touch' || gameMode !== 'play' || worldSafariGesture) return;

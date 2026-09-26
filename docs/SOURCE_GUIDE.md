@@ -104,8 +104,9 @@ Two closures matter:
     (`ROOFTOP.height` 240, 30 m) are in real units already. Facade textures repeat per storey;
     shopfronts, awnings (3.2 m), fascia signs, entrance canopies and business signs sit on
     the real ground floor.
-  - **Street furniture**: lamp posts 9 m (`LAMP_HEIGHT`), street trees about 7 m
-    (`TREE_RISE`), palms 9 m, bus shelters 2.5 m, benches 0.45 m seat / 0.85 m back, bins
+  - **Street furniture**: lamp posts 9 m (`LAMP_HEIGHT`), street trees 7-9 m and park trees
+    to 16 m (vegetation3d.js `TREE_SPECIES`, by plan radius and species), palms 8-13 m, bus
+    shelters 2.5 m, benches 0.45 m seat / 0.85 m back, bins
     0.8 m, mailboxes and parking meters 1.3 m, bollards 0.9 m, the payphone 2.2 m.
   - Derived: `METERS_PER_UNIT`, `KMH` (map units a second in one km/h), `KNOTS`, `GRAVITY`
     (9.81 m/s² in map units), `worldMeters()`, `distanceLabel()`, `speedKmh()`. Write speeds as
@@ -233,7 +234,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
 | geography.js | Land polygons and the cached `landAt`, `BRIDGES` and their architecture (`bridgeStructure`, `bridgeFootings`, `bridgePylons`), reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
 | drawbridge.js | The Palm Sound drawbridge: `DRAWBRIDGE_OPENINGS`, the opening phases (`updateDrawbridge`), barrier arms and ramming, traffic held at the stop lines (`drawbridgeTrafficLimit`), `drawbridgeKeepsOff`, `drawbridgeFootBlocked`, leaves as ramps and vehicle jumps (`drawbridgeSurface`, `drawbridgeSlopeDrive`, `drawbridgeFlight`, `drawbridgeSettle`), the ketch ALBATROSS, GPS pricing (`drawbridgeRouteDelay`), `drawDrawbridgeMap`, bells, motors and horns, the console report |
-| harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
+| harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit, and THE DROP in Vinny's warehouse (stage 4 shutter, 5 ELIMINATE POLICE · N LEFT for officers shut in with the truck, `depotPoliceInside`, 6 EXIT THE TRUCK, 7 ESCAPE ON FOOT THROUGH THE BACK DOOR; POLICE LOST at the back door, then MISSION COMPLETED; `depotStakeout` holds the wanted level while inside, `depotDropPrompt`) |
 | heat.js | Heat and wanted stars: `crime(amount)` (heat by severity; the only way heat rises, nothing adds it passively), `recordKill` / `recordVehicleKill` (by victim, with a spree bonus), `HEAT_STARS`, the escalation delay, `heatUI()` (stars, pending star, heat meter, body count), `crimeLog` (the last crimes, for `policeReport().crimes`) |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory, knife combat and FISTS (index 7, no weapon: `meleeAttack` throws a left-right combination with a haymaker, `punchReaction`; `playerUnarmed()` tells the crowd the player is harmless) |
@@ -242,8 +243,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | swat.js | SWAT teams and rooftop snipers. **`SNIPERS_ENABLED = false`**: the snipers are switched off (no spawn from any caller, their laser, beep, screen-edge glow and captions gated too); set it to true to restore them as described here. The rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen now and then at five stars (`roofSniperSite`, `updateRoofSnipers`: one at a time, a second only after 150 s at five stars, first roll 25-45 s in and then every 60-90 s on a 65% chance; laser telegraph, two led rounds, then it packs up), `swatStats` |
 | wounds.js | Wounds: `woundPerson` (hit zone, flinch, limp, blood trail, downed officers and bystanders), `chooseDeathFall` (backwards, face down, spun, slumped against a wall), `deathFallAmount` (the half-second fall), `hitFlinch`, `woundReport` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
-| campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
-| chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
+| campaign.js | Save schema, progression frontier, ammunition persistence and mission selection; PUBLIC DEMO (`DEMO_BUILD` in game.js, `DEMO_MISSIONS`, `demoLocked`, `storyCallWaiting`, `demoStoryOver`, the FULL GAME badges and buy note, the DEMO COMPLETE card `showDemoComplete`, `campaignStats` for its recap, the `dead-end-city-demo` key) |
+| chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `clearDepotFloor`; `depotSealed` once the drop's shutter is down: `depotPoliceBlocked` stops any officer crossing its walls either way, `depotSeparates` keeps arrests from reaching through them) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. A braced cruiser is an ordinary 1.6 t body on locked brakes (`parkedFriction`), so the rammer's momentum decides: a truck, bus or the tank shoves through, a sedan crumples and stalls in the V. A cruiser moved over a metre is knocked loose (`roadblockShoved`); the cut is busted when the player's car comes out the far side (`watchRoadblockBreach`) |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
 | riders.js | Riders thrown from motorbikes and bicycles: `RIDER_THROW`, `riderCrash` / `riderLanding`, `throwRider`, the flight, landing and slide (`stepThrownBody`), `updateThrownPlayer`, `stepRiderEjection`, fallen bikes (`updateFallenBike`), `riderReport` |
@@ -283,6 +284,9 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sports-fixtures.js | Club pools (`SPORTS_TEAMS`: names, kits, crests), `SPORTS_CALENDAR`, daily fixtures (`sportsFixtureFor`, `sportsCurrentFixture`), the match timeline (`sportsTimeline`), `drawSportsCrest` |
 | sports.js | Live basketball and soccer: match day stages, possession, shots, scoring, restarts, officials, harm and panic (`sportsTargets`, `sportsAbandon`), the player on the ball (`sportsKick`, stewards), `sportsConsole` |
 | sports-world.js | South Coast Stadium reservation, enclosure (`PITCH_FENCE` with its openings), big screens (`STADIUM_SCREENS`), turnstiles, vehicle barriers, markings |
+| sportsbook-odds.js | The sportsbook's pricing (section 4d, GOALLINE): `SPORTSBOOK_MODEL`, expected goals from the clubs' ratings (`sportsbookRates`), the live state (`sportsbookMatchState`), fair markets from the Poisson grid (`sportsbookFairMarkets`), the power-method margin and price ladder (`sportsbookPriceOutcomes`, `sportsbookLadder`), odds formats (`sportsbookFormatOdds`) |
+| sportsbook.js | GOALLINE SPORTS BET beside the stadium plaza: the plan and solids (`SPORTSBOOK_SHOP`, `sportsbookBlocked`, `sportsbookWalls`), bets (`sportsbookPlace`), settlement (`sportsbookUpdate`: goals, half time, full time, void), save data, the clerk and punters (`staffSportsbook`), prompt and door, ground and map, `sportsbookConsole` |
+| sportsbook-ui.js | The betting menu (`#sportsbook`): header, markets, slip, my bets, keys (`sportsbookKey`) |
 | sports-audio.js | Stadium goal reactions only (no crowd bed): the recorded cheer from the scoring end and groan from the other, attenuated by the player's distance to the stadium (`stadiumAudibility`); panic screams, the referee's whistle, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ride-skip.js | Skip the ride: the offer and prompt (`rideSkipOffer`, `rideSkipPrompt`) for a cab, a train or the sailing liner, the `skipRide` / `skipStop` keys (`rideSkipKey`), the fade on simulation time (`updateRideSkip`), the jump (`performRideSkip`: `catchUpWorld`, `placeCabAtKerb`, `placeTrainAtPlatform`, `placeLinerAtAnchor`), `rideSkipReport` |
@@ -315,6 +319,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | flight-view3d.js | Perspective flight camera (`flightViewShape(agl)`; `streetZoomHeight(zoom)`: the street zoom as the height at which the flight camera draws the ground at that scale, `city3D.zoomHeight`), ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
+| vegetation3d.js | The tree library (included where the trees are planted, before damage3d.js): `TREE_SPECIES` (plane, linden, honey locust, Bradford pear and its blossom, maple, oak, willow, jacaranda, flame tree, cherry, beech, birch, Italian cypress, stone pine, spruce, fir, pine; Canary, fan, coconut and royal palms), each one geometry per level of detail (`speciesGeometry(key, lod)`: 0 near, 1 mid) built from a kit (`tube`, `card`, `blob`, `frond`, `fanLeaf`, `bough`); the procedural foliage atlas and its normal map and alpha-keeping mips; `treeMaterial` / `treeDepthMaterial` (vertex attributes `foliage` = leaf mask and sway, `morph`; instance `instanceFoliage` = morph and density, instance colour = leaf tint; wind in both passes); placement (`treeSpecies`: `DISTRICT_TREES`, parks, ponds, county, foothills, Monarch Isle; `palmSpeciesAt`); per-tree variation (`treeVariation`: scale, aspect, lean, turn, tint, autumn and blossom accents, morph, density); `plantTree` / `plantPalm` (breakable props, near and mid linked), `foliageInstances`, the LOD switch (`updateVegetation`), far-city blobs (`noteFarTree`), `vegetationReport`, `treeLineup` |
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie textures and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light (`AIR_LIGHT`, the roof landing `searchlightLanding`), lens flare and crew aim (`updateHelicopterSearchlight`), `searchlightReport` |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
@@ -331,15 +336,16 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
 | air-cover3d.js | Road underpass walls, roof, portals and lamps |
 | renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
-| landscape3d.js | Renderer-only planting on open lawns: Battery Park trees and flower beds, Great Lawn picnic blankets |
+| landscape3d.js | Renderer-only planting on open lawns: Battery Park trees (planes, oaks, lindens and cherries by vegetation3d.js) and flower beds, Great Lawn picnic blankets |
 | sports3d.js | Tiered stands, crowd in team colours (fills, cheers, panics), floodlights (`stadiumFloodPools`), live screens (`paintSportsBoard`), the ball; athletes, officials and stewards are queued to the character rig (`queueAthlete`, crowd3d.js ATHLETES) |
+| sportsbook3d.js | GOALLINE's building: glass frontage, neon sign, fascia, video wall (the stadium's live board and the odds boards, `paintSportsbookOddsBoard`), counter, terminals, ledge and stools; the roof lifts off with the player inside (`updateSportsbookVisuals`) |
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
-| world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
+| world3d.js | Shore-aware water shader, palms (`makePalm` hands over to vegetation3d.js `plantPalm`: fan palms down Ocean Drive), airports, rooftop bar, waterfront scenery |
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beachvolley3d.js | The volleyball court: pit and tapes painted into the sand (`paintVolleyCourt`), padded poles, guy ropes, net and antennas (`buildVolleyCourt`), the canvas scoreboard, the ball's shadow and the landing ring (`updateVolleyVisuals`) |
 | beach3d.js | Sand, swash ribbon, pier, props and ladders; the beachgoers are drawn by the character rig (crowd3d.js BEACHGOERS: towel, lounger, swim, float and volleyball poses) |
-| county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests and boulders (near / far LOD per 2048-unit cell), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
+| county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests (`plantForest`: tree-library species by altitude, pine low, fir mid, spruce high, beech / birch / maple below; one near mesh per species and one far mesh for all conifers and one for all broadleaf per 2048-unit cell) and boulders (near / far LOD), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
 | airfields3d.js | Runways and taxiways over the ground sheets: one quad each with a patched standard material that paints the markings from metre uv (threshold, centre line, aiming point, touchdown zone, side stripes, blast pad chevrons, holding positions, rubber, rain), designation decals, holding-position signs; edge, threshold / end, approach (sequenced flashers), taxiway and obstruction lights as glow-field instances on batched fixtures; PAPI lenses and windsocks updated per frame (`updateAirfieldVisuals`, called from `updateCountyVisuals`) |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`); soldiers are dressed by crowd3d.js OUTFITS |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
@@ -360,7 +366,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | crowd3d.js | Everyone on foot from the rig's instanced parts: looks compiled to parts and paints (`compileLook`, by role and district), OUTFITS for the player, police, traffic officers, SWAT, agents, soldiers, gangs, mobsters, guests, beachgoers, athletes and riders (`outfitLook`); the skeleton, layered poses and the planted-foot gait (`drawCrowdPerson`, `solveLeg`), turning on the spot, weapon holds by two-bone IK (`HOLD_POSES`, `drawHold`, `ikArm`) with recoil and reload, swim strokes, parachute, car and pool transitions, a rider thrown off a bike (riders.js `thrown`, `ejected.rider`) (`specialSpec`), still figures replayed from recorded instances, RIDERS on bikes and jet skis (`queueRider`), BEACHGOERS, ATHLETES (`queueAthlete`), close-up / street / far body sets, dogs and scene props; `crowdStats()` |
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
 | ground-data3d.js | The ground materials' data: the detail layers (`groundDetail`, a texture array of tiling detail: the ground atlas's photographed asphalt and lawn at true scale, concrete grain, broom streaks, granite speckle, gravel, sand, mulch), the carriageway fields (`buildGroundField`: the signed distance to the nearest kerb as a half-float texture, 4 units a texel in the city and on Monarch Isle, 6 in the county, and an info texture with the paving style `GROUND_STYLE`, the lane width and park lawns), and the MARKS (`buildGroundMarks`: every road marking, manhole cover, gully grate, tree base and stop-line oil stain as a record in a 32-unit grid over the world); `groundDataReport` |
-| surfaces3d.js | Patches the ground sheets' materials with the ground materials (`groundDetailPatch`, GROUND MATERIAL UNIFORMS: per sheet its field and default style), the wet look's light and output chunks, foliage sway, `updateSurfaces` |
+| surfaces3d.js | Patches the ground sheets' materials with the ground materials (`groundDetailPatch`, GROUND MATERIAL UNIFORMS: per sheet its field and default style), the wet look's light and output chunks, foliage sway (the planted greenery; trees sway in vegetation3d.js), `updateSurfaces` |
 | ground-shader3d.js | (included by surfaces3d.js) The ground materials' GLSL: sheet magnification (painted edges re-cut crisp), classes (asphalt, lawn, loose, paving, coloured surfacing), asphalt (aggregate, patches, sealed and hairline cracks, wheel-path polish and lane oil, gutter pans), kerbs (stone, arris, face, joints), paving by district, lawns (photo grass, clumps, mowing stripes, flower beds), gravel with edging and pond margins, sand with ripples and footprints, the marks, the height bump and roughness, WET ROADS, rain rings on the puddles |
 | grass3d.js | Grass tufts on the lawns (HIGH / ULTRA, street zoom past ~1.75): one instanced draw on a world-anchored 2.6-unit grid round the view, each tuft placed and coloured from the ground sheet in the vertex shader, swaying in the wind (`updateGrassTufts`) |
 | helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, military), a light single (Bell 407 / H125 class) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface, per-pixel canvas liveries, glyph decals, cabin and crew, merged trim / lamps per look; four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
@@ -1028,9 +1034,29 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   the callouts do not. Wanted state is never touched; `save()` runs once after the jump.
   City rail and the liner are free, so only the cab charges. Console: `skipRide()`,
   `skipStop()`, `rideSkip()`, `boardTrain(from, to)`, `setCash(dollars)`.
-- **God mode** (the `godmode` cheat) unlocks every job in the mission picker
-  (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
-  advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
+- **Public demo** (`DEMO_BUILD` at the top of game.js; campaign.js PUBLIC DEMO): with the flag
+  on, a normal player gets missions 1 and 2 (`DEMO_MISSIONS`). Every later story mission and
+  contract is shown in the picker, locked, with a FULL GAME badge; a click shows the buy note
+  ("Thanks for playing the demo! If you liked it, please buy the full game."). The payphone
+  stops ringing after mission 2 (`storyCallWaiting`: no call notice, prompt, marker or GPS
+  line), RESTART CURRENT JOB cannot reach a gated job, and the mission card reads FREE ROAM ·
+  DEMO COMPLETE. Completing mission 2 brings up the DEMO COMPLETE card 2.6 s after the payday
+  headline (`demoMissionWon`, `showDemoComplete`, game mode `'demo'`): the title logo over the
+  cover art, the thanks, a recap from `campaignStats` (play time, cash earned: every rise of
+  the wallet, the wanted peak; saved with the story as `stats`), CONTINUE FREE ROAM (Enter or
+  Escape) and MAIN MENU. Completion is kept in `dead-end-city-demo`, which NEW GAME leaves;
+  the title menu shows a DEMO badge by the version (DEMO · COMPLETED after). Not missions,
+  so never gated: the hill climb, beach volleyball, the stadium ball, the pier rides, the
+  bike share, cabs, rail and the liner, the casino, garages, the gun shop, Fort Sentinel and
+  the Apache, the Monarch Isle payphones' lines. God mode lifts every gate and never shows
+  the card; the console's `startMission` reaches a gated job only with god mode or `?dev`.
+  `DEMO_BUILD = false` is the full game with no trace of the demo.
+- **God mode** (the `godmode` cheat, typed in play, on the city map or on the title screen)
+  unlocks every job in the mission picker (`missionUnlocked`, campaign.js) and opens Settings
+  straight on the GOD MODE tab (over the pause menu in play, over the title on the title
+  screen; BACK returns there). The tab's first row, MISSION SELECT · PLAY ANY MISSION
+  (`godOpenMissionSelect`, god-panel.js), opens the picker over the same screen. Typed again it
+  turns god mode off. A job played ahead of the story does not advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
   campaign.js): presets (dawn 06:00, morning 09:00, noon, golden hour 19:00, dusk 20:30,
   night 23:00, 03:00), a slider over the day in five-minute steps, and the weather (AUTO
   hands the sky back to the weather machine); each applies at once through `worldMinutes`
@@ -1232,6 +1258,62 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
   distance-based gains, the player's distance and audibility, and `bed: null`.
 - Developer console: `match(sport)`, `ballState()`, `matchDay(day, minutesFromKickoff, slot,
   sport)`, `fixtures(sport, days)`, `ballToPlayer(distance)`.
+- **Club ratings and finishing.** Each football club has a `rating` (0.78 AIRPORT RANGERS to
+  1.3 NORTHBANK CITY, 1 an average side). A shot the simulation puts on target beats the keeper
+  with `sportsFinishChance(fixture, team)` = 0.16 x ((rating x 1.1 at home) / the other's
+  rating)^1.6 (`SPORTS_FINISHING`); otherwise `sportsKeeperSave` saves it (he holds it when
+  close, else parries it back into play). Measured over 350 matches in a headless harness
+  (sports-fixtures.js + sports.js stepped at 30 Hz): goals per side are Poisson (dispersion
+  0.96) at 7.4 x the finishing chance, about 2.8 goals a match; before the keeper saved
+  anything it was about 12. Joining a match under way draws the score from the same model.
+
+### GOALLINE, the sports betting office
+
+sportsbook-odds.js, sportsbook.js, sportsbook-ui.js, sportsbook3d.js.
+
+- **The shop.** `SPORTSBOOK_SHOP`: x 2462-2590, y 4992-5088 (16 x 12 m, 4.6 m to the roof) in
+  the open block south-west of the stadium forecourt, which the city plan leaves empty (the
+  block overlaps the stadium lot). Glass frontage and a 2.25 m double door on the south (the
+  camera's side), a paved apron and a path east to the Garden Ave pavement. `SPORTSBOOK_SOLIDS`
+  (walls, glass either side of the door, counter, ledge, terminals) are solid through
+  `sportsBlocked` (solid()), the physics statics (pushed onto `SPORTS_VEHICLE_BARRIERS`) and the
+  shot lists (`sportsbookWalls`); `prepareSportsbookShop` clears trees and lamps from the plot
+  and registers the roof as overhead cover.
+- **The menu.** Inside (`sportsbookInside`) the prompt is PLACE A BET (id `sportsbook`) and the
+  action key opens `#sportsbook`. `gameMode` stays `play`, so the world, the clock and the match
+  run on; the keydown handler hands every key to `sportsbookKey`, `hurt()` ignores the player
+  (`sportsbookShelters`), and `sportsbookUpdate` closes the menu on a wanted level, leaving the
+  shop or any change of mode; `togglePause` closes it first. It will not open with stars.
+- **Pricing.** Expected goals over 90 minutes: `SPORTSBOOK_MODEL.shotsOnTarget` (7.4, measured)
+  x `sportsFinishChance`. Live, each side's goals still to come are Poisson with that rate times
+  the share of the 90 minutes left (`sportsbookMatchState`: the match clock; half at the break;
+  none after full time), added to the score; every market sums the grid of final scores. The
+  margin: implied probabilities p^k with k < 1 chosen so they add to 1 + margin (6%, correct
+  score 12%, scaled down to half for a market whose favourite is 90% or more), odds rounded down
+  to the ladder (hundredths to 2, then 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50); a market with
+  an outcome over 99% is closed. Markets: `result`, `next:<goal number>`, `total:<line>` (every
+  line not yet passed; the menu shows the one nearest even money and one either side), `btts`,
+  `cs` (16 scores to 3-3 and ANY OTHER), `ht` (before the break). Rebuilt when the fixture,
+  stage, score or quarter-minute changes (`sportsbookRefreshMarkets`).
+- **Bets and settlement.** `sportsbookPlace` takes the stake from the cash at the price showing
+  and ties the bet to the match object (`match.bookToken`). `sportsbookUpdate` (end of
+  updateSports) settles: each goal (`sportsbookGoal`: next goal for that goal number, OVER, BTTS
+  YES, correct scores passed, ANY OTHER at four), the break or anything past it (half-time),
+  full time (the rest). SUSPENDED from a goal until the kick-off after it and at least
+  `SPORTSBOOK_SUSPEND` (6 s). Winnings are credited automatically wherever the player is (toast
+  BET WON · +$N). VOID, stake returned: the match abandoned, or bets on a match object that is
+  gone (a clock jump past it, or a reload: restored bets carry on only if their fixture has not
+  kicked off). Saved in the game record as `sportsbook` (format, open bets, the last 40 settled,
+  totals).
+- **People.** `staffSportsbook` keeps a scene (`makeScene('sportsbook')`) while the player is
+  within 900 units: the clerk (`serve`) and two to five punters (sitting on the stools, at a
+  terminal, watching); each backs a side and cheers (`cheer`) or groans (`despair`) at a goal
+  for 3 s, two of them with a line; the clerk speaks on a win of $1,000 or at odds of 6+.
+- Developer console: `sportsbook()` (the shop, the fixture with ratings and expected goals,
+  every market with fair % and decimal / fractional / American odds and the book %, open and
+  settled bets, totals, a log with the cash after each event), `sportsbookBet(marketId, key,
+  stake)`, `sportsbookShop(open, tab)`, `sportsbookSlip(marketId, key, stake)`,
+  `sportsbookFormat(format)`; `stadiumGoal(team)` forces a goal.
 
 ## 5. Missions
 
@@ -1241,7 +1323,7 @@ sidejobs.js. In-game numbers (and the audit logs) are the index plus one:
 
 | # | Index | Mission | Code |
 | --- | --- | --- | --- |
-| 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse) |
+| 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse: see harbor.js THE DROP) |
 | 2 | 1 | A Seat at the Table | roofmission.js (the Blue Hour hit) |
 | 3-9 | 2-8 | Vinny's Favor, Paper Trail, No Last Ferry, Both Sides of the Bay, Above the Noise, Saltwater Accounting, One Clean Exit | challenges.js |
 | 10-11 | 9-10 | The Last Witness, The Manifest | aviation.js |
