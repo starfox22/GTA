@@ -61,6 +61,8 @@
     player.swimDrive = 0;
     player.wading = 0;
     player.climbing = null;
+    // In the Marea pool (clubpool.js): { phase: 'dive' | 'swim' | 'out', ... } or null.
+    player.pool = null;
     function deepWater(x, y, r = 4) {
       return !groundAt(x, y, r) && !onBridge(x, y, r) && !onDock(x, y, r);
     }
@@ -330,7 +332,15 @@
         player.swimming = false;
         player.wading = 0;
         player.climbing = null;
+        player.pool = null;
         swimBreath = Math.min(SWIM_BREATH, swimBreath + deltaSeconds * 6);
+        return;
+      }
+      // In the Marea beach club's pool (clubpool.js): its own bounds and way out.
+      if (player.pool) {
+        updatePoolSwim(deltaSeconds);
+        swimLast.x = player.x;
+        swimLast.y = player.y;
         return;
       }
       // A jump across the map (respawn, teleport, rescue) is not swimming ashore.
@@ -381,13 +391,40 @@
       }
       player.wading = 0;
       player.swimming = true;
+      const driving = swimStroke(deltaSeconds, SWIM_ALTITUDE);
+      // A ladder within reach: swim into it to climb out.
+      const ladder = nearestLadder(player.x, player.y, 26);
+      if (ladder) {
+        const toward = Math.cos(player.a - ladder.a) > 0.2;
+        if (driving && toward) startLadderClimb(ladder);
+        else if (gameTime - ladderHintAt > 8) {
+          ladderHintAt = gameTime;
+          tell('LADDER · swim into it to climb out', 2.4);
+        }
+      }
+      if (swimBreath <= 0) {
+        swimBreath = 0;
+        spentFor += deltaSeconds;
+        hurt(8 * deltaSeconds, 'blast');
+        if (Math.floor(gameTime * 2) % 4 === 0 && Math.random() < deltaSeconds * 4) splashAt(player.x, player.y, 0.5);
+        if (spentFor > RESCUE_AFTER && gameMode === 'play') harborPatrolRescue();
+      } else spentFor = 0;
+    }
+    /**
+     * THE STROKE
+     * One step of swimming wherever the water is (the sea here, the Marea pool in
+     * clubpool.js): effort, the arm cycle, riding the surface at `surface`, the
+     * breath it costs, spray and the stroke sounds. Returns whether the swimmer
+     * is driving (a movement key held).
+     */
+    function swimStroke(deltaSeconds, surface) {
       // Riding the surface: the body floats just awash, the back clear of it.
       const driving = playerDriving(),
         hard = driving && swimHard();
       player.swimDrive += ((driving ? (hard ? 1 : 0.62) : 0) - player.swimDrive) * Math.min(1, deltaSeconds * 4);
       // One arm cycle per stroke: slow and long while floating, quick when driving.
       player.swimStroke += deltaSeconds * (1.5 + player.swimDrive * 5.2);
-      player.altitude = SWIM_ALTITUDE + Math.sin(player.swimStroke) * 0.5 + Math.sin(gameTime * 1.3) * 0.4;
+      player.altitude = surface + Math.sin(player.swimStroke) * 0.5 + Math.sin(gameTime * 1.3) * 0.4;
       // Treading water tires you slowly, breaststroke faster, the hard crawl fastest.
       swimBreath -= deltaSeconds * (hard ? 1.7 : driving ? 1 : 0.4);
       if (Math.floor(player.swimStroke / Math.PI) !== player.swimBeat) {
@@ -407,23 +444,7 @@
         // A breath on every other stroke once it starts to hurt.
         if (breathFraction() < 0.35 && player.swimBeat % 2 === 0) swimGasp(1 - breathFraction() / 0.35);
       }
-      // A ladder within reach: swim into it to climb out.
-      const ladder = nearestLadder(player.x, player.y, 26);
-      if (ladder) {
-        const toward = Math.cos(player.a - ladder.a) > 0.2;
-        if (driving && toward) startLadderClimb(ladder);
-        else if (gameTime - ladderHintAt > 8) {
-          ladderHintAt = gameTime;
-          tell('LADDER · swim into it to climb out', 2.4);
-        }
-      }
-      if (swimBreath <= 0) {
-        swimBreath = 0;
-        spentFor += deltaSeconds;
-        hurt(8 * deltaSeconds, 'blast');
-        if (Math.floor(gameTime * 2) % 4 === 0 && Math.random() < deltaSeconds * 4) splashAt(player.x, player.y, 0.5);
-        if (spentFor > RESCUE_AFTER && gameMode === 'play') harborPatrolRescue();
-      } else spentFor = 0;
+      return driving;
     }
     /* Pulled from the sea by the harbor patrol: never left to tread water forever. */
     function harborPatrolRescue() {

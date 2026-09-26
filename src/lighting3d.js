@@ -277,7 +277,7 @@
         // Rooftop and street neon: tinted glows (their sprites carry the colour).
         for (const n of neonSigns) {
           const p = n.sprite.getWorldPosition(sunScratch);
-          if (p.y > 30) continue;
+          if (p.y > SHOP_FLOOR + 16) continue;
           const c = n.sprite.material.color;
           pool(p.x, p.z, 40, Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255), 0.35);
         }

@@ -187,8 +187,10 @@
       jeep: {
         name: 'SENTINEL M4 UTILITY',
         offroad: true,
-        l: 52,
-        w: 29,
+        // A military utility truck, 2.2 m body.
+        l: 4.6 * UNITS_PER_METRE,
+        w: 2.3 * UNITS_PER_METRE,
+        modelScale: 0.65,
         topKmh: 110,
         zeroTo: [80, 13],
         brakeG: 0.8,
@@ -204,8 +206,10 @@
       apc: {
         name: 'SENTINEL LAV-8 ARMORED CARRIER',
         offroad: true,
-        l: 76,
-        w: 34,
+        // An eight-wheeled armoured carrier.
+        l: 6.4 * UNITS_PER_METRE,
+        w: 2.6 * UNITS_PER_METRE,
+        modelScale: 0.75,
         topKmh: 100,
         zeroTo: [60, 12],
         brakeG: 0.7,
@@ -222,8 +226,10 @@
         name: 'SENTINEL M35 CARGO TRUCK',
         offroad: true,
         truck: true,
-        l: 88,
-        w: 32,
+        // A two-and-a-half-tonne cargo truck.
+        l: 6.7 * UNITS_PER_METRE,
+        w: 2.45 * UNITS_PER_METRE,
+        modelScale: 0.9,
         topKmh: 90,
         zeroTo: [60, 20],
         brakeG: 0.65,

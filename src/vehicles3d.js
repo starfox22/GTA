@@ -56,7 +56,7 @@
         const model = specialVehicle(vehicle),
           b = model.body,
           cruiser = vehicle.type === 'cruiser',
-          l = vehicleSpec(vehicle).l;
+          l = designSize(vehicle).l;
         model.bike = true;
         tireAt(model, -l * 0.33, 0, 5.3, 3.2);
         tireAt(model, l * 0.34, 0, 5.3, 2.5);
@@ -266,9 +266,9 @@
       function makeTruck(c) {
         const model = specialVehicle(c),
           b = model.body,
-          vehicleDefinition = vehicleSpec(c),
-          l = vehicleDefinition.l,
-          w = vehicleDefinition.w * 0.91,
+          design = designSize(c),
+          l = design.l,
+          w = design.w * 0.91,
           bus = c.type === 'bus',
           pickup = c.type === 'pickup',
           flatbed = c.type === 'flatbed',
@@ -594,6 +594,8 @@
         }
       }
       function makeBicycle(vehicle) {
+        // A rented South Coast Cycle bike wears its livery (cycles3d.js).
+        if (vehicle.shareBike) return Object.assign(makeShareBicycle(vehicle), { realSize: true });
         const model = specialVehicle(vehicle),
           b = model.body;
         model.bike = true;

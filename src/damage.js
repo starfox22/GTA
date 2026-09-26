@@ -748,6 +748,12 @@
       umbrella: { half: [1.2, 1.2], breakKJ: 0.3, massKg: 15, carry: 1, material: 'fabric', harm: 0 },
       lounger: { half: [10, 4], breakKJ: 0.6, massKg: 18, carry: 1, material: 'plastic', harm: 0 },
       bench: { half: [8.5, 2.6], breakKJ: 8, massKg: 80, carry: 1, material: 'wood', harm: 3 },
+      // South Coast Cycle bike share (cycles.js): a docked bike goes over at a
+      // walking pace; the dock rack (a bolted steel spine) bends from ~25 km/h in
+      // a sedan and the payment totem from ~33.
+      sharebike: { half: [12.5, 3.6], breakKJ: 1.2, massKg: 23, carry: 1, material: 'metal', harm: 0 },
+      bikerack: { half: [24, 1.6], breakKJ: 35, massKg: 260, carry: 0.3, material: 'metal', harm: 5 },
+      biketotem: { half: [3.6, 2.4], breakKJ: 60, massKg: 280, carry: 0.4, material: 'glass', harm: 8 },
       // The esplanade's timber benches on cast-iron ends.
       seat: { half: [10, 3], breakKJ: 10, massKg: 90, carry: 1, material: 'wood', harm: 3 },
       railing: { half: [10, 1.5], breakKJ: 25, massKg: 90, carry: 0.6, material: 'metal', harm: 4 },
