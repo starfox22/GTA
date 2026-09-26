@@ -330,7 +330,7 @@ AUDIT CONTRACTS
 - Street columns are ROAD_CENTERS, rows are ROAD_ROWS; rows run negative north of
   the old shoreline. Block indices keep their pre-reclamation meaning. The x = 128
   column is the Shore Line's corridor (RAIL_CORRIDOR_X), not a street.
-- 512 world units = 100 meters. Timers use seconds; frame timestamps use ms.
+- 8 world units = 1 metre (UNITS_PER_METRE); a 512-unit city block is 64 m. Timers use seconds; frame timestamps use ms.
 - Physics uses 1/120-second steps; terrain uses shared Float32 triangles.
 - Compact entity keys (hp, a, vx/vy, w/l, hx/hy, sinkDepth) are data contracts.
 - entityElevation() is the only way to compare heights across terrain, roofs,

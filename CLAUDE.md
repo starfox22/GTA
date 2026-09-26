@@ -104,14 +104,11 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
 
 ## Agent workflow (parallel sessions)
 
-- Work in your own git worktree/branch. Before finishing: merge the lead branch
-  (`claude/compassionate-wright-cu2e1q`), resolve conflicts, `grep -rn '^<<<<<<<' .`
+- Work in your own git worktree/branch. Before finishing: merge the lead session's working
+  branch (the lead names it in your brief), resolve conflicts, `grep -rn '^<<<<<<<' .`
   (excluding node_modules), run `sh tools/quick-check.sh <tag>`, commit.
-- Commit in logical steps. Commit footer:
-  ```
-  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-  Claude-Session: https://claude.ai/code/session_01X7STL4NobWQRYwzSWdyi6G
-  ```
+- Commit in logical steps, ending each message with the attribution lines your session's
+  instructions give (the lead passes them on in agent briefs).
 - Never use bare `git stash` (the stash is shared between worktrees); use a WIP commit.
 - `docs/FILEMAP.md` conflict: take either side, rerun `python3 tools/filemap.py`.
 - Shared docs are small and per-area, so agents rarely touch the same file; edit the
