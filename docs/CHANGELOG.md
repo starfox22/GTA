@@ -33,7 +33,8 @@ The Falcon (themepark.js RIDERS' VOICES, car-radio.js)
   the elements ("WOOOO!", "Faster!", "Mommy!", "Upside dooown!"), and on the brake run "I'm going
   to throw up!", "Again! Again!", "My legs are jelly…". Two at a time through the crowd's bubble
   limit, first in line while the player rides, subject to NPC chatter and the height rule; seen
-  aboard and from the ground nearby.
+  aboard and from the ground nearby. From the chase camera the speakers come from cars 1-4 (in
+  frame); no line is said twice at once or twice running.
 - Console: `DeadEndCity.coasterVoices(reset)` (every cue with track position, height, vertical
   speed, g, drop depth), `DeadEndCity.speechView()`; `radio()` reports `enabled` (the ride's
   switch on the Falcon) and `saved`.

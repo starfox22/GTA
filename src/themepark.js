@@ -596,7 +596,7 @@
         speechUntil: 0,
       })),
       falconCars = Array.from({ length: COASTER_CARS }, () => ({})),
-      falconTalk = { running: false, nextLineAt: 0, eventLineAt: 0, firstDrop: false, log: [] },
+      falconTalk = { running: false, nextLineAt: 0, eventLineAt: 0, firstDrop: false, last: {}, log: [] },
       falconFrame = {},
       falconFrameB = {};
     /* The speakers crowd.js speechBubbles() considers alongside the street's. */
@@ -629,16 +629,23 @@
       rider.bubbleZ = f.z + f.tz * (along - 0.4) + uz * headUp + sz * across;
       rider.altitude = f.z;
     }
-    /* `count` riders not already talking say a line of `kind`; returns the lines. */
+    /* `count` riders not already talking say a line of `kind`; returns the lines.
+       From the chase camera (view 0) the front car is out of frame and the back
+       ones sit under the HUD, so the speakers come from cars 1 to 4. No line is
+       said twice at once, nor twice running. */
     function falconSay(kind, count = 1) {
-      const free = [];
+      const chase = player.coaster?.kind === 'train' && player.coaster.view === 0,
+        free = [];
       for (let r = 0; r < falconRiders.length; r++)
-        if (falconSeatTaken(r) && (falconRiders[r].speechUntil || 0) <= gameTime) free.push(falconRiders[r]);
+        if (falconSeatTaken(r) && (falconRiders[r].speechUntil || 0) <= gameTime && (!chase || (falconRiders[r].car >= 1 && falconRiders[r].car <= 4)))
+          free.push(falconRiders[r]);
       const said = [];
       for (let i = 0; i < count && free.length; i++) {
-        const rider = free.splice(Math.floor(seededRandom() * free.length), 1)[0];
+        const rider = free.splice(Math.floor(seededRandom() * free.length), 1)[0],
+          lines = FALCON_LINES[kind].filter((line) => line !== falconTalk.last[kind] && !said.includes(line));
         placeFalconRider(rider);
-        rider.speech = randomChoice(FALCON_LINES[kind]);
+        rider.speech = randomChoice(lines.length ? lines : FALCON_LINES[kind]);
+        falconTalk.last[kind] = rider.speech;
         rider.speechUntil = gameTime + 2.6;
         rider.speechKind = 'falcon-' + kind;
         rider.speechKindText = rider.speech;
