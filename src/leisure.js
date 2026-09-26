@@ -20,6 +20,7 @@
       // faces: the person next to them (TALK) or the water (SWIM). Standing still
       // next to someone starts a conversation on its own anyway (clubtalk.js).
       if (player.pool) return clubPoolPrompt() || clubTalkPrompt();
+      if (clubTalk.active) return clubTalkPrompt();
       const talk = clubTalkPrompt(),
         swim = clubPoolPrompt(),
         who = clubTalk.candidate;

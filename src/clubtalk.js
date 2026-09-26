@@ -279,7 +279,9 @@
       if (clubTalk.standFor >= CLUB_TALK.standSeconds && gameTime > clubTalk.restUntil && (p.talkedAt ?? -1e9) < gameTime - CLUB_TALK.againAfter) startClubTalk(p);
     }
     function clubTalkPrompt() {
-      if (clubTalk.active || !clubTalkPlayerFree()) return null;
+      // While talking, E moves the conversation on.
+      if (clubTalk.active) return { text: 'NEXT LINE', id: 'marea-talk' };
+      if (!clubTalkPlayerFree()) return null;
       const p = clubTalk.candidate && clubTalkable(clubTalk.candidate) && distanceBetween(clubTalk.candidate, player) < CLUB_TALK.reach ? clubTalk.candidate : clubTalkCandidate();
       return p ? { text: 'TALK', id: 'marea-talk' } : null;
     }
