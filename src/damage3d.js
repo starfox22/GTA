@@ -597,7 +597,7 @@
         part.updateMatrixWorld(true);
         part.matrixWorld.decompose(debrisPosition, debrisQuaternion, debrisScale);
         // The part's size is in its model's design units (render3d.js DESIGN SIZE).
-        const k = vehicleSpec(vehicle)?.modelScale || 1,
+        const k = carModels.get(vehicle)?.modelScale || vehicleSpec(vehicle)?.modelScale || 1,
           ks = Array.isArray(k) ? k[0] : k;
         sx *= ks;
         sy *= ks;
@@ -959,7 +959,7 @@
             bumper.position.z += side * half * (1 - Math.cos(drop));
           }
           // Police bumpers are black plastic (police3d.js).
-          bumper.material = damage.burnt ? burntMetal : m.bumperMaterial || chrome;
+          bumper.material = damage.burnt ? burntMetal : m.bumperMaterials?.[i] || m.bumperMaterial || chrome;
         });
         // Doors swing out on a bent hinge; torn off, the dark opening is left.
         for (const side of [-1, 1]) {
@@ -972,8 +972,10 @@
             const pivot = new Three.Group();
             pivot.position.set(l * 0.2, 0, side * w * 0.5);
             m.body.add(pivot);
-            const panel = box(pivot, -l * 0.13, (4.8 + h) / 2 + 0.2, side * 0.25, l * 0.26, h - 4.4, 0.45, m.paint),
-              opening = box(m.body, l * 0.07, (4.8 + h) / 2, side * (w * 0.5 + 0.04), l * 0.24, h - 5, 0.3, engineBay);
+            // From the sill (`dims.sill`: a real-size body's, cars3d.js) to the belt.
+            const sill = m.dims.sill ?? 4.8,
+              panel = box(pivot, -l * 0.13, (sill + h + 0.4) / 2, side * 0.25, l * 0.26, h + 0.4 - sill, 0.45, m.paint),
+              opening = box(m.body, l * 0.07, (sill + h) / 2, side * (w * 0.5 + 0.04), l * 0.24, h - sill - 0.2, 0.3, engineBay);
             // A livery samples its door colour through the panel's UVs (police3d.js).
             if (m.panelGeometry) panel.geometry = m.panelGeometry;
             door = m.doors[side] = { pivot, panel, opening };

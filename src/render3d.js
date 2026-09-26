@@ -1191,6 +1191,7 @@
       // @include src/apache3d.js
       // @include src/vehicles3d.js
       // @include src/police3d.js
+      // @include src/cars3d.js
       // @include src/plane3d.js
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
@@ -1272,7 +1273,10 @@
           model.modelScale = 1;
           return model;
         }
-        const [sx, sy, sz] = modelScaleOf(vehicle);
+        // A builder may draw at its own scale whatever the type's (`drawScale`: the
+        // police bodies, authored for 0.8, also dress the 'suv' and 'van' types,
+        // which cars3d.js builds at real size).
+        const [sx, sy, sz] = model.drawScale ? [model.drawScale, model.drawScale, model.drawScale] : modelScaleOf(vehicle);
         model.group.scale.set(sx, sy, sz);
         model.modelScale = sx;
         return model;
@@ -1286,12 +1290,14 @@
         if (vehicleSpec(vehicle).bike) return makeMotorcycle(vehicle);
         if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
         if (vehicleSpec(vehicle).boat) return makeBoat(vehicle);
-        if (vehicleSpec(vehicle).truck) return makeTruck(vehicle);
         // Patrol cars, roadblock cruisers, the SWAT truck and agents' SUVs (police3d.js).
         if (vehicle.type === 'police' || vehicle.lawUnit === 'swat' || vehicle.lawUnit === 'fed' || vehicle.policeLook) {
           const look = policeLookFor(vehicle);
           if (look) return makePoliceVehicle(vehicle, look);
         }
+        // Civilian cars at real size (cars3d.js).
+        if (CAR_BODIES[vehicle.type]) return makeCivilianCar(vehicle);
+        if (vehicleSpec(vehicle).truck) return makeTruck(vehicle);
         const group = new Three.Group(),
           body = new Three.Group();
         group.add(body);
@@ -2670,6 +2676,12 @@
               for (const lamp of m.lamps)
                 if (lamp.lit === tailLamp && !c.damage?.lights?.[lamp.key]) lamp.mesh.material = braking ? brakeLamp : tailLamp;
             }
+            // Civilian lamps, DRLs, rolling and steering wheels (cars3d.js).
+            if (m.civilian) {
+              const lampsOn = vehicleLampAmount(),
+                driven = c.hp > 0 && (c.ai || c === player.car || !!c.showLamps);
+              animateCivilianCar(c, m, deltaSeconds, driven, lampsOn, braking);
+            }
             // Windscreen wipers in the rain (vehicles3d.js).
             if (m.wipers) updateWipers(c, m, deltaSeconds);
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
@@ -2743,7 +2755,9 @@
             if (c.bloodyUntil > gameTime && !m.blood) {
               m.blood = new Three.Group();
               m.body.add(m.blood);
-              const vehicleDefinition = designSize(c),
+              // In the model's own units (its drawn scale, DESIGN SIZE).
+              const k = m.modelScale || 1,
+                vehicleDefinition = { l: vehicleSpec(c).l / k, w: vehicleSpec(c).w / k },
                 red = mat('#7a0f1f', 0.62);
               for (let j = 0; j < 9; j++)
                 box(

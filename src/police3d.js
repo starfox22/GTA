@@ -75,6 +75,7 @@
        * the windscreen foot, roof arch and the side pillars ([s, width, 'paint' or
        * 'black'], s = 0 at the rear glass, 1 at the windscreen).
        */
+      const POLICE_DRAW_SCALE = 0.8;
       const POLICE_BODIES = {
         charger: {
           name: 'charger',
@@ -1520,9 +1521,12 @@
        */
       function makePoliceVehicle(vehicle, look) {
         claimPoliceResources();
-        const design = designSize(vehicle),
-          l = design.l,
-          w = design.w * 0.87,
+        // The bodies are authored for a drawn scale of 0.8 (the patrol type's);
+        // the agents' 'suv' and the SWAT 'van' are real-size types (cars3d.js), so
+        // the scale is the model's own (`drawScale`, render3d.js makeVehicle).
+        const spec = vehicleSpec(vehicle),
+          l = spec.l / POLICE_DRAW_SCALE,
+          w = (spec.w / POLICE_DRAW_SCALE) * 0.87,
           body = POLICE_BODIES[look.body],
           kit = policeKit(look, body, l, w),
           g = body.glass,
@@ -1607,6 +1611,7 @@
           dead: false,
           car: true,
           police: true,
+          drawScale: POLICE_DRAW_SCALE,
           look,
           dims: { l, w, h: body.h, roof: g.roof, van: body.kind !== 'sedan' },
           shell,
