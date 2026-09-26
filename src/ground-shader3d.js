@@ -607,8 +607,8 @@
               if ( byKerb ) {
                 // Old flagstones in rows along the kerb.
                 vec3 st = groundAshlar( fr, 7.0, 13.0, 8.0, 19.0 );
-                joint = 1.0 - smoothstep( 0.22, 0.22 + fp, st.y );
-                joint = mix( 0.1, joint, groundFade( 0.6, fp ) );
+                // Box filtered: a joint narrower than a pixel still shows as a faint line.
+                joint = mix( groundBand( st.y, 0.22, fp ), 0.05, smoothstep( 3.0, 6.0, fp ) );
                 float dome = smoothstep( 0.0, 1.4, st.y );
                 vec3 tint = mix( vec3( 0.96, 0.98, 1.02 ), vec3( 1.06, 1.0, 0.92 ), st.x );
                 pave = base * tint * ( 0.82 + 0.26 * cityHash( vec2( st.x, 1.0 ) ) ) * ( 0.84 + 0.3 * cg.r );
@@ -639,8 +639,7 @@
                 vec2 f = mod( fr - 9.0, 16.0 );
                 sb = vec3( floor( ( fr - 9.0 ) / 16.0 ), min( min( f.x, 16.0 - f.x ), min( f.y, 16.0 - f.y ) ) );
               }
-              joint = 1.0 - smoothstep( 0.12, 0.12 + fp, sb.z );
-              joint = mix( 0.03, joint, groundFade( 0.5, fp ) );
+              joint = mix( groundBand( sb.z, 0.12, fp ), 0.02, smoothstep( 3.0, 6.0, fp ) );
               float tone = cityHash( sb.xy + 4.0 );
               float speck = cg.b;
               float band = byKerb ? 1.0 - smoothstep( 3.5 - 0.5 * fp, 3.5 + 0.5 * fp, across ) : 0.0;
@@ -683,8 +682,7 @@
             } else if ( gStyle < 5.5 ) {
               // Monarch Isle: pale limestone ashlar.
               vec3 st = groundAshlar( fr, 9.0, 16.0, 11.0, 26.0 );
-              joint = 1.0 - smoothstep( 0.16, 0.16 + fp, st.y );
-              joint = mix( 0.04, joint, groundFade( 0.5, fp ) );
+              joint = mix( groundBand( st.y, 0.16, fp ), 0.03, smoothstep( 3.0, 6.0, fp ) );
               float tone = st.x;
               vec3 lime = base * vec3( 1.07, 1.03, 0.94 ) * ( 0.93 + 0.1 * tone ) * ( 0.9 + 0.2 * cg.r );
               // Fossil flecks.
@@ -818,8 +816,8 @@
                   step1 = max( step1, ( 1.0 - smoothstep( 0.7, 1.0, e ) ) * groundFade( 0.8, fp ) );
                 }
               }
-              loose = sheet * ( 0.94 + 0.12 * lg.b ) * ( 1.0 + 0.05 * ripple ) * ( 1.0 - 0.1 * step1 ) * ( 0.96 + 0.08 * macro );
-              h = 0.22 * ripple + ( lg.b - 0.5 ) * 0.1 - 0.3 * step1;
+              loose = sheet * ( 0.94 + 0.12 * lg.b ) * ( 1.0 + 0.09 * ripple ) * ( 1.0 - 0.1 * step1 ) * ( 0.96 + 0.08 * macro );
+              h = 0.35 * ripple + ( lg.b - 0.5 ) * 0.1 - 0.3 * step1;
               rough = 0.96;
             } else {
               // Gravel paths, clay, soil: pebbles with their own tones.

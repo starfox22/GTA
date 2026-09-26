@@ -219,3 +219,76 @@ Cost of the wet look (HIGH, 1280 x 720, Old Quarter crossroads at 22:30): camera
 Screenshots (session scratchpad `gfx/shots/`): `cmp-u1080.png` (the band before / after, contrast-stretched below), `e-aoview-enh.png` / `f-aoview-enh.png` (the AO buffer before / after), `cmp-phantom.png`, `cmp-night-tiers.png`, `cmp-day-tiers.png`, `cmp-final.png`, `cmp-outline.png`.
 
 Known issues: the reflection pass sees only what is on screen (reflections fade out towards the top of the frame, and a lamp above the frame has no reflected head, only its streak); lamp pools on wet pavements under a lamp still bloom brightly at night; bridge decks keep their own wet shader and are not mirrored by the reflection pass.
+
+## Follow-up: streets and parks at close zoom (ground materials), closer camera
+
+Owner: "the game doesn't look so good at closer zooms ... the street textures are low-res ...
+make them AAA even at a slightly closer zoom."
+
+### Diagnosis
+
+| Surface | Source | Texels per metre | Screen pixels per metre (1280 x 800) at zoom 1.2 / 1.8 / 2.4 / 3.0 |
+| --- | --- | --- | --- |
+| City streets, pavements, plazas, parks | render3d.js baked sheet, 0.636 px/unit (29 MP) | 5.1 | 9 / 13.5 / 18 / 22.6 |
+| County ground and roads | county.js tiles, 0.364 px/unit | 2.9 | same |
+| Monarch Isle | monarch.js tile, 0.56 px/unit | 4.5 | same |
+| Sunset Pier / Fort Sentinel | own tiles, 0.64 / ~0.5 px/unit | 5.1 / ~4 | same |
+
+(1080p is 1.35x these, ULTRA's pixel ratio 2 doubles them.) At the old default a sheet texel
+already covered ~1.8 pixels, at 3.0 over 4 (6-9 at 1080p ULTRA): every painted edge, lane dash
+and crossing was a blur 3 units wide. Worse, the sheets were filled with the ground atlas's
+photographs squeezed into 72-120 texel tiles: the pavement "slabs" were 4.7 m squares of a
+blurred photo and the tarmac a blotchy print, magnified. The ground shader's detail was two
+octaves of value noise picked by the painted colour's brightness, so it could not tell a kerb
+from a plaza or paint from paving (the blend between asphalt and a white line passed through
+"paving", which is why the old wet gutter needed twelve sheet reads).
+
+### What changed
+
+See SOURCE_GUIDE "Ground materials" for the full description.
+
+- The sheets only say what lies where (flat fills; no photos, no markings). The shader draws
+  the surfaces in world space: sheet edges re-cut crisp where magnified; classes from colour;
+  asphalt, kerbs, paving by district, lawns, gravel and sand as materials built from a small
+  texture array of detail layers (the atlas photos at their true scale, plus generated concrete,
+  broom, granite, gravel, sand and mulch) and procedural patterns (herringbone, running bond,
+  ashlar, setts, slabs, patches, cracks, wheel paths).
+- A signed distance field of the carriageways (from the street geometry, not the painting)
+  gives crisp kerb stones, gutter pans, lane-aware wheel paths and oil, and pavement joints that
+  follow the kerb; an info texture gives the district style, lane width and park lawns.
+- Every road marking, manhole cover, gully grate, tree base, dropped kerb and oil stain is a
+  record drawn exactly by the shader (worn paint box-filtered, iron with tread), from the same
+  data the maps paint.
+- Height and roughness per material drive a screen-space bump and the wet look; standing water
+  gathers in the gutters, between setts and in the grates.
+- Grass tufts: one instanced draw (21,504 tufts of five blades on a world-anchored 2.6-unit grid)
+  on HIGH / ULTRA from street zoom 1.75 (full at 2.3), off lawns collapsed in the vertex shader.
+- Camera: `STREET_ZOOM` 1.2 -> 1.6, wheel maximum 1.8 -> 3.0; the speed pull-back now goes to
+  0.68 of the zoom or 0.82, whichever is wider, so at 220 km/h the view of the road ahead is the
+  same as it was from the old default.
+
+### Anti-aliasing
+
+Detail layers are mipmapped (trilinear, 4x anisotropic) and sampled with explicit gradients;
+every procedural pattern fades to its average coverage by the pixel footprint (`groundFade`,
+`groundJoints`), thin lines are box filtered (`groundBand`) or scaled to their true share of the
+pixel, and past a footprint of 8 units a pixel (the flight view) the cheap path takes over.
+Motion test: the same view drawn twice with the simulation held and the camera moved 0.37 units
+(a fraction of a pixel) east; the second frame is compared with the first shifted by the same
+amount (`shimmer.py`: what remains is detail that did not move with the ground).
+
+### Cost
+
+- Texture memory: detail layers 1.4 MB (256 x 256 x 4 layers RGBA8 with mips); carriageway fields
+  22.7 MB (city 1824 x 2464 half float, county 1878 x 1878, Monarch Isle 1250 x 1260, plus the
+  info textures); marks 3.5 MB (4,784 records filed as ~30,000 copies in the 32-unit grid, none
+  dropped). The coarse roughness sheet (1161 x 1568 RGBA, ~9.7 MB with mips) is gone: net about
+  +18 MB against the ~155 MB city sheet. Build time at start-up ~2.9 s headless (SwiftShader
+  machine, loaded), most of it the fields' distance evaluation.
+- Draw calls: the ground is unchanged (one mesh per sheet); the grass tufts add one draw (no
+  shadow draw) only on HIGH / ULTRA zoomed in past 1.75.
+- Shader: per ground pixel on HIGH, typically 9-14 texture reads (sheet 3, field 2, detail layers
+  2-4, marks index 1 + 2 per record in the cell, usually 0-3 records) against the old 7 dry /
+  19 wet; ALU roughly 2-3x the old ground shader in the busiest spots (kerb plus paving plus
+  marks), about the same on open asphalt. MEDIUM takes one detail sample instead of two; LOW
+  keeps a short path (sheet, one detail sample, kerb line, marks, no bump).
