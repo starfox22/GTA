@@ -306,8 +306,12 @@
         return;
       }
       const raw = Math.hypot(dx, dy) / deltaSeconds;
-      // Faster than anything on foot can go (a deck under way tops out far below).
-      if (raw > 80 * KMH) return;
+      // Faster than anything on foot can go (a deck under way tops out far
+      // below): a teleport or respawn, so start again from standing.
+      if (raw > 80 * KMH) {
+        paceMeter.speed = 0;
+        return;
+      }
       paceMeter.speed += (raw - paceMeter.speed) * (1 - Math.exp(-deltaSeconds / PACE_SMOOTHING));
       if (paceMeter.speed < PACE_STANDING && raw < PACE_STANDING) paceMeter.speed = 0;
     }
