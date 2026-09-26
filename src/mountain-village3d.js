@@ -606,7 +606,7 @@
         plaster: mvStd({ map: MV_TEX.plaster, roughness: 0.96 }),
         shake: mvStd({ map: MV_TEX.shake, roughness: 0.94 }),
         slate: mvStd({ map: MV_TEX.slate, roughness: 0.6, metalness: 0.08 }),
-        metal: mvStd({ map: MV_TEX.metal, roughness: 0.42, metalness: 0.55 }),
+        metal: mvStd({ map: MV_TEX.metal, roughness: 0.5, metalness: 0.2 }),
         timber: mvStd({ map: MV_TEX.timber, roughness: 0.88 }),
         planks: mvStd({ map: MV_TEX.planks, roughness: 0.9 }),
         stack: mvStd({ map: MV_TEX.stack, roughness: 0.95 }),
@@ -623,7 +623,7 @@
         gravel: mvStd({ map: MV_TEX.gravel, roughness: 1, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }),
         dirt: mvStd({ map: MV_TEX.dirt, roughness: 1, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }),
         cobbles: mvStd({ map: MV_TEX.cobbles, roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }),
-        water: mvStd({ color: '#ffffff', roughness: 0.05, metalness: 0.35, emissive: '#1a5a70', emissiveIntensity: 0.15 }),
+        water: mvStd({ color: '#ffffff', roughness: 0.05, metalness: 0.35, emissive: '#10323c', emissiveIntensity: 0.1 }),
         // Windows: lit from inside at night (the lit set) or dark rooms.
         windowLit: mvStd({ map: mvWindowDay, emissiveMap: mvWindowGlow, emissive: '#ffffff', emissiveIntensity: 0, roughness: 0.3, metalness: 0.2 }),
         windowDark: mvStd({ map: mvWindowDay, emissiveMap: mvWindowGlow, emissive: '#ffffff', emissiveIntensity: 0, roughness: 0.3, metalness: 0.2 }),
@@ -989,8 +989,8 @@
       function mvRoofFinish(b) {
         const F = b.finish;
         if (F.roof === 'metal') return ['metal', F.roofColor];
-        if (F.roof === 'slate') return ['slate', mvMix(F.roofColor, '#ffffff', 0.25)];
-        return ['shake', mvMix(F.roofColor, '#ffffff', 0.45)];
+        if (F.roof === 'slate') return ['slate', mvMix(F.roofColor, '#ffffff', 0.1)];
+        return ['shake', mvMix(F.roofColor, '#ffffff', 0.18)];
       }
       /*
        * A gable roof over x0..x1, z0..z1 with its ridge along `axis` ('x' or 'y'
@@ -1717,7 +1717,7 @@
       }
       // The town square: cobbles, a kerb, and the fountain (Northridge) or the well (Stonecreek).
       function mvSquare(batch, s) {
-        mvGround(batch, 'cobbles', s.x, s.y, s.x + s.w, s.y + s.h, '#ffffff', 0.18);
+        mvGround(batch, 'cobbles', s.x, s.y, s.x + s.w, s.y + s.h, '#a9a196', 0.18);
         for (const [x0, z0, x1, z1] of [[s.x, s.y, s.x + s.w, s.y + 0.3 * MVU], [s.x, s.y + s.h - 0.3 * MVU, s.x + s.w, s.y + s.h], [s.x, s.y, s.x + 0.3 * MVU, s.y + s.h], [s.x + s.w - 0.3 * MVU, s.y, s.x + s.w, s.y + s.h]])
           mvBlock(batch, 'stone', x0, 0, z0, x1, 0.15 * MVU, z1, '#b3ada2');
         const cx = s.cx,
@@ -1726,9 +1726,9 @@
           // An octagonal stone basin, the water, a column with a bowl, a carved bear on top.
           const r = 3.6 * MVU;
           mvCyl(batch, 'stone', mvV3(cx, 0, cz), mvV3(cx, 0.7 * MVU, cz), r, 8, '#c8c2b6', 'stone', '#c8c2b6');
-          mvCyl(batch, 'water', mvV3(cx, 0.55 * MVU, cz), mvV3(cx, 0.72 * MVU, cz), r - 0.35 * MVU, 8, '#3f7f94', 'water', '#3f7f94');
+          mvCyl(batch, 'water', mvV3(cx, 0.55 * MVU, cz), mvV3(cx, 0.72 * MVU, cz), r - 0.35 * MVU, 8, '#2e5560', 'water', '#2e5560');
           mvCyl(batch, 'stone', mvV3(cx, 0.7 * MVU, cz), mvV3(cx, 2.3 * MVU, cz), 0.45 * MVU, 8, '#b9b3a8');
-          mvCyl(batch, 'stone', mvV3(cx, 2.3 * MVU, cz), mvV3(cx, 2.55 * MVU, cz), 1.3 * MVU, 10, '#c8c2b6', 'water', '#5a9fb4');
+          mvCyl(batch, 'stone', mvV3(cx, 2.3 * MVU, cz), mvV3(cx, 2.55 * MVU, cz), 1.3 * MVU, 10, '#c8c2b6', 'water', '#3e6a74');
           mvGeometry(batch, 'stone', MV_GEO.blob, cx, 3.1 * MVU, cz, 0.55 * MVU, 0.6 * MVU, 0.85 * MVU, '#8a8276', 0.3);
           mvGeometry(batch, 'stone', MV_GEO.blob, cx, 3.55 * MVU, cz + 0.55 * MVU, 0.32 * MVU, 0.3 * MVU, 0.35 * MVU, '#8a8276');
           for (let k = 0; k < 4; k++) {
@@ -1867,7 +1867,7 @@
         if (!isMountainTown(town)) continue;
         const batch = mvBatch(town.name),
           inTown = (x, y) => x > town.x - 100 && x < town.x + BLOCK_SIZE * 2 + 100 && y > town.y - 100 && y < town.y + BLOCK_SIZE * 2 + 100;
-        for (const y of MOUNTAIN_VILLAGE.yards) if (inTown(y.x, y.y)) mvGround(batch, y.kind === 'dirt' ? 'dirt' : 'gravel', y.x, y.y, y.x + y.w, y.y + y.h);
+        for (const y of MOUNTAIN_VILLAGE.yards) if (inTown(y.x, y.y)) mvGround(batch, y.kind === 'dirt' ? 'dirt' : 'gravel', y.x, y.y, y.x + y.w, y.y + y.h, y.kind === 'dirt' ? '#d8cbb4' : '#b9ae9c');
         for (const b of MOUNTAIN_VILLAGE.buildings) if (b.town === town.name) mvHouse(batch, b);
         for (const w of MOUNTAIN_VILLAGE.boardwalks) if (w.building.town === town.name) mvBoardwalk(batch, w);
         for (const f of MOUNTAIN_VILLAGE.fences) if (inTown(f.x0, f.y0)) mvFence(batch, f);

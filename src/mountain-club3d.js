@@ -251,7 +251,7 @@
         mvStringLights(shell, [[pole1.x, 4.5 * M, pole1.y], [pole2.x, 4.5 * M, pole2.y], [pole3.x, 4.5 * M, pole3.y], [CLUBD.x, CLUB_GF - 0.3 * M, CLUBD.y + CLUBD.h]]);
         // ---- The lot: gravel, wheel tracks, log rails, wheel stops, the gate and its carved sign.
         const L = CLUBK.lot;
-        mvGround(shell, 'gravel', L.x, L.y + 196, L.x + L.w, L.y + L.h, '#e8e0d2', 0.12);
+        mvGround(shell, 'gravel', L.x, L.y + 196, L.x + L.w, L.y + L.h, '#c9bda9', 0.12);
         mvGround(shell, 'dirt', L.x + 112, L.y + 206, L.x + 140, L.y + L.h, '#b8a48a', 0.16);
         mvGround(shell, 'dirt', L.x + 112, L.y + 196, L.x + 410, L.y + 218, '#b8a48a', 0.16);
         for (const [u0, v0, u1, v1] of CLUBK.rails) {
