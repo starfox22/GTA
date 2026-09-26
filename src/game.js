@@ -339,6 +339,21 @@
       '#736244',
       '#a25666',
     ];
+    /* Paint palettes (VEHICLE_DEFINITIONS `palette`): what real cars of each class
+       come in, most popular first-ish; vehiclePaint(type) picks one. cars3d.js
+       gives bright solids a gloss finish and the rest a metallic flake. */
+    const PAINT_EVERYDAY = ['#e8eae9', '#b9bdc1', '#7a7f85', '#3e4348', '#16181b', '#1f3455', '#7c1b20', '#c7b89b', '#34503f', '#8aa8c4', '#5b4839', '#a25666'],
+      PAINT_SPORT = ['#b3121b', '#e9b82a', '#f06a12', '#1e56b8', '#16181b', '#eceeed', '#2f7d3a', '#9aa3ab', '#0f7fa0', '#5e2b7e'],
+      PAINT_LUXURY = ['#16181b', '#1f2a38', '#e9eae6', '#3d4148', '#4a2a2e', '#b8b3a8', '#2b3d33'];
+    // The rare exotica: seen now and then in traffic, parked at the upscale
+    // addresses (populate, SHOWCASE PARKING).
+    const FLAGSHIP_TYPES = ['chevette', 'brutini', 'cavalino', 'dolcati', 'yamasaki'];
+    function vehiclePaint(type) {
+      const spec = VEHICLE_DEFINITIONS[type];
+      return randomChoice(spec?.palette || VEHICLE_PAINT_COLORS);
+    }
+    // Every civilian car and motorbike, for DeadEndCity.carLineup().
+    const CIVILIAN_LINEUP = ['sedan', 'taxi', 'coupe', 'muscle', 'sport', 'roadster', 'rally', 'hotrod', 'supercar', 'luxury', 'limousine', 'suv', 'van', 'pickup', 'chevette', 'brutini', 'cavalino', 'bike', 'cruiser', 'dolcati', 'yamasaki', 'kr500'];
     const VEHICLE_DEFINITIONS = {
       bicycle: {
         name: 'CITY CYCLE',
@@ -411,8 +426,9 @@
       roadster: {
         balance: 0.5,
         name: 'SOLSTICE SPIDER',
-        l: 42,
-        w: 22,
+        // A two-seat roadster (MX-5 / Solstice): 4.2 m, 1.78 m body.
+        l: 4.2 * UNITS_PER_METRE,
+        w: 2.05 * UNITS_PER_METRE,
         topKmh: 250,
         zeroTo: [100, 4.8],
         brakeG: 1.1,
@@ -423,12 +439,14 @@
         mass: 1.12,
         grip: 8.4,
         color: '#b85b48',
+        palette: PAINT_SPORT,
       },
       rally: {
         balance: 0.1,
         name: 'KODIAK RS',
-        l: 39,
-        w: 23,
+        // A rally hatchback (WRX STI / Focus RS): 4.35 m, 1.8 m body.
+        l: 4.35 * UNITS_PER_METRE,
+        w: 2.07 * UNITS_PER_METRE,
         topKmh: 230,
         zeroTo: [100, 4.0],
         brakeG: 1.1,
@@ -439,12 +457,14 @@
         mass: 1.38,
         grip: 11,
         color: '#557bb3',
+        palette: ['#1f4fbf', '#eceeed', '#16181b', '#b3121b', '#9aa3ab', '#2f7d3a'],
       },
       limousine: {
         balance: -0.5,
         name: 'SOVEREIGN STRETCH',
-        l: 76,
-        w: 25,
+        // A stretch limousine on a full-size sedan: 8.8 m, 2.0 m body.
+        l: 8.8 * UNITS_PER_METRE,
+        w: 2.3 * UNITS_PER_METRE,
         topKmh: 190,
         zeroTo: [100, 9.5],
         brakeG: 0.9,
@@ -455,12 +475,14 @@
         mass: 3.4,
         grip: 5.8,
         color: '#222b37',
+        palette: PAINT_LUXURY,
       },
       hotrod: {
         balance: 0.7,
         name: 'HELLFIRE CUSTOM',
-        l: 46,
-        w: 24,
+        // A chopped '32-style hot rod coupe: 4.5 m, 1.8 m over the rear fenders.
+        l: 4.5 * UNITS_PER_METRE,
+        w: 2.07 * UNITS_PER_METRE,
         topKmh: 235,
         zeroTo: [100, 4.3],
         brakeG: 0.95,
@@ -471,11 +493,13 @@
         mass: 1.5,
         grip: 5.2,
         color: '#943d42',
+        palette: ['#8f1b1b', '#16181b', '#d8561a', '#2a4f8a', '#e3b23c', '#3b6b5c', '#5e2b7e'],
       },
       bike: {
         name: 'VORTEX 900',
-        l: 30,
-        w: 10,
+        // A naked streetfighter: 2.1 m, bars 0.8 m.
+        l: 2.1 * UNITS_PER_METRE,
+        w: 0.8 * UNITS_PER_METRE,
         topKmh: 225,
         zeroTo: [100, 3.2],
         brakeG: 1.0,
@@ -487,11 +511,13 @@
         grip: 9,
         bike: true,
         color: '#c4483c',
+        palette: ['#c4483c', '#1e56b8', '#16181b', '#eceeed', '#5bbd2b', '#e9b82a'],
       },
       cruiser: {
         name: 'NOMAD CRUISER',
-        l: 34,
-        w: 12,
+        // A heavy V-twin cruiser: 2.45 m, bars 0.95 m.
+        l: 2.45 * UNITS_PER_METRE,
+        w: 0.95 * UNITS_PER_METRE,
         topKmh: 180,
         zeroTo: [100, 5.0],
         brakeG: 0.9,
@@ -503,12 +529,14 @@
         grip: 7,
         bike: true,
         color: '#313f4b',
+        palette: ['#16181b', '#5a1a22', '#1f3455', '#8b8f94', '#3b3f44', '#e9eae6'],
       },
       supercar: {
         balance: 0.2,
         name: 'V12 TEMPEST',
-        l: 45,
-        w: 23,
+        // A front-mid V12 grand tourer (812 / DBS): 4.7 m, 2.0 m body.
+        l: 4.7 * UNITS_PER_METRE,
+        w: 2.3 * UNITS_PER_METRE,
         topKmh: 330,
         zeroTo: [100, 2.9],
         brakeG: 1.2,
@@ -519,11 +547,13 @@
         mass: 1.35,
         grip: 9,
         color: '#d9b753',
+        palette: ['#b3121b', '#1a1c20', '#9aa3ab', '#eceeed', '#1f3455', '#2f5a3a', '#e9b82a'],
       },
       luxury: {
         name: 'MONARCH V12',
-        l: 52,
-        w: 25,
+        // A full-size luxury saloon (Phantom / S-Class): 5.3 m, 1.95 m body.
+        l: 5.3 * UNITS_PER_METRE,
+        w: 2.24 * UNITS_PER_METRE,
         topKmh: 250,
         zeroTo: [100, 5.0],
         brakeG: 1.1,
@@ -534,13 +564,15 @@
         mass: 2.05,
         grip: 6,
         color: '#283b4c',
+        palette: PAINT_LUXURY,
       },
       suv: {
         balance: -0.4,
         name: 'RANGER 4X4',
         offroad: true,
-        l: 49,
-        w: 26,
+        // A full-size luxury SUV (Range Rover / Land Cruiser): 4.95 m, 1.95 m body.
+        l: 4.95 * UNITS_PER_METRE,
+        w: 2.24 * UNITS_PER_METRE,
         topKmh: 175,
         zeroTo: [100, 9.0],
         brakeG: 0.95,
@@ -551,12 +583,14 @@
         mass: 2.3,
         grip: 6,
         color: '#54684f',
+        palette: ['#16181b', '#eceeed', '#b9bdc1', '#3e4348', '#34503f', '#1f3455', '#5b4839', '#6e7a5a'],
       },
       pickup: {
         balance: -0.4,
         name: 'WORKHORSE',
-        l: 59,
-        w: 26,
+        // A full-size crew-cab pickup (F-150): 5.6 m, 1.94 m body.
+        l: 5.6 * UNITS_PER_METRE,
+        w: 2.23 * UNITS_PER_METRE,
         topKmh: 165,
         zeroTo: [100, 10.0],
         brakeG: 0.9,
@@ -567,6 +601,7 @@
         mass: 2.7,
         truck: true,
         color: '#70899a',
+        palette: ['#eceeed', '#16181b', '#9aa3ab', '#8e1c1f', '#1f3455', '#3e4348', '#6e5a3f', '#34503f'],
       },
       truck: {
         balance: -0.7,
@@ -649,8 +684,9 @@
         balance: 0.1,
         mass: 1.25,
         name: 'VOLT COUPE',
-        l: 40,
-        w: 20,
+        // A compact electric fastback (Model 3 / Polestar 2): 4.4 m, 1.8 m body.
+        l: 4.4 * UNITS_PER_METRE,
+        w: 2.07 * UNITS_PER_METRE,
         topKmh: 205,
         zeroTo: [100, 6.5],
         brakeG: 1.05,
@@ -659,13 +695,15 @@
         turn: 2.5,
         hp: 130,
         color: '#8dbdb7',
+        palette: ['#eceeed', '#9aa3ab', '#16181b', '#1e56b8', '#b3121b', '#3e4348', '#7fa2bf', '#2d5b4c'],
       },
       muscle: {
         balance: 0.6,
         mass: 1.65,
         name: 'DUKE V8',
-        l: 47,
-        w: 23,
+        // A muscle car (Challenger / Mustang): 5.0 m, 1.92 m body.
+        l: 5.0 * UNITS_PER_METRE,
+        w: 2.2 * UNITS_PER_METRE,
         topKmh: 245,
         zeroTo: [100, 5.0],
         brakeG: 1.0,
@@ -674,12 +712,14 @@
         turn: 2.05,
         hp: 160,
         color: '#b55142',
+        palette: ['#b3121b', '#16181b', '#eceeed', '#f06a12', '#1e56b8', '#8b8f94', '#2b6b3a', '#5e2b7e', '#e9b82a'],
       },
       taxi: {
         mass: 1.5,
         name: 'CITY CAB',
-        l: 43,
-        w: 23,
+        // A boxy full-size cab sedan (Crown Victoria): 4.9 m, 1.85 m body.
+        l: 4.9 * UNITS_PER_METRE,
+        w: 2.13 * UNITS_PER_METRE,
         topKmh: 175,
         zeroTo: [100, 9.5],
         brakeG: 1.0,
@@ -687,14 +727,16 @@
         tractionG: 0.6,
         turn: 2.15,
         hp: 145,
-        color: '#d9ac3e',
+        color: '#f2b705',
+        palette: ['#f2b705'],
       },
       van: {
         balance: -0.5,
         mass: 2.35,
         name: 'MULE VAN',
-        l: 48,
-        w: 26,
+        // A high-roof panel van (Transit / Sprinter): 5.25 m, 2.0 m body.
+        l: 5.25 * UNITS_PER_METRE,
+        w: 2.3 * UNITS_PER_METRE,
         topKmh: 150,
         zeroTo: [100, 13],
         brakeG: 0.85,
@@ -703,13 +745,15 @@
         turn: 1.6,
         hp: 240,
         color: '#b8b8a0',
+        palette: ['#eceeed', '#eceeed', '#b9bdc1', '#7a7f85', '#16181b', '#1f3455', '#c7b89b', '#8e1c1f'],
       },
       sport: {
         balance: 0.2,
         mass: 1.1,
         name: 'COMET GT',
-        l: 42,
-        w: 21,
+        // A rear-engined sports coupe (911): 4.5 m, 1.85 m body.
+        l: 4.5 * UNITS_PER_METRE,
+        w: 2.13 * UNITS_PER_METRE,
         topKmh: 290,
         zeroTo: [100, 3.8],
         brakeG: 1.15,
@@ -718,12 +762,14 @@
         turn: 2.8,
         hp: 110,
         color: '#cf806d',
+        palette: PAINT_SPORT,
       },
       sedan: {
         mass: 1.45,
         name: 'REGENT',
-        l: 43,
-        w: 22,
+        // A mid-size sedan (Camry / Accord): 4.85 m, 1.85 m body, 1.45 m tall.
+        l: 4.85 * UNITS_PER_METRE,
+        w: 2.13 * UNITS_PER_METRE,
         topKmh: 180,
         zeroTo: [100, 9.0],
         brakeG: 1.0,
@@ -732,6 +778,135 @@
         turn: 2.15,
         hp: 150,
         color: '#bdbdb3',
+        palette: PAINT_EVERYDAY,
+      },
+      /* FLAGSHIPS (cars3d.js, motorbikes3d.js): rare in traffic, parked at the
+         upscale addresses (populate, SHOWCASE PARKING). Performance measured with
+         DeadEndCity.simulate (docs/CHANGELOG.md). */
+      chevette: {
+        // A mid-engined, flat-plane V8 supercar after the C8 Corvette Z06:
+        // 4.69 m, 2.02 m body, 1.23 m tall, 1.56 t.
+        balance: 0.25,
+        mass: 1.56,
+        name: 'CHEVETTE Z06',
+        l: 4.69 * UNITS_PER_METRE,
+        w: 2.32 * UNITS_PER_METRE,
+        topKmh: 315,
+        zeroTo: [100, 2.7],
+        brakeG: 1.25,
+        cornerG: 1.8,
+        tractionG: 1.18,
+        turn: 2.55,
+        hp: 140,
+        grip: 9.5,
+        flagship: true,
+        color: '#e9b82a',
+        palette: ['#e9b82a', '#b3121b', '#eceeed', '#1a1c20', '#2b5fd9', '#f06a12', '#8f9aa3'],
+      },
+      brutini: {
+        // A V12 wedge hypercar after the Aventador SVJ: 4.94 m, 2.1 m body,
+        // 1.14 m tall, 1.53 t, all-wheel drive.
+        balance: 0.1,
+        mass: 1.53,
+        name: 'BRUTINI SVJ',
+        l: 4.94 * UNITS_PER_METRE,
+        w: 2.41 * UNITS_PER_METRE,
+        topKmh: 350,
+        zeroTo: [100, 2.8],
+        brakeG: 1.3,
+        cornerG: 1.85,
+        tractionG: 1.15,
+        turn: 2.4,
+        hp: 145,
+        grip: 10,
+        flagship: true,
+        color: '#7ac231',
+        palette: ['#7ac231', '#f58a07', '#e9c21e', '#15171a', '#eceeed', '#6b2d8c', '#8f9aa3'],
+      },
+      cavalino: {
+        // A mid-engined V8 berlinetta after the 458 Italia: 4.53 m, 1.94 m body,
+        // 1.21 m tall, 1.48 t; nearly always red.
+        balance: 0.3,
+        mass: 1.48,
+        name: 'CAVALINO 458',
+        l: 4.53 * UNITS_PER_METRE,
+        w: 2.23 * UNITS_PER_METRE,
+        topKmh: 325,
+        zeroTo: [100, 3.0],
+        brakeG: 1.25,
+        cornerG: 1.8,
+        tractionG: 1.08,
+        turn: 2.6,
+        hp: 135,
+        grip: 9.5,
+        flagship: true,
+        color: '#c8141c',
+        palette: ['#c8141c', '#c8141c', '#c8141c', '#c8141c', '#e9c21e', '#16181b', '#eceeed', '#1f3d8a'],
+      },
+      dolcati: {
+        // A V4 superbike after the Panigale V4: 2.11 m, bars 0.81 m, 198 kg
+        // wet plus its rider.
+        name: 'DOLCATI V4',
+        l: 2.11 * UNITS_PER_METRE,
+        w: 0.82 * UNITS_PER_METRE,
+        topKmh: 300,
+        zeroTo: [100, 2.9],
+        brakeG: 1.1,
+        cornerG: 1.45,
+        tractionG: 1.0,
+        turn: 3.15,
+        hp: 85,
+        mass: 0.28,
+        grip: 9.5,
+        bike: true,
+        flagship: true,
+        color: '#c8102e',
+        palette: ['#c8102e'],
+      },
+      yamasaki: {
+        // A crossplane litre superbike after the R1 / ZX-10RR: 2.07 m, bars
+        // 0.75 m; racing blue or lime green.
+        name: 'YAMASAKI 1000RR',
+        l: 2.07 * UNITS_PER_METRE,
+        w: 0.78 * UNITS_PER_METRE,
+        topKmh: 295,
+        zeroTo: [100, 3.0],
+        brakeG: 1.1,
+        cornerG: 1.45,
+        tractionG: 0.98,
+        turn: 3.15,
+        hp: 85,
+        mass: 0.28,
+        grip: 9.5,
+        bike: true,
+        flagship: true,
+        color: '#1f4fbf',
+        palette: ['#1f4fbf', '#5bbd2b', '#1f4fbf', '#5bbd2b', '#16181b'],
+      },
+      kr500: {
+        // A 500 cc enduro after the KTM 500 EXC: 2.2 m, bars 0.82 m, 111 kg
+        // plus its rider. Knobbly tyres: sure-footed on dirt, grass and the
+        // mountain trails (terrain.js `dirt`), vague on tarmac at speed
+        // (physics.js tyreSurfaceGrip); light and quick to turn; it lifts the
+        // front wheel under full throttle (motorbikes3d.js).
+        balance: 0.35,
+        name: 'KR 500',
+        l: 2.2 * UNITS_PER_METRE,
+        w: 0.82 * UNITS_PER_METRE,
+        topKmh: 150,
+        zeroTo: [100, 4.4],
+        brakeG: 0.85,
+        cornerG: 1.05,
+        tractionG: 0.82,
+        turn: 3.6,
+        hp: 70,
+        mass: 0.19,
+        grip: 7.5,
+        bike: true,
+        offroad: true,
+        dirt: true,
+        color: '#ff6a00',
+        palette: ['#ff6a00'],
       },
       jetski: {
         name: 'RIPTIDE JET SKI',
@@ -1821,7 +1996,8 @@
           x = vert ? r - dir * 25 : v,
           y = vert ? v : r + dir * 25,
           a = vert ? (dir * Math.PI) / 2 : dir === 1 ? 0 : Math.PI,
-          type = randomChoice([
+          // One car in forty is a flagship (cars3d.js, motorbikes3d.js).
+          type = seededRandom() < 0.025 ? randomChoice(FLAGSHIP_TYPES) : randomChoice([
             'sedan',
             'sedan',
             'taxi',
@@ -1855,7 +2031,7 @@
           y,
           a,
           true,
-          type === 'taxi' ? VEHICLE_DEFINITIONS.taxi.color : randomChoice(VEHICLE_PAINT_COLORS),
+          vehiclePaint(type),
         );
       }
       for (let i = 0; i < 70; i++) {
@@ -1889,7 +2065,7 @@
           !canSpawnCar(type, x, y, a, 8)
         )
           continue;
-        makeCar(type, x, y, a, false, randomChoice(VEHICLE_PAINT_COLORS));
+        makeCar(type, x, y, a, false, vehiclePaint(type));
       }
       const PED_COLORS = DRIVER_COLORS;
       for (let i = 0; i < 380; i++) {
@@ -6308,6 +6484,24 @@
           const c = makeCar(type, x - Math.sin(heading) * i * spacing, y + Math.cos(heading) * i * spacing, heading, false, type === 'suv' ? '#121417' : undefined);
           Object.assign(c, { policeLook: { body, livery }, showLights: lights });
           return { id: c.id, type, body, livery };
+        });
+      },
+      // Civilian vehicle review (cars3d.js, vehicles3d.js): parks one of each type
+      // in `types` (default: every civilian car and motorbike) in a column from
+      // (x, y), `spacing` apart, facing `heading`, each in its own colour (or
+      // `color` for all). `lamps` true turns their lamps on as if driven
+      // (`showLamps`), 'brake' holds the brake lights too. Returns ids and types.
+      carLineup(types, x = player.x + 60, y = player.y - 160, heading = 0, spacing = 44, color, lamps = false) {
+        const list = Array.isArray(types) && types.length ? types : CIVILIAN_LINEUP;
+        let along = 0;
+        return list.map((type) => {
+          if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+          const spec = VEHICLE_DEFINITIONS[type],
+            gap = Math.max(spacing, spec.w + 14),
+            c = makeCar(type, x - Math.sin(heading) * along, y + Math.cos(heading) * along, heading, false, color || spec.color);
+          along += gap;
+          if (lamps) c.showLamps = lamps;
+          return { id: c.id, type, name: spec.name };
         });
       },
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene

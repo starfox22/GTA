@@ -2463,9 +2463,10 @@
               // Lamps on at night and in heavy rain (weather3d.js).
               // Brake lights glow by day too: from above the lamp itself is a sliver.
               const lampsOn = vehicleLampAmount(),
-                driven = c.hp > 0 && (c.ai || c === player.car),
+                // `showLamps`: a parked review car lit as if driven (DeadEndCity.carLineup).
+                driven = c.hp > 0 && (c.ai || c === player.car || !!c.showLamps),
                 lit = driven && lampsOn > 0.25,
-                braking = driven && !!c.braking;
+                braking = driven && (!!c.braking || c.showLamps === 'brake');
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
                 sprite.visible = false;
@@ -2475,7 +2476,7 @@
               }
             }
             // Brake lights: tail lamps that aren't broken swap material while braking.
-            const braking = !!c.braking && c.hp > 0;
+            const braking = (!!c.braking || c.showLamps === 'brake') && c.hp > 0;
             if (m.lamps && m.brakeLit !== braking) {
               m.brakeLit = braking;
               for (const lamp of m.lamps)
