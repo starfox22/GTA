@@ -10,11 +10,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 (marked ▸). Files are listed in build order, so order matters (a `const` must be
 included before code that runs at load time and reads it).
 
-257 files in the include tree, 137,901 lines.
+265 files in the include tree, 137,984 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   154 — ▸ Game orchestration and shared state
+- `src/game.js`   152 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -37,7 +37,7 @@ included before code that runs at load time and reads it).
 - `src/game-minimap.js`   221 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/game-ui.js`   406 — weapon chip, mission card and updateUI() (HUD text refresh)
 - `src/game-menus.js`   166 — resize, begin/newGame, pause, help, big map toggle
-- `src/game-input.js`   422 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/game-input.js`   412 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   294 — Key bindings
 - `src/geography.js`  1496 — Coastlines and land regions
 - `src/drawbridge.js`  1422 — The Palm Sound drawbridge: schedule, gates, leaves, jumps
@@ -123,9 +123,7 @@ included before code that runs at load time and reads it).
 - `src/hud.js`  1291 — HUD behaviour and the title menu
 - `src/render3d.js`   200 — ▸ Three.js renderer and resource lifecycle
 - `src/game-loop.js`   158 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
-- `src/game-console.js`   556 — window.DeadEndCity developer console, part 1 of 3 (one object literal across game-console*.js; only valid together)
-- `src/game-console-world.js`   535 — DeadEndCity console part 2 of 3: ride, simulate, bikes, world/vehicle probes
-- `src/game-console-graphics.js`   280 — DeadEndCity console part 3 of 3: damage tests, lineups, graphics, settings, radio
+- `src/game-console.js`    45 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
 
 ## src/physics.js ▸ Vehicle and pedestrian physics
@@ -322,7 +320,20 @@ included before code that runs at load time and reads it).
 
 - `src/parachute3d.js`   528 — Ram-air parachute
 
+## src/game-console.js ▸ DeadEndCity console registry and assembly
+
+- `src/game-console-core.js`   112 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
+- `src/game-console-missions.js`   184 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-police.js`   132 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
+- `src/game-console-world.js`   191 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
+- `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
+- `src/game-console-crowd.js`    98 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-graphics.js`   170 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-settings.js`    95 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
+
 ## Outside the include tree
 
 - `src/asset-loader.js`   160 — decodes the embedded/streamed media into ASSETS before the game starts
-- `src/shell.html`  8212 — HTML/CSS page shell; build.py fills its `<!-- @include-* -->` directives
+- `src/shell.html`  8207 — HTML/CSS page shell; build.py fills its `<!-- @include-* -->` directives

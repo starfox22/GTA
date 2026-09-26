@@ -1,26 +1,46 @@
-      // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
-      // streetProps(), damageStats() (see damage.js damageConsole).
-      ...damageConsole(),
-      // Handling: turnTest(), pose(), aiDriving(), riderReport(), rideInto(),
-      // bridgeJump() (see physics.js handlingConsole).
-      ...handlingConsole(),
-      // Stop the frame loop's simulation (it still draws) so a screenshot sequence
-      // can be stepped with simulate(); false lets it run again.
-      holdSimulation(on = true) {
-        simulationHeld = !!on;
-        return simulationHeld;
+    // BEGIN SUBSYSTEM: src/game-console-graphics.js — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+    // Graphics and render probes: quality tier, render scale, frame stats, post views,
+    // shadow and draw-call probes, the world-scale audit and the vehicle/tree model lineups.
+    addConsoleMethods('graphics', {
+      // World-scale audit, everything in metres: each road vehicle's spec
+      // (length, width), the built models within `radius` of the player measured
+      // from their meshes (length, width, height), the player's model, the crowd
+      // rig's stature range and the city's building heights.
+      scaleReport(radius = 400) {
+        const m = (units) => Math.round(worldMeters(units) * 100) / 100,
+          near = vehicles.filter((c) => distanceBetween(c, player) < radius),
+          extents = city3D?.modelExtents?.([...near, player]) || [],
+          size = (e) => (e ? { l: m(e.l), w: m(e.w), h: m(e.h) } : null),
+          rig = city3D?.crowdRigHeight?.() || 0,
+          statures = pedestrians
+            .filter((p) => p.look && p.role !== 'kid')
+            .map((p) => city3D?.personStature?.(p) || 0)
+            .filter(Boolean),
+          heights = buildings.map((b) => b.height).sort((a, b) => a - b),
+          pick = (list, q) => (list.length ? m(list[Math.min(list.length - 1, Math.floor(q * list.length))]) : null);
+        return {
+          unitsPerMetre: UNITS_PER_METRE,
+          specs: Object.fromEntries(Object.entries(VEHICLE_DEFINITIONS).map(([type, s]) => [type, { l: m(s.l), w: m(s.w) }])),
+          models: near
+            .map((c, i) => ({ id: c.id, type: c.type, look: c.policeLook?.body || c.lawUnit || null, ...size(extents[i]) }))
+            .filter((row) => row.l),
+          player: size(extents[near.length]),
+          crowd: {
+            rig: m(rig),
+            player: m(city3D?.personStature?.(player) || 0),
+            shortest: pick(statures.sort((a, b) => a - b), 0),
+            average: statures.length ? m(statures.reduce((s, v) => s + v, 0) / statures.length) : null,
+            tallest: pick(statures.sort((a, b) => a - b), 1),
+          },
+          buildings: { count: heights.length, lowest: pick(heights, 0), median: pick(heights, 0.5), p90: pick(heights, 0.9), tallest: pick(heights, 1) },
+        };
       },
-      // Sound: audioMix(), engineSound(), rainSound() (see audio.js audioConsole).
-      ...audioConsole(),
-      // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
-      // (see sports.js sportsConsole).
-      ...sportsConsole(),
-      // MONARCH MOTORS: dealership(), prestigeCatalog(), dealershipVisit(), dealerMenu(),
-      // dealerBuy(), dealerAlarm(), dealerShatter(), dealerCalm(), dealerResetGarage()
-      // (see dealership.js dealershipConsole).
-      ...dealershipConsole(),
-      // GOALLINE, the betting shop by the stadium: markets, odds, bets (sportsbook.js).
-      ...sportsbookConsole(),
+      // Inspection only: look at the street from bearing `yaw` (0 = from the south,
+      // as the game camera does; 90 = from the east) and `pitch` degrees above the
+      // horizon, aimed `lift` units up; no arguments restores the game camera.
+      inspectView: (yaw, pitch, lift) => city3D?.inspectView?.(yaw, pitch, lift),
+      vegetation: () => city3D?.vegetation?.() ?? null,
+      treeLineup: (x = player.x, y = player.y, spacing, lod, perRow) => city3D?.treeLineup?.(x, y, spacing, lod, perRow) ?? null,
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
       // Settings choice); returns what the renderer is now using.
       graphics(tier) {
@@ -56,16 +76,6 @@
           Object.assign(c, { policeLook: { body, livery }, showLights: lights });
           return { id: c.id, type, body, livery };
         });
-      },
-      // The flagships and dirt bikes in the world (SHOWCASE PARKING and traffic):
-      // id, type, where (x, y, district), the showcase place it stands at, driven or parked.
-      showcase() {
-        return vehicles
-          .filter((c) => VEHICLE_DEFINITIONS[c.type]?.flagship || c.type === 'kr500')
-          .map((c) => {
-            const spot = SHOWCASE_PARKING.find((p) => Math.hypot(p.x - c.x, p.y - c.y) < 260);
-            return { id: c.id, type: c.type, x: Math.round(c.x), y: Math.round(c.y), district: districtAt(c.x, c.y), place: spot ? spot.place : null, driven: !!c.ai };
-          });
       },
       // Civilian vehicle review (cars3d.js, vehicles3d.js): parks one of each type
       // in `types` (default: every civilian car and motorbike) in a column from
@@ -109,127 +119,6 @@
       renderScale(scale) {
         return city3D?.setRenderScale?.(Number(scale) || 1) ?? null;
       },
-      // Everything on the settings screen (settings.js), and the HUD's saved
-      // state. Pass an object to change some of it, e.g. { chatter: false,
-      // masterVolume: 40, minimapZoom: 2, minimapFolded: true, touch: 'on' }.
-      settings(changes) {
-        if (changes && typeof changes === 'object') {
-          for (const { key } of AUDIO_VOLUMES)
-            if (Number.isFinite(changes[key])) settings[key] = clamp(Math.round(changes[key]), 0, 100);
-          if (changes.audioReset === true) resetAudioVolumes();
-          if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
-          if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
-          if (typeof changes.playerOutline === 'boolean') settings.playerOutline = changes.playerOutline;
-          // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
-          if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
-          if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
-          if (typeof changes.voices === 'boolean' && changes.voices !== voicesOn) toggleVoices();
-          if (typeof changes.fps === 'boolean' && changes.fps !== fpsMeter.shown) toggleFpsCounter();
-          // 30, 60, 120, or 'unlimited' (0 also means unlimited).
-          if (changes.frameLimit !== undefined) setFrameLimit(changes.frameLimit === 0 ? 'unlimited' : changes.frameLimit);
-          if (typeof changes.minimapFolded === 'boolean') setMinimapFolded(changes.minimapFolded);
-          if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
-          if (typeof changes.flightHud === 'boolean') setFlightHud(changes.flightHud);
-          if (typeof changes.gps === 'boolean') setGps(changes.gps);
-          // 'kmh' or 'mph' (hud.js SPEED BOX); the speed box on foot.
-          if (typeof changes.units === 'string') setSpeedUnits(changes.units.toLowerCase());
-          if (typeof changes.footSpeed === 'boolean') setFootSpeed(changes.footSpeed);
-          if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
-          // Settings · Driving (driving.js): abs, esc, tcs (booleans), steering
-          // (50-150 %), lookAhead (0-150 %); drivingReset: true restores them.
-          for (const key of ['abs', 'esc', 'tcs']) if (typeof changes[key] === 'boolean') setDrivingSetting(key, changes[key]);
-          for (const key of ['steering', 'lookAhead']) if (Number.isFinite(changes[key])) setDrivingSetting(key, changes[key]);
-          if (changes.drivingReset === true) resetDrivingSettings();
-          if (typeof changes.touch === 'string') setTouchMode(changes.touch);
-          applyVolumes();
-          saveSettings();
-          if (gameMode === 'settings') renderSettings();
-          updateUI();
-        }
-        return {
-          graphics: graphicsSetting,
-          shadows: shadowSetting,
-          frameLimit: frameLimit() || 'unlimited',
-          fps: fpsMeter.shown,
-          cutaway: settings.cutaway,
-          playerOutline: settings.playerOutline,
-          sound: soundOn,
-          // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
-          // radioVolume, engineVolume, soundVolume (effects), voiceVolume,
-          // ambienceVolume, sirenVolume.
-          ...Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.key, settings[v.key]])),
-          voices: voicesOn,
-          chatter: settings.npcChatter,
-          minimapFolded: hudState.minimapFolded,
-          minimapZoom: +hudState.minimapZoom.toFixed(2),
-          keyHints: hudState.keyHints,
-          flightHud: hudState.flightHud,
-          gps: hudState.gps,
-          units: hudState.units,
-          footSpeed: hudState.footSpeed,
-          abs: drivingSettings.abs,
-          esc: drivingSettings.esc,
-          tcs: drivingSettings.tcs,
-          steering: drivingSettings.steering,
-          lookAhead: drivingSettings.lookAhead,
-          gpsRoute: gpsRoute.points.length,
-          touch: touchMode,
-          screen: gameMode === 'settings' ? settingsTab : null,
-        };
-      },
-      // The car radio and the radio box's volume row (car-radio.js RADIO VOLUME).
-      radio: () => radioReport(),
-      /* The player's road vehicle through the tyre model (driving.js): the
-         assists it has and has switched on, the HUD lamps, the pedal and
-         steering ramps, each axle's slip, lock, ABS pressure and sideways share,
-         the wheelspin and the stability yaw. */
-      drivingState() {
-        const c = player.car;
-        if (!c || isAircraft(c) || isBoat(c)) return null;
-        const ch = drivingCharacter(c),
-          t = c.tyres,
-          round = (v) => +(+v).toFixed(3);
-        return {
-          type: c.type,
-          fitted: { abs: ch.abs, esc: ch.esc, tcs: ch.tcs },
-          lamps: drivingAssistStates(c),
-          character: { front: ch.front, cgOverWheelbase: ch.hL, bias: round(ch.bias), drive: ch.drive, liftOff: round(ch.liftOff) },
-          settings: { ...drivingSettings },
-          tyres: t
-            ? {
-                pedal: round(t.pedal),
-                steer: round(t.steer),
-                slip: t.slip.map(round),
-                lock: t.lock.map(round),
-                pressure: t.pressure.map(round),
-                lateral: t.lateral.map(round),
-                spin: round(t.spin),
-                yawSlide: round(t.yawSlide),
-                decelG: round(t.lastDecel || 0),
-              }
-            : null,
-          absActive: !!c.absActive,
-          tyreSlip: round(c.tyreSlip || 0),
-        };
-      },
-      // Open the settings screen on a tab ('graphics', 'audio', 'gameplay',
-      // 'driving', 'controls'); during play it opens over the pause menu. Screenshot tours use it.
-      openSettings(tab = 'graphics') {
-        if (gameMode === 'play') togglePause();
-        syncGodSettingsTab(); // GOD PANEL: 'god' is a tab while god mode is on
-        openSettings(SETTINGS_TABS.some((t) => t[0] === tab) ? tab : 'graphics');
-        return gameMode;
-      },
-      // Key bindings (controls.js) as { action: [primary, secondary] }. Pass
-      // { action: 'KeyX' } to bind a primary key (a clash swaps, as the settings
-      // screen offers), or 'reset' for the defaults.
-      bindings(changes) {
-        if (changes === 'reset') resetControlBindings();
-        else if (changes && typeof changes === 'object')
-          for (const [id, code] of Object.entries(changes))
-            if (!bindControl(id, 0, code, true)) throw Error('cannot bind ' + id + ' to ' + code);
-        return JSON.parse(JSON.stringify(controlBindings));
-      },
       // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
       // 'bloom'; nothing for the image) to tune the post-processing.
       postView: (mode) => city3D?.postView?.(mode) ?? null,
@@ -238,9 +127,9 @@
       searchlight: (options) => city3D?.searchlight?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
-      // Shadow casters near the view that the camera pass does not show.
       // What casts the sun's shadow onto the ground point (x, y).
       shadowProbe: (x, y) => city3D?.shadowProbe?.(Number(x), Number(y)) ?? null,
+      // Shadow casters near the view that the camera pass does not show.
       // With `everywhere`, every see-through caster in the scene.
       shadowCasters: (limit, everywhere) => city3D?.shadowCasters?.(limit, !!everywhere) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
@@ -278,3 +167,4 @@
         return out;
       },
     });
+    // END SUBSYSTEM: src/game-console-graphics.js
