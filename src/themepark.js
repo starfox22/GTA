@@ -51,7 +51,7 @@
       // shore: a low octagonal granite plinth (circumradius r) in a paved ring
       // (apron). She rears towards the west and a little towards the street
       // camera (face, her heading), so it sees her in three-quarter profile.
-      unicorn: { x: 4068, y: -6048, r: 30, apron: 50, face: Math.PI - 0.35 },
+      unicorn: { x: 4068, y: -6048, r: 26, apron: 46, face: Math.PI - 0.35 },
     };
     // ---- The Falcon: circuit builder -----------------------------------------------
     /**
@@ -741,14 +741,14 @@
       box(L.x - L.rx + 30, L.y - L.ry + 40, (L.rx - 30) * 2, (L.ry - 40) * 2, 3, 'lagoon');
       for (const f of coasterFootings()) box(f.x - 5, f.y - 5, 10, 10, f.height, 'coaster support');
       // UNICORN STATUE: the granite plinth is solid stone to people and cars,
-      // its octagon (apothem 27.7, sides 23 long) as two slabs and a square
+      // its octagon (apothem 24, sides 19.9 long) as two slabs and a square
       // whose corners stay inside it; the statue's core stands in the middle
-      // as tall as her horn tip (12 m).
+      // as tall as her horn tip (13 m above the lawn).
       const U = p.unicorn;
-      box(U.x - 27.7, U.y - 11.5, 55.4, 23, 10.4, 'unicorn statue');
-      box(U.x - 11.5, U.y - 27.7, 23, 55.4, 10.4, 'unicorn statue');
-      box(U.x - 19.5, U.y - 19.5, 39, 39, 10.4, 'unicorn statue');
-      box(U.x - 10, U.y - 10, 20, 20, 97, 'unicorn statue');
+      box(U.x - 24, U.y - 9.9, 48, 19.8, 10.4, 'unicorn statue');
+      box(U.x - 9.9, U.y - 24, 19.8, 48, 10.4, 'unicorn statue');
+      box(U.x - 16.9, U.y - 16.9, 33.8, 33.8, 10.4, 'unicorn statue');
+      box(U.x - 10, U.y - 10, 20, 20, 106, 'unicorn statue');
       parkSolidList = list;
       parkSolidGrid = new Map();
       list.forEach((b, i) => {

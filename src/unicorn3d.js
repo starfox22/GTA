@@ -4,7 +4,7 @@
        * Source: src/unicorn3d.js
        * Scope: createCityRenderer() closure (included by themepark3d.js, after
        * the gate; uses parkParts, parkMats, parkBulbs and parkRoot).
-       * A monumental rearing unicorn (12 m to the horn tip) on the lawn south of
+       * A monumental rearing unicorn (12 m to the horn tip, 13 m above the lawn) on the lawn south of
        * the drop tower (PIER.unicorn), cast in polished black: a clearcoated
        * obsidian lacquer whose reflections are folded up into the sky (see
        * OBSIDIAN), so the sunset and the blue of the day run along her back and
@@ -22,18 +22,18 @@
        * is merged per material: six draws and no textures but the plaque.
        */
       const UNICORN = PIER.unicorn,
-        // Metres of statue to world units (about 3.4 times life size); the plinth top (1.3 m).
-        UNICORN_SCALE = 27,
+        // Model metres to world units (3.75 times life size: 12 m to the horn tip); the plinth top (1.3 m).
+        UNICORN_SCALE = 30,
         UNICORN_PLINTH_TOP = 10.4,
         // Where the sculpt's origin sits on the plinth, along her heading (model metres),
         // so her hooves, the rock and the tail's touch all stand on the plinth top.
         UNICORN_SHIFT = 0.36,
         // The plinth's die (octagon circumradius) and the plaque's height on it.
-        UNICORN_DIE = 27,
+        UNICORN_DIE = 23.5,
         UNICORN_PLAQUE_Y = 5.6,
         // The uplights: map angles round her and their distance, out on the lawn.
         UNICORN_LAMPS = [Math.PI * 0.6, Math.PI * 0.16, -Math.PI * 0.42, Math.PI * 0.97],
-        UNICORN_LAMP_RADIUS = 58;
+        UNICORN_LAMP_RADIUS = 39;
       const unicornHornTip = new Three.Vector3();
       /**
        * OBSIDIAN
@@ -64,26 +64,40 @@
         uniform float unicornUplight;
         uniform float unicornEdge;
         uniform vec3 unicornEdgeColor;
-        uniform float unicornSpeckle;`,
+        uniform float unicornSpeckle;
+        uniform float unicornRim;`,
         UNICORN_SURFACE = `
         {
           vec3 unicornView = isOrthographic ? vec3( 0.0, 0.0, 1.0 ) : normalize( vViewPosition );
           float unicornGrazing = 1.0 - clamp( abs( dot( normal, unicornView ) ), 0.0, 1.0 );
           diffuseColor.rgb = mix( diffuseColor.rgb, unicornEdgeColor, unicornEdge * pow( unicornGrazing, 1.4 ) );
           if ( unicornSpeckle > 0.0 ) {
-            vec3 grainCell = floor( vCityWorld * 1.4 );
+            // A slow cloud in the stone and a faint coarse grain (coarse, so the
+            // far camera does not shimmer on it).
+            vec3 grainCell = floor( vCityWorld * 0.6 );
             float grain = fract( sin( dot( grainCell, vec3( 12.9898, 78.233, 37.719 ) ) ) * 43758.5453 );
             float cloud = 0.5 + 0.5 * sin( vCityWorld.x * 0.23 + sin( vCityWorld.z * 0.17 ) * 2.0 ) * sin( vCityWorld.z * 0.21 + vCityWorld.y * 0.35 );
-            diffuseColor.rgb *= 0.78 + 0.5 * cloud * unicornSpeckle;
-            diffuseColor.rgb += vec3( 0.13, 0.125, 0.12 ) * step( 0.84, grain ) * unicornSpeckle;
+            diffuseColor.rgb *= 0.8 + ( 0.4 * cloud + 0.18 * grain ) * unicornSpeckle;
           }
         }`,
         UNICORN_UPLIGHT = `
+        #ifdef ENVMAP_TYPE_CUBE_UV
+        if ( unicornRim > 0.0 ) {
+          // Rim light: the sky along her edges (see OBSIDIAN).
+          vec3 rimView = isOrthographic ? vec3( 0.0, 0.0, 1.0 ) : normalize( vViewPosition );
+          float rim = pow( 1.0 - clamp( abs( dot( normal, rimView ) ), 0.0, 1.0 ), 2.4 );
+          vec3 rimDir = inverseTransformDirection( normal, viewMatrix );
+          rimDir.y = abs( rimDir.y ) * 0.6 + 0.35;
+          vec3 rimSky = textureCubeUV( envMap, normalize( rimDir ), 0.3 ).rgb;
+          rimSky = mix( vec3( dot( rimSky, vec3( 0.3, 0.59, 0.11 ) ) ), rimSky, 0.7 );
+          reflectedLight.indirectSpecular += rimSky * envMapIntensity * unicornRim * rim;
+        }
+        #endif
         if ( unicornLightPower > 0.001 && unicornUplight > 0.0 ) {
           vec3 upView = isOrthographic ? vec3( 0.0, 0.0, 1.0 ) : normalize( vViewPosition );
           vec3 upPos = - vViewPosition;
           float upDiffuse = 0.0, upGlint = 0.0;
-          float upShine = mix( 10.0, 110.0, 1.0 - material.roughness );
+          float upShine = mix( 24.0, 240.0, 1.0 - material.roughness );
           for ( int i = 0; i < ${UNICORN_LAMPS.length}; i++ ) {
             vec3 toLampWorld = unicornLights[ i ] - vCityWorld;
             float d = length( toLampWorld );
@@ -93,11 +107,12 @@
             vec3 toLamp = normalize( ( viewMatrix * vec4( unicornLights[ i ], 1.0 ) ).xyz - upPos );
             float facing = max( dot( normal, toLamp ), 0.0 );
             upDiffuse += facing * fall;
-            upGlint += pow( max( dot( normal, normalize( toLamp + upView ) ), 0.0 ), upShine ) * fall * ( 0.35 + facing );
+            upGlint += pow( max( dot( normal, normalize( toLamp + upView ) ), 0.0 ), upShine ) * fall * facing;
           }
           vec3 upLight = unicornLightColor * unicornLightPower * unicornUplight;
           reflectedLight.directDiffuse += upLight * upDiffuse * material.diffuseColor;
-          reflectedLight.directSpecular += upLight * ( upGlint * 1.6 + upDiffuse * 0.05 );
+          // Black lacquer shows the lamps as tight warm glints, a faint sheen round them.
+          reflectedLight.directSpecular += upLight * ( upGlint * 2.2 + upDiffuse * 0.012 );
         }`,
         UNICORN_IBL = `
         vec3 getIBLRadiance( const in vec3 viewDir, const in vec3 normal, const in float roughness ) {
@@ -107,18 +122,23 @@
             reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
             reflectVec.y = abs( reflectVec.y ) * 0.8 + 0.1;
             reflectVec = normalize( reflectVec );
-            return textureCubeUV( envMap, reflectVec, roughness ).rgb * envMapIntensity;
+            vec3 sky = textureCubeUV( envMap, reflectVec, roughness ).rgb;
+            // A little of the sky's colour is kept, so black reads as black
+            // (not navy) under a blue noon and still warms at sunset.
+            sky = mix( vec3( dot( sky, vec3( 0.3, 0.59, 0.11 ) ) ), sky, 0.55 );
+            return sky * envMapIntensity;
           #else
             return vec3( 0.0 );
           #endif
         }`;
-      function unicornMaterial(settings, { uplight = 1, edge = 0, edgeColor = '#3a3b41', speckle = 0 } = {}) {
+      function unicornMaterial(settings, { uplight = 1, edge = 0, edgeColor = '#3a3b41', speckle = 0, rim = 0 } = {}) {
         const m = new Three.MeshPhysicalMaterial(settings),
           own = {
             unicornUplight: { value: uplight },
             unicornEdge: { value: edge },
             unicornEdgeColor: { value: new Three.Color(edgeColor) },
             unicornSpeckle: { value: speckle },
+            unicornRim: { value: rim },
           };
         m.onBeforeCompile = (shader) => {
           cityMaterialPatch(shader);
@@ -139,18 +159,18 @@
         // Black lacquer over bronze: a touch of blue in the black, a firm
         // clearcoat for the sky and the sun's glints.
         obsidian: unicornMaterial(
-          { color: '#07080b', roughness: 0.3, metalness: 0.25, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.9 },
-          { edge: 0.35, edgeColor: '#1c1d22' },
+          { color: '#07080b', roughness: 0.3, metalness: 0.25, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.2 },
+          { edge: 0.35, edgeColor: '#1c1d22', rim: 0.45 },
         ),
         // The mane and tail: the same black, the lock edges turning anthracite.
         mane: unicornMaterial(
-          { color: '#0b0c10', roughness: 0.36, metalness: 0.25, clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 1.8 },
-          { edge: 1, edgeColor: '#4a4b52' },
+          { color: '#0b0c10', roughness: 0.36, metalness: 0.25, clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 1.2 },
+          { edge: 1, edgeColor: '#4a4b52', rim: 0.55 },
         ),
         // Polished black granite: grain, a slow cloud, a softer gloss than hers.
         granite: unicornMaterial(
           { color: '#1d1e22', roughness: 0.34, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.14, envMapIntensity: 1.3 },
-          { uplight: 0.7, speckle: 1 },
+          { uplight: 0.7, speckle: 1, rim: 0.12 },
         ),
         horn: unicornMaterial(
           { color: '#e8bf62', roughness: 0.18, metalness: 1, clearcoat: 0.5, clearcoatRoughness: 0.05, envMapIntensity: 1.5, emissive: '#ffcf7a', emissiveIntensity: 0 },
@@ -236,7 +256,7 @@
       }
       /* A mass under the skin (a muscle): a flattened ellipsoid, radii along its
          own x, y, z, turned `roll` about z (in the body's plane), at `p`. */
-      const unicornMassGeo = new Three.SphereGeometry(1, 12, 8);
+      const unicornMassGeo = new Three.SphereGeometry(1, 10, 7);
       function unicornMass(p, radii, roll) {
         const geo = unicornMassGeo.clone();
         geo.scale(...radii);
@@ -264,13 +284,13 @@
           offset = (p, dx, dy, dz = 0) => [p[0] + dx, p[1] + dy, p[2] + dz];
         // The rock she rears from, carved from the plinth's granite.
         {
-          const rock = new Three.IcosahedronGeometry(1, 2),
+          const rock = new Three.SphereGeometry(1, 22, 10),
             p = rock.attributes.position;
           for (let i = 0; i < p.count; i++) {
             const x = p.getX(i),
               y = p.getY(i),
               z = p.getZ(i),
-              bump = 1 + 0.16 * Math.sin(x * 5.1 + z * 3.3) * Math.cos(z * 4.7 - x * 2.1) + 0.07 * Math.sin(x * 11 + y * 7);
+              bump = 1 + 0.16 * Math.sin(x * 5.1 + z * 3.3) * Math.cos(z * 4.7 - x * 2.1) + 0.08 * Math.sin(x * 11 + y * 7) * Math.cos(z * 9 - y * 5) + 0.05 * Math.abs(Math.sin(x * 17 + z * 13));
             p.setXYZ(i, x * bump, Math.max(-0.2, y) * bump, z * bump);
           }
           rock.computeVertexNormals();
@@ -376,12 +396,12 @@
             const s = i / 4;
             ctrl.push({ p: [0, 1, 2].map((j) => base[j] + (hornDir[j] / len) * s * hornLength), r: 0.056 * (1 - s) + 0.003 });
           }
-          add(unicornMats.horn, unicornTube(ctrl, { perSpan: 5, sides: 12, hint: turned(0, 0, 1), groove: (angle, s) => 0.8 + 0.2 * Math.cos(angle * 2 - s * TAU * 3.5) }));
+          add(unicornMats.horn, unicornTube(ctrl, { perSpan: 4, sides: 12, hint: turned(0, 0, 1), groove: (angle, s) => 0.8 + 0.2 * Math.cos(angle * 2 - s * TAU * 3.5) }));
           hornTip = ctrl[4].p;
         }
         // Legs through their joints (rings flattened across the leg), black hooves.
         const leg = (joints, hoofDir) => {
-          add(unicornMats.obsidian, unicornTube(joints, { perSpan: 3, sides: 10, hint: [0, 0, 1] }));
+          add(unicornMats.obsidian, unicornTube(joints, { perSpan: 2, sides: 10, hint: [0, 0, 1] }));
           const end = joints[joints.length - 1].p,
             z = end[2],
             tip = [end[0] + hoofDir[0] * 0.09, end[1] + hoofDir[1] * 0.09, z];
@@ -443,34 +463,53 @@
             [0.35, -0.94],
           );
         }
-        // Mane: long waved locks off the crest, streaming back and down, most
-        // to her right (the camera side), a few to the left, lifting clear of
-        // the neck towards their tips; broad side outward. A forelock.
-        const MANE_LOCKS = 17;
+        // Mane: a rolled crest along the top of the neck, and heavy waved
+        // clumps off it, the way a bronze founder models hair: most falling
+        // to her right (the camera side) and a few to the left, lying on the
+        // neck and lifting clear only towards their curled tips, broad side
+        // outward. A forelock.
+        const crestAt = (s) => {
+            const k = Math.min(3, Math.floor(s * 4)),
+              f = s * 4 - k,
+              c = neck[k].p,
+              d = neck[k + 1].p,
+              r = neck[k].r + (neck[k + 1].r - neck[k].r) * f;
+            return {
+              p: [c[0] + (d[0] - c[0]) * f - r * 0.78, c[1] + (d[1] - c[1]) * f + r * 0.22, c[2] + (d[2] - c[2]) * f],
+              half: neck[k].w + (neck[k + 1].w - neck[k].w) * f,
+            };
+          },
+          crestRoll = [];
+        for (let i = 0; i <= 6; i++) {
+          const s = i / 6;
+          crestRoll.push({ p: crestAt(s * 0.97).p, r: 0.045 - s * 0.012, w: 0.07 - s * 0.02 });
+        }
+        add(unicornMats.mane, unicornTube(crestRoll, { perSpan: 2, sides: 8, hint: [-1, 0.3, 0] }));
+        // Each clump is a ribbon whose broad side faces up and outward, so
+        // the mane reads from the street camera above as well as in profile.
+        const MANE_LOCKS = 19;
         for (let i = 0; i < MANE_LOCKS; i++) {
-          const s = 0.03 + (i * 0.94) / (MANE_LOCKS - 1),
-            k = Math.min(3, Math.floor(s * 4)),
-            f = s * 4 - k,
-            c = neck[k].p,
-            d = neck[k + 1].p,
-            r = neck[k].r + (neck[k + 1].r - neck[k].r) * f,
-            half = neck[k].w + (neck[k + 1].w - neck[k].w) * f,
-            crest = [c[0] + (d[0] - c[0]) * f - r * 0.8, c[1] + (d[1] - c[1]) * f + r * 0.25, c[2] + (d[2] - c[2]) * f],
-            side = i % 5 === 2 ? 1 : -1,
-            fall = 0.38 + 0.1 * Math.sin(i * 1.7) - s * 0.1,
-            wave = Math.sin(i * 2.3) * 0.05,
-            flare = 0.04 * Math.cos(i * 1.3);
+          const s = 0.02 + (i * 0.93) / (MANE_LOCKS - 1),
+            { p: crest, half } = crestAt(s),
+            side = i % 4 === 1 ? 1 : -1,
+            // Streaming back and down, longer at the withers; neighbours
+            // overlap, so the mane reads as one waved sheet with a scalloped edge.
+            reach = 0.34 - s * 0.1 + 0.035 * Math.sin(i * 1.9),
+            drop = 0.26 - s * 0.06 + 0.04 * Math.cos(i * 1.4),
+            wave = 0.035 * Math.sin(i * 2.3 + 0.6),
+            out = side * half;
           add(
             unicornMats.mane,
             unicornTube(
               [
-                { p: offset(crest, 0.04, 0.03), r: 0.03, w: 0.075 },
-                { p: offset(crest, -0.06, 0.02, side * half * 0.6), r: 0.03, w: 0.1 },
-                { p: offset(crest, -0.13 + wave, -fall * 0.35, side * (half + 0.06)), r: 0.027, w: 0.1 },
-                { p: offset(crest, -0.22 - wave, -fall * 0.7, side * (half + 0.11 + flare)), r: 0.02, w: 0.075 },
-                { p: offset(crest, -0.3, -fall + 0.04, side * (half + 0.09 + flare * 2)), r: 0.004, w: 0.01 },
+                { p: offset(crest, 0.03, -0.01), r: 0.028, w: 0.075 },
+                { p: offset(crest, -reach * 0.25, -drop * 0.22, out * 0.6), r: 0.03, w: 0.11 },
+                { p: offset(crest, -reach * 0.55, -drop * 0.55 + wave, out + side * 0.03), r: 0.028, w: 0.12 },
+                { p: offset(crest, -reach * 0.82, -drop * 0.85 - wave, out + side * 0.045), r: 0.022, w: 0.09 },
+                { p: offset(crest, -reach, -drop, out + side * 0.04), r: 0.012, w: 0.04 },
+                { p: offset(crest, -reach - 0.01, -drop - 0.03, out + side * 0.03), r: 0.004, w: 0.01 },
               ],
-              { perSpan: 3, sides: 5, hint: [0, 0, 1] },
+              { perSpan: 2, sides: 6, hint: [0.25, 0.75, side * 0.6] },
             ),
           );
         }
@@ -509,10 +548,12 @@
           for (let k = 0; k < lock.end; k++) {
             const s = (k + 1) / 5,
               taper = 1 - s * 0.45;
-            ctrl.push({ p: offset(spine[k], lock.spread * s * s, 0, lock.z * s * 1.6), r: (i ? 0.062 : 0.085) * taper, w: 0.036 * taper });
+            ctrl.push({ p: offset(spine[k], lock.spread * s * s, 0, lock.z * s * 1.6), r: (i ? 0.058 : 0.078) * taper, w: (i ? 0.046 : 0.058) * taper });
           }
-          ctrl.push({ p: offset(dock, ...lock.flick), r: 0.006, w: 0.006 });
-          add(unicornMats.mane, unicornTube(ctrl, { perSpan: 3, sides: 5, hint: [0, 0, 1] }));
+          // The ends curl round, blunt, rather than tapering to a point.
+          ctrl.push({ p: offset(dock, ...lock.flick), r: 0.018, w: 0.016 });
+          ctrl.push({ p: offset(dock, lock.flick[0] - 0.04, lock.flick[1] + 0.05, lock.flick[2] * 1.1), r: 0.004, w: 0.004 });
+          add(unicornMats.mane, unicornTube(ctrl, { perSpan: 2, sides: 6, hint: [0, 0, 1] }));
         });
         return hornTip;
       }
@@ -555,10 +596,10 @@
         b.add(parkMats.gold, octagon([[D + 0.04, 7.7], [D + 0.12, 7.85], [D + 0.04, 8.0]]), at);
         // The plaque on the die's camera face: engraved brass on a thin brass back.
         const apothem = D * Math.cos(Math.PI / 8);
-        b.box(parkMats.gold, parkPlaced(UNICORN.x, UNICORN.y + apothem + 0.1, UNICORN_PLAQUE_Y, 17.6, 3.9, 0.2));
+        b.box(parkMats.gold, parkPlaced(UNICORN.x, UNICORN.y + apothem + 0.1, UNICORN_PLAQUE_Y, 15.2, 3.7, 0.2));
         const plaqueCanvas = document.createElement('canvas');
         plaqueCanvas.width = 512;
-        plaqueCanvas.height = 112;
+        plaqueCanvas.height = 116;
         {
           const g = plaqueCanvas.getContext('2d'),
             brass = g.createLinearGradient(0, 0, 512, 112);
@@ -567,7 +608,7 @@
           brass.addColorStop(0.55, '#e8c77e');
           brass.addColorStop(1, '#8a672f');
           g.fillStyle = brass;
-          g.fillRect(0, 0, 512, 112);
+          g.fillRect(0, 0, 512, 116);
           // Engraved: a dark cut with a bright lip below it.
           const engrave = (draw) => {
             g.save();
@@ -580,22 +621,22 @@
           };
           engrave(() => {
             g.lineWidth = 2;
-            g.strokeRect(10, 10, 492, 92);
+            g.strokeRect(10, 10, 492, 96);
           });
           engrave(() => {
             g.textAlign = 'center';
             g.textBaseline = 'middle';
             g.font = '600 62px Georgia, "Times New Roman", serif';
             if ('letterSpacing' in g) g.letterSpacing = '18px';
-            g.fillText('AURORA', 265, 60);
+            g.fillText('AURORA', 265, 62);
           });
         }
         const plaqueTexture = new Three.CanvasTexture(plaqueCanvas);
         plaqueTexture.colorSpace = Three.SRGBColorSpace;
         plaqueTexture.anisotropy = 4;
         const plaque = new Three.Mesh(
-          new Three.PlaneGeometry(17, 3.7),
-          new Three.MeshStandardMaterial({ map: plaqueTexture, roughness: 0.32, metalness: 0.75 }),
+          new Three.PlaneGeometry(14.6, 3.3),
+          new Three.MeshStandardMaterial({ map: plaqueTexture, roughness: 0.38, metalness: 0.3 }),
         );
         plaque.position.set(UNICORN.x, UNICORN_PLAQUE_Y, UNICORN.y + apothem + 0.22);
         plaque.userData.dynamic = true;
@@ -616,13 +657,14 @@
           .multiply(new Three.Matrix4().makeScale(UNICORN_SCALE, UNICORN_SCALE, UNICORN_SCALE))
           .multiply(new Three.Matrix4().makeTranslation(UNICORN_SHIFT, 0, 0));
         const hornTip = unicornStatue(b, statueMatrix);
-        b.flush(parkRoot, 'unicorn statue');
+        window.__unicornTris = b.flush(parkRoot, 'unicorn statue').map((m) => m.geometry.index.count / 3); // TEMP
         unicornHornTip.set(...hornTip).applyMatrix4(statueMatrix);
         // A soft glow at the horn's tip after dark.
         parkBulbs.add(unicornHornTip.x, unicornHornTip.z, unicornHornTip.y, 7, '#ffe2a8');
       }
       function updateUnicornStatue(night) {
-        unicornUniforms.unicornLightPower.value = night * 3.2;
+        // The uplights come up as the dusk goes: black by day, glints by night.
+        unicornUniforms.unicornLightPower.value = night * night * 1.4;
         // The horn: a slow warm breath of light after dark.
         unicornMats.horn.emissiveIntensity = night * (0.55 + 0.2 * Math.sin(gameTime * 0.8));
       }
