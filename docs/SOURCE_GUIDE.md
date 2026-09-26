@@ -209,7 +209,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends; on the Falcon it starts off every ride and the switch holds for that ride only, `radioSwitchedOn()` / `player.coaster.radio`, never saved); RADIO VOLUME, the radio box's speaker and slider (section 4d); `radioReport()` |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends; on the Falcon it starts off every ride and the switch holds for that ride only, `radioSwitchedOn()` / `player.coaster.radio`, never saved); RADIO VOLUME, the radio box's 90s volume knob (LED arc, LCD readout) and speaker (section 4d); `radioReport()` |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
 | crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: Falcon riders while the player rides with them, soldiers, police and mission characters, then lines at the player, then the nearest; SPEECH SEEN FROM ABOVE: `speechHeightFade` fades every bubble, the Blue Hour's too, from 40 m to 50 m of height between the view and the speaker (`speechViewHeight`: the player's elevation when flying or riding, i.e. the AGL, else the street zoom as a height), and a hidden line takes no slot; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
@@ -659,19 +659,32 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   ride-skip `duckBus`, then the ear filter, then `mixBus` (master volume x the Sound switch) and
   the limiter. Engines default to 65 (about 3.7 dB under their old level on the shared effects
   slider); a save from before the split starts ambience at its old effects value and engines at
-  65% of it. The car radio is an `<audio>` element scaled by `volumeScale('radio')` (master x
-  radio). `applyVolumes()` pushes every change into the live mix and the radio box's slider;
-  RESET AUDIO TO DEFAULTS (an `action` row) restores the default mix.
-- **Radio volume** (car-radio.js RADIO VOLUME): the radio box's open rows carry a speaker (mute
-  / unmute to `settings.radioUnmute`), a slider and the level: the same value as Settings ·
-  Audio · Radio & music, set through `setRadioVolume()` (settings.js) and redrawn by
-  `renderRadioVolume()` whoever changes it. Drag, click, the wheel anywhere over the box (open or
-  resting), a tap on touch (the box opens first), the focused slider's own keys, and
-  `radioQuieter` / `radioLouder` (`,` / `.`, remappable) in a vehicle. The row stops pointer,
-  click and key events so nothing reaches the canvas (fire, aim, zoom) or the window's keydown
-  (arrows, Space); the box stays open while a drag lasts and gives focus back to the canvas
-  after a mouse drag or click. Muted, the resting chip's bars lie flat with a crossed speaker.
-  `DeadEndCity.radio()` reports it.
+  65% of it. The radio defaults to 100 (it was 80): a save still at 80, or without a level and
+  not marked `radioVolumeSet`, moves to 100 once on load (settings.js RADIO DEFAULT) and is
+  written back; any change by the player (knob, keys, wheel, mute, the Settings slider, a level
+  saved off the default) sets `radioVolumeSet`, and RESET clears it. The car radio is an
+  `<audio>` element scaled by `volumeScale('radio')` (master x radio). `applyVolumes()` pushes
+  every change into the live mix and the radio box's knob; RESET AUDIO TO DEFAULTS (an `action`
+  row) restores the default mix.
+- **Radio volume** (car-radio.js RADIO VOLUME): the radio box's open rows carry a 90s head-unit
+  rotary knob (CSS: a ribbed rubber grip and pointer that turn with `--angle`, a machined cap,
+  rim light and specular spot that stay put), an arc of 20 amber LED segments over 270 degrees
+  (one per 5 steps, the last partly lit, the top three hot), an LCD readout (SVG seven-segment
+  digits over ghost 8s, `OFF` at 0, a blinking MUTE annunciator) and the speaker (mute / unmute
+  to `settings.radioUnmute`). The same value as Settings · Audio · Radio & music, set through
+  `setRadioVolume()` (settings.js) and redrawn by `renderRadioVolume()` whoever changes it (it
+  writes nothing when nothing changed). Drag on the knob (pointer captured): straight movement
+  counts `dx - dy` at 1.6 px a step (160 px = the range; Shift x0.25); a path that curves round
+  the centre (turned 50 degrees in the sense it swept 30) switches to following the pointer's
+  angle, 270 degrees = the range. Also a double-click (mute), the wheel anywhere over the box,
+  the focused knob's arrows / Page / Home / End (`role="slider"`), a tap on touch (the box
+  opens first; the knob is 76 px with a wider hit area), and `radioQuieter` / `radioLouder`
+  (`,` / `.`, remappable) in a vehicle. Keys and the wheel go to the next 5-step mark; each
+  mark crossed ticks softly on the effects bus (`knobDetent`). The row stops pointer, click and
+  key events so nothing reaches the canvas (fire, aim, zoom) or the window's keydown (arrows,
+  Space); the box stays open while a drag lasts and gives focus back to the canvas after a
+  mouse drag or click. Muted, the resting chip's bars lie flat with a crossed speaker.
+  `DeadEndCity.radio()` reports it (`knob`: value, angle, lit LEDs, readout, drag mode, last drag).
 - **HUD** (shell.html DOM and the INTERFACE 30 stylesheet section; hud.js): top-left
   location, top-right cash / stars / clock, a waypoint pill top centre, bottom row minimap
   with health and armour bars, the mission card and the equipment column. The radio and

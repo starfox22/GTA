@@ -3429,28 +3429,270 @@ kbd {
   background: var(--acid);
   color: #111;
 }
-/* Radio volume: speaker (mute), slider, level. The row lights up under the
-   pointer; the thumb grows on hover and while dragging. */
+/* Radio volume (car-radio.js RADIO VOLUME): a 90s head-unit rotary knob in an
+   arc of amber LED segments (one per 5 steps, 270 degrees), an LCD readout with
+   ghost segments and a MUTE annunciator, and the speaker button. Everything is
+   CSS gradients and inline SVG, so it stays crisp at any DPI. The script sets
+   --angle on the knob; the rubber grip and the pointer turn with it while the
+   light (the rim sheen, the machined cap's anisotropic shine and the specular
+   spot) stays put, as on a real knob. */
 .radio-volume {
+  --lcd: #ffb23e;
+  --lcd-hot: #ff7438;
+  --lcd-glow: #ff9a1f;
+  --lcd-ghost: #ffb23e17;
   display: flex;
   align-items: center;
-  gap: 7px;
-  margin: 8px -6px 0 -4px;
-  padding: 3px 8px 3px 3px;
+  gap: 10px;
+  margin: 9px 0 0;
+  padding: 4px 6px 4px 3px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 12px;
   transition:
     background 0.2s,
     border-color 0.2s;
 }
 .radio-volume:hover,
 .radio-volume:focus-within {
-  background: #ffffff10;
+  background: #ffffff0b;
   border-color: var(--ui-line);
 }
 .radio-volume.dragging {
-  background: #ffffff14;
-  border-color: var(--ui-line-strong);
+  background: #ffffff10;
+  border-color: color-mix(in srgb, var(--lcd) 35%, transparent);
+}
+.radio-knob {
+  --size: 72px;
+  --angle: 135deg;
+  position: relative;
+  flex: 0 0 var(--size);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  cursor: grab;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* A hit area a little larger than the drawing. */
+.radio-knob::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+}
+.radio-volume.dragging .radio-knob {
+  cursor: grabbing;
+}
+.knob-leds {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 1.4px color-mix(in srgb, var(--lcd-glow) 75%, transparent));
+  transition: filter 0.2s;
+}
+.knob-leds .led {
+  fill: #2b1f0f;
+  stroke: #000a;
+  stroke-width: 0.7;
+}
+.knob-leds .led.on {
+  fill: var(--lcd);
+}
+.knob-leds .led.hot.on {
+  fill: var(--lcd-hot);
+}
+.knob-leds .end {
+  fill: #ffffff38;
+}
+.knob-body {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  box-shadow:
+    0 4px 6px #000c,
+    0 1px 1px #000,
+    0 0 0 1px #000d;
+  transition: box-shadow 0.2s;
+}
+.knob-body > i {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+/* Black rubber with 36 soft ribs: it turns. */
+.knob-grip {
+  inset: 0;
+  background: repeating-conic-gradient(#0b0c0e 0deg, #3a3e44 3.4deg, #16181b 6deg, #0b0c0e 10deg);
+  transform: rotate(var(--angle));
+  transition: transform 0.12s var(--ui-ease);
+}
+/* Light from the top left across the ribs: it stays put. */
+.knob-rim-light {
+  inset: 0;
+  background: linear-gradient(155deg, #ffffff52, #ffffff08 38%, #0000 55%, #000000b0);
+  box-shadow:
+    inset 0 1.5px 1px #ffffff30,
+    inset 0 -2px 3px #000c,
+    inset 0 0 0 1px #000a;
+}
+/* The machined aluminium cap: concentric turning marks over an anisotropic
+   sheen (a conic gradient), bevelled into the rubber. */
+.knob-cap {
+  inset: 19%;
+  background:
+    repeating-radial-gradient(circle, #0000 0 0.55px, #00000016 0.7px 1.15px),
+    conic-gradient(
+      from 12deg,
+      #f1f3f5,
+      #979da4 42deg,
+      #e3e6ea 88deg,
+      #7b8188 142deg,
+      #eef0f3 192deg,
+      #8a9097 246deg,
+      #f7f8fa 302deg,
+      #f1f3f5
+    );
+  box-shadow:
+    0 0 0 1.5px #0a0b0d,
+    0 1.5px 2.5px 1.5px #000b,
+    inset 0 1px 0 #ffffffc0,
+    inset 0 -1px 1.5px #0008;
+}
+/* The pointer: an engraved line in the cap and a lit dot on the rubber. */
+.knob-pointer {
+  inset: 0;
+  transform: rotate(var(--angle));
+  transition: transform 0.12s var(--ui-ease);
+}
+.knob-pointer::before,
+.knob-pointer::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+}
+.knob-pointer::before {
+  top: 21%;
+  width: 2px;
+  height: 21%;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: #1a1c20;
+  box-shadow:
+    0 0 0 0.5px #0005,
+    0.6px 0.6px 0 #ffffff70;
+}
+.knob-pointer::after {
+  top: 4.5%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--lcd);
+  box-shadow: 0 0 4px var(--lcd-glow);
+}
+.knob-gloss {
+  inset: 19%;
+  background: radial-gradient(ellipse 58% 42% at 36% 26%, #ffffffd0, #ffffff00 72%);
+  opacity: 0.6;
+}
+.radio-knob:hover .knob-body,
+.radio-knob:focus-visible .knob-body {
+  box-shadow:
+    0 4px 6px #000c,
+    0 1px 1px #000,
+    0 0 0 1px #000d,
+    0 0 12px 1px color-mix(in srgb, var(--lcd-glow) 30%, transparent);
+}
+.radio-knob:hover .knob-leds {
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--lcd-glow) 90%, transparent));
+}
+.radio-knob:focus-visible .knob-body {
+  outline: 2px solid var(--acid);
+  outline-offset: 4px;
+}
+/* While dragging: a soft amber glow, and the knob follows the pointer at once. */
+.radio-volume.dragging .knob-body {
+  box-shadow:
+    0 4px 6px #000c,
+    0 1px 1px #000,
+    0 0 0 1px #000d,
+    0 0 0 3px color-mix(in srgb, var(--lcd) 22%, transparent),
+    0 0 13px 2px color-mix(in srgb, var(--lcd-glow) 45%, transparent);
+}
+.radio-volume.dragging .knob-leds {
+  filter: drop-shadow(0 0 3px var(--lcd-glow));
+}
+.radio-volume.dragging .knob-grip,
+.radio-volume.dragging .knob-pointer {
+  transition: none;
+}
+.radio-volume.muted .knob-pointer::after {
+  background: #5b3f1c;
+  box-shadow: none;
+}
+/* The LCD: amber seven-segment digits over their unlit ghosts. */
+.radio-lcd {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(0deg, #0000 0 2px, #0000001f 2px 3px),
+    radial-gradient(130% 100% at 50% 0%, #2b1c07, #130c03 72%);
+  box-shadow:
+    inset 0 1px 4px #000d,
+    inset 0 0 0 1px #000,
+    0 1px 0 #ffffff17;
+}
+.lcd-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font:
+    800 8px/1 var(--ui-font);
+  letter-spacing: 0.16em;
+}
+.lcd-vol {
+  color: var(--lcd);
+  text-shadow: 0 0 4px color-mix(in srgb, var(--lcd-glow) 80%, transparent);
+}
+.lcd-mute {
+  color: var(--lcd-ghost);
+}
+.radio-volume.muted .lcd-mute {
+  color: var(--lcd-hot);
+  text-shadow: 0 0 5px var(--lcd-hot);
+  animation: lcdBlink 1.2s steps(1) infinite;
+}
+@keyframes lcdBlink {
+  50% {
+    opacity: 0.25;
+  }
+}
+.lcd-digits {
+  height: 27px;
+  width: auto;
+  margin-left: auto;
+  overflow: visible;
+  filter: drop-shadow(0 0 2.5px color-mix(in srgb, var(--lcd-glow) 70%, transparent));
+}
+.lcd-digits .seg {
+  fill: var(--lcd-ghost);
+}
+.lcd-digits .seg.on {
+  fill: var(--lcd);
+}
+.radio-volume.muted .lcd-digits .seg.on {
+  fill: var(--lcd-hot);
 }
 #carRadio #radioMute {
   display: grid;
@@ -3473,8 +3715,7 @@ kbd {
   background: #ffffff16;
   border-color: var(--ui-line-strong);
 }
-#carRadio #radioMute:focus-visible,
-#radioVolume:focus-visible {
+#carRadio #radioMute:focus-visible {
   outline: 2px solid var(--acid);
   outline-offset: 2px;
 }
@@ -3506,86 +3747,6 @@ kbd {
 }
 .radio-volume.muted #radioMute .cross {
   display: inline;
-}
-#radioVolume {
-  --fill: 80%;
-  flex: 1;
-  min-width: 0;
-  height: 22px;
-  margin: 0;
-  background: transparent;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  touch-action: none;
-}
-#radioVolume::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--acid) var(--fill), #ffffff26 var(--fill));
-}
-#radioVolume::-moz-range-track {
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--acid) var(--fill), #ffffff26 var(--fill));
-}
-#radioVolume::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
-  margin-top: -4px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 4px #0009;
-  transition:
-    transform 0.18s var(--ui-ease),
-    box-shadow 0.18s;
-}
-#radioVolume::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  border: 0;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 4px #0009;
-}
-.radio-volume:hover #radioVolume::-webkit-slider-thumb,
-#radioVolume:focus-visible::-webkit-slider-thumb {
-  transform: scale(1.25);
-  box-shadow:
-    0 1px 4px #0009,
-    0 0 0 4px color-mix(in srgb, var(--acid) 30%, transparent);
-}
-.radio-volume.dragging #radioVolume::-webkit-slider-thumb {
-  transform: scale(1.4);
-  box-shadow:
-    0 1px 4px #0009,
-    0 0 0 5px color-mix(in srgb, var(--acid) 40%, transparent);
-}
-.radio-volume.muted #radioVolume::-webkit-slider-runnable-track {
-  background: #ffffff1c;
-}
-.radio-volume.muted #radioVolume::-moz-range-track {
-  background: #ffffff1c;
-}
-#radioVolumeValue {
-  flex-shrink: 0;
-  min-width: 22px;
-  text-align: right;
-  font:
-    800 10px/1 var(--ui-font);
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
-  color: var(--ui-dim);
-  transition: color 0.2s;
-}
-.radio-volume:hover #radioVolumeValue,
-.radio-volume:focus-within #radioVolumeValue,
-.radio-volume.dragging #radioVolumeValue {
-  color: var(--acid);
-}
-.radio-volume.muted #radioVolumeValue {
-  color: var(--ui-danger);
 }
 /* Muted: the chip's bars lie flat and a crossed speaker sits at its end, so
    the resting chip says so too. */
@@ -5034,13 +5195,27 @@ body.no-key-hints .quickkeys {
 .touch-mode #carRadio.open {
   width: 250px;
 }
-.touch-mode #radioVolume {
-  height: 30px;
+.touch-mode .radio-knob {
+  --size: 76px;
 }
-.touch-mode #radioVolume::-webkit-slider-thumb {
-  width: 18px;
-  height: 18px;
-  margin-top: -7px;
+.touch-mode .radio-knob::before {
+  inset: -12px;
+}
+/* The narrower touch box: the LCD's tags sit over the digits. */
+.touch-mode .radio-lcd {
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  height: 52px;
+  padding: 0 7px;
+}
+.touch-mode .lcd-tags {
+  flex-direction: row;
+  gap: 7px;
+}
+.touch-mode .lcd-digits {
+  height: 24px;
+  margin: 0;
 }
 .touch-mode #carRadio #radioMute {
   width: 34px;
@@ -5466,6 +5641,7 @@ body.no-key-hints .quickkeys {
   .hud-stars i.gained,
   .hud-stars.wanted i.on,
   .radio-eq i,
+  .radio-volume.muted .lcd-mute,
   #healthbox.low .vital.health i,
   .binding-key.listening,
   .bindings-clash,
@@ -5560,22 +5736,39 @@ body.no-key-hints .quickkeys {
             ><button id="radioPower" aria-label="Toggle car radio" aria-pressed="true">N · ON</button>
           </div>
           <div id="radioTrack" aria-live="polite"></div>
-          <!-- The radio volume: the same value as Settings · Audio · Radio music
-               (car-radio.js RADIO VOLUME). -->
+          <!-- The radio volume: a rotary knob inside an arc of LED segments, an LCD
+               readout and the speaker (mute); the same value as Settings · Audio ·
+               Radio & music (car-radio.js RADIO VOLUME builds the LEDs and digits). -->
           <div class="radio-volume" id="radioVolumeRow">
+            <div
+              class="radio-knob"
+              id="radioKnob"
+              role="slider"
+              tabindex="0"
+              aria-label="Radio volume"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="100"
+              aria-valuetext="100%"
+            >
+              <svg class="knob-leds" id="radioKnobLeds" viewBox="-50 -50 100 100" aria-hidden="true"></svg>
+              <span class="knob-body" aria-hidden="true"
+                ><i class="knob-grip"></i><i class="knob-rim-light"></i><i class="knob-cap"></i><i class="knob-pointer"></i
+                ><i class="knob-gloss"></i
+              ></span>
+            </div>
+            <div class="radio-lcd" aria-hidden="true">
+              <span class="lcd-tags"><b class="lcd-vol">VOL</b><b class="lcd-mute">MUTE</b></span>
+              <svg class="lcd-digits" id="radioLcdDigits" viewBox="-1 -1 46 22"></svg>
+            </div>
             <button id="radioMute" type="button" aria-label="Mute radio" aria-pressed="false" title="Mute radio">
               <svg viewBox="0 0 20 20" aria-hidden="true">
                 <path class="spk" d="M3 7.5h3.2L10.5 4v12L6.2 12.5H3z" />
                 <path class="wave w1" d="M13 7.4a3.6 3.6 0 0 1 0 5.2" />
                 <path class="wave w2" d="M15.3 5.2a6.8 6.8 0 0 1 0 9.6" />
                 <path class="cross" d="M13.2 7.6l4.8 4.8M18 7.6l-4.8 4.8" />
-              </svg></button
-            ><input id="radioVolume" type="range" min="0" max="100" step="5" value="80" aria-label="Radio volume" /><output
-              id="radioVolumeValue"
-              for="radioVolume"
-              aria-hidden="true"
-              >80</output
-            >
+              </svg>
+            </button>
           </div>
           <div class="radio-presets">
             <button id="radioPreset0" aria-label="Tune Oddball 99.3, after-hours mix" aria-pressed="true">
