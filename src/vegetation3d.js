@@ -1624,7 +1624,9 @@
       const MID_TREE_ZOOM = 0.5,
         MID_TREE_DISTANCE = 1500;
       function updateVegetation(deltaSeconds) {
-        foliageUniforms.foliageTime.value = (foliageUniforms.foliageTime.value + deltaSeconds * (1 + weather.wind * 1.5)) % 10000;
+        // Wrapped at 200 pi seconds, where every term of the sway and flutter
+        // comes round to its start (a jump-free loop that keeps float precision).
+        foliageUniforms.foliageTime.value = (foliageUniforms.foliageTime.value + deltaSeconds * (1 + weather.wind * 1.5)) % (200 * Math.PI);
         // A few inches of movement in a breeze, a foot or more in a gale.
         foliageUniforms.foliageWind.value = 0.3 + weather.wind * 1.1 + weather.rain * 0.3;
         const lod = activeTier ? activeTier.lodBias : 1,
