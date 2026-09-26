@@ -5807,10 +5807,12 @@
       const deltaSeconds = Math.min(frameLimiter.limit === 30 ? 0.04 : 0.033, Math.max(0, (t - lastTime) / 1000));
       // Headline cards run on the wall clock: a phone call or pause that opens
       // right after one must not leave it frozen across the middle of the screen.
-      // Uncapped, so a slow renderer (a 1 FPS software GL) cannot stretch the
-      // 1.8 s SOUTH COAST · 1997 welcome card over the first minute of play.
+      // Up to a second a frame: a slow renderer (a 1 FPS software GL) must not
+      // stretch the 1.8 s SOUTH COAST · 1997 welcome card over the first minute
+      // of play (at 0.25 s a frame it did), yet one long hitch (a save, a
+      // console simulate()) must not swallow a MISSION COMPLETE card unseen.
       if (announceTime > 0) {
-        announceTime -= lastTime ? Math.min(5, Math.max(0, (t - lastTime) / 1000)) : 0;
+        announceTime -= lastTime ? Math.min(1, Math.max(0, (t - lastTime) / 1000)) : 0;
         if (announceTime <= 0) getElement('announcement').classList.remove('show');
       }
       if (profile.last) profile.frameGap += t - profile.last;
