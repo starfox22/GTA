@@ -110,6 +110,56 @@
       function streetFrameHeight() {
         return clamp(viewportHeight * 0.68, 430, 630);
       }
+      /* The flight camera's shape at `agl` world units above the ground (see FLIGHT
+         CAMERA): how far the lens has widened (0..1), the field of view and pitch,
+         and how much wider than the street view the aircraft is framed. */
+      function flightViewShape(agl) {
+        const widen = 1 - Math.pow(1 - clamp(agl / 720, 0, 1), 2),
+          tilt = clamp(agl / 2600, 0, 1);
+        return {
+          widen,
+          fov: GROUND_FOV + (AIR_FOV - GROUND_FOV) * widen - (AIR_FOV - HIGH_FOV) * clamp((agl - 3000) / 3600, 0, 1),
+          pitch: STREET_PITCH + (HIGH_PITCH - STREET_PITCH) * tilt * tilt * (3 - 2 * tilt),
+          framing: 1 + 0.3 * clamp(agl / 3000, 0, 1),
+        };
+      }
+      /**
+       * STREET ZOOM AS A HEIGHT
+       * The street camera is orthographic, so its own position says nothing about
+       * how high the view is. What it does have is a scale: zoomed out to 0.64 the
+       * ground is drawn at 0.64 of its size at zoom 1. The flight camera takes over
+       * from the street view at zoom 1 with the same framing (height 0), and as it
+       * climbs the ground under the aircraft shrinks the same way, so the height at
+       * which the flight camera draws the ground at the street zoom's scale is the
+       * street view's height (world units; 0 at zoom 1 or closer). Speech bubbles
+       * (crowd.js speechViewHeight) use it: zoom 0.8 is about 30 m, 0.72 about 40 m,
+       * 0.64 about 50 m. The ground in the middle of the frame lies
+       * `distance + agl / sin(pitch)` from the flight camera, the aircraft
+       * `distance`, which frames `frameH * framing` units.
+       */
+      const zoomHeightMemo = { zoom: NaN, frameH: NaN, agl: 0 };
+      function flightGroundScale(agl, frameH) {
+        const { fov, pitch, framing } = flightViewShape(agl),
+          halfTan = Math.tan((fov * Math.PI) / 360);
+        return frameH / (frameH * framing + (2 * halfTan * agl) / Math.sin(pitch));
+      }
+      function streetZoomHeight(zoom) {
+        const frameH = streetFrameHeight();
+        if (!(zoom < 1)) return 0;
+        if (zoom === zoomHeightMemo.zoom && frameH === zoomHeightMemo.frameH) return zoomHeightMemo.agl;
+        // The ground scale falls steadily with height: bisect for the zoom's.
+        let low = 0,
+          high = 40000;
+        for (let i = 0; i < 40; i++) {
+          const mid = (low + high) / 2;
+          if (flightGroundScale(mid, frameH) > zoom) low = mid;
+          else high = mid;
+        }
+        zoomHeightMemo.zoom = zoom;
+        zoomHeightMemo.frameH = frameH;
+        zoomHeightMemo.agl = (low + high) / 2;
+        return zoomHeightMemo.agl;
+      }
       /**
        * Sets `camera` for this frame and fills viewCenter/viewReach/viewZoom. Returns
        * nothing; render() carries on with whichever camera is active.
@@ -170,11 +220,8 @@
           return;
         }
         camera = flightCamera;
-        const widen = 1 - Math.pow(1 - clamp(viewAgl / 720, 0, 1), 2),
-          tilt = clamp(viewAgl / 2600, 0, 1),
-          fov = GROUND_FOV + (AIR_FOV - GROUND_FOV) * widen - (AIR_FOV - HIGH_FOV) * clamp((viewAgl - 3000) / 3600, 0, 1),
-          pitch = STREET_PITCH + (HIGH_PITCH - STREET_PITCH) * tilt * tilt * (3 - 2 * tilt),
-          frame = (frameH * (1 + 0.3 * clamp(viewAgl / 3000, 0, 1)) * (1 + flightSpeedWiden)) / worldZoom,
+        const { widen, fov, pitch, framing } = flightViewShape(viewAgl),
+          frame = (frameH * framing * (1 + flightSpeedWiden)) / worldZoom,
           distance = frame / 2 / Math.tan((fov * Math.PI) / 360);
         // Bank a little into turns, more as the view opens up.
         const craft = player.car,

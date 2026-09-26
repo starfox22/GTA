@@ -891,7 +891,11 @@
     }
     function roofSpeechBubble(p, x, y, scale = 1) {
       if (!p.speech || p.speechFor <= 0) return;
+      // Like the street bubbles, unreadable from high above (crowd.js speechHeightFade).
+      const fade = speechHeightFade(p);
+      if (fade <= 0.01) return;
       worldContext.save();
+      worldContext.globalAlpha = fade;
       worldContext.font = '600 ' + 14 * scale + 'px Arial';
       const w = worldContext.measureText(p.speech).width + 24 * scale,
         h = 30 * scale;

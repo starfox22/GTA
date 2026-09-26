@@ -2337,6 +2337,8 @@
         return;
       if (player.car) {
         if (garageInteract()) return;
+        // Riding a share bike into a station docks it (cycles.js BIKE SHARE).
+        if (bikeShareInteract()) return;
         exitCar();
         return;
       }
@@ -2351,6 +2353,8 @@
         offerMission();
         return;
       }
+      // RENT BIKE at a South Coast Cycle station (cycles.js BIKE SHARE).
+      if (bikeShareInteract()) return;
       const c = nearestCar();
       if (c) {
         if (vehicleIsLocked(c)) {
@@ -3256,6 +3260,8 @@
         timed('drawbridge', () => updateDrawbridge(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
+        // The on-foot figure in the speed box (hud.js SPEED BOX).
+        trackPlayerPace(deltaSeconds);
         updateWeather(deltaSeconds);
         updateSwimming(deltaSeconds);
         updateMarinaFooting();
@@ -4196,6 +4202,7 @@
       if (!big) drawGpsRoutes(drawingContext, scale);
       drawCountyMap(drawingContext, scale, big);
       drawGarageMap(drawingContext, scale);
+      drawBikeShareMap(drawingContext, scale, big);
       drawAirCoverMap(drawingContext, scale);
       drawDrawbridgeMap(drawingContext, scale, big);
       drawAviationMap(drawingContext, scale);
@@ -4513,45 +4520,8 @@
         : reloadSecondsRemaining > 0
           ? 'LOADING'
           : keyName('reload');
-      getElement('vehicleName').textContent = transitRide
-        ? 'CITY RAIL'
-        : c
-          ? vehicleSpec(c).name
-          : player.swimming
-            ? 'SWIMMING'
-            : player.wading
-              ? 'WADING'
-              : 'ON FOOT';
-      // The speed readout doubles as the breath gauge while you are in the water.
-      const swimming = !c && player.swimming;
-      getElement('speed').textContent = swimming
-        ? Math.round(breathFraction() * 100)
-        : c
-          ? Math.round(
-              // Boats read knots; everything else km/h (both from UNITS_PER_METRE).
-              isBoat(c)
-                ? Math.hypot(c.vx || 0, c.vy || 0) / KNOTS
-                : speedKmh(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : Math.abs(c.speed)),
-            )
-          : '';
-      getElement('speedUnit').textContent = swimming
-        ? '% BREATH'
-        : c
-          ? isAircraft(c)
-            ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
-            : ridingBicycle()
-              ? 'KM/H · ' +
-                Math.round(pedalCadence() * 60) +
-                ' RPM · LEGS ' +
-                Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) +
-                '%'
-              : isBoat(c)
-                ? 'KNOTS'
-                : 'KM/H'
-          : '';
-      getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
-      getElement('vehicleStats').classList.toggle('damaged', !!c && c.hp < c.maxhp * 0.3);
-      getElement('vehicleStats').classList.toggle('active', !!c || swimming || !!transitRide);
+      // The speed box: vehicles, on foot, swimming and falling (hud.js SPEED BOX).
+      updateSpeedBox();
       const target = objective(),
         m = mission;
       getElement('pager').classList.toggle('hidden', !m && incomingCallRemaining <= 0);
@@ -4598,6 +4568,8 @@
       let prompt = '',
         promptId,
         promptKey = 'interact';
+      // A bike-share station in reach: RENT BIKE on foot, DOCK BIKE on a share bike.
+      const bikeShare = gameMode === 'play' && !rideSkipActive() ? bikeShareOffer() : null;
       // A passenger ride that can be skipped offers that first (ride-skip.js).
       const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
       if (gameMode === 'play' && rideSkipActive()) prompt = '';
@@ -4623,7 +4595,11 @@
               aircraftClearance(c) > 1
                 ? keyName('ascend') + ' RISE · ' + keyName('descend') + ' DESCEND · ' + moveKeysName() + ' FLY'
                 : keyName('ascend') + ' TAKE OFF · ' + keyName('interact') + ' EXIT';
-          else if (garageForCar(c))
+          else if (bikeShare) {
+            prompt = bikeShare.text;
+            promptId = 'bikeshare';
+            promptKey = bikeShare.key;
+          } else if (garageForCar(c))
             prompt = repairJob
               ? 'RESPRAYING…'
               : garageServiceCost(c) === 0
@@ -4639,7 +4615,11 @@
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (payphoneInReach() && !m && missionIndex < missions.length) prompt = 'ANSWER PAYPHONE';
-        else if (sportsKickPrompt()) prompt = sportsKickPrompt();
+        else if (bikeShare) {
+          prompt = bikeShare.text;
+          promptId = 'bikeshare';
+          promptKey = bikeShare.key;
+        } else if (sportsKickPrompt()) prompt = sportsKickPrompt();
         else {
           const n = nearestCar();
           promptId = 'vehicle';
@@ -5944,6 +5924,22 @@
         for (const code of held) keys[code] = false;
         return this.ride();
       },
+      // South Coast Cycle (cycles.js BIKE SHARE): every station, its docks and
+      // bikes, the prompt in reach, what renting and docking have cost.
+      bikeShare: () => bikeShareReport(),
+      // Stand at bike-share station `id` (from bikeShare().list), facing its bikes.
+      bikeStation(id = 0) {
+        return goToBikeStation(id);
+      },
+      // The speed box as shown: mode, label, figure and unit line (hud.js SPEED BOX).
+      speedBox: () => (updateSpeedBox(), {
+        active: getElement('vehicleStats').classList.contains('active'),
+        mode: getElement('vehicleStats').dataset.mode,
+        label: getElement('vehicleName').textContent,
+        speed: getElement('speed').textContent,
+        unit: getElement('speedUnit').textContent,
+        units: hudState.units,
+      }),
       // Rack a bicycle beside the player.
       bike(headingRadians = player.a) {
         spawnClearCar(
@@ -6126,6 +6122,10 @@
         rideAttraction(kind);
         return parkReport().riding;
       },
+      // The Falcon riders' scream cues (track position, height, vertical speed, g) and lines; `reset` clears the log.
+      coasterVoices: (reset = false) => falconVoicesReport(!!reset),
+      // Speech bubbles and height: the view's height over someone on the ground at the view's centre, and their bubble's fade.
+      speechView: () => speechViewReport(),
       // Every train on the network: where it is, how fast, and whether it carries the player.
       trains: () =>
         railTrains.map((t) => ({
@@ -6446,6 +6446,9 @@
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
           if (typeof changes.flightHud === 'boolean') setFlightHud(changes.flightHud);
           if (typeof changes.gps === 'boolean') setGps(changes.gps);
+          // 'kmh' or 'mph' (hud.js SPEED BOX); the speed box on foot.
+          if (typeof changes.units === 'string') setSpeedUnits(changes.units.toLowerCase());
+          if (typeof changes.footSpeed === 'boolean') setFootSpeed(changes.footSpeed);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
@@ -6471,6 +6474,8 @@
           keyHints: hudState.keyHints,
           flightHud: hudState.flightHud,
           gps: hudState.gps,
+          units: hudState.units,
+          footSpeed: hudState.footSpeed,
           gpsRoute: gpsRoute.points.length,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,

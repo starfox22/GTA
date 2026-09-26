@@ -1646,6 +1646,11 @@
         meter: { tip: 1.25, slide: 0, time: 0.4, lift: 0.3 },
         bollard: { tip: 1.1, slide: 0, time: 0.35, lift: 0.3 },
         bench: { tip: 1.5, slide: 0.15, time: 0.6, lift: 2 },
+        // Bike share (cycles3d.js): bikes clatter onto their sides and skid, the
+        // rack folds over at its feet, the totem topples like a lamp.
+        sharebike: { tip: 1.45, slide: 0.35, time: 0.55, lift: 1.4, yaw: 0.5 },
+        bikerack: { tip: 1.2, slide: 0.04, time: 0.5, lift: 0.3 },
+        biketotem: { tip: 1.5, slide: 0.05, time: 0.8, lift: 0.5 },
         seat: { tip: 1.5, slide: 0.18, time: 0.6, lift: 2 },
         railing: { tip: 1.35, slide: 0.22, time: 0.45, lift: 0.6 },
         umbrella: { tip: 1.57, slide: 0.45, time: 0.7, lift: 2 },
@@ -1800,6 +1805,7 @@
         mailbox: '#2e4d7a',
         lounger: '#f1efe8',
         umbrella: '#e0c24a',
+        sharebike: '#12948f',
       };
       function propDebris(prop, x, z, material, altitude, closing) {
         const dx = Math.cos(prop.fallA || 0),

@@ -594,6 +594,8 @@
         }
       }
       function makeBicycle(vehicle) {
+        // A rented South Coast Cycle bike wears its livery (cycles3d.js).
+        if (vehicle.shareBike) return Object.assign(makeShareBicycle(vehicle), { realSize: true });
         const model = specialVehicle(vehicle),
           b = model.body;
         model.bike = true;
