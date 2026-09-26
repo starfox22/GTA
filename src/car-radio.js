@@ -3,7 +3,8 @@
      * Vehicle radio stations
      * Source: src/car-radio.js
      * Scope: shared game closure.
-     * Six stations of licensed tracks, selection, playback and saved settings.
+     * Six stations of licensed tracks, selection, playback and saved settings;
+     * the same radio box on the title menu (TITLE RADIO).
      */
     /* In-vehicle music stations; a single streaming decoder keeps memory bounded.
        Oddball is preset one: it is the station the dashboard comes up on. New stations
@@ -91,6 +92,43 @@
       // performance.now() time until which the station's tagline shows.
       carRadioTaglineUntil = 0,
       carRadioTaglineTimer = null;
+    /**
+     * TITLE RADIO
+     * The same radio box plays on the title menu, and behind the settings,
+     * mission select, help and credits screens opened from it: docked on the
+     * right of the screen and open (the box moves into #menu, so the screens
+     * opened over the title cover it). The title has its own station, NEON 88.7
+     * until the player tunes another there (saved as `titleStation`), and its
+     * own power switch for the visit; Settings · Audio · Radio on title screen
+     * (titleRadioEnabled, saved by settings.js) hides it. The volume is the one
+     * radio level (settings.radioVolume: the knob, the mute and the Settings
+     * slider).
+     *
+     * Browsers refuse to start sound before the page has had a user gesture:
+     * the first attempt is made at once and, while it is refused, the box says
+     * "Click anywhere to play radio" and the first click, tap or key anywhere
+     * starts it (titleRadioGesture). A refusal throws nothing: play()'s promise
+     * is caught and only marks the radio blocked.
+     *
+     * Leaving the title for the game hands over (setTitleRadio): in a vehicle
+     * with the radio on, the in-car radio carries on with the same station and
+     * track without a break; otherwise the music fades out over
+     * RADIO_HANDOVER_MS (wall-clock time, so a slow frame rate does not stretch
+     * it) and pauses. Back on the title it resumes.
+     */
+    const TITLE_RADIO_STATION = 1, // NEON 88.7
+      RADIO_HANDOVER_MS = 1500,
+      // The element's level on the title before the fade-in and volumeScale('radio').
+      RADIO_TITLE_LEVEL = 0.27;
+    let titleRadioStation = TITLE_RADIO_STATION,
+      // Settings · Audio · Radio on title screen (saved with the settings, settings.js).
+      titleRadioEnabled = true,
+      titleRadioPower = true,
+      // Whether the box is on the title now (syncCarRadio keeps it up to date).
+      titleRadioShown = false,
+      // The handover's fade-out while it lasts: { from: element volume, start: ms }.
+      carRadioFade = null,
+      carRadioFadeTimer = null;
     try {
       const pref = JSON.parse(localStorage.getItem('dead-end-city-radio-v2'));
       if (pref && typeof pref === 'object') {
@@ -100,6 +138,8 @@
         for (const station of MUSIC_STATIONS)
           if (Number.isInteger(pref.tracks?.[station.id]))
             carRadioTrack[station.id] = clamp(pref.tracks[station.id], 0, station.tracks.length - 1);
+        if (Number.isInteger(pref.titleStation))
+          titleRadioStation = clamp(pref.titleStation, 0, MUSIC_STATIONS.length - 1);
       }
     } catch {}
     function saveCarRadio() {
@@ -110,11 +150,16 @@
             enabled: carRadioEnabled,
             station: carRadioStation,
             tracks: carRadioTrack,
+            titleStation: titleRadioStation,
           }),
         );
       } catch {}
     }
-    function stationTrackKey(index = carRadioStation) {
+    /* The station the box shows and plays: the title's own on the title menu. */
+    function radioStationIndex() {
+      return titleRadioShown ? titleRadioStation : carRadioStation;
+    }
+    function stationTrackKey(index = radioStationIndex()) {
       const station = MUSIC_STATIONS[index];
       return station.tracks[(carRadioTrack[station.id] || 0) % station.tracks.length];
     }
@@ -145,7 +190,7 @@
       carRadioPlayer.volume = 0;
       carRadioPlayer.addEventListener('ended', () => {
         carRadioGain = 0;
-        const station = MUSIC_STATIONS[carRadioStation];
+        const station = MUSIC_STATIONS[radioStationIndex()];
         if (station.tracks.length > 1 && carRadioLoaded?.startsWith(station.id + '/')) {
           // Next track in the station's rotation; syncCarRadio loads and starts it.
           carRadioTrack[station.id] = ((carRadioTrack[station.id] || 0) + 1) % station.tracks.length;
@@ -169,46 +214,106 @@
       return true;
     }
     /* Somewhere with a radio: a working vehicle (a bicycle has none), or a Sunset
-       Pier ride, the Falcon's train or an Eye capsule (themepark.js), which play
-       the same stations through the same player. */
+       Pier ride such as an Eye capsule (themepark.js), which plays the same
+       stations through the same player. The Falcon's train has no radio. */
     function radioAboard() {
       // A hired cab has the driver's radio on (taxi.js), and it plays on through
       // a skipped ride's fade (ride-skip.js ducks the effects bus, not the radio).
-      return gameMode === 'play' && ((player.car?.hp > 0 && !ridingBicycle()) || !!player.coaster || !!taxiRide);
+      return gameMode === 'play' && ((player.car?.hp > 0 && !ridingBicycle()) || (!!player.coaster && player.coaster.kind !== 'train') || !!taxiRide);
     }
     /* Whether the radio is on where the player is. On the Falcon it starts off
        every ride and the switch (N / B, a click) holds for that ride only
        (`player.coaster.radio`, themepark.js); everywhere else it is the saved
        carRadioEnabled. */
     function radioSwitchedOn() {
+      if (titleRadioShown) return titleRadioPower;
       return player.coaster?.kind === 'train' ? !!player.coaster.radio : carRadioEnabled;
     }
     function setRadioSwitch(on) {
-      if (player.coaster?.kind === 'train') player.coaster.radio = on;
+      if (titleRadioShown) titleRadioPower = on;
+      else if (player.coaster?.kind === 'train') player.coaster.radio = on;
       else carRadioEnabled = on;
     }
+    const titleMenuBox = getElement('menu'),
+      // Where the radio box lives in the HUD, to put it back after the title.
+      radioBoxHome = { parent: getElement('carRadio').parentNode, next: getElement('carRadio').nextSibling };
+    function titleRadioWanted() {
+      return titleRadioEnabled && gameMode !== 'play' && !titleMenuBox.classList.contains('hidden');
+    }
+    /* The box onto the title menu (docked right, open) or back into the HUD,
+       and the handover when the title closes. */
+    function setTitleRadio(on) {
+      titleRadioShown = on;
+      const box = getElement('carRadio');
+      box.classList.toggle('title-radio', on);
+      if (on) {
+        carRadioFade = null;
+        titleMenuBox.append(box);
+      } else {
+        radioBoxHome.parent.insertBefore(box, radioBoxHome.next);
+        // A refusal on the title (no gesture yet) must not keep the car radio
+        // waiting for N: the game's first ride tries again.
+        if (!carRadioUnavailable) carRadioBlocked = false;
+        const playing = !!carRadioPlayer && !carRadioPlayer.paused;
+        if (playing && radioAboard() && radioSwitchedOn() && carRadioLoaded !== RADIO_PARTY) {
+          // Into a vehicle: its radio carries on with the title's station, no break.
+          carRadioStation = titleRadioStation;
+          saveCarRadio();
+        } else if (playing) {
+          carRadioFade = { from: carRadioPlayer.volume, start: performance.now() };
+          // Stepped on its own clock: the first frames of play can be slow.
+          clearInterval(carRadioFadeTimer);
+          carRadioFadeTimer = setInterval(() => {
+            syncCarRadio();
+            if (!carRadioFade) clearInterval(carRadioFadeTimer);
+          }, 40);
+        }
+      }
+      updateCarRadioUI();
+    }
+    // The title opening or closing (the start buttons, a mission picked, the
+    // option) moves the box at once rather than on the next frame.
+    new MutationObserver(() => syncCarRadio()).observe(titleMenuBox, { attributes: true, attributeFilter: ['class'] });
     function syncCarRadio(gesture = false, deltaSeconds = 0) {
+      const title = titleRadioWanted();
+      if (title !== titleRadioShown) {
+        // setTitleRadio redraws the box, which syncs again with the new state.
+        setTitleRadio(title);
+        return;
+      }
       const party = gameMode === 'play' && player.roof && !document.hidden,
         riding = radioAboard() && !document.hidden,
-        wants = (party || (riding && radioSwitchedOn())) && soundOn,
+        wants = (party || ((riding || (title && !document.hidden)) && radioSwitchedOn())) && soundOn,
+        station = MUSIC_STATIONS[radioStationIndex()],
         // The Blue Hour rooftop party always plays the synth track, whatever is tuned.
-        loadKey = party ? RADIO_PARTY : MUSIC_STATIONS[carRadioStation].id + '/' + stationTrackKey(),
+        loadKey = party ? RADIO_PARTY : station.id + '/' + stationTrackKey(),
         track = party ? (typeof ASSETS !== 'undefined' ? ASSETS.music?.synth : null) : radioTrack();
       if (!wants) {
         if (carRadioPlayer && (!carRadioPlayer.paused || carRadioPending)) {
+          // The title's handover: fade out, then pause (a hidden page stops at once).
+          if (carRadioFade && !carRadioPlayer.paused && !document.hidden && soundOn) {
+            const t = (performance.now() - carRadioFade.start) / RADIO_HANDOVER_MS;
+            if (t < 1) {
+              carRadioPlayer.volume = clamp(carRadioFade.from * (1 - t) * (1 - t), 0, 1);
+              return;
+            }
+          }
+          carRadioFade = null;
           carRadioPlayer.pause();
           carRadioRevision++;
           carRadioPending = false;
           carRadioGain = 0;
         }
+        carRadioFade = null;
         return;
       }
+      carRadioFade = null;
       if (!track?.src || !carRadioReady()) return;
       if (carRadioLoaded !== loadKey) {
         carRadioRevision++;
         carRadioPending = false;
         carRadioPlayer.pause();
-        carRadioLead = party ? 0.06 : MUSIC_STATIONS[carRadioStation].lead || 0;
+        carRadioLead = party ? 0.06 : station.lead || 0;
         carRadioGain = 0;
         carRadioPlayer.volume = 0;
         carRadioPlayer.src = track.src;
@@ -217,7 +322,9 @@
         carRadioUnavailable = false;
         seekCarRadioLead();
       }
-      const target = party
+      const target = title
+        ? RADIO_TITLE_LEVEL
+        : party
         ? (rooftopJob()?.boss.speech?.length ? 0.055 : 0.18) *
           clamp(1 - distanceBetween(player, roofAt(195, 310)) / 600, 0.35, 1)
         : gameTime < radioUntil || gameTime < (mission?.lineUntil || 0)
@@ -250,8 +357,9 @@
       // The radio box pops open to show the new station, then tucks away (hud.js).
       hudPop('carRadio');
       const next = (index + MUSIC_STATIONS.length) % MUSIC_STATIONS.length,
-        changed = next !== carRadioStation || !radioSwitchedOn();
-      carRadioStation = next;
+        changed = next !== radioStationIndex() || !radioSwitchedOn();
+      if (titleRadioShown) titleRadioStation = next;
+      else carRadioStation = next;
       setRadioSwitch(true);
       carRadioBlocked = false;
       saveCarRadio();
@@ -280,9 +388,12 @@
       updateCarRadioUI();
     }
     function updateCarRadioUI() {
-      const riding = radioAboard();
+      const riding = radioAboard() || titleRadioShown,
+        // On the title, a browser that refused to start sound before a gesture.
+        waiting = titleRadioShown && carRadioBlocked && !carRadioUnavailable && radioSwitchedOn() && soundOn;
       getElement('carRadio').classList.toggle('hidden', !riding);
-      const station = MUSIC_STATIONS[carRadioStation],
+      getElement('carRadio').classList.toggle('radio-waiting', waiting);
+      const station = MUSIC_STATIONS[radioStationIndex()],
         track = radioTrack();
       getElement('radioStation').textContent = station.name;
       getElement('radioGenre').textContent = station.genre.toUpperCase();
@@ -293,7 +404,9 @@
           ? 'Game sound muted · ' + keyName('mute') + ' to unmute'
           : carRadioUnavailable
             ? 'Track unavailable · ' + keyName('radioPower') + ' to retry'
-            : carRadioBlocked
+            : waiting
+              ? '♪ ' + (touchEnabled() ? 'Tap' : 'Click') + ' anywhere to play radio'
+              : carRadioBlocked
               ? 'Press ' + keyName('radioPower') + ' to start playback'
               : performance.now() < carRadioTaglineUntil
                 ? '“' + station.tagline + '”'
@@ -303,25 +416,58 @@
       getElement('radioPower').textContent = keyName('radioPower') + ' · ' + (on ? 'ON' : 'OFF');
       getElement('radioPower').setAttribute?.('aria-pressed', String(on));
       getElement('carRadio').classList.toggle('radio-off', !on);
+      const tuned = radioStationIndex();
       for (let i = 0; i < MUSIC_STATIONS.length; i++) {
-        getElement('radioPreset' + i).setAttribute?.('aria-pressed', String(i === carRadioStation));
-        getElement('radioPreset' + i).classList.toggle('selected', i === carRadioStation);
+        getElement('radioPreset' + i).setAttribute?.('aria-pressed', String(i === tuned));
+        getElement('radioPreset' + i).classList.toggle('selected', i === tuned);
       }
       syncCarRadio();
     }
-    getElement('radioPower').onclick = () => {
+    /* After a click on the box the keys go back where they were: to the game
+       canvas in play; on the title to the menu item last selected, so Enter
+       still starts the game and the arrows still move through the menu (a
+       keyboard press on a radio button keeps its focus there). */
+    let titleMenuFocus = null;
+    titleMenuBox.addEventListener('focusin', (e) => {
+      if (e.target.classList?.contains('menu-item')) titleMenuFocus = e.target;
+    });
+    function radioFocusBack(e) {
+      if (!titleRadioShown) canvas.focus();
+      else if (!e || e.detail > 0 || e.pointerType)
+        (titleMenuFocus || getElement('startBtn')).focus({ preventScroll: true });
+    }
+    getElement('radioPower').onclick = (e) => {
       toggleCarRadio();
-      canvas.focus();
+      radioFocusBack(e);
     };
-    getElement('radioNext').onclick = () => {
-      tuneCarRadio(carRadioStation + 1);
-      canvas.focus();
+    getElement('radioNext').onclick = (e) => {
+      tuneCarRadio(radioStationIndex() + 1);
+      radioFocusBack(e);
     };
     for (let i = 0; i < MUSIC_STATIONS.length; i++)
-      getElement('radioPreset' + i).onclick = () => {
+      getElement('radioPreset' + i).onclick = (e) => {
         tuneCarRadio(i);
-        canvas.focus();
+        radioFocusBack(e);
       };
+    /* TITLE RADIO: the first gesture anywhere starts the refused playback. The
+       events are the ones that count as a user activation (a touch counts on
+       touchend / pointerup, a mouse on mousedown / pointerdown), listened for
+       on the capture phase because the radio's own rows stop theirs. The
+       radio's power key and button do it themselves (a press there that
+       started the radio here would then switch it off). */
+    function titleRadioGesture(e) {
+      if (!titleRadioShown || !carRadioBlocked || carRadioUnavailable) return;
+      if (e.type === 'keydown' && (e.key === 'Escape' || controlBindings.radioPower.includes(e.code))) return;
+      if (e.target?.closest?.('#radioPower')) return;
+      initAudio();
+      carRadioRevision++;
+      carRadioPending = false;
+      carRadioBlocked = false;
+      syncCarRadio(true);
+      updateCarRadioUI();
+    }
+    for (const type of ['pointerdown', 'mousedown', 'pointerup', 'touchend', 'keydown'])
+      window.addEventListener(type, titleRadioGesture, true);
     /**
      * RADIO VOLUME
      * A 90s head-unit volume knob in the radio box: a knurled rubber knob with a
@@ -501,8 +647,8 @@
     getElement('radioMute').addEventListener('click', (e) => {
       toggleRadioMute();
       hudPop('carRadio');
-      // A mouse click hands the keys back to the game, like the other radio buttons.
-      if (e.detail > 0) canvas.focus();
+      // A mouse click hands the keys back to the game (or the title menu), like the other radio buttons.
+      if (e.detail > 0) radioFocusBack(e);
     });
     radioKnob.addEventListener('pointerdown', (e) => {
       if (e.button !== 0 || knobDrag) return;
@@ -594,7 +740,7 @@
       radioVolumeRow.classList.remove('dragging');
       if (drag.moved) saveSettings();
       hudPop('carRadio', drag.type === 'mouse' ? HUD_POP_MS : 6000);
-      if (drag.type === 'mouse') canvas.focus();
+      if (drag.type === 'mouse') radioFocusBack();
     }
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) radioKnob.addEventListener(type, endKnobDrag);
     radioKnob.addEventListener('dblclick', () => {
@@ -642,7 +788,24 @@
       return {
         shown: !box.classList.contains('hidden'),
         open: box.classList.contains('open') || box.matches(':hover, :focus-within'),
-        station: MUSIC_STATIONS[carRadioStation].name,
+        station: MUSIC_STATIONS[radioStationIndex()].name,
+        // The title menu's radio (TITLE RADIO): docked on the title, its own station.
+        title: {
+          enabled: titleRadioEnabled,
+          shown: titleRadioShown,
+          station: MUSIC_STATIONS[titleRadioStation].name,
+          power: titleRadioPower,
+          // Refused before a user gesture: the box asks for a click.
+          waiting: box.classList.contains('radio-waiting'),
+          inMenu: box.parentNode === titleMenuBox,
+        },
+        carStation: MUSIC_STATIONS[carRadioStation].name,
+        blocked: carRadioBlocked,
+        unavailable: carRadioUnavailable,
+        loaded: carRadioLoaded,
+        src: carRadioPlayer ? String(carRadioPlayer.currentSrc || '').slice(0, 80) : null,
+        time: carRadioPlayer ? +carRadioPlayer.currentTime.toFixed(2) : null,
+        fading: !!carRadioFade,
         // On where the player is (the Falcon's own per-ride switch while riding it).
         enabled: radioSwitchedOn(),
         saved: carRadioEnabled,
