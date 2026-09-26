@@ -169,7 +169,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. A braced cruiser is an ordinary 1.6 t body on locked brakes (`parkedFriction`), so the rammer's momentum decides: a truck, bus or the tank shoves through, a sedan crumples and stalls in the V. A cruiser moved over a metre is knocked loose (`roadblockShoved`); the cut is busted when the player's car comes out the far side (`watchRoadblockBreach`) |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
-| themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
+| themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride; RIDERS' VOICES: recorded screams cued per car by the track and rider speech bubbles, `updateFalconVoices`, `falconRiders`), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
 | cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
@@ -209,9 +209,9 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends); RADIO VOLUME, the radio box's 90s volume knob (LED arc, LCD readout) and speaker (section 4d); `radioReport()` |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends; on the Falcon it starts off every ride and the switch holds for that ride only, `radioSwitchedOn()` / `player.coaster.radio`, never saved); RADIO VOLUME, the radio box's 90s volume knob (LED arc, LCD readout) and speaker (section 4d); `radioReport()` |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
-| crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: soldiers, police and mission characters first, then lines at the player, then the nearest; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
+| crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: Falcon riders while the player rides with them, soldiers, police and mission characters, then lines at the player, then the nearest; SPEECH SEEN FROM ABOVE: `speechHeightFade` fades every bubble, the Blue Hour's too, from 40 m to 50 m of height between the view and the speaker (`speechViewHeight`: the player's elevation when flying or riding, i.e. the AGL, else the street zoom as a height), and a hidden line takes no slot; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
 | beachclub-audio.js | The club's procedural music on a look-ahead scheduler (day, sunset and night sets), the wall low-pass by where the listener stands, and `mareaGroove`, the beat clock the dancers and lights follow |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
@@ -227,7 +227,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 
 | File | Role |
 | --- | --- |
-| flight-view3d.js | Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city |
+| flight-view3d.js | Perspective flight camera (`flightViewShape(agl)`; `streetZoomHeight(zoom)`: the street zoom as the height at which the flight camera draws the ground at that scale, `city3D.zoomHeight`), ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
@@ -391,6 +391,15 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   north shore, and in the east the
   carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
   food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
+- **Riders' voices** (themepark.js RIDERS' VOICES): each car is read off the circuit every frame
+  (vertical speed = train speed x tangent rise, seat load from the change of rise, upside down).
+  Falling faster than 4.5 m/s after a crest cues screams: the first drop after the lift a chorus
+  (two recorded pedestrian screams per car, pitch 0.9..1.14, own level and delay, placed on the
+  car, so it rolls down the train), later drops of 12 m+ / 5 m+ dips, airtime (< 0.45 g) and
+  inversions a voice from some cars. Voices bus, 3D distance from the player (`playSample` with
+  `elevation` and `delay`). Rider bubbles (`falconRiders`, one per seat, anchored over the head by
+  `bubbleZ`; the player's seat is silent): nervous on the lift, "AAAAHHH!" at the first drop, lines
+  on later elements, queasy on the brake run. `DeadEndCity.coasterVoices()` logs every cue.
 - Riding: `player.coaster` is the carrier for both rides (`{ kind: 'train' | 'wheel' }`), so the
   existing teleport, death and mission-reset hooks let go of either. The ride camera
   (`updateParkCamera`, called from render3d.js right after `updateFlightView`) puts the
@@ -637,7 +646,9 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   the keydown listener hands every key to `settingsKeyDown()`. The character see-through
   switch writes `dead-end-city-cutaway` and calls `city3D.setCharacterCutaway(on)` (owned by
   the renderer). NPC chatter off hides the street speech bubbles (render3d.js); mission
-  dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected.
+  dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected. Every bubble (the Blue Hour's
+  included) fades out seen from 40..50 m above (crowd.js SPEECH SEEN FROM ABOVE); the HUD log and
+  captions are not bubbles.
 - **Audio buses** (audio.js THE MIX): one gain per category, each set by its Settings · Audio
   slider (settings.js `AUDIO_VOLUMES`; `busLevel(channel)` = 0.62 x the slider): `master`
   (effects: weapons, impacts, crashes, UI; the historical name, so anything connected to

@@ -176,10 +176,21 @@
       // a skipped ride's fade (ride-skip.js ducks the effects bus, not the radio).
       return gameMode === 'play' && ((player.car?.hp > 0 && !ridingBicycle()) || !!player.coaster || !!taxiRide);
     }
+    /* Whether the radio is on where the player is. On the Falcon it starts off
+       every ride and the switch (N / B, a click) holds for that ride only
+       (`player.coaster.radio`, themepark.js); everywhere else it is the saved
+       carRadioEnabled. */
+    function radioSwitchedOn() {
+      return player.coaster?.kind === 'train' ? !!player.coaster.radio : carRadioEnabled;
+    }
+    function setRadioSwitch(on) {
+      if (player.coaster?.kind === 'train') player.coaster.radio = on;
+      else carRadioEnabled = on;
+    }
     function syncCarRadio(gesture = false, deltaSeconds = 0) {
       const party = gameMode === 'play' && player.roof && !document.hidden,
         riding = radioAboard() && !document.hidden,
-        wants = (party || (riding && carRadioEnabled)) && soundOn,
+        wants = (party || (riding && radioSwitchedOn())) && soundOn,
         // The Blue Hour rooftop party always plays the synth track, whatever is tuned.
         loadKey = party ? RADIO_PARTY : MUSIC_STATIONS[carRadioStation].id + '/' + stationTrackKey(),
         track = party ? (typeof ASSETS !== 'undefined' ? ASSETS.music?.synth : null) : radioTrack();
@@ -239,9 +250,9 @@
       // The radio box pops open to show the new station, then tucks away (hud.js).
       hudPop('carRadio');
       const next = (index + MUSIC_STATIONS.length) % MUSIC_STATIONS.length,
-        changed = next !== carRadioStation || !carRadioEnabled;
+        changed = next !== carRadioStation || !radioSwitchedOn();
       carRadioStation = next;
-      carRadioEnabled = true;
+      setRadioSwitch(true);
       carRadioBlocked = false;
       saveCarRadio();
       initAudio();
@@ -259,10 +270,10 @@
     }
     function toggleCarRadio() {
       hudPop('carRadio');
-      if (carRadioBlocked && carRadioEnabled) {
+      if (carRadioBlocked && radioSwitchedOn()) {
         carRadioBlocked = false;
         if (carRadioUnavailable) carRadioLoaded = null;
-      } else carRadioEnabled = !carRadioEnabled;
+      } else setRadioSwitch(!radioSwitchedOn());
       saveCarRadio();
       initAudio();
       syncCarRadio(true);
@@ -275,7 +286,8 @@
         track = radioTrack();
       getElement('radioStation').textContent = station.name;
       getElement('radioGenre').textContent = station.genre.toUpperCase();
-      getElement('radioTrack').textContent = !carRadioEnabled
+      const on = radioSwitchedOn();
+      getElement('radioTrack').textContent = !on
         ? 'Radio off'
         : !soundOn
           ? 'Game sound muted · ' + keyName('mute') + ' to unmute'
@@ -288,9 +300,9 @@
                 : track
                   ? track.title + ' · ' + track.artist
                   : 'Tuning…';
-      getElement('radioPower').textContent = keyName('radioPower') + ' · ' + (carRadioEnabled ? 'ON' : 'OFF');
-      getElement('radioPower').setAttribute?.('aria-pressed', String(carRadioEnabled));
-      getElement('carRadio').classList.toggle('radio-off', !carRadioEnabled);
+      getElement('radioPower').textContent = keyName('radioPower') + ' · ' + (on ? 'ON' : 'OFF');
+      getElement('radioPower').setAttribute?.('aria-pressed', String(on));
+      getElement('carRadio').classList.toggle('radio-off', !on);
       for (let i = 0; i < MUSIC_STATIONS.length; i++) {
         getElement('radioPreset' + i).setAttribute?.('aria-pressed', String(i === carRadioStation));
         getElement('radioPreset' + i).classList.toggle('selected', i === carRadioStation);
@@ -631,7 +643,9 @@
         shown: !box.classList.contains('hidden'),
         open: box.classList.contains('open') || box.matches(':hover, :focus-within'),
         station: MUSIC_STATIONS[carRadioStation].name,
-        enabled: carRadioEnabled,
+        // On where the player is (the Falcon's own per-ride switch while riding it).
+        enabled: radioSwitchedOn(),
+        saved: carRadioEnabled,
         playing: !!carRadioPlayer && !carRadioPlayer.paused,
         volume: settings.radioVolume,
         muted: settings.radioVolume === 0,

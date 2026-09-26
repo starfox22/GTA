@@ -2173,8 +2173,13 @@
           return {
             x: (v.x * 0.5 + 0.5) * viewportWidth,
             y: (-0.5 * v.y + 0.5) * viewportHeight,
+            // Behind a perspective camera (the flight and ride views) the point
+            // projects mirrored into the frame: callers drawing labels skip it.
+            behind: v.z > 1,
           };
         },
+        // The street zoom as a height above the ground in world units (flight-view3d.js).
+        zoomHeight: (zoom) => streetZoomHeight(zoom),
         aim(mx, my) {
           ray.setFromCamera(
             new Three.Vector2((mx / viewportWidth) * 2 - 1, (-my / viewportHeight) * 2 + 1),
@@ -3084,14 +3089,17 @@
           // Drivers shouting out of the window use the same bubble over the car.
           // speechBubbles() (crowd.js) picks at most two, most important first, and
           // returns none with Settings · Gameplay · NPC chatter off. A second bubble
-          // that would overlap the first rises clear above it.
+          // that would overlap the first rises clear above it. Seen from high up
+          // (above 40 m, gone by 50 m: speechHeightFade, crowd.js) they fade out.
+          // A Falcon rider's bubble is anchored over the head (`bubbleZ`).
           const bubbleRects = [];
           for (const p of speechBubbles()) {
-            const q = api.project(p.x, p.y, entityElevation(p) + (p.type ? 22 : 27));
-            if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;
+            const q = api.project(p.x, p.y, p.bubbleZ ?? entityElevation(p) + (p.type ? 22 : 27));
+            if (q.behind || q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;
             worldContext.font = '600 10px Arial';
             const tw = worldContext.measureText(p.speech).width + 12,
-              fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1);
+              fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1) * speechHeightFade(p);
+            if (fade <= 0.01) continue;
             for (const r of bubbleRects)
               if (Math.abs(q.x - r.x) < (tw + r.w) / 2 + 4 && Math.abs(q.y - r.y) < 20)
                 q.y = r.y - 20;

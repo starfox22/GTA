@@ -6016,6 +6016,10 @@
         rideAttraction(kind);
         return parkReport().riding;
       },
+      // The Falcon riders' scream cues (track position, height, vertical speed, g) and lines; `reset` clears the log.
+      coasterVoices: (reset = false) => falconVoicesReport(!!reset),
+      // Speech bubbles and height: the view's height over someone on the ground at the view's centre, and their bubble's fade.
+      speechView: () => speechViewReport(),
       // Every train on the network: where it is, how fast, and whether it carries the player.
       trains: () =>
         railTrains.map((t) => ({
