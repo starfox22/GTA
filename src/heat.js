@@ -9,9 +9,14 @@
      * than the same kills spread over an afternoon. The HUD shows the stars, the
      * climb toward the next one and the body count of the current incident.
      *
-     * `crime(amount)` is the one way a system reports the player: amounts are in
-     * the historic "crime units" (a gunshot 0.075, a carjacking 0.8, trespassing
-     * on Fort Sentinel 3); `recordKill` and `recordVehicleKill` report deaths.
+     * `crime(amount, how)` is the one way a system reports the player: amounts
+     * are in the historic "crime units" (a gunshot 0.075, a carjacking 0.8,
+     * trespassing on Fort Sentinel 3); `recordKill` and `recordVehicleKill`
+     * report deaths. With no stars up a crime only counts if the police know:
+     * a unit saw or heard it (or `how` is 'seen': a base alarm, a mission), or a
+     * witness report arrives (`how` = { x, y, kind, caller }, witnesses.js).
+     * Otherwise it is banked as unreported for a witness to call in later
+     * (`how` may name the kind: 'gunfire', 'theft', ...).
      * Missions that raise `wantedStars` directly keep working: the heat is lifted
      * to that star's floor on the next update.
      */
@@ -39,8 +44,8 @@
     let wantedLevel = 0,
       starElapsed = 0,
       wantedHeat = 0,
-      // Heat from crimes nobody has reported yet (a silent knife kill with no
-      // police around); the next witness call or crime adds it.
+      // Heat from crimes nobody has reported yet (witnesses.js keeps them, with
+      // where and when, for a witness call to report later).
       unreportedHeat = 0,
       escalateSeconds = 0,
       lastHeatAt = -100;
@@ -63,7 +68,7 @@
     }
     function resetHeat() {
       wantedHeat = 0;
-      unreportedHeat = 0;
+      forgetWitnessedCrimes();
       wantedLevel = 0;
       starElapsed = 0;
       escalateSeconds = 0;
@@ -94,7 +99,6 @@
         wantedLevel = visible;
         starElapsed = 0;
       }
-      unreportedHeat = Math.max(0, unreportedHeat - deltaSeconds * 0.1);
       if (!visible) {
         escalateSeconds = 0;
         return;
@@ -130,11 +134,21 @@
       crimeLog.push({ at: Math.round(gameTime * 10) / 10, heat: Math.round(amount * CRIME_HEAT * 100) / 100, by });
       if (crimeLog.length > 12) crimeLog.shift();
     }
-    function crime(amount = 1) {
+    function crime(amount = 1, how = null) {
       if (harborPoliceProtected(player.x, player.y, 40)) return;
       logCrime(amount);
-      addHeat(Math.max(0, amount) * CRIME_HEAT + unreportedHeat);
-      unreportedHeat = 0;
+      const heat = Math.max(0, amount) * CRIME_HEAT;
+      // A witness's call reaching dispatch: the police go to where it happened.
+      if (how && typeof how === 'object') {
+        reportedCrime(heat, how);
+        return;
+      }
+      // Nobody in authority saw or heard it: it waits for a witness.
+      if (wantedStars <= 0 && !policeWitnessCrime(how)) {
+        bankUnreportedCrime(heat, typeof how === 'string' ? how : '');
+        return;
+      }
+      addHeat(heat);
       if (wantedStars <= 0) {
         wantedStars = 1;
         wantedLevel = 1;
@@ -178,14 +192,15 @@
         tell(category === 'cop' ? 'OFFICER DOWN' : category === 'swat' ? 'SWAT OFFICER DOWN' : 'AGENT DOWN', 1.6);
         policeRadioEvent('officer-down', victim);
       }
-      // A quiet kill with nobody watching waits for a witness to call it in.
-      if (wantedStars <= 0 && (kind === 'melee' || kind === 'punch') && !lawman && !policeCanSeePlayer()) {
-        unreportedHeat = Math.min(HEAT_MAX, unreportedHeat + heat);
+      if (harborPoliceProtected(player.x, player.y, 40)) return;
+      // A killing no police unit saw or heard waits for a witness to call it in
+      // (the body found later counts too). An officer's death is on the radio.
+      if (wantedStars <= 0 && !lawman && !policeWitnessCrime(kind === 'blast' ? 'explosion' : '')) {
+        bankUnreportedCrime(heat, 'kill', victim);
         return;
       }
-      if (harborPoliceProtected(player.x, player.y, 40)) return;
       addHeat(heat);
-      if (wantedStars <= 0) crime(0);
+      if (wantedStars <= 0) crime(0, 'seen');
       else {
         // The police know where the shooting is.
         lastSeen = { x: player.x, y: player.y };
@@ -198,11 +213,16 @@
     /* Somebody the player shot down but did not kill (wounds.js): most of a
        kill's heat, none of the body count. A later death adds the rest. */
     function recordWounding(victim) {
-      const heat = (KILL_HEAT[killCategory(victim)] || 0) * 0.7;
+      const category = killCategory(victim),
+        heat = (KILL_HEAT[category] || 0) * 0.7;
       if (!heat || harborPoliceProtected(player.x, player.y, 40)) return;
       victim.woundHeat = heat;
+      if (wantedStars <= 0 && !victim.police && !policeWitnessCrime('')) {
+        bankUnreportedCrime(heat, 'wounding', victim);
+        return;
+      }
       addHeat(heat);
-      if (wantedStars <= 0) crime(0);
+      if (wantedStars <= 0) crime(0, 'seen');
       else lastSeen = { x: player.x, y: player.y };
     }
     /* A vehicle the player damaged last has blown up (updateCars). */
@@ -220,8 +240,15 @@
       else if (vehicle.lawUnit === 'swat') heat = 14;
       else if (vehicle.type === 'police' || vehicle.lawUnit) heat = 9;
       else heat = vehicle.ai || vehicle.occupied ? 3.5 : 1.5;
+      // A civilian car blown up with no unit near: the blast is heard, and whoever
+      // hears it may call (crowdAlarm 'explosion'); the police do not know yet.
+      const lawful = vehicle.airUnit || vehicle.lawUnit || vehicle.type === 'police' || vehicle.military || vehicle.armyUnit;
+      if (wantedStars <= 0 && !lawful && !policeWitnessCrime('explosion')) {
+        bankUnreportedCrime(heat, 'explosion', null);
+        return;
+      }
       addHeat(heat);
-      if (wantedStars <= 0) crime(0);
+      if (wantedStars <= 0) crime(0, 'seen');
     }
     /**
      * The HUD: filled stars, the next star flashing while dispatch escalates,

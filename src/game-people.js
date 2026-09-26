@@ -19,8 +19,16 @@
         'Kola tastes like pennies.',
         'Ferry’s cancelled. Again.',
         'Heard shots by the docks.',
+        'My landlord raised the rent again.',
+        'Did you tape the game last night?',
+        'I swear this street gets longer.',
+        'Where did I park?',
+        'Call me when you get there.',
+        'That diner does the best pie.',
+        'My pager keeps going off.',
+        'Parking in this city. Unbelievable.',
       ],
-      wanted: ['It’s him!', 'That’s the guy from the news!', 'Don’t look at him.', 'Cops are everywhere tonight.'],
+      wanted: ['It’s him!', 'That’s the guy from the news!', 'Don’t look at him.', 'Cops are everywhere tonight.', 'Don’t make eye contact.', 'Isn’t that the guy they’re after?', 'Walk faster.'],
       gym: [
         'Three more. Three.',
         'Control the negative, don’t drop.',
@@ -64,10 +72,10 @@
         'Sea air. Finally.',
       ],
     };
+    // One picker for every street line (crowd-speech.js crowdSay): no repeats,
+    // idle remarks spaced out across the street.
     function pedSay(p, kind, chance = 1) {
-      if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return;
-      p.speech = randomChoice(PED_LINES[kind]);
-      p.speechUntil = gameTime + 2.6;
+      crowdSay(p, kind, chance);
     }
     function shopfrontNear(p) {
       // Standing on a south sidewalk directly in front of a building's street face.

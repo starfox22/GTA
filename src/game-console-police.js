@@ -128,5 +128,64 @@
         clearRoadblocks();
         return roadblocks.length;
       },
+      // Witnesses and 911 (witnesses.js): crimes nobody has reported yet, the calls
+      // under way (who, about what, how far through), the player's incidents and
+      // their witnesses, the response to the last report and running totals.
+      witnesses: () => witnessReportData(),
+      // Stage a witness test round the player: nobody else within `radius` (people,
+      // officers and police vehicles removed, stars, calls and unreported crimes
+      // cleared), a victim standing 60 units in front of the player, `count`
+      // onlookers 170+ units off to the side facing the victim, and with `police`
+      // a crewed patrol car 180 units behind the player. Returns the positions.
+      witnessStage(count = 1, police = false, radius = 1100) {
+        if (player.car) exitCar();
+        clearPolice(false);
+        const far = (e) => distanceBetween(e, player) >= radius;
+        for (let i = pedestrians.length - 1; i >= 0; i--) if (!far(pedestrians[i])) pedestrians.splice(i, 1);
+        for (let i = officers.length - 1; i >= 0; i--) if (!far(officers[i])) officers.splice(i, 1);
+        for (let i = vehicles.length - 1; i >= 0; i--) {
+          const c = vehicles[i];
+          if (c !== player.car && (c.type === 'police' || c.cop || c.lawUnit || c.airUnit) && !far(c)) vehicles.splice(i, 1);
+        }
+        crowd.incidents.length = 0;
+        forgetWitnessedCrimes();
+        const a = player.a,
+          fx = Math.cos(a),
+          fy = Math.sin(a),
+          round = (e) => ({ x: Math.round(e.x), y: Math.round(e.y) });
+        const person = (x, y, face) => {
+          const p = { x, y, a: face, dir: face, hp: 30, flee: 0, timer: 999, walk: 0, state: 'idle', stateTime: 900 };
+          dressPerson(p, 'casual');
+          p.nerve = 0.6;
+          pedestrians.push(p);
+          return p;
+        };
+        const victim = person(player.x + fx * 60, player.y + fy * 60, a + Math.PI),
+          onlookers = [];
+        for (let i = 0; i < count; i++) {
+          const side = i % 2 ? -1 : 1,
+            off = 170 + Math.floor(i / 2) * 30,
+            x = victim.x - fy * off * side,
+            y = victim.y + fx * off * side;
+          onlookers.push(person(x, y, Math.atan2(victim.y - y, victim.x - x)));
+        }
+        let car = null;
+        if (police) {
+          car = spawnClearCar('police', player.x - fx * 180, player.y - fy * 180, a, true);
+          if (car) car.vx = car.vy = car.speed = 0;
+        }
+        return { player: round(player), victim: round(victim), witnesses: onlookers.map(round), police: car ? round(car) : null };
+      },
+      // Carjack tests: a stopped, unlocked traffic car with a driver at the wheel
+      // right beside the player (interact() then hauls the driver out); `mood` is
+      // how the driver takes it (carjack.js: flee, angry, defiant, plead, witness).
+      carjackTarget(type = 'sedan', mood = 'flee') {
+        if (player.car) exitCar();
+        const a = player.a + Math.PI / 2,
+          c = spawnClearCar(type, player.x + Math.cos(a) * 22, player.y + Math.sin(a) * 22, player.a, true);
+        if (!c) return null;
+        Object.assign(c, { occupied: true, locked: false, driverMood: mood, vx: 0, vy: 0, speed: 0 });
+        return { type: c.type, x: Math.round(c.x), y: Math.round(c.y), d: Math.round(distanceBetween(c, player)) };
+      },
     });
     // END SUBSYSTEM: src/game-console-police.js
