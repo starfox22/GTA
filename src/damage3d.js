@@ -1116,7 +1116,8 @@
         }
         const wear = clamp(1 - c.hp / c.maxhp, 0, 1),
           heat = damage?.burning ? clamp(damage.burning / 8, 0, 0.7) : 0,
-          key = wear + heat * 10;
+          // The colour is part of the key: a respray changes it with the wear unchanged.
+          key = wear + heat * 10 + (m.liveryColor || c.color);
         if (m.paintWear === key) return;
         m.paintWear = key;
         m.paint.color.set(m.liveryColor || c.color).lerp(grime, wear * 0.22).lerp(sootColor, heat);

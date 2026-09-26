@@ -1,5 +1,48 @@
 # Changelog
 
+## Unreleased — the respray garages: real-scale workshops, prices and a drive-in show
+
+- **The helicopter loses you inside.** Every garage bay and office is overhead cover
+  (garages.js `registerGarageCover`, air-cover.js): drive into Eastside Garage with the
+  helicopter overhead and it reports HIDDEN FROM AIR at once; with no ground unit in sight
+  the lose-police timer runs. Measured on a 3-star chase: helicopter `seesPlayer` true on the
+  apron, false from the moment the car is under the roof, search timer counting down inside.
+- **Where the searchlight lands:** `overheadCoverHeight(x, y, elevation)` (air-cover.js)
+  returns the top of the roof over a target (map units; 55.2 = 6.9 m for a garage) or null in
+  the open, for the helicopter's pool to sit on the roof instead of the car.
+  `DeadEndCity.cover()` reports it as `roofHeight`.
+- **Renamed and signed:** EASTSIDE CUSTOMS is now EASTSIDE GARAGE; PALM AUTO PAINT is PALM KEYS
+  AUTO, BATTERY MOTOR WORKS is SOUTH BANK MOTOR WORKS, STONECREEK GARAGE stays. Every shop has
+  its rooftop billboard (with MECHANICS on its tagline), a lit fascia over the door
+  ("MECHANICS · RESPRAY · REPAIR" and the like) and a MECHANICS lightbox over the office; the
+  city map shows the name and MECHANICS · RESPRAY under each R badge. Mission 2's objective,
+  the billboard ad and the story's proper nouns follow the new name.
+- **Prices** (`garageOffer`): respray by class (motorcycle $200, compact $250, saloon $300,
+  performance or SUV / van $400, truck / bus $500), repair by damage ($100 plus up to $1,400,
+  so $100-1,500), both together 15% off. The prompt shows the bill ("RESPRAY + REPAIR · $580").
+  Short of the full bill the shop does the respray alone; short of that, "Sorry, friend … Come
+  back with cash" and no service. Vinny still pays for the cargo truck on the first job.
+- **The police rule:** a respray clears the stars only when no unit, on the ground or in the
+  air, had eyes on you from the order until the door was down (`policeHaveEyesOnPlayer`,
+  citylife.js). Seen driving in, you get the paint but keep the stars ("They saw you drive in").
+- **The building** (garage3d.js, `GARAGE_PLAN`): a brick and clad-steel workshop, bay 10 m
+  wide and 15 m deep, eaves 6.4 m, a sectional roll-up door 6 m wide and 5 m high (the 12 m bus
+  and the 10 m box truck fit with 1.5 m to spare), side windows, a parapet with AC units,
+  skylights and an extract stack, and a 6 x 8 m office. Inside: an epoxy floor with bay lines,
+  hatching and oil stains, a two-post lift, two red rolling tool chests, a workbench with a
+  vice and a pegboard, a compressor and hose reel, a tyre stack, an engine hoist with an engine
+  on the chain, oil drums, a paint cart, the paint zone (extraction fan, filter banks, a spray
+  gun on a gantry trolley), fluorescent tubes, a NO SMOKING sign, a calendar and a fire
+  extinguisher. Two mechanics in navy overalls work there (crowd scene members).
+- **The drive-in show** (about 11 s; E skips to the bill): the car rolls in at walking pace to
+  the lift, the door rattles down (animated slats, amber beacon), the camera frames the bay
+  and the roof and front lift off, paint mist in the new colour and the new colour creeping
+  over the body, grinder sparks when there is damage to mend, a dip to black with the bill
+  ("RESPRAYED · REPAIRED · SALOON · $580 paid"), the door rolls up and the car rolls out onto
+  the apron. `DeadEndCity.garage()` reports the shops, the offer, the job and the last service.
+- The car's paint follows `vehicle.color` live (damage3d.js paint key), so a respray shows
+  without waiting for new damage.
+
 ## Unreleased — tighter steering, rain for every driver, riders thrown, helicopters that break up, the drawbridge launch
 
 Steering (physics.js STEER_LOCK, TYRE STIFFNESS, UNDERSTEER SKID; measured with `turnTest`)

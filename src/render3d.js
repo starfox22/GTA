@@ -2211,6 +2211,8 @@
           }
           return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
         },
+        // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
+        searchlight: (options) => searchlightReport(options),
         /* Shadow casters the view does not show (for "shadows from nowhere"):
            every mesh the sun's shadow pass draws, near the view, that the camera
            pass would not: hidden by its material (fully transparent, no colour

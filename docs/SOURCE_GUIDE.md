@@ -248,7 +248,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | beach.js | Palm Keys Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball players and their watchers (`fan`) and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
 | roofmission.js | The Blue Hour terrace (`ROOFTOP`, `player.roof`, `moveOnRoof`), mission 2's hit (index 1); `entityElevation`, `sameFloor` |
 | rooftops.js | Helicopter landings on flat roofs (`helicopterRoofSite`, `roofLandingClear`), rooftop helipads (`chooseRoofHelipads`, `b.helipad`), the `player.buildingRoof` carrier (`exitOntoRoof`, `moveOnBuildingRoof`), `playerOnRoof()` |
-| air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft; OVERHEAD COVER: `overheadCover(x, y, elevation)` (one grid of the overhead volumes, the roofs registered with `registerOverheadCover()` by the renderer: every cutaway roof, the Falcon queue canopy and station roof, shop awnings, entrance canopies, the cruise terminal canopy; building interiors; bridges over the water) and `hiddenFromAir(t)`, which blinds the police helicopter |
+| air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft; OVERHEAD COVER: `overheadCover(x, y, elevation)` (one grid of the overhead volumes, the roofs registered with `registerOverheadCover()` by the renderer: every cutaway roof, the Falcon queue canopy and station roof, shop awnings, entrance canopies, the cruise terminal canopy; the respray garages' bays and offices; building interiors; bridges over the water), `overheadCoverHeight(x, y, elevation)` (the top of that roof, map units, or null: where the helicopter's searchlight pool belongs) and `hiddenFromAir(t)`, which blinds the police helicopter |
 | combat-rules.js | Elevation-aware shots, vehicle handgun rules, tank armor (`vehicleArmorShare`: the Apache takes 30% of small arms) and the POLICE HELICOPTER (`AIR_UNITS_MAX`: one at a time from stars, a chase at sea or a mission; unarmed: it tracks, lights and reports, never fires; blind to a player under overhead cover, `airCanSee`; HUD line `airPursuitStatus`, HIDDEN FROM AIR); ON-SCREEN RULE (`shooterInView`: police, army and base shooters fire at a player on the ground only from inside the view); SHOT LOG (`logHostileShot`, `DeadEndCity.shotLog()`: every hostile round at the player by source, hits, distance, on screen); SNIPER FIRE, used only by the rooftop snipers (off): a lock of 2 s or more with a laser (rooftop), a rising beep and a red screen-edge glow toward the shooter (`noteSniperLock`, `sniperThreat`, hud.js SNIPER WARNING), then one visible tracer round (`fireSniperRound`) aimed at where the player is guessed to be (measured velocity, `trackPlayerMotion`, led by a random 0.3..skill of the flight time), so standing still is a hit and running or turning usually a miss; a hit is `'sniper'` damage, 50 before armour, never lethal from full health |
 | damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture and trees by impact energy (`STREET_PROP_KINDS`, `registerStreetProp`, `treeProp`, `streetPropContacts`, `knockStreetProp`), the damage console helpers |
 | crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; street furniture passes its `material` (wood, plastic and fabric knock higher and softer with a splinter settle, stone and trees crash lower, a tree adds the thud of the trunk landing); the whole bus plays at `CRASH_LEVEL` (-3.5 dB, under gunfire and engines); one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
@@ -278,7 +278,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
 | car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends; on the Falcon it starts off every ride and the switch holds for that ride only, `radioSwitchedOn()` / `player.coaster.radio`, never saved); RADIO VOLUME, the radio box's 90s volume knob (LED arc, LCD readout) and speaker (section 4d); `radioReport()` |
-| garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
+| garages.js | The respray garages (EASTSIDE GARAGE, PALM KEYS AUTO, SOUTH BANK MOTOR WORKS, STONECREEK GARAGE): real-scale plan (`GARAGE_PLAN`: 10 x 15 m bay, 6 x 5 m roll-up door, office), the PRICE LIST (`garageOffer`: respray by class $200-500, repair by damage $100-1,500, both 15% off, refusal without cash), the drive-in show (`repairJob.phase`: rollin, doorDown, work, fade, doorUp, driveout; E skips), the police rule (a respray clears the stars only if no unit saw you drive in), the mechanics (`staffGarages`), overhead cover (`registerGarageCover`), `garageReport()` |
 | crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: Falcon riders while the player rides with them, soldiers, police and mission characters, then lines at the player, then the nearest; SPEECH SEEN FROM ABOVE: `speechHeightFade` fades every bubble, the Blue Hour's too, from 40 m to 50 m of height between the view and the speaker (`speechViewHeight`: the player's elevation when flying or riding, i.e. the AGL, else the street zoom as a height), and a hidden line takes no slot; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
 | clubpool.js | The Marea pool: SWIM (E) at the edge dives in (`player.pool` carrier: dive, swim, out), the sea's `swimStroke` (water.js) inside `movePoolSwimmer`'s bounds, breath only slows you, GET OUT (E) to a free deck spot (`poolExitSpots`), drips, club-goers' remarks |
@@ -301,7 +301,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | flight-view3d.js | Perspective flight camera (`flightViewShape(agl)`; `streetZoomHeight(zoom)`: the street zoom as the height at which the flight camera draws the ground at that scale, `city3D.zoomHeight`), ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
-| searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
+| searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie textures and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light (`AIR_LIGHT`, the roof landing `searchlightLanding`), lens flare and crew aim (`updateHelicopterSearchlight`), `searchlightReport` |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
 | signkit3d.js | (included by render3d.js before `sign()`) `SignKit`: the hand-built stroke font (`strokeText`), letter treatments (`tubes`, `doubleTubes`, `bulbLetters`, `blockLetters`, `stencilCut`, `decoLetters`, `pixelLetters`), canvas type effects (`fxText` with font stacks, gold and chrome fills), board shapes and materials (`boardPath`, `fillBoard`), emblems (`icon`, `tubeIcon`) |
@@ -311,8 +311,8 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras (the station roof and its sign are their own batch, cut away while the train or the ride camera is under them, `setStationRoofCut`) |
-| unicorn3d.js | (included by themepark3d.js) The Unicorn Fountain in the forecourt (`PIER.unicorn`): Aurora, a rearing unicorn sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) in pearlescent marble with a gilded horn and hooves; tiered plinth with a bronze plaque, basin, eight arcing jets and spray; night uplights as a shader term on her marble (UPLIGHTS), the horn's pastel glow; `updateUnicornFountain` each frame |
-| garage3d.js | Garage buildings, shutters, lights and service details |
+| unicorn3d.js | (included by themepark3d.js) Aurora, the black unicorn statue on the lawn by the drop tower (`PIER.unicorn`): a monumental rearing unicorn (12 m to the horn tip, 13 m above the lawn) sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) and embedded masses for the musculature (`unicornMass`), in clearcoated black lacquer with a polished gold horn and black hooves; the OBSIDIAN patch (reflections folded up into the sky and partly desaturated, a sky rim light, anthracite lock edges, granite grain) and night UPLIGHTS (four warm-white lamps in the paving, a tight specular glint on the black); a low octagonal polished black granite plinth (1.3 m) with an inlaid brass line and an engraved brass AURORA plaque facing the camera; everything merged per material (about 9.2k triangles, six draws with the plaque); `updateUnicornStatue` each frame (uplights, the horn's soft glow) |
+| garage3d.js | The garages' meshes: brick and steel workshop, sectional door slats, rooftop billboard and AC, office with its MECHANICS lightbox, the tagline fascia; inside a two-post lift, tool chests, workbench and vice, compressor, tyres, engine hoist, paint zone with extraction fan and spray rig, tubes, NO SMOKING sign and calendar; the show's paint mist and grinder sparks (`updateGarageVisuals`) |
 | landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
 | air-cover3d.js | Road underpass walls, roof, portals and lamps |
@@ -457,12 +457,15 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **The Sunset Eye** (hub 3600, -6050, 300 up, rim radius 240, 48 capsules, one turn in 240 s;
   `wheelCapsule(k)`) with its terminal underneath. **Fountain Lagoon** (3170, -6370) with the
   show schedule (`fountainShowAt`) and fireworks (`fireworksTonight`), the **Sunset Palace**
-  crescent hotel (3530, -6770), the **Unicorn Fountain** in the forecourt between the drive and
-  the gate (`PIER.unicorn`, 3200, -5987: a round basin with Aurora, a rearing marble unicorn, on a
-  plinth; solid to people and cars, guests stop round it to take photos), the beach club on the
-  north shore, and in the east the
+  crescent hotel (3530, -6770), the beach club on the north shore, and in the east the
   carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
-  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
+  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`). **Aurora**, a 12 m black
+  unicorn statue (`PIER.unicorn`, 4068, -6048), stands on the lawn south of the drop tower
+  (clear of its base, the games stalls, the drive's end and the beach) in a ring of pale paving
+  (radius `apron`) with a short walk from the end of the island drive; her granite plinth is
+  solid to people and cars (`parkSolids`, kind `unicorn statue`), palms keep off her lawn, and
+  guests walk out to her, round the plinth (`unicornArc`, never across it; `unicornExit` on the
+  way back) and stop on the paving or the lawn to take photos (the filming pose).
 - **Riders' voices** (themepark.js RIDERS' VOICES): each car is read off the circuit every frame
   (vertical speed = train speed x tangent rise, seat load from the change of rise, upside down).
   Falling faster than 4.5 m/s after a crest cues screams: the first drop after the lift a chorus
@@ -683,8 +686,8 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   and thins it to `line.points`. Stations are inserted into their routes and kept on straight
   track. Everything else (decks, piers, cover volumes, the map, trains) reads `line.points`.
 - Central Garden (renewal.js `CENTRAL_PARK`, `COMMONS`) is two blocks wide and two deep; the
-  streets inside it are closed by `parkStreetClosed`. Eastside Customs garage sits on Cannery St
-  at (1320, 2022).
+  streets inside it are closed by `parkStreetClosed`. Eastside Garage sits on Cannery St
+  at (1320, 2022) (its bay's lift at (1296, 1997)).
 - South Coast Stadium (sports-world.js) is enclosed: `STADIUM_ENCLOSURE` blocks people and
   vehicles, `STADIUM_VEHICLE_BARRIERS` (bollards, turnstile span) block vehicles only, and the
   two turnstile gates at x 2665..2686 and 2692..2713 (y 4845) are the only way onto the concourse.
@@ -1208,13 +1211,13 @@ docs/audit/missions-qa.md shows the method).
   | `cinema` bulb name on red, white changeable-letter strip, film reels | bulbs + marquee | ROYAL CINEMA |
   | `diner` chrome-ribbed pill, enamel panel, script tubes, block pill | neon | THE BLUE PLATE DINER, ROSIE’S DINER |
   | `lightbox` backlit panel in an aluminium frame, vinyl letters, bands, tabs | lightbox | hospitals (cross in a box), EMERGENCY, PALM GRILL (24 HRS tab), airports, HELIPAD, 24 HOUR, BANDSHELL, pharmacy, bail bonds, laundromat, noodle, pizza, photo |
-  | `enamel` gloss porcelain enamel, two-tone rim, serif/slab, inset pill | floodlit or `backlit` | BAYVIEW TAVERN (oval, gilt), SOUTH COAST POLICE (badge), BATTERY MOTOR WORKS (piston, pill), MARINA, OUTFITTERS, CAUSEWAY INN, transit roundel, town welcome signs, bakery, deli |
+  | `enamel` gloss porcelain enamel, two-tone rim, serif/slab, inset pill | floodlit or `backlit` | BAYVIEW TAVERN (oval, gilt), SOUTH COAST POLICE (badge), SOUTH BANK MOTOR WORKS (piston, pill), MARINA, OUTFITTERS, CAUSEWAY INN, transit roundel, town welcome signs, bakery, deli |
   | `wood` weathered planks, routed or painted letters, rope border | floodlit | THE RUSTY ANCHOR (anchors, rope), county LODGEs, park and trail signs, SEAFOOD MARKET |
   | `stencil` bridged stencil capitals on sheet or corrugated steel, rivets, hazard stripes, rust | floodlit (warning signs reflective) | SOUTH COAST ARMORY (target, crossed pistols), PALM KEYS ARMORY, SENTINEL SURPLUS, WEAPONS · AMMO · ARMOR, IRONWORKS CARGO, MORETTI FREIGHT, RESTRICTED |
   | `deco` contrast capitals, wide tracking, rules, sunburst fan; neon or halo | neon / halo | THE BLUE HOUR, BLUE HOUR HOTEL, OCEAN DRIVE MENSWEAR (halo-lit gold), SUNSET PALACE, Deco hotel and tower names |
   | `carved` gold leaf serif on lacquer, stone or wood | floodlit | SOUTH COAST COLLEGE (crests), PAWN & LOAN, TAILOR, BOOKS, CIGARS, banks |
-  | `customs` flames, pinstripes, chrome 3D italic, red neon rim | neon + lit flames | EASTSIDE CUSTOMS |
-  | `airbrush` Miami sunset gradient, fat italic letters | lightbox | PALM AUTO PAINT (spray gun), VIDEO WORLD (chrome, grid) |
+  | `customs` flames, pinstripes, chrome 3D italic, red neon rim | neon + lit flames | EASTSIDE GARAGE |
+  | `airbrush` Miami sunset gradient, fat italic letters | lightbox | PALM KEYS AUTO (spray gun), VIDEO WORLD (chrome, grid) |
   | `varsity` athletic block letters, outline and drop, optional arch | floodlit or backlit | RIVERSIDE HIGH SCHOOL, SOUTH COAST STADIUM, THE FALCON, GYM |
   | `painted` wall-painted slab letters, drop shade, sun-faded | floodlit | STONECREEK GARAGE, FREIGHT CO., HARDWARE, SHOE REPAIR |
   | `hand` hand-lettered plywood | floodlit | safehouse ROOMS, THRIFT, beach kiosks, food trucks |
@@ -1325,14 +1328,38 @@ docs/audit/missions-qa.md shows the method).
 - **Searchlights** (searchlight3d.js): a shaft is a cone whose front faces march the view
   ray through the cone (exit solved analytically): soft radial profile with a hot core,
   denser towards the lamp, forward scattering, drifting haze noise (MEDIUM and up), a soft
-  fade into the ground plane and a soft shoulder so a beam seen end-on never blows out. The
-  police helicopter's pool is one real SpotLight (always in the scene, intensity 0 when idle,
-  so no program changes) with a cookie map; it casts shadows on HIGH/ULTRA while sun shadows are
-  HIGH (switched only on a tier or shadow setting change). Rain streaks inside its cone are lit (one GPU-animated LineSegments). The
-  aim is a critically damped spring fed with the target's velocity: it lags and wobbles while
-  tracking, sweeps a widening figure round the last sighting while searching, and snaps on
-  with a flare when the player is found again. The Fort Sentinel watch towers use the same
-  shaft with a cookie decal on the ground. Faint by day, strong at night and in rain.
+  fade into the ground plane and a soft shoulder (`uCap`) so a beam seen end-on never blows
+  out. The Fort Sentinel watch towers use that shaft with a soft cookie decal on the ground.
+- **Police helicopter searchlight** (searchlight3d.js, HELICOPTER SEARCHLIGHT LOOK,
+  `AIR_LIGHT`): the pool is light, not an overlay. One real SpotLight (always in the scene,
+  intensity 0 when idle, so no program changes) in cool xenon white (`#d8e5ff`) with a crisp
+  cookie (hot centre, even plateau, faint caustic ring, narrow penumbra, a whisper of spill,
+  slightly oval) lights the ground, cars, facades and the player through their own
+  materials, so the player is lit from above with their own colour and detail and casts a
+  sharp shadow away from the helicopter (whenever sun shadows are on: 512 texels below HIGH,
+  1024 on HIGH, 2048 on ULTRA; switched only on a tier or shadow setting change). Its brightness is set as exposed light (divided by
+  `postLook.exposure`): pale paving comes out near white without clipping, asphalt a clear
+  mid grey, and dark ground stays under the night bloom threshold. The shaft is a garnish,
+  drawn on HIGH/ULTRA only: faint in clear air, fuller in rain and murk, thinned over its last
+  stretch (`uTail`) and cleared round the lit point (`uClear`, 1.25 pool radii) so it never
+  lies over the target; rain streaks in the cone dim at head height. LOW/MEDIUM have the pool
+  alone. The aim is a critically damped spring fed with most of the target's velocity (a fast
+  car leads the pool slightly), with the operator's sway and the airframe's buzz on top; it
+  sweeps a widening figure round the last sighting while searching (the player under cover)
+  and snaps on with a flare when they are found again. Under overhead cover the light lands
+  on the roof, never on the target below (`searchlightLanding`: air-cover.js
+  `overheadCoverHeight` when present, else `overheadCover`'s top and footprint, else the
+  drive-in garages' roofs from `GARAGES`): the aim, the shaft's ground and the pool go to the
+  roof's top, and an invisible shadow-only box on the roof's footprint (`airRoofStandIn`)
+  stops the spot even where the cutaway has hidden the roof (a custom depth material collapses
+  it in orthographic shadow passes, so it never casts a moon shadow); with shadows off the
+  light's reach ends just under the roof instead. The beam starts at the Nightsun's lens,
+  `helicopterSearchlightMount(h, out)` (helicopter3d.js): the only thing it takes from the
+  helicopter model. Why: the old shaft was integrated down to the
+  ground through the player (the march cannot read the depth buffer it is drawn into) and
+  saturated at 2.2 HDR seen end-on from the street camera, and the pool was about 4x brighter,
+  clipping pale paving and blooming over the player: a white veil (player vs pool contrast
+  -0.03, now about -0.7). `DeadEndCity.searchlight()` reports it and switches shaft / pool.
 - **Cutaway** (lighting3d.js, `updateCutaway`): when a building or a deck stands between the
   camera and the player (rays from their middle and head towards the camera hit its box,
   `findOccluders`), a player-sized hole is dithered through that structure alone. Also when the
