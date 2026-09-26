@@ -12,8 +12,10 @@
        *   scene ──> HDR target (MSAA on HIGH/ULTRA, with a depth texture)
        *     │  ├──> ambient occlusion, half resolution, from the depth buffer
        *     │  │      └── two depth-aware blur passes
-       *     │  └──> bloom: bright-pass, then a mip chain down and back up
-       *     └──> composite: AO, bloom, exposure, ACES filmic tone curve, colour
+       *     │  ├──> bloom: bright-pass, then a mip chain down and back up
+       *     │  └──> wet reflections (HIGH / ULTRA, wet streets only), half
+       *     │         resolution, then a blur along the reflection
+       *     └──> composite: AO, wet reflections, bloom, exposure, ACES filmic tone curve, colour
        *          grade for the time of day, vignette, dither, sRGB
        *            └── FXAA when the scene target is not multisampled
        *
@@ -98,6 +100,7 @@
         ldrTarget = null,
         aoTargets = [],
         bloomTargets = [],
+        ssrTargets = [],
         postWidth = 0,
         postHeight = 0,
         // The canvas's drawing buffer the targets were sized for, and the share of
@@ -263,6 +266,134 @@
         aoBlurUniforms,
       );
       /**
+       * WET REFLECTIONS
+       * On HIGH and ULTRA, while the streets are wet, the wet ground mirrors what
+       * stands on it: facades, shop windows and neon, lamp heads, cars and their
+       * lights, people. The ground shader (surfaces3d.js) marks wet pixels in the
+       * HDR target's alpha with a negative reflectivity (damp film a little,
+       * standing water a lot); this pass, at half resolution, traces each marked
+       * pixel's mirror ray through the depth buffer (geometric steps out to about
+       * a frame height, then a binary search for the crossing) and fetches the
+       * scene colour where it meets something. The ray is jittered in its
+       * vertical plane by the surface roughness (hardly in a puddle, widely on
+       * damp tarmac), so lights stretch into the long streaks wet asphalt shows,
+       * and the blur pass after it smooths them along the reflection. Rain rings
+       * in the puddles (the same pattern the ground uses) wobble the mirror.
+       * The result is stored as the hit colour minus the sky the ground already
+       * reflects, so the composite adds `reflection * wetness * mirror` and a
+       * building reflected in a puddle darkens it while a lamp brightens it.
+       * Dry streets skip both passes.
+       */
+      const ssrUniforms = {
+        tScene: { value: null },
+        tDepth: { value: null },
+        uInvProjection: aoUniforms.uInvProjection,
+        uProjection: aoUniforms.uProjection,
+        uDepthTexel: aoUniforms.uDepthTexel,
+        uPerspective: aoUniforms.uPerspective,
+        uView: { value: new Three.Matrix4() },
+        uCameraWorld: { value: new Three.Matrix4() },
+        uReach: { value: 600 },
+        uSky: { value: new Three.Color(0, 0, 0) },
+        uRain: { value: 0 },
+        uRainTime: { value: 0 },
+      };
+      function makeSsrMaterial(steps) {
+        return postMaterial(
+          `
+          varying vec2 vUv;
+          uniform sampler2D tScene;
+          uniform mat4 uProjection, uView, uCameraWorld;
+          uniform vec2 uDepthTexel;
+          uniform float uPerspective, uReach, uRain, uRainTime;
+          uniform vec3 uSky;
+          ${AO_COMMON}
+          ${SURFACE_NOISE}
+          ${RAIN_RINGS}
+          vec2 cityProject( vec3 q ) {
+            vec4 clip = uProjection * vec4( q, 1.0 );
+            return clip.xy / clip.w * 0.5 + 0.5;
+          }
+          void main() {
+            // Texel centres, as in the AO pass.
+            vec2 uv = ( floor( gl_FragCoord.xy ) * 2.0 + 0.5 ) * uDepthTexel;
+            float wet = clamp( -texture2D( tScene, uv ).a, 0.0, 1.0 );
+            if ( wet < 0.004 ) { gl_FragColor = vec4( 0.0 ); return; }
+            vec3 P = cityViewPosition( uv );
+            vec3 V = uPerspective > 0.5 ? normalize( P ) : vec3( 0.0, 0.0, -1.0 );
+            vec3 N = normalize( ( uView * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz );
+            // Standing water shivers in the rain (surfaces3d.js puts the same rings in its normal).
+            float pool = smoothstep( 0.45, 0.9, wet );
+            if ( uRain > 0.01 && pool > 0.01 ) {
+              vec2 world = ( uCameraWorld * vec4( P, 1.0 ) ).xz;
+              vec2 tilt = cityPuddleRipples( world, uRainTime ) * uRain * pool * 0.6;
+              N = normalize( N + ( uView * vec4( tilt.x, 0.0, tilt.y, 0.0 ) ).xyz );
+            }
+            vec3 R = reflect( V, N );
+            // Glossy lobe: jitter the ray in its vertical plane (streaks along the
+            // view) and a little sideways, more on damp tarmac than in a puddle.
+            float rough = mix( 0.2, 0.012, pool );
+            float n1 = fract( 52.9829189 * fract( dot( gl_FragCoord.xy, vec2( 0.06711056, 0.00583715 ) ) ) );
+            float n2 = fract( n1 * 7.13 + 0.37 );
+            vec3 side = normalize( cross( R, N ) ), lift = normalize( cross( side, R ) );
+            R = normalize( R + lift * ( n1 - 0.5 ) * rough * 2.4 + side * ( n2 - 0.5 ) * rough * 0.3 );
+            if ( dot( R, N ) < 0.02 ) { gl_FragColor = vec4( 0.0 ); return; }
+            // March out along the ray in growing steps.
+            float growth = pow( uReach / 1.5, 1.0 / float( SSR_STEPS - 1 ) );
+            float t = 1.5 * ( 0.75 + 0.5 * n2 ), last = 0.0, hit = 0.0;
+            vec2 q = uv;
+            for ( int i = 0; i < SSR_STEPS; i++ ) {
+              vec3 Q = P + R * t;
+              q = cityProject( Q );
+              if ( q.x < 0.0 || q.x > 1.0 || q.y < 0.0 || q.y > 1.0 ) break;
+              float dz = cityViewZ( texture2D( tDepth, q ).x ) - Q.z;
+              if ( dz > 0.0 && dz < max( 6.0, ( t - last ) * 1.2 ) ) { hit = 1.0; break; }
+              last = t;
+              t *= growth;
+            }
+            if ( hit < 0.5 ) { gl_FragColor = vec4( 0.0 ); return; }
+            // Refine the crossing between the last miss and the hit.
+            float lo = last, hi = t;
+            for ( int j = 0; j < 5; j++ ) {
+              float mid = 0.5 * ( lo + hi );
+              vec3 Q = P + R * mid;
+              vec2 m = cityProject( Q );
+              if ( cityViewZ( texture2D( tDepth, m ).x ) - Q.z > 0.0 ) { hi = mid; q = m; } else lo = mid;
+            }
+            vec3 c = texture2D( tScene, q ).rgb;
+            c = any( isnan( c ) ) ? vec3( 0.0 ) : clamp( c, vec3( 0.0 ), vec3( 64.0 ) );
+            // Fade out towards the frame edges (nothing beyond them to reflect) and the reach.
+            vec2 edge = smoothstep( vec2( 0.0 ), vec2( 0.06, 0.1 ), q ) * smoothstep( vec2( 1.0 ), vec2( 0.94, 0.9 ), q );
+            float fade = edge.x * edge.y * ( 1.0 - smoothstep( uReach * 0.55, uReach, hi ) );
+            gl_FragColor = vec4( ( c - uSky ) * fade, fade );
+          }`,
+          ssrUniforms,
+          { SSR_STEPS: steps },
+        );
+      }
+      let ssrMaterial = null;
+      // A 9-tap blur along the reflection (screen-vertical for the street camera),
+      // weighted towards the viewer so streaks run down the wet road.
+      const ssrBlurUniforms = { tSource: { value: null }, uDirection: { value: new Three.Vector2() } };
+      const ssrBlurMaterial = postMaterial(
+        `
+        varying vec2 vUv;
+        uniform sampler2D tSource;
+        uniform vec2 uDirection;
+        void main() {
+          vec4 sum = vec4( 0.0 );
+          float weights = 0.0;
+          for ( int i = -4; i <= 4; i++ ) {
+            float f = float( i );
+            float w = exp( -f * f / ( f < 0.0 ? 10.0 : 5.0 ) );
+            sum += texture2D( tSource, vUv + uDirection * f ) * w;
+            weights += w;
+          }
+          gl_FragColor = sum / weights;
+        }`,
+        ssrBlurUniforms,
+      );
+      /**
        * BLOOM
        * A soft-knee bright-pass keeps only light well above the scene's whites,
        * then a chain of half-size targets is filtered down (13 taps, the "Call of
@@ -358,6 +489,8 @@
         tDepth: { value: null },
         tAo: { value: null },
         tBloom: { value: null },
+        tReflect: { value: null },
+        uReflect: { value: 0 },
         uExposure: { value: 1.14 },
         uAoStrength: { value: 0 },
         uBloomStrength: { value: 0 },
@@ -379,6 +512,8 @@
           uniform sampler2D tScene;
           uniform sampler2D tAo;
           uniform sampler2D tBloom;
+          uniform sampler2D tReflect;
+          uniform float uReflect;
           uniform float uExposure;
           uniform float uAoStrength;
           uniform float uBloomStrength;
@@ -413,6 +548,13 @@
               float lum = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
               color *= mix( 1.0, ao, uAoStrength * ( 1.0 - smoothstep( 1.2, 4.0, lum ) ) );
             #endif
+            #ifdef USE_SSR
+              // Wet reflections: the ground's own reflectivity (negative alpha) at
+              // full resolution keeps the half-resolution reflection off the cars
+              // and kerbs standing in it.
+              float wet = clamp( -texture2D( tScene, vUv ).a, 0.0, 1.0 );
+              if ( uReflect > 0.0 && wet > 0.0 ) color = max( color + texture2D( tReflect, vUv ).rgb * wet * uReflect, 0.0 );
+            #endif
             #ifdef USE_BLOOM
               color += texture2D( tBloom, vUv ).rgb * uBloomStrength;
             #endif
@@ -431,7 +573,11 @@
             #ifdef USE_BLOOM
               if ( uDebugView > 1.5 && uDebugView < 2.5 ) color = texture2D( tBloom, vUv ).rgb;
             #endif
-            if ( uDebugView > 2.5 ) color = vec3( fract( texture2D( tDepth, vUv ).x * 400.0 ) );
+            if ( uDebugView > 2.5 && uDebugView < 3.5 ) color = vec3( fract( texture2D( tDepth, vUv ).x * 400.0 ) );
+            #ifdef USE_SSR
+              // The wet reflections (red: the ground's reflectivity) around mid grey.
+              if ( uDebugView > 3.5 ) color = clamp( texture2D( tReflect, vUv ).rgb * 0.5 + 0.25, 0.0, 1.0 ) + vec3( clamp( -texture2D( tScene, vUv ).a, 0.0, 1.0 ) * 0.25, 0.0, 0.0 );
+            #endif
             color = cityLinearToSRGB( clamp( color, 0.0, 1.0 ) );
             // Dither (and, when graded, a whisper of film grain) against banding. An
             // arithmetic hash: the old fract( sin( dot( ... ) ) * 43758 ) one fed sin()
@@ -449,6 +595,7 @@
             tier.ao ? { USE_AO: 1 } : {},
             tier.bloom ? { USE_BLOOM: 1 } : {},
             tier.grade ? { USE_GRADE: 1 } : {},
+            tier.ssr ? { USE_SSR: 1 } : {},
           ),
         );
       }
@@ -510,6 +657,12 @@
             h = Math.max(1, height >> 1);
           aoTargets.push(colorTarget(w, h, Three.UnsignedByteType), colorTarget(w, h, Three.UnsignedByteType));
         }
+        disposeTargets(ssrTargets);
+        if (tier.ssr) {
+          const w = Math.max(1, width >> 1),
+            h = Math.max(1, height >> 1);
+          ssrTargets.push(colorTarget(w, h), colorTarget(w, h));
+        }
         disposeTargets(bloomTargets);
         for (let i = 0, w = width >> 1, h = height >> 1; i < tier.bloom && w >= 4 && h >= 4; i++, w >>= 1, h >>= 1)
           bloomTargets.push(colorTarget(w, h));
@@ -541,6 +694,8 @@
         aoMaterial = tier.ao ? makeAoMaterial(tier.ao) : null;
         if (compositeMaterial) compositeMaterial.dispose();
         compositeMaterial = makeCompositeMaterial(tier);
+        if (ssrMaterial) ssrMaterial.dispose();
+        ssrMaterial = tier.ssr ? makeSsrMaterial(tier.ssr) : null;
         postCompositeUniforms.uAoStrength.value = tier.ao ? 1 : 0;
         if (hdrCapable) sizePostTargets();
       }
@@ -560,7 +715,19 @@
         gain: new Three.Vector3(1, 1, 1),
         vignette: 0.22,
         grain: 0.006,
+        // Wet reflections (weather3d.js): how much of the scene a fully wet
+        // surface mirrors (0 = pass off), the sky it already reflects
+        // (scene-linear), and the rain on the puddles.
+        reflect: 0,
+        reflectSky: new Three.Color(0, 0, 0),
+        rain: 0,
+        rainTime: 0,
       };
+      // Whether this tier can draw the wet reflections (the ground then marks
+      // itself for them; weather3d.js decides when they are worth it).
+      function wetReflectionsAvailable() {
+        return hdrCapable && !!postTier && postTier.ssr > 0;
+      }
       // Draws the frame: the whole pipeline, or straight to the canvas without HDR.
       // Draw calls and triangles of the scene pass (shadow map included when it was
       // refreshed this frame) and of the whole frame, for DeadEndCity.stats().
@@ -611,6 +778,29 @@
           runPass(aoBlurMaterial, aoTargets[0]);
           postCompositeUniforms.tAo.value = aoTargets[0].texture;
         }
+        postCompositeUniforms.uReflect.value = 0;
+        if (tier.ssr && ssrMaterial && postLook.reflect > 0.001) {
+          ssrUniforms.tScene.value = sceneTarget.texture;
+          ssrUniforms.tDepth.value = sceneTarget.depthTexture;
+          // (Projection, inverse and texel size are shared with the AO pass.)
+          aoUniforms.uProjection.value.copy(camera.projectionMatrix);
+          aoUniforms.uInvProjection.value.copy(camera.projectionMatrixInverse);
+          aoUniforms.uDepthTexel.value.set(1 / postWidth, 1 / postHeight);
+          aoUniforms.uPerspective.value = camera.isPerspectiveCamera ? 1 : 0;
+          ssrUniforms.uView.value.copy(camera.matrixWorldInverse);
+          ssrUniforms.uCameraWorld.value.copy(camera.matrixWorld);
+          ssrUniforms.uSky.value.copy(postLook.reflectSky);
+          ssrUniforms.uRain.value = postLook.rain;
+          ssrUniforms.uRainTime.value = postLook.rainTime;
+          // Out to about a frame height of ground (the street view's is ~630 units at zoom 1).
+          ssrUniforms.uReach.value = clamp(700 / Math.max(0.2, viewZoom), 400, 2400);
+          runPass(ssrMaterial, ssrTargets[0]);
+          ssrBlurUniforms.tSource.value = ssrTargets[0].texture;
+          ssrBlurUniforms.uDirection.value.set(0, 1.4 / ssrTargets[0].height);
+          runPass(ssrBlurMaterial, ssrTargets[1]);
+          postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
+          postCompositeUniforms.uReflect.value = postLook.reflect;
+        } else if (ssrTargets.length) postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
         if (bloomTargets.length) {
           bloomUniforms.uThreshold.value = postLook.bloomThreshold;
           bloomUniforms.tSource.value = sceneTarget.texture;

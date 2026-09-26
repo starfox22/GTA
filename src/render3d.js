@@ -679,21 +679,11 @@
           drawingContext.fillRect(x + hc + 20, z - hr, 3, hr);
           drawingContext.fillRect(x - hc - 23, z, 3, hr);
         }
-      // Patches, drains, stop lines and curb stains keep the road from reading as a flat color.
-      let rseed = 47;
-      const random = () => {
-        rseed = (rseed * 1664525 + 1013904223) >>> 0;
-        return rseed / 4294967296;
-      };
-      for (let i = 0; i < 330; i++) {
-        const x = CITY_LEFT + 80 + random() * (CITY_WIDTH - 240),
-          z = 80 + random() * (CITY_SIZE - 240);
-        if (!onRoad(x, z)) continue;
-        drawingContext.fillStyle = 'rgba(12,17,23,' + (0.12 + random() * 0.12) + ')';
-        drawingContext.beginPath();
-        drawingContext.ellipse(x, z, 12 + random() * 35, 3 + random() * 9, random() * 3, 0, TAU);
-        drawingContext.fill();
-      }
+      // (330 dark ellipses, 25-95 units long at random angles, used to be
+      // stamped on the roads here as "patches". Seen from the street camera they
+      // read as long shadows with nothing casting them, fixed to the tarmac
+      // whatever the time of day. The ground shader's tar-sealed patches, cracks
+      // and grain (surfaces3d.js) break the tarmac up instead.)
       // Gully grates in the gutter, only where the street really runs (they
       // used to be stamped down every column line, across plazas and quays).
       for (const road of cityStreets().filter((s) => s.vertical))
@@ -1505,7 +1495,9 @@
        * read as an effect, not as a lit street). Only a faint cool rim on the
        * edges turned away from the camera, as moonlight catching the shoulders,
        * keeps their silhouette from dissolving into an unlit street; it follows
-       * nightAmount and is gone by day.
+       * nightAmount and is gone by day. Settings · Graphics · Player outline at
+       * night (settings.js `playerOutlineOn`, saved with the other settings)
+       * switches it off.
        */
       const playerRim = { value: new Three.Color(0, 0, 0) },
         PLAYER_RIM_NIGHT = new Three.Color('#6d80a6');
@@ -2139,9 +2131,90 @@
           }
           return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
         },
+        /* Shadow casters the view does not show (for "shadows from nowhere"):
+           every mesh the sun's shadow pass draws, near the view, that the camera
+           pass would not: hidden by its material (fully transparent, no colour
+           write), a helper, or outside the camera frustum while its shadow can
+           fall into it. Returns counts by name and the first few with positions. */
+        shadowCasters(limit = 40, everywhere = false) {
+          const frustum = new Three.Frustum().setFromProjectionMatrix(
+              new Three.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+            ),
+            sphere = new Three.Sphere(),
+            found = [],
+            byName = new Map();
+          const visit = (o, named) => {
+            if (!o.visible) return;
+            if (o.name) named = o;
+            if ((o.isMesh || o.isInstancedMesh) && o.castShadow && o.layers.test(camera.layers)) {
+              const materials = Array.isArray(o.material) ? o.material : [o.material];
+              const hidden = materials.every(
+                (m) => !m || m.visible === false || m.colorWrite === false || (m.transparent && m.opacity < 0.6),
+              );
+              if (o.isInstancedMesh && o.boundingSphere === null) o.computeBoundingSphere();
+              const bounds = o.isInstancedMesh ? o.boundingSphere : (o.geometry.boundingSphere || (o.geometry.computeBoundingSphere(), o.geometry.boundingSphere));
+              sphere.copy(bounds).applyMatrix4(o.matrixWorld);
+              const near = everywhere || Math.hypot(sphere.center.x - viewCenter.x, sphere.center.z - viewCenter.y) < viewReach + sphere.radius;
+              const offView = !frustum.intersectsSphere(sphere);
+              if (near && (hidden || (!everywhere && offView && sphere.center.y > 40))) {
+                const key =
+                  (named?.name || o.name || o.geometry?.type || 'mesh') +
+                  (hidden ? ' (see-through material, opacity ' + materials.map((m) => m && +m.opacity.toFixed(2)).join('/') + ')' : ' (off view)');
+                byName.set(key, (byName.get(key) || 0) + 1);
+                if (found.length < limit)
+                  found.push({ name: key, x: Math.round(sphere.center.x), y: Math.round(sphere.center.z), height: Math.round(sphere.center.y), radius: Math.round(sphere.radius) });
+              }
+            }
+            for (const c of o.children) visit(c, named);
+          };
+          visit(scene, null);
+          return { byName: Object.fromEntries(byName), found };
+        },
+        /* What shades a ground point from the sun: casts a ray from (x, y) on
+           the ground towards the sun (the moon at night) through every
+           shadow-casting mesh and returns the hits, nearest first (name, the
+           named group it belongs to, the instance for instanced meshes, height of
+           the hit, distance along the ray, whether the mesh is drawn). */
+        shadowProbe(x, y) {
+          const origin = new Three.Vector3(x, terrainHeight(x, y) + 0.5, y),
+            probe = new Three.Raycaster(origin, sunDirection.clone().normalize(), 0, 4000),
+            casters = [];
+          scene.traverse((o) => {
+            if ((o.isMesh || o.isInstancedMesh) && o.castShadow) casters.push(o);
+          });
+          const shown = (o) => {
+            for (let p = o; p; p = p.parent) if (!p.visible) return false;
+            return true;
+          };
+          // Instanced meshes are raycast against their stored bounds, which may
+          // predate their instances' current places: fresh bounds for the probe.
+          const kept = casters.filter((o) => o.isInstancedMesh).map((o) => [o, o.boundingSphere]);
+          for (const [o] of kept) o.computeBoundingSphere();
+          const found = probe.intersectObjects(casters, false);
+          for (const [o, sphere] of kept) o.boundingSphere = sphere;
+          return {
+            sun: sunDirection.toArray().map((v) => +v.toFixed(3)),
+            hits: found
+              .slice(0, 8)
+              .map((h) => {
+                let named = h.object;
+                while (named && !named.name && named.parent) named = named.parent;
+                return {
+                  name: h.object.name || h.object.geometry?.type,
+                  group: named?.name || '',
+                  instance: h.instanceId ?? null,
+                  height: +h.point.y.toFixed(1),
+                  at: [Math.round(h.point.x), Math.round(h.point.z)],
+                  distance: Math.round(h.distance),
+                  shown: shown(h.object),
+                  material: h.object.material?.type,
+                };
+              }),
+          };
+        },
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.
         postView(mode) {
-          postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : 0;
+          postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : mode === 'reflect' ? 4 : 0;
           return mode || 'image';
         },
         // Switch graphics quality tier (quality.js) at runtime.
@@ -2814,7 +2887,8 @@
           playerRing.visible =
             !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
-          playerRim.value.copy(PLAYER_RIM_NIGHT).multiplyScalar(nightAmount * 0.55);
+          // Settings · Graphics · Player outline at night turns it off.
+          playerRim.value.copy(PLAYER_RIM_NIGHT).multiplyScalar(playerOutlineOn() ? nightAmount * 0.55 : 0);
           // A swimmer's wake, kick foam and the ripples round them are drawn into the
           // sea like a boat's (wakes3d.js). The flat V and ring planes that did this
           // sat at a fixed height, so the swell rose through them.

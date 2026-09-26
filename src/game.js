@@ -5778,6 +5778,12 @@
       weather: () => weatherReport(),
       // Bring a shower in: overcast now, rain after `seconds` (the machine runs on).
       weatherFront: (seconds) => weatherFront(seconds),
+      // Set how wet the streets are (0 dry .. 1 soaked); after rain it dries on
+      // from there (weather.js), so a test can look at a drying street at once.
+      wetness: (value) => {
+        weather.wet = clamp(Number(value) || 0, 0, 1);
+        return weatherReport();
+      },
       // A lightning strike `distance` map units from the player (thunder follows).
       lightning: (distance = 900) => {
         const s = lightningStrike(distance);
@@ -6325,6 +6331,7 @@
           if (changes.audioReset === true) resetAudioVolumes();
           if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
           if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
+          if (typeof changes.playerOutline === 'boolean') settings.playerOutline = changes.playerOutline;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -6349,6 +6356,7 @@
           frameLimit: frameLimit() || 'unlimited',
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,
+          playerOutline: settings.playerOutline,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,
@@ -6391,6 +6399,11 @@
       postView: (mode) => city3D?.postView?.(mode) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
+      // Shadow casters near the view that the camera pass does not show.
+      // What casts the sun's shadow onto the ground point (x, y).
+      shadowProbe: (x, y) => city3D?.shadowProbe?.(Number(x), Number(y)) ?? null,
+      // With `everywhere`, every see-through caster in the scene.
+      shadowCasters: (limit, everywhere) => city3D?.shadowCasters?.(limit, !!everywhere) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),
