@@ -25,6 +25,11 @@ OUT = os.path.join(ROOT, 'docs', 'FILEMAP.md')
 INCLUDE_RX = re.compile(r'^\s*// @include (src/[\w.-]+\.js)\s*$')
 BANNER_RX = re.compile(r'//\s*BEGIN SUBSYSTEM: src/[\w.-]+\.js\s*[—-]+\s*(.+)$')
 DECL_RX = re.compile(r'^\s*(?:async\s+)?(?:function\s*\*?\s*([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*))')
+UI_CSS_RX = re.compile(r'^\s*/\* @include (src/[\w./-]+\.css) \*/\s*$')
+UI_HTML_RX = re.compile(r'^\s*<!-- @include (src/[\w./-]+\.html) -->\s*$')
+INCLUDE_ANY_RX = re.compile(r'^\s*(/\*|<!--) @include')
+SHELL_TEXT = ('HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and '
+              'build.py\'s `<!-- @include-* -->` slots (game, three.js, media, credits)')
 MAX = 150
 
 # Descriptions for files whose source does not (yet) open with a describing
@@ -192,6 +197,73 @@ def walk():
     return out
 
 
+def ui_purpose(rel, lines, above):
+    """A src/ui fragment: its opening comment (/* */ or <!-- -->), the comment
+    above its include line, or the first selectors / element ids it holds."""
+    def strip_html(block):
+        return [re.sub(r'<!--|-->', '', l) for l in block]
+
+    def opening(ls):
+        for i, line in enumerate(ls[:40]):
+            s = line.strip()
+            if not s:
+                continue
+            for start, end in (('/*', '*/'), ('<!--', '-->')):
+                if s.startswith(start):
+                    j = i
+                    while j < len(ls) and end not in ls[j]:
+                        j += 1
+                    return strip_html(ls[i:j + 1])
+            return []
+        return []
+
+    text = summarise(opening(lines))
+    if len(text) > 8:
+        return text
+    text = summarise(strip_html(above))
+    if len(text) > 8 and not INCLUDE_ANY_RX.match(above[-1] if above else ''):
+        return text
+    if rel.endswith('.css'):
+        sels = []
+        for line in lines:
+            m = re.match(r'^\s{0,6}([^\s{}/*@][^{}]*?)\s*\{\s*$', line)
+            if m and m.group(1) not in sels:
+                sels.append(m.group(1))
+        return 'styles: ' + ', '.join(sels[:4]) + (', …' if len(sels) > 4 else '') if sels else 'styles'
+    ids = []
+    for line in lines:
+        ids += ['#' + i for i in re.findall(r'\bid="([\w-]+)"', line)]
+    return 'markup: ' + ', '.join(ids[:5]) + (', …' if len(ids) > 5 else '') if ids else 'markup'
+
+
+def walk_ui():
+    """(rel, parent, lines, above) for src/shell.html's CSS/HTML fragments, in order."""
+    out = []
+    if not os.path.isfile(os.path.join(ROOT, 'src', 'shell.html')):
+        return out
+
+    def visit(rel, parent, seen):
+        lines = lines_of(rel)
+        for i, line in enumerate(lines):
+            m = UI_CSS_RX.match(line) or UI_HTML_RX.match(line)
+            if not m or m.group(1) in seen:
+                continue
+            child = m.group(1)
+            seen.add(child)
+            if not os.path.isfile(os.path.join(ROOT, child)):
+                continue
+            j, above = i - 1, []
+            while j >= 0 and re.match(r'^\s*(<!--|/\*|\*|-->)', lines[j]) and not INCLUDE_ANY_RX.match(lines[j]):
+                above.insert(0, lines[j])
+                j -= 1
+            child_lines = lines_of(child)
+            out.append((child, rel, child_lines, above))
+            visit(child, child, seen)
+
+    visit('src/shell.html', None, set())
+    return out
+
+
 def render(with_counts=True):
     entries = walk()
     children = {}
@@ -199,9 +271,14 @@ def render(with_counts=True):
         children.setdefault(parent, []).append(rel)
     info = {rel: (len(lines), purpose(rel, lines, above)) for rel, _, _, lines, above in entries}
     parents = [rel for rel, *_ in entries if rel in children]
-    included = set(info)
+    ui = walk_ui()
+    included = set(info) | {rel for rel, *_ in ui}
     loose = sorted(f for f in os.listdir(os.path.join(ROOT, 'src'))
-                   if 'src/' + f not in included)
+                   if 'src/' + f not in included and os.path.isfile(os.path.join(ROOT, 'src', f)))
+    ui_dir = os.path.join(ROOT, 'src', 'ui')
+    if os.path.isdir(ui_dir):
+        loose += sorted('ui/' + f for f in os.listdir(ui_dir)
+                        if 'src/ui/' + f not in included and os.path.isfile(os.path.join(ui_dir, f)))
 
     def row(rel, count, text):
         num = f'{count:>5}' if with_counts else '    -'
@@ -218,7 +295,8 @@ def render(with_counts=True):
         'Grep this file first: `grep -i crowd docs/FILEMAP.md`. Sections follow the include',
         'tree from src/main.js; a file that is itself an include list has its own section',
         '(marked ▸). Files are listed in build order, so order matters (a `const` must be',
-        'included before code that runs at load time and reads it).',
+        'included before code that runs at load time and reads it). The CSS/HTML fragments',
+        'src/shell.html includes (src/ui/) have their own section after the scripts.',
         '',
         f'{len(entries)} files in the include tree, '
         f'{sum(c for c, _ in info.values()):,} lines.' if with_counts else
@@ -232,14 +310,21 @@ def render(with_counts=True):
             if rel in children:
                 t = '▸ ' + t
             out.append(row(rel, c, t))
+    if ui:
+        out += ['', f'## src/shell.html ▸ {SHELL_TEXT}', '']
+        for rel, parent, lines, above in ui:
+            prefix = f'(in {parent[4:]}) ' if parent != 'src/shell.html' else ''
+            out.append(row(rel, len(lines), prefix + ui_purpose(rel, lines, above)))
     out += ['', '## Outside the include tree', '']
     for f in loose:
         rel = 'src/' + f
         lines = lines_of(rel)
         if f == 'shell.html':
-            text = 'HTML/CSS page shell; build.py fills its `<!-- @include-* -->` directives'
+            text = SHELL_TEXT
         elif f == 'asset-loader.js':
             text = 'decodes the embedded/streamed media into ASSETS before the game starts'
+        elif f.startswith('ui/'):
+            text = 'NOT INCLUDED by src/shell.html — dead fragment? ' + ui_purpose(rel, lines, [])
         else:
             text = purpose(rel, lines, []) or 'NOT INCLUDED ANYWHERE — dead file?'
         out.append(row(rel, len(lines), text))

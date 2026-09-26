@@ -542,7 +542,35 @@ included before code that runs at load time and reads it).
 
 - `src/parachute3d.js`   528 — Ram-air parachute
 
+## src/shell.html ▸ HTML page skeleton: head, body canvases, the src/ui/*.css and *.html fragments below, and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
+
+- `src/ui/build-header.html`   361 — Dead end city — readable development / review build 30.0.0: Open this HTML directly to play offline.
+- `src/ui/base.css`   561 — styles: :root, body, button, button:focus-visible, …
+- `src/ui/touch-controls.css`   312 — Compact dashboard radio: presets stay within reach without covering the road ahead.
+- `src/ui/casino-transit.css`   201 — styles: #casinoTable, .roulette-top, .roulette-top canvas, .roulette-bank, …
+- `src/ui/police-arsenal.css`   517 — POLICE FEEDBACK AND ARSENAL — readable interface additions, v23.
+- `src/ui/wanted-effects.css`   166 — Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while dispatch escalates, earned stars grey out during a search, a thin meter …
+- `src/ui/hud-top.css`   598 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
+- `src/ui/hud-bottom.css`   693 — Bottom row: minimap + vitals, mission card, equipment
+- `src/ui/radio.css`   544 — Car radio: a station chip that opens on a change or on hover
+- `src/ui/title.css`   308 — Title screen
+- `src/ui/dialogs.css`   221 — Dialogs: one panel style for pause, calls, shops, help
+- `src/ui/god-panel.css`   188 — God panel: the GOD MODE settings tab and the map's teleport pick
+- `src/ui/sportsbook.css`   463 — SPORTSBOOK (sportsbook-ui.js): GOALLINE's betting menu: The settings panel's glass and type, with the house's neon green for the brand and live …
+- `src/ui/sportsbook-bets.css`   505 — styles: .sb-summary, .sb-summary span, .sb-summary b, .sb-summary .plus b, …
+- `src/ui/demo.css`   231 — PUBLIC DEMO (campaign.js): The DEMO badge by the title menu's version, the picker's FULL GAME badges and buy note, and the DEMO COMPLETE card after …
+- `src/ui/settings.css`   476 — styles: .mission-choice, button:focus-visible, body.no-key-hints .quickkeys, #settingsOverlay, …
+- `src/ui/touch-hud.css`   314 — Touch play: thumbs own the lower corners, so the HUD moves up
+- `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
+- `src/ui/flight-hud.css`   274 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
+- `src/ui/reduced-motion.css`    48 — Reduced motion: keep the states, drop the movement
+- `src/ui/hud.html`   272 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
+- `src/ui/menus.html`   220 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
+- `src/ui/panels.html`   222 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
+- `src/ui/credits.html`   299 — markup: #credits, #closeCredits
+- `src/ui/transit.html`    18 — markup: #transitOverlay, #transitPanel, #transitTitle, #transitOptions, #closeTransit
+
 ## Outside the include tree
 
 - `src/asset-loader.js`   160 — decodes the embedded/streamed media into ASSETS before the game starts
-- `src/shell.html`  8207 — HTML/CSS page shell; build.py fills its `<!-- @include-* -->` directives
+- `src/shell.html`    72 — HTML page skeleton: head, body canvases, the src/ui/*.css and *.html fragments below, and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
