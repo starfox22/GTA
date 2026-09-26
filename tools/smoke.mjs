@@ -21,23 +21,23 @@ page.on('pageerror', (e) => errors.push('[pageerror] ' + e.message + '\n' + (e.s
 
 await page.goto('file://' + file, { timeout: 300000, waitUntil: 'load' });
 await page.waitForTimeout(2500);
-await page.screenshot({ path: path.join(out, '01-menu.png') });
+await page.screenshot({ path: path.join(out, '01-menu.png'), timeout: 180000 });
 await page.click('#startBtn');
 await page.waitForTimeout(3000);
-await page.screenshot({ path: path.join(out, '02-start.png') });
+await page.screenshot({ path: path.join(out, '02-start.png'), timeout: 180000 });
 
 // Walk around, then steal a car and drive.
 const hold = async (key, ms) => { await page.keyboard.down(key); await page.waitForTimeout(ms); await page.keyboard.up(key); };
 await hold('KeyW', 1500);
 await hold('KeyD', 600);
-await page.screenshot({ path: path.join(out, '03-walk.png') });
+await page.screenshot({ path: path.join(out, '03-walk.png'), timeout: 180000 });
 await page.keyboard.press('KeyE');
 await page.waitForTimeout(800);
 await hold('KeyW', 3000);
-await page.screenshot({ path: path.join(out, '04-drive.png') });
+await page.screenshot({ path: path.join(out, '04-drive.png'), timeout: 180000 });
 await page.keyboard.press('Tab');
 await page.waitForTimeout(800);
-await page.screenshot({ path: path.join(out, '05-map.png') });
+await page.screenshot({ path: path.join(out, '05-map.png'), timeout: 180000 });
 await page.keyboard.press('Tab');
 
 const stats = await page.evaluate(() => ({

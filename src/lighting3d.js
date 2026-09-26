@@ -175,6 +175,21 @@
         cityCutBoxB: { value: new Three.Vector4(0, 0, 0, 0) },
         cityCutSpanB: { value: new Three.Vector4(1, 0, 0, 0) },
       };
+      /* Wet ground (surfaces3d.js, WET SURFACES below): how much of the wet look
+         the tier draws (0 LOW darkening only, 1 MEDIUM the sheen, 2 HIGH / ULTRA
+         puddles and reflections), whether the wet reflections pass is running
+         this frame (the ground then marks itself in the HDR alpha, postfx3d.js),
+         and the sky light the wet surface mirrors (scene-linear), all set by
+         updateWeatherVisuals (weather3d.js). */
+      const wetUniforms = {
+        cityWetDetail: { value: 0 },
+        cityReflectOut: { value: 0 },
+        citySkyReflect: { value: new Three.Color(0, 0, 0) },
+        // The view direction along the ground (lamp streaks run along it) and
+        // how bright the lamp and neon streaks in the wet road are.
+        citySheenDir: { value: new Three.Vector2(0, -1) },
+        citySheenGain: { value: 0 },
+      };
       /* Street lamps a car has knocked flat (damage3d.js): their pools are left out
          of the map until the lamp is stood up again, so no pool of light lies on
          the pavement with nothing above it. Keyed by the lamp's map position. */
@@ -290,6 +305,64 @@
           cityWorld = instanceMatrix * cityWorld;
         #endif
         vCityWorld = ( modelMatrix * cityWorld ).xyz;`;
+      /**
+       * WET SURFACES (shared GLSL)
+       * Value noise, raindrop rings and the wet-road pattern, shared by the ground
+       * shader (surfaces3d.js), the wet-street light streaks (signage3d.js) and the
+       * wet reflections pass (postfx3d.js), so all three agree on where the water
+       * stands. `weather.wet` (the `cityWet` uniform) rises while it rains and
+       * falls over a few minutes after; the pattern turns that single number into
+       * a road that soaks and dries in patches:
+       *
+       *   cityWetLow(p)       0 on a crown .. 1 in the deepest dip (a few metres
+       *                       across), where standing water collects first
+       *   cityWetFilm(...)    the damp film: each spot has its own drying order
+       *                       (broad patches, crowns first, dips and gutters last),
+       *                       so a drying street goes patchy from the edges in
+       *   cityPuddle(...)     standing water: fills the dips as it rains, shrinks
+       *                       back to their middles as it dries
+       */
+      const SURFACE_NOISE = `
+        float cityHash( vec2 p ) {
+          vec3 p3 = fract( vec3( p.xyx ) * 0.1031 );
+          p3 += dot( p3, p3.yzx + 33.33 );
+          return fract( ( p3.x + p3.y ) * p3.z );
+        }
+        float cityNoise( vec2 p ) {
+          vec2 i = floor( p ), f = fract( p );
+          f = f * f * ( 3.0 - 2.0 * f );
+          return mix( mix( cityHash( i ), cityHash( i + vec2( 1.0, 0.0 ) ), f.x ),
+                      mix( cityHash( i + vec2( 0.0, 1.0 ) ), cityHash( i + vec2( 1.0, 1.0 ) ), f.x ), f.y );
+        }
+        float cityWetLow( vec2 p ) {
+          return cityNoise( p * 0.017 + 41.0 ) * 0.7 + cityNoise( p * 0.052 + 7.0 ) * 0.3;
+        }
+        float cityWetFilm( vec2 p, float low, float extra, float wet ) {
+          float order = ( cityNoise( p * 0.011 + 13.0 ) * 0.62 + cityNoise( p * 0.043 + 5.0 ) * 0.38 ) * 0.8 - low * 0.35 - extra + 0.28;
+          return smoothstep( order - 0.07, order + 0.07, wet * 1.3 - 0.1 );
+        }
+        float cityPuddle( float depth, float wet ) {
+          float level = 0.97 - 0.28 * smoothstep( 0.25, 0.75, wet ) - 0.06 * smoothstep( 0.75, 1.0, wet );
+          return smoothstep( level, level + 0.045, depth );
+        }`;
+      // Expanding rings from raindrops on still water, as a normal tilt (x, z):
+      // one drop per `cell` square, each at a random spot and time.
+      const RAIN_RINGS = `
+        vec2 cityRainRings( vec2 p, float t, float cell ) {
+          vec2 c = floor( p / cell ), f = p / cell - c;
+          float h = cityHash( c );
+          vec2 centre = vec2( cityHash( c + 3.1 ), cityHash( c + 7.7 ) ) * 0.6 + 0.2;
+          float life = fract( t * 1.3 + h );
+          vec2 d = ( f - centre ) * cell;
+          float dist = length( d );
+          float w = dist - life * cell * 0.45;
+          float slope = -6.0 * w * exp( -w * w * 3.0 ) * ( 1.0 - life );
+          return d / max( dist, 1e-3 ) * slope;
+        }
+        // Three overlapping layers of drops, as a tilt for a puddle's normal.
+        vec2 cityPuddleRipples( vec2 p, float t ) {
+          return ( cityRainRings( p, t, 9.0 ) + cityRainRings( p + 3.7, t * 1.13 + 0.5, 7.0 ) + cityRainRings( p + vec2( 5.1, 1.9 ), t * 0.91 + 0.25, 11.0 ) ) * 0.3;
+        }`;
       // The drive light map (DRIVE LIGHT MAP below) stores road levels offset so
       // that 0, the clear value, means "no beam".
       const DRIVE_LEVEL_OFFSET = 600;

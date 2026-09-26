@@ -392,7 +392,11 @@
     }
     /* ---- Leaves as ramps, and the jump ---------------------------------------------- */
     /* Slope gravity and the tyres' limit on a leaf, applied in controlVehicle
-       before the engine's push is added. Returns the engine acceleration allowed. */
+       before the engine's push is added. The car's velocity is kept as its
+       horizontal part (the climb is deckVz), so both forces enter as their
+       horizontal components: gravity along the slope g sin(a) cos(a), and the
+       wheels' push along the slope (at most DRAWBRIDGE_GRIP g cos(a)) times cos(a).
+       Returns the horizontal acceleration the wheels give. */
     function drawbridgeSlopeDrive(c, acceleration, stepSeconds) {
       if (!c.deckLeaf || !c.deckSlope) return acceleration;
       const g = drawbridgeGeometry(),
@@ -402,7 +406,31 @@
       c.vx += pull * g.f.ux * stepSeconds;
       c.vy += pull * g.f.uy * stepSeconds;
       const grip = DRAWBRIDGE_GRIP * DRAWBRIDGE_GRAVITY * cosine;
-      return clamp(acceleration, -grip, grip);
+      return clamp(acceleration, -grip, grip) * cosine;
+    }
+    /* THE KINK AT THE TRUNNION. A raised leaf meets the approach at a sharp angle:
+       the wheels hit the slope and the part of the car's speed square to it is
+       lost into the springs and tyres (and, fast enough, the front end). The speed
+       along the new slope is the old speed times cos(the change of angle), and the
+       car keeps its horizontal part. At 35 degrees a car keeps 82% of its speed up
+       the leaf; what it lost is the reason a steep leaf needs a fast car. */
+    function drawbridgeKink(c, s0, s1, speedU) {
+      const g = drawbridgeGeometry(),
+        direction = Math.sign(speedU),
+        before = Math.atan(s0 * direction),
+        after = Math.atan(s1 * direction),
+        turn = after - before;
+      if (turn < 0.004) return;
+      const along = Math.abs(speedU) / Math.cos(before),
+        into = along * Math.sin(turn),
+        keep = (Math.cos(turn) * Math.cos(after)) / Math.cos(before) - 1;
+      c.vx += g.f.ux * speedU * keep;
+      c.vy += g.f.uy * speedU * keep;
+      if (into > 5 * UNITS_PER_METRE) {
+        damageVehicle(c, (into - 5 * UNITS_PER_METRE) * 0.7, c.x, c.y, null, { kind: 'crash', nx: -direction * g.f.ux, ny: -direction * g.f.uy, closing: into, otherMass: 0 });
+        playSample(into > 12 * UNITS_PER_METRE ? 'crash-heavy-1' : 'crash-medium-1', clamp(into / (17 * UNITS_PER_METRE), 0.25, 0.9), 1, c);
+        if (c === player.car) shake = Math.max(shake, Math.min(9, into / 12));
+      } else if (into > 1.5 * UNITS_PER_METRE) playSample('crash-bump-1', 0.3, 1, c);
     }
     /* A road vehicle in the air: no grip, no steering, gravity. Called by
        controlVehicle instead of the driving model; drawbridgeSettle lands it. */
@@ -446,12 +474,33 @@
         surface = onDeckWidth ? drawbridgeSurface(p.u) : undefined,
         speedU = c.vx * g.f.ux + c.vy * g.f.uy;
       if (c.deckAir) {
-        const ground = surface === undefined ? (groundAt(c.x, c.y) ? 0 : null) : surface ? surface.h : null;
+        // Past the far trunnion the approach span is road too, not the Sound (a
+        // long jump used to splash down on the deck beyond the far leaf).
+        const ground =
+          surface === undefined ? (groundAt(c.x, c.y) || onBridgeDeck(c.x, c.y) ? 0 : null) : surface ? surface.h : null;
+        /* The nose reaches the far leaf before the middle does: if it arrives below
+           the tip (a bumper's height, pitched as the car is), it strikes the end
+           of the leaf and the car drops into the gap. */
+        const spec = vehicleSpec(c),
+          ahead = (spec.l / 2) * Math.sign(speedU || 1),
+          nose = drawbridgeSurface(p.u + ahead),
+          noseHeight = c.deckLift + (spec.l / 2) * Math.sin(c.slopePitch || 0);
+        if (surface === null && nose && nose.leaf !== c.deckJump?.leaf && noseHeight < nose.h - 3 && c.deckJump) {
+          const closing = Math.abs(speedU);
+          c.vx -= g.f.ux * speedU * 1.3;
+          c.vy -= g.f.uy * speedU * 1.3;
+          c.deckJump.struck = true;
+          damageVehicle(c, Math.max(4, closing * 0.12), c.x, c.y, null, { kind: 'crash', nx: -Math.sign(speedU) * g.f.ux, ny: -Math.sign(speedU) * g.f.uy, closing, otherMass: 0 });
+          playSample('crash-heavy-1', 0.7, 0.9, c);
+          if (c === player.car) shake = Math.max(shake, 7);
+          return drawbridgePose(c, stepSeconds);
+        }
         if (surface && c.deckLift < surface.h - 7) {
           // Came in under the far leaf's tip: strike its end and drop into the gap.
           const start = drawbridgeLocal(c.stepStartX, c.stepStartY),
             before = drawbridgeSurface(start.u);
           if (before === null) {
+            if (c.deckJump) c.deckJump.struck = true;
             const closing = Math.abs(speedU);
             c.x = c.stepStartX;
             c.y = c.stepStartY;
@@ -473,6 +522,8 @@
           c.deckLift = ground;
           c.deckVz = surfaceVz;
           if (jump) jump.crossed = (p.u - g.m) * jump.leaf < 0;
+          // A rider coming down this hard is thrown off (riders.js).
+          if (jump) jump.riderThrown = riderLanding(c, into);
           // Coming down faster than 5 m/s (a fall of about 1.3 m) bends things; a
           // flat landing from a long flight (14 m/s, a ten-metre drop) costs a sedan
           // about a third of its health.
@@ -543,6 +594,7 @@
         return drawbridgePose(c, stepSeconds);
       }
       // On a leaf: ride its surface; the vertical speed is what a take-off carries.
+      if (!c.deckAir && Math.abs(surface.slope - (c.deckSlope || 0)) > 0.004) drawbridgeKink(c, c.deckSlope || 0, surface.slope, speedU);
       const rise = (surface.h - (c.deckLift || 0)) / stepSeconds;
       c.deckVz = (c.deckVz || 0) * 0.5 + rise * 0.5;
       c.deckLift = surface.h;
@@ -1086,7 +1138,7 @@
           .map((c) => ({ id: c.id, type: c.type, x: Math.round(c.x), y: Math.round(c.y), speed: Math.round(c.speed || 0), ai: !!c.ai, desired: c.aiControl ? Math.round(c.aiControl.desired) : null, hp: Math.round(c.hp), crashed: !!c.crashStop })),
         vessel: v ? { leg: v.leg, x: Math.round(v.x), y: Math.round(v.y), across: Math.round(v.across), speed: +v.speed.toFixed(1) } : null,
         openings: d.openings,
-        jumps: d.jumps.map((j) => ({ speed: j.speed, angle: j.angle, crossed: j.crossed, landed: j.landed ?? null, splash: !!j.splash, distance: j.distance ?? null, impact: j.impact ?? null })),
+        jumps: d.jumps.map((j) => ({ speed: j.speed, angle: j.angle, crossed: j.crossed, landed: j.landed ?? null, splash: !!j.splash, struck: !!j.struck, distance: j.distance ?? null, impact: j.impact ?? null })),
         splashes: d.splashes,
         player: player.car ? { lift: +(player.car.deckLift || 0).toFixed(1), air: !!player.car.deckAir, leaf: player.car.deckLeaf || 0, sinking: +(player.car.sinkFor || 0).toFixed(1) } : null,
         centre: { x: Math.round(g.channel.x), y: Math.round(g.channel.y) },
