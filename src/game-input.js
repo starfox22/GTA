@@ -407,16 +407,6 @@
     getElement('menuSound').onclick = mute;
     applySoundLabels();
     getElement('closeTaxi').onclick = closeTaxiOffer;
-    // Sandboxed embeds and bare file:// copies cannot deliver this file, so hide
-    // the offer instead of showing a link that silently does nothing.
-    const offlineCopy = getElement('offlineCopy');
-    let sandboxed = location.protocol === 'file:' || !!window.claude;
-    try {
-      if (window.top !== window.self) sandboxed = true;
-    } catch (err) {
-      sandboxed = true;
-    }
-    if (offlineCopy && sandboxed) offlineCopy.hidden = true;
     getElement('restartMission').onclick = retryMission;
     getElement('newGame').onclick = newGame;
     window.addEventListener('resize', resize);
