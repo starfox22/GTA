@@ -1000,9 +1000,10 @@
       },
       helicopter: {
         name: 'MAVERICK HELICOPTER',
-        // An H125 / Bell 407 class light single: 10.75 m over the rotor, 4.25 m
-        // across the skids and stabiliser. helicopter3d.js builds every look at
-        // real size (the UH-60 class military one fitted to this footprint).
+        // A light single's footprint: 10.75 m long, 4.25 m across the skids and
+        // stabiliser. helicopter3d.js builds every look at real size (the EC120
+        // class police machine, the R44 / R66 class civilians; the UH-60 class
+        // military one fitted to this footprint).
         l: 86,
         w: 34,
         modelScale: 1,
@@ -6833,11 +6834,13 @@
         });
       },
       // Helicopter review (helicopter3d.js): parks one helicopter of each look
-      // ('police', 'news', 'executive', 'military') in a row east from (x, y),
-      // `spacing` apart, facing `heading`; `rotors` true spins them up (with the police lights
-      // running). Returns the ids and looks.
-      helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110) {
-        return ['police', 'news', 'executive', 'military'].map((heliLook, i) => {
+      // ('police', 'news', 'executive', the civil schemes 'civil:classic', 'civil:yellow',
+      // 'civil:silver', 'civil:noir', and 'military', or the `looks` given) in a row east
+      // from (x, y), `spacing` apart, facing `heading`; `rotors` true spins them up (with
+      // the police lights running). Returns the ids and looks.
+      helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110, looks = null) {
+        const list = Array.isArray(looks) ? looks : ['police', 'news', 'executive', 'civil:classic', 'civil:yellow', 'civil:silver', 'civil:noir', 'military'];
+        return list.map((heliLook, i) => {
           const c = makeCar('helicopter', x + i * spacing, y, heading, false);
           Object.assign(c, { heliLook, showRotor: !!rotors, showLights: rotors ? 'pursuit' : false });
           return { id: c.id, look: heliLook };

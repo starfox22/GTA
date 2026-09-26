@@ -12,20 +12,29 @@
        * (vehicleSpec 86 x 34); only the model changed.
        *
        * LOOKS (pickHelicopterLook, cached per vehicle in a WeakMap):
-       *   - police: the air unit (c.airUnit) and the machine on the POLICE HQ pad. A
-       *     Bell 407 / H125 class light single: SOUTH COAST POLICE in the patrol
-       *     cars' modern livery (white, navy swoosh, sky-blue band, reflective silver
-       *     line, gold star), AIR 1 big on the roof and POLICE along the tail boom
-       *     for the camera above, N-7 on the fin; FLIR ball under the nose, the
-       *     Nightsun searchlight on a gimbal under the port side
-       *     (HELI_SEARCHLIGHT_MOUNT), wire cutters, PA speaker, red / blue LED bars
-       *     along the lower cabin, on the boom and on the fin tip;
-       *   - news: the same airframe in CH 7 NEWS white and red with a gyro-stabilised
-       *     camera ball on the chin and a downlink dome under the boom (the
-       *     RIVERSIDE pad's, and one civilian machine in three);
-       *   - executive: glossy metallic paint (a palette, or the vehicle's own colour
-       *     after a respray) with gold pinstripes, tan leather, polished skids and a
-       *     shrouded fenestron tail fan instead of the open tail rotor;
+       *   - police: the air unit (c.airUnit) and the machine on the POLICE HQ pad. An
+       *     EC120 / H130 class light single (the `colibri` airframe): big bubble
+       *     canopy, egg-shaped cabin, the engine cowl behind the three-blade rotor,
+       *     a shrouded fenestron fan in the fin and a stabiliser with tall endplates.
+       *     Gloss navy-black with a deep blue band edged in gold pinstripes from the
+       *     nose along the cabin and the boom; POLICE in big white letters outlined
+       *     in blue on both sides, SOUTH COAST over it, the department seal on the
+       *     rear doors, N-7SC on the cowl, AIR ONE on the fin, and for the camera
+       *     above AIR 1 across the cowl and POLICE along the boom. FLIR ball under
+       *     the nose, the Nightsun under the belly (HELI_SEARCHLIGHT_MOUNT), wire
+       *     cutters, antennas, red / blue LED strobes on the cabin, nose, boom and
+       *     fin tip;
+       *   - civil: a Robinson R44 / R66 class four-seater (the `robin` airframe):
+       *     a teardrop cabin with a big glazed bubble and roof window, the tall mast
+       *     fairing with a two-blade teetering rotor, a slim boom with a two-blade
+       *     tail rotor on the left and the V tail (upper and lower fins), tubular
+       *     skids. Schemes (HELI_CIVIL_SCHEMES): white with red and blue stripes,
+       *     yellow, metallic grey, black with gold; a respray's colour on its own;
+       *   - news: the same small airframe in CH 7 NEWS white, red and navy with a
+       *     gyro-stabilised camera ball on the chin (the RIVERSIDE pad's, and one
+       *     civilian machine in four);
+       *   - executive: the small airframe in deep metallic paint with double gold
+       *     pinstripes, tan leather and polished skids (one civilian in four);
        *   - military: Fort Sentinel's machines (c.military). A UH-60 Black Hawk class
        *     utility helicopter, scaled into the same footprint: boxy cabin with a
        *     sliding door and gunner windows (M240s on their mounts), twin engines
@@ -34,33 +43,35 @@
        *     wheeled main gear and tail wheel, flat olive drab with a black
        *     anti-glare panel, low-visibility U.S. ARMY and serial.
        *
-       * CONSTRUCTION (heliKit, once per look; heliPlans for the two airframes):
+       * CONSTRUCTION (heliKit, once per look; heliPlans for the three airframes):
        *   - the fuselage is one lofted surface (monotone-cubic stations of keel,
        *     crown, widest height, half width and two superellipse exponents). Its
        *     quads are split by the plan's window field (`windows(x, y, z)`, a
        *     signed distance) into painted skin and the flush, transparent canopy:
        *     the bubble, roof and door windows are the fuselage itself;
-       *   - the livery is one canvas per look painted per pixel from the same
-       *     surface (heliLiveryTexture): paint scheme, black window seals over the
-       *     glass edge, door seams, belly grime and exhaust soot; the bottom quarter
-       *     holds the fin art and flat swatches for the cowling, stabiliser and
-       *     endplates. Words and numbers are glyph quads laid on the surface from
-       *     the police glyph atlas (crisp at any zoom, one shared material);
+       *   - the livery is one canvas per look (2048 wide for the police and news)
+       *     painted per pixel from the same surface (heliLiveryTexture): paint
+       *     scheme, pinstripes, black window seals over the glass edge, door seams,
+       *     belly grime and exhaust soot. The bottom quarter holds both faces of the
+       *     fin, the cowl (lofted and painted like the fuselage) and flat swatches.
+       *     Words, registrations and seals are canvas text and art warped onto the
+       *     surface strip by strip (heliPaintWord), so they follow its curves, read
+       *     forwards on both sides and char with the paint on a wreck. Only the
+       *     Black Hawk's stencils still use glyph quads (heliText);
        *   - inside: a dark liner and floor seen through the glass, instrument
        *     panel with lit screens, seats, sticks, and the crew (pilot on the
        *     right, observer on the left) shown only while somebody flies it;
        *   - trim (skids and arched cross tubes, steps, exhaust, grilles, antennas,
-       *     sensors, gear), interior, decals and every lamp lens are each merged
-       *     into one vertex-coloured mesh. About 15 draw calls for a whole
-       *     helicopter, against ~35 for the old box model.
+       *     sensors, gear), interior and every lamp lens are each merged into one
+       *     vertex-coloured mesh: 10 to 14 draw calls for a whole helicopter.
        *
-       * ROTORS: four blades with twist, taper, swept tips, droop at rest and tip
-       *   paint, on a hub with grips, pitch links and a swashplate. Spinning up
-       *   (~4 s) and coasting down (~9 s) follow `m.rpm`; past half speed the solid
-       *   blades give way to a translucent disc shaded with blade ghosts that trail
-       *   round it (HELI DISC shader), and the blades keep casting their shadow (a
-       *   depth-only material), so a faint flicker of blades crosses the ground. The
-       *   tail rotor (or the fenestron fan) blurs the same way.
+       * ROTORS: three (police), two (civil) or four (military) blades with twist,
+       *   taper, tip paint and droop at rest, on a hub with grips, pitch links and a
+       *   swashplate. Spinning up (~4 s) and coasting down (~9 s) follow `m.rpm`; past
+       *   half speed the solid blades give way to a translucent disc shaded with
+       *   blade ghosts that trail round it (HELI DISC shader), and the blades keep
+       *   casting their shadow (a depth-only material), so a faint flicker of blades
+       *   crosses the ground. The tail rotor (or the fenestron fan) blurs the same way.
        *
        * LIGHTS: every lens is one mesh on the police light shader with its own
        *   eight channel levels (HELI_CH): red / green / white navigation, double-
@@ -77,72 +88,99 @@
        *   helicopterSearchlightMount(c, out) gives the searchlight's lens position in
        *   world space for searchlight3d.js.
        */
-      const HELI_TEX_W = 1024,
-        HELI_TEX_H = 512,
-        // Share of the livery canvas (from the bottom) for the fin art and swatches.
-        HELI_BAND = 0.25,
-        HELI_LOFT_ROWS = Math.round(HELI_TEX_H * (1 - HELI_BAND)),
+      // Share of the livery canvas (from the bottom) for the fin, cowl and swatches.
+      const HELI_BAND = 0.25,
+        // Columns of that band (share of the width): the fin's starboard face, its
+        // port face (mirrored, so words read forwards), the cowl's loft, the swatches.
+        HELI_ART = { finS: 0, finP: 0.25, cowl: 0.5, cowlEnd: 0.8, swatch: 0.8 },
         HELI_SWATCH = { top: 0, lower: 1, accent: 2, cowl: 3, stab: 4, plate: 5, dark: 6, metal: 7 },
         // Light channels of the lens mesh (police light shader: eight levels per model).
         HELI_CH = { red: 0, blue: 1, navRed: 2, navGreen: 3, navWhite: 4, strobe: 5, beacon: 6, work: 7 },
         // The police Nightsun's lens in model space (x forward, y up, z to starboard):
-        // under the port side of the cabin, just behind the door post.
-        HELI_SEARCHLIGHT_MOUNT = Object.freeze({ x: 16.5, y: 3.7, z: -5.8 }),
+        // on its gimbal under the belly, a little to port, between the skid cross tubes.
+        HELI_SEARCHLIGHT_MOUNT = Object.freeze({ x: 8.8, y: 3.5, z: -3.3 }),
         // Main rotor at full speed (radians per second of the model), tail rotor.
         HELI_SPIN = 55,
-        HELI_TAIL_SPIN = 160;
+        HELI_TAIL_SPIN = 160,
+        // Block letters for the liveries (canvas text, warped onto the skin).
+        HELI_FONT = '"Arial Black", "Helvetica Neue", Arial, "Liberation Sans", Helvetica, sans-serif';
       const HELI_LOOKS = {
         police: {
           livery: 'police',
-          airframe: 'light',
-          tail: 'rotor',
-          finish: { roughness: 0.3, metalness: 0.06, clearcoat: 1 },
-          glass: '#3a4b5b',
-          // The roof is painted (the aerial ID), not glazed.
+          airframe: 'colibri',
+          tail: 'fenestron',
+          tex: 2048,
+          paintScale: 0.5,
+          finish: { roughness: 0.2, metalness: 0.14, clearcoat: 1 },
+          glass: '#324050',
+          // The roof over the cockpit is painted (the cowl carries the aerial ID).
           roofGlass: false,
-          liner: '#26292e',
-          seat: '#2a2d33',
-          skid: '#202226',
+          liner: '#222529',
+          seat: '#26292e',
+          skid: '#16181b',
           suit: '#1f2838',
           helmet: '#1c2946',
-          blade: '#2a2d31',
-          tip: '#e6dfbf',
+          blade: '#25272a',
+          tip: '#d7cf9e',
           reflective: true,
         },
         news: {
           livery: 'news',
-          airframe: 'light',
+          airframe: 'robin',
           tail: 'rotor',
-          finish: { roughness: 0.26, metalness: 0.08, clearcoat: 1 },
+          tex: 2048,
+          paintScale: 0.5,
+          finish: { roughness: 0.24, metalness: 0.08, clearcoat: 1 },
           glass: '#3d4f60',
           roofGlass: true,
           liner: '#2b2e33',
           seat: '#30343a',
-          skid: '#9ca2a8',
+          skid: '#b3b8bd',
           suit: '#3a434f',
           helmet: '#e2e2dc',
-          blade: '#2a2d31',
-          tip: '#e6dfbf',
+          blade: '#232528',
+          tip: '#e2ddc4',
         },
         executive: {
           livery: 'executive',
-          airframe: 'light',
-          tail: 'fenestron',
-          finish: { roughness: 0.14, metalness: 0.5, clearcoat: 1 },
+          paintScale: 0.5,
+          airframe: 'robin',
+          tail: 'rotor',
+          tex: 1024,
+          finish: { roughness: 0.1, metalness: 0.55, clearcoat: 1 },
           glass: '#2f3942',
           roofGlass: true,
           liner: '#6f6356',
           seat: '#a37d56',
-          skid: '#b9bec3',
+          skid: '#d3d7db',
           suit: '#23272d',
           helmet: '#2b2f34',
-          blade: '#2c2f33',
+          blade: '#232528',
           tip: '#d9d9d4',
+        },
+        civil: {
+          livery: 'civil',
+          paintScale: 0.5,
+          airframe: 'robin',
+          tail: 'rotor',
+          tex: 1024,
+          finish: { roughness: 0.26, metalness: 0.1, clearcoat: 1 },
+          glass: '#384a5a',
+          roofGlass: true,
+          liner: '#34373c',
+          seat: '#474b52',
+          skid: '#aab0b6',
+          suit: '#3a3f47',
+          helmet: '#2b2f34',
+          blade: '#232528',
+          tip: '#e4e0cc',
         },
         military: {
           livery: 'military',
+          paintScale: 0.5,
           airframe: 'hawk',
           tail: 'rotor',
+          tex: 1024,
           finish: { roughness: 0.88, metalness: 0.03, clearcoat: 0 },
           glass: '#344036',
           roofGlass: false,
@@ -155,10 +193,19 @@
           tip: '#d9c24c',
         },
       };
-      const HELI_EXECUTIVE_PAINTS = ['#18253c', '#111316', '#4b1521', '#e7e4dd', '#373d45'];
+      // The small civilian machines' paint: base, cheat line, pinstripe, the line's
+      // width (share of the full stripe), finish and registration.
+      const HELI_CIVIL_SCHEMES = {
+        classic: { base: '#eef0f1', stripe: '#c8262d', accent: '#1f3f8f', width: 1, reg: 'N44SC' },
+        yellow: { base: '#f1c01c', stripe: '#1d1e21', accent: '#f6f6f0', width: 0.8, reg: 'N66YB' },
+        silver: { base: '#9fa6ad', stripe: '#2d3137', accent: '#c8262d', width: 0.8, reg: 'N440M', finish: { roughness: 0.22, metalness: 0.6, clearcoat: 1 } },
+        noir: { base: '#121316', stripe: '#c9a44a', accent: '#c9a44a', width: 0.16, reg: 'N7GLD', finish: { roughness: 0.14, metalness: 0.3, clearcoat: 1 } },
+      };
+      const HELI_EXECUTIVE_PAINTS = ['#18253c', '#4b1521', '#1d3a2f', '#e7e4dd', '#373d45'];
       // ---- Which model ----------------------------------------------------------------
       // Cached per vehicle, never stored on it (every vehicle keeps one object layout);
-      // `heliLook` on a vehicle is only set by DeadEndCity.helicopterLineup for review.
+      // `heliLook` on a vehicle is only set by DeadEndCity.helicopterLineup for review
+      // ('police', 'news', 'executive', 'military', 'civil' or 'civil:<scheme>').
       const heliLooks = new WeakMap();
       function helicopterLookFor(c) {
         let look = heliLooks.get(c);
@@ -169,120 +216,251 @@
         return look;
       }
       function pickHelicopterLook(c) {
-        const hash = Math.imul(c.id + 7, 2654435761) >>> 0;
-        let kind = HELI_LOOKS[c.heliLook] ? c.heliLook : null;
+        const hash = Math.imul(c.id + 7, 2654435761) >>> 0,
+          [asked, askedScheme] = String(c.heliLook || '').split(':');
+        let kind = HELI_LOOKS[asked] ? asked : null,
+          scheme = HELI_CIVIL_SCHEMES[askedScheme] ? askedScheme : null;
         if (!kind) {
           if (c.airUnit || c.cop) kind = 'police';
           else if (c.military) kind = 'military';
           else {
-            const pad = HELIPADS.find((p) => Math.hypot(p.x - c.x, p.y - c.y) < 120);
-            kind = pad?.name === 'POLICE HQ' ? 'police' : pad?.name === 'RIVERSIDE' ? 'news' : (hash >>> 9) % 3 === 0 ? 'news' : 'executive';
+            const pad = HELIPADS.find((p) => Math.hypot(p.x - c.x, p.y - c.y) < 120),
+              pick = (hash >>> 9) % 4;
+            kind = pad?.name === 'POLICE HQ' ? 'police' : pad?.name === 'RIVERSIDE' || pick === 0 ? 'news' : pick === 1 ? 'executive' : 'civil';
           }
         }
         const stock = VEHICLE_DEFINITIONS.helicopter.color,
           own = c.color && c.color !== stock && c.color !== '#d9e1df' ? c.color : null;
-        let paint = null;
-        if (kind === 'executive') paint = own || HELI_EXECUTIVE_PAINTS[(hash >>> 13) % HELI_EXECUTIVE_PAINTS.length];
+        let paint = null,
+          finish = HELI_LOOKS[kind].finish;
+        if (kind === 'civil') {
+          const names = Object.keys(HELI_CIVIL_SCHEMES);
+          scheme = scheme || (own ? null : names[(hash >>> 13) % names.length]);
+          const s = scheme ? HELI_CIVIL_SCHEMES[scheme] : null;
+          paint = s ? s.base : own;
+          finish = s?.finish || finish;
+          scheme = scheme || 'own';
+        } else if (kind === 'executive') paint = own || HELI_EXECUTIVE_PAINTS[(hash >>> 13) % HELI_EXECUTIVE_PAINTS.length];
         else if (kind === 'military') paint = own || '#4d5641';
-        return { ...HELI_LOOKS[kind], kind, paint, key: kind + ':' + (paint || '') };
+        return heliLookOf(kind, scheme, paint, finish);
+      }
+      function heliLookOf(kind, scheme = null, paint = null, finish = HELI_LOOKS[kind].finish) {
+        return { ...HELI_LOOKS[kind], kind, scheme, paint, finish, key: kind + ':' + (scheme || '') + ':' + (paint || '') };
+      }
+      /*
+       * While the title screen is up (render3d.js, with the shader prewarm): the
+       * police machine's kit at once, then its livery a few milliseconds at a time,
+       * so the air unit's first call costs no hitch.
+       */
+      function prewarmHelicopters() {
+        const looks = [heliLookOf('police'), heliLookOf('news'), ...Object.entries(HELI_CIVIL_SCHEMES).map(([name, s]) => heliLookOf('civil', name, s.base, s.finish))];
+        let job = null;
+        const step = () => {
+          const started = performance.now();
+          while (performance.now() - started < 8) {
+            if (!job) {
+              const look = looks.shift();
+              if (!look) return;
+              if (heliLiveryTextures.has(look.key) || heliLiveryJobs.has(look.key)) continue;
+              job = heliLiveryJob(look, heliKit(look));
+              heliLiveryJobs.set(look.key, job);
+            }
+            if (job.next().done) job = null;
+          }
+          setTimeout(step, 30);
+        };
+        setTimeout(step, 2500);
       }
       // ---- Airframe plans ---------------------------------------------------------------
       function heliRoundRect(px, py, x0, x1, y0, y1, r) {
         const qx = Math.abs(px - (x0 + x1) / 2) - ((x1 - x0) / 2 - r),
           qy = Math.abs(py - (y0 + y1) / 2) - ((y1 - y0) / 2 - r);
-        return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r;
+        const ox = Math.max(qx, 0),
+          oy = Math.max(qy, 0);
+        // (Math.sqrt, not Math.hypot: this runs for every pixel of the livery.)
+        return Math.sqrt(ox * ox + oy * oy) + Math.min(Math.max(qx, qy), 0) - r;
       }
       /*
        * Stations are [x, keel, crown, widest height, half width, upper exponent,
        * lower exponent], tail to nose. `windows(x, y, z, st)` is a signed distance to
        * the glazing (negative on glass), `seams` the distance to a panel seam.
        */
-      function heliLightPlan() {
+      // EC120 / H130 class (the police): about 9.7 m from the nose to the fan.
+      function heliColibriPlan() {
         return {
-          name: 'light',
+          name: 'colibri',
           // Half widths are scaled by this (a touch broader than life reads better from above).
-          widen: 1.12,
+          widen: 1.08,
           keys: [
-            [-48.3, 15.4, 15.9, 15.65, 0.25, 2, 2],
-            [-47.7, 15.0, 16.3, 15.65, 0.9, 2, 2],
-            [-45.5, 14.7, 16.55, 15.6, 1.3, 2, 2],
-            [-40, 14.3, 16.8, 15.55, 1.65, 2, 2],
-            [-30, 13.6, 17.0, 15.3, 2.1, 2, 2],
-            [-21, 13.0, 17.3, 15.1, 2.45, 2.05, 2.05],
-            [-17.5, 12.3, 17.6, 14.7, 3.0, 2.1, 2.2],
-            [-14, 10.6, 18.2, 14.0, 4.1, 2.2, 2.5],
-            [-10, 8.6, 18.9, 13.4, 5.4, 2.25, 2.8],
-            [-5, 7.0, 19.5, 12.8, 6.6, 2.3, 3.1],
-            [1, 6.4, 19.8, 12.4, 7.2, 2.3, 3.2],
-            [8, 6.1, 20.0, 12.2, 7.5, 2.3, 3.2],
-            [16, 6.0, 20.0, 12.0, 7.6, 2.3, 3.2],
-            [24, 6.1, 19.9, 11.8, 7.6, 2.3, 3.1],
-            [29, 6.2, 19.5, 11.5, 7.4, 2.25, 3.0],
-            [33, 6.4, 18.8, 11.3, 6.9, 2.2, 2.8],
-            [36, 6.8, 17.8, 11.2, 6.2, 2.15, 2.6],
-            [38.5, 7.4, 16.6, 11.1, 5.1, 2.1, 2.4],
-            [40.2, 8.2, 15.2, 11.1, 3.8, 2.05, 2.2],
-            [41.3, 9.0, 13.9, 11.1, 2.6, 2, 2.1],
-            [42.0, 9.9, 12.6, 11.1, 1.4, 2, 2],
-            [42.3, 10.9, 11.3, 11.1, 0.3, 2, 2],
+            [-38.6, 14.7, 15.9, 15.3, 0.3, 2, 2],
+            [-38.0, 14.3, 16.3, 15.3, 1.0, 2, 2],
+            [-36.5, 14.0, 16.55, 15.3, 1.45, 2, 2],
+            [-32, 13.85, 16.75, 15.3, 1.75, 2, 2],
+            [-26, 13.55, 16.95, 15.25, 2.1, 2, 2],
+            [-20, 13.0, 17.3, 15.1, 2.5, 2.05, 2.05],
+            [-16, 12.1, 17.75, 14.8, 3.0, 2.1, 2.15],
+            [-12, 10.4, 18.45, 14.2, 3.8, 2.15, 2.3],
+            [-8, 8.3, 19.15, 13.4, 4.7, 2.2, 2.5],
+            [-4, 6.8, 19.75, 12.8, 5.4, 2.25, 2.7],
+            [1, 5.9, 20.2, 12.4, 5.9, 2.3, 2.9],
+            [8, 5.5, 20.4, 12.2, 6.2, 2.3, 3.0],
+            [15, 5.4, 20.3, 12.0, 6.3, 2.3, 3.0],
+            [21, 5.4, 19.9, 11.6, 6.25, 2.25, 2.9],
+            [26, 5.5, 19.1, 11.1, 6.0, 2.2, 2.7],
+            [30, 5.8, 17.8, 10.6, 5.5, 2.15, 2.5],
+            [33.2, 6.3, 16.1, 10.2, 4.6, 2.1, 2.3],
+            [35.6, 7.1, 14.2, 10.0, 3.4, 2.05, 2.15],
+            [37.0, 8.1, 12.4, 10.0, 2.1, 2, 2],
+            [37.8, 9.2, 10.9, 10.0, 0.9, 2, 2],
+            [38.1, 9.8, 10.2, 10.0, 0.25, 2, 2],
           ],
           // Extra sample planes along x (window and door edges), sample step.
-          marks: [-17.3, 0.8, 1.8, 13.4, 14.1, 14.8, 15.6, 17.4, 26.6, 27.6, 27.9, 28.4, 32],
-          step: (x) => (x > -18 ? 1.3 : 2.6),
-          segments: 44,
-          cabin: { back: -0.6, front: 36, floor: 7.4 },
+          marks: [-15, 2.8, 3.5, 15.2, 16.2, 17.0, 17.4, 27.1, 27.8, 28.4],
+          step: (x) => (x > -16 ? 1.25 : 2.4),
+          segments: 48,
+          cabin: { back: -3.5, front: 34, floor: 7.2 },
           windows(x, y, z, st, roofGlass = true) {
             const az = Math.abs(z),
-              side = az > st.w * 0.6,
+              side = az > st.w * 0.58,
               top = y > st.yw + (st.yt - st.yw) * 0.55;
-            // The bubble: everything ahead of the door post above the chin line.
-            let d = Math.max(28.4 - x, 8.9 - y);
-            if (top && roofGlass) d = Math.min(d, heliRoundRect(x, z, 17.4, 27.6, -3.7, 3.7, 1.3));
-            if (side) {
-              d = Math.min(d, heliRoundRect(x, y, 15.6, 26.6, 10.3, 18.5, 1.6));
-              d = Math.min(d, heliRoundRect(x, y, 1.8, 13.4, 11.2, 18.3, 1.9));
-            }
-            // Frames: the windscreen post and roof beam, the chin bar, the nose keel.
-            d = Math.max(d, -Math.max(az - 0.45, 11.4 - y, 17 - x));
-            d = Math.max(d, -Math.max(Math.abs(y - 11.05) - 0.3, 32 - x));
-            d = Math.max(d, -Math.max(az - 1.9, y - 11.05));
+            // The bubble: everything ahead of the front door post above the chin line.
+            let d = Math.max(17.4 - x, 8.7 + Math.max(0, x - 31) * 0.4 - y);
+            if (top && roofGlass) d = Math.min(d, heliRoundRect(x, z, 4.5, 16.4, -3.4, 3.4, 1.3));
+            // The rear sliding door's window.
+            if (side) d = Math.min(d, heliRoundRect(x, y, 3.5, 15.2, 12.0, 18.3, 1.6));
+            // Frames: the canopy arch over the front doors, its roof beam, the nose keel.
+            d = Math.max(d, -Math.max(Math.abs(x - 27.45) - 0.32, 9.2 - y));
+            d = Math.max(d, -Math.max(az - 0.42, 16.2 - y, x - 27.45));
+            d = Math.max(d, -Math.max(az - 1.2, y - 9.3, 34.5 - x));
             return d;
           },
           seams(x, y, z, st) {
-            let d = Math.abs(x + 17.3);
+            let d = Math.abs(x + 15);
             if (Math.abs(z) > st.w * 0.55 && y > st.yb + 0.4)
               d = Math.min(
                 d,
-                Math.abs(heliRoundRect(x, y, 14.8, 27.9, 6.9, 19.4, 1.4)),
-                Math.abs(heliRoundRect(x, y, 0.8, 14.1, 6.9, 19.3, 1.4)),
+                Math.abs(heliRoundRect(x, y, 16.9, 27.9, 6.6, 19.6, 1.4)),
+                Math.abs(heliRoundRect(x, y, 2.8, 16.3, 6.5, 19.5, 1.4)),
                 // Baggage door behind the cabin.
-                Math.abs(heliRoundRect(x, y, -9.6, -3.4, 10.4, 15.8, 0.8)),
+                Math.abs(heliRoundRect(x, y, -10.4, -4.4, 11.0, 16.6, 0.8)),
               );
             return d;
           },
-          // Soot from the exhaust along the top of the boom, 0..1.
-          soot: (x, y, z, st) => (x < -12 && x > -34 && y > st.yw ? Math.max(0, 1 - Math.abs(z) / 1.6) * Math.min(1, (x + 34) / 10) * 0.9 : 0),
+          // Soot from the exhaust at the back of the cowl onto the boom root, 0..1.
+          soot: (x, y, z, st) => (x < -13 && x > -24 && y > st.yw ? Math.max(0, 1 - Math.abs(z) / 1.4) * Math.min(1, (x + 24) / 6) * 0.6 : 0),
           tops: [
             {
-              keys: [[-19.4, 17.6, 0.35], [-18.6, 18.2, 1.6], [-16, 20.3, 3.4], [-13, 21.8, 4.4], [-9, 22.8, 5.0], [-3, 23.4, 5.3], [3, 23.5, 5.3], [9, 22.9, 4.9], [12, 21.6, 3.6], [13.6, 20.1, 1.2]],
+              keys: [[-17.5, 17.5, 0.4], [-15.5, 18.7, 2.0], [-12, 20.8, 3.4], [-7, 22.6, 4.2], [-1, 23.4, 4.5], [6, 23.6, 4.4], [12, 23.2, 3.8], [15.5, 22.0, 2.8], [17.8, 20.6, 0.6]],
               z: 0,
-              sink: 1.1,
-              swatch: 'cowl',
+              sink: 1.0,
+              // Lofted into the livery (the registration and the aerial ID are painted on it).
+              art: true,
             },
           ],
-          rotor: { x: 2, y: 26.9, radius: 43, blades: 4, chord: 2.5, root: 4.4, mast: 23.2, droop: 1.4, sweep: 0.6, hub: 2.6 },
-          tailRotor: { x: -44.3, y: 20.2, z: -2.35, radius: 6.6, blades: 2, chord: 1.05, cant: 0 },
-          fenestron: { x: -44.9, y: 17.9, radius: 4.3 },
+          rotor: { x: 9, y: 26.4, radius: 40, blades: 3, chord: 2.3, root: 3.6, mast: 23.6, droop: 1.3, sweep: 0.5, hub: 2.2, taper: 0.3, park: 0 },
+          fenestron: { x: -40.6, y: 15.5, radius: 3.0, blades: 8, shroud: 4.9, thick: 3.2 },
           fin: {
             thick: 1.1,
-            rotor: [[-38.4, 16.9], [-44.5, 27.1], [-47.9, 27.4], [-47.5, 16.6], [-47.1, 9.9], [-45.3, 9.5], [-41.4, 14.3]],
-            fenestron: [[-37.6, 16.9], [-42.2, 24.0], [-44.7, 29.2], [-48.4, 29.5], [-49.9, 19.2], [-49.4, 13.2], [-46.8, 11.6], [-41.6, 14.2]],
-            art: [-50.5, -36.5, 9, 30],
+            // The fenestron tail: the fin above the shroud and the ventral fin under it.
+            fenestron: [
+              [[-37.2, 18.6], [-41.4, 26.4], [-44.0, 27.2], [-45.3, 26.6], [-45.4, 18.0], [-43.0, 17.0]],
+              [[-38.6, 12.0], [-43.6, 8.4], [-45.2, 8.6], [-44.6, 12.4], [-42.0, 12.4]],
+            ],
+            art: [-47, -34, 7, 29],
           },
-          stab: { x: -29.5, y: 15.95, span: 10.3, chord: 4.6, thick: 0.72, plate: [4.6, 3.9] },
+          stab: { x: -33.2, y: 15.3, span: 8, chord: 3.2, thick: 0.6, plate: [3.2, 7.2] },
           gear: 'skids',
-          seats: { front: 21, rear: 7.2, side: 3.3, rearSides: [-3.5, 0, 3.5] },
-          dash: 31.3,
+          seats: { front: 22.5, rear: 8, side: 3.2, rearSides: [-3.4, 0, 3.4] },
+          dash: 30.2,
+          panel: 4.8,
+        };
+      }
+      // Robinson R44 / R66 class (the civilians): about 9.3 m from the nose to the tail.
+      function heliRobinPlan() {
+        return {
+          name: 'robin',
+          widen: 1.08,
+          keys: [
+            [-45.6, 14.05, 14.45, 14.25, 0.2, 2, 2],
+            [-45.0, 13.75, 14.75, 14.25, 0.55, 2, 2],
+            [-42, 13.6, 14.85, 14.2, 0.78, 2, 2],
+            [-35, 13.3, 14.95, 14.1, 0.95, 2, 2],
+            [-25, 12.9, 15.05, 13.95, 1.2, 2, 2],
+            [-17, 12.5, 15.15, 13.8, 1.45, 2, 2],
+            [-14.5, 11.4, 15.4, 13.5, 1.9, 2.05, 2.05],
+            [-12, 9.8, 15.8, 13.1, 2.6, 2.15, 2.15],
+            [-8.5, 8.2, 16.3, 12.6, 3.3, 2.2, 2.25],
+            [-4.5, 6.9, 16.9, 12.1, 4.0, 2.2, 2.35],
+            [-1, 5.8, 17.6, 11.6, 4.7, 2.25, 2.55],
+            [4, 5.1, 18.1, 11.2, 5.15, 2.3, 2.75],
+            [9, 4.9, 18.3, 10.9, 5.3, 2.3, 2.8],
+            [14, 4.8, 18.1, 10.6, 5.25, 2.25, 2.75],
+            [18.5, 4.9, 17.3, 10.3, 5.0, 2.2, 2.6],
+            [22, 5.3, 16.0, 10.0, 4.5, 2.15, 2.45],
+            [25, 6.0, 14.3, 9.7, 3.7, 2.1, 2.3],
+            [27.2, 7.0, 12.6, 9.5, 2.6, 2.05, 2.15],
+            [28.4, 8.1, 11.0, 9.4, 1.4, 2, 2],
+            [28.9, 9.0, 9.9, 9.4, 0.3, 2, 2],
+          ],
+          marks: [-3.4, -2.4, 8.8, 9.2, 9.8, 10.0, 19.3, 19.6, 20.0, 20.6],
+          step: (x) => (x > -15 ? 1.1 : 2.4),
+          segments: 44,
+          cabin: { back: -3.4, front: 26, floor: 6.3 },
+          windows(x, y, z, st, roofGlass = true) {
+            const az = Math.abs(z),
+              side = az > st.w * 0.58,
+              top = y > st.yw + (st.yt - st.yw) * 0.6;
+            // The wraparound windscreen ahead of the front door posts.
+            let d = Math.max(20.3 - x, 8.6 - y);
+            // The tinted roof window over the front seats.
+            if (top && roofGlass) d = Math.min(d, heliRoundRect(x, z, 9.6, 19.8, -3.0, 3.0, 1.3));
+            if (side) {
+              d = Math.min(d, heliRoundRect(x, y, 9.8, 19.4, 10.2, 17.1, 1.5));
+              d = Math.min(d, heliRoundRect(x, y, -2.2, 8.9, 10.6, 16.7, 1.6));
+            }
+            // Frames: the door posts' arch, the windscreen's centre bar.
+            d = Math.max(d, -Math.max(Math.abs(x - 20.3) - 0.3, 9.6 - y));
+            d = Math.max(d, -Math.max(az - 0.3, 12.2 - y, 27.4 - x));
+            return d;
+          },
+          seams(x, y, z, st) {
+            let d = Math.abs(x + 3.8);
+            if (Math.abs(z) > st.w * 0.55 && y > st.yb + 0.4)
+              d = Math.min(
+                d,
+                Math.abs(heliRoundRect(x, y, 9.3, 20.0, 5.9, 17.9, 1.4)),
+                Math.abs(heliRoundRect(x, y, -2.7, 9.3, 6.0, 17.6, 1.4)),
+                // The engine bay's access panel.
+                Math.abs(heliRoundRect(x, y, -12.6, -5.2, 9.4, 14.6, 0.7)),
+              );
+            return d;
+          },
+          soot: (x, y, z, st) => (x < -8 && x > -18 && y < st.yw && z > 0 ? Math.max(0, 1 - Math.abs(y - st.yw + 1.6) / 2) * Math.min(1, (x + 18) / 6) * 0.5 : 0),
+          tops: [
+            // The tall mast fairing behind the cabin roof.
+            {
+              keys: [[-8, 15.8, 0.3], [-6, 17.0, 1.4], [-3, 18.7, 2.3], [1, 20.2, 2.6], [5, 20.9, 2.5], [8, 20.5, 2.0], [10.5, 19.2, 1.1], [12, 18.5, 0.3]],
+              z: 0,
+              sink: 0.8,
+              art: true,
+            },
+          ],
+          rotor: { x: 4, y: 25.6, radius: 38, blades: 2, chord: 2.0, root: 2.8, mast: 20.9, droop: 1.9, sweep: 0, hub: 1.3, taper: 0, park: Math.PI / 2 - 0.3 },
+          tailRotor: { x: -45.0, y: 15.6, z: -1.35, radius: 5.6, blades: 2, chord: 0.85, cant: 0 },
+          fin: {
+            thick: 0.6,
+            // The V tail: the upper and lower fins sweeping back from the boom's end.
+            rotor: [
+              [[-39.6, 14.9], [-44.4, 21.6], [-46.4, 22.0], [-46.0, 15.8], [-43.4, 14.7]],
+              [[-40.6, 13.8], [-43.8, 9.3], [-45.4, 9.2], [-45.4, 13.9]],
+            ],
+            art: [-47, -38, 8.5, 23],
+          },
+          stab: { x: -36.5, y: 14.3, span: 3.6, chord: 2.4, thick: 0.45, plate: null },
+          gear: 'skids',
+          seats: { front: 14.2, rear: 4.2, side: 2.55, rearSides: [-2.55, 2.55] },
+          dash: 21.4,
+          panel: 3.6,
         };
       }
       function heliHawkPlan() {
@@ -376,7 +554,7 @@
       let heliPlanCache = null;
       function heliPlans() {
         if (heliPlanCache) return heliPlanCache;
-        heliPlanCache = { light: heliLightPlan(), hawk: heliHawkPlan() };
+        heliPlanCache = { colibri: heliColibriPlan(), robin: heliRobinPlan(), hawk: heliHawkPlan() };
         for (const plan of Object.values(heliPlanCache)) {
           const xs = plan.keys.map((k) => k[0]);
           plan.spline = [1, 2, 3, 4, 5, 6].map((i) =>
@@ -385,6 +563,8 @@
               plan.keys.map((k) => k[i]),
             ),
           );
+          // A single fin outline becomes a list of one.
+          if (!Array.isArray(plan.fin.rotor?.[0]?.[0])) plan.fin.rotor = plan.fin.rotor && [plan.fin.rotor];
           plan.x0 = xs[0];
           plan.x1 = xs[xs.length - 1];
           for (const top of plan.tops) {
@@ -407,6 +587,8 @@
       // ---- Surface maths ------------------------------------------------------------------
       // Monotone cubic interpolation (Fritsch-Carlson): smooth, never overshoots.
       function heliMonotone(xs, ys) {
+        let lastX = NaN,
+          lastY = 0;
         const n = xs.length,
           d = [],
           m = new Array(n);
@@ -428,16 +610,19 @@
             m[i + 1] = t * b * d[i];
           }
         }
+        // Remembers the last answer: the livery painter asks for one x a column at a time.
         return (x) => {
-          if (x <= xs[0]) return ys[0];
-          if (x >= xs[n - 1]) return ys[n - 1];
+          if (x === lastX) return lastY;
+          lastX = x;
+          if (x <= xs[0]) return (lastY = ys[0]);
+          if (x >= xs[n - 1]) return (lastY = ys[n - 1]);
           let i = 0;
           while (x > xs[i + 1]) i++;
           const h = xs[i + 1] - xs[i],
             t = (x - xs[i]) / h,
             t2 = t * t,
             t3 = t2 * t;
-          return (2 * t3 - 3 * t2 + 1) * ys[i] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * ys[i + 1] + (t3 - t2) * h * m[i + 1];
+          return (lastY = (2 * t3 - 3 * t2 + 1) * ys[i] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * ys[i + 1] + (t3 - t2) * h * m[i + 1]);
         };
       }
       function heliStation(plan, x) {
@@ -761,117 +946,125 @@
       }
       /*
        * Paint schemes: `body(out, x, y, z, st)` writes the colour of the skin at a
-       * point, `fin(out, x, y)` the fin's, `swatches` the flat parts' (HELI_SWATCH
-       * order), `badges(g, map)` draws emblems with canvas paths through the surface
-       * mapping, `decals(add)` lays the words and numbers.
+       * point (the cowl too, from its own stations), `fin(out, x, y, side)` the
+       * fin's, `swatches` the flat parts' (HELI_SWATCH order), `words` the lettering
+       * and emblems painted into the livery (heliPaintWord), `decals(add)` glyph
+       * quads (the Black Hawk's stencils).
        */
       function heliScheme(look) {
-        const WHITE = [239, 241, 242],
-          NAVY = [19, 41, 92],
-          SKY = [63, 143, 217],
-          SILVER = [214, 222, 229],
+        const plan = heliPlans()[look.airframe],
+          heliStationFor = (x) => heliStation(plan, x),
+          WHITE = [239, 241, 242],
           DARK = [16, 17, 20],
-          METAL = [150, 156, 162];
+          METAL = [150, 156, 162],
+          // The small airframe's cheat line: along the lower doors, up the engine bay onto the boom.
+          robinLine = () => heliMonotone([-46, -30, -16, -8, 0, 10, 20, 26, 29], [14.15, 14.0, 13.3, 11.4, 9.2, 8.1, 7.9, 8.3, 9.0]),
+          // Stripes narrow with the section (thinner along the boom).
+          band = (st) => Math.min(1, Math.max(0.35, st.w / 5.7));
         if (look.livery === 'police') {
-          const line = heliMonotone([-48, -24, -17, -10, -2, 8, 18, 30, 43], [14.95, 14.7, 13.9, 11.2, 8.4, 7.65, 8.1, 8.9, 9.5]);
+          const INK = [11, 15, 26],
+            BLUE = [22, 58, 160],
+            GOLD = [222, 178, 80],
+            BLACK = [7, 9, 14],
+            // The blue band's top edge (the upper gold pinstripe) and its bottom edge.
+            hi = heliMonotone([-46, -36, -24, -15, -6, 2, 8, 14, 18, 26, 31, 35, 39], [16.35, 16.4, 16.45, 16.8, 17.0, 16.4, 13.4, 9.7, 8.3, 8.25, 8.5, 9.5, 10.2]),
+            lo = heliMonotone([-46, -36, -24, -15, -8, 0, 8, 14, 20, 28, 34, 39], [14.05, 14.2, 14.1, 13.2, 11.2, 10.2, 8.7, 7.4, 6.9, 7.0, 7.9, 9.6]),
+            letters = { fill: '#f6f8fa', outline: '#1c52dc', outlineWidth: 0.11, edge: '#050d24', edgeWidth: 0.05 };
           return {
-            body(out, x, y, z, st) {
-              const y0 = line(x),
-                band = Math.min(1, Math.max(0.42, st.w / 7.6));
-              out[0] = WHITE[0];
-              out[1] = WHITE[1];
-              out[2] = WHITE[2];
-              heliMix(out, SILVER, heliCover(Math.max(y0 + 0.95 * band - y, y - y0 - 1.28 * band)));
-              heliMix(out, SKY, heliCover(Math.max(y0 - y, y - y0 - 0.95 * band)));
-              heliMix(out, NAVY, heliCover(y - y0));
+            body(out, x, y) {
+              out[0] = INK[0];
+              out[1] = INK[1];
+              out[2] = INK[2];
+              heliMix(out, BLUE, heliCover(Math.max(lo(x) - y, y - hi(x)), 0.08));
             },
+            // The gold pinstripes just outside the band's edges.
+            lines: [
+              { y: (x) => hi(x) + 0.17, width: 0.15, color: '#deb250' },
+              { y: (x) => lo(x) - 0.17, width: 0.15, color: '#deb250' },
+            ],
             fin(out, x, y) {
-              out[0] = NAVY[0];
-              out[1] = NAVY[1];
-              out[2] = NAVY[2];
-              heliMix(out, SKY, heliCover(Math.abs(y - 13.4 - (x + 50) * 0.75) - 0.55, 0.15));
+              // Blue over the fenestron and the fin's root, gold line, black fin tip.
+              const edge = 21.4 + (x + 41) * 0.28;
+              out[0] = INK[0];
+              out[1] = INK[1];
+              out[2] = INK[2];
+              heliMix(out, BLUE, heliCover(Math.max(y - edge, 10.9 - y), 0.05));
+              heliMix(out, GOLD, heliCover(Math.abs(y - edge - 0.14) - 0.09, 0.04));
             },
-            swatches: [WHITE, NAVY, SKY, WHITE, WHITE, NAVY, DARK, METAL],
-            badges(g, map) {
-              for (const side of [-1, 1]) heliStarBadge(g, map, -6.8, 14.7, side, 2.3, '#13295c', '#c9a44a', 7);
-            },
-            decals(add) {
-              add('AIR 1', { surface: 'top', x: 19.6, z: 0, height: 5.4, color: '#13295c' });
-              add('POLICE', { surface: 'top', x: -29.2, z: 0, height: 3.2, color: '#13295c' });
-              for (const side of [-1, 1]) {
-                add('POLICE', { surface: 'side', side, x: 7.4, y: 9.95, height: 1.9, color: '#13295c' });
-                add('SOUTH COAST', { surface: 'side', side, x: -30.5, y: 16.05, height: 1.15, color: '#13295c' });
-                add('N-7', { surface: 'fin', side, x: -44.6, y: 21.5, height: 2.6, color: '#f2f4f6' });
-                add('911', { surface: 'side', side, x: -7.2, y: 11.4, height: 0.9, color: '#13295c' });
-              }
-            },
+            swatches: [INK, INK, BLUE, INK, INK, BLACK, DARK, METAL],
+            words: [
+              { text: 'POLICE', surface: 'side', x: -5.6, y: 14.15, height: 3.3, squeeze: 0.86, spacing: 0.07, ...letters },
+              { text: 'SOUTH COAST', surface: 'side', x: -3.2, y: 18.15, height: 1.0, squeeze: 0.9, spacing: 0.14, fill: '#f6f8fa' },
+              { image: () => heliSealImage(), surface: 'side', x: 6.3, y: 10.1, height: 3.2 },
+              { text: 'N-7SC', surface: 'cowl', x: -2.4, y: 21.35, height: 1.6, spacing: 0.08, fill: '#f6f8fa', outline: '#050d24', outlineWidth: 0.08 },
+              { text: 'AIR ONE', surface: 'fin', x: -42.9, y: 24.2, height: 1.0, squeeze: 0.85, spacing: 0.08, fill: '#f6f8fa' },
+              // For the camera above: the unit across the cowl, POLICE along the boom.
+              { text: 'AIR 1', surface: 'cowlTop', x: -3.6, z: 0, height: 3.3, spacing: 0.06, ...letters },
+              { text: 'POLICE', surface: 'top', x: -24.2, z: 0, height: 2.7, squeeze: 0.86, spacing: 0.05, ...letters },
+            ],
           };
         }
         if (look.livery === 'news') {
           const RED = [196, 30, 42],
-            BLUE = [16, 32, 74],
-            line = heliMonotone([-48, -20, -12, -2, 10, 26, 43], [14.9, 14.5, 12.4, 9.3, 8.5, 9.1, 10.2]);
+            NAVY = [16, 32, 74],
+            line = robinLine();
           return {
             body(out, x, y, z, st) {
-              const y0 = line(x),
-                band = Math.min(1, Math.max(0.42, st.w / 7.6));
               out[0] = WHITE[0];
               out[1] = WHITE[1];
               out[2] = WHITE[2];
-              heliMix(out, BLUE, heliCover(Math.max(y0 + 0.3 * band - y, y - y0 - 0.95 * band)));
-              heliMix(out, RED, heliCover(y - y0));
+              heliMix(out, [214, 218, 222], heliCover(y - line(x), 0.05) * 0.8);
             },
+            lines: [
+              { y: line, width: (x, st) => 1.9 * band(st), color: '#c41e2a' },
+              { y: (x) => line(x) + 1.3 * band(heliStationFor(x)), width: (x, st) => 0.34 * band(st), color: '#10204a' },
+            ],
             fin(out, x, y) {
               out[0] = RED[0];
               out[1] = RED[1];
               out[2] = RED[2];
-              heliMix(out, WHITE, heliCover(Math.abs(y - 12.6 - (x + 50) * 0.75) - 0.35, 0.15));
+              heliMix(out, WHITE, heliCover(Math.abs(y - 13.6 - (x + 46) * 0.6) - 0.3, 0.05));
             },
-            swatches: [WHITE, RED, BLUE, WHITE, WHITE, RED, DARK, METAL],
-            badges(g, map) {
-              for (const side of [-1, 1]) heliRoundel(g, map, -6.6, 14.3, side, 2.5, '#c41e2a', '#ffffff');
-            },
-            decals(add) {
-              add('7 NEWS', { surface: 'top', x: 19.6, z: 0, height: 5.0, color: '#c41e2a' });
-              add('CH 7', { surface: 'top', x: -29.2, z: 0, height: 3.2, color: '#10204a' });
-              for (const side of [-1, 1]) {
-                add('7', { surface: 'side', side, x: -6.6, y: 14.3, height: 3.3, color: '#ffffff' });
-                add('CH 7 NEWS', { surface: 'side', side, x: 7.4, y: 9.95, height: 1.75, color: '#10204a' });
-                add('SKY 7', { surface: 'side', side, x: -30.5, y: 16.05, height: 1.15, color: '#c41e2a' });
-                add('N7NW', { surface: 'fin', side, x: -44.6, y: 21.2, height: 1.9, color: '#ffffff' });
-              }
-            },
+            swatches: [WHITE, RED, NAVY, WHITE, WHITE, RED, DARK, METAL],
+            words: [
+              { text: 'CH 7 NEWS', surface: 'side', x: 7.4, y: 8.05, height: 1.05, squeeze: 0.9, spacing: 0.1, fill: '#ffffff' },
+              { image: () => heliRoundelImage('7', '#c41e2a', '#ffffff'), surface: 'side', x: -8.3, y: 12.7, height: 3.3 },
+              { text: 'SKY 7', surface: 'side', x: -27, y: 14.85, height: 0.75, squeeze: 0.9, spacing: 0.1, fill: '#10204a' },
+              { text: 'N7NW', surface: 'fin', x: -43.4, y: 18.8, height: 1.05, squeeze: 0.85, fill: '#ffffff' },
+              { text: 'NEWS', surface: 'cowlTop', x: -2.3, z: 0, height: 2.5, squeeze: 0.9, spacing: 0.06, fill: '#c41e2a' },
+              { text: 'CH 7', surface: 'top', x: -27, z: 0, height: 1.9, squeeze: 0.9, spacing: 0.08, fill: '#10204a' },
+            ],
           };
         }
-        if (look.livery === 'executive') {
+        if (look.livery === 'executive' || look.livery === 'civil') {
           const P = heliHex(look.paint),
-            light = P[0] + P[1] + P[2] > 480,
-            STRIPE = light ? [150, 124, 62] : [201, 164, 74],
-            BELLY = P.map((v) => v * 0.78),
-            line = heliMonotone([-48, -18, -10, 0, 12, 28, 43], [15.55, 15.1, 13.4, 10.9, 10.35, 10.3, 10.8]);
+            light = P[0] * 0.3 + P[1] * 0.59 + P[2] * 0.11 > 150,
+            s = HELI_CIVIL_SCHEMES[look.scheme] || (look.livery === 'executive' ? { stripe: light ? '#96793e' : '#c9a44a', accent: light ? '#96793e' : '#c9a44a', width: 0.12, reg: 'N66EX' } : { stripe: light ? '#1d1e21' : '#e9e9e4', accent: light ? '#c8262d' : '#c9a44a', width: 0.7, reg: 'N44RP' }),
+            STRIPE = heliHex(s.stripe),
+            ACCENT = heliHex(s.accent),
+            BELLY = P.map((v) => v * 0.86),
+            line = robinLine(),
+            ink = light ? '#17191c' : s.width < 0.3 ? s.stripe : '#f2f2ee';
           return {
             body(out, x, y, z, st) {
-              const y0 = line(x),
-                band = Math.min(1, Math.max(0.42, st.w / 7.6));
               out[0] = P[0];
               out[1] = P[1];
               out[2] = P[2];
-              heliMix(out, BELLY, heliCover(y - (y0 - 1.6 * band), 0.4));
-              heliMix(out, STRIPE, heliCover(Math.abs(y - y0) - 0.09 * band, 0.06));
-              heliMix(out, STRIPE, heliCover(Math.abs(y - y0 - 0.5 * band) - 0.05 * band, 0.06));
+              heliMix(out, BELLY, heliCover(y - (st.yb + (st.yw - st.yb) * 0.42), 0.5));
             },
+            // The cheat line along the lower doors and up onto the boom, a pinstripe over it.
+            lines: [
+              { y: line, width: (x, st) => 1.24 * band(st) * s.width, color: s.stripe },
+              { y: (x) => line(x) + (0.62 * s.width + 0.36) * band(heliStationFor(x)), width: (x, st) => 0.18 * band(st), color: s.accent },
+            ],
             fin(out, x, y) {
               out[0] = P[0];
               out[1] = P[1];
               out[2] = P[2];
-              heliMix(out, STRIPE, heliCover(Math.abs(y - 13.8 - (x + 50) * 0.5) - 0.12, 0.08));
+              heliMix(out, STRIPE, heliCover(Math.abs(y - 13.6 - (x + 46) * 0.6) - 0.5 * Math.max(0.25, s.width), 0.05));
             },
             swatches: [P, BELLY, STRIPE, P, P, P, DARK, METAL],
-            badges() {},
-            decals(add) {
-              const ink = light ? '#1b1d21' : '#d8c07a';
-              for (const side of [-1, 1]) add('N407EX', { surface: 'side', side, x: -30.2, y: 15.9, height: 1.4, color: ink });
-            },
+            words: [{ text: s.reg, surface: 'side', x: -8.6, y: 13.7, height: 1.25, squeeze: 0.9, spacing: 0.08, fill: ink }],
           };
         }
         // Military: flat olive drab with a faint mottle, black anti-glare, low-vis marks.
@@ -894,9 +1087,7 @@
             out[2] = OD[2] * mottle;
           },
           swatches: [OD, OD_DARK, OD, OD, OD, OD, BLACK, [96, 98, 90]],
-          badges(g, map) {
-            for (const side of [-1, 1]) heliStarBadge(g, map, 6.8, 11.2, side, 1.9, null, 'rgba(24,26,22,0.85)', 5, true);
-          },
+          words: [{ image: () => heliArmyStarImage(), surface: 'side', x: 6.8, y: 11.2, height: 4.6 }],
           decals(add) {
             for (const side of [-1, 1]) {
               add('U.S. ARMY', { surface: 'side', side, x: -27, y: 16.6, height: 1.6, color: '#1b1d19' });
@@ -906,140 +1097,395 @@
           },
         };
       }
-      // A star in a ring on the side (canvas paths through the surface mapping).
-      function heliStarBadge(g, map, x, y, side, r, ring, star, points, outline = false) {
-        const [cx, cy, sx, sy] = map(x, y, side);
-        g.save();
-        g.translate(cx, cy);
-        g.scale(sx, sy);
-        if (ring) {
-          g.fillStyle = ring;
-          g.beginPath();
-          g.arc(0, 0, r, 0, TAU);
-          g.fill();
-          g.fillStyle = '#e8e8e4';
-          g.beginPath();
-          g.arc(0, 0, r * 0.84, 0, TAU);
-          g.fill();
-        }
+      // ---- Emblems (small canvases, warped onto the skin like the words) ----------------------
+      function heliEmblemCanvas(size = 256) {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = size;
+        const g = canvas.getContext('2d');
+        g.translate(size / 2, size / 2);
+        return { canvas, g };
+      }
+      function heliStarPath(g, r, points, inner) {
         g.beginPath();
         for (let i = 0; i < points * 2; i++) {
-          const a = Math.PI / 2 + (i * Math.PI) / points,
-            k = (i % 2 ? 0.45 : 1) * r * (ring ? 0.76 : 1);
+          const a = -Math.PI / 2 + (i * Math.PI) / points,
+            k = i % 2 ? inner : r;
           g.lineTo(Math.cos(a) * k, Math.sin(a) * k);
         }
         g.closePath();
-        if (outline) {
-          g.strokeStyle = star;
-          g.lineWidth = 0.28;
-          g.stroke();
-          g.beginPath();
-          g.arc(0, 0, r * 1.18, 0, TAU);
-          g.stroke();
-        } else {
-          g.fillStyle = star;
-          g.fill();
-          g.strokeStyle = 'rgba(80,60,20,0.8)';
-          g.lineWidth = 0.08;
-          g.stroke();
-        }
-        g.restore();
       }
-      function heliRoundel(g, map, x, y, side, r, fill, ring) {
-        const [cx, cy, sx, sy] = map(x, y, side);
-        g.save();
-        g.translate(cx, cy);
-        g.scale(sx, sy);
+      // The police department's seal: a gold-rimmed navy ring of stars round a gold star.
+      function heliSealImage() {
+        const { canvas, g } = heliEmblemCanvas();
+        const disc = (r, color) => {
+          g.fillStyle = color;
+          g.beginPath();
+          g.arc(0, 0, r, 0, TAU);
+          g.fill();
+        };
+        disc(124, '#d8b25a');
+        disc(114, '#0e2150');
+        g.fillStyle = '#d8b25a';
+        for (let i = 0; i < 20; i++) {
+          const a = (i * TAU) / 20;
+          g.save();
+          g.translate(Math.cos(a) * 99, Math.sin(a) * 99);
+          heliStarPath(g, 7, 5, 3);
+          g.fill();
+          g.restore();
+        }
+        disc(84, '#d8b25a');
+        disc(78, '#f2f0e8');
+        heliStarPath(g, 70, 7, 36);
+        g.fillStyle = '#d8b25a';
+        g.fill();
+        g.lineWidth = 3;
+        g.strokeStyle = '#7a5c1c';
+        g.stroke();
+        disc(25, '#0e2150');
+        heliStarPath(g, 17, 5, 7);
+        g.fillStyle = '#f2f0e8';
+        g.fill();
+        return canvas;
+      }
+      function heliRoundelImage(text, fill, ring) {
+        const { canvas, g } = heliEmblemCanvas();
         g.fillStyle = ring;
         g.beginPath();
-        g.arc(0, 0, r * 1.1, 0, TAU);
+        g.arc(0, 0, 124, 0, TAU);
         g.fill();
         g.fillStyle = fill;
         g.beginPath();
-        g.arc(0, 0, r, 0, TAU);
+        g.arc(0, 0, 110, 0, TAU);
         g.fill();
-        g.restore();
+        g.fillStyle = ring;
+        g.font = `900 190px ${HELI_FONT}`;
+        g.textAlign = 'center';
+        g.textBaseline = 'middle';
+        g.fillText(text, 0, 10);
+        return canvas;
+      }
+      // The Army's low-visibility star in a ring (outlined, no fill).
+      function heliArmyStarImage() {
+        const { canvas, g } = heliEmblemCanvas();
+        g.strokeStyle = 'rgba(24,26,22,0.85)';
+        g.lineWidth = 12;
+        g.lineJoin = 'miter';
+        heliStarPath(g, 88, 5, 34);
+        g.stroke();
+        g.beginPath();
+        g.arc(0, 0, 112, 0, TAU);
+        g.stroke();
+        return canvas;
+      }
+      // ---- Lettering: canvas text rasterised upright, then warped onto a surface ----------------
+      function heliWordImage(w, pxPerUnit) {
+        const canvas = document.createElement('canvas'),
+          g = canvas.getContext('2d'),
+          // Cap height in source pixels: about twice what the livery gives it.
+          CAP = Math.round(clamp(w.height * pxPerUnit * 2.2, 40, 220)),
+          weight = w.weight || '900',
+          family = w.font || HELI_FONT,
+          squeeze = w.squeeze ?? 1;
+        g.font = `${weight} 200px ${family}`;
+        const size = (200 * CAP) / (g.measureText('H').actualBoundingBoxAscent || 144),
+          font = `${weight} ${size.toFixed(1)}px ${family}`;
+        g.font = font;
+        const chars = [...w.text],
+          gap = (w.spacing ?? 0.05) * CAP,
+          advances = chars.map((ch) => g.measureText(ch).width * squeeze),
+          outline = w.outline ? (w.outlineWidth ?? 0.1) * CAP : 0,
+          ring = outline + (w.edge ? (w.edgeWidth ?? 0.05) * CAP : 0),
+          pad = Math.ceil(ring + 3);
+        canvas.width = Math.ceil(advances.reduce((a, b) => a + b, 0) + gap * (chars.length - 1) + pad * 2);
+        canvas.height = Math.ceil(CAP + pad * 2);
+        g.font = font;
+        g.lineJoin = 'round';
+        const layers = [];
+        if (w.edge) layers.push([w.edge, ring * 2]);
+        if (w.outline) layers.push([w.outline, outline * 2]);
+        layers.push([w.fill, 0]);
+        for (const [color, width] of layers) {
+          let cursor = pad;
+          chars.forEach((ch, i) => {
+            g.save();
+            g.translate(cursor, pad + CAP);
+            g.scale(squeeze, 1);
+            if (width) {
+              g.strokeStyle = color;
+              g.lineWidth = width;
+              g.strokeText(ch, 0, 0);
+            } else {
+              g.fillStyle = color;
+              g.fillText(ch, 0, 0);
+            }
+            g.restore();
+            cursor += advances[i] + gap;
+          });
+        }
+        return { canvas, unit: w.height / CAP };
+      }
+      /*
+       * Draws `img` onto the livery through `point(fu, fv)` (the source's 0..1
+       * coordinates, fu along the reading direction, fv down the letters, to canvas
+       * pixels): small cells each drawn with their own affine transform, so the
+       * image follows the surface's curves; a pixel of overlap hides the joins.
+       */
+      function heliWarp(g, img, point) {
+        const N = Math.max(8, Math.ceil(img.width / 6)),
+          K = 6,
+          sw = img.width / N,
+          sh = img.height / K,
+          grid = [];
+        for (let i = 0; i <= N; i++) for (let k = 0; k <= K; k++) grid.push(point(i / N, k / K));
+        for (let i = 0; i < N; i++)
+          for (let k = 0; k < K; k++) {
+            const p = grid[i * (K + 1) + k],
+              px = grid[(i + 1) * (K + 1) + k],
+              py = grid[i * (K + 1) + k + 1],
+              w = Math.min(sw + 1, img.width - i * sw),
+              h = Math.min(sh + 1, img.height - k * sh);
+            g.setTransform((px[0] - p[0]) / sw, (px[1] - p[1]) / sw, (py[0] - p[0]) / sh, (py[1] - p[1]) / sh, p[0], p[1]);
+            g.drawImage(img, i * sw, k * sh, w, h, 0, 0, w, h);
+          }
+        g.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      // The top of a section at z (the upper surface's angle, inverse of heliSection).
+      function heliTopTheta(st, z) {
+        const c = clamp(z / st.w, -1, 1);
+        return Math.acos(Math.sign(c) * Math.pow(Math.abs(c), st.nu / 2));
+      }
+      // Canvas pixels of surface points: the fuselage and cowl lofts (sides and tops), the fin.
+      function heliSurfaces(plan, cowl, W, H) {
+        const ringOf = (theta) => ((((theta + Math.PI / 2) / TAU) % 1) + 1) % 1,
+          loft = (stationAt, u, v) => ({
+            side: (x, y, side) => [u(x), v(ringOf(heliSideTheta(stationAt(x), y, side)))],
+            top: (x, z) => [u(x), v(ringOf(heliTopTheta(stationAt(x), z)))],
+          }),
+          span = plan.x1 - plan.x0,
+          [fx0, fx1, fy0, fy1] = plan.fin.art;
+        return {
+          body: loft(
+            (x) => heliStation(plan, x),
+            (x) => ((x - plan.x0) / span) * W,
+            (r) => (1 - (HELI_BAND + (1 - HELI_BAND) * r)) * H,
+          ),
+          cowl:
+            cowl &&
+            loft(
+              cowl.stationAt,
+              (x) => (HELI_ART.cowl + ((HELI_ART.cowlEnd - HELI_ART.cowl) * (x - cowl.x0)) / (cowl.x1 - cowl.x0)) * W,
+              (r) => (1 - HELI_BAND * r) * H,
+            ),
+          fin: (x, y, side) => {
+            const f = (x - fx0) / (fx1 - fx0);
+            return [(side > 0 ? HELI_ART.finS + 0.25 * f : HELI_ART.finP + 0.25 * (1 - f)) * W, (1 - (HELI_BAND * (y - fy0)) / (fy1 - fy0)) * H];
+          },
+        };
+      }
+      /*
+       * One word or emblem: on the sides (both unless `side`), reading forwards on
+       * each, upright; on a top ('top', 'cowlTop') reading towards the nose with the
+       * letters standing towards port (so a machine heading east reads on screen).
+       */
+      function heliPaintWord(g, surfaces, w, pxPerUnit) {
+        const source = w.image ? { canvas: w.image() } : heliWordImage(w, pxPerUnit),
+          img = source.canvas,
+          unit = source.unit || w.height / img.height,
+          len = img.width * unit,
+          tall = img.height * unit,
+          loft = w.surface.startsWith('cowl') ? surfaces.cowl : surfaces.body;
+        if (!loft) return;
+        if (w.surface === 'top' || w.surface === 'cowlTop') {
+          heliWarp(g, img, (fu, fv) => loft.top(w.x + (fu - 0.5) * len, (w.z || 0) - (0.5 - fv) * tall));
+          return;
+        }
+        for (const side of w.side ? [w.side] : [-1, 1])
+          heliWarp(g, img, (fu, fv) => {
+            const x = w.x + side * (fu - 0.5) * len,
+              y = w.y + (0.5 - fv) * tall;
+            return w.surface === 'fin' ? surfaces.fin(x, y, side) : loft.side(x, y, side);
+          });
       }
       /*
        * The livery canvas: the loft (top three quarters: u along x, v round the
-       * ring from the keel) painted per pixel from the surface, then the fin art and
-       * the swatches in the bottom quarter, then the emblems.
+       * ring from the keel) painted per pixel from the surface, then the fin's two
+       * faces, the cowl's loft and the swatches in the bottom quarter, then the
+       * pinstripes, words and emblems. The big liveries paint their pixels at half
+       * size (`paintScale`) and are drawn up to full size before the fine work,
+       * which is canvas paths and text at full size. It is a job that yields
+       * between slices: heliLiveryTexture runs it to the end at once, the title
+       * screen's prewarm (prewarmHelicopters) a few milliseconds at a time.
        */
-      const heliLiveryTextures = new Map();
-      function heliLiveryTexture(look, plan, scheme) {
-        let texture = heliLiveryTextures.get(look.key);
-        if (texture) return texture;
-        const canvas = document.createElement('canvas');
-        canvas.width = HELI_TEX_W;
-        canvas.height = HELI_TEX_H;
-        const g = canvas.getContext('2d'),
-          image = g.createImageData(HELI_TEX_W, HELI_TEX_H),
+      const heliLiveryTextures = new Map(),
+        heliLiveryJobs = new Map();
+      function heliLiveryTexture(look, kit) {
+        const done = heliLiveryTextures.get(look.key);
+        if (done) return done;
+        let job = heliLiveryJobs.get(look.key);
+        if (!job) heliLiveryJobs.set(look.key, (job = heliLiveryJob(look, kit)));
+        let step;
+        do step = job.next();
+        while (!step.done);
+        return step.value || heliLiveryTextures.get(look.key);
+      }
+      function* heliLiveryJob(look, kit) {
+        let busy = 0,
+          slice = performance.now();
+        const pause = () => (busy += performance.now() - slice),
+          resume = () => (slice = performance.now()),
+          { plan, cowl } = kit,
+          scheme = heliScheme(look),
+          W = look.tex || 1024,
+          H = W / 2,
+          scale = look.paintScale || 1,
+          w = Math.round(W * scale),
+          h = Math.round(H * scale),
+          LOFT = Math.round(h * (1 - HELI_BAND)),
+          image = new ImageData(w, h),
           data = image.data,
           span = plan.x1 - plan.x0,
-          columns = [],
           out = [0, 0, 0],
           pt = { y: 0, z: 0 },
-          SEAL = [15, 17, 20];
-        for (let px = 0; px < HELI_TEX_W; px++) columns.push(heliStation(plan, plan.x0 + ((px + 0.5) / HELI_TEX_W) * span));
-        for (let py = 0; py < HELI_LOFT_ROWS; py++) {
-          const vTex = 1 - (py + 0.5) / HELI_TEX_H,
-            theta = ((vTex - HELI_BAND) / (1 - HELI_BAND)) * TAU - Math.PI / 2;
-          for (let px = 0; px < HELI_TEX_W; px++) {
-            const st = columns[px],
-              x = st.x;
+          SEAL = [15, 17, 20],
+          sootScale = look.kind === 'military' ? 1.3 : 1,
+          put = (px, py) => {
+            const k = (py * w + px) * 4;
+            data[k] = out[0];
+            data[k + 1] = out[1];
+            data[k + 2] = out[2];
+            data[k + 3] = 255;
+          };
+        // Column by column, so the scheme's curves see one x at a time (heliMonotone's memo).
+        for (let px = 0; px < w; px++) {
+          const st = heliStation(plan, plan.x0 + ((px + 0.5) / w) * span),
+            x = st.x;
+          for (let py = 0; py < LOFT; py++) {
+            const theta = ((1 - (py + 0.5) / h - HELI_BAND) / (1 - HELI_BAND)) * TAU - Math.PI / 2;
             heliSection(st, theta, pt);
             const y = pt.y,
               z = pt.z;
             scheme.body(out, x, y, z, st);
             // Belly grime and exhaust soot.
             const low = Math.min(1, Math.max(0, (st.yw - y) / Math.max(0.5, st.yw - st.yb)));
-            heliShade(out, 1 - 0.1 * low * low - 0.3 * plan.soot(x, y, z, st) * (look.kind === 'military' ? 1.3 : 1));
+            heliShade(out, 1 - 0.1 * low * low - 0.3 * plan.soot(x, y, z, st) * sootScale);
             // Panel seams, then the black rubber seals round the glazing.
-            heliShade(out, 1 - 0.32 * heliCover(plan.seams(x, y, z, st) - 0.06, 0.06));
-            heliMix(out, SEAL, heliCover(plan.windows(x, y, z, st, look.roofGlass) - 0.95, 0.12));
-            const k = (py * HELI_TEX_W + px) * 4;
-            data[k] = out[0];
-            data[k + 1] = out[1];
-            data[k + 2] = out[2];
-            data[k + 3] = 255;
+            heliShade(out, 1 - 0.32 * heliCover(plan.seams(x, y, z, st) - 0.05, 0.05));
+            heliMix(out, SEAL, heliCover(plan.windows(x, y, z, st, look.roofGlass) - 0.9, 0.1));
+            put(px, py);
+          }
+          if (px % 48 === 47) {
+            pause();
+            yield;
+            resume();
           }
         }
-        // Fin art: the left half of the bottom band.
-        const [fx0, fx1, fy0, fy1] = plan.fin.art;
-        for (let py = HELI_LOFT_ROWS; py < HELI_TEX_H; py++)
-          for (let px = 0; px < HELI_TEX_W / 2; px++) {
-            const x = fx0 + ((px + 0.5) / (HELI_TEX_W / 2)) * (fx1 - fx0),
-              y = fy0 + ((HELI_TEX_H - py - 0.5) / (HELI_TEX_H - HELI_LOFT_ROWS)) * (fy1 - fy0);
-            scheme.fin(out, x, y);
-            const k = (py * HELI_TEX_W + px) * 4;
-            data[k] = out[0];
-            data[k + 1] = out[1];
-            data[k + 2] = out[2];
-            data[k + 3] = 255;
+        // Both faces of the fin, the port face mirrored so its words read forwards.
+        const [fx0, fx1, fy0, fy1] = plan.fin.art,
+          quarter = w / 4;
+        for (const side of [1, -1]) {
+          const c0 = Math.round((side > 0 ? HELI_ART.finS : HELI_ART.finP) * w);
+          for (let i = 0; i < quarter; i++) {
+            const f = (i + 0.5) / quarter,
+              x = fx0 + (side > 0 ? f : 1 - f) * (fx1 - fx0);
+            for (let py = LOFT; py < h; py++) {
+              scheme.fin(out, x, fy0 + ((h - py - 0.5) / (h - LOFT)) * (fy1 - fy0), side);
+              put(c0 + i, py);
+            }
           }
-        g.putImageData(image, 0, 0);
+        }
+        // The cowl, lofted like the fuselage.
+        if (cowl) {
+          const c0 = Math.round(HELI_ART.cowl * w),
+            c1 = Math.round(HELI_ART.cowlEnd * w);
+          for (let px = c0; px < c1; px++) {
+            const st = cowl.stationAt(cowl.x0 + ((px - c0 + 0.5) / (c1 - c0)) * (cowl.x1 - cowl.x0));
+            for (let py = LOFT; py < h; py++) {
+              heliSection(st, ((h - py - 0.5) / (h - LOFT)) * TAU - Math.PI / 2, pt);
+              scheme.body(out, st.x, pt.y, pt.z, st);
+              put(px, py);
+            }
+          }
+        }
+        pause();
+        yield;
+        resume();
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const g = canvas.getContext('2d');
+        g.imageSmoothingEnabled = true;
+        g.imageSmoothingQuality = 'high';
+        if (scale === 1) g.putImageData(image, 0, 0);
+        else {
+          const small = document.createElement('canvas');
+          small.width = w;
+          small.height = h;
+          small.getContext('2d').putImageData(image, 0, 0);
+          g.drawImage(small, 0, 0, W, H);
+        }
         scheme.swatches.forEach((rgb, i) => {
           g.fillStyle = `rgb(${rgb.map(Math.round).join(',')})`;
-          g.fillRect(HELI_TEX_W / 2 + (i * HELI_TEX_W) / 16, HELI_LOFT_ROWS, HELI_TEX_W / 16, HELI_TEX_H - HELI_LOFT_ROWS);
+          g.fillRect(Math.round(HELI_ART.swatch * W + (i * W) / 40), Math.round(H * (1 - HELI_BAND)), Math.ceil(W / 40), Math.round(H * HELI_BAND));
         });
-        // Emblems: a local linear map from side (x, y) to canvas pixels.
-        const pixel = (x, y, side) => {
-            const st = heliStation(plan, x),
-              ring = (((heliSideTheta(st, y, side) + Math.PI / 2) / TAU) % 1 + 1) % 1;
-            return [((x - plan.x0) / span) * HELI_TEX_W, (1 - (HELI_BAND + (1 - HELI_BAND) * ring)) * HELI_TEX_H];
-          },
-          map = (x, y, side) => {
-            const c = pixel(x, y, side),
-              ax = pixel(x + 0.5, y, side),
-              ay = pixel(x, y + 0.5, side);
-            return [c[0], c[1], (ax[0] - c[0]) * 2, (ay[1] - c[1]) * 2];
-          };
-        scheme.badges(g, map);
-        texture = policeCanvasTexture(canvas);
+        const surfaces = heliSurfaces(plan, cowl, W, H);
+        // Pinstripes: bands of constant width along a height curve on both sides,
+        // broken where they would cross the glazing's seals.
+        for (const line of scheme.lines || []) {
+          g.fillStyle = line.color;
+          const x0 = line.x0 ?? plan.x0 + 0.3,
+            x1 = line.x1 ?? plan.x1 - 0.3,
+            n = Math.ceil(((x1 - x0) / span) * (W / 3));
+          for (const side of [-1, 1]) {
+            let run = [];
+            const flush = () => {
+              if (run.length > 1) {
+                g.beginPath();
+                run.forEach(([x, y, width]) => g.lineTo(...surfaces.body.side(x, y + width / 2, side)));
+                for (let i = run.length - 1; i >= 0; i--) g.lineTo(...surfaces.body.side(run[i][0], run[i][1] - run[i][2] / 2, side));
+                g.closePath();
+                g.fill();
+              }
+              run = [];
+            };
+            for (let i = 0; i <= n; i++) {
+              const x = x0 + ((x1 - x0) * i) / n,
+                y = line.y(x),
+                st = heliStation(plan, x),
+                width = typeof line.width === 'function' ? line.width(x, st) : line.width;
+              if (plan.windows(x, y, heliSurfaceZ(st, y, side), st, look.roofGlass) < 0.95 + width / 2 || y > st.yt - 0.05 || y < st.yb + 0.05) flush();
+              else run.push([x, y, width]);
+            }
+            flush();
+          }
+        }
+        // Words, registrations and emblems, warped onto the surfaces.
+        for (const word of scheme.words || []) {
+          heliPaintWord(g, surfaces, word, W / span);
+          pause();
+          yield;
+          resume();
+        }
+        const texture = policeCanvasTexture(canvas);
+        pause();
+        texture.userData.paintMs = Math.round(busy);
         heliLiveryTextures.set(look.key, texture);
+        heliLiveryJobs.delete(look.key);
         return texture;
       }
-      const heliSwatchUv = (name) => [0.5 + (HELI_SWATCH[name] + 0.5) / 16, HELI_BAND / 2];
+      const heliSwatchUv = (name) => [HELI_ART.swatch + (HELI_SWATCH[name] + 0.5) / 40, HELI_BAND / 2];
+      // The fin's faces into their halves of the fin art (the port face mirrored).
+      function heliFinUv(geo, art) {
+        const [fx0, fx1, fy0, fy1] = art,
+          pos = geo.attributes.position,
+          nor = geo.attributes.normal,
+          uv = geo.attributes.uv;
+        for (let k = 0; k < pos.count; k++) {
+          const f = clamp((pos.getX(k) - fx0) / (fx1 - fx0), 0.004, 0.996),
+            v = HELI_BAND * clamp((pos.getY(k) - fy0) / (fy1 - fy0), 0.01, 0.99);
+          uv.setXY(k, nor.getZ(k) < -0.3 ? HELI_ART.finP + 0.25 * (1 - f) : HELI_ART.finS + 0.25 * f, v);
+        }
+      }
       // ---- Words and numbers on the skin (police glyph atlas) -------------------------------
       function heliText(set, plan, text, o) {
         const atlas = policeGlyphs(),
@@ -1095,9 +1541,11 @@
         }
       }
       // ---- The kit: every shared geometry of one look ------------------------------------------
+      // Geometry depends only on the kind (paint and scheme are the livery's), so the
+      // civil schemes, executive paints and resprays share one kit.
       const heliKits = new Map();
       function heliKit(look) {
-        if (heliKits.has(look.key)) return heliKits.get(look.key);
+        if (heliKits.has(look.kind)) return heliKits.get(look.kind);
         const plan = heliPlans()[look.airframe],
           S = policeShapeKit(),
           col = (hex) => heliColor.set(hex).clone(),
@@ -1166,7 +1614,6 @@
             else paint.index.push(p0, p1, centre);
           }
         }
-        probe.y = 0;
         // ---- Floor and the bulkhead behind the cabin ----
         {
           const floorColor = col('#1c1e21'),
@@ -1191,10 +1638,12 @@
           }
           for (let j = 0; j < 32; j++) interior.index.push(centre, ring[j + 1], ring[j]);
         }
-        // ---- Cowlings / nacelles on top (flat swatch colour) ----
+        // ---- Cowlings / fairings / nacelles on top ----
+        // The first `art` top is lofted into the livery (its own columns of the bottom
+        // band, painted by the scheme like the fuselage); the rest take a swatch.
+        let cowl = null;
         for (const top of plan.tops) {
-          const uv = heliSwatchUv(top.swatch),
-            txs = [];
+          const txs = [];
           for (let k = 0; k <= 26; k++) txs.push(top.x0 + ((top.x1 - top.x0) * k) / 26);
           const topStation = (x) => {
               const crown = top.yt(x),
@@ -1207,12 +1656,17 @@
               return { x, yb: floor - 0.6, yt: Math.max(crown, floor + 0.2), yw: floor + 0.35 * Math.max(0.2, crown - floor), w, nu: 2.6, nl: 2 };
             },
             tg = heliLoftGrid(topStation, txs, 28),
+            art = top.art && !cowl,
+            swatch = heliSwatchUv(top.swatch || 'cowl'),
             base = paint.count,
             white = col('#ffffff');
+          if (art) cowl = { stationAt: topStation, x0: top.x0, x1: top.x1 };
           for (let i = 0; i < tg.rows; i++)
             for (let j = 0; j < tg.cols; j++) {
-              const k = (i * tg.cols + j) * 3;
-              heliPushVertex(paint, tg.P[k], tg.P[k + 1], tg.P[k + 2] + top.z, tg.N[k], tg.N[k + 1], tg.N[k + 2], uv[0], uv[1], white);
+              const k = (i * tg.cols + j) * 3,
+                u = art ? HELI_ART.cowl + ((HELI_ART.cowlEnd - HELI_ART.cowl) * (tg.P[k] - top.x0)) / (top.x1 - top.x0) : swatch[0],
+                v = art ? (HELI_BAND * j) / (tg.cols - 1) : swatch[1];
+              heliPushVertex(paint, tg.P[k], tg.P[k + 1], tg.P[k + 2] + top.z, tg.N[k], tg.N[k + 1], tg.N[k + 2], u, v, white);
             }
           for (let i = 0; i < tg.rows - 1; i++)
             for (let j = 0; j < tg.cols - 1; j++) {
@@ -1221,37 +1675,42 @@
               paint.index.push(a, b, b + 1, a, b + 1, a + 1);
             }
         }
-        // ---- Fin (with the fenestron's duct), stabiliser and endplates ----
+        // ---- Fins (and the fenestron's shroud), stabiliser and endplates ----
         const fenestron = look.tail === 'fenestron' && plan.fenestron;
         {
-          const outline = fenestron ? plan.fin.fenestron : plan.fin.rotor,
-            shape = new Three.Shape(outline.map(([x, y]) => new Three.Vector2(x, y)));
-          if (fenestron) {
-            const hole = new Three.Path();
-            hole.absarc(fenestron.x, fenestron.y, fenestron.radius, 0, TAU, true);
-            shape.holes.push(hole);
-          }
           const t = plan.fin.thick,
-            fin = new Three.ExtrudeGeometry(shape, { depth: t, bevelEnabled: true, bevelThickness: 0.3, bevelSize: 0.3, bevelSegments: 2, curveSegments: 20 });
-          fin.translate(0, 0, -t / 2);
-          const [fx0, fx1, fy0, fy1] = plan.fin.art,
-            pos = fin.attributes.position,
-            uvs = fin.attributes.uv;
-          for (let k = 0; k < pos.count; k++) uvs.setXY(k, (0.005 + (0.49 * (pos.getX(k) - fx0)) / (fx1 - fx0)) * 1, 0.005 + (0.24 * (pos.getY(k) - fy0)) / (fy1 - fy0));
-          policeAddMatrix(paint, fin, heliMatrix.identity(), '#ffffff');
-          fin.dispose();
+            bevel = Math.min(0.3, t * 0.35);
+          for (const outline of fenestron ? plan.fin.fenestron : plan.fin.rotor) {
+            const shape = new Three.Shape(outline.map(([x, y]) => new Three.Vector2(x, y))),
+              fin = new Three.ExtrudeGeometry(shape, { depth: t, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 2, curveSegments: 20 });
+            fin.translate(0, 0, -t / 2);
+            heliFinUv(fin, plan.fin.art);
+            policeAddMatrix(paint, fin, heliMatrix.identity(), '#ffffff');
+            fin.dispose();
+          }
           if (fenestron) {
-            // The duct's lining and the fan's stators and hub inside it.
-            const duct = new Three.CylinderGeometry(fenestron.radius, fenestron.radius, t + 0.5, 32, 1, true);
+            // The shroud: a thick ring round the fan, its duct lined, stators and hub inside.
+            const f = fenestron,
+              ring = new Three.Shape(),
+              hole = new Three.Path();
+            ring.absarc(f.x, f.y, f.shroud - 0.45, 0, TAU, false);
+            hole.absarc(f.x, f.y, f.radius + 0.6, 0, TAU, true);
+            ring.holes.push(hole);
+            const shroud = new Three.ExtrudeGeometry(ring, { depth: f.thick - 0.9, bevelEnabled: true, bevelThickness: 0.45, bevelSize: 0.45, bevelSegments: 3, curveSegments: 36 });
+            shroud.translate(0, 0, -(f.thick - 0.9) / 2);
+            heliFinUv(shroud, plan.fin.art);
+            policeAddMatrix(paint, shroud, heliMatrix.identity(), '#ffffff');
+            shroud.dispose();
+            const duct = new Three.CylinderGeometry(f.radius + 0.18, f.radius + 0.18, f.thick + 0.2, 36, 1, true);
             duct.rotateX(Math.PI / 2);
-            duct.translate(fenestron.x, fenestron.y, 0);
-            policeAddMatrix(trim, duct, heliMatrix.identity(), '#2a2d31');
+            duct.translate(f.x, f.y, 0);
+            policeAddMatrix(trim, duct, heliMatrix.identity(), '#1c1f23');
             duct.dispose();
             for (let s = 0; s < 3; s++) {
-              const a = 0.4 + (s * TAU) / 3;
-              heliRod(trim, [fenestron.x, fenestron.y, 0.35], [fenestron.x + Math.cos(a) * fenestron.radius, fenestron.y + Math.sin(a) * fenestron.radius, 0.35], 0.22, '#3a3d42', boxGeo, 0.5);
+              const a = 0.5 + (s * TAU) / 3;
+              heliRod(trim, [f.x, f.y, 0.55], [f.x + Math.cos(a) * (f.radius + 0.2), f.y + Math.sin(a) * (f.radius + 0.2), 0.55], 0.2, '#34373c', boxGeo, 0.5);
             }
-            policeAdd(trim, S.cylinder, fenestron.x, fenestron.y, 0.3, 1.3, 1.1, 1.3, '#3a3d42', null, Math.PI / 2);
+            policeAdd(trim, S.cylinder, f.x, f.y, 0.45, 1.05, 1.1, 1.05, '#34373c', null, Math.PI / 2);
           }
         }
         {
@@ -1260,26 +1719,28 @@
           policeAdd(paint, stab, s.x, s.y, 0, 1, 1, 1, '#ffffff', { uv: heliSwatchUv('stab') }, 0, 0, 0);
           if (s.plate)
             for (const side of [-1, 1]) {
-              const plate = roundedBar(0.38, s.plate[1], s.plate[0], 0.18);
-              policeAdd(paint, plate, s.x - 0.5, s.y + 0.5, side * (s.span + 0.12), 1, 1, 1, '#ffffff', { uv: heliSwatchUv('plate') });
+              const plate = roundedBar(0.42, s.plate[1], s.plate[0], 0.2);
+              // Swept back a little, like the real endplates.
+              policeAdd(paint, plate, s.x - 0.4, s.y + 0.4, side * (s.span + 0.14), 1, 1, 1, '#ffffff', { uv: heliSwatchUv('plate') }, 0, 0, 0.22);
             }
         }
         // ---- Airframe equipment, interior, crew ----
         const crew = { pilot: policeSet(), observer: policeSet() },
           kitParts = { plan, look, S, col, paint, glass, interior, trim, metal, lights, anchors, crew, stationAt };
-        if (plan.name === 'light') heliLightEquipment(kitParts);
+        if (plan.name === 'colibri') heliColibriEquipment(kitParts);
+        else if (plan.name === 'robin') heliRobinEquipment(kitParts);
         else heliHawkEquipment(kitParts);
         heliCabin(kitParts);
-        // ---- Decals ----
+        // ---- Decals (glyph quads: only the Black Hawk's stencils) ----
         const scheme = heliScheme(look),
           decals = policeSet();
-        scheme.decals((text, o) => heliText(decals, plan, text, o));
+        scheme.decals?.((text, o) => heliText(decals, plan, text, o));
         // ---- Rotors ----
         const rotor = heliRotorParts(plan.rotor, look, look.kind === 'military'),
           tail = fenestron ? heliFenestronParts(fenestron, look) : heliTailRotorParts(plan.tailRotor, look);
         const kit = {
           plan,
-          scheme,
+          cowl,
           fenestron,
           paint: policeGeometry(paint, { colors: false }),
           glass: policeGeometry(glass, { colors: false }),
@@ -1289,150 +1750,204 @@
           trim: policeGeometry(trim),
           metal: metal.count ? policeGeometry(metal) : null,
           lights: policeGeometry(lights, { channels: true }),
-          decals: policeGeometry(decals),
+          decals: decals.count ? policeGeometry(decals) : null,
           anchors,
           rotor,
           tail,
           nightsun: kitParts.nightsun || null,
         };
-        heliKits.set(look.key, kit);
+        heliKits.set(look.kind, kit);
         return kit;
       }
-      // ---- Light single (Bell 407 / H125 class) equipment ----------------------------------------
-      function heliLightEquipment(k) {
-        const { plan, look, S, trim, metal, lights, anchors, stationAt } = k,
-          skid = look.skid,
-          dark = '#1a1c1f',
-          grey = '#3a3e43',
-          police = look.kind === 'police',
-          news = look.kind === 'news';
-        // Skids with upturned toes, arched cross tubes, saddles, steps and wear shoes.
+      // ---- Shared light-single parts: skids, lamps ----------------------------------------------
+      /*
+       * Tubular skids with upturned toes, arched cross tubes clamped to the belly,
+       * saddles and wear shoes. `o`: half track z, skid tube from x0 to x1 (the toe
+       * curls up ahead of x1), height y, tube radius r, cross tubes, shoes.
+       */
+      function heliSkids(k, o) {
+        const { trim, S, stationAt, look } = k,
+          c = look.skid;
         for (const side of [-1, 1]) {
-          const z = side * 9.9;
-          heliTube(trim, [[-15.8, 1.2, z], [-14.6, 0.95, z], [8, 0.95, z], [20.8, 0.95, z], [23.9, 1.6, z], [25.6, 3.3, z]], 0.5, skid, 40);
-          policeAdd(trim, S.sphere, -15.9, 1.2, z, 0.5, 0.5, 0.5, skid);
-          for (const x of [-10, 4, 17]) policeAdd(trim, boxGeo, x, 0.42, z, 3.4, 0.22, 0.7, '#55595e');
-          for (const x of [14.2, -4.6]) {
-            policeAdd(trim, boxGeo, x, 1.25, z, 2.2, 0.9, 1.2, skid);
-            policeAdd(trim, boxGeo, x + 1.6, 4.1, side * 8.9, 2.4, 0.22, 1.5, '#474b50');
-          }
+          const z = side * o.z;
+          heliTube(trim, [[o.x0, o.y + 0.25, z], [o.x0 + 1.2, o.y, z], [(o.x0 + o.x1) / 2, o.y, z], [o.x1, o.y, z], [o.x1 + 2.6, o.y + 0.65, z], [o.x1 + 3.9, o.y + 2.3, z]], o.r, c, 40);
+          policeAdd(trim, S.sphere, o.x0 - 0.02, o.y + 0.25, z, o.r, o.r, o.r, c);
+          for (const x of o.shoes) policeAdd(trim, boxGeo, x, o.y - o.r * 0.95, z, 3.0, 0.2, o.r * 1.5, '#55595e');
         }
-        for (const x of [14.2, -4.6])
+        for (const x of o.cross) {
+          const keel = stationAt(x).yb + 0.3,
+            h = o.z;
           heliTube(
             trim,
-            [[x, 1.1, -9.9], [x, 3.8, -9.75], [x, 5.3, -8.4], [x, 5.55, -4.4], [x, 5.55, 0], [x, 5.55, 4.4], [x, 5.3, 8.4], [x, 3.8, 9.75], [x, 1.1, 9.9]],
-            0.58,
-            skid,
-            36,
+            [[x, o.y, -h], [x, o.y + 2.0, -h + 0.1], [x, keel - 0.5, -h * 0.74], [x, keel, -h * 0.4], [x, keel, 0], [x, keel, h * 0.4], [x, keel - 0.5, h * 0.74], [x, o.y + 2.0, h - 0.1], [x, o.y, h]],
+            o.r * 1.12,
+            c,
+            40,
           );
-        // Engine cowling: intake grilles, the exhaust stack, the mast fairing.
+          for (const side of [-1, 1]) policeAdd(trim, boxGeo, x, o.y + 0.25, side * h, 1.6, o.r * 2.2, o.r * 2.6, c);
+        }
+      }
+      // A lens on the lights mesh (police light shader channel `ch`).
+      function heliLens(k, ch, color, x, y, z, sx, sy, sz, geo = k.S.sphere) {
+        policeAdd(k.lights, geo, x, y, z, sx, sy, sz, color, { channel: ch });
+      }
+      // Navigation lights (red port, green starboard) and white strobes at z = ±span.
+      function heliNavLights(k, x, y, span, strobeX) {
         for (const side of [-1, 1]) {
-          policeAdd(trim, boxGeo, 2.2, 21.4, side * 5.18, 6, 1.4, 0.14, dark);
-          policeAdd(trim, boxGeo, -9.2, 21.4, side * 4.85, 4.2, 1.1, 0.14, dark);
-          for (let g = 0; g < 5; g++) policeAdd(trim, boxGeo, -0.2 + g * 1.2, 21.4, side * 5.24, 0.12, 1.3, 0.1, '#52565b');
+          const z = side * span,
+            navColor = side < 0 ? '#ff3a2c' : '#3dff79',
+            ch = side < 0 ? HELI_CH.navRed : HELI_CH.navGreen;
+          heliLens(k, ch, navColor, x, y, z, 0.5, 0.45, 0.35);
+          heliLens(k, HELI_CH.strobe, '#ffffff', strobeX, y, z, 0.42, 0.38, 0.3);
+          k.anchors.push({ x: x + 0.2, y, z: z + side * 0.3, size: 7, color: navColor, channel: ch, strength: 1 });
+          k.anchors.push({ x: strobeX, y, z: z + side * 0.3, size: 18, color: '#ffffff', channel: HELI_CH.strobe, strength: 1 });
         }
-        heliRod(metal, [-12.6, 21.4, 0.9], [-14.6, 23.4, 0.9], 1.05, '#4a4d51', S.cylinder, 1.35);
-        heliRod(trim, [-14.5, 23.3, 0.9], [-14.75, 23.55, 0.9], 0.85, '#0c0c0d', S.cylinder, 1.15);
-        policeAdd(trim, S.cylinder, plan.rotor.x, 23.7, 0, 1.7, 0.9, 1.7, grey);
-        policeAdd(metal, S.cylinder, plan.rotor.x, 24.55, 0, 2.3, 0.4, 2.3, '#7c8288');
-        policeAdd(trim, boxGeo, plan.rotor.x - 1.9, 24.9, 0, 0.9, 1.1, 0.5, grey);
-        // Antennas, pitot, GPS, door handles.
-        policeAdd(trim, boxGeo, -38.3, 17.8, 0, 1.4, 1.9, 0.14, dark, null, 0, 0, 0.35);
-        policeAdd(trim, S.sphere, -11.4, 22.6, 0, 0.9, 0.35, 0.9, '#e4e4e0');
-        policeAdd(trim, boxGeo, -24, 12.9, 0, 1.6, 1.7, 0.14, dark, null, 0, 0, -0.35);
-        heliRod(trim, [8, 5.8, 1.5], [6, 3.9, 1.5], 0.09, dark);
-        heliRod(metal, [27.4, 20.2, 1.3], [30.2, 20.3, 1.3], 0.1, '#9aa0a6');
+      }
+      function heliBeacon(k, x, y, lift) {
+        heliLens(k, HELI_CH.beacon, '#ff2a1e', x, y, 0, 0.62, 0.45 * Math.sign(lift), 0.62, k.S.dome);
+        k.anchors.push({ x, y: y + lift, z: 0, size: 12, color: '#ff3326', channel: HELI_CH.beacon, strength: 1 });
+      }
+      // ---- EC120 class (the police) equipment -----------------------------------------------------
+      function heliColibriEquipment(k) {
+        const { plan, look, S, trim, metal, anchors, stationAt } = k,
+          dark = '#16181b',
+          grey = '#383c41',
+          police = look.kind === 'police';
+        heliSkids(k, { z: 9.0, x0: -6.4, x1: 24.4, y: 0.9, r: 0.5, cross: [19.4, 1.4], shoes: [-2, 9, 19] });
+        // Boarding steps on the cross tubes' legs.
         for (const side of [-1, 1])
+          for (const x of [19.4, 1.4]) policeAdd(trim, boxGeo, x + 1.5, 3.0, side * 8.2, 2.4, 0.22, 1.5, '#43474c');
+        // Cowl: intake grilles, the exhaust at its tail, the mast fairing and swashplate.
+        for (const side of [-1, 1]) {
+          policeAdd(trim, boxGeo, 12.2, 21.9, side * 3.95, 4.2, 1.1, 0.14, dark);
+          for (let g = 0; g < 5; g++) policeAdd(trim, boxGeo, 10.6 + g * 0.8, 21.9, side * 4.02, 0.12, 1.0, 0.1, '#4b4f54');
+          // The door handles.
           for (const [x, y] of [
-            [16.4, 12.5],
-            [2.4, 12.8],
-          ]) {
-            const z = heliSurfaceZ(stationAt(x), y, side) + side * 0.12;
-            policeAdd(metal, boxGeo, x, y, z, 1.3, 0.3, 0.2, '#b7bcc1');
-          }
-        // Tail: gearbox, tail skid, the drive cover on the fin.
-        if (look.tail !== 'fenestron') {
-          const t = plan.tailRotor;
-          policeAdd(trim, boxGeo, t.x, t.y, -1.05, 2.2, 2.4, 1.3, grey);
-          policeAdd(trim, S.cylinder, t.x, t.y, t.z * 0.62, 0.55, 1.3, 0.55, grey, null, Math.PI / 2);
-          heliRod(trim, [-45.6, 10.1, 0], [-48.7, 8.3, 0], 0.28, skid);
-        } else heliRod(trim, [-48.6, 13.4, 0], [-50.6, 11.3, 0], 0.28, skid);
-        // Wire strike cutters (police), roof and chin.
-        if (police) {
-          policeAdd(trim, boxGeo, 29.6, 20.6, 0, 3.4, 0.9, 0.16, '#2b2e32', null, 0, 0, -0.35);
-          policeAdd(trim, boxGeo, 40.6, 7.9, 0, 2.6, 0.7, 0.16, '#2b2e32', null, 0, 0, 0.5);
+            [16.6, 12.6],
+            [4.2, 12.2],
+          ])
+            policeAdd(metal, boxGeo, x, y, heliSurfaceZ(stationAt(x), y, side) + side * 0.12, 1.2, 0.28, 0.2, '#b7bcc1');
         }
-        // Sensors: police FLIR ball and Nightsun bracket; the news camera ball.
+        heliRod(metal, [-12.2, 20.6, 0], [-15.4, 21.6, 0], 1.25, '#4a4d51', S.cylinder, 0.9);
+        heliRod(trim, [-15.3, 21.57, 0], [-15.6, 21.66, 0], 1.0, '#0b0b0c', S.cylinder, 0.7);
+        policeAdd(trim, S.cylinder, plan.rotor.x, 23.9, 0, 1.55, 0.9, 1.55, grey);
+        policeAdd(metal, S.cylinder, plan.rotor.x, 24.6, 0, 2.1, 0.35, 2.1, '#7c8288');
+        // Antennas: blade on the cowl's tail, GPS dome, VHF whips and blades under the belly, pitot.
+        policeAdd(trim, boxGeo, -14.2, 19.4, 0, 1.3, 1.6, 0.14, dark, null, 0, 0, 0.4);
+        policeAdd(trim, S.sphere, -9.5, 22.3, 0, 0.8, 0.32, 0.8, '#e4e4e0');
+        policeAdd(trim, boxGeo, -2.5, 5.9, 0, 1.5, 1.6, 0.14, dark, null, 0, 0, -0.4);
+        policeAdd(trim, boxGeo, -17.5, 12.1, 0, 1.3, 1.4, 0.14, dark, null, 0, 0, -0.4);
+        heliRod(trim, [13, 5.6, 1.6], [11.2, 3.7, 1.8], 0.08, dark);
+        heliRod(metal, [26.4, 19.3, 1.2], [29.4, 19.4, 1.2], 0.09, '#9aa0a6');
+        // Tail bumper under the ventral fin.
+        heliRod(trim, [-43.6, 8.8, 0], [-46.0, 7.7, 0], 0.26, look.skid);
         if (police) {
-          policeAdd(trim, boxGeo, 37.2, 6.6, 0, 1.4, 1.2, 1.4, grey);
-          policeAdd(trim, S.sphere, 37.4, 5.1, 0, 1.6, 1.6, 1.6, '#c9ccd0');
-          policeAdd(trim, boxGeo, 38.9, 5.0, 0, 0.35, 1.5, 2.1, '#0a0d11');
-          policeAdd(trim, S.sphere, 39.05, 5.4, 0.45, 0.3, 0.35, 0.35, '#3d6c8c');
-          policeAdd(trim, boxGeo, 37.4, 5.1, 0, 0.8, 3.4, 0.4, '#b5b8bc');
+          // Wire strike cutters over the canopy and under the chin.
+          policeAdd(trim, boxGeo, 29.4, 19.2, 0, 3.2, 0.85, 0.16, '#2b2e32', null, 0, 0, -0.45);
+          policeAdd(trim, boxGeo, 36.6, 7.2, 0, 2.4, 0.7, 0.16, '#2b2e32', null, 0, 0, 0.55);
+          // FLIR turret under the nose: yoke, ball and its window.
+          policeAdd(trim, boxGeo, 33.4, 5.95, 0, 1.4, 0.9, 1.4, grey);
+          policeAdd(trim, S.sphere, 33.5, 4.55, 0, 1.55, 1.55, 1.55, '#3b3f45');
+          policeAdd(trim, boxGeo, 34.95, 4.5, 0, 0.3, 1.45, 1.9, '#07090c');
+          policeAdd(trim, S.sphere, 35.08, 4.85, 0.42, 0.26, 0.32, 0.32, '#3d6c8c');
+          policeAdd(trim, S.sphere, 35.08, 4.2, -0.4, 0.2, 0.24, 0.24, '#6a4a86');
+          // The Nightsun's bracket from the belly to its gimbal.
           const m = HELI_SEARCHLIGHT_MOUNT;
-          heliRod(trim, [m.x, 6.3, m.z + 1.4], [m.x, m.y + 1.2, m.z], 0.35, grey, boxGeo);
-          policeAdd(trim, boxGeo, m.x, m.y + 1.25, m.z, 1.6, 0.4, 1.6, grey);
+          heliRod(trim, [m.x + 0.6, stationAt(m.x).yb + 0.4, m.z * 0.5], [m.x, m.y + 1.2, m.z], 0.34, grey, boxGeo);
+          policeAdd(trim, boxGeo, m.x, m.y + 1.25, m.z, 1.5, 0.4, 1.5, grey);
           // PA speaker under the starboard cabin.
-          policeAdd(trim, boxGeo, 4.5, 5.35, 5.8, 2.4, 1.3, 1.6, '#23262a');
-          policeAdd(trim, boxGeo, 5.75, 5.35, 5.8, 0.1, 1.0, 1.3, '#4c5055');
+          policeAdd(trim, boxGeo, 3.6, 4.95, 3.8, 2.4, 1.2, 1.5, '#1e2124');
+          policeAdd(trim, boxGeo, 4.85, 4.95, 3.8, 0.1, 0.95, 1.2, '#4c5055');
           k.nightsun = heliNightsunParts(S);
         }
-        if (news) {
-          policeAdd(trim, boxGeo, 37.8, 6.7, 0, 1.8, 1.3, 1.8, grey);
-          policeAdd(trim, S.sphere, 38.1, 4.5, 0, 2.05, 2.05, 2.05, '#e8e8e4');
-          policeAdd(trim, boxGeo, 40.0, 4.4, 0, 0.4, 1.4, 1.6, '#08090b');
-          policeAdd(trim, S.sphere, 40.15, 4.4, 0, 0.35, 0.55, 0.55, '#2f5d82');
-          policeAdd(trim, S.sphere, -24.5, 13.2, 0, 2.1, 0.95, 1.5, '#e8e8e4');
-        }
-        // ---- Lamps: navigation, strobes, beacons, landing lights, police LEDs ----
-        const s = plan.stab,
-          lens = (ch, color, x, y, z, sx, sy, sz, geo = S.sphere) => policeAdd(lights, geo, x, y, z, sx, sy, sz, color, { channel: ch });
-        for (const side of [-1, 1]) {
-          const z = side * (s.span + 0.42),
-            navColor = side < 0 ? '#ff3a2c' : '#3dff79';
-          lens(side < 0 ? HELI_CH.navRed : HELI_CH.navGreen, navColor, s.x + 1.2, s.y + 0.5, z, 0.55, 0.5, 0.35);
-          lens(HELI_CH.strobe, '#ffffff', s.x - 1.6, s.y + 0.5, z, 0.45, 0.4, 0.32);
-          anchors.push({ x: s.x + 1.4, y: s.y + 0.5, z: z + side * 0.3, size: 7, color: navColor, channel: side < 0 ? HELI_CH.navRed : HELI_CH.navGreen, strength: 1 });
-          anchors.push({ x: s.x - 1.6, y: s.y + 0.5, z: z + side * 0.3, size: 18, color: '#ffffff', channel: HELI_CH.strobe, strength: 1 });
-        }
-        const tailX = look.tail === 'fenestron' ? -50.2 : -48.25;
-        lens(HELI_CH.navWhite, '#fff6e6', tailX, 16.2, 0, 0.4, 0.45, 0.45);
-        anchors.push({ x: tailX - 0.3, y: 16.2, z: 0, size: 7, color: '#fff4e0', channel: HELI_CH.navWhite, strength: 1 });
-        // Red anti-collision beacons: on the cowl behind the rotor and on the belly.
-        for (const [x, y, sy] of [
-          [-16.3, 20.35, 0.4],
-          [3, 5.75, -0.4],
-        ]) {
-          lens(HELI_CH.beacon, '#ff2a1e', x, y, 0, 0.7, 0.5, 0.7, S.dome);
-          anchors.push({ x, y: y + sy, z: 0, size: 12, color: '#ff3326', channel: HELI_CH.beacon, strength: 1 });
-        }
-        // Landing and taxi lights under the nose.
-        for (const z of [-1.5, 1.5]) {
-          lens(HELI_CH.work, '#fff8e8', 30.5, 6.05, z, 0.8, 0.3, 0.8);
-          anchors.push({ x: 31, y: 5.7, z, size: 13, color: '#fff3d6', channel: HELI_CH.work, strength: 0.8 });
+        // ---- Lamps ----
+        const s = plan.stab;
+        heliNavLights(k, s.x + 0.9, s.y + 3.9, s.span + 0.45, s.x - 1.2);
+        heliLens(k, HELI_CH.navWhite, '#fff6e6', -45.7, 16.4, 0, 0.36, 0.42, 0.42);
+        anchors.push({ x: -46.0, y: 16.4, z: 0, size: 7, color: '#fff4e0', channel: HELI_CH.navWhite, strength: 1 });
+        heliBeacon(k, -15.9, 18.95, 0.4);
+        heliBeacon(k, 2.5, stationAt(2.5).yb + 0.05, -0.4);
+        for (const z of [-1.4, 1.4]) {
+          heliLens(k, HELI_CH.work, '#fff8e8', 30.2, 5.95, z, 0.75, 0.28, 0.75);
+          anchors.push({ x: 30.6, y: 5.6, z, size: 13, color: '#fff3d6', channel: HELI_CH.work, strength: 0.8 });
         }
         if (police) {
-          // Red (port) and blue (starboard) LED bars along the lower cabin, pods on
-          // the boom and a pair on the fin tip.
+          // Red (port) and blue (starboard) LED strobes: bars under the doors, a pair
+          // flanking the nose, pods on the boom and a pair on the fin tip.
           for (const side of [-1, 1]) {
             const ch = side < 0 ? HELI_CH.red : HELI_CH.blue,
               color = side < 0 ? '#ff2d22' : '#2f62ff';
-            for (let x = 5; x <= 17; x += 3) {
-              const z = heliSurfaceZ(stationAt(x), 7.7, side) + side * 0.1;
-              lens(ch, color, x, 7.7, z, 2.4, 0.42, 0.24, boxGeo);
-              if (x % 6 === 5) anchors.push({ x, y: 7.7, z: z + side * 0.4, size: 10, color, channel: ch, strength: 1 });
+            for (let x = 5; x <= 20; x += 3) {
+              const z = heliSurfaceZ(stationAt(x), 7.2, side) + side * 0.1;
+              heliLens(k, ch, color, x, 7.2, z, 2.3, 0.4, 0.22, boxGeo);
+              if (x % 6 === 5) anchors.push({ x, y: 7.2, z: z + side * 0.4, size: 10, color, channel: ch, strength: 1 });
             }
-            const bz = heliSurfaceZ(stationAt(-26.5), 15.1, side) + side * 0.15;
-            lens(ch, color, -26.5, 15.1, bz, 1.6, 0.55, 0.3, boxGeo);
-            anchors.push({ x: -26.5, y: 15.1, z: bz + side * 0.4, size: 9, color, channel: ch, strength: 1 });
+            const nz = heliSurfaceZ(stationAt(35.4), 8.4, side) + side * 0.08;
+            heliLens(k, ch, color, 35.4, 8.4, nz, 1.1, 0.5, 0.3, boxGeo);
+            anchors.push({ x: 35.8, y: 8.4, z: nz + side * 0.3, size: 11, color, channel: ch, strength: 1 });
+            const bz = heliSurfaceZ(stationAt(-28.5), 14.4, side) + side * 0.14;
+            heliLens(k, ch, color, -28.5, 14.4, bz, 1.5, 0.5, 0.28, boxGeo);
+            anchors.push({ x: -28.5, y: 14.4, z: bz + side * 0.4, size: 9, color, channel: ch, strength: 1 });
           }
-          lens(HELI_CH.red, '#ff2d22', -45.4, 27.35, 0, 0.9, 0.45, 0.7, boxGeo);
-          lens(HELI_CH.blue, '#2f62ff', -47.2, 27.6, 0, 0.9, 0.45, 0.7, boxGeo);
-          anchors.push({ x: -45.4, y: 27.9, z: 0, size: 12, color: '#ff2d22', channel: HELI_CH.red, strength: 1 });
-          anchors.push({ x: -47.2, y: 28.1, z: 0, size: 12, color: '#2f62ff', channel: HELI_CH.blue, strength: 1 });
-        } else {
-          lens(HELI_CH.beacon, '#ff2a1e', look.tail === 'fenestron' ? -46.6 : -46.3, look.tail === 'fenestron' ? 29.6 : 27.6, 0, 0.6, 0.45, 0.6, S.dome);
-          anchors.push({ x: look.tail === 'fenestron' ? -46.6 : -46.3, y: look.tail === 'fenestron' ? 30.1 : 28.1, z: 0, size: 12, color: '#ff3326', channel: HELI_CH.beacon, strength: 1 });
+          heliLens(k, HELI_CH.red, '#ff2d22', -42.8, 27.2, 0, 0.9, 0.42, 0.7, boxGeo);
+          heliLens(k, HELI_CH.blue, '#2f62ff', -44.6, 27.3, 0, 0.9, 0.42, 0.7, boxGeo);
+          anchors.push({ x: -42.8, y: 27.7, z: 0, size: 12, color: '#ff2d22', channel: HELI_CH.red, strength: 1 });
+          anchors.push({ x: -44.6, y: 27.8, z: 0, size: 12, color: '#2f62ff', channel: HELI_CH.blue, strength: 1 });
+        } else heliBeacon(k, -43.8, 27.4, 0.45);
+      }
+      // ---- R44 / R66 class (the civilians) equipment ---------------------------------------------
+      function heliRobinEquipment(k) {
+        const { plan, look, S, trim, metal, anchors, stationAt } = k,
+          dark = '#17191c',
+          grey = '#3a3e43',
+          news = look.kind === 'news';
+        heliSkids(k, { z: 8.3, x0: -11.4, x1: 19.0, y: 0.8, r: 0.42, cross: [13.4, -4.4], shoes: [-7, 4, 14] });
+        for (const side of [-1, 1]) policeAdd(trim, boxGeo, 14.8, 2.8, side * 7.6, 2.0, 0.2, 1.2, '#4a4e53');
+        // The mast: a boot where it leaves the fairing, the swashplate.
+        policeAdd(trim, S.cylinder, plan.rotor.x, 21.2, 0, 1.15, 0.9, 1.15, grey);
+        policeAdd(metal, S.cylinder, plan.rotor.x, 21.9, 0, 1.6, 0.3, 1.6, '#80868c');
+        // Engine bay: cooling louvres each side, the exhaust under the starboard side.
+        for (const side of [-1, 1]) {
+          const z = heliSurfaceZ(stationAt(-7.4), 11.6, side);
+          policeAdd(trim, boxGeo, -7.4, 11.6, z + side * 0.05, 3.2, 1.5, 0.12, dark, null, 0, side * -0.35, 0);
+          for (let g = 0; g < 4; g++) policeAdd(trim, boxGeo, -8.6 + g * 0.8, 11.6, z + side * 0.1, 0.12, 1.3, 0.1, '#4b4f54', null, 0, side * -0.35, 0);
+          // Door handles.
+          for (const [x, y] of [
+            [10.4, 10.4],
+            [-1.6, 10.8],
+          ])
+            policeAdd(metal, boxGeo, x, y, heliSurfaceZ(stationAt(x), y, side) + side * 0.1, 1.0, 0.24, 0.18, '#b7bcc1');
+        }
+        heliRod(metal, [-9, 8.8, 2.2], [-14.2, 9.6, 2.5], 0.42, '#6d7176');
+        heliRod(trim, [-14.1, 9.58, 2.5], [-14.4, 9.62, 2.5], 0.34, '#0b0b0c');
+        // Antennas and pitot; the tail rotor guard.
+        policeAdd(trim, boxGeo, -20, 12.4, 0, 1.0, 1.3, 0.12, dark, null, 0, 0, -0.45);
+        heliRod(trim, [2, 4.9, 1.2], [0.6, 3.4, 1.3], 0.07, dark);
+        heliRod(metal, [11.5, 18.35, 0], [13.6, 18.4, 0], 0.08, '#9aa0a6');
+        heliTube(trim, [[-38.2, 13.3, 0], [-40.4, 10.6, 0], [-43.2, 9.0, 0], [-45.8, 8.95, 0]], 0.2, look.skid, 16);
+        // The tail rotor's gearbox and output shaft.
+        const t = plan.tailRotor;
+        policeAdd(trim, boxGeo, t.x, t.y, -0.55, 1.8, 1.9, 1.0, grey);
+        policeAdd(trim, S.cylinder, t.x, t.y, t.z * 0.6, 0.45, 1.1, 0.45, grey, null, Math.PI / 2);
+        if (news) {
+          // The gyro-stabilised camera on the chin, the downlink dome under the boom.
+          policeAdd(trim, boxGeo, 25.3, 5.6, 0, 1.5, 1.2, 1.5, grey);
+          policeAdd(trim, S.sphere, 25.5, 3.7, 0, 1.75, 1.75, 1.75, '#e8e8e4');
+          policeAdd(trim, boxGeo, 27.2, 3.6, 0, 0.36, 1.25, 1.45, '#08090b');
+          policeAdd(trim, S.sphere, 27.35, 3.6, 0, 0.32, 0.5, 0.5, '#2f5d82');
+          policeAdd(trim, S.sphere, -22, 12.5, 0, 1.6, 0.8, 1.2, '#e8e8e4');
+        }
+        // ---- Lamps ----
+        const s = plan.stab;
+        heliNavLights(k, s.x + 0.6, s.y, s.span + 0.3, s.x - 0.7);
+        heliLens(k, HELI_CH.navWhite, '#fff6e6', -46.5, 15.4, 0, 0.32, 0.38, 0.38);
+        anchors.push({ x: -46.8, y: 15.4, z: 0, size: 7, color: '#fff4e0', channel: HELI_CH.navWhite, strength: 1 });
+        heliBeacon(k, -45.5, 22.1, 0.4);
+        heliBeacon(k, 5, stationAt(5).yb + 0.05, -0.4);
+        // Landing lights in the nose.
+        for (const z of [-1.1, 1.1]) {
+          heliLens(k, HELI_CH.work, '#fff8e8', 27.7, 8.2, z, 0.3, 0.6, 0.6);
+          anchors.push({ x: 28.2, y: 8.2, z, size: 13, color: '#fff3d6', channel: HELI_CH.work, strength: 0.8 });
         }
       }
       // The police Nightsun: head on a yaw / pitch gimbal, pointing along +x.
@@ -1534,9 +2049,10 @@
           dash = plan.dash,
           frame = '#2c2f33';
         // Instrument panel with its glareshield, screens on the pilots' side.
-        policeAdd(interior, boxGeo, dash + 0.9, floor + 4.5, 0, 2.2, 3.4, 10.4, '#1f2124');
-        policeAdd(interior, boxGeo, dash + 1.5, floor + 6.35, 0, 3.4, 0.45, 11.2, '#141517');
-        for (const z of [-2.6, 2.6])
+        const panel = plan.panel || 5.2;
+        policeAdd(interior, boxGeo, dash + 0.9, floor + 4.5, 0, 2.2, 3.4, panel * 2, '#1f2124');
+        policeAdd(interior, boxGeo, dash + 1.5, floor + 6.35, 0, 3.4, 0.45, panel * 2 + 0.8, '#141517');
+        for (const z of [-panel / 2, panel / 2])
           for (const dz of [-1.05, 1.05]) policeAdd(lights, boxGeo, dash - 0.25, floor + 4.9, z + dz, 0.08, 1.5, 1.7, '#5fb3d8', { channel: HELI_CH.navWhite });
         policeAdd(interior, boxGeo, (seats.front + dash) / 2 + 0.6, floor + 1.4, 0, dash - seats.front - 1.5, 2.8, 2.0, '#232528');
         const chair = (x, z, height = 1) => {
@@ -1627,7 +2143,7 @@
             rings = stations.map((r) => {
               const f = (r - root) / (R - root),
                 tipF = Math.max(0, (r - R * 0.9) / (R * 0.1)),
-                cw = r < root + 1 ? chord * 0.6 : chord * (1 - 0.4 * tipF),
+                cw = r < root + 1 ? chord * 0.6 : chord * (1 - (rotor.taper ?? 0.4) * tipF),
                 pitch = 0.16 - 0.14 * f,
                 swept = sweep * tipF * tipF,
                 drop = -droop * f * f;
@@ -1676,8 +2192,10 @@
       }
       function heliFenestronParts(f, look) {
         const set = policeSet();
-        for (let i = 0; i < 10; i++) {
-          const a = (i * TAU) / 10,
+        const n = f.blades || 10;
+        for (let i = 0; i < n; i++) {
+          // Unevenly spaced, as a real fenestron's are (less of a whine).
+          const a = (i * TAU) / n + 0.12 * Math.sin(i * 2.4),
             c = Math.cos(a),
             s = Math.sin(a),
             place = (ring) => ring.map(([r, py, pz]) => [c * r - s * pz, s * r + c * pz, py]);
@@ -1690,7 +2208,7 @@
           z: 0,
           cant: 0,
           radius: f.radius - 0.1,
-          disc: { blades: 10, hub: 0.27, tip: 1.2, trail: 0.12, smear: 0.22, color: '#2a2d31', tipColor: '#2a2d31' },
+          disc: { blades: n, hub: 0.27, tip: 1.2, trail: 0.12, smear: 0.22, color: '#2a2d31', tipColor: '#2a2d31' },
         };
       }
       // ---- The model -------------------------------------------------------------------------
@@ -1703,7 +2221,7 @@
         group.add(body);
         scene.add(group);
         group.name = look.kind + ' helicopter';
-        const livery = heliLiveryTexture(look, kit.plan, kit.scheme),
+        const livery = heliLiveryTexture(look, kit),
           finish = look.finish,
           paint = new Three.MeshPhysicalMaterial({
             color: '#ffffff',
@@ -1731,14 +2249,14 @@
         const pilot = quiet(mesh(kit.pilot, M.interior, body, 0, 0, 0)),
           observer = quiet(mesh(kit.observer, M.interior, body, 0, 0, 0));
         pilot.visible = observer.visible = false;
-        quiet(mesh(kit.decals, policeGlyphs().material, body, 0, 0, 0));
+        if (kit.decals) quiet(mesh(kit.decals, policeGlyphs().material, body, 0, 0, 0));
         const lights = quiet(mesh(kit.lights, lightMaterial, body, 0, 0, 0));
         lights.receiveShadow = false;
         // Main rotor: hub and blades spin in `rotor`; the blur disc stays still.
         const rotor = new Three.Group();
         rotor.position.set(kit.rotor.x, 0, 0);
-        // Parked, no blade lies along the fuselage (it would hide the roof).
-        rotor.rotation.y = Math.PI / 4;
+        // Parked, no blade lies along the fuselage (it would hide the roof and boom).
+        rotor.rotation.y = kit.plan.rotor.park ?? Math.PI / 4;
         body.add(rotor);
         quiet(mesh(kit.rotor.hub, M.metal, rotor, 0, 0, 0));
         const blades = mesh(kit.rotor.blades, M.blade, rotor, 0, 0, 0);
@@ -1991,6 +2509,9 @@
           shadowCasters: shadows,
           triangles: Math.round(triangles),
           crew: m.pilot ? (m.pilot.visible ? 1 : 0) + (m.observer.visible ? 1 : 0) : null,
+          scheme: m.look?.scheme || null,
+          // Milliseconds the look's livery took to paint (once per look).
+          liveryMs: m.liveryMap?.userData.paintMs ?? null,
         };
       }
       // END SUBSYSTEM: src/helicopter3d.js

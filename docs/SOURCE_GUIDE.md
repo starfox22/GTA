@@ -355,7 +355,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | crowd3d.js | Everyone on foot from the rig's instanced parts: looks compiled to parts and paints (`compileLook`, by role and district), OUTFITS for the player, police, traffic officers, SWAT, agents, soldiers, gangs, mobsters, guests, beachgoers, athletes and riders (`outfitLook`); the skeleton, layered poses and the planted-foot gait (`drawCrowdPerson`, `solveLeg`), turning on the spot, weapon holds by two-bone IK (`HOLD_POSES`, `drawHold`, `ikArm`) with recoil and reload, swim strokes, parachute, car and pool transitions, a rider thrown off a bike (riders.js `thrown`, `ejected.rider`) (`specialSpec`), still figures replayed from recorded instances, RIDERS on bikes and jet skis (`queueRider`), BEACHGOERS, ATHLETES (`queueAthlete`), close-up / street / far body sets, dogs and scene props; `crowdStats()` |
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
-| helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, military), a light single (Bell 407 / H125 class) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface, per-pixel canvas liveries, glyph decals, cabin and crew, merged trim / lamps per look; four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
+| helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, civil schemes, military), the EC120 class police single (`colibri`), the R44 / R66 class civilian (`robin`) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface; per-pixel canvas liveries with pinstripes, words and emblems warped onto the surface (`heliLiveryJob`, prewarmed on the title screen), cabin and crew, merged trim / lamps per kind; two-, three- and four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Trucks and buses (`makeTruck`), bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
 | cars3d.js | Every civilian car (section 6d): `CAR_BODIES` (seventeen real-size archetypes), the lofted shell with cross-sections that change along the car and wings above the bonnet (`civShellGeometry`), the five-pane glasshouse (`civCabinGeometry`), the kit of merged paint / trim / DRL / lamp sets built from surface-conforming helpers (`civKit`: `patch`, `strip`, `round`, `grille`, `cornerLamp`), the trim atlas and per-vertex finishes, livery decals over the paint (`civLiveryTexture`), tyres and rims (`civTyreGeometry`, `civRimGeometry`), `makeCivilianCar`, `animateCivilianCar` (lamps, DRLs, rolling and steering wheels), `civilianModelReport` |
@@ -1684,52 +1684,92 @@ the models are drawn inside them and nothing in the physics changed.
 
 Every helicopter except Fort Sentinel's Apache is built by `src/helicopter3d.js`
 (`makeHelicopter`, called from `makeVehicle`). The collision footprint is the vehicle type's
-own (86 × 34, rotor ~86 across, a real H125's size at 8 units to the metre, `modelScale: 1`:
-the models are built at real size and returned with `realSize`, so DESIGN SIZE never
-scales them); nothing in the flight model changed.
+own (86 × 34, `modelScale: 1`: the models are built at real size, 8 units to the metre, and
+returned with `realSize`, so DESIGN SIZE never scales them); nothing in the flight model
+changed.
 
-- **Looks** (`helicopterLookFor`, cached per vehicle in a WeakMap): `police` (the air unit,
-  and the machine on the POLICE HQ pad), `news` (the RIVERSIDE pad, and one civilian in
-  three), `executive` (the rest: glossy metallic paint from a palette, or the vehicle's own
-  colour after a respray, gold pinstripes, fenestron tail), `military` (Fort Sentinel,
-  `c.military`: a UH-60 Black Hawk class airframe scaled into the same footprint, flat
-  olive drab, wheeled gear).
-- **Airframes** are plans of stations (`heliLightPlan`, `heliHawkPlan`) lofted with
-  monotone cubics and superellipse sections. The plan's `windows(x, y, z)` signed distance
-  splits the loft's quads into painted skin and flush transparent glass (bubble, roof and
-  door windows); a dark liner, floor, seats, panel and the crew (pilot with anyone
-  aboard, observer in the air unit) sit inside and read through the tinted glass from above.
-- **Liveries** are one canvas per look painted per pixel from the surface
-  (`heliLiveryTexture`): the scheme (`heliScheme`), window seals, panel seams, belly grime
-  and exhaust soot; the bottom quarter holds the fin art and swatches for the cowling,
-  stabiliser and endplates. The police scheme follows the patrol cars' modern livery
-  (white, navy swoosh, sky-blue band, reflective silver line, gold star) with AIR 1 on the
-  roof and POLICE along the boom for the camera above. Words are glyph quads from the
-  police glyph atlas (`heliText`).
-- **Draw calls**: skin, glass, trim, metal, interior, decals, lamps, hub, blades, disc,
-  tail blades and tail disc: 12 draws for a parked police machine (15 with the crew and
-  Nightsun), against ~35 meshes and sprites for the old box model; 5 shadow casters.
-  Geometry is shared per look; each model owns only its paint, glass, lamp and disc
-  materials.
-- **Rotors**: four twisted, tapered blades with swept, painted tips and droop, grips,
-  dampers, pitch links and swashplate. `m.rpm` spools up in ~4 s and down in ~9 s; past
-  half speed the blades switch to a depth-only material (they still cast their flickering
-  shadow) and the HELI DISC shader draws a translucent disc with blade ghosts trailing
-  round it. The tail rotor or fenestron blurs the same way.
+- **Looks** (`helicopterLookFor`, cached per vehicle in a WeakMap; `heliLookOf(kind, scheme,
+  paint)` builds one): `police` (the air unit, `c.cop`, and the machine on the POLICE HQ
+  pad), `news` (the RIVERSIDE pad, and one civilian in four), `executive` (one civilian in
+  four: deep metallic paint from `HELI_EXECUTIVE_PAINTS`, double gold pinstripes, tan
+  leather, polished skids), `civil` (the rest: a scheme from `HELI_CIVIL_SCHEMES`, white
+  with red and blue stripes, yellow, metallic grey or black with gold, or a respray's own
+  colour), `military` (Fort Sentinel, `c.military`: a UH-60 Black Hawk class airframe
+  scaled into the same footprint, flat olive drab, wheeled gear).
+- **Airframes** are plans of stations (`heliColibriPlan`, `heliRobinPlan`, `heliHawkPlan`)
+  lofted with monotone cubics and superellipse sections:
+  - `colibri`, the police machine: an EC120 / H130 class light single, about 9.7 m from
+    the nose to the fan. Big bubble canopy with the front door arch, rear sliding-door
+    windows, the engine cowl behind the three-blade rotor, a shrouded fenestron (a thick
+    ring round an eight-blade fan with stators) under the fin and a ventral fin, the
+    stabiliser with tall swept endplates, tubular skids with arched cross tubes;
+  - `robin`, every civilian (civil, news, executive): a Robinson R44 / R66 class
+    four-seater, about 9.3 m long. Teardrop cabin with the wraparound windscreen, roof
+    window and four door windows, the tall mast fairing and a two-blade teetering rotor
+    (parked across the boom), a slim tail boom, the V tail (upper and lower fins, a small
+    stabiliser), a two-blade tail rotor on the left, the tail guard, small skids;
+  - `hawk`, unchanged.
+  The plan's `windows(x, y, z)` signed distance splits the loft's quads into painted skin
+  and flush transparent glass; a dark liner, floor, seats, panel and the crew (pilot with
+  anyone aboard, observer in the air unit) sit inside and read through the tinted glass.
+- **Liveries** are one canvas per look (`heliLiveryTexture`, 2048 × 1024 for the police and
+  news, 1024 × 512 for the rest): the loft painted per pixel from the surface (the scheme's
+  `body`, belly grime, exhaust soot, panel seams, the black seals round the glazing) at half
+  size (`paintScale`) and drawn up, then the fine work at full size: `lines` (pinstripes and
+  cheat lines as canvas paths through the surface, broken at the glazing's seals) and
+  `words` (canvas text and emblem art warped onto the surface strip by strip by
+  `heliPaintWord` / `heliWarp`, so it follows the curves, reads forwards on both sides and
+  chars with the paint on a wreck). The bottom quarter holds the fin's starboard and port
+  faces (the port face mirrored, `heliFinUv`), the cowl's own loft (`art` tops) and flat
+  swatches. It is a generator job (`heliLiveryJob`): drawn at once when a model needs it,
+  or a few milliseconds at a time while the title screen is up (`prewarmHelicopters`,
+  called by render3d.js: the police, news and four civil liveries), so the air unit's
+  first call costs no hitch. `helicopterModels()` reports each livery's paint time.
+  - Police (after the reference photo of an EC120 in police service, with our own
+    branding): gloss navy-black, a deep blue band from the nose along the lower canopy,
+    the cabin and the boom edged by two gold pinstripes, blue over the fenestron, POLICE
+    in big white block letters outlined in blue (with a thin dark edge) on both sides of
+    the cabin and boom root, SOUTH COAST above, the department seal (`heliSealImage`) on
+    the rear doors, N-7SC on the cowl, AIR ONE on the fin, and for the camera above AIR 1
+    across the cowl and POLICE along the boom.
+  - News: white with the red CH 7 band and navy pinstripe, the 7 roundel, NEWS on the mast
+    fairing and CH 7 along the boom for the camera above. Civil and executive: the cheat
+    line along the lower doors and up the boom with a pinstripe over it, the registration
+    on the engine bay.
+  - The Black Hawk's stencils are still glyph quads from the police glyph atlas
+    (`heliText`), its star painted.
+- **Draw calls**: skin, glass, trim, metal, interior, lamps, hub, blades, disc, tail blades
+  and tail disc: 9 for a parked civilian, 11 for a parked police machine (13 with the crew,
+  14 with the Nightsun), 10 for the Black Hawk (its decals); 5 shadow casters. Geometry is
+  shared per kind (`heliKit`: the civil schemes and paints share one kit); each model owns
+  only its paint, glass, lamp and disc materials; each look one livery texture. About 21k
+  triangles for the police machine, 16.5k for a civilian (19.5k for the old police model).
+- **Rotors**: three (police), two (civil, rectangular blades with no taper) or four
+  (military) twisted blades with tip paint and droop, grips, dampers, pitch links and
+  swashplate; `rotor.park` sets the parked angle so no blade lies along the boom. `m.rpm`
+  spools up in ~4 s and down in ~9 s; past half speed the blades switch to a depth-only
+  material (they still cast their flickering shadow) and the HELI DISC shader draws a
+  translucent disc with blade ghosts trailing round it. The tail rotor or fenestron blurs
+  the same way.
 - **Lights** are one lens mesh per model on the police light shader (`HELI_CH` channels):
-  red / green / white navigation, double-flash strobes, red beacons, landing lights (low
-  or tracking at night), and on the police machine red / blue LED bars on the cabin, boom
-  and fin tip flashing with `policeLightLevels`; lit channels queue VEHICLE HALOS.
+  red / green navigation and white strobes on the stabiliser tips (the endplates on the
+  police machine), the white tail light, red beacons (cowl or fin top and belly), landing
+  lights (nose), and on the police machine red / blue LED strobes under the doors, flanking
+  the nose, on the boom and on the fin tip, flashing with `policeLightLevels`; lit channels
+  queue VEHICLE HALOS. The police livery's white letters glow faintly at night (reflective
+  vinyl, the paint's emissive map).
 - **Searchlight mount**: the Nightsun's lens is at `HELI_SEARCHLIGHT_MOUNT` (model space,
-  under the port side of the cabin); `m.searchlightMount` is an anchor there and
-  `helicopterSearchlightMount(c, out)` returns it in world space for searchlight3d.js. The
-  Nightsun head turns on its gimbal towards what the crew are watching.
-- **Damage**: paint weathers and chars through `paintVehicle` (livery restored on repair),
-  the glass soots, bullet marks land on skin, glass and trim (`m.rayTargets`); a wreck's
-  rotor stops with its hub askew.
-- `DeadEndCity.helicopterLineup(x, y, heading, rotors)` parks one of each look;
-  `DeadEndCity.helicopterModels()` reports each model's look, spool, draw calls, shadow
-  casters and triangles.
+  under the belly, a little to port between the skid cross tubes); `m.searchlightMount` is
+  an anchor there and `helicopterSearchlightMount(c, out)` returns it in world space for
+  searchlight3d.js. The Nightsun head turns on its gimbal towards what the crew are
+  watching; the FLIR turret sits under the nose.
+- **Damage**: paint weathers and chars through `paintVehicle` (livery, words included,
+  restored on repair), the glass soots, bullet marks land on skin, glass and trim
+  (`m.rayTargets`); a wreck's rotor stops with its hub askew.
+- `DeadEndCity.helicopterLineup(x, y, heading, rotors, spacing, looks)` parks one of each
+  look (police, news, executive, the four civil schemes, military) or the `looks` given
+  (`'civil:yellow'` picks a scheme); `DeadEndCity.helicopterModels()` reports each model's
+  look, scheme, spool, draw calls, shadow casters, triangles and livery paint time.
 
 ## 6d. Civilian cars and motorbikes
 

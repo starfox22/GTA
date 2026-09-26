@@ -2988,6 +2988,7 @@
       refreshEnvironment(true);
       api.resize();
       prewarmShaders();
+      prewarmHelicopters();
       return api;
     }
     // END SUBSYSTEM: src/render3d.js
