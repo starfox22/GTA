@@ -46,12 +46,12 @@
       flume: { x: 4090, y: -6480 },
       midway: { x: 3895, y: -6400 },
       busStop: { x: 3266, y: -5838 },
-      // The Unicorn Fountain in the forecourt, between the drive and the gate:
-      // a round basin (outer radius r) with Aurora, a rearing marble unicorn,
-      // on a plinth in the middle whose plaque faces the drive. She rears
-      // towards the west and a little towards the arrivals (face, her
-      // heading), so the street camera sees her in profile.
-      unicorn: { x: 3200, y: -5987, r: 30, face: Math.PI - 0.45 },
+      // UNICORN STATUE (unicorn3d.js). Aurora, a monumental black unicorn, on
+      // the lawn south of the drop tower between the island drive and the east
+      // shore: a low octagonal granite plinth (circumradius r) in a paved ring
+      // (apron). She rears towards the west and a little towards the street
+      // camera (face, her heading), so it sees her in three-quarter profile.
+      unicorn: { x: 4068, y: -6048, r: 26, apron: 46, face: Math.PI - 0.35 },
     };
     // ---- The Falcon: circuit builder -----------------------------------------------
     /**
@@ -1048,14 +1048,15 @@
       }
       box(L.x - L.rx + 30, L.y - L.ry + 40, (L.rx - 30) * 2, (L.ry - 40) * 2, 3, 'lagoon');
       for (const f of coasterFootings()) box(f.x - 5, f.y - 5, 10, 10, f.height, 'coaster support');
-      // The Unicorn Fountain: heavy stone, a cross of two slabs and a square
-      // round the circular basin (their corners stay within a unit of its rim),
-      // the plinth and statue in the middle standing as tall as she does.
+      // UNICORN STATUE: the granite plinth is solid stone to people and cars,
+      // its octagon (apothem 24, sides 19.9 long) as two slabs and a square
+      // whose corners stay inside it; the statue's core stands in the middle
+      // as tall as her horn tip (13 m above the lawn).
       const U = p.unicorn;
-      box(U.x - 29, U.y - 11, 58, 22, 5, 'unicorn fountain');
-      box(U.x - 11, U.y - 29, 22, 58, 5, 'unicorn fountain');
-      box(U.x - 22, U.y - 22, 44, 44, 5, 'unicorn fountain');
-      box(U.x - 11, U.y - 11, 22, 22, 72, 'unicorn fountain');
+      box(U.x - 24, U.y - 9.9, 48, 19.8, 10.4, 'unicorn statue');
+      box(U.x - 9.9, U.y - 24, 19.8, 48, 10.4, 'unicorn statue');
+      box(U.x - 16.9, U.y - 16.9, 33.8, 33.8, 10.4, 'unicorn statue');
+      box(U.x - 10, U.y - 10, 20, 20, 106, 'unicorn statue');
       parkSolidList = list;
       parkSolidGrid = new Map();
       list.forEach((b, i) => {
@@ -1456,21 +1457,39 @@
         g.lineTo(p.gate.x + Math.cos(a) * 70, p.gate.y - 20 + Math.sin(a) * 60);
         g.stroke();
       }
-      // The Unicorn Fountain's apron: a ring of darker stone round the basin
-      // with a gold-flecked border (the basin itself is a mesh).
+      // UNICORN STATUE: a ring of pale limestone round the plinth on the
+      // lawn (the plinth is a mesh), a dark granite kerb with a brass line
+      // inlaid, the paving laid in courses; a short walk from the east gate
+      // promenade.
       const U = p.unicorn;
-      g.fillStyle = '#c9b48a';
+      g.strokeStyle = '#b9a988';
+      g.lineWidth = 20;
+      g.lineCap = 'round';
       g.beginPath();
-      g.arc(U.x, U.y, U.r + 9, 0, TAU);
-      g.fill();
-      g.fillStyle = '#ddd0b2';
+      g.moveTo(3946, U.y + 6);
+      g.lineTo(U.x - U.apron, U.y + 6);
+      g.stroke();
+      g.strokeStyle = '#e6dcc4';
+      g.lineWidth = 15;
+      g.stroke();
+      g.fillStyle = '#34353a';
       g.beginPath();
-      g.arc(U.x, U.y, U.r + 6, 0, TAU);
+      g.arc(U.x, U.y, U.apron + 2.5, 0, TAU);
       g.fill();
-      g.fillStyle = '#c6a456';
-      for (let i = 0; i < 48; i++) {
-        const a = (i / 48) * TAU;
-        g.fillRect(U.x + Math.cos(a) * (U.r + 7.5) - 1, U.y + Math.sin(a) * (U.r + 7.5) - 1, 2, 2);
+      g.fillStyle = '#b8964e';
+      g.beginPath();
+      g.arc(U.x, U.y, U.apron + 1.2, 0, TAU);
+      g.fill();
+      g.fillStyle = '#e9e2d0';
+      g.beginPath();
+      g.arc(U.x, U.y, U.apron, 0, TAU);
+      g.fill();
+      g.strokeStyle = '#d8ceb6';
+      g.lineWidth = 0.8;
+      for (let r = U.r + 6; r < U.apron; r += 5) {
+        g.beginPath();
+        g.arc(U.x, U.y, r, 0, TAU);
+        g.stroke();
       }
       // Promenades: light stone with a darker border and a tile grid.
       for (const s of parkPathSegments()) {
@@ -1550,12 +1569,7 @@
       g.fillStyle = '#5a4a2c';
       g.font = 'bold 26px monospace';
       g.textAlign = 'center';
-      // The forecourt's name, either side of the fountain.
-      g.textAlign = 'right';
-      g.fillText('SUNSET', U.x - U.r - 16, -5965);
-      g.textAlign = 'left';
-      g.fillText('PIER', U.x + U.r + 16, -5965);
-      g.textAlign = 'center';
+      g.fillText('SUNSET PIER', p.gate.x, -5965);
       g.font = 'bold 14px monospace';
       g.fillText('THE FALCON', p.station.x, -6480);
       g.fillText('SUNSET EYE', p.wheel.x, p.wheel.y + 4);
@@ -1591,6 +1605,8 @@
           !inLagoon(x, y, 16) &&
           !parkBuildingAt(x, y, 16) &&
           !coasterNear(x, y, 22) &&
+          // UNICORN STATUE: her lawn stays open round the paved ring.
+          Math.hypot(x - PIER.unicorn.x, y - PIER.unicorn.y) > PIER.unicorn.apron + 34 &&
           list.every((p) => Math.hypot(p.x - x, p.y - y) > 26);
       const add = (x, y, s) => ok(x, y) && list.push({ x, y, s: s ?? 0.9 + ((x * 7 + y * 13) % 7) / 14 });
       // Twin rows along every promenade.
@@ -1661,20 +1677,32 @@
       { name: 'unicorn', x: PIER.unicorn.x, y: PIER.unicorn.y },
       { name: 'unicorn', x: PIER.unicorn.x, y: PIER.unicorn.y },
     ];
-    /* Where a guest stops to look at (and photograph) the unicorn: somewhere
-       round the basin, a step back from its rim. Guests come out through the
-       gate, so a spot on the far (drive) side is reached round the basin's
-       flank. */
+    /* UNICORN STATUE: where a guest stops to look at (and photograph) Aurora:
+       somewhere round her plinth on the paving or the lawn, a few metres
+       back. Guests come along the walk from the east gate promenade (west of
+       her) and go round the plinth in steps (unicornArc), and leave the same
+       way (unicornExit), so they never cut across it. */
+    function unicornArc(a) {
+      const U = PIER.unicorn,
+        ring = U.r + 16,
+        points = [];
+      for (let k = 1, steps = Math.ceil((Math.PI - Math.abs(a)) / 0.7); k <= steps; k++) {
+        const b = Math.sign(a || 1) * (Math.PI - ((Math.PI - Math.abs(a)) * k) / steps);
+        points.push({ x: U.x + Math.cos(b) * ring, y: U.y + Math.sin(b) * ring });
+      }
+      return points;
+    }
+    const unicornWalkEnd = () => ({ x: PIER.unicorn.x - PIER.unicorn.apron - 6, y: PIER.unicorn.y + 6 });
     function unicornViewpoint() {
       const U = PIER.unicorn,
-        a = randomBetween(0, TAU),
-        r = U.r + randomBetween(8, 12),
-        x = U.x + Math.cos(a) * r,
-        y = Math.max(U.y - 38, Math.min(U.y + 40, U.y + Math.sin(a) * r)),
-        points = [];
-      if (y > U.y + 4) points.push({ x: U.x + (x < U.x ? -1 : 1) * (U.r + 16), y: U.y - 6 });
-      points.push({ x, y, linger: true, faceTo: U });
-      return points;
+        a = randomBetween(-Math.PI, Math.PI),
+        r = U.r + randomBetween(12, 34);
+      return [unicornWalkEnd(), ...unicornArc(a), { x: U.x + Math.cos(a) * r, y: U.y + Math.sin(a) * r, linger: true, faceTo: U }];
+    }
+    function unicornExit(person) {
+      const U = PIER.unicorn;
+      if (Math.hypot(person.x - U.x, person.y - U.y) > U.apron + 24) return [];
+      return [...unicornArc(Math.atan2(person.y - U.y, person.x - U.x)).reverse(), unicornWalkEnd()];
     }
     /* Queue lines: slots from the front of the line back. */
     const PARK_QUEUES = {
@@ -1827,6 +1855,8 @@
             route = parkRoute(nearestParkNode(person.x, person.y), nearestParkNode(spot.x, spot.y));
           person.pose = null;
           person.parkRoute = route ? route.map((i) => parkPathGraph()[i]).map((n) => ({ x: n.x + randomBetween(-12, 12), y: n.y + randomBetween(-12, 12) })) : [];
+          // UNICORN STATUE: away from her round the plinth, not across it.
+          person.parkRoute.unshift(...unicornExit(person));
           if (spot.name === 'unicorn') person.parkRoute.push(...unicornViewpoint());
           else person.parkRoute.push({ x: spot.x + randomBetween(-20, 20), y: spot.y + randomBetween(-16, 16), linger: true });
           if ((person.speechUntil || 0) <= gameTime && seededRandom() < 0.25) {
@@ -2154,7 +2184,7 @@
         for (let j = i + 1; j < solids.length; j++) {
           const a = solids[i],
             b = solids[j];
-          if (a.kind === b.kind && (a.kind === 'lagoon' || a.kind === 'flume' || a.kind === 'unicorn fountain')) continue;
+          if (a.kind === b.kind && (a.kind === 'lagoon' || a.kind === 'flume' || a.kind === 'unicorn statue')) continue;
           if (a.kind.startsWith('flume') && b.kind.startsWith('flume')) continue;
           if (a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h)
             overlaps.push(a.kind + ' x ' + b.kind + ' at ' + Math.round(a.x) + ',' + Math.round(a.y));

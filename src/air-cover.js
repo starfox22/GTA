@@ -328,7 +328,9 @@
      *     (themepark3d.js), shop awnings (cityscape3d.js), club and hotel
      *     entrance canopies (civic3d.js) and the cruise terminal's drop-off
      *     canopy (marina3d.js);
-     *   - the inside of a building, below its roof (Vinny's depot, a garage bay);
+     *   - the respray garages' bays and offices (garages.js registerGarageCover:
+     *     a car inside with the door up or down is out of the helicopter's sight);
+     *   - the inside of a building, below its roof (Vinny's depot);
      *   - a road bridge over someone on the water (underBridgeWater).
      * Trees do not count. Registered and volume covers live in one grid of
      * OVERHEAD_CELL-unit cells (built on first use, rebuilt after a
@@ -380,6 +382,19 @@
         }
       if (elevation < 4 && underBridgeWater(x, y)) return bridgeCover;
       return null;
+    }
+    /**
+     * ROOF HEIGHT FOR THE SEARCHLIGHT
+     * `overheadCoverHeight(x, y, elevation)`: the height (map units, the top
+     * surface) of the roof over a target standing at `elevation` at (x, y), or
+     * null in the open. The helicopter's searchlight puts its pool there, on
+     * the roof the target is hiding under, instead of on the target: a garage
+     * (6.9 m), the underpass deck, a station canopy, a shop awning, a building.
+     * Same answer, same cost as overheadCover (a cell lookup).
+     */
+    function overheadCoverHeight(x, y, elevation = terrainHeight(x, y)) {
+      const c = overheadCover(x, y, elevation);
+      return c ? c.top : null;
     }
     /* Hidden from the air: the target (the player, or the vehicle they are in)
        is under overhead cover. */

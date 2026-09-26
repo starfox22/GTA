@@ -138,6 +138,8 @@
     function stepEjection(person, deltaSeconds) {
       const e = person.ejected;
       if (!e) return;
+      // Thrown off a motorbike: a flight, a landing and a slide (riders.js).
+      if (e.rider) return stepRiderEjection(person, e, deltaSeconds);
       e.time += deltaSeconds;
       moveBody(person, e.vx * deltaSeconds, e.vy * deltaSeconds, 6);
       const drag = Math.exp(-4.4 * deltaSeconds);

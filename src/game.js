@@ -315,6 +315,8 @@
         x: 3200,
         y: 2880,
       };
+    // Set only by the console's holdSimulation (screenshot sequences).
+    let simulationHeld = false;
     const player = {
       ...spawn,
       a: 0,
@@ -818,8 +820,12 @@
       },
       helicopter: {
         name: 'MAVERICK HELICOPTER',
+        // An H125 / Bell 407 class light single: 10.75 m over the rotor, 4.25 m
+        // across the skids and stabiliser. helicopter3d.js builds every look at
+        // real size (the UH-60 class military one fitted to this footprint).
         l: 86,
         w: 34,
+        modelScale: 1,
         // Cruise flat out at about 240 km/h (helicopterControl).
         max: 250 * KMH,
         acc: 0.5 * GRAVITY,
@@ -1334,6 +1340,20 @@
           junction: null,
           hazard: false,
           spinUntil: 0,
+          // The player's front tyres held against the grip limit (seconds) and the
+          // scrub that follows (0..1), and whether the driver is steering into a
+          // slide (physics.js UNDERSTEER SKID, TYRE STIFFNESS).
+          skidHold: 0,
+          skid: 0,
+          counterSteer: false,
+          handbrakeTurn: false,
+          // The velocity going into the last contact (resolveContact): a thrown
+          // rider keeps it (riders.js). A two-wheeler down on its side (riders.js).
+          impactVx: 0,
+          impactVy: 0,
+          fallen: null,
+          // A driver's car more than 15 degrees off its way (physics.js driverStats).
+          sliding: false,
           // Road or pavement under the middle last step (kerbStrike), and the
           // vehicle that last hit a braced roadblock cruiser (roadblocks.js).
           onTarmac: null,
@@ -2178,6 +2198,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
+      player.thrown = null;
       if (player.roof || player.buildingRoof) {
         player.roof = false;
         player.buildingRoof = null;
@@ -2329,7 +2350,7 @@
       tone(160, 0.06, 0.15, 'triangle');
     }
     function interact() {
-      if (gameMode !== 'play' || player.parachute || rideSkipActive()) return;
+      if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
       // On a building roof the only thing to do is fly off again.
       if (player.buildingRoof && !player.car) {
         const c = nearestCar();
@@ -2390,13 +2411,15 @@
         return;
       }
       if (GARAGES.some((s) => distanceBetween(player, s) < 140))
-        tell('Drive fully inside the open bay, stop, and press E. Respray and repair: $250.');
+        tell('Drive up to the door and press E: respray from $200, repairs by the damage.');
     }
     /* Taking the wheel: shared by the action key, the cab hijack and the getaway
        cars missions hand you, so every entry sets the same state. */
     function enterVehicle(c) {
         player.buildingRoof = null;
         player.car = c;
+        // A bike that went down is picked up and ridden on (riders.js).
+        c.fallen = null;
         c.ramUntil = 0;
         enforceVehicleHandgun();
         c.abandonedFlight = false;
@@ -2601,9 +2624,10 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
+      player.thrown = null;
       cleanupMissionExtras();
       clearDepotFloor();
-      repairJob = null;
+      cancelGarageJob();
       player.parachute = null;
       for (let i = storyActors.length - 1; i >= 0; i--)
         if (storyActors[i].name === 'ELENA CRUZ') storyActors.splice(i, 1);
@@ -2968,7 +2992,7 @@
           worldContext.restore();
         }
     }
-    const shotSolidLists = [null, null, null, null, null, null];
+    const shotSolidLists = [null, null, null, null, null, null, null];
     function shotBlocked(x, y, altitude = 0) {
       if (airCoverStopsShot(x, y, altitude) || (landAt(x, y) && altitude + 10 < terrainHeight(x, y)))
         return true;
@@ -3000,6 +3024,7 @@
       lists[3] = militarySolids();
       lists[4] = countyStaticSolids;
       lists[5] = AIRPORT_SCENERY_SOLIDS;
+      lists[6] = garageDoorSolids();
       for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
         // Most rounds are nowhere near a given list's rectangles (rectListBounds).
@@ -3298,6 +3323,8 @@
           !transitRide &&
           !taxiRide &&
           !player.coaster &&
+          // Thrown off a bike: flying, sliding or lying there (riders.js).
+          !updateThrownPlayer(deltaSeconds) &&
           !updateMountainFooting(deltaSeconds)
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
@@ -3332,8 +3359,9 @@
           !player.coaster
         )
           player.altitude = terrainHeight(player.x, player.y);
-        // On the volleyball court a click hits the ball instead (beachvolley.js).
-        if (!volleyTakesFire() && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
+        // On the volleyball court a click hits the ball instead (beachvolley.js);
+        // nothing is fired while thrown off a bike (riders.js).
+        if (!volleyTakesFire() && !player.thrown && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
           tone(220, 0.08, 0.04, 'sawtooth');
         if (keys.KeyE && canSilentHit(rooftopJob())) {
@@ -3438,8 +3466,10 @@
       } else {
         planeCameraLead.x = Math.cos(player.a) * look;
         planeCameraLead.y = Math.sin(player.a) * look;
-        cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
-        cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
+        // A garage's drive-in show frames the bay (garages.js garageCameraFrame).
+        const frame = garageCameraFrame();
+        cameraTarget.x += ((frame ? frame.x : player.x + Math.cos(player.a) * look) - cameraTarget.x) * follow;
+        cameraTarget.y += ((frame ? frame.y : player.y + Math.sin(player.a) * look) - cameraTarget.y) * follow;
       }
       timed('sound', () => {
         soundUpdate(deltaSeconds);
@@ -3923,6 +3953,7 @@
       drawCounty2D();
       drawDistrictScenery2D();
       paintGarages(worldContext);
+      paintGarageNames(worldContext);
       drawAviationGround(worldContext);
       drawHarbor2D();
       drawDepot2D();
@@ -4598,7 +4629,8 @@
       const bikeShare = gameMode === 'play' && !rideSkipActive() ? bikeShareOffer() : null;
       // A passenger ride that can be skipped offers that first (ride-skip.js).
       const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
-      if (gameMode === 'play' && rideSkipActive()) prompt = '';
+      // Thrown off a bike (riders.js): nothing to offer until back on their feet.
+      if (gameMode === 'play' && (rideSkipActive() || player.thrown)) prompt = '';
       else if (skip) {
         prompt = skip.prompt;
         promptId = skip.id;
@@ -4625,14 +4657,9 @@
             prompt = bikeShare.text;
             promptId = 'bikeshare';
             promptKey = bikeShare.key;
-          } else if (garageForCar(c))
-            prompt = repairJob
-              ? 'RESPRAYING…'
-              : garageServiceCost(c) === 0
-                ? 'RESPRAY & REPAIR · VINNY PAYS'
-                : 'RESPRAY & REPAIR · $250';
-          else if (GARAGES.some((s) => distanceBetween(c, s) < 200))
-            prompt = 'DRIVE FULLY INTO THE OPEN REPAIR BAY';
+          } else if (garagePrompt(c) !== null)
+            // The price at the door (garages.js PRICE LIST); E skips the show.
+            prompt = garagePrompt(c);
         } else if (taxiRide) prompt = taxiRide.arrival > 0 ? '' : 'STOP HERE · $' + taxiRide.fare;
         else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
         else if (player.deck)
@@ -4878,6 +4905,7 @@
       player.coaster = null;
       player.parachute = null;
       player.climbing = null;
+      player.thrown = null;
       player.pool = null;
       player.jumpUntil = 0;
       // Off any roof: the Blue Hour terrace or a building roof.
@@ -5242,6 +5270,7 @@
     // @include src/chase.js
     // @include src/roadblocks.js
     // @include src/carjack.js
+    // @include src/riders.js
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js
@@ -5440,7 +5469,9 @@
       const updateStart = performance.now();
       // The city keeps living behind the title menu, and behind settings opened
       // from it. WASTED and BUSTED play out in slow motion.
-      if (
+      // A test holding the simulation (console `holdSimulation`) still draws.
+      if (simulationHeld) soundUpdate(0);
+      else if (
         gameMode === 'play' ||
         gameMode === 'menu' ||
         (gameMode === 'settings' && settingsOrigin === 'menu')
@@ -5835,7 +5866,8 @@
       // police helicopter, and how many covers of each kind are registered (with
       // one example point each, for tests).
       cover(x = player.x, y = player.y) {
-        const c = overheadCover(x, y, x === player.x && y === player.y ? entityElevation(player.car || player) : terrainHeight(x, y)),
+        const elevation = x === player.x && y === player.y ? entityElevation(player.car || player) : terrainHeight(x, y),
+          c = overheadCover(x, y, elevation),
           kinds = {};
         for (const k of overheadCovers) {
           const entry = (kinds[k.kind] ??= { count: 0, example: [Math.round(k.x), Math.round(k.y)] });
@@ -5845,10 +5877,16 @@
           x: Math.round(x),
           y: Math.round(y),
           cover: c ? { kind: c.kind, bottom: Math.round(c.bottom), top: Math.round(c.top) } : null,
+          // Where the helicopter's searchlight lands (air-cover.js overheadCoverHeight).
+          roofHeight: overheadCoverHeight(x, y, elevation),
           playerHiddenFromAir: hiddenFromAir(player.car || player),
+          air: airPursuitStatus(),
           registered: kinds,
         };
       },
+      // The respray garages (garages.js): shops, doors, prices, the offer for the
+      // player's vehicle, the drive-in job in progress and the last service.
+      garage: () => garageReport(),
       // Fix the Apache's aim point on the ground (map x, y) as the mouse would;
       // no arguments hands the aim back to the mouse. Returns apache().
       // Put a fresh Apache back on its pad (the old one, wrecked or not, is removed
@@ -6459,6 +6497,15 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Handling: turnTest(), pose(), aiDriving(), riderReport(), rideInto(),
+      // bridgeJump() (see physics.js handlingConsole).
+      ...handlingConsole(),
+      // Stop the frame loop's simulation (it still draws) so a screenshot sequence
+      // can be stepped with simulate(); false lets it run again.
+      holdSimulation(on = true) {
+        simulationHeld = !!on;
+        return simulationHeld;
+      },
       // Sound: audioMix(), engineSound(), rainSound() (see audio.js audioConsole).
       ...audioConsole(),
       // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
@@ -6500,6 +6547,20 @@
           return { id: c.id, type, body, livery };
         });
       },
+      // Helicopter review (helicopter3d.js): parks one helicopter of each look
+      // ('police', 'news', 'executive', 'military') in a row east from (x, y),
+      // `spacing` apart, facing `heading`; `rotors` true spins them up (with the police lights
+      // running). Returns the ids and looks.
+      helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110) {
+        return ['police', 'news', 'executive', 'military'].map((heliLook, i) => {
+          const c = makeCar('helicopter', x + i * spacing, y, heading, false);
+          Object.assign(c, { heliLook, showRotor: !!rotors, showLights: rotors ? 'pursuit' : false });
+          return { id: c.id, look: heliLook };
+        });
+      },
+      // Every helicopter model built: look, rotor spool, draw calls, shadow casters,
+      // triangles, crew shown (helicopter3d.js).
+      helicopterModels: () => city3D?.helicopterModels?.() ?? null,
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
       // pass). On AUTO the adaptive controller may change it again.
       renderScale(scale) {
@@ -6586,6 +6647,8 @@
       // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
       // 'bloom'; nothing for the image) to tune the post-processing.
       postView: (mode) => city3D?.postView?.(mode) ?? null,
+      // The helicopter searchlight's state, screen points and shaft / pool switches.
+      searchlight: (options) => city3D?.searchlight?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
       // Shadow casters near the view that the camera pass does not show.

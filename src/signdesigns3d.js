@@ -1077,10 +1077,13 @@
           'SENTINEL SURPLUS': ['stencil', { ground: '#6b6a4a', kind: 'steel', ink: '#1d1d1d', icon: 'star', icon2: true, iconColor: '#1d1d1d', rivets: true, rust: 0.5, sub: 'ARMY · NAVY · GEAR' }],
           'WEAPONS · AMMO · ARMOR': ['stencil', { ground: '#f2c21b', ink: '#141414', hazard: 'border', border: null, stencil: true }],
           // Garages and cars
-          'EASTSIDE CUSTOMS': ['customs', { sub: 'KUSTOM PAINT · CHOP · CHROME' }],
-          'PALM AUTO PAINT': ['airbrush', { grad: ['#ff7ac0', '#ff9a5a', '#27c6c0'], icon: 'spray', iconColor: '#ffffff', iconColor2: '#1b2a4a', palms: false, lines: ['PALM AUTO PAINT'], sub: 'RESPRAYS · WHILE · YOU · WAIT', outline: '#2a1a4a' }],
-          'BATTERY MOTOR WORKS': ['enamel', { ground: '#1d3b7a', ink: '#d8261c', innerInk: '#d8261c', inner: '#f2efe6', rim: '#f2efe6', font: 'slab', weight: '900', lines: ['BATTERY', 'MOTOR WORKS'], ratio: [0.7, 1], icon: 'piston', icon2: true, iconColor: '#f2efe6', iconColor2: '#1d3b7a', backlit: false }],
-          'STONECREEK GARAGE': ['painted', { ground: '#7a2e22', ink: '#f0e6c8', icon: 'tyre', icon2: 'wrench', iconColor: '#f0e6c8', iconColor2: '#7a2e22', font: 'slab', sub: 'TOWING · REPAIRS · TIRES' }],
+          // The respray garages (garages.js): every billboard says MECHANICS.
+          'EASTSIDE GARAGE': ['customs', { sub: 'MECHANICS · RESPRAY · REPAIR' }],
+          'PALM KEYS AUTO': ['airbrush', { grad: ['#ff7ac0', '#ff9a5a', '#27c6c0'], icon: 'spray', iconColor: '#ffffff', iconColor2: '#1b2a4a', palms: false, lines: ['PALM KEYS AUTO'], sub: 'MECHANICS · RESPRAYS WHILE YOU WAIT', outline: '#2a1a4a' }],
+          'SOUTH BANK MOTOR WORKS': ['enamel', { ground: '#1d3b7a', ink: '#d8261c', innerInk: '#d8261c', inner: '#f2efe6', rim: '#f2efe6', font: 'slab', weight: '900', lines: ['SOUTH BANK', 'MOTOR WORKS'], ratio: [0.7, 1], icon: 'piston', icon2: true, iconColor: '#f2efe6', iconColor2: '#1d3b7a', backlit: false, sub: 'MECHANICS · BODYWORK · PAINT', subInk: '#1d3b7a' }],
+          'STONECREEK GARAGE': ['painted', { ground: '#7a2e22', ink: '#f0e6c8', icon: 'tyre', icon2: 'wrench', iconColor: '#f0e6c8', iconColor2: '#7a2e22', font: 'slab', sub: 'MECHANICS · TOWING · TYRES' }],
+          // The lightbox over each garage's office door.
+          MECHANICS: ['lightbox', { panel: '#1e2327', ink: '#ffd200', icon: 'wrench', icon2: true, iconColor: '#ffd200', font: 'sans', weight: '800', spacing: 0.22 }],
           // Rooms
           'SUNSET MOTEL': ['neonScript', { board: '#1f8a8c', shape: 'boomerang', rim: '#f4efe2', script: 'Sunset', block: 'MOTEL', tube: '#ff8a3d', blockTube: '#ff3b5c', painted: 'sunset', paintedColor: '#ffb347', flicker: true }],
           'CORAL PALMS MOTEL': ['neonScript', { board: '#f29c8f', shape: 'round', rim: '#fff4e6', script: 'Coral Palms', block: 'MOTEL', tube: '#19d3c5', blockTube: '#1a5fd0', icon: 'palm', iconColor: '#2fe07a', iconFill: '#1f7a52', flicker: true, balance: false }],
@@ -1174,7 +1177,7 @@
           if (/MOTEL/.test(t)) return ['neonScript', { board: '#1f6f8a', script: t.replace(/ ?MOTEL/, '').toLowerCase() || 'motel', block: 'MOTEL', tube: '#ff8a3d', blockTube: '#ff3b5c', flicker: true }];
           if (/INN$|HOTEL/.test(t)) return ['enamel', { ground: '#0f3550', ink: '#f4e7c5', rim: '#f4e7c5', font: 'times', shape: 'round', icon: 'star', iconColor: '#f4e7c5' }];
           if (/DINER|GRILL/.test(t)) return ['diner', { panel: '#b3202a', script: t.replace(/ ?(DINER|GRILL).*/, '').toLowerCase(), block: 'DINER', tube: '#8fd8ff' }];
-          if (/GARAGE|MOTOR|AUTO|CUSTOMS/.test(t)) return ['painted', { ground: color ? SignKit.shade(color, 0.55) : '#39463a', ink: '#f0e6c8', icon: 'wrench', iconColor: '#f0e6c8', font: 'slab' }];
+          if (/GARAGE|MOTOR|AUTO|CUSTOMS|MECHANIC/.test(t)) return ['painted', { ground: color ? SignKit.shade(color, 0.55) : '#39463a', ink: '#f0e6c8', icon: 'wrench', iconColor: '#f0e6c8', font: 'slab' }];
           if (/HOSPITAL|MEDICAL|CLINIC/.test(t)) return ['lightbox', { panel: '#f4f6f5', ink: '#123a6b', band: '#123a6b', icon: 'cross', iconColor: '#d42a2a', iconBox: '#ffffff' }];
           if (/BANK|TRUST|CAPITAL|EXCHANGE/.test(t)) return ['carved', { ground: '#10202e', font: 'times' }];
           if (/CLUB|LOUNGE|BAR$/.test(t)) return ['neonScript', { script: t.toLowerCase(), tube: color || '#ff4fb8' }];
@@ -1454,7 +1457,7 @@
             },
           ],
           [
-            'PALM AUTO PAINT',
+            'PALM KEYS AUTO',
             (g, w, h) => {
               sky(g, w, h, ['#ff7ac0', '#ff9a5a', '#27c6c0']);
               g.strokeStyle = 'rgba(255,255,255,0.7)';
@@ -1466,8 +1469,8 @@
                 g.stroke();
               }
               K.icon(g, 'car', w * 0.8, h * 0.6, 150, '#1b2a4a', '#f6efe0');
-              T(g, 'PALM AUTO PAINT', w * 0.3, h * 0.36, { font: 'black', weight: '900', size: 40, maxW: w * 0.54, skew: 0.25, fill: '#ffffff', outline: [2.5, '#2c1e2a'], extrude: [3, 4, '#2c1e2a'] });
-              T(g, 'RESPRAYS WHILE YOU WAIT', w * 0.3, h * 0.7, { font: 'sans', weight: '800', size: 17, maxW: w * 0.5, skew: 0.2, spacing: 0.1, fill: '#2c1e2a' });
+              T(g, 'PALM KEYS AUTO', w * 0.3, h * 0.36, { font: 'black', weight: '900', size: 40, maxW: w * 0.54, skew: 0.25, fill: '#ffffff', outline: [2.5, '#2c1e2a'], extrude: [3, 4, '#2c1e2a'] });
+              T(g, 'MECHANICS · RESPRAYS WHILE YOU WAIT', w * 0.3, h * 0.7, { font: 'sans', weight: '800', size: 17, maxW: w * 0.5, skew: 0.2, spacing: 0.1, fill: '#2c1e2a' });
             },
           ],
           [
