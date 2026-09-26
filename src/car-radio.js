@@ -169,12 +169,12 @@
       return true;
     }
     /* Somewhere with a radio: a working vehicle (a bicycle has none), or a Sunset
-       Pier ride, the Falcon's train or an Eye capsule (themepark.js), which play
-       the same stations through the same player. */
+       Pier ride such as an Eye capsule (themepark.js), which plays the same
+       stations through the same player. The Falcon's train has no radio. */
     function radioAboard() {
       // A hired cab has the driver's radio on (taxi.js), and it plays on through
       // a skipped ride's fade (ride-skip.js ducks the effects bus, not the radio).
-      return gameMode === 'play' && ((player.car?.hp > 0 && !ridingBicycle()) || !!player.coaster || !!taxiRide);
+      return gameMode === 'play' && ((player.car?.hp > 0 && !ridingBicycle()) || (!!player.coaster && player.coaster.kind !== 'train') || !!taxiRide);
     }
     /* Whether the radio is on where the player is. On the Falcon it starts off
        every ride and the switch (N / B, a click) holds for that ride only
