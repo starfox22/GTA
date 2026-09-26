@@ -428,12 +428,14 @@
         'Brakes on. I am dropping the shutter behind you — they are right on your tail.',
       );
     }
-    /* Officers still in the fight inside the sealed warehouse. A downed officer
-       (alive, crawling, no longer shooting) is out of it. */
+    /* Officers still alive inside the sealed warehouse. A downed officer (hit
+       hard, crawling, no longer shooting) still counts: he is a witness on the
+       floor, and the marker stays on him until he is dealt with. (Inside the
+       sealed warehouse a fatal body hit kills outright, wounds.js, so this is
+       only the officer left under 26 hp.) */
     function depotPoliceInside() {
       return officers.filter(
-        (o) =>
-          o.hp > 0 && !o.downed && !o.returned && o.state !== 'return' && insideDepot(o.x, o.y),
+        (o) => o.hp > 0 && !o.returned && o.state !== 'return' && insideDepot(o.x, o.y),
       );
     }
     function eliminateText(n) {
