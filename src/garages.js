@@ -253,7 +253,7 @@
         byId = (id) => GARAGE_RESPRAY_PRICES.find((c) => c.id === id);
       if (type === 'bike' || type === 'cruiser') return byId('motorcycle');
       if (spec.truck && spec.l > 8 * UNITS_PER_METRE) return byId('heavy');
-      if (['supercar', 'luxury', 'limousine', 'sport', 'roadster', 'rally'].includes(type)) return byId('performance');
+      if (['supercar', 'luxury', 'limousine', 'sport', 'roadster', 'rally', 'muscle', 'hotrod'].includes(type)) return byId('performance');
       if (spec.truck || ['suv', 'pickup', 'van', 'ambulance'].includes(type)) return byId('utility');
       return byId(spec.l < 4.6 * UNITS_PER_METRE ? 'compact' : 'saloon');
     }
@@ -291,6 +291,8 @@
     /* What the prompt says in a vehicle at or in a garage (null elsewhere). */
     function garagePrompt(vehicle) {
       if (repairJob) return repairJob.phase === 'driveout' ? '' : 'SKIP';
+      // Vinny's coupe with its tracker (challenges.js): no respray until it is out.
+      if (mission?.index === 2 && [1, 2].includes(mission.stage) && garageForCar(vehicle)) return 'GET OUT · REMOVE THE TRACKER';
       const s = garageApproach(vehicle);
       if (!s) {
         // Heading for a garage (nose within 90 degrees of its door): how to get served.
@@ -503,7 +505,8 @@
         placeGarageCar(job, shop.service.x, shop.service.y + travel * eased, Math.PI / 2);
         setGarageDoor(shop, 1);
         if (k >= 1) {
-          const speed = (travel / job.duration) * 1.4;
+          // Rolling at walking pace onto the apron: the player takes it from there.
+          const speed = 8 * KMH;
           car.speed = speed;
           car.vx = 0;
           car.vy = speed;

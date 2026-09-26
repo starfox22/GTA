@@ -747,7 +747,7 @@
             addGlow(x, 46.4, z, 16, '#e8f2ff', 0.5, { day: 0.15 });
           }
         // The tubes' light on the floor at night (the light map; lighting3d.js).
-        for (const v of [30, 90]) signSpill(s.bayX, zOf(v), 52, '#dfeaff', 0.5);
+        for (const v of [34, 84]) signSpill(s.bayX, zOf(v), 44, '#dfeaff', 0.22);
 
         const model = { shop: s, group, roof, upper, slats, slatH, beacon, rig, gun, fanBlades, rigPark: bay.x1 - 10 };
         garageModels.push(model);
