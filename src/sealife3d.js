@@ -79,10 +79,22 @@
            */
           loft(stations, segments, paint, part = () => 0) {
             let prev = null;
+            // A triangle joining the lower jaw (part 1) to the rest of the head
+            // (part 0) is left out: that seam is the mouth, which opens.
+            const partOf = (i) => sea[i * 3 + 1];
+            const lips = (a, c, d) => {
+              const pa = partOf(a),
+                pc = partOf(c),
+                pd = partOf(d);
+              return (pa === 1 || pc === 1 || pd === 1) && (pa === 0 || pc === 0 || pd === 0);
+            };
+            const face = (a, c, d) => {
+              if (!lips(a, c, d)) idx.push(a, c, d);
+            };
             for (const st of stations) {
               if (!st.w) {
                 const tip = b.v(st.x, st.yc || 0, 0, paint(st.x, 0, 0, 1), part(st.x, 0, 0, 1));
-                if (prev) for (let k = 0; k < segments; k++) idx.push(tip, prev[k], prev[(k + 1) % segments]);
+                if (prev) for (let k = 0; k < segments; k++) face(tip, prev[k], prev[(k + 1) % segments]);
                 prev = { tip };
                 continue;
               }
@@ -96,14 +108,15 @@
                   ps = Math.sign(s) * Math.pow(Math.abs(s), e);
                 ring.push(b.v(st.x, (st.yc || 0) + (s >= 0 ? st.top : st.bot) * ps, st.w * pc, paint(st.x, th, s, c), part(st.x, th, s, c)));
               }
-              if (prev && prev.tip !== undefined) for (let k = 0; k < segments; k++) idx.push(prev.tip, ring[(k + 1) % segments], ring[k]);
+              if (prev && prev.tip !== undefined) for (let k = 0; k < segments; k++) face(prev.tip, ring[(k + 1) % segments], ring[k]);
               else if (prev)
                 for (let k = 0; k < segments; k++) {
                   const a = prev[k],
                     bb = prev[(k + 1) % segments],
                     c = ring[k],
                     d = ring[(k + 1) % segments];
-                  idx.push(a, bb, c, bb, d, c);
+                  face(a, bb, c);
+                  face(bb, d, c);
                 }
               prev = ring;
             }
@@ -213,7 +226,7 @@
         b.fin([0, 0.25, 0], [1, 0, 0], [0, 1, 0], [[0.15, 0], [0.03, 0.12], [-0.09, 0.24], [-0.24, 0.34], [-0.21, 0.27], [-0.22, 0.15], [-0.3, 0]], 0.045, () => cape);
         // Flippers.
         for (const side of [-1, 1])
-          b.fin([0.62, -0.13, 0.18 * side], norm3(-0.55, -0.45, 0.7 * side), [1, 0, 0], [[0, 0.1], [0, -0.1], [0.22, -0.12], [0.34, -0.1], [0.31, -0.04], [0.15, 0.06]], 0.035, (u, v, top) => (top === side > 0 ? flank : cape));
+          b.fin([0.62, -0.13, 0.18 * side], norm3(-0.55, -0.45, 0.7 * side), [1, 0, 0], [[0, 0.1], [0, -0.1], [0.22, -0.12], [0.34, -0.1], [0.31, -0.04], [0.15, 0.06]], 0.035, (u, v, top) => (top === side > 0 ? cape : flank));
         // Flukes: a horizontal crescent with a median notch.
         b.fin(
           [-1.0, 0.015, 0],
@@ -325,7 +338,7 @@
         b.fin([0.55, 0.5, 0], [1, 0, 0], [0, 1, 0], [[0.45, 0], [0.22, 0.34], [-0.02, 0.68], [-0.18, 0.95], [-0.2, 0.86], [-0.2, 0.6], [-0.25, 0.28], [-0.33, 0]], 0.08, () => back);
         // Pectorals: long, swept and angled down.
         for (const side of [-1, 1])
-          b.fin([1.05, -0.28, 0.44 * side], norm3(-0.32, -0.42, 0.85 * side), [1, 0, 0], [[0, 0.3], [0, -0.25], [0.5, -0.25], [1.05, -0.2], [0.98, -0.05], [0.55, 0.13]], 0.06, (u, v, top) => (top === side > 0 ? belly : back));
+          b.fin([1.05, -0.28, 0.44 * side], norm3(-0.32, -0.42, 0.85 * side), [1, 0, 0], [[0, 0.3], [0, -0.25], [0.5, -0.25], [1.05, -0.2], [0.98, -0.05], [0.55, 0.13]], 0.06, (u, v, top) => (top === side > 0 ? back : belly));
         // Pelvic fins, second dorsal and anal fin.
         for (const side of [-1, 1]) b.fin([-0.35, -0.28, 0.17 * side], norm3(-0.5, -0.5, 0.7 * side), [1, 0, 0], [[0, 0.12], [0, -0.1], [0.25, -0.12], [0.21, 0.02]], 0.04, finPaint);
         b.fin([-0.8, 0.12, 0], [1, 0, 0], [0, 1, 0], [[0.06, 0], [-0.03, 0.11], [-0.08, 0.1], [-0.13, 0]], 0.03, () => back);
@@ -388,7 +401,9 @@
             [0, 0, side],
             outline,
             0.015,
-            (u, v, top) => {
+            (u, v, normalSide) => {
+              // The outline's normal points down on the right wing, up on the left.
+              const top = side > 0 ? !normalSide : normalSide;
               if (!top) return v > 0.55 ? seaColor('#50555a') : under;
               if (v > 0.5) return Math.abs(v - 0.61) < 0.03 && u < -0.08 ? white : ink;
               return u < -0.095 && v < 0.4 ? white : mantle;
@@ -865,7 +880,7 @@
           if (!seaNear(pod.x, pod.y, 300)) continue;
           for (const m of pod.members) {
             if (n >= dol.spec.capacity) break;
-            const flukes = m.mode === 'leap' ? 0.25 : m.mode === 'rise' ? 1.5 : 0.9 + clamp(m.speed / 60, 0, 1) * 0.6;
+            const flukes = m.mode === 'leap' ? 0.6 : m.mode === 'rise' ? 3.4 : 2 + clamp(m.speed / 60, 0, 1) * 1.2;
             seaPlace(dol, n, m.x, m.z, m.y, m.a, m.pitch, m.roll, m.scale, m.phase, flukes);
             n++;
             // At the surface: a wake off the back.
@@ -882,7 +897,7 @@
         const sh = seaSpecies.shark;
         const sharkShown = shark.active && seaNear(shark.x, shark.y, 300);
         if (sharkShown) {
-          seaPlace(sh, 0, shark.x, shark.z, shark.y, shark.a, shark.pitch, shark.roll, 1, shark.phase, 0.9 + shark.speed / 60, shark.mouth);
+          seaPlace(sh, 0, shark.x, shark.z, shark.y, shark.a, shark.pitch, shark.roll, 1, shark.phase, 2.4 + shark.speed / 20, shark.mouth);
           sh.mesh.instanceMatrix.needsUpdate = true;
           sh.anim.needsUpdate = true;
           // The fin cutting the surface leaves its own narrow wake.
