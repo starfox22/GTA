@@ -1,8 +1,14 @@
     // Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
-    const MONARCH_TOWERS = [
-      { id: 'sovereign', name: 'THE SOVEREIGN', block: [2, 1], x: 7596, y: -3420, w: 116, h: 116, storeys: 57, floor: 3.3 * UNITS_PER_METRE, crown: 64, helipad: false },
-      { id: 'monarch-one', name: 'MONARCH ONE', block: [2, 2], x: 7606, y: -2580, w: 150, h: 150, storeys: 48, floor: 3.35 * UNITS_PER_METRE, crown: 40, helipad: true },
+    /* Every tower design the island has had. `reserve` ones are kept (data and
+       their 3D builder in monarch-villas3d.js) but never built: THE SOVEREIGN
+       stood on block (2, 1) until MONARCH ONE became the island's only tower. */
+    const MONARCH_TOWER_DESIGNS = [
+      { id: 'sovereign', name: 'THE SOVEREIGN', reserve: true, block: [2, 1], x: 7596, y: -3420, w: 116, h: 116, storeys: 57, floor: 3.3 * UNITS_PER_METRE, crown: 64, helipad: false },
+      // On its own north-east point (monarch-one.js MONARCH_ONE): open sea north
+      // and east, so it hides nothing from the camera, which looks north.
+      { id: 'monarch-one', name: 'MONARCH ONE', estate: true, x: 9672, y: -5076, w: 176, h: 176, storeys: 74, floor: 3.6 * UNITS_PER_METRE, crown: 64, spire: 220, helipad: true },
     ];
+    const MONARCH_TOWERS = MONARCH_TOWER_DESIGNS.filter((t) => !t.reserve);
     /**
      * BUSINESSES: every trade the island needs, each with its own sign
      * (SIGN_DESIGNS entries in monarch3d.js). `block` and `slot` place the unit
@@ -15,10 +21,11 @@
       { name: 'VALMONT', trade: 'watches', block: [1, 1], slot: 2, width: 96, color: '#16233b' },
       { name: 'SAVILLE & CROWN', trade: 'tailor', block: [1, 1], slot: 3, width: 110, color: '#2a1f1a' },
       { name: 'FLEUR DE LYS', trade: 'florist', block: [1, 1], slot: 4, width: 84, color: '#355a3a' },
-      // The Sovereign's podium, block (2, 1).
+      // Sovereign Square, block (2, 1): two pavilions either side of the garden on
+      // Crown Avenue. Regent Court, block (2, 2): the bank on Regent Row.
       { name: 'CROWN PRIVATE BANK', trade: 'bank', block: [2, 2], slot: 0, width: 150, color: '#10202e' },
-      { name: 'AURELIE PARIS', trade: 'fashion', block: [2, 1], slot: 0, width: 120, color: '#e8e2d6' },
-      { name: 'ORO & PERLA', trade: 'jewellery', block: [2, 1], slot: 1, width: 110, color: '#3a1f28' },
+      { name: 'AURELIE PARIS', trade: 'fashion', block: [2, 1], slot: 0, width: 150, color: '#e8e2d6' },
+      { name: 'ORO & PERLA', trade: 'jewellery', block: [2, 1], slot: 1, width: 150, color: '#3a1f28' },
       // Block (3, 1): food and wine.
       { name: 'THE PROVISIONER', trade: 'grocer', block: [3, 1], slot: 0, width: 190, color: '#1f3d2c' },
       { name: 'CAFÉ ROYALE', trade: 'cafe', block: [3, 1], slot: 1, width: 96, color: '#3b2419' },
@@ -57,10 +64,32 @@
       monarchTrees = [],
       monarchLamps = [],
       monarchPlan = { villas: [], blocks: [], shops: [], built: false };
-    /* A tower's plaza: the paving round the tower is kept to a forecourt and
-       walks; the rest is lawn in the corners (planted with plane trees round
-       its edge, planIsleStreetscape), a long reflecting pool with a line of jets
-       in the widest lawn and a bronze sculpture on the next. */
+    /* A garden square (the low-rise blocks that took the towers' old sites): a
+       paved square `S` with a broad walk down its middle and a lawn either side
+       (plane trees round each, planIsleStreetscape), the reflecting pool in the
+       west lawn and a bronze sculpture (`kind`) on the east one. */
+    function planIsleSquare(plan, S, kind) {
+      const gap = 60,
+        half = (S.w - gap) / 2;
+      plan.square = S;
+      plan.lawns = [
+        { x: S.x + 24, y: S.y + 24, w: half - 48, h: S.h - 48 },
+        { x: S.x + half + gap + 24, y: S.y + 24, w: half - 48, h: S.h - 48 },
+      ];
+      const L = plan.lawns[0],
+        pw = Math.min(90, L.w * 0.42),
+        ph = Math.min(L.h * 0.62, 320);
+      plan.reflect = { x: L.x + (L.w - pw) / 2, y: L.y + (L.h - ph) / 2, w: pw, h: ph };
+      isleSolid(plan.reflect.x, plan.reflect.y, plan.reflect.w, plan.reflect.h, 2, 'pool');
+      const E = plan.lawns[1];
+      plan.sculpture = { x: E.x + E.w / 2, y: E.y + E.h / 2, kind };
+      isleSolid(plan.sculpture.x - 14, plan.sculpture.y - 14, 28, 28, 40, 'sculpture');
+    }
+    /* A tower's plaza (a reserve tower's block, see MONARCH_TOWER_DESIGNS): the
+       paving round the tower is kept to a forecourt and walks; the rest is lawn
+       in the corners (planted with plane trees round its edge,
+       planIsleStreetscape), a long reflecting pool with a line of jets in the
+       widest lawn and a bronze sculpture on the next. */
     function planIslePlaza(plan) {
       const B = plan.block,
         t = plan.tower,
@@ -150,9 +179,10 @@
           isleSolid(t.x + t.w + 4, t.y - 6, 2, t.h + 12, 14, 'fence');
         }
       }
-      // ---- The towers ----
+      // ---- The tower and its grounds ----
       for (const t of MONARCH_TOWERS)
         t.building = isleBuilding(t.x, t.y, t.w, t.h, Math.round(t.storeys * t.floor), { style: 0, tower: t.id, archetype: 'tower', monarchTower: t });
+      planMonarchOne(isleRandomSource(1997));
       // ---- Blocks ----
       for (const [key, use] of Object.entries(ISLE_BLOCK_USES)) {
         const [i, j] = key.split(',').map(Number),

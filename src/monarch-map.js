@@ -26,6 +26,7 @@
           g.fillRect(v.pool.x, v.pool.y, v.pool.w, v.pool.h);
         }
       }
+      paintMonarchOneMap(g);
       g.restore();
       g.fillStyle = '#c9c2ae';
       for (const f of MONARCH_MARINA.fingers) g.fillRect(f.x, f.y, f.w, f.h);
@@ -62,6 +63,7 @@
       ['ROYAL BOTANIC GARDEN', 8000, -4200],
       ['MONARCH HARBOUR', 8800, -880],
       ['MONARCH BEACH', 7700, -5130],
+      ['MONARCH ONE', 9720, -4560],
       // (Sovereign Sound is named in the HUD only: on the map it is narrower
       // than its name and would run into North Point's labels.)
       ['R E G E N C Y  C H A N N E L', 7600, -250],
@@ -83,7 +85,9 @@
         streets: ISLE_STREETS.map((s) => ({ name: s.name, vertical: s.vertical, at: s.at, from: s.from, to: s.to, divided: !!s.divided })),
         circles: ISLE_CIRCLES,
         villas: monarchPlan.villas.map((p) => ({ name: p.villa.name, style: p.villa.style, lot: p.villa.lot, house: p.house, storeys: p.storeys, pool: p.pool, tennis: p.tennis || null, gate: p.gateAt })),
-        towers: MONARCH_TOWERS.map((t) => ({ name: t.name, x: t.x, y: t.y, w: t.w, h: t.h, height: t.building ? t.building.height : 0, metres: Math.round(worldMeters(t.building ? t.building.height + t.crown : 0)) })),
+        towers: MONARCH_TOWERS.map((t) => ({ name: t.name, x: t.x, y: t.y, w: t.w, h: t.h, height: t.building ? t.building.height : 0, metres: Math.round(worldMeters(t.building ? t.building.height + t.crown + (t.spire || 0) : 0)) })),
+        reserveTowers: MONARCH_TOWER_DESIGNS.filter((t) => t.reserve).map((t) => t.name),
+        monarchOne: monarchOneReport(),
         businesses: monarchPlan.shops.map((s) => ({ name: s.name, trade: s.trade, door: s.door })),
         marina: { basin: MONARCH_MARINA.basin, fingers: MONARCH_MARINA.fingers, berths: monarchBerths().length, superyachts: MONARCH_SUPERYACHTS.map((s) => s.name) },
         garden: { x: MONARCH_GARDEN.x, y: MONARCH_GARDEN.y, w: MONARCH_GARDEN.w, h: MONARCH_GARDEN.h, house: MONARCH_GARDEN.house },

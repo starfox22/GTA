@@ -26,9 +26,8 @@
        *   THE SOVEREIGN  a pencil tower: a chamfered square shaft in bronze glass
        *                  behind full-height bronze fins, four setbacks and an open
        *                  lantern crown lit gold with a spire.
-       *   MONARCH ONE    a twisting tower: a softened square turning a quarter turn
-       *                  over 48 storeys, a white balcony band every other floor, a
-       *                  colour-walking LED crown and a helipad.
+       *                  (A reserve design since MONARCH ONE became the island's
+       *                  only tower; MONARCH ONE is built by monarch-one3d.js.)
        */
       const VILLA_LOOK = {
         modern: { facade: 'villaGlass', roof: 'flat', wall: 'render' },
@@ -386,6 +385,9 @@
       SKY_GLAZING.sovereign = { glass: ['#b89a74', '#5a4632'], mullion: ['#3d2c1c', 3], spandrel: ['#7a5c3c', 0.14], pattern: 'fins', lit: 0.5, warm: 0.9 };
       SKY_GLAZING.monarchOne = { glass: ['#a8c8d8', '#4a7086'], mullion: ['#f2f4f5', 2], spandrel: ['#f4f5f4', 0.3], pattern: 'bands', lit: 0.55, warm: 0.7 };
       function buildIsleTower(t) {
+        // MONARCH ONE, the island's supertall, has its own build (monarch-one3d.js);
+        // this one draws the reserve design, THE SOVEREIGN.
+        if (t.id === 'monarch-one') return buildMonarchOneTower(t);
         const b = t.building,
           group = new Three.Group();
         group.position.set(b.x, 0, b.y);
@@ -422,41 +424,11 @@
           skyBeacon(T, T.cx, H + t.crown + 122, T.cz, 0.2);
           roofKeepOut(b.x + b.w / 2, b.y + b.h / 2, b.w, b.h);
           T.top = H + t.crown + 122;
-        } else {
-          const glass = skyGlass('monarchOne', b),
-            white = skyStone,
-            plan0 = planSuper(1, 1, 3.4, 48),
-            steps = 24,
-            sections = [];
-          // Podium: a double-height lobby in glass with a white canopy.
-          box(group, T.cx, 18, T.cz, T.W - 4, 36, T.D - 4, skyLobby);
-          box(group, T.cx, 37, T.cz, T.W, 2.4, T.D, white);
-          for (let k = 0; k <= steps; k++) {
-            const u = k / steps;
-            sections.push({ y: 38 + (H - 38) * u, r: u * (Math.PI / 2), s: 1 - 0.06 * Math.sin(u * Math.PI) });
-          }
-          const f = fitScale(plan0, sections, T.W / 2 - 8, T.D / 2 - 8),
-            plan = scalePlan(plan0, f);
-          skyLoft(T, plan, sections, glass);
-          // A white balcony band every other floor, turning with the tower.
-          const floor = t.floor;
-          for (let y = 38 + floor * 2; y < H - 4; y += floor * 2) {
-            const u = (y - 38) / (H - 38);
-            skyBand(T, plan, { r: u * (Math.PI / 2), s: 1 - 0.06 * Math.sin(u * Math.PI) }, y - 0.9, y + 0.6, 2.6, white);
-          }
-          const last = sections[steps];
-          skyBand(T, plan, last, H - 4, H + 2, 1.6, skyLed('#9fe0ff', 3.2, true));
-          skyBand(T, plan, sections[Math.round(steps * 0.5)], (38 + H) / 2 - 2, (38 + H) / 2 + 2, 1.6, skyLed('#9fe0ff', 2.2, true));
-          if (b.helipad) roofHelipad(group, b, H);
-          box(group, T.W - 18, H + 18, T.D - 18, 1.2, 36, 1.2, skySteel);
-          roofKeepOut(b.x + T.W - 18, b.y + T.D - 18, 8, 8);
-          skyBeacon(T, T.W - 18, H + 37, T.D - 18, 0.6);
-          T.top = H + 38;
         }
         // The name on the podium.
         atlasSign(group, towerNameCell(t.name), T.cx, 30, T.D + 1.4, Math.min(T.W * 0.8, 90), Math.min(T.W * 0.8, 90) / 8, neonCutout);
         signSpill(b.x + T.cx, b.y + T.D + 14, 50, '#ffe2b0', 0.35);
         b.crownHeight = Math.max(0, T.top - H);
-        allBuildings.push({ b, group, height: T.top, materials: [skyGlassMaterials.get(t.id === 'sovereign' ? 'sovereign' : 'monarchOne')] });
+        allBuildings.push({ b, group, height: T.top, materials: [skyGlassMaterials.get('sovereign')] });
       }
       // END SUBSYSTEM: src/monarch-villas3d.js

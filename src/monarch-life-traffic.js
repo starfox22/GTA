@@ -347,6 +347,8 @@
         }
       }
       for (let k = 0; k < 6; k++) park(['suv', 'luxury', 'roadster', 'sport', 'coupe', 'suv'][k], 9730 + (k % 2) * 118, -1160 + Math.floor(k / 2) * 72, k % 2 ? Math.PI : 0, ISLE_CAR_PAINT[k]);
+      // Monarch One's residents' bays and the tender at the cove's jetty.
+      populateMonarchOne(park);
       // Boats cruising out of the basin and along the channel.
       for (const [type, route] of ISLE_BOAT_ROUTES) {
         const p = route[0];
