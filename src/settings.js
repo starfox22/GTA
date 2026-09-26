@@ -11,7 +11,9 @@
      *             (game.js, FRAME LIMITER; 'dead-end-city-frame-limit'), character
      *             see-through: the cutaway round the player under a roof, owned
      *             by the renderer (city3D.setCharacterCutaway, which also reads
-     *             localStorage 'dead-end-city-cutaway' at startup: 'off' = off)
+     *             localStorage 'dead-end-city-cutaway' at startup: 'off' = off),
+     *             player outline at night (the faint moonlit rim on the player's
+     *             model, render3d.js PLAYER AT NIGHT; read every frame)
      *   AUDIO     sound on/off, a slider per mix bus (AUDIO_VOLUMES: master,
      *             radio & music, engines & vehicles, effects, voices, ambience,
      *             sirens; audio.js THE MIX), radio voices (police and dispatch
@@ -51,6 +53,8 @@
       radioUnmute: 80,
       npcChatter: true,
       cutaway: true,
+      // The faint moonlit rim on the player's silhouette at night (render3d.js).
+      playerOutline: true,
     };
     try {
       const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE));
@@ -65,6 +69,7 @@
         }
         if (Number.isFinite(saved.radioUnmute)) settings.radioUnmute = clamp(Math.round(saved.radioUnmute), 5, 100);
         if (typeof saved.npcChatter === 'boolean') settings.npcChatter = saved.npcChatter;
+        if (typeof saved.playerOutline === 'boolean') settings.playerOutline = saved.playerOutline;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
         if (typeof saved.voicesOn === 'boolean') voicesOn = saved.voicesOn;
       }
@@ -78,6 +83,7 @@
             ...Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.key, settings[v.key]])),
             radioUnmute: settings.radioUnmute,
             npcChatter: settings.npcChatter,
+            playerOutline: settings.playerOutline,
             soundOn,
             voicesOn,
           }),
@@ -106,6 +112,10 @@
     }
     function npcChatterOn() {
       return settings.npcChatter;
+    }
+    // Read by the renderer every frame, so a change applies at once.
+    function playerOutlineOn() {
+      return settings.playerOutline;
     }
     function setCharacterCutaway(on) {
       settings.cutaway = !!on;
@@ -181,6 +191,16 @@
           note: () => 'Cut a window through roofs, trees and decks above you so you can always see your character.',
           get: () => settings.cutaway,
           set: (on) => setCharacterCutaway(on),
+        },
+        {
+          id: 'playerOutline',
+          kind: 'toggle',
+          label: 'Player outline at night',
+          note: () => 'A faint moonlit rim on your character\u2019s edges at night, so they stand out on dark streets.',
+          get: () => settings.playerOutline,
+          set: (on) => {
+            settings.playerOutline = !!on;
+          },
         },
       ],
       audio: [
