@@ -144,6 +144,8 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
 
 ## Docs and changelog
 
+- `docs/BACKLOG.md`: known issues and loose ends per feature; check it before polishing an area,
+  delete a line when you fix it.
 - `docs/README.md` (index) · `docs/FILEMAP.md` (generated) · `docs/areas/*.md` (≤ ~8 KB each;
   update the one your change affects: contracts and gotchas, not what code says) ·
   `docs/audit/` (QA logs) · `docs/CHANGELOG.md` (latest release only) ·
