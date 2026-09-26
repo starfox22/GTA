@@ -1848,7 +1848,7 @@
         placePropInstance(mvLampArms, prop, l.x, height + 0.6, l.y, 1.6, 1.2, 1.6);
         placePropInstance(mvLampHeads, prop, l.x + 4.2, height - 3.4, l.y, 1.1, 2.6, 1.1, Math.PI / 4);
         prop.halo = glowHandle(addGlow(l.x + 4.2, height - 3.4, l.y, 12, '#ffcf8a', 0.85, { day: 0 }));
-        mvPool(batch, l.x + 4, l.y + 2, 9 * MVU, '#ffc27a', 0.6);
+        mvPool(batch, l.x + 4, l.y + 2, 8 * MVU, '#ffc27a', 0.42);
       }
       /* ---- The towns ------------------------------------------------------------------------- */
       const mvTownGroups = new Map();
