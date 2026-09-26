@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-362 files in the include tree, 138,273 lines.
+364 files in the include tree, 138,277 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -281,7 +281,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/flight-view3d.js`   882 — Flight camera and aerial perspective
 - `src/postfx3d.js`   841 — HDR post-processing pipeline
-- `src/lighting3d.js`    24 — ▸ Sun, sky, reflections and night light
+- `src/lighting3d.js`    26 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   924 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   313 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   294 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
@@ -349,7 +349,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
 - `src/lighting3d-sky.js`   602 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
-- `src/lighting3d-cutaway.js`   618 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and head, tail and strobe light beams.
+- `src/lighting3d-cutaway.js`   144 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
+- `src/lighting3d-vehicle-lights.js`   233 — Lighting 3D vehicle lights: the drive light map (head beams, tail washes, police strobes on the road).
+- `src/lighting3d-look.js`   243 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
 
 ## src/vegetation3d.js ▸ Tree library: species, foliage atlas, wind, LOD
 
