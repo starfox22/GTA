@@ -1,5 +1,57 @@
 # Changelog
 
+## Unreleased — MONARCH MOTORS and the Prestige Collection
+
+A flagship luxury car dealership on Monarch Isle, and eleven new hypercars and grand tourers you
+can buy (dealership.js, dealership-people.js, dealership3d.js, hypercars.js, hypercars3d.js;
+SOURCE_GUIDE section 6e). Free roam: available in the demo.
+
+- **MONARCH MOTORS · PRESTIGE COLLECTION** fills block (0, 2) at the Sovereign Bridge's landing
+  (Crown Avenue / Westgate / Regent Row), replacing the old MONARCH AUTOMOBILI showroom and the
+  SOLARIS pumps: a 74 x 47 m, 11 m glass hall with a waved white canopy, an oculus over the hero
+  dais and skylights; a polished travertine floor; twelve cars on flush turntables (three turning)
+  and a placard by each; WALTER MARTIN, CHEVETTE and MUGATTI brand walls under a mezzanine
+  gallery; a VIP lounge with sofas, a black marble bar and a lit bottle wall; a live configurator
+  LED wall; the reception desk; the delivery suite (stage turntable, LED backdrop, velvet curtain,
+  service desk); a forecourt with three podium cars, planters, flags, the lit pylon, the handover
+  bay and eight owners' bays. The roof lifts off while you are inside so the showroom reads from
+  above; at night the glass box glows and the island's light map carries pools under every car.
+- **Buying**: walk up to a car (prompt: name and price), open its card: spec sheet (power,
+  torque, 0-100, top speed, weight, length, engine, drivetrain), blurb, how it ranks in the
+  collection, paint swatches (the plinth car is resprayed as you choose), the price and BUY, or
+  INSUFFICIENT FUNDS with the shortfall; TEST DRIVE (two minutes); browse the other cars. A sale
+  takes the cash, saves and plays the delivery: the curtain draws back, the stage turns, confetti,
+  the salesman's congratulations, then the keys at the handover bay with the car beside you.
+- **Owned cars** are saved (localStorage `dead-end-city-garage`), are never stolen when you get in,
+  and live in the owners' bays: a wrecked or missing one is brought back while you are away; the
+  concierge's MY GARAGE brings any of them to the handover bay.
+- **People**: three salesmen in suits who come to meet you, walk with you, stand by the car you
+  look at and talk about it (by car, by your budget: "Perhaps our pre-owned… no, we don't do
+  pre-owned.", by the state you are in: "Sir, security is watching you… closely."), a
+  receptionist, a barista, enthusiasts with cameras ("My whole house costs less than this
+  wheel."), all through the crowd's two-bubble limit and the NPC chatter setting.
+- **Security**: armed guards in dark suits at the doors and on the floor. Gunfire or a blast on
+  the lot, hurting anyone, shooting or ramming the glass, damaging or taking a display car sounds
+  the alarm: four stars at once (five by the usual rules), shutters down, the alarm bell, the
+  guards fight (story.js combat), a response team after twelve seconds, staff cower and visitors
+  run. Panes shatter one by one and open. Display cars can be taken by force during an alarm.
+- **Cars** (hypercars3d.js, on cars3d.js's kit and damage contract; flake paint under the clear
+  coat, carbon twill in the liveries, active wings that lift at speed and brake as air brakes):
+  WALTER MARTIN VALKYRIE (venturi tunnels between the keel and the wheel pods, teardrop canopy,
+  dorsal fin, roof exhausts), WALTER MARTIN DBS SUPERLEGGERA (trapezoid grille, strakes, carbon
+  roof, blade tail lamp), CHEVETTE ZR1X (bridge vent, swan-neck wing, quad centre pipes), CHEVETTE
+  Z06 CARBON AERO, MUGATTI WAYRON SUPER SPORT (horseshoe grille, C-line, two-tone, roof scoops, the
+  W16 on show), MUGATTI TOURBILLON (quad vertical LED eyes, dorsal spine, light bar), KONIGSBERG
+  JASKO ABSOLUT (long tail, twin fins, ring lamps), PAGANO SIROCCO (quad round lamps, antennae
+  mirrors, snorkel, four pipes in a circle), RIMAK NOVERA (electric: gills, full-width tail bar),
+  McLOWEN W1 (eye-socket lamps, long active wing), CAVALINO LA FERA (dark nose spine, four round
+  tails). Engines: V12 hypercar, twin-turbo V12, W16, V16 hybrid, twin-turbo V8 and electric sets,
+  with a synthesised turbo whistle and wastegate chuff and a hybrid / electric motor whine.
+- **Console**: `dealership`, `prestigeCatalog`, `dealershipVisit`, `dealerMenu`, `dealerMenuPaint`,
+  `closeDealer`, `dealerBuy`, `dealerAlarm`, `dealerShatter`, `dealerCalm`, `dealerResetGarage`.
+
+<!-- PRESTIGE SPEC TABLE -->
+
 ## Unreleased — the car and motorbike redesign, and the flagships
 
 Civilian cars (cars3d.js) and motorbikes (motorbikes3d.js), rebuilt at real size to the police

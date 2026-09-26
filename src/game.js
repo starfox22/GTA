@@ -2611,6 +2611,8 @@
         return;
       // The hill climb at the 4x4 club's sign, from a vehicle (offroad.js).
       if (offroadClubInteract()) return;
+      // MONARCH MOTORS: a car on display, the concierge, ending a test drive (dealership.js).
+      if (dealershipInteract()) return;
       if (player.car) {
         if (garageInteract()) return;
         // Riding a share bike into a station docks it (cycles.js BIKE SHARE).
@@ -3143,6 +3145,8 @@
           continue;
         }
         if (!p.look) ensureLook(p);
+        // MONARCH MOTORS' staff and visitors (dealership-people.js).
+        if (updateDealerPerson(p, deltaSeconds)) continue;
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateIsleWalker(p, deltaSeconds)) continue;
@@ -3548,6 +3552,8 @@
         timed('leisure', () => updateLeisure(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('monarch', () => updateMonarchIsle(deltaSeconds));
+        // MONARCH MOTORS: display, sale, delivery, owned cars, alarm (dealership.js).
+        timed('dealership', () => updateDealership(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
         if (player.parachute) updateParachute(deltaSeconds);
@@ -4892,6 +4898,10 @@
             prompt = bikeShare.text;
             promptId = 'bikeshare';
             promptKey = bikeShare.key;
+          } else if (dealershipPrompt()) {
+            // A test drive's clock (dealership.js).
+            prompt = dealershipPrompt().text;
+            promptId = 'dealer-test';
           } else if (garagePrompt(c) !== null)
             // The price at the door (garages.js PRICE LIST); E skips the show.
             prompt = garagePrompt(c);
@@ -4904,6 +4914,11 @@
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (payphoneInReach() && !m && missionIndex < missions.length) prompt = 'ANSWER PAYPHONE';
         else if (monarchPrompt()) prompt = monarchPrompt();
+        // MONARCH MOTORS: the car on display and its price, the concierge (dealership.js).
+        else if (dealershipPrompt()) {
+          prompt = dealershipPrompt().text;
+          promptId = dealershipPrompt().id;
+        }
         else if (bikeShare) {
           prompt = bikeShare.text;
           promptId = 'bikeshare';
@@ -4983,6 +4998,11 @@
       }
       if (gameMode === 'service') {
         closeService();
+        return;
+      }
+      // MONARCH MOTORS' purchase card (dealership.js).
+      if (gameMode === 'dealer') {
+        closeDealerMenu();
         return;
       }
       if (gameMode === 'taxi') {
@@ -5217,6 +5237,11 @@
       }
       const actions = pressControlKey(code),
         is = (id) => actions.includes(id);
+      // MONARCH MOTORS' purchase card owns the keyboard while it is open (dealership.js).
+      if (gameMode === 'dealer') {
+        dealershipKeyDown(e, code, is);
+        return;
+      }
       if (gameMode === 'map' && code === 'KeyC') {
         e.preventDefault();
         centerMapOnPlayer();
@@ -5536,6 +5561,7 @@
     // @include src/streets.js
     // @include src/terrain.js
     // @include src/offroad.js
+    // @include src/hypercars.js
     // @include src/casino.js
     // @include src/skyline.js
     // @include src/renewal.js
@@ -5554,6 +5580,8 @@
     // @include src/garages.js
     // @include src/crowd.js
     // @include src/monarch-life.js
+    // @include src/dealership.js
+    // @include src/dealership-people.js
     // @include src/beachclub.js
     // @include src/beachclub-audio.js
     // @include src/clubpool.js
@@ -6768,6 +6796,10 @@
       // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
       // (see sports.js sportsConsole).
       ...sportsConsole(),
+      // MONARCH MOTORS: dealership(), prestigeCatalog(), dealershipVisit(), dealerMenu(),
+      // dealerBuy(), dealerAlarm(), dealerShatter(), dealerCalm(), dealerResetGarage()
+      // (see dealership.js dealershipConsole).
+      ...dealershipConsole(),
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
       // Settings choice); returns what the renderer is now using.
       graphics(tier) {

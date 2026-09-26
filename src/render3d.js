@@ -1186,6 +1186,7 @@
       // @include src/monarch-marina3d.js
       // @include src/monarch-garden3d.js
       // @include src/monarch-streets3d.js
+      // @include src/dealership3d.js
       // @include src/beachclub3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
@@ -1198,6 +1199,7 @@
       // @include src/vehicles3d.js
       // @include src/police3d.js
       // @include src/cars3d.js
+      // @include src/hypercars3d.js
       // @include src/motorbikes3d.js
       // @include src/offroad3d.js
       // @include src/plane3d.js
@@ -2397,6 +2399,7 @@
           updateHarborVisuals();
           updateMarinaVisuals(deltaSeconds);
           updateMonarchVisuals();
+          updateDealershipVisuals(deltaSeconds);
           updateMissionVisuals();
           lap = profileLap('r:scenery', lap);
           placeSun();

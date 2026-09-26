@@ -739,9 +739,7 @@
       // Block (3, 2), on Regent Row: dining.
       { name: 'L’ÉTOILE', trade: 'restaurant', block: [3, 2], slot: 0, width: 220, color: '#0c0c10' },
       { name: 'THE REGENT HOTEL', trade: 'hotel', block: [3, 2], slot: 1, width: 280, color: '#1b2638' },
-      // Block (0, 2): cars and fuel.
-      { name: 'MONARCH AUTOMOBILI', trade: 'cars', block: [0, 2], slot: 0, width: 330, color: '#111316' },
-      { name: 'SOLARIS', trade: 'fuel', block: [0, 2], slot: 1, width: 210, color: '#0e2a3a' },
+      // Block (0, 2) is MONARCH MOTORS, the Prestige Collection's flagship (dealership.js).
       // The marina front, blocks (2, 3) and (3, 3), on Marina Drive.
       { name: 'THE OYSTER ROOM', trade: 'seafood', block: [2, 3], slot: 0, width: 150, color: '#12324a' },
       { name: 'GELATERIA DOLCE', trade: 'gelato', block: [2, 3], slot: 1, width: 92, color: '#f4d9e0' },
@@ -1078,19 +1076,8 @@
           break;
         }
         case 'motors': {
-          const [cars, fuel] = shopsIn(plan.key);
-          // The showroom on Regent Row: glass, a cantilevered roof and a forecourt of supercars.
-          cars.building = push(B.x + 250, B.y + B.h - 200, cars.width, 150, 38, { shop: cars.name, trade: cars.trade, facade: 'showroom', front: 'south' });
-          cars.door = { x: B.x + 250 + cars.width / 2, y: B.y + B.h - 40 };
-          plan.forecourt = { x: B.x + 250, y: B.y + B.h - 50, w: cars.width, h: 48 };
-          // The fuel station on Westgate, just off the bridge: shop and a canopy over four pumps.
-          fuel.building = push(B.x + 24, B.y + 60, 150, 90, 24, { shop: fuel.name, trade: fuel.trade, facade: 'fuel', front: 'south', style: 0 });
-          fuel.door = { x: B.x + 99, y: B.y + 160 };
-          plan.canopy = { x: B.x + 20, y: B.y + 200, w: 200, h: 140 };
-          plan.pumps = [0, 1, 2, 3].map((k) => ({ x: plan.canopy.x + 44 + (k % 2) * 112, y: plan.canopy.y + 38 + Math.floor(k / 2) * 64 }));
-          for (const p of plan.pumps) isleSolid(p.x - 10, p.y - 4, 20, 8, 10, 'fuel pump');
-          monarchPlan.shops.push(cars, fuel);
-          push(B.x + 250, B.y + 40, 350, 180, isleFloors(3), { facade: 'mansion', front: 'south' });
+          // MONARCH MOTORS, the flagship dealership, takes the whole block (dealership.js).
+          planDealership(plan, B);
           break;
         }
         case 'academy': {
@@ -1168,7 +1155,8 @@
         buildings.some((b) => b.monarch && x > b.x - pad && x < b.x + b.w + pad && y > b.y - pad && y < b.y + b.h + pad) ||
         monarchSolidList.some((b) => x > b.x - pad && x < b.x + b.w + pad && y > b.y - pad && y < b.y + b.h + pad) ||
         monarchPlan.shops.some((s) => s.door && Math.hypot(s.door.x - x, s.door.y - y) < 26) ||
-        monarchPlan.villas.some((v) => Math.hypot(v.gateAt.x - x, v.gateAt.y - y) < 44);
+        monarchPlan.villas.some((v) => Math.hypot(v.gateAt.x - x, v.gateAt.y - y) < 44) ||
+        dealershipKeepOut(x, y);
       const tree = (x, y, r, kind) => {
         if (blocked(x, y, 6)) return false;
         if (monarchTrees.some((t) => Math.abs(t.x - x) < 16 && Math.abs(t.y - y) < 16)) return false;
@@ -1179,7 +1167,7 @@
       };
       const lamp = (x, y, kind = 'lantern') => {
         if (!landAt(x, y) || onAnyRoad(x, y, 3) || isleCircleAt(x, y, -4) === null ? false : false) return;
-        if (onAnyRoad(x, y, 3)) return;
+        if (onAnyRoad(x, y, 3) || dealershipKeepOut(x, y)) return;
         // Nor on a bridge's deck at its landing.
         if (MONARCH_BRIDGES.some((B) => segmentDistance(x, y, B.a, B.b) < B.width / 2 + 4)) return;
         monarchLamps.push({ x, y, kind });
@@ -1695,6 +1683,8 @@
         fill = (r, c) => r && ((g.fillStyle = c), g.fillRect(r.x, r.y, r.w, r.h));
       // Most blocks: a paved forecourt along the shops, a garden court behind.
       fill({ x: B.x, y: B.y, w: B.w, h: B.h }, '#6a8b52');
+      // MONARCH MOTORS' forecourt, lane and bays (dealership.js).
+      if (plan.use === 'motors') paintDealershipGround(g, plan, P, detail);
       if (['arcade', 'provisions', 'harbourfront', 'chandlery', 'towerSovereign', 'towerMonarch'].includes(plan.use))
         fill({ x: B.x, y: B.y + B.h - 20, w: B.w, h: 20 }, P.walk);
       if (plan.use === 'towerSovereign' || plan.use === 'towerMonarch') {

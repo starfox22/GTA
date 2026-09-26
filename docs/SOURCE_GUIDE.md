@@ -262,6 +262,9 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
 | monarch.js | Monarch Isle (section 4, "Monarch Isle"): the coast (`MONARCH_ISLE`, pushed onto `LAND_REGIONS`), `MONARCH_BOUNDS`, the 100 m grid (`ISLE_COLS`, `ISLE_ROWS`, `ISLE_STREETS`, `ISLE_CIRCLES`, `isleCarriageways`), `MONARCH_BRIDGES` (pushed onto `BRIDGES`, designs `harp` and `bowstring` in `BRIDGE_DESIGNS`), `MONARCH_ROADS` (into `COUNTY_ROADS`: GPS and police routing), villas (`MONARCH_VILLAS`, `planVilla`), block uses (`ISLE_BLOCK_USES`, `planIsleBlock`, `planIslePlaza`), `MONARCH_TOWERS`, `MONARCH_BUSINESSES`, `MONARCH_MARINA` and berths, `MONARCH_GARDEN`, `buildMonarchIsle` (called from buildWorld after the real-height pass), street trees and lanterns (`planIsleStreetscape`, `monarchLamps`), collision (`monarchBlocked`, `monarchSolids`), districts, streets and shores (`monarchDistrictAt`, `monarchStreetName`, `monarchShoreStyle`), the ground tile and map paint, `monarchLayout()` |
 | monarch-life.js | Monarch Isle life: the island lane graph (`isleRoadGraph`: 31 nodes, 49 links, the two bridges joined to city and county roads), junction boxes and anticlockwise roundabouts (`isleCrossing`, `isleNodeBusy`, `isleBoxOccupied`), `isleTrafficControl` (called from physics.js for cars with `c.isle`), `populateMonarchIsle`, the walk graph (`isleWalkNodes`: pavements, zebras, ring walks, promenade, garden, beach), walkers (`updateIsleWalker`: look both ways at the kerb, detours, doors, photos), staff posts, boats (`isleBoatHelm`), payphones, sound, `monarchReport()` (DeadEndCity.monarch()) |
+| hypercars.js | The Prestige Collection (section 6e): `PRESTIGE_TYPES` (eleven hypercars and GTs added to `VEHICLE_DEFINITIONS` at real size, `modelScale` 1, `prestige`), `PRESTIGE_CATALOG` (marque, model, blurb, hp, torque, engine, drivetrain, price, paints), `prestigeFigures`, `prestigePrice`, their glass bands (`CAR_GLASS_BANDS`), engine sets (`ENGINE_SETS` v12hyper, v12tt, w16, v16, v8tt, electric) and the synthesised turbo whistle, wastegate chuff and motor whine (`updateHypercarVoice`) |
+| dealership.js | MONARCH MOTORS (section 6e): `DEALER` (the plan: hall, doors, panes, display slots, stage, curtain, handover and owners' bays, staff posts, furniture), `planDealership` (called by monarch.js for block (0, 2)), colliders, `paintDealershipGround`, the display cars (`spawnDisplayCar`, `stockDealership`, turntables), owned cars (`dealer.owned`, localStorage `dead-end-city-garage`, `keepOwnedCars`, `bringOwnedCar`), the purchase card (gameMode `'dealer'`, `openDealerMenu`, `dealershipKeyDown`, `buyPrestigeCar`), the delivery reveal (`startDeliveryReveal`, `dealershipCameraFrame`), test drives, the alarm (`dealershipAlarm`: 4 stars, shutters, guards; `dealershipHearsViolence` from notifyViolence; `dealershipShatter`), `dealershipPrompt` / `dealershipInteract`, `dealershipConsole()` |
+| dealership-people.js | MONARCH MOTORS' people: salesmen, receptionist and barista (pedestrians with a `dealer` record, `updateDealerPerson` from updatePeople), guards (gang members of the `prestige` faction, `dealerGuard`), enthusiasts; `DEALER_LINES` and `DEALER_CAR_LINES`, the aisle walk (`dealerAislePath`), escort and pitch (`dealerEscort`, `dealerPitchLine`), panic, `dealershipPeopleReport` |
 | airfields.js | The runway plan (section 4, "Airfields"): `RUNWAYS`, `TAXIWAYS`, `RUNWAY_PIERS` (reclaimed land, pushed onto `LAND_REGIONS`), `runwayRect` / `runwayPoint` / `runwayUnder` / `runwayPierAt`, PAPI units and `papiShowsWhite`, `paintAirfieldGround` (the flat runways for the 2D view, the maps and the ground sheets), `airfieldReport()` (DeadEndCity.airfields()) |
 | military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
 | apache.js | Fort Sentinel's AH-64 Apache, player only: parked on the west helipad (`parkApache`, `APACHE_PAD`), a `helicopter` with `airframe: 'apache'` (`HELICOPTER_AIRFRAMES`, merged by vehicleSpec), theft (`apacheBoarded`: base alarm, heat to the top), the chin gun laid by the mouse (`apacheAimPoint`, `traverseTurret`, `apacheGun`, `apacheRoundImpact`), rocket salvos (`apacheSalvo`, `apacheRocket`: `rocket` + `shell` rounds through `explode()`), ammunition and rearming on the base helipads (`updateApacheRearm`), respawn, the weapon chip (`apacheHud`, `drawRocketIcon`), the reticle (`updateApacheReticle`), `apacheReport()` |
@@ -348,6 +351,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | monarch-marina3d.js | Monarch Harbour: pontoons, berthed yachts from the Harbor Point builders, three superyachts (`buildIsleSuperyacht`), the fuel pontoon, the mole and lighthouse, the harbour master's tower, the yacht club |
 | monarch-garden3d.js | The Royal Botanic Garden: the Palm House (`buildIslePalmHouse`: translucent `gardenGlass`, wings, transept dome, interior plants, night glow), the plant builders (tree fern, banana, dragon tree, saguaro, agave, cacti, bird of paradise, bamboo, topiary, giant lilies, bougainvillea arches), fence, gates and signs |
 | monarch-streets3d.js | The island's streetscape and build (the last island renderer file): instanced lanterns (knockable props), fountains, the beach furniture, payphones, block extras (fuel canopy, showroom, courts, green, pitch, police lamp, tower plazas, chapel), median limes, then every island mesh merged per root (`kitMerge`); `updateMonarchVisuals()` |
+| dealership3d.js | MONARCH MOTORS in 3D (section 6e): travertine floor, stone walls, the instanced glass frontage, brand walls, mezzanine and stair, VIP lounge and bar, configurator LED wall (`drawDealerScreen`), reception, delivery stage with its LED backdrop and velvet curtain (`placeDealerCurtain`), hero dais, placards, forecourt podiums, planters, flags and pylon; the canopy roof (waved front edge, oculus, skylights) hidden while the player is inside; instanced turntables, rims and light pools, hero light cones, sliding and vehicle doors, security shutters and shards; built at include time so its pools are in the island's light map; `updateDealershipVisuals` |
 | beachclub3d.js | The club's meshes (batched), sails that fade while the player is inside, and the show: LED floor, moving heads, lasers, strobe, LED wall, flames, string lights (`updateBeachClubVisuals`, called from `updateBeachVisuals`) |
 | cycles3d.js | Bike-share stations: dock racks, docked share bikes and payment totems as instanced breakable props (merged vertex-coloured parts, `shareGeometry`), the totem's lit map, screen and brand faces, night glow and pool; the ridden share bike (`makeShareBicycle`); empty docks hidden (`updateBikeShareVisuals`) |
 | weather3d.js | GPU rain streaks (world-anchored, three depth layers, wind slant, lit by the night light map), splashes, roof and awning drips, spray behind cars, wet roads, lightning bolts and flashes, `vehicleLampAmount()` (headlights in heavy rain), the storm grade (`weatherGrade`) |
@@ -359,6 +363,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Trucks and buses (`makeTruck`), bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
 | cars3d.js | Every civilian car (section 6d): `CAR_BODIES` (seventeen real-size archetypes), the lofted shell with cross-sections that change along the car and wings above the bonnet (`civShellGeometry`), the five-pane glasshouse (`civCabinGeometry`), the kit of merged paint / trim / DRL / lamp sets built from surface-conforming helpers (`civKit`: `patch`, `strip`, `round`, `grille`, `cornerLamp`), the trim atlas and per-vertex finishes, livery decals over the paint (`civLiveryTexture`), tyres and rims (`civTyreGeometry`, `civRimGeometry`), `makeCivilianCar`, `animateCivilianCar` (lamps, DRLs, rolling and steering wheels), `civilianModelReport` |
+| hypercars3d.js | The Prestige Collection's bodies added to `CAR_BODIES` with cars3d.js's kit (section 6e): valkyrie, dbs, zr1x, chevetteSE, wayron, tourbillon, jasko, sirocco, novera, w1, lafera; carbon twill in the liveries (`hcCarbon`), the flake paint and active wings (`hcPrestigeExtras`), the horseshoe grille, C-line, venturi tunnels |
 | motorbikes3d.js | Every motorbike (section 6d): `MOTO_BODIES` (VORTEX 900, NOMAD CRUISER, DOLCATI V4, YAMASAKI 1000RR, KR 500), lofted tanks and fairings (`motoPod`), merged riders per riding pose (`motoRiderGeometry`) on the `model.rider` anchor, the steering fork, `makeMotorbike`, `animateMotorbike` (lamps, fork, wheelie) |
 | police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
 | offroad3d.js | The club trucks (`makeOffroadVehicle`, `OFFROAD_BODIES` in the police body format, canvas liveries, modelled mud-terrain / all-terrain / desert tyres and beadlock / steel / cast rims, kit per truck; `animateOffroadVehicle`: wheel speed with wheelspin, steering, articulation), mud on any vehicle's paint (`vehicleMudPatch`, `applyVehicleMud`), mud clumps, mist and dust, splat and tyre-track decals (`updateOffroadVisuals`), the club lot (sign, canopy, chairs, cooler, grill, fire ring, flag, string lights, lanterns) and the hill climb course (start gate, checkpoint flags, rock-step slabs, finish) |
@@ -539,8 +544,8 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   DE LYS florist), the tower podiums (CROWN PRIVATE BANK, AURELIE PARIS, ORO & PERLA), food
   and wine (THE PROVISIONER gourmet grocer, CAFÉ ROYALE, VINTAGE & VINE, GALERIE MONARCH), THE
   HALCYON CLINIC and AQUA SERENA SPA, L'ÉTOILE and THE REGENT HOTEL on Regent Row, MONARCH
-  AUTOMOBILI (supercars in the showroom and on the forecourt) with the SOLARIS premium fuel
-  station, the MONARCH COUNTRY CLUB (clay courts, pool, putting green), MONARCH ACADEMY and
+  MOTORS (the flagship dealership, filling block (0, 2) at the Sovereign Bridge's landing; section
+  6e; it replaced the old MONARCH AUTOMOBILI showroom and the SOLARIS pumps), the MONARCH COUNTRY CLUB (clay courts, pool, putting green), MONARCH ACADEMY and
   St Aldric's Chapel, the police substation, and on the harbourfront THE OYSTER ROOM,
   GELATERIA DOLCE, OCEANIS YACHTS, the MARINE CHANDLERY, the CHAMPAGNE BAR and BOUTIQUE RIVA. PLACES entries (monarch: true) make the clothes shop, café, bar,
   hotel and clinic work like the city's.
@@ -1800,6 +1805,66 @@ dress the 'suv' and 'van' types for the agents and SWAT at their own 0.8 (`drawS
 - **Engines** (engine-audio.js): `flatplane` (the V8's loops low, the six and the 4A-GE high,
   8,800 rpm; Chevette, Cavalino), `v12` (Brutini), `single` (KR 500); the superbikes use the
   bike set pitched (Dolcati lower, Yamasaki higher).
+
+## 6e. MONARCH MOTORS and the Prestige Collection
+
+The island's flagship dealership (dealership.js plans and runs it, dealership-people.js staffs
+it, dealership3d.js draws it; hypercars.js and hypercars3d.js are the cars). Free roam, no
+mission: it is in every build, the demo included.
+
+- **Where**: block (0, 2) of Monarch Isle, between Crown Avenue (north), Westgate (west, the
+  Sovereign Bridge lands at its corner) and Regent Row (south, the frontage). The hall is 74 x 47
+  m and 11 m high (`DEALER.hall`, x 5704..6296, y -2828..-2452); the forecourt runs to Regent Row
+  (y -2232). `DeadEndCity.dealershipVisit(where)` stands you at 'door', 'hall', 'hero',
+  'forecourt', 'stage', 'bays', 'lounge' or 'street'.
+- **Layout**: the glass frontage is 3 m panes (each its own collider in `DEALER.panes`) between a
+  4.5 m sliding pedestrian door and a 7 m vehicle door; stone side and back walls; inside, twelve
+  display slots on flush turntables (three turn), the Tourbillon on the hero dais under the
+  oculus, the brand walls under the mezzanine, the delivery suite in the west wing (stage,
+  curtain, backdrop, service desk), the VIP lounge (sofas, bar, stair) in the north-east, the
+  configurator wall and the reception desk by the door. People walk the three aisles between the
+  rows (`dealerAislePath`). The forecourt has three podium cars, planters, flags, the pylon, the
+  handover bay outside the vehicle door and eight owners' bays along the lane (painted into the
+  island's ground sheet by `paintDealershipGround`; street trees and lanterns keep out of the
+  lane's mouth, `dealershipKeepOut`).
+- **Buying**: on foot within 8 m of a display car (the reach of `nearestCar`) the prompt names it
+  and its price; the action key opens the purchase card (gameMode `'dealer'`: the simulation
+  holds, the camera frames the car): spec sheet, blurb, how it ranks in the collection, paint
+  swatches (the plinth car is resprayed live), the price with BUY or INSUFFICIENT FUNDS and the
+  shortfall, TEST DRIVE (two minutes from the handover bay), the other cars (up / down). No sale
+  while wanted or during an alarm. A purchase takes the cash, saves (`save()` and the garage), and
+  plays the delivery (`dealer.reveal`, about 9 s): the player stands before the stage, the car on
+  it behind the closed curtain, which draws back while the stage turns under confetti and the
+  salesman congratulates; then the keys at the handover bay, the car beside the player.
+- **Owned cars**: saved in localStorage `dead-end-city-garage` ({version, cars: [{id, type, color,
+  paint, price, boughtAt}]}); flagged `owned` (never locked, never a crime to enter: they are parked
+  cars). One that is wrecked or missing is brought back to a free owners' bay while the player is
+  more than 500 units away (a wreck after 45 s); the concierge at the reception desk (MY GARAGE)
+  brings any of them round to the handover bay. Owned cars live on Monarch Isle, not at the
+  safehouse: the safehouse block has no off-street parking, and the dealership's bays are where
+  the delivery ends.
+- **Security**: `dealershipAlarm(reason)`: gunfire or a blast on the lot by the player
+  (`dealershipHearsViolence`, called from harbor.js notifyViolence), a round through a pane or a car
+  into one (`watchDealershipHarm`; the pane shatters and its collider goes), a display car damaged
+  or driven off, anyone here hurt. It sets four stars at once (`setWantedLevel(4)` if lower, plus a
+  little heat: five follows by the usual rules), rolls the shutters down over eight seconds,
+  sounds the two-tone bell, and turns the guards (gang members of faction `prestige`, drawn in dark
+  suits, armed and fighting by story.js updateGangFights) on the player; a two-man response team
+  comes through the vehicle door after twelve seconds. Staff cower, visitors run. During an alarm
+  a display car can be taken (STEAL); taken or wrecked cars are restocked once the player is away.
+- **People**: three salesmen (suits, ties), a receptionist and a barista; the nearest free salesman
+  meets the player, walks with them, stands beside a car they linger at and talks about it (car
+  lines, budget lines from `cash`, wanted / armed / hurt lines), says goodbye when they leave;
+  enthusiasts wander the display with cameras (more by day), with their own lines. Bubbles go
+  through crowd.js speechBubbles (two at a time, the NPC chatter setting).
+- **Cars** (hypercars3d.js): eleven bodies on cars3d.js's kit and damage contract, with a flake
+  layer in the paint (the base coat's normal jittered per 1.5 cm cell, the clear coat smooth),
+  carbon twill painted in the liveries, and active wings on the Wayron, Tourbillon, Novera, W1
+  and La Fera (they lift above 110 km/h and stand up as air brakes under hard braking). Specs and
+  measured figures are in the changelog; `DeadEndCity.prestigeCatalog()` lists the cards.
+- **Console**: `dealership()`, `prestigeCatalog()`, `dealershipVisit(where, zoom)`,
+  `dealerMenu(type | 'garage')`, `dealerMenuPaint(i)`, `closeDealer()`, `dealerBuy(type, paint)`,
+  `dealerAlarm(reason)`, `dealerShatter(index)`, `dealerCalm()`, `dealerResetGarage()`.
 
 ## 7. Build, check, test
 

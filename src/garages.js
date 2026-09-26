@@ -629,6 +629,9 @@
     /* The camera during the show (game.js camera follow and world-view.js zoom):
        from the door coming down it frames the bay, a little closer in. */
     function garageCameraFrame() {
+      // MONARCH MOTORS' delivery reveal frames the stage (dealership.js).
+      const delivery = dealershipCameraFrame();
+      if (delivery) return delivery;
       const job = repairJob;
       if (!job || job.phase === 'rollin' || job.phase === 'driveout') return null;
       return { x: job.shop.service.x, y: job.shop.service.y + 14, zoom: 1.75 };
