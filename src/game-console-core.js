@@ -100,6 +100,15 @@
         player.a = heading;
         return { x: Math.round(player.x), y: Math.round(player.y), yacht: superyachtDeckState() };
       },
+      // Facing and footwork (footwork.js): with `aimDegrees` (0 east, 90 south) hold the
+      // aim there as the touch aim stick does, `null` lets it go; returns where the
+      // body faces, the movement keys' heading and the pace share (1, 0.8 side-step,
+      // 0.6 backpedal) and km/h. Hold keys with simulate() to move.
+      footwork(aimDegrees) {
+        if (aimDegrees === null) touchAim = null;
+        else if (typeof aimDegrees === 'number') touchAim = (aimDegrees * Math.PI) / 180;
+        return footworkReport();
+      },
       // Stop the frame loop's simulation (it still draws) so a screenshot sequence
       // can be stepped with simulate(); false lets it run again.
       holdSimulation(on = true) {

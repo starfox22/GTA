@@ -42,7 +42,8 @@
         gaitFoot = new Float32Array(2),
         gaitArm = new Float32Array(2),
         gaitElbow = new Float32Array(2),
-        gaitAbduct = new Float32Array(2);
+        gaitAbduct = new Float32Array(2),
+        gaitSpread = new Float32Array(2);
       /* Which poses carry something that needs the phone in hand. */
       const PHONE_POSES = new Set(['text', 'phone', 'film']);
       /* The far figure: plain standing or walking people only. */
@@ -133,12 +134,23 @@
         if (dt === 0 || fresh) s.yaw = facing;
         const H = R.height * RIG_UNIT,
           loco = J[J_LOCO] * clamp((s.speed - 1.5) / 5, 0, 1);
-        let strideSign = 1;
+        /*
+         * BACKPEDAL, STRAFE
+         * The upper body faces the aim; the hips lead along the line of travel
+         * going forwards, along its reverse backing off (`s.backing`, switched
+         * with some hysteresis so a sideways drift does not flip it), turning at
+         * most ~50 / ~25 degrees from the chest. What the hips do not turn is
+         * stepped: the stride runs along the travel direction in the hips' own
+         * frame, so the planted foot moves ahead of the body when backing off and
+         * the legs side-step (abducting, never crossing) for the rest.
+         */
         if (loco > 0.05) {
-          const rel = normalizeAngle(s.moveYaw - s.yaw),
-            back = Math.abs(rel) > 1.95;
-          if (back) strideSign = -1;
-          const hipTarget = s.yaw + clamp(back ? normalizeAngle(rel - Math.PI) : rel, -1.2, 1.2) * 0.85;
+          const rel = normalizeAngle(s.moveYaw - s.yaw);
+          if (Math.abs(rel) > 1.95) s.backing = true;
+          else if (Math.abs(rel) < 1.2) s.backing = false;
+          const lead = s.backing ? normalizeAngle(rel - Math.PI) : rel,
+            reach = s.backing ? 0.55 : 0.95,
+            hipTarget = s.yaw + clamp(lead, -reach, reach) * (s.backing ? 0.8 : 0.9);
           s.hipYaw += normalizeAngle(hipTarget - s.hipYaw) * (1 - Math.exp(-dt * 10));
           s.turning = false;
         } else {
@@ -155,30 +167,40 @@
           s.hipYaw = s.yaw;
           s.turning = false;
         }
-        const upperTurn = normalizeAngle(s.yaw - s.hipYaw);
+        const upperTurn = normalizeAngle(s.yaw - s.hipYaw),
+          // The travel direction in the hips' frame: along (+ forwards) and across (+ right).
+          travel = loco > 0.05 ? normalizeAngle(s.moveYaw - s.hipYaw) : 0,
+          along = Math.cos(travel),
+          across = Math.sin(travel),
+          back = Math.max(0, -along);
         // The gait. One cycle (two steps) covers strideCycle (game.js), a
-        // little shorter for smaller people.
-        const run = clamp((s.speed - 20) / 18, 0, 1),
-          cycle = strideCycle(s.speed) * (0.55 + 0.45 * R.height);
-        if (!fresh && dt > 0) s.phase += (moved / cycle) * TAU * strideSign * (p.injured || spec?.limp ? 0.8 : 1);
+        // little shorter for smaller people, and shorter and quicker backing off
+        // or side-stepping (never a sprinter's bound backwards).
+        const run = clamp((s.speed - 20) / 18, 0, 1) * (1 - 0.45 * back),
+          stride = 1 - 0.32 * back - 0.18 * Math.abs(across),
+          cycle = strideCycle(s.speed) * (0.55 + 0.45 * R.height) * stride;
+        if (!fresh && dt > 0) s.phase += (moved / cycle) * TAU * (p.injured || spec?.limp ? 0.8 : 1);
         const phi = s.phase,
           beta = 0.62 - 0.26 * run,
           L1 = RIG.thigh,
           L2 = RIG.shin,
-          stanceLen = Math.min((beta * cycle) / H, 6.4),
-          liftH = 0.75 + 2.3 * run,
+          stanceLen = Math.min((beta * cycle) / H, 6.4 * stride),
+          liftH = (0.75 + 2.3 * run) * (1 - 0.35 * back),
           bobWalk = -0.28 * (0.5 + 0.5 * Math.cos(2 * phi)),
           bobRun = 0.55 * (0.5 - 0.5 * Math.cos(2 * (phi - Math.PI * beta))) - 0.4,
           bob = loco * (bobWalk + (bobRun - bobWalk) * run),
           hipY = RIG.hip + J[J_DROP] + bob;
         const legHip = gaitHip,
           legKnee = gaitKnee,
-          footPitch = gaitFoot;
+          footPitch = gaitFoot,
+          legSpread = gaitSpread,
+          hipWidth = R.hipZ * R.width;
         const limp = p.injured || spec?.limp;
         for (let side = 0; side < 2; side++) {
           let hip = J[J_HIP[side]],
             knee = J[J_KNEE[side]],
             pitch = 0;
+          legSpread[side] = 0;
           if (loco > 0.01) {
             let u = ((phi + side * Math.PI) / TAU) % 1;
             if (u < 0) u += 1;
@@ -199,11 +221,19 @@
               fx *= 0.55;
               lift *= 0.4;
             }
-            fx *= strideSign;
-            const leg = solveLeg(fx, -(hipY - RIG.ankle - lift), L1, L2);
+            // Along the travel line: backwards the foot lands toes first and rolls
+            // back onto the heel; sideways the leg swings out (abduction) instead,
+            // and a foot never steps across the other.
+            const sign = side ? 1 : -1,
+              drop = hipY - RIG.ankle - lift;
+            let fz = fx * across * 0.8;
+            if (-sign * fz > 0.7 * hipWidth) fz = -sign * 0.7 * hipWidth;
+            const out = sign * fz,
+              leg = solveLeg(fx * along, -Math.hypot(drop, out), L1, L2);
             hip += (leg.hip - hip) * loco;
             knee += (leg.knee - knee) * loco;
-            pitch *= loco;
+            legSpread[side] = Math.atan2(out, drop) * loco;
+            pitch *= loco * (1 - 1.5 * back);
           }
           if (s.turning && loco < 0.3) {
             const lift = Math.max(0, Math.sin(s.turnPhase + side * Math.PI)) * 0.6;
@@ -216,7 +246,7 @@
         }
         const hipsDiff = legHip[0] - legHip[1],
           pelvisYaw = -0.12 * hipsDiff * loco,
-          lean = J[J_LEAN] - loco * (0.03 + run * 0.17),
+          lean = J[J_LEAN] - loco * (0.03 + run * 0.17) * (1 - back) + loco * back * 0.07,
           twist = J[J_TWIST] - clamp(upperTurn, -1.1, 1.1) + 0.2 * hipsDiff * loco * (1 - J[J_HOLD] * 0.8),
           roll = J[J_ROLL] + loco * (limp ? 0.1 * Math.sin(phi) : 0.02 * Math.cos(phi));
         // Arms swing against the legs, bent more at a run.
@@ -348,7 +378,7 @@
           const sign = side ? 1 : -1;
           let hip = legHip[side],
             knee = legKnee[side],
-            spread = J[J_SPREAD];
+            spread = J[J_SPREAD] + legSpread[side];
           if (spec?.legTargets) {
             // A rider's feet on the pedals or pegs: the target in the pelvis frame.
             legLocal.copy(spec.legTargets[side]).applyMatrix4(legInverse.copy(mHips).invert());

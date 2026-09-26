@@ -203,7 +203,8 @@
     /* The pace the player's legs are going on foot now; the movement, mountain
        footing (terrain.js), footsteps (audio.js) and the police's aim read it. */
     function footPace() {
-      return player.roof || actionHeld('walk') ? FOOT_WALK : FOOT_RUN;
+      // Backpedalling or side-stepping while facing the aim is slower (footwork.js).
+      return (player.roof || actionHeld('walk') ? FOOT_WALK : FOOT_RUN) * footworkPace(playerMoveHeading());
     }
     /* People's legs: one stride (two steps) covers 10 units plus 0.3 s of travel,
        so a walk steps about twice a second and a sprint four times. strideCycle
