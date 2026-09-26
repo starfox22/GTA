@@ -689,6 +689,7 @@ body.dealer-reveal #pager,body.dealer-reveal #toast{visibility:hidden}
       mouse.down = false;
       ensureDealerOverlay().classList.remove('hidden');
       document.body.classList.add('dealer-open');
+      syncPanelCover();
       frameDealerMenu();
       renderDealerMenu();
       dealershipSalesPitch(s, 'open');
@@ -703,6 +704,7 @@ body.dealer-reveal #pager,body.dealer-reveal #toast{visibility:hidden}
       if (dealerOverlay) dealerOverlay.classList.add('hidden');
       document.body.classList.remove('dealer-open');
       if (gameMode === 'dealer') gameMode = 'play';
+      syncPanelCover();
       worldZoom = m.view.zoom;
       canvasScale = clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
       keys = {};

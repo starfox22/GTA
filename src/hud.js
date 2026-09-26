@@ -725,6 +725,26 @@
       box.style.setProperty('--sniper-y', (50 + 50 * s * k).toFixed(1) + '%');
       box.style.setProperty('--sniper-aim', (0.35 + 0.65 * sniperThreat.aim).toFixed(2));
     }
+    /**
+     * PANEL COVER
+     * While a full-screen panel is up (pause, settings, the phone call, the
+     * sportsbook, the Monarch purchase card, the arsenal, transit, taxi...),
+     * body.panel-open hides the floating world HUD: the help toast, the headline
+     * card, the district plate, the navigation pill, the story line and the
+     * mission pager. A toast raised while the panel is open (a bet settling at
+     * the GOALLINE counter) is about the panel, so tell() tags it .over-panel
+     * and it stays visible. frame() (game.js) calls this every frame, whatever
+     * the mode (rAF runs before paint, so a panel never shows a frame with the
+     * hint over it); the sportsbook and the dealer card also call it at once.
+     */
+    const PANEL_MODES = new Set(['pause', 'settings', 'help', 'missions', 'arsenal', 'dealer', 'transit', 'taxi', 'service', 'demo', 'dialogue', 'elevator']);
+    function hudCovered() {
+      return PANEL_MODES.has(gameMode) || !!sportsbook.open || mapOpen;
+    }
+    function syncPanelCover() {
+      const covered = hudCovered();
+      if (covered !== document.body.classList.contains('panel-open')) document.body.classList.toggle('panel-open', covered);
+    }
     /* Called at the end of updateUI(). */
     function updateHud() {
       commitPrompt();

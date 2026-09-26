@@ -46,6 +46,7 @@
       sportsbookUi.structure = sportsbookUi.header = sportsbookUi.slip = sportsbookUi.bets = sportsbookUi.crests = '';
       getElement('sportsbook').classList.remove('hidden');
       document.body.classList.add('sportsbook-open');
+      syncPanelCover();
       renderSportsbook();
       tone(660, 0.05, 0.05);
       // Focus the first price, so the arrows work at once.
@@ -57,6 +58,7 @@
       sportsbook.open = false;
       getElement('sportsbook').classList.add('hidden');
       document.body.classList.remove('sportsbook-open');
+      syncPanelCover();
       keys = {};
       canvas.focus();
     }

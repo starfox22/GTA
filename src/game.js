@@ -1212,6 +1212,7 @@
     function tell(text, duration = 3) {
       getElement('toast').textContent = text;
       getElement('toast').classList.add('show');
+      getElement('toast').classList.toggle('over-panel', hudCovered());
       freshToast();
       toastTime = duration;
     }
@@ -5803,8 +5804,10 @@
       const deltaSeconds = Math.min(frameLimiter.limit === 30 ? 0.04 : 0.033, Math.max(0, (t - lastTime) / 1000));
       // Headline cards run on the wall clock: a phone call or pause that opens
       // right after one must not leave it frozen across the middle of the screen.
+      // Uncapped, so a slow renderer (a 1 FPS software GL) cannot stretch the
+      // 1.8 s SOUTH COAST · 1997 welcome card over the first minute of play.
       if (announceTime > 0) {
-        announceTime -= Math.min(0.25, Math.max(0, (t - lastTime) / 1000));
+        announceTime -= lastTime ? Math.min(5, Math.max(0, (t - lastTime) / 1000)) : 0;
         if (announceTime <= 0) getElement('announcement').classList.remove('show');
       }
       if (profile.last) profile.frameGap += t - profile.last;
@@ -5833,6 +5836,7 @@
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);
       }
+      syncPanelCover();
       const drawStart = performance.now();
       drawWorld();
       updateTankReticle();

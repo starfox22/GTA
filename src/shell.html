@@ -4705,6 +4705,17 @@ body:not(.touch-mode).police-search-active #carRadio {
 body.sportsbook-open #toast {
   z-index: 31;
 }
+/* A full-screen panel is up (hud.js PANEL COVER): the floating world HUD
+   steps aside. A toast raised by the panel itself (.over-panel) stays. */
+body.panel-open #toast:not(.over-panel),
+body.panel-open #announcement,
+body.panel-open #hudLocation,
+body.panel-open #storyLine,
+body.panel-open #pager,
+body.panel-open #navigation,
+body.panel-open #interaction {
+  visibility: hidden;
+}
 .sb-panel {
   position: relative;
   display: flex;
