@@ -57,6 +57,16 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   (`rotorStrikes`). Console `heliInto`.
 - Damage is data on the entity (damage.js; see police-and-combat.md for the damage model and
   breakable props).
+- Off a drop (falls-vehicles.js): a road vehicle on a terrain field tracks a free body height
+  (`fallZ`); past 0.75 m of suspension droop it is airborne (`c.cliffAir`: ballistic, nose
+  tipping at about g / 2v, roll if it went over at an angle; `cliffFlight` replaces the
+  driving step, `cliffSettle` runs after `terrainVehiclePose`). Landing speed decides: under
+  5 m/s nothing, then ((v − 5) / 20)^1.3 of the hp (×1.35 on the roof or a side), the player
+  takes the body scale at 0.72 of it, a rider is thrown (`riderLanding`). On faces over 40°
+  it bounces and slides down; where it stops the whole height counts (×0.85 speed). It may
+  rest `c.overturned` (roof or side: not drivable, not enterable; `repairVehicle` rights it).
+  While flying or overturned the lift lives in `deckLift` (so `entityElevation` is right) and
+  `drawbridgeSettle` skips the car (`c.cliffLift`). Roads and trails never open the gap.
 
 ## Aircraft and camera
 
