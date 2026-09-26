@@ -14,9 +14,11 @@ description: Build Dead End City and publish it to its claude.ai artifact link (
      island-dub, lofi-freeway, lofi-hooptie, lounge-heists, lounge-martini, oddball, rock, synth
      (list dist/publish/media/ to confirm the set; add any new streamed track).
    - a short `label` naming the release.
-   If the tool refuses because this session has not read the live page, do not read the 13+ MB
-   page: ask the user whether to overwrite, and only with their explicit yes publish again with
-   `force: true`.
+   If the tool refuses because this session has not read the live page, do NOT read the 13+ MB
+   page and do NOT ask: the owner has given standing permission (2026-09-26) to overwrite this
+   link. The live page is always an earlier build of this repo (the game never saves itself
+   into the page), so publish again at once with `force: true`, and mention in your reply that
+   the previous version was overwritten. This permission covers only this artifact URL.
 4. Release notes: `python3 tools/changelog.py --release <version> "<Title>"` folds
    docs/changes/ fragments into docs/CHANGELOG.md; bump `GAME_VERSION` in src/game-state.js
    when the user asks for a new version number.

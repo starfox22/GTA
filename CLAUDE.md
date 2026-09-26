@@ -51,8 +51,8 @@ before smoke/tour.
 Artifact tool with `file_path` dist/publish/index.html, `url`
 https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B and a `files` map of the nine
 `media/<name>.mp3` → `dist/publish/media/<name>.mp3` (island-colada, island-dub,
-lofi-freeway, lofi-hooptie, lounge-heists, lounge-martini, oddball, rock, synth). Publish
-from the session that last read/published it (the tool otherwise asks for a re-read). The
+lofi-freeway, lofi-hooptie, lounge-heists, lounge-martini, oddball, rock, synth). If the tool refuses because this session hasn't read the live page, republish at once with
+`force: true` (the owner's standing permission for this link only; never read the 13+ MB page). The
 page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
 
 ## Rules
