@@ -22,14 +22,16 @@ calipers, clear-coated paint in each class's real colours (`palette`), livery de
   superbike: slit LEDs, winglets, single-sided arm), YAMASAKI 1000RR (R1 / ZX-10RR-style, blue or
   green), KR 500 (500 cc enduro after the KTM 500 EXC: orange plastics, knobbly tyres, long
   forks, high fender).
-- **Riders**: one merged rider per riding pose (crouched on the superbikes, upright on the
-  cruiser, standing tall on the enduro) inside `model.rider`, the anchor riders.js's throws hide.
+- **Riders**: each bike gives the character rig its seat, grips, pegs and lean from its riding
+  pose (`model.riderSeat`: crouched on the superbikes, upright on the cruiser, tall on the
+  enduro); a merged rider of the pose stays in `model.rider`, the anchor riders.js's throws hide.
   The fork steers; the KR 500 wheelies under full throttle below 70 km/h (the superbikes a little
   off the line).
-- **KR 500 handling**: full traction on dirt, grass and the trails, climbs grades a 4x4 slides
-  back down, 60 km/h off the trail and 85 on it (terrain.js `dirt`), little rolling drag off the
+- **KR 500 handling**: on the 4x4 club's traction model (offroad.js) with knobbly tyres (the
+  best on dirt and mud), long travel and a motorbike's drive share; little rolling drag off the
   tarmac; the knobblies lose up to a fifth of their grip on tarmac by 120 km/h
-  (physics.js `tyreSurfaceGrip`); light (190 kg with rider) and quick to turn.
+  (physics.js `tyreSurfaceGrip`); light (190 kg with rider) and quick to turn. 3 s flat out up
+  Mount Ascent from rest: KR 500 32.7 km/h, the club's Bronco 27.8, a sedan 15.8, the Dolcati 0.6.
 - **Engines**: flat-plane V8 set (Chevette, Cavalino), V12 set (Brutini), single (KR 500); the
   superbikes use the bike set pitched lower (Dolcati) and higher (Yamasaki).
 - **Where**: one traffic car in forty is a flagship; SHOWCASE PARKING (game.js) puts them at North

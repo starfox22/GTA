@@ -1772,9 +1772,11 @@ dress the 'suv' and 'van' types for the agents and SWAT at their own 0.8 (`drawS
 - **Lamps**: `lit` is each lamp's resting material; `animateCivilianCar` swaps head lamps to
   lit with the headlights, tails to lit or to the brake material, and leaves a broken lamp's
   `deadLamp` alone. nightLights are [head, tail] per side as before. The glass is `m.glass`.
-- **Motorbikes**: the body's `rider` pose (hips, shoulders, hands, knees, feet, head) becomes
-  one merged rider mesh inside `model.rider`, which the vehicle pass shows while someone
-  rides and riders.js's throws hide. The front wheel hangs from a fork group tilted by the
+- **Motorbikes**: the body's `rider` pose (hips, shoulders, hands, knees, feet, head, lean)
+  gives the model's `riderSeat` (seat, grips, pegs, lean in its own real-size units), from
+  which the character rig draws whoever rides (crowd3d.js RIDERS); a merged rider mesh of
+  the pose stays inside `model.rider`, the anchor the vehicle pass shows and hides (and the
+  rig replaces while it draws the rider). The front wheel hangs from a fork group tilted by the
   rake; wheels carry their radius for rolling. `bikeUpdate` runs after the pass leans the body:
   lamps, fork steering and the wheelie (the body pitched about the rear contact patch; the KR
   500 lifts under full throttle below 70 km/h).
@@ -1787,9 +1789,13 @@ dress the 'suv' and 'van' types for the agents and SWAT at their own 0.8 (`drawS
   the Marea valet line and the Sunset Pier VIP bays, and KR 500s at the Mount Ascent and
   Needle Ridge trailheads and Stonecreek Lodge (`DeadEndCity.showcase()`).
 - **Handling**: the flagships and new bikes are specified like every road vehicle (section
-  2a). The KR 500 (`dirt`) has full traction on dirt, grass and the trails and climbs steeper
-  grades (terrain.js `roadVehicleTerrain`), little rolling drag off the tarmac, and loses up to
-  a fifth of its grip on tarmac by 120 km/h (physics.js `tyreSurfaceGrip`).
+  2a). On the range the KR 500 runs on the 4x4 club's traction model (offroad.js): knobbly
+  tyres (`tyre: 'knobby'`, the best on dirt and mud), long travel (`travel` 1.7: fast over
+  rough ground) and a motorbike's drive share (most of the weight on the rear wheel under
+  power, `drivenShare`); off the tarmac elsewhere it has little rolling drag (`dirt`), and it
+  loses up to a fifth of its grip on tarmac by 120 km/h (physics.js `tyreSurfaceGrip`).
+  Measured 3 s flat out up Mount Ascent from rest: KR 500 32.7 km/h, the club's Bronco 27.8,
+  a sedan 15.8, the road-tyred Dolcati 0.6 (spinning).
 - **Engines** (engine-audio.js): `flatplane` (the V8's loops low, the six and the 4A-GE high,
   8,800 rpm; Chevette, Cavalino), `v12` (Brutini), `single` (KR 500); the superbikes use the
   bike set pitched (Dolcati lower, Yamasaki higher).

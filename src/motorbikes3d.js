@@ -21,8 +21,10 @@
        *    number-plate lamp and an upswept silencer.
        *
        * Model contract (render3d.js vehicle pass, damage3d.js specialDamage,
-       * riders.js): `bike`, `special`, `rider` (the rider's group: the anchor the
-       * pass shows while someone rides and hides when they are thrown), `wheels`
+       * riders.js, crowd3d.js RIDERS): `bike`, `special`, `rider` (the rider's
+       * group: the anchor the pass shows while someone rides and hides when they
+       * are thrown; the character rig draws the rider in its place from
+       * `riderSeat`, the seat, grips, pegs and lean in this model's units), `wheels`
        * (front x > 0, each with its radius), lamps headLeft / tailLeft (lit, brake
        * and broken states as the cars'), nightLights [head, tail]. `bikeUpdate`
        * runs after the pass has leaned the body: lamps, the fork steering and the
