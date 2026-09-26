@@ -300,7 +300,11 @@
       if (next === 1) {
         // Dig or bump to the setter's spot by the net.
         p.pose = beachBall.z < 8 ? 'dig' : 'bump';
-        const spot = volleyNetSpot(team, (partner ? partner.y - c.y : 0) * 0.3);
+        // To the setter's spot by the net; to the player, wherever they stand (they only
+        // have to press the hit key as it drops to them).
+        const spot = partner?.human
+          ? { x: c.x + side * clamp((partner.x - c.x) * side, 1.5 * VU, c.w / 2), y: clamp(partner.y, c.y - c.h / 2, c.y + c.h / 2) }
+          : volleyNetSpot(team, (partner ? partner.y - c.y : 0) * 0.3);
         if (err < 0.06) {
           // Shanked: off the arms into the stands.
           volleyLaunch(p.x + side * randomBetween(-40, 10), c.y + randomBetween(-1, 1) * (c.h / 2 + 40), randomBetween(26, 48));
@@ -369,7 +373,7 @@
     function volleyHumanReach() {
       const b = beachBall,
         d = Math.hypot(b.x - player.x, b.y - player.y);
-      return { d, ok: b.mode === 'flight' && d < 2.3 * VU && b.z > 2 && b.z < VOLLEY.jumpZ + 4 };
+      return { d, ok: b.mode === 'flight' && d < 2.6 * VU && b.z > 2 && b.z < VOLLEY.jumpZ + 4 };
     }
     function volleyHumanHit() {
       const h = volley.human,
@@ -403,7 +407,7 @@
         spike = !soft && nearNet && b.z > 15 && moving,
         // Timing: best met at chest height for a pass, as high as possible for a spike.
         ideal = spike ? VOLLEY.jumpZ - 4 : soft ? 16 : 13,
-        quality = clamp(1 - Math.abs(b.z - ideal) / 22 - (reach.d / (2.3 * VU)) * 0.25, 0.3, 1),
+        quality = clamp(1 - Math.max(0, Math.abs(b.z - ideal) - 10) / 24 - (reach.d / (2.6 * VU)) * 0.2, 0.35, 1),
         spread = (1 - quality) * 1.4 * VU;
       if (!volleyTouch(me)) return true;
       volley.humanHits++;
@@ -920,6 +924,7 @@
         phase: volley.phase,
         score: [...volley.score],
         serveTeam: volley.serveTeam,
+        server: volley.serverAthlete ? (volley.serverAthlete.human ? 'player' : 'team ' + volley.serverAthlete.vteam) : null,
         touches: volley.touches,
         touchTeam: volley.touchTeam,
         ball: b.active ? { x: round(b.x), y: round(b.y), z: round(b.z), vx: round(b.vx || 0), vy: round(b.vy || 0), vz: round(b.vz || 0), mode: b.mode } : null,
