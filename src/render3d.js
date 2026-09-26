@@ -1560,6 +1560,25 @@
         };
         material.customProgramCacheKey = () => 'player-rim';
       }
+      /* A body thrown off a bike (riders.js): somersaulting about its hips along
+         the flight (`pitch`; forward is negative about the model's lateral axis),
+         `z` the hips' height above the road; lying flat once down. */
+      function poseThrownBody(m, p, t) {
+        const hips = 8.5,
+          along = -hips * Math.sin(t.pitch);
+        m.group.position.set(
+          p.x + Math.cos(t.heading) * along,
+          entityElevation(p) + t.z - hips * Math.cos(t.pitch) + 2,
+          p.y + Math.sin(t.heading) * along,
+        );
+        m.group.rotation.set(0, -t.heading, -t.pitch);
+        const flying = t.phase === 'air' ? 1 : 0;
+        m.parts.arm1.rotation.z = 2.3 - flying * 0.5;
+        m.parts['arm-1'].rotation.z = 1.9 + flying * 0.4;
+        m.parts.leg1.rotation.z = 0.35 + flying * 0.4;
+        m.parts['leg-1'].rotation.z = -0.25 - flying * 0.3;
+        m.parts.guns.forEach((g) => (g.visible = false));
+      }
       /* 0 at a walk .. 1 at the full run (game.js FOOT_WALK / FOOT_RUN), from how
          fast the player's model has actually been moving. */
       function playerRunAmount(m, p, deltaSeconds) {
@@ -2691,7 +2710,8 @@
             if (m.special) {
               if (!m.plane) m.body.rotation.z = -wear * 0.025 + stance.pitch;
               if (m.bike) {
-                m.body.rotation.x = clamp(c.av * 0.13, -0.28, 0.28);
+                // Leaning into the turn, or down on its side after a crash (riders.js).
+                m.body.rotation.x = c.fallen ? c.fallen.roll : clamp(c.av * 0.13, -0.28, 0.28);
                 m.rider.visible = c.hp > 0 && (c === player.car || c.ai);
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
@@ -2892,6 +2912,9 @@
             if (p.drinking && p.hp > 0 && !incapacitated) {
               m.parts.arm1.rotation.z = 1.5 + Math.sin(gameTime * 3) * 0.15;
             }
+            // Thrown off a bike (riders.js): the player, or traffic's rider.
+            const thrown = activePlayer ? player.thrown : p.ejected?.rider ? p.ejected : null;
+            if (thrown) poseThrownBody(m, p, thrown);
             if (activePlayer && player.tumble) {
               m.group.rotation.z = Math.PI / 2;
               m.group.rotation.x = player.tumbleRoll || 0;
@@ -2977,6 +3000,8 @@
                 m.torso.rotation.z = 0.14 + Math.sin(stroke * 2) * 0.06;
                 m.parts.guns.forEach((gun) => (gun.visible = false));
               }
+              // Thrown off a bike: the whole-body pose again over the weapon's arms.
+              if (player.thrown) poseThrownBody(m, p, player.thrown);
               // Freefall and canopy poses (parachute3d.js); resets the spread limbs after.
               poseParachutist(m, deltaSeconds);
             }

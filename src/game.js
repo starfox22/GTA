@@ -315,6 +315,8 @@
         x: 3200,
         y: 2880,
       };
+    // Set only by the console's holdSimulation (screenshot sequences).
+    let simulationHeld = false;
     const player = {
       ...spawn,
       a: 0,
@@ -1324,6 +1326,20 @@
           junction: null,
           hazard: false,
           spinUntil: 0,
+          // The player's front tyres held against the grip limit (seconds) and the
+          // scrub that follows (0..1), and whether the driver is steering into a
+          // slide (physics.js UNDERSTEER SKID, TYRE STIFFNESS).
+          skidHold: 0,
+          skid: 0,
+          counterSteer: false,
+          handbrakeTurn: false,
+          // The velocity going into the last contact (resolveContact): a thrown
+          // rider keeps it (riders.js). A two-wheeler down on its side (riders.js).
+          impactVx: 0,
+          impactVy: 0,
+          fallen: null,
+          // A driver's car more than 15 degrees off its way (physics.js driverStats).
+          sliding: false,
           // Road or pavement under the middle last step (kerbStrike), and the
           // vehicle that last hit a braced roadblock cruiser (roadblocks.js).
           onTarmac: null,
@@ -2168,6 +2184,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
+      player.thrown = null;
       if (player.roof || player.buildingRoof) {
         player.roof = false;
         player.buildingRoof = null;
@@ -2319,7 +2336,7 @@
       tone(160, 0.06, 0.15, 'triangle');
     }
     function interact() {
-      if (gameMode !== 'play' || player.parachute || rideSkipActive()) return;
+      if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
       // On a building roof the only thing to do is fly off again.
       if (player.buildingRoof && !player.car) {
         const c = nearestCar();
@@ -2385,6 +2402,8 @@
     function enterVehicle(c) {
         player.buildingRoof = null;
         player.car = c;
+        // A bike that went down is picked up and ridden on (riders.js).
+        c.fallen = null;
         c.ramUntil = 0;
         enforceVehicleHandgun();
         c.abandonedFlight = false;
@@ -2589,6 +2608,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
+      player.thrown = null;
       cleanupMissionExtras();
       clearDepotFloor();
       repairJob = null;
@@ -3286,6 +3306,8 @@
           !transitRide &&
           !taxiRide &&
           !player.coaster &&
+          // Thrown off a bike: flying, sliding or lying there (riders.js).
+          !updateThrownPlayer(deltaSeconds) &&
           !updateMountainFooting(deltaSeconds)
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
@@ -3320,8 +3342,9 @@
           !player.coaster
         )
           player.altitude = terrainHeight(player.x, player.y);
-        // On the volleyball court a click hits the ball instead (beachvolley.js).
-        if (!volleyTakesFire() && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
+        // On the volleyball court a click hits the ball instead (beachvolley.js);
+        // nothing is fired while thrown off a bike (riders.js).
+        if (!volleyTakesFire() && !player.thrown && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
           tone(220, 0.08, 0.04, 'sawtooth');
         if (keys.KeyE && canSilentHit(rooftopJob())) {
@@ -4584,7 +4607,8 @@
       const bikeShare = gameMode === 'play' && !rideSkipActive() ? bikeShareOffer() : null;
       // A passenger ride that can be skipped offers that first (ride-skip.js).
       const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
-      if (gameMode === 'play' && rideSkipActive()) prompt = '';
+      // Thrown off a bike (riders.js): nothing to offer until back on their feet.
+      if (gameMode === 'play' && (rideSkipActive() || player.thrown)) prompt = '';
       else if (skip) {
         prompt = skip.prompt;
         promptId = skip.id;
@@ -4864,6 +4888,7 @@
       player.coaster = null;
       player.parachute = null;
       player.climbing = null;
+      player.thrown = null;
       player.pool = null;
       player.jumpUntil = 0;
       // Off any roof: the Blue Hour terrace or a building roof.
@@ -5228,6 +5253,7 @@
     // @include src/chase.js
     // @include src/roadblocks.js
     // @include src/carjack.js
+    // @include src/riders.js
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js
@@ -5425,7 +5451,9 @@
       const updateStart = performance.now();
       // The city keeps living behind the title menu, and behind settings opened
       // from it. WASTED and BUSTED play out in slow motion.
-      if (
+      // A test holding the simulation (console `holdSimulation`) still draws.
+      if (simulationHeld) soundUpdate(0);
+      else if (
         gameMode === 'play' ||
         gameMode === 'menu' ||
         (gameMode === 'settings' && settingsOrigin === 'menu')
@@ -6426,6 +6454,15 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Handling: turnTest(), pose(), aiDriving(), riderReport(), rideInto(),
+      // bridgeJump() (see physics.js handlingConsole).
+      ...handlingConsole(),
+      // Stop the frame loop's simulation (it still draws) so a screenshot sequence
+      // can be stepped with simulate(); false lets it run again.
+      holdSimulation(on = true) {
+        simulationHeld = !!on;
+        return simulationHeld;
+      },
       // Sound: audioMix(), engineSound(), rainSound() (see audio.js audioConsole).
       ...audioConsole(),
       // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
