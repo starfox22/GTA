@@ -35,8 +35,8 @@ calipers, clear-coated paint in each class's real colours (`palette`), livery de
 - **Engines**: flat-plane V8 set (Chevette, Cavalino), V12 set (Brutini), single (KR 500); the
   superbikes use the bike set pitched lower (Dolcati) and higher (Yamasaki).
 - **Where**: one traffic car in forty is a flagship; SHOWCASE PARKING (game.js) puts them at North
-  Point's avenue, the marina, the Marea valet line and the Sunset Pier VIP bays, kerbside or in
-  the bays; KR 500s wait at the Mount Ascent and Needle Ridge trailheads and Stonecreek Lodge.
+  Point's avenue, the marina, the Marea valet line, the Sunset Pier VIP bays and Monarch Isle
+  (Ocean Crescent by the villas, Marina Drive), kerbside or in the bays; KR 500s wait at the Mount Ascent and Needle Ridge trailheads and Stonecreek Lodge.
   Respray garages class the flagships as performance cars and every motorbike as a motorcycle.
 - **Damage**: the new models keep the contract (crumpled shell and panes, sprung hood over the
   engine bay, hanging bumpers, sprung doors from the real sill, cracked and burst glass, broken

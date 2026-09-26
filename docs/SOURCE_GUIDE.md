@@ -1786,7 +1786,8 @@ dress the 'suv' and 'van' types for the agents and SWAT at their own 0.8 (`drawS
   shell, glass, hood, panels and trim). `DeadEndCity.carModels()` reports every built model.
 - **Where they are** (game.js): one traffic car in forty is a flagship (`FLAGSHIP_TYPES`);
   SHOWCASE PARKING puts flagships at North Point (the avenue under the towers), the marina,
-  the Marea valet line and the Sunset Pier VIP bays, and KR 500s at the Mount Ascent and
+  the Marea valet line, the Sunset Pier VIP bays and Monarch Isle (Ocean Crescent by the
+  villas, Marina Drive), and KR 500s at the Mount Ascent and
   Needle Ridge trailheads and Stonecreek Lodge (`DeadEndCity.showcase()`).
 - **Handling**: the flagships and new bikes are specified like every road vehicle (section
   2a). On the range the KR 500 runs on the 4x4 club's traction model (offroad.js): knobbly

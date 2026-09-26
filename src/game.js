@@ -2081,6 +2081,9 @@
       { place: 'MAREA VALET', x: -2756, y: 5272, a: 0, dir: 0, gap: 52, kerb: Math.PI / 2, types: ['brutini', 'dolcati'] },
       // Sunset Pier: nose-in in the VIP bays at the east end of the car park.
       { place: 'SUNSET PIER VIP', x: 3676, y: -5806, a: -Math.PI / 2, dir: 0, gap: 27, types: ['chevette', 'brutini', 'cavalino'] },
+      // Monarch Isle: outside the villa gates on Ocean Crescent, and on Marina Drive.
+      { place: 'MONARCH ISLE VILLAS', x: 6800, y: -4544, a: 0, dir: 0, gap: 54, kerb: -Math.PI / 2, types: ['cavalino', 'brutini'] },
+      { place: 'MONARCH ISLE MARINA', x: 8400, y: -1344, a: Math.PI, dir: 0, gap: 54, kerb: Math.PI / 2, types: ['chevette', 'dolcati'] },
       // The Ridgeline trailheads and a county lodge: dirt bikes.
       { place: 'MOUNT ASCENT TRAILHEAD', x: 7470, y: 2010, a: -Math.PI / 2, dir: 0, gap: 16, types: ['kr500', 'kr500'] },
       { place: 'NEEDLE RIDGE TRAILHEAD', x: 9460, y: 2900, a: -Math.PI / 2, dir: 0, gap: 16, types: ['kr500'] },
