@@ -27,7 +27,25 @@ Run smoke too when a change touches boot, rendering, input, HUD or anything a co
 cannot prove. Smoke passes with 0 errors (the three.js "build/three.js deprecated" warning is
 normal). Headless = Playwright + SwiftShader, Chromium in `/opt/pw-browsers` (never
 `playwright install`); it runs a few fps and boots in a minute or more: **one browser at a
-time**, and call `DeadEndCity.graphics('high')` before judging an image.
+time** (the dev server counts as one).
+
+**Verifying cheaply** (use these instead of writing Playwright scripts):
+
+```sh
+node tools/test.mjs [filter] [--verbose]      # regression suite (~40 s, no-render page): after logic changes
+node tools/dev.mjs start [--render]           # ONE persistent headless page (~7 s no-render, ~35 s rendered)
+node tools/dev.mjs call <method> [json...]    # a NAMED DeadEndCity method → compact JSON (--max N / --full)
+node tools/dev.mjs keys KeyW,KeyD 3 | wait 5  # simulate() game seconds (--real: real key presses)
+node tools/dev.mjs shot <name> [--crop x,y,w,h] [--width 480]   # small JPEG in dist/dev/shots/
+node tools/dev.mjs reload | errors | stop     # rebuild+reload after edits (fresh profile) / console errors / quit
+```
+
+The default dev page is `?dev&norender` (`NO_RENDER` in render3d.js: no WebGL, ~55 fps). Use
+`--render` (or `reload --render`) only for images, after `call graphics high` (bare words pass as strings). `--nodev`
+boots `?test` (demo gate live). New test: one file `tools/tests/<name>.mjs` exporting
+`default async (t)` (`t.call/keys/wait/assert/near/finite`); set up the state it needs,
+`fresh = true` for a clean page. The dev server counts as the one headless browser: `stop` it
+before smoke/tour.
 
 **Publish** (only when asked): `python3 tools/build.py --split-media dist/publish`, then the
 Artifact tool with `file_path` dist/publish/index.html, `url`
@@ -82,8 +100,8 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
 - Grep before reading; read line ranges (`Read` with offset/limit, `sed -n 'a,bp'`), never
   whole 1,000+ line files or the built HTML (38 MB).
 - Pipe long command output through `tail`/`head`/`grep`; don't cat logs or tables.
-- One headless browser at a time; screenshots only to prove a visual point: prefer console
-  reports (`DeadEndCity.stats()`, `status()`, subsystem reports).
+- One headless browser at a time; prefer `node tools/dev.mjs call <report>` and tests over
+  screenshots; take small `dev.mjs shot`s only to prove a visual point.
 - Give subagents a precise brief: files/symbols to touch, the check to run, the output wanted.
 - **Pure-move refactors must keep the build byte-identical**:
   ```sh
