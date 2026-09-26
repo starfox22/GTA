@@ -455,10 +455,10 @@
         if (b.skyline) return 'skyline';
         if (b.roofBar) return 'hotel';
         if (b.style === 2) return 'warehouse';
-        if (b.tropical) return b.height >= 60 ? 'decoTower' : 'deco';
+        if (b.tropical) return b.height >= realBuildingHeight(60) ? 'decoTower' : 'deco';
         const district = districtAt(b.x + b.w / 2, b.y + b.h / 2);
-        if (b.height >= 100) return 'tower';
-        if (b.height >= 68) return district.includes('FINANCIAL') ? 'tower' : 'office';
+        if (b.height >= realBuildingHeight(100)) return 'tower';
+        if (b.height >= realBuildingHeight(68)) return district.includes('FINANCIAL') ? 'tower' : 'office';
         if (district.includes('OLD QUARTER') || district.includes('IRONWORKS')) return b.style === 1 ? 'stucco' : 'brick';
         if (district === 'MIDTOWN' || district === 'BROADWAY') return cityRandom() < 0.55 ? 'brick' : 'office';
         return cityRandom() < 0.5 ? 'brick' : 'stucco';
@@ -561,8 +561,9 @@
           return {
             material,
             tint: new Three.Color(kind === 'decoTower' ? '#e9dccb' : '#cfd6dc'),
+            // A curtain-wall tile is two storeys high.
             repeatX: Math.max(1, Math.round(b.w / 36)),
-            repeatY: Math.max(1, Math.round(b.height / 34)),
+            repeatY: Math.max(1, Math.round(b.height / (2 * STOREY))),
             strength: cityRange(0.7, 1.1),
             phase: cityRandom() * 9,
           };
@@ -590,8 +591,9 @@
         return {
           material,
           tint: new Three.Color(tints[index % tints.length]),
+          // A wall tile is four bays by four storeys.
           repeatX: Math.max(1, Math.round(b.w / 34) / 4),
-          repeatY: Math.max(0.5, Math.round(b.height / 18) / 4),
+          repeatY: Math.max(0.5, Math.round(b.height / STOREY) / 4),
           strength: mask ? cityRange(0.6, 1.0) : 0,
           phase: mask ? cityRandom() * 9 : 0,
         };
@@ -862,20 +864,27 @@
       }
       function shopfront(group, b, kind, i) {
         let windowNeon = cityRandom() < 0.4 ? cityPick(WINDOW_NEONS) : null;
+        // The ground floor is SHOP_FLOOR (4.5 m) high: a 2.3 m door, glazing from a
+        // low sill to 3.6 m, awnings at 3.2 m and the sign on the fascia above.
         const face = b.h + 0.6,
           bays = Math.max(1, Math.floor((b.w - 16) / 46)),
-          bayWidth = (b.w - 16) / bays;
-        box(group, b.w / 2, 7.5, b.h + 0.4, b.w - 2, 15, 1.2, staticMat('#2b3033', 0.7, 0.2));
-        box(group, b.w / 2, 15.6, b.h + 1.2, b.w, 1.4, 2.6, mat(kind === 'stucco' ? '#d9c8a8' : '#4a4d50'));
+          bayWidth = (b.w - 16) / bays,
+          glassTop = SHOP_FLOOR * 0.8,
+          awningY = SHOP_FLOOR * 0.72,
+          signY = SHOP_FLOOR + 4;
+        box(group, b.w / 2, SHOP_FLOOR / 2, b.h + 0.4, b.w - 2, SHOP_FLOOR, 1.2, staticMat('#2b3033', 0.7, 0.2));
+        box(group, b.w / 2, SHOP_FLOOR + 0.6, b.h + 1.2, b.w, 1.4, 2.6, mat(kind === 'stucco' ? '#d9c8a8' : '#4a4d50'));
         for (let k = 0; k < bays; k++) {
           const x = 8 + bayWidth * (k + 0.5),
             door = k === Math.floor(bays / 2);
           if (door) {
-            box(group, x, 6, face + 0.2, 8, 12, 0.6, staticMat('#3f2f28'));
-            box(group, x, 6, face + 0.6, 0.6, 12, 0.3, chrome);
-            box(group, x, 12.6, face + 0.4, 9, 0.8, 0.6, chrome);
+            box(group, x, DOOR_HEIGHT / 2, face + 0.2, 8, DOOR_HEIGHT, 0.6, staticMat('#3f2f28'));
+            box(group, x, DOOR_HEIGHT / 2, face + 0.6, 0.6, DOOR_HEIGHT, 0.3, chrome);
+            box(group, x, DOOR_HEIGHT + 0.6, face + 0.4, 9, 0.8, 0.6, chrome);
+            // A transom light over the door, up to the glazing line.
+            box(group, x, (DOOR_HEIGHT + 1 + glassTop) / 2, face + 0.2, 8, glassTop - DOOR_HEIGHT - 1, 0.5, shopGlassMaterial);
           } else {
-            box(group, x, 7, face + 0.2, bayWidth - 8, 10, 0.5, shopGlassMaterial);
+            box(group, x, (3 + glassTop) / 2, face + 0.2, bayWidth - 8, glassTop - 3, 0.5, shopGlassMaterial);
             // The pane in world space, so a bullet can star it and a blast blow it in.
             (b.shopPanes || (b.shopPanes = [])).push({
               x0: b.x + x - (bayWidth - 8) / 2,
@@ -889,20 +898,20 @@
             box(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, staticMat('#5b5f63'));
             if (windowNeon) {
               const color = windowNeonColor(windowNeon);
-              atlasSign(group, windowNeonCell(windowNeon), x, 8.5, face + 0.9, Math.min(14, bayWidth - 12), Math.min(14, bayWidth - 12) / 2, cityRandom() < 0.3 ? neonCutoutFlicker : neonCutout);
-              addGroupGlow(group, x, 8.5, face + 2, 16, color, 0.18, {});
+              atlasSign(group, windowNeonCell(windowNeon), x, 14, face + 0.9, Math.min(14, bayWidth - 12), Math.min(14, bayWidth - 12) / 2, cityRandom() < 0.3 ? neonCutoutFlicker : neonCutout);
+              addGroupGlow(group, x, 14, face + 2, 16, color, 0.18, {});
               // One per shop, in its first window.
               windowNeon = null;
             }
           }
           if (!door && cityRandom() < 0.55) {
-            const awning = box(group, x, 13.2, face + 4.2, bayWidth - 6, 0.7, 8.5, cityPick(awningMaterials));
+            const awning = box(group, x, awningY, face + 5.4, bayWidth - 6, 0.7, 11, cityPick(awningMaterials));
             awning.rotation.x = 0.42;
-            const stripe = box(group, x, 13.2, face + 4.2, bayWidth - 6, 0.75, 8.5, awningStripe);
+            const stripe = box(group, x, awningY, face + 5.4, bayWidth - 6, 0.75, 11, awningStripe);
             stripe.rotation.x = 0.42;
             stripe.scale.x = 0.34;
             // Someone standing under it is out of sight of the helicopter (air-cover.js).
-            registerOverheadCover(b.x + x, b.y + face + 4.4, (bayWidth - 6) / 2, 4.4, 0, 11.5, 15, 'awning');
+            registerOverheadCover(b.x + x, b.y + face + 5.4, (bayWidth - 6) / 2, 5.4, 0, awningY - 2.4, awningY + 2.4, 'awning');
           }
         }
         const style = shopSignStyle(b),
@@ -912,8 +921,8 @@
           cell = shopSignCell(name),
           light = shopSignLight(name),
           flicker = shopSignIsNeon(name) && cityRandom() < 0.14;
-        atlasSign(group, cell, signX, 19.5, b.h + 1.9, signWidth, signWidth / 4, flicker ? cityPick(neonBoardFlicker) : neonBoard);
-        box(group, signX, 19.5, b.h + 1.2, signWidth + 2, signWidth / 4 + 2, 0.8, darkMetal);
+        atlasSign(group, cell, signX, signY, b.h + 1.9, signWidth, signWidth / 4, flicker ? cityPick(neonBoardFlicker) : neonBoard);
+        box(group, signX, signY, b.h + 1.2, signWidth + 2, signWidth / 4 + 2, 0.8, darkMetal);
         // Colour on the pavement and, in the rain, smeared down the wet road.
         signSpill(b.x + signX, b.y + b.h + 14, signWidth * 0.8, light, style === 'lightbox' ? 0.3 : 0.4, {
           width: signWidth * 0.8,
@@ -924,9 +933,9 @@
       }
       function fireEscape(group, b) {
         const x = Math.max(24, b.w * 0.3),
-          floors = Math.floor((b.height - 14) / 16);
+          floors = Math.floor((b.height - SHOP_FLOOR) / STOREY);
         for (let f = 1; f <= floors; f++) {
-          const y = f * 16 - 4;
+          const y = SHOP_FLOOR + (f - 1) * STOREY;
           box(group, x, y, b.h + 3.2, 24, 0.6, 6, darkMetal);
           for (const dx of [-11, 11]) box(group, x + dx, y + 3, b.h + 6, 0.5, 6, 0.5, darkMetal);
           box(group, x, y + 6, b.h + 6.2, 24, 0.5, 0.5, darkMetal);
@@ -934,16 +943,16 @@
             rod(
               group,
               new Three.Vector3(x + (f % 2 ? -11 : 11), y + 0.5, b.h + 4),
-              new Three.Vector3(x + (f % 2 ? 11 : -11), y + 15.5, b.h + 4),
+              new Three.Vector3(x + (f % 2 ? 11 : -11), y + STOREY - 0.5, b.h + 4),
               0.4,
               darkMetal,
             );
         }
       }
       function balconies(group, b, material) {
-        const floors = Math.floor((b.height - 12) / 14);
+        const floors = Math.floor((b.height - SHOP_FLOOR) / STOREY) + 1;
         for (let f = 1; f < floors; f++) {
-          const y = f * 14;
+          const y = SHOP_FLOOR + (f - 1) * STOREY;
           for (let x = 16; x < b.w - 12; x += 30) {
             box(group, x, y, b.h + 2.4, 18, 0.8, 5, material);
             box(group, x, y + 3, b.h + 4.6, 18, 5, 0.4, glass);
@@ -994,17 +1003,17 @@
         box(group, 2, height + 1.6, b.h / 2, 4, 3.2, b.h, trim);
         box(group, b.w - 2, height + 1.6, b.h / 2, 4, 3.2, b.h, trim);
         if (kind !== 'tower') box(group, b.w / 2, 2.5, b.h + 0.8, b.w + 3, 5, 2, kind === 'stucco' || kind === 'deco' ? staticMat('#cbbfae') : trim);
-        if (kind === 'tower' && height > 120) {
+        if (kind === 'tower' && height > realBuildingHeight(120)) {
           /* Setback crown. A single step reads as an office block; the towers of
              the financial core step two or three times and carry a mast, which is
              what makes a skyline out of a row of buildings. */
-          const steps = height > 420 ? 3 : height > 260 ? 2 : 1;
+          const steps = height > realBuildingHeight(420) ? 3 : height > realBuildingHeight(260) ? 2 : 1;
           let level = height,
             sw = b.w,
             sh = b.h,
             crown = 0;
           for (let s = 0; s < steps; s++) {
-            const stepH = Math.min(52, height * (0.2 - s * 0.042));
+            const stepH = Math.min(3 * STOREY, height * (0.2 - s * 0.042));
             sw *= 0.78;
             sh *= 0.78;
             if (s === 0) roofKeepOut(b.x + b.w / 2, b.y + b.h / 2, sw + 3, sh + 3);
@@ -1013,14 +1022,14 @@
             level += stepH + 1.2;
             crown += stepH + 1.2;
           }
-          if (height > 420) {
-            const spire = Math.min(110, height * 0.17);
+          if (height > realBuildingHeight(420)) {
+            const spire = Math.min(180, height * 0.17);
             mesh(cylinderGeo, trim, group, b.w / 2, level + spire / 2, b.h / 2, 2.8, spire, 2.8);
             mesh(cylinderGeo, chrome, group, b.w / 2, level + spire + 8, b.h / 2, 0.9, 20, 0.9);
             crown += spire + 18;
           }
           // Vertical mullion fins: the curtain wall needs relief to catch the sun.
-          if (height > 260) {
+          if (height > realBuildingHeight(260)) {
             const finMat = staticMat('#b6bec4', 0.45, 0.35);
             for (let x = 22; x < b.w - 14; x += 38) {
               box(group, x, height / 2, b.h + 0.7, 1.4, height - 10, 1.4, finMat);
@@ -1032,28 +1041,29 @@
             }
           }
           // Glazed podium: towers meet the street on a wider base, never on a knife edge.
-          if (height > 260) {
-            const podium = Math.min(46, height * 0.1);
+          if (height > realBuildingHeight(260)) {
+            const podium = Math.min(SHOP_FLOOR + STOREY, height * 0.1);
             blockBox(group, b.w / 2, podium / 2, b.h / 2, b.w + 22, podium, b.h + 22, face, top);
             box(group, b.w / 2, podium + 1.4, b.h / 2, b.w + 26, 2.8, b.h + 26, trim);
           }
           b.crownHeight = crown;
         }
         if (kind === 'brick' && cityRandom() < 0.5)
-          for (let y = 16; y < height - 6; y += 16) box(group, b.w / 2, y, b.h + 0.3, b.w + 1, 1.1, 1.4, trim);
+          for (let y = SHOP_FLOOR; y < height - 6; y += STOREY) box(group, b.w / 2, y, b.h + 0.3, b.w + 1, 1.1, 1.4, trim);
         if (kind === 'office') box(group, b.w / 2, height - 5, b.h + 0.6, b.w + 1.5, 2.2, 2, trim);
         if (kind === 'hotel') {
-          for (let y = 25; y < height - 8; y += 18) {
+          // A slab edge at every floor, a picture window and a balcony shelf over it.
+          for (let y = SHOP_FLOOR; y < height - 8; y += STOREY) {
             for (const z of [-1, b.h + 1]) {
               box(group, b.w / 2, y, z, b.w + 2, 1.8, 3, concrete);
               for (let x = 18; x < b.w - 12; x += 26) {
-                box(group, x, y + 7, z, 18, 10, 1, glass);
+                box(group, x, y + STOREY * 0.45, z, 18, STOREY * 0.6, 1, glass);
                 box(group, x, y + 2, z + (z < 0 ? -1 : 1), 20, 1.2, 5, trim);
               }
             }
             for (const x of [-1, b.w + 1]) {
               box(group, x, y, b.h / 2, 3, 1.8, b.h, concrete);
-              for (let z = 18; z < b.h - 12; z += 26) box(group, x, y + 7, z, 1, 10, 18, glass);
+              for (let z = 18; z < b.h - 12; z += 26) box(group, x, y + STOREY * 0.45, z, 1, STOREY * 0.6, 18, glass);
             }
           }
           for (const x of [5, b.w - 5]) for (const z of [5, b.h - 5]) box(group, x, height / 2, z, 7, height + 1, 7, concrete);
@@ -1094,18 +1104,19 @@
         g.position.set(x, 0, z);
         g.rotation.y = faceSouth ? 0 : Math.PI;
         furnitureGroup.add(g);
-        for (const dx of [-13, 13]) box(g, dx, 8, -3, 1, 16, 1, darkMetal);
-        box(g, 0, 16.2, 0, 30, 0.7, 9, staticMat('#6b7378', 0.4, 0.5));
-        box(g, 0, 8.5, -3.4, 27, 12, 0.5, glass);
-        box(g, 0, 4.8, -0.5, 22, 0.8, 4, propMats.benchSeat);
-        for (const dx of [-9, 9]) box(g, dx, 2.4, -0.5, 0.8, 4.6, 3.4, darkMetal);
-        const adPanel = new Three.Mesh(adPlane(9, 12, Math.floor(cityRandom() * ADS.length)), adLightbox);
-        adPanel.position.set(-16.5, 9, 2.8);
+        // A 2.5 m shelter: posts, roof, back glass, bench, ad panel and the stop's flag.
+        for (const dx of [-13, 13]) box(g, dx, 10, -3, 1, 20, 1, darkMetal);
+        box(g, 0, 20.2, 0, 30, 0.7, 9, staticMat('#6b7378', 0.4, 0.5));
+        box(g, 0, 10.5, -3.4, 27, 16, 0.5, glass);
+        box(g, 0, 3.8, -0.5, 22, 0.8, 4, propMats.benchSeat);
+        for (const dx of [-9, 9]) box(g, dx, 1.9, -0.5, 0.8, 3.6, 3.4, darkMetal);
+        const adPanel = new Three.Mesh(adPlane(10, 14, Math.floor(cityRandom() * ADS.length)), adLightbox);
+        adPanel.position.set(-16.5, 10, 2.8);
         adPanel.rotation.y = Math.PI / 2;
         g.add(adPanel);
-        box(g, -16.5, 9, 2.8, 0.8, 13, 10, darkMetal);
-        box(g, 18, 9, 2, 0.8, 18, 0.8, darkMetal);
-        box(g, 18, 17, 2, 6, 3, 0.4, staticMat('#2f5f9a'));
+        box(g, -16.5, 10, 2.8, 0.8, 15, 11, darkMetal);
+        box(g, 18, 11, 2, 0.8, 22, 0.8, darkMetal);
+        box(g, 18, 21, 2, 6, 3, 0.4, staticMat('#2f5f9a'));
         // The bus stop box painted on the carriageway in front of the shelter,
         // a bus length along the kerb, with BUS STOP lettering in the lane.
         if (kerbZ !== undefined) {
@@ -1122,7 +1133,7 @@
         registerFootObstacle(x, z - back * 3.4, 14, 1);
         registerFootObstacle(x - back * 16.5, z + back * 2.8, 1, 5.5);
         // The roof is cut away round a player waiting under it (lighting3d.js).
-        registerCutawayRoof(x, z, 16, 6.5, 0, 15, 18);
+        registerCutawayRoof(x, z, 16, 6.5, 0, 19, 22);
         // People wait here (src/crowd.js) and buses stop for them.
         registerBusStop(x, z);
       }
@@ -1141,19 +1152,19 @@
           for (const px of [x + 96, x + 238])
             if (clearSidewalk(px, south + 4)) placeProp('trash', pools.trash, px, 3.2, south + 4, 2.6, 6.4, 2.6);
           if (clearSidewalk(x + 150, south + 4)) {
-            placeProp('news', pools.newsRed, x + 150, 3.6, south + 4, 3.5, 7, 3);
-            placeProp('news', pools.newsYellow, x + 154, 3.6, south + 4, 3.5, 7, 3);
-            placeProp('news', pools.newsBlue, x + 158, 3.6, south + 4, 3.5, 7, 3);
+            placeProp('news', pools.newsRed, x + 150, 4.4, south + 4, 3.5, 8.8, 3);
+            placeProp('news', pools.newsYellow, x + 154, 4.4, south + 4, 3.5, 8.8, 3);
+            placeProp('news', pools.newsBlue, x + 158, 4.4, south + 4, 3.5, 8.8, 3);
           }
-          if (clearSidewalk(x + 300, south + 3) && cityRandom() < 0.6) placeProp('mailbox', pools.mailbox, x + 300, 4, south + 3, 4, 8, 4);
+          if (clearSidewalk(x + 300, south + 3) && cityRandom() < 0.6) placeProp('mailbox', pools.mailbox, x + 300, 5.2, south + 3, 4, 10.4, 4);
           if (cityRandom() < 0.5)
             for (let px = x + 40; px < x + w - 30; px += 52)
-              if (clearSidewalk(px, south - 4)) placeProp('meter', pools.meter, px, 4.5, south - 4, 1.2, 9, 1.2);
+              if (clearSidewalk(px, south - 4)) placeProp('meter', pools.meter, px, 5.2, south - 4, 1.2, 10.4, 1.2);
           // North sidewalk: a bin and bollards; benches come from the shared benchSpots() list below.
           if (clearSidewalk(x + w - 30, north)) placeProp('trash', pools.trash, x + w - 30, 3.2, north, 2.6, 6.4, 2.6);
           // West and east sidewalks: bollards and the odd traffic cone.
           for (const [sx, sz] of [[west, z + 30], [west, z + w - 30], [east, z + 30], [east, z + w - 30]])
-            if (clearSidewalk(sx, sz)) placeProp('bollard', pools.bollard, sx, 2.6, sz, 1.2, 5.2, 1.2);
+            if (clearSidewalk(sx, sz)) placeProp('bollard', pools.bollard, sx, 3.6, sz, 1.4, 7.2, 1.4);
           if (cityRandom() < 0.25 && clearSidewalk(east, z + w / 2)) placeProp('cone', pools.cone, east, 3, z + w / 2, 3, 6, 3);
           // Alley clutter: dumpsters and crates in the interior parking court.
           if (cityRandom() < 0.7 && clearSidewalk(x + 200, z + 176)) {
@@ -1166,10 +1177,11 @@
             busShelter(x + 180, south + 6, true, avenue - 56);
         }
       for (const spot of benchSpots()) {
-        const bench = placeProp('bench', pools.benchSeat, spot.x, 4.2, spot.y, 16, 1, 5);
-        placeProp('bench', pools.benchSeat, spot.x, 7, spot.y - 2.4, 16, 4.5, 0.8, 0, bench);
-        placeProp('bench', pools.benchLeg, spot.x - 6.5, 2, spot.y, 1, 4, 4.6, 0, bench);
-        placeProp('bench', pools.benchLeg, spot.x + 6.5, 2, spot.y, 1, 4, 4.6, 0, bench);
+        // Seat 0.45 m up, backrest to 0.85 m.
+        const bench = placeProp('bench', pools.benchSeat, spot.x, 3.6, spot.y, 16, 1, 5);
+        placeProp('bench', pools.benchSeat, spot.x, 5.6, spot.y - 2.4, 16, 3.6, 0.8, 0, bench);
+        placeProp('bench', pools.benchLeg, spot.x - 6.5, 1.6, spot.y, 1, 3.2, 4.6, 0, bench);
+        placeProp('bench', pools.benchLeg, spot.x + 6.5, 1.6, spot.y, 1, 3.2, 4.6, 0, bench);
         // Knocked over, nobody can sit on it (damage.js topple).
         if (bench) bench.bench = spot;
       }

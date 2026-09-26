@@ -500,10 +500,10 @@
       // surface: shopfronts, plinths and tower podiums project past the footprint.
       function wallOffset(building, ny, z) {
         if (!building || ny < 0.5) return 0.18;
-        const podium = building.archetype === 'tower' && building.height > 260 ? Math.min(46, building.height * 0.1) : 0;
+        const podium = building.archetype === 'tower' && building.height > realBuildingHeight(260) ? Math.min(46, building.height * 0.1) : 0;
         if (z < podium) return 11.2;
         if (z < 5 && building.archetype !== 'tower') return 1.95;
-        if (building.shopPanes && z < 16.3) return 1.2;
+        if (building.shopPanes && z < SHOP_FLOOR + 1.3) return 1.2;
         return 0.18;
       }
       function facadeColor(building) {
@@ -596,6 +596,12 @@
       function spawnPanel(part, color, vehicle, sx, sy, sz, kick = 1) {
         part.updateMatrixWorld(true);
         part.matrixWorld.decompose(debrisPosition, debrisQuaternion, debrisScale);
+        // The part's size is in its model's design units (render3d.js DESIGN SIZE).
+        const k = vehicleSpec(vehicle)?.modelScale || 1,
+          ks = Array.isArray(k) ? k[0] : k;
+        sx *= ks;
+        sy *= ks;
+        sz *= ks;
         newDebris(panels, 90, {
           x: debrisPosition.x,
           y: debrisPosition.y,
@@ -886,27 +892,30 @@
           first = !m.partState,
           before = m.partState || {},
           paintColor = '#' + m.paint.color.getHexString();
-        // Crumple the shell and the glasshouse with the same dents.
+        // Crumple the shell and the glasshouse with the same dents. The dents are
+        // in world units, the model in its design units (render3d.js DESIGN SIZE).
         const signature = c.dents.reduce((s, d) => s + (d.depth || 0) * 7 + d.x + d.y * 3, c.dents.length);
         if (signature !== m.dentSignature) {
           m.dentSignature = signature;
+          const k = 1 / (m.modelScale || 1);
+          m.designDents = k === 1 ? c.dents : c.dents.map((d) => ({ ...d, x: d.x * k, y: d.y * k, z: d.z * k, r: d.r * k, depth: d.depth === undefined ? undefined : d.depth * k }));
           if (c.dents.length) {
             if (!m.ownShell) {
               m.shell.geometry = m.shell.geometry.clone();
               m.ownShell = true;
             }
-            crumple(m.shell.geometry, m.shellBase, c.dents, 0, c.id);
+            crumple(m.shell.geometry, m.shellBase, m.designDents, 0, c.id);
             if (m.cabinBase) {
               if (!m.ownCabin) {
                 m.cabin.geometry = m.cabin.geometry.clone();
                 m.ownCabin = true;
               }
-              crumple(m.cabin.geometry, m.cabinBase, c.dents, m.cabin.position.x, c.id);
+              crumple(m.cabin.geometry, m.cabinBase, m.designDents, m.cabin.position.x, c.id);
             }
           }
           m.shapeVersion = (m.shapeVersion || 0) + 1;
         }
-        const frontDepth = c.dents.reduce((s, d) => (d.x > l * 0.2 && d.depth ? Math.max(s, d.depth) : s), 0);
+        const frontDepth = (m.designDents || c.dents).reduce((s, d) => (d.x > l * 0.2 && d.depth ? Math.max(s, d.depth) : s), 0);
         // Hood: buckles up in the middle, springs open on its hinge, or is gone.
         if (!m.hoodPivot) m.hoodPivot = hingePart(m, m.hood, hingeScratch.set(l * 0.215, m.hoodBaseY, 0));
         m.hood.visible = parts.hood < 2;
@@ -1023,13 +1032,13 @@
       }
       // Glass that bursts throws a glitter of crumbs out of the frame.
       function glassBurst(c, m, pane) {
-        const { l, w } = m.dims || { l: vehicleSpec(c).l, w: vehicleSpec(c).w },
+        const { l, w } = vehicleSpec(c),
           local = { front: [l * 0.27, 0], rear: [-l * 0.32, 0], left: [0, -w * 0.45], right: [0, w * 0.45] }[pane] || [0, 0],
           cos = Math.cos(c.a),
           sin = Math.sin(c.a),
           x = c.x + local[0] * cos - local[1] * sin,
           z = c.y + local[0] * sin + local[1] * cos,
-          y = entityElevation(c) + 11;
+          y = entityElevation(c) + 11 * (m.modelScale || 1);
         for (let j = 0; j < 14; j++)
           fx.push({
             x: x + (Math.random() - 0.5) * 6,
@@ -1192,7 +1201,7 @@
           health = c.hp / c.maxhp,
           elevation = entityElevation(c) + (c.hop?.z || 0),
           engineX = m.car ? spec.l * 0.33 : spec.truck ? spec.l * 0.3 : 0,
-          engineY = elevation + (m.car ? m.dims.h + 1.2 : spec.truck ? 14 : 9),
+          engineY = elevation + (m.car ? (m.dims.h + 1.2) * (m.modelScale || 1) : spec.truck ? 14 : 9),
           cos = Math.cos(c.a),
           sin = Math.sin(c.a),
           x = c.x + cos * engineX,
@@ -1328,12 +1337,12 @@
       function shatterShopPane(pane) {
         if (pane.state === 2) return;
         pane.state = 2;
-        addDecal(DECAL.pane, pane.cx, 7, pane.face, 0, 0, 1, pane.width + 0.4, 10.4, 0, 1, null, 0.14);
+        addDecal(DECAL.pane, pane.cx, (3 + SHOP_FLOOR * 0.8) / 2, pane.face, 0, 0, 1, pane.width + 0.4, SHOP_FLOOR * 0.8 - 2.6, 0, 1, null, 0.14);
         addDecal(DECAL.shards, pane.cx, 0.12, pane.face + 7, 0, 1, 0, pane.width * 0.95, 12, Math.random() < 0.5 ? 0 : Math.PI, 0.95);
         for (let j = 0; j < 22; j++)
           fx.push({
             x: pane.cx + (Math.random() - 0.5) * pane.width,
-            y: 3 + Math.random() * 8,
+            y: 3 + Math.random() * 24,
             z: pane.face + 1,
             vx: (Math.random() - 0.5) * 30,
             vy: 10 + Math.random() * 30,
@@ -1403,11 +1412,11 @@
         if (!grid) return;
         // The same repeats facadeMaterial() gives the wall texture.
         const repeatX = Math.max(1, Math.round(building.w / 34) / 4),
-          repeatY = Math.max(0.5, Math.round(building.height / 18) / 4),
+          repeatY = Math.max(0.5, Math.round(building.height / STOREY) / 4),
           // The dark pane fills the middle 77% of the decal tile.
           width = ((grid.w / 512 / repeatX) * building.w) / 0.77,
           height = ((grid.h / 512 / repeatY) * building.height) / 0.77,
-          lowest = building.shopPanes ? 16.3 : 5;
+          lowest = building.shopPanes ? SHOP_FLOOR + 1.3 : 5;
         for (let n = 0; n < Math.ceil(repeatY); n++)
           for (const row of grid.rows) {
             // A row can be cut by the cornice or the shopfront: break only what shows.
@@ -1637,6 +1646,11 @@
         meter: { tip: 1.25, slide: 0, time: 0.4, lift: 0.3 },
         bollard: { tip: 1.1, slide: 0, time: 0.35, lift: 0.3 },
         bench: { tip: 1.5, slide: 0.15, time: 0.6, lift: 2 },
+        // Bike share (cycles3d.js): bikes clatter onto their sides and skid, the
+        // rack folds over at its feet, the totem topples like a lamp.
+        sharebike: { tip: 1.45, slide: 0.35, time: 0.55, lift: 1.4, yaw: 0.5 },
+        bikerack: { tip: 1.2, slide: 0.04, time: 0.5, lift: 0.3 },
+        biketotem: { tip: 1.5, slide: 0.05, time: 0.8, lift: 0.5 },
         seat: { tip: 1.5, slide: 0.18, time: 0.6, lift: 2 },
         railing: { tip: 1.35, slide: 0.22, time: 0.45, lift: 0.6 },
         umbrella: { tip: 1.57, slide: 0.45, time: 0.7, lift: 2 },
@@ -1791,6 +1805,7 @@
         mailbox: '#2e4d7a',
         lounger: '#f1efe8',
         umbrella: '#e0c24a',
+        sharebike: '#12948f',
       };
       function propDebris(prop, x, z, material, altitude, closing) {
         const dx = Math.cos(prop.fallA || 0),

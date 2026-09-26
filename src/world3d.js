@@ -590,7 +590,9 @@
         const g = new Three.Group();
         g.position.set(x, 0, z);
         g.scale.setScalar(size);
-        rod(g, new Three.Vector3(0, 0, 0), new Three.Vector3(2, 28, 0), 1.5, palmTrunkMaterial);
+        // A 9 m palm (at size 1): the trunk runs up PALM_LIFT past the crown's own
+        // 28-unit design height and the fronds are raised with it.
+        rod(g, new Three.Vector3(0, 0, 0), new Three.Vector3(2, 28 + PALM_LIFT, 0), 1.5, palmTrunkMaterial);
         if (!palmFrondGeometry) {
           const verts = [],
             idx = [];
@@ -618,7 +620,7 @@
           palmFrondGeometry.setIndex(idx);
           palmFrondGeometry.computeVertexNormals();
         }
-        mesh(palmFrondGeometry, palmFrondMaterial, g, 0, 0, 0);
+        mesh(palmFrondGeometry, palmFrondMaterial, g, 0, PALM_LIFT, 0);
         breakableGroup(prop, g);
         return prop;
       }
@@ -631,9 +633,10 @@
         scene.add(group);
         batchGroups.push(group);
         const co = mat(resortColors[Math.floor(b.y / 200) % 4]);
-        for (let y = 15; y < b.height; y += 13) {
+        // A balcony slab and its glass rail at every storey (game.js STOREY).
+        for (let y = SHOP_FLOOR; y < b.height; y += STOREY) {
           box(group, b.x + b.w / 2, y, b.y + b.h + 3, b.w - 12, 1.1, 7, co);
-          box(group, b.x + b.w / 2, y + 3.5, b.y + b.h + 6, b.w - 14, 5, 0.6, glass);
+          box(group, b.x + b.w / 2, y + 4.4, b.y + b.h + 6, b.w - 14, 7.6, 0.6, glass);
         }
         for (const x of [b.x + 10, b.x + b.w - 10])
           box(group, x, b.height / 2, b.y + b.h + 3, 3, b.height, 5, co);
