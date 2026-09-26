@@ -1704,6 +1704,7 @@
               balance,
               surface,
               lockRear: brakeDecel > 0 ? tyres.lock[1] : 0,
+              lockFront: brakeDecel > 0 ? tyres.lock[0] : 0,
               skid: c.skid,
               stepSeconds,
             });
@@ -2828,6 +2829,7 @@
           for (const k of ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD']) keys[k] = false;
           handlingTestPaved = false;
           weather.wet = savedWet;
+          if (!from) return { type, error: 'the test car was lost before braking', mode: gameMode, inCar: player.car === c };
           const dx = c.x - from.x,
             dy = c.y - from.y,
             distance = worldMeters(Math.hypot(dx, dy)),

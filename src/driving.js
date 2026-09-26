@@ -328,26 +328,31 @@
         wetness = 1 + (1 - clamp(s.surface, 0.5, 1)) * 2.2;
       let deficit = 0;
       if (t.lift > 0) deficit += ch.liftOff * (t.lift / 0.7) * s.lateralUse * 1.1;
-      if (ch.drive !== 'fwd') deficit += t.spin * (ch.drive === '4x4' ? 0.3 : 1) * (0.35 + s.lateralUse);
+      if (ch.drive !== 'fwd') deficit += t.spin * (ch.drive === '4x4' ? 0.3 : 1) * (0.1 + 1.2 * s.lateralUse);
       // (A motorbike's light rear just skips; the rider holds it straight.)
-      deficit += s.lockRear * (0.4 + s.lateralUse) * (ch.bike ? 0.3 : 1.5);
+      // Only a wheel really locked counts (ABS's brief slips keep a straight stop straight).
+      // A locked rear with the fronts still rolling swings the tail round (the
+      // unstable case); all four locked, the car slides on straight. Only a
+      // wheel really locked counts: ABS's brief slips keep a straight stop straight.
+      deficit += clamp((s.lockRear - 0.4) / 0.6, 0, 1) * (1 - s.lockFront) * (0.4 + s.lateralUse) * (ch.bike ? 0.3 : 1.5);
       if (s.slowing && !s.handbrake) deficit += Math.max(0, s.balance + 0.3) * 0.25 * s.longUse * s.lateralUse;
       deficit *= wetness;
-      // Wheelspin at the back on a straight: the tail wriggles.
-      const wriggle = ch.drive !== 'fwd' && t.spin > 0.3 ? (Math.random() - 0.5) * t.spin * 2.2 * dt : 0;
       const slide = t.yawSlide,
         size = Math.abs(slide),
         counter = s.turnKey !== 0 && Math.sign(s.turnKey) === -Math.sign(slide) && size > 0.05,
         relaxed = s.handbrake || physicsClock - t.handbrakeAt < 0.8,
         esc = assists.esc && !relaxed;
-      const grow = deficit * 2.3 * clamp(speed / (70 * KMH), 0.3, 1.4) * (1 + 1.4 * size) * (Math.sign(slide) || dir),
+      // Dead straight with nothing turning it, there is nothing to swing the tail
+      // either way (a real car needs a nudge too).
+      const nudged = size > 0.01 || Math.abs(c.av) > 0.02 || s.turnKey !== 0,
+        grow = nudged ? deficit * 2.3 * clamp(speed / (70 * KMH), 0.3, 1.4) * (1 + 1.4 * size) * (Math.sign(slide) || dir) : 0,
         // The rear finds its grip again as the cause goes; slower once the car is well round.
         settle = (1.7 * clamp(1 - deficit, 0, 1)) / (1 + Math.max(0, size - 0.8) * 1.5) + (counter ? (esc ? 5.5 : 3.6) : 0);
       let escDamp = 0;
       if (esc && size > 0.06) {
         escDamp = 4.5;
         out.brake = Math.min(0.35, size * 0.55) * GRAVITY;
-        out.cut = clamp(size * 3, 0, 1);
+        out.cut = clamp((size - 0.04) * 3, 0, 1);
         t.escAt = physicsClock;
       }
       // Pushing wide (the understeer skid): brake the inner rear, ease the throttle.
@@ -357,8 +362,8 @@
         t.escAt = physicsClock;
       }
       // Spinning wheels mid-slide with TCS off: ESC still cuts the throttle.
-      if (esc && t.spin > 0.2 && size > 0.04) out.cut = Math.max(out.cut, 0.7);
-      t.yawSlide = clamp(slide + (grow - slide * (settle + escDamp)) * dt + wriggle, -3.2, 3.2);
+      if (esc && t.spin > 0.2 && size > 0.1) out.cut = Math.max(out.cut, 0.7);
+      t.yawSlide = clamp(slide + (grow - slide * (settle + escDamp)) * dt, -3.2, 3.2);
       // The rear tyres sliding hold the car less sideways.
       out.hold = 1 / (1 + 0.7 * Math.abs(t.yawSlide));
       return out;
