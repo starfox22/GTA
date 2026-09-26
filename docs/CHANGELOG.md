@@ -43,6 +43,111 @@ Beach volleyball (beachvolley.js, beachvolley3d.js, beach.js, beach3d.js)
   shows the score and the controls. Walk off the court or **LEAVE MATCH · E** between points.
 - Six beachgoers watch from the sides and cheer the points.
 
+## Unreleased — speed box on foot, km/h / mph, South Coast Cycle bike share
+
+Speed box (hud.js SPEED BOX)
+- The vehicle speed box now also shows on foot, swimming and under a parachute, in the same
+  style: the movement state (STANDING, WALKING, RUNNING, WADING, CLIMBING, SWIMMING · CRAWL /
+  BREASTSTROKE / TREADING WATER, FALLING · FREEFALL / CANOPY) over the speed. On foot it is the
+  measured ground speed (`trackPlayerPace`), eased over 0.35 s and held to whole numbers with a
+  0.75 hysteresis, so it does not jitter; standing reads 0. Under a parachute: airspeed, rate of
+  descent and height.
+- Swimming, the big figure used to be the breath percentage; it is now the swimming speed, with
+  the breath as the bar under it and in the unit line (BREATH 74%), red under 30%. On foot the
+  bar folds away (there is no stamina on foot). A bicycle still shows cadence and LEGS %.
+- Settings · Gameplay: **Speed units** (KM/H or MPH) and **Speed box on foot** (on by default;
+  the water always shows the breath). The units apply to every speed shown: the speed box, the
+  flight HUD's airspeed tape, its stall band and caption, the Falcon's ride card and banner.
+  Boats keep knots, distances stay metric. Saved with the HUD state; `DeadEndCity.settings({
+  units, footSpeed })`, `DeadEndCity.speedBox()`.
+
+South Coast Cycle bike share (cycles.js, cycles3d.js)
+- The free bike stands become docked bike-share stations: a steel dock rack of 4-8 teal and
+  white city bikes (step-through frame, mudguards, chain case, front carrier with the brand
+  panel, dynamo lamps) and a payment totem with a backlit station map, a RENT A BIKE screen, the
+  SOUTH COAST CYCLE header and a lit canopy strip, a night glow and a light pool on the pavement.
+- Placed beside every payphone (`phone`, a district's `PAYPHONES`, PLACES of kind 'payphone'), at
+  every job's first destination (`missions[i].start`, else `MISSION_STARTS`), at the rail
+  stations and where the old stands were (park gates, marina, pier, Exchange, esplanade), on
+  kerb-side pavement with a walkway kept behind the bikes, off carriageways, crosswalks, doors,
+  rail entrances, the payphone's reach, trees, lamps, benches, colliders, parked vehicles,
+  runways, taxiways and helipads; the renderer settles each against the furniture it placed.
+- RENT BIKE · $5 on foot undocks a bike and puts you on it (an ordinary bicycle in the livery);
+  DOCK BIKE · $2 BACK riding a share bike slowly up to any station with a free dock racks it.
+  Stations restock one bike about every 150 s while you are away. Teal bicycle icons on the
+  minimap and map (grey when empty), BIKE SHARE in the map legend.
+- Rack, totem and bikes are breakable props (`bikerack` 35 kJ, `biketotem` 60 kJ, `sharebike`
+  1.2 kJ): bikes go over at walking pace, the rack from ~25 km/h in a sedan, the totem from ~33;
+  a fallen rack takes its bikes down; the city stands them up again. Drawn as instanced
+  breakables from merged vertex-coloured parts (one instance per bike), a handful of draws per
+  map cell. Every size follows the bicycle's length (`SHARE_BIKE_LENGTH`) or the metre.
+- `DeadEndCity.bikeShare()` (network, nearest station, rent/dock log), `DeadEndCity.bikeStation(id)`.
+## Unreleased — a 90s volume knob, the radio at 100 by default
+
+Radio volume (car-radio.js RADIO VOLUME, shell.html, settings.js)
+- **The radio box's slider is now a 90s car-stereo volume knob**: a ribbed black-rubber knob with
+  a machined aluminium cap (concentric turning marks, a fixed anisotropic sheen), an engraved
+  pointer and a lit amber dot, a specular spot and a drop shadow; around it 20 amber LED
+  segments over 270 degrees (one per 5 steps, the last partly lit, the top three hot) and beside
+  it an LCD readout in slanted seven-segment digits over their ghost 8s (`OFF` at 0, a blinking
+  MUTE annunciator). All CSS gradients and inline SVG: crisp at any DPI, redrawn only when the
+  level changes.
+- Drag it: straight movement counts right / up as louder (`dx - dy`, 1.6 px a step, 160 px for
+  the whole range, Shift four times finer); a drag that circles the centre switches to turning
+  with the pointer (270 degrees = the range). Measured from 50: up 10 / 20 / 40 / 80 px -> 56 / 63
+  / 75 / 100; down 40 px -> 25; with Shift up 80 px -> 63; pressing on the rim and circling
+  clockwise 90 / 120 / 180 degrees -> 62 / 73 / 94, anticlockwise 180 -> 12. A double-click on the
+  knob mutes / unmutes (the speaker button stays), the wheel and the focused knob's arrow, Page,
+  Home and End keys work, `,` / `.` still step it in a vehicle. Keys and the wheel go to the next
+  5-step mark; each mark ticks softly on the effects bus. A soft amber glow while dragging; the
+  pointer is captured and nothing reaches the canvas (no shots, no aiming). On touch the knob is
+  76 px with a 12 px wider hit area.
+- **The radio defaults to 100** (was 80), RESET AUDIO TO DEFAULTS included. A save still at the
+  old 80, or without a radio level, moves to 100 once and is written back; a save at any other
+  level (0 = muted included) keeps it. From now on every change the player makes marks the save
+  (`radioVolumeSet`), so a deliberate 80 stays 80.
+- `DeadEndCity.radio()` reports `volumeSet` and `knob` (value, angle, lit LEDs, readout, drag mode,
+  the last drag) in place of `slider`.
+
+## Unreleased — speech bubbles seen from above, the Falcon's riders scream and talk
+
+Speech bubbles (crowd.js SPEECH SEEN FROM ABOVE, render3d.js, roofmission.js, flight-view3d.js)
+- Every speech bubble (street crowd, drivers, carjacks, police and soldiers, the Falcon's riders,
+  the Blue Hour rooftop) fades out between 40 m and 50 m of height between the view and the
+  speaker, and a hidden line no longer takes one of the two bubble slots. The HUD log and captions
+  are unchanged.
+- The height: flying (helicopter, plane, parachute) or riding (the Falcon, the Sunset Eye), the
+  player's elevation over the speaker, which for someone on the ground is the AGL the flight HUD
+  shows; on foot or driving, the street zoom as a height (`streetZoomHeight`: the height at which
+  the flight camera draws the ground at the zoom's scale; zoom 0.8 = 29 m, 0.72 = 38 m, 0.68 =
+  43 m, 0.64 = 49 m, 0.5 = 73 m), plus the player's elevation over the speaker (from a roof). The
+  pull-back at speed does not count. Measured headless: helicopter at 30 m AGL fade 1, 45 m 0.5,
+  60 m 0 (bubbles gone).
+- Labels projected behind a perspective camera are skipped instead of drawn mirrored.
+
+The Falcon (themepark.js RIDERS' VOICES, car-radio.js)
+- **Radio off by default on the Falcon.** Each ride starts with the radio off; the widget is
+  shown and N / B / a click turn it on for that ride only (`player.coaster.radio`); the saved
+  radio setting for vehicles and the Eye is untouched.
+- **Screams in time with the track.** Each car is read off the circuit (vertical speed from the
+  train speed and the track's rise, seat load from the change of rise, inversion). Over the first
+  drop every car lets out up to two of the recorded pedestrian screams (pitch 0.9..1.14, own
+  level and delay), placed on that car, so the chorus rolls down the train as each car tips over;
+  later drops (12 m+), dips (5 m+), airtime (< 0.45 g) and inversions draw a quieter voice from
+  some cars. Voices bus (Voices slider and switch), attenuated by the 3D distance from the player,
+  so they are heard aboard and from the ground nearby. Replaces the synthesised coaster screams
+  (the flume and drop tower keep theirs). No whoop sample exists, so none is played.
+- **Rider speech bubbles:** nervous on the lift ("OMG I'm so scared!", "Why did I agree to
+  this?", "Don't look down…"), screams over the first drop ("AAAAHHH!"), excited or terrified on
+  the elements ("WOOOO!", "Faster!", "Mommy!", "Upside dooown!"), and on the brake run "I'm going
+  to throw up!", "Again! Again!", "My legs are jelly…". Two at a time through the crowd's bubble
+  limit, first in line while the player rides, subject to NPC chatter and the height rule; seen
+  aboard and from the ground nearby. From the chase camera the speakers come from cars 1-4 (in
+  frame); no line is said twice at once or twice running.
+- Console: `DeadEndCity.coasterVoices(reset)` (every cue with track position, height, vertical
+  speed, g, drop depth), `DeadEndCity.speechView()`; `radio()` reports `enabled` (the ride's
+  switch on the Falcon) and `saved`.
+
 ## Unreleased — ramming roadblocks, crash physics, breakable trees and furniture
 
 Roadblocks (roadblocks.js, physics.js)
