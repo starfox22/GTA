@@ -1,6 +1,45 @@
 # Changelog
 
-## Unreleased — the car and motorbike redesign, and the flagships
+## Unreleased — the Palm Sound drawbridge: 44 m leaves and the opening as a spectacle
+
+Drawbridge (geography.js, drawbridge.js, drawbridge3d.js, bridges3d.js, world-view.js, settings.js)
+- **Leaves 12.5 m → 44 m each** (88 m trunnion to trunnion, the scale of Chicago's longest
+  double-leaf bascules; the navigation channel between the pier noses is 76 m, 73 m clear at the
+  brigantine's mastheads with the leaves at 78°). The moving span and its piers now fill most of
+  Palm Sound (trunnions x -916 / -212, gates x -1058 / -70, stop lines x -1076 / -52; the
+  approach piers inside that stretch are gone). The trunnions sit 2 m below the road.
+- **Piers with open counterweight pits**: each pier runs from 14.5 m behind its trunnion to 5 m
+  ahead of it under the leaf's heel and is 43 m across: the fixed deck in the middle, a 17 m
+  deep pit each side, then the platforms with the tender's houses. The leaves' outboard main
+  girders (5.5 m deep at the trunnion, 1.8 m at the tip) carry curved racks and 590 t
+  counterweights (striped yellow and black on top) that swing down into the pits as the leaves
+  rise; pinions on shafts across the pits turn as the racks roll through them; motor houses
+  above. A depth-only mask over each pit keeps the water plane out of it.
+- **The opening** (about three minutes of play, three a day: 06:40, 14:20, 21:30): the ship
+  asks for the bridge, the tender answers with one long blast; bells, signals amber then red,
+  wig-wags; the arms come down; the centre lock bars draw back (clanks); the leaves rise over a
+  minute, eased, to 78°, with the drive motors' deep hum, a gear whine following the swing and a
+  knock for every rack tooth; water drips and sprays off the tips and girders (a burst as the
+  tips part); red span lights flash on the tips while they move; the channel lights turn green;
+  the brigantine ALBATROSS (new: a 32 m hull, masts 30 m over the water, four square sails on
+  the foremast, gaff main and topsail, three headsails, festoon lights dressed overall) sets
+  sail, passes at 5 knots and salutes, the tender answers; the leaves come down as slowly, the
+  lock bars drive home, the arms rise. After dark floodlights on the pier noses throw beams onto
+  the raised leaves and their paint and steel glow. The leaves' underside (cross girders every
+  3.5 m, stringers, X bracing) shows as they stand up; three pairs of globe lamps ride on each.
+- **Onlookers**: a dozen people walk in and stand behind the sidewalk arms on both approaches,
+  facing the channel (watching, filming, pointing), for an opening the player is near.
+- **Event camera**: near an opening (on foot or under 45 km/h) the street view eases back to
+  about three quarters of the zoom so both leaves and the ship fit; the player keeps control.
+  Settings · Gameplay · Event camera turns it off.
+- The tender walks anyone still on the span off by the nearer end (an 88 m span takes a walker
+  a minute). The GPS prices the longer closure (`drawbridgeSecondsToTraffic`).
+- **Traction on a leaf counts only the driven wheels** (drivenShare, the 4x4 club's model): a
+  front-wheel-drive saloon has about a third of its weight on its driving wheels up a 25° leaf,
+  so it cannot hold its speed up 44 m of it; the brakes still use all four; rain makes the
+  deck slicker. Real gravity, as before.
+
+TABLE_HERE
 
 Civilian cars (cars3d.js) and motorbikes (motorbikes3d.js), rebuilt at real size to the police
 models' standard: lofted curved bodies with wings, arches and tumblehome, five-pane glass with
