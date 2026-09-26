@@ -1,3 +1,4 @@
+    // Theme park colliders: solids, air solids, kiosks, coaster footings, lagoon and paths (parkBlocked).
     // ---- Colliders -----------------------------------------------------------------
     /**
      * Everything solid in the park as rectangles {x, y, w, h, height}: buildings,

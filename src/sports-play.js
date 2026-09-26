@@ -1,3 +1,4 @@
+    // Match play: possession, passing, movement, offside (sportsPass, sportsBestReceiver).
     function sportsRecordEvent(match, type, player, detail = '') {
       const event = {
         time: Number(match.time.toFixed(2)),

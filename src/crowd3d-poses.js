@@ -1,3 +1,4 @@
+      // Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
       function crowdPoseTargets(p, s, T, t, spec) {
         T.fill(0);
         const seed = s.seed,

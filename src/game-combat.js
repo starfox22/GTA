@@ -1,3 +1,4 @@
+    // updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
     function updateCombat(deltaSeconds) {
       for (let i = fires.length - 1; i >= 0; i--) {
         const fire = fires[i];

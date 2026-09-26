@@ -1,3 +1,4 @@
+      // Civilian car kit: a body's merged parts for one size (civKit, civKits).
       // ---- THE KIT: a body's merged parts for one size -----------------------------------
       /*
        * civKit(body, l, w) builds everything a body shares between cars: shell,

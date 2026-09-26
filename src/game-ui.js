@@ -1,3 +1,4 @@
+    // Weapon chip, mission card and updateUI() (HUD text refresh).
     function drawWeapon() {
       // In a tank the chip shows the main gun or the MG (armor.js tankHud), in the
       // Apache its gun and rockets (apache.js apacheHud).

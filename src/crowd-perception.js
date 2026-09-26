@@ -1,3 +1,4 @@
+    // Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
     const ALARM_REACH = { gunfire: 560, explosion: 950, crash: 380, knock: 300, melee: 170, body: 150 };
     function crowdIncident(kind, source, attacker, severity = 1) {
       const loud = kind === 'gunfire' || kind === 'explosion';

@@ -1,0 +1,274 @@
+/* --- Flight HUD (hud.js, FLIGHT HUD) -----------------------------------------
+   Shown only in an aircraft, compact and against the screen edges so the view
+   stays clear: attitude, airspeed and power in a column on the left edge;
+   altitude, vertical speed, AGL and g on the right edge above the vehicle card;
+   a thin heading strip at the top under the navigation pill, with one warning
+   at a time under it. The instruments are canvases redrawn every frame, drawn
+   at full size and scaled down as a group (--fh-scale). They slide in from the
+   edges. Settings · Gameplay · Flight HUD off (.instruments-off) leaves only the
+   warnings. */
+#flightHud {
+  --fh-line: #e9efe6;
+  --fh-accent: #7fe3ee;
+  --fh-scale: 0.78;
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.35s var(--ui-ease),
+    visibility 0s linear 0.35s;
+}
+#flightHud.on {
+  visibility: visible;
+  opacity: 1;
+  transition:
+    opacity 0.35s var(--ui-ease),
+    visibility 0s;
+}
+#flightHud .fh-frame {
+  position: absolute;
+  inset: 0;
+}
+#flightHud .fh-col {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 124px;
+  transition: transform 0.45s var(--ui-ease);
+}
+/* Left edge, vertically centred between the location block and the minimap. */
+#flightHud .fh-left {
+  left: var(--hud-edge);
+  top: 50%;
+  translate: 0 -50%;
+  align-items: flex-start;
+  transform-origin: 0 50%;
+  transform: translateX(-60px) scale(var(--fh-scale));
+}
+/* Right edge, standing on the vehicle card (below the radio box). */
+#flightHud .fh-right {
+  right: var(--hud-edge);
+  bottom: 176px;
+  align-items: flex-end;
+  transform-origin: 100% 100%;
+  transform: translateX(60px) scale(var(--fh-scale));
+}
+#flightHud .fh-top {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transform-origin: 50% 0;
+  transform: translateY(-24px) scale(var(--fh-scale));
+  transition: transform 0.45s var(--ui-ease);
+}
+#flightHud.on .fh-col,
+#flightHud.on .fh-top {
+  transform: scale(var(--fh-scale));
+}
+/* Instruments off: only a warning, when there is one. */
+#flightHud.instruments-off .fh-col,
+#flightHud.instruments-off #fhHeading {
+  display: none;
+}
+#flightHud canvas {
+  display: block;
+}
+#flightHud .fh-adi {
+  width: 124px;
+  height: 124px;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px var(--ui-line-strong),
+    var(--ui-shadow);
+}
+#flightHud .fh-tape {
+  position: relative;
+  padding: 16px 0 0;
+}
+#flightHud .fh-cap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--ui-dim);
+  text-align: center;
+  white-space: nowrap;
+}
+#flightHud .fh-block {
+  width: 124px;
+  padding: 7px 10px 8px;
+  box-sizing: border-box;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-line);
+  background: var(--ui-panel);
+  box-shadow: var(--ui-shadow);
+}
+#flightHud .fh-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ui-dim);
+  line-height: 1.6;
+}
+#flightHud .fh-row b {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--ui-text);
+  font-variant-numeric: tabular-nums;
+}
+#flightHud .fh-bar {
+  position: relative;
+  height: 6px;
+  margin: 3px 0 7px;
+  border-radius: 3px;
+  background: #ffffff1a;
+}
+#flightHud .fh-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #7fe3ee, #e2c897);
+}
+#flightHud .fh-bar em {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 12px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--ui-text);
+  box-shadow: 0 0 4px #000a;
+}
+#flightHud .fh-chips {
+  display: flex;
+  gap: 5px;
+}
+#flightHud .fh-chip {
+  flex: 1;
+  padding: 3px 0;
+  border-radius: 5px;
+  border: 1px solid var(--ui-line);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: var(--ui-dim);
+  white-space: nowrap;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+#flightHud .fh-chip.set {
+  color: #0d1418;
+  border-color: transparent;
+  background: var(--fh-accent);
+}
+#flightHud .fh-chip.moving {
+  color: var(--ui-gold);
+  border-color: #e2c89788;
+  animation: fhBlink 0.6s steps(2) infinite;
+}
+#flightHud .fh-chip.alert {
+  color: #1a0b08;
+  border-color: transparent;
+  background: var(--ui-danger);
+  animation: fhBlink 0.5s steps(2) infinite;
+}
+#flightHud .fh-warning {
+  min-height: 24px;
+  padding: 0 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  line-height: 24px;
+  color: #1a0b08;
+  background: var(--ui-danger);
+  box-shadow: 0 0 22px #f0867288;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.2s,
+    transform 0.2s var(--ui-ease);
+}
+#flightHud .fh-warning.show {
+  opacity: 1;
+  transform: none;
+  animation: fhBlink 0.7s steps(2) infinite;
+}
+#flightHud .fh-warning.caution {
+  color: #1a1408;
+  background: var(--ui-gold);
+  box-shadow: 0 0 18px #e2c89766;
+}
+@keyframes fhBlink {
+  50% {
+    opacity: 0.55;
+  }
+}
+/* The helicopter shows the slim version: no attitude ball, flaps or gear. */
+#flightHud.heli .fh-adi,
+#flightHud.heli .fh-chips {
+  display: none;
+}
+@media (max-width: 1180px), (max-height: 760px) {
+  #flightHud {
+    --fh-scale: 0.68;
+  }
+}
+@media (max-width: 900px), (max-height: 620px) {
+  #flightHud {
+    --fh-scale: 0.56;
+  }
+  #flightHud .fh-top {
+    top: 62px;
+  }
+}
+/* Phones and touch: the heading strip and the two tapes only, both tapes at
+   mid-height against the edges (the thumb buttons own the lower corners). */
+@media (max-width: 640px) {
+  #flightHud .fh-adi,
+  #flightHud .fh-block {
+    display: none;
+  }
+}
+.touch-mode #flightHud .fh-adi,
+.touch-mode #flightHud .fh-block {
+  display: none;
+}
+.touch-mode #flightHud .fh-right {
+  bottom: auto;
+  top: 50%;
+  translate: 0 -50%;
+  transform-origin: 100% 50%;
+}
+/* Touch phones: the thumbs own both sides and the vehicle card already reads
+   speed and altitude, so only the warnings show, under the aircraft. */
+@media (max-height: 520px), (max-width: 640px) {
+  .touch-mode #flightHud .fh-col,
+  .touch-mode #flightHud #fhHeading {
+    display: none;
+  }
+  .touch-mode #flightHud .fh-top {
+    top: calc(50% + 48px);
+  }
+}

@@ -1,3 +1,4 @@
+      // Helicopter equipment: skids, lenses, nav lights, beacons, Nightsun, per-type kit and cabins.
       // ---- Shared light-single parts: skids, lamps ----------------------------------------------
       /*
        * Tubular skids with upturned toes, arched cross tubes clamped to the belly,

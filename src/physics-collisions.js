@@ -1,3 +1,4 @@
+    // Contact resolution, crash severity, damage and injury (resolveContact, damageVehicle, repairVehicle).
     // `detail` says what did the damage so damage.js can shape it: a crash crumples
     // along the contact normal, a blast dishes in the face toward it, a bullet only
     // holes the skin. Without a detail the hit dents toward the centre as before.

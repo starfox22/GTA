@@ -1,3 +1,4 @@
+      // Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
       const oliveTrim = mat('#3c4433', 0.8, 0.2),
         canvasMat = mat('#6b6c4c', 0.97);
       function starDecal(parent, x, y, z, size, facing, flat = false) {

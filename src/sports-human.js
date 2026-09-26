@@ -1,3 +1,4 @@
+    // The player on the pitch: touches, kicks, prompts, pitch invaders and escorts, crowd presence.
     function sportsHumanOnField(match) {
       if (!match || match.sport !== 'soccer' || gameMode !== 'play' || player.car || player.parachute) return false;
       if (player.roof || player.buildingRoof || player.deck || player.swimming) return false;

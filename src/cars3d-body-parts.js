@@ -1,3 +1,4 @@
+      // Civilian car body parts: civBody() and shared lamps, LED lines, projectors, plates, exhausts, badges, fins.
       // ---- BODIES ------------------------------------------------------------------------------
       // Lengths along the car are fractions of l; heights, radii and offsets in metres
       // (civBody() turns them into map units). See the header for the archetypes.

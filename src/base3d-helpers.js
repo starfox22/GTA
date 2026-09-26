@@ -1,3 +1,4 @@
+      // Fort Sentinel geometry helpers: rodTo, strip, coil, vault and arch walls, gableRoof, cylinder, mergeUnder.
       const rodTo = (parent, ax, ay, az, bx, by, bz, r, material) =>
         rod(parent, new Three.Vector3(ax, ay, az), new Three.Vector3(bx, by, bz), r, material);
       // A vertical strip between two map points with its texture repeated every `period`.

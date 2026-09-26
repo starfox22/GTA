@@ -1,3 +1,4 @@
+    // Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
     const CROWD_LINES = {
       cower: ['Get down!', 'Oh god, oh god…', 'Don’t shoot!', 'Stay down!', 'Please, no!'],
       flee: ['Run!', 'He’s got a gun!', 'Move, move!', 'Get out of here!', 'Somebody help!', 'Go, go, go!'],

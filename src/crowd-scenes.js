@@ -1,3 +1,4 @@
+    // Street scenes: set pieces staged round the player, their members and props (sceneOpen, spawnSceneMember, streetFrontages).
     const SCENE_HOURS = {
       vendor: [7, 21],
       busker: [10, 23],

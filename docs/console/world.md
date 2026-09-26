@@ -1,0 +1,20 @@
+# Console: world
+
+`addConsoleMethods('world', …)` in `src/game-console-world.js`. World and places: map probes, the plan as data, terrain and towns, weather, airfields, rooftops, the drawbridge, GPS, Monarch Isle.
+
+| Method | Purpose |
+| --- | --- |
+| `sky(id)` | Force the weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`); no argument hands the sky back to the weather machine |
+| `places()` | Named businesses and landmarks with coordinates |
+| `wetness(value)` | Set how wet the streets are (0 dry .. 1 soaked); with the rain stopped they dry on from there, so a test can look at a drying street at once; returns `weather()` |
+| `weather()`, `weatherFront(seconds)`, `lightning(distance)` | The weather machine's state (sky, next step, rain, wet, wind, `approach`, showers, strikes, thunder pending); bring a shower in after `seconds` (overcast now, the build-up, then rain; unlocks the sky); a lightning strike `distance` map units from the player (returns where, and when its thunder arrives) |
+| `probe(x, y, r)` | What occupies a map point: land/water, solid, road, rail, beach, whether a car or a jet ski fits |
+| `terrain()` | The Ridgeline Range: each height field's grid, highest point and build time per stage (ms), the two summits' heights, each 4x4 trail's length, summit, steepest graded pitch and trailhead height, forest / boulder / stream counts, and each rock outcrop's ground height and clearance from the trails |
+| `mountainTowns()` | The mountain villages (mountain-village.js): each town's buildings by kind, businesses (footprint, eaves and ridge in metres, door, place), the street dressing counts, the rescue helipad, the club block, buildings skipped for a road, and with WebGL the meshes and triangles per town (`render`) |
+| `airfields()` | The runways (airfields.js): designations, length, width and blast pads in metres, thresholds, aiming point and touchdown zone, approach lights, what each PAPI shows the player's aircraft (`'RRWW'`, nearest the runway first; on-slope with nobody flying), the runway piers, the taxiway count and every plane (airframe, position, district, hp) |
+| `route(x, y)` | Set a map waypoint and report the GPS route from the player: status, road length, the bridges it crosses |
+| `drawbridge(action, degrees)`, `drawbridgeLook(spot, zoom)`, `drawbridgeTraffic(count)` | The Palm Sound drawbridge: `'status'`, `'open'` (an opening now: horn, bells, arms, locks, a minute's rise, the brigantine, the lowering), `'close'`, `'hold'` with degrees (arms down, leaves held there), `'snap'` with degrees (leaves there at once, for screenshots); the report has the phase, angle, gap, tip height, leaf length, clear width at the ship's mastheads, lock bars, camera factor, onlookers, traffic on the causeway, the ship (leg, sails), jumps and the layout (trunnions, gates, stop lines). Stand at a viewpoint (`'channel'`, `'west'`, `'east'`, `'north'`, `'south'`, `'tower'`, `'overview'`, `'pit'`); put `count` cars in the lanes into the bridge on each approach |
+| `layout()` | The plan as data (coast, streets, rail, buildings, helipads, ships, props, foot obstacles, street ends, crosswalks, doors, colliders) for overlap audits |
+| `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |
+| `monarch()` | Monarch Isle: coast, 100 m grid, streets and roundabouts, villas, towers, businesses, marina; traffic (`traffic`, `trafficMoving`, `trafficWaiting`, `trafficStuck`: still over 30 s, `stopped` with what holds each car), walkers (`people`, `staff`, `roles`, `onRoad`), `walkOnRoad` (walk links that run along a carriageway: should be empty), boats |
+| `barriers()`, `solidAt(points, r, foot)` | Barrier audit: every sea railing run, street-end guardrail, gate pier and railing as data (what the renderer draws and `solid()` blocks); `solid()` at many `[x, y]` points at once (`foot` adds the player's foot obstacles: furniture, trunks, fixtures) |

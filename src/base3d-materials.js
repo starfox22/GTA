@@ -1,3 +1,4 @@
+      // Fort Sentinel textures and materials: fences, nets, plates, containers (baseTexture, plateMaterial).
       function baseTexture(w, h, paint, repeat = true) {
         const canvas = document.createElement('canvas');
         canvas.width = w;

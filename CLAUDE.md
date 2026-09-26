@@ -66,10 +66,15 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
   include tree. Then `grep -n` the symbol in `src/`.
 - Naming: `<area>.js` = game logic, `<area>3d.js` = its meshes (renderer closure),
   `<area>-audio.js` = its sound, `<parent>-<part>.js` = a piece split out of `<parent>.js`,
-  whose file is now just an ordered include list (game-*, physics-*, crowd-*, crowd3d-*,
-  render3d-*, cars3d-*, helicopter3d-*, themepark-*, sports-*, base3d-*, monarch-*).
-- `game-console.js` + `-world.js` + `-graphics.js` are ONE object literal split in three:
-  only valid together, in that order.
+  whose file is then just its banner and an ordered include list. No src file is over
+  1,000 lines; keep it that way (split by pure moves when one grows past ~800).
+- Pieces only valid together, in order: `signkit3d-emblems-a/b` (case blocks of one
+  `switch`), `signdesigns3d-families-a/b` (one object literal), `cars3d-bodies-a/b` (one
+  `CAR_BODIES` literal), `render3d-api.js`/`render3d-frame.js` (one `api` literal).
+- Page markup and CSS: `src/shell.html` is a ~70-line skeleton; CSS lives in `src/ui/*.css`
+  (included inside `<style>` as `/* @include src/ui/x.css */`, include order = cascade order)
+  and markup in `src/ui/*.html` (`<!-- @include src/ui/x.html -->`). Find an id:
+  `grep -rn 'id="x"' src/ui/`.
 - Area docs (why, contracts, gotchas): `docs/README.md` indexes them; open one, not all.
 
 ## Token-saving working rules (you and every subagent)
@@ -93,12 +98,17 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
 
 ## Adding things
 
-- Source file: create `src/<name>.js` (open it with a comment saying what it is: FILEMAP
-  reads it), add `// @include src/<name>.js` to the right include list (game logic in
-  `src/game.js` or its area parent; meshes in `render3d.js`'s list). Top-level `const`/`let`
-  read during setup must come before their readers. Run `python3 tools/filemap.py`.
-- Console method: add a named method in the right `game-console*.js` part and a row to the
-  table in `docs/areas/testing-and-console.md`.
+- Source file: create `src/<name>.js` opening with a 1–3 line header saying what it holds
+  (FILEMAP reads it), add `// @include src/<name>.js` to the right include list (game logic
+  in `src/game.js` or its area parent; meshes in `render3d.js`'s list). Top-level
+  `const`/`let` read during setup must come before their readers. Run `python3 tools/filemap.py`.
+- UI panel: markup in the matching `src/ui/*.html` (or a new file + include line), CSS in a
+  `src/ui/*.css` (a new file goes before `reduced-motion.css`). Details: docs/areas/ui-and-settings.md.
+- Console method: add a named method to the area's `src/game-console-<group>.js` (core,
+  missions, police, vehicles, world, rides, leisure, crowd, graphics, settings); each is one
+  `addConsoleMethods('<group>', {...})` call and game-console.js freezes them all into
+  `window.DeadEndCity`. A feature can return methods from `<feature>Console()` and register
+  them from its group. Duplicate names log a console error. Document it in `docs/console/<group>.md`.
 - Media: `assets/` file + manifest entry (+ `"stream": true` for large music played by URL)
   + credit. Mission: docs/areas/missions-and-demo.md.
 

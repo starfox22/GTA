@@ -1,3 +1,4 @@
+    // VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road and air resistance.
     /* Sizes are real (WORLD SCALE): `l` is the length and `w` the collider's width,
        the body plus its mirrors (car bodies are drawn 0.87 of it, trucks' 0.91), both
        written in metres. `modelScale` is the scale the model is drawn at: it is

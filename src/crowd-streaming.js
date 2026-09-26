@@ -1,3 +1,4 @@
+    // Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
     // Streaming stops adding walkers at CROWD_STREET_CAP; scenes and drivers may
     // take the total up to CROWD_HARD_CAP.
     const CROWD_STREET_TARGET = 360,

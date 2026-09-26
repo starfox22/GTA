@@ -1,3 +1,4 @@
+    // makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
     function makeCar(type, x, y, headingRadians = 0, autonomous = false, color) {
       const vehicleDefinition = VEHICLE_DEFINITIONS[type],
         vehicle = {

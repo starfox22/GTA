@@ -1,3 +1,4 @@
+    // updateSports() and drawSports(): per-frame match update, board clock, console snapshot.
     function sportsUpdateMatch(match, deltaSeconds) {
       match.time += deltaSeconds;
       for (const athlete of match.people) {

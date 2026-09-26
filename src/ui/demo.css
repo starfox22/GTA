@@ -1,0 +1,231 @@
+/* --- PUBLIC DEMO (campaign.js) ---------------------------------------------
+   The DEMO badge by the title menu's version, the picker's FULL GAME badges and
+   buy note, and the DEMO COMPLETE card after mission 2. */
+.demo-badge {
+  margin-left: auto;
+  padding: 4px 9px 3px;
+  border: 1px solid var(--ui-gold);
+  border-radius: 4px;
+  color: var(--ui-gold);
+  font: 900 9px/1 var(--ui-font);
+  letter-spacing: 0.28em;
+  background: #e2c89714;
+}
+.demo-badge:not(.hidden) + .menu-version {
+  margin-left: 12px;
+}
+.mission-choice.full-game {
+  opacity: 0.62;
+  cursor: pointer;
+}
+.mission-choice.full-game:hover,
+.mission-choice.full-game:focus-visible {
+  opacity: 0.9;
+  border-color: var(--ui-gold);
+  outline: 2px solid #e2c89780;
+}
+.mission-badge {
+  margin-left: auto;
+  flex: none;
+  padding: 5px 9px 4px;
+  border: 1px solid #e2c897a0;
+  border-radius: 4px;
+  color: var(--ui-gold);
+  font: 900 9px/1 var(--ui-font);
+  letter-spacing: 0.22em;
+  white-space: nowrap;
+}
+.dialog > p.demo-buy-note {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border: 1px solid var(--ui-gold);
+  border-radius: 10px;
+  background: linear-gradient(90deg, #e2c8972a, #e2c89708);
+  color: #f4e7c8;
+  font: 700 14px/1.4 var(--ui-font);
+}
+.demo-buy-note.flash {
+  animation: demoNote 0.5s var(--ui-ease);
+}
+@keyframes demoNote {
+  from {
+    transform: translateY(-4px);
+    background-color: #e2c89770;
+  }
+}
+#demoComplete {
+  z-index: 85;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden auto;
+  background: #06080b;
+  backdrop-filter: none;
+  padding: 0;
+  animation: demoIn 0.9s var(--ui-ease) both;
+}
+#demoComplete.hidden {
+  display: none !important;
+}
+@keyframes demoIn {
+  from {
+    opacity: 0;
+  }
+}
+.demo-art {
+  position: absolute;
+  inset: -3%;
+  background: #10151b center / cover no-repeat;
+  background-position: 62% center;
+  animation: titleDrift 38s ease-in-out infinite alternate;
+  filter: saturate(0.9);
+}
+.demo-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #06080bf5 0%, #06080be0 36%, #06080b66 66%, #06080b22 100%),
+    linear-gradient(0deg, #06080bf0 0%, transparent 38%),
+    radial-gradient(ellipse at 18% 50%, #e2c8971a, transparent 55%);
+}
+.demo-card {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(720px, 100%);
+  padding: clamp(28px, 7vh, 80px) clamp(16px, 7vw, 110px);
+  color: var(--ui-text);
+  font-family: var(--ui-font);
+}
+.demo-logo {
+  font-size: clamp(40px, 6.4vw, 88px);
+}
+.demo-rule {
+  width: 72px;
+  height: 3px;
+  margin: clamp(18px, 3.4vh, 30px) 0 clamp(14px, 2.6vh, 22px);
+  background: linear-gradient(90deg, var(--ui-gold), transparent);
+  animation: titleRise 0.9s var(--ui-ease) 0.55s both;
+}
+#demoThanks {
+  margin: 0;
+  font: 900 clamp(24px, 3.3vw, 38px) / 1.08 var(--ui-font);
+  letter-spacing: -0.02em;
+  color: #f7f3e6;
+  text-transform: none;
+  animation: titleRise 0.9s var(--ui-ease) 0.65s both;
+}
+.demo-buy {
+  margin: 10px 0 0;
+  font-size: clamp(14px, 1.5vw, 18px);
+  font-weight: 700;
+  color: var(--ui-gold);
+  animation: titleRise 0.9s var(--ui-ease) 0.75s both;
+}
+.demo-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: clamp(20px, 4vh, 34px) 0 0;
+  animation: titleRise 0.9s var(--ui-ease) 0.85s both;
+}
+.demo-stats > div {
+  padding: 14px 16px 13px;
+  border: 1px solid var(--ui-line-strong);
+  border-radius: 10px;
+  background: #0b1015b8;
+}
+.demo-stats dt {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  color: var(--ui-dim);
+}
+.demo-stats dd {
+  margin: 8px 0 0;
+  font: 900 clamp(18px, 2.2vw, 26px) / 1 var(--ui-font);
+  color: #f4f1e6;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.demo-stars i {
+  font-style: normal;
+  color: #ffffff2e;
+  margin-right: 1px;
+}
+.demo-stars i.on {
+  color: var(--ui-gold);
+  text-shadow: 0 0 12px #e2c89780;
+}
+.demo-more {
+  margin: 16px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #c3cabd;
+  animation: titleRise 0.9s var(--ui-ease) 0.95s both;
+}
+.demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(20px, 4vh, 32px);
+  animation: titleRise 0.9s var(--ui-ease) 1.05s both;
+}
+.demo-actions button {
+  width: auto;
+  margin: 0;
+  min-width: 200px;
+  min-height: 48px;
+  padding: 0 18px;
+  gap: 22px;
+  font: 800 12px/1 var(--ui-font);
+  letter-spacing: 0.12em;
+}
+.demo-actions .primary {
+  background: linear-gradient(180deg, #f0d9a8, var(--ui-gold));
+  color: #17130a;
+  box-shadow: 0 10px 30px #e2c89733;
+}
+.demo-actions .primary > span {
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  opacity: 0.6;
+}
+.demo-actions .primary:focus-visible,
+.demo-actions .secondary:focus-visible {
+  outline: 2px solid #f4f1e6;
+  outline-offset: 3px;
+}
+@media (max-width: 640px) {
+  #demoComplete {
+    align-items: flex-end;
+  }
+  .demo-shade {
+    background:
+      linear-gradient(0deg, #06080bf8 0%, #06080be6 60%, #06080b55 100%);
+  }
+  .demo-stats {
+    grid-template-columns: 1fr;
+  }
+  .demo-actions button {
+    flex: 1 1 100%;
+  }
+  .demo-logo i {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #demoComplete,
+  .demo-art,
+  .demo-rule,
+  #demoThanks,
+  .demo-buy,
+  .demo-stats,
+  .demo-more,
+  .demo-actions,
+  .demo-buy-note.flash {
+    animation: none;
+  }
+}
+/* --- END PUBLIC DEMO ------------------------------------------------------- */

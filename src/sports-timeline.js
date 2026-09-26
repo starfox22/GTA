@@ -1,3 +1,4 @@
+    // Sports officials, schedule, warm-up, walk-outs and leaving, harm checks and abandonment.
     function sportsUpdateOfficials(match, deltaSeconds) {
       const ball = match.ball,
         venue = match.venue;

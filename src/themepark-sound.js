@@ -1,3 +1,4 @@
+    // Theme park sound: screams, fountain music, fireworks and splashes (updateParkAudio).
     // ---- Park sound ------------------------------------------------------------------
     /**
      * All procedural (Web Audio): the fountain show's music (a plucked oud-like

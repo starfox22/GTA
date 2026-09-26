@@ -1,3 +1,4 @@
+      // Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
       const compiledLooks = new WeakMap();
       const hashOf = (seed, k) => {
         const x = Math.sin(seed * 12.9898 + k * 78.233) * 43758.5453;

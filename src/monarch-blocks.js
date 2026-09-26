@@ -1,3 +1,4 @@
+    // Monarch Isle block planning (planIsleBlock, planIsleStreetscape), solids, districts and shore styles.
     function planIsleBlock(plan, random) {
       const B = plan.block,
         push = (x, y, w, h, height, extra = {}) => {

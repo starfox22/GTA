@@ -1,3 +1,4 @@
+    // Theme park grounds: the log flume, the pier ground paint, buildSunsetPier() and park palms.
     // ---- The log flume ---------------------------------------------------------------
     /**
      * A trough on stilts round the east end of the island: out from the station

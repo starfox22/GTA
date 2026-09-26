@@ -1,0 +1,693 @@
+/* --- BOTTOM ROW: minimap + vitals, mission card, equipment ---------------- */
+#bottom {
+  position: absolute;
+  left: var(--hud-edge);
+  right: var(--hud-edge);
+  bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  pointer-events: none;
+  font-family: var(--ui-font);
+}
+.minimap-box {
+  position: relative;
+  flex-shrink: 0;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.35s var(--ui-ease);
+}
+.minimap-frame {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-line-strong);
+  background: #123244;
+  box-shadow: var(--ui-shadow), inset 0 0 0 1px #0006;
+  pointer-events: auto;
+  touch-action: none;
+  transition:
+    height 0.35s var(--ui-ease),
+    opacity 0.25s,
+    border-color 0.2s;
+}
+.minimap-frame:hover {
+  border-color: #ffffff5c;
+}
+#minimap {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Vignette inside the minimap frame so the edges fall off like a lens. */
+.minimap-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 26px #0a121acc;
+  pointer-events: none;
+}
+.mini-north {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #0b1015d9;
+  color: #fff;
+  font:
+    900 9px/1 var(--ui-font);
+  z-index: 1;
+}
+.mini-district {
+  position: absolute;
+  left: 9px;
+  bottom: 7px;
+  max-width: 60%;
+  z-index: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #eef1e8;
+  font:
+    800 9px/1.2 var(--ui-font);
+  letter-spacing: 0.12em;
+  text-shadow: 0 1px 3px #000, 0 0 6px #000;
+}
+.mini-zoom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -140%);
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #000b;
+  color: #fff;
+  font:
+    800 11px/1.3 var(--ui-font);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.mini-zoom.show {
+  opacity: 1;
+}
+.mini-map-btn {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 1;
+  padding: 3px 7px 3px 4px;
+  border: 1px solid var(--ui-line-strong);
+  border-radius: 99px;
+  background: #0b1015d9;
+  color: #e4e9dd;
+  font:
+    800 9px/1.3 var(--ui-font);
+  letter-spacing: 0.1em;
+  pointer-events: auto;
+}
+.mini-map-btn kbd {
+  padding: 0 4px;
+  font-size: 8px;
+}
+/* Fold button: a round "−" on the frame's corner; folded, the map chip. */
+.mini-fold {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--ui-line-strong);
+  border-radius: 99px;
+  background: #0b1015e6;
+  color: var(--ui-text);
+  pointer-events: auto;
+  transition:
+    background 0.2s,
+    top 0.35s var(--ui-ease);
+}
+.mini-fold i {
+  position: relative;
+  width: 8px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+.mini-fold-label {
+  display: none;
+  font:
+    800 9px/1 var(--ui-font);
+  letter-spacing: 0.14em;
+}
+.minimap-box.folded {
+  width: 150px;
+}
+.minimap-box.folded .minimap-frame {
+  height: 0;
+  opacity: 0;
+  border-width: 0;
+  pointer-events: none;
+}
+.minimap-box.folded .mini-fold {
+  position: relative;
+  top: 0;
+  right: auto;
+  align-self: flex-start;
+  height: 26px;
+  padding: 0 10px;
+  margin-bottom: 6px;
+}
+.minimap-box.folded .mini-fold-label {
+  display: inline;
+}
+/* Folded: the icon becomes a "+" (a second bar, rotated). */
+.minimap-box.folded .mini-fold i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  border-radius: 1px;
+  transform: rotate(90deg);
+}
+.minimap-box.folded .mini-fold {
+  order: -1;
+}
+/* Vitals under the minimap: health (wide) and armour (narrow). */
+#healthbox {
+  display: grid;
+  grid-template-columns: 7fr 3fr;
+  gap: 4px;
+  margin-top: 6px;
+}
+.vital {
+  height: 5px;
+  border-radius: 3px;
+  background: #ffffff1f;
+  overflow: hidden;
+  box-shadow: 0 1px 4px #0008;
+}
+.vital i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7fcf5e, #b9ec87);
+  transition: width 0.3s var(--ui-ease);
+}
+.vital.armor i {
+  background: linear-gradient(90deg, #4b9ed0, var(--ui-armor));
+}
+#healthbox.low .vital.health i {
+  background: linear-gradient(90deg, #d8553f, var(--ui-danger));
+  animation: lowHealth 0.8s ease-in-out infinite alternate;
+}
+@keyframes lowHealth {
+  to {
+    filter: brightness(1.6);
+  }
+}
+.status-label {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #cbd2c6;
+  text-shadow: 0 1px 3px #000;
+}
+.status-label b {
+  color: #d6f2b5;
+  font-variant-numeric: tabular-nums;
+}
+#armorLabel {
+  color: var(--ui-armor);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#healthbox:not(.armored) #armorLabel {
+  color: #aab2a6;
+}
+/* Mission card (pager). Open for a few seconds, then a one-line strip. */
+.bottom-middle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+#pager {
+  position: relative;
+  width: min(460px, 100%);
+  padding: 12px 16px 12px 16px;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-line);
+  border-left: 3px solid var(--acid);
+  background: var(--ui-panel-solid);
+  box-shadow: var(--ui-shadow);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: cardOpen 0.45s var(--ui-ease);
+}
+@keyframes cardOpen {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.pager-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #cfd7ca;
+}
+.pager-head .blink {
+  color: var(--acid);
+  font-size: 8px;
+}
+#missionCounter {
+  margin-left: auto;
+  color: var(--ui-dim);
+  font-variant-numeric: tabular-nums;
+}
+.mission-copy {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+#missionPortrait {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--ui-line-strong);
+  background-size: cover;
+  background-position: center;
+}
+#pager h2 {
+  margin: 0 0 3px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ui-text);
+}
+#pager p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #c3cbbf;
+}
+.pager-objective {
+  display: none;
+}
+#missionMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--ui-dim);
+}
+#missionTimer {
+  color: var(--ui-gold);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+#pagerHint {
+  display: none;
+}
+#pager.compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  width: auto;
+  max-width: min(520px, 100%);
+  padding: 7px 10px 7px 12px;
+  border-radius: 99px;
+  animation: cardFold 0.4s var(--ui-ease);
+}
+@keyframes cardFold {
+  from {
+    opacity: 0.4;
+    transform: scaleY(1.6);
+  }
+}
+#pager.compact .pager-head,
+#pager.compact .mission-copy,
+#pager.compact #missionDistance {
+  display: none;
+}
+#pager.compact .pager-objective {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #eef1e8;
+}
+#pager.compact .pager-objective::before {
+  content: '● ';
+  color: var(--acid);
+}
+#pager.compact #missionMeta {
+  margin-top: 0;
+}
+#pager.compact #missionMeta:has(#missionTimer:empty) {
+  display: none;
+}
+#pager.compact #pagerHint {
+  display: inline-block;
+}
+#pager.compact #cargoStatus {
+  order: 3;
+  flex-basis: 100%;
+  margin: 2px 0 0;
+}
+#cargoStatus {
+  margin-top: 10px;
+  color: #ecd79e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.cargo-track {
+  height: 4px;
+  margin-top: 5px;
+  border-radius: 2px;
+  background: #ffffff1f;
+  overflow: hidden;
+}
+.cargo-track i {
+  display: block;
+  height: 100%;
+  background: var(--ui-gold);
+  transition: width 0.3s;
+}
+/* Key hints: small, quiet, and about what you are doing now. */
+.quickkeys {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #d5dbd0;
+  opacity: 0.72;
+  text-shadow: 0 1px 3px #000;
+}
+.quickkeys kbd {
+  margin-right: 3px;
+  padding: 1px 5px;
+  font-size: 9px;
+}
+/* Equipment column: speed chip over the weapon box. */
+#equipment {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+  width: 250px;
+}
+#vehicleStats {
+  display: none;
+  min-width: 170px;
+  padding: 8px 12px;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-line);
+  background: var(--ui-panel);
+  box-shadow: var(--ui-shadow);
+  text-align: right;
+}
+#vehicleStats.active {
+  display: block;
+  animation: cardOpen 0.35s var(--ui-ease);
+}
+#vehicleName {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--ui-dim);
+}
+.speed-readout {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 6px;
+}
+#speed {
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+#speedUnit {
+  max-width: 150px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #c9d0c4;
+}
+#vehicleStats .meter {
+  height: 3px;
+  margin-top: 5px;
+  border-radius: 2px;
+}
+#carFill {
+  background: linear-gradient(90deg, #7fcf5e, #b9ec87);
+}
+#vehicleStats.damaged #carFill {
+  background: var(--ui-danger);
+}
+/* On foot there is no gauge under the figure; swimming it is the breath. */
+#vehicleStats.no-meter .meter {
+  display: none;
+}
+#vehicleStats.breath #carFill {
+  background: linear-gradient(90deg, #5fb3d9, #a9e1f2);
+}
+#vehicleStats.breath.damaged #carFill {
+  background: var(--ui-danger);
+}
+/* Driving assists (hud.js updateSpeedBox, driving.js drivingAssistStates): a
+   lamp per assist, dim while ready, amber and flickering while it works, struck
+   through when switched off, N/A on a vehicle built without it. */
+.assist-lamps {
+  display: none;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 5px;
+}
+#vehicleStats.assists .assist-lamps {
+  display: flex;
+}
+.assist-lamps span {
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(201, 208, 196, 0.22);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  color: rgba(201, 208, 196, 0.55);
+}
+.assist-lamps span[data-state='active'] {
+  color: #1b1405;
+  background: #ffb32e;
+  border-color: #ffb32e;
+  box-shadow: 0 0 8px rgba(255, 179, 46, 0.65);
+  animation: assistFlicker 0.16s steps(2, jump-none) infinite;
+}
+.assist-lamps span[data-state='off'] {
+  color: rgba(255, 150, 120, 0.7);
+  text-decoration: line-through;
+}
+.assist-lamps span[data-state='na'] {
+  color: rgba(201, 208, 196, 0.32);
+  border-style: dashed;
+}
+.assist-lamps span[data-state='na']::after {
+  content: ' N/A';
+  font-weight: 600;
+}
+@keyframes assistFlicker {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .assist-lamps span[data-state='active'] {
+    animation: none;
+  }
+}
+/* Pop boxes (hud.js): .hud-more rows fold to nothing until .open or hover. */
+.hud-pop .hud-more {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.38s var(--ui-ease),
+    opacity 0.25s,
+    margin 0.38s var(--ui-ease);
+}
+.hud-more-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+.hud-pop.open .hud-more,
+.hud-pop:hover .hud-more,
+.hud-pop:focus-within .hud-more,
+.hud-pop:focus-visible .hud-more {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+#weaponButton {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 150px;
+  padding: 7px 12px;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-line);
+  background: var(--ui-panel);
+  box-shadow: var(--ui-shadow);
+  color: var(--ui-text);
+  text-align: left;
+  pointer-events: auto;
+  transition:
+    width 0.38s var(--ui-ease),
+    padding 0.38s var(--ui-ease),
+    background 0.25s,
+    border-color 0.25s;
+}
+#weaponButton.open,
+#weaponButton:hover,
+#weaponButton:focus-visible {
+  width: 250px;
+  padding: 11px 14px;
+  background: var(--ui-panel-solid);
+  border-color: var(--ui-line-strong);
+}
+#weaponButton:focus-visible {
+  outline: 2px solid var(--acid);
+  outline-offset: 2px;
+}
+.weapon-head {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+#weaponSlot {
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--ui-dim);
+  white-space: nowrap;
+}
+#weaponName {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.weapon-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+#weaponArt {
+  display: block;
+  width: 72px;
+  height: 26px;
+  flex-shrink: 0;
+  transition:
+    width 0.38s var(--ui-ease),
+    height 0.38s var(--ui-ease);
+}
+#weaponButton.open #weaponArt,
+#weaponButton:hover #weaponArt,
+#weaponButton:focus-visible #weaponArt {
+  width: 124px;
+  height: 44px;
+}
+.ammo {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+}
+.ammo strong {
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-gold);
+  line-height: 1;
+}
+#reserve {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ui-dim);
+  font-variant-numeric: tabular-nums;
+}
+#reloadHint {
+  display: none;
+  margin-left: 2px;
+}
+#weaponButton.open #reloadHint,
+#weaponButton:hover #reloadHint,
+#weaponButton.reloading #reloadHint {
+  display: inline-block;
+}
+#weaponButton.reloading .ammo strong {
+  animation: blink 0.5s steps(2) infinite;
+}
+.arsenal-hint {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 7px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #cfd6ca;
+  white-space: nowrap;
+}
+.arsenal-hint kbd {
+  padding: 0 4px;
+  font-size: 8px;
+}

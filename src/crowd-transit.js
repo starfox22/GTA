@@ -1,3 +1,4 @@
+    // Crowd taxis and buses: hailing, bus arrivals, deliveries and the per-frame scene update (updateScenes).
     function curbsideStop(c) {
       if (c.crashStop) return 0;
       const s = c.curbStop;

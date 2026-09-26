@@ -1,3 +1,4 @@
+    // physicsStep(): the fixed step, broadphase, contact passes, settling.
     // Rest flags, vehicle pairs, nearby walls and barriers for this step's contacts.
     function vehicleBroadphase(pc) {
       // Vehicles that are far from the player, barely moving and untouched for a while

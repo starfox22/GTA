@@ -1,3 +1,4 @@
+    // controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
     const noStatics = [];
     // Broadphase containers reused from step to step (see physicsStep).
     const broadphaseCells = Array.from({ length: 4096 }, () => Object.assign([], { stamp: 0 })),

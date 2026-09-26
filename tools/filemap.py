@@ -9,11 +9,12 @@
 
 Each line is `path  lines  purpose`. The purpose is taken, in order, from:
   1. the file's own `// BEGIN SUBSYSTEM: src/x.js — Title` banner,
-  2. the comment directly above its `// @include` line in the parent,
-  3. the first comment in the file's first 40 lines,
+  2. the comment the file opens with (its header: 1-3 lines saying what it
+     holds and its main entry points),
+  3. the comment directly above its `// @include` line in the parent,
   4. the names it declares at top level ("defines a, b, c"),
 with OVERRIDES (below) consulted right after step 1. Improve a description by
-editing that comment in the source (and dropping any override), then rerun.
+editing the file's header comment (and dropping any override), then rerun.
 """
 import os
 import re
@@ -24,34 +25,18 @@ OUT = os.path.join(ROOT, 'docs', 'FILEMAP.md')
 INCLUDE_RX = re.compile(r'^\s*// @include (src/[\w.-]+\.js)\s*$')
 BANNER_RX = re.compile(r'//\s*BEGIN SUBSYSTEM: src/[\w.-]+\.js\s*[—-]+\s*(.+)$')
 DECL_RX = re.compile(r'^\s*(?:async\s+)?(?:function\s*\*?\s*([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*))')
+UI_CSS_RX = re.compile(r'^\s*/\* @include (src/[\w./-]+\.css) \*/\s*$')
+UI_HTML_RX = re.compile(r'^\s*<!-- @include (src/[\w./-]+\.html) -->\s*$')
+INCLUDE_ANY_RX = re.compile(r'^\s*(/\*|<!--) @include')
+SHELL_TEXT = ('HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and '
+              'build.py\'s `<!-- @include-* -->` slots (game, three.js, media, credits)')
 MAX = 150
 
 # Descriptions for files whose source does not (yet) open with a describing
-# comment, mostly pieces cut out of a bigger file by pure moves. A file's own
-# `BEGIN SUBSYSTEM` banner still wins; better still, add a comment to the
-# source and delete the entry here.
+# comment. A file's own `BEGIN SUBSYSTEM` banner still wins; better still, add
+# a header comment to the source and delete the entry here.
 OVERRIDES = {
-    'src/game-weapons.js': 'weapon table (weapons) and mission list (missions)',
-    'src/game-vehicles.js': 'VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road/air resistance',
-    'src/game-car-spawn.js': 'makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout',
-    'src/game-worldgen.js': 'buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas',
-    'src/game-player-actions.js': 'player verbs: enter/exit vehicles, interact, aim, shoot, reload, hurt, die, explode',
-    'src/game-cops.js': 'resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning',
-    'src/game-combat.js': 'updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets',
-    'src/game-draw2d.js': '2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers',
-    'src/game-ui.js': 'weapon chip, mission card and updateUI() (HUD text refresh)',
     'src/game-menus.js': 'resize, begin/newGame, pause, help, big map toggle',
-    'src/game-update.js': 'update(dt): the per-frame simulation step (only active play advances clocks)',
-    'src/game-console.js': 'window.DeadEndCity developer console, part 1 of 3 (one object literal across game-console*.js; only valid together)',
-    'src/game-console-world.js': 'DeadEndCity console part 2 of 3: ride, simulate, bikes, world/vehicle probes',
-    'src/game-console-graphics.js': 'DeadEndCity console part 3 of 3: damage tests, lineups, graphics, settings, radio',
-    'src/physics-shapes.js': 'oriented collision boxes, vehicle shapes, the static-collider grid (addStatic, nearbyStatics)',
-    'src/physics-collisions.js': 'contact resolution, crash severity/damage/injury (resolveContact, damageVehicle, repairVehicle)',
-    'src/physics-traffic.js': 'traffic AI: signals, junction planning, road-line following (trafficControl)',
-    'src/physics-driving.js': 'controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers',
-    'src/physics-step.js': 'physicsStep(): the fixed step, broadphase, contact passes, settling',
-    'src/physics-update.js': 'updateCars(): per-frame vehicle update driving the fixed steps',
-    'src/physics-knockdowns.js': 'people knocked down by vehicles, swept person contacts, blood tracks',
     'src/render3d-statics.js': 'static building batches, static cells and culling (staticInView), shared materials',
     'src/render3d-terrain.js': 'mesh/box/rod helpers, wall textures, the ground mesh and kerbs',
     'src/render3d-streetprops.js': 'street lamps and their glow halos, vehicle halos, blossom, sign() boards',
@@ -60,23 +45,6 @@ OVERRIDES = {
     'src/render3d-resources.js': 'GPU resource lifecycle: shared geometries, model pruning and disposal',
     'src/render3d-api.js': 'the object the renderer returns (city3D.*): draw API and debug/info hooks',
     'src/render3d-frame.js': 'render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats()',
-    'src/crowd3d-poses.js': 'pose targets and IK for arms and legs (crowdPoseTargets, solveLeg)',
-    'src/crowd3d-draw.js': 'drawCrowdPerson(): weapon holds, phone poses, far-figure shortcut',
-    'src/crowd3d-frame.js': 'updateCrowd3D(): per-frame packing, car enter/exit transitions, dogs, crowd stats',
-    'src/sports-setup.js': 'venues, stands, exits, kits and shared sports helpers',
-    'src/sports-play.js': 'match play: possession, passing, movement, offside (sportsPass, sportsBestReceiver …)',
-    'src/sports-frame.js': 'updateSports()/drawSports(): per-frame match update, board clock, console snapshot',
-    'src/themepark-rides.js': 'The Sunset Eye wheel, coaster status, park shows and fireworks',
-    'src/themepark-grounds.js': 'the log flume, the pier ground paint and buildSunsetPier(), park palms',
-    'src/base3d-materials.js': 'Fort Sentinel textures and materials (fences, nets, plates, containers)',
-    'src/base3d-facilities.js': 'Fort Sentinel control tower, radar head, windsock, glow meshes',
-    'src/helicopter3d-looks.js': 'helicopter looks and civil/executive paint schemes (pickHelicopterLook)',
-    'src/helicopter3d-livery.js': 'helicopter livery painting: emblems, seals, roundels, lettering',
-    'src/helicopter3d-model.js': 'rotors and makeHelicopter()',
-    'src/cars3d-materials.js': 'civilian car materials: trim atlas, paint and finish materials',
-    'src/cars3d-models.js': 'makeCivilianCar()/animateCivilianCar(), liveries, lettering, lamps',
-    'src/cars3d-bodies-a.js': 'CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod',
-    'src/cars3d-bodies-b.js': 'CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino',
 }
 
 
@@ -198,13 +166,13 @@ def purpose(rel, lines, above):
         return OVERRIDES[rel]
     names = declared_names(lines)
     defines = ('defines ' + ', '.join(names[:4]) + (', …' if len(names) > 4 else '')) if names else ''
-    text = summarise(above) if above else ''
-    if len(text) > 8 and not text[:1].islower() and not text.startswith('('):
-        return text
     top = next((l for l in lines if l.strip()), '')
     text = summarise(first_comment(lines))
     if len(text) > 8 and top.strip().startswith(('/*', '//')):
         return text  # the file opens with a comment: its own description
+    above_text = summarise(above) if above else ''
+    if len(above_text) > 8 and not above_text[:1].islower() and not above_text.startswith('('):
+        return above_text
     if len(text) > 8 and defines:
         return defines + ' · ' + text
     return defines or text
@@ -226,6 +194,73 @@ def walk():
     return out
 
 
+def ui_purpose(rel, lines, above):
+    """A src/ui fragment: its opening comment (/* */ or <!-- -->), the comment
+    above its include line, or the first selectors / element ids it holds."""
+    def strip_html(block):
+        return [re.sub(r'<!--|-->', '', l) for l in block]
+
+    def opening(ls):
+        for i, line in enumerate(ls[:40]):
+            s = line.strip()
+            if not s:
+                continue
+            for start, end in (('/*', '*/'), ('<!--', '-->')):
+                if s.startswith(start):
+                    j = i
+                    while j < len(ls) and end not in ls[j]:
+                        j += 1
+                    return strip_html(ls[i:j + 1])
+            return []
+        return []
+
+    text = summarise(opening(lines))
+    if len(text) > 8:
+        return text
+    text = summarise(strip_html(above))
+    if len(text) > 8 and not INCLUDE_ANY_RX.match(above[-1] if above else ''):
+        return text
+    if rel.endswith('.css'):
+        sels = []
+        for line in lines:
+            m = re.match(r'^\s{0,6}([^\s{}/*@][^{}]*?)\s*\{\s*$', line)
+            if m and m.group(1) not in sels:
+                sels.append(m.group(1))
+        return 'styles: ' + ', '.join(sels[:4]) + (', …' if len(sels) > 4 else '') if sels else 'styles'
+    ids = []
+    for line in lines:
+        ids += ['#' + i for i in re.findall(r'\bid="([\w-]+)"', line)]
+    return 'markup: ' + ', '.join(ids[:5]) + (', …' if len(ids) > 5 else '') if ids else 'markup'
+
+
+def walk_ui():
+    """(rel, parent, lines, above) for src/shell.html's CSS/HTML fragments, in order."""
+    out = []
+    if not os.path.isfile(os.path.join(ROOT, 'src', 'shell.html')):
+        return out
+
+    def visit(rel, parent, seen):
+        lines = lines_of(rel)
+        for i, line in enumerate(lines):
+            m = UI_CSS_RX.match(line) or UI_HTML_RX.match(line)
+            if not m or m.group(1) in seen:
+                continue
+            child = m.group(1)
+            seen.add(child)
+            if not os.path.isfile(os.path.join(ROOT, child)):
+                continue
+            j, above = i - 1, []
+            while j >= 0 and re.match(r'^\s*(<!--|/\*|\*|-->)', lines[j]) and not INCLUDE_ANY_RX.match(lines[j]):
+                above.insert(0, lines[j])
+                j -= 1
+            child_lines = lines_of(child)
+            out.append((child, rel, child_lines, above))
+            visit(child, child, seen)
+
+    visit('src/shell.html', None, set())
+    return out
+
+
 def render(with_counts=True):
     entries = walk()
     children = {}
@@ -233,9 +268,14 @@ def render(with_counts=True):
         children.setdefault(parent, []).append(rel)
     info = {rel: (len(lines), purpose(rel, lines, above)) for rel, _, _, lines, above in entries}
     parents = [rel for rel, *_ in entries if rel in children]
-    included = set(info)
+    ui = walk_ui()
+    included = set(info) | {rel for rel, *_ in ui}
     loose = sorted(f for f in os.listdir(os.path.join(ROOT, 'src'))
-                   if 'src/' + f not in included)
+                   if 'src/' + f not in included and os.path.isfile(os.path.join(ROOT, 'src', f)))
+    ui_dir = os.path.join(ROOT, 'src', 'ui')
+    if os.path.isdir(ui_dir):
+        loose += sorted('ui/' + f for f in os.listdir(ui_dir)
+                        if 'src/ui/' + f not in included and os.path.isfile(os.path.join(ui_dir, f)))
 
     def row(rel, count, text):
         num = f'{count:>5}' if with_counts else '    -'
@@ -252,7 +292,8 @@ def render(with_counts=True):
         'Grep this file first: `grep -i crowd docs/FILEMAP.md`. Sections follow the include',
         'tree from src/main.js; a file that is itself an include list has its own section',
         '(marked ▸). Files are listed in build order, so order matters (a `const` must be',
-        'included before code that runs at load time and reads it).',
+        'included before code that runs at load time and reads it). The CSS/HTML fragments',
+        'src/shell.html includes (src/ui/) have their own section after the scripts.',
         '',
         f'{len(entries)} files in the include tree, '
         f'{sum(c for c, _ in info.values()):,} lines.' if with_counts else
@@ -266,14 +307,21 @@ def render(with_counts=True):
             if rel in children:
                 t = '▸ ' + t
             out.append(row(rel, c, t))
+    if ui:
+        out += ['', f'## src/shell.html ▸ {SHELL_TEXT}', '']
+        for rel, parent, lines, above in ui:
+            prefix = f'(in {parent[4:]}) ' if parent != 'src/shell.html' else ''
+            out.append(row(rel, len(lines), prefix + ui_purpose(rel, lines, above)))
     out += ['', '## Outside the include tree', '']
     for f in loose:
         rel = 'src/' + f
         lines = lines_of(rel)
         if f == 'shell.html':
-            text = 'HTML/CSS page shell; build.py fills its `<!-- @include-* -->` directives'
+            text = SHELL_TEXT
         elif f == 'asset-loader.js':
             text = 'decodes the embedded/streamed media into ASSETS before the game starts'
+        elif f.startswith('ui/'):
+            text = 'NOT INCLUDED by src/shell.html — dead fragment? ' + ui_purpose(rel, lines, [])
         else:
             text = purpose(rel, lines, []) or 'NOT INCLUDED ANYWHERE — dead file?'
         out.append(row(rel, len(lines), text))

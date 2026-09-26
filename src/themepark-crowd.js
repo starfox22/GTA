@@ -1,3 +1,4 @@
+    // Theme park crowd: lines, spots, queues and guests (spawnParkGuest).
     // ---- The park crowd --------------------------------------------------------------
     /**
      * Guests are ordinary pedestrians (drawn by the instanced crowd) flagged

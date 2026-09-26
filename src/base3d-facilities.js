@@ -1,3 +1,4 @@
+      // Fort Sentinel control tower, radar head (radarHead), windsock and glow meshes.
       // Control tower.
       {
         const b = planOf('atc'),

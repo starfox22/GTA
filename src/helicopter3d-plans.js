@@ -1,3 +1,4 @@
+      // Helicopter airframe plans: Colibri, Robin, Hawk (heliPlans).
       // ---- Airframe plans ---------------------------------------------------------------
       function heliRoundRect(px, py, x0, x1, y0, y1, r) {
         const qx = Math.abs(px - (x0 + x1) / 2) - ((x1 - x0) / 2 - r),

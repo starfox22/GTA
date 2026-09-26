@@ -1,3 +1,4 @@
+    // The Falcon coaster track: circuit builder, speed profile, banking and frames (coasterCircuit, coasterFrame).
     // ---- The Falcon: circuit builder -----------------------------------------------
     /**
      * THE FALCON

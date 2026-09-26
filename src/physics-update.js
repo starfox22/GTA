@@ -1,3 +1,4 @@
+    // updateCars(): per-frame vehicle update driving the fixed steps.
     function updateCars(deltaSeconds, active) {
       bloodTrackCandidates.length = 0;
       for (let i = 0; i < bloodPools.length; i++) {

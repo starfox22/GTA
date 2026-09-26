@@ -1,3 +1,4 @@
+      // Helicopter livery painting: emblems, seals, roundels, lettering.
       // ---- Livery ----------------------------------------------------------------------------
       const heliHex = (hex) => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
       // Coverage of a signed distance (negative inside) over about a texel.

@@ -1,3 +1,4 @@
+      // Fort Sentinel per-frame visuals: updateBaseVisuals() and the searchlight lens.
       const searchLens = new Three.Vector3(),
         searchAim = new Three.Vector3();
       function updateBaseVisuals() {

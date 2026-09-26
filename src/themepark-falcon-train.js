@@ -1,3 +1,4 @@
+    // The Falcon coaster train: stepping, boarding and leaving, riders, screams and speakers (stepCoasterTrain).
     // ---- The Falcon: the train ------------------------------------------------------
     /**
      * One train of seven cars runs the circuit all day: it loads for a spell in

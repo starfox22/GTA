@@ -1,3 +1,4 @@
+        // CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod.
         /* REGENT: a mid-size saloon (Camry / Accord): a low nose with a wide black
            mouth, swept lamps with an LED brow, a fastback roof and a light bar
            across the lid. */

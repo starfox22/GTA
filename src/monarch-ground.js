@@ -1,3 +1,4 @@
+    // Monarch Isle ground sheet: one painted canvas tile (paintMonarchGround) with junctions, villas, blocks, garden, marina.
     const MONARCH_TILE = { x: 5300, y: -5420, w: 5000, h: 5040, pixelsPerUnit: 0.56 };
     const ISLE_PAINT = {
       lawn: '#6c8e55',

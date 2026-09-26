@@ -1,3 +1,4 @@
+      // Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
       const CAR_M = UNITS_PER_METRE,
         // Swatches along the livery's bottom band (police3d.js POLICE_SWATCH_BAND).
         CAR_SWATCH = { paint: 0, roof: 1, black: 2, lower: 3, accent: 4, silver: 5, dark: 6, white: 7 },

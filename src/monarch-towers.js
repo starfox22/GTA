@@ -1,3 +1,4 @@
+    // Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
     const MONARCH_TOWERS = [
       { id: 'sovereign', name: 'THE SOVEREIGN', block: [2, 1], x: 7596, y: -3420, w: 116, h: 116, storeys: 57, floor: 3.3 * UNITS_PER_METRE, crown: 64, helipad: false },
       { id: 'monarch-one', name: 'MONARCH ONE', block: [2, 2], x: 7606, y: -2580, w: 150, h: 150, storeys: 48, floor: 3.35 * UNITS_PER_METRE, crown: 40, helipad: true },

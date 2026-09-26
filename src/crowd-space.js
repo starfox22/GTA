@@ -1,3 +1,4 @@
+    // Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
     const crowd = {
       grid: new Map(),
       gridStamp: -1,

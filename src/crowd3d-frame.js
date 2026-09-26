@@ -1,3 +1,4 @@
+      // updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
       /* Where the player got into or out of a car, for the transition poses. */
       function trackCarTransition() {
         const car = player.car && !transitRide && !taxiRide ? player.car : null;

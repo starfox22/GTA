@@ -1,3 +1,4 @@
+    // Sports venues, stands, exits, kits and shared sports helpers.
     const SPORTS_VENUES = {
       basketball: {
         id: 'riverside-basketball',

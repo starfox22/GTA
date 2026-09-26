@@ -1,0 +1,314 @@
+/* --- TOUCH PLAY: thumbs own the lower corners, so the HUD moves up --------- */
+/* Row 1: location, waypoint, cash and stars. Row 2: minimap, mission card,
+   weapon. Toasts and dialogue sit just above the button strip at the bottom. */
+.touch-mode {
+  --hud-edge: max(12px, env(safe-area-inset-left));
+}
+.touch-mode #topbar {
+  top: max(8px, env(safe-area-inset-top));
+  align-items: center;
+  gap: 10px;
+}
+.touch-mode .hud-location {
+  max-width: 30vw;
+}
+.touch-mode .hud-location b {
+  font-size: 12px;
+}
+.touch-mode .hud-location .eyebrow,
+.touch-mode #worldClock {
+  display: none;
+}
+.touch-mode .hud-status {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.touch-mode .hud-cash {
+  font-size: 20px;
+}
+.touch-mode .hud-stars {
+  font-size: 14px;
+}
+.touch-mode #pauseBtn {
+  width: 38px;
+  height: 38px;
+}
+.touch-mode #navigation {
+  top: max(8px, env(safe-area-inset-top));
+  padding: 4px 12px 4px 4px;
+  max-width: 34vw;
+}
+.touch-mode #navArrow {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
+.touch-mode #terrainStatus,
+.touch-mode #stealthStatus {
+  top: auto;
+  bottom: 160px;
+  max-width: 50vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.touch-mode #toast {
+  top: auto;
+  bottom: 86px;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
+  max-width: min(420px, 50vw);
+  transform: translateY(6px);
+  font-size: 12px;
+  text-align: center;
+}
+.touch-mode #toast.show {
+  transform: none;
+}
+.touch-mode #storyLine {
+  bottom: 138px;
+  width: min(520px, 52vw);
+  font-size: 13px;
+}
+.touch-mode #interaction {
+  top: calc(50% + 40px);
+}
+/* Touch: dock on the right just above the action buttons (hud.js measures
+   them into --touch-dock-top / --touch-dock-right), fading in there. */
+.touch-mode #interaction.docked {
+  top: var(--touch-dock-top, 40%);
+  left: auto;
+  right: var(--touch-dock-right, 16px);
+  margin: 0;
+  max-width: 42vw;
+  transform: scale(0.9);
+  transform-origin: 100% 100%;
+  translate: 0 -100%;
+  transition:
+    opacity 0.18s,
+    visibility 0s;
+  animation: promptIn 0.3s var(--ui-ease);
+}
+/* A toast that has been read dims so it does not sit over the play. */
+.touch-mode #toast.settled {
+  opacity: 0.72;
+}
+.touch-mode #radioCaption {
+  top: 96px;
+}
+.touch-mode #bottom {
+  top: 54px;
+  bottom: auto;
+  align-items: flex-start;
+  gap: 10px;
+}
+.touch-mode .minimap-box {
+  width: 150px;
+}
+.touch-mode .minimap-frame {
+  height: 96px;
+}
+.touch-mode .minimap-box.folded {
+  width: 90px;
+}
+.touch-mode .mini-map-btn kbd {
+  display: none;
+}
+.touch-mode #pager {
+  width: min(340px, 100%);
+  padding: 8px 12px;
+}
+.touch-mode #pager .mission-copy p {
+  display: none;
+}
+.touch-mode #missionPortrait {
+  width: 34px;
+  height: 34px;
+}
+.touch-mode #pager h2 {
+  font-size: 13px;
+}
+.touch-mode #pager.compact #pagerHint,
+.touch-mode .quickkeys,
+.touch-mode .arsenal-hint {
+  display: none;
+}
+.touch-mode #equipment {
+  width: 150px;
+}
+.touch-mode #weaponButton,
+.touch-mode #weaponButton.open {
+  width: 132px;
+  padding: 6px 10px;
+}
+.touch-mode #weaponButton #weaponArt {
+  width: 60px;
+  height: 22px;
+}
+.touch-mode #vehicleStats {
+  min-width: 132px;
+  padding: 6px 10px;
+}
+.touch-mode #speed {
+  font-size: 20px;
+}
+.touch-mode #carRadio {
+  top: 150px;
+  right: var(--hud-edge);
+  width: 150px;
+}
+.touch-mode #carRadio.open {
+  width: 250px;
+}
+.touch-mode .radio-knob {
+  --size: 76px;
+}
+.touch-mode .radio-knob::before {
+  inset: -12px;
+}
+/* The narrower touch box: the LCD's tags sit over the digits. */
+.touch-mode .radio-lcd {
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  height: 52px;
+  padding: 0 7px;
+}
+.touch-mode .lcd-tags {
+  flex-direction: row;
+  gap: 7px;
+}
+.touch-mode .lcd-digits {
+  height: 24px;
+  margin: 0;
+}
+.touch-mode #carRadio #radioMute {
+  width: 34px;
+  height: 30px;
+}
+/* Portrait phones: the mission card drops under the minimap / weapon row. */
+@media (max-width: 600px) {
+  .touch-mode .hud-location {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+  .touch-mode .hud-location .street {
+    display: none;
+  }
+  .touch-mode #navigation {
+    top: 52px;
+    max-width: 70vw;
+  }
+  .touch-mode #bottom {
+    top: 92px;
+    flex-wrap: wrap;
+  }
+  .touch-mode .bottom-middle {
+    order: 3;
+    flex-basis: 100%;
+  }
+  .touch-mode .minimap-box {
+    width: 124px;
+    margin-right: auto;
+  }
+  .touch-mode .minimap-frame {
+    height: 84px;
+  }
+  .touch-mode .mini-district,
+  .touch-mode .mini-map-btn {
+    display: none;
+  }
+  .touch-mode #equipment,
+  .touch-mode #weaponButton,
+  .touch-mode #weaponButton.open,
+  .touch-mode #vehicleStats {
+    width: 124px;
+    min-width: 0;
+  }
+  .touch-mode #weaponButton #weaponArt {
+    width: 48px;
+    height: 18px;
+  }
+  .touch-mode .ammo strong {
+    font-size: 17px;
+  }
+  /* Between the mission card and the button strip: toast, dialogue, status. */
+  .touch-mode #toast {
+    top: 318px;
+    bottom: auto;
+    max-width: 86vw;
+  }
+  .touch-mode #storyLine {
+    width: 86vw;
+    top: 376px;
+    bottom: auto;
+  }
+  .touch-mode #terrainStatus,
+  .touch-mode #stealthStatus {
+    top: 300px;
+    bottom: auto;
+    max-width: 86vw;
+  }
+  .touch-mode #carRadio,
+  .touch-mode #carRadio.open {
+    top: auto;
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    bottom: 300px;
+  }
+  .touch-mode .hud-status {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+  }
+  .touch-mode .hud-cash {
+    font-size: 18px;
+  }
+  .touch-mode .hud-stars {
+    font-size: 12px;
+  }
+}
+.touch-mode #interaction kbd {
+  display: none;
+}
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-mode #bottom {
+    top: 50px;
+  }
+  .touch-mode .minimap-frame {
+    height: 84px;
+  }
+  /* Between the weapon chip and the thumb buttons: a shorter radio box. */
+  .touch-mode #carRadio {
+    top: 148px;
+  }
+  .touch-mode #radioTrack {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .touch-mode .radio-presets {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 3px;
+  }
+  .touch-mode #radioNext {
+    grid-column: span 1;
+  }
+}
+/* Title menu on a short landscape phone: a darker veil behind the menu column
+   and taller rows for thumbs. */
+@media (max-height: 560px) {
+  .title-shade {
+    background:
+      linear-gradient(90deg, #06080bf2 0%, #06080be0 45%, #06080b99 75%, #06080b40 100%),
+      linear-gradient(0deg, #06080bee 0%, transparent 32%);
+  }
+  .touch-mode .menu-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
