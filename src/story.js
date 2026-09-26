@@ -330,6 +330,11 @@
       canvas.focus();
     }
     function offerMission() {
+      // PUBLIC DEMO (campaign.js): past mission 2 the payphone has nothing.
+      if (demoStoryOver()) {
+        tell(DEMO_BUY_MESSAGE, 5);
+        return;
+      }
       if (missionIndex >= missions.length) {
         tell('Every job is done. Explore the islands, rooftop and gang territories, or replay from pause.', 5);
         return;
@@ -460,7 +465,7 @@
       getElement('storyLine').classList.remove('show');
     }
     function retryMission() {
-      if (!mission && missionIndex >= missions.length) return;
+      if (!mission && !storyCallWaiting()) return;
       if (transitRide) leaveTransit(transitRide.from, true);
       player.roof = false;
       player.buildingRoof = null;
@@ -484,6 +489,8 @@
       cash += reward;
       finishCampaignMission(missionState);
       mission = null;
+      // PUBLIC DEMO: mission 2 brings up the DEMO COMPLETE card (campaign.js).
+      const demoEnd = demoMissionWon(missionState.index);
       if (completed > previousCompleted) newCallNotice();
       enemies.length = 0;
       storyActors
@@ -508,9 +515,11 @@
           ? 'The ledger is delivered. Your crew is safe. The payphone still rings: contracts are open.'
           : lastContract
             ? 'Every contract is closed. The South Coast is yours.'
-            : missionIndex >= missions.length
-              ? 'Replay complete. Choose another mission from pause, or explore the city.'
-              : 'The payphone is ringing. The next job is waiting.',
+            : demoEnd || demoStoryOver()
+              ? DEMO_BUY_MESSAGE
+              : missionIndex >= missions.length
+                ? 'Replay complete. Choose another mission from pause, or explore the city.'
+                : 'The payphone is ringing. The next job is waiting.',
         7,
       );
       getElement('storyLine').classList.remove('show');
@@ -518,7 +527,7 @@
       updateUI();
     }
     function objective() {
-      return mission ? mission.target : missionIndex < missions.length ? phone : null;
+      return mission ? mission.target : storyCallWaiting() ? phone : null;
     }
     function passengerCar(vehicle) {
       return (

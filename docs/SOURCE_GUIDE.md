@@ -228,7 +228,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
 | geography.js | Land polygons and the cached `landAt`, `BRIDGES` and their architecture (`bridgeStructure`, `bridgeFootings`, `bridgePylons`), reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
 | drawbridge.js | The Palm Sound drawbridge: `DRAWBRIDGE_OPENINGS`, the opening phases (`updateDrawbridge`), barrier arms and ramming, traffic held at the stop lines (`drawbridgeTrafficLimit`), `drawbridgeKeepsOff`, `drawbridgeFootBlocked`, leaves as ramps and vehicle jumps (`drawbridgeSurface`, `drawbridgeSlopeDrive`, `drawbridgeFlight`, `drawbridgeSettle`), the ketch ALBATROSS, GPS pricing (`drawbridgeRouteDelay`), `drawDrawbridgeMap`, bells, motors and horns, the console report |
-| harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
+| harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit, and THE DROP in Vinny's warehouse (stage 4 shutter, 5 ELIMINATE POLICE · N LEFT for officers shut in with the truck, `depotPoliceInside`, 6 EXIT THE TRUCK, 7 ESCAPE ON FOOT THROUGH THE BACK DOOR; POLICE LOST at the back door, then MISSION COMPLETED; `depotStakeout` holds the wanted level while inside, `depotDropPrompt`) |
 | heat.js | Heat and wanted stars: `crime(amount)` (heat by severity; the only way heat rises, nothing adds it passively), `recordKill` / `recordVehicleKill` (by victim, with a spree bonus), `HEAT_STARS`, the escalation delay, `heatUI()` (stars, pending star, heat meter, body count), `crimeLog` (the last crimes, for `policeReport().crimes`) |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory, knife combat and FISTS (index 7, no weapon: `meleeAttack` throws a left-right combination with a haymaker, `punchReaction`; `playerUnarmed()` tells the crowd the player is harmless) |
@@ -237,8 +237,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | swat.js | SWAT teams and rooftop snipers. **`SNIPERS_ENABLED = false`**: the snipers are switched off (no spawn from any caller, their laser, beep, screen-edge glow and captions gated too); set it to true to restore them as described here. The rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen now and then at five stars (`roofSniperSite`, `updateRoofSnipers`: one at a time, a second only after 150 s at five stars, first roll 25-45 s in and then every 60-90 s on a 65% chance; laser telegraph, two led rounds, then it packs up), `swatStats` |
 | wounds.js | Wounds: `woundPerson` (hit zone, flinch, limp, blood trail, downed officers and bystanders), `chooseDeathFall` (backwards, face down, spun, slumped against a wall), `deathFallAmount` (the half-second fall), `hitFlinch`, `woundReport` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
-| campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
-| chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
+| campaign.js | Save schema, progression frontier, ammunition persistence and mission selection; PUBLIC DEMO (`DEMO_BUILD` in game.js, `DEMO_MISSIONS`, `demoLocked`, `storyCallWaiting`, `demoStoryOver`, the FULL GAME badges and buy note, the DEMO COMPLETE card `showDemoComplete`, `campaignStats` for its recap, the `dead-end-city-demo` key) |
+| chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `clearDepotFloor`; `depotSealed` once the drop's shutter is down: `depotPoliceBlocked` stops any officer crossing its walls either way, `depotSeparates` keeps arrests from reaching through them) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. A braced cruiser is an ordinary 1.6 t body on locked brakes (`parkedFriction`), so the rammer's momentum decides: a truck, bus or the tank shoves through, a sedan crumples and stalls in the V. A cruiser moved over a metre is knocked loose (`roadblockShoved`); the cut is busted when the player's car comes out the far side (`watchRoadblockBreach`) |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
 | riders.js | Riders thrown from motorbikes and bicycles: `RIDER_THROW`, `riderCrash` / `riderLanding`, `throwRider`, the flight, landing and slide (`stepThrownBody`), `updateThrownPlayer`, `stepRiderEjection`, fallen bikes (`updateFallenBike`), `riderReport` |
@@ -1003,6 +1003,23 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   the callouts do not. Wanted state is never touched; `save()` runs once after the jump.
   City rail and the liner are free, so only the cab charges. Console: `skipRide()`,
   `skipStop()`, `rideSkip()`, `boardTrain(from, to)`, `setCash(dollars)`.
+- **Public demo** (`DEMO_BUILD` at the top of game.js; campaign.js PUBLIC DEMO): with the flag
+  on, a normal player gets missions 1 and 2 (`DEMO_MISSIONS`). Every later story mission and
+  contract is shown in the picker, locked, with a FULL GAME badge; a click shows the buy note
+  ("Thanks for playing the demo! If you liked it, please buy the full game."). The payphone
+  stops ringing after mission 2 (`storyCallWaiting`: no call notice, prompt, marker or GPS
+  line), RESTART CURRENT JOB cannot reach a gated job, and the mission card reads FREE ROAM ·
+  DEMO COMPLETE. Completing mission 2 brings up the DEMO COMPLETE card 2.6 s after the payday
+  headline (`demoMissionWon`, `showDemoComplete`, game mode `'demo'`): the title logo over the
+  cover art, the thanks, a recap from `campaignStats` (play time, cash earned: every rise of
+  the wallet, the wanted peak; saved with the story as `stats`), CONTINUE FREE ROAM (Enter or
+  Escape) and MAIN MENU. Completion is kept in `dead-end-city-demo`, which NEW GAME leaves;
+  the title menu shows a DEMO badge by the version (DEMO · COMPLETED after). Not missions,
+  so never gated: the hill climb, beach volleyball, the stadium ball, the pier rides, the
+  bike share, cabs, rail and the liner, the casino, garages, the gun shop, Fort Sentinel and
+  the Apache, the Monarch Isle payphones' lines. God mode lifts every gate and never shows
+  the card; the console's `startMission` reaches a gated job only with god mode or `?dev`.
+  `DEMO_BUILD = false` is the full game with no trace of the demo.
 - **God mode** (the `godmode` cheat) unlocks every job in the mission picker
   (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
   advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
@@ -1216,7 +1233,7 @@ sidejobs.js. In-game numbers (and the audit logs) are the index plus one:
 
 | # | Index | Mission | Code |
 | --- | --- | --- | --- |
-| 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse) |
+| 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse: see harbor.js THE DROP) |
 | 2 | 1 | A Seat at the Table | roofmission.js (the Blue Hour hit) |
 | 3-9 | 2-8 | Vinny's Favor, Paper Trail, No Last Ferry, Both Sides of the Bay, Above the Noise, Saltwater Accounting, One Clean Exit | challenges.js |
 | 10-11 | 9-10 | The Last Witness, The Manifest | aviation.js |
