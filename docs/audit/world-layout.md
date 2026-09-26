@@ -1,5 +1,32 @@
 # Audit report: world layout, railway, county, parks, harbor, sports, streets
 
+## Ridgeline mountain villages pass
+
+Stonecreek, Northridge and Eastgate rebuilt as mountain villages (mountain-village.js); the 4x4
+club moved into Northridge's north-west block (lot x 8464..8888, y 2654..3062); the lone helipad
+by the Ridgeline Highway (8130, 2740) and its helicopter removed, the Last Witness pad moved to
+the Northridge ranger station (8570, 3462). Streets, avenues and the terrain's flat pads are
+unchanged; NORTHRIDGE MARKET STREET (a service lane through the old block (0, 0)) is gone.
+
+Verified (headless):
+- Every building is checked against every county and service road when the plan is built
+  (`mountainRectClear`, 4 units); `DeadEndCity.mountainTowns().skipped` is empty. The island
+  holds 57 buildings: 46 mountain buildings and the 11 thin walls of the clubhouse and workshop
+  (no city-kit building is left on Ridgeline).
+- `tools/layout-audit.mjs`: nothing new, only the 39 known oblique junction notes (the club,
+  the squares, 82 lantern props, fences, woodpiles and the rescue pad add no overlap).
+- Hill climb: at the club gate in a truck the prompt reads HILL CLIMB · BEAT 2:30; E arms it
+  (`armed: 0`) and sets the GPS to the start gate (7552, 1907); from the gate `trailDrive`
+  started the challenge clock and passed checkpoint 1 in 25 s.
+- The club block: 7 club trucks and 2 members' rigs parked, 14 members (bar, pool, couches,
+  veranda, fire pit, BBQ, workshop); inside the clubhouse the roof and upper storey hide
+  (`mountainTowns().render.club.upperShown: false`).
+- No console errors. Draw calls (graphics high, whole frame, camera / shadow, same views by day)
+  before -> after: Northridge 436 / 431 -> 386 / 390 (now with the whole club block in view),
+  Stonecreek 459 / 501 -> 360 / 385, Eastgate 290 / 277 -> 230 / 236. Each village is 23-25
+  meshes (Stonecreek 45.9k triangles, Northridge 28.9k, Eastgate 44.7k) plus the club's 50
+  (18.8k).
+
 ## Monarch Isle pass
 
 A new island north of the Ridgeline Range (x 5460..10150, y -5272..-468; SOURCE_GUIDE section

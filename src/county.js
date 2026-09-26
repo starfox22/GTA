@@ -466,6 +466,10 @@
       }
       paintMountainGround(drawingContext);
       for (const t of COUNTY_TOWNS) {
+        if (isMountainTown(t)) {
+          paintMountainTownGround(drawingContext, t);
+          continue;
+        }
         drawingContext.fillStyle = t.color;
         drawingContext.fillRect(t.x - 64, t.y - 64, BLOCK_SIZE * 2 + 128, BLOCK_SIZE * 2 + 128);
         for (let i = 0; i < 2; i++)
@@ -526,8 +530,11 @@
       placeMountainOutcrops();
       const oldSeed = randomSeed;
       randomSeed = 94197;
+      // Ridgeline's towns are mountain villages, laid out block by block
+      // (mountain-village.js); the other islands' towns keep the city kit.
+      buildMountainVillages();
       for (const t of COUNTY_TOWNS)
-        for (let bx = 0; bx < 2; bx++)
+        for (let bx = 0; bx < 2 && !isMountainTown(t); bx++)
           for (let by = 0; by < 2; by++) {
             const x = t.x + bx * BLOCK_SIZE + 82,
               y = t.y + by * BLOCK_SIZE + 82;
@@ -602,6 +609,7 @@
           terrainHeight(x, y) > 5 ||
           onMountainTrail(x, y) ||
           offroadClubBlocked(x, y, 45) ||
+          mountainTownBlocked(x, y, 40) ||
           countyBlocked(x, y, 45) ||
           buildings.some(
             (b) => x > b.x - 35 && x < b.x + b.w + 35 && y > b.y - 35 && y < b.y + b.h + 35,
@@ -654,7 +662,8 @@
         drawingContext.translate(-x, -y);
         paintCountyGround(drawingContext, true);
         for (const b of buildings.filter((b) => b.county)) {
-          drawingContext.fillStyle = b.tropical ? '#c1ad91' : '#788080';
+          // Mountain buildings in their roof colours (shake, slate, painted metal).
+          drawingContext.fillStyle = b.mapColor || (b.tropical ? '#c1ad91' : '#788080');
           drawingContext.fillRect(b.x, b.y, b.w, b.h);
           drawingContext.strokeStyle = '#424c48';
           drawingContext.lineWidth = 4;
@@ -797,11 +806,11 @@
       makeCar('helicopter', 3690, 8830, 0);
       makeCar('supercar', 4200, 8740, 0);
       makeCar('bus', 4400, 8760, 0);
-      makeCar('helicopter', 8130, 2740, 0);
       makeCar('plane', FLIGHT.parked.x, FLIGHT.parked.y, 0);
       populateMilitary();
       spawnTrailVehicles();
       populateOffroadClub();
+      populateMountainVillages();
       populateRecreation();
       populateSunsetPier();
       populateMonarchIsle();
@@ -836,7 +845,7 @@
         ) {
           worldContext.fillStyle = '#161e2566';
           worldContext.fillRect(b.x + 10, b.y + 14, b.w, b.h);
-          worldContext.fillStyle = b.tropical ? '#cab997' : '#87918d';
+          worldContext.fillStyle = b.mapColor || (b.tropical ? '#cab997' : '#87918d');
           worldContext.fillRect(b.x, b.y, b.w, b.h);
           worldContext.strokeStyle = '#3e514e';
           worldContext.lineWidth = 3;
@@ -873,14 +882,17 @@
         ['OCEANVIEW INTERNATIONAL ✈', 4770, 9630],
         ['FORT SENTINEL · RESTRICTED', 9810, 9570],
         ['CORAL SOUND', 5830, 5880],
+        ['4X4 CLUB', OFFROAD_CLUB.lot.x + OFFROAD_CLUB.lot.w / 2, OFFROAD_CLUB.lot.y + OFFROAD_CLUB.lot.h / 2],
+        ['RANGER STATION', MOUNTAIN_VILLAGE.helipad ? MOUNTAIN_VILLAGE.helipad.x + 110 : 8680, MOUNTAIN_VILLAGE.helipad ? MOUNTAIN_VILLAGE.helipad.y - 60 : 3400],
       ]) {
         drawingContext.strokeText(name, x, y);
         drawingContext.fillStyle = name.includes('SENTINEL') ? '#f0b49b' : '#e5e3ce';
         drawingContext.fillText(name, x, y);
       }
+      // Helicopter pads: Oceanview's, and Mountain Rescue's at the Northridge ranger station.
       for (const [x, y] of [
         [3690, 8830],
-        [8130, 2740],
+        [FLIGHT.pickup.x, FLIGHT.pickup.y],
       ]) {
         drawingContext.fillStyle = '#e3d19c';
         drawingContext.fillText('H', x, y);
@@ -891,6 +903,7 @@
       addBeachColliders();
       addBeachClubColliders();
       addOffroadClubColliders();
+      addMountainColliders();
       for (const b of [...countySolids(), ...militaryWalls])
         addStatic(b.x, b.y, b.w, b.h, b.height, b.kind || 'military');
       // Towers, pylons, arches, trusses and cable fans (bridgeStructure,

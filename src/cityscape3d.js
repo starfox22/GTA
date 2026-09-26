@@ -965,8 +965,9 @@
       for (let i = 0; i < buildings.length; i++) {
         const b = buildings[i];
         // Fort Sentinel's buildings are drawn by base3d.js.
-        // Monarch Isle builds its own (monarch3d.js and after).
-        if (b.depotWall || b.baseBuilding || b.monarch) continue;
+        // Monarch Isle builds its own (monarch3d.js and after), and so do the
+        // mountain villages (mountain-village3d.js).
+        if (b.depotWall || b.baseBuilding || b.monarch || b.mountain) continue;
         const kind = (b.archetype = archetypeFor(b)),
           height = b.height,
           group = new Three.Group();

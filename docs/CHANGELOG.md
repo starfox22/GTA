@@ -35,6 +35,41 @@ now only say what lies where; the ground shader draws the surfaces themselves, c
   220 km/h).
 - LOW keeps a cheap path (the sheet, one detail sample, the kerb, the marks).
   `DeadEndCity.groundDetail()` reports the ground data and the tufts.
+## Unreleased — the Ridgeline mountain villages and the 4x4 clubhouse
+
+The Ridgeline island has its own architecture now (mountain-village.js, mountain-village3d.js,
+mountain-club3d.js): Stonecreek, Northridge and Eastgate keep their streets and flat pads, but
+every city box is gone.
+
+- **Mountain village kit**: steep gables with deep eaves, bargeboards, rafter tails and ridge
+  caps in cedar shake, slate or standing-seam metal; fieldstone plinths and ground floors, hewn
+  log walls with notched corners, board and batten, plastered and timber-framed upper storeys
+  (jettied), carved tulip-cut balconies with geranium boxes, shutters, dormers, front gables with
+  glazed trusses, stone chimneys (wood smoke), false-front shops with porches over plank
+  boardwalks, split-rail fences, firewood stacks, half-barrel planters, split-log benches,
+  instanced iron lantern lamps (knockable), cobbled squares with a fountain (Northridge) and a
+  stone well (Stonecreek), windows lit warm at night, porch lanterns and light pools. Every piece
+  is written into one buffer per material per town: about 23-25 draw calls a town.
+- **Businesses** (carved, routed and painted wood signs from one atlas): NORTHRIDGE OUTFITTERS
+  (ski, bike, hunting), NORTHRIDGE LODGE, ALPENGLOW CAFÉ, GENERAL STORE, MOUNTAIN CHAPEL (steeple),
+  PINE CONE BAKERY, RIDGELINE RANGER STATION with a fire lookout and MOUNTAIN RESCUE; STONECREEK
+  OUTFITTERS and LODGE, SUMMIT DINER, THE ANTLER TAVERN (deck under string lights), RIDGELINE
+  RENTALS, PINE CREST MOTEL, GAS · GROCERIES under a timber canopy, STONECREEK GARAGE rebuilt
+  rustic (fieldstone, boards, red metal gable; same bay, door and MECHANICS); EASTGATE OUTFITTERS
+  and LODGE, FEED & SEED, RIDGELINE TIMBER CO. sawmill (log decks, lumber stacks), TIMBERLINE CAFÉ.
+- **4x4 club**: RIDGELINE 4X4 CLUB moved down Eagle Pass into Northridge and takes its whole
+  north-west block: a walk-in two-storey stone-and-log clubhouse (bar with taps and back bar, two
+  pool tables, leather couches, stone fireplace with antlers, a big TV, trail maps, a mounted tyre,
+  winch and plates; the roof and upper storey lift off while the player is inside), a veranda
+  with the carved balcony over it, the workshop bay with a lift and a rig on it, the members' yard
+  (fire pit, Adirondack chairs, stone BBQ, smoker, string lights), the gravel lot with the seven
+  trucks and two members' rigs, the timber gate with the carved 4X4 CLUB sign. Members hang out
+  inside, on the veranda, at the fire and in the workshop. E at the gate arms the hill climb and
+  sets the GPS to the start gate at the trailhead up Eagle Pass. The old lot is a small trailhead
+  car park with the trail board.
+- **Removed**: the helicopter parked on a lone pad by the Ridgeline Highway west of Northridge,
+  and the pad; The Last Witness now lands on the Mountain Rescue helipad at the ranger station.
+- Console: `DeadEndCity.mountainTowns()`.
 
 ## Unreleased — GOALLINE, the sports betting office by the stadium
 

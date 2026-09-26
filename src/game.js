@@ -2042,8 +2042,8 @@
       buildCounty();
       // Plan heights to real storeys (realBuildingHeight). Fort Sentinel's buildings
       // (base3d.js), Vinny's depot walls and the Blue Hour (ROOFTOP) are given in
-      // real units already.
-      for (const b of buildings) if (!b.military && !b.depotWall && !b.roofBar && !b.monarch) b.height = realBuildingHeight(b.height);
+      // real units already, and so are the mountain villages (mountain-village.js).
+      for (const b of buildings) if (!b.military && !b.depotWall && !b.roofBar && !b.monarch && !b.mountain) b.height = realBuildingHeight(b.height);
       // Monarch Isle is planned in real storeys from the start (monarch.js).
       buildMonarchIsle();
       // A business's own record (civic3d.js dresses its roof from it) follows its building.
@@ -5612,6 +5612,7 @@
     // @include src/streets.js
     // @include src/terrain.js
     // @include src/offroad.js
+    // @include src/mountain-village.js
     // @include src/casino.js
     // @include src/skyline.js
     // @include src/renewal.js
@@ -6023,6 +6024,11 @@
       // The 4x4 club and the trails (offroad.js): the lot and its clearances, the
       // club trucks, the members, the player's traction state, the hill climb.
       offroad: () => offroadReport(),
+      // The mountain villages (mountain-village.js): each town's buildings by kind,
+      // its businesses (footprint, eaves and ridge in metres, door), the street
+      // dressing, the rescue helipad, the club block and, with WebGL, the
+      // renderer's meshes, draw calls and triangles per town.
+      mountainTowns: () => mountainVillageReport(),
       clubLineup: (x, y) => clubLineup(x, y),
       // 'state', 'arm', 'reset', 'clear' (records), 'gate' or 'cp0'..'cp2' (move the player's vehicle there).
       hillClimb: (action, trail) => hillClimbConsole(action, trail),
