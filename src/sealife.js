@@ -471,8 +471,8 @@
      * At night most of the flock roosts on its perches and only a couple fly.
      */
     const GULL_FLOCKS = [
-      { name: 'Palm Keys Beach', x: -1980, y: 5620, r: 520, fly: 9, perch: 9, lo: 90, hi: 300 },
-      { name: 'Beach pier', x: -1710, y: 5900, r: 180, fly: 3, perch: 6, lo: 70, hi: 200 },
+      { name: 'Palm Keys Beach', x: -1980, y: 5620, r: 520, fly: 6, perch: 5, lo: 90, hi: 300 },
+      { name: 'Beach pier', x: -1710, y: 5900, r: 180, fly: 2, perch: 5, lo: 70, hi: 200 },
       { name: 'Harbor Point Marina', x: 1100, y: -3700, r: 420, fly: 7, perch: 9, lo: 90, hi: 280 },
       { name: 'Cruise terminal', x: 2300, y: -4300, r: 500, fly: 5, perch: 3, lo: 140, hi: 380 },
       { name: 'Ironworks Docks', x: 3350, y: 1500, r: 380, fly: 6, perch: 5, lo: 100, hi: 300 },
@@ -603,6 +603,9 @@
           g.timer = 5 + Math.random() * 20;
           return;
         }
+        g.flock = null;
+        g.mode = 'off';
+        return;
       }
       g.mode = 'circle';
       gullNewOrbit(g);
@@ -737,9 +740,14 @@
           }
         const wantFly = Math.round(f.fly * day),
           wantPerch = f.perch + (f.fly - wantFly);
-        if (flying < wantFly || perched < Math.min(wantPerch, gullPerches(f).length)) {
+        // One more gull at a time: a flier while the flock is short of them, a
+        // percher while there is a free perch; never more than the flock's size.
+        const perches = gullPerches(f),
+          room = flying + perched < f.fly + f.perch,
+          wantsPercher = perched < Math.min(wantPerch, perches.length) && perches.some((p) => !p.taken);
+        if (room && (flying < wantFly || wantsPercher)) {
           const free = gulls.find((g) => g.mode === 'off');
-          if (free) gullAssign(f, free, perched < Math.min(wantPerch, gullPerches(f).length) && (flying >= wantFly || Math.random() < 0.5));
+          if (free) gullAssign(f, free, flying >= wantFly || (wantsPercher && Math.random() < 0.5));
         } else if (flying > wantFly + 1) {
           // Dusk: a flier goes to roost.
           const g = gulls.find((q) => q.flock === f && q.mode === 'circle');

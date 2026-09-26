@@ -290,7 +290,7 @@
                 vec2 l1 = texture2D(uLife, luv + vec2(uLifeRect.w, 0.)).rg + texture2D(uLife, luv - vec2(uLifeRect.w, 0.)).rg
                         + texture2D(uLife, luv + vec2(0., uLifeRect.w)).rg + texture2D(uLife, luv - vec2(0., uLifeRect.w)).rg;
                 lifeSeen = l0 * 0.5 + l1 * 0.125;
-                body = mix(body, body * 0.22 + vec3(.004, .016, .024), clamp(lifeSeen.r, 0., 1.));
+                body = mix(body, body * 0.1 + vec3(.003, .012, .018), clamp(lifeSeen.r, 0., 1.));
                 body = mix(body, vec3(.30, .018, .02), clamp(lifeSeen.g * 1.3, 0., 0.92));
               }
             }
@@ -299,7 +299,9 @@
             vec3 skyDay = vec3(.55, .70, .84);
             vec3 sky = mix(skyNight, skyDay, uDay);
             sky = mix(sky, vec3(.92, .55, .33), uDusk * 0.55);
-            vec3 color = mix(body, sky, fresnel * 0.62);
+            // Over a shape in the water the eye reads through the surface: less sky.
+            float lifeShade = clamp(lifeSeen.r, 0., 1.);
+            vec3 color = mix(body, sky, fresnel * 0.62 * (1. - 0.45 * lifeShade));
             // Wave-crest scattering lifts the color where the swell is tallest.
             color += shallow * 0.18 * clamp(vCrest, 0., 1.) * uDay;
             // Sun glitter: tight and broad specular lobes.
@@ -307,7 +309,7 @@
             float spec = pow(max(dot(reflected, viewDir), 0.), mix(110., 320., fine)) * mix(0.4, 2.4, fine * fine)
                        + pow(max(dot(reflected, viewDir), 0.), 28.) * 0.22;
             vec3 sunColor = mix(vec3(1., .96, .86), vec3(1., .62, .34), uDusk);
-            color += sunColor * spec * (0.25 + 1.1 * uDay) * (1. - uRain * 0.75);
+            color += sunColor * spec * (0.25 + 1.1 * uDay) * (1. - uRain * 0.75) * (1. - 0.55 * lifeShade);
             // A shower greys the sea and roughens it into a pale sheen.
             color = mix(color, color * 0.82 + sky * 0.1, uRain * 0.5);
             // Moon path and shoreline light spill at night.

@@ -599,11 +599,12 @@
             varying float vDepth;
             void main() {
               if ( vDepth < 0.2 ) discard;
-              // Darkest just under the surface, fading out by about 9 m down.
-              float k = smoothstep( 0.2, 3.0, vDepth ) * ( 1.0 - smoothstep( 6.0, 72.0, vDepth ) );
-              gl_FragColor = vec4( k * 0.78, 0.0, 0.0, 0.0 );
+              // Darkest just under the surface, fading out by about 11 m down.
+              float k = smoothstep( 0.2, 2.5, vDepth ) * ( 1.0 - smoothstep( 12.0, 90.0, vDepth ) );
+              gl_FragColor = vec4( k * 0.92, 0.0, 0.0, 0.0 );
             }`,
           ...lifeBlend,
+          side: Three.DoubleSide,
         });
         const ghost = new Three.InstancedMesh(sp.geometry, material, sp.spec.capacity);
         ghost.instanceMatrix = sp.mesh.instanceMatrix;
@@ -698,8 +699,8 @@
               float ringWidth = 2.0 + vSize * 2.5 + vAge * 1.5;
               float ring = exp( -pow( ( d - vRadius ) / ringWidth, 2.0 ) ) * smoothstep( 0.25, 0.7, grain + 0.25 * fade );
               // White water where it went in, lacing out.
-              float patch = exp( -pow( d / ( 4.0 + vSize * 9.0 + vAge * 3.0 ), 2.0 ) ) * smoothstep( 0.2 + 0.5 * ( 1.0 - fade ), 0.8, grain + 0.4 * fade );
-              float foam = ( ring * 0.9 + patch * 1.2 ) * fade;
+              float whiteWater = exp( -pow( d / ( 4.0 + vSize * 9.0 + vAge * 3.0 ), 2.0 ) ) * smoothstep( 0.2 + 0.5 * ( 1.0 - fade ), 0.8, grain + 0.4 * fade );
+              float foam = ( ring * 0.9 + whiteWater * 1.2 ) * fade;
               // Ripples running out: crest and trough.
               float wave = cos( ( d - vRadius ) * 0.55 ) * exp( -pow( ( d - vRadius * 0.85 ) / ( 6.0 + vSize * 8.0 ), 2.0 ) ) * fade;
               gl_FragColor = vec4( foam, max( wave, 0.0 ) * 0.9, max( -wave, 0.0 ) * 0.9, 0.0 );
