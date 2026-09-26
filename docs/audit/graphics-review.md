@@ -292,3 +292,42 @@ amount (`shimmer.py`: what remains is detail that did not move with the ground).
   19 wet; ALU roughly 2-3x the old ground shader in the busiest spots (kerb plus paving plus
   marks), about the same on open asphalt. MEDIUM takes one detail sample instead of two; LOW
   keeps a short path (sheet, one detail sample, kerb line, marks, no bump).
+
+### Results
+
+- Motion test at zoom 0.6 (HIGH, noon, Old Quarter, where the high-frequency detail is most at
+  risk): residual after compensating the 0.21-pixel camera move, mean 1.85 / 255, 99th
+  percentile 23 (both minimal at the true shift, so the images are registered). The residual
+  (amplified 4x) lies only on hard geometric edges (roof outlines, signs, kerb boxes), which any
+  sub-pixel move resamples; the street and pavement surfaces themselves are black in it, with no
+  sparkle or crawling joints.
+- `stats()` at the Old Quarter crossroads, 1280 x 800, noon: HIGH at zoom 1.6 257 camera draws,
+  363 shadow draws, 84 programs; LOW at 1.8 237 camera draws, no shadow pass. The ground is one
+  draw per sheet as before; the tufts' one draw only appears from zoom 1.75 on HIGH / ULTRA.
+  `groundDetail()`: 5,984 mark records (36,695 filed copies, none dropped, 3.7 MB), fields
+  22.7 MB, detail layers 1.4 MB, built in 2.4 s (fields 1.7 s, layers 0.5 s) on the loaded
+  headless machine.
+- No console errors or warnings (with `?shadercheck`, so shader compile errors would show)
+  beyond three.js's deprecation notice.
+- The test machine ran at a load average of 100-350 through this work (other agents' browsers),
+  so SwiftShader frame times (2-560 s) say nothing about GPU cost; the cost section above is
+  counted from the shader.
+
+Screenshots (session scratchpad `gtex/`): `cmp-z3.png` and `cmp-z3b.png` (before / after at zoom
+3.0: Old Quarter, North Point, Palm Keys, the Great Lawn, Monarch Isle, a county road, the
+beach), `cmp-z3c.png` (county and lawn, final), `cmp-default.png` (the old 1.2 default against
+the new 1.6), `cmp-night-wet-low.png` (night dry and in the rain, LOW and HIGH), `shots/`
+(every view), `motion-residual.png`.
+
+### Known issues
+
+- The beach and other painted sand still carry the old painted speckle under the new ripples
+  and footprints; the county verges read as pale gravel rather than a distinct shoulder.
+- District paving follows `districtAt` on a 64-unit grid, so a style can change mid-pavement at
+  a district boundary.
+- Grass tufts are thin at the street camera's angle: from zoom ~2.5 they read as a texture more
+  than as blades; they grow on the city and Monarch Isle sheets only (not the county).
+- The 2D fallback and maps keep painting the markings; the flat-fill 3D sheet looks plainer than
+  before only if the ground shader fails to compile (it falls back to the sheet colours).
+- Sunset Pier and Fort Sentinel have no carriageway field (no kerb stones or lane wear there);
+  their painted markings stay as painted.
