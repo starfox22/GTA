@@ -53,6 +53,8 @@
             sp.elevation = entityElevation(player);
             return sp;
           }
+          // Taking a car off its driver (carjack3d.js).
+          if (player.carjack) return playerCarjackSpec(sp);
           if (player.tumble) {
             sp.pose = 'tumble';
             sp.elevation = entityElevation(player) + 2;

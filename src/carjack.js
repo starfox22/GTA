@@ -7,12 +7,18 @@
      */
     /**
      * TAKING A CAR OFF SOMEBODY
-     * Traffic carries drivers. Opening the door means hauling one of them out: the
-     * driver is thrown clear along the door line, lands on their back and gets up
-     * dazed, and only then decides what to do. Roughly one car in three is locked;
-     * the window has to go first, and how that driver answers a gunshot through
-     * their glass depends on who they are. Every reaction is a normal pedestrian
-     * state afterwards, so the panic, police and crowd systems all see it.
+     * Traffic carries drivers (and now and then a passenger). Taking the car is a
+     * short struggle at the driver's door (carjack-struggle.js); a car rolling too
+     * fast for that, a bike or a cab hijacked from its window has the driver thrown
+     * clear along the door line at once. Either way the driver lands, gets up dazed
+     * and only then decides what to do: most shout and run, some plead, a few chase
+     * or fight, one in eight calls it in on the spot; every victim reports the car
+     * stolen to the police a few seconds later (crowd-reactions.js crowdReport).
+     * Roughly one car in three is locked; the window has to go first, and how that
+     * driver answers a gunshot through their glass depends on who they are. Every
+     * reaction is a normal pedestrian state afterwards, so the panic, police and
+     * crowd systems all see it. Drivers are men and women, young and old, and what
+     * they shout fits them (VICTIM_SHOUTS, voices.js for the scream).
      */
     const DRIVER_COLORS = [
       '#cab392', '#879eb3', '#b57374', '#c2bd95', '#778e70', '#9689a7',
@@ -20,15 +26,35 @@
     ];
     const DRIVER_MOODS = ['flee', 'flee', 'flee', 'flee', 'plead', 'angry', 'witness', 'defiant'];
     const CARJACK_LINES = {
-      pulled: ['That’s my car!', 'Take it! Take it!', 'Please — don’t!', 'Hey! HEY!', 'My keys!'],
-      plead: ['Okay, okay — it’s yours.', 'Don’t hurt me, please.', 'Just take it and go.'],
+      pulled: ['Hey! HEY!', 'No, no, no!', 'Get off me!', 'Let go of me!', 'What are you doing?!', 'Please — don’t!'],
+      plead: ['Okay, okay — it’s yours.', 'Don’t hurt me, please.', 'Just take it and go.', 'Take it! Take it!'],
       angry: ['I know your face!', 'Come back here!', 'You’re dead, you hear me?', 'That’s my livelihood!'],
-      witness: ['Blue sedan, heading south!', 'I’m calling it in right now.', 'Someone get the plate!'],
+      witness: ['Blue sedan, heading south!', 'I’m calling it in right now.', 'Someone get the plate!', '911? My car’s just been stolen!'],
       defiant: ['Get off my car!', 'Not today, pal.', 'You picked the wrong one.'],
     };
-    function driverTalk(person, kind) {
-      const lines = CARJACK_LINES[kind];
-      if (!lines || (person.speechUntil || 0) > gameTime) return;
+    const PASSENGER_LINES = ['Run! RUN!', 'Oh my God!', 'Get out, get out!', 'He’s crazy!'];
+    /* What the victim shouts once back on their feet, by who they are. */
+    const VICTIM_SHOUTS = {
+      any: [
+        'Police! Someone took my car!',
+        'Hey! That’s my car!',
+        'Are you out of your mind?!',
+        'My laptop’s in there!',
+        'Somebody stop him!',
+        'Help! He took my car!',
+        'I just made the last payment on that!',
+      ],
+      woman: ['My purse is in there!', 'Somebody call the police!', 'Get your hands off me!', 'My kids’ car seats are in there!'],
+      man: ['My tools are in the trunk!', 'You’ll regret that, pal!', 'Get back here, punk!', 'That’s my ride, man!'],
+      elder: ['Young man, that is my car!', 'Have you no shame?!', 'My pills are in the glovebox!', 'Forty years I’ve driven that car!'],
+    };
+    function driverTalk(person, kind, force = false) {
+      let lines = CARJACK_LINES[kind];
+      if (kind === 'victim') {
+        const own = person.role === 'elder' ? VICTIM_SHOUTS.elder : personFemale(person) ? VICTIM_SHOUTS.woman : VICTIM_SHOUTS.man;
+        lines = seededRandom() < 0.6 ? VICTIM_SHOUTS.any : own;
+      }
+      if (!lines || (!force && (person.speechUntil || 0) > gameTime)) return;
       person.speech = randomChoice(lines);
       person.speechUntil = gameTime + 2.8;
       // Said to the player: first claim on a speech bubble (crowd.js speechBubbles).
@@ -47,9 +73,15 @@
         return;
       vehicle.occupied = true;
       // Motorbikes have no doors to lock: the rider can always be pulled off.
-      vehicle.locked = !vehicleSpec(vehicle).bike && seededRandom() < 0.32;
+      const bike = !!vehicleSpec(vehicle).bike;
+      vehicle.locked = !bike && seededRandom() < 0.32;
       vehicle.driverMood = randomChoice(DRIVER_MOODS);
       vehicle.driverColor = randomChoice(DRIVER_COLORS);
+      // Who is driving: a man or a woman, now and then someone older.
+      vehicle.driverFemale = seededRandom() < 0.44;
+      vehicle.driverRole = seededRandom() < 0.12 ? 'elder' : seededRandom() < 0.4 ? 'commuter' : 'casual';
+      // A passenger in about one car in five (they bail out of the far door).
+      vehicle.passengers = !bike && !vehicleSpec(vehicle).truck && seededRandom() < 0.2 ? 1 : 0;
     }
     function vehicleIsLocked(vehicle) {
       return !!vehicle?.locked && !vehicleSpec(vehicle).bike && !vehicle.lockBroken && vehicle.hp > 0 && vehicle.occupied !== false;
@@ -61,6 +93,56 @@
         a,
         x: vehicle.x + Math.cos(a) * (spec.w / 2 + 11),
         y: vehicle.y + Math.sin(a) * (spec.w / 2 + 11),
+      };
+    }
+    /* Give a person the look of someone of this sex (after dressPerson). */
+    function dressAsSex(p, female) {
+      const look = p.look;
+      look.female = female;
+      if (female) {
+        if (look.hairStyle === 0 || look.hairStyle === 1) look.hairStyle = seededRandom() < 0.5 ? 2 : 3;
+      } else {
+        look.skirt = false;
+        if (look.hairStyle === 2 || look.hairStyle === 3) look.hairStyle = 1;
+      }
+    }
+    /* The person behind the wheel, dressed as the car said (assignDriver), on foot at (x, y). */
+    function makeCarDriver(vehicle, x, y, a) {
+      const driver = {
+        x,
+        y,
+        a,
+        hp: 30,
+        color: vehicle.driverColor || randomChoice(DRIVER_COLORS),
+        flee: 0,
+        timer: 1,
+        walk: 0,
+        state: 'walk',
+        mood: vehicle.driverMood || 'flee',
+        knockedFor: 0,
+        dazedFor: 0,
+        impactCooldown: 0.6,
+        ejected: null,
+      };
+      dressPerson(driver, vehicle.driverRole || 'casual');
+      driver.color = vehicle.driverColor || driver.color;
+      if (vehicle.driverFemale !== undefined) dressAsSex(driver, !!vehicle.driverFemale);
+      driver.carry = null;
+      pedestrians.push(driver);
+      return driver;
+    }
+    /* Throw a driver clear: `speed` along heading `a` (map units a second). */
+    function throwDriver(driver, a, speed, knocked, reason) {
+      driver.knockedFor = knocked;
+      driver.impactCooldown = 0.6;
+      // The throw and the landing are one knockdown, so the fall animation,
+      // the daze and every collision rule already in the game apply to it.
+      driver.ejected = {
+        vx: Math.cos(a) * speed,
+        vy: Math.sin(a) * speed,
+        spin: randomBetween(-8, 8),
+        time: 0,
+        reason,
       };
     }
     function ejectDriver(vehicle, reason = 'hijack') {
@@ -81,35 +163,39 @@
           y = vehicle.y;
         }
       }
-      const driver = {
-        x,
-        y,
-        a: normalizeAngle(door.a + Math.PI),
-        hp: 30,
-        color: vehicle.driverColor || randomChoice(DRIVER_COLORS),
-        flee: 0,
-        timer: 1,
-        walk: 0,
-        state: 'walk',
-        mood: vehicle.driverMood || 'flee',
-        // The throw and the landing are one knockdown, so the fall animation,
-        // the daze and every collision rule already in the game apply to it.
-        knockedFor: reason === 'hijack' ? 1.35 : 0.9,
-        dazedFor: 0,
-        impactCooldown: 0.6,
-        ejected: {
-          vx: Math.cos(door.a) * throwSpeed,
-          vy: Math.sin(door.a) * throwSpeed,
-          spin: randomBetween(-8, 8),
-          time: 0,
-          reason,
-        },
-      };
-      pedestrians.push(driver);
+      const driver = makeCarDriver(vehicle, x, y, normalizeAngle(door.a + Math.PI));
+      throwDriver(driver, door.a, throwSpeed, reason === 'hijack' ? 1.35 : 0.9, reason);
       driverTalk(driver, reason === 'hijack' ? 'pulled' : 'plead');
       scream(driver);
       particle(x, y, '#b9b3a0', 5, 45, 2);
+      if (reason === 'hijack') driver.carjackInc = crowdAlarm('melee', driver, player, 1.2);
+      bailPassengers(vehicle, driver.carjackInc || null);
       return driver;
+    }
+    /* Passengers get out of the far door and run (crowd-perception.js startReaction). */
+    function bailPassengers(vehicle, inc) {
+      const count = vehicle.passengers || 0;
+      vehicle.passengers = 0;
+      const spec = vehicleSpec(vehicle);
+      for (let i = 0; i < count; i++) {
+        const side = vehicle.a + Math.PI / 2;
+        let x = vehicle.x + Math.cos(side) * (spec.w / 2 + 9),
+          y = vehicle.y + Math.sin(side) * (spec.w / 2 + 9);
+        if (solid(x, y, 6)) {
+          x = vehicle.x - Math.cos(vehicle.a) * (spec.l / 2 + 9);
+          y = vehicle.y - Math.sin(vehicle.a) * (spec.l / 2 + 9);
+          if (solid(x, y, 6)) continue;
+        }
+        const p = { x, y, a: side, hp: 30, flee: 0, timer: 1, walk: 0, state: 'walk' };
+        dressPerson(p, seededRandom() < 0.2 ? 'elder' : 'casual');
+        p.carry = null;
+        pedestrians.push(p);
+        startReaction(p, 'flee', randomBetween(6, 9), player, inc, { scream: true });
+        p.speech = randomChoice(PASSENGER_LINES);
+        p.speechUntil = gameTime + 2.4;
+        p.speechKind = 'carjack';
+        p.speechKindText = p.speech;
+      }
     }
     function finishEjection(person) {
       const mood = person.mood || 'flee';
@@ -119,18 +205,21 @@
         x: player.x,
         y: player.y,
       };
+      // Back on their feet, they report it a few seconds later, wherever they are.
+      if (person.carjackInc) person.reportAt = gameTime + randomBetween(3, 6);
       if (mood === 'angry' || mood === 'defiant') {
-        // Chases the car for a few seconds, shouting, before thinking better of it.
-        person.angryUntil = gameTime + 6 + seededRandom() * 4;
-        driverTalk(person, mood === 'angry' ? 'angry' : 'defiant');
+        // Chases the car a few steps, shouting, before thinking better of it.
+        person.angryUntil = gameTime + 3 + seededRandom() * 2;
+        driverTalk(person, mood === 'angry' ? 'angry' : 'defiant', true);
       } else if (mood === 'witness') {
         // Calls it in. That is a real cost: the description reaches dispatch.
         person.witnessUntil = gameTime + 7;
-        driverTalk(person, 'witness');
+        driverTalk(person, 'witness', true);
         crime(0.7);
+        if (person.carjackInc) person.reportAt = person.witnessUntil;
       } else {
         person.flee = 10 + seededRandom() * 4;
-        if (mood === 'plead') driverTalk(person, 'plead');
+        driverTalk(person, mood === 'plead' && seededRandom() < 0.4 ? 'plead' : 'victim', true);
       }
     }
     /* The throw itself: applied wherever knockdowns are stepped, so it runs for
@@ -153,6 +242,25 @@
       if (person.knockedFor <= 0 || e.time > 3) finishEjection(person);
     }
     function updateCarjackReactions(person, deltaSeconds) {
+      // Held at the door in the struggle: carjack-struggle.js places and poses them.
+      if (person.carjackHeld) return true;
+      // The stolen car reported (the witness path the crowd uses).
+      if (person.reportAt && gameTime >= person.reportAt) {
+        person.reportAt = 0;
+        crowdReport(person, person.carjackInc);
+      }
+      if (person.handsUpUntil > gameTime) {
+        // Frozen with the hands up, watching whoever took the car.
+        person.pose = 'handsUp';
+        person.walking = false;
+        person.a = headingBetween(person, player.car || player);
+        return true;
+      }
+      if (person.handsUpUntil) {
+        person.handsUpUntil = 0;
+        person.pose = null;
+        person.flee = Math.max(person.flee || 0, 9);
+      }
       if (person.angryUntil > gameTime) {
         const chase = player.car || player;
         person.a = headingBetween(person, chase);

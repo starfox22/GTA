@@ -104,6 +104,7 @@
       player.tumble = null;
       player.tumbleRoll = 0;
       player.thrown = null;
+      cancelCarjack();
       if (player.roof || player.buildingRoof) {
         player.roof = false;
         player.buildingRoof = null;
@@ -256,6 +257,8 @@
     }
     function interact() {
       if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
+      // E again in a carjack cuts the struggle short (carjack-struggle.js).
+      if (skipCarjack()) return;
       // On a building roof the only thing to do is fly off again.
       if (player.buildingRoof && !player.car) {
         const c = nearestCar();
@@ -314,10 +317,8 @@
           tone(140, 0.07, 0.2, 'square');
           return;
         }
-        if (c.occupied) {
-          ejectDriver(c, 'hijack');
-          crime(0.8);
-        }
+        // Somebody at the wheel: the struggle at the door (carjack-struggle.js).
+        if (c.occupied && startCarjack(c)) return;
         enterVehicle(c);
         return;
       }

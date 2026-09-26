@@ -104,6 +104,33 @@
           return { who: voiceWho(p), female: personFemale(p), sample, drawn: city3D?.drawnFemale ? city3D.drawnFemale(p) : null };
         });
       },
+      // Carjack (carjack-struggle.js): a stopped sedan beside the player with a driver of
+      // `mood` (flee, plead, angry, witness, defiant; `female` true/false, `passengers`
+      // 0/1), the player on its `side` ('driver' or 'passenger'), and E pressed at it.
+      // Returns the struggle as carjack() does.
+      carjackTest(mood = 'flee', side = 'driver', female = null, passengers = 0) {
+        if (player.car) exitCar();
+        // The last test's car goes, so it is never in the way of this one's door.
+        for (let i = vehicles.length - 1; i >= 0; i--) if (vehicles[i].carjackTest) vehicles.splice(i, 1);
+        const c = spawnClearCar('sedan', player.x, player.y - 40, 0, true),
+          spec = vehicleSpec(c),
+          out = side === 'passenger' ? -1 : 1;
+        c.carjackTest = true;
+        c.vx = c.vy = c.speed = 0;
+        c.occupied = true;
+        c.locked = false;
+        c.driverMood = mood;
+        if (female !== null) c.driverFemale = !!female;
+        c.passengers = passengers ? 1 : 0;
+        // An eastbound car's driver's side is north (heading minus 90 degrees).
+        teleportPlayer(c.x, c.y - out * (spec.w / 2 + 16));
+        startCarjack(c);
+        return carjackState();
+      },
+      // The struggle in progress (phase, seconds, the driver's temper, waypoints round
+      // the car, positions) and the last victim: sex, pose, down or up, what they are
+      // saying, whether they have reported it and how many passengers ran.
+      carjack: () => carjackState(),
       // Raise an incident at a map point without firing: gunfire, explosion, crash.
       alarm(kind = 'gunfire', x = player.x, y = player.y) {
         const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);

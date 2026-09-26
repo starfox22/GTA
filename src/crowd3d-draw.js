@@ -104,7 +104,8 @@
         s.ember = false;
         crowdPoseTargets(p, s, T, t + s.seed, spec);
         // Ease the base pose.
-        const k = 1 - Math.exp(-dt * (p.react || spec?.hold?.aiming ? 14 : 9));
+        // The carjack struggle moves quickly (carjack3d.js): its poses are followed closely.
+        const k = 1 - Math.exp(-dt * (p.carjackHeld || (p === player && player.carjack) ? 20 : p.react || spec?.hold?.aiming ? 14 : 9));
         let unsettled = 0;
         for (let i = 0; i < J_COUNT; i++) {
           const d = (T[i] - J[i]) * (dt > 0 && !fresh ? k : 1);
@@ -351,6 +352,8 @@
           crowdJoint(mElbow[side], mShoulder[side], 0, -RIG.upperArm, 0, elbows[side]);
           crowdJoint(mHand[side], mElbow[side], 0, -RIG.forearm, 0, 0.1);
         }
+        // Held at the car door: where the player's hands take hold (carjack3d.js).
+        if (p.carjackHeld) recordCarjackGrip(s, w);
         // Weapons and fists: both hands to the hold by IK.
         const hold = spec?.hold,
           holdWeight = J[J_HOLD];

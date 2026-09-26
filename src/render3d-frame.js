@@ -267,6 +267,8 @@
                 );
             }
             if (m.blood) m.blood.visible = c.bloodyUntil > gameTime;
+            // The driver's door in a carjack (carjack3d.js).
+            if (c.doorSwing || m.carjackDoor) swingDriverDoor(c, m);
             // SWAT van rear doors swing open for the team and stay open (swat.js).
             if (m.rearDoors) {
               const open = c.doorsOpenAt ? clamp((gameTime - c.doorsOpenAt) / 0.7, 0, 1) : 0;

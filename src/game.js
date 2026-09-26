@@ -62,6 +62,7 @@
     // @include src/chase.js
     // @include src/roadblocks.js
     // @include src/carjack.js
+    // @include src/carjack-struggle.js
     // @include src/riders.js
     // @include src/themepark.js
     // @include src/marina.js
