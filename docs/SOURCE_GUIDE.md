@@ -126,9 +126,18 @@ Two closures matter:
   less air and rolling resistance that would balance it 15% past `max` (the physics caps the
   car at `max`). `coastDeceleration` is the roll-down with nothing pressed; the handbrake adds
   a sliding half-g and drops the grip. Steering reaches full lock by 30 km/h
-  (`STEER_FULL_SPEED`); above that `corneringLimit(spec, v)` caps the yaw rate at
-  `cornerG * GRAVITY / v`, for the player, traffic and pursuit cars alike, so a city corner is
-  taken at 30-40 km/h (or on the handbrake) and a wide bend at 150. The same numbers feed the
+  (`STEER_FULL_SPEED`; 15 km/h on the handbrake); the player's lock is `turn` x `STEER_LOCK`
+  (1.13, a game's allowance: a sedan turns in 9.6 m kerb to kerb). Above that
+  `corneringLimit(spec, v)` caps the yaw rate at `cornerG * GRAVITY / v`, for the player,
+  traffic and pursuit cars alike, so a city corner is taken at 30-40 km/h (or on the handbrake)
+  and a wide bend at 150. Handling details (physics.js): TYRE STIFFNESS (the sideways force
+  reaches the cornering limit at `TYRE_PEAK_SLIP`, 7 degrees, so the car follows its nose
+  instead of drifting 13 degrees wide at 30 km/h; counter-steering into a slide makes the fronts
+  bite 1.5x), `PLAYER_YAW_RESPONSE` (8.5/s: the player's car takes up the yaw in about 0.12 s;
+  2.6/s in a handbrake turn so the swing carries on as the car slows; traffic 5/s), UNDERSTEER
+  SKID (the key held against the grip limit above 28 km/h for over half a second: the fronts
+  howl, lay marks and scrub up to 0.12 g, so the line tightens as the car slows; a tap or a
+  sweeping bend is untouched). Measure with the console's `turnTest(type, kmh, options)`. The same numbers feed the
   AI: traffic and police clamp their throttle to `engineAcceleration` and their braking to
   `spec.brake`.
 - **Tyres and balance** (physics.js FRICTION CIRCLE AND BALANCE, the player's car): driving,
@@ -140,7 +149,34 @@ Two closures matter:
   brakes, handbrake and cornering: a sedan's 100-0 grows from 34.5 m to 45.8 m and its steady
   cornering from 1.22 g to 0.89 g. `vehicleHandling` adds `steer` (a bent front end) and
   `brake` (flat tyres). `kerbStrike` jolts the body and scrubs 1-5% of the speed on mounting
-  or dropping off a kerb above 25 km/h. Traffic and police AI keep their dry-road limits.
+  or dropping off a kerb above 25 km/h.
+- **Rain and the AI** (physics.js controlVehicle): every driver's tyres get `wetGrip()`.
+  Traffic keeps inside it (steering clamp, brakes and traction x grip) and drives slower by
+  sqrt(grip) (15% off every speed on a soaked road, which in trafficControl's stopping formulas
+  is also a stop and a following gap allowed for braking at 72%); one driver in eleven
+  (`c.id % 11 === 0`) keeps dry habits and is the occasional rear-ender. Pursuit cars steer to
+  1.1 x the dry limit x (0.7 + 0.3 grip) with the tyres' sideways hold at the wet value, so a
+  cruiser thrown into a corner in a downpour can slide or spin; their brakes shrink too.
+  `aiDriving(reset)` counts drivers' crashes and slides per minute.
+- **Riders** (riders.js): a crash delta-v over `RIDER_THROW` (24 km/h on a motorbike, 18 on a
+  bicycle) or a drawbridge landing into the road over 6.5 m/s throws the rider over the bars
+  with the bike's speed going in (`impactVx/Vy`, kept by resolveContact): a real ballistic arc,
+  a somersault, strikes on walls, trunks and tall vehicles (a car's roof is vaulted), a landing,
+  bounces, a slide at 0.62 g, a moment lying still, then up. Damage by the speed into each
+  thing (`riderImpactDamage`: 27 hp at 40 km/h, lethal from ~75), the landing and road rash;
+  god mode survives. The player is `player.thrown` (stepped by `updateThrownPlayer` in place of
+  walking; no firing or boarding meanwhile); traffic's rider becomes a pedestrian with
+  `ejected.rider` (carjack.js stepEjection hands it to `stepRiderEjection`). The bike goes on
+  alone with `fallen` (cartwheels while quick, lies on its side, slides at 0.55 g) until someone
+  gets on. Crime and wanted rules are the crash's own. Console: `rideInto(type, kmh, target, gap)`,
+  `riderReport()`.
+- **Aircraft strikes** (physics.js AIRCRAFT STRIKES): an airborne helicopter or plane faster than
+  `AIRCRAFT_CRASH_SPEED` (40 km/h along the contact) into a building, structure, big vehicle or
+  hillside (or touching the ground above 40 km/h) is destroyed by `destroyAircraft` (the usual
+  explosion and burning wreck; the player dies, or in god mode is thrown clear by the riders'
+  throw). `rotorStrikes` (settleVehicle) tests the rotor disc (the airframe's length) against
+  walls: over `ROTOR_STRIKE_SPEED` (15 km/h toward one) the same; slower, a graze. Console
+  `heliInto`; `riderReport().aircraft` lists the break-ups.
 - **Crashes** (physics.js CRASH SEVERITY): every vehicle is a body of its real `mass` (tonnes;
   the tank 55, the bus 11.5). Damage follows each body's delta-v, closing x M / (m + M) (a
   wall is M = infinity): the share of hit points is ((delta-v - 10 km/h) / 190 km/h)^1.5, a
@@ -199,6 +235,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. A braced cruiser is an ordinary 1.6 t body on locked brakes (`parkedFriction`), so the rammer's momentum decides: a truck, bus or the tank shoves through, a sedan crumples and stalls in the V. A cruiser moved over a metre is knocked loose (`roadblockShoved`); the cut is busted when the player's car comes out the far side (`watchRoadblockBreach`) |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
+| riders.js | Riders thrown from motorbikes and bicycles: `RIDER_THROW`, `riderCrash` / `riderLanding`, `throwRider`, the flight, landing and slide (`stepThrownBody`), `updateThrownPlayer`, `stepRiderEjection`, fallen bikes (`updateFallenBike`), `riderReport` |
 | themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride; RIDERS' VOICES: recorded screams cued per car by the track and rider speech bubbles, `updateFalconVoices`, `falconRiders`), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
@@ -251,7 +288,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
 | god-panel.js | God mode settings: the GOD MODE settings tab (time presets and slider, freeze time, weather, refill, lose police, teleport), the map's teleport pick mode and the safe teleport `godTeleport` (section 4d, God mode) |
-| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
+| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the player outline at night (`playerOutlineOn`), the key remapping table and its keyboard handling (`settingsKeyDown`) |
 | hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), the SPEED BOX (`updateSpeedBox`, `trackPlayerPace`, the km/h / mph units: `speedReading`, `speedText`, `kmhReading`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
 
@@ -264,7 +301,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | flight-view3d.js | Perspective flight camera (`flightViewShape(agl)`; `streetZoomHeight(zoom)`: the street zoom as the height at which the flight camera draws the ground at that scale, `city3D.zoomHeight`), ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
-| searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
+| searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie textures and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light (`AIR_LIGHT`, the roof landing `searchlightLanding`), lens flare and crew aim (`updateHelicopterSearchlight`), `searchlightReport` |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
 | signkit3d.js | (included by render3d.js before `sign()`) `SignKit`: the hand-built stroke font (`strokeText`), letter treatments (`tubes`, `doubleTubes`, `bulbLetters`, `blockLetters`, `stencilCut`, `decoLetters`, `pixelLetters`), canvas type effects (`fxText` with font stacks, gold and chrome fills), board shapes and materials (`boardPath`, `fillBoard`), emblems (`icon`, `tubeIcon`) |
@@ -274,7 +311,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras (the station roof and its sign are their own batch, cut away while the train or the ride camera is under them, `setStationRoofCut`) |
-| unicorn3d.js | (included by themepark3d.js) The Unicorn Fountain in the forecourt (`PIER.unicorn`): Aurora, a rearing unicorn sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) in pearlescent marble with a gilded horn and hooves; tiered plinth with a bronze plaque, basin, eight arcing jets and spray; night uplights as a shader term on her marble (UPLIGHTS), the horn's pastel glow; `updateUnicornFountain` each frame |
+| unicorn3d.js | (included by themepark3d.js) Aurora, the black unicorn statue on the lawn by the drop tower (`PIER.unicorn`): a monumental rearing unicorn (12 m to the horn tip, 13 m above the lawn) sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) and embedded masses for the musculature (`unicornMass`), in clearcoated black lacquer with a polished gold horn and black hooves; the OBSIDIAN patch (reflections folded up into the sky and partly desaturated, a sky rim light, anthracite lock edges, granite grain) and night UPLIGHTS (four warm-white lamps in the paving, a tight specular glint on the black); a low octagonal polished black granite plinth (1.3 m) with an inlaid brass line and an engraved brass AURORA plaque facing the camera; everything merged per material (about 9.2k triangles, six draws with the plaque); `updateUnicornStatue` each frame (uplights, the horn's soft glow) |
 | garage3d.js | The garages' meshes: brick and steel workshop, sectional door slats, rooftop billboard and AC, office with its MECHANICS lightbox, the tagline fascia; inside a two-post lift, tool chests, workbench and vice, compressor, tyres, engine hoist, paint zone with extraction fan and spray rig, tubes, NO SMOKING sign and calendar; the show's paint mist and grinder sparks (`updateGarageVisuals`) |
 | landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
@@ -302,7 +339,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
-| helicopter3d.js | Airframe, rotor, lights and cockpit |
+| helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, military), a light single (Bell 407 / H125 class) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface, per-pixel canvas liveries, glyph decals, cabin and crew, merged trim / lamps per look; four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
 | police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
@@ -420,12 +457,15 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **The Sunset Eye** (hub 3600, -6050, 300 up, rim radius 240, 48 capsules, one turn in 240 s;
   `wheelCapsule(k)`) with its terminal underneath. **Fountain Lagoon** (3170, -6370) with the
   show schedule (`fountainShowAt`) and fireworks (`fireworksTonight`), the **Sunset Palace**
-  crescent hotel (3530, -6770), the **Unicorn Fountain** in the forecourt between the drive and
-  the gate (`PIER.unicorn`, 3200, -5987: a round basin with Aurora, a rearing marble unicorn, on a
-  plinth; solid to people and cars, guests stop round it to take photos), the beach club on the
-  north shore, and in the east the
+  crescent hotel (3530, -6770), the beach club on the north shore, and in the east the
   carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
-  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
+  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`). **Aurora**, a 12 m black
+  unicorn statue (`PIER.unicorn`, 4068, -6048), stands on the lawn south of the drop tower
+  (clear of its base, the games stalls, the drive's end and the beach) in a ring of pale paving
+  (radius `apron`) with a short walk from the end of the island drive; her granite plinth is
+  solid to people and cars (`parkSolids`, kind `unicorn statue`), palms keep off her lawn, and
+  guests walk out to her, round the plinth (`unicornArc`, never across it; `unicornExit` on the
+  way back) and stop on the paving or the lawn to take photos (the filming pose).
 - **Riders' voices** (themepark.js RIDERS' VOICES): each car is read off the circuit every frame
   (vertical speed = train speed x tangent rise, seat load from the change of rise, upside down).
   Falling faster than 4.5 m/s after a crest cues screams: the first drop after the lift a chorus
@@ -516,7 +556,14 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
     vehicle on a leaf carries `deckLift` (added by `entityElevation`), `deckLeaf`, `deckSlope`
     and `slopePitch`; `drawbridgeSlopeDrive` (controlVehicle) adds gravity along the slope
     (`DRAWBRIDGE_GRAVITY`, real gravity) and caps the tyres at `DRAWBRIDGE_GRIP` 0.84 (no climbing
-    past ~40°). Off a tip the vehicle is airborne (`deckAir`, `deckVz`; controlVehicle runs
+    past ~40°); the velocity is the horizontal part, so the push enters times cos(angle).
+    `drawbridgeKink` takes the speed square to the leaf off at the trunnion (a car keeps
+    cos(angle) of its speed up the slope: 82% at 35°) and damages the car above 5 m/s into it.
+    The gap is 2 (leaf (1 - cos a) + drop sin a) and the tips stand leaf sin a - drop (1 - cos a)
+    high (leaf 12.5 m, drop 1 m: 0.3 m / 1.1 m at 5°, 1.4 / 3.3 at 15°, 5.7 / 7.0 at 35°); the
+    car's nose (half its length ahead, pitched) must reach the far tip above it or it strikes
+    the leaf's end and drops. Past the far trunnion the approach span is road (it was taken for
+    the Sound). Off a tip the vehicle is airborne (`deckAir`, `deckVz`; controlVehicle runs
     `drawbridgeFlight`: no grip or steering, the nose drops); `drawbridgeSettle` lands it on the
     far leaf or the deck beyond (damage from the speed into the surface above 5 m/s, a BRIDGE
     JUMP headline), bounces it off the far tip if it comes in low, or drops it into the Sound
@@ -680,7 +727,8 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   has `get()` / `set()` and applies at once. While it is open `gameMode` is `'settings'` and
   the keydown listener hands every key to `settingsKeyDown()`. The character see-through
   switch writes `dead-end-city-cutaway` and calls `city3D.setCharacterCutaway(on)` (owned by
-  the renderer). NPC chatter off hides the street speech bubbles (render3d.js); mission
+  the renderer). Player outline at night (`settings.playerOutline`, in the saved record) is
+  read by the renderer every frame. NPC chatter off hides the street speech bubbles (render3d.js); mission
   dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected. Every bubble (the Blue Hour's
   included) fades out seen from 40..50 m above (crowd.js SPEECH SEEN FROM ABOVE); the HUD log and
   captions are not bubbles.
@@ -1218,13 +1266,21 @@ docs/audit/missions-qa.md shows the method).
 
 - **HDR and post-processing** (postfx3d.js): the scene renders into a half-float target
   (4x MSAA on HIGH/ULTRA, with a depth texture), then SAO ambient occlusion (half resolution,
-  depth-aware blur), a soft-knee bloom mip chain, and one composite pass: AO, bloom, exposure,
+  depth-aware blur), wet reflections (HIGH/ULTRA, wet streets only, see Wet roads), a soft-knee
+  bloom mip chain, and one composite pass: AO, wet reflections, bloom, exposure,
   the ACES filmic curve, a time-of-day grade (saturation, contrast, lift/gain), vignette and
   dither, then FXAA when there is no MSAA. `renderFrame()` replaces `renderer.render()`.
   Built-in materials output scene-linear light into the target. Custom `ShaderMaterial`s that
   compute final screen colours (the water) end with `#include <city_hdr_output>` (and include
   `<city_hdr_pars>`), which inverts the tone curve so they look as designed; unlit
   `MeshBasicMaterial`s with `toneMapped: false` (signs) get the same automatically.
+  Half-resolution passes that read the full-resolution depth buffer (AO, its blur, the wet
+  reflections) fetch it at texel centres computed from `gl_FragCoord`: a half-resolution
+  pixel's centre lies exactly on the corner of four depth texels, and which one a nearest
+  fetch returned flipped with sub-ULP rounding of the interpolated UV (one way above the
+  middle row of the screen and on one side of the full-screen quad's diagonal). That printed
+  AO stripes and a darker band with a hard horizontal edge through the middle of the frame,
+  right under the player (the "horizontal lines on ULTRA", also on HIGH).
 - **Adaptive quality** (quality.js, ADAPTIVE QUALITY): on AUTO the frame loop feeds each
   frame's interval and CPU time to `adaptGraphics()`; GPU-bound and slow, the scene is drawn
   at a lower share of the canvas (`setRenderScale`, postfx3d.js; the composite upsamples),
@@ -1239,7 +1295,7 @@ docs/audit/missions-qa.md shows the method).
   With shadows off, cars and people stand on soft contact blobs (lighting3d.js CONTACT
   SHADOWS, one instanced draw). The shadow box stays texel-snapped (`placeSun`).
 - **Quality tiers** (quality.js) set pixel ratio, default shadows and shadow-map size, MSAA,
-  AO samples, bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
+  AO samples, wet-reflection steps (`ssr`, HIGH/ULTRA), bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
   record; the renderer's `setQuality(tier)` applies one at runtime. `DeadEndCity.graphics('high')`
   switches from the console (tests use it, since SwiftShader auto-detects as LOW).
 - **Sun and sky** (lighting3d.js): `sunDirection` follows the clock (east, north-west at
@@ -1266,18 +1322,44 @@ docs/audit/missions-qa.md shows the method).
   blue-hour night: stronger moonlight and cool sky fill, a brighter night sky, opened exposure,
   slightly lifted blue blacks and less contrast and saturation loss than before; lamps, neon and
   headlights stay far above that ambient. No light follows the player (the foot pool is gone;
-  only a faint moonlit rim on their model's silhouette edges remains).
+  only a faint moonlit rim on their model's silhouette edges remains; Settings · Graphics ·
+  Player outline at night switches it off: `settings.playerOutline`, saved with the other
+  settings and read every frame).
 - **Searchlights** (searchlight3d.js): a shaft is a cone whose front faces march the view
   ray through the cone (exit solved analytically): soft radial profile with a hot core,
   denser towards the lamp, forward scattering, drifting haze noise (MEDIUM and up), a soft
-  fade into the ground plane and a soft shoulder so a beam seen end-on never blows out. The
-  police helicopter's pool is one real SpotLight (always in the scene, intensity 0 when idle,
-  so no program changes) with a cookie map; it casts shadows on HIGH/ULTRA while sun shadows are
-  HIGH (switched only on a tier or shadow setting change). Rain streaks inside its cone are lit (one GPU-animated LineSegments). The
-  aim is a critically damped spring fed with the target's velocity: it lags and wobbles while
-  tracking, sweeps a widening figure round the last sighting while searching, and snaps on
-  with a flare when the player is found again. The Fort Sentinel watch towers use the same
-  shaft with a cookie decal on the ground. Faint by day, strong at night and in rain.
+  fade into the ground plane and a soft shoulder (`uCap`) so a beam seen end-on never blows
+  out. The Fort Sentinel watch towers use that shaft with a soft cookie decal on the ground.
+- **Police helicopter searchlight** (searchlight3d.js, HELICOPTER SEARCHLIGHT LOOK,
+  `AIR_LIGHT`): the pool is light, not an overlay. One real SpotLight (always in the scene,
+  intensity 0 when idle, so no program changes) in cool xenon white (`#d8e5ff`) with a crisp
+  cookie (hot centre, even plateau, faint caustic ring, narrow penumbra, a whisper of spill,
+  slightly oval) lights the ground, cars, facades and the player through their own
+  materials, so the player is lit from above with their own colour and detail and casts a
+  sharp shadow away from the helicopter (whenever sun shadows are on: 512 texels below HIGH,
+  1024 on HIGH, 2048 on ULTRA; switched only on a tier or shadow setting change). Its brightness is set as exposed light (divided by
+  `postLook.exposure`): pale paving comes out near white without clipping, asphalt a clear
+  mid grey, and dark ground stays under the night bloom threshold. The shaft is a garnish,
+  drawn on HIGH/ULTRA only: faint in clear air, fuller in rain and murk, thinned over its last
+  stretch (`uTail`) and cleared round the lit point (`uClear`, 1.25 pool radii) so it never
+  lies over the target; rain streaks in the cone dim at head height. LOW/MEDIUM have the pool
+  alone. The aim is a critically damped spring fed with most of the target's velocity (a fast
+  car leads the pool slightly), with the operator's sway and the airframe's buzz on top; it
+  sweeps a widening figure round the last sighting while searching (the player under cover)
+  and snaps on with a flare when they are found again. Under overhead cover the light lands
+  on the roof, never on the target below (`searchlightLanding`: air-cover.js
+  `overheadCoverHeight` when present, else `overheadCover`'s top and footprint, else the
+  drive-in garages' roofs from `GARAGES`): the aim, the shaft's ground and the pool go to the
+  roof's top, and an invisible shadow-only box on the roof's footprint (`airRoofStandIn`)
+  stops the spot even where the cutaway has hidden the roof (a custom depth material collapses
+  it in orthographic shadow passes, so it never casts a moon shadow); with shadows off the
+  light's reach ends just under the roof instead. The beam starts at the Nightsun's lens,
+  `helicopterSearchlightMount(h, out)` (helicopter3d.js): the only thing it takes from the
+  helicopter model. Why: the old shaft was integrated down to the
+  ground through the player (the march cannot read the depth buffer it is drawn into) and
+  saturated at 2.2 HDR seen end-on from the street camera, and the pool was about 4x brighter,
+  clipping pale paving and blooming over the player: a white veil (player vs pool contrast
+  -0.03, now about -0.7). `DeadEndCity.searchlight()` reports it and switches shaft / pool.
 - **Cutaway** (lighting3d.js, `updateCutaway`): when a building or a deck stands between the
   camera and the player (rays from their middle and head towards the camera hit its box,
   `findOccluders`), a player-sized hole is dithered through that structure alone. Also when the
@@ -1299,7 +1381,34 @@ docs/audit/missions-qa.md shows the method).
   samples for foam and for its normal. Spray is one `Points` object.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
-  a bump, dielectric roughness and rain puddles (`weather.wet`). Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
+  a bump and dielectric roughness. (The painted sheet no longer carries the 330 dark
+  "patch" ellipses it used to: from the street camera they read as long shadows with nothing
+  casting them, fixed to the tarmac whatever the time of day.)
+- **Wet roads** (surfaces3d.js WET ROADS, lighting3d.js WET SURFACES, postfx3d.js WET
+  REFLECTIONS, weather3d.js WET GROUND), all from `weather.wet` (rises in the rain, dries over a
+  few minutes after). A shared GLSL pattern decides where water stands: `cityWetLow` (dips in
+  the tarmac), `cityWetFilm` (the damp film, each spot with its own drying order, so a drying
+  street goes patchy from the edges in; dips and gutters dry last) and `cityPuddle` (standing
+  water that fills the dips and gutters as it rains and shrinks to their middles as it dries).
+  The ground, the neon streaks (signage3d.js) and the reflections pass all use it.
+  - LOW: the film only darkens (asphalt and paving darker and more saturated, paint and bright
+    kerbs a little less, grass hardly) and smooths a little.
+  - MEDIUM: plus the glossy film (roughness ~0.25), the sky mirrored in it (`citySkyReflect`)
+    and at night the lamps, shop windows and neon streaked down the wet road towards the
+    camera: the night light map read at six points up the view direction and high-passed
+    across it, so only the bright cores of the pools come through as narrow streaks in the
+    lamps' colours (`citySheenDir`, `WET_STREAK_GAIN`).
+  - HIGH / ULTRA: plus standing water in the dips and in the gutters (paving a few units from
+    the tarmac in the painted sheet), nearly a mirror, with three layers of rain rings
+    (`cityPuddleRipples`), and the wet reflections pass: the wet ground writes its
+    reflectivity into the HDR target's alpha as a negative number (nothing else writes one); a
+    half-resolution pass traces each wet pixel's mirror ray through the depth buffer (20 steps
+    on HIGH, 28 on ULTRA, geometric, then a 5-step binary search), jittered in its vertical
+    plane by the roughness so lights stretch into streaks, rippled in the puddles, then
+    blurred along the reflection; the composite adds (hit minus the sky the ground already
+    mirrors) x wetness x `WET_MIRROR_DAY`/`NIGHT`, so facades, signs, lamps, people and cars
+    stand in the wet road. Both passes are skipped on dry streets.
+  - Tyre spray behind fast cars on a wet road (weather3d.js SPRAY) on MEDIUM and up. Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
 
 - **Weather** (weather.js, weather3d.js, weather-audio.js): the next state is picked when a
   state starts, so an overcast spell that will turn to rain announces it over its last
@@ -1464,6 +1573,57 @@ the models are drawn inside them and nothing in the physics changed.
   `(c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.showLights`.
 - `DeadEndCity.policeLineup(x, y, heading, lights, spacing)` parks one of each model and
   livery for review.
+
+## 6d. Helicopters
+
+Every helicopter except Fort Sentinel's Apache is built by `src/helicopter3d.js`
+(`makeHelicopter`, called from `makeVehicle`). The collision footprint is the vehicle type's
+own (86 × 34, rotor ~86 across, a real H125's size at 8 units to the metre, `modelScale: 1`:
+the models are built at real size and returned with `realSize`, so DESIGN SIZE never
+scales them); nothing in the flight model changed.
+
+- **Looks** (`helicopterLookFor`, cached per vehicle in a WeakMap): `police` (the air unit,
+  and the machine on the POLICE HQ pad), `news` (the RIVERSIDE pad, and one civilian in
+  three), `executive` (the rest: glossy metallic paint from a palette, or the vehicle's own
+  colour after a respray, gold pinstripes, fenestron tail), `military` (Fort Sentinel,
+  `c.military`: a UH-60 Black Hawk class airframe scaled into the same footprint, flat
+  olive drab, wheeled gear).
+- **Airframes** are plans of stations (`heliLightPlan`, `heliHawkPlan`) lofted with
+  monotone cubics and superellipse sections. The plan's `windows(x, y, z)` signed distance
+  splits the loft's quads into painted skin and flush transparent glass (bubble, roof and
+  door windows); a dark liner, floor, seats, panel and the crew (pilot with anyone
+  aboard, observer in the air unit) sit inside and read through the tinted glass from above.
+- **Liveries** are one canvas per look painted per pixel from the surface
+  (`heliLiveryTexture`): the scheme (`heliScheme`), window seals, panel seams, belly grime
+  and exhaust soot; the bottom quarter holds the fin art and swatches for the cowling,
+  stabiliser and endplates. The police scheme follows the patrol cars' modern livery
+  (white, navy swoosh, sky-blue band, reflective silver line, gold star) with AIR 1 on the
+  roof and POLICE along the boom for the camera above. Words are glyph quads from the
+  police glyph atlas (`heliText`).
+- **Draw calls**: skin, glass, trim, metal, interior, decals, lamps, hub, blades, disc,
+  tail blades and tail disc: 12 draws for a parked police machine (15 with the crew and
+  Nightsun), against ~35 meshes and sprites for the old box model; 5 shadow casters.
+  Geometry is shared per look; each model owns only its paint, glass, lamp and disc
+  materials.
+- **Rotors**: four twisted, tapered blades with swept, painted tips and droop, grips,
+  dampers, pitch links and swashplate. `m.rpm` spools up in ~4 s and down in ~9 s; past
+  half speed the blades switch to a depth-only material (they still cast their flickering
+  shadow) and the HELI DISC shader draws a translucent disc with blade ghosts trailing
+  round it. The tail rotor or fenestron blurs the same way.
+- **Lights** are one lens mesh per model on the police light shader (`HELI_CH` channels):
+  red / green / white navigation, double-flash strobes, red beacons, landing lights (low
+  or tracking at night), and on the police machine red / blue LED bars on the cabin, boom
+  and fin tip flashing with `policeLightLevels`; lit channels queue VEHICLE HALOS.
+- **Searchlight mount**: the Nightsun's lens is at `HELI_SEARCHLIGHT_MOUNT` (model space,
+  under the port side of the cabin); `m.searchlightMount` is an anchor there and
+  `helicopterSearchlightMount(c, out)` returns it in world space for searchlight3d.js. The
+  Nightsun head turns on its gimbal towards what the crew are watching.
+- **Damage**: paint weathers and chars through `paintVehicle` (livery restored on repair),
+  the glass soots, bullet marks land on skin, glass and trim (`m.rayTargets`); a wreck's
+  rotor stops with its hub askew.
+- `DeadEndCity.helicopterLineup(x, y, heading, rotors)` parks one of each look;
+  `DeadEndCity.helicopterModels()` reports each model's look, spool, draw calls, shadow
+  casters and triangles.
 
 ## 7. Build, check, test
 

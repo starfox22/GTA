@@ -315,6 +315,8 @@
         x: 3200,
         y: 2880,
       };
+    // Set only by the console's holdSimulation (screenshot sequences).
+    let simulationHeld = false;
     const player = {
       ...spawn,
       a: 0,
@@ -818,8 +820,12 @@
       },
       helicopter: {
         name: 'MAVERICK HELICOPTER',
+        // An H125 / Bell 407 class light single: 10.75 m over the rotor, 4.25 m
+        // across the skids and stabiliser. helicopter3d.js builds every look at
+        // real size (the UH-60 class military one fitted to this footprint).
         l: 86,
         w: 34,
+        modelScale: 1,
         // Cruise flat out at about 240 km/h (helicopterControl).
         max: 250 * KMH,
         acc: 0.5 * GRAVITY,
@@ -1320,6 +1326,20 @@
           junction: null,
           hazard: false,
           spinUntil: 0,
+          // The player's front tyres held against the grip limit (seconds) and the
+          // scrub that follows (0..1), and whether the driver is steering into a
+          // slide (physics.js UNDERSTEER SKID, TYRE STIFFNESS).
+          skidHold: 0,
+          skid: 0,
+          counterSteer: false,
+          handbrakeTurn: false,
+          // The velocity going into the last contact (resolveContact): a thrown
+          // rider keeps it (riders.js). A two-wheeler down on its side (riders.js).
+          impactVx: 0,
+          impactVy: 0,
+          fallen: null,
+          // A driver's car more than 15 degrees off its way (physics.js driverStats).
+          sliding: false,
           // Road or pavement under the middle last step (kerbStrike), and the
           // vehicle that last hit a braced roadblock cruiser (roadblocks.js).
           onTarmac: null,
@@ -2164,6 +2184,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
+      player.thrown = null;
       if (player.roof || player.buildingRoof) {
         player.roof = false;
         player.buildingRoof = null;
@@ -2315,7 +2336,7 @@
       tone(160, 0.06, 0.15, 'triangle');
     }
     function interact() {
-      if (gameMode !== 'play' || player.parachute || rideSkipActive()) return;
+      if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
       // On a building roof the only thing to do is fly off again.
       if (player.buildingRoof && !player.car) {
         const c = nearestCar();
@@ -2381,6 +2402,8 @@
     function enterVehicle(c) {
         player.buildingRoof = null;
         player.car = c;
+        // A bike that went down is picked up and ridden on (riders.js).
+        c.fallen = null;
         c.ramUntil = 0;
         enforceVehicleHandgun();
         c.abandonedFlight = false;
@@ -2585,6 +2608,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
+      player.thrown = null;
       cleanupMissionExtras();
       clearDepotFloor();
       cancelGarageJob();
@@ -3283,6 +3307,8 @@
           !transitRide &&
           !taxiRide &&
           !player.coaster &&
+          // Thrown off a bike: flying, sliding or lying there (riders.js).
+          !updateThrownPlayer(deltaSeconds) &&
           !updateMountainFooting(deltaSeconds)
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
@@ -3317,8 +3343,9 @@
           !player.coaster
         )
           player.altitude = terrainHeight(player.x, player.y);
-        // On the volleyball court a click hits the ball instead (beachvolley.js).
-        if (!volleyTakesFire() && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
+        // On the volleyball court a click hits the ball instead (beachvolley.js);
+        // nothing is fired while thrown off a bike (riders.js).
+        if (!volleyTakesFire() && !player.thrown && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
           tone(220, 0.08, 0.04, 'sawtooth');
         if (keys.KeyE && canSilentHit(rooftopJob())) {
@@ -4584,7 +4611,8 @@
       const bikeShare = gameMode === 'play' && !rideSkipActive() ? bikeShareOffer() : null;
       // A passenger ride that can be skipped offers that first (ride-skip.js).
       const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
-      if (gameMode === 'play' && rideSkipActive()) prompt = '';
+      // Thrown off a bike (riders.js): nothing to offer until back on their feet.
+      if (gameMode === 'play' && (rideSkipActive() || player.thrown)) prompt = '';
       else if (skip) {
         prompt = skip.prompt;
         promptId = skip.id;
@@ -4859,6 +4887,7 @@
       player.coaster = null;
       player.parachute = null;
       player.climbing = null;
+      player.thrown = null;
       player.pool = null;
       player.jumpUntil = 0;
       // Off any roof: the Blue Hour terrace or a building roof.
@@ -5223,6 +5252,7 @@
     // @include src/chase.js
     // @include src/roadblocks.js
     // @include src/carjack.js
+    // @include src/riders.js
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js
@@ -5420,7 +5450,9 @@
       const updateStart = performance.now();
       // The city keeps living behind the title menu, and behind settings opened
       // from it. WASTED and BUSTED play out in slow motion.
-      if (
+      // A test holding the simulation (console `holdSimulation`) still draws.
+      if (simulationHeld) soundUpdate(0);
+      else if (
         gameMode === 'play' ||
         gameMode === 'menu' ||
         (gameMode === 'settings' && settingsOrigin === 'menu')
@@ -5892,6 +5924,12 @@
       weather: () => weatherReport(),
       // Bring a shower in: overcast now, rain after `seconds` (the machine runs on).
       weatherFront: (seconds) => weatherFront(seconds),
+      // Set how wet the streets are (0 dry .. 1 soaked); after rain it dries on
+      // from there (weather.js), so a test can look at a drying street at once.
+      wetness: (value) => {
+        weather.wet = clamp(Number(value) || 0, 0, 1);
+        return weatherReport();
+      },
       // A lightning strike `distance` map units from the player (thunder follows).
       lightning: (distance = 900) => {
         const s = lightningStrike(distance);
@@ -6422,6 +6460,15 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Handling: turnTest(), pose(), aiDriving(), riderReport(), rideInto(),
+      // bridgeJump() (see physics.js handlingConsole).
+      ...handlingConsole(),
+      // Stop the frame loop's simulation (it still draws) so a screenshot sequence
+      // can be stepped with simulate(); false lets it run again.
+      holdSimulation(on = true) {
+        simulationHeld = !!on;
+        return simulationHeld;
+      },
       // Sound: audioMix(), engineSound(), rainSound() (see audio.js audioConsole).
       ...audioConsole(),
       // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
@@ -6463,6 +6510,20 @@
           return { id: c.id, type, body, livery };
         });
       },
+      // Helicopter review (helicopter3d.js): parks one helicopter of each look
+      // ('police', 'news', 'executive', 'military') in a row east from (x, y),
+      // `spacing` apart, facing `heading`; `rotors` true spins them up (with the police lights
+      // running). Returns the ids and looks.
+      helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110) {
+        return ['police', 'news', 'executive', 'military'].map((heliLook, i) => {
+          const c = makeCar('helicopter', x + i * spacing, y, heading, false);
+          Object.assign(c, { heliLook, showRotor: !!rotors, showLights: rotors ? 'pursuit' : false });
+          return { id: c.id, look: heliLook };
+        });
+      },
+      // Every helicopter model built: look, rotor spool, draw calls, shadow casters,
+      // triangles, crew shown (helicopter3d.js).
+      helicopterModels: () => city3D?.helicopterModels?.() ?? null,
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
       // pass). On AUTO the adaptive controller may change it again.
       renderScale(scale) {
@@ -6478,6 +6539,7 @@
           if (changes.audioReset === true) resetAudioVolumes();
           if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
           if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
+          if (typeof changes.playerOutline === 'boolean') settings.playerOutline = changes.playerOutline;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -6505,6 +6567,7 @@
           frameLimit: frameLimit() || 'unlimited',
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,
+          playerOutline: settings.playerOutline,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,
@@ -6547,8 +6610,15 @@
       // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
       // 'bloom'; nothing for the image) to tune the post-processing.
       postView: (mode) => city3D?.postView?.(mode) ?? null,
+      // The helicopter searchlight's state, screen points and shaft / pool switches.
+      searchlight: (options) => city3D?.searchlight?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
+      // Shadow casters near the view that the camera pass does not show.
+      // What casts the sun's shadow onto the ground point (x, y).
+      shadowProbe: (x, y) => city3D?.shadowProbe?.(Number(x), Number(y)) ?? null,
+      // With `everywhere`, every see-through caster in the scene.
+      shadowCasters: (limit, everywhere) => city3D?.shadowCasters?.(limit, !!everywhere) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

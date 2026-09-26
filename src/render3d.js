@@ -679,21 +679,11 @@
           drawingContext.fillRect(x + hc + 20, z - hr, 3, hr);
           drawingContext.fillRect(x - hc - 23, z, 3, hr);
         }
-      // Patches, drains, stop lines and curb stains keep the road from reading as a flat color.
-      let rseed = 47;
-      const random = () => {
-        rseed = (rseed * 1664525 + 1013904223) >>> 0;
-        return rseed / 4294967296;
-      };
-      for (let i = 0; i < 330; i++) {
-        const x = CITY_LEFT + 80 + random() * (CITY_WIDTH - 240),
-          z = 80 + random() * (CITY_SIZE - 240);
-        if (!onRoad(x, z)) continue;
-        drawingContext.fillStyle = 'rgba(12,17,23,' + (0.12 + random() * 0.12) + ')';
-        drawingContext.beginPath();
-        drawingContext.ellipse(x, z, 12 + random() * 35, 3 + random() * 9, random() * 3, 0, TAU);
-        drawingContext.fill();
-      }
+      // (330 dark ellipses, 25-95 units long at random angles, used to be
+      // stamped on the roads here as "patches". Seen from the street camera they
+      // read as long shadows with nothing casting them, fixed to the tarmac
+      // whatever the time of day. The ground shader's tar-sealed patches, cracks
+      // and grain (surfaces3d.js) break the tarmac up instead.)
       // Gully grates in the gutter, only where the street really runs (they
       // used to be stamped down every column line, across plazas and quays).
       for (const road of cityStreets().filter((s) => s.vertical))
@@ -1547,7 +1537,9 @@
        * read as an effect, not as a lit street). Only a faint cool rim on the
        * edges turned away from the camera, as moonlight catching the shoulders,
        * keeps their silhouette from dissolving into an unlit street; it follows
-       * nightAmount and is gone by day.
+       * nightAmount and is gone by day. Settings · Graphics · Player outline at
+       * night (settings.js `playerOutlineOn`, saved with the other settings)
+       * switches it off.
        */
       const playerRim = { value: new Three.Color(0, 0, 0) },
         PLAYER_RIM_NIGHT = new Three.Color('#6d80a6');
@@ -1567,6 +1559,25 @@
             );
         };
         material.customProgramCacheKey = () => 'player-rim';
+      }
+      /* A body thrown off a bike (riders.js): somersaulting about its hips along
+         the flight (`pitch`; forward is negative about the model's lateral axis),
+         `z` the hips' height above the road; lying flat once down. */
+      function poseThrownBody(m, p, t) {
+        const hips = 8.5,
+          along = -hips * Math.sin(t.pitch);
+        m.group.position.set(
+          p.x + Math.cos(t.heading) * along,
+          entityElevation(p) + t.z - hips * Math.cos(t.pitch) + 2,
+          p.y + Math.sin(t.heading) * along,
+        );
+        m.group.rotation.set(0, -t.heading, -t.pitch);
+        const flying = t.phase === 'air' ? 1 : 0;
+        m.parts.arm1.rotation.z = 2.3 - flying * 0.5;
+        m.parts['arm-1'].rotation.z = 1.9 + flying * 0.4;
+        m.parts.leg1.rotation.z = 0.35 + flying * 0.4;
+        m.parts['leg-1'].rotation.z = -0.25 - flying * 0.3;
+        m.parts.guns.forEach((g) => (g.visible = false));
       }
       /* 0 at a walk .. 1 at the full run (game.js FOOT_WALK / FOOT_RUN), from how
          fast the player's model has actually been moving. */
@@ -2112,6 +2123,13 @@
          * name of its nearest named ancestor and by 512-unit cell. For hunting
          * unbatched scenery; DeadEndCity.drawProfile() prints the top entries.
          */
+        // Every helicopter model built: look, spool, draw calls, shadow casters,
+        // triangles and crew shown (helicopter3d.js; DeadEndCity.helicopterModels()).
+        helicopterModels() {
+          const out = [];
+          for (const [c, m] of carModels) if (c.type === 'helicopter') out.push(helicopterModelReport(c, m));
+          return out;
+        },
         drawProfile(top = 15) {
           const byName = new Map(),
             byCell = new Map(),
@@ -2185,9 +2203,92 @@
           }
           return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
         },
+        // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
+        searchlight: (options) => searchlightReport(options),
+        /* Shadow casters the view does not show (for "shadows from nowhere"):
+           every mesh the sun's shadow pass draws, near the view, that the camera
+           pass would not: hidden by its material (fully transparent, no colour
+           write), a helper, or outside the camera frustum while its shadow can
+           fall into it. Returns counts by name and the first few with positions. */
+        shadowCasters(limit = 40, everywhere = false) {
+          const frustum = new Three.Frustum().setFromProjectionMatrix(
+              new Three.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+            ),
+            sphere = new Three.Sphere(),
+            found = [],
+            byName = new Map();
+          const visit = (o, named) => {
+            if (!o.visible) return;
+            if (o.name) named = o;
+            if ((o.isMesh || o.isInstancedMesh) && o.castShadow && o.layers.test(camera.layers)) {
+              const materials = Array.isArray(o.material) ? o.material : [o.material];
+              const hidden = materials.every(
+                (m) => !m || m.visible === false || m.colorWrite === false || (m.transparent && m.opacity < 0.6),
+              );
+              if (o.isInstancedMesh && o.boundingSphere === null) o.computeBoundingSphere();
+              const bounds = o.isInstancedMesh ? o.boundingSphere : (o.geometry.boundingSphere || (o.geometry.computeBoundingSphere(), o.geometry.boundingSphere));
+              sphere.copy(bounds).applyMatrix4(o.matrixWorld);
+              const near = everywhere || Math.hypot(sphere.center.x - viewCenter.x, sphere.center.z - viewCenter.y) < viewReach + sphere.radius;
+              const offView = !frustum.intersectsSphere(sphere);
+              if (near && (hidden || (!everywhere && offView && sphere.center.y > 40))) {
+                const key =
+                  (named?.name || o.name || o.geometry?.type || 'mesh') +
+                  (hidden ? ' (see-through material, opacity ' + materials.map((m) => m && +m.opacity.toFixed(2)).join('/') + ')' : ' (off view)');
+                byName.set(key, (byName.get(key) || 0) + 1);
+                if (found.length < limit)
+                  found.push({ name: key, x: Math.round(sphere.center.x), y: Math.round(sphere.center.z), height: Math.round(sphere.center.y), radius: Math.round(sphere.radius) });
+              }
+            }
+            for (const c of o.children) visit(c, named);
+          };
+          visit(scene, null);
+          return { byName: Object.fromEntries(byName), found };
+        },
+        /* What shades a ground point from the sun: casts a ray from (x, y) on
+           the ground towards the sun (the moon at night) through every
+           shadow-casting mesh and returns the hits, nearest first (name, the
+           named group it belongs to, the instance for instanced meshes, height of
+           the hit, distance along the ray, whether the mesh is drawn). */
+        shadowProbe(x, y) {
+          const origin = new Three.Vector3(x, terrainHeight(x, y) + 0.5, y),
+            probe = new Three.Raycaster(origin, sunDirection.clone().normalize(), 0, 4000),
+            casters = [];
+          scene.traverse((o) => {
+            if ((o.isMesh || o.isInstancedMesh) && o.castShadow) casters.push(o);
+          });
+          const shown = (o) => {
+            for (let p = o; p; p = p.parent) if (!p.visible) return false;
+            return true;
+          };
+          // Instanced meshes are raycast against their stored bounds, which may
+          // predate their instances' current places: fresh bounds for the probe.
+          const kept = casters.filter((o) => o.isInstancedMesh).map((o) => [o, o.boundingSphere]);
+          for (const [o] of kept) o.computeBoundingSphere();
+          const found = probe.intersectObjects(casters, false);
+          for (const [o, sphere] of kept) o.boundingSphere = sphere;
+          return {
+            sun: sunDirection.toArray().map((v) => +v.toFixed(3)),
+            hits: found
+              .slice(0, 8)
+              .map((h) => {
+                let named = h.object;
+                while (named && !named.name && named.parent) named = named.parent;
+                return {
+                  name: h.object.name || h.object.geometry?.type,
+                  group: named?.name || '',
+                  instance: h.instanceId ?? null,
+                  height: +h.point.y.toFixed(1),
+                  at: [Math.round(h.point.x), Math.round(h.point.z)],
+                  distance: Math.round(h.distance),
+                  shown: shown(h.object),
+                  material: h.object.material?.type,
+                };
+              }),
+          };
+        },
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.
         postView(mode) {
-          postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : 0;
+          postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : mode === 'reflect' ? 4 : 0;
           return mode || 'image';
         },
         /**
@@ -2579,7 +2680,10 @@
             if (m.crank)
               m.crank.rotation.z -=
                 deltaSeconds * (c === player.car ? pedalCadence() * Math.PI * 2 : c.speed * 0.13);
-            if (m.helicopter) {
+            if (m.heli) {
+              // Spool, rotor blur, attitude, crew, Nightsun and lights (helicopter3d.js).
+              animateHelicopter(c, m, deltaSeconds, wear);
+            } else if (m.helicopter) {
               const running =
                 (c === player.car ||
                   c.airUnit ||
@@ -2608,7 +2712,8 @@
             if (m.special) {
               if (!m.plane) m.body.rotation.z = -wear * 0.025 + stance.pitch;
               if (m.bike) {
-                m.body.rotation.x = clamp(c.av * 0.13, -0.28, 0.28);
+                // Leaning into the turn, or down on its side after a crash (riders.js).
+                m.body.rotation.x = c.fallen ? c.fallen.roll : clamp(c.av * 0.13, -0.28, 0.28);
                 m.rider.visible = c.hp > 0 && (c === player.car || c.ai);
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
@@ -2809,6 +2914,9 @@
             if (p.drinking && p.hp > 0 && !incapacitated) {
               m.parts.arm1.rotation.z = 1.5 + Math.sin(gameTime * 3) * 0.15;
             }
+            // Thrown off a bike (riders.js): the player, or traffic's rider.
+            const thrown = activePlayer ? player.thrown : p.ejected?.rider ? p.ejected : null;
+            if (thrown) poseThrownBody(m, p, thrown);
             if (activePlayer && player.tumble) {
               m.group.rotation.z = Math.PI / 2;
               m.group.rotation.x = player.tumbleRoll || 0;
@@ -2894,6 +3002,8 @@
                 m.torso.rotation.z = 0.14 + Math.sin(stroke * 2) * 0.06;
                 m.parts.guns.forEach((gun) => (gun.visible = false));
               }
+              // Thrown off a bike: the whole-body pose again over the weapon's arms.
+              if (player.thrown) poseThrownBody(m, p, player.thrown);
               // Freefall and canopy poses (parachute3d.js); resets the spread limbs after.
               poseParachutist(m, deltaSeconds);
             }
@@ -2903,7 +3013,8 @@
           playerRing.visible =
             !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
-          playerRim.value.copy(PLAYER_RIM_NIGHT).multiplyScalar(nightAmount * 0.55);
+          // Settings · Graphics · Player outline at night turns it off.
+          playerRim.value.copy(PLAYER_RIM_NIGHT).multiplyScalar(playerOutlineOn() ? nightAmount * 0.55 : 0);
           // A swimmer's wake, kick foam and the ripples round them are drawn into the
           // sea like a boat's (wakes3d.js). The flat V and ring planes that did this
           // sat at a fixed height, so the swell rose through them.
