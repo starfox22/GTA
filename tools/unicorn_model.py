@@ -391,8 +391,8 @@ def sculpt_hooves(mats):
         hind = leg.endswith('H')
         # Standing hooves put their soles on the plinth; folded ones follow the pastern.
         axis = _unit(d * 0.35 + DOWN * 0.65) if hind else _unit(d)
-        top = a + (b - a) * 0.55
-        rings = [top - axis * 2, top + axis * 3.5, top + axis * 8.5, top + axis * 9.2]
+        top = a + (b - a) * 0.72
+        rings = [top - axis * 3, top + axis * 1.5, top + axis * 6, top + axis * 6.7]
         radii = [(5.2, 5.6), (6.0, 6.4), (7.0, 7.4), (6.7, 7.1)]
         out.append({'rings': [[*p, r, w] for p, (r, w) in zip(rings, radii)], 'hint': list(_unit(np.cross(axis, np.array([1.0, 0, 0])) + 1e-6))})
     return out
@@ -456,9 +456,16 @@ def build():
     tail = sculpt_tail(mats)
     horn = horn_footing(smooth, sf, mats)
     hooves = sculpt_hooves(mats)
-    # The standing hooves' soles on the plinth.
-    low = min(r[1] - r[3] * 0.3 for h in hooves for r in h['rings'])
-    return posed, tris, smooth, sf, {'mane': mane, 'tail': tail, 'hooves': hooves, 'horn': horn, 'low': low}
+    # The hind hooves' soles stand on the plinth: everything moves to put the
+    # lowest of them at 0.
+    low = min(tube(h['rings'], h['hint'], 1, 12)[0][:, 1].min() for h in hooves)
+    posed[:, 1] -= low
+    smooth[:, 1] -= low
+    for lk in mane + tail + hooves:
+        for r in lk['rings']:
+            r[1] -= low
+    horn['base'] = horn['base'] - np.array([0, low, 0])
+    return posed, tris, smooth, sf, {'mane': mane, 'tail': tail, 'hooves': hooves, 'horn': horn}
 
 
 def to_js(p):
