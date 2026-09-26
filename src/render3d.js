@@ -2133,6 +2133,13 @@
          */
         // Every helicopter model built: look, spool, draw calls, shadow casters,
         // triangles and crew shown (helicopter3d.js; DeadEndCity.helicopterModels()).
+        // Every civilian car and motorbike model built (cars3d.js, motorbikes3d.js):
+        // type, draw calls, shadow casters and triangles, the parts by triangles.
+        carModels() {
+          const out = [];
+          for (const [c, m] of carModels) if (m.civilian || m.moto) out.push(civilianModelReport(c, m));
+          return out;
+        },
         helicopterModels() {
           const out = [];
           for (const [c, m] of carModels) if (c.type === 'helicopter') out.push(helicopterModelReport(c, m));

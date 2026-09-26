@@ -472,7 +472,7 @@
         hp: 120,
         mass: 1.12,
         grip: 8.4,
-        color: '#b85b48',
+        color: '#b3121b',
         palette: PAINT_SPORT,
       },
       rally: {
@@ -492,7 +492,7 @@
         hp: 175,
         mass: 1.38,
         grip: 11,
-        color: '#557bb3',
+        color: '#1f4fbf',
         palette: ['#1f4fbf', '#eceeed', '#16181b', '#b3121b', '#9aa3ab', '#2f7d3a'],
       },
       limousine: {
@@ -532,7 +532,7 @@
         hp: 145,
         mass: 1.5,
         grip: 5.2,
-        color: '#943d42',
+        color: '#8f1b1b',
         palette: ['#8f1b1b', '#16181b', '#d8561a', '#2a4f8a', '#e3b23c', '#3b6b5c', '#5e2b7e'],
       },
       bike: {
@@ -592,7 +592,7 @@
         hp: 130,
         mass: 1.35,
         grip: 9,
-        color: '#d9b753',
+        color: '#2f5a3a',
         palette: ['#b3121b', '#1a1c20', '#9aa3ab', '#eceeed', '#1f3455', '#2f5a3a', '#e9b82a'],
       },
       luxury: {
@@ -632,7 +632,7 @@
         hp: 250,
         mass: 2.3,
         grip: 6,
-        color: '#54684f',
+        color: '#34503f',
         palette: ['#16181b', '#eceeed', '#b9bdc1', '#3e4348', '#34503f', '#1f3455', '#5b4839', '#6e7a5a'],
       },
       pickup: {
@@ -652,7 +652,7 @@
         hp: 280,
         mass: 2.7,
         truck: true,
-        color: '#70899a',
+        color: '#1f3455',
         palette: ['#eceeed', '#16181b', '#9aa3ab', '#8e1c1f', '#1f3455', '#3e4348', '#6e5a3f', '#34503f'],
       },
       truck: {
@@ -754,7 +754,7 @@
         tractionG: 0.7,
         turn: 2.5,
         hp: 130,
-        color: '#8dbdb7',
+        color: '#eceeed',
         palette: ['#eceeed', '#9aa3ab', '#16181b', '#1e56b8', '#b3121b', '#3e4348', '#7fa2bf', '#2d5b4c'],
       },
       muscle: {
@@ -773,7 +773,7 @@
         tractionG: 0.8,
         turn: 2.05,
         hp: 160,
-        color: '#b55142',
+        color: '#b3121b',
         palette: ['#b3121b', '#16181b', '#eceeed', '#f06a12', '#1e56b8', '#8b8f94', '#2b6b3a', '#5e2b7e', '#e9b82a'],
       },
       taxi: {
@@ -810,7 +810,7 @@
         tractionG: 0.5,
         turn: 1.6,
         hp: 240,
-        color: '#b8b8a0',
+        color: '#eceeed',
         palette: ['#eceeed', '#eceeed', '#b9bdc1', '#7a7f85', '#16181b', '#1f3455', '#c7b89b', '#8e1c1f'],
       },
       sport: {
@@ -829,7 +829,7 @@
         tractionG: 0.95,
         turn: 2.8,
         hp: 110,
-        color: '#cf806d',
+        color: '#0f7fa0',
         palette: PAINT_SPORT,
       },
       sedan: {
@@ -847,7 +847,7 @@
         tractionG: 0.6,
         turn: 2.15,
         hp: 150,
-        color: '#bdbdb3',
+        color: '#b9bdc1',
         palette: PAINT_EVERYDAY,
       },
       /* FLAGSHIPS (cars3d.js, motorbikes3d.js): rare in traffic, parked at the
@@ -6764,6 +6764,9 @@
       // Every helicopter model built: look, rotor spool, draw calls, shadow casters,
       // triangles, crew shown (helicopter3d.js).
       helicopterModels: () => city3D?.helicopterModels?.() ?? null,
+      // Every civilian car and motorbike model built: draw calls, shadow casters,
+      // triangles and the heaviest parts (cars3d.js, motorbikes3d.js).
+      carModels: () => city3D?.carModels?.() ?? null,
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
       // pass). On AUTO the adaptive controller may change it again.
       renderScale(scale) {

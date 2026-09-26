@@ -492,8 +492,12 @@
         if (civAxisC.lengthSq() < 1e-8) civAxisC.set(1, 0, 0);
         civAxisC.normalize();
         civAxisB.crossVectors(civAxisA, civAxisC).normalize();
-        const geo = roundedBar(+length.toFixed(2), +height.toFixed(2), +depth.toFixed(2), +Math.min(radius, height / 2, depth / 2).toFixed(2));
-        civMatrix.makeBasis(civAxisC, civAxisB, civAxisA);
+        // Thin strips (LED lines, frames, rails) are plain boxes: at that size a
+        // rounded edge is sub-pixel and costs a hundred triangles.
+        const thin = options.box || Math.min(height, depth) < 0.07 * CAR_M,
+          geo = thin ? boxGeo : roundedBar(+length.toFixed(2), +height.toFixed(2), +depth.toFixed(2), +Math.min(radius, height / 2, depth / 2).toFixed(2));
+        if (thin) civMatrix.makeBasis(civAxisC.multiplyScalar(depth), civAxisB.multiplyScalar(height), civAxisA.multiplyScalar(length));
+        else civMatrix.makeBasis(civAxisC, civAxisB, civAxisA);
         civMatrix.setPosition((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
         civAddMatrix(set, geo, civMatrix, options);
       }
@@ -526,15 +530,18 @@
         const hexPrism = new Three.CylinderGeometry(1, 1, 1, 6);
         civShapes = {
           ...policeShapeKit(),
-          cylinder24: new Three.CylinderGeometry(1, 1, 1, 24),
+          // (Named for the old count: 16 sides reads round at any street zoom.)
+          cylinder24: new Three.CylinderGeometry(1, 1, 1, 16),
           hex: hexPrism,
-          tube: new Three.CylinderGeometry(1, 1, 1, 10, 1, true),
-          cone: new Three.CylinderGeometry(0.62, 1, 1, 16),
-          torus: new Three.TorusGeometry(1, 0.12, 8, 28),
-          ring: new Three.TorusGeometry(1, 0.06, 6, 28),
-          halfTorus: new Three.TorusGeometry(1, 0.1, 6, 18, Math.PI),
+          tube: new Three.CylinderGeometry(1, 1, 1, 12, 1, true),
+          cone: new Three.CylinderGeometry(0.62, 1, 1, 12),
+          torus: new Three.TorusGeometry(1, 0.12, 3, 14),
+          ring: new Three.TorusGeometry(1, 0.06, 3, 18),
+          halfTorus: new Three.TorusGeometry(1, 0.1, 4, 10, Math.PI),
           box: boxGeo,
           plane: new Three.PlaneGeometry(1, 1),
+          // A low dome for lamp lenses and projectors (48 triangles).
+          lowDome: new Three.SphereGeometry(1, 8, 3, 0, TAU, 0, Math.PI / 2),
         };
         return civShapes;
       }
@@ -604,7 +611,7 @@
         if (civShells.has(key)) return civShells.get(key);
         const vs = policeRingV(body, w),
           ts = [];
-        for (let i = 0; i <= 40; i++) ts.push(-0.5 * Math.cos((i / 40) * Math.PI));
+        for (let i = 0; i <= 30; i++) ts.push(-0.5 * Math.cos((i / 30) * Math.PI));
         for (const p of body.profile) ts.push(p[0]);
         for (const [t] of body.sections || []) ts.push(t);
         ts.sort((a, b) => a - b);
@@ -740,7 +747,7 @@
             [bead + (0.9 - bead) * 0.5, 0.49],
             [bead, 0.44],
           ].map(([r, y]) => new Three.Vector2(r, y)),
-          lathe = new Three.LatheGeometry(profile, kind === 'knobby' ? 20 : 28),
+          lathe = new Three.LatheGeometry(profile, 14),
           set = civSet(),
           sidewall = (r) => (kind === 'whitewall' && r > bead + (0.9 - bead) * 0.25 && r < bead + (0.9 - bead) * 0.8 ? '#e8e6de' : '#26272a');
         // Colour the lathe by radius (whitewalls), tread darker.
@@ -804,16 +811,14 @@
           metal = rim.finish || 'alloy',
           out = (d) => face + side * d,
           disc = (radius, t, z, c, finish, geo = S.cylinder24) => civAdd(set, geo, 0, 0, z, radius, t, radius, { color: c, finish }, across, 0, 0);
-        // Barrel (the inside of the rim) and the brake disc with its hat.
-        civAdd(set, S.tube, 0, 0, face - side * width * 0.42, R * 0.99, width * 0.8, R * 0.99, { color: '#4a4d52', finish: 'satin' }, across, 0, 0);
+        // The dark inside of the rim, the brake disc with its hat.
+        disc(R * 0.99, 0.02, face - side * width * 0.6, '#2a2c30', 'satin', S.cylinderLow);
         if (rim.style !== 'dirt') {
-          disc(R * 0.86, 0.12, face - side * width * 0.32, '#6d7176', 'satin');
-          disc(R * 0.36, 0.2, face - side * width * 0.28, '#2b2d31', 'satin');
+          disc(R * 0.86, 0.12, face - side * width * 0.32, '#6d7176', 'satin', S.cylinderLow);
+          disc(R * 0.36, 0.2, face - side * width * 0.28, '#2b2d31', 'satin', S.cylinderLow);
         }
         // The lip: a bright ring round the face.
-        const lipT = rim.lip ?? 0.06;
         civAdd(set, S.torus, 0, 0, out(0.01), R * 0.985, R * 0.985, 1.2, { color: rim.lipColor || color, finish: rim.lipColor ? 'chrome' : metal }, 0, 0, 0);
-        if (lipT > 0.05) civAdd(set, S.ring, 0, 0, out(0.02), R * 0.93, R * 0.93, 1, { color: rim.lipColor || color, finish: 'chrome' });
         const spokes = rim.spokes || 5,
           hubR = R * 0.24,
           spokeZ = out(-0.02);
@@ -868,8 +873,8 @@
           }
           if (rim.style === 'mesh' || rim.style === 'split' || rim.style === 'y') disc(R * 0.95, 0.03, out(-0.08), dark, 'satin');
           // Hub and centre cap (a centre-lock nut on the exotics).
-          disc(hubR, 0.14, out(0.06), rim.hubColor || color, metal);
-          disc(hubR * 0.6, 0.1, out(0.11), rim.capColor || '#2a2c30', rim.centreLock ? 'chrome' : 'gloss', rim.centreLock ? S.hex : S.cylinder24);
+          disc(hubR, 0.14, out(0.06), rim.hubColor || color, metal, S.cylinderLow);
+          disc(hubR * 0.6, 0.1, out(0.11), rim.capColor || '#2a2c30', rim.centreLock ? 'chrome' : 'gloss', rim.centreLock ? S.hex : S.cylinderLow);
         }
         const geo = civGeometry(set);
         civRims.set(key, geo);
@@ -1273,11 +1278,11 @@
             span = (spec.span ?? 0.86) * at(front ? 0.44 * l : -0.44 * l, y).half,
             set = civSet(),
             pts = [];
-          for (let i = 0; i <= 10; i++) {
-            const z = lerpNumber(-span, span, i / 10);
+          for (let i = 0; i <= 6; i++) {
+            const z = lerpNumber(-span, span, i / 6);
             pts.push([z, y]);
           }
-          strip(set, front ? 'front' : 'rear', pts, height, (spec.d ?? 0.08) * M, { lift: (spec.lift ?? 0.02) * M, ...(spec.cell ? { cell: spec.cell } : {}), uv: swatchUv(CAR_SWATCH.paint) });
+          strip(set, front ? 'front' : 'rear', pts, height, (spec.d ?? 0.08) * M, { lift: (spec.lift ?? 0.02) * M, box: true, uv: swatchUv(CAR_SWATCH.paint) });
           const geo = civGeometry(set, { colors: false, finish: false });
           geo.computeBoundingBox();
           const box3 = geo.boundingBox,
@@ -1399,6 +1404,24 @@
         civLetterings.set(key, geo);
         return geo;
       }
+      // What DeadEndCity.carModels reports for one model.
+      function civilianModelReport(c, m) {
+        let draws = 0,
+          casters = 0,
+          triangles = 0;
+        const parts = [];
+        m.group.traverse((o) => {
+          if (!o.isMesh || !o.visible) return;
+          const g = o.geometry,
+            tris = Math.round((g.index ? g.index.count : g.attributes.position.count) / 3);
+          draws += Array.isArray(o.material) ? g.groups.length || 1 : 1;
+          if (o.castShadow) casters++;
+          triangles += tris;
+          parts.push([o.material?.name || o.material?.type || '?', tris]);
+        });
+        parts.sort((a, b) => b[1] - a[1]);
+        return { id: c.id, type: c.type, draws, casters, triangles, heaviest: parts.slice(0, 6) };
+      }
       // ---- The model -----------------------------------------------------------------------
       const civLampMaterials = {};
       function civLampSet() {
@@ -1443,6 +1466,8 @@
           trim = mesh(kit.trim, materials.trim, bodyGroup, 0, 0, 0),
           drl = kit.drl ? mesh(kit.drl, materials.drlOff, bodyGroup, 0, 0, 0) : null;
         if (drl) drl.castShadow = false;
+        // The shell, glass and trim cast the car's shadow; the hood and panels lie on them.
+        hood.castShadow = panels.castShadow = false;
         const bumperMaterial = { paint, black: materials.bumperBlack, chrome: materials.bumperChrome },
           bumpers = kit.bumpers.map((b) => {
             const m = mesh(b.geo, bumperMaterial[b.material] || paint, bodyGroup, b.centre.x, b.centre.y, b.centre.z, b.size.x, b.size.y, b.size.z);
@@ -1649,8 +1674,8 @@
       }
       function projector(k, set, frame, z, y, r, side = 1) {
         const S = k.S;
-        k.round(set, S.cylinder24, frame, z, y, r * k.M, 0.03 * k.M, { color: '#dfe4ea', finish: 'chrome', lift: 0.018 * k.M }, side);
-        k.round(set, S.dome, frame, z, y, r * 0.7 * k.M, 0.05 * k.M, { color: '#ffffff', finish: 'lens', lift: 0.03 * k.M }, side);
+        k.round(set, S.cylinderLow, frame, z, y, r * k.M, 0.03 * k.M, { color: '#dfe4ea', finish: 'chrome', lift: 0.018 * k.M }, side);
+        k.round(set, S.lowDome, frame, z, y, r * 0.7 * k.M, 0.05 * k.M, { color: '#ffffff', finish: 'lens', lift: 0.03 * k.M }, side);
       }
       // Cross-sections from the underside (0) to the top (1): [height share, half-width share].
       const SEC_SALOON = [[0, 0.84], [0.1, 0.95], [0.3, 1], [0.6, 1], [0.76, 0.98], [0.87, 0.93], [0.94, 0.85], [0.98, 0.7], [1, 0.4], [1, 0]],
@@ -2225,7 +2250,7 @@
           arches: 0.03,
           archSpan: 0.1,
           section: SEC_WEDGE,
-          sections: [[-0.5, SEC_FENDER_SOFT], [-0.25, SEC_FENDER_SOFT], [-0.12, SEC_WEDGE], [0.02, SEC_WEDGE], [0.14, SEC_FENDER], [0.5, SEC_FENDER]],
+          sections: [[-0.5, SEC_FENDER_SOFT], [-0.25, SEC_FENDER_SOFT], [-0.12, SEC_WEDGE], [0.02, SEC_WEDGE], [0.14, SEC_FENDER_SOFT], [0.5, SEC_FENDER_SOFT]],
           profile: [
             [-0.5, 0.8, 0.82, 0.3], [-0.49, 0.9, 0.88, 0.2], [-0.47, 0.96, 0.9, 0.13], [-0.4, 1.0, 0.9], [-0.3, 1.02, 0.89], [-0.15, 1.0, 0.86],
             [0.0, 0.98, 0.84], [0.1, 0.985, 0.8], [0.25, 0.995, 0.75], [0.36, 0.985, 0.7], [0.44, 0.955, 0.63], [0.475, 0.9, 0.56, 0.14], [0.49, 0.82, 0.48, 0.18], [0.5, 0.72, 0.4, 0.24],
@@ -2464,7 +2489,7 @@
               k.halo('head', side, k.surf('front', side * lw * 0.8, 0.82 * M, 0.05 * M), 1.1);
               // Tall tail lamps up the rear pillars.
               const tw = at(-0.498 * l, 1.0 * M).half;
-              lampPatch(k, k.tail(side), 'rear', side * tw * 0.86, side * tw * 0.995, () => [0.6 * M, 1.2 * M], '#8e1016');
+              lampPatch(k, k.tail(side), 'rear', side * tw * 0.86, side * tw * 0.995, () => [0.6 * M, 1.08 * M], '#8e1016');
               k.patch(k.tail(side), 'rear', side * tw * 0.88, side * tw * 0.98, 0.8 * M, 0.9 * M, { color: CV_REVERSE, finish: 'lens', cols: 1, rows: 1, lift: 0.02 * M });
               k.halo('tail', side, k.surf('rear', side * tw * 0.92, 0.95 * M, 0.05 * M), 1);
               // Sliding-door track on the right, plastic rubbing strip down both sides.
@@ -2528,11 +2553,12 @@
               k.strip(sets.drl, 'front', [[side * hw * 0.7, 1.11 * M], [side * hw * 0.97, 1.11 * M], [side * hw * 0.97, 0.87 * M], [side * hw * 0.7, 0.87 * M]], 0.022 * M, 0.02 * M, { color: CV_LED, lift: 0.03 * M });
               projector(k, k.head(side), 'front', side * hw * 0.84, 1.0 * M, 0.05, side);
               k.halo('head', side, k.surf('front', side * hw * 0.84, 1.0 * M, 0.05 * M), 1.2);
-              // Tall tail lamps on the bed's corners.
-              const tw = at(-0.499 * l, 1.1 * M).half;
-              lampPatch(k, k.tail(side), 'rear', side * tw * 0.86, side * tw * 0.995, () => [0.8 * M, 1.24 * M], '#8e1016');
-              k.patch(k.tail(side), 'rear', side * tw * 0.88, side * tw * 0.98, 0.9 * M, 0.98 * M, { color: CV_REVERSE, finish: 'lens', cols: 1, rows: 1, lift: 0.02 * M });
-              k.halo('tail', side, k.surf('rear', side * tw * 0.92, 1.05 * M, 0.05 * M), 1.1);
+              // Tall tail lamps on the bed's corners (lenses on the wall ends: the bed
+              // floor is below them, so there is no surface for a projected lens).
+              const tw = at(-0.3 * l, 1.2 * M).half - 0.07 * M;
+              k.add(k.tail(side), S.box, -0.5 * l - 0.01 * M, 1.02 * M, side * tw, 0.04 * M, 0.42 * M, 0.12 * M, { color: '#a8121a', finish: 'lens' });
+              k.add(k.tail(side), S.box, -0.5 * l - 0.02 * M, 0.94 * M, side * tw, 0.03 * M, 0.08 * M, 0.1 * M, { color: CV_REVERSE, finish: 'lens' });
+              k.halo('tail', side, [-0.5 * l - 0.3 * M, 1.05 * M, side * tw], 1.1);
               // The bed side walls and their caps, the running boards.
               const z = side * (at(-0.3 * l, 1.2 * M).half - 0.04 * M);
               k.bar(sets.paint, [-0.495 * l, 1.12 * M, z], [-0.118 * l, 1.12 * M, z], 0.33 * M, 0.08 * M, 0.02 * M, k.sw('paint'));
