@@ -412,6 +412,20 @@
       const spec = vehicleSpec(vehicle) || {};
       return Math.pow(kmh - 25, 1.5) * 0.03 * (spec.bike ? 2 : spec.tank ? 0.1 : spec.mass >= 4 ? 0.6 : 1);
     }
+    /* DRIVERS' CRASHES AND SLIDES (the developer console's aiDriving()): crashes
+       with a driver at the wheel that the player's car took no part in, and
+       slides (the body more than 15 degrees off the way it is going above
+       40 km/h), counted for traffic and police, dry or wet. */
+    const driverStats = { since: 0, wetTime: 0, trafficCrashes: 0, policeCrashes: 0, trafficSlides: 0, policeSlides: 0, closings: [] };
+    function noteDriverCrash(a, b, closing) {
+      if (a === player.car || b === player.car || closing < 19 * KMH) return;
+      const driven = (v) => v && v.hp > 0 && (v.ai || (v.cop && !v.crewDeployed && !v.blockade));
+      if (!driven(a) && !driven(b)) return;
+      if ((a.cop && driven(a)) || (b?.cop && driven(b))) driverStats.policeCrashes++;
+      else driverStats.trafficCrashes++;
+      driverStats.closings.push(Math.round(closing / KMH));
+      if (driverStats.closings.length > 30) driverStats.closings.shift();
+    }
     function collisionImpact(a, b, hit, closing, key, staticBody = null) {
       // Below about 19 km/h nothing bends.
       if (closing < 19 * KMH) {
@@ -436,6 +450,7 @@
         time: physicsClock,
       });
       crowdCrash(a, b, hit, closing);
+      noteDriverCrash(a, b, closing);
       // The contact normal points from a to b, so each body is crushed back along it
       // toward its own middle; how far depends on the closing speed and on how heavy
       // the other side is (a wall counts as immovable).
@@ -525,6 +540,12 @@
           }
         }
       }
+      // An airframe flown into something breaks up (AIRCRAFT STRIKES).
+      aircraftImpact(a, b, closing, staticBody);
+      if (b) aircraftImpact(b, a, closing, null);
+      // A rider on a two-wheeler that stopped this hard goes over the bars (riders.js).
+      riderCrash(a, crashDeltaV(a, b, closing), b);
+      if (b) riderCrash(b, crashDeltaV(b, a, closing), a);
     }
     // Which contact pass last touched a body: passes after the first only revisit
     // bodies a contact moved in the pass before (physicsStep).
@@ -581,7 +602,13 @@
         // Speeds going in, so collisionImpact can tell who rammed whom.
         if (record) {
           a.impactSpeed = Math.hypot(a.vx, a.vy);
-          if (b) b.impactSpeed = Math.hypot(b.vx, b.vy);
+          a.impactVx = a.vx;
+          a.impactVy = a.vy;
+          if (b) {
+            b.impactSpeed = Math.hypot(b.vx, b.vy);
+            b.impactVx = b.vx;
+            b.impactVy = b.vy;
+          }
         }
         a.vx -= n.x * impulse * inverseMassA;
         a.vy -= n.y * impulse * inverseMassA;
@@ -1049,6 +1076,112 @@
         desired: Math.max(0, desired),
       };
     }
+    /**
+     * AIRCRAFT STRIKES
+     * An airframe is not a car: a helicopter or a plane flown into a building, a
+     * hillside or a bridge tower faster than AIRCRAFT_CRASH_SPEED (40 km/h along
+     * the contact) breaks up. The tanks go, the wreck burns and falls (the usual
+     * vehicle explosion and debris, updateCars), and whoever is aboard dies with
+     * it; in god mode the player is thrown clear instead (riders.js throw) and
+     * lands unhurt. Slower, it is a scrape: the ordinary crash damage.
+     * The rotor reaches past the fuselage (a disc the length of the airframe):
+     * blades meeting a wall faster than ROTOR_STRIKE_SPEED (15 km/h toward it)
+     * shatter and the helicopter goes down the same way; slower, the tips chip,
+     * it is pushed back and the pilot is warned.
+     */
+    const AIRCRAFT_CRASH_SPEED = 40 * KMH,
+      ROTOR_STRIKE_SPEED = 15 * KMH,
+      aircraftCrashes = [];
+    function aircraftAirborne(c) {
+      return isAircraft(c) && c.hp > 0 && aircraftClearance(c) > 3;
+    }
+    function destroyAircraft(c, cause, speed) {
+      if (c.hp <= 0) return;
+      aircraftCrashes.push({ type: c.type, cause, kmh: Math.round(speed / KMH), altitudeM: Math.round(worldMeters(aircraftClearance(c))), player: c === player.car, at: +gameTime.toFixed(1) });
+      if (aircraftCrashes.length > 8) aircraftCrashes.shift();
+      damageVehicle(c, c.hp + 1, c.x, c.y, null, { kind: 'crash', nx: 0, ny: 0, closing: speed, otherMass: 0 });
+      if (c.damage) c.damage.burning = true;
+      playSample('crash-heavy-2', 0.9, 0.8, c);
+      // The wreck drops out of the sky, carrying a little of its way.
+      c.vx *= 0.35;
+      c.vy *= 0.35;
+      c.vz = Math.min(c.vz || 0, 0);
+      if (c.type === 'helicopter') c.abandonedFlight = true;
+      if (c === player.car) {
+        tell(cause === 'rotor strike' ? 'ROTOR STRIKE' : 'THE AIRFRAME BREAKS UP', 3);
+        if (player.godMode) {
+          // God mode: thrown clear of the fireball, falling unhurt (riders.js).
+          let x = c.x,
+            y = c.y;
+          const back = Math.atan2(-c.vy, -c.vx);
+          for (let r = 0; r < 200 && solid(x, y, RIDER_RADIUS); r += 12) {
+            x = c.x + Math.cos(back) * r;
+            y = c.y + Math.sin(back) * r;
+          }
+          c.ai = false;
+          player.car = null;
+          player.x = x;
+          player.y = y;
+          player.altitude = terrainHeight(x, y);
+          player.thrown = riderThrowState(c.vx * 0.5, c.vy * 0.5, Math.max(RIDER_SEAT, c.altitude - terrainHeight(x, y)), 4 * UNITS_PER_METRE, 'aircraft', [c, null], c);
+        }
+      }
+    }
+    // From collisionImpact: an airborne aircraft into a static body or a vehicle.
+    function aircraftImpact(c, other, closing, staticBody) {
+      if (!aircraftAirborne(c)) return false;
+      // A small prop or a bicycle does not bring an airframe down.
+      if (other && (vehicleSpec(other).mass || 1.25) < 1) return false;
+      if (staticBody && staticBody.breakKJ !== undefined && staticBody.breakKJ < 100) return false;
+      if (closing < AIRCRAFT_CRASH_SPEED) return false;
+      destroyAircraft(c, staticBody ? (staticBody.building || staticBody.kind === 'building' ? 'building' : staticBody.kind || 'structure') : 'vehicle', closing);
+      return true;
+    }
+    // The rotor disc against the walls round a flying helicopter (settleVehicle).
+    function rotorStrikes(c, stepSeconds) {
+      if (c.type !== 'helicopter' || !aircraftAirborne(c) || (c.rotorSpeed || 0) < 0.4) return;
+      const radius = vehicleSpec(c).l * 0.5,
+        shape = contactShape(c);
+      for (const b of nearbyStatics(c)) {
+        if (b.height === undefined || b.height < c.altitude + 2) continue;
+        if (b.minHeight !== undefined && b.minHeight > c.altitude + 30) continue;
+        // Nearest point of the box to the rotor mast.
+        const cosine = Math.cos(b.a || 0),
+          sine = Math.sin(b.a || 0),
+          dx = c.x - b.x,
+          dy = c.y - b.y,
+          lx = dx * cosine + dy * sine,
+          ly = -dx * sine + dy * cosine,
+          qx = clamp(lx, -b.hx, b.hx),
+          qy = clamp(ly, -b.hy, b.hy),
+          gap = Math.hypot(lx - qx, ly - qy);
+        if (gap >= radius || gap < 0.01 || boxContact(shape, b)) continue;
+        // Outward normal from the wall toward the mast, and the speed into it.
+        const nx = ((lx - qx) * cosine - (ly - qy) * sine) / gap,
+          ny = ((lx - qx) * sine + (ly - qy) * cosine) / gap,
+          toward = -(c.vx * nx + c.vy * ny);
+        if (toward > ROTOR_STRIKE_SPEED) {
+          destroyAircraft(c, 'rotor strike', toward);
+          return;
+        }
+        // A graze: blade tips chip, the helicopter is shoved clear.
+        if (toward > 0) {
+          c.vx += nx * toward * 1.4;
+          c.vy += ny * toward * 1.4;
+        }
+        c.x += nx * Math.min(2, radius - gap) * 0.5;
+        c.y += ny * Math.min(2, radius - gap) * 0.5;
+        if (physicsClock - (c.rotorGrazeAt || -100) > 0.5) {
+          c.rotorGrazeAt = physicsClock;
+          damageVehicle(c, 6, c.x - nx * radius, c.y - ny * radius, null, { kind: 'crash', nx, ny, closing: Math.max(0, toward), otherMass: 0 });
+          playSample('crash-scrape', 0.5, 1.4, c);
+          if (c === player.car) {
+            shake = Math.max(shake, 3);
+            tell('ROTOR TIPS ON THE WALL · Back off!', 2);
+          }
+        }
+      }
+    }
     function helicopterControl(c, stepSeconds, active) {
       if (c.abandonedFlight && c !== player.car) {
         // A pilotless helicopter settling onto a flat roof it fits on lands there.
@@ -1133,6 +1266,14 @@
       const climbRate = 75 + clamp(clearance - 400, 0, 3000) * 0.035;
       c.vz += (lift * climbRate - c.vz) * Math.min(1, stepSeconds * 3);
       let next = clamp(c.altitude + c.vz * stepSeconds, floor, ceiling);
+      // Flown into the ground (a hillside rising under it, a roof, a hard
+      // set-down with way on): the skids dig in and it rolls over and breaks up.
+      const groundSpeed = Math.hypot(c.vx, c.vy);
+      if (c.hp > 0 && clearance > 0.5 && c.altitude + c.vz * stepSeconds < floor && groundSpeed > AIRCRAFT_CRASH_SPEED) {
+        destroyAircraft(c, site ? 'roof' : 'terrain', groundSpeed);
+        c.altitude = floor;
+        return;
+      }
       c.roofSite = site;
       if (c.hp > 0 && next < floor + 20 && clearance >= 20 && !landingClear()) {
         next = floor + 20;
@@ -1219,8 +1360,19 @@
     // One vehicle's controls and integration for a physics step (player input,
     // pursuit, traffic, boats and aircraft).
     // Reverse gear tops out at about 25 km/h; steering reaches full lock by 30 km/h.
+    // Set only while the console's turnTest runs on the open strip by the runway,
+    // so the measurement is of the tyres on tarmac, not of the grass's drag.
+    let handlingTestPaved = false;
+    // STEER_LOCK: a game's allowance over the real lock (13% tighter: a sedan turns
+    // in 9.5 m kerb to kerb instead of 10.5); the tank pivots on its tracks.
+    // TYRE_PEAK_SLIP: the slip angle (radians) at which a tyre's sideways force
+    // peaks. PLAYER_YAW_RESPONSE: how fast the player's car takes up the yaw the
+    // wheel asks for (1/s).
     const REVERSE_TOP = 25 * KMH,
-      STEER_FULL_SPEED = 30 * KMH;
+      STEER_FULL_SPEED = 30 * KMH,
+      STEER_LOCK = 1.13,
+      TYRE_PEAK_SLIP = 0.12,
+      PLAYER_YAW_RESPONSE = 8.5;
     /* The yaw rate (radians a second) the tyres' sideways grip allows at `along`:
        lateral acceleration is speed times yaw rate, capped at cornerG. */
     function corneringLimit(spec, along) {
@@ -1351,6 +1503,8 @@
           // Brake lights (render3d.js): the player's brake pedal, or a driver
           // slowing hard or holding the car at a stop.
           braking = false;
+        c.counterSteer = false;
+        c.handbrakeTurn = false;
         if (c.hp > 0 && c === pc && active) {
           const up = keys.KeyW || keys.ArrowUp,
             down = keys.KeyS || keys.ArrowDown,
@@ -1394,7 +1548,7 @@
           // The handbrake locks the rear wheels: a sliding stop at about half a g.
           if (brake) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY * surface);
           // Off the tarmac (verges, lawns, dirt): more rolling resistance.
-          if ((up || down) && !pedalled && !onRoad(c.x, c.y))
+          if ((up || down) && !pedalled && !handlingTestPaved && !onRoad(c.x, c.y))
             acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (vehicleDefinition.offroad ? 0.05 : 0.14) * GRAVITY);
           grip = brake ? 1.9 : (vehicleDefinition.grip || 7) * handling.grip;
           // Resistance is in engineAcceleration / coastDeceleration; drag here only
@@ -1440,21 +1594,48 @@
           steer =
             turn *
             vehicleDefinition.turn *
+            (vehicleDefinition.tank ? 1 : STEER_LOCK) *
             handling.steer *
-            clamp(Math.abs(along) / STEER_FULL_SPEED, vehicleDefinition.tank ? 0.72 : 0, 1) *
+            // On the handbrake the locked rear slides out, so the car pivots about
+            // its front wheels and reaches full swing by 15 km/h, not 30.
+            clamp(Math.abs(along) / (brake && !pedalled ? STEER_FULL_SPEED / 2 : STEER_FULL_SPEED), vehicleDefinition.tank ? 0.72 : 0, 1) *
             Math.sign(along || 1) *
             (brake ? 1.35 : 1);
+          c.handbrakeTurn = !!brake && !pedalled && Math.abs(along) > 8 * KMH;
           const cornerLimit =
             corneringLimit(vehicleDefinition, along) * handling.grip * surface * (pedalled ? 1 : cornerShare) * (brake ? 1.6 : 1);
+          /* UNDERSTEER SKID
+             The key asks for full lock; the tyres give what grip allows (the clamp
+             below), which is a clean line for a tap, a lane change or a sweeping bend.
+             Held against the limit for a while (going in too fast for how tight the
+             driver wants to turn), the front tyres start to scrub: they howl, leave
+             marks and bleed off up to an eighth of a g, so the line tightens as the car
+             slows, the way a real car washes wide and then bites. */
+          const overLimit = !pedalled && !brake && Math.abs(steer) > cornerLimit * 1.05 && Math.abs(along) > 28 * KMH;
+          c.skidHold = overLimit ? Math.min(1.4, c.skidHold + stepSeconds) : Math.max(0, c.skidHold - stepSeconds * 3);
+          c.skid = clamp((c.skidHold - 0.5) / 0.8, 0, 1);
+          if (c.skid > 0 && !down)
+            acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, c.skid * 0.12 * GRAVITY * surface);
           steer = clamp(steer, -cornerLimit, cornerLimit);
           kerbStrike(c, along);
+          // Steering toward where the car is sliding (lateral and the key agree).
+          c.counterSteer = !!turn && Math.sign(turn) === Math.sign(lateral) && Math.abs(lateral) > Math.max(10, Math.abs(along) * 0.12);
           steer += handling.pull * clamp(Math.abs(along) / 160, 0, 1) * Math.sign(along || 1) * 0.45;
-          if (brake && Math.abs(along) > 80 && Math.floor(physicsClock * 40) !== c.lastSkid) {
+          // Rubber on the road: the rear tyres under the handbrake, the front ones
+          // scrubbing wide, any tyre in a slide past about ten degrees.
+          const sliding = Math.abs(lateral) > Math.max(12, Math.abs(along) * 0.17);
+          if (
+            ((brake && Math.abs(along) > 80) || (c.skid > 0.3 && !pedalled) || (sliding && !pedalled && Math.abs(along) > 60)) &&
+            Math.floor(physicsClock * 40) !== c.lastSkid
+          ) {
             c.lastSkid = Math.floor(physicsClock * 40);
-            for (const side of [-1, 1])
+            // Axles and track from the vehicle's size; a motorbike lays one line.
+            const axle = (brake || sliding ? -0.3 : 0.3) * vehicleDefinition.l,
+              track = vehicleDefinition.bike ? 0 : vehicleDefinition.w * 0.4;
+            for (const side of vehicleDefinition.bike ? [0] : [-1, 1])
               skids.push({
-                x: c.x - headingSine * side * 9,
-                y: c.y + headingCosine * side * 9,
+                x: c.x + headingCosine * axle - headingSine * side * track,
+                y: c.y + headingSine * axle + headingCosine * side * track,
                 a: Math.atan2(c.vy, c.vx),
                 len: Math.abs(along) / 40 + 2,
                 life: 35,
@@ -1471,11 +1652,17 @@
         ) {
           const target = c.gangTarget,
             d = distanceBetween(c, target),
-            da = normalizeAngle(headingBetween(c, target) - c.a);
-          const desired = clamp((d - 150) * 1.5, 0, 80 * KMH),
-            corner = corneringLimit(vehicleDefinition, along);
+            da = normalizeAngle(headingBetween(c, target) - c.a),
+            surface = wetGrip();
+          const desired = clamp((d - 150) * 1.5, 0, 80 * KMH) * Math.sqrt(surface),
+            corner = corneringLimit(vehicleDefinition, along) * surface;
           steer = clamp(da * 2.5, -Math.min(1.8, corner), Math.min(1.8, corner));
-          acceleration = clamp((desired - along) * 4, -vehicleDefinition.brake * 1.1, engineAcceleration(vehicleDefinition, along));
+          acceleration = clamp(
+            (desired - along) * 4,
+            -vehicleDefinition.brake * 1.1 * surface,
+            Math.min(engineAcceleration(vehicleDefinition, along), vehicleDefinition.acc * surface),
+          );
+          lateralScale = surface;
           drag = 0.05;
         } else if (
           c.hp > 0 &&
@@ -1486,10 +1673,21 @@
           !harborPoliceProtected(player.x, player.y, 30)
         ) {
           // Intercepts, PIT and boxing, search sweeps and stuck recovery (pursuit.js).
-          const control = pursuitControl(c, stepSeconds, along, vehicleDefinition),
-            corner = corneringLimit(vehicleDefinition, along) * 1.1;
+          /* RAIN (every driver's tyres, weather.js wetGrip): a pursuit driver takes
+             corners a tenth past the dry limit and eases off only a little in the
+             wet, so on a soaked road a cruiser thrown into a corner asks more of
+             its tyres than they have and can slide wide or spin; its brakes and
+             traction shrink like everyone's, so it runs long into junctions. */
+          const surface = wetGrip(),
+            control = pursuitControl(c, stepSeconds, along, vehicleDefinition),
+            corner = corneringLimit(vehicleDefinition, along) * 1.1 * (0.7 + 0.3 * surface);
           steer = clamp(control.steer, -corner, corner);
-          acceleration = control.acceleration;
+          acceleration = clamp(
+            control.acceleration,
+            -vehicleDefinition.brake * 1.2 * surface,
+            vehicleDefinition.acc * surface,
+          );
+          lateralScale = surface;
           drag = control.drag;
         } else if (c.hp > 0 && c.ai && !c.crewDeployed) {
           // Traffic decisions are cached: 20 Hz near the player, 4 Hz for distant cars.
@@ -1501,26 +1699,43 @@
                   : trafficControl(c, stepSeconds)),
                 (c.aiControlAt = physicsClock + (c.farFromPlayer ? 0.25 : 0.05)),
                 c.aiControl);
+          /* Traffic in the rain keeps inside what its tyres now give (cornering,
+             brakes and traction all shrink with wetGrip) and drives slower by the
+             square root of the grip: 15% off every speed on a soaked road, which is
+             also a stop and a following distance allowed for braking at 72% (the
+             stopping formulas in trafficControl turn a speed into a distance through
+             its square). One driver in eleven keeps their dry-road habits and is
+             the one who, now and then, runs into the car ahead. */
           const handling = vehicleHandling(c),
-            corner = corneringLimit(vehicleDefinition, along);
+            surface = wetGrip(),
+            rainPace = c.id % 11 === 0 ? 1 : Math.sqrt(surface),
+            corner = corneringLimit(vehicleDefinition, along) * surface;
           steer = clamp(ai.steer, -corner, corner);
           acceleration = clamp(
-            (ai.desired * handling.top - along) * 5,
-            -vehicleDefinition.brake,
-            engineAcceleration(vehicleDefinition, along) * handling.power,
+            (ai.desired * rainPace * handling.top - along) * 5,
+            -vehicleDefinition.brake * surface,
+            Math.min(engineAcceleration(vehicleDefinition, along) * handling.power, vehicleDefinition.acc * surface),
           );
+          lateralScale = surface;
           drag = 0;
         } else {
           // Nobody driving: a roadblock or deployed cruiser sits on locked brakes,
           // a parked car in gear with the handbrake on, a wreck on burst tyres.
           // Shoved, it slides against that friction (parkedFriction) instead of
           // being an immovable post or gliding on.
-          unattended = c.blockade ? 0.8 : c.crewDeployed ? 0.75 : c.hp <= 0 ? 0.6 : 0.35;
+          // A bike down on its side slides on its bodywork (riders.js).
+          unattended = c.fallen ? 0.55 : c.blockade ? 0.8 : c.crewDeployed ? 0.75 : c.hp <= 0 ? 0.6 : 0.35;
+          if (c.fallen) updateFallenBike(c, stepSeconds);
           drag = 0;
           grip = 0;
         }
-        if (c !== pc && c.hp > 0 && (c.ai || c.cop) && !c.crewDeployed)
+        if (c !== pc && c.hp > 0 && (c.ai || c.cop) && !c.crewDeployed) {
           braking = along > 2 * KMH ? acceleration < -0.12 * GRAVITY : along > -2 * KMH && acceleration <= 0;
+          // A slide (driverStats): counted once until the car is straight again.
+          const sliding = along > 40 * KMH && Math.abs(lateral) > along * 0.27;
+          if (sliding && !c.sliding) driverStats[c.cop ? 'policeSlides' : 'trafficSlides']++;
+          c.sliding = sliding || (c.sliding && Math.abs(lateral) > along * 0.1);
+        }
         c.braking = braking;
         const terrain = roadVehicleTerrain(c);
         if (terrain) {
@@ -1543,11 +1758,31 @@
         // past the cornering grip (cornerG) at full grip. Normal cornering never
         // reaches the limit; a car punted sideways by a T-bone or a blast skates
         // across the lane and scrubs off instead of stopping dead as if glued to the road.
-        const lateralLimit =
-            (((vehicleDefinition.cornerG || 1.2) * 1.25 * GRAVITY * Math.max(grip, 5)) / Math.max(vehicleDefinition.grip || 7, 5)) *
+        /* TYRE STIFFNESS
+           Below the limit a tyre's sideways force grows with its slip angle and
+           peaks at about seven degrees (TYRE_PEAK_SLIP), whatever the speed. The old
+           fixed rate (`grip` a second) let the body slip 13 degrees through a 30 km/h
+           corner, so the car drifted wide of where it pointed and a tight turn felt
+           like steering a boat. The rate is now at least what reaches the full
+           cornering force at the peak slip angle, so the car follows its nose at town
+           speeds; `grip` still rules at speed and in a slide, and the handbrake's
+           low grip is left alone. */
+        const specGrip = vehicleDefinition.grip || 7,
+          tyreRate =
+            grip >= 3
+              ? Math.max(
+                  grip,
+                  (((vehicleDefinition.cornerG || 1.2) * GRAVITY) / (Math.max(Math.abs(along), 12 * KMH) * TYRE_PEAK_SLIP)) *
+                    (grip / specGrip) *
+                    // Steering into a slide (counter-steer) lets the fronts bite: the slide is caught.
+                    (c.counterSteer ? 1.5 : 1),
+                )
+              : grip,
+          lateralLimit =
+            (((vehicleDefinition.cornerG || 1.2) * 1.25 * GRAVITY * Math.max(grip, 5)) / Math.max(specGrip, 5)) *
             lateralScale *
             stepSeconds,
-          traction = clamp(lateral * (1 - Math.exp(-grip * stepSeconds)), -lateralLimit, lateralLimit);
+          traction = clamp(lateral * (1 - Math.exp(-tyreRate * stepSeconds)), -lateralLimit, lateralLimit);
         c.vx += headingSine * traction;
         c.vy -= headingCosine * traction;
         c.vx *= Math.exp(-drag * stepSeconds);
@@ -1557,7 +1792,13 @@
         // cannot cancel it at once (resolveContact sets spinUntil). With nobody at
         // the wheel only the tyres' friction slows the spin (parkedFriction).
         else {
-          const yawAuthority = physicsClock < (c.spinUntil || 0) ? 1.1 : 5;
+          // The player's car answers the wheel in about a tenth of a second (a
+          // keyboard has no half-lock to feed in); drivers' cars more gently.
+          // In a handbrake turn the body's own rotation carries it on (the tail is
+          // sliding), so the yaw follows the wheel more lazily and a swing started
+          // at 30 km/h goes on round as the car slows.
+          const yawAuthority =
+            physicsClock < (c.spinUntil || 0) ? 1.1 : c === pc ? (c.handbrakeTurn ? 2.6 : PLAYER_YAW_RESPONSE) : 5;
           c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
         }
         c.a = normalizeAngle(c.a + c.av * stepSeconds);
@@ -1605,6 +1846,8 @@
             const nx = slope.x / m,
               ny = slope.y / m,
               inward = Math.max(0, c.vx * nx + c.vy * ny);
+            // Flown into the hillside (AIRCRAFT STRIKES): the speed into the slope.
+            if (inward > AIRCRAFT_CRASH_SPEED || Math.hypot(c.vx, c.vy) > AIRCRAFT_CRASH_SPEED * 1.5) destroyAircraft(c, 'terrain', Math.max(inward, Math.hypot(c.vx, c.vy)));
             c.vx -= nx * inward;
             c.vy -= ny * inward;
           }
@@ -1883,6 +2126,7 @@
       terrainVehiclePose(c, stepSeconds);
       // Drawbridge leaves as ramps, take-off, landing and the gap (drawbridge.js).
       drawbridgeSettle(c, stepSeconds);
+      rotorStrikes(c, stepSeconds);
       c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
       if (c === player.car) {
         player.x = c.x;
@@ -2245,5 +2489,353 @@
       }
       if (impactContacts.size > 300)
         for (const [k, v] of impactContacts) if (physicsClock - v.time > 2) impactContacts.delete(k);
+    }
+    /**
+     * HANDLING TESTS (developer console)
+     * turnTest() drives a fresh vehicle on the open strip beside the Oceanview
+     * runway through the real game step (contacts, weather, everything) and
+     * measures what the steering achieves: the path's radius, the lateral g, and
+     * how far the car runs forward and sideways to turn 90 degrees from a straight
+     * entry (a city corner). pose() is the player's vehicle as the physics sees it.
+     */
+    function handlingConsole() {
+      const TRACK = { x: -2600, y: 9650 };
+      // The last test car, taken away before the next test so none pile up.
+      let testCar = null;
+      // Kasa least-squares circle through the points: returns the radius.
+      const fitRadius = (points) => {
+        if (points.length < 5) return null;
+        let mx = 0,
+          my = 0;
+        for (const p of points) {
+          mx += p.x;
+          my += p.y;
+        }
+        mx /= points.length;
+        my /= points.length;
+        let suu = 0,
+          svv = 0,
+          suv = 0,
+          suuu = 0,
+          svvv = 0,
+          suvv = 0,
+          svuu = 0;
+        for (const p of points) {
+          const u = p.x - mx,
+            v = p.y - my;
+          suu += u * u;
+          svv += v * v;
+          suv += u * v;
+          suuu += u * u * u;
+          svvv += v * v * v;
+          suvv += u * v * v;
+          svuu += v * u * u;
+        }
+        const det = suu * svv - suv * suv;
+        if (Math.abs(det) < 1e-9) return null;
+        const b1 = (suuu + suvv) / 2,
+          b2 = (svvv + svuu) / 2,
+          uc = (b1 * svv - b2 * suv) / det,
+          vc = (b2 * suu - b1 * suv) / det;
+        return Math.sqrt(uc * uc + vc * vc + (suu + svv) / points.length);
+      };
+      const pose = () => {
+        const c = player.car;
+        if (!c) return null;
+        const speed = Math.hypot(c.vx || 0, c.vy || 0);
+        return {
+          type: c.type,
+          x: +c.x.toFixed(1),
+          y: +c.y.toFixed(1),
+          heading: +((c.a * 180) / Math.PI).toFixed(1),
+          yawRate: +((c.av || 0) * 1).toFixed(3),
+          kmh: +(speed / KMH).toFixed(1),
+          // Angle between where the car points and where it is going (a slide).
+          slip: speed > 5 ? +((normalizeAngle(Math.atan2(c.vy, c.vx) - c.a) * 180) / Math.PI).toFixed(1) : 0,
+          hp: Math.round(c.hp),
+          lift: +(c.deckLift || 0).toFixed(1),
+          air: !!c.deckAir,
+        };
+      };
+      return {
+        pose,
+        /* Traffic and police driving since the last reset: crashes and slides per
+           minute of game time, the road's wetness, and the mean speed of the
+           traffic within 1500 units of the player now. */
+        aiDriving(reset = false) {
+          const minutes = Math.max(1e-6, (physicsClock - driverStats.since) / 60);
+          let n = 0,
+            sum = 0,
+            police = 0;
+          for (const c of vehicles)
+            if (c.hp > 0 && c.ai && !isBoat(c) && !isAircraft(c) && distanceBetween(c, player) < 1500 && Math.abs(c.speed) > 3 * KMH) {
+              n++;
+              sum += Math.abs(c.speed);
+            } else if (c.cop && c.hp > 0) police++;
+          const out = {
+            minutes: +minutes.toFixed(2),
+            wet: +weather.wet.toFixed(2),
+            grip: +wetGrip().toFixed(2),
+            trafficMoving: n,
+            trafficKmh: n ? +(sum / n / KMH).toFixed(1) : null,
+            police,
+            trafficCrashes: driverStats.trafficCrashes,
+            policeCrashes: driverStats.policeCrashes,
+            trafficSlides: driverStats.trafficSlides,
+            policeSlides: driverStats.policeSlides,
+            crashesPerMinute: +((driverStats.trafficCrashes + driverStats.policeCrashes) / minutes).toFixed(2),
+            closingsKmh: driverStats.closings.slice(-10),
+          };
+          if (reset) Object.assign(driverStats, { since: physicsClock, trafficCrashes: 0, policeCrashes: 0, trafficSlides: 0, policeSlides: 0, closings: [] });
+          return out;
+        },
+        // The player's throw off a bike now and the last few throws (riders.js),
+        // and the last aircraft broken up by a strike (AIRCRAFT STRIKES).
+        riderReport: () => ({ ...riderReport(), aircraft: aircraftCrashes.slice() }),
+        /* Fly a fresh helicopter at `kmh` (level, the speed held) from `metres` short
+           of a downtown tower's west face, `heightM` above the street; `offsetM` puts the mast that far north
+           of the tower's corner, so only the rotor reaches it (a rotor-strike test).
+           Returns what became of it and the last aircraft crashes. */
+        heliInto(kmh = 60, heightM = 15, metres = 30, offsetM = 0, seconds = 3) {
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          // The west face of the tallest tower with a clear street in front.
+          const tower = buildings
+              .filter((b) => b.height > 30 * UNITS_PER_METRE && b.h > 12 * UNITS_PER_METRE)
+              .filter((b) => !solid(b.x - 12, b.y + b.h / 2, 4) && !solid(b.x - 12, b.y - 40, 4))
+              .sort((p, q) => q.height - p.height)[0],
+            wall = { x: tower.x, y: tower.y + tower.h / 2 },
+            x = wall.x - metres * UNITS_PER_METRE,
+            // Off the wall's line: `offsetM` north of the tower's north-west corner.
+            y = offsetM ? tower.y - offsetM * UNITS_PER_METRE : wall.y;
+          teleportPlayer(x, y);
+          const c = (testCar = makeCar('helicopter', x, y, 0, false));
+          c.authorized = true;
+          enterVehicle(c);
+          c.altitude = terrainHeight(x, y) + heightM * UNITS_PER_METRE;
+          c.rotorSpeed = 1;
+          Object.assign(c, { vx: kmh * KMH, vy: 0, vz: 0, speed: kmh * KMH, av: 0 });
+          const hp = c.hp;
+          // Held at the speed, on and off the cyclic.
+          for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play'; i++) {
+            keys.KeyW = player.car === c && Math.hypot(c.vx, c.vy) < kmh * KMH;
+            update(1 / 30);
+          }
+          keys.KeyW = false;
+          return {
+            kmh,
+            heightM,
+            offsetM,
+            destroyed: c.hp <= 0,
+            hpLost: Math.round(hp - Math.max(0, c.hp)),
+            playerHp: Math.round(player.hp),
+            gameMode,
+            onFoot: !player.car,
+            thrown: !!player.thrown,
+            crashes: aircraftCrashes.slice(-2),
+          };
+        },
+        /* The drawbridge jump: both leaves held at `degrees`, a fresh `type` set
+           going at `kmh` 25 m short of the west trunnion, held at that speed (flooring it up the leaf if it drops). Returns
+           the outcome ('clears', 'falls short', 'strikes the far leaf' (and falls),
+           "can't climb"), the gap and tip height the leaves make, the speed up the
+           leaf at the tip, the flight's length and the landing's speed into the road. */
+        bridgeJump(degrees = 15, kmh = 60, type = 'sedan', seconds = 9, trace = false) {
+          const d = drawbridge,
+            g = drawbridgeGeometry();
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          drawbridgeArms();
+          d.held = d.angle = clamp((degrees * Math.PI) / 180, 0, DRAWBRIDGE_MAX_ANGLE);
+          d.rate = 0;
+          d.phase = 'open';
+          d.timer = 0;
+          d.jumps.length = 0;
+          const start = bridgePoint(g.bridge, g.hinge[0] - 25 * UNITS_PER_METRE, g.road / 4);
+          teleportPlayer(start.x, start.y);
+          const c = (testCar = makeCar(type, start.x, start.y, g.f.a, false));
+          c.authorized = true;
+          enterVehicle(c);
+          Object.assign(c, { vx: g.f.ux * kmh * KMH, vy: g.f.uy * kmh * KMH, speed: kmh * KMH, av: 0 });
+          const hp = c.hp;
+          let tipKmh = null,
+            maxLift = 0,
+            rolledBack = false;
+          const samples = [];
+          handlingTestPaved = true;
+          for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play'; i++) {
+            // The driver holds the speed (on and off the throttle) up to and up the
+            // leaf, flooring it if the slope pulls the car below it.
+            const forward = c.vx * g.f.ux + c.vy * g.f.uy;
+            keys.KeyW = forward < kmh * KMH;
+            update(1 / 30);
+            if (trace && i % 3 === 0) samples.push([+(i / 30).toFixed(2), Math.round(drawbridgeLocal(c.x, c.y).u - g.hinge[0]), Math.round(forward / KMH), +(c.deckLift || 0).toFixed(1), c.deckLeaf, !!c.deckAir, +(c.deckSlope || 0).toFixed(2)]);
+            maxLift = Math.max(maxLift, c.deckLift || 0);
+            if (tipKmh === null && c.deckAir) tipKmh = Math.round(Math.hypot(c.vx, c.vy, c.deckVz || 0) / KMH);
+            const along = c.vx * g.f.ux + c.vy * g.f.uy;
+            if (!c.deckAir && tipKmh === null && along < -5) rolledBack = true;
+            const jump = d.jumps[0];
+            if ((jump && (jump.landed !== undefined || jump.splash)) || rolledBack || c.sinkFor > 0) {
+              // Run on a moment for the landing to settle.
+              for (let k = 0; k < 10; k++) update(1 / 30);
+              break;
+            }
+          }
+          keys.KeyW = false;
+          handlingTestPaved = false;
+          const jump = d.jumps[0],
+            outcome = !jump
+              ? "can't climb"
+              : jump.crossed && jump.landed
+                ? 'clears'
+                : jump.struck
+                  ? 'strikes the far leaf'
+                  : 'falls short';
+          const report = drawbridgeReport();
+          return {
+            degrees,
+            kmh,
+            type,
+            outcome,
+            gapM: +worldMeters(report.gap).toFixed(1),
+            tipM: +worldMeters(report.tipHeight).toFixed(1),
+            tipKmh,
+            peakM: +worldMeters(maxLift).toFixed(1),
+            flightM: jump?.distance ?? null,
+            landingMs: jump?.impact != null ? +(jump.impact / UNITS_PER_METRE).toFixed(1) : null,
+            hpLost: Math.round(hp - c.hp),
+            ...(trace ? { samples } : {}),
+          };
+        },
+        /* Ride a fresh `type` east along the runway strip at `kmh` (held there)
+           into a parked `targetType` turned across the way (or 'none'), `gap`
+           metres ahead; stepped for `seconds`. `trafficRider`: a traffic bike
+           (flat out at the player's side) instead. Returns the riders' report. */
+        rideInto(type = 'bike', kmh = 50, targetType = 'sedan', gap = 25, seconds = 0.05, trafficRider = false) {
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          for (let i = vehicles.length - 1; i >= 0; i--)
+            if (vehicles[i].rideTarget) vehicles.splice(i, 1);
+          const x = TRACK.x,
+            y = TRACK.y + 60;
+          teleportPlayer(x, y - 60);
+          if (targetType !== 'none') {
+            const t = makeCar(targetType, x + gap * UNITS_PER_METRE, y, Math.PI / 2, false);
+            t.rideTarget = true;
+          }
+          // With `trafficRider` the bike is traffic's, ridden by its own rider, and
+          // the player watches from the verge.
+          const c = (testCar = makeCar(type, x, y, 0, trafficRider));
+          c.authorized = true;
+          if (trafficRider) {
+            // Its rider aims past the parked car at the player standing beyond it.
+            c.occupied = true;
+            c.ramUntil = gameTime + 30;
+            teleportPlayer(x + (gap + 8) * UNITS_PER_METRE, y);
+          } else enterVehicle(c);
+          Object.assign(c, { vx: kmh * KMH, vy: 0, speed: kmh * KMH, av: 0 });
+          handlingTestPaved = true;
+          for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play'; i++) {
+            // Held at the speed (on and off the throttle) until the crash.
+            keys.KeyW = !!player.car && c.vx < kmh * KMH;
+            update(1 / 30);
+          }
+          keys.KeyW = false;
+          handlingTestPaved = false;
+          return riderReport();
+        },
+        /* Steer a fresh `type` at `kmh` and measure. options:
+           dir 1 right / -1 left; seconds; mode 'cruise' (throttle on and off to hold
+           the speed), 'coast', 'throttle' (held), 'brake' (S held) or 'handbrake'
+           (Space held); wet 0..1 (the road's wetness for the test); entry: seconds
+           driven straight first. Returns the radius (m, fitted while the heading
+           turns from 20 to 110 degrees, at the mean speed there, fitKmh), the yaw and lateral g, the run to 90 degrees
+           (forward and sideways, m, and seconds), the heading turned, the speed at
+           the end and whether anything was touched. */
+        turnTest(type = 'sedan', kmh = 30, options = {}) {
+          const { dir = 1, seconds = 6, mode = 'cruise', wet = 0, entry = 0.3, x = TRACK.x, y = TRACK.y, trace = false } = options;
+          const samples = [];
+          if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+          const savedWet = weather.wet;
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          // Nothing left on the strip from a ride test.
+          for (let i = vehicles.length - 1; i >= 0; i--) if (vehicles[i].rideTarget) vehicles.splice(i, 1);
+          teleportPlayer(x, y - 60);
+          const c = (testCar = spawnClearCar(type, x, y, 0, false));
+          c.authorized = true;
+          enterVehicle(c);
+          Object.assign(c, { x, y, a: 0, av: 0, vx: kmh * KMH, vy: 0, speed: kmh * KMH });
+          player.x = x;
+          player.y = y;
+          const target = kmh * KMH,
+            turnKey = dir > 0 ? 'KeyD' : 'KeyA',
+            path = [];
+          let turned = 0,
+            lastA = c.a,
+            at90 = null,
+            touched = false,
+            fitSpeed = 0,
+            turnFrom = null,
+            time = 0;
+          c.contactPass = -1;
+          handlingTestPaved = true;
+          for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play'; i++) {
+            weather.wet = wet;
+            for (const k of ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD']) keys[k] = false;
+            const along = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
+            if (mode === 'cruise' || time < entry) keys.KeyW = along < target;
+            if (mode === 'throttle') keys.KeyW = true;
+            if (time >= entry) {
+              keys[turnKey] = true;
+              if (mode === 'brake') keys.KeyS = true;
+              if (mode === 'handbrake') keys.Space = true;
+            }
+            update(1 / 30);
+            time += 1 / 30;
+            if (c.contactPass >= 0) touched = true;
+            if (trace && i % 3 === 0) samples.push({ t: +time.toFixed(2), ...pose(), skid: +c.skid.toFixed(2) });
+            turned += normalizeAngle(c.a - lastA) * dir;
+            lastA = c.a;
+            if (turned > (20 * Math.PI) / 180 && turned < (110 * Math.PI) / 180) {
+              path.push({ x: c.x, y: c.y });
+              fitSpeed += Math.hypot(c.vx, c.vy);
+            }
+            if (!turnFrom && time >= entry) turnFrom = { x: c.x, y: c.y };
+            if (!at90 && turned >= Math.PI / 2)
+              at90 = {
+                // From where the key went down.
+                forward: +worldMeters(c.x - turnFrom.x).toFixed(1),
+                side: +worldMeters(Math.abs(c.y - turnFrom.y)).toFixed(1),
+                seconds: +(time - entry).toFixed(2),
+                kmh: +(Math.hypot(c.vx, c.vy) / KMH).toFixed(1),
+              };
+          }
+          for (const k of ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD']) keys[k] = false;
+          handlingTestPaved = false;
+          weather.wet = savedWet;
+          // The radius over 20-110 degrees of the turn, at the mean speed there.
+          const radius = fitRadius(path),
+            speed = path.length ? fitSpeed / path.length : Math.hypot(c.vx, c.vy);
+          return {
+            type,
+            kmh,
+            mode,
+            wet,
+            radius: radius ? +worldMeters(radius).toFixed(1) : null,
+            // Kerb-to-kerb circle: the path's diameter plus the car's width.
+            kerbToKerb: radius ? +worldMeters(2 * radius + vehicleSpec(c).w).toFixed(1) : null,
+            yawRate: +Math.abs(c.av).toFixed(2),
+            lateralG: radius ? +((speed * speed) / radius / GRAVITY).toFixed(2) : null,
+            at90,
+            turnedDeg: Math.round((turned * 180) / Math.PI),
+            fitKmh: +(speed / KMH).toFixed(1),
+            endKmh: +(Math.hypot(c.vx, c.vy) / KMH).toFixed(1),
+            slip: pose().slip,
+            touched,
+            ...(trace ? { samples } : {}),
+          };
+        },
+      };
     }
     // END SUBSYSTEM: src/physics.js

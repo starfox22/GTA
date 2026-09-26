@@ -126,9 +126,18 @@ Two closures matter:
   less air and rolling resistance that would balance it 15% past `max` (the physics caps the
   car at `max`). `coastDeceleration` is the roll-down with nothing pressed; the handbrake adds
   a sliding half-g and drops the grip. Steering reaches full lock by 30 km/h
-  (`STEER_FULL_SPEED`); above that `corneringLimit(spec, v)` caps the yaw rate at
-  `cornerG * GRAVITY / v`, for the player, traffic and pursuit cars alike, so a city corner is
-  taken at 30-40 km/h (or on the handbrake) and a wide bend at 150. The same numbers feed the
+  (`STEER_FULL_SPEED`; 15 km/h on the handbrake); the player's lock is `turn` x `STEER_LOCK`
+  (1.13, a game's allowance: a sedan turns in 9.6 m kerb to kerb). Above that
+  `corneringLimit(spec, v)` caps the yaw rate at `cornerG * GRAVITY / v`, for the player,
+  traffic and pursuit cars alike, so a city corner is taken at 30-40 km/h (or on the handbrake)
+  and a wide bend at 150. Handling details (physics.js): TYRE STIFFNESS (the sideways force
+  reaches the cornering limit at `TYRE_PEAK_SLIP`, 7 degrees, so the car follows its nose
+  instead of drifting 13 degrees wide at 30 km/h; counter-steering into a slide makes the fronts
+  bite 1.5x), `PLAYER_YAW_RESPONSE` (8.5/s: the player's car takes up the yaw in about 0.12 s;
+  2.6/s in a handbrake turn so the swing carries on as the car slows; traffic 5/s), UNDERSTEER
+  SKID (the key held against the grip limit above 28 km/h for over half a second: the fronts
+  howl, lay marks and scrub up to 0.12 g, so the line tightens as the car slows; a tap or a
+  sweeping bend is untouched). Measure with the console's `turnTest(type, kmh, options)`. The same numbers feed the
   AI: traffic and police clamp their throttle to `engineAcceleration` and their braking to
   `spec.brake`.
 - **Tyres and balance** (physics.js FRICTION CIRCLE AND BALANCE, the player's car): driving,
@@ -140,7 +149,34 @@ Two closures matter:
   brakes, handbrake and cornering: a sedan's 100-0 grows from 34.5 m to 45.8 m and its steady
   cornering from 1.22 g to 0.89 g. `vehicleHandling` adds `steer` (a bent front end) and
   `brake` (flat tyres). `kerbStrike` jolts the body and scrubs 1-5% of the speed on mounting
-  or dropping off a kerb above 25 km/h. Traffic and police AI keep their dry-road limits.
+  or dropping off a kerb above 25 km/h.
+- **Rain and the AI** (physics.js controlVehicle): every driver's tyres get `wetGrip()`.
+  Traffic keeps inside it (steering clamp, brakes and traction x grip) and drives slower by
+  sqrt(grip) (15% off every speed on a soaked road, which in trafficControl's stopping formulas
+  is also a stop and a following gap allowed for braking at 72%); one driver in eleven
+  (`c.id % 11 === 0`) keeps dry habits and is the occasional rear-ender. Pursuit cars steer to
+  1.1 x the dry limit x (0.7 + 0.3 grip) with the tyres' sideways hold at the wet value, so a
+  cruiser thrown into a corner in a downpour can slide or spin; their brakes shrink too.
+  `aiDriving(reset)` counts drivers' crashes and slides per minute.
+- **Riders** (riders.js): a crash delta-v over `RIDER_THROW` (24 km/h on a motorbike, 18 on a
+  bicycle) or a drawbridge landing into the road over 6.5 m/s throws the rider over the bars
+  with the bike's speed going in (`impactVx/Vy`, kept by resolveContact): a real ballistic arc,
+  a somersault, strikes on walls, trunks and tall vehicles (a car's roof is vaulted), a landing,
+  bounces, a slide at 0.62 g, a moment lying still, then up. Damage by the speed into each
+  thing (`riderImpactDamage`: 27 hp at 40 km/h, lethal from ~75), the landing and road rash;
+  god mode survives. The player is `player.thrown` (stepped by `updateThrownPlayer` in place of
+  walking; no firing or boarding meanwhile); traffic's rider becomes a pedestrian with
+  `ejected.rider` (carjack.js stepEjection hands it to `stepRiderEjection`). The bike goes on
+  alone with `fallen` (cartwheels while quick, lies on its side, slides at 0.55 g) until someone
+  gets on. Crime and wanted rules are the crash's own. Console: `rideInto(type, kmh, target, gap)`,
+  `riderReport()`.
+- **Aircraft strikes** (physics.js AIRCRAFT STRIKES): an airborne helicopter or plane faster than
+  `AIRCRAFT_CRASH_SPEED` (40 km/h along the contact) into a building, structure, big vehicle or
+  hillside (or touching the ground above 40 km/h) is destroyed by `destroyAircraft` (the usual
+  explosion and burning wreck; the player dies, or in god mode is thrown clear by the riders'
+  throw). `rotorStrikes` (settleVehicle) tests the rotor disc (the airframe's length) against
+  walls: over `ROTOR_STRIKE_SPEED` (15 km/h toward one) the same; slower, a graze. Console
+  `heliInto`; `riderReport().aircraft` lists the break-ups.
 - **Crashes** (physics.js CRASH SEVERITY): every vehicle is a body of its real `mass` (tonnes;
   the tank 55, the bus 11.5). Damage follows each body's delta-v, closing x M / (m + M) (a
   wall is M = infinity): the share of hit points is ((delta-v - 10 km/h) / 190 km/h)^1.5, a
@@ -199,6 +235,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. A braced cruiser is an ordinary 1.6 t body on locked brakes (`parkedFriction`), so the rammer's momentum decides: a truck, bus or the tank shoves through, a sedan crumples and stalls in the V. A cruiser moved over a metre is knocked loose (`roadblockShoved`); the cut is busted when the player's car comes out the far side (`watchRoadblockBreach`) |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
+| riders.js | Riders thrown from motorbikes and bicycles: `RIDER_THROW`, `riderCrash` / `riderLanding`, `throwRider`, the flight, landing and slide (`stepThrownBody`), `updateThrownPlayer`, `stepRiderEjection`, fallen bikes (`updateFallenBike`), `riderReport` |
 | themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride; RIDERS' VOICES: recorded screams cued per car by the track and rider speech bubbles, `updateFalconVoices`, `falconRiders`), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
@@ -274,7 +311,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras (the station roof and its sign are their own batch, cut away while the train or the ride camera is under them, `setStationRoofCut`) |
-| unicorn3d.js | (included by themepark3d.js) The Unicorn Fountain in the forecourt (`PIER.unicorn`): Aurora, a rearing unicorn sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) in pearlescent marble with a gilded horn and hooves; tiered plinth with a bronze plaque, basin, eight arcing jets and spray; night uplights as a shader term on her marble (UPLIGHTS), the horn's pastel glow; `updateUnicornFountain` each frame |
+| unicorn3d.js | (included by themepark3d.js) Aurora, the black unicorn statue on the lawn by the drop tower (`PIER.unicorn`): a monumental rearing unicorn (12 m to the horn tip, 13 m above the lawn) sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) and embedded masses for the musculature (`unicornMass`), in clearcoated black lacquer with a polished gold horn and black hooves; the OBSIDIAN patch (reflections folded up into the sky and partly desaturated, a sky rim light, anthracite lock edges, granite grain) and night UPLIGHTS (four warm-white lamps in the paving, a tight specular glint on the black); a low octagonal polished black granite plinth (1.3 m) with an inlaid brass line and an engraved brass AURORA plaque facing the camera; everything merged per material (about 9.2k triangles, six draws with the plaque); `updateUnicornStatue` each frame (uplights, the horn's soft glow) |
 | garage3d.js | Garage buildings, shutters, lights and service details |
 | landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
@@ -420,12 +457,15 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **The Sunset Eye** (hub 3600, -6050, 300 up, rim radius 240, 48 capsules, one turn in 240 s;
   `wheelCapsule(k)`) with its terminal underneath. **Fountain Lagoon** (3170, -6370) with the
   show schedule (`fountainShowAt`) and fireworks (`fireworksTonight`), the **Sunset Palace**
-  crescent hotel (3530, -6770), the **Unicorn Fountain** in the forecourt between the drive and
-  the gate (`PIER.unicorn`, 3200, -5987: a round basin with Aurora, a rearing marble unicorn, on a
-  plinth; solid to people and cars, guests stop round it to take photos), the beach club on the
-  north shore, and in the east the
+  crescent hotel (3530, -6770), the beach club on the north shore, and in the east the
   carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
-  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
+  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`). **Aurora**, a 12 m black
+  unicorn statue (`PIER.unicorn`, 4068, -6048), stands on the lawn south of the drop tower
+  (clear of its base, the games stalls, the drive's end and the beach) in a ring of pale paving
+  (radius `apron`) with a short walk from the end of the island drive; her granite plinth is
+  solid to people and cars (`parkSolids`, kind `unicorn statue`), palms keep off her lawn, and
+  guests walk out to her, round the plinth (`unicornArc`, never across it; `unicornExit` on the
+  way back) and stop on the paving or the lawn to take photos (the filming pose).
 - **Riders' voices** (themepark.js RIDERS' VOICES): each car is read off the circuit every frame
   (vertical speed = train speed x tangent rise, seat load from the change of rise, upside down).
   Falling faster than 4.5 m/s after a crest cues screams: the first drop after the lift a chorus
@@ -516,7 +556,14 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
     vehicle on a leaf carries `deckLift` (added by `entityElevation`), `deckLeaf`, `deckSlope`
     and `slopePitch`; `drawbridgeSlopeDrive` (controlVehicle) adds gravity along the slope
     (`DRAWBRIDGE_GRAVITY`, real gravity) and caps the tyres at `DRAWBRIDGE_GRIP` 0.84 (no climbing
-    past ~40°). Off a tip the vehicle is airborne (`deckAir`, `deckVz`; controlVehicle runs
+    past ~40°); the velocity is the horizontal part, so the push enters times cos(angle).
+    `drawbridgeKink` takes the speed square to the leaf off at the trunnion (a car keeps
+    cos(angle) of its speed up the slope: 82% at 35°) and damages the car above 5 m/s into it.
+    The gap is 2 (leaf (1 - cos a) + drop sin a) and the tips stand leaf sin a - drop (1 - cos a)
+    high (leaf 12.5 m, drop 1 m: 0.3 m / 1.1 m at 5°, 1.4 / 3.3 at 15°, 5.7 / 7.0 at 35°); the
+    car's nose (half its length ahead, pitched) must reach the far tip above it or it strikes
+    the leaf's end and drops. Past the far trunnion the approach span is road (it was taken for
+    the Sound). Off a tip the vehicle is airborne (`deckAir`, `deckVz`; controlVehicle runs
     `drawbridgeFlight`: no grip or steering, the nose drops); `drawbridgeSettle` lands it on the
     far leaf or the deck beyond (damage from the speed into the surface above 5 m/s, a BRIDGE
     JUMP headline), bounces it off the far tip if it comes in low, or drops it into the Sound
