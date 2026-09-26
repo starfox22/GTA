@@ -397,6 +397,18 @@
           ]),
         };
       }
+      /* Lift the front of a helmet's rim to the brow so the face shows beneath it. */
+      function rigFaceCut(g, brow) {
+        const p = g.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+          const x = p.getX(i),
+            y = p.getY(i),
+            front = clamp((x - 0.15) / 0.65, 0, 1);
+          if (y < brow) p.setY(i, y + (brow - y) * front * front * (3 - 2 * front));
+        }
+        g.computeVertexNormals();
+        return g;
+      }
       function rigHatGeometries() {
         const dome = (list) => rigLoft(hairRings(list), 14, (i) => (i === 0 ? 1 : 0));
         return {
@@ -417,11 +429,11 @@
           ]),
           // Ballistic helmet: shell (0), strap / band (1), mount (2).
           helmet: rigMerge([
-            rigLoft(
+            rigFaceCut(rigLoft(
               hairRings([[1.36, 0.92, 1.0, 0.8, -0.02], [1.56, 0.96, 1.02, 0.83], [1.72, 0.97, 1.02, 0.83], [1.98, 0.95, 0.99, 0.81], [2.26, 0.8, 0.85, 0.68], [2.5, 0.5, 0.55, 0.43], [2.63, 0.15, 0.15, 0.15, 0, 0.02]]),
               14,
               (i) => (i === 1 || i === 2 ? 1 : 0),
-            ),
+            ), 1.86),
             rigBox(0.14, 0.3, 0.34, 2, 0.98, 2.08, 0),
           ]),
           // Straw sun hat: crown (0), brim (1).
@@ -449,9 +461,10 @@
         const a = Math.abs(th) / RIG_DEG,
           front = a < 62;
         if (front && a < 5 && y > 1.0 && y < 3.2) return 6;
-        if (front && y > 1.3 && Math.abs(z) < 0.16 + (y - 1.3) * 0.36) return 1;
-        if (y > 2.05 && y < 2.62 && th < -12 * RIG_DEG && th > -34 * RIG_DEG) return 5;
-        if (y >= 2.97) return 4;
+        if (front && y > 1.4 && Math.abs(z) < 0.1 + (y - 1.4) * 0.27) return 1;
+        if (y > 2.2 && y < 2.5 && th < -14 * RIG_DEG && th > -28 * RIG_DEG) return 5;
+        // The shoulder tops (epaulettes, bare shoulders); the ring round the neck stays with the upper band.
+        if (y >= 2.85 && Math.abs(z) > 0.72) return 4;
         if (y >= 2.05) return 3;
         if (y >= 1.25) return 2;
         if (y <= 0.62) return 7;
@@ -521,24 +534,25 @@
       function rigUpperArmGeometry() {
         return rigLoft(
           [
-            { y: 0.42, fx: 0.4, w: 0.4 },
-            { y: 0.1, fx: 0.56, bx: 0.52, w: 0.55 },
-            { y: -0.55, fx: 0.52, bx: 0.5, w: 0.52 },
+            { y: 0.3, fx: 0.3, w: 0.3, dome: 0.06 },
+            { y: 0.12, fx: 0.5, bx: 0.48, w: 0.5 },
+            { y: -0.3, fx: 0.55, bx: 0.52, w: 0.54 },
+            { y: -0.75, fx: 0.5, bx: 0.49, w: 0.5 },
             { y: -1.05, fx: 0.47, bx: 0.47, w: 0.46 },
             { y: -1.2, fx: 0.46, bx: 0.46, w: 0.45 },
             { y: -1.9, fx: 0.4, bx: 0.39, w: 0.38 },
-            { y: -2.55, fx: 0.33, bx: 0.36, w: 0.33 },
-            { y: -2.72, fx: 0.24, bx: 0.26, w: 0.24, dome: 0.04 },
+            { y: -2.5, fx: 0.34, bx: 0.37, w: 0.34 },
+            { y: -2.8, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.1 },
           ],
           10,
-          (i) => (i <= 3 ? 0 : 1),
+          (i) => (i <= 4 ? 0 : 1),
         );
       }
       function rigForearmGeometry() {
         return rigLoft(
           [
-            { y: 0.18, fx: 0.28, bx: 0.3, w: 0.3 },
-            { y: -0.1, fx: 0.34, bx: 0.36, w: 0.34 },
+            { y: 0.28, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.08 },
+            { y: -0.1, fx: 0.34, bx: 0.37, w: 0.34 },
             { y: -0.6, fx: 0.36, bx: 0.34, w: 0.35 },
             { y: -1.5, fx: 0.27, bx: 0.26, w: 0.26 },
             { y: -1.72, fx: 0.24, bx: 0.23, w: 0.22 },
@@ -554,15 +568,15 @@
         return rigMerge([
           rigLoft(
             [
-              { y: 0.05, fx: 0.15, bx: 0.15, w: 0.12 },
-              { y: -0.3, fx: 0.22, bx: 0.2, w: 0.14 },
-              { y: -0.72, fx: 0.23, bx: 0.2, w: 0.13 },
-              { y: -1.05, fx: 0.2, bx: 0.16, w: 0.12, cx: 0.06 },
-              { y: -1.24, fx: 0.12, bx: 0.1, w: 0.1, cx: 0.14, dome: 0.03 },
+              { y: 0.08, fx: 0.18, bx: 0.18, w: 0.14 },
+              { y: -0.3, fx: 0.3, bx: 0.28, w: 0.16 },
+              { y: -0.78, fx: 0.31, bx: 0.28, w: 0.15 },
+              { y: -1.12, fx: 0.26, bx: 0.22, w: 0.14, cx: 0.05 },
+              { y: -1.36, fx: 0.16, bx: 0.12, w: 0.11, cx: 0.12, dome: 0.03 },
             ],
             7,
           ),
-          rigPlace(rigRegion(new Three.CylinderGeometry(0.07, 0.09, 0.62, 5, 1), 0), 0.24, -0.5, 0, 0, 0, 0.55),
+          rigPlace(rigRegion(new Three.CylinderGeometry(0.08, 0.1, 0.66, 5, 1), 0), 0.3, -0.52, 0.06, 0, 0, 0.55),
         ]);
       }
       function rigThighGeometry(female) {
@@ -575,8 +589,8 @@
             { y: -1.3, fx: 0.6, bx: 0.58, w: 0.58 * w },
             { y: -1.45, fx: 0.59, bx: 0.56, w: 0.57 * w },
             { y: -2.5, fx: 0.47, bx: 0.47, w: 0.46 },
-            { y: -3.25, fx: 0.42, bx: 0.4, w: 0.4 },
-            { y: -3.48, fx: 0.3, bx: 0.3, w: 0.3, dome: 0.04 },
+            { y: -3.25, fx: 0.43, bx: 0.41, w: 0.42 },
+            { y: -3.55, fx: 0.38, bx: 0.36, w: 0.38, dome: 0.12 },
           ],
           10,
           (i) => (i <= 3 ? 0 : 1),
@@ -585,8 +599,8 @@
       function rigShinGeometry() {
         return rigLoft(
           [
-            { y: 0.2, fx: 0.36, bx: 0.36, w: 0.38 },
-            { y: -0.12, fx: 0.4, bx: 0.4, w: 0.41 },
+            { y: 0.32, fx: 0.38, bx: 0.36, w: 0.38, dome: 0.1 },
+            { y: -0.12, fx: 0.42, bx: 0.4, w: 0.42 },
             { y: -0.35, fx: 0.37, bx: 0.44, w: 0.41 },
             { y: -1.0, fx: 0.35, bx: 0.52, w: 0.42 },
             { y: -1.9, fx: 0.31, bx: 0.36, w: 0.33 },

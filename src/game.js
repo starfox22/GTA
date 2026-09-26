@@ -5472,7 +5472,10 @@
           extents = city3D?.modelExtents?.([...near, player]) || [],
           size = (e) => (e ? { l: m(e.l), w: m(e.w), h: m(e.h) } : null),
           rig = city3D?.crowdRigHeight?.() || 0,
-          statures = pedestrians.filter((p) => p.look).map((p) => (p.look.height || 1) * rig * PERSON_SCALE),
+          statures = pedestrians
+            .filter((p) => p.look && p.role !== 'kid')
+            .map((p) => city3D?.personStature?.(p) || 0)
+            .filter(Boolean),
           heights = buildings.map((b) => b.height).sort((a, b) => a - b),
           pick = (list, q) => (list.length ? m(list[Math.min(list.length - 1, Math.floor(q * list.length))]) : null);
         return {
@@ -5483,8 +5486,9 @@
             .filter((row) => row.l),
           player: size(extents[near.length]),
           crowd: {
-            rig: m(rig * PERSON_SCALE),
-            shortest: pick(statures.filter((s) => s > rig * 0.8 * PERSON_SCALE).sort((a, b) => a - b), 0),
+            rig: m(rig),
+            player: m(city3D?.personStature?.(player) || 0),
+            shortest: pick(statures.sort((a, b) => a - b), 0),
             average: statures.length ? m(statures.reduce((s, v) => s + v, 0) / statures.length) : null,
             tallest: pick(statures.sort((a, b) => a - b), 1),
           },
@@ -6376,12 +6380,19 @@
       // Inspection only: zoom the camera in past the player's limit to look at
       // people up close. Anything above 1.5 is not reachable in play.
       closeUp(zoom = 4) {
-        worldZoom = worldZoomTarget = clamp(zoom, 0.14, 8);
+        worldZoom = worldZoomTarget = clamp(zoom, 0.14, 24);
         return worldZoom;
       },
       // Line up one pedestrian per pose in front of the player (for screenshots);
       // `role` dresses them all alike, e.g. 'commuter'.
       poseGallery: (role) => poseGallery(role),
+      // One of each kind of character in a row in front of the player, facing the
+      // camera (crowd.js CHARACTER LINEUP): stance 'stand', 'walk' or 'aim'.
+      characterLineup: (stance, spacing) => characterLineup(stance, spacing),
+      // Inspection only: look at the street from bearing `yaw` (0 = from the south,
+      // as the game camera does; 90 = from the east) and `pitch` degrees above the
+      // horizon, aimed `lift` units up; no arguments restores the game camera.
+      inspectView: (yaw, pitch, lift) => city3D?.inspectView?.(yaw, pitch, lift),
       // Raise an incident at a map point without firing: gunfire, explosion, crash.
       alarm(kind = 'gunfire', x = player.x, y = player.y) {
         const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);

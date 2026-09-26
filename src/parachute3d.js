@@ -292,7 +292,7 @@
       const chuteEuler = new Three.Euler(0, 0, 0, 'YXZ'),
         chuteTmp = new Three.Vector3(),
         chuteTmp2 = new Three.Vector3(),
-        chuteHarnessOffset = new Three.Vector3(0, 13, 0),
+        chuteHarnessOffset = new Three.Vector3(0, 11.4 * (PERSON_HEIGHT / 14), 0),
         chuteRiser = [new Three.Vector3(), new Three.Vector3(), new Three.Vector3(), new Three.Vector3()];
       const smooth01 = (a, b, x) => {
         const t = clamp((x - a) / (b - a), 0, 1);
@@ -379,9 +379,9 @@
         chutePack.visible = true;
         chutePack.position.copy(m.group.position);
         chutePack.quaternion.setFromEuler(m.group.rotation);
-        chuteTmp.set(-3.1, 10.6, 0).applyQuaternion(chutePack.quaternion);
+        chuteTmp.set(-1.6, 10.2, 0).multiplyScalar(PERSON_HEIGHT / 14).applyQuaternion(chutePack.quaternion);
         chutePack.position.add(chuteTmp);
-        chutePack.scale.setScalar(1);
+        chutePack.scale.setScalar(0.72 * (PERSON_HEIGHT / 14));
       }
       function chuteSetLine(i, a, b) {
         chuteLinePos[i * 6] = a.x;

@@ -605,7 +605,7 @@
             upperArm: rigPaint(top, top, accent, skin, SLEEVES[armCover], topPattern),
             forearm: rigPaint(top, look.cuff || top, top, skin, armCover === 'long' ? [0, 1] : [3, 3], topPattern),
             hand: gloves ? rigPaint(gloves) : rigPaint(skin),
-            pelvis: rigPaint(pants, look.beltColor || '#1d1a18', look.buckle || '#b7b9bb', skin, look.belt || garment === 'bikini' || garment === 'dress' ? [0, 0, 0] : [0, 1, 2], pantsPattern),
+            pelvis: rigPaint(pants, look.beltColor || '#1d1a18', look.buckle || '#b7b9bb', skin, look.belt || garment === 'bikini' || garment === 'dress' || garment === 'shirtless' || (shorts && !legsCovered && summer) ? [0, 0, 0] : [0, 1, 2], pantsPattern),
             skirt: rigPaint(pants, mixHex(pants, '#000000', 0.2), pants, pants, [0, 1]),
             thigh: rigPaint(pants, pants, pants, skin, skirt || garment === 'bikini' ? [3, 3] : shorts ? [0, 3] : [0, 0], pantsPattern),
             shin: rigPaint(pants, socks || skin, kneePads || pants, skin, legsCovered ? [0, 0, kneePads ? 2 : 0] : [3, socks ? 1 : 3, 3], pantsPattern),
@@ -640,7 +640,7 @@
         if (p.faction) return 'gang';
         return 'story';
       }
-      const PLAYER_GOLD = '#e2c897'; // the HUD gold (shell.html --ui-gold)
+      const PLAYER_GOLD = '#c9a14f'; // the HUD gold (shell.html --ui-gold #e2c897), deepened so it reads as gold on cloth
       function outfitLook(p, outfit, seed) {
         const h = (k) => hashOf(seed, k),
           skin = pickOf(['#e9c2a3', '#d9a886', '#c99169', '#b27a52', '#8f5b3c', '#6e4630', '#4e3223'], h(1)),
@@ -1481,7 +1481,12 @@
         // Weapon stances turn the upper body: blading for a shouldered long gun,
         // square for a pistol, a lean into the aim.
         const hold = spec?.hold;
-        if (hold) {
+        if (hold?.inHand) {
+          // The firing arm hangs a little forward and less free.
+          T[J_ARMFREE[1]] = 0.55;
+          T[J_SH[1]] = Math.max(T[J_SH[1]], 0.08);
+          T[J_EL[1]] = Math.max(T[J_EL[1]], 0.3);
+        } else if (hold) {
           T[J_HOLD] = 1;
           T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
           T[J_TWIST] += hold.twist || 0;
@@ -1584,6 +1589,9 @@
         pistolAim: { grip: [3.35, 4.55, 0.18], pitch: 0, twist: 0, lean: -0.06, headPitch: 0.12, aiming: true },
         pistolOneHand: { grip: [3.8, 4.55, 0.85], pitch: 0, twist: -0.3, lean: -0.04, headPitch: 0.08, oneHand: true, aiming: true },
         pistolReady: { grip: [2.05, 2.55, 0.45], pitch: -0.85, twist: 0, lean: 0, headPitch: 0.05 },
+        // Carried in the firing hand at the side, muzzle down; the arms swing.
+        pistolSide: { inHand: true, at: [0.12, -0.62, 0.02], rz: -1.2 },
+        smgSide: { inHand: true, at: [0.1, -0.6, 0.04], rz: -1.05 },
         smgAim: { grip: [2.55, 3.85, 0.42], pitch: 0, twist: -0.25, lean: -0.1, headPitch: 0.2, aiming: true },
         smgReady: { grip: [1.9, 2.9, 0.5], pitch: -0.6, twist: -0.15, lean: 0, headPitch: 0.05 },
         longAim: { grip: [2.45, 3.88, 0.52], pitch: 0, twist: -0.45, lean: -0.16, headPitch: 0.3, headYaw: 0.28, aiming: true },
@@ -1610,6 +1618,7 @@
         holdVec2 = new Three.Vector3(),
         holdPole = new Three.Vector3(),
         shoulderWorld = [new Three.Vector3(), new Three.Vector3()],
+        handFrames = [new Three.Matrix4(), new Three.Matrix4()],
         armTargets = [new Three.Vector3(), new Three.Vector3()];
 
       /* Which poses carry something that needs the phone in hand. */
@@ -1655,6 +1664,8 @@
         const k = 1 - Math.exp(-dt * (p.react || spec?.hold?.aiming ? 14 : 9));
         for (let i = 0; i < J_COUNT; i++) J[i] += (T[i] - J[i]) * (dt > 0 && !fresh ? k : 1);
         if (p.hp <= 0 && !p.deathStyle?.slump) J[J_FALL] = personFallAmount(p);
+        // Swimming strokes and the parachute set the limbs outright.
+        if (spec && (spec.swim || spec.parachute)) applyLimbOverrides(spec, J);
         // Facing. The upper body turns to where they face; the hips follow the
         // direction of travel (strafing, backing away) or, standing, step round
         // once the twist grows large.
@@ -1744,7 +1755,7 @@
         const hipsDiff = legHip[0] - legHip[1],
           pelvisYaw = -0.12 * hipsDiff * loco,
           lean = J[J_LEAN] - loco * (0.03 + run * 0.17),
-          twist = J[J_TWIST] + clamp(upperTurn, -1.1, 1.1) + 0.2 * hipsDiff * loco * (1 - J[J_HOLD] * 0.8),
+          twist = J[J_TWIST] - clamp(upperTurn, -1.1, 1.1) + 0.2 * hipsDiff * loco * (1 - J[J_HOLD] * 0.8),
           roll = J[J_ROLL] + loco * (limp ? 0.1 * Math.sin(phi) : 0.02 * Math.cos(phi));
         // Arms swing against the legs, bent more at a run.
         const armSwing = [
@@ -1812,7 +1823,7 @@
           rigEmit(P.backpack, mOut, 1, 1, w, paints.backpack);
         }
         // Head: turned towards what they look at, steadied against the stride.
-        const headYaw = J[J_HEAD_YAW] + (upperTurn - clamp(upperTurn, -1.1, 1.1)) - 0.2 * hipsDiff * loco * 0.8;
+        const headYaw = J[J_HEAD_YAW] - (upperTurn - clamp(upperTurn, -1.1, 1.1)) - 0.2 * hipsDiff * loco * 0.8;
         crowdJoint(mHead, mTorso, 0.04, RIG.neck, 0, -J[J_HEAD_PITCH] - lean * 0.3, 0, headYaw);
         const hs = R.headScale;
         rigEmit(P.head, mHead, hs, hs, hs, paints.head);
@@ -1828,7 +1839,10 @@
         // Weapons and fists: both hands to the hold by IK.
         const hold = spec?.hold,
           holdWeight = J[J_HOLD];
-        if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, R, H, elevation, hipY, holdWeight);
+        if (hold?.inHand) {
+          crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
+          rigEmit(P[spec.weapon], mGun, 1 / 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
+        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, R, H, elevation, hipY, holdWeight);
         const armPaint = paints.upperArm,
           forePaint = paints.forearm;
         for (let side = 0; side < 2; side++) {
@@ -1918,7 +1932,9 @@
           reload = spec.reload ?? -1,
           reloadBump = reload >= 0 ? Math.sin(Math.PI * clamp(reload, 0, 1)) : 0;
         let rightTarget = null,
-          leftTarget = null;
+          leftTarget = null,
+          rightFrame = null,
+          leftFrame = null;
         if (hold.fists) {
           // Guard up at the chin; the punching hand snaps out and back.
           const lead = spec.punchLead ?? 1,
@@ -1950,13 +1966,27 @@
           const kind = spec.weapon === 'rifle' && spec.army ? 'rifleArmy' : spec.weapon;
           rigEmit(P[spec.weapon], mGun, 1, 1, 1, WEAPON_PAINTS[kind] || WEAPON_PAINTS.pistol);
           // The firing hand: its wrist a little behind and above the grip.
-          rightTarget = armTargets[1].set(-0.28, 0.3, 0).applyMatrix4(mGun);
+          // The firing hand wraps the grip: the wrist a little behind and above it,
+          // the hand down the grip, fingers round the front.
+          crowdJoint(handFrames[1], mGun, -0.3, 0.34, 0.02, 0.22);
+          rightTarget = armTargets[1].setFromMatrixPosition(handFrames[1]);
+          rightFrame = handFrames[1];
           if (info.support && !hold.oneHand) {
-            const sp = info.support;
+            const sp = info.support,
+              k = WEAPON_SCALE_OF(spec.weapon),
+              pistolGrip = spec.weapon === 'pistol';
             // Reloading: the support hand goes to the magazine and back.
-            leftTarget = armTargets[0]
-              .set(sp[0] * WEAPON_SCALE_OF(spec.weapon) - reloadBump * (sp[0] * WEAPON_SCALE_OF(spec.weapon) - 0.5), sp[1] - 0.25 - reloadBump * 1.1, sp[2] - 0.12)
-              .applyMatrix4(mGun);
+            crowdJoint(
+              handFrames[0],
+              mGun,
+              sp[0] * k - reloadBump * (sp[0] * k - 0.5) + (pistolGrip ? -0.22 : -0.3),
+              sp[1] + (pistolGrip ? 0.3 : 0.12) - reloadBump * 1.1,
+              sp[2] - (pistolGrip ? 0.08 : 0.22),
+              pistolGrip ? 0.22 : 0.9,
+              pistolGrip ? 0 : -0.5,
+            );
+            leftTarget = armTargets[0].setFromMatrixPosition(handFrames[0]);
+            leftFrame = handFrames[0];
           }
         }
         if (spec.shield) {
@@ -1965,7 +1995,9 @@
           rigEmit(P.shield, mShieldM, 1, 1, 1, WEAPON_PAINTS.shield);
           crowdJoint(mOut, mShieldM, 0.52, -1.0, 0, -0.3);
           crowdEmit(P.labelPolice, mOut, 1.3, 1.3, 1.3);
-          leftTarget = armTargets[0].set(-0.35, 0.28, 0.1).applyMatrix4(mShieldM);
+          crowdJoint(handFrames[0], mShieldM, -0.3, 0.55, 0.1, 0.1);
+          leftTarget = armTargets[0].setFromMatrixPosition(handFrames[0]);
+          leftFrame = handFrames[0];
         }
         for (let side = 0; side < 2; side++) {
           const target = side ? rightTarget : leftTarget;
@@ -1979,6 +2011,9 @@
           // Elbows down and out, a little back.
           holdPole.set(-0.25, -1, sign * 0.7).transformDirection(mAim);
           ikArm(mShoulder[side], mElbow[side], mHand[side], shoulderWorld[side], target, holdPole, L1, L2, H);
+          // A hand on the weapon takes the weapon's frame once the hold is in.
+          const frame = side ? rightFrame : leftFrame;
+          if (frame && weight > 0.6) mHand[side].copy(frame);
         }
         void w;
       }
@@ -2050,8 +2085,8 @@
             sp.hold = HOLD_POSES.knife;
             sp.knifeSwing = Math.max(0, ((player.knifeSwingUntil || 0) - gameTime) / 0.28);
           } else if (weapon === 'rocket') sp.hold = HOLD_POSES.rocket;
-          else if (weapon === 'pistol') sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.pistolAim : HOLD_POSES.pistolReady;
-          else if (weapon === 'smg') sp.hold = firedRecently ? HOLD_POSES.smgAim : HOLD_POSES.smgReady;
+          else if (weapon === 'pistol') sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.pistolAim : HOLD_POSES.pistolSide;
+          else if (weapon === 'smg') sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.smgAim : HOLD_POSES.smgSide;
           else sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.longAim : HOLD_POSES.longReady;
           return sp;
         }
@@ -2099,7 +2134,8 @@
           hard = typeof swimHard === 'function' ? swimHard() : true,
           drive = clamp(player.swimDrive || 0, 0, 1),
           roll = hard ? Math.sin(stroke) * 0.44 * (0.4 + drive * 0.6) : 0;
-        sp.elevation = entityElevation(player) + 1.2;
+        sp.facing = player.a;
+        sp.elevation = entityElevation(player) + 2.0;
         crowdJoint(rootMatrixScratch, mIdentity, player.x, sp.elevation, player.y, -Math.PI / 2 + 0.12, roll, -player.a);
         sp.rootOverride = rootMatrixScratch;
         sp.swim = { stroke, hard, drive };
@@ -2114,6 +2150,7 @@
         rootMatrixScratch.compose(g.position, rootQuat, unitScale);
         sp.rootOverride = rootMatrixScratch;
         sp.parachute = proxy;
+        sp.facing = player.parachute.heading ?? player.a;
         sp.elevation = g.position.y;
         return sp;
       }
@@ -2325,7 +2362,7 @@
           }
           const spec = specialSpec(p),
             s = stateFor(p);
-          drawSpecial(p, s, deltaSeconds, isPlayer ? Math.max(detail, 1) : detail, spec);
+          drawCrowdPerson(p, s, deltaSeconds, isPlayer ? Math.max(detail, 1) : detail, spec);
           drawn++;
         }
         drawEnterCar(deltaSeconds, detail);
@@ -2342,30 +2379,22 @@
         flushCrowdParts();
         return drawn;
       }
-      /* A special character: swimming and parachute limbs are set after the pose eases. */
-      function drawSpecial(p, s, deltaSeconds, detail, spec) {
-        if (spec.swim || spec.parachute) {
-          // Pose, then override the limbs, then pack (the easing would fight the stroke).
-          const J = s.joints;
-          crowdPoseTargets(p, s, poseTarget, gameTime + s.seed, spec, null);
-          J.set(poseTarget);
-          applyLimbOverrides(spec, J);
-          drawPosedOverride(p, s, detail, spec);
-          return;
-        }
-        drawCrowdPerson(p, s, deltaSeconds, detail, spec);
+      /**
+       * Measures for DeadEndCity.scaleReport: the rig's standing height at
+       * look.height 1, and a person's drawn extents ({ l, w, h }, map units).
+       */
+      function crowdRigHeight() {
+        return PERSON_HEIGHT;
       }
-      /* Pack a person whose joints were set directly (swimming, parachuting). */
-      function drawPosedOverride(p, s, detail, spec) {
-        const J = s.joints,
-          saved = J.slice();
-        // drawCrowdPerson eases towards its own targets; hand it the set pose as
-        // the target by drawing with zero time and restoring the override.
-        const originalTargets = crowdPoseTargets;
-        overridePose = saved;
-        drawCrowdPerson(p, s, 0, detail, spec);
-        overridePose = null;
-        void originalTargets;
+      function personExtents(p) {
+        if (!p || !(p === player || pedestrians.includes(p) || renderPeople.includes(p))) return null;
+        const look = p === player || !p.look ? specialLook(p) : p.look,
+          R = compiledLook(look, p),
+          H = R.height * RIG_UNIT;
+        return { l: 2.3 * H * R.width, w: 3.9 * H * R.width, h: 14 * H };
       }
-      let overridePose = null;
+      function personStature(p) {
+        const look = p.look || (renderPeople.includes(p) ? specialLook(p) : null);
+        return look ? compiledLook(look, p).height * PERSON_HEIGHT : null;
+      }
       // END SUBSYSTEM: src/crowd3d.js
