@@ -1240,6 +1240,20 @@
           slopePitch: 0,
           slopeRoll: 0,
           offroadState: null,
+          // Off-road (offroad.js): the reused terrain record, how far the driven
+          // wheels spin ahead of the ground (0..1 and in u/s), the mud and rock
+          // under them, low range, the last rock ledge, the mud on the body (and
+          // how wet it is), the 4x4 club slot it was parked in.
+          terrainRecord: null,
+          wheelSpin: 0,
+          spinSpeed: 0,
+          surfaceMud: 0,
+          surfaceRock: 0,
+          lowRange: false,
+          ledge: -1,
+          mudCoat: 0,
+          mudWet: 0,
+          clubSlot: -1,
           loadSpeed: null,
           loadPitch: 0,
           loadRoll: 0,
@@ -2254,6 +2268,8 @@
         interactRooftop()
       )
         return;
+      // The hill climb at the 4x4 club's sign, from a vehicle (offroad.js).
+      if (offroadClubInteract()) return;
       if (player.car) {
         if (garageInteract()) return;
         exitCar();
@@ -3267,6 +3283,8 @@
         timed('civic', () => updateCivic(deltaSeconds));
         timed('roofencounter', () => updateRoofEncounter(deltaSeconds));
         timed('military', () => updateMilitary(deltaSeconds));
+        // The 4x4 club, body mud and the hill climb (offroad.js).
+        timed('offroad', () => updateOffroad(deltaSeconds));
         updatePlayerArmor(deltaSeconds);
         updatePlayerApache(deltaSeconds);
         timed('combat', () => updateCombat(deltaSeconds));
@@ -5175,6 +5193,7 @@
     // @include src/sidejobs.js
     // @include src/streets.js
     // @include src/terrain.js
+    // @include src/offroad.js
     // @include src/casino.js
     // @include src/skyline.js
     // @include src/renewal.js
@@ -5483,6 +5502,20 @@
       // each trail's length, summit and steepest graded pitch, scenery counts and
       // the outcrops' footing. Terrain tests read it alongside probe().
       terrain: () => terrainReport(),
+      // The 4x4 club and the trails (offroad.js): the lot and its clearances, the
+      // club trucks, the members, the player's traction state, the hill climb.
+      offroad: () => offroadReport(),
+      clubLineup: (x, y) => clubLineup(x, y),
+      // 'state', 'arm', 'reset', 'clear' (records), 'gate' or 'cp0'..'cp2' (move the player's vehicle there).
+      hillClimb: (action, trail) => hillClimbConsole(action, trail),
+      // Set the mud on the player's vehicle (0..1) and how wet it is.
+      mud: (amount = 1, wet = 1) => {
+        const c = player.car;
+        if (!c) return null;
+        c.mudCoat = clamp(amount, 0, 1);
+        c.mudWet = clamp(wet, 0, 1);
+        return { mudCoat: c.mudCoat, mudWet: c.mudWet };
+      },
       // The current mission in full: target (with altitude), timer, the mission
       // vehicles, its guards and actors, and each job's own list of points.
       missionTargets() {

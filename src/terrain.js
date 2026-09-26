@@ -568,6 +568,8 @@
       for (const line of RAIL_LINES) rasterizePolyline(flat, field, line.route, 40);
       for (const t of COUNTY_TOWNS) rasterizeRect(flat, field, t.x - 90, t.y - 90, BLOCK_SIZE * 2 + 180, BLOCK_SIZE * 2 + 180);
       rasterizePolyline(flat, field, [[FLIGHT.pickup.x, FLIGHT.pickup.y], [FLIGHT.pickup.x, FLIGHT.pickup.y]], 150);
+      // Level pads the plan cuts into the hillside (the 4x4 club's lot, offroad.js).
+      for (const pad of offroadTerrainPads()) rasterizeRect(flat, field, pad.x, pad.y, pad.w, pad.h);
       lap('masks');
       const flatDistance = gridDistance(flat, cols, rows, TERRAIN_CELL),
         seaDistance = gridDistance(sea, cols, rows, TERRAIN_CELL),
@@ -722,8 +724,12 @@
         heights[i] = land[i] ? Math.max(0, smoothMin(heights[i], cap, 60)) : 0;
       }
       // 5. Trails: graded, cut and filled, with a level platform at the top.
-      const trailMask = new Float32Array(count);
-      for (const trail of MOUNTAIN_TRAILS) {
+      const trailMask = new Float32Array(count),
+        // Per vertex: distance to the nearest carriageway, its path sample and trail (+1), for the mud (offroad.js).
+        trailNear = new Float32Array(count).fill(1e9),
+        trailSegment = new Int16Array(count).fill(-1),
+        trailOwner = new Uint8Array(count);
+      for (const [trailIndex, trail] of MOUNTAIN_TRAILS.entries()) {
         const { points } = trail;
         if (points.every(([x, y]) => x < x0 || x > field.x1 || y < y0 || y > field.y1)) continue;
         // Resample every ~12 units, read the relief under it, smooth, then grade.
@@ -849,6 +855,11 @@
             const near = Math.min(Math.sqrt(nearest[i]), Math.max(0, padReach)),
               far = Math.sqrt(other[i]),
               platform = Math.hypot(x0 + c * TERRAIN_CELL - top[0], y0 + r * TERRAIN_CELL - top[1]);
+            if (near < reach && near < trailNear[i]) {
+              trailNear[i] = near;
+              trailSegment[i] = nearestSegment[i];
+              trailOwner[i] = trailIndex + 1;
+            }
             let goal = target[i],
               w = 0;
             if (near > half && near < reach && far < reach) {
@@ -873,6 +884,8 @@
             }
           }
       }
+      // Mud, rock and the trail's own frame per vertex (offroad.js).
+      offroadTrailBake(field, trailNear, trailSegment, trailOwner);
       lap('trails');
       // The surface: exact Float32 vertices; a triangle exists where all three
       // corners are land and one is above street level.
@@ -957,24 +970,26 @@
           t.hairpins.some(([hx, hy]) => Math.hypot(x - hx, y - hy) < HAIRPIN_PAD),
       );
     }
+    /* The ground under a road vehicle on the range (null off it): height, the
+       gradient, its components along and across the heading, whether it is on a
+       trail. One record per vehicle, rewritten each call (this runs every physics
+       step); the traction itself is offroadDrive (offroad.js). */
     function roadVehicleTerrain(vehicle) {
       const z = terrainHeight(vehicle.x, vehicle.y);
       if (z < 0.2 && !mountainAt(vehicle.x, vehicle.y)) return null;
-      const slope = terrainSlope(vehicle.x, vehicle.y),
-        along = slope.x * Math.cos(vehicle.a) + slope.y * Math.sin(vehicle.a),
-        cross = -slope.x * Math.sin(vehicle.a) + slope.y * Math.cos(vehicle.a),
-        trail = onMountainTrail(vehicle.x, vehicle.y),
-        offroadCapable = !!vehicleSpec(vehicle).offroad;
-      return {
-        z,
-        slope,
-        along,
-        cross,
-        trail,
-        four: offroadCapable,
-        traction: offroadCapable ? (trail ? 0.92 : 0.68) : trail ? 0.26 : 0.12,
-        limit: offroadCapable ? (trail ? 110 : 65) : trail ? 48 : 25,
-      };
+      const t = vehicle.terrainRecord || (vehicle.terrainRecord = { z: 0, slope: { x: 0, y: 0 }, along: 0, cross: 0, trail: false, four: false, limit: 0 }),
+        slope = t.slope,
+        cos = Math.cos(vehicle.a),
+        sin = Math.sin(vehicle.a);
+      slope.x = (terrainHeight(vehicle.x + 3, vehicle.y) - terrainHeight(vehicle.x - 3, vehicle.y)) / 6;
+      slope.y = (terrainHeight(vehicle.x, vehicle.y + 3) - terrainHeight(vehicle.x, vehicle.y - 3)) / 6;
+      t.z = z;
+      t.along = slope.x * cos + slope.y * sin;
+      t.cross = -slope.x * sin + slope.y * cos;
+      t.trail = offroadSurfaceAt(vehicle.x, vehicle.y, offroadSurface).across < 1.15;
+      t.four = !!vehicleSpec(vehicle).offroad;
+      t.limit = 200 * KMH;
+      return t;
     }
     function terrainVehiclePose(vehicle, h) {
       if (isAircraft(vehicle) || isBoat(vehicle)) return;
@@ -986,20 +1001,31 @@
       vehicle.poseA = vehicle.a;
       const t = roadVehicleTerrain(vehicle);
       vehicle.groundHeight = t?.z || 0;
-      vehicle.slopePitch = Math.atan(t?.along || 0);
-      vehicle.slopeRoll = -Math.atan(t?.cross || 0);
       vehicle.offroadState = t;
+      if (t) {
+        // The body sits on its four wheels, not on the slope at its middle: pitch
+        // from the axles' heights, roll from the two sides' (a truck straddling a
+        // rut or a ledge leans as it would).
+        const spec = vehicleSpec(vehicle),
+          cos = Math.cos(vehicle.a),
+          sin = Math.sin(vehicle.a),
+          ax = spec.l * 0.3,
+          az = spec.w * 0.42,
+          h = (f, s) => terrainHeight(vehicle.x + cos * f * ax - sin * s * az, vehicle.y + sin * f * ax + cos * s * az),
+          fl = h(1, -1),
+          fr = h(1, 1),
+          rl = h(-1, -1),
+          rr = h(-1, 1);
+        vehicle.slopePitch = Math.atan((fl + fr - rl - rr) / (4 * ax));
+        vehicle.slopeRoll = -Math.atan((fr + rr - fl - rl) / (4 * az));
+      } else {
+        vehicle.slopePitch = 0;
+        vehicle.slopeRoll = 0;
+      }
       if (vehicle === player.car && t?.z > 10) {
         const peak = mountainAt(vehicle.x, vehicle.y);
-        if (
-          peak?.name &&
-          distanceBetween(vehicle, peak) < 48 &&
-          !vehicle.summits?.includes(peak.name)
-        ) {
-          vehicle.summits = vehicle.summits || [];
-          vehicle.summits.push(peak.name);
-          announce('SUMMIT REACHED', peak.name, 4);
-        }
+        // SUMMIT REACHED, with the hill climb's time (offroad.js).
+        if (peak?.name && distanceBetween(vehicle, peak) < 48) offroadSummit(vehicle, peak);
       }
     }
     /**

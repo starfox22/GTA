@@ -2768,6 +2768,11 @@
       waiter: 'wait',
       hailer: 'wave',
       worker: 'carry',
+      // The 4x4 club (offroad.js).
+      clubGrill: 'serve',
+      clubChat: 'chat',
+      clubSit: 'sit',
+      clubArms: 'arms',
     };
     function updateSceneMember(p, deltaSeconds) {
       const spot = p.sceneSpot;

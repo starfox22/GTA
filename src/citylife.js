@@ -1593,6 +1593,7 @@
       }
       roofMissionUI();
       militaryUI();
+      offroadClubUI();
     }
     function drawCivicMap(drawingContext, big) {
       for (const p of PLACES) {

@@ -1191,6 +1191,7 @@
       // @include src/apache3d.js
       // @include src/vehicles3d.js
       // @include src/police3d.js
+      // @include src/offroad3d.js
       // @include src/plane3d.js
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
@@ -1249,6 +1250,8 @@
         if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
         if (vehicle.type === 'plane') return makePlane(vehicle);
         if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
+        // The 4x4 club's trucks (offroad3d.js).
+        if (vehicleSpec(vehicle).clubModel) return makeOffroadVehicle(vehicle);
         if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
         if (vehicle.type === 'helicopter') return vehicle.airframe === 'apache' ? makeApache(vehicle) : makeHelicopter(vehicle);
         if (vehicleSpec(vehicle).bike) return makeMotorcycle(vehicle);
@@ -2572,6 +2575,9 @@
             }
             // Flash patterns, wig-wag, halos (police3d.js).
             if (m.police) animatePoliceVehicle(c, m);
+            // Club trucks: wheel spin, steering, articulation, light bars; mud on any body (offroad3d.js).
+            if (m.offroad) animateOffroadVehicle(c, m, deltaSeconds);
+            else if (c.mudCoat > 0.01 || m.mudUniforms) applyVehicleMud(c, m);
             for (let i = 0; i < m.strobes.length; i++)
               m.strobes[i].material.color.copy(
                 cachedColor(
@@ -2590,6 +2596,8 @@
           lap = profileLap('r:vehicles', lap);
           // Every craft on the water has reported in: draw the wake map (wakes3d.js).
           updateWakes(deltaSeconds);
+          // Mud and dust from the tyres, splats and tyre tracks, the 4x4 club's flag and smoke (offroad3d.js).
+          updateOffroadVisuals(deltaSeconds);
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;
