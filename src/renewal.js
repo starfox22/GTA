@@ -308,7 +308,8 @@
         if (route.some((q, k) => k && segmentDistance(x, y, route[k - 1], q) < 24)) continue;
         if (((j * 31) % 100) / 100 > groveChance) continue;
         if (trees.some((t) => Math.hypot(t.x - x, t.y - y) < 26)) continue;
-        const t = { x, y, r: 13 + (j % 6) * 2, blossom: j % 4 === 0 };
+        // `park` and `nearPond` choose the species (vegetation3d.js: willows by the water).
+        const t = { x, y, r: 13 + (j % 6) * 2, blossom: j % 4 === 0, park: 'commons', nearPond: parkPondBlocked(x, y, 70) };
         drawTree(x, y, t.r);
         Object.assign(trees[trees.length - 1], t);
         planted++;
@@ -334,6 +335,8 @@
             r: 12 + (j % 5) * 2,
             blossom: ['pond', 'orchard', 'commons'].includes(p.kind) && j % 3 === 0,
             tropical: p.kind === 'botanic',
+            park: p.kind,
+            nearPond: parkPondBlocked(x, y, 60),
           };
           drawTree(x, y, t.r);
           Object.assign(trees[trees.length - 1], t);

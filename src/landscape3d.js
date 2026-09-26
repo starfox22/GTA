@@ -56,7 +56,7 @@
           if (!next) return;
           const cx = (x + 16 + next) / 2;
           flowerBed(cx, midY, 64, 16, 7 + i * 3);
-          for (const side of [-1, 1]) plantTree({ x: cx + side * 86, y: midY, r: 14 + ((i + side + 2) % 3) * 1.5, blossom: (i + side) % 3 === 0 }, i * 2 + side);
+          for (const side of [-1, 1]) plantTree({ x: cx + side * 86, y: midY, r: 14 + ((i + side + 2) % 3) * 1.5, blossom: (i + side) % 3 === 0, park: 'battery' });
         });
         // The Great Lawn (renewal.js COMMONS): picnic blankets and baskets.
         const lawn = COMMONS.lawn,

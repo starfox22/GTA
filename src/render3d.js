@@ -805,12 +805,15 @@
         if (breakablesFlushed) return;
         breakablesFlushed = true;
         for (const bucket of breakableBuckets.values()) {
-          const im = new Three.InstancedMesh(bucket.geometry, bucket.material, bucket.parts.length);
-          im.name = 'breakable scenery';
+          // Trees (vegetation3d.js) carry per-instance tint, morph and density.
+          const foliage = !!bucket.geometry.userData.foliage,
+            im = foliage ? foliageInstances(bucket.geometry, bucket.parts.length) : new Three.InstancedMesh(bucket.geometry, bucket.material, bucket.parts.length);
+          if (!foliage) im.name = 'breakable scenery';
           im.castShadow = bucket.castShadow;
           im.receiveShadow = true;
           bucket.parts.forEach((part, i) => {
             im.setMatrixAt(i, part.matrix);
+            if (foliage) setFoliageInstance(im, i, part.source.userData.foliageTint, part.source.userData.foliageMorph, part.source.userData.foliageDensity);
             if (part.prop) linkPropInstance(part.prop, im, i);
             // The far city keeps an intact copy of every piece.
             noteFarScenery(part.source);
@@ -821,82 +824,15 @@
           im.boundingSphere.radius += 90;
           breakableCell(bucket.cx, bucket.cz).group.add(im);
           farHidden.push(im);
+          if (foliage) noteFoliageLod(im);
         }
         breakableBuckets.clear();
       }
-      // A palm's seven fronds as one geometry at size 1 (makePalm, world3d.js,
-      // scales the whole palm), made on first use.
-      let palmFrondGeometry = null;
-      // Trees' heights over their plan radius (plantTree) and a palm's trunk past its
-      // crown's design height (world3d.js makePalm): set before the trees are planted.
-      const TREE_RISE = 1.6,
-        PALM_LIFT = 42;
-      // Street trees with proper trunks and layered crowns.
+      // Street trees, park trees and palms: the species library (vegetation3d.js).
+      // @include src/vegetation3d.js
+      // (Still in surfaces3d.js's list of swaying materials.)
       const blossomMat = mat('#d5a2b5');
-      // A crown lobe: 80 smooth-shaded faces read as foliage at street zoom (five
-      // per tree, every tree drawn from instanced cells, BREAKABLE SCENERY).
-      const leafGeo = new Three.IcosahedronGeometry(1, 1),
-        trunkGeo = new Three.CylinderGeometry(0.9, 1.9, 1, 8),
-        // A pine's tiers are one unit cone scaled per tier (one draw for them all).
-        pineTierGeo = new Three.ConeGeometry(1, 1, 8);
-      trees.forEach((t, i) => plantTree(t, i));
-      // One tree of the plan (or a renderer-only one, landscape3d.js): a palm on the
-      // Keys, otherwise a trunk, limbs and a crown of lobes; a breakable prop drawn
-      // as instances (BREAKABLE SCENERY).
-      function plantTree(t, i) {
-        if (t.tropical ?? (onPalmKeys(t.x) && !t.county)) {
-          t.prop = makePalm(t.x, t.y, t.r / 17);
-          return;
-        }
-        const group = new Three.Group();
-        group.position.set(t.x, terrainHeight(t.x, t.y), t.y);
-        t.prop = treeProp(t);
-        // Tapered trunk with a root flare, two main limbs, and a layered crown of
-        // five offset lobes so the canopy reads as foliage rather than a ball.
-        // Heights run TREE_RISE over the plan's crown radius: a street tree of r 15
-        // stands about 7 m, its crown lifted clear of a person walking under it.
-        const rise = TREE_RISE;
-        mesh(trunkGeo, wood, group, 0, t.r * 0.8 * rise, 0, 1.2, t.r * 1.6 * rise, 1.2);
-        if (!t.pine) {
-          for (const a of [0.7, 3.4]) {
-            // The trunk's tapered cylinder, so trunk and limbs are one draw.
-            const limb = mesh(trunkGeo, wood, group, Math.cos(a) * t.r * 0.25, t.r * 1.45 * rise, Math.sin(a) * t.r * 0.25, 0.45, t.r * 0.9 * rise, 0.45);
-            limb.rotation.set(Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5);
-          }
-        }
-        const lobes = t.pine ? 4 : 5;
-        for (let j = 0; j < lobes; j++) {
-          const a = j * 2.399 + i * 0.7;
-          if (t.pine)
-            mesh(
-              pineTierGeo,
-              leafMats[(i + j) % 3],
-              group,
-              0,
-              t.r * (1.3 + j * 0.55) * rise,
-              0,
-              t.r * (0.95 - j * 0.16),
-              t.r * 1.2 * rise,
-              t.r * (0.95 - j * 0.16),
-            );
-          else {
-            const spread = j === 0 ? 0 : t.r * 0.42,
-              lift = j === 0 ? t.r * 0.35 : (j % 2) * t.r * 0.22;
-            mesh(
-              leafGeo,
-              t.blossom && j % 2 ? blossomMat : leafMats[(i + j) % 3],
-              group,
-              Math.cos(a) * spread,
-              t.r * 1.75 * rise + lift,
-              Math.sin(a) * spread,
-              t.r * (j === 0 ? 0.95 : 0.7),
-              t.r * (j === 0 ? 0.8 : 0.62) * 1.25,
-              t.r * (j === 0 ? 0.95 : 0.7),
-            );
-          }
-        }
-        breakableGroup(t.prop, group);
-      }
+      trees.forEach((t) => plantTree(t));
       // Lamps, illuminated signs and street furniture.
       const haloCanvas = document.createElement('canvas');
       haloCanvas.width = haloCanvas.height = 64;
@@ -2160,6 +2096,9 @@
         crowdRigHeight: () => crowdRigHeight(),
         // People's share of the frame (crowd3d.js): parts, draw calls, triangles.
         crowdStats: (byPart) => crowdStats(byPart),
+        // Trees (vegetation3d.js): species counts, the forests, tree draws in view.
+        vegetation: () => vegetationReport(),
+        treeLineup: (x, y, spacing, lod, perRow) => treeLineup(x, y, spacing, lod, perRow),
         crowdBenchmark: (frames) => crowdBenchmark(frames),
         // A person's drawn height from the soles to the crown (their compiled look), in map units.
         personStature: (p) => personStature(p),
@@ -2401,6 +2340,8 @@
           lap = profileLap('r:scenery', lap);
           placeSun();
           updateFarScenery();
+          // Tree levels of detail and wind (vegetation3d.js), after the far city's switch.
+          updateVegetation(deltaSeconds);
           // Scenery groups inside the visible ground footprint (flight-view3d.js);
           // small ones drop out once they would only be a few pixels across. Most
           // hang from a cell group (STATIC CELLS): a cell out of reach is hidden
