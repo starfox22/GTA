@@ -264,8 +264,14 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     One InstancedMesh per body part, layered poses, stride, dogs and scene props.
   src/clouds3d.js: Volumetric clouds and cloud shadows
     Ray-marched cumulus at 600-950 m over a 3D noise volume, and their shadows on the city.
+  src/ground-data3d.js: Ground shader data
+    Detail layers (texture array), carriageway fields (kerb distance, style, lanes), marks (road markings, covers, grates, tree bases) in a world grid.
   src/surfaces3d.js: Procedural surface detail
-    Ground shader detail (asphalt, paving, grass), rain puddles, county ground, foliage sway.
+    Patches the ground sheets with the ground materials, wet-road light, foliage sway.
+  src/ground-shader3d.js: Ground materials (GLSL)
+    Sheet magnification, classes, asphalt, kerbs, paving by district, lawns, gravel, sand, marks, bump and roughness, wet roads.
+  src/grass3d.js: Grass tufts
+    Instanced blades on the lawns near the view (HIGH/ULTRA, close zoom), placed and coloured from the ground sheet.
   src/helicopter3d.js: Helicopter meshes
   src/apache3d.js: The AH-64 attack helicopter model (lofted airframe, pods, Hellfires, chin gun)
     Airframe, rotor, lights and cockpit.

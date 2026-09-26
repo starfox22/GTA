@@ -1613,6 +1613,11 @@
     // canvas rasterisation at start-up.
     const GROUND_PIXELS_PER_UNIT =
       (typeof THREE !== 'undefined' && typeof WebGL2RenderingContext !== 'undefined' ? 768 : 3072) / CITY_SIZE;
+    // With the 3D renderer there, the road markings (lane dashes, crossings, stop
+    // lines) are drawn by its ground shader from data (streets.js ROAD MARKINGS,
+    // ground-marks3d.js), crisp at any zoom; the baked 3D ground sheets leave them
+    // out. The maps and the 2D view paint them as before.
+    const VECTOR_GROUND_MARKINGS = typeof THREE !== 'undefined' && typeof WebGL2RenderingContext !== 'undefined';
     const groundCanvas = document.createElement('canvas');
     groundCanvas.width = Math.ceil(CITY_WIDTH * GROUND_PIXELS_PER_UNIT);
     groundCanvas.height = Math.ceil(CITY_HEIGHT * GROUND_PIXELS_PER_UNIT);
@@ -5337,7 +5342,7 @@
       if (gameMode !== 'play') return;
       if (is('zoomIn') || is('zoomOut') || is('zoomReset')) {
         e.preventDefault();
-        setWorldZoom(is('zoomReset') ? 1 : worldZoomTarget * (is('zoomOut') ? 1 / 1.25 : 1.25));
+        setWorldZoom(is('zoomReset') ? STREET_ZOOM : worldZoomTarget * (is('zoomOut') ? 1 / 1.25 : 1.25));
         return;
       }
       if (is('bail')) {
@@ -6935,6 +6940,7 @@
       // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
       // 'bloom'; nothing for the image) to tune the post-processing.
       postView: (mode) => city3D?.postView?.(mode) ?? null,
+      groundDetail: () => city3D?.groundReport?.() ?? null,
       // The helicopter searchlight's state, screen points and shaft / pool switches.
       searchlight: (options) => city3D?.searchlight?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).

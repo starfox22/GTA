@@ -205,11 +205,15 @@ Two closures matter:
   rolls, flaps 1, rotating at the airframe's speed: courier 236 m (lift-off ~116 km/h), jet
   504 m (~180), airliner 794 m (~207); landing rolls from touchdown at that speed with full
   brakes 103 / 253 / 368 m. The runways (section 4, "Airfields") are sized from these.
-- **Camera**: the street view starts at `STREET_ZOOM` 1.2 (world-view.js; the wheel reaches
-  0.14-1.8), so true-size cars and people read about as large as the old oversized ones.
-  The street camera stands clear of the tallest roof (`streetCeiling()`), and the sun's shadow
-  box reaches that high too. From about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js,
-  to 0.68 of the player's zoom by 220 km/h) and the look-ahead is about 0.45 s of travel.
+- **Camera**: the street view starts at `STREET_ZOOM` 1.6 (world-view.js; the wheel and the
+  zoom keys reach `STREET_ZOOM_MIN` 0.14 to `STREET_ZOOM_MAX` 3.0, the reset key goes back to
+  1.6): people read bigger than at the old 1.2, over about 43 m of street top to bottom on a
+  16:10 screen, and the ground holds up that close (ground-shader3d.js). The street camera
+  stands clear of the tallest roof (`streetCeiling()`), and the sun's shadow box reaches that
+  high too. From about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js):
+  by 220 km/h to 0.68 of the player's zoom or to `DRIVE_ZOOM_FAR` 0.82, whichever is wider, so
+  at speed the road ahead shows as it did from the old default; the look-ahead is about 0.45 s
+  of travel.
 
 ## 3. Subsystem map
 
@@ -354,7 +358,10 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | character-rig3d.js | The character rig's parts, lofted from rings at real height (`rigLoft`): head with a face hint, seven hair styles, cap / patrol cap / helmet / sun hat / hard hat, male and female torso, pelvis, limbs, hands, shoe and boot, skirt, collar, hood, plate carrier / hi-vis vest, duty belt, backpack, weapons (`WEAPON_HOLDS`), POLICE / FED lettering; the region paint shader (`rigPaintPatch`: four packed colours and a per-region mask per instance, patterns, the player's night rim), `TORSO_MASKS` (tee, tank, bikini, jacket, suit, uniform, hoodie, dress...) |
 | crowd3d.js | Everyone on foot from the rig's instanced parts: looks compiled to parts and paints (`compileLook`, by role and district), OUTFITS for the player, police, traffic officers, SWAT, agents, soldiers, gangs, mobsters, guests, beachgoers, athletes and riders (`outfitLook`); the skeleton, layered poses and the planted-foot gait (`drawCrowdPerson`, `solveLeg`), turning on the spot, weapon holds by two-bone IK (`HOLD_POSES`, `drawHold`, `ikArm`) with recoil and reload, swim strokes, parachute, car and pool transitions, a rider thrown off a bike (riders.js `thrown`, `ejected.rider`) (`specialSpec`), still figures replayed from recorded instances, RIDERS on bikes and jet skis (`queueRider`), BEACHGOERS, ATHLETES (`queueAthlete`), close-up / street / far body sets, dogs and scene props; `crowdStats()` |
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
-| surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
+| ground-data3d.js | The ground materials' data: the detail layers (`groundDetail`, a texture array of tiling detail: the ground atlas's photographed asphalt and lawn at true scale, concrete grain, broom streaks, granite speckle, gravel, sand, mulch), the carriageway fields (`buildGroundField`: the signed distance to the nearest kerb as a half-float texture, 4 units a texel in the city and on Monarch Isle, 6 in the county, and an info texture with the paving style `GROUND_STYLE`, the lane width and park lawns), and the MARKS (`buildGroundMarks`: every road marking, manhole cover, gully grate, tree base and stop-line oil stain as a record in a 32-unit grid over the world); `groundDataReport` |
+| surfaces3d.js | Patches the ground sheets' materials with the ground materials (`groundDetailPatch`, GROUND MATERIAL UNIFORMS: per sheet its field and default style), the wet look's light and output chunks, foliage sway, `updateSurfaces` |
+| ground-shader3d.js | (included by surfaces3d.js) The ground materials' GLSL: sheet magnification (painted edges re-cut crisp), classes (asphalt, lawn, loose, paving, coloured surfacing), asphalt (aggregate, patches, sealed and hairline cracks, wheel-path polish and lane oil, gutter pans), kerbs (stone, arris, face, joints), paving by district, lawns (photo grass, clumps, mowing stripes, flower beds), gravel with edging and pond margins, sand with ripples and footprints, the marks, the height bump and roughness, WET ROADS, rain rings on the puddles |
+| grass3d.js | Grass tufts on the lawns (HIGH / ULTRA, street zoom past ~1.75): one instanced draw on a world-anchored 2.6-unit grid round the view, each tuft placed and coloured from the ground sheet in the vertex shader, swaying in the wind (`updateGrassTufts`) |
 | helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, military), a light single (Bell 407 / H125 class) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface, per-pixel canvas liveries, glyph decals, cabin and crew, merged trim / lamps per look; four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Trucks and buses (`makeTruck`), bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
@@ -389,8 +396,8 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - `WORLD_LEFT..WORLD_SIZE` x `WORLD_TOP..WORLD_SIZE` (-5120..11264 x -8192..11264) is the world
   box: the sea, the city map, the water shader's shore field (`SHORE_RES` 768 texels across).
 - The city frame `CITY_LEFT..CITY_RIGHT` x `CITY_TOP..CITY_SIZE` (-3584..3712 x -4224..5632) is
-  what the baked ground textures (game.js `groundCanvas`, render3d.js terrain and roughness
-  sheets), the night light map (lighting3d.js) and the street grid cover: Palm Keys, Palm Sound
+  what the baked ground textures (game.js `groundCanvas`, render3d.js terrain sheet and the
+  ground shader's city carriageway field, ground-data3d.js), the night light map (lighting3d.js) and the street grid cover: Palm Keys, Palm Sound
   and Northbank. Anything past `CITY_SIZE` in x or y is county (`x > CITY_SIZE || y > CITY_SIZE`
   tests stay valid; the county starts east of x 5632). Ground outside the city frame comes in
   tiles (`countyGroundTiles`, each `{x, y, w, h, canvas}`): three county tiles and the Sunset
