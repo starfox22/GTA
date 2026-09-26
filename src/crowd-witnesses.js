@@ -62,7 +62,9 @@
       if (p.react && CALL_BLOCKING.has(p.react.kind)) return false;
       // A carjacked driver still chasing the car or shouting at it (carjack.js).
       if (p.angryUntil > gameTime || p.witnessUntil > gameTime) return false;
-      return Math.abs(p.x - player.x) > 140 || Math.abs(p.y - player.y) > 140 || distanceBetween(p, player) > 140;
+      // Clear of the player, and near enough to be simulated (updatePeople runs 1,500 units round).
+      const d = distanceBetween(p, player);
+      return d > 140 && d < 1400;
     }
     /**
      * THE DIRECTOR (four times a second)
