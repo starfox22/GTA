@@ -422,6 +422,18 @@
           screenFrame: tint('#0c0d0f', 'gloss'),
         };
         const bx = (x, y, z, w, h, d, m, parent = hall) => box(parent, x, y, z, w, h, d, m);
+        // A raised stone ring round a turntable: the cars stand on the flush disc
+        // inside it, so nothing buries their wheels.
+        const ring = (x, z, inner, outer, h, m) => {
+          const profile = [
+            [inner, 0],
+            [inner, h],
+            [outer - 1, h],
+            [outer, h * 0.4],
+            [outer, 0],
+          ].map(([r, y]) => new Three.Vector2(r, y));
+          return mesh(new Three.LatheGeometry(profile, 72), m, hall, x, 0, z);
+        };
         // ---- Floor ----
         const floor = new Three.Mesh(new Three.PlaneGeometry(H.w, H.h), dealerMaterials.floor);
         floor.rotation.x = -Math.PI / 2;
@@ -491,7 +503,7 @@
         backdrop.position.set(st.x, 22, H.y + 2);
         moving.add(backdrop);
         bx(st.x, 22, H.y + 1.2, 116, 34, 1, T.screenFrame);
-        hall.add(mesh(new Three.CylinderGeometry(st.r + 6, st.r + 8, 1.2, 64), T.granite, hall, st.x, 0.6, st.y));
+        ring(st.x, st.y, st.r + 0.8, st.r + 9, 1.4, T.granite);
         bx(F.stageWall.x + F.stageWall.w / 2, 12, F.stageWall.y + 1.5, F.stageWall.w, 24, 3, T.stoneDark);
         // The curtain track over the stage's front.
         const C = DEALER.curtain;
@@ -544,14 +556,13 @@
         bx(Bar.x + Bar.w / 2, 4.6, Bar.y + Bar.h / 2, Bar.w, 9.2, Bar.h, T.marble);
         bx(Bar.x + Bar.w / 2, 9.4, Bar.y + Bar.h / 2, Bar.w + 3, 0.6, Bar.h + 2, tint('#e8e2d6', 'pearl'));
         bx(Bar.x - 0.3, 2, Bar.y + Bar.h / 2, 0.4, 0.6, Bar.h - 4, dealerMaterials.led);
-        const bottles = new Three.Mesh(dealerAtlasPlane(Bar.h - 10, 22, 512, 320, 256, 128, 1024, 512), dealerMaterials.sign);
-        bottles.position.set(H.x1 - 0.8, 16, Bar.y + Bar.h / 2);
-        bottles.rotation.y = -Math.PI / 2;
+        const bottles = new Three.Mesh(dealerAtlasPlane(Bar.w - 10, 22, 512, 320, 256, 128, 1024, 512), dealerMaterials.sign);
+        bottles.position.set(Bar.x + Bar.w / 2, 17, H.y + 0.8);
         hall.add(bottles);
         for (let i = 0; i < 5; i++) {
-          const z = Bar.y + 14 + i * 18;
-          mesh(cylinderGeo, T.chrome, hall, Bar.x - 7, 3.2, z, 0.5, 6.4, 0.5);
-          mesh(cylinderGeo, T.leatherDark, hall, Bar.x - 7, 6.6, z, 2.4, 1, 2.4);
+          const x = Bar.x + 10 + i * 17;
+          mesh(cylinderGeo, T.chrome, hall, x, 3.2, Bar.y + Bar.h + 6, 0.5, 6.4, 0.5);
+          mesh(cylinderGeo, T.leatherDark, hall, x, 6.6, Bar.y + Bar.h + 6, 2.4, 1, 2.4);
         }
         // Plants in tall planters in the corners.
         const plant = (x, z, s = 1) => {
@@ -581,7 +592,7 @@
         dealerVisual.screenCanvas = screenCanvas;
         dealerVisual.screenTex = screenTex;
         const screen = new Three.Mesh(new Three.PlaneGeometry(CW.w - 4, 30), screenMat);
-        screen.position.set(CW.x + CW.w / 2, 19, CW.y + CW.h + 0.6);
+        screen.position.set(CW.x + CW.w / 2, 19, CW.y + CW.h + 0.3);
         moving.add(screen);
         bx(CW.x + CW.w / 2, 18, CW.y + CW.h / 2, CW.w, 36, CW.h, T.screenFrame);
         bx(CW.x + CW.w / 2, 1.2, CW.y + CW.h / 2, CW.w + 4, 2.4, CW.h + 8, T.granite);
@@ -589,8 +600,8 @@
         // ---- The hero dais: a raised stepped ring round the hero turntable ----
         for (const s of DEALER.slots) {
           if (!s.hero) continue;
-          mesh(new Three.CylinderGeometry(s.r + 12, s.r + 14, 1.4, 72), T.granite, hall, s.x, 0.7, s.y);
-          mesh(new Three.CylinderGeometry(s.r + 6, s.r + 8, 2.4, 72), T.white, hall, s.x, 1.2, s.y);
+          ring(s.x, s.y, s.r + 5, s.r + 11, 1.2, T.granite);
+          ring(s.x, s.y, s.r + 0.8, s.r + 5.2, 2.4, T.white);
         }
         // ---- Placards: a stand with the car's card beside every car on show ----
         for (const s of DEALER.slots) {
@@ -611,8 +622,8 @@
         }
         // ---- Forecourt: podiums, planters, flags, the pylon, the bay posts ----
         for (const p of F.podiums) {
-          mesh(new Three.CylinderGeometry(p.r, p.r + 2, 1.6, 56), T.granite, hall, p.x, 0.8, p.y);
-          mesh(new Three.CylinderGeometry(p.r - 4, p.r - 3, 1.8, 56), T.white, hall, p.x, 0.9, p.y);
+          ring(p.x, p.y, p.r - 9.2, p.r + 1, 1.8, T.white);
+          ring(p.x, p.y, p.r - 1, p.r + 2.5, 1, T.granite);
         }
         for (const pl of F.planters) {
           bx(pl.x + pl.w / 2, 3.4, pl.y + pl.h / 2, pl.w, 6.8, pl.h, T.planter);
@@ -1009,8 +1020,8 @@
         DEALER.slots.forEach((s, i) => {
           const c = s.car,
             a = c && c.dealerDisplay === s ? c.a : s.a;
-          dealerSet(discs, i, s.x, 0.3, s.y, s.r, 1, s.r, 0, -a, 0);
-          dealerSet(rims, i, s.x, s.hero ? 2.5 : 0.6, s.y, s.r + 0.4, s.r + 0.4, 1, Math.PI / 2, 0, 0);
+          dealerSet(discs, i, s.x, 0.15, s.y, s.r, 0.4, s.r, 0, -a, 0);
+          dealerSet(rims, i, s.x, 0.35, s.y, s.r + 0.4, s.r + 0.4, 1, Math.PI / 2, 0, 0);
           dealerSet(pools, i, s.x, 0.4, s.y, s.r * 3.2, s.r * 3.2, 1, -Math.PI / 2, 0, 0);
         });
         // The delivery stage: its own disc and rim, turning with the car on it.
@@ -1018,9 +1029,9 @@
           reveal = dealer.reveal,
           last = DEALER.slots.length,
           stageA = reveal?.car ? reveal.car.a : (gameTime * 0.1) % TAU;
-        dealerSet(discs, last, st.x, 1.4, st.y, st.r, 1, st.r, 0, -stageA, 0);
-        dealerSet(rims, last, st.x, 1.8, st.y, st.r + 0.4, st.r + 0.4, 1, Math.PI / 2, 0, 0);
-        dealerSet(pools, last, st.x, 1.6, st.y, st.r * 3, st.r * 3, 1, -Math.PI / 2, 0, 0);
+        dealerSet(discs, last, st.x, 0.15, st.y, st.r, 0.4, st.r, 0, -stageA, 0);
+        dealerSet(rims, last, st.x, 0.35, st.y, st.r + 0.4, st.r + 0.4, 1, Math.PI / 2, 0, 0);
+        dealerSet(pools, last, st.x, 0.4, st.y, st.r * 3, st.r * 3, 1, -Math.PI / 2, 0, 0);
         discs.instanceMatrix.needsUpdate = rims.instanceMatrix.needsUpdate = pools.instanceMatrix.needsUpdate = true;
         // The curtain: closed from the start of a delivery until it draws back.
         const open = reveal ? reveal.curtain : 1;

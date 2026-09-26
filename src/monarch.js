@@ -920,7 +920,7 @@
       for (const p of MONARCH_PAYPHONES) addBikeShareAnchor({ x: p.x + 60, y: p.y + 30, label: p.name });
       addBikeShareAnchor({ x: 8420, y: -1290, label: 'MONARCH HARBOUR' });
       addBikeShareAnchor({ x: 8110, y: -3700, label: 'BOTANIC GARDEN' });
-      addBikeShareAnchor({ x: 5740, y: -2830, label: 'SOVEREIGN BRIDGE' });
+      addBikeShareAnchor({ x: 5760, y: -2874, label: 'SOVEREIGN BRIDGE' });
     }
     /* The garden's iron railing round all four sides, broken at the gates, where
        bollards 12 units apart let people through and keep cars out. */

@@ -114,34 +114,34 @@
       ];
       DEALER.slots.forEach((s, i) => (s.id = i));
       const posts = {
-        receptionist: { x: H.x + 386, y: H.y + 322, a: Math.PI / 2 },
-        barista: { x: H.x + 582, y: H.y + 64, a: Math.PI },
+        receptionist: { x: H.x + 388, y: H.y + 331, a: Math.PI / 2 },
+        barista: { x: H.x + 531, y: H.y + 5, a: Math.PI / 2 },
         salesmen: [
           { x: H.x + 206, y: H.y + 128, a: Math.PI / 2 },
           { x: H.x + 356, y: H.y + 232, a: Math.PI / 2 },
-          { x: H.x + 486, y: H.y + 250, a: Math.PI },
+          { x: H.x + 482, y: H.y + 262, a: Math.PI },
         ],
         guards: [
           { x: DEALER.doorPeople.x0 - 14, y: H.y1 + 14, a: Math.PI / 2, kind: 'door' },
           { x: DEALER.doorPeople.x1 + 14, y: H.y1 + 14, a: Math.PI / 2, kind: 'door' },
           { x: DEALER.doorCars.x1 + 14, y: H.y1 + 16, a: Math.PI / 2, kind: 'door' },
-          { x: H.x + 120, y: H.y + 300, a: 0, kind: 'floor', patrol: [{ x: H.x + 120, y: H.y + 300 }, { x: H.x + 150, y: H.y + 200 }] },
-          { x: H.x + 540, y: H.y + 300, a: Math.PI, kind: 'floor', patrol: [{ x: H.x + 540, y: H.y + 300 }, { x: H.x + 500, y: H.y + 200 }] },
+          { x: H.x + 140, y: H.y + 310, a: 0, kind: 'floor', patrol: [{ x: H.x + 140, y: H.y + 310 }, { x: H.x + 140, y: H.y + 190 }] },
+          { x: H.x + 560, y: H.y + 330, a: Math.PI, kind: 'floor', patrol: [{ x: H.x + 560, y: H.y + 330 }, { x: H.x + 578, y: H.y + 250 }] },
         ],
       };
       DEALER.posts = posts;
       // Furniture the renderer draws and people walk round (also colliders).
       DEALER.furniture = {
-        reception: { x: H.x + 356, y: H.y + 328, w: 64, h: 18 },
-        bar: { x: H.x + 566, y: H.y + 16, w: 18, h: 100 },
-        sofaA: { x: H.x + 482, y: H.y + 50, w: 60, h: 12 },
-        sofaB: { x: H.x + 482, y: H.y + 62, w: 12, h: 50 },
-        sofaC: { x: H.x + 530, y: H.y + 106, w: 26, h: 12 },
-        table: { x: H.x + 506, y: H.y + 78, w: 22, h: 16 },
+        reception: { x: H.x + 356, y: H.y + 338, w: 64, h: 16 },
+        bar: { x: H.x + 486, y: H.y + 10, w: 90, h: 16 },
+        sofaA: { x: H.x + 482, y: H.y + 72, w: 60, h: 12 },
+        sofaB: { x: H.x + 482, y: H.y + 84, w: 12, h: 50 },
+        sofaC: { x: H.x + 528, y: H.y + 134, w: 30, h: 12 },
+        table: { x: H.x + 506, y: H.y + 100, w: 22, h: 16 },
         lounge: { x: H.x + 468, y: H.y + 8, w: H.w - 476, h: 162 },
         loungeRail: { x: H.x + 468, y: H.y + 166, w: 82, h: 4 },
-        config: { x: H.x1 - 6, y: H.y + 188, w: 4, h: 142 },
-        kiosk: { x: H.x + 552, y: H.y + 252, w: 10, h: 16 },
+        config: { x: H.x + 478, y: H.y + 212, w: 88, h: 4 },
+        kiosk: { x: H.x + 514, y: H.y + 236, w: 16, h: 10 },
         service: { x: H.x + 104, y: H.y + 250, w: 20, h: 44 },
         partition: { x: H.x + 130, y: H.y, w: 4, h: 122 },
         stageWall: { x: H.x + 8, y: H.y + 4, w: 118, h: 3 },
@@ -190,9 +190,9 @@
           DEALER.panes.push(pane);
         }
       }
-      for (const key of ['reception', 'bar', 'sofaA', 'sofaB', 'sofaC', 'table', 'loungeRail', 'kiosk', 'service', 'partition', 'stageWall']) {
+      for (const key of ['reception', 'bar', 'sofaA', 'sofaB', 'sofaC', 'table', 'loungeRail', 'kiosk', 'service', 'partition', 'stageWall', 'config']) {
         const r = F[key];
-        solid(r.x, r.y, r.w, r.h, key === 'partition' || key === 'stageWall' ? 3.2 * U : 1.1 * U, 'dealer ' + key);
+        solid(r.x, r.y, r.w, r.h, key === 'partition' || key === 'stageWall' || key === 'config' ? 3.2 * U : 1.1 * U, 'dealer ' + key);
       }
       for (const p of F.planters) solid(p.x, p.y, p.w, p.h, 0.9 * U, 'dealer planter');
       for (const f of F.flags) solid(f.x - 1.5, f.y - 1.5, 3, 3, 9 * U, 'dealer flag');
@@ -420,9 +420,10 @@
         if (rec.lostAt < 0) rec.lostAt = gameTime;
         const lost = gameTime - rec.lostAt,
           far = !onDealerLot(player.x, player.y, 500);
-        if (!far || lost < (rec.car ? 45 : 0)) continue;
+        if (lost < (rec.car ? 45 : 0)) continue;
         const bay = freeOwnerBay();
         if (!bay) return;
+        if (!far && (rec.car || crowdInView(bay.x, bay.y, 40))) continue;
         const replaced = !!rec.car;
         const c = makeCar(rec.type, bay.x, bay.y, bay.a, false, rec.color);
         markOwned(c, rec);

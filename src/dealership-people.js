@@ -225,7 +225,7 @@
     function dealerAisles() {
       const H = DEALER.hall;
       return {
-        rows: [H.y + 124, H.y + 232, H.y + 338],
+        rows: [H.y + 124, H.y + 232, H.y + 320],
         // [from row, to row, x]
         links: [
           [0, 1, H.x + 239],
@@ -428,6 +428,11 @@
       }
       for (const g of dealerPeople.guards) {
         if (g.hp <= 0) continue;
+        // Back on the list if something cleared it (populateStoryWorld on a new game).
+        if (!gangMembers.includes(g)) gangMembers.push(g);
+        // Police treat private security as allies (citylife.js policeGangTarget reads these).
+        g.lastShotAt = -100;
+        g.policeThreatUntil = 0;
         const s = g.dealerGuard;
         if (g.hp < s.hp - 0.5) dealershipAlarm('a guard attacked');
         s.hp = g.hp;
