@@ -1,5 +1,116 @@
 # Changelog
 
+## Unreleased — GOALLINE, the sports betting office by the stadium
+
+- **The shop** (sportsbook.js, sportsbook3d.js): GOALLINE SPORTS BET, a 16 x 12 m sportsbook
+  south-west of South Coast Stadium's entrance plaza (x 2462-2590, y 4992-5088), its glass
+  frontage and double door facing south onto a paved apron with a path to the Garden Ave
+  pavement. The neon sign stands on the front parapet over a lit fascia (LIVE ODDS · IN-PLAY);
+  inside, a pitch-green carpet, a video wall (the stadium's live board between two GOALLINE odds
+  boards that go SUSPENDED over a goal), the counter with its till and PAY OUT sign, three
+  self-service terminals, a ledge with low stools; the roof lifts off with the player inside.
+  A clerk in the house green and up to five punters, each backing a side: they cheer or groan at
+  every goal with a speech bubble, and the clerk has a word for a big win ("Lucky day, huh?").
+  Walls, counter, ledge and terminals are solid to people, vehicles and rounds; the roof is
+  cover from the police helicopter. On the city map: a green $ badge, GOALLINE · BETS.
+- **Betting** (the action key inside: PLACE A BET): markets on the stadium's football fixture,
+  live while it is played: match result, next goal (or no goal), total goals over / under (the
+  line nearest even money and one either side), both teams to score, correct score (16 scores
+  and ANY OTHER), half-time result before the break. Pre-match prices for the next fixture with
+  the kick-off countdown when nothing is on. Bets settle as their market resolves (next goal on
+  the goal, OVER and BTTS YES at once, a correct score lost once passed, half time at the break,
+  the rest at full time) and winnings are credited automatically (BET WON · +$1,250); an
+  abandoned match, or one the clock jumped past, is VOID with the stake returned. Markets are
+  SUSPENDED from a goal until the kick-off after it. Open bets and the last 40 settled ones are
+  saved with the game.
+- **Odds** (sportsbook-odds.js): the football clubs now have ratings (sports-fixtures.js), and
+  a shot on target beats the keeper with a chance from the two ratings and the home crowd
+  (`sportsFinishChance`; before, nearly every shot on target went in: about 12 goals a match,
+  now about 2.8, measured over 350 simulated matches). The book prices from the same model:
+  Poisson goals at the measured rate (7.4 shots on target a side), live on the score and the
+  minutes left, a 6% margin by the power method (12% on correct score, less on near-certain
+  markets), odds rounded down to a real price ladder, shown decimal, fractional or American.
+- **The menu** (sportsbook-ui.js, SPORTSBOOK in shell.html): the match header in both clubs'
+  colours with crests, score, clock and a pulsing LIVE badge; price cards that flash up or down
+  as they move; the slip with typed stake, $10 / $50 / $100 / $500 / MAX chips, a slider over the
+  cash in hand, the potential return, validation (at least $1, never more than you carry) and a
+  PLACED stamp; MY BETS with open and settled bets and the running profit and loss. Arrows,
+  Enter, + / -, P, M, F and Esc; mouse and touch. The world keeps running (the match goes on)
+  and the player is sheltered while it is open; it closes with a wanted level or a pause.
+- **Console**: `sportsbook()`, `sportsbookBet(market, key, stake)`, `sportsbookShop(open, tab)`,
+  `sportsbookSlip(market, key, stake)`, `sportsbookFormat(format)`; `stadiumGoal(team)` forces a
+  goal.
+
+## Unreleased — the tree library
+
+Every tree is now one of 22 species (vegetation3d.js), so no two streets, parks or hillsides
+look alike, and no two trees of a species are the same.
+
+- **Broadleaf**: London plane, linden, honey locust (light, airy), Bradford pear (one in five in
+  white blossom), maple (one in seven turning gold or red), oak, weeping willow, jacaranda
+  (purple), flame tree (red), cherry, beech, birch. A trunk with a root flare forks into limbs
+  that show under the crown's edge; the crown is a cluster of lobes, each a lumpy core wrapped
+  in leaf-cluster cards, so its edge reads as foliage from above.
+- **Conifers**: spruce (ragged drooping whorls), fir (a tight blue-green cone, a spire),
+  pine (a bare trunk under tufted clumps), Italian cypress (a dark column), stone pine (a flat
+  umbrella).
+- **Palms**: Canary date palm (thick diamond-patterned trunk, a dense ball of fronds), Mexican
+  fan palm (tall and thin, fan leaves over a skirt of dead ones), coconut (a bowed trunk, long
+  drooping fronds, nuts), royal palm (smooth grey trunk, green crownshaft). Fronds are curved,
+  keeled blades that twist towards the tip.
+- **Materials**: one procedural atlas (leaf clusters, needles, pine tufts, willow strands,
+  blossom, pinnate and fan fronds, eight barks) with a baked normal map and mipmaps that keep
+  the leaf coverage at a distance; one material for every tree.
+- **Variety per tree**: scale ±18%, height to width, lean, turn, leaf tint, crown density and
+  a shape morph (a crown that spreads or stays upright, boughs that droop or lift, fronds that
+  hang), all from the tree's position. Wind sways crowns and fronds, shadows included.
+- **Where**: the Old Quarter and Battery Point lindens and planes; downtown honey locusts and
+  pears, stone pines in the financial plazas; South Bank maples; planes at the Ironworks, planes
+  and stone pines at the marina; parks oaks, lindens, maples
+  and planes with willows by the ponds and cherries; the Keys mixed palms (fan palms down Ocean
+  Drive, coconuts on the beach, royal and date palms in Little Havana) with flame trees and
+  jacarandas; Monarch Isle planes with stone pines among them, mixed palms on the waterfront;
+  the foothills pines, spruce and fir; the Ridgeline pines low down, fir through the middle and
+  spruce up to the treeline, beech, birch and maple below them.
+- **Performance**: one instanced mesh per species per breakable cell and level of detail, as
+  before; a ~100-triangle mid level from street zoom 0.5 out and beyond 1.5 km in the flight
+  view, and one plain crown per tree in the far city.
+- **Console**: `DeadEndCity.vegetation()` (species counts, tree draws and triangles in view),
+  `DeadEndCity.treeLineup()` (one of every species, for inspection).
+## Unreleased — the public demo build, and mission 1's warehouse ending
+
+- **Public demo** (`DEMO_BUILD = true` at the top of game.js; campaign.js PUBLIC DEMO): normal
+  players get missions 1 and 2. Missions 3-11 and contracts C1-C5 show in CHOOSE MISSION as
+  locked with a FULL GAME badge (titles visible, a click shows "Thanks for playing the demo! If
+  you liked it, please buy the full game."); the payphone stops ringing after mission 2 (no call
+  notice, prompt, marker or GPS line), RESTART CURRENT JOB cannot reach a gated job, and the
+  mission card reads FREE ROAM · DEMO COMPLETE. Completing mission 2 opens the DEMO COMPLETE
+  card: the title logo over the cover art, the thanks, a recap (time played, cash earned, wanted
+  peak, from the new saved `stats`), CONTINUE FREE ROAM and MAIN MENU. Completion is kept in
+  `dead-end-city-demo` (NEW GAME leaves it); the title menu has a DEMO badge by the version
+  (DEMO · COMPLETED after). Free-roam activities are not gated: the hill climb, beach
+  volleyball, the stadium ball, the pier rides, the bike share, cabs, rail, the liner, casino,
+  garages, gun shop, Fort Sentinel and the Apache. God mode opens everything, with no card.
+  Console: `demo()`, `skipToRooftopEscape()`; `startMission(i)` reaches a gated job only with
+  god mode or `?dev`.
+- **God mode opens its settings**: typing GODMODE (in play, on the map or on the title screen)
+  turns god mode on and opens Settings straight on the GOD MODE tab instead of the mission
+  picker; over the title it returns to the title when closed. The tab's new first row, MISSION
+  SELECT · PLAY ANY MISSION, opens the picker with every job unlocked (demo build included).
+  Typed again it turns god mode off with the usual toast.
+- **Mission 1 ending** (harbor.js THE DROP): the shutter comes down behind the truck with no
+  "police lost". Officers shut inside with it (on foot through the doorway, or a cruiser's
+  crew) must be put down: ELIMINATE POLICE · N LEFT, the marker on the nearest one; downed
+  officers count as out. The warehouse is sealed (chase.js `depotSealed`): no officer crosses
+  its walls either way, by the shutter or the back door, and none cuffs through them; officers
+  caught under the closing shutter step to the nearer side. The wanted level is held while the
+  player is inside (the units stake out the building; no more are sent). Then EXIT THE TRUCK
+  (while still at the wheel), then the back door opens: ESCAPE ON FOOT THROUGH THE BACK DOOR,
+  with the marker on the door. Walking out clears the wanted level at that moment (POLICE
+  LOST!), and MISSION 1 COMPLETE follows 1.4 s later. The truck destroyed before the escape
+  still fails the job; dying inside fails it as before. Console: `depotOfficers(n)`,
+  `neutraliseDepotPolice()`, `missionState()` now reports `depotSealed` and `policeInside`.
+
 ## Unreleased — the radio on the title screen
 
 The car radio plays on the title menu too, so the city's music is there before the first ride
