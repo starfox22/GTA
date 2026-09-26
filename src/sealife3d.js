@@ -613,49 +613,51 @@
         lifeScene.add(ghost);
         sp.ghost = ghost;
       }
-      // Blood clouds (green channel): soft, torn, spreading and fading.
+      // Blood clouds (green channel): soft, torn, spreading and fading. One
+      // InstancedMesh like the silhouettes: each instance's matrix carries the
+      // cloud's centre (x, z), the time it was spilled (y) and its size (scale).
       const BLOOD_CAPACITY = 6,
-        bloodData = new Float32Array(BLOOD_CAPACITY * 4),
-        bloodGeometry = new Three.InstancedBufferGeometry(),
-        seaQuad = new Three.PlaneGeometry(2, 2);
-      bloodGeometry.setIndex(seaQuad.index);
-      bloodGeometry.setAttribute('position', seaQuad.getAttribute('position'));
-      const bloodAttr = new Three.InstancedBufferAttribute(bloodData, 4).setUsage(Three.DynamicDrawUsage);
-      bloodGeometry.setAttribute('iBlood', bloodAttr);
-      bloodGeometry.instanceCount = 0;
-      const bloodMesh = new Three.Mesh(
-        bloodGeometry,
+        seaQuad = new Three.PlaneGeometry(2, 2),
+        bloodMatrix = new Three.Matrix4();
+      const bloodMesh = new Three.InstancedMesh(
+        seaQuad,
         new Three.ShaderMaterial({
           uniforms: { uLifeFrame: lifeFrame, uClock: lifeClock },
           vertexShader: `
-            attribute vec4 iBlood;   // x, z, time, size
             uniform vec3 uLifeFrame;
             uniform float uClock;
             varying vec2 vLocal;
-            varying float vAge, vSize;
+            varying float vAge;
+            varying float vSize;
             void main() {
-              float age = max( uClock - iBlood.z, 0.0 );
-              float radius = iBlood.w * ( 10.0 + 34.0 * sqrt( age ) ) + 6.0;
-              vec2 world = iBlood.xy + position.xy * radius;
+              vec4 cloud = instanceMatrix[3];
+              float size = instanceMatrix[0][0];
+              float age = max( uClock - cloud.y, 0.0 );
+              float radius = size * ( 10.0 + 34.0 * sqrt( age ) ) + 6.0;
+              vec2 world = cloud.xz + position.xy * radius;
               vLocal = position.xy;
               vAge = age;
-              vSize = iBlood.w;
+              vSize = size;
               gl_Position = vec4( ( world - uLifeFrame.xy ) / uLifeFrame.z * 2.0 - 1.0, 0.0, 1.0 );
             }`,
           fragmentShader: `
             ${WAKE_NOISE}
             varying vec2 vLocal;
-            varying float vAge, vSize;
+            varying float vAge;
+            varying float vSize;
             void main() {
               float r = length( vLocal );
               float torn = wakeNoise( vLocal * 3.0 + vAge * 0.15 ) * 0.6 + wakeNoise( vLocal * 7.0 - vAge * 0.2 ) * 0.4;
-              float body = 1.0 - smoothstep( 0.35 + 0.45 * torn, 1.0, r );
-              float k = body * ( 0.35 + 0.65 * torn ) * min( 1.0, vAge * 3.0 ) * exp( -vAge / 22.0 ) * clamp( vSize, 0.0, 1.0 );
+              float cloud = 1.0 - smoothstep( 0.35 + 0.45 * torn, 1.0, r );
+              float k = cloud * ( 0.35 + 0.65 * torn ) * min( 1.0, vAge * 3.0 ) * exp( -vAge / 22.0 ) * clamp( vSize, 0.0, 1.0 );
               gl_FragColor = vec4( 0.0, k, 0.0, 0.0 );
             }`,
           ...lifeBlend,
         }),
+        BLOOD_CAPACITY,
       );
+      bloodMesh.instanceMatrix.setUsage(Three.DynamicDrawUsage);
+      bloodMesh.count = 0;
       bloodMesh.frustumCulled = false;
       lifeScene.add(bloodMesh);
       const bloodClouds = [];
@@ -941,14 +943,12 @@
         while (bloodClouds.length && lifeClock.value - bloodClouds[0].t > 45) bloodClouds.shift();
         for (let i = 0; i < bloodClouds.length; i++) {
           const c = bloodClouds[i];
-          bloodData[i * 4] = c.x;
-          bloodData[i * 4 + 1] = c.y;
-          bloodData[i * 4 + 2] = c.t;
-          bloodData[i * 4 + 3] = c.size;
+          bloodMatrix.makeScale(c.size, c.size, c.size).setPosition(c.x, c.t, c.y);
+          bloodMesh.setMatrixAt(i, bloodMatrix);
         }
-        bloodGeometry.instanceCount = bloodClouds.length;
+        bloodMesh.count = bloodClouds.length;
         bloodMesh.visible = bloodClouds.length > 0;
-        if (bloodClouds.length) bloodAttr.needsUpdate = true;
+        if (bloodClouds.length) bloodMesh.instanceMatrix.needsUpdate = true;
         // Spray, lit like the wakes' spray.
         seaSprayUniforms.uLight.value
           .copy(sun.color)
