@@ -6,6 +6,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 
 const file = path.resolve(process.argv[2] || 'dead-end-city.html');
+if (!fs.existsSync(file)) { console.error('missing ' + file + ': build it first (python3 tools/build.py)'); process.exit(1); }
 const out = path.resolve(process.argv[3] || 'dist/smoke');
 fs.mkdirSync(out, { recursive: true });
 

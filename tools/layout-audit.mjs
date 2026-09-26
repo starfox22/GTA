@@ -21,6 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const file = path.resolve(process.argv[2] || 'dead-end-city.html');
+if (!fs.existsSync(file)) { console.error('missing ' + file + ': build it first (python3 tools/build.py)'); process.exit(1); }
 const browser = await chromium.launch({
   executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   args: ['--disable-accelerated-2d-canvas', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
