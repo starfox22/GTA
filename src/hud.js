@@ -325,9 +325,9 @@
         return moving ? (swimHard() ? 'SWIMMING · CRAWL' : 'SWIMMING · BREASTSTROKE') : 'SWIMMING · TREADING WATER';
       if (!moving) return 'STANDING';
       if (player.wading) return 'WADING';
-      // The legs' pace decides, with the measured speed as the check: blocked
-      // by a wall at a run reads as standing, not running.
-      return footPace() === FOOT_RUN && paceMeter.speed > (FOOT_WALK + FOOT_RUN) / 2.6 ? 'RUNNING' : 'WALKING';
+      // The measured speed decides, so the word always agrees with the figure:
+      // anything well past a walk (a run slowed by a slope still counts) runs.
+      return paceMeter.speed > FOOT_WALK * 1.7 ? 'RUNNING' : 'WALKING';
     }
     function updateSpeedBox() {
       const c = player.car,

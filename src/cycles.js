@@ -354,6 +354,18 @@
       out.sort((p, q) => p.d - q.d);
       return out;
     }
+    // What to keep off round an anchor: trees, crosswalks, lamps, benches,
+    // parked vehicles (not traffic) and a job's own spawn point.
+    function gatherBikeKeepOuts(near, anchor, crosswalks) {
+      const close = (p) => Math.abs(p.x - anchor.x) < 700 && Math.abs(p.y - anchor.y) < 700;
+      near.trees = trees.filter(close);
+      near.crosswalks = crosswalks.filter(close);
+      near.lamps = lamps.filter(close);
+      near.benches = benchSpots().filter(close);
+      near.parked = vehicles.filter((c) => !c.ai && close(c));
+      near.spawn = anchor.kind === 'mission' ? anchor : null;
+      return near;
+    }
     function bikeStationPlan() {
       if (bikeStationCache) return bikeStationCache;
       const stations = [],
@@ -399,15 +411,7 @@
           served.serves.push(anchor.label);
           continue;
         }
-        // What to keep off round this anchor.
-        const close = (p) => Math.abs(p.x - anchor.x) < 700 && Math.abs(p.y - anchor.y) < 700;
-        near.trees = trees.filter(close);
-        near.crosswalks = crosswalks.filter(close);
-        near.lamps = lamps.filter(close);
-        near.benches = benchSpots().filter(close);
-        // Parked vehicles (not traffic), and a job's own spawn point.
-        near.parked = vehicles.filter((c) => !c.ai && close(c));
-        near.spawn = anchor.kind === 'mission' ? anchor : null;
+        gatherBikeKeepOuts(near, anchor, crosswalks);
         const alternatives = [];
         for (const c of bikeStationCandidates(anchor)) {
           if (alternatives.some((q) => Math.hypot(q.x - c.x, q.y - c.y) < 30)) continue;
@@ -430,6 +434,7 @@
           a: alternatives[0].a,
           n: anchor.n,
           alternatives,
+          anchor,
           slots: [],
           rack: null,
           totem: null,
@@ -491,9 +496,26 @@
       };
       for (let i = stations.length - 1; i >= 0; i--) {
         const st = stations[i],
-          spot = st.alternatives.find(
-            (q) => !blocked({ ...q, n: st.n }) && !stations.some((o) => o !== st && Math.hypot(o.x - q.x, o.y - q.y) < BIKE_SHARE.spacing),
+          clear = (q) => !blocked({ ...q, n: st.n }) && !stations.some((o) => o !== st && Math.hypot(o.x - q.x, o.y - q.y) < BIKE_SHARE.spacing);
+        let spot = st.alternatives.find(clear);
+        if (!spot) {
+          // Every kept alternative has furniture in it: search again with the
+          // furniture as part of the test.
+          const near = gatherBikeKeepOuts(
+            { stations: [], doors: PLACES.filter((p) => p.door).map((p) => p.door), entries: RAIL_STATIONS.map((s) => s.entry), payphones: payphoneAnchors() },
+            st.anchor,
+            cityCrosswalks(),
           );
+          bikePointCache = new Map();
+          for (const c of bikeStationCandidates(st.anchor)) {
+            const q = { x: c.x, y: c.y, a: c.a, n: st.n };
+            if (clear(q) && bikeStationFits(q, near)) {
+              spot = q;
+              break;
+            }
+          }
+          bikePointCache = null;
+        }
         if (!spot) {
           bikeShareLog.skipped.push(st.label + ' (street furniture)');
           stations.splice(i, 1);
@@ -758,6 +780,9 @@
           docks: st.n,
           docked: dockedBikes(st),
           rack: rackStanding(st),
+          totem: !(st.totem && st.totem.down),
+          // Racked bikes lying where a car knocked them.
+          knocked: st.slots.filter((s) => s.bike && s.prop?.down).length,
         })),
       };
     }
