@@ -252,6 +252,8 @@
       beachHearsViolence(source, kind);
       // So does the beach club next to it (beachclub.js).
       beachClubHearsViolence(source, kind, attacker);
+      // An attack on MONARCH MOTORS sounds its alarm (dealership.js).
+      dealershipHearsViolence(source, kind, attacker);
       // Pedestrians hear and see it through the crowd's perception (src/crowd.js).
       crowdAlarm(kind === 'explosion' ? 'explosion' : 'gunfire', source, attacker);
       for (const c of vehicles)

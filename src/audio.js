@@ -338,16 +338,21 @@
       updateEngineAudio(deltaSeconds);
       const tires = audioLoops.tires;
       if (tires) {
-        const slipping =
-          c &&
-          !isAircraft(c) &&
-          !vehicleSpec(c).boat &&
-          // Narrow bicycle tyres do not howl through a turn.
-          !vehicleSpec(c).bicycle &&
-          Math.abs(c.speed) > 70 &&
-          (keys.Space || Math.abs(normalizeAngle(c.a - (c.moveA ?? c.a))) > 0.14);
-        glideParam(tires.gain.gain, active && slipping ? 0.19 : 0, audio.currentTime, 0.08);
+        /* TYRES: as loud as the tyres are slipping (physics.js c.tyreSlip: a
+           slide, locked wheels, wheelspin, the understeer scrub, the handbrake),
+           a locked tyre lower and harsher than a cornering howl. */
+        const road =
+            c &&
+            !isAircraft(c) &&
+            !vehicleSpec(c).boat &&
+            // Narrow bicycle tyres do not howl through a turn.
+            !vehicleSpec(c).bicycle,
+          slip = road ? clamp(c.tyreSlip || 0, 0, 1) : 0,
+          locked = road && c.tyres ? Math.max(c.tyres.lock[0], c.tyres.lock[1]) : 0;
+        glideParam(tires.gain.gain, active && slip > 0.08 ? 0.05 + 0.19 * Math.pow(slip, 0.8) : 0, audio.currentTime, 0.07);
+        glideParam(tires.source.playbackRate, 1.04 - 0.14 * locked + 0.06 * (c?.tyres?.spin || 0), audio.currentTime, 0.1);
       }
+      absBuzz(active && !!c?.absActive);
       const siren = audioLoops.siren;
       if (siren) {
         let d = 10000;
@@ -417,6 +422,38 @@
           tone(95 + Math.random() * 40, 0.045, 0.09, 'sine', 45);
         }
       }
+    }
+    /* ABS: while it works, a faint rattle on the effects bus, the pump and the
+       valves pulsing at about 12 Hz under the pedal. Built on first use. */
+    let absVoice = null;
+    function absBuzz(on) {
+      if (!audio) return;
+      if (!absVoice) {
+        if (!on) return;
+        const buzz = audio.createOscillator(),
+          pulse = audio.createOscillator(),
+          depth = audio.createGain(),
+          body = audio.createGain(),
+          tone = audio.createBiquadFilter(),
+          level = audio.createGain();
+        buzz.type = 'sawtooth';
+        buzz.frequency.value = 74;
+        pulse.type = 'square';
+        pulse.frequency.value = 12.5;
+        // The pulse swings the body's gain between 0 and 1.
+        body.gain.value = 0.5;
+        depth.gain.value = 0.5;
+        pulse.connect(depth).connect(body.gain);
+        tone.type = 'bandpass';
+        tone.frequency.value = 420;
+        tone.Q.value = 1.4;
+        level.gain.value = 0;
+        buzz.connect(body).connect(tone).connect(level).connect(master);
+        buzz.start();
+        pulse.start();
+        absVoice = { level };
+      }
+      glideParam(absVoice.level.gain, on ? 0.075 : 0, audio.currentTime, on ? 0.02 : 0.06);
     }
     function mute() {
       soundOn = !soundOn;
