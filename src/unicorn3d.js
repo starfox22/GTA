@@ -4,22 +4,23 @@
        * Source: src/unicorn3d.js
        * Scope: createCityRenderer() closure (included by themepark3d.js, after
        * the gate; uses parkParts, parkMats, parkBulbs and parkRoot).
-       * A monumental rearing unicorn (12 m to the horn tip, 13 m above the lawn) on the lawn south of
-       * the drop tower (PIER.unicorn), cast in polished black: a clearcoated
-       * obsidian lacquer whose reflections are folded up into the sky (see
-       * OBSIDIAN), so the sunset and the blue of the day run along her back and
-       * the edges of her mane, which turn a shade lighter (anthracite). Her
-       * spiral horn is polished gold; her hooves stay black. She stands on a
-       * low octagonal plinth of polished black granite (1.3 m) with a brass
-       * line inlaid under the cornice and an engraved brass AURORA plaque on
-       * the face towards the street camera, in a ring of pale paving painted
-       * on the lawn (themepark.js). The sculpt is Catmull-Rom tubes with
-       * elliptical sections (body, neck, head, legs, mane and tail locks, the
+       * A monumental rearing unicorn (12 m to the horn tip, 13 m above the
+       * lawn) on the lawn south of the drop tower (PIER.unicorn), cast in
+       * polished black: a clearcoated lacquer whose reflections are folded up
+       * into the sky (see OBSIDIAN), so the blue of the day and the sunset run
+       * along her back and a sky rim outlines her against the grass; the edges
+       * of her mane and tail turn a shade lighter (anthracite). Her spiral horn
+       * is polished gold, her hooves stay black. She stands on a low octagonal
+       * plinth of polished black granite (1.3 m) with a brass line inlaid under
+       * the cornice and an engraved brass AURORA plaque on the face towards the
+       * street camera, in a ring of pale paving painted on the lawn
+       * (themepark.js). The sculpt is Catmull-Rom tubes with elliptical
+       * sections (body, neck, head, legs, the crest, mane and tail locks, the
        * spiral horn) and a few embedded masses for the musculature, modelled
        * in life-size metres and scaled up. At night four warm-white uplights
-       * in the lawn light her (a shader term, UPLIGHTS: a glint off the gloss
-       * more than light on the black), and the horn glows softly. Everything
-       * is merged per material: six draws and no textures but the plaque.
+       * in the paving catch her gloss (a shader term, UPLIGHTS: glints more
+       * than light on the black) and the horn glows softly. Everything is
+       * merged per material: about 9.2k triangles in five draws, and the plaque.
        */
       const UNICORN = PIER.unicorn,
         // Model metres to world units (3.75 times life size: 12 m to the horn tip); the plinth top (1.3 m).
@@ -31,7 +32,7 @@
         // The plinth's die (octagon circumradius) and the plaque's height on it.
         UNICORN_DIE = 23.5,
         UNICORN_PLAQUE_Y = 5.6,
-        // The uplights: map angles round her and their distance, out on the lawn.
+        // The uplights: map angles round her and their distance, set in the paving.
         UNICORN_LAMPS = [Math.PI * 0.6, Math.PI * 0.16, -Math.PI * 0.42, Math.PI * 0.97],
         UNICORN_LAMP_RADIUS = 39;
       const unicornHornTip = new Three.Vector3();
@@ -43,10 +44,13 @@
        *   mirror-true reflection off her flanks would show the dim ground and a
        *   black statue would read as a hole in the lawn; folded up, the gloss
        *   carries the sky, the sunset and the clearcoat's bright rim;
+       * - the sky's colour partly desaturated, so black reads black (not navy)
+       *   at noon and still warms at sunset, and `unicornRim`, the sky along
+       *   her edges, so she stands out from the grass seen from above;
        * - `unicornEdge` lightens grazing surfaces towards anthracite (the locks
        *   of the mane and tail);
        * - `unicornSpeckle` gives the granite its grain and a slow cloud;
-       * - UPLIGHTS: the island has no city light map, so four lamps in the lawn
+       * - UPLIGHTS: the island has no city light map, so four lamps round her
        *   are a term of their own: each lights what faces it and rises above
        *   it, fading with distance, scaled by the night, with a sharp specular
        *   glint (Blinn-Phong in view space) since black lacquer shows light as
@@ -657,7 +661,7 @@
           .multiply(new Three.Matrix4().makeScale(UNICORN_SCALE, UNICORN_SCALE, UNICORN_SCALE))
           .multiply(new Three.Matrix4().makeTranslation(UNICORN_SHIFT, 0, 0));
         const hornTip = unicornStatue(b, statueMatrix);
-        window.__unicornTris = b.flush(parkRoot, 'unicorn statue').map((m) => m.geometry.index.count / 3); // TEMP
+        b.flush(parkRoot, 'unicorn statue');
         unicornHornTip.set(...hornTip).applyMatrix4(statueMatrix);
         // A soft glow at the horn's tip after dark.
         parkBulbs.add(unicornHornTip.x, unicornHornTip.z, unicornHornTip.y, 7, '#ffe2a8');

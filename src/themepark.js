@@ -1680,19 +1680,29 @@
     /* UNICORN STATUE: where a guest stops to look at (and photograph) Aurora:
        somewhere round her plinth on the paving or the lawn, a few metres
        back. Guests come along the walk from the east gate promenade (west of
-       her) and round the plinth in steps, so they never cut across it. */
-    function unicornViewpoint() {
+       her) and go round the plinth in steps (unicornArc), and leave the same
+       way (unicornExit), so they never cut across it. */
+    function unicornArc(a) {
       const U = PIER.unicorn,
-        a = randomBetween(-Math.PI, Math.PI),
-        r = U.r + randomBetween(12, 34),
         ring = U.r + 16,
-        points = [{ x: U.x - U.apron - 6, y: U.y + 6 }];
-      for (let k = 1, steps = Math.ceil(Math.abs(Math.PI - Math.abs(a)) / 0.7); k <= steps; k++) {
+        points = [];
+      for (let k = 1, steps = Math.ceil((Math.PI - Math.abs(a)) / 0.7); k <= steps; k++) {
         const b = Math.sign(a || 1) * (Math.PI - ((Math.PI - Math.abs(a)) * k) / steps);
         points.push({ x: U.x + Math.cos(b) * ring, y: U.y + Math.sin(b) * ring });
       }
-      points.push({ x: U.x + Math.cos(a) * r, y: U.y + Math.sin(a) * r, linger: true, faceTo: U });
       return points;
+    }
+    const unicornWalkEnd = () => ({ x: PIER.unicorn.x - PIER.unicorn.apron - 6, y: PIER.unicorn.y + 6 });
+    function unicornViewpoint() {
+      const U = PIER.unicorn,
+        a = randomBetween(-Math.PI, Math.PI),
+        r = U.r + randomBetween(12, 34);
+      return [unicornWalkEnd(), ...unicornArc(a), { x: U.x + Math.cos(a) * r, y: U.y + Math.sin(a) * r, linger: true, faceTo: U }];
+    }
+    function unicornExit(person) {
+      const U = PIER.unicorn;
+      if (Math.hypot(person.x - U.x, person.y - U.y) > U.apron + 24) return [];
+      return [...unicornArc(Math.atan2(person.y - U.y, person.x - U.x)).reverse(), unicornWalkEnd()];
     }
     /* Queue lines: slots from the front of the line back. */
     const PARK_QUEUES = {
@@ -1845,6 +1855,8 @@
             route = parkRoute(nearestParkNode(person.x, person.y), nearestParkNode(spot.x, spot.y));
           person.pose = null;
           person.parkRoute = route ? route.map((i) => parkPathGraph()[i]).map((n) => ({ x: n.x + randomBetween(-12, 12), y: n.y + randomBetween(-12, 12) })) : [];
+          // UNICORN STATUE: away from her round the plinth, not across it.
+          person.parkRoute.unshift(...unicornExit(person));
           if (spot.name === 'unicorn') person.parkRoute.push(...unicornViewpoint());
           else person.parkRoute.push({ x: spot.x + randomBetween(-20, 20), y: spot.y + randomBetween(-16, 16), linger: true });
           if ((person.speechUntil || 0) <= gameTime && seededRandom() < 0.25) {

@@ -274,7 +274,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras (the station roof and its sign are their own batch, cut away while the train or the ride camera is under them, `setStationRoofCut`) |
-| unicorn3d.js | (included by themepark3d.js) The Unicorn Fountain in the forecourt (`PIER.unicorn`): Aurora, a rearing unicorn sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) in pearlescent marble with a gilded horn and hooves; tiered plinth with a bronze plaque, basin, eight arcing jets and spray; night uplights as a shader term on her marble (UPLIGHTS), the horn's pastel glow; `updateUnicornFountain` each frame |
+| unicorn3d.js | (included by themepark3d.js) Aurora, the black unicorn statue on the lawn by the drop tower (`PIER.unicorn`): a monumental rearing unicorn (12 m to the horn tip, 13 m above the lawn) sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) and embedded masses for the musculature (`unicornMass`), in clearcoated black lacquer with a polished gold horn and black hooves; the OBSIDIAN patch (reflections folded up into the sky and partly desaturated, a sky rim light, anthracite lock edges, granite grain) and night UPLIGHTS (four warm-white lamps in the paving, a tight specular glint on the black); a low octagonal polished black granite plinth (1.3 m) with an inlaid brass line and an engraved brass AURORA plaque facing the camera; everything merged per material (about 9.2k triangles, six draws with the plaque); `updateUnicornStatue` each frame (uplights, the horn's soft glow) |
 | garage3d.js | Garage buildings, shutters, lights and service details |
 | landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
@@ -420,12 +420,15 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **The Sunset Eye** (hub 3600, -6050, 300 up, rim radius 240, 48 capsules, one turn in 240 s;
   `wheelCapsule(k)`) with its terminal underneath. **Fountain Lagoon** (3170, -6370) with the
   show schedule (`fountainShowAt`) and fireworks (`fireworksTonight`), the **Sunset Palace**
-  crescent hotel (3530, -6770), the **Unicorn Fountain** in the forecourt between the drive and
-  the gate (`PIER.unicorn`, 3200, -5987: a round basin with Aurora, a rearing marble unicorn, on a
-  plinth; solid to people and cars, guests stop round it to take photos), the beach club on the
-  north shore, and in the east the
+  crescent hotel (3530, -6770), the beach club on the north shore, and in the east the
   carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
-  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
+  food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`). **Aurora**, a 12 m black
+  unicorn statue (`PIER.unicorn`, 4068, -6048), stands on the lawn south of the drop tower
+  (clear of its base, the games stalls, the drive's end and the beach) in a ring of pale paving
+  (radius `apron`) with a short walk from the end of the island drive; her granite plinth is
+  solid to people and cars (`parkSolids`, kind `unicorn statue`), palms keep off her lawn, and
+  guests walk out to her, round the plinth (`unicornArc`, never across it; `unicornExit` on the
+  way back) and stop on the paving or the lawn to take photos (the filming pose).
 - **Riders' voices** (themepark.js RIDERS' VOICES): each car is read off the circuit every frame
   (vertical speed = train speed x tangent rise, seat load from the change of rise, upside down).
   Falling faster than 4.5 m/s after a crest cues screams: the first drop after the lift a chorus
