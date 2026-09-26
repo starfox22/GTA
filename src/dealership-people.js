@@ -211,7 +211,6 @@
         color: '#15171b',
         faction: 'prestige',
         guard: true,
-        name: 'MONARCH SECURITY',
         timer: 1 + index * 0.3,
         walk: 0,
         home: { x: post.x, y: post.y },
@@ -563,7 +562,7 @@
       if (s.state === 'approach') {
         const reached = d < 26;
         if (!reached) {
-          if (!s.route.length || gameTime - (s.routeAt || 0) > 1.5) {
+          if (!s.route.length) {
             s.route = dealerAislePath(p.x, p.y, player.x, player.y);
             s.routeAt = gameTime;
           }
@@ -602,7 +601,7 @@
       }
       if (d > 110) {
         // Lost the customer: catch up along the aisles.
-        if (!s.route.length || gameTime - (s.routeAt || 0) > 1.5) {
+        if (!s.route.length) {
           s.route = dealerAislePath(p.x, p.y, player.x, player.y);
           s.routeAt = gameTime;
         }

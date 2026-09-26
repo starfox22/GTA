@@ -11,12 +11,12 @@
      *   THE HALL      74 x 47 m, 11 m high: a glass frontage of 3 m panes onto the
      *                 forecourt, stone side and back walls. Inside: the display
      *                 floor (twelve cars on flush turntables and plinths, the
-     *                 Tourbillon on the hero dais under the oculus), the brand
-     *                 walls of WALTER MARTIN, CHEVETTE and MUGATTI along the back
-     *                 under a mezzanine gallery, the DELIVERY SUITE in the west
-     *                 wing (a stage turntable behind a curtain, the service desk
-     *                 and the vehicle door onto the forecourt), the VIP LOUNGE in
-     *                 the north-east (sofas and a bar), the CONFIGURATOR WALL and
+     *                 Tourbillon on the hero dais), the backlit brand walls of
+     *                 WALTER MARTIN, CHEVETTE and MUGATTI along the back wall,
+     *                 the DELIVERY SUITE in the west wing (a stage turntable
+     *                 behind a curtain, the service desk and the vehicle door
+     *                 onto the forecourt), the VIP LOUNGE in the north-east
+     *                 (sofas, a bar under the gallery), the CONFIGURATOR WALL and
      *                 the reception desk by the entrance.
      *   FORECOURT     three cars on podiums, the entrance walk between planters
      *                 and flags, the handover bay outside the vehicle door, eight
@@ -115,7 +115,7 @@
       DEALER.slots.forEach((s, i) => (s.id = i));
       const posts = {
         receptionist: { x: H.x + 388, y: H.y + 331, a: Math.PI / 2 },
-        barista: { x: H.x + 531, y: H.y + 5, a: Math.PI / 2 },
+        barista: { x: H.x + 531, y: H.y + 27, a: Math.PI / 2 },
         salesmen: [
           { x: H.x + 206, y: H.y + 128, a: Math.PI / 2 },
           { x: H.x + 356, y: H.y + 232, a: Math.PI / 2 },
@@ -133,7 +133,7 @@
       // Furniture the renderer draws and people walk round (also colliders).
       DEALER.furniture = {
         reception: { x: H.x + 356, y: H.y + 338, w: 64, h: 16 },
-        bar: { x: H.x + 486, y: H.y + 10, w: 90, h: 16 },
+        bar: { x: H.x + 486, y: H.y + 34, w: 90, h: 14 },
         sofaA: { x: H.x + 482, y: H.y + 72, w: 60, h: 12 },
         sofaB: { x: H.x + 482, y: H.y + 84, w: 12, h: 50 },
         sofaC: { x: H.x + 528, y: H.y + 134, w: 30, h: 12 },
@@ -145,11 +145,12 @@
         service: { x: H.x + 104, y: H.y + 250, w: 20, h: 44 },
         partition: { x: H.x + 130, y: H.y, w: 4, h: 122 },
         stageWall: { x: H.x + 8, y: H.y + 4, w: 118, h: 3 },
-        mezzanine: { x: H.x + 136, y: H.y, w: H.w - 136, h: 32, height: 5.4 * U },
+        // The gallery over the bar, reached by the stair on the east wall.
+        mezzanine: { x: H.x + 470, y: H.y, w: H.w - 470, h: 30, height: 5.4 * U },
         brandWalls: [
-          { brand: 'WALTER MARTIN', x0: H.x + 138, x1: H.x + 276, color: '#0b4d3b', accent: '#b6f02c' },
-          { brand: 'CHEVETTE', x0: H.x + 278, x1: H.x + 410, color: '#141518', accent: '#f2c21b' },
-          { brand: 'MUGATTI', x0: H.x + 412, x1: H.x + 470, color: '#0d2a66', accent: '#e8e4da' },
+          { brand: 'WALTER MARTIN', x0: H.x + 140, x1: H.x + 250, color: '#0b4d3b', accent: '#b6f02c' },
+          { brand: 'CHEVETTE', x0: H.x + 254, x1: H.x + 364, color: '#141518', accent: '#f2c21b' },
+          { brand: 'MUGATTI', x0: H.x + 368, x1: H.x + 478, color: '#0d2a66', accent: '#e8e4da' },
         ],
         podiums: DEALER.slots.filter((s) => s.where === 'forecourt').map((s) => ({ x: s.x, y: s.y, r: s.r + 10 })),
         planters: [
@@ -588,7 +589,7 @@
 #dealerOverlay.hidden{display:none}
 #dealerOverlay .dl-shade{position:absolute;inset:0;background:linear-gradient(90deg,#07090cf2 0%,#07090ce6 34%,#07090c80 52%,#07090c00 70%);pointer-events:auto}
 #dealerOverlay .dl-panel{position:absolute;left:clamp(16px,4vw,56px);top:50%;transform:translateY(-50%);width:min(520px,calc(100vw - 32px));max-height:94vh;overflow:auto;pointer-events:auto;animation:dlIn .45s cubic-bezier(.2,.8,.2,1)}
-@keyframes dlIn{from{opacity:0;transform:translate(-18px,-50%)}to{opacity:1;transform:translate(0,-50%)}}
+@keyframes dlIn{from{transform:translate(-18px,-50%)}to{transform:translate(0,-50%)}}
 #dealerOverlay .dl-house{display:flex;align-items:center;gap:10px;font:800 10px/1 var(--ui-font);letter-spacing:.34em;color:#c9a24e}
 #dealerOverlay .dl-house i{flex:1;height:1px;background:linear-gradient(90deg,#c9a24e88,#c9a24e00)}
 #dealerOverlay .dl-marque{margin-top:18px;font:800 13px/1 var(--ui-font);letter-spacing:.42em;color:#d8d2c2}
@@ -637,7 +638,7 @@
 #dealerReveal .card{position:absolute;left:50%;bottom:11vh;transform:translateX(-50%);text-align:center;color:#fff;opacity:0;transition:opacity .8s, transform .8s}
 #dealerReveal .card.show{opacity:1}
 #dealerReveal .card small{display:block;font:800 10px/1 var(--ui-font);letter-spacing:.42em;color:#e2c897}
-#dealerReveal .card b{display:block;margin-top:10px;font:200 40px/1 var(--ui-font);letter-spacing:.04em;text-shadow:0 4px 30px #000c}
+#dealerReveal .card b{display:block;margin-top:10px;font:200 clamp(22px,3.4vw,38px)/1.1 var(--ui-font);letter-spacing:.04em;white-space:nowrap;text-shadow:0 4px 30px #000c}
 #dealerReveal .card span{display:block;margin-top:10px;font:600 12px/1 var(--ui-font);letter-spacing:.24em;color:#d8d2c2}
 #dealerReveal canvas{position:absolute;inset:0;width:100%;height:100%}
 @media (max-width:700px){#dealerOverlay .dl-model{font-size:32px}#dealerOverlay .dl-grid{grid-template-columns:repeat(2,1fr)}#dealerOverlay .dl-shade{background:#07090ce8}}
@@ -711,7 +712,7 @@
       const narrow = viewportWidth < 700;
       cameraTarget.x = target.x - (narrow ? 0 : 5.5 * UNITS_PER_METRE);
       cameraTarget.y = target.y + (narrow ? 4 * UNITS_PER_METRE : 0.5 * UNITS_PER_METRE);
-      worldZoom = Math.max(m.view.zoom, 1.55);
+      worldZoom = Math.max(m.view.zoom, 1.8);
       canvasScale = clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
     }
     function dealerSpecCell(value, unit, label, wide = false) {
@@ -962,7 +963,6 @@
       card.querySelector('span').textContent = rec.paint.toUpperCase() + ' · ' + prestigePrice(rec.price);
       dealerConfetti = null;
       dealershipRevealStaff(true);
-      announce('CONGRATULATIONS', 'YOUR ' + VEHICLE_DEFINITIONS[rec.type].name, 3);
     }
     // Held keys are dropped while the reveal plays (the player is a spectator).
     function updateDeliveryReveal(deltaSeconds) {
@@ -974,10 +974,13 @@
         card = el.querySelector('.card');
       for (const k of ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyF', 'Space']) keys[k] = false;
       mouse.down = false;
-      const v = DEALER.viewing;
-      player.x = v.x;
-      player.y = v.y;
-      player.a = v.a;
+      // Held in front of the stage until the keys are handed over.
+      if (!r.handed) {
+        const v = DEALER.viewing;
+        player.x = v.x;
+        player.y = v.y;
+        player.a = v.a;
+      }
       if (r.t > 0.5 && r.t < 7.2) fade.style.opacity = '0';
       // The curtain draws back from 1.4 s to 4.2 s; the stage turns from 1 s.
       r.curtain = clamp((r.t - 1.4) / 2.8, 0, 1);

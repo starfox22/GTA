@@ -8,10 +8,11 @@ SOURCE_GUIDE section 6e). Free roam: available in the demo.
 
 - **MONARCH MOTORS · PRESTIGE COLLECTION** fills block (0, 2) at the Sovereign Bridge's landing
   (Crown Avenue / Westgate / Regent Row), replacing the old MONARCH AUTOMOBILI showroom and the
-  SOLARIS pumps: a 74 x 47 m, 11 m glass hall with a waved white canopy, an oculus over the hero
-  dais and skylights; a polished travertine floor; twelve cars on flush turntables (three turning)
-  and a placard by each; WALTER MARTIN, CHEVETTE and MUGATTI brand walls under a mezzanine
-  gallery; a VIP lounge with sofas, a black marble bar and a lit bottle wall; a live configurator
+  SOLARIS pumps: a 74 x 47 m, 11 m glass hall with a waved white canopy round a glass roof on a
+  white grid (the collection reads through it from above and glows at night); a polished
+  travertine floor; twelve cars on flush turntables (three turning) and a placard by each;
+  backlit WALTER MARTIN, CHEVETTE and MUGATTI brand walls; a VIP lounge with sofas, a black
+  marble bar and a lit bottle wall under a gallery; a live configurator
   LED wall; the reception desk; the delivery suite (stage turntable, LED backdrop, velvet curtain,
   service desk); a forecourt with three podium cars, planters, flags, the lit pylon, the handover
   bay and eight owners' bays. The roof lifts off while you are inside so the showroom reads from

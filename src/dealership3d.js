@@ -19,17 +19,18 @@
        *             reception desk, the DELIVERY SUITE (stage turntable, LED
        *             backdrop, velvet curtain on a track, service desk), the hero
        *             dais under the oculus, and a placard on a stand by every car.
-       *   ROOF      a thin white canopy whose front edge waves out over the
-       *             forecourt, with the oculus over the hero and two skylight
-       *             strips: hidden while the player is inside (or the purchase card
-       *             or the delivery is on), so the showroom reads from above.
+       *   ROOF      a thin white canopy frame whose front edge waves out over the
+       *             forecourt, round a glass roof on a white grid (the cars read
+       *             through it from above, and it glows at night) with a ring over
+       *             the hero; all of it is hidden while the player is inside (or
+       *             the purchase card or the delivery is on).
        *   FORECOURT podiums with LED rings, planters with clipped box, six flags,
        *             the lit pylon, bay posts; the lane and bays are painted in the
        *             ground sheet (dealership.js).
        *   MOVING    turntable discs and their LED rims follow their cars (two
-       *             instanced draws), light pools under the cars, light cones on the
-       *             hero, the curtain's folds, the doors, the security shutters and
-       *             the broken panes' shards, the screens.
+       *             instanced draws), light pools under the cars, the curtain's
+       *             folds, the doors, the security shutters and the broken panes'
+       *             shards, the screens.
        *   NIGHT     the glass box glows warm, pools of light in the island's light
        *             map under every car and along the frontage, rim LEDs, the signs.
        *
@@ -352,7 +353,7 @@
           signTex = dealerTexture(dealerSignCanvas()),
           placardTex = dealerTexture(dealerPlacardCanvas());
         const m = {
-          floor: new Three.MeshStandardMaterial({ map: floorTex, roughness: 0.1, metalness: 0.04, envMapIntensity: 1.35 }),
+          floor: new Three.MeshStandardMaterial({ map: floorTex, color: '#d8d3c9', roughness: 0.12, metalness: 0.05, envMapIntensity: 1.3 }),
           brand: new Three.MeshStandardMaterial({ map: brandTex, emissiveMap: brandTex, emissive: '#ffffff', emissiveIntensity: 0.25, roughness: 0.35, metalness: 0.05 }),
           sign: new Three.MeshStandardMaterial({ map: signTex, emissiveMap: signTex, emissive: '#ffffff', emissiveIntensity: 0.15, roughness: 0.3, metalness: 0.1 }),
           placard: new Three.MeshStandardMaterial({ map: placardTex, emissiveMap: placardTex, emissive: '#ffffff', emissiveIntensity: 0.35, roughness: 0.3, metalness: 0.1 }),
@@ -461,17 +462,17 @@
         // Glass over the doors.
         bx((DEALER.doorPeople.x0 + DEALER.doorPeople.x1) / 2, (27 + top - 5) / 2, frontY, DEALER.doorPeople.x1 - DEALER.doorPeople.x0, top - 32, 0.4, dealerMaterials.glass, moving);
         bx((DEALER.doorCars.x0 + DEALER.doorCars.x1) / 2, (47 + top - 5) / 2, frontY, DEALER.doorCars.x1 - DEALER.doorCars.x0, top - 52, 0.4, dealerMaterials.glass, moving);
-        // ---- Brand walls under the mezzanine ----
-        const brandTop = F.mezzanine.height - 3;
+        // ---- Brand walls: backlit panels on the back wall, each behind its cars ----
         F.brandWalls.forEach((wall, k) => {
           const w = wall.x1 - wall.x0,
-            panel = new Three.Mesh(dealerAtlasPlane(w - 4, brandTop - 6, 0, k * 256, 1024, 256, 1024, 768), dealerMaterials.brand);
-          panel.position.set((wall.x0 + wall.x1) / 2, 3 + (brandTop - 6) / 2 + 1, H.y + 1.2);
+            ph = Math.min(w / 2.6, 46),
+            panel = new Three.Mesh(dealerAtlasPlane(w - 4, ph, 0, k * 256, 1024, 256, 1024, 768), dealerMaterials.brand);
+          panel.position.set((wall.x0 + wall.x1) / 2, 4 + ph / 2, H.y + 1.2);
           hall.add(panel);
-          // A backlit gold (or lime) line under each.
+          // A backlit line under each, a bronze frame round it.
           bx((wall.x0 + wall.x1) / 2, 2.6, H.y + 1.6, w - 8, 0.5, 0.5, dealerMaterials.led);
-          // Dividing blades between the walls.
-          bx(wall.x1 + 1, brandTop / 2, H.y + 2, 1.4, brandTop, 4, T.bronze);
+          bx((wall.x0 + wall.x1) / 2, 5 + ph, H.y + 1.6, w, 1.2, 1.2, T.bronze);
+          for (const x of [wall.x0, wall.x1]) bx(x, (ph + 6) / 2, H.y + 2, 1.4, ph + 6, 4, T.bronze);
         });
         // ---- Mezzanine gallery with its glass balustrade and the stair ----
         const Z = F.mezzanine;
@@ -515,19 +516,27 @@
         // Service desk.
         const S = F.service;
         bx(S.x + S.w / 2, 4.2, S.y + S.h / 2, S.w, 8.4, S.h, T.white);
-        bx(S.x + S.w / 2, 8.7, S.y + S.h / 2, S.w + 2, 0.6, S.h + 2, T.marble);
+        bx(S.x + S.w / 2, 8.7, S.y + S.h / 2, S.w + 2, 0.6, S.h + 2, tint('#e8e2d6', 'pearl'));
         bx(S.x - 0.3, 5, S.y + S.h / 2, 0.4, 2, S.h - 6, dealerMaterials.led);
         // ---- Reception: a curved white desk with a marble top ----
         const R = F.reception;
-        const desk = new Three.Mesh(new Three.CylinderGeometry(R.w * 0.62, R.w * 0.62, 8.6, 40, 1, false, Math.PI * 0.2, Math.PI * 0.6), T.white);
-        desk.position.set(R.x + R.w / 2, 4.3, R.y + R.h / 2 - R.w * 0.62 + R.h);
-        desk.rotation.y = Math.PI;
-        hall.add(desk);
-        bx(R.x + R.w / 2, 8.9, R.y + R.h / 2, R.w, 0.6, R.h, T.marble);
-        bx(R.x + R.w / 2, 4.6, R.y + R.h + 0.4, R.w * 0.5, 2.6, 0.4, T.gold);
+        // The front curves towards the door: faceted white panels on an arc, a pale marble top.
+        const arcX = R.x + R.w / 2,
+          arcY = R.y - 30,
+          arcR = 46;
+        for (let i = 0; i < 8; i++) {
+          const a0 = lerpNumber(Math.PI * 0.3, Math.PI * 0.7, i / 8),
+            a1 = lerpNumber(Math.PI * 0.3, Math.PI * 0.7, (i + 1) / 8),
+            am = (a0 + a1) / 2,
+            seg = mesh(boxGeo, T.white, hall, arcX + Math.cos(am) * arcR, 4.3, arcY + Math.sin(am) * arcR, arcR * (a1 - a0) + 0.6, 8.6, 6);
+          seg.rotation.y = -am + Math.PI / 2;
+          const topSeg = mesh(boxGeo, tint('#e8e2d6', 'pearl'), hall, arcX + Math.cos(am) * (arcR - 1), 8.9, arcY + Math.sin(am) * (arcR - 1), arcR * (a1 - a0) + 1, 0.6, 9);
+          topSeg.rotation.y = -am + Math.PI / 2;
+        }
+        bx(arcX, 4.6, arcY + arcR + 3.2, 14, 2.6, 0.4, T.gold);
         // Orchids and a screen on the desk.
-        bx(R.x + 8, 11, R.y + 6, 2.5, 4, 1.5, T.screenFrame);
-        mesh(sphereGeo, tint('#f2e6f0', 'satin'), hall, R.x + R.w - 8, 11.5, R.y + 8, 2.4, 2, 2.4);
+        bx(arcX - 12, 11, arcY + arcR - 3, 2.5, 4, 1.5, T.screenFrame);
+        mesh(sphereGeo, tint('#f2e6f0', 'satin'), hall, arcX + 14, 11.5, arcY + arcR - 4, 2.4, 2, 2.4);
         // ---- VIP lounge ----
         const L = F.lounge;
         bx(L.x + L.w / 2, 0.25, L.y + L.h / 2 + 10, L.w - 24, 0.3, L.h - 60, T.rug);
@@ -558,6 +567,8 @@
         bx(Bar.x - 0.3, 2, Bar.y + Bar.h / 2, 0.4, 0.6, Bar.h - 4, dealerMaterials.led);
         const bottles = new Three.Mesh(dealerAtlasPlane(Bar.w - 10, 22, 512, 320, 256, 128, 1024, 512), dealerMaterials.sign);
         bottles.position.set(Bar.x + Bar.w / 2, 17, H.y + 0.8);
+        // The bar's back counter against the wall under the gallery.
+        bx(Bar.x + Bar.w / 2, 4.6, H.y + 5, Bar.w, 9.2, 8, T.marble);
         hall.add(bottles);
         for (let i = 0; i < 5; i++) {
           const x = Bar.x + 10 + i * 17;
@@ -653,7 +664,7 @@
         const bayPlaque = new Three.Mesh(dealerAtlasPlane(10, 2.5, 0, 320, 256, 64, 1024, 512), dealerMaterials.sign);
         bayPlaque.position.set(DEALER.lot.x + 22, 7, DEALER.bays[0].y - 13.2);
         hall.add(bayPlaque);
-        // ---- The roof: the canopy with a waved front edge, the oculus and skylights ----
+        // ---- The roof: the canopy with a waved front edge round the glass roof ----
         const hero = DEALER.slots.find((s) => s.hero),
           shape = new Three.Shape(),
           over = 5 * U,
@@ -665,42 +676,35 @@
           shape.lineTo(x, -wave(x));
         }
         shape.closePath();
-        const oculus = new Three.Path();
-        oculus.absellipse(hero.x, -hero.y, 7 * U, 5.5 * U, 0, TAU, true);
-        shape.holes.push(oculus);
-        const skylights = [
-          { x0: H.x + 150, x1: H.x + 250, y0: H.y + 60, y1: H.y + 300 },
-          { x0: H.x + 362, x1: H.x + 462, y0: H.y + 60, y1: H.y + 300 },
-        ];
-        for (const k of skylights) {
-          const hole = new Three.Path();
-          hole.moveTo(k.x0, -k.y0);
-          hole.lineTo(k.x0, -k.y1);
-          hole.lineTo(k.x1, -k.y1);
-          hole.lineTo(k.x1, -k.y0);
-          hole.closePath();
-          shape.holes.push(hole);
-        }
+        // The middle of the roof is glass on a white grid, so the collection reads
+        // from above (and glows at night); the canopy is the frame round it.
+        const G = { x0: H.x + 14, x1: H.x1 - 14, y0: H.y + 14, y1: H.y1 - 10 },
+          hole = new Three.Path();
+        hole.moveTo(G.x0, -G.y0);
+        hole.lineTo(G.x0, -G.y1);
+        hole.lineTo(G.x1, -G.y1);
+        hole.lineTo(G.x1, -G.y0);
+        hole.closePath();
+        shape.holes.push(hole);
         const roofGeo = new Three.ExtrudeGeometry(shape, { depth: 3.2, bevelEnabled: false, curveSegments: 32 });
         roofGeo.rotateX(-Math.PI / 2);
-        const roofMesh = new Three.Mesh(roofGeo, T.white);
+        const canopyWhite = tint('#e4e1da', 'satin'),
+          roofMesh = new Three.Mesh(roofGeo, canopyWhite);
         roofMesh.position.y = top - 1;
         roofMesh.castShadow = roofMesh.receiveShadow = true;
         roof.add(roofMesh);
-        // Glass in the oculus and skylights, with fine mullions.
-        const oculusGlass = new Three.Mesh(new Three.CircleGeometry(1, 48), dealerMaterials.roofGlass);
-        oculusGlass.rotation.x = -Math.PI / 2;
-        oculusGlass.scale.set(7 * U, 5.5 * U, 1);
-        oculusGlass.position.set(hero.x, top + 1.4, hero.y);
-        roof.add(oculusGlass);
-        for (const k of skylights) {
-          const sky = new Three.Mesh(new Three.PlaneGeometry(k.x1 - k.x0, k.y1 - k.y0), dealerMaterials.roofGlass);
-          sky.rotation.x = -Math.PI / 2;
-          sky.position.set((k.x0 + k.x1) / 2, top + 1.2, (k.y0 + k.y1) / 2);
-          roof.add(sky);
-          for (let z = k.y0 + 20; z < k.y1; z += 20) bx((k.x0 + k.x1) / 2, top + 1.6, z, k.x1 - k.x0, 0.8, 0.8, T.white, roof);
-          bx((k.x0 + k.x1) / 2, top + 1.6, (k.y0 + k.y1) / 2, 0.8, 0.8, k.y1 - k.y0, T.white, roof);
-        }
+        const roofPane = new Three.Mesh(new Three.PlaneGeometry(G.x1 - G.x0, G.y1 - G.y0), dealerMaterials.roofGlass);
+        roofPane.rotation.x = -Math.PI / 2;
+        roofPane.position.set((G.x0 + G.x1) / 2, top + 1.2, (G.y0 + G.y1) / 2);
+        roofPane.castShadow = false;
+        roof.add(roofPane);
+        // The grid: slim white beams every 6 m, heavier ones every 18 m, the oculus ring over the hero.
+        let k = 0;
+        for (let x = G.x0 + 48; x < G.x1 - 4; x += 48, k++) bx(x, top + 1.4, (G.y0 + G.y1) / 2, k % 3 === 2 ? 2.4 : 1, k % 3 === 2 ? 2.4 : 1.2, G.y1 - G.y0, canopyWhite, roof);
+        k = 0;
+        for (let z = G.y0 + 48; z < G.y1 - 4; z += 48, k++) bx((G.x0 + G.x1) / 2, top + 1.4, z, G.x1 - G.x0, 1.2, 1, canopyWhite, roof);
+        const oculus = mesh(new Three.TorusGeometry(1, 0.04, 6, 64), canopyWhite, roof, hero.x, top + 1.8, hero.y, 7 * U, 5.5 * U, 30);
+        oculus.rotation.x = Math.PI / 2;
         // The fascia sign on the canopy's front, over the entrance, and one on the back.
         const fascia = new Three.Mesh(dealerAtlasPlane(90, 11.25, 0, 0, 1024, 128, 1024, 512), dealerMaterials.sign);
         const fx = (DEALER.doorPeople.x0 + DEALER.doorPeople.x1) / 2;
@@ -715,7 +719,7 @@
         // Pendant lamps and ceiling spots hang from the roof (hidden with it).
         for (let x = H.x + 60; x < H.x1; x += 64)
           for (let z = H.y + 60; z < H.y1 - 20; z += 70) mesh(cylinderGeo, T.black, roof, x, top - 6, z, 1.6, 2, 1.6);
-        // ---- Moving parts: turntables, rims, pools, cones, curtain, doors, shutters ----
+        // ---- Moving parts: turntables, rims, pools, curtain, doors, shutters ----
         const slots = DEALER.slots,
           discs = new Three.InstancedMesh(new Three.CylinderGeometry(1, 1, 0.5, 64), dealerMaterials.disc, slots.length + 1),
           rims = new Three.InstancedMesh(new Three.TorusGeometry(1, 0.012, 4, 96), dealerMaterials.ledRing, slots.length + 1),
@@ -729,21 +733,6 @@
         dealerVisual.discs = discs;
         dealerVisual.rims = rims;
         dealerVisual.pools = pools;
-        // Light cones on the hero from four ceiling spots.
-        const cones = new Three.Group();
-        for (let k = 0; k < 4; k++) {
-          const a = (k / 4) * TAU + 0.4,
-            geo = new Three.CylinderGeometry(1.2, hero.r * 0.55, top - 8, 20, 1, true),
-            cone = new Three.Mesh(geo, dealerMaterials.cone);
-          cone.position.set(hero.x + Math.cos(a) * 12, (top - 8) / 2, hero.y + Math.sin(a) * 12);
-          cone.lookAt(hero.x, 0, hero.y);
-          cone.rotateX(Math.PI / 2);
-          cone.position.set(hero.x + Math.cos(a) * hero.r * 0.6, (top - 8) / 2, hero.y + Math.sin(a) * hero.r * 0.6);
-          cone.rotation.set(Math.sin(a) * 0.12, 0, -Math.cos(a) * 0.12);
-          cones.add(cone);
-        }
-        moving.add(cones);
-        dealerVisual.cones = cones;
         // The curtain: two halves of folded velvet on the track.
         const half = (C.x1 - C.x0) / 2,
           curtainHeight = 48,
@@ -805,9 +794,9 @@
         // One culling entry for the whole dealership (the roof's own visibility is ours).
         statics.push({ x: H.x + H.w / 2, y: H.y + H.h / 2 + 60, group: root, radius: 520 });
         // ---- Night light: pools in the island's light map and glows ----
-        for (const s of slots) isleLightPools.push({ x: s.x, y: s.y, r: s.where === 'hall' ? 52 : 44, color: [255, 238, 214], strength: s.where === 'hall' ? 0.55 : 0.45 });
+        for (const s of slots) isleLightPools.push({ x: s.x, y: s.y, r: s.where === 'hall' ? 50 : 44, color: [255, 238, 214], strength: s.where === 'hall' ? 0.28 : 0.3 });
         for (let x = H.x + 30; x < H.x1; x += 60) isleLightPools.push({ x, y: H.y1 + 24, r: 60, color: [255, 226, 186], strength: 0.4 });
-        for (let x = H.x + 40; x < H.x1; x += 80) for (let z = H.y + 40; z < H.y1; z += 80) isleLightPools.push({ x, y: z, r: 64, color: [255, 240, 220], strength: 0.3 });
+        for (let x = H.x + 40; x < H.x1; x += 80) for (let z = H.y + 40; z < H.y1; z += 80) isleLightPools.push({ x, y: z, r: 64, color: [255, 240, 220], strength: 0.16 });
         isleLightPools.push({ x: Py.x + Py.w / 2, y: Py.y + 20, r: 40, color: [255, 214, 150], strength: 0.4 });
         dealerVisual.glows = [];
         for (let x = H.x + 60; x < H.x1; x += 64)
@@ -1010,9 +999,7 @@
         dealerMaterials.brand.emissiveIntensity = 0.28 + night * 0.9;
         dealerMaterials.sign.emissiveIntensity = 0.12 + night * 1.6;
         dealerMaterials.placard.emissiveIntensity = 0.3 + night * 0.7;
-        dealerMaterials.pool.opacity = 0.1 + night * 0.35;
-        dealerMaterials.cone.opacity = (inside ? 0.035 : 0) + night * (inside ? 0.05 : 0);
-        dealerVisual.cones.visible = dealerMaterials.cone.opacity > 0.005;
+        dealerMaterials.pool.opacity = 0.08 + night * 0.18;
         // Turntables and rims follow their cars; pools under each car.
         const discs = dealerVisual.discs,
           rims = dealerVisual.rims,
