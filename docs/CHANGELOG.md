@@ -40,6 +40,45 @@ South Coast Cycle bike share (cycles.js, cycles3d.js)
   map cell. Every size follows the bicycle's length (`SHARE_BIKE_LENGTH`) or the metre.
 - `DeadEndCity.bikeShare()` (network, nearest station, rent/dock log), `DeadEndCity.bikeStation(id)`.
 
+## Unreleased — speech bubbles seen from above, the Falcon's riders scream and talk
+
+Speech bubbles (crowd.js SPEECH SEEN FROM ABOVE, render3d.js, roofmission.js, flight-view3d.js)
+- Every speech bubble (street crowd, drivers, carjacks, police and soldiers, the Falcon's riders,
+  the Blue Hour rooftop) fades out between 40 m and 50 m of height between the view and the
+  speaker, and a hidden line no longer takes one of the two bubble slots. The HUD log and captions
+  are unchanged.
+- The height: flying (helicopter, plane, parachute) or riding (the Falcon, the Sunset Eye), the
+  player's elevation over the speaker, which for someone on the ground is the AGL the flight HUD
+  shows; on foot or driving, the street zoom as a height (`streetZoomHeight`: the height at which
+  the flight camera draws the ground at the zoom's scale; zoom 0.8 = 29 m, 0.72 = 38 m, 0.68 =
+  43 m, 0.64 = 49 m, 0.5 = 73 m), plus the player's elevation over the speaker (from a roof). The
+  pull-back at speed does not count. Measured headless: helicopter at 30 m AGL fade 1, 45 m 0.5,
+  60 m 0 (bubbles gone).
+- Labels projected behind a perspective camera are skipped instead of drawn mirrored.
+
+The Falcon (themepark.js RIDERS' VOICES, car-radio.js)
+- **Radio off by default on the Falcon.** Each ride starts with the radio off; the widget is
+  shown and N / B / a click turn it on for that ride only (`player.coaster.radio`); the saved
+  radio setting for vehicles and the Eye is untouched.
+- **Screams in time with the track.** Each car is read off the circuit (vertical speed from the
+  train speed and the track's rise, seat load from the change of rise, inversion). Over the first
+  drop every car lets out up to two of the recorded pedestrian screams (pitch 0.9..1.14, own
+  level and delay), placed on that car, so the chorus rolls down the train as each car tips over;
+  later drops (12 m+), dips (5 m+), airtime (< 0.45 g) and inversions draw a quieter voice from
+  some cars. Voices bus (Voices slider and switch), attenuated by the 3D distance from the player,
+  so they are heard aboard and from the ground nearby. Replaces the synthesised coaster screams
+  (the flume and drop tower keep theirs). No whoop sample exists, so none is played.
+- **Rider speech bubbles:** nervous on the lift ("OMG I'm so scared!", "Why did I agree to
+  this?", "Don't look down…"), screams over the first drop ("AAAAHHH!"), excited or terrified on
+  the elements ("WOOOO!", "Faster!", "Mommy!", "Upside dooown!"), and on the brake run "I'm going
+  to throw up!", "Again! Again!", "My legs are jelly…". Two at a time through the crowd's bubble
+  limit, first in line while the player rides, subject to NPC chatter and the height rule; seen
+  aboard and from the ground nearby. From the chase camera the speakers come from cars 1-4 (in
+  frame); no line is said twice at once or twice running.
+- Console: `DeadEndCity.coasterVoices(reset)` (every cue with track position, height, vertical
+  speed, g, drop depth), `DeadEndCity.speechView()`; `radio()` reports `enabled` (the ride's
+  switch on the Falcon) and `saved`.
+
 ## Unreleased — ramming roadblocks, crash physics, breakable trees and furniture
 
 Roadblocks (roadblocks.js, physics.js)
