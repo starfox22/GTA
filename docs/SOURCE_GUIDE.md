@@ -251,7 +251,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
 | god-panel.js | God mode settings: the GOD MODE settings tab (time presets and slider, freeze time, weather, refill, lose police, teleport), the map's teleport pick mode and the safe teleport `godTeleport` (section 4d, God mode) |
-| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
+| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the player outline at night (`playerOutlineOn`), the key remapping table and its keyboard handling (`settingsKeyDown`) |
 | hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), the SPEED BOX (`updateSpeedBox`, `trackPlayerPace`, the km/h / mph units: `speedReading`, `speedText`, `kmhReading`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
 
@@ -680,7 +680,8 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   has `get()` / `set()` and applies at once. While it is open `gameMode` is `'settings'` and
   the keydown listener hands every key to `settingsKeyDown()`. The character see-through
   switch writes `dead-end-city-cutaway` and calls `city3D.setCharacterCutaway(on)` (owned by
-  the renderer). NPC chatter off hides the street speech bubbles (render3d.js); mission
+  the renderer). Player outline at night (`settings.playerOutline`, in the saved record) is
+  read by the renderer every frame. NPC chatter off hides the street speech bubbles (render3d.js); mission
   dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected. Every bubble (the Blue Hour's
   included) fades out seen from 40..50 m above (crowd.js SPEECH SEEN FROM ABOVE); the HUD log and
   captions are not bubbles.
@@ -1218,13 +1219,21 @@ docs/audit/missions-qa.md shows the method).
 
 - **HDR and post-processing** (postfx3d.js): the scene renders into a half-float target
   (4x MSAA on HIGH/ULTRA, with a depth texture), then SAO ambient occlusion (half resolution,
-  depth-aware blur), a soft-knee bloom mip chain, and one composite pass: AO, bloom, exposure,
+  depth-aware blur), wet reflections (HIGH/ULTRA, wet streets only, see Wet roads), a soft-knee
+  bloom mip chain, and one composite pass: AO, wet reflections, bloom, exposure,
   the ACES filmic curve, a time-of-day grade (saturation, contrast, lift/gain), vignette and
   dither, then FXAA when there is no MSAA. `renderFrame()` replaces `renderer.render()`.
   Built-in materials output scene-linear light into the target. Custom `ShaderMaterial`s that
   compute final screen colours (the water) end with `#include <city_hdr_output>` (and include
   `<city_hdr_pars>`), which inverts the tone curve so they look as designed; unlit
   `MeshBasicMaterial`s with `toneMapped: false` (signs) get the same automatically.
+  Half-resolution passes that read the full-resolution depth buffer (AO, its blur, the wet
+  reflections) fetch it at texel centres computed from `gl_FragCoord`: a half-resolution
+  pixel's centre lies exactly on the corner of four depth texels, and which one a nearest
+  fetch returned flipped with sub-ULP rounding of the interpolated UV (one way above the
+  middle row of the screen and on one side of the full-screen quad's diagonal). That printed
+  AO stripes and a darker band with a hard horizontal edge through the middle of the frame,
+  right under the player (the "horizontal lines on ULTRA", also on HIGH).
 - **Adaptive quality** (quality.js, ADAPTIVE QUALITY): on AUTO the frame loop feeds each
   frame's interval and CPU time to `adaptGraphics()`; GPU-bound and slow, the scene is drawn
   at a lower share of the canvas (`setRenderScale`, postfx3d.js; the composite upsamples),
@@ -1239,7 +1248,7 @@ docs/audit/missions-qa.md shows the method).
   With shadows off, cars and people stand on soft contact blobs (lighting3d.js CONTACT
   SHADOWS, one instanced draw). The shadow box stays texel-snapped (`placeSun`).
 - **Quality tiers** (quality.js) set pixel ratio, default shadows and shadow-map size, MSAA,
-  AO samples, bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
+  AO samples, wet-reflection steps (`ssr`, HIGH/ULTRA), bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
   record; the renderer's `setQuality(tier)` applies one at runtime. `DeadEndCity.graphics('high')`
   switches from the console (tests use it, since SwiftShader auto-detects as LOW).
 - **Sun and sky** (lighting3d.js): `sunDirection` follows the clock (east, north-west at
@@ -1266,7 +1275,9 @@ docs/audit/missions-qa.md shows the method).
   blue-hour night: stronger moonlight and cool sky fill, a brighter night sky, opened exposure,
   slightly lifted blue blacks and less contrast and saturation loss than before; lamps, neon and
   headlights stay far above that ambient. No light follows the player (the foot pool is gone;
-  only a faint moonlit rim on their model's silhouette edges remains).
+  only a faint moonlit rim on their model's silhouette edges remains; Settings · Graphics ·
+  Player outline at night switches it off: `settings.playerOutline`, saved with the other
+  settings and read every frame).
 - **Searchlights** (searchlight3d.js): a shaft is a cone whose front faces march the view
   ray through the cone (exit solved analytically): soft radial profile with a hot core,
   denser towards the lamp, forward scattering, drifting haze noise (MEDIUM and up), a soft
@@ -1299,7 +1310,34 @@ docs/audit/missions-qa.md shows the method).
   samples for foam and for its normal. Spray is one `Points` object.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
-  a bump, dielectric roughness and rain puddles (`weather.wet`). Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
+  a bump and dielectric roughness. (The painted sheet no longer carries the 330 dark
+  "patch" ellipses it used to: from the street camera they read as long shadows with nothing
+  casting them, fixed to the tarmac whatever the time of day.)
+- **Wet roads** (surfaces3d.js WET ROADS, lighting3d.js WET SURFACES, postfx3d.js WET
+  REFLECTIONS, weather3d.js WET GROUND), all from `weather.wet` (rises in the rain, dries over a
+  few minutes after). A shared GLSL pattern decides where water stands: `cityWetLow` (dips in
+  the tarmac), `cityWetFilm` (the damp film, each spot with its own drying order, so a drying
+  street goes patchy from the edges in; dips and gutters dry last) and `cityPuddle` (standing
+  water that fills the dips and gutters as it rains and shrinks to their middles as it dries).
+  The ground, the neon streaks (signage3d.js) and the reflections pass all use it.
+  - LOW: the film only darkens (asphalt and paving darker and more saturated, paint and bright
+    kerbs a little less, grass hardly) and smooths a little.
+  - MEDIUM: plus the glossy film (roughness ~0.25), the sky mirrored in it (`citySkyReflect`)
+    and at night the lamps, shop windows and neon streaked down the wet road towards the
+    camera: the night light map read at six points up the view direction and high-passed
+    across it, so only the bright cores of the pools come through as narrow streaks in the
+    lamps' colours (`citySheenDir`, `WET_STREAK_GAIN`).
+  - HIGH / ULTRA: plus standing water in the dips and in the gutters (paving a few units from
+    the tarmac in the painted sheet), nearly a mirror, with three layers of rain rings
+    (`cityPuddleRipples`), and the wet reflections pass: the wet ground writes its
+    reflectivity into the HDR target's alpha as a negative number (nothing else writes one); a
+    half-resolution pass traces each wet pixel's mirror ray through the depth buffer (20 steps
+    on HIGH, 28 on ULTRA, geometric, then a 5-step binary search), jittered in its vertical
+    plane by the roughness so lights stretch into streaks, rippled in the puddles, then
+    blurred along the reflection; the composite adds (hit minus the sky the ground already
+    mirrors) x wetness x `WET_MIRROR_DAY`/`NIGHT`, so facades, signs, lamps, people and cars
+    stand in the wet road. Both passes are skipped on dry streets.
+  - Tyre spray behind fast cars on a wet road (weather3d.js SPRAY) on MEDIUM and up. Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
 
 - **Weather** (weather.js, weather3d.js, weather-audio.js): the next state is picked when a
   state starts, so an overcast spell that will turn to rain announces it over its last

@@ -200,6 +200,7 @@
           uniform float uWet;
           varying vec2 vUv;
           varying vec3 vGlow;
+          varying vec2 vGround;
           ${GLOW_MODE_GLSL}
           #include <fog_pars_vertex>
           void main() {
@@ -209,6 +210,7 @@
             // A ground quad: width across, length running south (towards the camera).
             vec3 p = glowCenter + vec3( position.x * glowParams.x, 0.0, -position.y * glowExtra.x );
             if ( level < 0.002 ) p = vec3( 0.0, -9999.0, 0.0 );
+            vGround = p.xz;
             vec4 mvPosition = modelViewMatrix * vec4( p, 1.0 );
             gl_Position = projectionMatrix * mvPosition;
             #include <fog_vertex>
@@ -216,7 +218,10 @@
         fragmentShader: `
           varying vec2 vUv;
           varying vec3 vGlow;
+          varying vec2 vGround;
           uniform float uTime;
+          uniform float uWet;
+          ${SURFACE_NOISE}
           #include <common>
           #include <fog_pars_fragment>
           void main() {
@@ -227,6 +232,11 @@
             float streaks = 0.62 + 0.38 * sin( vUv.x * 19.0 + along * 2.5 + 1.3 );
             float ripple = 0.7 + 0.3 * sin( along * 29.0 + uTime * 2.6 + sin( vUv.x * 9.0 ) * 3.0 );
             float g = pow( across, 1.3 ) * pow( along, 1.4 ) * streaks * ripple;
+            // Only where the road is still wet (lighting3d.js WET SURFACES): the
+            // streak breaks up over the drying patches and runs brighter and
+            // sharper across standing water.
+            float low = cityWetLow( vGround );
+            g *= cityWetFilm( vGround, low, 0.0, uWet ) * mix( 0.75, 1.5, cityPuddle( low, uWet ) );
             gl_FragColor = vec4( vGlow * g, 1.0 );
             #include <tonemapping_fragment>
             #include <colorspace_fragment>
