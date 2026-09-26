@@ -8,13 +8,14 @@ rerun. Merge conflict here? Take either side and rerun the tool.
 Grep this file first: `grep -i crowd docs/FILEMAP.md`. Sections follow the include
 tree from src/main.js; a file that is itself an include list has its own section
 (marked ▸). Files are listed in build order, so order matters (a `const` must be
-included before code that runs at load time and reads it).
+included before code that runs at load time and reads it). The CSS/HTML fragments
+src/shell.html includes (src/ui/) have their own section after the scripts.
 
-354 files in the include tree, 138,161 lines.
+362 files in the include tree, 138,254 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   154 — ▸ Game orchestration and shared state
+- `src/game.js`   152 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -123,9 +124,7 @@ included before code that runs at load time and reads it).
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
 - `src/render3d.js`   200 — ▸ Three.js renderer and resource lifecycle
 - `src/game-loop.js`   158 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
-- `src/game-console.js`   556 — window.DeadEndCity developer console, part 1 of 3 (one object literal across game-console*.js; only valid together)
-- `src/game-console-world.js`   535 — DeadEndCity console part 2 of 3: ride, simulate, bikes, world/vehicle probes
-- `src/game-console-graphics.js`   280 — DeadEndCity console part 3 of 3: damage tests, lineups, graphics, settings, radio
+- `src/game-console.js`    45 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
 
 ## src/physics.js ▸ Vehicle and pedestrian physics
@@ -542,7 +541,20 @@ included before code that runs at load time and reads it).
 
 - `src/parachute3d.js`   528 — Ram-air parachute
 
-## src/shell.html ▸ HTML page skeleton: head, body canvases, the src/ui/*.css and *.html fragments below, and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
+## src/game-console.js ▸ DeadEndCity console registry and assembly
+
+- `src/game-console-core.js`   112 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
+- `src/game-console-missions.js`   184 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-police.js`   132 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
+- `src/game-console-world.js`   191 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
+- `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
+- `src/game-console-crowd.js`    98 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-graphics.js`   170 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-settings.js`    95 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
+
+## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
 
 - `src/ui/build-header.html`   361 — Dead end city — readable development / review build 30.0.0: Open this HTML directly to play offline.
 - `src/ui/base.css`   561 — styles: :root, body, button, button:focus-visible, …
@@ -573,4 +585,4 @@ included before code that runs at load time and reads it).
 ## Outside the include tree
 
 - `src/asset-loader.js`   160 — decodes the embedded/streamed media into ASSETS before the game starts
-- `src/shell.html`    72 — HTML page skeleton: head, body canvases, the src/ui/*.css and *.html fragments below, and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
+- `src/shell.html`    72 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

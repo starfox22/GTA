@@ -147,8 +147,6 @@
     // @include src/game-loop.js
     requestAnimationFrame(frame);
     // @include src/game-console.js
-    // @include src/game-console-world.js
-    // @include src/game-console-graphics.js
     // @include src/game-agent-tools.js
   })();
   // END SUBSYSTEM: src/game.js

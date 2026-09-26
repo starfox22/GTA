@@ -37,9 +37,6 @@ MAX = 150
 # a header comment to the source and delete the entry here.
 OVERRIDES = {
     'src/game-menus.js': 'resize, begin/newGame, pause, help, big map toggle',
-    'src/game-console.js': 'window.DeadEndCity developer console, part 1 of 3 (one object literal across game-console*.js; only valid together)',
-    'src/game-console-world.js': 'DeadEndCity console part 2 of 3: ride, simulate, bikes, world/vehicle probes',
-    'src/game-console-graphics.js': 'DeadEndCity console part 3 of 3: damage tests, lineups, graphics, settings, radio',
     'src/render3d-statics.js': 'static building batches, static cells and culling (staticInView), shared materials',
     'src/render3d-terrain.js': 'mesh/box/rod helpers, wall textures, the ground mesh and kerbs',
     'src/render3d-streetprops.js': 'street lamps and their glow halos, vehicle halos, blossom, sign() boards',

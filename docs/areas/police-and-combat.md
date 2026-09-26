@@ -85,4 +85,4 @@ damage.js / damage3d.js, air-cover.js.
 ## Reports
 
 `policeReport()` (includes `wounds` and `crimes`); see
-testing-and-console.md for the full console table.
+docs/console/police.md for the police console methods.

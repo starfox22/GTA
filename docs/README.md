@@ -15,7 +15,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
 | areas/rendering.md | Cameras, draw-call rules, HDR pipeline, lighting, searchlights, cutaway, buildings and signs, ground, wet roads |
 | areas/ui-and-settings.md | Input actions, settings, HUD and the interaction prompt, touch, bike share |
-| areas/testing-and-console.md | Test tools, headless tips, tours, console rules and the full `DeadEndCity` table |
+| areas/testing-and-console.md | Test tools, headless tips, tours, console rules and the index of the `DeadEndCity` tables (console/) |
 | changes/ | Changelog fragments, one per change (see changes/README.md) |
 | CHANGELOG.md | The latest release; older ones in archive/CHANGELOG-archive.md |
 | audit/ | QA and review logs (method, findings, open observations) |
