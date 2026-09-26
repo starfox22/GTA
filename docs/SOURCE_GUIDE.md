@@ -152,8 +152,8 @@ Two closures matter:
   harder, the tail lightens); `balance` per class (VEHICLE_DEFINITIONS, -1..1) makes trucks,
   buses, vans and SUVs push wide at the limit and muscle cars and roadsters step the tail out
   under power. Rain (`wetGrip()`, weather.js: down to 0.72 on a soaked road) scales traction,
-  brakes, handbrake and cornering: a sedan's 100-0 grows from 34.5 m to 45.8 m and its steady
-  cornering from 1.22 g to 0.89 g. `vehicleHandling` adds `steer` (a bent front end) and
+  brakes, handbrake and cornering: a sedan's 100-0 with ABS grows from 38 m to 57 m on a soaked
+  road (the brakes, section Brakes and assists) and its steady cornering from 1.22 g to 0.89 g. `vehicleHandling` adds `steer` (a bent front end) and
   `brake` (flat tyres). `kerbStrike` jolts the body and scrubs 1-5% of the speed on mounting
   or dropping off a kerb above 25 km/h.
 - **Brakes and assists** (driving.js, called from physics.js controlVehicle for the player's
@@ -167,8 +167,8 @@ Two closures matter:
   can ask 1.5x the peak, so past it the wheel locks, faster at low speed. The corner's share of
   the grip comes off first (friction circle). `spec.brakeG` is still the mean deceleration of an
   ABS stop (what road tests print; the AI's clamp): the tyres' peak is brakeG / 0.93
-  (`ABS_EFFICIENCY`). ABS dumps an axle's pressure to 0.8 when its slip passes 19%, holds 25 ms
-  and builds again at 3.2/s: a 10-15 Hz cycle that keeps the fronts about half their sideways
+  (`ABS_EFFICIENCY`). ABS dumps an axle's pressure by a fifth (and at least down to what the tyre
+  is taking) when its slip passes 19%, holds 25 ms and builds again at 3.2/s: a 10-15 Hz cycle that keeps the fronts about half their sideways
   grip (the car steers while stopping). Locked, the fronts keep next to nothing (`cornerShare`),
   the tyres slide on the way the car is going, the wheels stop turning (cars3d.js), marks and a
   lower squeal; a locked front on a motorbike for 0.5 s (0.25 s leaned) lowsides the rider
