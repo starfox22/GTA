@@ -818,8 +818,12 @@
       },
       helicopter: {
         name: 'MAVERICK HELICOPTER',
+        // An H125 / Bell 407 class light single: 10.75 m over the rotor, 4.25 m
+        // across the skids and stabiliser. helicopter3d.js builds every look at
+        // real size (the UH-60 class military one fitted to this footprint).
         l: 86,
         w: 34,
+        modelScale: 1,
         // Cruise flat out at about 240 km/h (helicopterControl).
         max: 250 * KMH,
         acc: 0.5 * GRAVITY,
@@ -6463,6 +6467,20 @@
           return { id: c.id, type, body, livery };
         });
       },
+      // Helicopter review (helicopter3d.js): parks one helicopter of each look
+      // ('police', 'news', 'executive', 'military') in a row east from (x, y),
+      // `spacing` apart, facing `heading`; `rotors` true spins them up (with the police lights
+      // running). Returns the ids and looks.
+      helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110) {
+        return ['police', 'news', 'executive', 'military'].map((heliLook, i) => {
+          const c = makeCar('helicopter', x + i * spacing, y, heading, false);
+          Object.assign(c, { heliLook, showRotor: !!rotors, showLights: rotors ? 'pursuit' : false });
+          return { id: c.id, look: heliLook };
+        });
+      },
+      // Every helicopter model built: look, rotor spool, draw calls, shadow casters,
+      // triangles, crew shown (helicopter3d.js).
+      helicopterModels: () => city3D?.helicopterModels?.() ?? null,
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
       // pass). On AUTO the adaptive controller may change it again.
       renderScale(scale) {
