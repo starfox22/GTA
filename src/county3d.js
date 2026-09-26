@@ -768,7 +768,8 @@
           trail.peak.name + ' · 4×4 TRAIL',
           trail.points[0][0] + 55,
           trail.points[0][1] + 30,
-          150,
+          // A trailhead board at real size (it was 19 m across).
+          88,
           '#d4cb92',
         );
         statics.push({

@@ -138,10 +138,15 @@
       points = points.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]);
       // A level turning pad at each hairpin (room for a three-point turn): centred
       // on the rounded curve where it passes closest to the leg's raw corner.
+      // Searched in order along the curve: well rounded, a corner can lie nearer
+      // to the leg below it than to its own bend.
+      let cursor = 0;
       const hairpins = corners.map(([cx, cy]) => {
-        let best = points[0];
-        for (const p of points) if (Math.hypot(p[0] - cx, p[1] - cy) < Math.hypot(best[0] - cx, best[1] - cy)) best = p;
-        return best;
+        let best = cursor;
+        for (let i = cursor; i < points.length; i++)
+          if (Math.hypot(points[i][0] - cx, points[i][1] - cy) < Math.hypot(points[best][0] - cx, points[best][1] - cy)) best = i;
+        cursor = best + 1;
+        return points[best];
       });
       return { points, hairpins };
     }

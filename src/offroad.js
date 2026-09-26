@@ -964,7 +964,7 @@
         records: { ...hillClimbRecords() },
         courses: MOUNTAIN_TRAILS.map((t, i) => {
           const course = trailCourse(i);
-          return { trail: t.name, start: [Math.round(course.start.x), Math.round(course.start.y)], checkpoints: course.checkpoints.map((p) => [Math.round(p.x), Math.round(p.y)]), target: course.target };
+          return { trail: t.name, start: [Math.round(course.start.x), Math.round(course.start.y)], checkpoints: course.checkpoints.map((p) => [Math.round(p.x), Math.round(p.y), p.i]), hairpins: t.hairpins.map(([x, y]) => [Math.round(x), Math.round(y)]), target: course.target };
         }),
         wet: +(weather.wet || 0).toFixed(2),
         effects: city3D ? city3D.offroadInfo() : null,
@@ -1049,11 +1049,13 @@
           look = Math.min(n, idx + (tight ? 2 : 4 + Math.floor(Math.max(0, kmh) / 8))),
           [tx, ty] = path[look],
           err = normalizeAngle(Math.atan2(ty - c.y, tx - c.x) - c.a);
-        // Ease off for the bend ahead: the heading change over the next 12 samples.
-        const a0 = Math.atan2(path[Math.min(n, idx + 2)][1] - path[idx][1], path[Math.min(n, idx + 2)][0] - path[idx][0]),
-          a1 = Math.atan2(path[Math.min(n, idx + 12)][1] - path[Math.min(n, idx + 10)][1], path[Math.min(n, idx + 12)][0] - path[Math.min(n, idx + 10)][0]),
-          bend = Math.abs(normalizeAngle(a1 - a0)),
-          desired = Math.min(maxKmh, bend > 2 ? 8 : bend > 1.2 ? 13 : bend > 0.6 ? 22 : maxKmh);
+        // Ease off in time for the bends ahead: the sharpest heading change within
+        // braking reach (farther ahead at speed).
+        let bend = 0;
+        const h0 = heading(idx),
+          reach = 6 + Math.floor(Math.max(0, kmh) / 2.5);
+        for (let j = idx + 1; j <= Math.min(n - 1, idx + reach); j++) bend = Math.max(bend, Math.abs(normalizeAngle(heading(j) - h0)));
+        const desired = Math.min(maxKmh, bend > 2.2 ? 9 : bend > 1.3 ? 14 : bend > 0.6 ? 24 : maxKmh);
         // Wedged (nose in a bank past a hairpin): back off a moment on opposite lock.
         stall = keys.KeyW && Math.abs(kmh) < 1 && c.wheelSpin < 0.3 ? stall + dt : 0;
         if (stall > 1.5) backing = 1.4;

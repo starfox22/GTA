@@ -1,5 +1,72 @@
 # Changelog
 
+## Unreleased — the 4x4 club, trail mud and the hill climb
+
+World (offroad.js, offroad3d.js, terrain.js, county3d.js)
+- **RIDGELINE 4X4 CLUB**: a gravel lot cut level into the foot of Mount Ascent across Eagle Pass
+  from the trailhead (x 7410..7700, y 2034..2194; 3.75 m clear of the road, 7 m of the trail):
+  log rails, a carved 4X4 CLUB board on log posts with a rusted steel emblem and lamps, a pop-up
+  canopy with a table and a lantern, camp chairs round a fire ring, a cooler, a kettle grill that
+  smokes, the club flag flying, string lights and lanterns after dark. Seven members stand about,
+  grill, sit by the fire and talk shop ("Aired down to 15 psi!", "Lockers engaged?", "Last one to
+  the summit buys the beers.", rain, night and theft lines, remarks on a muddy truck or a road car).
+- **Seven club trucks** at real size (modelScale 1), each its own lofted body, livery and kit:
+  | Truck | Size (m) | Mass | Top / 0-100 | Tyres, drive | Kit |
+  | --- | --- | --- | --- | --- | --- |
+  | ROVER SERIES III SAFARI | 4.45 x 1.68 | 1.75 t | 110 / 0-80 in 19 s | MT, 4x4, low range | safari double roof, alpine lights, bonnet spare, rack and jerry cans, rear ladder, zebra livery |
+  | BADGER RUBICON CRAWLER | 4.33 x 2.00 | 2.1 t | 150 / 10.8 s | 37" MT on beadlocks, 4x4, lockers | no doors, sport cage and bikini top, seats, winch bumper, sliders, tube fenders, screen light bar |
+  | MUSTANG RIDGE BRONCO | 4.20 x 1.86 | 2.05 t | 155 / 9.8 s | AT with raised letters, 4x4 | teal and white two-tone, chrome bumpers, swing-away spare, rack |
+  | HIGHLANDER 70 EXPEDITION | 5.22 x 1.94 | 2.75 t | 150 / 15.5 s | MT, 4x4, lockers | roof tent, sand ladders, jerry cans, snorkel, bull bar and winch, light bar, rear ladder and spare |
+  | TAURO HX35 ARCTIC | 5.33 x 1.94 | 2.2 t | 175 / 10.5 s | AT, 4x4 | flares, snorkel, roof light bar and pods, sports bar, loaded bed |
+  | OKTAV 6×6 EXPEDITION | 5.87 x 2.11 | 3.85 t | 160 / 7.8 s | MT on beadlocks, three axles, lockers | wing indicator pods, side pipes, rack and light bar, bed rollbar with pods |
+  | SIDEWINDER TROPHY TRUCK | 5.80 x 2.24 | 2.75 t | 210 / 5.4 s | desert, 4x4, long travel | race livery #88, bed cage over two spares, coilovers and bypass shocks, louvered hood |
+  Tyres are modelled (lathed carcass, staggered lugs: mud-terrain, all-terrain, desert); every
+  wheel steers, spins at the wheel speed (ahead of the truck when it spins) and follows the ground
+  within its travel. Taken or wrecked trucks are replaced while nobody watches.
+- **Trail mud**: every trail vertex carries mud and rock (baked with the trail's own distance
+  along and across): muddy dirt on the lower switchbacks, THE BOG and the MUDDY HAIRPIN on Mount
+  Ascent, rock steps higher up; deepest in the ruts, firmer on the crown and the edges. The
+  terrain shader draws dark wet mud, churned ruts and brown puddles that mirror the sky, wetter
+  after rain (weather.wet), and pale rock ledges (with slabs) on the steps.
+- **Hairpins**: four Chaikin passes round each hairpin (two left a right angle at the apex) and
+  the legs are evenly spaced up the face (bunched at the top, the last two were 6 m apart); the
+  hairpin pads are found in order along the curve (the third pad had landed on the first).
+  Steepest graded pitch 0.37 (was 0.53).
+
+Physics (offroad.js `offroadDrive`, called from physics.js)
+- On the range the driven wheels push at most mu x their load: surface (packed dirt 0.68, grass
+  0.58, mud down to ~0.3, wet mud lower, rock 0.8) x tyre (mud-terrain, all-terrain, desert, road)
+  x driven share (1 for 4x4; ~0.5 for two-wheel drive, shifting with the grade). Past it the wheels
+  spin (the wheel speed runs ahead of the ground: drawn, heard in the revs) and grip drops to
+  sliding friction. Low range multiplies the pull under 35 km/h. The brakes hold a stopped truck
+  up to the same friction; steeper, it slides back. Mud adds rolling resistance (heavier trucks
+  sink further); rough ground above a truck's suspension speed bounces and scrubs it; rock ledges
+  jolt it, and hurt anything taken over them fast. Sideways grip follows the surface. Replaces the
+  old flat traction factors, speed caps and heavy drag on terrain.
+- Body pitch and roll come from the ground under the four wheels, not the slope at the middle.
+- Measured with `trailDrive` (line-following pilot, dry): road cars stop spinning in the first mud
+  (sample ~55 of 401); the crawler reaches the summit in 1:39, the Series in 2:01, the Hilux and the
+  Ranger in 2:10-2:15; in the wet the bog stops a 4x4 driven up the middle of the ruts.
+
+Effects (offroad3d.js)
+- Mud clumps thrown rearward and up from spinning or fast tyres in mud (lit, instanced, ballistic,
+  splatting where they land), a finer mist, pale dust on dry dirt; tyre tracks behind every wheel
+  on dirt that fade over minutes. Pools: 640 clumps, 360 mist, 700 splats, 1800 track prints; no
+  per-frame allocation.
+- Mud on bodies (`c.mudCoat`, `c.mudWet`): a shader layer on the paint (every vehicle), trim and
+  tyres (club trucks), heaviest low down, dark and glossy when fresh, pale when dry; washed off by
+  rain and by driving through water (the sea, lakes, streams).
+- Engine audio revs with wheelspin and pulls low-range revs at crawling speed.
+
+Hill climb
+- Crossing a trail's start gate starts the clock; three checkpoints in order; SUMMIT REACHED shows
+  the time and the best clean run (localStorage `dead-end-city-hillclimb`). E at the club sign in a
+  vehicle arms the Mount Ascent challenge: beat 2:30 for $1,000. A running clock (with 4LO) shows
+  during a climb.
+
+Console: `offroad()`, `clubLineup(x, y)`, `hillClimb(action, trail)`, `trailDrive(seconds, maxKmh,
+trail)`, `trailProfile(trail, step)`, `mud(amount, wet)`.
+
 ## Unreleased — wet streets, the ULTRA band, phantom shadows
 
 Graphics (postfx3d.js, surfaces3d.js, lighting3d.js, weather3d.js, signage3d.js)
