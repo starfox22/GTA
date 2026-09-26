@@ -386,6 +386,8 @@
         );
       }
       updateWaterAudio(deltaSeconds);
+      // The shark's score and the dolphins' voices (sealife-audio.js).
+      updateSeaLifeAudio(deltaSeconds);
       if (!active) return;
       footstepClock -= deltaSeconds;
       const walking =

@@ -343,7 +343,8 @@
         labels = [];
       // coasterSpeakers(): the Falcon's riders (themepark.js); clubTalkSpeakers(): the
       // player, while talking with a club-goer (clubtalk.js).
-      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers(), clubTalkSpeakers()])
+      // sealifeSpeakers(): the beach shouting SHARK! (sealife.js).
+      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers(), clubTalkSpeakers(), sealifeSpeakers()])
         for (const p of list) {
           if (!p.speech || p.speechUntil < gameTime) continue;
           if (p.speechHeard !== p.speech) {

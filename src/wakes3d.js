@@ -476,6 +476,8 @@
           live++;
         }
         wakeFrameCount++;
+        // Foam rings from sea life going in and out of the water (sealife3d.js).
+        live += sealifeWakeLive();
         updateSpray(deltaSeconds);
         waterUniforms.uWakeOn.value = live ? 1 : 0;
         if (!live) return;

@@ -118,6 +118,10 @@ const embeddedAssetReferences = {
     "rain-light": "media-audio-rain-light",
     "rain-steady": "media-audio-rain-steady",
     "rain-heavy": "media-audio-rain-heavy",
+    "sealife-gulls": "media-audio-sealife-gulls",
+    "sealife-splash": "media-audio-sealife-splash",
+    "sealife-big": "media-audio-sealife-big",
+    "sealife-blow": "media-audio-sealife-blow",
     "tires": "media-audio-tires"
   }
 };

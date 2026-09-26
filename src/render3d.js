@@ -1170,6 +1170,7 @@
       // @include src/ecology3d.js
       // @include src/world3d.js
       // @include src/wakes3d.js
+      // @include src/sealife3d.js
       // @include src/beachvolley3d.js
       // @include src/beach3d.js
       // @include src/county3d.js
@@ -2643,6 +2644,9 @@
           // Riders on the vehicles just posed, then the people's instance upload (crowd3d.js).
           finishCrowd3D(deltaSeconds);
           lap = profileLap('r:vehicles', lap);
+          // Dolphins, the shark and gulls, their splashes, the life map under the
+          // surface (sealife3d.js); fins and dolphins at the surface report wakes.
+          updateSeaLifeVisuals(deltaSeconds);
           // Every craft on the water has reported in: draw the wake map (wakes3d.js).
           updateWakes(deltaSeconds);
           // Mud and dust from the tyres, splats and tyre tracks, the 4x4 club's flag and smoke (offroad3d.js).
@@ -2969,6 +2973,8 @@
               drawDizzy(q.x, q.y);
             }
           drawHarborLabels3D(api);
+          // SHARK! and the arrow to the fin (sealife3d.js).
+          drawSealifeOverlay3D(api);
           drawHitTargetLabel();
           if (flash > 0) {
             worldContext.fillStyle = 'rgba(199,88,62,' + flash * 0.7 + ')';

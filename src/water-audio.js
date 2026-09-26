@@ -263,6 +263,8 @@
     }
     /* A herring gull: a rising "kee" and a falling "ahh", two to four times. */
     function gullCall(position) {
+      // The recorded calls (sealife-audio.js) when they are loaded.
+      if (gullRecording(position)) return;
       const calls = 2 + Math.floor(Math.random() * 3),
         base = 1500 + Math.random() * 500;
       for (let i = 0; i < calls; i++) {

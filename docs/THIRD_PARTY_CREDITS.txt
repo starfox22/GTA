@@ -625,6 +625,40 @@ rain-heavy.ogg
   Obtained from bob6664569/open-water (site/assets/audio/weather/rain-heavy.mp3;
   site/assets/audio/LICENSES.md). Changes: 0.2-10.4 s.
 
+SEA LIFE
+Played by src/sealife-audio.js: gulls over the coast, the dolphins' splashes and blows, the
+shark's breach and bumps. Each file is a sprite of short takes (the slice table is
+SEA_SPRITES in sealife-audio.js). Freesound could not be opened from the build environment;
+the files were taken from the tidewater project (dgreenheck/tidewater on GitHub, MIT-licensed
+code), whose public/audio/CREDITS.md states that every sound there is a Freesound recording
+released under CC0 1.0 and lists author, page and licence for each; its src/audio/soundBank.js
+gives the slice table. Retrieved 2026-09-26 from raw.githubusercontent.com (SHA-256 of the
+copies: gull.ogg 467dd8e4..., splash.ogg 9de4dab5..., big_splash.ogg b3401965...,
+whale_blow.ogg 549b6b6c...). Changes for this game: transcoded from Opus to mono 32 kHz OGG
+Vorbis (quality 3), metadata stripped, timing unchanged; the gull calls high-passed at 180 Hz.
+License of every recording: Creative Commons Zero (CC0 1.0)
+http://creativecommons.org/publicdomain/zero/1.0/
+
+sealife-gulls.ogg (six herring gull calls)
+  "Seagull on beach" by squashy555, https://freesound.org/people/squashy555/sounds/353416/
+  "Seagulls / gaviotas clean wildtrack.WAV" by Soojay, https://freesound.org/people/Soojay/sounds/462462/
+
+sealife-splash.ogg (four splashes)
+  "SPLASH (by blaukreuz)" by qubodup, https://freesound.org/people/qubodup/sounds/212143/
+    (qubodup's cleaned edit of blaukreuz's "130723_Brela_HarborJump_F_4824.wav", also CC0)
+  "Foley_Natural_Water_Jump_Mono.wav" by Nox_Sound, https://freesound.org/people/Nox_Sound/sounds/585744/
+
+sealife-big.ogg (two big splashes: the breach and the fall back)
+  "Big Water Splash" by qubodup, https://freesound.org/people/qubodup/sounds/442773/
+    (qubodup's mix of CC0 sounds, among them wormer2's 415669 / 415670 and roboroo's 436792)
+  "Large Splash" by roboroo, https://freesound.org/people/roboroo/sounds/436792/
+
+sealife-blow.ogg (three cetacean breaths, played higher as the dolphins' blow)
+  "ORCA.wav" by mikewest, https://freesound.org/people/mikewest/sounds/198937/
+
+Dolphin whistles and echolocation clicks, and the shark encounter's music (low stab, bowed
+double-bass heartbeat, string drone), are synthesised at run time (Web Audio); no recording.
+
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
 third-party shader source is copied. The techniques follow published work:

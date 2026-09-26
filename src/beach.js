@@ -566,6 +566,8 @@
           }
           continue;
         }
+        // Caught up in the SHARK! alarm (sealife.js): pointing, or out of the water.
+        if (p.sharkRush && beachSharkStep(p, deltaSeconds)) continue;
         beachBehave(p, deltaSeconds, hour);
       }
       updateBeachGames(deltaSeconds);
