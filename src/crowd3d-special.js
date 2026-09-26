@@ -51,6 +51,13 @@
             sp.elevation = entityElevation(player);
             return sp;
           }
+          if (player.fall) {
+            // Off a drop (falls-body.js): turning over in the air, limbs going.
+            sp.pose = 'thrown';
+            sp.thrown = player.fall.pose;
+            sp.elevation = entityElevation(player);
+            return sp;
+          }
           if (player.tumble) {
             sp.pose = 'tumble';
             sp.elevation = entityElevation(player) + 2;

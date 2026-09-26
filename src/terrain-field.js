@@ -458,7 +458,8 @@
       return t;
     }
     function terrainVehiclePose(vehicle, h) {
-      if (isAircraft(vehicle) || isBoat(vehicle)) return;
+      // Airborne off a drop, falls-vehicles.js poses it.
+      if (isAircraft(vehicle) || isBoat(vehicle) || vehicle.cliffAir) return;
       // The pose depends only on where the car stands; hundreds of parked cars
       // stand still, so skip the terrain sampling until one moves or is moved.
       if (vehicle.poseX === vehicle.x && vehicle.poseY === vehicle.y && vehicle.poseA === vehicle.a) return;
@@ -488,6 +489,8 @@
         vehicle.slopePitch = 0;
         vehicle.slopeRoll = 0;
       }
+      // On its roof or a side after a fall (falls-vehicles.js).
+      if (vehicle.overturned) vehicle.slopeRoll += vehicle.overturned.roll;
       if (vehicle === player.car && t?.z > 10) {
         const peak = mountainAt(vehicle.x, vehicle.y);
         // SUMMIT REACHED, with the hill climb's time (offroad.js).

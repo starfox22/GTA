@@ -109,6 +109,7 @@
     // @include src/sealife-audio.js
     // @include src/navigation.js
     // @include src/parachute.js
+    // @include src/falls.js
     // @include src/mobile.js
     // @include src/world-view.js
     // @include src/car-radio.js

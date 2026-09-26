@@ -593,7 +593,7 @@
           continue;
         }
         // On a drawbridge leaf, or still in the air off one: not in the water yet.
-        if (!deepWater(c.x, c.y, 6) || c.deckAir || c.deckLeaf) {
+        if (!deepWater(c.x, c.y, 6) || c.deckAir || c.deckLeaf || c.cliffAir) {
           if (c.sinkFor) {
             c.sinkFor = 0;
             c.sinkDepth = 0;

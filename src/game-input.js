@@ -45,6 +45,7 @@
       player.parachute = null;
       player.climbing = null;
       player.thrown = null;
+      player.fall = null;
       player.pool = null;
       player.jumpUntil = 0;
       // Off any roof: the Blue Hour terrace or a building roof.
@@ -270,12 +271,12 @@
         return;
       }
       if (is('bail')) {
-        // Aircraft: parachute. Boats and flooding cars: over the side (water.js).
-        if (!bailOut()) diveOverboard();
-        return;
-      }
-      if (player.parachute && is('handbrake')) {
-        deployParachute();
+        // Held until released: the parachute opens only on a fresh press after the
+        // jump (parachute.js), never on the press that jumped.
+        holdActions(actions);
+        // In freefall: pull the ripcord. Aircraft: parachute. Boats and flooding cars: over the side (water.js).
+        if (player.parachute) openParachuteByHand();
+        else if (!bailOut()) diveOverboard();
         return;
       }
       // Plane flaps and landing gear (aviation.js, FLIGHT CONTROLS).
