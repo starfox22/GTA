@@ -417,9 +417,13 @@
       /**
        * FORESTS AND BOULDERS
        * mountainScenery() (terrain.js) places them; here each kind is an
-       * InstancedMesh per 2048-unit cell, in two levels of detail: near cells draw
-       * the modelled tree (a trunk and three whorls of boughs, or a lobed broadleaf
-       * crown) and cast shadows, far cells a single low cone or blob that does not.
+       * InstancedMesh per 2048-unit cell, in two levels of detail. The trees are
+       * species of the tree library (vegetation3d.js): the conifers by altitude,
+       * pines low down, fir through the middle and spruce up to the treeline,
+       * and beech, birch and maple below them. Near cells draw the modelled tree
+       * of each species (one mesh per species) and cast shadows; far cells one
+       * low cone for every conifer and one blob for every broadleaf, tinted per
+       * tree to its species, that do not.
        */
       const SCENERY_CELL = 2048,
         SCENERY_NEAR = 2300,
@@ -462,36 +466,19 @@
         out.setAttribute('color', new Three.BufferAttribute(color, 3));
         return out;
       }
-      const translated = (g, x, y, z, sx = 1, sy = 1, sz = 1) => g.scale(sx, sy, sz).translate(x, y, z);
-      // Unit trees stand on y = 0 and are ~3.5 units tall for a size of 1.
-      const coniferNear = mergedColoredGeometry([
-          [translated(new Three.CylinderGeometry(0.07, 0.13, 1.2, 5), 0, 0.6, 0), '#4a3a2c', 0.3],
-          [translated(new Three.ConeGeometry(0.95, 1.55, 7), 0, 1.35, 0), '#2c4632', 0.5],
-          [translated(new Three.ConeGeometry(0.74, 1.35, 7), 0, 2.1, 0), '#314e38', 0.45],
-          [translated(new Three.ConeGeometry(0.48, 1.2, 7), 0, 2.85, 0), '#38573f', 0.4],
-        ]),
-        coniferFar = mergedColoredGeometry([[translated(new Three.ConeGeometry(0.85, 3.2, 5), 0, 1.9, 0), '#2e4a34', 0.5]]),
-        broadleafNear = mergedColoredGeometry([
-          [translated(new Three.CylinderGeometry(0.08, 0.15, 1.5, 5), 0, 0.75, 0), '#4f4033', 0.3],
-          [translated(new Three.IcosahedronGeometry(0.95, 1), 0, 2.0, 0, 1, 0.8, 1), '#435a37', 0.55],
-          [translated(new Three.IcosahedronGeometry(0.62, 0), 0.45, 2.55, 0.2), '#4d6540', 0.4],
-          [translated(new Three.IcosahedronGeometry(0.58, 0), -0.4, 2.35, -0.35), '#3d5334', 0.45],
-        ]),
-        broadleafFar = mergedColoredGeometry([[translated(new Three.IcosahedronGeometry(1, 0), 0, 2.1, 0, 1, 0.9, 1), '#42593a', 0.55]]),
-        boulderGeometry = (() => {
-          const g = new Three.IcosahedronGeometry(1, 1),
-            p = g.attributes.position;
-          for (let i = 0; i < p.count; i++) {
-            const x = p.getX(i),
-              y = p.getY(i),
-              z = p.getZ(i),
-              k = 0.78 + terrainHash(Math.round(x * 50), Math.round(y * 50 + z * 17), 5) * 0.4;
-            p.setXYZ(i, x * k, y * k * 0.62, z * k);
-          }
-          g.computeVertexNormals();
-          return mergedColoredGeometry([[g, '#8b8880', 0.35]]);
-        })(),
-        sceneryMaterial = new Three.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 }),
+      const boulderGeometry = (() => {
+        const g = new Three.IcosahedronGeometry(1, 1),
+          p = g.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+          const x = p.getX(i),
+            y = p.getY(i),
+            z = p.getZ(i),
+            k = 0.78 + terrainHash(Math.round(x * 50), Math.round(y * 50 + z * 17), 5) * 0.4;
+          p.setXYZ(i, x * k, y * k * 0.62, z * k);
+        }
+        g.computeVertexNormals();
+        return mergedColoredGeometry([[g, '#8b8880', 0.35]]);
+      })(),
         boulderMaterial = new Three.MeshStandardMaterial({ vertexColors: true, roughness: 0.93 });
       function plantScenery(list, nearGeo, farGeo, material, kind, scaleY = 1, sink = 0) {
         const cells = new Map();
@@ -537,13 +524,102 @@
             scene.add(mesh);
           }
           meshes[1].visible = false;
-          sceneryCells.push({ near: meshes[0], far: meshes[1], x: cx / entries.length, y: cy / entries.length, far_: false });
+          sceneryCells.push({ near: [meshes[0]], far: [meshes[1]], x: cx / entries.length, y: cy / entries.length });
+        }
+      }
+      // The Ridgeline's species: conifers by altitude, broadleaf by chance.
+      function forestSpecies(conifer, ground, roll) {
+        if (!conifer) return roll < 0.55 ? 'beech' : roll < 0.8 ? 'birch' : 'maple';
+        const [pine, fir] = ground < 150 ? [0.55, 0.8] : ground < 400 ? [0.2, 0.6] : [0.1, 0.35];
+        return roll < pine ? 'pine' : roll < fir ? 'fir' : 'spruce';
+      }
+      // Size 1 of mountainScenery() is 1/21 of a species' modelled size.
+      const FOREST_SCALE = 1 / 21;
+      function plantForest(lists) {
+        const cells = new Map();
+        for (const { list, conifer } of lists)
+          for (let k = 0; k < list.length; k += 6) {
+            const key = Math.floor(list[k] / SCENERY_CELL) * 4096 + Math.floor(list[k + 1] / SCENERY_CELL);
+            if (!cells.has(key)) cells.set(key, []);
+            const roll = (list[k + 4] * 7.31 + list[k + 5] * 0.137) % 1;
+            cells.get(key).push({ list, k, conifer, species: forestSpecies(conifer, list[k + 2], roll) });
+          }
+        const m = new Three.Matrix4(),
+          q = new Three.Quaternion(),
+          lean = new Three.Quaternion(),
+          s = new Three.Vector3(),
+          p = new Three.Vector3(),
+          up = new Three.Vector3(0, 1, 0),
+          axis = new Three.Vector3(),
+          ratio = new Three.Color();
+        // The far level: every conifer is the spruce's low cone, every broadleaf
+        // the beech's blob, tinted to its own species' leaf colour.
+        const farBase = { true: TREE_SPECIES.spruce, false: TREE_SPECIES.beech };
+        for (const entries of cells.values()) {
+          const bySpecies = new Map(),
+            byFar = new Map();
+          for (const e of entries) {
+            if (!bySpecies.has(e.species)) bySpecies.set(e.species, []);
+            bySpecies.get(e.species).push(e);
+            if (!byFar.has(e.conifer)) byFar.set(e.conifer, []);
+            byFar.get(e.conifer).push(e);
+          }
+          const place = (mesh, list, far) =>
+            list.forEach((e, j) => {
+              const { list: data, k, species } = e,
+                S = TREE_SPECIES[species],
+                v = treeVariation(S, data[k], data[k + 1]),
+                size = data[k + 3] * FOREST_SCALE * v.scale;
+              q.setFromAxisAngle(up, data[k + 5]);
+              axis.set(v.leanX, 0, v.leanZ);
+              const tilt = axis.length();
+              if (tilt > 1e-4) q.premultiply(lean.setFromAxisAngle(axis.normalize(), tilt * 0.6));
+              s.set(size * v.aspect, size / Math.sqrt(v.aspect), size * v.aspect);
+              p.set(data[k], data[k + 2] - 1, data[k + 1]);
+              m.compose(p, q, s);
+              mesh.setMatrixAt(j, m);
+              if (far) {
+                const base = farBase[e.conifer].leafColor;
+                ratio.setRGB(S.leafColor.r / base.r, S.leafColor.g / base.g, S.leafColor.b / base.b).multiply(v.tint);
+                setFoliageInstance(mesh, j, ratio, v.morph, 0);
+              } else setFoliageInstance(mesh, j, v.tint, v.morph, v.density);
+              forestCounts[species] = (forestCounts[species] || 0) + (far ? 0 : 1);
+            });
+          const near = [],
+            far = [];
+          for (const [species, list] of bySpecies) {
+            const mesh = foliageInstances(speciesGeometry(species, 0), list.length);
+            mesh.name = 'Ridgeline ' + species;
+            place(mesh, list, false);
+            near.push(mesh);
+          }
+          for (const [conifer, list] of byFar) {
+            const mesh = foliageInstances(speciesGeometry(farBase[conifer].key, 1), list.length);
+            mesh.name = 'Ridgeline ' + (conifer ? 'conifers' : 'broadleaf') + ' far';
+            mesh.castShadow = false;
+            place(mesh, list, true);
+            mesh.visible = false;
+            far.push(mesh);
+          }
+          let cx = 0,
+            cy = 0;
+          for (const e of entries) {
+            cx += e.list[e.k];
+            cy += e.list[e.k + 1];
+          }
+          for (const mesh of [...near, ...far]) {
+            mesh.computeBoundingSphere();
+            scene.add(mesh);
+          }
+          sceneryCells.push({ near, far, x: cx / entries.length, y: cy / entries.length });
         }
       }
       {
         const { conifers, broadleaf, rocks } = mountainScenery();
-        plantScenery(conifers, coniferNear, coniferFar, sceneryMaterial, 'conifers');
-        plantScenery(broadleaf, broadleafNear, broadleafFar, sceneryMaterial, 'broadleaf');
+        plantForest([
+          { list: conifers, conifer: true },
+          { list: broadleaf, conifer: false },
+        ]);
         plantScenery(rocks, boulderGeometry, boulderGeometry, boulderMaterial, 'boulders', 1, 0.25);
       }
       /**
@@ -711,8 +787,8 @@
         for (const cell of sceneryCells) {
           const d = Math.hypot(terrainEye.x - cell.x, terrainEye.z - cell.y, terrainEye.y * 0.8),
             far = d > SCENERY_NEAR * lodScale;
-          cell.near.visible = !far;
-          cell.far.visible = far;
+          for (const mesh of cell.near) mesh.visible = !far;
+          for (const mesh of cell.far) mesh.visible = far;
         }
         // Mist: thickest just after dawn, a trace at dusk, more when the ground is wet.
         const hour = (worldMinutes % 1440) / 60,
@@ -820,7 +896,8 @@
       // The bridges are drawn by bridges3d.js, each in its own style.
       for (const t of COUNTY_TOWNS) {
         sign(t.name, t.x + 200, t.y - 72, 150, t.style === 'resort' ? '#e3b9b5' : '#d6d6be', false, { style: t.style === 'resort' ? 'resort' : 'town' });
-        for (let j = 0; j < 5; j++) {
+        // The mountain villages light their streets with iron lanterns (mountain-village3d.js).
+        for (let j = 0; j < 5 && !isMountainTown(t); j++) {
           const group = new Three.Group();
           scene.add(group);
           batchGroups.push(group);
@@ -896,6 +973,7 @@
         updateBaseVisuals();
         updateAirfieldVisuals();
         updateTerrainVisuals();
+        updateMountainVisuals();
       }
       function makeTank(vehicle) {
         const model = specialVehicle(vehicle),

@@ -376,26 +376,23 @@
       function buildIsleMedians() {
         const limes = monarchTrees.filter((t) => t.median);
         if (!limes.length) return;
-        const trunks = new Three.InstancedMesh(new Three.CylinderGeometry(0.6, 0.9, 1, 6), wood, limes.length),
-          crowns = new Three.InstancedMesh(new Three.SphereGeometry(1, 10, 8), leafMats[2], limes.length),
+        // Lindens from the species library (vegetation3d.js), kept compact and
+        // upright by the morph as clipped trees are: one instanced mesh.
+        const S = TREE_SPECIES.linden,
+          limesMesh = foliageInstances(speciesGeometry('linden', 0), limes.length),
           dummy = new Three.Object3D();
         limes.forEach((t, i) => {
-          dummy.position.set(t.x, 7, t.y);
-          dummy.scale.set(1, 14, 1);
-          dummy.rotation.set(0, 0, 0);
+          const v = treeVariation(S, t.x, t.y);
+          dummy.position.set(t.x, 0, t.y);
+          dummy.rotation.set(0, v.yaw, 0);
+          dummy.scale.set(0.52, 0.5, 0.52);
           dummy.updateMatrix();
-          trunks.setMatrixAt(i, dummy.matrix);
-          dummy.position.set(t.x, 19, t.y);
-          dummy.scale.set(8, 9, 8);
-          dummy.updateMatrix();
-          crowns.setMatrixAt(i, dummy.matrix);
+          limesMesh.setMatrixAt(i, dummy.matrix);
+          setFoliageInstance(limesMesh, i, v.tint, -1, 0);
         });
-        for (const im of [trunks, crowns]) {
-          im.castShadow = true;
-          im.receiveShadow = true;
-          im.name = 'monarch medians';
-          scene.add(im);
-        }
+        limesMesh.computeBoundingSphere();
+        limesMesh.name = 'monarch medians';
+        scene.add(limesMesh);
       }
       /* ---- The build ------------------------------------------------------------------ */
       {

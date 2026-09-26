@@ -128,7 +128,7 @@
     function roofSniperSite() {
       const sites = [];
       for (const b of buildings) {
-        if (b.depotWall || b.height < realBuildingHeight(30) || b.height > realBuildingHeight(200)) continue;
+        if (b.depotWall || b.pitched || b.height < realBuildingHeight(30) || b.height > realBuildingHeight(200)) continue;
         const cx = b.x + b.w / 2,
           cy = b.y + b.h / 2;
         if (Math.abs(cx - player.x) > 800 || Math.abs(cy - player.y) > 800) continue;

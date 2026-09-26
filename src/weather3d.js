@@ -280,7 +280,7 @@
           if (n >= DRIP_MAX) break;
           if (b.x + b.w < cx - reach || b.x > cx + reach || b.y + b.h < cy - reach || b.y > cy + reach) continue;
           // The south face (towards the camera): gutters every 16-30 units.
-          for (let x = b.x + 6 + Math.random() * 10; x < b.x + b.w - 4; x += 16 + Math.random() * 14) add(x, b.height - 0.5, b.y + b.h + 1.2);
+          for (let x = b.x + 6 + Math.random() * 10; x < b.x + b.w - 4; x += 16 + Math.random() * 14) add(x, (b.eaves ?? b.height) - 0.5, b.y + b.h + 1.2);
           // Shop awnings drip in a row along their front edge.
           for (const pane of b.shopPanes || [])
             for (let k = -pane.width / 2 + 2; k < pane.width / 2; k += 5 + Math.random() * 4) add(pane.cx + k, SHOP_FLOOR * 0.72 - 2.3, pane.face + 10.5);
