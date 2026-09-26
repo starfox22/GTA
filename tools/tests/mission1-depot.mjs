@@ -8,15 +8,17 @@ export default async function (t) {
   await t.keys('KeyW', 3); // drive at the open shutter and coast in
   await t.wait(4);
   let m = await t.call('missionState');
-  if (m.stage === 3) {
-    // Officers or a cruiser in the way can leave the truck short or askew: park it
-    // inside (the drop itself is what this test is about).
-    t.note('truck parked inside by placeVehicle: ' + m.instruction);
-    await t.call('neutraliseDepotPolice');
-    await t.call('placeVehicle', -1664, 4470, Math.PI / 2);
+  // Officers or a cruiser in the doorway can leave the truck short, askew or shoved back
+  // out under the shutter: then park it inside again (the drop is what this tests).
+  for (let i = 0; i < 12 && !(m.depotSealed && m.stage >= 5); i++) {
+    if (m.stage === 3) {
+      t.note(`try ${i}: truck parked inside (${m.instruction})`);
+      await t.call('neutraliseDepotPolice');
+      await t.call('placeVehicle', -1664, 4470, Math.PI / 2);
+    }
+    await t.wait(2);
+    m = await t.call('missionState');
   }
-  await t.wait(8);
-  m = await t.call('missionState');
   t.assert(m.depotSealed && m.stage >= 5, 'warehouse not sealed: ' + JSON.stringify(m));
   await t.call('neutraliseDepotPolice');
   await t.wait(2);
