@@ -1104,6 +1104,8 @@
           'RESTRICTED · KEEP CLEAR': ['stencil', { ground: '#f4f4ee', ink: '#b3202a', icon: 'warn', iconColor: '#f2c21b', iconColor2: '#141414', lines: ['RESTRICTED'], sub: 'KEEP CLEAR · NO ENTRY', subInk: '#141414', border: '#b3202a', stencil: false, weight: 0.16, reflective: true }],
           'SOUTH COAST STADIUM': ['varsity', { ground: '#10213f', fill: '#ff7a1a', outline: '#ffffff', icon: 'ball', icon2: true, iconColor: '#ffffff', iconColor2: '#10213f', slant: 0.12, backlit: true, stripe: '#ff7a1a' }],
           TICKETS: ['pixel', { ink: '#ffb020', accent: '#ff7a1a' }],
+          // The betting shop beside the stadium plaza (sportsbook3d.js).
+          'GOALLINE SPORTS BET': ['neonBlock', { board: '#04120a', tube: '#3dff8e', tube2: '#ffe14d', accent: '#3dff8e', lines: ['GOALLINE', 'SPORTS BET'], ratio: [1.35, 0.75], icon: 'ball', icon2: true, iconColor: '#f4fff8', track: 0.26, border: 'rect' }],
           '24 HOUR': ['lightbox', { panel: '#ffffff', ink: '#1f8a4c', font: 'black', weight: '900', stripes: ['#f47b20', '#1f8a4c', '#d7262e'], lines: ['24 HOUR STORE'], outline: null }],
           'EXCHANGE UNDERPASS': ['highway', { arrow: 'up' }],
           'ROAD UNDERPASS': ['highway', { arrow: 'up' }],
