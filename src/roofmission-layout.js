@@ -14,10 +14,30 @@
         x: -2183,
         y: 1972,
       },
-      drink: roofAt(273, 131),
+      // A clean poisoning's way out: east along the hotel's pavement, past where
+      // the ambulance pulls up. Anywhere ROOF_AWAY from the doors will do.
+      away: {
+        x: -1330,
+        y: 2624,
+      },
+      // Vescari's reserved glass stands on the near (east) side of the VIP table;
+      // he walks to `seat`, then steps up to the table edge (`sip`) to take it.
+      drink: roofAt(278, 131),
       seat: roofAt(294, 131),
+      sip: roofAt(287, 131),
       home: roofAt(304, 90),
       bossName: 'Luciano Vescari',
+    };
+    /* A bodyguard's view (roofmission-stealth.js): a cone `half` radians either
+       side of where his head points, `range` units deep (15.5 m), stopped by
+       the balustrade and by any cover but the pool (roofViewLength). The drawn
+       cones (roofmission3d.js, drawRoofStealth2D) use these same numbers. */
+    const ROOF_AWAY = 300;
+    const ROOF_VIEW = {
+      half: 0.7,
+      range: 124,
+      // Closer than this a guest is under his nose: suspicion climbs fast.
+      near: 40,
     };
     const roofCover = [
       {
@@ -28,6 +48,8 @@
         h: 56,
         height: 3,
         sight: false,
+        // Flat water: the only cover a bodyguard sees across.
+        view: false,
       },
       {
         kind: 'bar',
@@ -165,12 +187,16 @@
         !roofCover.some((b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h)
       );
     }
-    function roofRayLength(origin, a, range = 118) {
+    /* How far a ray from `origin` at heading `a` runs before cover stops it, up to
+       `range`. Shots and the takedown (`view` false) pass over low cover (`sight:
+       false`); a bodyguard's eyes (`view` true) are stopped by everything but the
+       pool (`view: false`). */
+    function roofRayLength(origin, a, range = 118, view = false) {
       const headingCosine = Math.cos(a),
         headingSine = Math.sin(a);
       let limit = range;
       for (const r of roofCover) {
-        if (r.sight === false) continue;
+        if ((view ? r.view : r.sight) === false) continue;
         let lo = 0,
           hi = limit;
         if (Math.abs(headingCosine) < 0.000001) {
@@ -193,18 +219,56 @@
       }
       return limit;
     }
+    /* A bodyguard's line of sight: cover (roofRayLength with `view`) and the
+       terrace's glass balustrade, 6 units in from the roof's edge. */
+    function roofViewLength(origin, a, range = ROOF_VIEW.range) {
+      const headingCosine = Math.cos(a),
+        headingSine = Math.sin(a),
+        left = ROOFTOP.x + 6,
+        right = ROOFTOP.x + ROOFTOP.w - 6,
+        top = ROOFTOP.y + 6,
+        bottom = ROOFTOP.y + ROOFTOP.h - 6;
+      let limit = range;
+      if (headingCosine > 1e-6) limit = Math.min(limit, (right - origin.x) / headingCosine);
+      else if (headingCosine < -1e-6) limit = Math.min(limit, (left - origin.x) / headingCosine);
+      if (headingSine > 1e-6) limit = Math.min(limit, (bottom - origin.y) / headingSine);
+      else if (headingSine < -1e-6) limit = Math.min(limit, (top - origin.y) / headingSine);
+      return roofRayLength(origin, a, Math.max(0, limit), true);
+    }
     function roofSight(a, b) {
       return (
         sameFloor(a, b) &&
         roofRayLength(a, headingBetween(a, b), distanceBetween(a, b)) >= distanceBetween(a, b) - 0.01
       );
     }
-    function roofSees(a, b, range = 130) {
+    /* Where a bodyguard is looking: his body's heading plus his head's turn
+       (`look`, roofmission-stealth.js). The cone is centred on it. */
+    function roofGuardView(e) {
+      return (e.a || 0) + (e.look || 0);
+    }
+    /* Inside the cone (angle and range) with a clear line of sight: the only way a
+       bodyguard sees anyone. There is no all-round awareness. */
+    function roofGuardSees(e, target, range = ROOF_VIEW.range) {
+      if (!sameFloor(e, target)) return false;
+      const d = distanceBetween(e, target);
+      if (d > range || d < 0.5) return false;
+      const a = headingBetween(e, target);
       return (
-        distanceBetween(a, b) < range &&
-        Math.abs(normalizeAngle(headingBetween(a, b) - a.a)) < 0.82 &&
-        roofSight(a, b)
+        Math.abs(normalizeAngle(a - roofGuardView(e))) <= ROOF_VIEW.half &&
+        roofViewLength(e, a, d) >= d - 0.01
       );
+    }
+    /* A free spot `radius` from `center`, as near the `prefer` heading as the
+       cover allows (tried either side of it in steps), or null. */
+    function roofSpotNear(center, radius, prefer = 0, margin = 8) {
+      for (const r of [radius, radius + 8, radius + 16])
+        for (let k = 0; k < 16; k++) {
+          const a = prefer + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * 0.4,
+            x = center.x + Math.cos(a) * r,
+            y = center.y + Math.sin(a) * r;
+          if (roofPointFree(x, y, margin)) return { x, y };
+        }
+      return null;
     }
     function roofPathClear(a, b) {
       if (!roofPointFree(a.x, a.y, 8) || !roofPointFree(b.x, b.y, 8)) return false;

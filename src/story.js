@@ -75,8 +75,8 @@
         contact: 'vinny',
         reward: 4200,
         phoneMessage:
-          'Vinny gave you a mission: dress as a guest, kill Luciano Vescari at Blue Hour, and escape.',
-        brief: 'Dress as a guest, kill Luciano Vescari at Blue Hour, and escape.',
+          'Vinny gave you a mission: dress as a guest, kill Luciano Vescari at the Blue Hour, and walk out.',
+        brief: 'Dress as a guest, kill Luciano Vescari at the Blue Hour, and walk out.',
       },
       {
         title: "Vinny's Favor",
@@ -499,6 +499,9 @@
       vehicles.filter((c) => c.mission).forEach((c) => (c.mission = false));
       const finale = missionState.index === SIDE_JOB_FIRST - 1,
         lastContract = missionState.index === missions.length - 1;
+      // The payday card owns the top of the screen: a POLICE LOST chip from the
+      // last beat of the job (mission 1's back door) must not sit over it.
+      hidePoliceNotice();
       announce(
         'PAYDAY +$' + reward.toLocaleString(),
         finale
@@ -731,8 +734,16 @@
         tell(
           up
             ? rooftopJob()
-              ? 'PRIVATE PARTY · Walk calmly. Hold E near Vescari for a takedown, or P at his reserved glass. F draws your pistol.'
-              : 'THE BLUE HOUR · E at the bar or elevator · Weapons stay holstered on the terrace.'
+              ? 'PRIVATE PARTY · Guests walk (hold ' +
+                keyName('walk') +
+                ' to run). Stay out of the bodyguards’ sight cones. ' +
+                keyName('poison') +
+                ' at Vescari’s reserved glass, or hold ' +
+                keyName('interact') +
+                ' beside him for a takedown. ' +
+                keyName('fire') +
+                ' draws your pistol.'
+              : 'THE BLUE HOUR · ' + keyName('interact') + ' at the bar or elevator · Weapons stay holstered on the terrace.'
             : 'Back at street level.',
           5,
         );
@@ -756,8 +767,14 @@
         }
         tell(
           rooftopJob()
-            ? 'Blend in. Hold E near Vescari for a takedown, or P beside his reserved drink; E at the elevator to leave.'
-            : 'E at the bar, Mara, or the elevator. Weapons stay holstered here.',
+            ? 'Blend in. ' +
+                keyName('poison') +
+                ' beside Vescari’s reserved glass, or hold ' +
+                keyName('interact') +
+                ' beside him for a takedown; ' +
+                keyName('interact') +
+                ' at the elevator to leave.'
+            : keyName('interact') + ' at the bar, Mara, or the elevator. Weapons stay holstered here.',
           3,
         );
         return true;

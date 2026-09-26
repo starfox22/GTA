@@ -3,16 +3,6 @@
       p.speech = text;
       p.speechFor = seconds;
     }
-    function roofVoice(p) {
-      if (
-        soundOn &&
-        voicesOn &&
-        player.roof &&
-        sameFloor(player, p) &&
-        distanceBetween(player, p) < 650
-      )
-        playSample('civilian-scream-male-2', 0.8, 0.86, p);
-    }
     function startRooftopHit(m) {
       Object.assign(m, {
         disguise: false,
@@ -25,7 +15,14 @@
         poisonTimer: 0,
         poisonUsed: false,
         poisonPhase: null,
+        phaseTime: 0,
+        glassTaken: false,
         partyPanic: false,
+        medical: null,
+        quietExit: false,
+        suspicionRate: 0,
+        playerSpeed: 0,
+        lastPlayerSpot: null,
       });
       const z = ROOFTOP.height + 3,
         boss = {
@@ -83,6 +80,13 @@
           patrolRoute: route,
           patrolIndex: 1,
           patrolWait: 2 + i * 1.5,
+          // Head turn from the body's heading, and the sweep's clock (roofmission-stealth.js).
+          look: 0,
+          scan: i * 1.7,
+          alert: 0,
+          sees: false,
+          seenFor: 0,
+          postA: headingBetween(route[0], roofAt(180, 180)),
         });
       }
       const spots = [
@@ -163,7 +167,7 @@
           idleWait: 2 + i,
         });
       }
-      setStage(0, ROOF_HIT.outfit, 'COLLECT GUEST CLOTHES AT SUNSET MOTEL · E');
+      setStage(0, ROOF_HIT.outfit, 'COLLECT GUEST CLOTHES AT SUNSET MOTEL · ' + keyName('interact'));
     }
     function roofAlarm(m) {
       if (m.alarm) return;
@@ -180,6 +184,9 @@
           // Close protection details do not hesitate: weapons come up now.
           e.timer = 0.15 + seededRandom() * 0.15;
           e.roofRoute = null;
+          e.look = 0;
+          e.sees = false;
+          e.pose = null;
         }
       // Security downstairs is called the moment the party breaks.
       wantedStars = Math.max(2, wantedStars);
@@ -194,52 +201,10 @@
         m.boss.hp > 0 &&
         !m.alarm &&
         !m.weaponDrawn &&
-        !['sip', 'sick', 'collapse'].includes(m.poisonPhase) &&
+        !poisonCommitted(m) &&
         distanceBetween(player, m.boss) <= 36 &&
         roofSight(player, m.boss)
       );
-    }
-    function poisonWitness(m) {
-      return enemies.find(
-        (e) => e.guard && e.hp > 0 && e.missionTag === 'rooftop-hit' && roofSees(e, player, 90),
-      );
-    }
-    function poisonDrink() {
-      const m = rooftopJob();
-      if (gameMode !== 'play' || !m || !player.roof) return false;
-      if (m.boss.hp <= 0) {
-        tell('Vescari is down. Reach the elevator.', 3);
-        return true;
-      }
-      if (m.poisonUsed) {
-        tell('The glass is prepared. Watch Vescari or slip away.', 3);
-        return true;
-      }
-      if (distanceBetween(player, ROOF_HIT.drink) > 36 || !roofSight(player, ROOF_HIT.drink)) {
-        tell(
-          'Find Vescari’s reserved glass in the VIP lounge, northeast of the dance floor. Press P beside it.',
-          4,
-        );
-        return true;
-      }
-      if (m.alarm || m.weaponDrawn || !m.disguise) {
-        tell('Your cover is blown. Vescari will not touch the drink.', 3);
-        return true;
-      }
-      if (poisonWitness(m)) {
-        m.suspicion = Math.min(90, m.suspicion + 24);
-        tell('A bodyguard is watching. Wait for him to turn away before touching the glass.', 3);
-        return true;
-      }
-      m.poisonUsed = m.poisoned = true;
-      m.poisonPhase = 'approach';
-      m.poisonTimer = 0;
-      m.phaseTime = 0;
-      m.boss.roofRoute = null;
-      roofSay(m.boss, "I'll get a drink", 3);
-      setStage(2, m.boss, 'GLASS PREPARED · KEEP YOUR COVER OR SLIP AWAY');
-      tell('Vescari is heading to his glass. Stay calm; the elevator remains open.', 5);
-      return true;
     }
     function rooftopMissionInteract() {
       const missionState = rooftopJob();
@@ -256,12 +221,18 @@
         setStage(1, ROOFTOP.door, 'ENTER THE BLUE HOUR AS A GUEST');
         announce('MISSION 2 · A SEAT AT THE TABLE', 'GUEST ATTIRE', 2.5);
         tell(
-          'Vescari is meeting the dock buyers in the VIP lounge. Walk calmly, watch the patrols, and prepare his reserved glass with P when no guard is looking. E nearby is a quiet takedown.',
+          'Vescari is meeting the dock buyers in the VIP lounge. Walk, keep out of the bodyguards’ sight cones, and spike his reserved glass with ' +
+            keyName('poison') +
+            ' when nobody is looking. Holding ' +
+            keyName('interact') +
+            ' beside him is a quiet takedown.',
           9,
         );
         return true;
       }
       if (canSilentHit(missionState)) {
+        // Seen doing it: the detail opens fire at once.
+        const witness = poisonWitness(missionState);
         missionState.boss.hp = 0;
         missionState.boss.deadTime = gameTime;
         missionState.bodyDelay = 12;
@@ -269,93 +240,61 @@
         missionState.boss.drinking = false;
         bleed(missionState.boss, 1.5, player.a);
         updateRooftopHit(missionState, 0);
-        tell('Vescari is down. Leave before the bodyguards find him.', 4);
+        if (witness) roofAlarm(missionState);
+        else tell('Vescari is down. Leave before the bodyguards find him.', 4);
         return true;
       }
       return false;
     }
+    /* Stage flow: the lounge, Vescari down, the lift, and the way out. A clean
+       poisoning (no alarm, no stars) only asks the player to walk away from the
+       hotel; a loud job (the alarm, or the takedown) is the run to Coral Palms. */
     function updateRooftopHit(m, deltaSeconds) {
       const b = m.boss;
-      if (m.poisoned && b.hp > 0) {
-        m.phaseTime += deltaSeconds;
-        m.poisonTimer += deltaSeconds;
-        if (m.poisonPhase === 'approach') {
-          if (m.alarm) {
-            m.poisoned = false;
-            m.poisonPhase = 'aborted';
-            b.speech = '';
-            tell('Vescari abandoned his drink. Stop him and reach the elevator.', 4);
-          } else {
-            roofStep(b, ROOF_HIT.seat, deltaSeconds, 4.5 * KMH);
-            if (distanceBetween(b, ROOF_HIT.seat) < 3 && m.phaseTime >= 2.4) {
-              m.poisonPhase = 'sip';
-              m.phaseTime = 0;
-              b.a = Math.PI;
-              b.drinking = true;
-              b.walking = false;
-            }
-          }
-        } else if (m.poisonPhase === 'sip' && m.phaseTime >= 1.6) {
-          m.poisonPhase = 'sick';
-          m.phaseTime = 0;
-          b.drinking = false;
-          b.illness = 0;
-          roofSay(b, 'This tastes strange...', 2.8);
-        } else if (m.poisonPhase === 'sick') {
-          b.illness = Math.min(1, m.phaseTime / 2.8);
-          if (m.phaseTime >= 2.8) {
-            m.poisonPhase = 'collapse';
-            m.phaseTime = 0;
-            b.speech = '';
-            b.poisonCollapse = 0;
-            if (!m.deathVoicePlayed) {
-              m.deathVoicePlayed = true;
-              roofVoice(b);
-            }
-          }
-        } else if (m.poisonPhase === 'collapse') {
-          b.poisonCollapse = Math.min(1, m.phaseTime / 1.25);
-          if (m.phaseTime >= 1.25) {
-            b.hp = 0;
-            b.deadTime = gameTime;
-            b.poisoned = true;
-            b.poisonCollapse = 1;
-            m.poisonPhase = 'dead';
-            m.bodyDelay = 1.4;
-            tell('Vescari is down. Blend into the crowd and leave through the elevator.', 5);
-          }
-        }
-      }
+      updatePoisonDrink(m, deltaSeconds);
       if (m.stage === 1 && player.roof)
-        setStage(2, b, 'VIP LOUNGE · P AT THE RESERVED GLASS WHEN GUARDS LOOK AWAY');
+        setStage(
+          2,
+          ROOF_HIT.drink,
+          'SPIKE VESCARI’S GLASS · ' + keyName('poison') + ' WHEN NO GUARD IS LOOKING',
+        );
       if (b.hp <= 0 && !m.killRegistered) {
         m.killRegistered = true;
         b.drinking = false;
         b.speech = '';
         m.bodyDelay = Math.max(m.bodyDelay, 1);
+        const quiet = b.poisoned && !m.alarm;
         setStage(
           3,
           {
             ...ROOFTOP.lift,
             altitude: ROOFTOP.height + 3,
           },
-          'VESCARI IS DOWN · ESCAPE VIA THE ELEVATOR',
+          quiet ? 'LEAVE CALMLY · TAKE THE ELEVATOR DOWN' : 'VESCARI IS DOWN · ESCAPE VIA THE ELEVATOR',
+          quiet ? 'vinny' : undefined,
+          quiet ? 'That’s it. Don’t run. Let them look at him, not at you.' : undefined,
         );
+        if (quiet) tell('Vescari collapsed. Walk to the elevator: running draws the bodyguards’ eyes.', 5);
       }
-      if (
-        m.stage === 3 &&
+      const grounded =
         !player.roof &&
         !player.parachute &&
         gameMode === 'play' &&
-        Math.abs(entityElevation(player) - terrainHeight(player.x, player.y)) < 3
-      )
-        setStage(4, ROOF_HIT.escape, 'LOSE THE POLICE · REACH CORAL PALMS MOTEL ON FOOT');
+        Math.abs(entityElevation(player) - terrainHeight(player.x, player.y)) < 3;
+      if (m.stage === 3 && grounded) {
+        m.quietExit = !!b.poisoned && !m.alarm && wantedStars === 0;
+        if (m.quietExit)
+          setStage(4, ROOF_HIT.away, 'WALK AWAY FROM THE HOTEL', 'vinny', 'Clean work. Walk away. Nobody saw a thing.');
+        else setStage(4, ROOF_HIT.escape, 'LOSE THE POLICE · REACH CORAL PALMS MOTEL ON FOOT');
+      }
+      if (m.stage !== 4 || !grounded) return;
+      if (m.quietExit) {
+        m.instruction = wantedStars > 0 ? 'LOSE THE POLICE · THEN WALK AWAY' : 'WALK AWAY FROM THE HOTEL';
+        if (wantedStars === 0 && distanceBetween(player, ROOFTOP.door) > ROOF_AWAY) winMission();
+        return;
+      }
       if (
-        m.stage === 4 &&
-        !player.roof &&
-        !player.parachute &&
         !player.car &&
-        Math.abs(entityElevation(player) - terrainHeight(player.x, player.y)) < 3 &&
         distanceBetween(player, ROOF_HIT.escape) < 55 &&
         wantedStars === 0
       )
@@ -365,69 +304,43 @@
       const m = rooftopJob();
       if (!m) return;
       const guards = enemies.filter((e) => e.missionTag === 'rooftop-hit' && e.hp > 0),
-        guests = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && p.hp > 0 && !p.hidden);
-      for (const p of [m.boss, ...guests])
+        // Everyone at the party (and the paramedics): guests are the party only.
+        people = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && p.hp > 0 && !p.hidden),
+        guests = people.filter((p) => p.guest);
+      for (const p of [m.boss, ...guards, ...people])
         if (p.speechFor > 0) {
           p.speechFor -= deltaSeconds;
           if (p.speechFor <= 0) p.speech = '';
         }
-      let suspicious = false;
+      trackRoofPace(m, deltaSeconds);
       for (const e of guards) {
-        e.walking = false;
-        if (e.guard && !m.alarm) {
-          if (m.partyPanic) {
-            const goal = roofAt(
-              ROOF_HIT.seat.x - ROOFTOP.x + (e.patrol - 1) * 23,
-              ROOF_HIT.seat.y - ROOFTOP.y + 31,
-            );
-            if (distanceBetween(e, goal) > 4) roofStep(e, goal, deltaSeconds, 5 * KMH);
-            else e.a = headingBetween(e, m.boss);
-          } else if (e.patrolWait > 0) {
-            e.patrolWait -= deltaSeconds;
-            e.a += Math.sin(gameTime * 0.65 + e.patrol) * deltaSeconds * 0.45;
-          } else {
-            const goal = e.patrolRoute[e.patrolIndex];
-            roofStep(e, goal, deltaSeconds, 4 * KMH);
-            if (distanceBetween(e, goal) < 3) {
-              e.patrolIndex = (e.patrolIndex + 1) % e.patrolRoute.length;
-              e.patrolWait = 3 + e.patrol;
-              e.roofRoute = null;
-            }
-          }
-          if (player.roof && roofSees(e, player, 132)) {
-            // Crowding the detail or lingering inside the cordon reads wrong (the
-            // terrace is always walked, game.js footPace, so nobody runs here).
-            const d = distanceBetween(e, player);
-            if (d < 34 || m.partyPanic) suspicious = true;
-            else if (d < 96) e.lingering = (e.lingering || 0) + deltaSeconds;
-            if ((e.lingering || 0) > 1.6) suspicious = true;
-          } else e.lingering = Math.max(0, (e.lingering || 0) - deltaSeconds * 1.6);
-        }
+        if (e.guard && !m.alarm) updateRoofGuard(m, e, deltaSeconds);
+        else if (e.guard) e.sees = false;
         if (e.boss && !m.alarm && !m.poisoned) e.a = -Math.PI / 2 + Math.sin(gameTime * 0.22) * 0.45;
       }
-      if (!m.alarm) {
-        m.suspicion = clamp(m.suspicion + (suspicious ? 64 : -11) * deltaSeconds, 0, 100);
-        if (player.roof && (m.weaponDrawn || m.suspicion >= 100)) roofAlarm(m);
-        if (m.killRegistered && !m.partyPanic) {
-          m.bodyDelay -= deltaSeconds;
-          if (
-            m.bodyDelay <= 0 &&
-            guards.some((e) => roofSight(e, m.boss) && distanceBetween(e, m.boss) < 180)
-          ) {
-            m.partyPanic = true;
-            const witness = guests.find((p) => distanceBetween(p, m.boss) < 100);
-            if (witness) roofSay(witness, 'Call a doctor!', 3);
-            if (!m.boss.poisoned && player.roof) roofAlarm(m);
-          }
+      updateRoofSuspicion(m, deltaSeconds, guards);
+      // The takedown's body: a bodyguard who sees it, or a guest who stumbles on it.
+      if (!m.alarm && m.killRegistered && !m.partyPanic) {
+        m.bodyDelay -= deltaSeconds;
+        if (
+          m.bodyDelay <= 0 &&
+          (guards.some((e) => e.guard && roofGuardSees(e, m.boss, 180)) ||
+            (m.bodyDelay < -4 && guests.some((p) => distanceBetween(p, m.boss) < 45)))
+        ) {
+          m.partyPanic = true;
+          const witness = guests.find((p) => distanceBetween(p, m.boss) < 100);
+          if (witness) roofSay(witness, 'Call a doctor!', 3);
+          if (!m.boss.poisoned && player.roof) roofAlarm(m);
         }
       }
       for (const e of guards) {
-        if (!m.alarm || !player.roof || (e.boss && m.poisonPhase && m.poisonPhase !== 'aborted')) {
+        if (!m.alarm || !player.roof || (e.boss && poisonCommitted(m))) {
           e.aiming = false;
           continue;
         }
         const seen = roofSight(e, player);
         e.a = headingBetween(e, player);
+        e.look = 0;
         e.aiming = seen;
         e.timer -= deltaSeconds;
         if (!seen || distanceBetween(e, player) > 120) roofStep(e, player, deltaSeconds, 9 * KMH);
@@ -451,44 +364,6 @@
           if (city3D) city3D.fire(e.x, e.y, a, false, e.altitude);
         }
       }
-      for (const p of guests) {
-        p.walking = false;
-        p.dancing = false;
-        if (m.partyPanic) {
-          p.reactionTime = (p.reactionTime || 0) + deltaSeconds;
-          if (!p.panicSaid) {
-            if (player.roof && distanceBetween(p, player) < 220 && p.phase % 9 === 0) scream(p);
-            p.panicSaid = true;
-          }
-          if (p.reactionTime < 1.4 + (p.phase % 3) * 0.3) {
-            p.a = headingBetween(p, m.boss);
-            p.recoiling = true;
-          } else {
-            p.recoiling = false;
-            roofStep(p, roofAt(71, 303), deltaSeconds, (m.alarm ? 12 : 6) * KMH);
-            if (distanceBetween(p, roofAt(71, 303)) < 9) p.hidden = true;
-          }
-        } else if (p.role === 'dance') {
-          p.dancing = true;
-          p.a = Math.sin(gameTime * 0.35 + p.phase);
-        } else {
-          p.idleWait -= deltaSeconds;
-          if (p.idleWait <= 0) {
-            if (!p.idleTarget) {
-              const a = p.phase * 2.4 + gameTime * 0.1,
-                c = {
-                  x: p.home.x + Math.cos(a) * 12,
-                  y: p.home.y + Math.sin(a) * 12,
-                };
-              p.idleTarget = roofPointFree(c.x, c.y, 8) ? c : p.home;
-            }
-            roofStep(p, p.idleTarget, deltaSeconds, (p.staff ? 4 : 3) * KMH);
-            if (distanceBetween(p, p.idleTarget) < 3) {
-              p.idleWait = 3 + (p.phase % 5);
-              p.idleTarget = null;
-              p.roofRoute = null;
-            }
-          } else p.a = Math.sin(gameTime * 0.17 + p.phase) * 2;
-        }
-      }
+      updateRoofGuests(m, guests, deltaSeconds);
+      updateRoofMedical(m, deltaSeconds);
     }

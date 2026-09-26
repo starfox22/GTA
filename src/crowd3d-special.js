@@ -117,11 +117,13 @@
           return sp;
         }
         if (p.guest || p.boss) {
+          // A scripted reaction (roofmission-poison.js p.pose) wins over the party loop.
           if (p.drinking) {
-            sp.pose = 'drink';
+            sp.pose = p.pose || 'drink';
             sp.cocktail = true;
             sp.sip = Math.sin(gameTime * 1.3 + (p.phase || 0)) > 0.6;
-          } else if (p.role === 'serve' || p.staff) sp.pose = 'serve';
+          } else if (p.pose) sp.pose = p.pose;
+          else if (p.role === 'serve' || p.staff) sp.pose = 'serve';
           else if (!p.dancing && p.role === 'chat') sp.pose = 'chat';
         }
         return sp;

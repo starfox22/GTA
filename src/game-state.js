@@ -197,13 +197,15 @@
        full running gait) and walks while the walk action is held (Shift,
        controls.js). There is no separate sprint: the run outpaces every officer
        on foot (pursuit.js OFFICER_KINDS, 16-19 km/h). The Blue Hour terrace is
-       always walked (a stealth party, roofmission.js). */
+       walked (a party): during mission 2 the walk action runs there instead
+       (roofPartyPace, roofmission-stealth.js), otherwise it is always walked. */
     const FOOT_WALK = 5.4 * KMH,
       FOOT_RUN = 25 * KMH; // a strong runner's pace, quick for a game but humanly possible
     /* The pace the player's legs are going on foot now; the movement, mountain
        footing (terrain.js), footsteps (audio.js) and the police's aim read it. */
     function footPace() {
-      return player.roof || actionHeld('walk') ? FOOT_WALK : FOOT_RUN;
+      if (player.roof) return roofPartyPace() && actionHeld('walk') ? FOOT_RUN : FOOT_WALK;
+      return actionHeld('walk') ? FOOT_WALK : FOOT_RUN;
     }
     /* People's legs: one stride (two steps) covers 10 units plus 0.3 s of travel,
        so a walk steps about twice a second and a sprint four times. strideCycle

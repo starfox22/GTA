@@ -54,7 +54,7 @@
       { id: 'right', label: 'Right', note: 'Walk or steer right, bank or turn right', group: 'move', keys: ['KeyD', 'ArrowRight'], ctx: EVERYWHERE },
       // On foot the player runs; Shift held walks (game.js footPace). Its virtual
       // code is not a key, so it never collides with the bicycle's use of Shift.
-      { id: 'walk', label: 'Walk (hold)', note: 'On foot you run; hold to walk, and to swim an easy stroke that saves breath', group: 'move', code: 'Walk', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['foot'] },
+      { id: 'walk', label: 'Walk (hold)', note: 'On foot you run; hold to walk, and to swim an easy stroke that saves breath (on the Blue Hour terrace during mission 2 you walk; hold to run)', group: 'move', code: 'Walk', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['foot'] },
       // The id stays 'sprint' so saved bindings keep their place.
       { id: 'sprint', label: 'Pedal hard', note: 'Bicycle: stand on the pedals for speed (uses stamina)', group: 'move', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['drive'] },
       { id: 'interact', label: 'Interact', note: 'Enter or leave a vehicle, payphones, shops, stations, boarding; hold for objectives', group: 'combat', keys: ['KeyE'], ctx: EVERYWHERE },

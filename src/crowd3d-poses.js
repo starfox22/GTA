@@ -772,10 +772,7 @@
           default:
             break;
         }
-        if (p.illness) {
-          T[J_LEAN] -= p.illness * 0.3;
-          setArm(T, 0, 0.85, 0.2, 1.2);
-        }
+        if (p.missionTag === 'rooftop-hit') roofPartyPose(p, T, t); // mission 2: the poisoned toast, guards' heads (crowd3d-roofparty.js)
         if (spec?.dazed) T[J_ROLL] += Math.sin(gameTime * 8) * 0.06;
         // Weapon stances turn the upper body: blading for a shouldered long gun,
         // square for a pistol, a lean into the aim.

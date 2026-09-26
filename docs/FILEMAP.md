@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-365 files in the include tree, 138,279 lines.
+369 files in the include tree, 139,408 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -19,7 +19,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/game.js ▸ Game orchestration and shared state
 
-- `src/game-state.js`   377 — Shared data contracts: Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
+- `src/game-state.js`   379 — Shared data contracts: Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
 - `src/game-vehicles.js`   747 — VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road and air resistance.
 - `src/game-weapons.js`    78 — Weapon table (weapons) and mission list (missions).
 - `src/audio.js`   556 — Effects and voice audio
@@ -42,14 +42,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/controls.js`   294 — Key bindings
 - `src/geography.js`    11 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
-- `src/harbor.js`   979 — Ironworks cargo terminal
+- `src/harbor.js`   981 — Ironworks cargo terminal
 - `src/police-feedback.js`    52 — Police action feedback
 - `src/arsenal.js`   257 — Arsenal and knife combat
 - `src/citylife.js`    11 — ▸ Civic services and police
 - `src/pursuit.js`    26 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
-- `src/wounds.js`   146 — Wounds, hit reactions and death falls
-- `src/story.js`   890 — Story characters and mission stages
+- `src/wounds.js`   153 — Wounds, hit reactions and death falls
+- `src/story.js`   907 — Story characters and mission stages
 - `src/campaign.js`   442 — Campaign saves and replay
 - `src/chase.js`   544 — Cargo pursuit
 - `src/roadblocks.js`   434 — Police containment and roadblocks
@@ -65,7 +65,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/water-audio.js`   394 — Water and beach sound
 - `src/beachvolley.js`    43 — ▸ Beach volleyball on Palm Keys Beach
 - `src/beach.js`   968 — Palm Keys Beach life
-- `src/roofmission.js`    11 — ▸ Blue Hour rooftop mission
+- `src/roofmission.js`    14 — ▸ Blue Hour rooftop mission
 - `src/rooftops.js`   138 — Building roofs: helipads, helicopter landings, walking on a roof
 - `src/air-cover.js`   404 — Overhead cover geometry
 - `src/combat-rules.js`   555 — Aerial combat and pursuit rules
@@ -122,7 +122,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/god-panel.js`   773 — God mode settings
 - `src/driving.js`   466 — Tyres, brakes and driving assists
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   210 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   211 — ▸ Three.js renderer and resource lifecycle
 - `src/game-loop.js`   158 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    45 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
@@ -184,9 +184,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/roofmission.js ▸ Blue Hour rooftop mission
 
-- `src/roofmission-layout.js`   334 — Blue Hour layout: ROOF_HIT points, roof cover, entityElevation, sight rays and terrace routes (roofRoute, roofStep).
-- `src/roofmission-scene.js`   494 — Blue Hour scene: guests and guards (startRooftopHit), the alarm, the takedown, stage flow and the party's frame update.
-- `src/roofmission-ui.js`   124 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
+- `src/roofmission-layout.js`   386 — Blue Hour layout: ROOF_HIT points, roof cover, entityElevation, sight rays and terrace routes (roofRoute, roofStep).
+- `src/roofmission-stealth.js`   227 — Blue Hour stealth: the bodyguards' beats and scanning heads, the vision-cone suspicion meter, walking and running on the terrace.
+- `src/roofmission-poison.js`   601 — Blue Hour poison: the reserved glass (P), Vescari's toast, cough and faint, the party's reaction, the call and the ambulance.
+- `src/roofmission-scene.js`   367 — Blue Hour scene: guests and guards (startRooftopHit), the alarm, the takedown, stage flow and the party's frame update.
+- `src/roofmission-ui.js`   159 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
 
 ## src/damage.js ▸ Vehicle damage, bullet impacts and breakable street furniture
 
@@ -280,7 +282,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   626 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-state.js`   628 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   636 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
@@ -307,7 +309,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sportsbook3d.js`   420 — GOALLINE betting shop meshes
 - `src/transit3d.js`   457 — Railway meshes
 - `src/ecology3d.js`   321 — Wildlife meshes
-- `src/world3d.js`   977 — World scenery meshes
+- `src/world3d.js`   978 — World scenery meshes
 - `src/wakes3d.js`   513 — Boat wakes and spray
 - `src/sealife3d.js`    41 — ▸ Sea life meshes
 - `src/beachvolley3d.js`   178 — Beach volleyball court meshes
@@ -319,7 +321,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/drawbridge3d.js`    53 — ▸ The Palm Sound drawbridge in 3D
 - `src/bridges3d.js`    31 — ▸ Bridges: one architecture per crossing
 - `src/monarch-bridges3d.js`   222 — Monarch Isle's two bridges
-- `src/harbor3d.js`   725 — Cargo terminal meshes
+- `src/harbor3d.js`   661 — Cargo terminal meshes
+- `src/roofmission3d.js`   175 — Mission 2 (the Blue Hour) in 3D: the bodyguards' sight cones on the terrace floor and the speech bubbles and name label over the party.
 - `src/marina3d.js`    17 — ▸ Marina, superyacht and cruise liner meshes
 - `src/monarch3d.js`   773 — Monarch Isle in 3D
 - `src/monarch-villas3d.js`   462 — Monarch Isle: villas and towers
@@ -331,7 +334,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/cycles3d.js`   450 — Bike-share station meshes
 - `src/weather3d.js`   630 — Weather and sky visuals
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
-- `src/crowd3d.js`    83 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
+- `src/crowd3d.js`    84 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/clouds3d.js`   618 — Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   825 — Ground shader data
 - `src/surfaces3d.js`   195 — ▸ Procedural surface detail
@@ -485,9 +488,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-bodies.js`   302 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
 - `src/crowd3d-looks.js`   486 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/crowd3d-joints.js`   138 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
-- `src/crowd3d-poses.js`   879 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
+- `src/crowd3d-poses.js`   876 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
+- `src/crowd3d-roofparty.js`   138 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   521 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
-- `src/crowd3d-special.js`   460 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
+- `src/crowd3d-special.js`   462 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-frame.js`   251 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/surfaces3d.js ▸ Procedural surface detail
@@ -550,7 +554,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
 - `src/game-console-core.js`   112 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
-- `src/game-console-missions.js`   184 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-missions.js`   241 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   132 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   191 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
@@ -568,7 +572,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/casino-transit.css`   201 — styles: #casinoTable, .roulette-top, .roulette-top canvas, .roulette-bank, …
 - `src/ui/police-arsenal.css`   517 — POLICE FEEDBACK AND ARSENAL — readable interface additions, v23.
 - `src/ui/wanted-effects.css`   166 — Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while dispatch escalates, earned stars grey out during a search, a thin meter …
-- `src/ui/hud-top.css`   598 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
+- `src/ui/hud-top.css`   632 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
 - `src/ui/hud-bottom.css`   693 — Bottom row: minimap + vitals, mission card, equipment
 - `src/ui/radio.css`   544 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen
@@ -582,7 +586,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   274 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
 - `src/ui/reduced-motion.css`    48 — Reduced motion: keep the states, drop the movement
-- `src/ui/hud.html`   272 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
+- `src/ui/hud.html`   273 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   220 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
 - `src/ui/panels.html`   222 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
