@@ -106,7 +106,7 @@ Two closures matter:
   - Derived: `METERS_PER_UNIT`, `KMH` (map units a second in one km/h), `KNOTS`, `GRAVITY`
     (9.81 m/s² in map units), `worldMeters()`, `distanceLabel()`, `speedKmh()`. Write speeds as
     `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats,
-    the flight HUD and its roof clearance, metres in prompts and the GPS, the map's scale bar,
+    the flight HUD and its roof clearance, metres in prompts and the GPS,
     the Falcon's and the Eye's figures) comes from it.
 - **On foot** (game.js `FOOT_WALK` 5.4, `FOOT_RUN` 25 km/h, `footPace()`): the player runs by
   default and walks while Shift (`walk`, controls.js, "Walk (hold)") is held; there is no separate

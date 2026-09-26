@@ -86,6 +86,7 @@ something, never a generic code-evaluation hook.
 | --- | --- |
 | `version` | The build version (30.0.0) |
 | `unitsPerMetre` | The world scale, map units to the metre (8) |
+| `scaleReport(radius)` | World-scale audit in metres: every vehicle type's spec (`l`, `w`), the built models within `radius` of the player measured from their meshes (length, width, height), the player's model, the crowd's statures (rig, shortest, average, tallest) and the building heights (lowest, median, 90th percentile, tallest) |
 | `repair()` | Mend the player's vehicle as a repair bay would (repeatable physics tests); returns `damageReport()` |
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle, weapon in hand, renderer (`3d` or `2d`) |
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once); lets go of any carrier |

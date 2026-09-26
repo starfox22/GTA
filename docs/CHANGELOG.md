@@ -1,5 +1,79 @@
 # Changelog
 
+## Unreleased — true scale: vehicles, people, buildings and street furniture
+
+At 8 units to the metre (unchanged; blocks, roads and the map are as they were) every thing in
+the street is now its real size. Measured with `DeadEndCity.scaleReport()` (models from their
+meshes, metres; real references in brackets):
+
+| Item | Before | After | Real |
+| --- | --- | --- | --- |
+| Sedan (REGENT) l x w x h | 5.41 x 2.68 x 1.87 | 4.88 x 2.08 x 1.50 | 4.85 x 2.1 (mirrors) x 1.47 |
+| City cab | 5.41 x 2.79 x 2.14 | 4.93 x 2.08 x 1.71 (sign) | 4.9 |
+| Coupe / sports / supercar | 5.03 / 5.28 / 5.66 | 4.43 / 4.53 / 4.72 | 4.4 / 4.5 / 4.7 |
+| Muscle / luxury / limousine | 5.91 / 6.53 / 9.53 | 5.03 / 5.33 / 8.83 | 5.0 / 5.3 / 8.8 |
+| SUV / van / pickup | 6.16 / 6.03 / 7.37 | 4.97 / 5.28 / 5.57 | 4.95 / 5.25 / 5.6 |
+| Patrol car (charger / utility / Crown Vic) | 5.86 x 2.76 | 5.29 x 2.12 (1.84-2.2 tall) | 5.1-5.2 |
+| Ambulance / box truck / flatbed | 7.32 / 10.6 / 11.82 | 6.63 / 9.85 / 9.57 | 6.7 / 8-10 / 9.5 |
+| Bus | 11.81 x 3.79 x 3.88 | 11.78 x 2.79 x 3.18 | 12 x 2.55 x 3.2 |
+| Bicycle | 4.05 x 1.13 x 2.4 | 1.90 x 0.53 x 1.13 | 1.8 x 0.6 x 1.1 |
+| Sport bike / cruiser | 3.84 / 4.17 | 2.14 / 2.38 (1.17 tall) | 2.1 / 2.4 |
+| Tank (hull; gun and whip past it) | 10.5 collider, 12.8 model | 7.9 collider, 9.0 model | 7.9 hull, 9.8 with gun |
+| Army jeep / APC / cargo truck | 6.84 / 9.75 / 10.62 | 4.6 / 6.4 / 6.7 specs | 4.6 / 6.4-7 / 6.7 |
+| Person (crowd rig, average) | 2.17 (2.02-2.32) | 1.74 (1.63-1.87) | 1.75 (1.6-1.9) |
+| Player | 2.13 | 1.71 standing (1.75 rig) | 1.75 |
+| Storey / ground floor | 1.9 / 1.9 | 3.2 / 4.5 | 3.0-3.5 / 4-5 |
+| Shop door / entrance doors | 1.5 / 2.0 | 2.3 / 2.6 | 2.1-2.4 |
+| Buildings (median / 90% / tallest) | 7.7 / 12.8 / 144 m | 14.0 / 23.2 / 247 m | |
+| Street lamp | 4.25 | 9.0 | 8-10 |
+| Street tree (r 15) / palm | ~4.5 / 3.9 | ~7 / 9 | 6-12 / 8-15 |
+| Bus shelter / bench seat, back | 2.0 / 0.53, 1.16 | 2.5 / 0.45, 0.85 | 2.4-2.6 / 0.45, 0.85 |
+| Mailbox / meter / bollard | 1.0 / 1.1 / 0.65 | 1.3 / 1.3 / 0.9 | 1.3 / 1.2-1.4 / 0.9-1.0 |
+| Lane with gutter / sidewalk / block | 5.5 / 3.5 / 64 | same | (Portland block 61) |
+| Boats, planes, helicopters | true | unchanged | |
+
+Vehicles (game.js VEHICLE_DEFINITIONS, render3d.js DESIGN SIZE)
+- `l` / `w` are written in metres. Each model is built at its design size, (l, w) / `modelScale`,
+  and drawn at `modelScale` (0.8 for cars, 0.47 bicycle, 0.55 sport bike, 0.65-0.9 trucks), so
+  roofs, beltlines, wheels, lamps, lightbars and riders come out real without restyling the
+  models. Dents, loose panels, glass bursts, engine smoke, wheel spin and the body impostors work
+  in design units. Physics reads the new sizes as they are (inertia, the collider, traffic's
+  look-ahead and following gap, which are in metres of bumper-to-bumper space); physics.js is
+  unchanged. The share bike is drawn at its collider already and is not scaled again.
+- Roadblock V: the carriageway cruisers stand 19 units either side of the line (were 22) so the
+  shorter cruisers still overlap past the centre.
+
+People (game.js PEOPLE)
+- `PERSON_HEIGHT` 1.75 m, `PERSON_SCALE` on every rig (crowd, player, officers, actors; officers
+  and actors vary 0.94-1.06 like the crowd's looks). A round hits within `PERSON_HIT_RADIUS` (1 m,
+  was 1.25). Name tags, speech bubbles, dizzy stars, the sniper laser, the aim plane and the
+  crowd impostors follow the height. Cafe chairs lowered to a 0.45 m seat.
+
+Buildings (game.js BUILDINGS, cityscape3d.js, skyline3d.js, civic3d.js, world3d.js)
+- `realBuildingHeight()` turns the plan's heights into real storeys (`STOREY` 3.2 m over a
+  `SHOP_FLOOR` 4.5 m ground floor): towers are 1.7x taller. The Blue Hour roof is 30 m (was 17),
+  its elevator counts 10 floors. Height thresholds (archetypes, setbacks, fire escapes, rooftop
+  helipads, SWAT sniper roofs, wall decals) use the same conversion. Facade textures, curtain
+  walls, balconies, hotel floors, fire escapes and brick courses repeat per real storey.
+- Shopfronts: a 2.3 m door with a transom light, glazing to 3.6 m, awnings at 3.2 m (their air
+  cover and rain drips moved up with them), the sign on the fascia at 5 m. Business entrances:
+  2.6 m doors under a 3.2 m canopy; business signs no lower than the fascia.
+- The sun's shadow box reaches the tallest roof; the police helicopter flies 8 m over the roofs
+  near it (at least 35 m up); the flight HUD's roof clearance reads the real roofs.
+
+Street furniture: lamp posts 9 m (`LAMP_HEIGHT`), street trees about 7 m (`TREE_RISE`), palms
+9 m, bus shelters 2.5 m, benches, mailboxes, meters, news boxes and bollards at real heights.
+
+Camera: the street view starts at `STREET_ZOOM` 1.2 (the wheel reaches 1.8), so a true-size car
+and person read about as large as the old oversized ones.
+
+Checked: layout audit clean (only the known oblique junction notes), smoke test clean, no
+console errors; a drive up Harbor Ave through North Point, a 3-star chase (9 patrols, a
+roadblock) and the Blue Hour elevator mission start. Draw calls at the default street zoom
+(camera, then shadow map; headless, settled frames): Old Quarter 221 / 372 -> 197 / 298, North
+Point towers 166-201 / 284-306 -> 203 / 251, Midtown 533 / 489-588 -> 445 / 454. The taller
+towers cost no more: the closer default zoom takes in less of the city.
+
 <<<<<<< HEAD
 ## Unreleased — speed box on foot, km/h / mph, South Coast Cycle bike share
 
