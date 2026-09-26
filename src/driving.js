@@ -249,7 +249,9 @@
         if (abs && pedal > 0.05) {
           if (t.dump[i] > 0) t.dump[i] -= stepSeconds;
           else if (s > ABS_SLIP_HIGH) {
-            t.pressure[i] *= ABS_DUMP;
+            // Down by a step, and at least to what this tyre is taking now (the
+            // controller learns the road: a corner or ice leaves little to brake with).
+            t.pressure[i] = Math.min(t.pressure[i] * ABS_DUMP, (0.85 * cap) / Math.max(1e-6, demand * bias[i]));
             t.dump[i] = ABS_DUMP_TIME;
             t.absAt = physicsClock;
             if (i === 0) t.absCycles = (t.absCycles || 0) + 1;
