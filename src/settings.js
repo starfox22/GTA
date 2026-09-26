@@ -17,7 +17,8 @@
      *   AUDIO     sound on/off, a slider per mix bus (AUDIO_VOLUMES: master,
      *             radio & music, engines & vehicles, effects, voices, ambience,
      *             sirens; audio.js THE MIX), radio voices (police and dispatch
-     *             callouts), and a reset to the default mix
+     *             callouts), the radio on the title screen (car-radio.js TITLE
+     *             RADIO), and a reset to the default mix
      *   GAMEPLAY  NPC chatter (street speech bubbles), minimap, GPS route on the
      *             minimap, flight HUD, speed box on foot, control hints
      *   DRIVING   ABS, stability control, traction control, steering
@@ -93,6 +94,8 @@
         settings.radioVolumeSet = radioChosen;
         if (typeof saved.npcChatter === 'boolean') settings.npcChatter = saved.npcChatter;
         if (typeof saved.playerOutline === 'boolean') settings.playerOutline = saved.playerOutline;
+        // The title menu's radio (car-radio.js TITLE RADIO), on unless switched off.
+        if (typeof saved.titleRadio === 'boolean') titleRadioEnabled = saved.titleRadio;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
         if (typeof saved.voicesOn === 'boolean') voicesOn = saved.voicesOn;
       }
@@ -113,6 +116,7 @@
             radioVolumeSet: settings.radioVolumeSet,
             npcChatter: settings.npcChatter,
             playerOutline: settings.playerOutline,
+            titleRadio: titleRadioEnabled,
             soundOn,
             voicesOn,
           }),
@@ -254,6 +258,18 @@
           get: () => voicesOn,
           set: (on) => {
             if (on !== voicesOn) toggleVoices();
+          },
+        },
+        {
+          id: 'titleRadio',
+          kind: 'toggle',
+          label: 'Radio on title screen',
+          note: () =>
+            'The radio box on the title menu, playing NEON 88.7 until you tune another there. The first click, tap or key starts it; it fades out as you enter the city.',
+          get: () => titleRadioEnabled,
+          set: (on) => {
+            titleRadioEnabled = !!on;
+            syncCarRadio();
           },
         },
         {

@@ -1471,44 +1471,23 @@
       }
       // ---- Palms and lamps -------------------------------------------------------------
       {
+        // Coconut and royal palms from the species library (vegetation3d.js), one
+        // instanced mesh per species; nothing here can be knocked down.
         const palms = parkPalms(),
-          trunkGeo = new Three.CylinderGeometry(1.2, 2, 30, 7, 5);
-        trunkGeo.translate(0, 15, 0);
-        // A gentle lean: bend the trunk's upper rings.
-        const tp = trunkGeo.attributes.position;
-        for (let i = 0; i < tp.count; i++) tp.setX(i, tp.getX(i) + Math.pow(tp.getY(i) / 30, 2) * 3);
-        trunkGeo.computeVertexNormals();
-        const crown = parkParts();
-        for (let k = 0; k < 9; k++) {
-          const a = (k / 9) * TAU,
-            verts = [];
-          for (let j = 0; j < 7; j++) {
-            const d = (j / 6) * 20,
-              h = 31 + Math.sin((j / 6) * Math.PI) * 4 - (j / 6) * (8 + (k % 3) * 3),
-              w = Math.sin((j / 6) * Math.PI) * 3.4;
-            verts.push(3 + Math.cos(a) * d - Math.sin(a) * w, h, Math.sin(a) * d + Math.cos(a) * w, 3 + Math.cos(a) * d + Math.sin(a) * w, h, Math.sin(a) * d - Math.cos(a) * w);
-          }
-          const geo = new Three.BufferGeometry();
-          geo.setAttribute('position', new Three.Float32BufferAttribute(verts, 3));
-          const idx = [];
-          for (let j = 0; j < 6; j++) idx.push(j * 2, j * 2 + 1, j * 2 + 2, j * 2 + 1, j * 2 + 3, j * 2 + 2);
-          geo.setIndex(idx);
-          geo.computeVertexNormals();
-          crown.add(palmFrondMaterial, geo, new Three.Matrix4());
-        }
-        crown.add(palmTrunkMaterial, sphereGeo, parkPlaced(3, 0, 30.5, 2.6, 2.6, 2.6));
-        const crownMeshes = crown.flush(new Three.Group(), 'palm crown');
-        const trunks = new Three.InstancedMesh(trunkGeo, palmTrunkMaterial, palms.length),
-          crowns = crownMeshes.map((m) => new Three.InstancedMesh(m.geometry, m.material, palms.length)),
+          bySpecies = { coconut: [], royal: [] },
           m4 = new Three.Matrix4();
-        palms.forEach((p, i) => {
-          m4.compose(parkV.set(p.x, 0, p.y), pq.setFromAxisAngle(parkUpAxis, (p.x * 13 + p.y * 7) % TAU), ps.set(p.s, p.s, p.s));
-          trunks.setMatrixAt(i, m4);
-          for (const c of crowns) c.setMatrixAt(i, m4);
-        });
-        for (const m of [trunks, ...crowns]) {
-          m.castShadow = true;
-          m.receiveShadow = true;
+        for (const p of palms) bySpecies[vegHash(p.x, p.y, 5) < 0.62 ? 'coconut' : 'royal'].push(p);
+        for (const [key, list] of Object.entries(bySpecies)) {
+          if (!list.length) continue;
+          const S = TREE_SPECIES[key],
+            m = foliageInstances(speciesGeometry(key, 0), list.length);
+          list.forEach((p, i) => {
+            const v = treeVariation(S, p.x, p.y);
+            m4.compose(parkV.set(p.x, 0, p.y), pq.setFromAxisAngle(parkUpAxis, v.yaw), ps.setScalar(p.s * 0.62 * v.scale));
+            m.setMatrixAt(i, m4);
+            setFoliageInstance(m, i, v.tint, v.morph, 0);
+          });
+          m.computeBoundingSphere();
           m.userData.dynamic = true;
           m.name = 'park palms';
           parkRoot.add(m);

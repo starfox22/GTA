@@ -50,7 +50,7 @@
       return 1 / (1 + clamp((v - 60 * KMH) / (160 * KMH), 0, 1) * 0.47);
     }
     function newCallNotice() {
-      if (missionIndex < missions.length) incomingCallRemaining = 8;
+      if (storyCallWaiting()) incomingCallRemaining = 8;
     }
     canvas.addEventListener('pointerdown', (e) => {
       if (e.pointerType !== 'touch' || gameMode !== 'play' || worldSafariGesture) return;

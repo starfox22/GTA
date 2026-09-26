@@ -28,6 +28,17 @@
     // The build's version, shown on the title menu and by DeadEndCity.version.
     const GAME_VERSION = '30.0.0';
     /**
+     * DEMO BUILD FLAG
+     * true: the public demo. A normal player gets missions 1 and 2 only; every
+     * later story mission and contract shows as FULL GAME in the picker and the
+     * payphone stops ringing after mission 2, whose completion shows the DEMO
+     * COMPLETE card (thanks, stats, free roam or main menu). Free roam and its
+     * activities stay open. God mode (the godmode cheat) plays everything, with
+     * no card. false: the full game, with no demo gates or badges at all.
+     * See campaign.js PUBLIC DEMO.
+     */
+    const DEMO_BUILD = true;
+    /**
      * HUD WRITE GUARD
      * The HUD is refreshed ~11 times a second and sets forty-odd texts whether or
      * not they changed. Writing textContent or innerHTML always replaces the
@@ -1394,6 +1405,8 @@
       // Where the player may cross the shoreline (beaches, ladders): water.js.
       if (swimmer && shoreStepBlocked(body.x, body.y, x, y, collisionRadius)) return true;
       if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
+      // Mission 1: nobody follows the truck into Vinny's sealed warehouse (chase.js).
+      if (body.police && depotPoliceBlocked(body, x, y)) return true;
       // Street furniture, tree trunks, park fixtures and shelters stop the
       // player on foot (streets.js); the crowd keeps to its own paths round them.
       if (onFoot && footObstacleBlocked(x, y, 4.5)) return true;
@@ -2629,7 +2642,7 @@
         openService(place);
         return;
       }
-      if (payphoneInReach() && !mission) {
+      if (payphoneInReach() && !mission && storyCallWaiting()) {
         offerMission();
         return;
       }
@@ -3519,6 +3532,8 @@
       if (active) timed('knockdowns', () => updateKnockdowns(deltaSeconds));
       if (active || gameMode === 'menu') timed('cars', () => updateCars(deltaSeconds, active));
       if (active) {
+        // Play time, cash earned, wanted peak; the demo card's timer (campaign.js).
+        trackCampaignStats(deltaSeconds);
         player.inv = Math.max(0, player.inv - deltaSeconds);
         shotCooldownSeconds = Math.max(0, shotCooldownSeconds - deltaSeconds);
         if (reloadSecondsRemaining > 0) {
@@ -4819,12 +4834,13 @@
       updateSpeedBox();
       const target = objective(),
         m = mission;
-      getElement('pager').classList.toggle('hidden', !m && incomingCallRemaining <= 0);
+      getElement('pager').classList.toggle('hidden', !m && incomingCallRemaining <= 0 && !demoStoryOver());
       // Numbered the same way as the mission-start headline: story missions out
       // of the story, contracts out of the contracts.
       const shownIndex = Math.min(mission?.index ?? missionIndex, missions.length - 1);
-      getElement('missionCounter').textContent =
-        shownIndex >= SIDE_JOB_FIRST
+      getElement('missionCounter').textContent = !m && demoStoryOver()
+        ? 'DEMO COMPLETE'
+        : shownIndex >= SIDE_JOB_FIRST
           ? 'CONTRACT ' + (shownIndex + 1 - SIDE_JOB_FIRST) + ' / ' + (missions.length - SIDE_JOB_FIRST)
           : 'MISSION ' +
             String(shownIndex + 1).padStart(2, '0') +
@@ -4838,6 +4854,11 @@
           CHARACTERS[missions[m.index].contact].name.toUpperCase();
         getElement('missionTitle').textContent = missions[m.index].title;
         getElement('missionText').textContent = missionSummary(m);
+      } else if (demoStoryOver()) {
+        // PUBLIC DEMO (campaign.js): the story stops here; the city does not.
+        getElement('pagerLabel').textContent = 'DEAD END CITY · DEMO';
+        getElement('missionTitle').textContent = 'Thanks for playing the demo!';
+        getElement('missionText').textContent = 'If you liked it, please buy the full game. Until then the city is yours to explore.';
       } else if (missionIndex >= missions.length) {
         getElement('pagerLabel').textContent = 'THE SOUTH COAST LEDGER';
         getElement('missionTitle').textContent = 'One clean exit.';
@@ -4852,13 +4873,17 @@
       }
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
-        : 'FREE ROAM · ' + completed + ' JOBS COMPLETE';
+        : demoStoryOver()
+          ? 'FREE ROAM · DEMO COMPLETE'
+          : 'FREE ROAM · ' + completed + ' JOBS COMPLETE';
       updateMissionCard(
         m
           ? m.instruction || missions[m.index].brief
-          : missionIndex >= missions.length
-            ? 'FREE ROAM · ' + completed + ' JOBS COMPLETE'
-            : 'ANSWER THE RINGING PAYPHONE',
+          : demoStoryOver()
+            ? 'FREE ROAM · DEMO COMPLETE'
+            : missionIndex >= missions.length
+              ? 'FREE ROAM · ' + completed + ' JOBS COMPLETE'
+              : 'ANSWER THE RINGING PAYPHONE',
       );
       let prompt = '',
         promptId,
@@ -4873,6 +4898,10 @@
         prompt = skip.prompt;
         promptId = skip.id;
         promptKey = 'skipRide';
+      } else if (gameMode === 'play' && player.coaster) {
+        // Aboard a Sunset Pier ride (the Falcon, the Sunset Eye...): E cycles the view.
+        prompt = 'CHANGE VIEW';
+        promptId = 'ride-view';
       } else if (gameMode === 'play') {
         if (c) {
           // The flight HUD shows power, speed and the warnings; the prompt only
@@ -4905,7 +4934,7 @@
         else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
-        else if (payphoneInReach() && !m && missionIndex < missions.length) prompt = 'ANSWER PAYPHONE';
+        else if (payphoneInReach() && !m && storyCallWaiting()) prompt = 'ANSWER PAYPHONE';
         else if (monarchPrompt()) prompt = monarchPrompt();
         else if (bikeShare) {
           prompt = bikeShare.text;
@@ -4972,7 +5001,12 @@
       getElement('menu').classList.add('hidden');
       canvas.focus();
       keys = {};
-      tell('Welcome to South Coast. Answer the yellow payphone, or take a ride.', 5);
+      tell(
+        demoStoryOver()
+          ? 'Welcome back. The demo story is complete: the city is yours to explore.'
+          : 'Welcome to South Coast. Answer the yellow payphone, or take a ride.',
+        5,
+      );
       announce('SOUTH COAST · 1997', 'DEAD END CITY', 1.8);
     }
     function togglePause() {
@@ -5122,7 +5156,7 @@
           player.hp = 100;
           player.armor = 100;
           announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
-          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · time, weather, ammo and teleport in Settings · God mode · click the map to teleport', 5);
+          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · mission select, time, weather, ammo and teleport in Settings · God mode', 5);
         } else {
           announce('SOUTH COAST', 'GODMODE OFF', 1.8);
           tell('GODMODE OFF', 2.5);
@@ -5130,8 +5164,13 @@
         drawWeapon();
         updateUI();
         tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
-        // God mode unlocks every job in the mission picker (campaign.js): offer it.
-        if (player.godMode && gameMode === 'play') openMissionSelect();
+        // Straight to Settings · GOD MODE (god-panel.js), whose first row opens
+        // the mission picker with every job unlocked. In play it opens over the
+        // pause menu; on the title screen over the title, and BACK returns there.
+        if (!player.godMode) return;
+        if (gameMode === 'map') toggleMap();
+        if (gameMode === 'play') togglePause();
+        if (gameMode === 'pause' || gameMode === 'menu') openSettings('god');
       },
     };
     /* Put the player somewhere else, letting go of anything that was carrying
@@ -5212,7 +5251,7 @@
       }
       if (
         !e.repeat &&
-        (gameMode === 'play' || gameMode === 'map') &&
+        (gameMode === 'play' || gameMode === 'map' || gameMode === 'menu') &&
         feedCheatBuffer((e.key || '').toLowerCase())
       ) {
         e.preventDefault();
@@ -5270,6 +5309,14 @@
           if (code === 'Enter' || is('interact')) acceptDialogue();
           if (code === 'Escape') closeDialogue();
         }
+        return;
+      }
+      // The DEMO COMPLETE card (campaign.js): a focused button takes Enter and
+      // Space itself; Escape (or Enter elsewhere) carries on in free roam.
+      if (gameMode === 'demo') {
+        if (document.activeElement?.tagName === 'BUTTON' && ['Enter', 'NumpadEnter', 'Space'].includes(code)) return;
+        e.preventDefault();
+        if (!e.repeat && ['Escape', 'Enter', 'NumpadEnter'].includes(code)) closeDemoComplete(false);
         return;
       }
       if (gameMode === 'elevator') {
@@ -5337,6 +5384,13 @@
         openHelp();
         return;
       }
+      // The title menu's radio takes the same keys as in a vehicle (car-radio.js TITLE RADIO).
+      if (gameMode === 'menu' && titleRadioShown) {
+        if (is('radioPower')) toggleCarRadio();
+        else if (is('radioNext')) tuneCarRadio(radioStationIndex() + 1);
+        else if (is('radioLouder') || is('radioQuieter')) stepRadioVolume(is('radioLouder') ? 1 : -1);
+        return;
+      }
       if (gameMode !== 'play') return;
       if (is('zoomIn') || is('zoomOut') || is('zoomReset')) {
         e.preventDefault();
@@ -5365,7 +5419,7 @@
         return;
       }
       if ((player.car || player.coaster || taxiRide) && is('radioNext')) {
-        tuneCarRadio(carRadioStation + 1);
+        tuneCarRadio(radioStationIndex() + 1);
         return;
       }
       if (radioAboard() && (is('radioLouder') || is('radioQuieter'))) {
@@ -5816,11 +5870,66 @@
       },
       setZoom: (value) => setWorldZoom(value),
       startMission(index) {
+        // A public demo's gated jobs need god mode or ?dev in the URL (campaign.js).
+        if (demoLocked(index) && !/[?&]dev\b/.test(location.search)) return { ...this.status(), demoLocked: true };
         if (index >= 0 && index < missions.length) {
           missionIndex = index;
           startMission();
         }
         return this.status();
+      },
+      // PUBLIC DEMO (campaign.js): the build flag, which jobs are open, the stats
+      // recap, whether the demo was completed and whether the card is up.
+      demo: () => ({
+        build: DEMO_BUILD,
+        missions: DEMO_MISSIONS,
+        godMode: !!player.godMode,
+        open: missions.map((m, i) => i).filter((i) => !demoLocked(i)),
+        storyOver: demoStoryOver(),
+        callWaiting: storyCallWaiting(),
+        completed: demoCompleted,
+        cardShown: gameMode === 'demo',
+        cardIn: Math.round(demoCardIn * 10) / 10,
+        stats: { ...campaignStats, playSeconds: Math.round(campaignStats.playSeconds) },
+      }),
+      // Mission 2 test shortcut: start A Seat at the Table if needed, put Vescari
+      // down and the player on the street for the last stage (reach the motel).
+      skipToRooftopEscape() {
+        if (mission?.index !== 1) {
+          missionIndex = 1;
+          startMission();
+        }
+        const m = mission;
+        m.boss.hp = 0;
+        m.boss.deadTime = gameTime;
+        m.killRegistered = true;
+        player.roof = false;
+        player.buildingRoof = null;
+        player.altitude = 0;
+        teleportPlayer(ROOF_HIT.escape.x, ROOF_HIT.escape.y - 120);
+        setStage(4, ROOF_HIT.escape, 'LOSE THE POLICE · REACH CORAL PALMS MOTEL ON FOOT');
+        return this.missionState();
+      },
+      // Mission 1 test helper: `n` patrol officers on foot just inside Vinny's
+      // front doorway, as if they had run in after the truck.
+      depotOfficers(n = 2) {
+        const spawned = [];
+        for (let i = 0; i < n; i++) {
+          const o = makeOfficer(-1700 + (i % 4) * 24, 4372 + Math.floor(i / 4) * 22, Math.PI / 2, 'patrol', {
+            car: null,
+            timer: 1.2 + i * 0.3,
+          });
+          officers.push(o);
+          spawned.push({ x: Math.round(o.x), y: Math.round(o.y) });
+        }
+        return spawned;
+      },
+      // Mission 1 test helper: every officer still fighting inside the sealed
+      // warehouse takes a fatal shot from the player (the ordinary hit path).
+      neutraliseDepotPolice() {
+        const inside = depotPoliceInside();
+        for (const o of inside) strikePerson(o, 999, headingBetween(player, o), player, true, 'headshot');
+        return inside.length;
       },
       missions: () => missions.map((m, i) => ({ index: i, title: m.title, contact: m.contact })),
       // Mission 1 test shortcut: start Dockside Favor if needed, load all three
@@ -5858,6 +5967,8 @@
                 : null,
               depotShutter: +depotFrontShutter.toFixed(2),
               depotBackDoor: +depotBackDoor.toFixed(2),
+              depotSealed,
+              policeInside: mission.index === 0 ? depotPoliceInside().length : undefined,
               wanted: Math.ceil(wantedStars),
             }
           : { mission: null, last: lastMissionOutcome, completed, depotShutter: +depotFrontShutter.toFixed(2), depotBackDoor: +depotBackDoor.toFixed(2) },
@@ -6710,6 +6821,8 @@
       inspectView: (yaw, pitch, lift) => city3D?.inspectView?.(yaw, pitch, lift),
       // What the people cost in the last frame (crowd3d.js): parts, draw calls, instances, triangles.
       crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
+      vegetation: () => city3D?.vegetation?.() ?? null,
+      treeLineup: (x = player.x, y = player.y, spacing, lod, perRow) => city3D?.treeLineup?.(x, y, spacing, lod, perRow) ?? null,
       // Pack the people `frames` times back to back: the rig's CPU cost per frame in ms.
       crowdBenchmark: (frames) => city3D?.crowdBenchmark?.(frames) ?? null,
       // Raise an incident at a map point without firing: gunfire, explosion, crash.

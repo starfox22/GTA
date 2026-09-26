@@ -1,5 +1,109 @@
 # Changelog
 
+## Unreleased — the tree library
+
+Every tree is now one of 22 species (vegetation3d.js), so no two streets, parks or hillsides
+look alike, and no two trees of a species are the same.
+
+- **Broadleaf**: London plane, linden, honey locust (light, airy), Bradford pear (one in five in
+  white blossom), maple (one in seven turning gold or red), oak, weeping willow, jacaranda
+  (purple), flame tree (red), cherry, beech, birch. A trunk with a root flare forks into limbs
+  that show under the crown's edge; the crown is a cluster of lobes, each a lumpy core wrapped
+  in leaf-cluster cards, so its edge reads as foliage from above.
+- **Conifers**: spruce (ragged drooping whorls), fir (a tight blue-green cone, a spire),
+  pine (a bare trunk under tufted clumps), Italian cypress (a dark column), stone pine (a flat
+  umbrella).
+- **Palms**: Canary date palm (thick diamond-patterned trunk, a dense ball of fronds), Mexican
+  fan palm (tall and thin, fan leaves over a skirt of dead ones), coconut (a bowed trunk, long
+  drooping fronds, nuts), royal palm (smooth grey trunk, green crownshaft). Fronds are curved,
+  keeled blades that twist towards the tip.
+- **Materials**: one procedural atlas (leaf clusters, needles, pine tufts, willow strands,
+  blossom, pinnate and fan fronds, eight barks) with a baked normal map and mipmaps that keep
+  the leaf coverage at a distance; one material for every tree.
+- **Variety per tree**: scale ±18%, height to width, lean, turn, leaf tint, crown density and
+  a shape morph (a crown that spreads or stays upright, boughs that droop or lift, fronds that
+  hang), all from the tree's position. Wind sways crowns and fronds, shadows included.
+- **Where**: the Old Quarter and Battery Point lindens and planes; downtown honey locusts and
+  pears, stone pines in the financial plazas; South Bank maples; planes at the Ironworks, planes
+  and stone pines at the marina; parks oaks, lindens, maples
+  and planes with willows by the ponds and cherries; the Keys mixed palms (fan palms down Ocean
+  Drive, coconuts on the beach, royal and date palms in Little Havana) with flame trees and
+  jacarandas; Monarch Isle planes with stone pines among them, mixed palms on the waterfront;
+  the foothills pines, spruce and fir; the Ridgeline pines low down, fir through the middle and
+  spruce up to the treeline, beech, birch and maple below them.
+- **Performance**: one instanced mesh per species per breakable cell and level of detail, as
+  before; a ~100-triangle mid level from street zoom 0.5 out and beyond 1.5 km in the flight
+  view, and one plain crown per tree in the far city.
+- **Console**: `DeadEndCity.vegetation()` (species counts, tree draws and triangles in view),
+  `DeadEndCity.treeLineup()` (one of every species, for inspection).
+## Unreleased — the public demo build, and mission 1's warehouse ending
+
+- **Public demo** (`DEMO_BUILD = true` at the top of game.js; campaign.js PUBLIC DEMO): normal
+  players get missions 1 and 2. Missions 3-11 and contracts C1-C5 show in CHOOSE MISSION as
+  locked with a FULL GAME badge (titles visible, a click shows "Thanks for playing the demo! If
+  you liked it, please buy the full game."); the payphone stops ringing after mission 2 (no call
+  notice, prompt, marker or GPS line), RESTART CURRENT JOB cannot reach a gated job, and the
+  mission card reads FREE ROAM · DEMO COMPLETE. Completing mission 2 opens the DEMO COMPLETE
+  card: the title logo over the cover art, the thanks, a recap (time played, cash earned, wanted
+  peak, from the new saved `stats`), CONTINUE FREE ROAM and MAIN MENU. Completion is kept in
+  `dead-end-city-demo` (NEW GAME leaves it); the title menu has a DEMO badge by the version
+  (DEMO · COMPLETED after). Free-roam activities are not gated: the hill climb, beach
+  volleyball, the stadium ball, the pier rides, the bike share, cabs, rail, the liner, casino,
+  garages, gun shop, Fort Sentinel and the Apache. God mode opens everything, with no card.
+  Console: `demo()`, `skipToRooftopEscape()`; `startMission(i)` reaches a gated job only with
+  god mode or `?dev`.
+- **God mode opens its settings**: typing GODMODE (in play, on the map or on the title screen)
+  turns god mode on and opens Settings straight on the GOD MODE tab instead of the mission
+  picker; over the title it returns to the title when closed. The tab's new first row, MISSION
+  SELECT · PLAY ANY MISSION, opens the picker with every job unlocked (demo build included).
+  Typed again it turns god mode off with the usual toast.
+- **Mission 1 ending** (harbor.js THE DROP): the shutter comes down behind the truck with no
+  "police lost". Officers shut inside with it (on foot through the doorway, or a cruiser's
+  crew) must be put down: ELIMINATE POLICE · N LEFT, the marker on the nearest one; downed
+  officers count as out. The warehouse is sealed (chase.js `depotSealed`): no officer crosses
+  its walls either way, by the shutter or the back door, and none cuffs through them; officers
+  caught under the closing shutter step to the nearer side. The wanted level is held while the
+  player is inside (the units stake out the building; no more are sent). Then EXIT THE TRUCK
+  (while still at the wheel), then the back door opens: ESCAPE ON FOOT THROUGH THE BACK DOOR,
+  with the marker on the door. Walking out clears the wanted level at that moment (POLICE
+  LOST!), and MISSION 1 COMPLETE follows 1.4 s later. The truck destroyed before the escape
+  still fails the job; dying inside fails it as before. Console: `depotOfficers(n)`,
+  `neutraliseDepotPolice()`, `missionState()` now reports `depotSealed` and `policeInside`.
+
+## Unreleased — the radio on the title screen
+
+The car radio plays on the title menu too, so the city's music is there before the first ride
+(car-radio.js TITLE RADIO).
+
+- **The same radio box** (station chip, genre, now playing, the 90s volume knob with its LED arc
+  and LCD, mute, the six presets and NEXT) docks on the right of the title screen, open, over the
+  cover art and clear of the logo and the menu column (the column narrows beside it on narrower
+  windows). Upright phones: at the top right over the art; short upright phones and landscape
+  phones: its one-line chip at the top right, opened by a tap for a few seconds. The box moves
+  into `#menu` while the title shows, so Settings, Choose Mission, How to Play and Credits cover it
+  and the music plays on behind them.
+- **NEON 88.7 by default** on the title; a station tuned there is remembered for the title
+  (`titleStation` in `dead-end-city-radio-v2`), apart from the car's preset. N / B and `,` / `.`
+  work on the title as in a vehicle. The volume is the one radio level (knob, mute, Settings).
+- **Autoplay**: browsers block sound before a user gesture. The first attempt is made at once;
+  while it is refused the box says "♪ Click anywhere to play radio" ("Tap" on touch; "♪ TAP TO
+  PLAY" on the short-phone chip), the bars lie flat, and the first click, tap or key anywhere
+  starts it. A refusal throws nothing (the play() promise is caught).
+- **Focus**: a click on the box hands the keys back to the menu item last selected, so Enter still
+  starts the game and the arrows still move through the menu.
+- **Handover**: entering the city on foot fades the music out over 1.5 s (on the wall clock) and
+  pauses it; starting in a vehicle with its radio on carries the same station and track on
+  without a break (the car's preset becomes the title's station). Back on the title it resumes.
+- **Settings · Audio · Radio on title screen** (on by default, saved as `titleRadio` in
+  `dead-end-city-settings`).
+- **Published split build**: the title radio streams `media/synth.mp3` like the in-car radio;
+  checked over a local HTTP server.
+- **Fix**: `#damageArc` is centred before the first hit too; untransformed it ran 150 px past a
+  phone's right edge and widened the page (fixed elements were placed on the wider layout).
+- **Console**: `DeadEndCity.radio()` reports `title` (enabled, shown, station, power, waiting for a
+  gesture, docked in the menu), `carStation`, `blocked`, `unavailable`, `loaded`, `src`, `time`
+  and `fading`.
+
 ## Unreleased — the car and motorbike redesign, and the flagships
 
 Civilian cars (cars3d.js) and motorbikes (motorbikes3d.js), rebuilt at real size to the police

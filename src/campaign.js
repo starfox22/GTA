@@ -8,9 +8,141 @@
     /* Campaign frontier is independent from the mission currently selected for replay. */
     let missionMenuOrigin = 'menu';
     /* Jobs the picker offers: everything up to the frontier, or every job while
-       the godmode cheat is on. */
+       the godmode cheat is on. A public demo build stops at DEMO_MISSIONS. */
     function missionUnlocked(index) {
-      return index <= completed || !!player.godMode;
+      return !demoLocked(index) && (index <= completed || !!player.godMode);
+    }
+    /**
+     * PUBLIC DEMO (game.js DEMO_BUILD)
+     * In a demo build a normal player gets missions 1 and 2 (indices below
+     * DEMO_MISSIONS). Everything later in `missions` is a story job or a
+     * contract and is gated: the picker shows it locked with a FULL GAME badge
+     * (a click shows the buy note), the payphone does not ring for it, and
+     * RESTART CURRENT JOB cannot reach it. Free-roam activities are not
+     * missions and stay open: the hill climb, beach volleyball, the stadium ball,
+     * the Sunset Pier rides, the bike share, cabs, rail and the liner, the
+     * casino, garages and the gun shop, Fort Sentinel and the Apache.
+     * Completing mission 2 shows the DEMO COMPLETE card (thanks, a stats recap,
+     * CONTINUE FREE ROAM / MAIN MENU); it is remembered in its own storage key,
+     * `dead-end-city-demo`, which NEW GAME does not erase. God mode (the godmode
+     * cheat) lifts every gate and never shows the card. The developer console's
+     * startMission reaches a gated job only with god mode or `?dev` in the URL.
+     */
+    const DEMO_MISSIONS = 2;
+    const DEMO_BUY_MESSAGE = 'Thanks for playing the demo! If you liked it, please buy the full game.';
+    const DEMO_KEY = 'dead-end-city-demo';
+    // Play time, cash earned and the highest wanted level of this story, saved
+    // with it (the demo card's recap).
+    const campaignStats = { playSeconds: 0, cashEarned: 0, wantedPeak: 0 };
+    let statsCashSeen = null,
+      demoCardIn = 0,
+      demoCompleted = false;
+    try {
+      demoCompleted = !!JSON.parse(localStorage.getItem(DEMO_KEY))?.complete;
+    } catch {}
+    function demoLocked(index) {
+      return DEMO_BUILD && !player.godMode && index >= DEMO_MISSIONS;
+    }
+    /* A story call is waiting at the payphone (none past the demo's end). */
+    function storyCallWaiting() {
+      return missionIndex < missions.length && !demoLocked(missionIndex);
+    }
+    /* The demo's story is done: free roam, no more calls. */
+    function demoStoryOver() {
+      return missionIndex < missions.length && demoLocked(missionIndex);
+    }
+    function resetCampaignStats() {
+      campaignStats.playSeconds = campaignStats.cashEarned = campaignStats.wantedPeak = 0;
+      statsCashSeen = null;
+    }
+    /* Called every play step (game.js update). Cash earned is every rise in the
+       wallet; spending never takes it back. */
+    function trackCampaignStats(deltaSeconds) {
+      campaignStats.playSeconds += deltaSeconds;
+      campaignStats.wantedPeak = Math.max(campaignStats.wantedPeak, Math.ceil(wantedStars));
+      if (statsCashSeen !== null && cash > statsCashSeen) campaignStats.cashEarned += cash - statsCashSeen;
+      statsCashSeen = cash;
+      if (demoCardIn > 0) {
+        demoCardIn = Math.max(0, demoCardIn - deltaSeconds);
+        if (demoCardIn === 0) showDemoComplete();
+      }
+    }
+    /* winMission: mission 2 closes the demo; the card follows the payday headline. */
+    function demoMissionWon(index) {
+      if (!DEMO_BUILD || player.godMode || index !== DEMO_MISSIONS - 1) return false;
+      demoCompleted = true;
+      try {
+        localStorage.setItem(DEMO_KEY, JSON.stringify({ complete: true, version: GAME_VERSION }));
+      } catch {}
+      demoCardIn = 2.6;
+      return true;
+    }
+    function playTimeText(seconds) {
+      const minutes = Math.floor(seconds / 60),
+        h = Math.floor(minutes / 60);
+      return h > 0
+        ? h + 'h ' + String(minutes % 60).padStart(2, '0') + 'm'
+        : minutes + 'm ' + String(Math.floor(seconds % 60)).padStart(2, '0') + 's';
+    }
+    function showDemoComplete() {
+      // Wait out a menu, a call or a death screen: the card comes up in play.
+      if (gameMode !== 'play') {
+        demoCardIn = 0.5;
+        return;
+      }
+      if (mapOpen) toggleMap();
+      gameMode = 'demo';
+      keys = {};
+      mouse.down = false;
+      getElement('demoArt').style.backgroundImage = getElement('coverArt').style.backgroundImage;
+      getElement('demoTime').textContent = playTimeText(campaignStats.playSeconds);
+      getElement('demoCash').textContent = '$' + Math.floor(campaignStats.cashEarned).toLocaleString();
+      const peak = clamp(campaignStats.wantedPeak, 0, 5),
+        stars = getElement('demoWanted');
+      stars.replaceChildren();
+      for (let i = 0; i < 5; i++) {
+        const star = document.createElement('i');
+        star.textContent = '★';
+        if (i < peak) star.className = 'on';
+        stars.appendChild(star);
+      }
+      stars.setAttribute('aria-label', peak + ' of 5 stars');
+      getElement('demoMore').textContent =
+        'The full game: ' +
+        (SIDE_JOB_FIRST - DEMO_MISSIONS) +
+        ' more story missions and ' +
+        (missions.length - SIDE_JOB_FIRST) +
+        ' contracts across the South Coast.';
+      getElement('demoComplete').classList.remove('hidden');
+      getElement('demoContinue').focus();
+      updateUI();
+    }
+    function closeDemoComplete(toMenu = false) {
+      if (gameMode !== 'demo') return;
+      getElement('demoComplete').classList.add('hidden');
+      keys = {};
+      save();
+      if (toMenu) {
+        gameMode = 'menu';
+        getElement('menu').classList.remove('hidden');
+        updateTitleMenu();
+        return;
+      }
+      gameMode = 'play';
+      canvas.focus();
+      tell('Free roam: the city is yours. The hill climb, beach volleyball, the pier rides and the bike share are all open.', 6);
+      updateUI();
+    }
+    getElement('demoContinue').onclick = () => closeDemoComplete(false);
+    getElement('demoMenu').onclick = () => closeDemoComplete(true);
+    /* A FULL GAME job picked in the demo: the buy note, in the picker. */
+    function showDemoBuyNote() {
+      const note = getElement('demoBuyNote');
+      note.textContent = DEMO_BUY_MESSAGE;
+      note.classList.remove('hidden', 'flash');
+      void note.offsetWidth;
+      note.classList.add('flash');
+      tone(420, 0.08, 0.1, 'triangle');
     }
     const initialAmmo = [96, 150, 36, 8, 150, 30];
     function campaignCount(value) {
@@ -33,6 +165,7 @@
             missionIndex,
             completed,
             highestCompleted: completed,
+            stats: campaignStats,
             cash,
             worldMinutes,
             owned: weapons.map((w) => w.owned),
@@ -62,6 +195,9 @@
           if (Array.isArray(s.reserve)) w.reserve = savedSupply(s.reserve[i], w.reserve, 999999);
         });
         restoreWeaponSelection(s.selectedWeaponIndex);
+        if (s.stats && typeof s.stats === 'object')
+          for (const k of Object.keys(campaignStats))
+            campaignStats[k] = Number.isFinite(s.stats[k]) ? Math.max(0, s.stats[k]) : 0;
       } catch {}
     }
     function clearMissionOverlays() {
@@ -92,15 +228,37 @@
       mouse.down = false;
       const list = getElement('missionChoices');
       list.replaceChildren();
-      getElement('campaignProgress').textContent =
-        completed + ' / ' + missions.length + ' MISSIONS COMPLETED' + (player.godMode ? ' · GOD MODE: ALL JOBS OPEN' : '');
+      const demo = DEMO_BUILD && !player.godMode;
+      getElement('campaignProgress').textContent = demo
+        ? Math.min(completed, DEMO_MISSIONS) + ' / ' + DEMO_MISSIONS + ' DEMO MISSIONS COMPLETED'
+        : completed + ' / ' + missions.length + ' MISSIONS COMPLETED' + (player.godMode ? ' · GOD MODE: ALL JOBS OPEN' : '');
       getElement('missionSelect').classList.toggle('god-mode', !!player.godMode);
+      getElement('missionSelect').classList.toggle('demo-mode', demo);
+      getElement('demoBuyNote').classList.add('hidden');
       getElement('missionSelectNote').textContent = player.godMode
         ? 'God mode: every job is open. A job played ahead of the story does not skip it.'
-        : 'Replay a completed job or continue your story. Future jobs stay secret.';
+        : demo
+          ? 'Demo: the first two missions are yours to play and replay. The rest of the story is in the full game.'
+          : 'Replay a completed job or continue your story. Future jobs stay secret.';
       for (let i = 0; i < missions.length; i++) {
         const unlocked = missionUnlocked(i),
           b = document.createElement('button');
+        if (demoLocked(i)) {
+          // Shown, not secret: the full game's jobs, locked, each a buy note.
+          b.className = 'mission-choice locked full-game';
+          b.setAttribute?.('aria-label', 'Mission ' + (i + 1) + ': ' + missions[i].title + ', in the full game');
+          b.innerHTML =
+            '<span class="mission-number">' +
+            String(i + 1).padStart(2, '0') +
+            '</span><span><b>' +
+            missions[i].title +
+            '</b><small>' +
+            (i >= SIDE_JOB_FIRST ? 'CONTRACT · ' : '') +
+            'AVAILABLE IN THE FULL GAME</small></span><span class="mission-badge">FULL GAME</span>';
+          b.onclick = showDemoBuyNote;
+          list.appendChild(b);
+          continue;
+        }
         b.className = 'mission-choice' + (unlocked ? '' : ' locked');
         b.disabled = !unlocked;
         b.setAttribute?.(
@@ -131,7 +289,7 @@
       }
       renderGodWorld();
       getElement('missionSelect').classList.remove('hidden');
-      list.children[Math.min(completed, missions.length - 1)]?.focus();
+      list.children[Math.min(completed, (demo ? DEMO_MISSIONS : missions.length) - 1)]?.focus();
     }
     /**
      * GOD MODE · TIME OF DAY
@@ -230,6 +388,10 @@
       }
     }
     function chooseMission(index) {
+      if (Number.isInteger(index) && index < missions.length && demoLocked(index)) {
+        if (gameMode === 'missions') showDemoBuyNote();
+        return false;
+      }
       if (!Number.isInteger(index) || index < 0 || index >= missions.length || !missionUnlocked(index))
         return false;
       initAudio();
@@ -256,6 +418,8 @@
       missionIndex = completed;
     }
     function resetCampaign() {
+      resetCampaignStats();
+      demoCardIn = 0;
       completed = 0;
       missionIndex = 0;
       clearMissionOverlays();
