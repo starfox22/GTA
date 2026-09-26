@@ -281,6 +281,11 @@
           { geo: at(unitCylinder, 0.2, 0.2, 0, 0, 0, 0, 0.48, 2.1, 0.48), color: '#1d3a28' },
           { geo: at(unitCylinder, 0.2, 1.5, 0, 0, 0, 0, 0.2, 0.8, 0.2), color: '#d4b24a' },
         ]), crowdPropMaterial, 12, false, false),
+        // An assistant referee's flag.
+        flag: crowdPart('flag', crowdMerge([
+          { geo: at(unitCylinder, 0.15, -1.2, 0, 0, 0, 0, 0.1, 4.2, 0.1), color: '#1d1f22' },
+          { geo: at(unitBox, 0.15, -2.4, 1.1, 0, 0, 0, 0.06, 1.5, 2.0), color: '#f2d33a' },
+        ]), crowdPropMaterial, 8, false, false),
         spark: crowdPart('spark', new Three.OctahedronGeometry(1, 0), crowdEmberMaterial, 60, false, false),
         broom: crowdPart('broom', crowdMerge([
           { geo: at(unitCylinder, 0, -2.2, 0, 0, 0, 0, 0.16, 6.6, 0.16), color: '#8a6d4a' },
@@ -491,7 +496,7 @@
           skirt = !!look.skirt,
           footwear = look.footwear || 'shoe',
           sole = look.sole || null,
-          socks = null,
+          socks = look.socks || null,
           hatStyle = look.hatStyle || (look.hat ? 'cap' : null),
           vest = look.vest || null,
           beard = look.beard ?? (!female && !kid ? (h(3) < 0.1 ? 2 : h(3) < 0.32 ? 1 : 0) : 0),
@@ -626,7 +631,7 @@
             pelvis: rigPaint(pants, look.beltColor || '#1d1a18', look.buckle || '#b7b9bb', skin, look.belt || garment === 'bikini' || garment === 'dress' || garment === 'shirtless' || (shorts && !legsCovered && summer) ? [0, 0, 0] : [0, 1, 2], pantsPattern),
             skirt: rigPaint(pants, mixHex(pants, '#000000', 0.2), pants, pants, [0, 1]),
             thigh: rigPaint(pants, pants, pants, skin, skirt || garment === 'bikini' ? [3, 3] : shorts ? [0, 3] : [0, 0], pantsPattern),
-            shin: rigPaint(pants, socks || skin, kneePads || pants, skin, legsCovered ? [0, 0, kneePads ? 2 : 0] : [3, socks ? 1 : 3, 3], pantsPattern),
+            shin: rigPaint(pants, socks || skin, kneePads || pants, skin, legsCovered ? [0, 0, kneePads ? 2 : 0] : look.kneeSocks && socks ? [1, 1, 1] : [3, socks ? 1 : 3, 3], pantsPattern),
             shoe: rigPaint(barefoot ? skin : shoes, sole, collarColor, skin, footwear === 'boot' ? [0, 1, 0] : [0, 1, 2]),
             vest: vest ? rigPaint(vest.a, vest.b, vest.c) : null,
             belt: rigPaint(look.dutyBelt?.a || '#121315', look.dutyBelt?.b || '#18191b', look.dutyBelt?.c || '#b8bec4'),
@@ -831,6 +836,36 @@
               return { ...base2, garment: 'jacket', top: pickOf(['#1c1d20', '#2a2320', '#3a1d1d', '#1d2433'], h(7)), topPattern: PATTERN.leather, inner: '#2a2c30', pants: '#23282f', shoes: '#141414', footwear: 'boot', gloves: '#141414', hatStyle: 'helmet', hatColor: pickOf(['#e9e7e1', '#1b1c1f', '#b8322a', '#2c5ea8'], h(8)), brim: '#101114', hatBadge: '#101114' };
             if (outfit === 'jetskier') return { ...base2, garment: female ? 'bikini' : 'shirtless', top: female ? '#2a67b5' : base.skin, pants: pickOf(['#d8413a', '#2a67b5', '#15253f'], h(7)), shorts: true, shoes: base.skin };
             return { ...base2, garment: pickOf(['tee', 'hoodie', 'jacket', 'tee'], h(7)), top: pickOf(['#4d7782', '#e24a3b', '#f2f1ec', '#2f3e57', '#e3c35a'], h(8)), pants: pickOf(['#23303f', '#1d2126', '#6e6553'], h(9)), shorts: h(10) < 0.3, footwear: 'sneaker', shoes: '#f0eee8', hatStyle: 'cap', hatColor: pickOf(['#3fa9a6', '#23272e', '#e24a3b'], h(11)) };
+          }
+          case 'athlete': {
+            // Match kit (sports.js): shirt in the club's colours and pattern, shorts, socks.
+            const kit = p.kit || {},
+              basketball = p.sport === 'basketball',
+              official = p.kind === 'referee' || p.kind === 'assistant',
+              steward = p.kind === 'steward',
+              female = false;
+            return {
+              ...base,
+              female,
+              hairStyle: pickOf([1, 'hairBuzz', 4, 1, 0], h(6)),
+              heightAbsolute: basketball && p.kind === 'athlete' ? 1.95 / 1.75 + (h(4) - 0.5) * 0.06 : (1.8 + (h(4) - 0.5) * 0.12) / 1.75,
+              build: basketball ? 0.95 : 1 + (h(3) - 0.5) * 0.2,
+              garment: steward ? 'tee' : basketball && !official ? 'tank' : 'tee',
+              top: steward ? '#23282f' : kit.primary || '#3caae1',
+              accent: kit.secondary || kit.primary || '#ffffff',
+              topPattern: { stripes: PATTERN.kitStripes, hoops: PATTERN.kitHoops, halves: PATTERN.kitHalves, sash: PATTERN.kitSash }[kit.pattern] || 0,
+              pants: kit.shorts || '#1b1b20',
+              pantsPattern: 0,
+              shorts: !steward,
+              sleevesStyle: official ? 'short' : 'short',
+              socks: basketball ? '#f2f1ec' : kit.socks || '#f2f1ec',
+              kneeSocks: !basketball,
+              shoes: basketball ? '#f0eee8' : '#18191c',
+              footwear: basketball ? 'sneaker' : 'shoe',
+              sole: basketball ? '#eeede8' : '#101010',
+              vest: steward ? { a: kit.primary || '#e6e23a', b: kit.primary || '#e6e23a', c: '#c9ced3' } : null,
+              beard: h(7) < 0.2 ? 1 : 0,
+            };
           }
           case 'beach': {
             // Palm Keys Beach (beach.js): swimwear, a shirt for strollers and staff.
@@ -1516,6 +1551,85 @@
             T[J_HEAD_PITCH] = 0.4 * k;
             break;
           }
+          // ---- Match day (sports.js): football and basketball ----
+          case 'kick': {
+            // Planted support foot, the kicking leg through the ball, the opposite arm out.
+            const k = Math.sin(clamp(spec?.progress ?? 0, 0, 1) * Math.PI);
+            T[J_LOCO] = 0.2;
+            T[J_HIP[1]] = -0.55 + k * 1.8;
+            T[J_KNEE[1]] = -1.1 + k * 0.9;
+            T[J_HIP[0]] = -0.18;
+            T[J_KNEE[0]] = -0.25;
+            setArm(T, 1, -0.55, 0.45, 0.4);
+            setArm(T, 0, 0.8, 0.55, 0.5);
+            T[J_LEAN] = -0.15 + k * 0.1;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          }
+          case 'save':
+            // The keeper spread for the shot.
+            T[J_LOCO] = 0.3;
+            T[J_DROP] = -0.8;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.8;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0.4;
+            T[J_SPREAD] = 0.25;
+            setArm(T, 0, 1.7, 0.6, 0.1);
+            setArm(T, 1, 1.7, 0.6, 0.1);
+            T[J_ROLL] = Math.sin(t * 5) * 0.23;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'bbDribble': {
+            const bounce = spec?.bounce ?? 0;
+            setArm(T, 1, 0.45 + bounce * 0.55, 0.3, 0.6 - bounce * 0.4);
+            setArm(T, 0, 0.35, 0.35, 1.0);
+            T[J_LEAN] = -0.12;
+            T[J_DROP] = -0.4;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.45;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0.1;
+            break;
+          }
+          case 'bbShoot': {
+            const k = clamp(spec?.progress ?? 0, 0, 1),
+              up = Math.sin(k * Math.PI);
+            T[J_LOCO] = 0;
+            setArm(T, 1, 2.25 + up * 0.45, 0.15, 1.4 * (1 - k) + 0.1);
+            setArm(T, 0, 2.05 + up * 0.5, 0.25, 1.2 * (1 - k) + 0.2);
+            T[J_HIP[0]] = 0.15;
+            T[J_HIP[1]] = -0.15;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.4 * (1 - up);
+            T[J_HEAD_PITCH] = -0.35;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          }
+          case 'bbPass': {
+            const k = clamp(spec?.progress ?? 0, 0, 1),
+              out = Math.sin(k * Math.PI);
+            setArm(T, 0, 1.2 + out * 0.3, -0.25, 1.4 * (1 - out) + 0.1);
+            setArm(T, 1, 1.2 + out * 0.3, -0.25, 1.4 * (1 - out) + 0.1);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          }
+          case 'bbRebound':
+            setArm(T, 1, 2.75, 0.2, 0.3);
+            setArm(T, 0, 2.55, 0.25, 0.3);
+            T[J_HEAD_PITCH] = -0.4;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'bbDefend':
+            // Arms wide, low, on the balls of the feet.
+            setArm(T, 1, 0.95, 0.85, 0.35);
+            setArm(T, 0, 0.85, 0.85, 0.35);
+            T[J_LEAN] = -0.18;
+            T[J_DROP] = -0.7;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.75;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0.35;
+            T[J_SPREAD] = 0.14;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0.15;
+            break;
+          case 'flagUp':
+            setArm(T, 1, 2.8, 0.25, 0.1);
+            T[J_ARMFREE[1]] = 0;
+            break;
           case 'riding':
             // On a bicycle, motorbike or jet ski (RIDERS): seated, leaning to the bars.
             T[J_LOCO] = 0;
@@ -2010,7 +2124,7 @@
           fall = J[J_FALL];
         // Someone lying along the camera's line of sight reads as standing, so a
         // body going down turns a little across the screen as it falls.
-        if (fall < 0.05) s.fallTurn = null;
+        if (fall < 0.05 || spec?.lieInPlace) s.fallTurn = null;
         else if (s.fallTurn == null) {
           const along = Math.abs(Math.sin(s.hipYaw));
           s.fallTurn = along > 0.6 ? (s.seed % 2 < 1 ? 1 : -1) * (0.7 + (s.seed % 0.4)) : 0;
@@ -2020,7 +2134,12 @@
         // Root: position, heading, then the fall (a rotation about the lateral
         // axis): over backwards, or face down for fallSign -1.
         if (spec?.rootOverride) mRoot.copy(spec.rootOverride);
-        else crowdJoint(mRoot, mIdentity, p.x, elevation + fall * 1.2 * H, p.y, (fallSign * fall * Math.PI) / 2, p.ejected ? p.ejectRoll || 0 : 0, -(s.hipYaw + fallYaw));
+        else {
+          // Someone lying down on purpose (a sunbather) lies with their hips on the spot, not their feet.
+          const shift = spec?.lieInPlace ? fallSign * RIG.hip * H * fall : 0,
+            heading = s.hipYaw + fallYaw;
+          crowdJoint(mRoot, mIdentity, p.x + Math.cos(heading) * shift, elevation + fall * 1.2 * H, p.y + Math.sin(heading) * shift, (fallSign * fall * Math.PI) / 2, p.ejected ? p.ejectRoll || 0 : 0, -heading);
+        }
         mRoot.scale(crowdScale.set(H, H, H));
         rigRimFlag = spec?.rim ? 16 : 0;
         const w = R.width,
@@ -2553,6 +2672,7 @@
         }
         if (pose === 'tread') sp.elevation = (p.z || 0) - 7.4;
         sp.pose = BEACH_POSES[pose] ?? null;
+        sp.lieInPlace = pose === 'lie' || pose === 'lieFront';
         return sp;
       }
       function drawBeachgoers(deltaSeconds, detail) {
@@ -2658,6 +2778,60 @@
           drawCrowdPerson(proxy, stateFor(proxy), deltaSeconds, detail, sp);
         }
         riderQueue.length = 0;
+      }
+      /**
+       * ATHLETES
+       * Footballers, basketball players, referees, assistants with their flags
+       * and stewards (sports.js) are queued by sports3d.js and drawn here in
+       * their kits, their touches mapped onto the rig's poses.
+       */
+      const athleteQueue = [];
+      function queueAthlete(athlete, match) {
+        athleteQueue.push(athlete, match);
+      }
+      function athleteSpec(a, match) {
+        const sp = specScratch;
+        for (const k in sp) sp[k] = undefined;
+        let entry = specialLooks.get(a);
+        if (!entry || entry.kit !== a.kit) {
+          entry = { outfit: 'athlete', kit: a.kit, look: outfitLook(a, 'athlete', (a.number || 7) * 13.7 + (a.team + 2) * 91 + a.id.length) };
+          specialLooks.set(a, entry);
+        }
+        sp.look = entry.look;
+        sp.facing = a.a || 0;
+        sp.elevation = entityElevation(a) + (a.jump || 0);
+        if (a.hp <= 0 || a.knockedFor > 0) return sp;
+        if (a.fleeing || (match.abandoned && a.walking)) return sp;
+        if (a.kind === 'assistant') {
+          sp.flag = true;
+          if (match.stage === 'live' && match.phase === 'restart') sp.pose = 'flagUp';
+          return sp;
+        }
+        const progress = a.actionDuration > 0 ? 1 - a.actionTime / a.actionDuration : 0,
+          ownsBall = match.ball.ownerId === a.id;
+        sp.progress = progress;
+        if (match.sport === 'basketball') {
+          if (ownsBall && a.action === 'dribble') {
+            sp.pose = 'bbDribble';
+            sp.bounce = Math.abs(Math.sin(match.time * 8 + (a.number || 0)));
+          } else if (a.action === 'shoot') sp.pose = 'bbShoot';
+          else if (a.action === 'pass') sp.pose = 'bbPass';
+          else if (a.action === 'rebound') sp.pose = 'bbRebound';
+          else if (a.kind === 'athlete' && !ownsBall && match.possessionTeam !== a.team) sp.pose = 'bbDefend';
+        } else if (a.action === 'shoot' || a.action === 'pass') sp.pose = 'kick';
+        else if (a.action === 'save') sp.pose = 'save';
+        if (a.action === 'celebrate') sp.pose = 'cheer';
+        return sp;
+      }
+      function drawQueuedAthletes(deltaSeconds, detail) {
+        for (let i = 0; i < athleteQueue.length; i += 2) {
+          const a = athleteQueue[i],
+            match = athleteQueue[i + 1],
+            spec = athleteSpec(a, match);
+          const hand = drawCrowdPerson(a, stateFor(a), deltaSeconds, detail, spec);
+          if (spec.flag && hand && detail > 0) crowdEmit(P.flag, hand, 1, 1, 1);
+        }
+        athleteQueue.length = 0;
       }
       /* Where the player got into or out of a car, for the transition poses. */
       function trackCarTransition() {
@@ -2833,6 +3007,7 @@
       /* After the vehicles are posed: the riders, then upload every part (render3d.js). */
       function finishCrowd3D(deltaSeconds) {
         drawQueuedRiders(deltaSeconds, crowdDetail());
+        drawQueuedAthletes(deltaSeconds, crowdDetail());
         flushCrowdParts();
       }
       /**

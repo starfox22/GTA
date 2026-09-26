@@ -25,7 +25,8 @@
        * an open leather jacket over a tee, a suit with a tie or a police shirt with
        * its badge, all in the same draw call. Slot A can also carry a procedural
        * pattern (camouflage, denim, check, floral, stripes, leather or satin
-       * sheen), and the player's instances a faint night rim (render3d.js PLAYER
+       * sheen, and club kits' stripes, hoops, halves and sash in slot C), and
+       * the player's instances a faint night rim (render3d.js PLAYER
        * AT NIGHT).
        */
       const RIG = {
@@ -62,6 +63,7 @@
         varying float vCrowdPattern;
         varying float vCrowdSlotA;
         varying float vCrowdRim;
+        varying vec3 vCrowdAccent;
         vec3 crowdUnpack( float packed ) {
           packed = floor( packed + 0.5 );
           float r = floor( packed / 65536.0 );
@@ -82,6 +84,7 @@
           vCrowdPattern = mod( crowdFlags, 16.0 );
           vCrowdSlotA = crowdSlot == 0 ? 1.0 : 0.0;
           vCrowdLocal = position;
+          vCrowdAccent = crowdUnpack( crowdPaint.z );
         }`;
       const RIG_PAINT_FRAGMENT_PARS = `
         varying vec3 vCrowdColor;
@@ -89,8 +92,17 @@
         varying float vCrowdPattern;
         varying float vCrowdSlotA;
         varying float vCrowdRim;
+        varying vec3 vCrowdAccent;
         uniform vec3 cityPlayerRim;
         vec3 crowdPatternColor( vec3 c, float pattern, vec3 p ) {
+          if ( pattern > 7.5 ) {
+            // Club kits in the accent colour (slot C): stripes, hoops, halves, a sash.
+            float k = pattern < 8.5 ? step( 0.5, fract( p.z * 1.05 + 0.25 ) )
+              : pattern < 9.5 ? step( 0.5, fract( p.y * 1.25 + 0.1 ) )
+              : pattern < 10.5 ? step( 0.0, p.z )
+              : step( abs( p.y - 1.75 - p.z * 0.75 ), 0.38 );
+            return mix( c, vCrowdAccent, k );
+          }
           if ( pattern < 1.5 ) {
             // Woodland camouflage: three blotch tones over the base.
             float a = sin( p.x * 2.3 + sin( p.y * 1.9 + p.z * 0.7 ) * 1.6 ) * cos( p.z * 2.1 - p.y * 1.1 );
@@ -135,7 +147,7 @@
             '#include <roughnessmap_fragment>',
             `#include <roughnessmap_fragment>
             // Leather (6) and satin (7) have a sheen the cloth around them lacks.
-            if ( vCrowdSlotA > 0.5 && vCrowdPattern > 5.5 ) roughnessFactor = vCrowdPattern > 6.5 ? 0.36 : 0.42;`,
+            if ( vCrowdSlotA > 0.5 && vCrowdPattern > 5.5 && vCrowdPattern < 7.5 ) roughnessFactor = vCrowdPattern > 6.5 ? 0.36 : 0.42;`,
           )
           .replace(
             '#include <lights_fragment_end>',
@@ -865,7 +877,7 @@
       function rigPaint(a, b = a, c = a, d = a, slots = [0, 1, 2, 3, 0, 0, 0, 0], pattern = 0, rim = 0) {
         return new Float32Array([packColor(a), packColor(b), packColor(c), packColor(d), maskOf(slots), pattern + rim * 16]);
       }
-      const PATTERN = { camo: 1, denim: 2, check: 3, floral: 4, stripes: 5, leather: 6, satin: 7 };
+      const PATTERN = { camo: 1, denim: 2, check: 3, floral: 4, stripes: 5, leather: 6, satin: 7, kitStripes: 8, kitHoops: 9, kitHalves: 10, kitSash: 11 };
       // Torso region -> slot, per garment (slots: 0 outer, 1 inner, 2 accent, 3 skin).
       const TORSO_MASKS = {
         tee: [0, 0, 0, 0, 0, 0, 0, 0],
