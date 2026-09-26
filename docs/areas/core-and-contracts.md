@@ -17,8 +17,9 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   (function declarations are hoisted). A new game file goes into `src/game.js` (or the
   parent include list of its area); meshes go into render3d.js's list.
 - Parent files named `<parent>.js` with siblings `<parent>-<area>.js` are include lists
-  after pure-move splits. `game-console.js` + `game-console-world.js` +
-  `game-console-graphics.js` are **one object literal** split in three: only valid together.
+  after pure-move splits. `game-console.js` is the console registry: each
+  `game-console-<group>.js` is a self-contained `addConsoleMethods(group, {...})` call
+  (see testing-and-console.md).
 - `src/asset-loader.js` sits outside the closure: it decodes the embedded media blocks
   (or, in a split build, returns the `data-src` URL of a streamed file) and calls
   `startDeadEndCity(ASSETS)`. `src/shell.html` holds the DOM and CSS.
