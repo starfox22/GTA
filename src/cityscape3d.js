@@ -342,7 +342,7 @@
         ['SUNSET MOTEL', 'VACANCY · HBO · POOL', '#1f5f63', '#c9f5f0'],
         ['RIOT 104.5', 'LOUD. ALL NIGHT.', '#1c1c1f', '#ff6f4e'],
         ['SOUTHPORT AIR', 'FLY THE KEYS DAILY', '#dfe7ea', '#1f3c52'],
-        ['PALM AUTO PAINT', 'RESPRAYS WHILE YOU WAIT', '#f0a7b8', '#2c1e2a'],
+        ['PALM KEYS AUTO', 'MECHANICS · RESPRAYS WHILE YOU WAIT', '#f0a7b8', '#2c1e2a'],
         ['MARLOW BAY FERRIES', 'NO LAST FERRY TONIGHT', '#22415a', '#e6e0c8'],
       ];
       function textAtlas(entries, cellW, cellH, paintCell) {

@@ -251,7 +251,7 @@
         x: -2328,
         y: 2286,
         w: 280,
-        h: 140, // clear of Palm Auto Paint's lot (prepareGarages)
+        h: 140, // clear of Palm Keys Auto's lot (prepareGarages)
         height: 32,
         color: '#e8b384',
         symbol: 'EAT',
@@ -821,6 +821,15 @@
      * six seconds at one star up to twenty-four at five (pursuit.js). Any unit
      * that sees you, on the ground or in the air, starts it again.
      */
+    /* Sight was worked out this frame by updateOfficers (and the air units):
+       does anyone on the police side have eyes on the player? (The search
+       below, and the garages' rule that a respray only works unseen.) */
+    function policeHaveEyesOnPlayer() {
+      return (
+        officers.some((o) => o.state !== 'return' && o.hp > 0 && o.seesPlayer) ||
+        vehicles.some((c) => c.cop && !c.crewDeployed && c.hp > 0 && c.seesPlayer)
+      );
+    }
     function policeSearchSeconds(stars = wantedStars) {
       return pursuitSearchSeconds(stars);
     }
@@ -977,6 +986,8 @@
         maxY = Math.max(a.y, b.y) + 4;
       const lists = [
         garageWalls(),
+        // A garage door while it is down (garages.js).
+        garageDoorSolids(),
         militarySolids(),
         countyStaticSolids,
         AIRPORT_SCENERY_SOLIDS,
@@ -991,7 +1002,7 @@
             block.y <= maxY &&
             block.y + block.h >= minY &&
             // Low harbor clutter (bollards, crates) does not block a line of sight.
-            (i < 5 || block.height > 14) &&
+            (i < 6 || block.height > 14) &&
             sightBlockedBy(block, a.x, a.y, start, dx, dy, dz)
           )
             return false;
@@ -1312,10 +1323,7 @@
         searchRemaining = 0;
         return;
       }
-      const seen =
-        // Sight was worked out this frame by updateOfficers (and the air units).
-        officers.some((o) => o.state !== 'return' && o.hp > 0 && o.seesPlayer) ||
-        vehicles.some((c) => c.cop && !c.crewDeployed && c.hp > 0 && c.seesPlayer);
+      const seen = policeHaveEyesOnPlayer();
       if (seen) {
         lastSeen = {
           x: player.x,

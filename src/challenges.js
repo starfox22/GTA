@@ -47,9 +47,11 @@
       if (missionState.index === 2) {
         missionState.car = spawnClearCar('coupe', 1000, 666, Math.PI, false, '#89c7ab');
         missionState.car.mission = true;
+        // The lift in Eastside Garage's bay (garages.js).
+        const eastside = GARAGES.find((g) => g.id === 'eastside');
         missionState.workshop = {
-          x: 1320,
-          y: 2130,
+          x: eastside.service.x,
+          y: eastside.service.y,
         };
         setStage(0, missionState.car, 'STEAL VINNY’S SEA-GREEN COUPE');
       }
@@ -130,7 +132,7 @@
           setStage(
             1,
             missionState.workshop,
-            'TRACKER ACTIVE · PARK AT EASTSIDE CUSTOMS',
+            'TRACKER ACTIVE · PARK IN EASTSIDE GARAGE',
             'vinny',
             'The ledger is under the seat. Their transmitter is under the rear bumper. Remove it before coming to me.',
           );

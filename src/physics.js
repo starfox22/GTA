@@ -244,6 +244,7 @@
       addUnderpassColliders();
       addCountyColliders();
       for (const b of garageWalls()) addStatic(b.x, b.y, b.w, b.h, b.height, 'garage');
+      addGarageDoorBodies();
       for (const stand of STADIUM_STANDS)
         addStatic(stand.x, stand.y, stand.w, stand.h, stand.height, 'stadium');
       for (const fixture of SPORTS_FIXTURES) {
