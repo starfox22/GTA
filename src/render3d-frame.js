@@ -1,3 +1,4 @@
+        // Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
         render() {
           const deltaSeconds = Math.min(0.04, Math.max(0, gameTime - lastVisualTime));
           lastVisualTime = gameTime;

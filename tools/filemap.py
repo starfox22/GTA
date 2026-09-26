@@ -35,17 +35,7 @@ MAX = 150
 # Descriptions for files whose source does not (yet) open with a describing
 # comment. A file's own `BEGIN SUBSYSTEM` banner still wins; better still, add
 # a header comment to the source and delete the entry here.
-OVERRIDES = {
-    'src/game-menus.js': 'resize, begin/newGame, pause, help, big map toggle',
-    'src/render3d-statics.js': 'static building batches, static cells and culling (staticInView), shared materials',
-    'src/render3d-terrain.js': 'mesh/box/rod helpers, wall textures, the ground mesh and kerbs',
-    'src/render3d-streetprops.js': 'street lamps and their glow halos, vehicle halos, blossom, sign() boards',
-    'src/render3d-vehicle-models.js': 'makeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights',
-    'src/render3d-effects.js': 'player/objective rings, arrows, muzzle and head lights, smoke and flame sprites',
-    'src/render3d-resources.js': 'GPU resource lifecycle: shared geometries, model pruning and disposal',
-    'src/render3d-api.js': 'the object the renderer returns (city3D.*): draw API and debug/info hooks',
-    'src/render3d-frame.js': 'render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats()',
-}
+OVERRIDES = {}
 
 
 def lines_of(rel):

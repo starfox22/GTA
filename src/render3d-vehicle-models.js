@@ -1,3 +1,4 @@
+      // MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
        * shared by every car): a car was 50-odd draw calls, 32 of them its wheels.

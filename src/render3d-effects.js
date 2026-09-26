@@ -1,3 +1,4 @@
+      // Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
       /**
        * PLAYER AT NIGHT
        * No light follows the player (the pool of light that rode at their feet

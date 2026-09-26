@@ -1,3 +1,4 @@
+    // Resize, begin/newGame, pause, help, big map toggle.
     function resize() {
       viewportWidth = innerWidth;
       viewportHeight = innerHeight;

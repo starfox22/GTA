@@ -1,3 +1,4 @@
+      // Static building batches, static cells and culling (staticInView), shared materials.
       const allBuildings = [],
         statics = [],
         carModels = new Map(),

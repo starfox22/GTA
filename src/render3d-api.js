@@ -1,3 +1,4 @@
+        // The object the renderer returns (city3D.*): draw API and debug/info hooks.
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
         // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.

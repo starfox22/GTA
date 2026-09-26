@@ -1,3 +1,4 @@
+      // GPU resource lifecycle: shared geometries, model pruning and disposal.
       // Dynamic models own their cloned/new resources; the initial world and factory primitives persist.
       const sharedGeometries = new Set([boxGeo, sphereGeo, wheelGeo, cylinderGeo]),
         sharedMaterials = new Set();

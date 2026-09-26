@@ -1,3 +1,4 @@
+      // Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
       function mesh(geo, material, parent, x, y, z, sx = 1, sy = 1, sz = 1) {
         const m = new Three.Mesh(geo, material);
         m.position.set(x, y, z);

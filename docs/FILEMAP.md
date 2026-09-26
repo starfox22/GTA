@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-362 files in the include tree, 138,254 lines.
+362 files in the include tree, 138,273 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -37,7 +37,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-draw2d.js`   630 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   221 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/game-ui.js`   407 — Weapon chip, mission card and updateUI() (HUD text refresh).
-- `src/game-menus.js`   166 — resize, begin/newGame, pause, help, big map toggle
+- `src/game-menus.js`   167 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/game-input.js`   412 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   294 — Key bindings
 - `src/geography.js`    11 — ▸ Coastlines and land regions
@@ -122,7 +122,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/god-panel.js`   773 — God mode settings
 - `src/driving.js`   466 — Tyres, brakes and driving assists
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   200 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   210 — ▸ Three.js renderer and resource lifecycle
 - `src/game-loop.js`   158 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    45 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
@@ -283,10 +283,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/postfx3d.js`   841 — HDR post-processing pipeline
 - `src/lighting3d.js`    24 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   924 — Searchlights: light shafts, ground pools, the helicopter's spot
-- `src/render3d-statics.js`   312 — static building batches, static cells and culling (staticInView), shared materials
-- `src/render3d-terrain.js`   293 — mesh/box/rod helpers, wall textures, the ground mesh and kerbs
+- `src/render3d-statics.js`   313 — Static building batches, static cells and culling (staticInView), shared materials.
+- `src/render3d-terrain.js`   294 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    57 — ▸ Tree library: species, foliage atlas, wind, LOD
-- `src/render3d-streetprops.js`   249 — ▸ street lamps and their glow halos, vehicle halos, blossom, sign() boards
+- `src/render3d-streetprops.js`   250 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 - `src/cityscape3d.js`    21 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
 - `src/roadblocks3d.js`    70 — Police roadblock meshes
@@ -340,11 +340,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/offroad3d.js`    41 — ▸ 4x4 club trucks, the club lot, trail props and mud
 - `src/mountain-village3d.js`    38 — ▸ Mountain village meshes
 - `src/plane3d.js`    48 — ▸ Airplane meshes
-- `src/render3d-vehicle-models.js`   347 — makeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights
-- `src/render3d-effects.js`   215 — ▸ player/objective rings, arrows, muzzle and head lights, smoke and flame sprites
-- `src/render3d-resources.js`   140 — GPU resource lifecycle: shared geometries, model pruning and disposal
-- `src/render3d-api.js`   458 — the object the renderer returns (city3D.*): draw API and debug/info hooks
-- `src/render3d-frame.js`   633 — render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats()
+- `src/render3d-vehicle-models.js`   348 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
+- `src/render3d-effects.js`   216 — ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
+- `src/render3d-resources.js`   141 — GPU resource lifecycle: shared geometries, model pruning and disposal.
+- `src/render3d-api.js`   459 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   634 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
@@ -357,7 +357,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/vegetation3d-material.js`   481 — Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
 - `src/vegetation3d-species.js`   588 — Vegetation 3D species (conifers, palms and others), LOD meshes, instances, tints and far trees.
 
-## src/render3d-streetprops.js ▸ street lamps and their glow halos, vehicle halos, blossom, sign() boards
+## src/render3d-streetprops.js ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 
 - `src/damage3d.js`    27 — ▸ Crumpling bodies, decals, debris and knocked furniture
 - `src/signkit3d.js`   156 — ▸ Sign lettering kit: stroke font, letter treatments, boards, emblems
@@ -537,7 +537,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/plane3d-shapes.js`   564 — Aircraft 3D plans, airfoils, fuselage and lifting surfaces, liveries (aircraftPlans, fuselageMesh).
 - `src/plane3d-build.js`   626 — Aircraft 3D static merge, labels, control surfaces, engines, gear, makePlane() and animateAircraft().
 
-## src/render3d-effects.js ▸ player/objective rings, arrows, muzzle and head lights, smoke and flame sprites
+## src/render3d-effects.js ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 
 - `src/parachute3d.js`   528 — Ram-air parachute
 

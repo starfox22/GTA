@@ -1,3 +1,4 @@
+      // Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
       // (Still in surfaces3d.js's list of swaying materials.)
       const blossomMat = mat('#d5a2b5');
       trees.forEach((t) => plantTree(t));
