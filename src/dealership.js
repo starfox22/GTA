@@ -1265,7 +1265,10 @@
           teleportPlayer(p.x, p.y);
           cameraTarget.x = p.x;
           cameraTarget.y = p.y;
-          if (zoom) setWorldZoom(Number(zoom));
+          if (zoom) {
+            setWorldZoom(Number(zoom));
+            worldZoom = worldZoomTarget;
+          }
           dealer.clock = 0;
           updateDealership(0);
           return this.dealership();
