@@ -1088,7 +1088,9 @@
       drawingContext.lineCap = 'round';
       drawingContext.stroke();
     }
-    function paintDistrictGround(drawingContext, detail = true) {
+    // `vectorMarks`: the 3D ground draws the boulevards' lane dashes itself
+    // (ground-data3d.js MARKS), so its sheet leaves them out.
+    function paintDistrictGround(drawingContext, detail = true, vectorMarks = false) {
       drawingContext.save();
       coastPath(drawingContext);
       drawingContext.clip();
@@ -1132,6 +1134,7 @@
       for (const road of BOULEVARDS) {
         strokeRoad(drawingContext, road.points, road.width + 15, '#b3ada0');
         strokeRoad(drawingContext, road.points, road.width, '#485259');
+        if (vectorMarks) continue;
         drawingContext.setLineDash([19, 14]);
         strokeRoad(drawingContext, road.points, 2, '#d4ba75');
         drawingContext.setLineDash([]);

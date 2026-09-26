@@ -1431,8 +1431,9 @@
       }
       // The quay and promenade strip along the marina, and Regency Point.
       fill(7440, -1256, 2460, 60, P.stone);
-      // Slab joints on the pavements (the shader adds more up close).
-      if (detail) {
+      // Slab joints on the pavements (the 3D ground shader lays its own
+      // limestone ashlar along the kerbs, ground-shader3d.js).
+      if (detail && !VECTOR_GROUND_MARKINGS) {
         g.strokeStyle = P.walkDark;
         g.lineWidth = 0.8;
         g.globalAlpha = 0.5;
@@ -1539,9 +1540,12 @@
         g.stroke();
         g.setLineDash([]);
       }
-      // Lane markings: a dashed centre line on the plain streets, edge lines on the boulevards.
+      // Lane markings: a dashed centre line on the plain streets, edge lines on
+      // the boulevards; zebras and stop lines at the junctions. With the 3D
+      // renderer the ground shader draws these from data (ground-data3d.js
+      // monarchRecords), crisp at any zoom, and the tile leaves them out.
       g.fillStyle = P.lane;
-      for (const s of ISLE_STREETS)
+      if (!VECTOR_GROUND_MARKINGS) for (const s of ISLE_STREETS)
         for (const piece of isleCarriageways(s)) {
           const [a, b] = piece.points,
             len = Math.hypot(b[0] - a[0], b[1] - a[1]),
@@ -1571,7 +1575,7 @@
           }
         }
       // Zebra crossings on every arm of every junction, just outside the box.
-      for (const j of isleJunctions()) {
+      if (!VECTOR_GROUND_MARKINGS) for (const j of isleJunctions()) {
         for (const arm of j.arms) {
           const ux = Math.cos(arm.a),
             uy = Math.sin(arm.a),
