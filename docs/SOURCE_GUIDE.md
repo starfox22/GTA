@@ -282,6 +282,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ride-skip.js | Skip the ride: the offer and prompt (`rideSkipOffer`, `rideSkipPrompt`) for a cab, a train or the sailing liner, the `skipRide` / `skipStop` keys (`rideSkipKey`), the fade on simulation time (`updateRideSkip`), the jump (`performRideSkip`: `catchUpWorld`, `placeCabAtKerb`, `placeTrainAtPlatform`, `placeLinerAtAnchor`), `rideSkipReport` |
 | ecology.js | Habitats, harmless animals, bear warning/attack and 2D drawing |
+| sealife.js | Sea life (section "Sea life"): the sea distance field (`seaDistance`, `seaNoGo`, `seaSteer`), dolphin pods (breaths, leaps, bow riding), gull flocks (perches, circling, following boats), the great white's patrol, fin, beach pass and boat bump, the swimmer encounter (`sharkEncounter`), the beach SHARK! alarm (`beachSharkStep`, `sealifeSpeakers`), `sealifeReport()` |
+| sealife-audio.js | Recorded gull calls, splashes and blows as sprites (`SEA_SPRITES`, `seaSprite`), procedural dolphin whistles and clicks, the shark's score (`sharkScore`) and attack sounds |
 | navigation.js | Road graph, shortest paths, waypoints, map gestures and route guidance; the minimap GPS (road routes to the objective and the waypoint with direction chevrons, `updateGpsRoute`, `drawGpsRoutes`) |
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
@@ -332,6 +334,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
+| sealife3d.js | The dolphin, shark and gull models (one InstancedMesh each, animated in the vertex shader from `iAnim`), the life map (shapes and blood under the surface, sampled by the water shader), splash / blow / blood particles, foam rings in the wake map, fin and dolphin wakes, the SHARK! HUD (`drawSealifeOverlay3D`) |
 | beachvolley3d.js | The volleyball court: pit and tapes painted into the sand (`paintVolleyCourt`), padded poles, guy ropes, net and antennas (`buildVolleyCourt`), the canvas scoreboard, the ball's shadow and the landing ring (`updateVolleyVisuals`) |
 | beach3d.js | Sand, swash ribbon, pier, props and ladders; the beachgoers are drawn by the character rig (crowd3d.js BEACHGOERS: towel, lounger, swim, float and volleyball poses) |
 | county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests and boulders (near / far LOD per 2048-unit cell), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
@@ -687,6 +690,56 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   ~420 units of quay, dock ends and the pier head, each only where a swimmer can reach the
   foot head-on), each marked by a lifebuoy post. The superyacht's passerelle counts as dry
   ground for the shoreline rule.
+
+### Sea life
+
+sealife.js (game), sealife-audio.js (sound) and sealife3d.js (renderer). Console:
+`sealife()`, `sharkAttack(stage)`, `spawnDolphins(count, x, y, leap)`.
+
+- **Sea field**: `seaDistance(x, y)` is the distance to land (64-unit cells, chamfer transform,
+  built a slice a frame the first time sea life runs). `seaNoGo` keeps dolphins and the shark
+  out of Harbor Point and Monarch marinas, the Ironworks freighter's berth and the cruise
+  terminal's. `seaSteer` turns a swimmer toward the nearest heading with open water ahead.
+- **Dolphins**: pods of 2-5 (sometimes a calf) arrive out of sight 650-1150 units from the
+  viewer, at `dolphinRate()` pods an in-game hour (2 by day, 4 at dawn / dusk, 0.7 at night,
+  x1.5 on a boat; one game hour is a real minute), at most two at once, and leave after a minute
+  or two. Each dolphin cruises 1.5-3 m down, rolls up to breathe every 6-18 s (blow: spray and
+  the recorded breath) and now and then drives up and leaps (2.2-4 m, a real ballistic arc, a
+  third land on their side). Near a boat at 8-30 knots (the player's, or the Meridian Star
+  under way) a pod may ride the bow: slots off the bow, the boat's speed, frequent leaps.
+- **Gulls**: `GULL_FLOCKS` (the beach, the beach pier, Harbor Point, the cruise terminal,
+  Ironworks, Battery Park, Monarch Marina, Coral Marina) share a pool of 60. Perches
+  (`gullPerches`): the pier and jetty edges, lifeguard tower roofs, moored boats, marina fingers,
+  flat roofs by the water, the quay edge. Perched gulls take off when the player comes within
+  ~5 m on foot (more running or driving) or a shot is fired, circle, and return to a free perch
+  once the coast is clear; fliers soar on banked orbits with bursts of flapping; up to six
+  follow the liner, four the ketch or the player's boat. By night most roost.
+- **The shark**: one great white patrols deep water (`SHARK_WATER`, 47 m from land) within
+  sight of the viewer, mostly 4-5 m down (a shape in the water), with the fin cutting the
+  surface for 10-22 s every 35-85 s. A rare pass along the beach's buoy line (a 20% chance a
+  minute while the player is at a busy beach by day) raises the **beach alarm**: the nearest
+  beachgoers stand, turn and point and shout SHARK! (speech bubbles through `sealifeSpeakers`),
+  the lifeguards whistle and call everyone in, swimmers race ashore and watch from the sand,
+  and the slots stay out of the water for a few minutes. A small boat (under 10 m) idling in
+  deep water for 25 s may be **bumped** from below (a jolt, a thud, no damage) and circled once;
+  five minutes between bumps.
+- **The encounter** (`sharkEncounter`): interest builds only while the player swims more than
+  30 m from land (`SHARK_DEEP_SWIM`), outside the buoy line, not in a harbour or the Marea pool,
+  not during a mission, and not within 8 minutes (`SHARK_COOLDOWN`) of the last encounter; about
+  38 s at the base rate, faster farther out, crawling hard, at night or hurt. Then *approach*
+  (the fin appears ~48 m out on the open-sea side, never between the player and the way out;
+  the score starts; SHARK! and an arrow to the fin), *circle* (tightening from 21 m to 7 m over
+  the window: 1.2 x the swim to the nearest way out at the hard crawl + 4 s, 18-48 s), *dive*
+  (the fin goes under, a shape rises beneath), *breach* (the shark lunges up with its jaws open;
+  WASTED, "TAKEN BY A GREAT WHITE", the water turns red; god mode: it bites down, lets go and
+  leaves). Out of the water, on a ladder, aboard a boat or back inside the buoys before the
+  dive is an *escape*. Beach swimmers are never taken.
+- **Drawing**: each species is one InstancedMesh animated in the vertex shader (`SEA_DEFORM`:
+  the dolphin's vertical body wave, the shark's tail sweep and jaw, the gull's wingbeat and
+  fold); gulls cast shadows. What is under the surface is drawn top down into the **life map**
+  (512², round the view; red how dark it makes the water, green blood) that the water shader
+  darkens and reddens its body with. Splashes are one Points object; foam rings go into the wake
+  map (`sealifeWakeLive` keeps it drawn); fins and surfacing dolphins call `wakeEmit`.
 
 ### Streets, county, railway, parks
 
