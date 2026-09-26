@@ -1798,6 +1798,8 @@
           dead: false,
           helicopter: true,
           heli: true,
+          // Built at real size: the renderer's DESIGN SIZE never scales it.
+          realSize: true,
           look,
           rotor,
           blades,

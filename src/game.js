@@ -818,8 +818,12 @@
       },
       helicopter: {
         name: 'MAVERICK HELICOPTER',
+        // An H125 / Bell 407 class light single: 10.75 m over the rotor, 4.25 m
+        // across the skids and stabiliser. helicopter3d.js builds every look at
+        // real size (the UH-60 class military one fitted to this footprint).
         l: 86,
         w: 34,
+        modelScale: 1,
         // Cruise flat out at about 240 km/h (helicopterControl).
         max: 250 * KMH,
         acc: 0.5 * GRAVITY,

@@ -1469,8 +1469,9 @@ the models are drawn inside them and nothing in the physics changed.
 
 Every helicopter except Fort Sentinel's Apache is built by `src/helicopter3d.js`
 (`makeHelicopter`, called from `makeVehicle`). The collision footprint is the vehicle type's
-own (86 × 34, rotor ~86 across, a real H125's size at 8 units to the metre); nothing in
-the flight model changed.
+own (86 × 34, rotor ~86 across, a real H125's size at 8 units to the metre, `modelScale: 1`:
+the models are built at real size and returned with `realSize`, so DESIGN SIZE never
+scales them); nothing in the flight model changed.
 
 - **Looks** (`helicopterLookFor`, cached per vehicle in a WeakMap): `police` (the air unit,
   and the machine on the POLICE HQ pad), `news` (the RIVERSIDE pad, and one civilian in
