@@ -4541,7 +4541,8 @@
         promptKey = 'interact';
       // A passenger ride that can be skipped offers that first (ride-skip.js).
       const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
-      if (gameMode === 'play' && rideSkipActive()) prompt = '';
+      // Thrown off a bike (riders.js): nothing to offer until back on their feet.
+      if (gameMode === 'play' && (rideSkipActive() || player.thrown)) prompt = '';
       else if (skip) {
         prompt = skip.prompt;
         promptId = skip.id;

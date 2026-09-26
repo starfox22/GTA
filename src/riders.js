@@ -57,7 +57,7 @@
       const spec = vehicleSpec(c);
       if (deltaV < (spec.bicycle ? RIDER_THROW.bicycle : RIDER_THROW.motorbike)) return false;
       // The speed the bike had going in (resolveContact keeps it), which the rider still has.
-      throwRider(c, c.impactVx || c.vx, c.impactVy || c.vy, 'crash', other);
+      throwRider(c, c.impactVx || c.vx, c.impactVy || c.vy, 'crash', other, 0, deltaV);
       return true;
     }
     // From drawbridgeSettle: a two-wheeler landing `into` the road this hard.
@@ -72,7 +72,36 @@
       const tall = spec.bike ? 1.1 : spec.bus || spec.truck || (spec.mass || 1.25) >= 2.8 ? 3 : (spec.mass || 1.25) >= 2 ? 1.9 : 1.45;
       return entityElevation(o) + tall * UNITS_PER_METRE;
     }
-    function throwRider(c, vx, vy, cause, other = null, into = 0) {
+    /* A body in flight: velocity (vx, vy), hips `z` above the road climbing at
+       `vz`, somersaulting quicker the faster it goes; `ignore` the vehicles it may
+       pass through at first (its own [0] always, what it hit [1] briefly). */
+    function riderThrowState(vx, vy, z, vz, cause, ignore, from) {
+      const speed = Math.hypot(vx, vy);
+      return {
+        vx,
+        vy,
+        z,
+        vz,
+        heading: speed > 5 ? Math.atan2(vy, vx) : from.a,
+        pitch: 0,
+        spin: clamp((speed / UNITS_PER_METRE) * 0.65, 3, 11),
+        slideSpin: randomBetween(-1, 1) * clamp(speed / 60, 0.5, 4),
+        phase: 'air',
+        time: 0,
+        downFor: 0,
+        hurt: 0,
+        hits: 0,
+        bounces: 0,
+        slid: 0,
+        rash: 0,
+        peak: z,
+        from: { x: from.x, y: from.y },
+        ignore,
+        cause,
+        speed: Math.round(speed / KMH),
+      };
+    }
+    function throwRider(c, vx, vy, cause, other = null, into = 0, deltaV = 0) {
       const spec = vehicleSpec(c),
         speed = Math.hypot(vx, vy),
         heading = speed > 5 ? Math.atan2(vy, vx) : c.a,
@@ -81,33 +110,11 @@
       // the tank, turning part of the speed into a climb. Off a landing the rider
       // is pitched forward rather than up.
       const keep = landing ? 0.9 : 0.85,
-        climb = landing ? 1.2 * UNITS_PER_METRE : clamp(speed * 0.3, 1.5 * UNITS_PER_METRE, 7 * UNITS_PER_METRE),
-        throwState = {
-          vx: vx * keep,
-          vy: vy * keep,
-          z: RIDER_SEAT,
-          vz: climb,
-          heading,
-          pitch: 0,
-          // Somersault rate (rad/s): quicker the harder the throw.
-          spin: clamp(speed / UNITS_PER_METRE * 0.55, 3, 11) * (landing ? 0.6 : 1),
-          slideSpin: randomBetween(-1, 1) * clamp(speed / 60, 0.5, 4),
-          phase: 'air',
-          time: 0,
-          downFor: 0,
-          hurt: 0,
-          hits: 0,
-          bounces: 0,
-          slid: 0,
-          rash: 0,
-          peak: RIDER_SEAT,
-          from: { x: c.x, y: c.y },
-          // The bike and whatever it hit are passed through for a moment while the
-          // body clears them; a car low enough is vaulted, a van's side is not.
-          ignore: [c, other && riderObstacleTop(other) - entityElevation(other) < 2.2 * UNITS_PER_METRE ? other : null],
-          cause,
-          speed: Math.round(speed / KMH),
-        };
+        climb = landing ? 1.2 * UNITS_PER_METRE : clamp(speed * 0.22, 1.5 * UNITS_PER_METRE, 6 * UNITS_PER_METRE),
+        // The bike and whatever it hit are passed through for a moment while the
+        // body clears them; a car low enough is vaulted, a van's side is not.
+        throwState = riderThrowState(vx * keep, vy * keep, RIDER_SEAT, climb, cause, [c, other && riderObstacleTop(other) - entityElevation(other) < 2.2 * UNITS_PER_METRE ? other : null], c);
+      throwState.spin *= landing ? 0.6 : 1;
       // The rider starts at the handlebars, just ahead of the bike's middle.
       let x = c.x + Math.cos(c.a) * spec.l * 0.2,
         y = c.y + Math.sin(c.a) * spec.l * 0.2;
@@ -147,13 +154,15 @@
         x,
         y,
         a: heading,
-        hp: 70,
         color: c.driverColor || randomChoice(DRIVER_COLORS),
         flee: 0,
         timer: 1,
         walk: 0,
         state: 'walk',
         mood: 'flee',
+        // The legs and body into the bars and whatever the bike hit (the player's
+        // share of this is collisionImpact's crashInjury).
+        hp: Math.max(1, 70 - crashInjury(c, deltaV)),
         // Held down while in the air and sliding; the lie-still afterwards is the
         // usual knockdown (the daze and every rule about people on the ground).
         knockedFor: 60,
@@ -245,8 +254,8 @@
           t.z = 0;
           hurtBody(riderLandingDamage(into, t.bounces ? 0 : along), 'impact');
           playSample('crash-bump-1', clamp(into / (8 * UNITS_PER_METRE), 0.15, 0.6), 0.8, body);
-          t.vx *= 0.8;
-          t.vy *= 0.8;
+          t.vx *= 0.7;
+          t.vy *= 0.7;
           t.bounces++;
           if (into > 3.2 * UNITS_PER_METRE && t.bounces < 4) {
             t.vz = into * 0.28;

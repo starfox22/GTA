@@ -1,5 +1,105 @@
 # Changelog
 
+## Unreleased — tighter steering, rain for every driver, riders thrown, helicopters that break up, the drawbridge launch
+
+Steering (physics.js STEER_LOCK, TYRE STIFFNESS, UNDERSTEER SKID; measured with `turnTest`)
+- Low-speed lock 13% tighter (`STEER_LOCK`, a game's allowance on each class's `turn`); the
+  player's car takes up the yaw in 0.12 s (`PLAYER_YAW_RESPONSE` 8.5/s, was 5); the tyres'
+  sideways force now peaks at a 7-degree slip (`TYRE_PEAK_SLIP`), so a car follows its nose
+  (7 degrees of body slip at the limit at 30 km/h, was 13-14) instead of drifting wide.
+- Held against the grip limit above 28 km/h for over half a second, the front tyres scrub:
+  howl, marks, up to 0.12 g off, so a corner taken too fast tightens as the car slows. Taps,
+  lane changes and sweeping bends are untouched. Skid marks also for slides past ~10 degrees.
+- Handbrake: full swing by 15 km/h (was 30) and the yaw carries on through the slide, so a
+  30 km/h handbrake turn goes round. Counter-steering into a slide makes the fronts bite 1.5x.
+- Grip-limited cornering (g at 40/60 km/h) is unchanged: at speed the tyres still decide.
+
+| Class | Min radius m (kerb-to-kerb) before -> after | 20 km/h radius | 40 km/h radius (g) | 60 km/h radius (g) | 90° corner from 35 km/h coasting, forward x sideways m | Handbrake from 30 km/h, degrees |
+| --- | --- | --- | --- | --- | --- | --- |
+| Sedan | 3.9 (10.5) -> 3.4 (9.6) | 4.2 -> 3.5 | 10.4 -> 10.2 (1.23) | 22.3 -> 20.6 (1.25) | 9.2 x 4.7 -> 8.2 x 5.3 | 85 -> 90 |
+| Coupe | 3.4 (9.2) -> 3.0 (8.4) | 3.7 -> 3.0 | 9.4 -> 9.2 | 20.1 -> 19.1 | 8.7 x 4.3 -> 7.7 x 4.9 | 92 -> 94 |
+| Sport | 3.0 (8.6) -> 2.6 (7.9) | 3.3 -> 2.7 | 8.4 -> 8.0 | 17.8 -> 17.6 | 7.7 x 3.5 -> 6.7 x 4.3 | 94 -> 96 |
+| Supercar | 3.4 (9.6) -> 3.0 (8.8) | 3.5 -> 3.0 | 7.8 -> 7.5 | 16.9 -> 16.9 | 7.4 x 3.7 -> 6.5 x 4.2 | 89 -> 94 |
+| Muscle | 4.1 (11.0) -> 3.6 (10.1) | 4.3 -> 3.6 | 10.0 -> 9.9 | 21.3 -> 20.9 | 9.0 x 4.4 -> 8.1 x 5.0 | 81 -> 87 |
+| Patrol car | 3.4 (9.6) -> 3.0 (8.8) | 3.7 -> 3.0 | 9.5 -> 9.2 | 20.3 -> 19.3 | 8.3 x 4.0 -> 7.4 x 4.6 | 90 -> 93 |
+| SUV | 4.7 (12.6) -> 4.1 (11.4) | 4.9 -> 4.2 | 11.9 -> 11.6 | 25.7 -> 23.3 | 10.1 x 5.1 -> 9.1 x 5.8 | 77 -> 84 |
+| Van | 5.2 (13.7) -> 4.6 (12.5) | 5.4 -> 4.7 | 12.8 -> 12.2 | 28.1 -> 24.9 | 10.5 x 5.8 -> 9.6 x 6.1 | 70 -> 78 |
+| Box truck | 8.0 (19.8) -> 7.0 (17.9) | 8.1 -> 7.1 | 17.2 -> 15.5 | 37.0 -> 30.3 | 13.3 x 7.5 -> 12.1 x 7.6 | 50 -> 61 |
+| Bus | 9.5 (22.8) -> 8.4 (20.6) | 9.6 -> 8.4 | 16.7 -> 14.3 | 37.1 -> 29.9 | 14.1 x 8.5 -> 12.8 x 8.3 | 42 -> 52 |
+| Motorbike | 2.7 (6.7) -> 2.4 (6.0) | 3.0 -> 2.5 | 10.0 -> 9.9 | 21.9 -> 22.2 | 8.8 x 4.9 -> 7.9 x 4.9 | 98 -> 96 |
+| Bicycle | 2.2 (5.4) -> 1.9 (4.9) | 3.4 -> 3.3 | (35 km/h) 11.2 -> 11.1 | - | 11.7 x 7.6 -> 10.9 x 7.6 | - |
+
+  A 2-lane street is 11 m kerb to kerb: every car now U-turns in one sweep (a sedan in 9.6 m),
+  vans and pickups with one shunt; trucks and buses need the junction.
+
+Rain for every driver (physics.js controlVehicle; `aiDriving(reset)` counts)
+- Traffic's cornering, brakes and traction shrink with `wetGrip()`, and it drives 15% slower on
+  a soaked road (sqrt of the grip: the same factor makes trafficControl's stopping and
+  following distances allow for braking at 72%); one driver in eleven keeps dry habits.
+- Police in pursuit steer to 1.1 x the dry limit x (0.7 + 0.3 grip) with wet tyres, and their
+  brakes and traction shrink: a cruiser thrown into a corner in a downpour can slide or spin.
+- Measured downtown (3.3 min of traffic, 2.5 min of a 3-star pursuit on foot; dry -> storm):
+  moving traffic's mean speed 30.5 -> 24.7 km/h, traffic crashes 1 -> 0; police crashes
+  3 -> 6, police slides 0 -> 2 (closing speeds 63-80 -> 58-104 km/h).
+
+Riders thrown off motorbikes and bicycles (new riders.js; physics.js, carjack.js, drawbridge.js)
+- A crash delta-v over 24 km/h on a motorbike (18 on a bicycle), or a drawbridge landing into
+  the road over 6.5 m/s, throws the rider over the bars with the bike's speed going in: a real
+  ballistic arc (climb 0.22 x speed, up to 6 m/s), a somersault, strikes on walls, trunks and
+  tall vehicles (a car's roof is vaulted), a landing and bounces, a slide at 0.62 g (less in
+  the wet), a moment lying still, then up. Damage by the speed into each thing, the landing and
+  road rash, on top of the crash's own injury; god mode survives. The bike slides on alone,
+  cartwheeling while quick, and lies on its side until someone gets on. Traffic's riders do
+  the same as pedestrians. Wanted and crime rules are the crash's own.
+- Measured (`rideInto`, speeds at impact): 15-22 km/h into a car, bicycle 12, 90 km/h on open
+  road: stays on. Motorbike 26 / 34 km/h into a sedan's side: thrown into it, 10 / 21 hp;
+  52 / 77 km/h: over the roof, 7 / 19 hp from the landing and slide plus the crash's 7 / 20,
+  about 30 m from the bike. 35 km/h into a box truck's side: 26 hp; 51 km/h (cruiser): 50 hp
+  plus 8; 76 km/h: dead (god mode: unhurt). Bicycle 17 / 25 km/h: 3 / 10 hp. A traffic rider
+  at 58 km/h lands 32 m on with 49 of 70 hp.
+
+Helicopters and planes break up (physics.js AIRCRAFT STRIKES; `heliInto`)
+- Airborne and faster than 40 km/h into a building, a structure, a big vehicle or a hillside
+  (or touching the ground above 40 km/h, or any terrain contact above 60): destroyed, the
+  usual vehicle explosion, debris and fire, the burning wreck falls; the player dies, or in
+  god mode is thrown clear and lands unhurt. Slower is the ordinary crash damage.
+- The rotor disc (the airframe's length) against a wall: more than 15 km/h toward it is a
+  rotor strike and the same break-up; slower, the tips chip (6 hp), the helicopter is shoved
+  clear and the pilot warned.
+- Measured into a tower's face at 15 m: 10 / 25 / 35 km/h: 0 / 5 / 10 hp; 45 / 60 / 120 km/h:
+  destroyed (mortal at 60: dead). Past the corner with the mast 2.5 m clear: 8 / 12 / 20 km/h
+  grazes (6-12 hp), 40 km/h (28 km/h into the corner) rotor strike. Hillside at 25 km/h: stops
+  against it unhurt; 50 / 100 km/h: destroyed.
+
+Drawbridge (drawbridge.js; `bridgeJump`)
+- Real gravity kept. Leaf geometry checked: the gap is 2 (leaf (1 - cos a) + drop sin a) and
+  the tips stand leaf sin a - drop (1 - cos a) high (12.5 m leaves on trunnions 1 m below the
+  road). New: the kink at the trunnion takes the speed square to the leaf off (a car keeps
+  cos(angle) of its speed up the slope) and hurts above 5 m/s into it; the wheels' push on a
+  leaf enters as its horizontal part; the nose (half the car ahead, pitched) must reach the
+  far tip above it or strikes the leaf's end; a long jump lands on the approach span instead
+  of splashing into "the Sound" beyond the far leaf.
+- Sedan, speed held from 25 m out (throttle floored up the leaf when the slope pulls it under):
+
+| Leaves | Gap / tip height | 20 km/h | 30 | 40 | 60 | 80 | 100 | 140 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 5° | 0.3 / 1.1 m | clears | clears | clears | clears | clears | clears | clears |
+| 10° | 0.8 / 2.1 m | clears | clears | clears | clears (12 hp) | clears (14) | clears (17) | clears (33) |
+| 15° | 1.4 / 3.3 m | clears | clears | clears | clears (22) | clears (30) | clears (43) | clears (70) |
+| 20° | 2.3 / 4.3 m | clears | clears | clears (28) | clears (35) | clears (50) | clears (68) | clears (103) |
+| 25° | 3.3 / 5.3 m | clears | clears | clears (34) | clears (50) | clears (69) | clears (90) | clears (136) |
+| 30° | 4.4 / 6.1 m | clears (just) | clears | clears (43) | clears (62) | clears (85) | clears (110) | lands wrecked (150) |
+| 35° | 5.6 / 7.0 m | strikes the far leaf | clears (just) | clears | clears (74) | clears (100) | clears (129) | lands wrecked |
+| 40° | 7.1 / 7.8 m | falls short | strikes the far leaf | strikes the far leaf | clears (85) | clears (112) | clears (143) | lands wrecked |
+| over 40° | | can't climb (a wall) | | | | | | |
+
+  With leaves this short (a 25 m channel), a car that can climb the leaf clears the gap below
+  about 30 degrees: that is the physics, not a fake gravity. Slow cars fall short from 35
+  degrees. Landings, not the gap, decide the damage: 9-20 m/s into the road.
+
+Console: `turnTest`, `pose`, `aiDriving`, `rideInto`, `riderReport`, `heliInto`, `bridgeJump`,
+`holdSimulation` (docs/DEVELOPMENT.md).
+
 ## Unreleased — ramming roadblocks, crash physics, breakable trees and furniture
 
 Roadblocks (roadblocks.js, physics.js)

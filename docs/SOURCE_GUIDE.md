@@ -128,7 +128,7 @@ Two closures matter:
   sqrt(grip) (15% off every speed on a soaked road, which in trafficControl's stopping formulas
   is also a stop and a following gap allowed for braking at 72%); one driver in eleven
   (`c.id % 11 === 0`) keeps dry habits and is the occasional rear-ender. Pursuit cars steer to
-  1.1 x the dry limit x (0.8 + 0.2 grip) with the tyres' sideways hold at the wet value, so a
+  1.1 x the dry limit x (0.7 + 0.3 grip) with the tyres' sideways hold at the wet value, so a
   cruiser thrown into a corner in a downpour can slide or spin; their brakes shrink too.
   `aiDriving(reset)` counts drivers' crashes and slides per minute.
 - **Riders** (riders.js): a crash delta-v over `RIDER_THROW` (24 km/h on a motorbike, 18 on a
@@ -143,6 +143,13 @@ Two closures matter:
   alone with `fallen` (cartwheels while quick, lies on its side, slides at 0.55 g) until someone
   gets on. Crime and wanted rules are the crash's own. Console: `rideInto(type, kmh, target, gap)`,
   `riderReport()`.
+- **Aircraft strikes** (physics.js AIRCRAFT STRIKES): an airborne helicopter or plane faster than
+  `AIRCRAFT_CRASH_SPEED` (40 km/h along the contact) into a building, structure, big vehicle or
+  hillside (or touching the ground above 40 km/h) is destroyed by `destroyAircraft` (the usual
+  explosion and burning wreck; the player dies, or in god mode is thrown clear by the riders'
+  throw). `rotorStrikes` (settleVehicle) tests the rotor disc (the airframe's length) against
+  walls: over `ROTOR_STRIKE_SPEED` (15 km/h toward one) the same; slower, a graze. Console
+  `heliInto`; `riderReport().aircraft` lists the break-ups.
 - **Crashes** (physics.js CRASH SEVERITY): every vehicle is a body of its real `mass` (tonnes;
   the tank 55, the bus 11.5). Damage follows each body's delta-v, closing x M / (m + M) (a
   wall is M = infinity): the share of hit points is ((delta-v - 10 km/h) / 190 km/h)^1.5, a

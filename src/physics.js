@@ -540,6 +540,9 @@
           }
         }
       }
+      // An airframe flown into something breaks up (AIRCRAFT STRIKES).
+      aircraftImpact(a, b, closing, staticBody);
+      if (b) aircraftImpact(b, a, closing, null);
       // A rider on a two-wheeler that stopped this hard goes over the bars (riders.js).
       riderCrash(a, crashDeltaV(a, b, closing), b);
       if (b) riderCrash(b, crashDeltaV(b, a, closing), a);
@@ -1073,6 +1076,112 @@
         desired: Math.max(0, desired),
       };
     }
+    /**
+     * AIRCRAFT STRIKES
+     * An airframe is not a car: a helicopter or a plane flown into a building, a
+     * hillside or a bridge tower faster than AIRCRAFT_CRASH_SPEED (40 km/h along
+     * the contact) breaks up. The tanks go, the wreck burns and falls (the usual
+     * vehicle explosion and debris, updateCars), and whoever is aboard dies with
+     * it; in god mode the player is thrown clear instead (riders.js throw) and
+     * lands unhurt. Slower, it is a scrape: the ordinary crash damage.
+     * The rotor reaches past the fuselage (a disc the length of the airframe):
+     * blades meeting a wall faster than ROTOR_STRIKE_SPEED (15 km/h toward it)
+     * shatter and the helicopter goes down the same way; slower, the tips chip,
+     * it is pushed back and the pilot is warned.
+     */
+    const AIRCRAFT_CRASH_SPEED = 40 * KMH,
+      ROTOR_STRIKE_SPEED = 15 * KMH,
+      aircraftCrashes = [];
+    function aircraftAirborne(c) {
+      return isAircraft(c) && c.hp > 0 && aircraftClearance(c) > 3;
+    }
+    function destroyAircraft(c, cause, speed) {
+      if (c.hp <= 0) return;
+      aircraftCrashes.push({ type: c.type, cause, kmh: Math.round(speed / KMH), altitudeM: Math.round(worldMeters(aircraftClearance(c))), player: c === player.car, at: +gameTime.toFixed(1) });
+      if (aircraftCrashes.length > 8) aircraftCrashes.shift();
+      damageVehicle(c, c.hp + 1, c.x, c.y, null, { kind: 'crash', nx: 0, ny: 0, closing: speed, otherMass: 0 });
+      if (c.damage) c.damage.burning = true;
+      playSample('crash-heavy-2', 0.9, 0.8, c);
+      // The wreck drops out of the sky, carrying a little of its way.
+      c.vx *= 0.35;
+      c.vy *= 0.35;
+      c.vz = Math.min(c.vz || 0, 0);
+      if (c.type === 'helicopter') c.abandonedFlight = true;
+      if (c === player.car) {
+        tell(cause === 'rotor strike' ? 'ROTOR STRIKE' : 'THE AIRFRAME BREAKS UP', 3);
+        if (player.godMode) {
+          // God mode: thrown clear of the fireball, falling unhurt (riders.js).
+          let x = c.x,
+            y = c.y;
+          const back = Math.atan2(-c.vy, -c.vx);
+          for (let r = 0; r < 200 && solid(x, y, RIDER_RADIUS); r += 12) {
+            x = c.x + Math.cos(back) * r;
+            y = c.y + Math.sin(back) * r;
+          }
+          c.ai = false;
+          player.car = null;
+          player.x = x;
+          player.y = y;
+          player.altitude = terrainHeight(x, y);
+          player.thrown = riderThrowState(c.vx * 0.5, c.vy * 0.5, Math.max(RIDER_SEAT, c.altitude - terrainHeight(x, y)), 4 * UNITS_PER_METRE, 'aircraft', [c, null], c);
+        }
+      }
+    }
+    // From collisionImpact: an airborne aircraft into a static body or a vehicle.
+    function aircraftImpact(c, other, closing, staticBody) {
+      if (!aircraftAirborne(c)) return false;
+      // A small prop or a bicycle does not bring an airframe down.
+      if (other && (vehicleSpec(other).mass || 1.25) < 1) return false;
+      if (staticBody && staticBody.breakKJ !== undefined && staticBody.breakKJ < 100) return false;
+      if (closing < AIRCRAFT_CRASH_SPEED) return false;
+      destroyAircraft(c, staticBody ? (staticBody.building || staticBody.kind === 'building' ? 'building' : staticBody.kind || 'structure') : 'vehicle', closing);
+      return true;
+    }
+    // The rotor disc against the walls round a flying helicopter (settleVehicle).
+    function rotorStrikes(c, stepSeconds) {
+      if (c.type !== 'helicopter' || !aircraftAirborne(c) || (c.rotorSpeed || 0) < 0.4) return;
+      const radius = vehicleSpec(c).l * 0.5,
+        shape = contactShape(c);
+      for (const b of nearbyStatics(c)) {
+        if (b.height === undefined || b.height < c.altitude + 2) continue;
+        if (b.minHeight !== undefined && b.minHeight > c.altitude + 30) continue;
+        // Nearest point of the box to the rotor mast.
+        const cosine = Math.cos(b.a || 0),
+          sine = Math.sin(b.a || 0),
+          dx = c.x - b.x,
+          dy = c.y - b.y,
+          lx = dx * cosine + dy * sine,
+          ly = -dx * sine + dy * cosine,
+          qx = clamp(lx, -b.hx, b.hx),
+          qy = clamp(ly, -b.hy, b.hy),
+          gap = Math.hypot(lx - qx, ly - qy);
+        if (gap >= radius || gap < 0.01 || boxContact(shape, b)) continue;
+        // Outward normal from the wall toward the mast, and the speed into it.
+        const nx = ((lx - qx) * cosine - (ly - qy) * sine) / gap,
+          ny = ((lx - qx) * sine + (ly - qy) * cosine) / gap,
+          toward = -(c.vx * nx + c.vy * ny);
+        if (toward > ROTOR_STRIKE_SPEED) {
+          destroyAircraft(c, 'rotor strike', toward);
+          return;
+        }
+        // A graze: blade tips chip, the helicopter is shoved clear.
+        if (toward > 0) {
+          c.vx += nx * toward * 1.4;
+          c.vy += ny * toward * 1.4;
+        }
+        c.x += nx * Math.min(2, radius - gap) * 0.5;
+        c.y += ny * Math.min(2, radius - gap) * 0.5;
+        if (physicsClock - (c.rotorGrazeAt || -100) > 0.5) {
+          c.rotorGrazeAt = physicsClock;
+          damageVehicle(c, 6, c.x - nx * radius, c.y - ny * radius, null, { kind: 'crash', nx, ny, closing: Math.max(0, toward), otherMass: 0 });
+          playSample('crash-scrape', 0.5, 1.4, c);
+          if (c === player.car) {
+            shake = Math.max(shake, 3);
+            tell('ROTOR TIPS ON THE WALL · Back off!', 2);
+          }
+        }
+      }
+    }
     function helicopterControl(c, stepSeconds, active) {
       if (c.abandonedFlight && c !== player.car) {
         // A pilotless helicopter settling onto a flat roof it fits on lands there.
@@ -1157,6 +1266,14 @@
       const climbRate = 75 + clamp(clearance - 400, 0, 3000) * 0.035;
       c.vz += (lift * climbRate - c.vz) * Math.min(1, stepSeconds * 3);
       let next = clamp(c.altitude + c.vz * stepSeconds, floor, ceiling);
+      // Flown into the ground (a hillside rising under it, a roof, a hard
+      // set-down with way on): the skids dig in and it rolls over and breaks up.
+      const groundSpeed = Math.hypot(c.vx, c.vy);
+      if (c.hp > 0 && clearance > 0.5 && c.altitude + c.vz * stepSeconds < floor && groundSpeed > AIRCRAFT_CRASH_SPEED) {
+        destroyAircraft(c, site ? 'roof' : 'terrain', groundSpeed);
+        c.altitude = floor;
+        return;
+      }
       c.roofSite = site;
       if (c.hp > 0 && next < floor + 20 && clearance >= 20 && !landingClear()) {
         next = floor + 20;
@@ -1563,7 +1680,7 @@
              traction shrink like everyone's, so it runs long into junctions. */
           const surface = wetGrip(),
             control = pursuitControl(c, stepSeconds, along, vehicleDefinition),
-            corner = corneringLimit(vehicleDefinition, along) * 1.1 * (0.8 + 0.2 * surface);
+            corner = corneringLimit(vehicleDefinition, along) * 1.1 * (0.7 + 0.3 * surface);
           steer = clamp(control.steer, -corner, corner);
           acceleration = clamp(
             control.acceleration,
@@ -1729,6 +1846,8 @@
             const nx = slope.x / m,
               ny = slope.y / m,
               inward = Math.max(0, c.vx * nx + c.vy * ny);
+            // Flown into the hillside (AIRCRAFT STRIKES): the speed into the slope.
+            if (inward > AIRCRAFT_CRASH_SPEED || Math.hypot(c.vx, c.vy) > AIRCRAFT_CRASH_SPEED * 1.5) destroyAircraft(c, 'terrain', Math.max(inward, Math.hypot(c.vx, c.vy)));
             c.vx -= nx * inward;
             c.vy -= ny * inward;
           }
@@ -2007,6 +2126,7 @@
       terrainVehiclePose(c, stepSeconds);
       // Drawbridge leaves as ramps, take-off, landing and the gap (drawbridge.js).
       drawbridgeSettle(c, stepSeconds);
+      rotorStrikes(c, stepSeconds);
       c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
       if (c === player.car) {
         player.x = c.x;
@@ -2441,14 +2561,14 @@
         pose,
         /* Traffic and police driving since the last reset: crashes and slides per
            minute of game time, the road's wetness, and the mean speed of the
-           traffic within 900 units of the player now. */
+           traffic within 1500 units of the player now. */
         aiDriving(reset = false) {
           const minutes = Math.max(1e-6, (physicsClock - driverStats.since) / 60);
           let n = 0,
             sum = 0,
             police = 0;
           for (const c of vehicles)
-            if (c.hp > 0 && c.ai && !isBoat(c) && !isAircraft(c) && distanceBetween(c, player) < 900 && Math.abs(c.speed) > 3 * KMH) {
+            if (c.hp > 0 && c.ai && !isBoat(c) && !isAircraft(c) && distanceBetween(c, player) < 1500 && Math.abs(c.speed) > 3 * KMH) {
               n++;
               sum += Math.abs(c.speed);
             } else if (c.cop && c.hp > 0) police++;
@@ -2469,14 +2589,58 @@
           if (reset) Object.assign(driverStats, { since: physicsClock, trafficCrashes: 0, policeCrashes: 0, trafficSlides: 0, policeSlides: 0, closings: [] });
           return out;
         },
-        // The player's throw off a bike now and the last few throws (riders.js).
-        riderReport: () => riderReport(),
+        // The player's throw off a bike now and the last few throws (riders.js),
+        // and the last aircraft broken up by a strike (AIRCRAFT STRIKES).
+        riderReport: () => ({ ...riderReport(), aircraft: aircraftCrashes.slice() }),
+        /* Fly a fresh helicopter at `kmh` (level, the speed held) from `metres` short
+           of a downtown tower's west face, `heightM` above the street; `offsetM` puts the mast that far north
+           of the tower's corner, so only the rotor reaches it (a rotor-strike test).
+           Returns what became of it and the last aircraft crashes. */
+        heliInto(kmh = 60, heightM = 15, metres = 30, offsetM = 0, seconds = 3) {
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          // The west face of the tallest tower with a clear street in front.
+          const tower = buildings
+              .filter((b) => b.height > 30 * UNITS_PER_METRE && b.h > 12 * UNITS_PER_METRE)
+              .filter((b) => !solid(b.x - 12, b.y + b.h / 2, 4) && !solid(b.x - 12, b.y - 40, 4))
+              .sort((p, q) => q.height - p.height)[0],
+            wall = { x: tower.x, y: tower.y + tower.h / 2 },
+            x = wall.x - metres * UNITS_PER_METRE,
+            // Off the wall's line: `offsetM` north of the tower's north-west corner.
+            y = offsetM ? tower.y - offsetM * UNITS_PER_METRE : wall.y;
+          teleportPlayer(x, y);
+          const c = (testCar = makeCar('helicopter', x, y, 0, false));
+          c.authorized = true;
+          enterVehicle(c);
+          c.altitude = terrainHeight(x, y) + heightM * UNITS_PER_METRE;
+          c.rotorSpeed = 1;
+          Object.assign(c, { vx: kmh * KMH, vy: 0, vz: 0, speed: kmh * KMH, av: 0 });
+          const hp = c.hp;
+          // Held at the speed, on and off the cyclic.
+          for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play'; i++) {
+            keys.KeyW = player.car === c && Math.hypot(c.vx, c.vy) < kmh * KMH;
+            update(1 / 30);
+          }
+          keys.KeyW = false;
+          return {
+            kmh,
+            heightM,
+            offsetM,
+            destroyed: c.hp <= 0,
+            hpLost: Math.round(hp - Math.max(0, c.hp)),
+            playerHp: Math.round(player.hp),
+            gameMode,
+            onFoot: !player.car,
+            thrown: !!player.thrown,
+            crashes: aircraftCrashes.slice(-2),
+          };
+        },
         /* The drawbridge jump: both leaves held at `degrees`, a fresh `type` set
-           going at `kmh` 3 m short of the west trunnion, throttle held. Returns
+           going at `kmh` 25 m short of the west trunnion, held at that speed (flooring it up the leaf if it drops). Returns
            the outcome ('clears', 'falls short', 'strikes the far leaf' (and falls),
            "can't climb"), the gap and tip height the leaves make, the speed up the
            leaf at the tip, the flight's length and the landing's speed into the road. */
-        bridgeJump(degrees = 15, kmh = 60, type = 'sedan', seconds = 9) {
+        bridgeJump(degrees = 15, kmh = 60, type = 'sedan', seconds = 9, trace = false) {
           const d = drawbridge,
             g = drawbridgeGeometry();
           if (player.car) exitCar();
@@ -2487,7 +2651,7 @@
           d.phase = 'open';
           d.timer = 0;
           d.jumps.length = 0;
-          const start = bridgePoint(g.bridge, g.hinge[0] - 3 * UNITS_PER_METRE, g.road / 4);
+          const start = bridgePoint(g.bridge, g.hinge[0] - 25 * UNITS_PER_METRE, g.road / 4);
           teleportPlayer(start.x, start.y);
           const c = (testCar = makeCar(type, start.x, start.y, g.f.a, false));
           c.authorized = true;
@@ -2497,9 +2661,15 @@
           let tipKmh = null,
             maxLift = 0,
             rolledBack = false;
-          keys.KeyW = true;
+          const samples = [];
+          handlingTestPaved = true;
           for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play'; i++) {
+            // The driver holds the speed (on and off the throttle) up to and up the
+            // leaf, flooring it if the slope pulls the car below it.
+            const forward = c.vx * g.f.ux + c.vy * g.f.uy;
+            keys.KeyW = forward < kmh * KMH;
             update(1 / 30);
+            if (trace && i % 3 === 0) samples.push([+(i / 30).toFixed(2), Math.round(drawbridgeLocal(c.x, c.y).u - g.hinge[0]), Math.round(forward / KMH), +(c.deckLift || 0).toFixed(1), c.deckLeaf, !!c.deckAir, +(c.deckSlope || 0).toFixed(2)]);
             maxLift = Math.max(maxLift, c.deckLift || 0);
             if (tipKmh === null && c.deckAir) tipKmh = Math.round(Math.hypot(c.vx, c.vy, c.deckVz || 0) / KMH);
             const along = c.vx * g.f.ux + c.vy * g.f.uy;
@@ -2512,6 +2682,7 @@
             }
           }
           keys.KeyW = false;
+          handlingTestPaved = false;
           const jump = d.jumps[0],
             outcome = !jump
               ? "can't climb"
@@ -2533,12 +2704,14 @@
             flightM: jump?.distance ?? null,
             landingMs: jump?.impact != null ? +(jump.impact / UNITS_PER_METRE).toFixed(1) : null,
             hpLost: Math.round(hp - c.hp),
+            ...(trace ? { samples } : {}),
           };
         },
-        /* Ride a fresh `type` east along the runway strip at `kmh` (throttle held)
+        /* Ride a fresh `type` east along the runway strip at `kmh` (held there)
            into a parked `targetType` turned across the way (or 'none'), `gap`
-           metres ahead; stepped for `seconds`. Returns the rider's report. */
-        rideInto(type = 'bike', kmh = 50, targetType = 'sedan', gap = 25, seconds = 0.05) {
+           metres ahead; stepped for `seconds`. `trafficRider`: a traffic bike
+           (flat out at the player's side) instead. Returns the riders' report. */
+        rideInto(type = 'bike', kmh = 50, targetType = 'sedan', gap = 25, seconds = 0.05, trafficRider = false) {
           if (player.car) exitCar();
           if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
           for (let i = vehicles.length - 1; i >= 0; i--)
@@ -2550,14 +2723,21 @@
             const t = makeCar(targetType, x + gap * UNITS_PER_METRE, y, Math.PI / 2, false);
             t.rideTarget = true;
           }
-          const c = (testCar = makeCar(type, x, y, 0, false));
+          // With `trafficRider` the bike is traffic's, ridden by its own rider, and
+          // the player watches from the verge.
+          const c = (testCar = makeCar(type, x, y, 0, trafficRider));
           c.authorized = true;
-          enterVehicle(c);
+          if (trafficRider) {
+            // Its rider aims past the parked car at the player standing beyond it.
+            c.occupied = true;
+            c.ramUntil = gameTime + 30;
+            teleportPlayer(x + (gap + 8) * UNITS_PER_METRE, y);
+          } else enterVehicle(c);
           Object.assign(c, { vx: kmh * KMH, vy: 0, speed: kmh * KMH, av: 0 });
           handlingTestPaved = true;
-          keys.KeyW = true;
           for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play'; i++) {
-            if (!player.car) keys.KeyW = false;
+            // Held at the speed (on and off the throttle) until the crash.
+            keys.KeyW = !!player.car && c.vx < kmh * KMH;
             update(1 / 30);
           }
           keys.KeyW = false;
@@ -2579,6 +2759,8 @@
           const savedWet = weather.wet;
           if (player.car) exitCar();
           if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          // Nothing left on the strip from a ride test.
+          for (let i = vehicles.length - 1; i >= 0; i--) if (vehicles[i].rideTarget) vehicles.splice(i, 1);
           teleportPlayer(x, y - 60);
           const c = (testCar = spawnClearCar(type, x, y, 0, false));
           c.authorized = true;
