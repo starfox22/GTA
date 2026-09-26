@@ -414,6 +414,7 @@
       for (const bridge of BRIDGES) list.push(...bridgeFootings(bridge));
       list.push({ x: HARBOR.ship.x, y: HARBOR.ship.y, hx: HARBOR.ship.w / 2, hy: HARBOR.ship.l / 2, a: 0 });
       list.push(...marinaObstacles());
+      list.push(...monarchBoatObstacles());
       for (const b of list) b.reach = b.hx + b.hy;
       return (boatObstacleCache = list);
     }

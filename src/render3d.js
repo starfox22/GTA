@@ -1179,8 +1179,14 @@
       // @include src/boats3d.js
       // @include src/drawbridge3d.js
       // @include src/bridges3d.js
+      // @include src/monarch-bridges3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js
+      // @include src/monarch3d.js
+      // @include src/monarch-villas3d.js
+      // @include src/monarch-marina3d.js
+      // @include src/monarch-garden3d.js
+      // @include src/monarch-streets3d.js
       // @include src/beachclub3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
@@ -2552,6 +2558,7 @@
           updateCountyVisuals();
           updateHarborVisuals();
           updateMarinaVisuals(deltaSeconds);
+          updateMonarchVisuals();
           updateMissionVisuals();
           lap = profileLap('r:scenery', lap);
           placeSun();

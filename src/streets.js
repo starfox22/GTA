@@ -99,6 +99,8 @@
       },
     };
     function streetNameAt(x, y) {
+      const isleStreet = monarchStreetName(x, y);
+      if (isleStreet) return isleStreet;
       if (x > CITY_SIZE || y > CITY_SIZE || !landAt(x, y)) {
         const county = COUNTY_ROADS.find((r) =>
           r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + 30),
@@ -410,6 +412,7 @@
       const p = esplanadePoint(e);
       return (
         beachShore(e) ||
+        monarchEsplanadeGivesWay(e) ||
         inReservedPlot(p.x, p.y, 10) ||
         HELIPADS.some((pad) => Math.abs(p.x - pad.x) < 64 && Math.abs(p.y - pad.y) < 64)
       );
@@ -417,6 +420,8 @@
     // Palm Keys: sand on the public beach and down Ocean Drive's open-sea (west)
     // shore; the bay shore facing the city is a quay.
     function shoreStyle(e) {
+      const isle = monarchShoreStyle(e);
+      if (isle) return isle;
       return beachShore(e) ||
         (e.region === 'palmkeys' && e.x < -1700) ||
         COUNTY_REGIONS.find((r) => r.id === e.region)?.beach
@@ -463,7 +468,7 @@
       }
       return false;
     }
-    const PROMENADE_REGIONS = ['northbank', 'palmkeys'];
+    const PROMENADE_REGIONS = ['northbank', 'palmkeys', 'monarch'];
     // Wide enough for two people abreast and a bicycle past them: the walk runs
     // from the quay edge (40 seaward of the esplanade point) 72 units inland.
     const ESPLANADE_LANDWARD = 32,
@@ -536,6 +541,7 @@
     function addPromenadeRailRuns(spots) {
       const gaps = [];
       for (const f of MARINA.fingers) gaps.push({ x: f.x + f.w / 2, y: MARINA.quay.y - 10, half: f.w / 2 + 5 });
+      gaps.push(...monarchRailGaps());
       const g = SUPERYACHT_GANGWAY,
         board = deckWorld(SUPERYACHT, g.u0, (g.v0 + g.v1) / 2);
       gaps.push({ x: board.x, y: board.y, half: (g.v1 - g.v0) / 2 + 5 });

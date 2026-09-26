@@ -444,7 +444,8 @@
     }
     /* Inside the street grid of the city proper, where sidewalks follow the roads. */
     function inCityGrid(x, y) {
-      return x > CITY_LEFT + 60 && x < CITY_SIZE - 60 && y > CITY_TOP + 60 && y < CITY_SIZE - 60;
+      // Monarch Isle's west shore falls inside the city frame; it has its own people (monarch-life.js).
+      return x > CITY_LEFT + 60 && x < CITY_SIZE - 60 && y > CITY_TOP + 60 && y < CITY_SIZE - 60 && !(x > 5300 && y < -380);
     }
     /* Cheap carriageway test: within a road's asphalt on the grid. */
     function crowdOnRoad(x, y) {

@@ -1122,6 +1122,7 @@
         airportSceneryBlocked(x, y, r) ||
         garageBlocked(x, y, r) ||
         parkBlocked(x, y, r) ||
+        monarchBlocked(x, y, r) ||
         marinaBlocked(x, y, r) ||
         beachBlocked(x, y, r) ||
         promenadeRailBlocked(x, y, r) ||
@@ -1829,7 +1830,9 @@
       // Plan heights to real storeys (realBuildingHeight). Fort Sentinel's buildings
       // (base3d.js), Vinny's depot walls and the Blue Hour (ROOFTOP) are given in
       // real units already.
-      for (const b of buildings) if (!b.military && !b.depotWall && !b.roofBar) b.height = realBuildingHeight(b.height);
+      for (const b of buildings) if (!b.military && !b.depotWall && !b.roofBar && !b.monarch) b.height = realBuildingHeight(b.height);
+      // Monarch Isle is planned in real storeys from the start (monarch.js).
+      buildMonarchIsle();
       // A business's own record (civic3d.js dresses its roof from it) follows its building.
       for (const place of PLACES) {
         const b = place.kind !== 'rooftop' && buildings.find((o) => o.place === place.id);
@@ -4146,6 +4149,7 @@
       drawingContext.restore();
       paintDistrictGround(drawingContext, false);
       paintCountyGround(drawingContext, false);
+      paintMonarchMap(drawingContext, big);
       drawingContext.save();
       coastPath(drawingContext);
       drawingContext.clip();
@@ -4284,6 +4288,7 @@
           ['P A L M  S O U N D', -560, 2300],
           ['M A R L O W  B A Y', 4650, 2560],
           ['N O R T H  S O U N D', 1500, -4900],
+          ...MONARCH_MAP_LABELS,
         ];
         for (const [label, x, y] of labels) {
           drawingContext.font = 'bold 11px Arial';
@@ -4292,7 +4297,7 @@
           const px = width / 2 + (x - cx) * scale,
             py = height / 2 + (y - cy) * scale;
           drawingContext.strokeText(label, px, py);
-          drawingContext.fillStyle = /B A Y|S O U N D/.test(label) ? '#a3d1d5' : '#ede6d2';
+          drawingContext.fillStyle = /B A Y|S O U N D|C H A N N E L/.test(label) ? '#a3d1d5' : '#ede6d2';
           drawingContext.fillText(label, px, py);
         }
         drawingContext.fillStyle = '#a6c4cb';
@@ -5272,6 +5277,7 @@
     // @include src/crash-audio.js
     // @include src/engine-audio.js
     // @include src/county.js
+    // @include src/monarch.js
     // @include src/airfields.js
     // @include src/military.js
     // @include src/armor.js
@@ -5317,6 +5323,7 @@
     populateStoryWorld();
     populateCounty();
     chooseRoofHelipads();
+    addMonarchHelipads();
     load();
     resize();
     drawWeapon();
@@ -6192,6 +6199,9 @@
       }),
       // Sunset Pier: ride states, the coaster's numbers, shows, guests and an overlap check.
       themePark: () => parkReport(),
+      // Monarch Isle: the plan (grid, streets, villas, towers, businesses, marina,
+      // garden) and its life (monarch.js, monarch-life.js).
+      monarch: () => monarchLayout(),
       // Board the Falcon ('coaster') or the Sunset Eye ('wheel') from its platform.
       boardRide(kind = 'coaster') {
         rideAttraction(kind);
