@@ -555,7 +555,7 @@
         arr[o + 3] = a3;
       }
       /* ---- Under the surface: the life map --------------------------------------------------- */
-      const LIFE_MAP_SIZE = 512;
+      const LIFE_MAP_SIZE = touchEnabled() || graphicsTier().name === 'LOW' ? 512 : 1024;
       const lifeTarget = new Three.WebGLRenderTarget(LIFE_MAP_SIZE, LIFE_MAP_SIZE, {
         depthBuffer: false,
         stencilBuffer: false,
@@ -680,7 +680,7 @@
             varying float vAge, vRadius, vSize;
             void main() {
               float age = max( uClock - iRing.z, 0.0 );
-              vRadius = iRing.w * ( 5.0 + 20.0 * sqrt( age ) );
+              vRadius = iRing.w * ( 4.0 + 15.0 * sqrt( age ) );
               vec2 world = iRing.xy + position.xy * ( vRadius + 14.0 * iRing.w + 6.0 );
               vWorld = world - iRing.xy;
               vAge = age;
@@ -694,15 +694,15 @@
             void main() {
               float d = length( vWorld );
               float grain = wakeNoise( vWorld * 0.35 + vAge ) * 0.6 + wakeNoise( vWorld * 0.9 - vAge * 1.3 ) * 0.4;
-              float fade = exp( -vAge / ( 2.0 + vSize * 2.0 ) );
+              float fade = exp( -vAge / ( 1.1 + vSize * 0.9 ) );
               // The ring of foam thrown out, broken up as it spreads.
-              float ringWidth = 2.0 + vSize * 2.5 + vAge * 1.5;
-              float ring = exp( -pow( ( d - vRadius ) / ringWidth, 2.0 ) ) * smoothstep( 0.25, 0.7, grain + 0.25 * fade );
-              // White water where it went in, lacing out.
-              float whiteWater = exp( -pow( d / ( 4.0 + vSize * 9.0 + vAge * 3.0 ), 2.0 ) ) * smoothstep( 0.2 + 0.5 * ( 1.0 - fade ), 0.8, grain + 0.4 * fade );
-              float foam = ( ring * 0.9 + whiteWater * 1.2 ) * fade;
+              float ringWidth = 1.5 + vSize * 1.5 + vAge * 1.2;
+              float ring = exp( -pow( ( d - vRadius ) / ringWidth, 2.0 ) ) * smoothstep( 0.35, 0.8, grain + 0.2 * fade );
+              // White water where it went in, torn into lace within a second or two.
+              float whiteWater = exp( -pow( d / ( 3.0 + vSize * 5.0 + vAge * 2.0 ), 2.0 ) ) * smoothstep( 0.35 + 0.45 * ( 1.0 - fade ), 0.9, grain + 0.25 * fade );
+              float foam = ( ring * 0.75 + whiteWater ) * fade;
               // Ripples running out: crest and trough.
-              float wave = cos( ( d - vRadius ) * 0.55 ) * exp( -pow( ( d - vRadius * 0.85 ) / ( 6.0 + vSize * 8.0 ), 2.0 ) ) * fade;
+              float wave = cos( ( d - vRadius ) * 0.55 ) * exp( -pow( ( d - vRadius * 0.85 ) / ( 5.0 + vSize * 6.0 ), 2.0 ) ) * exp( -vAge / ( 2.5 + vSize * 1.5 ) );
               gl_FragColor = vec4( foam, max( wave, 0.0 ) * 0.9, max( -wave, 0.0 ) * 0.9, 0.0 );
             }`,
           ...wakeBlend,
@@ -905,7 +905,7 @@
           const finX = shark.x + Math.cos(shark.a) * 3,
             finY = shark.y + Math.sin(shark.a) * 3,
             finTop = shark.z + 0.5 * SEA_M + 0.95 * SEA_M;
-          if (finTop > SEA_SURFACE + 1 && shark.z < SEA_SURFACE && shark.finUp > 0.3) wakeEmit(sharkFinKey, finX, finY, shark.a, shark.speed, 9, 2.2, 55, false);
+          if (finTop > SEA_SURFACE + 1 && shark.z < SEA_SURFACE && shark.finUp > 0.3) wakeEmit(sharkFinKey, finX, finY, shark.a, shark.speed, 10, 2.4, 22, false);
         }
         sh.mesh.count = sh.ghost.count = sharkShown ? 1 : 0;
         sh.drawn = sharkShown ? 1 : 0;

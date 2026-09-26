@@ -738,7 +738,7 @@ sealife.js (game), sealife-audio.js (sound) and sealife3d.js (renderer). Console
 - **Drawing**: each species is one InstancedMesh animated in the vertex shader (`SEA_DEFORM`:
   the dolphin's vertical body wave, the shark's tail sweep and jaw, the gull's wingbeat and
   fold); gulls cast shadows. What is under the surface is drawn top down into the **life map**
-  (512², round the view; red how dark it makes the water, green blood) that the water shader
+  (1024², 512² on LOW and touch, round the view; red how dark it makes the water, green blood) that the water shader
   darkens and reddens its body with. Splashes are one Points object; foam rings go into the wake
   map (`sealifeWakeLive` keeps it drawn); fins and surfacing dolphins call `wakeEmit`.
 

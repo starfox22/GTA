@@ -986,18 +986,29 @@
       shark.mode = 'patrol';
       return true;
     }
+    /**
+     * How far a point in the sea is out from Palm Keys Beach's waterline
+     * (Infinity off the strand). water.js's beachShelfDistance only reaches a
+     * shore cell (128 units); the buoy line lies 178 out.
+     */
+    function beachOffshore(x, y) {
+      if (x < BEACH.polygon[0][0] - 60 || x > BEACH.polygon[1][0] + 60 || y < 5300 || typeof shoreAt !== 'function') return Infinity;
+      if (landAt(x, y)) return 0;
+      const p = shoreAt(shoreS(x));
+      return Math.hypot(x - p.x, y - p.y);
+    }
     /* Is the player in the shark's water? (see THE ENCOUNTER) */
     function sharkWaterForPlayer() {
       if (!player.swimming || player.pool || player.climbing || player.car || player.parachute) return false;
       if (seaNoGo(player.x, player.y)) return false;
-      if (beachShelfDistance(player.x, player.y) < SHARK_BUOY_CLEAR) return false;
+      if (beachOffshore(player.x, player.y) < SHARK_BUOY_CLEAR) return false;
       return seaDistance(player.x, player.y) > SHARK_DEEP_SWIM;
     }
     /* Somewhere the swimmer counts as out of reach. */
     function sharkPlayerSafe() {
       if (gameMode !== 'play') return false;
       if (!player.swimming || player.climbing || player.car || player.pool) return true;
-      return beachShelfDistance(player.x, player.y) < SHARK_BUOY_CLEAR - 30;
+      return beachOffshore(player.x, player.y) < SHARK_BUOY_CLEAR - 30;
     }
     /* The nearest way out for the fairness window: a ladder, a beach or rocks, or a boat in reach. */
     function sharkNearestExit() {
@@ -1008,10 +1019,10 @@
           if (!best || d < best.d) best = { x: c.x, y: c.y, kind: 'boat', d };
         }
       // The buoy line counts as safety off the beach.
-      const shelf = beachShelfDistance(player.x, player.y);
+      const shelf = beachOffshore(player.x, player.y);
       if (Number.isFinite(shelf) && (!best || shelf - SHARK_BUOY_CLEAR < best.d)) {
-        const s = nearestShore(player.x, player.y, SHORE_CELL);
-        if (s) best = { x: (s.seg.ax + s.seg.bx) / 2, y: (s.seg.ay + s.seg.by) / 2, kind: 'swim zone', d: Math.max(0, shelf - SHARK_BUOY_CLEAR + 30) };
+        const p = shoreAt(shoreS(player.x));
+        best = { x: p.x, y: p.y, kind: 'swim zone', d: Math.max(0, shelf - SHARK_BUOY_CLEAR + 30) };
       }
       return best;
     }
@@ -1112,7 +1123,7 @@
         shark.speed += (clamp(gap * 0.8, 2.5 * UNITS_PER_METRE, 6.5 * UNITS_PER_METRE) - shark.speed) * Math.min(1, deltaSeconds);
         shark.x += Math.cos(shark.a) * shark.speed * deltaSeconds;
         shark.y += Math.sin(shark.a) * shark.speed * deltaSeconds;
-        shark.depth = SEA_SURFACE - 7;
+        shark.depth = SEA_SURFACE - 6;
         shark.finUp = 1;
         if (e.t > e.window) {
           e.phase = 'dive';
@@ -1308,7 +1319,7 @@
           target = null;
         } else if (distanceBetween(shark, target) < 40) bp.i++;
         shark.finUp = 1;
-        shark.depth = SEA_SURFACE - 7;
+        shark.depth = SEA_SURFACE - 6;
       }
       if (!target || distanceBetween(shark, target) < 90) {
         shark.waypoint = seaPointNear(viewer.x, viewer.y, 500, 1700, SHARK_WATER, 20) || seaPointNear(shark.x, shark.y, 300, 900, SHARK_WATER * 0.7, 20);
@@ -1324,8 +1335,8 @@
         shark.finClock -= deltaSeconds;
         if (shark.finFor > 0) {
           shark.finFor -= deltaSeconds;
-          shark.depth = SEA_SURFACE - 7;
-          if (shark.z > SEA_SURFACE - 9) shark.finUp = Math.min(1, shark.finUp + deltaSeconds);
+          shark.depth = SEA_SURFACE - 6;
+          if (shark.z > SEA_SURFACE - 8) shark.finUp = Math.min(1, shark.finUp + deltaSeconds);
           if (shark.finFor <= 0) shark.finClock = 35 + Math.random() * 50;
         } else {
           shark.finUp = Math.max(0, shark.finUp - deltaSeconds * 0.5);
@@ -1421,7 +1432,7 @@
       shark.speed += (2.4 * UNITS_PER_METRE - shark.speed) * Math.min(1, deltaSeconds);
       shark.x += Math.cos(shark.a) * shark.speed * deltaSeconds;
       shark.y += Math.sin(shark.a) * shark.speed * deltaSeconds;
-      shark.depth = SEA_SURFACE - 7;
+      shark.depth = SEA_SURFACE - 6;
       shark.finUp = Math.min(1, shark.finUp + deltaSeconds);
       if (shark.bumpT > 11) {
         shark.mode = 'retreat';
@@ -1442,7 +1453,7 @@
     function beachFinInSight() {
       if (!shark.active || shark.finUp < 0.5 || typeof beachgoers === 'undefined' || !beachgoers.length) return false;
       if (Math.abs(shark.x + 1970) > 1000 || shark.y < 5400 || shark.y > 6500) return false;
-      const shelf = beachShelfDistance(shark.x, shark.y);
+      const shelf = beachOffshore(shark.x, shark.y);
       return shelf < 560;
     }
     function updateBeachSharkAlarm(deltaSeconds) {
@@ -1450,7 +1461,7 @@
       if (beachFinInSight()) {
         if (a.until < gameTime) {
           a.started = gameTime;
-          seaNote('beach: SHARK! alarm', 'fin ' + Math.round(beachShelfDistance(shark.x, shark.y)) + ' off the waterline');
+          seaNote('beach: SHARK! alarm', 'fin ' + distanceLabel(beachOffshore(shark.x, shark.y)) + ' off the waterline');
           beachSharkAlarmStart();
         }
         a.until = gameTime + 25;
@@ -1682,7 +1693,7 @@
         if (!p) return sealifeReport();
         sharkPlace(p.x, p.y, Math.random() * TAU);
         shark.mode = 'patrol';
-        shark.z = shark.depth = SEA_SURFACE - 7;
+        shark.z = shark.depth = SEA_SURFACE - 6;
         shark.finFor = 30;
         shark.finUp = 1;
         return sealifeReport();
@@ -1699,6 +1710,8 @@
         }
         return sealifeReport();
       }
+      // Off a boat first (a boat is only left at a dock, or over the side).
+      if (player.car && isBoat(player.car)) diveOverboard();
       if (!sharkWaterForPlayer()) {
         const spot = seaPointNear(-1980, 6380, 0, 160, SHARK_DEEP_SWIM + 20, 40) || { x: -1980, y: 6420 };
         teleportPlayer(spot.x, spot.y);

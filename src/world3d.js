@@ -289,7 +289,7 @@
                 vec2 l0 = texture2D(uLife, luv).rg;
                 vec2 l1 = texture2D(uLife, luv + vec2(uLifeRect.w, 0.)).rg + texture2D(uLife, luv - vec2(uLifeRect.w, 0.)).rg
                         + texture2D(uLife, luv + vec2(0., uLifeRect.w)).rg + texture2D(uLife, luv - vec2(0., uLifeRect.w)).rg;
-                lifeSeen = l0 * 0.5 + l1 * 0.125;
+                lifeSeen = l0 * 0.6 + l1 * 0.1;
                 body = mix(body, body * 0.1 + vec3(.003, .012, .018), clamp(lifeSeen.r, 0., 1.));
                 body = mix(body, vec3(.30, .018, .02), clamp(lifeSeen.g * 1.3, 0., 0.92));
               }
