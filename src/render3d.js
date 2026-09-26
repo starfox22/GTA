@@ -2132,6 +2132,7 @@
         crowdRigHeight: () => crowdRigHeight(),
         // People's share of the frame (crowd3d.js): parts, draw calls, triangles.
         crowdStats: (byPart) => crowdStats(byPart),
+        crowdBenchmark: (frames) => crowdBenchmark(frames),
         // A person's drawn height from the soles to the crown (their compiled look), in map units.
         personStature: (p) => personStature(p),
         // Switch graphics quality tier (quality.js) at runtime.

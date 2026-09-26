@@ -55,9 +55,17 @@ base3d.js, parachute3d.js, flight-view3d.js, lighting3d.js)
   and 12 shadow calls for all the people in view), fewer than before once officers, gangs,
   guards, athletes or beachgoers are on screen (each old figure was a dozen or more draws;
   22 footballers alone were hundreds). Far away, anyone just standing or walking is a
-  three-instance figure.
+  three-instance figure. Anyone lying or sitting still (sunbathers, bodies) is recorded once
+  settled and copied back each frame instead of re-solving the skeleton, and packing
+  allocates nothing per person.
+- Measured headless (SwiftShader, HIGH, 13:00, zoom 1; before = the lead branch): downtown
+  251 / 341 camera / shadow calls before, 244 / 336 after (people: 28 + 12); the beach 221 /
+  246 before, 222 / 243 after; a 3-star pursuit 503 / 490 before with 7 officers, 561 / 434
+  after with 8 (people: 33 + 12, the rest is the chase). Packing everyone costs 0.6 ms
+  downtown and about 4 ms at the busiest beach (150 people, 3200 instances) on that throttled
+  machine (`crowdBenchmark`).
 - Console: `characterLineup(stance, spacing)`, `inspectView(yaw, pitch, lift)`,
-  `crowdStats()`; `closeUp` goes to 24; `scaleReport().crowd` reads the rig's statures.
+  `crowdStats(byPart)`, `crowdBenchmark(frames)`; `closeUp` goes to 24; `scaleReport().crowd` reads the rig's statures.
 
 ## Unreleased — wet streets, the ULTRA band, phantom shadows
 

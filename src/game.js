@@ -6395,6 +6395,8 @@
       inspectView: (yaw, pitch, lift) => city3D?.inspectView?.(yaw, pitch, lift),
       // What the people cost in the last frame (crowd3d.js): parts, draw calls, instances, triangles.
       crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
+      // Pack the people `frames` times back to back: the rig's CPU cost per frame in ms.
+      crowdBenchmark: (frames) => city3D?.crowdBenchmark?.(frames) ?? null,
       // Raise an incident at a map point without firing: gunfire, explosion, crash.
       alarm(kind = 'gunfire', x = player.x, y = player.y) {
         const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);

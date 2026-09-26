@@ -400,8 +400,54 @@
         mOut.copy(matrix).scale(crowdScale.set(sx, sy, sz));
         part.mesh.setMatrixAt(part.n, mOut);
         if (color && part.mesh.instanceColor) part.mesh.setColorAt(part.n, color);
+        if (crowdRecording) recordInstance(part, part.n);
         part.n++;
       }
+      /**
+       * STILL FIGURES
+       * Someone lying still (a sunbather, a body) packs the same instances frame
+       * after frame, so once their pose has settled the instances are recorded
+       * and copied back in on later frames instead of rebuilding the skeleton.
+       */
+      let crowdRecording = null,
+        crowdStillCount = 0,
+        crowdStillShown = 0;
+      function recordInstance(part, i) {
+        const data = new Float32Array(16 + (part.paint ? 6 : 3));
+        data.set(part.mesh.instanceMatrix.array.subarray(i * 16, i * 16 + 16));
+        if (part.paint) {
+          data.set(part.paint.array.subarray(i * 4, i * 4 + 4), 16);
+          data.set(part.meta.array.subarray(i * 2, i * 2 + 2), 20);
+        } else if (part.mesh.instanceColor) data.set(part.mesh.instanceColor.array.subarray(i * 3, i * 3 + 3), 16);
+        crowdRecording.push(part, data);
+      }
+      function replayInstances(records) {
+        for (let r = 0; r < records.length; r += 2) {
+          const part = records[r],
+            data = records[r + 1],
+            i = part.n;
+          if (i >= part.capacity) continue;
+          const m = part.mesh.instanceMatrix.array;
+          for (let k = 0, o = i * 16; k < 16; k++) m[o + k] = data[k];
+          if (part.paint) {
+            const pa = part.paint.array,
+              ma = part.meta.array;
+            pa[i * 4] = data[16];
+            pa[i * 4 + 1] = data[17];
+            pa[i * 4 + 2] = data[18];
+            pa[i * 4 + 3] = data[19];
+            ma[i * 2] = data[20];
+            ma[i * 2 + 1] = data[21];
+          } else if (part.mesh.instanceColor && data.length > 16) {
+            const c = part.mesh.instanceColor.array;
+            c[i * 3] = data[16];
+            c[i * 3 + 1] = data[17];
+            c[i * 3 + 2] = data[18];
+          }
+          part.n++;
+        }
+      }
+      const STILL_POSES = new Set(['lieBack', 'lieFront', 'recline', 'sitGround']);
       // 16 while the person being packed wears the player's night rim, else 0.
       let rigRimFlag = 0;
       /* A painted part: the matrix, then the paint (character-rig3d.js rigPaint). */
@@ -419,6 +465,7 @@
         pa[i * 4 + 3] = paint[3];
         ma[i * 2] = paint[4];
         ma[i * 2 + 1] = paint[5] + rigRimFlag;
+        if (crowdRecording) recordInstance(part, i);
         part.n++;
       }
       const dogColors = new Map();
@@ -581,7 +628,8 @@
         const hatPart = hatStyle ? (BODY_CLOSE[hatStyle] ? hatStyle : 'cap') : null,
           helmet = hatStyle === 'helmet' || hatStyle === 'hardHat';
         const height = look.heightAbsolute || (kid ? look.height || 0.64 : clamp((look.height || 1) * (female ? 0.965 : 1.015), 0.914, 1.086)),
-          width = clamp(1 + ((look.build || 1) - 1) * 0.5, 0.9, 1.2) * (kid ? 0.9 : 1);
+          // A touch broader than the tape measure (8%) so figures read from the street camera.
+          width = clamp(1 + ((look.build || 1) - 1) * 0.5, 0.9, 1.2) * (kid ? 0.9 : 1) * 1.08;
         const eyes = look.eyes || mixHex(hair, '#0d0b0a', 0.45),
           jaw = beard === 2 ? mixHex(hair, skin, 0.15) : beard === 1 ? mixHex(skin, hair, 0.38) : skin,
           lips = mixHex(skin, '#a4474a', female ? 0.38 : 0.2),
@@ -699,14 +747,14 @@
           case 'police':
           case 'traffic': {
             const female = h(5) < 0.3,
-              cap = outfit === 'traffic' || h(6) < 0.4;
+              cap = outfit === 'traffic' || h(6) < 0.6;
             return {
               ...base,
               female,
               hairStyle: female ? 3 : h(7) < 0.5 ? 'hairBuzz' : 1,
               garment: 'uniform',
-              top: '#1d283a',
-              inner: '#152033',
+              top: '#253a5c',
+              inner: '#172338',
               accent: '#d8b65a',
               sleevesStyle: h(8) < 0.5 ? 'long' : 'short',
               pants: '#1b2433',
@@ -1066,7 +1114,7 @@
         }
       }
       /* Base pose targets. `side` 0 is left, 1 is right. */
-      function crowdPoseTargets(p, s, T, t, spec, R) {
+      function crowdPoseTargets(p, s, T, t, spec) {
         T.fill(0);
         const seed = s.seed,
           stoop = p.look?.stoop || 0;
@@ -1085,6 +1133,8 @@
         T[J_KNEE[sway > 0 ? 1 : 0]] = -0.04 - Math.abs(sway) * 0.1;
         T[J_HEAD_YAW] = Math.sin(t * 0.31 + seed * 2) * Math.max(0, Math.sin(t * 0.13 + seed)) * 0.7;
         if (p.hp <= 0) {
+          // The dead lie still: none of the idle life above.
+          T.fill(0);
           T[J_LOCO] = 0;
           T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
           T[J_HEAD_YAW] = 0;
@@ -1146,7 +1196,7 @@
           setArm(T, 1, 0.75, 0.05, 1.7);
           T[J_ARMFREE[1]] = 0;
         }
-        const shake = (amount) => Math.sin(t * 31 + seed) * amount;
+        const shiver = Math.sin(t * 31 + seed);
         switch (pose) {
           case 'run':
             T[J_LEAN] = -0.2 - stoop;
@@ -1184,7 +1234,7 @@
           case 'cower':
             T[J_LOCO] = 0;
             T[J_DROP] = -3.1;
-            T[J_LEAN] = -0.9 + shake(0.03);
+            T[J_LEAN] = -0.9 + shiver * 0.03;
             T[J_HIP[0]] = T[J_HIP[1]] = 1.45;
             T[J_KNEE[0]] = T[J_KNEE[1]] = -2.3;
             T[J_SPREAD] = 0.18;
@@ -1195,14 +1245,14 @@
             break;
           case 'freeze':
             T[J_LOCO] = 0;
-            T[J_LEAN] = 0.06 + shake(0.02);
+            T[J_LEAN] = 0.06 + shiver * 0.02;
             setArm(T, 0, 0.55, 0.3, 1.35);
             setArm(T, 1, 0.55, 0.3, 1.35);
             T[J_HEAD_YAW] = 0;
             break;
           case 'handsUp':
             T[J_LOCO] = 0;
-            T[J_LEAN] = 0.05 + shake(0.012);
+            T[J_LEAN] = 0.05 + shiver * 0.012;
             setArm(T, 0, 2.8, 0.5, 0.3);
             setArm(T, 1, 2.8, 0.5, 0.3);
             T[J_HEAD_PITCH] = -0.12;
@@ -1643,6 +1693,7 @@
           case 'ride':
             // On the sand (or a pedalo seat): legs out in front, leaning back on the hands.
             T[J_LOCO] = 0;
+            T[J_ROLL] = T[J_HEAD_YAW] = 0;
             T[J_DROP] = -6.3;
             T[J_HIP[0]] = 1.45;
             T[J_HIP[1]] = 1.3;
@@ -1655,13 +1706,16 @@
               setArm(T, 1, 1.25, 0.1, 0.3);
             } else {
               setArm(T, 0, -0.5, 0.35, 0.1);
-              setArm(T, 1, seed % 2 < 1 ? -0.5 : 0.9 + Math.sin(t * 0.3) * 0.1, 0.35, seed % 2 < 1 ? 0.1 : 1.3);
+              setArm(T, 1, seed % 2 < 1 ? -0.5 : 0.9, 0.35, seed % 2 < 1 ? 0.1 : 1.3);
             }
             T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
             break;
           case 'recline':
             // On a lounger: back raised, legs out.
             T[J_LOCO] = 0;
+            T[J_ROLL] = T[J_HEAD_YAW] = 0;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.04;
             T[J_DROP] = -6.4;
             T[J_HIP[0]] = T[J_HIP[1]] = 1.5;
             T[J_KNEE[0]] = -0.1;
@@ -1688,6 +1742,9 @@
           case 'lieBack':
             // Sunbathing on the back: hands behind the head for some, a knee up for others.
             T[J_LOCO] = 0;
+            T[J_ROLL] = T[J_HEAD_YAW] = 0;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.04;
             T[J_FALL] = 1;
             if ((p.threshold ?? seed % 1) > 0.5) {
               setArm(T, 0, 2.75, 0.6, 2.4);
@@ -1707,6 +1764,9 @@
           case 'lieFront':
             // On the front, head on the folded arms.
             T[J_LOCO] = 0;
+            T[J_ROLL] = T[J_HEAD_YAW] = 0;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.04;
             T[J_FALL] = 1;
             setArm(T, 0, 2.7, 0.55, 2.2);
             setArm(T, 1, 2.7, 0.55, 2.2);
@@ -1969,6 +2029,13 @@
         legInverse = new Three.Matrix4(),
         armTargets = [new Three.Vector3(), new Three.Vector3()];
 
+      // Per-person gait scratch (both sides), reused so packing allocates nothing.
+      const gaitHip = new Float32Array(2),
+        gaitKnee = new Float32Array(2),
+        gaitFoot = new Float32Array(2),
+        gaitArm = new Float32Array(2),
+        gaitElbow = new Float32Array(2),
+        gaitAbduct = new Float32Array(2);
       /* Which poses carry something that needs the phone in hand. */
       const PHONE_POSES = new Set(['text', 'phone', 'film']);
       /* The far figure: plain standing or walking people only. */
@@ -1994,6 +2061,26 @@
           facing = spec?.facing ?? p.a ?? 0;
         s.x = p.x;
         s.y = p.y;
+        // Still and unchanged since their instances were recorded: copy them (STILL FIGURES).
+        const stillPose = spec ? spec.pose : p.pose,
+          dead = p.hp <= 0,
+          still = s.still;
+        if (
+          still &&
+          s.seen &&
+          moved < 1e-4 &&
+          still.pose === stillPose &&
+          still.dead === dead &&
+          still.detail === detail &&
+          still.body === BODY &&
+          still.look === R &&
+          still.facing === facing &&
+          hitFlinch(p) === 0
+        ) {
+          replayInstances(still.records);
+          crowdStillCount++;
+          return null;
+        }
         let fresh = false;
         if (moved > 40 || !s.seen) {
           s.speed = 0;
@@ -2007,11 +2094,28 @@
         s.umbrella = weather.rain > 0.25 && !!look.umbrella && !p.react && !p.sitting && p.hp > 0 && !p.scene && !spec;
         s.guitar = false;
         s.ember = false;
-        crowdPoseTargets(p, s, T, t + s.seed, spec, R);
+        crowdPoseTargets(p, s, T, t + s.seed, spec);
         // Ease the base pose.
         const k = 1 - Math.exp(-dt * (p.react || spec?.hold?.aiming ? 14 : 9));
-        for (let i = 0; i < J_COUNT; i++) J[i] += (T[i] - J[i]) * (dt > 0 && !fresh ? k : 1);
+        let unsettled = 0;
+        for (let i = 0; i < J_COUNT; i++) {
+          const d = (T[i] - J[i]) * (dt > 0 && !fresh ? k : 1);
+          J[i] += d;
+          unsettled = Math.max(unsettled, Math.abs(T[i] - J[i]));
+        }
         if (p.hp <= 0 && !p.deathStyle?.slump) J[J_FALL] = personFallAmount(p);
+        // Lying still and settled: copy last frame's instances (STILL FIGURES).
+        const settledStill =
+          unsettled < 0.003 &&
+          !p.ejected &&
+          ((p.hp <= 0 && J[J_FALL] >= 0.999) || (STILL_POSES.has(spec?.pose) && hitFlinch(p) === 0)) &&
+          moved < 1e-4;
+        s.still = null;
+        if (settledStill) {
+          // Record this frame's instances; later frames copy them.
+          s.still = { pose: stillPose, dead, detail, body: BODY, look: R, facing, records: [] };
+          crowdRecording = s.still.records;
+        }
         // Swimming strokes and the parachute set the limbs outright.
         if (spec && (spec.swim || spec.parachute)) applyLimbOverrides(spec, J);
         // Facing. The upper body turns to where they face; the hips follow the
@@ -2040,7 +2144,10 @@
             if (Math.abs(lag) < 0.06) s.turning = false;
           }
         }
-        if (fresh || J[J_FALL] > 0.02 || J[J_LOCO] < 0.2) s.hipYaw = s.yaw;
+        if (fresh || J[J_FALL] > 0.02 || J[J_LOCO] < 0.2) {
+          s.hipYaw = s.yaw;
+          s.turning = false;
+        }
         const upperTurn = normalizeAngle(s.yaw - s.hipYaw);
         // The gait. One cycle (two steps) covers strideCycle (game.js), a
         // little shorter for smaller people.
@@ -2057,9 +2164,9 @@
           bobRun = 0.55 * (0.5 - 0.5 * Math.cos(2 * (phi - Math.PI * beta))) - 0.4,
           bob = loco * (bobWalk + (bobRun - bobWalk) * run),
           hipY = RIG.hip + J[J_DROP] + bob;
-        const legHip = [0, 0],
-          legKnee = [0, 0],
-          footPitch = [0, 0];
+        const legHip = gaitHip,
+          legKnee = gaitKnee,
+          footPitch = gaitFoot;
         const limp = p.injured || spec?.limp;
         for (let side = 0; side < 2; side++) {
           let hip = J[J_HIP[side]],
@@ -2106,18 +2213,19 @@
           twist = J[J_TWIST] - clamp(upperTurn, -1.1, 1.1) + 0.2 * hipsDiff * loco * (1 - J[J_HOLD] * 0.8),
           roll = J[J_ROLL] + loco * (limp ? 0.1 * Math.sin(phi) : 0.02 * Math.cos(phi));
         // Arms swing against the legs, bent more at a run.
-        const armSwing = [
-            J[J_SH[0]] - loco * J[J_ARMFREE[0]] * (0.85 + run * 0.45) * (legHip[0] - (legHip[0] + legHip[1]) / 2),
-            J[J_SH[1]] - loco * J[J_ARMFREE[1]] * (0.85 + run * 0.45) * (legHip[1] - (legHip[0] + legHip[1]) / 2),
-          ],
-          elbows = [
-            J[J_EL[0]] + loco * J[J_ARMFREE[0]] * (0.22 + run * 1.15 + Math.max(0, armSwing[0]) * 0.35),
-            J[J_EL[1]] + loco * J[J_ARMFREE[1]] * (0.22 + run * 1.15 + Math.max(0, armSwing[1]) * 0.35),
-          ],
-          abduct = [J[J_AB[0]] - loco * J[J_ARMFREE[0]] * run * 0.12, J[J_AB[1]] - loco * J[J_ARMFREE[1]] * run * 0.12];
+        const armSwing = gaitArm,
+          elbows = gaitElbow,
+          abduct = gaitAbduct,
+          meanHip = (legHip[0] + legHip[1]) / 2;
+        for (let side = 0; side < 2; side++) {
+          const free = loco * J[J_ARMFREE[side]];
+          armSwing[side] = J[J_SH[side]] - free * (0.85 + run * 0.45) * (legHip[side] - meanHip);
+          elbows[side] = J[J_EL[side]] + free * (0.22 + run * 1.15 + Math.max(0, armSwing[side]) * 0.35);
+          abduct[side] = J[J_AB[side]] - free * run * 0.12;
+        }
         // Breathing: the chest rises a little, faster after running.
         s.breath = (s.breath || 0) + dt * (1.7 + Math.min(1, s.speed / 40) * 2.5);
-        const breathe = Math.sin(s.breath) * (1 - loco * 0.5),
+        const breathe = p.hp <= 0 ? 0 : Math.sin(s.breath) * (1 - loco * 0.5),
           shrug = breathe * 0.035;
         const elevation = spec?.elevation ?? entityElevation(p),
           fall = J[J_FALL];
@@ -2151,6 +2259,7 @@
             crowdJoint(mOut, mRoot, 0, hipY, (side ? 1 : -1) * R.hipZ * w, legHip[side] * 0.8);
             rigEmit(P.figureLeg, mOut, 1, 1, 1, paints.figureLeg);
           }
+          crowdRecording = null;
           return null;
         }
         crowdJoint(mHips, mRoot, 0, hipY, 0, -run * loco * 0.06, roll * 0.4, pelvisYaw);
@@ -2195,7 +2304,7 @@
         if (hold?.inHand) {
           crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
           rigEmit(P[spec.weapon], mGun, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
-        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, R, H, elevation, hipY, holdWeight);
+        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, H, elevation, hipY, holdWeight);
         // A rider's hands on the bars (RIDERS).
         if (spec?.handTargets) {
           for (let side = 0; side < 2; side++) {
@@ -2228,7 +2337,7 @@
           crowdJoint(mHip[side], mHips, 0, 0, sign * R.hipZ * w, hip, -sign * spread, 0);
           rigEmit(BODY[R.thigh], mHip[side], w, 1, w, paints.thigh);
           crowdJoint(mKnee[side], mHip[side], 0, -RIG.thigh, 0, knee);
-          rigEmit(BODY.shin, mKnee[side], 1, 1, 1, paints.shin);
+          rigEmit(BODY.shin, mKnee[side], w, 1, w, paints.shin);
           // The foot stays flat on the ground through the stance, rolls onto the
           // toes at push-off and hangs toes-down in the swing.
           const flat = fall > 0.5 ? 0.3 : 1;
@@ -2283,6 +2392,7 @@
           crowdEmit(P.umbrella, mOut, H, H, H, cachedCrowdColor(umbrellaColors, look.umbrella || '#1b1d22'));
         }
         rigRimFlag = 0;
+        crowdRecording = null;
         return right;
       }
       /**
@@ -2291,8 +2401,7 @@
        * weapon is drawn there, and the wrists are brought to its grip and
        * handguard by IK (overwriting the posed arm matrices).
        */
-      function drawHold(p, s, spec, hold, R, H, elevation, hipY, weight) {
-        const w = R.width;
+      function drawHold(p, s, spec, hold, H, elevation, hipY, weight) {
         crowdJoint(mAim, mIdentity, p.x, elevation + hipY * H, p.y, 0, 0, -s.yaw);
         mAim.scale(crowdScale.set(H, H, H));
         for (let side = 0; side < 2; side++) shoulderWorld[side].setFromMatrixPosition(mShoulder[side]);
@@ -2385,7 +2494,6 @@
           const frame = side ? rightFrame : leftFrame;
           if (frame && weight > 0.6) mHand[side].copy(frame);
         }
-        void w;
       }
       const WEAPON_SCALE_OF = (weapon) => (weapon === 'shield' ? 1 : WEAPON_SCALE);
 
@@ -2395,7 +2503,17 @@
        * and how, from game state; read by drawCrowdPerson. One scratch spec,
        * filled per person just before they are packed.
        */
-      const specScratch = {};
+      const SPEC_FIELDS = [
+        'look', 'facing', 'snapFacing', 'rim', 'elevation', 'rootOverride', 'pose', 'transition', 'hold', 'weapon', 'recoil', 'reload',
+        'knifeSwing', 'punch', 'punchLead', 'army', 'shield', 'dazed', 'limp', 'cocktail', 'sip', 'swim', 'parachute', 'lieInPlace',
+        'progress', 'bounce', 'flag', 'riderLean', 'handTargets', 'legTargets',
+      ];
+      // One spec object with every field declared up front, so its shape never changes.
+      const specScratch = Object.fromEntries(SPEC_FIELDS.map((k) => [k, undefined]));
+      function resetSpec(sp) {
+        for (let i = 0; i < SPEC_FIELDS.length; i++) sp[SPEC_FIELDS[i]] = undefined;
+        return sp;
+      }
       const parachuteProxy = (() => {
         const part = () => ({ rotation: { x: 0, z: 0 } });
         return {
@@ -2409,13 +2527,13 @@
         unitScale = new Three.Vector3(1, 1, 1);
       // Car transitions (render side only): when the player got in or out.
       const carTransition = { car: null, at: -10, kind: null, x: 0, y: 0, a: 0 };
+      const recoilSince = (at) => (at != null ? clamp(1 - (gameTime - at) / 0.13, 0, 1) : 0);
       function specialSpec(p) {
         const sp = specScratch;
-        for (const k in sp) sp[k] = undefined;
+        resetSpec(sp);
         sp.look = specialLook(p);
         sp.facing = p.a || 0;
         const incapacitated = personIncapacitated(p) || p.hp <= 0;
-        const recoilFrom = (at) => (at != null ? clamp(1 - (gameTime - at) / 0.13, 0, 1) : 0);
         if (p === player) {
           sp.rim = true;
           sp.snapFacing = true;
@@ -2481,7 +2599,7 @@
           sp.weapon = weapon;
           sp.army = !!(p.military || unit === 'soldier');
           sp.shield = !!p.shield;
-          sp.recoil = recoilFrom(p.muzzleAt);
+          sp.recoil = recoilSince(p.muzzleAt);
           if (p.shield) sp.hold = HOLD_POSES.shield;
           else if (weapon === 'pistol') sp.hold = aiming ? HOLD_POSES.pistolAim : wantedStars > 0 ? HOLD_POSES.pistolReady : null;
           else if (weapon === 'smg') sp.hold = aiming ? HOLD_POSES.smgAim : HOLD_POSES.smgReady;
@@ -2492,7 +2610,7 @@
         if (p.faction && p.aiming && p.hp > 0) {
           sp.weapon = 'pistol';
           sp.hold = HOLD_POSES.pistolOneHand;
-          sp.recoil = p.recoiling ? 1 : recoilFrom(p.muzzleAt);
+          sp.recoil = p.recoiling ? 1 : recoilSince(p.muzzleAt);
           return sp;
         }
         if (p.guest || p.boss) {
@@ -2521,7 +2639,9 @@
           sp.swim = { stroke: 0, hard: true, drive: 0, dive: true };
           return sp;
         }
-        sp.elevation = entityElevation(player) + 2.0;
+        // The body's axis just under the surface: the back and head break it (the sea at
+        // -3.1, world3d.js; the Marea pool's water 2.4 above the swimmer, clubpool.js).
+        sp.elevation = entityElevation(player) + (player.pool ? 2.2 : 1.3);
         crowdJoint(rootMatrixScratch, mIdentity, player.x, sp.elevation, player.y, -Math.PI / 2 + 0.12, roll, -player.a);
         sp.rootOverride = rootMatrixScratch;
         sp.swim = { stroke, hard, drive };
@@ -2650,7 +2770,7 @@
       const beachFacing = new Three.Matrix4();
       function beachSpec(p) {
         const sp = specScratch;
-        for (const k in sp) sp[k] = undefined;
+        resetSpec(sp);
         let entry = specialLooks.get(p);
         if (!entry) {
           entry = { outfit: 'beach', look: outfitLook(p, 'beach', (p.threshold || 0.5) * 997 + (p.phase || 0) * 13) };
@@ -2663,13 +2783,13 @@
         if (pose === 'swim' || pose === 'float') {
           const stroke = (p.phase || 0) * 3.2 + gameTime * (pose === 'swim' ? 3.2 : 0.8),
             onBack = pose === 'float';
-          sp.elevation = (p.z || 0) + 2.0;
+          sp.elevation = (p.z || 0) + 1.3;
           crowdJoint(beachFacing, mIdentity, p.x, sp.elevation, p.y, onBack ? Math.PI / 2 : -Math.PI / 2 + 0.12, onBack ? 0 : Math.sin(stroke) * 0.35, -(p.a || 0));
           sp.rootOverride = beachFacing;
           sp.swim = { stroke, hard: true, drive: 0.7, float: onBack };
           return sp;
         }
-        if (pose === 'tread') sp.elevation = (p.z || 0) - 7.4;
+        if (pose === 'tread') sp.elevation = (p.z || 0) - 9.3;
         sp.pose = BEACH_POSES[pose] ?? null;
         sp.lieInPlace = pose === 'lie' || pose === 'lieFront';
         return sp;
@@ -2736,7 +2856,7 @@
           proxy.a = c.a;
           const sp = isPlayer ? specialSpec(player) : specScratch;
           if (!isPlayer) {
-            for (const k in sp) sp[k] = undefined;
+            resetSpec(sp);
             let entry = specialLooks.get(c);
             const outfit = kind === 'motorbike' ? 'motorcyclist' : kind === 'jetski' ? 'jetskier' : 'cyclist';
             if (!entry || entry.outfit !== outfit) {
@@ -2790,7 +2910,7 @@
       }
       function athleteSpec(a, match) {
         const sp = specScratch;
-        for (const k in sp) sp[k] = undefined;
+        resetSpec(sp);
         let entry = specialLooks.get(a);
         if (!entry || entry.kit !== a.kit) {
           entry = { outfit: 'athlete', kit: a.kit, look: outfitLook(a, 'athlete', (a.number || 7) * 13.7 + (a.team + 2) * 91 + a.id.length) };
@@ -2956,6 +3076,8 @@
       let crowdPackMs = 0;
       function updateCrowd3D(deltaSeconds, specials = []) {
         const packStart = performance.now();
+        crowdStillShown = crowdStillCount;
+        crowdStillCount = 0;
         let drawn = 0;
         lastDelta = deltaSeconds;
         const detail = crowdDetail(),
@@ -3051,8 +3173,20 @@
           bodySet: BODY === BODY_CLOSE ? 'close' : 'street',
           packMs: Math.round(crowdPackMs * 100) / 100,
           packMsAverage: Math.round(crowdPackAverage * 100) / 100,
+          // People drawn from their recorded instances (STILL FIGURES).
+          still: crowdStillShown,
           ...(byPart ? { byPart: list } : {}),
         };
+      }
+      /* Pack the people `frames` times back to back and report the average (ms):
+         the CPU cost of the rig without the frame's other work in the timing. */
+      function crowdBenchmark(frames = 20) {
+        const start = performance.now();
+        for (let i = 0; i < frames; i++) {
+          updateCrowd3D(1 / 60, renderPeople);
+          finishCrowd3D(1 / 60);
+        }
+        return Math.round(((performance.now() - start) / frames) * 1000) / 1000;
       }
       function crowdRigHeight() {
         return PERSON_HEIGHT;

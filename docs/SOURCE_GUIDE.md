@@ -115,8 +115,9 @@ Two closures matter:
   default and walks while Shift (`walk`, controls.js, "Walk (hold)") is held; there is no separate
   sprint. The Blue Hour terrace is always walked (a stealth party). `footPace()` is read by the
   movement, mountain footing (terrain.js), footsteps (audio.js) and the police's aim (pursuit.js);
-  the player's legs swing wider and lean in at the run (render3d.js `playerRunAmount`, from the
-  model's measured travel). Swimming crawls hard by default (5 km/h, breath drains 1.7/s) and
+  like everyone's, the player's gait comes from the figure's measured travel (crowd3d.js: the
+  feet plant for the stance and swing through, longer and with a flight phase and a lean at
+  the run). Swimming crawls hard by default (5 km/h, breath drains 1.7/s) and
   eases into breaststroke (3.5 km/h, 1/s) with Shift or once breath is under 30%
   (water.js `swimHard`). Pedestrians walk 4-6 km/h (`cityTempo`), flee at 17-21, officers run
   16-19 (`OFFICER_KINDS.run`), so the default run outpaces them. Legs keep pace with the ground through `strideCycle(speed)` / `strideRate(speed)`
