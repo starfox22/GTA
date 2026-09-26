@@ -72,15 +72,42 @@ Two closures matter:
 
 ## 2a. World scale, speeds and handling
 
-- **One scale.** `UNITS_PER_METRE` (game.js WORLD SCALE) is 8, measured from the models: a sedan
-  is 43 units (4.5 m), a person 17.4 units to the crown (1.75 m), a lane with its gutter 44
-  (6 m), the courier plane 112 (14.4 m), a shop door 12 (2.1 m) and a storey 14-16 (3.2 m).
-  People and cars are drawn a little large and buildings a little squat; 8 sits between them.
-  Derived: `METERS_PER_UNIT`, `KMH` (map units a second in one km/h), `KNOTS`, `GRAVITY`
-  (9.81 m/s² in map units), `worldMeters()`, `distanceLabel()`, `speedKmh()`. Write speeds as
-  `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats, the
-  flight HUD, metres in prompts, the map's scale bar, the Falcon's and the Eye's figures) comes
-  from it.
+- **One scale, true to life.** `UNITS_PER_METRE` (game.js WORLD SCALE) is 8: a 512-unit block
+  is 64 m, a lane with its gutter 44 units (5.5 m), a sidewalk 28 (3.5 m). Everything drawn in
+  the street is at its real size at that scale (measured with `DeadEndCity.scaleReport()`):
+  - **Vehicles**: `VEHICLE_DEFINITIONS` `l` / `w` are written in metres (`4.85 * UNITS_PER_METRE`;
+    `w` is the collider, the body plus mirrors: car bodies are drawn 0.87 of it, trucks 0.91).
+    Sedan 4.85 x 2.13 (body 1.85, 1.47 tall), cab 4.9, coupe 4.4, sports 4.5, supercar 4.7,
+    muscle 5.0, luxury 5.3, limousine 8.8, SUV 4.95, van 5.25, pickup 5.6, ambulance 6.7,
+    patrol car 5.1, box truck 10.0, flatbed 9.5, bus 12.0 x 2.8 (3.2 m tall), bicycle 1.85 x
+    0.62, sport bike 2.1 x 0.8, cruiser 2.45 x 0.95, jet ski 3.3, tank hull 7.9. Helicopters,
+    planes and boats were already true. `modelScale` is the scale a model is drawn at: it is
+    built at its design size, (l, w) / modelScale, so the parts its builder sizes in fixed
+    units (roof and beltline, wheels, lamps, lightbars, riders) come out real while its
+    footprint matches the collider (render3d.js DESIGN SIZE). A model built at real size
+    sets `modelScale` 1. Code that places into a model by hand works in its design units
+    (`m.modelScale`: dents, loose panels, wheel spin, body impostors).
+  - **People**: every rig is modelled 17.4 units to the crown; `PERSON_SCALE` draws it at
+    `PERSON_HEIGHT`, 1.75 m. The crowd's looks vary the height 0.93-1.07 (kids 0.58-0.7),
+    officers and actors 0.94-1.06; a round hits within `PERSON_HIT_RADIUS` (1 m). Name tags,
+    speech bubbles and the dizzy stars sit on `PERSON_HEIGHT`.
+  - **Buildings**: a storey is `STOREY` (3.2 m) over a `SHOP_FLOOR` (4.5 m) ground floor, doors
+    `DOOR_HEIGHT` (2.3 m). The city plan still writes heights in its old numbers (a storey was
+    15 units); `realBuildingHeight()` turns them into real storeys once the world is built
+    (game.js buildWorld), so a two-storey house is 7.7 m and the tallest tower about 250 m.
+    Thresholds on heights (archetypes, fire escapes, helipad roofs, SWAT roofs) are written
+    as `realBuildingHeight(planNumber)`. Fort Sentinel, Vinny's depot and the Blue Hour
+    (`ROOFTOP.height` 240, 30 m) are in real units already. Facade textures repeat per storey;
+    shopfronts, awnings (3.2 m), fascia signs, entrance canopies and business signs sit on
+    the real ground floor.
+  - **Street furniture**: lamp posts 9 m (`LAMP_HEIGHT`), street trees about 7 m
+    (`TREE_RISE`), palms 9 m, bus shelters 2.5 m, benches 0.45 m seat / 0.85 m back, bins
+    0.8 m, mailboxes and parking meters 1.3 m, bollards 0.9 m, the payphone 2.2 m.
+  - Derived: `METERS_PER_UNIT`, `KMH` (map units a second in one km/h), `KNOTS`, `GRAVITY`
+    (9.81 m/s² in map units), `worldMeters()`, `distanceLabel()`, `speedKmh()`. Write speeds as
+    `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats,
+    the flight HUD and its roof clearance, metres in prompts and the GPS, the map's scale bar,
+    the Falcon's and the Eye's figures) comes from it.
 - **On foot** (game.js `FOOT_WALK` 5.4, `FOOT_RUN` 25 km/h, `footPace()`): the player runs by
   default and walks while Shift (`walk`, controls.js, "Walk (hold)") is held; there is no separate
   sprint. The Blue Hour terrace is always walked (a stealth party). `footPace()` is read by the
@@ -136,7 +163,10 @@ Two closures matter:
   rolls, flaps 1, rotating at the airframe's speed: courier 236 m (lift-off ~116 km/h), jet
   504 m (~180), airliner 794 m (~207); landing rolls from touchdown at that speed with full
   brakes 103 / 253 / 368 m. The runways (section 4, "Airfields") are sized from these.
-- **Camera**: from about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js,
+- **Camera**: the street view starts at `STREET_ZOOM` 1.2 (world-view.js; the wheel reaches
+  0.14-1.8), so true-size cars and people read about as large as the old oversized ones.
+  The street camera stands clear of the tallest roof (`streetCeiling()`), and the sun's shadow
+  box reaches that high too. From about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js,
   to 0.68 of the player's zoom by 220 km/h) and the look-ahead is about 0.45 s of travel.
 
 ## 3. Subsystem map
