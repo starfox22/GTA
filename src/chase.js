@@ -82,7 +82,11 @@
     let depotFrontShutter = 0,
       depotBackDoor = 1,
       depotFrontTarget = 0,
-      depotBackTarget = 1;
+      depotBackTarget = 1,
+      // Mission 1 after the shutter is down (harbor.js THE DROP): no officer
+      // crosses the warehouse's walls, in or out, by either door
+      // (depotPoliceBlocked), and none reaches through them to cuff the player.
+      depotSealed = false;
     // The front doorway, where a closing shutter must not come down on anything.
     // It stops short of where truckInsideDepot() counts a truck as inside.
     const DEPOT_DOORWAY = { x: -1722, y: 4318, w: 116, h: 32 };
@@ -156,6 +160,17 @@
     function resetDepotDoors() {
       depotFrontShutter = depotFrontTarget = 0;
       depotBackDoor = depotBackTarget = 1;
+      depotSealed = false;
+    }
+    /* A police officer's step that would cross the sealed warehouse's walls
+       (game.js footStepBlocked): the units outside cannot follow the truck in,
+       even once the back door stands open, and those shut in cannot leave. */
+    function depotPoliceBlocked(body, x, y) {
+      return depotSealed && insideDepot(body.x, body.y, -10) !== insideDepot(x, y, -10);
+    }
+    /* Whether the sealed warehouse's walls stand between two people. */
+    function depotSeparates(a, b) {
+      return depotSealed && insideDepot(a.x, a.y, -10) !== insideDepot(b.x, b.y, -10);
     }
     // After a completed drop, animate back to idle instead of snapping: the back
     // door swings shut behind the runner and the shutter rolls up on the truck.
@@ -179,6 +194,14 @@
             c.vy = Math.min(c.vy, -40);
             c.vx *= 0.5;
           }
+      // Officers on foot do not hold the shutter up either: one caught under it
+      // as it comes down steps through to whichever side they were nearer.
+      if (closing && depotFrontShutter > 0.12)
+        for (const o of officers) {
+          const d = DEPOT_DOORWAY;
+          if (o.hp <= 0 || o.x < d.x - 6 || o.x > d.x + d.w + 6 || o.y < 4326 || o.y > 4356) continue;
+          o.y = o.y >= 4341 ? 4356 : 4326;
+        }
       if (closing && depotFrontShutter < 0.95 && depotDoorwayOccupied())
         depotFrontShutter = Math.max(0, depotFrontShutter - deltaSeconds * 0.8);
       else if (Math.abs(depotFrontTarget - depotFrontShutter) > 1e-4)

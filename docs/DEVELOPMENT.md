@@ -97,10 +97,13 @@ something, never a generic code-evaluation hook.
 | `setClock(hours)`, `sky(id)` | Time of day; weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`) |
 | `wetness(value)` | Set how wet the streets are (0 dry .. 1 soaked); with the rain stopped they dry on from there, so a test can look at a drying street at once; returns `weather()` |
 | `weather()`, `weatherFront(seconds)`, `lightning(distance)` | The weather machine's state (sky, next step, rain, wet, wind, `approach`, showers, strikes, thunder pending); bring a shower in after `seconds` (overcast now, the build-up, then rain; unlocks the sky); a lightning strike `distance` map units from the player (returns where, and when its thunder arrives) |
-| `startMission(i)`, `missions()` | Jump into a mission |
+| `startMission(i)`, `missions()` | Jump into a mission (in a demo build a gated job needs god mode or `?dev` in the URL, else the status comes back with `demoLocked: true`) |
+| `demo()` | The public demo (campaign.js): the build flag, `DEMO_MISSIONS`, god mode, the open job indices, whether the demo's story is over and a call is waiting, whether it was ever completed, the DEMO COMPLETE card (shown, seconds until it opens) and the stats recap |
+| `skipToRooftopEscape()` | Mission 2: Vescari down, the player on the street for the last stage (reach the motel with no stars); used to fast-complete mission 2 |
 | `promptState()` | The interaction prompt as shown: visible, text (with its key), identity, docked, seconds since it popped in, and this pass's offer |
-| `missionState()` | Current mission stage, instruction, objective target and Vinny's depot door state; with no mission, how the last one ended |
+| `missionState()` | Current mission stage, instruction, objective target and Vinny's depot door state (`depotSealed`, and in mission 1 `policeInside`); with no mission, how the last one ended |
 | `skipToDepotDelivery()` | Mission 1: crates loaded, player in the truck outside Vinny's warehouse with the police alerted |
+| `depotOfficers(n)`, `neutraliseDepotPolice()` | Mission 1's drop: put `n` patrol officers on foot just inside the warehouse doorway (as if they ran in after the truck; call it while the shutter comes down); every officer still fighting inside takes a fatal shot from the player through the ordinary hit path (returns how many) |
 | `missionTargets()` | The current mission in full: target with altitude, timer, mission vehicles (health, fire), guards, armed hostiles aiming nearby, actors, and each job's point lists (gates, checkpoints, rings, repos...) |
 | `probe(x, y, r)` | What occupies a map point: land/water, solid, road, rail, beach, whether a car or a jet ski fits |
 | `terrain()` | The Ridgeline Range: each height field's grid, highest point and build time per stage (ms), the two summits' heights, each 4x4 trail's length, summit, steepest graded pitch and trailhead height, forest / boulder / stream counts, and each rock outcrop's ground height and clearance from the trails |

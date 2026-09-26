@@ -36,6 +36,39 @@ look alike, and no two trees of a species are the same.
   view, and one plain crown per tree in the far city.
 - **Console**: `DeadEndCity.vegetation()` (species counts, tree draws and triangles in view),
   `DeadEndCity.treeLineup()` (one of every species, for inspection).
+## Unreleased — the public demo build, and mission 1's warehouse ending
+
+- **Public demo** (`DEMO_BUILD = true` at the top of game.js; campaign.js PUBLIC DEMO): normal
+  players get missions 1 and 2. Missions 3-11 and contracts C1-C5 show in CHOOSE MISSION as
+  locked with a FULL GAME badge (titles visible, a click shows "Thanks for playing the demo! If
+  you liked it, please buy the full game."); the payphone stops ringing after mission 2 (no call
+  notice, prompt, marker or GPS line), RESTART CURRENT JOB cannot reach a gated job, and the
+  mission card reads FREE ROAM · DEMO COMPLETE. Completing mission 2 opens the DEMO COMPLETE
+  card: the title logo over the cover art, the thanks, a recap (time played, cash earned, wanted
+  peak, from the new saved `stats`), CONTINUE FREE ROAM and MAIN MENU. Completion is kept in
+  `dead-end-city-demo` (NEW GAME leaves it); the title menu has a DEMO badge by the version
+  (DEMO · COMPLETED after). Free-roam activities are not gated: the hill climb, beach
+  volleyball, the stadium ball, the pier rides, the bike share, cabs, rail, the liner, casino,
+  garages, gun shop, Fort Sentinel and the Apache. God mode opens everything, with no card.
+  Console: `demo()`, `skipToRooftopEscape()`; `startMission(i)` reaches a gated job only with
+  god mode or `?dev`.
+- **God mode opens its settings**: typing GODMODE (in play, on the map or on the title screen)
+  turns god mode on and opens Settings straight on the GOD MODE tab instead of the mission
+  picker; over the title it returns to the title when closed. The tab's new first row, MISSION
+  SELECT · PLAY ANY MISSION, opens the picker with every job unlocked (demo build included).
+  Typed again it turns god mode off with the usual toast.
+- **Mission 1 ending** (harbor.js THE DROP): the shutter comes down behind the truck with no
+  "police lost". Officers shut inside with it (on foot through the doorway, or a cruiser's
+  crew) must be put down: ELIMINATE POLICE · N LEFT, the marker on the nearest one; downed
+  officers count as out. The warehouse is sealed (chase.js `depotSealed`): no officer crosses
+  its walls either way, by the shutter or the back door, and none cuffs through them; officers
+  caught under the closing shutter step to the nearer side. The wanted level is held while the
+  player is inside (the units stake out the building; no more are sent). Then EXIT THE TRUCK
+  (while still at the wheel), then the back door opens: ESCAPE ON FOOT THROUGH THE BACK DOOR,
+  with the marker on the door. Walking out clears the wanted level at that moment (POLICE
+  LOST!), and MISSION 1 COMPLETE follows 1.4 s later. The truck destroyed before the escape
+  still fails the job; dying inside fails it as before. Console: `depotOfficers(n)`,
+  `neutraliseDepotPolice()`, `missionState()` now reports `depotSealed` and `policeInside`.
 
 ## Unreleased — the radio on the title screen
 

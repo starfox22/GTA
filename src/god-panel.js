@@ -5,8 +5,12 @@
      * Scope: shared game closure (included after settings.js).
      *
      * While the godmode cheat is on, the SETTINGS screen gains a fifth tab, GOD
-     * MODE, after CONTROLS (hidden, and left out of the Q / E cycle, otherwise):
+     * MODE, after CONTROLS (hidden, and left out of the Q / E cycle, otherwise).
+     * Typing the cheat opens Settings on this tab (game.js CHEAT_CODES: over the
+     * pause menu in play, over the title on the title screen).
      *
+     *   Missions      MISSION SELECT · PLAY ANY MISSION opens the mission picker
+     *                 (campaign.js) with every job open, a demo build's too.
      *   Time of day   the mission picker's presets (campaign.js GOD_TIMES) as
      *                 chips, a 24 h sky slider in five-minute steps and FREEZE
      *                 TIME, which stops the world clock (citylife.js
@@ -91,7 +95,7 @@
       if (!on && settingsTab === 'god') settingsTab = 'graphics';
     }
     function godSettingsHint() {
-      return 'Everything applies at once. Type GODMODE again during play to turn god mode off.';
+      return 'Everything applies at once. Type GODMODE again in play or on the title screen to turn god mode off.';
     }
     /**
      * ROWS
@@ -101,6 +105,7 @@
      */
     SETTING_ROWS.god = [
       { id: 'godHead', kind: 'custom', render: renderGodHead },
+      { id: 'godMissions', kind: 'custom', render: renderGodMissionsRow },
       { id: 'godTime', kind: 'custom', render: renderGodTimeRow },
       { id: 'godScrub', kind: 'custom', render: renderGodScrubRow },
       {
@@ -240,6 +245,27 @@
       b.dataset.nav = '';
       b.onclick = onclick;
       return b;
+    }
+    /* MISSION SELECT: the picker (campaign.js), every job open in god mode, a
+       demo build's included. It opens over whatever Settings was opened from
+       (the pause menu or the title), and BACK returns there. */
+    function godOpenMissionSelect() {
+      if (!player.godMode || gameMode !== 'settings') return;
+      closeSettings();
+      openMissionSelect();
+    }
+    function renderGodMissionsRow(body) {
+      const row = godRow('godMissions', 'god-action-row god-missions-row'),
+        button = godActionButton('godMissions', 'MISSION SELECT · PLAY ANY MISSION', godOpenMissionSelect);
+      button.classList.add('god-action-missions');
+      row.append(
+        godLabel(
+          'Mission select',
+          'Every story mission and contract is open in god mode. A job played ahead of the story does not skip it.',
+        ),
+        button,
+      );
+      body.append(row);
     }
     function renderGodRefillRow(body) {
       const row = godRow('godRefill', 'god-action-row'),
