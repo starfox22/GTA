@@ -1224,6 +1224,13 @@
           for (let x = l.x + 18; x <= l.x + l.w - 18; x += 52) for (const y of [l.y + 18, l.y + l.h - 18]) tree(x, y, 16 + random() * 3, 'plane');
           for (let y = l.y + 70; y <= l.y + l.h - 70; y += 52) for (const x of [l.x + 18, l.x + l.w - 18]) tree(x, y, 16 + random() * 3, 'plane');
         }
+      // Lighthouse Park: a grove of pines and planes on the clifftop south of
+      // the east villas, above the marina.
+      for (let x = 9700; x <= 10040; x += 64)
+        for (let y = -2180; y <= -1270; y += 64) if (random() < 0.62) {
+            const pine = random() < 0.5;
+            tree(x + (random() - 0.5) * 30, y + (random() - 0.5) * 30, pine ? 9 : 17 + random() * 4, pine ? 'cypress' : 'plane');
+          }
       // The garden's flowering cherries along the south lawn.
       for (const c of MONARCH_GARDEN.cherries) tree(c.x, c.y, 17, 'cherry');
       // Villa gardens: specimen trees 18 inside the boundary, cypresses for the
@@ -1951,13 +1958,14 @@
     }
     // Big-map labels (drawMap).
     const MONARCH_MAP_LABELS = [
-      ['M O N A R C H  I S L E', 7700, -3350],
-      ['THE CRESCENT', 7700, -4700],
-      ['CROWN AVENUE', 6500, -2870],
-      ['ROYAL BOTANIC GARDEN', 8000, -4000],
+      // Spread out: at the whole-county zoom the island is ~120 px across.
+      ['M O N A R C H  I S L E', 7800, -3200],
+      ['CROWN AVENUE', 6600, -2500],
+      ['ROYAL BOTANIC GARDEN', 8000, -4200],
       ['MONARCH HARBOUR', 8800, -880],
       ['MONARCH BEACH', 7700, -5130],
-      ['S O V E R E I G N  S O U N D', 4400, -3300],
+      // (Sovereign Sound is named in the HUD only: on the map it is narrower
+      // than its name and would run into North Point's labels.)
       ['R E G E N C Y  C H A N N E L', 7600, -250],
     ];
     /* After the city's rooftop pads are chosen: the towers' roofs take a helicopter. */
