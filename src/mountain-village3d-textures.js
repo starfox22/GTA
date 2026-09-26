@@ -1,3 +1,4 @@
+      // Mountain village 3D textures and materials: window, door and map atlases (MV_TEX, MV_MAT).
       const MVU = UNITS_PER_METRE;
       let mvSeed = 20260926;
       const mvRand = () => ((mvSeed = (mvSeed * 16807) % 2147483647) / 2147483647);

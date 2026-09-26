@@ -1,3 +1,4 @@
+    // Monarch Isle walkers and staff: walk routes, destinations, dress and updateMonarchCrowd().
     // A route over the walk graph (breadth-first: the graph is small).
     function isleWalkRoute(from, to) {
       const nodes = isleWalkNodes(),

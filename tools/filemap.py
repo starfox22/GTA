@@ -9,11 +9,12 @@
 
 Each line is `path  lines  purpose`. The purpose is taken, in order, from:
   1. the file's own `// BEGIN SUBSYSTEM: src/x.js — Title` banner,
-  2. the comment directly above its `// @include` line in the parent,
-  3. the first comment in the file's first 40 lines,
+  2. the comment the file opens with (its header: 1-3 lines saying what it
+     holds and its main entry points),
+  3. the comment directly above its `// @include` line in the parent,
   4. the names it declares at top level ("defines a, b, c"),
 with OVERRIDES (below) consulted right after step 1. Improve a description by
-editing that comment in the source (and dropping any override), then rerun.
+editing the file's header comment (and dropping any override), then rerun.
 """
 import os
 import re
@@ -27,31 +28,13 @@ DECL_RX = re.compile(r'^\s*(?:async\s+)?(?:function\s*\*?\s*([A-Za-z_$][\w$]*)|(
 MAX = 150
 
 # Descriptions for files whose source does not (yet) open with a describing
-# comment, mostly pieces cut out of a bigger file by pure moves. A file's own
-# `BEGIN SUBSYSTEM` banner still wins; better still, add a comment to the
-# source and delete the entry here.
+# comment. A file's own `BEGIN SUBSYSTEM` banner still wins; better still, add
+# a header comment to the source and delete the entry here.
 OVERRIDES = {
-    'src/game-weapons.js': 'weapon table (weapons) and mission list (missions)',
-    'src/game-vehicles.js': 'VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road/air resistance',
-    'src/game-car-spawn.js': 'makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout',
-    'src/game-worldgen.js': 'buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas',
-    'src/game-player-actions.js': 'player verbs: enter/exit vehicles, interact, aim, shoot, reload, hurt, die, explode',
-    'src/game-cops.js': 'resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning',
-    'src/game-combat.js': 'updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets',
-    'src/game-draw2d.js': '2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers',
-    'src/game-ui.js': 'weapon chip, mission card and updateUI() (HUD text refresh)',
     'src/game-menus.js': 'resize, begin/newGame, pause, help, big map toggle',
-    'src/game-update.js': 'update(dt): the per-frame simulation step (only active play advances clocks)',
     'src/game-console.js': 'window.DeadEndCity developer console, part 1 of 3 (one object literal across game-console*.js; only valid together)',
     'src/game-console-world.js': 'DeadEndCity console part 2 of 3: ride, simulate, bikes, world/vehicle probes',
     'src/game-console-graphics.js': 'DeadEndCity console part 3 of 3: damage tests, lineups, graphics, settings, radio',
-    'src/physics-shapes.js': 'oriented collision boxes, vehicle shapes, the static-collider grid (addStatic, nearbyStatics)',
-    'src/physics-collisions.js': 'contact resolution, crash severity/damage/injury (resolveContact, damageVehicle, repairVehicle)',
-    'src/physics-traffic.js': 'traffic AI: signals, junction planning, road-line following (trafficControl)',
-    'src/physics-driving.js': 'controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers',
-    'src/physics-step.js': 'physicsStep(): the fixed step, broadphase, contact passes, settling',
-    'src/physics-update.js': 'updateCars(): per-frame vehicle update driving the fixed steps',
-    'src/physics-knockdowns.js': 'people knocked down by vehicles, swept person contacts, blood tracks',
     'src/render3d-statics.js': 'static building batches, static cells and culling (staticInView), shared materials',
     'src/render3d-terrain.js': 'mesh/box/rod helpers, wall textures, the ground mesh and kerbs',
     'src/render3d-streetprops.js': 'street lamps and their glow halos, vehicle halos, blossom, sign() boards',
@@ -60,23 +43,6 @@ OVERRIDES = {
     'src/render3d-resources.js': 'GPU resource lifecycle: shared geometries, model pruning and disposal',
     'src/render3d-api.js': 'the object the renderer returns (city3D.*): draw API and debug/info hooks',
     'src/render3d-frame.js': 'render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats()',
-    'src/crowd3d-poses.js': 'pose targets and IK for arms and legs (crowdPoseTargets, solveLeg)',
-    'src/crowd3d-draw.js': 'drawCrowdPerson(): weapon holds, phone poses, far-figure shortcut',
-    'src/crowd3d-frame.js': 'updateCrowd3D(): per-frame packing, car enter/exit transitions, dogs, crowd stats',
-    'src/sports-setup.js': 'venues, stands, exits, kits and shared sports helpers',
-    'src/sports-play.js': 'match play: possession, passing, movement, offside (sportsPass, sportsBestReceiver …)',
-    'src/sports-frame.js': 'updateSports()/drawSports(): per-frame match update, board clock, console snapshot',
-    'src/themepark-rides.js': 'The Sunset Eye wheel, coaster status, park shows and fireworks',
-    'src/themepark-grounds.js': 'the log flume, the pier ground paint and buildSunsetPier(), park palms',
-    'src/base3d-materials.js': 'Fort Sentinel textures and materials (fences, nets, plates, containers)',
-    'src/base3d-facilities.js': 'Fort Sentinel control tower, radar head, windsock, glow meshes',
-    'src/helicopter3d-looks.js': 'helicopter looks and civil/executive paint schemes (pickHelicopterLook)',
-    'src/helicopter3d-livery.js': 'helicopter livery painting: emblems, seals, roundels, lettering',
-    'src/helicopter3d-model.js': 'rotors and makeHelicopter()',
-    'src/cars3d-materials.js': 'civilian car materials: trim atlas, paint and finish materials',
-    'src/cars3d-models.js': 'makeCivilianCar()/animateCivilianCar(), liveries, lettering, lamps',
-    'src/cars3d-bodies-a.js': 'CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod',
-    'src/cars3d-bodies-b.js': 'CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino',
 }
 
 
@@ -198,13 +164,13 @@ def purpose(rel, lines, above):
         return OVERRIDES[rel]
     names = declared_names(lines)
     defines = ('defines ' + ', '.join(names[:4]) + (', …' if len(names) > 4 else '')) if names else ''
-    text = summarise(above) if above else ''
-    if len(text) > 8 and not text[:1].islower() and not text.startswith('('):
-        return text
     top = next((l for l in lines if l.strip()), '')
     text = summarise(first_comment(lines))
     if len(text) > 8 and top.strip().startswith(('/*', '//')):
         return text  # the file opens with a comment: its own description
+    above_text = summarise(above) if above else ''
+    if len(above_text) > 8 and not above_text[:1].islower() and not above_text.startswith('('):
+        return above_text
     if len(text) > 8 and defines:
         return defines + ' · ' + text
     return defines or text

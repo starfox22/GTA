@@ -1,3 +1,4 @@
+      // Marina 3D statics, deck wood, lights and superyachts (buildSuperyacht, superyachtFurniture).
       const marinaStatic = new Three.Group();
       scene.add(marinaStatic);
       batchGroups.push(marinaStatic);

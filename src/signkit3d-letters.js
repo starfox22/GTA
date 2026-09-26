@@ -1,3 +1,4 @@
+        // SignKit colour helpers, stroke font (GLYPHS, strokeText) and letter treatments (tubes, stencil cuts).
         const FULL = Math.PI * 2,
           RAD = Math.PI / 180;
         // ---- Colour -----------------------------------------------------------------

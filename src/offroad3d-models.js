@@ -1,3 +1,4 @@
+      // Off-road 3D mud on vehicles, body plans, liveries, shapes, tubes, tyres and rims.
       // ---- Mud on a vehicle's materials ---------------------------------------------------
       const MUD_NOISE = `
         float mudHash( vec3 p ) {

@@ -1,3 +1,4 @@
+    // Monarch Isle grid: columns, blocks, kerbs and floors (ISLE_COLS, isleBlock).
     const ISLE_COLS = [5600, 6400, 7200, 8000, 8800, 9600],
       ISLE_ROWS = [-4544, -3744, -2944, -2144, -1344],
       ISLE_BLOCK = 800,

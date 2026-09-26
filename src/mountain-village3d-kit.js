@@ -1,3 +1,4 @@
+      // Mountain village 3D kit: per-material buffers and primitives (mvBatch, mvQuad, mvBox, mvCyl).
       /* ---- The kit: pieces written straight into per-material buffers ---------------------- */
       const mvColor = new Three.Color(),
         mvTmp = new Three.Color();

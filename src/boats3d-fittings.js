@@ -1,3 +1,4 @@
+      // Boat kit fittings: deck slabs, stairs, rails, loungers, sofas, tables, hot tubs, pools, tenders, radar scanners.
       /* A deck slab: white fascia edge, underside, and a teak (or other) top.
          `holes` are outlines cut right through it, for stair wells. */
       function deckSlab(parent, outline, z, thickness = 3, topMaterial = kitTeak, edge = tint('#f4f4f0'), holes = []) {

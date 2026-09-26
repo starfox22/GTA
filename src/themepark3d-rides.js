@@ -1,3 +1,4 @@
+      // Theme park 3D Falcon train and Sunset Eye capsules and LEDs (updateCoasterTrain, updateEyeCapsules).
       // ---- The Falcon: train -----------------------------------------------------------
       /* One car: gold and white shell, four seats with lap bars, bogies on the rails.
          +x is forward, +y up, z across; the front car wears the falcon's head. */

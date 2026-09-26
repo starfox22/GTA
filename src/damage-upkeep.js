@@ -1,3 +1,4 @@
+    // Vehicle fire, wrecks and per-frame damage upkeep (igniteVehicle, wreckVehicle, updateDamage) and knockable street props.
     // ---- Fire, wrecks and per-frame upkeep ------------------------------------------
     function canBurn(vehicle) {
       const type = damageClass(vehicle);

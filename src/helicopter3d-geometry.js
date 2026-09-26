@@ -1,3 +1,4 @@
+      // Helicopter surface maths: monotone interpolation, sections, lofted grids and geometry helpers.
       // ---- Surface maths ------------------------------------------------------------------
       // Monotone cubic interpolation (Fritsch-Carlson): smooth, never overshoots.
       function heliMonotone(xs, ys) {

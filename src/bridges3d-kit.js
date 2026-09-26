@@ -1,3 +1,4 @@
+      // Bridge 3D kit: BRIDGE_KIT, lamp, glow and LED materials, deck lights and pools.
       const BRIDGE_KIT = {
         concrete: tint('#b6b2a6', 'satin'),
         concreteDark: tint('#8e8b82', 'satin'),

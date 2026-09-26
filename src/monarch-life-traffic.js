@@ -1,3 +1,4 @@
+    // Monarch Isle road graph, traffic control, car types and populateMonarchIsle().
     const ISLE_CITY_END = { x: 3290, y: -2944 },
       ISLE_RIDGE_END = { x: 6500, y: 1800 };
     let isleGraphCache = null;

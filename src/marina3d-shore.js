@@ -1,3 +1,4 @@
+      // Marina 3D shore: cruise terminal, liner classes and models, updateLinerVisuals(), updateMarinaVisuals().
       // ---- Shore buildings ----------------------------------------------------------
       {
         const c = MARINA.club;

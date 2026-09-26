@@ -1,3 +1,4 @@
+    // Crowd appearance: palettes, role weights, dressPerson() and ensureLook().
     const CROWD_SKIN = ['#f3d6c1', '#eac0a0', '#dcaa85', '#c99169', '#b27a52', '#95603e', '#7a4b31', '#5e3825', '#452a1d'];
     const CROWD_HAIR = ['#16110e', '#231a15', '#33241b', '#4b3424', '#6a4a30', '#8c6a42', '#b89060', '#d8bd84', '#9c3f26', '#6f6f6f', '#b9b8b2'];
     const CROWD_TOPS = [

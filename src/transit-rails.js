@@ -1,3 +1,4 @@
+    // Railway lines and stations, track geometry, speeds and decks (RAIL_LINES, railTrackGeometry, railGraph).
     /**
      * RAILWAY
      * Three lines on their own elevated right of way, all of it on the west and

@@ -1,3 +1,4 @@
+      // Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
       /* ---- The material ---------------------------------------------------------------- */
       const foliageUniforms = {
         foliageTime: { value: 0 },

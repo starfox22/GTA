@@ -1,3 +1,4 @@
+    // Off-road club lot: vehicles, colliders, ground, club talk and scenes, the hill climb.
     /* ---- The lot: vehicles, colliders, ground ---------------------------------------- */
     const clubState = {
       slots: [],

@@ -1,3 +1,4 @@
+      // Civilian car tyres and rims (civTyreGeometry, civRimGeometry).
       // ---- Tyres and rims ----------------------------------------------------------------------
       /*
        * A unit tyre (radius 1, width 1, axis y like wheelGeo): tread, rounded

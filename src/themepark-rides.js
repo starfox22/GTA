@@ -1,3 +1,4 @@
+    // The Sunset Eye wheel, coaster status, park shows and fireworks (updateWheelRide, updateParkShows).
     // ---- The Sunset Eye ------------------------------------------------------------
     /**
      * A 48-capsule observation wheel on twin A-frame legs, turning once every

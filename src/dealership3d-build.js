@@ -1,3 +1,4 @@
+      // Dealership 3D build: buildDealership(), panes, shutters, screens, curtains and updateDealershipVisuals().
       // ---- The build ---------------------------------------------------------------------
       const dealerGroups = { hall: null, roof: null, moving: null, root: null };
       function buildDealership() {

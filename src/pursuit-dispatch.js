@@ -1,3 +1,4 @@
+    // Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
     // `air` is the helicopter the tier sends: never more than one at a time
     // (AIR_UNITS_MAX, combat-rules.js), and unarmed (it tracks, lights and reports;
     // it never fires), so the top tiers escalate on the ground. `snipers` is the

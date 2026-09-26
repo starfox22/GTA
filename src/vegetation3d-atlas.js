@@ -1,3 +1,4 @@
+      // Vegetation 3D foliage atlas: painting, normals and mips (FOLIAGE_ATLAS, foliageAtlas).
       const FOLIAGE_ATLAS = 1024,
         ATLAS_CELLS = {
           leafRound: [0, 0, 256, 256],

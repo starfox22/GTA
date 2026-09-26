@@ -1,3 +1,4 @@
+    // Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
     /* SHOWCASE PARKING: the flagships (cars3d.js, motorbikes3d.js) where the money
        parks, and the KR 500 where the dirt starts. Stealing one is like stealing
        any parked car. */

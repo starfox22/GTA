@@ -1,3 +1,4 @@
+      // Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
       const SPEC_FIELDS = [
         'look', 'facing', 'snapFacing', 'rim', 'elevation', 'rootOverride', 'pose', 'transition', 'hold', 'weapon', 'recoil', 'reload',
         'knifeSwing', 'punch', 'punchLead', 'army', 'shield', 'dazed', 'limp', 'cocktail', 'sip', 'swim', 'parachute', 'lieInPlace',

@@ -1,3 +1,4 @@
+    // Sports ball physics: bounces, goal frames and nets, out and goal detection, respots, keeper reach.
     const SPORTS_POST_RADIUS = 0.7;
     function sportsBounceOff(ball, normalX, normalY, restitution) {
       const along = ball.vx * normalX + ball.vy * normalY;

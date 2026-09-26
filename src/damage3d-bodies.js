@@ -1,3 +1,4 @@
+      // Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
       // ---- Vehicle bodies ------------------------------------------------------------------
       // Section table of the saloon shell: x along the length, then width
       // and height factors. The damageable shell is re-sliced much finer from it.

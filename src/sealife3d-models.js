@@ -1,3 +1,4 @@
+      // Sea life 3D geometry and materials: dolphins, sharks, gulls, deformation (SEA_KINDS).
       const SEA_M = UNITS_PER_METRE;
       /* ---- Geometry builder ------------------------------------------------------------ */
       function seaBuilder(headX, length) {

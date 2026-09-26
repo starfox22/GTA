@@ -1,3 +1,4 @@
+      // drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
       const HOLD_POSES = {
         pistolAim: { grip: [3.35, 4.55, 0.18], pitch: 0, twist: 0, lean: -0.06, headPitch: 0.12, aiming: true },
         pistolOneHand: { grip: [3.8, 4.55, 0.85], pitch: 0, twist: -0.3, lean: -0.04, headPitch: 0.08, oneHand: true, aiming: true },

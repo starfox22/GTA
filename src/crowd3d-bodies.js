@@ -1,3 +1,4 @@
+      // Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
       function rigBodySet(suffix, detailScale) {
         rigSegmentScale = detailScale;
         const hair = rigHairGeometries(),

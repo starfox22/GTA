@@ -1,3 +1,4 @@
+      // Sports 3D stadium crowd (one instance per seat), floodlights and venue builders (createSoccerVenue).
       /**
        * THE CROWD
        * One instance per seat for each body part. Each seat has a random `rank`:

@@ -1,3 +1,4 @@
+    // Car dealership lot: plan, keep-out, saved garage and the display stock (DEALER, planDealership, spawnDisplayCar).
     const DEALER = {
       name: 'MONARCH MOTORS',
       sub: 'PRESTIGE COLLECTION',

@@ -1,3 +1,4 @@
+      // Helicopter per frame: animateHelicopter(), helicopterSearchlightMount(), helicopterModelReport().
       // ---- Per frame ---------------------------------------------------------------------------
       const heliTarget = new Three.Vector3(),
         heliPoliceLevels = new Float32Array(8);

@@ -1,3 +1,4 @@
+      // Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
       // ---- LIVERY ------------------------------------------------------------------------
       /*
        * A body's decal layer (see LIVERY above): transparent over the paint, with

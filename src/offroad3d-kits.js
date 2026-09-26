@@ -1,3 +1,4 @@
+      // Off-road 3D kits: makeOffroadVehicle() and animateOffroadVehicle().
       // ---- Kits ------------------------------------------------------------------------------
       const offroadKits = new Map();
       function offroadKit(type, def, l, w, specW) {

@@ -1,3 +1,4 @@
+      // Aircraft 3D plans, airfoils, fuselage and lifting surfaces, liveries (aircraftPlans, fuselageMesh).
       function aircraftPlans() {
         return {
           courier: {

@@ -1,3 +1,4 @@
+      // Bridge 3D builders: footing foam, approach piers, beacons, BRIDGE_BUILDERS, far copies and updateBridgeVisuals().
       /* Foam round everything standing in the water. It lies above the swell
          crests, which is above the road (the deck is at sea level), so it is cut
          away wherever the deck covers it: whole rings drawn under the deck used to

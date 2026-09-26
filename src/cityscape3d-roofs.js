@@ -1,3 +1,4 @@
+      // Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
       // ---- Roof props ----------------------------------------------------------------
       /* Roof plant is recorded on its building as `b.roofKeepOuts` (world-space
          boxes) while the building is dressed: a helicopter will not set down on it

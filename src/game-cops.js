@@ -1,3 +1,4 @@
+    // resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
     function resetMissionState() {
       if (transitRide) leaveTransit(transitRide.from, true);
       if (taxiRide) endTaxiRide(false);

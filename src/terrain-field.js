@@ -1,3 +1,4 @@
+    // Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
     // Over the depression-filled surface, whose flood order is the drainage order:
     // every catchment reaches the sea or the reservoir. Returns the routing surface too.
     function routedFlow(heights, wet, cols, rows) {

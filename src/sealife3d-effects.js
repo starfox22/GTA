@@ -1,3 +1,4 @@
+      // Sea life 3D life map, blood clouds, foam rings, wakes and spray.
       /* ---- Under the surface: the life map --------------------------------------------------- */
       const LIFE_MAP_SIZE = touchEnabled() || graphicsTier().name === 'LOW' ? 512 : 1024;
       const lifeTarget = new Three.WebGLRenderTarget(LIFE_MAP_SIZE, LIFE_MAP_SIZE, {

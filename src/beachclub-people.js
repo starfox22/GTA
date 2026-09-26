@@ -1,3 +1,4 @@
+    // Marea beach club people: door talk, spawning, routing, walking and leaving (mareaSay, mareaSpawn, mareaWalk).
     /**
      * WHAT PEOPLE SAY
      * Every line goes through crowdSay (crowd.js), registered as its own

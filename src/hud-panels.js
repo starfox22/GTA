@@ -1,3 +1,4 @@
+    // HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
     /* What the prompt shows, for DeadEndCity.promptState(). */
     function promptReport() {
       return {

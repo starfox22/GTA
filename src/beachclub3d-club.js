@@ -1,3 +1,4 @@
+        // Marea beach club 3D, inside buildBeachClub3D(): materials, textures, ground, street side, staff block, stage and dance floor.
         const MX = MAREA.plot.x,
           MY = MAREA.plot.y,
           clubGroup = new Three.Group(),

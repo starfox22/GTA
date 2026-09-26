@@ -1,3 +1,4 @@
+    // Oriented collision boxes, vehicle shapes, the static-collider grid (addStatic, nearbyStatics).
     let physicsAccumulator = 0,
       physicsClock = 0;
     const staticGrid = new Map(),

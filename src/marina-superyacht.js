@@ -1,3 +1,4 @@
+    // Superyacht deck plan: levels, stairs, walking aboard and boarding (superyachtPlan, moveOnYacht, boardSuperyachtFrom).
     /* ---- Superyacht deck plan ------------------------------------------------ */
     let superyachtPlanCache = null;
     const inStairRect = (s, u, v) => u >= s.u0 && u <= s.u1 && v >= s.v0 && v <= s.v1;

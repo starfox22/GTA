@@ -1,3 +1,4 @@
+    // Off-road club block and trails: layout, terrain pads, vehicle types, trail sections and surfaces (offroadSurfaceAt).
     /*
      * THE CLUB BLOCK. The club took over a whole block of Northridge (its
      * north-west block, where Eagle Pass comes down from the trailhead into the

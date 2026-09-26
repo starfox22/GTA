@@ -1,3 +1,4 @@
+    // Traffic AI: signals, junction planning, road-line following (trafficControl).
     function trafficSignal(x, y) {
       const phase =
         (((physicsClock + Math.round(x / BLOCK_SIZE) * 3 + Math.round(y / BLOCK_SIZE) * 5) % 24) + 24) %

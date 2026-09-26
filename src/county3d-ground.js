@@ -1,3 +1,4 @@
+      // County 3D ground: regional terrain materials and patches (terrainMaterials, TERRAIN_* maps) and scenery cells.
       // Regional ground is tiled separately so the original city's ground detail stays sharp.
       // Their materials get the same procedural ground detail as the city sheet
       // (surfaces3d.js), or the county is a flat, textureless pastel.

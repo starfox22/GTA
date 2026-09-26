@@ -1,3 +1,4 @@
+      // Police 3D bodies, liveries and looks (POLICE_BODIES, pickPoliceLook), trim materials and shared resources.
       const POLICE_FONT = '"Arial Narrow", "Liberation Sans Narrow", Arial, "Liberation Sans", Helvetica, sans-serif',
         // Share of the livery canvas (from the bottom) kept for the panel swatches.
         POLICE_SWATCH_BAND = 0.125,

@@ -1,3 +1,4 @@
+        // CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino.
         /* V12 TEMPEST: a front-mid V12 grand tourer (812 / DBS): a long bonnet with
            vents, a wide slatted grille, lamps swept up into the wings, a fastback
            roof, four round tail lamps and quad pipes in the diffuser. */

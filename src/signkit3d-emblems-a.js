@@ -1,3 +1,4 @@
+            // SignKit.icon() emblem cases part 1 (from 'wrench' to 'moon').
             case 'wrench':
               g.rotate(-Math.PI / 4);
               line([

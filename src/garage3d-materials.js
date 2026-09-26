@@ -1,3 +1,4 @@
+      // Garage 3D materials: canvases, brick, stone and board tiles, slats, floor and pegboard.
       const garageModels = [],
         GARAGE_CUT = 2.6 * UNITS_PER_METRE, // the cutaway's height on the facade
         garageTextures = new Map();

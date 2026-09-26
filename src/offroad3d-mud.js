@@ -1,3 +1,4 @@
+      // Off-road 3D mud, dust, splats and tyre tracks: clumps, mist and ground decals.
       // ---- Mud, dust, splats and tracks -----------------------------------------------------------
       const MUD_CLUMPS = 640,
         MUD_MIST = 360,

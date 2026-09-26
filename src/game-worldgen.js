@@ -1,3 +1,4 @@
+    // buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
     // One texture covers the whole city including the northern reclamation, so it
     // is taller than it is wide. The pixels-per-unit ratio is held below the old
     // 4096-square texture's so the bitmap does not grow with the city.

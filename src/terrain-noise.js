@@ -1,3 +1,4 @@
+    // Ridgeline Range: terrain cells, switchback trails and noise functions (terrainNoise, terrainFbm, terrainRidged).
     /**
      * THE RIDGELINE RANGE
      * The mountains are one height field over the north of Ridgeline County

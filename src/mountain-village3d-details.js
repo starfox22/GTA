@@ -1,3 +1,4 @@
+      // Mountain village 3D details: balconies, false fronts, porches, awnings, steeples, motel and barn fronts, decks, lights.
       // A carved balcony across the street face at `y`, with flower boxes and brackets.
       function mvBalcony(batch, b, cx, y, face, width) {
         const F = b.finish,

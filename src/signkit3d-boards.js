@@ -1,3 +1,4 @@
+        // SignKit canvas fonts and boards: text effects, board paths, weathering, rope, rivets, hazard stripes, backlight.
         // ---- Canvas fonts ---------------------------------------------------------------
         const FONTS = {
           sans: 'Helvetica, Arial, "Liberation Sans", "DejaVu Sans", sans-serif',

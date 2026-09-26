@@ -1,3 +1,4 @@
+      // Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
       // ---- The kit: merged parts for one body and equipment ----------------------------------
       const policeKits = new Map();
       function policeKit(look, body, l, w) {

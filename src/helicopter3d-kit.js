@@ -1,3 +1,4 @@
+      // Helicopter kit: every shared geometry of one look (heliKit, heliKits).
       // ---- The kit: every shared geometry of one look ------------------------------------------
       // Geometry depends only on the kind (paint and scheme are the livery's), so the
       // civil schemes, executive paints and resprays share one kit.

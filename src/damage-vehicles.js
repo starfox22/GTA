@@ -1,3 +1,4 @@
+    // Vehicle damage state: dents, lamps, glass bands and panes (freshDamage, ensureDamage, addDent, shatterPane).
     const MAX_VEHICLE_MARKS = 32,
       MAX_VEHICLE_DENTS = 14,
       // Below this share of its health an engine catches fire and burns down to the tank.

@@ -1,3 +1,4 @@
+      // Fort Sentinel ground sheet: the base plot rectangle G and its painted ground.
       const G = { x: 9040, y: 7730, w: 1560, h: 2240 },
         groundSheet = document.createElement('canvas');
       groundSheet.width = G.w;

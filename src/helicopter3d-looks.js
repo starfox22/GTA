@@ -1,3 +1,4 @@
+      // Helicopter looks and civil and executive paint schemes (pickHelicopterLook).
       // Share of the livery canvas (from the bottom) for the fin, cowl and swatches.
       const HELI_BAND = 0.25,
         // Columns of that band (share of the width): the fin's starboard face, its

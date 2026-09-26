@@ -1,3 +1,4 @@
+    // Gulls (updateGulls) and the shark's setup: encounters, beach alarm and placement.
     /* Who a perched gull minds: the player on foot, their vehicle, anyone firing. */
     function gullScared(g) {
       const threat = player.car || player,

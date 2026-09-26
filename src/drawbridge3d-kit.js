@@ -1,3 +1,4 @@
+      // Drawbridge 3D kit: view state, pit render order, lenses, glows, gratings and racks.
       const drawbridgeView = { built: false, leaves: [], arms: [], lenses: [], glows: [], pinions: [], locks: [], floodlit: [], ship: null };
       // Drawn before the pit mask (renderOrder -2), which is drawn before the water.
       const DRAWBRIDGE_PIT_ORDER = -3;

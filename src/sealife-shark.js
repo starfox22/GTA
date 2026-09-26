@@ -1,3 +1,4 @@
+    // Shark bites, patrols, beach passes and bumps (updateShark) and the beach shark alarm.
     /* The jaws close. God mode: it bites down and lets go. */
     function sharkBite() {
       const e = sharkEncounter;

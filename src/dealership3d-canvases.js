@@ -1,3 +1,4 @@
+      // Dealership 3D canvases and materials: floor, brand, sign, placard, pool and shutter textures (dealerMaterials).
       const dealerVisual = { built: false, roofShown: true, screenAt: -1, screenIndex: 0, curtain: 1, doorPeople: 0, doorCars: 0, shutter: -1, broken: 0 };
       // ---- Canvases --------------------------------------------------------------------
       function dealerCanvas(w, h, paint) {

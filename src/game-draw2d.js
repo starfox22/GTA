@@ -1,3 +1,4 @@
+    // 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
     function carSprite(c) {
       const vehicleDefinition = vehicleSpec(c),
         s = document.createElement('canvas');

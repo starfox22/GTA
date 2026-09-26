@@ -1,3 +1,4 @@
+    // HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
     const HUD_STORAGE = 'dead-end-city-hud',
       // The overlays (labels, markers) are drawn in world units and grow with
       // the zoom, so the range stays modest.

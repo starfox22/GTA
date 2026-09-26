@@ -1,3 +1,4 @@
+    // Drawbridge openings: clearing the span, camera zoom, swinging the leaves, updateDrawbridge(), map, console command and report.
     /* People still on the span while the tender waits to open it walk off by the
        nearer end (a walker keeps to its axis, `dir`). */
     function drawbridgeUsherPeople() {

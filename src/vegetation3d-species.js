@@ -1,3 +1,4 @@
+      // Vegetation 3D species (conifers, palms and others), LOD meshes, instances, tints and far trees.
       function buildConifer(S, lod) {
         const fm = new FoliageMesh(),
           random = vegRandom(S.seed + lod),

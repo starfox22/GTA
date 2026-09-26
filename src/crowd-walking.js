@@ -1,3 +1,4 @@
+    // Walking the grid: crossings, sidewalks, going indoors, rain, updateStreetWalker() and encounters.
     function nextCrossing(lines, v, sign) {
       let best;
       for (const r of lines) if ((r - v) * sign > 0 && (best === undefined || (r - best) * sign < 0)) best = r;

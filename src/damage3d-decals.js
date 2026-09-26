@@ -1,3 +1,4 @@
+      // Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
       const DECAL = {
         hole: 0,
         chip: 1,

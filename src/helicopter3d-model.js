@@ -1,3 +1,4 @@
+      // Helicopter rotors and makeHelicopter().
       // ---- Rotors ---------------------------------------------------------------------------
       // An airfoil ring (chordwise loop), leading edge at -z: the blade runs along +x.
       const HELI_AIRFOIL = [

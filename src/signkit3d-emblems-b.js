@@ -1,3 +1,4 @@
+            // SignKit.icon() emblem cases part 2 (from 'stars' to 'warn').
             case 'stars':
               for (const [sx, sy, r] of [
                 [-0.5, -0.3, 0.3],

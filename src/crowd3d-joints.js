@@ -1,3 +1,4 @@
+      // Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
       const J_DROP = 0,
         J_LEAN = 1,
         J_TWIST = 2,

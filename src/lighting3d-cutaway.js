@@ -1,3 +1,4 @@
+      // Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and head, tail and strobe light beams.
       /* Occluders: buildings, and decks or roofs over the street (airCoverVolumes),
          that stand between the camera and the player, found by casting rays from
          the player's middle and head towards the camera through each one's box

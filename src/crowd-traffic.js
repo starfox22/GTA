@@ -1,3 +1,4 @@
+    // Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
     function blockerAhead(c) {
       const ca = Math.cos(c.a),
         sa = Math.sin(c.a),

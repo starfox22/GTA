@@ -1,3 +1,4 @@
+    // Fort Sentinel rules: plans, walls, gates, lockdown, solids and alarms (MILITARY, SENTINEL, militaryBlocked, militaryAlarm).
     const MILITARY = {
       name: 'FORT SENTINEL',
       x: 9300,

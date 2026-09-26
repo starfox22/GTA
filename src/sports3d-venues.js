@@ -1,3 +1,4 @@
+      // Sports 3D venue materials, net and ball materials, ground lines and scoreboards.
       const sportsVenueModels = new Map(),
         sportsBallModels = new Map(),
         sportsBoardSurfaces = new Map(),

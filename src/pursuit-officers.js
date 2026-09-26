@@ -1,3 +1,4 @@
+    // Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
     /* Suppressive fire at the corner the runner ducked behind. */
     function officerSuppress(o, deltaSeconds) {
       if (!lastSeen || gameTime - (o.lastSawPlayerAt ?? -100) > 3.5 || !policeTier().deadly || policeHoldFire() || !shooterInView(o)) return false;

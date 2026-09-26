@@ -1,3 +1,4 @@
+      // Marina 3D rigging and fleet: furled jibs, booms, wheels, outboards, MARINA_BUILDERS and marinaFleet.
       // A furled headsail wrapped round the forestay, as a slim spindle.
       function furledJib(g, spec, u, head, deckZ, color = '#e8e4d8') {
         const bow = spec.length * 0.48,

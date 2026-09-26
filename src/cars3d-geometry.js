@@ -1,3 +1,4 @@
+      // Civilian car merging kit: matrices, beams, bars, discs and profile shapes (civAdd, civGeometry, civShapeKit).
       // ---- MERGING KIT ----------------------------------------------------------------
       /* Parts are accumulated into one vertex set per material, with a colour, a
          finish and an atlas UV per vertex (see police3d.js for the police kit). */

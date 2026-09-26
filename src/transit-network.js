@@ -1,3 +1,4 @@
+    // Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
     // Where a station's lift stands. It depends only on the track, so it is worked
     // out once per built track (solid() asks for every station on every call).
     const railLiftCache = new Map();

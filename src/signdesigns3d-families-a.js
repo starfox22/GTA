@@ -1,3 +1,4 @@
+          // SignArt FAMILIES part 1: neonScript, neonBlock, bulbs, lightbox, enamel, wood, stencil, deco.
           /**
            * Script neon: slanted lower-case tubes (the word the business is known by),
            * an optional line of block-capital tubes below, a swash, an emblem in tubes.

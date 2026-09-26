@@ -1,3 +1,4 @@
+      // Garage 3D build: fascia, buildGarage3D(), rustic roofs, mist and effects, updateGarageVisuals().
       // The fascia strip: tagline on the shop colour; the letters glow at night.
       function garageFasciaMaterial(s) {
         const paint = (g, w, h, glow) => {

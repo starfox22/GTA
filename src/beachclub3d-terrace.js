@@ -1,3 +1,4 @@
+        // Marea beach club 3D, inside buildBeachClub3D(): bars, VIP terrace, daybeds, pool, fire lounge, palms and lights.
         /* ---- bars ---- */
         const bar = MAREA.bar,
           back = MAREA.backBar;

@@ -1,3 +1,4 @@
+    // People knocked down by vehicles, swept person contacts, blood tracks.
     function personIncapacitated(p) {
       return p.hp > 0 && ((p.knockedFor || 0) > 0 || (p.dazedFor || 0) > 0);
     }

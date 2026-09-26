@@ -1,3 +1,4 @@
+    // Fort Sentinel life: buildMilitary(), soldiers and drill, gunners and tanks firing, supply runs, updateMilitary().
     /* ---- Buildings ------------------------------------------------------------------- */
     function buildMilitary() {
       const old = randomSeed;

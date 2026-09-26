@@ -1,3 +1,4 @@
+    // City life services and police sight: service menus, crowd density, search, gang targets, deploying officers (renderService, policeSees).
     function renderService() {
       const p = servicePlace;
       if (!p) return;

@@ -1,3 +1,4 @@
+    // Marea beach club plan: plot, solids, gates, walk graph and opening hours (MAREA, mareaPath, mareaPhase).
     const MAREA = {
       name: 'MAREA',
       plot: BEACH_CLUB_PLOT,

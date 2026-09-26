@@ -1,3 +1,4 @@
+    // South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
     function buildCounty() {
       placeMountainOutcrops();
       const oldSeed = randomSeed;

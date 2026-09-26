@@ -1,3 +1,4 @@
+      // County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
       // The Ridgeline's species: conifers by altitude, broadleaf by chance.
       function forestSpecies(conifer, ground, roll) {
         if (!conifer) return roll < 0.55 ? 'beech' : roll < 0.8 ? 'birch' : 'maple';

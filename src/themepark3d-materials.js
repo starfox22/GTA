@@ -1,3 +1,4 @@
+      // Theme park 3D root, shared materials, ride instancing and tube helpers.
       const parkRoot = new Three.Group();
       parkRoot.name = 'sunset pier';
       scene.add(parkRoot);

@@ -1,3 +1,4 @@
+    // The sea field: distance to land, steering, viewer, hour and events for sea life (seaField, seaSteer).
     /**
      * THE SEA FIELD
      * A coarse distance-to-land field (SEA_FIELD_CELL units a cell) over the

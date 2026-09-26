@@ -1,3 +1,4 @@
+    // Weapon table (weapons) and mission list (missions).
     const weapons = [
       {
         owned: true,

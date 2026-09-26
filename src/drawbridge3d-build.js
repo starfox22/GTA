@@ -1,3 +1,4 @@
+      // Drawbridge 3D gates, signals, signs, water and the ship (buildDrawbridge, buildDrawbridgeShip).
       /* ---- Gates, signals and signs ---------------------------------------------------- */
       /* One barrier: a kerb cabinet, the long striped arm over its half of the
          road (lamps along it) and the short arm over the footway, hinged at the

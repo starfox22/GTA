@@ -1,3 +1,4 @@
+    // Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
     /* After the contacts (settleVehicle): follow a leaf's surface, take off from
        its tip, land, strike the far leaf's end or fall into the Sound. */
     function drawbridgeSettle(c, stepSeconds) {

@@ -1,3 +1,4 @@
+    // Crowd reactions per frame (updateReaction), pose galleries and lineups, updateCrowdPerson(), dogs and witness reports.
     function updateReaction(p, deltaSeconds) {
       const r = p.react;
       r.t += deltaSeconds;

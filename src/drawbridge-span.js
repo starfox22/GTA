@@ -1,3 +1,4 @@
+    // Drawbridge span: opening timetable, geometry, surface, gap and on-span tests (DRAWBRIDGE_OPENINGS, drawbridgeSurface).
     // Three a day, one of them after dark for the floodlit show; an opening
     // holds the traffic about three minutes of play.
     const DRAWBRIDGE_OPENINGS = [400, 860, 1290], // 06:40, 14:20, 21:30

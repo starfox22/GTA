@@ -1,3 +1,4 @@
+      // Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
       let cityscapeSeed = 8191;
       const cityRandom = () => {
           cityscapeSeed = (cityscapeSeed * 1664525 + 1013904223) >>> 0;

@@ -1,3 +1,4 @@
+      // Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
       // ---- Sun path ----------------------------------------------------------------------
       // Unit vector towards the sun (or moon), shared with the shadow fit, water and sky.
       const sunDirection = new Three.Vector3(-0.56, 0.62, -0.55).normalize(),

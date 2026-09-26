@@ -1,3 +1,4 @@
+      // Aircraft 3D static merge, labels, control surfaces, engines, gear, makePlane() and animateAircraft().
       /**
        * STATIC MERGE
        * Parts that never move are collected per material and merged into one mesh

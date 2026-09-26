@@ -1,3 +1,4 @@
+      // Fort Sentinel perimeter: double fence, razor wire, towers, CCTV, signs, searchlights and gate parts.
       {
         const X0 = MILITARY.x,
           Y0 = MILITARY.y,

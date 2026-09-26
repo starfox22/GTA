@@ -1,3 +1,4 @@
+    // Marea beach club queue, bouncers, host and taxis (updateMareaQueue, updateMareaTaxis) and its reaction to violence.
     /**
      * THE QUEUE
      * Groups of one to three stand along the rope, the head of the line at the

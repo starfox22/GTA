@@ -1,3 +1,4 @@
+      // Theme park 3D bumper cars, fireworks, updateParkVisuals() and the ride camera.
       // ---- Bumper cars ----------------------------------------------------------------
       const BC = PIER.bumper,
         BUMPERS = 10,

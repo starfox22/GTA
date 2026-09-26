@@ -1,3 +1,4 @@
+    // Bridge pylons and footings on the map, groundAt(), lake, coast and region paths, painted district ground and beach.
     /* Everything of a bridge that rises above the deck, on the map (tower legs,
        portals, cable fans, arches, trusses): aircraft collide with these. */
     function bridgePylons(bridge) {

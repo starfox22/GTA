@@ -1,3 +1,4 @@
+      // Skyline 3D kit: seeded random, panels, glazing and LED materials, plan helpers.
       const SKY_PANEL = 8,
         SKY_FLOOR = STOREY,
         SKY_TILE_U = SKY_PANEL * 4,

@@ -1,3 +1,4 @@
+      // Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
       const CROWD_CAPACITY = 900;
       const crowdBodyMaterial = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.82 }),
         crowdClothDouble = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.85, side: Three.DoubleSide }),

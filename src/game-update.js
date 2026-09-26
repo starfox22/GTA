@@ -1,3 +1,4 @@
+    // update(dt): the per-frame simulation step (only active play advances clocks).
     // SIMULATION UPDATE: only active play advances gameplay clocks and state.
     function update(deltaSeconds) {
       const active = gameMode === 'play';

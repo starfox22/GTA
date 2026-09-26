@@ -1,3 +1,4 @@
+    // Monarch Isle minimap and big-map layer (paintMonarchMap), labels, helipads and monarchLayout.
     function paintMonarchMap(g, big) {
       g.save();
       isleRegionPath(g);

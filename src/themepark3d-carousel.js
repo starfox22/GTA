@@ -1,3 +1,4 @@
+      // Theme park 3D Sunset Palace carousel, teacups and flume boats (updateFlume).
       // ---- The Sunset Palace ----------------------------------------------------------
       /**
        * A crescent hotel opening to the lagoon: two stepped wings on an arc, joined

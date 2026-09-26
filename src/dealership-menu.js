@@ -1,3 +1,4 @@
+    // Car dealership menu: camera, spec cards, browsing, paint, buying, keys and bringing owned cars (renderDealerMenu).
     // The camera on the car, off to the right of the card.
     function frameDealerMenu() {
       const m = dealer.menu;

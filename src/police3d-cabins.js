@@ -1,3 +1,4 @@
+      // Police 3D glasshouse cabins and livery textures (policeCabinGeometry, policeLiveryTextures).
       // ---- Glasshouse ------------------------------------------------------------------
       // A point on a pane: 'side' (s 0 rear..1 front, t 0 base..1 roof, `side` ±1),
       // 'front' / 'rear' (s -1..1 across), 'roof' (s across, t rear..front).

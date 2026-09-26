@@ -1,3 +1,4 @@
+    // Aircraft cockpit warnings and flight data, the flight missions (flightMissionStart, flightMissionUpdate) and 2D drawing of planes and airfields.
     /* Cockpit warnings for the player's aircraft: the stall horn, and a gear
        horn when low, slow and descending with the wheels up. */
     function planeWarnings(aircraft) {

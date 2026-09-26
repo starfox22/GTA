@@ -1,3 +1,4 @@
+      // Fort Sentinel buildings from SENTINEL.buildings (planOf): window rows and flags.
       const planOf = (id) => SENTINEL.buildings.find((b) => b.id === id);
       // Window rows on the south and north faces (and optionally east/west).
       function windowRows(b, rows, spacing, w, h, { skip = null, ends = true } = {}) {

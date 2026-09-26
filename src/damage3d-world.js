@@ -1,3 +1,4 @@
+      // Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
       // ---- World hits: walls, shop windows, ground -------------------------------------------
       function shopPaneAt(building, x) {
         return building?.shopPanes?.find((p) => x > p.x0 - 0.5 && x < p.x1 + 0.5) || null;

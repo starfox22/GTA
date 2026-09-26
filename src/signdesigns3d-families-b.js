@@ -1,3 +1,4 @@
+          // SignArt FAMILIES part 2: carved, plaque, customs, airbrush, varsity, highway, pixel, tattoo and the rest.
           /** Gold leaf on dark stone, lacquer or wood: engraved serif capitals; banks, pawnbrokers, the college. */
           carved(dg, gg, w, h, text, P) {
             const u = h / 100;

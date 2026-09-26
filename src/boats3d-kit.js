@@ -1,3 +1,4 @@
+      // Boat kit materials and textures: finishes, tints, glass, pool water, lamps, teak and mahogany (KIT_FINISHES).
       const KIT_FINISHES = {
         gloss: { roughness: 0.3, metalness: 0.08 },
         pearl: { roughness: 0.22, metalness: 0.4 },

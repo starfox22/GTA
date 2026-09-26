@@ -1,3 +1,4 @@
+    // Baked terrain data: treeline, scenery, streams, snow, mountain ground paint and terrainReport().
     /**
      * BAKED TERRAIN DATA
      * What the renderer and the 2D map read per vertex, made once per field:

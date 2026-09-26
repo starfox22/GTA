@@ -1,3 +1,4 @@
+    // Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
     function district() {
       return districtAt(player.x, player.y);
     }

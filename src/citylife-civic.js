@@ -1,3 +1,4 @@
+    // City life: officers and the wanted level (updateOfficers, updateWanted), blood and injury, updateCivic(), navigation and the civic map.
     function updateOfficers(deltaSeconds) {
       assignFireTokens(deltaSeconds);
       for (const c of vehicles) {

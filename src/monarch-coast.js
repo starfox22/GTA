@@ -1,3 +1,4 @@
+    // Monarch Isle outline and coast (MONARCH_ISLE, onMonarchIsle), marina berths and superyachts.
     const MONARCH_ISLE = {
       id: 'monarch',
       name: 'MONARCH ISLE',

@@ -1,3 +1,4 @@
+        // SignArt style table (SIGN_DESIGNS), designFor(), paint(), hotel and tower names, billboards and SignArt's API.
         /**
          * THE STYLE TABLE: business -> [family, parameters]. docs/SOURCE_GUIDE.md
          * lists the styles; copy the nearest line for a new business.
