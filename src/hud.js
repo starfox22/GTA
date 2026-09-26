@@ -401,7 +401,7 @@
     function hudContext() {
       const c = player.car;
       if (player.parachute) return 'chute';
-      if (player.coaster) return 'ride';
+      if (player.coaster) return player.coaster.kind === 'train' ? 'coaster' : 'ride';
       if (!c) return player.swimming ? 'swim' : 'foot';
       if (c.type === 'helicopter') return 'heli';
       if (c.type === 'plane') return 'plane';
@@ -419,6 +419,8 @@
       chute: [['handbrake', 'OPEN'], ['move', 'STEER']],
       // Sunset Pier rides: E changes the view (and steps off), the radio plays.
       ride: [['interact', 'VIEW'], ['radioPower', 'RADIO'], ['radioNext', 'STATION']],
+      // The Falcon has no radio: only the view.
+      coaster: [['interact', 'VIEW']],
     };
     function hintKey(id) {
       return id === 'move' ? moveKeysName() : keyName(id);
