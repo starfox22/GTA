@@ -1244,7 +1244,7 @@
           v.beams.visible = flood > 0.02;
           v.beams.material.uniforms.uStrength.value = flood;
         }
-        for (const m of v.floodlit) m.emissiveIntensity = lit * (0.12 + 0.55 * flood);
+        for (const m of v.floodlit) m.emissiveIntensity = lit * (0.08 + 0.3 * flood) * (m === v.underside ? 0.6 : 1);
         // Water off the leaves: only simulated while the bridge is in view.
         const g = drawbridgeGeometry(),
           near = Math.abs(g.channel.x - viewCenter.x) < viewReach + 700 && Math.abs(g.channel.y - viewCenter.y) < viewReach + 700 && !farSceneryShown;

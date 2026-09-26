@@ -634,10 +634,10 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   signals amber then red) → `gates` (entry arms, then exit arms; an arm waits while a vehicle
   is under it) → `clearing` (the tender waits until the span is empty and walks people off by
   the nearer end, `drawbridgeUsherPeople`; horn and a HUD line if the player is on it; a
-  stalled car nobody is watching is towed after 20 s) → `unlock` (the centre lock bars draw
+  stalled car nobody is watching is towed after 20 s, one in sight after a minute) → `unlock` (the centre lock bars draw
   back, `drawbridge.locks` 0 → 1 over `DRAWBRIDGE_LOCK_SECONDS`, clanks) → `raising` (eased,
   ≤ 1.6°/s, 78° in about a minute) → `open` (the channel lights go green; the ship passes
-  under sail, salutes and the tender answers; 8-45 s) → `lowering` (as slowly) → `seating`
+  under sail, salutes and the tender answers; until she is clear, at most 100 s) → `lowering` (as slowly) → `seating`
   (the lock bars drive home) → `lifting` → `idle`. Openings start at `DRAWBRIDGE_OPENINGS`
   (06:40, 14:20, 21:30, one after dark for the floodlit show) for the brigantine ALBATROSS
   (`DRAWBRIDGE_VESSEL`: a 32 m hull, 7.5 m beam, masts 30 m over the water): she lies at
@@ -667,8 +667,11 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
     the gap); the open gap is not deck (`onBridgeDeck`), so it is water to water.js. A road
     vehicle on a leaf carries `deckLift` (added by `entityElevation`), `deckLeaf`, `deckSlope`
     and `slopePitch`; `drawbridgeSlopeDrive` (controlVehicle) adds gravity along the slope
-    (`DRAWBRIDGE_GRAVITY`, real gravity) and caps the tyres at `DRAWBRIDGE_GRIP` 0.84 (no climbing
-    past ~40°); the velocity is the horizontal part, so the push enters times cos(angle).
+    (`DRAWBRIDGE_GRAVITY`, real gravity) and caps the tyres at `DRAWBRIDGE_GRIP` 0.84 (less in
+    the wet) times the driven wheels' share of the load (`drivenShare`, offroad.js: a
+    front-wheel-drive saloon has about a third on a 25° climb, a 4x4 all of it; braking uses
+    all four); the velocity is the horizontal part, so the push enters times cos(angle).
+    `bridgeJump` clears the causeway of other vehicles before each run.
     `drawbridgeKink` takes the speed square to the leaf off at the trunnion (a car keeps
     cos(angle) of its speed up the slope: 82% at 35°) and damages the car above 5 m/s into it.
     The gap is 2 (leaf (1 - cos a) + drop sin a) and the tips stand leaf sin a - drop (1 - cos a)

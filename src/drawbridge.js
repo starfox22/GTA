@@ -1103,10 +1103,11 @@
             drawbridgeHorn(g.channel.x, g.channel.y, 150, [0.6, 0.6, 0.6]);
             tell('BRIDGE TENDER · Clear the span, the bridge is opening.', 3.5);
           }
-          // A stalled or abandoned car nobody is watching is towed after a while.
+          // A stalled or abandoned car nobody is watching is towed after a while
+          // (the 88 m span is long: after a minute even one in sight of the player).
           if (d.waited > 20 && !on.player && !on.people)
             for (const c of on.vehicles)
-              if (distanceBetween(c, player) > 900 && Math.abs(c.speed || 0) < 3 && c !== mission?.car && !c.taxiHire) {
+              if ((distanceBetween(c, player) > 900 || !crowdInView(c.x, c.y, 40) || d.waited > 60) && Math.abs(c.speed || 0) < 3 && c !== mission?.car && !c.taxiHire) {
                 const k = vehicles.indexOf(c);
                 if (k >= 0) vehicles.splice(k, 1);
               }
@@ -1138,7 +1139,9 @@
             if (Math.abs(d.angle - d.held) > 0.001) swingDrawbridge(d.held, deltaSeconds);
             break;
           }
-          if ((d.timer > 8 && drawbridgeVesselClear()) || d.timer > 45) {
+          // The ship needs about 40 s from the hold point to clear the span; the
+          // tender gives her well over twice that before lowering regardless.
+          if ((d.timer > 8 && drawbridgeVesselClear()) || d.timer > 100) {
             d.phase = 'lowering';
             d.timer = 0;
           }

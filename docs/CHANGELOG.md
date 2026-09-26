@@ -33,13 +33,35 @@ Drawbridge (geography.js, drawbridge.js, drawbridge3d.js, bridges3d.js, world-vi
   about three quarters of the zoom so both leaves and the ship fit; the player keeps control.
   Settings · Gameplay · Event camera turns it off.
 - The tender walks anyone still on the span off by the nearer end (an 88 m span takes a walker
-  a minute). The GPS prices the longer closure (`drawbridgeSecondsToTraffic`).
+  a minute), has a car abandoned on it towed after a minute even in sight of the player, and
+  keeps the leaves up until the ship is clear (at most 100 s; it was 45, less than the ship
+  needs to cross). The GPS prices the longer closure (`drawbridgeSecondsToTraffic`).
+  `bridgeJump` clears the causeway of other vehicles and sends the ship back to her anchorage
+  before each run.
 - **Traction on a leaf counts only the driven wheels** (drivenShare, the 4x4 club's model): a
   front-wheel-drive saloon has about a third of its weight on its driving wheels up a 25° leaf,
   so it cannot hold its speed up 44 m of it; the brakes still use all four; rain makes the
   deck slicker. Real gravity, as before.
 
-TABLE_HERE
+- The jump, measured (`bridgeJump`: a front-wheel-drive saloon, the speed held from 25 m short
+  of the trunnion, the throttle floored up the leaf when the slope pulls it under; hit points
+  lost of 150 in brackets, 150 = wrecked). With 44 m leaves the gap opens fast and the tips
+  stand high, and the climb eats a slow car's speed:
+
+| Leaves | Gap / tip height | 40 km/h | 60 | 80 | 100 | 140 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 5° | 0.6 / 3.9 m | clears | clears | clears | clears | clears (24) |
+| 10° | 2.0 / 7.6 m | clears | clears | clears (12) | clears (45) | clears (59) |
+| 15° | 4.0 / 11.4 m | clears | clears (12) | clears (29) | clears (75) | clears (98) |
+| 20° | 6.6 / 14.9 m | strikes the far leaf (8) | clears (13) | clears (44) | clears (103) | clears (135) |
+| 25° | 9.9 / 18.4 m | can't climb | strikes the far leaf (19) | clears (44) | clears (129) | lands wrecked |
+| 30° | 13.8 / 21.8 m | can't climb | can't climb | strikes the far leaf (43) | clears (87) | lands wrecked |
+| 35° | 18.3 / 24.9 m | can't climb | can't climb | falls short (43) | clears (61) | lands wrecked |
+
+  From 20° a slow car hits the far leaf's end and drops into the Sound; from 25° it rolls back
+  before the tip. A fast car clears 20-60 m out and up to 36 m over the water, and the landing
+  (8-27 m/s into the deck) costs most of a car.
+
 ## Unreleased — the radio on the title screen
 
 The car radio plays on the title menu too, so the city's music is there before the first ride
