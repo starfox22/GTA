@@ -1020,9 +1020,12 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   the Apache, the Monarch Isle payphones' lines. God mode lifts every gate and never shows
   the card; the console's `startMission` reaches a gated job only with god mode or `?dev`.
   `DEMO_BUILD = false` is the full game with no trace of the demo.
-- **God mode** (the `godmode` cheat) unlocks every job in the mission picker
-  (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
-  advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
+- **God mode** (the `godmode` cheat, typed in play, on the city map or on the title screen)
+  unlocks every job in the mission picker (`missionUnlocked`, campaign.js) and opens Settings
+  straight on the GOD MODE tab (over the pause menu in play, over the title on the title
+  screen; BACK returns there). The tab's first row, MISSION SELECT · PLAY ANY MISSION
+  (`godOpenMissionSelect`, god-panel.js), opens the picker over the same screen. Typed again it
+  turns god mode off. A job played ahead of the story does not advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
   campaign.js): presets (dawn 06:00, morning 09:00, noon, golden hour 19:00, dusk 20:30,
   night 23:00, 03:00), a slider over the day in five-minute steps, and the weather (AUTO
   hands the sky back to the weather machine); each applies at once through `worldMinutes`

@@ -16,6 +16,11 @@
   garages, gun shop, Fort Sentinel and the Apache. God mode opens everything, with no card.
   Console: `demo()`, `skipToRooftopEscape()`; `startMission(i)` reaches a gated job only with
   god mode or `?dev`.
+- **God mode opens its settings**: typing GODMODE (in play, on the map or on the title screen)
+  turns god mode on and opens Settings straight on the GOD MODE tab instead of the mission
+  picker; over the title it returns to the title when closed. The tab's new first row, MISSION
+  SELECT · PLAY ANY MISSION, opens the picker with every job unlocked (demo build included).
+  Typed again it turns god mode off with the usual toast.
 - **Mission 1 ending** (harbor.js THE DROP): the shutter comes down behind the truck with no
   "police lost". Officers shut inside with it (on foot through the doorway, or a cruiser's
   crew) must be put down: ELIMINATE POLICE · N LEFT, the marker on the nearest one; downed

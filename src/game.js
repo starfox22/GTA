@@ -5149,7 +5149,7 @@
           player.hp = 100;
           player.armor = 100;
           announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
-          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · time, weather, ammo and teleport in Settings · God mode · click the map to teleport', 5);
+          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · mission select, time, weather, ammo and teleport in Settings · God mode', 5);
         } else {
           announce('SOUTH COAST', 'GODMODE OFF', 1.8);
           tell('GODMODE OFF', 2.5);
@@ -5157,8 +5157,13 @@
         drawWeapon();
         updateUI();
         tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
-        // God mode unlocks every job in the mission picker (campaign.js): offer it.
-        if (player.godMode && gameMode === 'play') openMissionSelect();
+        // Straight to Settings · GOD MODE (god-panel.js), whose first row opens
+        // the mission picker with every job unlocked. In play it opens over the
+        // pause menu; on the title screen over the title, and BACK returns there.
+        if (!player.godMode) return;
+        if (gameMode === 'map') toggleMap();
+        if (gameMode === 'play') togglePause();
+        if (gameMode === 'pause' || gameMode === 'menu') openSettings('god');
       },
     };
     /* Put the player somewhere else, letting go of anything that was carrying
@@ -5239,7 +5244,7 @@
       }
       if (
         !e.repeat &&
-        (gameMode === 'play' || gameMode === 'map') &&
+        (gameMode === 'play' || gameMode === 'map' || gameMode === 'menu') &&
         feedCheatBuffer((e.key || '').toLowerCase())
       ) {
         e.preventDefault();
