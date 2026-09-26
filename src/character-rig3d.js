@@ -166,11 +166,13 @@
        * theta is 0 straight ahead (+x) and positive towards the right (+z).
        * The seam shares its vertices, so normals are smooth all round.
        */
+      // Radial detail for the parts being built: 1 for the close-up set, less for the street set.
+      let rigSegmentScale = 1;
       function rigLoft(rings, segments, region = null, capBottom = true, capTop = true) {
         const positions = [],
           regions = [],
           index = [],
-          n = segments;
+          n = Math.max(5, Math.round(segments * rigSegmentScale));
         for (let i = 0; i < rings.length; i++) {
           const r = rings[i],
             e = 2 / (r.n || 2);
@@ -244,7 +246,18 @@
       const rigBox = (w, h, d, region, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) =>
         rigPlace(rigRegion(new Three.BoxGeometry(w, h, d), region), x, y, z, rx, ry, rz);
       const rigBall = (rx, ry, rz, region, x = 0, y = 0, z = 0, segments = 8, rings = 6) =>
-        rigPlace(rigRegion(new Three.SphereGeometry(1, segments, rings), region), x, y, z, 0, 0, 0, rx, ry, rz);
+        rigPlace(
+          rigRegion(new Three.SphereGeometry(1, Math.max(4, Math.round(segments * rigSegmentScale)), Math.max(3, Math.round(rings * rigSegmentScale))), region),
+          x,
+          y,
+          z,
+          0,
+          0,
+          0,
+          rx,
+          ry,
+          rz,
+        );
       // A cylinder along +x from x0 to x1.
       const rigRod = (x0, x1, r, region, y = 0, z = 0, segments = 8, r1 = r) =>
         rigPlace(rigRegion(new Three.CylinderGeometry(r1, r, x1 - x0, segments, 1), region), (x0 + x1) / 2, y, z, 0, 0, -Math.PI / 2);
@@ -456,7 +469,8 @@
        *   chest and back, 4 shoulder yoke and collar line, 5 badge (left chest),
        *   6 centre strip (tie, placket, zip), 7 waistband.
        */
-      const TORSO_SAMPLES = [-0.3, 0.1, 0.45, 0.62, 0.8, 1.05, 1.25, 1.4, 1.62, 1.85, 2.0, 2.12, 2.35, 2.6, 2.8, 2.9, 2.98, 3.1, 3.22, 3.32, 3.4];
+      const TORSO_SAMPLES = [-0.3, 0.1, 0.45, 0.62, 0.8, 1.05, 1.25, 1.4, 1.62, 1.85, 2.0, 2.12, 2.35, 2.6, 2.8, 2.9, 2.98, 3.1, 3.22, 3.32, 3.4],
+        TORSO_SAMPLES_STREET = [-0.3, 0.45, 0.62, 1.25, 1.62, 2.12, 2.6, 2.9, 3.1, 3.28, 3.4];
       function torsoRegion(i, th, y, x, z) {
         const a = Math.abs(th) / RIG_DEG,
           front = a < 62;
@@ -501,7 +515,7 @@
               { y: 3.34, fx: 0.45, bx: 0.48, w: 0.7 },
               { y: 3.4, fx: 0.42, bx: 0.44, w: 0.56 },
             ];
-        return rigLoft(rigProfile(keys, TORSO_SAMPLES), 16, torsoRegion);
+        return rigLoft(rigProfile(keys, rigSegmentScale < 1 ? TORSO_SAMPLES_STREET : TORSO_SAMPLES), 16, torsoRegion);
       }
       /* Pelvis: joint at the hip joints' height. Regions: 0 cloth, 1 belt, 2 buckle. */
       function rigPelvisGeometry(female) {

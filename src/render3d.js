@@ -2130,6 +2130,8 @@
         },
         // The character rig's standing height at look.height 1 (crowd3d.js), in map units.
         crowdRigHeight: () => crowdRigHeight(),
+        // People's share of the frame (crowd3d.js): parts, draw calls, triangles.
+        crowdStats: () => crowdStats(),
         // A person's drawn height from the soles to the crown (their compiled look), in map units.
         personStature: (p) => personStature(p),
         // Switch graphics quality tier (quality.js) at runtime.
@@ -2526,6 +2528,8 @@
                 m.rider.visible = c.hp > 0 && (c === player.car || c.ai);
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
+              // The character rig draws the rider in their place (crowd3d.js RIDERS).
+              if (m.rider?.visible && (m.bike || m.jetski) && m.group.visible && queueRider(c, m)) m.rider.visible = false;
               if (m.boat) {
                 // Under a road bridge the hull slips below the deck (air-cover.js). It
                 // starts down as soon as the bow or stern is under the roadway and eases
@@ -2590,6 +2594,8 @@
             vehicleEffects(c, m, deltaSeconds);
           }
           endVehicleImpostors();
+          // Riders on the vehicles just posed, then the people's instance upload (crowd3d.js).
+          finishCrowd3D(deltaSeconds);
           lap = profileLap('r:vehicles', lap);
           // Every craft on the water has reported in: draw the wake map (wakes3d.js).
           updateWakes(deltaSeconds);

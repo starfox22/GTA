@@ -126,9 +126,7 @@
         part.meta = metaAttribute;
         return part;
       }
-      const hairGeometries = rigHairGeometries(),
-        hatGeometries = rigHatGeometries(),
-        weaponGeometries = rigWeaponGeometries();
+      const weaponGeometries = rigWeaponGeometries();
       /* The figure far away: body and one leg, each a single low mesh. */
       function farFigureGeometries() {
         const region = (g, r) => rigRegion(g, r);
@@ -169,40 +167,60 @@
         return { body, leg };
       }
       const farFigure = farFigureGeometries();
+      /**
+       * BODY SETS
+       * The body parts are built twice: a close-up set at full detail and a
+       * street set with about half the facets (for the zooms people are played
+       * at, where a head is a few pixels across). Only one set is drawn in a
+       * frame, so the draw calls do not double.
+       */
+      function rigBodySet(suffix, detailScale) {
+        rigSegmentScale = detailScale;
+        const hair = rigHairGeometries(),
+          hats = rigHatGeometries();
+        const set = {
+          head: rigPart('head' + suffix, rigHeadGeometry(), rigSkinMaterial, CROWD_CAPACITY, true),
+          torsoM: rigPart('torso' + suffix, rigTorsoGeometry(false), rigSkinMaterial, CROWD_CAPACITY, true),
+          torsoF: rigPart('torso f' + suffix, rigTorsoGeometry(true), rigSkinMaterial, CROWD_CAPACITY, true),
+          pelvisM: rigPart('pelvis' + suffix, rigPelvisGeometry(false), rigSkinMaterial, CROWD_CAPACITY, true),
+          pelvisF: rigPart('pelvis f' + suffix, rigPelvisGeometry(true), rigSkinMaterial, CROWD_CAPACITY, true),
+          upperArm: rigPart('upper arm' + suffix, rigUpperArmGeometry(), rigSkinMaterial, CROWD_CAPACITY * 2, true),
+          forearm: rigPart('forearm' + suffix, rigForearmGeometry(), rigSkinMaterial, CROWD_CAPACITY * 2),
+          hand: rigPart('hand' + suffix, rigHandGeometry(), rigSkinMaterial, CROWD_CAPACITY * 2),
+          thighM: rigPart('thigh' + suffix, rigThighGeometry(false), rigSkinMaterial, CROWD_CAPACITY * 2, true),
+          thighF: rigPart('thigh f' + suffix, rigThighGeometry(true), rigSkinMaterial, CROWD_CAPACITY * 2, true),
+          shin: rigPart('shin' + suffix, rigShinGeometry(), rigSkinMaterial, CROWD_CAPACITY * 2, true),
+          shoe: rigPart('shoe' + suffix, rigShoeGeometry(false), rigSkinMaterial, CROWD_CAPACITY * 2),
+          boot: rigPart('boot' + suffix, rigShoeGeometry(true), rigSkinMaterial, 600),
+          skirt: rigPart('skirt' + suffix, rigSkirtGeometry(), rigClothDouble, 500, true),
+          hairShort: rigPart('hair' + suffix, hair.hairShort, rigHairMaterial, 600),
+          hairCrop: rigPart('hair crop' + suffix, hair.hairCrop, rigHairMaterial, 200),
+          hairBuzz: rigPart('hair buzz' + suffix, hair.hairBuzz, rigHairMaterial, 400),
+          hairLong: rigPart('long hair' + suffix, hair.hairLong, rigHairMaterial, 500),
+          hairCurly: rigPart('curly hair' + suffix, hair.hairCurly, rigHairMaterial, 400),
+          hairBun: rigPart('hair bun' + suffix, hair.hairBun, rigHairMaterial, 300),
+          hairPony: rigPart('ponytail' + suffix, hair.hairPony, rigHairMaterial, 300),
+          cap: rigPart('cap' + suffix, hats.cap, rigSkinMaterial, 300),
+          patrolCap: rigPart('patrol cap' + suffix, hats.patrolCap, rigGearMaterial, 150),
+          helmet: rigPart('helmet' + suffix, hats.helmet, rigGearMaterial, 200),
+          sunhat: rigPart('sun hat' + suffix, hats.sunhat, rigSkinMaterial, 200),
+          hardHat: rigPart('hard hat' + suffix, hats.hardHat, rigGearMaterial, 100),
+          collar: rigPart('collar' + suffix, rigCollarGeometry(), rigClothDouble, 400),
+          hood: rigPart('hood' + suffix, rigHoodGeometry(), rigSkinMaterial, 300),
+          vest: rigPart('vest' + suffix, rigVestGeometry(), rigSkinMaterial, 200, true),
+          belt: rigPart('duty belt' + suffix, rigBeltGeometry(), rigGearMaterial, 200),
+          backpack: rigPart('backpack' + suffix, rigBackpackGeometry(), rigSkinMaterial, 300, true),
+          radio: rigPart('radio' + suffix, rigRegion(new Three.BoxGeometry(0.34, 0.55, 0.28), 0), rigGearMaterial, 150),
+        };
+        rigSegmentScale = 1;
+        return set;
+      }
+      const BODY_CLOSE = rigBodySet('', 1),
+        BODY_STREET = rigBodySet(' street', 0.6);
+      // The set drawn this frame (updateCrowd3D).
+      let BODY = BODY_STREET;
       const P = {
-        // The body (character-rig3d.js), painted per instance. Only the larger parts cast shadows.
-        head: rigPart('head', rigHeadGeometry(), rigSkinMaterial, CROWD_CAPACITY, true),
-        torsoM: rigPart('torso', rigTorsoGeometry(false), rigSkinMaterial, CROWD_CAPACITY, true),
-        torsoF: rigPart('torso f', rigTorsoGeometry(true), rigSkinMaterial, CROWD_CAPACITY, true),
-        pelvisM: rigPart('pelvis', rigPelvisGeometry(false), rigSkinMaterial, CROWD_CAPACITY, true),
-        pelvisF: rigPart('pelvis f', rigPelvisGeometry(true), rigSkinMaterial, CROWD_CAPACITY, true),
-        upperArm: rigPart('upper arm', rigUpperArmGeometry(), rigSkinMaterial, CROWD_CAPACITY * 2, true),
-        forearm: rigPart('forearm', rigForearmGeometry(), rigSkinMaterial, CROWD_CAPACITY * 2),
-        hand: rigPart('hand', rigHandGeometry(), rigSkinMaterial, CROWD_CAPACITY * 2),
-        thighM: rigPart('thigh', rigThighGeometry(false), rigSkinMaterial, CROWD_CAPACITY * 2, true),
-        thighF: rigPart('thigh f', rigThighGeometry(true), rigSkinMaterial, CROWD_CAPACITY * 2, true),
-        shin: rigPart('shin', rigShinGeometry(), rigSkinMaterial, CROWD_CAPACITY * 2, true),
-        shoe: rigPart('shoe', rigShoeGeometry(false), rigSkinMaterial, CROWD_CAPACITY * 2),
-        boot: rigPart('boot', rigShoeGeometry(true), rigSkinMaterial, 600),
-        skirt: rigPart('skirt', rigSkirtGeometry(), rigClothDouble, 500, true),
-        hairShort: rigPart('hair', hairGeometries.hairShort, rigHairMaterial, 600),
-        hairCrop: rigPart('hair crop', hairGeometries.hairCrop, rigHairMaterial, 200),
-        hairBuzz: rigPart('hair buzz', hairGeometries.hairBuzz, rigHairMaterial, 400),
-        hairLong: rigPart('long hair', hairGeometries.hairLong, rigHairMaterial, 500),
-        hairCurly: rigPart('curly hair', hairGeometries.hairCurly, rigHairMaterial, 400),
-        hairBun: rigPart('hair bun', hairGeometries.hairBun, rigHairMaterial, 300),
-        hairPony: rigPart('ponytail', hairGeometries.hairPony, rigHairMaterial, 300),
-        cap: rigPart('cap', hatGeometries.cap, rigSkinMaterial, 300),
-        patrolCap: rigPart('patrol cap', hatGeometries.patrolCap, rigGearMaterial, 150),
-        helmet: rigPart('helmet', hatGeometries.helmet, rigGearMaterial, 200),
-        sunhat: rigPart('sun hat', hatGeometries.sunhat, rigSkinMaterial, 200),
-        hardHat: rigPart('hard hat', hatGeometries.hardHat, rigGearMaterial, 100),
-        collar: rigPart('collar', rigCollarGeometry(), rigClothDouble, 400),
-        hood: rigPart('hood', rigHoodGeometry(), rigSkinMaterial, 300),
-        vest: rigPart('vest', rigVestGeometry(), rigSkinMaterial, 200, true),
-        belt: rigPart('duty belt', rigBeltGeometry(), rigGearMaterial, 200),
-        backpack: rigPart('backpack', rigBackpackGeometry(), rigSkinMaterial, 300, true),
-        radio: rigPart('radio', rigRegion(new Three.BoxGeometry(0.34, 0.55, 0.28), 0), rigGearMaterial, 150),
+        // Parts drawn at one detail only.
         figure: rigPart('far body', farFigure.body, rigSkinMaterial, CROWD_CAPACITY, true),
         figureLeg: rigPart('far leg', farFigure.leg, rigSkinMaterial, CROWD_CAPACITY * 2, true),
         labelPolice: crowdPart('label police', rigLabelGeometry, rigLabelMaterial('POLICE', '#f2f2ea'), 120, false, false),
@@ -453,7 +471,7 @@
         const seed = (look.build || 1) * 1000 + (look.height || 1) * 77,
           h = (k) => hashOf(seed, k),
           role = look.outfit ? null : p.role || 'casual',
-          kid = role === 'kid',
+          kid = role === 'kid' || !!look.kid,
           female = look.female ?? (look.skirt || look.hairStyle === 2 || look.hairStyle === 3 || (look.hairStyle === 4 && h(1) < 0.5)),
           skin = look.skin || '#c99169',
           hair = look.hair || '#231a15',
@@ -549,13 +567,13 @@
         if (!sole) sole = footwear === 'sneaker' ? '#eeede8' : footwear === 'boot' ? '#15120f' : barefoot ? skin : '#1b1816';
         // Hair: 0 shaved / bald, 1 short, 2 long, 3 bun, 4 curly (crowd.js); outfits may name a part.
         const style = look.hairStyle;
-        if (typeof style === 'string') hairPart = P[style] || null;
-        else if (style === 1) hairPart = P.hairShort;
-        else if (style === 2) hairPart = P.hairLong;
-        else if (style === 3) hairPart = P.hairBun;
-        else if (style === 4) hairPart = P.hairCurly;
-        else if (style === 0) hairPart = female ? P.hairPony : h(11) < 0.6 ? P.hairBuzz : null;
-        const hatPart = hatStyle ? P[hatStyle] || P.cap : null,
+        if (typeof style === 'string') hairPart = BODY_CLOSE[style] ? style : null;
+        else if (style === 1) hairPart = 'hairShort';
+        else if (style === 2) hairPart = 'hairLong';
+        else if (style === 3) hairPart = 'hairBun';
+        else if (style === 4) hairPart = 'hairCurly';
+        else if (style === 0) hairPart = female ? 'hairPony' : h(11) < 0.6 ? 'hairBuzz' : null;
+        const hatPart = hatStyle ? (BODY_CLOSE[hatStyle] ? hatStyle : 'cap') : null,
           helmet = hatStyle === 'helmet' || hatStyle === 'hardHat';
         const height = look.heightAbsolute || (kid ? look.height || 0.64 : clamp((look.height || 1) * (female ? 0.965 : 1.015), 0.914, 1.086)),
           width = clamp(1 + ((look.build || 1) - 1) * 0.5, 0.9, 1.2) * (kid ? 0.9 : 1);
@@ -578,15 +596,15 @@
           height,
           width,
           garment,
-          torso: female ? P.torsoF : P.torsoM,
-          pelvis: female ? P.pelvisF : P.pelvisM,
-          thigh: female ? P.thighF : P.thighM,
+          torso: female ? 'torsoF' : 'torsoM',
+          pelvis: female ? 'pelvisF' : 'pelvisM',
+          thigh: female ? 'thighF' : 'thighM',
           shoulderZ: RIG.shoulderZ[female ? 1 : 0],
           hipZ: RIG.hipZ[female ? 1 : 0],
           headScale: kid ? 1.22 : female ? 0.95 : 1,
           hairPart: helmet ? null : hairPart,
           hatPart,
-          shoePart: footwear === 'boot' ? P.boot : P.shoe,
+          shoePart: footwear === 'boot' ? 'boot' : 'shoe',
           skirtOn: skirt || garment === 'dress',
           collar: !!look.collar || garment === 'jacket' || garment === 'accentJacket' || garment === 'suit',
           hood: garment === 'hoodie',
@@ -802,6 +820,45 @@
               footwear: h(10) < 0.6 ? 'sneaker' : 'shoe',
               hat: h(11) < 0.4 ? 1 : 0,
               hatColor: h(12) < 0.5 ? '#141414' : p.color || '#6b2f36',
+            };
+          }
+          case 'cyclist':
+          case 'motorcyclist':
+          case 'jetskier': {
+            const female = h(5) < 0.35;
+            const base2 = { ...base, female, hairStyle: female ? pickOf([3, 'hairPony', 2], h(6)) : pickOf([1, 'hairBuzz', 4], h(6)) };
+            if (outfit === 'motorcyclist')
+              return { ...base2, garment: 'jacket', top: pickOf(['#1c1d20', '#2a2320', '#3a1d1d', '#1d2433'], h(7)), topPattern: PATTERN.leather, inner: '#2a2c30', pants: '#23282f', shoes: '#141414', footwear: 'boot', gloves: '#141414', hatStyle: 'helmet', hatColor: pickOf(['#e9e7e1', '#1b1c1f', '#b8322a', '#2c5ea8'], h(8)), brim: '#101114', hatBadge: '#101114' };
+            if (outfit === 'jetskier') return { ...base2, garment: female ? 'bikini' : 'shirtless', top: female ? '#2a67b5' : base.skin, pants: pickOf(['#d8413a', '#2a67b5', '#15253f'], h(7)), shorts: true, shoes: base.skin };
+            return { ...base2, garment: pickOf(['tee', 'hoodie', 'jacket', 'tee'], h(7)), top: pickOf(['#4d7782', '#e24a3b', '#f2f1ec', '#2f3e57', '#e3c35a'], h(8)), pants: pickOf(['#23303f', '#1d2126', '#6e6553'], h(9)), shorts: h(10) < 0.3, footwear: 'sneaker', shoes: '#f0eee8', hatStyle: 'cap', hatColor: pickOf(['#3fa9a6', '#23272e', '#e24a3b'], h(11)) };
+          }
+          case 'beach': {
+            // Palm Keys Beach (beach.js): swimwear, a shirt for strollers and staff.
+            const female = !!p.female,
+              kid = (p.scale || 1) < 0.8,
+              onePiece = female && !p.shirt && h(5) < 0.35;
+            return {
+              outfit,
+              kid,
+              female,
+              skin: p.skin,
+              hair: p.hair,
+              hairStyle: female ? pickOf([2, 3, 'hairPony', 4, 2], h(6)) : pickOf([1, 'hairBuzz', 4, 1, 0], h(6)),
+              beard: female || kid ? 0 : h(7) < 0.25 ? 1 : 0,
+              build: 1 + (h(3) - 0.5) * 0.3,
+              heightAbsolute: kid ? p.scale : clamp(p.scale || 1, 0.92, 1.08),
+              garment: p.shirt ? 'tee' : female ? (onePiece ? 'tank' : 'bikini') : 'shirtless',
+              top: p.shirt || (female ? p.suit : p.skin),
+              topPattern: p.shirt && p.kind === 'stroller' && h(8) < 0.4 ? PATTERN.floral : 0,
+              pants: p.suit,
+              pantsPattern: 0,
+              shorts: true,
+              sleevesStyle: 'short',
+              shoes: p.kind === 'vendor' || p.kind === 'patron' ? '#8a6d4a' : p.skin,
+              footwear: 'shoe',
+              hat: p.kind === 'lifeguard' || h(9) < 0.12 ? 1 : 0,
+              hatStyle: p.kind === 'lifeguard' ? 'cap' : h(9) < 0.12 ? 'sunhat' : null,
+              hatColor: p.kind === 'lifeguard' ? '#d9302c' : '#e9dcc0',
             };
           }
           default: {
@@ -1459,6 +1516,182 @@
             T[J_HEAD_PITCH] = 0.4 * k;
             break;
           }
+          case 'riding':
+            // On a bicycle, motorbike or jet ski (RIDERS): seated, leaning to the bars.
+            T[J_LOCO] = 0;
+            T[J_LEAN] = spec?.riderLean ?? -0.3;
+            T[J_HEAD_PITCH] = -0.2;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            T[J_ROLL] = 0;
+            break;
+          // ---- The beach (beach.js poses) ----
+          case 'sitGround':
+          case 'ride':
+            // On the sand (or a pedalo seat): legs out in front, leaning back on the hands.
+            T[J_LOCO] = 0;
+            T[J_DROP] = -6.3;
+            T[J_HIP[0]] = 1.45;
+            T[J_HIP[1]] = 1.3;
+            T[J_KNEE[0]] = -0.35;
+            T[J_KNEE[1]] = -0.9;
+            T[J_SPREAD] = 0.1;
+            T[J_LEAN] = pose === 'ride' ? -0.1 : 0.22;
+            if (pose === 'ride') {
+              setArm(T, 0, 1.25, 0.1, 0.3);
+              setArm(T, 1, 1.25, 0.1, 0.3);
+            } else {
+              setArm(T, 0, -0.5, 0.35, 0.1);
+              setArm(T, 1, seed % 2 < 1 ? -0.5 : 0.9 + Math.sin(t * 0.3) * 0.1, 0.35, seed % 2 < 1 ? 0.1 : 1.3);
+            }
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'recline':
+            // On a lounger: back raised, legs out.
+            T[J_LOCO] = 0;
+            T[J_DROP] = -6.4;
+            T[J_HIP[0]] = T[J_HIP[1]] = 1.5;
+            T[J_KNEE[0]] = -0.1;
+            T[J_KNEE[1]] = -0.35;
+            T[J_LEAN] = 0.95;
+            T[J_HEAD_PITCH] = 0.5;
+            setArm(T, 0, seed % 2 < 1 ? 2.7 : 0.1, 0.5, seed % 2 < 1 ? 2.3 : 0.2);
+            setArm(T, 1, seed % 2 < 1 ? 2.7 : 0.1, 0.5, seed % 2 < 1 ? 2.3 : 0.2);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'kneelDig':
+            // A child building in the sand: kneeling, hands scooping in turn.
+            T[J_LOCO] = 0;
+            T[J_DROP] = -3.05;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0.2;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -1.9;
+            T[J_SPREAD] = 0.15;
+            T[J_LEAN] = -0.45;
+            setArm(T, 0, 0.9 + Math.sin(t * 5) * 0.5, 0.15, 0.4);
+            setArm(T, 1, 0.9 + Math.sin(t * 5 + 1.6) * 0.5, 0.15, 0.4);
+            T[J_HEAD_PITCH] = 0.4;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'lieBack':
+            // Sunbathing on the back: hands behind the head for some, a knee up for others.
+            T[J_LOCO] = 0;
+            T[J_FALL] = 1;
+            if ((p.threshold ?? seed % 1) > 0.5) {
+              setArm(T, 0, 2.75, 0.6, 2.4);
+              setArm(T, 1, 2.75, 0.6, 2.4);
+            } else {
+              setArm(T, 0, 0.1, 0.25, 0.1);
+              setArm(T, 1, 0.1, 0.25, 0.1);
+            }
+            if ((p.threshold ?? 0) > 0.75) {
+              T[J_HIP[1]] = 0.8;
+              T[J_KNEE[1]] = -1.5;
+            }
+            T[J_SPREAD] = 0.08;
+            T[J_HEAD_PITCH] = -0.1;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'lieFront':
+            // On the front, head on the folded arms.
+            T[J_LOCO] = 0;
+            T[J_FALL] = 1;
+            setArm(T, 0, 2.7, 0.55, 2.2);
+            setArm(T, 1, 2.7, 0.55, 2.2);
+            T[J_SPREAD] = 0.1;
+            T[J_HEAD_PITCH] = -0.3;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'wade':
+            // In the shallows: arms held out of the water.
+            T[J_AB[0]] = T[J_AB[1]] = 0.42 + Math.sin(t * 0.8 + seed) * 0.08;
+            T[J_EL[0]] = T[J_EL[1]] = 0.5;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0.4;
+            break;
+          case 'vbReady':
+            // Volleyball (beachvolley.js): the ready crouch, forearms out.
+            T[J_LOCO] = 0.6;
+            T[J_DROP] = -0.9;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0.5;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.9;
+            T[J_SPREAD] = 0.16;
+            T[J_LEAN] = -0.35;
+            setArm(T, 0, 0.75, 0.25, 0.9);
+            setArm(T, 1, 0.75, 0.25, 0.9);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0.2;
+            break;
+          case 'vbBump':
+            // Forearm pass: arms straight and together, platform out in front.
+            T[J_LOCO] = 0.4;
+            T[J_DROP] = -1.3;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0.7;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -1.2;
+            T[J_SPREAD] = 0.18;
+            T[J_LEAN] = -0.35;
+            setArm(T, 0, 1.05, -0.28, 0.05);
+            setArm(T, 1, 1.05, -0.28, 0.05);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'vbDig':
+            // A dive for the ball: a long lunge, arms reaching low.
+            T[J_LOCO] = 0;
+            T[J_DROP] = -3.0;
+            T[J_HIP[0]] = 1.3;
+            T[J_KNEE[0]] = -1.5;
+            T[J_HIP[1]] = -0.5;
+            T[J_KNEE[1]] = -0.4;
+            T[J_LEAN] = -0.7;
+            setArm(T, 0, 1.2, -0.2, 0.05);
+            setArm(T, 1, 1.2, -0.2, 0.05);
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'vbSet':
+            // Hands up over the forehead.
+            T[J_LOCO] = 0.5;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -0.3;
+            T[J_DROP] = -0.25;
+            setArm(T, 0, 2.55, 0.35, 1.2);
+            setArm(T, 1, 2.55, 0.35, 1.2);
+            T[J_HEAD_PITCH] = -0.45;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'vbSpike':
+            // In the air: the hitting arm cocked high, the other reaching.
+            T[J_LOCO] = 0;
+            T[J_HIP[0]] = T[J_HIP[1]] = 0.5;
+            T[J_KNEE[0]] = T[J_KNEE[1]] = -1.1;
+            T[J_LEAN] = 0.12;
+            setArm(T, 1, 3.0 + Math.sin(t * 9) * 0.3, 0.2, 0.6);
+            setArm(T, 0, 2.2, 0.2, 0.3);
+            T[J_HEAD_PITCH] = -0.35;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'vbServe':
+            T[J_LOCO] = 0.3;
+            setArm(T, 0, 2.4, 0.1, 0.2);
+            setArm(T, 1, 2.9, 0.3, 1.2);
+            T[J_LEAN] = 0.08;
+            T[J_HIP[0]] = 0.25;
+            T[J_HEAD_PITCH] = -0.4;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'vbHit':
+          case 'cheer':
+            // Arms up: a block at the net, or celebrating a point.
+            T[J_LOCO] = pose === 'cheer' ? 0 : 0.3;
+            setArm(T, 0, 2.8 + (pose === 'cheer' ? Math.sin(t * 8) * 0.15 : 0), pose === 'cheer' ? 0.55 : 0.12, 0.2);
+            setArm(T, 1, 2.8 + (pose === 'cheer' ? Math.sin(t * 8 + 1) * 0.15 : 0), pose === 'cheer' ? 0.55 : 0.12, 0.2);
+            T[J_HEAD_PITCH] = -0.3;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
+          case 'throw':
+            T[J_LOCO] = 0;
+            setArm(T, 1, 1.5, 0.1, 0.2);
+            setArm(T, 0, -0.4, 0.2, 0.3);
+            T[J_LEAN] = -0.1;
+            T[J_TWIST] = -0.3;
+            T[J_HIP[0]] = 0.3;
+            T[J_HIP[1]] = -0.2;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            break;
           case 'tumble':
             T[J_LOCO] = 0;
             setArm(T, 0, 2.1, 0.8, 0.6);
@@ -1619,13 +1852,15 @@
         holdPole = new Three.Vector3(),
         shoulderWorld = [new Three.Vector3(), new Three.Vector3()],
         handFrames = [new Three.Matrix4(), new Three.Matrix4()],
+        legLocal = new Three.Vector3(),
+        legInverse = new Three.Matrix4(),
         armTargets = [new Three.Vector3(), new Three.Vector3()];
 
       /* Which poses carry something that needs the phone in hand. */
       const PHONE_POSES = new Set(['text', 'phone', 'film']);
       /* The far figure: plain standing or walking people only. */
       function farFigureOk(p, spec, J) {
-        return !spec?.hold && !spec?.rootOverride && p.hp > 0 && J[J_FALL] < 0.02 && J[J_DROP] > -0.6 && J[J_LOCO] > 0.9 && !p.sitting && !p.dancing;
+        return !spec?.hold && !spec?.rootOverride && !(p.hp <= 0) && J[J_FALL] < 0.02 && J[J_DROP] > -0.6 && J[J_LOCO] > 0.9 && !p.sitting && !p.dancing;
       }
       /**
        * Pack one person. `detail` 2 full, 1 without hands and small props, 0 far
@@ -1780,7 +2015,7 @@
           const along = Math.abs(Math.sin(s.hipYaw));
           s.fallTurn = along > 0.6 ? (s.seed % 2 < 1 ? 1 : -1) * (0.7 + (s.seed % 0.4)) : 0;
         }
-        const fallSign = p.hp <= 0 ? (p.deathStyle?.sign ?? 1) : p.pose === 'crawl' || spec?.pose === 'crawl' ? -1 : 1,
+        const fallSign = p.hp <= 0 ? (p.deathStyle?.sign ?? 1) : p.pose === 'crawl' || spec?.pose === 'crawl' || spec?.pose === 'lieFront' ? -1 : 1,
           fallYaw = ((s.fallTurn || 0) + (p.hp <= 0 ? p.deathStyle?.turn || 0 : 0)) * fall;
         // Root: position, heading, then the fall (a rotation about the lateral
         // axis): over backwards, or face down for fallSign -1.
@@ -1802,33 +2037,33 @@
         }
         crowdJoint(mHips, mRoot, 0, hipY, 0, -run * loco * 0.06, roll * 0.4, pelvisYaw);
         crowdJoint(mTorso, mHips, 0, RIG.waist, 0, lean, roll, twist);
-        rigEmit(R.pelvis, mHips, w, 1, w, paints.pelvis);
-        if (R.skirtOn) rigEmit(P.skirt, mHips, w, 1, w, paints.skirt);
-        if (R.belt) rigEmit(P.belt, mHips, w, 1, w, paints.belt);
+        rigEmit(BODY[R.pelvis], mHips, w, 1, w, paints.pelvis);
+        if (R.skirtOn) rigEmit(BODY.skirt, mHips, w, 1, w, paints.skirt);
+        if (R.belt) rigEmit(BODY.belt, mHips, w, 1, w, paints.belt);
         // The torso breathes (a touch deeper and taller at the chest).
-        rigEmit(R.torso, mTorso, w * (1 + breathe * 0.012), 1 + breathe * 0.006, w, paints.torso);
-        if (R.collar) rigEmit(P.collar, mTorso, w, 1, w, paints.collar);
-        if (R.hood) rigEmit(P.hood, mTorso, w, 1, w, paints.hood);
-        if (R.vest) rigEmit(P.vest, mTorso, w, 1, w, paints.vest);
+        rigEmit(BODY[R.torso], mTorso, w * (1 + breathe * 0.012), 1 + breathe * 0.006, w, paints.torso);
+        if (R.collar) rigEmit(BODY.collar, mTorso, w, 1, w, paints.collar);
+        if (R.hood) rigEmit(BODY.hood, mTorso, w, 1, w, paints.hood);
+        if (R.vest) rigEmit(BODY.vest, mTorso, w, 1, w, paints.vest);
         if (R.label) {
           crowdJoint(mOut, mTorso, -(R.vest ? 1.16 : 1.0) * w, 2.62, 0);
           crowdEmit(R.label, mOut, 1, 1, w);
         }
         if (R.radio && detail > 1) {
           crowdJoint(mOut, mTorso, 0.72 * w, 2.95, -1.02 * w, 0, 0.3, 0);
-          rigEmit(P.radio, mOut, 1, 1, 1, paints.radio);
+          rigEmit(BODY.radio, mOut, 1, 1, 1, paints.radio);
         }
         if (R.backpack || look.backpack) {
           crowdJoint(mOut, mTorso, -1.42 * w, 1.9, 0);
-          rigEmit(P.backpack, mOut, 1, 1, w, paints.backpack);
+          rigEmit(BODY.backpack, mOut, 1, 1, w, paints.backpack);
         }
         // Head: turned towards what they look at, steadied against the stride.
         const headYaw = J[J_HEAD_YAW] - (upperTurn - clamp(upperTurn, -1.1, 1.1)) - 0.2 * hipsDiff * loco * 0.8;
         crowdJoint(mHead, mTorso, 0.04, RIG.neck, 0, -J[J_HEAD_PITCH] - lean * 0.3, 0, headYaw);
         const hs = R.headScale;
-        rigEmit(P.head, mHead, hs, hs, hs, paints.head);
-        if (R.hatPart) rigEmit(R.hatPart, mHead, hs, hs, hs, paints.hat);
-        if (R.hairPart && !(R.hatPart && R.hairPart === P.hairCurly)) rigEmit(R.hairPart, mHead, hs, hs, hs, paints.hair);
+        rigEmit(BODY.head, mHead, hs, hs, hs, paints.head);
+        if (R.hatPart) rigEmit(BODY[R.hatPart], mHead, hs, hs, hs, paints.hat);
+        if (R.hairPart && !(R.hatPart && R.hairPart === 'hairCurly')) rigEmit(BODY[R.hairPart], mHead, hs, hs, hs, paints.hair);
         // Shoulders.
         for (let side = 0; side < 2; side++) {
           const sign = side ? 1 : -1;
@@ -1841,29 +2076,46 @@
           holdWeight = J[J_HOLD];
         if (hold?.inHand) {
           crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
-          rigEmit(P[spec.weapon], mGun, 1 / 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
+          rigEmit(P[spec.weapon], mGun, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
         } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, R, H, elevation, hipY, holdWeight);
+        // A rider's hands on the bars (RIDERS).
+        if (spec?.handTargets) {
+          for (let side = 0; side < 2; side++) {
+            shoulderWorld[side].setFromMatrixPosition(mShoulder[side]);
+            holdPole.set(-0.4, -1, (side ? 1 : -1) * 0.6).transformDirection(mTorso);
+            ikArm(mShoulder[side], mElbow[side], mHand[side], shoulderWorld[side], spec.handTargets[side], holdPole, RIG.upperArm * H, RIG.forearm * H, H);
+          }
+        }
         const armPaint = paints.upperArm,
           forePaint = paints.forearm;
         for (let side = 0; side < 2; side++) {
-          rigEmit(P.upperArm, mShoulder[side], w, 1, w, armPaint);
-          rigEmit(P.forearm, mElbow[side], w, 1, w, forePaint);
-          if (detail > 1) rigEmit(P.hand, mHand[side], 1, 1, 1, paints.hand);
+          rigEmit(BODY.upperArm, mShoulder[side], w, 1, w, armPaint);
+          rigEmit(BODY.forearm, mElbow[side], w, 1, w, forePaint);
+          if (detail > 1) rigEmit(BODY.hand, mHand[side], 1, 1, 1, paints.hand);
         }
         // Legs.
         for (let side = 0; side < 2; side++) {
-          const sign = side ? 1 : -1,
-            hip = legHip[side],
-            knee = legKnee[side];
-          crowdJoint(mHip[side], mHips, 0, 0, sign * R.hipZ * w, hip, -sign * J[J_SPREAD], 0);
-          rigEmit(R.thigh, mHip[side], w, 1, w, paints.thigh);
+          const sign = side ? 1 : -1;
+          let hip = legHip[side],
+            knee = legKnee[side],
+            spread = J[J_SPREAD];
+          if (spec?.legTargets) {
+            // A rider's feet on the pedals or pegs: the target in the pelvis frame.
+            legLocal.copy(spec.legTargets[side]).applyMatrix4(legInverse.copy(mHips).invert());
+            const leg = solveLeg(legLocal.x, legLocal.y, RIG.thigh, RIG.shin);
+            hip = leg.hip;
+            knee = leg.knee;
+            spread = clamp(Math.atan2(sign * legLocal.z - R.hipZ * w, -legLocal.y), -0.15, 0.5);
+          }
+          crowdJoint(mHip[side], mHips, 0, 0, sign * R.hipZ * w, hip, -sign * spread, 0);
+          rigEmit(BODY[R.thigh], mHip[side], w, 1, w, paints.thigh);
           crowdJoint(mKnee[side], mHip[side], 0, -RIG.thigh, 0, knee);
-          rigEmit(P.shin, mKnee[side], 1, 1, 1, paints.shin);
+          rigEmit(BODY.shin, mKnee[side], 1, 1, 1, paints.shin);
           // The foot stays flat on the ground through the stance, rolls onto the
           // toes at push-off and hangs toes-down in the swing.
           const flat = fall > 0.5 ? 0.3 : 1;
           crowdJoint(mFoot, mKnee[side], 0, -RIG.shin, 0, -(hip + knee) * flat + footPitch[side] + (-run * loco * 0.06));
-          rigEmit(R.shoePart, mFoot, 1, 1, 1, paints.shoe);
+          rigEmit(BODY[R.shoePart], mFoot, 1, 1, 1, paints.shoe);
         }
         // Things in hand.
         const right = mHand[1];
@@ -2051,6 +2303,13 @@
           sp.snapFacing = true;
           if (mouse.active || touchAim !== null) sp.facing = aim();
           const holstered = !!rooftopJob() && player.disguised && !rooftopJob().weaponDrawn;
+          // The Marea pool (clubpool.js): a dive in, and a climb out onto the deck.
+          if (player.pool?.phase === 'out') {
+            sp.pose = 'exitCar';
+            sp.transition = clamp(player.pool.t || 0, 0, 1);
+            sp.facing = player.a;
+            return sp;
+          }
           if (player.swimming) return playerSwimSpec(sp);
           if (player.parachute) return playerParachuteSpec(sp);
           if (player.tumble) {
@@ -2135,6 +2394,15 @@
           drive = clamp(player.swimDrive || 0, 0, 1),
           roll = hard ? Math.sin(stroke) * 0.44 * (0.4 + drive * 0.6) : 0;
         sp.facing = player.a;
+        if (player.pool?.phase === 'dive') {
+          // Head first: from a lean off the edge to arms-first into the water.
+          const k = clamp(player.pool.t || 0, 0, 1);
+          sp.elevation = entityElevation(player);
+          crowdJoint(rootMatrixScratch, mIdentity, player.x, sp.elevation + 4 * k, player.y, -(0.35 + k * 1.75), 0, -player.a);
+          sp.rootOverride = rootMatrixScratch;
+          sp.swim = { stroke: 0, hard: true, drive: 0, dive: true };
+          return sp;
+        }
         sp.elevation = entityElevation(player) + 2.0;
         crowdJoint(rootMatrixScratch, mIdentity, player.x, sp.elevation, player.y, -Math.PI / 2 + 0.12, roll, -player.a);
         sp.rootOverride = rootMatrixScratch;
@@ -2158,12 +2426,32 @@
       /* Swimming and the parachute set the limbs directly, after the pose has eased. */
       function applyLimbOverrides(sp, J) {
         if (sp.swim) {
-          const { stroke, hard, drive } = sp.swim;
+          const { stroke, hard, drive, float, dive } = sp.swim;
           J[J_LOCO] = 0;
           J[J_FALL] = 0;
           J[J_DROP] = 0;
           J[J_HOLD] = 0;
-          if (hard) {
+          if (dive) {
+            // Streamlined: arms overhead, legs together.
+            J[J_SH[0]] = J[J_SH[1]] = 3.05;
+            J[J_AB[0]] = J[J_AB[1]] = 0.08;
+            J[J_EL[0]] = J[J_EL[1]] = 0.05;
+            J[J_HIP[0]] = J[J_HIP[1]] = 0;
+            J[J_KNEE[0]] = J[J_KNEE[1]] = -0.08;
+            J[J_SPREAD] = 0;
+            J[J_HEAD_PITCH] = 0.25;
+            J[J_HEAD_YAW] = 0;
+          } else if (float) {
+            // Floating on the back, arms and legs spread, a lazy scull.
+            J[J_SH[0]] = J[J_SH[1]] = 0.2;
+            J[J_AB[0]] = J[J_AB[1]] = 1.2 + Math.sin(stroke) * 0.1;
+            J[J_EL[0]] = J[J_EL[1]] = 0.2;
+            J[J_HIP[0]] = J[J_HIP[1]] = 0.1;
+            J[J_KNEE[0]] = J[J_KNEE[1]] = -0.15;
+            J[J_SPREAD] = 0.3;
+            J[J_HEAD_PITCH] = -0.2;
+            J[J_HEAD_YAW] = 0;
+          } else if (hard) {
             // Front crawl: arms windmill half a cycle apart, a flutter kick at twice the rate.
             J[J_SH[1]] = Math.PI - stroke;
             J[J_SH[0]] = -stroke;
@@ -2210,6 +2498,166 @@
           J[J_LEAN] = sp.parachute.torso.rotation.z;
           J[J_ARMFREE[0]] = J[J_ARMFREE[1]] = 0;
         }
+      }
+      /**
+       * BEACHGOERS
+       * Palm Keys Beach's people (beach.js) are drawn by the rig too: their
+       * `pose` is mapped onto the rig's poses, `z` is their height (the sand, a
+       * towel, a lounger, the lifeguard tower, the water), and swimmers get the
+       * crawl or float on the surface like the player.
+       */
+      const BEACH_POSES = {
+        walk: null,
+        run: null,
+        stand: null,
+        wadeWalk: 'wade',
+        wade: 'wade',
+        sit: 'sitGround',
+        ride: 'ride',
+        recline: 'recline',
+        kneel: 'kneelDig',
+        lie: 'lieBack',
+        lieFront: 'lieFront',
+        tread: 'swim',
+        ready: 'vbReady',
+        hit: 'vbHit',
+        bump: 'vbBump',
+        dig: 'vbDig',
+        set: 'vbSet',
+        spike: 'vbSpike',
+        serve: 'vbServe',
+        cheer: 'cheer',
+        throw: 'throw',
+      };
+      const beachFacing = new Three.Matrix4();
+      function beachSpec(p) {
+        const sp = specScratch;
+        for (const k in sp) sp[k] = undefined;
+        let entry = specialLooks.get(p);
+        if (!entry) {
+          entry = { outfit: 'beach', look: outfitLook(p, 'beach', (p.threshold || 0.5) * 997 + (p.phase || 0) * 13) };
+          specialLooks.set(p, entry);
+        }
+        sp.look = entry.look;
+        sp.facing = p.a || 0;
+        sp.elevation = p.z || 0;
+        const pose = p.pose;
+        if (pose === 'swim' || pose === 'float') {
+          const stroke = (p.phase || 0) * 3.2 + gameTime * (pose === 'swim' ? 3.2 : 0.8),
+            onBack = pose === 'float';
+          sp.elevation = (p.z || 0) + 2.0;
+          crowdJoint(beachFacing, mIdentity, p.x, sp.elevation, p.y, onBack ? Math.PI / 2 : -Math.PI / 2 + 0.12, onBack ? 0 : Math.sin(stroke) * 0.35, -(p.a || 0));
+          sp.rootOverride = beachFacing;
+          sp.swim = { stroke, hard: true, drive: 0.7, float: onBack };
+          return sp;
+        }
+        if (pose === 'tread') sp.elevation = (p.z || 0) - 7.4;
+        sp.pose = BEACH_POSES[pose] ?? null;
+        return sp;
+      }
+      function drawBeachgoers(deltaSeconds, detail) {
+        if (typeof beachgoers === 'undefined' || !beachgoers.length) return 0;
+        if (Math.abs(cameraTarget.x + 2010) > 1900 || Math.abs(cameraTarget.y - 5620) > 1500) return 0;
+        let n = 0;
+        for (const p of beachgoers) {
+          if (!p.visible || p.state === 'off' || p.pose === 'dive' || !entityInView(p, 30)) {
+            const s = crowdState.get(p);
+            if (s) s.seen = false;
+            continue;
+          }
+          drawCrowdPerson(p, stateFor(p), deltaSeconds, detail, beachSpec(p));
+          n++;
+        }
+        return n;
+      }
+      /**
+       * RIDERS
+       * Whoever rides a bicycle, a share bike, a motorbike or a jet ski is drawn
+       * by the rig on the vehicle's model (render3d.js hands each one over with
+       * `queueRider` once the vehicle is posed): hips on the seat, hands on the
+       * grips and feet on the pedals (turning with the crank) or the pegs, all
+       * by IK, leaning into the bars. The player keeps their own look.
+       */
+      const RIDER_SEATS = {
+        bicycle: { seat: [-2.2, 15.25, 0], grip: [8.6, 18, 4.1], crank: 3, pedalZ: 2, lean: -0.45 },
+        share: { seat: [-3.1, 16.25, 0], grip: [5.0, 17.4, 3.9], crank: 3, pedalZ: 2.6, lean: -0.32 },
+        motorbike: { seat: [-5.2, 12.35, 0], grip: [6.8, 14, 3], peg: [0.2, 5.4, 3.4], lean: -0.32 },
+        jetski: { seat: [-4.6, 8.1, 0], grip: [2.4, 9.6, 4.4], peg: [-3.8, 4.6, 3.1], lean: -0.22 },
+      };
+      const riderQueue = [],
+        riderProxies = new WeakMap(),
+        riderRoot = new Three.Matrix4(),
+        riderRotation = new Three.Matrix4(),
+        riderSeat = new Three.Vector3(),
+        riderUp = new Three.Vector3(),
+        riderHands = [new Three.Vector3(), new Three.Vector3()],
+        riderFeet = [new Three.Vector3(), new Three.Vector3()],
+        riderScratch = new Three.Vector3(),
+        riderScale = new Three.Vector3();
+      /* Called by render3d.js for a two-wheeler or jet ski whose rider shows; true when the rig draws them. */
+      function queueRider(c, m) {
+        riderQueue.push(c, m);
+        return true;
+      }
+      function drawQueuedRiders(deltaSeconds, detail) {
+        for (let i = 0; i < riderQueue.length; i += 2) {
+          const c = riderQueue[i],
+            m = riderQueue[i + 1],
+            kind = m.jetski ? 'jetski' : c.shareBike ? 'share' : m.bicycle ? 'bicycle' : 'motorbike',
+            seat = RIDER_SEATS[kind],
+            frame = m.rider.parent;
+          if (!frame) continue;
+          m.group.updateMatrixWorld(true);
+          const M = frame.matrixWorld,
+            isPlayer = c === player.car;
+          let proxy = riderProxies.get(c);
+          if (!proxy) riderProxies.set(c, (proxy = { x: c.x, y: c.y, a: c.a, hp: 1 }));
+          proxy.x = c.x;
+          proxy.y = c.y;
+          proxy.a = c.a;
+          const sp = isPlayer ? specialSpec(player) : specScratch;
+          if (!isPlayer) {
+            for (const k in sp) sp[k] = undefined;
+            let entry = specialLooks.get(c);
+            const outfit = kind === 'motorbike' ? 'motorcyclist' : kind === 'jetski' ? 'jetskier' : 'cyclist';
+            if (!entry || entry.outfit !== outfit) {
+              entry = { outfit, look: outfitLook(c, outfit, (c.id || 1) * 7.31) };
+              specialLooks.set(c, entry);
+            }
+            sp.look = entry.look;
+          } else if (kind === 'jetski') sp.look = { ...specialLook(player) };
+          sp.hold = null;
+          sp.weapon = null;
+          sp.swim = null;
+          sp.parachute = null;
+          sp.pose = 'riding';
+          sp.riderLean = seat.lean;
+          const R = compiledLook(sp.look, proxy),
+            H = R.height * RIG_UNIT;
+          // Root: the frame's rotation, the hips on the seat.
+          M.decompose(riderSeat, crowdQuat, riderScale);
+          riderRotation.makeRotationFromQuaternion(crowdQuat);
+          riderSeat.set(...seat.seat).applyMatrix4(M);
+          riderUp.set(0, 1, 0).applyQuaternion(crowdQuat);
+          riderRoot.copy(riderRotation).setPosition(riderSeat.addScaledVector(riderUp, -(RIG.hip - 0.5) * H));
+          sp.rootOverride = riderRoot;
+          sp.elevation = riderSeat.y;
+          sp.facing = c.a;
+          for (let side = 0; side < 2; side++) {
+            const z = (side ? 1 : -1) * seat.grip[2];
+            riderHands[side].set(seat.grip[0] - 0.4, seat.grip[1] + 0.2, z).applyMatrix4(M);
+            if (seat.crank && m.crank) {
+              // The pedal on this side, then the ankle just above it.
+              const a = (m.crank.rotation.z || 0) + (side ? 0 : Math.PI);
+              riderScratch.set(m.crank.position.x - Math.sin(a) * seat.crank, m.crank.position.y + Math.cos(a) * seat.crank, (side ? 1 : -1) * seat.pedalZ);
+              riderFeet[side].copy(riderScratch).applyMatrix4(M).addScaledVector(riderUp, RIG.ankle * H);
+            } else riderFeet[side].set(seat.peg[0], seat.peg[1], (side ? 1 : -1) * seat.peg[2]).applyMatrix4(M).addScaledVector(riderUp, RIG.ankle * H);
+          }
+          sp.handTargets = riderHands;
+          sp.legTargets = riderFeet;
+          drawCrowdPerson(proxy, stateFor(proxy), deltaSeconds, detail, sp);
+        }
+        riderQueue.length = 0;
       }
       /* Where the player got into or out of a car, for the transition poses. */
       function trackCarTransition() {
@@ -2335,7 +2783,10 @@
         let drawn = 0;
         lastDelta = deltaSeconds;
         const detail = crowdDetail(),
+          zoom = flightViewActive ? viewZoom : worldZoom,
           zoomedIn = (flightViewActive ? viewZoom : worldZoom) > 0.22;
+        // Close-up detail only where a head is more than a few pixels across.
+        BODY = zoom >= 2.4 ? BODY_CLOSE : BODY_STREET;
         trackCarTransition();
         if (zoomedIn)
           for (const p of pedestrians) {
@@ -2366,6 +2817,7 @@
           drawn++;
         }
         drawEnterCar(deltaSeconds, detail);
+        if (zoomedIn) drawn += drawBeachgoers(deltaSeconds, detail);
         for (const prop of crowd.props) {
           const part = propParts[prop.kind];
           if (!part || !entityInView(prop, 30)) continue;
@@ -2376,13 +2828,38 @@
             part.n++;
           }
         }
-        flushCrowdParts();
         return drawn;
+      }
+      /* After the vehicles are posed: the riders, then upload every part (render3d.js). */
+      function finishCrowd3D(deltaSeconds) {
+        drawQueuedRiders(deltaSeconds, crowdDetail());
+        flushCrowdParts();
       }
       /**
        * Measures for DeadEndCity.scaleReport: the rig's standing height at
        * look.height 1, and a person's drawn extents ({ l, w, h }, map units).
        */
+      /* What the people cost this frame: instanced parts drawn, draw calls (camera
+         and shadow) and triangles, and which body set is in use. */
+      function crowdStats() {
+        let parts = 0,
+          viewCalls = 0,
+          shadowCalls = 0,
+          triangles = 0,
+          instances = 0;
+        for (const part of Object.values(crowdParts)) {
+          const mesh = part.mesh;
+          if (!mesh.visible || !mesh.count) continue;
+          const g = mesh.geometry,
+            tris = (g.index ? g.index.count : g.attributes.position.count) / 3;
+          parts++;
+          viewCalls++;
+          if (mesh.castShadow) shadowCalls++;
+          instances += mesh.count;
+          triangles += tris * mesh.count;
+        }
+        return { parts, viewCalls, shadowCalls, instances, triangles: Math.round(triangles), bodySet: BODY === BODY_CLOSE ? 'close' : 'street' };
+      }
       function crowdRigHeight() {
         return PERSON_HEIGHT;
       }
