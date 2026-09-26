@@ -62,10 +62,11 @@ Two closures matter:
 - Timers are seconds. Physics runs in fixed 1/120 s steps. `worldMinutes` advances one game
   minute per real second; `daylight()` returns 0..1 (sun up 05:40, down 19:50).
 - Save data (`localStorage`, key `dead-end-city-v1`) holds campaign indices, cash, clock and
-  weapons. Settings have their own keys: `dead-end-city-settings` (volumes, sound, radio
+  weapons. Settings have their own keys: `dead-end-city-settings` (volumes, sound, radio on the title screen, radio
   voices, NPC chatter), `-controls` (key bindings), `-hud` (minimap fold and zoom),
   `-graphics`, `-frame-limit` (30, 60, 120 or unlimited: the frame loop's cap,
-  game.js FRAME LIMITER), `-fps`, `-touch`, `-cutaway` and `-radio-v2`. Adding missions needs no schema
+  game.js FRAME LIMITER), `-fps`, `-touch`, `-cutaway` and `-radio-v2` (the car's station, its power, each
+  station's track and the title menu's station, `titleStation`). Adding missions needs no schema
   change.
 - Input goes through named actions (section 4d): `keys.KeyW` means "the forward action is
   held", whatever key the player bound to it.
@@ -289,7 +290,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends; on the Falcon it starts off every ride and the switch holds for that ride only, `radioSwitchedOn()` / `player.coaster.radio`, never saved); RADIO VOLUME, the radio box's 90s volume knob (LED arc, LCD readout) and speaker (section 4d); `radioReport()` |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends; on the Falcon it starts off every ride and the switch holds for that ride only, `radioSwitchedOn()` / `player.coaster.radio`, never saved); RADIO VOLUME, the radio box's 90s volume knob (LED arc, LCD readout) and speaker (section 4d); TITLE RADIO: the same box docked on the title menu, NEON by default, started by the first gesture, faded out (or carried into a vehicle) as the game starts; `radioReport()` |
 | garages.js | The respray garages (EASTSIDE GARAGE, PALM KEYS AUTO, SOUTH BANK MOTOR WORKS, STONECREEK GARAGE): real-scale plan (`GARAGE_PLAN`: 10 x 15 m bay, 6 x 5 m roll-up door, office), the PRICE LIST (`garageOffer`: respray by class $200-500, repair by damage $100-1,500, both 15% off, refusal without cash), the drive-in show (`repairJob.phase`: rollin, doorDown, work, fade, doorUp, driveout; E skips), the police rule (a respray clears the stars only if no unit saw you drive in), the mechanics (`staffGarages`), overhead cover (`registerGarageCover`), `garageReport()` |
 | crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: Falcon riders while the player rides with them, soldiers, police and mission characters, then lines at the player, then the nearest; SPEECH SEEN FROM ABOVE: `speechHeightFade` fades every bubble, the Blue Hour's too, from 40 m to 50 m of height between the view and the speaker (`speechViewHeight`: the player's elevation when flying or riding, i.e. the AGL, else the street zoom as a height), and a hidden line takes no slot; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
@@ -875,6 +876,23 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   Space); the box stays open while a drag lasts and gives focus back to the canvas after a
   mouse drag or click. Muted, the resting chip's bars lie flat with a crossed speaker.
   `DeadEndCity.radio()` reports it (`knob`: value, angle, lit LEDs, readout, drag mode, last drag).
+- **Title radio** (car-radio.js TITLE RADIO): the radio box also plays on the title menu. While
+  `#menu` shows (and gameMode is not `play`), `syncCarRadio` moves the `#carRadio` element into
+  `#menu` (`setTitleRadio`, class `title-radio`: docked right, always open; the phone layouts are
+  in shell.html's TITLE RADIO section) and back into the HUD when the title closes; a
+  MutationObserver on `#menu`'s class makes that immediate. The title has its own station
+  (`titleRadioStation`, NEON by default, saved as `titleStation`) and power switch for the visit
+  (`titleRadioPower`); `radioStationIndex()` is the station shown and played, and
+  `radioSwitchedOn()` / `setRadioSwitch()` read the title's switch there. Settings · Audio ·
+  Radio on title screen sets `titleRadioEnabled` (saved as `titleRadio` by settings.js). The
+  first play() without a gesture is usually refused: `carRadioBlocked` then shows "Click
+  anywhere to play radio" (`.radio-waiting`), and `titleRadioGesture` (capture-phase
+  pointerdown / mousedown / pointerup / touchend / keydown on window: the events that count as a
+  user activation) retries inside the gesture. Clicks on the box give focus back to the last
+  menu item (`radioFocusBack`), so Enter still starts the game. Leaving the title: in a vehicle
+  with its radio on the in-car radio carries on (the car's station becomes the title's); else
+  `carRadioFade` fades the element out over `RADIO_HANDOVER_MS` (1.5 s, stepped by its own 40 ms
+  timer) and pauses it.
 - **HUD** (shell.html DOM and the INTERFACE 30 stylesheet section; hud.js): top-left
   location, top-right cash / stars / clock, a waypoint pill top centre, bottom row minimap
   with health and armour bars, the mission card and the equipment column. The radio and
