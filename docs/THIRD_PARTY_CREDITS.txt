@@ -625,6 +625,19 @@ rain-heavy.ogg
   Obtained from bob6664569/open-water (site/assets/audio/weather/rain-heavy.mp3;
   site/assets/audio/LICENSES.md). Changes: 0.2-10.4 s.
 
+3D MODELS
+unicorn-horse.json (Aurora, the unicorn statue on Sunset Pier; src/unicorn3d.js)
+  Base mesh: "Horse.glb" from the three.js examples (examples/models/gltf/Horse.glb),
+  https://github.com/mrdoob/three.js/blob/dev/examples/models/gltf/Horse.glb
+  Copyright © 2010-2023 three.js authors. License: MIT (the three.js licence, above).
+  The model originally comes from "3 Dreams of Black" (ro.me, 2011; Chris Milk and the
+  Google Data Arts Team), whose source and assets were released under the Apache License 2.0:
+  https://github.com/dataarts/3-dreams-of-black (http://www.apache.org/licenses/LICENSE-2.0)
+  Kept unchanged in tools/models/Horse.glb. Changes: tools/unicorn_model.py welds its
+  first gallop frame into a closed mesh, thickens the legs, removes the tail and re-poses it
+  rearing with a hand-built skeleton; the game subdivides it (Loop) and adds a sculpted
+  mane, tail and horn of its own. Only the posed 494-vertex cage is embedded.
+
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
 third-party shader source is copied. The techniques follow published work:

@@ -37,6 +37,10 @@ split page under ~15.5 MB; prefer procedural textures and small media (WebP, MP3
 A recorded loop (engines, rain) ends with 0.2 s of its own start and is listed with its
 exact loop length in `LOOP_SECONDS` (audio.js); play it with `loopingSource(name)`, because
 Vorbis decoders disagree by up to a few hundred samples about where a file ends.
+Generated media is rebuilt by its tool, not edited: `assets/unicorn-horse.json` (the unicorn
+statue's posed horse and the layout of her mane, tail and horn) comes from
+`python3 tools/unicorn_model.py` (numpy; `--obj file` also writes the whole sculpt as an OBJ
+to look at), which reads the source model kept in `tools/models/`.
 
 ## Test
 
