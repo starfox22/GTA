@@ -192,6 +192,11 @@
        strideRate is the same in radians a second for the simple `walk` phases. */
     const strideCycle = (speed) => 10 + 0.3 * Math.abs(speed),
       strideRate = (speed) => (TAU * Math.abs(speed)) / strideCycle(speed);
+    /* People are modelled at real height (crowd3d.js CHARACTER RIG): the
+       reference adult stands PERSON_HEIGHT to the crown (1.75 m, 14 units) and
+       each look's `height` scales it (adults 1.6-1.9 m, the player 1.80 m). Rigs
+       are built at this size, so nothing scales them again. */
+    const PERSON_HEIGHT = 1.75 * UNITS_PER_METRE;
     const worldMeters = (units) => units * METERS_PER_UNIT,
       // Map units a second -> km/h, the one conversion every speed readout uses.
       speedKmh = (unitsPerSecond) => (unitsPerSecond / KMH),
