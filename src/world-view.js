@@ -6,8 +6,13 @@
      * World zoom, pinch gestures, mouse wheel and camera limits.
      */
     /* World gestures are independent from navigation-map gestures and touch sticks. */
-    let worldZoom = 1,
-      worldZoomTarget = 1,
+    /* The street view's default zoom. At true scale a car is 4.8 m and a person
+       1.75 m (game.js WORLD SCALE), about 0.8 of what they were drawn at before,
+       so the camera starts 1.2x closer than it did: a car and a person read at
+       about their old size on screen, over 57 m of street top to bottom. */
+    const STREET_ZOOM = 1.2;
+    let worldZoom = STREET_ZOOM,
+      worldZoomTarget = STREET_ZOOM,
       // Pulled back while driving fast (speedZoomTarget), on top of the player's zoom.
       speedZoom = 1,
       worldTouchUntil = 0,
@@ -16,7 +21,7 @@
       incomingCallRemaining = 0;
     const worldPointers = new Map();
     function setWorldZoom(value) {
-      worldZoomTarget = clamp(value, 0.14, 1.5);
+      worldZoomTarget = clamp(value, 0.14, 1.8);
     }
     function resetWorldGesture() {
       worldPointers.clear();

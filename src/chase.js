@@ -451,7 +451,8 @@
       vehicle.av = clamp(delta * 2, -1.2, 1.2);
       vehicle.a = normalizeAngle(vehicle.a + vehicle.av * stepSeconds);
       const desiredAltitude =
-        Math.max(terrainHeight(vehicle.x, vehicle.y) + 280, entityElevation(t) + 120) +
+        // 35 m up, or 8 m over the nearest rooftops (towers reach 130 m and more).
+        Math.max(terrainHeight(vehicle.x, vehicle.y) + 280, entityElevation(t) + 120, roofHeightNear(vehicle.x, vehicle.y, 140) + 64) +
         (vehicle.airOrbit ? 65 : 0) +
         Math.sin(gameTime * 0.6) * 4;
       vehicle.altitude += (desiredAltitude - vehicle.altitude) * Math.min(1, stepSeconds * 0.7);

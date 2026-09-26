@@ -9,8 +9,8 @@
        * where it has them) through a list of sections (height, scale, twist,
        * offset), so a twisting tower, a tapering needle, a curved facade or a stack
        * of rotated blocks are all the same few lines of data. Walls are UV-mapped in
-       * world units (one curtain-wall tile is four 8-unit panels by four 18-unit
-       * floors), so one glazing texture per design serves any size without
+       * world units (one curtain-wall tile is four 8-unit panels by four storeys,
+       * game.js STOREY), so one glazing texture per design serves any size without
        * per-mesh texture repeats, and each design has its own glass colour, mullion
        * rhythm and spandrel pattern. Night lighting comes from a lit-window
        * emissive map (the city's litWindowMaterials drive it), LED crown and
@@ -25,7 +25,7 @@
        * and every shaft stays inside it.
        */
       const SKY_PANEL = 8,
-        SKY_FLOOR = 18,
+        SKY_FLOOR = STOREY,
         SKY_TILE_U = SKY_PANEL * 4,
         SKY_TILE_V = SKY_FLOOR * 4;
       // A private seeded random so the cluster does not shift the rest of the city's dressing.

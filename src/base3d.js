@@ -1888,8 +1888,8 @@
           model = specialVehicle(vehicle),
           b = model.body,
           p = model.paint,
-          l = spec.l,
-          w = spec.w,
+          l = designSize(vehicle).l,
+          w = designSize(vehicle).w,
           keep = new Set();
         p.roughness = 0.78;
         p.metalness = 0.15;

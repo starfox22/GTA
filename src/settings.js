@@ -34,10 +34,11 @@
        key, its mix channel (audio.js busLevel / volumeScale), the default and
        the row's text. `master` is the whole mix. Engines default to 65: about
        3.7 dB under the level they had when they shared the effects slider, so
-       they no longer swamp the radio (100 restores it). */
+       they no longer swamp the radio (100 restores it). The radio defaults to
+       full (100); it was 80 before 30.x (see RADIO DEFAULT below). */
     const AUDIO_VOLUMES = [
       { key: 'masterVolume', channel: 'master', value: 80, label: 'Master volume', note: 'Everything the game plays.' },
-      { key: 'radioVolume', channel: 'radio', value: 80, label: 'Radio & music', note: 'The car radio, the rooftop bar and the beach club; the same level as the slider in the radio box.' },
+      { key: 'radioVolume', channel: 'radio', value: 100, label: 'Radio & music', note: 'The car radio, the rooftop bar and the beach club; the same level as the volume knob in the radio box.' },
       { key: 'engineVolume', channel: 'engine', value: 65, label: 'Engines & vehicles', note: 'Your engine, traffic, aircraft and boats, tyres and road noise, rotors.' },
       { key: 'soundVolume', channel: 'sound', value: 100, label: 'Effects', note: 'Gunfire, impacts, crashes, explosions, footsteps and interface sounds.' },
       { key: 'voiceVolume', channel: 'voice', value: 100, label: 'Voices', note: 'Police challenges and dispatch and mission radio callouts.' },
@@ -45,13 +46,18 @@
       { key: 'sirenVolume', channel: 'siren', value: 100, label: 'Sirens', note: 'Police sirens and the Fort Sentinel alarm.' },
     ];
     const AUDIO_VOLUME_OF = Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.channel, v]));
+    // The radio's default before 30.x (RADIO DEFAULT).
+    const RADIO_OLD_DEFAULT = 80;
     const settings = {
       ...Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.key, v.value])),
       // What the radio box's speaker unmutes to (car-radio.js RADIO VOLUME).
-      radioUnmute: 80,
+      radioUnmute: AUDIO_VOLUME_OF.radio.value,
+      // Whether the player has set the radio level themselves (RADIO DEFAULT).
+      radioVolumeSet: false,
       npcChatter: true,
       cutaway: true,
     };
+    let radioMigrated = false;
     try {
       const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE));
       if (saved && typeof saved === 'object') {
@@ -64,19 +70,39 @@
           settings.engineVolume = Math.round((AUDIO_VOLUME_OF.engine.value * settings.soundVolume) / 100);
         }
         if (Number.isFinite(saved.radioUnmute)) settings.radioUnmute = clamp(Math.round(saved.radioUnmute), 5, 100);
+        /* RADIO DEFAULT: the radio used to default to 80 and saved no sign of
+           whether the player chose it. A save marked radioVolumeSet, or holding
+           any level but the old default, was the player's choice and stays; one
+           still at 80 (or without a level) moves to the new default once, and
+           the speaker's unmute level with it. From now on every change by the
+           player marks the save. */
+        const radioChosen =
+          saved.radioVolumeSet === true ||
+          (Number.isFinite(saved.radioVolume) && ![RADIO_OLD_DEFAULT, AUDIO_VOLUME_OF.radio.value].includes(saved.radioVolume));
+        if (!radioChosen) {
+          radioMigrated = saved.radioVolume !== AUDIO_VOLUME_OF.radio.value;
+          settings.radioVolume = settings.radioUnmute = AUDIO_VOLUME_OF.radio.value;
+        }
+        settings.radioVolumeSet = radioChosen;
         if (typeof saved.npcChatter === 'boolean') settings.npcChatter = saved.npcChatter;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
         if (typeof saved.voicesOn === 'boolean') voicesOn = saved.voicesOn;
       }
       settings.cutaway = localStorage.getItem('dead-end-city-cutaway') !== 'off';
     } catch {}
+    // Write the moved radio level back, so the move happens once.
+    if (radioMigrated) saveSettings();
     function saveSettings() {
+      // A radio level off the default can only have been set on purpose (the
+      // console's settings() included).
+      if (settings.radioVolume !== AUDIO_VOLUME_OF.radio.value) settings.radioVolumeSet = true;
       try {
         localStorage.setItem(
           SETTINGS_STORAGE,
           JSON.stringify({
             ...Object.fromEntries(AUDIO_VOLUMES.map((v) => [v.key, settings[v.key]])),
             radioUnmute: settings.radioUnmute,
+            radioVolumeSet: settings.radioVolumeSet,
             npcChatter: settings.npcChatter,
             soundOn,
             voicesOn,
@@ -101,6 +127,7 @@
     function resetAudioVolumes() {
       for (const v of AUDIO_VOLUMES) settings[v.key] = v.value;
       settings.radioUnmute = AUDIO_VOLUME_OF.radio.value;
+      settings.radioVolumeSet = false;
       applyVolumes();
       saveSettings();
     }
@@ -209,7 +236,7 @@
           id: 'audioReset',
           kind: 'action',
           label: 'Default mix',
-          note: () => 'Every volume back to its default (engines a little under the effects, radio and master at 80).',
+          note: () => 'Every volume back to its default (engines a little under the effects, master at 80, radio at 100).',
           button: 'RESET AUDIO TO DEFAULTS',
           disabled: audioVolumesAreDefault,
           run: () => {
@@ -255,6 +282,28 @@
           set: (on) => setFlightHud(on),
         },
         {
+          id: 'units',
+          kind: 'choice',
+          label: 'Speed units',
+          note: () =>
+            'Kilometres or miles an hour for every speed the game shows: the speed box, the flight HUD\u2019s airspeed and the rides. Boats keep knots; distances stay in metres.',
+          options: [
+            ['kmh', 'KM/H'],
+            ['mph', 'MPH'],
+          ],
+          get: () => hudState.units,
+          set: (value) => setSpeedUnits(value),
+        },
+        {
+          id: 'footSpeed',
+          kind: 'toggle',
+          label: 'Speed box on foot',
+          note: () =>
+            'Show your speed walking, running, swimming and falling, with what you are doing (WALKING, RUNNING, SWIMMING, FALLING). Swimming always shows your breath.',
+          get: () => hudState.footSpeed,
+          set: (on) => setFootSpeed(on),
+        },
+        {
           id: 'keyHints',
           kind: 'toggle',
           label: 'Control hints',
@@ -288,11 +337,12 @@
         row.get = () => settings[row.id];
         row.set = (value) => {
           settings[row.id] = clamp(Math.round(value), 0, 100);
+          if (row.id === 'radioVolume') settings.radioVolumeSet = true;
           applyVolumes();
         };
       }
     /* Push the volumes into the live mix (every bus, audio.js THE MIX) and the
-       radio, and redraw the radio box's slider (it shows the same radio level). */
+       radio, and redraw the radio box's knob (it shows the same radio level). */
     function applyVolumes() {
       applyMixLevels();
       syncCarRadio();
@@ -305,6 +355,7 @@
       const next = clamp(Math.round(value), 0, 100);
       if (next === 0 && from > 0) settings.radioUnmute = from;
       settings.radioVolume = next;
+      settings.radioVolumeSet = true;
       applyVolumes();
       if (save) saveSettings();
     }
@@ -312,7 +363,7 @@
       if (settings.radioVolume > 0) {
         settings.radioUnmute = settings.radioVolume;
         setRadioVolume(0);
-      } else setRadioVolume(settings.radioUnmute >= 5 ? settings.radioUnmute : 80);
+      } else setRadioVolume(settings.radioUnmute >= 5 ? settings.radioUnmute : AUDIO_VOLUME_OF.radio.value);
     }
     renderRadioVolume();
     let settingsOrigin = 'menu',

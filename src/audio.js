@@ -205,7 +205,11 @@
       duckBus.gain.cancelScheduledValues(audio.currentTime);
       duckBus.gain.setTargetAtTime(clamp(level, 0, 1), audio.currentTime, Math.max(0.01, seconds / 3));
     }
-    function playSample(name, volume = 0.5, rate = 1, position = null, bus = master) {
+    /* A recorded sample, optionally from a map position (attenuated and panned
+       from the player; a position with an `elevation` also counts the height
+       between it and the player, e.g. the Falcon's train) and `delay` seconds
+       from now. */
+    function playSample(name, volume = 0.5, rate = 1, position = null, bus = master, delay = 0) {
       if (!audio || !soundOn) return;
       const b = audioBuffers[name];
       if (!b) return;
@@ -216,14 +220,15 @@
       s.playbackRate.value = rate;
       let attenuation = 1;
       if (position) {
-        const distance = distanceBetween(position, player);
+        const rise = position.elevation === undefined ? 0 : position.elevation - entityElevation(player),
+          distance = Math.hypot(distanceBetween(position, player), rise);
         attenuation = 1 / (1 + distance / 230);
         pan.pan.value = clamp((position.x - player.x) / 450, -0.9, 0.9);
       }
       g.gain.value = volume * attenuation;
       s.connect(g).connect(pan).connect(bus || master);
       if (['pistol', 'automatic', 'shotgun', 'rifle', 'explosion'].includes(name)) pan.connect(reverb);
-      s.start();
+      s.start(delay > 0 ? audio.currentTime + delay : 0);
       s.onended = () => {
         s.disconnect();
         g.disconnect();

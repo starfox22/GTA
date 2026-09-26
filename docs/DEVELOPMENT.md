@@ -86,6 +86,7 @@ something, never a generic code-evaluation hook.
 | --- | --- |
 | `version` | The build version (30.0.0) |
 | `unitsPerMetre` | The world scale, map units to the metre (8) |
+| `scaleReport(radius)` | World-scale audit in metres: every vehicle type's spec (`l`, `w`), the built models within `radius` of the player measured from their meshes (length, width, height), the player's model, the crowd's statures (rig, shortest, average, tallest) and the building heights (lowest, median, 90th percentile, tallest) |
 | `repair()` | Mend the player's vehicle as a repair bay would (repeatable physics tests); returns `damageReport()` |
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle, weapon in hand, renderer (`3d` or `2d`) |
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once); lets go of any carrier |
@@ -137,14 +138,14 @@ something, never a generic code-evaluation hook.
 | `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
 | `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and trees near a point, nearest first (id, kind, box, `breakKJ`, strain, size, down) plus counts by kind; shop panes and their state |
 | `damageStats()` | Decal and debris pool use and GPU geometry/texture counts (for leak checks) |
-| `pedestrianReport()` | Crowd summary: counts by reaction, pose, role and state, street scenes, incidents, witness reports, horns, the speech `bubbles` on screen (at most two, with rank and seconds left) and `unshownLines` |
+| `pedestrianReport()` | Crowd summary: counts by reaction, pose, role and state, street scenes, incidents, witness reports, horns, the speech `bubbles` on screen (at most two, with rank, seconds left, `viewHeight` m, height `fade`, `rider`) and `unshownLines` |
 | `fireShot(x, y)` | Fire the equipped weapon toward a map point as the player would (the crowd hears and reacts) |
 | `alarm(kind, x, y)` | Raise a `gunfire`, `explosion` or `crash` incident at a point without firing |
 | `stageCrash(metersPerSecond)` | Drive the player's car into an occupied car across the road ahead |
 | `lifeScene(kind)` | Stage a street scene by the player: `vendor`, `busker`, `cafe`, `smokers`, `delivery`, `hail`, `nightlife`, `busStop` |
 | `poseGallery(role)` | Line up one labelled pedestrian per pose in front of the player |
 | `closeUp(zoom)` | Inspection only: zoom past the player's limit (up to 8) to look at people |
-| `radio()` | The car radio and its volume row as shown: shown / open, station, on, playing, `volume` (= Settings radio), muted, `unmuteTo`, `elementVolume` (the `<audio>` element's live volume), `scale` (`volumeScale('radio')`), and the slider's value, fill, readout, aria value text and whether it is being dragged |
+| `radio()` | The car radio and its volume row as shown: shown / open, station, on (`enabled`: on the Falcon the ride's own switch; `saved`: the saved setting), playing, `volume` (= Settings radio), muted, `unmuteTo`, `volumeSet` (the player chose the level), `elementVolume` (the `<audio>` element's live volume), `scale` (`volumeScale('radio')`), and `knob`: value, angle in degrees, lit LEDs, LCD readout, aria value text, whether it is being dragged and in which mode (`linear` / `circular`), the last drag (mode, from, to, pixels, degrees swept), pixels per step and sweep |
 | `audioMix()`, `engineSound()` | The audio context, every bus's live gain (`buses`: mix, effects, engines, ambience, sirens, music, voices), the fixed loops (tyres, siren, rotor) with their gains; the player's engine: set, revs, gear, throttle, load, output gain and tone, each layer's rate and gain, road / wind / track levels, the jet voice, the traffic voices (`nearbyDriven`, the nearest four with loop, distance, revs, rate, level) and `trace` (the last 12 s at 0.1 s: speed, revs, gear, load, gain and the audible layers). `simulate()` drives it, so a test can hold `KeyW` from a standstill and read the gear shifts |
 | `rainSound()` | The rain beds: `rain` and `wet`, each bed's target weight (`targets`) and live gain (`light`, `steady`, `heavy`), the roof drumming and tyre spray gains, the `cabin` low-pass (16 kHz in the open, 2.5 kHz under cover, 620 Hz in a closed vehicle) and `shelter` (0 open, 1 under cover) |
 | `stats()` | Per-frame CPU timings (`parts`, the renderer's split as `r:` parts), draw calls (`viewCalls` camera, `shadowCalls` shadow map, redrawn every frame while shadows are on), triangles, linked shader `programs`, the dynamic `renderScale` |
@@ -160,10 +161,15 @@ something, never a generic code-evaluation hook.
 | `swim()`, `ladders()` | The player and the water (swimming, wading, stamina, shore type, nearest way out); every ladder out of the sea |
 | `beach()` | Palm Keys Beach: crowd density for the hour, who is there and what they are doing, prop counts |
 | `beachClub(action)` | Marea Beach Club: phase, levels, people by slot kind, mode and pose, the queue and the conversation at the door, admitted/rejected/evacuated counts, the music (set, bar, section, gain, wall cutoff); `'trouble'` raises gunfire on its dance floor |
+| `clubPool()`, `clubPoolEdge()` | The Marea pool: water rect, the player's phase (dive / swim / out), SWIM / GET OUT offered, breath, club swimmers; stand on its south deck |
+| `clubTalk()`, `clubTalkApproach()` | Club conversations: script count by personality, the running one (lines, pose), the bubbles; stand beside the nearest talkable club-goer |
+| `volley()`, `volleyJoin(team)`, `volleyLob()`, `volleyCourtCheck()` | Beach volleyball: court, phase, score, ball, players, the player, log; join on a side (0 west, 1 east); lob the ball to the player; the court against the beach plan |
 | `trains()`, `advanceTrains(seconds)` | Train positions; run the railway forward (rides take minutes at headless frame rates) |
 | `yacht()`, `boardYacht()` | Where the player stands aboard the superyacht; put them on her swim platform |
 | `rooftops(x, y)` | Rooftop helipads, the roof the player stands on, the roof under the player's helicopter (floor, clearance); with a map point, that building's roof: height, whether it is landable, archetype and roof plant (`roofKeepOuts`) |
 | `themePark()`, `boardRide(kind)` | Sunset Pier: the Falcon's numbers and train, the Eye, fountain and fireworks state, guests, an overlap self-check; board `'coaster'` or `'wheel'` (then `interact()` cycles the ride camera) |
+| `coasterVoices(reset)` | The Falcon riders' voices: running, track position (m), whether the first drop has passed, who is speaking, and the log of every scream cue (`first drop`, `drop`, `dip`, `airtime`, `inversion`: game time, car, track m, height m, vertical speed m/s, seat g, drop depth, voices played, lines said) and rider line (`say lift`, `say end`); `reset` clears the log |
+| `speechView()` | The speech bubble height rule for someone on the ground at the view's centre: the view's height over them (m), the fade (1 below 40 m, 0 from 50 m), the zoom counted, riding / flying, and the bubbles on screen with their fades |
 | `barriers()`, `solidAt(points, r, foot)` | Barrier audit: every sea railing run, street-end guardrail, gate pier and railing as data (what the renderer draws and `solid()` blocks); `solid()` at many `[x, y]` points at once (`foot` adds the player's foot obstacles: furniture, trunks, fixtures) |
 | `walk(heading, distance)` | Walk on foot through the real collision code (headless frames are too slow for keys) |
 | `match(sport)` | A venue's fixture (`'soccer'` default, `'basketball'`): stage, clock, score, status, crowd, who is on the field, fleeing or dead, abandoned, pitch invader, the player's goals |
