@@ -116,6 +116,11 @@
         uWake: { value: null },
         uWakeRect: { value: new Three.Vector4(0, 0, 1 / 2048, 1 / 1024) },
         uWakeOn: { value: 0 },
+        // Sea life (sealife3d.js): how dark what swims under the surface makes the
+        // water in red, blood in green, over (origin x, origin z, 1 / span, 1 / size).
+        uLife: { value: null },
+        uLifeRect: { value: new Three.Vector4(0, 0, 1 / 2048, 1 / 512) },
+        uLifeOn: { value: 0 },
         // Rain on the sea: rings from the drops, the glitter dulled (weather.rain).
         uRain: { value: 0 },
         // Distance haze (flight-view3d.js) so open sea fades like the land does.
@@ -193,6 +198,9 @@
           uniform sampler2D uWake;
           uniform vec4 uWakeRect;
           uniform float uWakeOn;
+          uniform sampler2D uLife;
+          uniform vec4 uLifeRect;
+          uniform float uLifeOn;
           uniform float uRain;
           vec2 rainRings(vec2 p, float t, float cell){
             vec2 c = floor(p / cell), f = p / cell - c;
@@ -272,12 +280,28 @@
             float sandy = vBeach * (1. - smoothstep(8., 170., vShore + h0 * 24.));
             body = mix(body, vec3(.30, .62, .60), sandy * 0.7);
             body = mix(body, vec3(.58, .70, .60), vBeach * (1. - smoothstep(0., 50., vShore + h0 * 12.)) * 0.55);
+            // Sea life under the surface (sealife3d.js): a dark shape in the body of
+            // the water, softened by the swell's refraction; blood clouding it red.
+            vec2 lifeSeen = vec2(0.);
+            if (uLifeOn > 0.5) {
+              vec2 luv = (vWorld.xz + (n.xz - vNormal.xz) * 3.0 - uLifeRect.xy) * uLifeRect.z;
+              if (luv.x > 0. && luv.y > 0. && luv.x < 1. && luv.y < 1.) {
+                vec2 l0 = texture2D(uLife, luv).rg;
+                vec2 l1 = texture2D(uLife, luv + vec2(uLifeRect.w, 0.)).rg + texture2D(uLife, luv - vec2(uLifeRect.w, 0.)).rg
+                        + texture2D(uLife, luv + vec2(0., uLifeRect.w)).rg + texture2D(uLife, luv - vec2(0., uLifeRect.w)).rg;
+                lifeSeen = l0 * 0.6 + l1 * 0.1;
+                body = mix(body, body * 0.1 + vec3(.003, .012, .018), clamp(lifeSeen.r, 0., 1.));
+                body = mix(body, vec3(.30, .018, .02), clamp(lifeSeen.g * 1.3, 0., 0.92));
+              }
+            }
             // Sky reflection: night navy -> dusk amber horizon -> pale day sky.
             vec3 skyNight = vec3(.05, .08, .16);
             vec3 skyDay = vec3(.55, .70, .84);
             vec3 sky = mix(skyNight, skyDay, uDay);
             sky = mix(sky, vec3(.92, .55, .33), uDusk * 0.55);
-            vec3 color = mix(body, sky, fresnel * 0.62);
+            // Over a shape in the water the eye reads through the surface: less sky.
+            float lifeShade = clamp(lifeSeen.r, 0., 1.);
+            vec3 color = mix(body, sky, fresnel * 0.62 * (1. - 0.45 * lifeShade));
             // Wave-crest scattering lifts the color where the swell is tallest.
             color += shallow * 0.18 * clamp(vCrest, 0., 1.) * uDay;
             // Sun glitter: tight and broad specular lobes.
@@ -285,7 +309,7 @@
             float spec = pow(max(dot(reflected, viewDir), 0.), mix(110., 320., fine)) * mix(0.4, 2.4, fine * fine)
                        + pow(max(dot(reflected, viewDir), 0.), 28.) * 0.22;
             vec3 sunColor = mix(vec3(1., .96, .86), vec3(1., .62, .34), uDusk);
-            color += sunColor * spec * (0.25 + 1.1 * uDay) * (1. - uRain * 0.75);
+            color += sunColor * spec * (0.25 + 1.1 * uDay) * (1. - uRain * 0.75) * (1. - 0.55 * lifeShade);
             // A shower greys the sea and roughens it into a pale sheen.
             color = mix(color, color * 0.82 + sky * 0.1, uRain * 0.5);
             // Moon path and shoreline light spill at night.
@@ -313,6 +337,8 @@
             // Wake: aerated water turns pale green-blue under the foam, then the foam.
             color = mix(color, color * 0.55 + vec3(.12, .26, .27), smoothstep(0., 0.35, wakeFoam) * 0.3);
             color = mix(color, vec3(.88, .94, .94), smoothstep(0.05, 0.9, wakeFoam) * 0.92);
+            // Blood reaches the surface too: pink foam, a red slick over the glitter.
+            color = mix(color, color * vec3(.9, .35, .33) + vec3(.16, 0., 0.), clamp(lifeSeen.g, 0., 1.) * 0.75);
             color *= 0.3 + 0.7 * uDay;
             gl_FragColor = vec4(color, 1.);
             #include <fog_fragment>

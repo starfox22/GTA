@@ -3550,6 +3550,8 @@
       }
       if (active) timed('knockdowns', () => updateKnockdowns(deltaSeconds));
       if (active || gameMode === 'menu') timed('cars', () => updateCars(deltaSeconds, active));
+      // A shark's breach plays out while WASTED is on screen (sealife.js).
+      if (gameMode === 'dead') updateSeaLife(deltaSeconds);
       if (active) {
         // Play time, cash earned, wanted peak; the demo card's timer (campaign.js).
         trackCampaignStats(deltaSeconds);
@@ -3587,6 +3589,9 @@
         // MONARCH MOTORS: display, sale, delivery, owned cars, alarm (dealership.js).
         timed('dealership', () => updateDealership(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
+        // Dolphins, gulls and the shark (sealife.js); after the coaster, which
+        // resets player.hidden that a shark attack sets.
+        timed('sealife', () => updateSeaLife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
         if (player.parachute) updateParachute(deltaSeconds);
         else if (
@@ -5659,6 +5664,8 @@
     // @include src/transit.js
     // @include src/ride-skip.js
     // @include src/ecology.js
+    // @include src/sealife.js
+    // @include src/sealife-audio.js
     // @include src/navigation.js
     // @include src/parachute.js
     // @include src/mobile.js
@@ -6532,6 +6539,16 @@
         })),
       // Palm Keys Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
+      // Sea life (sealife.js): dolphin pods, gull flocks, the shark, the encounter
+      // (phase, interest, cooldown, way out, outcomes), the beach alarm, the log
+      // and the renderer's counts and cost.
+      sealife: () => sealifeReport(),
+      // Start the shark encounter (puts the player in deep water off Palm Keys
+      // Beach first if needed); stage 'approach' (default), 'circle', 'breach',
+      // 'fin' (the fin up nearby, no encounter) or 'beach' (a pass along the buoys).
+      sharkAttack: (stage) => sharkAttackConsole(stage),
+      // A pod of dolphins near the player (or at x, y) that starts leaping.
+      spawnDolphins: (count, x, y, leap) => spawnDolphinsConsole(count, x, y, leap),
       // The Marea pool (clubpool.js): the water, the player's phase in it (dive,
       // swim, out), whether SWIM / GET OUT are offered, breath, club swimmers.
       clubPool: () => clubPoolReport(),

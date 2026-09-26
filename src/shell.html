@@ -138,6 +138,10 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Fade, clock and world catch-up, arrival for cab, train and liner passengers; the skip prompt and keys.
   src/ecology.js: Wildlife behavior
     Habitats, harmless animals, bear warning/attack and 2D drawing.
+  src/sealife.js: Sea life: dolphins, gulls and the great white
+    Sea distance field, dolphin pods (breaths, leaps, bow riding), gull flocks (perch, circle, follow boats), the shark's patrol, fin, beach pass, boat bump and the swimmer encounter; the beach SHARK! alarm.
+  src/sealife-audio.js: Sea life sound
+    Recorded gull calls, splashes and blows (sprites); procedural dolphin whistles and clicks; the shark's score and attack sounds.
   src/navigation.js: City map and route planning
     Road graph, shortest paths, waypoints, map gestures and route guidance.
   src/parachute.js: Bailout and parachute
@@ -233,6 +237,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery.
   src/wakes3d.js: Boat wakes and spray
     Kelvin wake, propeller wash and hull collar drawn into a wake map the water samples; bow spray.
+  src/sealife3d.js: Sea life meshes
+    Instanced dolphin, shark and gull models animated in the vertex shader, the life map of shapes and blood under the surface, splashes, foam rings, fin wakes, the SHARK! HUD.
   src/beachvolley3d.js: Beach volleyball court meshes
     Pit and tapes in the sand texture, poles, net, antennas, scoreboard, ball shadow and landing ring.
   src/beach3d.js: Palm Keys Beach meshes
@@ -7958,6 +7964,14 @@ body.no-key-hints .quickkeys {
               >Sandermotions, “Soccer match stadium sounds”</a
             >
             (CC0 1.0, Freesound); trimmed, converted to mono and level-adjusted.
+          </p>
+          <p>
+            Sea life: gull calls by squashy555 and Soojay; splashes by qubodup (blaukreuz), Nox_Sound
+            and roboroo; cetacean breaths (the dolphins' blow) by mikewest; all CC0 1.0 (Freesound),
+            as cut by the
+            <a href="https://github.com/dgreenheck/tidewater" target="_blank" rel="noopener">tidewater</a>
+            project; converted to mono OGG Vorbis. Dolphin whistles and clicks and the shark's score
+            are synthesised in the game.
           </p>
           <p>
             <strong>Driving radio</strong> — six licensed music stations. Tracks are

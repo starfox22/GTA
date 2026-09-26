@@ -1,5 +1,34 @@
 # Changelog
 
+## Unreleased — sea life: dolphins, gulls and a great white
+
+sealife.js, sealife-audio.js, sealife3d.js (SOURCE_GUIDE "Sea life").
+
+- **Dolphins**: pods of 2-5 bottlenose dolphins (sometimes a calf) in open water and the
+  channels, never in the harbours: about two sightings an in-game hour by day, four at dawn and
+  dusk, fewer at night, more from a boat. They cruise under the surface (a dark shape through the
+  water), roll up to breathe with a blow, leap clear on a real arc (a third land on their side)
+  with spray, a crown splash and a ring of foam, and ride the bow of the player's boat (8-30
+  knots) or the Meridian Star. Recorded breaths and splashes, synthesised whistles and clicks.
+- **Gulls**: flocks over the beach, the pier, both marinas, the cruise terminal, the Ironworks and
+  Battery Park; perched on the pier, jetties, lifeguard towers, moored boats and roofs, taking off
+  when approached or at a shot and coming back; circling on banked glides, following the liner,
+  the ketch and the player's boat; roosting at night. Grey mantles, black wingtips, shadows,
+  recorded calls (CC0).
+- **The great white**: a 5 m shark patrols deep water, its fin cutting the surface now and then;
+  a rare pass along the beach's buoy line sets off the SHARK! alarm (people point and shout, the
+  lifeguards whistle, swimmers race out); a small boat idling offshore can get a bump. A swimmer
+  who stays far out (more than 30 m from land, outside the buoys, no mission, 8 minutes between
+  encounters) draws it in: the fin, the score, SHARK! with an arrow, circling closer over a
+  window sized from the swim to the nearest way out; get out (shore, buoys, ladder, a boat) or
+  it breaches and takes you (TAKEN BY A GREAT WHITE, the water turns red). God mode: it bites,
+  lets go and leaves. Beach swimmers are never taken.
+- **Drawing**: one InstancedMesh per species animated in the vertex shader; what is under the
+  surface (and blood) drawn into a life map the water shader darkens and reddens its colour
+  with; splash particles; foam rings in the wake map. About 0.3 ms of renderer CPU, 4 camera
+  draw calls, 1 shadow and up to 4 off-screen passes with everything in view.
+- Console: `sealife()`, `sharkAttack(stage)`, `spawnDolphins(count, x, y, leap)`.
+
 ## Unreleased — MONARCH MOTORS and the Prestige Collection
 
 A flagship luxury car dealership on Monarch Isle, and eleven new hypercars and grand tourers you

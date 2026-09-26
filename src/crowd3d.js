@@ -2796,6 +2796,8 @@
         serve: 'vbServe',
         cheer: 'cheer',
         throw: 'throw',
+        // The SHARK! alarm (sealife.js).
+        point: 'point',
       };
       const beachFacing = new Three.Matrix4();
       function beachSpec(p) {
