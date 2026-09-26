@@ -1174,8 +1174,8 @@ docs/audit/missions-qa.md shows the method).
   cookie (hot centre, even plateau, faint caustic ring, narrow penumbra, a whisper of spill,
   slightly oval) lights the ground, cars, facades and the player through their own
   materials, so the player is lit from above with their own colour and detail and casts a
-  sharp shadow away from the helicopter (HIGH/ULTRA while sun shadows are HIGH, switched only
-  on a tier or shadow setting change). Its brightness is set as exposed light (divided by
+  sharp shadow away from the helicopter (whenever sun shadows are on: 512 texels below HIGH,
+  1024 on HIGH, 2048 on ULTRA; switched only on a tier or shadow setting change). Its brightness is set as exposed light (divided by
   `postLook.exposure`): pale paving comes out near white without clipping, asphalt a clear
   mid grey, and dark ground stays under the night bloom threshold. The shaft is a garnish,
   drawn on HIGH/ULTRA only: faint in clear air, fuller in rain and murk, thinned over its last
@@ -1184,7 +1184,13 @@ docs/audit/missions-qa.md shows the method).
   alone. The aim is a critically damped spring fed with most of the target's velocity (a fast
   car leads the pool slightly), with the operator's sway and the airframe's buzz on top; it
   sweeps a widening figure round the last sighting while searching (the player under cover)
-  and snaps on with a flare when they are found again. The lamp's place on the airframe is
+  and snaps on with a flare when they are found again. Under overhead cover the light lands
+  on the roof, never on the target below (`searchlightLanding`: air-cover.js
+  `overheadCoverHeight` when present, else `overheadCover`'s top and footprint, else the
+  drive-in garages' roofs from `GARAGES`): the aim, the shaft's ground and the pool go to the
+  roof's top, and an invisible shadow-only box on the roof's footprint (`airRoofStandIn`)
+  stops the spot even where the cutaway has hidden the roof; with shadows off the light's
+  reach ends just under the roof instead. The lamp's place on the airframe is
   `HELI_SEARCHLIGHT_MOUNT` (forward / side / up from the helicopter's position): the only
   thing it takes from the helicopter model. Why: the old shaft was integrated down to the
   ground through the player (the march cannot read the depth buffer it is drawn into) and
