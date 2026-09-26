@@ -136,8 +136,10 @@
       // officers and police vehicles removed, stars, calls and unreported crimes
       // cleared), a victim standing 60 units in front of the player, `count`
       // onlookers 170+ units off to the side facing the victim, and with `police`
-      // a crewed patrol car 180 units behind the player. Returns the positions.
-      witnessStage(count = 1, police = false, radius = 1100) {
+      // a crewed patrol car 180 units behind the player. `lookAway` stands them
+      // 120 units off facing away (they notice a body, not a quiet killing).
+      // Returns the positions.
+      witnessStage(count = 1, police = false, radius = 1100, lookAway = false) {
         if (player.car) exitCar();
         clearPolice(false);
         const far = (e) => distanceBetween(e, player) >= radius;
@@ -164,10 +166,10 @@
           onlookers = [];
         for (let i = 0; i < count; i++) {
           const side = i % 2 ? -1 : 1,
-            off = 170 + Math.floor(i / 2) * 30,
+            off = (lookAway ? 120 : 170) + Math.floor(i / 2) * 30,
             x = victim.x - fy * off * side,
             y = victim.y + fx * off * side;
-          onlookers.push(person(x, y, Math.atan2(victim.y - y, victim.x - x)));
+          onlookers.push(person(x, y, Math.atan2(victim.y - y, victim.x - x) + (lookAway ? Math.PI : 0)));
         }
         let car = null;
         if (police) {

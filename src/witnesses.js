@@ -34,7 +34,7 @@
     // The response to the last report: where the units are going and when the first arrived.
     const policeResponse = { active: false, x: 0, y: 0, at: -100, eta: 0, arrivedAt: -100, kind: '', street: '' };
     const lawEyes = { at: -100, seen: false };
-    const witnessStats = { banked: 0, reports: 0, calls: 0, dropped: 0, silenced: 0, seenByPolice: 0, heardByPolice: 0, stumbledOn: 0 };
+    const witnessStats = { banked: 0, reports: 0, calls: 0, dropped: 0, silenced: 0, seenByPolice: 0, heardByPolice: 0, stumbledOn: 0, bodiesFound: 0 };
     let witnessTimer = 0;
 
     /* A police unit that could see anything: officers on their feet, crewed cruisers
@@ -243,7 +243,7 @@
     }
     function updatePoliceResponse() {
       if (!policeResponse.active) return;
-      if (wantedStars <= 0 || !searchActive) {
+      if (wantedStars <= 0 || policeHaveEyesOnPlayer()) {
         policeResponse.active = false;
         return;
       }
@@ -252,6 +252,8 @@
       for (const c of vehicles)
         if (c.cop && c.hp > 0 && !c.airUnit && distanceBetween(c, lastSeen) < reach) {
           policeResponse.arrivedAt = gameTime;
+          if (gameMode === 'play')
+            dispatchCaption('UNIT ON SCENE' + (policeResponse.street ? ' · ' + policeResponse.street.toUpperCase() : '') + ' · SEARCHING THE AREA', null);
           return;
         }
     }
@@ -376,6 +378,17 @@
         from = body ? (inc.focus?.deadTime ?? inc.start) : inc.start,
         to = body ? from : inc.time;
       let heat = takeUnreportedCrimes(inc.x, inc.y, from, to, body ? inc.focus : null);
+      // A body found long after, with the player nowhere near: the police have a
+      // case, not a suspect to chase. They go and look; nobody is wanted.
+      if (body && heat && wantedStars <= 0 && gameTime - from > 30 && distanceBetween(player, inc) > policeSearchRadius(1) * 1.5) {
+        witnessStats.bodiesFound++;
+        if (gameMode === 'play') {
+          const street = spokenStreet(inc.x, inc.y);
+          dispatchCaption('911 CALL · BODY FOUND' + (street ? ' · ' + street.toUpperCase() : '') + ' · UNIT RESPONDING', null);
+          tell('A BODY HAS BEEN FOUND · THE POLICE ARE INVESTIGATING', 3);
+        }
+        return false;
+      }
       if (!heat) {
         // Already known to the police (or an accident): the call changes nothing.
         if (wantedStars > 0 || !REPORT_BASE[inc.kind]) return false;

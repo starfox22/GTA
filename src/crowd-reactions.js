@@ -367,8 +367,12 @@
             crowd.bodies.push(e);
       for (const body of crowd.bodies) {
         let inc = bodyIncidents.get(body);
+        // An old incident the crowd has since dropped: whoever finds it now starts a new one.
+        if (inc && !crowd.incidents.includes(inc)) inc = null;
         forPeopleNear(body.x, body.y, ALARM_REACH.body, (p, d) => {
           if (p.hp <= 0 || p.react || p.pending || p.leader || p.onDeck || personIncapacitated(p)) return;
+          // Each person takes in a given body once (then they watch, call or move on).
+          if (p.bodySeen === body) return;
           if (d > 55 && !crowdSight(p, body)) return;
           if (!inc) {
             inc = crowdIncident('body', body, body.killedBy === player ? player : null, 1);
@@ -376,6 +380,7 @@
             bodyIncidents.set(body, inc);
           }
           inc.time = gameTime;
+          p.bodySeen = body;
           p.pending = { inc, at: gameTime + randomBetween(0.15, 0.6), sees: true, d };
           if (inc.attacker === player) noteWitness(p, inc, true, d);
         });

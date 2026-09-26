@@ -7,7 +7,7 @@
      * bubble system (crowd-speech.js) still shows at most two.
      */
     const AMBIENT_GAP = 1.6,
-      AMBIENT_KINDS = new Set(['idle', 'night', 'morning', 'lunch', 'evening', 'rainTalk', 'beachTalk', 'officeTalk', 'docksTalk', 'parkTalk', 'sirens', 'aftermath', 'chat', 'phoneTalk', 'greet']);
+      AMBIENT_KINDS = new Set(['idle', 'night', 'morning', 'lunch', 'evening', 'rainTalk', 'beachTalk', 'officeTalk', 'docksTalk', 'parkTalk', 'sirens', 'aftermath', 'crashTalk', 'chat', 'phoneTalk', 'greet']);
     let ambientSaidAt = -100,
       remarkTimer = 0,
       remarkSaidAt = -100;
@@ -76,6 +76,7 @@
         'Did anybody call the cops?',
         'I still can’t stop shaking.',
       ],
+      crashTalk: ['Did you see that crash back there?', 'People drive like maniacs here.', 'Somebody’s gonna get killed on this street.', 'That car was flying.'],
       // Seeing something done in front of them.
       sawCrime: ['Hey! What are you doing?!', 'Oh my god!', 'Did he just…?', 'Somebody stop him!', 'Hey! That’s not yours!', 'Are you seeing this?'],
       // Onlookers round a body, holding each other up.
@@ -106,8 +107,9 @@
       const h = crowd.hour,
         r = seededRandom();
       for (const inc of crowd.incidents)
-        if (inc.loud && gameTime - inc.time < 150 && gameTime - inc.time > 20 && Math.abs(inc.x - p.x) < 900 && Math.abs(inc.y - p.y) < 900)
-          if (r < 0.5) return 'aftermath';
+        if (gameTime - inc.time < 150 && gameTime - inc.time > 20 && Math.abs(inc.x - p.x) < 900 && Math.abs(inc.y - p.y) < 900 && r < 0.5)
+          if (inc.loud || inc.kind === 'body' || inc.kind === 'melee') return 'aftermath';
+          else if (inc.kind === 'crash' && inc.severity > 1) return 'crashTalk';
       if (wantedStars > 0 && r < 0.35) return 'sirens';
       if (weather.rain > 0.3 && r < 0.5) return 'rainTalk';
       if (h >= 22 || h < 5) return r < 0.6 ? 'night' : 'idle';

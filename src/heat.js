@@ -111,7 +111,9 @@
       if (searchActive && gameTime - lastHeatAt > 8)
         wantedHeat = Math.max(HEAT_STARS[visible], wantedHeat - deltaSeconds * 1.5);
       const earned = starsForHeat(wantedHeat);
-      if (earned > visible && visible < 5) {
+      // A reported crime escalates once the first units are on the scene, not
+      // while dispatch is still getting them there (witnesses.js).
+      if (earned > visible && visible < 5 && !policeResponseHolding()) {
         escalateSeconds += deltaSeconds;
         if (escalateSeconds >= ESCALATE_SECONDS[visible + 1]) {
           escalateSeconds = 0;

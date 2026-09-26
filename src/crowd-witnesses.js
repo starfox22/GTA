@@ -26,7 +26,8 @@
       WITNESS_CALL_CHANCE = { gunfire: 1, explosion: 1, melee: 1, knock: 1, body: 1, carjack: 1, theft: 0.8, crime: 0.6, crash: 0.35 },
       // Reactions that leave no hand free for a phone (or no nerve).
       CALL_BLOCKING = new Set(['flee', 'cower', 'freeze', 'shelter', 'dodge', 'handsUp', 'kneel', 'groan', 'call', 'point', 'fist', 'shout', 'argue', 'help', 'returnCar']);
-    let witnessDirectorTimer = 0;
+    let witnessDirectorTimer = 0,
+      witnessToldAt = -100;
     /* Within the person's field of view (or close enough to notice regardless). */
     function witnessFacing(p, source, d) {
       if (d < 55) return true;
@@ -125,6 +126,11 @@
       if (!r.opened && r.t > 1.1) {
         r.opened = true;
         sayCallLine(p, call911Opening(r.inc, p), 3.6);
+        // On screen and about the player: the one warning they get.
+        if (r.inc?.attacker === player && !r.inc.reported && wantedStars <= 0 && crowdInView(p.x, p.y, 0) && gameTime - witnessToldAt > 12) {
+          witnessToldAt = gameTime;
+          tell('SOMEONE IS CALLING 911', 2.2);
+        }
       }
       if (r.opened && !r.detailed && r.t > Math.max(4.2, r.callTime * 0.6)) {
         r.detailed = true;

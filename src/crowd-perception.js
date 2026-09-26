@@ -154,6 +154,19 @@
       }
       if (inc.kind === 'crash' || inc.kind === 'knock' || inc.kind === 'body') {
         if (cur && !['startle', 'hurry'].includes(cur)) return;
+        // A body with somebody armed standing over it: nobody stays to look.
+        if (
+          inc.kind === 'body' &&
+          !playerUnarmed() &&
+          !player.car &&
+          distanceBetween(player, inc) < 160 &&
+          distanceBetween(p, player) < 420 &&
+          crowdSight(p, player)
+        ) {
+          startReaction(p, 'flee', randomBetween(5, 8), player, inc, { scream: r < 0.5 });
+          crowdSay(p, 'gasp', 0.6);
+          return;
+        }
         // A crowd forms, but only so big: past a dozen, newcomers look and move on.
         let gathered = 0;
         for (const other of crowd.incidents)
