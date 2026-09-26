@@ -1,0 +1,48 @@
+# Builds the playable zip (DeadEndCity/index.html + media/ + README.txt) and attaches it to
+# a GitHub Release, so the game is always downloadable from the repo's Releases page:
+# - every push updates the rolling "latest" release (the newest build of the pushed branch);
+# - pushing a tag like v31.0.0 creates a permanent release for that version;
+# - "Run workflow" on the Actions tab rebuilds on demand.
+name: Release zip
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-zip-${{ github.ref_type }}
+  cancel-in-progress: true
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the zip
+        run: python3 tools/build.py --zip dist/DeadEndCity.zip
+
+      - name: Publish the rolling "latest" release
+        if: github.ref_type == 'branch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest dist/DeadEndCity.zip \
+            --title "Latest build" \
+            --target "$GITHUB_SHA" \
+            --notes "Newest build of \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}). Download DeadEndCity.zip, unzip it and double-click DeadEndCity/index.html (Chrome, Edge, Firefox or Safari)."
+
+      - name: Publish the version release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/DeadEndCity.zip \
+            --title "Dead End City $GITHUB_REF_NAME" \
+            --notes "Download DeadEndCity.zip, unzip it and double-click DeadEndCity/index.html. Release notes: docs/CHANGELOG.md."

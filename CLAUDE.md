@@ -14,7 +14,7 @@ sh tools/check.sh [tag]                  # syntax gate only (dist/check/<tag>.{h
 python3 tools/build.py                   # dead-end-city.html (local, git-ignored: never commit it)
 python3 tools/build.py --out dist/game.html            # scratch build
 python3 tools/build.py --split-media dist/publish      # dist/publish/index.html + media/*.mp3 (the artifact)
-python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}
+python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI (.github/workflows/release-zip.yml) attaches it to the "latest" GitHub Release on every push, and to a versioned release for tags v*
 python3 tools/filemap.py                 # regenerate docs/FILEMAP.md after adding/removing/renaming files
 node tools/smoke.mjs dist/game.html dist/smoke         # headless boot, walk, drive, map: errors + 5 screenshots
 node tools/tour.mjs steps.json dist/tour dist/game.html   # scripted screenshots (?dev console)

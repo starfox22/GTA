@@ -8,7 +8,8 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
 
 - **In the browser**: open the published build,
   https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B, and press **ENTER THE CITY**.
-- **Downloaded**: unzip `DeadEndCity.zip` and double-click `DeadEndCity/index.html`
+- **Downloaded**: get `DeadEndCity.zip` from this repository's **Releases** page ("Latest
+  build" is rebuilt on every push; tagged versions are kept), unzip it and double-click `DeadEndCity/index.html`
   (Chrome, Edge, Firefox or Safari). Keep the `media` folder beside it: the car radio
   streams its music from there. Everything else is inside `index.html`, and nothing is
   fetched from the network.
