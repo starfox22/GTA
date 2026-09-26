@@ -53,9 +53,11 @@ index plus one.
 ## Public demo (`DEMO_BUILD`, game-state.js; campaign.js PUBLIC DEMO)
 
 - `DEMO_BUILD = true` today. A normal player gets missions 1 and 2 (`DEMO_MISSIONS`); later
-  jobs show locked with a FULL GAME badge and a buy note. The payphone stops ringing after
+  jobs show locked and nameless (`???`, `missionPickerTitle`) with a FULL GAME badge and a buy note
+  (a story job not reached yet is `???` too). The payphone stops ringing after
   mission 2 (`storyCallWaiting`), and completing it shows the DEMO COMPLETE card
-  (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`). Completion is kept
+  (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`) the first time only; a
+  replay of mission 2 is just a payday. Completion is kept
   in `dead-end-city-demo`. `demoLocked()` is the gate.
 - Never gated (not missions): the hill climb, volleyball, the stadium ball, the pier rides,
   bike share, cabs, rail, the liner, casino, garages, gun shop, Fort Sentinel, the Apache,

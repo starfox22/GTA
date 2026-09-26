@@ -490,7 +490,7 @@
       finishCampaignMission(missionState);
       mission = null;
       // PUBLIC DEMO: mission 2 brings up the DEMO COMPLETE card (campaign.js).
-      const demoEnd = demoMissionWon(missionState.index);
+      const demoEnd = demoMissionWon(missionState.index, completed > previousCompleted);
       if (completed > previousCompleted) newCallNotice();
       enemies.length = 0;
       storyActors
