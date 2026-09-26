@@ -1,6 +1,5 @@
 # Changelog
 
-<<<<<<< HEAD
 ## Unreleased — speed box on foot, km/h / mph, South Coast Cycle bike share
 
 Speed box (hud.js SPEED BOX)
@@ -40,7 +39,6 @@ South Coast Cycle bike share (cycles.js, cycles3d.js)
   breakables from merged vertex-coloured parts (one instance per bike), a handful of draws per
   map cell. Every size follows the bicycle's length (`SHARE_BIKE_LENGTH`) or the metre.
 - `DeadEndCity.bikeShare()` (network, nearest station, rent/dock log), `DeadEndCity.bikeStation(id)`.
-=======
 ## Unreleased — a 90s volume knob, the radio at 100 by default
 
 Radio volume (car-radio.js RADIO VOLUME, shell.html, settings.js)
@@ -67,7 +65,6 @@ Radio volume (car-radio.js RADIO VOLUME, shell.html, settings.js)
   (`radioVolumeSet`), so a deliberate 80 stays 80.
 - `DeadEndCity.radio()` reports `volumeSet` and `knob` (value, angle, lit LEDs, readout, drag mode,
   the last drag) in place of `slider`.
->>>>>>> worktree-agent-a62ff53c76f66cc6e
 
 ## Unreleased — speech bubbles seen from above, the Falcon's riders scream and talk
 
