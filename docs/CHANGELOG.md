@@ -36,6 +36,7 @@
   bike-share stations, fountains, rigging, gulls and garden birds.
 - **Night light**: the island has its own lamp light map beside the city's (lighting3d.js).
 - Console: `DeadEndCity.monarch()` (plan, traffic, walkers, walk-graph audit).
+
 ## Unreleased — one character rig for everyone: the player, police, NPCs
 
 Characters (character-rig3d.js new, crowd3d.js rewritten; render3d.js, beach3d.js, sports3d.js,
