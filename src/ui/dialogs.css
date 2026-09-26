@@ -1,0 +1,221 @@
+/* --- DIALOGS: one panel style for pause, calls, shops, help ---------------- */
+.overlay {
+  background: #05080cd0;
+  backdrop-filter: blur(6px) saturate(0.8);
+}
+.dialog {
+  border-radius: 14px;
+  border: 1px solid var(--ui-line-strong);
+  background: linear-gradient(180deg, #151d24f5, #0f151bf5);
+  box-shadow: 0 30px 90px #000b;
+  font-family: var(--ui-font);
+  animation: dialogIn 0.35s var(--ui-ease);
+}
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+}
+.primary {
+  border-radius: 8px;
+  transition:
+    filter 0.2s,
+    transform 0.2s var(--ui-ease);
+}
+.primary:hover {
+  transform: translateY(-1px);
+}
+.secondary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  background: #ffffff0b;
+  border-color: var(--ui-line);
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    padding 0.25s var(--ui-ease);
+}
+.secondary > span {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--ui-dim);
+}
+.secondary:hover,
+.secondary:focus-visible {
+  filter: none;
+  background: #d7f97014;
+  border-color: #d7f97066;
+  padding-left: 20px;
+}
+.pause-dialog {
+  width: min(420px, 92vw);
+}
+/* HOW TO PLAY: the key grid (hud.js renderControlsHelp) in labelled groups. */
+#controlGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 6px 22px;
+  margin-bottom: 14px;
+}
+#controlGrid section h3 {
+  margin: 12px 0 6px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--ui-gold);
+}
+#controlGrid section > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 0;
+  border-bottom: 1px solid #ffffff0d;
+}
+#controlGrid kbd {
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: center;
+}
+#controlGrid p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #c3ccbf;
+}
+.help-touch {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #b5beb1;
+}
+.help-touch kbd {
+  margin-right: 6px;
+}
+#missionSelect.god-mode #campaignProgress {
+  color: var(--ui-gold);
+}
+/* God mode's world panel in the mission picker: time of day and weather,
+   in the settings screen's controls (campaign.js renderGodWorld). */
+.god-world {
+  margin: 18px 0 4px;
+  padding: 16px 18px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--ui-line-strong);
+  background: linear-gradient(180deg, #141c23f2, #0c1217f2);
+  font-family: var(--ui-font);
+  animation: dialogIn 0.35s var(--ui-ease);
+}
+.god-world-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.god-world-title,
+.god-world-sub {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: var(--ui-gold);
+}
+.god-world-sub {
+  margin: 14px 0 8px;
+}
+.god-world-clock {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.god-world-clock b {
+  font:
+    900 italic 28px/1 var(--ui-font);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.god-world-clock small {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  color: var(--acid);
+}
+.settings-choice.god-choice {
+  flex-wrap: wrap;
+  gap: 2px;
+  border-radius: 18px;
+}
+.god-choice button {
+  flex: 1 1 auto;
+  min-height: 32px;
+}
+.god-slider {
+  position: relative;
+  display: block;
+  margin-top: 12px;
+}
+/* The track is the sky through the day: night, dawn, noon, golden hour, dusk. */
+.god-slider input {
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.god-slider input::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--ui-line-strong);
+  background: linear-gradient(90deg, #0b1026 0%, #1c2447 21%, #e5936a 25.5%, #8fc3e6 36%, #6fb3ea 50%, #9cc6e0 70%, #f0b060 78%, #e0704a 83%, #2a2d5a 88%, #0b1026 100%);
+}
+.god-slider input::-moz-range-track {
+  height: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--ui-line-strong);
+  background: linear-gradient(90deg, #0b1026 0%, #1c2447 21%, #e5936a 25.5%, #8fc3e6 36%, #6fb3ea 50%, #9cc6e0 70%, #f0b060 78%, #e0704a 83%, #2a2d5a 88%, #0b1026 100%);
+}
+.god-slider input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -7px;
+  border-radius: 50%;
+  border: 3px solid var(--acid);
+  background: #fff;
+  box-shadow: 0 2px 10px #000a;
+}
+.god-slider input::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--acid);
+  border-radius: 50%;
+  background: #fff;
+}
+.god-slider input:focus-visible {
+  outline: 2px solid var(--acid);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.god-slider-hours {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--ui-dim);
+}
+.god-slider-hours i {
+  font-style: normal;
+}
+@media (pointer: coarse) {
+  .god-choice button {
+    min-height: 40px;
+  }
+  .god-slider input {
+    height: 40px;
+  }
+}

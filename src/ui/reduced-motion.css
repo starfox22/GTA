@@ -1,0 +1,48 @@
+/* --- Reduced motion: keep the states, drop the movement -------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .title-art,
+  .title-logo,
+  .title-tagline,
+  .edition,
+  .menu-item,
+  .menu-caption,
+  .menu-foot,
+  .dialog,
+  .settings-panel,
+  .settings-body.enter .settings-row,
+  #pager,
+  #pager.compact,
+  #vehicleStats.active,
+  #carRadio,
+  #carRadio.radio-waiting #radioTrack,
+  #interaction,
+  #storyLine.show,
+  #announcement.show strong,
+  .hud-stars i.gained,
+  .hud-stars.wanted i.on,
+  .radio-eq i,
+  .radio-volume.muted .lcd-mute,
+  #healthbox.low .vital.health i,
+  .binding-key.listening,
+  .bindings-clash,
+  #flightHud * {
+    animation: none !important;
+  }
+  #topbar *,
+  #bottom *,
+  #carRadio *,
+  #carRadio,
+  #toast,
+  #announcement,
+  #interaction,
+  .menu-item,
+  .menu-item::before,
+  .settings-tabs button::after,
+  .settings-switch i::after,
+  .minimap-box,
+  .minimap-frame,
+  #flightHud,
+  #flightHud * {
+    transition-duration: 0.01ms !important;
+  }
+}

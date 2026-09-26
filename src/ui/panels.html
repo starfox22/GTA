@@ -1,0 +1,222 @@
+    <div class="hidden" id="sportsbook" role="dialog" aria-modal="true" aria-labelledby="sbTitle">
+      <div class="sb-panel">
+        <header class="sb-head">
+          <div class="sb-brand" id="sbTitle">
+            <span class="sb-ball" aria-hidden="true"></span><b>GOALLINE</b><small>SPORTS BET</small>
+          </div>
+          <div class="sb-format settings-choice" id="sbFormat" role="radiogroup" aria-label="Odds format">
+            <button type="button" role="radio" data-format="decimal">DECIMAL</button
+            ><button type="button" role="radio" data-format="fractional">FRACTIONAL</button
+            ><button type="button" role="radio" data-format="american">AMERICAN</button>
+          </div>
+          <div class="sb-wallet"><span>CASH</span><strong id="sbCash">$0</strong></div>
+          <button id="sbClose" class="settings-close" type="button"><kbd>ESC</kbd> LEAVE</button>
+        </header>
+        <section class="sb-match" id="sbMatch">
+          <div class="sb-team">
+            <canvas id="sbCrestHome" width="96" height="96" aria-hidden="true"></canvas>
+            <b id="sbHomeName"></b><small>HOME</small>
+          </div>
+          <div class="sb-centre">
+            <span class="sb-badge" id="sbBadge" data-state="live">LIVE</span>
+            <strong class="sb-score" id="sbScore">0 – 0</strong>
+            <span class="sb-clock" id="sbClock"></span>
+            <span class="sb-note" id="sbNote"></span>
+          </div>
+          <div class="sb-team away">
+            <canvas id="sbCrestAway" width="96" height="96" aria-hidden="true"></canvas>
+            <b id="sbAwayName"></b><small>AWAY</small>
+          </div>
+          <div class="sb-league" id="sbLeague"></div>
+          <div class="sb-status" id="sbStatus" role="status" aria-live="polite"></div>
+          <div class="sb-progress"><i id="sbProgress"></i></div>
+        </section>
+        <nav class="sb-tabs settings-tabs" role="tablist" aria-label="Sportsbook">
+          <button role="tab" id="sbTabMarkets" type="button">MARKETS</button
+          ><button role="tab" id="sbTabBets" type="button">MY BETS <span id="sbOpenCount"></span></button>
+          <span class="settings-tab-keys" aria-hidden="true"><kbd>M</kbd></span>
+        </nav>
+        <div class="sb-main">
+          <div class="sb-list" id="sbMarkets"></div>
+          <div class="sb-list hidden" id="sbBets"></div>
+          <aside class="sb-slip empty" id="sbSlip" aria-label="Bet slip">
+            <header><b>BET SLIP</b><button type="button" id="sbClear" class="sb-clear">CLEAR</button></header>
+            <div class="sb-pick">
+              <small id="sbPickMarket"></small>
+              <b id="sbPickLabel"></b>
+              <strong id="sbPickOdds"></strong>
+            </div>
+            <p class="sb-slip-hint">Pick a price to start a bet. Odds move with the match.</p>
+            <label for="sbStake">STAKE</label>
+            <div class="sb-stake"><span>$</span><input id="sbStake" type="number" inputmode="numeric" min="1" step="1" value="10" /></div>
+            <div class="sb-chips" id="sbChips">
+              <button type="button" data-chip="10">$10</button><button type="button" data-chip="50">$50</button
+              ><button type="button" data-chip="100">$100</button><button type="button" data-chip="500">$500</button
+              ><button type="button" data-chip="max">MAX</button>
+            </div>
+            <input id="sbSlider" class="sb-slider" type="range" min="0" max="1000" step="1" value="0" aria-label="Stake slider" />
+            <div class="sb-return"><span>POTENTIAL RETURN</span><strong id="sbReturn">$0</strong><small id="sbProfit"></small></div>
+            <p class="sb-slip-error" id="sbSlipError" role="alert"></p>
+            <button type="button" class="sb-place" id="sbPlace">PLACE BET</button>
+            <div class="sb-stamp" id="sbStamp" aria-live="assertive"></div>
+          </aside>
+        </div>
+        <footer class="sb-foot">
+          <span class="sb-keys" aria-hidden="true"
+            ><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> PRICES <kbd>ENTER</kbd> PICK / PLACE <kbd>+</kbd><kbd>−</kbd> STAKE <kbd>F</kbd> ODDS FORMAT</span
+          >
+          <span class="sb-fine">Winnings are paid straight into your cash. Please gamble responsibly · 18+</span>
+        </footer>
+      </div>
+    </div>
+    <div class="overlay hidden" id="pauseMenu">
+      <div class="dialog pause-dialog">
+        <div class="eyebrow">TAKE A BREATHER</div>
+        <h2>CITY ON HOLD.</h2>
+        <p id="pauseInfo">Your ride will be right where you left it.</p>
+        <button class="primary" id="resumeBtn">BACK TO THE STREETS <span>↗</span></button
+        ><button class="secondary" id="chooseMissionPause">CHOOSE MISSION</button
+        ><button class="secondary" id="pauseSettings">SETTINGS <span>GRAPHICS · AUDIO · CONTROLS</span></button
+        ><button class="secondary" id="pauseHelp">HOW TO PLAY</button
+        ><button class="secondary" id="creditsBtn">CREDITS</button
+        ><button class="secondary danger" id="restartMission">RESTART CURRENT JOB</button
+        ><button class="text-btn" id="newGame">NEW GAME <span>RESET THIS RUN</span></button>
+        <p class="fine">Progress stays on this browser. Press Escape to resume.</p>
+      </div>
+    </div>
+    <div
+      class="overlay hidden"
+      id="settingsOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settingsTitle"
+    >
+      <div class="settings-panel">
+        <header class="settings-head">
+          <div>
+            <span class="eyebrow">DEAD END CITY · OPTIONS</span>
+            <h2 id="settingsTitle">SETTINGS<span>.</span></h2>
+          </div>
+          <button id="closeSettings" class="settings-close" type="button">
+            <kbd>ESC</kbd> BACK
+          </button>
+        </header>
+        <nav class="settings-tabs" id="settingsTabs" role="tablist" aria-label="Settings sections">
+          <button role="tab" data-tab="graphics" type="button">GRAPHICS</button
+          ><button role="tab" data-tab="audio" type="button">AUDIO</button
+          ><button role="tab" data-tab="gameplay" type="button">GAMEPLAY</button
+          ><button role="tab" data-tab="driving" type="button">DRIVING</button
+          ><button role="tab" data-tab="controls" type="button">CONTROLS</button>
+          <span class="settings-tab-keys" aria-hidden="true"><kbd>Q</kbd><kbd>E</kbd></span>
+        </nav>
+        <div id="settingsBody" class="settings-body" role="tabpanel"></div>
+        <footer class="settings-foot">
+          <span id="settingsHint"></span>
+          <span class="settings-keys" aria-hidden="true"
+            ><kbd>↑</kbd><kbd>↓</kbd> SELECT <kbd>←</kbd><kbd>→</kbd> CHANGE <kbd>ENTER</kbd> BIND</span
+          >
+        </footer>
+      </div>
+    </div>
+    <div class="overlay hidden" id="help">
+      <div class="dialog help-dialog">
+        <div class="eyebrow">THE STREET MANUAL</div>
+        <h2>KNOW THE CONTROLS.</h2>
+        <div class="control-grid" id="controlGrid"></div>
+        <p class="help-touch">
+          <kbd>TOUCH</kbd> Move with the left stick, aim and fire with the right. Context buttons
+          handle driving, flying and missions. Turn them on or off in Settings · Controls.
+        </p>
+        <p class="help-tip">
+          Press E at the payphone, then Enter to accept the caller’s job. Eleven connected jobs take
+          you across Northbank, Palm Keys and Southport Airport. Explore the wider county via five
+          new crossings: Ridgeline mountain roads, Stonecreek, Northridge, Eastgate, Oceanview and
+          Palmshore. Oceanview International sits in the southern outskirts. Fort Sentinel is a
+          restricted military island in the southeast: E breaches the barrier; steal a tank and use
+          W/S to drive, A/D to pivot and F to fire its cannon. LIFT marks The Blue Hour: press E to
+          ride to its walkable rooftop terrace, bar and return elevator. During Mission 2, collect
+          guest clothes, walk calmly, and hold E near the unaware target for a quiet takedown. Or
+          press P beside his reserved drink on the west table. The drink takes 8 seconds; you can
+          leave while waiting. F draws your concealed pistol. Escape via the elevator. Outside this
+          job, weapons stay holstered on the terrace. The yellow jet ski waits at Bay Launch, marked
+          JET on the Palm Keys shore. Rust jackets belong to Harbor Kings; violet to Glasshouse
+          Crew. Buy weapons at GUN. Sleep at ZZ to heal and advance time. Hospitals provide
+          treatment; bars serve food; clubs open at 20:00. Boats are tied to the wooden river docks.
+          Break police sight and keep hidden until the countdown ends to clear all stars. Steal
+          helicopters at the H markers: Police HQ and Riverside. Slow down over clear ground to
+          land; press E after touchdown. Cars dent and smoke as damage builds. Face your target to
+          shoot. Nearby threats in front of you are aimed at automatically. Mouse aiming is
+          optional. Follow yellow markers for jobs. Green crosses heal; purple crates refill ammo.
+          Four R markers show drive-in respray shops. Drive fully inside an open bay, stop, and
+          press E. Repairs and paint cost $250. Mission 1: leaving the harbor starts a visible
+          10-second police countdown. Vinny covers the loaded truck’s first respray; use any R
+          garage to lose the cops, then deliver the crates. Mission 10: land, defeat the guards,
+          free Daniel and escort him to the helicopter. Mission 11: fly Daniel and the ledger; V
+          changes landing destination after the manifest is exposed. Escape in the van and drive
+          inside Vinny’s warehouse. Flyable courier planes, private jets and a large airliner wait
+          at the airports. The larger airliner needs Oceanview’s long runway. Hold W to accelerate,
+          then ↑ (climb) to rotate; a notch of flaps (X extends, Z retracts) shortens the take-off
+          roll, and L raises the gear once airborne. Excessive nose-up pitch or too little speed causes
+          a stall (the HUD and a horn warn first): release ↑, lower the nose with ↓ (descend), add W
+          throttle. Lower the gear (L) before landing. On approach keep a little power, reduce
+          descent and briefly raise the nose just before touchdown. Pinch the game view or scroll to
+          zoom out over the city; +/− zoom and 0 resets the view. Only one police helicopter follows
+          you. Hide in the U railway underpass in Northbank, take a boat beneath a bridge, or break
+          sight behind towers and mountain ridges. Stay unseen for 18 seconds and air support
+          leaves. Its search follows your last known position; coming back into view resets the
+          search. Shoot it down with rifles or a bazooka on foot, or use your handgun from a
+          vehicle. A destroyed helicopter cannot be replaced for 45 seconds. Ground patrols may
+          still pursue you. Vehicle gunfire is handgun-only; tank armor blocks ordinary bullets.
+          Find CAS on Palm Keys for roulette. Map: C or FIND ME centers on you. Tap or click any
+          destination for a cyan road route; drag to pan, pinch or use +/− to zoom, and CLEAR ROUTE
+          to remove it. City rail: look for M on the map. Press E at a station to choose any other
+          station; E on the train requests the next stop. Riding a cab or a train (or the
+          Meridian Star at sea), Y skips the ride: the screen fades, the clock moves on as far as
+          the ride would have taken, and you arrive; a cab charges its full fare, and on a train U
+          picks a different stop to skip to. Rail viaducts and station platforms
+          provide real overhead cover. Central Commons has a walking circuit and a separate green
+          cycle loop. Free bicycles wait by park racks and mountain trailheads: hold W to pedal, S
+          brakes, A/D steers. Deer and rabbits flee noise; foxes can approach quietly. Bears warn before
+          charging—back away or reach a vehicle. Wanted levels build gradually between stars; air
+          support takes at least eight seconds to arrive before switching on its searchlight.
+          Mountains: take a Ranger 4×4 from either trailhead to climb Mount Ascent or Needle Ridge.
+          Road tires lose grip on steep slopes. Guns and lodging are available on every island. J
+          jumps from an aircraft when safely above the ground; Space opens the parachute, with
+          automatic opening near the ground. Every key can be changed in Settings · Controls; this
+          manual names the defaults.
+        </p>
+        <button class="primary" id="closeHelp">GOT IT. <span>↗</span></button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="mapOverlay">
+      <div class="map-panel">
+        <div class="map-heading">
+          <div>
+            <div class="eyebrow">SOUTH COAST · 1997</div>
+            <h2>SOUTH COAST COUNTY.</h2>
+          </div>
+          <button id="findMe" class="secondary">FIND ME <kbd>C</kbd></button
+          ><button id="closeMap" class="secondary">CLOSE <kbd>TAB</kbd></button>
+        </div>
+        <div class="map-tools">
+          <button id="mapZoomOut" aria-label="Zoom map out">−</button
+          ><button id="mapZoomIn" aria-label="Zoom map in">+</button
+          ><button id="mapBasketball">BASKETBALL</button><button id="mapStadium">STADIUM</button
+          ><button id="clearRoute">CLEAR ROUTE</button
+          ><span id="mapRouteStatus"
+            >Tap a destination · Drag to pan · Pinch or use + / − to zoom</span
+          >
+        </div>
+        <canvas id="bigmap" width="800" height="660"></canvas>
+        <div class="legend">
+          <span><i class="yellow"></i> JOB / PAYPHONE</span><span><i class="green"></i> HEALTH</span
+          ><span><i class="purple"></i> AMMO</span><span><i class="blue"></i> RESPRAY</span
+          ><span><i class="bikeshare-key"></i> BIKE SHARE · $5</span
+          ><span><i class="police-map-key"></i> POLICE · FLASHING = PURSUIT</span
+          ><span>⊕ POLICE HELICOPTER</span><span>H HELIPAD</span><span>U RAILWAY UNDERPASS</span
+          ><span>M RAIL STATION</span><span>GUN ARMORY</span><span>ZZ SLEEP</span
+          ><span>CAS CASINO</span><span>+ HOSPITAL</span><span>BOAT / JET · WATERCRAFT</span
+          ><span>LIFT ROOFTOP</span><span>RUST / VIOLET GANGS</span><span>▲ YOU</span>
+        </div>
+      </div>
+    </div>

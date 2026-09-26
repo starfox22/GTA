@@ -1,0 +1,272 @@
+    <!-- HUD. Layout and motion live in the HUD section of the stylesheet; the
+         collapse/expand behaviour of the radio and weapon boxes and the minimap
+         fold and zoom are in src/hud.js. -->
+    <header id="topbar">
+      <div class="hud-location" id="hudLocation">
+        <span class="eyebrow" id="renderBadge">SOUTH COAST · DUSK</span>
+        <b id="district">OLD QUARTER</b>
+        <span class="street" id="streetName"></span>
+      </div>
+      <div class="hud-status">
+        <strong id="cash" class="hud-cash">$000000</strong>
+        <div id="stars" class="hud-stars" role="img" aria-label="Wanted level 0 of 5"></div>
+        <div id="heatMeter" class="hidden"><i id="heatFill"></i></div>
+        <span id="bodyCount"></span>
+        <div id="worldClock">DAY 1 · 17:20</div>
+      </div>
+      <button id="pauseBtn" class="icon-btn" aria-label="Pause game" title="Pause (Escape)">
+        <i></i><i></i>
+      </button>
+    </header>
+    <div id="fpsCounter" class="hidden" aria-hidden="true"></div>
+    <div id="terrainStatus"></div>
+    <div id="navigation">
+      <span id="navArrow">↑</span>
+      <div><b id="navTitle">NEXT JOB · PAYPHONE</b><span id="navDistance"></span></div>
+    </div>
+    <div id="policeStatusPanel">
+      <div id="chaseStatus"></div>
+      <div id="policeEscapeTimer" class="hidden">
+        <strong id="policeEscapeSeconds">0s</strong><span>TO LOSE POLICE</span>
+      </div>
+    </div>
+    <div id="policeNotice" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="arrestStatus" aria-live="polite">
+      <span id="arrestLabel">BEING ARRESTED · FIGHT OR RUN</span>
+      <div class="meter"><i id="arrestFill"></i></div>
+    </div>
+    <div id="damageArc" aria-hidden="true"></div>
+    <div id="tankReticle" class="hidden" aria-hidden="true"><i id="tankAimRing"></i><i id="tankBarrelPip"></i></div>
+    <div id="stealthStatus" style="display: none">
+      <span id="stealthLabel"></span>
+      <div class="meter"><i id="stealthFill"></i></div>
+    </div>
+    <div id="storyLine"></div>
+    <audio id="carRadioAudio" preload="auto" hidden></audio>
+    <aside id="carRadio" class="hidden hud-pop" aria-label="Car radio">
+      <div class="radio-chip">
+        <span class="radio-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        <strong id="radioStation">ODDBALL 99.3</strong>
+        <svg class="radio-chip-muted" viewBox="0 0 20 20" aria-hidden="true">
+          <path class="spk" d="M3 7.5h3.2L10.5 4v12L6.2 12.5H3z" /><path d="M13.2 7.6l4.8 4.8M18 7.6l-4.8 4.8" />
+        </svg>
+      </div>
+      <div class="hud-more">
+        <div class="hud-more-inner">
+          <div class="car-radio-top">
+            <span id="radioGenre">AFTER-HOURS MIX</span
+            ><button id="radioPower" aria-label="Toggle car radio" aria-pressed="true">N · ON</button>
+          </div>
+          <div id="radioTrack" aria-live="polite"></div>
+          <!-- The radio volume: a rotary knob inside an arc of LED segments, an LCD
+               readout and the speaker (mute); the same value as Settings · Audio ·
+               Radio & music (car-radio.js RADIO VOLUME builds the LEDs and digits). -->
+          <div class="radio-volume" id="radioVolumeRow">
+            <div
+              class="radio-knob"
+              id="radioKnob"
+              role="slider"
+              tabindex="0"
+              aria-label="Radio volume"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="100"
+              aria-valuetext="100%"
+            >
+              <svg class="knob-leds" id="radioKnobLeds" viewBox="-50 -50 100 100" aria-hidden="true"></svg>
+              <span class="knob-body" aria-hidden="true"
+                ><i class="knob-grip"></i><i class="knob-rim-light"></i><i class="knob-cap"></i><i class="knob-pointer"></i
+                ><i class="knob-gloss"></i
+              ></span>
+            </div>
+            <div class="radio-lcd" aria-hidden="true">
+              <span class="lcd-tags"><b class="lcd-vol">VOL</b><b class="lcd-mute">MUTE</b></span>
+              <svg class="lcd-digits" id="radioLcdDigits" viewBox="-1 -1 46 22"></svg>
+            </div>
+            <button id="radioMute" type="button" aria-label="Mute radio" aria-pressed="false" title="Mute radio">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path class="spk" d="M3 7.5h3.2L10.5 4v12L6.2 12.5H3z" />
+                <path class="wave w1" d="M13 7.4a3.6 3.6 0 0 1 0 5.2" />
+                <path class="wave w2" d="M15.3 5.2a6.8 6.8 0 0 1 0 9.6" />
+                <path class="cross" d="M13.2 7.6l4.8 4.8M18 7.6l-4.8 4.8" />
+              </svg>
+            </button>
+          </div>
+          <div class="radio-presets">
+            <button id="radioPreset0" aria-label="Tune Oddball 99.3, after-hours mix" aria-pressed="true">
+              ODDBALL</button
+            ><button id="radioPreset1" aria-label="Tune Neon 88.7, 80s synth" aria-pressed="false">
+              NEON</button
+            ><button id="radioPreset2" aria-label="Tune Riot 104.5, rock" aria-pressed="false">
+              RIOT</button
+            ><button id="radioPreset3" aria-label="Tune Velvet 91.5, lounge jazz" aria-pressed="false">
+              VELVET</button
+            ><button id="radioPreset4" aria-label="Tune Palms 95.9, island grooves" aria-pressed="false">
+              PALMS</button
+            ><button id="radioPreset5" aria-label="Tune Block 101.7, lo-fi beats" aria-pressed="false">
+              BLOCK</button
+            ><button id="radioNext" aria-label="Next radio station">B · NEXT</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div id="radioCaption" aria-live="polite"></div>
+    <div id="toast" aria-live="polite"></div>
+    <div id="announcement">
+      <small id="announceSmall"></small><strong id="announceBig"></strong>
+    </div>
+    <div id="interaction"></div>
+    <!-- Skip the ride (ride-skip.js): the fade to black and the arrival card. -->
+    <div id="rideSkip" class="hidden" aria-live="polite">
+      <div class="ride-skip-card">
+        <small id="rideSkipKicker"></small><strong id="rideSkipTitle"></strong
+        ><span id="rideSkipDetail"></span><i class="ride-skip-bar"><b id="rideSkipBar"></b></i>
+      </div>
+    </div>
+    <div id="sniperWarning" aria-hidden="true"></div>
+    <!-- Flight HUD (hud.js, FLIGHT HUD): shown in an aircraft only. -->
+    <div id="flightHud" aria-hidden="true">
+      <div class="fh-frame">
+        <div class="fh-top">
+          <canvas id="fhHeading"></canvas>
+          <div id="fhWarning" class="fh-warning" role="status" aria-live="assertive"></div>
+        </div>
+        <div class="fh-col fh-left">
+          <canvas id="fhAttitude" class="fh-adi"></canvas>
+          <div class="fh-tape"><span class="fh-cap" id="fhSpeedCap">IAS · KM/H</span><canvas id="fhSpeed"></canvas></div>
+          <div class="fh-block">
+            <div class="fh-row"><span id="fhPowerLabel">PWR</span><b id="fhPower">0%</b></div>
+            <div class="fh-bar"><i id="fhPowerFill"></i><em id="fhThrottleMark"></em></div>
+            <div class="fh-chips"><span id="fhFlaps" class="fh-chip">FLAPS UP</span><span id="fhGear" class="fh-chip">GEAR ▼</span></div>
+          </div>
+        </div>
+        <div class="fh-col fh-right">
+          <div class="fh-tape"><span class="fh-cap">ALT · M</span><canvas id="fhAltitude"></canvas></div>
+          <div class="fh-block">
+            <div class="fh-row"><span>AGL</span><b id="fhAgl">0 m</b></div>
+            <div class="fh-row"><span>V/S</span><b id="fhVs">0.0 m/s</b></div>
+            <div class="fh-row"><span>LOAD</span><b id="fhG">1.0 g</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom">
+      <section class="minimap-box" id="minimapBox">
+        <div class="minimap-frame" id="minimapFrame">
+          <canvas id="minimap" width="240" height="160" aria-label="Minimap. Scroll or pinch to zoom."></canvas>
+          <span class="mini-north" aria-hidden="true">N</span>
+          <span id="mapDistrict" class="mini-district">OLD QUARTER</span>
+          <span id="minimapZoomLabel" class="mini-zoom" aria-hidden="true"></span>
+          <button id="mapBtn" class="mini-map-btn" title="City map"><kbd id="mapKeyHint">TAB</kbd> MAP</button>
+        </div>
+        <button
+          id="minimapFold"
+          class="mini-fold"
+          aria-controls="minimapFrame"
+          aria-expanded="true"
+          aria-label="Minimize minimap"
+          title="Minimize minimap"
+        >
+          <span class="mini-fold-label">MAP</span><i aria-hidden="true"></i>
+        </button>
+        <div id="healthbox">
+          <div class="vital health"><i id="healthFill"></i></div>
+          <div class="vital armor"><i id="armorFill"></i></div>
+          <span class="status-label"
+            ><span>HEALTH <b id="healthValue">100</b></span><span id="armorLabel">NO ARMOR</span></span
+          >
+        </div>
+      </section>
+      <div class="bottom-middle">
+        <div id="pager">
+          <div class="pager-head">
+            <span class="blink">●</span> <span id="pagerLabel">INCOMING CALL</span
+            ><span id="missionCounter">01 / 09</span>
+          </div>
+          <div class="mission-copy">
+            <span
+              id="missionPortrait"
+              class="contact-portrait"
+              role="img"
+              aria-label="Mission contact portrait"
+            ></span>
+            <div>
+              <h2 id="missionTitle">Every city has an opening.</h2>
+              <p id="missionText">Find the ringing payphone to pick up your first job.</p>
+            </div>
+          </div>
+          <div id="cargoStatus" style="display: none">
+            <span id="cargoLabel">CARGO 0 / 3</span>
+            <div class="cargo-track"><i id="cargoFill"></i></div>
+          </div>
+          <p id="missionObjective" class="pager-objective"></p>
+          <div id="missionMeta">
+            <span id="missionDistance">PAYPHONE · 80 M</span><span id="missionTimer"></span>
+          </div>
+          <kbd id="pagerHint" title="Show the mission card">O</kbd>
+        </div>
+        <div class="quickkeys" id="quickKeys"></div>
+      </div>
+      <section id="equipment">
+        <div id="vehicleStats">
+          <span id="vehicleName">ON FOOT</span>
+          <div class="speed-readout"><strong id="speed">0</strong><small id="speedUnit">KM/H</small></div>
+          <div class="meter"><i id="carFill"></i></div>
+          <div class="assist-lamps" id="assistLamps" aria-label="Driving assists">
+            <span data-assist="abs">ABS</span><span data-assist="esc">ESC</span><span data-assist="tcs">TCS</span>
+          </div>
+        </div>
+        <button
+          id="weaponButton"
+          class="hud-pop"
+          type="button"
+          aria-label="Open arsenal. Q changes equipped weapon; K selects knife."
+          aria-haspopup="dialog"
+        >
+          <span class="hud-more"
+            ><span class="hud-more-inner weapon-head"
+              ><span class="eyebrow" id="weaponSlot">EQUIPPED · 2 WEAPONS</span
+              ><span id="weaponName">PISTOL</span></span
+            ></span
+          >
+          <span class="weapon-main">
+            <canvas id="weaponArt" width="328" height="116"></canvas>
+            <span class="ammo"
+              ><strong id="ammo">12</strong><span id="reserve">/ 96</span
+              ><kbd id="reloadHint">R</kbd></span
+            >
+          </span>
+          <span class="hud-more"
+            ><span class="hud-more-inner arsenal-hint"
+              ><span><kbd id="cycleKeyHint">Q</kbd> CHANGE WEAPON</span><span>CLICK FOR ARSENAL</span></span
+            ></span
+          >
+        </button>
+      </section>
+    </div>
+    <div id="touchControls" class="hidden" aria-label="Touch game controls">
+      <div
+        id="moveStick"
+        class="touch-stick"
+        role="group"
+        aria-label="Movement and steering joystick"
+      >
+        <span id="moveLabel">MOVE</span><i id="moveNub"></i>
+      </div>
+      <div id="aimStick" class="touch-stick" role="group" aria-label="Aim and fire joystick">
+        <span>AIM / FIRE</span><i id="aimNub"></i>
+      </div>
+      <div class="touch-utility">
+        <button id="touchMap">MAP</button><button id="touchRadio">RADIO</button
+        ><button id="touchStation">STATION</button><button id="touchWeapon">WEAPON</button
+        ><button id="touchReload">RELOAD</button><button id="touchRun" aria-label="Hold to walk">WALK</button>
+      </div>
+      <div class="touch-actions">
+        <button id="touchPoison">POISON</button><button id="touchDivert">DIVERT</button
+        ><button id="touchSkip" class="hidden">SKIP RIDE</button
+        ><button id="touchJump" class="touch-special">PARACHUTE</button
+        ><button id="touchAction">ACTION</button><button id="touchFire">FIRE</button
+        ><button id="touchUp">NOSE UP</button><button id="touchDown">NOSE DOWN</button
+        ><button id="touchGo" class="touch-go">GAS</button><button id="touchBrake">BRAKE</button>
+      </div>
+    </div>

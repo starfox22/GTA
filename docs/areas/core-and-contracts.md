@@ -21,9 +21,10 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   `game-console-graphics.js` are **one object literal** split in three: only valid together.
 - `src/asset-loader.js` sits outside the closure: it decodes the embedded media blocks
   (or, in a split build, returns the `data-src` URL of a streamed file) and calls
-  `startDeadEndCity(ASSETS)`. `src/shell.html` holds the DOM and CSS.
-- The top of `src/shell.html` has a SUBSYSTEM INDEX and AUDIT CONTRACTS comment from the
-  original upload. It is informative but not maintained (FILEMAP replaces the index), and
+  `startDeadEndCity(ASSETS)`. `src/shell.html` + `src/ui/*` hold the DOM and CSS
+  (ui-and-settings.md).
+- `src/ui/build-header.html` (the top of the built page) has a SUBSYSTEM INDEX and AUDIT
+  CONTRACTS comment from the original upload. It is informative but not maintained (FILEMAP replaces the index), and
   one line is stale: it says 512 units = 100 m; the scale is **512 units = 64 m**.
 
 ## Units and scale (game-state.js WORLD SCALE)
