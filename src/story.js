@@ -354,7 +354,7 @@
       el.title = CHARACTERS[id]?.name || 'Vinny Moretti';
     }
     const STORY_PROPER_NOUNS =
-      /\b(vinny|elena|mara|rafe|daniel|vescari|vale|rusk|palm keys|blue hour|coral palms|southport|oceanview|northridge|glasshouse|bay launch|eastside customs|sunset motel|hangar three)\b/g;
+      /\b(vinny|elena|mara|rafe|daniel|vescari|vale|rusk|palm keys|blue hour|coral palms|southport|oceanview|northridge|glasshouse|bay launch|eastside garage|sunset motel|hangar three)\b/g;
     function missionSummary(m) {
       if (m.index >= SIDE_JOB_FIRST)
         return (

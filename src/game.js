@@ -2374,7 +2374,7 @@
         return;
       }
       if (GARAGES.some((s) => distanceBetween(player, s) < 140))
-        tell('Drive fully inside the open bay, stop, and press E. Respray and repair: $250.');
+        tell('Drive up to the door and press E: respray from $200, repairs by the damage.');
     }
     /* Taking the wheel: shared by the action key, the cab hijack and the getaway
        cars missions hand you, so every entry sets the same state. */
@@ -2587,7 +2587,7 @@
       player.tumbleRoll = 0;
       cleanupMissionExtras();
       clearDepotFloor();
-      repairJob = null;
+      cancelGarageJob();
       player.parachute = null;
       for (let i = storyActors.length - 1; i >= 0; i--)
         if (storyActors[i].name === 'ELENA CRUZ') storyActors.splice(i, 1);
@@ -2952,7 +2952,7 @@
           worldContext.restore();
         }
     }
-    const shotSolidLists = [null, null, null, null, null, null];
+    const shotSolidLists = [null, null, null, null, null, null, null];
     function shotBlocked(x, y, altitude = 0) {
       if (airCoverStopsShot(x, y, altitude) || (landAt(x, y) && altitude + 10 < terrainHeight(x, y)))
         return true;
@@ -2984,6 +2984,7 @@
       lists[3] = militarySolids();
       lists[4] = countyStaticSolids;
       lists[5] = AIRPORT_SCENERY_SOLIDS;
+      lists[6] = garageDoorSolids();
       for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
         // Most rounds are nowhere near a given list's rectangles (rectListBounds).
@@ -3420,8 +3421,10 @@
       } else {
         planeCameraLead.x = Math.cos(player.a) * look;
         planeCameraLead.y = Math.sin(player.a) * look;
-        cameraTarget.x += (player.x + Math.cos(player.a) * look - cameraTarget.x) * follow;
-        cameraTarget.y += (player.y + Math.sin(player.a) * look - cameraTarget.y) * follow;
+        // A garage's drive-in show frames the bay (garages.js garageCameraFrame).
+        const frame = garageCameraFrame();
+        cameraTarget.x += ((frame ? frame.x : player.x + Math.cos(player.a) * look) - cameraTarget.x) * follow;
+        cameraTarget.y += ((frame ? frame.y : player.y + Math.sin(player.a) * look) - cameraTarget.y) * follow;
       }
       timed('sound', () => {
         soundUpdate(deltaSeconds);
@@ -3905,6 +3908,7 @@
       drawCounty2D();
       drawDistrictScenery2D();
       paintGarages(worldContext);
+      paintGarageNames(worldContext);
       drawAviationGround(worldContext);
       drawHarbor2D();
       drawDepot2D();
@@ -4607,14 +4611,9 @@
             prompt = bikeShare.text;
             promptId = 'bikeshare';
             promptKey = bikeShare.key;
-          } else if (garageForCar(c))
-            prompt = repairJob
-              ? 'RESPRAYING…'
-              : garageServiceCost(c) === 0
-                ? 'RESPRAY & REPAIR · VINNY PAYS'
-                : 'RESPRAY & REPAIR · $250';
-          else if (GARAGES.some((s) => distanceBetween(c, s) < 200))
-            prompt = 'DRIVE FULLY INTO THE OPEN REPAIR BAY';
+          } else if (garagePrompt(c) !== null)
+            // The price at the door (garages.js PRICE LIST); E skips the show.
+            prompt = garagePrompt(c);
         } else if (taxiRide) prompt = taxiRide.arrival > 0 ? '' : 'STOP HERE · $' + taxiRide.fare;
         else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
         else if (player.deck)
@@ -5798,7 +5797,8 @@
       // police helicopter, and how many covers of each kind are registered (with
       // one example point each, for tests).
       cover(x = player.x, y = player.y) {
-        const c = overheadCover(x, y, x === player.x && y === player.y ? entityElevation(player.car || player) : terrainHeight(x, y)),
+        const elevation = x === player.x && y === player.y ? entityElevation(player.car || player) : terrainHeight(x, y),
+          c = overheadCover(x, y, elevation),
           kinds = {};
         for (const k of overheadCovers) {
           const entry = (kinds[k.kind] ??= { count: 0, example: [Math.round(k.x), Math.round(k.y)] });
@@ -5808,10 +5808,16 @@
           x: Math.round(x),
           y: Math.round(y),
           cover: c ? { kind: c.kind, bottom: Math.round(c.bottom), top: Math.round(c.top) } : null,
+          // Where the helicopter's searchlight lands (air-cover.js overheadCoverHeight).
+          roofHeight: overheadCoverHeight(x, y, elevation),
           playerHiddenFromAir: hiddenFromAir(player.car || player),
+          air: airPursuitStatus(),
           registered: kinds,
         };
       },
+      // The respray garages (garages.js): shops, doors, prices, the offer for the
+      // player's vehicle, the drive-in job in progress and the last service.
+      garage: () => garageReport(),
       // Fix the Apache's aim point on the ground (map x, y) as the mouse would;
       // no arguments hands the aim back to the mouse. Returns apache().
       // Put a fresh Apache back on its pad (the old one, wrecked or not, is removed

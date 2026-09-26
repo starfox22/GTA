@@ -2274,7 +2274,7 @@
       p.sceneRole = role;
       p.sceneSpot = spot;
       p.sceneTime = seconds;
-      if (['vendor', 'busker', 'bouncer', 'worker'].includes(role)) {
+      if (['vendor', 'busker', 'bouncer', 'worker', 'mechanic'].includes(role)) {
         p.sceneHome = scene;
         p.homeSpot = spot;
       }
@@ -2825,6 +2825,8 @@
       waiter: 'wait',
       hailer: 'wave',
       worker: 'carry',
+      // A garage's mechanics (garages.js staffGarages); their spot may name a pose.
+      mechanic: 'serve',
     };
     function updateSceneMember(p, deltaSeconds) {
       const spot = p.sceneSpot;
@@ -2860,6 +2862,7 @@
       if (role === 'waiter' && spot.seat) p.pose = 'sit';
       if (role === 'waiter' && !spot.seat && p.texting) p.pose = 'text';
       if (role === 'worker') p.pose = p.carry === 'box' ? 'carry' : 'idle';
+      if (spot.pose) p.pose = spot.pose;
       p.sitting = p.pose === 'sit';
       if (role === 'sitter') {
         p.sipping = (gameTime + (p.walk || 0)) % 7 < 1.4;

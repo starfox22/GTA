@@ -130,7 +130,7 @@
           setStage(
             1,
             missionState.workshop,
-            'TRACKER ACTIVE · PARK AT EASTSIDE CUSTOMS',
+            'TRACKER ACTIVE · PARK IN EASTSIDE GARAGE',
             'vinny',
             'The ledger is under the seat. Their transmitter is under the rear bumper. Remove it before coming to me.',
           );
