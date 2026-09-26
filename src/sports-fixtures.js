@@ -11,7 +11,10 @@
      *
      * - SPORTS_TEAMS.<sport>: the club pool. `kit` is the home strip (primary,
      *   secondary, a pattern the athlete model paints, shorts, socks, keeper
-     *   shirt); `crest` picks the badge shape drawSportsCrest() paints.
+     *   shirt); `crest` picks the badge shape drawSportsCrest() paints. A
+     *   football club's `rating` (1 = an average side) is its quality: the
+     *   chance a shot on target beats the keeper (sportsFinishChance) scales
+     *   with the ratio of the two ratings, and the sportsbook prices from it.
      * - SPORTS_CALENDAR.<sport>: kickoff slots (minutes after midnight), the
      *   number and length of periods in match minutes and in world seconds (one
      *   world minute passes per second of play), the breaks, the warm-up before
@@ -24,17 +27,17 @@
      */
     const SPORTS_TEAMS = {
       soccer: [
-        { name: 'HARBOR ROVERS', short: 'HRV', crest: 'anchor', kit: { primary: '#1f3f8f', secondary: '#f2f2ee', pattern: 'hoops', shorts: '#f2f2ee', socks: '#1f3f8f', keeper: '#e8c547' } },
-        { name: 'SOUTHPORT ATHLETIC', short: 'SPA', crest: 'shield', kit: { primary: '#c8242f', secondary: '#f4f1e8', pattern: 'stripes', shorts: '#1b1b20', socks: '#c8242f', keeper: '#52b36a' } },
-        { name: 'NORTHBANK CITY', short: 'NBC', crest: 'round', kit: { primary: '#6cb4e8', secondary: '#f4f4f0', pattern: 'plain', shorts: '#f4f4f0', socks: '#6cb4e8', keeper: '#f08a2b' } },
-        { name: 'CANNERY TOWN', short: 'CAN', crest: 'diamond', kit: { primary: '#2f8a3e', secondary: '#f2c230', pattern: 'halves', shorts: '#1f2a22', socks: '#f2c230', keeper: '#9b59c9' } },
-        { name: 'EASTSIDE WANDERERS', short: 'EWA', crest: 'star', kit: { primary: '#1c1c1f', secondary: '#f07a1a', pattern: 'stripes', shorts: '#1c1c1f', socks: '#f07a1a', keeper: '#3fc4d8' } },
-        { name: 'RIVERSIDE UNITED', short: 'RSU', crest: 'shield', kit: { primary: '#7d1e36', secondary: '#8cc6ea', pattern: 'sash', shorts: '#f4f4f0', socks: '#7d1e36', keeper: '#e8e04a' } },
-        { name: 'KEYS ALBION', short: 'KEY', crest: 'round', kit: { primary: '#f1f0ea', secondary: '#1d2b57', pattern: 'chevron', shorts: '#1d2b57', socks: '#f1f0ea', keeper: '#2c2c2c' } },
-        { name: 'AIRPORT RANGERS', short: 'APR', crest: 'star', kit: { primary: '#5b2d8c', secondary: '#e8b923', pattern: 'sash', shorts: '#5b2d8c', socks: '#e8b923', keeper: '#63c36b' } },
-        { name: 'DOCKERS FC', short: 'DOC', crest: 'anchor', kit: { primary: '#e9772b', secondary: '#20325c', pattern: 'hoops', shorts: '#20325c', socks: '#e9772b', keeper: '#d4d4d4' } },
-        { name: 'PALM BEACH FC', short: 'PBF', crest: 'diamond', kit: { primary: '#16a3a0', secondary: '#f28bb4', pattern: 'halves', shorts: '#f4f4f0', socks: '#16a3a0', keeper: '#f2d23c' } },
-        { name: 'OLD TOWN HARRIERS', short: 'OTH', crest: 'shield', kit: { primary: '#f0cf2a', secondary: '#151515', pattern: 'stripes', shorts: '#151515', socks: '#f0cf2a', keeper: '#3d7be0' } },
+        { name: 'HARBOR ROVERS', short: 'HRV', rating: 1.08, crest: 'anchor', kit: { primary: '#1f3f8f', secondary: '#f2f2ee', pattern: 'hoops', shorts: '#f2f2ee', socks: '#1f3f8f', keeper: '#e8c547' } },
+        { name: 'SOUTHPORT ATHLETIC', short: 'SPA', rating: 1.2, crest: 'shield', kit: { primary: '#c8242f', secondary: '#f4f1e8', pattern: 'stripes', shorts: '#1b1b20', socks: '#c8242f', keeper: '#52b36a' } },
+        { name: 'NORTHBANK CITY', short: 'NBC', rating: 1.3, crest: 'round', kit: { primary: '#6cb4e8', secondary: '#f4f4f0', pattern: 'plain', shorts: '#f4f4f0', socks: '#6cb4e8', keeper: '#f08a2b' } },
+        { name: 'CANNERY TOWN', short: 'CAN', rating: 0.84, crest: 'diamond', kit: { primary: '#2f8a3e', secondary: '#f2c230', pattern: 'halves', shorts: '#1f2a22', socks: '#f2c230', keeper: '#9b59c9' } },
+        { name: 'EASTSIDE WANDERERS', short: 'EWA', rating: 0.96, crest: 'star', kit: { primary: '#1c1c1f', secondary: '#f07a1a', pattern: 'stripes', shorts: '#1c1c1f', socks: '#f07a1a', keeper: '#3fc4d8' } },
+        { name: 'RIVERSIDE UNITED', short: 'RSU', rating: 1.04, crest: 'shield', kit: { primary: '#7d1e36', secondary: '#8cc6ea', pattern: 'sash', shorts: '#f4f4f0', socks: '#7d1e36', keeper: '#e8e04a' } },
+        { name: 'KEYS ALBION', short: 'KEY', rating: 0.9, crest: 'round', kit: { primary: '#f1f0ea', secondary: '#1d2b57', pattern: 'chevron', shorts: '#1d2b57', socks: '#f1f0ea', keeper: '#2c2c2c' } },
+        { name: 'AIRPORT RANGERS', short: 'APR', rating: 0.78, crest: 'star', kit: { primary: '#5b2d8c', secondary: '#e8b923', pattern: 'sash', shorts: '#5b2d8c', socks: '#e8b923', keeper: '#63c36b' } },
+        { name: 'DOCKERS FC', short: 'DOC', rating: 1.0, crest: 'anchor', kit: { primary: '#e9772b', secondary: '#20325c', pattern: 'hoops', shorts: '#20325c', socks: '#e9772b', keeper: '#d4d4d4' } },
+        { name: 'PALM BEACH FC', short: 'PBF', rating: 0.88, crest: 'diamond', kit: { primary: '#16a3a0', secondary: '#f28bb4', pattern: 'halves', shorts: '#f4f4f0', socks: '#16a3a0', keeper: '#f2d23c' } },
+        { name: 'OLD TOWN HARRIERS', short: 'OTH', rating: 0.94, crest: 'shield', kit: { primary: '#f0cf2a', secondary: '#151515', pattern: 'stripes', shorts: '#151515', socks: '#f0cf2a', keeper: '#3d7be0' } },
       ],
       basketball: [
         { name: 'RIVERSIDE RAYS', short: 'RAY', crest: 'round', kit: { primary: '#ee854b', secondary: '#1d2b57', pattern: 'plain', shorts: '#ee854b', socks: '#f4f4f0' } },
@@ -133,6 +136,21 @@
         attendance: 0.62 + ((hash >>> 16) % 1000) / 1000 * 0.36,
         seed: hash,
       };
+    }
+
+    /**
+     * FINISHING. A football shot that would go in beats the keeper with this
+     * chance: the league's rate for evenly matched sides, scaled by the ratio
+     * of the attacking club's rating (lifted by the home crowd) to the
+     * defending club's. The match simulation rolls it (sports.js
+     * sportsKeeperSave); sportsbook.js prices the markets from the same numbers.
+     */
+    const SPORTS_FINISHING = { base: 0.16, exponent: 1.6, homeEdge: 1.1 };
+    function sportsFinishChance(fixture, team) {
+      const attack = team === 0 ? fixture.home : fixture.away,
+        defence = team === 0 ? fixture.away : fixture.home,
+        ratio = ((attack.rating || 1) * (team === 0 ? SPORTS_FINISHING.homeEdge : 1)) / (defence.rating || 1);
+      return Math.max(0.03, Math.min(0.9, SPORTS_FINISHING.base * Math.pow(ratio, SPORTS_FINISHING.exponent)));
     }
 
     /* Minutes from kickoff to the final whistle. */

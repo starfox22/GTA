@@ -44,62 +44,187 @@
      * E at the club sign in a vehicle arms the challenge: beat 2:30 on Mount
      * Ascent for $1,000.
      */
+    /*
+     * THE CLUB BLOCK. The club took over a whole block of Northridge (its
+     * north-west block, where Eagle Pass comes down from the trailhead into the
+     * town): the block's own kerbs bound the lot. Lot-local u runs east and v
+     * south from the lot's north-west corner (map 8464, 2654):
+     *
+     *   north   the CLUBHOUSE (a two-storey stone-and-log lodge, 27.5 x 16.8 m)
+     *           and, sharing its east wall, the WORKSHOP bay (10.8 x 18.5 m,
+     *           a 7 m barn door, a two-post lift); a covered veranda across the
+     *           clubhouse front with the balcony over it;
+     *   west    the members' yard: a stone fire pit ringed with log benches and
+     *           Adirondack chairs, the stone BBQ and smoker, string lights;
+     *   south   the gravel lot: five trucks nose-out in a row, the 6x6 and the
+     *           members' own rigs in the second row, the trophy truck parked on
+     *           show by the gate; a log rail round it, the timber gate with the
+     *           carved 4X4 CLUB sign facing the avenue (the hill climb is armed
+     *           there), the flag.
+     *
+     * Walking in and out: the clubhouse and the workshop are real rooms, their
+     * walls thin buildings (clubWalls), their doors gaps in them. Inside, the
+     * renderer lifts the roof and the upper storey off (the cutaway).
+     */
     const OFFROAD_CLUB = {
       name: 'RIDGELINE 4X4 CLUB',
-      // The gravel pad (map units), across Eagle Pass from the Mount Ascent trailhead.
-      lot: { x: 7410, y: 2034, w: 290, h: 160 },
+      town: 'NORTHRIDGE',
+      // The whole block inside its kerbs (map units): Northridge block (0, 0).
+      lot: { x: 8464, y: 2654, w: 424, h: 408 },
       trail: 0,
     };
-    // Lot-local (u east, v south from the pad's north-west corner) to map.
+    // Lot-local (u east, v south from the lot's north-west corner) to map.
     function clubPoint(u, v) {
       return { x: OFFROAD_CLUB.lot.x + u, y: OFFROAD_CLUB.lot.y + v };
     }
+    // A lot-local rectangle as a map rectangle.
+    function clubRect(u0, v0, u1, v1) {
+      const a = clubPoint(u0, v0);
+      return { x: a.x, y: a.y, w: u1 - u0, h: v1 - v0 };
+    }
     Object.assign(OFFROAD_CLUB, {
-      // The sign stands at the north-west corner facing the lot and the road.
-      sign: clubPoint(40, 14),
-      canopy: { ...clubPoint(118, 122), size: 26 },
-      grill: clubPoint(170, 128),
-      cooler: clubPoint(98, 138),
-      flag: clubPoint(18, 146),
-      fire: clubPoint(222, 136),
-      // Seven slots in a herringbone row along the north edge, noses south-east
-      // (the camera sees the fronts): [u, v, type, colour].
+      // Buildings (map rectangles, outer faces).
+      house: clubRect(106, 12, 326, 146),
+      workshop: clubRect(326, 12, 412, 160),
+      // The covered veranda across the clubhouse front (a low plank deck).
+      deck: clubRect(96, 146, 326, 190),
+      wall: 3,
+      // Door gaps [x0, x1] or [y0, y1] along each wall, map units.
+      doors: {
+        front: [8670, 8690], // the clubhouse's double doors onto the veranda
+        yard: [2775, 2791], // west wall, to the fire pit
+        inner: [2750, 2766], // clubhouse / workshop
+        barn: [8805, 8861], // the workshop's barn door (7 m)
+      },
+      // The timber gate in the south rail, the carved sign on its beam facing
+      // the avenue: E there arms the hill climb.
+      gate: { u0: 74, u1: 178, v: 401 },
+      sign: clubPoint(126, 401),
+      grill: clubPoint(38, 40),
+      smoker: clubPoint(62, 34),
+      cooler: clubPoint(22, 58),
+      flag: clubPoint(20, 206),
+      fire: clubPoint(50, 124),
+      // Seven slots: [u, v, type, colour]. Five nose-out in the front row (the
+      // camera sees the fronts), the 6x6 in the second, the trophy truck on show.
       slots: [
-        [30, 44, 'series', '#c9b27a'],
-        [70, 46, 'crawler', '#e8672a'],
-        [110, 48, 'bronco', '#2e8b91'],
-        [152, 50, 'expedition', '#d7c9a6'],
-        [196, 52, 'hilux', '#eeeeea'],
-        [240, 54, 'sixbysix', '#7d7556'],
-        [270, 104, 'trophy', '#f1c232'],
+        [211, 251, 'series', '#c9b27a'],
+        [256, 251, 'crawler', '#e8672a'],
+        [301, 251, 'bronco', '#2e8b91'],
+        [346, 251, 'expedition', '#d7c9a6'],
+        [391, 251, 'hilux', '#eeeeea'],
+        [256, 346, 'sixbysix', '#7d7556'],
+        [41, 276, 'trophy', '#f1c232'],
       ],
       heading: Math.PI / 2 - 0.42,
-      // Where the log rail runs (open along the road side, a gap to the east).
+      // The members' own rigs in the second row: [u, v, type, colour, heading].
+      memberCars: [
+        [316, 346, 'pickup', '#6d2a22', Math.PI / 2 - 0.42],
+        [376, 346, 'suv', '#2f3e36', Math.PI / 2 - 0.42],
+      ],
+      // Where the log rail runs (vehicles only): lot-local segments; the gate
+      // is the gap in the south run.
       rails: [
-        [0, 0, 0, 160],
-        [0, 160, 290, 160],
-        [290, 160, 290, 72],
-        [0, 0, 14, 0],
+        [0, 6, 0, 404],
+        [0, 404, 74, 404],
+        [178, 404, 424, 404],
+        [424, 160, 424, 404],
+        [0, 6, 100, 6],
       ],
       // The members and what they do there: [u, v, facing, role, dress].
       members: [
-        [164, 116, 1.9, 'clubGrill', 'worker'],
-        [186, 132, 3.3, 'clubChat', 'casual'],
-        [206, 126, 0.55, 'clubSit', 'casual'],
-        [236, 148, -2.3, 'clubSit', 'tourist'],
-        [96, 76, -1.2, 'clubChat', 'casual'],
-        [110, 74, 2.6, 'clubArms', 'worker'],
-        [234, 118, 2.2, 'clubChat', 'tourist'],
+        // Inside: the bartender, two at the bar, a game of pool, two on the couches.
+        [252, 36, Math.PI / 2, 'clubGrill', 'worker'],
+        [226, 58, -Math.PI / 2, 'clubChat', 'casual'],
+        [246, 58, -Math.PI / 2 - 0.3, 'clubChat', 'tourist'],
+        [178, 96, 0.4, 'clubArms', 'casual'],
+        [154, 110, -2.6, 'clubChat', 'worker'],
+        [141, 70, Math.PI, 'clubSit', 'casual'],
+        [140, 110, -Math.PI / 2, 'clubSit', 'tourist'],
+        // On the veranda.
+        [150, 172, Math.PI / 2 + 0.3, 'clubSit', 'casual'],
+        [196, 170, Math.PI / 2 - 0.4, 'clubSit', 'tourist'],
+        [174, 178, -2.4, 'clubChat', 'worker'],
+        // Round the fire pit, at the BBQ, in the workshop.
+        [34, 118, 0.2, 'clubSit', 'casual'],
+        [64, 140, -2.2, 'clubSit', 'worker'],
+        [44, 54, -Math.PI / 2, 'clubGrill', 'worker'],
+        [360, 118, Math.PI, 'clubArms', 'worker'],
       ],
     });
-    function offroadTerrainPads() {
-      const l = OFFROAD_CLUB.lot;
-      return [{ x: l.x - 10, y: l.y - 10, w: l.w + 20, h: l.h + 20 }];
+    /* Inside and on the veranda (map rectangles, kept clear by walkers; the
+       renderer furnishes them): the stone fireplace on the west wall, the two
+       leather couches facing it, the bar along the north wall with the back bar
+       behind it, two pool tables, and in the workshop the lift's posts, the
+       bench and the tool chests. The veranda rail runs along the deck's front
+       with steps to the lot in front of the doors and to the yard at the west end. */
+    Object.assign(OFFROAD_CLUB, {
+      furniture: [
+        { kind: 'fireplace', ...clubRect(109, 56, 121, 96) },
+        // Its stone chimney stack stands outside the west wall, up the gable.
+        { kind: 'chimney', ...clubRect(96, 50, 106, 100) },
+        { kind: 'couch', ...clubRect(139, 61, 147, 91), facing: Math.PI },
+        { kind: 'couch', ...clubRect(126, 106, 156, 114), facing: -Math.PI / 2 },
+        { kind: 'bar', ...clubRect(206, 42, 296, 50) },
+        { kind: 'backbar', ...clubRect(216, 15, 306, 21) },
+        { kind: 'pool', ...clubRect(181, 100, 201, 112) },
+        { kind: 'pool', ...clubRect(256, 100, 276, 112) },
+        { kind: 'lift', ...clubRect(345, 88, 349, 92) },
+        { kind: 'lift', ...clubRect(373, 88, 377, 92) },
+        { kind: 'bench', ...clubRect(400, 40, 409, 104) },
+        { kind: 'chest', ...clubRect(330, 20, 342, 34) },
+      ],
+      // Veranda rail runs along the deck's front edge (map x ranges), steps between them.
+      deckRail: [
+        [8574, 8664],
+        [8696, 8786],
+      ],
+    });
+    /* The clubhouse's and the workshop's walls as thin buildings (solid to people
+       and vehicles, door gaps left open): [x, y, w, h, height]. */
+    function clubWalls() {
+      const H = OFFROAD_CLUB.house,
+        S = OFFROAD_CLUB.workshop,
+        D = OFFROAD_CLUB.doors,
+        t = OFFROAD_CLUB.wall,
+        houseTop = 7.2 * OFFROAD_M,
+        shopTop = 6.8 * OFFROAD_M,
+        walls = [];
+      const run = (x0, y0, x1, y1, height, gap) => {
+        // A wall from (x0, y0) to (x1, y1), horizontal or vertical, minus the gap.
+        const along = y0 === y1,
+          a = along ? x0 : y0,
+          b = along ? x1 : y1,
+          pieces = gap ? [[a, gap[0]], [gap[1], b]] : [[a, b]];
+        for (const [p, q] of pieces) {
+          if (q - p < 1) continue;
+          walls.push(along ? { x: p, y: y0, w: q - p, h: t, height } : { x: x0, y: p, w: t, h: q - p, height });
+        }
+      };
+      // Clubhouse: north, west (yard door), south (front doors); its east wall is shared.
+      run(H.x, H.y, H.x + H.w + t, H.y, houseTop);
+      run(H.x, H.y + t, H.x, H.y + H.h - t, houseTop, D.yard);
+      run(H.x, H.y + H.h - t, H.x + H.w, H.y + H.h - t, houseTop, D.front);
+      run(S.x, H.y + t, S.x, S.y + S.h, houseTop, D.inner);
+      // Workshop: north, east, south (the barn door).
+      run(S.x + t, S.y, S.x + S.w, S.y, shopTop);
+      run(S.x + S.w - t, S.y + t, S.x + S.w - t, S.y + S.h - t, shopTop);
+      run(S.x + t, S.y + S.h - t, S.x + S.w, S.y + S.h - t, shopTop, D.barn);
+      return walls;
     }
-    // Inside the lot (plus a margin): county trees and scenery keep out.
+    // The old lot across Eagle Pass from the Mount Ascent trailhead is a small
+    // trailhead car park now (three bays, a log rail, the trail board).
+    const TRAILHEAD_PARKING = { x: 7470, y: 2046, w: 170, h: 84 };
+    function offroadTerrainPads() {
+      const p = TRAILHEAD_PARKING;
+      return [{ x: p.x - 10, y: p.y - 10, w: p.w + 20, h: p.h + 20 }];
+    }
+    // Inside the club block or the trailhead car park (plus a margin): county
+    // trees and scenery keep out.
     function offroadClubBlocked(x, y, margin = 0) {
-      const l = OFFROAD_CLUB.lot;
-      return x > l.x - margin && x < l.x + l.w + margin && y > l.y - margin && y < l.y + l.h + margin;
+      for (const l of [OFFROAD_CLUB.lot, TRAILHEAD_PARKING])
+        if (x > l.x - margin && x < l.x + l.w + margin && y > l.y - margin && y < l.y + l.h + margin) return true;
+      return false;
     }
     /* ---- The club's trucks ------------------------------------------------------------
        Real dimensions (metres x UNITS_PER_METRE), kerb masses, performance.
@@ -581,6 +706,11 @@
     }
     function populateOffroadClub() {
       for (let i = 0; i < OFFROAD_CLUB.slots.length; i++) parkClubVehicle(i);
+      // The members' own rigs, parked in the second row.
+      for (const [u, v, type, color, heading] of OFFROAD_CLUB.memberCars) {
+        const p = clubPoint(u, v);
+        if (canSpawnCar(type, p.x, p.y, heading, 2)) makeCar(type, p.x, p.y, heading, false, color);
+      }
     }
     function addOffroadClubColliders() {
       const l = OFFROAD_CLUB.lot;
@@ -590,30 +720,62 @@
           y = l.y + Math.min(v0, v1) - 2;
         addStatic(x, y, Math.abs(u1 - u0) + 4, Math.abs(v1 - v0) + 4, 4, 'rail');
       }
-      const cn = OFFROAD_CLUB.canopy;
-      addStatic(cn.x - cn.size / 2, cn.y - cn.size / 2, cn.size, cn.size, 24, 'canopy');
-      const g = OFFROAD_CLUB.grill;
-      addStatic(g.x - 4, g.y - 4, 8, 8, 9, 'grill');
-      const s = OFFROAD_CLUB.sign;
-      addStatic(s.x - 34, s.y - 3, 68, 6, 30, 'sign');
-      const f = OFFROAD_CLUB.flag;
-      addStatic(f.x - 1.5, f.y - 1.5, 3, 3, 60, 'pole');
+      // The gate posts (the carved sign spans the lane between them, 5.5 m up).
+      const g = OFFROAD_CLUB.gate;
+      for (const u of [g.u0, g.u1]) {
+        const p = clubPoint(u, g.v);
+        addStatic(p.x - 3, p.y - 3, 6, 6, 60, 'gate post');
+      }
+      // The veranda's posts, the stone fire pit, the BBQ and the smoker in the yard.
+      const d = OFFROAD_CLUB.deck;
+      for (const x of clubDeckPosts()) addStatic(x - 1.6, d.y + d.h - 4, 3.2, 3.2, 50, 'post');
+      for (const [x0, x1] of OFFROAD_CLUB.deckRail) addStatic(x0, d.y + d.h - 3.5, x1 - x0, 2, 8, 'rail');
+      const f = OFFROAD_CLUB.fire;
+      addStatic(f.x - 7, f.y - 7, 14, 14, 4, 'fire pit');
+      for (const [p, hw, hd, h] of [
+        [OFFROAD_CLUB.grill, 14, 5, 9],
+        [OFFROAD_CLUB.smoker, 5, 4, 12],
+      ])
+        addStatic(p.x - hw, p.y - hd, hw * 2, hd * 2, h, 'grill');
+      const pole = OFFROAD_CLUB.flag;
+      addStatic(pole.x - 1.5, pole.y - 1.5, 3, 3, 60, 'pole');
+      for (const f of OFFROAD_CLUB.furniture) if (f.kind === 'chimney') addStatic(f.x, f.y, f.w, f.h, 130, 'chimney');
     }
-    // The pad on the county sheet (2D view, the map, and under the 3D ground decal).
+    // The veranda posts along the deck's front edge (map x): the renderer and the colliders share them.
+    function clubDeckPosts() {
+      // Paired either side of the steps in front of the doors.
+      return [8563, 8601, 8639, 8662, 8698, 8729, 8759, 8787];
+    }
+    // The block on the county sheet (2D view, the map, and the 3D ground under
+    // the renderer's gravel and yard decals): the gravel lot, the yard's grass,
+    // the buildings' footprints, the tracks in from the gate; and the trailhead
+    // car park where the club used to be.
     function paintOffroadClubGround(drawingContext) {
-      const l = OFFROAD_CLUB.lot;
+      const l = OFFROAD_CLUB.lot,
+        H = OFFROAD_CLUB.house,
+        S = OFFROAD_CLUB.workshop,
+        p = TRAILHEAD_PARKING;
       drawingContext.save();
       drawingContext.fillStyle = '#8d7b62';
       drawingContext.fillRect(l.x - 6, l.y - 6, l.w + 12, l.h + 12);
       drawingContext.fillStyle = '#a3906f';
-      drawingContext.fillRect(l.x, l.y, l.w, l.h);
-      // A track worn in from the road and round the lot.
-      drawingContext.strokeStyle = 'rgba(92,74,52,0.55)';
-      drawingContext.lineWidth = 14;
+      drawingContext.fillRect(l.x, l.y + 196, l.w, l.h - 196);
+      drawingContext.fillStyle = '#6f7d52';
+      drawingContext.fillRect(l.x, l.y, 100, 196);
+      drawingContext.fillStyle = '#6b5a48';
+      drawingContext.fillRect(H.x, H.y, H.w, H.h);
+      drawingContext.fillRect(S.x, S.y, S.w, S.h);
+      drawingContext.strokeStyle = 'rgba(92,74,52,0.5)';
+      drawingContext.lineWidth = 12;
       drawingContext.beginPath();
-      drawingContext.moveTo(l.x + 150, l.y - 40);
-      drawingContext.quadraticCurveTo(l.x + 150, l.y + 80, l.x + 250, l.y + 90);
+      drawingContext.moveTo(l.x + 126, l.y + l.h);
+      drawingContext.quadraticCurveTo(l.x + 126, l.y + 212, l.x + 260, l.y + 206);
+      drawingContext.lineTo(l.x + 400, l.y + 206);
       drawingContext.stroke();
+      drawingContext.fillStyle = '#8d7b62';
+      drawingContext.fillRect(p.x - 4, p.y - 4, p.w + 8, p.h + 8);
+      drawingContext.fillStyle = '#a3906f';
+      drawingContext.fillRect(p.x, p.y, p.w, p.h);
       drawingContext.restore();
     }
     /* ---- The members ----------------------------------------------------------------- */
@@ -673,7 +835,7 @@
       if (!members.length) return;
       // Somebody drives off in a club truck.
       const car = player.car;
-      if (car && car.clubSlot >= 0 && gameTime - clubState.theftTold > 20 && distanceBetween(car, clubPoint(150, 60)) < 260 && Math.abs(car.speed) > 12) {
+      if (car && car.clubSlot >= 0 && gameTime - clubState.theftTold > 20 && distanceBetween(car, clubPoint(250, 260)) < 320 && Math.abs(car.speed) > 12) {
         clubState.theftTold = gameTime;
         const shout = members.reduce((a, b) => (distanceBetween(a, car) < distanceBetween(b, car) ? a : b));
         clubSay(shout, TRAIL_CLUB_THEFT);
@@ -875,7 +1037,7 @@
         best = hillClimbRecords()['MOUNT ASCENT'];
       if (!c) offerPrompt('4X4 CLUB · HILL CLIMB · TAKE A TRUCK', { key: null, id: 'club-hillclimb-foot' });
       else if (isAircraft(c) || isBoat(c) || vehicleSpec(c).bicycle) return;
-      else if (clubState.armed === 0) offerPrompt('HILL CLIMB ARMED · GO TO THE START GATE', { key: null, id: 'club-hillclimb-armed' });
+      else if (clubState.armed === 0) offerPrompt('HILL CLIMB ARMED · START GATE AT THE MOUNT ASCENT TRAILHEAD', { key: null, id: 'club-hillclimb-armed' });
       else offerPrompt('HILL CLIMB · BEAT 2:30' + (best !== undefined ? ' · BEST ' + climbClock(best) : ''), { id: 'club-hillclimb' });
     }
     function offroadClubInteract() {
@@ -883,7 +1045,11 @@
       if (!c || isAircraft(c) || isBoat(c) || vehicleSpec(c).bicycle || !nearClubSign() || clubState.armed === 0) return false;
       clubState.armed = 0;
       clubState.climb = null;
-      tell('HILL CLIMB · Mount Ascent · the clock starts at the trailhead gate across the road. Beat 2:30 for $1,000.', 6);
+      // The start gate is up Eagle Pass at the Mount Ascent trailhead (about 200 m
+      // by road from the club): the GPS takes the player there.
+      const gate = trailCourse(0).start;
+      setWaypoint(gate.x, gate.y);
+      tell('HILL CLIMB · Mount Ascent · drive up Eagle Pass to the trailhead: the clock starts at the gate. Beat 2:30 for $1,000.', 7);
       tone(520, 0.1, 0.16, 'triangle');
       return true;
     }
@@ -923,7 +1089,7 @@
       let padLevel = 0;
       for (let u = 0; u <= l.w; u += 29) for (let v = 0; v <= l.h; v += 32) padLevel = Math.max(padLevel, terrainHeight(l.x + u, l.y + v));
       return {
-        club: { lot: l, padMaxHeight: +padLevel.toFixed(2), roadClearance: roadClear, trailClearance: trailClear },
+        club: { town: OFFROAD_CLUB.town, lot: l, house: OFFROAD_CLUB.house, workshop: OFFROAD_CLUB.workshop, sign: OFFROAD_CLUB.sign, walls: clubWalls().length, trailhead: TRAILHEAD_PARKING, padMaxHeight: +padLevel.toFixed(2), roadClearance: roadClear, trailClearance: trailClear },
         vehicles: OFFROAD_CLUB.slots.map(([, , type], i) => {
           const spec = VEHICLE_DEFINITIONS[type],
             v = clubState.slots[i];

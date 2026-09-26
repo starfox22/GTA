@@ -218,7 +218,8 @@
     }
 
     function sportsBlocked(x, y, radius = 0) {
-      if (!inStadiumLot(x, y, radius)) return false;
+      // GOALLINE, the betting shop beside the plaza (sportsbook.js).
+      if (!inStadiumLot(x, y, radius)) return sportsbookBlocked(x, y, radius);
       return SPORTS_GROUND_SOLIDS.some(
         (stand) =>
           x + radius > stand.x &&
@@ -247,6 +248,7 @@
             scenery.splice(index, 1);
         }
       }
+      prepareSportsbookShop();
     }
 
     function paintPavers(context, x, y, width, height, step = 12) {
@@ -404,6 +406,7 @@
         context.fillText('P', 2443, 4948);
         context.fillText('P', 2933, 4948);
       }
+      paintSportsbookGround(context, detail);
       context.restore();
     }
 
@@ -425,6 +428,7 @@
         }
       }
       context.restore();
+      drawSportsbookMap(context, scale, big);
     }
 
     function showSportsDestination(sport) {

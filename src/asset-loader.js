@@ -12,6 +12,7 @@ const embeddedAssetReferences = {
   "weapons": "media-weapons",
   "harbor": "media-harbor",
   "arsenal": "media-arsenal",
+  "unicorn": "media-unicorn",
   "music": {
     "synth": {
       "title": "Retroracing One more round",
@@ -137,7 +138,7 @@ function embeddedMediaDataUrl(identifier) {
 }
 
 const gameAssets = {};
-for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal']) {
+for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn']) {
   gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
 }
 gameAssets.audio = {};

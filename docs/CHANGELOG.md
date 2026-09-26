@@ -1,5 +1,249 @@
 # Changelog
 
+## Unreleased — the Palm Sound drawbridge: 44 m leaves and the opening as a spectacle
+
+Drawbridge (geography.js, drawbridge.js, drawbridge3d.js, bridges3d.js, world-view.js, settings.js)
+- **Leaves 12.5 m → 44 m each** (88 m trunnion to trunnion, the scale of Chicago's longest
+  double-leaf bascules; the navigation channel between the pier noses is 76 m, 73 m clear at the
+  brigantine's mastheads with the leaves at 78°). The moving span and its piers now fill most of
+  Palm Sound (trunnions x -916 / -212, gates x -1058 / -70, stop lines x -1076 / -52; the
+  approach piers inside that stretch are gone). The trunnions sit 2 m below the road.
+- **Piers with open counterweight pits**: each pier runs from 14.5 m behind its trunnion to 5 m
+  ahead of it under the leaf's heel and is 43 m across: the fixed deck in the middle, a 17 m
+  deep pit each side, then the platforms with the tender's houses. The leaves' outboard main
+  girders (5.5 m deep at the trunnion, 1.8 m at the tip) carry curved racks and 590 t
+  counterweights (striped yellow and black on top) that swing down into the pits as the leaves
+  rise; pinions on shafts across the pits turn as the racks roll through them; motor houses
+  above. A depth-only mask over each pit keeps the water plane out of it.
+- **The opening** (about three minutes of play, three a day: 06:40, 14:20, 21:30): the ship
+  asks for the bridge, the tender answers with one long blast; bells, signals amber then red,
+  wig-wags; the arms come down; the centre lock bars draw back (clanks); the leaves rise over a
+  minute, eased, to 78°, with the drive motors' deep hum, a gear whine following the swing and a
+  knock for every rack tooth; water drips and sprays off the tips and girders (a burst as the
+  tips part); red span lights flash on the tips while they move; the channel lights turn green;
+  the brigantine ALBATROSS (new: a 32 m hull, masts 30 m over the water, four square sails on
+  the foremast, gaff main and topsail, three headsails, festoon lights dressed overall) sets
+  sail, passes at 5 knots and salutes, the tender answers; the leaves come down as slowly, the
+  lock bars drive home, the arms rise. After dark floodlights on the pier noses throw beams onto
+  the raised leaves and their paint and steel glow. The leaves' underside (cross girders every
+  3.5 m, stringers, X bracing) shows as they stand up; three pairs of globe lamps ride on each.
+- **Onlookers**: a dozen people walk in and stand behind the sidewalk arms on both approaches,
+  facing the channel (watching, filming, pointing), for an opening the player is near.
+- **Event camera**: near an opening (on foot or under 45 km/h) the street view eases back to
+  about three quarters of the zoom so both leaves and the ship fit; the player keeps control.
+  Settings · Gameplay · Event camera turns it off.
+- The tender walks anyone still on the span off by the nearer end (an 88 m span takes a walker
+  a minute), has a car abandoned on it towed after a minute even in sight of the player, and
+  keeps the leaves up until the ship is clear (at most 100 s; it was 45, less than the ship
+  needs to cross). The GPS prices the longer closure (`drawbridgeSecondsToTraffic`).
+  `bridgeJump` clears the causeway of other vehicles and sends the ship back to her anchorage
+  before each run.
+- **Traction on a leaf counts only the driven wheels** (drivenShare, the 4x4 club's model): a
+  front-wheel-drive saloon has about a third of its weight on its driving wheels up a 25° leaf,
+  so it cannot hold its speed up 44 m of it; the brakes still use all four; rain makes the
+  deck slicker. Real gravity, as before.
+
+- The jump, measured (`bridgeJump`: a front-wheel-drive saloon, the speed held from 25 m short
+  of the trunnion, the throttle floored up the leaf when the slope pulls it under; hit points
+  lost of 150 in brackets, 150 = wrecked). With 44 m leaves the gap opens fast and the tips
+  stand high, and the climb eats a slow car's speed:
+
+| Leaves | Gap / tip height | 40 km/h | 60 | 80 | 100 | 140 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 5° | 0.6 / 3.9 m | clears | clears | clears | clears | clears (24) |
+| 10° | 2.0 / 7.6 m | clears | clears | clears (12) | clears (45) | clears (59) |
+| 15° | 4.0 / 11.4 m | clears | clears (12) | clears (29) | clears (75) | clears (98) |
+| 20° | 6.6 / 14.9 m | strikes the far leaf (8) | clears (13) | clears (44) | clears (103) | clears (135) |
+| 25° | 9.9 / 18.4 m | can't climb | strikes the far leaf (19) | clears (44) | clears (129) | lands wrecked |
+| 30° | 13.8 / 21.8 m | can't climb | can't climb | strikes the far leaf (43) | clears (87) | lands wrecked |
+| 35° | 18.3 / 24.9 m | can't climb | can't climb | falls short (43) | clears (61) | lands wrecked |
+
+  From 20° a slow car hits the far leaf's end and drops into the Sound; from 25° it rolls back
+  before the tip. A fast car clears 20-60 m out and up to 36 m over the water, and the landing
+  (8-27 m/s into the deck) costs most of a car.
+
+## Unreleased — streets and parks drawn at screen resolution, and a closer camera
+
+The ground used to be the painted sheets (1.6 units a texel in the city, 2.8 in the county) with
+the ground atlas's photos squeezed into them: soft and blotchy past the default zoom. The sheets
+now only say what lies where; the ground shader draws the surfaces themselves, crisp at any zoom
+(ground-shader3d.js, ground-data3d.js, grass3d.js; SOURCE_GUIDE "Ground materials").
+
+- **Streets**: asphalt from the photographed aggregate at its true scale with binder mottling,
+  utility patches with tar-sealed seams, sealed and hairline cracks, polished wheel paths and an
+  oil strip down each lane, oil stains behind the stop lines; a kerb stone along every
+  carriageway (bevelled arris, a face that takes the sun, joints, scuffs) and a gutter pan
+  (concrete, or granite setts in the Old Quarter and on Monarch Isle), both from a signed
+  distance field of the carriageways, so they stay sharp.
+- **Markings and street furniture** drawn exactly from data instead of painted: lane dashes,
+  zebras, stop lines, the avenues' double yellow, boulevard, county and Monarch Isle lines, with
+  ragged worn edges and the aggregate showing through; cast iron manhole covers in a ring of
+  newer asphalt; gully grates; tree pits with grilles, mulch rings under park trees, sand under
+  the palms.
+- **Pavements by district**: concrete slabs with broom finish, cracks, stains and gum (city);
+  flagstones and cobble setts (Old Quarter, Battery Point); polished granite with a dark band at
+  the kerb (North Point); worn concrete panels with rust and oil (docks); herringbone pavers
+  (Palm Keys); limestone ashlar (Monarch Isle); weathered slabs with grass in the joints
+  (county). Joints follow the kerb.
+- **Parks**: photographed grass with clumps, clover, lush and dry patches, mowing stripes, flower
+  beds in bloom, gravel paths with steel edging, wet margins at the ponds; on HIGH / ULTRA, zoomed
+  in, real grass tufts sway on the lawns. Sand gets wind ripples and footprints.
+- Painted edges (lawns, paths, plazas) are re-cut crisp where the sheet is magnified; everything
+  finer than a couple of pixels fades to its average, so nothing shimmers zoomed out or moving.
+  Height and roughness per material feed the sun, the lamp pools and the wet reflections;
+  puddles gather in the gutters, between setts and in the grates.
+- **Camera**: the street view starts at zoom 1.6 (was 1.2) and the wheel reaches 3.0 (was 1.8);
+  the reset key returns to 1.6. At speed the camera still pulls back to the old view (0.82 by
+  220 km/h).
+- LOW keeps a cheap path (the sheet, one detail sample, the kerb, the marks).
+  `DeadEndCity.groundDetail()` reports the ground data and the tufts.
+## Unreleased — the Ridgeline mountain villages and the 4x4 clubhouse
+
+The Ridgeline island has its own architecture now (mountain-village.js, mountain-village3d.js,
+mountain-club3d.js): Stonecreek, Northridge and Eastgate keep their streets and flat pads, but
+every city box is gone.
+
+- **Mountain village kit**: steep gables with deep eaves, bargeboards, rafter tails and ridge
+  caps in cedar shake, slate or standing-seam metal; fieldstone plinths and ground floors, hewn
+  log walls with notched corners, board and batten, plastered and timber-framed upper storeys
+  (jettied), carved tulip-cut balconies with geranium boxes, shutters, dormers, front gables with
+  glazed trusses, stone chimneys (wood smoke), false-front shops with porches over plank
+  boardwalks, split-rail fences, firewood stacks, half-barrel planters, split-log benches,
+  instanced iron lantern lamps (knockable), cobbled squares with a fountain (Northridge) and a
+  stone well (Stonecreek), windows lit warm at night, porch lanterns and light pools. Every piece
+  is written into one buffer per material per town: about 23-25 draw calls a town.
+- **Businesses** (carved, routed and painted wood signs from one atlas): NORTHRIDGE OUTFITTERS
+  (ski, bike, hunting), NORTHRIDGE LODGE, ALPENGLOW CAFÉ, GENERAL STORE, MOUNTAIN CHAPEL (steeple),
+  PINE CONE BAKERY, RIDGELINE RANGER STATION with a fire lookout and MOUNTAIN RESCUE; STONECREEK
+  OUTFITTERS and LODGE, SUMMIT DINER, THE ANTLER TAVERN (deck under string lights), RIDGELINE
+  RENTALS, PINE CREST MOTEL, GAS · GROCERIES under a timber canopy, STONECREEK GARAGE rebuilt
+  rustic (fieldstone, boards, red metal gable; same bay, door and MECHANICS); EASTGATE OUTFITTERS
+  and LODGE, FEED & SEED, RIDGELINE TIMBER CO. sawmill (log decks, lumber stacks), TIMBERLINE CAFÉ.
+- **4x4 club**: RIDGELINE 4X4 CLUB moved down Eagle Pass into Northridge and takes its whole
+  north-west block: a walk-in two-storey stone-and-log clubhouse (bar with taps and back bar, two
+  pool tables, leather couches, stone fireplace with antlers, a big TV, trail maps, a mounted tyre,
+  winch and plates; the roof and upper storey lift off while the player is inside), a veranda
+  with the carved balcony over it, the workshop bay with a lift and a rig on it, the members' yard
+  (fire pit, Adirondack chairs, stone BBQ, smoker, string lights), the gravel lot with the seven
+  trucks and two members' rigs, the timber gate with the carved 4X4 CLUB sign. Members hang out
+  inside, on the veranda, at the fire and in the workshop. E at the gate arms the hill climb and
+  sets the GPS to the start gate at the trailhead up Eagle Pass. The old lot is a small trailhead
+  car park with the trail board.
+- **Removed**: the helicopter parked on a lone pad by the Ridgeline Highway west of Northridge,
+  and the pad; The Last Witness now lands on the Mountain Rescue helipad at the ranger station.
+- Console: `DeadEndCity.mountainTowns()`.
+
+## Unreleased — GOALLINE, the sports betting office by the stadium
+
+- **The shop** (sportsbook.js, sportsbook3d.js): GOALLINE SPORTS BET, a 16 x 12 m sportsbook
+  south-west of South Coast Stadium's entrance plaza (x 2462-2590, y 4992-5088), its glass
+  frontage and double door facing south onto a paved apron with a path to the Garden Ave
+  pavement. The neon sign stands on the front parapet over a lit fascia (LIVE ODDS · IN-PLAY);
+  inside, a pitch-green carpet, a video wall (the stadium's live board between two GOALLINE odds
+  boards that go SUSPENDED over a goal), the counter with its till and PAY OUT sign, three
+  self-service terminals, a ledge with low stools; the roof lifts off with the player inside.
+  A clerk in the house green and up to five punters, each backing a side: they cheer or groan at
+  every goal with a speech bubble, and the clerk has a word for a big win ("Lucky day, huh?").
+  Walls, counter, ledge and terminals are solid to people, vehicles and rounds; the roof is
+  cover from the police helicopter. On the city map: a green $ badge, GOALLINE · BETS.
+- **Betting** (the action key inside: PLACE A BET): markets on the stadium's football fixture,
+  live while it is played: match result, next goal (or no goal), total goals over / under (the
+  line nearest even money and one either side), both teams to score, correct score (16 scores
+  and ANY OTHER), half-time result before the break. Pre-match prices for the next fixture with
+  the kick-off countdown when nothing is on. Bets settle as their market resolves (next goal on
+  the goal, OVER and BTTS YES at once, a correct score lost once passed, half time at the break,
+  the rest at full time) and winnings are credited automatically (BET WON · +$1,250); an
+  abandoned match, or one the clock jumped past, is VOID with the stake returned. Markets are
+  SUSPENDED from a goal until the kick-off after it. Open bets and the last 40 settled ones are
+  saved with the game.
+- **Odds** (sportsbook-odds.js): the football clubs now have ratings (sports-fixtures.js), and
+  a shot on target beats the keeper with a chance from the two ratings and the home crowd
+  (`sportsFinishChance`; before, nearly every shot on target went in: about 12 goals a match,
+  now about 2.8, measured over 350 simulated matches). The book prices from the same model:
+  Poisson goals at the measured rate (7.4 shots on target a side), live on the score and the
+  minutes left, a 6% margin by the power method (12% on correct score, less on near-certain
+  markets), odds rounded down to a real price ladder, shown decimal, fractional or American.
+- **The menu** (sportsbook-ui.js, SPORTSBOOK in shell.html): the match header in both clubs'
+  colours with crests, score, clock and a pulsing LIVE badge; price cards that flash up or down
+  as they move; the slip with typed stake, $10 / $50 / $100 / $500 / MAX chips, a slider over the
+  cash in hand, the potential return, validation (at least $1, never more than you carry) and a
+  PLACED stamp; MY BETS with open and settled bets and the running profit and loss. Arrows,
+  Enter, + / -, P, M, F and Esc; mouse and touch. The world keeps running (the match goes on)
+  and the player is sheltered while it is open; it closes with a wanted level or a pause.
+- **Console**: `sportsbook()`, `sportsbookBet(market, key, stake)`, `sportsbookShop(open, tab)`,
+  `sportsbookSlip(market, key, stake)`, `sportsbookFormat(format)`; `stadiumGoal(team)` forces a
+  goal.
+
+## Unreleased — the tree library
+
+Every tree is now one of 22 species (vegetation3d.js), so no two streets, parks or hillsides
+look alike, and no two trees of a species are the same.
+
+- **Broadleaf**: London plane, linden, honey locust (light, airy), Bradford pear (one in five in
+  white blossom), maple (one in seven turning gold or red), oak, weeping willow, jacaranda
+  (purple), flame tree (red), cherry, beech, birch. A trunk with a root flare forks into limbs
+  that show under the crown's edge; the crown is a cluster of lobes, each a lumpy core wrapped
+  in leaf-cluster cards, so its edge reads as foliage from above.
+- **Conifers**: spruce (ragged drooping whorls), fir (a tight blue-green cone, a spire),
+  pine (a bare trunk under tufted clumps), Italian cypress (a dark column), stone pine (a flat
+  umbrella).
+- **Palms**: Canary date palm (thick diamond-patterned trunk, a dense ball of fronds), Mexican
+  fan palm (tall and thin, fan leaves over a skirt of dead ones), coconut (a bowed trunk, long
+  drooping fronds, nuts), royal palm (smooth grey trunk, green crownshaft). Fronds are curved,
+  keeled blades that twist towards the tip.
+- **Materials**: one procedural atlas (leaf clusters, needles, pine tufts, willow strands,
+  blossom, pinnate and fan fronds, eight barks) with a baked normal map and mipmaps that keep
+  the leaf coverage at a distance; one material for every tree.
+- **Variety per tree**: scale ±18%, height to width, lean, turn, leaf tint, crown density and
+  a shape morph (a crown that spreads or stays upright, boughs that droop or lift, fronds that
+  hang), all from the tree's position. Wind sways crowns and fronds, shadows included.
+- **Where**: the Old Quarter and Battery Point lindens and planes; downtown honey locusts and
+  pears, stone pines in the financial plazas; South Bank maples; planes at the Ironworks, planes
+  and stone pines at the marina; parks oaks, lindens, maples
+  and planes with willows by the ponds and cherries; the Keys mixed palms (fan palms down Ocean
+  Drive, coconuts on the beach, royal and date palms in Little Havana) with flame trees and
+  jacarandas; Monarch Isle planes with stone pines among them, mixed palms on the waterfront;
+  the foothills pines, spruce and fir; the Ridgeline pines low down, fir through the middle and
+  spruce up to the treeline, beech, birch and maple below them.
+- **Performance**: one instanced mesh per species per breakable cell and level of detail, as
+  before; a ~100-triangle mid level from street zoom 0.5 out and beyond 1.5 km in the flight
+  view, and one plain crown per tree in the far city.
+- **Console**: `DeadEndCity.vegetation()` (species counts, tree draws and triangles in view),
+  `DeadEndCity.treeLineup()` (one of every species, for inspection).
+## Unreleased — the public demo build, and mission 1's warehouse ending
+
+- **Public demo** (`DEMO_BUILD = true` at the top of game.js; campaign.js PUBLIC DEMO): normal
+  players get missions 1 and 2. Missions 3-11 and contracts C1-C5 show in CHOOSE MISSION as
+  locked with a FULL GAME badge (titles visible, a click shows "Thanks for playing the demo! If
+  you liked it, please buy the full game."); the payphone stops ringing after mission 2 (no call
+  notice, prompt, marker or GPS line), RESTART CURRENT JOB cannot reach a gated job, and the
+  mission card reads FREE ROAM · DEMO COMPLETE. Completing mission 2 opens the DEMO COMPLETE
+  card: the title logo over the cover art, the thanks, a recap (time played, cash earned, wanted
+  peak, from the new saved `stats`), CONTINUE FREE ROAM and MAIN MENU. Completion is kept in
+  `dead-end-city-demo` (NEW GAME leaves it); the title menu has a DEMO badge by the version
+  (DEMO · COMPLETED after). Free-roam activities are not gated: the hill climb, beach
+  volleyball, the stadium ball, the pier rides, the bike share, cabs, rail, the liner, casino,
+  garages, gun shop, Fort Sentinel and the Apache. God mode opens everything, with no card.
+  Console: `demo()`, `skipToRooftopEscape()`; `startMission(i)` reaches a gated job only with
+  god mode or `?dev`.
+- **God mode opens its settings**: typing GODMODE (in play, on the map or on the title screen)
+  turns god mode on and opens Settings straight on the GOD MODE tab instead of the mission
+  picker; over the title it returns to the title when closed. The tab's new first row, MISSION
+  SELECT · PLAY ANY MISSION, opens the picker with every job unlocked (demo build included).
+  Typed again it turns god mode off with the usual toast.
+- **Mission 1 ending** (harbor.js THE DROP): the shutter comes down behind the truck with no
+  "police lost". Officers shut inside with it (on foot through the doorway, or a cruiser's
+  crew) must be put down: ELIMINATE POLICE · N LEFT, the marker on the nearest one; downed
+  officers count as out. The warehouse is sealed (chase.js `depotSealed`): no officer crosses
+  its walls either way, by the shutter or the back door, and none cuffs through them; officers
+  caught under the closing shutter step to the nearer side. The wanted level is held while the
+  player is inside (the units stake out the building; no more are sent). Then EXIT THE TRUCK
+  (while still at the wheel), then the back door opens: ESCAPE ON FOOT THROUGH THE BACK DOOR,
+  with the marker on the door. Walking out clears the wanted level at that moment (POLICE
+  LOST!), and MISSION 1 COMPLETE follows 1.4 s later. The truck destroyed before the escape
+  still fails the job; dying inside fails it as before. Console: `depotOfficers(n)`,
+  `neutraliseDepotPolice()`, `missionState()` now reports `depotSealed` and `policeInside`.
+
 ## Unreleased — the radio on the title screen
 
 The car radio plays on the title menu too, so the city's music is there before the first ride

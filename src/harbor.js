@@ -398,12 +398,23 @@
        Driving the loaded truck into Vinny's warehouse is not the end of the job:
          stage 4  the truck is inside; the front roller shutter comes down behind
                   it (and backs off if anything is in the doorway);
-         stage 5  the shutter is down, so the units outside lose the truck and
-                  the back door swings open; the player leaves the truck and
-                  walks out through the back door;
-         win      standing on the pavement outside the back door, on foot,
-                  having come through the building.
-       Backing out before the shutter is down returns to the delivery stage. */
+         stage 5  the shutter is down and the warehouse is sealed (depotSealed,
+                  chase.js): no officer crosses its walls either way. Any
+                  officer who got in with the truck (on foot through the doorway,
+                  or the crew of a cruiser that made it inside) has to be put
+                  down: ELIMINATE POLICE · N LEFT. Skipped when nobody got in;
+         stage 6  the truck stays inside on its own: EXIT THE TRUCK;
+         stage 7  the back door swings open: ESCAPE ON FOOT THROUGH THE BACK DOOR
+                  (the marker is on the door);
+         win      out through the back door onto the pavement, on foot, having
+                  come through the building. The units staking out the front
+                  lose the trail at that moment (POLICE LOST), and a beat later
+                  the job completes.
+       While the player is inside during stages 5-7 the wanted level is held
+       (depotStakeout, citylife.js updateWanted): the police know the truck went
+       in, they just cannot get in after it. There is no "police lost" before the
+       back door. Backing out before the shutter is down returns to the delivery
+       stage; the truck destroyed before stage 7 fails the job as ever. */
     function beginDepotDrop(m) {
       setDepotDoors(1, 1);
       noise(0.45, 0.2, 300);
@@ -415,32 +426,73 @@
         'Brakes on. I am dropping the shutter behind you — they are right on your tail.',
       );
     }
-    /* The shutter is down: nobody outside saw where the truck went. */
+    /* Officers still in the fight inside the sealed warehouse. A downed officer
+       (alive, crawling, no longer shooting) is out of it. */
+    function depotPoliceInside() {
+      return officers.filter(
+        (o) =>
+          o.hp > 0 && !o.downed && !o.returned && o.state !== 'return' && insideDepot(o.x, o.y),
+      );
+    }
+    function eliminateText(n) {
+      return 'ELIMINATE POLICE · ' + n + ' LEFT';
+    }
+    /* The shutter is down: the warehouse is sealed with whoever is inside. */
     function depotShutterDown(m) {
       m.cargoDelivered = true;
       m.truck = m.car;
       m.truck.cargoCount = 0;
-      m.truck.mission = false;
-      // The truck stays parked in the warehouse; losing it now cannot fail the job.
-      m.car = null;
       m.throughBuilding = false;
+      m.escapedAt = 0;
+      // The police saw the truck go in: the heat they had is held until the back
+      // door (depotStakeout). Nothing is cleared here.
+      m.depotHeat = Math.ceil(wantedStars);
+      depotSealed = true;
       for (const c of vehicles) {
-        if (!c.missionPursuit || c === player.car) continue;
-        // Units that were chasing the truck go back to patrolling the streets.
-        c.missionPursuit = false;
-        c.pursuitTarget = null;
+        if (c === player.car) continue;
+        if (c.missionPursuit) {
+          // Units that were chasing the truck now hunt the driver by the normal
+          // rules; they stake out the building from the street.
+          c.missionPursuit = false;
+          c.pursuitTarget = null;
+        }
+        // A cruiser that made it in with the truck: its crew gets out to fight.
+        if (lawVehicle(c) && c.hp > 0 && c.cop && insideDepot(c.x, c.y)) deployOfficers(c);
       }
-      clearPolice(true);
-      setDepotDoors(1, 0);
       noise(0.25, 0.25, 180);
-      setStage(
-        5,
-        VINNY_DEPOT.exit,
-        'GET OUT AND SLIP OUT THE BACK DOOR',
-        'vinny',
-        'Shutter is down and they have lost you. Leave the truck, out the back door, on foot.',
-      );
-      tell('Shutter down · the police lost the truck. Out the back door on foot.', 5);
+      const inside = depotPoliceInside();
+      if (inside.length > 0) {
+        const n = inside.length;
+        setStage(
+          5,
+          inside[0],
+          eliminateText(n),
+          'vinny',
+          n === 1 ? 'You brought a cop in with you. Deal with it.' : 'You brought company in with you. Deal with them.',
+        );
+        announce('SHUTTER DOWN · ' + n + (n === 1 ? ' OFFICER INSIDE' : ' OFFICERS INSIDE'), 'ELIMINATE POLICE', 3);
+      } else depotInteriorClear(m, true);
+    }
+    /* Nobody left inside who can stop the drop. */
+    function depotInteriorClear(m, straightAway = false) {
+      if (straightAway)
+        missionLine('vinny', 'Shutter is down. Leave the truck and go out the back door, on foot.');
+      else {
+        missionLine('vinny', 'That is the last of them. Leave the truck, out the back door, on foot.');
+        announce('WAREHOUSE CLEAR', 'LEAVE THE TRUCK', 2.5);
+      }
+      m.stage = 6;
+      updateDepotDrop(m);
+      updateUI();
+    }
+    function depotEscapeStage(m) {
+      // The truck is parked for good: losing it now cannot fail the job.
+      if (m.truck) m.truck.mission = false;
+      m.car = null;
+      setDepotDoors(1, 0);
+      noise(0.2, 0.2, 220);
+      setStage(7, VINNY_DEPOT.backDoor, 'ESCAPE ON FOOT THROUGH THE BACK DOOR');
+      announce('BACK DOOR OPEN', 'ESCAPE ON FOOT', 2.5);
     }
     function updateDepotDrop(missionState) {
       if (missionState.stage === 4) {
@@ -458,13 +510,41 @@
         if (depotFrontShutter >= 1) depotShutterDown(missionState);
         return;
       }
-      // Stage 5: out of the truck, through the building and out the back door.
-      missionState.target = VINNY_DEPOT.exit;
-      if (player.car) {
-        missionState.instruction = 'GET OUT OF THE TRUCK · E';
+      if (missionState.escapedAt) {
+        // Out and gone: the police have lost the trail; the job closes a beat later.
+        if (gameTime - missionState.escapedAt >= 1.4) {
+          winMission();
+          // Shut the back door behind the runner and roll the front back up.
+          settleDepotDoors();
+        }
         return;
       }
-      missionState.instruction = 'SLIP OUT THE BACK DOOR';
+      if (missionState.stage === 5) {
+        const inside = depotPoliceInside();
+        if (inside.length) {
+          // The marker rides on the nearest officer still fighting.
+          missionState.target = inside.reduce((a, b) =>
+            distanceBetween(player, a) <= distanceBetween(player, b) ? a : b,
+          );
+          missionState.instruction = eliminateText(inside.length);
+          return;
+        }
+        depotInteriorClear(missionState);
+        return;
+      }
+      if (missionState.stage === 6) {
+        if (player.car) {
+          missionState.target = missionState.truck;
+          missionState.instruction = 'EXIT THE TRUCK';
+          return;
+        }
+        depotEscapeStage(missionState);
+        return;
+      }
+      // Stage 7: out of the truck, through the building and out the back door.
+      missionState.target = VINNY_DEPOT.backDoor;
+      missionState.instruction = player.car ? 'EXIT THE TRUCK' : 'ESCAPE ON FOOT THROUGH THE BACK DOOR';
+      if (player.car) return;
       if (insideDepot(player.x, player.y)) missionState.throughBuilding = true;
       const exit = VINNY_DEPOT.exit;
       if (
@@ -474,10 +554,36 @@
         Math.abs(player.x - exit.x) < 70 &&
         Math.abs(player.y - exit.y) < 60
       ) {
-        winMission();
-        // Shut the back door behind the runner and roll the front back up.
-        settleDepotDoors();
+        missionState.escapedAt = gameTime;
+        missionState.instruction = 'POLICE LOST';
+        missionState.target = null;
+        depotSealed = false;
+        const wasWanted = wantedStars > 0;
+        clearPolice();
+        if (wasWanted) showPoliceNotice('POLICE LOST!', true);
       }
+    }
+    /* The drop's prompts (offered from civicUI): the count while officers are
+       inside, the way out of the cab, and the back door. */
+    function depotDropPrompt(m) {
+      if (!m || m.stage < 5 || m.escapedAt || gameMode !== 'play') return;
+      if (m.stage === 5) offerPrompt(m.instruction, { key: null, id: 'depot-eliminate' });
+      else if (player.car) offerPrompt('EXIT THE TRUCK', { id: 'depot-exit-truck' });
+      else if (m.stage === 7) offerPrompt('ESCAPE ON FOOT THROUGH THE BACK DOOR', { key: null, id: 'depot-escape' });
+    }
+    /* Held while the player is inside the sealed warehouse (citylife.js
+       updateWanted): the police know where the truck went. */
+    function depotStakeout() {
+      const m = mission;
+      return (
+        m?.index === 0 &&
+        m.stage >= 5 &&
+        m.stage <= 7 &&
+        !m.escapedAt &&
+        depotSealed &&
+        m.depotHeat > 0 &&
+        insideDepot(player.x, player.y, -8)
+      );
     }
     function updateHarborMission(missionState, deltaSeconds) {
       if (missionState.stage >= 4) {

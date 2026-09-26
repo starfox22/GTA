@@ -399,7 +399,7 @@
         if (Math.abs(b.x - x) < reach + b.reach && Math.abs(b.y - y) < reach + b.reach && boxContact(shape, b)) return false;
       // The sailing liner moves, so her hull is asked for where she is now.
       for (const hull of movingLinerHulls()) if (boxContact(shape, hull)) return false;
-      // So does the ketch that works the Palm Sound drawbridge (drawbridge.js).
+      // So does the brigantine the Palm Sound drawbridge opens for (drawbridge.js).
       for (const hull of drawbridgeVesselHulls()) if (boxContact(shape, hull)) return false;
       return true;
     }
@@ -1320,6 +1320,19 @@
         updateCargoPursuit(deltaSeconds);
         return;
       }
+      // Mission 1, inside Vinny's sealed warehouse (harbor.js THE DROP): the
+      // police know where the truck went and cannot get in after it. The heat
+      // is held, and no more units are sent, until the player slips out the back.
+      if (depotStakeout()) {
+        wantedStars = Math.max(mission.depotHeat, wantedStars);
+        searchActive = false;
+        searchRemaining = policeSearchSeconds();
+        lastSeen = {
+          x: player.x,
+          y: player.y,
+        };
+        return;
+      }
       if (wantedStars <= 0) {
         searchActive = false;
         searchRemaining = 0;
@@ -1565,7 +1578,11 @@
       }
       if (gameMode === 'play' && harborGate < 0.82 && withinRange('harbor-gate', distanceBetween(player, HARBOR.gate), 110, 130))
         offerPrompt('OPEN HARBOR BARRIER', { id: 'harbor-gate' });
-      else if (gameMode === 'play') harborBayPrompt(hm);
+      else if (gameMode === 'play') {
+        harborBayPrompt(hm);
+        // Inside Vinny's warehouse after the shutter (harbor.js THE DROP).
+        depotDropPrompt(hm);
+      }
       getElement('worldClock').textContent =
         'DAY ' + (Math.floor(worldMinutes / 1440) + 1) + ' · ' + clockText();
       const nav = navigationState();
@@ -1582,6 +1599,10 @@
         ? 'Cops alerted · ' + Math.ceil(cargo.policeArrivalIn - 1e-7) + 's'
         : mission?.index === 10 && mission.stage === 5
           ? 'MANIFEST EXPOSED · GET DANIEL INSIDE VINNY’S WAREHOUSE'
+          : depotStakeout()
+            ? mission.stage === 5
+              ? 'OFFICERS INSIDE THE WAREHOUSE'
+              : 'POLICE OUTSIDE · OUT THE BACK'
           : cargo
             ? 'COPS TRACKING TRUCK · RESPRAY AT R'
             : wantedStars > 0

@@ -14,21 +14,21 @@
        * plinth of polished black granite (1.3 m) with a brass line inlaid under
        * the cornice and an engraved brass AURORA plaque on the face towards the
        * street camera, in a ring of pale paving painted on the lawn
-       * (themepark.js). The sculpt is Catmull-Rom tubes with elliptical
-       * sections (body, neck, head, legs, the crest, mane and tail locks, the
-       * spiral horn) and a few embedded masses for the musculature, modelled
-       * in life-size metres and scaled up. At night four warm-white uplights
-       * in the paving catch her gloss (a shader term, UPLIGHTS: glints more
-       * than light on the black) and the horn glows softly. Everything is
-       * merged per material: about 9.2k triangles in five draws, and the plaque.
+       * (themepark.js). Her body is a real horse: the three.js examples
+       * horse (MIT; from "3 Dreams of Black", Apache 2.0), re-posed rearing
+       * by tools/unicorn_model.py, which writes its 494-vertex cage and the
+       * layout of her mane, tail and horn to assets/unicorn-horse.json
+       * (ASSETS.unicorn, about 30 KB); here the cage is Loop-subdivided twice
+       * into a smooth cast body, the locks are swept as flattened tubes and
+       * the horn as a grooved spiral. At night four warm-white uplights in
+       * the paving catch her gloss (a shader term, UPLIGHTS: glints more than
+       * light on the black) and the horn glows softly. Everything is merged
+       * per material: about 29.5k triangles in five draws, and the plaque.
        */
       const UNICORN = PIER.unicorn,
-        // Model metres to world units (3.75 times life size: 12 m to the horn tip); the plinth top (1.3 m).
-        UNICORN_SCALE = 30,
+        // Her horn tip above the plinth (12 m: about four times life size); the plinth top (1.3 m).
+        UNICORN_HEIGHT = 96,
         UNICORN_PLINTH_TOP = 10.4,
-        // Where the sculpt's origin sits on the plinth, along her heading (model metres),
-        // so her hooves, the rock and the tail's touch all stand on the plinth top.
-        UNICORN_SHIFT = 0.36,
         // The plinth's die (octagon circumradius) and the plaque's height on it.
         UNICORN_DIE = 23.5,
         UNICORN_PLAQUE_Y = 5.6,
@@ -258,37 +258,92 @@
         geo.computeVertexNormals();
         return geo;
       }
-      /* A mass under the skin (a muscle): a flattened ellipsoid, radii along its
-         own x, y, z, turned `roll` about z (in the body's plane), at `p`. */
-      const unicornMassGeo = new Three.SphereGeometry(1, 10, 7);
-      function unicornMass(p, radii, roll) {
-        const geo = unicornMassGeo.clone();
-        geo.scale(...radii);
-        geo.rotateZ(roll);
-        geo.translate(...p);
-        return geo;
+      /**
+       * LOOP SUBDIVISION
+       * One step of Loop's scheme on a closed triangle mesh (the same as
+       * tools/unicorn_model.py): each edge gets a point (3/8 of its ends and
+       * 1/8 of the two corners across it), each vertex moves towards its
+       * neighbours (Warren's weights), each triangle becomes four. The old
+       * vertices keep their indices; the edge points follow.
+       */
+      function unicornLoop(pos, tri) {
+        const nv = pos.length / 3,
+          nt = tri.length / 3,
+          edgeOf = new Map(),
+          ends = [],
+          across = [],
+          faceEdges = new Int32Array(nt * 3);
+        for (let f = 0; f < nt; f++)
+          for (let k = 0; k < 3; k++) {
+            const a = tri[f * 3 + k],
+              b = tri[f * 3 + ((k + 1) % 3)],
+              c = tri[f * 3 + ((k + 2) % 3)],
+              key = a < b ? a * nv + b : b * nv + a;
+            let e = edgeOf.get(key);
+            if (e === undefined) {
+              e = ends.length / 2;
+              edgeOf.set(key, e);
+              ends.push(a, b);
+              across.push(0, 0, 0);
+            }
+            for (let j = 0; j < 3; j++) across[e * 3 + j] += pos[c * 3 + j];
+            faceEdges[f * 3 + k] = e;
+          }
+        const ne = ends.length / 2,
+          out = new Float32Array((nv + ne) * 3),
+          around = new Float64Array(nv * 3),
+          valence = new Uint16Array(nv);
+        for (let e = 0; e < ne; e++) {
+          const a = ends[e * 2],
+            b = ends[e * 2 + 1];
+          valence[a]++;
+          valence[b]++;
+          for (let j = 0; j < 3; j++) {
+            around[a * 3 + j] += pos[b * 3 + j];
+            around[b * 3 + j] += pos[a * 3 + j];
+            out[(nv + e) * 3 + j] = 0.375 * (pos[a * 3 + j] + pos[b * 3 + j]) + 0.125 * across[e * 3 + j];
+          }
+        }
+        for (let v = 0; v < nv; v++) {
+          const n = valence[v],
+            beta = n === 3 ? 3 / 16 : 3 / (8 * n);
+          for (let j = 0; j < 3; j++) out[v * 3 + j] = pos[v * 3 + j] * (1 - n * beta) + around[v * 3 + j] * beta;
+        }
+        const faces = new Uint32Array(nt * 12);
+        for (let f = 0; f < nt; f++) {
+          const a = tri[f * 3],
+            b = tri[f * 3 + 1],
+            c = tri[f * 3 + 2],
+            ab = nv + faceEdges[f * 3],
+            bc = nv + faceEdges[f * 3 + 1],
+            ca = nv + faceEdges[f * 3 + 2];
+          faces.set([a, ab, ca, b, bc, ab, c, ca, bc, ab, bc, ca], f * 12);
+        }
+        return [out, faces];
       }
-      /* Aurora in life-size metres: x forward, y up, z to her left (her right
-         side, with the mane, faces the street camera). She rears on her hind
-         legs, the body pitched up 42 degrees, forelegs folded high, the neck
-         arched and the head bowed and turned a little towards the camera, the
-         horn thrust forward; the mane streams back off the crest in long
-         waved locks and the tail sweeps down in an S to the plinth (the
-         sculptor's third point of support) and fans out behind. */
-      function unicornStatue(parts, matrix) {
+      /* The sculpt (assets/unicorn-horse.json, written by tools/unicorn_model.py
+         from the three.js examples horse): millimetres, life size, x forward,
+         y up, -z the side she turns to and shows the street camera. */
+      function unicornSculptData() {
+        const url = ASSETS.unicorn;
+        return JSON.parse(atob(url.slice(url.indexOf(',') + 1)));
+      }
+      /* Aurora in life-size metres. She rears in a levade on her gathered hind
+         legs, the body pitched up, forelegs folded high, the neck arched and
+         the head turned towards the camera, the horn thrust forward and up;
+         the mane streams back off the crest in the wind, most of it to the
+         camera side, and the tail falls in an S to the plinth (the
+         sculptor's third point of support) and fans out there. The body is
+         the posed horse's cage, Loop-subdivided twice (about 15.7k
+         triangles, smooth as cast bronze); the locks are flattened
+         Catmull-Rom tubes; the horn a two-start spiral. */
+      function unicornStatue(parts, matrix, data) {
         const add = (material, geo) => parts.add(material, geo, matrix),
-          pitch = (42 * Math.PI) / 180,
-          dir = [Math.cos(pitch), Math.sin(pitch)],
-          up = [-Math.sin(pitch), Math.cos(pitch)],
-          rumpX = -0.62,
-          rumpY = 0.98,
-          length = 1.45,
-          // A point in the body's frame: t along the spine, `rise` towards the back.
-          body = (t, rise = 0, z = 0) => [rumpX + dir[0] * t * length + up[0] * rise, rumpY + dir[1] * t * length + up[1] * rise, z],
-          offset = (p, dx, dy, dz = 0) => [p[0] + dx, p[1] + dy, p[2] + dz];
-        // The rock she rears from, carved from the plinth's granite.
+          metres = (a) => a.map((v) => v / 1000),
+          centre = metres(data.centre);
+        // The rock under her hooves and the tail's rest, carved from the plinth's granite.
         {
-          const rock = new Three.SphereGeometry(1, 22, 10),
+          const rock = new Three.SphereGeometry(1, 22, 9),
             p = rock.attributes.position;
           for (let i = 0; i < p.count; i++) {
             const x = p.getX(i),
@@ -298,268 +353,43 @@
             p.setXYZ(i, x * bump, Math.max(-0.2, y) * bump, z * bump);
           }
           rock.computeVertexNormals();
-          rock.scale(0.6, 0.15, 0.46);
-          rock.translate(-0.3, -0.02, 0);
+          rock.scale(0.62, 0.075, 0.5);
+          rock.translate(centre[0] + 0.02, -0.012, centre[2]);
           add(unicornMats.granite, rock);
         }
-        // Barrel: round hindquarters, a lean waist, a deep girth and chest.
-        add(
-          unicornMats.obsidian,
-          unicornTube(
-            [
-              { p: body(-0.06), r: 0.04, w: 0.04, o: 0.08 },
-              { p: body(0.0), r: 0.2, w: 0.17, o: 0.07 },
-              { p: body(0.08), r: 0.31, w: 0.27, o: 0.05 },
-              { p: body(0.17), r: 0.35, w: 0.305, o: 0.03 },
-              { p: body(0.3), r: 0.33, w: 0.28 },
-              { p: body(0.45), r: 0.31, w: 0.25, o: -0.035 },
-              { p: body(0.6), r: 0.33, w: 0.255, o: -0.03 },
-              { p: body(0.74), r: 0.355, w: 0.265, o: -0.015 },
-              { p: body(0.86), r: 0.36, w: 0.26 },
-              { p: body(0.95), r: 0.3, w: 0.235, o: 0.02 },
-              { p: body(1.01), r: 0.18, w: 0.16 },
-              { p: body(1.05), r: 0.03, w: 0.03 },
-            ],
-            { perSpan: 3, sides: 20, hint: [up[0], up[1], 0] },
-          ),
-        );
-        // Musculature: the hindquarters, the shoulders over the scapulae, the chest.
-        for (const side of [-1, 1]) {
-          add(unicornMats.obsidian, unicornMass(body(0.15, 0.02, side * 0.13), [0.3, 0.26, 0.17], pitch));
-          add(unicornMats.obsidian, unicornMass(body(0.78, -0.03, side * 0.125), [0.26, 0.13, 0.13], pitch - 1.0));
-          add(unicornMats.obsidian, unicornMass(body(0.96, -0.17, side * 0.075), [0.15, 0.14, 0.11], pitch));
-        }
-        // Neck: out of the top of the chest, a long arch up to the poll, turning
-        // a little to her right towards its top.
-        const withers = body(0.86, 0.1),
-          neck = [
-            { p: withers, r: 0.31, w: 0.21 },
-            { p: offset(withers, 0.14, 0.33, -0.005), r: 0.25, w: 0.16 },
-            { p: offset(withers, 0.26, 0.64, -0.02), r: 0.19, w: 0.13 },
-            { p: offset(withers, 0.31, 0.9, -0.045), r: 0.15, w: 0.11 },
-            { p: offset(withers, 0.3, 1.03, -0.065), r: 0.13, w: 0.1 },
-          ];
-        add(unicornMats.obsidian, unicornTube(neck, { perSpan: 3, sides: 16, hint: [-1, 0.25, 0] }));
-        // Head: bowed 40 degrees below level from the poll, turned `turn` about
-        // the vertical towards her right; the jaw deep at the back, nostrils flared.
-        const poll = offset(neck[4].p, 0.02, 0.05, -0.01),
-          headDown = (40 * Math.PI) / 180,
-          turn = 0.32,
-          hd = [Math.cos(headDown), -Math.sin(headDown)],
-          hn = [Math.sin(headDown), Math.cos(headDown)],
-          headLength = 0.64,
-          turned = (x, y, z) => [x * Math.cos(turn) + z * Math.sin(turn), y, -x * Math.sin(turn) + z * Math.cos(turn)],
-          head = (s, rise = 0, z = 0) => {
-            const [x, y, dz] = turned(hd[0] * s * headLength + hn[0] * rise, hd[1] * s * headLength + hn[1] * rise, z);
-            return [poll[0] + x, poll[1] + y, poll[2] + dz];
-          },
-          headUp = turned(hn[0], hn[1], 0);
-        add(
-          unicornMats.obsidian,
-          unicornTube(
-            [
-              { p: head(-0.06), r: 0.1, w: 0.09 },
-              { p: head(0.06), r: 0.165, w: 0.12, o: -0.045 },
-              { p: head(0.2), r: 0.155, w: 0.118, o: -0.035 },
-              { p: head(0.36), r: 0.112, w: 0.095, o: -0.01 },
-              { p: head(0.55), r: 0.088, w: 0.078 },
-              { p: head(0.74), r: 0.086, w: 0.074, o: -0.006 },
-              { p: head(0.88), r: 0.094, w: 0.084, o: -0.012 },
-              { p: head(0.97), r: 0.075, w: 0.066, o: -0.015 },
-              { p: head(1.03), r: 0.02, w: 0.02, o: -0.01 },
-            ],
-            { perSpan: 3, sides: 14, hint: headUp },
-          ),
-        );
-        // Ears, pricked up and a little forward.
-        for (const z of [-1, 1]) {
-          const base = head(0.03, 0.1, z * 0.055),
-            tip = head(-0.02, 0.29, z * 0.085),
-            mid = head(0.01, 0.2, z * 0.075);
-          add(
-            unicornMats.obsidian,
-            unicornTube(
-              [
-                { p: base, r: 0.04, w: 0.028 },
-                { p: mid, r: 0.034, w: 0.024 },
-                { p: tip, r: 0.003, w: 0.003 },
-              ],
-              { perSpan: 3, sides: 6, hint: turned(1, 0, 0) },
-            ),
-          );
-        }
-        // The horn: a polished gold two-start spiral from the forehead, thrust forward.
-        let hornTip;
-        {
-          const base = head(0.2, 0.12),
-            hornDir = turned(hd[0] * 0.5 + hn[0] * 0.87, hd[1] * 0.5 + hn[1] * 0.87, 0),
-            len = Math.hypot(...hornDir),
-            hornLength = 0.62,
-            ctrl = [];
-          for (let i = 0; i <= 4; i++) {
-            const s = i / 4;
-            ctrl.push({ p: [0, 1, 2].map((j) => base[j] + (hornDir[j] / len) * s * hornLength), r: 0.056 * (1 - s) + 0.003 });
+        // The body: the cage, subdivided twice.
+        let pos = new Float32Array(metres(data.vertices)),
+          tri = data.triangles;
+        for (let i = 0; i < 2; i++) [pos, tri] = unicornLoop(pos, tri);
+        const body = new Three.BufferGeometry();
+        body.setAttribute('position', new Three.BufferAttribute(pos, 3));
+        body.setIndex(new Three.BufferAttribute(tri, 1));
+        body.computeVertexNormals();
+        add(unicornMats.obsidian, body);
+        // The mane, forelock and tail, and the hooves: rings [x, y, z, r, w] in millimetres.
+        const rings = (lock) => {
+          const ctrl = [];
+          for (let i = 0; i < lock.rings.length; i += 5) {
+            const [x, y, z, r, w] = metres(lock.rings.slice(i, i + 5));
+            ctrl.push({ p: [x, y, z], r, w });
           }
-          add(unicornMats.horn, unicornTube(ctrl, { perSpan: 4, sides: 12, hint: turned(0, 0, 1), groove: (angle, s) => 0.8 + 0.2 * Math.cos(angle * 2 - s * TAU * 3.5) }));
-          hornTip = ctrl[4].p;
-        }
-        // Legs through their joints (rings flattened across the leg), black hooves.
-        const leg = (joints, hoofDir) => {
-          add(unicornMats.obsidian, unicornTube(joints, { perSpan: 2, sides: 10, hint: [0, 0, 1] }));
-          const end = joints[joints.length - 1].p,
-            z = end[2],
-            tip = [end[0] + hoofDir[0] * 0.09, end[1] + hoofDir[1] * 0.09, z];
-          add(
-            unicornMats.obsidian,
-            unicornTube(
-              [
-                { p: [end[0] - hoofDir[0] * 0.01, end[1] - hoofDir[1] * 0.01, z], r: 0.05 },
-                { p: tip, r: 0.068, w: 0.072 },
-              ],
-              { perSpan: 1, sides: 10, hint: [0, 0, 1], cap: true },
-            ),
-          );
+          return ctrl;
         };
-        // Hind legs: thigh to stifle, a strong gaskin to the hock, cannon, fetlock, hoof planted.
-        const hip = body(0.12, -0.05);
-        for (const [z, stifle, hock, fetlock, pastern] of [
-          [0.16, [-0.25, 0.68], [-0.5, 0.36], [-0.4, 0.1], [-0.37, 0.075]],
-          [-0.16, [-0.18, 0.7], [-0.44, 0.38], [-0.26, 0.11], [-0.22, 0.08]],
-        ]) {
-          const hoof = [pastern[0] + 0.02, 0.0],
-            dx = hoof[0] - pastern[0],
-            dy = hoof[1] - pastern[1] - 0.005,
-            dl = Math.hypot(dx, dy);
-          leg(
-            [
-              { p: [hip[0], hip[1], z * 0.8], r: 0.17, w: 0.22 },
-              { p: [hip[0] + 0.1, hip[1] - 0.18, z], r: 0.145, w: 0.19 },
-              { p: [...stifle, z], r: 0.105, w: 0.125 },
-              { p: [(stifle[0] + hock[0]) / 2 + 0.015, (stifle[1] + hock[1]) / 2, z], r: 0.08, w: 0.095 },
-              { p: [...hock, z], r: 0.056, w: 0.08 },
-              { p: [(hock[0] + fetlock[0]) / 2, (hock[1] + fetlock[1]) / 2, z], r: 0.041, w: 0.055 },
-              { p: [...fetlock, z], r: 0.052, w: 0.062 },
-              { p: [...pastern, z], r: 0.042, w: 0.046 },
-            ],
-            [dx / dl, dy / dl],
-          );
+        for (const lock of [...data.mane, ...data.tail]) add(unicornMats.mane, unicornTube(rings(lock), { perSpan: 2, sides: 6, hint: lock.hint }));
+        for (const hoof of data.hooves) add(unicornMats.obsidian, unicornTube(rings(hoof), { perSpan: 1, sides: 12, hint: hoof.hint, cap: true }));
+        // The horn: polished gold, a slight flare at its root, two spiral
+        // grooves running five turns to the tip.
+        const horn = data.horn,
+          base = metres(horn.base),
+          length = horn.length / 1000,
+          radius = horn.radius / 1000,
+          ctrl = [];
+        for (let i = 0; i <= 8; i++) {
+          const s = i / 8;
+          ctrl.push({ p: base.map((b, j) => b + horn.dir[j] * length * s), r: radius * (Math.pow(1 - s, 0.85) + (s < 0.13 ? 0.12 * (1 - s / 0.13) : 0)) + 0.0015 });
         }
-        // Forelegs folded: the one on the camera side raised high at the knee, the far one lower.
-        const shoulder = body(0.8, -0.05),
-          elbow = body(0.88, -0.3);
-        for (const [z, knee, fold] of [
-          [-0.17, [0.34, 0.22], [-0.08, -0.3]],
-          [0.17, [0.25, -0.02], [-0.15, -0.27]],
-        ]) {
-          const k = offset(elbow, knee[0], knee[1]),
-            f = offset(k, fold[0], fold[1]),
-            pastern = offset(f, 0.04, -0.09);
-          leg(
-            [
-              { p: [shoulder[0], shoulder[1], z * 0.75], r: 0.135, w: 0.175 },
-              { p: [elbow[0], elbow[1], z], r: 0.105, w: 0.125 },
-              { p: [(elbow[0] + k[0]) / 2, (elbow[1] + k[1]) / 2, z], r: 0.07, w: 0.088 },
-              { p: [k[0], k[1], z], r: 0.06, w: 0.072 },
-              { p: [(k[0] + f[0]) / 2, (k[1] + f[1]) / 2, z], r: 0.04, w: 0.052 },
-              { p: [f[0], f[1], z], r: 0.05, w: 0.06 },
-              { p: [pastern[0], pastern[1], z], r: 0.041, w: 0.045 },
-            ],
-            [0.35, -0.94],
-          );
-        }
-        // Mane: a rolled crest along the top of the neck, and heavy waved
-        // clumps off it, the way a bronze founder models hair: most falling
-        // to her right (the camera side) and a few to the left, lying on the
-        // neck and lifting clear only towards their curled tips, broad side
-        // outward. A forelock.
-        const crestAt = (s) => {
-            const k = Math.min(3, Math.floor(s * 4)),
-              f = s * 4 - k,
-              c = neck[k].p,
-              d = neck[k + 1].p,
-              r = neck[k].r + (neck[k + 1].r - neck[k].r) * f;
-            return {
-              p: [c[0] + (d[0] - c[0]) * f - r * 0.78, c[1] + (d[1] - c[1]) * f + r * 0.22, c[2] + (d[2] - c[2]) * f],
-              half: neck[k].w + (neck[k + 1].w - neck[k].w) * f,
-            };
-          },
-          crestRoll = [];
-        for (let i = 0; i <= 6; i++) {
-          const s = i / 6;
-          crestRoll.push({ p: crestAt(s * 0.97).p, r: 0.045 - s * 0.012, w: 0.07 - s * 0.02 });
-        }
-        add(unicornMats.mane, unicornTube(crestRoll, { perSpan: 2, sides: 8, hint: [-1, 0.3, 0] }));
-        // Each clump is a ribbon whose broad side faces up and outward, so
-        // the mane reads from the street camera above as well as in profile.
-        const MANE_LOCKS = 19;
-        for (let i = 0; i < MANE_LOCKS; i++) {
-          const s = 0.02 + (i * 0.93) / (MANE_LOCKS - 1),
-            { p: crest, half } = crestAt(s),
-            side = i % 4 === 1 ? 1 : -1,
-            // Streaming back and down, longer at the withers; neighbours
-            // overlap, so the mane reads as one waved sheet with a scalloped edge.
-            reach = 0.34 - s * 0.1 + 0.035 * Math.sin(i * 1.9),
-            drop = 0.26 - s * 0.06 + 0.04 * Math.cos(i * 1.4),
-            wave = 0.035 * Math.sin(i * 2.3 + 0.6),
-            out = side * half;
-          add(
-            unicornMats.mane,
-            unicornTube(
-              [
-                { p: offset(crest, 0.03, -0.01), r: 0.028, w: 0.075 },
-                { p: offset(crest, -reach * 0.25, -drop * 0.22, out * 0.6), r: 0.03, w: 0.11 },
-                { p: offset(crest, -reach * 0.55, -drop * 0.55 + wave, out + side * 0.03), r: 0.028, w: 0.12 },
-                { p: offset(crest, -reach * 0.82, -drop * 0.85 - wave, out + side * 0.045), r: 0.022, w: 0.09 },
-                { p: offset(crest, -reach, -drop, out + side * 0.04), r: 0.012, w: 0.04 },
-                { p: offset(crest, -reach - 0.01, -drop - 0.03, out + side * 0.03), r: 0.004, w: 0.01 },
-              ],
-              { perSpan: 2, sides: 6, hint: [0.25, 0.75, side * 0.6] },
-            ),
-          );
-        }
-        for (const [z, lift] of [
-          [-0.02, 0],
-          [0.03, 0.03],
-        ])
-          add(
-            unicornMats.mane,
-            unicornTube(
-              [
-                { p: head(-0.02, 0.13, z), r: 0.024, w: 0.045 },
-                { p: head(0.1, 0.17 + lift, z - 0.02), r: 0.022, w: 0.05 },
-                { p: head(0.2, 0.15 + lift, z - 0.06), r: 0.014, w: 0.032 },
-                { p: head(0.27, 0.11 + lift, z - 0.09), r: 0.003, w: 0.004 },
-              ],
-              { perSpan: 3, sides: 5, hint: headUp },
-            ),
-          );
-        // Tail: a thick root off the croup, an S down to the plinth (the main
-        // lock rests on it and flicks out behind), the other locks fanning and
-        // curling apart towards their ends. Broad side outward.
-        const dock = body(-0.02, 0.22),
-          spine = [offset(dock, -0.15, 0.02), offset(dock, -0.3, -0.2), offset(dock, -0.32, -0.52), offset(dock, -0.22, -0.82), offset(dock, -0.14, -1.07)];
-        const tailLocks = [
-          { z: 0, spread: 0, end: 5, flick: [-0.34, -1.08, -0.04] },
-          { z: 0.055, spread: -0.05, end: 4, flick: [-0.42, -0.84, 0.2] },
-          { z: -0.055, spread: -0.04, end: 4, flick: [-0.36, -0.88, -0.2] },
-          { z: 0.03, spread: -0.1, end: 3, flick: [-0.52, -0.54, 0.12] },
-          { z: -0.035, spread: -0.08, end: 3, flick: [-0.5, -0.6, -0.14] },
-          { z: -0.03, spread: 0.06, end: 4, flick: [-0.12, -1.0, -0.12] },
-          { z: 0.04, spread: 0.05, end: 4, flick: [-0.1, -1.02, 0.14] },
-        ];
-        tailLocks.forEach((lock, i) => {
-          const ctrl = [{ p: offset(dock, 0.03, 0.01), r: 0.075, w: 0.06 }];
-          for (let k = 0; k < lock.end; k++) {
-            const s = (k + 1) / 5,
-              taper = 1 - s * 0.45;
-            ctrl.push({ p: offset(spine[k], lock.spread * s * s, 0, lock.z * s * 1.6), r: (i ? 0.058 : 0.078) * taper, w: (i ? 0.046 : 0.058) * taper });
-          }
-          // The ends curl round, blunt, rather than tapering to a point.
-          ctrl.push({ p: offset(dock, ...lock.flick), r: 0.018, w: 0.016 });
-          ctrl.push({ p: offset(dock, lock.flick[0] - 0.04, lock.flick[1] + 0.05, lock.flick[2] * 1.1), r: 0.004, w: 0.004 });
-          add(unicornMats.mane, unicornTube(ctrl, { perSpan: 2, sides: 6, hint: [0, 0, 1] }));
-        });
-        return hornTip;
+        add(unicornMats.horn, unicornTube(ctrl, { perSpan: 8, sides: 16, hint: horn.side, groove: (angle, s) => 1 - 0.15 * Math.pow(0.5 + 0.5 * Math.cos(angle * 2 - s * TAU * 5), 2), cap: true }));
+        return metres(horn.tip);
       }
       // ---- The plinth, the plaque, the uplights and Aurora ---------------------------
       {
@@ -654,13 +484,16 @@
           unicornUniforms.unicornLights.value[i].set(x, 0.9, y);
           parkBulbs.add(x, y, 1.0, 3.4, '#fff1dc');
         });
-        // Aurora herself, turned to her heading.
-        const statueMatrix = new Three.Matrix4()
-          .makeTranslation(UNICORN.x, T, UNICORN.y)
-          .multiply(new Three.Matrix4().makeRotationY(-UNICORN.face))
-          .multiply(new Three.Matrix4().makeScale(UNICORN_SCALE, UNICORN_SCALE, UNICORN_SCALE))
-          .multiply(new Three.Matrix4().makeTranslation(UNICORN_SHIFT, 0, 0));
-        const hornTip = unicornStatue(b, statueMatrix);
+        // Aurora herself, turned to her heading, scaled so her horn tip stands
+        // UNICORN_HEIGHT above the plinth, her support centred on it.
+        const sculpt = unicornSculptData(),
+          scale = UNICORN_HEIGHT / (sculpt.horn.tip[1] / 1000),
+          statueMatrix = new Three.Matrix4()
+            .makeTranslation(UNICORN.x, T, UNICORN.y)
+            .multiply(new Three.Matrix4().makeRotationY(-UNICORN.face))
+            .multiply(new Three.Matrix4().makeScale(scale, scale, scale))
+            .multiply(new Three.Matrix4().makeTranslation(-sculpt.centre[0] / 1000, 0, -sculpt.centre[2] / 1000));
+        const hornTip = unicornStatue(b, statueMatrix, sculpt);
         b.flush(parkRoot, 'unicorn statue');
         unicornHornTip.set(...hornTip).applyMatrix4(statueMatrix);
         // A soft glow at the horn's tip after dark.

@@ -10,22 +10,34 @@
      * (`s.bascule`: trunnions, leaf length, piers, gate and stop lines), so the
      * renderer, the physics and the boats agree on it.
      *
+     * The leaves are 44 m each (88 m trunnion to trunnion), as long as the
+     * longest double-leaf bascules built; their counterweights hang off the
+     * outboard main girders and swing down into open pits beside the fixed deck
+     * on each pier, driven by racks on the girders' tails and pinions on the
+     * pier (drawbridge3d.js draws all of it moving).
+     *
      * SCHEDULE. The bridge opens at DRAWBRIDGE_OPENINGS (minutes of the day) for
-     * the ketch ALBATROSS, whose masts are far too tall for the deck; each
+     * the brigantine ALBATROSS, whose masts stand 30 m over the water; each
      * opening takes her across from one anchorage in Palm Sound to the other. An
      * opening runs like a real one, one phase after another:
-     *   warning    bells, the traffic signals go amber then red, lamps flash
+     *   warning    one long blast of the tender's horn, bells, the traffic
+     *              signals go amber then red, lamps flash
      *   gates      the entry arms come down on both approaches, then the exit
      *              arms (an arm waits while a vehicle is under it)
      *   clearing   the tender waits until nobody is left on the moving span
-     *   unlock     the centre locks draw back (clank)
-     *   raising    both leaves swing up together, eased, ~4 degrees a second, to 78
-     *   open       the ketch passes through the channel
-     *   lowering   the leaves come down, eased
-     *   seating    the locks drive home
+     *   unlock     the centre lock bars draw back out of the far leaf (clanks)
+     *   raising    both leaves swing up together, slowly and eased (a minute,
+     *              at most 1.6 degrees a second), to 78 degrees
+     *   open       the channel lights turn green; the brigantine passes under
+     *              sail and salutes, the tender answers
+     *   lowering   the leaves come down, eased, as slowly
+     *   seating    the lock bars drive home
      *   lifting    the arms rise, the signals go green
      * The phase clock is game seconds (one second is an in-game minute), so an
-     * opening lasts about ninety seconds of play.
+     * opening lasts about three minutes of play. A small crowd gathers on the
+     * approaches to watch (drawbridgeSpectators) and the camera eases back a
+     * little for a player close by (drawbridgeCameraZoom, the Event camera
+     * setting).
      *
      * TRAFFIC AND PEOPLE. Traffic stops at the stop lines (drawbridgeTrafficLimit,
      * called from trafficControl), queues, and moves off when the arms rise. No
@@ -40,21 +52,26 @@
      *
      * LEAVES AND JUMPS. The leaves are ramps: a road vehicle on a leaf follows its
      * surface (deckLift, slopePitch; entityElevation adds deckLift), feels its
-     * slope (drawbridgeSlopeDrive: gravity along the slope, tyres grip only up
-     * to about 40 degrees) and leaves the tip ballistically into the gap
+     * slope (drawbridgeSlopeDrive: gravity along the slope; only the driven
+     * wheels push, so a front-wheel-drive saloon cannot hold its speed up much
+     * past 20 degrees and a 4x4 climbs to about 40) and leaves the tip
+     * ballistically into the gap
      * (deckAir, drawbridgeFlight: height, vertical speed, gravity, no grip).
      * It lands on the far leaf or the deck beyond (impact damage by the speed
      * into the surface), strikes the far leaf's end if it comes in low, or falls
      * into the Sound, where water.js floods it. A leaf steeper than
      * DRAWBRIDGE_WALL_ANGLE is a wall. The open gap is not deck (onBridgeDeck).
      */
-    const DRAWBRIDGE_OPENINGS = [50, 330, 615, 900, 1240], // 00:50, 05:30, 10:15, 15:00, 20:40
+    // Three a day, one of them after dark for the floodlit show; an opening
+    // holds the traffic about three minutes of play.
+    const DRAWBRIDGE_OPENINGS = [400, 860, 1290], // 06:40, 14:20, 21:30
       DRAWBRIDGE_MAX_ANGLE = (78 * Math.PI) / 180,
-      DRAWBRIDGE_RATE = (4.2 * Math.PI) / 180, // top swing speed, radians a second
-      DRAWBRIDGE_SWING_ACCEL = (1.4 * Math.PI) / 180, // how fast the swing speeds up and slows
+      DRAWBRIDGE_RATE = (1.6 * Math.PI) / 180, // top swing speed, radians a second: 78 degrees in about a minute
+      DRAWBRIDGE_SWING_ACCEL = (0.16 * Math.PI) / 180, // how gently the swing speeds up and slows
+      DRAWBRIDGE_LOCK_SECONDS = 2.6, // the centre lock bars' stroke
       DRAWBRIDGE_WALL_ANGLE = (40 * Math.PI) / 180,
       DRAWBRIDGE_GRAVITY = GRAVITY, // real gravity: a car off a leaf flies a true arc
-      DRAWBRIDGE_GRIP = 0.84, // tyre friction on the steel: no climbing past ~40 degrees
+      DRAWBRIDGE_GRIP = 0.84, // tyre friction on the leaf's surfacing, dry (times the driven wheels' share of the load)
       DRAWBRIDGE_ARM_SNAP = 50 * KMH, // barrier arms snap for anything faster
       DRAWBRIDGE_ARM_SECONDS = 5.5;
     const drawbridge = {
@@ -63,6 +80,8 @@
       angle: 0,
       rate: 0,
       target: 0,
+      // The centre lock bars: 0 driven home into the far leaf, 1 withdrawn.
+      locks: 0,
       held: null,
       lastSlot: null,
       openings: 0,
@@ -76,6 +95,10 @@
       vessel: null,
       geo: null,
       motor: null,
+      // The onlookers' crowd scene for this opening (drawbridgeSpectators).
+      audience: null,
+      // Seconds the motors have run this swing, for the rack's clicks.
+      rackClock: 0,
     };
     /* ---- Layout ------------------------------------------------------------------ */
     function drawbridgeGeometry() {
@@ -95,6 +118,8 @@
         hinge: b.trunnions,
         leaf: b.leaf,
         drop: b.drop,
+        tail: b.tail,
+        wide: b.wide,
         half: bridge.width / 2,
         road: (bridge.width - 22) / 2,
         gates: b.gates,
@@ -122,6 +147,25 @@
     function drawbridgeTipReach(angle = drawbridge.angle) {
       const g = drawbridgeGeometry();
       return g.leaf * Math.cos(angle) - g.drop * Math.sin(angle);
+    }
+    /* The clear width between the raised leaves up to `height` over the road: the
+       leaves' undersides (the main girders, DRAWBRIDGE_GIRDER deep at the
+       trunnion, a third of that at the tip) lean in toward the channel, most at
+       the top. 0 while the leaves are down. */
+    const DRAWBRIDGE_GIRDER = 44;
+    function drawbridgeClearWidth(height, angle = drawbridge.angle) {
+      const g = drawbridgeGeometry();
+      if (angle < 0.004) return 0;
+      const c = Math.cos(angle),
+        s = Math.sin(angle);
+      let along = g.leaf,
+        depth = DRAWBRIDGE_GIRDER / 3;
+      for (let i = 0; i < 3; i++) {
+        along = Math.min(g.leaf, Math.max(0, (height + g.drop - (g.drop - depth) * c) / s));
+        depth = DRAWBRIDGE_GIRDER * (1 - (2 / 3) * (along / g.leaf));
+      }
+      const reach = along * c - (g.drop - depth) * s;
+      return Math.max(0, g.hinge[1] - g.hinge[0] - 2 * reach);
     }
     /* The road surface at `u` with the leaves at `angle`: {h, slope (dh/du),
        leaf (-1 west, 1 east)} on a leaf, null over the open gap, undefined off the
@@ -360,7 +404,11 @@
     // Roughly how long until traffic can cross again.
     function drawbridgeSecondsToTraffic() {
       const d = drawbridge,
-        swing = d.angle / DRAWBRIDGE_RATE + 3;
+        // A full swing takes about a minute (eased at both ends); the lock bars,
+        // seating and the arms add the rest.
+        fullSwing = DRAWBRIDGE_MAX_ANGLE / DRAWBRIDGE_RATE + 8,
+        down = (d.angle / DRAWBRIDGE_MAX_ANGLE) * fullSwing + 12,
+        passage = 34;
       switch (d.phase) {
         case 'idle':
           return 0;
@@ -368,14 +416,14 @@
         case 'gates':
         case 'clearing':
         case 'unlock':
-          return 75;
+          return fullSwing * 2 + passage + 12;
         case 'raising':
-          return 60 - d.angle * 20;
+          return fullSwing * (1 - d.angle / DRAWBRIDGE_MAX_ANGLE) + passage + fullSwing + 12;
         case 'open':
-          return swing + 20;
+          return Math.max(8, passage - d.timer) + down;
         case 'lowering':
         case 'seating':
-          return swing + 8;
+          return down;
         default:
           return 6;
       }
@@ -405,7 +453,16 @@
         pull = (-DRAWBRIDGE_GRAVITY * s) / (1 + s * s);
       c.vx += pull * g.f.ux * stepSeconds;
       c.vy += pull * g.f.uy * stepSeconds;
-      const grip = DRAWBRIDGE_GRIP * DRAWBRIDGE_GRAVITY * cosine;
+      /* Only the driven wheels push, and on a climb the load moves off the front:
+         a front-wheel-drive saloon has about a third of its weight on the wheels
+         that drive it up a 25 degree leaf (drivenShare, offroad.js; 4x4s all of
+         it). The brakes act on all four. The deck is wetter and slicker in rain. */
+      const mu = DRAWBRIDGE_GRIP - 0.3 * clamp(weather.wet || 0, 0, 1),
+        forward = (c.speed || 0) >= 0 ? 1 : -1,
+        grade = s * Math.cos(c.a - g.f.a) * forward,
+        driving = acceleration * forward > 0,
+        share = driving ? drivenShare(vehicleSpec(c), grade) : 1,
+        grip = mu * share * DRAWBRIDGE_GRAVITY * cosine;
       return clamp(acceleration, -grip, grip) * cosine;
     }
     /* THE KINK AT THE TRUNNION. A raised leaf meets the approach at a sharp angle:
@@ -713,45 +770,78 @@
         return;
       }
       if (!d.motor) {
+        /* Four big drive motors under load: a deep sub-bass hum (the machinery
+           room's rumble), the motors' mains buzz, and the open gear train's
+           whine rising and falling with the swing speed. */
         const gain = audio.createGain(),
           filter = audio.createBiquadFilter(),
+          sub = audio.createOscillator(),
+          subGain = audio.createGain(),
           hum = audio.createOscillator(),
+          hum2 = audio.createOscillator(),
           whine = audio.createOscillator(),
           whineGain = audio.createGain();
         gain.gain.value = 0;
         filter.type = 'lowpass';
-        filter.frequency.value = 420;
+        filter.frequency.value = 360;
+        sub.type = 'sine';
+        sub.frequency.value = 33;
+        subGain.gain.value = 1.4;
         hum.type = 'sawtooth';
-        hum.frequency.value = 58;
+        hum.frequency.value = 50;
+        hum2.type = 'sawtooth';
+        hum2.frequency.value = 50.6;
         whine.type = 'triangle';
-        whine.frequency.value = 232;
-        whineGain.gain.value = 0.25;
+        whine.frequency.value = 170;
+        whineGain.gain.value = 0.16;
+        sub.connect(subGain).connect(gain);
         hum.connect(filter);
+        hum2.connect(filter);
         whine.connect(whineGain).connect(filter);
         filter.connect(gain).connect(ambienceBus);
-        hum.start();
-        whine.start();
-        d.motor = { gain, whine, sources: [hum, whine] };
+        for (const o of [sub, hum, hum2, whine]) o.start();
+        d.motor = { gain, whine, sub, sources: [sub, hum, hum2, whine] };
       }
       const g = drawbridgeGeometry();
       // Held only while refreshed: if the game stops updating (paused), it dies away.
       const now = audio.currentTime;
       d.motor.gain.gain.cancelScheduledValues(now);
-      d.motor.gain.gain.setTargetAtTime(level * drawbridgeSoundLevel(g.channel.x, g.channel.y) * 0.1, now, 0.2);
-      d.motor.gain.gain.setTargetAtTime(0, now + 0.4, 0.25);
-      d.motor.whine.frequency.setTargetAtTime(180 + 90 * level, audio.currentTime, 0.2);
+      d.motor.gain.gain.setTargetAtTime(level * drawbridgeSoundLevel(g.channel.x, g.channel.y) * 0.13, now, 0.4);
+      d.motor.gain.gain.setTargetAtTime(0, now + 0.5, 0.3);
+      d.motor.whine.frequency.setTargetAtTime(130 + 110 * level, now, 0.4);
+      d.motor.sub.frequency.setTargetAtTime(30 + 6 * level, now, 0.4);
     }
-    /* ---- The ketch ------------------------------------------------------------------ */
-    /* ALBATROSS, a classic ketch whose masts clear 30 m: the reason the bridge opens.
-       She lies at anchor on one side of the causeway and each opening takes her
-       through the channel to the other. `across` is her distance from the deck's
-       centre line (+ is the right of a -> b, south here). */
-    // The ketch under power: about 7 knots, 4 through the bridge.
-    const DRAWBRIDGE_VESSEL = { length: 132, beam: 32, anchor: 720, hold: 330, cruise: 7 * KNOTS, approach: 4 * KNOTS };
+    // A drop of water off a rising leaf into the Sound: a small plink.
+    function drawbridgeDrip(x, y, size = 1) {
+      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.05 * size, (x - player.x) / 500, (out, t) => {
+        const o = audio.createOscillator(),
+          g = audio.createGain(),
+          f = 700 + Math.random() * 900;
+        o.type = 'sine';
+        o.frequency.setValueAtTime(f, t);
+        o.frequency.exponentialRampToValueAtTime(f * 1.9, t + 0.05);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.6, t + 0.004);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+        o.connect(g).connect(out);
+        o.start(t);
+        o.stop(t + 0.1);
+      });
+    }
+    /* ---- The tall ship ---------------------------------------------------------------- */
+    /* ALBATROSS, a brigantine (a 32 m hull, 40 m over the bowsprit, masts 30 m
+       over the water): the tall ship the bridge opens for. She lies at anchor on
+       one side of the causeway with her sails furled; each opening she sets them
+       and passes through the channel to the other side (the opening between the
+       raised leaves is 70 m wide where her mastheads pass). `across` is her
+       distance from the deck's centre line (+ is the right of a -> b, south
+       here); `sails` (0 furled .. 1 set) is for the renderer. */
+    // Under sail and engine: about 5 knots through the bridge, 4 while she closes the hold point.
+    const DRAWBRIDGE_VESSEL = { length: 256, beam: 60, masts: 30, anchor: 860, hold: 440, cruise: 5 * KNOTS, approach: 4 * KNOTS };
     function drawbridgeVessel() {
       if (drawbridge.vessel) return drawbridge.vessel;
       // `dir` is the way she goes next: +1 toward +across.
-      drawbridge.vessel = { across: DRAWBRIDGE_VESSEL.anchor, dir: -1, speed: 0, leg: 'anchored', swing: 0, x: 0, y: 0, a: 0 };
+      drawbridge.vessel = { across: DRAWBRIDGE_VESSEL.anchor, dir: -1, speed: 0, leg: 'anchored', swing: 0, sails: 0, x: 0, y: 0, a: 0 };
       placeDrawbridgeVessel(drawbridge.vessel, 0);
       return drawbridge.vessel;
     }
@@ -799,24 +889,116 @@
           v.dir = -v.dir;
         }
       }
-      v.speed += clamp(want - v.speed, -8 * deltaSeconds, 5 * deltaSeconds);
+      v.speed += clamp(want - v.speed, -6 * deltaSeconds, 3 * deltaSeconds);
       if (v.leg === 'anchored') v.swing += deltaSeconds * 0.02;
       else v.across += v.dir * v.speed * deltaSeconds;
+      // The crew sets sail as she weighs anchor and hands it again at the far anchorage.
+      const setSails = v.leg !== 'anchored' ? 1 : 0;
+      v.sails = clamp(v.sails + Math.sign(setSails - v.sails) * deltaSeconds * 0.12, 0, 1);
+      // Passing under the raised leaves she salutes the bridge; the tender answers.
+      if (v.leg === 'transit' && !v.saluted && v.dir * v.across > -DRAWBRIDGE_VESSEL.length * 0.2) {
+        v.saluted = true;
+        drawbridgeHorn(v.x, v.y, 185, [2.2]);
+        v.answerAt = gameTime + 3.2;
+      }
+      if (v.answerAt && gameTime > v.answerAt) {
+        v.answerAt = 0;
+        const g = drawbridgeGeometry();
+        drawbridgeHorn(g.channel.x, g.channel.y, 150, [0.7, 0.7]);
+      }
       placeDrawbridgeVessel(v, deltaSeconds);
     }
     function drawbridgeVesselSetOff() {
       const v = drawbridgeVessel();
       if (v.leg !== 'anchored') return;
       v.leg = 'approach';
+      v.saluted = false;
       // One prolonged and one short blast: the signal asking for the bridge.
-      drawbridgeHorn(v.x, v.y, 196);
+      drawbridgeHorn(v.x, v.y, 185);
     }
-    // The ketch is clear of the span on her far side (or has nowhere to go).
+    // The ship is clear of the span on her far side (or has nowhere to go).
     function drawbridgeVesselClear() {
       const v = drawbridge.vessel;
       if (!v || v.leg === 'anchored') return true;
       if (v.leg === 'approach') return false;
       return v.dir * v.across > drawbridgeGeometry().half + DRAWBRIDGE_VESSEL.length / 2 + 70;
+    }
+    /* ---- Onlookers and the camera ------------------------------------------------- */
+    /* A small crowd gathers on both approaches to watch an opening the player is
+       near: a dozen people walk in along the footways from behind and stop at the
+       holding positions just behind the sidewalk arms, facing the channel (a
+       crowd scene, crowd.js: anything frightening breaks it up as it would any
+       scene), and wander off once the arms are up. */
+    const DRAWBRIDGE_SPECTATORS = 12;
+    function drawbridgeHoldingSpots() {
+      const g = drawbridgeGeometry(),
+        spots = [];
+      for (let k = 0; k < DRAWBRIDGE_SPECTATORS; k++) {
+        const approach = k % 2 ? 1 : -1,
+          side = k % 4 < 2 ? 1 : -1,
+          row = Math.floor(k / 4),
+          u = g.gates[approach < 0 ? 0 : 1] + approach * (12 + row * 13 + ((k * 7) % 5) * 2),
+          v = side * (g.road + 3.5 + ((k * 5) % 3) * 2.2),
+          spot = bridgePoint(g.bridge, u, v),
+          look = bridgePoint(g.bridge, g.m, v * 0.4);
+        spot.a = headingBetween(spot, look) + (((k * 13) % 7) - 3) * 0.06;
+        spot.pose = ['watch', 'watch', 'film', 'watch', 'point', 'watch'][k % 6];
+        spots.push({ spot, approach, u, v });
+      }
+      return spots;
+    }
+    function drawbridgeSpectators() {
+      const d = drawbridge,
+        g = drawbridgeGeometry();
+      if (d.phase === 'idle' || d.reason === 'hold' || d.phase === 'lifting') {
+        if (d.audience) {
+          d.audience.done = true;
+          d.audience = null;
+        }
+        return;
+      }
+      if (d.audience || d.audienceFor === d.openings || ['lowering', 'seating'].includes(d.phase)) return;
+      if (distanceBetween(player, g.channel) > 1500 || typeof makeScene !== 'function') return;
+      d.audienceFor = d.openings;
+      const scene = (d.audience = makeScene('bridgeWatch', g.channel.x, g.channel.y)),
+        roles = ['tourist', 'tourist', 'casual', 'casual', 'elder', 'commuter', 'casual', 'kid'];
+      for (const [k, { spot, approach, u, v }] of drawbridgeHoldingSpots().entries()) {
+        const p = spawnSceneMember(scene, 'bridgeWatcher', spot, roles[k % roles.length]);
+        if (!p) break;
+        scene.spawned = (scene.spawned || 0) + 1;
+        // They walk in from further back along the approach footway.
+        const from = bridgePoint(g.bridge, u + approach * (70 + ((k * 37) % 60)), v);
+        if (onBridgeDeck(from.x, from.y, 4) && !solid(from.x, from.y, 5)) {
+          p.x = from.x;
+          p.y = from.y;
+          p.a = headingBetween(from, spot);
+        }
+      }
+    }
+    /* People still on the span while the tender waits to open it walk off by the
+       nearer end (a walker keeps to its axis, `dir`). */
+    function drawbridgeUsherPeople() {
+      const g = drawbridgeGeometry();
+      forEachPedestrianNear(g.channel.x, g.channel.y, g.leaf + 30, (p) => {
+        if (p.hp <= 0 || p.react || p.scene || p.state !== 'walk' || !drawbridgeOnSpan(p.x, p.y, 2)) return;
+        const out = drawbridgeLocal(p.x, p.y).u < g.m ? g.f.a + Math.PI : g.f.a;
+        p.dir = snapAxis(out);
+      });
+    }
+    /* The event camera: for a player close to an opening (on foot, or driving
+       slowly), the view eases back to about three quarters of the zoom so both
+       leaves and the ship fit the screen. A factor on the zoom the player chose,
+       eased like the speed zoom (world-view.js), never a take-over; the Event
+       camera setting (settings.js) turns it off. */
+    function drawbridgeCameraZoom() {
+      const d = drawbridge;
+      if (d.phase === 'idle' || d.reason === 'hold' || !eventCameraOn()) return 1;
+      const g = drawbridgeGeometry(),
+        c = player.car;
+      if (c && (isAircraft(c) || Math.hypot(c.vx || 0, c.vy || 0) > 45 * KMH)) return 1;
+      const show = ['unlock', 'raising', 'open', 'lowering'].includes(d.phase) || (d.phase === 'seating' && d.timer < 1),
+        near = 1 - clamp((distanceBetween(player, g.channel) - 700) / 600, 0, 1);
+      return show ? 1 - 0.26 * near : 1;
     }
     /* ---- The operating sequence ------------------------------------------------------ */
     // Who is on the moving span: the tender waits for them.
@@ -845,6 +1027,8 @@
       d.reason = reason;
       d.warnedPlayer = false;
       d.openings++;
+      // The ship asks for the bridge; the tender answers with one long blast.
+      d.hornDue = reason !== 'hold' ? 2.6 : 0;
       if (reason !== 'hold') drawbridgeVesselSetOff();
       return true;
     }
@@ -884,7 +1068,11 @@
       let motor = 0;
       switch (d.phase) {
         case 'warning':
-          if (d.timer > 6) {
+          if (d.hornDue && d.timer > d.hornDue) {
+            d.hornDue = 0;
+            drawbridgeHorn(g.channel.x, g.channel.y, 150, [3]);
+          }
+          if (d.timer > 8) {
             d.phase = 'gates';
             d.timer = 0;
           }
@@ -909,22 +1097,29 @@
             break;
           }
           d.waited += deltaSeconds;
+          if (on.people) drawbridgeUsherPeople();
           if (on.player && d.waited > 6 && gameTime - d.hornAt > 12) {
             d.hornAt = gameTime;
             drawbridgeHorn(g.channel.x, g.channel.y, 150, [0.6, 0.6, 0.6]);
             tell('BRIDGE TENDER · Clear the span, the bridge is opening.', 3.5);
           }
-          // A stalled or abandoned car nobody is watching is towed after a while.
+          // A stalled or abandoned car nobody is watching is towed after a while
+          // (the 88 m span is long: after a minute even one in sight of the player).
           if (d.waited > 20 && !on.player && !on.people)
             for (const c of on.vehicles)
-              if (distanceBetween(c, player) > 900 && Math.abs(c.speed || 0) < 3 && c !== mission?.car && !c.taxiHire) {
+              if ((distanceBetween(c, player) > 900 || !crowdInView(c.x, c.y, 40) || d.waited > 60) && Math.abs(c.speed || 0) < 3 && c !== mission?.car && !c.taxiHire) {
                 const k = vehicles.indexOf(c);
                 if (k >= 0) vehicles.splice(k, 1);
               }
           break;
         }
         case 'unlock':
-          if (d.timer > 2) {
+          // The lock bars draw back out of the far leaf's sockets; a clank as each stroke ends.
+          if (d.locks < 1) {
+            d.locks = Math.min(1, d.locks + deltaSeconds / DRAWBRIDGE_LOCK_SECONDS);
+            if (d.locks >= 1) drawbridgeClank(g.channel.x, g.channel.y, 0.9);
+          }
+          if (d.timer > DRAWBRIDGE_LOCK_SECONDS + 1) {
             d.phase = 'raising';
             d.timer = 0;
             d.target = d.held ?? DRAWBRIDGE_MAX_ANGLE;
@@ -944,7 +1139,9 @@
             if (Math.abs(d.angle - d.held) > 0.001) swingDrawbridge(d.held, deltaSeconds);
             break;
           }
-          if ((d.timer > 8 && drawbridgeVesselClear()) || d.timer > 45) {
+          // The ship needs about 40 s from the hold point to clear the span; the
+          // tender gives her well over twice that before lowering regardless.
+          if ((d.timer > 8 && drawbridgeVesselClear()) || d.timer > 100) {
             d.phase = 'lowering';
             d.timer = 0;
           }
@@ -958,9 +1155,15 @@
           }
           break;
         case 'seating':
-          if (d.timer > 2.2) {
+          // The leaves settle on their live-load shoes, then the lock bars drive home.
+          if (d.timer > 0.8 && d.locks > 0) {
+            d.locks = Math.max(0, d.locks - deltaSeconds / DRAWBRIDGE_LOCK_SECONDS);
+            if (d.locks <= 0) drawbridgeClank(g.channel.x, g.channel.y, 1.1);
+          }
+          if (d.timer > DRAWBRIDGE_LOCK_SECONDS + 1.6) {
             d.phase = 'lifting';
             d.timer = 0;
+            d.locks = 0;
             drawbridgeClank(g.channel.x, g.channel.y, 0.8);
           }
           break;
@@ -975,6 +1178,29 @@
         }
       }
       updateDrawbridgeMotor(motor * (d.phase === 'raising' || d.phase === 'lowering' ? 1 : 0));
+      // The rack's teeth rolling through the pinions: a soft knock each tooth.
+      if (Math.abs(d.rate) > 0.002) {
+        d.rackClock += Math.abs(d.rate) * deltaSeconds;
+        if (d.rackClock > 0.034) {
+          d.rackClock = 0;
+          for (const u of g.hinge) {
+            const p = bridgePoint(g.bridge, u, g.half + 30);
+            drawbridgeClank(p.x, p.y, 0.12);
+          }
+        }
+      }
+      // Water off the leaves as they rise from the wet: drips and a patter from the
+      // tips and girders into the Sound, most in the first twenty degrees.
+      if (d.phase === 'raising' && d.rate > 0.001) {
+        const wet = clamp(1 - d.angle / 0.5, 0.15, 1);
+        if (Math.random() < deltaSeconds * 7 * wet) {
+          const reach = Math.max(0, drawbridgeTipReach()) * Math.random(),
+            u = Math.random() < 0.5 ? g.hinge[0] + reach : g.hinge[1] - reach,
+            p = bridgePoint(g.bridge, u, (Math.random() - 0.5) * g.bridge.width);
+          drawbridgeDrip(p.x, p.y, wet);
+        }
+      }
+      drawbridgeSpectators();
       // Bells ring from the first warning until the arms are down, and again as they rise.
       const ringing = d.phase === 'warning' || d.phase === 'gates' || d.phase === 'lifting';
       if (ringing) {
@@ -1106,6 +1332,7 @@
         // Put the leaves at `degrees` at once (screenshots); the phase is kept.
         d.angle = clamp(((degrees || 0) * Math.PI) / 180, 0, DRAWBRIDGE_MAX_ANGLE);
         d.rate = 0;
+        d.locks = d.angle > 0 ? 1 : d.locks;
       }
       return drawbridgeReport();
     }
@@ -1124,6 +1351,14 @@
         held: d.held === null ? null : +((d.held * 180) / Math.PI).toFixed(1),
         gap: d.angle > 0.004 ? Math.round(g.hinge[1] - g.hinge[0] - drawbridgeTipReach() * 2) : 0,
         tipHeight: Math.round(drawbridgeSurface(g.hinge[0] + drawbridgeTipReach() - 0.01)?.h || 0),
+        leafM: +worldMeters(g.leaf).toFixed(1),
+        // The clear width between the leaves at the ship's mastheads (DRAWBRIDGE_VESSEL.masts over the water).
+        mastheadClearM: +worldMeters(drawbridgeClearWidth(DRAWBRIDGE_VESSEL.masts * UNITS_PER_METRE)).toFixed(1),
+        locks: +d.locks.toFixed(2),
+        cameraZoom: +drawbridgeCameraZoom().toFixed(2),
+        spectators: d.audience ? d.audience.members.length : 0,
+        spectatorsSpawned: d.audience ? d.audience.spawned || 0 : 0,
+        spectatorsAtSpots: d.audience ? d.audience.members.filter((p) => p.sceneSpot && distanceBetween(p, p.sceneSpot) < 6).length : 0,
         trafficHeld: drawbridgeStopsTraffic(),
         spanClosed: drawbridgeSpanClosed(),
         arms: d.arms.map((a) => ({ id: a.id, pos: +a.pos.toFixed(2), broken: a.broken })),
@@ -1136,7 +1371,7 @@
         traffic: vehicles
           .filter((c) => !isBoat(c) && !isAircraft(c) && drawbridgeNear(c.x, c.y) && Math.abs(drawbridgeLocal(c.x, c.y).v) < g.half)
           .map((c) => ({ id: c.id, type: c.type, x: Math.round(c.x), y: Math.round(c.y), speed: Math.round(c.speed || 0), ai: !!c.ai, desired: c.aiControl ? Math.round(c.aiControl.desired) : null, hp: Math.round(c.hp), crashed: !!c.crashStop })),
-        vessel: v ? { leg: v.leg, x: Math.round(v.x), y: Math.round(v.y), across: Math.round(v.across), speed: +v.speed.toFixed(1) } : null,
+        vessel: v ? { leg: v.leg, x: Math.round(v.x), y: Math.round(v.y), across: Math.round(v.across), speed: +v.speed.toFixed(1), sails: +v.sails.toFixed(2), saluted: !!v.saluted } : null,
         openings: d.openings,
         jumps: d.jumps.map((j) => ({ speed: j.speed, angle: j.angle, crossed: j.crossed, landed: j.landed ?? null, splash: !!j.splash, struck: !!j.struck, distance: j.distance ?? null, impact: j.impact ?? null })),
         splashes: d.splashes,
@@ -1177,6 +1412,9 @@
           south: [g.m, g.half + 200],
           north: [g.m, -g.half - 200],
           tower: [g.b.piers[1], g.half + 40],
+          // The whole bridge from off its south side; the west pier's south pit.
+          overview: [g.m, g.half + 520],
+          pit: [g.hinge[0] - 40, g.half + 40],
         },
         [u, v] = views[spot] || views.channel;
       return bridgePoint(g.bridge, u, v);

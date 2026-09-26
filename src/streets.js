@@ -274,34 +274,108 @@
         onBridge(x, y, -margin)
       );
     }
+    /**
+     * ROAD MARKINGS
+     * The city grid's paint as data: `cityMarkingShapes()` lists every lane dash
+     * run, zebra crossing and forecourt crossing as a strip from a to b, `hw`
+     * either side of that line, with a pattern along it (`solid`; `dash`: `len`
+     * on, every `period`, from a; `bars`: the same, each bar across the whole
+     * strip, a zebra). The 2D view and the maps paint them (`paintMarkingShapes`);
+     * the 3D ground draws them in its shader from the same list, crisp at any
+     * zoom (ground-marks3d.js), so its painted sheet leaves them out.
+     * `paint` is the colour: 'white' (crossings, stop lines), 'lane' (the cream
+     * lane dashes) or 'yellow' (centre lines).
+     */
+    const MARKING_COLOURS = { white: '#d4d6c7', lane: '#d0c39a', yellow: '#c9a94a' };
+    let cityMarkingCache = null;
+    function cityMarkingShapes() {
+      if (cityMarkingCache) return cityMarkingCache;
+      const shapes = (cityMarkingCache = []),
+        streets = cityStreets();
+      // A strip in a frame at p turned by a: from (u0, v) to (u1, v).
+      const turned = (p, a, u0, u1, v, hw, extra) => {
+        const c = Math.cos(a),
+          s = Math.sin(a);
+        return { ax: p.x + c * u0 - s * v, ay: p.y + s * u0 + c * v, bx: p.x + c * u1 - s * v, by: p.y + s * u1 + c * v, hw, ...extra };
+      };
+      for (const r of streets) {
+        const pos = (v) => (r.vertical ? { x: r.r, y: v } : { x: v, y: r.r });
+        for (const v of [r.start, r.end]) {
+          const p = pos(v),
+            outward = v === r.start ? -1 : 1,
+            a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
+          if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65) || streetEndInJunction(r, p)) continue;
+          // The forecourt's crossing in front of park and stadium gates: seven
+          // bars 15 long (along the street) and 6 wide, every 13 across it.
+          if (streetEndAtGate(p.x, p.y, a))
+            shapes.push(turned(p, a + Math.PI / 2, -42, 42, -41.5, 7.5, { pattern: 'bars', len: 6, period: 13, paint: 'white' }));
+          // Meeting the esplanade: five bars 13 long, every 12.
+          else if (streetEndAtShore(p.x, p.y, a))
+            shapes.push(turned(p, a + Math.PI / 2, -27, 27, -30.5, 6.5, { pattern: 'bars', len: 6, period: 12, paint: 'white' }));
+        }
+        // Lane dashes down the middle, 2 wide and 15 long every 32, stopping
+        // short of each junction and of the boulevards: one shape per stretch.
+        let run = null;
+        const flush = () => {
+          if (!run) return;
+          const a = pos(run.from),
+            b = pos(run.to + 15);
+          // On an avenue the 3D ground draws a double yellow line there instead
+          // (ground-data3d.js); the maps keep the dashes.
+          shapes.push({ ax: a.x, ay: a.y, bx: b.x, by: b.y, hw: 1, pattern: 'dash', len: 15, period: 32, paint: 'lane', avenue: r.width >= 112 });
+          run = null;
+        };
+        for (let v = r.start + 55; v < r.end - 50; v += 32) {
+          const p = pos(v);
+          if (Math.abs(v - (r.vertical ? rowNear(v) : roadNear(v))) < 85 || onBoulevard(p.x, p.y, 35)) flush();
+          else if (run) run.to = v;
+          else run = { from: v, to: v };
+        }
+        flush();
+      }
+      // Zebra crossings: bars 6 wide every 12, the full width of the carriageway.
+      for (const c of cityCrosswalks()) {
+        const along = c.w > c.h,
+          length = along ? c.w : c.h;
+        let last = 5;
+        while (last + 12 <= length - 11) last += 12;
+        const zebra = { pattern: 'bars', len: 6, period: 12, paint: 'white' };
+        if (along) shapes.push({ ax: c.x + 5, ay: c.y + c.h / 2, bx: c.x + last + 6, by: c.y + c.h / 2, hw: c.h / 2, ...zebra });
+        else shapes.push({ ax: c.x + c.w / 2, ay: c.y + 5, bx: c.x + c.w / 2, by: c.y + last + 6, hw: c.w / 2, ...zebra });
+      }
+      return shapes;
+    }
+    // Paints marking shapes (ROAD MARKINGS) the way the flat ground layers draw them.
+    function paintMarkingShapes(drawingContext, shapes) {
+      for (const m of shapes) {
+        const length = Math.hypot(m.bx - m.ax, m.by - m.ay);
+        drawingContext.save();
+        drawingContext.translate(m.ax, m.ay);
+        drawingContext.rotate(Math.atan2(m.by - m.ay, m.bx - m.ax));
+        drawingContext.fillStyle = MARKING_COLOURS[m.paint] || m.paint;
+        if (m.pattern === 'solid') drawingContext.fillRect(0, -m.hw, length, m.hw * 2);
+        else for (let u = 0; u < length - 0.01; u += m.period) drawingContext.fillRect(u, -m.hw, Math.min(m.len, length - u), m.hw * 2);
+        drawingContext.restore();
+      }
+    }
+    // The grid's carriageways, pavements and street ends; with `detail` their
+    // markings too (the 3D ground draws the markings itself and passes false).
     function paintCityStreets(drawingContext, detail = true) {
       const streets = cityStreets();
       drawingContext.save();
       for (const r of streets) strokeRoad(drawingContext, r.points, r.width + 28, '#9b9d90');
       for (const r of streets) strokeRoad(drawingContext, r.points, r.width, '#414c52');
       for (const r of streets) {
-        const pos = (v) =>
-          r.vertical
-            ? {
-                x: r.r,
-                y: v,
-              }
-            : {
-                x: v,
-                y: r.r,
-              };
+        const pos = (v) => (r.vertical ? { x: r.r, y: v } : { x: v, y: r.r });
         for (const v of [r.start, r.end]) {
           const p = pos(v),
             outward = v === r.start ? -1 : 1,
-            a = r.vertical
-              ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2)
-              : outward > 0
-                ? 0
-                : Math.PI;
+            a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
           if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65) || streetEndInJunction(r, p)) continue;
           if (streetEndAtGate(p.x, p.y, a)) {
             // Forecourt: the carriageway widens into a paved apron at the gates,
-            // with a crossing where the footway passes in front of them.
+            // with a crossing where the footway passes in front of them (the
+            // crossing is a marking shape) and a row of paving pads beyond it.
             drawingContext.save();
             drawingContext.translate(p.x, p.y);
             drawingContext.rotate(a);
@@ -310,8 +384,6 @@
             drawingContext.fillStyle = '#4b5659';
             drawingContext.fillRect(-14, -r.width / 2, 42, r.width);
             if (detail) {
-              drawingContext.fillStyle = '#d4d6c7';
-              for (let i = -3; i <= 3; i++) drawingContext.fillRect(34, i * 13 - 3, 15, 6);
               drawingContext.fillStyle = '#a5a396';
               for (let i = -3; i <= 3; i++) drawingContext.fillRect(56, i * 13 - 4, 16, 8);
             }
@@ -325,11 +397,6 @@
             drawingContext.rotate(a);
             drawingContext.fillStyle = '#4b5659';
             drawingContext.fillRect(0, -r.width / 2, 22, r.width);
-            if (detail) {
-              drawingContext.fillStyle = '#d4d6c7';
-              for (let i = -2; i <= 2; i++)
-                drawingContext.fillRect(24, i * 12 - 3, 13, 6);
-            }
             drawingContext.restore();
             continue;
           }
@@ -345,26 +412,8 @@
           drawingContext.fillRect(0, -r.width / 2, 2.5, r.width);
           drawingContext.restore();
         }
-        if (!detail) continue;
-        drawingContext.fillStyle = '#d0c39a';
-        for (let v = r.start + 55; v < r.end - 50; v += 32) {
-          const p = pos(v);
-          if (Math.abs(v - (r.vertical ? rowNear(v) : roadNear(v))) < 85 || onBoulevard(p.x, p.y, 35))
-            continue;
-          if (r.vertical) drawingContext.fillRect(p.x - 1, p.y, 2, 15);
-          else drawingContext.fillRect(p.x, p.y - 1, 15, 2);
-        }
       }
-      if (detail) {
-        drawingContext.fillStyle = '#d4d6c7';
-        for (const c of cityCrosswalks()) {
-          // Bars the full width of the carriageway crossed, across the walk.
-          const along = c.w > c.h;
-          for (let i = 5; i <= (along ? c.w : c.h) - 11; i += 12)
-            if (along) drawingContext.fillRect(c.x + i, c.y, 6, c.h);
-            else drawingContext.fillRect(c.x, c.y + i, c.w, 6);
-        }
-      }
+      if (detail) paintMarkingShapes(drawingContext, cityMarkingShapes());
       drawingContext.restore();
     }
     /* Zebra crossings on every leg of every junction, T-junctions included, as
@@ -758,11 +807,12 @@
       }
       drawingContext.restore();
     }
-    function paintCountyRoads(g, detail) {
-      for (const r of COUNTY_ROADS)
-        strokeRoad(g, r.points, r.width + 12, r.bridge ? '#b1b4a9' : '#9eaa92');
-      for (const r of COUNTY_ROADS) strokeRoad(g, r.points, r.width, '#414d51');
-      if (!detail) return;
+    /* County roads' centre dashes as marking shapes (ROAD MARKINGS): 22 long every
+       46 down each leg, not where another road joins; one shape per run. */
+    let countyMarkingCache = null;
+    function countyMarkingShapes() {
+      if (countyMarkingCache) return countyMarkingCache;
+      countyMarkingCache = [];
       for (const r of COUNTY_ROADS)
         for (let i = 1; i < r.points.length; i++) {
           const a = r.points[i - 1],
@@ -770,30 +820,44 @@
             dx = b[0] - a[0],
             dy = b[1] - a[1],
             len = Math.hypot(dx, dy);
+          let run = null;
+          const flush = () => {
+            if (run)
+              countyMarkingCache.push({
+                ax: a[0] + (dx * run.from) / len,
+                ay: a[1] + (dy * run.from) / len,
+                bx: a[0] + (dx * (run.to + 22)) / len,
+                by: a[1] + (dy * (run.to + 22)) / len,
+                hw: 1,
+                pattern: 'dash',
+                len: 22,
+                period: 46,
+                paint: '#d7c697',
+              });
+            run = null;
+          };
           for (let d = 18; d < len - 12; d += 46) {
             const x = a[0] + (dx * d) / len,
-              y = a[1] + (dy * d) / len;
-            if (
-              COUNTY_ROADS.some(
-                (o) =>
-                  o !== r &&
-                  o.points.some(
-                    (p, j) => j && segmentDistance(x, y, o.points[j - 1], p) < o.width / 2 + 22,
-                  ),
-              )
-            )
-              continue;
-            strokeRoad(
-              g,
-              [
-                [x, y],
-                [x + (dx / len) * 22, y + (dy / len) * 22],
-              ],
-              2,
-              '#d7c697',
-            );
+              y = a[1] + (dy * d) / len,
+              joined = COUNTY_ROADS.some(
+                (o) => o !== r && o.points.some((p, j) => j && segmentDistance(x, y, o.points[j - 1], p) < o.width / 2 + 22),
+              );
+            if (joined) flush();
+            else if (run) run.to = d;
+            else run = { from: d, to: d };
           }
+          flush();
         }
+      return countyMarkingCache;
+    }
+    // County roads on a ground layer; with `detail` their centre dashes, unless
+    // the 3D ground draws those itself (VECTOR_GROUND_MARKINGS).
+    function paintCountyRoads(g, detail) {
+      for (const r of COUNTY_ROADS)
+        strokeRoad(g, r.points, r.width + 12, r.bridge ? '#b1b4a9' : '#9eaa92');
+      for (const r of COUNTY_ROADS) strokeRoad(g, r.points, r.width, '#414d51');
+      if (!detail || VECTOR_GROUND_MARKINGS) return;
+      paintMarkingShapes(g, countyMarkingShapes());
     }
     function drawPlayerMapMarker(drawingContext, width, height, scale, cx, cy, big) {
       const displayWidth = big ? getElement('bigmap').getBoundingClientRect().width : width,

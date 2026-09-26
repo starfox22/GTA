@@ -48,6 +48,8 @@
         ring.position.set(x, 0.28, z);
         group.add(ring);
         serviceRings.push(ring);
+        // A mountain village dresses its own shopfront (mountain-village3d.js).
+        if (p.mountain) continue;
         if (p.x === undefined) {
           sign('SAFEHOUSE · ROOMS', x, z - 27, 95, p.color);
           box(group, x, 12, z - 29, 4, 24, 4, darkMetal);
