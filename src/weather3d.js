@@ -283,7 +283,7 @@
           for (let x = b.x + 6 + Math.random() * 10; x < b.x + b.w - 4; x += 16 + Math.random() * 14) add(x, b.height - 0.5, b.y + b.h + 1.2);
           // Shop awnings drip in a row along their front edge.
           for (const pane of b.shopPanes || [])
-            for (let k = -pane.width / 2 + 2; k < pane.width / 2; k += 5 + Math.random() * 4) add(pane.cx + k, 15.5, pane.face + 9);
+            for (let k = -pane.width / 2 + 2; k < pane.width / 2; k += 5 + Math.random() * 4) add(pane.cx + k, SHOP_FLOOR * 0.72 - 2.3, pane.face + 10.5);
         }
         dripGeometry.setDrawRange(0, n * 2);
         dripGeometry.attributes.aEmit.needsUpdate = true;
@@ -547,10 +547,7 @@
             : buffer.y / 2 / Math.tan(((camera.fov || 50) * Math.PI) / 360);
           emitCarSpray(deltaSeconds, tier.name === 'MEDIUM' ? 0.5 : 1);
         }
-        // Wet tarmac: a darker, glossier ground while the water stands.
-        groundMesh.material.roughness = 1 - weather.wet * 0.72;
-        groundMesh.material.metalness = 0.14 + weather.wet * 0.34;
-        groundMesh.material.color.setScalar(1 - weather.wet * 0.26);
+        updateWetGround(tier, light);
         // Overcast flattens the sun and lifts the ambient; lightning blows both out.
         const overcast = cloud * cloud;
         sun.intensity *= 1 - overcast * 0.62 - rain * 0.12;
@@ -577,6 +574,47 @@
         }
         boltMesh.visible = !!strike && gameTime - strike.at < 1.2 && flash > 0.03;
         if (boltMesh.visible) boltMaterial.opacity = clamp(flash * 1.4, 0, 1);
+      }
+      /**
+       * WET GROUND
+       * The ground shader (surfaces3d.js) draws the wet look from weather.wet
+       * (cityWet) at the tier's level: LOW darkens only, MEDIUM adds the glossy
+       * film and the sky in it, HIGH and ULTRA standing water with rain rings and
+       * the wet reflections pass (postfx3d.js). `WET_MIRROR` is how much of the
+       * scene a fully wet surface mirrors (a real puddle seen at the street
+       * camera's angle reflects far less; this is the look, not the physics).
+       */
+      const WET_MIRROR_DAY = 0.55,
+        WET_MIRROR_NIGHT = 0.6,
+        WET_STREAK_GAIN = 0.65,
+        WET_SKY_SHARE = 0.4,
+        wetGreyScratch = new Three.Color(),
+        wetSkyScratch = new Three.Color(),
+        wetViewScratch = new Three.Vector3();
+      function updateWetGround(tier, light) {
+        const wet = weather.wet,
+          detail = tier.name === 'LOW' ? 0 : tier.name === 'MEDIUM' ? 1 : 2,
+          reflections = wet > 0.01 && detail === 2 && wetReflectionsAvailable(),
+          mirror = WET_MIRROR_NIGHT + (WET_MIRROR_DAY - WET_MIRROR_NIGHT) * light;
+        wetUniforms.cityWetDetail.value = detail;
+        wetUniforms.cityReflectOut.value = reflections ? 1 : 0;
+        // The sky the wet road mirrors, about 40 degrees up (the sky shader's
+        // gradient there, lighting3d.js), as the environment map holds it.
+        // Toned down and greyed: at the street camera's angle a wet road mirrors
+        // only a few percent of the sky, and a clear blue sky in the drying
+        // patches read as blue paint.
+        wetSkyScratch.copy(skyUniforms.uHorizon.value).lerp(skyUniforms.uZenith.value, 0.78);
+        const skyGrey = (wetSkyScratch.r + wetSkyScratch.g + wetSkyScratch.b) / 3;
+        wetSkyScratch.lerp(wetGreyScratch.setScalar(skyGrey), 0.4).multiplyScalar(WET_SKY_SHARE);
+        wetUniforms.citySkyReflect.value.copy(wetSkyScratch).multiplyScalar(mirror);
+        camera.getWorldDirection(wetViewScratch);
+        const flat = Math.hypot(wetViewScratch.x, wetViewScratch.z);
+        if (flat > 0.05) wetUniforms.citySheenDir.value.set(wetViewScratch.x / flat, wetViewScratch.z / flat);
+        wetUniforms.citySheenGain.value = detail === 0 ? 0 : WET_STREAK_GAIN;
+        postLook.reflect = reflections ? mirror : 0;
+        postLook.reflectSky.copy(wetSkyScratch);
+        postLook.rain = weather.rain;
+        postLook.rainTime = surfaceUniforms.cityRainTime.value;
       }
       /* Storm grade, applied after the time-of-day look (updateLighting): a rainy
          day is darker, flatter and cooler; a flash opens the exposure. */

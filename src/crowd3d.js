@@ -303,9 +303,10 @@
           { geo: at(unitCylinder, 0, 3.2, 0, 0, 0, 0, 0.35, 6.2, 0.35), color: '#2c2f33' },
           { geo: at(unitCylinder, 0, 0.2, 0, 0, 0, 0, 1.6, 0.35, 1.6), color: '#2c2f33' },
           ...[-1, 1].flatMap((s) => [
-            { geo: at(unitBox, s * 7.5, 4.3, 0, 0, 0, 0, 3.2, 0.5, 3.2), color: '#8a5a32' },
-            { geo: at(unitBox, s * 9.1, 6.9, 0, 0, 0, 0, 0.5, 4.8, 3.2), color: '#7a4e2a' },
-            { geo: at(unitBox, s * 7.5, 2.1, 0, 0, 0, 0, 2.6, 4.2, 2.6), color: '#3a3430' },
+            // Chairs: a 0.45 m seat, where a seated person's hips come to.
+            { geo: at(unitBox, s * 7.5, 3.6, 0, 0, 0, 0, 3.2, 0.5, 3.2), color: '#8a5a32' },
+            { geo: at(unitBox, s * 9.1, 6.2, 0, 0, 0, 0, 0.5, 4.8, 3.2), color: '#7a4e2a' },
+            { geo: at(unitBox, s * 7.5, 1.75, 0, 0, 0, 0, 2.6, 3.5, 2.6), color: '#3a3430' },
           ]),
         ]),
         menuBoard: crowdMerge([

@@ -887,6 +887,8 @@
       p.pose = slot.pose;
       // Bouncers in trouble mode hold the door or go for the player.
       if (slot.kind === 'bouncer' && updateMareaBouncer(p, slot, deltaSeconds)) return;
+      // Talking with the player, or clapping a dive (clubtalk.js).
+      if (clubGoerOverride(p, slot, deltaSeconds)) return;
       if (slot.swim) {
         // Drift about the pool, turning now and then.
         const w = MAREA.poolWater;
