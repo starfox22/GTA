@@ -1212,7 +1212,10 @@
     function tell(text, duration = 3) {
       getElement('toast').textContent = text;
       getElement('toast').classList.add('show');
-      getElement('toast').classList.toggle('over-panel', hudCovered());
+      // Raised while a full-screen panel is up (hud.js PANEL COVER): about the
+      // panel, so it shows over it. (The class, not hudCovered(): tell() runs
+      // during boot, before hud.js's constants exist.)
+      getElement('toast').classList.toggle('over-panel', document.body.classList.contains('panel-open'));
       freshToast();
       toastTime = duration;
     }
