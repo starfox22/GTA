@@ -181,9 +181,16 @@
       }
       // Lamp standards along the sea edge of the boardwalk: the promenade is lit at night.
       for (let x = BEACH.boardwalk.x0 + 40; x < BEACH.boardwalk.x1; x += 96) L.lamps.push({ x, y: walkBottom - 2 });
-      // Beach volleyball on the upper sand at the west end.
-      L.court = { x: -2320, y: 5452, w: 84, h: 42 };
-      beachReserve(L.court.x - L.court.w / 2 - 22, L.court.y - L.court.h / 2 - 16, L.court.x + L.court.w / 2 + 22, L.court.y + L.court.h / 2 + 16);
+      // Beach volleyball on the upper sand at the west end: a regulation court in
+      // its sand pit, with the clear zone round it and the scoreboard to the north
+      // kept free of towels and umbrellas (beachvolley.js).
+      L.court = volleyCourtPlan();
+      {
+        const c = L.court,
+          hx = c.w / 2 + c.pit + c.free,
+          hy = c.h / 2 + c.pit + c.free;
+        beachReserve(c.x - hx, Math.min(c.y - hy, c.board.y - 6), c.x + hx, c.y + hy);
+      }
       // Lifeguard towers, facing the swim zone.
       for (const f of [0.2, 0.47, 0.78]) {
         let s = length * f,
@@ -271,6 +278,8 @@
       const L = BEACH_LAYOUT;
       for (const k of L.kiosks) if (x + r > k.x && x - r < k.x + k.w && y + r > k.y && y - r < k.y + k.h) return true;
       for (const t of L.towers) if (Math.abs(x - t.x) < 9 + r && Math.abs(y - t.y) < 9 + r) return true;
+      // The volleyball poles and net (beachvolley.js).
+      if (L.court && volleyBlocked(x, y, r)) return true;
       return false;
     }
     /* Vehicles meet the same kiosks, and boats meet the pier's piles. */
@@ -286,7 +295,8 @@
      * all; `threshold` is how busy it has to be before this one turns up.
      */
     const beachgoers = [];
-    const beachBall = { active: false, x: 0, y: 0, z: 0, from: null, to: null, t: 0, dur: 1, kind: 'volley' },
+    // The volleyball: a projectile moved by beachvolley.js (beach3d.js draws it).
+    const beachBall = { active: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, mode: 'held', kind: 'volley' },
       beachDiscs = [];
     let beachSpooked = 0,
       beachCrowdCache = { at: -1, x: 0, y: 0, level: 0 },
@@ -300,6 +310,7 @@
       swimmer: [8, 19],
       wader: [8.5, 20],
       volley: [10, 19.2],
+      fan: [10, 19.2],
       thrower: [9, 19.5],
       jogger: [6, 21],
       stroller: [6.5, 23],
@@ -380,13 +391,27 @@
       // Volleyball: four players, two a side, all on court or none.
       const court = L.court,
         volleyThreshold = beachBetween(0.1, 0.45);
-      for (const [dx, dy] of [
-        [-30, -10],
-        [-24, 12],
-        [30, 10],
-        [24, -12],
+      for (const [fx, fy] of [
+        [-0.3, -0.25],
+        [-0.3, 0.25],
+        [0.3, 0.25],
+        [0.3, -0.25],
       ])
-        beachPerson('volley', { x: court.x + dx, y: court.y + dy, a: dx < 0 ? 0 : Math.PI }, { threshold: volleyThreshold, side: Math.sign(dx) });
+        beachPerson('volley', { x: court.x + fx * court.w, y: court.y + fy * court.h, a: fx < 0 ? 0 : Math.PI }, { threshold: volleyThreshold, side: Math.sign(fx) });
+      // People watching the game: sitting along the south side of the pit, standing at the ends.
+      for (const [dx, dy, pose] of [
+        [-44, 1, 'sit'],
+        [-18, 1, 'sit'],
+        [12, 1, 'sit'],
+        [40, 1, 'sit'],
+        [-(court.w / 2 + court.pit + 8), -0.3, 'stand'],
+        [court.w / 2 + court.pit + 8, 0.25, 'stand'],
+      ]) {
+        const onSide = pose === 'sit',
+          x = court.x + dx,
+          y = onSide ? court.y + court.h / 2 + court.pit + 6 : court.y + dy * court.h;
+        beachPerson('fan', { x, y, a: onSide ? -Math.PI / 2 : dx < 0 ? 0 : Math.PI }, { threshold: volleyThreshold + beachBetween(0, 0.2), seat: pose });
+      }
       // Frisbee and ball throwers in pairs on the lower sand.
       for (let i = 0; i < 4; i++) {
         const s = beachBetween(260, length - 260),
@@ -494,6 +519,7 @@
       if (Math.abs(player.x + 1970) > 2600 || Math.abs(player.y - 5600) > 2400) {
         for (const p of beachgoers) p.visible = false;
         beachBall.active = false;
+        if (volleyPlayerInMatch()) volleyLeave('You left the beach volleyball.');
         return;
       }
       beachClock += deltaSeconds;
@@ -746,6 +772,17 @@
           p.pose = 'ride';
           break;
         }
+        case 'fan': {
+          // Watching the volleyball: follow the ball, cheer the points.
+          p.x = home.x;
+          p.y = home.y;
+          p.z = 0;
+          const ball = beachBall,
+            look = ball.active ? Math.atan2(ball.y - p.y, ball.x - p.x) : home.a;
+          p.a = home.a + clamp(normalizeAngle(look - home.a), -1.1, 1.1);
+          p.pose = volley.cheerUntil > beachClock && ball.active ? (p.seat === 'sit' && p.threshold % 0.1 < 0.05 ? 'sit' : 'cheer') : p.seat;
+          break;
+        }
         case 'volley':
         case 'thrower': {
           // Positioned by updateBeachGames; here they just face the play.
@@ -771,42 +808,11 @@
         boat.a = Math.atan2(Math.cos(boat.phase) * 0.55 * dir, -Math.sin(boat.phase) * dir);
         boat.active = beachgoers.some((p) => p.boat === boat && p.visible && p.state === 'on');
       }
-      const players = beachgoers.filter((p) => p.kind === 'volley' && p.state === 'on');
-      if (players.length === 4) {
-        for (const p of players) {
-          // A little shuffling on the spot, facing the net.
-          p.x = p.anchor.x + Math.sin(beachClock * 1.3 + p.threshold * 20 + p.anchor.y) * 4;
-          p.y = p.anchor.y + Math.cos(beachClock * 0.9 + p.anchor.x) * 3;
-          p.a = p.side < 0 ? 0 : Math.PI;
-          if (p.pose !== 'hit' || beachClock > (p.hitUntil || 0)) p.pose = 'ready';
-        }
-        if (!beachBall.active) {
-          beachBall.active = true;
-          beachBall.from = players[0];
-          beachBall.to = players[2];
-          beachBall.t = 0;
-          beachBall.dur = 1.3;
-        }
-        beachBall.t += deltaSeconds / beachBall.dur;
-        const f = beachBall.from,
-          to = beachBall.to,
-          k = Math.min(1, beachBall.t);
-        beachBall.x = f.x + (to.x - f.x) * k;
-        beachBall.y = f.y + (to.y - f.y) * k;
-        beachBall.z = 16 + Math.sin(k * Math.PI) * (beachBall.dur > 1.1 ? 42 : 22);
-        if (k >= 1) {
-          to.pose = 'hit';
-          to.hitUntil = beachClock + 0.35;
-          // Two touches a side at most: set to the partner, then over the net.
-          const partner = players.find((q) => q !== to && q.side === to.side),
-            over = players.filter((q) => q.side !== to.side),
-            setFirst = beachBall.from.side !== to.side && Math.random() < 0.6;
-          beachBall.from = to;
-          beachBall.to = setFirst ? partner : over[Math.floor(Math.random() * over.length)];
-          beachBall.dur = setFirst ? 0.8 : 1.2 + Math.random() * 0.3;
-          beachBall.t = 0;
-        }
-      } else beachBall.active = false;
+      // Beach volleyball: the match, its ball and the player joining in (beachvolley.js).
+      updateVolleyball(
+        deltaSeconds,
+        beachgoers.filter((p) => p.kind === 'volley' && p.state === 'on'),
+      );
       for (const g of beachDiscs) {
         const on = g.a.state === 'on' && g.b.state === 'on';
         g.active = on;

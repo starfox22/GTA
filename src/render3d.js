@@ -1181,6 +1181,7 @@
       // @include src/ecology3d.js
       // @include src/world3d.js
       // @include src/wakes3d.js
+      // @include src/beachvolley3d.js
       // @include src/beach3d.js
       // @include src/county3d.js
       // @include src/base3d.js
@@ -2906,7 +2907,7 @@
           // A swimmer's wake, kick foam and the ripples round them are drawn into the
           // sea like a boat's (wakes3d.js). The flat V and ring planes that did this
           // sat at a fixed height, so the swell rose through them.
-          if (player.swimming) wakeEmit(player, player.x, player.y, player.a, clamp(player.swimDrive || 0, 0, 1) * 70, 16, 7, 80, false);
+          if (player.swimming && !player.pool) wakeEmit(player, player.x, player.y, player.a, clamp(player.swimDrive || 0, 0, 1) * 70, 16, 7, 80, false);
           for (const p of pickups) {
             let m = pickupModels.get(p);
             if (!m) {

@@ -270,7 +270,7 @@
     function speechPriority(p) {
       // The Falcon's riders come first while the player rides with them (themepark.js).
       if (p.coasterRider && player.coaster?.kind === 'train') return 4;
-      if (p.military || p.police || p.missionTag || p.ally) return 3;
+      if (p.military || p.police || p.missionTag || p.ally || p.inConversation) return 3;
       const kind = p.speechKindText === p.speech ? p.speechKind : '';
       if (SPEECH_TO_PLAYER.has(kind) || distanceBetween(p, player) < 70) return 2;
       return 1;
@@ -341,7 +341,9 @@
       speechShown = speechShown.filter((p) => speechLive(p) && p.speechShownText === p.speech);
       const waiting = [],
         labels = [];
-      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers()])
+      // coasterSpeakers(): the Falcon's riders (themepark.js); clubTalkSpeakers(): the
+      // player, while talking with a club-goer (clubtalk.js).
+      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers(), clubTalkSpeakers()])
         for (const p of list) {
           if (!p.speech || p.speechUntil < gameTime) continue;
           if (p.speechHeard !== p.speech) {

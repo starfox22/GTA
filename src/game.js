@@ -1219,6 +1219,8 @@
         return moveOnDeck(displacementX, displacementY, collisionRadius);
       if (body === player && player.buildingRoof)
         return moveOnBuildingRoof(displacementX, displacementY, collisionRadius);
+      // In the Marea pool: held inside the water (clubpool.js).
+      if (body === player && player.pool) return movePoolSwimmer(displacementX, displacementY);
       let hit = false;
       // Vehicle test: a cheap bounding box rejects almost every vehicle before the
       // rotated point-in-car test (this runs for every pedestrian step each frame).
@@ -2325,6 +2327,8 @@
       if (transitInteract()) return;
       if (parkInteract()) return;
       if (beachClubInteract()) return;
+      // The Marea pool, club conversations and beach volleyball (leisure.js).
+      if (leisureInteract()) return;
       if (marinaInteract()) return;
       if (taxiInteract()) return;
       if (
@@ -3268,6 +3272,7 @@
         updateSinking(deltaSeconds);
         timed('beach', () => updateBeach(deltaSeconds));
         timed('beachclub', () => updateBeachClub(deltaSeconds));
+        timed('leisure', () => updateLeisure(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -3304,12 +3309,15 @@
           !player.swimming &&
           !player.wading &&
           !player.climbing &&
+          !player.pool &&
+          !((player.jumpUntil || 0) > gameTime) &&
           !transitRide &&
           !taxiRide &&
           !player.coaster
         )
           player.altitude = terrainHeight(player.x, player.y);
-        if (keys.KeyF || (!player.car && keys.Space) || mouse.down) shoot();
+        // On the volleyball court a click hits the ball instead (beachvolley.js).
+        if (!volleyTakesFire() && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
           tone(220, 0.08, 0.04, 'sawtooth');
         if (keys.KeyE && canSilentHit(rooftopJob())) {
@@ -4620,7 +4628,11 @@
           promptId = 'bikeshare';
           promptKey = bikeShare.key;
         } else if (sportsKickPrompt()) prompt = sportsKickPrompt();
-        else {
+        else if (leisurePrompt()) {
+          const leisure = leisurePrompt();
+          prompt = leisure.text;
+          promptId = leisure.id;
+        } else {
           const n = nearestCar();
           promptId = 'vehicle';
           if (n)
@@ -4848,6 +4860,8 @@
       player.coaster = null;
       player.parachute = null;
       player.climbing = null;
+      player.pool = null;
+      player.jumpUntil = 0;
       // Off any roof: the Blue Hour terrace or a building roof.
       if (player.roof || player.buildingRoof) {
         player.roof = false;
@@ -5218,6 +5232,7 @@
     // @include src/weather-audio.js
     // @include src/water.js
     // @include src/water-audio.js
+    // @include src/beachvolley.js
     // @include src/beach.js
     // @include src/roofmission.js
     // @include src/rooftops.js
@@ -5255,6 +5270,9 @@
     // @include src/crowd.js
     // @include src/beachclub.js
     // @include src/beachclub-audio.js
+    // @include src/clubpool.js
+    // @include src/clubtalk.js
+    // @include src/leisure.js
     // @include src/ambience.js
     // @include src/quality.js
     // @include src/settings.js
@@ -6007,6 +6025,25 @@
         })),
       // Palm Keys Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
+      // The Marea pool (clubpool.js): the water, the player's phase in it (dive,
+      // swim, out), whether SWIM / GET OUT are offered, breath, club swimmers.
+      clubPool: () => clubPoolReport(),
+      // Stand on the deck at the pool's south edge (then interact() dives in).
+      clubPoolEdge: () => clubPoolEdge(),
+      // Club conversations (clubtalk.js): the script count by personality, the one
+      // running (lines, pose), the candidate and stand timer, the bubbles on screen.
+      clubTalk: () => clubTalkReport(),
+      // Stand beside the nearest club-goer who can talk (standing still starts it).
+      clubTalkApproach: () => clubTalkApproach(),
+      // Beach volleyball (beachvolley.js): court, phase, score, ball, players, the
+      // player in the match, rallies and the recent log.
+      volley: () => volleyReport(),
+      // Step onto the court on a side (0 west, 1 east) and join the match.
+      volleyJoin: (team = 0) => volleyJoinConsole(team),
+      // Lob the ball from across the net to the player in the match.
+      volleyLob: () => volleyLobToPlayer(),
+      // The court against the beach plan: anything laid on it or its clear zone.
+      volleyCourtCheck: () => volleyCourtCheck(),
       // Marea Beach Club: phase, levels, who is where, the queue and the door,
       // the music (beachclub.js). `beachClub('trouble')` raises gunfire on its
       // dance floor as if someone fired there, for tests of the evacuation.

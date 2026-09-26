@@ -74,7 +74,49 @@ roadblock) and the Blue Hour elevator mission start. Draw calls at the default s
 Point towers 166-201 / 284-306 -> 203 / 251, Midtown 533 / 489-588 -> 445 / 454. The taller
 towers cost no more: the closer default zoom takes in less of the city.
 
-<<<<<<< HEAD
+## Unreleased — the Marea pool, club conversations and beach volleyball
+
+Marea pool (clubpool.js, water.js)
+- **SWIM · E** at the pool's edge (inside the club only; at night that means past the door with a
+  band): a short dive, a splash and its sound, and a club-goer's remark ("Nice dive!"). In the
+  water the sea's stroke runs unchanged (`swimStroke`, split out of `updateSwimming`): the hard
+  crawl by default, the easy stroke with Shift, the breath gauge, the crawl pose. `player.pool`
+  is a carrier (`movePoolSwimmer` holds the swimmer inside the water; `teleportPlayer` and a far
+  jump let go). Out of breath only slows you here; hanging on at the edge gets it back.
+  **GET OUT · E** at an edge with open deck beyond it steps up onto the deck, dripping for 12 s.
+  No wake on the sea under the pool; the police send no boats for a swimmer in the pool.
+- Works by day and at night (the pool is lit after dark); the club's own pool swimmers keep
+  swimming by day.
+
+Conversations with club-goers (clubtalk.js)
+- Stand next to a club-goer for about a second (or **TALK · E**) and the two of you trade
+  alternating speech bubbles, four to six lines: 41 scripts across tourists, influencers,
+  bartenders, businessmen, DJ fans, bouncers and swimmers, by day and by night (the DJ, cocktails,
+  the sunset, yachts, gossip, a hint of the city's crime, friendly flirting), with alternative lines
+  and forked endings. No script repeats until every one that fits the hour has been heard. The
+  club-goer turns to the player, waves, talks with their hands; walking away gets a "Catch you
+  later!". E moves a conversation on.
+- The player's lines use the crowd's bubbles (`clubTalkSpeakers` in speechBubbles); both speakers
+  are `inConversation`, which ranks their lines first, so the two bubbles stay with the
+  conversation. NPC chatter off: no conversations.
+
+Beach volleyball (beachvolley.js, beachvolley3d.js, beach.js, beach3d.js)
+- The small court is now a regulation one (16 x 8 m, net 2.43 m) in a raked sand pit at
+  x -2322, y 5450 on the upper sand, with padded poles, guy ropes, antennas, a boundary tape and
+  a scoreboard; the clear zone is reserved so towels and umbrellas stay off it
+  (`DeadEndCity.volleyCourtCheck()`: clear).
+- The four players play 2 v 2 by rally scoring to 15 (win by two) with a physics ball: every touch
+  is solved for a target and an apex, so the AI runs to where it will come down; bump to the
+  setter, set, jump spike or shot into the open court, with shanks, tight sets, spikes into the net
+  and long; the net stops a low ball, the sand swallows the bounce, in / out decides the point.
+  Sand kicks, hit and landing sounds, the whistle; the winners cheer, the beach roars.
+- **JOIN MATCH · E** on the court: the player takes the nearer player's place (who watches from
+  the sideline). E or a left click hits a ball in reach (a press just early is held), aimed with
+  the mouse or the movement keys; Shift + hit is a soft set to the partner; running into a high
+  ball by the net is a jump spike. A ring marks where the player's ball comes down; a hint card
+  shows the score and the controls. Walk off the court or **LEAVE MATCH · E** between points.
+- Six beachgoers watch from the sides and cheer the points.
+
 ## Unreleased — speed box on foot, km/h / mph, South Coast Cycle bike share
 
 Speed box (hud.js SPEED BOX)
@@ -114,7 +156,6 @@ South Coast Cycle bike share (cycles.js, cycles3d.js)
   breakables from merged vertex-coloured parts (one instance per bike), a handful of draws per
   map cell. Every size follows the bicycle's length (`SHARE_BIKE_LENGTH`) or the metre.
 - `DeadEndCity.bikeShare()` (network, nearest station, rent/dock log), `DeadEndCity.bikeStation(id)`.
-=======
 ## Unreleased — a 90s volume knob, the radio at 100 by default
 
 Radio volume (car-radio.js RADIO VOLUME, shell.html, settings.js)
@@ -141,7 +182,6 @@ Radio volume (car-radio.js RADIO VOLUME, shell.html, settings.js)
   (`radioVolumeSet`), so a deliberate 80 stays 80.
 - `DeadEndCity.radio()` reports `volumeSet` and `knob` (value, angle, lit LEDs, readout, drag mode,
   the last drag) in place of `slider`.
->>>>>>> worktree-agent-a62ff53c76f66cc6e
 
 ## Unreleased — speech bubbles seen from above, the Falcon's riders scream and talk
 
