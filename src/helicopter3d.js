@@ -999,8 +999,8 @@
               { text: 'N-7SC', surface: 'cowl', x: -2.4, y: 21.35, height: 1.6, spacing: 0.08, fill: '#f6f8fa', outline: '#050d24', outlineWidth: 0.08 },
               { text: 'AIR ONE', surface: 'fin', x: -42.9, y: 24.2, height: 1.0, squeeze: 0.85, spacing: 0.08, fill: '#f6f8fa' },
               // For the camera above: the unit across the cowl, POLICE along the boom.
-              { text: 'AIR 1', surface: 'cowlTop', x: -3.6, z: 0, height: 3.3, spacing: 0.06, ...letters },
-              { text: 'POLICE', surface: 'top', x: -24.2, z: 0, height: 2.7, squeeze: 0.86, spacing: 0.05, ...letters },
+              { text: 'AIR 1', surface: 'cowlTop', x: -3.6, z: 0, height: 3.9, squeeze: 0.92, spacing: 0.06, ...letters },
+              { text: 'POLICE', surface: 'top', x: -24.2, z: 0, height: 3.1, squeeze: 0.78, spacing: 0.05, ...letters },
             ],
           };
         }
@@ -2463,12 +2463,12 @@
           const level = L[h.channel];
           if (level > 0.05) queueVehicleHalo(h.sprite, level * h.strength * scale * (h.channel === HELI_CH.strobe ? 1.6 : 1));
         }
-        // Police livery: the reflective band catches the light at night.
+        // Police livery: the reflective lettering and pinstripes catch the light at night.
         if (m.look.reflective) {
           const glow = m.charred ? -1 : Math.round(lampsOn * 20) / 20;
           if (m.reflective !== glow) {
             m.reflective = glow;
-            if (glow >= 0) m.paint.emissive.setScalar(glow * 0.05);
+            if (glow >= 0) m.paint.emissive.setScalar(glow * 0.08);
           }
         }
       }
