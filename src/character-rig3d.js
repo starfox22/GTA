@@ -180,7 +180,11 @@
        */
       // Radial detail for the parts being built: 1 for the close-up set, less for the street set.
       let rigSegmentScale = 1;
-      function rigLoft(rings, segments, region = null, capBottom = true, capTop = true) {
+      function rigLoft(allRings, segments, region = null, capBottom = true, capTop = true) {
+        // The street set keeps every other ring (and the ends); regions still see the original index.
+        const ringIndex = [];
+        for (let i = 0; i < allRings.length; i++) if (rigSegmentScale >= 1 || i % 2 === 0 || i === allRings.length - 1 || allRings.length <= 4) ringIndex.push(i);
+        const rings = ringIndex.map((i) => allRings[i]);
         const positions = [],
           regions = [],
           index = [],
@@ -197,7 +201,7 @@
               x = (r.cx || 0) + pc * (c >= 0 ? r.fx : (r.bx ?? r.fx)),
               z = (r.cz || 0) + ps * r.w;
             positions.push(x, r.y, z);
-            regions.push(region ? region(i, th > Math.PI ? th - TAU : th, r.y, x, z) : 0);
+            regions.push(region ? region(ringIndex[i], th > Math.PI ? th - TAU : th, r.y, x, z) : 0);
           }
         }
         for (let i = 0; i < rings.length - 1; i++)
@@ -210,7 +214,7 @@
           const r = rings[i],
             centre = positions.length / 3;
           positions.push(r.cx || 0, r.y + (top ? 1 : -1) * (r.dome || 0), r.cz || 0);
-          regions.push(region ? region(i, 0, r.y, r.cx || 0, r.cz || 0, true) : 0);
+          regions.push(region ? region(ringIndex[i], 0, r.y, r.cx || 0, r.cz || 0, true) : 0);
           for (let k = 0; k < n; k++) {
             const a = i * n + k,
               b = i * n + ((k + 1) % n);
@@ -481,8 +485,7 @@
        *   chest and back, 4 shoulder yoke and collar line, 5 badge (left chest),
        *   6 centre strip (tie, placket, zip), 7 waistband.
        */
-      const TORSO_SAMPLES = [-0.3, 0.1, 0.45, 0.62, 0.8, 1.05, 1.25, 1.4, 1.62, 1.85, 2.0, 2.12, 2.35, 2.6, 2.8, 2.9, 2.98, 3.1, 3.22, 3.32, 3.4],
-        TORSO_SAMPLES_STREET = [-0.3, 0.45, 0.62, 1.25, 1.62, 2.12, 2.6, 2.9, 3.1, 3.28, 3.4];
+      const TORSO_SAMPLES = [-0.3, 0.1, 0.45, 0.62, 0.8, 1.05, 1.25, 1.4, 1.62, 1.85, 2.0, 2.12, 2.35, 2.6, 2.8, 2.9, 2.98, 3.1, 3.22, 3.32, 3.4];
       function torsoRegion(i, th, y, x, z) {
         const a = Math.abs(th) / RIG_DEG,
           front = a < 62;
@@ -527,7 +530,7 @@
               { y: 3.34, fx: 0.45, bx: 0.48, w: 0.7 },
               { y: 3.4, fx: 0.42, bx: 0.44, w: 0.56 },
             ];
-        return rigLoft(rigProfile(keys, rigSegmentScale < 1 ? TORSO_SAMPLES_STREET : TORSO_SAMPLES), 16, torsoRegion);
+        return rigLoft(rigProfile(keys, TORSO_SAMPLES), 16, torsoRegion);
       }
       /* Pelvis: joint at the hip joints' height. Regions: 0 cloth, 1 belt, 2 buckle. */
       function rigPelvisGeometry(female) {

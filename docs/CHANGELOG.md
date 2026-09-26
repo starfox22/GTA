@@ -1,5 +1,64 @@
 # Changelog
 
+## Unreleased — one character rig for everyone: the player, police, NPCs
+
+Characters (character-rig3d.js new, crowd3d.js rewritten; render3d.js, beach3d.js, sports3d.js,
+base3d.js, parachute3d.js, flight-view3d.js, lighting3d.js)
+- **One modern rig for everyone on foot.** The player, patrol and traffic officers, SWAT,
+  agents, soldiers (in pursuit and at Fort Sentinel), gangs, mobsters, party guests, mission
+  characters, pedestrians, beachgoers, footballers, basketball players, referees, stewards
+  and riders are all drawn from one set of sculpted instanced parts. The old boxy per-person
+  models (the player's was the oldest code in the game, ~20 meshes each), the beach's box
+  figures and the athletes' box models are gone.
+- **Real proportions at real size**: modelled at `PERSON_HEIGHT` (1.75 m, 14 units), about 7.5
+  heads tall (crown 14, chin 12.2, shoulders 11.3, hips 7.3, knees 4.0 units); male and
+  female bodies; adults 1.6-1.9 m, the player 1.80 m, basketball players ~1.95 m. The rig is
+  never scaled again (`PERSON_SCALE` only converts old offsets).
+- **Smooth low-poly forms** lofted from rings: a head with jaw, ears, nose and a face hint
+  (eyes, brows, lips, stubble or beard), seven hair styles, cap / patrol cap / helmet / sun
+  hat / hard hat, neck and trapezius, chest, waist, hips, deltoids, elbows, hands with a
+  thumb, knees, calves, shoes and boots. A close-up set and a street set (about a quarter of
+  the facets) are built; one is drawn per frame.
+- **Clothing through paint, not draw calls**: each instance carries four packed colours and
+  a region mask, so one torso is a tee, V-neck, tank, crop top, bikini, one-piece, open
+  jacket over a tee, suit and tie, police shirt with badge, hoodie or dress; procedural
+  camouflage, denim, check, floral and Breton patterns, leather and satin sheen, club kits
+  (stripes, hoops, halves, sash). Beachwear on the beach and in the resort districts, suits
+  downtown, hi-vis on workers.
+- **The player**: dark leather jacket with HUD-gold shoulder yokes over a white tee, dark
+  denim, brown boots, a short dark crop and stubble; readable from above in a crowd; the
+  night rim now lives in the rig's shader. The rooftop disguise is a cream suit.
+- **Police**: LAPD-style navy uniforms with badge, duty belt (holster, pouches, radio, cuffs),
+  shoulder radio, patrol cap on some; traffic officers in a hi-vis vest and white cap; SWAT in
+  black with helmet, plate carrier, gloves, knee pads and POLICE across the upper back; agents
+  in dark suits with FED on the back; soldiers in woodland camouflage with helmet, plate
+  carrier and gloves (military police with a white helmet band).
+- **Weapons held properly** by two-bone IK: pistol two-hand isosceles grip, rifles and the
+  shotgun shouldered with the support hand on the handguard, the SMG at the chest, the rocket
+  tube on the shoulder, a low-ready pistol, a rifle carried across the chest, the knife
+  slash, the fist guard and punch, the SWAT shield; recoil kicks, the reload drops the
+  magazine hand; the player carries a pistol or SMG at the side until firing.
+- **Animation**: a planted-foot gait (each foot is fixed on the ground for its stance and
+  swung forward in an arc, hip and knee by IK), heel strike and toe-off, the pelvis rising
+  over the planted leg, arms against the legs, a forward lean and a flight phase at the run,
+  strafing and backpedalling (hips follow the travel, the upper body the aim), stepping round
+  on the spot when turning, breathing and weight shifts; car get-in and get-out, the Marea
+  pool dive and climb-out, front crawl, breaststroke, treading water and floating, freefall
+  and canopy under the parachute, the tumble; riders sit on bicycles, share bikes,
+  motorbikes and jet skis with hands on the grips and feet on the turning pedals; beach
+  poses (sunbathing on the back or front, sitting, reclining, kids digging, wading) and the
+  volleyball and match-day touches (kicks, saves, dribbles, jump shots, rebounds, the
+  assistant's flag).
+- **Size parity**: the see-through hole round the player follows `PERSON_HEIGHT`; the gun's
+  aiming plane is at shoulder height; the parachute pack and harness sit on the new body.
+- **Performance**: everyone costs one instanced draw per part in use (about 30 camera calls
+  and 12 shadow calls for all the people in view), fewer than before once officers, gangs,
+  guards, athletes or beachgoers are on screen (each old figure was a dozen or more draws;
+  22 footballers alone were hundreds). Far away, anyone just standing or walking is a
+  three-instance figure.
+- Console: `characterLineup(stance, spacing)`, `inspectView(yaw, pitch, lift)`,
+  `crowdStats()`; `closeUp` goes to 24; `scaleReport().crowd` reads the rig's statures.
+
 ## Unreleased — wet streets, the ULTRA band, phantom shadows
 
 Graphics (postfx3d.js, surfaces3d.js, lighting3d.js, weather3d.js, signage3d.js)

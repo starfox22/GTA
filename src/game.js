@@ -6394,7 +6394,7 @@
       // horizon, aimed `lift` units up; no arguments restores the game camera.
       inspectView: (yaw, pitch, lift) => city3D?.inspectView?.(yaw, pitch, lift),
       // What the people cost in the last frame (crowd3d.js): parts, draw calls, instances, triangles.
-      crowdStats: () => city3D?.crowdStats?.() || null,
+      crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
       // Raise an incident at a map point without firing: gunfire, explosion, crash.
       alarm(kind = 'gunfire', x = player.x, y = player.y) {
         const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);

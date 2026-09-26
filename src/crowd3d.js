@@ -1961,8 +1961,7 @@
         shield: rigPaint('#15181c', '#0f1113', '#0f1113', '#56707f', [0, 1, 2, 3]),
       };
       const PLAYER_WEAPONS = ['pistol', 'smg', 'shotgun', 'rocket', 'rifle', 'sniper', 'knife', null];
-      const holdVec = new Three.Vector3(),
-        holdVec2 = new Three.Vector3(),
+      const holdVec2 = new Three.Vector3(),
         holdPole = new Three.Vector3(),
         shoulderWorld = [new Three.Vector3(), new Three.Vector3()],
         handFrames = [new Three.Matrix4(), new Three.Matrix4()],
@@ -2745,7 +2744,7 @@
               specialLooks.set(c, entry);
             }
             sp.look = entry.look;
-          } else if (kind === 'jetski') sp.look = { ...specialLook(player) };
+          }
           sp.hold = null;
           sp.weapon = null;
           sp.swim = null;
@@ -2942,18 +2941,21 @@
           part.n = 0;
         }
       }
-      /* Level of detail from the zoom: 2 full, 1 no hands or small props, 0 far figures. */
+      /* Level of detail from the zoom: 2 full (hands and small props once a figure is 25 px
+         or more), 1 without them, 0 far figures. */
       function crowdDetail() {
         const lod = activeTier ? activeTier.lodBias : 1,
           zoom = flightViewActive ? viewZoom : worldZoom;
-        return zoom >= 0.6 * lod ? 2 : zoom >= 0.34 * lod ? 1 : 0;
+        return zoom >= 1.3 * lod ? 2 : zoom >= 0.34 * lod ? 1 : 0;
       }
       /**
        * Per frame: pack every visible pedestrian, their dog, the special
        * characters (`specials`: the player, officers, gangs, guards, mission
        * characters) and the scene props. Returns how many people were drawn.
        */
+      let crowdPackMs = 0;
       function updateCrowd3D(deltaSeconds, specials = []) {
+        const packStart = performance.now();
         let drawn = 0;
         lastDelta = deltaSeconds;
         const detail = crowdDetail(),
@@ -2992,6 +2994,7 @@
         }
         drawEnterCar(deltaSeconds, detail);
         if (zoomedIn) drawn += drawBeachgoers(deltaSeconds, detail);
+        crowdPackMs = performance.now() - packStart;
         for (const prop of crowd.props) {
           const part = propParts[prop.kind];
           if (!part || !entityInView(prop, 30)) continue;
@@ -3006,17 +3009,22 @@
       }
       /* After the vehicles are posed: the riders, then upload every part (render3d.js). */
       function finishCrowd3D(deltaSeconds) {
+        const start = performance.now();
         drawQueuedRiders(deltaSeconds, crowdDetail());
         drawQueuedAthletes(deltaSeconds, crowdDetail());
         flushCrowdParts();
+        crowdPackMs += performance.now() - start;
+        crowdPackAverage += (crowdPackMs - crowdPackAverage) * 0.05;
       }
+      let crowdPackAverage = 0;
       /**
        * Measures for DeadEndCity.scaleReport: the rig's standing height at
        * look.height 1, and a person's drawn extents ({ l, w, h }, map units).
        */
       /* What the people cost this frame: instanced parts drawn, draw calls (camera
          and shadow) and triangles, and which body set is in use. */
-      function crowdStats() {
+      function crowdStats(byPart = false) {
+        const list = [];
         let parts = 0,
           viewCalls = 0,
           shadowCalls = 0,
@@ -3032,8 +3040,19 @@
           if (mesh.castShadow) shadowCalls++;
           instances += mesh.count;
           triangles += tris * mesh.count;
+          if (byPart) list.push([mesh.name, mesh.count, tris]);
         }
-        return { parts, viewCalls, shadowCalls, instances, triangles: Math.round(triangles), bodySet: BODY === BODY_CLOSE ? 'close' : 'street' };
+        return {
+          parts,
+          viewCalls,
+          shadowCalls,
+          instances,
+          triangles: Math.round(triangles),
+          bodySet: BODY === BODY_CLOSE ? 'close' : 'street',
+          packMs: Math.round(crowdPackMs * 100) / 100,
+          packMsAverage: Math.round(crowdPackAverage * 100) / 100,
+          ...(byPart ? { byPart: list } : {}),
+        };
       }
       function crowdRigHeight() {
         return PERSON_HEIGHT;
