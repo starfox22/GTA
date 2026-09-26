@@ -161,9 +161,9 @@
         fascia.userData.sign = true;
         B(cx, glassTop + 0.8 + fasciaH / 2, S.y1 - 0.4, S.x1 - S.x0, fasciaH, 1.4, M.claddingDark);
         // Warm light through the glass at night, onto the apron.
-        signSpill(cx, S.y1 + 10, 90, '#dfffe9', 0.4, { width: 70, length: 40, strength: 0.6 });
+        signSpill(cx, S.y1 + 10, 80, '#dfffe9', 0.25, { width: 70, length: 40, strength: 0.45 });
         signSpill(cx, (S.y0 + S.y1) / 2, 70, '#fff3dc', 0.45);
-        for (const x of [S.x0 + 26, cx, S.x1 - 26]) addGlow(x, glassTop * 0.6, S.y1 + 1, 22, '#e9fff0', 0.28, { day: 0 });
+        for (const x of [S.x0 + 26, cx, S.x1 - 26]) addGlow(x, glassTop * 0.6, S.y1 + 1, 18, '#e9fff0', 0.16, { day: 0 });
 
         // ---- Roof: deck, parapet and coping, AC units; the neon sign on the front.
         B(cx, H + 1, (S.y0 + S.y1) / 2, S.x1 - S.x0, 2, depth, M.roofDeck, roof);
@@ -194,8 +194,8 @@
         const title = sign(S.name, cx, signZ, signW, '#3dff8e');
         title.position.y = title.userData.backing.position.y = signY;
         roof.add(title, title.userData.backing);
-        addGlow(cx, signY, signZ + 3, signW * 0.6, '#3dff8e', 0.35, { day: 0 });
-        signSpill(cx, S.y1 + 20, 110, '#3dff8e', 0.3);
+        addGlow(cx, signY, signZ + 3, signW * 0.5, '#3dff8e', 0.22, { day: 0 });
+        signSpill(cx, S.y1 + 20, 90, '#3dff8e', 0.16);
 
         // ---- The video wall: the live board in the middle, odds boards either side.
         const wallZ = S.y0 + S.wall + 0.6,
