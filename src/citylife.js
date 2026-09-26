@@ -414,6 +414,7 @@
       for (const bridge of BRIDGES) list.push(...bridgeFootings(bridge));
       list.push({ x: HARBOR.ship.x, y: HARBOR.ship.y, hx: HARBOR.ship.w / 2, hy: HARBOR.ship.l / 2, a: 0 });
       list.push(...marinaObstacles());
+      list.push(...monarchBoatObstacles());
       for (const b of list) b.reach = b.hx + b.hy;
       return (boatObstacleCache = list);
     }
@@ -1130,6 +1131,8 @@
         if (!c.crewDeployed && (gangClose || playerClose) && Math.abs(c.speed) < 24) deployOfficers(c);
       }
       for (const o of officers) {
+        // Standing for a screenshot (DeadEndCity.characterLineup): no orders.
+        if (o.lineup) continue;
         if (o.hp <= 0) {
           o.state = 'dead';
           continue;
@@ -1601,6 +1604,7 @@
       }
       roofMissionUI();
       militaryUI();
+      offroadClubUI();
     }
     function drawCivicMap(drawingContext, big) {
       for (const p of PLACES) {

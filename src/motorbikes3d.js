@@ -96,7 +96,7 @@
           frame: '#b3121b',
           engine: '#2c2e31',
           seat: '#141516',
-          rider: { hip: [-0.2, 0.93], shoulder: [0.12, 1.43], hand: [0.42, 1.08], knee: [0.12, 0.78], foot: [-0.16, 0.42], head: 1.62, suit: '#23272c', accent: '#8a9098', helmet: '#16181b', visor: '#2c3b4a' },
+          rider: { lean: -0.5, hip: [-0.2, 0.93], shoulder: [0.12, 1.43], hand: [0.42, 1.08], knee: [0.12, 0.78], foot: [-0.16, 0.42], head: 1.62, suit: '#23272c', accent: '#8a9098', helmet: '#16181b', visor: '#2c3b4a' },
           build(k) {
             const { S, add, pod } = k;
             // Tank and tail: a sculpted tank, a short tail with the seat.
@@ -123,7 +123,7 @@
           frame: '#141516',
           engine: '#b9bec3',
           seat: '#1b1614',
-          rider: { hip: [-0.3, 0.8], shoulder: [-0.28, 1.36], hand: [0.3, 1.14], knee: [0.3, 0.8], foot: [0.52, 0.4], head: 1.58, suit: '#15171a', accent: '#2c3e5c', helmet: '#16181b', visor: null, openFace: true },
+          rider: { lean: 0.06, hip: [-0.3, 0.8], shoulder: [-0.28, 1.36], hand: [0.3, 1.14], knee: [0.3, 0.8], foot: [0.52, 0.4], head: 1.58, suit: '#15171a', accent: '#2c3e5c', helmet: '#16181b', visor: null, openFace: true },
           build(k) {
             const { S, pod } = k;
             // A fat teardrop tank with the dash, fenders over both wheels, the solo seat.
@@ -160,7 +160,7 @@
           engine: '#2a2c2f',
           seat: '#141516',
           singleSided: true,
-          rider: { hip: [-0.26, 0.96], shoulder: [0.18, 1.3], hand: [0.46, 1.0], knee: [0.08, 0.72], foot: [-0.22, 0.46], head: 1.42, suit: '#c8102e', accent: '#f0f0ec', helmet: '#c8102e', visor: '#1a1f26' },
+          rider: { lean: -0.85, hip: [-0.26, 0.96], shoulder: [0.18, 1.3], hand: [0.46, 1.0], knee: [0.08, 0.72], foot: [-0.22, 0.46], head: 1.42, suit: '#c8102e', accent: '#f0f0ec', helmet: '#c8102e', visor: '#1a1f26' },
           build(k) {
             const { S, pod } = k;
             // The full fairing: a sharp nose, flanks to the belly pan, the tank and tail.
@@ -191,7 +191,7 @@
           frame: '#8f959b',
           engine: '#2a2c2f',
           seat: '#141516',
-          rider: { hip: [-0.26, 0.95], shoulder: [0.16, 1.31], hand: [0.45, 1.0], knee: [0.08, 0.72], foot: [-0.22, 0.46], head: 1.43, suit: '#1f4fbf', accent: '#f0f0ec', helmet: '#f0f0ec', visor: '#1a1f26' },
+          rider: { lean: -0.85, hip: [-0.26, 0.95], shoulder: [0.16, 1.31], hand: [0.45, 1.0], knee: [0.08, 0.72], foot: [-0.22, 0.46], head: 1.43, suit: '#1f4fbf', accent: '#f0f0ec', helmet: '#f0f0ec', visor: '#1a1f26' },
           build(k) {
             const { S, pod } = k;
             pod(k.paint, [[0.82, 0.95, 0.02, 0.02, 0.02], [0.76, 0.99, 0.12, 0.09, 0.1, 2.6], [0.6, 0.97, 0.18, 0.18, 0.26, 2.8], [0.4, 0.86, 0.19, 0.17, 0.36, 3], [0.18, 0.74, 0.16, 0.12, 0.34, 3], [0.0, 0.62, 0.12, 0.06, 0.26, 3]]);
@@ -223,7 +223,7 @@
           engine: '#3a3d42',
           seat: '#15161a',
           dirt: true,
-          rider: { hip: [-0.18, 1.08], shoulder: [0.16, 1.58], hand: [0.5, 1.28], knee: [0.18, 0.9], foot: [-0.04, 0.48], head: 1.78, suit: '#ff6a00', accent: '#15161a', helmet: '#ff6a00', visor: '#15161a', peak: true },
+          rider: { lean: -0.32, hip: [-0.18, 1.08], shoulder: [0.16, 1.58], hand: [0.5, 1.28], knee: [0.18, 0.9], foot: [-0.04, 0.48], head: 1.78, suit: '#ff6a00', accent: '#15161a', helmet: '#ff6a00', visor: '#15161a', peak: true },
           build(k) {
             const { S, pod } = k;
             // Slim tank and radiator shrouds, the long flat seat to the tail, the side panels.
@@ -513,6 +513,16 @@
         b.add(rider);
         mesh(kit.rider, materials.trim, rider, 0, 0, 0);
         model.rider = rider;
+        // For the character rig (crowd3d.js RIDERS), in this model's units: hips on
+        // the saddle, hands on the grips, soles on the pegs, the torso's lean.
+        const pose = body.rider,
+          grip = type === 'kr500' ? 0.36 : type === 'cruiser' ? 0.34 : type === 'bike' ? 0.3 : 0.24;
+        model.riderSeat = {
+          seat: [pose.hip[0] * M, pose.hip[1] * M, 0],
+          grip: [pose.hand[0] * M + 0.4, pose.hand[1] * M - 0.2, grip * M],
+          peg: [pose.foot[0] * M, (pose.foot[1] - 0.04) * M, 0.17 * M],
+          lean: pose.lean,
+        };
         model.drl = drl;
         model.steer = steer;
         model.bikeUpdate = (c, deltaSeconds) => animateMotorbike(c, model, deltaSeconds);

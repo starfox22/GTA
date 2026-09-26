@@ -264,6 +264,8 @@
       for (const b of marinaSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'marina');
       for (const b of parkSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier');
       for (const b of parkAirSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier').minHeight = b.minHeight;
+      // Monarch Isle's garden walls, fences, pools, fountains, pumps and parapets (monarch.js).
+      for (const b of monarchSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'isle ' + b.kind);
       // Water contact follows the same irregular shores as the visible terrain.
       for (const e of buildCoastSegments()) {
         if (e.opening) continue;
@@ -1305,7 +1307,7 @@
         headingSine = Math.sin(c.a),
         along = c.vx * headingCosine + c.vy * headingSine,
         // A police launch in a water pursuit steers itself (pursuit.js).
-        helm = !controlled && active && c.marineUnit && c.cop && c.hp > 0 && wantedStars > 0 ? marineBoatInput(c, along) : null,
+        helm = !controlled && active && c.marineUnit && c.cop && c.hp > 0 && wantedStars > 0 ? marineBoatInput(c, along) : !controlled && c.isleBoat && c.hp > 0 ? isleBoatHelm(c, along) : null,
         up = controlled ? keys.KeyW || keys.ArrowUp : !!helm?.up,
         down = controlled ? keys.KeyS || keys.ArrowDown : !!helm?.down,
         turn = controlled
@@ -1454,6 +1456,7 @@
         c.resting &&
         c !== pc &&
         !c.ai &&
+        !c.isleBoat &&
         !c.taxiHire &&
         (!c.cop || c.crewDeployed || c.hp <= 0) &&
         (c.hp > 0 || !c.damage?.burning)
@@ -1705,9 +1708,11 @@
           const ai =
             c.aiControl && physicsClock < (c.aiControlAt || 0)
               ? c.aiControl
-              : ((c.aiControl = c.countyRoute
-                  ? countyRouteControl(c)
-                  : trafficControl(c, stepSeconds)),
+              : ((c.aiControl = c.isle
+                  ? isleTrafficControl(c)
+                  : c.countyRoute
+                    ? countyRouteControl(c)
+                    : trafficControl(c, stepSeconds)),
                 (c.aiControlAt = physicsClock + (c.farFromPlayer ? 0.25 : 0.05)),
                 c.aiControl);
           /* Traffic in the rain keeps inside what its tyres now give (cornering,
@@ -1748,20 +1753,17 @@
           c.sliding = sliding || (c.sliding && Math.abs(lateral) > along * 0.1);
         }
         c.braking = braking;
+        // OFF-ROAD (offroad.js): on the range the tyres give what the surface and
+        // the driven wheels allow (wheelspin past it), gravity pulls down the slope,
+        // mud drags, rough ground bounces; off it the wheels roll with the ground.
         const terrain = roadVehicleTerrain(c);
         if (terrain) {
-          const slope = Math.hypot(terrain.slope.x, terrain.slope.y),
-            power = terrain.traction;
-          acceleration *= power;
+          const ground = offroadDrive(c, vehicleDefinition, terrain, acceleration, along, stepSeconds);
+          acceleration = ground.acceleration;
           if (Math.abs(along) > terrain.limit && acceleration * along > 0) acceleration = 0;
-          grip *= terrain.dirt ? 1 : terrain.four ? 0.82 : 0.48;
-          drag = Math.max(drag, terrain.dirt ? (terrain.trail ? 0.3 : 0.6) : terrain.trail ? 0.7 : 1.3);
-          // Knobblies claw up grades a 4x4 slides back down.
-          const tractionLimit = terrain.dirt ? (terrain.trail ? 0.8 : 0.85) : terrain.four ? (terrain.trail ? 0.62 : 0.72) : 0.15,
-            slide = Math.max(0, slope - tractionLimit);
-          c.vx -= terrain.slope.x * GRAVITY * (1 + slide * 2.3) * stepSeconds;
-          c.vy -= terrain.slope.y * GRAVITY * (1 + slide * 2.3) * stepSeconds;
-        }
+          grip *= ground.grip;
+          lateralScale *= ground.lateral;
+        } else if (c.wheelSpin || c.surfaceMud) offroadRoll(c, stepSeconds);
         // On a raised drawbridge leaf: gravity down the slope, grip up to ~40 degrees.
         if (c.deckLeaf) acceleration = drawbridgeSlopeDrive(c, acceleration, stepSeconds);
         c.vx += headingCosine * acceleration * stepSeconds;

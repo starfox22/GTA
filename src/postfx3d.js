@@ -742,8 +742,6 @@
       }
       renderer.info.autoReset = false;
       function renderFrame() {
-        // Crowd impostors placed during this frame's people pass (flight-view3d.js).
-        endPersonImpostors();
         renderer.info.reset();
         frameStats.shadowFrame = renderer.shadowMap.enabled && renderer.shadowMap.needsUpdate;
         if (!hdrCapable || !postTier) {

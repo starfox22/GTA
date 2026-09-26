@@ -1022,6 +1022,9 @@
           bridgeLamps(g, bridge, s, kit.lights, kit.pools, 66, 'cobra', BRIDGE_KIT.darkSteel, h.at.map((at) => [at - 22, at + 22]));
           aviationBeacons(g, h.at.flatMap((at) => [V3(at, h.height + 7, h.legs), V3(at, h.height + 7, -h.legs)]));
         },
+        // Monarch Isle's two (monarch-bridges3d.js).
+        harp: buildHarpBridge,
+        bowstring: buildBowstringBridge,
         swing(g, bridge, s, kit) {
           const W = bridge.width,
             w = s.swing,
@@ -1114,6 +1117,14 @@
           }
         if (s.bascule) for (const h of s.bascule.houses) box(g, h.along, 20, h.across, 22, 40, 18, paint('#ecebe5'));
         if (s.swing) for (const side of [-1, 1]) box(g, s.middle, 5, side * (W / 2 + 3), s.water[1] - s.water[0], 13, 3, paint('#5c6444'));
+        if (s.harp) {
+          const H = s.harp;
+          bridgeMember(g, V3(H.base, 0, 0), V3(H.top.x, H.top.y, 0), 24, 22, paint('#f3f4f1'));
+          for (const st of [H.stays[0], H.stays[6], H.stays[12]]) bridgeMember(g, V3(st.from.x, st.from.y, 0), V3(st.to.x, 4, 0), 2, 2, paint('#e6eaec'));
+        }
+        if (s.bowstring)
+          for (const a of s.bowstring.arches)
+            for (const side of [-1, 1]) line(curve((x) => 3 + s.archHeightAt(x), a.from, a.to, 10, 1, 0).map((p) => V3(p.x, p.y, side * s.bowstring.plane)), 5, paint('#3f6b5c'));
       }
       /* ---- Build ------------------------------------------------------------------- */
       {

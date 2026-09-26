@@ -277,7 +277,7 @@
       let ok = bikePointCache.get(key);
       if (ok === undefined) {
         ok =
-          groundAt(x, y) && !solid(x, y, 2) && !cityStreetAt(x, y, 4) && !onBeach(x, y) &&
+          groundAt(x, y) && !solid(x, y, 2) && !cityStreetAt(x, y, 4) && !monarchRoadAt(x, y, 4) && !onBeach(x, y) &&
           !inHarbor(x, y, 12) && !staticBodyAt(x, y, 2) && !onAirfieldPavement(x, y);
         bikePointCache.set(key, ok);
       }

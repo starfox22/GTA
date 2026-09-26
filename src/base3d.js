@@ -10,7 +10,7 @@
        * ammunition bunkers, comms mast, radome and radar, water tower, range,
        * obstacle course, parade ground and flags, sandbag nests, camouflage nets,
        * containers, generators, floodlights and CCTV; military vehicle models
-       * (`makeMilitaryVehicle`) and soldier kit (`dressSoldier`, `poseSoldier`).
+       * (`makeMilitaryVehicle`); soldiers are dressed by the character rig (crowd3d.js OUTFITS).
        *
        * Static pieces go into one batched group (merged per material and cell).
        * Anything that moves is under a group flagged `userData.dynamic`. Night
@@ -2033,50 +2033,5 @@
         mergeUnder(model.turret, new Set([model.barrel]));
         mergeUnder(model.barrel);
         return model;
-      }
-      /* ---- Soldiers ---------------------------------------------------------------------- */
-      const soldierKit = {
-        helmet: mat('#4b5539', 0.85),
-        vest: mat('#56603f', 0.9),
-        pouch: mat('#434b32', 0.9),
-        rifle: mat('#26292b', 0.55, 0.4),
-        band: mat('#e9e6dc', 0.7),
-      };
-      function dressSoldier(person, model) {
-        const group = model.group;
-        mesh(sphereGeo, soldierKit.helmet, group, 0.1, 16.9, 0, 2.45, 1.75, 2.5);
-        box(group, 0.1, 16.1, 0, 5.4, 0.35, 5.4, soldierKit.helmet);
-        if (person.role === 'gate') box(group, 0.1, 16.9, 0, 4.9, 0.8, 5.1, soldierKit.band);
-        box(group, 0.2, 10.4, 0, 5.4, 5.6, 7.2, soldierKit.vest);
-        for (const z of [-2, 0, 2]) box(group, 2.8, 9.5, z, 0.9, 1.8, 1.5, soldierKit.pouch);
-        box(group, -2.9, 10.8, 0, 1, 3.6, 3.6, soldierKit.pouch);
-        // Swap the pistol for a carbine.
-        const gun = model.parts.guns[0];
-        for (const c of [...gun.children]) gun.remove(c);
-        box(gun, 3.5, 0, 0, 8, 1.3, 1.1, soldierKit.rifle);
-        box(gun, -1.5, -0.4, 0, 4, 1.8, 1.2, soldierKit.rifle);
-        box(gun, 4.5, -1.8, 0, 1.2, 3, 1, soldierKit.rifle);
-        box(gun, 3.5, 1.2, 0, 3, 0.8, 0.8, soldierKit.rifle);
-        const barrel = mesh(cylinderGeo, soldierKit.rifle, gun, 9.5, 0, 0, 0.3, 5, 0.3);
-        barrel.rotation.z = Math.PI / 2;
-        gun.visible = true;
-        mergeUnder(group, new Set([model.parts.leg1, model.parts['leg-1'], model.parts.arm1, model.parts['arm-1'], gun, model.torso]));
-      }
-      // Rifle at the ready when aiming or challenging, carried across the chest otherwise.
-      function poseSoldier(p, model, incapacitated) {
-        const gun = model.parts.guns[0];
-        gun.visible = p.hp > 0 && !incapacitated;
-        if (incapacitated || p.hp <= 0) return;
-        if (p.aiming || p.aimingOnly) {
-          gun.position.set(5, 10, 3.8);
-          gun.rotation.set(0, 0, 0);
-          model.parts.arm1.rotation.z = 1.12;
-          model.parts['arm-1'].rotation.z = 0.9;
-        } else {
-          gun.position.set(3.6, 10.5, 0.8);
-          gun.rotation.set(0, -0.9, 0.75);
-          model.parts.arm1.rotation.z = 0.6;
-          model.parts['arm-1'].rotation.z = 0.75;
-        }
       }
       // END SUBSYSTEM: src/base3d.js

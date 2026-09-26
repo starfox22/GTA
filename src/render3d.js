@@ -108,7 +108,6 @@
       const allBuildings = [],
         statics = [],
         carModels = new Map(),
-        personModels = new Map(),
         pickupModels = new Map(),
         fx = [];
       const boxGeo = new Three.BoxGeometry(1, 1, 1),
@@ -1179,11 +1178,18 @@
       // @include src/boats3d.js
       // @include src/drawbridge3d.js
       // @include src/bridges3d.js
+      // @include src/monarch-bridges3d.js
       // @include src/harbor3d.js
       // @include src/marina3d.js
+      // @include src/monarch3d.js
+      // @include src/monarch-villas3d.js
+      // @include src/monarch-marina3d.js
+      // @include src/monarch-garden3d.js
+      // @include src/monarch-streets3d.js
       // @include src/beachclub3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
+      // @include src/character-rig3d.js
       // @include src/crowd3d.js
       // @include src/clouds3d.js
       // @include src/surfaces3d.js
@@ -1193,6 +1199,7 @@
       // @include src/police3d.js
       // @include src/cars3d.js
       // @include src/motorbikes3d.js
+      // @include src/offroad3d.js
       // @include src/plane3d.js
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
@@ -1286,6 +1293,8 @@
         if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
         if (vehicle.type === 'plane') return makePlane(vehicle);
         if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
+        // The 4x4 club's trucks (offroad3d.js).
+        if (vehicleSpec(vehicle).clubModel) return makeOffroadVehicle(vehicle);
         if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
         if (vehicle.type === 'helicopter') return vehicle.airframe === 'apache' ? makeApache(vehicle) : makeHelicopter(vehicle);
         // Motorbikes at real size (motorbikes3d.js).
@@ -1549,204 +1558,8 @@
        * night (settings.js `playerOutlineOn`, saved with the other settings)
        * switches it off.
        */
-      const playerRim = { value: new Three.Color(0, 0, 0) },
-        PLAYER_RIM_NIGHT = new Three.Color('#6d80a6');
-      function playerRimMaterial(material) {
-        material.onBeforeCompile = (shader) => {
-          cityMaterialPatch(shader);
-          shader.uniforms.cityPlayerRim = playerRim;
-          shader.fragmentShader = shader.fragmentShader
-            .replace('#include <common>', '#include <common>\nuniform vec3 cityPlayerRim;')
-            .replace(
-              '#include <lights_fragment_end>',
-              `#include <lights_fragment_end>
-              {
-                float rimView = 1.0 - clamp( dot( normal, geometryViewDir ), 0.0, 1.0 );
-                totalEmissiveRadiance += cityPlayerRim * rimView * rimView * rimView;
-              }`,
-            );
-        };
-        material.customProgramCacheKey = () => 'player-rim';
-      }
-      /* A body thrown off a bike (riders.js): somersaulting about its hips along
-         the flight (`pitch`; forward is negative about the model's lateral axis),
-         `z` the hips' height above the road; lying flat once down. */
-      function poseThrownBody(m, p, t) {
-        const hips = 8.5,
-          along = -hips * Math.sin(t.pitch);
-        m.group.position.set(
-          p.x + Math.cos(t.heading) * along,
-          entityElevation(p) + t.z - hips * Math.cos(t.pitch) + 2,
-          p.y + Math.sin(t.heading) * along,
-        );
-        m.group.rotation.set(0, -t.heading, -t.pitch);
-        const flying = t.phase === 'air' ? 1 : 0;
-        m.parts.arm1.rotation.z = 2.3 - flying * 0.5;
-        m.parts['arm-1'].rotation.z = 1.9 + flying * 0.4;
-        m.parts.leg1.rotation.z = 0.35 + flying * 0.4;
-        m.parts['leg-1'].rotation.z = -0.25 - flying * 0.3;
-        m.parts.guns.forEach((g) => (g.visible = false));
-      }
-      /* 0 at a walk .. 1 at the full run (game.js FOOT_WALK / FOOT_RUN), from how
-         fast the player's model has actually been moving. */
-      function playerRunAmount(m, p, deltaSeconds) {
-        const moved = Math.hypot(p.x - (m.lastX ?? p.x), p.y - (m.lastY ?? p.y));
-        m.lastX = p.x;
-        m.lastY = p.y;
-        if (moved > 40) m.pace = 0;
-        else if (deltaSeconds > 0)
-          m.pace = (m.pace || 0) + (moved / deltaSeconds - (m.pace || 0)) * (1 - Math.exp(-deltaSeconds * 8));
-        return clamp(((m.pace || 0) - FOOT_WALK * 1.3) / (FOOT_RUN * 0.85 - FOOT_WALK * 1.3), 0, 1);
-      }
-      function makePerson(person, isPlayer) {
-        const group = new Three.Group();
-        scene.add(group);
-        // Built 17.4 units to the crown like every rig; drawn at 1.75 m (PERSON_SCALE),
-        // give or take 6% (the crowd's own looks vary their height the same way).
-        if (!isPlayer && person.stature === undefined) person.stature = 0.94 + Math.random() * 0.12;
-        group.scale.setScalar(PERSON_SCALE * (isPlayer ? 1 : person.stature));
-        const skin = mat(isPlayer ? '#bb9475' : '#af8b72'),
-          cloth = mat(isPlayer ? '#353d4a' : person.color || '#6b5965'),
-          pants = mat(isPlayer ? '#536273' : '#343b44'),
-          shoe = mat('#18191c'),
-          parts = {};
-        const torso = box(group, 0, 10, 0, 4.5, 6, 6.5, cloth);
-        box(group, -0.5, 10, -3.35, 1.5, 5, 0.25, mat('#171c24'));
-        const head = mesh(sphereGeo, skin, group, 0, 15.3, 0, 2, 2.5, 2.1);
-        mesh(sphereGeo, mat('#302923'), group, -0.5, 16.5, 0, 1.9, 1.6, 2.13);
-        for (const side of [-1, 1]) {
-          const leg = new Three.Group();
-          leg.position.set(0, 7, side * 1.8);
-          group.add(leg);
-          box(leg, 0, -2.8, 0, 2, 5.5, 2.5, pants);
-          box(leg, 1, -5.3, 0, 3.8, 1.3, 2.6, shoe);
-          parts['leg' + side] = leg;
-          const arm = new Three.Group();
-          arm.position.set(0, 12, side * 4);
-          group.add(arm);
-          box(arm, 0.3, -2, 0, 1.8, 4.8, 1.8, cloth);
-          mesh(sphereGeo, skin, arm, 0.6, -4.3, 0, 1, 1.2, 1);
-          parts['arm' + side] = arm;
-        }
-        // Body, clothes and hair (not the guns) carry the player's faint night rim.
-        if (isPlayer) group.traverse((o) => o.material?.isMeshStandardMaterial && playerRimMaterial(o.material));
-        const guns = [];
-        for (let slot = 0; slot < (isPlayer ? 7 : 1); slot++) {
-          const gun = new Three.Group();
-          gun.position.set(5, 10, 3.8);
-          group.add(gun);
-          guns.push(gun);
-          gun.visible =
-            isPlayer || enemies.includes(person) || gangMembers.includes(person) || !!person.police;
-          if (slot === KNIFE_INDEX) {
-            box(gun, 0.5, 0, 0, 2.8, 0.9, 0.8, rubber);
-            box(gun, 2, 0, 0, 0.35, 1.7, 1.3, darkMetal);
-            box(gun, 4, 0, 0, 3.8, 0.22, 0.9, mat('#cbd6dd', 0.25, 0.8));
-          }
-          if (slot === 0 && !isPlayer && person.rifle) {
-            // SWAT and agents carry carbines (pursuit.js).
-            box(gun, 3, 0, 0, 7, 1.3, 1.1, darkMetal);
-            box(gun, -1.5, -0.4, 0, 3.5, 1.4, 1.1, rubber);
-            box(gun, 2.5, -1.8, 0, 1, 2.6, 0.9, darkMetal);
-            const barrel = mesh(cylinderGeo, darkMetal, gun, 8.5, 0, 0, 0.3, 5, 0.3);
-            barrel.rotation.z = Math.PI / 2;
-            // A rooftop marksman's rifle: a long barrel and a scope (swat.js).
-            if (person.unit === 'sniper') {
-              const long = mesh(cylinderGeo, darkMetal, gun, 13, 0, 0, 0.26, 7, 0.26);
-              long.rotation.z = Math.PI / 2;
-              const scope = mesh(cylinderGeo, darkMetal, gun, 3.5, 1.6, 0, 0.62, 5, 0.62);
-              scope.rotation.z = Math.PI / 2;
-            }
-          } else if (slot === 0) {
-            box(gun, 2, 0, 0, 4.5, 1.1, 0.9, darkMetal);
-            box(gun, 0.8, -1, 0, 1, 2, 0.8, rubber);
-          }
-          if (slot === 1) {
-            box(gun, 3, 0, 0, 5, 1.5, 1.1, darkMetal);
-            box(gun, 3, -2, 0, 0.8, 3, 1, darkMetal);
-            box(gun, -0.5, -0.5, 0, 2, 0.6, 1, rubber);
-            const barrel = mesh(cylinderGeo, darkMetal, gun, 7, 0, 0, 0.36, 3, 0.36);
-            barrel.rotation.z = Math.PI / 2;
-          }
-          if (slot === 2) {
-            const barrel = mesh(cylinderGeo, darkMetal, gun, 6, 0, 0, 0.32, 10, 0.32);
-            barrel.rotation.z = Math.PI / 2;
-            box(gun, 0, -0.4, 0, 4, 1, 1.1, wood);
-            box(gun, 5, -0.6, 0, 3, 1.1, 1.3, wood);
-          }
-          if (slot === 4 || slot === 5) {
-            box(gun, 3, 0, 0, 7, 1.4, 1.3, darkMetal);
-            box(gun, -2, -0.5, 0, 4, 1.6, 1.4, slot === 5 ? wood : rubber);
-            box(gun, 2, -2, 0, 1, 3, 1, darkMetal);
-            const barrel = mesh(cylinderGeo, darkMetal, gun, 10, 0, 0, 0.3, slot === 5 ? 11 : 7, 0.3);
-            barrel.rotation.z = Math.PI / 2;
-            if (slot === 5) {
-              const scope = mesh(cylinderGeo, darkMetal, gun, 3, 1.8, 0, 0.65, 5, 0.65);
-              scope.rotation.z = Math.PI / 2;
-            }
-          }
-          if (slot === 3) {
-            const tube = mesh(cylinderGeo, mat('#59644c', 0.65, 0.5), gun, 5, 0, 0, 1.2, 13, 1.2);
-            tube.rotation.z = Math.PI / 2;
-            const mouth = mesh(cylinderGeo, darkMetal, gun, 11.5, 0, 0, 1.5, 0.7, 1.5);
-            mouth.rotation.z = Math.PI / 2;
-            box(gun, 3, -1.9, 0, 0.8, 2, 1, darkMetal);
-            box(gun, 4, 1.6, 0, 2, 1, 0.6, darkMetal);
-          }
-        }
-        if (person.police && (person.unit === 'swat' || person.unit === 'sniper')) {
-          // Helmet, plate carrier with a pale POLICE panel.
-          mesh(sphereGeo, mat('#15191e', 0.5, 0.2), group, 0, 16.3, 0, 2.5, 2.1, 2.55);
-          box(group, 0.2, 10.3, 0, 5.2, 5.2, 7, mat('#23292f'));
-          box(group, -2.7, 11, 0, 0.2, 1.6, 4.6, mat('#c9d3da'));
-          box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
-          if (person.shield) {
-            // Ballistic shield carried on the left arm: black, a viewport, POLICE.
-            const shield = new Three.Group();
-            shield.position.set(5.6, 9.5, -1.6);
-            group.add(shield);
-            box(shield, 0, 0, 0, 0.9, 15, 8.5, mat('#161a20', 0.45, 0.3));
-            box(shield, 0.5, 4.6, 0, 0.3, 2.2, 4.6, mat('#3d5566', 0.1, 0.6));
-            plate(shield, 0.5, -1.5, 0, 7, 1.8, plateMaterial('POLICE', { bg: '#161a20', fg: '#f2f2ea', w: 256, h: 64 }), Math.PI / 2);
-            parts.shield = shield;
-          }
-        } else if (person.police && person.unit === 'soldier') {
-          // Army: olive helmet and plate carrier.
-          mesh(sphereGeo, mat('#4b5635', 0.8, 0.1), group, 0, 16.3, 0, 2.55, 2.1, 2.6);
-          box(group, 0.2, 10.3, 0, 5.2, 5.2, 7, mat('#56603f'));
-          box(group, 0, 7.5, 0, 5, 1, 6.7, mat('#3a4130'));
-        } else if (person.police && person.unit === 'fed') {
-          // Windbreaker with the yellow back panel.
-          box(group, -2.35, 11, 0, 0.25, 2, 4.8, mat('#d9b93c'));
-          box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
-        } else if (person.police) {
-          mesh(wheelGeo, mat('#20354b'), group, 0, 17.7, 0, 2.5, 1, 2.5);
-          box(group, 1.5, 17.4, 0, 3, 0.4, 4, mat('#162332'));
-          box(group, 2.35, 11.5, -1.5, 0.3, 1.8, 1.4, mat('#c7b57a'));
-          box(group, 0, 7.5, 0, 5, 1, 6.7, darkMetal);
-        }
-        if (person.boss || person.guest) {
-          const cup = new Three.Group();
-          parts.arm1.add(cup);
-          cup.position.set(0.6, -4.3, 0);
-          mesh(cylinderGeo, glass, cup, 0, -1, 0, 1.6, 3, 1.6);
-          mesh(cylinderGeo, mat('#8d2942'), cup, 0, -1.2, 0, 1.3, 1.7, 1.3);
-          cup.visible = false;
-          parts.cup = cup;
-        }
-        parts.guns = guns;
-        const model = {
-          group,
-          parts,
-          torso,
-          isPlayer,
-          cloth,
-          pants,
-        };
-        // Fort Sentinel soldiers: helmet, plate carrier, carbine (base3d.js).
-        if (person.military) dressSoldier(person, model);
-        return model;
-      }
+      // The rim itself is in the rig's paint shader (character-rig3d.js `playerRim`).
+      const PLAYER_RIM_NIGHT = new Three.Color('#6d80a6');
       // @include src/parachute3d.js
       const playerRing = new Three.Mesh(
         new Three.RingGeometry(10, 11.2, 36),
@@ -2093,6 +1906,8 @@
       const api = {
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
+        // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
+        offroadInfo: () => offroadEffectsInfo(),
         /**
          * Settings contract: the see-through hole round the player under a roof
          * (lighting3d.js, CUTAWAY). On by default; read at start-up from
@@ -2151,7 +1966,6 @@
             sphere = new Three.Sphere(),
             roles = new Map();
           for (const m of carModels.values()) roles.set(m.group, 'vehicle');
-          for (const m of personModels.values()) roles.set(m.group || m, 'person');
           let total = 0;
           const visit = (o) => {
             if (!o.visible || !o.layers.test(camera.layers)) return;
@@ -2317,7 +2131,9 @@
           const box = new Three.Box3(),
             part = new Three.Box3();
           return entities.map((e) => {
-            const m = carModels.get(e) || personModels.get(e);
+            const person = personExtents(e);
+            if (person) return person;
+            const m = carModels.get(e);
             if (!m?.group) return null;
             const g = m.group,
               rotation = g.rotation.clone(),
@@ -2340,8 +2156,13 @@
             return { l: box.max.x - box.min.x, w: box.max.z - box.min.z, h: box.max.y - box.min.y };
           });
         },
-        // The crowd rig's standing height at look.height 1 (crowd3d.js), in map units.
+        // The character rig's standing height at look.height 1 (crowd3d.js), in map units.
         crowdRigHeight: () => crowdRigHeight(),
+        // People's share of the frame (crowd3d.js): parts, draw calls, triangles.
+        crowdStats: (byPart) => crowdStats(byPart),
+        crowdBenchmark: (frames) => crowdBenchmark(frames),
+        // A person's drawn height from the soles to the crown (their compiled look), in map units.
+        personStature: (p) => personStature(p),
         // Switch graphics quality tier (quality.js) at runtime.
         setQuality(tier) {
           applyRendererQuality(tier);
@@ -2376,6 +2197,12 @@
             behind: v.z > 1,
           };
         },
+        // Inspection only: turn the street camera to a bearing and pitch (degrees),
+        // aimed `lift` units above the ground; no arguments restores it.
+        inspectView(yaw, pitch, lift = 0) {
+          inspectAngles = yaw == null ? null : { yaw: (yaw * Math.PI) / 180, pitch: (pitch * Math.PI) / 180, lift };
+          return inspectAngles;
+        },
         // The street zoom as a height above the ground in world units (flight-view3d.js).
         zoomHeight: (zoom) => streetZoomHeight(zoom),
         aim(mx, my) {
@@ -2383,8 +2210,8 @@
             new Three.Vector2((mx / viewportWidth) * 2 - 1, (-my / viewportHeight) * 2 + 1),
             camera,
           );
-          // The gun's height in the hand (makePerson's y 10, drawn at PERSON_SCALE).
-          groundPlane.constant = -10 * PERSON_SCALE - entityElevation(player);
+          // The gun's height in the hand (crowd3d.js HOLDS: about shoulder height).
+          groundPlane.constant = -0.8 * PERSON_HEIGHT - entityElevation(player);
           if (ray.ray.intersectPlane(groundPlane, hitPoint))
             return Math.atan2(hitPoint.z - player.y, hitPoint.x - player.x);
           return player.a;
@@ -2569,6 +2396,7 @@
           updateCountyVisuals();
           updateHarborVisuals();
           updateMarinaVisuals(deltaSeconds);
+          updateMonarchVisuals();
           updateMissionVisuals();
           lap = profileLap('r:scenery', lap);
           placeSun();
@@ -2601,17 +2429,16 @@
           // (lighting3d.js, CUTAWAY).
           updateCutaway(altitude);
           lap = profileLap('r:lod', lap);
-          // Pedestrians are drawn by the instanced crowd (src/crowd3d.js), poses and
-          // all; guards, gangs, officers, story actors and the player keep
-          // individual models for their weapons and uniforms.
+          // Everyone on foot is drawn by the instanced character rig (crowd3d.js,
+          // character-rig3d.js): pedestrians, and guards, gangs, officers, story
+          // actors and the player in their outfits with what they hold.
           const people = renderPeople;
           people.length = 0;
           for (const list of [enemies, gangMembers, officers, storyActors]) for (let i = 0; i < list.length; i++) people.push(list[i]);
           people.push(player);
-          updateCrowd3D(deltaSeconds);
+          updateCrowd3D(deltaSeconds, people);
           lap = profileLap('r:crowd', lap);
           pruneModels(carModels, vehicles);
-          pruneModels(personModels, people);
           pruneModels(pickupModels, pickups);
           newModelsThisFrame = 0;
           beginVehicleImpostors();
@@ -2742,6 +2569,8 @@
                 if (m.bikeUpdate) m.bikeUpdate(c, deltaSeconds);
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
+              // The character rig draws the rider in their place (crowd3d.js RIDERS).
+              if (m.rider?.visible && (m.bike || m.jetski) && m.group.visible && queueRider(c, m)) m.rider.visible = false;
               if (m.boat) {
                 // Under a road bridge the hull slips below the deck (air-cover.js). It
                 // starts down as soon as the bow or stern is under the roadway and eases
@@ -2793,6 +2622,9 @@
             }
             // Flash patterns, wig-wag, halos (police3d.js).
             if (m.police) animatePoliceVehicle(c, m);
+            // Club trucks: wheel spin, steering, articulation, light bars; mud on any body (offroad3d.js).
+            if (m.offroad) animateOffroadVehicle(c, m, deltaSeconds);
+            else if (c.mudCoat > 0.01 || m.mudUniforms) applyVehicleMud(c, m);
             for (let i = 0; i < m.strobes.length; i++)
               m.strobes[i].material.color.copy(
                 cachedColor(
@@ -2808,9 +2640,13 @@
             vehicleEffects(c, m, deltaSeconds);
           }
           endVehicleImpostors();
+          // Riders on the vehicles just posed, then the people's instance upload (crowd3d.js).
+          finishCrowd3D(deltaSeconds);
           lap = profileLap('r:vehicles', lap);
           // Every craft on the water has reported in: draw the wake map (wakes3d.js).
           updateWakes(deltaSeconds);
+          // Mud and dust from the tyres, splats and tyre tracks, the 4x4 club's flag and smoke (offroad3d.js).
+          updateOffroadVisuals(deltaSeconds);
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;
@@ -2820,221 +2656,6 @@
           updateDamageVisuals(deltaSeconds);
           lap = profileLap('r:damage', lap);
           updateSniperSights();
-          for (const p of people) {
-            const activePlayer = p === player;
-            let m = personModels.get(p);
-            const near =
-              activePlayer ||
-              ((flightViewActive ? viewZoom > PEOPLE_ZOOM : worldZoom > 0.22) && entityInView(p, 35));
-            // Zoomed out, plain standing/walking figures are instanced (flight-view3d.js).
-            if (near && !activePlayer && personImpostor(p)) {
-              if (m) m.group.visible = false;
-              continue;
-            }
-            if (!m && !near) continue;
-            if (!m) {
-              if (newModelsThisFrame >= NEW_MODELS_PER_FRAME + 4 && !activePlayer) continue;
-              newModelsThisFrame++;
-              m = makePerson(p, activePlayer);
-              personModels.set(p, m);
-              // Only torso-sized parts cast into the shadow map (lighting3d.js).
-              trimShadowCasters(m.group, 3.5 * PERSON_SCALE);
-            }
-            m.group.visible = near && !(activePlayer && (player.car || transitRide || taxiRide));
-            if (p.hidden) m.group.visible = false;
-            if (!m.group.visible) continue;
-            // Wounds (wounds.js): the dead fall over half a second, backwards, face
-            // down or spun, or sit slumped against a wall; a downed officer lies
-            // prone and crawls; a fresh hit tilts the body away from the round.
-            const death = p.hp <= 0 ? p.deathStyle : null,
-              downed = p.hp > 0 && !!p.downed,
-              slump = !!death?.slump,
-              fallen = slump ? 0 : p.hp <= 0 ? personFallAmount(p) : downed ? 1 : (p.poisonCollapse ?? personFallAmount(p)),
-              fallSign = death ? death.sign : downed ? -1 : 1,
-              flinch = hitFlinch(p),
-              flinchAlong = flinch ? Math.cos(normalizeAngle((p.hitDir || 0) - (p.a || 0))) : 0,
-              incapacitated = personIncapacitated(p) || downed;
-            m.group.position.set(
-              p.x,
-              entityElevation(p) + (fallen * 1.5 - (slump ? 4.5 : 0) - (p.hitZone === 'leg' ? flinch * 1.5 : 0)) * PERSON_SCALE,
-              p.y,
-            );
-            m.group.rotation.set(
-              p.ejected ? p.ejectRoll || 0 : 0,
-              -(activePlayer && (mouse.active || touchAim !== null) ? aim() : p.a) - (death?.turn || 0) * fallen,
-              (fallSign * fallen * Math.PI) / 2 +
-                (slump ? 0.5 : 0) -
-                flinchAlong * 0.35 * flinch +
-                (p.hp > 0 && p.dazedFor > 0 ? Math.sin(gameTime * 8) * 0.055 : 0),
-            );
-            // The player's legs swing wider at a run than at a walk; the pace is
-            // measured from the model's own travel, so every footing agrees.
-            const playerRun = activePlayer ? playerRunAmount(m, p, deltaSeconds) : 0,
-              step =
-                p.hp > 0 && !incapacitated && p.walking !== false
-                  ? Math.sin(p.walk || 0) * (activePlayer ? 0.4 + 0.42 * playerRun : 0.5)
-                  : 0;
-            m.torso.rotation.z = 0;
-            m.parts.leg1.rotation.z = step;
-            m.parts['leg-1'].rotation.z = -step;
-            m.parts.arm1.rotation.z = -step * 0.5;
-            m.parts['arm-1'].rotation.z = step * 0.5;
-            if (p.faction && !incapacitated) {
-              m.parts.guns[0].visible = p.hp > 0 && !!p.aiming;
-              m.parts.arm1.rotation.z = p.aiming ? 1.12 : -step * 0.5;
-              m.parts['arm-1'].rotation.z = p.aiming ? 0.9 : step * 0.5;
-            }
-            if (p.military) poseSoldier(p, m, incapacitated);
-            if (p.police && !incapacitated) {
-              m.parts.guns[0].visible = p.hp > 0;
-              const aiming = p.state === 'aim' || p.state === 'suppress';
-              m.parts.arm1.rotation.z = aiming ? 1.12 : 0.3;
-              m.parts['arm-1'].rotation.z = aiming ? 0.9 : -step * 0.5;
-            }
-            if (downed) {
-              // Hauling along on the elbows, weapon dropped.
-              const c = Math.sin((p.walk || 0) * 0.8);
-              m.parts.guns[0].visible = false;
-              m.parts.arm1.rotation.z = 2.5 + c * 0.45;
-              m.parts['arm-1'].rotation.z = 2.5 - c * 0.45;
-              m.parts.leg1.rotation.z = Math.max(0, c) * 0.4;
-              m.parts['leg-1'].rotation.z = 0;
-            } else if (slump) {
-              m.parts.leg1.rotation.z = 1.45;
-              m.parts['leg-1'].rotation.z = 1.3;
-              m.parts.arm1.rotation.z = 0.15;
-              m.parts['arm-1'].rotation.z = 0.35;
-            } else if (p.hp <= 0 && fallSign < 0) {
-              m.parts.arm1.rotation.z = 2.4;
-              m.parts['arm-1'].rotation.z = 1.7;
-            } else if (p.limping && p.hp > 0) {
-              // Favour one leg: a short stride on it.
-              m.parts['leg-1'].rotation.z *= 0.35;
-            }
-            if (m.parts.cup) m.parts.cup.visible = !!p.drinking && p.hp > 0;
-            if (p.hp > 0 && p.dancing) {
-              const beat = gameTime * 4 + p.phase;
-              m.group.rotation.z = Math.sin(beat) * 0.07;
-              m.parts.arm1.rotation.z = 0.7 + Math.sin(beat) * 0.5;
-              m.parts['arm-1'].rotation.z = 0.7 - Math.sin(beat) * 0.5;
-              m.parts.leg1.rotation.z = Math.sin(beat) * 0.22;
-              m.parts['leg-1'].rotation.z = -Math.sin(beat) * 0.22;
-            }
-            if (p.recoiling && p.hp > 0) {
-              m.parts.arm1.rotation.z = 1.2;
-              m.parts['arm-1'].rotation.z = 1.1;
-            }
-            if (p.illness && p.hp > 0) {
-              m.group.rotation.z = -p.illness * 0.24 + Math.sin(gameTime * 8) * 0.025;
-              m.torso.rotation.z = -p.illness * 0.2;
-              m.parts.arm1.rotation.z = 0.85;
-              m.parts['arm-1'].rotation.z = 0.5;
-            }
-            if (p.poisonCollapse !== undefined) {
-              m.group.rotation.z = ((p.hp <= 0 ? 1 : p.poisonCollapse) * Math.PI) / 2;
-              m.parts.leg1.rotation.z = 0.4 * (1 - p.poisonCollapse);
-              m.parts['leg-1'].rotation.z = 0.2 * (1 - p.poisonCollapse);
-              m.parts.arm1.rotation.z = 0.8 * (1 - p.poisonCollapse);
-              m.parts['arm-1'].rotation.z = 0.3;
-            }
-            if (incapacitated) m.parts.guns.forEach((g) => (g.visible = false));
-            if (p.drinking && p.hp > 0 && !incapacitated) {
-              m.parts.arm1.rotation.z = 1.5 + Math.sin(gameTime * 3) * 0.15;
-            }
-            // Thrown off a bike (riders.js): the player, or traffic's rider.
-            const thrown = activePlayer ? player.thrown : p.ejected?.rider ? p.ejected : null;
-            if (thrown) poseThrownBody(m, p, thrown);
-            if (activePlayer && player.tumble) {
-              m.group.rotation.z = Math.PI / 2;
-              m.group.rotation.x = player.tumbleRoll || 0;
-              m.group.position.y += 4;
-              m.parts.arm1.rotation.z = 2.1;
-              m.parts['arm-1'].rotation.z = 1.7;
-              m.parts.leg1.rotation.z = -0.7;
-              m.parts['leg-1'].rotation.z = -0.4;
-            }
-            if (activePlayer) {
-              if (player.parachute) {
-                m.parts.arm1.rotation.z = 2.6;
-                m.parts['arm-1'].rotation.z = 2.6;
-                m.parts.leg1.rotation.z = 0.25;
-                m.parts['leg-1'].rotation.z = -0.25;
-              }
-              m.cloth.color.set(player.disguised ? '#e3dac0' : '#272d36');
-              m.pants.color.set(player.disguised ? '#252a33' : '#536273');
-              const holstered = !!rooftopJob() && player.disguised && !rooftopJob().weaponDrawn;
-              const recoil = Math.max(0, ((player.recoilUntil || 0) - gameTime) / 0.12);
-              // Leaning into the run.
-              m.torso.rotation.z = -recoil * 0.12 - playerRun * 0.14;
-              m.parts.guns.forEach((gun, i) => {
-                gun.visible = i === selectedWeaponIndex && !holstered && !player.parachute;
-                gun.position.x = 5 - recoil * 1.8;
-                gun.rotation.z = -recoil * 0.08;
-              });
-              const knifeSwing =
-                selectedWeaponIndex === KNIFE_INDEX
-                  ? Math.max(0, ((player.knifeSwingUntil || 0) - gameTime) / 0.28)
-                  : 0;
-              const knifeModel = m.parts.guns[KNIFE_INDEX];
-              knifeModel.rotation.y = Math.sin(knifeSwing * Math.PI) * 1.3;
-              knifeModel.position.x += Math.sin(knifeSwing * Math.PI) * 3;
-              m.parts.arm1.rotation.z = holstered
-                ? -step * 0.5
-                : 1.12 + Math.sin(knifeSwing * Math.PI) * 0.8;
-              m.parts['arm-1'].rotation.z = holstered
-                ? step * 0.5
-                : selectedWeaponIndex > 0
-                  ? 0.9
-                  : step * 0.5;
-              // Fists: arms swing loose while walking; for a few seconds after a
-              // punch they come up in a guard and the punching arm snaps out.
-              if (selectedWeaponIndex === FISTS_INDEX && !player.parachute) {
-                const guard = gameTime - (player.punchAt ?? -100) < 2.5,
-                  punch = Math.sin(clamp(1 - ((player.punchUntil || 0) - gameTime) / 0.26, 0, 1) * Math.PI) *
-                    ((player.punchUntil || 0) > gameTime ? 1 : 0),
-                  lead = player.punchHand === -1 ? 'arm-1' : 'arm1',
-                  rear = lead === 'arm1' ? 'arm-1' : 'arm1';
-                if (guard) {
-                  m.parts[lead].rotation.z = 0.85 + punch * 0.75;
-                  m.parts[rear].rotation.z = 0.85;
-                  m.torso.rotation.y = (lead === 'arm1' ? -1 : 1) * punch * 0.25;
-                } else {
-                  m.parts.arm1.rotation.z = -step * 0.5;
-                  m.parts['arm-1'].rotation.z = step * 0.5;
-                  m.torso.rotation.y = 0;
-                }
-              } else m.torso.rotation.y = 0;
-              if (player.parachute) {
-                m.parts.arm1.rotation.z = 2.6;
-                m.parts['arm-1'].rotation.z = 2.6;
-              }
-              /**
-               * FRONT CRAWL
-               * Swimming is a whole-body pose, so it is applied last and overrides
-               * everything the walk and the weapon set before it. The body lies
-               * prone along its heading and rolls with the stroke the way a
-               * swimmer's does; the arms windmill a half cycle apart, catching and
-               * recovering rather than swinging like a walk; the legs flutter at
-               * twice the arm rate; and the whole thing rides at the waterline.
-               */
-              if (player.swimming) {
-                const stroke = player.swimStroke || 0,
-                  roll = Math.sin(stroke) * 0.44;
-                m.group.rotation.set(roll, -player.a, -Math.PI / 2);
-                m.group.position.y = entityElevation(player) + 2.6 * PERSON_SCALE;
-                m.parts.arm1.rotation.z = stroke;
-                m.parts['arm-1'].rotation.z = stroke + Math.PI;
-                m.parts.leg1.rotation.z = Math.sin(stroke * 2) * 0.3;
-                m.parts['leg-1'].rotation.z = -Math.sin(stroke * 2) * 0.3;
-                m.torso.rotation.z = 0.14 + Math.sin(stroke * 2) * 0.06;
-                m.parts.guns.forEach((gun) => (gun.visible = false));
-              }
-              // Thrown off a bike: the whole-body pose again over the weapon's arms.
-              if (player.thrown) poseThrownBody(m, p, player.thrown);
-              // Freefall and canopy poses (parachute3d.js); resets the spread limbs after.
-              poseParachutist(m, deltaSeconds);
-            }
-          }
           // The parachute hangs from the harness point the person pass just posed.
           updateParachute3D(deltaSeconds);
           playerRing.visible =

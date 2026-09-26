@@ -76,6 +76,176 @@ calls +989 -> +462 (41 -> 19 a car), shadow draw calls +554 -> +72 (23 -> 3), tr
 +249k (3.4k -> 10.4k a car, shadow pass included). Per model (`carModels`): cars 19-23 draws,
 3 shadow casters, 6.6-9.6k triangles; motorbikes 11 draws.
 
+## Unreleased — Monarch Isle: a rich island district north of the mountains
+
+- **A new island** (monarch.js, monarch-life.js, monarch*3d.js; SOURCE_GUIDE section 4,
+  "Monarch Isle"): x 5460..10150, y -5272..-468, about 580 x 600 m, north of the Ridgeline
+  Range across the Regency Channel and east of North Point across Sovereign Sound.
+- **Blocks are strictly 100 m**: street centrelines 800 units apart both ways (columns 5600 to
+  9600, rows -4544 to -1344); two divided boulevards (Crown Avenue, Monarch Boulevard) with
+  lime medians, two roundabouts with fountains (Crown Circus, Harbour Circle), a waterfront
+  Marina Drive, street trees and triple lanterns down every pavement.
+- **Two new bridges**, both on the GPS, traffic and police road graphs: the SOVEREIGN BRIDGE
+  (North Point's Crown Ave to the island; a harp cable-stayed bridge with a pylon leaning 60
+  degrees back over the landing) and the REGENCY BRIDGE (Harbour Circle to the range's west
+  coast; three white bowstring arches), with Regency Road on to Eagle Pass.
+- **Fourteen villas** in nine styles behind walls, hedges and open gates with guards, drives
+  with two luxury cars each, pools, terraces and tennis courts; five on Monarch Beach with
+  their own strands of loungers and parasols, three on the east cliffs.
+- **Two supertall towers**: THE SOVEREIGN (57 storeys, ~186 m, bronze fins, a lit lantern and
+  spire) and MONARCH ONE (48 storeys, twisting, balcony bands, LED crown, rooftop helipad with a
+  helicopter), on plazas with lawns, plane trees, reflecting pools and bronze sculptures.
+- **27 businesses** with their own signs: fashion, jewellery, watches, a tailor, a florist, a
+  private bank, a gourmet grocer, CAFÉ ROYALE, a wine bar, a gallery, a private clinic and spa,
+  L'ÉTOILE, THE REGENT HOTEL, a supercar showroom with a premium fuel station, a country club
+  with courts, pool and putting green, an academy and chapel, a police substation and the
+  harbourfront (oyster bar, gelateria, yacht broker, chandlery, champagne bar, boutique).
+- **Monarch Harbour**: seven pontoons of berthed yachts, three superyachts at the mole, a fuel
+  pontoon, yacht club, harbour master's tower and lighthouse; boats come and go in the basin.
+- **Royal Botanic Garden**: a Kew-style Palm House (translucent glass, palms, banana and tree
+  ferns inside, warm glow at night), giant water lilies, parterres, cacti, dragon blood trees,
+  bird of paradise, bamboo, topiary, bougainvillea arches, flowering cherries; visitors taking
+  photos.
+- **Life**: island traffic on its own lane graph (junction boxes, anticlockwise roundabouts,
+  hand-over with city traffic on the Sovereign Bridge), well-dressed walkers who cross at the
+  zebras and look both ways, joggers, dog walkers, doormen, valets and guards, two payphones,
+  bike-share stations, fountains, rigging, gulls and garden birds.
+- **Night light**: the island has its own lamp light map beside the city's (lighting3d.js).
+- Console: `DeadEndCity.monarch()` (plan, traffic, walkers, walk-graph audit).
+
+## Unreleased — one character rig for everyone: the player, police, NPCs
+
+Characters (character-rig3d.js new, crowd3d.js rewritten; render3d.js, beach3d.js, sports3d.js,
+base3d.js, parachute3d.js, flight-view3d.js, lighting3d.js)
+- **One modern rig for everyone on foot.** The player, patrol and traffic officers, SWAT,
+  agents, soldiers (in pursuit and at Fort Sentinel), gangs, mobsters, party guests, mission
+  characters, pedestrians, beachgoers, footballers, basketball players, referees, stewards
+  and riders are all drawn from one set of sculpted instanced parts. The old boxy per-person
+  models (the player's was the oldest code in the game, ~20 meshes each), the beach's box
+  figures and the athletes' box models are gone.
+- **Real proportions at real size**: modelled at `PERSON_HEIGHT` (1.75 m, 14 units), about 7.5
+  heads tall (crown 14, chin 12.2, shoulders 11.3, hips 7.3, knees 4.0 units); male and
+  female bodies; adults 1.6-1.9 m, the player 1.80 m, basketball players ~1.95 m. The rig is
+  never scaled again (`PERSON_SCALE` only converts old offsets).
+- **Smooth low-poly forms** lofted from rings: a head with jaw, ears, nose and a face hint
+  (eyes, brows, lips, stubble or beard), seven hair styles, cap / patrol cap / helmet / sun
+  hat / hard hat, neck and trapezius, chest, waist, hips, deltoids, elbows, hands with a
+  thumb, knees, calves, shoes and boots. A close-up set and a street set (about a quarter of
+  the facets) are built; one is drawn per frame.
+- **Clothing through paint, not draw calls**: each instance carries four packed colours and
+  a region mask, so one torso is a tee, V-neck, tank, crop top, bikini, one-piece, open
+  jacket over a tee, suit and tie, police shirt with badge, hoodie or dress; procedural
+  camouflage, denim, check, floral and Breton patterns, leather and satin sheen, club kits
+  (stripes, hoops, halves, sash). Beachwear on the beach and in the resort districts, suits
+  downtown, hi-vis on workers.
+- **The player**: dark leather jacket with HUD-gold shoulder yokes over a white tee, dark
+  denim, brown boots, a short dark crop and stubble; readable from above in a crowd; the
+  night rim now lives in the rig's shader. The rooftop disguise is a cream suit.
+- **Police**: LAPD-style navy uniforms with badge, duty belt (holster, pouches, radio, cuffs),
+  shoulder radio, patrol cap on some; traffic officers in a hi-vis vest and white cap; SWAT in
+  black with helmet, plate carrier, gloves, knee pads and POLICE across the upper back; agents
+  in dark suits with FED on the back; soldiers in woodland camouflage with helmet, plate
+  carrier and gloves (military police with a white helmet band).
+- **Weapons held properly** by two-bone IK: pistol two-hand isosceles grip, rifles and the
+  shotgun shouldered with the support hand on the handguard, the SMG at the chest, the rocket
+  tube on the shoulder, a low-ready pistol, a rifle carried across the chest, the knife
+  slash, the fist guard and punch, the SWAT shield; recoil kicks, the reload drops the
+  magazine hand; the player carries a pistol or SMG at the side until firing.
+- **Animation**: a planted-foot gait (each foot is fixed on the ground for its stance and
+  swung forward in an arc, hip and knee by IK), heel strike and toe-off, the pelvis rising
+  over the planted leg, arms against the legs, a forward lean and a flight phase at the run,
+  strafing and backpedalling (hips follow the travel, the upper body the aim), stepping round
+  on the spot when turning, breathing and weight shifts; car get-in and get-out, the Marea
+  pool dive and climb-out, front crawl, breaststroke, treading water and floating, freefall
+  and canopy under the parachute, the tumble; riders sit on bicycles, share bikes,
+  motorbikes and jet skis with hands on the grips and feet on the turning pedals; beach
+  poses (sunbathing on the back or front, sitting, reclining, kids digging, wading) and the
+  volleyball and match-day touches (kicks, saves, dribbles, jump shots, rebounds, the
+  assistant's flag).
+- **Size parity**: the see-through hole round the player follows `PERSON_HEIGHT`; the gun's
+  aiming plane is at shoulder height; the parachute pack and harness sit on the new body.
+- **Performance**: everyone costs one instanced draw per part in use (about 30 camera calls
+  and 12 shadow calls for all the people in view), fewer than before once officers, gangs,
+  guards, athletes or beachgoers are on screen (each old figure was a dozen or more draws;
+  22 footballers alone were hundreds). Far away, anyone just standing or walking is a
+  three-instance figure. Anyone lying or sitting still (sunbathers, bodies) is recorded once
+  settled and copied back each frame instead of re-solving the skeleton, and packing
+  allocates nothing per person.
+- Measured headless (SwiftShader, HIGH, 13:00, zoom 1; before = the lead branch): downtown
+  251 / 341 camera / shadow calls before, 244 / 336 after (people: 28 + 12); the beach 221 /
+  246 before, 222 / 243 after; a 3-star pursuit 503 / 490 before with 7 officers, 561 / 434
+  after with 8 (people: 33 + 12, the rest is the chase). Packing everyone costs 0.6 ms
+  downtown and about 4 ms at the busiest beach (150 people, 3200 instances) on that throttled
+  machine (`crowdBenchmark`).
+- Console: `characterLineup(stance, spacing)`, `inspectView(yaw, pitch, lift)`,
+  `crowdStats(byPart)`, `crowdBenchmark(frames)`; `closeUp` goes to 24; `scaleReport().crowd` reads the rig's statures.
+## Unreleased — the 4x4 club, trail mud and the hill climb
+
+World (offroad.js, offroad3d.js, terrain.js, county3d.js)
+- **RIDGELINE 4X4 CLUB**: a gravel lot cut level into the foot of Mount Ascent across Eagle Pass
+  from the trailhead (x 7410..7700, y 2034..2194; 3.75 m clear of the road, 7 m of the trail):
+  log rails, a carved 4X4 CLUB board on log posts with a rusted steel emblem and lamps, a pop-up
+  canopy with a table and a lantern, camp chairs round a fire ring, a cooler, a kettle grill that
+  smokes, the club flag flying, string lights and lanterns after dark. Seven members stand about,
+  grill, sit by the fire and talk shop ("Aired down to 15 psi!", "Lockers engaged?", "Last one to
+  the summit buys the beers.", rain, night and theft lines, remarks on a muddy truck or a road car).
+- **Seven club trucks** at real size (modelScale 1), each its own lofted body, livery and kit:
+  | Truck | Size (m) | Mass | Top / 0-100 | Tyres, drive | Kit |
+  | --- | --- | --- | --- | --- | --- |
+  | ROVER SERIES III SAFARI | 4.45 x 1.68 | 1.75 t | 110 / 0-80 in 19 s | MT, 4x4, low range | safari double roof, alpine lights, bonnet spare, rack and jerry cans, rear ladder, zebra livery |
+  | BADGER RUBICON CRAWLER | 4.33 x 2.00 | 2.1 t | 150 / 10.8 s | 37" MT on beadlocks, 4x4, lockers | no doors, sport cage and bikini top, seats, winch bumper, sliders, tube fenders, screen light bar |
+  | MUSTANG RIDGE BRONCO | 4.20 x 1.86 | 2.05 t | 155 / 9.8 s | AT with raised letters, 4x4 | teal and white two-tone, chrome bumpers, swing-away spare, rack |
+  | HIGHLANDER 70 EXPEDITION | 5.22 x 1.94 | 2.75 t | 150 / 15.5 s | MT, 4x4, lockers | roof tent, sand ladders, jerry cans, snorkel, bull bar and winch, light bar, rear ladder and spare |
+  | TAURO HX35 ARCTIC | 5.33 x 1.94 | 2.2 t | 175 / 10.5 s | AT, 4x4 | flares, snorkel, roof light bar and pods, sports bar, loaded bed |
+  | OKTAV 6×6 EXPEDITION | 5.87 x 2.11 | 3.85 t | 160 / 7.8 s | MT on beadlocks, three axles, lockers | wing indicator pods, side pipes, rack and light bar, bed rollbar with pods |
+  | SIDEWINDER TROPHY TRUCK | 5.80 x 2.24 | 2.75 t | 210 / 5.4 s | desert, 4x4, long travel | race livery #88, bed cage over two spares, coilovers and bypass shocks, louvered hood |
+  Tyres are modelled (lathed carcass, staggered lugs: mud-terrain, all-terrain, desert); every
+  wheel steers, spins at the wheel speed (ahead of the truck when it spins) and follows the ground
+  within its travel. Taken or wrecked trucks are replaced while nobody watches.
+- **Trail mud**: every trail vertex carries mud and rock (baked with the trail's own distance
+  along and across): muddy dirt on the lower switchbacks, THE BOG and the MUDDY HAIRPIN on Mount
+  Ascent, rock steps higher up; deepest in the ruts, firmer on the crown and the edges. The
+  terrain shader draws dark wet mud, churned ruts and brown puddles that mirror the sky, wetter
+  after rain (weather.wet), and pale rock ledges (with slabs) on the steps.
+- **Hairpins**: four Chaikin passes round each hairpin (two left a right angle at the apex) and
+  the legs are evenly spaced up the face (bunched at the top, the last two were 6 m apart); the
+  hairpin pads are found in order along the curve (the third pad had landed on the first).
+  Steepest graded pitch 0.37 (was 0.53).
+
+Physics (offroad.js `offroadDrive`, called from physics.js)
+- On the range the driven wheels push at most mu x their load: surface (packed dirt 0.68, grass
+  0.58, mud down to ~0.3, wet mud lower, rock 0.8) x tyre (mud-terrain, all-terrain, desert, road)
+  x driven share (1 for 4x4; ~0.5 for two-wheel drive, shifting with the grade). Past it the wheels
+  spin (the wheel speed runs ahead of the ground: drawn, heard in the revs) and grip drops to
+  sliding friction. Low range multiplies the pull under 35 km/h. The brakes hold a stopped truck
+  up to the same friction; steeper, it slides back. Mud adds rolling resistance (heavier trucks
+  sink further); rough ground above a truck's suspension speed bounces and scrubs it; rock ledges
+  jolt it, and hurt anything taken over them fast. Sideways grip follows the surface. Replaces the
+  old flat traction factors, speed caps and heavy drag on terrain.
+- Body pitch and roll come from the ground under the four wheels, not the slope at the middle.
+- Measured with `trailDrive` (line-following pilot, dry): road cars stop spinning in the first mud
+  (sample ~55 of 401); the crawler reaches the summit in 1:39, the Series in 2:01, the Hilux and the
+  Ranger in 2:10-2:15; in the wet the bog stops a 4x4 driven up the middle of the ruts.
+
+Effects (offroad3d.js)
+- Mud clumps thrown rearward and up from spinning or fast tyres in mud (lit, instanced, ballistic,
+  splatting where they land), a finer mist, pale dust on dry dirt; tyre tracks behind every wheel
+  on dirt that fade over minutes. Pools: 640 clumps, 360 mist, 700 splats, 1800 track prints; no
+  per-frame allocation.
+- Mud on bodies (`c.mudCoat`, `c.mudWet`): a shader layer on the paint (every vehicle), trim and
+  tyres (club trucks), heaviest low down, dark and glossy when fresh, pale when dry; washed off by
+  rain and by driving through water (the sea, lakes, streams).
+- Engine audio revs with wheelspin and pulls low-range revs at crawling speed.
+
+Hill climb
+- Crossing a trail's start gate starts the clock; three checkpoints in order; SUMMIT REACHED shows
+  the time and the best clean run (localStorage `dead-end-city-hillclimb`). E at the club sign in a
+  vehicle arms the Mount Ascent challenge: beat 2:30 for $1,000. A running clock (with 4LO) shows
+  during a climb.
+
+Console: `offroad()`, `clubLineup(x, y)`, `hillClimb(action, trail)`, `trailDrive(seconds, maxKmh,
+trail)`, `trailProfile(trail, step)`, `mud(amount, wet)`.
+
 ## Unreleased — the respray garages: real-scale workshops, prices and a drive-in show
 
 - **The helicopter loses you inside.** Every garage bay and office is overhead cover

@@ -1023,7 +1023,7 @@
             landAt(x + r, y + r)))
       )
         return true;
-      return onBridge(x, y, r) || onDock(x, y, r) || onBeachPier(x, y, r);
+      return onBridge(x, y, r) || onDock(x, y, r) || onBeachPier(x, y, r) || onIslePontoon(x, y, r);
     }
     function appendLakePaths(g) {
       for (const lake of COUNTY_LAKES) {
@@ -1249,6 +1249,9 @@
       return false;
     }
     function districtAt(x, y) {
+      // Monarch Isle, its bridges and the water round it (monarch.js).
+      const isle = monarchDistrictAt(x, y);
+      if (isle) return isle;
       if (COUNTY_LAKES.some((r) => regionContains(r, x, y))) return 'CLEARWATER RESERVOIR';
       // The runway piers (airfields.js) belong to their airports.
       const pier = runwayPierAt(x, y);

@@ -1,5 +1,32 @@
 # Audit report: world layout, railway, county, parks, harbor, sports, streets
 
+## Monarch Isle pass
+
+A new island north of the Ridgeline Range (x 5460..10150, y -5272..-468; SOURCE_GUIDE section
+4, "Monarch Isle"), joined by the Sovereign Bridge (3150, -2944 -> 5600, -2944) and the
+Regency Bridge (6400, 600 -> 6400, -1276), with Regency Road along the range's west coast to
+Eagle Pass (6500, 1800). Nothing existing was moved; the Sunset Pier Bridge, North Point and
+the range keep their places (the Sovereign Bridge is 2,450 units long, the Regency Bridge
+1,876).
+
+Verified (headless):
+- Block size: `DeadEndCity.monarch().grid` gives columns 5600, 6400, 7200, 8000, 8800, 9600 and
+  rows -4544, -3744, -2944, -2144, -1344: every street centreline spacing is 800 units (100 m).
+- `tools/layout-audit.mjs`: nothing new but the expected oblique notes where the island's
+  streets meet the two roundabouts and where Harbour Circle meets the Regency Bridge (both
+  junctions) and Eagle Pass x Regency Road (a junction). Interior palms of the Palm House are
+  plain geometry, not street props; no lantern stands on a bridge deck.
+- GPS: `route()` from Northbank (2000, -2900) to the island uses the Sovereign Bridge; from
+  Eagle Pass (6500, 1800) the Regency Bridge; from Palm Keys the Keys Bridge and Sovereign.
+- Driving: North Point -> Sovereign Bridge -> Crown Avenue -> Regency Road -> Harbour Circle ->
+  Regency Bridge -> Regency Road on the mainland (terrain flat along the road).
+- Traffic: 30 island cars, after 200 s 27 moving and none still for over 30 s
+  (`trafficStuck: 0`); after a further 240 s, 29 moving. `walkOnRoad` is empty.
+- Police: two stars on the island bring patrols onto the island's streets.
+- `tools/smoke.mjs`: clean. Draw calls (graphics high): island views 133-207 view calls and
+  167-253 shadow calls, against 181 / 264 in the city centre; the island's per-frame update is
+  about 0.1 ms steady.
+
 ## Runway piers pass
 
 Southport's runway was extended south over the sea to 460 m on a reclaimed pier

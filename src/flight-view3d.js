@@ -164,6 +164,8 @@
        * Sets `camera` for this frame and fills viewCenter/viewReach/viewZoom. Returns
        * nothing; render() carries on with whichever camera is active.
        */
+      // Inspection bearing for the street camera ({ yaw, pitch, lift } radians / units), or null.
+      let inspectAngles = null;
       function updateFlightView(deltaSeconds, altitude, flying) {
         const ground = terrainHeight(cameraTarget.x, cameraTarget.y);
         // Follow height with a short lag so climbs and dives read as motion; a jump
@@ -192,11 +194,21 @@
             cosPitch = 560 / Math.hypot(680, 560),
             clear = Math.max(distance, (streetCeiling() + (viewH / 2) * cosPitch) / sinPitch),
             setBack = clear - distance;
-          camera.position.set(cameraTarget.x, clear * sinPitch + altitude, cameraTarget.y + clear * cosPitch);
+          if (inspectAngles) {
+            // Inspection only (DeadEndCity.inspectView): the same camera turned to
+            // another bearing and pitch, to look at people from the side.
+            const pitch = inspectAngles.pitch,
+              yaw = inspectAngles.yaw;
+            camera.position.set(
+              cameraTarget.x + clear * Math.cos(pitch) * Math.sin(yaw),
+              clear * Math.sin(pitch) + altitude + inspectAngles.lift,
+              cameraTarget.y + clear * Math.cos(pitch) * Math.cos(yaw),
+            );
+          } else camera.position.set(cameraTarget.x, clear * sinPitch + altitude, cameraTarget.y + clear * cosPitch);
           // Just deep enough for the ground at the top of the frame: a tight depth
           // range keeps the depth buffer precise for the ambient occlusion pass.
           camera.far = distance + setBack + viewH * 0.7 + altitude * 1.5 + 600;
-          camera.lookAt(cameraTarget.x, altitude, cameraTarget.y);
+          camera.lookAt(cameraTarget.x, altitude + (inspectAngles ? inspectAngles.lift : 0), cameraTarget.y);
           camera.left = (-viewH * aspect) / 2;
           camera.right = (viewH * aspect) / 2;
           camera.top = viewH / 2;
@@ -393,8 +405,6 @@
         FAR_DETAIL_ZOOM = 0.12,
         PEOPLE_ZOOM = 0.32,
         IMPOSTOR_ZOOM = 0.4,
-        PERSON_IMPOSTOR_ZOOM = 0.52,
-        PERSON_IMPOSTOR_CAPACITY = 1200,
         IMPOSTOR_CAPACITY = 640;
       for (const layer of [DETAIL_LAYER, FAR_DETAIL_LAYER]) {
         streetCamera.layers.enable(layer);
@@ -567,62 +577,6 @@
         impostorCabins.setMatrixAt(impostorCount, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
         impostorCount++;
         return true;
-      }
-      /**
-       * PEOPLE AT A DISTANCE
-       * A pedestrian model is a dozen meshes (torso, head, limbs, hands, gun
-       * models); zoomed out, a crowd of them was the largest share of the draw
-       * calls. Below PERSON_IMPOSTOR_ZOOM, anyone simply standing or walking is
-       * drawn as three instanced parts instead (legs, torso in their own clothing
-       * colour, head): three draw calls for the whole crowd. Anyone sitting,
-       * falling, swimming, fighting for breath or otherwise posed keeps the full
-       * model, as does the player.
-       */
-      const personMaterial = (color, roughness) => new Three.MeshStandardMaterial({ color, roughness }),
-        personImpostorLegs = new Three.InstancedMesh(impostorBox, personMaterial('#343b44', 0.85), PERSON_IMPOSTOR_CAPACITY),
-        personImpostorTorso = new Three.InstancedMesh(impostorBox, personMaterial('#ffffff', 0.8), PERSON_IMPOSTOR_CAPACITY),
-        personImpostorHead = new Three.InstancedMesh(new Three.IcosahedronGeometry(1, 1), personMaterial('#af8b72', 0.7), PERSON_IMPOSTOR_CAPACITY);
-      for (const m of [personImpostorLegs, personImpostorTorso, personImpostorHead]) {
-        m.count = 0;
-        m.castShadow = true;
-        m.receiveShadow = true;
-        m.frustumCulled = false;
-        m.userData.dynamic = true;
-        scene.add(m);
-      }
-      personImpostorTorso.setColorAt(0, impostorColor);
-      let personImpostorCount = 0;
-      function personImpostor(p) {
-        const lod = activeTier ? activeTier.lodBias : 1;
-        if (viewZoom >= PERSON_IMPOSTOR_ZOOM * lod || personImpostorCount >= PERSON_IMPOSTOR_CAPACITY) return false;
-        if (p.hp <= 0 || p.hidden || p.sitting || p.swimming || p.parachute || p.ejected || p.illness) return false;
-        if (p.poisonCollapse !== undefined || p.drinking || personIncapacitated(p)) return false;
-        // Sized like the rigs (17.4 units) and drawn at the person's height (PERSON_SCALE).
-        const i = personImpostorCount++,
-          ground = entityElevation(p),
-          k = PERSON_SCALE * (p.look?.height || 1);
-        impostorRotation.setFromAxisAngle(impostorUp, -p.a);
-        impostorPosition.set(p.x, ground + 3.6 * k, p.y);
-        impostorScale.set(2.6 * k, 7.2 * k, 5 * k);
-        personImpostorLegs.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
-        impostorPosition.y = ground + 10.2 * k;
-        impostorScale.set(4.6 * k, 6.4 * k, 8.2 * k);
-        personImpostorTorso.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
-        personImpostorTorso.setColorAt(i, impostorColor.set(p.color || '#6b5965'));
-        impostorPosition.y = ground + 15.3 * k;
-        impostorScale.set(2.1 * k, 2.5 * k, 2.1 * k);
-        personImpostorHead.setMatrixAt(i, impostorMatrix.compose(impostorPosition, impostorRotation, impostorScale));
-        return true;
-      }
-      // Called once the frame's people have been placed (from renderFrame).
-      function endPersonImpostors() {
-        const n = personImpostorCount;
-        personImpostorCount = 0;
-        for (const m of [personImpostorLegs, personImpostorTorso, personImpostorHead]) {
-          m.count = n;
-          if (n) m.instanceMatrix.needsUpdate = true;
-        }
-        if (n) personImpostorTorso.instanceColor.needsUpdate = true;
       }
       function endVehicleImpostors() {
         for (const pool of bodyPools.values()) {

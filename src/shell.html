@@ -90,6 +90,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     RPM-driven recorded engine loops per class, gearbox, start-up, road noise, traffic voices, jet synthesis.
   src/county.js: Outlying districts
     County roads, towns, buildings, scenery, traffic, regional police and bridges.
+  src/monarch.js: Monarch Isle, the rich island north of the Ridgeline Range
+    Coast, 100 m street grid, boulevards and roundabouts, bridges, villas, towers, businesses, marina, botanic garden, ground and map.
   src/airfields.js: Runways, taxiways and the reclaimed runway piers
     RUNWAYS / TAXIWAYS / RUNWAY_PIERS plan, runway lookup, PAPI angles, flat ground painting.
   src/military.js: Fort Sentinel
@@ -107,6 +109,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Street grid, intersections, sidewalks, road painting, promenades, street names, benches.
   src/terrain.js: Mountains and off-road contact
     Triangulated mountains, snow caps, trails, slope handling and off-road contact.
+  src/offroad.js: The 4x4 club, trail mud, off-road traction and the hill climb
+    Club lot and trucks, baked trail mud and rock, traction and wheelspin, body mud, club members, hill climb timing.
   src/casino.js: Casino roulette
     Roulette layout, stakes, settlement, UI and saved cash.
   src/skyline.js: North Point financial cluster plan
@@ -141,6 +145,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Repair bays, vehicle fit, paint, repairs and pursuit clearance.
   src/crowd.js: Crowd life, perception and reactions
     Appearance and roles by hour, crowd streaming, sidewalk walking, perception, reactions, witnesses, scenes.
+  src/monarch-life.js: Monarch Isle life
+    Island traffic on its own lane graph, walkers, staff posts, garden visitors, marina boats, payphones, ambient sound.
   src/beachclub.js: Marea Beach Club
     The club on the beach-club plot: plan and colliders, cast of slots by hour, door queue and bouncer talk, trouble, player cover and VIP band.
   src/beachclub-audio.js: Marea Beach Club music
@@ -228,18 +234,32 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging.
   src/drawbridge3d.js: The Palm Sound drawbridge in 3D
     Trunnion bascule leaves, piers, tender houses, fenders, barrier gates, signals and lamps, the ketch ALBATROSS.
+  src/monarch-bridges3d.js: Monarch Isle bridges
+    The Sovereign Bridge's leaning harp pylon and the Regency Bridge's three bowstring arches.
   src/bridges3d.js: Bridges: one architecture per crossing
     Every bridge from bridgeStructure(): truss, bascule, cable-stayed, suspension, arch and county designs; lamps, LEDs, beacons, foam, far copies.
   src/harbor3d.js: Cargo terminal meshes
     Cranes, the container ship, containers, depot, signals and helicopter searchlight.
   src/marina3d.js: Marina, superyacht and cruise liner meshes
     Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners and the sailing liner's wake.
+  src/monarch3d.js: Monarch Isle buildings
+    Facade styles, mansard, hipped and gabled roofs, balustrades, doorways, shopfronts with signs, awnings and window displays.
+  src/monarch-villas3d.js: Monarch Isle villas and towers
+    Nine villa styles with gardens, gates, pools and courts; The Sovereign and Monarch One.
+  src/monarch-marina3d.js: Monarch Harbour
+    Pontoons, berthed yachts, three superyachts, the mole, lighthouse, harbour master and yacht club.
+  src/monarch-garden3d.js: Royal Botanic Garden
+    The Palm House glasshouse and its interior, unique plants, beds, pond, arches, gates.
+  src/monarch-streets3d.js: Monarch Isle streetscape and build
+    Lanterns, fountains, beach, payphones, block extras, tower plazas, medians; builds the island.
   src/beachclub3d.js: Marea Beach Club meshes and show lighting
     Forecourt, stage, LED wall, truss, bars, sails, pool, daybeds, sand; LED floor, moving heads, lasers, strobe, flames.
   src/cycles3d.js: Bike-share stand meshes
     Bike-share racks (the bicycles are ordinary vehicles).
   src/weather3d.js: Weather and sky visuals
     GPU rain streaks, splashes, roof drips, road spray, wet roads, lightning bolts and flashes, the storm grade.
+  src/character-rig3d.js: Character rig: sculpted body parts, outfits and paint
+    One set of lofted parts for everyone (head with face hint, hair, hats, male/female torso, limbs, shoes, kit, weapons); region paint shader.
   src/crowd3d.js: Instanced crowd bodies, poses and street props
     One InstancedMesh per body part, layered poses, stride, dogs and scene props.
   src/clouds3d.js: Volumetric clouds and cloud shadows
@@ -257,6 +277,8 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
     Seventeen real-size bodies (the everyday cars and the CHEVETTE Z06, BRUTINI SVJ, CAVALINO 458): lofted shells, glasshouses, livery decals, merged trim, LED lamps.
   src/motorbikes3d.js: Motorbike models
     VORTEX 900, NOMAD CRUISER, DOLCATI V4, YAMASAKI 1000RR, KR 500: lofted fairings, steering fork, merged riders, wheelies.
+  src/offroad3d.js: 4x4 club trucks, the club lot, trail props and mud
+    Lofted club trucks with liveries and modelled tyres, mud on bodies, mud clumps, splats and tyre tracks, the lot, course gates.
   src/plane3d.js: Airplane meshes
     Courier prop plane, business jet and airliner.
   src/parachute3d.js: Ram-air parachute

@@ -27,6 +27,8 @@
         });
       }
       for (const p of PLACES) {
+        // Monarch Isle dresses its own businesses (monarch3d.js).
+        if (p.monarch) continue;
         const color = new Three.Color(p.color),
           group = new Three.Group();
         scene.add(group);
