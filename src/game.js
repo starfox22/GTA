@@ -2415,7 +2415,8 @@
       if (attacker === player) crime(0.5);
     }
     function hurt(d, kind = 'ballistic') {
-      if (player.inv > 0 || gameMode !== 'play' || player.godMode) return;
+      // At GOALLINE's counter (sportsbook.js) nobody lays a finger on you.
+      if (player.inv > 0 || gameMode !== 'play' || player.godMode || sportsbookShelters()) return;
       d = ballisticDamage(player, d, kind);
       player.hp -= d;
       if (d > 1 && !player.car) bleed(player, d / 35, player.a + Math.PI);
@@ -2620,6 +2621,8 @@
       }
       // On the stadium pitch E kicks the ball at your feet (sports.js).
       if (sportsInteract()) return;
+      // PLACE A BET inside GOALLINE by the stadium (sportsbook.js).
+      if (sportsbookInteract()) return;
       // A Monarch Isle payphone (monarch-life.js).
       if (monarchInteract()) return;
       const place = nearestPlace();
@@ -3224,7 +3227,7 @@
           worldContext.restore();
         }
     }
-    const shotSolidLists = [null, null, null, null, null, null, null];
+    const shotSolidLists = [null, null, null, null, null, null, null, null];
     function shotBlocked(x, y, altitude = 0) {
       if (airCoverStopsShot(x, y, altitude) || (landAt(x, y) && altitude + 10 < terrainHeight(x, y)))
         return true;
@@ -3257,6 +3260,8 @@
       lists[4] = countyStaticSolids;
       lists[5] = AIRPORT_SCENERY_SOLIDS;
       lists[6] = garageDoorSolids();
+      // GOALLINE, the betting shop by the stadium (sportsbook.js).
+      lists[7] = sportsbookWalls();
       for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
         // Most rounds are nowhere near a given list's rectangles (rectListBounds).
@@ -4908,6 +4913,10 @@
           prompt = bikeShare.text;
           promptId = 'bikeshare';
           promptKey = bikeShare.key;
+        } else if (sportsbookPrompt()) {
+          // Inside GOALLINE by the stadium (sportsbook.js).
+          prompt = sportsbookPrompt();
+          promptId = 'sportsbook';
         } else if (sportsKickPrompt()) prompt = sportsKickPrompt();
         else if (leisurePrompt()) {
           const leisure = leisurePrompt();
@@ -4973,6 +4982,7 @@
       announce('SOUTH COAST · 1997', 'DEAD END CITY', 1.8);
     }
     function togglePause() {
+      closeSportsbook();
       if (gameMode === 'arsenal') {
         closeArsenal();
         return;
@@ -5205,6 +5215,12 @@
       // listens for a key to bind).
       if (gameMode === 'settings') {
         settingsKeyDown(e);
+        return;
+      }
+      // The betting menu owns the keyboard while it is open; the world runs on
+      // (sportsbook-ui.js).
+      if (sportsbook.open && gameMode === 'play') {
+        sportsbookKey(e);
         return;
       }
       if (
@@ -5540,8 +5556,11 @@
     // @include src/skyline.js
     // @include src/renewal.js
     // @include src/sports-fixtures.js
+    // @include src/sportsbook-odds.js
     // @include src/sports.js
     // @include src/sports-world.js
+    // @include src/sportsbook.js
+    // @include src/sportsbook-ui.js
     // @include src/sports-audio.js
     // @include src/transit.js
     // @include src/ride-skip.js
@@ -6768,6 +6787,8 @@
       // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
       // (see sports.js sportsConsole).
       ...sportsConsole(),
+      // GOALLINE, the betting shop by the stadium: markets, odds, bets (sportsbook.js).
+      ...sportsbookConsole(),
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
       // Settings choice); returns what the renderer is now using.
       graphics(tier) {

@@ -39,6 +39,8 @@
             armor: player.armor,
             ammo: weapons.map((w) => w.ammo),
             reserve: weapons.map((w) => w.reserve),
+            // GOALLINE: open bets (their stakes already out of the cash) and the history.
+            sportsbook: sportsbookSaveData(),
           }),
         );
       } catch {}
@@ -62,6 +64,7 @@
           if (Array.isArray(s.reserve)) w.reserve = savedSupply(s.reserve[i], w.reserve, 999999);
         });
         restoreWeaponSelection(s.selectedWeaponIndex);
+        loadSportsbook(s.sportsbook);
       } catch {}
     }
     function clearMissionOverlays() {

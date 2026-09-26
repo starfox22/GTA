@@ -1,5 +1,46 @@
 # Changelog
 
+## Unreleased — GOALLINE, the sports betting office by the stadium
+
+- **The shop** (sportsbook.js, sportsbook3d.js): GOALLINE SPORTS BET, a 16 x 12 m sportsbook
+  south-west of South Coast Stadium's entrance plaza (x 2462-2590, y 4992-5088), its glass
+  frontage and double door facing south onto a paved apron with a path to the Garden Ave
+  pavement. The neon sign stands on the front parapet over a lit fascia (LIVE ODDS · IN-PLAY);
+  inside, a pitch-green carpet, a video wall (the stadium's live board between two GOALLINE odds
+  boards that go SUSPENDED over a goal), the counter with its till and PAY OUT sign, three
+  self-service terminals, a ledge with low stools; the roof lifts off with the player inside.
+  A clerk in the house green and up to five punters, each backing a side: they cheer or groan at
+  every goal with a speech bubble, and the clerk has a word for a big win ("Lucky day, huh?").
+  Walls, counter, ledge and terminals are solid to people, vehicles and rounds; the roof is
+  cover from the police helicopter. On the city map: a green $ badge, GOALLINE · BETS.
+- **Betting** (the action key inside: PLACE A BET): markets on the stadium's football fixture,
+  live while it is played: match result, next goal (or no goal), total goals over / under (the
+  line nearest even money and one either side), both teams to score, correct score (16 scores
+  and ANY OTHER), half-time result before the break. Pre-match prices for the next fixture with
+  the kick-off countdown when nothing is on. Bets settle as their market resolves (next goal on
+  the goal, OVER and BTTS YES at once, a correct score lost once passed, half time at the break,
+  the rest at full time) and winnings are credited automatically (BET WON · +$1,250); an
+  abandoned match, or one the clock jumped past, is VOID with the stake returned. Markets are
+  SUSPENDED from a goal until the kick-off after it. Open bets and the last 40 settled ones are
+  saved with the game.
+- **Odds** (sportsbook-odds.js): the football clubs now have ratings (sports-fixtures.js), and
+  a shot on target beats the keeper with a chance from the two ratings and the home crowd
+  (`sportsFinishChance`; before, nearly every shot on target went in: about 12 goals a match,
+  now about 2.8, measured over 350 simulated matches). The book prices from the same model:
+  Poisson goals at the measured rate (7.4 shots on target a side), live on the score and the
+  minutes left, a 6% margin by the power method (12% on correct score, less on near-certain
+  markets), odds rounded down to a real price ladder, shown decimal, fractional or American.
+- **The menu** (sportsbook-ui.js, SPORTSBOOK in shell.html): the match header in both clubs'
+  colours with crests, score, clock and a pulsing LIVE badge; price cards that flash up or down
+  as they move; the slip with typed stake, $10 / $50 / $100 / $500 / MAX chips, a slider over the
+  cash in hand, the potential return, validation (at least $1, never more than you carry) and a
+  PLACED stamp; MY BETS with open and settled bets and the running profit and loss. Arrows,
+  Enter, + / -, P, M, F and Esc; mouse and touch. The world keeps running (the match goes on)
+  and the player is sheltered while it is open; it closes with a wanted level or a pause.
+- **Console**: `sportsbook()`, `sportsbookBet(market, key, stake)`, `sportsbookShop(open, tab)`,
+  `sportsbookSlip(market, key, stake)`, `sportsbookFormat(format)`; `stadiumGoal(team)` forces a
+  goal.
+
 ## Unreleased — the car and motorbike redesign, and the flagships
 
 Civilian cars (cars3d.js) and motorbikes (motorbikes3d.js), rebuilt at real size to the police

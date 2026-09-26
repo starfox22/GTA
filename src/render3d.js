@@ -1166,6 +1166,7 @@
       // @include src/renewal3d.js
       // @include src/landscape3d.js
       // @include src/sports3d.js
+      // @include src/sportsbook3d.js
       // @include src/transit3d.js
       // @include src/ecology3d.js
       // @include src/world3d.js
@@ -2386,6 +2387,7 @@
           updateTransitVisuals();
           updateWildlifeVisuals(deltaSeconds);
           updateSportsVisuals(deltaSeconds);
+          updateSportsbookVisuals();
           updateGarageVisuals();
           updateWorldVisuals();
           updateCityscapeVisuals();

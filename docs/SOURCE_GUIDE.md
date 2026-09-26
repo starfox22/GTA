@@ -278,6 +278,9 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sports-fixtures.js | Club pools (`SPORTS_TEAMS`: names, kits, crests), `SPORTS_CALENDAR`, daily fixtures (`sportsFixtureFor`, `sportsCurrentFixture`), the match timeline (`sportsTimeline`), `drawSportsCrest` |
 | sports.js | Live basketball and soccer: match day stages, possession, shots, scoring, restarts, officials, harm and panic (`sportsTargets`, `sportsAbandon`), the player on the ball (`sportsKick`, stewards), `sportsConsole` |
 | sports-world.js | South Coast Stadium reservation, enclosure (`PITCH_FENCE` with its openings), big screens (`STADIUM_SCREENS`), turnstiles, vehicle barriers, markings |
+| sportsbook-odds.js | The sportsbook's pricing (section 4d, GOALLINE): `SPORTSBOOK_MODEL`, expected goals from the clubs' ratings (`sportsbookRates`), the live state (`sportsbookMatchState`), fair markets from the Poisson grid (`sportsbookFairMarkets`), the power-method margin and price ladder (`sportsbookPriceOutcomes`, `sportsbookLadder`), odds formats (`sportsbookFormatOdds`) |
+| sportsbook.js | GOALLINE SPORTS BET beside the stadium plaza: the plan and solids (`SPORTSBOOK_SHOP`, `sportsbookBlocked`, `sportsbookWalls`), bets (`sportsbookPlace`), settlement (`sportsbookUpdate`: goals, half time, full time, void), save data, the clerk and punters (`staffSportsbook`), prompt and door, ground and map, `sportsbookConsole` |
+| sportsbook-ui.js | The betting menu (`#sportsbook`): header, markets, slip, my bets, keys (`sportsbookKey`) |
 | sports-audio.js | Stadium goal reactions only (no crowd bed): the recorded cheer from the scoring end and groan from the other, attenuated by the player's distance to the stadium (`stadiumAudibility`); panic screams, the referee's whistle, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ride-skip.js | Skip the ride: the offer and prompt (`rideSkipOffer`, `rideSkipPrompt`) for a cab, a train or the sailing liner, the `skipRide` / `skipStop` keys (`rideSkipKey`), the fade on simulation time (`updateRideSkip`), the jump (`performRideSkip`: `catchUpWorld`, `placeCabAtKerb`, `placeTrainAtPlatform`, `placeLinerAtAnchor`), `rideSkipReport` |
@@ -328,6 +331,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
 | landscape3d.js | Renderer-only planting on open lawns: Battery Park trees and flower beds, Great Lawn picnic blankets |
 | sports3d.js | Tiered stands, crowd in team colours (fills, cheers, panics), floodlights (`stadiumFloodPools`), live screens (`paintSportsBoard`), the ball; athletes, officials and stewards are queued to the character rig (`queueAthlete`, crowd3d.js ATHLETES) |
+| sportsbook3d.js | GOALLINE's building: glass frontage, neon sign, fascia, video wall (the stadium's live board and the odds boards, `paintSportsbookOddsBoard`), counter, terminals, ledge and stools; the roof lifts off with the player inside (`updateSportsbookVisuals`) |
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
@@ -1207,6 +1211,62 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
   distance-based gains, the player's distance and audibility, and `bed: null`.
 - Developer console: `match(sport)`, `ballState()`, `matchDay(day, minutesFromKickoff, slot,
   sport)`, `fixtures(sport, days)`, `ballToPlayer(distance)`.
+- **Club ratings and finishing.** Each football club has a `rating` (0.78 AIRPORT RANGERS to
+  1.3 NORTHBANK CITY, 1 an average side). A shot the simulation puts on target beats the keeper
+  with `sportsFinishChance(fixture, team)` = 0.16 x ((rating x 1.1 at home) / the other's
+  rating)^1.6 (`SPORTS_FINISHING`); otherwise `sportsKeeperSave` saves it (he holds it when
+  close, else parries it back into play). Measured over 350 matches in a headless harness
+  (sports-fixtures.js + sports.js stepped at 30 Hz): goals per side are Poisson (dispersion
+  0.96) at 7.4 x the finishing chance, about 2.8 goals a match; before the keeper saved
+  anything it was about 12. Joining a match under way draws the score from the same model.
+
+### GOALLINE, the sports betting office
+
+sportsbook-odds.js, sportsbook.js, sportsbook-ui.js, sportsbook3d.js.
+
+- **The shop.** `SPORTSBOOK_SHOP`: x 2462-2590, y 4992-5088 (16 x 12 m, 4.6 m to the roof) in
+  the open block south-west of the stadium forecourt, which the city plan leaves empty (the
+  block overlaps the stadium lot). Glass frontage and a 2.25 m double door on the south (the
+  camera's side), a paved apron and a path east to the Garden Ave pavement. `SPORTSBOOK_SOLIDS`
+  (walls, glass either side of the door, counter, ledge, terminals) are solid through
+  `sportsBlocked` (solid()), the physics statics (pushed onto `SPORTS_VEHICLE_BARRIERS`) and the
+  shot lists (`sportsbookWalls`); `prepareSportsbookShop` clears trees and lamps from the plot
+  and registers the roof as overhead cover.
+- **The menu.** Inside (`sportsbookInside`) the prompt is PLACE A BET (id `sportsbook`) and the
+  action key opens `#sportsbook`. `gameMode` stays `play`, so the world, the clock and the match
+  run on; the keydown handler hands every key to `sportsbookKey`, `hurt()` ignores the player
+  (`sportsbookShelters`), and `sportsbookUpdate` closes the menu on a wanted level, leaving the
+  shop or any change of mode; `togglePause` closes it first. It will not open with stars.
+- **Pricing.** Expected goals over 90 minutes: `SPORTSBOOK_MODEL.shotsOnTarget` (7.4, measured)
+  x `sportsFinishChance`. Live, each side's goals still to come are Poisson with that rate times
+  the share of the 90 minutes left (`sportsbookMatchState`: the match clock; half at the break;
+  none after full time), added to the score; every market sums the grid of final scores. The
+  margin: implied probabilities p^k with k < 1 chosen so they add to 1 + margin (6%, correct
+  score 12%, scaled down to half for a market whose favourite is 90% or more), odds rounded down
+  to the ladder (hundredths to 2, then 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50); a market with
+  an outcome over 99% is closed. Markets: `result`, `next:<goal number>`, `total:<line>` (every
+  line not yet passed; the menu shows the one nearest even money and one either side), `btts`,
+  `cs` (16 scores to 3-3 and ANY OTHER), `ht` (before the break). Rebuilt when the fixture,
+  stage, score or quarter-minute changes (`sportsbookRefreshMarkets`).
+- **Bets and settlement.** `sportsbookPlace` takes the stake from the cash at the price showing
+  and ties the bet to the match object (`match.bookToken`). `sportsbookUpdate` (end of
+  updateSports) settles: each goal (`sportsbookGoal`: next goal for that goal number, OVER, BTTS
+  YES, correct scores passed, ANY OTHER at four), the break or anything past it (half-time),
+  full time (the rest). SUSPENDED from a goal until the kick-off after it and at least
+  `SPORTSBOOK_SUSPEND` (6 s). Winnings are credited automatically wherever the player is (toast
+  BET WON · +$N). VOID, stake returned: the match abandoned, or bets on a match object that is
+  gone (a clock jump past it, or a reload: restored bets carry on only if their fixture has not
+  kicked off). Saved in the game record as `sportsbook` (format, open bets, the last 40 settled,
+  totals).
+- **People.** `staffSportsbook` keeps a scene (`makeScene('sportsbook')`) while the player is
+  within 900 units: the clerk (`serve`) and two to five punters (sitting on the stools, at a
+  terminal, watching); each backs a side and cheers (`cheer`) or groans (`despair`) at a goal
+  for 3 s, two of them with a line; the clerk speaks on a win of $1,000 or at odds of 6+.
+- Developer console: `sportsbook()` (the shop, the fixture with ratings and expected goals,
+  every market with fair % and decimal / fractional / American odds and the book %, open and
+  settled bets, totals, a log with the cash after each event), `sportsbookBet(marketId, key,
+  stake)`, `sportsbookShop(open, tab)`, `sportsbookSlip(marketId, key, stake)`,
+  `sportsbookFormat(format)`; `stadiumGoal(team)` forces a goal.
 
 ## 5. Missions
 
