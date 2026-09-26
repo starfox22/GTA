@@ -41,6 +41,12 @@
         beach: 7, // sand
       };
       function cityGroundStyle(x, y) {
+        // A North Point tower block is granite to its road centrelines: the
+        // district line (x 1880) runs through the western column of the
+        // cluster, and west of it the plaza came out as rusty dock panels.
+        const bx = Math.floor((x - 128) / BLOCK_SIZE),
+          by = Math.floor((y - 128) / BLOCK_SIZE);
+        if (skylineBlockTowers(bx, by).length && districtAt(blockX(bx) + BLOCK_SIZE / 2, blockY(by) + BLOCK_SIZE / 2).includes('FINANCIAL')) return GROUND_STYLE.financial;
         const d = districtAt(x, y);
         if (d === BEACH.name || (onPalmKeys(x) && !onRoad(x, y) && segmentPathDistance(x, y, KEYS_WEST_STRAND) < 80)) return GROUND_STYLE.beach;
         if (d.includes('OLD QUARTER') || d === 'BATTERY POINT') return GROUND_STYLE.oldQuarter;

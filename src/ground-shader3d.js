@@ -635,10 +635,32 @@
               // grid the tower plazas are set out on (skyline.js: joints at 9
               // modulo 16 units).
               vec3 sb = groundBond( fr, 16.0, 8.0 );
+              // World offset from this pixel to the middle of its slab.
+              vec2 toCentre;
               if ( !byKerb ) {
                 vec2 f = mod( fr - 9.0, 16.0 );
                 sb = vec3( floor( ( fr - 9.0 ) / 16.0 ), min( min( f.x, 16.0 - f.x ), min( f.y, 16.0 - f.y ) ) );
+                toCentre = 8.0 - f;
+              } else {
+                float odd = mod( sb.y, 2.0 );
+                vec2 d = vec2( ( sb.x + 0.5 - 0.5 * odd ) * 16.0, ( sb.y + 0.5 ) * 8.0 ) - fr;
+                toCentre = t * d.x + gKerbN * d.y;
               }
+              // Each slab takes the sheet's colour at its middle. The sheet is a
+              // unit or so a texel: magnified at street zoom its painted joint
+              // lines, the plaza's dark bands and the texel steps between them
+              // read as blocky pixels. Sampled once per slab, a band is whole dark
+              // slabs and every slab one clean stone. Only stone against the same
+              // stone snaps: a planter, a lawn edge or a tree pit keeps its outline.
+              #if defined( USE_MAP ) && !defined( CITY_HILL )
+              {
+                vec3 cs = groundSheetAt( vMapUv + vec2( toCentre.x, -toCentre.y ) / cityGroundSize ) * diffuse;
+                float cl = dot( cs, vec3( 0.2126, 0.7152, 0.0722 ) );
+                float stone = smoothstep( 0.1, 0.16, cl ) * ( 1.0 - smoothstep( 0.004, 0.012, cs.g - max( cs.r, cs.b ) ) );
+                float sameHue = 1.0 - smoothstep( 0.08, 0.2, length( cs / max( cl, 0.02 ) - sheet / max( lum, 0.02 ) ) );
+                base = mix( sheet, cs, stone * sameHue );
+              }
+              #endif
               joint = mix( groundBand( sb.z, 0.12, fp ), 0.02, smoothstep( 3.0, 6.0, fp ) );
               float tone = cityHash( sb.xy + 4.0 );
               float speck = cg.b;
