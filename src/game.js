@@ -152,21 +152,18 @@
       BLOCK_Y_MAX = 9;
     /**
      * WORLD SCALE
-     * The one constant that ties map units to metres. It was measured from the
-     * models the player judges speed against:
-     *   a sedan (REGENT) is 43 units long, a real one about 4.5 m   -> 9.6 u/m
-     *   a person stands 17.4 units to the crown, about 1.75 m       -> 9.9 u/m
-     *   a traffic lane (kerb to centre line) is 44 units; 3.5 m of
-     *     lane plus 2.5 m of gutter and parking                     -> 7.3 u/m
-     *   the courier plane is 112 long (14.4 m), the helicopter 86
-     *     (12 m with the rotor), the speedboat 58 (7.5 m)           -> 7..8 u/m
-     *   a shop door is 12 units high (2.1 m), a storey 14-16 (3.2 m) -> 4.7..5.7 u/m
-     * People and cars are drawn a little large and buildings a little squat, as
-     * top-down games do; 8 units to the metre sits between them (it is the
-     * geometric mean of the five reference measures) and matches the roads,
-     * boats and aircraft. A city block (512) is 64 m. Every speed, gravity and
-     * readout (speedometer, flight instruments, knots, metres) derives from it;
-     * write real speeds as `50 * KMH`, accelerations as `0.8 * GRAVITY`.
+     * The one constant that ties map units to metres: 8 units to the metre. It
+     * came from the roads, boats and aircraft, which were drawn true (a traffic
+     * lane with its gutter is 44 units, 5.5 m; the courier plane 112, 14 m; the
+     * speedboat 58, 7.25 m), and everything else is now true to it as well:
+     * vehicles are specified in metres (VEHICLE_DEFINITIONS), people stand
+     * PERSON_HEIGHT (1.75 m), buildings rise in real storeys (STOREY 3.2 m over a
+     * 4.5 m SHOP_FLOOR, realBuildingHeight), doors are DOOR_HEIGHT (2.3 m) and the
+     * street furniture is its real size (a 9 m lamp post, a 7 m street tree). A
+     * city block (512) is 64 m. Every speed, gravity and readout (speedometer,
+     * flight instruments, knots, metres) derives from it; write real speeds as
+     * `50 * KMH`, accelerations as `0.8 * GRAVITY`, sizes as `4.8 * UNITS_PER_METRE`.
+     * DeadEndCity.scaleReport() measures the built models against it.
      */
     const UNITS_PER_METRE = 8,
       METERS_PER_UNIT = 1 / UNITS_PER_METRE,
@@ -174,6 +171,25 @@
       KMH = UNITS_PER_METRE / 3.6,
       KNOTS = UNITS_PER_METRE * 0.514444,
       GRAVITY = 9.81 * UNITS_PER_METRE;
+    /* PEOPLE. Every body rig (the crowd's, the player's, officers' and actors')
+       is modelled 17.4 units from the soles to the crown at look.height 1;
+       PERSON_SCALE draws it at PERSON_HEIGHT, an average adult's 1.75 m (the
+       crowd's looks vary it 0.93-1.07, 1.63-1.87 m; officers and actors 0.94-1.06).
+       A round hits a person within PERSON_HIT_RADIUS of their centre. */
+    const PERSON_HEIGHT = 1.75 * UNITS_PER_METRE,
+      PERSON_SCALE = PERSON_HEIGHT / 17.4,
+      PERSON_HIT_RADIUS = 10 * PERSON_SCALE;
+    /* BUILDINGS. A storey is STOREY high (3.2 m floor to floor) over a ground
+       floor of SHOP_FLOOR (4.5 m, shopfronts and lobbies) with doors DOOR_HEIGHT
+       (2.3 m) high. realBuildingHeight() turns the city plan's height numbers
+       (drawn when a storey was 15 units) into those. */
+    const STOREY = 3.2 * UNITS_PER_METRE,
+      SHOP_FLOOR = 4.5 * UNITS_PER_METRE,
+      DOOR_HEIGHT = 2.3 * UNITS_PER_METRE,
+      // A height in the city plan's numbers, which were drawn when a storey was 15
+      // units (a two-storey house 30, a forty-storey tower 600), as the ground
+      // floor plus that many real storeys: 30 -> 62 (7.7 m), 600 -> 1034 (129 m).
+      realBuildingHeight = (planHeight) => Math.max(planHeight, SHOP_FLOOR + (planHeight / 15 - 1) * STOREY);
     /* On foot, in map units a second: the player runs by default (FOOT_RUN, the
        full running gait) and walks while the walk action is held (Shift,
        controls.js). There is no separate sprint: the run outpaces every officer
@@ -299,6 +315,8 @@
         x: 3200,
         y: 2880,
       };
+    // Set only by the console's holdSimulation (screenshot sequences).
+    let simulationHeld = false;
     const player = {
       ...spawn,
       a: 0,
@@ -354,11 +372,20 @@
     }
     // Every civilian car and motorbike, for DeadEndCity.carLineup().
     const CIVILIAN_LINEUP = ['sedan', 'taxi', 'coupe', 'muscle', 'sport', 'roadster', 'rally', 'hotrod', 'supercar', 'luxury', 'limousine', 'suv', 'van', 'pickup', 'chevette', 'brutini', 'cavalino', 'bike', 'cruiser', 'dolcati', 'yamasaki', 'kr500'];
+    /* Sizes are real (WORLD SCALE): `l` is the length and `w` the collider's width,
+       the body plus its mirrors (car bodies are drawn 0.87 of it, trucks' 0.91), both
+       written in metres. `modelScale` is the scale the model is drawn at: it is
+       built at its design size, (l, w) / modelScale, so the parts its builder sizes
+       in fixed units (roof and beltline heights, wheels, lamps, mirrors, lightbars,
+       riders) come out real while its length and width match the collider
+       (render3d.js designSize). An array scales x, y and z apart (the tank). */
     const VEHICLE_DEFINITIONS = {
       bicycle: {
         name: 'CITY CYCLE',
-        l: 28,
-        w: 9,
+        // A city bike: 1.8 m, bars 0.6 m.
+        l: 1.85 * UNITS_PER_METRE,
+        w: 0.62 * UNITS_PER_METRE,
+        modelScale: 0.47,
         // Pedal-limited: a fit rider's city cruise of about 27 km/h, a little
         // quicker than the run on foot; pedalDrive (cycles.js) tapers the legs'
         // push toward it, and standing on the pedals raises it to about 43 km/h.
@@ -391,8 +418,11 @@
       tank: {
         name: 'SENTINEL M120 MAIN BATTLE TANK',
         offroad: true,
-        l: 84,
-        w: 53,
+        // A main battle tank's 7.9 m hull (the gun reaches 1.5 m past it). The model
+        // is drawn at one scale (its turret turns); it is a little broad and tall.
+        l: 7.9 * UNITS_PER_METRE,
+        w: 4.4 * UNITS_PER_METRE,
+        modelScale: 0.7,
         topKmh: 55,
         zeroTo: [30, 6.5],
         brakeG: 0.6,
@@ -409,8 +439,10 @@
       flatbed: {
         balance: -0.7,
         name: 'ATLAS CARGO FLATBED',
-        l: 94,
-        w: 30,
+        // A medium flatbed, 2.55 m body.
+        l: 9.5 * UNITS_PER_METRE,
+        w: 2.8 * UNITS_PER_METRE,
+        modelScale: 0.9,
         topKmh: 120,
         zeroTo: [100, 22],
         brakeG: 0.7,
@@ -426,9 +458,11 @@
       roadster: {
         balance: 0.5,
         name: 'SOLSTICE SPIDER',
-        // A two-seat roadster (MX-5 / Solstice): 4.2 m, 1.78 m body.
+        // A two-seat roadster.
         l: 4.2 * UNITS_PER_METRE,
         w: 2.05 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 250,
         zeroTo: [100, 4.8],
         brakeG: 1.1,
@@ -444,9 +478,11 @@
       rally: {
         balance: 0.1,
         name: 'KODIAK RS',
-        // A rally hatchback (WRX STI / Focus RS): 4.35 m, 1.8 m body.
+        // A rally hatchback.
         l: 4.35 * UNITS_PER_METRE,
         w: 2.07 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 230,
         zeroTo: [100, 4.0],
         brakeG: 1.1,
@@ -462,9 +498,11 @@
       limousine: {
         balance: -0.5,
         name: 'SOVEREIGN STRETCH',
-        // A stretch limousine on a full-size sedan: 8.8 m, 2.0 m body.
+        // A stretch limousine.
         l: 8.8 * UNITS_PER_METRE,
         w: 2.3 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 190,
         zeroTo: [100, 9.5],
         brakeG: 0.9,
@@ -480,9 +518,11 @@
       hotrod: {
         balance: 0.7,
         name: 'HELLFIRE CUSTOM',
-        // A chopped '32-style hot rod coupe: 4.5 m, 1.8 m over the rear fenders.
+        // A hot rod.
         l: 4.5 * UNITS_PER_METRE,
         w: 2.07 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 235,
         zeroTo: [100, 4.3],
         brakeG: 0.95,
@@ -497,9 +537,11 @@
       },
       bike: {
         name: 'VORTEX 900',
-        // A naked streetfighter: 2.1 m, bars 0.8 m.
+        // A sport bike.
         l: 2.1 * UNITS_PER_METRE,
         w: 0.8 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 225,
         zeroTo: [100, 3.2],
         brakeG: 1.0,
@@ -515,9 +557,11 @@
       },
       cruiser: {
         name: 'NOMAD CRUISER',
-        // A heavy V-twin cruiser: 2.45 m, bars 0.95 m.
+        // A cruiser motorbike.
         l: 2.45 * UNITS_PER_METRE,
         w: 0.95 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 180,
         zeroTo: [100, 5.0],
         brakeG: 0.9,
@@ -534,9 +578,11 @@
       supercar: {
         balance: 0.2,
         name: 'V12 TEMPEST',
-        // A front-mid V12 grand tourer (812 / DBS): 4.7 m, 2.0 m body.
+        // A supercar, 2.0 m body.
         l: 4.7 * UNITS_PER_METRE,
         w: 2.3 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 330,
         zeroTo: [100, 2.9],
         brakeG: 1.2,
@@ -551,9 +597,11 @@
       },
       luxury: {
         name: 'MONARCH V12',
-        // A full-size luxury saloon (Phantom / S-Class): 5.3 m, 1.95 m body.
+        // A full-size luxury saloon.
         l: 5.3 * UNITS_PER_METRE,
         w: 2.24 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 250,
         zeroTo: [100, 5.0],
         brakeG: 1.1,
@@ -570,9 +618,11 @@
         balance: -0.4,
         name: 'RANGER 4X4',
         offroad: true,
-        // A full-size luxury SUV (Range Rover / Land Cruiser): 4.95 m, 1.95 m body.
+        // A mid-size SUV.
         l: 4.95 * UNITS_PER_METRE,
         w: 2.24 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 175,
         zeroTo: [100, 9.0],
         brakeG: 0.95,
@@ -588,9 +638,11 @@
       pickup: {
         balance: -0.4,
         name: 'WORKHORSE',
-        // A full-size crew-cab pickup (F-150): 5.6 m, 1.94 m body.
+        // A full-size pickup, 2.0 m body, 1.95 m tall.
         l: 5.6 * UNITS_PER_METRE,
         w: 2.23 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 165,
         zeroTo: [100, 10.0],
         brakeG: 0.9,
@@ -606,8 +658,10 @@
       truck: {
         balance: -0.7,
         name: 'ATLAS BOX TRUCK',
-        l: 86,
-        w: 31,
+        // A box truck, 2.55 m body.
+        l: 10 * UNITS_PER_METRE,
+        w: 2.8 * UNITS_PER_METRE,
+        modelScale: 0.9,
         topKmh: 115,
         zeroTo: [100, 21],
         brakeG: 0.7,
@@ -623,8 +677,10 @@
       bus: {
         balance: -0.8,
         name: 'METRO CITY BUS',
-        l: 96,
-        w: 31,
+        // A twelve-metre city bus, 2.55 m wide, 3.2 m tall.
+        l: 12 * UNITS_PER_METRE,
+        w: 2.8 * UNITS_PER_METRE,
+        modelScale: 0.82,
         topKmh: 100,
         zeroTo: [50, 9],
         brakeG: 0.65,
@@ -641,8 +697,10 @@
       ambulance: {
         balance: -0.5,
         name: 'PARAMEDIC',
-        l: 59,
-        w: 27,
+        // A box ambulance, 2.3 m body.
+        l: 6.7 * UNITS_PER_METRE,
+        w: 2.5 * UNITS_PER_METRE,
+        modelScale: 0.78,
         topKmh: 155,
         zeroTo: [100, 12],
         brakeG: 0.85,
@@ -684,9 +742,11 @@
         balance: 0.1,
         mass: 1.25,
         name: 'VOLT COUPE',
-        // A compact electric fastback (Model 3 / Polestar 2): 4.4 m, 1.8 m body.
+        // A compact coupe.
         l: 4.4 * UNITS_PER_METRE,
         w: 2.07 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 205,
         zeroTo: [100, 6.5],
         brakeG: 1.05,
@@ -701,9 +761,11 @@
         balance: 0.6,
         mass: 1.65,
         name: 'DUKE V8',
-        // A muscle car (Challenger / Mustang): 5.0 m, 1.92 m body.
-        l: 5.0 * UNITS_PER_METRE,
+        // A muscle car.
+        l: 5 * UNITS_PER_METRE,
         w: 2.2 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 245,
         zeroTo: [100, 5.0],
         brakeG: 1.0,
@@ -717,9 +779,11 @@
       taxi: {
         mass: 1.5,
         name: 'CITY CAB',
-        // A boxy full-size cab sedan (Crown Victoria): 4.9 m, 1.85 m body.
+        // A sedan cab.
         l: 4.9 * UNITS_PER_METRE,
         w: 2.13 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 175,
         zeroTo: [100, 9.5],
         brakeG: 1.0,
@@ -734,9 +798,11 @@
         balance: -0.5,
         mass: 2.35,
         name: 'MULE VAN',
-        // A high-roof panel van (Transit / Sprinter): 5.25 m, 2.0 m body.
+        // A panel van.
         l: 5.25 * UNITS_PER_METRE,
         w: 2.3 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 150,
         zeroTo: [100, 13],
         brakeG: 0.85,
@@ -751,9 +817,11 @@
         balance: 0.2,
         mass: 1.1,
         name: 'COMET GT',
-        // A rear-engined sports coupe (911): 4.5 m, 1.85 m body.
+        // A sports coupe.
         l: 4.5 * UNITS_PER_METRE,
         w: 2.13 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 290,
         zeroTo: [100, 3.8],
         brakeG: 1.15,
@@ -767,9 +835,11 @@
       sedan: {
         mass: 1.45,
         name: 'REGENT',
-        // A mid-size sedan (Camry / Accord): 4.85 m, 1.85 m body, 1.45 m tall.
+        // A mid-size sedan, 1.85 m body, 1.47 m tall.
         l: 4.85 * UNITS_PER_METRE,
         w: 2.13 * UNITS_PER_METRE,
+        // Built at real size (cars3d.js / motorbikes3d.js).
+        modelScale: 1,
         topKmh: 180,
         zeroTo: [100, 9.0],
         brakeG: 1.0,
@@ -910,8 +980,10 @@
       },
       jetski: {
         name: 'RIPTIDE JET SKI',
-        l: 29,
-        w: 13,
+        // A sit-down jet ski.
+        l: 3.3 * UNITS_PER_METRE,
+        w: 1.25 * UNITS_PER_METRE,
+        modelScale: 0.9,
         max: 50 * KNOTS,
         acc: 0.55 * GRAVITY,
         turn: 2.5,
@@ -923,8 +995,12 @@
       },
       helicopter: {
         name: 'MAVERICK HELICOPTER',
+        // An H125 / Bell 407 class light single: 10.75 m over the rotor, 4.25 m
+        // across the skids and stabiliser. helicopter3d.js builds every look at
+        // real size (the UH-60 class military one fitted to this footprint).
         l: 86,
         w: 34,
+        modelScale: 1,
         // Cruise flat out at about 240 km/h (helicopterControl).
         max: 250 * KMH,
         acc: 0.5 * GRAVITY,
@@ -936,8 +1012,10 @@
       police: {
         mass: 1.6,
         name: 'PATROL UNIT',
-        l: 45,
-        w: 23,
+        // A pursuit sedan or utility.
+        l: 5.1 * UNITS_PER_METRE,
+        w: 2.18 * UNITS_PER_METRE,
+        modelScale: 0.8,
         topKmh: 230,
         zeroTo: [100, 6.3],
         brakeG: 1.1,
@@ -1322,6 +1400,8 @@
         return moveOnDeck(displacementX, displacementY, collisionRadius);
       if (body === player && player.buildingRoof)
         return moveOnBuildingRoof(displacementX, displacementY, collisionRadius);
+      // In the Marea pool: held inside the water (clubpool.js).
+      if (body === player && player.pool) return movePoolSwimmer(displacementX, displacementY);
       let hit = false;
       // Vehicle test: a cheap bounding box rejects almost every vehicle before the
       // rotated point-in-car test (this runs for every pedestrian step each frame).
@@ -1421,6 +1501,20 @@
           junction: null,
           hazard: false,
           spinUntil: 0,
+          // The player's front tyres held against the grip limit (seconds) and the
+          // scrub that follows (0..1), and whether the driver is steering into a
+          // slide (physics.js UNDERSTEER SKID, TYRE STIFFNESS).
+          skidHold: 0,
+          skid: 0,
+          counterSteer: false,
+          handbrakeTurn: false,
+          // The velocity going into the last contact (resolveContact): a thrown
+          // rider keeps it (riders.js). A two-wheeler down on its side (riders.js).
+          impactVx: 0,
+          impactVy: 0,
+          fallen: null,
+          // A driver's car more than 15 degrees off its way (physics.js driverStats).
+          sliding: false,
           // Road or pavement under the middle last step (kerbStrike), and the
           // vehicle that last hit a braced roadblock cruiser (roadblocks.js).
           onTarmac: null,
@@ -1907,6 +2001,15 @@
       buildVinnyDepot();
       buildSunsetPier();
       buildCounty();
+      // Plan heights to real storeys (realBuildingHeight). Fort Sentinel's buildings
+      // (base3d.js), Vinny's depot walls and the Blue Hour (ROOFTOP) are given in
+      // real units already.
+      for (const b of buildings) if (!b.military && !b.depotWall && !b.roofBar) b.height = realBuildingHeight(b.height);
+      // A business's own record (civic3d.js dresses its roof from it) follows its building.
+      for (const place of PLACES) {
+        const b = place.kind !== 'rooftop' && buildings.find((o) => o.place === place.id);
+        if (b) place.height = b.height;
+      }
       for (const r of SERVICE_ROADS.filter((r) => r.name.startsWith('SOUTHPORT ')))
         strokeRoad(groundContext, r.points, r.width, '#606664');
       paintServiceForecourts(groundContext, true);
@@ -2257,6 +2360,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
+      player.thrown = null;
       if (player.roof || player.buildingRoof) {
         player.roof = false;
         player.buildingRoof = null;
@@ -2408,7 +2512,7 @@
       tone(160, 0.06, 0.15, 'triangle');
     }
     function interact() {
-      if (gameMode !== 'play' || player.parachute || rideSkipActive()) return;
+      if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
       // On a building roof the only thing to do is fly off again.
       if (player.buildingRoof && !player.car) {
         const c = nearestCar();
@@ -2420,6 +2524,8 @@
       if (transitInteract()) return;
       if (parkInteract()) return;
       if (beachClubInteract()) return;
+      // The Marea pool, club conversations and beach volleyball (leisure.js).
+      if (leisureInteract()) return;
       if (marinaInteract()) return;
       if (taxiInteract()) return;
       if (
@@ -2432,6 +2538,8 @@
         return;
       if (player.car) {
         if (garageInteract()) return;
+        // Riding a share bike into a station docks it (cycles.js BIKE SHARE).
+        if (bikeShareInteract()) return;
         exitCar();
         return;
       }
@@ -2446,6 +2554,8 @@
         offerMission();
         return;
       }
+      // RENT BIKE at a South Coast Cycle station (cycles.js BIKE SHARE).
+      if (bikeShareInteract()) return;
       const c = nearestCar();
       if (c) {
         if (vehicleIsLocked(c)) {
@@ -2468,6 +2578,8 @@
     function enterVehicle(c) {
         player.buildingRoof = null;
         player.car = c;
+        // A bike that went down is picked up and ridden on (riders.js).
+        c.fallen = null;
         c.ramUntil = 0;
         enforceVehicleHandgun();
         c.abandonedFlight = false;
@@ -2672,6 +2784,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
+      player.thrown = null;
       cleanupMissionExtras();
       clearDepotFloor();
       repairJob = null;
@@ -3245,7 +3358,7 @@
               (b.enemy && b.faction === p.faction)
             )
               continue;
-            if (Math.hypot(b.x - p.x, b.y - p.y) >= 10) continue;
+            if (Math.hypot(b.x - p.x, b.y - p.y) >= PERSON_HIT_RADIUS) continue;
             // A precision-rifle round on the target it was aimed at is a headshot:
             // one shot, whatever the vest.
             // A riot shield stops a round from the front: sparks, no wound (swat.js).
@@ -3278,7 +3391,7 @@
             sameFloor(b, player) &&
             !player.car &&
             (b.faction !== 'police' || b.target === player) &&
-            Math.hypot(b.x - player.x, b.y - player.y) < 10
+            Math.hypot(b.x - player.x, b.y - player.y) < PERSON_HIT_RADIUS
           ) {
             if (b.damageKind === 'sniper') sniperFireStats.hits++;
             hurt(b.playerDmg ?? b.dmg, b.damageKind);
@@ -3351,12 +3464,15 @@
         timed('drawbridge', () => updateDrawbridge(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
+        // The on-foot figure in the speed box (hud.js SPEED BOX).
+        trackPlayerPace(deltaSeconds);
         updateWeather(deltaSeconds);
         updateSwimming(deltaSeconds);
         updateMarinaFooting();
         updateSinking(deltaSeconds);
         timed('beach', () => updateBeach(deltaSeconds));
         timed('beachclub', () => updateBeachClub(deltaSeconds));
+        timed('leisure', () => updateLeisure(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
@@ -3366,6 +3482,8 @@
           !transitRide &&
           !taxiRide &&
           !player.coaster &&
+          // Thrown off a bike: flying, sliding or lying there (riders.js).
+          !updateThrownPlayer(deltaSeconds) &&
           !updateMountainFooting(deltaSeconds)
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
@@ -3393,12 +3511,16 @@
           !player.swimming &&
           !player.wading &&
           !player.climbing &&
+          !player.pool &&
+          !((player.jumpUntil || 0) > gameTime) &&
           !transitRide &&
           !taxiRide &&
           !player.coaster
         )
           player.altitude = terrainHeight(player.x, player.y);
-        if (keys.KeyF || (!player.car && keys.Space) || mouse.down) shoot();
+        // On the volleyball court a click hits the ball instead (beachvolley.js);
+        // nothing is fired while thrown off a bike (riders.js).
+        if (!volleyTakesFire() && !player.thrown && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
           tone(220, 0.08, 0.04, 'sawtooth');
         if (keys.KeyE && canSilentHit(rooftopJob())) {
@@ -4204,9 +4326,9 @@
       coastPath(drawingContext);
       drawingContext.clip();
       for (const b of buildings) {
-        drawingContext.fillStyle = b.tropical ? '#c4beb2' : b.height > 110 ? '#354953' : '#43585a';
+        drawingContext.fillStyle = b.tropical ? '#c4beb2' : b.height > realBuildingHeight(110) ? '#354953' : '#43585a';
         drawingContext.fillRect(b.x, b.y, b.w, b.h);
-        if (big && b.height > 110) {
+        if (big && b.height > realBuildingHeight(110)) {
           drawingContext.fillStyle = '#75888b';
           drawingContext.fillRect(b.x + 7, b.y + 7, b.w - 14, 8);
         }
@@ -4291,6 +4413,7 @@
       if (!big) drawGpsRoutes(drawingContext, scale);
       drawCountyMap(drawingContext, scale, big);
       drawGarageMap(drawingContext, scale);
+      drawBikeShareMap(drawingContext, scale, big);
       drawAirCoverMap(drawingContext, scale);
       drawDrawbridgeMap(drawingContext, scale, big);
       drawAviationMap(drawingContext, scale);
@@ -4608,45 +4731,8 @@
         : reloadSecondsRemaining > 0
           ? 'LOADING'
           : keyName('reload');
-      getElement('vehicleName').textContent = transitRide
-        ? 'CITY RAIL'
-        : c
-          ? vehicleSpec(c).name
-          : player.swimming
-            ? 'SWIMMING'
-            : player.wading
-              ? 'WADING'
-              : 'ON FOOT';
-      // The speed readout doubles as the breath gauge while you are in the water.
-      const swimming = !c && player.swimming;
-      getElement('speed').textContent = swimming
-        ? Math.round(breathFraction() * 100)
-        : c
-          ? Math.round(
-              // Boats read knots; everything else km/h (both from UNITS_PER_METRE).
-              isBoat(c)
-                ? Math.hypot(c.vx || 0, c.vy || 0) / KNOTS
-                : speedKmh(c.type === 'plane' ? c.airspeed || Math.abs(c.speed) : Math.abs(c.speed)),
-            )
-          : '';
-      getElement('speedUnit').textContent = swimming
-        ? '% BREATH'
-        : c
-          ? isAircraft(c)
-            ? 'KM/H · ' + Math.round(worldMeters(c.altitude)) + ' m ALT · ' + roofClearanceText(c)
-            : ridingBicycle()
-              ? 'KM/H · ' +
-                Math.round(pedalCadence() * 60) +
-                ' RPM · LEGS ' +
-                Math.round((cycleStamina / CYCLE_STAMINA_MAX) * 100) +
-                '%'
-              : isBoat(c)
-                ? 'KNOTS'
-                : 'KM/H'
-          : '';
-      getElement('carFill').style.width = c ? clamp((c.hp / c.maxhp) * 100, 0, 100) + '%' : '0%';
-      getElement('vehicleStats').classList.toggle('damaged', !!c && c.hp < c.maxhp * 0.3);
-      getElement('vehicleStats').classList.toggle('active', !!c || swimming || !!transitRide);
+      // The speed box: vehicles, on foot, swimming and falling (hud.js SPEED BOX).
+      updateSpeedBox();
       const target = objective(),
         m = mission;
       getElement('pager').classList.toggle('hidden', !m && incomingCallRemaining <= 0);
@@ -4693,9 +4779,12 @@
       let prompt = '',
         promptId,
         promptKey = 'interact';
+      // A bike-share station in reach: RENT BIKE on foot, DOCK BIKE on a share bike.
+      const bikeShare = gameMode === 'play' && !rideSkipActive() ? bikeShareOffer() : null;
       // A passenger ride that can be skipped offers that first (ride-skip.js).
       const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
-      if (gameMode === 'play' && rideSkipActive()) prompt = '';
+      // Thrown off a bike (riders.js): nothing to offer until back on their feet.
+      if (gameMode === 'play' && (rideSkipActive() || player.thrown)) prompt = '';
       else if (skip) {
         prompt = skip.prompt;
         promptId = skip.id;
@@ -4718,7 +4807,11 @@
               aircraftClearance(c) > 1
                 ? keyName('ascend') + ' RISE · ' + keyName('descend') + ' DESCEND · ' + moveKeysName() + ' FLY'
                 : keyName('ascend') + ' TAKE OFF · ' + keyName('interact') + ' EXIT';
-          else if (garageForCar(c))
+          else if (bikeShare) {
+            prompt = bikeShare.text;
+            promptId = 'bikeshare';
+            promptKey = bikeShare.key;
+          } else if (garageForCar(c))
             prompt = repairJob
               ? 'RESPRAYING…'
               : garageServiceCost(c) === 0
@@ -4734,8 +4827,16 @@
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (payphoneInReach() && !m && missionIndex < missions.length) prompt = 'ANSWER PAYPHONE';
-        else if (sportsKickPrompt()) prompt = sportsKickPrompt();
-        else {
+        else if (bikeShare) {
+          prompt = bikeShare.text;
+          promptId = 'bikeshare';
+          promptKey = bikeShare.key;
+        } else if (sportsKickPrompt()) prompt = sportsKickPrompt();
+        else if (leisurePrompt()) {
+          const leisure = leisurePrompt();
+          prompt = leisure.text;
+          promptId = leisure.id;
+        } else {
           const n = nearestCar();
           promptId = 'vehicle';
           if (n)
@@ -4887,7 +4988,7 @@
     function newGame() {
       initAudio();
       cancelRideSkip();
-      worldZoom = worldZoomTarget = 1;
+      worldZoom = worldZoomTarget = STREET_ZOOM;
       airDispatchTimer = 0;
       casinoRound = null;
       casinoAngle = 0;
@@ -4963,6 +5064,9 @@
       player.coaster = null;
       player.parachute = null;
       player.climbing = null;
+      player.thrown = null;
+      player.pool = null;
+      player.jumpUntil = 0;
       // Off any roof: the Blue Hour terrace or a building roof.
       if (player.roof || player.buildingRoof) {
         player.roof = false;
@@ -5325,6 +5429,7 @@
     // @include src/chase.js
     // @include src/roadblocks.js
     // @include src/carjack.js
+    // @include src/riders.js
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js
@@ -5333,6 +5438,7 @@
     // @include src/weather-audio.js
     // @include src/water.js
     // @include src/water-audio.js
+    // @include src/beachvolley.js
     // @include src/beach.js
     // @include src/roofmission.js
     // @include src/rooftops.js
@@ -5370,6 +5476,9 @@
     // @include src/crowd.js
     // @include src/beachclub.js
     // @include src/beachclub-audio.js
+    // @include src/clubpool.js
+    // @include src/clubtalk.js
+    // @include src/leisure.js
     // @include src/ambience.js
     // @include src/quality.js
     // @include src/settings.js
@@ -5518,7 +5627,9 @@
       const updateStart = performance.now();
       // The city keeps living behind the title menu, and behind settings opened
       // from it. WASTED and BUSTED play out in slow motion.
-      if (
+      // A test holding the simulation (console `holdSimulation`) still draws.
+      if (simulationHeld) soundUpdate(0);
+      else if (
         gameMode === 'play' ||
         gameMode === 'menu' ||
         (gameMode === 'settings' && settingsOrigin === 'menu')
@@ -5553,6 +5664,35 @@
       version: GAME_VERSION,
       // The world scale (game.js WORLD SCALE): map units to the metre.
       unitsPerMetre: UNITS_PER_METRE,
+      // World-scale audit, everything in metres: each road vehicle's spec
+      // (length, width), the built models within `radius` of the player measured
+      // from their meshes (length, width, height), the player's model, the crowd
+      // rig's stature range and the city's building heights.
+      scaleReport(radius = 400) {
+        const m = (units) => Math.round(worldMeters(units) * 100) / 100,
+          near = vehicles.filter((c) => distanceBetween(c, player) < radius),
+          extents = city3D?.modelExtents?.([...near, player]) || [],
+          size = (e) => (e ? { l: m(e.l), w: m(e.w), h: m(e.h) } : null),
+          rig = city3D?.crowdRigHeight?.() || 0,
+          statures = pedestrians.filter((p) => p.look).map((p) => (p.look.height || 1) * rig * PERSON_SCALE),
+          heights = buildings.map((b) => b.height).sort((a, b) => a - b),
+          pick = (list, q) => (list.length ? m(list[Math.min(list.length - 1, Math.floor(q * list.length))]) : null);
+        return {
+          unitsPerMetre: UNITS_PER_METRE,
+          specs: Object.fromEntries(Object.entries(VEHICLE_DEFINITIONS).map(([type, s]) => [type, { l: m(s.l), w: m(s.w) }])),
+          models: near
+            .map((c, i) => ({ id: c.id, type: c.type, look: c.policeLook?.body || c.lawUnit || null, ...size(extents[i]) }))
+            .filter((row) => row.l),
+          player: size(extents[near.length]),
+          crowd: {
+            rig: m(rig * PERSON_SCALE),
+            shortest: pick(statures.filter((s) => s > rig * 0.8 * PERSON_SCALE).sort((a, b) => a - b), 0),
+            average: statures.length ? m(statures.reduce((s, v) => s + v, 0) / statures.length) : null,
+            tallest: pick(statures.sort((a, b) => a - b), 1),
+          },
+          buildings: { count: heights.length, lowest: pick(heights, 0), median: pick(heights, 0.5), p90: pick(heights, 0.9), tallest: pick(heights, 1) },
+        };
+      },
       // Mend the player's vehicle as a repair bay would (for repeatable physics tests).
       repair() {
         if (!player.car) return null;
@@ -5954,6 +6094,12 @@
       weather: () => weatherReport(),
       // Bring a shower in: overcast now, rain after `seconds` (the machine runs on).
       weatherFront: (seconds) => weatherFront(seconds),
+      // Set how wet the streets are (0 dry .. 1 soaked); after rain it dries on
+      // from there (weather.js), so a test can look at a drying street at once.
+      wetness: (value) => {
+        weather.wet = clamp(Number(value) || 0, 0, 1);
+        return weatherReport();
+      },
       // A lightning strike `distance` map units from the player (thunder follows).
       lightning: (distance = 900) => {
         const s = lightningStrike(distance);
@@ -6010,6 +6156,22 @@
         for (const code of held) keys[code] = false;
         return this.ride();
       },
+      // South Coast Cycle (cycles.js BIKE SHARE): every station, its docks and
+      // bikes, the prompt in reach, what renting and docking have cost.
+      bikeShare: () => bikeShareReport(),
+      // Stand at bike-share station `id` (from bikeShare().list), facing its bikes.
+      bikeStation(id = 0) {
+        return goToBikeStation(id);
+      },
+      // The speed box as shown: mode, label, figure and unit line (hud.js SPEED BOX).
+      speedBox: () => (updateSpeedBox(), {
+        active: getElement('vehicleStats').classList.contains('active'),
+        mode: getElement('vehicleStats').dataset.mode,
+        label: getElement('vehicleName').textContent,
+        speed: getElement('speed').textContent,
+        unit: getElement('speedUnit').textContent,
+        units: hudState.units,
+      }),
       // Rack a bicycle beside the player.
       bike(headingRadians = player.a) {
         spawnClearCar(
@@ -6077,6 +6239,25 @@
         })),
       // Palm Keys Beach: how busy it is and what everyone is doing (beach.js).
       beach: () => beachStatus(),
+      // The Marea pool (clubpool.js): the water, the player's phase in it (dive,
+      // swim, out), whether SWIM / GET OUT are offered, breath, club swimmers.
+      clubPool: () => clubPoolReport(),
+      // Stand on the deck at the pool's south edge (then interact() dives in).
+      clubPoolEdge: () => clubPoolEdge(),
+      // Club conversations (clubtalk.js): the script count by personality, the one
+      // running (lines, pose), the candidate and stand timer, the bubbles on screen.
+      clubTalk: () => clubTalkReport(),
+      // Stand beside the nearest club-goer who can talk (standing still starts it).
+      clubTalkApproach: () => clubTalkApproach(),
+      // Beach volleyball (beachvolley.js): court, phase, score, ball, players, the
+      // player in the match, rallies and the recent log.
+      volley: () => volleyReport(),
+      // Step onto the court on a side (0 west, 1 east) and join the match.
+      volleyJoin: (team = 0) => volleyJoinConsole(team),
+      // Lob the ball from across the net to the player in the match.
+      volleyLob: () => volleyLobToPlayer(),
+      // The court against the beach plan: anything laid on it or its clear zone.
+      volleyCourtCheck: () => volleyCourtCheck(),
       // Marea Beach Club: phase, levels, who is where, the queue and the door,
       // the music (beachclub.js). `beachClub('trouble')` raises gunfire on its
       // dance floor as if someone fired there, for tests of the evacuation.
@@ -6192,6 +6373,10 @@
         rideAttraction(kind);
         return parkReport().riding;
       },
+      // The Falcon riders' scream cues (track position, height, vertical speed, g) and lines; `reset` clears the log.
+      coasterVoices: (reset = false) => falconVoicesReport(!!reset),
+      // Speech bubbles and height: the view's height over someone on the ground at the view's centre, and their bubble's fade.
+      speechView: () => speechViewReport(),
       // Every train on the network: where it is, how fast, and whether it carries the player.
       trains: () =>
         railTrains.map((t) => ({
@@ -6445,6 +6630,15 @@
       // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
       // streetProps(), damageStats() (see damage.js damageConsole).
       ...damageConsole(),
+      // Handling: turnTest(), pose(), aiDriving(), riderReport(), rideInto(),
+      // bridgeJump() (see physics.js handlingConsole).
+      ...handlingConsole(),
+      // Stop the frame loop's simulation (it still draws) so a screenshot sequence
+      // can be stepped with simulate(); false lets it run again.
+      holdSimulation(on = true) {
+        simulationHeld = !!on;
+        return simulationHeld;
+      },
       // Sound: audioMix(), engineSound(), rainSound() (see audio.js audioConsole).
       ...audioConsole(),
       // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
@@ -6504,6 +6698,20 @@
           return { id: c.id, type, name: spec.name };
         });
       },
+      // Helicopter review (helicopter3d.js): parks one helicopter of each look
+      // ('police', 'news', 'executive', 'military') in a row east from (x, y),
+      // `spacing` apart, facing `heading`; `rotors` true spins them up (with the police lights
+      // running). Returns the ids and looks.
+      helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110) {
+        return ['police', 'news', 'executive', 'military'].map((heliLook, i) => {
+          const c = makeCar('helicopter', x + i * spacing, y, heading, false);
+          Object.assign(c, { heliLook, showRotor: !!rotors, showLights: rotors ? 'pursuit' : false });
+          return { id: c.id, look: heliLook };
+        });
+      },
+      // Every helicopter model built: look, rotor spool, draw calls, shadow casters,
+      // triangles, crew shown (helicopter3d.js).
+      helicopterModels: () => city3D?.helicopterModels?.() ?? null,
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
       // pass). On AUTO the adaptive controller may change it again.
       renderScale(scale) {
@@ -6519,6 +6727,7 @@
           if (changes.audioReset === true) resetAudioVolumes();
           if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
           if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
+          if (typeof changes.playerOutline === 'boolean') settings.playerOutline = changes.playerOutline;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -6530,6 +6739,9 @@
           if (typeof changes.keyHints === 'boolean') setKeyHints(changes.keyHints);
           if (typeof changes.flightHud === 'boolean') setFlightHud(changes.flightHud);
           if (typeof changes.gps === 'boolean') setGps(changes.gps);
+          // 'kmh' or 'mph' (hud.js SPEED BOX); the speed box on foot.
+          if (typeof changes.units === 'string') setSpeedUnits(changes.units.toLowerCase());
+          if (typeof changes.footSpeed === 'boolean') setFootSpeed(changes.footSpeed);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
@@ -6543,6 +6755,7 @@
           frameLimit: frameLimit() || 'unlimited',
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,
+          playerOutline: settings.playerOutline,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,
@@ -6555,6 +6768,8 @@
           keyHints: hudState.keyHints,
           flightHud: hudState.flightHud,
           gps: hudState.gps,
+          units: hudState.units,
+          footSpeed: hudState.footSpeed,
           gpsRoute: gpsRoute.points.length,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,
@@ -6585,6 +6800,11 @@
       postView: (mode) => city3D?.postView?.(mode) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
+      // Shadow casters near the view that the camera pass does not show.
+      // What casts the sun's shadow onto the ground point (x, y).
+      shadowProbe: (x, y) => city3D?.shadowProbe?.(Number(x), Number(y)) ?? null,
+      // With `everywhere`, every see-through caster in the scene.
+      shadowCasters: (limit, everywhere) => city3D?.shadowCasters?.(limit, !!everywhere) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

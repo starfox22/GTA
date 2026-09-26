@@ -1,5 +1,343 @@
 # Changelog
 
+## Unreleased — tighter steering, rain for every driver, riders thrown, helicopters that break up, the drawbridge launch
+
+Steering (physics.js STEER_LOCK, TYRE STIFFNESS, UNDERSTEER SKID; measured with `turnTest`)
+- Low-speed lock 13% tighter (`STEER_LOCK`, a game's allowance on each class's `turn`); the
+  player's car takes up the yaw in 0.12 s (`PLAYER_YAW_RESPONSE` 8.5/s, was 5); the tyres'
+  sideways force now peaks at a 7-degree slip (`TYRE_PEAK_SLIP`), so a car follows its nose
+  (7 degrees of body slip at the limit at 30 km/h, was 13-14) instead of drifting wide.
+- Held against the grip limit above 28 km/h for over half a second, the front tyres scrub:
+  howl, marks, up to 0.12 g off, so a corner taken too fast tightens as the car slows. Taps,
+  lane changes and sweeping bends are untouched. Skid marks also for slides past ~10 degrees.
+- Handbrake: full swing by 15 km/h (was 30) and the yaw carries on through the slide, so a
+  30 km/h handbrake turn goes round. Counter-steering into a slide makes the fronts bite 1.5x.
+- Grip-limited cornering (g at 40/60 km/h) is unchanged: at speed the tyres still decide.
+
+| Class | Min radius m (kerb-to-kerb) before -> after | 20 km/h radius | 40 km/h radius (g) | 60 km/h radius (g) | 90° corner from 35 km/h coasting, forward x sideways m | Handbrake from 30 km/h, degrees |
+| --- | --- | --- | --- | --- | --- | --- |
+| Sedan | 3.9 (10.5) -> 3.4 (9.6) | 4.2 -> 3.5 | 10.4 -> 10.2 (1.23) | 22.3 -> 20.6 (1.25) | 9.2 x 4.7 -> 8.2 x 5.3 | 85 -> 90 |
+| Coupe | 3.4 (9.2) -> 3.0 (8.4) | 3.7 -> 3.0 | 9.4 -> 9.2 | 20.1 -> 19.1 | 8.7 x 4.3 -> 7.7 x 4.9 | 92 -> 94 |
+| Sport | 3.0 (8.6) -> 2.6 (7.9) | 3.3 -> 2.7 | 8.4 -> 8.0 | 17.8 -> 17.6 | 7.7 x 3.5 -> 6.7 x 4.3 | 94 -> 96 |
+| Supercar | 3.4 (9.6) -> 3.0 (8.8) | 3.5 -> 3.0 | 7.8 -> 7.5 | 16.9 -> 16.9 | 7.4 x 3.7 -> 6.5 x 4.2 | 89 -> 94 |
+| Muscle | 4.1 (11.0) -> 3.6 (10.1) | 4.3 -> 3.6 | 10.0 -> 9.9 | 21.3 -> 20.9 | 9.0 x 4.4 -> 8.1 x 5.0 | 81 -> 87 |
+| Patrol car | 3.4 (9.6) -> 3.0 (8.8) | 3.7 -> 3.0 | 9.5 -> 9.2 | 20.3 -> 19.3 | 8.3 x 4.0 -> 7.4 x 4.6 | 90 -> 93 |
+| SUV | 4.7 (12.6) -> 4.1 (11.4) | 4.9 -> 4.2 | 11.9 -> 11.6 | 25.7 -> 23.3 | 10.1 x 5.1 -> 9.1 x 5.8 | 77 -> 84 |
+| Van | 5.2 (13.7) -> 4.6 (12.5) | 5.4 -> 4.7 | 12.8 -> 12.2 | 28.1 -> 24.9 | 10.5 x 5.8 -> 9.6 x 6.1 | 70 -> 78 |
+| Box truck | 8.0 (19.8) -> 7.0 (17.9) | 8.1 -> 7.1 | 17.2 -> 15.5 | 37.0 -> 30.3 | 13.3 x 7.5 -> 12.1 x 7.6 | 50 -> 61 |
+| Bus | 9.5 (22.8) -> 8.4 (20.6) | 9.6 -> 8.4 | 16.7 -> 14.3 | 37.1 -> 29.9 | 14.1 x 8.5 -> 12.8 x 8.3 | 42 -> 52 |
+| Motorbike | 2.7 (6.7) -> 2.4 (6.0) | 3.0 -> 2.5 | 10.0 -> 9.9 | 21.9 -> 22.2 | 8.8 x 4.9 -> 7.9 x 4.9 | 98 -> 96 |
+| Bicycle | 2.2 (5.4) -> 1.9 (4.9) | 3.4 -> 3.3 | (35 km/h) 11.2 -> 11.1 | - | 11.7 x 7.6 -> 10.9 x 7.6 | - |
+
+  A 2-lane street is 11 m kerb to kerb: every car now U-turns in one sweep (a sedan in 9.6 m),
+  vans and pickups with one shunt; trucks and buses need the junction.
+
+Rain for every driver (physics.js controlVehicle; `aiDriving(reset)` counts)
+- Traffic's cornering, brakes and traction shrink with `wetGrip()`, and it drives 15% slower on
+  a soaked road (sqrt of the grip: the same factor makes trafficControl's stopping and
+  following distances allow for braking at 72%); one driver in eleven keeps dry habits.
+- Police in pursuit steer to 1.1 x the dry limit x (0.7 + 0.3 grip) with wet tyres, and their
+  brakes and traction shrink: a cruiser thrown into a corner in a downpour can slide or spin.
+- Measured downtown (3.3 min of traffic, 2.5 min of a 3-star pursuit on foot; dry -> storm):
+  moving traffic's mean speed 30.5 -> 24.7 km/h, traffic crashes 1 -> 0; police crashes
+  3 -> 6, police slides 0 -> 2 (closing speeds 63-80 -> 58-104 km/h).
+
+Riders thrown off motorbikes and bicycles (new riders.js; physics.js, carjack.js, drawbridge.js)
+- A crash delta-v over 24 km/h on a motorbike (18 on a bicycle), or a drawbridge landing into
+  the road over 6.5 m/s, throws the rider over the bars with the bike's speed going in: a real
+  ballistic arc (climb 0.22 x speed, up to 6 m/s), a somersault, strikes on walls, trunks and
+  tall vehicles (a car's roof is vaulted), a landing and bounces, a slide at 0.62 g (less in
+  the wet), a moment lying still, then up. Damage by the speed into each thing, the landing and
+  road rash, on top of the crash's own injury; god mode survives. The bike slides on alone,
+  cartwheeling while quick, and lies on its side until someone gets on. Traffic's riders do
+  the same as pedestrians. Wanted and crime rules are the crash's own.
+- Measured (`rideInto`, speeds at impact): 15-22 km/h into a car, bicycle 12, 90 km/h on open
+  road: stays on. Motorbike 26 / 34 km/h into a sedan's side: thrown into it, 10 / 21 hp;
+  52 / 77 km/h: over the roof, 7 / 19 hp from the landing and slide plus the crash's 7 / 20,
+  about 30 m from the bike. 35 km/h into a box truck's side: 26 hp; 51 km/h (cruiser): 50 hp
+  plus 8; 76 km/h: dead (god mode: unhurt). Bicycle 17 / 25 km/h: 3 / 10 hp. A traffic rider
+  at 58 km/h lands 32 m on with 49 of 70 hp.
+
+Helicopters and planes break up (physics.js AIRCRAFT STRIKES; `heliInto`)
+- Airborne and faster than 40 km/h into a building, a structure, a big vehicle or a hillside
+  (or touching the ground above 40 km/h, or any terrain contact above 60): destroyed, the
+  usual vehicle explosion, debris and fire, the burning wreck falls; the player dies, or in
+  god mode is thrown clear and lands unhurt. Slower is the ordinary crash damage.
+- The rotor disc (the airframe's length) against a wall: more than 15 km/h toward it is a
+  rotor strike and the same break-up; slower, the tips chip (6 hp), the helicopter is shoved
+  clear and the pilot warned.
+- Measured into a tower's face at 15 m: 10 / 25 / 35 km/h: 0 / 5 / 10 hp; 45 / 60 / 120 km/h:
+  destroyed (mortal at 60: dead). Past the corner with the mast 2.5 m clear: 8 / 12 / 20 km/h
+  grazes (6-12 hp), 40 km/h (28 km/h into the corner) rotor strike. Hillside at 25 km/h: stops
+  against it unhurt; 50 / 100 km/h: destroyed.
+
+Drawbridge (drawbridge.js; `bridgeJump`)
+- Real gravity kept. Leaf geometry checked: the gap is 2 (leaf (1 - cos a) + drop sin a) and
+  the tips stand leaf sin a - drop (1 - cos a) high (12.5 m leaves on trunnions 1 m below the
+  road). New: the kink at the trunnion takes the speed square to the leaf off (a car keeps
+  cos(angle) of its speed up the slope) and hurts above 5 m/s into it; the wheels' push on a
+  leaf enters as its horizontal part; the nose (half the car ahead, pitched) must reach the
+  far tip above it or strikes the leaf's end; a long jump lands on the approach span instead
+  of splashing into "the Sound" beyond the far leaf.
+- Sedan, speed held from 25 m out (throttle floored up the leaf when the slope pulls it under):
+
+| Leaves | Gap / tip height | 20 km/h | 30 | 40 | 60 | 80 | 100 | 140 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 5° | 0.3 / 1.1 m | clears | clears | clears | clears | clears | clears | clears |
+| 10° | 0.8 / 2.1 m | clears | clears | clears | clears (12 hp) | clears (14) | clears (17) | clears (33) |
+| 15° | 1.4 / 3.3 m | clears | clears | clears | clears (22) | clears (30) | clears (43) | clears (70) |
+| 20° | 2.3 / 4.3 m | clears | clears | clears (28) | clears (35) | clears (50) | clears (68) | clears (103) |
+| 25° | 3.3 / 5.3 m | clears | clears | clears (34) | clears (50) | clears (69) | clears (90) | clears (136) |
+| 30° | 4.4 / 6.1 m | clears (just) | clears | clears (43) | clears (62) | clears (85) | clears (110) | lands wrecked (150) |
+| 35° | 5.6 / 7.0 m | strikes the far leaf | clears (just) | clears | clears (74) | clears (100) | clears (129) | lands wrecked |
+| 40° | 7.1 / 7.8 m | falls short | strikes the far leaf | strikes the far leaf | clears (85) | clears (112) | clears (143) | lands wrecked |
+| over 40° | | can't climb (a wall) | | | | | | |
+
+  With leaves this short (a 25 m channel), a car that can climb the leaf clears the gap below
+  about 30 degrees: that is the physics, not a fake gravity. Slow cars fall short from 35
+  degrees. Landings, not the gap, decide the damage: 9-20 m/s into the road.
+
+Console: `turnTest`, `pose`, `aiDriving`, `rideInto`, `riderReport`, `heliInto`, `bridgeJump`,
+`holdSimulation` (docs/DEVELOPMENT.md).
+
+## Unreleased — wet streets, the ULTRA band, phantom shadows
+
+Graphics (postfx3d.js, surfaces3d.js, lighting3d.js, weather3d.js, signage3d.js)
+- **Bug: a faint horizontal band across the road under the player on HIGH / ULTRA.** The
+  half-resolution AO pass read depth at texel corners; which texel came back flipped with
+  float rounding across the middle row of the screen. Depth is now read at texel centres.
+- **Wet streets**: soaked, darker, more saturated tarmac and paving; a glossy film; puddles in
+  dips and gutters with raindrop rings (HIGH / ULTRA); lamps, shop windows and neon streaked
+  down the wet road at night (MEDIUM and up); screen-space reflections of facades, signs,
+  lamps, cars and people (HIGH / ULTRA); patchy drying after the rain. LOW darkens only.
+- **Bug: elongated "shadows" on the streets with nothing casting them.** They were dark ellipses
+  painted into the road sheet; removed.
+- Settings · Graphics · **Player outline at night** (on by default).
+- Console: `wetness(value)`, `shadowProbe(x, y)`, `shadowCasters(limit, everywhere)`,
+  `postView('reflect')`, `settings({ playerOutline })`.
+
+## Unreleased — true scale: vehicles, people, buildings and street furniture
+
+At 8 units to the metre (unchanged; blocks, roads and the map are as they were) every thing in
+the street is now its real size. Measured with `DeadEndCity.scaleReport()` (models from their
+meshes, metres; real references in brackets):
+
+| Item | Before | After | Real |
+| --- | --- | --- | --- |
+| Sedan (REGENT) l x w x h | 5.41 x 2.68 x 1.87 | 4.88 x 2.08 x 1.50 | 4.85 x 2.1 (mirrors) x 1.47 |
+| City cab | 5.41 x 2.79 x 2.14 | 4.93 x 2.08 x 1.71 (sign) | 4.9 |
+| Coupe / sports / supercar | 5.03 / 5.28 / 5.66 | 4.43 / 4.53 / 4.72 | 4.4 / 4.5 / 4.7 |
+| Muscle / luxury / limousine | 5.91 / 6.53 / 9.53 | 5.03 / 5.33 / 8.83 | 5.0 / 5.3 / 8.8 |
+| SUV / van / pickup | 6.16 / 6.03 / 7.37 | 4.97 / 5.28 / 5.57 | 4.95 / 5.25 / 5.6 |
+| Patrol car (charger / utility / Crown Vic) | 5.86 x 2.76 | 5.29 x 2.12 (1.84-2.2 tall) | 5.1-5.2 |
+| Ambulance / box truck / flatbed | 7.32 / 10.6 / 11.82 | 6.63 / 9.85 / 9.57 | 6.7 / 8-10 / 9.5 |
+| Bus | 11.81 x 3.79 x 3.88 | 11.78 x 2.79 x 3.18 | 12 x 2.55 x 3.2 |
+| Bicycle | 4.05 x 1.13 x 2.4 | 1.90 x 0.53 x 1.13 | 1.8 x 0.6 x 1.1 |
+| Sport bike / cruiser | 3.84 / 4.17 | 2.14 / 2.38 (1.17 tall) | 2.1 / 2.4 |
+| Tank (hull; gun and whip past it) | 10.5 collider, 12.8 model | 7.9 collider, 9.0 model | 7.9 hull, 9.8 with gun |
+| Army jeep / APC / cargo truck | 6.84 / 9.75 / 10.62 | 4.6 / 6.4 / 6.7 specs | 4.6 / 6.4-7 / 6.7 |
+| Person (crowd rig, average) | 2.17 (2.02-2.32) | 1.74 (1.63-1.87) | 1.75 (1.6-1.9) |
+| Player | 2.13 | 1.71 standing (1.75 rig) | 1.75 |
+| Storey / ground floor | 1.9 / 1.9 | 3.2 / 4.5 | 3.0-3.5 / 4-5 |
+| Shop door / entrance doors | 1.5 / 2.0 | 2.3 / 2.6 | 2.1-2.4 |
+| Buildings (median / 90% / tallest) | 7.7 / 12.8 / 144 m | 14.0 / 23.2 / 247 m | |
+| Street lamp | 4.25 | 9.0 | 8-10 |
+| Street tree (r 15) / palm | ~4.5 / 3.9 | ~7 / 9 | 6-12 / 8-15 |
+| Bus shelter / bench seat, back | 2.0 / 0.53, 1.16 | 2.5 / 0.45, 0.85 | 2.4-2.6 / 0.45, 0.85 |
+| Mailbox / meter / bollard | 1.0 / 1.1 / 0.65 | 1.3 / 1.3 / 0.9 | 1.3 / 1.2-1.4 / 0.9-1.0 |
+| Lane with gutter / sidewalk / block | 5.5 / 3.5 / 64 | same | (Portland block 61) |
+| Boats, planes, helicopters | true | unchanged | |
+
+Vehicles (game.js VEHICLE_DEFINITIONS, render3d.js DESIGN SIZE)
+- `l` / `w` are written in metres. Each model is built at its design size, (l, w) / `modelScale`,
+  and drawn at `modelScale` (0.8 for cars, 0.47 bicycle, 0.55 sport bike, 0.65-0.9 trucks), so
+  roofs, beltlines, wheels, lamps, lightbars and riders come out real without restyling the
+  models. Dents, loose panels, glass bursts, engine smoke, wheel spin and the body impostors work
+  in design units. Physics reads the new sizes as they are (inertia, the collider, traffic's
+  look-ahead and following gap, which are in metres of bumper-to-bumper space); physics.js is
+  unchanged. The share bike is drawn at its collider already and is not scaled again.
+- Roadblock V: the carriageway cruisers stand 19 units either side of the line (were 22) so the
+  shorter cruisers still overlap past the centre.
+
+People (game.js PEOPLE)
+- `PERSON_HEIGHT` 1.75 m, `PERSON_SCALE` on every rig (crowd, player, officers, actors; officers
+  and actors vary 0.94-1.06 like the crowd's looks). A round hits within `PERSON_HIT_RADIUS` (1 m,
+  was 1.25). Name tags, speech bubbles, dizzy stars, the sniper laser, the aim plane and the
+  crowd impostors follow the height. Cafe chairs lowered to a 0.45 m seat.
+
+Buildings (game.js BUILDINGS, cityscape3d.js, skyline3d.js, civic3d.js, world3d.js)
+- `realBuildingHeight()` turns the plan's heights into real storeys (`STOREY` 3.2 m over a
+  `SHOP_FLOOR` 4.5 m ground floor): towers are 1.7x taller. The Blue Hour roof is 30 m (was 17),
+  its elevator counts 10 floors. Height thresholds (archetypes, setbacks, fire escapes, rooftop
+  helipads, SWAT sniper roofs, wall decals) use the same conversion. Facade textures, curtain
+  walls, balconies, hotel floors, fire escapes and brick courses repeat per real storey.
+- Shopfronts: a 2.3 m door with a transom light, glazing to 3.6 m, awnings at 3.2 m (their air
+  cover and rain drips moved up with them), the sign on the fascia at 5 m. Business entrances:
+  2.6 m doors under a 3.2 m canopy; business signs no lower than the fascia.
+- The sun's shadow box reaches the tallest roof; the police helicopter flies 8 m over the roofs
+  near it (at least 35 m up); the flight HUD's roof clearance reads the real roofs.
+
+Street furniture: lamp posts 9 m (`LAMP_HEIGHT`), street trees about 7 m (`TREE_RISE`), palms
+9 m, bus shelters 2.5 m, benches, mailboxes, meters, news boxes and bollards at real heights.
+
+Camera: the street view starts at `STREET_ZOOM` 1.2 (the wheel reaches 1.8), so a true-size car
+and person read about as large as the old oversized ones.
+
+Checked: layout audit clean (only the known oblique junction notes), smoke test clean, no
+console errors; a drive up Harbor Ave through North Point, a 3-star chase (9 patrols, a
+roadblock) and the Blue Hour elevator mission start. Draw calls at the default street zoom
+(camera, then shadow map; headless, settled frames): Old Quarter 221 / 372 -> 197 / 298, North
+Point towers 166-201 / 284-306 -> 203 / 251, Midtown 533 / 489-588 -> 445 / 454. The taller
+towers cost no more: the closer default zoom takes in less of the city.
+
+## Unreleased — the Marea pool, club conversations and beach volleyball
+
+Marea pool (clubpool.js, water.js)
+- **SWIM · E** at the pool's edge (inside the club only; at night that means past the door with a
+  band): a short dive, a splash and its sound, and a club-goer's remark ("Nice dive!"). In the
+  water the sea's stroke runs unchanged (`swimStroke`, split out of `updateSwimming`): the hard
+  crawl by default, the easy stroke with Shift, the breath gauge, the crawl pose. `player.pool`
+  is a carrier (`movePoolSwimmer` holds the swimmer inside the water; `teleportPlayer` and a far
+  jump let go). Out of breath only slows you here; hanging on at the edge gets it back.
+  **GET OUT · E** at an edge with open deck beyond it steps up onto the deck, dripping for 12 s.
+  No wake on the sea under the pool; the police send no boats for a swimmer in the pool.
+- Works by day and at night (the pool is lit after dark); the club's own pool swimmers keep
+  swimming by day.
+
+Conversations with club-goers (clubtalk.js)
+- Stand next to a club-goer for about a second (or **TALK · E**) and the two of you trade
+  alternating speech bubbles, four to six lines: 41 scripts across tourists, influencers,
+  bartenders, businessmen, DJ fans, bouncers and swimmers, by day and by night (the DJ, cocktails,
+  the sunset, yachts, gossip, a hint of the city's crime, friendly flirting), with alternative lines
+  and forked endings. No script repeats until every one that fits the hour has been heard. The
+  club-goer turns to the player, waves, talks with their hands; walking away gets a "Catch you
+  later!". E moves a conversation on.
+- The player's lines use the crowd's bubbles (`clubTalkSpeakers` in speechBubbles); both speakers
+  are `inConversation`, which ranks their lines first, so the two bubbles stay with the
+  conversation. NPC chatter off: no conversations.
+
+Beach volleyball (beachvolley.js, beachvolley3d.js, beach.js, beach3d.js)
+- The small court is now a regulation one (16 x 8 m, net 2.43 m) in a raked sand pit at
+  x -2322, y 5450 on the upper sand, with padded poles, guy ropes, antennas, a boundary tape and
+  a scoreboard; the clear zone is reserved so towels and umbrellas stay off it
+  (`DeadEndCity.volleyCourtCheck()`: clear).
+- The four players play 2 v 2 by rally scoring to 15 (win by two) with a physics ball: every touch
+  is solved for a target and an apex, so the AI runs to where it will come down; bump to the
+  setter, set, jump spike or shot into the open court, with shanks, tight sets, spikes into the net
+  and long; the net stops a low ball, the sand swallows the bounce, in / out decides the point.
+  Sand kicks, hit and landing sounds, the whistle; the winners cheer, the beach roars.
+- **JOIN MATCH · E** on the court: the player takes the nearer player's place (who watches from
+  the sideline). E or a left click hits a ball in reach (a press just early is held), aimed with
+  the mouse or the movement keys; Shift + hit is a soft set to the partner; running into a high
+  ball by the net is a jump spike. A ring marks where the player's ball comes down; a hint card
+  shows the score and the controls. Walk off the court or **LEAVE MATCH · E** between points.
+- Six beachgoers watch from the sides and cheer the points.
+
+## Unreleased — speed box on foot, km/h / mph, South Coast Cycle bike share
+
+Speed box (hud.js SPEED BOX)
+- The vehicle speed box now also shows on foot, swimming and under a parachute, in the same
+  style: the movement state (STANDING, WALKING, RUNNING, WADING, CLIMBING, SWIMMING · CRAWL /
+  BREASTSTROKE / TREADING WATER, FALLING · FREEFALL / CANOPY) over the speed. On foot it is the
+  measured ground speed (`trackPlayerPace`), eased over 0.35 s and held to whole numbers with a
+  0.75 hysteresis, so it does not jitter; standing reads 0. Under a parachute: airspeed, rate of
+  descent and height.
+- Swimming, the big figure used to be the breath percentage; it is now the swimming speed, with
+  the breath as the bar under it and in the unit line (BREATH 74%), red under 30%. On foot the
+  bar folds away (there is no stamina on foot). A bicycle still shows cadence and LEGS %.
+- Settings · Gameplay: **Speed units** (KM/H or MPH) and **Speed box on foot** (on by default;
+  the water always shows the breath). The units apply to every speed shown: the speed box, the
+  flight HUD's airspeed tape, its stall band and caption, the Falcon's ride card and banner.
+  Boats keep knots, distances stay metric. Saved with the HUD state; `DeadEndCity.settings({
+  units, footSpeed })`, `DeadEndCity.speedBox()`.
+
+South Coast Cycle bike share (cycles.js, cycles3d.js)
+- The free bike stands become docked bike-share stations: a steel dock rack of 4-8 teal and
+  white city bikes (step-through frame, mudguards, chain case, front carrier with the brand
+  panel, dynamo lamps) and a payment totem with a backlit station map, a RENT A BIKE screen, the
+  SOUTH COAST CYCLE header and a lit canopy strip, a night glow and a light pool on the pavement.
+- Placed beside every payphone (`phone`, a district's `PAYPHONES`, PLACES of kind 'payphone'), at
+  every job's first destination (`missions[i].start`, else `MISSION_STARTS`), at the rail
+  stations and where the old stands were (park gates, marina, pier, Exchange, esplanade), on
+  kerb-side pavement with a walkway kept behind the bikes, off carriageways, crosswalks, doors,
+  rail entrances, the payphone's reach, trees, lamps, benches, colliders, parked vehicles,
+  runways, taxiways and helipads; the renderer settles each against the furniture it placed.
+- RENT BIKE · $5 on foot undocks a bike and puts you on it (an ordinary bicycle in the livery);
+  DOCK BIKE · $2 BACK riding a share bike slowly up to any station with a free dock racks it.
+  Stations restock one bike about every 150 s while you are away. Teal bicycle icons on the
+  minimap and map (grey when empty), BIKE SHARE in the map legend.
+- Rack, totem and bikes are breakable props (`bikerack` 35 kJ, `biketotem` 60 kJ, `sharebike`
+  1.2 kJ): bikes go over at walking pace, the rack from ~25 km/h in a sedan, the totem from ~33;
+  a fallen rack takes its bikes down; the city stands them up again. Drawn as instanced
+  breakables from merged vertex-coloured parts (one instance per bike), a handful of draws per
+  map cell. Every size follows the bicycle's length (`SHARE_BIKE_LENGTH`) or the metre.
+- `DeadEndCity.bikeShare()` (network, nearest station, rent/dock log), `DeadEndCity.bikeStation(id)`.
+## Unreleased — a 90s volume knob, the radio at 100 by default
+
+Radio volume (car-radio.js RADIO VOLUME, shell.html, settings.js)
+- **The radio box's slider is now a 90s car-stereo volume knob**: a ribbed black-rubber knob with
+  a machined aluminium cap (concentric turning marks, a fixed anisotropic sheen), an engraved
+  pointer and a lit amber dot, a specular spot and a drop shadow; around it 20 amber LED
+  segments over 270 degrees (one per 5 steps, the last partly lit, the top three hot) and beside
+  it an LCD readout in slanted seven-segment digits over their ghost 8s (`OFF` at 0, a blinking
+  MUTE annunciator). All CSS gradients and inline SVG: crisp at any DPI, redrawn only when the
+  level changes.
+- Drag it: straight movement counts right / up as louder (`dx - dy`, 1.6 px a step, 160 px for
+  the whole range, Shift four times finer); a drag that circles the centre switches to turning
+  with the pointer (270 degrees = the range). Measured from 50: up 10 / 20 / 40 / 80 px -> 56 / 63
+  / 75 / 100; down 40 px -> 25; with Shift up 80 px -> 63; pressing on the rim and circling
+  clockwise 90 / 120 / 180 degrees -> 62 / 73 / 94, anticlockwise 180 -> 12. A double-click on the
+  knob mutes / unmutes (the speaker button stays), the wheel and the focused knob's arrow, Page,
+  Home and End keys work, `,` / `.` still step it in a vehicle. Keys and the wheel go to the next
+  5-step mark; each mark ticks softly on the effects bus. A soft amber glow while dragging; the
+  pointer is captured and nothing reaches the canvas (no shots, no aiming). On touch the knob is
+  76 px with a 12 px wider hit area.
+- **The radio defaults to 100** (was 80), RESET AUDIO TO DEFAULTS included. A save still at the
+  old 80, or without a radio level, moves to 100 once and is written back; a save at any other
+  level (0 = muted included) keeps it. From now on every change the player makes marks the save
+  (`radioVolumeSet`), so a deliberate 80 stays 80.
+- `DeadEndCity.radio()` reports `volumeSet` and `knob` (value, angle, lit LEDs, readout, drag mode,
+  the last drag) in place of `slider`.
+
+## Unreleased — speech bubbles seen from above, the Falcon's riders scream and talk
+
+Speech bubbles (crowd.js SPEECH SEEN FROM ABOVE, render3d.js, roofmission.js, flight-view3d.js)
+- Every speech bubble (street crowd, drivers, carjacks, police and soldiers, the Falcon's riders,
+  the Blue Hour rooftop) fades out between 40 m and 50 m of height between the view and the
+  speaker, and a hidden line no longer takes one of the two bubble slots. The HUD log and captions
+  are unchanged.
+- The height: flying (helicopter, plane, parachute) or riding (the Falcon, the Sunset Eye), the
+  player's elevation over the speaker, which for someone on the ground is the AGL the flight HUD
+  shows; on foot or driving, the street zoom as a height (`streetZoomHeight`: the height at which
+  the flight camera draws the ground at the zoom's scale; zoom 0.8 = 29 m, 0.72 = 38 m, 0.68 =
+  43 m, 0.64 = 49 m, 0.5 = 73 m), plus the player's elevation over the speaker (from a roof). The
+  pull-back at speed does not count. Measured headless: helicopter at 30 m AGL fade 1, 45 m 0.5,
+  60 m 0 (bubbles gone).
+- Labels projected behind a perspective camera are skipped instead of drawn mirrored.
+
+The Falcon (themepark.js RIDERS' VOICES, car-radio.js)
+- **Radio off by default on the Falcon.** Each ride starts with the radio off; the widget is
+  shown and N / B / a click turn it on for that ride only (`player.coaster.radio`); the saved
+  radio setting for vehicles and the Eye is untouched.
+- **Screams in time with the track.** Each car is read off the circuit (vertical speed from the
+  train speed and the track's rise, seat load from the change of rise, inversion). Over the first
+  drop every car lets out up to two of the recorded pedestrian screams (pitch 0.9..1.14, own
+  level and delay), placed on that car, so the chorus rolls down the train as each car tips over;
+  later drops (12 m+), dips (5 m+), airtime (< 0.45 g) and inversions draw a quieter voice from
+  some cars. Voices bus (Voices slider and switch), attenuated by the 3D distance from the player,
+  so they are heard aboard and from the ground nearby. Replaces the synthesised coaster screams
+  (the flume and drop tower keep theirs). No whoop sample exists, so none is played.
+- **Rider speech bubbles:** nervous on the lift ("OMG I'm so scared!", "Why did I agree to
+  this?", "Don't look down…"), screams over the first drop ("AAAAHHH!"), excited or terrified on
+  the elements ("WOOOO!", "Faster!", "Mommy!", "Upside dooown!"), and on the brake run "I'm going
+  to throw up!", "Again! Again!", "My legs are jelly…". Two at a time through the crowd's bubble
+  limit, first in line while the player rides, subject to NPC chatter and the height rule; seen
+  aboard and from the ground nearby. From the chase camera the speakers come from cars 1-4 (in
+  frame); no line is said twice at once or twice running.
+- Console: `DeadEndCity.coasterVoices(reset)` (every cue with track position, height, vertical
+  speed, g, drop depth), `DeadEndCity.speechView()`; `radio()` reports `enabled` (the ride's
+  switch on the Falcon) and `saved`.
+
 ## Unreleased — ramming roadblocks, crash physics, breakable trees and furniture
 
 Roadblocks (roadblocks.js, physics.js)

@@ -1110,7 +1110,7 @@
     const MARINE_CAP = [0, 0, 1, 2, 3, 3];
     let marineTimer = 3;
     function playerAtSea() {
-      return (!!player.car && isBoat(player.car)) || !!player.swimming;
+      return (!!player.car && isBoat(player.car)) || (!!player.swimming && !player.pool);
     }
     function spawnMarineUnit() {
       // Ahead of a boat under way (they come out of a marina in its path),

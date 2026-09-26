@@ -268,13 +268,68 @@
       return clamp(1.5 + text.length * 0.065, 2.4, 6);
     }
     function speechPriority(p) {
-      if (p.military || p.police || p.missionTag || p.ally) return 3;
+      // The Falcon's riders come first while the player rides with them (themepark.js).
+      if (p.coasterRider && player.coaster?.kind === 'train') return 4;
+      if (p.military || p.police || p.missionTag || p.ally || p.inConversation) return 3;
       const kind = p.speechKindText === p.speech ? p.speechKind : '';
       if (SPEECH_TO_PLAYER.has(kind) || distanceBetween(p, player) < 70) return 2;
       return 1;
     }
     function speechLive(p) {
-      return !!p.speech && p.speechUntil >= gameTime && p.hp > 0 && distanceBetween(p, cameraTarget) <= SPEECH_RANGE;
+      return (
+        !!p.speech &&
+        p.speechUntil >= gameTime &&
+        p.hp > 0 &&
+        distanceBetween(p, cameraTarget) <= SPEECH_RANGE &&
+        speechHeightFade(p) > 0
+      );
+    }
+    /**
+     * SPEECH SEEN FROM ABOVE
+     * A bubble is a line heard at street level: from 50 m up nobody could hear
+     * it, so bubbles fade out between SPEECH_FADE_FROM (40 m) and SPEECH_HIDDEN
+     * (50 m) of height between the view and the speaker, and a hidden line takes
+     * no bubble slot. The height is:
+     *   - flying (an aircraft, the parachute) or riding (the Falcon, the Eye):
+     *     the player's elevation over the speaker's; for someone on the ground
+     *     under a helicopter that is the AGL the flight HUD shows, and riders on
+     *     the player's own train are level with the player, so theirs stay up
+     *     however high the track climbs (the ride camera stays by the train);
+     *   - otherwise the street camera's zoom as a height (streetZoomHeight,
+     *     flight-view3d.js: about 30 m at zoom 0.8, 50 m at 0.64) plus the
+     *     player's elevation over the speaker (looking down from a roof). The
+     *     player's own zoom counts, not the pull-back at speed, which is
+     *     momentary and is when drivers shout at the player.
+     * Someone above the view (riders on the Falcon watched from the ground)
+     * counts as level. Covers every bubble: the street (crowd, drivers,
+     * carjacks, police, soldiers, Falcon riders) and the Blue Hour rooftop.
+     */
+    const SPEECH_FADE_FROM = 40 * UNITS_PER_METRE,
+      SPEECH_HIDDEN = 50 * UNITS_PER_METRE;
+    function speechViewHeight(p) {
+      let eye = entityElevation(player);
+      if (!player.coaster && !player.parachute && !isAircraft(player.car)) {
+        const zoom = worldZoom / Math.max(0.1, speedZoom);
+        eye += city3D?.zoomHeight ? city3D.zoomHeight(zoom) : Math.max(0, 1 / zoom - 1) * 780;
+      }
+      return Math.max(0, eye - entityElevation(p));
+    }
+    function speechHeightFade(p) {
+      return clamp((SPEECH_HIDDEN - speechViewHeight(p)) / (SPEECH_HIDDEN - SPEECH_FADE_FROM), 0, 1);
+    }
+    // DeadEndCity.speechView(): the rule as it stands for someone on the ground at the view's centre.
+    function speechViewReport() {
+      const ground = { x: cameraTarget.x, y: cameraTarget.y };
+      return {
+        viewHeight: +worldMeters(speechViewHeight(ground)).toFixed(1),
+        fade: +speechHeightFade(ground).toFixed(2),
+        fadeFrom: worldMeters(SPEECH_FADE_FROM),
+        hiddenAt: worldMeters(SPEECH_HIDDEN),
+        zoom: +(worldZoom / Math.max(0.1, speedZoom)).toFixed(3),
+        riding: player.coaster?.kind || null,
+        flying: !!(player.parachute || isAircraft(player.car)),
+        bubbles: speechShown.map((p) => ({ text: p.speech, rider: !!p.coasterRider, fade: +speechHeightFade(p).toFixed(2) })),
+      };
     }
     // The bubbles to draw this frame, most important first: at most SPEECH_BUBBLES_MAX.
     function speechBubbles() {
@@ -286,7 +341,9 @@
       speechShown = speechShown.filter((p) => speechLive(p) && p.speechShownText === p.speech);
       const waiting = [],
         labels = [];
-      for (const list of [pedestrians, vehicles, gangMembers])
+      // coasterSpeakers(): the Falcon's riders (themepark.js); clubTalkSpeakers(): the
+      // player, while talking with a club-goer (clubtalk.js).
+      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers(), clubTalkSpeakers()])
         for (const p of list) {
           if (!p.speech || p.speechUntil < gameTime) continue;
           if (p.speechHeard !== p.speech) {
@@ -3174,8 +3231,12 @@
           rank: speechPriority(p),
           seconds: +(p.speechUntil - gameTime).toFixed(1),
           d: Math.round(distanceBetween(p, player)),
+          // Height of the view over the speaker (m) and the bubble's fade for it.
+          viewHeight: +worldMeters(speechViewHeight(p)).toFixed(1),
+          fade: +speechHeightFade(p).toFixed(2),
+          rider: !!p.coasterRider,
         })),
-        unshownLines: [...pedestrians, ...vehicles, ...gangMembers].filter(
+        unshownLines: [...pedestrians, ...vehicles, ...gangMembers, ...coasterSpeakers()].filter(
           (p) => p.speech && p.speechUntil >= gameTime && !speechShown.includes(p) && !(p.posed && p.speech === p.posed),
         ).length,
         honking: vehicles.filter((c) => (c.blockedFor || 0) > 2).length,
