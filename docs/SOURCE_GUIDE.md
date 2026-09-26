@@ -152,10 +152,44 @@ Two closures matter:
   harder, the tail lightens); `balance` per class (VEHICLE_DEFINITIONS, -1..1) makes trucks,
   buses, vans and SUVs push wide at the limit and muscle cars and roadsters step the tail out
   under power. Rain (`wetGrip()`, weather.js: down to 0.72 on a soaked road) scales traction,
-  brakes, handbrake and cornering: a sedan's 100-0 grows from 34.5 m to 45.8 m and its steady
-  cornering from 1.22 g to 0.89 g. `vehicleHandling` adds `steer` (a bent front end) and
+  brakes, handbrake and cornering: a sedan's 100-0 with ABS grows from 38 m to 57 m on a soaked
+  road (the brakes, section Brakes and assists) and its steady cornering from 1.22 g to 0.89 g. `vehicleHandling` adds `steer` (a bent front end) and
   `brake` (flat tyres). `kerbStrike` jolts the body and scrubs 1-5% of the speed on mounting
   or dropping off a kerb above 25 km/h.
+- **Brakes and assists** (driving.js, called from physics.js controlVehicle for the player's
+  road vehicle; the bicycle and the tank keep the old constant brake). The S key pushes a pedal
+  down over 0.2 s (pressure = pedal^1.5: an 80 ms tap brakes at about 0.4 g) and lets go in
+  0.08 s. `brakeStep` splits the pressure front / rear by the class's `bias` (DRIVING_CHARACTER:
+  static front weight `front`, CG height over wheelbase `hL`; the bias locks the fronts first
+  on a dry road) against each axle's load with last step's deceleration moved forward, and
+  follows each axle's wheel slip: the force rises to the tyres' peak at 12% slip, then falls
+  toward the sliding friction (0.8 of the peak dry, 0.58 soaked) as the wheel locks; the brakes
+  can ask 1.5x the peak, so past it the wheel locks, faster at low speed. The corner's share of
+  the grip comes off first (friction circle). `spec.brakeG` is still the mean deceleration of an
+  ABS stop (what road tests print; the AI's clamp): the tyres' peak is brakeG / 0.93
+  (`ABS_EFFICIENCY`). ABS dumps an axle's pressure by a fifth (and at least down to what the tyre
+  is taking) when its slip passes 19%, holds 25 ms and builds again at 3.2/s: a 10-15 Hz cycle that keeps the fronts about half their sideways
+  grip (the car steers while stopping). Locked, the fronts keep next to nothing (`cornerShare`),
+  the tyres slide on the way the car is going, the wheels stop turning (cars3d.js), marks and a
+  lower squeal; a locked front on a motorbike for 0.5 s (0.25 s leaned) lowsides the rider
+  (riders.js `throwRider`). TCS compares the low-gear pull (power over the speed, held at its
+  60 km/h value below that) with what the driven tyres put down after the corner's share: with
+  TCS the throttle is trimmed to the peak (the lamp); without it the wheels spin to their sliding
+  grip, rev the engine (`c.wheelSpin`), lay rubber, push a front-driven car wide and step a
+  rear-driven car's tail out. `yawStability` adds `yawSlide` (rad/s) to the yaw the steering
+  asks: fed by lift-off after heavy throttle mid-corner (`liftOff` per class), wheelspin at the
+  back, locked rears and trail-braking, stronger in the wet, growing on itself, settled by the
+  tyres and by counter-steering. ESC damps it (the outer front's brake, up to 0.35 g, and a
+  throttle cut), brakes the inner rear and eases the throttle when the car pushes wide, and
+  stands back on the handbrake and 0.8 s after. The keys also go through `steeringRamp` (in
+  about 0.15 s, back to centre faster, a third slower at speed; Settings · Driving ·
+  Steering sensitivity scales it). Fitment: cars have all three, motorbikes ABS (the superbikes
+  and the naked VORTEX TCS), classics (hot rod, Rover Series, the Sentinel jeep and M35) none,
+  the Highlander 70 ABS only; `spec.abs` / `esc` / `tcs` override. HUD: ABS / ESC / TCS lamps in
+  the speed box (`drivingAssistStates`: N/A, OFF, ready, flickering amber while working); ABS
+  also pulses the brake lamps and a faint 12 Hz rattle on the effects bus (audio.js `absBuzz`);
+  the tyre loop's level follows `c.tyreSlip`. Measure with `brakeTest`, `liftOffTest`,
+  `accelTest` and `drivingState` (DEVELOPMENT.md).
 - **Rain and the AI** (physics.js controlVehicle): every driver's tyres get `wetGrip()`.
   Traffic keeps inside it (steering clamp, brakes and traction x grip) and drives slower by
   sqrt(grip) (15% off every speed on a soaked road, which in trafficControl's stopping formulas
@@ -311,6 +345,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
 | god-panel.js | God mode settings: the GOD MODE settings tab (time presets and slider, freeze time, weather, refill, lose police, teleport), the map's teleport pick mode and the safe teleport `godTeleport` (section 4d, God mode) |
+| driving.js | Tyres, brakes and driving assists for the player's road vehicle (section 2a, Brakes and assists): the brake pedal ramp, front / rear bias and weight transfer, per-axle slip with a peak and a sliding friction (`brakeStep`), ABS, traction control, stability control (`yawStability`), the steering ramp, per-vehicle fitment (`drivingCharacter`, classics without), the HUD lamps (`drivingAssistStates`) and Settings · Driving (`drivingSettings`, 'dead-end-city-driving') |
 | settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the player outline at night (`playerOutlineOn`), the key remapping table and its keyboard handling (`settingsKeyDown`) |
 | hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), the SPEED BOX (`updateSpeedBox`, `trackPlayerPace`, the km/h / mph units: `speedReading`, `speedText`, `kmhReading`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |

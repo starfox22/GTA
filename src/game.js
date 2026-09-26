@@ -458,7 +458,7 @@
         modelScale: 0.9,
         topKmh: 120,
         zeroTo: [100, 22],
-        brakeG: 0.7,
+        brakeG: 0.75,
         cornerG: 0.85,
         tractionG: 0.35,
         turn: 1.1,
@@ -478,7 +478,7 @@
         modelScale: 1,
         topKmh: 250,
         zeroTo: [100, 4.8],
-        brakeG: 1.1,
+        brakeG: 1.21,
         cornerG: 1.55,
         tractionG: 0.8,
         turn: 2.7,
@@ -498,7 +498,7 @@
         modelScale: 1,
         topKmh: 230,
         zeroTo: [100, 4.0],
-        brakeG: 1.1,
+        brakeG: 1.25,
         cornerG: 1.5,
         tractionG: 0.95,
         turn: 2.65,
@@ -518,7 +518,7 @@
         modelScale: 1,
         topKmh: 190,
         zeroTo: [100, 9.5],
-        brakeG: 0.9,
+        brakeG: 0.95,
         cornerG: 1.05,
         tractionG: 0.5,
         turn: 1.18,
@@ -577,7 +577,7 @@
         modelScale: 1,
         topKmh: 180,
         zeroTo: [100, 5.0],
-        brakeG: 0.9,
+        brakeG: 0.95,
         cornerG: 1.25,
         tractionG: 0.75,
         turn: 2.3,
@@ -598,7 +598,7 @@
         modelScale: 1,
         topKmh: 330,
         zeroTo: [100, 2.9],
-        brakeG: 1.2,
+        brakeG: 1.31,
         cornerG: 1.75,
         tractionG: 1.05,
         turn: 2.5,
@@ -617,7 +617,7 @@
         modelScale: 1,
         topKmh: 250,
         zeroTo: [100, 5.0],
-        brakeG: 1.1,
+        brakeG: 1.12,
         cornerG: 1.4,
         tractionG: 0.75,
         turn: 1.7,
@@ -638,7 +638,7 @@
         modelScale: 1,
         topKmh: 175,
         zeroTo: [100, 9.0],
-        brakeG: 0.95,
+        brakeG: 1.06,
         cornerG: 1.2,
         tractionG: 0.6,
         turn: 1.8,
@@ -658,7 +658,7 @@
         modelScale: 1,
         topKmh: 165,
         zeroTo: [100, 10.0],
-        brakeG: 0.9,
+        brakeG: 0.97,
         cornerG: 1.15,
         tractionG: 0.55,
         turn: 1.6,
@@ -677,7 +677,7 @@
         modelScale: 0.9,
         topKmh: 115,
         zeroTo: [100, 21],
-        brakeG: 0.7,
+        brakeG: 0.75,
         cornerG: 0.85,
         tractionG: 0.35,
         turn: 1.05,
@@ -716,7 +716,7 @@
         modelScale: 0.78,
         topKmh: 155,
         zeroTo: [100, 12],
-        brakeG: 0.85,
+        brakeG: 0.9,
         cornerG: 1.1,
         tractionG: 0.5,
         turn: 1.7,
@@ -762,7 +762,7 @@
         modelScale: 1,
         topKmh: 205,
         zeroTo: [100, 6.5],
-        brakeG: 1.05,
+        brakeG: 1.15,
         cornerG: 1.45,
         tractionG: 0.7,
         turn: 2.5,
@@ -781,7 +781,7 @@
         modelScale: 1,
         topKmh: 245,
         zeroTo: [100, 5.0],
-        brakeG: 1.0,
+        brakeG: 1.14,
         cornerG: 1.3,
         tractionG: 0.8,
         turn: 2.05,
@@ -799,7 +799,7 @@
         modelScale: 1,
         topKmh: 175,
         zeroTo: [100, 9.5],
-        brakeG: 1.0,
+        brakeG: 1.05,
         cornerG: 1.25,
         tractionG: 0.6,
         turn: 2.15,
@@ -818,7 +818,7 @@
         modelScale: 1,
         topKmh: 150,
         zeroTo: [100, 13],
-        brakeG: 0.85,
+        brakeG: 0.99,
         cornerG: 1.1,
         tractionG: 0.5,
         turn: 1.6,
@@ -837,7 +837,7 @@
         modelScale: 1,
         topKmh: 290,
         zeroTo: [100, 3.8],
-        brakeG: 1.15,
+        brakeG: 1.33,
         cornerG: 1.65,
         tractionG: 0.95,
         turn: 2.8,
@@ -855,7 +855,7 @@
         modelScale: 1,
         topKmh: 180,
         zeroTo: [100, 9.0],
-        brakeG: 1.0,
+        brakeG: 1.12,
         cornerG: 1.3,
         tractionG: 0.6,
         turn: 2.15,
@@ -876,7 +876,7 @@
         w: 2.32 * UNITS_PER_METRE,
         topKmh: 315,
         zeroTo: [100, 2.7],
-        brakeG: 1.25,
+        brakeG: 1.35,
         cornerG: 1.8,
         tractionG: 1.18,
         turn: 2.55,
@@ -896,12 +896,14 @@
         w: 2.41 * UNITS_PER_METRE,
         topKmh: 350,
         zeroTo: [100, 2.8],
-        brakeG: 1.3,
+        brakeG: 1.38,
         cornerG: 1.85,
         tractionG: 1.15,
         turn: 2.4,
         hp: 145,
         grip: 10,
+        // All-wheel drive (driving.js traction control, offroad.js).
+        drive: '4x4',
         flagship: true,
         color: '#7ac231',
         palette: ['#7ac231', '#f58a07', '#e9c21e', '#15171a', '#eceeed', '#6b2d8c', '#8f9aa3'],
@@ -916,7 +918,7 @@
         w: 2.23 * UNITS_PER_METRE,
         topKmh: 325,
         zeroTo: [100, 3.0],
-        brakeG: 1.25,
+        brakeG: 1.33,
         cornerG: 1.8,
         tractionG: 1.08,
         turn: 2.6,
@@ -1035,7 +1037,7 @@
         modelScale: 0.8,
         topKmh: 230,
         zeroTo: [100, 6.3],
-        brakeG: 1.1,
+        brakeG: 1.18,
         cornerG: 1.45,
         tractionG: 0.75,
         turn: 2.5,
@@ -3717,8 +3719,9 @@
       }
       shake *= Math.pow(0.008, deltaSeconds);
       flash = Math.max(0, flash - deltaSeconds);
-      // Look ahead of a moving vehicle: about 0.45 s of travel, up to 300 units.
-      const look = player.car ? clamp(player.car.speed * 0.45, -80, 300) : 0,
+      // Look ahead of a moving vehicle: about 0.45 s of travel, up to 300 units
+      // (scaled by Settings · Driving · Camera look-ahead, driving.js).
+      const look = player.car ? clamp(player.car.speed * 0.45, -80, 300) * drivingLookAhead() : 0,
         // A coaster outruns the usual trailing camera; stay with the train.
         follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
       if (player.car?.type === 'plane') {
@@ -5671,6 +5674,7 @@
     // @include src/quality.js
     // @include src/settings.js
     // @include src/god-panel.js
+    // @include src/driving.js
     // @include src/hud.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
@@ -7060,6 +7064,11 @@
           if (typeof changes.units === 'string') setSpeedUnits(changes.units.toLowerCase());
           if (typeof changes.footSpeed === 'boolean') setFootSpeed(changes.footSpeed);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
+          // Settings · Driving (driving.js): abs, esc, tcs (booleans), steering
+          // (50-150 %), lookAhead (0-150 %); drivingReset: true restores them.
+          for (const key of ['abs', 'esc', 'tcs']) if (typeof changes[key] === 'boolean') setDrivingSetting(key, changes[key]);
+          for (const key of ['steering', 'lookAhead']) if (Number.isFinite(changes[key])) setDrivingSetting(key, changes[key]);
+          if (changes.drivingReset === true) resetDrivingSettings();
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
           saveSettings();
@@ -7087,6 +7096,11 @@
           gps: hudState.gps,
           units: hudState.units,
           footSpeed: hudState.footSpeed,
+          abs: drivingSettings.abs,
+          esc: drivingSettings.esc,
+          tcs: drivingSettings.tcs,
+          steering: drivingSettings.steering,
+          lookAhead: drivingSettings.lookAhead,
           gpsRoute: gpsRoute.points.length,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,
@@ -7094,8 +7108,41 @@
       },
       // The car radio and the radio box's volume row (car-radio.js RADIO VOLUME).
       radio: () => radioReport(),
+      /* The player's road vehicle through the tyre model (driving.js): the
+         assists it has and has switched on, the HUD lamps, the pedal and
+         steering ramps, each axle's slip, lock, ABS pressure and sideways share,
+         the wheelspin and the stability yaw. */
+      drivingState() {
+        const c = player.car;
+        if (!c || isAircraft(c) || isBoat(c)) return null;
+        const ch = drivingCharacter(c),
+          t = c.tyres,
+          round = (v) => +(+v).toFixed(3);
+        return {
+          type: c.type,
+          fitted: { abs: ch.abs, esc: ch.esc, tcs: ch.tcs },
+          lamps: drivingAssistStates(c),
+          character: { front: ch.front, cgOverWheelbase: ch.hL, bias: round(ch.bias), drive: ch.drive, liftOff: round(ch.liftOff) },
+          settings: { ...drivingSettings },
+          tyres: t
+            ? {
+                pedal: round(t.pedal),
+                steer: round(t.steer),
+                slip: t.slip.map(round),
+                lock: t.lock.map(round),
+                pressure: t.pressure.map(round),
+                lateral: t.lateral.map(round),
+                spin: round(t.spin),
+                yawSlide: round(t.yawSlide),
+                decelG: round(t.lastDecel || 0),
+              }
+            : null,
+          absActive: !!c.absActive,
+          tyreSlip: round(c.tyreSlip || 0),
+        };
+      },
       // Open the settings screen on a tab ('graphics', 'audio', 'gameplay',
-      // 'controls'); during play it opens over the pause menu. Screenshot tours use it.
+      // 'driving', 'controls'); during play it opens over the pause menu. Screenshot tours use it.
       openSettings(tab = 'graphics') {
         if (gameMode === 'play') togglePause();
         syncGodSettingsTab(); // GOD PANEL: 'god' is a tab while god mode is on

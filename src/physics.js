@@ -1523,8 +1523,7 @@
           const up = keys.KeyW || keys.ArrowUp,
             down = keys.KeyS || keys.ArrowDown,
             brake = keys.Space,
-            turn = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-          braking = !!down && along > 10;
+            turnKey = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
           // A bicycle has no engine: holding W pedals, and the push the rider's
           // legs give tapers off toward the top speed (pedalDrive, cycles.js).
           const pedalled = !!vehicleDefinition.bicycle,
@@ -1533,23 +1532,46 @@
             // A hurt engine pulls weaker, flat tyres and a bent front end cap the
             // speed and drag the car to one side (damage.js vehicleHandling).
             handling = vehicleHandling(c);
+          // Wet tarmac: every tyre force (drive, brakes, cornering) shrinks together.
+          const surface = pedalled ? 1 : wetGrip() * tyreSurfaceGrip(c, vehicleDefinition, along),
+            wet = pedalled ? 0 : weather.wet || 0;
+          /* TYRES, BRAKES AND ASSISTS (driving.js): every motor vehicle but the
+             tank goes through the tyre model: the steering ramp, the brake pedal
+             and each axle's slip (ABS), traction control and stability control. */
+          const modelled = !pedalled && !vehicleDefinition.tank,
+            tyres = tyreState(c),
+            character = modelled ? drivingCharacter(c) : null,
+            assists = modelled ? drivingAssists(c) : null,
+            turn = modelled ? steeringRamp(tyres, turnKey, along, !!brake, stepSeconds) : turnKey,
+            // Last step's yaw: the share of the grip the corner is using.
+            cornerG = (vehicleDefinition.cornerG || 1.2) * GRAVITY * surface * handling.grip,
+            lateralUse = pedalled ? 0 : clamp(Math.abs(along * c.av) / cornerG, 0, 1);
+          if (brake) tyres.handbrakeAt = physicsClock;
+          // The brake pedal ramps in (a tap is gentle, a hold is full), and each
+          // axle gives what its slip allows (ABS keeps it near the peak).
+          const pedal = modelled ? brakePedal(tyres, !!down && !up && along > 10, stepSeconds) : down && along > 10 ? 1 : 0;
+          let brakeDecel = 0;
+          if (modelled && pedal > 0 && along > 10) {
+            const mu = ((vehicleDefinition.brakeG || 1) / ABS_EFFICIENCY) * surface * handling.brake;
+            brakeDecel = brakeStep(c, tyres, character, assists.abs, pedal, mu, wet, lateralUse, along, stepSeconds);
+          } else if (modelled) brakesOff(tyres);
+          braking = pedal > 0.05 && along > 10;
           // The engine's pull at this speed (game.js ROAD PERFORMANCE); a bicycle's
           // push comes from the rider's legs instead.
-          // Wet tarmac: every tyre force (drive, brakes, cornering) shrinks together.
-          const surface = pedalled ? 1 : wetGrip() * tyreSurfaceGrip(c, vehicleDefinition, along);
+          const engineAsk = up && !pedalled ? (engineAcceleration(vehicleDefinition, along) * handling.power) / (1 + (c.cargoCount || 0) * 0.1) : 0,
+            tractionLimit = vehicleDefinition.acc * surface;
           acceleration =
             up && !pedalled
-              ? Math.min(
-                  (engineAcceleration(vehicleDefinition, along) * handling.power) / (1 + (c.cargoCount || 0) * 0.1),
-                  vehicleDefinition.acc * surface,
-                )
-              : down
-                ? along > 10
-                  ? -(vehicleDefinition.brake || GRAVITY) * surface * handling.brake
-                  : -vehicleDefinition.acc * 0.5 * surface
-                : pedalled
-                  ? pedalDrive(along, topSpeed)
-                  : 0;
+              ? Math.min(engineAsk, tractionLimit)
+              : modelled && brakeDecel > 0
+                ? -brakeDecel
+                : down
+                  ? along > 10
+                    ? -(vehicleDefinition.brake || GRAVITY) * surface * handling.brake
+                    : -vehicleDefinition.acc * 0.5 * surface
+                  : pedalled
+                    ? pedalDrive(along, topSpeed)
+                    : 0;
           if (
             (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * handling.top &&
               up &&
@@ -1577,12 +1599,36 @@
              in harder) and lightens the tail; power loads the tail. `balance`
              (VEHICLE_DEFINITIONS) is the class's character: trucks, vans and SUVs
              push wide at the limit (negative), muscle cars and roadsters step the
-             tail out under power (positive). */
-          const cornerG = (vehicleDefinition.cornerG || 1.2) * GRAVITY * surface * handling.grip,
-            lateralUse = pedalled ? 0 : clamp(Math.abs(along * c.av) / cornerG, 0, 1),
-            balance = vehicleDefinition.balance || 0,
+             tail out under power (positive). The brakes' share of it is worked
+             out per axle in brakeStep (driving.js). */
+          const balance = vehicleDefinition.balance || 0,
             longLimit = acceleration > 0 ? vehicleDefinition.acc : vehicleDefinition.brake || GRAVITY;
-          if (!pedalled && acceleration) acceleration *= Math.sqrt(Math.max(0.2, 1 - lateralUse * lateralUse));
+          if (!pedalled && acceleration && !(brakeDecel > 0)) acceleration *= Math.sqrt(Math.max(0.2, 1 - lateralUse * lateralUse));
+          /* TRACTION CONTROL
+             The engine's pull in the low gears (power over the speed, from 35 km/h
+             down held at its torque) against what the driven tyres can put down
+             with the corner's share taken. With TCS the throttle is trimmed to the
+             tyres' peak (the lamp flickers); without it the wheels spin: they give
+             their sliding grip, rev the engine, lay rubber and, driven at the
+             back, let the tail step out (yawStability). */
+          let spinAsk = 0;
+          if (modelled && up && acceleration > 0 && along > -2 * KMH && !c.offroadState) {
+            const pull = ((vehicleDefinition.power || 0) / Math.max(Math.max(along, 0), 35 * KMH)) * handling.power,
+              put = tractionLimit * Math.sqrt(Math.max(0.2, 1 - lateralUse * lateralUse)),
+              excess = pull / Math.max(1, put) - 1;
+            if (excess > 0.04) {
+              if (assists.tcs) tyres.tcsAt = physicsClock;
+              else spinAsk = clamp(excess / 0.4, 0, 1);
+            }
+          }
+          if (modelled) {
+            tyres.spin += (spinAsk - tyres.spin) * Math.min(1, stepSeconds * (spinAsk > tyres.spin ? 14 : 5));
+            if (tyres.spin > 0.01) {
+              acceleration *= 1 - (1 - (SLIDE_DRY + (SLIDE_WET - SLIDE_DRY) * wet)) * tyres.spin;
+              // The engine revs and the wheels turn ahead of the road (engine-audio.js, offroad.js).
+              c.wheelSpin = Math.max(c.wheelSpin || 0, tyres.spin * 0.9);
+            }
+          }
           const longUse = pedalled ? 0 : clamp(Math.abs(acceleration) / Math.max(1, longLimit), 0, 1),
             slowing = acceleration < 0 && along > 10,
             // How hard the driver is asking the driven wheels to push (a strong
@@ -1592,15 +1638,22 @@
                 ? clamp((engineAcceleration(vehicleDefinition, along) * handling.power) / Math.max(1, vehicleDefinition.acc), 0, 1)
                 : 0;
           let cornerShare = Math.sqrt(Math.max(0.3, 1 - longUse * longUse));
+          // Under the brakes the front tyres keep what brakeStep left them: about
+          // half with ABS, next to nothing locked (the car goes straight on).
+          if (brakeDecel > 0) cornerShare = Math.max(0.02, tyres.lateral[0]);
           if (slowing) cornerShare *= 1 + 0.12 * longUse;
           if (balance < 0) cornerShare *= 1 + balance * 0.15 * lateralUse;
           if (balance > 0) cornerShare *= 1 + balance * 0.25 * lateralUse * throttle;
+          // Spinning front wheels push wide.
+          if (character?.drive === 'fwd') cornerShare *= 1 - 0.45 * tyres.spin;
           // Sideways hold: the tail lets go under power in a tail-happy car, and
           // lightens under braking in anything that is not a push-wide truck.
           lateralScale =
             surface *
             (1 - (balance > 0 ? balance * 0.4 * lateralUse * throttle : 0)) *
             (1 - (slowing ? Math.max(0, balance + 0.5) * 0.12 * longUse * lateralUse : 0));
+          // Locked tyres slide on whichever way the car is going.
+          if (brakeDecel > 0) lateralScale *= 0.3 + 0.7 * clamp(Math.min(tyres.lateral[0], tyres.lateral[1]) / 0.5, 0, 1);
           // Full lock at walking pace; above that the tyres' sideways grip is the
           // limit (cornerG): the yaw rate a speed allows is grip / speed, so a car
           // takes a city corner at 30-40 km/h and sweeps a wide bend at 150. The
@@ -1633,28 +1686,87 @@
           steer = clamp(steer, -cornerLimit, cornerLimit);
           kerbStrike(c, along);
           // Steering toward where the car is sliding (lateral and the key agree).
-          c.counterSteer = !!turn && Math.sign(turn) === Math.sign(lateral) && Math.abs(lateral) > Math.max(10, Math.abs(along) * 0.12);
+          c.counterSteer = !!turnKey && Math.sign(turnKey) === Math.sign(lateral) && Math.abs(lateral) > Math.max(10, Math.abs(along) * 0.12);
+          /* STABILITY (driving.js yawStability): the yaw the tyres add beyond what
+             the wheel asks (lift-off and power oversteer, locked rears), and ESC
+             trimming it with a wheel's brake and a throttle cut. */
+          if (modelled) {
+            const stability = yawStability(c, tyres, character, assists, {
+              along,
+              lateral,
+              steer,
+              turnKey,
+              up: !!up,
+              handbrake: !!brake,
+              lateralUse,
+              slowing,
+              longUse,
+              balance,
+              surface,
+              lockRear: brakeDecel > 0 ? tyres.lock[1] : 0,
+              lockFront: brakeDecel > 0 ? tyres.lock[0] : 0,
+              skid: c.skid,
+              stepSeconds,
+            });
+            if (acceleration > 0) acceleration *= 1 - stability.cut;
+            if (stability.brake > 0 && along > 5 * KMH) acceleration -= Math.min(along / stepSeconds, stability.brake);
+            lateralScale *= stability.hold;
+            steer += tyres.yawSlide;
+            if (assists.esc && stability.cut + stability.brake > 0) braking = braking || stability.brake > 0.1 * GRAVITY;
+            // A pulse in the brake lamps while ABS works (render3d.js reads c.braking).
+            c.absActive = brakeDecel > 0 && physicsClock - tyres.absAt < 0.1;
+            if (c.absActive) braking = (physicsClock * 7) % 1 < 0.62;
+            // How loud the tyres are (audio.js): a slide, a lock, wheelspin, a scrub.
+            const speed = Math.hypot(c.vx, c.vy),
+              slideAngle = Math.abs(lateral) / Math.max(Math.abs(along), 20);
+            c.tyreSlip =
+              speed < 15 * KMH
+                ? 0
+                : Math.max(
+                    clamp((slideAngle - 0.1) / 0.3, 0, 1),
+                    brakeDecel > 0 ? Math.max(tyres.lock[0], tyres.lock[1]) : 0,
+                    tyres.spin * 0.9,
+                    c.skid * 0.75,
+                    brake && Math.abs(along) > 70 ? 0.8 : 0,
+                    c.absActive ? 0.3 : 0,
+                  );
+          } else c.tyreSlip = brake && Math.abs(along) > 70 && !pedalled ? 0.8 : 0;
           steer += handling.pull * clamp(Math.abs(along) / 160, 0, 1) * Math.sign(along || 1) * 0.45;
           // Rubber on the road: the rear tyres under the handbrake, the front ones
-          // scrubbing wide, any tyre in a slide past about ten degrees.
-          const sliding = Math.abs(lateral) > Math.max(12, Math.abs(along) * 0.17);
+          // scrubbing wide, any tyre in a slide past about ten degrees, locked
+          // wheels and spinning driven ones.
+          const sliding = Math.abs(lateral) > Math.max(12, Math.abs(along) * 0.17),
+            lockedFront = brakeDecel > 0 && tyres.lock[0] > 0.5 && along > 30,
+            lockedRear = brakeDecel > 0 && tyres.lock[1] > 0.5 && along > 30,
+            spinning = modelled && tyres.spin > 0.35 && Math.abs(along) > 5;
           if (
-            ((brake && Math.abs(along) > 80) || (c.skid > 0.3 && !pedalled) || (sliding && !pedalled && Math.abs(along) > 60)) &&
+            ((brake && Math.abs(along) > 80) || (c.skid > 0.3 && !pedalled) || (sliding && !pedalled && Math.abs(along) > 60) || lockedFront || lockedRear || spinning) &&
             Math.floor(physicsClock * 40) !== c.lastSkid
           ) {
             c.lastSkid = Math.floor(physicsClock * 40);
             // Axles and track from the vehicle's size; a motorbike lays one line.
-            const axle = (brake || sliding ? -0.3 : 0.3) * vehicleDefinition.l,
+            const rearMarks = brake || sliding || lockedRear || (spinning && character.drive !== 'fwd'),
+              frontMarks = (c.skid > 0.3 && !brake && !sliding) || lockedFront || (spinning && character.drive !== 'rwd'),
               track = vehicleDefinition.bike ? 0 : vehicleDefinition.w * 0.4;
-            for (const side of vehicleDefinition.bike ? [0] : [-1, 1])
-              skids.push({
-                x: c.x + headingCosine * axle - headingSine * side * track,
-                y: c.y + headingSine * axle + headingCosine * side * track,
-                a: Math.atan2(c.vy, c.vx),
-                len: Math.abs(along) / 40 + 2,
-                life: 35,
-              });
+            for (const axle of [frontMarks ? 0.3 * vehicleDefinition.l : null, rearMarks || !frontMarks ? -0.3 * vehicleDefinition.l : null])
+              if (axle !== null)
+                for (const side of vehicleDefinition.bike ? [0] : [-1, 1])
+                  skids.push({
+                    x: c.x + headingCosine * axle - headingSine * side * track,
+                    y: c.y + headingSine * axle + headingCosine * side * track,
+                    a: Math.atan2(c.vy, c.vx),
+                    len: Math.abs(along) / 40 + 2,
+                    life: 35,
+                  });
           }
+          // A locked front wheel on a motorbike: the bike tucks and goes down (a lowside).
+          if (character?.bike && brakeDecel > 0 && tyres.lock[0] > 0.8 && along > 25 * KMH) {
+            tyres.frontLockTime += stepSeconds;
+            if (tyres.frontLockTime > (Math.abs(c.av) > 0.3 ? 0.25 : 0.5)) {
+              tyres.frontLockTime = 0;
+              throwRider(c, c.vx * 0.9, c.vy * 0.9, 'lowside');
+            }
+          } else tyres.frontLockTime = 0;
         } else if (
           c.hp > 0 &&
           !c.pursuitTarget &&
@@ -1701,7 +1813,10 @@
             -vehicleDefinition.brake * 1.2 * surface,
             vehicleDefinition.acc * surface,
           );
-          lateralScale = surface;
+          // Pursuit brakes are ABS brakes (spec.brake is an ABS stop). A cruiser
+          // lining up a PIT drives with its stability control off: shoved into
+          // the runner's quarter panel it can slide as well (driving.js ESC).
+          lateralScale = surface * (c.pursuitPlan?.mode === 'pit' ? 0.8 : 1);
           drag = control.drag;
         } else if (c.hp > 0 && c.ai && !c.crewDeployed) {
           // Traffic decisions are cached: 20 Hz near the player, 4 Hz for distant cars.
@@ -2649,6 +2764,160 @@
             zeroTo200: standing.zeroTo200,
             topKmh: +rolling.top.toFixed(1),
             spec: { topKmh: spec.topKmh, zeroTo: spec.zeroTo, mass: spec.mass, lengthM: +(spec.l / UNITS_PER_METRE).toFixed(2), widthM: +(spec.w / UNITS_PER_METRE).toFixed(2) },
+          };
+        },
+        /* Brake a fresh `type` from `kmh` to a stop on the strip by the Oceanview
+           runway, the brake key (S) held from the first step. options: wet 0..1;
+           steer 1 right / -1 left (the key held with the brake: braking in a
+           turn), entry (seconds of the steering alone first, to load the car
+           into the bend); seconds (the cap). Returns the stopping distance (m),
+           the time, the mean deceleration (g), how far the car moved sideways
+           and turned while stopping (a locked car goes straight on), the peak
+           slip and, where the assists exist, how long ABS worked. */
+        brakeTest(type = 'sedan', kmh = 100, options = {}) {
+          const { wet = 0, steer = 0, entry = 0, seconds = 12, x = TRACK.x, y = TRACK.y, trace = false } = options;
+          if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+          const savedWet = weather.wet;
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          for (let i = vehicles.length - 1; i >= 0; i--) if (vehicles[i].rideTarget) vehicles.splice(i, 1);
+          teleportPlayer(x, y - 60);
+          const c = (testCar = spawnClearCar(type, x, y, 0, false));
+          c.authorized = true;
+          enterVehicle(c);
+          Object.assign(c, { x, y, a: 0, av: 0, vx: kmh * KMH, vy: 0, speed: kmh * KMH });
+          player.x = x;
+          player.y = y;
+          const turnKey = steer > 0 ? 'KeyD' : 'KeyA',
+            samples = [];
+          let time = 0,
+            from = null,
+            heading0 = 0,
+            peakSlip = 0,
+            absTime = 0,
+            lockTime = 0,
+            stopped = false;
+          handlingTestPaved = true;
+          // Frames of 1/30 s (four physics steps each), as the other tests.
+          for (let i = 0; i < Math.round((seconds + entry) * 30) && gameMode === 'play' && player.car === c; i++) {
+            weather.wet = wet;
+            for (const k of ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD']) keys[k] = false;
+            if (steer) keys[turnKey] = true;
+            if (time >= entry) {
+              if (!from) {
+                from = { x: c.x, y: c.y, kmh: Math.hypot(c.vx, c.vy) / KMH };
+                heading0 = c.a;
+              }
+              keys.KeyS = true;
+            } else keys.KeyW = Math.hypot(c.vx, c.vy) < kmh * KMH;
+            update(1 / 30);
+            time += 1 / 30;
+            if (from) {
+              const speed = Math.hypot(c.vx, c.vy);
+              if (speed > 3 * KMH) peakSlip = Math.max(peakSlip, Math.abs(normalizeAngle(Math.atan2(c.vy, c.vx) - c.a)));
+              if (c.absActive) absTime += 1 / 30;
+              const lock = c.tyres ? Math.max(c.tyres.lock[0], c.tyres.lock[1]) : 0;
+              if (lock > 0.5) lockTime += 1 / 30;
+              if (trace && i % 3 === 0) samples.push({ t: +(time - entry).toFixed(2), ...pose(), lock: +lock.toFixed(2), abs: !!c.absActive });
+              // Stopped: below walking pace the brake would start reversing.
+              if (c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a) < 0.5 * KMH && speed < 1.5 * KMH) {
+                stopped = true;
+                break;
+              }
+            }
+          }
+          for (const k of ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD']) keys[k] = false;
+          handlingTestPaved = false;
+          weather.wet = savedWet;
+          if (!from) return { type, error: 'the test car was lost before braking', mode: gameMode, inCar: player.car === c };
+          const dx = c.x - from.x,
+            dy = c.y - from.y,
+            distance = worldMeters(Math.hypot(dx, dy)),
+            stopTime = time - entry,
+            v0 = (from.kmh * KMH) / UNITS_PER_METRE;
+          return {
+            type,
+            kmh: Math.round(from.kmh),
+            wet,
+            steer,
+            stopped,
+            distance: +distance.toFixed(1),
+            seconds: +stopTime.toFixed(2),
+            meanG: +((v0 * v0) / (2 * Math.max(0.1, distance)) / 9.81).toFixed(2),
+            // Along and across the heading the braking began on.
+            forward: +worldMeters(dx * Math.cos(heading0) + dy * Math.sin(heading0)).toFixed(1),
+            side: +worldMeters(Math.abs(-dx * Math.sin(heading0) + dy * Math.cos(heading0))).toFixed(1),
+            turnedDeg: Math.round((Math.abs(normalizeAngle(c.a - heading0)) * 180) / Math.PI),
+            peakSlipDeg: Math.round((peakSlip * 180) / Math.PI),
+            absSeconds: +absTime.toFixed(2),
+            // The front axle's pressure cycles a second while ABS worked.
+            absHz: absTime > 0.2 ? +((c.tyres?.absCycles || 0) / absTime).toFixed(1) : 0,
+            lockSeconds: +lockTime.toFixed(2),
+            ...(trace ? { samples } : {}),
+          };
+        },
+        /* Lift-off oversteer: a fresh `type` at `kmh` on the strip, steered hard
+           into a bend on full throttle for `hold` seconds, then the throttle lifted
+           with the wheel held for `after` seconds (Settings · Driving decides ESC).
+           Returns the peak body slip (degrees), the peak yaw the tyres added
+           beyond the wheel's (rad/s), whether the car spun (slip past 90
+           degrees), the heading turned after the lift, how long ESC worked and
+           the speed at the end. */
+        liftOffTest(type = 'muscle', kmh = 80, options = {}) {
+          const { dir = 1, hold = 1.5, after = 2.5, wet = 0, x = TRACK.x, y = TRACK.y } = options;
+          if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+          const savedWet = weather.wet;
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          teleportPlayer(x, y - 60);
+          const c = (testCar = spawnClearCar(type, x, y, 0, false));
+          c.authorized = true;
+          enterVehicle(c);
+          Object.assign(c, { x, y, a: 0, av: 0, vx: kmh * KMH, vy: 0, speed: kmh * KMH });
+          player.x = x;
+          player.y = y;
+          const turnKey = dir > 0 ? 'KeyD' : 'KeyA';
+          let time = 0,
+            liftA = null,
+            peakSlip = 0,
+            peakYaw = 0,
+            escTime = 0,
+            slipAtLift = 0;
+          handlingTestPaved = true;
+          for (let i = 0; i < Math.round((hold + after) * 30) && gameMode === 'play' && player.car === c; i++) {
+            weather.wet = wet;
+            for (const k of ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD']) keys[k] = false;
+            keys[turnKey] = true;
+            keys.KeyW = time < hold;
+            update(1 / 30);
+            time += 1 / 30;
+            const speed = Math.hypot(c.vx, c.vy),
+              slip = speed > 3 * KMH ? Math.abs(normalizeAngle(Math.atan2(c.vy, c.vx) - c.a)) : 0;
+            if (time >= hold) {
+              if (liftA === null) {
+                liftA = c.a;
+                slipAtLift = slip;
+              }
+              peakSlip = Math.max(peakSlip, slip);
+              peakYaw = Math.max(peakYaw, Math.abs(c.tyres?.yawSlide || 0));
+              if (physicsClock - (c.tyres?.escAt ?? -10) < 0.034) escTime += 1 / 30;
+            }
+          }
+          for (const k of ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD']) keys[k] = false;
+          handlingTestPaved = false;
+          weather.wet = savedWet;
+          return {
+            type,
+            kmh,
+            wet,
+            esc: drivingAssists(c).esc,
+            slipAtLiftDeg: Math.round((slipAtLift * 180) / Math.PI),
+            peakSlipDeg: Math.round((peakSlip * 180) / Math.PI),
+            peakYawSlide: +peakYaw.toFixed(2),
+            spun: peakSlip > Math.PI / 2,
+            turnedAfterLiftDeg: liftA === null ? null : Math.round((Math.abs(normalizeAngle(c.a - liftA)) * 180) / Math.PI),
+            escSeconds: +escTime.toFixed(2),
+            endKmh: +(Math.hypot(c.vx, c.vy) / KMH).toFixed(1),
           };
         },
         // The player's throw off a bike now and the last few throws (riders.js),

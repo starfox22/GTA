@@ -175,6 +175,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/settings.js: Settings menu
     Graphics, audio, gameplay and controls tabs; volumes, NPC chatter, see-through, key remapping screen.
   src/god-panel.js: God mode settings
+  src/driving.js: Tyres, brakes and driving assists (ABS, ESC, TCS; Settings · Driving)
     The GOD MODE settings tab (time, freeze, weather, refill, lose police, teleport) and the safe map teleport.
   src/hud.js: HUD behaviour and the title menu
     Pop-open radio and weapon boxes, minimap fold and zoom, context key hints, stars, the title menu.
@@ -3227,6 +3228,60 @@ kbd {
 }
 #vehicleStats.breath.damaged #carFill {
   background: var(--ui-danger);
+}
+/* Driving assists (hud.js updateSpeedBox, driving.js drivingAssistStates): a
+   lamp per assist, dim while ready, amber and flickering while it works, struck
+   through when switched off, N/A on a vehicle built without it. */
+.assist-lamps {
+  display: none;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 5px;
+}
+#vehicleStats.assists .assist-lamps {
+  display: flex;
+}
+.assist-lamps span {
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(201, 208, 196, 0.22);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  color: rgba(201, 208, 196, 0.55);
+}
+.assist-lamps span[data-state='active'] {
+  color: #1b1405;
+  background: #ffb32e;
+  border-color: #ffb32e;
+  box-shadow: 0 0 8px rgba(255, 179, 46, 0.65);
+  animation: assistFlicker 0.16s steps(2, jump-none) infinite;
+}
+.assist-lamps span[data-state='off'] {
+  color: rgba(255, 150, 120, 0.7);
+  text-decoration: line-through;
+}
+.assist-lamps span[data-state='na'] {
+  color: rgba(201, 208, 196, 0.32);
+  border-style: dashed;
+}
+.assist-lamps span[data-state='na']::after {
+  content: ' N/A';
+  font-weight: 600;
+}
+@keyframes assistFlicker {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .assist-lamps span[data-state='active'] {
+    animation: none;
+  }
 }
 /* Pop boxes (hud.js): .hud-more rows fold to nothing until .open or hover. */
 .hud-pop .hud-more {
@@ -7302,6 +7357,9 @@ body.no-key-hints .quickkeys {
           <span id="vehicleName">ON FOOT</span>
           <div class="speed-readout"><strong id="speed">0</strong><small id="speedUnit">KM/H</small></div>
           <div class="meter"><i id="carFill"></i></div>
+          <div class="assist-lamps" id="assistLamps" aria-label="Driving assists">
+            <span data-assist="abs">ABS</span><span data-assist="esc">ESC</span><span data-assist="tcs">TCS</span>
+          </div>
         </div>
         <button
           id="weaponButton"
@@ -7685,6 +7743,7 @@ body.no-key-hints .quickkeys {
           <button role="tab" data-tab="graphics" type="button">GRAPHICS</button
           ><button role="tab" data-tab="audio" type="button">AUDIO</button
           ><button role="tab" data-tab="gameplay" type="button">GAMEPLAY</button
+          ><button role="tab" data-tab="driving" type="button">DRIVING</button
           ><button role="tab" data-tab="controls" type="button">CONTROLS</button>
           <span class="settings-tab-keys" aria-hidden="true"><kbd>Q</kbd><kbd>E</kbd></span>
         </nav>

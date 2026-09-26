@@ -71,6 +71,135 @@ reach their governed maximum, which the physics holds at `topKmh`):
 | BRUTINI SVJ (sold new) | $520,000 | 759 hp · 720 Nm | 6.5 V12 · AWD | 4.94 m · 1.53 t | 2.8 s (spec) | | 350 |
 
 Models: 20-28 draw calls, 3-4 shadow casters and 7.3-10.2k triangles each (`carModels`).
+## Unreleased — brakes, ABS, stability and traction control, Settings · Driving
+
+The audit (before, measured with the new `DeadEndCity.brakeTest`): the brakes were a constant
+deceleration of `brakeG` from the moment S went down, whatever the tyres, the load or the
+speed: no pedal, no wheel slip, no lock and no ABS (a stop was ABS-perfect and instant). A
+sedan did 100-0 in 39.4 m dry (exactly v²/2·1.0 g; the 34.5 m in an older note was not
+reproduced) and 54.8 m soaked; holding the brake in a turn kept the full turn (the sedan turned
+147 degrees while stopping from 100 km/h). Several classes stopped longer than real cars
+(sedan, taxi, muscle, luxury, SUV, pickup, van, ambulance and bus 2-10% long), the sports and
+supercars about right.
+
+Tyres and brakes (new driving.js, called from physics.js controlVehicle for the player's road
+vehicle; the bicycle and the tank are unchanged)
+- **Pedal**: S pushes it down over 0.2 s (pressure = pedal^1.5, so a tap brakes gently and a
+  hold is full) and lets go in 0.08 s.
+- **Per-axle slip**: the brake force is split front / rear by the class's bias (`DRIVING_CHARACTER`:
+  static front weight and CG height over wheelbase; the bias locks the fronts first on a dry
+  road) against each axle's load with the weight moved forward by the deceleration. Each axle's
+  force rises with its wheel slip to the tyres' peak at 12%, then falls to the sliding friction
+  (0.8 of the peak dry, 0.58 soaked) as the wheel locks. The corner's share of the grip comes off
+  first (friction circle).
+- **ABS** (on by default): past 19% slip an axle's pressure is dumped by a fifth (at least down
+  to what the tyre is taking), held 25 ms and built again: a 9-13 Hz cycle. The fronts keep
+  about half their sideways grip, so the car steers while it stops. Feedback: the brake lamps
+  pulse, a faint 12 Hz rattle on the effects bus, the HUD's ABS lamp flickers amber.
+- **ABS off** (or a car built without it): a hard stop locks the wheels: skid marks from the
+  locked axle, a lower, harsher squeal, the wheels stop turning, the car goes straight on
+  whatever the steering, the stop is 12% longer dry and 30% longer soaked. Pumping the brake
+  (cadence braking) does better. A locked rear with the fronts still rolling swings the tail. A
+  motorbike's locked front for half a second (a quarter leaned over) lowsides the rider.
+- `brakeG` stays the ABS stop's mean deceleration (what road tests print, and the AI's clamp), so
+  traffic and police brake like ABS cars. Retuned to real 100-0 figures: sedan 1.12, taxi 1.05,
+  coupe 1.15, muscle 1.14, sport 1.33, roadster 1.21, rally 1.25, supercar 1.31, luxury 1.12,
+  limousine 0.95, SUV 1.06, pickup 0.97, van 0.99, ambulance 0.9, patrol car 1.18, box truck and
+  flatbed 0.75, CHEVETTE 1.35, BRUTINI 1.38 (now all-wheel drive), CAVALINO 1.33, cruiser 0.95.
+
+Stability and traction (driving.js `yawStability`, physics.js TRACTION CONTROL)
+- **ESC** (on by default): the yaw the rear tyres add beyond what the wheel asks (`yawSlide`:
+  lift-off after heavy throttle mid-corner, wheelspin at the back, a locked rear, trail-braking;
+  stronger in the wet) is damped by braking the outer front wheel (up to 0.35 g) and cutting the
+  throttle; pushing wide it brakes the inner rear and eases off. Counter-steer catches a slide
+  faster with it on. It stands back while the handbrake is pulled and 0.8 s after, so handbrake
+  turns are unchanged. **ESC off**: tail-happy classes (muscle, sports, mid-engined, the hot rod)
+  can spin on a lift or on the power; a front-driven sedan tucks its nose in.
+- **TCS** (on by default): the throttle is trimmed to the driven tyres' peak (the lamp flickers).
+  **TCS off**: past the tyres, the wheels spin at their sliding grip: slower launches, the engine
+  revs, rubber on the road, a rear-driven car's tail steps out in a corner, a front-driven one
+  pushes wide.
+- **Fitment**: cars have all three; motorbikes ABS only (the superbikes and the VORTEX also TCS);
+  the hot rod, the Rover Series, the Sentinel jeep and M35 none; the Highlander 70 ABS only;
+  bicycles and the tank none. The HUD shows N/A for what is not fitted. `spec.abs`, `spec.esc`,
+  `spec.tcs` override (for the dealership's hypercars). Police cruisers lining up a PIT drive
+  with their stability control off (0.8 of their sideways hold).
+- **Steering**: the keys turn the wheel through a short ramp (about 0.15 s in, faster back to
+  the centre and across, a third slower at speed), which the front wheels show.
+
+Settings · Driving (new tab between Gameplay and Controls): ABS, Stability control, Traction
+control (ON), Steering sensitivity (50-150%), Camera look-ahead (0-150%), Speed units (moved
+from Gameplay) and RESET DRIVING TO DEFAULTS; saved under `dead-end-city-driving`, applied at
+once, keyboard navigable like the other tabs; `DeadEndCity.settings({ abs, esc, tcs, steering,
+lookAhead, drivingReset })`. HUD: ABS · ESC · TCS lamps under the speed (dim ready, amber
+flicker working, struck through off, dashed N/A). The tyre loop's level follows how hard the
+tyres slip (`c.tyreSlip`: slide, lock, wheelspin, scrub, handbrake) instead of an on/off.
+
+Measured (`brakeTest`, 1/30 s frames, pedal from the first frame; m)
+
+| Vehicle | 100-0 dry before -> ABS | soaked before -> ABS | 50-0 dry before -> ABS | ABS off dry / soaked | Reference |
+| --- | --- | --- | --- | --- | --- |
+| REGENT (sedan) | 39.4 -> 37.3 | 54.8 -> 55.0 | 9.9 -> 10.3 | 42.6 / 71.8 | 35-38 |
+| CITY CAB | 39.4 -> 40.0 | 54.8 -> 56.7 | 9.9 -> 10.8 | 45.3 / 73.4 | 38-41 |
+| VOLT COUPE | 37.5 -> 36.4 | 52.1 -> 53.4 | 9.4 -> 10.1 | 41.5 / 76.5 | 35-37 |
+| DUKE V8 | 39.3 -> 36.6 | 54.7 -> 53.6 | 9.9 -> 10.0 | 41.8 / 76.6 | 35-37 |
+| COMET GT | 34.2 -> 31.8 | 47.5 -> 45.5 | 8.6 -> 8.8 | 36.1 / 66.3 | 31-33 |
+| SOLSTICE SPIDER | 35.8 -> 34.7 | 49.7 -> 50.0 | 9.0 -> 9.6 | 39.5 / 72.8 | 33-35 |
+| KODIAK RS | 35.7 -> 33.6 | 49.7 -> 48.7 | 9.0 -> 9.3 | 38.3 / 61.2 | 33-35 |
+| HELLFIRE CUSTOM (no ABS) | 41.4 -> 49.8 locked | 57.5 -> 77.3 | 10.4 -> 13.0 | same | drums, no ABS |
+| V12 TEMPEST | 32.7 -> 32.1 | 45.5 -> 46.1 | 8.2 -> 8.9 | 36.6 / 67.3 | 31-33 |
+| MONARCH V12 | 35.8 -> 37.3 | 49.7 -> 53.5 | 9.0 -> 10.2 | 42.5 / 77.2 | 36-38 |
+| SOVEREIGN STRETCH | 43.8 -> 43.7 | 60.9 -> 62.9 | 11.1 -> 11.9 | 49.9 / 92.7 | 42-45 |
+| RANGER 4X4 | 41.5 -> 39.5 | 57.6 -> 58.2 | 10.5 -> 10.8 | 44.8 / 79.7 | 38-41 |
+| MULE VAN | 46.4 -> 41.9 | 64.4 -> 61.7 | 11.7 -> 11.5 | 48.0 / 82.2 | ~42 |
+| WORKHORSE | 43.8 -> 42.7 | 60.8 -> 61.5 | 11.1 -> 11.6 | 48.9 / 84.5 | 40-43 |
+| PARAMEDIC | 46.4 -> 46.2 | 64.4 -> 73.0 | 11.7 -> 12.5 | 52.0 / 97.7 | 44-48 |
+| PATROL UNIT | 35.8 -> 35.5 | 49.7 -> 52.0 | 9.0 -> 9.8 | 40.5 / 73.9 | 35-37 |
+| ATLAS BOX TRUCK | 56.4 -> 54.3 | 78.4 -> 84.1 | 14.3 -> 14.7 | 61.0 / 107.4 | 50-60 |
+| METRO CITY BUS | 60.8 -> 63.0 | 84.5 -> 90.5 | 15.5 -> 17.0 | 72.3 / 135.1 | 55-65 |
+| CHEVETTE Z06 | 31.4 -> 31.3 | 43.7 -> 44.8 | 7.9 -> 8.7 | 35.5 / 65.3 | 30-32 |
+| BRUTINI SVJ | 30.2 -> 30.9 | 42.0 -> 44.0 | 7.6 -> 8.5 | 34.8 / 63.9 | 30-31 |
+| CAVALINO 458 | 31.4 -> 31.7 | 43.7 -> 45.3 | 7.9 -> 8.8 | 36.1 / 66.2 | 31-33 |
+| VORTEX 900 | 39.4 -> 41.7 | 54.8 -> 61.7 | 9.9 -> 11.2 | lowside at ~19 m | 38-45 |
+| NOMAD CRUISER | 43.7 -> 43.8 | 60.8 -> 64.4 | 11.0 -> 11.8 | lowside | 42-46 |
+| DOLCATI V4 / YAMASAKI | 35.8 -> 38.2 | 49.7 -> 56.3 | 9.0 -> 10.3 | lowside | 36-40 |
+| KR 500 | ~46 -> 48.3 | 64.4 -> 71.0 | 11.6 -> 12.9 | lowside | knobblies |
+
+Motorbikes' "before" figures are the constant-deceleration formula (checked against the cars to
+0.1 m; the browser crashed under the machine's load before their rows ran). 50-0 is a little
+longer than before in every class: the pedal's 0.2 s build-up is a larger share of a short stop.
+Soaked (`wet` 1, standing water) is +43-58% with ABS; a road half as wet grips 0.86, about +17-20%.
+
+Braking in a turn (100 km/h, steering held from 0.6 s before the brake to the stop; distance /
+sideways / degrees turned): before, the sedan turned 147 degrees (51 m, 35 m aside) with the
+brakes at full. ABS on: 42 m, 26 m aside, 150 degrees (it keeps turning, wider); ABS off: 39 m,
+2.9 m aside, 14 degrees (the locked fronts push it straight on). Every car class shows the
+same: ABS off 10-17 degrees, ABS on 125-178.
+
+Lift-off oversteer (`liftOffTest`: full throttle on full lock for 1.5 s, then lifted with the
+wheel held; peak body slip):
+
+| Vehicle | ESC on | ESC off |
+| --- | --- | --- |
+| DUKE V8, 80 km/h | 15 degrees, caught (ESC 2.5 s) | 124 degrees, spins |
+| DUKE V8, 100 km/h | 21, caught | 102, spins |
+| DUKE V8, 80 km/h soaked | 67, caught at walking pace | 176, spins |
+| REGENT (front drive), 80 | 7 | 14 (tucks in) |
+| COMET GT, 100 | 15, caught | 104, spins |
+| HELLFIRE (no ESC/TCS), 90 | spins on the power before the lift | same |
+
+Launch (`accelTest`, TCS on -> off, 0-100 / 0-200 s): V12 TEMPEST 2.93 / 9.27 -> 3.33 / 9.70;
+BRUTINI (4x4) 2.83 / 9.40 -> 3.13 / 9.73; CHEVETTE 2.73 / 9.13 -> 3.03 / 9.43; DUKE V8 5.03 ->
+5.20; REGENT 9.03 -> 9.03 (not enough power to spin).
+
+Handling (`turnTest`, defaults: ABS, ESC, TCS on) against the last table: minimum circle, 20 km/h
+radius and steady cornering unchanged (sedan 3.4 m / 3.5 m / 1.19-1.22 g, wet 0.89 g); the 90
+degree corner from 35 km/h is about 0.3 m longer (the steering ramp: sedan 8.5 x 4.9 m, was 8.2 x
+5.3); handbrake swing from 30 km/h within 1-4 degrees (sedan 89, sport 95, supercar 92, muscle 86,
+SUV 82, van 77, box truck 58, bus 48, motorbike 95).
+
+Console: `brakeTest(type, kmh, options)`, `liftOffTest(type, kmh, options)`, `drivingState()`;
+`settings()` and `openSettings('driving')`.
 
 ## Unreleased — the Palm Sound drawbridge: 44 m leaves and the opening as a spectacle
 

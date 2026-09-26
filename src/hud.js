@@ -382,6 +382,20 @@
           unit = units + ' · BREATH ' + Math.round(meter * 100) + '%';
         }
       }
+      // The assists' lamps (driving.js): road vehicles only.
+      const assists = c ? drivingAssistStates(c) : null;
+      box.classList.toggle('assists', !!assists);
+      if (assists) {
+        const signature = assists.abs + assists.esc + assists.tcs;
+        if (signature !== hudSeen.assists) {
+          hudSeen.assists = signature;
+          for (const lamp of getElement('assistLamps').children) {
+            const state = assists[lamp.dataset.assist];
+            lamp.dataset.state = state;
+            lamp.title = lamp.textContent + (state === 'na' ? ': not fitted to this vehicle' : state === 'off' ? ': switched off (Settings · Driving)' : state === 'active' ? ': working' : ': ready');
+          }
+        }
+      }
       const active = !!name;
       getElement('vehicleName').textContent = name || 'ON FOOT';
       getElement('speed').textContent = figure;
