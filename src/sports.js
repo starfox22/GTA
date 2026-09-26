@@ -329,6 +329,8 @@
       sportsTargetList.length = 0;
       sportsStepAccumulator = 0;
       for (const sport of Object.keys(sportsMatches)) sportsFollowSchedule(sport);
+      // A new game clears the betting slips too (campaign.js load() restores them).
+      resetSportsbook();
     }
 
     function sportsRecordEvent(match, type, player, detail = '') {
@@ -768,12 +770,46 @@
       const insideGoal =
         Math.abs(match.ball.y - goal.y) < match.venue.goalWidth / 2 - match.ball.radius &&
         match.ball.z < match.venue.goalHeight - match.ball.radius;
-      if (insideGoal) sportsScore(match, flight.team, 1, source);
-      else {
+      if (insideGoal) {
+        if (!sportsKeeperSave(match, flight)) sportsScore(match, flight.team, 1, source);
+      } else {
         sportsRecordEvent(match, 'wide', source);
         const restartPoint = sportsPoint(match, 1 - flight.team, 0.075, 0.5);
         sportsBeginRestart(match, 1 - flight.team, restartPoint, 'GOAL KICK', 1.3);
       }
+    }
+
+    /**
+     * A shot on target meets the keeper: it goes in with the fixture's finishing
+     * chance (sports-fixtures.js sportsFinishChance: the clubs' ratings), else
+     * the keeper saves. Close to the ball he holds it; otherwise he parries it
+     * back into play from the line. A keeper who is down saves nothing.
+     */
+    function sportsKeeperSave(match, flight) {
+      const keeper = match.players.find(
+        (athlete) =>
+          athlete.team !== flight.team && athlete.role === 'goalkeeper' && athlete.hp > 0 && !athlete.hidden && !(athlete.knockedFor > 0),
+      );
+      if (!keeper || sportsRandom(match) < sportsFinishChance(match.fixture, flight.team)) return false;
+      const ball = match.ball,
+        goal = sportsGoal(match, flight.team),
+        outward = -sportsAttackDirection(flight.team);
+      match.stats.saves++;
+      sportsSetAction(keeper, 'save', 0.9);
+      sportsRecordEvent(match, 'save', keeper);
+      // The ball stops just in front of the line, and the keeper dives across to it.
+      ball.x = goal.x + outward * 4;
+      keeper.y += sportsLimit(ball.y - keeper.y, -9, 9);
+      if (Math.abs(ball.y - keeper.y) < 14 && sportsRandom(match) < 0.6) {
+        sportsGivePossession(match, keeper);
+        match.status = 'SAVED · KEEPER HOLDS IT';
+      } else {
+        sportsLooseBall(match, outward * (55 + sportsRandom(match) * 45), (sportsRandom(match) - 0.5) * 90, 10);
+        ball.lastTouch = keeper.id;
+        ball.lastTouchTeam = keeper.team;
+        match.status = 'WHAT A SAVE!';
+      }
+      return true;
     }
 
     /**
@@ -1502,9 +1538,18 @@
         share = clock / (calendar.periods * calendar.periodMinutes);
       for (const team of [0, 1]) {
         if (match.sport === 'soccer') {
-          // About 1.4 goals a side over a match.
-          let goals = 0;
-          for (let chance = 0; chance < 6; chance++) if (sportsRandom(match) < share * 0.24) goals++;
+          // A Poisson draw on the side's expected goals for the minutes played
+          // (the sportsbook's goal model, sportsbook-odds.js).
+          const rate = sportsbookRates(match.fixture)[team] * share,
+            roll = sportsRandom(match);
+          let goals = 0,
+            term = Math.exp(-rate),
+            sum = term;
+          while (roll > sum && goals < 9) {
+            goals++;
+            term *= rate / goals;
+            sum += term;
+          }
           match.scores[team] = goals;
         } else match.scores[team] = Math.round(share * (44 + sportsRandom(match) * 22));
       }
@@ -2028,6 +2073,8 @@
         for (const person of match.people) if (!person.hidden) sportsTargetList.push(person);
       }
       updateSportsAudio(deltaSeconds);
+      // GOALLINE settles what the match just decided (sportsbook.js).
+      sportsbookUpdate(deltaSeconds);
     }
 
     /* Athletes, officials and stewards the combat code may hit (see header). */

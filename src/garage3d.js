@@ -67,6 +67,51 @@
         garageTiledMats.set(key, m);
         return m;
       }
+      // The rustic shop (STONECREEK GARAGE, a mountain village's): fieldstone and
+      // board and batten, 2 m to the tile.
+      const garageStoneTile = garageCanvas('fieldstone', 256, 256, (g, w, h) => {
+        g.fillStyle = '#857f74';
+        g.fillRect(0, 0, w, h);
+        const tones = ['#c9c1b3', '#b3ab9e', '#d6cfc2', '#a69f94', '#bfc2bd', '#c7b79d'];
+        for (let row = 0; row < 7; row++)
+          for (let x = -20 + (row % 2) * 16; x < w + 20; ) {
+            const sw = 26 + Math.abs(Math.sin(row * 7.1 + x * 0.37)) * 22,
+              sh = 28 + Math.abs(Math.sin(row * 3.3 + x * 0.11)) * 8,
+              cx = x + sw / 2,
+              cy = row * 37 + 18;
+            for (const dx of [-w, 0, w]) {
+              g.fillStyle = 'rgba(40,36,30,0.55)';
+              g.beginPath();
+              g.ellipse(cx + dx + 1, cy + 2, sw / 2, sh / 2, 0, 0, Math.PI * 2);
+              g.fill();
+              g.fillStyle = tones[(row * 3 + Math.round(x)) % tones.length];
+              g.beginPath();
+              g.ellipse(cx + dx, cy, sw / 2 - 1.5, sh / 2 - 1.5, 0, 0, Math.PI * 2);
+              g.fill();
+              g.fillStyle = 'rgba(255,255,255,0.16)';
+              g.beginPath();
+              g.ellipse(cx + dx - sw * 0.1, cy - sh * 0.2, sw * 0.26, sh * 0.14, 0, 0, Math.PI * 2);
+              g.fill();
+            }
+            x += sw + 3;
+          }
+      });
+      garageStoneTile.wrapS = garageStoneTile.wrapT = Three.RepeatWrapping;
+      const garageBoardTile = garageCanvas('boards', 256, 256, (g, w, h) => {
+        for (let i = 0; i < 8; i++) {
+          const v = 118 + ((i * 37) % 30);
+          g.fillStyle = `rgb(${v},${Math.round(v * 0.78)},${Math.round(v * 0.55)})`;
+          g.fillRect(i * 32, 0, 32, h);
+          g.fillStyle = 'rgba(255,240,215,0.25)';
+          g.fillRect(i * 32 + 27, 0, 2, h);
+          g.fillStyle = 'rgba(30,18,10,0.6)';
+          g.fillRect(i * 32 + 29, 0, 3, h);
+        }
+      });
+      garageBoardTile.wrapS = garageBoardTile.wrapT = Three.RepeatWrapping;
+      const garageStone = (w, h) => garageTiled('fieldstone', w, h, garageStoneTile, { tile: 16 }),
+        garageBoards = (w, h) => garageTiled('boards', w, h, garageBoardTile, { tile: 16 }),
+        garageRedRoof = (w, h) => garageTiled('redroof', w, h, ROOF_TEXTURES.metal, { color: '#9a3a2a', roughness: 0.5, metalness: 0.35, tile: 20 });
       const garageBrick = (w, h) => garageTiled('brick', w, h, garageBrickTile),
         garageCladding = (w, h) => garageTiled('metal', w, h, ROOF_TEXTURES.metal, { color: '#b9c2c4', roughness: 0.55, metalness: 0.4 });
       // Door slats: ribbed galvanised steel.
@@ -445,7 +490,10 @@
           eaves = P.eaves,
           // v: map units from the inside of the door line towards the back wall.
           zOf = (v) => bay.y1 - v,
-          B = (x, y, z, w, h, d, material, parent = group) => box(parent, x, y, z, w, h, d, material);
+          B = (x, y, z, w, h, d, material, parent = group) => box(parent, x, y, z, w, h, d, material),
+          // The rustic shop's stone and boards, or the city shops' brick and cladding.
+          brick = s.rustic ? garageStone : garageBrick,
+          clad = s.rustic ? garageBoards : garageCladding;
         live.userData.dynamic = true;
         scene.add(group);
         group.add(live);
@@ -466,10 +514,10 @@
         ]) {
           const outer = x0 < s.bayX ? x0 + 0.8 : x1 - 0.8,
             inner = x0 < s.bayX ? x1 - 0.8 : x0 + 0.8;
-          B(outer, eaves / 2, (back + front) / 2, 1.6, eaves, depth, x0 < s.bayX ? garageCladding(depth, eaves) : garageBrick(depth, eaves));
+          B(outer, eaves / 2, (back + front) / 2, 1.6, eaves, depth, x0 < s.bayX ? clad(depth, eaves) : brick(depth, eaves));
           B(inner, eaves / 2, (back + front - P.wall) / 2, 1.6, eaves, depth - P.wall, GM.lining);
         }
-        B(s.bayX, eaves / 2, back + 0.8, wallX1 - wallX0, eaves, 1.6, garageCladding(wallX1 - wallX0, eaves));
+        B(s.bayX, eaves / 2, back + 0.8, wallX1 - wallX0, eaves, 1.6, clad(wallX1 - wallX0, eaves));
         B(s.bayX, eaves / 2, back + 2.4, bay.x1 - bay.x0, eaves, 1.6, GM.lining);
         // A plinth round the base.
         B(s.bayX, 1.6, back - 0.3, wallX1 - wallX0 + 1, 3.2, 1, GM.concrete);
@@ -491,11 +539,11 @@
           [wallX0 + pierWest / 2, pierWest],
           [s.door.x1 + pierEast / 2, pierEast],
         ]) {
-          B(cx, GARAGE_CUT / 2, pierZ, w, GARAGE_CUT, P.wall, garageBrick(w, GARAGE_CUT));
-          B(cx, (GARAGE_CUT + eaves) / 2, pierZ, w, eaves - GARAGE_CUT, P.wall, garageBrick(w, eaves - GARAGE_CUT), upper);
+          B(cx, GARAGE_CUT / 2, pierZ, w, GARAGE_CUT, P.wall, brick(w, GARAGE_CUT));
+          B(cx, (GARAGE_CUT + eaves) / 2, pierZ, w, eaves - GARAGE_CUT, P.wall, brick(w, eaves - GARAGE_CUT), upper);
         }
         const doorW = s.door.x1 - s.door.x0;
-        B(s.bayX, (P.doorHeight + eaves) / 2, pierZ, doorW, eaves - P.doorHeight, P.wall, garageBrick(doorW, eaves - P.doorHeight), upper);
+        B(s.bayX, (P.doorHeight + eaves) / 2, pierZ, doorW, eaves - P.doorHeight, P.wall, brick(doorW, eaves - P.doorHeight), upper);
         // Steel jamb channels, hazard stripes at bumper height, the head beam.
         for (const x of [s.door.x0, s.door.x1]) {
           B(x, GARAGE_CUT / 2, front + 0.2, 1.4, GARAGE_CUT, 1.2, GM.steel);
@@ -543,50 +591,53 @@
         // skylights and the billboard.
         const roofW = wallX1 - wallX0,
           deckTop = eaves + P.roof;
-        B(s.bayX, eaves + P.roof / 2, (back + front) / 2, roofW, P.roof, depth, GM.roofDeck, roof);
-        for (const [x, z, w, d] of [
-          [s.bayX, back + 0.8, roofW, 1.6],
-          [s.bayX, front - 0.8, roofW, 1.6],
-          [wallX0 + 0.8, (back + front) / 2, 1.6, depth],
-          [wallX1 - 0.8, (back + front) / 2, 1.6, depth],
-        ]) {
-          B(x, deckTop + 2.4, z, w, 4.8, d, x === s.bayX ? garageBrick(w, 4.8) : garageCladding(d, 4.8), roof);
-          B(x, deckTop + 5, z, w + 0.6, 0.6, d + 0.6, GM.coping, roof);
+        if (s.rustic) rusticGarageRoof(s, roof, B, wallX0, wallX1, back, front, eaves, clad);
+        else {
+          B(s.bayX, eaves + P.roof / 2, (back + front) / 2, roofW, P.roof, depth, GM.roofDeck, roof);
+          for (const [x, z, w, d] of [
+            [s.bayX, back + 0.8, roofW, 1.6],
+            [s.bayX, front - 0.8, roofW, 1.6],
+            [wallX0 + 0.8, (back + front) / 2, 1.6, depth],
+            [wallX1 - 0.8, (back + front) / 2, 1.6, depth],
+          ]) {
+            B(x, deckTop + 2.4, z, w, 4.8, d, x === s.bayX ? brick(w, 4.8) : clad(d, 4.8), roof);
+            B(x, deckTop + 5, z, w + 0.6, 0.6, d + 0.6, GM.coping, roof);
+          }
+          for (const [v, u] of [
+            [70, -18],
+            [96, 14],
+          ]) {
+            B(s.bayX + u, deckTop + 4, zOf(v), 12, 8, 9, GM.acBody, roof);
+            B(s.bayX + u, deckTop + 8.2, zOf(v), 11, 0.4, 8, GM.steel, roof);
+            const fan = mesh(cylinderGeo, GM.steel, roof, s.bayX + u, deckTop + 8.5, zOf(v), 3.2, 0.3, 3.2);
+            fan.castShadow = false;
+            B(s.bayX + u + 7, deckTop + 2, zOf(v), 2, 2, 2, GM.galv, roof);
+          }
+          for (const v of [36, 50]) B(s.bayX - 10, deckTop + 0.8, zOf(v), 18, 1.6, 10, GM.glass, roof);
+          mesh(cylinderGeo, GM.galv, roof, s.bayX + 26, deckTop + 6, zOf(112), 2.2, 12, 2.2);
+          mesh(cylinderGeo, GM.steel, roof, s.bayX + 26, deckTop + 12.6, zOf(112), 3.4, 1.2, 3.4);
+          // The rooftop billboard: two steel legs with braces, lit from below.
+          const boardW = 124,
+            boardH = boardW / 4,
+            boardY = deckTop + 6 + boardH / 2,
+            boardZ = front - 5;
+          for (const x of [s.bayX - boardW * 0.32, s.bayX + boardW * 0.32]) {
+            B(x, deckTop + 3 + boardH / 2, boardZ - 2.2, 1.4, boardH + 6, 1.4, GM.steel, roof);
+            rod(roof, new Three.Vector3(x, deckTop, boardZ - 12), new Three.Vector3(x, boardY, boardZ - 2.4), 0.5, GM.steel);
+          }
+          B(s.bayX, deckTop + 5.2, boardZ + 0.4, boardW + 4, 0.6, 3, GM.steel, roof);
+          const title = sign(s.name, s.bayX, boardZ, boardW, s.color);
+          title.position.y = title.userData.backing.position.y = boardY;
+          roof.add(title, title.userData.backing);
+          for (const x of [-0.3, 0, 0.3]) addGlow(s.bayX + x * boardW, deckTop + 4.4, boardZ + 3, 12, '#fff1d0', 0.8, { day: 0 });
         }
-        for (const [v, u] of [
-          [70, -18],
-          [96, 14],
-        ]) {
-          B(s.bayX + u, deckTop + 4, zOf(v), 12, 8, 9, GM.acBody, roof);
-          B(s.bayX + u, deckTop + 8.2, zOf(v), 11, 0.4, 8, GM.steel, roof);
-          const fan = mesh(cylinderGeo, GM.steel, roof, s.bayX + u, deckTop + 8.5, zOf(v), 3.2, 0.3, 3.2);
-          fan.castShadow = false;
-          B(s.bayX + u + 7, deckTop + 2, zOf(v), 2, 2, 2, GM.galv, roof);
-        }
-        for (const v of [36, 50]) B(s.bayX - 10, deckTop + 0.8, zOf(v), 18, 1.6, 10, GM.glass, roof);
-        mesh(cylinderGeo, GM.galv, roof, s.bayX + 26, deckTop + 6, zOf(112), 2.2, 12, 2.2);
-        mesh(cylinderGeo, GM.steel, roof, s.bayX + 26, deckTop + 12.6, zOf(112), 3.4, 1.2, 3.4);
-        // The rooftop billboard: two steel legs with braces, lit from below.
-        const boardW = 124,
-          boardH = boardW / 4,
-          boardY = deckTop + 6 + boardH / 2,
-          boardZ = front - 5;
-        for (const x of [s.bayX - boardW * 0.32, s.bayX + boardW * 0.32]) {
-          B(x, deckTop + 3 + boardH / 2, boardZ - 2.2, 1.4, boardH + 6, 1.4, GM.steel, roof);
-          rod(roof, new Three.Vector3(x, deckTop, boardZ - 12), new Three.Vector3(x, boardY, boardZ - 2.4), 0.5, GM.steel);
-        }
-        B(s.bayX, deckTop + 5.2, boardZ + 0.4, boardW + 4, 0.6, 3, GM.steel, roof);
-        const title = sign(s.name, s.bayX, boardZ, boardW, s.color);
-        title.position.y = title.userData.backing.position.y = boardY;
-        roof.add(title, title.userData.backing);
-        for (const x of [-0.3, 0, 0.3]) addGlow(s.bayX + x * boardW, deckTop + 4.4, boardZ + 3, 12, '#fff1d0', 0.8, { day: 0 });
 
         // ---- The office: brick, a glass door and a big window, a lightbox sign.
         const O = s.office,
           oh = P.officeHeight,
           ox = O.x + O.w / 2,
           oz = O.y + O.h / 2;
-        B(ox, oh / 2, oz, O.w, oh, O.h, garageBrick(O.w, oh));
+        B(ox, oh / 2, oz, O.w, oh, O.h, brick(O.w, oh));
         B(ox, oh + 1.6, oz, O.w + 0.8, 3.2, O.h + 0.8, GM.coping);
         B(ox, oh + 3.4, oz - 6, 10, 5, 8, GM.acBody);
         B(ox - 10, 12, front + 0.25, 22, 13, 0.6, GM.glass);
@@ -753,6 +804,53 @@
         garageModels.push(model);
         return model;
       }
+      /* The rustic shop's roof (lifts off with the city shops' flat one): a steep
+         red metal gable, ridge running back from the street, board gables with
+         the name carved on a board under the apex, bargeboards, a cupola. */
+      function rusticGarageRoof(s, roof, B, wallX0, wallX1, back, front, eaves, clad) {
+        const w = wallX1 - wallX0 + 2,
+          depth = front - back + 2,
+          cx = s.bayX,
+          cz = (back + front) / 2,
+          ov = 1.0 * UNITS_PER_METRE,
+          half = w / 2,
+          rise = half * Math.tan((38 * Math.PI) / 180),
+          pitch = Math.atan2(rise, half),
+          L = (half + ov) / Math.cos(pitch),
+          dark = new Three.MeshStandardMaterial({ color: '#3a2a1e', roughness: 0.85 });
+        B(cx, eaves + 0.3, cz, w, 0.6, depth, GM.roofDeck, roof);
+        for (const side of [-1, 1]) {
+          const slab = box(roof, cx + side * (L / 2) * Math.cos(pitch), eaves + rise - (L / 2) * Math.sin(pitch) + 1.2, cz, L, 1.6, depth + 2 * ov, garageRedRoof(L, depth + 2 * ov));
+          slab.rotation.z = -side * pitch;
+          // Bargeboards front and back.
+          for (const z of [cz - depth / 2 - ov, cz + depth / 2 + ov]) {
+            const barge = box(roof, cx + side * (L / 2) * Math.cos(pitch), eaves + rise - (L / 2) * Math.sin(pitch) + 0.4, z, L, 2.4, 0.8, dark);
+            barge.rotation.z = -side * pitch;
+          }
+        }
+        box(roof, cx, eaves + rise + 1.8, cz, 2.4, 1.2, depth + 2 * ov, garageRedRoof(2.4, depth));
+        // The gable ends in boards (a triangle each way).
+        const tri = new Three.BufferGeometry();
+        tri.setAttribute('position', new Three.Float32BufferAttribute([-half, 0, 0, half, 0, 0, 0, rise, 0], 3));
+        tri.setAttribute('uv', new Three.Float32BufferAttribute([0, 0, w / 16, 0, w / 32, rise / 16], 2));
+        tri.computeVertexNormals();
+        for (const [z, turn] of [[front + 0.1, 0], [back - 0.1, Math.PI]]) {
+          const gable = new Three.Mesh(tri, clad(w, rise));
+          gable.position.set(cx, eaves, z);
+          gable.rotation.y = turn;
+          gable.castShadow = gable.receiveShadow = true;
+          roof.add(gable);
+        }
+        // The name, carved, under the apex of the street gable; a lantern either side.
+        const title = sign(s.name, cx, front + 0.8, 72, s.color);
+        title.position.y = title.userData.backing.position.y = eaves + rise * 0.42;
+        roof.add(title, title.userData.backing);
+        for (const x of [-30, 30]) addGlow(cx + x, eaves + rise * 0.42 + 10, front + 4, 7, '#ffd9a0', 1, { day: 0 });
+        // A little cupola on the ridge.
+        B(cx, eaves + rise + 5, cz - 10, 10, 8, 10, clad(10, 8), roof);
+        const cap = box(roof, cx, eaves + rise + 10, cz - 10, 12, 2, 12, garageRedRoof(12, 12));
+        cap.castShadow = true;
+      }
       for (const s of GARAGES) buildGarage3D(s);
 
       /* THE SHOW'S EFFECTS: one pool of paint mist and one of sparks, used at
@@ -896,7 +994,9 @@
         stepGarageFx(garageFx.mist, dt, -1.5, true);
         stepGarageFx(garageFx.sparks, dt, 90, false);
       }
-      for (const p of [FLIGHT.heli, FLIGHT.pickup]) {
+      // Oceanview's pad (the rescue pad at the Northridge ranger station is
+      // part of the mountain village kit, mountain-village3d.js).
+      for (const p of [FLIGHT.heli]) {
         const cv = document.createElement('canvas');
         cv.width = cv.height = 256;
         const drawingContext2 = cv.getContext('2d');

@@ -224,9 +224,11 @@
       // Station plaza with paver grid and the fountain basin.
       g.fillStyle = '#c3bfb2';
       g.fillRect(c.plaza.x, c.plaza.y, c.plaza.w, c.plaza.h);
+      // (With the 3D renderer its ground shader lays the slabs, game.js
+      // VECTOR_GROUND_MARKINGS.)
       g.strokeStyle = '#a9a598';
       g.lineWidth = 1;
-      for (let x = c.plaza.x; x <= c.plaza.x + c.plaza.w; x += 20) {
+      for (let x = c.plaza.x; x <= c.plaza.x + c.plaza.w && !VECTOR_GROUND_MARKINGS; x += 20) {
         g.beginPath();
         g.moveTo(x, c.plaza.y);
         g.lineTo(x, c.plaza.y + c.plaza.h);
@@ -308,7 +310,8 @@
         if (route.some((q, k) => k && segmentDistance(x, y, route[k - 1], q) < 24)) continue;
         if (((j * 31) % 100) / 100 > groveChance) continue;
         if (trees.some((t) => Math.hypot(t.x - x, t.y - y) < 26)) continue;
-        const t = { x, y, r: 13 + (j % 6) * 2, blossom: j % 4 === 0 };
+        // `park` and `nearPond` choose the species (vegetation3d.js: willows by the water).
+        const t = { x, y, r: 13 + (j % 6) * 2, blossom: j % 4 === 0, park: 'commons', nearPond: parkPondBlocked(x, y, 70) };
         drawTree(x, y, t.r);
         Object.assign(trees[trees.length - 1], t);
         planted++;
@@ -334,6 +337,8 @@
             r: 12 + (j % 5) * 2,
             blossom: ['pond', 'orchard', 'commons'].includes(p.kind) && j % 3 === 0,
             tropical: p.kind === 'botanic',
+            park: p.kind,
+            nearPond: parkPondBlocked(x, y, 60),
           };
           drawTree(x, y, t.r);
           Object.assign(trees[trees.length - 1], t);

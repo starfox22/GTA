@@ -104,8 +104,9 @@ Two closures matter:
     (`ROOFTOP.height` 240, 30 m) are in real units already. Facade textures repeat per storey;
     shopfronts, awnings (3.2 m), fascia signs, entrance canopies and business signs sit on
     the real ground floor.
-  - **Street furniture**: lamp posts 9 m (`LAMP_HEIGHT`), street trees about 7 m
-    (`TREE_RISE`), palms 9 m, bus shelters 2.5 m, benches 0.45 m seat / 0.85 m back, bins
+  - **Street furniture**: lamp posts 9 m (`LAMP_HEIGHT`), street trees 7-9 m and park trees
+    to 16 m (vegetation3d.js `TREE_SPECIES`, by plan radius and species), palms 8-13 m, bus
+    shelters 2.5 m, benches 0.45 m seat / 0.85 m back, bins
     0.8 m, mailboxes and parking meters 1.3 m, bollards 0.9 m, the payphone 2.2 m.
   - Derived: `METERS_PER_UNIT`, `KMH` (map units a second in one km/h), `KNOTS`, `GRAVITY`
     (9.81 m/s² in map units), `worldMeters()`, `distanceLabel()`, `speedKmh()`. Write speeds as
@@ -207,11 +208,15 @@ Two closures matter:
   rolls, flaps 1, rotating at the airframe's speed: courier 236 m (lift-off ~116 km/h), jet
   504 m (~180), airliner 794 m (~207); landing rolls from touchdown at that speed with full
   brakes 103 / 253 / 368 m. The runways (section 4, "Airfields") are sized from these.
-- **Camera**: the street view starts at `STREET_ZOOM` 1.2 (world-view.js; the wheel reaches
-  0.14-1.8), so true-size cars and people read about as large as the old oversized ones.
-  The street camera stands clear of the tallest roof (`streetCeiling()`), and the sun's shadow
-  box reaches that high too. From about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js,
-  to 0.68 of the player's zoom by 220 km/h) and the look-ahead is about 0.45 s of travel.
+- **Camera**: the street view starts at `STREET_ZOOM` 1.6 (world-view.js; the wheel and the
+  zoom keys reach `STREET_ZOOM_MIN` 0.14 to `STREET_ZOOM_MAX` 3.0, the reset key goes back to
+  1.6): people read bigger than at the old 1.2, over about 43 m of street top to bottom on a
+  16:10 screen, and the ground holds up that close (ground-shader3d.js). The street camera
+  stands clear of the tallest roof (`streetCeiling()`), and the sun's shadow box reaches that
+  high too. From about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js):
+  by 220 km/h to 0.68 of the player's zoom or to `DRIVE_ZOOM_FAR` 0.82, whichever is wider, so
+  at speed the road ahead shows as it did from the old default; the look-ahead is about 0.45 s
+  of travel.
 
 ## 3. Subsystem map
 
@@ -230,7 +235,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
 | geography.js | Land polygons and the cached `landAt`, `BRIDGES` and their architecture (`bridgeStructure`, `bridgeFootings`, `bridgePylons`), reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
 | drawbridge.js | The Palm Sound drawbridge: `DRAWBRIDGE_OPENINGS`, the opening phases (`updateDrawbridge`), barrier arms and ramming, traffic held at the stop lines (`drawbridgeTrafficLimit`), `drawbridgeKeepsOff`, `drawbridgeFootBlocked`, leaves as ramps and vehicle jumps (`drawbridgeSurface`, `drawbridgeSlopeDrive`, `drawbridgeFlight`, `drawbridgeSettle`), the ketch ALBATROSS, GPS pricing (`drawbridgeRouteDelay`), `drawDrawbridgeMap`, bells, motors and horns, the console report |
-| harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
+| harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit, and THE DROP in Vinny's warehouse (stage 4 shutter, 5 ELIMINATE POLICE · N LEFT for officers shut in with the truck, `depotPoliceInside`, 6 EXIT THE TRUCK, 7 ESCAPE ON FOOT THROUGH THE BACK DOOR; POLICE LOST at the back door, then MISSION COMPLETED; `depotStakeout` holds the wanted level while inside, `depotDropPrompt`) |
 | heat.js | Heat and wanted stars: `crime(amount)` (heat by severity; the only way heat rises, nothing adds it passively), `recordKill` / `recordVehicleKill` (by victim, with a spree bonus), `HEAT_STARS`, the escalation delay, `heatUI()` (stars, pending star, heat meter, body count), `crimeLog` (the last crimes, for `policeReport().crimes`) |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
 | arsenal.js | Ownership-driven equipment, mystery weapon cards, icon inventory, knife combat and FISTS (index 7, no weapon: `meleeAttack` throws a left-right combination with a haymaker, `punchReaction`; `playerUnarmed()` tells the crowd the player is harmless) |
@@ -239,8 +244,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | swat.js | SWAT teams and rooftop snipers. **`SNIPERS_ENABLED = false`**: the snipers are switched off (no spawn from any caller, their laser, beep, screen-edge glow and captions gated too); set it to true to restore them as described here. The rear-door deployment of a SWAT van (`swatDeploySpots`, `equipSwatOperator`), the shield man and the stack behind him (`swatLeadSpot`, `swatStackSpot`, `shieldBlocks`), rooftop marksmen now and then at five stars (`roofSniperSite`, `updateRoofSnipers`: one at a time, a second only after 150 s at five stars, first roll 25-45 s in and then every 60-90 s on a 65% chance; laser telegraph, two led rounds, then it packs up), `swatStats` |
 | wounds.js | Wounds: `woundPerson` (hit zone, flinch, limp, blood trail, downed officers and bystanders), `chooseDeathFall` (backwards, face down, spun, slumped against a wall), `deathFallAmount` (the half-second fall), `hitFlinch`, `woundReport` |
 | story.js | Characters, `STORY` missions, dialogue, `setStage`, `startMission`, `winMission`, `failMission`, `missionUpdate`, `updateMissionCard` |
-| campaign.js | Save schema, progression frontier, ammunition persistence and mission selection |
-| chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `beginDepotDrop`, `clearDepotFloor`) |
+| campaign.js | Save schema, progression frontier, ammunition persistence and mission selection; PUBLIC DEMO (`DEMO_BUILD` in game.js, `DEMO_MISSIONS`, `demoLocked`, `storyCallWaiting`, `demoStoryOver`, the FULL GAME badges and buy note, the DEMO COMPLETE card `showDemoComplete`, `campaignStats` for its recap, the `dead-end-city-demo` key) |
+| chase.js | Mission 1 cargo pursuit (`notifyCargoPolice`, `evadeCargoPolice` for the respray), Vinny's depot (front shutter, back door, `clearDepotFloor`; `depotSealed` once the drop's shutter is down: `depotPoliceBlocked` stops any officer crossing its walls either way, `depotSeparates` keeps arrests from reaching through them) |
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. A braced cruiser is an ordinary 1.6 t body on locked brakes (`parkedFriction`), so the rammer's momentum decides: a truck, bus or the tank shoves through, a sedan crumples and stalls in the V. A cruiser moved over a metre is knocked loose (`roadblockShoved`); the cut is busted when the player's car comes out the far side (`watchRoadblockBreach`) |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
 | riders.js | Riders thrown from motorbikes and bicycles: `RIDER_THROW`, `riderCrash` / `riderLanding`, `throwRider`, the flight, landing and slide (`stepThrownBody`), `updateThrownPlayer`, `stepRiderEjection`, fallen bikes (`updateFallenBike`), `riderReport` |
@@ -261,7 +266,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | damage.js | Vehicle damage model (crumple dents, panels, glass, lamps, tyres, engine fire, handling loss), bullet holes and wall/glass/ground strikes, blast shove, breakable street furniture and trees by impact energy (`STREET_PROP_KINDS`, `registerStreetProp`, `treeProp`, `streetPropContacts`, `knockStreetProp`), the damage console helpers |
 | crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; street furniture passes its `material` (wood, plastic and fabric knock higher and softer with a splinter settle, stone and trees crash lower, a tree adds the thud of the trunk landing); the whole bus plays at `CRASH_LEVEL` (-3.5 dB, under gunfire and engines); one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
 | engine-audio.js | Engine sound: `ENGINE_SETS` (recorded loops per class with the revs each was recorded at: compact, sport, V8, diesel, bike, cruiser, tank, outboard, marine diesel, jet ski) and `ENGINE_OF_TYPE` (vehicle type to set, pitch, level); the player's engine simulation (`engineSimulate`: idle, clutch slip pulling away, automatic gearbox with a throttle cut on upshifts and a blip on downshifts, throttle load), layers pitched by rpm / recorded rpm and cross-faded in the middle of each gap (`engineLayerWeights`), a recorded starter on getting in, overrun burble (V8, sport), misfires when badly hurt; tyre roar, gravel off-road and tank tracks (tank-tracks.ogg), wind on open vehicles; synthesised turboprop and turbofan (`updateJetVoice`: whine, roar, hiss, blade buzz); the nearest four driven traffic vehicles get one voice each with distance, pan and Doppler (`updateTrafficEngines`); `engineReport()` (DeadEndCity.engineSound(): revs, gear, load, layer rates and gains, traffic, a trace) |
-| county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
+| county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges (Ridgeline's three towns are laid out by mountain-village.js) |
+| mountain-village.js | The Ridgeline island's mountain villages (STONECREEK, NORTHRIDGE, EASTGATE): `MOUNTAIN_KINDS` (chalet, house, cabin, lodge, shop, store, bakery, cafe, diner, tavern, chapel, station, rescue, motel, gas, barn, mill, woodshed, lookout: storey heights, pitch, ridge direction, finishes, features), `MOUNTAIN_TOWN_PLANS` (per block, hand-laid), `buildMountainVillages` (buildings at real height with `mountain` / `pitched`, seeded finishes, the club's walls as thin buildings), the street dressing (`MOUNTAIN_VILLAGE`: boardwalks, lantern lamps, benches, planters, firewood, split-rail fences, the squares, yards, trees), the Mountain Rescue helipad, the gas station, the sawmill yard, `mountainServiceSpot` (where the OUTFITTERS / LODGE businesses stand), colliders and foot obstacles, the county-sheet paint, `mountainVillageReport()` |
 | monarch.js | Monarch Isle (section 4, "Monarch Isle"): the coast (`MONARCH_ISLE`, pushed onto `LAND_REGIONS`), `MONARCH_BOUNDS`, the 100 m grid (`ISLE_COLS`, `ISLE_ROWS`, `ISLE_STREETS`, `ISLE_CIRCLES`, `isleCarriageways`), `MONARCH_BRIDGES` (pushed onto `BRIDGES`, designs `harp` and `bowstring` in `BRIDGE_DESIGNS`), `MONARCH_ROADS` (into `COUNTY_ROADS`: GPS and police routing), villas (`MONARCH_VILLAS`, `planVilla`), block uses (`ISLE_BLOCK_USES`, `planIsleBlock`, `planIslePlaza`), `MONARCH_TOWERS`, `MONARCH_BUSINESSES`, `MONARCH_MARINA` and berths, `MONARCH_GARDEN`, `buildMonarchIsle` (called from buildWorld after the real-height pass), street trees and lanterns (`planIsleStreetscape`, `monarchLamps`), collision (`monarchBlocked`, `monarchSolids`), districts, streets and shores (`monarchDistrictAt`, `monarchStreetName`, `monarchShoreStyle`), the ground tile and map paint, `monarchLayout()` |
 | monarch-life.js | Monarch Isle life: the island lane graph (`isleRoadGraph`: 31 nodes, 49 links, the two bridges joined to city and county roads), junction boxes and anticlockwise roundabouts (`isleCrossing`, `isleNodeBusy`, `isleBoxOccupied`), `isleTrafficControl` (called from physics.js for cars with `c.isle`), `populateMonarchIsle`, the walk graph (`isleWalkNodes`: pavements, zebras, ring walks, promenade, garden, beach), walkers (`updateIsleWalker`: look both ways at the kerb, detours, doors, photos), staff posts, boats (`isleBoatHelm`), payphones, sound, `monarchReport()` (DeadEndCity.monarch()) |
 | hypercars.js | The Prestige Collection (section 6e): `PRESTIGE_TYPES` (eleven hypercars and GTs added to `VEHICLE_DEFINITIONS` at real size, `modelScale` 1, `prestige`), `PRESTIGE_CATALOG` (marque, model, blurb, hp, torque, engine, drivetrain, price, paints), `prestigeFigures`, `prestigePrice`, their glass bands (`CAR_GLASS_BANDS`), engine sets (`ENGINE_SETS` v12hyper, v12tt, w16, v16, v8tt, electric) and the synthesised turbo whistle, wastegate chuff and motor whine (`updateHypercarVoice`) |
@@ -276,13 +282,16 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
 | terrain.js | The Ridgeline Range: generated, eroded height fields (one shared triangulated surface for rendering, collision and elevation), switchback 4x4 trails, baked AO / flow / forest data, forest, boulder and stream placement, the 2D relief paint, slope handling and off-road contact, `terrainReport` |
-| offroad.js | The 4x4 club, trail mud, off-road traction and the hill climb: `OFFROAD_CLUB` (the lot across Eagle Pass from the Mount Ascent trailhead, its pad flattened in the height field by `offroadTerrainPads`), `OFFROAD_TYPES` (seven club trucks added to `VEHICLE_DEFINITIONS`, real size, `modelScale` 1), `OFFROAD_SECTIONS` (mud, the bog, the muddy hairpin, rock steps, checkpoints per trail), `offroadTrailBake` (mud / rock / trail frame per vertex), `offroadSurfaceAt`, `offroadDrive` (traction on the range, called by physics.js), body mud (`c.mudCoat`, `c.mudWet`), the club's members (a crowd scene), the hill climb (`trailCourse`, `offroadSummit`, best times in `dead-end-city-hillclimb`), `trailPilot` / `trailProfile` (console) |
+| offroad.js | The 4x4 club, trail mud, off-road traction and the hill climb: `OFFROAD_CLUB` (a whole Northridge block: clubhouse, workshop, veranda, yard, gravel lot, gate and sign, the seven slots, the members' rigs, furniture, `clubWalls`), `TRAILHEAD_PARKING` (the small car park left at the old lot across Eagle Pass from the Mount Ascent trailhead, its pad flattened by `offroadTerrainPads`), `OFFROAD_TYPES` (seven club trucks added to `VEHICLE_DEFINITIONS`, real size, `modelScale` 1), `OFFROAD_SECTIONS` (mud, the bog, the muddy hairpin, rock steps, checkpoints per trail), `offroadTrailBake` (mud / rock / trail frame per vertex), `offroadSurfaceAt`, `offroadDrive` (traction on the range, called by physics.js), body mud (`c.mudCoat`, `c.mudWet`), the club's members (a crowd scene), the hill climb (`trailCourse`, `offroadSummit`, best times in `dead-end-city-hillclimb`), `trailPilot` / `trailProfile` (console) |
 | casino.js | Roulette layout, stakes, settlement, UI and saved cash |
 | skyline.js | North Point financial cluster plan: `SKYLINE_TOWERS` (named tower lots per block, heights, designs), `buildSkylineBlock`, `paintSkylinePlaza` |
 | renewal.js | Parks (`CENTRAL_PARK`, `COMMONS`), ponds (`parkPondBlocked`, `parkPondNear`), boardwalks, walkers, joggers, the outdoor gym |
 | sports-fixtures.js | Club pools (`SPORTS_TEAMS`: names, kits, crests), `SPORTS_CALENDAR`, daily fixtures (`sportsFixtureFor`, `sportsCurrentFixture`), the match timeline (`sportsTimeline`), `drawSportsCrest` |
 | sports.js | Live basketball and soccer: match day stages, possession, shots, scoring, restarts, officials, harm and panic (`sportsTargets`, `sportsAbandon`), the player on the ball (`sportsKick`, stewards), `sportsConsole` |
 | sports-world.js | South Coast Stadium reservation, enclosure (`PITCH_FENCE` with its openings), big screens (`STADIUM_SCREENS`), turnstiles, vehicle barriers, markings |
+| sportsbook-odds.js | The sportsbook's pricing (section 4d, GOALLINE): `SPORTSBOOK_MODEL`, expected goals from the clubs' ratings (`sportsbookRates`), the live state (`sportsbookMatchState`), fair markets from the Poisson grid (`sportsbookFairMarkets`), the power-method margin and price ladder (`sportsbookPriceOutcomes`, `sportsbookLadder`), odds formats (`sportsbookFormatOdds`) |
+| sportsbook.js | GOALLINE SPORTS BET beside the stadium plaza: the plan and solids (`SPORTSBOOK_SHOP`, `sportsbookBlocked`, `sportsbookWalls`), bets (`sportsbookPlace`), settlement (`sportsbookUpdate`: goals, half time, full time, void), save data, the clerk and punters (`staffSportsbook`), prompt and door, ground and map, `sportsbookConsole` |
+| sportsbook-ui.js | The betting menu (`#sportsbook`): header, markets, slip, my bets, keys (`sportsbookKey`) |
 | sports-audio.js | Stadium goal reactions only (no crowd bed): the recorded cheer from the scoring end and groan from the other, attenuated by the player's distance to the stadium (`stadiumAudibility`); panic screams, the referee's whistle, kicks |
 | transit.js | Railway: `RAIL_LINES` routes filleted by `railTrackGeometry`, `RAIL_STATIONS`, `railDecks`, boarding (`openTransit`, `boardTransit`), `leaveTransit`, scenic trains |
 | ride-skip.js | Skip the ride: the offer and prompt (`rideSkipOffer`, `rideSkipPrompt`) for a cab, a train or the sailing liner, the `skipRide` / `skipStop` keys (`rideSkipKey`), the fade on simulation time (`updateRideSkip`), the jump (`performRideSkip`: `catchUpWorld`, `placeCabAtKerb`, `placeTrainAtPlatform`, `placeLinerAtAnchor`), `rideSkipReport` |
@@ -315,6 +324,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | flight-view3d.js | Perspective flight camera (`flightViewShape(agl)`; `streetZoomHeight(zoom)`: the street zoom as the height at which the flight camera draws the ground at that scale, `city3D.zoomHeight`), ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
+| vegetation3d.js | The tree library (included where the trees are planted, before damage3d.js): `TREE_SPECIES` (plane, linden, honey locust, Bradford pear and its blossom, maple, oak, willow, jacaranda, flame tree, cherry, beech, birch, Italian cypress, stone pine, spruce, fir, pine; Canary, fan, coconut and royal palms), each one geometry per level of detail (`speciesGeometry(key, lod)`: 0 near, 1 mid) built from a kit (`tube`, `card`, `blob`, `frond`, `fanLeaf`, `bough`); the procedural foliage atlas and its normal map and alpha-keeping mips; `treeMaterial` / `treeDepthMaterial` (vertex attributes `foliage` = leaf mask and sway, `morph`; instance `instanceFoliage` = morph and density, instance colour = leaf tint; wind in both passes); placement (`treeSpecies`: `DISTRICT_TREES`, parks, ponds, county, foothills, Monarch Isle; `palmSpeciesAt`); per-tree variation (`treeVariation`: scale, aspect, lean, turn, tint, autumn and blossom accents, morph, density); `plantTree` / `plantPalm` (breakable props, near and mid linked), `foliageInstances`, the LOD switch (`updateVegetation`), far-city blobs (`noteFarTree`), `vegetationReport`, `treeLineup` |
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie textures and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light (`AIR_LIGHT`, the roof landing `searchlightLanding`), lens flare and crew aim (`updateHelicopterSearchlight`), `searchlightReport` |
 | damage3d.js | Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire, `shellImpact` (a tank round's breach in a facade: hole, cracks, soot, thrown and falling masonry, rubble heap, dust, broken glass) |
 | cityscape3d.js | Buildings: facade archetypes (`archetypeFor`), roof textures and plant (recorded as `b.roofKeepOuts`), rooftop helipads, shopfronts, fire escapes, balconies, lit windows, instanced street furniture (`pools`) |
@@ -325,21 +335,22 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | sidejobs3d.js | Sky rings, bomb and substation devices |
 | roadblocks3d.js | Loose traffic cones and burning flares |
 | themepark3d.js | Falcon track, supports, station and train; the Sunset Eye (LED shows, level capsules); lagoon fountain; hotel, beach club, gate; family rides, flume, dark ride, dodgems, souk; palms, lamps, night light sheet, fireworks; ride cameras (the station roof and its sign are their own batch, cut away while the train or the ride camera is under them, `setStationRoofCut`) |
-| unicorn3d.js | (included by themepark3d.js) Aurora, the black unicorn statue on the lawn by the drop tower (`PIER.unicorn`): a monumental rearing unicorn (12 m to the horn tip, 13 m above the lawn) sculpted from Catmull-Rom tubes (`unicornTube`: elliptical sections, a normal hint to turn flattened mane and tail locks, a groove for the spiral horn) and embedded masses for the musculature (`unicornMass`), in clearcoated black lacquer with a polished gold horn and black hooves; the OBSIDIAN patch (reflections folded up into the sky and partly desaturated, a sky rim light, anthracite lock edges, granite grain) and night UPLIGHTS (four warm-white lamps in the paving, a tight specular glint on the black); a low octagonal polished black granite plinth (1.3 m) with an inlaid brass line and an engraved brass AURORA plaque facing the camera; everything merged per material (about 9.2k triangles, six draws with the plaque); `updateUnicornStatue` each frame (uplights, the horn's soft glow) |
-| garage3d.js | The garages' meshes: brick and steel workshop, sectional door slats, rooftop billboard and AC, office with its MECHANICS lightbox, the tagline fascia; inside a two-post lift, tool chests, workbench and vice, compressor, tyres, engine hoist, paint zone with extraction fan and spray rig, tubes, NO SMOKING sign and calendar; the show's paint mist and grinder sparks (`updateGarageVisuals`) |
+| unicorn3d.js | (included by themepark3d.js) Aurora, the black unicorn statue on the lawn by the drop tower (`PIER.unicorn`): a monumental rearing unicorn (12 m to the horn tip, `UNICORN_HEIGHT` above the plinth) sculpted on a real horse, the three.js examples horse (MIT; from "3 Dreams of Black", Apache 2.0; kept in `tools/models/Horse.glb`). `tools/unicorn_model.py` welds it into a closed 494-vertex cage, skins it to a hand-placed skeleton (inverse-distance weights smoothed over the mesh), thickens the legs, draws in the model's tail and poses her in a levade (body pitched up 47 degrees, hind legs gathered, forelegs folded, the neck arched and the head turned to the street camera), then lays out on the smooth surface the mane (43 wind-swept locks off the crest found by ray casts, most to the camera side), the forelock, the tail (15 locks in an S to the plinth, the third point of support, fanning out) and the horn's footing; it writes `assets/unicorn-horse.json` (millimetres; ASSETS.unicorn, ~30 KB; `--obj` dumps the sculpt for inspection). Here `unicornLoop` subdivides the cage twice (15.7k triangles), `unicornTube` sweeps the locks (flattened sections turned by a hint) and the polished gold horn (a two-start spiral groove, five turns), `unicornStatue` merges them per material and the statue matrix scales her so the horn tip stands 12 m up with her support (hooves and tail) centred on the plinth; clearcoated black lacquer with a gold horn; the OBSIDIAN patch (reflections folded up into the sky and partly desaturated, a sky rim light, anthracite lock edges, granite grain) and night UPLIGHTS (four warm-white lamps in the paving, a tight specular glint on the black); a low octagonal polished black granite plinth (1.3 m) with a granite rock under her hooves, an inlaid brass line and an engraved brass AURORA plaque facing the camera; about 29.5k triangles, six draws with the plaque; `updateUnicornStatue` each frame (uplights, the horn's soft glow) |
+| garage3d.js | The garages' meshes: brick and steel workshop (STONECREEK GARAGE, `rustic`: fieldstone and board and batten under a red metal gable with its carved name, `rusticGarageRoof`), sectional door slats, rooftop billboard and AC, office with its MECHANICS lightbox, the tagline fascia; inside a two-post lift, tool chests, workbench and vice, compressor, tyres, engine hoist, paint zone with extraction fan and spray rig, tubes, NO SMOKING sign and calendar; the show's paint mist and grinder sparks (`updateGarageVisuals`) |
 | landmarks3d.js | Waterfront gardens, civic precinct and ground helipads |
 | civic3d.js | Businesses, the casino, hospital and school fronts, time-of-day palette |
 | air-cover3d.js | Road underpass walls, roof, portals and lamps |
 | renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
-| landscape3d.js | Renderer-only planting on open lawns: Battery Park trees and flower beds, Great Lawn picnic blankets |
+| landscape3d.js | Renderer-only planting on open lawns: Battery Park trees (planes, oaks, lindens and cherries by vegetation3d.js) and flower beds, Great Lawn picnic blankets |
 | sports3d.js | Tiered stands, crowd in team colours (fills, cheers, panics), floodlights (`stadiumFloodPools`), live screens (`paintSportsBoard`), the ball; athletes, officials and stewards are queued to the character rig (`queueAthlete`, crowd3d.js ATHLETES) |
+| sportsbook3d.js | GOALLINE's building: glass frontage, neon sign, fascia, video wall (the stadium's live board and the odds boards, `paintSportsbookOddsBoard`), counter, terminals, ledge and stools; the roof lifts off with the player inside (`updateSportsbookVisuals`) |
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
-| world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
+| world3d.js | Shore-aware water shader, palms (`makePalm` hands over to vegetation3d.js `plantPalm`: fan palms down Ocean Drive), airports, rooftop bar, waterfront scenery |
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beachvolley3d.js | The volleyball court: pit and tapes painted into the sand (`paintVolleyCourt`), padded poles, guy ropes, net and antennas (`buildVolleyCourt`), the canvas scoreboard, the ball's shadow and the landing ring (`updateVolleyVisuals`) |
 | beach3d.js | Sand, swash ribbon, pier, props and ladders; the beachgoers are drawn by the character rig (crowd3d.js BEACHGOERS: towel, lounger, swim, float and volleyball poses) |
-| county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests and boulders (near / far LOD per 2048-unit cell), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
+| county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests (`plantForest`: tree-library species by altitude, pine low, fir mid, spruce high, beech / birch / maple below; one near mesh per species and one far mesh for all conifers and one for all broadleaf per 2048-unit cell) and boulders (near / far LOD), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
 | airfields3d.js | Runways and taxiways over the ground sheets: one quad each with a patched standard material that paints the markings from metre uv (threshold, centre line, aiming point, touchdown zone, side stripes, blast pad chevrons, holding positions, rubber, rain), designation decals, holding-position signs; edge, threshold / end, approach (sequenced flashers), taxiway and obstruction lights as glow-field instances on batched fixtures; PAPI lenses and windsocks updated per frame (`updateAirfieldVisuals`, called from `updateCountyVisuals`) |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`); soldiers are dressed by crowd3d.js OUTFITS |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
@@ -360,15 +371,20 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | character-rig3d.js | The character rig's parts, lofted from rings at real height (`rigLoft`): head with a face hint, seven hair styles, cap / patrol cap / helmet / sun hat / hard hat, male and female torso, pelvis, limbs, hands, shoe and boot, skirt, collar, hood, plate carrier / hi-vis vest, duty belt, backpack, weapons (`WEAPON_HOLDS`), POLICE / FED lettering; the region paint shader (`rigPaintPatch`: four packed colours and a per-region mask per instance, patterns, the player's night rim), `TORSO_MASKS` (tee, tank, bikini, jacket, suit, uniform, hoodie, dress...) |
 | crowd3d.js | Everyone on foot from the rig's instanced parts: looks compiled to parts and paints (`compileLook`, by role and district), OUTFITS for the player, police, traffic officers, SWAT, agents, soldiers, gangs, mobsters, guests, beachgoers, athletes and riders (`outfitLook`); the skeleton, layered poses and the planted-foot gait (`drawCrowdPerson`, `solveLeg`), turning on the spot, weapon holds by two-bone IK (`HOLD_POSES`, `drawHold`, `ikArm`) with recoil and reload, swim strokes, parachute, car and pool transitions, a rider thrown off a bike (riders.js `thrown`, `ejected.rider`) (`specialSpec`), still figures replayed from recorded instances, RIDERS on bikes and jet skis (`queueRider`), BEACHGOERS, ATHLETES (`queueAthlete`), close-up / street / far body sets, dogs and scene props; `crowdStats()` |
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
-| surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
-| helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, military), a light single (Bell 407 / H125 class) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface, per-pixel canvas liveries, glyph decals, cabin and crew, merged trim / lamps per look; four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
+| ground-data3d.js | The ground materials' data: the detail layers (`groundDetail`, a texture array of tiling detail: the ground atlas's photographed asphalt and lawn at true scale, concrete grain, broom streaks, granite speckle, gravel, sand, mulch), the carriageway fields (`buildGroundField`: the signed distance to the nearest kerb as a half-float texture, 4 units a texel in the city and on Monarch Isle, 6 in the county, and an info texture with the paving style `GROUND_STYLE`, the lane width and park lawns), and the MARKS (`buildGroundMarks`: every road marking, manhole cover, gully grate, tree base and stop-line oil stain as a record in a 32-unit grid over the world); `groundDataReport` |
+| surfaces3d.js | Patches the ground sheets' materials with the ground materials (`groundDetailPatch`, GROUND MATERIAL UNIFORMS: per sheet its field and default style), the wet look's light and output chunks, foliage sway (the planted greenery; trees sway in vegetation3d.js), `updateSurfaces` |
+| ground-shader3d.js | (included by surfaces3d.js) The ground materials' GLSL: sheet magnification (painted edges re-cut crisp), classes (asphalt, lawn, loose, paving, coloured surfacing), asphalt (aggregate, patches, sealed and hairline cracks, wheel-path polish and lane oil, gutter pans), kerbs (stone, arris, face, joints), paving by district, lawns (photo grass, clumps, mowing stripes, flower beds), gravel with edging and pond margins, sand with ripples and footprints, the marks, the height bump and roughness, WET ROADS, rain rings on the puddles |
+| grass3d.js | Grass tufts on the lawns (HIGH / ULTRA, street zoom past ~1.75): one instanced draw on a world-anchored 2.6-unit grid round the view, each tuft placed and coloured from the ground sheet in the vertex shader, swaying in the wind (`updateGrassTufts`) |
+| helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, civil schemes, military), the EC120 class police single (`colibri`), the R44 / R66 class civilian (`robin`) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface; per-pixel canvas liveries with pinstripes, words and emblems warped onto the surface (`heliLiveryJob`, prewarmed on the title screen), cabin and crew, merged trim / lamps per kind; two-, three- and four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Trucks and buses (`makeTruck`), bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
 | cars3d.js | Every civilian car (section 6d): `CAR_BODIES` (seventeen real-size archetypes), the lofted shell with cross-sections that change along the car and wings above the bonnet (`civShellGeometry`), the five-pane glasshouse (`civCabinGeometry`), the kit of merged paint / trim / DRL / lamp sets built from surface-conforming helpers (`civKit`: `patch`, `strip`, `round`, `grille`, `cornerLamp`), the trim atlas and per-vertex finishes, livery decals over the paint (`civLiveryTexture`), tyres and rims (`civTyreGeometry`, `civRimGeometry`), `makeCivilianCar`, `animateCivilianCar` (lamps, DRLs, rolling and steering wheels), `civilianModelReport` |
 | hypercars3d.js | The Prestige Collection's bodies added to `CAR_BODIES` with cars3d.js's kit (section 6e): valkyrie, dbs, zr1x, chevetteSE, wayron, tourbillon, jasko, sirocco, novera, w1, lafera; carbon twill in the liveries (`hcCarbon`), the flake paint and active wings (`hcPrestigeExtras`), the horseshoe grille, C-line, venturi tunnels |
 | motorbikes3d.js | Every motorbike (section 6d): `MOTO_BODIES` (VORTEX 900, NOMAD CRUISER, DOLCATI V4, YAMASAKI 1000RR, KR 500), lofted tanks and fairings (`motoPod`), merged riders per riding pose (`motoRiderGeometry`) on the `model.rider` anchor, the steering fork, `makeMotorbike`, `animateMotorbike` (lamps, fork, wheelie) |
 | police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
-| offroad3d.js | The club trucks (`makeOffroadVehicle`, `OFFROAD_BODIES` in the police body format, canvas liveries, modelled mud-terrain / all-terrain / desert tyres and beadlock / steel / cast rims, kit per truck; `animateOffroadVehicle`: wheel speed with wheelspin, steering, articulation), mud on any vehicle's paint (`vehicleMudPatch`, `applyVehicleMud`), mud clumps, mist and dust, splat and tyre-track decals (`updateOffroadVisuals`), the club lot (sign, canopy, chairs, cooler, grill, fire ring, flag, string lights, lanterns) and the hill climb course (start gate, checkpoint flags, rock-step slabs, finish) |
+| mountain-village3d.js | The mountain village kit: painted materials (hewn logs, fieldstone, board and batten, plaster, cedar shake, slate, standing seam, timber, planks, carved balcony boards, shutters, lit / dark windows, doors, gravel, cobbles), pieces written straight into one buffer per material per town (`mvBox`, `mvOBox`, `mvCyl`, `mvQuad`, `mvGableRoof`, `mvGables`, `mvWindow`, `mvDoor`, `mvLogCorners`, `mvChimney`), `mvHouse` and the kinds' features (jetty, half-timbering, balcony, false front, porch, awning, dormers, cross gable, steeple, motel run, barn and bay doors, lookout, open sheds), the street dressing, the gas canopy, the mill yard, the helipad, instanced knockable lantern lamps, one sign atlas, night light pools; `updateMountainVisuals`, `mountainVillageInfo()` |
+| mountain-club3d.js | The 4x4 clubhouse block (included by mountain-village3d.js): shell, upper storey and roof (hidden while the player is inside), the workshop roof, the interior (bar, pool tables, couches, fireplace, TV, maps, trophies, the workshop's lift), the veranda and balcony, the yard, the lot and gate, the trailhead car park; `updateClubVisuals` |
+| offroad3d.js | The club trucks (`makeOffroadVehicle`, `OFFROAD_BODIES` in the police body format, canvas liveries, modelled mud-terrain / all-terrain / desert tyres and beadlock / steel / cast rims, kit per truck; `animateOffroadVehicle`: wheel speed with wheelspin, steering, articulation), mud on any vehicle's paint (`vehicleMudPatch`, `applyVehicleMud`), mud clumps, mist and dust, splat and tyre-track decals (`updateOffroadVisuals`), the club's flag (the club block itself is mountain-club3d.js) and the hill climb course (start gate, checkpoint flags, rock-step slabs, finish) |
 | plane3d.js | The three airframes, modelled on real types: the Serrano C200 courier (mission 11's plane; a low-wing single turboprop with a T-tail after the Pilatus PC-12), the Aurelia J8 business jet and the Meridian 220 airliner. A lofted fuselage (monotone-cubic stations, superellipse sections) wears a livery texture computed per pixel from the surface (windscreen and cockpit glass with frames, cabin windows, doors, cheatline, registration; glossy glass through a roughness / metalness map); NACA-section wings, winglets, fin and stabiliser; flaps, ailerons, elevators and rudder in hinge pivots; four-blade propeller with blur disc or lathed turbofans with spinning fans; retracting gear; navigation, strobe, beacon and landing lights. Static parts are merged per material. `animateAircraft` poses it all from the flight model each frame |
 | parachute3d.js | The ram-air parachute: nine-cell canopy rebuilt per frame (inflation, pillows, brakes, trailing-edge flutter), lines, risers, slider, pilot chute and bridle, the pack; `poseParachutist` (freefall box position, hanging pendulum, toggles: it poses a stand-in whose angles crowd3d.js applies to the rig), collapse and pack-up after landing |
 
@@ -396,8 +412,8 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - `WORLD_LEFT..WORLD_SIZE` x `WORLD_TOP..WORLD_SIZE` (-5120..11264 x -8192..11264) is the world
   box: the sea, the city map, the water shader's shore field (`SHORE_RES` 768 texels across).
 - The city frame `CITY_LEFT..CITY_RIGHT` x `CITY_TOP..CITY_SIZE` (-3584..3712 x -4224..5632) is
-  what the baked ground textures (game.js `groundCanvas`, render3d.js terrain and roughness
-  sheets), the night light map (lighting3d.js) and the street grid cover: Palm Keys, Palm Sound
+  what the baked ground textures (game.js `groundCanvas`, render3d.js terrain sheet and the
+  ground shader's city carriageway field, ground-data3d.js), the night light map (lighting3d.js) and the street grid cover: Palm Keys, Palm Sound
   and Northbank. Anything past `CITY_SIZE` in x or y is county (`x > CITY_SIZE || y > CITY_SIZE`
   tests stay valid; the county starts east of x 5632). Ground outside the city frame comes in
   tiles (`countyGroundTiles`, each `{x, y, w, h, canvas}`): three county tiles and the Sunset
@@ -697,6 +713,20 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
 
 ### Streets, county, railway, parks
 
+- **Mountain villages** (mountain-village.js, mountain-village3d.js). Ridgeline's towns keep their 2 x 2
+  blocks and streets but not the city kit: every building is planned per block and dressed from a
+  mountain kit (chalets with carved balconies, log cabins, stone-and-log lodges with front gables and
+  dormers, false-front shops on plank boardwalks, a chapel with a steeple, a ranger station with a fire
+  lookout and the Mountain Rescue helipad where The Last Witness lands, a motel, a tavern with a lit
+  deck, a diner, a gas station under a timber canopy, a sawmill, the rustic STONECREEK GARAGE). Northridge:
+  the 4X4 CLUB, OUTFITTERS, LODGE, ALPENGLOW CAFE, the ranger station, GENERAL STORE, MOUNTAIN CHAPEL,
+  PINE CONE BAKERY round a square with a fountain. Stonecreek: OUTFITTERS, LODGE, the garage, SUMMIT
+  DINER, THE ANTLER TAVERN, RIDGELINE RENTALS, PINE CREST MOTEL, GAS · GROCERIES, a square with a well.
+  Eastgate: OUTFITTERS, LODGE, FEED & SEED, RIDGELINE TIMBER CO. (sawmill), TIMBERLINE CAFE. Snow lies
+  on a roof only well up the mountain (`b.snow`; none in the valley towns). The lone helipad that stood
+  by the Ridgeline Highway west of Northridge, with a helicopter on it, is gone.
+  `DeadEndCity.mountainTowns()` reports the plan and, with WebGL, the meshes per town.
+
 - Street names are in `STREET_NAMES` (streets.js; Palm Keys columns keyed '-2432', '-1920',
   '-1408') and shown in the HUD under the district; off the grid, a bridge or county road gives
   its own name.
@@ -733,7 +763,7 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   ridged multifractal and derivative-damped ("erosion") fBm, three passes of stream-power incision
   over depression-filled D8 flow, terraced strata on steep faces, thermal settling, then caps from
   distance fields (exact distance transforms): flat on and beside every county road, service road,
-  rail line, town block and the Northridge helipad, rising no faster than a noisy embankment;
+  rail line, town block and the rescue helipad (now inside Northridge), rising no faster than a noisy embankment;
   gentle shores on the reservoir; sea cliffs on the coast; nothing at the field's edge. The two
   4x4 trails are switchbacks up the south faces (`switchbackTrail`), graded to at most
   `TRAIL_MAX_GRADE` (0.28) between street level at the trailhead and a level summit platform, cut
@@ -742,9 +772,14 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   draws those same vertices (near LOD), so contact and picture agree. `DeadEndCity.terrain()`
   reports the fields (grid, top, build timings), peak and trail figures, scenery counts and the
   outcrops' footing.
-- **The 4x4 club and the trails** (offroad.js, offroad3d.js). RIDGELINE 4X4 CLUB's gravel lot
-  (x 7410..7700, y 2034..2194) lies south of Eagle Pass opposite the Mount Ascent trailhead, on a
-  pad cut level into the height field. Seven club trucks (ROVER SERIES III SAFARI, BADGER RUBICON
+- **The 4x4 club and the trails** (offroad.js, offroad3d.js, mountain-club3d.js). RIDGELINE 4X4 CLUB
+  takes Northridge's whole north-west block (lot x 8464..8888, y 2654..3062), where Eagle Pass comes down
+  from the Mount Ascent trailhead: a two-storey stone-and-log clubhouse (walk-in; its roof and upper
+  storey lift off while the player is inside) with a veranda and balcony, a workshop bay with a lift,
+  the members' yard (fire pit, BBQ, smoker, string lights) and the gravel lot behind a log rail; the
+  carved 4X4 CLUB sign hangs on the timber gate facing the avenue (E there arms the hill climb and sets
+  the GPS to the start gate up Eagle Pass). The old lot across Eagle Pass is a small trailhead car park
+  with the trail board. Seven club trucks (ROVER SERIES III SAFARI, BADGER RUBICON
   CRAWLER, MUSTANG RIDGE BRONCO, HIGHLANDER 70 EXPEDITION, TAURO HX35 ARCTIC, OKTAV 6×6 EXPEDITION,
   SIDEWINDER TROPHY TRUCK) are parked in a herringbone row and come back when taken. The trails
   carry baked mud: the lower switchbacks (to ~55% of the way up), THE BOG and the MUDDY HAIRPIN on
@@ -1027,9 +1062,29 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   the callouts do not. Wanted state is never touched; `save()` runs once after the jump.
   City rail and the liner are free, so only the cab charges. Console: `skipRide()`,
   `skipStop()`, `rideSkip()`, `boardTrain(from, to)`, `setCash(dollars)`.
-- **God mode** (the `godmode` cheat) unlocks every job in the mission picker
-  (`missionUnlocked`, campaign.js) and opens it; a job played ahead of the story does not
-  advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
+- **Public demo** (`DEMO_BUILD` at the top of game.js; campaign.js PUBLIC DEMO): with the flag
+  on, a normal player gets missions 1 and 2 (`DEMO_MISSIONS`). Every later story mission and
+  contract is shown in the picker, locked, with a FULL GAME badge; a click shows the buy note
+  ("Thanks for playing the demo! If you liked it, please buy the full game."). The payphone
+  stops ringing after mission 2 (`storyCallWaiting`: no call notice, prompt, marker or GPS
+  line), RESTART CURRENT JOB cannot reach a gated job, and the mission card reads FREE ROAM ·
+  DEMO COMPLETE. Completing mission 2 brings up the DEMO COMPLETE card 2.6 s after the payday
+  headline (`demoMissionWon`, `showDemoComplete`, game mode `'demo'`): the title logo over the
+  cover art, the thanks, a recap from `campaignStats` (play time, cash earned: every rise of
+  the wallet, the wanted peak; saved with the story as `stats`), CONTINUE FREE ROAM (Enter or
+  Escape) and MAIN MENU. Completion is kept in `dead-end-city-demo`, which NEW GAME leaves;
+  the title menu shows a DEMO badge by the version (DEMO · COMPLETED after). Not missions,
+  so never gated: the hill climb, beach volleyball, the stadium ball, the pier rides, the
+  bike share, cabs, rail and the liner, the casino, garages, the gun shop, Fort Sentinel and
+  the Apache, the Monarch Isle payphones' lines. God mode lifts every gate and never shows
+  the card; the console's `startMission` reaches a gated job only with god mode or `?dev`.
+  `DEMO_BUILD = false` is the full game with no trace of the demo.
+- **God mode** (the `godmode` cheat, typed in play, on the city map or on the title screen)
+  unlocks every job in the mission picker (`missionUnlocked`, campaign.js) and opens Settings
+  straight on the GOD MODE tab (over the pause menu in play, over the title on the title
+  screen; BACK returns there). The tab's first row, MISSION SELECT · PLAY ANY MISSION
+  (`godOpenMissionSelect`, god-panel.js), opens the picker over the same screen. Typed again it
+  turns god mode off. A job played ahead of the story does not advance the campaign. The picker then also shows a time-of-day panel (`renderGodWorld`,
   campaign.js): presets (dawn 06:00, morning 09:00, noon, golden hour 19:00, dusk 20:30,
   night 23:00, 03:00), a slider over the day in five-minute steps, and the weather (AUTO
   hands the sky back to the weather machine); each applies at once through `worldMinutes`
@@ -1231,6 +1286,62 @@ sports-fixtures.js, sports.js, sports-world.js, sports-audio.js, sports3d.js.
   distance-based gains, the player's distance and audibility, and `bed: null`.
 - Developer console: `match(sport)`, `ballState()`, `matchDay(day, minutesFromKickoff, slot,
   sport)`, `fixtures(sport, days)`, `ballToPlayer(distance)`.
+- **Club ratings and finishing.** Each football club has a `rating` (0.78 AIRPORT RANGERS to
+  1.3 NORTHBANK CITY, 1 an average side). A shot the simulation puts on target beats the keeper
+  with `sportsFinishChance(fixture, team)` = 0.16 x ((rating x 1.1 at home) / the other's
+  rating)^1.6 (`SPORTS_FINISHING`); otherwise `sportsKeeperSave` saves it (he holds it when
+  close, else parries it back into play). Measured over 350 matches in a headless harness
+  (sports-fixtures.js + sports.js stepped at 30 Hz): goals per side are Poisson (dispersion
+  0.96) at 7.4 x the finishing chance, about 2.8 goals a match; before the keeper saved
+  anything it was about 12. Joining a match under way draws the score from the same model.
+
+### GOALLINE, the sports betting office
+
+sportsbook-odds.js, sportsbook.js, sportsbook-ui.js, sportsbook3d.js.
+
+- **The shop.** `SPORTSBOOK_SHOP`: x 2462-2590, y 4992-5088 (16 x 12 m, 4.6 m to the roof) in
+  the open block south-west of the stadium forecourt, which the city plan leaves empty (the
+  block overlaps the stadium lot). Glass frontage and a 2.25 m double door on the south (the
+  camera's side), a paved apron and a path east to the Garden Ave pavement. `SPORTSBOOK_SOLIDS`
+  (walls, glass either side of the door, counter, ledge, terminals) are solid through
+  `sportsBlocked` (solid()), the physics statics (pushed onto `SPORTS_VEHICLE_BARRIERS`) and the
+  shot lists (`sportsbookWalls`); `prepareSportsbookShop` clears trees and lamps from the plot
+  and registers the roof as overhead cover.
+- **The menu.** Inside (`sportsbookInside`) the prompt is PLACE A BET (id `sportsbook`) and the
+  action key opens `#sportsbook`. `gameMode` stays `play`, so the world, the clock and the match
+  run on; the keydown handler hands every key to `sportsbookKey`, `hurt()` ignores the player
+  (`sportsbookShelters`), and `sportsbookUpdate` closes the menu on a wanted level, leaving the
+  shop or any change of mode; `togglePause` closes it first. It will not open with stars.
+- **Pricing.** Expected goals over 90 minutes: `SPORTSBOOK_MODEL.shotsOnTarget` (7.4, measured)
+  x `sportsFinishChance`. Live, each side's goals still to come are Poisson with that rate times
+  the share of the 90 minutes left (`sportsbookMatchState`: the match clock; half at the break;
+  none after full time), added to the score; every market sums the grid of final scores. The
+  margin: implied probabilities p^k with k < 1 chosen so they add to 1 + margin (6%, correct
+  score 12%, scaled down to half for a market whose favourite is 90% or more), odds rounded down
+  to the ladder (hundredths to 2, then 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50); a market with
+  an outcome over 99% is closed. Markets: `result`, `next:<goal number>`, `total:<line>` (every
+  line not yet passed; the menu shows the one nearest even money and one either side), `btts`,
+  `cs` (16 scores to 3-3 and ANY OTHER), `ht` (before the break). Rebuilt when the fixture,
+  stage, score or quarter-minute changes (`sportsbookRefreshMarkets`).
+- **Bets and settlement.** `sportsbookPlace` takes the stake from the cash at the price showing
+  and ties the bet to the match object (`match.bookToken`). `sportsbookUpdate` (end of
+  updateSports) settles: each goal (`sportsbookGoal`: next goal for that goal number, OVER, BTTS
+  YES, correct scores passed, ANY OTHER at four), the break or anything past it (half-time),
+  full time (the rest). SUSPENDED from a goal until the kick-off after it and at least
+  `SPORTSBOOK_SUSPEND` (6 s). Winnings are credited automatically wherever the player is (toast
+  BET WON · +$N). VOID, stake returned: the match abandoned, or bets on a match object that is
+  gone (a clock jump past it, or a reload: restored bets carry on only if their fixture has not
+  kicked off). Saved in the game record as `sportsbook` (format, open bets, the last 40 settled,
+  totals).
+- **People.** `staffSportsbook` keeps a scene (`makeScene('sportsbook')`) while the player is
+  within 900 units: the clerk (`serve`) and two to five punters (sitting on the stools, at a
+  terminal, watching); each backs a side and cheers (`cheer`) or groans (`despair`) at a goal
+  for 3 s, two of them with a line; the clerk speaks on a win of $1,000 or at odds of 6+.
+- Developer console: `sportsbook()` (the shop, the fixture with ratings and expected goals,
+  every market with fair % and decimal / fractional / American odds and the book %, open and
+  settled bets, totals, a log with the cash after each event), `sportsbookBet(marketId, key,
+  stake)`, `sportsbookShop(open, tab)`, `sportsbookSlip(marketId, key, stake)`,
+  `sportsbookFormat(format)`; `stadiumGoal(team)` forces a goal.
 
 ## 5. Missions
 
@@ -1240,7 +1351,7 @@ sidejobs.js. In-game numbers (and the audit logs) are the index plus one:
 
 | # | Index | Mission | Code |
 | --- | --- | --- | --- |
-| 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse) |
+| 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse: see harbor.js THE DROP) |
 | 2 | 1 | A Seat at the Table | roofmission.js (the Blue Hour hit) |
 | 3-9 | 2-8 | Vinny's Favor, Paper Trail, No Last Ferry, Both Sides of the Bay, Above the Noise, Saltwater Accounting, One Clean Exit | challenges.js |
 | 10-11 | 9-10 | The Last Witness, The Manifest | aviation.js |
@@ -1505,11 +1616,61 @@ docs/audit/missions-qa.md shows the method).
 - **Wakes** (wakes3d.js): boats call `wakeEmit()` each frame; trails and hull collars are
   drawn into a wake map (foam, wave crest, trough) round the view that the water shader
   samples for foam and for its normal. Spray is one `Points` object.
-- **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
-  (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
-  a bump and dielectric roughness. (The painted sheet no longer carries the 330 dark
-  "patch" ellipses it used to: from the street camera they read as long shadows with nothing
-  casting them, fixed to the tarmac whatever the time of day.)
+- **Ground materials** (ground-shader3d.js, ground-data3d.js, surfaces3d.js). The painted
+  ground sheets are 1.6 (city) to 2.8 (county) units a texel, soft at street zoom; they now only
+  say what lies where, and the ground shader draws the surfaces in world space at the screen's
+  resolution:
+  - *Sheet magnification*: where a sheet texel covers more than ~1.3 pixels, the bilinear
+    sample is re-cut along the colour gradient into the two pure colours either side, at the
+    edge's true position, antialiased to a pixel (`groundSheetSharp`). Lawn, path and plaza
+    edges stay crisp; lawn against lawn stays soft. The sheets are painted in flat fills (the
+    ground atlas's photos used to be squeezed into them as 4.7 m slabs and blotchy tarmac).
+  - *Classes* from the crisp colour: asphalt (dark neutral), lawn (green over its brightness),
+    loose ground (warm tan: gravel, sand, clay, soil), coloured surfacing (teal and blue) and
+    paving (the rest). Palm Keys and Monarch Isle read warm light stone as paving.
+  - *Carriageway field* (`buildGroundField`): the signed distance to the nearest kerb line
+    (negative on the carriageway) from the streets' own geometry (city grid and boulevards,
+    county and service roads, Monarch Isle's streets, roundabouts and bridge approaches), a
+    half-float texture at 4 units a texel (6 in the county). A distance filters exactly, so the
+    kerb stone (`kerbW` 1.7-2.0 units, bevelled arris, a 0.9-unit face that takes the sun,
+    joints, scuffs), the gutter pan (concrete; granite setts in the Old Quarter and on
+    Monarch Isle), the lanes' wheel paths and oil strip (from the info texture's lane width;
+    not in junction boxes) and the pavement joints that run with the kerb are crisp at any zoom.
+    The info texture (16 units a texel) carries the district's paving style (`GROUND_STYLE`),
+    the lane width and park lawns.
+  - *Materials* (each fades what it cannot resolve: the detail layers by their mipmaps, the
+    procedural patterns by the pixel footprint `fp`, so nothing shimmers far away or in motion):
+    asphalt (photographed aggregate at 1.5 m a tile, twice and turned against tiling; binder
+    mottling; utility patches aligned with the road, tar-sealed; sealed and hairline cracks;
+    polish; district age: the Old Quarter patched, the docks cracked, downtown fresh, Palm
+    Keys bleached, the county a pale chip seal), paving by style (city concrete slabs 1.5 m with
+    broom finish, cracked slabs, stains and gum; Old Quarter flagstones along the kerbs and
+    cobble setts elsewhere; financial polished granite 2 x 1 m with a dark granite band along
+    the kerb; docks 3 m concrete panels, rust, oil, exposed aggregate; Palm Keys herringbone
+    pavers 40 x 20 cm, sand-swept; Monarch limestone ashlar; county slabs with grass in the
+    joints), lawns (photographed grass, clumps, clover, lush and dry patches, mowing stripes in
+    the parks, flower beds as blooms), loose ground (gravel with steel edging along the lawns
+    and a wet margin by the ponds; sand with wind ripples and footprints).
+  - *Marks* (`buildGroundMarks`, MARK_KIND): lane dashes, zebras, stop lines, the avenues'
+    double yellow, boulevard, county and Monarch Isle paint, manhole covers, gully grates,
+    tree bases (a pit with a grille in the pavement, setts round it in the Old Quarter; a mulch
+    ring on a lawn; sand under a palm) and oil stains behind the stop lines, as records filed in
+    a 32-unit grid over the world (at most 10 a cell). The shader draws each exactly: paint box
+    filtered (`groundBand`), with ragged worn edges and the aggregate showing through, worn in
+    the wheel paths; cast iron with a diamond tread in a ring of newer asphalt. The shapes are
+    the same data the maps paint (streets.js ROAD MARKINGS: `cityMarkingShapes`,
+    `countyMarkingShapes`); with the 3D renderer available (`VECTOR_GROUND_MARKINGS`) the 3D
+    sheets and tiles leave the paint out. Trees are the plan's `trees` (whatever their model).
+  - *Relief*: each material has a height (aggregate, joints, cracks, domed setts, paint, the
+    kerb's face) turned into the normal by screen-space derivatives, and a roughness (polished
+    wheel paths and tar seams smoother, granite honed, grass rough) with metal on the covers,
+    so low sun, the lamp pools and the wet reflections read the surface.
+  - *Tiers*: LOW draws the sheet with a light grain, the kerb and the marks; MEDIUM the full
+    materials with one detail sample; HIGH / ULTRA two samples against tiling, and the grass
+    tufts (grass3d.js) past street zoom ~1.75. `DeadEndCity.groundDetail()` reports the data
+    (build ms, bytes, records) and the tufts.
+  (The painted sheet no longer carries the 330 dark "patch" ellipses it used to: from the
+  street camera they read as long shadows with nothing casting them.)
 - **Wet roads** (surfaces3d.js WET ROADS, lighting3d.js WET SURFACES, postfx3d.js WET
   REFLECTIONS, weather3d.js WET GROUND), all from `weather.wet` (rises in the rain, dries over a
   few minutes after). A shared GLSL pattern decides where water stands: `cityWetLow` (dips in
@@ -1524,8 +1685,9 @@ docs/audit/missions-qa.md shows the method).
     camera: the night light map read at six points up the view direction and high-passed
     across it, so only the bright cores of the pools come through as narrow streaks in the
     lamps' colours (`citySheenDir`, `WET_STREAK_GAIN`).
-  - HIGH / ULTRA: plus standing water in the dips and in the gutters (paving a few units from
-    the tarmac in the painted sheet), nearly a mirror, with three layers of rain rings
+  - HIGH / ULTRA: plus standing water in the dips, in the gutters (the carriageway field's
+    last 5 units before the kerb), in the gaps between setts and in the grates, nearly a
+    mirror (granite and paint shed water, covers do not soak), with three layers of rain rings
     (`cityPuddleRipples`), and the wet reflections pass: the wet ground writes its
     reflectivity into the HDR target's alpha as a negative number (nothing else writes one); a
     half-resolution pass traces each wet pixel's mirror ray through the depth buffer (20 steps
@@ -1708,52 +1870,92 @@ the models are drawn inside them and nothing in the physics changed.
 
 Every helicopter except Fort Sentinel's Apache is built by `src/helicopter3d.js`
 (`makeHelicopter`, called from `makeVehicle`). The collision footprint is the vehicle type's
-own (86 × 34, rotor ~86 across, a real H125's size at 8 units to the metre, `modelScale: 1`:
-the models are built at real size and returned with `realSize`, so DESIGN SIZE never
-scales them); nothing in the flight model changed.
+own (86 × 34, `modelScale: 1`: the models are built at real size, 8 units to the metre, and
+returned with `realSize`, so DESIGN SIZE never scales them); nothing in the flight model
+changed.
 
-- **Looks** (`helicopterLookFor`, cached per vehicle in a WeakMap): `police` (the air unit,
-  and the machine on the POLICE HQ pad), `news` (the RIVERSIDE pad, and one civilian in
-  three), `executive` (the rest: glossy metallic paint from a palette, or the vehicle's own
-  colour after a respray, gold pinstripes, fenestron tail), `military` (Fort Sentinel,
-  `c.military`: a UH-60 Black Hawk class airframe scaled into the same footprint, flat
-  olive drab, wheeled gear).
-- **Airframes** are plans of stations (`heliLightPlan`, `heliHawkPlan`) lofted with
-  monotone cubics and superellipse sections. The plan's `windows(x, y, z)` signed distance
-  splits the loft's quads into painted skin and flush transparent glass (bubble, roof and
-  door windows); a dark liner, floor, seats, panel and the crew (pilot with anyone
-  aboard, observer in the air unit) sit inside and read through the tinted glass from above.
-- **Liveries** are one canvas per look painted per pixel from the surface
-  (`heliLiveryTexture`): the scheme (`heliScheme`), window seals, panel seams, belly grime
-  and exhaust soot; the bottom quarter holds the fin art and swatches for the cowling,
-  stabiliser and endplates. The police scheme follows the patrol cars' modern livery
-  (white, navy swoosh, sky-blue band, reflective silver line, gold star) with AIR 1 on the
-  roof and POLICE along the boom for the camera above. Words are glyph quads from the
-  police glyph atlas (`heliText`).
-- **Draw calls**: skin, glass, trim, metal, interior, decals, lamps, hub, blades, disc,
-  tail blades and tail disc: 12 draws for a parked police machine (15 with the crew and
-  Nightsun), against ~35 meshes and sprites for the old box model; 5 shadow casters.
-  Geometry is shared per look; each model owns only its paint, glass, lamp and disc
-  materials.
-- **Rotors**: four twisted, tapered blades with swept, painted tips and droop, grips,
-  dampers, pitch links and swashplate. `m.rpm` spools up in ~4 s and down in ~9 s; past
-  half speed the blades switch to a depth-only material (they still cast their flickering
-  shadow) and the HELI DISC shader draws a translucent disc with blade ghosts trailing
-  round it. The tail rotor or fenestron blurs the same way.
+- **Looks** (`helicopterLookFor`, cached per vehicle in a WeakMap; `heliLookOf(kind, scheme,
+  paint)` builds one): `police` (the air unit, `c.cop`, and the machine on the POLICE HQ
+  pad), `news` (the RIVERSIDE pad, and one civilian in four), `executive` (one civilian in
+  four: deep metallic paint from `HELI_EXECUTIVE_PAINTS`, double gold pinstripes, tan
+  leather, polished skids), `civil` (the rest: a scheme from `HELI_CIVIL_SCHEMES`, white
+  with red and blue stripes, yellow, metallic grey or black with gold, or a respray's own
+  colour), `military` (Fort Sentinel, `c.military`: a UH-60 Black Hawk class airframe
+  scaled into the same footprint, flat olive drab, wheeled gear).
+- **Airframes** are plans of stations (`heliColibriPlan`, `heliRobinPlan`, `heliHawkPlan`)
+  lofted with monotone cubics and superellipse sections:
+  - `colibri`, the police machine: an EC120 / H130 class light single, about 9.7 m from
+    the nose to the fan. Big bubble canopy with the front door arch, rear sliding-door
+    windows, the engine cowl behind the three-blade rotor, a shrouded fenestron (a thick
+    ring round an eight-blade fan with stators) under the fin and a ventral fin, the
+    stabiliser with tall swept endplates, tubular skids with arched cross tubes;
+  - `robin`, every civilian (civil, news, executive): a Robinson R44 / R66 class
+    four-seater, about 9.3 m long. Teardrop cabin with the wraparound windscreen, roof
+    window and four door windows, the tall mast fairing and a two-blade teetering rotor
+    (parked across the boom), a slim tail boom, the V tail (upper and lower fins, a small
+    stabiliser), a two-blade tail rotor on the left, the tail guard, small skids;
+  - `hawk`, unchanged.
+  The plan's `windows(x, y, z)` signed distance splits the loft's quads into painted skin
+  and flush transparent glass; a dark liner, floor, seats, panel and the crew (pilot with
+  anyone aboard, observer in the air unit) sit inside and read through the tinted glass.
+- **Liveries** are one canvas per look (`heliLiveryTexture`, 2048 × 1024 for the police and
+  news, 1024 × 512 for the rest): the loft painted per pixel from the surface (the scheme's
+  `body`, belly grime, exhaust soot, panel seams, the black seals round the glazing) at half
+  size (`paintScale`) and drawn up, then the fine work at full size: `lines` (pinstripes and
+  cheat lines as canvas paths through the surface, broken at the glazing's seals) and
+  `words` (canvas text and emblem art warped onto the surface strip by strip by
+  `heliPaintWord` / `heliWarp`, so it follows the curves, reads forwards on both sides and
+  chars with the paint on a wreck). The bottom quarter holds the fin's starboard and port
+  faces (the port face mirrored, `heliFinUv`), the cowl's own loft (`art` tops) and flat
+  swatches. It is a generator job (`heliLiveryJob`): drawn at once when a model needs it,
+  or a few milliseconds at a time while the title screen is up (`prewarmHelicopters`,
+  called by render3d.js: the police, news and four civil liveries), so the air unit's
+  first call costs no hitch. `helicopterModels()` reports each livery's paint time.
+  - Police (after the reference photo of an EC120 in police service, with our own
+    branding): gloss navy-black, a deep blue band from the nose along the lower canopy,
+    the cabin and the boom edged by two gold pinstripes, blue over the fenestron, POLICE
+    in big white block letters outlined in blue (with a thin dark edge) on both sides of
+    the cabin and boom root, SOUTH COAST above, the department seal (`heliSealImage`) on
+    the rear doors, N-7SC on the cowl, AIR ONE on the fin, and for the camera above AIR 1
+    across the cowl and POLICE along the boom.
+  - News: white with the red CH 7 band and navy pinstripe, the 7 roundel, NEWS on the mast
+    fairing and CH 7 along the boom for the camera above. Civil and executive: the cheat
+    line along the lower doors and up the boom with a pinstripe over it, the registration
+    on the engine bay.
+  - The Black Hawk's stencils are still glyph quads from the police glyph atlas
+    (`heliText`), its star painted.
+- **Draw calls**: skin, glass, trim, metal, interior, lamps, hub, blades, disc, tail blades
+  and tail disc: 9 for a parked civilian, 11 for a parked police machine (13 with the crew,
+  14 with the Nightsun), 10 for the Black Hawk (its decals); 5 shadow casters. Geometry is
+  shared per kind (`heliKit`: the civil schemes and paints share one kit); each model owns
+  only its paint, glass, lamp and disc materials; each look one livery texture. About 21k
+  triangles for the police machine, 16.5k for a civilian (19.5k for the old police model).
+- **Rotors**: three (police), two (civil, rectangular blades with no taper) or four
+  (military) twisted blades with tip paint and droop, grips, dampers, pitch links and
+  swashplate; `rotor.park` sets the parked angle so no blade lies along the boom. `m.rpm`
+  spools up in ~4 s and down in ~9 s; past half speed the blades switch to a depth-only
+  material (they still cast their flickering shadow) and the HELI DISC shader draws a
+  translucent disc with blade ghosts trailing round it. The tail rotor or fenestron blurs
+  the same way.
 - **Lights** are one lens mesh per model on the police light shader (`HELI_CH` channels):
-  red / green / white navigation, double-flash strobes, red beacons, landing lights (low
-  or tracking at night), and on the police machine red / blue LED bars on the cabin, boom
-  and fin tip flashing with `policeLightLevels`; lit channels queue VEHICLE HALOS.
+  red / green navigation and white strobes on the stabiliser tips (the endplates on the
+  police machine), the white tail light, red beacons (cowl or fin top and belly), landing
+  lights (nose), and on the police machine red / blue LED strobes under the doors, flanking
+  the nose, on the boom and on the fin tip, flashing with `policeLightLevels`; lit channels
+  queue VEHICLE HALOS. The police livery's white letters glow faintly at night (reflective
+  vinyl, the paint's emissive map).
 - **Searchlight mount**: the Nightsun's lens is at `HELI_SEARCHLIGHT_MOUNT` (model space,
-  under the port side of the cabin); `m.searchlightMount` is an anchor there and
-  `helicopterSearchlightMount(c, out)` returns it in world space for searchlight3d.js. The
-  Nightsun head turns on its gimbal towards what the crew are watching.
-- **Damage**: paint weathers and chars through `paintVehicle` (livery restored on repair),
-  the glass soots, bullet marks land on skin, glass and trim (`m.rayTargets`); a wreck's
-  rotor stops with its hub askew.
-- `DeadEndCity.helicopterLineup(x, y, heading, rotors)` parks one of each look;
-  `DeadEndCity.helicopterModels()` reports each model's look, spool, draw calls, shadow
-  casters and triangles.
+  under the belly, a little to port between the skid cross tubes); `m.searchlightMount` is
+  an anchor there and `helicopterSearchlightMount(c, out)` returns it in world space for
+  searchlight3d.js. The Nightsun head turns on its gimbal towards what the crew are
+  watching; the FLIR turret sits under the nose.
+- **Damage**: paint weathers and chars through `paintVehicle` (livery, words included,
+  restored on repair), the glass soots, bullet marks land on skin, glass and trim
+  (`m.rayTargets`); a wreck's rotor stops with its hub askew.
+- `DeadEndCity.helicopterLineup(x, y, heading, rotors, spacing, looks)` parks one of each
+  look (police, news, executive, the four civil schemes, military) or the `looks` given
+  (`'civil:yellow'` picks a scheme); `DeadEndCity.helicopterModels()` reports each model's
+  look, scheme, spool, draw calls, shadow casters, triangles and livery paint time.
 
 ## 6d. Civilian cars and motorbikes
 

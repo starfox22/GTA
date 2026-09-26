@@ -1522,6 +1522,7 @@
           strokeRoad(drawingContext, r.points, r.width, '#606664');
       for (const p of PLACES) {
         if (
+          p.mountain ||
           !/^(county-|southport-|sentinel-|keys-guns)/.test(p.id) ||
           (cityOnly && (p.x >= CITY_SIZE || p.y >= CITY_SIZE))
         )
@@ -1554,7 +1555,7 @@
       drawingContext.restore();
     }
     function installCountyServices() {
-      const add = (id, kind, name, b, door) => {
+      const add = (id, kind, name, b, door, mountain = false) => {
         if (PLACES.some((p) => p.id === id)) return;
         let building = buildings.find((o) => o.x === b.x && o.y === b.y);
         if (!building) {
@@ -1575,9 +1576,20 @@
           door,
           color: kind === 'guns' ? '#d6ba80' : '#95d2cb',
           symbol: kind === 'guns' ? 'GUN' : 'ZZ',
+          // Dressed by mountain-village3d.js (civic3d.js draws only its door ring).
+          mountain,
         });
       };
       for (const [i, t] of COUNTY_TOWNS.entries()) {
+        // A mountain village's OUTFITTERS and LODGE stand where its plan put
+        // them (mountain-village.js); the other towns keep the old spots.
+        const guns = mountainServiceSpot(t, 'guns'),
+          sleep = mountainServiceSpot(t, 'sleep');
+        if (guns && sleep) {
+          add('county-guns-' + i, 'guns', t.name + ' OUTFITTERS', guns.b, guns.door, true);
+          add('county-sleep-' + i, 'sleep', t.name + ' LODGE', sleep.b, sleep.door, true);
+          continue;
+        }
         add(
           'county-guns-' + i,
           'guns',
@@ -1721,7 +1733,8 @@
         ],
       },
     ];
-    for (const town of COUNTY_TOWNS)
+    // Northridge's north-west block is the 4x4 club's (offroad.js): no market lane through it.
+    for (const town of COUNTY_TOWNS.filter((t) => t.name !== 'NORTHRIDGE'))
       SERVICE_ROADS.push({
         name: town.name + ' MARKET STREET',
         width: 36,

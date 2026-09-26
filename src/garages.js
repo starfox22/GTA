@@ -93,6 +93,9 @@
         y: 3555,
         roadY: 3712,
         color: '#8ebac8',
+        // A mountain village's garage (mountain-village.js): fieldstone and
+        // board-and-batten under a steep red metal gable, drawn by garage3d.js.
+        rustic: true,
       },
     ];
     /* Each shop's plan in map units, worked out once: the bay (inside faces),
