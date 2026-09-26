@@ -5,7 +5,7 @@
      * Scope: shared game closure.
      *
      * One SETTINGS screen, reached from the title menu and the pause menu, with
-     * four tabs:
+     * five tabs:
      *
      *   GRAPHICS  quality tier and shadows (quality.js), frame limiter and FPS counter
      *             (game.js, FRAME LIMITER; 'dead-end-city-frame-limit'), character
@@ -19,7 +19,10 @@
      *             sirens; audio.js THE MIX), radio voices (police and dispatch
      *             callouts), and a reset to the default mix
      *   GAMEPLAY  NPC chatter (street speech bubbles), minimap, GPS route on the
-     *             minimap, control hints
+     *             minimap, flight HUD, speed box on foot, control hints
+     *   DRIVING   ABS, stability control, traction control, steering
+     *             sensitivity, camera look-ahead, speed units and a reset
+     *             (rows in driving.js, saved under 'dead-end-city-driving')
      *   CONTROLS  touch controls (mobile.js) and key remapping (controls.js)
      *
      * Everything applies the moment it changes and is saved in localStorage. The
@@ -158,6 +161,7 @@
       ['graphics', 'GRAPHICS'],
       ['audio', 'AUDIO'],
       ['gameplay', 'GAMEPLAY'],
+      ['driving', 'DRIVING'],
       ['controls', 'CONTROLS'],
     ];
     const SETTING_ROWS = {
@@ -300,19 +304,6 @@
             'The instruments at the screen edges while flying: airspeed, altitude, attitude, power and heading. Off, only STALL, PULL UP and the other warnings still flash when they apply.',
           get: () => hudState.flightHud,
           set: (on) => setFlightHud(on),
-        },
-        {
-          id: 'units',
-          kind: 'choice',
-          label: 'Speed units',
-          note: () =>
-            'Kilometres or miles an hour for every speed the game shows: the speed box, the flight HUD\u2019s airspeed and the rides. Boats keep knots; distances stay in metres.',
-          options: [
-            ['kmh', 'KM/H'],
-            ['mph', 'MPH'],
-          ],
-          get: () => hudState.units,
-          set: (value) => setSpeedUnits(value),
         },
         {
           id: 'footSpeed',
@@ -496,27 +487,37 @@
         return button;
       }
       if (row.kind === 'slider') {
-        const wrap = settingsElement('label', 'settings-slider'),
+        // 0..100 in fives unless the row says otherwise (Settings · Driving's
+        // sliders run 50-150% and 0-150%).
+        const min = row.min ?? 0,
+          max = row.max ?? 100,
+          format = row.format || String,
+          fill = (v) => (((v - min) / (max - min)) * 100).toFixed(1) + '%',
+          wrap = settingsElement('label', 'settings-slider'),
           input = document.createElement('input'),
-          readout = settingsElement('output', '', String(value));
+          readout = settingsElement('output', '', format(value));
         input.type = 'range';
-        input.min = '0';
-        input.max = '100';
-        input.step = '5';
+        input.min = String(min);
+        input.max = String(max);
+        input.step = String(row.step ?? 5);
         input.value = String(value);
         input.dataset.focus = row.id;
         input.dataset.nav = '';
         input.setAttribute('aria-label', row.label);
-        input.style.setProperty('--fill', value + '%');
+        input.style.setProperty('--fill', fill(value));
         input.oninput = () => {
           row.set(Number(input.value));
-          readout.textContent = input.value;
-          input.style.setProperty('--fill', input.value + '%');
+          readout.textContent = format(Number(input.value));
+          input.style.setProperty('--fill', fill(Number(input.value)));
         };
         input.onchange = () => {
           saveSettings();
-          const reset = getElement('settingsBody').querySelector('[data-focus="audioReset"]');
-          if (reset) reset.disabled = audioVolumesAreDefault();
+          // The tab's reset button wakes up once something is off its default.
+          for (const other of SETTING_ROWS[settingsTab])
+            if (other.kind === 'action' && other.disabled) {
+              const reset = getElement('settingsBody').querySelector('[data-focus="' + other.id + '"]');
+              if (reset) reset.disabled = !!other.disabled();
+            }
         };
         wrap.append(input, readout);
         return wrap;

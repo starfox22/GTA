@@ -1583,10 +1583,13 @@
           if (m.drl.material !== material) m.drl.material = material;
         }
         // Wheels roll with the road speed; the fronts follow the turn.
-        const steer = c === player.car ? clamp((keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0), -1, 1) * 0.42 : clamp(c.av * 0.5, -0.4, 0.4);
+        const steer = c === player.car ? clamp(c.tyres ? c.tyres.steer : (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0), -1, 1) * 0.42 : clamp(c.av * 0.5, -0.4, 0.4);
         m.steer = (m.steer || 0) + (steer - (m.steer || 0)) * Math.min(1, deltaSeconds * 8);
+        // Locked wheels stop turning (driving.js: the brakes' lock, the handbrake's rears).
+        const locks = c === player.car ? c.tyres?.lock : null;
         for (const wheel of m.wheels) {
-          wheel.wheel.rotation.z -= (c.speed * deltaSeconds) / wheel.radius;
+          const lock = locks ? (wheel.front ? locks[0] : Math.max(locks[1], c.handbrakeTurn ? 1 : 0)) : 0;
+          wheel.wheel.rotation.z -= ((c.speed * deltaSeconds) / wheel.radius) * (1 - lock);
           if (wheel.front) wheel.wheel.rotation.y = -m.steer;
         }
         if (m.extra?.animate) m.extra.animate(c, m, deltaSeconds, driven, lampsOn);
