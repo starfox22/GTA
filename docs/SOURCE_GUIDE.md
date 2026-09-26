@@ -87,10 +87,13 @@ Two closures matter:
     footprint matches the collider (render3d.js DESIGN SIZE). A model built at real size
     sets `modelScale` 1. Code that places into a model by hand works in its design units
     (`m.modelScale`: dents, loose panels, wheel spin, body impostors).
-  - **People**: every rig is modelled 17.4 units to the crown; `PERSON_SCALE` draws it at
-    `PERSON_HEIGHT`, 1.75 m. The crowd's looks vary the height 0.93-1.07 (kids 0.58-0.7),
-    officers and actors 0.94-1.06; a round hits within `PERSON_HIT_RADIUS` (1 m). Name tags,
-    speech bubbles and the dizzy stars sit on `PERSON_HEIGHT`.
+  - **People**: everyone on foot is one character rig (character-rig3d.js, crowd3d.js)
+    modelled at real height, `PERSON_HEIGHT` (1.75 m, 14 units) to the crown at look height 1,
+    about 7.5 heads tall; nothing scales it again. Adults are 1.6-1.9 m (women a little
+    shorter), the player 1.80 m, basketball players about 1.95 m, kids 0.55-0.7 of the
+    reference. `PERSON_SCALE` (14 / 17.4) only converts offsets measured on the old
+    17.4-unit figures. A round hits within `PERSON_HIT_RADIUS` (1 m). Name tags, speech
+    bubbles, the dizzy stars and the see-through hole (lighting3d.js) sit on `PERSON_HEIGHT`.
   - **Buildings**: a storey is `STOREY` (3.2 m) over a `SHOP_FLOOR` (4.5 m) ground floor, doors
     `DOOR_HEIGHT` (2.3 m). The city plan still writes heights in its old numbers (a storey was
     15 units); `realBuildingHeight()` turns them into real storeys once the world is built
@@ -112,8 +115,9 @@ Two closures matter:
   default and walks while Shift (`walk`, controls.js, "Walk (hold)") is held; there is no separate
   sprint. The Blue Hour terrace is always walked (a stealth party). `footPace()` is read by the
   movement, mountain footing (terrain.js), footsteps (audio.js) and the police's aim (pursuit.js);
-  the player's legs swing wider and lean in at the run (render3d.js `playerRunAmount`, from the
-  model's measured travel). Swimming crawls hard by default (5 km/h, breath drains 1.7/s) and
+  like everyone's, the player's gait comes from the figure's measured travel (crowd3d.js: the
+  feet plant for the stance and swing through, longer and with a flight phase and a lean at
+  the run). Swimming crawls hard by default (5 km/h, breath drains 1.7/s) and
   eases into breaststroke (3.5 km/h, 1/s) with Shift or once breath is under 30%
   (water.js `swimHard`). Pedestrians walk 4-6 km/h (`cityTempo`), flee at 17-21, officers run
   16-19 (`OFFICER_KINDS.run`), so the default run outpaces them. Legs keep pace with the ground through `strideCycle(speed)` / `strideRate(speed)`
@@ -265,6 +269,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
 | terrain.js | The Ridgeline Range: generated, eroded height fields (one shared triangulated surface for rendering, collision and elevation), switchback 4x4 trails, baked AO / flow / forest data, forest, boulder and stream placement, the 2D relief paint, slope handling and off-road contact, `terrainReport` |
+| offroad.js | The 4x4 club, trail mud, off-road traction and the hill climb: `OFFROAD_CLUB` (the lot across Eagle Pass from the Mount Ascent trailhead, its pad flattened in the height field by `offroadTerrainPads`), `OFFROAD_TYPES` (seven club trucks added to `VEHICLE_DEFINITIONS`, real size, `modelScale` 1), `OFFROAD_SECTIONS` (mud, the bog, the muddy hairpin, rock steps, checkpoints per trail), `offroadTrailBake` (mud / rock / trail frame per vertex), `offroadSurfaceAt`, `offroadDrive` (traction on the range, called by physics.js), body mud (`c.mudCoat`, `c.mudWet`), the club's members (a crowd scene), the hill climb (`trailCourse`, `offroadSummit`, best times in `dead-end-city-hillclimb`), `trailPilot` / `trailProfile` (console) |
 | casino.js | Roulette layout, stakes, settlement, UI and saved cash |
 | skyline.js | North Point financial cluster plan: `SKYLINE_TOWERS` (named tower lots per block, heights, designs), `buildSkylineBlock`, `paintSkylinePlaza` |
 | renewal.js | Parks (`CENTRAL_PARK`, `COMMONS`), ponds (`parkPondBlocked`, `parkPondNear`), boardwalks, walkers, joggers, the outdoor gym |
@@ -320,16 +325,16 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | air-cover3d.js | Road underpass walls, roof, portals and lamps |
 | renewal3d.js | Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks |
 | landscape3d.js | Renderer-only planting on open lawns: Battery Park trees and flower beds, Great Lawn picnic blankets |
-| sports3d.js | Tiered stands, crowd in team colours (fills, cheers, panics), floodlights (`stadiumFloodPools`), live screens (`paintSportsBoard`), kits, animated matches |
+| sports3d.js | Tiered stands, crowd in team colours (fills, cheers, panics), floodlights (`stadiumFloodPools`), live screens (`paintSportsBoard`), the ball; athletes, officials and stewards are queued to the character rig (`queueAthlete`, crowd3d.js ATHLETES) |
 | transit3d.js | Swept viaduct, sleepers, masts, piers and bents, stations and moving trains |
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
 | beachvolley3d.js | The volleyball court: pit and tapes painted into the sand (`paintVolleyCourt`), padded poles, guy ropes, net and antennas (`buildVolleyCourt`), the canvas scoreboard, the ball's shadow and the landing ring (`updateVolleyVisuals`) |
-| beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers (volleyball poses: bump, dig, set, spike, serve, cheer) |
+| beach3d.js | Sand, swash ribbon, pier, props and ladders; the beachgoers are drawn by the character rig (crowd3d.js BEACHGOERS: towel, lounger, swim, float and volleyball poses) |
 | county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests and boulders (near / far LOD per 2048-unit cell), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
 | airfields3d.js | Runways and taxiways over the ground sheets: one quad each with a patched standard material that paints the markings from metre uv (threshold, centre line, aiming point, touchdown zone, side stripes, blast pad chevrons, holding positions, rubber, rain), designation decals, holding-position signs; edge, threshold / end, approach (sequenced flashers), taxiway and obstruction lights as glow-field instances on batched fixtures; PAPI lenses and windsocks updated per frame (`updateAirfieldVisuals`, called from `updateCountyVisuals`) |
-| base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
+| base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`); soldiers are dressed by crowd3d.js OUTFITS |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
 | drawbridge3d.js | The Palm Sound drawbridge in 3D (`buildDrawbridge`, the bascule builder): hinged leaves with grid decking, girders and counterweights, piers and tender houses, fenders, barrier gates, signals and lamps (switched lenses and halos), the ketch; `updateDrawbridgeVisuals` each frame |
 | monarch-bridges3d.js | (included by render3d.js after bridges3d.js) `buildHarpBridge` (the Sovereign Bridge's leaning pylon and parallel stays) and `buildBowstringBridge` (the Regency Bridge's three arches) |
@@ -344,15 +349,17 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | beachclub3d.js | The club's meshes (batched), sails that fade while the player is inside, and the show: LED floor, moving heads, lasers, strobe, LED wall, flames, string lights (`updateBeachClubVisuals`, called from `updateBeachVisuals`) |
 | cycles3d.js | Bike-share stations: dock racks, docked share bikes and payment totems as instanced breakable props (merged vertex-coloured parts, `shareGeometry`), the totem's lit map, screen and brand faces, night glow and pool; the ridden share bike (`makeShareBicycle`); empty docks hidden (`updateBikeShareVisuals`) |
 | weather3d.js | GPU rain streaks (world-anchored, three depth layers, wind slant, lit by the night light map), splashes, roof and awning drips, spray behind cars, wet roads, lightning bolts and flashes, `vehicleLampAmount()` (headlights in heavy rain), the storm grade (`weatherGrade`) |
-| crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
+| character-rig3d.js | The character rig's parts, lofted from rings at real height (`rigLoft`): head with a face hint, seven hair styles, cap / patrol cap / helmet / sun hat / hard hat, male and female torso, pelvis, limbs, hands, shoe and boot, skirt, collar, hood, plate carrier / hi-vis vest, duty belt, backpack, weapons (`WEAPON_HOLDS`), POLICE / FED lettering; the region paint shader (`rigPaintPatch`: four packed colours and a per-region mask per instance, patterns, the player's night rim), `TORSO_MASKS` (tee, tank, bikini, jacket, suit, uniform, hoodie, dress...) |
+| crowd3d.js | Everyone on foot from the rig's instanced parts: looks compiled to parts and paints (`compileLook`, by role and district), OUTFITS for the player, police, traffic officers, SWAT, agents, soldiers, gangs, mobsters, guests, beachgoers, athletes and riders (`outfitLook`); the skeleton, layered poses and the planted-foot gait (`drawCrowdPerson`, `solveLeg`), turning on the spot, weapon holds by two-bone IK (`HOLD_POSES`, `drawHold`, `ikArm`) with recoil and reload, swim strokes, parachute, car and pool transitions, a rider thrown off a bike (riders.js `thrown`, `ejected.rider`) (`specialSpec`), still figures replayed from recorded instances, RIDERS on bikes and jet skis (`queueRider`), BEACHGOERS, ATHLETES (`queueAthlete`), close-up / street / far body sets, dogs and scene props; `crowdStats()` |
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
 | helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, military), a light single (Bell 407 / H125 class) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface, per-pixel canvas liveries, glyph decals, cabin and crew, merged trim / lamps per look; four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
 | police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
+| offroad3d.js | The club trucks (`makeOffroadVehicle`, `OFFROAD_BODIES` in the police body format, canvas liveries, modelled mud-terrain / all-terrain / desert tyres and beadlock / steel / cast rims, kit per truck; `animateOffroadVehicle`: wheel speed with wheelspin, steering, articulation), mud on any vehicle's paint (`vehicleMudPatch`, `applyVehicleMud`), mud clumps, mist and dust, splat and tyre-track decals (`updateOffroadVisuals`), the club lot (sign, canopy, chairs, cooler, grill, fire ring, flag, string lights, lanterns) and the hill climb course (start gate, checkpoint flags, rock-step slabs, finish) |
 | plane3d.js | The three airframes, modelled on real types: the Serrano C200 courier (mission 11's plane; a low-wing single turboprop with a T-tail after the Pilatus PC-12), the Aurelia J8 business jet and the Meridian 220 airliner. A lofted fuselage (monotone-cubic stations, superellipse sections) wears a livery texture computed per pixel from the surface (windscreen and cockpit glass with frames, cabin windows, doors, cheatline, registration; glossy glass through a roughness / metalness map); NACA-section wings, winglets, fin and stabiliser; flaps, ailerons, elevators and rudder in hinge pivots; four-blade propeller with blur disc or lathed turbofans with spinning fans; retracting gear; navigation, strobe, beacon and landing lights. Static parts are merged per material. `animateAircraft` poses it all from the flight model each frame |
-| parachute3d.js | The ram-air parachute: nine-cell canopy rebuilt per frame (inflation, pillows, brakes, trailing-edge flutter), lines, risers, slider, pilot chute and bridle, the pack; `poseParachutist` (freefall box position, hanging pendulum, toggles), collapse and pack-up after landing |
+| parachute3d.js | The ram-air parachute: nine-cell canopy rebuilt per frame (inflation, pillows, brakes, trailing-edge flutter), lines, risers, slider, pilot chute and bridle, the pack; `poseParachutist` (freefall box position, hanging pendulum, toggles: it poses a stand-in whose angles crowd3d.js applies to the rig), collapse and pack-up after landing |
 
 `src/asset-loader.js` sits outside the closure: it decodes the media blocks and calls
 `startDeadEndCity(ASSETS)`.
@@ -724,6 +731,21 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   draws those same vertices (near LOD), so contact and picture agree. `DeadEndCity.terrain()`
   reports the fields (grid, top, build timings), peak and trail figures, scenery counts and the
   outcrops' footing.
+- **The 4x4 club and the trails** (offroad.js, offroad3d.js). RIDGELINE 4X4 CLUB's gravel lot
+  (x 7410..7700, y 2034..2194) lies south of Eagle Pass opposite the Mount Ascent trailhead, on a
+  pad cut level into the height field. Seven club trucks (ROVER SERIES III SAFARI, BADGER RUBICON
+  CRAWLER, MUSTANG RIDGE BRONCO, HIGHLANDER 70 EXPEDITION, TAURO HX35 ARCTIC, OKTAV 6×6 EXPEDITION,
+  SIDEWINDER TROPHY TRUCK) are parked in a herringbone row and come back when taken. The trails
+  carry baked mud: the lower switchbacks (to ~55% of the way up), THE BOG and the MUDDY HAIRPIN on
+  Mount Ascent, rock steps higher up. Traction on the range (`offroadDrive`): the driven wheels
+  push at most mu x load (surface: packed dirt 0.68, mud down to ~0.3, wet lower, rock 0.8; tyre:
+  mud-terrain, all-terrain, desert, road; driven share 1 for 4x4, ~0.5 for two-wheel drive),
+  more than that spins them (`c.wheelSpin`, `c.spinSpeed`); low range under 35 km/h; the brakes
+  hold a truck up to the same friction and it slides back past it; mud costs rolling resistance
+  and rough ground bounces a vehicle past its suspension speed. The hill climb clock starts at
+  each trail's start gate; E at the club sign arms the Mount Ascent challenge (2:30, $1,000).
+  Four Chaikin passes round the hairpins and the legs are evenly spaced up the face (they used to
+  bunch up at the top, leaving the last hairpin only 6 m wide).
 - **Fort Sentinel** (military.js `MILITARY`, `SENTINEL`; drawn by base3d.js) fills x 9300..10560,
   y 7750..9950 of its island inside a double razor-wire fence with eight watch towers. The
   Sentinel Causeway lands at the main gate (y 8150): jersey-barrier funnel, guard booth on a
@@ -1581,8 +1603,9 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
 - `DeadEndCity.drawProfile()` lists the draw calls in view by object and by map cell;
   `stats()` reports `viewCalls` (camera) and `shadowCalls` (last shadow refresh) separately.
 - Level of detail, both cameras: intact cars become instanced per-type body shells below
-  `viewZoom` 0.62 and boxes below 0.4; standing pedestrians become three instanced parts
-  below 0.52; the merged far city replaces the batches below 0.2 (and casts their shadows
+  `viewZoom` 0.62 and boxes below 0.4; people use the close-up body set above zoom 2.4, the
+  street set (about a quarter of the facets) below it, drop hands and small props below 1.3 and, if
+  only standing or walking, become a three-instance figure below 0.34 (crowd3d.js); the merged far city replaces the batches below 0.2 (and casts their shadows
   below 0.55).
   The tier's `lodBias` scales these. Traffic signals are merged posts plus one instanced bulb
   pool. New car and person models only cast shadows from their larger parts.
@@ -1599,8 +1622,11 @@ Damage is data on the entity; `damage3d.js` only draws it (see the header of `da
 - Vehicles far from the player and at rest skip contact passes; distant traffic re-plans
   at 4 Hz instead of 20 Hz; off-screen pedestrians think every fourth frame (every sixth
   beyond ~900 units); distant wildlife validates its position twice a second.
-- Pedestrians are drawn by crowd3d.js from one InstancedMesh per body part (about 30 draw
-  calls for the whole crowd plus shadows), not per-person models. crowd.js rebuilds a 64-unit
+- Everyone on foot (pedestrians, the player, officers, soldiers, gangs, actors, beachgoers,
+  athletes, riders) is drawn by crowd3d.js from one InstancedMesh per body part (about 30
+  draw calls for all of them plus a dozen shadow casters), not per-person models; a part's
+  colours travel as four packed floats and a region mask per instance, so outfits cost no
+  draw calls. crowd.js rebuilds a 64-unit
   neighbour grid once a frame; perception, panic spread, traffic yielding, car/pedestrian
   contacts in `updateCars`, bullet targets (`bulletTargets`), the hired cab's look-ahead
   (`forEachPedestrianNear`) and near misses query it instead of scanning every pedestrian.

@@ -14,7 +14,6 @@
        * canvas per venue. The stands cheer a goal, and empty in a panic.
        */
       const sportsVenueModels = new Map(),
-        sportsAthleteModels = new Map(),
         sportsBallModels = new Map(),
         sportsBoardSurfaces = new Map(),
         sportsScreens = [],
@@ -32,8 +31,6 @@
         rim: staticMat('#ee7840', 0.48, 0.2),
         basketball: staticMat('#db8239', 0.88),
         soccer: staticMat('#f4eee0', 0.82),
-        skin: ['#d6af88', '#b88964', '#875e43', '#67452f'].map((color) => mat(color)),
-        hair: staticMat('#302821'),
         shoes: staticMat('#202630'),
         shorts: staticMat('#233a4b'),
         homeShirt: staticMat('#3caae1'),
@@ -1003,86 +1000,8 @@
         }
       }
 
-      // Athlete factories share one material per kit colour and primitive geometry.
-      // A new fixture replaces the athletes; stale groups are removed without
-      // disposing resources the next match reuses.
-      const sportsKitMaterials = new Map();
-      function sportsKitMaterial(color) {
-        let material = sportsKitMaterials.get(color);
-        if (!material) sportsKitMaterials.set(color, (material = mat(color, 0.78)));
-        return material;
-      }
-
-      /**
-       * The kit's pattern in the second colour over the shirt (the torso is 4.5
-       * deep along x, the way the athlete faces, and 6.5 wide along z):
-       * stripes, hoops, halves, a sash, or a chevron across the chest.
-       */
-      function addKitPattern(group, kit) {
-        const trim = sportsKitMaterial(kit.secondary);
-        if (kit.pattern === 'stripes')
-          for (const z of [-2.2, 0, 2.2]) box(group, 0, 10, z, 4.62, 6.02, 0.95, trim);
-        else if (kit.pattern === 'hoops') for (const y of [8.6, 11.2]) box(group, 0, y, 0, 4.62, 1.2, 6.62, trim);
-        else if (kit.pattern === 'halves') box(group, 0, 10, 1.64, 4.62, 6.02, 3.3, trim);
-        else if (kit.pattern === 'sash') {
-          const sash = box(group, 0, 10, 0, 4.64, 1.5, 8.2, trim);
-          sash.rotation.x = 0.72;
-        } else if (kit.pattern === 'chevron')
-          for (const side of [-1, 1]) {
-            const bar = box(group, 2.28, 11, side * 1.5, 0.12, 1.1, 3.6, trim);
-            bar.rotation.x = side * 0.55;
-          }
-      }
-
-      function createSportsAthlete(athlete) {
-        const group = new Three.Group();
-        group.name = athlete.sport + ' ' + athlete.kind + ' ' + athlete.id;
-        const kit = athlete.kit,
-          cloth = sportsKitMaterial(kit.primary),
-          shorts = sportsKitMaterial(kit.shorts),
-          socks = sportsKitMaterial(kit.socks),
-          seed = sportsHash(athlete.id.length, athlete.number, athlete.team + 5),
-          skin = sportsMaterials.skin[seed % sportsMaterials.skin.length];
-        const torso = box(group, 0, 10, 0, 4.5, 6, 6.5, cloth);
-        addKitPattern(group, kit);
-        if (athlete.kind === 'athlete') box(group, 2.3, 10.3, 0, 0.14, 0.8, 5.4, sportsKitMaterial(kit.secondary));
-        box(group, 0, 7.1, 0, 4.6, 1.2, 6.6, shorts);
-        mesh(sphereGeo, skin, group, 0, 15.3, 0, 2, 2.5, 2.1);
-        mesh(sphereGeo, sportsMaterials.hair, group, -0.5, 16.5, 0, 1.9, 1.6, 2.13);
-        const parts = {};
-        for (const side of [-1, 1]) {
-          const leg = new Three.Group();
-          leg.position.set(0, 7, side * 1.8);
-          group.add(leg);
-          box(leg, 0, -1.1, 0, 2.1, 2.4, 2.5, shorts);
-          box(leg, 0, -2.8, 0, 1.7, 1.6, 2.1, athlete.kind === 'steward' ? shorts : skin);
-          box(leg, 0, -4.1, 0, 1.8, 1.5, 2.2, socks);
-          box(leg, 1, -5.6, 0, 3.6, 1.3, 2.5, sportsMaterials.shoes);
-          parts['leg' + side] = leg;
-          const arm = new Three.Group();
-          arm.position.set(0, 12, side * 4);
-          group.add(arm);
-          box(arm, 0, -0.9, 0, 1.8, 2, 1.9, cloth);
-          box(arm, 0, -2, 0, 1.5, 1.1, 1.6, athlete.kind === 'steward' ? cloth : skin);
-          const forearm = new Three.Group();
-          forearm.position.set(0, -2.5, 0);
-          arm.add(forearm);
-          box(forearm, 0, -0.8, 0, 1.5, 2.1, 1.5, skin);
-          mesh(sphereGeo, skin, forearm, 0.2, -2.1, 0, 0.9, 1.05, 0.95);
-          // The assistant referees carry their flags.
-          if (athlete.kind === 'assistant' && side > 0) {
-            box(forearm, 0.3, -3.2, 0, 0.3, 4.4, 0.3, darkMetal);
-            box(forearm, 0.3, -1.9, 1.4, 0.15, 2, 2.6, sportsKitMaterial('#f2d33a'));
-          }
-          parts['arm' + side] = arm;
-          parts['forearm' + side] = forearm;
-        }
-        scene.add(group);
-        // As for the crowd's people: only torso-sized parts go into the shadow map
-        // (22 players were ~500 extra shadow draws, their shadow unchanged).
-        trimShadowCasters(group, 3.5);
-        return { group, torso, parts };
-      }
+      /* Athletes, officials and stewards are drawn by the character rig in
+         their kits (crowd3d.js ATHLETES, `queueAthlete`). */
 
       // The two balls share their component geometries across match resets.
       const basketballSeamCoordinates = [];
@@ -1148,101 +1067,6 @@
         return { group };
       }
 
-      function poseSportsAthlete(model, athlete, match) {
-        const { group, parts, torso } = model;
-        group.position.set(athlete.x, athlete.jump || 0, athlete.y);
-        group.rotation.set(0, -athlete.a, 0);
-        torso.rotation.z = 0;
-        // Down: shot, stabbed, run over. The dead stay on their backs; the
-        // knocked-down lie there until they get up.
-        if (athlete.hp <= 0 || athlete.knockedFor > 0) {
-          group.position.y = 2.3;
-          group.rotation.set(0, -athlete.a, Math.PI / 2);
-          for (const side of [-1, 1]) {
-            parts['leg' + side].rotation.z = side * 0.12;
-            parts['arm' + side].rotation.z = 2.4 + side * 0.3;
-            parts['forearm' + side].rotation.z = 0.2;
-          }
-          return;
-        }
-        // Running for their lives: long strides, arms pumping, leaning in.
-        const fleeing = athlete.fleeing || (match.abandoned && athlete.walking);
-        const stride = fleeing ? 0.9 : 0.62;
-        const running = athlete.walking ? Math.sin(athlete.walk) * stride : 0;
-        const actionProgress =
-          athlete.actionDuration > 0 ? 1 - athlete.actionTime / athlete.actionDuration : 0;
-        const actionSwing = Math.sin(Math.max(0, Math.min(1, actionProgress)) * Math.PI);
-        parts.leg1.rotation.z = running;
-        parts['leg-1'].rotation.z = -running;
-        parts.arm1.rotation.z = -running * (fleeing ? 1.1 : 0.65);
-        parts['arm-1'].rotation.z = running * (fleeing ? 1.1 : 0.65);
-        parts.forearm1.rotation.z = fleeing ? 1.2 : 0.35;
-        parts['forearm-1'].rotation.z = fleeing ? 1.2 : 0.35;
-        if (fleeing) {
-          torso.rotation.z = -0.22;
-          return;
-        }
-        if (athlete.kind === 'assistant' && match.stage === 'live' && match.phase === 'restart') {
-          // Flag up for the restart.
-          parts.arm1.rotation.z = 2.7;
-          return;
-        }
-        const ownsBall = match.ball.ownerId === athlete.id;
-        if (match.sport === 'basketball') {
-          if (ownsBall && athlete.action === 'dribble') {
-            // The hand follows the same bounce frequency used by sports.js.
-            const bounce = Math.abs(Math.sin(match.time * 8 + athlete.number));
-            parts.arm1.rotation.z = 0.45 + bounce * 0.75;
-            parts.forearm1.rotation.z = -0.2 + bounce * 0.3;
-            parts['arm-1'].rotation.z = 0.35;
-            torso.rotation.z = -0.08;
-          } else if (athlete.action === 'shoot') {
-            parts.arm1.rotation.z = 2.25 + actionSwing * 0.45;
-            parts['arm-1'].rotation.z = 2.05 + actionSwing * 0.5;
-            parts.forearm1.rotation.z = -0.45 * (1 - actionProgress);
-            parts['forearm-1'].rotation.z = -0.35 * (1 - actionProgress);
-            parts.leg1.rotation.z = 0.15;
-            parts['leg-1'].rotation.z = -0.15;
-          } else if (athlete.action === 'pass') {
-            parts.arm1.rotation.z = 1.2 + actionSwing * 0.3;
-            parts['arm-1'].rotation.z = 1.2 + actionSwing * 0.3;
-            parts.forearm1.rotation.z = 0.25 * (1 - actionProgress);
-            parts['forearm-1'].rotation.z = 0.25 * (1 - actionProgress);
-          } else if (athlete.action === 'rebound') {
-            parts.arm1.rotation.z = 2.7;
-            parts['arm-1'].rotation.z = 2.5;
-          } else if (athlete.kind === 'athlete' && !ownsBall && match.possessionTeam !== athlete.team) {
-            parts.arm1.rotation.z = 0.95;
-            parts['arm-1'].rotation.z = 0.85;
-            torso.rotation.z = -0.06;
-          }
-        } else {
-          if (athlete.action === 'shoot' || athlete.action === 'pass') {
-            // A planted support foot, full kicking-leg follow-through and opposite
-            // arm swing make kicks visibly distinct from running after the ball.
-            parts.leg1.rotation.z = -0.55 + actionSwing * 1.8;
-            parts['leg-1'].rotation.z = -0.18;
-            parts.arm1.rotation.z = -0.55;
-            parts['arm-1'].rotation.z = 0.8;
-            torso.rotation.z = -0.15;
-          } else if (athlete.action === 'save') {
-            parts.arm1.rotation.z = 1.7;
-            parts['arm-1'].rotation.z = 1.7;
-            parts.forearm1.rotation.z = 0;
-            parts['forearm-1'].rotation.z = 0;
-            group.rotation.x = Math.sin(match.time * 5) * 0.23;
-          } else if (ownsBall) {
-            parts.leg1.rotation.z += Math.sin(match.time * 9) * 0.23;
-            torso.rotation.z = -0.07;
-          }
-        }
-        if (athlete.action === 'celebrate') {
-          parts.arm1.rotation.z = 2.6 + Math.sin(match.time * 7 + athlete.number) * 0.2;
-          parts['arm-1'].rotation.z = 2.6 - Math.sin(match.time * 7 + athlete.number) * 0.2;
-          group.rotation.z = Math.sin(match.time * 5 + athlete.number) * 0.06;
-        }
-      }
-
       /**
        * NIGHT MATCHES
        * The floodlights throw the pitch into the night light map (lighting3d.js
@@ -1284,15 +1108,7 @@
         if (soccer) updateStadiumFloodlights(soccer);
         // deltaSeconds is deliberately not used as an animation clock: simulation
         // time and action timers freeze during pause and remain authoritative.
-        const liveAthletes = new Set();
         const liveMatches = new Set(Object.values(sportsMatches).filter(Boolean));
-        for (const match of liveMatches) for (const athlete of match.people) liveAthletes.add(athlete);
-        for (const [athlete, model] of sportsAthleteModels) {
-          if (!liveAthletes.has(athlete)) {
-            scene.remove(model.group);
-            sportsAthleteModels.delete(athlete);
-          }
-        }
         for (const [match, model] of sportsBallModels) {
           if (!liveMatches.has(match)) {
             scene.remove(model.group);
@@ -1313,14 +1129,7 @@
           }
           for (const athlete of match.people) {
             const visible = !athlete.hidden && venueModel.group.visible && viewZoom > 0.22 && entityInView(athlete, 25);
-            let model = sportsAthleteModels.get(athlete);
-            if (!model && !visible) continue;
-            if (!model) {
-              model = createSportsAthlete(athlete);
-              sportsAthleteModels.set(athlete, model);
-            }
-            model.group.visible = visible;
-            if (visible) poseSportsAthlete(model, athlete, match);
+            if (visible) queueAthlete(athlete, match);
           }
           const ballVisible =
             venueModel.group.visible && viewZoom > 0.22 && entityInView(match.ball, 40);

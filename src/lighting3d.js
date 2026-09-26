@@ -588,7 +588,7 @@
         // Roofs only the renderer knows about: {x, y, hx, hy, a, bottom, top}.
         cutawayRoofs = [],
         // World radius of the hole on foot: the player's size plus a small margin.
-        CUTAWAY_RADIUS_ON_FOOT = 18;
+        CUTAWAY_RADIUS_ON_FOOT = PERSON_HEIGHT + 2;
       let characterCutaway = true;
       try {
         characterCutaway = localStorage.getItem('dead-end-city-cutaway') !== 'off';
@@ -714,7 +714,7 @@
         if (!characterCutaway || gameMode === 'map' || player.parachute || player.swimming || player.hidden) return;
         if (transitRide || taxiRide || (car && (isAircraft(car) || isBoat(car)))) return;
         const spec = car ? vehicleSpec(car) : null,
-          bodyHeight = car ? (spec.truck ? 32 : 18) : 18,
+          bodyHeight = car ? (spec.truck ? 32 : 18) : PERSON_HEIGHT + 1,
           radius = car ? Math.hypot(spec.l, spec.w) / 2 + 6 : CUTAWAY_RADIUS_ON_FOOT,
           covers = coversOver(player.x, player.y, elevation + bodyHeight, elevation, car ? 0 : 3, !!car);
         // Anything standing between the camera and the player (a tower south of

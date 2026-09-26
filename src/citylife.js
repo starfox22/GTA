@@ -1131,6 +1131,8 @@
         if (!c.crewDeployed && (gangClose || playerClose) && Math.abs(c.speed) < 24) deployOfficers(c);
       }
       for (const o of officers) {
+        // Standing for a screenshot (DeadEndCity.characterLineup): no orders.
+        if (o.lineup) continue;
         if (o.hp <= 0) {
           o.state = 'dead';
           continue;
@@ -1602,6 +1604,7 @@
       }
       roofMissionUI();
       militaryUI();
+      offroadClubUI();
     }
     function drawCivicMap(drawingContext, big) {
       for (const p of PLACES) {

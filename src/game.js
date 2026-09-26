@@ -171,11 +171,13 @@
       KMH = UNITS_PER_METRE / 3.6,
       KNOTS = UNITS_PER_METRE * 0.514444,
       GRAVITY = 9.81 * UNITS_PER_METRE;
-    /* PEOPLE. Every body rig (the crowd's, the player's, officers' and actors')
-       is modelled 17.4 units from the soles to the crown at look.height 1;
-       PERSON_SCALE draws it at PERSON_HEIGHT, an average adult's 1.75 m (the
-       crowd's looks vary it 0.93-1.07, 1.63-1.87 m; officers and actors 0.94-1.06).
-       A round hits a person within PERSON_HIT_RADIUS of their centre. */
+    /* PEOPLE. Everyone on foot is one character rig (character-rig3d.js),
+       modelled at real height: PERSON_HEIGHT, an average adult's 1.75 m, to the
+       crown at look.height 1 (adults 1.6-1.9 m, the player 1.80 m). The rig is
+       never scaled again. PERSON_SCALE converts measurements taken on the old
+       17.4-unit figures (a hand at 10, a head at 15) to real size, for code
+       that still places things by them. A round hits a person within
+       PERSON_HIT_RADIUS of their centre. */
     const PERSON_HEIGHT = 1.75 * UNITS_PER_METRE,
       PERSON_SCALE = PERSON_HEIGHT / 17.4,
       PERSON_HIT_RADIUS = 10 * PERSON_SCALE;
@@ -1321,6 +1323,20 @@
           slopePitch: 0,
           slopeRoll: 0,
           offroadState: null,
+          // Off-road (offroad.js): the reused terrain record, how far the driven
+          // wheels spin ahead of the ground (0..1 and in u/s), the mud and rock
+          // under them, low range, the last rock ledge, the mud on the body (and
+          // how wet it is), the 4x4 club slot it was parked in.
+          terrainRecord: null,
+          wheelSpin: 0,
+          spinSpeed: 0,
+          surfaceMud: 0,
+          surfaceRock: 0,
+          lowRange: false,
+          ledge: -1,
+          mudCoat: 0,
+          mudWet: 0,
+          clubSlot: -1,
           loadSpeed: null,
           loadPitch: 0,
           loadRoll: 0,
@@ -2363,6 +2379,8 @@
         interactRooftop()
       )
         return;
+      // The hill climb at the 4x4 club's sign, from a vehicle (offroad.js).
+      if (offroadClubInteract()) return;
       if (player.car) {
         if (garageInteract()) return;
         // Riding a share bike into a station docks it (cycles.js BIKE SHARE).
@@ -3391,6 +3409,8 @@
         timed('civic', () => updateCivic(deltaSeconds));
         timed('roofencounter', () => updateRoofEncounter(deltaSeconds));
         timed('military', () => updateMilitary(deltaSeconds));
+        // The 4x4 club, body mud and the hill climb (offroad.js).
+        timed('offroad', () => updateOffroad(deltaSeconds));
         updatePlayerArmor(deltaSeconds);
         updatePlayerApache(deltaSeconds);
         timed('combat', () => updateCombat(deltaSeconds));
@@ -5285,6 +5305,7 @@
     // @include src/sidejobs.js
     // @include src/streets.js
     // @include src/terrain.js
+    // @include src/offroad.js
     // @include src/casino.js
     // @include src/skyline.js
     // @include src/renewal.js
@@ -5504,7 +5525,10 @@
           extents = city3D?.modelExtents?.([...near, player]) || [],
           size = (e) => (e ? { l: m(e.l), w: m(e.w), h: m(e.h) } : null),
           rig = city3D?.crowdRigHeight?.() || 0,
-          statures = pedestrians.filter((p) => p.look).map((p) => (p.look.height || 1) * rig * PERSON_SCALE),
+          statures = pedestrians
+            .filter((p) => p.look && p.role !== 'kid')
+            .map((p) => city3D?.personStature?.(p) || 0)
+            .filter(Boolean),
           heights = buildings.map((b) => b.height).sort((a, b) => a - b),
           pick = (list, q) => (list.length ? m(list[Math.min(list.length - 1, Math.floor(q * list.length))]) : null);
         return {
@@ -5515,8 +5539,9 @@
             .filter((row) => row.l),
           player: size(extents[near.length]),
           crowd: {
-            rig: m(rig * PERSON_SCALE),
-            shortest: pick(statures.filter((s) => s > rig * 0.8 * PERSON_SCALE).sort((a, b) => a - b), 0),
+            rig: m(rig),
+            player: m(city3D?.personStature?.(player) || 0),
+            shortest: pick(statures.sort((a, b) => a - b), 0),
             average: statures.length ? m(statures.reduce((s, v) => s + v, 0) / statures.length) : null,
             tallest: pick(statures.sort((a, b) => a - b), 1),
           },
@@ -5629,6 +5654,24 @@
       // each trail's length, summit and steepest graded pitch, scenery counts and
       // the outcrops' footing. Terrain tests read it alongside probe().
       terrain: () => terrainReport(),
+      // The 4x4 club and the trails (offroad.js): the lot and its clearances, the
+      // club trucks, the members, the player's traction state, the hill climb.
+      offroad: () => offroadReport(),
+      clubLineup: (x, y) => clubLineup(x, y),
+      // 'state', 'arm', 'reset', 'clear' (records), 'gate' or 'cp0'..'cp2' (move the player's vehicle there).
+      hillClimb: (action, trail) => hillClimbConsole(action, trail),
+      // Drive the player's vehicle up a trail through the real physics (a line-following pilot).
+      trailDrive: (seconds, maxKmh, trail) => trailPilot(seconds, maxKmh, trail),
+      // A trail's path: [sample, x, y, height, grade, mud, rock] every `step` samples.
+      trailProfile: (trail, step) => trailProfile(trail, step),
+      // Set the mud on the player's vehicle (0..1) and how wet it is.
+      mud: (amount = 1, wet = 1) => {
+        const c = player.car;
+        if (!c) return null;
+        c.mudCoat = clamp(amount, 0, 1);
+        c.mudWet = clamp(wet, 0, 1);
+        return { mudCoat: c.mudCoat, mudWet: c.mudWet };
+      },
       // The current mission in full: target (with altitude), timer, the mission
       // vehicles, its guards and actors, and each job's own list of points.
       missionTargets() {
@@ -6418,12 +6461,23 @@
       // Inspection only: zoom the camera in past the player's limit to look at
       // people up close. Anything above 1.5 is not reachable in play.
       closeUp(zoom = 4) {
-        worldZoom = worldZoomTarget = clamp(zoom, 0.14, 8);
+        worldZoom = worldZoomTarget = clamp(zoom, 0.14, 24);
         return worldZoom;
       },
       // Line up one pedestrian per pose in front of the player (for screenshots);
       // `role` dresses them all alike, e.g. 'commuter'.
       poseGallery: (role) => poseGallery(role),
+      // One of each kind of character in a row in front of the player, facing the
+      // camera (crowd.js CHARACTER LINEUP): stance 'stand', 'walk' or 'aim'.
+      characterLineup: (stance, spacing) => characterLineup(stance, spacing),
+      // Inspection only: look at the street from bearing `yaw` (0 = from the south,
+      // as the game camera does; 90 = from the east) and `pitch` degrees above the
+      // horizon, aimed `lift` units up; no arguments restores the game camera.
+      inspectView: (yaw, pitch, lift) => city3D?.inspectView?.(yaw, pitch, lift),
+      // What the people cost in the last frame (crowd3d.js): parts, draw calls, instances, triangles.
+      crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
+      // Pack the people `frames` times back to back: the rig's CPU cost per frame in ms.
+      crowdBenchmark: (frames) => city3D?.crowdBenchmark?.(frames) ?? null,
       // Raise an incident at a map point without firing: gunfire, explosion, crash.
       alarm(kind = 'gunfire', x = player.x, y = player.y) {
         const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);

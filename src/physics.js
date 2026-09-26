@@ -1743,19 +1743,17 @@
           c.sliding = sliding || (c.sliding && Math.abs(lateral) > along * 0.1);
         }
         c.braking = braking;
+        // OFF-ROAD (offroad.js): on the range the tyres give what the surface and
+        // the driven wheels allow (wheelspin past it), gravity pulls down the slope,
+        // mud drags, rough ground bounces; off it the wheels roll with the ground.
         const terrain = roadVehicleTerrain(c);
         if (terrain) {
-          const slope = Math.hypot(terrain.slope.x, terrain.slope.y),
-            power = terrain.traction;
-          acceleration *= power;
+          const ground = offroadDrive(c, vehicleDefinition, terrain, acceleration, along, stepSeconds);
+          acceleration = ground.acceleration;
           if (Math.abs(along) > terrain.limit && acceleration * along > 0) acceleration = 0;
-          grip *= terrain.four ? 0.82 : 0.48;
-          drag = Math.max(drag, terrain.trail ? 0.7 : 1.3);
-          const tractionLimit = terrain.four ? (terrain.trail ? 0.62 : 0.72) : 0.15,
-            slide = Math.max(0, slope - tractionLimit);
-          c.vx -= terrain.slope.x * GRAVITY * (1 + slide * 2.3) * stepSeconds;
-          c.vy -= terrain.slope.y * GRAVITY * (1 + slide * 2.3) * stepSeconds;
-        }
+          grip *= ground.grip;
+          lateralScale *= ground.lateral;
+        } else if (c.wheelSpin || c.surfaceMud) offroadRoll(c, stepSeconds);
         // On a raised drawbridge leaf: gravity down the slope, grip up to ~40 degrees.
         if (c.deckLeaf) acceleration = drawbridgeSlopeDrive(c, acceleration, stepSeconds);
         c.vx += headingCosine * acceleration * stepSeconds;

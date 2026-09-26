@@ -1990,6 +1990,49 @@
       });
       return GALLERY_POSES;
     }
+    /**
+     * CHARACTER LINEUP (DeadEndCity.characterLineup, for screenshots): a row in
+     * front of the player of a man and a woman from the street, a commuter in a
+     * suit, a jogger, a beachgoer, a patrol officer, a traffic officer, SWAT, an
+     * agent and a soldier, all facing the camera. `stance` 'aim' raises the
+     * officers' weapons; 'walk' walks the civilians on the spot.
+     */
+    function characterLineup(stance = 'stand', spacing = 2.4 * UNITS_PER_METRE) {
+      for (let i = pedestrians.length - 1; i >= 0; i--) if (pedestrians[i].posed) pedestrians.splice(i, 1);
+      for (let i = officers.length - 1; i >= 0; i--) if (officers[i].lineup) officers.splice(i, 1);
+      const cast = [
+        ['casual', { female: false }],
+        ['casual', { female: true }],
+        ['commuter', {}],
+        ['jogger', {}],
+        ['beach', {}],
+        ['patrol'],
+        ['road'],
+        ['swat'],
+        ['fed'],
+        ['soldier'],
+      ];
+      // Civilians to the player's left, officers to the right, the player between.
+      const y = player.y;
+      player.a = Math.PI / 2;
+      cast.forEach(([kind, extra], i) => {
+        const x = player.x + (i < 5 ? i - 5 : i - 4) * spacing;
+        if (extra) {
+          const p = { x, y, a: Math.PI / 2, hp: 30, flee: 0, timer: 5, walk: 0, state: 'walk', posed: stance === 'walk' ? 'walk' : kind, anchor: { x, y } };
+          dressPerson(p, kind === 'beach' ? 'casual' : kind);
+          if (extra.female !== undefined) {
+            p.look.hairStyle = extra.female ? 2 : 1;
+            p.look.skirt = false;
+          }
+          if (kind === 'beach') Object.assign(p.look, { top: p.look.skin, shoes: p.look.skin, shorts: true, pants: '#2a67b5', sleeves: false, hairStyle: 1 });
+          pedestrians.push(p);
+        } else {
+          const o = makeOfficer(x, y, Math.PI / 2, kind, { lineup: true, state: stance === 'aim' ? 'aim' : 'idle', shield: false });
+          officers.push(o);
+        }
+      });
+      return cast.map((c) => c[0]);
+    }
     function updatePosed(p, deltaSeconds) {
       const speed = GALLERY_MOVERS[p.posed] || 0;
       p.pose = p.posed === 'walk' ? null : p.posed;
@@ -2828,6 +2871,11 @@
       waiter: 'wait',
       hailer: 'wave',
       worker: 'carry',
+      // The 4x4 club (offroad.js).
+      clubGrill: 'serve',
+      clubChat: 'chat',
+      clubSit: 'sit',
+      clubArms: 'arms',
       // A garage's mechanics (garages.js staffGarages); their spot may name a pose.
       mechanic: 'serve',
     };
