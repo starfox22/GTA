@@ -1,5 +1,42 @@
 # Changelog
 
+## Unreleased — Monarch Isle: a rich island district north of the mountains
+
+- **A new island** (monarch.js, monarch-life.js, monarch*3d.js; SOURCE_GUIDE section 4,
+  "Monarch Isle"): x 5460..10150, y -5272..-468, about 580 x 600 m, north of the Ridgeline
+  Range across the Regency Channel and east of North Point across Sovereign Sound.
+- **Blocks are strictly 100 m**: street centrelines 800 units apart both ways (columns 5600 to
+  9600, rows -4544 to -1344); two divided boulevards (Crown Avenue, Monarch Boulevard) with
+  lime medians, two roundabouts with fountains (Crown Circus, Harbour Circle), a waterfront
+  Marina Drive, street trees and triple lanterns down every pavement.
+- **Two new bridges**, both on the GPS, traffic and police road graphs: the SOVEREIGN BRIDGE
+  (North Point's Crown Ave to the island; a harp cable-stayed bridge with a pylon leaning 60
+  degrees back over the landing) and the REGENCY BRIDGE (Harbour Circle to the range's west
+  coast; three white bowstring arches), with Regency Road on to Eagle Pass.
+- **Fourteen villas** in nine styles behind walls, hedges and open gates with guards, drives
+  with two luxury cars each, pools, terraces and tennis courts; five on Monarch Beach with
+  their own strands of loungers and parasols, three on the east cliffs.
+- **Two supertall towers**: THE SOVEREIGN (57 storeys, ~186 m, bronze fins, a lit lantern and
+  spire) and MONARCH ONE (48 storeys, twisting, balcony bands, LED crown, rooftop helipad with a
+  helicopter), on plazas with lawns, plane trees, reflecting pools and bronze sculptures.
+- **27 businesses** with their own signs: fashion, jewellery, watches, a tailor, a florist, a
+  private bank, a gourmet grocer, CAFÉ ROYALE, a wine bar, a gallery, a private clinic and spa,
+  L'ÉTOILE, THE REGENT HOTEL, a supercar showroom with a premium fuel station, a country club
+  with courts, pool and putting green, an academy and chapel, a police substation and the
+  harbourfront (oyster bar, gelateria, yacht broker, chandlery, champagne bar, boutique).
+- **Monarch Harbour**: seven pontoons of berthed yachts, three superyachts at the mole, a fuel
+  pontoon, yacht club, harbour master's tower and lighthouse; boats come and go in the basin.
+- **Royal Botanic Garden**: a Kew-style Palm House (translucent glass, palms, banana and tree
+  ferns inside, warm glow at night), giant water lilies, parterres, cacti, dragon blood trees,
+  bird of paradise, bamboo, topiary, bougainvillea arches, flowering cherries; visitors taking
+  photos.
+- **Life**: island traffic on its own lane graph (junction boxes, anticlockwise roundabouts,
+  hand-over with city traffic on the Sovereign Bridge), well-dressed walkers who cross at the
+  zebras and look both ways, joggers, dog walkers, doormen, valets and guards, two payphones,
+  bike-share stations, fountains, rigging, gulls and garden birds.
+- **Night light**: the island has its own lamp light map beside the city's (lighting3d.js).
+- Console: `DeadEndCity.monarch()` (plan, traffic, walkers, walk-graph audit).
+
 ## Unreleased — the respray garages: real-scale workshops, prices and a drive-in show
 
 - **The helicopter loses you inside.** Every garage bay and office is overhead cover

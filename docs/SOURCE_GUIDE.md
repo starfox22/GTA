@@ -254,6 +254,8 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | crash-audio.js | `crashSound`: one positioned, recorded crash per vehicle impact (from `collisionImpact`, including soft knocks below its damage threshold, and street props), picked by closing speed: a quiet bump or metal scrape, a medium crash or a heavy crash (small pitch and gain spread); glass only when a pane broke, a recorded tyre skid when sliding, a debris settle after very hard hits; trucks, buses and tanks use the heavy set a little lower; street furniture passes its `material` (wood, plastic and fabric knock higher and softer with a splinter settle, stone and trees crash lower, a tree adds the thud of the trunk landing); the whole bus plays at `CRASH_LEVEL` (-3.5 dB, under gunfire and engines); one event per pair per 0.7 s; `crashLog` (DeadEndCity.crashSounds()) records the choices |
 | engine-audio.js | Engine sound: `ENGINE_SETS` (recorded loops per class with the revs each was recorded at: compact, sport, V8, diesel, bike, cruiser, tank, outboard, marine diesel, jet ski) and `ENGINE_OF_TYPE` (vehicle type to set, pitch, level); the player's engine simulation (`engineSimulate`: idle, clutch slip pulling away, automatic gearbox with a throttle cut on upshifts and a blip on downshifts, throttle load), layers pitched by rpm / recorded rpm and cross-faded in the middle of each gap (`engineLayerWeights`), a recorded starter on getting in, overrun burble (V8, sport), misfires when badly hurt; tyre roar, gravel off-road and tank tracks (tank-tracks.ogg), wind on open vehicles; synthesised turboprop and turbofan (`updateJetVoice`: whine, roar, hiss, blade buzz); the nearest four driven traffic vehicles get one voice each with distance, pan and Doppler (`updateTrafficEngines`); `engineReport()` (DeadEndCity.engineSound(): revs, gear, load, layer rates and gains, traffic, a trace) |
 | county.js | County roads, towns, buildings, scenery, traffic, regional police and bridges |
+| monarch.js | Monarch Isle (section 4, "Monarch Isle"): the coast (`MONARCH_ISLE`, pushed onto `LAND_REGIONS`), `MONARCH_BOUNDS`, the 100 m grid (`ISLE_COLS`, `ISLE_ROWS`, `ISLE_STREETS`, `ISLE_CIRCLES`, `isleCarriageways`), `MONARCH_BRIDGES` (pushed onto `BRIDGES`, designs `harp` and `bowstring` in `BRIDGE_DESIGNS`), `MONARCH_ROADS` (into `COUNTY_ROADS`: GPS and police routing), villas (`MONARCH_VILLAS`, `planVilla`), block uses (`ISLE_BLOCK_USES`, `planIsleBlock`, `planIslePlaza`), `MONARCH_TOWERS`, `MONARCH_BUSINESSES`, `MONARCH_MARINA` and berths, `MONARCH_GARDEN`, `buildMonarchIsle` (called from buildWorld after the real-height pass), street trees and lanterns (`planIsleStreetscape`, `monarchLamps`), collision (`monarchBlocked`, `monarchSolids`), districts, streets and shores (`monarchDistrictAt`, `monarchStreetName`, `monarchShoreStyle`), the ground tile and map paint, `monarchLayout()` |
+| monarch-life.js | Monarch Isle life: the island lane graph (`isleRoadGraph`: 31 nodes, 49 links, the two bridges joined to city and county roads), junction boxes and anticlockwise roundabouts (`isleCrossing`, `isleNodeBusy`, `isleBoxOccupied`), `isleTrafficControl` (called from physics.js for cars with `c.isle`), `populateMonarchIsle`, the walk graph (`isleWalkNodes`: pavements, zebras, ring walks, promenade, garden, beach), walkers (`updateIsleWalker`: look both ways at the kerb, detours, doors, photos), staff posts, boats (`isleBoatHelm`), payphones, sound, `monarchReport()` (DeadEndCity.monarch()) |
 | airfields.js | The runway plan (section 4, "Airfields"): `RUNWAYS`, `TAXIWAYS`, `RUNWAY_PIERS` (reclaimed land, pushed onto `LAND_REGIONS`), `runwayRect` / `runwayPoint` / `runwayUnder` / `runwayPierAt`, PAPI units and `papiShowsWhite`, `paintAirfieldGround` (the flat runways for the 2D view, the maps and the ground sheets), `airfieldReport()` (DeadEndCity.airfields()) |
 | military.js | Fort Sentinel: the base plan (`SENTINEL`: fences, gate, buildings, depots, airfield), colliders (`militaryWalls`, `militarySolids()`), the gate (drop arms, anti-ram bollards, sliding gates, ramming), the challenge (halt, final warning, fire), alarm, lockdown and siren, garrison (posts, towers, patrols, drill, range, QRF and patrol jeeps, crewed armour, supply runs), the jeep/APC/army truck types, `militaryReport()` |
 | apache.js | Fort Sentinel's AH-64 Apache, player only: parked on the west helipad (`parkApache`, `APACHE_PAD`), a `helicopter` with `airframe: 'apache'` (`HELICOPTER_AIRFRAMES`, merged by vehicleSpec), theft (`apacheBoarded`: base alarm, heat to the top), the chin gun laid by the mouse (`apacheAimPoint`, `traverseTurret`, `apacheGun`, `apacheRoundImpact`), rocket salvos (`apacheSalvo`, `apacheRocket`: `rocket` + `shell` rounds through `explode()`), ammunition and rearming on the base helipads (`updateApacheRearm`), respawn, the weapon chip (`apacheHud`, `drawRocketIcon`), the reticle (`updateApacheReticle`), `apacheReport()` |
@@ -330,9 +332,15 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
 | drawbridge3d.js | The Palm Sound drawbridge in 3D (`buildDrawbridge`, the bascule builder): hinged leaves with grid decking, girders and counterweights, piers and tender houses, fenders, barrier gates, signals and lamps (switched lenses and halos), the ketch; `updateDrawbridgeVisuals` each frame |
+| monarch-bridges3d.js | (included by render3d.js after bridges3d.js) `buildHarpBridge` (the Sovereign Bridge's leaning pylon and parallel stays) and `buildBowstringBridge` (the Regency Bridge's three arches) |
 | bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; the shaded carriageway (`bridgeRoadMaterial`: asphalt wear and antialiased markings in the shader), expansion joints, each deck's lamp light map (`bridgeDeckLight`), lamps, LEDs, aviation beacons, foam cut round the deck, far copies |
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
 | marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners, the sailing liner and her wake |
+| monarch3d.js | Monarch Isle buildings: the island's roots (`isleRoot`, one per 1024 cell for culling), palette (`ISLE`), facade canvases (`ISLE_FACADES`, `paintIsleFacade`), roofs (`isleMansard`, `isleHipRoof`, `isleGableRoof`), `buildIsleBuilding`, balustrades, doorways, `buildIsleShopfront` (shop panes, fascia sign from `SIGN_DESIGNS`, awnings, canopies registered as overhead cover), window displays |
+| monarch-villas3d.js | The villas (`buildIsleVilla`, nine styles; gardens, walls, gates, guard lodges, pools, terraces, courts, drive lamps) and the two towers (`buildIsleTower`: The Sovereign's bronze fins, setbacks and lantern; Monarch One's twist, balcony bands, LED crown and helipad) |
+| monarch-marina3d.js | Monarch Harbour: pontoons, berthed yachts from the Harbor Point builders, three superyachts (`buildIsleSuperyacht`), the fuel pontoon, the mole and lighthouse, the harbour master's tower, the yacht club |
+| monarch-garden3d.js | The Royal Botanic Garden: the Palm House (`buildIslePalmHouse`: translucent `gardenGlass`, wings, transept dome, interior plants, night glow), the plant builders (tree fern, banana, dragon tree, saguaro, agave, cacti, bird of paradise, bamboo, topiary, giant lilies, bougainvillea arches), fence, gates and signs |
+| monarch-streets3d.js | The island's streetscape and build (the last island renderer file): instanced lanterns (knockable props), fountains, the beach furniture, payphones, block extras (fuel canopy, showroom, courts, green, pitch, police lamp, tower plazas, chapel), median limes, then every island mesh merged per root (`kitMerge`); `updateMonarchVisuals()` |
 | beachclub3d.js | The club's meshes (batched), sails that fade while the player is inside, and the show: LED floor, moving heads, lasers, strobe, LED wall, flames, string lights (`updateBeachClubVisuals`, called from `updateBeachVisuals`) |
 | cycles3d.js | Bike-share stations: dock racks, docked share bikes and payment totems as instanced breakable props (merged vertex-coloured parts, `shareGeometry`), the totem's lit map, screen and brand faces, night glow and pool; the ridden share bike (`makeShareBicycle`); empty docks hidden (`updateBikeShareVisuals`) |
 | weather3d.js | GPU rain streaks (world-anchored, three depth layers, wind slant, lit by the night light map), splashes, roof and awning drips, spray behind cars, wet roads, lightning bolts and flashes, `vehicleLampAmount()` (headlights in heavy rain), the storm grade (`weatherGrade`) |
@@ -485,6 +493,72 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   walks (`parkPathGraph`, queues in `PARK_QUEUES`); guests exist only while the player is within
   ~1.9 km. `DeadEndCity.themePark()` reports rides, shows, guests and an overlap self-check.
 
+### Monarch Isle (x 5460..10150, y -5272..-468)
+
+The island north of the Ridgeline Range across the Regency Channel, east of North Point
+across Sovereign Sound (monarch.js plans it; monarch-life.js runs it; the monarch*3d.js
+files draw it). About 580 x 600 m of land (4690 x 4800 units).
+
+- **The 100 m grid.** Street centrelines 800 units (100 m) apart both ways: columns
+  `ISLE_COLS` 5600, 6400, 7200, 8000, 8800, 9600; rows `ISLE_ROWS` -4544, -3744, -2944,
+  -2144, -1344. A block is 100 m between street centrelines; streets are 96 wide (12 m, two
+  24-unit lanes and 24 of parking and kerb) with 40-unit (5 m) pavements. Crown Avenue (row
+  -2944) and Monarch Boulevard (column 7200) are divided boulevards (a 24-unit median of
+  clipped limes, 48-unit carriageways). Two roundabouts with fountains: Crown Circus (7200,
+  -2944, a three-tier fountain with a gilded crown) and Harbour Circle (6400, -1344, a bronze
+  compass-rose basin), traffic anticlockwise. Street trees (planes, palms on the waterfront)
+  alternate with triple lanterns every 80 units down both pavements.
+- **Bridges** (table in "Water and bridges"): the Sovereign Bridge lands on Westgate at the
+  west end of Crown Avenue; the Regency Bridge runs south from Harbour Circle to Regency
+  Road, which follows the range's west coast to Eagle Pass (6500, 1800), clear of the 4x4
+  trailheads.
+- **The Crescent and Monarch Beach** (north shore): five beachfront villas on lots 328-358
+  deep, each with its own strand of loungers and parasols; three clifftop villas on the east
+  cliffs; six more on the interior blocks. Fourteen villas in nine styles (Mediterranean,
+  modern glass, Hamptons, neoclassical, Spanish, Tudor, chateau, Georgian, art deco), each
+  behind walls or hedges with a gate (open, a guard at the lodge), a drive with two luxury
+  cars on the forecourt, a pool, terraces and specimen trees, tennis where the lot is deep
+  enough (`planVilla`).
+- **Towers:** THE SOVEREIGN (57 storeys of 3.3 m, ~186 m with its lantern and spire, bronze
+  fins) and MONARCH ONE (48 storeys of 3.35 m, a twisting glass tower with balcony bands, an
+  LED crown and a rooftop helipad where a helicopter waits), each on a plaza of lawns, plane
+  trees, a reflecting pool with jets and a bronze sculpture (`planIslePlaza`).
+- **Businesses** (`MONARCH_BUSINESSES`, 27, each with its own sign design): Crown Arcade
+  (MAISON VERAUD, HALDEN & FROST jewellers, VALMONT watches, SAVILLE & CROWN tailors, FLEUR
+  DE LYS florist), the tower podiums (CROWN PRIVATE BANK, AURELIE PARIS, ORO & PERLA), food
+  and wine (THE PROVISIONER gourmet grocer, CAFÉ ROYALE, VINTAGE & VINE, GALERIE MONARCH), THE
+  HALCYON CLINIC and AQUA SERENA SPA, L'ÉTOILE and THE REGENT HOTEL on Regent Row, MONARCH
+  AUTOMOBILI (supercars in the showroom and on the forecourt) with the SOLARIS premium fuel
+  station, the MONARCH COUNTRY CLUB (clay courts, pool, putting green), MONARCH ACADEMY and
+  St Aldric's Chapel, the police substation, and on the harbourfront THE OYSTER ROOM,
+  GELATERIA DOLCE, OCEANIS YACHTS, the MARINE CHANDLERY, the CHAMPAGNE BAR and BOUTIQUE RIVA. PLACES entries (monarch: true) make the clothes shop, café, bar,
+  hotel and clinic work like the city's.
+- **Monarch Harbour** (south shore, basin x 7696..9900): seven pontoons of berthed yachts
+  (31 designs), three superyachts at the mole (SOVEREIGN LADY with a helipad, OBSIDIAN with a
+  pool, ETERNITY, an explorer), the fuel pontoon, the Monarch Yacht Club, the harbour
+  master's tower with its radar on Regency Point and the lighthouse on the mole's tip. The
+  marina promenade runs along the basin; boats leave and return on basin routes.
+- **Royal Botanic Garden** (x 7300..8712, y -4456..-3832): the Palm House (a Kew-style
+  glasshouse: two barrel-vaulted wings, a domed transept, translucent glass with palms,
+  banana and tree ferns inside, lit warm at night), the lily pond with giant water lilies,
+  parterres, arid, fern, bamboo and Socotra beds (saguaro, agave, barrel and prickly-pear
+  cacti, dragon blood trees, bird of paradise), topiary (cones, balls, spirals, a peacock),
+  bougainvillea arches, flowering cherries, gates and railings; visitors stop to photograph.
+- **Life** (monarch-life.js): 30 cars on the island's own lane graph (junction boxes, the
+  roundabouts, city cars adopted off the Sovereign Bridge, island cars handed to city traffic
+  at its far end); walkers by the hour (up to 110 at midday: shoppers, tourists, joggers,
+  dog walkers, elders) on a pavement graph that crosses only at zebras and ring walks, looks
+  both ways at the kerb and steps round obstacles; doormen, valets and villa guards at their
+  posts; boats in the basin; fountains, rigging, gulls and garden birds; two payphones
+  (Crown Avenue, Marina Promenade) and bike-share stations. `DeadEndCity.monarch()` reports
+  the plan, traffic (moving, waiting, stuck over 30 s), walkers and a walk-graph audit.
+- **Night:** the island has its own lamp light map over `MONARCH_BOUNDS` (lighting3d.js,
+  `isleLightPools`), sampled where the city's map ends: lantern pools, shop windows, sign
+  spill and the pools the island's renderer files add.
+- **Collision and routing:** buildings and `monarchSolids()` (walls, pools, lodges, the
+  sculpture) in `solid()` and as vehicle statics; `offCityStreets(x, y)` keeps city-grid
+  logic (police routing, patrol joins) off the island.
+
 ### Water and bridges
 
 - Channels: Palm Sound (Palm Keys - Northbank, x -1144..40, ~1200 wide), Marlow Bay (Northbank -
@@ -517,6 +591,8 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 | coral-sound | CORAL SOUND BRIDGE | extradosed: four coral sail pylons, harps of stays | Oceanview - Coral Coast | 5700, 8000 | 6750, 8000 | 116 |
 | ridgeline | RIDGELINE VIADUCT | cable-stayed on two concrete H-pylons, weathering-steel girder | Ridgeline - Coral Coast | 7800, 5620 | 7433, 7262 | 116 |
 | sentinel | SENTINEL CAUSEWAY | olive plate-girder causeway, swing span on a pivot pier, floodlights | Coral Coast - Fort Sentinel | 7800, 8150 | 9440, 8150 | 126 |
+| sovereign | SOVEREIGN BRIDGE | harp cable-stayed: one white pylon leaning 60 degrees back over the Westgate landing (420 long), thirteen parallel stays | North Point (Crown Ave) - Monarch Isle (Crown Avenue) | 3150, -2944 | 5600, -2944 | 128 |
+| regency | REGENCY BRIDGE | three white bowstring arches (spans 300 / 360 / 300, rises 96 / 118 / 96) on pylons | Monarch Isle (Harbour Circle) - Ridgeline (Regency Road) | 6400, 600 | 6400, -1276 | 116 |
 
   bridges3d.js (after boats3d.js) builds each bridge in its own frame with the boat kit and
   merges it into a few vertex-coloured meshes (`kitMerge`); its lamps, navigation lights and
