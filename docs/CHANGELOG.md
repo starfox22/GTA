@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased — wet streets, the ULTRA band, phantom shadows
+
+Graphics (postfx3d.js, surfaces3d.js, lighting3d.js, weather3d.js, signage3d.js)
+- **Bug: a faint horizontal band across the road under the player on HIGH / ULTRA.** The
+  half-resolution AO pass read depth at texel corners; which texel came back flipped with
+  float rounding across the middle row of the screen. Depth is now read at texel centres.
+- **Wet streets**: soaked, darker, more saturated tarmac and paving; a glossy film; puddles in
+  dips and gutters with raindrop rings (HIGH / ULTRA); lamps, shop windows and neon streaked
+  down the wet road at night (MEDIUM and up); screen-space reflections of facades, signs,
+  lamps, cars and people (HIGH / ULTRA); patchy drying after the rain. LOW darkens only.
+- **Bug: elongated "shadows" on the streets with nothing casting them.** They were dark ellipses
+  painted into the road sheet; removed.
+- Settings · Graphics · **Player outline at night** (on by default).
+- Console: `wetness(value)`, `shadowProbe(x, y)`, `shadowCasters(limit, everywhere)`,
+  `postView('reflect')`, `settings({ playerOutline })`.
+
 ## Unreleased — ramming roadblocks, crash physics, breakable trees and furniture
 
 Roadblocks (roadblocks.js, physics.js)
