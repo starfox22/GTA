@@ -1,0 +1,220 @@
+    <div class="overlay" id="menu">
+      <!-- TITLE SCREEN. The cover art (set by the media loader) fills the screen
+           and drifts slowly; the logo and menu slide in over its dark side. -->
+      <div class="title-art" id="coverArt" aria-hidden="true"></div>
+      <div class="title-shade" aria-hidden="true"></div>
+      <div class="title-grain" aria-hidden="true"></div>
+      <div class="title-layout">
+        <div class="title-brand">
+          <div class="edition"><span class="tiny-cross">✚</span> SOUTH COAST STORIES · VOL. 01</div>
+          <h1 class="title-logo">DEAD END<span>CITY</span><i>1997</i></h1>
+          <p class="title-tagline">A city. A score. A way out.</p>
+        </div>
+        <nav class="title-menu" aria-label="Main menu">
+          <button class="menu-item" id="startBtn" data-caption="Take the wheel. Work the payphones. Keep one step ahead of the law.">
+            <span class="menu-label">ENTER THE CITY</span><span class="menu-meta" id="startMeta">NEW STORY</span>
+          </button>
+          <button class="menu-item" id="newGameStart" data-caption="Start the story again from the first payphone call.">
+            <span class="menu-label">NEW GAME</span><span class="menu-meta" id="newGameMeta"></span>
+          </button>
+          <button class="menu-item" id="chooseMissionStart" data-caption="Replay a finished job or pick up the current one.">
+            <span class="menu-label">CHOOSE MISSION</span><span class="menu-meta" id="chooseMeta"></span>
+          </button>
+          <button class="menu-item" id="menuSettings" data-caption="Graphics, audio, gameplay, key bindings and touch controls.">
+            <span class="menu-label">SETTINGS</span><span class="menu-meta"></span>
+          </button>
+          <button class="menu-item" id="helpBtn" data-caption="Every key and how the city works.">
+            <span class="menu-label">HOW TO PLAY</span><span class="menu-meta"></span>
+          </button>
+          <button class="menu-item" id="creditsMenuBtn" data-caption="The music, sound and code this city is built from.">
+            <span class="menu-label">CREDITS</span><span class="menu-meta"></span>
+          </button>
+          <p class="menu-caption" id="menuCaption" aria-live="polite">
+            Take the wheel. Work the payphones. Keep one step ahead of the law.
+          </p>
+        </nav>
+      </div>
+      <div class="menu-foot">
+        <span class="menu-hints"><kbd>↑</kbd><kbd>↓</kbd> SELECT <kbd>ENTER</kbd> CONFIRM</span
+        ><span class="demo-badge hidden" id="menuDemoBadge">DEMO</span
+        ><span class="menu-version" id="menuVersion">AN ORIGINAL TOP-DOWN CRIME GAME</span
+        ><button id="menuSound" aria-pressed="true">SOUND ON</button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="missionSelect">
+      <div class="dialog mission-dialog">
+        <div class="eyebrow" id="campaignProgress"></div>
+        <h2>CHOOSE MISSION.</h2>
+        <p id="missionSelectNote">Replay a completed job or continue your story. Future jobs stay secret.</p>
+        <section class="god-world hidden" id="godWorld" aria-labelledby="godWorldTitle">
+          <div class="god-world-head">
+            <span class="god-world-title" id="godWorldTitle">GOD MODE · TIME OF DAY</span>
+            <span class="god-world-clock"><b id="godClock">12:00</b><small id="godClockName">NOON</small></span>
+          </div>
+          <div class="settings-choice god-choice" id="godTimePresets" role="radiogroup" aria-label="Time of day"></div>
+          <label class="god-slider">
+            <input type="range" id="godTimeSlider" min="0" max="1435" step="5" aria-label="Time of day, in minutes after midnight" />
+            <span class="god-slider-hours" aria-hidden="true"><i>00</i><i>06</i><i>12</i><i>18</i><i>24</i></span>
+          </label>
+          <div class="god-world-sub">WEATHER</div>
+          <div class="settings-choice god-choice" id="godWeather" role="radiogroup" aria-label="Weather"></div>
+        </section>
+        <p class="demo-buy-note hidden" id="demoBuyNote" role="status" aria-live="polite"></p>
+        <div id="missionChoices"></div>
+        <button class="text-btn" id="closeMissions">BACK <span>ESC</span></button>
+      </div>
+    </div>
+    <!-- PUBLIC DEMO (campaign.js): the card after mission 2 in a demo build.
+         The cover art (copied from the title screen when it opens) under the
+         title's logo, the thanks, a recap and the way on. -->
+    <div class="overlay hidden" id="demoComplete" role="dialog" aria-modal="true" aria-labelledby="demoThanks">
+      <div class="demo-art" id="demoArt" aria-hidden="true"></div>
+      <div class="demo-shade" aria-hidden="true"></div>
+      <div class="title-grain" aria-hidden="true"></div>
+      <div class="demo-card">
+        <div class="edition"><span class="tiny-cross">✚</span> SOUTH COAST STORIES · VOL. 01 · DEMO COMPLETE</div>
+        <h1 class="title-logo demo-logo" aria-label="Dead End City">DEAD END<span>CITY</span><i>1997</i></h1>
+        <div class="demo-rule" aria-hidden="true"></div>
+        <h2 id="demoThanks">Thanks for playing the demo!</h2>
+        <p class="demo-buy">If you liked it, please buy the full game.</p>
+        <dl class="demo-stats">
+          <div><dt>TIME PLAYED</dt><dd id="demoTime">0m 00s</dd></div>
+          <div><dt>CASH EARNED</dt><dd id="demoCash">$0</dd></div>
+          <div><dt>WANTED PEAK</dt><dd class="demo-stars" id="demoWanted" role="img" aria-label="0 of 5 stars"></dd></div>
+        </dl>
+        <p class="demo-more" id="demoMore"></p>
+        <div class="demo-actions">
+          <button class="primary" id="demoContinue">CONTINUE FREE ROAM <span>ENTER</span></button
+          ><button class="secondary" id="demoMenu">MAIN MENU</button>
+        </div>
+      </div>
+    </div>
+    <div class="overlay hidden" id="callOverlay">
+      <div class="dialog call-dialog">
+        <div class="eyebrow">THE SOUTH COAST LEDGER · INCOMING CALL</div>
+        <div class="caller">
+          <span
+            id="callPortrait"
+            class="contact-portrait"
+            role="img"
+            aria-label="Caller portrait"
+          ></span>
+          <div>
+            <h3 id="callName"></h3>
+            <span id="callRole"></span>
+          </div>
+        </div>
+        <div class="call-job-heading">
+          <h2 id="callTitle"></h2>
+          <span id="callReward"></span>
+        </div>
+        <p id="callMessage"></p>
+        <button class="primary" id="callAccept">ACCEPT JOB · ENTER</button
+        ><button class="text-btn" id="callDecline">HANG UP · ESCAPE</button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="elevatorOverlay">
+      <div class="dialog elevator-dialog">
+        <div class="eyebrow">THE BLUE HOUR · SKY LOUNGE</div>
+        <h2 id="elevatorFloor">FLOOR 00</h2>
+        <p id="elevatorDirection"></p>
+        <div class="meter"><i id="elevatorProgress"></i></div>
+      </div>
+    </div>
+    <div
+      class="overlay hidden"
+      id="arsenalOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="arsenalTitle"
+      aria-describedby="arsenalDescription"
+    >
+      <div class="dialog arsenal-dialog">
+        <div class="arsenal-header">
+          <div>
+            <span class="eyebrow">SOUTH COAST · PERSONAL EQUIPMENT</span>
+            <h2 id="arsenalTitle">ARSENAL<span>.</span></h2>
+          </div>
+          <div class="arsenal-header-right">
+            <span id="arsenalEquippedCount">2 / 7 EQUIPPED</span
+            ><button id="closeArsenal" class="arsenal-close" aria-label="Close arsenal">
+              ESC <span aria-hidden="true">×</span>
+            </button>
+          </div>
+        </div>
+        <p id="arsenalDescription">
+          Everything you own is equipped. Select a weapon to put it in your hand.
+        </p>
+        <div class="arsenal-featured">
+          <div class="arsenal-featured-visual">
+            <span class="arsenal-featured-label">IN HAND</span
+            ><canvas id="arsenalActiveArt" width="1000" height="500" aria-hidden="true"></canvas>
+          </div>
+          <div class="arsenal-featured-info">
+            <span class="eyebrow" id="arsenalActiveCategory"></span>
+            <h3 id="arsenalActiveName"></h3>
+            <div class="arsenal-ammo-readout">
+              <strong id="arsenalActiveAmmo"></strong><span id="arsenalActiveReserve"></span>
+            </div>
+            <p id="arsenalActiveDescription"></p>
+          </div>
+        </div>
+        <div class="arsenal-collection-heading">
+          <h3>YOUR WEAPONS</h3>
+          <span>SELECT TO USE</span>
+        </div>
+        <div id="arsenalCollection" class="arsenal-collection"></div>
+        <div class="arsenal-footer">
+          <span><kbd>Q</kbd> Cycle weapons <kbd>K</kbd> Knife</span
+          ><span>Find new weapons at <b>GUN</b> on the map.</span>
+        </div>
+      </div>
+    </div>
+    <div class="overlay hidden" id="taxiOverlay">
+      <div class="dialog">
+        <div class="eyebrow">SOUTH COAST YELLOW CAB</div>
+        <h2>TAKE A CAB?</h2>
+        <p id="taxiText"></p>
+        <div id="taxiActions"></div>
+        <button class="text-btn" id="closeTaxi">WALK AWAY <span>ESC</span></button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="serviceOverlay">
+      <div class="dialog service-dialog">
+        <div class="eyebrow" id="serviceClock"></div>
+        <h2 id="serviceName"></h2>
+        <p id="serviceDescription"></p>
+        <div id="serviceActions"></div>
+        <div id="casinoTable" class="hidden">
+          <div class="roulette-top">
+            <canvas
+              id="rouletteWheel"
+              width="280"
+              height="280"
+              aria-label="Roulette wheel"
+            ></canvas>
+            <div class="roulette-bank">
+              <span>YOUR CITY CASH</span><strong id="casinoBalance"></strong
+              ><label for="casinoStake">BET AMOUNT</label
+              ><input
+                id="casinoStake"
+                type="number"
+                inputmode="numeric"
+                min="10"
+                max="5000"
+                step="10"
+                value="50"
+              /><small>Table limit $10–$5,000</small>
+            </div>
+          </div>
+          <div class="roulette-bets">
+            <button id="betred" class="red">RED</button><button id="betblack">BLACK</button
+            ><button id="betnumber">A NUMBER</button>
+          </div>
+          <div id="casinoNumbers" class="hidden"></div>
+          <p id="casinoResult" role="status" aria-live="polite"></p>
+          <button id="casinoSpin" class="primary">SPIN THE WHEEL <span>↗</span></button>
+        </div>
+        <button class="text-btn" id="closeService">LEAVE <span>ESC / E</span></button>
+      </div>
+    </div>

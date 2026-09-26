@@ -1,0 +1,201 @@
+#casinoTable {
+  border-top: 1px solid #b6a57966;
+  padding-top: 12px;
+}
+.roulette-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.roulette-top canvas {
+  width: 54%;
+  height: auto;
+  max-width: 280px;
+}
+.roulette-bank {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.roulette-bank span,
+.roulette-bank label {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #d3c29b;
+}
+.roulette-bank strong {
+  font-size: 27px;
+  color: #f1d28c;
+}
+.roulette-bank input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #b39f73;
+  background: #17292e;
+  color: #fff2cc;
+  font: 18px monospace;
+  box-sizing: border-box;
+}
+.roulette-bank small {
+  font-size: 12px;
+  color: #a8bdb6;
+}
+.roulette-bets {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+.roulette-bets button,
+.roulette-number {
+  min-height: 44px;
+  border: 1px solid #b4a07a77;
+  background: #14252e;
+  color: #f8ecd1;
+  font-weight: bold;
+  cursor: pointer;
+}
+.roulette-bets button {
+  flex: 1;
+  padding: 12px;
+}
+.roulette-bets .red,
+.roulette-number.red {
+  background: #852d40;
+}
+.roulette-number.green {
+  background: #246c59;
+}
+.roulette-bets .selected,
+.roulette-number.selected {
+  outline: 2px solid #f5d18b;
+  outline-offset: -3px;
+  background-image: linear-gradient(#ffffff18, #ffffff08);
+}
+#casinoNumbers {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+}
+#casinoResult {
+  min-height: 42px;
+  color: #efce91;
+  font-size: 15px;
+  line-height: 1.45;
+}
+#casinoSpin {
+  width: 100%;
+  margin-bottom: 10px;
+}
+#casinoTable button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+@media (max-width: 600px) {
+  .roulette-top {
+    gap: 8px;
+  }
+  .roulette-bank strong {
+    font-size: 21px;
+  }
+  .roulette-bank span,
+  .roulette-bank label {
+    font-size: 10px;
+  }
+  .service-dialog h2 {
+    font-size: 25px;
+  }
+}
+#chaseStatus {
+  white-space: pre-line;
+  line-height: 1.5;
+  text-shadow:
+    0 2px 5px #000,
+    0 0 8px #000;
+}
+.touch-mode #chaseStatus {
+  top: 222px;
+  max-width: 260px;
+  padding: 7px 10px;
+  background: #101d28e8;
+  border-left: 2px solid #e7c581;
+}
+.touch-mode #chaseStatus:empty {
+  display: none;
+}
+@media (max-width: 600px) {
+  .touch-mode #chaseStatus {
+    top: 258px;
+    right: 14px;
+    max-width: 205px;
+    font-size: 12px;
+  }
+}
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-mode #chaseStatus {
+    top: 193px;
+    right: 18px;
+    max-width: 225px;
+  }
+}
+.transit-panel {
+  width: min(640px, calc(100vw - 28px));
+  max-height: 88dvh;
+  overflow: auto;
+  background: #142a35;
+  border: 1px solid #749e9b;
+  padding: 28px;
+  color: #e8edda;
+  border-radius: 12px;
+  box-shadow: 0 20px 80px #0009;
+}
+.transit-panel h2 {
+  font: 600 27px Georgia;
+  margin: 8px 0 12px;
+}
+.transit-panel p {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.transit-kicker {
+  color: #85cbb9;
+  font-size: 12px !important;
+  letter-spacing: 0.12em;
+}
+#transitOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin: 20px 0;
+}
+#transitOptions button,
+#closeTransit {
+  min-height: 48px;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #547f83;
+  border-radius: 6px;
+  background: #234451;
+  color: #eef2de;
+  cursor: pointer;
+}
+#transitOptions button:hover {
+  background: #356166;
+}
+#closeTransit {
+  width: 100%;
+}
+@media (max-width: 480px) {
+  .transit-panel {
+    padding: 20px;
+  }
+  #transitOptions {
+    grid-template-columns: 1fr;
+  }
+}
+/* The readable media loader sets this property from embedded image bytes. */
+.contact-portrait {
+  background-image: var(--contact-portrait-image);
+}

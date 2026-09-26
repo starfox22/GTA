@@ -1,0 +1,561 @@
+      :root {
+  --ink: #111216;
+  --paper: #f2f1e8;
+  --acid: #d7f970;
+  --muted: #92998c;
+  --pink: #e897b0;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: #101215;
+  color: var(--paper);
+  font-family: Arial, Helvetica, sans-serif;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+button:focus-visible {
+  outline: 3px solid var(--acid);
+  outline-offset: 4px;
+}
+button:hover {
+  filter: brightness(1.12);
+}
+#game {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+  image-rendering: auto;
+}
+.eyebrow {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.7px;
+  color: #abb2a4;
+  line-height: 1.6;
+}
+.meter {
+  height: 4px;
+  background: #ffffff20;
+  overflow: hidden;
+  margin-top: 7px;
+}
+.meter i {
+  display: block;
+  background: var(--acid);
+  height: 100%;
+  width: 100%;
+  transition: width 0.15s;
+}
+kbd {
+  display: inline-block;
+  border: 1px solid #c6d1b949;
+  border-bottom-width: 2px;
+  background: #ffffff0b;
+  padding: 2px 5px;
+  font-family: Consolas, monospace;
+  font-size: 10px;
+  color: #e4e9dd;
+  line-height: 1.2;
+  border-radius: 2px;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+/* Headline cards (district, mission title, payday) are a beat, not a poster:
+   mid-size type high in the frame so the street stays readable under them. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: #070b0bd6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  z-index: 20;
+}
+.hidden {
+  display: none !important;
+}
+.primary {
+  background: var(--acid);
+  border: 0;
+  color: #152014;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  min-height: 48px;
+}
+.primary > span {
+  font-size: 21px;
+  line-height: 12px;
+}
+.text-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  background: none;
+  border: 0;
+  color: #e1e6d9;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-size: 10px;
+  width: 100%;
+}
+.text-btn > span {
+  color: #7f8c76;
+  font-size: 8px;
+  font-weight: normal;
+}
+.dialog {
+  background: #191f1b;
+  border: 1px solid #67765366;
+  padding: 36px;
+  width: min(440px, 92vw);
+  box-shadow: 0 30px 100px #0006;
+}
+.dialog h2,
+.map-heading h2 {
+  font-size: 32px;
+  letter-spacing: -1.7px;
+  font-style: italic;
+  margin: 12px 0 20px;
+  font-weight: 900;
+}
+.dialog > p {
+  font-size: 13px;
+  color: #a4b198;
+  line-height: 1.6;
+  margin-bottom: 23px;
+}
+.secondary {
+  display: block;
+  background: #242d24;
+  border: 1px solid #768c5f45;
+  color: #dde8d4;
+  padding: 13px 15px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  width: 100%;
+  margin-top: 10px;
+  text-align: left;
+}
+.danger {
+  color: #eab5af;
+}
+.dialog .fine {
+  font-size: 10px;
+  margin-bottom: 0;
+}
+.help-dialog {
+  width: min(770px, 94vw);
+  max-height: 95vh;
+  overflow: auto;
+}
+.control-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 35px;
+}
+.control-grid > div {
+  border-bottom: 1px solid #ffffff15;
+  padding-bottom: 5px;
+}
+.control-grid kbd {
+  font-size: 12px;
+}
+.control-grid p {
+  font-size: 12px;
+  color: #a5b097;
+  margin: 8px 0;
+}
+.help-dialog .help-tip {
+  font-size: 12px;
+  line-height: 1.6;
+  border-left: 2px solid var(--acid);
+  padding-left: 14px;
+  margin: 20px 0;
+}
+.map-panel {
+  width: min(830px, 94vw);
+  max-height: 96vh;
+  padding: 23px;
+  background: #141a16;
+  border: 1px solid #5a6952;
+  display: flex;
+  flex-direction: column;
+}
+.map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.map-heading h2 {
+  font-size: 27px;
+  margin: 5px 0 14px;
+}
+.map-heading .secondary {
+  width: auto;
+  margin: 0;
+}
+#bigmap {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  object-fit: contain;
+  max-height: 68vh;
+  border: 1px solid #394232;
+}
+.legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  font-size: 9px;
+  color: #afbea1;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.legend i {
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  margin-right: 5px;
+}
+.yellow {
+  background: #ddf375;
+}
+.green {
+  background: #76e9ba;
+}
+.purple {
+  background: #cf92e9;
+}
+.bikeshare-key {
+  background: #12948f;
+  box-shadow: 0 0 0 1px #eef6f2;
+}
+.blue {
+  background: #77cbe5;
+}
+@media (max-height: 700px) {
+  .text-btn {
+    padding: 13px 0;
+  }
+  .dialog {
+    padding: 24px;
+  }
+}
+@media (max-width: 590px) {
+  .control-grid {
+    gap: 8px 15px;
+  }
+  .help-dialog h2 {
+    font-size: 24px;
+  }
+  .help-dialog .help-tip {
+    font-size: 10px;
+  }
+  .control-grid p {
+    font-size: 10px;
+  }
+}
+/* Keep the game-native title screen usable on shorter displays. */
+.primary {
+  flex-shrink: 0;
+}
+/* Dusk edition: restrained warm instruments over the cinematic world. */
+:root {
+  --acid: #e6d4a6;
+  --paper: #f3eee4;
+  --muted: #a8abb0;
+}
+#scene {
+  position: absolute;
+  inset: 0;
+  /* Always the viewport, whatever pixel size the renderer last wrote into the
+     inline style: a stale larger size would widen a phone's layout viewport and
+     push the right-hand HUD off screen. */
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+#game {
+  background: transparent;
+}
+/* Only enough to seat the HUD text: the renderer's graded image carries its own
+   vignette, and a heavy band here stacked on it read as dark bars on the frame. */
+.overlay {
+  background: #070c16d6;
+}
+.dialog {
+  background: #172027;
+}
+.credits-copy p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #b9c4c7;
+}
+.credits-copy a {
+  color: #e3d0a0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.credits-copy {
+  margin-bottom: 22px;
+}
+.dialog {
+  max-height: 94vh;
+  overflow-y: auto;
+}
+.help-dialog {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+#chaseStatus {
+  position: fixed;
+  z-index: 9;
+  right: 34px;
+  top: 113px;
+  font: 700 12px monospace;
+  color: #ec978b;
+  max-width: 240px;
+  text-align: right;
+}
+#chaseStatus.searching {
+  color: #efce82;
+}
+.searching {
+  animation: searchflash 1.2s infinite alternate;
+}
+@keyframes searchflash {
+  to {
+    opacity: 0.55;
+  }
+}
+.service-dialog {
+  max-width: 580px;
+  max-height: 92vh;
+  overflow: auto;
+}
+.service-dialog h2 {
+  font-size: 30px;
+}
+.service-option {
+  text-align: left;
+  width: 100%;
+  font: 13px monospace;
+  margin-bottom: 7px;
+  padding: 14px;
+}
+.legend {
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+@media (max-width: 850px) {
+  #chaseStatus {
+    top: 166px;
+    right: 14px;
+    max-width: 150px;
+    font-size: 10px;
+  }
+}
+.call-dialog {
+  width: min(650px, 92vw);
+  padding: 34px 40px;
+}
+.caller {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin: 24px 0 15px;
+}
+#callInitials {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid #a89674;
+  background: #31404a;
+  color: #e5cf9f;
+  font: 700 27px Georgia;
+}
+.caller h3 {
+  font-size: 23px;
+  margin: 0 0 7px;
+}
+.caller span {
+  color: #a8c1c8;
+  font-size: 14px;
+}
+#callBackground {
+  font-size: 13px;
+  line-height: 1.5;
+  border-bottom: 1px solid #a4b9bd33;
+  padding-bottom: 20px;
+  color: #aebcbc;
+}
+#callTitle {
+  font-size: 32px;
+  margin: 20px 0 14px;
+}
+#callMessage {
+  white-space: pre-line;
+  font: 16px/1.65 Georgia;
+  color: #e1e6df;
+  margin-bottom: 26px;
+}
+.elevator-dialog {
+  text-align: center;
+}
+.elevator-dialog h2 {
+  font: 300 47px monospace;
+  letter-spacing: 4px;
+}
+.elevator-dialog .meter {
+  height: 3px;
+}
+@media (max-width: 850px) {
+  .call-dialog {
+    padding: 24px;
+  }
+  #callMessage {
+    font-size: 15px;
+  }
+}
+/* Compact contact cards keep the face and task together. */
+.contact-portrait {
+  display: block;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  background-size: 200% 200%;
+  background-repeat: no-repeat;
+  border: 1px solid #b59c66;
+  border-radius: 5px;
+  background-color: #293239;
+  box-shadow: 0 2px 8px #0005;
+}
+.call-dialog {
+  width: min(530px, 92vw);
+  padding: 28px 32px;
+}
+.caller {
+  margin: 18px 0;
+}
+.caller .contact-portrait {
+  width: 84px;
+  height: 84px;
+}
+.caller h3 {
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+.call-job-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+#callTitle {
+  font-size: 25px;
+  margin: 10px 0 14px;
+}
+#callReward {
+  font: 700 16px monospace;
+  color: #e7d6a2;
+  white-space: nowrap;
+}
+#callMessage {
+  font: 16px/1.55 Arial;
+  margin: 4px 0 24px;
+}
+.call-dialog .text-btn {
+  padding-bottom: 0;
+}
+/* Mission card folding: the full card shows for a few seconds after a new job
+   or objective, then folds into a one-line objective strip. O or a tap on the
+   strip opens it again (game.js, updateMissionCard). */
+#missionSelect {
+  z-index: 45;
+}
+.mission-dialog {
+  width: min(660px, 94vw);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+#missionChoices {
+  display: grid;
+  gap: 7px;
+  margin: 20px 0;
+}
+.mission-choice {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #16232c;
+  border: 1px solid #69746a;
+  text-align: left;
+  color: #eee8d3;
+  cursor: pointer;
+}
+.mission-choice:not(:disabled):hover,
+.mission-choice:focus-visible {
+  border-color: #e6cb80;
+  background: #273630;
+  outline: 2px solid #e6cb80;
+}
+.mission-choice b {
+  display: block;
+  font-size: 16px;
+}
+.mission-choice small {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  margin-top: 4px;
+  color: #bdd095;
+}
+.mission-number {
+  font-size: 24px;
+  font-weight: 800;
+  color: #e4c990;
+}
+.mission-lock {
+  margin-left: auto;
+}
+.mission-choice.locked {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+.mission-choice.locked small {
+  color: #a8afb0;
+}
+.mission-choice.locked .mission-number {
+  color: #a8afb0;
+}
+.police-map-key {
+  background: #6ccfff;
+  border: 1px solid #e6f7ff;
+  box-shadow: inset -4px 0 #ff736d;
+}

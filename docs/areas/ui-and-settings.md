@@ -2,7 +2,7 @@
 
 controls.js (bindings), game-input.js (keyboard, mouse, cheats), mobile.js (touch),
 world-view.js (zoom), settings.js, hud.js, game-ui.js, game-menus.js, game-minimap.js,
-navigation.js (big map, GPS), cycles.js (bike share), src/shell.html (DOM and CSS).
+navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* (DOM and CSS).
 
 ## Actions, not keys (controls.js)
 
@@ -28,7 +28,25 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html (DOM and CS
 - Storage keys: see core-and-contracts.md. `DeadEndCity.settings({...})` sets rows from the
   console (e.g. `{ units: 'mph', footSpeed: true }`).
 
-## HUD (hud.js, shell.html INTERFACE 30 section)
+## Page markup and CSS (src/shell.html, src/ui/)
+
+- `src/shell.html` is a ~70-line skeleton: `<head>`, a `<style>` of
+  `/* @include src/ui/x.css */` lines, a `<body>` of `<!-- @include src/ui/x.html -->` lines,
+  then the build placeholders (`<!-- @include-game-source -->` etc.). build.py splices each
+  fragment in verbatim (nested includes allowed, missing file = build error), so order in
+  the skeleton is cascade order: a later file wins ties.
+- CSS: base (tokens, dialogs, calls), touch-controls, casino-transit, police-arsenal,
+  wanted-effects, hud-top, hud-bottom, radio, title, dialogs, god-panel, sportsbook,
+  sportsbook-bets, demo, settings, touch-hud, title-radio, flight-hud, reduced-motion.
+  Markup: hud (every HUD element, radio, flight HUD, touch buttons), menus (title menu,
+  mission select, demo card, call/elevator/arsenal/taxi/service overlays), panels
+  (sportsbook, pause, settings, help, map), credits, transit. build-header.html is the
+  comment at the top of the built page.
+- Find an id or class with `grep -rn 'id="x"' src/ui/`. Add a panel: markup in a new or
+  matching `src/ui/*.html`, its CSS in a `src/ui/*.css` (new file = new include line in
+  `src/shell.html`, before `reduced-motion.css`), then `python3 tools/filemap.py`.
+
+## HUD (hud.js, src/ui/hud.html, src/ui/hud-top.css + hud-bottom.css)
 
 - Layout: location top left; cash, stars and clock top right; waypoint pill top centre;
   minimap with health and armour, mission card and equipment column along the bottom (moved
@@ -54,7 +72,7 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html (DOM and CS
   distances stay metric. Console `speedBox()`.
 - Flight HUD (`#flightHud`, `updateFlightHud` from `flightData()`): instruments hug the
   screen edges; warnings (STALL, PULL UP, GEAR) always show even with the instruments off.
-- Reduced motion cuts slides and pop-ins (the shell's reduced-motion block).
+- Reduced motion cuts slides and pop-ins (src/ui/reduced-motion.css).
 - Console `promptState()` reports the prompt.
 
 ## Touch (mobile.js)

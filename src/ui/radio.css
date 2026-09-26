@@ -1,0 +1,544 @@
+/* --- CAR RADIO: a station chip that opens on a change or on hover --------- */
+#carRadio {
+  position: fixed;
+  z-index: 9;
+  top: 212px;
+  right: var(--hud-edge);
+  width: 190px;
+  padding: 7px 12px;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-line);
+  background: var(--ui-panel);
+  box-shadow: var(--ui-shadow);
+  font-family: var(--ui-font);
+  pointer-events: auto;
+  transition:
+    width 0.38s var(--ui-ease),
+    padding 0.38s var(--ui-ease),
+    background 0.25s;
+  animation: cardOpen 0.35s var(--ui-ease);
+}
+#carRadio.open,
+#carRadio:hover,
+#carRadio:focus-within {
+  width: 290px;
+  padding: 11px 14px;
+  background: var(--ui-panel-solid);
+}
+.radio-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+#radioStation {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: font-size 0.38s var(--ui-ease);
+}
+#carRadio.open #radioStation,
+#carRadio:hover #radioStation {
+  font-size: 17px;
+}
+/* Three bars that bounce while music plays. */
+.radio-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+  flex-shrink: 0;
+}
+.radio-eq i {
+  width: 3px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--acid);
+  transform-origin: bottom;
+  animation: eq 0.9s ease-in-out infinite alternate;
+}
+.radio-eq i:nth-child(2) {
+  animation-duration: 0.6s;
+}
+.radio-eq i:nth-child(3) {
+  animation-duration: 1.2s;
+}
+@keyframes eq {
+  from {
+    transform: scaleY(0.25);
+  }
+}
+#carRadio.radio-off .radio-eq i {
+  animation: none;
+  transform: scaleY(0.2);
+  background: var(--ui-dim);
+}
+#carRadio.radio-off #radioStation {
+  color: var(--ui-dim);
+}
+.car-radio-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+#radioGenre {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--ui-dim);
+}
+#radioTrack {
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #cdd5c9;
+}
+/* Six presets and NEXT: two rows of four, NEXT takes the last two slots. */
+.radio-presets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 9px;
+}
+#radioNext {
+  grid-column: span 2;
+}
+#carRadio button {
+  padding: 5px 8px;
+  border: 1px solid var(--ui-line-strong);
+  border-radius: 6px;
+  background: #ffffff0d;
+  color: #e6ebdf;
+  font:
+    800 9px/1.2 var(--ui-font);
+  letter-spacing: 0.1em;
+}
+#carRadio .radio-presets button {
+  min-width: 0;
+  overflow: hidden;
+  padding-left: 3px;
+  padding-right: 3px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#carRadio button.selected {
+  border-color: var(--acid);
+  background: var(--acid);
+  color: #111;
+}
+/* Radio volume (car-radio.js RADIO VOLUME): a 90s head-unit rotary knob in an
+   arc of amber LED segments (one per 5 steps, 270 degrees), an LCD readout with
+   ghost segments and a MUTE annunciator, and the speaker button. Everything is
+   CSS gradients and inline SVG, so it stays crisp at any DPI. The script sets
+   --angle on the knob; the rubber grip and the pointer turn with it while the
+   light (the rim sheen, the machined cap's anisotropic shine and the specular
+   spot) stays put, as on a real knob. */
+.radio-volume {
+  --lcd: #ffb23e;
+  --lcd-hot: #ff7438;
+  --lcd-glow: #ff9a1f;
+  --lcd-ghost: #ffb23e17;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 9px 0 0;
+  padding: 4px 6px 4px 3px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.radio-volume:hover,
+.radio-volume:focus-within {
+  background: #ffffff0b;
+  border-color: var(--ui-line);
+}
+.radio-volume.dragging {
+  background: #ffffff10;
+  border-color: color-mix(in srgb, var(--lcd) 35%, transparent);
+}
+.radio-knob {
+  --size: 72px;
+  --angle: 135deg;
+  position: relative;
+  flex: 0 0 var(--size);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  cursor: grab;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* A hit area a little larger than the drawing. */
+.radio-knob::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+}
+.radio-volume.dragging .radio-knob {
+  cursor: grabbing;
+}
+.knob-leds {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 1.4px color-mix(in srgb, var(--lcd-glow) 75%, transparent));
+  transition: filter 0.2s;
+}
+.knob-leds .led {
+  fill: #2b1f0f;
+  stroke: #000a;
+  stroke-width: 0.7;
+}
+.knob-leds .led.on {
+  fill: var(--lcd);
+}
+.knob-leds .led.hot.on {
+  fill: var(--lcd-hot);
+}
+.knob-leds .end {
+  fill: #ffffff38;
+}
+.knob-body {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  box-shadow:
+    0 4px 6px #000c,
+    0 1px 1px #000,
+    0 0 0 1px #000d;
+  transition: box-shadow 0.2s;
+}
+.knob-body > i {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+/* Black rubber with 36 soft ribs: it turns. */
+.knob-grip {
+  inset: 0;
+  background: repeating-conic-gradient(#0b0c0e 0deg, #3a3e44 3.4deg, #16181b 6deg, #0b0c0e 10deg);
+  transform: rotate(var(--angle));
+  transition: transform 0.12s var(--ui-ease);
+}
+/* Light from the top left across the ribs: it stays put. */
+.knob-rim-light {
+  inset: 0;
+  background: linear-gradient(155deg, #ffffff52, #ffffff08 38%, #0000 55%, #000000b0);
+  box-shadow:
+    inset 0 1.5px 1px #ffffff30,
+    inset 0 -2px 3px #000c,
+    inset 0 0 0 1px #000a;
+}
+/* The machined aluminium cap: concentric turning marks over an anisotropic
+   sheen (a conic gradient), bevelled into the rubber. */
+.knob-cap {
+  inset: 19%;
+  background:
+    repeating-radial-gradient(circle, #0000 0 0.55px, #00000016 0.7px 1.15px),
+    conic-gradient(
+      from 12deg,
+      #f1f3f5,
+      #979da4 42deg,
+      #e3e6ea 88deg,
+      #7b8188 142deg,
+      #eef0f3 192deg,
+      #8a9097 246deg,
+      #f7f8fa 302deg,
+      #f1f3f5
+    );
+  box-shadow:
+    0 0 0 1.5px #0a0b0d,
+    0 1.5px 2.5px 1.5px #000b,
+    inset 0 1px 0 #ffffffc0,
+    inset 0 -1px 1.5px #0008;
+}
+/* The pointer: an engraved line in the cap and a lit dot on the rubber. */
+.knob-pointer {
+  inset: 0;
+  transform: rotate(var(--angle));
+  transition: transform 0.12s var(--ui-ease);
+}
+.knob-pointer::before,
+.knob-pointer::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+}
+.knob-pointer::before {
+  top: 21%;
+  width: 2px;
+  height: 21%;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: #1a1c20;
+  box-shadow:
+    0 0 0 0.5px #0005,
+    0.6px 0.6px 0 #ffffff70;
+}
+.knob-pointer::after {
+  top: 4.5%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--lcd);
+  box-shadow: 0 0 4px var(--lcd-glow);
+}
+.knob-gloss {
+  inset: 19%;
+  background: radial-gradient(ellipse 58% 42% at 36% 26%, #ffffffd0, #ffffff00 72%);
+  opacity: 0.6;
+}
+.radio-knob:hover .knob-body,
+.radio-knob:focus-visible .knob-body {
+  box-shadow:
+    0 4px 6px #000c,
+    0 1px 1px #000,
+    0 0 0 1px #000d,
+    0 0 12px 1px color-mix(in srgb, var(--lcd-glow) 30%, transparent);
+}
+.radio-knob:hover .knob-leds {
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--lcd-glow) 90%, transparent));
+}
+.radio-knob:focus-visible .knob-body {
+  outline: 2px solid var(--acid);
+  outline-offset: 4px;
+}
+/* While dragging: a soft amber glow, and the knob follows the pointer at once. */
+.radio-volume.dragging .knob-body {
+  box-shadow:
+    0 4px 6px #000c,
+    0 1px 1px #000,
+    0 0 0 1px #000d,
+    0 0 0 3px color-mix(in srgb, var(--lcd) 22%, transparent),
+    0 0 13px 2px color-mix(in srgb, var(--lcd-glow) 45%, transparent);
+}
+.radio-volume.dragging .knob-leds {
+  filter: drop-shadow(0 0 3px var(--lcd-glow));
+}
+.radio-volume.dragging .knob-grip,
+.radio-volume.dragging .knob-pointer {
+  transition: none;
+}
+.radio-volume.muted .knob-pointer::after {
+  background: #5b3f1c;
+  box-shadow: none;
+}
+/* The LCD: amber seven-segment digits over their unlit ghosts. */
+.radio-lcd {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(0deg, #0000 0 2px, #0000001f 2px 3px),
+    radial-gradient(130% 100% at 50% 0%, #2b1c07, #130c03 72%);
+  box-shadow:
+    inset 0 1px 4px #000d,
+    inset 0 0 0 1px #000,
+    0 1px 0 #ffffff17;
+}
+.lcd-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font:
+    800 8px/1 var(--ui-font);
+  letter-spacing: 0.16em;
+}
+.lcd-vol {
+  color: var(--lcd);
+  text-shadow: 0 0 4px color-mix(in srgb, var(--lcd-glow) 80%, transparent);
+}
+.lcd-mute {
+  color: var(--lcd-ghost);
+}
+.radio-volume.muted .lcd-mute {
+  color: var(--lcd-hot);
+  text-shadow: 0 0 5px var(--lcd-hot);
+  animation: lcdBlink 1.2s steps(1) infinite;
+}
+@keyframes lcdBlink {
+  50% {
+    opacity: 0.25;
+  }
+}
+.lcd-digits {
+  height: 27px;
+  width: auto;
+  margin-left: auto;
+  overflow: visible;
+  filter: drop-shadow(0 0 2.5px color-mix(in srgb, var(--lcd-glow) 70%, transparent));
+}
+.lcd-digits .seg {
+  fill: var(--lcd-ghost);
+}
+.lcd-digits .seg.on {
+  fill: var(--lcd);
+}
+.radio-volume.muted .lcd-digits .seg.on {
+  fill: var(--lcd-hot);
+}
+#carRadio #radioMute {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ui-text);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+#carRadio #radioMute:hover {
+  background: #ffffff16;
+  border-color: var(--ui-line-strong);
+}
+#carRadio #radioMute:focus-visible {
+  outline: 2px solid var(--acid);
+  outline-offset: 2px;
+}
+#radioMute svg,
+.radio-chip-muted {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#radioMute .spk,
+.radio-chip-muted .spk {
+  fill: currentColor;
+  stroke-width: 1;
+}
+#radioMute .cross {
+  display: none;
+  stroke: var(--ui-danger);
+}
+.radio-volume.muted #radioMute {
+  color: var(--ui-dim);
+}
+.radio-volume.muted #radioMute .wave,
+.radio-volume.quiet #radioMute .w2 {
+  display: none;
+}
+.radio-volume.muted #radioMute .cross {
+  display: inline;
+}
+/* Muted: the chip's bars lie flat and a crossed speaker sits at its end, so
+   the resting chip says so too. */
+.radio-chip-muted {
+  display: none;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  color: var(--ui-danger);
+}
+#carRadio.radio-muted .radio-chip-muted {
+  display: block;
+}
+#carRadio.radio-muted .radio-eq i {
+  animation: none;
+  transform: scaleY(0.2);
+}
+body:not(.touch-mode).police-search-active #carRadio {
+  top: 290px;
+}
+/* The police chip (police-feedback.js) keeps its look; it is centred with
+   margins so its untransformed box never widens a phone's viewport. */
+#policeNotice {
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  transform: translateY(-6px);
+}
+#policeNotice.show {
+  transform: none;
+}
+/* --- Narrower windows ---------------------------------------------------- */
+@media (max-width: 980px) {
+  :root {
+    --hud-edge: 16px;
+  }
+  .minimap-box {
+    width: 200px;
+  }
+  .minimap-frame {
+    height: 134px;
+  }
+  #equipment {
+    width: 200px;
+  }
+  #weaponButton.open,
+  #weaponButton:hover {
+    width: 200px;
+  }
+  #navigation {
+    top: 64px;
+  }
+  #terrainStatus {
+    top: 112px;
+  }
+  #stealthStatus {
+    top: 142px;
+  }
+  #pager p {
+    font-size: 11px;
+  }
+}
+@media (max-width: 700px) {
+  .quickkeys {
+    display: none;
+  }
+  .minimap-box {
+    width: 160px;
+  }
+  .minimap-frame {
+    height: 108px;
+  }
+  #missionPortrait {
+    width: 42px;
+    height: 42px;
+  }
+  #toast {
+    max-width: calc(100vw - 32px);
+  }
+  #storyLine {
+    width: calc(100vw - 32px);
+  }
+}
+@media (max-height: 620px) {
+  .minimap-frame {
+    height: 110px;
+  }
+  #pager:not(.compact) .mission-copy p {
+    display: none;
+  }
+  #storyLine {
+    bottom: 150px;
+  }
+}

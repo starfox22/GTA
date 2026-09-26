@@ -1,0 +1,312 @@
+/* Compact dashboard radio: presets stay within reach without covering the road ahead. */
+#chaseStatus.dispatching {
+  font: 700 13px/1.25 monospace;
+  color: #f8d384;
+  background: #251b16ed;
+  border: 1px solid #cfaa6470;
+  padding: 7px 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+@media (max-width: 850px) {
+  #chaseStatus.dispatching {
+    top: 164px;
+    max-width: 245px;
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+}
+/* Touch play reserves the lower corners for thumbs and keeps the centre of the road visible. */
+#game,
+#touchControls,
+#bigmap {
+  touch-action: none;
+}
+#touchControls {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#touchControls button,
+.touch-stick {
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#touchControls button {
+  min-width: 62px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid #bad5cf88;
+  border-radius: 12px;
+  background: #132532d9;
+  color: #f1e8ce;
+  font: 700 12px Arial;
+  box-shadow: 0 3px 12px #0005;
+}
+#touchControls button:active {
+  background: #617c72;
+}
+.touch-stick {
+  position: absolute;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: #16334387;
+  border: 2px solid #b4d5d45e;
+}
+.touch-stick span {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #d5e5d8;
+  font: 700 11px Arial;
+  pointer-events: none;
+}
+.touch-stick i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #9bbdae9c;
+  border: 2px solid #d2e8d3;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+#moveStick {
+  left: max(20px, env(safe-area-inset-left));
+}
+#aimStick {
+  right: max(20px, env(safe-area-inset-right));
+}
+.touch-actions {
+  position: absolute;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: 166px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+  width: 230px;
+}
+.touch-utility {
+  position: absolute;
+  left: 174px;
+  right: 174px;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+}
+#touchControls .touch-go {
+  background: #3c685adb;
+}
+#touchControls .touch-special {
+  border-color: #e0b786;
+  color: #ffe1a5;
+}
+.map-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  color: #b9d3d3;
+  font: 12px Arial;
+}
+.map-tools button {
+  padding: 10px 14px;
+  min-height: 42px;
+  border: 1px solid #698788;
+  background: #20343d;
+  color: #d2eee3;
+  cursor: pointer;
+}
+.map-tools span {
+  margin-left: auto;
+}
+#bigmap {
+  cursor: crosshair;
+}
+.touch-mode #chaseStatus {
+  top: 158px;
+  right: 18px;
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .touch-mode #chaseStatus {
+    top: 206px;
+    right: 16px;
+  }
+  .touch-stick {
+    width: 112px;
+    height: 112px;
+    bottom: 26px;
+  }
+  #moveStick {
+    left: 14px;
+  }
+  #aimStick {
+    right: 14px;
+  }
+  .touch-stick i {
+    width: 47px;
+    height: 47px;
+  }
+  .touch-utility {
+    left: 12px;
+    right: 12px;
+    bottom: 145px;
+    gap: 5px;
+    justify-content: center;
+  }
+  .touch-actions {
+    right: 132px;
+    left: 132px;
+    bottom: 25px;
+    width: auto;
+    justify-content: center;
+    gap: 6px;
+  }
+  #touchControls button {
+    min-width: 54px;
+    min-height: 44px;
+    padding: 8px;
+    font-size: 10px;
+  }
+  .touch-actions #touchUp,
+  .touch-actions #touchDown {
+    font-size: 9px;
+  }
+  .touch-mode #touchJump {
+    position: fixed;
+    bottom: 290px;
+    right: 16px;
+  }
+  .touch-mode #touchDivert,
+  .touch-mode #touchSkip {
+    position: fixed;
+    bottom: 290px;
+    left: 16px;
+  }
+  .map-panel {
+    padding: 12px;
+    max-height: 96dvh;
+  }
+  .map-heading h2 {
+    font-size: 18px;
+  }
+  .map-heading .eyebrow {
+    display: none;
+  }
+  .map-heading .secondary {
+    padding: 10px 8px;
+    font-size: 10px;
+    min-height: 42px;
+  }
+  .map-tools {
+    flex-wrap: wrap;
+  }
+  .map-tools span {
+    flex-basis: 100%;
+    font-size: 12px;
+    margin: 0;
+  }
+  #bigmap {
+    max-height: 60dvh;
+  }
+  .legend {
+    max-height: 70px;
+    overflow: auto;
+    font-size: 10px;
+  }
+  .overlay {
+    padding: 8px;
+  }
+  .dialog {
+    max-height: 94dvh;
+  }
+  .service-option {
+    font-size: 14px;
+    min-height: 48px;
+  }
+}
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-actions {
+    bottom: 160px;
+    width: 245px;
+  }
+  .touch-stick {
+    width: 116px;
+    height: 116px;
+  }
+  .touch-utility {
+    bottom: 20px;
+    left: 148px;
+    right: 148px;
+  }
+  .touch-mode #chaseStatus {
+    top: 195px;
+  }
+  .map-heading h2 {
+    font-size: 18px;
+  }
+  .map-panel {
+    padding: 10px;
+    max-height: 97dvh;
+  }
+  #bigmap {
+    max-height: 65dvh;
+  }
+  .map-tools {
+    padding: 2px 0;
+  }
+  .legend {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .touch-mode.touch-driving .touch-actions {
+    left: auto;
+    right: 14px;
+    bottom: 24px;
+    width: 154px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .touch-mode.touch-driving #touchJump,
+  .touch-mode.touch-driving #touchDivert {
+    position: static;
+  }
+  .touch-mode.touch-driving .touch-utility {
+    bottom: 238px;
+  }
+}
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-mode.touch-driving .touch-actions {
+    bottom: 20px;
+    width: 232px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+  .touch-mode.touch-driving .touch-utility {
+    left: 148px;
+    right: 270px;
+    bottom: 20px;
+  }
+  .touch-mode.touch-driving #touchJump,
+  .touch-mode.touch-driving #touchDivert {
+    position: static;
+  }
+}
