@@ -786,7 +786,7 @@
             if (g.timer <= 0) {
               g.timer = 4 + Math.random() * 14;
               g.a += (Math.random() - 0.5) * 1.6;
-              if (Math.random() < 0.25) gullCallAt(g, 0.5);
+              if (Math.random() < 0.12) gullCallAt(g, 0.5);
             }
             break;
           }
@@ -812,7 +812,7 @@
                 g.wantPerch = false;
               } else gullNewOrbit(g);
             }
-            if (Math.random() < deltaSeconds * 0.04 && gameTime - g.calledAt > 6) {
+            if (Math.random() < deltaSeconds * 0.02 && gameTime - g.calledAt > 8) {
               g.calledAt = gameTime;
               gullCallAt(g, 0.6);
             }
@@ -1016,7 +1016,7 @@
       e.phase = 'approach';
       e.t = 0;
       e.exit = exit ? { x: Math.round(exit.x), y: Math.round(exit.y), kind: exit.kind, d: Math.round(exit.d) } : null;
-      e.window = clamp(need * 1.2 + 4, 18, 48);
+      e.window = clamp(need * 1.25 + 5, 20, 90);
       e.bite = false;
       e.taken = false;
       e.god = !!player.godMode;

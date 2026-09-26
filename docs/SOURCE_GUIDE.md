@@ -730,7 +730,7 @@ sealife.js (game), sealife-audio.js (sound) and sealife3d.js (renderer). Console
   38 s at the base rate, faster farther out, crawling hard, at night or hurt. Then *approach*
   (the fin appears ~48 m out on the open-sea side, never between the player and the way out;
   the score starts; SHARK! and an arrow to the fin), *circle* (tightening from 21 m to 7 m over
-  the window: 1.2 x the swim to the nearest way out at the hard crawl + 4 s, 18-48 s), *dive*
+  the window: 1.25 x the swim to the nearest way out at the hard crawl + 5 s, 20-90 s), *dive*
   (the fin goes under, a shape rises beneath), *breach* (the shark lunges up with its jaws open;
   WASTED, "TAKEN BY A GREAT WHITE", the water turns red; god mode: it bites down, lets go and
   leaves). Out of the water, on a ladder, aboard a boat or back inside the buoys before the

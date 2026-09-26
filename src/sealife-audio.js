@@ -79,8 +79,11 @@
     function gullRecording(position, strength = 0.7) {
       return seaSprite('sealife-gulls', null, 0.2 * strength, 0.92 + Math.random() * 0.16, position);
     }
+    let gullHeardAt = -99;
     function gullCallSound(g, strength) {
-      if (!seaAudible(g, 900)) return;
+      // A flock calls now and then, not all at once: one call every couple of seconds at most.
+      if (!seaAudible(g, 900) || gameTime - gullHeardAt < 1.6 + Math.random() * 1.6) return;
+      gullHeardAt = gameTime;
       // A gull high overhead is heard a little dulled.
       if (!seaSprite('sealife-gulls', null, 0.22 * strength, 0.9 + Math.random() * 0.2, g, { lowpass: g.z > 150 ? 5000 : 0 })) gullCall(g);
     }
