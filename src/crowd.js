@@ -1280,6 +1280,8 @@
             if (
               facing < -0.8 &&
               q.state === 'walk' &&
+              !q.isle &&
+              !p.isle &&
               !q.react &&
               !q.leader &&
               !q.scene &&

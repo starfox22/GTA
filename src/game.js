@@ -2372,6 +2372,8 @@
       }
       // On the stadium pitch E kicks the ball at your feet (sports.js).
       if (sportsInteract()) return;
+      // A Monarch Isle payphone (monarch-life.js).
+      if (monarchInteract()) return;
       const place = nearestPlace();
       if (place) {
         openService(place);
@@ -2668,13 +2670,7 @@
       const quarry = c.pursuitTarget || player.car || player,
         chaseTarget =
           destination || (c.interceptor ? aheadOf(quarry, 3.4) : c.pursuitTarget || player);
-      if (
-        c.x > CITY_SIZE ||
-        c.y > CITY_SIZE ||
-        chaseTarget.x > CITY_SIZE ||
-        chaseTarget.y > CITY_SIZE
-      )
-        return policeNavRoute(c, chaseTarget);
+      if (offCityStreets(c.x, c.y) || offCityStreets(chaseTarget.x, chaseTarget.y)) return policeNavRoute(c, chaseTarget);
       const start = {
           x: ROAD_CENTERS.indexOf(roadNear(c.x)),
           y: ROAD_ROWS.indexOf(rowNear(c.y)),
@@ -2746,7 +2742,7 @@
       if (harborPoliceProtected(player.x, player.y, 120)) return;
       const occupied = vehicles.filter((c) => c.cop && c.hp > 0);
       if (occupied.length >= Math.ceil(wantedStars) * 2 + 1) return;
-      if (player.x > CITY_SIZE || player.y > CITY_SIZE) {
+      if (offCityStreets(player.x, player.y)) {
         spawnCountyCop();
         return;
       }
@@ -2901,6 +2897,7 @@
         if (!p.look) ensureLook(p);
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
+        if (updateIsleWalker(p, deltaSeconds)) continue;
         if (updateCarjackReactions(p, deltaSeconds)) continue;
         if (updateClubGoer(p, deltaSeconds)) continue;
         if (updateCrowdPerson(p, deltaSeconds)) continue;
@@ -3301,6 +3298,7 @@
         timed('beachclub', () => updateBeachClub(deltaSeconds));
         timed('leisure', () => updateLeisure(deltaSeconds));
         timed('coaster', () => updateCoaster(deltaSeconds));
+        timed('monarch', () => updateMonarchIsle(deltaSeconds));
         timed('wildlife', () => updateWildlife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
         if (player.parachute) updateParachute(deltaSeconds);
@@ -4656,6 +4654,7 @@
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
         else if (payphoneInReach() && !m && missionIndex < missions.length) prompt = 'ANSWER PAYPHONE';
+        else if (monarchPrompt()) prompt = monarchPrompt();
         else if (bikeShare) {
           prompt = bikeShare.text;
           promptId = 'bikeshare';
@@ -5304,6 +5303,7 @@
     // @include src/car-radio.js
     // @include src/garages.js
     // @include src/crowd.js
+    // @include src/monarch-life.js
     // @include src/beachclub.js
     // @include src/beachclub-audio.js
     // @include src/clubpool.js
@@ -6201,7 +6201,7 @@
       themePark: () => parkReport(),
       // Monarch Isle: the plan (grid, streets, villas, towers, businesses, marina,
       // garden) and its life (monarch.js, monarch-life.js).
-      monarch: () => monarchLayout(),
+      monarch: () => monarchReport(),
       // Board the Falcon ('coaster') or the Sunset Eye ('wheel') from its platform.
       boardRide(kind = 'coaster') {
         rideAttraction(kind);

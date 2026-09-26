@@ -179,6 +179,12 @@
     function onMonarchIsle(x, y) {
       return regionContains(MONARCH_ISLE, x, y);
     }
+    /* Off the city's street grid: the county (past CITY_SIZE) and Monarch Isle,
+       whose roads the police, the GPS and the county patrols take from the
+       route graph (COUNTY_ROADS) instead of the grid. */
+    function offCityStreets(x, y) {
+      return x > CITY_SIZE || y > CITY_SIZE || (x > 5300 && y < -380 && y > -5420);
+    }
     // The island and the water round it, for systems that switch on near it.
     const MONARCH_BOUNDS = { x0: 5300, y0: -5420, x1: 10300, y1: -380 };
     function nearMonarchIsle(x, y, margin = 0) {

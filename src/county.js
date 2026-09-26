@@ -801,6 +801,7 @@
       spawnTrailVehicles();
       populateRecreation();
       populateSunsetPier();
+      populateMonarchIsle();
       populateLiners();
       populatePromenade();
       populateBeach();

@@ -158,7 +158,7 @@
       return kind === 'army' || kind === 'armyJeep' || kind === 'armyApc' || kind === 'armyTruck';
     }
     function spawnPursuitUnit(kind) {
-      if (player.x > CITY_SIZE || player.y > CITY_SIZE) {
+      if (offCityStreets(player.x, player.y)) {
         if (kind === 'patrol') spawnCountyCop();
         return null;
       }
@@ -219,7 +219,7 @@
       } else dispatchTimer = tier.every * (searchActive ? 1.3 : 1) * randomBetween(0.8, 1.2);
       // Patrol cars already cruising nearby join the pursuit before any new unit
       // is sent: the response starts with whoever is closest.
-      if (have.patrol < tier.patrols && !(player.x > CITY_SIZE || player.y > CITY_SIZE)) {
+      if (have.patrol < tier.patrols && !offCityStreets(player.x, player.y)) {
         let nearest = null;
         for (const c of vehicles)
           if (

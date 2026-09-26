@@ -1306,7 +1306,7 @@
         headingSine = Math.sin(c.a),
         along = c.vx * headingCosine + c.vy * headingSine,
         // A police launch in a water pursuit steers itself (pursuit.js).
-        helm = !controlled && active && c.marineUnit && c.cop && c.hp > 0 && wantedStars > 0 ? marineBoatInput(c, along) : null,
+        helm = !controlled && active && c.marineUnit && c.cop && c.hp > 0 && wantedStars > 0 ? marineBoatInput(c, along) : !controlled && c.isleBoat && c.hp > 0 ? isleBoatHelm(c, along) : null,
         up = controlled ? keys.KeyW || keys.ArrowUp : !!helm?.up,
         down = controlled ? keys.KeyS || keys.ArrowDown : !!helm?.down,
         turn = controlled
@@ -1445,6 +1445,7 @@
         c.resting &&
         c !== pc &&
         !c.ai &&
+        !c.isleBoat &&
         !c.taxiHire &&
         (!c.cop || c.crewDeployed || c.hp <= 0) &&
         (c.hp > 0 || !c.damage?.burning)
@@ -1696,9 +1697,11 @@
           const ai =
             c.aiControl && physicsClock < (c.aiControlAt || 0)
               ? c.aiControl
-              : ((c.aiControl = c.countyRoute
-                  ? countyRouteControl(c)
-                  : trafficControl(c, stepSeconds)),
+              : ((c.aiControl = c.isle
+                  ? isleTrafficControl(c)
+                  : c.countyRoute
+                    ? countyRouteControl(c)
+                    : trafficControl(c, stepSeconds)),
                 (c.aiControlAt = physicsClock + (c.farFromPlayer ? 0.25 : 0.05)),
                 c.aiControl);
           /* Traffic in the rain keeps inside what its tyres now give (cornering,
