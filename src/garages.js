@@ -251,9 +251,9 @@
       const spec = vehicleSpec(vehicle),
         type = vehicle.type,
         byId = (id) => GARAGE_RESPRAY_PRICES.find((c) => c.id === id);
-      if (type === 'bike' || type === 'cruiser') return byId('motorcycle');
+      if (spec.bike && !spec.bicycle) return byId('motorcycle');
       if (spec.truck && spec.l > 8 * UNITS_PER_METRE) return byId('heavy');
-      if (['supercar', 'luxury', 'limousine', 'sport', 'roadster', 'rally', 'muscle', 'hotrod'].includes(type)) return byId('performance');
+      if (spec.flagship || ['supercar', 'luxury', 'limousine', 'sport', 'roadster', 'rally', 'muscle', 'hotrod'].includes(type)) return byId('performance');
       if (spec.truck || ['suv', 'pickup', 'van', 'ambulance'].includes(type)) return byId('utility');
       return byId(spec.l < 4.6 * UNITS_PER_METRE ? 'compact' : 'saloon');
     }

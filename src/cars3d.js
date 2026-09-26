@@ -1594,11 +1594,9 @@
       // ---- BODIES ------------------------------------------------------------------------------
       // Lengths along the car are fractions of l; heights, radii and offsets in metres
       // (civBody() turns them into map units). See the header for the archetypes.
-      const CV_LENS = '#9aa3ab',
-        CV_LENS_DARK = '#4a5057',
+      const CV_LENS_DARK = '#4a5057',
         CV_LED = '#f4f7ff',
         CV_AMBER = '#ffa227',
-        CV_TAIL = '#b3121b',
         CV_TAIL_DARK = '#8e1016',
         CV_TAIL_BAR = '#ff3a2e',
         CV_REVERSE = '#e9e9e4',

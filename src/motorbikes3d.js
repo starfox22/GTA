@@ -562,8 +562,10 @@
         m.accel = (m.accel || 0) + (accel - (m.accel || 0)) * Math.min(1, deltaSeconds * 6);
         const throttle = player_ ? !!(keys.KeyW || keys.ArrowUp) : m.accel > 0.2 * GRAVITY,
           dirt = m.moto === 'kr500',
-          lift = c.hp > 0 && !c.fallen && throttle && m.accel > (dirt ? 0.3 : 0.62) * GRAVITY && speed < (dirt ? 75 : 110) * KMH && speed > 4 * KMH,
-          wheelieTarget = lift ? (dirt ? 0.42 : 0.16) : 0;
+          // The player's throttle is known; traffic's is read from how hard it pulls.
+          pulling = player_ ? throttle : throttle && m.accel > (dirt ? 0.3 : 0.62) * GRAVITY,
+          lift = c.hp > 0 && !c.fallen && pulling && speed < (dirt ? 70 : 45) * KMH && speed > 3 * KMH,
+          wheelieTarget = lift ? (dirt ? 0.42 : 0.12) : 0;
         m.wheelie = (m.wheelie || 0) + (wheelieTarget - (m.wheelie || 0)) * Math.min(1, deltaSeconds * (wheelieTarget > (m.wheelie || 0) ? 2.2 : 4));
         if (m.wheelie > 0.002) {
           // Pitch about the rear contact patch (x = rear axle, y = 0).

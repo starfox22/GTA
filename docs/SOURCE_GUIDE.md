@@ -187,7 +187,9 @@ Two closures matter:
 - **Targets** (measured with `simulate`, see CHANGELOG): everyday cars 150-205 km/h and 0-100
   in 6.5-13 s, sports and supercars 230-330 km/h in 2.9-5 s, trucks 115-120, the bus 100, the
   tank 55; motorbikes 180-225; the patrol car 230 km/h (0-100 in 6.3 s) so it catches anything
-  but a sports car on an open road; the police helicopter 260 km/h. Bicycles cruise at 27 and
+  but a sports car on an open road; the police helicopter 260 km/h. The flagships: CHEVETTE Z06 315 km/h
+  and 2.7 s, BRUTINI SVJ 350 and 2.8 s, CAVALINO 458 325 and 3.0 s; DOLCATI V4 300, YAMASAKI
+  1000RR 295, KR 500 150 (`DeadEndCity.accelTest`). Bicycles cruise at 27 and
   sprint at 43. Traffic keeps to 40-55 km/h in town and 70-85 on the long bridges, follows at
   about 0.8 s and stops for reds at about half a g; county traffic 60. Boats: speedboat 55
   knots, jet ski 50, harbor launch 14, police launches 15% quicker; the liner 19 knots at sea.
@@ -294,7 +296,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 
 Renderer closure (inside `createCityRenderer()` in render3d.js, in include order;
 flight-view3d, postfx3d and lighting3d come first, right after the cameras and lights,
-and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
+and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, before `makeVehicle`):
 
 | File | Role |
 | --- | --- |
@@ -341,7 +343,9 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
 | helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, military), a light single (Bell 407 / H125 class) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface, per-pixel canvas liveries, glyph decals, cabin and crew, merged trim / lamps per look; four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
-| vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
+| vehicles3d.js | Trucks and buses (`makeTruck`), bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
+| cars3d.js | Every civilian car (section 6d): `CAR_BODIES` (seventeen real-size archetypes), the lofted shell with cross-sections that change along the car and wings above the bonnet (`civShellGeometry`), the five-pane glasshouse (`civCabinGeometry`), the kit of merged paint / trim / DRL / lamp sets built from surface-conforming helpers (`civKit`: `patch`, `strip`, `round`, `grille`, `cornerLamp`), the trim atlas and per-vertex finishes, livery decals over the paint (`civLiveryTexture`), tyres and rims (`civTyreGeometry`, `civRimGeometry`), `makeCivilianCar`, `animateCivilianCar` (lamps, DRLs, rolling and steering wheels), `civilianModelReport` |
+| motorbikes3d.js | Every motorbike (section 6d): `MOTO_BODIES` (VORTEX 900, NOMAD CRUISER, DOLCATI V4, YAMASAKI 1000RR, KR 500), lofted tanks and fairings (`motoPod`), merged riders per riding pose (`motoRiderGeometry`) on the `model.rider` anchor, the steering fork, `makeMotorbike`, `animateMotorbike` (lamps, fork, wheelie) |
 | police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
 | plane3d.js | The three airframes, modelled on real types: the Serrano C200 courier (mission 11's plane; a low-wing single turboprop with a T-tail after the Pilatus PC-12), the Aurelia J8 business jet and the Meridian 220 airliner. A lofted fuselage (monotone-cubic stations, superellipse sections) wears a livery texture computed per pixel from the surface (windscreen and cockpit glass with frames, cabin windows, doors, cheatline, registration; glossy glass through a roughness / metalness map); NACA-section wings, winglets, fin and stabiliser; flaps, ailerons, elevators and rudder in hinge pivots; four-blade propeller with blur disc or lathed turbofans with spinning fans; retracting gear; navigation, strobe, beacon and landing lights. Static parts are merged per material. `animateAircraft` poses it all from the flight model each frame |
 | parachute3d.js | The ram-air parachute: nine-cell canopy rebuilt per frame (inflation, pillows, brakes, trailing-edge flutter), lines, risers, slider, pilot chute and bridle, the pack; `poseParachutist` (freefall box position, hanging pendulum, toggles), collapse and pack-up after landing |
@@ -1624,6 +1628,69 @@ scales them); nothing in the flight model changed.
 - `DeadEndCity.helicopterLineup(x, y, heading, rotors)` parks one of each look;
   `DeadEndCity.helicopterModels()` reports each model's look, spool, draw calls, shadow
   casters and triangles.
+
+## 6d. Civilian cars and motorbikes
+
+Every civilian car is built by `src/cars3d.js` (`makeCivilianCar`, from `makeVehicle` for any
+type in `CAR_BODIES` that is not a police look), every motorbike by `src/motorbikes3d.js`
+(`makeMotorbike`, for any type in `MOTO_BODIES`). Both are built at real size: their
+`VEHICLE_DEFINITIONS` have `modelScale` 1 and the models report `realSize`. Police bodies
+dress the 'suv' and 'van' types for the agents and SWAT at their own 0.8 (`drawScale`).
+
+- **Bodies** (CAR_BODIES): sedan REGENT (Camry / Accord saloon), taxi CITY CAB (Crown
+  Victoria cab: checker band, CITY CAB, lit TAXI sign in glyph-atlas lettering), coupe VOLT
+  COUPE (Model 3 style fastback, glass roof, aero wheels), muscle DUKE V8 (Challenger: quad
+  halo lamps, twin stripes, racetrack tail), sport COMET GT (911: frog-eye lamps, louvred lid,
+  light bar), roadster SOLSTICE SPIDER (MX-5, top down, cockpit and hoops), rally KODIAK RS
+  (WRX hatch: scoop, roof wing, light pod, gold wheels, decals), hotrod HELLFIRE CUSTOM ('32
+  coupe: blown V8, zoomies, exposed front wheels, whitewalls, flames), supercar V12 TEMPEST
+  (812 / DBS front-mid GT), luxury MONARCH V12 (Phantom: temple grille), limousine SOVEREIGN
+  STRETCH (Town Car), suv RANGER 4X4 (Range Rover: floating roof), van MULE VAN (high-roof
+  Transit), pickup WORKHORSE (crew-cab F-150 with an open bed), and the flagships CHEVETTE Z06
+  (C8 Z06), BRUTINI SVJ (Aventador SVJ) and CAVALINO 458 (458 Italia). Heights, radii and
+  offsets are written in metres (`civBody` converts), lengths along the car as shares of `l`.
+- **Shell**: a cross-section (`section`, or `sections` keyframed along the car) lofted along
+  the profile `[t, width, top, bottom]`; shares past 1 in a section stand a wing above the
+  bonnet's centre (SEC_FENDER). `arches` swells the body over the axles. `k.topY` reads the
+  upper surface from the section itself, `k.peak` its highest point (the wheel wells stop
+  under it).
+- **Kit** (`civKit`, one per body and size): the damage parts (shell, cabin, hood in the
+  damage model's unit frame, two bumpers as unit boxes, door / trunk swatch boxes) and four
+  merged sets: paint panels (roof, pillars, mirrors, lips, spoilers, bed walls), trim (every
+  other part in one draw: vertex colours, a per-vertex `finish` [roughness, metalness] and a
+  cell of the 512-pixel TRIM ATLAS: honeycomb, slats, bars, mesh, carbon, hexagons, louvres,
+  tread, plate...), DRLs (lit while driven) and the four lamps. Bodies add their details
+  through surface helpers in the frames `front`, `rear`, `top`, `side`: `patch` (with
+  `span(u)` shapes), `strip`, `round`, `grille`, and `cornerLamp` (a lens across the nose or
+  tail wrapping onto the flank).
+- **Livery**: one decal canvas per body over the clear-coated paint (premultiplied: clear
+  where the paint shows; shut lines, stripes, checkers, cladding, lettering; the swatch band
+  as police3d.js's). Paint colours come from each type's `palette` (`vehiclePaint`); bright
+  solids get a gloss finish, the rest a metallic flake or solid by the car's id (`civFinish`).
+- **Lamps**: `lit` is each lamp's resting material; `animateCivilianCar` swaps head lamps to
+  lit with the headlights, tails to lit or to the brake material, and leaves a broken lamp's
+  `deadLamp` alone. nightLights are [head, tail] per side as before. The glass is `m.glass`.
+- **Motorbikes**: the body's `rider` pose (hips, shoulders, hands, knees, feet, head) becomes
+  one merged rider mesh inside `model.rider`, which the vehicle pass shows while someone
+  rides and riders.js's throws hide. The front wheel hangs from a fork group tilted by the
+  rake; wheels carry their radius for rolling. `bikeUpdate` runs after the pass leans the body:
+  lamps, fork steering and the wheelie (the body pitched about the rear contact patch; the KR
+  500 lifts under full throttle below 70 km/h).
+- **Draw calls**: a car is ~20 draws (shell, glass, hood, panels, trim, DRL, four lamps, two
+  bumpers, four tyres, four rims), 3 shadow casters (shell, glass, trim) and 7-9k triangles;
+  a motorbike 11 draws. Zoomed out, cars pool per type (flight-view3d.js BODY IMPOSTORS:
+  shell, glass, hood, panels and trim). `DeadEndCity.carModels()` reports every built model.
+- **Where they are** (game.js): one traffic car in forty is a flagship (`FLAGSHIP_TYPES`);
+  SHOWCASE PARKING puts flagships at North Point (the avenue under the towers), the marina,
+  the Marea valet line and the Sunset Pier VIP bays, and KR 500s at the Mount Ascent and
+  Needle Ridge trailheads and Stonecreek Lodge (`DeadEndCity.showcase()`).
+- **Handling**: the flagships and new bikes are specified like every road vehicle (section
+  2a). The KR 500 (`dirt`) has full traction on dirt, grass and the trails and climbs steeper
+  grades (terrain.js `roadVehicleTerrain`), little rolling drag off the tarmac, and loses up to
+  a fifth of its grip on tarmac by 120 km/h (physics.js `tyreSurfaceGrip`).
+- **Engines** (engine-audio.js): `flatplane` (the V8's loops low, the six and the 4A-GE high,
+  8,800 rpm; Chevette, Cavalino), `v12` (Brutini), `single` (KR 500); the superbikes use the
+  bike set pitched (Dolcati lower, Yamasaki higher).
 
 ## 7. Build, check, test
 

@@ -2048,34 +2048,46 @@
       }
     }
     /* SHOWCASE PARKING: the flagships (cars3d.js, motorbikes3d.js) where the money
-       parks, and the KR 500 where the dirt starts. Each spot's vehicles line up
-       along its heading, `gap` apart; a vehicle that cannot fit near its place
-       is left out. Stealing one is like stealing any parked car. */
+       parks, and the KR 500 where the dirt starts. Stealing one is like stealing
+       any parked car. */
     const SHOWCASE_PARKING = [
-      // North Point, the financial district: along the avenue under the towers.
-      { place: 'NORTH POINT', x: 2660, y: -3010, a: Math.PI / 2, gap: 48, types: ['brutini', 'chevette', 'cavalino'] },
-      // The marina: on the street behind the quay.
-      { place: 'MARINA', x: 1010, y: -3242, a: 0, gap: 50, types: ['cavalino', 'yamasaki', 'chevette'] },
+      // North Point, the financial district: mid-block on the avenue under the towers.
+      { place: 'NORTH POINT', x: 2688, y: -2780, a: -Math.PI / 2, dir: Math.PI / 2, gap: 52, kerb: Math.PI, types: ['brutini', 'chevette', 'cavalino'] },
+      // The marina: down the street from the quay, by the yachts.
+      { place: 'MARINA', x: 1150, y: -3180, a: Math.PI / 2, dir: Math.PI / 2, gap: 52, kerb: Math.PI, types: ['cavalino', 'yamasaki', 'chevette'] },
       // Marea Beach Club: the valet line past the taxi rank.
-      { place: 'MAREA VALET', x: -2756, y: 5272, a: 0, gap: 50, types: ['brutini', 'dolcati'] },
-      // Sunset Pier: the VIP bays at the east end of the car park.
-      { place: 'SUNSET PIER VIP', x: 3720, y: -5800, a: Math.PI / 2, gap: 30, types: ['chevette', 'brutini', 'cavalino'] },
+      { place: 'MAREA VALET', x: -2756, y: 5272, a: 0, dir: 0, gap: 52, kerb: Math.PI / 2, types: ['brutini', 'dolcati'] },
+      // Sunset Pier: nose-in in the VIP bays at the east end of the car park.
+      { place: 'SUNSET PIER VIP', x: 3676, y: -5806, a: -Math.PI / 2, dir: 0, gap: 27, types: ['chevette', 'brutini', 'cavalino'] },
       // The Ridgeline trailheads and a county lodge: dirt bikes.
-      { place: 'MOUNT ASCENT TRAILHEAD', x: 7470, y: 2010, a: -Math.PI / 2, gap: 16, types: ['kr500', 'kr500'] },
-      { place: 'NEEDLE RIDGE TRAILHEAD', x: 9460, y: 2900, a: -Math.PI / 2, gap: 16, types: ['kr500'] },
-      { place: 'STONECREEK LODGE', x: 6990, y: 3236, a: 0, gap: 16, types: ['kr500'] },
+      { place: 'MOUNT ASCENT TRAILHEAD', x: 7470, y: 2010, a: -Math.PI / 2, dir: 0, gap: 16, types: ['kr500', 'kr500'] },
+      { place: 'NEEDLE RIDGE TRAILHEAD', x: 9460, y: 2900, a: -Math.PI / 2, dir: 0, gap: 16, types: ['kr500'] },
+      { place: 'STONECREEK LODGE', x: 6990, y: 3236, a: 0, dir: 0, gap: 16, types: ['kr500'] },
     ];
+    /* Each spot's vehicles line up from (x, y) along `dir`, `gap` apart, facing
+       `a`; on a street (`kerb`: the direction of its edge) each slides over to
+       the kerb, staying wholly on the tarmac. A vehicle that cannot fit near its
+       place is left out. */
     function parkShowcase() {
       const parked = [];
       for (const spot of SHOWCASE_PARKING)
         spot.types.forEach((type, i) => {
-          const x = spot.x + Math.cos(spot.a) * i * spot.gap,
-            y = spot.y + Math.sin(spot.a) * i * spot.gap;
-          for (let r = 0; r < 150; r += 12)
+          const half = VEHICLE_DEFINITIONS[type].w / 2 + 4;
+          let x = spot.x + Math.cos(spot.dir) * i * spot.gap,
+            y = spot.y + Math.sin(spot.dir) * i * spot.gap;
+          if (spot.kerb !== undefined && cityStreetAt(x, y, -half))
+            for (let d = 3; d < 160; d += 3) {
+              const px = x + Math.cos(spot.kerb) * 3,
+                py = y + Math.sin(spot.kerb) * 3;
+              if (!cityStreetAt(px, py, -half)) break;
+              x = px;
+              y = py;
+            }
+          for (let r = 0; r < 60; r += 6)
             for (let k = 0; k < (r ? 12 : 1); k++) {
               const px = x + Math.cos((k * TAU) / 12) * r,
                 py = y + Math.sin((k * TAU) / 12) * r;
-              if (!canSpawnCar(type, px, py, spot.a, 6)) continue;
+              if (!canSpawnCar(type, px, py, spot.a, 4)) continue;
               parked.push(makeCar(type, px, py, spot.a, false, vehiclePaint(type)));
               return;
             }

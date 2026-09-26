@@ -1,5 +1,81 @@
 # Changelog
 
+## Unreleased — the car and motorbike redesign, and the flagships
+
+Civilian cars (cars3d.js) and motorbikes (motorbikes3d.js), rebuilt at real size to the police
+models' standard: lofted curved bodies with wings, arches and tumblehome, five-pane glass with
+sky reflections, LED lamps and light bars, grilles, mirrors, real wheels with brake discs and
+calipers, clear-coated paint in each class's real colours (`palette`), livery decals.
+
+- **Redesigned** (all `modelScale` 1): REGENT (mid-size saloon), CITY CAB (Crown Vic cab: checker
+  band, lit TAXI sign), VOLT COUPE (electric fastback, glass roof), DUKE V8 (Challenger: quad
+  halo lamps, stripes, racetrack tail), COMET GT (911: frog eyes, louvred lid), SOLSTICE SPIDER
+  (MX-5 top down: cockpit, hoops), KODIAK RS (rally hatch: scoop, roof wing, light pod),
+  HELLFIRE CUSTOM ('32 coupe: blown V8, zoomies, whitewalls, flames), V12 TEMPEST (front-mid GT),
+  MONARCH V12 (Phantom-style saloon), SOVEREIGN STRETCH (Town Car limo), RANGER 4X4 (Range Rover:
+  floating roof), MULE VAN (high-roof panel van), WORKHORSE (crew-cab pickup with an open bed),
+  VORTEX 900 (naked triple), NOMAD CRUISER (V-twin: chrome, whitewalls, shotgun pipes).
+- **New flagships**: CHEVETTE Z06 (mid-engined flat-plane V8 after the C8 Z06: stripes, flank
+  intakes, engine glass, wing), BRUTINI SVJ (V12 wedge after the Aventador SVJ: Y lamps,
+  hexagons, big wing, high hex pipes), CAVALINO 458 (berlinetta after the 458 Italia: boomerang
+  lamps, twin round tails, triple pipes; nearly always red), DOLCATI V4 (Panigale V4-style
+  superbike: slit LEDs, winglets, single-sided arm), YAMASAKI 1000RR (R1 / ZX-10RR-style, blue or
+  green), KR 500 (500 cc enduro after the KTM 500 EXC: orange plastics, knobbly tyres, long
+  forks, high fender).
+- **Riders**: one merged rider per riding pose (crouched on the superbikes, upright on the
+  cruiser, standing tall on the enduro) inside `model.rider`, the anchor riders.js's throws hide.
+  The fork steers; the KR 500 wheelies under full throttle below 70 km/h (the superbikes a little
+  off the line).
+- **KR 500 handling**: full traction on dirt, grass and the trails, climbs grades a 4x4 slides
+  back down, 60 km/h off the trail and 85 on it (terrain.js `dirt`), little rolling drag off the
+  tarmac; the knobblies lose up to a fifth of their grip on tarmac by 120 km/h
+  (physics.js `tyreSurfaceGrip`); light (190 kg with rider) and quick to turn.
+- **Engines**: flat-plane V8 set (Chevette, Cavalino), V12 set (Brutini), single (KR 500); the
+  superbikes use the bike set pitched lower (Dolcati) and higher (Yamasaki).
+- **Where**: one traffic car in forty is a flagship; SHOWCASE PARKING (game.js) puts them at North
+  Point's avenue, the marina, the Marea valet line and the Sunset Pier VIP bays, kerbside or in
+  the bays; KR 500s wait at the Mount Ascent and Needle Ridge trailheads and Stonecreek Lodge.
+  Respray garages class the flagships as performance cars and every motorbike as a motorcycle.
+- **Damage**: the new models keep the contract (crumpled shell and panes, sprung hood over the
+  engine bay, hanging bumpers, sprung doors from the real sill, cracked and burst glass, broken
+  lamps, flat tyres, soot and embers); bullets find the new glasshouses (damage.js
+  `CAR_GLASS_BANDS`).
+- **Console**: `carLineup`, `showcase`, `carModels`, `accelTest`.
+
+Measured with `DeadEndCity.accelTest` (0-100 and 0-200 from a standstill, top speed rolling from
+90% of the spec's):
+
+| Vehicle | Length · mass | 0-100 km/h | 0-200 km/h | Top speed |
+| --- | --- | --- | --- | --- |
+| REGENT | 4.85 m · 1.45 t | 9.03 s | | 180 km/h |
+| CITY CAB | 4.9 m · 1.5 t | 9.53 s | | 175 km/h |
+| VOLT COUPE | 4.4 m · 1.25 t | 6.53 s | | 205 km/h |
+| DUKE V8 | 5.0 m · 1.65 t | 5.03 s | 20.6 s | 245 km/h |
+| COMET GT | 4.5 m · 1.1 t | 3.83 s | 14.1 s | 290 km/h |
+| SOLSTICE SPIDER | 4.2 m · 1.12 t | 4.83 s | 19.3 s | 250 km/h |
+| KODIAK RS | 4.35 m · 1.38 t | 4.03 s | 16.8 s | 230 km/h |
+| HELLFIRE CUSTOM | 4.5 m · 1.5 t | 4.33 s | 16.2 s | 235 km/h |
+| V12 TEMPEST | 4.7 m · 1.35 t | 2.93 s | 9.27 s | 330 km/h |
+| MONARCH V12 | 5.3 m · 2.05 t | 5.03 s | 19.9 s | 250 km/h |
+| SOVEREIGN STRETCH | 8.8 m · 3.4 t | 9.53 s | | 190 km/h |
+| RANGER 4X4 | 4.95 m · 2.3 t | 9.03 s | | 175 km/h |
+| MULE VAN | 5.25 m · 2.35 t | 13.03 s | | 150 km/h |
+| WORKHORSE | 5.6 m · 2.7 t | 10.03 s | | 165 km/h |
+| **CHEVETTE Z06** | 4.69 m · 1.56 t | 2.73 s | 9.13 s | 315 km/h |
+| **BRUTINI SVJ** | 4.94 m · 1.53 t | 2.83 s | 9.40 s | 350 km/h |
+| **CAVALINO 458** | 4.53 m · 1.48 t | 3.03 s | 10.2 s | 325 km/h |
+| VORTEX 900 | 2.1 m · 0.3 t | 3.23 s | 11.6 s | 225 km/h |
+| NOMAD CRUISER | 2.45 m · 0.44 t | 5.03 s | | 180 km/h |
+| **DOLCATI V4** | 2.11 m · 0.28 t | 2.93 s | 6.47 s | 300 km/h |
+| **YAMASAKI 1000RR** | 2.07 m · 0.28 t | 3.03 s | 9.23 s | 295 km/h |
+| **KR 500** | 2.2 m · 0.19 t | 4.43 s | | 150 km/h |
+
+Performance (HIGH, street zoom, 24 cars of the traffic mix parked in view on the Oceanview
+runway, minus the empty scene; before = the old box-built models at `modelScale` 0.8): view draw
+calls +989 -> +462 (41 -> 19 a car), shadow draw calls +554 -> +72 (23 -> 3), triangles +82k ->
++249k (3.4k -> 10.4k a car, shadow pass included). Per model (`carModels`): cars 19-23 draws,
+3 shadow casters, 6.6-9.6k triangles; motorbikes 11 draws.
+
 ## Unreleased — the respray garages: real-scale workshops, prices and a drive-in show
 
 - **The helicopter loses you inside.** Every garage bay and office is overhead cover
