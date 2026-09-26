@@ -35,7 +35,8 @@
       return !!(player.roof || player.buildingRoof);
     }
     function roofLandable(b) {
-      return !!b && !b.depotWall && !b.roofBar && b.style !== 2;
+      // Not a pitched roof (the mountain villages, mountain-village.js).
+      return !!b && !b.depotWall && !b.roofBar && b.style !== 2 && !b.pitched;
     }
     // The highest building whose footprint contains the point.
     function buildingRoofAt(x, y) {
