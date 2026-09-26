@@ -1181,17 +1181,27 @@
         next = missions[Math.min(missionIndex, missions.length - 1)];
       getElement('startBtn').querySelector('.menu-label').textContent = saved ? 'CONTINUE' : 'ENTER THE CITY';
       getElement('startMeta').textContent = saved
-        ? missionIndex >= missions.length
-          ? 'FREE ROAM'
-          : (missionIndex >= SIDE_JOB_FIRST ? 'CONTRACT ' + (missionIndex + 1 - SIDE_JOB_FIRST) : 'MISSION ' + String(missionIndex + 1).padStart(2, '0')) +
-            (next ? ' · ' + next.title.toUpperCase() : '')
+        ? demoStoryOver()
+          ? 'DEMO COMPLETE · FREE ROAM'
+          : missionIndex >= missions.length
+            ? 'FREE ROAM'
+            : (missionIndex >= SIDE_JOB_FIRST ? 'CONTRACT ' + (missionIndex + 1 - SIDE_JOB_FIRST) : 'MISSION ' + String(missionIndex + 1).padStart(2, '0')) +
+              (next ? ' · ' + next.title.toUpperCase() : '')
         : 'NEW STORY';
       getElement('startBtn').dataset.caption = saved
-        ? 'Pick up where you left off: $' + Math.floor(cash).toLocaleString() + ' in your pocket, ' + completed + ' of ' + missions.length + ' jobs done.'
+        ? 'Pick up where you left off: $' + Math.floor(cash).toLocaleString() + ' in your pocket, ' +
+          (DEMO_BUILD
+            ? Math.min(completed, DEMO_MISSIONS) + ' of ' + DEMO_MISSIONS + ' demo missions done.'
+            : completed + ' of ' + missions.length + ' jobs done.')
         : 'Take the wheel. Work the payphones. Keep one step ahead of the law.';
       getElement('newGameMeta').textContent = saved ? 'ERASES PROGRESS' : '';
-      getElement('chooseMeta').textContent = completed + ' / ' + missions.length;
+      getElement('chooseMeta').textContent = DEMO_BUILD
+        ? Math.min(completed, DEMO_MISSIONS) + ' / ' + DEMO_MISSIONS + ' · DEMO'
+        : completed + ' / ' + missions.length;
       getElement('menuVersion').textContent = 'VERSION ' + GAME_VERSION + ' · AN ORIGINAL TOP-DOWN CRIME GAME';
+      // PUBLIC DEMO (campaign.js): the badge beside the version.
+      getElement('menuDemoBadge').classList.toggle('hidden', !DEMO_BUILD);
+      getElement('menuDemoBadge').textContent = demoCompleted ? 'DEMO · COMPLETED' : 'DEMO';
       const focused = document.activeElement?.classList?.contains('menu-item') ? document.activeElement : null;
       // The title menu opens with its first item selected, so Enter plays.
       if (!focused && gameMode === 'menu') getElement('startBtn').focus({ preventScroll: true });

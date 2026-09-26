@@ -854,7 +854,10 @@
         !taxiRide &&
         !playerOnRoof() &&
         player.hp > 0 &&
-        !harborPoliceProtected(player.x, player.y, 30)
+        !harborPoliceProtected(player.x, player.y, 30) &&
+        // Shut in Vinny's sealed warehouse with no officer inside: nobody to
+        // surrender to (chase.js depotSealed).
+        !(depotSealed && !officers.some((o) => o.hp > 0 && !o.downed && !depotSeparates(o, player)))
       );
     }
     /* Standing (or sitting in a stopped car) still, not fighting: giving up. */
@@ -885,6 +888,8 @@
       if (arrestable() && calm)
         for (const o of officers) {
           if (o.hp <= 0 || o.downed || personIncapacitated(o) || o.state === 'return' || o.returned) continue;
+          // Not through the walls of Vinny's sealed warehouse (chase.js).
+          if (depotSeparates(o, player)) continue;
           const d = combatDistance(o, player);
           if (d < 90) near++;
           // Arm's reach, a little generous: a parked car or a kerb can keep an officer a step off.

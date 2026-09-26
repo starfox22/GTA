@@ -581,48 +581,13 @@
         }
       }
       buildPromenade();
-      // palmTrunkMaterial / palmFrondMaterial (render3d.js) are shared by every palm
-      // and the fronds sway (surfaces3d.js). A palm is a breakable prop (damage.js):
-      // drawn as two instances, trunk and crown (render3d.js BREAKABLE SCENERY), it
-      // snaps and falls when a vehicle brings enough energy. Returns the prop.
-      function makePalm(x, z, size = 1) {
-        const prop = registerStreetProp('palm', x, z, 0, { half: [2 * size, 2 * size], size: 12 * size });
-        const g = new Three.Group();
-        g.position.set(x, 0, z);
-        g.scale.setScalar(size);
-        // A 9 m palm (at size 1): the trunk runs up PALM_LIFT past the crown's own
-        // 28-unit design height and the fronds are raised with it.
-        rod(g, new Three.Vector3(0, 0, 0), new Three.Vector3(2, 28 + PALM_LIFT, 0), 1.5, palmTrunkMaterial);
-        if (!palmFrondGeometry) {
-          const verts = [],
-            idx = [];
-          for (let k = 0; k < 7; k++) {
-            const a = (k * TAU) / 7,
-              base = verts.length / 3;
-            for (let j = 0; j < 7; j++) {
-              const d = (j / 6) * 19,
-                h = 31 + Math.sin((j / 6) * Math.PI) * 4 - (j / 6) * 8,
-                w = Math.sin((j / 6) * Math.PI) * 3;
-              verts.push(
-                2 + Math.cos(a) * d - Math.sin(a) * w,
-                h,
-                Math.sin(a) * d + Math.cos(a) * w,
-                2 + Math.cos(a) * d + Math.sin(a) * w,
-                h,
-                Math.sin(a) * d - Math.cos(a) * w,
-              );
-            }
-            for (let j = 0; j < 6; j++)
-              idx.push(base + j * 2, base + j * 2 + 1, base + j * 2 + 2, base + j * 2 + 1, base + j * 2 + 3, base + j * 2 + 2);
-          }
-          palmFrondGeometry = new Three.BufferGeometry();
-          palmFrondGeometry.setAttribute('position', new Three.Float32BufferAttribute(verts, 3));
-          palmFrondGeometry.setIndex(idx);
-          palmFrondGeometry.computeVertexNormals();
-        }
-        mesh(palmFrondGeometry, palmFrondMaterial, g, 0, PALM_LIFT, 0);
-        breakableGroup(prop, g);
-        return prop;
+      // A palm of the species library (vegetation3d.js plantPalm): the species by
+      // place (fan palms down Ocean Drive, coconuts on the beach...). A palm is a
+      // breakable prop (damage.js) drawn as instances (render3d.js BREAKABLE
+      // SCENERY): it snaps and falls when a vehicle brings enough energy. Returns
+      // the prop.
+      function makePalm(x, z, size = 1, species = null) {
+        return plantPalm(x, z, size, species);
       }
       // The keys trade brick canyons for pastel hotels, pools, palms and beach
       // furniture. Palms line both kerbs of Ocean Dr (x -2432) on the sea side.
