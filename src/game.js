@@ -4870,6 +4870,10 @@
         prompt = skip.prompt;
         promptId = skip.id;
         promptKey = 'skipRide';
+      } else if (gameMode === 'play' && player.coaster) {
+        // Aboard a Sunset Pier ride (the Falcon, the Sunset Eye...): E cycles the view.
+        prompt = 'CHANGE VIEW';
+        promptId = 'ride-view';
       } else if (gameMode === 'play') {
         if (c) {
           // The flight HUD shows power, speed and the warnings; the prompt only
