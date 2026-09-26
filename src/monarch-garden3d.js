@@ -165,6 +165,7 @@
         // The warm light inside at night, and the glass itself glowing.
         for (let x = x0 + 40; x < x1 - 30; x += 60) {
           gardenGlows.push(addGlow(x, 40, cz, 40, '#ffd8a0', 0.6, { day: 0 }));
+          isleLightPools.push({ x, y: cz, r: 110, color: [255, 206, 140], strength: 0.4 });
           kitLight(isleLights, root, x, 60, cz + 40, '#ffe2b0');
           kitLight(isleLights, root, x, 60, cz - 40, '#ffe2b0');
         }
@@ -419,6 +420,7 @@
             isleBox(px, 12, pz, 8, 24, 8, ISLE.stone, root);
             isleMesh(sphereGeo, ISLE.stone, px, 27, pz, 3.4, 3.4, 3.4, root);
             addGlow(px, 20, pz, 8, '#ffd9a0', 0.7, { day: 0 });
+            isleLightPools.push({ x: px, y: pz, r: 64, color: [255, 214, 160], strength: 0.4 });
           }
         // The name over the south gate on an iron overthrow.
         const sg = G.gates[0];
@@ -441,6 +443,7 @@
             isleMesh(cylinderGeo, ISLE.iron, 8000 + s * 30, 9, z, 0.6, 18, 0.6, root);
             isleMesh(sphereGeo, tint('#fff2d2', 'satin'), 8000 + s * 30, 19, z, 1.8, 1.8, 1.8, root);
             addGlow(8000 + s * 30, 19, z, 9, '#ffe0b0', 0.8, { day: 0 });
+            isleLightPools.push({ x: 8000 + s * 30, y: z, r: 60, color: [255, 214, 160], strength: 0.4 });
             registerFootObstacle(8000 + s * 30, z, 1.2);
           }
       }

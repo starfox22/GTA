@@ -139,6 +139,7 @@
         for (let k = 0; k < 10; k++) {
           const a = (k / 10) * TAU;
           addGlow(c.x + Math.cos(a) * (r - 2), 5, c.y + Math.sin(a) * (r - 2), 9, '#bfe8ff', 1.1, { day: 0, phase: k / 10 });
+          isleLightPools.push({ x: c.x + Math.cos(a) * (r - 2), y: c.y + Math.sin(a) * (r - 2), r: 28, color: [191, 232, 255], strength: 0.3 });
         }
         signSpill(c.x, c.y, r + 20, '#bfe0ff', 0.25);
         isleFountains.push({ c, group: animated, jets, r });
@@ -214,6 +215,7 @@
           isleBox(p.x, h - 1.8, p.y + 2.9, 5, 1.4, 0.2, tint('#f2e8c8', 'matte'), root);
           isleMesh(new Three.CylinderGeometry(2.4, 3.6, 2, 4), green, p.x, h + 3, p.y, 1, 1, 1, root).rotation.y = Math.PI / 4;
           kitLight(isleLights, root, p.x, h - 1.8, p.y + 3.2, '#fff4d8');
+          isleLightPools.push({ x: p.x, y: p.y + 6, r: 30, color: [255, 240, 210], strength: 0.4 });
         }
       }
       /* ---- Block extras: the fuel canopy, the showroom, courts, the chapel ---------------- */
@@ -235,6 +237,7 @@
               isleBox(p.x, 12.6, p.y, 14.4, 1.2, 4.4, tint('#ffc22a', 'satin'), root);
             }
             for (let x = c.x + 20; x < c.x + c.w; x += 40) for (let z = c.y + 20; z < c.y + c.h; z += 40) addGlow(x, y - 3, z, 14, '#f4f8ff', 0.7, { day: 0 });
+            for (let x = c.x + 20; x < c.x + c.w; x += 40) for (let z = c.y + 20; z < c.y + c.h; z += 40) isleLightPools.push({ x, y: z, r: 48, color: [244, 248, 255], strength: 0.45 });
             registerOverheadCover(c.x + c.w / 2, c.y + c.h / 2, c.w / 2, c.h / 2, 0, y - 2, y + 2, 'canopy');
             // The price totem.
             const tx = c.x + c.w + 16,
@@ -291,6 +294,46 @@
             isleMesh(cylinderGeo, ISLE.iron, p.x + p.w / 2 + 40, 13, B.y + B.h - 6, 0.5, 26, 0.5, root);
             isleBox(p.x + p.w / 2 + 40, 27, B.y + B.h - 6, 4, 4, 4, tint('#2f5fd0', 'gloss'), root);
             addGlow(p.x + p.w / 2 + 40, 27, B.y + B.h - 6, 12, '#4f7fff', 1.6, { day: 0.1 });
+          }
+          if (plan.reflect) {
+            // The reflecting pool: a stone kerb, dark water and a line of jets, uplit at night.
+            const R = plan.reflect,
+              root = isleRoot(R.x + R.w / 2, R.y + R.h / 2),
+              along = R.h > R.w;
+            isleBox(R.x + R.w / 2, 1, R.y + R.h / 2, R.w + 12, 2, R.h + 12, ISLE.stone, root);
+            isleBox(R.x + R.w / 2, 2.1, R.y + R.h / 2, R.w, 0.4, R.h, isleBasinWater, root);
+            const n = Math.max(3, Math.floor((along ? R.h : R.w) / 40));
+            for (let k = 0; k < n; k++) {
+              const f = (k + 0.5) / n,
+                x = along ? R.x + R.w / 2 : R.x + R.w * f,
+                z = along ? R.y + R.h * f : R.y + R.h / 2;
+              isleMesh(new Three.CylinderGeometry(0.5, 1.2, 1, 8), isleWaterMaterial, x, 2.3 + 6, z, 1, 12, 1, root);
+              addGlow(x, 4, z, 8, '#bfe8ff', 0.9, { day: 0, phase: f });
+              isleLightPools.push({ x, y: z, r: 30, color: [191, 232, 255], strength: 0.28 });
+            }
+          }
+          if (plan.sculpture) {
+            // Bronze on a granite drum: interlocking rings for The Sovereign, a
+            // leaning arc for Monarch One.
+            const S = plan.sculpture,
+              root = isleRoot(S.x, S.y),
+              bronze = tint('#8a5a2b', 'satin');
+            isleMesh(new Three.CylinderGeometry(12, 13, 5, 24), ISLE.stoneDark, S.x, 2.5, S.y, 1, 1, 1, root);
+            if (S.kind === 'rings')
+              for (const [ry, tilt] of [
+                [0, 0.35],
+                [1.1, -0.4],
+                [2.2, 0.1],
+              ]) {
+                const ring = isleMesh(new Three.TorusGeometry(10, 1.1, 8, 32), bronze, S.x, 17, S.y, 1, 1, 1, root);
+                ring.rotation.set(Math.PI / 2 + tilt, ry, 0);
+              }
+            else {
+              const arc = isleMesh(new Three.TorusGeometry(16, 1.6, 8, 32, Math.PI * 1.25), bronze, S.x, 5, S.y, 1, 1, 1, root);
+              arc.rotation.set(0, 0.6, 0.3);
+            }
+            for (const s of [-1, 1]) addGlow(S.x + s * 10, 1.5, S.y + 10, 7, '#ffe2b0', 0.8, { day: 0 });
+            isleLightPools.push({ x: S.x, y: S.y, r: 44, color: [255, 214, 160], strength: 0.35 });
           }
           if (plan.chapel) buildIsleChapel(plan.chapel);
         }

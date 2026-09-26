@@ -291,6 +291,7 @@
           isleBox(px, 21, pz, 2.6, 3.4, 2.6, ISLE.iron, root);
           kitLight(isleLights, root, px, 21, pz, '#ffd9a0');
           addGlow(px, 21.5, pz, 9, '#ffd9a0', 0.9, { day: 0 });
+          isleLightPools.push({ x: px, y: pz, r: 64, color: [255, 214, 160], strength: 0.42 });
           // The gate leaf, swung inward.
           const leaf = new Three.Group();
           leaf.position.set(axisY ? gate.x + s * half : gate.x, 0, axisY ? gate.y : gate.y + s * half);
@@ -309,6 +310,7 @@
           isleBox(lx, 9, lz + 7.2, 12, 6, 0.4, ISLE.glass, root);
           isleBox(lx, 16.6, lz, 21, 1.2, 17, ISLE.slate, root);
           kitLight(isleLights, root, lx, 10, lz + 8, '#ffe8c0');
+          isleLightPools.push({ x: lx, y: lz + 8, r: 44, color: [255, 214, 160], strength: 0.4 });
         }
         // Pool: coping, water, loungers and parasols along one side.
         if (plan.pool) {
@@ -331,6 +333,7 @@
             }
           }
           kitLight(isleLights, root, pcx, 0.6, pcz, '#7fe8ff');
+          isleLightPools.push({ x: pcx, y: pcz, r: 54, color: [127, 232, 255], strength: 0.3 });
         }
         if (plan.terrace) {
           const T = plan.terrace;
@@ -351,6 +354,7 @@
             for (const s of [-1, 1]) {
               isleBox(gate.x + s * 20, 3, z, 1.2, 6, 1.2, ISLE.iron, root);
               addGlow(gate.x + s * 20, 6.2, z, 5, '#ffe0b0', 0.8, { day: 0 });
+              isleLightPools.push({ x: gate.x + s * 20, y: z, r: 34, color: [255, 214, 160], strength: 0.32 });
             }
         }
       }

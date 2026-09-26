@@ -652,6 +652,7 @@
         for (const dx of [-6.2, 6.2]) {
           isleBox(x + dx, DOOR_HEIGHT + 0.8, zFace + 1.8, 1.4, 2.2, 1.4, ISLE.iron, root);
           kitLight(isleLights, root, x + dx, DOOR_HEIGHT + 0.8, zFace + 2.2, '#ffd9a0');
+          isleLightPools.push({ x: x + dx, y: zFace + 4, r: 36, color: [255, 214, 160], strength: 0.4 });
         }
       }
       /* The ground floor of a shop unit: stone piers, plate glass, a recessed door,

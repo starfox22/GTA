@@ -29,6 +29,7 @@
           for (let z = f.y + 30; z < f.y + f.h - 6; z += 40) {
             isleBox(cx, deck + 3, z, 2.4, 6, 2.4, ISLE.white, root);
             kitLight(isleLights, root, cx, deck + 6.4, z, '#e8f4ff');
+            isleLightPools.push({ x: cx, y: z, r: 30, color: [228, 240, 255], strength: 0.25 });
             for (const s of [-1, 1]) isleBox(cx + s * (f.w / 2 - 1.6), deck + 0.5, z + 10, 1.2, 1, 3, ISLE.chrome, root);
           }
           // The gangway down from the quay.
@@ -65,6 +66,7 @@
           for (const z of [f.y + 14, f.y + 86]) isleBox(cx, deck + 9, z, 1.2, 18, 1.2, ISLE.chrome, root);
           kitLight(isleLights, root, cx, deck + 17, f.y + 50, '#f4f8ff');
           addGlow(cx, deck + 17, f.y + 50, 16, '#eaf4ff', 0.9, { day: 0 });
+          isleLightPools.push({ x: cx, y: f.y + 50, r: 90, color: [228, 240, 255], strength: 0.45 });
         }
         // ---- The mole: armour stone both sides, flags on the walk ----
         {

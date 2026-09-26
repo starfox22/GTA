@@ -768,6 +768,38 @@
       monarchTrees = [],
       monarchLamps = [],
       monarchPlan = { villas: [], blocks: [], shops: [], built: false };
+    /* A tower's plaza: the paving round the tower is kept to a forecourt and
+       walks; the rest is lawn in the corners (planted with plane trees round
+       its edge, planIsleStreetscape), a long reflecting pool with a line of jets
+       in the widest lawn and a bronze sculpture on the next. */
+    function planIslePlaza(plan) {
+      const B = plan.block,
+        t = plan.tower,
+        P = { x: B.x + 20, y: B.y + 20, w: B.w - 40, h: B.h - 180 },
+        gap = 44,
+        sections = [
+          { x: P.x, y: P.y, w: t.x - gap - P.x, h: P.h },
+          { x: t.x + t.w + gap, y: P.y, w: P.x + P.w - (t.x + t.w + gap), h: P.h },
+          { x: t.x - gap, y: P.y, w: t.w + gap * 2, h: t.y - gap - P.y },
+        ]
+          .filter((r) => r.w > 110 && r.h > 110)
+          // A walk 24 wide round each lawn.
+          .map((r) => ({ x: r.x + 24, y: r.y + 24, w: r.w - 48, h: r.h - 48 }))
+          .sort((a, b) => b.w * b.h - a.w * a.h);
+      plan.lawns = sections;
+      const L = sections[0];
+      if (L) {
+        const pw = Math.min(90, L.w * 0.42),
+          ph = Math.min(L.h * 0.62, 320);
+        plan.reflect = { x: L.x + (L.w - pw) / 2, y: L.y + (L.h - ph) / 2, w: pw, h: ph };
+        isleSolid(plan.reflect.x, plan.reflect.y, plan.reflect.w, plan.reflect.h, 2, 'pool');
+      }
+      const S = sections[1];
+      if (S) {
+        plan.sculpture = { x: S.x + S.w / 2, y: S.y + S.h / 2, kind: t.id === 'sovereign' ? 'rings' : 'arc' };
+        isleSolid(plan.sculpture.x - 14, plan.sculpture.y - 14, 28, 28, 40, 'sculpture');
+      }
+    }
     function isleSolid(x, y, w, h, height, kind) {
       const s = { x, y, w, h, height, kind };
       monarchSolidList.push(s);
@@ -1017,12 +1049,14 @@
         case 'towerSovereign': {
           frontage(shopsIn(plan.key), isleFloors(2), { facade: 'podium', inset: 150 });
           plan.tower = MONARCH_TOWERS[0];
+          planIslePlaza(plan);
           break;
         }
         case 'towerMonarch': {
           const bank = shopsIn(plan.key)[0];
           frontage([bank], isleFloors(2), { facade: 'bank', inset: 170 });
           plan.tower = MONARCH_TOWERS[1];
+          planIslePlaza(plan);
           break;
         }
         case 'provisions': {
@@ -1181,6 +1215,12 @@
           const px = x + (y === -1090 ? 55 : 0);
           if (Math.abs(px - 6400) < 170) continue;
           tree(px, y + (random() - 0.5) * 16, 18, y === -1090 ? 'palm' : 'plane');
+        }
+      // Tower plazas: plane trees round each lawn, inside its edge.
+      for (const plan of monarchPlan.blocks)
+        for (const l of plan.lawns || []) {
+          for (let x = l.x + 18; x <= l.x + l.w - 18; x += 52) for (const y of [l.y + 18, l.y + l.h - 18]) tree(x, y, 16 + random() * 3, 'plane');
+          for (let y = l.y + 70; y <= l.y + l.h - 70; y += 52) for (const x of [l.x + 18, l.x + l.w - 18]) tree(x, y, 16 + random() * 3, 'plane');
         }
       // The garden's flowering cherries along the south lawn.
       for (const c of MONARCH_GARDEN.cherries) tree(c.x, c.y, 17, 'cherry');
@@ -1664,6 +1704,26 @@
           }
         }
         fill({ x: t.x - 24, y: t.y + t.h, w: t.w + 48, h: 60 }, '#bfb49c');
+        for (const l of plan.lawns || []) {
+          fill({ x: l.x - 3, y: l.y - 3, w: l.w + 6, h: l.h + 6 }, '#8f8a78');
+          fill(l, '#5f9148');
+          if (detail) {
+            // Mown stripes.
+            g.fillStyle = 'rgba(255,255,255,0.05)';
+            for (let x = l.x; x < l.x + l.w; x += 24) g.fillRect(x, l.y, 12, l.h);
+          }
+        }
+        if (plan.reflect) {
+          const R = plan.reflect;
+          fill({ x: R.x - 8, y: R.y - 8, w: R.w + 16, h: R.h + 16 }, '#d8d0bc');
+          fill(R, '#2f7a8e');
+        }
+        if (plan.sculpture) {
+          g.fillStyle = '#b8ae98';
+          g.beginPath();
+          g.arc(plan.sculpture.x, plan.sculpture.y, 26, 0, TAU);
+          g.fill();
+        }
       }
       if (plan.courts)
         for (const t of plan.courts) {

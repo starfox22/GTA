@@ -156,7 +156,25 @@
       // Row 0 of the canvas is the north edge, sampled at v = 0.
       lampTexture.flipY = false;
       lampTexture.minFilter = Three.LinearFilter;
+      /* Monarch Isle (monarch.js) lies north-east of the city frame, so it has a
+         map of its own over MONARCH_BOUNDS at the same scale: its lanterns, shop
+         windows, sign spill and the pools its renderer files add to
+         isleLightPools (the Palm House, the marina, villa drives, fountains). */
+      const isleLampCanvas = document.createElement('canvas');
+      isleLampCanvas.width = Math.ceil((MONARCH_BOUNDS.x1 - MONARCH_BOUNDS.x0) / LAMP_MAP_UNITS);
+      isleLampCanvas.height = Math.ceil((MONARCH_BOUNDS.y1 - MONARCH_BOUNDS.y0) / LAMP_MAP_UNITS);
+      const isleLampTexture = new Three.CanvasTexture(isleLampCanvas);
+      isleLampTexture.colorSpace = Three.SRGBColorSpace;
+      isleLampTexture.generateMipmaps = false;
+      isleLampTexture.flipY = false;
+      isleLampTexture.minFilter = Three.LinearFilter;
+      // { x, y, r, color: [r, g, b] 0..255, strength }
+      const isleLightPools = [];
       const cityLightUniforms = {
+        cityIsleMap: { value: isleLampTexture },
+        cityIsleRect: {
+          value: new Three.Vector4(MONARCH_BOUNDS.x0, MONARCH_BOUNDS.y0, 1 / (MONARCH_BOUNDS.x1 - MONARCH_BOUNDS.x0), 1 / (MONARCH_BOUNDS.y1 - MONARCH_BOUNDS.y0)),
+        },
         cityLampMap: { value: lampTexture },
         // (origin x, origin z, 1 / width, 1 / height) of the map in world units.
         cityLampRect: { value: new Three.Vector4(CITY_LEFT, CITY_TOP, 1 / CITY_WIDTH, 1 / CITY_HEIGHT) },
@@ -195,12 +213,62 @@
          the pavement with nothing above it. Keyed by the lamp's map position. */
       const lampLightOut = new Set();
       function lampLightSwitch(prop, on) {
-        if (prop.kind !== 'lamp') return;
+        if (prop.kind !== 'lamp' && prop.kind !== 'lantern') return;
         const key = prop.x + ',' + prop.y;
         if (on === !lampLightOut.has(key)) return;
         if (on) lampLightOut.delete(key);
         else lampLightOut.add(key);
         paintLampLight({ x: prop.x + 6, y: prop.y + 6, r: LAMP_POOL_RADIUS + 8 });
+      }
+      // Monarch Isle's map (see isleLampCanvas): whole, or the pools touching `region`.
+      function paintIsleLampLight(region = null) {
+        const B = MONARCH_BOUNDS;
+        if (region && (region.x + region.r < B.x0 || region.x - region.r > B.x1 || region.y + region.r < B.y0 || region.y - region.r > B.y1)) return;
+        const g = isleLampCanvas.getContext('2d'),
+          s = 1 / LAMP_MAP_UNITS;
+        g.save();
+        if (region) {
+          g.beginPath();
+          g.rect((region.x - region.r - B.x0) * s, (region.y - region.r - B.y0) * s, region.r * 2 * s, region.r * 2 * s);
+          g.clip();
+        }
+        g.fillStyle = '#000';
+        g.fillRect(0, 0, isleLampCanvas.width, isleLampCanvas.height);
+        g.globalCompositeOperation = 'lighter';
+        const pool = (x, y, radius, rgb, stops) => {
+          if (x < B.x0 - radius || x > B.x1 + radius || y < B.y0 - radius || y > B.y1 + radius) return;
+          if (region && (Math.abs(x - region.x) > region.r + radius || Math.abs(y - region.y) > region.r + radius)) return;
+          const px = (x - B.x0) * s,
+            py = (y - B.y0) * s,
+            pr = radius * s,
+            grad = g.createRadialGradient(px, py, 0, px, py, pr),
+            c = rgb.map(Math.round).join(',');
+          for (const [at, a] of stops) grad.addColorStop(at, `rgba(${c},${a})`);
+          g.fillStyle = grad;
+          g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
+        };
+        const soft = (strength) => [
+          [0, strength],
+          [0.35, strength * 0.55],
+          [1, 0],
+        ];
+        // Lanterns: three warm heads each, a pool like a city lamp's but gentler
+        // (the lanterns stand closer together than the city's lamps).
+        for (const l of monarchLamps)
+          if (!lampLightOut.has(l.x + ',' + l.y))
+            pool(l.x, l.y, LAMP_POOL_RADIUS * 0.9, LAMP_WARM, [
+              [0, 0.62],
+              [0.16, 0.46],
+              [0.4, 0.24],
+              [0.7, 0.09],
+              [1, 0],
+            ]);
+        for (const b of buildings) if (b.monarch) for (const pane of b.shopPanes || []) pool(pane.cx, pane.face + 10, Math.max(22, pane.width * 0.8), [255, 214, 160], soft(0.45));
+        for (const p of signLightPools) pool(p.x, p.y, p.r, [p.color[0] * 255, p.color[1] * 255, p.color[2] * 255], soft(p.strength));
+        for (const p of isleLightPools) pool(p.x, p.y, p.r, p.color, soft(p.strength));
+        g.globalCompositeOperation = 'source-over';
+        g.restore();
+        isleLampTexture.needsUpdate = true;
       }
       // Reach of a street lamp's pool on the ground (world units; ~19 m).
       const LAMP_POOL_RADIUS = 100,
@@ -287,6 +355,7 @@
         g.globalCompositeOperation = 'source-over';
         g.restore();
         lampTexture.needsUpdate = true;
+        paintIsleLampLight(region);
       }
       /**
        * MATERIAL PATCH
@@ -371,6 +440,8 @@
         uniform sampler2D cityLampMap;
         uniform vec4 cityLampRect;
         uniform float cityLampPower;
+        uniform sampler2D cityIsleMap;
+        uniform vec4 cityIsleRect;
         uniform vec3 cityZonePower;
         uniform float cityRiverLeft;
         uniform float cityWet;
@@ -387,10 +458,16 @@
         // stop catching it by ~40 units, walls take the spill higher up the facade.
         // \`up\` is how much the surface faces the sky (0 wall, 1 roof).
         vec3 cityLampLight( float up ) {
-          vec2 uv = ( vCityWorld.xz - cityLampRect.xy ) * cityLampRect.zw;
-          if ( cityLampPower < 0.001 || uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) return vec3( 0.0 );
-          float zone = cityPower();
+          if ( cityLampPower < 0.001 ) return vec3( 0.0 );
           float height = 1.0 - smoothstep( mix( 30.0, 8.0, up ), mix( 78.0, 42.0, up ), vCityWorld.y );
+          vec2 uv = ( vCityWorld.xz - cityLampRect.xy ) * cityLampRect.zw;
+          if ( uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) {
+            // Monarch Isle's own map, beyond the city frame.
+            vec2 iv = ( vCityWorld.xz - cityIsleRect.xy ) * cityIsleRect.zw;
+            if ( iv.x < 0.0 || iv.y < 0.0 || iv.x > 1.0 || iv.y > 1.0 ) return vec3( 0.0 );
+            return texture2D( cityIsleMap, iv ).rgb * ( cityLampPower * height );
+          }
+          float zone = cityPower();
           return texture2D( cityLampMap, uv ).rgb * ( cityLampPower * zone * height );
         }
         // Vehicle head and tail lights (the drive light map, redrawn every frame
