@@ -1438,13 +1438,20 @@
           case 'wait':
             T[J_HEAD_YAW] = Math.sin(t * 0.9 + seed) * 0.5;
             break;
-          case 'thrown':
+          case 'thrown': {
+            // Limbs flung out in the air, gathered once sliding or down.
+            const flying = (spec?.thrown || p.ejected)?.phase === 'down' ? 0 : 1;
             T[J_LOCO] = 0;
-            setArm(T, 0, 2.3, 0.6, 0.3);
-            setArm(T, 1, 1.4, 0.6, 0.3);
-            T[J_HIP[0]] = 0.7;
-            T[J_HIP[1]] = -0.5;
+            T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
+            setArm(T, 0, 1.9 + flying * 0.4, 0.6 + flying * 0.3, 0.3);
+            setArm(T, 1, 2.3 - flying * 0.9, 0.6 + flying * 0.2, 0.3 + flying * 0.4);
+            T[J_HIP[0]] = 0.35 + flying * 0.4;
+            T[J_HIP[1]] = -0.25 - flying * 0.3;
+            T[J_KNEE[0]] = -0.3 - flying * 0.6;
+            T[J_KNEE[1]] = -0.2;
+            T[J_SPREAD] = 0.15 + flying * 0.15;
             break;
+          }
           case 'dance':
             crowdDancePose(p, s, T, seed);
             break;
@@ -2240,8 +2247,24 @@
           fallYaw = ((s.fallTurn || 0) + (p.hp <= 0 ? p.deathStyle?.turn || 0 : 0)) * fall;
         // Root: position, heading, then the fall (a rotation about the lateral
         // axis): over backwards, or face down for fallSign -1.
+        const thrown = spec?.thrown || (p.ejected?.rider ? p.ejected : null);
         if (spec?.rootOverride) mRoot.copy(spec.rootOverride);
-        else {
+        else if (thrown) {
+          // Thrown off a bike (riders.js): somersaulting about the hips along the
+          // flight (`pitch`), the hips `z` above the road; flat once down.
+          const hips = RIG.hip * H,
+            along = -hips * Math.sin(thrown.pitch);
+          crowdJoint(
+            mRoot,
+            mIdentity,
+            p.x + Math.cos(thrown.heading) * along,
+            elevation + thrown.z - hips * Math.cos(thrown.pitch) + 1.2,
+            p.y + Math.sin(thrown.heading) * along,
+            -thrown.pitch,
+            0,
+            -thrown.heading,
+          );
+        } else {
           // Someone lying down on purpose (a sunbather) lies with their hips on the spot, not their feet.
           const shift = spec?.lieInPlace ? fallSign * RIG.hip * H * fall : 0,
             heading = s.hipYaw + fallYaw;
@@ -2506,7 +2529,7 @@
       const SPEC_FIELDS = [
         'look', 'facing', 'snapFacing', 'rim', 'elevation', 'rootOverride', 'pose', 'transition', 'hold', 'weapon', 'recoil', 'reload',
         'knifeSwing', 'punch', 'punchLead', 'army', 'shield', 'dazed', 'limp', 'cocktail', 'sip', 'swim', 'parachute', 'lieInPlace',
-        'progress', 'bounce', 'flag', 'riderLean', 'handTargets', 'legTargets',
+        'progress', 'bounce', 'flag', 'riderLean', 'handTargets', 'legTargets', 'thrown',
       ];
       // One spec object with every field declared up front, so its shape never changes.
       const specScratch = Object.fromEntries(SPEC_FIELDS.map((k) => [k, undefined]));
@@ -2548,6 +2571,13 @@
           }
           if (player.swimming) return playerSwimSpec(sp);
           if (player.parachute) return playerParachuteSpec(sp);
+          if (player.thrown) {
+            // Thrown off a bike or out of a crash (riders.js).
+            sp.pose = 'thrown';
+            sp.thrown = player.thrown;
+            sp.elevation = entityElevation(player);
+            return sp;
+          }
           if (player.tumble) {
             sp.pose = 'tumble';
             sp.elevation = entityElevation(player) + 2;

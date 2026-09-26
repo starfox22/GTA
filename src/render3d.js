@@ -1191,6 +1191,7 @@
       // @include src/apache3d.js
       // @include src/vehicles3d.js
       // @include src/police3d.js
+      // @include src/offroad3d.js
       // @include src/plane3d.js
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
@@ -1281,6 +1282,8 @@
         if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
         if (vehicle.type === 'plane') return makePlane(vehicle);
         if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
+        // The 4x4 club's trucks (offroad3d.js).
+        if (vehicleSpec(vehicle).clubModel) return makeOffroadVehicle(vehicle);
         if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
         if (vehicle.type === 'helicopter') return vehicle.airframe === 'apache' ? makeApache(vehicle) : makeHelicopter(vehicle);
         if (vehicleSpec(vehicle).bike) return makeMotorcycle(vehicle);
@@ -1889,6 +1892,8 @@
       const api = {
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
+        // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
+        offroadInfo: () => offroadEffectsInfo(),
         /**
          * Settings contract: the see-through hole round the player under a roof
          * (lighting3d.js, CUTAWAY). On by default; read at start-up from
@@ -2006,6 +2011,8 @@
           }
           return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
         },
+        // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
+        searchlight: (options) => searchlightReport(options),
         /* Shadow casters the view does not show (for "shadows from nowhere"):
            every mesh the sun's shadow pass draws, near the view, that the camera
            pass would not: hidden by its material (fully transparent, no colour
@@ -2525,7 +2532,8 @@
             if (m.special) {
               if (!m.plane) m.body.rotation.z = -wear * 0.025 + stance.pitch;
               if (m.bike) {
-                m.body.rotation.x = clamp(c.av * 0.13, -0.28, 0.28);
+                // Leaning into the turn, or down on its side after a crash (riders.js).
+                m.body.rotation.x = c.fallen ? c.fallen.roll : clamp(c.av * 0.13, -0.28, 0.28);
                 m.rider.visible = c.hp > 0 && (c === player.car || c.ai);
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
@@ -2580,6 +2588,9 @@
             }
             // Flash patterns, wig-wag, halos (police3d.js).
             if (m.police) animatePoliceVehicle(c, m);
+            // Club trucks: wheel spin, steering, articulation, light bars; mud on any body (offroad3d.js).
+            if (m.offroad) animateOffroadVehicle(c, m, deltaSeconds);
+            else if (c.mudCoat > 0.01 || m.mudUniforms) applyVehicleMud(c, m);
             for (let i = 0; i < m.strobes.length; i++)
               m.strobes[i].material.color.copy(
                 cachedColor(
@@ -2600,6 +2611,8 @@
           lap = profileLap('r:vehicles', lap);
           // Every craft on the water has reported in: draw the wake map (wakes3d.js).
           updateWakes(deltaSeconds);
+          // Mud and dust from the tyres, splats and tyre tracks, the 4x4 club's flag and smoke (offroad3d.js).
+          updateOffroadVisuals(deltaSeconds);
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;

@@ -11,18 +11,24 @@
        *    with a hotter core, brighter towards the lamp, forward scattering (a
        *    beam aimed towards the camera glows), drifting dust or haze noise, and a
        *    fade into the ground plane, so the shaft never ends in a hard ellipse.
-       *    Additive and HDR, so bloom catches the bright end.
+       *    Additive and HDR, so bloom catches the bright end. The helicopter's
+       *    shaft also thins out over its last stretch and leaves clear air round
+       *    the lit target, so it never lies over the player as a white veil.
        *  - GROUND POOL: the helicopter's spot is a real SpotLight with a cookie
-       *    (hot centre, feathered edge, faint reflector rings) that lights the
-       *    ground, cars, facades and the player, and casts shadows on HIGH/ULTRA.
-       *    The watch towers use a cookie decal on the ground (eight real lights
-       *    would cost every material in the city).
+       *    (hot centre, even plateau, crisp edge with a narrow penumbra) that
+       *    lights the ground, cars, facades and the player through their own
+       *    materials, exposed so pale paving does not clip, and casts shadows while
+       *    sun shadows are on (HELICOPTER SEARCHLIGHT LOOK below). The watch towers use a
+       *    softer cookie decal on the ground (eight real lights would cost every
+       *    material in the city).
        *  - RAIN IN THE BEAM: a few hundred streaks that live inside the cone and
        *    are lit by it, animated on the GPU.
-       *  - THE HELICOPTER'S CREW (updateHelicopterSearchlight): the aim lags and
-       *    wobbles as it tracks, sweeps a search pattern round the last sighting
-       *    when the player is hidden, and snaps on (with a flare) when it finds
-       *    them again. The lens flares when it looks towards the camera.
+       *  - THE HELICOPTER'S CREW (updateHelicopterSearchlight): the aim lags a
+       *    little behind a fast target, sways with the operator's hand and buzzes
+       *    with the airframe, sweeps a search pattern round the last sighting when
+       *    the player is hidden, and snaps on (with a flare) when it finds them
+       *    again. Under a roof it lights the roof, never the target below
+       *    (SEARCHLIGHT LANDING). The lens flares when it looks towards the camera.
        */
       // ---- Shared shader pieces ---------------------------------------------------------
       // Beam frame: the cone's virtual apex (where its sides meet, behind the lens),
@@ -69,6 +75,10 @@
         uniform float uTime;
         uniform float uNoise;
         uniform vec3 uDrift;
+        uniform vec3 uTarget;
+        uniform float uClear;
+        uniform float uTail;
+        uniform float uCap;
         varying vec3 vWorld;
         float beamHash( vec3 p ) {
           p = fract( p * 0.3183099 + 0.1 );
@@ -140,7 +150,25 @@
             float phase = mix( 1.0, ( 1.0 - g * g ) / pow( 1.0 + g * g - 2.0 * g * c, 1.5 ) / hg90, 0.55 );
             // Soft landing: the shaft thins into the ground where the pool takes over.
             float ground = 0.18 + 0.82 * smoothstep( 0.0, 22.0, p.y - uGroundY );
-            float density = profile * along * phase * ground;
+            // Clear air round the target (the helicopter's beam): the last stretch of
+            // the shaft thins out (uTail of it gone by the ground) and nothing is left
+            // within ~uClear of the lit point, so the haze never lies over what the
+            // pool lights. The march cannot read the depth buffer it is drawn into;
+            // this keeps everything standing in the pool (people, cars) out of it.
+            float tail = 1.0 - uTail * smoothstep( 0.45, 1.0, bc.y );
+            float clearing = 1.0;
+            if ( uClear > 0.0 ) {
+              vec3 fromTarget = p - uTarget;
+              clearing = smoothstep( uClear * 0.6, uClear * 1.7, length( fromTarget ) );
+              // And in front of it on screen: whatever lies between the camera and
+              // the target along its line of sight is thinned out (a soft tube
+              // down that line), so the shaft never crosses over it.
+              vec3 sight = isOrthographic ? forward : normalize( uTarget - cameraPosition );
+              float toward = -dot( fromTarget, sight );
+              float offLine = length( fromTarget + sight * toward );
+              clearing *= 1.0 - smoothstep( -4.0, 12.0, toward ) * ( 1.0 - smoothstep( uClear * 0.3, uClear * 0.9, offLine ) );
+            }
+            float density = profile * along * phase * ground * tail * clearing;
             #ifdef BEAM_NOISE
               // Slow billows of haze with finer dust through them.
               vec3 q = p * 0.021 + uDrift;
@@ -149,10 +177,10 @@
             #endif
             sum += density;
           }
-          // Soft shoulder: looking down the length of the beam saturates instead
-          // of blowing out into a solid column.
+          // Soft shoulder: looking down the length of the beam saturates (at uCap)
+          // instead of blowing out into a solid column.
           float light = uIntensity * sum * dt * uNorm;
-          light = light / ( 1.0 + light * 0.45 );
+          light = light / ( 1.0 + light / uCap );
           gl_FragColor = vec4( uColor * light, 1.0 );
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
@@ -198,6 +226,12 @@
           uTime: { value: 0 },
           uNoise: { value: 1 },
           uDrift: { value: new Three.Vector3() },
+          // Target clearing, tail fade and shoulder (the helicopter sets them; a
+          // watch tower keeps these: no clearing, the old 2.2 shoulder).
+          uTarget: { value: new Three.Vector3() },
+          uClear: { value: 0 },
+          uTail: { value: 0 },
+          uCap: { value: 2.2 },
         };
         const material = new Three.ShaderMaterial({
           uniforms,
@@ -244,11 +278,10 @@
         return defines;
       }
       /**
-       * Searchlight cookie: the light's cross-section as a texture. A hot centre,
-       * a long soft shoulder, a faint reflector ring and a feathered edge, with a
-       * little mottling so the pool never looks like a perfect disc.
+       * Searchlight cookies: a light's cross-section as a texture, from a radial
+       * profile `shape(r, angle, x, y)` (r 0 centre .. 1 texture edge).
        */
-      const searchCookieTexture = (() => {
+      function searchCookie(shape) {
         const size = 256,
           c = document.createElement('canvas');
         c.width = c.height = size;
@@ -257,20 +290,10 @@
           data = image.data;
         for (let y = 0; y < size; y++)
           for (let x = 0; x < size; x++) {
-            const dx = (x + 0.5) / size - 0.5,
-              dy = (y + 0.5) / size - 0.5,
-              r = Math.hypot(dx, dy) * 2,
-              a = Math.atan2(dy, dx);
-            let v = 0;
-            if (r < 1) {
-              const feather = 1 - smoothUnit(0.66, 1, r);
-              v = (0.5 * Math.exp(-2.4 * r * r) + 0.5 * Math.exp(-11 * r * r)) * feather;
-              // Reflector rings and a slight asymmetry of the arc lamp.
-              v *= 1 + 0.09 * Math.exp(-Math.pow((r - 0.72) / 0.05, 2)) + 0.05 * Math.exp(-Math.pow((r - 0.4) / 0.04, 2));
-              v *= 1 + 0.05 * Math.sin(a * 3 + r * 9) * r + 0.04 * Math.sin(a * 7 - r * 13) * r;
-              v = Math.max(0, v) / 1.02;
-            }
-            const byte = Math.round(Math.min(1, v) * 255),
+            const dx = ((x + 0.5) / size - 0.5) * 2,
+              dy = ((y + 0.5) / size - 0.5) * 2,
+              v = shape(Math.hypot(dx, dy), Math.atan2(dy, dx), dx, dy),
+              byte = Math.round(clamp(v, 0, 1) * 255),
               o = (y * size + x) * 4;
             data[o] = data[o + 1] = data[o + 2] = byte;
             data[o + 3] = 255;
@@ -280,7 +303,39 @@
         t.colorSpace = Three.NoColorSpace;
         t.wrapS = t.wrapT = Three.ClampToEdgeWrapping;
         return t;
-      })();
+      }
+      /**
+       * The helicopter's xenon spot through a parabolic reflector: a hot centre
+       * over a broad even plateau, a faint bright caustic ring just inside a crisp
+       * edge, a narrow penumbra (r 0.80..0.93 of the texture) and a whisper of
+       * spill beyond it, very slightly oval, with a little mottling so it never
+       * looks like a perfect disc.
+       */
+      const searchCookieTexture = searchCookie((round, a, x, y) => {
+        const r = Math.hypot(x, y * 1.04);
+        if (r >= 1) return 0;
+        // Plateau with a hot core, sagging a little towards the rim.
+        let v = (0.6 + 0.4 * Math.exp(-(r * r) / 0.07)) * (1 - 0.14 * r * r);
+        // The reflector's caustic ring, then the crisp edge and its penumbra.
+        v *= 1 + 0.08 * Math.exp(-Math.pow((r - 0.76) / 0.035, 2));
+        v *= 1 - smoothUnit(0.8, 0.93, r);
+        v += 0.035 * (1 - smoothUnit(0.84, 1, r)) * smoothUnit(0.7, 0.86, r);
+        // A slight asymmetry of the arc and the lens.
+        return v * (1 + 0.035 * Math.sin(a * 3 + r * 9) * r + 0.025 * Math.sin(a * 7 - r * 13) * r);
+      });
+      /**
+       * The watch towers' softer lamps (ground decals): a hot centre, a long soft
+       * shoulder, a faint reflector ring and a feathered edge.
+       */
+      const searchPoolDecalTexture = searchCookie((r, a) => {
+        if (r >= 1) return 0;
+        const feather = 1 - smoothUnit(0.66, 1, r);
+        let v = (0.5 * Math.exp(-2.4 * r * r) + 0.5 * Math.exp(-11 * r * r)) * feather;
+        // Reflector rings and a slight asymmetry of the arc lamp.
+        v *= 1 + 0.09 * Math.exp(-Math.pow((r - 0.72) / 0.05, 2)) + 0.05 * Math.exp(-Math.pow((r - 0.4) / 0.04, 2));
+        v *= 1 + 0.05 * Math.sin(a * 3 + r * 9) * r + 0.04 * Math.sin(a * 7 - r * 13) * r;
+        return v / 1.02;
+      });
       function smoothUnit(edge0, edge1, x) {
         const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
         return t * t * (3 - 2 * t);
@@ -293,7 +348,7 @@
         const mesh = new Three.Mesh(
           new Three.PlaneGeometry(1, 1).rotateX(-Math.PI / 2),
           new Three.MeshBasicMaterial({
-            map: searchCookieTexture,
+            map: searchPoolDecalTexture,
             color,
             transparent: true,
             depthWrite: false,
@@ -321,6 +376,8 @@
         uWind: { value: new Three.Vector2() },
         uColor: { value: new Three.Color('#dbe8ff') },
         uIntensity: { value: 0 },
+        uTarget: { value: new Three.Vector3() },
+        uClear: { value: 0 },
       };
       const beamRain = (() => {
         const seeds = new Float32Array(BEAM_RAIN_MAX * 2 * 4),
@@ -348,6 +405,8 @@
             uniform float uTime;
             uniform float uGroundY;
             uniform vec2 uWind;
+            uniform vec3 uTarget;
+            uniform float uClear;
             attribute vec4 seed;
             attribute float tip;
             varying float vLight;
@@ -366,7 +425,14 @@
               float inside = ( 1.0 - smoothstep( 0.55, 1.0, bc.x ) ) * step( 0.0, bc.y ) * step( bc.y, 1.0 );
               float spread = uRadius0 + max( bc.y, 0.0 ) * uLength * uTan;
               float near = clamp( ( uRadius0 + uLength * uTan * 0.9 ) / spread, 1.0, 6.0 );
-              vLight = inside * sin( cycle * 3.14159 ) * near * step( uGroundY + 0.5, p.y ) * ( 1.0 - 0.6 * tip );
+              // Dimmer at head height, where they would streak over the lit target.
+              float low = mix( 0.2, 1.0, smoothstep( 6.0, 40.0, p.y - uGroundY ) );
+              // Thinner on the target's line of sight (as the shaft, a narrower tube).
+              vec3 sight = isOrthographic ? -vec3( viewMatrix[ 0 ][ 2 ], viewMatrix[ 1 ][ 2 ], viewMatrix[ 2 ][ 2 ] ) : normalize( uTarget - cameraPosition );
+              vec3 fromTarget = p - uTarget;
+              float toward = -dot( fromTarget, sight );
+              low *= 1.0 - 0.7 * step( 0.0, toward ) * ( 1.0 - smoothstep( uClear * 0.2, uClear * 0.6 + 1.0, length( fromTarget + sight * toward ) ) );
+              vLight = inside * sin( cycle * 3.14159 ) * near * low * step( uGroundY + 0.5, p.y ) * ( 1.0 - 0.6 * tip );
               gl_Position = projectionMatrix * viewMatrix * vec4( p, 1.0 );
             }`,
           fragmentShader: `
@@ -443,15 +509,77 @@
       searchFlare.userData.dynamic = true;
       scene.add(searchFlare);
       // ---- The helicopter's spot ---------------------------------------------------------
+      /**
+       * HELICOPTER SEARCHLIGHT LOOK
+       * The pool is light, not an overlay: one real SpotLight (cookie above) that
+       * lights the ground, cars, facades and the player through their own
+       * materials, so whoever stands in it is lit from above in the lamp's colour,
+       * keeps their contrast and detail and casts a crisp shadow away from the
+       * helicopter (while sun shadows are on). Its brightness is set as exposed light (divided by
+       * the night exposure), so pale paving comes out near white without clipping
+       * and asphalt a clear mid grey, whatever the time-of-day look does to the
+       * exposure, and it stays under the night bloom threshold on dark ground.
+       * The shaft is a garnish: faint in clear air, fuller in rain and murk, gone
+       * over the last stretch of the beam and round the target (uTail, uClear), and
+       * only drawn on HIGH/ULTRA.
+       */
+      const AIR_LIGHT = {
+        color: '#d8e5ff', // xenon arc: cool white with a slight blue tint
+        shaftColor: '#d0e0ff',
+        poolNight: 7.2, // irradiance x exposure at the pool's hot centre, full night
+        poolDay: 2.2, // the same by day (it barely shows against the sun)
+        wetDim: 0.45, // share lost on soaked tarmac, which mirrors it at the camera
+        shaftClear: 0.3, // shaft strength in clear air at night
+        shaftMurk: 0.8, // added per unit of murk (rain, overcast, lightning)
+        capClear: 0.3, // shaft shoulder (HDR ceiling of a pixel) in clear air
+        capMurk: 0.55, // added at full murk
+        tailClear: 0.95, // share of the shaft gone by the ground in clear air
+        tailRain: 0.6, // the same in heavy rain, where the lit drops carry it down
+        clear: 1.25, // radius of the clear air round the target, in pool radii
+        trackRadius: 44, // pool radius on the target (map units)
+        searchRadius: 60, // wider while searching
+        velocityFeed: 0.82, // share of the target's velocity the crew anticipates
+      };
       // Always in the scene (intensity 0 when idle) so every material keeps the same
       // program; its shadow is switched with the quality tier (setSearchlightQuality).
-      const airSpot = new Three.SpotLight('#e2eeff', 0, 600, 0.2, 0.28, 2);
+      // A hard-edged lamp: the cookie shapes the edge, the cone barely softens it.
+      const airSpot = new Three.SpotLight(AIR_LIGHT.color, 0, 600, 0.2, 0.04, 2);
       airSpot.map = searchCookieTexture;
       airSpot.shadow.bias = -0.00045;
       airSpot.shadow.normalBias = 0.7;
       airSpot.shadow.mapSize.set(1024, 1024);
       scene.add(airSpot, airSpot.target);
-      const airBeam = createSearchBeam('#dfeaff');
+      const airBeam = createSearchBeam(AIR_LIGHT.shaftColor);
+      /* ROOF STAND-IN: the roof the light lands on, as a shadow caster only (no
+         colour, no depth), just under the roof's top. A roof the cutaway hides
+         while the player is inside (a garage's, a building's) casts no shadow, so
+         without it the spot would pour through onto them. Shown only while the
+         light lands on cover. */
+      const airRoofStandIn = new Three.Mesh(
+        new Three.BoxGeometry(1, 1, 1),
+        new Three.MeshBasicMaterial({ colorWrite: false, depthWrite: false }),
+      );
+      airRoofStandIn.name = 'searchlight roof stand-in (spot shadow only)';
+      // Only in the spot's (perspective) shadow map: in an orthographic shadow
+      // pass (the sun and moon) it collapses outside the clip volume, so it never
+      // casts a moon shadow of its own.
+      airRoofStandIn.customDepthMaterial = new Three.MeshDepthMaterial({ depthPacking: Three.RGBADepthPacking });
+      airRoofStandIn.customDepthMaterial.onBeforeCompile = (shader) => {
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <project_vertex>',
+          '#include <project_vertex>\n\tif ( projectionMatrix[ 3 ][ 3 ] == 1.0 ) gl_Position = vec4( 0.0, 0.0, 2.0, 1.0 );',
+        );
+      };
+      airRoofStandIn.customDepthMaterial.customProgramCacheKey = () => 'searchlight-roof-stand-in';
+      airRoofStandIn.castShadow = true;
+      airRoofStandIn.receiveShadow = false;
+      airRoofStandIn.visible = false;
+      airRoofStandIn.userData.dynamic = true;
+      scene.add(airRoofStandIn);
+      // The shaft is drawn on HIGH/ULTRA only (setSearchlightQuality); the
+      // developer console can switch the shaft and pool off for A/B tests.
+      let airShaftTier = true;
+      const searchlightDebug = { shaft: true, pool: true };
       const airSearch = {
         unit: null,
         aim: new Three.Vector3(),
@@ -460,7 +588,11 @@
         lastGoal: new Three.Vector3(),
         goalVelocity: new Three.Vector3(),
         apex: new Three.Vector3(),
+        lit: new Three.Vector3(),
         ground: 0,
+        floor: 0,
+        roof: null,
+        roofBox: { top: 0, bottom: 0, x: 0, y: 0, hx: 0, hy: 0, a: 0 },
         radius: 48,
         fade: 0,
         state: '',
@@ -468,29 +600,74 @@
         flareUntil: 0,
         clock: 0,
         valid: false,
+        irradiance: 0,
       };
       const airScratch = new Three.Vector3(),
         airToCamera = new Three.Vector3();
-      // Where the crew points the light this frame, or null (see airSearchPoint).
+      /**
+       * SEARCHLIGHT LANDING: what the light lands on at a map point whose ground
+       * (or target) is at `elevation`: null in the open, or under overhead cover
+       * (air-cover.js: a roof, a garage or a building the target is inside, a
+       * station canopy, a rail deck) the cover's roof `{ top, bottom, x, y, hx,
+       * hy, a }` (a footprint rectangle when known), where the beam stops: it never
+       * reaches the ground or the target below. The one swap point for a better
+       * roof query: air-cover.js's `overheadCoverHeight(x, y, elevation)`, when a
+       * build has it, gives the height first.
+       */
+      const searchRoof = { top: 0, bottom: 0, x: 0, y: 0, hx: 0, hy: 0, a: 0 };
+      function searchlightLanding(x, y, elevation) {
+        const r = searchRoof,
+          cover = overheadCover(x, y, elevation);
+        let top = typeof overheadCoverHeight === 'function' ? overheadCoverHeight(x, y, elevation) : null;
+        r.a = 0;
+        if (cover && Number.isFinite(cover.hx)) {
+          // A registered roof: its own rectangle.
+          Object.assign(r, { x: cover.x, y: cover.y, hx: cover.hx, hy: cover.hy, a: cover.a || 0 });
+        } else if (cover && Number.isFinite(cover.x0)) {
+          Object.assign(r, { x: (cover.x0 + cover.x1) / 2, y: (cover.y0 + cover.y1) / 2, hx: (cover.x1 - cover.x0) / 2, hy: (cover.y1 - cover.y0) / 2 });
+        } else if (cover && cover.kind === 'building') {
+          Object.assign(r, { x, y, hx: 60, hy: 60 });
+          for (const b of buildingsNear(x, y))
+            if (x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) {
+              Object.assign(r, { x: b.x + b.w / 2, y: b.y + b.h / 2, hx: b.w / 2, hy: b.h / 2 });
+              break;
+            }
+        } else if (!cover) return null;
+        else Object.assign(r, { x, y, hx: 60, hy: 60 });
+        if (!Number.isFinite(top)) top = cover.top;
+        if (!Number.isFinite(top) || top <= elevation + 6) return null;
+        r.top = top;
+        r.bottom = cover && Number.isFinite(cover.bottom) && cover.bottom < top ? cover.bottom : top - 3;
+        return r;
+      }
+      // Where the crew points the light this frame, or null: `elevation` is where
+      // it lands (a roof over the target), `floor` the ground or target under it.
       function airSearchGoal(h) {
-        const seen = airSearchPoint(h);
-        if (!seen) return null;
         if (h.airState === 'searching') {
           // Hunting: a sweeping figure round the last sighting that dwells and
-          // doubles back, wider as the search drags on.
+          // doubles back, wider as the search drags on. Over a roof it lights the
+          // roof (the crew cannot see through it, so neither does the light).
+          const centre = h.airLastSeen || h.pursuitTarget;
+          if (!centre || h.airOnScene === false || distanceBetween(h, centre) > 560) return null;
           const t = gameTime,
-            centre = h.airLastSeen || seen,
             reach = 55 + Math.min(70, (h.airLostFor || 0) * 6),
-            a = t * 0.62 + Math.sin(t * 0.27) * 1.3;
-          return {
-            x: centre.x + Math.cos(a) * reach * (0.55 + 0.45 * Math.sin(t * 0.41)),
-            y: centre.y + Math.sin(a * 1.5) * reach * 0.8,
-            elevation: terrainHeight(centre.x, centre.y),
-          };
+            a = t * 0.62 + Math.sin(t * 0.27) * 1.3,
+            x = centre.x + Math.cos(a) * reach * (0.55 + 0.45 * Math.sin(t * 0.41)),
+            y = centre.y + Math.sin(a * 1.5) * reach * 0.8,
+            floor = terrainHeight(x, y);
+          return airGoalOn(x, y, floor);
         }
-        // Tracking: the live target, not the last simulation snapshot.
-        const live = h.airTarget && h.airTarget.hp > 0 ? h.airTarget : seen;
-        return { x: live.x, y: live.y, elevation: entityElevation(live) };
+        const seen = airSearchPoint(h);
+        if (!seen) return null;
+        // Tracking: the live target, not the last simulation snapshot (on a roof
+        // over them in the moment before the crew loses them).
+        const live = h.airTarget && h.airTarget.hp > 0 ? h.airTarget : seen,
+          floor = entityElevation(live);
+        return airGoalOn(live.x, live.y, floor);
+      }
+      function airGoalOn(x, y, floor) {
+        const roof = searchlightLanding(x, y, floor);
+        return { x, y, floor, elevation: roof ? roof.top : floor, roof };
       }
       /**
        * Critically damped spring, solved exactly (stable at any frame time), towards
@@ -526,6 +703,7 @@
         }
         if (goal) {
           s.goal.set(goal.x, goal.elevation, goal.y);
+          s.roof = goal.roof ? Object.assign(s.roofBox, goal.roof) : null;
           if (!s.valid) {
             // First sight: start on the goal, no swing in from nowhere.
             s.aim.copy(s.goal);
@@ -533,6 +711,7 @@
             s.aimVelocity.set(0, 0, 0);
             s.goalVelocity.set(0, 0, 0);
             s.ground = goal.elevation;
+            s.floor = goal.floor;
             s.valid = true;
           }
           const state = h.airState;
@@ -541,8 +720,9 @@
             s.flareUntil = gameTime + 0.45;
           }
           s.state = state;
-          // Target velocity (smoothed) feeds the spring so a moving car is held
-          // in the pool instead of trailing out of it.
+          // Target velocity (smoothed) feeds the spring so a moving car stays in
+          // the pool; the crew anticipates most of it, not all, so a fast car
+          // sits a little ahead of the centre, the light catching up.
           if (elapsed > 0) {
             airScratch.copy(s.goal).sub(s.lastGoal).divideScalar(elapsed);
             if (elapsed > 0.5 || airScratch.lengthSq() > 900 * 900) airScratch.set(0, 0, 0);
@@ -555,65 +735,93 @@
           if (s.aim.distanceTo(s.goal) > 280) {
             s.aim.copy(s.goal);
             s.aimVelocity.copy(s.goalVelocity);
-          } else springTowards(s.aim, s.aimVelocity, s.goal, s.goalVelocity, omega, dt);
+          } else {
+            airScratch.copy(s.goalVelocity).multiplyScalar(searching ? 1 : AIR_LIGHT.velocityFeed);
+            springTowards(s.aim, s.aimVelocity, s.goal, airScratch, omega, dt);
+          }
           s.ground += (goal.elevation - s.ground) * clamp(dt * 6, 0, 1);
+          s.floor += (goal.floor - s.floor) * clamp(dt * 6, 0, 1);
           // A wider beam to search with, narrowed onto the target once found.
-          s.radius += ((searching ? 60 : 44) - s.radius) * clamp(dt * 2.5, 0, 1);
+          s.radius += ((searching ? AIR_LIGHT.searchRadius : AIR_LIGHT.trackRadius) - s.radius) * clamp(dt * 2.5, 0, 1);
           s.fade = Math.min(1, s.fade + dt * 2.5);
         } else s.fade = Math.max(0, s.fade - dt * 1.8);
         const active = s.fade > 0.001 && s.valid && !!h;
-        airBeam.mesh.visible = searchFlare.visible = active;
-        beamRain.visible = active && weather.rain > 0.04;
+        airBeam.mesh.visible = active && airShaftTier && searchlightDebug.shaft;
+        searchFlare.visible = active;
+        beamRain.visible = active && weather.rain > 0.04 && searchlightDebug.shaft;
+        airRoofStandIn.visible = active && !!s.roof && airSpot.castShadow;
         if (!active) {
           airSpot.intensity = 0;
           return;
         }
-        // The light sits in the chin housing under the nose (helicopter3d.js).
-        const cos = Math.cos(h.a),
-          sin = Math.sin(h.a),
-          base = entityElevation(h) + 0.1;
-        s.apex.set(h.x + cos * 16.5, base + 4.2, h.y + sin * 16.5);
-        // The operator's hand and the airframe's sway.
+        if (airRoofStandIn.visible) {
+          const r = s.roof,
+            thick = clamp((r.top - r.bottom) * 0.5, 0.6, 2.5);
+          airRoofStandIn.position.set(r.x, r.top - 0.4 - thick / 2, r.y);
+          airRoofStandIn.rotation.set(0, -r.a, 0);
+          airRoofStandIn.scale.set(r.hx * 2, thick, r.hy * 2);
+        }
+        // The Nightsun's lens on the airframe: the only thing taken from the
+        // helicopter model (helicopter3d.js HELI_SEARCHLIGHT_MOUNT and its anchor).
+        helicopterSearchlightMount(h, s.apex);
+        // The operator's hand (slow sways, looser while searching) and the
+        // airframe's vibration through the gimbal, busier as it flies faster.
         const t = gameTime,
           wobble = s.state === 'searching' ? 3 : 1.6,
-          aim = airScratch.set(
-            s.aim.x + (Math.sin(t * 1.7) + 0.5 * Math.sin(t * 4.3 + 1.1)) * wobble,
+          buzz = 0.35 * (1 + (h.speed ? Math.min(1, Math.abs(h.speed) / 200) : 0)),
+          aim = s.lit.set(
+            s.aim.x + (Math.sin(t * 1.7) + 0.5 * Math.sin(t * 4.3 + 1.1)) * wobble + Math.sin(t * 71) * Math.sin(t * 13.1) * buzz,
             s.aim.y,
-            s.aim.z + (Math.sin(t * 1.3 + 2) + 0.5 * Math.sin(t * 3.7)) * wobble,
+            s.aim.z + (Math.sin(t * 1.3 + 2) + 0.5 * Math.sin(t * 3.7)) * wobble + Math.sin(t * 83 + 1) * Math.sin(t * 11.3) * buzz,
           );
         const distance = s.apex.distanceTo(aim),
           night = nightAmount,
           rain = weather.rain,
           overcast = weather.cloud * weather.cloud,
+          flash = weather.flash || 0,
           // A xenon arc barely flickers; a new find flares the beam.
           flicker = 1 + 0.025 * Math.sin(t * 43) * Math.sin(t * 17.3),
           flare = gameTime < s.flareUntil ? 1 + 0.35 * ((s.flareUntil - gameTime) / 0.45) : 1,
           power = s.fade * flicker * flare;
         // Ground pool: a real spot light, constant brightness at the target
-        // whatever the altitude (decay 2, intensity scaled by distance squared).
-        const cutoff = distance * 1.45,
+        // whatever the altitude (decay 2, intensity scaled by distance squared),
+        // set against the exposure (not the lightning's flash) so it is the same
+        // on screen however the night look is exposed.
+        const covered = !!s.roof && s.ground - s.floor > 6,
+          dropBelow = covered ? (s.ground - s.floor) * (distance / Math.max(1, s.apex.y - s.ground)) : 0,
+          // Under a roof with no spot shadow (LOW, shadows off) the light must not
+          // carry on through it to whoever hides inside: it ends a little under
+          // the roof instead of well past the target (a steeper fall-off across
+          // the roof, only then).
+          cutoff = covered && !airSpot.castShadow ? distance + clamp(dropBelow * 0.6, 8, distance * 0.45) : distance * 1.45,
           windowing = Math.pow(1 - Math.pow(distance / cutoff, 4), 2),
-          // Wet tarmac mirrors it back at the camera: less light, or the pool burns out.
-          irradiance = (1.6 + night * 17) * (1 - weather.wet * 0.55);
+          exposure = Math.max(0.2, postLook.exposure / (1 + flash * 0.6)),
+          irradiance = ((AIR_LIGHT.poolDay + (AIR_LIGHT.poolNight - AIR_LIGHT.poolDay) * night) / exposure) * (1 - weather.wet * AIR_LIGHT.wetDim);
+        s.irradiance = irradiance * power;
         airSpot.position.copy(s.apex);
         airSpot.target.position.copy(aim);
         airSpot.target.updateMatrixWorld();
         airSpot.distance = cutoff;
         airSpot.angle = Math.atan((s.radius * 1.12) / distance);
-        airSpot.intensity = (irradiance * distance * distance * power) / windowing;
+        airSpot.intensity = searchlightDebug.pool ? (irradiance * distance * distance * power) / windowing : 0;
         if (airSpot.castShadow) {
           airSpot.shadow.camera.near = Math.max(10, distance - 170);
           airSpot.shadow.camera.updateProjectionMatrix();
         }
-        // The shaft: faint by day, striking at night, thicker in rain and murk.
-        const haze = 1 + rain * 0.45 + overcast * 0.25 + (weather.flash || 0) * 0.5;
+        // The shaft: faint by day and in clear air, fuller in rain and murk, and
+        // clear of the target.
+        const murk = Math.min(1.6, rain * 1.3 + overcast * 0.5 + flash * 0.5),
+          b = airBeam.uniforms;
         airBeam.set(s.apex, aim, s.radius, 1.6, s.ground);
-        airBeam.uniforms.uIntensity.value = (0.05 + night * 0.95) * 1.25 * haze * power;
-        airBeam.uniforms.uNoise.value = 0.9 - rain * 0.3;
+        b.uIntensity.value = (0.03 + night * 0.97) * (AIR_LIGHT.shaftClear + AIR_LIGHT.shaftMurk * murk) * power;
+        b.uNoise.value = 0.9 - rain * 0.3;
+        b.uCap.value = AIR_LIGHT.capClear + AIR_LIGHT.capMurk * Math.min(1, murk);
+        b.uTail.value = AIR_LIGHT.tailClear + (AIR_LIGHT.tailRain - AIR_LIGHT.tailClear) * Math.min(1, rain * 1.5);
+        b.uTarget.value.copy(aim);
+        b.uClear.value = s.radius * AIR_LIGHT.clear;
         // Rain streaks lit inside the cone.
         if (beamRain.visible) {
-          const u = beamRainUniforms,
-            b = airBeam.uniforms;
+          const u = beamRainUniforms;
           u.uApex.value.copy(b.uApex.value);
           u.uAxis.value.copy(b.uAxis.value);
           u.uLength.value = b.uLength.value;
@@ -621,30 +829,75 @@
           u.uTan.value = b.uTan.value;
           u.uGroundY.value = s.ground;
           u.uTime.value = gameTime;
+          u.uTarget.value.copy(b.uTarget.value);
+          u.uClear.value = b.uClear.value;
           const slant = weather.wind * 0.21;
           u.uWind.value.set(Math.cos(weather.windAngle) * slant, Math.sin(weather.windAngle) * slant);
-          u.uIntensity.value = Math.min(1, rain * 1.4) * (0.15 + night * 0.85) * 0.8 * power;
+          u.uIntensity.value = Math.min(1, rain * 1.4) * (0.15 + night * 0.85) * 0.6 * power;
         }
         // Lens: a hot point always, a flare and streak when it looks at the camera.
         if (camera.isOrthographicCamera) camera.getWorldDirection(airToCamera).negate();
         else airToCamera.copy(camera.position).sub(s.apex).normalize();
-        const facing = Math.max(0, -airBeam.uniforms.uAxis.value.dot(airToCamera)),
+        const facing = Math.max(0, -b.uAxis.value.dot(airToCamera)),
           glare = Math.pow(facing, 3);
         searchFlareUniforms.uCenter.value.copy(s.apex);
         searchFlareUniforms.uSize.value = 7 + glare * 9;
         searchFlareUniforms.uIntensity.value = (0.25 + night * 1.6) * (0.35 + glare * 2.4) * power * (1 + 0.06 * Math.sin(t * 31));
         searchFlareUniforms.uStreak.value = glare * (0.4 + night * 0.6);
       }
+      /**
+       * Developer console (DeadEndCity.searchlight): the helicopter light's state,
+       * where its pool and the player are on screen (for contrast measurements),
+       * and switches for the shaft and the pool (`{ shaft: false }`) for A/B shots.
+       */
+      function searchlightReport(options) {
+        if (options && typeof options === 'object')
+          for (const key of ['shaft', 'pool']) if (typeof options[key] === 'boolean') searchlightDebug[key] = options[key];
+        const s = airSearch,
+          screen = (x, elevation, y) => {
+            const v = airScratch.set(x, elevation, y).project(camera);
+            return { x: Math.round((v.x * 0.5 + 0.5) * viewportWidth), y: Math.round((-0.5 * v.y + 0.5) * viewportHeight) };
+          },
+          round = (v) => Math.round(v * 100) / 100,
+          target = player.car || player;
+        return {
+          active: airSpot.intensity > 0 || airBeam.mesh.visible,
+          unit: s.unit ? s.unit.id : null,
+          state: s.state,
+          switches: { ...searchlightDebug },
+          shaftTier: airShaftTier,
+          shaftShown: airBeam.mesh.visible,
+          rainShown: beamRain.visible,
+          aim: { x: round(s.lit.x), y: round(s.lit.z), elevation: round(s.lit.y) },
+          lag: round(Math.hypot(s.lit.x - s.goal.x, s.lit.z - s.goal.z)),
+          radius: round(s.radius),
+          altitude: s.unit ? round(s.apex.y - s.ground) : null,
+          irradiance: round(s.irradiance),
+          onCover: !!s.roof,
+          roof: s.roof ? { ...s.roof } : null,
+          roofStandIn: airRoofStandIn.visible,
+          landing: round(s.ground),
+          floor: round(s.floor),
+          reach: round(airSpot.distance),
+          exposure: round(postLook.exposure),
+          shaft: { intensity: round(airBeam.uniforms.uIntensity.value), cap: round(airBeam.uniforms.uCap.value), tail: round(airBeam.uniforms.uTail.value), clear: round(airBeam.uniforms.uClear.value), steps: searchBeamSteps },
+          shadow: airSpot.castShadow ? airSpot.shadow.mapSize.x : 0,
+          screen: { aim: screen(s.lit.x, s.lit.y, s.lit.z), player: screen(target.x, entityElevation(target) + 8, target.y) },
+          pixelsPerUnit: round(viewportHeight / (streetCamera.top - streetCamera.bottom)),
+        };
+      }
       // ---- Quality ----------------------------------------------------------------------
       /**
-       * LOW: a short march without noise, no shadow, fewer lit raindrops.
-       * MEDIUM adds the dust; HIGH/ULTRA march further and give the helicopter's
-       * spot a shadow while sun shadows are HIGH (a program change for lit
-       * materials, so only on a tier or shadow setting change).
+       * LOW/MEDIUM: the pool alone (no shaft for the helicopter), a short march
+       * for the watch towers, fewer lit raindrops. HIGH/ULTRA add the helicopter's
+       * shaft and march further. The spot casts a shadow whenever sun shadows are
+       * on (a program change for lit materials, so only on a tier or shadow
+       * setting change).
        */
       function setSearchlightQuality(tier) {
         const steps = tier.ao >= 14 ? 22 : tier.ao > 0 ? 16 : tier.bloom > 0 ? 10 : 6,
           noise = tier.bloom > 0;
+        airShaftTier = tier.ao > 0;
         if (steps !== searchBeamSteps || noise !== searchBeamNoise) {
           searchBeamSteps = steps;
           searchBeamNoise = noise;
@@ -653,8 +906,11 @@
             beam.mesh.material.needsUpdate = true;
           }
         }
-        const shadows = tier.shadowMap >= 3072 && shadowQuality() === 'high',
-          shadowSize = tier.shadowMap >= 4096 ? 2048 : 1024;
+        // Whenever the sun has a shadow map (MEDIUM up by default) the spot has one
+        // too: the player's crisp shadow, and roofs that keep the light off whoever
+        // is under them. Smaller below HIGH.
+        const shadows = shadowQuality() !== 'off',
+          shadowSize = tier.shadowMap >= 4096 ? 2048 : tier.shadowMap >= 3072 && shadowQuality() === 'high' ? 1024 : 512;
         if (airSpot.castShadow !== shadows || airSpot.shadow.mapSize.x !== shadowSize) {
           airSpot.castShadow = shadows;
           airSpot.shadow.mapSize.set(shadowSize, shadowSize);

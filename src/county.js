@@ -498,6 +498,7 @@
       for (const r of SERVICE_ROADS) strokeRoad(drawingContext, r.points, r.width, '#606664');
       paintMountainTrails(drawingContext);
       paintServiceForecourts(drawingContext);
+      paintOffroadClubGround(drawingContext);
       if (detail) {
         let local = 1097;
         const random = () => {
@@ -600,6 +601,7 @@
           onCountyRoad(x, y, 95) ||
           terrainHeight(x, y) > 5 ||
           onMountainTrail(x, y) ||
+          offroadClubBlocked(x, y, 45) ||
           countyBlocked(x, y, 45) ||
           buildings.some(
             (b) => x > b.x - 35 && x < b.x + b.w + 35 && y > b.y - 35 && y < b.y + b.h + 35,
@@ -799,6 +801,7 @@
       makeCar('plane', FLIGHT.parked.x, FLIGHT.parked.y, 0);
       populateMilitary();
       spawnTrailVehicles();
+      populateOffroadClub();
       populateRecreation();
       populateSunsetPier();
       populateLiners();
@@ -886,6 +889,7 @@
     function addCountyColliders() {
       addBeachColliders();
       addBeachClubColliders();
+      addOffroadClubColliders();
       for (const b of [...countySolids(), ...militaryWalls])
         addStatic(b.x, b.y, b.w, b.h, b.height, b.kind || 'military');
       // Towers, pylons, arches, trusses and cable fans (bridgeStructure,

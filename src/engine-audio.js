@@ -231,7 +231,8 @@
         reversing = along < -5,
         drive = up || (down && along < 10),
         idle = set.idle,
-        top = spec.max || 300;
+        // Low range (offroad.js): the same revs at a third of the road speed.
+        top = (spec.max || 300) * (a.car?.lowRange ? 0.36 : 1);
       // Throttle pedal: quick to press, a touch slower to lift.
       a.throttle += ((drive ? 1 : 0) - a.throttle) * Math.min(1, dt * (drive ? 9 : 6));
       let target;
@@ -491,7 +492,9 @@
       if (set && !engineUseSet(a, kind)) return;
       const tuning = car ? ENGINE_OF_TYPE[car.type] || ['compact', 1, 1] : ['compact', 1, 1],
         spec = car ? vehicleSpec(car) : null,
-        along = car ? (car.vx || 0) * Math.cos(car.a) + (car.vy || 0) * Math.sin(car.a) || car.speed || 0 : 0,
+        // Spinning wheels (offroad.js) rev the engine past what the ground speed says.
+        rolling = car ? (car.vx || 0) * Math.cos(car.a) + (car.vy || 0) * Math.sin(car.a) || car.speed || 0 : 0,
+        along = rolling + (car?.spinSpeed || 0) * (rolling < -5 ? -1 : 1),
         running = on && alive && !!set;
       a.startDelay -= dt;
       if (running) {

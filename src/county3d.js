@@ -155,6 +155,31 @@
         // The trail: packed gravel with darker wheel ruts along the middle.
         vec3 tGravel = terrainSrgb( vec3( 0.62, 0.55, 0.43 ) ) * ( 0.84 + 0.3 * mix( 0.5, terrainNoise( tP.xz * 0.6 ), tFade ) );
         tCol = mix( tCol, tGravel, smoothstep( 0.2, 0.8, tTrail ) * ( 1.0 - tSnow * 0.6 ) );
+        // Trail mud (offroad.js bakes it per vertex): dark, wet dirt, deepest in the
+        // two wheel ruts, puddles lying in them, wetter after rain; rock ledges
+        // where the rock steps are.
+        float tMud = vTerrainMud.x, tAcross = vTerrainMud.y * 3.0, tRockStep = vTerrainMud.z;
+        float tMudW = 0.0, tPuddle = 0.0, tRut = 0.0;
+        if ( tMud + tRockStep > 0.004 ) {
+          float mudWetness = clamp( 0.5 + 0.5 * cityWet, 0.0, 1.0 );
+          tRut = exp( -pow( ( tAcross - 0.36 ) / 0.1, 2.0 ) ) * smoothstep( 0.05, 0.3, tMud );
+          float mn = terrainNoise( tP.xz * 0.31 ), mn2 = mix( 0.5, terrainNoise( tP.xz * 1.9 + 4.0 ), tFade );
+          vec3 mudDry = terrainSrgb( vec3( 0.47, 0.38, 0.28 ) ), mudWetCol = terrainSrgb( vec3( 0.29, 0.22, 0.15 ) );
+          vec3 mudCol = mix( mudDry, mudWetCol, mudWetness * ( 0.45 + 0.55 * tMud ) ) * ( 0.82 + 0.3 * mn2 ) * ( 1.0 - 0.22 * tRut );
+          // Tyre-churned streaks along the ruts.
+          mudCol *= 1.0 - 0.12 * tRut * mix( 0.5, terrainNoise( tP.xz * vec2( 2.3, 0.35 ) ), tFade );
+          // Puddles: a few, lying in the ruts and the low spots of the deepest mud,
+          // more of them after rain; brown water that mirrors the sky.
+          float puddleField = terrainNoise( tP.xz * 0.11 + 11.0 ) * 0.75 + mn * 0.25 + tRut * 0.22;
+          tPuddle = smoothstep( 0.74, 0.8, puddleField + tMud * 0.06 + cityWet * 0.06 ) * smoothstep( 0.4, 0.75, tMud ) * ( 0.35 + 0.65 * mudWetness );
+          mudCol = mix( mudCol, terrainSrgb( vec3( 0.26, 0.22, 0.17 ) ), tPuddle * 0.8 );
+          tMudW = smoothstep( 0.03, 0.3, tMud ) * ( 1.0 - tSnow );
+          tCol = mix( tCol, mudCol, tMudW );
+          // Rock steps: pale grey ledges across the trail.
+          vec3 slab = mix( tRock, terrainSrgb( vec3( 0.52, 0.5, 0.46 ) ), 0.5 ) * ( 0.8 + 0.3 * mn2 );
+          tCol = mix( tCol, slab, smoothstep( 0.3, 0.8, tRockStep ) * 0.85 );
+          tMudW *= mudWetness;
+        }
         // Ambient occlusion also darkens the albedo a little in the deepest folds.
         tCol *= mix( 0.72, 1.0, smoothstep( 0.35, 0.95, tAo ) );
         // At the foot the colour meets the painted county ground it rises from.
@@ -184,13 +209,17 @@
       const TERRAIN_ROUGHNESS = `
         roughnessFactor = mix( mix( 0.95, 0.86, tRockW ), 0.6, tSnow );
         roughnessFactor = mix( roughnessFactor, 0.1, tWater * ( 1.0 - tFoam ) );
-        roughnessFactor = mix( roughnessFactor, roughnessFactor * 0.55, cityWet );`;
+        roughnessFactor = mix( roughnessFactor, roughnessFactor * 0.55, cityWet );
+        roughnessFactor = mix( roughnessFactor, 0.42, tMudW * 0.7 );
+        roughnessFactor = mix( roughnessFactor, 0.08, tPuddle );`;
       const TERRAIN_NORMAL = `
         {
           // Bump from a height made of the rock grain, the strata ledges and the turf.
           float bumpHeight = ( tGrain * 2.2 + tGrainFine * 0.8 + smoothstep( 0.8, 1.0, tBandF ) * 1.4 ) * tRockW
             + terrainNoise( tP.xz * 0.5 ) * 0.5 * ( 1.0 - tRockW ) + tScreeW * terrainNoise( tP.xz * 1.3 ) * 0.6;
-          bumpHeight *= ( 1.0 - tSnow * 0.85 ) * tFade * ( 1.0 - tWater );
+          // Ruts pressed into the mud, a churned surface, flat water in the puddles.
+          bumpHeight += ( -tRut * 1.4 + terrainNoise( tP.xz * 0.9 ) * 0.5 ) * tMudW;
+          bumpHeight *= ( 1.0 - tSnow * 0.85 ) * tFade * ( 1.0 - tWater ) * ( 1.0 - tPuddle );
           vec3 sigmaX = dFdx( -vViewPosition ), sigmaY = dFdy( -vViewPosition );
           vec3 r1 = cross( sigmaY, normal ), r2 = cross( normal, sigmaX );
           float det = dot( sigmaX, r1 );
@@ -221,16 +250,16 @@
         shader.vertexShader = shader.vertexShader
           .replace(
             '#include <common>',
-            '#include <common>\nattribute vec4 terrainData;\nvarying vec4 vTerrainData;\nvarying vec3 vTerrainNormal;',
+            '#include <common>\nattribute vec4 terrainData;\nattribute vec4 terrainMud;\nvarying vec4 vTerrainData;\nvarying vec4 vTerrainMud;\nvarying vec3 vTerrainNormal;',
           )
           .replace(
             '#include <beginnormal_vertex>',
-            '#include <beginnormal_vertex>\nvTerrainNormal = normalize( mat3( modelMatrix ) * objectNormal );\nvTerrainData = terrainData;',
+            '#include <beginnormal_vertex>\nvTerrainNormal = normalize( mat3( modelMatrix ) * objectNormal );\nvTerrainData = terrainData;\nvTerrainMud = terrainMud;',
           );
         shader.fragmentShader = shader.fragmentShader
           .replace(
             '#include <common>',
-            '#include <common>\nvarying vec4 vTerrainData;\nvarying vec3 vTerrainNormal;\nuniform sampler2D terrainTile;\nuniform vec4 terrainTileRect;\nuniform vec3 terrainTileTint;\nuniform float terrainTime;\nuniform vec3 terrainSun;\nuniform float terrainSunPower;\nuniform float terrainSnowLine;\nuniform float terrainTreeLine;\n' +
+            '#include <common>\nvarying vec4 vTerrainData;\nvarying vec4 vTerrainMud;\nvarying vec3 vTerrainNormal;\nuniform sampler2D terrainTile;\nuniform vec4 terrainTileRect;\nuniform vec3 terrainTileTint;\nuniform float terrainTime;\nuniform vec3 terrainSun;\nuniform float terrainSunPower;\nuniform float terrainSnowLine;\nuniform float terrainTreeLine;\n' +
               TERRAIN_NOISE +
               SURFACE_NOISE,
           )
@@ -264,7 +293,7 @@
       }
       for (const field of TERRAIN_FIELDS) {
         const terrainMaterial = terrainMaterialAt((field.x0 + field.x1) / 2, (field.y0 + field.y1) / 2);
-        const { cols, rows, nx, ny, heights, triangles, flow, trailMask, x0, y0 } = terrainField(field),
+        const { cols, rows, nx, ny, heights, triangles, flow, trailMask, x0, y0, mudField, rockField, trailAcross } = terrainField(field),
           { normals, ao, forest } = terrainBakes(field);
         for (let cz = 0; cz < ny; cz += TERRAIN_CHUNK)
           for (let cx = 0; cx < nx; cx += TERRAIN_CHUNK) {
@@ -277,6 +306,8 @@
               positions = new Float32Array((w * h + border) * 3),
               normalData = new Float32Array((w * h + border) * 3),
               data = new Uint8Array((w * h + border) * 4),
+              // Mud, distance across the trail (/3), rock steps (offroad.js).
+              mudData = new Uint8Array((w * h + border) * 4),
               local = (c, r) => (r - cz) * w + (c - cx);
             let any = false,
               top = 0;
@@ -292,6 +323,9 @@
                 data[v * 4 + 1] = Math.round(flow[i] * 255);
                 data[v * 4 + 2] = Math.round(trailMask[i] * 255);
                 data[v * 4 + 3] = Math.round(forest[i] * 255);
+                mudData[v * 4] = Math.round(mudField[i] * 255);
+                mudData[v * 4 + 1] = Math.round(clamp(trailAcross[i] / 3, 0, 1) * 255);
+                mudData[v * 4 + 2] = Math.round(rockField[i] * 255);
                 top = Math.max(top, heights[i]);
               }
             const full = [];
@@ -338,6 +372,7 @@
               positions[v * 3 + 2] = positions[src * 3 + 2];
               normalData.set(normalData.subarray(src * 3, src * 3 + 3), v * 3);
               data.set(data.subarray(src * 4, src * 4 + 4), v * 4);
+              mudData.set(mudData.subarray(src * 4, src * 4 + 4), v * 4);
             });
             ring.forEach(([c, r], k) => {
               const [c2, r2] = ring[(k + 1) % ring.length],
@@ -354,6 +389,7 @@
             geo.setAttribute('position', new Three.BufferAttribute(positions, 3));
             geo.setAttribute('normal', new Three.BufferAttribute(normalData, 3));
             geo.setAttribute('terrainData', new Three.BufferAttribute(data, 4, true));
+            geo.setAttribute('terrainMud', new Three.BufferAttribute(mudData, 4, true));
             const fullIndex = new Three.BufferAttribute(new Uint32Array(full), 1),
               coarseIndex = new Three.BufferAttribute(new Uint32Array(coarse), 1);
             geo.setIndex(fullIndex);
@@ -732,7 +768,8 @@
           trail.peak.name + ' · 4×4 TRAIL',
           trail.points[0][0] + 55,
           trail.points[0][1] + 30,
-          150,
+          // A trailhead board at real size (it was 19 m across).
+          88,
           '#d4cb92',
         );
         statics.push({
