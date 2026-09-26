@@ -155,12 +155,12 @@
           [-40, 40, 1.4],
           [44, -36, 1.5],
         ])
-          makePalm(cx + dx, cz + dz, s);
+          gardenIndoorPalm(root, cx + dx, cz + dz, s);
         for (let x = x0 + 70; x < x1 - 60; x += 38) {
           if (Math.abs(x - cx) < dome + 10) continue;
           const z = cz + ((Math.round(x) % 3) - 1) * 26;
           gardenBanana(root, x, z, 1 + ((x * 7) % 5) / 10);
-          gardenTreeFern(root, x + 16, cz - 30 + ((x * 13) % 60), 0.8);
+          gardenTreeFern(root, x + 16, cz - 30 + ((x * 13) % 60), 0.8, true);
         }
         // The warm light inside at night, and the glass itself glowing.
         for (let x = x0 + 40; x < x1 - 30; x += 60) {
@@ -202,12 +202,19 @@
           pitch -= droop;
         }
       }
-      function gardenTreeFern(root, x, z, s = 1) {
+      // A palm under the glass: nothing to knock over or walk into (nobody gets
+      // inside the Palm House), so it is plain geometry rather than a street prop.
+      function gardenIndoorPalm(root, x, z, s = 1) {
+        const h = 30 * s;
+        isleMesh(new Three.CylinderGeometry(1.1 * s, 1.7 * s, h, 7), tint('#8a7458', 'matte'), x, h / 2, z, 1, 1, 1, root);
+        for (let k = 0; k < 9; k++) gardenFrond(root, x, h, z, (k / 9) * TAU, 16 * s, 3.4 * s, 0.4, P_GREEN, 4);
+      }
+      function gardenTreeFern(root, x, z, s = 1, indoor = false) {
         const h = 22 * s;
         isleMesh(new Three.CylinderGeometry(1.2 * s, 1.8 * s, h, 7), P_BARK, x, h / 2, z, 1, 1, 1, root);
         for (let k = 0; k < 11; k++) gardenFrond(root, x, h, z, (k / 11) * TAU, 17 * s, 3.6 * s, 0.42, P_FERN);
         isleMesh(sphereGeo, tint('#6b5a30', 'matte'), x, h + 0.8, z, 1.8 * s, 1.4 * s, 1.8 * s, root);
-        registerFootObstacle(x, z, 2 * s);
+        if (!indoor) registerFootObstacle(x, z, 2 * s);
       }
       function gardenBanana(root, x, z, s = 1) {
         const h = 16 * s;

@@ -1180,6 +1180,8 @@
       const lamp = (x, y, kind = 'lantern') => {
         if (!landAt(x, y) || onAnyRoad(x, y, 3) || isleCircleAt(x, y, -4) === null ? false : false) return;
         if (onAnyRoad(x, y, 3)) return;
+        // Nor on a bridge's deck at its landing.
+        if (MONARCH_BRIDGES.some((B) => segmentDistance(x, y, B.a, B.b) < B.width / 2 + 4)) return;
         monarchLamps.push({ x, y, kind });
       };
       // Street trees and lamps down both pavements of every street, every 80.
