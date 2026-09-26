@@ -51,7 +51,26 @@ SOURCE_GUIDE section 6e). Free roam: available in the demo.
 - **Console**: `dealership`, `prestigeCatalog`, `dealershipVisit`, `dealerMenu`, `dealerMenuPaint`,
   `closeDealer`, `dealerBuy`, `dealerAlarm`, `dealerShatter`, `dealerCalm`, `dealerResetGarage`.
 
-<!-- PRESTIGE SPEC TABLE -->
+Measured with `DeadEndCity.accelTest` (0-100 and 0-200 km/h from a standstill; top speed rolling
+from 90% of the spec's on the 1.1 km strip by the Oceanview runway, too short for the three fastest to
+reach their governed maximum, which the physics holds at `topKmh`):
+
+| Car | Price | Power · torque | Engine · drive | Length · mass | 0-100 | 0-200 | Top (spec) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| WALTER MARTIN VALKYRIE | $3,200,000 | 1,160 hp · 900 Nm | 6.5 V12 hybrid · RWD | 4.51 m · 1.27 t | 2.53 s | 8.17 s | 355 (355) |
+| WALTER MARTIN DBS SUPERLEGGERA | $335,000 | 715 hp · 900 Nm | 5.2 twin-turbo V12 · RWD | 4.71 m · 1.85 t | 3.43 s | 11.5 s | 338 (340) |
+| CHEVETTE ZR1X | $225,000 | 1,250 hp · 1,340 Nm | 5.5 TT V8 + e-axle · AWD | 4.69 m · 1.8 t | 2.00 s | 6.37 s | 375 (375) |
+| CHEVETTE Z06 CARBON AERO | $165,000 | 670 hp · 623 Nm | 5.5 flat-plane V8 · RWD | 4.69 m · 1.58 t | 2.63 s | 8.77 s | 312 (312) |
+| MUGATTI WAYRON SUPER SPORT | $2,700,000 | 1,184 hp · 1,500 Nm | 8.0 W16 quad-turbo · AWD | 4.46 m · 1.84 t | 2.43 s | 8.43 s | 417 (431) |
+| MUGATTI TOURBILLON | $4,100,000 | 1,775 hp · 1,650 Nm | 8.3 V16 hybrid · AWD | 4.67 m · 2.0 t | 2.00 s | 6.47 s | 435 (445) |
+| KONIGSBERG JASKO ABSOLUT | $3,400,000 | 1,600 hp · 1,500 Nm | 5.0 TT V8 (E85) · RWD | 4.61 m · 1.39 t | 2.53 s | 8.23 s | 457 (480) |
+| PAGANO SIROCCO | $3,100,000 | 864 hp · 1,100 Nm | 6.0 TT V12 · RWD | 4.6 m · 1.28 t | 2.83 s | 9.40 s | 350 (350) |
+| RIMAK NOVERA | $2,200,000 | 1,914 hp · 2,360 Nm | four motors · AWD | 4.75 m · 2.3 t | 1.87 s | 6.20 s | 410 (412) |
+| McLOWEN W1 | $2,100,000 | 1,258 hp · 1,340 Nm | 4.0 TT V8 hybrid · RWD | 4.64 m · 1.4 t | 2.73 s | 9.10 s | 350 (350) |
+| CAVALINO LA FERA | $3,000,000 | 950 hp · 900 Nm | 6.3 V12 hybrid · RWD | 4.7 m · 1.45 t | 2.43 s | 5.20 s | 350 (350) |
+| BRUTINI SVJ (sold new) | $520,000 | 759 hp · 720 Nm | 6.5 V12 · AWD | 4.94 m · 1.53 t | 2.8 s (spec) | | 350 |
+
+Models: 20-28 draw calls, 3-4 shadow casters and 7.3-10.2k triangles each (`carModels`).
 
 ## Unreleased — the radio on the title screen
 

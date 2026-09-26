@@ -297,8 +297,19 @@
     }
     // Follow a route; true once it is walked.
     function dealerFollow(p, speed, deltaSeconds) {
-      const r = p.dealer.route;
-      while (r.length && Math.hypot(r[0].x - p.x, r[0].y - p.y) < 5) r.shift();
+      const s = p.dealer,
+        r = s.route;
+      // A waypoint that cannot be reached (someone standing on it, a car nudged
+      // across it) is given up after a few seconds.
+      if (r.length && r[0] !== s.waypoint) {
+        s.waypoint = r[0];
+        s.waypointSince = gameTime;
+      }
+      while (r.length && (Math.hypot(r[0].x - p.x, r[0].y - p.y) < 6 || gameTime - s.waypointSince > 3)) {
+        r.shift();
+        s.waypoint = r[0];
+        s.waypointSince = gameTime;
+      }
       if (!r.length) {
         p.walking = false;
         return true;
@@ -773,7 +784,7 @@
       dealerPeople.reinforced = false;
     }
     function dealershipPeopleReport() {
-      const person = (p) => ({ role: p.dealer?.role || 'guard', state: p.dealer?.state || (p.aiming ? 'firing' : 'post'), x: Math.round(p.x), y: Math.round(p.y), hp: Math.round(p.hp), speech: p.speechUntil > gameTime ? p.speech : null, pose: p.pose || null });
+      const person = (p) => ({ role: p.dealer?.role || 'guard', state: p.dealer?.state || (p.aiming ? 'firing' : 'post'), x: Math.round(p.x), y: Math.round(p.y), hp: Math.round(p.hp), speech: p.speechUntil > gameTime ? p.speech : null, pose: p.pose || null, route: p.dealer?.route?.[0] ? [Math.round(p.dealer.route[0].x), Math.round(p.dealer.route[0].y), p.dealer.route.length] : null });
       return {
         live: dealerPeople.live,
         staff: dealerPeople.staff.filter((p) => pedestrians.includes(p)).map(person),

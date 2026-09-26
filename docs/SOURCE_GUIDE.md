@@ -194,7 +194,8 @@ Two closures matter:
   tank 55; motorbikes 180-225; the patrol car 230 km/h (0-100 in 6.3 s) so it catches anything
   but a sports car on an open road; the police helicopter 260 km/h. The flagships: CHEVETTE Z06 315 km/h
   and 2.7 s, BRUTINI SVJ 350 and 2.8 s, CAVALINO 458 325 and 3.0 s; DOLCATI V4 300, YAMASAKI
-  1000RR 295, KR 500 150 (`DeadEndCity.accelTest`). Bicycles cruise at 27 and
+  1000RR 295, KR 500 150 (`DeadEndCity.accelTest`). The Prestige Collection (section 6e) runs from the Z06
+  Carbon Aero (312 km/h, 2.6 s) to the Rimak Novera (1.87 s) and the Jasko Absolut (480, governed). Bicycles cruise at 27 and
   sprint at 43. Traffic keeps to 40-55 km/h in town and 70-85 on the long bridges, follows at
   about 0.8 s and stops for reds at about half a g; county traffic 60. Boats: speedboat 55
   knots, jet ski 50, harbor launch 14, police launches 15% quicker; the liner 19 knots at sea.

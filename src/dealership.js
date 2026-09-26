@@ -623,7 +623,8 @@
 #dealerOverlay .dl-actions button.buy:disabled{border-color:#f0867255;background:#f086721a;color:#f08672;cursor:not-allowed;filter:none}
 #dealerOverlay .dl-keys{margin-top:12px;font:700 9px/1.6 var(--ui-font);letter-spacing:.14em;color:#77736a}
 #dealerOverlay .dl-keys kbd{margin-right:4px}
-#dealerOverlay .dl-browse{position:absolute;right:clamp(16px,4vw,56px);bottom:clamp(16px,6vh,48px);display:flex;gap:6px;pointer-events:auto}
+#dealerOverlay .dl-browse{position:absolute;right:clamp(16px,3vw,40px);top:clamp(96px,14vh,130px);max-width:calc(100vw - 640px);display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;pointer-events:auto}
+body.dealer-open #interaction,body.dealer-open .quickkeys{visibility:hidden}
 #dealerOverlay .dl-browse button{padding:9px 12px;border-radius:8px;border:1px solid #ffffff26;background:#0b0e12c0;color:#e8e2d4;font:800 9px/1 var(--ui-font);letter-spacing:.18em}
 #dealerOverlay .dl-browse button[aria-current=true]{border-color:#e2c897;color:#e2c897}
 #dealerOverlay .dl-garage{margin-top:16px;display:grid;gap:8px}
@@ -641,6 +642,7 @@
 #dealerReveal .card b{display:block;margin-top:10px;font:200 clamp(22px,3.4vw,38px)/1.1 var(--ui-font);letter-spacing:.04em;white-space:nowrap;text-shadow:0 4px 30px #000c}
 #dealerReveal .card span{display:block;margin-top:10px;font:600 12px/1 var(--ui-font);letter-spacing:.24em;color:#d8d2c2}
 #dealerReveal canvas{position:absolute;inset:0;width:100%;height:100%}
+@media (max-width:1000px){#dealerOverlay .dl-browse{display:none}}
 @media (max-width:700px){#dealerOverlay .dl-model{font-size:32px}#dealerOverlay .dl-grid{grid-template-columns:repeat(2,1fr)}#dealerOverlay .dl-shade{background:#07090ce8}}
 `;
       document.head.appendChild(style);
@@ -685,6 +687,7 @@
       keys = {};
       mouse.down = false;
       ensureDealerOverlay().classList.remove('hidden');
+      document.body.classList.add('dealer-open');
       frameDealerMenu();
       renderDealerMenu();
       dealershipSalesPitch(s, 'open');
@@ -697,6 +700,7 @@
       if (m.slot?.car && displayCarIntact(m.slot.car)) m.slot.car.color = m.slot.baseColor;
       dealer.menu = null;
       if (dealerOverlay) dealerOverlay.classList.add('hidden');
+      document.body.classList.remove('dealer-open');
       if (gameMode === 'dealer') gameMode = 'play';
       worldZoom = m.view.zoom;
       canvasScale = clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
