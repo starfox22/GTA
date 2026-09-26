@@ -145,7 +145,7 @@
       }
       syncPanelCover();
       const drawStart = performance.now();
-      drawWorld();
+      if (!NO_RENDER) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
       updateTankReticle();
       const frameEnd = performance.now();
       profile.update += drawStart - updateStart;

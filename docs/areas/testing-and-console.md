@@ -5,6 +5,8 @@
 ```
 sh tools/quick-check.sh [tag]                  # syntax + build + FILEMAP + conflict markers, no browser
 sh tools/check.sh [tag]                        # syntax gate only (assemble + node --check)
+node tools/test.mjs [filter]                   # regression tests (tools/tests/*.mjs), no-render page, ~40 s
+node tools/dev.mjs start | call <method> [args] | stop   # persistent headless page (below)
 python3 tools/build.py --out dist/game.html    # scratch build (dist/ is ignored)
 node tools/smoke.mjs dist/game.html dist/smoke # boot, walk, drive, map: console errors + 5 screenshots
 node tools/tour.mjs steps.json dist/tour dist/game.html   # scripted screenshot tour
@@ -25,9 +27,40 @@ sh tools/check.sh dead && node tools/dead-code.mjs dist/check/dead.js   # unused
 - Playwright + SwiftShader; Chromium at `/opt/pw-browsers` (never `playwright install`), the
   Playwright module at `/opt/node22/lib/node_modules/playwright`. It renders a few frames a
   second, so game time is clamped per frame: toasts look "stuck" and waits must be longer.
-- Booting takes a minute or more. Run **one browser at a time**. For a long investigation
-  keep one page open and send it console calls (a small Playwright script with an HTTP
-  endpoint that runs `page.evaluate`) instead of re-running a tour per question.
+- A rendered boot takes 30-40 s (960x600) and runs about 1 fps (0.25 fps at 1280x800).
+  Run **one browser at a time**; use the dev server below rather than writing a script.
+
+## Dev server (tools/dev.mjs) and tests (tools/test.mjs)
+
+```
+node tools/dev.mjs start [html] [--render] [--nodev] [--size WxH]  # boot once (reuses a running one)
+node tools/dev.mjs call brakeTest sedan 100 '{"wet":1}'   # a NAMED console method, JSON args
+node tools/dev.mjs keys KeyW,KeyD 3    # simulate(3, keys): game seconds, no drawing (--real: key presses)
+node tools/dev.mjs wait 5              # simulate(5) (--real: wall-clock wait)
+node tools/dev.mjs shot name [--crop x,y,w,h] [--width 480] [--full]  # dist/dev/shots/name.jpg
+node tools/dev.mjs errors | status | reload [--render|--norender] | stop
+```
+
+- With no html, `start` builds `dist/dev/game.html` and `reload` rebuilds it (browser reused;
+  each boot gets a fresh browser context: no saved game or settings carried over). State in
+  `dist/dev.json`, log in `dist/dev.log`; the port is per worktree.
+- Default page: `?dev&norender`. **No-render mode** (`NO_RENDER`, render3d.js; honoured only
+  with `?dev` or `?test`): no WebGL renderer, `drawWorld()` skipped (game-loop.js); the HUD
+  and all logic run. Boot about 7-10 s instead of 30-40 s, real-time frames about 55 fps
+  instead of 1 fps; `status().renderer` is `'2d'` and renderer-backed reports (draw calls,
+  `scaleReport` models, crowd stats) are null. `--render` for images; `graphics('high')`
+  before judging one. `--nodev` opens `?test&norender`: no dev bypasses (demo gate live).
+- `call` prints one compact JSON line cut at 1500 chars (`--max N`, `--full`); NaN and
+  Infinity come back as strings. It only calls named methods: there is no JS-string path.
+- Every command notes new console errors; `errors` prints and clears them.
+- `node tools/test.mjs [filter...] [--verbose] [--keep]`: rebuilds, (re)boots the dev server
+  in no-render mode, runs `tools/tests/*.mjs` (one test per file; a line per test, a summary,
+  exit 1 on failure; a console error fails the test). A test exports `default async (t)`
+  using `t.call`, `t.keys`, `t.wait`, `t.assert`, `t.near(v, lo, hi, label)`, `t.finite(obj)`,
+  `t.note`; optional `export const flags = 'test'` (no `?dev`) and `fresh = true` (page
+  reloaded first; fresh tests run last). Set the state a test needs (cash, wanted level,
+  god mode) instead of relying on the test before it. Frame-driven effects (e.g. sportsbook
+  settlement) need a `t.wait()` after the call that causes them.
 - Call `DeadEndCity.graphics('high')` before judging an image (SwiftShader auto-detects LOW).
 - Open the page with `?dev` for dev-only console paths (e.g. `startMission` on demo-gated
   jobs), `?shadercheck` to have three.js report shader compile errors.

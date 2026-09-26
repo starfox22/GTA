@@ -9,6 +9,12 @@
     let city3D = null,
       visualAssets = {},
       lastVisualTime = 0;
+    /* DEV NO-RENDER MODE: `?norender` together with `?dev` (or `?test`, which tools/test.mjs
+     * uses to boot without the dev console's demo bypass) boots the simulation with no
+     * WebGL renderer and draws no frames (game-loop.js), so logic checks boot and tick
+     * fast under a software GL. Ignored without those flags: normal play never sees it. */
+    const NO_RENDER =
+      typeof location !== 'undefined' && /[?&]norender\b/.test(location.search) && /[?&](dev|test)\b/.test(location.search);
     async function loadVisuals() {
       // Native simulation tests have no image decoder; canvas geometry stays usable.
       if (typeof Image === 'undefined') return;
@@ -29,6 +35,10 @@
       );
       drawWeapon();
       if (gameMode === 'arsenal') renderArsenal();
+      if (NO_RENDER) {
+        getElement('renderBadge').textContent = 'NO RENDER (DEV)';
+        return;
+      }
       if (typeof THREE === 'undefined' || !visualAssets.architecture || !visualAssets.ground) return;
       try {
         city3D = createCityRenderer();
