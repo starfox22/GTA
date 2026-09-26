@@ -113,14 +113,18 @@
         py = ax / length;
       let points = [...approach];
       for (let k = 1; k <= legs; k++) {
-        // Legs bunch up towards the top, where the face is steepest.
-        const t = 1 - (1 - k / legs) ** 1.3,
+        // Legs evenly spaced up the face: bunched towards the top (as they once
+        // were) the last two legs ran 6 m apart, too close for a truck to swing
+        // round the hairpin between them without dropping onto the leg below.
+        const t = k / legs,
           side = k === legs ? 0 : (k % 2 ? 1 : -1) * amplitude * (1 - 0.4 * t);
         points.push([foot[0] + ax * t + px * side, foot[1] + ay * t + py * side]);
       }
       const corners = points.slice(approach.length, -1);
-      // Chaikin corner cutting, keeping the two ends where they are.
-      for (let pass = 0; pass < 2; pass++) {
+      // Chaikin corner cutting, keeping the two ends where they are. Four passes
+      // round each hairpin into a curve a truck can follow (two left a right
+      // angle at the apex).
+      for (let pass = 0; pass < 4; pass++) {
         const cut = [points[0]];
         for (let i = 0; i < points.length - 1; i++) {
           const [x0, y0] = points[i],
@@ -885,7 +889,7 @@
           }
       }
       // Mud, rock and the trail's own frame per vertex (offroad.js).
-      offroadTrailBake(field, trailNear, trailSegment, trailOwner);
+      offroadTrailBake(field, heights, trailNear, trailSegment, trailOwner);
       lap('trails');
       // The surface: exact Float32 vertices; a triangle exists where all three
       // corners are land and one is above street level.

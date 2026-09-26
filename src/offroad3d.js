@@ -130,7 +130,7 @@
           wheel: { r: 3.25, width: 1.85, xs: [0.31, -0.3], inset: 0.2, style: 'steel', rim: '#e5e2d6', tread: 'mt' },
           hood: [9.65, 0.66],
           head: [0.496, 7.9, 0.3, 0.3, 1.4, 1.4, 'round'],
-          tail: [-0.5, 6.2, 0.43, 0.3, 1.2, 0.9],
+          tail: [-0.5, 6.2, 0.43, 0.3, 1.2, 0.07],
           bumpers: [[0.53, 4.6, 1.2, 1.4, 0.98], [-0.52, 4.8, 1.0, 1.3, 0.9]],
         },
         crawler: {
@@ -145,7 +145,7 @@
           wheel: { r: 3.76, width: 3.1, xs: [0.335, -0.3], inset: 0.1, style: 'beadlock', rim: '#8c6a3c', tread: 'mt' },
           hood: [11.7, 0.7],
           head: [0.505, 10.0, 0.3, 0.3, 1.5, 1.5, 'round'],
-          tail: [-0.503, 8.7, 0.44, 0.3, 1.4, 0.6],
+          tail: [-0.503, 8.7, 0.44, 0.3, 1.4, 0.06],
           bumpers: [[0.53, 6.6, 1.6, 2.2, 0.9], [-0.52, 6.6, 1.4, 2.0, 0.88]],
         },
         bronco: {
@@ -159,7 +159,7 @@
           wheel: { r: 3.55, width: 2.8, xs: [0.31, -0.29], inset: 0.15, style: 'spoke', rim: '#c9ccce', tread: 'at', letters: true },
           hood: [10.75, 0.72],
           head: [0.503, 8.9, 0.34, 0.3, 1.45, 1.45, 'round'],
-          tail: [-0.5, 7.2, 0.44, 0.3, 1.6, 0.7],
+          tail: [-0.5, 7.2, 0.44, 0.3, 1.6, 0.07],
           bumpers: [[0.52, 5.5, 1.0, 1.3, 0.98], [-0.515, 5.6, 1.0, 1.3, 0.98]],
         },
         expedition: {
@@ -173,7 +173,7 @@
           wheel: { r: 3.4, width: 2.55, xs: [0.3, -0.27], inset: 0.15, style: 'steel', rim: '#26282b', tread: 'mt' },
           hood: [10.1, 0.72],
           head: [0.5, 8.4, 0.33, 0.3, 1.35, 1.35, 'round'],
-          tail: [-0.502, 7.6, 0.45, 0.3, 2.2, 0.55],
+          tail: [-0.502, 7.6, 0.45, 0.3, 2.2, 0.06],
           bumpers: [[0.53, 5.0, 1.8, 2.0, 0.96], [-0.52, 5.0, 1.2, 1.6, 0.94]],
         },
         hilux: {
@@ -188,7 +188,7 @@
           wheel: { r: 3.55, width: 2.9, xs: [0.31, -0.29], inset: 0.1, style: 'spoke', rim: '#1b1c1e', tread: 'at' },
           hood: [10.35, 0.72],
           head: [0.48, 9.3, 0.34, 0.8, 0.9, 0.24],
-          tail: [-0.503, 8.3, 0.45, 0.3, 2.6, 0.5],
+          tail: [-0.503, 8.3, 0.45, 0.3, 2.6, 0.07],
           bumpers: [[0.52, 5.4, 1.6, 2.2, 0.95], [-0.515, 5.4, 1.2, 1.6, 0.95]],
         },
         sixbysix: {
@@ -203,7 +203,7 @@
           wheel: { r: 3.8, width: 3.2, xs: [0.33, -0.13, -0.345], inset: 0.1, style: 'beadlock', rim: '#1d1e20', tread: 'mt' },
           hood: [12.45, 0.72],
           head: [0.5, 10.8, 0.34, 0.3, 1.5, 1.5, 'round'],
-          tail: [-0.503, 8.8, 0.45, 0.3, 1.6, 0.8],
+          tail: [-0.503, 8.8, 0.45, 0.3, 1.6, 0.08],
           bumpers: [[0.52, 6.9, 1.6, 2.4, 0.96], [-0.515, 6.9, 1.2, 1.8, 0.96]],
         },
         trophy: {
@@ -218,7 +218,7 @@
           wheel: { r: 4.0, width: 3.1, xs: [0.31, -0.31], inset: -0.2, style: 'beadlock', rim: '#202226', tread: 'desert' },
           hood: [10.3, 0.64],
           head: [0.49, 8.9, 0.28, 0.6, 0.8, 0.2],
-          tail: [-0.503, 8.2, 0.42, 0.3, 1.0, 0.4],
+          tail: [-0.503, 8.2, 0.42, 0.3, 1.0, 0.1],
           bumpers: [[0.51, 7.0, 1.2, 1.2, 0.8], [-0.51, 7.0, 1.0, 1.2, 0.8]],
         },
       };
@@ -357,7 +357,7 @@
       }
       // A cylinder along x (tubes: roll cages, sliders, bars) and a tread lug.
       const tubeX = offroadShape('tubeX', () => new Three.CylinderGeometry(1, 1, 1, 10).rotateZ(Math.PI / 2));
-      function tube(set, a, b, radius, color) {
+      function kitTube(set, a, b, radius, color) {
         policeBeam(set, tubeX, a, b, radius, radius, color);
       }
       /*
@@ -509,19 +509,19 @@
           policeAdd(trim, boxGeo, x, y + 3.75, z, 0.5, 0.35, 1.3, color, null, 0, ry, 0);
         };
         const roofRack = (x0, x1, y, half) => {
-          for (const side of [-1, 1]) tube(trim, [x0, y, side * half], [x1, y, side * half], 0.18, black);
-          tube(trim, [x0, y, -half], [x0, y, half], 0.18, black);
-          tube(trim, [x1, y, -half], [x1, y, half], 0.18, black);
+          for (const side of [-1, 1]) kitTube(trim, [x0, y, side * half], [x1, y, side * half], 0.18, black);
+          kitTube(trim, [x0, y, -half], [x0, y, half], 0.18, black);
+          kitTube(trim, [x1, y, -half], [x1, y, half], 0.18, black);
           for (let x = x0 + 2.2; x < x1 - 1; x += 2.4) policeAdd(trim, boxGeo, x, y - 0.05, 0, 0.5, 0.1, half * 2, '#2b2d30');
           for (const side of [-1, 1])
-            for (const x of [x0 + 1, x1 - 1, (x0 + x1) / 2]) tube(trim, [x, g.roof + g.arch, side * half * 0.95], [x, y, side * half], 0.12, black);
+            for (const x of [x0 + 1, x1 - 1, (x0 + x1) / 2]) kitTube(trim, [x, g.roof + g.arch, side * half * 0.95], [x, y, side * half], 0.12, black);
         };
         const snorkel = (side) => {
           const x0 = g.xf * l + 2.2,
             z = side * (halfAt(g.xf * l, def.h - 1) + 0.45),
             top = g.roof + 1.4;
-          tube(trim, [x0, def.h - 2.2, z], [x0, def.h + 0.2, z], 0.42, black);
-          tube(trim, [x0, def.h + 0.2, z], [lerpNumber(g.xf, g.rf, 0.92) * l - 0.3, top, z], 0.42, black);
+          kitTube(trim, [x0, def.h - 2.2, z], [x0, def.h + 0.2, z], 0.42, black);
+          kitTube(trim, [x0, def.h + 0.2, z], [lerpNumber(g.xf, g.rf, 0.92) * l - 0.3, top, z], 0.42, black);
           policeAdd(trim, roundedBar(1.6, 1.0, 1.2, 0.35), lerpNumber(g.xf, g.rf, 0.92) * l, top + 0.3, z, 1, 1, 1, black);
         };
         const steelBumper = (front, winch, bull) => {
@@ -541,8 +541,8 @@
           if (bull) {
             const top = topAt(nose - 1) + 0.6;
             for (const side of [-1, 1]) {
-              tube(trim, [x, y + 0.9, side * w * 0.33], [x - 0.3, top, side * w * 0.3], 0.3, steel);
-              tube(trim, [x - 0.3, top, side * w * 0.3], [x - 0.4, top, 0], 0.3, steel);
+              kitTube(trim, [x, y + 0.9, side * w * 0.33], [x - 0.3, top, side * w * 0.3], 0.3, steel);
+              kitTube(trim, [x - 0.3, top, side * w * 0.3], [x - 0.4, top, 0], 0.3, steel);
             }
           }
           if (!front) policeAdd(trim, boxGeo, x - 0.6, y - 0.4, 0, 1.2, 0.6, 0.8, steel);
@@ -553,8 +553,8 @@
             y = def.yb + 0.3;
           for (const side of [-1, 1]) {
             const z = side * (halfAt(0, def.yb + 1) + 0.55);
-            tube(trim, [x0, y, z], [x1, y, z], 0.34, steel);
-            for (const x of [x0 + 1, (x0 + x1) / 2, x1 - 1]) tube(trim, [x, y, z], [x, y + 0.2, side * (halfAt(0, def.yb + 1) - 0.4)], 0.22, steel);
+            kitTube(trim, [x0, y, z], [x1, y, z], 0.34, steel);
+            for (const x of [x0 + 1, (x0 + x1) / 2, x1 - 1]) kitTube(trim, [x, y, z], [x, y + 0.2, side * (halfAt(0, def.yb + 1) - 0.4)], 0.22, steel);
           }
         };
         const mirrors = (tall = false) => {
@@ -631,8 +631,8 @@
           jerryCan(-0.3 * l, g.roof + g.arch + 2.0, -3.5, '#56603a', Math.PI / 2);
           jerryCan(-0.3 * l, g.roof + g.arch + 2.0, -0.5, '#56603a', Math.PI / 2);
           policeAdd(trim, boxGeo, -0.05 * l, g.roof + g.arch + 2.6, 2.2, 8, 1.4, 3, '#5b4a34');
-          for (let k = 0; k < 6; k++) tube(trim, [tail - 0.25, def.yb + 1 + k * 1.9, -w * 0.3], [tail - 0.25, def.yb + 1 + k * 1.9, -w * 0.15], 0.14, alu);
-          for (const z of [-w * 0.3, -w * 0.15]) tube(trim, [tail - 0.25, def.yb, z], [tail - 0.25, g.roof + g.arch + 1.9, z], 0.16, alu);
+          for (let k = 0; k < 6; k++) kitTube(trim, [tail - 0.25, def.yb + 1 + k * 1.9, -w * 0.3], [tail - 0.25, def.yb + 1 + k * 1.9, -w * 0.15], 0.14, alu);
+          for (const z of [-w * 0.3, -w * 0.15]) kitTube(trim, [tail - 0.25, def.yb, z], [tail - 0.25, g.roof + g.arch + 1.9, z], 0.16, alu);
           policeAdd(trim, boxGeo, nose + 0.6, def.bumpers[0][1], 0, 1.2, 1.4, w * 1.04, '#1a1b1d');
           lightPod(nose + 0.8, def.bumpers[0][1] + 1.6, -w * 0.28, 0.9);
           lightPod(nose + 0.8, def.bumpers[0][1] + 1.6, w * 0.28, 0.9);
@@ -646,20 +646,20 @@
           const screenFoot = [g.xf * l, g.base, 0],
             screenTop = [g.rf * l, g.roof, 0];
           for (const side of [-1, 1]) {
-            tube(trim, [screenFoot[0], screenFoot[1], side * g.wb * w], [screenTop[0], screenTop[1], side * g.wb * w], 0.4, black);
+            kitTube(trim, [screenFoot[0], screenFoot[1], side * g.wb * w], [screenTop[0], screenTop[1], side * g.wb * w], 0.4, black);
             // Sport cage: hoops over the seats, bars back to the tub.
-            tube(trim, [screenTop[0], screenTop[1], side * g.wb * w], [-0.12 * l, g.roof, side * g.wb * w], 0.38, black);
-            tube(trim, [-0.12 * l, g.roof, side * g.wb * w], [-0.12 * l, def.h, side * g.wb * w], 0.38, black);
-            tube(trim, [-0.12 * l, g.roof, side * g.wb * w], [-0.44 * l, g.roof - 0.4, side * g.wb * w], 0.34, black);
-            tube(trim, [-0.44 * l, g.roof - 0.4, side * g.wb * w], [-0.44 * l, def.h, side * g.wb * w], 0.34, black);
+            kitTube(trim, [screenTop[0], screenTop[1], side * g.wb * w], [-0.12 * l, g.roof, side * g.wb * w], 0.38, black);
+            kitTube(trim, [-0.12 * l, g.roof, side * g.wb * w], [-0.12 * l, def.h, side * g.wb * w], 0.38, black);
+            kitTube(trim, [-0.12 * l, g.roof, side * g.wb * w], [-0.44 * l, g.roof - 0.4, side * g.wb * w], 0.34, black);
+            kitTube(trim, [-0.44 * l, g.roof - 0.4, side * g.wb * w], [-0.44 * l, def.h, side * g.wb * w], 0.34, black);
             // Seats, front and rear, with headrests.
             for (const sx of [0.02, -0.26]) {
               policeAdd(trim, roundedBar(2.6, 1.0, 3.2, 0.4), sx * l, def.h + 0.2, side * w * 0.2, 1, 1, 1, '#1f2023', null, 0, Math.PI / 2, 0);
               policeAdd(trim, roundedBar(0.9, 4.2, 3.2, 0.4), sx * l - 1.4, def.h + 2.2, side * w * 0.2, 1, 1, 1, '#1f2023', null, 0, Math.PI / 2, 0.12);
             }
           }
-          tube(trim, [screenTop[0], screenTop[1], -g.wb * w], [screenTop[0], screenTop[1], g.wb * w], 0.4, black);
-          tube(trim, [-0.12 * l, g.roof, -g.wb * w], [-0.12 * l, g.roof, g.wb * w], 0.38, black);
+          kitTube(trim, [screenTop[0], screenTop[1], -g.wb * w], [screenTop[0], screenTop[1], g.wb * w], 0.4, black);
+          kitTube(trim, [-0.12 * l, g.roof, -g.wb * w], [-0.12 * l, g.roof, g.wb * w], 0.38, black);
           // Bikini top over the front seats.
           policeAdd(trim, boxGeo, (screenTop[0] - 0.12 * l) / 2, g.roof + 0.45, 0, screenTop[0] + 0.12 * l, 0.25, g.wb * w * 2.1, '#18191b');
           lightBar(screenTop[0] - 0.2, g.roof + 1.2, g.wb * w * 1.8);
@@ -681,7 +681,7 @@
           policeAdd(bright, roundedBar(w * 1.0, 1.1, 1.0, 0.3), nose + 0.6, def.bumpers[0][1], 0, 1, 1, 1, '#d9dde0');
           policeAdd(bright, roundedBar(w * 1.0, 1.1, 1.0, 0.3), tail - 0.5, def.bumpers[1][1], 0, 1, 1, 1, '#d9dde0');
           spareOnBack(def.yb + 5.0);
-          tube(trim, [tail - 0.8, def.bumpers[1][1], w * 0.42], [tail - 0.8, def.yb + 7.5, w * 0.42], 0.3, steel);
+          kitTube(trim, [tail - 0.8, def.bumpers[1][1], w * 0.42], [tail - 0.8, def.yb + 7.5, w * 0.42], 0.3, steel);
           handles([0.14]);
           for (const side of [-1, 1]) policeAdd(bright, boxGeo, 0.02 * l, def.h - 1.0, side * (halfAt(0, def.h - 1) + 0.08), 0.4 * l, 0.12, 0.1, '#d9dde0');
           roofRack(g.rb * l + 1.5, g.rf * l - 2, g.roof + g.arch + 1.1, g.wt * w * 0.92);
@@ -709,8 +709,8 @@
           for (const side of [-1, 1]) policeAdd(trim, boxGeo, x0 + (x1 - x0) * 0.25, rackY + 0.5, side * (g.wt * w + 0.3), (x1 - x0) * 0.45, 0.22, 3.2, '#e2721f', null, Math.PI / 2 - 0.12 * side, 0, 0);
           lightBar(x1 - 0.2, rackY + 0.6, g.wt * w * 1.7);
           spareOnBack(def.yb + 4.6);
-          for (let k = 0; k < 7; k++) tube(trim, [tail - 0.25, def.yb + 2.2 + k * 1.75, w * 0.18], [tail - 0.25, def.yb + 2.2 + k * 1.75, w * 0.36], 0.14, black);
-          for (const z of [w * 0.18, w * 0.36]) tube(trim, [tail - 0.25, def.yb + 1.5, z], [tail - 0.25, rackY, z], 0.16, black);
+          for (let k = 0; k < 7; k++) kitTube(trim, [tail - 0.25, def.yb + 2.2 + k * 1.75, w * 0.18], [tail - 0.25, def.yb + 2.2 + k * 1.75, w * 0.36], 0.14, black);
+          for (const z of [w * 0.18, w * 0.36]) kitTube(trim, [tail - 0.25, def.yb + 1.5, z], [tail - 0.25, rackY, z], 0.16, black);
           handles([0.16, -0.02, -0.2]);
         } else if (type === 'hilux') {
           // Arctic-style pickup: flares, snorkel, roof light bar, sports bar and a
@@ -731,9 +731,9 @@
             policeAdd(paint, boxGeo, (bx * l + tail) / 2, (floor + wall) / 2, z, bx * l - tail, wall - floor, 0.5, '#ffffff', swatch('door'));
             policeAdd(trim, boxGeo, (bx * l + tail) / 2, wall + 0.1, z, bx * l - tail, 0.2, 0.7, black);
             // Sports bar behind the cab.
-            tube(trim, [bx * l - 1.2, wall, z * 0.95], [bx * l - 1.6, wall + 3.4, z * 0.8], 0.38, black);
+            kitTube(trim, [bx * l - 1.2, wall, z * 0.95], [bx * l - 1.6, wall + 3.4, z * 0.8], 0.38, black);
           }
-          tube(trim, [bx * l - 1.6, wall + 3.4, -w * 0.38], [bx * l - 1.6, wall + 3.4, w * 0.38], 0.38, black);
+          kitTube(trim, [bx * l - 1.6, wall + 3.4, -w * 0.38], [bx * l - 1.6, wall + 3.4, w * 0.38], 0.38, black);
           policeAdd(paint, boxGeo, tail + 0.25, (floor + wall) / 2, 0, 0.5, wall - floor, w * 0.92, '#ffffff', swatch('trunk'));
           policeAdd(trim, boxGeo, tail + 0.2, wall - 0.5, 0, 0.1, 0.6, w * 0.4, '#17181a');
           policeAdd(trim, boxGeo, bx * l - 0.5, (floor + g.base) / 2, 0, 0.5, g.base - floor, w * 0.9, '#eeeeea');
@@ -756,7 +756,7 @@
             // Indicator pods on the wings, the G-wagen's signature.
             policeAdd(trim, roundedBar(1.2, 0.8, 1.2, 0.3), 0.44 * l, topAt(0.44 * l) + 0.4, side * w * 0.44, 1, 1, 1, '#d98a1a');
             // Side exhausts ahead of the rear axles.
-            tube(bright, [-0.02 * l, def.yb + 0.6, side * (halfAt(0, def.yb + 1) + 0.3)], [0.04 * l, def.yb + 0.6, side * (halfAt(0, def.yb + 1) + 0.3)], 0.45, '#9aa0a4');
+            kitTube(bright, [-0.02 * l, def.yb + 0.6, side * (halfAt(0, def.yb + 1) + 0.3)], [0.04 * l, def.yb + 0.6, side * (halfAt(0, def.yb + 1) + 0.3)], 0.45, '#9aa0a4');
           }
           roofRack(g.rb * l + 0.8, g.rf * l - 0.6, g.roof + g.arch + 1.2, g.wt * w * 0.98);
           lightBar(g.rf * l - 0.8, g.roof + g.arch + 1.9, g.wt * w * 1.8);
@@ -765,9 +765,9 @@
             const z = side * (halfAt(bx * l - 2, floor + 1) - 0.25);
             policeAdd(paint, boxGeo, (bx * l + tail) / 2, (floor + wall) / 2, z, bx * l - tail, wall - floor, 0.5, '#ffffff', swatch('door'));
             policeAdd(trim, boxGeo, (bx * l + tail) / 2, wall + 0.1, z, bx * l - tail, 0.25, 0.8, black);
-            tube(trim, [bx * l - 1.0, wall, z * 0.95], [bx * l - 1.0, wall + 4.2, z * 0.8], 0.4, black);
+            kitTube(trim, [bx * l - 1.0, wall, z * 0.95], [bx * l - 1.0, wall + 4.2, z * 0.8], 0.4, black);
           }
-          tube(trim, [bx * l - 1.0, wall + 4.2, -w * 0.38], [bx * l - 1.0, wall + 4.2, w * 0.38], 0.4, black);
+          kitTube(trim, [bx * l - 1.0, wall + 4.2, -w * 0.38], [bx * l - 1.0, wall + 4.2, w * 0.38], 0.4, black);
           for (const side of [-1, 1]) lightPod(bx * l - 0.6, wall + 4.9, side * w * 0.2, 0.7);
           policeAdd(paint, boxGeo, tail + 0.25, (floor + wall) / 2, 0, 0.5, wall - floor, w * 0.92, '#ffffff', swatch('trunk'));
           policeAdd(trim, boxGeo, bx * l - 0.5, (floor + g.base) / 2, 0, 0.5, g.base - floor, w * 0.9, '#7d7556');
@@ -781,26 +781,26 @@
           policeAdd(trim, roundedBar(w * 0.7, 1.4, 0.4, 0.4), nose - 0.05, grilleY, 0, 1, 1, 1, '#101113');
           for (let k = 0; k < 6; k++) policeAdd(trim, boxGeo, (0.34 - k * 0.025) * l, topAt((0.34 - k * 0.025) * l) + 0.05, 0, 0.4, 0.1, w * 0.4, '#151618');
           lightBar(0.3 * l, topAt(0.3 * l) + 1.4, w * 0.8);
-          for (const side of [-1, 1]) tube(trim, [0.3 * l, topAt(0.3 * l), side * w * 0.3], [0.3 * l, topAt(0.3 * l) + 1.0, side * w * 0.3], 0.2, black);
+          for (const side of [-1, 1]) kitTube(trim, [0.3 * l, topAt(0.3 * l), side * w * 0.3], [0.3 * l, topAt(0.3 * l) + 1.0, side * w * 0.3], 0.2, black);
           policeAdd(paint, roundedBar(2.2, 1.2, 3.4, 0.4), (g.rb + g.rf) * 0.5 * l, g.roof + g.arch + 0.6, 0, 1, 1, 1, '#ffffff', swatch('roof'));
           for (const side of [-1, 1]) lightPod(g.rf * l - 0.4, g.roof + g.arch + 0.9, side * w * 0.22, 0.6);
           const [bx, floor] = def.bed,
             cage = floor + 5.6;
           for (const side of [-1, 1]) {
             const z = side * w * 0.46;
-            tube(trim, [bx * l - 0.5, g.roof - 0.5, side * w * 0.3], [tail + 1, cage, z], 0.3, '#1b1c1e');
-            tube(trim, [tail + 1, cage, z], [tail + 0.6, floor, z], 0.3, '#1b1c1e');
-            tube(trim, [bx * l - 1, floor + 0.2, z], [tail + 0.6, floor + 0.2, z], 0.28, '#1b1c1e');
+            kitTube(trim, [bx * l - 0.5, g.roof - 0.5, side * w * 0.3], [tail + 1, cage, z], 0.3, '#1b1c1e');
+            kitTube(trim, [tail + 1, cage, z], [tail + 0.6, floor, z], 0.3, '#1b1c1e');
+            kitTube(trim, [bx * l - 1, floor + 0.2, z], [tail + 0.6, floor + 0.2, z], 0.28, '#1b1c1e');
             // Rear coilover and bypass shocks leaning in from the axle to the cage.
             const ax = def.wheel.xs[1] * l;
-            tube(bright, [ax + 1.4, r + 0.6, side * (zWheel - 1.2)], [ax + 3.8, cage - 0.4, side * w * 0.36], 0.55, '#c9a227');
-            tube(trim, [ax + 1.0, r + 0.6, side * (zWheel - 1.4)], [ax + 3.2, cage - 0.6, side * w * 0.3], 0.45, '#2b2d30');
-            tube(bright, [ax - 1.2, r + 0.6, side * (zWheel - 1.3)], [ax - 0.6, cage - 1.0, side * w * 0.38], 0.4, '#b8292a');
+            kitTube(bright, [ax + 1.4, r + 0.6, side * (zWheel - 1.2)], [ax + 3.8, cage - 0.4, side * w * 0.36], 0.55, '#c9a227');
+            kitTube(trim, [ax + 1.0, r + 0.6, side * (zWheel - 1.4)], [ax + 3.2, cage - 0.6, side * w * 0.3], 0.45, '#2b2d30');
+            kitTube(bright, [ax - 1.2, r + 0.6, side * (zWheel - 1.3)], [ax - 0.6, cage - 1.0, side * w * 0.38], 0.4, '#b8292a');
             // Front shock towers through the hood.
-            tube(bright, [def.wheel.xs[0] * l, r + 0.5, side * (zWheel - 1.1)], [def.wheel.xs[0] * l - 1, topAt(def.wheel.xs[0] * l) + 1.2, side * w * 0.34], 0.5, '#c9a227');
+            kitTube(bright, [def.wheel.xs[0] * l, r + 0.5, side * (zWheel - 1.1)], [def.wheel.xs[0] * l - 1, topAt(def.wheel.xs[0] * l) + 1.2, side * w * 0.34], 0.5, '#c9a227');
           }
-          tube(trim, [tail + 1, cage, -w * 0.46], [tail + 1, cage, w * 0.46], 0.3, '#1b1c1e');
-          tube(trim, [bx * l - 0.5, g.roof - 0.5, -w * 0.3], [bx * l - 0.5, g.roof - 0.5, w * 0.3], 0.3, '#1b1c1e');
+          kitTube(trim, [tail + 1, cage, -w * 0.46], [tail + 1, cage, w * 0.46], 0.3, '#1b1c1e');
+          kitTube(trim, [bx * l - 0.5, g.roof - 0.5, -w * 0.3], [bx * l - 0.5, g.roof - 0.5, w * 0.3], 0.3, '#1b1c1e');
           spares.push({ x: -0.35 * l, y: floor + 3.2, z: -w * 0.18, ry: 0, rx: 0, lean: 0.35 });
           spares.push({ x: -0.35 * l, y: floor + 3.2, z: w * 0.18, ry: 0, rx: 0, lean: -0.35 });
           policeAdd(trim, roundedBar(w * 0.9, 1.6, 1.2, 0.3), -0.36 * l, floor + 1.0, 0, 1, 1, 1, '#2b2d30');
@@ -1007,7 +1007,7 @@
       // Clumps: lit, instanced lumps flying ballistic arcs.
       const clumpMesh = new Three.InstancedMesh(
           new Three.IcosahedronGeometry(1, 0),
-          new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.62, metalness: 0 }),
+          new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.4, metalness: 0 }),
           MUD_CLUMPS,
         ),
         clump = {
@@ -1129,7 +1129,7 @@
               float a = t.a * vFade;
               if ( a < 0.01 ) discard;
               // Multiplied into the ground: dark, wet mud darker still.
-              vec3 tint = mix( vec3( 0.62, 0.52, 0.42 ), vec3( 0.32, 0.25, 0.19 ), vWet ) * ( 0.8 + 0.4 * t.r );
+              vec3 tint = mix( vec3( 0.7, 0.6, 0.5 ), vec3( 0.46, 0.37, 0.29 ), vWet ) * ( 0.85 + 0.3 * t.r );
               gl_FragColor = vec4( mix( vec3( 1.0 ), tint, a ), 1.0 );
             }`,
           transparent: true,
@@ -1201,13 +1201,13 @@
         }
       });
       trackTexture.wrapS = Three.RepeatWrapping;
-      const splats = decalPool(MUD_SPLATS, splatTexture, 'mud splats'),
-        tracks = decalPool(MUD_TRACKS, trackTexture, 'tyre tracks');
+      const mudSplats = decalPool(MUD_SPLATS, splatTexture, 'mud splats'),
+        tyreTracks = decalPool(MUD_TRACKS, trackTexture, 'tyre tracks');
       const decalNormal = new Three.Vector3(),
         decalAlong = new Three.Vector3(),
         decalAcross = new Three.Vector3();
       // Lays one decal on the ground at (x, y) along heading `a`.
-      function addDecal(pool, x, y, a, length, width, seconds, wet) {
+      function addGroundDecal(pool, x, y, a, length, width, seconds, wet) {
         const i = pool.next;
         pool.next = (pool.next + 1) % pool.capacity;
         pool.used = Math.min(pool.capacity, pool.used + 1);
@@ -1258,9 +1258,9 @@
         mist.g[i] = color.g;
         mist.b[i] = color.b;
       }
-      const MUD_WET = new Three.Color('#3a2a1c'),
-        MUD_DRY = new Three.Color('#7a654a'),
-        DUST = new Three.Color('#b6a283'),
+      const MUD_WET = new Three.Color('#35261a'),
+        MUD_DRY = new Three.Color('#8c7353'),
+        DUST = new Three.Color('#a8957a'),
         clumpColor = new Three.Color(),
         clumpMatrix = new Three.Matrix4(),
         clumpQuat = new Three.Quaternion(),
@@ -1275,9 +1275,11 @@
         if (m.knuckles) for (const k of m.knuckles) list.push({ x: k.x, z: k.z, driven: k.driven, r: m.wheelRadius, width: OFFROAD_BODIES[spec.clubModel].wheel.width, emit: 0, lastX: NaN, lastY: NaN });
         else if (m.wheels?.length && m.wheels[0].wheel.position)
           for (const { wheel } of m.wheels) {
-            const x = wheel.position.x,
+            // Other models are built at design size and drawn at modelScale.
+            const k = m.modelScale || 1,
+              x = wheel.position.x * k,
               drive = spec.drive || (spec.offroad ? '4x4' : 'rwd');
-            list.push({ x, z: wheel.position.z, driven: drive === '4x4' || (drive === 'fwd' ? x > 0 : x < 0), r: wheel.position.y || 4, width: 2.6, emit: 0, lastX: NaN, lastY: NaN });
+            list.push({ x, z: wheel.position.z * k, driven: drive === '4x4' || (drive === 'fwd' ? x > 0 : x < 0), r: (wheel.position.y || 4) * k, width: 2.6 * k, emit: 0, lastX: NaN, lastY: NaN });
           }
         m.contacts = list;
         return list;
@@ -1307,14 +1309,14 @@
           }
           const moved = Math.hypot(wx - w.lastX, wy - w.lastY);
           if (moved > 12 || (moved > 2 && spin > 0.5 && moved > 6)) {
-            if (moved < 40) addDecal(tracks, (wx + w.lastX) / 2, (wy + w.lastY) / 2, Math.atan2(wy - w.lastY, wx - w.lastX), moved + 1, w.width * 0.95, 90 + mud * 120, mud > 0.15 ? wet : 0.1);
+            if (moved < 40) addGroundDecal(tyreTracks, (wx + w.lastX) / 2, (wy + w.lastY) / 2, Math.atan2(wy - w.lastY, wx - w.lastX), moved + 1, w.width * 0.95, 90 + mud * 120, mud > 0.15 ? wet : 0.1);
             w.lastX = wx;
             w.lastY = wy;
-          } else if (spin > 0.6 && speed < 8 && Math.random() < deltaSeconds * 4) addDecal(tracks, wx, wy, c.a, w.r * 1.2, w.width, 120, wet);
+          } else if (spin > 0.6 && speed < 8 && Math.random() < deltaSeconds * 4) addGroundDecal(tyreTracks, wx, wy, c.a, w.r * 1.2, w.width, 120, wet);
           if (!w.driven && spin > 0.1) continue;
           // How much is thrown: spin in mud throws the most; speed through mud some;
           // dry dirt only a haze.
-          const rate = (spin * 70 + speed * (mud * 0.5 + 0.03)) * (w.driven ? 1 : 0.4) * (mud > 0.1 ? 1 : 0.25);
+          const rate = (spin * 150 + speed * (mud * 0.6 + 0.03)) * (w.driven ? 1 : 0.4) * (mud > 0.1 ? 1 : 0.25);
           w.emit += rate * deltaSeconds;
           while (w.emit >= 1) {
             w.emit -= 1;
@@ -1327,10 +1329,12 @@
               vx = -cos * dir * throwSpeed - sin * sideways + (c.vx || 0) * 0.85,
               vy = -sin * dir * throwSpeed + cos * sideways + (c.vy || 0) * 0.85;
             if (mud > 0.1) {
-              spawnClump(ox, oz, oy, vx, up, vy, 0.25 + Math.random() * 0.55, wet);
+              spawnClump(ox, oz, oy, vx, up, vy, 0.45 + Math.random() * 0.75, wet);
+              // Droplets fly off with it, faster and smaller.
+              spawnClump(ox, oz, oy, vx * 1.2 + (Math.random() - 0.5) * 20, up * (0.7 + Math.random() * 0.6), vy * 1.2 + (Math.random() - 0.5) * 20, 0.2 + Math.random() * 0.2, wet);
               if (Math.random() < 0.5) {
-                clumpColor.copy(MUD_DRY).lerp(MUD_WET, wet);
-                spawnMist(ox, oz, oy, vx * 0.5, up * 0.4, vy * 0.5, 1.5 + Math.random(), 5, 0.45, 0.9 + Math.random() * 0.6, clumpColor);
+                clumpColor.copy(MUD_DRY).lerp(MUD_WET, wet).multiplyScalar(0.8);
+                spawnMist(ox, oz, oy, vx * 0.5, up * 0.4, vy * 0.5, 1.6 + Math.random() * 1.2, 4, 0.5, 0.7 + Math.random() * 0.5, clumpColor);
               }
             } else if (Math.random() < 0.6) spawnMist(ox, oz - w.r * 0.3, oy, vx * 0.35, 4 + Math.random() * 6, vy * 0.35, 2.5 + Math.random() * 2, 9, 0.3, 1.6 + Math.random(), DUST);
           }
@@ -1354,7 +1358,7 @@
             if (clump.y[i] <= ground + 0.1) {
               dead = true;
               // A splat where it lands (the bigger lumps).
-              if (clump.size[i] > 0.4 || Math.random() < 0.35) addDecal(splats, clump.x[i], clump.z[i], Math.random() * TAU, clump.size[i] * 7, clump.size[i] * 7, 70, clump.wet[i]);
+              if (clump.size[i] > 0.4 || Math.random() < 0.35) addGroundDecal(mudSplats, clump.x[i], clump.z[i], Math.random() * TAU, clump.size[i] * 7, clump.size[i] * 7, 70, clump.wet[i]);
             }
           }
           if (dead) {
@@ -1407,16 +1411,16 @@
         }
         for (const name of ['iPos', 'iSize', 'iAlpha', 'iColor']) at[name].needsUpdate = true;
         mist.geo.instanceCount = n;
-        mist.mesh.material.uniforms.uLight.value = 1 - 0.78 * nightAmount;
+        mist.mesh.material.uniforms.uLight.value = (1 - 0.8 * nightAmount) * 0.72;
       }
       // ---- The club lot ---------------------------------------------------------------------------
-      const clubGroup = new Three.Group();
-      clubGroup.name = '4x4 club';
-      scene.add(clubGroup);
-      batchGroups.push(clubGroup);
-      const clubLive = new Three.Group();
-      clubLive.name = '4x4 club (animated)';
-      scene.add(clubLive);
+      const trailClubGroup = new Three.Group();
+      trailClubGroup.name = '4x4 club';
+      scene.add(trailClubGroup);
+      batchGroups.push(trailClubGroup);
+      const trailClubLive = new Three.Group();
+      trailClubLive.name = '4x4 club (animated)';
+      scene.add(trailClubLive);
       const bark = staticMat('#56412e', 0.95),
         logEnd = staticMat('#b39468', 0.9),
         canopyMetal = staticMat('#c3c7ca', 0.35, 0.7),
@@ -1424,7 +1428,7 @@
         rust = staticMat('#7a3f22', 0.85, 0.35),
         clubStone = staticMat('#77756d', 0.95),
         clubLog = new Three.CylinderGeometry(1, 1, 1, 9);
-      function clubPos(u, v) {
+      function trailClubPos(u, v) {
         return clubPoint(u, v);
       }
       // A log from a to b (map x, height, map y) of radius r.
@@ -1492,20 +1496,20 @@
         pad.position.set(L.x + L.w / 2, 0.09, L.y + L.h / 2);
         pad.receiveShadow = true;
         pad.name = '4x4 club gravel';
-        clubGroup.add(pad);
+        trailClubGroup.add(pad);
         // Log rails on short posts, open along the road.
         for (const [u0, v0, u1, v1] of OFFROAD_CLUB.rails) {
-          const a = clubPos(u0, v0),
-            b = clubPos(u1, v1),
+          const a = trailClubPos(u0, v0),
+            b = trailClubPos(u1, v1),
             length = Math.hypot(b.x - a.x, b.y - a.y),
             posts = Math.max(1, Math.round(length / 26));
-          logBetween(clubGroup, a.x, 3.3, a.y, b.x, 3.3, b.y, 1.05);
+          logBetween(trailClubGroup, a.x, 3.3, a.y, b.x, 3.3, b.y, 1.05);
           for (let k = 0; k <= posts; k++) {
             const t = k / posts,
               x = a.x + (b.x - a.x) * t,
               y = a.y + (b.y - a.y) * t;
-            logBetween(clubGroup, x, 0, y, x, 4.2, y, 0.95);
-            mesh(clubLog, logEnd, clubGroup, x, 4.25, y, 0.9, 0.1, 0.9);
+            logBetween(trailClubGroup, x, 0, y, x, 4.2, y, 0.95);
+            mesh(clubLog, logEnd, trailClubGroup, x, 4.25, y, 0.9, 0.1, 0.9);
           }
         }
         // ---- The sign: carved planks between two log posts, chained under a
@@ -1521,18 +1525,18 @@
         const design = SignArt.paint(face.getContext('2d'), glowContext, 1024, 256, '4X4 CLUB', '#f3dca8', 'trail'),
           board = new Three.Mesh(new Three.PlaneGeometry(48, 12), litSignMaterial(signTexture(face), signTexture(glowCanvas), { night: design.night, day: design.day }));
         board.position.set(s.x, 21, s.y + 0.8);
-        clubLive.add(board);
-        box(clubGroup, s.x, 21, s.y, 49.5, 13.5, 1.2, staticMat('#3d2a1a', 0.9));
+        trailClubLive.add(board);
+        box(trailClubGroup, s.x, 21, s.y, 49.5, 13.5, 1.2, staticMat('#3d2a1a', 0.9));
         for (const side of [-1, 1]) {
-          logBetween(clubGroup, s.x + side * 27, 0, s.y, s.x + side * 27, 34, s.y, 1.5);
-          mesh(clubLog, logEnd, clubGroup, s.x + side * 27, 34.05, s.y, 1.4, 0.1, 1.4);
-          box(clubGroup, s.x + side * 17, 29.5, s.y, 0.25, 3.4, 0.25, clubBlack);
+          logBetween(trailClubGroup, s.x + side * 27, 0, s.y, s.x + side * 27, 34, s.y, 1.5);
+          mesh(clubLog, logEnd, trailClubGroup, s.x + side * 27, 34.05, s.y, 1.4, 0.1, 1.4);
+          box(trailClubGroup, s.x + side * 17, 29.5, s.y, 0.25, 3.4, 0.25, clubBlack);
           // Lamps over the board.
-          box(clubGroup, s.x + side * 14, 31.2, s.y + 2.2, 0.3, 0.3, 4.2, clubBlack);
-          box(clubGroup, s.x + side * 14, 30.8, s.y + 4.2, 1.6, 0.8, 1.2, clubBlack);
+          box(trailClubGroup, s.x + side * 14, 31.2, s.y + 2.2, 0.3, 0.3, 4.2, clubBlack);
+          box(trailClubGroup, s.x + side * 14, 30.8, s.y + 4.2, 1.6, 0.8, 1.2, clubBlack);
           addGlow(s.x + side * 14, 30.2, s.y + 4.4, 5, '#ffe2b0', 1.1, { day: 0 });
         }
-        logBetween(clubGroup, s.x - 31, 31.5, s.y, s.x + 31, 31.5, s.y, 1.35);
+        logBetween(trailClubGroup, s.x - 31, 31.5, s.y, s.x + 31, 31.5, s.y, 1.35);
         const emblem = new Three.Mesh(
           new Three.PlaneGeometry(16, 10),
           new Three.MeshStandardMaterial({
@@ -1571,7 +1575,7 @@
           }),
         );
         emblem.position.set(s.x, 38, s.y);
-        clubLive.add(emblem);
+        trailClubLive.add(emblem);
         // ---- Canopy: four legs, a truss, a peaked roof in club green with the
         // name on the valance; a folding table with a lantern and a map under it.
         const cp = OFFROAD_CLUB.canopy,
@@ -1587,28 +1591,28 @@
             g.fillStyle = '#d9a441';
             g.fillRect(0, H - 14, W, 6);
           });
-        for (const [dx, dz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) box(clubGroup, cp.x + dx * half, 10.5, cp.y + dz * half, 0.5, 21, 0.5, canopyMetal);
+        for (const [dx, dz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) box(trailClubGroup, cp.x + dx * half, 10.5, cp.y + dz * half, 0.5, 21, 0.5, canopyMetal);
         const roof = new Three.Mesh(new Three.ConeGeometry(half * Math.SQRT2 * 1.02, 5.5, 4, 1, true), new Three.MeshStandardMaterial({ color: '#2f5d3a', roughness: 0.85, side: Three.DoubleSide }));
         roof.rotation.y = Math.PI / 4;
         roof.position.set(cp.x, 23.8, cp.y);
         roof.castShadow = roof.receiveShadow = true;
-        clubGroup.add(roof);
+        trailClubGroup.add(roof);
         const valanceMaterial = new Three.MeshStandardMaterial({ map: canopyTexture, roughness: 0.85, side: Three.DoubleSide });
         for (const [dx, dz, ry] of [[0, 1, 0], [0, -1, Math.PI], [1, 0, Math.PI / 2], [-1, 0, -Math.PI / 2]]) {
           const v = new Three.Mesh(new Three.PlaneGeometry(cp.size, 2.4), valanceMaterial);
           v.position.set(cp.x + dx * half, 19.8, cp.y + dz * half);
           v.rotation.y = ry;
-          clubGroup.add(v);
+          trailClubGroup.add(v);
         }
-        box(clubGroup, cp.x, 5.9, cp.y - 4, 14.5, 0.35, 6, staticMat('#e2e0da', 0.6));
-        for (const dx of [-6, 6]) for (const dz of [-6.5, -1.5]) box(clubGroup, cp.x + dx, 2.9, cp.y + dz, 0.3, 5.8, 0.3, canopyMetal);
-        box(clubGroup, cp.x - 2, 6.15, cp.y - 4.5, 5, 0.1, 3.6, staticMat('#d8cfa6', 0.9));
-        box(clubGroup, cp.x + 4, 6.5, cp.y - 3.5, 1.4, 1.2, 1.4, staticMat('#b8292a', 0.6));
-        for (const dx of [-5, -4, 1]) mesh(cylinderGeo, staticMat('#c93a2a', 0.5), clubGroup, cp.x + dx, 6.9, cp.y - 2.5, 0.35, 1.2, 0.35);
+        box(trailClubGroup, cp.x, 5.9, cp.y - 4, 14.5, 0.35, 6, staticMat('#e2e0da', 0.6));
+        for (const dx of [-6, 6]) for (const dz of [-6.5, -1.5]) box(trailClubGroup, cp.x + dx, 2.9, cp.y + dz, 0.3, 5.8, 0.3, canopyMetal);
+        box(trailClubGroup, cp.x - 2, 6.15, cp.y - 4.5, 5, 0.1, 3.6, staticMat('#d8cfa6', 0.9));
+        box(trailClubGroup, cp.x + 4, 6.5, cp.y - 3.5, 1.4, 1.2, 1.4, staticMat('#b8292a', 0.6));
+        for (const dx of [-5, -4, 1]) mesh(cylinderGeo, staticMat('#c93a2a', 0.5), trailClubGroup, cp.x + dx, 6.9, cp.y - 2.5, 0.35, 1.2, 0.35);
         // Lanterns: on the table and hanging from the truss.
         const lanterns = [[cp.x + 5.5, 7.4, cp.y - 5], [cp.x - half + 2, 18.5, cp.y - half + 2], [cp.x + half - 2, 18.5, cp.y + half - 2]];
         for (const [x, y, z] of lanterns) {
-          box(clubGroup, x, y, z, 1.2, 1.8, 1.2, clubBlack);
+          box(trailClubGroup, x, y, z, 1.2, 1.8, 1.2, clubBlack);
           addGlow(x, y, z, 7, '#ffcf8a', 1.6, { mode: 'flicker', day: 0 });
         }
         // Camp chairs where the members sit (offroad.js members), a cooler, a grill.
@@ -1616,13 +1620,13 @@
         let chair = 0;
         for (const [u, v, a, role] of OFFROAD_CLUB.members) {
           if (role !== 'clubSit') continue;
-          const p = clubPos(u, v),
+          const p = trailClubPos(u, v),
             seat = new Three.Group();
           seat.position.set(p.x, 0, p.y);
           seat.rotation.y = -a;
-          clubGroup.add(seat);
+          trailClubGroup.add(seat);
           const cloth = staticMat(chairColors[chair++ % chairColors.length], 0.8);
-          box(seat, -0.4, 3.5, 0, 3.8, 0.35, 4.2, cloth);
+          box(seat, -0.4, 3.8, 0, 3.8, 0.35, 4.2, cloth);
           const back = box(seat, -2.4, 6.3, 0, 0.35, 5.2, 4.2, cloth);
           back.rotation.z = -0.22;
           for (const dz of [-2, 2]) {
@@ -1634,40 +1638,40 @@
           }
         }
         const cool = OFFROAD_CLUB.cooler;
-        box(clubGroup, cool.x, 1.8, cool.y, 5.6, 3.4, 3.6, staticMat('#f2f1ea', 0.5));
-        box(clubGroup, cool.x, 3.7, cool.y, 5.8, 0.6, 3.8, staticMat('#2d6aa0', 0.5));
-        box(clubGroup, cool.x, 4.2, cool.y, 3, 0.3, 0.5, clubBlack);
+        box(trailClubGroup, cool.x, 1.8, cool.y, 5.6, 3.4, 3.6, staticMat('#f2f1ea', 0.5));
+        box(trailClubGroup, cool.x, 3.7, cool.y, 5.8, 0.6, 3.8, staticMat('#2d6aa0', 0.5));
+        box(trailClubGroup, cool.x, 4.2, cool.y, 3, 0.3, 0.5, clubBlack);
         const gr = OFFROAD_CLUB.grill;
-        mesh(new Three.SphereGeometry(2.6, 14, 8, 0, TAU, Math.PI / 2, Math.PI / 2), clubBlack, clubGroup, gr.x, 6.8, gr.y);
-        mesh(cylinderGeo, staticMat('#2b2b2b', 0.4, 0.6), clubGroup, gr.x, 6.8, gr.y, 2.55, 0.15, 2.55);
-        const lid = mesh(new Three.SphereGeometry(2.6, 14, 6, 0, TAU, 0, Math.PI / 2), clubBlack, clubGroup, gr.x - 2.4, 7.2, gr.y);
+        mesh(new Three.SphereGeometry(2.6, 14, 8, 0, TAU, Math.PI / 2, Math.PI / 2), clubBlack, trailClubGroup, gr.x, 6.8, gr.y);
+        mesh(cylinderGeo, staticMat('#2b2b2b', 0.4, 0.6), trailClubGroup, gr.x, 6.8, gr.y, 2.55, 0.15, 2.55);
+        const lid = mesh(new Three.SphereGeometry(2.6, 14, 6, 0, TAU, 0, Math.PI / 2), clubBlack, trailClubGroup, gr.x - 2.4, 7.2, gr.y);
         lid.rotation.z = 1.3;
         for (let k = 0; k < 3; k++) {
           const a = (k / 3) * TAU,
-            leg = box(clubGroup, gr.x + Math.cos(a) * 1.6, 3.2, gr.y + Math.sin(a) * 1.6, 0.3, 6.6, 0.3, clubBlack);
+            leg = box(trailClubGroup, gr.x + Math.cos(a) * 1.6, 3.2, gr.y + Math.sin(a) * 1.6, 0.3, 6.6, 0.3, clubBlack);
           leg.rotation.set(Math.sin(a) * 0.25, 0, -Math.cos(a) * 0.25);
         }
-        for (let k = 0; k < 4; k++) box(clubGroup, gr.x - 1 + k * 0.7, 7.05, gr.y + (k % 2) * 0.6 - 0.3, 0.6, 0.3, 1.1, staticMat('#6b3a22', 0.8));
+        for (let k = 0; k < 4; k++) box(trailClubGroup, gr.x - 1 + k * 0.7, 7.05, gr.y + (k % 2) * 0.6 - 0.3, 0.6, 0.3, 1.1, staticMat('#6b3a22', 0.8));
         addGlow(gr.x, 7.1, gr.y, 5, '#ff8a3a', 1.4, { mode: 'flicker', day: 0.15 });
         // Fire ring: stones round split logs.
         const fr = OFFROAD_CLUB.fire;
         for (let k = 0; k < 11; k++) {
           const a = (k / 11) * TAU,
-            stone = mesh(new Three.IcosahedronGeometry(1, 0), clubStone, clubGroup, fr.x + Math.cos(a) * 5, 0.8, fr.y + Math.sin(a) * 5, 1.5, 1.1, 1.3);
+            stone = mesh(new Three.IcosahedronGeometry(1, 0), clubStone, trailClubGroup, fr.x + Math.cos(a) * 5, 0.8, fr.y + Math.sin(a) * 5, 1.5, 1.1, 1.3);
           stone.rotation.y = k;
         }
         for (let k = 0; k < 3; k++) {
           const a = (k / 3) * TAU;
-          logBetween(clubGroup, fr.x + Math.cos(a) * 2.8, 0.5, fr.y + Math.sin(a) * 2.8, fr.x - Math.cos(a) * 0.6, 2.2, fr.y - Math.sin(a) * 0.6, 0.55);
+          logBetween(trailClubGroup, fr.x + Math.cos(a) * 2.8, 0.5, fr.y + Math.sin(a) * 2.8, fr.x - Math.cos(a) * 0.6, 2.2, fr.y - Math.sin(a) * 0.6, 0.55);
         }
-        for (const [dx, dz] of [[9, -3], [10, 3]]) logBetween(clubGroup, fr.x + dx - 4, 1.6, fr.y + dz, fr.x + dx + 4, 1.6, fr.y + dz, 1.4);
+        for (const [dx, dz] of [[9, -3], [10, 3]]) logBetween(trailClubGroup, fr.x + dx - 4, 1.6, fr.y + dz, fr.x + dx + 4, 1.6, fr.y + dz, 1.4);
         addGlow(fr.x, 2.4, fr.y, 12, '#ff9a48', 2.2, { mode: 'flicker', day: 0 });
         // A stack of spare tyres and a pair of jerry cans by the rail.
-        for (let k = 0; k < 3; k++) mesh(new Three.TorusGeometry(2.7, 1.2, 8, 16), staticMat('#1c1c1d', 0.95), clubGroup, clubPos(276, 150).x, 1.2 + k * 2.3, clubPos(276, 150).y, 1, 1, 1).rotation.x = Math.PI / 2;
+        for (let k = 0; k < 3; k++) mesh(new Three.TorusGeometry(2.7, 1.2, 8, 16), staticMat('#1c1c1d', 0.95), trailClubGroup, trailClubPos(276, 150).x, 1.2 + k * 2.3, trailClubPos(276, 150).y, 1, 1, 1).rotation.x = Math.PI / 2;
         // String lights: from the canopy to two poles, a bulb every metre and a half.
-        const polesAt = [clubPos(40, 98), clubPos(250, 98), clubPos(210, 150)];
+        const polesAt = [trailClubPos(40, 98), trailClubPos(250, 98), trailClubPos(210, 150)];
         for (const p of polesAt) {
-          box(clubGroup, p.x, 12, p.y, 0.6, 24, 0.6, staticMat('#5a4630', 0.9));
+          box(trailClubGroup, p.x, 12, p.y, 0.6, 24, 0.6, staticMat('#5a4630', 0.9));
         }
         const runs = [
           [[cp.x - half, 21, cp.y - half], [polesAt[0].x, 23.5, polesAt[0].y]],
@@ -1684,7 +1688,7 @@
           for (let k = 1; k <= n; k++) {
             const t = k / n,
               p = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t - Math.sin(t * Math.PI) * sag, a[2] + (b[2] - a[2]) * t];
-            const seg = mesh(cylinderGeo, wire, clubGroup, (p[0] + prev[0]) / 2, (p[1] + prev[1]) / 2, (p[2] + prev[2]) / 2, 0.08, Math.hypot(p[0] - prev[0], p[1] - prev[1], p[2] - prev[2]), 0.08);
+            const seg = mesh(cylinderGeo, wire, trailClubGroup, (p[0] + prev[0]) / 2, (p[1] + prev[1]) / 2, (p[2] + prev[2]) / 2, 0.08, Math.hypot(p[0] - prev[0], p[1] - prev[1], p[2] - prev[2]), 0.08);
             seg.quaternion.setFromUnitVectors(new Three.Vector3(0, 1, 0), new Three.Vector3(p[0] - prev[0], p[1] - prev[1], p[2] - prev[2]).normalize());
             seg.castShadow = false;
             if (k < n) addGlow(p[0], p[1] - 0.6, p[2], 3.4, k % 3 ? '#ffd9a0' : '#ffb27a', 1.3, { day: 0, mode: 'steady' });
@@ -1695,14 +1699,14 @@
         signSpill(cp.x + 30, cp.y, 120, '#ffc98a', 0.55);
         signSpill(s.x, s.y + 20, 60, '#ffe2b0', 0.35);
         signSpill(fr.x, fr.y, 70, '#ff9a48', 0.5);
-        statics.push({ x: L.x + L.w / 2, y: L.y + L.h / 2, group: clubGroup, radius: 260 });
+        statics.push({ x: L.x + L.w / 2, y: L.y + L.h / 2, group: trailClubGroup, radius: 260 });
       }
       // ---- The flag: club colours on a pole, flying ----------------------------------------------
       const flagPoint = OFFROAD_CLUB.flag,
         flagGeometry = new Three.PlaneGeometry(14, 9, 12, 4);
       flagGeometry.translate(7, 0, 0);
       const flagBase = Float32Array.from(flagGeometry.attributes.position.array),
-        flag = new Three.Mesh(
+        clubFlag = new Three.Mesh(
           flagGeometry,
           new Three.MeshStandardMaterial({
             map: canvasMap(256, 160, (g) => {
@@ -1727,11 +1731,11 @@
             roughness: 0.85,
           }),
         );
-      flag.position.set(flagPoint.x + 0.4, 50, flagPoint.y);
-      flag.castShadow = true;
-      clubLive.add(flag);
-      box(clubGroup, flagPoint.x, 28, flagPoint.y, 0.7, 56, 0.7, staticMat('#d8dadc', 0.3, 0.7));
-      mesh(sphereGeo, staticMat('#d9a441', 0.3, 0.8), clubGroup, flagPoint.x, 56.4, flagPoint.y, 0.8, 0.8, 0.8);
+      clubFlag.position.set(flagPoint.x + 0.4, 50, flagPoint.y);
+      clubFlag.castShadow = true;
+      trailClubLive.add(clubFlag);
+      box(trailClubGroup, flagPoint.x, 28, flagPoint.y, 0.7, 56, 0.7, staticMat('#d8dadc', 0.3, 0.7));
+      mesh(sphereGeo, staticMat('#d9a441', 0.3, 0.8), trailClubGroup, flagPoint.x, 56.4, flagPoint.y, 0.8, 0.8, 0.8);
       function waveFlag() {
         const pos = flagGeometry.attributes.position,
           wind = weather.wind || 0.4,
@@ -1745,7 +1749,7 @@
         }
         pos.needsUpdate = true;
         flagGeometry.computeVertexNormals();
-        flag.rotation.y = -angle;
+        clubFlag.rotation.y = -angle;
       }
       // ---- Trail furniture: start gate, checkpoints, rock steps, finish ------------------------------
       const trailGroup = new Three.Group();
@@ -1845,7 +1849,7 @@
         if (deltaSeconds <= 0) return;
         const L = OFFROAD_CLUB.lot,
           nearClub = Math.abs(viewCenter.x - L.x - L.w / 2) < viewReach + 300 && Math.abs(viewCenter.y - L.y - L.h / 2) < viewReach + 300;
-        clubLive.visible = nearClub;
+        trailClubLive.visible = nearClub;
         if (nearClub) {
           waveFlag();
           // The grill smokes; the fire ring smoulders by day and burns at night.
@@ -1862,7 +1866,10 @@
           if (m.group.visible && (c.offroadState || c.x > CITY_SIZE - 200) && Math.abs(c.x - viewCenter.x) < viewReach + 100 && Math.abs(c.y - viewCenter.y) < viewReach + 100)
             vehicleSpray(c, m, deltaSeconds);
         updateMudParticles(deltaSeconds);
-        splats.material.uniforms.uTime.value = gameTime;
-        tracks.material.uniforms.uTime.value = gameTime;
+        mudSplats.material.uniforms.uTime.value = gameTime;
+        tyreTracks.material.uniforms.uTime.value = gameTime;
+      }
+      function offroadEffectsInfo() {
+        return { clumps: clump.count, mist: mist.count, splats: mudSplats.used, tracks: tyreTracks.used, capacity: { clumps: MUD_CLUMPS, mist: MUD_MIST, splats: MUD_SPLATS, tracks: MUD_TRACKS } };
       }
       // END SUBSYSTEM: src/offroad3d.js

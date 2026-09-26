@@ -226,6 +226,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | sidejobs.js | The five contracts (indices 11 to 15, from `SIDE_JOB_FIRST`) and `sideJobPower` (blackout) |
 | streets.js | Street grid (`cityStreets`, `cityStreetAt`), painting, `STREET_NAMES`, `streetNameAt`, `benchSpots`, the esplanade |
 | terrain.js | The Ridgeline Range: generated, eroded height fields (one shared triangulated surface for rendering, collision and elevation), switchback 4x4 trails, baked AO / flow / forest data, forest, boulder and stream placement, the 2D relief paint, slope handling and off-road contact, `terrainReport` |
+| offroad.js | The 4x4 club, trail mud, off-road traction and the hill climb: `OFFROAD_CLUB` (the lot across Eagle Pass from the Mount Ascent trailhead, its pad flattened in the height field by `offroadTerrainPads`), `OFFROAD_TYPES` (seven club trucks added to `VEHICLE_DEFINITIONS`, real size, `modelScale` 1), `OFFROAD_SECTIONS` (mud, the bog, the muddy hairpin, rock steps, checkpoints per trail), `offroadTrailBake` (mud / rock / trail frame per vertex), `offroadSurfaceAt`, `offroadDrive` (traction on the range, called by physics.js), body mud (`c.mudCoat`, `c.mudWet`), the club's members (a crowd scene), the hill climb (`trailCourse`, `offroadSummit`, best times in `dead-end-city-hillclimb`), `trailPilot` / `trailProfile` (console) |
 | casino.js | Roulette layout, stakes, settlement, UI and saved cash |
 | skyline.js | North Point financial cluster plan: `SKYLINE_TOWERS` (named tower lots per block, heights, designs), `buildSkylineBlock`, `paintSkylinePlaza` |
 | renewal.js | Parks (`CENTRAL_PARK`, `COMMONS`), ponds (`parkPondBlocked`, `parkPondNear`), boardwalks, walkers, joggers, the outdoor gym |
@@ -306,6 +307,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
 | police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
+| offroad3d.js | The club trucks (`makeOffroadVehicle`, `OFFROAD_BODIES` in the police body format, canvas liveries, modelled mud-terrain / all-terrain / desert tyres and beadlock / steel / cast rims, kit per truck; `animateOffroadVehicle`: wheel speed with wheelspin, steering, articulation), mud on any vehicle's paint (`vehicleMudPatch`, `applyVehicleMud`), mud clumps, mist and dust, splat and tyre-track decals (`updateOffroadVisuals`), the club lot (sign, canopy, chairs, cooler, grill, fire ring, flag, string lights, lanterns) and the hill climb course (start gate, checkpoint flags, rock-step slabs, finish) |
 | plane3d.js | The three airframes, modelled on real types: the Serrano C200 courier (mission 11's plane; a low-wing single turboprop with a T-tail after the Pilatus PC-12), the Aurelia J8 business jet and the Meridian 220 airliner. A lofted fuselage (monotone-cubic stations, superellipse sections) wears a livery texture computed per pixel from the surface (windscreen and cockpit glass with frames, cabin windows, doors, cheatline, registration; glossy glass through a roughness / metalness map); NACA-section wings, winglets, fin and stabiliser; flaps, ailerons, elevators and rudder in hinge pivots; four-blade propeller with blur disc or lathed turbofans with spinning fans; retracting gear; navigation, strobe, beacon and landing lights. Static parts are merged per material. `animateAircraft` poses it all from the flight model each frame |
 | parachute3d.js | The ram-air parachute: nine-cell canopy rebuilt per frame (inflation, pillows, brakes, trailing-edge flutter), lines, risers, slider, pilot chute and bridle, the pack; `poseParachutist` (freefall box position, hanging pendulum, toggles), collapse and pack-up after landing |
 
@@ -601,6 +603,21 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   draws those same vertices (near LOD), so contact and picture agree. `DeadEndCity.terrain()`
   reports the fields (grid, top, build timings), peak and trail figures, scenery counts and the
   outcrops' footing.
+- **The 4x4 club and the trails** (offroad.js, offroad3d.js). RIDGELINE 4X4 CLUB's gravel lot
+  (x 7410..7700, y 2034..2194) lies south of Eagle Pass opposite the Mount Ascent trailhead, on a
+  pad cut level into the height field. Seven club trucks (ROVER SERIES III SAFARI, BADGER RUBICON
+  CRAWLER, MUSTANG RIDGE BRONCO, HIGHLANDER 70 EXPEDITION, TAURO HX35 ARCTIC, OKTAV 6×6 EXPEDITION,
+  SIDEWINDER TROPHY TRUCK) are parked in a herringbone row and come back when taken. The trails
+  carry baked mud: the lower switchbacks (to ~55% of the way up), THE BOG and the MUDDY HAIRPIN on
+  Mount Ascent, rock steps higher up. Traction on the range (`offroadDrive`): the driven wheels
+  push at most mu x load (surface: packed dirt 0.68, mud down to ~0.3, wet lower, rock 0.8; tyre:
+  mud-terrain, all-terrain, desert, road; driven share 1 for 4x4, ~0.5 for two-wheel drive),
+  more than that spins them (`c.wheelSpin`, `c.spinSpeed`); low range under 35 km/h; the brakes
+  hold a truck up to the same friction and it slides back past it; mud costs rolling resistance
+  and rough ground bounces a vehicle past its suspension speed. The hill climb clock starts at
+  each trail's start gate; E at the club sign arms the Mount Ascent challenge (2:30, $1,000).
+  Four Chaikin passes round the hairpins and the legs are evenly spaced up the face (they used to
+  bunch up at the top, leaving the last hairpin only 6 m wide).
 - **Fort Sentinel** (military.js `MILITARY`, `SENTINEL`; drawn by base3d.js) fills x 9300..10560,
   y 7750..9950 of its island inside a double razor-wire fence with eight watch towers. The
   Sentinel Causeway lands at the main gate (y 8150): jersey-barrier funnel, guard booth on a

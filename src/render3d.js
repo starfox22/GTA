@@ -2069,6 +2069,8 @@
       const api = {
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
+        // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
+        offroadInfo: () => offroadEffectsInfo(),
         /**
          * Settings contract: the see-through hole round the player under a roof
          * (lighting3d.js, CUTAWAY). On by default; read at start-up from

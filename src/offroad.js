@@ -85,8 +85,8 @@
       members: [
         [164, 116, 1.9, 'clubGrill', 'worker'],
         [186, 132, 3.3, 'clubChat', 'casual'],
-        [108, 118, 0.3, 'clubSit', 'casual'],
-        [128, 132, -1.9, 'clubSit', 'tourist'],
+        [206, 126, 0.55, 'clubSit', 'casual'],
+        [236, 148, -2.3, 'clubSit', 'tourist'],
         [96, 76, -1.2, 'clubChat', 'casual'],
         [110, 74, 2.6, 'clubArms', 'worker'],
         [234, 118, 2.2, 'clubChat', 'tourist'],
@@ -248,7 +248,8 @@
         grip: 7,
         balance: 0.3,
         tyre: 'desert',
-        drive: 'rwd',
+        // A modern four-wheel-drive trophy truck (no low range: it is built for speed).
+        drive: '4x4',
         travel: 1.9,
         color: '#f1c232',
       },
@@ -256,6 +257,8 @@
     for (const [type, spec] of Object.entries(OFFROAD_TYPES)) {
       spec.offroad = true;
       spec.clubModel = type;
+      // Built at real size (offroad3d.js): drawn at scale 1.
+      spec.modelScale = 1;
       VEHICLE_DEFINITIONS[type] = spec;
       roadPerformance(spec);
     }
@@ -278,7 +281,7 @@
         mudTo: 0.58,
         patches: [
           { name: 'THE BOG', from: 0.13, to: 0.21, depth: 1 },
-          { name: 'MUDDY HAIRPIN', hairpin: 2, reach: 70, depth: 0.95 },
+          { name: 'MUDDY HAIRPIN', hairpin: 2, reach: 70, depth: 0.8 },
         ],
         rocks: [{ name: 'ROCK STEPS', from: 0.66, to: 0.74 }],
         checkpoints: [0.24, 'hairpin:2', 0.77],
@@ -309,7 +312,7 @@
        Called by generateTerrainField once the trails are carved, with, per vertex,
        the distance to the nearest trail carriageway (`near`, hairpin pads counted),
        the nearest path sample and which trail. */
-    function offroadTrailBake(field, near, segment, owner) {
+    function offroadTrailBake(field, heights, near, segment, owner) {
       const count = field.cols * field.rows,
         mud = new Float32Array(count),
         rock = new Float32Array(count),
@@ -352,6 +355,8 @@
         m *= (0.72 + 0.28 * rut) * (1 - 0.45 * edge);
         // Past the carriageway the mud thins out over the shoulders.
         m *= 1 - smoothStep(1.05, 2.4, a);
+        // None on the level approach beside the road (the county sheet, no terrain drawn).
+        m *= smoothStep(0.5, 5, heights[i]);
         let k = 0;
         for (const b of sections.rocks) k = Math.max(k, smoothStep(b.from - 0.01, b.from + 0.005, frac) * (1 - smoothStep(b.to - 0.005, b.to + 0.01, frac)));
         k *= 1 - smoothStep(1.0, 1.4, a);
@@ -392,7 +397,7 @@
     const OFFROAD_TYRES = {
       mt: [1, 1, 1],
       at: [0.97, 0.82, 0.95],
-      desert: [1.02, 0.7, 0.9],
+      desert: [1.02, 0.78, 0.9],
       track: [1.15, 1.1, 1.1],
       road: [0.82, 0.46, 0.86],
     };
@@ -608,7 +613,7 @@
       drawingContext.restore();
     }
     /* ---- The members ----------------------------------------------------------------- */
-    const CLUB_TALK = [
+    const TRAIL_CLUB_TALK = [
         'Aired down to 15 psi!',
         'Lockers engaged?',
         'Last one to the summit buys the beers.',
@@ -623,11 +628,11 @@
         'That winch saved my weekend.',
         'Two-thirty to the top. Beat that.',
       ],
-      CLUB_NIGHT = ['Stars are unreal up here.', 'Pass the lantern.', 'Night run to the summit?', 'Who’s got the marshmallows?'],
-      CLUB_RAIN = ['Here comes the good mud!', 'The hairpin’s going to be soup.', 'Lock the hubs, boys.'],
-      CLUB_THEFT = ['HEY! That’s my rig!', 'Somebody stop him!', 'Not the Series, she’s older than you!', 'Bring it back in one piece!'],
-      CLUB_ROAD_CAR = ['You’re not taking THAT up the trail?', 'Road tyres? Good luck.', 'Nice car. Wrong hobby.'],
-      CLUB_MUDDY = ['Now THAT’s a proper paint job.', 'Somebody found the bog!', 'Looks like you had fun.'];
+      TRAIL_CLUB_NIGHT = ['Stars are unreal up here.', 'Pass the lantern.', 'Night run to the summit?', 'Who’s got the marshmallows?'],
+      TRAIL_CLUB_RAIN = ['Here comes the good mud!', 'The hairpin’s going to be soup.', 'Lock the hubs, boys.'],
+      TRAIL_CLUB_THEFT = ['HEY! That’s my rig!', 'Somebody stop him!', 'Not the Series, she’s older than you!', 'Bring it back in one piece!'],
+      TRAIL_CLUB_ROAD_CAR = ['You’re not taking THAT up the trail?', 'Road tyres? Good luck.', 'Nice car. Wrong hobby.'],
+      TRAIL_CLUB_MUDDY = ['Now THAT’s a proper paint job.', 'Somebody found the bog!', 'Looks like you had fun.'];
     function clubSay(p, lines) {
       if (!p || p.hp <= 0 || (p.speechUntil || 0) > gameTime || p.react) return false;
       p.speech = randomChoice(lines);
@@ -667,7 +672,7 @@
       if (car && car.clubSlot >= 0 && gameTime - clubState.theftTold > 20 && distanceBetween(car, clubPoint(150, 60)) < 260 && Math.abs(car.speed) > 12) {
         clubState.theftTold = gameTime;
         const shout = members.reduce((a, b) => (distanceBetween(a, car) < distanceBetween(b, car) ? a : b));
-        clubSay(shout, CLUB_THEFT);
+        clubSay(shout, TRAIL_CLUB_THEFT);
         shout.speechKind = 'shout';
         crime(0.6);
         clubState.talkClock = 3;
@@ -677,11 +682,11 @@
       clubState.talkClock = randomBetween(4.5, 8);
       const hour = (worldMinutes % 1440) / 60,
         someone = randomChoice(members);
-      if (car && d < 260 && car.mudCoat > 0.45) clubSay(someone, CLUB_MUDDY);
-      else if (car && d < 260 && !vehicleSpec(car).offroad && !isAircraft(car) && !isBoat(car)) clubSay(someone, CLUB_ROAD_CAR);
-      else if ((weather.rain || 0) > 0.2) clubSay(someone, CLUB_RAIN);
-      else if (hour > 20.5 || hour < 5) clubSay(someone, seededRandom() < 0.5 ? CLUB_NIGHT : CLUB_TALK);
-      else clubSay(someone, CLUB_TALK);
+      if (car && d < 260 && car.mudCoat > 0.45) clubSay(someone, TRAIL_CLUB_MUDDY);
+      else if (car && d < 260 && !vehicleSpec(car).offroad && !isAircraft(car) && !isBoat(car)) clubSay(someone, TRAIL_CLUB_ROAD_CAR);
+      else if ((weather.rain || 0) > 0.2) clubSay(someone, TRAIL_CLUB_RAIN);
+      else if (hour > 20.5 || hour < 5) clubSay(someone, seededRandom() < 0.5 ? TRAIL_CLUB_NIGHT : TRAIL_CLUB_TALK);
+      else clubSay(someone, TRAIL_CLUB_TALK);
     }
     // A club truck taken or wrecked is replaced while nobody is looking.
     function refillClubSlots(deltaSeconds) {
@@ -962,6 +967,7 @@
           return { trail: t.name, start: [Math.round(course.start.x), Math.round(course.start.y)], checkpoints: course.checkpoints.map((p) => [Math.round(p.x), Math.round(p.y)]), target: course.target };
         }),
         wet: +(weather.wet || 0).toFixed(2),
+        effects: city3D ? city3D.offroadInfo() : null,
       };
     }
     // Every club truck side by side facing south (the camera), for a close look.
@@ -974,6 +980,132 @@
         ids.push(c.id);
       });
       return ids;
+    }
+    /*
+     * TRAIL PILOT (console): drives the player's vehicle up a trail through the
+     * real physics and controls (keys, 30 steps a second, no drawing), following
+     * the graded path with a look-ahead, easing off before the hairpins and
+     * holding at most `maxKmh`. Reports how far it got, the time, the wheelspin,
+     * and why it stopped (the summit, stuck, time). `keysHeld` go in as extra
+     * keys (e.g. Space).
+     */
+    function trailPilot(seconds = 240, maxKmh = 40, t = 0) {
+      const c = player.car,
+        trail = MOUNTAIN_TRAILS[t],
+        path = trail.path,
+        n = path.length - 1;
+      if (!c) return null;
+      let idx = 0,
+        best = 0,
+        bestAt = 0,
+        time = 0,
+        spinSum = 0,
+        slid = 0,
+        maxSpeed = 0,
+        reason = 'time',
+        lastProgress = 0,
+        stall = 0,
+        backing = 0;
+      // Start from the nearest sample.
+      let nearest = Infinity;
+      for (let i = 0; i <= n; i++) {
+        const d = Math.hypot(path[i][0] - c.x, path[i][1] - c.y);
+        if (d < nearest) {
+          nearest = d;
+          idx = i;
+        }
+      }
+      best = idx;
+      const dt = 1 / 30;
+      for (; time < seconds; time += dt) {
+        if (player.car !== c || c.hp <= 0) {
+          reason = 'lost vehicle';
+          break;
+        }
+        // Advance along the path while the next samples are closer.
+        for (let k = 0; k < 6 && idx < n; k++) {
+          const here = Math.hypot(path[idx][0] - c.x, path[idx][1] - c.y),
+            next = Math.hypot(path[idx + 1][0] - c.x, path[idx + 1][1] - c.y);
+          if (next <= here + 2) idx++;
+          else break;
+        }
+        if (idx > best) {
+          best = idx;
+          bestAt = time;
+        }
+        if (idx >= n - 2 || distanceBetween(c, trail.peak) < 40) {
+          reason = 'summit';
+          break;
+        }
+        if (time - bestAt > 12) {
+          reason = 'stuck';
+          break;
+        }
+        const speed = c.speed || 0,
+          kmh = speed / KMH,
+          heading = (i) => Math.atan2(path[Math.min(n, i + 1)][1] - path[Math.min(n, i)][1], path[Math.min(n, i + 1)][0] - path[Math.min(n, i)][0]),
+          // In a hairpin, follow the line closely (a long look cuts across the bank inside it).
+          tight = Math.abs(normalizeAngle(heading(idx + 6) - heading(idx))) > 1.1,
+          look = Math.min(n, idx + (tight ? 2 : 4 + Math.floor(Math.max(0, kmh) / 8))),
+          [tx, ty] = path[look],
+          err = normalizeAngle(Math.atan2(ty - c.y, tx - c.x) - c.a);
+        // Ease off for the bend ahead: the heading change over the next 12 samples.
+        const a0 = Math.atan2(path[Math.min(n, idx + 2)][1] - path[idx][1], path[Math.min(n, idx + 2)][0] - path[idx][0]),
+          a1 = Math.atan2(path[Math.min(n, idx + 12)][1] - path[Math.min(n, idx + 10)][1], path[Math.min(n, idx + 12)][0] - path[Math.min(n, idx + 10)][0]),
+          bend = Math.abs(normalizeAngle(a1 - a0)),
+          desired = Math.min(maxKmh, bend > 2 ? 8 : bend > 1.2 ? 13 : bend > 0.6 ? 22 : maxKmh);
+        // Wedged (nose in a bank past a hairpin): back off a moment on opposite lock.
+        stall = keys.KeyW && Math.abs(kmh) < 1 && c.wheelSpin < 0.3 ? stall + dt : 0;
+        if (stall > 1.5) backing = 1.4;
+        // Facing away from the line (overshot a hairpin): a three-point turn.
+        if (backing <= 0 && Math.abs(err) >= 1.5 && Math.abs(kmh) < 6) backing = 1.2;
+        if (backing > 0) {
+          backing -= dt;
+          keys.KeyW = false;
+          keys.KeyS = true;
+          keys.KeyD = err < 0;
+          keys.KeyA = err > 0;
+        } else {
+          keys.KeyW = kmh < desired && Math.abs(err) < 1.6;
+          keys.KeyS = kmh > desired + 8 || (Math.abs(err) >= 1.6 && kmh > 4);
+          keys.KeyD = err > 0.05;
+          keys.KeyA = err < -0.05;
+        }
+        if (speed < -2 * KMH && keys.KeyW) slid += -speed * dt;
+        spinSum += c.wheelSpin * dt;
+        maxSpeed = Math.max(maxSpeed, kmh);
+        update(dt);
+        if (idx !== lastProgress) lastProgress = idx;
+      }
+      keys.KeyW = keys.KeyS = keys.KeyA = keys.KeyD = false;
+      return {
+        reason,
+        seconds: +time.toFixed(1),
+        sample: best,
+        of: n,
+        progress: +(best / n).toFixed(3),
+        height: Math.round(terrainHeight(c.x, c.y)),
+        meanSpin: +(spinSum / Math.max(time, 1)).toFixed(2),
+        slidBackM: +worldMeters(slid).toFixed(1),
+        maxKmh: Math.round(maxSpeed),
+        hp: Math.round(c.hp),
+        mudCoat: +c.mudCoat.toFixed(2),
+        last: clubState.last,
+      };
+    }
+    // The graded path of a trail with its mud and rock, every `step` samples (console).
+    function trailProfile(t = 0, step = 4) {
+      const trail = MOUNTAIN_TRAILS[t],
+        out = [],
+        s = { ...offroadSurface };
+      for (let i = 0; i < trail.path.length; i += step) {
+        const [x, y] = trail.path[i],
+          j = Math.min(trail.path.length - 1, i + step),
+          run = Math.hypot(trail.path[j][0] - x, trail.path[j][1] - y) || 1;
+        offroadSurfaceAt(x, y, s);
+        out.push([i, Math.round(x), Math.round(y), +terrainHeight(x, y).toFixed(1), +((terrainHeight(...trail.path[j]) - terrainHeight(x, y)) / run).toFixed(3), +s.mud.toFixed(2), +s.rock.toFixed(2)]);
+      }
+      return out;
     }
     // Place the player's vehicle at a trail's start gate (or a checkpoint), facing up the trail.
     function hillClimbConsole(action = 'state', t = 0) {

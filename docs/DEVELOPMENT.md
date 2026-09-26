@@ -104,6 +104,12 @@ something, never a generic code-evaluation hook.
 | `missionTargets()` | The current mission in full: target with altitude, timer, mission vehicles (health, fire), guards, armed hostiles aiming nearby, actors, and each job's point lists (gates, checkpoints, rings, repos...) |
 | `probe(x, y, r)` | What occupies a map point: land/water, solid, road, rail, beach, whether a car or a jet ski fits |
 | `terrain()` | The Ridgeline Range: each height field's grid, highest point and build time per stage (ms), the two summits' heights, each 4x4 trail's length, summit, steepest graded pitch and trailhead height, forest / boulder / stream counts, and each rock outcrop's ground height and clearance from the trails |
+| `offroad()` | The 4x4 club and the trails: the lot, its pad height and clearances from the roads and trails, each club truck (dimensions, mass, performance, tyres, drive, parked), the members and what they say, the player's traction state (speed, wheel speed, wheelspin, low range, mud, rock, grade, body mud), the running climb, the challenge, the last result, best times, the courses, `effects` (mud clumps, mist, splats and tracks in use) |
+| `clubLineup(x, y)` | Park one of every club truck side by side facing the camera |
+| `hillClimb(action, trail)` | `'arm'` the challenge, `'reset'`, `'clear'` the best times, `'gate'` or `'cp0'`..`'cp2'` puts the player's vehicle there facing up the trail; returns `offroad()` |
+| `trailDrive(seconds, maxKmh, trail)` | Drive the player's vehicle up a trail through the real physics (a line-following pilot, three-point turns at hairpins); reports how far it got, the time, mean wheelspin, how far it slid back and why it stopped |
+| `trailProfile(trail, step)` | A trail's graded path: `[sample, x, y, height, grade, mud, rock]` every `step` samples |
+| `mud(amount, wet)` | Set the mud on the player's vehicle (0..1) and how fresh (wet) it is |
 | `steerTo(x, y, seconds, radius, passThrough)` | Drive the current road vehicle or boat toward a point through the real physics (straight-line pilot, backs off walls); `passThrough` counts the point at speed |
 | `interact()` | Press the action key once, as E would |
 | `boardMissionVehicle()`, `placeVehicle(x, y, heading, altitudeMeters)` | Take the mission's vehicle; move the player's vehicle (stopped, aircraft at an altitude) |

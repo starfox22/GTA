@@ -5616,6 +5616,10 @@
       clubLineup: (x, y) => clubLineup(x, y),
       // 'state', 'arm', 'reset', 'clear' (records), 'gate' or 'cp0'..'cp2' (move the player's vehicle there).
       hillClimb: (action, trail) => hillClimbConsole(action, trail),
+      // Drive the player's vehicle up a trail through the real physics (a line-following pilot).
+      trailDrive: (seconds, maxKmh, trail) => trailPilot(seconds, maxKmh, trail),
+      // A trail's path: [sample, x, y, height, grade, mud, rock] every `step` samples.
+      trailProfile: (trail, step) => trailProfile(trail, step),
       // Set the mud on the player's vehicle (0..1) and how wet it is.
       mud: (amount = 1, wet = 1) => {
         const c = player.car;

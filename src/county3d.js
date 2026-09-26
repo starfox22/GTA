@@ -164,12 +164,15 @@
           float mudWetness = clamp( 0.5 + 0.5 * cityWet, 0.0, 1.0 );
           tRut = exp( -pow( ( tAcross - 0.36 ) / 0.1, 2.0 ) ) * smoothstep( 0.05, 0.3, tMud );
           float mn = terrainNoise( tP.xz * 0.31 ), mn2 = mix( 0.5, terrainNoise( tP.xz * 1.9 + 4.0 ), tFade );
-          vec3 mudDry = terrainSrgb( vec3( 0.43, 0.35, 0.26 ) ), mudWetCol = terrainSrgb( vec3( 0.2, 0.15, 0.1 ) );
-          vec3 mudCol = mix( mudDry, mudWetCol, mudWetness * ( 0.45 + 0.55 * tMud ) ) * ( 0.8 + 0.32 * mn2 ) * ( 1.0 - 0.3 * tRut );
+          vec3 mudDry = terrainSrgb( vec3( 0.47, 0.38, 0.28 ) ), mudWetCol = terrainSrgb( vec3( 0.29, 0.22, 0.15 ) );
+          vec3 mudCol = mix( mudDry, mudWetCol, mudWetness * ( 0.45 + 0.55 * tMud ) ) * ( 0.82 + 0.3 * mn2 ) * ( 1.0 - 0.22 * tRut );
           // Tyre-churned streaks along the ruts.
           mudCol *= 1.0 - 0.12 * tRut * mix( 0.5, terrainNoise( tP.xz * vec2( 2.3, 0.35 ) ), tFade );
-          tPuddle = smoothstep( 0.6, 0.74, mn + tRut * 0.32 + tMud * 0.18 - ( 1.0 - mudWetness ) * 0.3 ) * smoothstep( 0.3, 0.65, tMud );
-          mudCol = mix( mudCol, terrainSrgb( vec3( 0.12, 0.11, 0.1 ) ), tPuddle * 0.85 );
+          // Puddles: a few, lying in the ruts and the low spots of the deepest mud,
+          // more of them after rain; brown water that mirrors the sky.
+          float puddleField = terrainNoise( tP.xz * 0.11 + 11.0 ) * 0.75 + mn * 0.25 + tRut * 0.22;
+          tPuddle = smoothstep( 0.74, 0.8, puddleField + tMud * 0.06 + cityWet * 0.06 ) * smoothstep( 0.4, 0.75, tMud ) * ( 0.35 + 0.65 * mudWetness );
+          mudCol = mix( mudCol, terrainSrgb( vec3( 0.26, 0.22, 0.17 ) ), tPuddle * 0.8 );
           tMudW = smoothstep( 0.03, 0.3, tMud ) * ( 1.0 - tSnow );
           tCol = mix( tCol, mudCol, tMudW );
           // Rock steps: pale grey ledges across the trail.
@@ -208,7 +211,7 @@
         roughnessFactor = mix( roughnessFactor, 0.1, tWater * ( 1.0 - tFoam ) );
         roughnessFactor = mix( roughnessFactor, roughnessFactor * 0.55, cityWet );
         roughnessFactor = mix( roughnessFactor, 0.42, tMudW * 0.7 );
-        roughnessFactor = mix( roughnessFactor, 0.05, tPuddle );`;
+        roughnessFactor = mix( roughnessFactor, 0.08, tPuddle );`;
       const TERRAIN_NORMAL = `
         {
           // Bump from a height made of the rock grain, the strata ledges and the turf.
