@@ -6311,12 +6311,12 @@
         });
       },
       // Helicopter review (helicopter3d.js): parks one helicopter of each look
-      // ('police', 'news', 'executive', 'military') in a row from (x, y), `spacing`
-      // apart, facing `heading`; `rotors` true spins them up (with the police lights
+      // ('police', 'news', 'executive', 'military') in a row east from (x, y),
+      // `spacing` apart, facing `heading`; `rotors` true spins them up (with the police lights
       // running). Returns the ids and looks.
       helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110) {
         return ['police', 'news', 'executive', 'military'].map((heliLook, i) => {
-          const c = makeCar('helicopter', x + Math.sin(heading) * i * spacing, y - Math.cos(heading) * i * spacing, heading, false);
+          const c = makeCar('helicopter', x + i * spacing, y, heading, false);
           Object.assign(c, { heliLook, showRotor: !!rotors, showLights: rotors ? 'pursuit' : false });
           return { id: c.id, look: heliLook };
         });

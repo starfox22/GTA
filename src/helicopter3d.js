@@ -97,7 +97,9 @@
           airframe: 'light',
           tail: 'rotor',
           finish: { roughness: 0.3, metalness: 0.06, clearcoat: 1 },
-          glass: '#0a141d',
+          glass: '#3a4b5b',
+          // The roof is painted (the aerial ID), not glazed.
+          roofGlass: false,
           liner: '#26292e',
           seat: '#2a2d33',
           skid: '#202226',
@@ -112,7 +114,8 @@
           airframe: 'light',
           tail: 'rotor',
           finish: { roughness: 0.26, metalness: 0.08, clearcoat: 1 },
-          glass: '#0c1823',
+          glass: '#3d4f60',
+          roofGlass: true,
           liner: '#2b2e33',
           seat: '#30343a',
           skid: '#9ca2a8',
@@ -126,7 +129,8 @@
           airframe: 'light',
           tail: 'fenestron',
           finish: { roughness: 0.14, metalness: 0.5, clearcoat: 1 },
-          glass: '#0d1115',
+          glass: '#2f3942',
+          roofGlass: true,
           liner: '#6f6356',
           seat: '#a37d56',
           skid: '#b9bec3',
@@ -140,7 +144,8 @@
           airframe: 'hawk',
           tail: 'rotor',
           finish: { roughness: 0.88, metalness: 0.03, clearcoat: 0 },
-          glass: '#121b1e',
+          glass: '#344036',
+          roofGlass: false,
           liner: '#3e4136',
           seat: '#5a5941',
           skid: '#2f322c',
@@ -195,6 +200,8 @@
       function heliLightPlan() {
         return {
           name: 'light',
+          // Half widths are scaled by this (a touch broader than life reads better from above).
+          widen: 1.12,
           keys: [
             [-48.3, 15.4, 15.9, 15.65, 0.25, 2, 2],
             [-47.7, 15.0, 16.3, 15.65, 0.9, 2, 2],
@@ -221,16 +228,16 @@
           ],
           // Extra sample planes along x (window and door edges), sample step.
           marks: [-17.3, 0.8, 1.8, 13.4, 14.1, 14.8, 15.6, 17.4, 26.6, 27.6, 27.9, 28.4, 32],
-          step: (x) => (x > -18 ? 1.05 : 2.2),
-          segments: 52,
+          step: (x) => (x > -18 ? 1.3 : 2.6),
+          segments: 44,
           cabin: { back: -0.6, front: 36, floor: 7.4 },
-          windows(x, y, z, st) {
+          windows(x, y, z, st, roofGlass = true) {
             const az = Math.abs(z),
               side = az > st.w * 0.6,
               top = y > st.yw + (st.yt - st.yw) * 0.55;
             // The bubble: everything ahead of the door post above the chin line.
             let d = Math.max(28.4 - x, 8.9 - y);
-            if (top) d = Math.min(d, heliRoundRect(x, z, 17.4, 27.6, -3.7, 3.7, 1.3));
+            if (top && roofGlass) d = Math.min(d, heliRoundRect(x, z, 17.4, 27.6, -3.7, 3.7, 1.3));
             if (side) {
               d = Math.min(d, heliRoundRect(x, y, 15.6, 26.6, 10.3, 18.5, 1.6));
               d = Math.min(d, heliRoundRect(x, y, 1.8, 13.4, 11.2, 18.3, 1.9));
@@ -281,6 +288,7 @@
       function heliHawkPlan() {
         return {
           name: 'hawk',
+          widen: 1.26,
           keys: [
             [-50.2, 16.9, 18.3, 17.5, 0.3, 2, 2],
             [-49.6, 16.3, 18.7, 17.4, 1.2, 2, 2],
@@ -303,10 +311,10 @@
             [46.4, 9.7, 11.0, 10.3, 0.4, 2, 2],
           ],
           marks: [-14.2, 2.6, 3.4, 9, 16, 17.6, 18.6, 23.4, 24.6, 33.4, 34, 38.6, 40.6],
-          step: (x) => (x > -16 ? 1.1 : 2.2),
-          segments: 52,
+          step: (x) => (x > -16 ? 1.35 : 2.6),
+          segments: 44,
           cabin: { back: 0.4, front: 38, floor: 7.5 },
-          windows(x, y, z, st) {
+          windows(x, y, z, st, roofGlass = true) {
             const az = Math.abs(z),
               side = az > st.w * 0.62;
             // Windscreen: two big panels over the nose, a post between them.
@@ -434,7 +442,7 @@
       }
       function heliStation(plan, x) {
         const s = plan.spline;
-        return { x, yb: s[0](x), yt: s[1](x), yw: s[2](x), w: Math.max(0.02, s[3](x)), nu: s[4](x), nl: s[5](x) };
+        return { x, yb: s[0](x), yt: s[1](x), yw: s[2](x), w: Math.max(0.02, s[3](x) * plan.widen), nu: s[4](x), nl: s[5](x) };
       }
       // A section point at `theta` (-PI/2 the keel, 0 starboard, PI/2 the crown).
       function heliSection(st, theta, out) {
@@ -631,10 +639,10 @@
           M.glass[tint] = new Three.MeshStandardMaterial({
             color: tint,
             roughness: 0.04,
-            metalness: 0.82,
-            envMapIntensity: 1.9,
+            metalness: 0.9,
+            envMapIntensity: 1.5,
             transparent: true,
-            opacity: 0.6,
+            opacity: 0.46,
             depthWrite: false,
           });
           sharedMaterials.add(M.glass[tint]);
@@ -683,7 +691,7 @@
         varying vec2 vPos;
         void main() {
           float r = length( vPos );
-          float rim = 1.0 - smoothstep( 0.985, 1.0, r );
+          float rim = 1.0 - smoothstep( 0.93, 1.0, r );
           float hub = smoothstep( uHub, uHub + 0.05, r );
           float spacing = 6.28318530718 / uBlades;
           float a = atan( vPos.y, vPos.x ) - uPhase;
@@ -692,8 +700,9 @@
           float behind = ( 1.0 - sector ) * spacing * r;
           float ahead = sector * spacing * r;
           float ghost = exp( -behind / uTrail ) + exp( -ahead / ( uTrail * 0.12 ) );
-          float tip = smoothstep( uTip - 0.01, uTip + 0.005, r );
-          float alpha = uBlur * rim * hub * ( uSmear * ( 0.75 + 0.25 * r ) + 0.2 * ghost + 0.12 * tip );
+          // The painted tips smear into a faint band, soft on both edges.
+          float tip = smoothstep( uTip - 0.04, uTip + 0.01, r ) * ( 1.0 - smoothstep( 0.965, 1.0, r ) );
+          float alpha = uBlur * rim * hub * ( uSmear * ( 0.75 + 0.25 * r ) + 0.24 * ghost + 0.05 * tip );
           gl_FragColor = vec4( mix( uColor, uTipColor, tip ), alpha );
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
@@ -987,7 +996,7 @@
             heliShade(out, 1 - 0.1 * low * low - 0.3 * plan.soot(x, y, z, st) * (look.kind === 'military' ? 1.3 : 1));
             // Panel seams, then the black rubber seals round the glazing.
             heliShade(out, 1 - 0.32 * heliCover(plan.seams(x, y, z, st) - 0.06, 0.06));
-            heliMix(out, SEAL, heliCover(plan.windows(x, y, z, st) - 0.95, 0.12));
+            heliMix(out, SEAL, heliCover(plan.windows(x, y, z, st, look.roofGlass) - 0.95, 0.12));
             const k = (py * HELI_TEX_W + px) * 4;
             data[k] = out[0];
             data[k + 1] = out[1];
@@ -1124,7 +1133,7 @@
               cy = (P[a * 3 + 1] + P[b * 3 + 1] + P[c * 3 + 1] + P[d * 3 + 1]) / 4,
               cz = (P[a * 3 + 2] + P[b * 3 + 2] + P[c * 3 + 2] + P[d * 3 + 2]) / 4,
               st = stationAt(cx);
-            if (plan.windows(cx, cy, cz, st) < 0) {
+            if (plan.windows(cx, cy, cz, st, look.roofGlass) < 0) {
               const g0 = vertexOf(glass, i, j),
                 g1 = vertexOf(glass, i + 1, j),
                 g2 = vertexOf(glass, i + 1, j + 1),
@@ -1299,19 +1308,19 @@
           news = look.kind === 'news';
         // Skids with upturned toes, arched cross tubes, saddles, steps and wear shoes.
         for (const side of [-1, 1]) {
-          const z = side * 9.3;
+          const z = side * 9.9;
           heliTube(trim, [[-15.8, 1.2, z], [-14.6, 0.95, z], [8, 0.95, z], [20.8, 0.95, z], [23.9, 1.6, z], [25.6, 3.3, z]], 0.5, skid, 40);
           policeAdd(trim, S.sphere, -15.9, 1.2, z, 0.5, 0.5, 0.5, skid);
           for (const x of [-10, 4, 17]) policeAdd(trim, boxGeo, x, 0.42, z, 3.4, 0.22, 0.7, '#55595e');
           for (const x of [14.2, -4.6]) {
             policeAdd(trim, boxGeo, x, 1.25, z, 2.2, 0.9, 1.2, skid);
-            policeAdd(trim, boxGeo, x + 1.6, 4.1, side * 8.35, 2.4, 0.22, 1.5, '#474b50');
+            policeAdd(trim, boxGeo, x + 1.6, 4.1, side * 8.9, 2.4, 0.22, 1.5, '#474b50');
           }
         }
         for (const x of [14.2, -4.6])
           heliTube(
             trim,
-            [[x, 1.1, -9.3], [x, 3.8, -9.15], [x, 5.3, -7.9], [x, 5.55, -4.2], [x, 5.55, 0], [x, 5.55, 4.2], [x, 5.3, 7.9], [x, 3.8, 9.15], [x, 1.1, 9.3]],
+            [[x, 1.1, -9.9], [x, 3.8, -9.75], [x, 5.3, -8.4], [x, 5.55, -4.4], [x, 5.55, 0], [x, 5.55, 4.4], [x, 5.3, 8.4], [x, 3.8, 9.75], [x, 1.1, 9.9]],
             0.58,
             skid,
             36,
@@ -1445,10 +1454,10 @@
           od = look.paint;
         // Main gear: struts from the sponsons, drag beams, wheels; the tail wheel.
         for (const side of [-1, 1]) {
-          const z = side * 9.4;
-          policeAdd(trim, boxGeo, 13, 8.2, side * 7.4, 6.5, 2.2, 1.6, od);
-          heliRod(metal, [13.6, 8.1, side * 7.6], [12.4, 3.6, z], 0.55, '#7d8279');
-          heliRod(trim, [18.5, 7.3, side * 6.8], [12.6, 3.8, z - side * 0.6], 0.4, grey);
+          const z = side * 11.2;
+          policeAdd(trim, boxGeo, 13, 8.2, side * 8.9, 6.5, 2.2, 1.8, od);
+          heliRod(metal, [13.6, 8.1, side * 9.2], [12.4, 3.6, z], 0.55, '#7d8279');
+          heliRod(trim, [18.5, 7.3, side * 8.2], [12.6, 3.8, z - side * 0.6], 0.4, grey);
           policeAdd(trim, wheelGeo, 12.4, 3.3, z, 3.3, 2.2, 3.3, '#161716', null, Math.PI / 2);
           policeAdd(metal, S.cylinder, 12.4, 3.3, z + side * 1.15, 1.6, 0.3, 1.6, '#8a8f86', null, Math.PI / 2);
         }
@@ -1728,6 +1737,8 @@
         // Main rotor: hub and blades spin in `rotor`; the blur disc stays still.
         const rotor = new Three.Group();
         rotor.position.set(kit.rotor.x, 0, 0);
+        // Parked, no blade lies along the fuselage (it would hide the roof).
+        rotor.rotation.y = Math.PI / 4;
         body.add(rotor);
         quiet(mesh(kit.rotor.hub, M.metal, rotor, 0, 0, 0));
         const blades = mesh(kit.rotor.blades, M.blade, rotor, 0, 0, 0);
@@ -1835,9 +1846,12 @@
           crewed = alive && (c === player.car || c.airUnit),
           running = alive && (crewed || (c.abandonedFlight && airborne) || !!c.showRotor);
         // Spool: about 4 s up to speed, 9 s coasting down; a wreck stops short.
-        if (m.rpm < 0) m.rpm = running ? 1 : 0;
+        // The player's machine follows the flight model's own rotor spool (the HUD's ROTOR).
+        const spool = c === player.car && alive ? c.rotorSpeed || 0 : null;
+        if (m.rpm < 0) m.rpm = spool ?? (running ? 1 : 0);
         const rate = running ? 0.26 : alive ? 0.11 : 0.6;
-        m.rpm = running ? Math.min(1, m.rpm + dt * rate) : Math.max(0, m.rpm - dt * rate);
+        if (spool !== null) m.rpm += (spool - m.rpm) * (1 - Math.exp(-dt * 5));
+        else m.rpm = running ? Math.min(1, m.rpm + dt * rate) : Math.max(0, m.rpm - dt * rate);
         const rpm = m.rpm,
           blur = clamp((rpm - 0.3) / 0.4, 0, 1);
         m.rotor.rotation.y += dt * rpm * HELI_SPIN;
@@ -1882,7 +1896,7 @@
         m.observer.visible = alive && !!c.airUnit;
         // Glass: scuffed and sooted with the wear.
         m.glass.roughness = 0.04 + wear * 0.5;
-        m.glass.opacity = 0.6 + wear * 0.3;
+        m.glass.opacity = 0.46 + wear * 0.4;
         // Nightsun: the head turns to what the crew are watching, else rests forward.
         const tracking = alive && c.airUnit && (c.airState === 'tracking' || c.airState === 'searching'),
           watched = tracking ? (c.airState === 'tracking' && c.airTarget && c.airTarget.hp > 0 ? c.airTarget : c.airLastSeen) : null;
