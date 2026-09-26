@@ -5343,6 +5343,13 @@
         openHelp();
         return;
       }
+      // The title menu's radio takes the same keys as in a vehicle (car-radio.js TITLE RADIO).
+      if (gameMode === 'menu' && titleRadioShown) {
+        if (is('radioPower')) toggleCarRadio();
+        else if (is('radioNext')) tuneCarRadio(radioStationIndex() + 1);
+        else if (is('radioLouder') || is('radioQuieter')) stepRadioVolume(is('radioLouder') ? 1 : -1);
+        return;
+      }
       if (gameMode !== 'play') return;
       if (is('zoomIn') || is('zoomOut') || is('zoomReset')) {
         e.preventDefault();
@@ -5371,7 +5378,7 @@
         return;
       }
       if ((player.car || player.coaster || taxiRide) && is('radioNext')) {
-        tuneCarRadio(carRadioStation + 1);
+        tuneCarRadio(radioStationIndex() + 1);
         return;
       }
       if (radioAboard() && (is('radioLouder') || is('radioQuieter'))) {
