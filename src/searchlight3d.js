@@ -632,28 +632,13 @@
               Object.assign(r, { x: b.x + b.w / 2, y: b.y + b.h / 2, hx: b.w / 2, hy: b.h / 2 });
               break;
             }
-        } else if (!cover) {
-          const g = garageRoof(x, y, elevation);
-          if (g && !Number.isFinite(top)) top = g.top;
-          if (!g && !Number.isFinite(top)) return null;
-          Object.assign(r, g || { x, y, hx: 60, hy: 60 });
-        } else Object.assign(r, { x, y, hx: 60, hy: 60 });
+        } else if (!cover) return null;
+        else Object.assign(r, { x, y, hx: 60, hy: 60 });
         if (!Number.isFinite(top)) top = cover.top;
         if (!Number.isFinite(top) || top <= elevation + 6) return null;
         r.top = top;
         r.bottom = cover && Number.isFinite(cover.bottom) && cover.bottom < top ? cover.bottom : top - 3;
         return r;
-      }
-      /* Fallback until air-cover.js registers the drive-in garages: the roof of a
-         repair bay (garage3d.js: 196 x 176, 3 thick, top 50.5 above the floor)
-         over a point below it, or null. */
-      function garageRoof(x, y, elevation) {
-        for (const g of GARAGES) {
-          if (Math.abs(x - g.x) > 98 || Math.abs(y - g.y) > 88) continue;
-          const top = terrainHeight(g.x, g.y) + 50.5;
-          return elevation < top - 12 ? { top, x: g.x, y: g.y, hx: 98, hy: 88, a: 0 } : null;
-        }
-        return null;
       }
       // Where the crew points the light this frame, or null: `elevation` is where
       // it lands (a roof over the target), `floor` the ground or target under it.
