@@ -31,9 +31,12 @@
         x: 3690,
         y: 8830,
       },
+      // The Mountain Rescue helipad at the Northridge ranger station
+      // (mountain-village.js). It used to be a lone pad by the Ridgeline
+      // Highway west of town, with a helicopter parked on it.
       pickup: {
-        x: 8130,
-        y: 2740,
+        x: 8570,
+        y: 3462,
       },
       // Southport's touchdown zone on runway 36 (landing northbound).
       arrival: {

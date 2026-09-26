@@ -1013,9 +1013,10 @@
       },
       helicopter: {
         name: 'MAVERICK HELICOPTER',
-        // An H125 / Bell 407 class light single: 10.75 m over the rotor, 4.25 m
-        // across the skids and stabiliser. helicopter3d.js builds every look at
-        // real size (the UH-60 class military one fitted to this footprint).
+        // A light single's footprint: 10.75 m long, 4.25 m across the skids and
+        // stabiliser. helicopter3d.js builds every look at real size (the EC120
+        // class police machine, the R44 / R66 class civilians; the UH-60 class
+        // military one fitted to this footprint).
         l: 86,
         w: 34,
         modelScale: 1,
@@ -1628,6 +1629,11 @@
     // canvas rasterisation at start-up.
     const GROUND_PIXELS_PER_UNIT =
       (typeof THREE !== 'undefined' && typeof WebGL2RenderingContext !== 'undefined' ? 768 : 3072) / CITY_SIZE;
+    // With the 3D renderer there, the road markings (lane dashes, crossings, stop
+    // lines) are drawn by its ground shader from data (streets.js ROAD MARKINGS,
+    // ground-marks3d.js), crisp at any zoom; the baked 3D ground sheets leave them
+    // out. The maps and the 2D view paint them as before.
+    const VECTOR_GROUND_MARKINGS = typeof THREE !== 'undefined' && typeof WebGL2RenderingContext !== 'undefined';
     const groundCanvas = document.createElement('canvas');
     groundCanvas.width = Math.ceil(CITY_WIDTH * GROUND_PIXELS_PER_UNIT);
     groundCanvas.height = Math.ceil(CITY_HEIGHT * GROUND_PIXELS_PER_UNIT);
@@ -2038,8 +2044,8 @@
       buildCounty();
       // Plan heights to real storeys (realBuildingHeight). Fort Sentinel's buildings
       // (base3d.js), Vinny's depot walls and the Blue Hour (ROOFTOP) are given in
-      // real units already.
-      for (const b of buildings) if (!b.military && !b.depotWall && !b.roofBar && !b.monarch) b.height = realBuildingHeight(b.height);
+      // real units already, and so are the mountain villages (mountain-village.js).
+      for (const b of buildings) if (!b.military && !b.depotWall && !b.roofBar && !b.monarch && !b.mountain) b.height = realBuildingHeight(b.height);
       // Monarch Isle is planned in real storeys from the start (monarch.js).
       buildMonarchIsle();
       // A business's own record (civic3d.js dresses its roof from it) follows its building.
@@ -2430,7 +2436,8 @@
       if (attacker === player) crime(0.5);
     }
     function hurt(d, kind = 'ballistic') {
-      if (player.inv > 0 || gameMode !== 'play' || player.godMode) return;
+      // At GOALLINE's counter (sportsbook.js) nobody lays a finger on you.
+      if (player.inv > 0 || gameMode !== 'play' || player.godMode || sportsbookShelters()) return;
       d = ballisticDamage(player, d, kind);
       player.hp -= d;
       if (d > 1 && !player.car) bleed(player, d / 35, player.a + Math.PI);
@@ -2635,6 +2642,8 @@
       }
       // On the stadium pitch E kicks the ball at your feet (sports.js).
       if (sportsInteract()) return;
+      // PLACE A BET inside GOALLINE by the stadium (sportsbook.js).
+      if (sportsbookInteract()) return;
       // A Monarch Isle payphone (monarch-life.js).
       if (monarchInteract()) return;
       const place = nearestPlace();
@@ -3239,7 +3248,7 @@
           worldContext.restore();
         }
     }
-    const shotSolidLists = [null, null, null, null, null, null, null];
+    const shotSolidLists = [null, null, null, null, null, null, null, null];
     function shotBlocked(x, y, altitude = 0) {
       if (airCoverStopsShot(x, y, altitude) || (landAt(x, y) && altitude + 10 < terrainHeight(x, y)))
         return true;
@@ -3272,6 +3281,8 @@
       lists[4] = countyStaticSolids;
       lists[5] = AIRPORT_SCENERY_SOLIDS;
       lists[6] = garageDoorSolids();
+      // GOALLINE, the betting shop by the stadium (sportsbook.js).
+      lists[7] = sportsbookWalls();
       for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
         // Most rounds are nowhere near a given list's rectangles (rectListBounds).
@@ -3550,7 +3561,7 @@
         timed('transit', () => updateTransit(deltaSeconds));
         // The Meridian Star under way (marina.js), before the player walks her deck.
         timed('liner', () => sailLiner(deltaSeconds));
-        // The Palm Sound drawbridge: timetable, gates, leaves and the ketch (drawbridge.js).
+        // The Palm Sound drawbridge: timetable, gates, leaves and the tall ship (drawbridge.js).
         timed('drawbridge', () => updateDrawbridge(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
@@ -4940,6 +4951,10 @@
           prompt = bikeShare.text;
           promptId = 'bikeshare';
           promptKey = bikeShare.key;
+        } else if (sportsbookPrompt()) {
+          // Inside GOALLINE by the stadium (sportsbook.js).
+          prompt = sportsbookPrompt();
+          promptId = 'sportsbook';
         } else if (sportsKickPrompt()) prompt = sportsKickPrompt();
         else if (leisurePrompt()) {
           const leisure = leisurePrompt();
@@ -5010,6 +5025,7 @@
       announce('SOUTH COAST · 1997', 'DEAD END CITY', 1.8);
     }
     function togglePause() {
+      closeSportsbook();
       if (gameMode === 'arsenal') {
         closeArsenal();
         return;
@@ -5249,6 +5265,12 @@
         settingsKeyDown(e);
         return;
       }
+      // The betting menu owns the keyboard while it is open; the world runs on
+      // (sportsbook-ui.js).
+      if (sportsbook.open && gameMode === 'play') {
+        sportsbookKey(e);
+        return;
+      }
       if (
         !e.repeat &&
         (gameMode === 'play' || gameMode === 'map' || gameMode === 'menu') &&
@@ -5394,7 +5416,7 @@
       if (gameMode !== 'play') return;
       if (is('zoomIn') || is('zoomOut') || is('zoomReset')) {
         e.preventDefault();
-        setWorldZoom(is('zoomReset') ? 1 : worldZoomTarget * (is('zoomOut') ? 1 / 1.25 : 1.25));
+        setWorldZoom(is('zoomReset') ? STREET_ZOOM : worldZoomTarget * (is('zoomOut') ? 1 / 1.25 : 1.25));
         return;
       }
       if (is('bail')) {
@@ -5593,12 +5615,16 @@
     // @include src/streets.js
     // @include src/terrain.js
     // @include src/offroad.js
+    // @include src/mountain-village.js
     // @include src/casino.js
     // @include src/skyline.js
     // @include src/renewal.js
     // @include src/sports-fixtures.js
+    // @include src/sportsbook-odds.js
     // @include src/sports.js
     // @include src/sports-world.js
+    // @include src/sportsbook.js
+    // @include src/sportsbook-ui.js
     // @include src/sports-audio.js
     // @include src/transit.js
     // @include src/ride-skip.js
@@ -6002,6 +6028,11 @@
       // The 4x4 club and the trails (offroad.js): the lot and its clearances, the
       // club trucks, the members, the player's traction state, the hill climb.
       offroad: () => offroadReport(),
+      // The mountain villages (mountain-village.js): each town's buildings by kind,
+      // its businesses (footprint, eaves and ridge in metres, door), the street
+      // dressing, the rescue helipad, the club block and, with WebGL, the
+      // renderer's meshes, draw calls and triangles per town.
+      mountainTowns: () => mountainVillageReport(),
       clubLineup: (x, y) => clubLineup(x, y),
       // 'state', 'arm', 'reset', 'clear' (records), 'gate' or 'cp0'..'cp2' (move the player's vehicle there).
       hillClimb: (action, trail) => hillClimbConsole(action, trail),
@@ -6542,7 +6573,7 @@
       // Put `count` traffic cars on each approach, heading onto the drawbridge.
       drawbridgeTraffic: (count) => drawbridgeSpawnTraffic(count),
       // Stand at a drawbridge viewpoint ('channel', 'west', 'east', 'north', 'south',
-      // 'tower') at a zoom; returns the point and the bridge's state.
+      // 'tower', 'overview', 'pit') at a zoom; returns the point and the bridge's state.
       drawbridgeLook(spot = 'channel', zoom) {
         const p = drawbridgeViewpoint(spot);
         this.look(p.x, p.y, zoom);
@@ -6885,6 +6916,8 @@
       // Match day: match(), ballState(), matchDay(), fixtures(), ballToPlayer()
       // (see sports.js sportsConsole).
       ...sportsConsole(),
+      // GOALLINE, the betting shop by the stadium: markets, odds, bets (sportsbook.js).
+      ...sportsbookConsole(),
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
       // Settings choice); returns what the renderer is now using.
       graphics(tier) {
@@ -6950,11 +6983,13 @@
         });
       },
       // Helicopter review (helicopter3d.js): parks one helicopter of each look
-      // ('police', 'news', 'executive', 'military') in a row east from (x, y),
-      // `spacing` apart, facing `heading`; `rotors` true spins them up (with the police lights
-      // running). Returns the ids and looks.
-      helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110) {
-        return ['police', 'news', 'executive', 'military'].map((heliLook, i) => {
+      // ('police', 'news', 'executive', the civil schemes 'civil:classic', 'civil:yellow',
+      // 'civil:silver', 'civil:noir', and 'military', or the `looks` given) in a row east
+      // from (x, y), `spacing` apart, facing `heading`; `rotors` true spins them up (with
+      // the police lights running). Returns the ids and looks.
+      helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110, looks = null) {
+        const list = Array.isArray(looks) ? looks : ['police', 'news', 'executive', 'civil:classic', 'civil:yellow', 'civil:silver', 'civil:noir', 'military'];
+        return list.map((heliLook, i) => {
           const c = makeCar('helicopter', x + i * spacing, y, heading, false);
           Object.assign(c, { heliLook, showRotor: !!rotors, showLights: rotors ? 'pursuit' : false });
           return { id: c.id, look: heliLook };
@@ -7095,6 +7130,7 @@
       // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
       // 'bloom'; nothing for the image) to tune the post-processing.
       postView: (mode) => city3D?.postView?.(mode) ?? null,
+      groundDetail: () => city3D?.groundReport?.() ?? null,
       // The helicopter searchlight's state, screen points and shaft / pool switches.
       searchlight: (options) => city3D?.searchlight?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).

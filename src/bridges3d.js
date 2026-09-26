@@ -602,7 +602,18 @@
             z1 = f.across + f.hy + 13,
             pieces = [];
           if (x1 <= deck0 || x0 >= deck1) pieces.push([x0, x1, z0, z1]);
-          else {
+          else if (f.kind === 'bascule pier') {
+            /* The drawbridge's piers hold open counterweight pits beside the deck:
+               foam only outside the pier, at its cutwater ends and along its faces. */
+            const end = f.hy - 14,
+              face0 = f.along - f.hx,
+              face1 = f.along + f.hx;
+            for (const side of [-1, 1]) {
+              pieces.push(side < 0 ? [x0, x1, z0, -end] : [x0, x1, end, z1]);
+              const [q0, q1] = side < 0 ? [-end, -cover] : [cover, end];
+              pieces.push([x0, face0, q0, q1], [face1, x1, q0, q1]);
+            }
+          } else {
             // Past either end of the deck the ring stays whole.
             if (x0 < deck0) pieces.push([x0, deck0, z0, z1]);
             if (x1 > deck1) pieces.push([deck1, x1, z0, z1]);

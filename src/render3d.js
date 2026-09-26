@@ -499,31 +499,16 @@
       const drawingContext = terrain.getContext('2d');
       drawingContext.scale(terrainPixelsPerUnit, terrainPixelsPerUnit);
       drawingContext.translate(-CITY_LEFT, -CITY_TOP);
-      function pattern(q, scale) {
-        const tile = document.createElement('canvas');
-        tile.width = tile.height = scale;
-        const tc = tile.getContext('2d');
-        tc.drawImage(
-          visualAssets.ground,
-          ((q % 2) * visualAssets.ground.width) / 2,
-          (Math.floor(q / 2) * visualAssets.ground.height) / 2,
-          visualAssets.ground.width / 2,
-          visualAssets.ground.height / 2,
-          0,
-          0,
-          scale,
-          scale,
-        );
-        if (q === 0) {
-          tc.fillStyle = '#222c38b0';
-          tc.fillRect(0, 0, scale, scale);
-        }
-        return drawingContext.createPattern(tile, 'repeat');
-      }
-      const asphalt = pattern(0, 112),
-        paving = pattern(1, 72),
-        grass = pattern(2, 100),
-        tarmac = pattern(3, 120);
+      // Flat fills: the sheet says what lies where and the ground shader draws the
+      // surface (ground-shader3d.js). These used to be the ground atlas's photos
+      // squeezed into 72-120 texel tiles, so up close the pavements showed
+      // 4.7 m slabs and the tarmac a blurred, blotchy print. The photos now
+      // serve as detail layers at their true scale (ground-data3d.js). The
+      // pavement fill is close to the kerbside strip's colour so a pavement
+      // reads as one surface, kerb to building line.
+      const paving = '#8f9086',
+        grass = '#3c4726',
+        tarmac = '#484949';
       drawingContext.save();
       coastPath(drawingContext);
       drawingContext.clip();
@@ -531,7 +516,7 @@
       drawingContext.fillRect(CITY_LEFT, CITY_TOP, CITY_WIDTH, CITY_HEIGHT);
       drawingContext.fillStyle = paving;
       drawingContext.fillRect(CITY_LEFT + 48, CITY_TOP + 45, CITY_WIDTH - 112, CITY_HEIGHT - 112);
-      paintCityStreets(drawingContext, true);
+      paintCityStreets(drawingContext, false);
       const curbGroup = new Three.Group();
       curbGroup.name = 'kerbs';
       scene.add(curbGroup);
@@ -563,18 +548,9 @@
           if (park) {
             continue;
           } else {
+            // The block's car park (its bay lines are marks, ground-data3d.js cityLotRecords).
             drawingContext.fillStyle = tarmac;
             drawingContext.fillRect(x + 18, z + 170, 318, 165);
-            drawingContext.strokeStyle = '#bebeb044';
-            drawingContext.lineWidth = 1;
-            for (let px = x + 20; px < x + 340; px += 26) {
-              drawingContext.beginPath();
-              drawingContext.moveTo(px, z + 178);
-              drawingContext.lineTo(px, z + 218);
-              drawingContext.moveTo(px, z + 291);
-              drawingContext.lineTo(px, z + 330);
-              drawingContext.stroke();
-            }
             // Zone-specific ground: mirrors the block patterns chosen in buildWorld().
             const zone = districtAt(x + 177, z + 177),
               blockSeed = (bx * 31 + by * 17) % 7;
@@ -582,16 +558,9 @@
               // Cluster plaza (src/skyline.js), the same inset as the game's ground canvas.
               paintSkylinePlaza(drawingContext, x + 14, z + 14, 326, 326);
             } else if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
+              // A granite forecourt (the ground shader lays its slabs).
               drawingContext.fillStyle = '#c3bfb2';
               drawingContext.fillRect(x + 10, z + 10, 344, 160);
-              drawingContext.strokeStyle = '#a8a497';
-              drawingContext.lineWidth = 1.2;
-              for (let g = 10; g <= 344; g += 24) {
-                drawingContext.beginPath();
-                drawingContext.moveTo(x + g, z + 10);
-                drawingContext.lineTo(x + g, z + 170);
-                drawingContext.stroke();
-              }
               // Planted beds under the plaza's two tree lines (buildWorld puts the
               // trees there). Two teal discs used to be painted here, pools with
               // nothing in them.
@@ -614,89 +583,13 @@
             drawingContext.strokeRect(x - 1, z - 1, 356, 356);
           }
         }
-      // Manhole covers and utility plates scattered along the roadway.
-      for (let i = 0; i < 260; i++) {
-        const mx = CITY_LEFT + 100 + ((i * 7919) % (CITY_WIDTH - 200)),
-          mz = 100 + ((i * 104729) % (CITY_SIZE - 200));
-        if (!onRoad(mx, mz) || onBridge(mx, mz)) continue;
-        drawingContext.fillStyle = '#2b3134';
-        drawingContext.beginPath();
-        drawingContext.arc(mx, mz, 5.5, 0, TAU);
-        drawingContext.fill();
-        drawingContext.strokeStyle = '#6b7275';
-        drawingContext.lineWidth = 1.2;
-        drawingContext.stroke();
-      }
-      // Avenues carry a solid double yellow centre line; local streets keep their dashes.
-      // The line stops short of every junction (at its stop line) and of the
-      // street's end, instead of running through the crossings and the box.
-      for (const r of cityStreets()) {
-        if (r.width < 112) continue;
-        const crossings = cityStreets()
-          .filter((o) => o.vertical !== r.vertical && r.r >= o.start - 6 && r.r <= o.end + 6 && o.r > r.start && o.r < r.end)
-          .map((o) => [o.r - o.width / 2 - 24, o.r + o.width / 2 + 24]);
-        const runs = [[r.start + 30, r.end - 30]];
-        for (const [c0, c1] of crossings)
-          for (let i = runs.length - 1; i >= 0; i--) {
-            const [s0, s1] = runs[i];
-            if (c1 <= s0 || c0 >= s1) continue;
-            runs.splice(i, 1, ...[[s0, c0], [c1, s1]].filter(([p, q]) => q - p > 20));
-          }
-        const at = (v, offset) => (r.vertical ? [r.r + offset, v] : [v, r.r + offset]);
-        for (const [v0, v1] of runs) {
-          drawingContext.strokeStyle = '#3b4449';
-          drawingContext.lineWidth = 7;
-          drawingContext.beginPath();
-          drawingContext.moveTo(...at(v0, 0));
-          drawingContext.lineTo(...at(v1, 0));
-          drawingContext.stroke();
-          drawingContext.strokeStyle = '#c9a94a';
-          drawingContext.lineWidth = 1.6;
-          for (const offset of [-2.4, 2.4]) {
-            drawingContext.beginPath();
-            drawingContext.moveTo(...at(v0, offset));
-            drawingContext.lineTo(...at(v1, offset));
-            drawingContext.stroke();
-          }
-        }
-      }
-      // Stop lines across the approach lanes at every signalled junction, just
-      // before the crossing (the same junctions harbor3d.js gives signals).
-      drawingContext.fillStyle = '#dcdccf';
-      for (const x of ROAD_CENTERS)
-        for (const z of ROAD_ROWS) {
-          if (!cityIntersectionAt(x, z) || !groundAt(x, z, 92) || inHarbor(x, z, 100)) continue;
-          const col = cityStreets().find((r) => r.vertical && r.r === x && z > r.start && z < r.end),
-            row = cityStreets().find((r) => !r.vertical && r.r === z && x > r.start && x < r.end);
-          if (!col || !row) continue;
-          const hc = col.width / 2,
-            hr = row.width / 2;
-          // Traffic keeps right: southbound stops north of the box on the west
-          // half, northbound south of it on the east half, and so on.
-          drawingContext.fillRect(x - hc, z - hr - 23, hc, 3);
-          drawingContext.fillRect(x, z + hr + 20, hc, 3);
-          drawingContext.fillRect(x + hc + 20, z - hr, 3, hr);
-          drawingContext.fillRect(x - hc - 23, z, 3, hr);
-        }
-      // (330 dark ellipses, 25-95 units long at random angles, used to be
-      // stamped on the roads here as "patches". Seen from the street camera they
-      // read as long shadows with nothing casting them, fixed to the tarmac
-      // whatever the time of day. The ground shader's tar-sealed patches, cracks
-      // and grain (surfaces3d.js) break the tarmac up instead.)
-      // Gully grates in the gutter, only where the street really runs (they
-      // used to be stamped down every column line, across plazas and quays).
-      for (const road of cityStreets().filter((s) => s.vertical))
-        for (let z = CITY_TOP + 240; z < CITY_SIZE - 150; z += 230) {
-          if (z < road.start + 20 || z > road.end - 30 || !onRoad(road.r + road.width / 2 - 4, z)) continue;
-          if (cityStreets().some((o) => !o.vertical && Math.abs(o.r - z) < o.width / 2 + 26 && road.r > o.start && road.r < o.end))
-            continue;
-          // The grate (drawn at r + 48, 5 wide) sits in the east gutter.
-          const r = road.r + road.width / 2 - 54;
-          drawingContext.fillStyle = '#1d282d';
-          drawingContext.fillRect(r + 48, z, 5, 11);
-          drawingContext.fillStyle = '#707576';
-          for (let k = 0; k < 10; k += 3) drawingContext.fillRect(r + 48, z + k, 5, 1);
-        }
+      // The road markings (lane dashes, crossings, stop lines, the avenues'
+      // double yellow), manhole covers and gully grates are not painted into this
+      // sheet: the ground shader draws them from data, crisp at any zoom
+      // (ground-data3d.js MARKS). (330 dark ellipses, 25-95 units long at random
+      // angles, also used to be stamped on the roads here as "patches"; from the
+      // street camera they read as long shadows with nothing casting them. The
+      // ground shader's utility patches and sealed cracks break the tarmac up.)
       // A broad river separates the old city from the garden borough.
       paintPromenades(drawingContext);
       drawingContext.fillStyle = tarmac;
@@ -710,7 +603,7 @@
         drawingContext.fillRect(pad.x - 50, pad.y - 50, 100, 100);
       }
       drawingContext.restore();
-      paintDistrictGround(drawingContext);
+      paintDistrictGround(drawingContext, true, true);
       // No park names painted across the lawns: the map and the HUD name them.
       paintParks(drawingContext, false);
       for (const r of SERVICE_ROADS.filter((r) => r.name.startsWith('SOUTHPORT ')))
@@ -724,25 +617,14 @@
       const groundTx = new Three.CanvasTexture(terrain);
       groundTx.colorSpace = Three.SRGBColorSpace;
       groundTx.anisotropy = 8;
-      const roughCanvas = document.createElement('canvas');
-      roughCanvas.width = Math.ceil((896 * CITY_WIDTH) / CITY_SIZE);
-      roughCanvas.height = Math.ceil((896 * CITY_HEIGHT) / CITY_SIZE);
-      const rg = roughCanvas.getContext('2d');
-      rg.scale(896 / CITY_SIZE, 896 / CITY_SIZE);
-      rg.translate(-CITY_LEFT, -CITY_TOP);
-      rg.fillStyle = '#e9e9e9';
-      rg.fillRect(CITY_LEFT, CITY_TOP, CITY_WIDTH, CITY_HEIGHT);
-      rg.fillStyle = '#737373';
-      for (const r of ROAD_CENTERS) rg.fillRect(r - 56, CITY_TOP + 48, 112, CITY_HEIGHT - 112);
-      for (const r of ROAD_ROWS) rg.fillRect(CITY_LEFT + 51, r - 56, CITY_WIDTH - 112, 112);
-      const roughTx = new Three.CanvasTexture(roughCanvas);
+      // Roughness and metalness come from the ground materials (ground-shader3d.js);
+      // the coarse roughness sheet that used to mark the roads is gone.
       const groundMesh = new Three.Mesh(
         new Three.PlaneGeometry(CITY_WIDTH, CITY_HEIGHT),
         new Three.MeshStandardMaterial({
           map: groundTx,
-          roughnessMap: roughTx,
           roughness: 1,
-          metalness: 0.14,
+          metalness: 0,
           transparent: false,
           alphaTest: 0.5,
         }),
@@ -1102,6 +984,7 @@
       // @include src/renewal3d.js
       // @include src/landscape3d.js
       // @include src/sports3d.js
+      // @include src/sportsbook3d.js
       // @include src/transit3d.js
       // @include src/ecology3d.js
       // @include src/world3d.js
@@ -1128,7 +1011,9 @@
       // @include src/character-rig3d.js
       // @include src/crowd3d.js
       // @include src/clouds3d.js
+      // @include src/ground-data3d.js
       // @include src/surfaces3d.js
+      // @include src/grass3d.js
       // @include src/helicopter3d.js
       // @include src/apache3d.js
       // @include src/vehicles3d.js
@@ -1136,6 +1021,7 @@
       // @include src/cars3d.js
       // @include src/motorbikes3d.js
       // @include src/offroad3d.js
+      // @include src/mountain-village3d.js
       // @include src/plane3d.js
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
@@ -1767,7 +1653,7 @@
        * texture is on the GPU its canvas is shrunk to a pixel, which frees the
        * bitmap; the texture keeps its GPU copy (nothing bumps its version again).
        */
-      const bakedCanvases = [groundTx, roughTx, ...countyGroundMaterials.map((m) => m.map)].filter((t) => t && t.image);
+      const bakedCanvases = [groundTx, ...countyGroundMaterials.map((m) => m.map)].filter((t) => t && t.image);
       function releaseBakedCanvases() {
         for (let i = bakedCanvases.length - 1; i >= 0; i--) {
           const texture = bakedCanvases[i],
@@ -1844,6 +1730,8 @@
         ...damageApi,
         // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
         offroadInfo: () => offroadEffectsInfo(),
+        // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
+        mountainInfo: () => mountainVillageInfo(),
         /**
          * Settings contract: the see-through hole round the player under a roof
          * (lighting3d.js, CUTAWAY). On by default; read at start-up from
@@ -2051,6 +1939,12 @@
               }),
           };
         },
+        // The ground materials' data (ground-data3d.js) and the grass tufts (grass3d.js).
+        groundReport: () => ({
+          ...groundDataReport,
+          detailLevel: groundShared.cityGroundDetail.value,
+          tufts: { shown: tuftMesh.visible, instances: tuftMesh.geometry.instanceCount, fade: +tuftUniforms.tuftFade.value.toFixed(2) },
+        }),
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.
         postView(mode) {
           postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : mode === 'reflect' ? 4 : 0;
@@ -2325,6 +2219,7 @@
           updateTransitVisuals();
           updateWildlifeVisuals(deltaSeconds);
           updateSportsVisuals(deltaSeconds);
+          updateSportsbookVisuals();
           updateGarageVisuals();
           updateWorldVisuals();
           updateCityscapeVisuals();
@@ -2929,6 +2824,7 @@
       refreshEnvironment(true);
       api.resize();
       prewarmShaders();
+      prewarmHelicopters();
       return api;
     }
     // END SUBSYSTEM: src/render3d.js

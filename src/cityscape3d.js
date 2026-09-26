@@ -965,8 +965,9 @@
       for (let i = 0; i < buildings.length; i++) {
         const b = buildings[i];
         // Fort Sentinel's buildings are drawn by base3d.js.
-        // Monarch Isle builds its own (monarch3d.js and after).
-        if (b.depotWall || b.baseBuilding || b.monarch) continue;
+        // Monarch Isle builds its own (monarch3d.js and after), and so do the
+        // mountain villages (mountain-village3d.js).
+        if (b.depotWall || b.baseBuilding || b.monarch || b.mountain) continue;
         const kind = (b.archetype = archetypeFor(b)),
           height = b.height,
           group = new Three.Group();
@@ -1098,7 +1099,7 @@
         adLightbox = litSignMaterial(adTexture, adTexture, { night: 1.3, day: 0.3, roughness: 0.3 });
       function clearSidewalk(x, y) {
         return landAt(x, y) && !onRoad(x, y) && !solid(x, y, 5) && !onBoulevard(x, y, 12) &&
-          !SERVICE_ROADS.some((r) => r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + 4)) && !inHarbor(x, y, 20) && !inStadiumLot(x, y, 10) && !inGarageLot(x, y, 6);
+          !SERVICE_ROADS.some((r) => r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + 4)) && !inHarbor(x, y, 20) && !inStadiumLot(x, y, 10) && !inGarageLot(x, y, 6) && !sportsbookNearShop(x, y, 30);
       }
       function busShelter(x, z, faceSouth, kerbZ) {
         const g = new Three.Group();

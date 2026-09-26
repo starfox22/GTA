@@ -793,42 +793,58 @@
         for (const side2 of [-1, 1])
           s.solids.push({ along: m, across: side2 * s.truss.plane, hx: main + side, hy: 3, minHeight: 0, height: 56, kind: 'truss' });
       },
-      /* Palm Sound Causeway: a low concrete causeway on bents every 110 with a
-         working double-leaf trunnion bascule over the channel (drawbridge.js
-         opens it; drawbridge3d.js draws it). Each leaf swings about a trunnion
-         `drop` below the road at the channel face of its pier; the pier behind
-         it holds the counterweight pit and carries two tender's houses, the
-         south-east one the control house. Timber fenders guard the pier faces
-         up and down the channel; the gate and stop lines stand on the approach
-         spans behind the piers. */
+      /* Palm Sound Causeway: a low concrete causeway with a working double-leaf
+         trunnion bascule over the channel (drawbridge.js opens it; drawbridge3d.js
+         draws it). Two 44 m leaves (88 m trunnion to trunnion, on the scale of
+         Chicago's longest double-leaf bascules) swing about trunnions `drop`
+         below the road. Each stands on a massive pier: its nose (`toe`) runs
+         under the leaf's heel, and behind the trunnion (`tail`) two open
+         counterweight pits flank the fixed deck, one each side, where the
+         counterweights on the leaf's outboard main girders swing down as it
+         rises. Beyond the pits the platforms carry the tender's houses, the
+         south-east one the control house. Timber fenders guard the channel up
+         and down from the pier noses; the gate and stop lines stand on the
+         approach spans behind the piers. */
       bascule(bridge, [w0, w1], m, s) {
         const W = bridge.width,
-          leaf = 100,
-          pier = 64;
+          half = W / 2,
+          leaf = 44 * UNITS_PER_METRE,
+          tail = 116,
+          toe = 40,
+          // Across: the fixed deck's edge (half + 2), the pit out to half + 72,
+          // its outer wall, then the house platform out to `wide`.
+          wide = half + 116,
+          pier = tail + toe;
         s.bascule = {
           leaf,
-          drop: 8,
-          trunnions: [m - leaf, m + leaf],
+          drop: 16,
+          tail,
+          toe,
           pier,
-          piers: [m - leaf - pier / 2 + 1, m + leaf + pier / 2 - 1],
-          gates: [m - leaf - pier - 26, m + leaf + pier + 26],
-          stops: [m - leaf - pier - 44, m + leaf + pier + 44],
+          wide,
+          // The pits, from the trunnion: back and front walls along, inner and
+          // outer walls across, the floor below the road.
+          pit: { inner: half + 2, outer: half + 72, back: tail - 6, front: toe - 4, depth: 136 },
+          trunnions: [m - leaf, m + leaf],
+          piers: [m - leaf - (tail - toe) / 2, m + leaf + (tail - toe) / 2],
+          gates: [m - leaf - tail - 26, m + leaf + tail + 26],
+          stops: [m - leaf - tail - 44, m + leaf + tail + 44],
           houses: [],
           fenders: [],
         };
-        s.channels = [[m - leaf + 8, m + leaf - 8]];
+        s.channels = [[m - leaf + toe + 8, m + leaf - toe - 8]];
         s.bascule.piers.forEach((p, i) => {
-          s.footings.push({ along: p, across: 0, hx: pier / 2 + 1, hy: W / 2 + 28, kind: 'bascule pier' });
+          s.footings.push({ along: p, across: 0, hx: pier / 2 + 1, hy: wide, kind: 'bascule pier' });
           for (const side of [-1, 1]) {
             const main = i === 1 && side > 0;
-            s.bascule.houses.push({ along: p, across: side * (W / 2 + 16), main });
-            s.solids.push({ along: p, across: side * (W / 2 + 16), hx: main ? 17 : 12, hy: main ? 12 : 10, minHeight: 0, height: main ? 64 : 48, kind: main ? 'control house' : 'tender house' });
-            const face = i ? m + leaf - 4 : m - leaf + 4;
-            s.bascule.fenders.push({ along: face, across: side * (W / 2 + 110) });
-            s.footings.push({ along: face, across: side * (W / 2 + 110), hx: 3, hy: 80, kind: 'fender' });
+            s.bascule.houses.push({ along: p, across: side * (half + 96), main });
+            s.solids.push({ along: p, across: side * (half + 96), hx: main ? 17 : 12, hy: main ? 12 : 10, minHeight: 0, height: main ? 64 : 48, kind: main ? 'control house' : 'tender house' });
+            const face = i ? m + leaf - toe + 4 : m - leaf + toe - 4;
+            s.bascule.fenders.push({ along: face, across: side * (wide + 82) });
+            s.footings.push({ along: face, across: side * (wide + 82), hx: 3, hy: 80, kind: 'fender' });
           }
         });
-        s.approach = [...approachPiers(m - leaf - pier, w0, 110), ...approachPiers(m + leaf + pier, w1, 110)];
+        s.approach = [...approachPiers(m - leaf - tail, w0, 110), ...approachPiers(m + leaf + tail, w1, 110)];
       },
       /* East Bay Crossing: a white cable-stayed bridge on a single A-pylon in
          mid-bay, two fans of stays to each edge of the deck, two navigation
@@ -1088,7 +1104,9 @@
       drawingContext.lineCap = 'round';
       drawingContext.stroke();
     }
-    function paintDistrictGround(drawingContext, detail = true) {
+    // `vectorMarks`: the 3D ground draws the boulevards' lane dashes itself
+    // (ground-data3d.js MARKS), so its sheet leaves them out.
+    function paintDistrictGround(drawingContext, detail = true, vectorMarks = false) {
       drawingContext.save();
       coastPath(drawingContext);
       drawingContext.clip();
@@ -1132,6 +1150,7 @@
       for (const road of BOULEVARDS) {
         strokeRoad(drawingContext, road.points, road.width + 15, '#b3ada0');
         strokeRoad(drawingContext, road.points, road.width, '#485259');
+        if (vectorMarks) continue;
         drawingContext.setLineDash([19, 14]);
         strokeRoad(drawingContext, road.points, 2, '#d4ba75');
         drawingContext.setLineDash([]);

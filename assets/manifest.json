@@ -42,6 +42,12 @@
     "original": "src/assets/arsenal-icons.webp"
   },
   {
+    "id": "media-unicorn",
+    "file": "assets/unicorn-horse.json",
+    "mime": "application/json",
+    "original": "tools/unicorn_model.py (from tools/models/Horse.glb)"
+  },
+  {
     "id": "media-music-synth",
     "file": "assets/music/synth.mp3",
     "mime": "audio/mpeg",
