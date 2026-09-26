@@ -213,6 +213,9 @@
         return;
       }
       volley.leaving = false;
+      // A good attack is often a kill: the defender gets there late (the player is never slowed).
+      volley.beaten = overNet && volley.attack && Math.random() < (volley.attack === 'spike' ? 0.45 : 0.2);
+      volley.attack = null;
       volleyChooseReceiver();
     }
     /* The nearer athlete of the receiving side takes it (never the last toucher). */
@@ -223,7 +226,10 @@
         bd = Infinity;
       for (const a of volleyTeam(volley.receivingTeam)) {
         if (a === volley.lastToucher && volley.touchTeam === volley.receivingTeam) continue;
-        const d = Math.hypot(a.x - p.x, a.y - p.y) * (a.human ? 0.8 : 1);
+        let d = Math.hypot(a.x - p.x, a.y - p.y);
+        // The player gets first call on a ball they can still reach; one they cannot
+        // (standing still, too far) is left to their partner: forgiving on a keyboard.
+        if (a.human) d = d / FOOT_RUN > p.t - beachClock + 0.3 ? d * 3 : d * 0.8;
         if (d < bd) {
           bd = d;
           best = a;
@@ -315,7 +321,8 @@
         // Attack: a jump spike from high by the net, or a shot over from anywhere else.
         const spot = volleyOpenSpot(team, 0.7 * VU, Math.random()),
           nearNet = Math.abs(p.x - c.x) < 3.5 * VU && beachBall.z > 17;
-        if (err < 0.1) {
+        volley.attack = nearNet ? 'spike' : 'shot';
+        if (err < 0.12) {
           // Into the net, or long.
           if (Math.random() < 0.5 && nearNet) volleyLaunch(c.x + side * -1, spot.y, beachBall.z + 1, 6);
           else volleyLaunchOver(spot.x - side * randomBetween(20, 50), spot.y + randomBetween(-30, 30), 40);
@@ -416,10 +423,12 @@
         if (spike) {
           player.jumpUntil = gameTime + 0.55;
           player.jumpAt = gameTime;
+          volley.attack = 'spike';
           volleyLaunchOver(tx, ty, b.z + 1, 1.5);
           volleyHitEffects(me, 1.6);
           volleyLog('player spikes');
         } else {
+          volley.attack = soft ? null : 'shot';
           volleyLaunchOver(tx, ty, soft ? 30 : 44);
           volleyHitEffects(me, soft ? 0.7 : 1.1);
           volleyLog('player hits it over (quality ' + quality.toFixed(2) + ')');
@@ -687,7 +696,7 @@
           dy = goal.y - p.y,
           d = Math.hypot(dx, dy),
           urgent = rally && volley.receiver === p,
-          speed = urgent || d > 12 ? VOLLEY.runSpeed : VOLLEY.shuffleSpeed,
+          speed = (urgent || d > 12 ? VOLLEY.runSpeed : VOLLEY.shuffleSpeed) * (urgent && volley.beaten ? 0.35 : 1),
           step = Math.min(d, speed * deltaSeconds);
         if (d > 0.5) {
           p.x += (dx / d) * step;

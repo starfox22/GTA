@@ -16,9 +16,15 @@
       if (gameMode !== 'play' || player.car) return null;
       const game = volleyPrompt();
       if (game || volleyPlayerInMatch()) return game;
-      // By the pool (or in it) the pool comes first; standing still next to someone
-      // still starts a conversation on its own (clubtalk.js).
-      return clubPoolPrompt() || clubTalkPrompt();
+      // In the pool the way out comes first. On the deck it is whichever the player
+      // faces: the person next to them (TALK) or the water (SWIM). Standing still
+      // next to someone starts a conversation on its own anyway (clubtalk.js).
+      if (player.pool) return clubPoolPrompt() || clubTalkPrompt();
+      const talk = clubTalkPrompt(),
+        swim = clubPoolPrompt(),
+        who = clubTalk.candidate;
+      if (talk && swim && who) return Math.abs(normalizeAngle(Math.atan2(who.y - player.y, who.x - player.x) - player.a)) < 0.9 ? talk : swim;
+      return swim || talk;
     }
     function leisureInteract() {
       if (gameMode !== 'play' || player.car) return false;
