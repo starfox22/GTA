@@ -131,7 +131,8 @@
       ['touchGo', () => ['KeyW']],
       ['touchBrake', () => ['KeyS']],
       // In an aircraft the up/down buttons are the climb and descend actions;
-      // elsewhere the up button is the handbrake (and opens the parachute).
+      // elsewhere the up button is the handbrake. The parachute opens from the
+      // jump button (touchJump), as the bail key does.
       ['touchUp', () => [isAircraft(player.car) ? actionCode('ascend') : actionCode('handbrake')]],
       ['touchDown', () => [actionCode('descend')]],
       // On foot the player runs; the WALK button holds the walk action.
@@ -144,7 +145,6 @@
       el.addEventListener('pointerdown', (e) => {
         holdTouch(e, codes());
         if (id === 'touchAction') interact();
-        if (id === 'touchUp' && player.parachute) deployParachute();
       });
       for (const event of ['pointerup', 'pointercancel', 'lostpointercapture'])
         el.addEventListener(event, releaseTouch);
@@ -153,7 +153,8 @@
       ['touchReload', startReload],
       ['touchWeapon', cycleWeapon],
       ['touchPoison', poisonDrink],
-      ['touchJump', bailOut],
+      // Jump from the aircraft; in freefall the same button pulls the ripcord.
+      ['touchJump', () => (player.parachute ? openParachuteByHand() : bailOut())],
       ['touchDivert', () => chooseFlightLanding(!mission?.divert)],
       ['touchSkip', () => rideSkipKey('skip')],
       ['touchMap', toggleMap],
@@ -216,6 +217,7 @@
       const c = player.car,
         air = isAircraft(c),
         chute = !!player.parachute,
+        freefall = player.parachute?.stage === 'freefall',
         foot = !c && !chute;
       document.body?.classList.toggle('touch-driving', !!c || chute);
       const show = (id, on) => getElement(id).classList.toggle('hidden', !on);
@@ -223,14 +225,15 @@
       show('touchFire', !!c);
       show('touchGo', !!c || chute);
       show('touchBrake', !!c || chute);
-      show('touchUp', !!c || chute);
+      show('touchUp', !!c);
       show('touchDown', air);
       show('touchRun', foot);
       show('touchAction', !chute);
       show('touchReload', foot || !!c);
       show('touchWeapon', foot || c?.type === 'tank');
       show('touchPoison', foot && player.roof && !!rooftopJob());
-      show('touchJump', air && aircraftClearance(c) >= 60);
+      show('touchJump', freefall || (air && aircraftClearance(c) >= 60));
+      getElement('touchJump').textContent = freefall ? 'OPEN CHUTE' : 'PARACHUTE';
       show(
         'touchDivert',
         mission?.index === 10 && mission.compromised && [1, 2, 3].includes(mission.stage),
@@ -246,13 +249,7 @@
             ? 'PEDAL'
             : 'GAS';
       getElement('touchBrake').textContent = chute ? 'FLARE' : air ? 'POWER −' : 'BRAKE';
-      getElement('touchUp').textContent = chute
-        ? 'OPEN'
-        : c?.type === 'plane'
-          ? 'NOSE UP'
-          : c?.type === 'helicopter'
-            ? 'RISE'
-            : 'HANDBRAKE';
+      getElement('touchUp').textContent = c?.type === 'plane' ? 'NOSE UP' : c?.type === 'helicopter' ? 'RISE' : 'HANDBRAKE';
       getElement('touchDown').textContent = c?.type === 'plane' ? 'NOSE DOWN' : 'DESCEND';
       getElement('touchAction').textContent = c ? 'EXIT' : 'ACTION';
     }

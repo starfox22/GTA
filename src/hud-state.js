@@ -385,7 +385,7 @@
      */
     function hudContext() {
       const c = player.car;
-      if (player.parachute) return 'chute';
+      if (player.parachute) return player.parachute.stage === 'freefall' ? 'freefall' : 'chute';
       if (player.coaster) return player.coaster.kind === 'train' ? 'coaster' : 'ride';
       if (!c) return player.swimming ? 'swim' : 'foot';
       if (c.type === 'helicopter') return 'heli';
@@ -401,7 +401,8 @@
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
       plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['flapsDown', 'FLAPS'], ['gear', 'GEAR'], ['bail', 'BAIL OUT']],
-      chute: [['handbrake', 'OPEN'], ['move', 'STEER']],
+      freefall: [['bail', 'OPEN PARACHUTE'], ['move', 'STEER'], ['forward', 'TRACK']],
+      chute: [['move', 'STEER'], ['back', 'FLARE'], ['forward', 'GLIDE']],
       // Sunset Pier rides: E changes the view (and steps off), the radio plays.
       ride: [['interact', 'VIEW'], ['radioPower', 'RADIO'], ['radioNext', 'STATION']],
       // The Falcon has no radio: only the view.

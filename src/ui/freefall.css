@@ -1,0 +1,167 @@
+/* --- Freefall cue (parachute.js FREEFALL CUE) -------------------------------
+   While the canopy is still packed: the call to open it with its key, the height
+   above whatever is below and a bar of that height against the room opening takes
+   (the tick; red below it). Pulses slowly high up, amber once it is time, red and
+   fast once there is no longer room. data-state: high, soon, danger. */
+#freefallCue {
+  --ffc-accent: var(--acid, #d7f970);
+  --ff-left: 1;
+  --ff-need: 0.3;
+  position: absolute;
+  z-index: 9;
+  left: 0;
+  right: 0;
+  top: calc(50% + 74px);
+  margin-inline: auto;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(10px) scale(0.96);
+  transition:
+    opacity 0.2s,
+    transform 0.35s var(--ui-ease),
+    visibility 0s linear 0.2s;
+}
+#freefallCue.on {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.2s,
+    transform 0.35s var(--ui-ease),
+    visibility 0s;
+}
+#freefallCue[data-state='soon'] {
+  --ffc-accent: var(--ui-gold, #e2c897);
+}
+#freefallCue[data-state='danger'] {
+  --ffc-accent: #ff5a47;
+}
+#freefallCue .ffc-card {
+  display: grid;
+  gap: 8px;
+  padding: 11px 14px 12px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--ffc-accent) 45%, transparent);
+  background: linear-gradient(180deg, #0b1015e6, #0b1015c4);
+  box-shadow:
+    0 10px 34px #000a,
+    0 0 0 1px #0006,
+    0 0 26px color-mix(in srgb, var(--ffc-accent) 22%, transparent);
+  text-shadow: 0 1px 2px #000;
+}
+#freefallCue .ffc-call {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#freefallCue kbd {
+  flex: none;
+  min-width: 34px;
+  padding: 5px 9px;
+  border: none;
+  border-radius: 7px;
+  background: var(--ffc-accent);
+  color: #0d1014;
+  font:
+    900 17px/1 var(--ui-font);
+  text-align: center;
+  text-shadow: none;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--ffc-accent) 45%, #000), 0 0 18px color-mix(in srgb, var(--ffc-accent) 55%, transparent);
+  animation: ffcPulse 1.5s ease-in-out infinite;
+}
+#freefallCue .ffc-call strong {
+  font:
+    800 13px/1.2 var(--ui-font);
+  letter-spacing: 0.14em;
+}
+#freefallCue .ffc-read {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+#freefallCue .ffc-read small {
+  font:
+    800 10px/1 var(--ui-font);
+  letter-spacing: 0.2em;
+  color: var(--ffc-accent);
+}
+#freefallCue .ffc-alt b {
+  font:
+    800 26px/1 var(--ui-font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+#freefallCue .ffc-alt i {
+  margin-left: 4px;
+  font:
+    700 11px/1 var(--ui-font);
+  font-style: normal;
+  letter-spacing: 0.14em;
+  opacity: 0.7;
+}
+/* The height left (fill) against the room opening takes (the red zone up to the tick). */
+#freefallCue .ffc-bar {
+  position: relative;
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #ff5a4766 calc(var(--ff-need) * 100%), #ffffff1a calc(var(--ff-need) * 100%));
+}
+#freefallCue .ffc-left {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--ff-left) * 100%);
+  border-radius: 3px;
+  background: var(--ffc-accent);
+  transition: width 0.12s linear;
+}
+#freefallCue .ffc-need {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: calc(var(--ff-need) * 100%);
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 6px #fff;
+}
+#freefallCue[data-state='soon'] kbd {
+  animation-duration: 0.8s;
+}
+#freefallCue[data-state='danger'] .ffc-card {
+  animation: ffcAlarm 0.36s ease-in-out infinite;
+}
+#freefallCue[data-state='danger'] kbd {
+  animation-duration: 0.36s;
+}
+@keyframes ffcPulse {
+  50% {
+    transform: scale(1.12);
+    filter: brightness(1.25);
+  }
+}
+@keyframes ffcAlarm {
+  50% {
+    background: linear-gradient(180deg, #3a0d0ae6, #230807d0);
+    border-color: #ff5a47;
+  }
+}
+@media (max-width: 600px) {
+  #freefallCue {
+    top: calc(50% + 48px);
+  }
+  #freefallCue .ffc-call strong {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #freefallCue,
+  #freefallCue * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

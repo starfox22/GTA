@@ -188,4 +188,7 @@
         return points.map(([x, y]) => solid(x, y, r) || (foot && footObstacleBlocked(x, y, r)));
       },
     });
+    // FALLS: bailOut(metres, x, y), openParachute(), parachuteState(), fallState(),
+    // cliffSpot(kind), fallTest(kind, seconds) (falls-console.js).
+    addConsoleMethods('falls', fallsConsole());
     // END SUBSYSTEM: src/game-console-world.js
