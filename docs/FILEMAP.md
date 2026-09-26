@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-362 files in the include tree, 138,273 lines.
+365 files in the include tree, 138,279 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -65,7 +65,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/water-audio.js`   394 — Water and beach sound
 - `src/beachvolley.js`    43 — ▸ Beach volleyball on Palm Keys Beach
 - `src/beach.js`   968 — Palm Keys Beach life
-- `src/roofmission.js`   957 — Blue Hour rooftop mission
+- `src/roofmission.js`    11 — ▸ Blue Hour rooftop mission
 - `src/rooftops.js`   138 — Building roofs: helipads, helicopter landings, walking on a roof
 - `src/air-cover.js`   404 — Overhead cover geometry
 - `src/combat-rules.js`   555 — Aerial combat and pursuit rules
@@ -181,6 +181,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/beachvolley-court.js`   483 — Beach volleyball: court plan, teams, bounds and match state (VOLLEY, volley, volleyCourtPlan, onVolleyCourt).
 - `src/beachvolley-play.js`   487 — Beach volleyball play: serves, the ball, athletes, the bench and the player joining in (updateVolleyball, volleyJoin).
+
+## src/roofmission.js ▸ Blue Hour rooftop mission
+
+- `src/roofmission-layout.js`   334 — Blue Hour layout: ROOF_HIT points, roof cover, entityElevation, sight rays and terrace routes (roofRoute, roofStep).
+- `src/roofmission-scene.js`   494 — Blue Hour scene: guests and guards (startRooftopHit), the alarm, the takedown, stage flow and the party's frame update.
+- `src/roofmission-ui.js`   124 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
 
 ## src/damage.js ▸ Vehicle damage, bullet impacts and breakable street furniture
 
