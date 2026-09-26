@@ -970,8 +970,8 @@
         for (let k = 1; k < rows.length; k++) fm.quad(rows[k - 1][0], rows[k - 1][1], rows[k][1], rows[k][0]);
       }
       /* ---- Species --------------------------------------------------------------------- */
-      // Sizes in map units (8 to the metre) at the nominal plan radius of 14 (a
-      // street tree of r 12 comes out at 0.86 of these). H: height; R: crown
+      // Sizes in map units (8 to the metre) at the nominal plan radius of 13 (a
+      // street tree of r 12 comes out at 0.92 of these). H: height; R: crown
       // radius; Ry: the crown's half height. Colours are the leaves', bark's and
       // (blossom) flowers'; `far` is the flat colour of the far city's blob.
       const TREE_SPECIES = {
@@ -1463,9 +1463,11 @@
           ['pear', 2],
           ['linden', 2],
         ],
+        // The towers' plazas: stone pines among the locusts.
         'NORTH POINT · FINANCIAL': [
-          ['locust', 6],
+          ['locust', 5],
           ['pear', 2],
+          ['stonePine', 1.5],
           ['plane', 1],
         ],
         'SOUTH BANK': [
@@ -1481,8 +1483,9 @@
           ['maple', 1],
         ],
         'HARBOR POINT MARINA': [
-          ['locust', 3],
           ['plane', 3],
+          ['locust', 2.5],
+          ['stonePine', 1.5],
           ['pear', 1],
         ],
         'IRONWORKS DOCKS': [
@@ -1570,7 +1573,7 @@
           return;
         }
         const v = treeVariation(S, t.x, t.y),
-          scale = (S.fixedScale ? 1 : t.r / 14) * v.scale,
+          scale = (S.fixedScale ? 1 : t.r / 13) * v.scale,
           ground = terrainHeight(t.x, t.y),
           group = new Three.Group();
         group.position.set(t.x, ground, t.y);

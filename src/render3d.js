@@ -136,8 +136,8 @@
         // for trees; a clipped hedge or a pot on a sheltered roof waving about read
         // as a glitch.
         stillLeafMat = mat('#4e654a'),
-        // Palms (makePalm in world3d.js) share these so they batch together.
-        palmTrunkMaterial = mat('#978266'),
+        // (Trees and palms are vegetation3d.js's; this is left in surfaces3d.js's
+        // list of swaying materials.)
         palmFrondMaterial = new Three.MeshStandardMaterial({ color: '#3e7862', roughness: 0.7, side: Three.DoubleSide });
       const warmLamp = new Three.MeshBasicMaterial({
           color: '#ffde9b',

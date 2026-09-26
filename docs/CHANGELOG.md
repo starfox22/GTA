@@ -1,5 +1,42 @@
 # Changelog
 
+## Unreleased — the tree library
+
+Every tree is now one of 22 species (vegetation3d.js), so no two streets, parks or hillsides
+look alike, and no two trees of a species are the same.
+
+- **Broadleaf**: London plane, linden, honey locust (light, airy), Bradford pear (one in five in
+  white blossom), maple (one in seven turning gold or red), oak, weeping willow, jacaranda
+  (purple), flame tree (red), cherry, beech, birch. A trunk with a root flare forks into limbs
+  that show under the crown's edge; the crown is a cluster of lobes, each a lumpy core wrapped
+  in leaf-cluster cards, so its edge reads as foliage from above.
+- **Conifers**: spruce (ragged drooping whorls), fir (a tight blue-green cone, a spire),
+  pine (a bare trunk under tufted clumps), Italian cypress (a dark column), stone pine (a flat
+  umbrella).
+- **Palms**: Canary date palm (thick diamond-patterned trunk, a dense ball of fronds), Mexican
+  fan palm (tall and thin, fan leaves over a skirt of dead ones), coconut (a bowed trunk, long
+  drooping fronds, nuts), royal palm (smooth grey trunk, green crownshaft). Fronds are curved,
+  keeled blades that twist towards the tip.
+- **Materials**: one procedural atlas (leaf clusters, needles, pine tufts, willow strands,
+  blossom, pinnate and fan fronds, eight barks) with a baked normal map and mipmaps that keep
+  the leaf coverage at a distance; one material for every tree.
+- **Variety per tree**: scale ±18%, height to width, lean, turn, leaf tint, crown density and
+  a shape morph (a crown that spreads or stays upright, boughs that droop or lift, fronds that
+  hang), all from the tree's position. Wind sways crowns and fronds, shadows included.
+- **Where**: the Old Quarter and Battery Point lindens and planes; downtown honey locusts and
+  pears, stone pines in the financial plazas; South Bank maples; planes at the Ironworks, planes
+  and stone pines at the marina; parks oaks, lindens, maples
+  and planes with willows by the ponds and cherries; the Keys mixed palms (fan palms down Ocean
+  Drive, coconuts on the beach, royal and date palms in Little Havana) with flame trees and
+  jacarandas; Monarch Isle planes with stone pines among them, mixed palms on the waterfront;
+  the foothills pines, spruce and fir; the Ridgeline pines low down, fir through the middle and
+  spruce up to the treeline, beech, birch and maple below them.
+- **Performance**: one instanced mesh per species per breakable cell and level of detail, as
+  before; a ~100-triangle mid level from street zoom 0.5 out and beyond 1.5 km in the flight
+  view, and one plain crown per tree in the far city.
+- **Console**: `DeadEndCity.vegetation()` (species counts, tree draws and triangles in view),
+  `DeadEndCity.treeLineup()` (one of every species, for inspection).
+
 ## Unreleased — the car and motorbike redesign, and the flagships
 
 Civilian cars (cars3d.js) and motorbikes (motorbikes3d.js), rebuilt at real size to the police
