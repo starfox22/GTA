@@ -161,7 +161,9 @@
       // by about six units seen down the road), so the V has no slot to thread
       // and a rammer aimed at the middle meets a flank, not two nose tips that
       // pivot out of the way; the along-road stagger keeps them out of each other.
-      for (const offset of [-22, 22])
+      // (At a real 5.1 m cruiser each reaches 22 units across from its centre, so
+      // the pair stands 19 either side of the line to keep that overlap.)
+      for (const offset of [-19, 19])
         park(
           site.x + lane.x * offset + along.x * offset,
           site.y + lane.y * offset + along.y * offset,

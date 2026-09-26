@@ -53,24 +53,25 @@
         }
         const face = p.y + p.h;
         if (p.kind !== 'rooftop') {
-          // The fascia board sits above the entrance canopy (top at 19) so the
+          // The fascia board sits above the entrance canopy (top at 27) so the
           // canopy does not hide the lower line of a two-line design.
           const width = Math.min(220, p.w * 0.85),
             board = sign(p.name, p.x + p.w / 2, face + 2, width, p.color);
-          board.position.y = board.userData.backing.position.y = Math.max(board.position.y, 21 + width / 8);
+          board.position.y = board.userData.backing.position.y = Math.max(board.position.y, 29 + width / 8);
         }
         // Recessed glass doors, lit entrances, steps and weather canopies.
-        box(group, x, 8, face + 1, 17, 16, 1.2, glass);
-        box(group, x, 8, face + 1.8, 0.7, 16, 0.3, chrome);
-        box(group, x, 18, face + 7, 38, 2, 16, mat(p.kind === 'club' ? '#332745' : '#4f6464'));
-        registerOverheadCover(x, face + 7, 19, 8, 0, 17, 19, 'entrance canopy');
+        // Doors a little over DOOR_HEIGHT with a glazed head, the canopy 3.2 m up.
+        box(group, x, 11, face + 1, 17, 22, 1.2, glass);
+        box(group, x, 11, face + 1.8, 0.7, 22, 0.3, chrome);
+        box(group, x, 26, face + 7, 38, 2, 16, mat(p.kind === 'club' ? '#332745' : '#4f6464'));
+        registerOverheadCover(x, face + 7, 19, 8, 0, 25, 27, 'entrance canopy');
         box(group, x, 0.8, face + 10, 34, 1.6, 17, concrete);
         // The lit entrance: a glow under the canopy, its colour on the steps and,
         // in the rain, down the wet road.
-        addGlow(x, 15, face + 11, 30, p.color, 0.5, {});
+        addGlow(x, 22, face + 11, 30, p.color, 0.5, {});
         signSpill(x, face + 20, 70, p.color, 0.45, { width: 40, length: 90, strength: 0.9 });
         for (const side of [-1, 1]) {
-          box(group, x + side * 17, 9, face + 13, 1.1, 18, 1.1, chrome);
+          box(group, x + side * 17, 13, face + 13, 1.1, 26, 1.1, chrome);
           box(group, x + side * (p.w * 0.38), 1.5, face + 14, 23, 3, 10, concrete);
           for (let j = 0; j < 3; j++)
             mesh(
