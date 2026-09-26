@@ -424,7 +424,7 @@
       }
     }
     function updateDealerGuards(deltaSeconds, alarmed) {
-      const armed = !currentWeapon().fists && !currentWeapon().melee;
+      const armed = dealerPlayerBrandishing();
       // Reinforcements twelve seconds into an alarm, through the vehicle door.
       if (alarmed && !dealerPeople.reinforced && gameTime - dealer.alarmStartedAt > 12) {
         dealerPeople.reinforced = true;
@@ -508,10 +508,17 @@
       }
       return true;
     }
+    // The starting pistol reads as holstered until it is fired; anything bigger is
+    // noticed the moment it is in hand.
+    function dealerPlayerBrandishing() {
+      const w = currentWeapon();
+      if (!w || w.fists || w.melee) return false;
+      return w !== weapons[0] || gameTime - (player.lastShotAt ?? -100) < 20;
+    }
     // What a salesman says next about the car the player is looking at.
     function dealerPitchLine(slot) {
       const item = slot ? PRESTIGE_BY_TYPE.get(slot.type) : null,
-        armed = !currentWeapon().fists && !currentWeapon().melee;
+        armed = dealerPlayerBrandishing();
       if (wantedStars > 0) return randomChoice(DEALER_LINES.wanted);
       if (armed && seededRandom() < 0.7) return randomChoice(DEALER_LINES.armed);
       if (player.hp < 45 && seededRandom() < 0.5) return randomChoice(DEALER_LINES.scruffy);

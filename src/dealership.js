@@ -624,7 +624,8 @@
 #dealerOverlay .dl-keys{margin-top:12px;font:700 9px/1.6 var(--ui-font);letter-spacing:.14em;color:#77736a}
 #dealerOverlay .dl-keys kbd{margin-right:4px}
 #dealerOverlay .dl-browse{position:absolute;right:clamp(16px,3vw,40px);top:clamp(96px,14vh,130px);max-width:calc(100vw - 640px);display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;pointer-events:auto}
-body.dealer-open #interaction,body.dealer-open .quickkeys{visibility:hidden}
+body.dealer-open #interaction,body.dealer-open .quickkeys,body.dealer-open #pager{visibility:hidden}
+body.dealer-reveal #pager,body.dealer-reveal #toast{visibility:hidden}
 #dealerOverlay .dl-browse button{padding:9px 12px;border-radius:8px;border:1px solid #ffffff26;background:#0b0e12c0;color:#e8e2d4;font:800 9px/1 var(--ui-font);letter-spacing:.18em}
 #dealerOverlay .dl-browse button[aria-current=true]{border-color:#e2c897;color:#e2c897}
 #dealerOverlay .dl-garage{margin-top:16px;display:grid;gap:8px}
@@ -973,6 +974,7 @@ body.dealer-open #interaction,body.dealer-open .quickkeys{visibility:hidden}
       const r = dealer.reveal;
       if (!r) return;
       r.t += deltaSeconds;
+      document.body.classList.add('dealer-reveal');
       const el = ensureRevealOverlay(),
         fade = el.querySelector('.fade'),
         card = el.querySelector('.card');
@@ -1021,6 +1023,7 @@ body.dealer-open #interaction,body.dealer-open .quickkeys{visibility:hidden}
       }
       if (r.t > 9.4) {
         el.classList.add('hidden');
+        document.body.classList.remove('dealer-reveal');
         dealer.reveal = null;
         dealerConfetti = null;
         tell('The keys are yours: your ' + VEHICLE_DEFINITIONS[r.rec.type].name + ' is at the handover bay. ' + keyName('interact') + ' to get in.', 5);
