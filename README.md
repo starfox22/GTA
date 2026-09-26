@@ -1,9 +1,22 @@
 # Dead End City
 
-An original, self-contained top-down crime game in the spirit of GTA 1 and 2, set on the
-South Coast in 1997. One HTML file, no server, no build step to play: open
-`dead-end-city.html` in a desktop or mobile browser and press **ENTER THE CITY**.
+An original top-down crime game in the spirit of GTA 1 and 2, set on the South Coast in
+1997. It runs in any modern desktop or mobile browser, with no install and no server.
 Version 30.0.0 (see `docs/CHANGELOG.md`).
+
+## How to play
+
+- **In the browser**: open the published build,
+  https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B, and press **ENTER THE CITY**.
+- **Downloaded**: unzip `DeadEndCity.zip` and double-click `DeadEndCity/index.html`
+  (Chrome, Edge, Firefox or Safari). Keep the `media` folder beside it: the car radio
+  streams its music from there. Everything else is inside `index.html`, and nothing is
+  fetched from the network.
+- **From source**: `python3 tools/build.py` writes `dead-end-city.html` (one file with
+  everything embedded, music included); `python3 tools/build.py --zip dist/DeadEndCity.zip`
+  makes the download.
+
+## What is in it
 
 - 16 missions: an 11-chapter story (harbor heists, a rooftop hit, a jet-ski run, car
   chases, a flight finale) followed by 5 contracts (a hot-car checkpoint run, bomb defusal
@@ -13,12 +26,12 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
   police); traffic that obeys signals and gets out of the car to argue after a crash; a
   wanted system with helicopters and rammable roadblocks; gangs, wildlife, sports matches,
   a casino and a Sunset Pier theme park on its own island north of the city.
-- Four islands and long bridges: Northbank's street grid in the middle, tropical Palm Keys to
+- Islands and long bridges: Northbank's street grid in the middle, tropical Palm Keys to
   the west across Palm Sound, the forest and mountains of Ridgeline east across Marlow Bay,
-  and the Sunset Pier amusement island to the north.
+  the Sunset Pier amusement island to the north and rich Monarch Isle beyond the mountains.
 - Palm Keys Beach with swimmers, lifeguards and a fishing pier; you can swim from the sand
   and climb out at beaches, rocks and ladders on the quays.
-- Harbor Point marina with sixteen unique yachts and M/Y AURELIA, a 105 m superyacht you can
+- Harbor Point marina with sixteen unique yachts and M/Y AURELIA, a superyacht you can
   walk aboard deck by deck; cruise liners, a freighter, boats and jet skis to drive.
 - Three railway lines along the west shore and across the county, 13 stations to ride
   between.
@@ -34,7 +47,7 @@ Version 30.0.0 (see `docs/CHANGELOG.md`).
   lamp and shop, weather, and four graphics quality tiers. Without WebGL a 2D renderer
   takes over.
 
-## Play
+## Controls
 
 | Action | Keys |
 | --- | --- |
@@ -72,36 +85,13 @@ GPS route on the minimap, control hints) and CONTROLS (touch controls, key bindi
 automatically on phones and tablets. Progress and every setting save to the browser's
 local storage. The game runs offline; nothing is fetched from the network.
 
-## Repository layout
+## Developing
 
-```
-dead-end-city.html    The playable, self-contained build (the deliverable).
-src/                  Game source, one file per subsystem (see docs/SOURCE_GUIDE.md).
-src/shell.html        HTML shell: CSS, DOM, subsystem index, audit contracts, include directives.
-vendor/three.r160.js  Unminified Three.js r160 with its MIT license.
-assets/               Decoded images and audio plus manifest.json (embedded at build time).
-tools/build.py        Reassembles dead-end-city.html from the pieces above.
-tools/check.sh        Fast syntax gate (assemble + `node --check`).
-tools/smoke.mjs       Headless Chromium boot test with screenshots.
-tools/tour.mjs        Scripted screenshot tour driven by the developer console.
-tools/layout-audit.mjs  Overlap audit of the city plan.
-docs/                 Source guide, development workflow, changelog, audit logs, credits.
-```
-
-## Build and verify
-
-```
-python3 tools/build.py                           # writes dead-end-city.html
-python3 tools/build.py --out dist/game.html      # scratch build (dist/ is git-ignored)
-sh tools/check.sh                                # parses the assembled script with Node
-node tools/smoke.mjs dist/game.html dist/smoke   # boots the build headlessly (Playwright + Chromium)
-node tools/layout-audit.mjs dist/game.html       # checks the city plan for overlaps
-```
-
-Only Python 3 is needed to build. The assembled file is plain, readable source: nothing is
-minified, packed or evaluated, and every media block is labeled with its path, byte count
-and SHA-256. The build must stay under 15.5 MB. `docs/DEVELOPMENT.md` explains the test
-tools and the `window.DeadEndCity` developer console.
+The source is modular (`src/*.js`, spliced into one page by `tools/build.py`; only Python 3
+is needed to build). Start with `CLAUDE.md`: commands, rules, where things are and how to
+work on the code; `docs/README.md` indexes the rest of the documentation. The assembled page
+is plain, readable source: nothing is minified, packed or evaluated, and every media block
+is labelled with its path, byte count and SHA-256.
 
 ## Credits
 
