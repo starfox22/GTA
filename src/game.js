@@ -3533,7 +3533,7 @@
         timed('transit', () => updateTransit(deltaSeconds));
         // The Meridian Star under way (marina.js), before the player walks her deck.
         timed('liner', () => sailLiner(deltaSeconds));
-        // The Palm Sound drawbridge: timetable, gates, leaves and the ketch (drawbridge.js).
+        // The Palm Sound drawbridge: timetable, gates, leaves and the tall ship (drawbridge.js).
         timed('drawbridge', () => updateDrawbridge(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
@@ -6427,7 +6427,7 @@
       // Put `count` traffic cars on each approach, heading onto the drawbridge.
       drawbridgeTraffic: (count) => drawbridgeSpawnTraffic(count),
       // Stand at a drawbridge viewpoint ('channel', 'west', 'east', 'north', 'south',
-      // 'tower') at a zoom; returns the point and the bridge's state.
+      // 'tower', 'overview', 'pit') at a zoom; returns the point and the bridge's state.
       drawbridgeLook(spot = 'channel', zoom) {
         const p = drawbridgeViewpoint(spot);
         this.look(p.x, p.y, zoom);

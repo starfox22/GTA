@@ -227,7 +227,7 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | physics.js | Vehicle physics in 1/120 s steps, `addStatic`/`staticGrid`, `resolveContact`, traffic AI (`trafficControl`), `helicopterControl`, `boatControl`, `safeLanding`, `damageVehicle`, knockdowns |
 | controls.js | Key bindings: `CONTROL_ACTIONS` (every action, its default keys and contexts), the virtual key table behind `keys`, `actionHeld(id)`, `keyName(id)` for prompts, rebinding with conflict checks (`bindControl`, `controlConflicts`) |
 | geography.js | Land polygons and the cached `landAt`, `BRIDGES` and their architecture (`bridgeStructure`, `bridgeFootings`, `bridgePylons`), reserved plots, `districtAt`, coast segments and `shoreStyle`, 2D water, `BEACH` (strand, boardwalk, pier) |
-| drawbridge.js | The Palm Sound drawbridge: `DRAWBRIDGE_OPENINGS`, the opening phases (`updateDrawbridge`), barrier arms and ramming, traffic held at the stop lines (`drawbridgeTrafficLimit`), `drawbridgeKeepsOff`, `drawbridgeFootBlocked`, leaves as ramps and vehicle jumps (`drawbridgeSurface`, `drawbridgeSlopeDrive`, `drawbridgeFlight`, `drawbridgeSettle`), the ketch ALBATROSS, GPS pricing (`drawbridgeRouteDelay`), `drawDrawbridgeMap`, bells, motors and horns, the console report |
+| drawbridge.js | The Palm Sound drawbridge: `DRAWBRIDGE_OPENINGS`, the opening phases (`updateDrawbridge`), barrier arms and ramming, traffic held at the stop lines (`drawbridgeTrafficLimit`), `drawbridgeKeepsOff`, `drawbridgeFootBlocked`, leaves as ramps and vehicle jumps (`drawbridgeSurface`, `drawbridgeSlopeDrive`, `drawbridgeFlight`, `drawbridgeSettle`), the brigantine ALBATROSS, the onlookers (`drawbridgeSpectators`) and the event camera (`drawbridgeCameraZoom`), GPS pricing (`drawbridgeRouteDelay`), `drawDrawbridgeMap`, bells, motors and horns, the console report |
 | harbor.js | Ironworks terminal, mission 1 loading, gates and guards, the harbor exit |
 | heat.js | Heat and wanted stars: `crime(amount)` (heat by severity; the only way heat rises, nothing adds it passively), `recordKill` / `recordVehicleKill` (by victim, with a spree bonus), `HEAT_STARS`, the escalation delay, `heatUI()` (stars, pending star, heat meter, body count), `crimeLog` (the last crimes, for `policeReport().crimes`) |
 | police-feedback.js | Wanted-level chips (NEED TO LOSE POLICE, POLICE CLEARED: only on a real drop, timed on the wall clock) and `policeBlocksMissionDelivery` |
@@ -338,7 +338,7 @@ and helicopter3d, vehicles3d, police3d, cars3d, motorbikes3d and plane3d last, b
 | airfields3d.js | Runways and taxiways over the ground sheets: one quad each with a patched standard material that paints the markings from metre uv (threshold, centre line, aiming point, touchdown zone, side stripes, blast pad chevrons, holding positions, rubber, rain), designation decals, holding-position signs; edge, threshold / end, approach (sequenced flashers), taxiway and obstruction lights as glow-field instances on batched fixtures; PAPI lenses and windsocks updated per frame (`updateAirfieldVisuals`, called from `updateCountyVisuals`) |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`); soldiers are dressed by crowd3d.js OUTFITS |
 | boats3d.js | Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging |
-| drawbridge3d.js | The Palm Sound drawbridge in 3D (`buildDrawbridge`, the bascule builder): hinged leaves with grid decking, girders and counterweights, piers and tender houses, fenders, barrier gates, signals and lamps (switched lenses and halos), the ketch; `updateDrawbridgeVisuals` each frame |
+| drawbridge3d.js | The Palm Sound drawbridge in 3D (`buildDrawbridge`, the bascule builder): 44 m hinged leaves with grid decking, outboard main girders, racks and counterweights, piers with open counterweight pits (pinions, the depth mask that keeps the sea out), tender houses, floodlights, fenders, barrier gates, signals and lamps (switched lenses and halos), drips and spray, the brigantine under sail; `updateDrawbridgeVisuals` each frame |
 | monarch-bridges3d.js | (included by render3d.js after bridges3d.js) `buildHarpBridge` (the Sovereign Bridge's leaning pylon and parallel stays) and `buildBowstringBridge` (the Regency Bridge's three arches) |
 | bridges3d.js | Every bridge in its own style from `bridgeStructure()`: truss, bascule, cable-stayed, suspension, arch, county designs; the shaded carriageway (`bridgeRoadMaterial`: asphalt wear and antialiased markings in the shader), expansion joints, each deck's lamp light map (`bridgeDeckLight`), lamps, LEDs, aviation beacons, foam cut round the deck, far copies |
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
@@ -594,7 +594,7 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
 | id | name | style | link | from | to | width |
 | --- | --- | --- | --- | --- | --- | --- |
 | keys-union | KEYS BRIDGE | green steel camel-back through-truss on four river piers | Palm Keys - Northbank (Union St) | -1460, 1152 | 130, 1152 | 112 |
-| keys-harbor | PALM SOUND CAUSEWAY | low causeway, globe lamps, a working double-leaf trunnion bascule (drawbridge.js): tender's houses, fenders, barrier gates | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 |
+| keys-harbor | PALM SOUND CAUSEWAY | low causeway, globe lamps, a working double-leaf trunnion bascule with 44 m leaves (drawbridge.js): counterweight pits, tender's houses, fenders, barrier gates | Palm Keys - Northbank (Harbor Ave) | -1460, 3200 | 130, 3200 | 112 |
 | east-bay | EAST BAY CROSSING | white cable-stayed, one A-pylon (380) and two fans of stays, a channel each side | Northbank - Ridgeline (Harbor Ave -> Ridgeline Hwy) | 3150, 3200 | 6580, 3200 | 122 |
 | south-bay | SOUTH BAY BRIDGE | red suspension bridge, two towers (316), main cables, hangers, anchorages | Northbank - Ridgeline (Stadium Way -> Foothill Rd) | 3150, 4736 | 6420, 4736 | 112 |
 | pier-bridge | SUNSET PIER BRIDGE | leaning white network arch (rise 244) with colour-cycling LEDs | Northbank - Sunset Pier (Riverbank Dr) | 3200, -3900 | 3200, -5800 | 104 |
@@ -617,20 +617,44 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
   channel and the Ridge Line's bridge across Coral Sound. No rail line crosses Palm Sound, Marlow
   Bay or North Sound.
 - **The Palm Sound drawbridge** (drawbridge.js, drawn by drawbridge3d.js). The Palm Sound
-  Causeway (`keys-harbor`, `movable: true`) is a working double-leaf trunnion bascule. Its
-  layout is `bridgeStructure(bridge).bascule`: `leaf` 100 (trunnion to the joint mid-channel),
-  `drop` 8 (the trunnion axis below the road), `trunnions`, `piers` (64 long, the counterweight
-  pits; four tender's houses, the south-east one the control house), `fenders`, and the `gates`
-  and `stops` (barrier and stop lines on the approach spans). The phase clock is game seconds
-  (an in-game minute each), so an opening lasts about ninety seconds of play:
-  `warning` (bells, signals amber then red) → `gates` (entry arms, then exit arms; an arm waits
-  while a vehicle is under it) → `clearing` (the tender waits until the span is empty; horn and
-  a HUD line if the player is on it; a stalled car nobody is watching is towed after 20 s) →
-  `unlock` → `raising` (eased, ≤ 4.2°/s, to 78°) → `open` (until the ketch is through, 8-45 s)
-  → `lowering` → `seating` → `lifting` → `idle`. Openings start at `DRAWBRIDGE_OPENINGS`
-  (00:50, 05:30, 10:15, 15:00, 20:40) for the ketch ALBATROSS, whose masts clear 19 m: she lies
-  at anchor 720 units off the deck on one side, sounds for the bridge, waits at the hold point
-  (330) and crosses in the `open` phase to the other anchorage (her hull is in `boatFits`).
+  Causeway (`keys-harbor`, `movable: true`) is a working double-leaf trunnion bascule with 44 m
+  leaves (88 m trunnion to trunnion, as long as the longest double-leaf bascules built; the
+  channel between the pier noses is 76 m). Its layout is `bridgeStructure(bridge).bascule`:
+  `leaf` 352 (trunnion to the joint mid-channel), `drop` 16 (the trunnion axis 2 m below the
+  road), `trunnions` (x -916 / -212), `tail` 116 and `toe` 40 (each pier runs from 14.5 m behind
+  its trunnion to 5 m ahead of it, under the leaf's heel), `wide` (the pier's half-width: 43 m
+  across), `pit` (the two open counterweight pits flanking the fixed deck on each pier: from the
+  deck edge out to half + 72, 110 back and 36 ahead of the trunnion, 17 m deep), `piers`,
+  `houses` (four tender's houses on the platforms beyond the pits, the south-east one the
+  control house), `fenders`, and the `gates` and `stops` (barrier and stop lines on the approach
+  spans behind the piers, x -1058 / -70 and -1076 / -52). The phase clock is game seconds (an
+  in-game minute each), so an opening lasts about three minutes of play:
+  `warning` (the ship asks for the bridge, the tender answers with one long blast; bells,
+  signals amber then red) → `gates` (entry arms, then exit arms; an arm waits while a vehicle
+  is under it) → `clearing` (the tender waits until the span is empty and walks people off by
+  the nearer end, `drawbridgeUsherPeople`; horn and a HUD line if the player is on it; a
+  stalled car nobody is watching is towed after 20 s) → `unlock` (the centre lock bars draw
+  back, `drawbridge.locks` 0 → 1 over `DRAWBRIDGE_LOCK_SECONDS`, clanks) → `raising` (eased,
+  ≤ 1.6°/s, 78° in about a minute) → `open` (the channel lights go green; the ship passes
+  under sail, salutes and the tender answers; 8-45 s) → `lowering` (as slowly) → `seating`
+  (the lock bars drive home) → `lifting` → `idle`. Openings start at `DRAWBRIDGE_OPENINGS`
+  (06:40, 14:20, 21:30, one after dark for the floodlit show) for the brigantine ALBATROSS
+  (`DRAWBRIDGE_VESSEL`: a 32 m hull, 7.5 m beam, masts 30 m over the water): she lies at
+  anchor 860 units off the deck on one side with her sails furled, sets them as she weighs,
+  waits at the hold point (440) and crosses at 5 knots in the `open` phase to the other
+  anchorage (her hull is in `boatFits`); `drawbridgeClearWidth(height)` is the clear width
+  between the raised leaves' undersides (73 m at her mastheads at 78°). Sounds (procedural,
+  through the effects bus): bells, horns, the drive motors (a 30-36 Hz sub hum, mains buzz and
+  a gear whine following the swing speed), a knock for each rack tooth through the pinions,
+  lock clanks, drips off the rising leaves (`drawbridgeDrip`).
+  - Onlookers: a crowd scene (`drawbridgeSpectators`, crowd.js scenes) of a dozen people walks
+    in along the approach footways and stops at the holding positions just behind the sidewalk
+    arms (`drawbridgeHoldingSpots`, facing the channel; some film, some point), for an opening
+    the player is within 1500 units of; the scene ends when the arms rise.
+  - Event camera: `drawbridgeCameraZoom()` eases the street view back to about 0.74 of the
+    player's zoom (a factor on `speedZoom`, world-view.js) while the leaves move or stand open
+    and the player is within about 1300 units, on foot or under 45 km/h. Never a take-over; the
+    Gameplay setting Event camera (`eventCameraOn`) turns it off.
   - Traffic: `trafficControl` brakes to the stop line (`drawbridgeTrafficLimit`; a car too close
     at the first amber carries on) and, past it, to the trunnion while the span is not seated.
     `drawbridgeKeepsOff` (settleVehicle) keeps every vehicle but the player's off an unseated
@@ -647,7 +671,9 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
     `drawbridgeKink` takes the speed square to the leaf off at the trunnion (a car keeps
     cos(angle) of its speed up the slope: 82% at 35°) and damages the car above 5 m/s into it.
     The gap is 2 (leaf (1 - cos a) + drop sin a) and the tips stand leaf sin a - drop (1 - cos a)
-    high (leaf 12.5 m, drop 1 m: 0.3 m / 1.1 m at 5°, 1.4 / 3.3 at 15°, 5.7 / 7.0 at 35°); the
+    high (leaf 44 m, drop 2 m: 0.7 m / 3.8 m at 5°, 4.0 / 11.3 at 15°, 9.9 / 18.4 at 25°,
+    18.2 / 24.9 at 35°), and a car has 44 m of climb to lose speed on: at 15-30° a slow car falls
+    short and a fast one clears with a long, high jump (CHANGELOG: the measured table). The
     car's nose (half its length ahead, pitched) must reach the far tip above it or it strikes
     the leaf's end and drops. Past the far trunnion the approach span is road (it was taken for
     the Sound). Off a tip the vehicle is airborne (`deckAir`, `deckVz`; controlVehicle runs
@@ -657,31 +683,48 @@ files draw it). About 580 x 600 m of land (4690 x 4800 units).
     where `updateSinking` floods it. Above `DRAWBRIDGE_WALL_ANGLE` (40°) each leaf is a wall.
     An airborne car clears rails lower than it (vehicleContactPasses).
   - GPS: route links across the span carry `drawbridge`; `navShortestPath` adds
-    `drawbridgeRouteDelay()` (seconds until traffic moves × 230) to them, so short trips wait
-    and long ones go round by the Keys Bridge. The graph itself is built as if the bridge were
-    down (`drawbridge.routing`).
+    `drawbridgeRouteDelay()` (seconds until traffic moves, `drawbridgeSecondsToTraffic`, at
+    45 km/h) to them, so short trips wait and long ones go round by the Keys Bridge. The graph
+    itself is built as if the bridge were down (`drawbridge.routing`).
   - Map: the baked ground layers leave the moving span out (`drawBridgeGround`; the 2D view
     passes `live`); `drawDrawbridgeMap` draws it (deck, or leaves foreshortened over water),
     red bars at the gates and a state icon (white down, amber closing, red up; BRIDGE UP on
-    the city map), and the ketch on the city map.
+    the city map), and the ship on the city map.
   - 3D (drawbridge3d.js): each leaf is a group hinged at its trunnion (`drop` below the road):
     carriageway and footways in the deck's own materials (`bridgeDeck` takes `look.gap` and
     keeps its materials in `g.userData.deckMaterials`; `bridgeRoadGeometry` takes a `start`
     so markings run on), open steel grid decking over the joint (alpha-tested), a finger lock,
-    ornamental railings, tapered fascia and main girders, floor beams, stringers, bracing, the
-    trunnion shaft and counterweight, red / green tip lanterns. Granite piers with house
-    platforms and balustrades, four limestone tender's houses with lit lookouts and copper
-    roofs, the control house's vessel signal mast (red / green each way up the channel) and
-    horn, timber fenders with red-lit dolphins, per approach two kerb cabinets with striped
-    arms (lamps along them), sidewalk arms, wig-wag lamps, a mast-arm signal with a STOP HERE
-    ON RED sign, a stop line and an advance DRAWBRIDGE AHEAD sign with amber flashers. Lenses
-    are shared materials switched each frame; lit ones get halos. A snapped arm keeps its stub
-    and leaves its boom on the road. The ketch is built with the boat kit the first frame she
-    is needed. Sounds (short procedural voices through the effects bus): bells, motor hum,
-    lock clanks, horns.
+    ornamental railings and three pairs of globe lamps (their pools in the deck's light map),
+    two outboard main girders (5.5 m deep at the trunnion, 1.8 m at the tip) whose tails carry
+    the curved racks and the counterweights (yellow and black striped tops, so they read as they
+    sink), the floor system seen from below as the leaf stands up (cross girders every 3.5 m,
+    stringers, X bracing), the centre lock bars (on the east leaf, sliding into receivers on the
+    west one), flashing red span lights while it moves, red / green tip lanterns. The piers:
+    granite, with the nose under the leaf's heel and the open pits (walls banded and lit, the
+    pinions on shafts across them turning as the racks roll through, the motor houses above);
+    the pits reach below the sea, so a depth-only mask over their openings (renderOrder -2,
+    after the pits and leaves at -3, before the water) keeps the water plane out. The street
+    camera looks north and down at 50°, so each pit shows its far wall and the counterweight
+    until it sinks below about 10 m. Platforms and balustrades, four limestone tender's houses
+    with lit lookouts and copper roofs, the control house's vessel signal mast (red / green each
+    way up the channel) and horn, floodlights on the pier noses (after dark their beams, one
+    additive mesh, show while the leaves stand up and the leaves' paint and steel glow,
+    `drawbridgeFloodlit`), timber fenders with red-lit dolphins, per approach two kerb cabinets
+    with striped arms (lamps along them), sidewalk arms, wig-wag lamps, a mast-arm signal with a
+    STOP HERE ON RED sign, a stop line and an advance DRAWBRIDGE AHEAD sign with amber flashers.
+    Water off the rising leaves: one points cloud of drips from the tips, grating and girders
+    (most in the first twenty degrees, a burst of spray as the tips part), splashing on the
+    Sound. Lenses are shared materials switched each frame; lit ones get halos. A snapped arm
+    keeps its stub and leaves its boom on the road. The brigantine is built with the boat kit
+    the first frame she is needed: four square sails on the foremast, a gaff main and gaff
+    topsail, three headsails (billowed sheets scaled out from their heads as she sets them),
+    festoon lights dressed overall, navigation lights. The foam round the piers is kept to their
+    outside (footingFoam).
   - Console: `DeadEndCity.drawbridge('status' | 'open' | 'close' | 'hold', degrees |
     'snap', degrees)`, `drawbridgeLook(spot, zoom)` ('channel', 'west', 'east', 'north',
-    'south', 'tower'), `drawbridgeTraffic(count)`.
+    'south', 'tower', 'overview', 'pit'), `drawbridgeTraffic(count)`. The report adds the leaf
+    length, the clear width at the ship's mastheads, the lock bars, the camera factor and the
+    onlookers (in the scene, spawned, at their spots).
 - Water access (water.js): on foot the sea can be entered only across a beach shore; everywhere
   else the edge is a wall. Swimmers climb out at beaches, rocky shores and ladders (86: every
   ~420 units of quay, dock ends and the pier head, each only where a swimmer can reach the

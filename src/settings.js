@@ -60,6 +60,8 @@
       cutaway: true,
       // The faint moonlit rim on the player's silhouette at night (render3d.js).
       playerOutline: true,
+      // The camera eases back for a spectacle close by (drawbridge.js drawbridgeCameraZoom).
+      eventCamera: true,
     };
     let radioMigrated = false;
     try {
@@ -90,6 +92,7 @@
         settings.radioVolumeSet = radioChosen;
         if (typeof saved.npcChatter === 'boolean') settings.npcChatter = saved.npcChatter;
         if (typeof saved.playerOutline === 'boolean') settings.playerOutline = saved.playerOutline;
+        if (typeof saved.eventCamera === 'boolean') settings.eventCamera = saved.eventCamera;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
         if (typeof saved.voicesOn === 'boolean') voicesOn = saved.voicesOn;
       }
@@ -110,6 +113,7 @@
             radioVolumeSet: settings.radioVolumeSet,
             npcChatter: settings.npcChatter,
             playerOutline: settings.playerOutline,
+            eventCamera: settings.eventCamera,
             soundOn,
             voicesOn,
           }),
@@ -143,6 +147,9 @@
     // Read by the renderer every frame, so a change applies at once.
     function playerOutlineOn() {
       return settings.playerOutline;
+    }
+    function eventCameraOn() {
+      return settings.eventCamera;
     }
     function setCharacterCutaway(on) {
       settings.cutaway = !!on;
@@ -274,6 +281,14 @@
             'Speech bubbles from people and drivers in the street, two at a time. Mission and contact dialogue always shows.',
           get: () => settings.npcChatter,
           set: (on) => (settings.npcChatter = on),
+        },
+        {
+          id: 'eventCamera',
+          kind: 'toggle',
+          label: 'Event camera',
+          note: () => 'Near a spectacle, such as the drawbridge opening, the camera eases back a little so it all fits on screen. You keep full control.',
+          get: () => settings.eventCamera,
+          set: (on) => (settings.eventCamera = !!on),
         },
         {
           id: 'minimap',
