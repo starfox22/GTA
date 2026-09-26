@@ -520,6 +520,25 @@
         s.solids.push({ along: m, across: -(W / 2 + 40), hx: 16, hy: 14, minHeight: 0, height: 54, kind: 'control house' });
         s.approach = [...approachPiers(m - half, w0, 100), ...approachPiers(m + half, w1, 100)];
       },
+      /* North Point Key Bridge: one short span between the two sea walls under a
+         pair of low white arches, one beside each footway (nothing over the
+         road), hung from the deck edges; springings at the walls. */
+      key(bridge, [w0, w1], m, s) {
+        const W = bridge.width,
+          from = w0 + 14,
+          to = w1 - 14,
+          half = (to - from) / 2,
+          mid = (from + to) / 2;
+        s.keyArch = { from, to, rise: 64, plane: W / 2 + 10 };
+        s.archHeight = (along) => s.keyArch.rise * Math.max(0, 1 - ((along - mid) / half) ** 2);
+        s.channels = [[w0 + 44, w1 - 44]];
+        for (const x of [from, to]) s.footings.push({ along: x, across: 0, hx: 16, hy: W / 2 + 16, kind: 'arch springing' });
+        for (const side of [-1, 1])
+          for (let x = from; x < to; x += 40) {
+            const x1 = Math.min(to, x + 40);
+            s.solids.push({ along: (x + x1) / 2, across: side * s.keyArch.plane, hx: (x1 - x) / 2, hy: 4, minHeight: 0, height: 6 + Math.max(s.archHeight(x), s.archHeight(x1), s.archHeight((x + x1) / 2)), kind: 'arch' });
+          }
+      },
     };
     function bridgeStructure(bridge) {
       if (bridge.structure) return bridge.structure;

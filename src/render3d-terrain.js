@@ -137,8 +137,11 @@
             const zone = districtAt(x + 177, z + 177),
               blockSeed = (bx * 31 + by * 17) % 7;
             if (zone.includes('FINANCIAL') && skylineBlockTowers(bx, by).length) {
-              // Cluster plaza (src/skyline.js), the same inset as the game's ground canvas.
+              // Cluster plaza (skyline-towers.js), the same inset as the game's ground canvas.
               paintSkylinePlaza(drawingContext, x + 14, z + 14, 326, 326);
+            } else if (zone.includes('FINANCIAL') && retiredSkylineTowers(bx, by).length) {
+              // The offices that replaced the cluster (skyline-towers.js), as in the game's canvas.
+              paintNorthPointOffices(drawingContext, bx, by, x + 10, z + 10, 334);
             } else if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               // A granite forecourt (the ground shader lays its slabs).
               drawingContext.fillStyle = '#c3bfb2';

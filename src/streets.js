@@ -27,6 +27,8 @@
             // West Quay (x = 128) is not a street: the strip between the sea wall
             // and the first blocks is the esplanade and the Shore Line viaduct.
             if (vertical && r === RAIL_CORRIDOR_X) return false;
+            // North Point Key: only the avenue off the bridge, up to the circle (skyline-islet.js).
+            if (northPointKeyStreetClip(x, y, vertical)) return false;
             if (onBridge(x, y, 0)) return true;
             const side = width / 2 + 28;
             return (
@@ -190,6 +192,8 @@
             a = r.vertical ? (outward > 0 ? Math.PI / 2 : -Math.PI / 2) : outward > 0 ? 0 : Math.PI;
           if (onBridge(p.x, p.y, -20) || onBoulevard(p.x, p.y, 65) || streetEndInJunction(r, p)) continue;
           if (inAirport(p.x, p.y) || inStadiumLot(p.x, p.y, 40)) continue;
+          // The avenue on North Point Key runs on into the drop-off circle.
+          if (onNorthPointKey(p.x, p.y)) continue;
           // A street that runs out at the water is finished by the esplanade.
           if (streetEndAtShore(p.x, p.y, a)) continue;
           streetEndCache.push({ p, a, width: r.width, kind: streetEndAtGate(p.x, p.y, a) ? 'gate' : 'closed' });
@@ -462,6 +466,7 @@
       return (
         beachShore(e) ||
         monarchEsplanadeGivesWay(e) ||
+        northPointKeyEsplanadeGivesWay(e) ||
         inReservedPlot(p.x, p.y, 10) ||
         HELIPADS.some((pad) => Math.abs(p.x - pad.x) < 64 && Math.abs(p.y - pad.y) < 64)
       );
@@ -469,7 +474,7 @@
     // Palm Keys: sand on the public beach and down Ocean Drive's open-sea (west)
     // shore; the bay shore facing the city is a quay.
     function shoreStyle(e) {
-      const isle = monarchShoreStyle(e);
+      const isle = monarchShoreStyle(e) || northPointKeyShoreStyle(e);
       if (isle) return isle;
       return beachShore(e) ||
         (e.region === 'palmkeys' && e.x < -1700) ||
@@ -517,7 +522,8 @@
       }
       return false;
     }
-    const PROMENADE_REGIONS = ['northbank', 'palmkeys', 'monarch'];
+    // North Point Key's region is pushed last (skyline-islet.js): the others keep their rhythm.
+    const PROMENADE_REGIONS = ['northbank', 'palmkeys', 'monarch', 'northpointkey'];
     // Wide enough for two people abreast and a bicycle past them: the walk runs
     // from the quay edge (40 seaward of the esplanade point) 72 units inland.
     const ESPLANADE_LANDWARD = 32,

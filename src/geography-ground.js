@@ -285,6 +285,7 @@
       }
       if (inAirport(x, y) && landAt(x, y)) return 'SOUTHPORT AIRPORT';
       if (onSunsetIsle(x, y)) return 'SUNSET PIER';
+      if (onNorthPointKey(x, y)) return NORTH_POINT_KEY.name;
       if (onBeach(x, y)) return BEACH.name;
       if (onPalmKeys(x) && landAt(x, y))
         return y < 1500
@@ -325,6 +326,8 @@
     function validCityBlock(x, y, w = 334, h = 334) {
       return (
         landRect(x - 8, y - 8, w + 16, h + 16) &&
+        // North Point Key is planned as a whole, not as grid blocks (skyline-islet.js).
+        !onNorthPointKey(x + w / 2, y + h / 2) &&
         !inAirport(x + w / 2, y + h / 2) &&
         ![
           [x, y],

@@ -99,6 +99,8 @@
     function updatePeople(frameDelta) {
       peopleFrame++;
       updateCrowd(frameDelta);
+      // North Point Key: CIRRUS fills and empties with the player's distance, its tables talk (skyline-bar.js).
+      updateNorthPointKey(frameDelta);
       const playerMoving = !player.car && (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD || keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight);
       for (let index = 0; index < pedestrians.length; index++) {
         const p = pedestrians[index];
@@ -121,6 +123,8 @@
           updateDeckWalker(p, deltaSeconds);
           continue;
         }
+        // North Point Key's guests, staff and doormen stay where they are placed.
+        if (updateKeyPerson(p, deltaSeconds)) continue;
         if (!p.look) ensureLook(p);
         // MONARCH MOTORS' staff and visitors (dealership-people.js).
         if (updateDealerPerson(p, deltaSeconds)) continue;
