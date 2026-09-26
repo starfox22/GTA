@@ -97,11 +97,35 @@
     function damageZone(spec, x, y) {
       return Math.abs(x / spec.l) > Math.abs(y / spec.w) ? (x > 0 ? 'front' : 'rear') : y > 0 ? 'right' : 'left';
     }
-    // Where the glass is on each body, in the same numbers render3d.js builds it with.
+    /* The glasshouses of the real-size cars (cars3d.js CAR_BODIES `glass`): the
+       belt and roof heights in metres, the rear and front glass feet as shares
+       of the length, and whether the car is open. Keep in step with the bodies. */
+    const CAR_GLASS_BANDS = {
+      sedan: [0.95, 1.44, -0.37, 0.2],
+      taxi: [0.98, 1.46, -0.28, 0.21],
+      coupe: [0.93, 1.43, -0.4, 0.24],
+      muscle: [1.0, 1.42, -0.29, 0.13],
+      sport: [0.86, 1.29, -0.36, 0.21],
+      roadster: [0.82, 1.2, 0.02, 0.19, true],
+      rally: [0.95, 1.46, -0.47, 0.21],
+      hotrod: [1.02, 1.33, -0.25, 0.13],
+      supercar: [0.83, 1.27, -0.42, 0.07],
+      luxury: [1.07, 1.62, -0.33, 0.19],
+      limousine: [0.98, 1.47, -0.4, 0.3],
+      suv: [1.15, 1.87, -0.48, 0.22],
+      van: [1.1, 2.5, -0.498, 0.3],
+      pickup: [1.27, 1.95, -0.103, 0.25],
+      chevette: [0.88, 1.22, -0.42, 0.13],
+      brutini: [0.82, 1.13, -0.44, 0.2],
+      cavalino: [0.86, 1.2, -0.4, 0.16],
+    };
+    // Where the glass is on each body, in the same numbers the renderer builds it with.
     function vehicleGlassBand(vehicle) {
       const spec = vehicleSpec(vehicle),
         l = spec.l,
-        t = vehicle.type;
+        t = vehicle.type,
+        real = !vehicle.policeLook && !vehicle.lawUnit && CAR_GLASS_BANDS[t];
+      if (real) return { belt: real[0] * UNITS_PER_METRE, roof: real[1] * UNITS_PER_METRE, back: real[2] * l, front: real[3] * l, open: !!real[4] };
       if (spec.truck)
         return t === 'bus'
           ? { belt: 17, roof: 29, back: -0.46 * l, front: 0.47 * l, open: false }

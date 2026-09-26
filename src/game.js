@@ -2047,6 +2047,41 @@
           lamps.splice(i, 1);
       }
     }
+    /* SHOWCASE PARKING: the flagships (cars3d.js, motorbikes3d.js) where the money
+       parks, and the KR 500 where the dirt starts. Each spot's vehicles line up
+       along its heading, `gap` apart; a vehicle that cannot fit near its place
+       is left out. Stealing one is like stealing any parked car. */
+    const SHOWCASE_PARKING = [
+      // North Point, the financial district: along the avenue under the towers.
+      { place: 'NORTH POINT', x: 2660, y: -3010, a: Math.PI / 2, gap: 48, types: ['brutini', 'chevette', 'cavalino'] },
+      // The marina: on the street behind the quay.
+      { place: 'MARINA', x: 1010, y: -3242, a: 0, gap: 50, types: ['cavalino', 'yamasaki', 'chevette'] },
+      // Marea Beach Club: the valet line past the taxi rank.
+      { place: 'MAREA VALET', x: -2756, y: 5272, a: 0, gap: 50, types: ['brutini', 'dolcati'] },
+      // Sunset Pier: the VIP bays at the east end of the car park.
+      { place: 'SUNSET PIER VIP', x: 3720, y: -5800, a: Math.PI / 2, gap: 30, types: ['chevette', 'brutini', 'cavalino'] },
+      // The Ridgeline trailheads and a county lodge: dirt bikes.
+      { place: 'MOUNT ASCENT TRAILHEAD', x: 7470, y: 2010, a: -Math.PI / 2, gap: 16, types: ['kr500', 'kr500'] },
+      { place: 'NEEDLE RIDGE TRAILHEAD', x: 9460, y: 2900, a: -Math.PI / 2, gap: 16, types: ['kr500'] },
+      { place: 'STONECREEK LODGE', x: 6990, y: 3236, a: 0, gap: 16, types: ['kr500'] },
+    ];
+    function parkShowcase() {
+      const parked = [];
+      for (const spot of SHOWCASE_PARKING)
+        spot.types.forEach((type, i) => {
+          const x = spot.x + Math.cos(spot.a) * i * spot.gap,
+            y = spot.y + Math.sin(spot.a) * i * spot.gap;
+          for (let r = 0; r < 150; r += 12)
+            for (let k = 0; k < (r ? 12 : 1); k++) {
+              const px = x + Math.cos((k * TAU) / 12) * r,
+                py = y + Math.sin((k * TAU) / 12) * r;
+              if (!canSpawnCar(type, px, py, spot.a, 6)) continue;
+              parked.push(makeCar(type, px, py, spot.a, false, vehiclePaint(type)));
+              return;
+            }
+        });
+      return parked;
+    }
     function populate() {
       vehicles.length = 0;
       pedestrians.length = 0;
@@ -2067,6 +2102,7 @@
       makeCar('rally', 1300, 704, 0);
       makeCar('hotrod', 1510, 576, 0);
       makeCar('limousine', -1614, 1728, 0);
+      parkShowcase();
       for (const d of DOCKS) makeCar(d.type, d.boatX, d.boatY, Math.PI / 2, false);
       for (const p of PLACES)
         if (p.kind === 'hospital') makeCar('ambulance', p.door.x + 94, p.door.y + 18, 0, false);
@@ -6679,6 +6715,16 @@
           Object.assign(c, { policeLook: { body, livery }, showLights: lights });
           return { id: c.id, type, body, livery };
         });
+      },
+      // The flagships and dirt bikes in the world (SHOWCASE PARKING and traffic):
+      // id, type, where (x, y, district), the showcase place it stands at, driven or parked.
+      showcase() {
+        return vehicles
+          .filter((c) => VEHICLE_DEFINITIONS[c.type]?.flagship || c.type === 'kr500')
+          .map((c) => {
+            const spot = SHOWCASE_PARKING.find((p) => Math.hypot(p.x - c.x, p.y - c.y) < 260);
+            return { id: c.id, type: c.type, x: Math.round(c.x), y: Math.round(c.y), district: districtAt(c.x, c.y), place: spot ? spot.place : null, driven: !!c.ai };
+          });
       },
       // Civilian vehicle review (cars3d.js, vehicles3d.js): parks one of each type
       // in `types` (default: every civilian car and motorbike) in a column from

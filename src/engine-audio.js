@@ -44,6 +44,16 @@
       sport: { layers: [['engine-sport-idle', 654], ['engine-sport-low', 2330], ['engine-sport-mid', 3012], ['engine-compact-high', 4900], ['engine-sport-high', 7800]], idle: 850, shift: 7300, redline: 8200, gears: 6, level: 1.05, burble: 1 },
       // Lotus V8 idle (wikusv / jimmygu3, CC BY 4.0) and a Ford 5.0 V8 (noiseloop, CC BY 3.0).
       v8: { layers: [['engine-v8-idle', 657], ['engine-v8-low', 1722], ['engine-v8-mid', 2316]], idle: 700, shift: 4300, redline: 4900, gears: 4, level: 1.1, burble: 1.4 },
+      // A flat-plane V8 (the CHEVETTE Z06, the CAVALINO 458): the V8's own loops low
+      // down, the six and the 4A-GE's scream up to an 8,600 rpm redline, eight close
+      // ratios (a dual-clutch box), a crackle on the overrun.
+      flatplane: { layers: [['engine-v8-idle', 657], ['engine-v8-low', 1722], ['engine-sport-mid', 3012], ['engine-compact-high', 4900], ['engine-sport-high', 7800]], idle: 1000, shift: 8200, redline: 8800, gears: 7, level: 1.15, burble: 1.6 },
+      // A naturally aspirated V12 (the BRUTINI SVJ): the sport set pitched on to a
+      // 8,700 rpm redline through seven fast shifts, a heavier bark.
+      v12: { layers: [['engine-sport-idle', 654], ['engine-sport-low', 2330], ['engine-sport-mid', 3012], ['engine-compact-high', 4900], ['engine-sport-high', 7800]], idle: 1000, shift: 8300, redline: 8900, gears: 7, level: 1.2, burble: 1.8 },
+      // A big single (the KR 500): the twin's tickover slowed to a thump, the
+      // four's loops up high for the snarl, six short gears.
+      single: { layers: [['engine-twin-idle', 1400], ['engine-compact-low', 2640], ['engine-compact-mid', 3460], ['engine-compact-high', 4900]], idle: 1500, shift: 8200, redline: 9500, gears: 6, level: 0.9, burble: 0.6 },
       // Heavy diesel (Nayckron, CC BY 3.0).
       diesel: { layers: [['engine-diesel-idle', 650], ['engine-diesel-mid', 920], ['engine-diesel-high', 1080]], idle: 600, shift: 1900, redline: 2150, gears: 6, level: 1.15 },
       // Twin tickover (richwise, CC0), then the four-cylinder loops high up.
@@ -80,6 +90,13 @@
       bus: ['diesel', 0.9, 1],
       bike: ['bike', 1, 1],
       cruiser: ['cruiser', 1, 1],
+      // The flagships (cars3d.js, motorbikes3d.js).
+      chevette: ['flatplane', 0.96, 1.1],
+      cavalino: ['flatplane', 1.08, 1.05],
+      brutini: ['v12', 1.1, 1.15],
+      dolcati: ['bike', 0.92, 1.1],
+      yamasaki: ['bike', 1.06, 1.05],
+      kr500: ['single', 1, 1],
       tank: ['tank', 1, 1],
       speedboat: ['outboard', 1, 1],
       workboat: ['marine', 1, 1],
@@ -484,7 +501,7 @@
           a.startDelay = 0.75;
           a.burble = 0;
           if (on && audioBuffers['engine-start'])
-            playSample('engine-start', 0.34 * (set.level || 1), kind === 'diesel' || kind === 'tank' || kind === 'marine' ? 0.78 : kind === 'bike' || kind === 'jetski' ? 1.3 : kind === 'v8' || kind === 'cruiser' ? 0.95 : 1.12);
+            playSample('engine-start', 0.34 * (set.level || 1), kind === 'diesel' || kind === 'tank' || kind === 'marine' ? 0.78 : kind === 'bike' || kind === 'jetski' || kind === 'single' ? 1.3 : kind === 'v8' || kind === 'cruiser' ? 0.95 : 1.12);
           else a.startDelay = 0;
         }
       }

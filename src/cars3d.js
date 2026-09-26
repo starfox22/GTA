@@ -507,9 +507,7 @@
         civMatrix.compose(civPosition.set(x, y, z), civQuaternion, civScale.set(r, t, r));
         civAddMatrix(set, geo, civMatrix, options);
       }
-      let civDebugName = '';
       function civGeometry(set, { colors = true, finish = true } = {}) {
-        if (set.position.some((v) => v !== v)) console.error('NaN geometry in ' + civDebugName + ' of ' + set.count + ' ' + new Error().stack.split('\n').slice(1, 4).join(' / '));
         const g = new Three.BufferGeometry();
         g.setAttribute('position', new Three.Float32BufferAttribute(set.position, 3));
         g.setAttribute('normal', new Three.Float32BufferAttribute(set.normal, 3));
@@ -644,7 +642,6 @@
         const middle = (body.yb + body.h) / 2;
         orientOutward(position, index, (p, out) => out.set(clamp(p.x, -0.46 * l, 0.46 * l), middle, 0));
         const geo = new Three.BufferGeometry();
-        if (position.some((v) => v !== v)) console.error('NaN shell in ' + body.name);
         geo.setAttribute('position', new Three.Float32BufferAttribute(position, 3));
         geo.setAttribute('uv', new Three.Float32BufferAttribute(uv, 2));
         geo.setIndex(index);
@@ -709,7 +706,6 @@
           geo.addGroup(start, index.length - start, i);
           pane.dispose();
         });
-        if (position.some((v) => v !== v)) console.error('NaN cabin in ' + body.name);
         geo.setAttribute('position', new Three.Float32BufferAttribute(position, 3));
         geo.setAttribute('normal', new Three.Float32BufferAttribute(normal, 3));
         geo.setAttribute('uv', new Three.Float32BufferAttribute(uv, 2));
@@ -892,7 +888,6 @@
       function civKit(body, l, w) {
         const key = body.name + ':' + l.toFixed(2) + ':' + w.toFixed(2);
         if (civKits.has(key)) return civKits.get(key);
-        civDebugName = body.name;
         const M = CAR_M,
           S = civShapeKit(),
           g = body.glass,

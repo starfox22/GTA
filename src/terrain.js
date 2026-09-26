@@ -964,7 +964,10 @@
         along = slope.x * Math.cos(vehicle.a) + slope.y * Math.sin(vehicle.a),
         cross = -slope.x * Math.sin(vehicle.a) + slope.y * Math.cos(vehicle.a),
         trail = onMountainTrail(vehicle.x, vehicle.y),
-        offroadCapable = !!vehicleSpec(vehicle).offroad;
+        offroadCapable = !!vehicleSpec(vehicle).offroad,
+        // Knobbly tyres (the KR 500, VEHICLE_DEFINITIONS `dirt`): full drive on the
+        // trails, nearly as much on open ground, and fast over it.
+        dirt = !!vehicleSpec(vehicle).dirt;
       return {
         z,
         slope,
@@ -972,8 +975,9 @@
         cross,
         trail,
         four: offroadCapable,
-        traction: offroadCapable ? (trail ? 0.92 : 0.68) : trail ? 0.26 : 0.12,
-        limit: offroadCapable ? (trail ? 110 : 65) : trail ? 48 : 25,
+        dirt,
+        traction: dirt ? (trail ? 1 : 0.9) : offroadCapable ? (trail ? 0.92 : 0.68) : trail ? 0.26 : 0.12,
+        limit: dirt ? (trail ? 85 * KMH : 60 * KMH) : offroadCapable ? (trail ? 110 : 65) : trail ? 48 : 25,
       };
     }
     function terrainVehiclePose(vehicle, h) {

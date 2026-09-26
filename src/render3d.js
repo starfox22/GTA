@@ -1192,6 +1192,7 @@
       // @include src/vehicles3d.js
       // @include src/police3d.js
       // @include src/cars3d.js
+      // @include src/motorbikes3d.js
       // @include src/plane3d.js
       /**
        * A car wheel's chrome rim, hub and spokes merged into one geometry (per side,
@@ -1287,7 +1288,8 @@
         if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
         if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
         if (vehicle.type === 'helicopter') return vehicle.airframe === 'apache' ? makeApache(vehicle) : makeHelicopter(vehicle);
-        if (vehicleSpec(vehicle).bike) return makeMotorcycle(vehicle);
+        // Motorbikes at real size (motorbikes3d.js).
+        if (MOTO_BODIES[vehicle.type]) return makeMotorbike(vehicle);
         if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
         if (vehicleSpec(vehicle).boat) return makeBoat(vehicle);
         // Patrol cars, roadblock cruisers, the SWAT truck and agents' SUVs (police3d.js).
@@ -2725,7 +2727,10 @@
               if (m.bike) {
                 // Leaning into the turn, or down on its side after a crash (riders.js).
                 m.body.rotation.x = c.fallen ? c.fallen.roll : clamp(c.av * 0.13, -0.28, 0.28);
-                m.rider.visible = c.hp > 0 && (c === player.car || c.ai);
+                // (`showLamps`: a review bike shows its rider, DeadEndCity.carLineup.)
+                m.rider.visible = c.hp > 0 && (c === player.car || c.ai || !!c.showLamps);
+                // Lamps, the fork's steering and the wheelie (motorbikes3d.js).
+                if (m.bikeUpdate) m.bikeUpdate(c, deltaSeconds);
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
               if (m.boat) {
@@ -2750,7 +2755,7 @@
                   wakeEmit(c, c.x, c.y, c.a, c.speed, boatSpec.l, boatSpec.w, boatSpec.max || 300, !underBridge);
                 if (m.boatUpdate) m.boatUpdate(c);
               }
-              for (const { wheel } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / (5 * (m.modelScale || 1));
+              for (const { wheel, radius } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / (radius || 5 * (m.modelScale || 1));
             }
             if (c.bloodyUntil > gameTime && !m.blood) {
               m.blood = new Three.Group();

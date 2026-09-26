@@ -52,67 +52,6 @@
         });
         return pivot;
       }
-      function makeMotorcycle(vehicle) {
-        const model = specialVehicle(vehicle),
-          b = model.body,
-          cruiser = vehicle.type === 'cruiser',
-          l = designSize(vehicle).l;
-        model.bike = true;
-        tireAt(model, -l * 0.33, 0, 5.3, 3.2);
-        tireAt(model, l * 0.34, 0, 5.3, 2.5);
-        rod(b, new Three.Vector3(-l * 0.3, 5, 0), new Three.Vector3(3, 11, 0), 0.8, chrome);
-        rod(b, new Three.Vector3(3, 11, 0), new Three.Vector3(l * 0.34, 5, 0), 0.7, chrome);
-        box(b, -1, 7, 0, 9, 6, 5, darkMetal);
-        for (let i = 0; i < 5; i++) box(b, -2, 6 + i * 0.65, 0, 6, 0.3, 5.6, chrome);
-        mesh(sphereGeo, model.paint, b, 2, 11, 0, 6, 2.5, 3.4);
-        box(b, -6, 11.5, 0, 7, 1.7, 4.8, rubber);
-        box(b, -11, 9, 0, 5, 1.2, 4, model.paint);
-        for (const side of [-1, 1]) {
-          rod(
-            b,
-            new Three.Vector3(l * 0.34, 5, side * 1.7),
-            new Three.Vector3(7, 14, side * 1.7),
-            0.6,
-            chrome,
-          );
-          box(b, -5, 5, side * 3.2, 13, 0.9, 1, chrome);
-          box(b, 7, 14, side * 3, 1, 1, 4, rubber);
-        }
-        if (!cruiser) {
-          mesh(sphereGeo, model.paint, b, 5, 9, 0, 5, 4, 4);
-          box(b, 7, 15, 0, 0.8, 4, 5, glass);
-        } else {
-          box(b, -8, 8, 0, 7, 3, 7, rubber);
-          rod(b, new Three.Vector3(7, 14, 0), new Three.Vector3(7, 17, 0), 0.5, chrome);
-        }
-        box(b, 10, 12, 0, 1.2, 2.4, 3, warmLamp);
-        model.lamps.push({ mesh: box(b, -13, 10, 0, 1, 1.4, 2, tailLamp), key: 'tailLeft', lit: tailLamp });
-        // Head and tail glow, in the [head, tail] order the halo pass expects (render3d.js).
-        model.nightLights = [halo(b, 10.6, 12, 0, 9, '#ffe9bd'), halo(b, -13.6, 10, 0, 6, '#ff5a44')];
-        const rider = new Three.Group();
-        b.add(rider);
-        box(rider, -2, 17, 0, 4.5, 7, 6, mat('#343e47'));
-        mesh(sphereGeo, mat('#222932', 0.25, 0.4), rider, 0, 23, 0, 2.4, 2.5, 2.4);
-        box(rider, 2, 23, 0, 0.7, 1.7, 3.9, glass);
-        for (const side of [-1, 1]) {
-          rod(
-            rider,
-            new Three.Vector3(-2, 18, side * 3),
-            new Three.Vector3(7, 14, side * 4),
-            1,
-            mat('#343e47'),
-          );
-          rod(
-            rider,
-            new Three.Vector3(-5, 13, side * 2),
-            new Three.Vector3(0, 7, side * 4),
-            1.2,
-            mat('#4c5561'),
-          );
-        }
-        model.rider = rider;
-        return model;
-      }
       /**
        * Drivable boats. Hulls are lofted by the boat kit (boats3d.js) and painted
        * in the vehicle's colour through `model.paint`, so wear and burn-out still

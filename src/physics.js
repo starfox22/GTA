@@ -1430,6 +1430,16 @@
       }
       if (c === player.car) shake = Math.max(shake, clamp(speed / 120, 0.6, 2.2));
     }
+    /* Tyre and surface (the player's vehicle): knobbly dirt tyres (`dirt`, the
+       KR 500) squirm on tarmac once the speed is up, down to 0.8 of their grip
+       by 120 km/h for braking, drive and cornering alike; on dirt, grass and the
+       trails they have it all (roadVehicleTerrain gives them full traction).
+       Every other tyre is 1 here. */
+    function tyreSurfaceGrip(c, spec, along) {
+      if (!spec.dirt) return 1;
+      if (!onRoad(c.x, c.y) && !onCountyRoad(c.x, c.y)) return 1;
+      return 1 - 0.2 * clamp((Math.abs(along) - 50 * KMH) / (70 * KMH), 0, 1);
+    }
     function controlVehicle(c, pc, stepSeconds, active) {
       const vehicleDefinition = vehicleSpec(c);
       c.stepStartX = c.x;
@@ -1522,7 +1532,7 @@
           // The engine's pull at this speed (game.js ROAD PERFORMANCE); a bicycle's
           // push comes from the rider's legs instead.
           // Wet tarmac: every tyre force (drive, brakes, cornering) shrinks together.
-          const surface = pedalled ? 1 : wetGrip();
+          const surface = pedalled ? 1 : wetGrip() * tyreSurfaceGrip(c, vehicleDefinition, along);
           acceleration =
             up && !pedalled
               ? Math.min(
@@ -1549,7 +1559,7 @@
           if (brake) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY * surface);
           // Off the tarmac (verges, lawns, dirt): more rolling resistance.
           if ((up || down) && !pedalled && !handlingTestPaved && !onRoad(c.x, c.y))
-            acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (vehicleDefinition.offroad ? 0.05 : 0.14) * GRAVITY);
+            acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (vehicleDefinition.dirt ? 0.02 : vehicleDefinition.offroad ? 0.05 : 0.14) * GRAVITY);
           grip = brake ? 1.9 : (vehicleDefinition.grip || 7) * handling.grip;
           // Resistance is in engineAcceleration / coastDeceleration; drag here only
           // scrubs a handbrake slide (and a bicycle's brake).
@@ -1743,9 +1753,10 @@
             power = terrain.traction;
           acceleration *= power;
           if (Math.abs(along) > terrain.limit && acceleration * along > 0) acceleration = 0;
-          grip *= terrain.four ? 0.82 : 0.48;
-          drag = Math.max(drag, terrain.trail ? 0.7 : 1.3);
-          const tractionLimit = terrain.four ? (terrain.trail ? 0.62 : 0.72) : 0.15,
+          grip *= terrain.dirt ? 1 : terrain.four ? 0.82 : 0.48;
+          drag = Math.max(drag, terrain.dirt ? (terrain.trail ? 0.3 : 0.6) : terrain.trail ? 0.7 : 1.3);
+          // Knobblies claw up grades a 4x4 slides back down.
+          const tractionLimit = terrain.dirt ? (terrain.trail ? 0.8 : 0.85) : terrain.four ? (terrain.trail ? 0.62 : 0.72) : 0.15,
             slide = Math.max(0, slope - tractionLimit);
           c.vx -= terrain.slope.x * GRAVITY * (1 + slide * 2.3) * stepSeconds;
           c.vy -= terrain.slope.y * GRAVITY * (1 + slide * 2.3) * stepSeconds;
@@ -2588,6 +2599,54 @@
           };
           if (reset) Object.assign(driverStats, { since: physicsClock, trafficCrashes: 0, policeCrashes: 0, trafficSlides: 0, policeSlides: 0, closings: [] });
           return out;
+        },
+        /* Flat out in a fresh `type` along the strip by the Oceanview runway
+           (tarmac-grade, dry; about 1.1 km): from a standstill for the 0-100 and
+           0-200 km/h times, then again rolling from 90% of the spec's top speed
+           for the plateau (the strip is too short to reach 300 from rest).
+           Returns both against the spec (VEHICLE_DEFINITIONS topKmh, zeroTo). */
+        accelTest(type = 'sedan') {
+          const savedWet = weather.wet,
+            x = TRACK.x,
+            y = TRACK.y,
+            end = x + 8600,
+            run = (startKmh, seconds) => {
+              if (player.car) exitCar();
+              if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+              teleportPlayer(x, y - 60);
+              const c = (testCar = makeCar(type, x, y, 0, false));
+              c.authorized = true;
+              enterVehicle(c);
+              Object.assign(c, { vx: startKmh * KMH, vy: 0, speed: startKmh * KMH });
+              handlingTestPaved = true;
+              const out = { time: 0, zeroTo100: null, zeroTo200: null, top: 0 };
+              for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play' && player.car === c && c.x < end; i++) {
+                weather.wet = 0;
+                keys.KeyW = true;
+                update(1 / 30);
+                out.time += 1 / 30;
+                const kmh = Math.hypot(c.vx, c.vy) / KMH;
+                if (out.zeroTo100 === null && kmh >= 100) out.zeroTo100 = +out.time.toFixed(2);
+                if (out.zeroTo200 === null && kmh >= 200) out.zeroTo200 = +out.time.toFixed(2);
+                out.top = Math.max(out.top, kmh);
+              }
+              keys.KeyW = false;
+              handlingTestPaved = false;
+              if (player.car) exitCar();
+              return out;
+            };
+          const spec = VEHICLE_DEFINITIONS[type],
+            standing = run(0, 30),
+            rolling = run(spec.topKmh * 0.9, 14);
+          weather.wet = savedWet;
+          return {
+            type,
+            name: spec.name,
+            zeroTo100: standing.zeroTo100,
+            zeroTo200: standing.zeroTo200,
+            topKmh: +rolling.top.toFixed(1),
+            spec: { topKmh: spec.topKmh, zeroTo: spec.zeroTo, mass: spec.mass, lengthM: +(spec.l / UNITS_PER_METRE).toFixed(2), widthM: +(spec.w / UNITS_PER_METRE).toFixed(2) },
+          };
         },
         // The player's throw off a bike now and the last few throws (riders.js),
         // and the last aircraft broken up by a strike (AIRCRAFT STRIKES).
