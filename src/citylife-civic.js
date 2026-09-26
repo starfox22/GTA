@@ -369,17 +369,7 @@
     function scream(p) {
       if (!voicesOn || gameTime < screamAt || distanceBetween(p, player) > 470) return;
       screamAt = gameTime + 1.7;
-      playSample(
-        randomChoice([
-          'civilian-scream-male-1',
-          'civilian-scream-male-2',
-          'civilian-scream-female-1',
-          'civilian-scream-female-2',
-        ]),
-        0.65,
-        randomBetween(0.95, 1.05),
-        p,
-      );
+      playPersonScream(p, 0.65); // their own voice: a man's or a woman's take (voices.js)
     }
     function strikePerson(person, damage, a = 0, source = null, showBlood = true, kind = 'ballistic') {
       if (person.hp <= 0) return;

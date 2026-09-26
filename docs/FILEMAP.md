@@ -11,18 +11,19 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-362 files in the include tree, 138,273 lines.
+363 files in the include tree, 138,465 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   152 — ▸ Game orchestration and shared state
+- `src/game.js`   153 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
 - `src/game-state.js`   377 — Shared data contracts: Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
 - `src/game-vehicles.js`   747 — VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road and air resistance.
 - `src/game-weapons.js`    78 — Weapon table (weapons) and mission list (missions).
-- `src/audio.js`   556 — Effects and voice audio
+- `src/audio.js`   559 — Effects and voice audio
+- `src/voices.js`   166 — People's voices: whether someone is drawn as a woman or a man (personFemale) and the recorded scream that fits them (screamVoice, playPersonScream …
 - `src/heat.js`   254 — Heat and wanted stars
 - `src/game-collision.js`   234 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
 - `src/game-car-spawn.js`   163 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
@@ -95,12 +96,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sports-world.js`   443 — City sports venue layout
 - `src/sportsbook.js`   695 — GOALLINE sports betting office
 - `src/sportsbook-ui.js`   469 — The betting menu
-- `src/sports-audio.js`   201 — Stadium goal cheers and whistles
+- `src/sports-audio.js`   205 — Stadium goal cheers and whistles
 - `src/transit.js`    10 — ▸ Public railway simulation
 - `src/ride-skip.js`   561 — Skip the ride
 - `src/ecology.js`   339 — Wildlife behavior
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
-- `src/sealife-audio.js`   355 — Sea life sound
+- `src/sealife-audio.js`   356 — Sea life sound
 - `src/navigation.js`   683 — City map and route planning
 - `src/parachute.js`   345 — Bailout and parachute
 - `src/mobile.js`   259 — Touch controls
@@ -155,7 +156,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/citylife-places.js`   503 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
 - `src/citylife-police.js`   600 — City life services and police sight: service menus, crowd density, search, gang targets, deploying officers (renderService, policeSees).
-- `src/citylife-civic.js`   645 — City life: officers and the wanted level (updateOfficers, updateWanted), blood and injury, updateCivic(), navigation and the civic map.
+- `src/citylife-civic.js`   635 — City life: officers and the wanted level (updateOfficers, updateWanted), blood and injury, updateCivic(), navigation and the civic map.
 
 ## src/pursuit.js ▸ Police response and pursuit tactics
 
@@ -165,12 +166,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/themepark.js ▸ Sunset Pier resort and theme park
 
 - `src/themepark-falcon-track.js`   344 — The Falcon coaster track: circuit builder, speed profile, banking and frames (coasterCircuit, coasterFrame).
-- `src/themepark-falcon-train.js`   423 — The Falcon coaster train: stepping, boarding and leaving, riders, screams and speakers (stepCoasterTrain).
+- `src/themepark-falcon-train.js`   430 — The Falcon coaster train: stepping, boarding and leaving, riders, screams and speakers (stepCoasterTrain).
 - `src/themepark-rides.js`   191 — The Sunset Eye wheel, coaster status, park shows and fireworks (updateWheelRide, updateParkShows).
 - `src/themepark-colliders.js`   293 — Theme park colliders: solids, air solids, kiosks, coaster footings, lagoon and paths (parkBlocked).
 - `src/themepark-grounds.js`   336 — Theme park grounds: the log flume, the pier ground paint, buildSunsetPier() and park palms.
 - `src/themepark-crowd.js`   268 — Theme park crowd: lines, spots, queues and guests (spawnParkGuest).
-- `src/themepark-sound.js`   313 — Theme park sound: screams, fountain music, fireworks and splashes (updateParkAudio).
+- `src/themepark-sound.js`   316 — Theme park sound: screams, fountain music, fireworks and splashes (updateParkAudio).
 
 ## src/marina.js ▸ Harbor Point marina, the superyacht and the cruise liners
 
@@ -228,7 +229,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sports-setup.js`   277 — Sports venues, stands, exits, kits and shared sports helpers.
 - `src/sports-play.js`   479 — Match play: possession, passing, movement, offside (sportsPass, sportsBestReceiver).
 - `src/sports-ball.js`   592 — Sports ball physics: bounces, goal frames and nets, out and goal detection, respots, keeper reach.
-- `src/sports-timeline.js`   320 — Sports officials, schedule, warm-up, walk-outs and leaving, harm checks and abandonment.
+- `src/sports-timeline.js`   321 — Sports officials, schedule, warm-up, walk-outs and leaving, harm checks and abandonment.
 - `src/sports-human.js`   242 — The player on the pitch: touches, kicks, prompts, pitch invaders and escorts, crowd presence.
 - `src/sports-frame.js`   319 — updateSports() and drawSports(): per-frame match update, board clock, console snapshot.
 
@@ -241,7 +242,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/sealife-sea.js`   620 — The sea field: distance to land, steering, viewer, hour and events for sea life (seaField, seaSteer).
 - `src/sealife-gulls.js`   581 — Gulls (updateGulls) and the shark's setup: encounters, beach alarm and placement.
-- `src/sealife-shark.js`   535 — Shark bites, patrols, beach passes and bumps (updateShark) and the beach shark alarm.
+- `src/sealife-shark.js`   536 — Shark bites, patrols, beach passes and bumps (updateShark) and the beach shark alarm.
 
 ## src/crowd.js ▸ Crowd life, perception and reactions
 
@@ -343,7 +344,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-vehicle-models.js`   348 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/render3d-effects.js`   216 — ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 - `src/render3d-resources.js`   141 — GPU resource lifecycle: shared geometries, model pruning and disposal.
-- `src/render3d-api.js`   459 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   460 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   634 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
@@ -477,12 +478,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/crowd3d-parts.js`   134 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
 - `src/crowd3d-bodies.js`   302 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
-- `src/crowd3d-looks.js`   486 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
+- `src/crowd3d-looks.js`   478 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/crowd3d-joints.js`   138 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   879 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-draw.js`   521 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   460 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
-- `src/crowd3d-frame.js`   251 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+- `src/crowd3d-frame.js`   258 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/surfaces3d.js ▸ Procedural surface detail
 
@@ -550,7 +551,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-world.js`   191 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
-- `src/game-console-crowd.js`    98 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-crowd.js`   113 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   170 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-settings.js`    95 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 

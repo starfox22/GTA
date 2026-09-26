@@ -499,7 +499,10 @@
         return false;
       const duration = audioBuffers[name]?.duration || (name === 'police-challenge' ? 3.8 : 1.8);
       radioUntil = gameTime + Math.max(police ? 6 : 3, duration + 0.4);
-      playSample(name, 0.7, 1, position, voiceBus);
+      // Every police recording is a man's voice: an officer who is a woman has a male
+      // colleague nearby shout it, or it is only captioned (voices.js maleVoiceNear).
+      const speaker = police && position && officers.includes(position) ? maleVoiceNear(position) : position;
+      if (speaker || !police || !position) playSample(name, 0.7, 1, speaker, voiceBus);
       const el = getElement('radioCaption');
       el.textContent = (police ? 'POLICE / ' : 'RADIO / ') + (radioText[name] || name.toUpperCase());
       el.classList.add('show');

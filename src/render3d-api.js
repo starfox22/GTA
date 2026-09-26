@@ -269,6 +269,7 @@
         crowdBenchmark: (frames) => crowdBenchmark(frames),
         // A person's drawn height from the soles to the crown (their compiled look), in map units.
         personStature: (p) => personStature(p),
+        drawnFemale: (p) => drawnFemale(p), // the rig's sex for a person (voices.js voiceReport)
         // Switch graphics quality tier (quality.js) at runtime.
         setQuality(tier) {
           applyRendererQuality(tier);

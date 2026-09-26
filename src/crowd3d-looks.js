@@ -1,9 +1,7 @@
       // Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
       const compiledLooks = new WeakMap();
-      const hashOf = (seed, k) => {
-        const x = Math.sin(seed * 12.9898 + k * 78.233) * 43758.5453;
-        return x - Math.floor(x);
-      };
+      // The rig's hash, shared with the voices (voices.js lookHash).
+      const hashOf = lookHash;
       const pickOf = (list, h) => list[Math.min(list.length - 1, Math.floor(h * list.length))];
       const mixColor = new Three.Color(),
         mixColor2 = new Three.Color();
@@ -39,7 +37,8 @@
           h = (k) => hashOf(seed, k),
           role = look.outfit ? null : p.role || 'casual',
           kid = role === 'kid' || !!look.kid,
-          female = look.female ?? (look.skirt || look.hairStyle === 2 || look.hairStyle === 3 || (look.hairStyle === 4 && h(1) < 0.5)),
+          // One rule for the body and the voice (voices.js lookFemale).
+          female = lookFemale(look),
           skin = look.skin || '#c99169',
           hair = look.hair || '#231a15',
           district = look.outfit || !p ? '' : districtAt(p.x, p.y) || '',
@@ -216,16 +215,9 @@
        * in suits; gangs in their colours; party guests and staff.
        */
       const specialLooks = new WeakMap();
-      const FEMALE_NAMES = /\b(MARA|ELENA|MARIA|SOFIA|ROSA|LUCIA|NINA|ANNA|CLAIRE|EVA)\b/;
-      function outfitOf(p) {
-        if (p === player) return player.disguised ? 'playerDisguise' : 'player';
-        if (p.police) return { patrol: 'police', road: 'traffic', swat: 'swat', sniper: 'swat', fed: 'fed', soldier: 'army' }[p.unit] || 'police';
-        if (p.military) return p.role === 'gate' ? 'mp' : 'army';
-        if (p.guest) return p.staff ? 'waiter' : 'partyGuest';
-        if (p.faction === 'vescari' || p.guard || p.boss) return 'mobster';
-        if (p.faction) return 'gang';
-        return 'story';
-      }
+      // Which outfit, and whether its wearer is a woman, are decided in voices.js
+      // (personOutfit, outfitFemale) so the screams match the bodies.
+      const outfitOf = personOutfit;
       const PLAYER_GOLD = '#c9a14f'; // the HUD gold (shell.html --ui-gold #e2c897), deepened so it reads as gold on cloth
       function outfitLook(p, outfit, seed) {
         const h = (k) => hashOf(seed, k),
@@ -261,7 +253,7 @@
           }
           case 'police':
           case 'traffic': {
-            const female = h(5) < 0.3,
+            const female = outfitFemale(p, outfit, seed),
               cap = outfit === 'traffic' || h(6) < 0.6;
             return {
               ...base,
@@ -313,8 +305,8 @@
           case 'fed':
             return {
               ...base,
-              female: h(5) < 0.25,
-              hairStyle: h(5) < 0.25 ? 3 : 1,
+              female: outfitFemale(p, outfit, seed),
+              hairStyle: outfitFemale(p, outfit, seed) ? 3 : 1,
               garment: 'suit',
               top: '#1a2131',
               inner: '#eef0f2',
@@ -368,13 +360,13 @@
           case 'waiter':
             return { ...base, garment: 'suit', top: '#efe7d2', inner: '#ffffff', accent: '#16171b', pants: '#17181b', pantsPattern: 0, shoes: '#111', beard: 0 };
           case 'partyGuest': {
-            const female = h(5) < 0.5;
+            const female = outfitFemale(p, outfit, seed);
             return female
               ? { ...base, female, hairStyle: pickOf([2, 3, 2, 4], h(6)), garment: 'dress', skirt: true, top: p.color || '#c23b6b', pants: p.color || '#c23b6b', topPattern: PATTERN.satin, shoes: '#111' }
               : { ...base, garment: 'suit', top: h(6) < 0.5 ? '#1c1d22' : p.color || '#2a2d33', inner: h(7) < 0.5 ? '#f2f0ea' : p.color || '#eae4d8', accent: '#18191c', pants: '#18191c', pantsPattern: 0, shoes: '#111' };
           }
           case 'gang': {
-            const female = h(5) < 0.2,
+            const female = outfitFemale(p, outfit, seed),
               garment = pickOf(['hoodie', 'jacket', 'tank', 'tee', 'hoodie'], h(6));
             return {
               ...base,
@@ -393,7 +385,7 @@
           case 'cyclist':
           case 'motorcyclist':
           case 'jetskier': {
-            const female = h(5) < 0.35;
+            const female = outfitFemale(p, outfit, seed);
             const base2 = { ...base, female, hairStyle: female ? pickOf([3, 'hairPony', 2], h(6)) : pickOf([1, 'hairBuzz', 4], h(6)) };
             if (outfit === 'motorcyclist')
               return { ...base2, garment: 'jacket', top: pickOf(['#1c1d20', '#2a2320', '#3a1d1d', '#1d2433'], h(7)), topPattern: PATTERN.leather, inner: '#2a2c30', pants: '#23282f', shoes: '#141414', footwear: 'boot', gloves: '#141414', hatStyle: 'helmet', hatColor: pickOf(['#e9e7e1', '#1b1c1f', '#b8322a', '#2c5ea8'], h(8)), brim: '#101114', hatBadge: '#101114' };
@@ -432,7 +424,7 @@
           }
           case 'beach': {
             // Palm Keys Beach (beach.js): swimwear, a shirt for strollers and staff.
-            const female = !!p.female,
+            const female = outfitFemale(p, outfit, seed),
               kid = (p.scale || 1) < 0.8,
               onePiece = female && !p.shirt && h(5) < 0.35;
             return {
@@ -460,7 +452,7 @@
             };
           }
           default: {
-            const female = FEMALE_NAMES.test(p.name || '') || (p.name ? false : h(5) < 0.5);
+            const female = outfitFemale(p, outfit, seed);
             return {
               ...base,
               female,
@@ -478,7 +470,7 @@
         const outfit = outfitOf(p);
         let entry = specialLooks.get(p);
         if (!entry || entry.outfit !== outfit || entry.color !== p.color) {
-          const seed = entry?.seed ?? Math.random() * 1000;
+          const seed = entry?.seed ?? personLookSeed(p);
           entry = { outfit, color: p.color, seed, look: outfitLook(p, outfit, seed) };
           specialLooks.set(p, entry);
         }

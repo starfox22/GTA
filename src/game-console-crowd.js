@@ -89,6 +89,21 @@
       crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
       // Pack the people `frames` times back to back: the rig's CPU cost per frame in ms.
       crowdBenchmark: (frames) => city3D?.crowdBenchmark?.(frames) ?? null,
+      // Voices (voices.js): who near the player screams as a woman or a man and, with
+      // the 3D renderer, how the rig draws them (`mismatches`); the last screams played.
+      voiceReport: (radius) => voiceReport(radius),
+      // The `count` nearest living people (street, police, gangs) scream in their own
+      // voices; returns who, the sex the voice used, the take and the rig's sex.
+      screamTest(count = 6) {
+        const near = [];
+        for (const list of [pedestrians, officers, gangMembers, enemies])
+          for (const p of list) if (p.hp > 0 && !p.hidden && distanceBetween(p, player) < 700) near.push(p);
+        near.sort((a, b) => distanceBetween(a, player) - distanceBetween(b, player));
+        return near.slice(0, count).map((p) => {
+          const sample = playPersonScream(p, 0.3);
+          return { who: voiceWho(p), female: personFemale(p), sample, drawn: city3D?.drawnFemale ? city3D.drawnFemale(p) : null };
+        });
+      },
       // Raise an incident at a map point without firing: gunfire, explosion, crash.
       alarm(kind = 'gunfire', x = player.x, y = player.y) {
         const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);
