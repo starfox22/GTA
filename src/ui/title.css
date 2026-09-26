@@ -1,0 +1,308 @@
+/* --- TITLE SCREEN ---------------------------------------------------------- */
+#menu {
+  display: block;
+  overflow: hidden;
+  background: #06080b;
+  backdrop-filter: none;
+  font-family: var(--ui-font);
+}
+#menu.settings-behind .title-layout,
+#menu.settings-behind .menu-foot {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+/* The cover art, full-bleed, drifting slowly (a Ken Burns move). */
+.title-art {
+  position: absolute;
+  inset: -3%;
+  background-color: #10151b;
+  background-size: cover;
+  background-position: 62% center;
+  animation:
+    titleArtIn 2.2s var(--ui-ease) both,
+    titleDrift 38s ease-in-out 2.2s infinite alternate;
+}
+@keyframes titleArtIn {
+  from {
+    opacity: 0;
+    transform: scale(1.08);
+    filter: blur(8px) brightness(0.4);
+  }
+}
+@keyframes titleDrift {
+  from {
+    transform: scale(1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.07) translate(-1.5%, -1%);
+  }
+}
+.title-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #06080bf2 0%, #06080bd9 30%, #06080b55 58%, #06080b10 78%),
+    linear-gradient(0deg, #06080bee 0%, transparent 32%),
+    linear-gradient(180deg, #06080b99 0%, transparent 20%);
+}
+/* Faint scanlines: a CRT memory, very quiet. */
+.title-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background: repeating-linear-gradient(0deg, #0000 0 2px, #0006 2px 3px);
+  pointer-events: none;
+}
+.title-layout {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(18px, 4vh, 44px);
+  padding: 0 clamp(20px, 7vw, 110px) 60px;
+  max-width: 760px;
+  transition: opacity 0.25s;
+}
+.edition {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  color: #b7c0b4;
+  animation: titleRise 0.8s var(--ui-ease) 0.3s both;
+}
+.tiny-cross {
+  color: var(--ui-gold);
+}
+.title-logo {
+  position: relative;
+  display: inline-block;
+  align-self: flex-start;
+  white-space: nowrap;
+  margin: 10px 0 0;
+  font:
+    900 italic clamp(46px, 7.4vw, 104px) / 0.84 var(--ui-font);
+  letter-spacing: -0.045em;
+  color: #f4f1e6;
+  text-shadow: 0 10px 40px #000a;
+  animation: titleRise 1s var(--ui-ease) 0.45s both;
+}
+.title-logo > span {
+  display: block;
+  color: var(--ui-gold);
+}
+.title-logo i {
+  position: absolute;
+  left: calc(100% + 12px);
+  bottom: 0.35em;
+  font:
+    700 12px/1 var(--ui-font);
+  letter-spacing: 0.4em;
+  color: #c9d0c4;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+.title-tagline {
+  margin: 14px 0 0;
+  font-size: clamp(13px, 1.3vw, 16px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #d9ddd2;
+  animation: titleRise 0.9s var(--ui-ease) 0.6s both;
+}
+@keyframes titleRise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+.title-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 420px;
+}
+.menu-item {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 14px 9px 18px;
+  border: 0;
+  background: transparent;
+  color: #d9ddd4;
+  text-align: left;
+  animation: titleRise 0.7s var(--ui-ease) both;
+  transition:
+    color 0.2s,
+    padding 0.3s var(--ui-ease),
+    background 0.3s;
+}
+.menu-item:nth-child(1) {
+  animation-delay: 0.7s;
+}
+.menu-item:nth-child(2) {
+  animation-delay: 0.76s;
+}
+.menu-item:nth-child(3) {
+  animation-delay: 0.82s;
+}
+.menu-item:nth-child(4) {
+  animation-delay: 0.88s;
+}
+.menu-item:nth-child(5) {
+  animation-delay: 0.94s;
+}
+.menu-item:nth-child(6) {
+  animation-delay: 1s;
+}
+/* The focus bar: a lime rule that slides in from the left. */
+.menu-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background: var(--acid);
+  transform: scaleY(0);
+  transition: transform 0.3s var(--ui-ease);
+}
+.menu-label {
+  font-size: clamp(16px, 1.7vw, 21px);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+.menu-meta {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #8f978c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 55%;
+}
+.menu-item:hover,
+.menu-item:focus,
+.menu-item:focus-visible {
+  outline: none;
+  filter: none;
+  color: #fff;
+  padding-left: 26px;
+  background: linear-gradient(90deg, #d7f97017, transparent 80%);
+}
+.menu-item:hover::before,
+.menu-item:focus::before {
+  transform: scaleY(1);
+}
+.menu-item:focus .menu-meta,
+.menu-item:hover .menu-meta {
+  color: var(--ui-gold);
+}
+#startBtn .menu-label {
+  color: #fff;
+}
+#newGameStart.armed .menu-meta {
+  color: var(--ui-danger);
+}
+.menu-caption {
+  min-height: 2.8em;
+  margin: 12px 0 0 18px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #a9b2a6;
+  animation: titleRise 0.7s var(--ui-ease) 1.1s both;
+}
+.menu-foot {
+  position: absolute;
+  z-index: 1;
+  left: clamp(20px, 7vw, 110px);
+  right: clamp(20px, 4vw, 60px);
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #8e988c;
+  animation: titleRise 0.7s var(--ui-ease) 1.2s both;
+}
+.menu-foot kbd {
+  margin: 0 2px;
+  font-size: 8px;
+}
+.menu-version {
+  margin-left: auto;
+}
+#menuSound {
+  padding: 6px 12px;
+  border: 1px solid var(--ui-line-strong);
+  border-radius: 99px;
+  background: #0006;
+  color: #e6ebdf;
+  font:
+    800 9px/1 var(--ui-font);
+  letter-spacing: 0.16em;
+}
+#menuSound[aria-pressed='false'] {
+  color: var(--ui-dim);
+}
+@media (max-width: 700px) {
+  .title-layout {
+    justify-content: flex-end;
+    padding-bottom: 70px;
+    max-width: none;
+  }
+  .title-shade {
+    background:
+      linear-gradient(0deg, #06080bf5 0%, #06080be0 48%, #06080b40 80%),
+      linear-gradient(180deg, #06080b99 0%, transparent 20%);
+  }
+  .title-logo i {
+    display: none;
+  }
+  .menu-hints,
+  .menu-version {
+    display: none;
+  }
+  .menu-foot {
+    justify-content: space-between;
+  }
+  .menu-item {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+}
+@media (max-height: 560px) {
+  .title-layout {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5vw;
+    max-width: none;
+    padding-bottom: 44px;
+  }
+  .title-logo {
+    font-size: clamp(34px, 9vh, 60px);
+  }
+  .title-tagline,
+  .menu-caption,
+  .menu-hints {
+    display: none;
+  }
+  .menu-item {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .menu-label {
+    font-size: 15px;
+  }
+}

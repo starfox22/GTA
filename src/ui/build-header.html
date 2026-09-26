@@ -1,0 +1,361 @@
+<!--
+DEAD END CITY — READABLE DEVELOPMENT / REVIEW BUILD 30.0.0
+
+Open this HTML directly to play offline. No server, CDN or build step is needed.
+This file is assembled by tools/build.py from the modular source (src/); edit
+there and rebuild rather than editing this file.
+All executable JavaScript is plain source. No packed/evaluated code is used.
+
+SOURCE ORDER
+1. Application HTML and readable CSS.
+2. Game source: search for BEGIN SUBSYSTEM: src/game.js.
+3. Original unminified Three.js r160, including its MIT license.
+4. Labeled image/audio Base64 blocks: binary media, never executable code.
+5. Readable media loader and startup call; complete third-party credits.
+
+SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
+  Game closure (src/main.js wraps everything; src/game.js includes these):
+  src/game.js: Game orchestration and shared state
+    Constants, vehicle definitions, world build, population, combat, 2D fallback drawing, map, HUD, input, frame loop, developer console.
+  src/audio.js: Effects and voice audio
+    Embedded samples, Web Audio lifecycle, spatial volume, procedural sound and the ear filter.
+  src/heat.js: Heat and wanted stars
+    crime(), heat by severity, kills by victim with a spree bonus, stars from heat, the wanted HUD.
+  src/physics.js: Vehicle and pedestrian physics
+    Fixed 1/120 s steps, oriented collision boxes, contact impulses, traffic AI, helicopter/boat control, knockdowns.
+  src/controls.js: Key bindings
+    Named actions with default keys, the virtual key table, remapping with conflict checks, key names.
+  src/geography.js: Coastlines and land regions
+    Land polygons, the cached land test, BRIDGES, reserved plots, coast segments, districtAt, 2D water, Palm Keys Beach outline.
+  src/drawbridge.js: The Palm Sound drawbridge
+    Opening timetable and phases, barrier arms, traffic and people held back, leaves as ramps, vehicle jumps, the ketch, GPS pricing, map icon, bells and motors.
+  src/harbor.js: Ironworks cargo terminal
+    Terminal geometry, crane loading, gates, guards, Vinny's depot drop and mission 1 rules.
+  src/police-feedback.js: Police action feedback
+    NEED TO LOSE POLICE / POLICE CLEARED chips on their own banner layer; delivery blocking.
+  src/arsenal.js: Arsenal and knife combat
+    Ownership-driven equipment, mystery weapon cards, icon inventory and knife combat.
+  src/citylife.js: Civic services and police
+    Clock, businesses (PLACES), docks, officers, police routing, wanted search and injury effects.
+  src/pursuit.js: Police response and pursuit tactics
+  src/swat.js: SWAT teams, riot shields and rooftop snipers
+    Per-star tiers, reinforcements, pursuit driving (PIT, box, search, off-road shortcuts, county routes), marine units, officer combat, arrest, armor, radar search area.
+  src/wounds.js: Wounds, hit reactions and death falls
+    Hit zones, flinches, limps, blood trails, directional death falls and wall slumps, downed officers and civilians.
+  src/story.js: Story characters and mission stages
+    Characters, STORY missions, dialogue, setStage, start/restart/win/fail, the mission card.
+  src/campaign.js: Campaign saves and replay
+    Save schema, progression frontier, ammunition persistence and mission selection.
+  src/chase.js: Cargo pursuit
+    Harbor police alert, the cargo chase, respray escape, Vinny's depot doors and floor.
+  src/roadblocks.js: Police containment and roadblocks
+    Chokepoint catalogue, blockade planning, braced cruisers a heavy vehicle can ram loose, cones.
+  src/carjack.js: Carjacking and driver reactions
+  src/riders.js: Riders thrown from motorbikes and bicycles
+    Occupied traffic, locked doors, the ejection throw and what drivers do next.
+  src/themepark.js: Sunset Pier resort and theme park
+    Island layout, the Falcon coaster and the Sunset Eye (both rideable), show schedules, colliders, crowd, sound.
+  src/marina.js: Harbor Point marina, the superyacht and the cruise liners
+    Harbor Point basin, hull-form math, the boardable superyacht deck plan, liner decks and guests.
+  src/taxi.js: Yellow cabs
+    Hailing, destination picking on the map, the ride itself and the hijack.
+  src/cycles.js: City bicycles
+    Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs.
+  src/weather.js: Weather
+    Weather state machine, the build-up before a shower, road wetness, wind, lightning and thunder timing.
+  src/weather-audio.js: Rain and thunder sound
+    Layered rain (hiss, patter, roar), roof drumming in a car, tyre spray, drips, splashes, thunder by distance.
+  src/water.js: Swimming and sinking
+    Swimming, wading, sinking cars, beach-only entry (shoreStepBlocked), ladders, dive/splashdown, rescue.
+  src/water-audio.js: Water and beach sound
+    Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle.
+  src/beachvolley.js: Beach volleyball on Palm Keys Beach
+    Regulation court plan, 2 v 2 rally scoring with a physics ball and AI touches, the player joining and hitting, the hint card.
+  src/beach.js: Palm Keys Beach life
+    Palm Keys Beach furniture plan, beachgoers by hour, games, panic and kiosks.
+  src/roofmission.js: Blue Hour rooftop mission
+    Blue Hour terrace (player.roof), guests, disguise, poison sequence, guards, escape; entityElevation.
+  src/rooftops.js: Building roofs: helipads, helicopter landings, walking on a roof
+    Helicopters landing on flat roofs, rooftop helipads, player.buildingRoof and walking on a roof.
+  src/air-cover.js: Overhead cover geometry
+    Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft.
+  src/combat-rules.js: Aerial combat and pursuit rules
+    Elevation-aware shots, vehicle handgun rules, tank armor and single-helicopter pursuit.
+  src/damage.js: Vehicle damage, bullet impacts and breakable street furniture
+    Crumple dents, panels, glass, lamps, tyres, engine fire, handling loss, blast shove, street props.
+  src/crash-audio.js: Vehicle crash sound
+    One layered, positioned crash per impact: thump, recorded crunch, metal, plastic, glass, debris, tyres.
+  src/engine-audio.js: Engine sound
+    RPM-driven recorded engine loops per class, gearbox, start-up, road noise, traffic voices, jet synthesis.
+  src/county.js: Outlying districts
+    County roads, towns, buildings, scenery, traffic, regional police and bridges.
+  src/monarch.js: Monarch Isle, the rich island north of the Ridgeline Range
+    Coast, 100 m street grid, boulevards and roundabouts, bridges, villas, towers, businesses, marina, botanic garden, ground and map.
+  src/airfields.js: Runways, taxiways and the reclaimed runway piers
+    RUNWAYS / TAXIWAYS / RUNWAY_PIERS plan, runway lookup, PAPI angles, flat ground painting.
+  src/military.js: Fort Sentinel
+  src/armor.js: The player's tank: turret traverse, ammunition, reticle
+  src/apache.js: Fort Sentinel's AH-64 attack helicopter (player only): chin gun, rockets, rearm
+    Base plan (SENTINEL), fences and gate (arms, bollards, sliding gates, ramming), challenge,
+    alarm and lockdown, siren, garrison posts/patrols/drill/range, supply runs, military vehicles, combat.
+  src/aviation.js: Fixed-wing flight and flight missions
+    Three airframes, stall/lift/bank model, takeoff and landing, flight missions 10 and 11.
+  src/challenges.js: Mission-specific encounters
+    Missions 3-9 objectives, guards and special actions; interact/UI routing for missions.
+  src/sidejobs.js: Contract missions after the main story
+    Contracts: Rush Hour, Fireworks Night, Blackout, Ring Run, Repo Man; blackout power hook.
+  src/streets.js: Road presentation
+    Street grid, intersections, sidewalks, road painting, promenades, street names, benches.
+  src/terrain.js: Mountains and off-road contact
+    Triangulated mountains, snow caps, trails, slope handling and off-road contact.
+  src/offroad.js: The 4x4 club, trail mud, off-road traction and the hill climb
+  src/mountain-village.js: The Ridgeline mountain villages: block plans, kinds, street dressing, colliders
+    Club lot and trucks, baked trail mud and rock, traction and wheelspin, body mud, club members, hill climb timing.
+  src/casino.js: Casino roulette
+    Roulette layout, stakes, settlement, UI and saved cash.
+  src/skyline.js: North Point financial cluster plan
+    Named tower lots per block (SKYLINE_TOWERS), plaza ground and planting.
+  src/renewal.js: Parks and recreation
+    Park layouts, ponds and their kerbs, boardwalks, walkers, joggers, outdoor gym.
+  src/sports-fixtures.js: Teams, kits, crests and the fixture calendar
+    Club pools, kit patterns, crests, daily fixtures, match timeline and clock.
+  src/sportsbook-odds.js: Sportsbook pricing model
+    Poisson goal model from the clubs' ratings, live markets, power-method margin, price ladder, odds formats.
+  src/sports.js: Live basketball and soccer matches
+    Match day, possession, shots, keeper saves, scoring, restarts, officials, harm and panic, the player on the ball.
+  src/sports-world.js: City sports venue layout
+    South Coast Stadium reservation, enclosure with pitch openings, big screens, turnstiles, barriers, markings.
+  src/sportsbook.js: GOALLINE sports betting office
+    The shop beside the stadium plaza, bets, settlement, void rules, saving, the clerk and punters, console.
+  src/sportsbook-ui.js: The betting menu
+    Match header, markets, bet slip, my bets, odds formats, keyboard, mouse and touch.
+  src/sports-audio.js: Stadium goal cheers and whistles
+    Recorded goal cheer and groan by distance to the stadium (no crowd bed), panic, whistles and kicks.
+  src/transit.js: Public railway simulation
+    Shore, Coast and Ridge lines: filleted track, 13 stations, boarding, rides, scenic trains.
+  src/ride-skip.js: Skip the ride
+    Fade, clock and world catch-up, arrival for cab, train and liner passengers; the skip prompt and keys.
+  src/ecology.js: Wildlife behavior
+    Habitats, harmless animals, bear warning/attack and 2D drawing.
+  src/sealife.js: Sea life: dolphins, gulls and the great white
+    Sea distance field, dolphin pods (breaths, leaps, bow riding), gull flocks (perch, circle, follow boats), the shark's patrol, fin, beach pass, boat bump and the swimmer encounter; the beach SHARK! alarm.
+  src/sealife-audio.js: Sea life sound
+    Recorded gull calls, splashes and blows (sprites); procedural dolphin whistles and clicks; the shark's score and attack sounds.
+  src/navigation.js: City map and route planning
+    Road graph, shortest paths, waypoints, map gestures and route guidance.
+  src/parachute.js: Bailout and parachute
+    aircraftClearance, bail-out, freefall, canopy, landing, terrace landing, water rescue.
+  src/mobile.js: Touch controls
+    Independent movement/aim fingers, context actions and overlay cleanup.
+  src/world-view.js: World camera gestures
+    World zoom, pinch gestures, mouse wheel and camera limits.
+  src/car-radio.js: Vehicle radio stations
+    Six stations, selection, playback and saved settings; the same radio box on the title menu.
+  src/garages.js: Drive-in repair and respray
+    Repair bays, vehicle fit, paint, repairs and pursuit clearance.
+  src/crowd.js: Crowd life, perception and reactions
+    Appearance and roles by hour, crowd streaming, sidewalk walking, perception, reactions, witnesses, scenes.
+  src/monarch-life.js: Monarch Isle life
+    Island traffic on its own lane graph, walkers, staff posts, garden visitors, marina boats, payphones, ambient sound.
+  src/dealership.js: MONARCH MOTORS, the flagship car dealership
+    The plan and colliders, the display, the purchase card, the delivery reveal, test drives, the saved garage and owners' bays, the alarm (4 stars), shattering glass.
+  src/dealership-people.js: MONARCH MOTORS staff, guards and enthusiasts
+    Salesmen in suits who greet, escort and pitch by car and by budget, receptionist, barista, armed private security, visitors with things to say.
+  src/beachclub.js: Marea Beach Club
+    The club on the beach-club plot: plan and colliders, cast of slots by hour, door queue and bouncer talk, trouble, player cover and VIP band.
+  src/beachclub-audio.js: Marea Beach Club music
+  src/clubpool.js: Marea pool: in, swim, out
+    Dive into the club pool, swim inside its bounds with the sea's stroke and breath, climb out onto the deck, drips.
+  src/clubtalk.js: Conversations with Marea club-goers
+    Personality scripts by day and night, alternating player / club-goer bubbles, no repeats, gestures, goodbyes.
+  src/leisure.js: Beach and club leisure: prompt and action key
+    One dispatcher for the E prompt of volleyball, the pool and the conversations.
+    Look-ahead Web Audio sets (day, sunset, night house), wall low-pass by listener position, the groove clock dancers follow.
+  src/ambience.js: City soundscape
+    Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker.
+  src/quality.js: Graphics quality tiers
+    LOW / MEDIUM / HIGH / ULTRA records, GPU capability check and the saved setting.
+  src/settings.js: Settings menu
+    Graphics, audio, gameplay and controls tabs; volumes, NPC chatter, see-through, key remapping screen.
+  src/god-panel.js: God mode settings
+  src/driving.js: Tyres, brakes and driving assists (ABS, ESC, TCS; Settings · Driving)
+    The GOD MODE settings tab (time, freeze, weather, refill, lose police, teleport) and the safe map teleport.
+  src/hud.js: HUD behaviour and the title menu
+    Pop-open radio and weapon boxes, minimap fold and zoom, context key hints, stars, the title menu.
+  src/render3d.js: Three.js renderer and resource lifecycle
+    Renderer entry: cameras, lights, ground texture, batching, entity models, effects, render().
+  Renderer closure (createCityRenderer() in src/render3d.js includes these):
+  src/flight-view3d.js: Flight camera and aerial perspective
+    Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city.
+  src/postfx3d.js: HDR post-processing pipeline
+    Half-float scene target, MSAA, SAO ambient occlusion, bloom, ACES tone curve, grade, FXAA.
+  src/lighting3d.js: Sun, sky, reflections and night light
+    Sun path, sky dome and environment map, night light map, material patch, dithered cutaway, headlight cones.
+  src/searchlight3d.js: Searchlights: light shafts, ground pools, the helicopter's spot
+    Volumetric beams, cookie pools, rain lit in the beam, the helicopter's spot light, lens flare and crew aim.
+  src/damage3d.js: Crumpling bodies, decals, debris and knocked furniture
+    Deformable car shells, per-pane glass, pooled decal atlas, rubble and panels, props, smoke and fire.
+  src/signkit3d.js: Sign lettering kit (included by render3d.js before sign())
+    Hand-built stroke font, neon tubes, marquee bulbs, block/stencil/Deco/LED letters, canvas type effects, boards, emblems.
+  src/signdesigns3d.js: Business sign designs (included by render3d.js before sign())
+    Sign families, the business style table, rooftop hotel names, tower names, billboard artwork.
+  src/cityscape3d.js: Building archetypes, roofs, shopfronts and street furniture
+    Facade archetypes, roof textures and plant (roof keep-outs), rooftop helipads, shopfronts, lit windows, street furniture.
+  src/signage3d.js: Night glows, neon and wet-street reflections (included by cityscape3d.js)
+    Instanced glow field, neon/lightbox sign atlas, LED ad screens, ticker, marquee bulbs, sign light spill.
+  src/skyline3d.js: North Point financial cluster towers (included by cityscape3d.js)
+    Lofted tower shafts, glazing per design, LED crowns, beacons, podiums and plazas.
+  src/sidejobs3d.js: Contract mission meshes
+    Sky rings, bomb and substation devices.
+  src/roadblocks3d.js: Police roadblock meshes
+    Loose traffic cones and burning flares.
+  src/themepark3d.js: Sunset Pier resort meshes
+    Falcon track and train, Sunset Eye, fountain, hotel, rides, flume, palms, night lights, fireworks, ride cameras.
+  src/unicorn3d.js: Aurora, the black unicorn on Sunset Pier
+    The 12 m black lacquer unicorn by the drop tower on her granite plinth, brass plaque, uplights and the glowing gold horn.
+  src/garage3d.js: Garage meshes
+    Garage buildings, shutters, lights and service details.
+  src/landmarks3d.js: City landmark meshes
+    Bridges, waterfront gardens, civic precinct and ground helipads.
+  src/civic3d.js: Civic and rooftop meshes
+    Businesses, the casino, hospital and school fronts, time-of-day palette.
+  src/air-cover3d.js: Underpass meshes
+    Road underpass walls, roof, portals and lamps.
+  src/renewal3d.js: Park meshes
+  src/landscape3d.js: Landscaping for open lawns
+    Benches, fountains, courts, pergolas, pond bridge, boathouse and bicycle racks.
+  src/sports3d.js: Sports stadium and match meshes
+    Tiered stands, crowd in team colours, floodlights, live screens, kits and animated matches.
+  src/sportsbook3d.js: GOALLINE betting shop meshes
+    Glass frontage, neon sign, video wall with the live board and odds, counter, terminals, stools.
+  src/transit3d.js: Railway meshes
+    Swept viaduct, sleepers, masts, piers and bents, stations and moving trains.
+  src/ecology3d.js: Wildlife meshes
+    Species geometry, gait animation, culling and material cleanup.
+  src/world3d.js: World scenery meshes
+    Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery.
+  src/wakes3d.js: Boat wakes and spray
+    Kelvin wake, propeller wash and hull collar drawn into a wake map the water samples; bow spray.
+  src/sealife3d.js: Sea life meshes
+    Instanced dolphin, shark and gull models animated in the vertex shader, the life map of shapes and blood under the surface, splashes, foam rings, fin wakes, the SHARK! HUD.
+  src/beachvolley3d.js: Beach volleyball court meshes
+    Pit and tapes in the sand texture, poles, net, antennas, scoreboard, ball shadow and landing ring.
+  src/beach3d.js: Palm Keys Beach meshes
+    Sand, swash ribbon, pier, props, ladders and instanced beachgoers.
+  src/county3d.js: County and mountain meshes
+    County ground tiles and hills, snow, rural scenery and region visibility.
+  src/base3d.js: Fort Sentinel meshes
+    Base ground sheet, fences, towers and searchlights, the gate, buildings, airfield, depots,
+    night lights, military vehicle models and soldier kit.
+  src/airfields3d.js: Runways, taxiways and airfield lighting
+    Marking shader, designation decals, edge/threshold/approach/taxiway lights, PAPI, windsocks.
+  src/boats3d.js: Boat kit: lofted hulls and shared yacht parts
+    Hull lofting, deckhouses, railings, deck furniture, name boards, night lights, mesh merging.
+  src/drawbridge3d.js: The Palm Sound drawbridge in 3D
+    Trunnion bascule leaves, piers, tender houses, fenders, barrier gates, signals and lamps, the ketch ALBATROSS.
+  src/monarch-bridges3d.js: Monarch Isle bridges
+    The Sovereign Bridge's leaning harp pylon and the Regency Bridge's three bowstring arches.
+  src/bridges3d.js: Bridges: one architecture per crossing
+    Every bridge from bridgeStructure(): truss, bascule, cable-stayed, suspension, arch and county designs; lamps, LEDs, beacons, foam, far copies.
+  src/harbor3d.js: Cargo terminal meshes
+    Cranes, the container ship, containers, depot, signals and helicopter searchlight.
+  src/marina3d.js: Marina, superyacht and cruise liner meshes
+    Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners and the sailing liner's wake.
+  src/monarch3d.js: Monarch Isle buildings
+    Facade styles, mansard, hipped and gabled roofs, balustrades, doorways, shopfronts with signs, awnings and window displays.
+  src/monarch-villas3d.js: Monarch Isle villas and towers
+    Nine villa styles with gardens, gates, pools and courts; The Sovereign and Monarch One.
+  src/monarch-marina3d.js: Monarch Harbour
+    Pontoons, berthed yachts, three superyachts, the mole, lighthouse, harbour master and yacht club.
+  src/monarch-garden3d.js: Royal Botanic Garden
+    The Palm House glasshouse and its interior, unique plants, beds, pond, arches, gates.
+  src/monarch-streets3d.js: Monarch Isle streetscape and build
+    Lanterns, fountains, beach, payphones, block extras, tower plazas, medians; builds the island.
+  src/dealership3d.js: MONARCH MOTORS in 3D
+    The glass showroom: travertine floor, brand walls, mezzanine, lounge, configurator wall, delivery stage and curtain, turntables, roof canopy, forecourt, shutters.
+  src/beachclub3d.js: Marea Beach Club meshes and show lighting
+    Forecourt, stage, LED wall, truss, bars, sails, pool, daybeds, sand; LED floor, moving heads, lasers, strobe, flames.
+  src/cycles3d.js: Bike-share stand meshes
+    Bike-share racks (the bicycles are ordinary vehicles).
+  src/weather3d.js: Weather and sky visuals
+    GPU rain streaks, splashes, roof drips, road spray, wet roads, lightning bolts and flashes, the storm grade.
+  src/character-rig3d.js: Character rig: sculpted body parts, outfits and paint
+    One set of lofted parts for everyone (head with face hint, hair, hats, male/female torso, limbs, shoes, kit, weapons); region paint shader.
+  src/crowd3d.js: Instanced crowd bodies, poses and street props
+    One InstancedMesh per body part, layered poses, stride, dogs and scene props.
+  src/clouds3d.js: Volumetric clouds and cloud shadows
+    Ray-marched cumulus at 600-950 m over a 3D noise volume, and their shadows on the city.
+  src/ground-data3d.js: Ground shader data
+    Detail layers (texture array), carriageway fields (kerb distance, style, lanes), marks (road markings, covers, grates, tree bases) in a world grid.
+  src/surfaces3d.js: Procedural surface detail
+    Patches the ground sheets with the ground materials, wet-road light, foliage sway.
+  src/ground-shader3d.js: Ground materials (GLSL)
+    Sheet magnification, classes, asphalt, kerbs, paving by district, lawns, gravel, sand, marks, bump and roughness, wet roads.
+  src/grass3d.js: Grass tufts
+    Instanced blades on the lawns near the view (HIGH/ULTRA, close zoom), placed and coloured from the ground sheet.
+  src/helicopter3d.js: Helicopter meshes
+  src/apache3d.js: The AH-64 attack helicopter model (lofted airframe, pods, Hellfires, chin gun)
+    Airframe, rotor, lights and cockpit.
+  src/vehicles3d.js: Vehicle meshes
+    Trucks, buses, bicycles, boats (speedboat, launch, jet ski), riders and moving parts.
+  src/police3d.js: Police vehicle models
+    Pursuit sedan, utility, Crown Vic, agents' SUV and the SWAT BearCat: lofted shells, liveries, roof numbers, lightbars and flash patterns.
+  src/cars3d.js: Civilian car models
+    Seventeen real-size bodies (the everyday cars and the CHEVETTE Z06, BRUTINI SVJ, CAVALINO 458): lofted shells, glasshouses, livery decals, merged trim, LED lamps.
+  src/hypercars3d.js: The Prestige Collection's car models
+    Walter Martin, Chevette, Mugatti, Konigsberg, Pagano, Rimak, McLowen and Cavalino hypercars on cars3d.js's kit: flake paint, carbon, active wings.
+  src/motorbikes3d.js: Motorbike models
+    VORTEX 900, NOMAD CRUISER, DOLCATI V4, YAMASAKI 1000RR, KR 500: lofted fairings, steering fork, merged riders, wheelies.
+  src/offroad3d.js: 4x4 club trucks, the club flag, trail props and mud
+  src/mountain-village3d.js: The mountain village kit: log, stone and timber buildings, street dressing, lanterns, signs
+  src/mountain-club3d.js: The 4x4 clubhouse block: clubhouse, interior, workshop, yard, lot, gate
+    Lofted club trucks with liveries and modelled tyres, mud on bodies, mud clumps, splats and tyre tracks, the lot, course gates.
+  src/plane3d.js: Airplane meshes
+    Courier prop plane, business jet and airliner.
+  src/parachute3d.js: Ram-air parachute
+    Nine-cell canopy rebuilt per frame (inflation, brakes, flutter), rigging, pilot chute, poses, collapse.
+  Outside the closure: src/asset-loader.js (decodes the media blocks and starts the game).
+
+REPOSITORY
+  The modular source of this build lives in the repository alongside it:
+  src/*.js (this file's subsystems), vendor/three.r160.js, assets/ (decoded
+  media), tools/build.py (reassembles this file), tools/smoke.mjs and
+  tools/check.sh (verification). See README.md and docs/SOURCE_GUIDE.md.
+
+AUDIT CONTRACTS
+- Game fragments share one closure; 3D fragments share createCityRenderer(), which
+  reads game state but never changes game rules.
+- Map x/y becomes Three.js (x, elevation, y); heading a is radians, yaw is -a.
+- Street columns are ROAD_CENTERS, rows are ROAD_ROWS; rows run negative north of
+  the old shoreline. Block indices keep their pre-reclamation meaning. The x = 128
+  column is the Shore Line's corridor (RAIL_CORRIDOR_X), not a street.
+- 8 world units = 1 metre (UNITS_PER_METRE); a 512-unit city block is 64 m. Timers use seconds; frame timestamps use ms.
+- Physics uses 1/120-second steps; terrain uses shared Float32 triangles.
+- Compact entity keys (hp, a, vx/vy, w/l, hx/hy, sinkDepth) are data contracts.
+- entityElevation() is the only way to compare heights across terrain, roofs,
+  decks, sinking cars, boats and aircraft. Aircraft altitude is absolute;
+  aircraftClearance() measures from the ground, or from the flat roof under a
+  helicopter (c.roofSite).
+- The player is in one carrier at a time and they are mutually exclusive: car,
+  roof (the Blue Hour terrace), buildingRoof (a roof reached by helicopter), deck
+  (the superyacht or a liner), parachute, coaster, transitRide, taxiRide, and the
+  water (swimming, wading, climbing a ladder). Use teleportPlayer() to move the
+  player: it lets go of whichever one is holding them.
+- solid(x, y, r, overWater) is the one collision test; the fourth argument exists
+  so the player can swim and is passed by nothing but moveBody(), on foot. On
+  foot the sea is entered only from a beach (shoreStepBlocked, water.js).
+- People take damage through ballisticDamage() (armour, lethality); vehicles
+  through damageVehicle(), whose `detail` shapes the dent (damage.js).
+- Cameras: orthographic on the street, perspective in the air (flight-view3d.js).
+  Cull and pick level of detail with viewCenter, viewReach and viewZoom, not
+  cameraTarget/worldZoom. Nothing lays a uniform wash over the frame. A roof
+  over the player (and only a roof) gets a small dithered hole round them
+  (lighting3d.js, CUTAWAY); nothing else is ever faded or cut.
+- Browser localStorage holds campaign/audio/graphics settings; there is no server.
+- window.DeadEndCity (end of src/game.js) is the only test surface: explicit named
+  methods, never a code-evaluation hook.
+- Media blocks name original paths, byte counts and SHA-256 hashes.
+
+POLICY: do not minify, obfuscate, pack or deploy this review build without
+the owner's explicit instruction. Readability includes dependencies.
+-->

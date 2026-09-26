@@ -23,7 +23,14 @@ and SHA-256 so the assembled file can be audited without tooling.
                                          (the split build), DeadEndCity/media/*.mp3 and
                                          DeadEndCity/README.txt. Works from file://.
 
-Directives understood in src/shell.html:
+Include lines (each on a line of its own; the file is inserted verbatim in its
+place, the line's own indentation is ignored, nesting is allowed, a missing file
+stops the build):
+  // @include src/x.js            in .js files
+  /* @include src/ui/x.css */     in .css files and inside <style> in .html files
+  <!-- @include src/ui/x.html --> in .html files (src/shell.html and src/ui/*.html)
+
+Placeholders filled after the includes are expanded (src/shell.html):
   <!-- @include-game-source -->   src/main.js with nested `// @include` lines
   <!-- @include-three-source -->  vendor/three.r160.js
   <!-- @include-media -->         every entry of assets/manifest.json
@@ -41,7 +48,15 @@ import tempfile
 import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INCLUDE_RX = re.compile(r'^(\s*)// @include (src/[\w.-]+\.js)\s*$')
+JS_INCLUDE = re.compile(r'^\s*// @include (src/[\w./-]+\.js)\s*$')
+CSS_INCLUDE = re.compile(r'^\s*/\* @include (src/[\w./-]+\.css) \*/\s*$')
+HTML_INCLUDE = re.compile(r'^\s*<!-- @include (src/[\w./-]+\.html) -->\s*$')
+# Which include lines each kind of file may contain.
+INCLUDES_BY_EXT = {
+    '.js': (JS_INCLUDE,),
+    '.css': (CSS_INCLUDE,),
+    '.html': (HTML_INCLUDE, CSS_INCLUDE),
+}
 
 
 def read(rel):
@@ -49,21 +64,23 @@ def read(rel):
         return fh.read()
 
 
-def expand_js(rel, seen=None):
-    """Recursively expand `// @include` directives. Each included file is
-    inserted verbatim, so line-level indentation of the directive is ignored
-    (the source files already carry their own indentation)."""
-    seen = seen or set()
+def expand(rel, seen=()):
+    """Recursively expand include lines. Each included file is inserted
+    verbatim (minus trailing newlines), so the include line's own indentation
+    is ignored: the source files already carry their own indentation."""
     if rel in seen:
         raise SystemExit('include cycle at ' + rel)
-    seen = seen | {rel}
+    seen = seen + (rel,)
+    patterns = INCLUDES_BY_EXT[os.path.splitext(rel)[1]]
     out = []
     for line in read(rel).rstrip('\n').split('\n'):
-        m = INCLUDE_RX.match(line)
-        if m:
-            out.append(expand_js(m.group(2), seen))
-        else:
+        m = next((m for m in (rx.match(line) for rx in patterns) if m), None)
+        if not m:
             out.append(line)
+        elif not os.path.isfile(os.path.join(ROOT, m.group(1))):
+            raise SystemExit(f'{rel}: included file not found: {m.group(1)}')
+        else:
+            out.append(expand(m.group(1), seen))
     return '\n'.join(out)
 
 
@@ -100,9 +117,9 @@ def media_blocks(split_dir=None):
 
 
 def build(out_path, split_dir=None):
-    shell = read('src/shell.html')
+    shell = expand('src/shell.html') + '\n'
     replacements = {
-        '<!-- @include-game-source -->': expand_js('src/main.js'),
+        '<!-- @include-game-source -->': expand('src/main.js'),
         '<!-- @include-three-source -->': read('vendor/three.r160.js').rstrip('\n'),
         '<!-- @include-media -->': media_blocks(split_dir),
         '<!-- @include-asset-loader -->': read('src/asset-loader.js').rstrip('\n'),
@@ -170,5 +187,5 @@ if __name__ == '__main__':
         build(args.out)
     if args.js_out:
         with open(args.js_out, 'w', encoding='utf-8') as fh:
-            fh.write(expand_js('src/main.js') + '\n')
+            fh.write(expand('src/main.js') + '\n')
         print('wrote', args.js_out)
