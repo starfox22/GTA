@@ -396,14 +396,7 @@
           mvBlock(inside, 'paint', f.x + 0.9, 0.82 * M, f.y + 0.9, f.x + f.w - 0.9, 0.85 * M, f.y + f.h - 0.9, '#1f5a3a', 'ny');
           for (let k = 0; k < 9; k++) mvGeometry(inside, 'glass', MV_GEO.ball, cx - 4 + (k % 3) * 1.1 + (k > 5 ? 3 : 0), 0.88 * M, cz - 1 + Math.floor(k / 3) * 1, 0.45, 0.45, 0.45, ['#f2f0e8', '#e8c02a', '#2a4ab0', '#c82a2a', '#6a2a8a', '#e86a1a', '#1a7a3a', '#6a1a1a', '#111111'][k]);
           mvCyl(inside, 'timber', mvV3(cx - 7, 0.95 * M, cz + 3), mvV3(cx + 6, 0.93 * M, cz + 2), 0.12, 4, '#c9a06a');
-          const wy = 2.9 * M;
-          mvCyl(inside, 'iron', mvV3(cx, wy, cz), mvV3(cx, CLUB_GF, cz), 0.03 * M, 3, '#111');
-          mvGeometry(inside, 'timber', MV_GEO.torus, cx, wy, cz, 0.7 * M, 0.7 * M, 0.28 * M, '#4a2a18', 0, Math.PI / 2);
-          for (let k = 0; k < 6; k++) {
-            const a = (k / 6) * TAU;
-            mvGeometry(inside, 'lamp', MV_GEO.ball, cx + Math.cos(a) * 0.7 * M, wy + 0.15 * M, cz + Math.sin(a) * 0.7 * M, 0.1 * M, 0.14 * M, 0.1 * M, '#ffe0a8');
-          }
-          addGlow(cx, wy - 0.2 * M, cz, 10, '#ffd49a', 1.3, { day: 0.2 });
+          clubWagonWheel(inside, cx, cz, 2.9 * M);
           mvPool(inside, cx, cz, 5 * M, '#ffd49a', 0.5);
         }
         // North wall (the camera sees its inside face): the TV, trail maps, a tyre, a winch, plates.
@@ -418,8 +411,26 @@
         mvCyl(inside, 'iron', mvV3(partsX + 2.4 * M, 2.9 * M, wallZ + 0.8), mvV3(partsX + 3.3 * M, 2.9 * M, wallZ + 0.8), 0.28 * M, 10, '#b8322a', 'iron', '#222');
         for (let k = 0; k < 4; k++) mvCellQuad(inside, 'paint', mvFacing(partsX + (4.4 + k * 0.8) * M, 2.7 * M, 3.05 * M, wallZ + 0.25, 0.65 * M), [0, 0, 1, 1], ['#e8dcc0', '#f2d35a', '#c9e0f0', '#e8c0c0'][k]);
         mvGeometry(inside, 'paint', MV_GEO.torus, partsX + 8 * M, 2.6 * M, wallZ + 0.4, 0.35 * M, 0.35 * M, 0.2 * M, '#2a2a2a');
-        // A string of club pennants across the room.
-        mvStringLights(inside, [[CLUBH.x + 4, CLUB_GF - 0.3 * M, CLUBH.y + 6], [CLUBS.x - 4, CLUB_GF - 0.3 * M, CLUBH.y + CLUBH.h - 6]]);
+        // String lights tacked under the ceiling round the back and side walls,
+        // swagged between hooks every 4 m (not across the room: from above a
+        // run over the floor reads as a wire cutting the room in two). The front
+        // wall is cut away while the player is inside, so it carries none.
+        {
+          const x0 = CLUBH.x + 5,
+            x1 = CLUBS.x - 5,
+            z0 = CLUBH.y + 5,
+            z1 = CLUBH.y + CLUBH.h - 8,
+            ly = CLUB_GF - 0.25 * M,
+            run = [];
+          const hooks = (ax, az, bx, bz) => {
+            const n = Math.max(1, Math.round(Math.hypot(bx - ax, bz - az) / (4 * M)));
+            for (let k = run.length ? 1 : 0; k <= n; k++) run.push([ax + ((bx - ax) * k) / n, ly, az + ((bz - az) * k) / n]);
+          };
+          hooks(x0, z1, x0, z0);
+          hooks(x0, z0, x1, z0);
+          hooks(x1, z0, x1, z1);
+          mvStringLights(inside, run);
+        }
         // Ceiling light over the room at night.
         mvPool(inside, houseCx, houseCz, 11 * M, '#ffcf8a', 0.35);
         // ---- The workshop inside: the lift with a rig on it, the bench, chests, tyres, tubes.
@@ -467,6 +478,31 @@
       // The clubhouse and the workshop as occluders: a player behind them keeps a hole through.
       allBuildings.push({ b: { x: CLUBH.x, y: CLUBH.y, w: CLUBH.w, h: CLUBH.h, height: CLUB_EAVES + 60 }, group: clubRoot, height: CLUB_EAVES + 60, materials: [MV_MAT.logs], tint: new Three.Color('#b58c62') });
       allBuildings.push({ b: { x: CLUBS.x, y: CLUBS.y, w: CLUBS.w, h: CLUBS.h, height: CLUB_SHOP_EAVES + 26 }, group: clubRoot, height: CLUB_SHOP_EAVES + 26, materials: [MV_MAT.boards], tint: new Three.Color('#8e6a44') });
+      // A wagon-wheel chandelier over a pool table, rim at height wy: a thin dark
+      // oak rim and hub, eight spokes, three chains up to a rod, and six small
+      // amber shades standing on the rim over their bulbs. (It was a fat torus
+      // ringed with bare bulbs: from above, a red and white life ring.)
+      function clubWagonWheel(batch, cx, cz, wy) {
+        const M = MVU,
+          R = 0.72 * M,
+          at = (a, r, y) => mvV3(cx + Math.cos(a) * r, y, cz + Math.sin(a) * r);
+        for (let k = 0; k < 16; k++) mvCyl(batch, 'timber', at((k / 16) * TAU, R, wy), at(((k + 1) / 16) * TAU, R, wy), 0.06 * M, 5, '#2a1c12');
+        mvCyl(batch, 'timber', mvV3(cx, wy - 0.09 * M, cz), mvV3(cx, wy + 0.09 * M, cz), 0.13 * M, 8, '#22160d', 'timber', '#3a2819');
+        for (let k = 0; k < 8; k++) {
+          const a = ((k + 0.5) / 8) * TAU;
+          mvCyl(batch, 'timber', at(a, 0.12 * M, wy), at(a, R - 0.04 * M, wy), 0.028 * M, 4, '#3b2716');
+        }
+        const top = wy + 0.6 * M;
+        for (let k = 0; k < 3; k++) mvCyl(batch, 'iron', at((k / 3) * TAU + 0.2, R, wy + 0.05 * M), mvV3(cx, top, cz), 0.012 * M, 3, '#151515');
+        mvCyl(batch, 'iron', mvV3(cx, top, cz), mvV3(cx, CLUB_GF, cz), 0.025 * M, 3, '#111');
+        for (let k = 0; k < 6; k++) {
+          const a = (k / 6) * TAU + 0.2,
+            p = at(a, R, wy);
+          mvGeometry(batch, 'lamp', MV_GEO.ball, p.x, wy + 0.1 * M, p.z, 0.05 * M, 0.06 * M, 0.05 * M, '#ffe0a8');
+          mvGeometry(batch, 'paint', MV_GEO.cone, p.x, wy + 0.18 * M, p.z, 0.12 * M, 0.17 * M, 0.12 * M, '#9a6a34');
+        }
+        addGlow(cx, wy - 0.2 * M, cz, 6, '#ffd49a', 1.1, { day: 0.2 });
+      }
       // An Adirondack chair: slatted seat and fan back, wide arms.
       function mvAdirondack(batch, x, z, a, color) {
         const c = Math.cos(a),
