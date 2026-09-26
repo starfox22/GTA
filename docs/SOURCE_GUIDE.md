@@ -1877,7 +1877,7 @@ mission: it is in every build, the demo included.
   enthusiasts wander the display with cameras (more by day), with their own lines. Bubbles go
   through crowd.js speechBubbles (two at a time, the NPC chatter setting).
 - **Cars** (hypercars3d.js): eleven bodies on cars3d.js's kit and damage contract, with a flake
-  layer in the paint (the base coat's normal jittered per 1.5 cm cell, the clear coat smooth),
+  layer in the paint (the base coat's normal jittered per 6 mm cell, the clear coat smooth),
   carbon twill painted in the liveries, and active wings on the Wayron, Tourbillon, Novera, W1
   and La Fera (they lift above 110 km/h and stand up as air brakes under hard braking). Specs and
   measured figures are in the changelog; `DeadEndCity.prestigeCatalog()` lists the cards.

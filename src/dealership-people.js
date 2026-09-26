@@ -577,7 +577,7 @@
             s.route = dealerAislePath(p.x, p.y, player.x, player.y);
             s.routeAt = gameTime;
           }
-          dealerFollow(p, 5 * KMH, deltaSeconds);
+          dealerFollow(p, 7.5 * KMH, deltaSeconds);
           p.pose = null;
           return true;
         }
@@ -616,11 +616,11 @@
           s.route = dealerAislePath(p.x, p.y, player.x, player.y);
           s.routeAt = gameTime;
         }
-        dealerFollow(p, 5.5 * KMH, deltaSeconds);
+        dealerFollow(p, 9 * KMH, deltaSeconds);
         p.pose = null;
         return true;
       }
-      const arrived = dealerStep(p, tx, ty, d > 40 ? 5.5 * KMH : 4 * KMH, deltaSeconds, 5);
+      const arrived = dealerStep(p, tx, ty, d > 40 ? 7.5 * KMH : 4.5 * KMH, deltaSeconds, 5);
       if (arrived) {
         p.a = lingering ? headingBetween(p, slot.car || slot) : headingBetween(p, player);
         const talk = gameTime - s.spokeAt;

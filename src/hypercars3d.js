@@ -43,7 +43,7 @@
        *    wings, four round tail lamps, the active flap.
        *
        * PRESTIGE FINISH (hcPrestigeExtras): each paint gets a flake layer (the
-       * base coat's normal jittered per 1.5 cm cell of the world, the clear coat
+       * base coat's normal jittered per 6 mm cell of the world, the clear coat
        * left smooth, so metallic sparkles under a glossy coat), and the cars with
        * active aero a wing that lifts above 110 km/h and stands up as an air
        * brake under hard braking (one extra draw, the trim material).
@@ -82,9 +82,9 @@
       // ---- The flake layer and active aero (body.extras) --------------------------------
       const HC_FLAKE = `
         {
-          vec3 flakeCell = floor( vCityWorld * 0.66 );
+          vec3 flakeCell = floor( vCityWorld * 20.0 );
           vec3 flakeHash = fract( sin( vec3( dot( flakeCell, vec3( 127.1, 311.7, 74.7 ) ), dot( flakeCell, vec3( 269.5, 183.3, 246.1 ) ), dot( flakeCell, vec3( 113.5, 271.9, 124.6 ) ) ) ) * 43758.5453 ) * 2.0 - 1.0;
-          normal = normalize( normal + flakeHash * 0.085 * metalnessFactor + flakeHash * 0.02 );
+          normal = normalize( normal + flakeHash * ( 0.06 * metalnessFactor + 0.012 ) );
         }`;
       function hcFlakePaint(paint) {
         const base = paint.onBeforeCompile;
