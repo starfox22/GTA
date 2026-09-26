@@ -679,21 +679,11 @@
           drawingContext.fillRect(x + hc + 20, z - hr, 3, hr);
           drawingContext.fillRect(x - hc - 23, z, 3, hr);
         }
-      // Patches, drains, stop lines and curb stains keep the road from reading as a flat color.
-      let rseed = 47;
-      const random = () => {
-        rseed = (rseed * 1664525 + 1013904223) >>> 0;
-        return rseed / 4294967296;
-      };
-      for (let i = 0; i < 330; i++) {
-        const x = CITY_LEFT + 80 + random() * (CITY_WIDTH - 240),
-          z = 80 + random() * (CITY_SIZE - 240);
-        if (!onRoad(x, z)) continue;
-        drawingContext.fillStyle = 'rgba(12,17,23,' + (0.12 + random() * 0.12) + ')';
-        drawingContext.beginPath();
-        drawingContext.ellipse(x, z, 12 + random() * 35, 3 + random() * 9, random() * 3, 0, TAU);
-        drawingContext.fill();
-      }
+      // (330 dark ellipses, 25-95 units long at random angles, used to be
+      // stamped on the roads here as "patches". Seen from the street camera they
+      // read as long shadows with nothing casting them, fixed to the tarmac
+      // whatever the time of day. The ground shader's tar-sealed patches, cracks
+      // and grain (surfaces3d.js) break the tarmac up instead.)
       // Gully grates in the gutter, only where the street really runs (they
       // used to be stamped down every column line, across plazas and quays).
       for (const road of cityStreets().filter((s) => s.vertical))
@@ -838,6 +828,10 @@
       // A palm's seven fronds as one geometry at size 1 (makePalm, world3d.js,
       // scales the whole palm), made on first use.
       let palmFrondGeometry = null;
+      // Trees' heights over their plan radius (plantTree) and a palm's trunk past its
+      // crown's design height (world3d.js makePalm): set before the trees are planted.
+      const TREE_RISE = 1.6,
+        PALM_LIFT = 42;
       // Street trees with proper trunks and layered crowns.
       const blossomMat = mat('#d5a2b5');
       // A crown lobe: 80 smooth-shaded faces read as foliage at street zoom (five
@@ -860,11 +854,14 @@
         t.prop = treeProp(t);
         // Tapered trunk with a root flare, two main limbs, and a layered crown of
         // five offset lobes so the canopy reads as foliage rather than a ball.
-        mesh(trunkGeo, wood, group, 0, t.r * 0.8, 0, 1, t.r * 1.6, 1);
+        // Heights run TREE_RISE over the plan's crown radius: a street tree of r 15
+        // stands about 7 m, its crown lifted clear of a person walking under it.
+        const rise = TREE_RISE;
+        mesh(trunkGeo, wood, group, 0, t.r * 0.8 * rise, 0, 1.2, t.r * 1.6 * rise, 1.2);
         if (!t.pine) {
           for (const a of [0.7, 3.4]) {
             // The trunk's tapered cylinder, so trunk and limbs are one draw.
-            const limb = mesh(trunkGeo, wood, group, Math.cos(a) * t.r * 0.25, t.r * 1.45, Math.sin(a) * t.r * 0.25, 0.45, t.r * 0.9, 0.45);
+            const limb = mesh(trunkGeo, wood, group, Math.cos(a) * t.r * 0.25, t.r * 1.45 * rise, Math.sin(a) * t.r * 0.25, 0.45, t.r * 0.9 * rise, 0.45);
             limb.rotation.set(Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5);
           }
         }
@@ -877,10 +874,10 @@
               leafMats[(i + j) % 3],
               group,
               0,
-              t.r * (1.3 + j * 0.55),
+              t.r * (1.3 + j * 0.55) * rise,
               0,
               t.r * (0.95 - j * 0.16),
-              t.r * 1.2,
+              t.r * 1.2 * rise,
               t.r * (0.95 - j * 0.16),
             );
           else {
@@ -891,10 +888,10 @@
               t.blossom && j % 2 ? blossomMat : leafMats[(i + j) % 3],
               group,
               Math.cos(a) * spread,
-              t.r * 1.75 + lift,
+              t.r * 1.75 * rise + lift,
               Math.sin(a) * spread,
               t.r * (j === 0 ? 0.95 : 0.7),
-              t.r * (j === 0 ? 0.8 : 0.62),
+              t.r * (j === 0 ? 0.8 : 0.62) * 1.25,
               t.r * (j === 0 ? 0.95 : 0.7),
             );
           }
@@ -1047,7 +1044,8 @@
       const lampGlowPending = [];
       // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
       // without unbatching the street; each is a street prop in damage.js.
-      const lampPosts = lamps.length,
+      const LAMP_HEIGHT = 9 * UNITS_PER_METRE,
+        lampPosts = lamps.length,
         lampPoles = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
         lampArms = new Three.InstancedMesh(boxGeo, darkMetal, lampPosts),
         lampHeads = new Three.InstancedMesh(boxGeo, warmLamp, lampPosts);
@@ -1066,9 +1064,10 @@
       for (let i = 0; i < lamps.length; i++) {
         const l = lamps[i],
           prop = registerStreetProp('lamp', l.x, l.y);
-        placePropInstance(lampPoles, prop, l.x, 17, l.y, 1.1, 34, 1.1);
-        placePropInstance(lampArms, prop, l.x + 3, 34, l.y, 7, 1, 1);
-        placePropInstance(lampHeads, prop, l.x + 6, 33.5, l.y, 5, 1.2, 3);
+        // A 9 m street light (LAMP_HEIGHT), its arm reaching out over the kerb.
+        placePropInstance(lampPoles, prop, l.x, LAMP_HEIGHT / 2, l.y, 1.6, LAMP_HEIGHT, 1.6);
+        placePropInstance(lampArms, prop, l.x + 3, LAMP_HEIGHT, l.y, 7, 1, 1);
+        placePropInstance(lampHeads, prop, l.x + 6, LAMP_HEIGHT - 0.5, l.y, 5, 1.2, 3);
         lampGlowPending.push({ x: l.x + 6, z: l.y, prop });
       }
       // @include src/signkit3d.js
@@ -1120,9 +1119,9 @@
               flicker: design.flicker,
             }),
           );
-        // Centred 23 up, but never so low that a wide board sinks into the ground
+        // Centred on the fascia over the ground floor (SHOP_FLOOR), but never so low that a wide board sinks into the ground
         // (a 235-wide sign is 59 tall); callers raise facade signs further.
-        const signY = Math.max(23, width / 8 + 3);
+        const signY = Math.max(SHOP_FLOOR + 5, width / 8 + 3);
         m.position.set(x, signY, z + 0.6);
         m.userData.sign = true;
         m.receiveShadow = true;
@@ -1149,7 +1148,7 @@
       // Street lamp halos in the glow field: lit after dark, dimmed with the district's
       // power, switched off while a car has the lamp down (damage3d.js sets `visible`).
       for (const p of lampGlowPending) {
-        p.prop.halo = glowHandle(addGlow(p.x, 33, p.z, 24, '#ffd99b', 0.55, { day: 0, phase: 0 }));
+        p.prop.halo = glowHandle(addGlow(p.x, LAMP_HEIGHT - 1, p.z, 28, '#ffd99b', 0.55, { day: 0, phase: 0 }));
         // Its reflection smeared down the wet street towards the camera (signage3d.js).
         addStreak(p.x, p.z + 8, 8, 64, '#ffcf96', 0.55);
       }
@@ -1172,6 +1171,7 @@
       // @include src/ecology3d.js
       // @include src/world3d.js
       // @include src/wakes3d.js
+      // @include src/beachvolley3d.js
       // @include src/beach3d.js
       // @include src/county3d.js
       // @include src/base3d.js
@@ -1245,7 +1245,39 @@
         carRims.set(side, rim);
         return rim;
       }
+      /**
+       * DESIGN SIZE
+       * A vehicle's model is built at its design size, the collider's length and
+       * width over its `modelScale` (VEHICLE_DEFINITIONS), and the finished group
+       * is drawn at modelScale. Its length and width so come out at the collider's,
+       * and every part the builders size in fixed units (roof and beltline heights,
+       * wheels, lamps, mirrors, lightbars, riders) at its real size. Anything that
+       * places into a model by hand works in design units: `m.modelScale` (x) turns
+       * world units into them (damage3d.js dents, glass and smoke).
+       */
+      function modelScaleOf(vehicle) {
+        const s = vehicleSpec(vehicle)?.modelScale || 1;
+        return Array.isArray(s) ? s : [s, s, s];
+      }
+      function designSize(vehicle) {
+        const spec = vehicleSpec(vehicle),
+          [sx, , sz] = modelScaleOf(vehicle);
+        return { l: spec.l / sx, w: spec.w / sz };
+      }
       function makeVehicle(vehicle) {
+        const model = buildVehicleModel(vehicle);
+        // A builder that already drew its model at the collider's size (the share
+        // bike, cycles3d.js) sets `realSize`.
+        if (model.realSize) {
+          model.modelScale = 1;
+          return model;
+        }
+        const [sx, sy, sz] = modelScaleOf(vehicle);
+        model.group.scale.set(sx, sy, sz);
+        model.modelScale = sx;
+        return model;
+      }
+      function buildVehicleModel(vehicle) {
         if (vehicle.type === 'bicycle') return makeBicycle(vehicle);
         if (vehicle.type === 'plane') return makePlane(vehicle);
         if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
@@ -1264,9 +1296,9 @@
           body = new Three.Group();
         group.add(body);
         scene.add(group);
-        const vehicleDefinition = vehicleSpec(vehicle),
-          l = vehicleDefinition.l,
-          w = vehicleDefinition.w * 0.87,
+        const design = designSize(vehicle),
+          l = design.l,
+          w = design.w * 0.87,
           low = ['sport', 'supercar', 'roadster'].includes(vehicle.type),
           open = vehicle.type === 'roadster',
           rodCar = vehicle.type === 'hotrod',
@@ -1483,8 +1515,8 @@
           if (n >= pool.length) break;
           const { beam, glint } = pool[n++],
             muzzle = o.a || 0;
-          sniperFrom.set(o.x + Math.cos(muzzle) * 9, entityElevation(o) + 11, o.y + Math.sin(muzzle) * 9);
-          sniperTo.set(player.x, entityElevation(player) + 9, player.y);
+          sniperFrom.set(o.x + Math.cos(muzzle) * 9 * PERSON_SCALE, entityElevation(o) + 11 * PERSON_SCALE, o.y + Math.sin(muzzle) * 9 * PERSON_SCALE);
+          sniperTo.set(player.x, entityElevation(player) + 9 * PERSON_SCALE, player.y);
           const length = sniperFrom.distanceTo(sniperTo);
           beam.position.copy(sniperFrom).add(sniperTo).multiplyScalar(0.5);
           beam.quaternion.setFromUnitVectors(sniperAxis, sniperTo.clone().sub(sniperFrom).normalize());
@@ -1505,7 +1537,9 @@
        * read as an effect, not as a lit street). Only a faint cool rim on the
        * edges turned away from the camera, as moonlight catching the shoulders,
        * keeps their silhouette from dissolving into an unlit street; it follows
-       * nightAmount and is gone by day.
+       * nightAmount and is gone by day. Settings · Graphics · Player outline at
+       * night (settings.js `playerOutlineOn`, saved with the other settings)
+       * switches it off.
        */
       const playerRim = { value: new Three.Color(0, 0, 0) },
         PLAYER_RIM_NIGHT = new Three.Color('#6d80a6');
@@ -1559,6 +1593,10 @@
       function makePerson(person, isPlayer) {
         const group = new Three.Group();
         scene.add(group);
+        // Built 17.4 units to the crown like every rig; drawn at 1.75 m (PERSON_SCALE),
+        // give or take 6% (the crowd's own looks vary their height the same way).
+        if (!isPlayer && person.stature === undefined) person.stature = 0.94 + Math.random() * 0.12;
+        group.scale.setScalar(PERSON_SCALE * (isPlayer ? 1 : person.stature));
         const skin = mat(isPlayer ? '#bb9475' : '#af8b72'),
           cloth = mat(isPlayer ? '#353d4a' : person.color || '#6b5965'),
           pants = mat(isPlayer ? '#536273' : '#343b44'),
@@ -2085,6 +2123,13 @@
          * name of its nearest named ancestor and by 512-unit cell. For hunting
          * unbatched scenery; DeadEndCity.drawProfile() prints the top entries.
          */
+        // Every helicopter model built: look, spool, draw calls, shadow casters,
+        // triangles and crew shown (helicopter3d.js; DeadEndCity.helicopterModels()).
+        helicopterModels() {
+          const out = [];
+          for (const [c, m] of carModels) if (c.type === 'helicopter') out.push(helicopterModelReport(c, m));
+          return out;
+        },
         drawProfile(top = 15) {
           const byName = new Map(),
             byCell = new Map(),
@@ -2158,11 +2203,128 @@
           }
           return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
         },
+        /* Shadow casters the view does not show (for "shadows from nowhere"):
+           every mesh the sun's shadow pass draws, near the view, that the camera
+           pass would not: hidden by its material (fully transparent, no colour
+           write), a helper, or outside the camera frustum while its shadow can
+           fall into it. Returns counts by name and the first few with positions. */
+        shadowCasters(limit = 40, everywhere = false) {
+          const frustum = new Three.Frustum().setFromProjectionMatrix(
+              new Three.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+            ),
+            sphere = new Three.Sphere(),
+            found = [],
+            byName = new Map();
+          const visit = (o, named) => {
+            if (!o.visible) return;
+            if (o.name) named = o;
+            if ((o.isMesh || o.isInstancedMesh) && o.castShadow && o.layers.test(camera.layers)) {
+              const materials = Array.isArray(o.material) ? o.material : [o.material];
+              const hidden = materials.every(
+                (m) => !m || m.visible === false || m.colorWrite === false || (m.transparent && m.opacity < 0.6),
+              );
+              if (o.isInstancedMesh && o.boundingSphere === null) o.computeBoundingSphere();
+              const bounds = o.isInstancedMesh ? o.boundingSphere : (o.geometry.boundingSphere || (o.geometry.computeBoundingSphere(), o.geometry.boundingSphere));
+              sphere.copy(bounds).applyMatrix4(o.matrixWorld);
+              const near = everywhere || Math.hypot(sphere.center.x - viewCenter.x, sphere.center.z - viewCenter.y) < viewReach + sphere.radius;
+              const offView = !frustum.intersectsSphere(sphere);
+              if (near && (hidden || (!everywhere && offView && sphere.center.y > 40))) {
+                const key =
+                  (named?.name || o.name || o.geometry?.type || 'mesh') +
+                  (hidden ? ' (see-through material, opacity ' + materials.map((m) => m && +m.opacity.toFixed(2)).join('/') + ')' : ' (off view)');
+                byName.set(key, (byName.get(key) || 0) + 1);
+                if (found.length < limit)
+                  found.push({ name: key, x: Math.round(sphere.center.x), y: Math.round(sphere.center.z), height: Math.round(sphere.center.y), radius: Math.round(sphere.radius) });
+              }
+            }
+            for (const c of o.children) visit(c, named);
+          };
+          visit(scene, null);
+          return { byName: Object.fromEntries(byName), found };
+        },
+        /* What shades a ground point from the sun: casts a ray from (x, y) on
+           the ground towards the sun (the moon at night) through every
+           shadow-casting mesh and returns the hits, nearest first (name, the
+           named group it belongs to, the instance for instanced meshes, height of
+           the hit, distance along the ray, whether the mesh is drawn). */
+        shadowProbe(x, y) {
+          const origin = new Three.Vector3(x, terrainHeight(x, y) + 0.5, y),
+            probe = new Three.Raycaster(origin, sunDirection.clone().normalize(), 0, 4000),
+            casters = [];
+          scene.traverse((o) => {
+            if ((o.isMesh || o.isInstancedMesh) && o.castShadow) casters.push(o);
+          });
+          const shown = (o) => {
+            for (let p = o; p; p = p.parent) if (!p.visible) return false;
+            return true;
+          };
+          // Instanced meshes are raycast against their stored bounds, which may
+          // predate their instances' current places: fresh bounds for the probe.
+          const kept = casters.filter((o) => o.isInstancedMesh).map((o) => [o, o.boundingSphere]);
+          for (const [o] of kept) o.computeBoundingSphere();
+          const found = probe.intersectObjects(casters, false);
+          for (const [o, sphere] of kept) o.boundingSphere = sphere;
+          return {
+            sun: sunDirection.toArray().map((v) => +v.toFixed(3)),
+            hits: found
+              .slice(0, 8)
+              .map((h) => {
+                let named = h.object;
+                while (named && !named.name && named.parent) named = named.parent;
+                return {
+                  name: h.object.name || h.object.geometry?.type,
+                  group: named?.name || '',
+                  instance: h.instanceId ?? null,
+                  height: +h.point.y.toFixed(1),
+                  at: [Math.round(h.point.x), Math.round(h.point.z)],
+                  distance: Math.round(h.distance),
+                  shown: shown(h.object),
+                  material: h.object.material?.type,
+                };
+              }),
+          };
+        },
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.
         postView(mode) {
-          postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : 0;
+          postCompositeUniforms.uDebugView.value = mode === 'ao' ? 1 : mode === 'bloom' ? 2 : mode === 'depth' ? 3 : mode === 'reflect' ? 4 : 0;
           return mode || 'image';
         },
+        /**
+         * World-scale audit (DeadEndCity.scaleReport): each entity's built model
+         * measured in its own frame, in map units: `l` along its heading, `w`
+         * across it, `h` from its lowest to its highest mesh. Glows, halos and
+         * other unlit transparent sprites are left out; null where no model is
+         * built yet (models are made as they come into view).
+         */
+        modelExtents(entities) {
+          const box = new Three.Box3(),
+            part = new Three.Box3();
+          return entities.map((e) => {
+            const m = carModels.get(e) || personModels.get(e);
+            if (!m?.group) return null;
+            const g = m.group,
+              rotation = g.rotation.clone(),
+              position = g.position.clone();
+            g.rotation.set(0, 0, 0);
+            g.position.set(0, 0, 0);
+            g.updateMatrixWorld(true);
+            box.makeEmpty();
+            g.traverseVisible((o) => {
+              if (!o.isMesh || o.isInstancedMesh || !o.geometry) return;
+              const material = Array.isArray(o.material) ? o.material[0] : o.material;
+              if (material?.isMeshBasicMaterial && material.transparent) return;
+              if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+              box.union(part.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld));
+            });
+            g.rotation.copy(rotation);
+            g.position.copy(position);
+            g.updateMatrixWorld(true);
+            if (box.isEmpty()) return null;
+            return { l: box.max.x - box.min.x, w: box.max.z - box.min.z, h: box.max.y - box.min.y };
+          });
+        },
+        // The crowd rig's standing height at look.height 1 (crowd3d.js), in map units.
+        crowdRigHeight: () => crowdRigHeight(),
         // Switch graphics quality tier (quality.js) at runtime.
         setQuality(tier) {
           applyRendererQuality(tier);
@@ -2192,14 +2354,20 @@
           return {
             x: (v.x * 0.5 + 0.5) * viewportWidth,
             y: (-0.5 * v.y + 0.5) * viewportHeight,
+            // Behind a perspective camera (the flight and ride views) the point
+            // projects mirrored into the frame: callers drawing labels skip it.
+            behind: v.z > 1,
           };
         },
+        // The street zoom as a height above the ground in world units (flight-view3d.js).
+        zoomHeight: (zoom) => streetZoomHeight(zoom),
         aim(mx, my) {
           ray.setFromCamera(
             new Three.Vector2((mx / viewportWidth) * 2 - 1, (-my / viewportHeight) * 2 + 1),
             camera,
           );
-          groundPlane.constant = -9 - entityElevation(player);
+          // The gun's height in the hand (makePerson's y 10, drawn at PERSON_SCALE).
+          groundPlane.constant = -10 * PERSON_SCALE - entityElevation(player);
           if (ray.ray.intersectPlane(groundPlane, hitPoint))
             return Math.atan2(hitPoint.z - player.y, hitPoint.x - player.x);
           return player.a;
@@ -2379,6 +2547,7 @@
           updateCityscapeVisuals();
           updateSideJobVisuals();
           updateRoadblockVisuals();
+          updateBikeShareVisuals();
           updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
@@ -2448,7 +2617,7 @@
               newModelsThisFrame++;
               m = makeVehicle(c);
               carModels.set(c, m);
-              trimShadowCasters(m.group, 4);
+              trimShadowCasters(m.group, 4 * m.modelScale);
             }
             m.group.visible = near;
             if (!near) continue;
@@ -2509,7 +2678,10 @@
             if (m.crank)
               m.crank.rotation.z -=
                 deltaSeconds * (c === player.car ? pedalCadence() * Math.PI * 2 : c.speed * 0.13);
-            if (m.helicopter) {
+            if (m.heli) {
+              // Spool, rotor blur, attitude, crew, Nightsun and lights (helicopter3d.js).
+              animateHelicopter(c, m, deltaSeconds, wear);
+            } else if (m.helicopter) {
               const running =
                 (c === player.car ||
                   c.airUnit ||
@@ -2565,12 +2737,12 @@
                   wakeEmit(c, c.x, c.y, c.a, c.speed, boatSpec.l, boatSpec.w, boatSpec.max || 300, !underBridge);
                 if (m.boatUpdate) m.boatUpdate(c);
               }
-              for (const { wheel } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / 5;
+              for (const { wheel } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / (5 * (m.modelScale || 1));
             }
             if (c.bloodyUntil > gameTime && !m.blood) {
               m.blood = new Three.Group();
               m.body.add(m.blood);
-              const vehicleDefinition = vehicleSpec(c),
+              const vehicleDefinition = designSize(c),
                 red = mat('#7a0f1f', 0.62);
               for (let j = 0; j < 9; j++)
                 box(
@@ -2637,7 +2809,7 @@
               m = makePerson(p, activePlayer);
               personModels.set(p, m);
               // Only torso-sized parts cast into the shadow map (lighting3d.js).
-              trimShadowCasters(m.group, 3.5);
+              trimShadowCasters(m.group, 3.5 * PERSON_SCALE);
             }
             m.group.visible = near && !(activePlayer && (player.car || transitRide || taxiRide));
             if (p.hidden) m.group.visible = false;
@@ -2655,7 +2827,7 @@
               incapacitated = personIncapacitated(p) || downed;
             m.group.position.set(
               p.x,
-              entityElevation(p) + fallen * 1.5 - (slump ? 4.5 : 0) - (p.hitZone === 'leg' ? flinch * 1.5 : 0),
+              entityElevation(p) + (fallen * 1.5 - (slump ? 4.5 : 0) - (p.hitZone === 'leg' ? flinch * 1.5 : 0)) * PERSON_SCALE,
               p.y,
             );
             m.group.rotation.set(
@@ -2820,7 +2992,7 @@
                 const stroke = player.swimStroke || 0,
                   roll = Math.sin(stroke) * 0.44;
                 m.group.rotation.set(roll, -player.a, -Math.PI / 2);
-                m.group.position.y = entityElevation(player) + 2.6;
+                m.group.position.y = entityElevation(player) + 2.6 * PERSON_SCALE;
                 m.parts.arm1.rotation.z = stroke;
                 m.parts['arm-1'].rotation.z = stroke + Math.PI;
                 m.parts.leg1.rotation.z = Math.sin(stroke * 2) * 0.3;
@@ -2839,11 +3011,12 @@
           playerRing.visible =
             !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
-          playerRim.value.copy(PLAYER_RIM_NIGHT).multiplyScalar(nightAmount * 0.55);
+          // Settings · Graphics · Player outline at night turns it off.
+          playerRim.value.copy(PLAYER_RIM_NIGHT).multiplyScalar(playerOutlineOn() ? nightAmount * 0.55 : 0);
           // A swimmer's wake, kick foam and the ripples round them are drawn into the
           // sea like a boat's (wakes3d.js). The flat V and ring planes that did this
           // sat at a fixed height, so the swell rose through them.
-          if (player.swimming) wakeEmit(player, player.x, player.y, player.a, clamp(player.swimDrive || 0, 0, 1) * 70, 16, 7, 80, false);
+          if (player.swimming && !player.pool) wakeEmit(player, player.x, player.y, player.a, clamp(player.swimDrive || 0, 0, 1) * 70, 16, 7, 80, false);
           for (const p of pickups) {
             let m = pickupModels.get(p);
             if (!m) {
@@ -3090,7 +3263,7 @@
               distanceBetween(p, player) > (p.ally ? 400 : 230)
             )
               continue;
-            const q = api.project(p.x, p.y, entityElevation(p) + 24);
+            const q = api.project(p.x, p.y, entityElevation(p) + PERSON_HEIGHT + 6.5);
             if (q.x < 20 || q.x > viewportWidth - 20 || q.y < 80 || q.y > viewportHeight - 180)
               continue;
             worldContext.font = 'bold 10px Arial';
@@ -3109,14 +3282,17 @@
           // Drivers shouting out of the window use the same bubble over the car.
           // speechBubbles() (crowd.js) picks at most two, most important first, and
           // returns none with Settings · Gameplay · NPC chatter off. A second bubble
-          // that would overlap the first rises clear above it.
+          // that would overlap the first rises clear above it. Seen from high up
+          // (above 40 m, gone by 50 m: speechHeightFade, crowd.js) they fade out.
+          // A Falcon rider's bubble is anchored over the head (`bubbleZ`).
           const bubbleRects = [];
           for (const p of speechBubbles()) {
-            const q = api.project(p.x, p.y, entityElevation(p) + (p.type ? 22 : 27));
-            if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;
+            const q = api.project(p.x, p.y, p.bubbleZ ?? entityElevation(p) + (p.type ? 19 : PERSON_HEIGHT + 9.5));
+            if (q.behind || q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;
             worldContext.font = '600 10px Arial';
             const tw = worldContext.measureText(p.speech).width + 12,
-              fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1);
+              fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1) * speechHeightFade(p);
+            if (fade <= 0.01) continue;
             for (const r of bubbleRects)
               if (Math.abs(q.x - r.x) < (tw + r.w) / 2 + 4 && Math.abs(q.y - r.y) < 20)
                 q.y = r.y - 20;
@@ -3139,7 +3315,7 @@
           }
           for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers])
             if (personIncapacitated(p) && distanceBetween(p, cameraTarget) < 850) {
-              const q = api.project(p.x, p.y, entityElevation(p) + (p.knockedFor > 0 ? 10 : 26));
+              const q = api.project(p.x, p.y, entityElevation(p) + (p.knockedFor > 0 ? 8 : PERSON_HEIGHT + 8.5));
               drawDizzy(q.x, q.y);
             }
           drawHarborLabels3D(api);

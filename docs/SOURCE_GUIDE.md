@@ -72,16 +72,43 @@ Two closures matter:
 
 ## 2a. World scale, speeds and handling
 
-- **One scale.** `UNITS_PER_METRE` (game.js WORLD SCALE) is 8, measured from the models: a sedan
-  is 43 units (4.5 m), a person 17.4 units to the crown (1.75 m), a lane with its gutter 44
-  (6 m), the courier plane 112 (14.4 m), a shop door 12 (2.1 m) and a storey 14-16 (3.2 m).
-  People and cars are drawn a little large and buildings a little squat; 8 sits between them.
-  Derived: `METERS_PER_UNIT`, `KMH` (map units a second in one km/h), `KNOTS`, `GRAVITY`
-  (9.81 m/s² in map units), `worldMeters()`, `distanceLabel()`, `speedKmh()`. Write speeds as
-  `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats, the
-  flight HUD, metres in prompts, the map's scale bar, the Falcon's and the Eye's figures) comes
-  from it.
-- **On foot** (game.js `FOOT_WALK` 5.4, `FOOT_RUN` 20 km/h, `footPace()`): the player runs by
+- **One scale, true to life.** `UNITS_PER_METRE` (game.js WORLD SCALE) is 8: a 512-unit block
+  is 64 m, a lane with its gutter 44 units (5.5 m), a sidewalk 28 (3.5 m). Everything drawn in
+  the street is at its real size at that scale (measured with `DeadEndCity.scaleReport()`):
+  - **Vehicles**: `VEHICLE_DEFINITIONS` `l` / `w` are written in metres (`4.85 * UNITS_PER_METRE`;
+    `w` is the collider, the body plus mirrors: car bodies are drawn 0.87 of it, trucks 0.91).
+    Sedan 4.85 x 2.13 (body 1.85, 1.47 tall), cab 4.9, coupe 4.4, sports 4.5, supercar 4.7,
+    muscle 5.0, luxury 5.3, limousine 8.8, SUV 4.95, van 5.25, pickup 5.6, ambulance 6.7,
+    patrol car 5.1, box truck 10.0, flatbed 9.5, bus 12.0 x 2.8 (3.2 m tall), bicycle 1.85 x
+    0.62, sport bike 2.1 x 0.8, cruiser 2.45 x 0.95, jet ski 3.3, tank hull 7.9. Helicopters,
+    planes and boats were already true. `modelScale` is the scale a model is drawn at: it is
+    built at its design size, (l, w) / modelScale, so the parts its builder sizes in fixed
+    units (roof and beltline, wheels, lamps, lightbars, riders) come out real while its
+    footprint matches the collider (render3d.js DESIGN SIZE). A model built at real size
+    sets `modelScale` 1. Code that places into a model by hand works in its design units
+    (`m.modelScale`: dents, loose panels, wheel spin, body impostors).
+  - **People**: every rig is modelled 17.4 units to the crown; `PERSON_SCALE` draws it at
+    `PERSON_HEIGHT`, 1.75 m. The crowd's looks vary the height 0.93-1.07 (kids 0.58-0.7),
+    officers and actors 0.94-1.06; a round hits within `PERSON_HIT_RADIUS` (1 m). Name tags,
+    speech bubbles and the dizzy stars sit on `PERSON_HEIGHT`.
+  - **Buildings**: a storey is `STOREY` (3.2 m) over a `SHOP_FLOOR` (4.5 m) ground floor, doors
+    `DOOR_HEIGHT` (2.3 m). The city plan still writes heights in its old numbers (a storey was
+    15 units); `realBuildingHeight()` turns them into real storeys once the world is built
+    (game.js buildWorld), so a two-storey house is 7.7 m and the tallest tower about 250 m.
+    Thresholds on heights (archetypes, fire escapes, helipad roofs, SWAT roofs) are written
+    as `realBuildingHeight(planNumber)`. Fort Sentinel, Vinny's depot and the Blue Hour
+    (`ROOFTOP.height` 240, 30 m) are in real units already. Facade textures repeat per storey;
+    shopfronts, awnings (3.2 m), fascia signs, entrance canopies and business signs sit on
+    the real ground floor.
+  - **Street furniture**: lamp posts 9 m (`LAMP_HEIGHT`), street trees about 7 m
+    (`TREE_RISE`), palms 9 m, bus shelters 2.5 m, benches 0.45 m seat / 0.85 m back, bins
+    0.8 m, mailboxes and parking meters 1.3 m, bollards 0.9 m, the payphone 2.2 m.
+  - Derived: `METERS_PER_UNIT`, `KMH` (map units a second in one km/h), `KNOTS`, `GRAVITY`
+    (9.81 m/s² in map units), `worldMeters()`, `distanceLabel()`, `speedKmh()`. Write speeds as
+    `50 * KMH`, accelerations as `0.8 * GRAVITY`. Every readout (speedometer, knots on boats,
+    the flight HUD and its roof clearance, metres in prompts and the GPS,
+    the Falcon's and the Eye's figures) comes from it.
+- **On foot** (game.js `FOOT_WALK` 5.4, `FOOT_RUN` 25 km/h, `footPace()`): the player runs by
   default and walks while Shift (`walk`, controls.js, "Walk (hold)") is held; there is no separate
   sprint. The Blue Hour terrace is always walked (a stealth party). `footPace()` is read by the
   movement, mountain footing (terrain.js), footsteps (audio.js) and the police's aim (pursuit.js);
@@ -160,8 +187,8 @@ Two closures matter:
 - **Targets** (measured with `simulate`, see CHANGELOG): everyday cars 150-205 km/h and 0-100
   in 6.5-13 s, sports and supercars 230-330 km/h in 2.9-5 s, trucks 115-120, the bus 100, the
   tank 55; motorbikes 180-225; the patrol car 230 km/h (0-100 in 6.3 s) so it catches anything
-  but a sports car on an open road; the police helicopter 260 km/h. Bicycles cruise at 22 and
-  sprint at 38. Traffic keeps to 40-55 km/h in town and 70-85 on the long bridges, follows at
+  but a sports car on an open road; the police helicopter 260 km/h. Bicycles cruise at 27 and
+  sprint at 43. Traffic keeps to 40-55 km/h in town and 70-85 on the long bridges, follows at
   about 0.8 s and stops for reds at about half a g; county traffic 60. Boats: speedboat 55
   knots, jet ski 50, harbor launch 14, police launches 15% quicker; the liner 19 knots at sea.
   Trains 100 km/h at 1.3 m/s²; the cab 65 km/h. The helicopter cruises at about 240 km/h.
@@ -172,7 +199,10 @@ Two closures matter:
   rolls, flaps 1, rotating at the airframe's speed: courier 236 m (lift-off ~116 km/h), jet
   504 m (~180), airliner 794 m (~207); landing rolls from touchdown at that speed with full
   brakes 103 / 253 / 368 m. The runways (section 4, "Airfields") are sized from these.
-- **Camera**: from about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js,
+- **Camera**: the street view starts at `STREET_ZOOM` 1.2 (world-view.js; the wheel reaches
+  0.14-1.8), so true-size cars and people read about as large as the old oversized ones.
+  The street camera stands clear of the tallest roof (`streetCeiling()`), and the sun's shadow
+  box reaches that high too. From about 60 km/h the street camera eases back (`speedZoomTarget`, world-view.js,
   to 0.68 of the player's zoom by 220 km/h) and the look-ahead is about 0.45 s of travel.
 
 ## 3. Subsystem map
@@ -206,15 +236,16 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | roadblocks.js | Police containment: bridge and avenue cuts of braced cruisers plus loose cones. A braced cruiser is an ordinary 1.6 t body on locked brakes (`parkedFriction`), so the rammer's momentum decides: a truck, bus or the tank shoves through, a sedan crumples and stalls in the V. A cruiser moved over a metre is knocked loose (`roadblockShoved`); the cut is busted when the player's car comes out the far side (`watchRoadblockBreach`) |
 | carjack.js | Occupied traffic, locked doors, the ejection throw and what drivers do next |
 | riders.js | Riders thrown from motorbikes and bicycles: `RIDER_THROW`, `riderCrash` / `riderLanding`, `throwRider`, the flight, landing and slide (`stepThrownBody`), `updateThrownPlayer`, `stepRiderEjection`, fallen bikes (`updateFallenBike`), `riderReport` |
-| themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
+| themepark.js | Sunset Pier resort island: layout (`PIER`), the Falcon coaster (circuit builder, banking, gravity ride; RIDERS' VOICES: recorded screams cued per car by the track and rider speech bubbles, `updateFalconVoices`, `falconRiders`), the Sunset Eye, ride and show schedules (fountain, fireworks), colliders, ground tile, park crowd and queues, procedural park sound |
 | marina.js | Harbor Point marina, hull-form math, the boardable superyacht's deck plan (`SUPERYACHT`, `deckLocal`/`deckWorld`), liners, deck walking (`moveOnDeck`), the Meridian Star's voyage (`LINER_VOYAGE`, `sailLiner`) |
 | taxi.js | Hailing, destination picking on the map, the ride itself and the hijack |
-| cycles.js | Bike-share stands, racked bicycles, hold-W pedalling and the rider's legs |
+| cycles.js | South Coast Cycle bike share (section 4d, Bike share): the station plan (`bikeStationPlan`, `MISSION_STARTS`, `settleBikeStations`), docks (`setDockBike`, `bikeShareVersion`), RENT BIKE / DOCK BIKE (`bikeShareOffer`, `bikeShareInteract`), restocking (`updateBikeShare`), the map icon (`drawBikeShareMap`), `bikeShareReport`; hold-W pedalling and the rider's legs |
 | weather.js | Weather state machine (`weather.next` is chosen as a state begins), the build-up before a shower (`weather.approach`: thicker cloud, rising wind, far thunder), `weather.shower` counter, road wetness, wind and gusts, lightning strikes with a place and distance (`lightningStrike`, the flash's return strokes in `lightningFlash`) and thunder queued at distance / speed of sound |
 | weather-audio.js | Rain and thunder sound: three recorded rain beds (`RAIN_BEDS`: light patter on a tile roof, a steady wash, a heavy downpour) cross-faded by intensity (`rainBedLevels`, `RAIN_LEVEL`), muffled under cover (`rainShelter()`: the underpass, beneath rail decks and station canopies, aboard a train or cab, the elevator) and through the glass inside a closed vehicle, where a resonant low band of the same recordings drums on the roof; tyre spray on wet roads (a band of the heavy bed), puddle splashes underfoot; `rainReport()` (DeadEndCity.rainSound()); `thunderSound(distance)` builds each clap (crack only when near; rumble rolls, lower and longer with distance) |
 | water.js | Swimming, wading and sinking. `shoreStepBlocked` (called by `moveBody`) is the shoreline rule: on foot you enter the sea only from a beach; quays, docks, the pier and bridges are walls; out again at beaches, rocks or the `ladderList()` ladders. Also `exitIntoWater` (out of a flooding car), `diveOverboard` (J), `parachuteSplashdown`, harbor-patrol rescue |
 | water-audio.js | Procedural splashes, strokes, wading, ladders, flooding cars, surf, lapping, gulls, lifeguard whistle |
-| beach.js | Palm Keys Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
+| beachvolley.js | Beach volleyball: the regulation court plan (`volleyCourtPlan`, 16 x 8 m, net 2.43 m, in a sand pit at x -2322, y 5450 on the upper sand), 2 v 2 rally scoring to 15 with a physics ball (`volleyLaunch` solves every touch for a target and apex, so the AI reads it; net, sand bounce, in/out), bump / set / spike AI with errors, the player joining (`volleyJoin`, E or click to hit, mouse or movement aim, Shift soft set, run-in jump spike, landing ring, `#volleyCard` hint card), `volleyCourtCheck` |
+| beach.js | Palm Keys Beach: the furniture plan (`BEACH_LAYOUT`, placed along the waterline by `shoreAt(s, d)`), `beachgoers` with time-of-day density, volleyball players and their watchers (`fan`) and frisbee, panic (`beachHearsViolence` from `notifyViolence`), kiosk colliders |
 | roofmission.js | The Blue Hour terrace (`ROOFTOP`, `player.roof`, `moveOnRoof`), mission 2's hit (index 1); `entityElevation`, `sameFloor` |
 | rooftops.js | Helicopter landings on flat roofs (`helicopterRoofSite`, `roofLandingClear`), rooftop helipads (`chooseRoofHelipads`, `b.helipad`), the `player.buildingRoof` carrier (`exitOntoRoof`, `moveOnBuildingRoof`), `playerOnRoof()` |
 | air-cover.js | Railway, platform and underpass volumes for sight, bullets, vehicles and aircraft; OVERHEAD COVER: `overheadCover(x, y, elevation)` (one grid of the overhead volumes, the roofs registered with `registerOverheadCover()` by the renderer: every cutaway roof, the Falcon queue canopy and station roof, shop awnings, entrance canopies, the cruise terminal canopy; building interiors; bridges over the water) and `hiddenFromAir(t)`, which blinds the police helicopter |
@@ -246,16 +277,19 @@ Game closure (in include order; `src/main.js` wraps it, `src/game.js` includes t
 | parachute.js | `aircraftClearance`, bail-out (`bailOut`), freefall, canopy (opens over one second), the Blue Hour terrace landing, water rescue; freefall wind and canopy flutter (`updateParachuteWind`) and the opening sound |
 | mobile.js | Independent movement/aim fingers, context actions and overlay cleanup |
 | world-view.js | World zoom, pinch gestures, mouse wheel and camera limits |
-| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends); RADIO VOLUME, the radio box's speaker and slider (section 4d); `radioReport()` |
+| car-radio.js | Six stations (`MUSIC_STATIONS`, one or more streamed tracks each; a change of station cuts straight to the new music with a silent DJ caption), selection, playback and saved settings; plays in vehicles and on the Sunset Pier rides (`radioAboard()`: the Falcon and the Eye use the same player, chip and N / B keys, and stop when the ride ends; on the Falcon it starts off every ride and the switch holds for that ride only, `radioSwitchedOn()` / `player.coaster.radio`, never saved); RADIO VOLUME, the radio box's 90s volume knob (LED arc, LCD readout) and speaker (section 4d); `radioReport()` |
 | garages.js | Repair bays, vehicle fit, paint, repairs and pursuit clearance |
-| crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: soldiers, police and mission characters first, then lines at the player, then the nearest; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
+| crowd.js | Pedestrian life: rain reactions (`rainReaction`: remarks ahead of a shower, umbrellas, sheltering in doorways, running), `dressPerson`, the crowd streamer (`streamCrowd`), sidewalk walking, perception and reactions (`crowdAlarm`, `decideReaction`, `updateReaction`), bodies, near misses, hands up, witness calls (`crowdReport`), crash drivers and horns (`crowdCrash`, `updateTrafficLife`), speech bubbles (`crowdSay`; `speechBubbles` picks at most two on screen: Falcon riders while the player rides with them, soldiers, police and mission characters, then lines at the player, then the nearest; SPEECH SEEN FROM ABOVE: `speechHeightFade` fades every bubble, the Blue Hour's too, from 40 m to 50 m of height between the view and the speaker (`speechViewHeight`: the player's elevation when flying or riding, i.e. the AGL, else the street zoom as a height), and a hidden line takes no slot; each stays up long enough to read, others wait 2.5 s or lapse), taxi fares and bus stops (`curbsideStop`), street scenes, the neighbour grid (`forEachPedestrianNear`) |
 | beachclub.js | Marea Beach Club on `BEACH_CLUB_PLOT`: the plan (`MAREA`, plot-local u/v, `mareaPoint`), colliders (`beachClubBlocked` from `solid()`, `addBeachClubColliders`), the schedule (`mareaPhase`, `mareaLevels`), the cast of slots filled by hour (club people are pedestrians with a `club` record, updated by `updateClubGoer` before the crowd), the door queue and bouncer dialogues (through `crowdSay`), evacuation (`beachClubHearsViolence` from `notifyViolence`), closing-time taxis, the player's cover and VIP band (`beachClubInteract`) |
+| clubpool.js | The Marea pool: SWIM (E) at the edge dives in (`player.pool` carrier: dive, swim, out), the sea's `swimStroke` (water.js) inside `movePoolSwimmer`'s bounds, breath only slows you, GET OUT (E) to a free deck spot (`poolExitSpots`), drips, club-goers' remarks |
+| clubtalk.js | Conversations with club-goers: `CLUB_TALKS` (41 scripts by personality and day / night, alternatives and forks), `clubPersona`, no repeats until the pool is used, auto-start after standing ~1 s beside someone (or TALK), alternating bubbles through speechBubbles (`clubTalkSpeakers`, `inConversation` ranks first), `clubGoerOverride` (face, gesture, clap), goodbye on walking away |
+| leisure.js | The action key and prompt for the leisure activities (`leisurePrompt`, `leisureInteract`, `updateLeisure`): volleyball, the pool, the conversations |
 | beachclub-audio.js | The club's procedural music on a look-ahead scheduler (day, sunset and night sets), the wall low-pass by where the listener stands, and `mareaGroove`, the beat clock the dancers and lights follow |
 | ambience.js | Procedural traffic hum, crowd murmur, wind, birds, crickets, horns, sirens, club beat, busker |
 | quality.js | Graphics quality tiers (LOW/MEDIUM/HIGH/ULTRA), GPU capability check and the saved setting (`graphicsTier()`) |
 | god-panel.js | God mode settings: the GOD MODE settings tab (time presets and slider, freeze time, weather, refill, lose police, teleport), the map's teleport pick mode and the safe teleport `godTeleport` (section 4d, God mode) |
-| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the key remapping table and its keyboard handling (`settingsKeyDown`) |
-| hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
+| settings.js | The SETTINGS screen (title and pause menus): GRAPHICS, AUDIO, GAMEPLAY and CONTROLS tabs, `SETTING_ROWS`, the volume sliders (`AUDIO_VOLUMES`, `channelVolume`, `volumeScale`, `setRadioVolume`, `resetAudioVolumes`), NPC chatter (`npcChatterOn`), the character see-through switch, the player outline at night (`playerOutlineOn`), the key remapping table and its keyboard handling (`settingsKeyDown`) |
+| hud.js | HUD behaviour: pop-open radio and weapon boxes (`hudPop`), minimap fold and zoom (`hudState`), the SPEED BOX (`updateSpeedBox`, `trackPlayerPace`, the km/h / mph units: `speedReading`, `speedText`, `kmhReading`), wanted stars, context key hints, the HOW TO PLAY key grid; the title menu (`updateTitleMenu`) |
 | render3d.js | Renderer entry: street camera, lights, ground texture, lamps, static batching (`batchStaticGroups`), person/vehicle models, effects, `render()` |
 
 Renderer closure (inside `createCityRenderer()` in render3d.js, in include order;
@@ -264,7 +298,7 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 
 | File | Role |
 | --- | --- |
-| flight-view3d.js | Perspective flight camera, ground footprint, distance haze, shadow fit, LOD, impostors, far city |
+| flight-view3d.js | Perspective flight camera (`flightViewShape(agl)`; `streetZoomHeight(zoom)`: the street zoom as the height at which the flight camera draws the ground at that scale, `city3D.zoomHeight`), ground footprint, distance haze, shadow fit, LOD, impostors, far city |
 | postfx3d.js | Half-float scene target, MSAA, SAO ambient occlusion, bloom (NaN/overflow-safe, Karis-weighted bright pass), ACES tone curve, grade, FXAA |
 | lighting3d.js | Sun path (`sunDirection`), sky dome and environment map, night light map, `cityMaterialPatch`, the dithered cutaway (`updateCutaway`), the drive light map (head and tail lamps), contact shadows, time-of-day look (`NIGHT_LOOK`) |
 | searchlight3d.js | Searchlights: volumetric light shafts (`createSearchBeam`), the cookie texture and ground pool decals (`createSearchPool`), rain lit in the beam, the police helicopter's spot light, lens flare and crew aim (`updateHelicopterSearchlight`) |
@@ -289,7 +323,8 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | ecology3d.js | Species geometry, gait animation, culling and material cleanup |
 | world3d.js | Shore-aware water shader, palms, airports, rooftop bar, waterfront scenery |
 | wakes3d.js | Boat wakes (Kelvin V, propeller wash, hull collar) drawn into a wake map the water shader samples; bow spray and rooster tails |
-| beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers |
+| beachvolley3d.js | The volleyball court: pit and tapes painted into the sand (`paintVolleyCourt`), padded poles, guy ropes, net and antennas (`buildVolleyCourt`), the canvas scoreboard, the ball's shadow and the landing ring (`updateVolleyVisuals`) |
+| beach3d.js | Sand, swash ribbon, pier, props, ladders and instanced beachgoers (volleyball poses: bump, dig, set, spike, serve, cheer) |
 | county3d.js | County ground tiles; the range's chunked terrain meshes (half-resolution far LOD with skirts) and their layered material (forest floor, meadow, alpine turf, dirt, scree, strata rock, snow, streams, AO, bump, snow glints); instanced forests and boulders (near / far LOD per 2048-unit cell), stream ribbons and waterfalls, dawn valley mist; rural scenery and the airport |
 | airfields3d.js | Runways and taxiways over the ground sheets: one quad each with a patched standard material that paints the markings from metre uv (threshold, centre line, aiming point, touchdown zone, side stripes, blast pad chevrons, holding positions, rubber, rain), designation decals, holding-position signs; edge, threshold / end, approach (sequenced flashers), taxiway and obstruction lights as glow-field instances on batched fixtures; PAPI lenses and windsocks updated per frame (`updateAirfieldVisuals`, called from `updateCountyVisuals`) |
 | base3d.js | Fort Sentinel meshes: its own ground sheet, double fence and razor wire, watch towers and searchlights, the animated gate, buildings, airfield, depots, night light pools, merged military vehicle models (`makeMilitaryVehicle`, `compactTank`) and soldier kit (`dressSoldier`, `poseSoldier`) |
@@ -299,12 +334,12 @@ and helicopter3d, vehicles3d, police3d and plane3d last, before `makeVehicle`):
 | harbor3d.js | Cranes, the container ship, containers, depot, signals and helicopter searchlight |
 | marina3d.js | Pontoons, sixteen unique yachts, the superyacht deck by deck, terminal, liners, the sailing liner and her wake |
 | beachclub3d.js | The club's meshes (batched), sails that fade while the player is inside, and the show: LED floor, moving heads, lasers, strobe, LED wall, flames, string lights (`updateBeachClubVisuals`, called from `updateBeachVisuals`) |
-| cycles3d.js | Bike-share racks (the bicycles are ordinary vehicles) |
+| cycles3d.js | Bike-share stations: dock racks, docked share bikes and payment totems as instanced breakable props (merged vertex-coloured parts, `shareGeometry`), the totem's lit map, screen and brand faces, night glow and pool; the ridden share bike (`makeShareBicycle`); empty docks hidden (`updateBikeShareVisuals`) |
 | weather3d.js | GPU rain streaks (world-anchored, three depth layers, wind slant, lit by the night light map), splashes, roof and awning drips, spray behind cars, wet roads, lightning bolts and flashes, `vehicleLampAmount()` (headlights in heavy rain), the storm grade (`weatherGrade`) |
 | crowd3d.js | One InstancedMesh per body part, layered poses, stride, dogs and scene props |
 | clouds3d.js | Ray-marched cumulus at 385-610 m over a 3D noise volume, and their shadows on the city |
 | surfaces3d.js | Ground shader detail (asphalt, paving, grass), rain puddles and rain rings / shiver on them, county ground, foliage sway |
-| helicopter3d.js | Airframe, rotor, lights and cockpit |
+| helicopter3d.js | Every helicopter but the Apache (section 6d): looks (`helicopterLookFor`: police, news, executive, military), a light single (Bell 407 / H125 class) and a UH-60 class utility airframe lofted from monotone-cubic stations with the glazing cut flush out of the same surface, per-pixel canvas liveries, glyph decals, cabin and crew, merged trim / lamps per look; four-blade rotors with hub and swashplate, the blur disc shader, tail rotor or fenestron; nav / strobe / beacon / landing / police lights on the police light shader with halos; `animateHelicopter` (spool, blur, attitude, vibration, Nightsun aim), `helicopterSearchlightMount` |
 | apache3d.js | The AH-64 model (`makeApache`): lofted fuselage (`apacheLoft`), canopy, sensors, nacelles, stub wings with rocket pods (tube-face texture) and Hellfire launchers, gear, fin and stabilator merged per material (aircraftBatch); rotor, tail rotor, chin gun (`gunYaw` / `gunPitch`) and nav lights animated by `animateApache` |
 | vehicles3d.js | Road vehicles, bicycles, boats (speedboat, launch, jet ski), riders and moving parts; windscreen wipers (`addWipers`, `updateWipers`) |
 | police3d.js | Every police vehicle (section 6c): patrol cars in three bodies (pursuit sedan, utility, Crown Vic) and four liveries (black and white, modern, county sheriff, unmarked), the agents' SUV and the SWAT BearCat; lofted deformable shells and curved glasshouses on the damage contract, canvas liveries with swatch UVs, roof unit numbers from a glyph atlas, merged trim / lights per model, flash patterns (`policeLightLevels`), wig-wag, halos and road pools (`animatePoliceVehicle`, `policeRoadGlow`), impostor pools (`policeImpostorKey`) |
@@ -428,6 +463,15 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   north shore, and in the east the
   carousel, swing ride, teacups, drop tower, dodgems, the Arabian Nights dark ride, the souk
   food court, kiosks and the Wadi Splash log flume (`FLUME_PATH`).
+- **Riders' voices** (themepark.js RIDERS' VOICES): each car is read off the circuit every frame
+  (vertical speed = train speed x tangent rise, seat load from the change of rise, upside down).
+  Falling faster than 4.5 m/s after a crest cues screams: the first drop after the lift a chorus
+  (two recorded pedestrian screams per car, pitch 0.9..1.14, own level and delay, placed on the
+  car, so it rolls down the train), later drops of 12 m+ / 5 m+ dips, airtime (< 0.45 g) and
+  inversions a voice from some cars. Voices bus, 3D distance from the player (`playSample` with
+  `elevation` and `delay`). Rider bubbles (`falconRiders`, one per seat, anchored over the head by
+  `bubbleZ`; the player's seat is silent): nervous on the lift, "AAAAHHH!" at the first drop, lines
+  on later elements, queasy on the brake run. `DeadEndCity.coasterVoices()` logs every cue.
 - Riding: `player.coaster` is the carrier for both rides (`{ kind: 'train' | 'wheel' }`), so the
   existing teleport, death and mission-reset hooks let go of either. The ride camera
   (`updateParkCamera`, called from render3d.js right after `updateFlightView`) puts the
@@ -680,8 +724,11 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   has `get()` / `set()` and applies at once. While it is open `gameMode` is `'settings'` and
   the keydown listener hands every key to `settingsKeyDown()`. The character see-through
   switch writes `dead-end-city-cutaway` and calls `city3D.setCharacterCutaway(on)` (owned by
-  the renderer). NPC chatter off hides the street speech bubbles (render3d.js); mission
-  dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected.
+  the renderer). Player outline at night (`settings.playerOutline`, in the saved record) is
+  read by the renderer every frame. NPC chatter off hides the street speech bubbles (render3d.js); mission
+  dialogue (`#storyLine`, the Blue Hour bubbles) is unaffected. Every bubble (the Blue Hour's
+  included) fades out seen from 40..50 m above (crowd.js SPEECH SEEN FROM ABOVE); the HUD log and
+  captions are not bubbles.
 - **Audio buses** (audio.js THE MIX): one gain per category, each set by its Settings · Audio
   slider (settings.js `AUDIO_VOLUMES`; `busLevel(channel)` = 0.62 x the slider): `master`
   (effects: weapons, impacts, crashes, UI; the historical name, so anything connected to
@@ -692,19 +739,32 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
   ride-skip `duckBus`, then the ear filter, then `mixBus` (master volume x the Sound switch) and
   the limiter. Engines default to 65 (about 3.7 dB under their old level on the shared effects
   slider); a save from before the split starts ambience at its old effects value and engines at
-  65% of it. The car radio is an `<audio>` element scaled by `volumeScale('radio')` (master x
-  radio). `applyVolumes()` pushes every change into the live mix and the radio box's slider;
-  RESET AUDIO TO DEFAULTS (an `action` row) restores the default mix.
-- **Radio volume** (car-radio.js RADIO VOLUME): the radio box's open rows carry a speaker (mute
-  / unmute to `settings.radioUnmute`), a slider and the level: the same value as Settings ·
-  Audio · Radio & music, set through `setRadioVolume()` (settings.js) and redrawn by
-  `renderRadioVolume()` whoever changes it. Drag, click, the wheel anywhere over the box (open or
-  resting), a tap on touch (the box opens first), the focused slider's own keys, and
-  `radioQuieter` / `radioLouder` (`,` / `.`, remappable) in a vehicle. The row stops pointer,
-  click and key events so nothing reaches the canvas (fire, aim, zoom) or the window's keydown
-  (arrows, Space); the box stays open while a drag lasts and gives focus back to the canvas
-  after a mouse drag or click. Muted, the resting chip's bars lie flat with a crossed speaker.
-  `DeadEndCity.radio()` reports it.
+  65% of it. The radio defaults to 100 (it was 80): a save still at 80, or without a level and
+  not marked `radioVolumeSet`, moves to 100 once on load (settings.js RADIO DEFAULT) and is
+  written back; any change by the player (knob, keys, wheel, mute, the Settings slider, a level
+  saved off the default) sets `radioVolumeSet`, and RESET clears it. The car radio is an
+  `<audio>` element scaled by `volumeScale('radio')` (master x radio). `applyVolumes()` pushes
+  every change into the live mix and the radio box's knob; RESET AUDIO TO DEFAULTS (an `action`
+  row) restores the default mix.
+- **Radio volume** (car-radio.js RADIO VOLUME): the radio box's open rows carry a 90s head-unit
+  rotary knob (CSS: a ribbed rubber grip and pointer that turn with `--angle`, a machined cap,
+  rim light and specular spot that stay put), an arc of 20 amber LED segments over 270 degrees
+  (one per 5 steps, the last partly lit, the top three hot), an LCD readout (SVG seven-segment
+  digits over ghost 8s, `OFF` at 0, a blinking MUTE annunciator) and the speaker (mute / unmute
+  to `settings.radioUnmute`). The same value as Settings · Audio · Radio & music, set through
+  `setRadioVolume()` (settings.js) and redrawn by `renderRadioVolume()` whoever changes it (it
+  writes nothing when nothing changed). Drag on the knob (pointer captured): straight movement
+  counts `dx - dy` at 1.6 px a step (160 px = the range; Shift x0.25); a path that curves round
+  the centre (turned 50 degrees in the sense it swept 30) switches to following the pointer's
+  angle, 270 degrees = the range. Also a double-click (mute), the wheel anywhere over the box,
+  the focused knob's arrows / Page / Home / End (`role="slider"`), a tap on touch (the box
+  opens first; the knob is 76 px with a wider hit area), and `radioQuieter` / `radioLouder`
+  (`,` / `.`, remappable) in a vehicle. Keys and the wheel go to the next 5-step mark; each
+  mark crossed ticks softly on the effects bus (`knobDetent`). The row stops pointer, click and
+  key events so nothing reaches the canvas (fire, aim, zoom) or the window's keydown (arrows,
+  Space); the box stays open while a drag lasts and gives focus back to the canvas after a
+  mouse drag or click. Muted, the resting chip's bars lie flat with a crossed speaker.
+  `DeadEndCity.radio()` reports it (`knob`: value, angle, lit LEDs, readout, drag mode, last drag).
 - **HUD** (shell.html DOM and the INTERFACE 30 stylesheet section; hud.js): top-left
   location, top-right cash / stars / clock, a waypoint pill top centre, bottom row minimap
   with health and armour bars, the mission card and the equipment column. The radio and
@@ -744,6 +804,51 @@ south-east). The **Sunset Pier** amusement island lies north of Northbank across
 - **Centre cards** (hud.js CENTRE CARDS): the headline card (`announce()`) slides up under the
   docked prompt and shrinks after 3 s (not WASTED / BUSTED); in touch mode a toast dims after
   3 s. Reduced motion cuts the slides and pop-ins (the shell's reduced-motion block).
+- **Speed box** (hud.js SPEED BOX, `#vehicleStats`): one readout however the player moves.
+  In a vehicle: its name, the speed (knots on a boat), altitude in an aircraft, cadence and legs
+  on a bicycle, and the condition bar. On foot (Settings · Gameplay · **Speed box on foot**,
+  `hudState.footSpeed`, on by default): the movement state (STANDING, WALKING, RUNNING, WADING,
+  CLIMBING, SWIMMING · CRAWL / BREASTSTROKE / TREADING WATER) over the measured ground speed
+  (`trackPlayerPace`, every step from where the step leaves the player, eased over 0.35 s, 0 once
+  under 0.6 km/h, the whole number only changing when the eased speed has moved 0.75 away); under
+  a parachute FALLING · FREEFALL / CANOPY with the airspeed, the rate of descent and the height.
+  The bar is the breath while swimming (the old breath figure; always shown in the water) and
+  folds away on foot (`.no-meter`). **Speed units** (Settings · Gameplay, `hudState.units`, `'kmh'`
+  or `'mph'`): every printed speed goes through `speedReading` / `speedText` / `kmhReading`: this
+  box, the flight HUD's airspeed tape and its caption (`#fhSpeedCap`), the Falcon's card and
+  banner. Boats keep knots and distances stay metric. `DeadEndCity.speedBox()` reports it;
+  `DeadEndCity.settings({ units: 'mph', footSpeed: true })` sets both.
+- **Bike share** (cycles.js BIKE SHARE, cycles3d.js): South Coast Cycle stations, a dock rack
+  of 4-8 share bikes and a payment totem, stand beside every payphone (8 docks) and at every
+  place a job first sends you (6 docks). The network is data-driven: payphones are `phone`, any
+  `PAYPHONES` array a district declares and PLACES of kind `'payphone'` (`payphoneAnchors`); a
+  job's start is `missions[i].start` when its entry has one, else `MISSION_STARTS` (the
+  `setStage(0)` target of each start function; keep it in step when a job's opening moves); other
+  systems can call `addBikeShareAnchor({ x, y, label })` before the city is populated. Also at
+  the rail stations and Southport terminal (8)
+  and where the old free racks were (park gates 5, marina / pier / Exchange 6, esplanade 4). An
+  anchor within `BIKE_SHARE.spacing` (21 m) of a station is served by it (`serves`). Placement
+  tries kerb-side pavement spots along the surrounding streets (dock posts `kerbGap` back from
+  the kerb, the bikes' tails toward the buildings), then open ground in rings, and takes the
+  first whose footprint is dry open pavement (no carriageway + 4, rail, building, collider,
+  quay railing, street end, beach, harbor, airport; off crosswalks + 2 m, trees, lamps and
+  benches) with the walkway behind it (1.8 m) clear, and 3 m from doors, 6 m from rail entrances
+  and 7.5 m from the payphone. The renderer settles the plan against the furniture it placed
+  (`settleBikeStations`: props and foot obstacles), moving a station to its next candidate.
+  Every size follows the bicycle (`SHARE_BIKE_LENGTH` = `VEHICLE_DEFINITIONS.bicycle.l`: the
+  dock pitch, bike positions, footprint, prop boxes; the share bike model is drawn to that length)
+  or the metre (rack and totem). On foot within 3.2 m, RENT BIKE · $5 (`offerPrompt`, id
+  `bikeshare`) undocks the nearest bike as an ordinary bicycle with `shareBike` set and puts the
+  player on it; riding a share bike below 12 km/h within 4.2 m of a station with a free dock,
+  DOCK BIKE · $2 BACK racks it (the vehicle is removed). The offer is one function
+  (`bikeShareOffer`) asked by the prompt and by E, with `withinRange` hysteresis; stations are
+  found through a 256-unit grid. A station restocks one bike about every 150 s while the player
+  is 32 m or more away. The rack (`bikerack`, 35 kJ), totem (`biketotem`, 60 kJ) and bikes
+  (`sharebike`, 1.2 kJ) are breakable props (damage.js); a fallen rack topples its bikes, and an
+  empty dock's bike prop is laid down and its instances zeroed (`updateBikeShareVisuals`, on a
+  `bikeShareVersion` change). Map and minimap show a teal bicycle chip per station (grey-teal
+  when empty) and the big map's legend has BIKE SHARE. `DeadEndCity.bikeShare()` lists the
+  network and the nearest station; `DeadEndCity.bikeStation(id)` stands the player at one.
 - **Flight HUD** (hud.js FLIGHT HUD, `#flightHud` in shell.html): in an aircraft the
   instruments hug the screen edges so the view stays clear: a column on the left edge
   (attitude indicator with pitch ladder and bank scale, the airspeed tape with its stall band,
@@ -1158,13 +1263,21 @@ docs/audit/missions-qa.md shows the method).
 
 - **HDR and post-processing** (postfx3d.js): the scene renders into a half-float target
   (4x MSAA on HIGH/ULTRA, with a depth texture), then SAO ambient occlusion (half resolution,
-  depth-aware blur), a soft-knee bloom mip chain, and one composite pass: AO, bloom, exposure,
+  depth-aware blur), wet reflections (HIGH/ULTRA, wet streets only, see Wet roads), a soft-knee
+  bloom mip chain, and one composite pass: AO, wet reflections, bloom, exposure,
   the ACES filmic curve, a time-of-day grade (saturation, contrast, lift/gain), vignette and
   dither, then FXAA when there is no MSAA. `renderFrame()` replaces `renderer.render()`.
   Built-in materials output scene-linear light into the target. Custom `ShaderMaterial`s that
   compute final screen colours (the water) end with `#include <city_hdr_output>` (and include
   `<city_hdr_pars>`), which inverts the tone curve so they look as designed; unlit
   `MeshBasicMaterial`s with `toneMapped: false` (signs) get the same automatically.
+  Half-resolution passes that read the full-resolution depth buffer (AO, its blur, the wet
+  reflections) fetch it at texel centres computed from `gl_FragCoord`: a half-resolution
+  pixel's centre lies exactly on the corner of four depth texels, and which one a nearest
+  fetch returned flipped with sub-ULP rounding of the interpolated UV (one way above the
+  middle row of the screen and on one side of the full-screen quad's diagonal). That printed
+  AO stripes and a darker band with a hard horizontal edge through the middle of the frame,
+  right under the player (the "horizontal lines on ULTRA", also on HIGH).
 - **Adaptive quality** (quality.js, ADAPTIVE QUALITY): on AUTO the frame loop feeds each
   frame's interval and CPU time to `adaptGraphics()`; GPU-bound and slow, the scene is drawn
   at a lower share of the canvas (`setRenderScale`, postfx3d.js; the composite upsamples),
@@ -1179,7 +1292,7 @@ docs/audit/missions-qa.md shows the method).
   With shadows off, cars and people stand on soft contact blobs (lighting3d.js CONTACT
   SHADOWS, one instanced draw). The shadow box stays texel-snapped (`placeSun`).
 - **Quality tiers** (quality.js) set pixel ratio, default shadows and shadow-map size, MSAA,
-  AO samples, bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
+  AO samples, wet-reflection steps (`ssr`, HIGH/ULTRA), bloom levels, grading, LOD bias and rain density. `graphicsTier()` is the active
   record; the renderer's `setQuality(tier)` applies one at runtime. `DeadEndCity.graphics('high')`
   switches from the console (tests use it, since SwiftShader auto-detects as LOW).
 - **Sun and sky** (lighting3d.js): `sunDirection` follows the clock (east, north-west at
@@ -1206,7 +1319,9 @@ docs/audit/missions-qa.md shows the method).
   blue-hour night: stronger moonlight and cool sky fill, a brighter night sky, opened exposure,
   slightly lifted blue blacks and less contrast and saturation loss than before; lamps, neon and
   headlights stay far above that ambient. No light follows the player (the foot pool is gone;
-  only a faint moonlit rim on their model's silhouette edges remains).
+  only a faint moonlit rim on their model's silhouette edges remains; Settings · Graphics ·
+  Player outline at night switches it off: `settings.playerOutline`, saved with the other
+  settings and read every frame).
 - **Searchlights** (searchlight3d.js): a shaft is a cone whose front faces march the view
   ray through the cone (exit solved analytically): soft radial profile with a hot core,
   denser towards the lamp, forward scattering, drifting haze noise (MEDIUM and up), a soft
@@ -1239,7 +1354,34 @@ docs/audit/missions-qa.md shows the method).
   samples for foam and for its normal. Spray is one `Points` object.
 - **Ground detail** (surfaces3d.js): the ground shader classifies the painted colour
   (asphalt, paving, grass) and adds world-space grain, patches, cracks, slab joints, mottling,
-  a bump, dielectric roughness and rain puddles (`weather.wet`). Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
+  a bump and dielectric roughness. (The painted sheet no longer carries the 330 dark
+  "patch" ellipses it used to: from the street camera they read as long shadows with nothing
+  casting them, fixed to the tarmac whatever the time of day.)
+- **Wet roads** (surfaces3d.js WET ROADS, lighting3d.js WET SURFACES, postfx3d.js WET
+  REFLECTIONS, weather3d.js WET GROUND), all from `weather.wet` (rises in the rain, dries over a
+  few minutes after). A shared GLSL pattern decides where water stands: `cityWetLow` (dips in
+  the tarmac), `cityWetFilm` (the damp film, each spot with its own drying order, so a drying
+  street goes patchy from the edges in; dips and gutters dry last) and `cityPuddle` (standing
+  water that fills the dips and gutters as it rains and shrinks to their middles as it dries).
+  The ground, the neon streaks (signage3d.js) and the reflections pass all use it.
+  - LOW: the film only darkens (asphalt and paving darker and more saturated, paint and bright
+    kerbs a little less, grass hardly) and smooths a little.
+  - MEDIUM: plus the glossy film (roughness ~0.25), the sky mirrored in it (`citySkyReflect`)
+    and at night the lamps, shop windows and neon streaked down the wet road towards the
+    camera: the night light map read at six points up the view direction and high-passed
+    across it, so only the bright cores of the pools come through as narrow streaks in the
+    lamps' colours (`citySheenDir`, `WET_STREAK_GAIN`).
+  - HIGH / ULTRA: plus standing water in the dips and in the gutters (paving a few units from
+    the tarmac in the painted sheet), nearly a mirror, with three layers of rain rings
+    (`cityPuddleRipples`), and the wet reflections pass: the wet ground writes its
+    reflectivity into the HDR target's alpha as a negative number (nothing else writes one); a
+    half-resolution pass traces each wet pixel's mirror ray through the depth buffer (20 steps
+    on HIGH, 28 on ULTRA, geometric, then a 5-step binary search), jittered in its vertical
+    plane by the roughness so lights stretch into streaks, rippled in the puddles, then
+    blurred along the reflection; the composite adds (hit minus the sky the ground already
+    mirrors) x wetness x `WET_MIRROR_DAY`/`NIGHT`, so facades, signs, lamps, people and cars
+    stand in the wet road. Both passes are skipped on dry streets.
+  - Tyre spray behind fast cars on a wet road (weather3d.js SPRAY) on MEDIUM and up. Tree leaves and palm fronds sway gently in the wind; planted greenery (hedges, planters, roof gardens such as the Blue Hour terrace) uses `stillLeafMat` and stays still.
 
 - **Weather** (weather.js, weather3d.js, weather-audio.js): the next state is picked when a
   state starts, so an overcast spell that will turn to rain announces it over its last
@@ -1404,6 +1546,57 @@ the models are drawn inside them and nothing in the physics changed.
   `(c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.showLights`.
 - `DeadEndCity.policeLineup(x, y, heading, lights, spacing)` parks one of each model and
   livery for review.
+
+## 6d. Helicopters
+
+Every helicopter except Fort Sentinel's Apache is built by `src/helicopter3d.js`
+(`makeHelicopter`, called from `makeVehicle`). The collision footprint is the vehicle type's
+own (86 × 34, rotor ~86 across, a real H125's size at 8 units to the metre, `modelScale: 1`:
+the models are built at real size and returned with `realSize`, so DESIGN SIZE never
+scales them); nothing in the flight model changed.
+
+- **Looks** (`helicopterLookFor`, cached per vehicle in a WeakMap): `police` (the air unit,
+  and the machine on the POLICE HQ pad), `news` (the RIVERSIDE pad, and one civilian in
+  three), `executive` (the rest: glossy metallic paint from a palette, or the vehicle's own
+  colour after a respray, gold pinstripes, fenestron tail), `military` (Fort Sentinel,
+  `c.military`: a UH-60 Black Hawk class airframe scaled into the same footprint, flat
+  olive drab, wheeled gear).
+- **Airframes** are plans of stations (`heliLightPlan`, `heliHawkPlan`) lofted with
+  monotone cubics and superellipse sections. The plan's `windows(x, y, z)` signed distance
+  splits the loft's quads into painted skin and flush transparent glass (bubble, roof and
+  door windows); a dark liner, floor, seats, panel and the crew (pilot with anyone
+  aboard, observer in the air unit) sit inside and read through the tinted glass from above.
+- **Liveries** are one canvas per look painted per pixel from the surface
+  (`heliLiveryTexture`): the scheme (`heliScheme`), window seals, panel seams, belly grime
+  and exhaust soot; the bottom quarter holds the fin art and swatches for the cowling,
+  stabiliser and endplates. The police scheme follows the patrol cars' modern livery
+  (white, navy swoosh, sky-blue band, reflective silver line, gold star) with AIR 1 on the
+  roof and POLICE along the boom for the camera above. Words are glyph quads from the
+  police glyph atlas (`heliText`).
+- **Draw calls**: skin, glass, trim, metal, interior, decals, lamps, hub, blades, disc,
+  tail blades and tail disc: 12 draws for a parked police machine (15 with the crew and
+  Nightsun), against ~35 meshes and sprites for the old box model; 5 shadow casters.
+  Geometry is shared per look; each model owns only its paint, glass, lamp and disc
+  materials.
+- **Rotors**: four twisted, tapered blades with swept, painted tips and droop, grips,
+  dampers, pitch links and swashplate. `m.rpm` spools up in ~4 s and down in ~9 s; past
+  half speed the blades switch to a depth-only material (they still cast their flickering
+  shadow) and the HELI DISC shader draws a translucent disc with blade ghosts trailing
+  round it. The tail rotor or fenestron blurs the same way.
+- **Lights** are one lens mesh per model on the police light shader (`HELI_CH` channels):
+  red / green / white navigation, double-flash strobes, red beacons, landing lights (low
+  or tracking at night), and on the police machine red / blue LED bars on the cabin, boom
+  and fin tip flashing with `policeLightLevels`; lit channels queue VEHICLE HALOS.
+- **Searchlight mount**: the Nightsun's lens is at `HELI_SEARCHLIGHT_MOUNT` (model space,
+  under the port side of the cabin); `m.searchlightMount` is an anchor there and
+  `helicopterSearchlightMount(c, out)` returns it in world space for searchlight3d.js. The
+  Nightsun head turns on its gimbal towards what the crew are watching.
+- **Damage**: paint weathers and chars through `paintVehicle` (livery restored on repair),
+  the glass soots, bullet marks land on skin, glass and trim (`m.rayTargets`); a wreck's
+  rotor stops with its hub askew.
+- `DeadEndCity.helicopterLineup(x, y, heading, rotors)` parks one of each look;
+  `DeadEndCity.helicopterModels()` reports each model's look, spool, draw calls, shadow
+  casters and triangles.
 
 ## 7. Build, check, test
 
