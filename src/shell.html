@@ -140,7 +140,7 @@ SUBSYSTEM INDEX — in include order; search for each BEGIN SUBSYSTEM marker.
   src/world-view.js: World camera gestures
     World zoom, pinch gestures, mouse wheel and camera limits.
   src/car-radio.js: Vehicle radio stations
-    Three embedded tracks, station selection, playback and saved settings.
+    Six stations, selection, playback and saved settings; the same radio box on the title menu.
   src/garages.js: Drive-in repair and respray
     Repair bays, vehicle fit, paint, repairs and pursuit clearance.
   src/crowd.js: Crowd life, perception and reactions
@@ -2018,6 +2018,10 @@ kbd {
   position: absolute;
   left: 50%;
   top: 50%;
+  /* Centred before the first hit too (pursuit.js sets the rotation with it):
+     untransformed, its box ran 150 px past a phone's right edge and widened
+     the page. */
+  transform: translate(-50%, -50%);
   width: 300px;
   height: 300px;
   border-radius: 50%;
@@ -5388,6 +5392,154 @@ body.no-key-hints .quickkeys {
     padding-bottom: 8px;
   }
 }
+/* --- TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
+   The same element and rows as in a vehicle, moved into #menu while the title
+   shows (so the screens opened over the title cover it), always open, on the
+   right of the screen over the cover art and clear of the logo and the menu
+   column. Before the browser lets it play (no user gesture yet) the track line
+   asks for a click and the bars lie flat (.radio-waiting). */
+#menu #carRadio.title-radio {
+  /* Placed in #menu (the screen), not the layout viewport. */
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: auto;
+  right: clamp(20px, 4vw, 60px);
+  width: 300px;
+  height: fit-content;
+  margin: auto 0;
+  padding: 12px 15px 14px;
+  background: #0a0e12e0;
+  backdrop-filter: blur(8px);
+  animation: titleRise 0.8s var(--ui-ease) 1.3s both;
+  transition: opacity 0.25s;
+}
+#menu #carRadio.title-radio .hud-more {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+#menu #carRadio.title-radio #radioStation {
+  font-size: 17px;
+}
+/* The settings screen hides the title behind it; the radio goes with it. */
+#menu.settings-behind #carRadio.title-radio {
+  opacity: 0;
+  pointer-events: none;
+}
+/* Leave room for the radio beside the menu column on narrower windows. */
+#menu:has(#carRadio.title-radio) .title-menu {
+  max-width: min(420px, calc(100vw - clamp(20px, 7vw, 110px) - 360px));
+}
+#carRadio.radio-waiting .radio-eq i {
+  animation: none;
+  transform: scaleY(0.2);
+}
+#carRadio.radio-waiting #radioTrack {
+  color: var(--acid);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  animation: radioHint 1.8s ease-in-out infinite;
+}
+@keyframes radioHint {
+  50% {
+    opacity: 0.5;
+  }
+}
+@media (max-width: 1100px) and (min-width: 701px) {
+  #menu #carRadio.title-radio {
+    width: 260px;
+  }
+  #menu:has(#carRadio.title-radio) .title-menu {
+    max-width: min(420px, calc(100vw - clamp(20px, 7vw, 110px) - 310px));
+  }
+}
+/* Phones upright: the logo and menu sit low, so the radio docks at the top
+   right over the cover art, full width up to 340 px. */
+@media (max-width: 700px) {
+  #menu #carRadio.title-radio {
+    top: max(12px, env(safe-area-inset-top));
+    bottom: auto;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: 340px;
+    height: auto;
+    margin: 0 0 0 auto;
+    padding: 10px 12px 11px;
+  }
+  #menu:has(#carRadio.title-radio) .title-menu {
+    max-width: 420px;
+  }
+  #menu #carRadio.title-radio #radioStation {
+    font-size: 15px;
+  }
+  #menu #carRadio.title-radio .radio-knob {
+    --size: 60px;
+  }
+  #menu #carRadio.title-radio .radio-lcd {
+    height: 40px;
+  }
+}
+/* Short screens (upright phones where the logo and menu reach high up, and
+   landscape phones where they fill the width): the radio rests as its one-line
+   chip at the top right (as in a vehicle) and opens on a tap for a few
+   seconds; while the browser still waits for a gesture the chip says so. */
+@media (max-width: 700px) and (max-height: 760px), (max-height: 560px) {
+  #menu #carRadio.title-radio:not(.open):not(:focus-within) {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  #menu #carRadio.title-radio:not(.open):not(:focus-within) .hud-more {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+  #menu #carRadio.title-radio.radio-waiting:not(.open):not(:focus-within) .radio-chip::after {
+    content: '♪ TAP TO PLAY';
+    margin-left: auto;
+    font:
+      800 9px/1 var(--ui-font);
+    letter-spacing: 0.14em;
+    color: var(--acid);
+    white-space: nowrap;
+  }
+}
+@media (max-height: 560px) and (min-width: 701px) {
+  #menu #carRadio.title-radio {
+    top: max(10px, env(safe-area-inset-top));
+    bottom: auto;
+    right: max(16px, env(safe-area-inset-right));
+    width: 280px;
+    margin: 0;
+    padding: 9px 12px 10px;
+  }
+  #menu:has(#carRadio.title-radio) .title-menu {
+    max-width: 420px;
+  }
+  #menu #carRadio.title-radio #radioStation {
+    font-size: 14px;
+  }
+  #menu #carRadio.title-radio #radioTrack {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #menu #carRadio.title-radio .radio-knob {
+    --size: 54px;
+  }
+  #menu #carRadio.title-radio .radio-lcd {
+    height: 36px;
+  }
+  /* Two rows of four, as on a desktop (the touch HUD's single row is too tight). */
+  #menu #carRadio.title-radio .radio-presets {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 7px;
+  }
+  #menu #carRadio.title-radio #radioNext {
+    grid-column: span 2;
+  }
+}
 /* --- Flight HUD (hud.js, FLIGHT HUD) -----------------------------------------
    Shown only in an aircraft, compact and against the screen edges so the view
    stays clear: attitude, airspeed and power in a column on the left edge;
@@ -5678,6 +5830,7 @@ body.no-key-hints .quickkeys {
   #pager.compact,
   #vehicleStats.active,
   #carRadio,
+  #carRadio.radio-waiting #radioTrack,
   #interaction,
   #storyLine.show,
   #announcement.show strong,

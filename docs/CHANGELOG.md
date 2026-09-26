@@ -36,6 +36,40 @@ now only say what lies where; the ground shader draws the surfaces themselves, c
 - LOW keeps a cheap path (the sheet, one detail sample, the kerb, the marks).
   `DeadEndCity.groundDetail()` reports the ground data and the tufts.
 
+## Unreleased — the radio on the title screen
+
+The car radio plays on the title menu too, so the city's music is there before the first ride
+(car-radio.js TITLE RADIO).
+
+- **The same radio box** (station chip, genre, now playing, the 90s volume knob with its LED arc
+  and LCD, mute, the six presets and NEXT) docks on the right of the title screen, open, over the
+  cover art and clear of the logo and the menu column (the column narrows beside it on narrower
+  windows). Upright phones: at the top right over the art; short upright phones and landscape
+  phones: its one-line chip at the top right, opened by a tap for a few seconds. The box moves
+  into `#menu` while the title shows, so Settings, Choose Mission, How to Play and Credits cover it
+  and the music plays on behind them.
+- **NEON 88.7 by default** on the title; a station tuned there is remembered for the title
+  (`titleStation` in `dead-end-city-radio-v2`), apart from the car's preset. N / B and `,` / `.`
+  work on the title as in a vehicle. The volume is the one radio level (knob, mute, Settings).
+- **Autoplay**: browsers block sound before a user gesture. The first attempt is made at once;
+  while it is refused the box says "♪ Click anywhere to play radio" ("Tap" on touch; "♪ TAP TO
+  PLAY" on the short-phone chip), the bars lie flat, and the first click, tap or key anywhere
+  starts it. A refusal throws nothing (the play() promise is caught).
+- **Focus**: a click on the box hands the keys back to the menu item last selected, so Enter still
+  starts the game and the arrows still move through the menu.
+- **Handover**: entering the city on foot fades the music out over 1.5 s (on the wall clock) and
+  pauses it; starting in a vehicle with its radio on carries the same station and track on
+  without a break (the car's preset becomes the title's station). Back on the title it resumes.
+- **Settings · Audio · Radio on title screen** (on by default, saved as `titleRadio` in
+  `dead-end-city-settings`).
+- **Published split build**: the title radio streams `media/synth.mp3` like the in-car radio;
+  checked over a local HTTP server.
+- **Fix**: `#damageArc` is centred before the first hit too; untransformed it ran 150 px past a
+  phone's right edge and widened the page (fixed elements were placed on the wider layout).
+- **Console**: `DeadEndCity.radio()` reports `title` (enabled, shown, station, power, waiting for a
+  gesture, docked in the menu), `carStation`, `blocked`, `unavailable`, `loaded`, `src`, `time`
+  and `fading`.
+
 ## Unreleased — the car and motorbike redesign, and the flagships
 
 Civilian cars (cars3d.js) and motorbikes (motorbikes3d.js), rebuilt at real size to the police
