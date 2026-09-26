@@ -29,32 +29,7 @@
         cityRain: { value: 0 },
         cityRainTime: { value: 0 },
       };
-      const SURFACE_NOISE = `
-        float cityHash( vec2 p ) {
-          vec3 p3 = fract( vec3( p.xyx ) * 0.1031 );
-          p3 += dot( p3, p3.yzx + 33.33 );
-          return fract( ( p3.x + p3.y ) * p3.z );
-        }
-        float cityNoise( vec2 p ) {
-          vec2 i = floor( p ), f = fract( p );
-          f = f * f * ( 3.0 - 2.0 * f );
-          return mix( mix( cityHash( i ), cityHash( i + vec2( 1.0, 0.0 ) ), f.x ),
-                      mix( cityHash( i + vec2( 0.0, 1.0 ) ), cityHash( i + vec2( 1.0, 1.0 ) ), f.x ), f.y );
-        }`;
-      // Expanding rings from raindrops on still water, as a normal tilt (x, z):
-      // one drop per `cell` square, each at a random spot and time.
-      const RAIN_RINGS = `
-        vec2 cityRainRings( vec2 p, float t, float cell ) {
-          vec2 c = floor( p / cell ), f = p / cell - c;
-          float h = cityHash( c );
-          vec2 centre = vec2( cityHash( c + 3.1 ), cityHash( c + 7.7 ) ) * 0.6 + 0.2;
-          float life = fract( t * 1.3 + h );
-          vec2 d = ( f - centre ) * cell;
-          float dist = length( d );
-          float w = dist - life * cell * 0.45;
-          float slope = -6.0 * w * exp( -w * w * 3.0 ) * ( 1.0 - life );
-          return d / max( dist, 1e-3 ) * slope;
-        }`;
+      // SURFACE_NOISE and RAIN_RINGS are shared GLSL (lighting3d.js, WET SURFACES).
       const GROUND_ALBEDO = `
         vec2 gp = vCityWorld.xz;
         vec3 groundBase = diffuseColor.rgb;
@@ -101,15 +76,44 @@
         // Lawns read lush rather than pastel: a deeper, more saturated green.
         grass = max( mix( vec3( dot( grass, vec3( 0.2126, 0.7152, 0.0722 ) ) ), grass, 1.15 ) * vec3( 0.84, 0.9, 0.84 ), 0.0 );
         diffuseColor.rgb = mix( mix( mix( groundBase * ( 0.94 + 0.12 * grain ), paving, paveMask ), asphalt, roadMask ), grass, grassMask );
-        // Rain: everything darkens as it soaks; low spots in the tarmac hold water.
-        float puddle = smoothstep( 0.6, 0.66, cityNoise( gp * 0.017 + 41.0 ) + grainA * 0.05 ) * roadMask * smoothstep( 0.2, 0.8, cityWet );
-        diffuseColor.rgb *= 1.0 - 0.3 * cityWet - 0.35 * puddle;`;
+        // WET ROADS (the pattern is lighting3d.js WET SURFACES). The damp film
+        // soaks asphalt and paving darker and more saturated, paint and bright
+        // kerbs a little less, grass hardly; it dries in patches after the rain.
+        // From MEDIUM up it turns glossy (roughness below, the sky sheen after the
+        // lights); from HIGH up dips in the tarmac and the gutters along the
+        // kerbs hold standing water that ripples in the rain and, with the wet
+        // reflections pass (postfx3d.js), mirrors the street. LOW only darkens.
+        float wetFilm = 0.0, puddle = 0.0, wetReflect = 0.0;
+        if ( cityWet > 0.002 ) {
+          float low = cityWetLow( gp ), gutter = 0.0;
+          #if defined( USE_MAP ) && !defined( CITY_HILL )
+            // A gutter: paving (a kerb) a few units from this tarmac, in any of
+            // the four directions. Two samples a step apart must both be paving:
+            // the soft edge of a painted line or crossing bar passes through
+            // paving's brightness too, and gave every marking a ring of water.
+            if ( cityWetDetail > 1.5 && roadMask > 0.2 ) {
+              vec2 dx = vec2( cityGroundTexel.x * 2.5, 0.0 ), dy = vec2( 0.0, cityGroundTexel.y * 2.5 );
+              gutter = max( max( cityKerbAt( vMapUv, dx ), cityKerbAt( vMapUv, -dx ) ), max( cityKerbAt( vMapUv, dy ), cityKerbAt( vMapUv, -dy ) ) );
+            }
+          #endif
+          wetFilm = cityWetFilm( gp, low, gutter * 0.25, cityWet );
+          if ( cityWetDetail > 1.5 ) puddle = cityPuddle( low + gutter * 0.32 + grainA * 0.03, cityWet ) * roadMask;
+          float porous = mix( mix( 0.6, 0.85, paveMask ), 1.0, roadMask ) * ( 1.0 - 0.65 * grassMask );
+          float soak = wetFilm * porous;
+          float bright = smoothstep( 0.3, 0.55, groundLum ) * ( 1.0 - grassMask );
+          vec3 soaked = diffuseColor.rgb;
+          soaked = max( mix( vec3( dot( soaked, vec3( 0.2126, 0.7152, 0.0722 ) ) ), soaked, 1.0 + 0.4 * soak ), 0.0 );
+          soaked *= 1.0 - soak * mix( 0.46, 0.2, bright );
+          diffuseColor.rgb = soaked * ( 1.0 - 0.3 * puddle );
+          wetReflect = cityWetDetail > 0.5 ? clamp( soak * 0.34 * ( 1.0 - bright * 0.4 ) + puddle * 0.66, 0.0, 1.0 ) : 0.0;
+        }`;
       const GROUND_ROUGHNESS = `
         roughnessFactor = mix( 0.92, mix( 0.8 + 0.14 * grain, 0.62, tarPatch ), roadMask );
-        roughnessFactor = mix( roughnessFactor, roughnessFactor * 0.45, cityWet );
+        // The damp film smooths the surface into a sheen (only a little on LOW).
+        roughnessFactor = mix( roughnessFactor, min( roughnessFactor, cityWetDetail > 0.5 ? 0.28 + 0.16 * grain : 0.6 ), wetFilm * ( 1.0 - 0.7 * grassMask ) );
         // Not a perfect mirror: at 0.05 the sun's reflection in a puddle was a blinding
         // blob that bloomed across the street from the air.
-        roughnessFactor = mix( roughnessFactor, 0.11, puddle );`;
+        roughnessFactor = mix( roughnessFactor, 0.09, puddle );`;
       const GROUND_NORMAL = `
         {
           float e = 0.3, h0 = cityNoise( gp * 3.1 );
@@ -125,12 +129,62 @@
             float ringsResolve = 1.0 - smoothstep( 0.3, 0.8, footprint );
             vec2 tilt = vec2( cityNoise( gp * 0.09 + vec2( cityRainTime * 0.7, 0.0 ) ), cityNoise( gp * 0.09 + vec2( 5.3, cityRainTime * 0.6 ) ) ) - 0.5;
             tilt *= 0.35 * ( 1.0 - ringsResolve );
-            if ( ringsResolve > 0.01 )
-              tilt += ( cityRainRings( gp, cityRainTime, 9.0 ) + cityRainRings( gp + 3.7, cityRainTime * 1.13 + 0.5, 7.0 ) ) * 0.35 * ringsResolve;
+            if ( ringsResolve > 0.01 ) tilt += cityPuddleRipples( gp, cityRainTime ) * ringsResolve;
             worldNormal = normalize( worldNormal + vec3( tilt.x, 0.0, tilt.y ) * cityRain * puddle );
           }
           normal = normalize( ( viewMatrix * vec4( worldNormal, 0.0 ) ).xyz );
         }`;
+      // After the lights: the sky mirrored in the film and the puddles (what stands
+      // in the way is added by the wet reflections pass on HIGH / ULTRA), and at
+      // night the street lamps, shop windows and neon smeared down the wet road
+      // towards the camera. A lamp head ~33 units up is mirrored ~28 units on the
+      // camera's side of its pool, and wet asphalt stretches that into a streak
+      // along the view: the night light map is read at several points up the
+      // view direction and high-passed across it, so only the bright cores of the
+      // pools come through, as narrow streaks in the lamps' own colours (sharper
+      // and brighter in standing water, broken up by the rings in the rain).
+      const GROUND_WET_LIGHT = `
+        reflectedLight.indirectSpecular += citySkyReflect * wetReflect;
+        if ( wetReflect > 0.003 && cityLampPower > 0.001 ) {
+          vec2 along = citySheenDir, across = vec2( -along.y, along.x );
+          // Rings in a puddle tilt the normal: the streak shivers sideways.
+          vec2 wobble = across * normal.x * 30.0;
+          float spread = mix( 1.0, 0.55, smoothstep( 0.4, 0.9, wetReflect ) );
+          vec3 streak = vec3( 0.0 );
+          for ( int i = 0; i < 6; i++ ) {
+            float d = ( 12.0 + float( i ) * 11.0 ) * spread;
+            vec2 uvC = ( vCityWorld.xz + along * d + wobble - cityLampRect.xy ) * cityLampRect.zw;
+            vec2 side = across * 9.0 * cityLampRect.zw;
+            vec3 core = texture2D( cityLampMap, uvC ).rgb;
+            vec3 flank = 0.5 * ( texture2D( cityLampMap, uvC + side ).rgb + texture2D( cityLampMap, uvC - side ).rgb );
+            // How much brighter than its flanks: ~0.15 on a pool's axis, nothing
+            // a few units off it, so a pool ~100 units wide leaves a streak ~15 wide.
+            float c = dot( core, vec3( 0.3333 ) ), f = dot( flank, vec3( 0.3333 ) );
+            float peak = clamp( ( c - f ) / max( c, 1e-3 ) / 0.13, 0.0, 1.0 );
+            streak += core * peak * peak * ( 1.0 - float( i ) * 0.12 );
+          }
+          reflectedLight.directSpecular += streak * cityLampPower * cityPower() * wetReflect * citySheenGain;
+        }`;
+      // With the wet reflections pass on, the wet ground marks itself in the HDR
+      // target's alpha, negative (nothing else writes a negative alpha), for the
+      // pass to know where and how strongly to reflect.
+      const GROUND_WET_OUTPUT = `
+        if ( cityReflectOut > 0.5 && wetReflect > 0.003 ) gl_FragColor.a = -wetReflect;`;
+      const GROUND_WET_PARS = `
+        #ifdef USE_MAP
+          // Paving (not paint) in the painted sheet: a kerb beside the road.
+          float cityKerb( vec2 uv ) {
+            float l = dot( texture2D( map, uv ).rgb, vec3( 0.2126, 0.7152, 0.0722 ) );
+            return smoothstep( 0.07, 0.12, l ) * ( 1.0 - smoothstep( 0.3, 0.42, l ) );
+          }
+          // Paving from one step to three steps along dir (a kerb), nearer is wetter.
+          float cityKerbAt( vec2 uv, vec2 dir ) {
+            float a = cityKerb( uv + dir ), b = cityKerb( uv + dir * 2.0 ), c = cityKerb( uv + dir * 3.0 );
+            // Averaged, not thresholded: the painted sheet's texels would print
+            // as steps along the edge of the water.
+            return ( min( a, b ) * 0.6 + min( b, c ) * 0.4 );
+          }
+        #endif`;
       const groundTexel = { value: new Three.Vector2(1 / terrain.width, 1 / terrain.height) };
       // Hills carry their colour in vertex colours, so their detail goes in after
       // those are applied (`colorChunk`), the flat sheets' straight after the map.
@@ -140,9 +194,20 @@
         const hill = colorChunk !== '#include <map_fragment>' ? '#define CITY_HILL\n' : '';
         shader.uniforms.cityRain = surfaceUniforms.cityRain;
         shader.uniforms.cityRainTime = surfaceUniforms.cityRainTime;
+        Object.assign(shader.uniforms, wetUniforms);
         shader.fragmentShader = shader.fragmentShader
-          .replace('#include <common>', '#include <common>\n' + hill + 'uniform vec2 cityGroundTexel;\nuniform float cityRain;\nuniform float cityRainTime;\n' + SURFACE_NOISE + RAIN_RINGS)
+          .replace(
+            '#include <common>',
+            '#include <common>\n' +
+              hill +
+              'uniform vec2 cityGroundTexel;\nuniform float cityRain;\nuniform float cityRainTime;\nuniform float cityWetDetail;\nuniform float cityReflectOut;\nuniform vec3 citySkyReflect;\nuniform vec2 citySheenDir;\nuniform float citySheenGain;\n' +
+              SURFACE_NOISE +
+              RAIN_RINGS,
+          )
+          .replace('#include <map_pars_fragment>', '#include <map_pars_fragment>\n' + GROUND_WET_PARS)
           .replace(colorChunk, colorChunk + '\n' + GROUND_ALBEDO)
+          .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + GROUND_WET_LIGHT)
+          .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + GROUND_WET_OUTPUT)
           .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + GROUND_ROUGHNESS)
           .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = 0.0;')
           .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + GROUND_NORMAL);

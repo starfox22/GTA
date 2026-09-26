@@ -914,7 +914,9 @@
         return m;
       }
       // ---- POLICE DECALS: unit numbers and words from one glyph atlas ---------------------
-      const POLICE_GLYPHS = '0123456789ABCEFHIKLNOPRSTUW-.',
+      // Letters in atlas order: the police set first, then the rest of the alphabet the
+      // aircraft liveries use (helicopter3d.js: CH 7 NEWS, U.S. ARMY, registrations).
+      const POLICE_GLYPHS = '0123456789ABCEFHIKLNOPRSTUW-.DGJMQVXYZ',
         GLYPH_CELL_W = 72,
         GLYPH_CELL_H = 128,
         GLYPHS_PER_ROW = 14;
@@ -1518,9 +1520,9 @@
        */
       function makePoliceVehicle(vehicle, look) {
         claimPoliceResources();
-        const spec = vehicleSpec(vehicle),
-          l = spec.l,
-          w = spec.w * 0.87,
+        const design = designSize(vehicle),
+          l = design.l,
+          w = design.w * 0.87,
           body = POLICE_BODIES[look.body],
           kit = policeKit(look, body, l, w),
           g = body.glass,

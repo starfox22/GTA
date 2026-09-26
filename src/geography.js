@@ -409,7 +409,8 @@
       y: 2250,
       w: 360,
       h: 350,
-      height: 135,
+      // 30 m: a lobby and eight storeys (game.js WORLD SCALE), in real units already.
+      height: 240,
       door: {
         x: -1664,
         y: 2622,

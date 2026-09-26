@@ -540,15 +540,6 @@
         searchRadius: 60, // wider while searching
         velocityFeed: 0.82, // share of the target's velocity the crew anticipates
       };
-      /**
-       * HELI SEARCHLIGHT MOUNT: where the lamp sits on a police helicopter, in the
-       * airframe's frame (map units): `forward` along its heading from the vehicle's
-       * position, `side` across it (towards (-sin, cos) of the heading), `up` above
-       * entityElevation(). This is the only thing the searchlight takes from the
-       * helicopter model (helicopter3d.js): a new airframe keeps its chin housing
-       * here, or changes these numbers.
-       */
-      const HELI_SEARCHLIGHT_MOUNT = { forward: 16.5, side: 0, up: 4.3 };
       // Always in the scene (intensity 0 when idle) so every material keeps the same
       // program; its shadow is switched with the quality tier (setSearchlightQuality).
       // A hard-edged lamp: the cookie shapes the edge, the cone barely softens it.
@@ -563,11 +554,23 @@
          colour, no depth), just under the roof's top. A roof the cutaway hides
          while the player is inside (a garage's, a building's) casts no shadow, so
          without it the spot would pour through onto them. Shown only while the
-         light lands on cover. It also shades the moon, as the roof would. */
+         light lands on cover. */
       const airRoofStandIn = new Three.Mesh(
         new Three.BoxGeometry(1, 1, 1),
         new Three.MeshBasicMaterial({ colorWrite: false, depthWrite: false }),
       );
+      airRoofStandIn.name = 'searchlight roof stand-in (spot shadow only)';
+      // Only in the spot's (perspective) shadow map: in an orthographic shadow
+      // pass (the sun and moon) it collapses outside the clip volume, so it never
+      // casts a moon shadow of its own.
+      airRoofStandIn.customDepthMaterial = new Three.MeshDepthMaterial({ depthPacking: Three.RGBADepthPacking });
+      airRoofStandIn.customDepthMaterial.onBeforeCompile = (shader) => {
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <project_vertex>',
+          '#include <project_vertex>\n\tif ( projectionMatrix[ 3 ][ 3 ] == 1.0 ) gl_Position = vec4( 0.0, 0.0, 2.0, 1.0 );',
+        );
+      };
+      airRoofStandIn.customDepthMaterial.customProgramCacheKey = () => 'searchlight-roof-stand-in';
       airRoofStandIn.castShadow = true;
       airRoofStandIn.receiveShadow = false;
       airRoofStandIn.visible = false;
@@ -773,12 +776,9 @@
           airRoofStandIn.rotation.set(0, -r.a, 0);
           airRoofStandIn.scale.set(r.hx * 2, thick, r.hy * 2);
         }
-        // The light sits in the chin housing under the nose (HELI_SEARCHLIGHT_MOUNT).
-        const cos = Math.cos(h.a),
-          sin = Math.sin(h.a),
-          mount = HELI_SEARCHLIGHT_MOUNT,
-          base = entityElevation(h);
-        s.apex.set(h.x + cos * mount.forward - sin * mount.side, base + mount.up, h.y + sin * mount.forward + cos * mount.side);
+        // The Nightsun's lens on the airframe: the only thing taken from the
+        // helicopter model (helicopter3d.js HELI_SEARCHLIGHT_MOUNT and its anchor).
+        helicopterSearchlightMount(h, s.apex);
         // The operator's hand (slow sways, looser while searching) and the
         // airframe's vibration through the gimbal, busier as it flies faster.
         const t = gameTime,
