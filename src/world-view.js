@@ -41,7 +41,8 @@
       }
       // A garage's drive-in show eases in closer, and quicker (garages.js).
       const garageFrame = garageCameraFrame();
-      speedZoom += ((garageFrame ? garageFrame.zoom : speedZoomTarget()) - speedZoom) * (1 - Math.exp(-deltaSeconds * (repairJob ? 2.5 : 0.8)));
+      // So does a drawbridge opening close by, the other way: back a little (drawbridge.js).
+      speedZoom += ((garageFrame ? garageFrame.zoom : speedZoomTarget() * drawbridgeCameraZoom()) - speedZoom) * (1 - Math.exp(-deltaSeconds * (repairJob ? 2.5 : 0.8)));
       worldZoom += (worldZoomTarget * speedZoom - worldZoom) * (1 - Math.exp(-deltaSeconds * 12));
       canvasScale = clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
       incomingCallRemaining = Math.max(0, incomingCallRemaining - deltaSeconds);

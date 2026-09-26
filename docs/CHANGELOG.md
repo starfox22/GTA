@@ -72,6 +72,68 @@ reach their governed maximum, which the physics holds at `topKmh`):
 
 Models: 20-28 draw calls, 3-4 shadow casters and 7.3-10.2k triangles each (`carModels`).
 
+## Unreleased — the Palm Sound drawbridge: 44 m leaves and the opening as a spectacle
+
+Drawbridge (geography.js, drawbridge.js, drawbridge3d.js, bridges3d.js, world-view.js, settings.js)
+- **Leaves 12.5 m → 44 m each** (88 m trunnion to trunnion, the scale of Chicago's longest
+  double-leaf bascules; the navigation channel between the pier noses is 76 m, 73 m clear at the
+  brigantine's mastheads with the leaves at 78°). The moving span and its piers now fill most of
+  Palm Sound (trunnions x -916 / -212, gates x -1058 / -70, stop lines x -1076 / -52; the
+  approach piers inside that stretch are gone). The trunnions sit 2 m below the road.
+- **Piers with open counterweight pits**: each pier runs from 14.5 m behind its trunnion to 5 m
+  ahead of it under the leaf's heel and is 43 m across: the fixed deck in the middle, a 17 m
+  deep pit each side, then the platforms with the tender's houses. The leaves' outboard main
+  girders (5.5 m deep at the trunnion, 1.8 m at the tip) carry curved racks and 590 t
+  counterweights (striped yellow and black on top) that swing down into the pits as the leaves
+  rise; pinions on shafts across the pits turn as the racks roll through them; motor houses
+  above. A depth-only mask over each pit keeps the water plane out of it.
+- **The opening** (about three minutes of play, three a day: 06:40, 14:20, 21:30): the ship
+  asks for the bridge, the tender answers with one long blast; bells, signals amber then red,
+  wig-wags; the arms come down; the centre lock bars draw back (clanks); the leaves rise over a
+  minute, eased, to 78°, with the drive motors' deep hum, a gear whine following the swing and a
+  knock for every rack tooth; water drips and sprays off the tips and girders (a burst as the
+  tips part); red span lights flash on the tips while they move; the channel lights turn green;
+  the brigantine ALBATROSS (new: a 32 m hull, masts 30 m over the water, four square sails on
+  the foremast, gaff main and topsail, three headsails, festoon lights dressed overall) sets
+  sail, passes at 5 knots and salutes, the tender answers; the leaves come down as slowly, the
+  lock bars drive home, the arms rise. After dark floodlights on the pier noses throw beams onto
+  the raised leaves and their paint and steel glow. The leaves' underside (cross girders every
+  3.5 m, stringers, X bracing) shows as they stand up; three pairs of globe lamps ride on each.
+- **Onlookers**: a dozen people walk in and stand behind the sidewalk arms on both approaches,
+  facing the channel (watching, filming, pointing), for an opening the player is near.
+- **Event camera**: near an opening (on foot or under 45 km/h) the street view eases back to
+  about three quarters of the zoom so both leaves and the ship fit; the player keeps control.
+  Settings · Gameplay · Event camera turns it off.
+- The tender walks anyone still on the span off by the nearer end (an 88 m span takes a walker
+  a minute), has a car abandoned on it towed after a minute even in sight of the player, and
+  keeps the leaves up until the ship is clear (at most 100 s; it was 45, less than the ship
+  needs to cross). The GPS prices the longer closure (`drawbridgeSecondsToTraffic`).
+  `bridgeJump` clears the causeway of other vehicles and sends the ship back to her anchorage
+  before each run.
+- **Traction on a leaf counts only the driven wheels** (drivenShare, the 4x4 club's model): a
+  front-wheel-drive saloon has about a third of its weight on its driving wheels up a 25° leaf,
+  so it cannot hold its speed up 44 m of it; the brakes still use all four; rain makes the
+  deck slicker. Real gravity, as before.
+
+- The jump, measured (`bridgeJump`: a front-wheel-drive saloon, the speed held from 25 m short
+  of the trunnion, the throttle floored up the leaf when the slope pulls it under; hit points
+  lost of 150 in brackets, 150 = wrecked). With 44 m leaves the gap opens fast and the tips
+  stand high, and the climb eats a slow car's speed:
+
+| Leaves | Gap / tip height | 40 km/h | 60 | 80 | 100 | 140 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 5° | 0.6 / 3.9 m | clears | clears | clears | clears | clears (24) |
+| 10° | 2.0 / 7.6 m | clears | clears | clears (12) | clears (45) | clears (59) |
+| 15° | 4.0 / 11.4 m | clears | clears (12) | clears (29) | clears (75) | clears (98) |
+| 20° | 6.6 / 14.9 m | strikes the far leaf (8) | clears (13) | clears (44) | clears (103) | clears (135) |
+| 25° | 9.9 / 18.4 m | can't climb | strikes the far leaf (19) | clears (44) | clears (129) | lands wrecked |
+| 30° | 13.8 / 21.8 m | can't climb | can't climb | strikes the far leaf (43) | clears (87) | lands wrecked |
+| 35° | 18.3 / 24.9 m | can't climb | can't climb | falls short (43) | clears (61) | lands wrecked |
+
+  From 20° a slow car hits the far leaf's end and drops into the Sound; from 25° it rolls back
+  before the tip. A fast car clears 20-60 m out and up to 36 m over the water, and the landing
+  (8-27 m/s into the deck) costs most of a car.
+
 ## Unreleased — streets and parks drawn at screen resolution, and a closer camera
 
 The ground used to be the painted sheets (1.6 units a texel in the city, 2.8 in the county) with

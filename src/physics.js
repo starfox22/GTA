@@ -2713,6 +2713,19 @@
           d.phase = 'open';
           d.timer = 0;
           d.jumps.length = 0;
+          // The ship back at an anchorage, out of the channel.
+          const ship = drawbridgeVessel();
+          if (ship.leg !== 'anchored') {
+            ship.across = (ship.across >= 0 ? 1 : -1) * DRAWBRIDGE_VESSEL.anchor;
+            Object.assign(ship, { leg: 'anchored', speed: 0, sails: 0, dir: ship.across > 0 ? -1 : 1 });
+          }
+          // A clear run: nothing else on the causeway (a cop stopped at the trunnion
+          // from an earlier chase, traffic queued at the stop line).
+          for (let i = vehicles.length - 1; i >= 0; i--) {
+            const o = vehicles[i];
+            if (o === player.car || isBoat(o) || isAircraft(o) || !drawbridgeNear(o.x, o.y)) continue;
+            if (Math.abs(drawbridgeLocal(o.x, o.y).v) < g.half + 20) vehicles.splice(i, 1);
+          }
           const start = bridgePoint(g.bridge, g.hinge[0] - 25 * UNITS_PER_METRE, g.road / 4);
           teleportPlayer(start.x, start.y);
           const c = (testCar = makeCar(type, start.x, start.y, g.f.a, false));
