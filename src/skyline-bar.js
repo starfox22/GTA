@@ -352,6 +352,12 @@
           k.scaredUntil = gameTime + randomBetween(9, 14);
         }
       }
+      // The street's remarks reach people by map distance: nobody up on the terrace
+      // answers a player down on the street (their bubble would float 180 m up).
+      if (p.altitude && p.speech && p.speechKind !== 'keyTalk' && player.buildingRoof?.skyline?.roof !== 'bar') {
+        p.speech = '';
+        p.speechUntil = 0;
+      }
       if (k.scaredUntil > gameTime) {
         p.pose = 'cower';
         p.walking = false;

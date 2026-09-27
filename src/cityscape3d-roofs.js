@@ -509,7 +509,7 @@
           // Alley clutter: dumpsters and crates in the interior parking court.
           if (cityRandom() < 0.7 && clearSidewalk(x + 200, z + 176)) {
             placeProp('dumpster', pools.dumpster, x + 200, 4.5, z + 176, 16, 9, 8);
-            if (cityRandom() < 0.5) placeProp('crate', pools.crate, x + 214, 3, z + 176, 6, 6, 6, 0.4);
+            if (cityRandom() < 0.5 && clearSidewalk(x + 214, z + 176)) placeProp('crate', pools.crate, x + 214, 3, z + 176, 6, 6, 6, 0.4);
           }
           // Bus shelters on the wide avenues, one per block on the north sidewalk.
           const avenue = blockY(by + 1);

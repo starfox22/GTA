@@ -37,8 +37,16 @@ coordinates are in the code (grep the constant); this doc keeps the rules.
   roundabouts (anticlockwise), the Sovereign (harp cable-stayed) and Regency (bowstring)
   bridges pushed onto `BRIDGES`, roads into `COUNTY_ROADS`. Built by `buildMonarchIsle`
   from buildWorld **after** the real-height pass.
-- Villas (`planVilla`, nine styles), two towers, 27 businesses (`MONARCH_BUSINESSES`, each
-  with a sign design), Monarch Harbour, the Royal Botanic Garden.
+- Villas (`planVilla`, nine styles), 27 businesses (`MONARCH_BUSINESSES`, each with a sign
+  design), Monarch Harbour, the Royal Botanic Garden.
+- **One tower**, MONARCH ONE (monarch-one.js, monarch-one3d.js), on the north-east point:
+  the camera looks north, so keep nothing of interest north of its x-span. THE SOVEREIGN
+  is a `reserve` entry of `MONARCH_TOWER_DESIGNS` (not built). Old sites: Sovereign Square
+  and Regent Court (`planIsleSquare`).
+- `MONARCH_ONE` grounds: the west wall runs out along the groyne (the public beach cannot
+  reach the cove); the gate arm is vehicle-only (extra entry of `monarchSolids()`, body
+  `minHeight` while up; it lifts for the player's car at a crawl, traffic has no lane in);
+  jetty `MONARCH_ONE_JETTY` is in `onIslePontoon`; staff posts carry `lines`.
 - Life runs on its own lane graph (`isleRoadGraph`, `isleTrafficControl` called from the
   physics for cars with `c.isle`) and pavement walk graph that crosses only at zebras.
 - Night: its own lamp light map over `MONARCH_BOUNDS`. Console `monarch()`.
@@ -130,6 +138,9 @@ coordinates are in the code (grep the constant); this doc keeps the rules.
 
 ## Garages, casino, bike share
 
-- Respray garages (garages.js, garage3d.js): `GARAGE_PLAN`, price list `garageOffer`; a
-  respray clears the stars only if no unit saw you drive in. Console `garage()`.
+- Respray garages (garages*.js, garage3d-*.js): price list `garageOffer`; a respray clears
+  the stars only if no unit saw you drive in. One on every island (`GARAGE_ISLANDS`, test
+  garages-islands.mjs): a new landmass needs one. Doors face south onto an east-west street
+  (`roadY`); `slab`/`forecourt` for shops off the city canvas, `style` in
+  garage3d-styles.js; planting keeps off via `garageKeepOut`. Console `garage()`.
 - Casino roulette: casino.js. Bike share: ui-and-settings.md.

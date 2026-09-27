@@ -163,6 +163,7 @@
       // @include src/marina3d.js
       // @include src/monarch3d.js
       // @include src/monarch-villas3d.js
+      // @include src/monarch-one3d.js
       // @include src/monarch-marina3d.js
       // @include src/monarch-garden3d.js
       // @include src/monarch-streets3d.js

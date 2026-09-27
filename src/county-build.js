@@ -496,10 +496,12 @@
       return (countyPoliceGraph = nodes);
     }
     function spawnCountyCop() {
-      const points = countyPoliceNodes().filter((p) => {
-        const d = distanceBetween(p, player);
-        return d > 550 && d < 1000 && canSpawnCar('police', p.x, p.y, 0, 10);
-      });
+      // Round the search while there is one (a witness report); never on screen.
+      const centre = searchActive && lastSeen ? lastSeen : player,
+        points = countyPoliceNodes().filter((p) => {
+          const d = distanceBetween(p, centre);
+          return d > 550 && d < 1000 && !crowdInView(p.x, p.y, 140) && canSpawnCar('police', p.x, p.y, 0, 10);
+        });
       if (!points.length) return;
       const p = randomChoice(points),
         c = makeCar('police', p.x, p.y, 0, true);
