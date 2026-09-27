@@ -4,7 +4,7 @@ Known, unfixed issues reported by the agents that built each feature (as of v30)
 here when polishing; delete a line when it is fixed. Newest features first.
 
 ## The living city (livingcity*.js)
-- Traffic streams only on the city grid: Monarch Isle and the county keep their own fixed traffic; North Point Key still has none (see below).
+- Traffic streams only on the city grid: Monarch Isle and the county keep their own fixed traffic; North Point Key gets only its few visitors (livingcity-key.js: one lane each way, no overtaking, no sirens pull-over on the Key).
 - Signals cycle every 24 s on a 64 m grid, so about half the traffic in the ring stands at a light or in its queue at any moment (`trafficReport().held`).
 - Paramedics walk straight at the victim (with a sidestep); round a building corner they may work from up to 30 units off. The revive is a mercy of the game (GTA's paramedics did it too), not a medical outcome.
 - No stretcher or sheet: a lost victim stays where they fell until the crowd streamer clears the dead out of view.
@@ -24,7 +24,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## North Point Key (skyline*.js, skyline3d-*.js)
 - East of the city frame: the night lamp map (and signSpill pools) does not reach its ground; it is lit by glows only.
-- City traffic never drives onto the Key (the street ends at the circle); no valet cars circle it.
+- Key visitors pause by the valet but nobody gets out (no guest walks in, no valet takes the car).
+- A Key visitor waits for anyone standing on its path (the player on the circle holds the ring); it never steers round a person, and crowd-traffic's honk only moves people whose reaction is `watch`.
 - The 2D fallback draws its ground tile and towers but not its palms or furniture.
 - CIRRUS guests are spawned per visit; the sky bar has no pool (the oval deck is 23 x 15 m).
 

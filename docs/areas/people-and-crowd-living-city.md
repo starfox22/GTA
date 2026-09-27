@@ -1,9 +1,9 @@
 # The living city (free roam)
 
 livingcity.js and livingcity-*.js: the traffic streamed round the player, drivers making way
-for sirens, ambulances answering bodies, street events. Game logic only; updated once a
+for sirens, ambulances answering bodies, street events, North Point Key visitors. Game logic only; updated once a
 frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
-(docs/console/crowd.md). Tests: living-traffic, living-sirens, living-medics.
+(docs/console/crowd.md). Tests: living-traffic, living-sirens, living-medics, living-snatch, living-key.
 
 ## Traffic round the player (livingcity-traffic.js)
 
@@ -78,6 +78,25 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   never moves anyone with a `cityRole`. The kill already counted stays counted.
 - Off: the player takes the ambulance, wrecks it (under 50%), leaves (2,200 units), a
   mission starts, or 150 s pass.
+
+## North Point Key visitors (livingcity-key.js)
+
+- City traffic cannot plan onto the Key (the street stops at the circle, so the bridge is no
+  exit for `planJunction`). With the player within 1,500 units of the circle and no mission,
+  up to 1-3 visitors by the hour (evenings most; one every 14 s at most) spawn out of view on
+  the avenue's city end (x 3290, south lane), cross the bridge, go round the circle
+  anticlockwise (right-hand traffic), about two in three pull up 4-8 s by the valet, and leave
+  on the north lane. At x 3340 they are handed to `trafficControl` as streamed traffic
+  (`navAngle` west, like Monarch Isle's hand-off at Crown Avenue).
+- Driven by `keyRunControl` through `countyRouteControl` (`c.countyRoute` is the run's
+  points, which also keeps the streamer off them): pure pursuit, 38-44 km/h on the avenue,
+  20 on the ring, the car ahead (a wider look on the ring), people in the road. A visitor
+  the player takes, wrecks or empties becomes an ordinary car; far, unseen, untouched ones
+  are removed when the player is 2,400 units away. Console `keyVisitors`, `keyVisitorSpawn`.
+- **Gotcha**: the sea-wall rail at the bridge's west end (x ≈ 3362) stops 12 units inside the
+  deck's south edge (its gap is centred on y -3467, not the row), so the lane in keeps 17
+  off the centre line: at 24 a limousine's flank caught the rail end and the crash put its
+  driver out. `keyVisitors().lastDropped` says why a visitor stopped being one.
 
 ## Street events (livingcity-events.js)
 

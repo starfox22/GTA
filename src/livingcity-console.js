@@ -27,6 +27,17 @@
         // The ambulance service (livingcity-medics.js): jobs, outcomes and the one
         // under way (phase, the ambulance and its siren, the medics and their poses).
         medicReport: () => medicReport(),
+        // North Point Key visitors (livingcity-key.js): the hour's target, counts
+        // (spawned, handed back to city traffic, drop-offs by the valet) and each
+        // visitor's leg (avenue, ring, stop, exit), speed and place.
+        keyVisitors: () => keyVisitorsReport(),
+        // Send one visitor onto the Key avenue now, in view or not (tests; `dropOff`
+        // true/false forces the pause by the valet or none): keyVisitors() with `sent` and its `id`.
+        keyVisitorSpawn(dropOff = null) {
+          keyVisitors.lastSpawnAt = -1e9;
+          const c = spawnKeyVisitor(true, dropOff === null ? null : !!dropOff);
+          return { ...keyVisitorsReport(), sent: !!c, id: c ? c.id : null };
+        },
         // A body at (x, y) (default: 60 units along the pavement from the player),
         // dead 12 s and nobody's victim, and an ambulance sent for it at once;
         // `revive` true/false forces the outcome. Returns medicReport().
