@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-417 files in the include tree, 149,207 lines.
+421 files in the include tree, 149,215 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -388,7 +388,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    84 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/carjack3d.js`   153 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
-- `src/clouds3d.js`   618 — Volumetric clouds and cloud shadows
+- `src/clouds3d.js`    45 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
 - `src/surfaces3d.js`   198 — ▸ Procedural surface detail
 - `src/grass3d.js`   152 — Grass tufts
@@ -560,6 +560,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-draw.js`   554 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   473 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-frame.js`   258 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+
+## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
+
+- `src/clouds3d-field.js`   199 — Clouds 3D field: layer constants, the coverage map, the GPU noise volume and the shared density field (CLOUD_FIELD_GLSL).
+- `src/clouds3d-march.js`   182 — Clouds 3D ray-march pass: the half-resolution march through the layer, its composite and depth quads behind the aircraft.
+- `src/clouds3d-shadows.js`    80 — Clouds 3D shadows: the plane over the city that throws the cloud field's shadows on the ground.
+- `src/clouds3d-frame.js`   120 — Clouds 3D frame update (updateCloudVisuals): wind, coverage, shadows, sun dimming and the march.
 
 ## src/surfaces3d.js ▸ Procedural surface detail
 
