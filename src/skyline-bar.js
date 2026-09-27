@@ -147,6 +147,9 @@
       waiter: ['Right away, madam.', 'Another bottle for table four.', 'Excuse me. Pardon me.', 'The oysters came in this morning.', 'Your table is ready, sir.'],
       doorman: ['Good evening. Welcome to North Point Key.', 'The sky bar is on EVOLUTION’s roof, sir. Lift’s inside.', 'Mind the step, sir.', 'Lovely evening for it.'],
       valet: ['Keys, sir?', 'I’ll bring it round to the circle.', 'Nice wheels.'],
+      // The Blue Hour's door on Palm Keys (roofmission-entrance.js).
+      blueHourDoor: ['Good evening. Welcome to the Blue Hour.', 'The terrace is on the roof, sir. Lift’s straight ahead.', 'Private party upstairs tonight.', 'Mind the carpet, sir.'],
+      blueHourValet: ['Your keys, sir?', 'Those two are the hotel’s cars, sir.', 'I’ll have it brought round.'],
       scared: ['Get down!', 'Oh my god!', 'Somebody call security!', 'Under the table!'],
     };
     /* ---- People -------------------------------------------------------------------- */
@@ -401,7 +404,7 @@
         // A word to the player walking past, now and then.
         if (!player.car && distanceBetween(p, player) < 46 && !(k.greetedAt > gameTime - 30)) {
           k.greetedAt = gameTime;
-          keySay(p, randomChoice(SKY_BAR_LINES[k.role]));
+          keySay(p, randomChoice(SKY_BAR_LINES[k.lines] || SKY_BAR_LINES[k.role]));
         }
         return true;
       }

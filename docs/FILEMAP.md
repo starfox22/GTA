@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-451 files in the include tree, 158,229 lines.
+455 files in the include tree, 158,873 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -32,7 +32,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-collision.js`   235 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
 - `src/game-car-spawn.js`   163 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   479 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
-- `src/game-populate.js`   246 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
+- `src/game-populate.js`   248 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/game-player-actions.js`   593 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   171 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    18 — ▸ Vehicle and pedestrian physics
@@ -56,7 +56,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   153 — Wounds, hit reactions and death falls
-- `src/story.js`   901 — Story characters and mission stages
+- `src/story.js`   897 — Story characters and mission stages
 - `src/campaign.js`   449 — Campaign saves and replay
 - `src/chase.js`   546 — Cargo pursuit
 - `src/roadblocks.js`   434 — Police containment and roadblocks
@@ -76,7 +76,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/water-audio.js`   394 — Water and beach sound
 - `src/beachvolley.js`    43 — ▸ Beach volleyball on Palm Keys Beach
 - `src/beach.js`    12 — ▸ Palm Keys Beach life
-- `src/roofmission.js`    14 — ▸ Blue Hour rooftop mission
+- `src/roofmission.js`    15 — ▸ Blue Hour rooftop mission
 - `src/rooftops.js`   158 — Building roofs: helipads, helicopter landings, walking on a roof
 - `src/air-cover.js`   404 — Overhead cover geometry
 - `src/combat-rules.js`   576 — Aerial combat and pursuit rules
@@ -220,10 +220,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/roofmission.js ▸ Blue Hour rooftop mission
 
 - `src/roofmission-layout.js`   398 — Blue Hour layout: ROOF_HIT points, roof cover, entityElevation, sight rays and terrace routes (roofRoute, roofStep).
-- `src/roofmission-stealth.js`   236 — Blue Hour stealth: the bodyguards' beats and scanning heads, the vision-cone suspicion meter, walking and running on the terrace.
+- `src/roofmission-stealth.js`   237 — Blue Hour stealth: the bodyguards' beats and scanning heads, the vision-cone suspicion meter, walking and running on the terrace.
 - `src/roofmission-poison.js`   646 — Blue Hour poison: the reserved glass (P), Vescari's toast, cough and faint, the party's reaction, the call and the ambulance.
-- `src/roofmission-scene.js`   402 — Blue Hour scene: guests and guards (startRooftopHit), the alarm, the takedown, stage flow and the party's frame update.
-- `src/roofmission-ui.js`   161 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
+- `src/roofmission-scene.js`   376 — Blue Hour scene: guests and guards (startRooftopHit), the alarm, stage flow and the party's frame update.
+- `src/roofmission-ui.js`   158 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
+- `src/roofmission-entrance.js`   116 — Blue Hour street entrance: the forecourt plan (canopy, carpet, planters, bollards, valet stand), the pavement kept clear of street furniture, the …
 
 ## src/damage.js ▸ Vehicle damage, bullet impacts and breakable street furniture
 
@@ -284,7 +285,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/skyline-towers.js`   166 — North Point towers: SKYLINE_TOWERS (three on North Point Key, the rest in reserve), the retired cluster blocks and the offices that replaced them.
 - `src/skyline-islet.js`   309 — North Point Key built: its land and bridge, the three towers, palms, fountain and ground tile, shore rules and map paint.
 - `src/skyline-lift.js`   225 — North Point Key's lifts: the roof decks (FEDERATION EAST's helideck, EVOLUTION's sky-bar terrace), lobby and roof doors, the ride and its fade, the …
-- `src/skyline-bar.js`   480 — CIRRUS, the sky bar on EVOLUTION's roof: the terrace plan, its guests and staff, their conversations, drinks at the bar; the Key's doormen.
+- `src/skyline-bar.js`   483 — CIRRUS, the sky bar on EVOLUTION's roof: the terrace plan, its guests and staff, their conversations, drinks at the bar; the Key's doormen.
 - `src/skyline-console.js`   104 — DeadEndCity console methods for North Point Key: skyline() report and skylineVisit(spot) (registered by game-console-world.js).
 
 ## src/sports.js ▸ Live basketball and soccer matches
@@ -526,7 +527,16 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/world3d-water.js`   361 — Water: the distance-to-shore field, the one water shader (bay, river, ocean, reservoir) and its surfaces.
 - `src/world3d-shore.js`   243 — Shoreline notes, street ends (barriers, gates) and the esplanade furniture along the waterfront (buildPromenade).
-- `src/world3d-resort.js`   369 — Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
+- `src/world3d-resort.js`   158 — ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
+
+## src/world3d-resort.js ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
+
+- `src/world3d-bluehour-terrace.js`   399 — ▸ The Blue Hour terrace in 3D (mission 2): teak deck, travertine and brass, glass balustrade, pool and loungers, marble bar, velvet lounges, clipped …
+
+## src/world3d-bluehour-terrace.js ▸ The Blue Hour terrace in 3D (mission 2): teak deck, travertine and brass, glass balustrade, pool and loungers, marble bar, velvet lounges, clipped …
+
+- `src/world3d-bluehour-table.js`   161 — Vescari's table on the Blue Hour terrace (mission 2): linen to the floor, place settings in china, crystal and brass, flowers, hurricane candles …
+- `src/world3d-bluehour-entrance.js`   202 — The Blue Hour's street entrance in 3D: stone portal, revolving door, glass canopy with marquee bulbs, red carpet, topiary, brass rope posts and …
 
 ## src/sealife3d.js ▸ Sea life meshes
 
@@ -672,7 +682,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-missions.js`   277 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   271 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
-- `src/game-console-world.js`   219 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-world.js`   222 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   142 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost

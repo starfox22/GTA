@@ -72,9 +72,6 @@
               { key: null },
             );
         }
-        if (canSilentHit(m)) {
-          offerPrompt('SILENT TAKEDOWN', { hold: true, id: 'takedown' });
-        }
       }
       if (missionState && player.roof && distanceBetween(player, ROOFTOP.lift) < 48) {
         offerPrompt('ELEVATOR TO STREET', { id: 'roof-lift' });

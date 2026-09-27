@@ -230,6 +230,8 @@
         }),
       );
       populateCasino();
+      // The Blue Hour's doormen, valet and limousines (roofmission-entrance.js).
+      populateBlueHourEntrance();
       resetSports();
       // Beyond Northbank: health by the other hospitals and the county lodges. There are
       // no ammunition, armour or weapon pickups: those come from the gun shops, the
