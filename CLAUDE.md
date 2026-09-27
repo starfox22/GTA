@@ -82,7 +82,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   literal keys). Details: docs/areas/core-and-contracts.md.
 - **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
   hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
-  pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911.
+  pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911. Crowd
+  perception (`p.pending`) is resolved in updatePeople before any special routine: a new
+  routine that owns people must step aside when `p.react`/`p.flee` is set.
 - `personFemale()` (voices.js) is the only man/woman rule (looks and voices both use it);
   `player.carjack` is a carrier (`cancelCarjack()`).
 - New land or bridges: append to `LAND_REGIONS`/`BRIDGES` last and keep coast-walk rhythms
