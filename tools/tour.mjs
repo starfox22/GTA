@@ -12,7 +12,7 @@
 // wait and the screenshot (e.g. a brake held while the shot is taken).
 // A step screenshots unless "shot": false.
 // The script prints each step's js result and every console error.
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+import { launchBrowser } from './browser.mjs';
 import path from 'node:path';
 import fs from 'node:fs';
 
@@ -22,17 +22,8 @@ const file = path.resolve(process.argv[4] || 'dead-end-city.html');
 if (!fs.existsSync(file)) { console.error('missing ' + file + ': build it first (python3 tools/build.py)'); process.exit(1); }
 fs.mkdirSync(out, { recursive: true });
 
-const browser = await chromium.launch({
-  executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args: [
-    '--disable-accelerated-2d-canvas',
-    '--use-gl=angle',
-    '--use-angle=swiftshader',
-    '--enable-unsafe-swiftshader',
-    '--autoplay-policy=no-user-gesture-required',
-    '--ignore-gpu-blocklist',
-  ],
-});
+// A machine-wide browser slot first (tools/browser.mjs), then Chromium.
+const { browser } = await launchBrowser({ label: 'tour', args: ['--autoplay-policy=no-user-gesture-required'] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 const errors = [];
 page.on('console', (m) => {

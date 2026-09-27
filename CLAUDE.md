@@ -25,9 +25,13 @@ python3 tools/changelog.py --new <topic> "<Title>"     # start a changelog fragm
 
 Run smoke too when a change touches boot, rendering, input, HUD or anything a console call
 cannot prove. Smoke passes with 0 errors (the three.js "build/three.js deprecated" warning is
-normal). Headless = Playwright + SwiftShader, Chromium in `/opt/pw-browsers` (never
-`playwright install`); it runs a few fps and boots in a minute or more: **one browser at a
-time** (the dev server counts as one).
+normal). Headless = Playwright + SwiftShader via tools/browser.mjs (cloud: Chromium in
+`/opt/pw-browsers`, never `playwright install`; elsewhere `CHROME_PATH`/`PLAYWRIGHT_MODULE`,
+and `DEC_GPU=1` renders on a real GPU); it runs a few fps and boots in a minute or more.
+**Browser slots**: every browser tool takes one of `DEC_BROWSER_SLOTS` machine-wide slots
+(default half the cores: 2 in the cloud) and queues when none is free; the dev server
+freezes its page and gives its slot back after `DEC_IDLE_FREEZE` s idle (default 20; the
+next command thaws it, state kept).
 
 **Verifying cheaply** (use these instead of writing Playwright scripts):
 
@@ -44,8 +48,8 @@ The default dev page is `?dev&norender` (`NO_RENDER` in render3d.js: no WebGL, ~
 `--render` (or `reload --render`) only for images, after `call graphics high` (bare words pass as strings). `--nodev`
 boots `?test` (demo gate live). New test: one file `tools/tests/<name>.mjs` exporting
 `default async (t)` (`t.call/keys/wait/assert/near/finite`); set up the state it needs,
-`fresh = true` for a clean page. The dev server counts as the one headless browser: `stop` it
-before smoke/tour.
+`fresh = true` for a clean page. The dev server holds a browser slot while awake: `stop` it
+when you are done with it (and before smoke/tour if slots are short).
 
 **Publish** (only when asked): `python3 tools/build.py --split-media dist/publish`, then the
 Artifact tool with `file_path` dist/publish/index.html, `url`
@@ -69,6 +73,16 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
   to move the player; releases every carrier), `solid()` (people collision), `crime()` (only
   heat source), `offerPrompt()` (only prompt writer), `actionHeld()`/`keyName()` (never
   literal keys). Details: docs/areas/core-and-contracts.md.
+- **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
+  hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
+  pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911.
+- `personFemale()` (voices.js) is the only man/woman rule (looks and voices both use it);
+  `player.carjack` is a carrier (`cancelCarjack()`).
+- New land or bridges: append to `LAND_REGIONS`/`BRIDGES` last and keep coast-walk rhythms
+  and grid blocks unchanged (compare `layout()` with the base build). Tall towers only where
+  nothing stands north of them (the camera looks north): North Point Key, Monarch One.
+- Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
+  tools/tests/garages-islands.mjs).
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - **Dev console** `window.DeadEndCity` has explicit named methods only. **Never** add an
@@ -100,8 +114,8 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
 - Grep before reading; read line ranges (`Read` with offset/limit, `sed -n 'a,bp'`), never
   whole 1,000+ line files or the built HTML (38 MB).
 - Pipe long command output through `tail`/`head`/`grep`; don't cat logs or tables.
-- One headless browser at a time; prefer `node tools/dev.mjs call <report>` and tests over
-  screenshots; take small `dev.mjs shot`s only to prove a visual point.
+- Browsers are the scarce resource (slots, above); prefer `node tools/dev.mjs call <report>`
+  and tests over screenshots; take small `dev.mjs shot`s only to prove a visual point.
 - Give subagents a precise brief: files/symbols to touch, the check to run, the output wanted.
 - **Pure-move refactors must keep the build byte-identical**:
   ```sh
@@ -132,6 +146,9 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
 
 ## Agent workflow (parallel sessions)
 
+- **How many at once**: the cloud machine has 4 cores and 16 GB; run at most 3-4 agents in
+  parallel (in waves), since every one of them needs browsers and slots only queue the
+  work. On a bigger machine (or `DEC_GPU=1`) raise `DEC_BROWSER_SLOTS` and the agent count.
 - Work in your own git worktree/branch. Before finishing: merge the lead session's working
   branch (the lead names it in your brief), resolve conflicts, `grep -rn '^<<<<<<<' .`
   (excluding node_modules), run `sh tools/quick-check.sh <tag>`, commit.

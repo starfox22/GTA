@@ -16,7 +16,7 @@ sh tools/check.sh dead && node tools/dead-code.mjs dist/check/dead.js   # unused
 ```
 
 - The `tag` keeps parallel worktrees from overwriting each other's `dist/check/<tag>.*`.
-- Run smoke (one browser at a time) when a change touches boot, rendering, input, the HUD or
+- Run smoke (it takes a browser slot) when a change touches boot, rendering, input, the HUD or
   anything you cannot prove from `sh tools/quick-check.sh` and console calls. Its expected
   output: 0 errors (the three.js "build/three.js is deprecated" warning is normal).
 - `tools/dead-code.mjs` hits need reading: a name used only from the console or built from a
@@ -24,11 +24,19 @@ sh tools/check.sh dead && node tools/dead-code.mjs dist/check/dead.js   # unused
 
 ## Headless browser
 
-- Playwright + SwiftShader; Chromium at `/opt/pw-browsers` (never `playwright install`), the
-  Playwright module at `/opt/node22/lib/node_modules/playwright`. It renders a few frames a
-  second, so game time is clamped per frame: toasts look "stuck" and waits must be longer.
-- A rendered boot takes 30-40 s (960x600) and runs about 1 fps (0.25 fps at 1280x800).
-  Run **one browser at a time**; use the dev server below rather than writing a script.
+- Every tool launches Chromium through tools/browser.mjs: Playwright + SwiftShader by
+  default. In the cloud image it finds Chromium at `/opt/pw-browsers` (never `playwright
+  install` there) and Playwright at `/opt/node22/lib/node_modules/playwright`; elsewhere set
+  `CHROME_PATH` / `PLAYWRIGHT_MODULE` or install Playwright. `DEC_GPU=1` uses a real GPU
+  instead of SwiftShader (a desktop run: much faster, GPU-true screenshots).
+- SwiftShader renders a few frames a second, so game time is clamped per frame: toasts
+  look "stuck" and waits must be longer. A rendered boot takes 30-40 s (960x600) and runs
+  about 1 fps (0.25 fps at 1280x800); each software-rendered page wants a whole CPU core.
+- **Browser slots**: a machine-wide limit on game browsers (lock files in the OS temp dir,
+  shared by every worktree; `DEC_BROWSER_SLOTS`, default half the cores = 2 on the 4-core
+  cloud machine). smoke, tour, layout-audit, media-check and the dev server take a slot
+  and wait (printing who holds them) when none is free; a dead holder's slot is reclaimed.
+  Use the dev server rather than writing a Playwright script.
 
 ## Dev server (tools/dev.mjs) and tests (tools/test.mjs)
 
