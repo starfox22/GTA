@@ -312,6 +312,8 @@
           updateWakes(deltaSeconds);
           // Mud and dust from the tyres, splats and tyre tracks, the 4x4 club's flag and smoke (offroad3d.js).
           updateOffroadVisuals(deltaSeconds);
+          // Smoke, dust and road spray off the tyres (tyresmoke3d.js).
+          updateTyreSmoke(deltaSeconds);
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;
@@ -443,8 +445,17 @@
             p.x += p.vx * deltaSeconds;
             p.y += p.vy * deltaSeconds;
             p.z += p.vz * deltaSeconds;
-            if (p.case) p.vy -= 120 * deltaSeconds;
-            else {
+            if (p.case) {
+              // A spent case falls, bounces and lies a moment on the ground before it fades.
+              p.vy -= 120 * deltaSeconds;
+              if (p.y < (p.floor ?? 0.5)) {
+                p.y = p.floor ?? 0.5;
+                const bounce = p.vy < -12;
+                p.vy = bounce ? -p.vy * 0.35 : 0;
+                p.vx *= bounce ? 0.55 : 0.6;
+                p.vz *= bounce ? 0.55 : 0.6;
+              }
+            } else {
               const drag = Math.pow(0.97, deltaSeconds * 60);
               p.vx *= drag;
               p.vz *= drag;
