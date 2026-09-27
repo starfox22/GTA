@@ -188,3 +188,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   methods; under ~15 lines). At release, `python3 tools/changelog.py --release <ver> "<Title>"`
   folds fragments into a new section and archives the previous one; `python3
   tools/changelog.py` previews it.
+- **Version numbers**: 0.9.0 is the public demo (the old 1.0-30.0.0 numbers were pre-alpha
+  build counts). Each release adds 0.0.1 (0.9.1, 0.9.2 ...), only when the owner asks for a
+  release: `GAME_VERSION` (src/game-state.js), `src/ui/build-header.html`, README.md, then
+  `--release`.

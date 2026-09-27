@@ -77,4 +77,3 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Other
 - `src/marina.js` calls the superyacht 105 m; its deck spans about 66 m at the current scale.
-- `GAME_VERSION` is still 30.0.0; fold `docs/changes/` with `python3 tools/changelog.py --release` at the next version.

@@ -13,9 +13,9 @@ internals and console/tool changes). Keep it under ~15 lines.
 
     python3 tools/changelog.py                     preview the next release section
     python3 tools/changelog.py --new TOPIC "Title" start a fragment for today
-    python3 tools/changelog.py --release 31.0.0 "Title"
+    python3 tools/changelog.py --release 0.9.1 "Title"
         fold the `## Unreleased` notes and every fragment into a new
-        `## 31.0.0 — Title` section at the top of docs/CHANGELOG.md, move the
+        `## 0.9.1 — Title` section at the top of docs/CHANGELOG.md, move the
         previous release section to docs/archive/CHANGELOG-archive.md (so the
         changelog only ever holds the latest release) and delete the fragments.
 """
