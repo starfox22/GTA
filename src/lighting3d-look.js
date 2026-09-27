@@ -37,8 +37,10 @@
         gradeGainNight = new Three.Vector3(1.05, 1.0, 0.95),
         gradeLiftDusk = new Three.Vector3(0.0, 0.002, 0.006),
         gradeGainDusk = new Three.Vector3(1.1, 1.0, 0.86),
-        gradeLiftDay = new Three.Vector3(0.0, 0.0, 0.003),
-        gradeGainDay = new Three.Vector3(1.05, 1.0, 0.92);
+        // Day: cool, sky-lit shade and warm sunlit highlights, so depth reads as
+        // colour as well as value.
+        gradeLiftDay = new Three.Vector3(0.0, 0.004, 0.013),
+        gradeGainDay = new Three.Vector3(1.06, 1.0, 0.9);
       let lightingClock = performance.now();
       function updateLighting(deltaSeconds) {
         // The environment rebuild is throttled on the wall clock, not game time.
@@ -93,17 +95,23 @@
         // Post look: exposure, bloom and grade (postfx3d.js).
         // A touch more exposure at night: legibility first, darkness second.
         postLook.exposure = renderer.toneMappingExposure * (1 + night * NIGHT_LOOK.exposure);
-        postLook.bloomThreshold = 2.2 - night * 1.35 - dusk * 0.3;
-        postLook.bloomStrength = 0.22 + night * 0.3 + dusk * 0.1;
-        postLook.saturation = (1.16 + dusk * 0.06 - night * NIGHT_LOOK.saturation) * (1 - overcast * 0.14 - rain * 0.06);
-        postLook.contrast = 1.14 + dusk * 0.02 - night * NIGHT_LOOK.contrast - overcast * 0.06;
+        // Bloom: by day only glints and the sun on glass and water (at 2.2 the
+        // sunlit pale paving itself crossed the knee and hung a milky veil over
+        // the street); after dark lamps, neon, windows and headlights.
+        postLook.bloomThreshold = 3.3 - night * 2.4 - dusk * 0.7;
+        postLook.bloomStrength = 0.18 + night * 0.32 + dusk * 0.12;
+        // Rich rather than loud: a little saturation, more vibrance (it lifts
+        // the muted paint, awnings and planting, not what is already strong).
+        postLook.saturation = (1.1 + dusk * 0.06 - night * NIGHT_LOOK.saturation) * (1 - overcast * 0.14 - rain * 0.06);
+        postLook.vibrance = (0.32 + dusk * 0.1 - night * 0.14) * (1 - overcast * 0.5);
+        postLook.contrast = 1.2 + dusk * 0.02 - night * NIGHT_LOOK.contrast - overcast * 0.08;
         postLook.lift.copy(gradeLiftDay).lerp(gradeLiftDusk, dusk).lerp(gradeLiftNight, night);
         postLook.gain.copy(gradeGainDay).lerp(gradeGainDusk, dusk).lerp(gradeGainNight, night);
         if (rain > 0.05) {
           postLook.lift.lerp(gradeLiftNight, rain * 0.3);
           postLook.gain.lerp(gradeGainDay, rain * 0.5);
         }
-        postLook.vignette = 0.2 + night * 0.06;
+        postLook.vignette = 0.22 + night * 0.06;
         // AO reads at street scale on the ground and grows with the view from the air.
         postLook.aoRadius = clamp(18 / Math.max(0.25, viewZoom), 18, 72);
         postLook.aoIntensity = 1.5;

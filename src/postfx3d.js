@@ -17,7 +17,7 @@
        *     │         resolution, then a blur along the reflection
        *     └──> composite: AO, wet reflections, bloom, exposure, ACES filmic tone curve, colour
        *          grade for the time of day, vignette, dither, sRGB
-       *            └── FXAA when the scene target is not multisampled
+       *            └── FXAA (every tier: after the tone curve, see FXAA)
        *
        * Every stage is switched by the quality tier (quality.js); LOW keeps only
        * the composite and FXAA. Nothing here allocates per frame. The HUD is a
@@ -495,6 +495,7 @@
         uAoStrength: { value: 0 },
         uBloomStrength: { value: 0 },
         uSaturation: { value: 1 },
+        uVibrance: { value: 0 },
         uContrast: { value: 1 },
         uLift: { value: new Three.Vector3(0, 0, 0) },
         uGain: { value: new Three.Vector3(1, 1, 1) },
@@ -518,6 +519,7 @@
           uniform float uAoStrength;
           uniform float uBloomStrength;
           uniform float uSaturation;
+          uniform float uVibrance;
           uniform float uContrast;
           uniform vec3 uLift;
           uniform vec3 uGain;
@@ -545,8 +547,9 @@
             color = any( isnan( color ) ) ? vec3( 0.0 ) : clamp( color, vec3( 0.0 ), vec3( 6.0e4 ) );
             #ifdef USE_AO
               float ao = texture2D( tAo, vUv ).r;
+              // Lights (lamps, neon, lit windows) are not shaded; sunlit paving is.
               float lum = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
-              color *= mix( 1.0, ao, uAoStrength * ( 1.0 - smoothstep( 1.2, 4.0, lum ) ) );
+              color *= mix( 1.0, ao, uAoStrength * ( 1.0 - smoothstep( 3.5, 9.0, lum ) ) );
             #endif
             #ifdef USE_SSR
               // Wet reflections: the ground's own reflectivity (negative alpha) at
@@ -561,7 +564,9 @@
             color = cityACES( color );
             #ifdef USE_GRADE
               float luma = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
-              color = mix( vec3( luma ), color, uSaturation );
+              // Saturation, plus vibrance: more for muted colours than vivid ones.
+              float chroma = max( color.r, max( color.g, color.b ) ) - min( color.r, min( color.g, color.b ) );
+              color = max( mix( vec3( luma ), color, uSaturation * ( 1.0 + uVibrance * ( 1.0 - smoothstep( 0.0, 0.5, chroma ) ) ) ), 0.0 );
               color = clamp( ( color - 0.18 ) * uContrast + 0.18, 0.0, 1.0 );
               color = uGain * ( color + uLift * ( 1.0 - color ) );
               vec2 v = ( vUv - 0.5 ) * vec2( uAspect, 1.0 );
@@ -602,10 +607,17 @@
       let compositeMaterial = null;
       /**
        * FXAA
-       * Fast approximate anti-aliasing (after Timothy Lottes' FXAA, NVIDIA) for the
-       * tiers without a multisampled scene target: find the local luma contrast,
-       * blur along the edge direction and keep the two- or four-tap result that
-       * stays inside the neighbourhood's luma range.
+       * Fast approximate anti-aliasing (after Timothy Lottes' FXAA, NVIDIA): find
+       * the local luma contrast, blur along the edge direction and keep the two-
+       * or four-tap result that stays inside the neighbourhood's luma range.
+       * It runs on every tier, after the tone curve. On HIGH and ULTRA the
+       * multisampled scene target smooths geometry edges, but MSAA resolves
+       * scene light before the tone curve: an edge between a lamp, a lit window
+       * or a sunlit roof and a dark street averages to nearly the bright side, so
+       * such edges stayed stepped, and the cut-out edges of leaves and sub-pixel
+       * glints are not multisampled at all. Without a pass after the curve those
+       * stepped, flickering edges were the "fringing and strobing" seen on HIGH
+       * and ULTRA (MEDIUM, with FXAA, did not show it).
        */
       const fxaaUniforms = { tSource: { value: null }, uTexel: { value: new Three.Vector2() } };
       const fxaaMaterial = postMaterial(
@@ -667,7 +679,7 @@
         for (let i = 0, w = width >> 1, h = height >> 1; i < tier.bloom && w >= 4 && h >= 4; i++, w >>= 1, h >>= 1)
           bloomTargets.push(colorTarget(w, h));
         if (ldrTarget) ldrTarget.dispose();
-        ldrTarget = tier.msaa ? null : colorTarget(width, height, Three.UnsignedByteType);
+        ldrTarget = colorTarget(width, height, Three.UnsignedByteType);
         postCompositeUniforms.uAspect.value = width / height;
       }
       // Dynamic resolution: the share of the canvas the scene is drawn at (0.5..1).
@@ -678,6 +690,39 @@
         renderScale = next;
         if (hdrCapable && postTier) sizePostTargets();
         return renderScale;
+      }
+      /**
+       * PIXEL-LOCKED STREET CAMERA
+       * The street camera is orthographic and never turns, so moving it by a
+       * whole number of the scene buffer's pixels (along its own right and up
+       * axes) moves the whole picture by whole pixels. Gliding after the player
+       * it used to land anywhere between pixels, and every frame resampled each
+       * static surface at a new sub-pixel phase: window grids, road markings,
+       * setts, text and roof edges crawled and shimmered whenever the view
+       * scrolled. The camera is snapped to the pixel grid (fixed in the world)
+       * before each street frame, so what does not move is drawn identically,
+       * just shifted. Moving along the view axis changes nothing an orthographic
+       * camera sees, so the snap never shows. Zooming still resamples, as it must.
+       */
+      // A/B switches for the look (DeadEndCity.lookSwitches): all on in play.
+      const lookSwitchState = { pixelLock: true, fxaa: true, vibrance: true, carLamps: true, groundSlopeCap: true };
+      const snapRight = new Three.Vector3(),
+        snapUp = new Three.Vector3(),
+        snapBuffer = new Three.Vector2();
+      function lockStreetCameraToPixels() {
+        if (!lookSwitchState.pixelLock) return;
+        sceneBufferSize(snapBuffer);
+        const zoom = camera.zoom || 1,
+          pixelX = (camera.right - camera.left) / zoom / snapBuffer.x,
+          pixelY = (camera.top - camera.bottom) / zoom / snapBuffer.y;
+        if (!(pixelX > 0 && pixelY > 0)) return;
+        snapRight.set(1, 0, 0).applyQuaternion(camera.quaternion);
+        snapUp.set(0, 1, 0).applyQuaternion(camera.quaternion);
+        const right = camera.position.dot(snapRight),
+          up = camera.position.dot(snapUp);
+        camera.position
+          .addScaledVector(snapRight, Math.round(right / pixelX) * pixelX - right)
+          .addScaledVector(snapUp, Math.round(up / pixelY) * pixelY - up);
       }
       // Size in pixels of the buffer the scene pass draws into (the canvas, or the
       // scaled HDR target): point sprites and screen-space lookups in scene
@@ -710,6 +755,7 @@
         aoRadius: 16,
         aoIntensity: 1.1,
         saturation: 1.05,
+        vibrance: 0,
         contrast: 1.04,
         lift: new Three.Vector3(0, 0, 0),
         gain: new Three.Vector3(1, 1, 1),
@@ -823,13 +869,14 @@
         postCompositeUniforms.uExposure.value = postLook.exposure;
         postCompositeUniforms.uBloomStrength.value = postLook.bloomStrength;
         postCompositeUniforms.uSaturation.value = postLook.saturation;
+        postCompositeUniforms.uVibrance.value = lookSwitchState.vibrance ? postLook.vibrance : 0;
         postCompositeUniforms.uContrast.value = postLook.contrast;
         postCompositeUniforms.uLift.value.copy(postLook.lift);
         postCompositeUniforms.uGain.value.copy(postLook.gain);
         postCompositeUniforms.uVignette.value = postLook.vignette;
         postCompositeUniforms.uGrain.value = postLook.grain;
         postCompositeUniforms.uTime.value = gameTime;
-        if (ldrTarget) {
+        if (ldrTarget && (lookSwitchState.fxaa || !tier.msaa)) {
           runPass(compositeMaterial, ldrTarget);
           fxaaUniforms.tSource.value = ldrTarget.texture;
           fxaaUniforms.uTexel.value.set(1 / postWidth, 1 / postHeight);

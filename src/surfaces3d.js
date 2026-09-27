@@ -76,6 +76,8 @@
       const groundShared = {
         cityDetail: { value: groundDetail },
         cityGroundDetail: { value: 2 },
+        // The bump's per-pixel tilt cap (ground-shader3d.js GROUND_NORMAL); 0 for A/B views.
+        cityGroundSlopeCap: { value: 1 },
         cityMarkIndex: { value: groundMarks.index },
         cityMarkData: { value: groundMarks.data },
         cityMarkGrid: { value: groundMarks.grid },
