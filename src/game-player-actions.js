@@ -106,13 +106,18 @@
       player.thrown = null;
       player.fall = null;
       cancelCarjack();
-      if (player.roof || player.buildingRoof) {
-        player.roof = false;
-        player.buildingRoof = null;
-        player.altitude = 0;
-      }
       player.parachute = null;
-      if (gameMode !== 'play') return;
+      // A body on a roof (the Blue Hour terrace, a building roof) stays up there
+      // for WASTED; the respawn below takes it off (teleportPlayer). Dropped to
+      // street level it lay inside the building, out of sight under its roof.
+      if (gameMode !== 'play') {
+        if (player.roof || player.buildingRoof) {
+          player.roof = false;
+          player.buildingRoof = null;
+          player.altitude = 0;
+        }
+        return;
+      }
       gameMode = 'dead';
       player.hp = 0;
       if (player.car) {
@@ -134,8 +139,8 @@
         player.hp = 100;
         player.armor = 0;
         player.inv = 3;
-        player.x = PLACES.find((p) => p.kind === 'hospital').door.x;
-        player.y = PLACES.find((p) => p.kind === 'hospital').door.y;
+        const hospital = PLACES.find((p) => p.kind === 'hospital').door;
+        teleportPlayer(hospital.x, hospital.y);
         clearPolice();
         resetOfficerCrews();
         gameMode = 'play';
