@@ -264,4 +264,5 @@
         }
         setPostQuality(tier);
         setSearchlightQuality(tier);
+        setFoliageCoverage(tier);
       }
