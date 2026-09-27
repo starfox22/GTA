@@ -188,7 +188,7 @@
       );
     }
     /* How far a ray from `origin` at heading `a` runs before cover stops it, up to
-       `range`. Shots and the takedown (`view` false) pass over low cover (`sight:
+       `range`. Shots (`view` false) pass over low cover (`sight:
        false`); a bodyguard's eyes (`view` true) are stopped by everything but the
        pool (`view: false`). */
     function roofRayLength(origin, a, range = 118, view = false) {

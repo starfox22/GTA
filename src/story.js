@@ -735,11 +735,9 @@
                 keyName('walk') +
                 ' to run). Stay out of the bodyguards’ sight cones. ' +
                 keyName('poison') +
-                ' at Vescari’s reserved glass, or hold ' +
-                keyName('interact') +
-                ' beside him for a takedown. ' +
+                ' at Vescari’s reserved glass, or ' +
                 keyName('fire') +
-                ' draws your pistol.'
+                ' draws your pistol and the whole detail with it.'
               : 'THE BLUE HOUR · ' + keyName('interact') + ' at the bar or elevator · Weapons stay holstered on the terrace.'
             : 'Back at street level.',
           5,
@@ -766,9 +764,7 @@
           rooftopJob()
             ? 'Blend in. ' +
                 keyName('poison') +
-                ' beside Vescari’s reserved glass, or hold ' +
-                keyName('interact') +
-                ' beside him for a takedown; ' +
+                ' beside Vescari’s reserved glass; ' +
                 keyName('interact') +
                 ' at the elevator to leave.'
             : keyName('interact') + ' at the bar, Mara, or the elevator. Weapons stay holstered here.',

@@ -1,4 +1,4 @@
-    // Blue Hour scene: guests and guards (startRooftopHit), the alarm, the takedown, stage flow and the party's frame update.
+    // Blue Hour scene: guests and guards (startRooftopHit), the alarm, stage flow and the party's frame update.
     function roofSay(p, text, seconds = 2.5) {
       p.speech = text;
       p.speechFor = seconds;
@@ -208,19 +208,6 @@
       // The objective follows: Vescari is still the job, if he is not already dying.
       if (bossLive) setStage(2, m.boss, 'COVER BLOWN · TAKE DOWN VESCARI');
     }
-    function canSilentHit(m) {
-      return (
-        !!m &&
-        player.roof &&
-        m.disguise &&
-        m.boss.hp > 0 &&
-        !m.alarm &&
-        !m.weaponDrawn &&
-        !poisonCommitted(m) &&
-        distanceBetween(player, m.boss) <= 36 &&
-        roofSight(player, m.boss)
-      );
-    }
     function rooftopMissionInteract() {
       const missionState = rooftopJob();
       if (!missionState) return false;
@@ -238,32 +225,16 @@
         tell(
           'Vescari is meeting the dock buyers in the VIP lounge. Walk, keep out of the bodyguards’ sight cones, and spike his reserved glass with ' +
             keyName('poison') +
-            ' when nobody is looking. Holding ' +
-            keyName('interact') +
-            ' beside him is a quiet takedown.',
+            ' when nobody is looking, or draw a gun and fight the whole detail.',
           9,
         );
-        return true;
-      }
-      if (canSilentHit(missionState)) {
-        // Seen doing it: the detail opens fire at once.
-        const witness = poisonWitness(missionState);
-        missionState.boss.hp = 0;
-        missionState.boss.deadTime = gameTime;
-        missionState.bodyDelay = 12;
-        missionState.boss.speech = '';
-        missionState.boss.drinking = false;
-        bleed(missionState.boss, 1.5, player.a);
-        updateRooftopHit(missionState, 0);
-        if (witness) roofAlarm(missionState);
-        else tell('Vescari is down. Leave before the bodyguards find him.', 4);
         return true;
       }
       return false;
     }
     /* Stage flow: the lounge, Vescari down, the lift, and the way out. A clean
        poisoning (no alarm, no stars) only asks the player to walk away from the
-       hotel; a loud job (the alarm, or the takedown) is the run to Coral Palms. */
+       hotel; a loud job (the alarm, or a body found) is the run to Coral Palms. */
     function updateRooftopHit(m, deltaSeconds) {
       const b = m.boss;
       updatePoisonDrink(m, deltaSeconds);
@@ -349,7 +320,7 @@
         if (e.boss && !m.alarm && !m.poisoned) e.a = -Math.PI / 2 + Math.sin(gameTime * 0.22) * 0.45;
       }
       updateRoofSuspicion(m, deltaSeconds, guards);
-      // The takedown's body: a bodyguard who sees it, or a guest who stumbles on it.
+      // A body with no alarm raised: a bodyguard who sees it, or a guest who stumbles on it.
       if (!m.alarm && m.killRegistered && !m.partyPanic) {
         m.bodyDelay -= deltaSeconds;
         if (
