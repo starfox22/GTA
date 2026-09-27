@@ -488,7 +488,8 @@
             west = x - 14,
             east = x + w + 14;
           // South sidewalk: hydrant, bins, newspaper boxes, mailbox, parking meters.
-          if (clearSidewalk(x + 10, south)) placeProp('hydrant', pools.hydrant, x + 10, 2.8, south, 1.6, 5.6, 1.6);
+          // Real sizes (scale audit): a 0.8 m hydrant, 0.65 x 0.8 m bins, 0.9 m bollards, 0.7 m cones.
+          if (clearSidewalk(x + 10, south)) placeProp('hydrant', pools.hydrant, x + 10, 3.2, south, 1.3, 6.4, 1.3);
           for (const px of [x + 96, x + 238])
             if (clearSidewalk(px, south + 4)) placeProp('trash', pools.trash, px, 3.2, south + 4, 2.6, 6.4, 2.6);
           if (clearSidewalk(x + 150, south + 4)) {
@@ -504,8 +505,8 @@
           if (clearSidewalk(x + w - 30, north)) placeProp('trash', pools.trash, x + w - 30, 3.2, north, 2.6, 6.4, 2.6);
           // West and east sidewalks: bollards and the odd traffic cone.
           for (const [sx, sz] of [[west, z + 30], [west, z + w - 30], [east, z + 30], [east, z + w - 30]])
-            if (clearSidewalk(sx, sz)) placeProp('bollard', pools.bollard, sx, 3.6, sz, 1.4, 7.2, 1.4);
-          if (cityRandom() < 0.25 && clearSidewalk(east, z + w / 2)) placeProp('cone', pools.cone, east, 3, z + w / 2, 3, 6, 3);
+            if (clearSidewalk(sx, sz)) placeProp('bollard', pools.bollard, sx, 3.6, sz, 1.1, 7.2, 1.1);
+          if (cityRandom() < 0.25 && clearSidewalk(east, z + w / 2)) placeProp('cone', pools.cone, east, 2.8, z + w / 2, 1.6, 5.6, 1.6);
           // Alley clutter: dumpsters and crates in the interior parking court.
           if (cityRandom() < 0.7 && clearSidewalk(x + 200, z + 176)) {
             placeProp('dumpster', pools.dumpster, x + 200, 4.5, z + 176, 16, 9, 8);

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-380 files in the include tree, 142,127 lines.
+380 files in the include tree, 142,306 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -105,7 +105,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/navigation.js`   683 — City map and route planning
 - `src/parachute.js`   345 — Bailout and parachute
 - `src/mobile.js`   259 — Touch controls
-- `src/world-view.js`   164 — World camera gestures
+- `src/world-view.js`   224 — World camera gestures
 - `src/car-radio.js`   836 — Vehicle radio stations
 - `src/garages.js`   750 — ▸ Drive-in repair and respray
 - `src/crowd.js`   192 — ▸ Crowd life, perception and reactions
@@ -405,7 +405,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/cityscape3d.js ▸ Building archetypes, roofs, shopfronts and street furniture
 
 - `src/cityscape3d-kit.js`   646 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
-- `src/cityscape3d-roofs.js`   553 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
+- `src/cityscape3d-roofs.js`   554 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
 ## src/cityscape3d-kit.js ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 
@@ -526,19 +526,19 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/police3d.js ▸ Police vehicle models
 
 - `src/police3d-looks.js`   504 — Police 3D bodies, liveries and looks (POLICE_BODIES, pickPoliceLook), trim materials and shared resources.
-- `src/police3d-cabins.js`   588 — Police 3D glasshouse cabins and livery textures (policeCabinGeometry, policeLiveryTextures).
+- `src/police3d-cabins.js`   620 — Police 3D glasshouse cabins and livery textures (policeCabinGeometry, policeLiveryTextures).
 - `src/police3d-kits.js`   597 — Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
 
 ## src/cars3d.js ▸ Civilian car models
 
 - `src/cars3d-materials.js`   334 — Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
-- `src/cars3d-geometry.js`   315 — Civilian car merging kit: matrices, beams, bars, discs and profile shapes (civAdd, civGeometry, civShapeKit).
+- `src/cars3d-geometry.js`   317 — Civilian car merging kit: matrices, beams, bars, discs and profile shapes (civAdd, civGeometry, civShapeKit).
 - `src/cars3d-wheels.js`   159 — Civilian car tyres and rims (civTyreGeometry, civRimGeometry).
-- `src/cars3d-kit.js`   439 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
+- `src/cars3d-kit.js`   444 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
 - `src/cars3d-models.js`   277 — Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
-- `src/cars3d-body-parts.js`   130 — Civilian car body parts: civBody() and shared lamps, LED lines, projectors, plates, exhausts, badges, fins.
-- `src/cars3d-bodies-a.js`   519 — CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod.
-- `src/cars3d-bodies-b.js`   563 — CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino.
+- `src/cars3d-body-parts.js`   144 — Civilian car body parts: civBody() and shared lamps, LED lines, projectors, plates, exhausts, badges, fins.
+- `src/cars3d-bodies-a.js`   545 — CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod.
+- `src/cars3d-bodies-b.js`   599 — CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino.
 
 ## src/offroad3d.js ▸ 4x4 club trucks, the club lot, trail props and mud
 
@@ -567,7 +567,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
-- `src/game-console-core.js`   115 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
+- `src/game-console-core.js`   118 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   186 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   193 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)

@@ -7,19 +7,46 @@
      */
     /* World gestures are independent from navigation-map gestures and touch sticks. */
     /* The street view's default zoom. At true scale a car is 4.8 m and a person
-       1.75 m (game.js WORLD SCALE). The ground is drawn at the screen's
-       resolution (ground-shader3d.js), so the camera starts closer than it used
-       to (1.2): people read bigger, over about 43 m of street top to bottom on
-       a 16:10 screen. The wheel reaches from the whole district (0.14) to 3.0,
-       close enough to see a face. */
-    const STREET_ZOOM = 1.6,
+       1.75 m (game.js WORLD SCALE). On foot the camera stands close enough that
+       a person reads clearly (about 35 px tall on a 1280 x 800 screen, over
+       about 27 m of street top to bottom); in a vehicle it frames wider
+       (CAMERA CONTEXT below) and eases back further with speed. The wheel
+       reaches from the whole district (0.14) to 4.5, close enough to see a
+       face. The player's zoom is one number: the context and speed framing
+       are factors on it, so a player who zooms out on foot is zoomed out in
+       the car too. */
+    const STREET_ZOOM = 2.5,
       STREET_ZOOM_MIN = 0.14,
-      STREET_ZOOM_MAX = 3.0,
+      STREET_ZOOM_MAX = 4.5,
       // How far out the street camera eases at full speed (below).
       DRIVE_ZOOM_FAR = 0.82;
+    /* CAMERA CONTEXT: the share of the player's zoom the camera frames at for
+       what the player is in, so entering a car pulls the view back over a
+       couple of seconds and stepping out brings it in again (both eased with
+       the speed framing in updateWorldView). A car at rest frames at 0.7 of
+       the on-foot zoom (1.75 by default, about the old all-round 1.6), so the
+       road ahead reads as before; long vehicles and boats wider; aircraft
+       keep the framing the flight view was tuned at (1.6 by default). */
+    const CAMERA_CONTEXT = { car: 0.7, bike: 0.76, bicycle: 0.82, long: 0.6, boat: 0.6, air: 1.6 / STREET_ZOOM, ride: 0.7, parachute: 0.78 };
+    function cameraContextZoom() {
+      const c = player.car;
+      if (c) {
+        const spec = vehicleSpec(c);
+        if (isAircraft(c)) return CAMERA_CONTEXT.air;
+        if (spec.boat || spec.jetski) return CAMERA_CONTEXT.boat;
+        if (spec.bicycle) return CAMERA_CONTEXT.bicycle;
+        if (spec.bike) return CAMERA_CONTEXT.bike;
+        if (spec.truck || spec.tank || spec.l > 7 * UNITS_PER_METRE) return CAMERA_CONTEXT.long;
+        return CAMERA_CONTEXT.car;
+      }
+      if (player.parachute) return CAMERA_CONTEXT.parachute;
+      if (transitRide || taxiRide || player.coaster) return CAMERA_CONTEXT.ride;
+      return 1;
+    }
     let worldZoom = STREET_ZOOM,
       worldZoomTarget = STREET_ZOOM,
-      // Pulled back while driving fast (speedZoomTarget), on top of the player's zoom.
+      // The context and speed framing (cameraContextZoom × speedZoomTarget), eased,
+      // on top of the player's zoom.
       speedZoom = 1,
       worldTouchUntil = 0,
       worldPinch = null,
@@ -28,6 +55,14 @@
     const worldPointers = new Map();
     function setWorldZoom(value) {
       worldZoomTarget = clamp(value, STREET_ZOOM_MIN, STREET_ZOOM_MAX);
+    }
+    // The factor on the player's zoom the camera eases towards (updateWorldView).
+    function cameraFramingTarget() {
+      // A garage's drive-in show eases in closer, and quicker (garages.js).
+      const garageFrame = garageCameraFrame(),
+        context = cameraContextZoom();
+      // So does a drawbridge opening close by, the other way: back a little (drawbridge.js).
+      return context * (garageFrame ? garageFrame.zoom : speedZoomTarget(context) * drawbridgeCameraZoom());
     }
     function resetWorldGesture() {
       worldPointers.clear();
@@ -39,30 +74,55 @@
         resetWorldGesture();
         return;
       }
-      // A garage's drive-in show eases in closer, and quicker (garages.js).
-      const garageFrame = garageCameraFrame();
-      // So does a drawbridge opening close by, the other way: back a little (drawbridge.js).
-      speedZoom += ((garageFrame ? garageFrame.zoom : speedZoomTarget() * drawbridgeCameraZoom()) - speedZoom) * (1 - Math.exp(-deltaSeconds * (repairJob ? 2.5 : 0.8)));
+      speedZoom += (cameraFramingTarget() - speedZoom) * (1 - Math.exp(-deltaSeconds * (repairJob ? 2.5 : 0.8)));
       worldZoom += (worldZoomTarget * speedZoom - worldZoom) * (1 - Math.exp(-deltaSeconds * 12));
       canvasScale = clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
       incomingCallRemaining = Math.max(0, incomingCallRemaining - deltaSeconds);
     }
     /* At real speeds a car covers the street view in a few seconds: from about
-       60 km/h the camera eases back (boats too; aircraft have their own flight
-       view). By 220 km/h it is out to 0.68 of the player's zoom or to
-       DRIVE_ZOOM_FAR, whichever is wider, so the closer default zoom gives the
-       same view of the road ahead at speed as the old one did (0.82 either
-       way); a player who has zoomed out keeps the old proportional pull-back.
-       Returns a factor on the player's zoom. */
-    function speedZoomTarget() {
+       45 km/h the camera eases back (boats too; aircraft have their own flight
+       view). By 205 km/h it is out to 0.68 of the vehicle's framing at rest or
+       to DRIVE_ZOOM_FAR, whichever is wider, so the default gives the same view
+       of the road ahead at speed as it always has (0.82); a player who has
+       zoomed out keeps the proportional pull-back. `context` is the vehicle's
+       share of the player's zoom (cameraContextZoom); returns a factor on top
+       of it. */
+    function speedZoomTarget(context = 1) {
       const c = player.car;
       if (!c || isAircraft(c)) return 1;
       const v = Math.hypot(c.vx || 0, c.vy || 0),
-        s = clamp((v - 60 * KMH) / (160 * KMH), 0, 1),
-        zoom = Math.max(worldZoomTarget, 1e-3),
+        s = clamp((v - 45 * KMH) / (160 * KMH), 0, 1),
+        zoom = Math.max(worldZoomTarget * context, 1e-3),
         proportional = 1 / (1 + s * 0.47),
         toFar = (zoom + (Math.min(zoom, DRIVE_ZOOM_FAR) - zoom) * s) / zoom;
       return Math.min(proportional, toFar);
+    }
+    /* DeadEndCity.cameraView(): the street camera's framing as it stands. `zoom` is
+       the zoom in force (player's zoom × framing), `target` the player's own,
+       `context` the share for what the player is in, `speed` the speed pull-back
+       on top, `framing` the eased product and `aim` the zoom it eases to (drawn
+       frames advance the easing; console simulate() does not); `viewMetres` the
+       screen's height in metres of street and `personPx` how tall a 1.75 m
+       person stands on screen (the street camera looks down at STREET_PITCH,
+       flight-view3d.js). */
+    function cameraViewReport() {
+      const context = cameraContextZoom(),
+        frameH = clamp(viewportHeight * 0.68, 430, 630),
+        viewH = frameH / Math.max(1e-3, worldZoom),
+        standing = PERSON_HEIGHT * Math.cos(Math.atan2(680, 560));
+      return {
+        zoom: +worldZoom.toFixed(3),
+        target: +worldZoomTarget.toFixed(3),
+        context: +context.toFixed(3),
+        speed: +speedZoomTarget(context).toFixed(3),
+        framing: +speedZoom.toFixed(3),
+        aim: +(worldZoomTarget * cameraFramingTarget()).toFixed(3),
+        defaultZoom: STREET_ZOOM,
+        limits: [STREET_ZOOM_MIN, STREET_ZOOM_MAX],
+        viewport: [viewportWidth, viewportHeight],
+        viewMetres: +worldMeters(viewH).toFixed(1),
+        personPx: Math.round((standing * viewportHeight) / viewH),
+      };
     }
     function newCallNotice() {
       if (storyCallWaiting()) incomingCallRemaining = 8;
