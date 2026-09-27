@@ -1,8 +1,21 @@
 // GOALLINE sportsbook: a live fixture takes bets at the showing price, refuses a stake
 // over the cash, and a goal settles the next-goal market with the right payout.
+// The old flake: the book starts tracking a new match object (its score) on the first
+// frame after matchDay, so a bet and a goal sent before any frame ran left the goal
+// unseen; and a real goal could land between console calls. So: one stepped frame to
+// track the match, then the simulation is held and only stepped by simulate().
 export default async function (t) {
   const m = await t.call('matchDay', 1, 10);
   t.assert(m.stage === 'live', 'fixture not live: ' + m.stage);
+  await t.call('holdSimulation', true);
+  await t.wait(1 / 30);
+  try {
+    await run(t);
+  } finally {
+    await t.call('holdSimulation', false);
+  }
+}
+async function run(t) {
   await t.call('wanted', 0); // the shop takes no bets from a wanted man
   await t.call('setCash', 1000);
   const tooMuch = await t.call('sportsbookBet', 'result', 'home', 5000);
@@ -13,7 +26,7 @@ export default async function (t) {
   const other = await t.call('sportsbookBet', 'result', 'away', 20);
   t.assert(!other.error && other.cash === 970, 'second bet: ' + JSON.stringify(other));
   await t.call('stadiumGoal', 0);
-  await t.wait(0.5); // bets settle in the frame update after the goal
+  await t.wait(0.1); // bets settle in the frame update after the goal
   const book = await t.call('sportsbook');
   const won = book.settled.find((b) => b.id === bet.id);
   t.assert(won && won.status === 'won', 'next-goal bet not settled as won: ' + JSON.stringify(won));
