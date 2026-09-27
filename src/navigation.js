@@ -641,7 +641,7 @@
       }
       if (transitRide) {
         getElement('terrainStatus').textContent =
-          'CITY RAIL → ' + transitRide.target.name + ' · E: NEXT STOP';
+          'CITY RAIL → ' + transitRide.target.name + ' · ' + keyName('interact') + ': NEXT STOP';
         return;
       }
       if (p)

@@ -186,7 +186,7 @@
         vehicle.vx = vehicle.vy = vehicle.speed = 0;
         player.car = null;
         player.inv = 0.5;
-        tell('ROOFTOP · E at the helicopter to fly on', 2.5);
+        tell('ROOFTOP · ' + keyName('interact') + ' at the helicopter to fly on', 2.5);
         tone(160, 0.06, 0.15, 'triangle');
         return;
       }
@@ -332,7 +332,7 @@
         return;
       }
       if (GARAGES.some((s) => distanceBetween(player, s) < 140))
-        tell('Drive up to the door and press E: respray from $200, repairs by the damage.');
+        tell('Drive up to the door and press ' + keyName('interact') + ': respray from $200, repairs by the damage.');
     }
     /* Taking the wheel: shared by the action key, the cab hijack and the getaway
        cars missions hand you, so every entry sets the same state. */
