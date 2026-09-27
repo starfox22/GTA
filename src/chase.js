@@ -372,7 +372,7 @@
       m.policeArrived = true;
       m.policeArrivalIn = 0;
       m.dispatchTimer = 6;
-      crime(3);
+      crime(3, 'seen');
       wantedStars = Math.max(3, wantedStars);
       for (let i = 0; i < 3; i++) {
         const patrol = spawnCargoPatrol(m);

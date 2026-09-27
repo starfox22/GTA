@@ -387,7 +387,7 @@
       const c = player.car;
       if (player.parachute) return player.parachute.stage === 'freefall' ? 'freefall' : 'chute';
       if (player.coaster) return player.coaster.kind === 'train' ? 'coaster' : 'ride';
-      if (!c) return player.swimming ? 'swim' : 'foot';
+      if (!c) return player.swimming ? 'swim' : roofPartyPace() ? 'party' : 'foot';
       if (c.type === 'helicopter') return 'heli';
       if (c.type === 'plane') return 'plane';
       if (isBoat(c)) return 'boat';
@@ -396,6 +396,8 @@
     const QUICK_KEYS = {
       foot: [['move', 'RUN'], ['walk', 'WALK'], ['interact', 'INTERACT'], ['fire', 'FIRE'], ['help', 'CONTROLS']],
       swim: [['move', 'SWIM'], ['walk', 'EASY STROKE'], ['help', 'CONTROLS']],
+      // The Blue Hour during mission 2: guests walk; the walk key runs (footPace).
+      party: [['move', 'WALK'], ['walk', 'RUN'], ['poison', 'SPIKE DRINK'], ['interact', 'INTERACT'], ['help', 'CONTROLS']],
       car: [['move', 'DRIVE'], ['handbrake', 'HANDBRAKE'], ['interact', 'EXIT'], ['radioNext', 'STATION'], ['help', 'CONTROLS']],
       bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['back', 'BRAKE'], ['interact', 'EXIT']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],

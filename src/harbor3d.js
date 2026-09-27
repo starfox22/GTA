@@ -517,29 +517,6 @@
       // clipped by the door posts) and hid the shutter the chase ends at.
       const morettiSign = sign('MORETTI FREIGHT', -1664, 4337, 120, '#e8ce83');
       morettiSign.position.y = morettiSign.userData.backing.position.y = 62;
-      const guardCones = Array.from(
-        {
-          length: 3,
-        },
-        () => {
-          const geo = new Three.BufferGeometry();
-          geo.setAttribute('position', new Three.BufferAttribute(new Float32Array(42 * 9), 3));
-          const g = new Three.Mesh(
-            geo,
-            new Three.MeshBasicMaterial({
-              color: '#e6c386',
-              transparent: true,
-              opacity: 0.075,
-              depthWrite: false,
-              side: Three.DoubleSide,
-            }),
-          );
-          g.frustumCulled = false;
-          g.visible = false;
-          scene.add(g);
-          return g;
-        },
-      );
       function updateMissionVisuals() {
         depotRoof.visible = distanceBetween(player, VINNY_DEPOT.inside) > 330;
         // The shutter slides up into its housing; 0 is open, 1 is fully down.
@@ -549,49 +526,8 @@
         depotBackHinge.rotation.y = -(1 - depotBackDoor) * 1.75;
         // The police helicopter's searchlight (searchlight3d.js).
         updateHelicopterSearchlight();
-        const missionState = rooftopJob(),
-          guards = enemies.filter((e) => e.guard && e.hp > 0 && e.missionTag === 'rooftop-hit');
-        guardCones.forEach((g, i) => {
-          const e = guards[i];
-          g.visible = !!e && !!missionState && player.roof && !missionState.alarm;
-          if (e) {
-            g.position.set(e.x, e.altitude + 0.2, e.y);
-            const v = g.geometry.attributes.position.array;
-            for (let j = 0; j < 42; j++) {
-              let at = j * 9;
-              v[at++] = 0;
-              v[at++] = 0;
-              v[at++] = 0;
-              for (const a of [e.a - 0.82 + (j * 1.64) / 42, e.a - 0.82 + ((j + 1) * 1.64) / 42]) {
-                const d = roofRayLength(e, a);
-                v[at++] = Math.cos(a) * d;
-                v[at++] = 0;
-                v[at++] = Math.sin(a) * d;
-              }
-            }
-            g.geometry.attributes.position.needsUpdate = true;
-          }
-        });
-      }
-      function drawHitTargetLabel() {
-        const m = rooftopJob();
-        if (!m || !player.roof) return;
-        for (const actor of [
-          m.boss,
-          ...storyActors.filter((p) => p.missionTag === 'rooftop-hit' && !p.hidden),
-        ]) {
-          const p = api.project(actor.x, actor.y, actor.altitude + 33);
-          if (p.x < 40 || p.x > viewportWidth - 40 || p.y < 70 || p.y > viewportHeight - 150) continue;
-          if (actor.speech) roofSpeechBubble(actor, p.x, p.y);
-          else if (actor === m.boss && actor.hp > 0) {
-            worldContext.fillStyle = '#15222bef';
-            worldContext.fillRect(p.x - 72, p.y - 16, 144, 24);
-            worldContext.fillStyle = '#f3d592';
-            worldContext.textAlign = 'center';
-            worldContext.font = 'bold 11px Arial';
-            worldContext.fillText('LUCIANO VESCARI', p.x, p.y);
-          }
-        }
+        // The Blue Hour's sight cones (roofmission3d.js).
+        updateRoofMissionVisuals();
       }
       // BEGIN CARGO SHIP
       /**

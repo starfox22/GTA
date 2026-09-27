@@ -27,6 +27,8 @@
     }
     /* Called by strikePerson for every hit that did damage. */
     function woundPerson(person, dealt, a, kind, source = null) {
+      // Poisoned (mission 2): no wound, no fall of its own, no blood trail.
+      if (person.poisoned) return;
       person.hitAt = gameTime;
       person.hitDir = a;
       person.hitZone = pickHitZone(kind);
@@ -39,6 +41,8 @@
         person.hitZone !== 'head' &&
         !person.woundedDown &&
         (person.police || pedestrians.includes(person)) &&
+        // Mission 1's sealed warehouse: no one left crawling on the floor (harbor.js depotPoliceInside).
+        !(person.police && depotSealed && insideDepot(person.x, person.y)) &&
         seededRandom() < (person.police ? 0.35 : 0.25)
       ) {
         person.hp = person.police ? 9 : 7;
@@ -94,9 +98,12 @@
       if (kind !== 'blast' && kind !== 'impact' && !style.slump) moveBody(person, Math.cos(a) * 5, Math.sin(a) * 5, 6);
       person.deathStyle = style;
     }
-    /* 0 standing to 1 on the ground, over the half second after death. */
+    /* 0 standing to 1 on the ground, over the half second after death. Poison
+       (the Blue Hour's glass, roofmission-poison.js) has already laid the body
+       down through its own faint: it stays down. */
     function deathFallAmount(p) {
       if (p.deathStyle?.slump) return 0;
+      if (p.poisoned) return 1;
       if (p.deadTime === undefined) return 1;
       const t = clamp((gameTime - p.deadTime) / DEATH_FALL_SECONDS, 0, 1);
       return t * t;
@@ -111,7 +118,7 @@
       for (let i = bleeders.length - 1; i >= 0; i--) {
         const b = bleeders[i],
           p = b.p;
-        if (p.hp <= 0 || gameTime > b.until || p.hidden) {
+        if (p.hp <= 0 || gameTime > b.until || p.hidden || p.poisoned) {
           bleeders.splice(i, 1);
           continue;
         }

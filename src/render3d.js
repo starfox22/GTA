@@ -160,6 +160,7 @@
       // @include src/skyline3d-islet.js
       // @include src/monarch-bridges3d.js
       // @include src/harbor3d.js
+      // @include src/roofmission3d.js
       // @include src/marina3d.js
       // @include src/monarch3d.js
       // @include src/monarch-villas3d.js

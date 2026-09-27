@@ -102,7 +102,9 @@
             if (y > radius * 0.24) list.push('KeyS');
             if (y < -radius * 0.24) list.push('KeyW');
             // A gentle push walks; past half-way the player runs, as with the keys.
-            if (m < radius * 0.5) list.push(actionCode('walk'));
+            // On the Blue Hour terrace during mission 2 the walk action runs
+            // (footPace), so it is held for the hard push there instead.
+            if (roofPartyPace() ? m >= radius * 0.5 : m < radius * 0.5) list.push(actionCode('walk'));
           }
         }
       } else if (stick.aim) touchAim = null;

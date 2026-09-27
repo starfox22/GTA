@@ -53,10 +53,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Unicorn (unicorn3d.js)
 - Bright sky-reflection patch under the chest in daylight (lacquer material); little muscle definition.
 
-## Missions and demo (harbor.js, campaign.js)
-- A POLICE LOST banner can sit over the PAYDAY line of the MISSION COMPLETE card.
-- A downed (crawling) officer counts as eliminated in mission 1's warehouse stage.
-
 ## Other
 - `src/marina.js` calls the superyacht 105 m; its deck spans about 66 m at the current scale.
 - `GAME_VERSION` is still 30.0.0; fold `docs/changes/` with `python3 tools/changelog.py --release` at the next version.
