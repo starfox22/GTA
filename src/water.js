@@ -51,7 +51,8 @@
       // Floating at the surface: the body rides just awash.
       SWIM_ALTITUDE = -4.6,
       // Seconds spent with no strength left before the harbor patrol pulls you out.
-      RESCUE_AFTER = 14;
+      RESCUE_AFTER = 14,
+      EXHAUSTED_HP_PER_SECOND = 5;
     let swimBreath = SWIM_BREATH,
       swimLast = { x: 0, y: 0 },
       spentFor = 0,
@@ -413,7 +414,10 @@
       if (swimBreath <= 0) {
         swimBreath = 0;
         spentFor += deltaSeconds;
-        hurt(8 * deltaSeconds, 'blast');
+        // Spent, the swimmer ships water: 70 hp over the RESCUE_AFTER wait, so an
+        // unhurt swimmer lives to be fished out and a wounded one can still drown (at
+        // 8 hp/s nobody without armor lasted until the harbor patrol came).
+        hurt(EXHAUSTED_HP_PER_SECOND * deltaSeconds, 'blast');
         if (Math.floor(gameTime * 2) % 4 === 0 && Math.random() < deltaSeconds * 4) splashAt(player.x, player.y, 0.5);
         if (spentFor > RESCUE_AFTER && gameMode === 'play') harborPatrolRescue();
       } else spentFor = 0;
@@ -457,13 +461,8 @@
     /* Pulled from the sea by the harbor patrol: never left to tread water forever. */
     function harborPatrolRescue() {
       const exit = nearestWaterExit(player.x, player.y) || { x: spawn.x, y: spawn.y };
-      player.swimming = false;
-      player.wading = 0;
-      player.x = exit.x;
-      player.y = exit.y;
+      teleportPlayer(exit.x, exit.y);
       player.altitude = terrainHeight(exit.x, exit.y);
-      cameraTarget.x = player.x;
-      cameraTarget.y = player.y;
       swimBreath = SWIM_BREATH * 0.5;
       spentFor = 0;
       cash = Math.max(0, cash - 100);
@@ -570,7 +569,7 @@
       player.swimStroke = 0;
       player.swimDrive = 0;
       splashAt(player.x, player.y, 1.4);
-      tell('OVER THE SIDE · swim back and press E to climb aboard', 3);
+      tell('OVER THE SIDE · swim back and press ' + keyName('interact') + ' to climb aboard', 3);
       return true;
     }
     /* A parachute that comes down on the sea: into the water, if there is a way out. */
@@ -628,7 +627,7 @@
         if (first) {
           splashAt(c.x, c.y, 2.2);
           carFloodSound(c);
-          if (c === player.car) tell('THE CAR IS GOING UNDER · E to get out', 3);
+          if (c === player.car) tell('THE CAR IS GOING UNDER · ' + keyName('interact') + ' to get out', 3);
         }
         const drag = Math.exp(-2.6 * deltaSeconds);
         c.vx = (c.vx || 0) * drag;

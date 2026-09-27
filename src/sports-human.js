@@ -162,7 +162,7 @@
         sportsWhistle(match, 'double');
         match.status = 'PITCH INVADER!';
         sportsRecordEvent(match, 'invader', null);
-        tell('PITCH INVADER · Walk into the ball to dribble, E to kick it', 3.5);
+        tell('PITCH INVADER · Walk into the ball to dribble, ' + keyName('interact') + ' to kick it', 3.5);
       }
       const invader = match.invader;
       if (!invader) return;

@@ -127,7 +127,7 @@
       car.taxiHire = true;
       car.speed = 0;
       player.inv = Math.max(player.inv, 0.5);
-      tell('FARE $' + fare + ' · ' + Math.round(worldMeters(routeLength(route))) + ' m · E to get out', 5);
+      tell('FARE $' + fare + ' · ' + Math.round(worldMeters(routeLength(route))) + ' m · ' + keyName('interact') + ' to get out', 5);
     }
     function routeLength(route) {
       let total = 0;

@@ -58,6 +58,10 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
 - Shoreline rule (water.js `shoreStepBlocked`, called by `moveBody`): on foot the sea is
   entered **only from a beach**; quays, docks, the pier and bridges are walls. Swimmers
   climb out at beaches, rocks or ladders (`ladderList()`, each marked by a lifebuoy).
+  Strength (`SWIM_BREATH`, 30 s of treading) runs out on a long swim; spent, the swimmer
+  loses `EXHAUSTED_HP_PER_SECOND` (5) until the harbor patrol fishes them out after
+  `RESCUE_AFTER` (14 s, $100): an unhurt swimmer survives the wait, a wounded one may not
+  (tools/tests/swim-rescue.mjs).
 - `BRIDGES` lists every road bridge as a straight deck `a → b` at road level with a `style`.
   `bridgeStructure(bridge)` lays out the design in the bridge's frame from `BRIDGE_DESIGNS`:
   navigation `channels`, `footings` in the water, `solids` on the deck (anything over the

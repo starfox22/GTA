@@ -59,7 +59,7 @@
           gameTime - (vehicle.bailWarnedAt || -100) > 6
         ) {
           vehicle.bailWarnedAt = gameTime;
-          tell('ENGINE ON FIRE · BAIL OUT (E) BEFORE IT GOES UP', 3.5);
+          tell('ENGINE ON FIRE · BAIL OUT (' + keyName('interact') + ') BEFORE IT GOES UP', 3.5);
           tone(520, 0.14, 0.2, 'square', 240);
         }
         updateBloodTracks(vehicle, active);
