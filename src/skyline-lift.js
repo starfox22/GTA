@@ -58,7 +58,8 @@
     }
     const SKY_LIFTS = [];
     let skyLift = null;
-    const SKY_LIFT_SECONDS = 2.6;
+    const SKY_LIFT_SECONDS = 2.6,
+      SKY_LIFT_DOWN_PROMPT = { text: 'ELEVATOR TO THE STREET', id: 'key-lift-down' };
     /* The decks and doors of the Key's towers with a roof use, measured once the
        towers stand (buildNorthPointKey). */
     function prepareSkylineRoofs() {
@@ -97,6 +98,10 @@
           Object.assign(lift, { venue: 'CIRRUS · SKY BAR', house: plan.house, door: plan.door, bar: plan });
         }
         lift.arrive = { x: lift.door.x, y: lift.door.y + 12 };
+        // Made once: the prompt asks every frame on the Key.
+        lift.reachUp = { lift, up: true };
+        lift.reachDown = { lift, up: false };
+        lift.promptUp = { text: 'ELEVATOR TO ' + lift.venue + ' · ' + t.name, id: 'key-lift-up' };
         SKY_LIFTS.push(lift);
       }
     }
@@ -106,9 +111,9 @@
       for (const lift of SKY_LIFTS) {
         if (player.buildingRoof) {
           if (player.buildingRoof !== lift.b) continue;
-          if (withinRange('key-lift-roof-' + lift.id, distanceBetween(player, lift.door), 26)) return { lift, up: false };
+          if (withinRange('key-lift-roof-' + lift.id, distanceBetween(player, lift.door), 26)) return lift.reachDown;
         } else if (onNorthPointKey(player.x, player.y) && withinRange('key-lift-lobby-' + lift.id, distanceBetween(player, lift.lobby), 34))
-          return { lift, up: true };
+          return lift.reachUp;
       }
       return null;
     }
@@ -116,10 +121,7 @@
     function northPointKeyPrompt() {
       if (skyLift || player.car || (!player.buildingRoof?.islet && !onNorthPointKey(player.x, player.y))) return null;
       const reach = skyLiftInReach();
-      if (reach)
-        return reach.up
-          ? { text: 'ELEVATOR TO ' + reach.lift.venue + ' · ' + reach.lift.tower.name, id: 'key-lift-up' }
-          : { text: 'ELEVATOR TO THE STREET', id: 'key-lift-down' };
+      if (reach) return reach.up ? reach.lift.promptUp : SKY_LIFT_DOWN_PROMPT;
       return skyBarPrompt();
     }
     // The action key on the Key: a lift, or the bar (skyline-bar.js).

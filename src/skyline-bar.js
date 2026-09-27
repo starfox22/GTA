@@ -409,7 +409,11 @@
       return true;
     }
     /* ---- The bar itself ------------------------------------------------------------- */
-    const SKY_BAR_DRINK = { price: 45, health: 10 };
+    const SKY_BAR_DRINK = { price: 45, health: 10 },
+      SKY_BAR_PROMPTS = {
+        bar: { text: 'ORDER A DRINK · $' + SKY_BAR_DRINK.price, id: 'key-bar' },
+        terrace: { text: 'CIRRUS · SKY BAR', id: 'key-terrace', key: null },
+      };
     function skyBarCounterInReach() {
       const lift = skyBarLift();
       if (!lift || player.buildingRoof !== lift.b) return false;
@@ -420,8 +424,7 @@
     function skyBarPrompt() {
       const lift = skyBarLift();
       if (!lift || player.buildingRoof !== lift.b) return null;
-      if (skyBarCounterInReach()) return { text: 'ORDER A DRINK · $' + SKY_BAR_DRINK.price, id: 'key-bar' };
-      return { text: 'CIRRUS · SKY BAR', id: 'key-terrace', key: null };
+      return skyBarCounterInReach() ? SKY_BAR_PROMPTS.bar : SKY_BAR_PROMPTS.terrace;
     }
     function skyBarInteract() {
       if (!skyBarCounterInReach()) return false;
