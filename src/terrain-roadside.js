@@ -321,21 +321,22 @@
       const road = SCENIC_ROADS.find((r) => r.name === name);
       if (!road) return { error: 'no scenic road ' + name };
       for (const f of TERRAIN_FIELDS) terrainField(f);
+      // The right-hand lane: `t` is positive right of the road's direction.
       const dir = reverse ? -1 : 1,
-        lane = -dir * road.half * 0.5,
+        lane = dir * road.half * 0.5,
         skip = scenicRoadSkip(road);
       let k = clamp(Math.round(from * (road.n - 1)), 0, road.n - 1);
       while (skip[k] && k > 0 && k < road.n - 1) k += dir;
       const start = scenicPointAt(road, k, lane, {});
       // A measurement, not a traffic test: other vehicles on this road are cleared
-      // first (a car stalled by an earlier run stayed in the lane).
+      // first, Monarch Isle's Regency Road traffic too, and the car the player
+      // leaves (an earlier run's car stood at the Regency Road's end, in Eagle Pass).
+      if (player.car) exitCar();
       const probe = {};
       for (let i = vehicles.length - 1; i >= 0; i--) {
         const v = vehicles[i];
-        if (v === player.car || v.isle) continue;
         if (scenicRoadNear(v.x, v.y, probe, road) && Math.abs(probe.t) < road.half + 20) vehicles.splice(i, 1);
       }
-      if (player.car) exitCar();
       teleportPlayer(start.x, start.y);
       const heading = reverse ? start.a + Math.PI : start.a,
         car = makeCar(type, start.x, start.y, heading, false);

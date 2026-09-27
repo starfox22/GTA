@@ -1,9 +1,18 @@
 // Ridgeline's scenic roads (terrain-roads.js): curves of real radius, a graded
 // surface with no steps or bumps where the wheels run, rails, posts and viewpoints;
-// and a supercar on the autopilot (mountainRoadDrive) through Eagle Pass both ways,
-// the Ridgeline Highway's climb and the Regency Road holds its lane on tarmac with
-// no jolts, knocks, damage or NaN.
+// and a supercar on the autopilot (mountainRoadDrive, right-hand lane) through Eagle
+// Pass both ways, the Ridgeline Highway's climb and the Regency Road holds its lane
+// on tarmac with no jolts, knocks, damage or NaN.
 export default async function (t) {
+  // The world only moves inside the drives (each clears its road first).
+  await t.call('holdSimulation', true);
+  try {
+    await checks(t);
+  } finally {
+    await t.call('holdSimulation', false);
+  }
+}
+async function checks(t) {
   const report = await t.call('mountainRoad');
   t.finite(report, 'mountainRoad');
   for (const r of report.roads) {
@@ -30,7 +39,7 @@ export default async function (t) {
   ]) {
     const label = `${name} ${reverse ? 'down' : 'up'} at ${kmh}`;
     let d = await t.call('mountainRoadDrive', name, kmh, from, seconds, reverse);
-    // The roads have traffic (and deer): a run that met something gets one more go.
+    // The range has deer: a run that met something gets one more go.
     if (d.knocks || d.offRoad) {
       t.note(`${label}: retried after knocks ${d.knocks} at ${d.knockAt} (${d.knockWith}), off road ${d.offRoad} at ${d.offAt}`);
       d = await t.call('mountainRoadDrive', name, kmh, from, seconds, reverse);

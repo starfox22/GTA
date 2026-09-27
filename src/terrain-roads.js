@@ -285,7 +285,7 @@
           d1y = b[1] - a[1],
           d2x = c[0] - b[0],
           d2y = c[1] - b[1];
-        // Circumcircle curvature of the three points, signed: positive turns left (towards +normal).
+        // Circumcircle curvature of the three points, signed: positive turns towards +normal (right, map y south).
         curvature[k] = (2 * (d1x * d2y - d1y * d2x)) / Math.max(1e-6, Math.hypot(d1x, d1y) * Math.hypot(d2x, d2y) * tl);
       }
       // A town corner or bridge landing is a junction, not a bend.
@@ -376,7 +376,8 @@
     /* The nearest scenic road centreline to (x, y) within the road's half-width
        plus SCENIC_REACH (null past that), optionally only road `only`: the road,
        the fractional sample index `k`, the signed offset `t` (positive on the
-       left of travel), the distance `d`. `out` is reused when given. */
+       right of the road's direction, map y pointing south: the right-hand lane
+       going from sample 0 up), the distance `d`. `out` is reused when given. */
     function scenicRoadNear(x, y, out = {}, only = null) {
       const cell = scenicRoadGrid().get(Math.floor(x / 64) * 4096 + Math.floor(y / 64));
       if (!cell) return null;

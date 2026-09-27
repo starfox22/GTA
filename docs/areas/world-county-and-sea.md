@@ -19,7 +19,9 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
   and fill), at street level by towns, bridges and other roads; trails start at road level. A
   road or trail that began on a rounded corner is moved onto the curve (don't assume the old
   vertex). County carriageways are tarmac to `offroadDrive` (`offroadState.paved`); rails are
-  oriented statics. Check `mountainRoad()` and tools/tests/mountain-road.mjs after edits.
+  oriented statics. `scenicRoadNear`'s `t` is positive right of the road's direction (map y
+  points south): traffic keeps right. Check `mountainRoad()` and
+  tools/tests/mountain-road.mjs after edits.
 - `prunePlanTrees` (end of `buildCounty`) drops plan trees on carriageways, in buildings, under
   rail decks, on runways or in doorways (`treeAudit()`).
 - Falls (falls.js): on foot, ground dropping away steeper than 1.35 (54°) under a step starts
