@@ -85,9 +85,9 @@ damage.js / damage3d.js, air-cover.js.
   'carjack', ...)`, made when the driver appears) and carjack-struggle.js (`player.carjack`:
   approach round the car, door, tug, swing, `enterVehicle`). The hijack keeps
   `crime(0.8, 'carjack')` (now when the door is yanked open) plus enterVehicle's own; the
-  street gets `crowdAlarm('carjack')`. Cars rolling over
-  14 km/h, bikes, or no room at the door keep the old instant yank. Anything that moves or
-  resets the player calls `cancelCarjack()` (teleportPlayer, die, resetMissionState).
+  street gets `crowdAlarm('carjack')`. Cars rolling over 14 km/h, bikes, or no room at the
+  door keep the old instant yank. Anything that moves or resets the player calls
+  `cancelCarjack()` (teleportPlayer, die, resetMissionState).
 - Tank armour: `vehicleArmorShare` (the Apache takes 30% of small arms). The player's tank
   turret (`traverseTurret`) is shared by the pursuit tank and army gunners.
 - Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding, and
