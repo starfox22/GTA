@@ -89,7 +89,8 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   samples the exact Float32 vertices the renderer draws, so contact and picture agree. Console
   `terrain()`.
 - **Scenic roads** (terrain-roads/-grading/-roadside.js, `SCENIC_ROAD_NAMES`): corners are
-  filleted arcs; `road.points` is what everything reads, `road.dense` (4-unit samples) what
+  filleted arcs (shrunk where one would sweep deeper into a town than its legs; the layout
+  audit notes a crossing once per arc segment); `road.points` is what everything reads, `road.dense` (4-unit samples) what
   grading and the ribbon read. Graded over the range (8%, spline profile, crown and bank, cut
   and fill), at street level by towns, bridges and other roads; trails start at road level. A
   road or trail that began on a rounded corner is moved onto the curve (don't assume the old

@@ -107,34 +107,62 @@
         R[i] = Math.max(R[i], Math.min(cap[i], before, after));
         T[i] = R[i] * tanHalf[i];
       }
-      const out = [plan[0].slice()];
-      for (let i = 1; i < n - 1; i++) {
-        const t = T[i];
-        if (t < 1) {
-          out.push(plan[i].slice());
-          continue;
-        }
-        const [vx, vy] = plan[i],
+      // The arc at corner i for radius r: from the tangent point on the incoming leg
+      // round to the one on the outgoing leg.
+      const arc = (i, r) => {
+        const t = r * tanHalf[i],
+          [vx, vy] = plan[i],
           li = Math.hypot(vx - plan[i - 1][0], vy - plan[i - 1][1]),
           lo = legLength(i),
           ux = (vx - plan[i - 1][0]) / li,
           uy = (vy - plan[i - 1][1]) / li,
-          wx = (plan[i + 1][0] - vx) / lo,
-          wy = (plan[i + 1][1] - vy) / lo,
-          r = R[i],
           ax = vx - ux * t,
           ay = vy - uy * t,
           // The centre is a radius in from the arc's start, on the side it turns to.
           cx = ax - uy * r * turn[i],
           cy = ay + ux * r * turn[i],
           from = Math.atan2(ay - cy, ax - cx),
-          steps = Math.max(2, Math.ceil((theta[i] * r) / 6));
+          steps = Math.max(2, Math.ceil((theta[i] * r) / 6)),
+          points = [];
         for (let s = 0; s < steps; s++) {
           const f = from + (turn[i] * theta[i] * s) / steps;
-          out.push([cx + Math.cos(f) * r, cy + Math.sin(f) * r]);
+          points.push([cx + Math.cos(f) * r, cy + Math.sin(f) * r]);
         }
-        // The arc ends on the outgoing leg, a distance t past the corner.
-        out.push([vx + wx * t, vy + wy * t]);
+        points.push([vx + ((plan[i + 1][0] - vx) / lo) * t, vy + ((plan[i + 1][1] - vy) / lo) * t]);
+        return points;
+      };
+      // A bend never sweeps deeper into a town than its legs ran (a big arc cut
+      // the corner of Eastgate's blocks): depth is how far inside a town's grid
+      // (plus 20) a point lies.
+      const townDepth = ([x, y]) => {
+          let depth = -Infinity;
+          for (const t of COUNTY_TOWNS) depth = Math.max(depth, Math.min(x - t.x + 20, t.x + BLOCK_SIZE * 2 + 20 - x, y - t.y + 20, t.y + BLOCK_SIZE * 2 + 20 - y));
+          return depth;
+        },
+        legPoint = (i, [x, y]) => {
+          const pick = (a, b) => {
+            const dx = b[0] - a[0],
+              dy = b[1] - a[1],
+              u = clamp(((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy || 1), 0, 1);
+            return [a[0] + dx * u, a[1] + dy * u];
+          };
+          const p = pick(plan[i - 1], plan[i]),
+            q = pick(plan[i], plan[i + 1]);
+          return Math.hypot(p[0] - x, p[1] - y) < Math.hypot(q[0] - x, q[1] - y) ? p : q;
+        },
+        intrudes = (i, point) => {
+          const depth = townDepth(point);
+          return depth > 0 && depth > townDepth(legPoint(i, point)) + 4;
+        };
+      for (let i = 1; i < n - 1; i++)
+        for (let tries = 0; tries < 24 && T[i] >= 1 && arc(i, R[i]).some((point) => intrudes(i, point)); tries++) {
+          R[i] *= 0.85;
+          T[i] = R[i] * tanHalf[i];
+        }
+      const out = [plan[0].slice()];
+      for (let i = 1; i < n - 1; i++) {
+        if (T[i] < 1) out.push(plan[i].slice());
+        else out.push(...arc(i, R[i]));
       }
       out.push(plan[n - 1].slice());
       return out;

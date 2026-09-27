@@ -297,6 +297,14 @@
       let k = clamp(Math.round(from * (road.n - 1)), 0, road.n - 1);
       while (skip[k] && k > 0 && k < road.n - 1) k += dir;
       const start = scenicPointAt(road, k, lane, {});
+      // A measurement, not a traffic test: other vehicles on this road are cleared
+      // first (a car stalled by an earlier run stayed in the lane).
+      const probe = {};
+      for (let i = vehicles.length - 1; i >= 0; i--) {
+        const v = vehicles[i];
+        if (v === player.car || v.isle) continue;
+        if (scenicRoadNear(v.x, v.y, probe, road) && Math.abs(probe.t) < road.half + 20) vehicles.splice(i, 1);
+      }
       if (player.car) exitCar();
       teleportPlayer(start.x, start.y);
       const heading = reverse ? start.a + Math.PI : start.a,
@@ -350,7 +358,11 @@
         }
         if (car.hop && !hadHop) out.hops++;
         const after = Math.hypot(car.vx, car.vy);
-        if (after < speed - 5 * KMH && !keys.KeyS && !out.knocks++) out.knockAt = [Math.round(car.x), Math.round(car.y), Math.round(speed / KMH), Math.round(after / KMH)];
+        if (after < speed - 5 * KMH && !keys.KeyS && !out.knocks++) {
+          out.knockAt = [Math.round(car.x), Math.round(car.y), Math.round(speed / KMH), Math.round(after / KMH)];
+          const other = vehicles.find((v) => v !== car && distanceBetween(v, car) < 90);
+          out.knockWith = other ? other.type : 'scenery';
+        }
         travelled += Math.hypot(car.x - x0, car.y - y0);
         speedSum += after;
         out.maxKmh = Math.max(out.maxKmh, Math.round(after / KMH));
