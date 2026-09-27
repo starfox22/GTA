@@ -510,8 +510,9 @@
       document.body?.classList.toggle('police-search-active', wantedStars > 0 && searchActive);
       getElement('policeEscapeSeconds').textContent = Math.ceil(searchRemaining) + 's';
       if (gameMode === 'play' && !player.car && !playerOnRoof()) {
-        const place = nearestPlace();
-        if (place) offerPrompt(place.name, { id: 'place|' + place.name });
+        const place = !lootableBody() && nearestPlace();
+        // A gun shop says what it sells: ammunition and armour are bought, not found.
+        if (place) offerPrompt(place.kind === 'guns' ? place.name + ' · GUNS, AMMO & ARMOR' : place.name, { id: 'place|' + place.name });
       }
       roofMissionUI();
       militaryUI();

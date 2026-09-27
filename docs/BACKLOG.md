@@ -20,7 +20,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Headless, the reports read Web Audio automation in audio time: after a simulated `wait` the gliding gains lag the probe (they glide in real time); judge levels in a real browser.
 
 ## Free roam and HUD (docs/audit/freeroam-sweep.md)
-- The demo's mission card counts MISSION 01 / 11 with two jobs open (design question).
 - Damage direction: only gunfire shows the red arc (pursuit-officers.js playerHitFeedback); blasts and melee do not.
 - Gamepad: tested with a virtual pad only (`gamepadFeed`); no rumble; the settings screen cannot rebind pad buttons.
 - The 2D fallback renderer's speech bubbles keep the old 10 px text.

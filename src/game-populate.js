@@ -229,53 +229,20 @@
           ready: 0,
         }),
       );
-      [
-        [1040, 640],
-        [2240, 2176],
-        [2810, 1664],
-        [2176, 2870],
-        [640, 2688],
-      ].forEach(([x, y]) =>
-        pickups.push({
-          x,
-          y,
-          type: 'ammo',
-          ready: 0,
-        }),
-      );
       populateCasino();
       // The Blue Hour's doormen, valet and limousines (roofmission-entrance.js).
       populateBlueHourEntrance();
       resetSports();
-      [
-        [128, 1800],
-        [2700, 2176],
-        [3200, 750],
-      ].forEach(([x, y]) =>
-        pickups.push({
-          x,
-          y,
-          type: 'armor',
-          ready: 0,
-        }),
-      );
-      // Beyond Northbank: health by the other hospitals and the county lodges, ammo
-      // by the Palm Keys armory and the Eastgate outfitters, armor on the Palm Keys
-      // sand, Crown Avenue, Sunset Pier, North Point Key and at Southport.
+      // Beyond Northbank: health by the other hospitals and the county lodges. There are
+      // no ammunition, armour or weapon pickups: those come from the gun shops, the
+      // bodies of armed people and police vehicles (ammo-supply.js).
       for (const [x, y, type] of [
         [-1730, 1996, 'health'], // RIVERSIDE MEDICAL
-        [-2244, 1425, 'ammo'], // PALM KEYS ARMORY
-        [-2100, 5560, 'armor'], // PALM KEYS BEACH
         [9000, -3030, 'health'], // THE HALCYON CLINIC
-        [7400, -3000, 'armor'], // CROWN AVENUE
-        [2943, -6382, 'armor'], // SUNSET PIER
-        [4091, -3522, 'armor'], // NORTH POINT KEY
         [7020, 3450, 'health'], // STONECREEK
         [9160, 3076, 'health'], // NORTHRIDGE
-        [8990, 4953, 'ammo'], // EASTGATE
         [2476, 7260, 'health'], // OCEANVIEW
         [7050, 7850, 'health'], // PALMSHORE
-        [800, 4476, 'armor'], // SOUTHPORT
       ])
         pickups.push({ x, y, type, ready: 0 });
     }
