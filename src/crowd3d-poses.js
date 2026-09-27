@@ -335,6 +335,14 @@
             T[J_KNEE[0]] = -0.3 - flying * 0.6;
             T[J_KNEE[1]] = -0.2;
             T[J_SPREAD] = 0.15 + flying * 0.15;
+            // Falling off a drop (falls-body.js): the arms and legs windmill.
+            if (spec?.thrown?.flail) {
+              const w = Math.sin(t * 10 + seed);
+              setArm(T, 0, 2.3 + w * 0.5, 0.9 - w * 0.3, 0.5);
+              setArm(T, 1, 2.3 - w * 0.5, 0.9 + w * 0.3, 0.5);
+              T[J_HIP[0]] = 0.45 + w * 0.45;
+              T[J_HIP[1]] = 0.45 - w * 0.45;
+            }
             break;
           }
           case 'dance':

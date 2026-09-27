@@ -53,6 +53,13 @@
             sp.elevation = entityElevation(player);
             return sp;
           }
+          if (player.fall) {
+            // Off a drop (falls-body.js): turning over in the air, limbs going.
+            sp.pose = 'thrown';
+            sp.thrown = player.fall.pose;
+            sp.elevation = entityElevation(player);
+            return sp;
+          }
           // Taking a car off its driver (carjack3d.js).
           if (player.carjack) return playerCarjackSpec(sp);
           if (player.tumble) {

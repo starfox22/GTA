@@ -88,6 +88,13 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   helipads, with two switchback 4x4 trails (`TRAIL_MAX_GRADE` 0.28). `terrainHeight` samples
   the exact Float32 vertices the renderer draws, so contact and picture agree. Console
   `terrain()`.
+- Falls (falls.js): on foot, ground dropping away steeper than 1.35 (54°) under a step starts
+  a ballistic fall (`player.fall`, a carrier; `settleFootOnGround` replaced the plain terrain
+  snap); faces over 45° cannot be landed on (the body slides down, scraping) and where it
+  stops the whole height counts. One impact scale (`fallInjury`, falls-body.js): under 6 m a
+  stumble, 6-17 m 8-100 hp, beyond dead (a splat: face down, blood pool); water safe to
+  20 m/s, fatal from 30. Slopes up to the tumble (terrain-field.js) are unchanged. Console
+  group `falls` (`cliffSpot`, `fallTest`, `fallState`, `bailOut`, `parachuteState`).
 - Railway (transit.js, transit3d.js): SHORE LINE (Cruise Terminal → west sea wall → Southport
   Airport), COAST LINE (→ Oceanview → Palmshore), RIDGE LINE (→ Eastgate, Northridge,
   Stonecreek). Each `route` is a control polygon filleted by `railTrackGeometry`; everything

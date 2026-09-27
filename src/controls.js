@@ -59,7 +59,7 @@
       { id: 'sprint', label: 'Pedal hard', note: 'Bicycle: stand on the pedals for speed (uses stamina)', group: 'move', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['drive'] },
       { id: 'interact', label: 'Interact', note: 'Enter or leave a vehicle, payphones, shops, stations, boarding; hold for objectives', group: 'combat', keys: ['KeyE'], ctx: EVERYWHERE },
       { id: 'fire', label: 'Fire', note: 'Fire the equipped weapon; the handgun from a vehicle; the Apache\'s 30 mm chin gun (the mouse aims it)', group: 'combat', keys: ['KeyF'], ctx: ['foot', 'drive', 'air'] },
-      { id: 'handbrake', label: 'Handbrake / alt fire', note: 'Handbrake in a vehicle, fires on foot, opens the parachute', group: 'combat', keys: ['Space'], ctx: ['foot', 'drive', 'chute'] },
+      { id: 'handbrake', label: 'Handbrake / alt fire', note: 'Handbrake in a vehicle, fires on foot', group: 'combat', keys: ['Space'], ctx: ['foot', 'drive'] },
       { id: 'poison', label: 'Spike the drink', note: 'Mission 2: poison the reserved drink', group: 'combat', keys: ['KeyP'], ctx: ['foot'] },
       { id: 'horn', label: 'Horn', note: 'Sound the horn', group: 'vehicle', keys: ['KeyH'], ctx: ['drive'] },
       { id: 'radioPower', label: 'Radio on / off', note: 'Car radio power', group: 'vehicle', keys: ['KeyN'], ctx: ['drive', 'air'] },
@@ -78,7 +78,7 @@
       { id: 'gear', label: 'Landing gear', note: 'Plane: raise or lower the landing gear (it cannot retract on the ground)', group: 'air', keys: ['KeyL'], ctx: ['air'] },
       // Its own virtual code: Space is the handbrake's, and the two may be bound apart.
       { id: 'rockets', label: 'Rockets', note: 'Apache: fire a rocket salvo along the nose, to the range of the aim (right mouse button too)', group: 'air', code: 'RocketSalvo', keys: ['Space'], ctx: ['air'] },
-      { id: 'bail', label: 'Bail out / dive', note: 'Jump from an aircraft; dive off a boat or out of a sinking car', group: 'air', keys: ['KeyJ'], ctx: ['drive', 'air'] },
+      { id: 'bail', label: 'Bail out / open parachute', note: 'Jump from an aircraft, then press again to open the parachute (it never opens by itself); dive off a boat or out of a sinking car', group: 'air', keys: ['KeyJ'], ctx: ['drive', 'air', 'chute'] },
       { id: 'divert', label: 'Divert landing', note: 'Mission 11: change the landing site once the manifest is exposed', group: 'air', keys: ['KeyV'], ctx: ['air'] },
       { id: 'reload', label: 'Reload', note: 'Reload the equipped weapon', group: 'weapons', keys: ['KeyR'], ctx: ['foot', 'drive', 'air'] },
       { id: 'cycleWeapon', label: 'Next weapon', note: 'Cycle through equipped weapons', group: 'weapons', keys: ['KeyQ'], ctx: ['foot', 'drive', 'air'] },

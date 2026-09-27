@@ -29,6 +29,8 @@
       vehicle.damageVersion = (vehicle.damageVersion || 0) + 1;
       vehicle.deadTime = 0;
       vehicle.sprite = null;
+      // Righted too, if it came to rest on its roof or side (falls-vehicles.js).
+      if (vehicle.overturned || vehicle.cliffAir) clearCliffState(vehicle);
     }
     // Closing speed (about 55 km/h) above which the player ramming an occupied
     // car is a reported crime (collisionImpact here, crowdCrash in crowd.js).

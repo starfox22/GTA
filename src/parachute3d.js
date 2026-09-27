@@ -18,7 +18,8 @@
        *    brake lines from the tail to the rear risers, the slider, the risers and
        *    the harness container on the jumper's back. All lines are one
        *    LineSegments.
-       *  - Deployment over opening 0 -> 1 (one second): the pilot chute is thrown
+       *  - Deployment over opening 0 -> 1 (PARACHUTE_OPEN_SECONDS, 2.4 s, only once
+       *    the jumper pulls the ripcord: parachute.js): the pilot chute is thrown
        *    and drags the bag out on its bridle, the lines stretch, the canopy
        *    inflates from the centre cells out (span overshoots slightly and
        *    settles) while the slider runs down the lines.
