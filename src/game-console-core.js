@@ -59,7 +59,10 @@
         const steps = Math.round(clamp(seconds, 0, 120) * 30);
         for (let i = 0; i < steps; i++) {
           // A Blue Hour elevator ride runs on its own clock (frame()); step it too.
-          if (gameMode === 'elevator') updateElevator(1 / 30);
+          if (gameMode === 'elevator') {
+            updateElevator(1 / 30);
+            updateSkyLift(1 / 30);
+          }
           else if (gameMode === 'play') update(1 / 30);
           else break;
           hudClockOffset += 1 / 30; // HUD timers (prompt docking) follow the stepped time

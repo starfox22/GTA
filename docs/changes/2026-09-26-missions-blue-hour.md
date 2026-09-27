@@ -12,9 +12,11 @@
   kneels at his side, one shouts for an ambulance and phones it in, a bodyguard radios the
   lobby; an ambulance comes up the avenue with its siren, and paramedics go up to him.
   Leave by the lift and walk away from the hotel to finish the job.
-- Mission 1: a downed officer inside the sealed warehouse still counts until dealt with
-  (and a fatal body hit there no longer leaves one crawling); the PAYDAY card hides a
-  POLICE LOST chip.
+- Mission 1: Vinny's truck is tougher (620 hp: the Harbor Kings' fire in the bay could
+  wreck it during a slow exit); once the shutter is down a wrecked truck no longer fails
+  the job; a downed officer inside the sealed warehouse still counts until dealt with (a
+  fatal body hit there no longer leaves one crawling); the PAYDAY card hides a POLICE
+  LOST chip.
 - New files: roofmission-stealth.js, roofmission-poison.js, roofmission3d.js,
   crowd3d-roofparty.js. Console: `roofPlace`, `roofGuard`, `roofStealth`, `roofPoison`,
   `roofSuspicion`, `spikeGlass`. Tests: mission2-cones, mission2-poison.

@@ -127,6 +127,8 @@
       updateWorldView(deltaSeconds);
       updateCasino(deltaSeconds);
       updateElevator(deltaSeconds);
+      // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
+      updateSkyLift(deltaSeconds);
       const updateStart = performance.now();
       // The city keeps living behind the title menu, and behind settings opened
       // from it. WASTED and BUSTED play out in slow motion.

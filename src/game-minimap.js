@@ -55,6 +55,8 @@
       paintDistrictGround(drawingContext, false);
       paintCountyGround(drawingContext, false);
       paintMonarchMap(drawingContext, big);
+      // North Point Key's own sheet over its land (skyline-islet.js).
+      paintNorthPointKeyMap(drawingContext);
       drawingContext.save();
       coastPath(drawingContext);
       drawingContext.clip();
@@ -173,6 +175,7 @@
         drawingContext.textAlign = 'center';
         const labels = [
           ['N O R T H  P O I N T', 2700, -2620],
+          ['NORTH POINT KEY', 4100, -3040],
           ['HARBOR POINT MARINA', 1060, -2960],
           ['CRUISE TERMINAL', 2360, -3990],
           ['THE RECLAMATION', 1420, -760],

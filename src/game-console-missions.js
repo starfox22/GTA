@@ -23,6 +23,8 @@
         completed: demoCompleted,
         cardShown: gameMode === 'demo',
         cardIn: Math.round(demoCardIn * 10) / 10,
+        // What the mission picker lists: locked jobs read ???.
+        picker: missions.map((m, i) => missionPickerTitle(i)),
         stats: { ...campaignStats, playSeconds: Math.round(campaignStats.playSeconds) },
       }),
       // Mission 2 test shortcut: start A Seat at the Table if needed, put Vescari

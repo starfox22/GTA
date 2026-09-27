@@ -259,6 +259,8 @@
       for (const b of parkAirSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'pier').minHeight = b.minHeight;
       // Monarch Isle's garden walls, fences, pools, fountains, pumps and parapets (monarch.js).
       for (const b of monarchSolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'isle ' + b.kind);
+      // North Point Key's fountain and gate pylons (skyline-islet.js).
+      for (const b of northPointKeySolids()) addStatic(b.x, b.y, b.w, b.h, b.height, 'key ' + b.kind);
       // Water contact follows the same irregular shores as the visible terrain.
       for (const e of buildCoastSegments()) {
         if (e.opening) continue;

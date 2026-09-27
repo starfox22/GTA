@@ -267,7 +267,8 @@
       { id: 'villa-2', name: 'THE GLASS HOUSE', style: 'modern', lot: { x: 6330, y: -4980, w: 740, h: 348 }, gate: 'south' },
       { id: 'villa-3', name: 'HALCYON HOUSE', style: 'hamptons', lot: { x: 7330, y: -4990, w: 720, h: 358 }, gate: 'south' },
       { id: 'villa-4', name: 'BELVEDERE', style: 'neoclassical', lot: { x: 8120, y: -4985, w: 640, h: 353 }, gate: 'south' },
-      { id: 'villa-5', name: 'CASA DEL SOL', style: 'spanish', lot: { x: 8850, y: -4960, w: 640, h: 328 }, gate: 'south' },
+      // Casa del Sol gave its east half to Monarch One's grounds (monarch-one.js).
+      { id: 'villa-5', name: 'CASA DEL SOL', style: 'spanish', lot: { x: 8850, y: -4960, w: 440, h: 328 }, gate: 'south' },
       // East cliffs, east of Lighthouse Road: the gates face west onto it.
       { id: 'villa-6', name: 'CLIFFTOP', style: 'modern', lot: { x: 9688, y: -4420, w: 320, h: 560 }, gate: 'west', cantilever: true },
       { id: 'villa-7', name: 'ROSEMOOR', style: 'tudor', lot: { x: 9688, y: -3640, w: 330, h: 600 }, gate: 'west' },
@@ -345,12 +346,12 @@
     const ISLE_BLOCK_USES = {
       '0,1': 'countryclub',
       '1,1': 'arcade',
-      '2,1': 'towerSovereign',
+      '2,1': 'squareSovereign',
       '3,1': 'provisions',
       '4,1': 'clinic',
       '0,2': 'motors',
       '1,2': 'academy',
-      '2,2': 'towerMonarch',
+      '2,2': 'courtRegent',
       '3,2': 'etoile',
       '4,2': 'townhouses',
       '0,3': 'residences',

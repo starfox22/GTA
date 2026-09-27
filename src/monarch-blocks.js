@@ -85,16 +85,48 @@
           break;
         }
         case 'towerSovereign': {
+          // Kept for THE SOVEREIGN (a reserve design): its podium shops and plaza.
           frontage(shopsIn(plan.key), isleFloors(2), { facade: 'podium', inset: 150 });
-          plan.tower = MONARCH_TOWERS[0];
+          plan.tower = MONARCH_TOWER_DESIGNS.find((t) => t.id === 'sovereign');
           planIslePlaza(plan);
           break;
         }
-        case 'towerMonarch': {
-          const bank = shopsIn(plan.key)[0];
-          frontage([bank], isleFloors(2), { facade: 'bank', inset: 170 });
-          plan.tower = MONARCH_TOWERS[1];
-          planIslePlaza(plan);
+        case 'squareSovereign': {
+          // SOVEREIGN SQUARE, on the old tower's site: a boutique pavilion at each
+          // corner on Crown Avenue, the garden square open to the avenue between
+          // them, and a mansion terrace across the back looking south over it.
+          const [west, east] = shopsIn(plan.key),
+            depth = 150,
+            y = B.y + B.h - depth;
+          for (const [shop, x] of [
+            [west, B.x],
+            [east, B.x + B.w - east.width],
+          ]) {
+            const r = keepCorner(x, y, shop.width, depth);
+            shop.building = push(r.x, r.y, r.w, r.h, isleFloors(3), { shop: shop.name, trade: shop.trade, archetype: 'stucco', front: 'south', facade: 'arcade' });
+            shop.door = { x: r.x + r.w / 2, y: r.y + r.h + 10 };
+            monarchPlan.shops.push(shop);
+          }
+          mansionRow(B.x + 20, B.x + B.w - 20, B.y + 30, 140, 3, isleFloors(5), { facade: 'mansion' });
+          planIsleSquare(plan, { x: B.x + 20, y: B.y + 196, w: B.w - 40, h: y - 24 - (B.y + 196) }, 'rings');
+          plan.squareOpen = { x: B.x + west.width + 10, y, w: B.w - west.width - east.width - 20, h: depth };
+          break;
+        }
+        case 'courtRegent': {
+          // REGENT COURT, on Monarch One's old site: the bank and a pair of town
+          // houses on Regent Row, MONARCH COACHWORKS (garages.js) at the east
+          // end of the row, a mansion block along the back and a garden court.
+          const bank = shopsIn(plan.key)[0],
+            depth = 150,
+            y = B.y + B.h - depth,
+            coach = GARAGES.find((g) => g.id === 'monarch'),
+            rowEnd = coach ? coach.x - 118 : B.x + B.w - 10;
+          bank.building = push(B.x + 10, y, bank.width, depth, isleFloors(3), { shop: bank.name, trade: bank.trade, archetype: 'stucco', front: 'south', facade: 'bank' });
+          bank.door = { x: B.x + 10 + bank.width / 2, y: B.y + B.h + 10 };
+          monarchPlan.shops.push(bank);
+          mansionRow(B.x + bank.width + 20, rowEnd, y, 140, 2, isleFloors(3), { facade: 'townhouse' });
+          push(B.x + 20, B.y + 30, B.w - 40, 150, isleFloors(5), { facade: 'mansionLight', front: 'south' });
+          planIsleSquare(plan, { x: B.x + 20, y: B.y + 206, w: B.w - 40, h: y - 30 - (B.y + 206) }, 'arc');
           break;
         }
         case 'provisions': {
@@ -196,7 +228,9 @@
         monarchSolidList.some((b) => x > b.x - pad && x < b.x + b.w + pad && y > b.y - pad && y < b.y + b.h + pad) ||
         monarchPlan.shops.some((s) => s.door && Math.hypot(s.door.x - x, s.door.y - y) < 26) ||
         monarchPlan.villas.some((v) => Math.hypot(v.gateAt.x - x, v.gateAt.y - y) < 44) ||
-        dealershipKeepOut(x, y);
+        dealershipKeepOut(x, y) ||
+        inGarageLot(x, y, 10) ||
+        (Math.abs(x - MONARCH_ONE.gate.x) < 56 && Math.abs(y - MONARCH_ONE.gate.y) < 60);
       const tree = (x, y, r, kind) => {
         if (blocked(x, y, 6)) return false;
         if (monarchTrees.some((t) => Math.abs(t.x - x) < 16 && Math.abs(t.y - y) < 16)) return false;
@@ -207,7 +241,8 @@
       };
       const lamp = (x, y, kind = 'lantern') => {
         if (!landAt(x, y) || onAnyRoad(x, y, 3) || isleCircleAt(x, y, -4) === null ? false : false) return;
-        if (onAnyRoad(x, y, 3) || dealershipKeepOut(x, y)) return;
+        if (onAnyRoad(x, y, 3) || dealershipKeepOut(x, y) || inGarageLot(x, y, 10)) return;
+        if (Math.abs(x - MONARCH_ONE.gate.x) < 56 && Math.abs(y - MONARCH_ONE.gate.y) < 60) return;
         // Nor on a bridge's deck at its landing.
         if (MONARCH_BRIDGES.some((B) => segmentDistance(x, y, B.a, B.b) < B.width / 2 + 4)) return;
         monarchLamps.push({ x, y, kind });
@@ -300,8 +335,9 @@
         }
       return false;
     }
+    // Vehicles meet everything the island adds, and Monarch One's gate arm (people duck under it).
     function monarchSolids() {
-      return monarchSolidList;
+      return [...monarchSolidList, MONARCH_ONE.arm];
     }
     /**
      * DISTRICTS (districtAt): the HUD's name for where the player is.
@@ -311,6 +347,7 @@
       if (!landAt(x, y)) {
         const deck = MONARCH_BRIDGES.find((b) => segmentDistance(x, y, b.a, b.b) <= b.width / 2);
         if (deck) return deck.name;
+        if (onIslePontoon(x, y) && inMonarchOne(x, y)) return MONARCH_ONE.name;
         const basin = MONARCH_MARINA.basin;
         if (x > basin.x && x < basin.x + basin.w && y > basin.y && y < basin.y + basin.h + 20) return 'MONARCH HARBOUR';
         if (onIslePontoon(x, y)) return 'MONARCH HARBOUR';
@@ -319,6 +356,7 @@
         return y < -5060 ? 'MONARCH BEACH' : null;
       }
       if (!onMonarchIsle(x, y)) return null;
+      if (inMonarchOne(x, y)) return MONARCH_ONE.name;
       const g = MONARCH_GARDEN;
       if (x > g.x - 10 && x < g.x + g.w + 10 && y > g.y - 10 && y < g.y + g.h + 10) return 'ROYAL BOTANIC GARDEN';
       if (y < -4990) return 'MONARCH BEACH';
@@ -329,11 +367,14 @@
       if (x < 5700 && y > -3100 && y < -2800) return 'WESTGATE';
       return 'CROWN AVENUE';
     }
-    /* The island's shores: sand on Monarch Beach, rocks on the north-east point
-       and the east cliffs, a quay everywhere else. */
+    /* The island's shores: sand on Monarch Beach and in Monarch One's cove, rocks
+       on the groyne between them, the north-east point and the east cliffs, a
+       quay everywhere else. */
     function monarchShoreStyle(e) {
       if (e.region !== 'monarch') return null;
-      if (e.y < -5080 && e.x > 5700 && e.x < 9640) return 'beach';
+      if (e.y < -5080 && e.x > 5700 && e.x < 9232) return 'beach';
+      if (e.y < -5140 && e.x > 9356 && e.x < 9716) return 'beach';
+      if (e.y < -5180 && e.x >= 9232 && e.x <= 9356) return 'rock';
       if (e.x > 9620 && e.y < -1150) return 'rock';
       if (e.y > -600 || (e.x > 9890 && e.y > -1170)) return 'rock';
       return 'quay';

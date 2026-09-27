@@ -6,6 +6,7 @@
      * Shared land polygons, bridges, roads, shoreline tests and district lookup.
      */
     // @include src/geography-regions.js
+    // @include src/geography-key.js
     // @include src/geography-land.js
     // @include src/geography-ground.js
     // END SUBSYSTEM: src/geography.js

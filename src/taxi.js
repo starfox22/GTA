@@ -65,8 +65,9 @@
         const car = taxiOffer;
         closeTaxiOffer();
         if (!car) return;
-        ejectDriver(car, 'hijack');
-        crime(0.8);
+        const driver = ejectDriver(car, 'hijack');
+        crime(0.8, 'carjack');
+        witnessReport(driver, 'carjack', car.x, car.y);
         enterVehicle(car);
       });
       getElement('taxiOverlay').classList.remove('hidden');

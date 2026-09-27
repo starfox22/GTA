@@ -1,9 +1,10 @@
-      // BEGIN SUBSYSTEM: src/skyline3d.js — North Point financial cluster towers
+      // BEGIN SUBSYSTEM: src/skyline3d.js — North Point towers, FEDERATION EAST's helideck and the CIRRUS sky bar
       /**
-       * North Point financial cluster towers
+       * North Point towers
        * Source: src/skyline3d.js
        * Scope: createCityRenderer() closure (included by src/cityscape3d.js, which calls
-       * buildSkylineTower() for every building that src/skyline.js planned).
+       * buildSkylineTower() for every building that skyline-towers.js planned: the
+       * three on North Point Key; the rest of the old cluster is in reserve).
        *
        * Each tower is lofted from a floor plan (a closed outline with hard corners
        * where it has them) through a list of sections (height, scale, twist,
@@ -21,9 +22,13 @@
        * batcher merges each tower per material and the far-scenery copy picks the
        * large pieces up on its own (thin fins and masts stay out of it).
        *
-       * Collision is the lot rectangle (src/skyline.js): the podium fills the lot
-       * and every shaft stays inside it.
+       * Collision is the lot rectangle (skyline-towers.js): the podium fills the lot
+       * and every shaft stays inside it. A roof with a use (skyline-lift.js) is
+       * drawn from the deck the game walks: the helideck (skyline3d-crowns.js) and
+       * the sky bar's terrace (skyline3d-bar.js).
        */
       // @include src/skyline3d-kit.js
       // @include src/skyline3d-towers.js
+      // @include src/skyline3d-crowns.js
+      // @include src/skyline3d-bar.js
       // END SUBSYSTEM: src/skyline3d.js

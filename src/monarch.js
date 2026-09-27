@@ -45,15 +45,18 @@
      */
     // @include src/monarch-streets.js
     /**
-     * THE TOWERS
-     *   THE SOVEREIGN   a slender pencil tower (57 storeys, ~186 m): a square
-     *                   shaft with feathered bronze fins that step back in four
-     *                   setbacks to a lantern crown, a helipad on the roof.
-     *   MONARCH ONE     a twisting glass tower (48 storeys, ~160 m): a softened
+     * THE TOWER
+     *   MONARCH ONE     the island's only skyscraper, a supertall of luxury
+     *                   apartments (74 storeys, ~300 m to the mast) on its own
+     *                   gated north-east point with a private cove: a softened
      *                   square that turns 90 degrees over its height, white
-     *                   balcony bands wrapping every floor, LED crown.
+     *                   balcony bands wrapping every other floor, an LED crown,
+     *                   a helipad and a mast. It used to stand on block (2, 2).
+     *   THE SOVEREIGN   a slender pencil tower (57 storeys, ~186 m) that stood on
+     *                   block (2, 1): kept as a reserve design, not built.
      */
     // @include src/monarch-towers.js
+    // @include src/monarch-one.js
     /**
      * A block's buildings, by use. Commercial blocks carry a frontage of shop
      * units along their south side (the camera's side) with residences over,

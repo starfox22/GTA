@@ -304,6 +304,7 @@
           !inLagoon(x, y, 16) &&
           !parkBuildingAt(x, y, 16) &&
           !coasterNear(x, y, 22) &&
+          !garageKeepOut(x, y, 20) &&
           // UNICORN STATUE: her lawn stays open round the paved ring.
           Math.hypot(x - PIER.unicorn.x, y - PIER.unicorn.y) > PIER.unicorn.apron + 34 &&
           list.every((p) => Math.hypot(p.x - x, p.y - y) > 26);

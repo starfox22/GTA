@@ -19,6 +19,7 @@
        *   extradosed  Coral Sound Bridge: coral sail pylons and harps of stays
        *   hpylon      Ridgeline Viaduct: concrete H-pylons, a weathering-steel girder
        *   swing       Sentinel Causeway: olive plate girders, a swing span, floodlights
+       *   key         North Point Key Bridge: white twin arches beside the footways
        * Each bridge is built in its own frame (x along the deck from the middle,
        * z across to the right of a -> b, y up from the road) and merged into a few
        * vertex-coloured meshes; its night lights are one points cloud. Lamps,
@@ -27,5 +28,6 @@
        * every bridge stands in when the whole city is in view (flight-view3d.js).
        */
       // @include src/bridges3d-kit.js
+      // @include src/bridges3d-key.js
       // @include src/bridges3d-build.js
       // END SUBSYSTEM: src/bridges3d.js
