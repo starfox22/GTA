@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-429 files in the include tree, 151,381 lines.
+430 files in the include tree, 151,541 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -49,7 +49,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/police-feedback.js`    52 — Police action feedback
 - `src/arsenal.js`   257 — Arsenal and knife combat
 - `src/citylife.js`    11 — ▸ Civic services and police
-- `src/pursuit.js`    26 — ▸ Police response and pursuit tactics
+- `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   153 — Wounds, hit reactions and death falls
 - `src/story.js`   910 — Story characters and mission stages
@@ -174,8 +174,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/pursuit.js ▸ Police response and pursuit tactics
 
-- `src/pursuit-dispatch.js`   675 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
-- `src/pursuit-officers.js`   677 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
+- `src/pursuit-dispatch.js`   697 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
+- `src/pursuit-steering.js`    98 — Pursuit steering aids: room to swing onto a straight run (roomToTurn), the speed the corners on the route ahead allow (routeCornerSpeed) and traffic …
+- `src/pursuit-officers.js`   691 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
 
 ## src/themepark.js ▸ Sunset Pier resort and theme park
 
@@ -226,7 +227,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/monarch-grid.js`    47 — Monarch Isle grid: columns, blocks, kerbs and floors (ISLE_COLS, isleBlock).
 - `src/monarch-coast.js`   247 — Monarch Isle outline and coast (MONARCH_ISLE, onMonarchIsle), marina berths and superyachts.
 - `src/monarch-streets.js`   397 — Monarch Isle streets, circles, carriageways, roads, bridges, parcels and villas (ISLE_STREETS, MONARCH_ROADS).
-- `src/monarch-towers.js`   277 — Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
+- `src/monarch-towers.js`   281 — Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
 - `src/monarch-one.js`   373 — Monarch Isle's MONARCH ONE estate: the supertall's gated grounds, porte-cochère, pool deck, private cove, gate arm, staff and ground paint …
 - `src/monarch-blocks.js`   397 — Monarch Isle block planning (planIsleBlock, planIsleStreetscape), solids, districts and shore styles.
 - `src/monarch-ground.js`   594 — Monarch Isle ground sheet: one painted canvas tile (paintMonarchGround) with junctions, villas, blocks, garden, marina.
@@ -311,9 +312,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd-space.js`   265 — Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
 - `src/crowd-streaming.js`   226 — Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
 - `src/crowd-walking.js`   409 — Walking the grid: crossings, sidewalks, going indoors, rain, updateStreetWalker() and encounters.
-- `src/crowd-perception.js`   453 — Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
+- `src/crowd-perception.js`   456 — Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
 - `src/crowd-reactions.js`   503 — Crowd reactions per frame (updateReaction), pose galleries and lineups, updateCrowdPerson(), dogs and witness reports.
-- `src/crowd-witnesses.js`   360 — Crowd witnesses: who really saw or heard what the player did, who runs a short way and phones 911, the call itself (phone out, the lines, cut short …
+- `src/crowd-witnesses.js`   364 — Crowd witnesses: who really saw or heard what the player did, who runs a short way and phones 911, the call itself (phone out, the lines, cut short …
 - `src/crowd-scenes.js`   354 — Street scenes: set pieces staged round the player, their members and props (sceneOpen, spawnSceneMember, streetFrontages).
 - `src/crowd-transit.js`   323 — Crowd taxis and buses: hailing, bus arrivals, deliveries and the per-frame scene update (updateScenes).
 - `src/crowd-traffic.js`   245 — Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
@@ -645,7 +646,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/game-console-core.js`   140 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   271 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   198 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-police.js`   212 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   215 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
