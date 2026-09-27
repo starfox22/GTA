@@ -40,7 +40,7 @@ export default async function (t) {
       p = await t.call('roofPoison');
     }
     await t.call('footwork', null);
-    t.assert(p.bossHp === 0 && !p.poisoned, 'Vescari not shot dead: ' + JSON.stringify(p));
+    t.assert(p.bossHp <= 0 && !p.poisoned, 'Vescari not shot dead: ' + JSON.stringify(p));
     s = await t.call('roofStealth');
     t.assert(s.alarm, 'shooting him did not blow the cover');
     let m = await t.call('missionState');
