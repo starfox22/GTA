@@ -180,6 +180,7 @@
       function finishCrowd3D(deltaSeconds) {
         const start = performance.now();
         drawQueuedRiders(deltaSeconds, crowdDetail());
+        drawDriveByDriver(deltaSeconds, crowdDetail());
         drawQueuedAthletes(deltaSeconds, crowdDetail());
         flushCrowdParts();
         crowdPackMs += performance.now() - start;

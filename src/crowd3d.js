@@ -80,5 +80,6 @@
        * filled per person just before they are packed.
        */
       // @include src/crowd3d-special.js
+      // @include src/crowd3d-driveby.js
       // @include src/crowd3d-frame.js
       // END SUBSYSTEM: src/crowd3d.js

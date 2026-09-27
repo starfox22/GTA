@@ -455,6 +455,11 @@
       if (touchAim !== null) return touchAim;
       if (mouse.active && city3D) return city3D.aim(mouse.x, mouse.y);
       let a = player.car ? player.car.a : player.a;
+      // From a vehicle: a threat inside the drive-by arcs, else out of the driver's window (driveby.js).
+      if (player.car && !mouse.active) {
+        const outOfWindow = driveByAutoAim(player.car);
+        if (outOfWindow !== null) return outOfWindow;
+      }
       if (mouse.active) {
         a = Math.atan2(
           mouse.y - ((player.y - cameraTarget.y) * canvasScale + viewportHeight / 2),
@@ -524,14 +529,31 @@
         return;
       }
       if (player.roof) rooftopShot();
-      let a = aim();
-      const shotTarget = playerShotTarget(a);
+      const aimed = aim();
+      let a = aimed,
+        shotTarget = playerShotTarget(a);
       if (shotTarget) a = headingBetween(player, shotTarget);
+      // From a vehicle: only through a window the arm is out of, along its arc (driveby.js).
+      const driveByMuzzle = player.car && driveByProfile(player.car) ? driveByOrigin : null;
+      if (driveByMuzzle) {
+        // A target the auto-aim picked outside the arcs: fire along the aim itself.
+        if (shotTarget && driveByAim(player.car, a).blocked) {
+          shotTarget = null;
+          a = aimed;
+        }
+        const along = driveByShot(player.car, a, driveByMuzzle);
+        if (along === null) {
+          shotCooldownSeconds = Math.max(shotCooldownSeconds, 0.05);
+          return;
+        }
+        if (driveByMuzzle.clamped) shotTarget = null;
+        a = along;
+      }
       let muzzle = player.car ? 30 : 14;
       w.ammo--;
       shotCooldownSeconds = w.rate;
-      const ox = player.x + Math.cos(a) * muzzle,
-        oy = player.y + Math.sin(a) * muzzle;
+      const ox = driveByMuzzle ? driveByMuzzle.x : player.x + Math.cos(a) * muzzle,
+        oy = driveByMuzzle ? driveByMuzzle.y : player.y + Math.sin(a) * muzzle;
       for (let j = 0; j < (w.pellets || 1); j++) {
         let ba = a + randomBetween(-w.spread, w.spread);
         bullets.push({
@@ -557,7 +579,8 @@
       }
       particle(ox, oy, '#f4d990', 5, 70, 4);
       weaponSound(selectedWeaponIndex, ox, oy);
-      if (city3D) city3D.fire(ox, oy, a, w.rocket, entityElevation(player));
+      // The flash at the gun's height out of a vehicle's window.
+      if (city3D) city3D.fire(ox, oy, a, w.rocket, entityElevation(player), driveByMuzzle ? driveByMuzzle.height : undefined);
       player.recoilUntil = gameTime + 0.12;
       player.lastShotAt = gameTime;
       notifyViolence(player, 'gunfire', player);

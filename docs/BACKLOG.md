@@ -28,6 +28,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only), and a respray keeps its MORETTI & SONS door lettering.
 - The payphone's and newspaper boxes' foot obstacles are registered by the renderer (like the bus shelters), so a `?norender` page walks through them.
 - At night the white faces round the payphone (newspaper pages, placards) sit in the street lamp's pool and read bright.
+- The Blue Hour's limousines have no chauffeurs and never leave; the doormen and valet keep their posts (no door opened, no car taken). The forecourt fixtures are foot obstacles, which stop only the player: a street walker straying to the wall or the kerb can pass through a planter or bollard.
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
@@ -80,6 +81,14 @@ here when polishing; delete a line when it is fixed. Newest features first.
   whoever is near the (stale) cursor; the camera leans along the stick.
 - Rain spray and dust were checked only in stills (headless frames are seconds apart); worth a
   look on a real GPU at speed in the rain and on the beach.
+
+## Drive-bys (driveby.js, crowd3d-driveby.js)
+- Only the pistol fires from a vehicle, so the SMG one-hand and two-handed lean-out poses are not
+  drawn; the rear shot and the passenger-side shot fire from inside the cabin, which the opaque
+  roof hides from the street camera (only the flash, the burst screen and the tracers show).
+- Trucks and special bodies have no per-pane glass: their driver's window does not show wound down.
+- A boat's helmsman and an aircraft's pilot are not drawn during a drive-by (the shot still
+  follows the arcs and leaves from `driveByGrip`).
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.

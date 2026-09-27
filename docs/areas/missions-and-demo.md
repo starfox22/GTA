@@ -54,11 +54,15 @@ index plus one.
 
 ## Mission 2: the Blue Hour (roofmission-*.js)
 
+- Two ways to kill Vescari: spike his glass unseen, or draw and shoot it out with the
+  detail. No silent takedown (owner: nobody kills quietly in front of a party); tests
+  mission2-poison and mission2-paths. The hotel's look (terrace, VIP table, street
+  entrance, limousines): missions-bluehour.md.
 - Guards see only inside their cone: `roofGuardSees` = `ROOF_VIEW` half-angle and range
   round `roofGuardView(e)` (heading + head `look`) with `roofViewLength` clear (all cover
   but the pool, and the balustrade). No all-round awareness; a bump is +10. The drawn
   cones (roofmission3d.js, `drawRoofStealth2D`) call the same functions: change the
-  numbers in `ROOF_VIEW` only. Shots and the takedown use `roofSight` (low cover passes).
+  numbers in `ROOF_VIEW` only. Shots use `roofSight` (low cover passes).
 - `m.suspicion` fills from `updateRoofSuspicion` (distance, running, beside Vescari, how
   long watched) and drains unseen; 100 is `roofAlarm`. After the collapse, walking seen
   tops out at `ROOF_WARY`; running still blows it.
@@ -68,7 +72,7 @@ index plus one.
   crowd3d-roofparty.js. Past `approach` it is committed (`poisonCommitted`). The body is
   `poisoned` with a `deathStyle.poison`: wounds.js skips the fall, wounds and blood for it.
 - Clean poisoning (no alarm, no stars at the lift): stage 4 is WALK AWAY FROM THE HOTEL
-  (`ROOF_AWAY` from the doors); the alarm or the takedown keep the run to Coral Palms.
+  (`ROOF_AWAY` from the doors); the alarm (a gunfight) keeps the run to Coral Palms.
 - Cover blown with Vescari standing (not `poisonCommitted`): leaving the terrace (street
   level, or `ROOF_AWAY` off) fails the job, "Vescari got away". Walking out before any alarm
   leaves the job waiting upstairs.

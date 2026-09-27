@@ -88,6 +88,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
 - No ammo, armor or weapon pickups: rounds come from gun shops, `lootInteract` (bodies, once)
   and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
+- Shooting from a vehicle goes through `driveByAim(vehicle, heading)` (driveby.js): arcs per
+  window and body live in `spec.driveBy`; the bullet and the pose both use `driveByGrip`.
 - **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
   hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
   pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911. Crowd
@@ -100,6 +102,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   nothing stands north of them (the camera looks north): North Point Key, Monarch One.
 - North Point Key visitors (livingcity-key.js) are the only traffic on the Key; its inbound
   lane runs 17 units off the centre line, not 24 (the sea-wall rail reaches onto the deck).
+- The Blue Hour: `BLUE_HOUR_ENTRANCE` (roofmission-entrance.js) is the only plan for the hotel's
+  forecourt (canopy, limousines, staff); street furniture stays off it via `blueHourForecourt()`.
+  Terrace furniture stays inside `roofCover` footprints or the 14-unit strip along the railings.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
 - `playerImpact()` / `fallInjury()` (falls-body.js) are the only fall-damage scale;

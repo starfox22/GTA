@@ -587,6 +587,13 @@
             T[J_HEAD_PITCH] = -0.2;
             T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
             T[J_ROLL] = 0;
+            // A drive-by turns the body to the aim (crowd3d-driveby.js).
+            if (spec?.torsoTwist != null) {
+              T[J_TWIST] = spec.torsoTwist;
+              T[J_ROLL] = spec.torsoRoll;
+              T[J_HEAD_YAW] = spec.headYaw;
+              T[J_HEAD_PITCH] = spec.headPitch;
+            }
             break;
           // ---- The beach (beach.js poses) ----
           case 'sitGround':

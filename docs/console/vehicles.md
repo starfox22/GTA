@@ -63,3 +63,12 @@
 | `dealerMenu(type)`, `dealerMenuPaint(i)`, `closeDealer()` | Open the purchase card on a car on display (a type, or the nearest; `'garage'` for MY GARAGE), pick a paint swatch, close it |
 | `dealerBuy(type, paint)` | Buy a car as the BUY button does (the cash must be there) and play the delivery; returns the result or why not (`funds` with `short`, `wanted`, `alarm`) |
 | `dealerAlarm(reason)`, `dealerShatter(index)`, `dealerCalm()`, `dealerResetGarage()` | Sound the dealership's alarm (4 stars), break a frontage pane (index or nearest), end the alarm and calm the staff, forget every owned car |
+
+**Drive-bys** (`driveByConsole()`, src/driveby.js):
+
+| Method | Purpose |
+| --- | --- |
+| `driveBy()` | The current vehicle's drive-by: body (`cabin`, `engine`, `bulkhead`, `box`, `cabWall`, `partition`, `open`, `rider`, `deck`, `cockpit`), rear (`glass`, `open`, null), the arcs in degrees off the nose (negative left) with their window, how far the arm is out, the window it is out of, the aim (`clear` / `clamped` / `blocked`), a shot waiting for the arm, the rear glass state, the windows wound down and counts (shots, refused, clamped, rear screens burst, windows lowered) |
+| `driveByArcs(type)` | A vehicle type's drive-by profile and arcs (no vehicle needed) |
+| `driveByCheck(relDegrees)` | Where an aim `relDegrees` off the nose would fire from the current vehicle: ok, clamped (to which edge), blocked with the hint text, no shot |
+| `driveByAim(relDegrees, fire)` | Hold the aim `relDegrees` off the nose as the aim stick does (`null` lets go); `fire` true holds the trigger, `'raise'` holds the arm out without firing (pictures); step with `wait` |

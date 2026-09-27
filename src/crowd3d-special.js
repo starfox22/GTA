@@ -3,6 +3,8 @@
         'look', 'facing', 'snapFacing', 'rim', 'elevation', 'rootOverride', 'pose', 'transition', 'hold', 'weapon', 'recoil', 'reload',
         'knifeSwing', 'punch', 'punchLead', 'army', 'shield', 'dazed', 'limp', 'cocktail', 'sip', 'swim', 'parachute', 'lieInPlace',
         'progress', 'bounce', 'flag', 'riderLean', 'handTargets', 'legTargets', 'thrown',
+        // A drive-by (crowd3d-driveby.js): the pistol's frame and hand, the torso and head turned to the aim.
+        'gunFrame', 'gunHandFrame', 'gunHand', 'torsoTwist', 'torsoRoll', 'headYaw', 'headPitch',
       ];
       // One spec object with every field declared up front, so its shape never changes.
       const specScratch = Object.fromEntries(SPEC_FIELDS.map((k) => [k, undefined]));
@@ -419,6 +421,8 @@
           }
           sp.handTargets = riderHands;
           sp.legTargets = riderFeet;
+          // A drive-by: the left hand off the bar and onto the pistol (crowd3d-driveby.js).
+          if (isPlayer) driveByRiderArm(c, sp, riderRoot, riderHands, H, deltaSeconds);
           drawCrowdPerson(proxy, stateFor(proxy), deltaSeconds, detail, sp);
         }
         riderQueue.length = 0;
