@@ -433,6 +433,31 @@ kbd {
 .elevator-dialog .meter {
   height: 3px;
 }
+/* North Point Key's lifts: the screen fades to black (opacity set by skyline-lift.js). */
+.sky-lift {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #04060a;
+  pointer-events: none;
+  opacity: 0;
+}
+.sky-lift-card {
+  text-align: center;
+  color: #e9e2cf;
+}
+.sky-lift-card .eyebrow {
+  letter-spacing: 4px;
+  color: #c9a861;
+}
+.sky-lift-card h2 {
+  font: 300 40px monospace;
+  letter-spacing: 6px;
+  margin-top: 10px;
+}
 @media (max-width: 850px) {
   .call-dialog {
     padding: 24px;

@@ -165,6 +165,14 @@
       // Sea walls: walk each quay run and drop a ladder every so often.
       let run = 210;
       for (const e of coastSegments()) {
+        // North Point Key's bridge landed on the sea wall where a ladder stood: its
+        // deck takes that ladder's turn, so every other ladder (and the railing
+        // gaps at them) stays where it was before the bridge (skyline-islet.js).
+        if (northPointKeyBridgeLanding(e)) {
+          run += e.length;
+          if (run >= 420) run = 0;
+          continue;
+        }
         if (e.opening || shoreStyle(e) !== 'quay') continue;
         run += e.length;
         if (run < 420) continue;

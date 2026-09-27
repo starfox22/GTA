@@ -32,6 +32,9 @@
         return clockText();
       },
       setZoom: (value) => setWorldZoom(value),
+      // The street camera's framing: zoom in force, the player's zoom, the vehicle
+      // context and speed shares, the metres of street on screen, a person's height in px.
+      cameraView: () => cameraViewReport(),
       // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
       // visible, text, identity, docked, seconds since it popped in, this pass's offer.
       promptState: () => promptReport(),
@@ -59,7 +62,10 @@
         const steps = Math.round(clamp(seconds, 0, 120) * 30);
         for (let i = 0; i < steps; i++) {
           // A Blue Hour elevator ride runs on its own clock (frame()); step it too.
-          if (gameMode === 'elevator') updateElevator(1 / 30);
+          if (gameMode === 'elevator') {
+            updateElevator(1 / 30);
+            updateSkyLift(1 / 30);
+          }
           else if (gameMode === 'play') update(1 / 30);
           else break;
           hudClockOffset += 1 / 30; // HUD timers (prompt docking) follow the stepped time
@@ -84,7 +90,7 @@
         return cash;
       },
       // Inspection only: zoom the camera in past the player's limit to look at
-      // people up close. Anything above 1.5 is not reachable in play.
+      // people up close. Anything above STREET_ZOOM_MAX (4.5) is not reachable in play.
       closeUp(zoom = 4) {
         worldZoom = worldZoomTarget = clamp(zoom, 0.14, 24);
         return worldZoom;

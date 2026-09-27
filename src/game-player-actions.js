@@ -260,14 +260,17 @@
     }
     function interact() {
       if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
-      // On a building roof the only thing to do is fly off again.
+      // On a building roof: a North Point Key lift or bar (skyline-lift.js), else fly off again.
       if (player.buildingRoof && !player.car) {
+        if (northPointKeyInteract()) return;
         const c = nearestCar();
         if (c) enterVehicle(c);
         else tell('ROOFTOP · The helicopter is the only way down.', 2.5);
         return;
       }
       if (policeBlocksMissionDelivery()) return;
+      // A lobby lift on North Point Key (skyline-lift.js).
+      if (northPointKeyInteract()) return;
       if (transitInteract()) return;
       if (parkInteract()) return;
       if (beachClubInteract()) return;

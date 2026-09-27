@@ -294,10 +294,15 @@
             const zone = districtAt(x + w / 2, y + h / 2),
               blockSeed = (bx * 31 + by * 17) % 7,
               perimeterBlock = zone === 'THE RECLAMATION' || zone === 'HARBOR POINT MARINA';
-            // The financial cluster is planned block by block (src/skyline.js).
-            const skylineBlock = zone.includes('FINANCIAL') && skylineBlockTowers(bx, by).length > 0;
-            if (skylineBlock) {
+            // The financial cluster was planned block by block (skyline-towers.js).
+            // Its towers moved to North Point Key or into reserve; a block still
+            // carrying one is built as before, the rest as the offices that
+            // replaced them (their draws of the seeded stream replayed first).
+            const skylineBlock = zone.includes('FINANCIAL') && retiredSkylineTowers(bx, by).length > 0;
+            if (skylineBlock && skylineBlockTowers(bx, by).length) {
               buildSkylineBlock(bx, by, x, y, w, h);
+            } else if (skylineBlock) {
+              buildNorthPointBlock(bx, by, x, y, w, h);
             } else if (zone.includes('FINANCIAL') && blockSeed % 2 === 0) {
               // One tower on a plaza: towers need air around them to read as towers.
               makeBuilding(x + 52, y + 12, w - 104, 140, 0);
@@ -469,4 +474,6 @@
         )
           lamps.splice(i, 1);
       }
+      // North Point Key last, on a stream of its own (skyline-islet.js).
+      buildNorthPointKey();
     }

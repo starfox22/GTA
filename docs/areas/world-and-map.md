@@ -15,6 +15,7 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
  y       x: -3100 .. -1144        40 .. 3420            ~5880 .. 11000
  -7050        .                 [SUNSET PIER isle]       [MONARCH ISLE 5460..10150,
  -4200        .                 NORTHBANK (reclamation)    y -5272..-468]
+ -3500        .                   + NORTH POINT KEY (x 3740..4460, the towers)
     50   PALM KEYS  <-Palm Sound->  NORTHBANK  <-Marlow Bay->  RIDGELINE (forest, peaks)
   5300   PALM KEYS BEACH            Battery Park               .
   6200+       .                     OCEANVIEW / CORAL COAST / FORT SENTINEL
@@ -37,7 +38,12 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   avenues are `WIDE_COLUMNS` / `WIDE_ROWS`: ask `wideColumn(x)` / `wideRow(y)` (one list
   could not tell column -1408 from row -1408). Blocks are 334 units square.
 - `BLOCK_COLUMNS` builds Northbank first so its seeded buildings never change, then Palm
-  Keys: **adding blocks must not reorder the seeded random stream.**
+  Keys: **adding blocks must not reorder the seeded random stream.** The retired North
+  Point cluster blocks replay the old plan's draws unseen before building their offices
+  (`buildNorthPointBlock`), one building per old tower, so every later building keeps its
+  index (zoned height, facade). New land must not make a grid block valid:
+  `validCityBlock` refuses North Point Key; places off the grid build last on their own
+  stream (`buildNorthPointKey`).
 - Streets are clipped to land, the airport, park closures, the stadium, the beach and
   reserved plots (`cityStreets()`); a bridge deck counts as ground. The x = 128 column is
   the Shore Line rail corridor (`RAIL_CORRIDOR_X`), not a street.
@@ -56,9 +62,11 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   carriageway starts at `BRIDGE_CLEARANCE`, 46). One structure feeds everything: boats steer
   round `bridgeFootings()`, aircraft collide with `bridgePylons()`, bridges3d.js draws it,
   roadblocks cut the city end, the route graph joins it to the streets.
-- Eleven bridges (Keys, Palm Sound Causeway, East Bay, South Bay, Sunset Pier, Oceanview,
-  Coral Sound, Ridgeline Viaduct, Sentinel, Sovereign, Regency): `DeadEndCity.layout().bridges`
-  has ids, styles, towers and footings. Rail bridges belong to the viaducts (transit.js).
+- Twelve bridges (Keys, Palm Sound Causeway, East Bay, South Bay, Sunset Pier, Oceanview,
+  Coral Sound, Ridgeline Viaduct, Sentinel, Sovereign, Regency, North Point Key):
+  `DeadEndCity.layout().bridges` has ids, styles, towers and footings. A region or bridge
+  added later is appended at the end (Monarch's, North Point Key's) so earlier coast walks
+  and promenade rhythms keep their order. Rail bridges belong to the viaducts (transit.js).
 - **The Palm Sound drawbridge** (drawbridge.js, drawbridge3d.js): a working double-leaf
   bascule with 44 m leaves on `bridgeStructure(bridge).bascule`. Openings at
   `DRAWBRIDGE_OPENINGS` for the brigantine ALBATROSS; phases warning → gates → clearing →

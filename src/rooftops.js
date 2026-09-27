@@ -23,6 +23,10 @@
      * - Rooftop helipads (`b.helipad`, `roofHelipads`): the Police HQ, the hospital and
      *   a spread of large flat office roofs; cityscape3d.js draws the pad instead of the
      *   usual roof clutter.
+     * - Roof decks (`b.roofDeck`, skyline-lift.js): a roof walked and landed on by
+     *   its own shape (discs, boxes, a polygon) instead of the lot, round
+     *   `b.deckKeepOuts` (lift houses, a bar's furniture: the game's own, so they
+     *   work without WebGL). `b.noLanding` keeps helicopters off a roof (CIRRUS).
      * - `player.buildingRoof` is the carrier: the building whose roof the player stands
      *   on (`player.altitude` is its height). It is set by exitCar() beside a
      *   helicopter parked on a roof and cleared by entering a vehicle, teleportPlayer()
@@ -36,7 +40,7 @@
     }
     function roofLandable(b) {
       // Not a pitched roof (the mountain villages, mountain-village.js).
-      return !!b && !b.depotWall && !b.roofBar && b.style !== 2 && !b.pitched;
+      return !!b && !b.depotWall && !b.roofBar && b.style !== 2 && !b.pitched && !b.noLanding;
     }
     // The highest building whose footprint contains the point.
     function buildingRoofAt(x, y) {
@@ -45,8 +49,23 @@
         if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h && (!best || b.height > best.height)) best = b;
       return best;
     }
+    // One shape of a roof deck contains the point, `inset` in from its edge.
+    function roofDeckContains(s, x, y, inset) {
+      if (s.r !== undefined) return Math.hypot(x - s.x, y - s.y) <= s.r - inset;
+      if (s.poly) {
+        if (!pointInPolygon(x, y, s.poly)) return false;
+        for (let i = 0; i < s.poly.length; i++) if (segmentDistance(x, y, s.poly[i], s.poly[(i + 1) % s.poly.length]) < inset) return false;
+        return true;
+      }
+      return x >= s.x0 + inset && x <= s.x1 - inset && y >= s.y0 + inset && y <= s.y1 - inset;
+    }
     function roofInside(b, x, y, inset) {
+      if (b.roofDeck) return b.roofDeck.some((s) => roofDeckContains(s, x, y, inset));
       return x >= b.x + inset && x <= b.x + b.w - inset && y >= b.y + inset && y <= b.y + b.h - inset;
+    }
+    // Roof plant the renderer drew and the deck furniture the game planned.
+    function roofKeepOutList(b) {
+      return b.deckKeepOuts ? [...(b.roofKeepOuts || []), ...b.deckKeepOuts] : b.roofKeepOuts || [];
     }
     function helicopterRoofSite(c) {
       if (c.type !== 'helicopter') return null;
@@ -58,14 +77,14 @@
     function roofLandingClear(c, b) {
       if (Math.hypot(c.vx || 0, c.vy || 0) > 36) return false;
       const shape = vehicleShape(c, 2);
-      if ((b.roofKeepOuts || []).some((k) => boxContact(shape, k))) return false;
+      if (roofKeepOutList(b).some((k) => boxContact(shape, k))) return false;
       return !vehicles.some(
         (o) => o !== c && o.hp > 0 && Math.abs(entityElevation(o) - b.height) < 20 && boxContact(shape, vehicleShape(o, 3)),
       );
     }
     function roofPointFreeOn(b, x, y, r = 8) {
       if (!roofInside(b, x, y, ROOF_PARAPET + r)) return false;
-      if ((b.roofKeepOuts || []).some((k) => Math.abs(x - k.x) < k.hx + r && Math.abs(y - k.y) < k.hy + r)) return false;
+      if (roofKeepOutList(b).some((k) => Math.abs(x - k.x) < k.hx + r && Math.abs(y - k.y) < k.hy + r)) return false;
       return !vehicles.some((o) => Math.abs(entityElevation(o) - b.height) < 20 && pointInCar(x, y, o, r));
     }
     function moveOnBuildingRoof(dx, dy, r) {
@@ -106,9 +125,9 @@
       roofHelipads.length = 0;
       const hospital = PLACES.find((p) => p.kind === 'hospital'),
         fits = (b) => roofLandable(b) && Math.min(b.w, b.h) >= 130 && b.height >= realBuildingHeight(40) && b.height < realBuildingHeight(68),
-        // A financial-cluster tower planned with a pad (src/skyline.js) always keeps it.
+        // A tower planned with a pad (FEDERATION EAST on North Point Key) always keeps it.
         chosen = buildings.filter(
-          (b) => (fits(b) && (b.policeHQ || (hospital && b.place === hospital.id))) || (b.skyline && b.skyline.helipad),
+          (b) => (fits(b) && (b.policeHQ || (hospital && b.place === hospital.id))) || (b.skyline && b.skyline.roof === 'helipad' && !b.skyline.reserve),
         );
       const rest = buildings
         .filter((b) => fits(b) && !b.place && !b.policeHQ && b.x < CITY_SIZE && b.y < CITY_SIZE)
@@ -120,7 +139,8 @@
         if (chosen.every((o) => Math.hypot(o.x + o.w / 2 - cx, o.y + o.h / 2 - cy) > 1100)) chosen.push(b);
       }
       for (const b of chosen) {
-        b.helipad = {
+        // A helideck brings its own pad (skyline-lift.js).
+        b.helipad = b.keyPad || {
           x: b.x + b.w / 2,
           y: b.y + b.h / 2,
           r: Math.min(46, Math.min(b.w, b.h) / 2 - 12),

@@ -76,8 +76,9 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   stall warnings; `flightData()` feeds the HUD and console.
 - Helicopters: `helicopterControl` (physics); rooftop landings in rooftops.js. The police
   helicopter is unarmed (police-and-combat.md). The Apache (apache.js) is player-only.
-- Street camera: `STREET_ZOOM` 1.6 default (world-view.js); from ~60 km/h it eases back
-  (`speedZoomTarget`). In the air a perspective camera takes over (rendering.md).
+- Street camera: `STREET_ZOOM` 2.5 on foot (world-view.js); a vehicle frames at its CAMERA
+  CONTEXT share of it (a car 0.7 = 1.75) and from ~45 km/h eases back (`speedZoomTarget`). In
+  the air a perspective camera takes over (rendering.md).
 
 ## Vehicle models
 
@@ -88,6 +89,11 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   keys and `lit` materials; `nightLights` are [head, tail] per side.
 - Liveries are one canvas per body/livery painted in the shell's UV space, with a band of
   solid swatches that panels and damage parts sample: the whole paint is one material.
+- Civilian glasshouses may curve (`glass.crown`, `screenCurve`, `backCurve`, metres;
+  `glassPoint` / `glassCrown` in police3d-cabins.js): place anything on the roof with
+  `glassPoint(g, l, w, 'roof', s, t)` or add `glassCrown(g, x, l)`, never `g.roof + g.arch`
+  alone. The MULE VAN's shell runs up to its roof (its glasshouse is only the cab's screen and
+  door glass; `hoodHinge`, `doorTop`); shell sections must keep ten points to blend.
 - Draw-call budget: a civilian car ~20 draws and 3 shadow casters, a motorbike 11, a patrol
   car ~22, helicopters 9-14. Zoomed out, cars pool into instanced impostors per type
   (BODY IMPOSTORS). Report with `carModels()`, `helicopterModels()`; line-ups with
