@@ -631,7 +631,9 @@
         e.a = headingBetween(e, target);
         e.walk += deltaSeconds * 8;
         if (best > 165) footStepTowards(e, target, deltaSeconds, 9 * KMH);
-        if (e.timer <= 0 && best < 335 && clearSight(e, target)) {
+        // At the player only from on screen (combat-rules.js ON-SCREEN RULE): off
+        // screen they close in but hold their fire.
+        if (e.timer <= 0 && best < 335 && (target !== player || shooterInView(e)) && clearSight(e, target)) {
           e.timer = 0.8 + seededRandom() * 0.85;
           e.lastShotAt = gameTime;
           if (target.police || target.type === 'police') e.policeThreatUntil = gameTime + 15;
