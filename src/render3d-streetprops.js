@@ -39,6 +39,13 @@
        * same texture, colour, opacity and additive blending (the quad's size is
        * the sprite's scale, its opacity rides in the unused w of the instance
        * matrix's first column).
+       *
+       * Lamps that shine one way (head and tail lamps: `facing` 1 or -1 along
+       * the body) glow brighter than white when they face the camera, so the
+       * bloom turns them into a lens glow, and dimmer seen from behind; facing
+       * head lamps add a faint horizontal flare streak on HIGH and ULTRA. `gain`
+       * brightens a lamp (brake lights), `tint` recolours it (reversing lamps on
+       * the tail sprites) and `size` scales it.
        */
       const VEHICLE_HALO_CAPACITY = 640,
         vehicleHaloMaterial = new Three.ShaderMaterial({
@@ -59,7 +66,7 @@
               #endif
               vOpacity = instanceMatrix[ 0 ].w;
               vec4 mvPosition = modelViewMatrix * vec4( instanceMatrix[ 3 ].xyz, 1.0 );
-              mvPosition.xy += position.xy * length( instanceMatrix[ 0 ].xyz );
+              mvPosition.xy += position.xy * vec2( length( instanceMatrix[ 0 ].xyz ), length( instanceMatrix[ 1 ].xyz ) );
               gl_Position = projectionMatrix * mvPosition;
               #include <fog_vertex>
             }
@@ -85,51 +92,89 @@
           fog: true,
         }),
         vehicleHalos = new Three.InstancedMesh(new Three.PlaneGeometry(1, 1), vehicleHaloMaterial, VEHICLE_HALO_CAPACITY),
-        vehicleHaloQueue = [],
-        vehicleHaloOpacity = [],
+        vehicleHaloQueue = new Array(VEHICLE_HALO_CAPACITY).fill(null),
+        vehicleHaloTint = new Array(VEHICLE_HALO_CAPACITY).fill(null),
+        vehicleHaloOpacity = new Float32Array(VEHICLE_HALO_CAPACITY),
+        vehicleHaloFacing = new Int8Array(VEHICLE_HALO_CAPACITY),
+        vehicleHaloGain = new Float32Array(VEHICLE_HALO_CAPACITY),
+        vehicleHaloSize = new Float32Array(VEHICLE_HALO_CAPACITY),
         vehicleHaloPoint = new Three.Vector3(),
-        vehicleHaloMatrix = new Three.Matrix4();
+        vehicleHaloMatrix = new Three.Matrix4(),
+        vehicleHaloColor = new Three.Color();
+      let vehicleHaloCount = 0;
       vehicleHalos.name = 'vehicle halos';
       vehicleHalos.frustumCulled = false;
       vehicleHalos.count = 0;
       vehicleHalos.userData.dynamic = true;
       vehicleHalos.setColorAt(0, new Three.Color(1, 1, 1));
       scene.add(vehicleHalos);
-      function queueVehicleHalo(sprite, opacity) {
-        if (vehicleHaloQueue.length >= VEHICLE_HALO_CAPACITY) return;
-        vehicleHaloQueue.push(sprite);
-        vehicleHaloOpacity.push(opacity);
+      function queueVehicleHalo(sprite, opacity, facing = 0, gain = 1, tint = null, size = 1) {
+        if (vehicleHaloCount >= VEHICLE_HALO_CAPACITY) return;
+        const i = vehicleHaloCount++;
+        vehicleHaloQueue[i] = sprite;
+        vehicleHaloOpacity[i] = opacity;
+        vehicleHaloFacing[i] = facing;
+        vehicleHaloGain[i] = gain;
+        vehicleHaloTint[i] = tint;
+        vehicleHaloSize[i] = size;
+      }
+      function writeVehicleHalo(n, x, y, z, sizeX, sizeY, opacity, color) {
+        const e = vehicleHaloMatrix.elements;
+        e[0] = sizeX;
+        e[1] = 0;
+        e[2] = 0;
+        e[3] = opacity;
+        e[4] = 0;
+        e[5] = sizeY;
+        e[6] = 0;
+        e[7] = 0;
+        e[8] = 0;
+        e[9] = 0;
+        e[10] = 1;
+        e[11] = 0;
+        e[12] = x;
+        e[13] = y;
+        e[14] = z;
+        e[15] = 1;
+        vehicleHalos.setMatrixAt(n, vehicleHaloMatrix);
+        vehicleHalos.setColorAt(n, color);
       }
       // After the scene's matrices are current (SCENE MATRICES): place each queued
       // halo where its sprite would have been drawn.
       function flushVehicleHalos() {
-        const n = vehicleHaloQueue.length,
-          e = vehicleHaloMatrix.elements;
-        for (let i = 0; i < n; i++) {
+        const count = vehicleHaloCount,
+          ce = camera.matrixWorld.elements,
+          // Towards the viewer: the camera's backward axis.
+          vx = ce[8],
+          vy = ce[9],
+          vz = ce[10],
+          flares = (activeTier?.bloom ?? 0) >= 5;
+        let n = 0;
+        for (let i = 0; i < count; i++) {
           const sprite = vehicleHaloQueue[i],
             parent = sprite.parent,
             pe = parent.matrixWorld.elements,
             parentScale = Math.hypot(pe[0], pe[1], pe[2]),
-            size = sprite.scale.x * parentScale;
+            size = sprite.scale.x * parentScale * vehicleHaloSize[i],
+            facing = vehicleHaloFacing[i];
           vehicleHaloPoint.copy(sprite.position).applyMatrix4(parent.matrixWorld);
-          e[0] = size;
-          e[1] = 0;
-          e[2] = 0;
-          e[3] = vehicleHaloOpacity[i];
-          e[4] = 0;
-          e[5] = size;
-          e[6] = 0;
-          e[7] = 0;
-          e[8] = 0;
-          e[9] = 0;
-          e[10] = size;
-          e[11] = 0;
-          e[12] = vehicleHaloPoint.x;
-          e[13] = vehicleHaloPoint.y;
-          e[14] = vehicleHaloPoint.z;
-          e[15] = 1;
-          vehicleHalos.setMatrixAt(i, vehicleHaloMatrix);
-          vehicleHalos.setColorAt(i, sprite.material.color);
+          let gain = vehicleHaloGain[i],
+            toward = 0;
+          if (facing) {
+            // How squarely the lamp faces the camera (the body's x axis is its heading).
+            toward = (facing * (pe[0] * vx + pe[1] * vy + pe[2] * vz)) / (parentScale || 1);
+            gain *= (0.55 + 0.45 * Three.MathUtils.smoothstep(toward, -0.6, 0.15)) * (1 + (facing > 0 ? 1.7 : 0.9) * Three.MathUtils.smoothstep(toward, 0.05, 0.7));
+          }
+          vehicleHaloColor.copy(vehicleHaloTint[i] || sprite.material.color).multiplyScalar(gain);
+          const opacity = vehicleHaloOpacity[i];
+          writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, size, size, opacity, vehicleHaloColor);
+          // A head lamp looking at the camera: a thin horizontal flare streak.
+          if (flares && facing > 0 && toward > 0.2 && n < VEHICLE_HALO_CAPACITY) {
+            const streak = Three.MathUtils.smoothstep(toward, 0.2, 0.8);
+            writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, size * 5, size * 0.2, opacity * 0.4 * streak, vehicleHaloColor);
+          }
+          vehicleHaloQueue[i] = null;
+          vehicleHaloTint[i] = null;
         }
         vehicleHalos.count = n;
         vehicleHalos.visible = n > 0;
@@ -141,8 +186,7 @@
           vehicleHalos.instanceColor.addUpdateRange(0, n * 3);
           vehicleHalos.instanceColor.needsUpdate = true;
         }
-        vehicleHaloQueue.length = 0;
-        vehicleHaloOpacity.length = 0;
+        vehicleHaloCount = 0;
       }
       // @include src/damage3d.js
       const lampGlowPending = [];

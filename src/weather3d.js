@@ -61,15 +61,36 @@
         uAmbient: { value: new Three.Color('#bcd2e4') },
         uFlash: { value: 0 },
       };
-      // Night light map (lighting3d.js): the drops glitter where the lamps are.
+      // Night light map (lighting3d.js): the drops glitter where the lamps are,
+      // and in the low beams of the nearest cars (CAR LAMPS), whose cut-off is
+      // relaxed a little so the rain over the lit road catches them.
       const RAIN_LAMP_GLSL = `
         uniform sampler2D cityLampMap;
         uniform vec4 cityLampRect;
         uniform float cityLampPower;
+        uniform vec4 cityCarLampA[ ${CAR_LAMP_SLOTS} ];
+        uniform vec4 cityCarLampB[ ${CAR_LAMP_SLOTS} ];
+        uniform float cityCarLampCount;
+        ${CITY_LOW_BEAM}
+        vec3 rainCarLight( vec3 p ) {
+          float sum = 0.0;
+          for ( int i = 0; i < ${CAR_LAMP_SLOTS}; i ++ ) {
+            if ( float( i ) >= cityCarLampCount ) break;
+            vec4 a = cityCarLampA[ i ], b = cityCarLampB[ i ];
+            vec3 d = p - a.xyz;
+            float ahead = dot( d.xz, b.xy );
+            if ( ahead < 2.0 || ahead > 480.0 ) continue;
+            float side = dot( d.xz, vec2( -b.y, b.x ) );
+            side = sign( side ) * max( abs( side ) - b.z, 0.0 );
+            sum += a.w * cityLowBeam( side / ahead, d.y / ahead - 0.05 ) / max( dot( d, d ) * 0.015625, 0.5 );
+          }
+          return vec3( 1.0, 0.93, 0.8 ) * min( sum * 0.012, 3.0 );
+        }
         vec3 rainLampLight( vec3 p ) {
+          vec3 cars = cityCarLampCount > 0.5 ? rainCarLight( p ) : vec3( 0.0 );
           vec2 uv = ( p.xz - cityLampRect.xy ) * cityLampRect.zw;
-          if ( cityLampPower < 0.001 || uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) return vec3( 0.0 );
-          return texture2D( cityLampMap, uv ).rgb * cityLampPower * ( 1.0 - smoothstep( 8.0, 70.0, p.y ) );
+          if ( cityLampPower < 0.001 || uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) return cars;
+          return cars + texture2D( cityLampMap, uv ).rgb * cityLampPower * ( 1.0 - smoothstep( 8.0, 70.0, p.y ) );
         }`;
       const rainMaterial = new Three.ShaderMaterial({
         uniforms: {
@@ -77,6 +98,9 @@
           cityLampMap: cityLightUniforms.cityLampMap,
           cityLampRect: cityLightUniforms.cityLampRect,
           cityLampPower: cityLightUniforms.cityLampPower,
+          cityCarLampA: cityLightUniforms.cityCarLampA,
+          cityCarLampB: cityLightUniforms.cityCarLampB,
+          cityCarLampCount: cityLightUniforms.cityCarLampCount,
         },
         vertexShader: `
           attribute vec4 aDrop;
@@ -145,6 +169,9 @@
           cityLampMap: cityLightUniforms.cityLampMap,
           cityLampRect: cityLightUniforms.cityLampRect,
           cityLampPower: cityLightUniforms.cityLampPower,
+          cityCarLampA: cityLightUniforms.cityCarLampA,
+          cityCarLampB: cityLightUniforms.cityCarLampB,
+          cityCarLampCount: cityLightUniforms.cityCarLampCount,
         },
         vertexShader: `
           attribute vec3 aSeed;
@@ -230,6 +257,9 @@
           cityLampMap: cityLightUniforms.cityLampMap,
           cityLampRect: cityLightUniforms.cityLampRect,
           cityLampPower: cityLightUniforms.cityLampPower,
+          cityCarLampA: cityLightUniforms.cityCarLampA,
+          cityCarLampB: cityLightUniforms.cityCarLampB,
+          cityCarLampCount: cityLightUniforms.cityCarLampCount,
         },
         vertexShader: `
           attribute vec4 aEmit;
@@ -309,6 +339,9 @@
           cityLampMap: cityLightUniforms.cityLampMap,
           cityLampRect: cityLightUniforms.cityLampRect,
           cityLampPower: cityLightUniforms.cityLampPower,
+          cityCarLampA: cityLightUniforms.cityCarLampA,
+          cityCarLampB: cityLightUniforms.cityCarLampB,
+          cityCarLampCount: cityLightUniforms.cityCarLampCount,
         },
         vertexShader: `
           attribute vec3 aVelocity;

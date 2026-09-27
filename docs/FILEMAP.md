@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-364 files in the include tree, 138,277 lines.
+364 files in the include tree, 138,911 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -117,7 +117,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/clubtalk.js`   380 — Conversations with Marea club-goers
 - `src/leisure.js`    45 — Beach and club leisure: prompt and action key
 - `src/ambience.js`   277 — City soundscape
-- `src/quality.js`   218 — Graphics quality tiers
+- `src/quality.js`   221 — Graphics quality tiers
 - `src/settings.js`   837 — Settings menu
 - `src/god-panel.js`   773 — God mode settings
 - `src/driving.js`   466 — Tyres, brakes and driving assists
@@ -280,20 +280,20 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
 - `src/flight-view3d.js`   882 — Flight camera and aerial perspective
-- `src/postfx3d.js`   841 — HDR post-processing pipeline
+- `src/postfx3d.js`   888 — HDR post-processing pipeline
 - `src/lighting3d.js`    26 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   924 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   313 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   294 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    57 — ▸ Tree library: species, foliage atlas, wind, LOD
-- `src/render3d-streetprops.js`   250 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
+- `src/render3d-streetprops.js`   294 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 - `src/cityscape3d.js`    21 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
 - `src/roadblocks3d.js`    70 — Police roadblock meshes
 - `src/themepark3d.js`    22 — ▸ Sunset Pier resort meshes
 - `src/garage3d.js`    26 — ▸ Garage meshes
 - `src/landmarks3d.js`    36 — City landmark meshes
-- `src/civic3d.js`   373 — Civic and rooftop meshes
+- `src/civic3d.js`   375 — Civic and rooftop meshes
 - `src/air-cover3d.js`    46 — Underpass meshes
 - `src/renewal3d.js`   474 — Park meshes
 - `src/landscape3d.js`   116 — Landscaping for open lawns
@@ -323,12 +323,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/dealership3d.js`    43 — ▸ MONARCH MOTORS in 3D
 - `src/beachclub3d.js`    38 — ▸ Marea Beach Club meshes and show lighting
 - `src/cycles3d.js`   450 — Bike-share station meshes
-- `src/weather3d.js`   630 — Weather and sky visuals
+- `src/weather3d.js`   663 — Weather and sky visuals
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    83 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/clouds3d.js`   618 — Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   825 — Ground shader data
-- `src/surfaces3d.js`   195 — ▸ Procedural surface detail
+- `src/surfaces3d.js`   197 — ▸ Procedural surface detail
 - `src/grass3d.js`   152 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
@@ -341,17 +341,17 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mountain-village3d.js`    38 — ▸ Mountain village meshes
 - `src/plane3d.js`    48 — ▸ Airplane meshes
 - `src/render3d-vehicle-models.js`   348 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
-- `src/render3d-effects.js`   216 — ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
+- `src/render3d-effects.js`   214 — ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 - `src/render3d-resources.js`   141 — GPU resource lifecycle: shared geometries, model pruning and disposal.
-- `src/render3d-api.js`   459 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   634 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-api.js`   468 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   629 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
-- `src/lighting3d-sky.js`   602 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
+- `src/lighting3d-sky.js`   701 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
 - `src/lighting3d-cutaway.js`   144 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
-- `src/lighting3d-vehicle-lights.js`   233 — Lighting 3D vehicle lights: the drive light map (head beams, tail washes, police strobes on the road).
-- `src/lighting3d-look.js`   243 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
+- `src/lighting3d-vehicle-lights.js`   608 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
+- `src/lighting3d-look.js`   251 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
 
 ## src/vegetation3d.js ▸ Tree library: species, foliage atlas, wind, LOD
 
@@ -488,7 +488,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/surfaces3d.js ▸ Procedural surface detail
 
-- `src/ground-shader3d.js`   937 — Ground materials (GLSL)
+- `src/ground-shader3d.js`   952 — Ground materials (GLSL)
 
 ## src/helicopter3d.js ▸ Helicopter models
 
@@ -553,7 +553,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`    98 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   170 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   174 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-settings.js`    95 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

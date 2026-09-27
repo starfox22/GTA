@@ -415,6 +415,53 @@
       // The drive light map (DRIVE LIGHT MAP below) stores road levels offset so
       // that 0, the clear value, means "no beam".
       const DRIVE_LEVEL_OFFSET = 600;
+      /**
+       * LOW BEAM
+       * The photometric pattern of a pair of dipped headlights (right-hand
+       * traffic), shared by the lit materials (CAR LAMPS in
+       * lighting3d-vehicle-lights.js), the rain and the drive light map's beam
+       * texture, so near and far cars throw the same light. `t` and `v` are the
+       * tangents of the angle to the kerb side and above the lamps; the result is
+       * the intensity relative to the hot spot:
+       *
+       *   - a flat-topped fan, aimed a touch to the kerb and wider on that side,
+       *     over a faint wide flood
+       *   - a sharp cut-off just under the horizon on the oncoming side that
+       *     rises 15 degrees from the elbow on the kerb side (so the beam reaches
+       *     farther along the kerb and lights the pavement and signs there), with
+       *     3% of glare light above it
+       *   - the hot spot just under the cut-off, falling off towards the road
+       *     in front of the bumper (steep angles), so the road is lit from about
+       *     two metres out to fifty and the far part fades rather than ends
+       *
+       * Keep lowBeamIntensity() below and the GLSL in step.
+       */
+      const CAR_LAMP_SLOTS = 12;
+      const CITY_LOW_BEAM = `
+        float cityLowBeam( float t, float v ) {
+          float u = t - 0.03;
+          float spread = u > 0.0 ? 0.46 : 0.36;
+          float q = u * u / ( spread * spread );
+          float lateral = 0.72 * exp( -q * q ) + 0.28 * exp( -0.35 * q );
+          float cut = -0.011 + 0.27 * clamp( t + 0.02, 0.0, 0.12 );
+          float glare = smoothstep( cut - 0.005, cut + 0.005, v );
+          float down = max( -v, 0.0 );
+          float vertical = down < 0.02 ? 1.0 : exp2( -2.35 * log2( down * 50.0 ) );
+          float hot = 1.0 + 0.7 * exp( -( ( v + 0.02 ) * ( v + 0.02 ) ) * 6944.0 - u * u * 100.0 );
+          return lateral * vertical * hot * ( 1.0 - 0.97 * glare );
+        }`;
+      function lowBeamIntensity(t, v) {
+        const u = t - 0.03,
+          spread = u > 0 ? 0.46 : 0.36,
+          q = (u * u) / (spread * spread),
+          lateral = 0.72 * Math.exp(-q * q) + 0.28 * Math.exp(-0.35 * q),
+          cut = -0.011 + 0.27 * clamp(t + 0.02, 0, 0.12),
+          glare = Three.MathUtils.smoothstep(v, cut - 0.005, cut + 0.005),
+          down = Math.max(-v, 0),
+          vertical = down < 0.02 ? 1 : Math.pow(down * 50, -2.35),
+          hot = 1 + 0.7 * Math.exp(-(v + 0.02) * (v + 0.02) * 6944 - u * u * 100);
+        return lateral * vertical * hot * (1 - 0.97 * glare);
+      }
       const CITY_LIGHT_PARS = `
         varying vec3 vCityWorld;
         uniform sampler2D cityLampMap;
@@ -433,6 +480,23 @@
         uniform sampler2D cityDriveMap;
         uniform vec4 cityDriveRect;
         uniform float cityDrivePower;
+        // The nearest cars' low beams (CAR LAMPS, lighting3d-vehicle-lights.js):
+        // A = lamp centre (world) and strength, B = heading (x, z), half the lamp
+        // spacing and the lamps' height over the road.
+        uniform vec4 cityCarLampA[ ${CAR_LAMP_SLOTS} ];
+        uniform vec4 cityCarLampB[ ${CAR_LAMP_SLOTS} ];
+        uniform float cityCarLampCount;
+        ${CITY_LOW_BEAM}
+        // The player's beams' shadow mask (BEAM SHADOWS): r darkness, g the
+        // occluder's top as a tangent above the lamps.
+        uniform sampler2D cityBeamShadow;
+        uniform float cityBeamShadowOn;
+        float cityBeamShade( float ahead, float side, float rise ) {
+          vec2 uv = vec2( ahead / 440.0, 0.5 + side / 360.0 );
+          if ( uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 ) return 1.0;
+          vec4 mask = textureLod( cityBeamShadow, uv, 0.0 );
+          return 1.0 - mask.r * ( 1.0 - smoothstep( mask.g - 0.012, mask.g + 0.012, rise ) );
+        }
         // Street lamps (the painted map) at this fragment. Lamps hang ~33 units
         // up: full light at street level; ground-facing surfaces (roofs, awnings)
         // stop catching it by ~40 units, walls take the spill higher up the facade.
@@ -488,7 +552,42 @@
           reflectedLight.directDiffuse += lampLight * facing * material.diffuseColor;
           // Glossy surfaces (wet tarmac, paint, glass) catch a sheen of it too.
           reflectedLight.directSpecular += lampLight * facing * 0.5 * ( 1.0 - material.roughness ) * ( 1.0 - material.roughness );
-        }`;
+        }
+        #ifdef RE_Direct
+        // The nearest cars' low beams as real lights (CAR LAMPS): the pattern's
+        // intensity over the distance squared, through the material's own BRDF,
+        // so kerbs, walls, parked cars and people facing a car are lit and wet or
+        // glossy surfaces show its glare. A surface square to the beam would take
+        // many times the light of the road it grazes; the soft cap keeps a wall or
+        // a pedestrian in the beam bright without burning out.
+        // Headlights graze the road (a degree or two at 30 m): against the
+        // ground's fine bump the cosine swung from zero to several times its
+        // mean from one pixel to the next, and every lit street turned to salt
+        // and pepper. The lamps light the surface's own (unbumped) normal.
+        vec3 lampNormal = nonPerturbedNormal;
+        for ( int i = 0; i < ${CAR_LAMP_SLOTS}; i ++ ) {
+          if ( float( i ) >= cityCarLampCount ) break;
+          vec4 lampA = cityCarLampA[ i ], lampB = cityCarLampB[ i ];
+          vec3 toLamp = lampA.xyz - vCityWorld;
+          float ahead = -dot( toLamp.xz, lampB.xy );
+          if ( ahead < 2.0 || ahead > 560.0 ) continue;
+          float across = -dot( toLamp.xz, vec2( -lampB.y, lampB.x ) );
+          float side = sign( across ) * max( abs( across ) - lampB.z, 0.0 );
+          if ( abs( side ) > ahead * 1.5 + 12.0 ) continue;
+          float beam = cityLowBeam( side / ahead, -toLamp.y / ahead ) * smoothstep( 6.0, 26.0, ahead );
+          if ( i == 0 && cityBeamShadowOn > 0.5 ) beam *= cityBeamShade( ahead, across, -toLamp.y / ahead );
+          // Units to metres: the pattern's strength is in metres squared.
+          float irradiance = lampA.w * beam / max( dot( toLamp, toLamp ) * 0.015625, 0.3 );
+          if ( irradiance < 0.003 ) continue;
+          directLight.direction = normalize( ( viewMatrix * vec4( toLamp, 0.0 ) ).xyz );
+          float nl = saturate( dot( lampNormal, directLight.direction ) );
+          if ( nl <= 0.0 ) continue;
+          float received = 5.0 * ( 1.0 - exp( -irradiance * nl * 0.2 ) );
+          // (x PI: city light is added straight onto the albedo, see cityLampLight.)
+          directLight.color = vec3( 1.0, 0.93, 0.8 ) * ( received * PI / nl );
+          RE_Direct( directLight, geometryPosition, lampNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );
+        }
+        #endif`;
       function cityMaterialPatch(shader) {
         Object.assign(shader.uniforms, cityLightUniforms);
         shader.vertexShader = shader.vertexShader
