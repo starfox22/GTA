@@ -44,7 +44,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Driving (driving.js, physics-*.js)
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
 - Soaked roads add 43–58 % to ABS stops (target 30–50 %).
-- The hot rod (no TCS/ESC) spins under power before lifting off.
 - AI traffic and police use the simple ABS-equivalent brake, not the per-axle tyre model.
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)

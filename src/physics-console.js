@@ -559,5 +559,53 @@
             ...(trace ? { samples } : {}),
           };
         },
+        /* A scripted drive on the same strip: a fresh `type` at `kmh`, then each
+           phase [keys, seconds] in turn ('KeyW,KeyD' held, '' for nothing), e.g.
+           throttle into a corner, counter-steer, straighten. Returns each phase's
+           end (body slip and heading turned, degrees; km/h), the peak slip, whether
+           the car spun (slip past 100 degrees) and, with `trace`, a sample every
+           0.1 s. Options: `wet` (0..1), `trace`. */
+        driftTest(type = 'hotrod', kmh = 60, phases = [['KeyW,KeyD', 3]], options = {}) {
+          const { wet = 0, trace = false, x = TRACK.x, y = TRACK.y } = options;
+          if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+          const savedWet = weather.wet,
+            held = ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD'];
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          teleportPlayer(x, y - 60);
+          const c = (testCar = spawnClearCar(type, x, y, 0, false));
+          c.authorized = true;
+          enterVehicle(c);
+          Object.assign(c, { x, y, a: 0, av: 0, vx: kmh * KMH, vy: 0, speed: kmh * KMH });
+          player.x = x;
+          player.y = y;
+          const slipOf = () => (Math.hypot(c.vx, c.vy) > 3 * KMH ? normalizeAngle(Math.atan2(c.vy, c.vx) - c.a) : 0),
+            deg = (r) => Math.round((r * 180) / Math.PI),
+            ends = [],
+            samples = [];
+          let turned = 0,
+            lastA = c.a,
+            peak = 0,
+            time = 0;
+          handlingTestPaved = true;
+          for (const [codes, seconds] of phases) {
+            const down = String(codes || '').split(',').filter(Boolean);
+            for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play' && player.car === c; i++) {
+              weather.wet = wet;
+              for (const k of held) keys[k] = down.includes(k);
+              update(1 / 30);
+              time += 1 / 30;
+              turned += normalizeAngle(c.a - lastA);
+              lastA = c.a;
+              peak = Math.max(peak, Math.abs(slipOf()));
+              if (trace && i % 3 === 2) samples.push([+time.toFixed(1), deg(slipOf()), deg(turned), Math.round(Math.hypot(c.vx, c.vy) / KMH)]);
+            }
+            ends.push({ keys: codes, slip: deg(slipOf()), turned: deg(turned), kmh: Math.round(Math.hypot(c.vx, c.vy) / KMH) });
+          }
+          for (const k of held) keys[k] = false;
+          handlingTestPaved = false;
+          weather.wet = savedWet;
+          return { type, kmh, wet, ends, peakSlip: deg(peak), spun: peak > (100 * Math.PI) / 180, ...(trace ? { samples } : {}) };
+        },
       };
     }
