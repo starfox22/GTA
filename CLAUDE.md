@@ -155,6 +155,11 @@ packs with plain `<script src>` so the zip still plays from file://.
 
 ## Agent workflow (parallel sessions)
 
+- **Branches and `main`**: develop on the session's working branch. `main` holds the owner's
+  approved game. When the owner says they are satisfied with a version **and** approves
+  moving it to main in the current conversation, merge the working branch into `main`
+  directly (no pull request needed) and push `main`; never push to `main` without that
+  explicit approval. CI builds the downloadable zip for whatever branch is pushed.
 - **How many at once**: the cloud machine has 4 cores and 16 GB; run at most 3-4 agents in
   parallel (in waves), since every one of them needs browsers and slots only queue the
   work. On a bigger machine (or `DEC_GPU=1`) raise `DEC_BROWSER_SLOTS` and the agent count.
