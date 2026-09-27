@@ -13,4 +13,6 @@
   shining in them.
 - Trees antialias their leaf edges on HIGH/ULTRA (alpha to coverage); the beach loses its
   painted speckle; helicopter canopies are less black; the unicorn's chest glare is dimmed.
+- Sunset Pier and Fort Sentinel get kerb stones and lane wear (their own kerb fields); the
+  fort's paving slabs sample its sheet at the right scale.
 - Console: `lookSwitches({ foliageCoverage })`; tools: `dev.mjs start|reload --shadercheck`.

@@ -87,7 +87,10 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   mark records (`buildGroundMarks`, shared with the maps' `cityMarkingShapes`). Everything
   fades what it cannot resolve (no shimmer). The screen-space bump's per-pixel tilt is capped
   (2x2-quad derivatives flipped fringes along marks and kerbs); the excess goes to roughness.
-  Console `groundDetail()`.
+  Fields: city, Monarch, county (6 units a texel), Sunset Pier (`PARK_TILE`, county roads and
+  the car park) and Fort Sentinel's own sheet (its tile is registered in `countyTileTextures`
+  as `ground: 'fort'`; built in surfaces3d.js). A county material with no tile gets a 1 x 1
+  sheet size, which breaks the slab and kerb look-ups. Console `groundDetail()`.
 - Scenic roads (county3d-roads.js): a ribbon at `terrainHeight` + 0.12, markings in its
   shader, not in the county kerb field. Scenery-only plants: vegetation3d-landscape.js.
 - Wet roads: one shared GLSL pattern (`cityWetLow`, `cityWetFilm`, `cityPuddle`) from

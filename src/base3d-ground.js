@@ -355,5 +355,7 @@
         ground.name = 'Fort Sentinel ground';
         scene.add(ground);
         countyGroundMaterials.push(groundMaterial);
+        // Its tile: the ground shader's sheet size and its kerb field (surfaces3d.js).
+        countyTileTextures.push({ tile: { x: G.x, y: G.y, w: G.w, h: G.h, ground: 'fort' }, texture: tx });
         statics.push({ x: G.x + G.w / 2, y: G.y + G.h / 2, group: ground, radius: 1400 });
       }

@@ -76,7 +76,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Ground and trees (ground-*.js, surfaces3d.js, vegetation3d*.js)
 - District paving is chosen on a 64-unit grid, so the style can switch mid-pavement at a boundary.
-- Sunset Pier and Fort Sentinel have no kerb distance field (no kerb stones or lane wear).
 - Sea sun glitter looked very speckled in headless shots: check on a real GPU.
 
 ## Scenic mountain roads (terrain-roads.js, terrain-grading.js, county3d-roads.js)
