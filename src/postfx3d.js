@@ -748,7 +748,7 @@
        * camera sees, so the snap never shows. Zooming still resamples, as it must.
        */
       // A/B switches for the look (DeadEndCity.lookSwitches): all on in play.
-      const lookSwitchState = { pixelLock: true, fxaa: true, vibrance: true, carLamps: true, groundSlopeCap: true };
+      const lookSwitchState = { pixelLock: true, fxaa: true, vibrance: true, carLamps: true, groundSlopeCap: true, terrainBeams: true, lightBar: true };
       const snapRight = new Three.Vector3(),
         snapUp = new Three.Vector3(),
         snapBuffer = new Three.Vector2();

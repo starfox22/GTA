@@ -1,6 +1,7 @@
 // Witness 911 calls that bring the chase: a killing watched by Monarch Isle's own walkers gets phoned
 // in within seconds (phone out, a 911 line in the bubble), the star comes when the call ends and the
-// first unit is on its way straight after, sent to the player the caller can see; nobody around, no star.
+// first unit is on its way straight after, sent to the player the caller can see; nobody around, no star;
+// a carjacked driver left far behind still gets through (off stage).
 export const fresh = true;
 // Crown Avenue by the shops on Monarch Isle, and Foothill Road in the county (nobody about).
 const MONARCH = [6700, -2990];
@@ -52,9 +53,10 @@ export default async function (t) {
       call ??= { ...c, at: clock };
       line ??= c.line;
       phone ||= c.phone;
-      t.assert(w.stars === 0 || c.reported, 'star before the call ended: ' + JSON.stringify(w));
     }
     if (w.stars >= 1) {
+      // (Another passer-by may get through first, e.g. about the body: any finished call counts.)
+      t.assert(w.incidents.some((i) => i.reported), 'star before any call ended: ' + JSON.stringify(w));
       starAt = clock;
       break;
     }
@@ -81,6 +83,26 @@ export default async function (t) {
   const later = nearestUnit(police);
   t.note(`nearest unit ${first} → ${later} units`);
   t.assert(later < first - 100 || later < 250, `the units are not closing in: ${first} → ${later}`);
+
+  // 4. A carjacked driver must call even when the player is suddenly far off (out of
+  //    the simulated ring): the call is made off stage and the carjack is reported.
+  await t.call('wanted', 0);
+  await t.call('teleport', 1000, 1000);
+  await t.call('carjackTest', 'flee', 'driver', null, 0);
+  let jack = null;
+  for (let i = 0; i < 35 && !(jack && !jack.running && jack.inCar); i++) {
+    await t.wait(0.1);
+    jack = await t.call('carjack');
+  }
+  t.assert(jack && jack.inCar, 'the carjack never finished: ' + JSON.stringify(jack));
+  await t.wait(2);
+  await t.call('teleport', 3000, 1000);
+  let victim = null;
+  for (let i = 0; i < 25 && !victim?.reported; i++) {
+    await t.wait(1);
+    victim = (await t.call('carjack')).victim;
+  }
+  t.assert(victim?.reported, 'a far-off carjacked driver never got through: ' + JSON.stringify(victim) + JSON.stringify((await t.call('witnesses')).calls));
 
   await t.call('holdSimulation', false);
   await t.call('wanted', 0);

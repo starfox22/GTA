@@ -74,7 +74,9 @@
           if (worst >= 0) list[worst] = p;
         }
       }
-      // Seeing something beats having heard something else.
+      // Someone who must call about something (witnessReport: a carjacked driver)
+      // sticks to it; seeing something beats having heard something else.
+      if (witnessMustCall(p) && p.witnessMust !== inc) return;
       const prev = p.witnessOf;
       if (prev && prev !== inc && !prev.reported && gameTime - (p.witnessAt ?? -100) < 30 && p.witnessSaw && !sees) return;
       if (prev === inc) {
@@ -98,6 +100,24 @@
     function witnessWindow(inc) {
       return inc.kind === 'body' ? UNREPORTED_KEEP : WITNESS_REPORT_WINDOW;
     }
+    /* Told to call (witnessReport) and not through yet. */
+    function witnessMustCall(p) {
+      const must = p.witnessMust;
+      return !!must && !must.reported && p.hp > 0 && gameTime - witnessCrimeTime(must) < witnessWindow(must);
+    }
+    /* Still has a call to make: the crowd streamer (crowd-streaming.js) neither
+       moves nor redresses them. */
+    function witnessOwesCall(p) {
+      if (witnessMustCall(p)) return true;
+      const inc = p.witnessOf;
+      return !!inc && !inc.reported && gameTime - (p.witnessAt ?? -100) < 90;
+    }
+    /* Someone who must call but has left the street (indoors, out of the
+       simulated ring): the call is made off stage from where they were. */
+    function witnessCallsOffstage(p, inc) {
+      if (offstageCalls.some((c) => c.person === p)) return;
+      offstageCalls.push({ person: p, inc, readyAt: gameTime + randomBetween(1, 3), startedAt: -1, callTime: randomBetween(CALL_SECONDS[0], CALL_SECONDS[1]), hidden: true });
+    }
     /* Could this witness be handed the phone now? True when nothing stops them. */
     function witnessCanCall(p, inc) {
       return !witnessCallBlock(p, inc);
@@ -106,17 +126,27 @@
     function witnessCallBlock(p, inc) {
       if (p.hp <= 0) return 'dead';
       if (p.witnessOf !== inc) return 'other';
-      // Gone indoors, recycled or never on the street: only the street crowd is run.
+      // Already calling off stage; gone indoors, recycled or never on the street
+      // (only the street crowd is run).
+      if (offstageCalls.some((c) => c.person === p)) return 'offstage';
       if (!pedestrians.includes(p)) return 'gone';
       if (p.silencedUntil > gameTime) return 'silenced';
+      // Out of the simulated ring (updatePeople runs 1,500 units round) nothing
+      // about them moves on, whatever state they were left in.
+      if (distanceBetween(p, player) >= 1400) return 'far';
       if (p.pending || p.onDeck || p.posed || p.ejected || personIncapacitated(p)) return 'busy';
       if (p.react && CALL_BLOCKING.has(p.react.kind)) return p.react.kind;
-      // A carjacked driver still chasing the car or shouting at it (carjack.js).
-      if (p.angryUntil > gameTime || p.witnessUntil > gameTime) return 'angry';
+      // A carjacked driver held at the door, frozen with the hands up, still
+      // chasing the car or shouting at it (carjack.js).
+      if (p.carjackHeld || p.handsUpUntil > gameTime || p.angryUntil > gameTime || p.witnessUntil > gameTime) return 'carjack';
       if (gameTime < (p.witnessReadyAt ?? 0)) return 'shaken';
       if (p.react && CALL_WAIT.has(p.react.kind)) return p.react.kind;
-      // Near enough to be simulated (updatePeople runs 1,500 units round).
-      return distanceBetween(p, player) < 1400 ? '' : 'far';
+      return '';
+    }
+    /* On the street and simulated (updatePeople runs 1,500 units round): a caller
+       out of that ring or off the street is frozen mid-call. */
+    function witnessOnStage(p) {
+      return distanceBetween(p, player) < 1400 && pedestrians.includes(p);
     }
     /* Someone is on the phone about it, or on the way to a phone (the incident's
        caller count is not given back when a caller dies or leaves the street). */
@@ -124,12 +154,13 @@
       const due = inc.callerDue;
       if (due) {
         const r = due.react;
-        if (due.hp > 0 && r && r.inc === inc && (r.kind === 'call' ? !r.reported : r.then === 'call') && pedestrians.includes(due)) return true;
+        if (due.hp > 0 && r && r.inc === inc && (r.kind === 'call' ? !r.reported : r.then === 'call') && witnessOnStage(due)) return true;
         inc.callerDue = null;
       }
       if (inc.callers <= 0) return false;
       let live = 0;
-      for (const p of inc.witnesses) if (p.hp > 0 && p.react?.kind === 'call' && p.react.inc === inc && !p.react.released) live++;
+      for (const p of inc.witnesses)
+        if (p.hp > 0 && p.react?.kind === 'call' && p.react.inc === inc && !p.react.released && !p.react.reported && witnessOnStage(p)) live++;
       for (const c of offstageCalls) if (c.inc === inc && c.startedAt > 0 && !c.hidden) live++;
       if (!live) inc.callers = 0;
       return live > 0;
@@ -155,7 +186,18 @@
         let best = null,
           bestScore = -Infinity;
         for (const p of inc.witnesses) {
-          if (p.witnessDeclined === inc || witnessCallBlock(p, inc)) continue;
+          if (p.witnessDeclined === inc) continue;
+          const why = witnessCallBlock(p, inc);
+          if (why) {
+            // Someone who must call, or was on the phone about it, still gets
+            // through when they leave the street or the simulated ring: off stage.
+            if (
+              (why === 'gone' || why === 'far') &&
+              ((p.witnessMust === inc && witnessMustCall(p)) || (p.react?.kind === 'call' && p.react.inc === inc && !p.react.reported))
+            )
+              witnessCallsOffstage(p, inc);
+            continue;
+          }
           const d = distanceBetween(p, player),
             score =
               (p.witnessMust === inc ? 3 : 0) +

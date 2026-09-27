@@ -98,6 +98,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   for the freefall cue: change them there only.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
+- Vehicle beams run in `headlightFrame()` (terrain-headlights.js: body pitch/roll, lamp
+  height); the CAR LAMPS uniform and the horizon strip in `cityBeamShadow` must stay in step
+  with `headlightHorizonLit`.
 - **Dev console** `window.DeadEndCity` has explicit named methods only. **Never** add an
   eval-style hook (eval, `Function`, run-a-string, generic get/set): a security rule.
 - **Third-party assets** must be credited in `docs/THIRD_PARTY_CREDITS.txt` (the build embeds

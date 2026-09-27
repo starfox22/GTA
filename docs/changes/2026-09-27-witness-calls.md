@@ -15,3 +15,6 @@
 - Console: `witnesses()` lists each incident's witnesses and why they cannot call (`who`),
   and each call's bubble `line`; `witnessStage(..., isle)` stages Monarch Isle walkers.
   Test: tools/tests/witnesses-monarch.mjs.
+- A carjacked driver always phones it in: no longer taken over by the car-theft incident,
+  never recycled by the crowd streamer while the call is owed, and finishing the call off
+  stage if the player is far away (the carjack test failed about 1 run in 3).

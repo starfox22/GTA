@@ -127,7 +127,9 @@
       searchlight: (options) => city3D?.searchlight?.(options) ?? null,
       // Vehicle lights: the cars lighting the world as real lights, drive-map beams, tails, reversing, haze.
       headlights: () => city3D?.headlights?.() ?? null,
-      // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap } (true = as in play).
+      // The player's lamps on a slope: pose, aim, and beam coordinates and the terrain horizon at points ahead (terrain-headlights.js).
+      headlightAim: (metres) => headlightAimReport(metres),
+      // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap, terrainBeams, lightBar } (true = as in play).
       lookSwitches: (options) => city3D?.lookSwitches?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,

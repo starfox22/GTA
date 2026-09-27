@@ -27,8 +27,23 @@
        *
        * BEAM HAZE
        * In rain and mist the air in a beam glows: a soft additive sheet over each
-       * CAR LAMPS beam (HIGH and ULTRA), drifting with the weather. The rain
-       * streaks catch the beams too (weather3d.js).
+       * CAR LAMPS beam (HIGH and ULTRA), drifting with the weather; on the range
+       * a little mountain air shows it on a clear night too. The rain streaks
+       * catch the beams too (weather3d.js).
+       *
+       * ON SLOPES (terrain-headlights.js)
+       * Every beam, quad and haze sheet is laid in its car's body frame
+       * (headlightFrame: the pitch and roll the model sits at on the terrain),
+       * from the lamps' real height (the club trucks' own lamps), so a climb,
+       * a descent or a side slope is lit like a level road and the light lands
+       * where the body aims it. A CAR LAMPS slot with terrain in reach reads its
+       * TERRAIN HORIZON (no light through a hill, recomputed as the car moves, a
+       * few a frame), kept in a strip of the BEAM SHADOWS texture; its haze thins
+       * where the ground rises into the sheet and thickens where the beam leaves
+       * the ground (over a crest). The player's club truck on the range also
+       * lights its light bar or pods (LIGHT BAR: a wide flood, one more CAR LAMPS
+       * slot on MEDIUM and up, taken from the farthest traffic). Console
+       * `headlightAim()`, A/B `lookSwitches({ terrainBeams })`.
        */
       function beamTexture(width, height, paint) {
         const c = document.createElement('canvas');
@@ -119,7 +134,8 @@
       // north from the rect's south edge (see cityDriveRect).
       driveCamera.up.set(0, 0, -1);
       const carLampA = Array.from({ length: CAR_LAMP_SLOTS }, () => new Three.Vector4()),
-        carLampB = Array.from({ length: CAR_LAMP_SLOTS }, () => new Three.Vector4());
+        carLampB = Array.from({ length: CAR_LAMP_SLOTS }, () => new Three.Vector4()),
+        carLampC = Array.from({ length: CAR_LAMP_SLOTS }, () => new Three.Vector4(0, 0, 1, 0));
       Object.assign(cityLightUniforms, {
         cityDriveMap: { value: driveTarget.texture },
         // (west x, south z, 1 / width, -1 / height) of the map in world units.
@@ -127,6 +143,7 @@
         cityDrivePower: { value: 0 },
         cityCarLampA: { value: carLampA },
         cityCarLampB: { value: carLampB },
+        cityCarLampC: { value: carLampC },
         cityCarLampCount: { value: 0 },
       });
       function beamPool(map) {
@@ -184,8 +201,21 @@
         headBeamUp = new Three.Vector3(0, 1, 0),
         driveClearColor = new Three.Color();
       // ---- Beam haze ------------------------------------------------------------------------
+      // Each sheet lies in its car's body frame, 0.55 of the lamp height up; instanceColor:
+      // strength, CAR LAMPS slot, 1 when the slot reads the TERRAIN HORIZON.
       const HAZE_CAPACITY = CAR_LAMP_SLOTS,
-        hazeUniforms = { map: { value: headBeamTexture }, uTime: { value: 0 }, uHaze: { value: 0 } },
+        // Air on the range on a clear night: a faint glow in every beam.
+        MOUNTAIN_AIR = 0.5,
+        hazeUniforms = {
+          map: { value: headBeamTexture },
+          uTime: { value: 0 },
+          uHaze: { value: 0.15 },
+          cityCarLampA: cityLightUniforms.cityCarLampA,
+          cityCarLampB: cityLightUniforms.cityCarLampB,
+          cityCarLampC: cityLightUniforms.cityCarLampC,
+          // The BEAM SHADOWS texture (its horizon strip), set once it exists.
+          cityBeamShadow: { value: null },
+        },
         beamHaze = new Three.InstancedMesh(
           beamGeometry,
           new Three.ShaderMaterial({
@@ -196,30 +226,65 @@
             vertexShader: `
               varying vec2 vUv;
               varying vec3 vStrength;
-              varying vec2 vWorld;
+              varying vec3 vWorld;
               void main() {
                 vUv = uv;
                 vStrength = instanceColor;
                 vec4 world = modelMatrix * instanceMatrix * vec4( position, 1.0 );
-                vWorld = world.xz;
+                vWorld = world.xyz;
                 gl_Position = projectionMatrix * viewMatrix * world;
               }`,
             fragmentShader: `
               uniform sampler2D map;
               uniform float uTime, uHaze;
+              uniform vec4 cityCarLampA[ ${CAR_LAMP_SLOTS} ];
+              uniform vec4 cityCarLampB[ ${CAR_LAMP_SLOTS} ];
+              uniform vec4 cityCarLampC[ ${CAR_LAMP_SLOTS} ];
+              uniform sampler2D cityBeamShadow;
               varying vec2 vUv;
               varying vec3 vStrength;
-              varying vec2 vWorld;
+              varying vec3 vWorld;
               ${SURFACE_NOISE}
+              ${CITY_LOW_BEAM}
+              ${CITY_LAMP_FRAME}
+              // The share of a low beam's light in the air from its axis down to a
+              // tangent below it (the LOW BEAM pattern's vertical profile, integrated).
+              float beamColumn( float down ) {
+                return down < 0.02 ? down : 0.02 + ( 1.0 - pow( down * 50.0, -1.3 ) ) / 65.0;
+              }
               void main() {
                 // The air glows where the beam is strong, most near the lamps,
                 // drifting in slow wisps.
                 float beam = texture2D( map, vUv ).r;
-                float wisp = cityNoise( vWorld * 0.018 + vec2( uTime * 0.21, uTime * 0.07 ) ) * 0.6
-                           + cityNoise( vWorld * 0.05 - vec2( uTime * 0.13, uTime * 0.3 ) ) * 0.4;
+                float wisp = cityNoise( vWorld.xz * 0.018 + vec2( uTime * 0.21, uTime * 0.07 ) ) * 0.6
+                           + cityNoise( vWorld.xz * 0.05 - vec2( uTime * 0.13, uTime * 0.3 ) ) * 0.4;
                 float along = 1.0 - smoothstep( 0.05, 0.9, vUv.x );
                 float glow = sqrt( beam ) * ( 0.35 + 0.65 * along ) * ( 0.55 + 0.9 * wisp );
-                gl_FragColor = vec4( vec3( 1.0, 0.94, 0.84 ) * vStrength * glow * uHaze, 1.0 );
+                if ( vStrength.b > 0.5 ) {
+                  // On the range the air is lit as the beam lights it, not as the
+                  // road under it is: a fan from the lamps (the pattern just under
+                  // the cut-off) fading with distance, times the lit air under the
+                  // sheet, which reaches down to the ground or, past a crest, to the
+                  // line the beam grazes over it. None where the ground rises into
+                  // the sheet (no seam where it meets a slope); a full column where
+                  // the beam leaves the ground and lifts off into the night.
+                  int slot = int( vStrength.g + 0.5 );
+                  vec4 lampA = cityCarLampA[ slot ], lampB = cityCarLampB[ slot ], lampC = cityCarLampC[ slot ];
+                  vec3 aim, kerb;
+                  cityLampFrame( lampB, lampC, aim, kerb );
+                  vec3 d = vWorld - lampA.xyz;
+                  float ahead = max( dot( d, aim ), 2.0 );
+                  float across = dot( d, kerb );
+                  float t = sign( across ) * max( abs( across ) - lampB.z, 0.0 ) / ahead;
+                  float fan = lampC.w > 1.5 ? cityFloodBeam( t, -0.025 ) : cityLowBeam( t, -0.02 );
+                  vec2 horizon = cityHorizonAt( vStrength.g, d, lampB.xy );
+                  float below = d.y - max( horizon.y, horizon.x * length( d.xz ) );
+                  float metres = ahead * 0.125;
+                  float edge = ( 1.0 - smoothstep( 0.55, 1.0, vUv.x ) ) * smoothstep( 0.0, 0.2, min( vUv.y, 1.0 - vUv.y ) );
+                  glow = 1.6 * fan * beamColumn( max( below, 0.0 ) / ahead ) / 0.035 * smoothstep( 0.0, 1.5, metres ) / ( 1.0 + metres * 0.12 )
+                       * ( 0.55 + 0.9 * wisp ) * edge;
+                }
+                gl_FragColor = vec4( vec3( 1.0, 0.94, 0.84 ) * vStrength.r * glow * uHaze, 1.0 );
               }`,
           }),
           HAZE_CAPACITY,
@@ -234,6 +299,8 @@
       scene.add(beamHaze);
       // ---- Which cars light the world themselves ----------------------------------------------
       const carLampCars = new Array(CAR_LAMP_SLOTS).fill(null),
+        // A slot lit by the car's light bar rather than its low beams (LIGHT BAR).
+        carLampFlood = new Array(CAR_LAMP_SLOTS).fill(false),
         carLampDistance = new Float32Array(CAR_LAMP_SLOTS),
         carLampStats = { slots: 0, analytic: 0, driveHeads: 0, tails: 0, reversing: 0, strobes: 0, haze: 0, shadowWedges: 0 };
       let carLampCount = 0;
@@ -255,8 +322,15 @@
           cz = viewCenter.y;
         if (player.car && lowBeamShare(player.car, night) > 0) {
           carLampCars[0] = player.car;
+          carLampFlood[0] = false;
           carLampDistance[0] = -1;
           carLampCount = 1;
+          if (slots >= 4 && lightBarLit(player.car)) {
+            carLampCars[1] = player.car;
+            carLampFlood[1] = true;
+            carLampDistance[1] = -1;
+            carLampCount = 2;
+          }
         }
         for (const c of vehicles) {
           if (c === player.car || lowBeamShare(c, night) <= 0) continue;
@@ -268,10 +342,12 @@
           let i = carLampCount < slots ? carLampCount++ : carLampCount - 1;
           while (i > 0 && carLampDistance[i - 1] > d) {
             carLampCars[i] = carLampCars[i - 1];
+            carLampFlood[i] = carLampFlood[i - 1];
             carLampDistance[i] = carLampDistance[i - 1];
             i--;
           }
           carLampCars[i] = c;
+          carLampFlood[i] = false;
           carLampDistance[i] = d;
         }
         for (let i = carLampCount; i < CAR_LAMP_SLOTS; i++) carLampCars[i] = null;
@@ -280,9 +356,126 @@
         for (let i = 0; i < carLampCount; i++) if (carLampCars[i] === c) return true;
         return false;
       }
-      // Height of a vehicle's head lamps over the road (world units).
-      function lampHeight(spec) {
-        return (spec.truck ? 1.0 : spec.bike ? 0.8 : 0.65) * UNITS_PER_METRE;
+      // ---- Lamps on slopes (terrain-headlights.js) -----------------------------------------------
+      // The lamps on a car's own model, unposed (world units from its centre): the club
+      // trucks' head lamps (built at real size, up to 1.35 m up), else null (the class
+      // default, headlampHeight). Cached on the model.
+      function modelLampMount(c) {
+        const m = carModels.get(c);
+        if (!m?.offroad || !m.nightLights?.[2]) return null;
+        if (!m.beamMount) {
+          // Halos 0 and 2 are the head lamps, half a unit ahead of the lenses.
+          const a = m.nightLights[0].position,
+            b = m.nightLights[2].position;
+          m.beamMount = { fwd: (a.x + b.x) / 2 - 0.5, height: (a.y + b.y) / 2, span: Math.abs(a.z - b.z) / 2 };
+        }
+        return m.beamMount;
+      }
+      /**
+       * LIGHT BAR
+       * The club trucks carry a roof light bar or driving pods (offroad3d-kits.js,
+       * their halos glow at night). On the range the player's truck lights them
+       * as one more CAR LAMPS slot: a wide level flood from the highest lamps
+       * (cityFloodBeam), a share of a low beam's strength, reaching the trees
+       * and rock faces round a bend. MEDIUM and up; the tier's slot count stays
+       * the same (the farthest traffic car drops to the drive map).
+       */
+      const LIGHT_BAR_SHARE = 0.4;
+      function lightBarMount(c) {
+        const m = carModels.get(c);
+        if (!m?.offroad || !m.extraHalos?.length) return null;
+        if (!m.barMount) {
+          let top = -Infinity,
+            x = 0,
+            n = 0,
+            zMin = Infinity,
+            zMax = -Infinity;
+          for (const sprite of m.extraHalos) top = Math.max(top, sprite.position.y);
+          for (const sprite of m.extraHalos)
+            if (sprite.position.y > top - 2) {
+              x += sprite.position.x;
+              n++;
+              zMin = Math.min(zMin, sprite.position.z);
+              zMax = Math.max(zMax, sprite.position.z);
+            }
+          m.barMount = { fwd: x / n - 0.9, height: top, span: (zMax - zMin) / 2 };
+        }
+        return m.barMount;
+      }
+      function lightBarLit(c) {
+        return lookSwitchState.terrainBeams && lookSwitchState.lightBar && !!c.offroadState && c.hp > 0 && !!lightBarMount(c);
+      }
+      // Slot frames (headlightFrame), a scratch one for the drive map, and the TERRAIN
+      // HORIZON strip: each slot's table side by side in a float texture, copied into the
+      // BEAM SHADOWS target under the mask (CAR LAMP FRAME, lighting3d-sky.js).
+      const slotFrames = Array.from({ length: CAR_LAMP_SLOTS }, newHeadlightFrame),
+        driveFrame = newHeadlightFrame(),
+        HORIZON_STRIP_WIDTH = HEADLIGHT_HORIZON.angles * CAR_LAMP_SLOTS,
+        horizonData = new Float32Array(HORIZON_STRIP_WIDTH * HEADLIGHT_HORIZON.rows * 2),
+        horizonTexture = new Three.DataTexture(horizonData, HORIZON_STRIP_WIDTH, HEADLIGHT_HORIZON.rows, Three.RGFormat, Three.FloatType),
+        horizonTable = new Float32Array(HEADLIGHT_HORIZON_SIZE),
+        // What each slot's table was made for, and whether it has terrain in reach.
+        horizonKeys = Array.from({ length: CAR_LAMP_SLOTS }, () => ({ car: null, flood: false, x: 0, y: 0, z: 0, a: 0, on: false })),
+        // Tables recomputed a frame for cars that kept their slot (new ones always are).
+        HORIZON_REFRESHES = 6;
+      horizonTexture.minFilter = horizonTexture.magFilter = Three.NearestFilter;
+      horizonTexture.generateMipmaps = false;
+      let horizonDirty = false,
+        horizonRefreshed = 0,
+        horizonComputed = 0;
+      function slotHorizon(i, c, flood, frame) {
+        // The strip is kept in the float target only (hdrCapable).
+        if (!hdrCapable) return false;
+        const key = horizonKeys[i],
+          same = key.car === c && key.flood === flood;
+        if (
+          same &&
+          Math.abs(key.x - frame.x) + Math.abs(key.y - frame.y) < 4 &&
+          Math.abs(key.z - frame.z) < 1.5 &&
+          Math.abs(normalizeAngle(key.a - frame.heading)) < 0.015
+        )
+          return key.on;
+        if (same && horizonRefreshed >= HORIZON_REFRESHES) return key.on;
+        horizonRefreshed++;
+        key.car = c;
+        key.flood = flood;
+        key.x = frame.x;
+        key.y = frame.y;
+        key.z = frame.z;
+        key.a = frame.heading;
+        key.on = headlightHorizon(frame, horizonTable);
+        if (key.on) {
+          const { angles, rows } = HEADLIGHT_HORIZON;
+          for (let k = 0; k < rows; k++)
+            for (let j = 0; j < angles * 2; j++) horizonData[(k * HORIZON_STRIP_WIDTH + i * angles) * 2 + j] = horizonTable[k * angles * 2 + j];
+          horizonDirty = true;
+          horizonComputed++;
+        }
+        return key.on;
+      }
+      // A beam quad or haze sheet laid in car c's body frame `f`: `along` its heading
+      // and `lift` up the body from the ground under its centre, `length` x `width`.
+      function setBodyMatrix(matrix, c, f, along, lift, length, width) {
+        const F = f.forward,
+          U = f.up,
+          R = f.right,
+          e = matrix.elements,
+          ground = entityElevation(c);
+        e[0] = F.x * length;
+        e[1] = F.z * length;
+        e[2] = F.y * length;
+        e[4] = U.x;
+        e[5] = U.z;
+        e[6] = U.y;
+        e[8] = R.x * width;
+        e[9] = R.z * width;
+        e[10] = R.y * width;
+        e[3] = e[7] = e[11] = 0;
+        e[12] = c.x + F.x * along + U.x * lift;
+        e[13] = ground + F.z * along + U.z * lift;
+        e[14] = c.y + F.y * along + U.y * lift;
+        e[15] = 1;
+        return matrix;
       }
       // The reversing lamps' halo colour (render3d-frame.js, VEHICLE HALOS).
       const REVERSE_LAMP_TINT = new Three.Color('#eef2ff');
@@ -300,19 +493,19 @@
           wetBoost = 1 + weather.wet * 0.35,
           slots = lookSwitchState.carLamps ? Math.min(CAR_LAMP_SLOTS, activeTier?.carLamps ?? 4) : 0;
         pickCarLamps(night, slots);
+        const terrainOn = lookSwitchState.terrainBeams;
+        horizonRefreshed = 0;
+        horizonComputed = 0;
         for (let i = 0; i < carLampCount; i++) {
           const c = carLampCars[i],
+            flood = carLampFlood[i],
             spec = vehicleSpec(c),
-            cos = Math.cos(c.a),
-            sin = Math.sin(c.a),
-            ground = entityElevation(c);
-          carLampA[i].set(
-            c.x + cos * spec.l * 0.5,
-            ground + lampHeight(spec),
-            c.y + sin * spec.l * 0.5,
-            CAR_LAMP_STRENGTH * night * lowBeamShare(c, night),
-          );
-          carLampB[i].set(cos, sin, spec.bike ? 0 : spec.w * 0.36, lampHeight(spec));
+            mount = flood ? lightBarMount(c) : modelLampMount(c),
+            f = headlightFrame(c, slotFrames[i], mount, !terrainOn),
+            horizon = terrainOn && slotHorizon(i, c, flood, f);
+          carLampA[i].set(f.x, f.z, f.y, CAR_LAMP_STRENGTH * night * lowBeamShare(c, night) * (flood ? LIGHT_BAR_SHARE : 1));
+          carLampB[i].set(Math.cos(c.a), Math.sin(c.a), spec.bike ? 0 : mount ? mount.span : spec.w * 0.36, f.height);
+          carLampC[i].set(f.sinPitch, f.sinRoll, f.cosRoll, (horizon ? 1 : 0) + (flood ? 2 : 0));
         }
         cityLightUniforms.cityCarLampCount.value = carLampCount;
         if (night > 0.2)
@@ -346,16 +539,14 @@
               spec = vehicleSpec(c);
             if (spec.boat || spec.jetski || spec.bicycle || c.type === 'bicycle') continue;
             if (!entityInView(c, 260)) continue;
-            const ground = entityElevation(c) + 0.35,
-              cos = Math.cos(c.a),
-              sin = Math.sin(c.a);
-            beamQuaternion.setFromAxisAngle(headBeamUp, -c.a);
+            // Laid in the body frame: on a slope the quads tilt with the car, so the
+            // map's road level (alpha) follows the grade under and ahead of it.
+            const f = headlightFrame(c, driveFrame, null, !terrainOn);
             // Cars with a CAR LAMPS slot light the world themselves.
             if (share > 0 && !hasCarLamp(c)) {
               const scale = spec.truck ? 1.15 : spec.bike ? 0.8 : 1;
-              beamPosition.set(c.x + cos * spec.l * 0.5, ground, c.y + sin * spec.l * 0.5);
-              beamScale.set(HEAD_BEAM_LENGTH * scale, 1, HEAD_BEAM_WIDTH * scale);
-              headBeams.setMatrixAt(heads, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
+              setBodyMatrix(beamMatrix, c, f, spec.l * 0.5, 0.35, HEAD_BEAM_LENGTH * scale, HEAD_BEAM_WIDTH * scale);
+              headBeams.setMatrixAt(heads, beamMatrix);
               headBeams.setColorAt(heads, beamColor.setScalar((night * share * headBeamPeak) / DRIVE_LIGHT_POWER));
               heads++;
             }
@@ -363,18 +554,16 @@
             // wider and brighter while braking.
             const braking = !!c.braking || c.showLamps === 'brake',
               back = spec.l * 0.5 + (braking ? 20 : 16);
-            beamPosition.set(c.x - cos * back, ground, c.y - sin * back);
-            beamScale.set(braking ? 36 : 26, 1, spec.w * (braking ? 1.9 : 1.5));
-            tailGlows.setMatrixAt(tails, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
+            setBodyMatrix(beamMatrix, c, f, -back, 0.35, braking ? 36 : 26, spec.w * (braking ? 1.9 : 1.5));
+            tailGlows.setMatrixAt(tails, beamMatrix);
             tailGlows.setColorAt(tails, beamColor.setScalar(night * (braking ? 0.95 : 0.36) * wetBoost));
             tails++;
             // Reversing lamps: a white pool behind the car.
             if (forwardSpeed(c) < -6 && strobes < STROBE_GLOW_CAPACITY) {
               const behind = spec.l * 0.5 + 34,
                 strength = 0.2 * night * wetBoost;
-              beamPosition.set(c.x - cos * behind, ground, c.y - sin * behind);
-              beamScale.set(52, 1, spec.w * 1.7);
-              strobeGlows.setMatrixAt(strobes, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
+              setBodyMatrix(beamMatrix, c, f, -behind, 0.35, 52, spec.w * 1.7);
+              strobeGlows.setMatrixAt(strobes, beamMatrix);
               strobeGlows.setColorAt(strobes, beamColor.setRGB(strength * 0.95, strength * 0.97, strength));
               strobes++;
               reversing++;
@@ -417,193 +606,33 @@
         renderer.setRenderTarget(previousTarget);
         renderer.setClearColor(driveClearColor, previousAlpha);
       }
-      // The haze sheets over the CAR LAMPS beams: rain, fog and a damp night.
+      // The haze sheets over the CAR LAMPS beams: rain, fog and a damp night, and the
+      // mountain air round a slot that reads the terrain horizon (on the range).
+      let hazePeak = 0;
       function updateBeamHaze(night) {
         const tier = activeTier,
-          haze = night * clamp(weather.rain * 0.9 + weather.cloud * weather.cloud * 0.25 + weather.wet * 0.15, 0, 1);
+          haze = clamp(weather.rain * 0.9 + weather.cloud * weather.cloud * 0.25 + weather.wet * 0.15, 0, 1);
         let n = 0;
-        if (tier && tier.bloom >= 5 && haze > 0.03)
+        hazePeak = 0;
+        if (tier && tier.bloom >= 5)
           for (let i = 0; i < carLampCount; i++) {
+            const onRange = carLampC[i].w % 2 > 0.5,
+              level = night * clamp(haze + (onRange ? MOUNTAIN_AIR : 0), 0, 1);
+            if (level <= 0.03) continue;
             const c = carLampCars[i],
-              spec = vehicleSpec(c),
-              cos = Math.cos(c.a),
-              sin = Math.sin(c.a);
-            beamQuaternion.setFromAxisAngle(headBeamUp, -c.a);
-            beamPosition.set(c.x + cos * spec.l * 0.5, entityElevation(c) + lampHeight(spec) * 0.55, c.y + sin * spec.l * 0.5);
-            beamScale.set(HEAD_BEAM_LENGTH * 0.8, 1, HEAD_BEAM_WIDTH * 0.7);
-            beamHaze.setMatrixAt(n, beamMatrix.compose(beamPosition, beamQuaternion, beamScale));
-            beamHaze.setColorAt(n, beamColor.setScalar(lowBeamShare(c, night)));
+              f = slotFrames[i],
+              share = carLampFlood[i] ? LIGHT_BAR_SHARE : 1;
+            setBodyMatrix(beamMatrix, c, f, f.fwd, f.height * 0.55, HEAD_BEAM_LENGTH * 0.8, HEAD_BEAM_WIDTH * 0.7);
+            beamHaze.setMatrixAt(n, beamMatrix);
+            beamHaze.setColorAt(n, beamColor.setRGB(lowBeamShare(c, night) * share * level, i, onRange ? 1 : 0));
+            hazePeak = Math.max(hazePeak, level);
             n++;
           }
         beamHaze.count = n;
         beamHaze.visible = n > 0;
         carLampStats.haze = n;
         if (!n) return;
-        hazeUniforms.uHaze.value = haze * 0.15;
         hazeUniforms.uTime.value = gameTime;
         beamHaze.instanceMatrix.needsUpdate = true;
         beamHaze.instanceColor.needsUpdate = true;
-      }
-      /**
-       * BEAM SHADOWS
-       * The player's own low beams (CAR LAMPS slot 0) are shadowed by the people
-       * and cars standing in them: each is drawn, seen from straight above, as a
-       * dark wedge running away from the lamps into a small mask laid along the
-       * beam (x ahead, y to the kerb side), widening with distance and softening
-       * as the two lamps' shadows part; its green channel keeps how high the
-       * occluder's top stands above the lamps (as a tangent from the lamps), so
-       * a wall behind a pedestrian is shadowed only below the line over their
-       * head. Max blending, one instanced draw into a 512 x 384 target, MEDIUM
-       * and up; lit materials read it for slot 0 only (cityBeamShade).
-       */
-      const BEAM_SHADOW_LENGTH = 440,
-        BEAM_SHADOW_WIDTH = 360,
-        BEAM_SHADOW_CAPACITY = 48,
-        beamShadowTarget = new Three.WebGLRenderTarget(512, 384, {
-          depthBuffer: false,
-          minFilter: Three.LinearFilter,
-          magFilter: Three.LinearFilter,
-        }),
-        beamShadowScene = new Three.Scene(),
-        beamShadowCamera = new Three.OrthographicCamera(0, BEAM_SHADOW_LENGTH, BEAM_SHADOW_WIDTH / 2, -BEAM_SHADOW_WIDTH / 2, 0.1, 10),
-        beamShadowWedges = new Three.InstancedMesh(
-          new Three.PlaneGeometry(1, 2).translate(0.5, 0, 0),
-          new Three.ShaderMaterial({
-            depthTest: false,
-            depthWrite: false,
-            blending: Three.CustomBlending,
-            blendEquation: Three.MaxEquation,
-            blendSrc: Three.OneFactor,
-            blendDst: Three.OneFactor,
-            vertexShader: `
-              varying vec2 vWedge;
-              varying vec3 vShade;
-              void main() {
-                // instanceColor: widening over the length, top tangent, darkness.
-                vShade = instanceColor;
-                vWedge = vec2( position.x, position.y );
-                vec3 p = vec3( position.x, position.y * mix( 1.0, instanceColor.x, position.x ), 0.0 );
-                gl_Position = projectionMatrix * viewMatrix * modelMatrix * instanceMatrix * vec4( p, 1.0 );
-              }`,
-            fragmentShader: `
-              varying vec2 vWedge;
-              varying vec3 vShade;
-              void main() {
-                float soft = mix( 0.35, 0.95, vWedge.x );
-                float across = 1.0 - smoothstep( 1.0 - soft, 1.0, abs( vWedge.y ) );
-                float along = smoothstep( 0.0, 0.03, vWedge.x ) * ( 1.0 - smoothstep( 0.55, 1.0, vWedge.x ) );
-                float dark = vShade.z * across * along * ( 1.0 - 0.45 * vWedge.x );
-                gl_FragColor = vec4( dark, dark > 0.01 ? vShade.y : 0.0, 0.0, 1.0 );
-              }`,
-          }),
-          BEAM_SHADOW_CAPACITY,
-        );
-      beamShadowTarget.texture.generateMipmaps = false;
-      beamShadowCamera.position.set(0, 0, 5);
-      beamShadowCamera.updateMatrixWorld();
-      beamShadowWedges.count = 0;
-      beamShadowWedges.frustumCulled = false;
-      beamShadowWedges.setColorAt(0, new Three.Color());
-      beamShadowScene.add(beamShadowWedges);
-      Object.assign(cityLightUniforms, {
-        cityBeamShadow: { value: beamShadowTarget.texture },
-        cityBeamShadowOn: { value: 0 },
-      });
-      const wedgeMatrix = new Three.Matrix4(),
-        wedgePosition = new Three.Vector3(),
-        wedgeQuaternion = new Three.Quaternion(),
-        wedgeScale = new Three.Vector3(),
-        wedgeAxis = new Three.Vector3(0, 0, 1),
-        wedgeColor = new Three.Color();
-      let wedgeCount = 0;
-      // One occluder at map (x, y): half its width across the ray, half its depth
-      // along it, and its top's height (world y).
-      function addBeamWedge(lamp, headingCos, headingSin, x, y, halfWidth, halfDepth, top) {
-        if (wedgeCount >= BEAM_SHADOW_CAPACITY) return;
-        const dx = x - lamp.x,
-          dz = y - lamp.z,
-          ahead = dx * headingCos + dz * headingSin,
-          side = -dx * headingSin + dz * headingCos,
-          distance = Math.hypot(ahead, side);
-        if (ahead < 4 || ahead > BEAM_SHADOW_LENGTH || Math.abs(side) > ahead * 1.3 + 24) return;
-        const rise = (top - lamp.y) / distance;
-        if (rise <= 0) return;
-        const ux = ahead / distance,
-          uy = side / distance,
-          start = distance + halfDepth * 0.6,
-          length = BEAM_SHADOW_LENGTH * 1.2 - start;
-        if (length <= 0) return;
-        wedgeQuaternion.setFromAxisAngle(wedgeAxis, Math.atan2(uy, ux));
-        wedgePosition.set(ux * start, uy * start, 0);
-        wedgeScale.set(length, halfWidth, 1);
-        beamShadowWedges.setMatrixAt(wedgeCount, wedgeMatrix.compose(wedgePosition, wedgeQuaternion, wedgeScale));
-        // A vertical post's shadow from a point widens in proportion to the distance.
-        beamShadowWedges.setColorAt(wedgeCount, wedgeColor.setRGB((start + length) / start, Math.min(rise, 1), 0.88));
-        wedgeCount++;
-      }
-      function addPersonWedge(p, lamp, cos, sin, reach) {
-        if (p.hidden || p.swimming || p === player) return;
-        if (Math.abs(p.x - lamp.x) > reach || Math.abs(p.y - lamp.z) > reach) return;
-        const half = 0.28 * UNITS_PER_METRE;
-        addBeamWedge(lamp, cos, sin, p.x, p.y, half, half, entityElevation(p) + PERSON_HEIGHT);
-      }
-      function updateBeamShadows() {
-        const u = cityLightUniforms.cityBeamShadowOn;
-        wedgeCount = 0;
-        if (!carLampCount || carLampCars[0] !== player.car || (activeTier?.carLamps ?? 0) < 4 || carLampA[0].w <= 0) {
-          u.value = 0;
-          return;
-        }
-        const lamp = carLampA[0],
-          cos = carLampB[0].x,
-          sin = carLampB[0].y,
-          reach = BEAM_SHADOW_LENGTH + 40;
-        for (const p of pedestrians) addPersonWedge(p, lamp, cos, sin, reach);
-        for (const p of renderPeople) addPersonWedge(p, lamp, cos, sin, reach);
-        for (const c of vehicles) {
-          if (c === player.car || c.hp <= 0 || isAircraft(c)) continue;
-          if (Math.abs(c.x - lamp.x) > reach || Math.abs(c.y - lamp.z) > reach) continue;
-          const spec = vehicleSpec(c);
-          if (spec.boat || spec.jetski) continue;
-          // The car's footprint seen along the ray from the lamps.
-          const ray = Math.atan2(c.y - lamp.z, c.x - lamp.x),
-            turn = c.a - ray,
-            across = 0.5 * (Math.abs(spec.l * Math.sin(turn)) + Math.abs(spec.w * Math.cos(turn))),
-            along = 0.5 * (Math.abs(spec.l * Math.cos(turn)) + Math.abs(spec.w * Math.sin(turn))),
-            height = (spec.truck || c.type === 'bus' || c.type === 'van' ? 2.6 : spec.bike || spec.bicycle ? 1.4 : 1.45) * UNITS_PER_METRE;
-          addBeamWedge(lamp, cos, sin, c.x, c.y, across * 0.9, along, entityElevation(c) + height);
-        }
-        beamShadowWedges.count = wedgeCount;
-        u.value = wedgeCount ? 1 : 0;
-        carLampStats.shadowWedges = wedgeCount;
-        if (!wedgeCount) return;
-        beamShadowWedges.instanceMatrix.needsUpdate = true;
-        beamShadowWedges.instanceColor.needsUpdate = true;
-        const previousTarget = renderer.getRenderTarget(),
-          previousAlpha = renderer.getClearAlpha();
-        renderer.getClearColor(driveClearColor);
-        renderer.setClearColor(0x000000, 0);
-        renderer.setRenderTarget(beamShadowTarget);
-        renderer.clear(true, false, false);
-        renderer.render(beamShadowScene, beamShadowCamera);
-        renderer.setRenderTarget(previousTarget);
-        renderer.setClearColor(driveClearColor, previousAlpha);
-      }
-      // DeadEndCity.headlights(): the vehicle lights this frame.
-      function vehicleLightsReport() {
-        const round = (v) => Math.round(v * 10) / 10;
-        return {
-          ...carLampStats,
-          lampsOn: round(vehicleLampAmount()),
-          cars: carLampCars.slice(0, carLampCount).map((c, i) => ({
-            type: c.type,
-            player: c === player.car,
-            x: round(carLampA[i].x),
-            z: round(carLampA[i].z),
-            height: round(carLampB[i].w),
-            strength: Math.round(carLampA[i].w),
-          })),
-          headBeamPeak: round(headBeamPeak),
-          hazeLevel: round(hazeUniforms.uHaze.value * 100) / 100,
-        };
       }

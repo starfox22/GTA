@@ -462,6 +462,49 @@
           hot = 1 + 0.7 * Math.exp(-(v + 0.02) * (v + 0.02) * 6944 - u * u * 100);
         return lateral * vertical * hot * (1 - 0.97 * glare);
       }
+      /**
+       * CAR LAMP FRAME, FLOOD AND HORIZON
+       * A CAR LAMPS slot's beam runs in its body frame (HEADLIGHT AIM,
+       * terrain-headlights.js): `cityLampFrame` rebuilds the forward and kerb-side
+       * axes from B (the heading) and C (sin pitch, sin roll, cos roll); up is
+       * cross( kerb, aim ). A slot whose C.w has bit 2 set is a light bar
+       * (`cityFloodBeam`: wide, level, a soft top and a spill onto the ground,
+       * no cut-off), bit 1 reads the TERRAIN HORIZON. The horizon tables sit in a
+       * strip under the BEAM SHADOWS mask in the same texture (cityBeamShadow),
+       * so lit materials take no extra sampler: `angles` texels per slot across,
+       * one row per distance step (HEADLIGHT_HORIZON). `cityHorizonAt` returns
+       * the horizon's tangent and the ground's height under a point (both from
+       * the lamp point); keep it in step with headlightHorizonLit().
+       */
+      const BEAM_MASK_WIDTH = 512,
+        BEAM_MASK_HEIGHT = 384,
+        BEAM_HORIZON_TOP = BEAM_MASK_HEIGHT + 2,
+        BEAM_TEXTURE_HEIGHT = BEAM_HORIZON_TOP + HEADLIGHT_HORIZON.rows;
+      const CITY_LAMP_FRAME = `
+        void cityLampFrame( vec4 b, vec4 c, out vec3 aim, out vec3 kerb ) {
+          float cp = sqrt( max( 1.0 - c.x * c.x, 0.0 ) );
+          aim = vec3( cp * b.x - c.x * c.y * b.y, c.x * c.z, cp * b.y + c.x * c.y * b.x );
+          kerb = vec3( -c.z * b.y, -c.y, c.z * b.x );
+        }
+        float cityFloodBeam( float t, float v ) {
+          float q = t * t * 2.0;
+          float lateral = 0.85 * exp( -q * q ) + 0.15 * exp( -t * t * 2.0 );
+          float core = exp( -( v + 0.025 ) * ( v + 0.025 ) * 400.0 );
+          float spill = v < 0.0 ? 0.3 * exp( -( v + 0.12 ) * ( v + 0.12 ) * 30.0 ) : 0.0;
+          return lateral * ( core + spill );
+        }
+        vec2 cityHorizonAt( float slot, vec3 d, vec2 heading ) {
+          float dist = length( d.xz );
+          float bearing = atan( dot( d.xz, vec2( -heading.y, heading.x ) ), dot( d.xz, heading ) );
+          float a = ( clamp( bearing / ${HEADLIGHT_HORIZON.halfAngle.toFixed(3)}, -1.0, 1.0 ) * 0.5 + 0.5 ) * ${(HEADLIGHT_HORIZON.angles - 1).toFixed(1)};
+          float row = clamp( dist / ${HEADLIGHT_HORIZON.step.toFixed(1)} - 1.0, 0.0, ${(HEADLIGHT_HORIZON.rows - 1).toFixed(1)} );
+          vec2 uv = vec2( ( slot * ${HEADLIGHT_HORIZON.angles.toFixed(1)} + a + 0.5 ) / ${BEAM_MASK_WIDTH.toFixed(1)}, ( ${BEAM_HORIZON_TOP.toFixed(1)} + row + 0.5 ) / ${BEAM_TEXTURE_HEIGHT.toFixed(1)} );
+          return textureLod( cityBeamShadow, uv, 0.0 ).rg;
+        }
+        // 0 where the ground between the lamp and the point hides it, 1 in the clear.
+        float cityHorizonShade( float slot, vec3 d, vec2 heading ) {
+          return smoothstep( -4.0, 2.0, d.y - cityHorizonAt( slot, d, heading ).x * length( d.xz ) );
+        }`;
       const CITY_LIGHT_PARS = `
         varying vec3 vCityWorld;
         uniform sampler2D cityLampMap;
@@ -485,15 +528,20 @@
         // spacing and the lamps' height over the road.
         uniform vec4 cityCarLampA[ ${CAR_LAMP_SLOTS} ];
         uniform vec4 cityCarLampB[ ${CAR_LAMP_SLOTS} ];
+        // C = the body's sin pitch, sin roll, cos roll and the slot's mode (CAR LAMP FRAME).
+        uniform vec4 cityCarLampC[ ${CAR_LAMP_SLOTS} ];
         uniform float cityCarLampCount;
         ${CITY_LOW_BEAM}
         // The player's beams' shadow mask (BEAM SHADOWS): r darkness, g the
-        // occluder's top as a tangent above the lamps.
+        // occluder's top as a tangent above the lamps (level frame); the terrain
+        // horizon strip under it.
         uniform sampler2D cityBeamShadow;
         uniform float cityBeamShadowOn;
+        ${CITY_LAMP_FRAME}
         float cityBeamShade( float ahead, float side, float rise ) {
           vec2 uv = vec2( ahead / 440.0, 0.5 + side / 360.0 );
           if ( uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 ) return 1.0;
+          uv.y *= ${(BEAM_MASK_HEIGHT / BEAM_TEXTURE_HEIGHT).toFixed(6)};
           vec4 mask = textureLod( cityBeamShadow, uv, 0.0 );
           return 1.0 - mask.r * ( 1.0 - smoothstep( mask.g - 0.012, mask.g + 0.012, rise ) );
         }
@@ -570,15 +618,27 @@
         float lampUp = max( dot( lampNormal, normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz ) ), 0.0 );
         for ( int i = 0; i < ${CAR_LAMP_SLOTS}; i ++ ) {
           if ( float( i ) >= cityCarLampCount ) break;
-          vec4 lampA = cityCarLampA[ i ], lampB = cityCarLampB[ i ];
+          vec4 lampA = cityCarLampA[ i ], lampB = cityCarLampB[ i ], lampC = cityCarLampC[ i ];
           vec3 toLamp = lampA.xyz - vCityWorld;
-          float ahead = -dot( toLamp.xz, lampB.xy );
+          // The pattern in the body's frame (CAR LAMP FRAME): on a slope the beam
+          // aims where the car points, so a constant grade looks like a level road.
+          vec3 aim, kerb;
+          cityLampFrame( lampB, lampC, aim, kerb );
+          float ahead = -dot( toLamp, aim );
           if ( ahead < 2.0 || ahead > 470.0 ) continue;
-          float across = -dot( toLamp.xz, vec2( -lampB.y, lampB.x ) );
+          float across = -dot( toLamp, kerb );
           float side = sign( across ) * max( abs( across ) - lampB.z, 0.0 );
           if ( abs( side ) > ahead * 1.5 + 12.0 ) continue;
-          float beam = cityLowBeam( side / ahead, -toLamp.y / ahead ) * smoothstep( 6.0, 26.0, ahead );
-          if ( i == 0 && cityBeamShadowOn > 0.5 ) beam *= cityBeamShade( ahead, across, -toLamp.y / ahead );
+          float rise = -dot( toLamp, cross( kerb, aim ) );
+          float beam = ( lampC.w > 1.5 ? cityFloodBeam( side / ahead, rise / ahead ) : cityLowBeam( side / ahead, rise / ahead ) ) * smoothstep( 6.0, 26.0, ahead );
+          if ( i == 0 && cityBeamShadowOn > 0.5 ) {
+            // The mask is laid out level along the heading.
+            float levelAhead = max( -dot( toLamp.xz, lampB.xy ), 1.0 );
+            beam *= cityBeamShade( levelAhead, -dot( toLamp.xz, vec2( -lampB.y, lampB.x ) ), -toLamp.y / levelAhead );
+          }
+          // No light through a hill (TERRAIN HORIZON).
+          bool onRange = mod( lampC.w, 2.0 ) > 0.5;
+          if ( onRange ) beam *= cityHorizonShade( float( i ), -toLamp, lampB.xy );
           // Units to metres: the pattern's strength is in metres squared. The
           // beam's useful reach ends by ~55 m (a kerb face grazed from far down
           // the street otherwise glowed as a line the length of the block).
@@ -589,10 +649,20 @@
           float nl = saturate( dot( lampNormal, directLight.direction ) );
           if ( nl <= 0.0 ) continue;
           float cap = 5.0 * mix( 0.25 + 0.75 * smoothstep( 0.0, 0.7, nl ), 1.0, lampUp );
+          // On the range a hillside or tree line square to the beam far off would
+          // fill the cap as a wall at the bumper does and read as a flat slab:
+          // there the cap falls off with distance, so far faces stay dimmer.
+          if ( onRange ) cap /= 1.0 + metres2 * 0.0011;
           float received = cap * ( 1.0 - exp( -irradiance * nl / cap ) );
           // (x PI: city light is added straight onto the albedo, see cityLampLight.)
           directLight.color = vec3( 1.0, 0.93, 0.8 ) * ( received * PI / nl );
           RE_Direct( directLight, geometryPosition, lampNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );
+          #ifdef CITY_RETRO
+          // Retroreflectors (the scenic roads' reflector posts, county3d-roads.js:
+          // the amber lens in the vertex colours) send a beam back up the road:
+          // they flare in a car's lights, CITY_RETRO times the light they take.
+          reflectedLight.directDiffuse += vec3( 1.0, 0.55, 0.16 ) * received * CITY_RETRO * smoothstep( 0.4, 0.8, vColor.r - vColor.b );
+          #endif
         }
         #endif`;
       function cityMaterialPatch(shader) {

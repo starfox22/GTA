@@ -321,8 +321,10 @@
     function witnessReport(person, kind = 'crime', x = player.x, y = player.y, options = {}) {
       if (!person || !(person.hp > 0) || gameMode !== 'play') return null;
       const inc = crowdIncident(kind, { x, y }, player, options.severity ?? 1);
-      // Told by this one person: bystanders still get asked what they saw.
-      inc.direct = true;
+      // Told by this one person: bystanders still get asked what they saw. (Not
+      // when it merged into what the street already saw, e.g. the carjack at the
+      // door: a second incident about the same crime would take its witnesses.)
+      if (inc.shots === 1 && inc.start === gameTime && !inc.witnesses?.length) inc.direct = true;
       if (!inc.witnesses) inc.witnesses = [];
       if (!inc.witnesses.includes(person)) inc.witnesses.push(person);
       person.witnessOf = inc;

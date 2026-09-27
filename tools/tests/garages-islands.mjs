@@ -32,6 +32,8 @@ export default async function (t) {
   }
   // A repair and respray at MONARCH COACHWORKS: drive a damaged car in off the apron.
   const shop = byId.monarch;
+  // Only t.wait advances the game from here: nothing touches the car between calls.
+  await t.call('holdSimulation', true);
   await t.call('god', true);
   await t.call('setCash', 5000);
   await t.call('teleport', shop.apron.x - 40, shop.apron.y + 30);
@@ -57,4 +59,5 @@ export default async function (t) {
   t.assert(g.vehicle.color !== colour, 'same colour after the respray');
   t.assert(g.cash < 5000, 'nothing charged');
   await t.call('god', false);
+  await t.call('holdSimulation', false);
 }
