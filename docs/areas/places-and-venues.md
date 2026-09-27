@@ -57,11 +57,27 @@ coordinates are in the code (grep the constant); this doc keeps the rules.
   `liners()`, `advanceLiner(s)`, `linerVoyageCheck()`.
 - Ironworks cargo terminal and mission 1's loading bay: harbor.js.
 
+## North Point Key (skyline*.js, geography-key.js, skyline3d-islet/crowns/bar.js)
+
+- The only towers left of the old North Point cluster, in a row on the islet's north sea
+  wall (nothing walkable behind them; the camera looks north): MERCURY, FEDERATION EAST
+  (helideck, parked helicopter), EVOLUTION (CIRRUS sky bar). The other 15 keep
+  `reserve: true` in `SKYLINE_TOWERS`. East of `CITY_RIGHT`: own ground tile, own lights.
+- Reached by the -3456 street over its `key` bridge; the grid street stops at the circle
+  (`northPointKeyStreetClip`): GPS ends there, traffic never turns in.
+- Lifts (skyline-lift.js): E at a lobby door (on foot, not wanted) or a roof door; gameMode
+  `'elevator'` during the fade, `teleportPlayer()` in the dark, then the roof carrier.
+- CIRRUS people are pedestrians with `keyPerson` (state `'key'`: never recruited or
+  streamed), spawned within ~900 units; one table talks at a time, only while the player
+  is up there. Console `skyline()`, `skylineVisit(spot)`.
+
 ## Roofs and helipads (rooftops.js)
 
 - A helicopter lands on any flat roof its airframe fits inside the parapet, clear of roof
   plant: `b.roofKeepOuts` are recorded by the **renderer** as it draws plant, so without
   WebGL every flat roof is clear. Towers and warehouses never take one.
+- A roof deck (`b.roofDeck`: discs, boxes, a polygon) replaces the lot as the walkable and
+  landable roof, round the game's own `b.deckKeepOuts`; `b.noLanding` keeps aircraft off.
 - `c.roofSite` is the roof under a landed helicopter (the contact pass skips its collider);
   the player on it is carried by `player.buildingRoof`; `playerOnRoof()` answers "not at
   street level" for police sight, shops, stations, taxis.

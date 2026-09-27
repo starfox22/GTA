@@ -246,7 +246,7 @@
       skyBar.groups.push({ kind: L.kind, members: [seat(L.seats[0], 'guest', 'suit'), seat(L.seats[1], 'guest', 'suit')], used: [] });
       const standing = plan.standing.map((s, k) => {
         const p = makeKeyPerson(s, z, 'guest', k ? 'suit' : 'gown');
-        p.pose = 'drink';
+        p.pose = p.keyPerson.pose = 'drink';
         p.carry = 'cocktail';
         people.push(p);
         return p;
@@ -331,17 +331,26 @@
         if (p && !(p.speechUntil > gameTime) && !skyBar.talker?.members.some((q) => q.speechUntil > gameTime)) keySay(p, randomChoice(SKY_BAR_LINES[p.keyPerson.role]));
       }
     }
+    // What sends one of the Key's people down: shots, a blast, a fight, someone running.
+    const KEY_ALARMS = new Set(['gunfire', 'explosion', 'melee']),
+      KEY_FRIGHTS = new Set(['flee', 'cower', 'shelter', 'handsUp', 'freeze', 'startle']);
     /* One of the Key's people this frame: true when handled (game-people.js). */
     function updateKeyPerson(p, deltaSeconds) {
       const k = p.keyPerson;
       if (!k) return false;
-      // Gunfire, a body, a blast: under the table, or a crouch at a post, for a while.
+      // The street crowd's reactions are not theirs: a fright under the table (or a
+      // crouch at a post) for a while, anything else forgotten. Up on the terrace only
+      // what happens up there counts (the alarms reach by distance on the map).
       if (p.pending || p.react || p.flee > 0) {
+        const fright = (p.pending && KEY_ALARMS.has(p.pending.inc?.kind)) || (p.react && KEY_FRIGHTS.has(p.react.kind)) || p.flee > 0,
+          here = !p.altitude || player.buildingRoof?.skyline?.roof === 'bar';
         p.pending = null;
         p.react = null;
         p.flee = 0;
-        if (!(k.scaredUntil > gameTime)) keySay(p, randomChoice(SKY_BAR_LINES.scared));
-        k.scaredUntil = gameTime + randomBetween(9, 14);
+        if (fright && here) {
+          if (!(k.scaredUntil > gameTime)) keySay(p, randomChoice(SKY_BAR_LINES.scared));
+          k.scaredUntil = gameTime + randomBetween(9, 14);
+        }
       }
       if (k.scaredUntil > gameTime) {
         p.pose = 'cower';
@@ -372,6 +381,7 @@
       p.walking = false;
       p.x = k.home.x;
       p.y = k.home.y;
+      if (k.pose) p.pose = k.pose;
       if (k.role === 'bartender') {
         p.pose = 'bartend';
         return true;
