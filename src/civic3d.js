@@ -305,12 +305,12 @@
         SKY_DUSK = new Three.Color('#c07a55'),
         SUN_NIGHT = new Three.Color('#9aaed8'),
         SUN_DUSK = new Three.Color('#ffa564'),
-        SUN_DAY = new Three.Color('#ffecce'),
+        SUN_DAY = new Three.Color('#ffe6c0'),
         HEMI_SKY_NIGHT = new Three.Color('#4a5c84'),
         HEMI_SKY_DAY = new Three.Color('#b9d0ef'),
         HEMI_GROUND_NIGHT = new Three.Color('#2c2b35'),
         // Daylight bounces off pavement and planting, not off bare earth.
-        HEMI_GROUND_DAY = new Three.Color('#6d6a52'),
+        HEMI_GROUND_DAY = new Three.Color('#7a6b50'),
         skyScratch = new Three.Color();
       let lastBadge = '';
       function updateCivicVisuals() {

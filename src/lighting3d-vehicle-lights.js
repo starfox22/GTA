@@ -41,7 +41,7 @@
       }
       // The pattern's strength (hot-spot intensity x metres squared, in scene
       // light) and the soft cap on what one surface takes from one car.
-      const CAR_LAMP_STRENGTH = 26000,
+      const CAR_LAMP_STRENGTH = 34000,
         CAR_LAMP_CAP = 5,
         // A nominal pair of lamps for the precomputed beam: height and half spacing (m).
         NOMINAL_LAMP_HEIGHT = 0.65,
@@ -66,7 +66,8 @@
               d2 = f * f + side * side + h * h,
               ahead = Math.max(f, 0.05),
               near = Three.MathUtils.smoothstep(f * UNITS_PER_METRE, 6, 26),
-              e = ((CAR_LAMP_STRENGTH * lowBeamIntensity(side / ahead, -h / ahead) * near) / Math.max(d2, 0.3)) * (h / Math.sqrt(d2)),
+              reach = 1 - Three.MathUtils.smoothstep(d2, 676, 3364),
+              e = ((CAR_LAMP_STRENGTH * lowBeamIntensity(side / ahead, -h / ahead) * near * reach) / Math.max(d2, 0.3)) * (h / Math.sqrt(d2)),
               v = CAR_LAMP_CAP * (1 - Math.exp(-e / CAR_LAMP_CAP));
             values[y * width + x] = v;
             peak = Math.max(peak, v);
@@ -438,7 +439,7 @@
         beamHaze.visible = n > 0;
         carLampStats.haze = n;
         if (!n) return;
-        hazeUniforms.uHaze.value = haze * 0.22;
+        hazeUniforms.uHaze.value = haze * 0.15;
         hazeUniforms.uTime.value = gameTime;
         beamHaze.instanceMatrix.needsUpdate = true;
         beamHaze.instanceColor.needsUpdate = true;

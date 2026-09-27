@@ -163,7 +163,7 @@
           if (facing) {
             // How squarely the lamp faces the camera (the body's x axis is its heading).
             toward = (facing * (pe[0] * vx + pe[1] * vy + pe[2] * vz)) / (parentScale || 1);
-            gain *= (0.55 + 0.45 * Three.MathUtils.smoothstep(toward, -0.6, 0.15)) * (1 + (facing > 0 ? 1.7 : 0.9) * Three.MathUtils.smoothstep(toward, 0.05, 0.7));
+            gain *= (0.55 + 0.45 * Three.MathUtils.smoothstep(toward, -0.6, 0.15)) * (1 + (facing > 0 ? 1.0 : 0.6) * Three.MathUtils.smoothstep(toward, 0.05, 0.7));
           }
           vehicleHaloColor.copy(vehicleHaloTint[i] || sprite.material.color).multiplyScalar(gain);
           const opacity = vehicleHaloOpacity[i];
@@ -171,7 +171,7 @@
           // A head lamp looking at the camera: a thin horizontal flare streak.
           if (flares && facing > 0 && toward > 0.2 && n < VEHICLE_HALO_CAPACITY) {
             const streak = Three.MathUtils.smoothstep(toward, 0.2, 0.8);
-            writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, size * 5, size * 0.2, opacity * 0.4 * streak, vehicleHaloColor);
+            writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, size * 5, size * 0.2, opacity * 0.28 * streak, vehicleHaloColor);
           }
           vehicleHaloQueue[i] = null;
           vehicleHaloTint[i] = null;

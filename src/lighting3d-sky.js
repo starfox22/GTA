@@ -446,7 +446,7 @@
           float cut = -0.011 + 0.27 * clamp( t + 0.02, 0.0, 0.12 );
           float glare = smoothstep( cut - 0.005, cut + 0.005, v );
           float down = max( -v, 0.0 );
-          float vertical = down < 0.02 ? 1.0 : exp2( -2.35 * log2( down * 50.0 ) );
+          float vertical = down < 0.02 ? 1.0 : exp2( -2.3 * log2( down * 50.0 ) );
           float hot = 1.0 + 0.7 * exp( -( ( v + 0.02 ) * ( v + 0.02 ) ) * 6944.0 - u * u * 100.0 );
           return lateral * vertical * hot * ( 1.0 - 0.97 * glare );
         }`;
@@ -458,7 +458,7 @@
           cut = -0.011 + 0.27 * clamp(t + 0.02, 0, 0.12),
           glare = Three.MathUtils.smoothstep(v, cut - 0.005, cut + 0.005),
           down = Math.max(-v, 0),
-          vertical = down < 0.02 ? 1 : Math.pow(down * 50, -2.35),
+          vertical = down < 0.02 ? 1 : Math.pow(down * 50, -2.3),
           hot = 1 + 0.7 * Math.exp(-(v + 0.02) * (v + 0.02) * 6944 - u * u * 100);
         return lateral * vertical * hot * (1 - 0.97 * glare);
       }
@@ -565,24 +565,31 @@
         // mean from one pixel to the next, and every lit street turned to salt
         // and pepper. The lamps light the surface's own (unbumped) normal.
         vec3 lampNormal = nonPerturbedNormal;
+        // Walls, kerb faces and car sides grazed by a beam from far down the
+        // street take a lower cap than faces turned to the car (see below).
+        float lampUp = max( dot( lampNormal, normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz ) ), 0.0 );
         for ( int i = 0; i < ${CAR_LAMP_SLOTS}; i ++ ) {
           if ( float( i ) >= cityCarLampCount ) break;
           vec4 lampA = cityCarLampA[ i ], lampB = cityCarLampB[ i ];
           vec3 toLamp = lampA.xyz - vCityWorld;
           float ahead = -dot( toLamp.xz, lampB.xy );
-          if ( ahead < 2.0 || ahead > 560.0 ) continue;
+          if ( ahead < 2.0 || ahead > 470.0 ) continue;
           float across = -dot( toLamp.xz, vec2( -lampB.y, lampB.x ) );
           float side = sign( across ) * max( abs( across ) - lampB.z, 0.0 );
           if ( abs( side ) > ahead * 1.5 + 12.0 ) continue;
           float beam = cityLowBeam( side / ahead, -toLamp.y / ahead ) * smoothstep( 6.0, 26.0, ahead );
           if ( i == 0 && cityBeamShadowOn > 0.5 ) beam *= cityBeamShade( ahead, across, -toLamp.y / ahead );
-          // Units to metres: the pattern's strength is in metres squared.
-          float irradiance = lampA.w * beam / max( dot( toLamp, toLamp ) * 0.015625, 0.3 );
+          // Units to metres: the pattern's strength is in metres squared. The
+          // beam's useful reach ends by ~55 m (a kerb face grazed from far down
+          // the street otherwise glowed as a line the length of the block).
+          float metres2 = dot( toLamp, toLamp ) * 0.015625;
+          float irradiance = lampA.w * beam / max( metres2, 0.3 ) * ( 1.0 - smoothstep( 676.0, 3364.0, metres2 ) );
           if ( irradiance < 0.003 ) continue;
           directLight.direction = normalize( ( viewMatrix * vec4( toLamp, 0.0 ) ).xyz );
           float nl = saturate( dot( lampNormal, directLight.direction ) );
           if ( nl <= 0.0 ) continue;
-          float received = 5.0 * ( 1.0 - exp( -irradiance * nl * 0.2 ) );
+          float cap = 5.0 * mix( 0.25 + 0.75 * smoothstep( 0.0, 0.7, nl ), 1.0, lampUp );
+          float received = cap * ( 1.0 - exp( -irradiance * nl / cap ) );
           // (x PI: city light is added straight onto the albedo, see cityLampLight.)
           directLight.color = vec3( 1.0, 0.93, 0.8 ) * ( received * PI / nl );
           RE_Direct( directLight, geometryPosition, lampNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );

@@ -488,6 +488,11 @@
         tScene: { value: null },
         tDepth: { value: null },
         tAo: { value: null },
+        // Joint bilateral AO upsampling: the AO target's size, the depth texel
+        // and the inverse projection (shared with the AO pass).
+        uAoSize: { value: new Three.Vector2(1, 1) },
+        uFullTexel: { value: new Three.Vector2(1, 1) },
+        uInvProjection: aoUniforms.uInvProjection,
         tBloom: { value: null },
         tReflect: { value: null },
         uReflect: { value: 0 },
@@ -529,6 +534,35 @@
           uniform float uAspect;
           uniform float uDebugView;
           uniform sampler2D tDepth;
+          #ifdef USE_AO
+            uniform vec2 uAoSize;
+            uniform vec2 uFullTexel;
+            uniform mat4 uInvProjection;
+            float compositeViewZ( float depth ) {
+              float z = depth * 2.0 - 1.0;
+              return ( uInvProjection[2][2] * z + uInvProjection[3][2] ) / ( uInvProjection[2][3] * z + uInvProjection[3][3] );
+            }
+            // The half-resolution AO brought up to full resolution taking only
+            // the texels on this pixel's own surface (their depth within half a
+            // metre): plain bilinear filtering smeared a roof's or a car's shade
+            // a pixel or two over the street beside it (and the street's onto
+            // the edge of the car), a fringe that flickered as the view moved.
+            float compositeAo( vec2 uv ) {
+              float zc = compositeViewZ( texture2D( tDepth, uv ).x );
+              vec2 p = uv * uAoSize - 0.5, i0 = floor( p ), f = p - i0;
+              float sum = 0.0, weights = 0.0;
+              for ( int k = 0; k < 4; k++ ) {
+                vec2 o = vec2( mod( float( k ), 2.0 ), floor( float( k ) * 0.5 ) );
+                vec2 cell = i0 + o;
+                // (The AO pass read each block's top-left depth texel.)
+                float z = compositeViewZ( texture2D( tDepth, ( cell * 2.0 + 0.5 ) * uFullTexel ).x );
+                float w = mix( 1.0 - f.x, f.x, o.x ) * mix( 1.0 - f.y, f.y, o.y ) * max( 1e-3, 1.0 - abs( z - zc ) * 0.25 );
+                sum += texture2D( tAo, ( cell + 0.5 ) / uAoSize ).r * w;
+                weights += w;
+              }
+              return sum / weights;
+            }
+          #endif
           vec3 cityACES( vec3 color ) {
             const mat3 inputMat = mat3( vec3( 0.59719, 0.07600, 0.02840 ), vec3( 0.35458, 0.90834, 0.13383 ), vec3( 0.04823, 0.01566, 0.83777 ) );
             const mat3 outputMat = mat3( vec3( 1.60475, -0.10208, -0.00327 ), vec3( -0.53108, 1.10813, -0.07276 ), vec3( -0.07367, -0.00605, 1.07602 ) );
@@ -546,7 +580,7 @@
             // (half float infinity) as NaN too: show them as nothing and as white.
             color = any( isnan( color ) ) ? vec3( 0.0 ) : clamp( color, vec3( 0.0 ), vec3( 6.0e4 ) );
             #ifdef USE_AO
-              float ao = texture2D( tAo, vUv ).r;
+              float ao = compositeAo( vUv );
               // Lights (lamps, neon, lit windows) are not shaded; sunlit paving is.
               float lum = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
               color *= mix( 1.0, ao, uAoStrength * ( 1.0 - smoothstep( 3.5, 9.0, lum ) ) );
@@ -821,6 +855,8 @@
           aoBlurUniforms.uDirection.value.set(0, 1 / aoTargets[0].height);
           runPass(aoBlurMaterial, aoTargets[0]);
           postCompositeUniforms.tAo.value = aoTargets[0].texture;
+          postCompositeUniforms.uAoSize.value.set(aoTargets[0].width, aoTargets[0].height);
+          postCompositeUniforms.uFullTexel.value.set(1 / postWidth, 1 / postHeight);
         }
         postCompositeUniforms.uReflect.value = 0;
         if (tier.ssr && ssrMaterial && postLook.reflect > 0.001) {

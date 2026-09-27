@@ -46,7 +46,8 @@ Everything in `createCityRenderer()` (render3d.js and its include list, render3d
 - The scene renders into a half-float HDR target (MSAA on HIGH/ULTRA), then SAO, wet
   reflections, bloom, one composite (exposure, ACES, grade + vibrance, vignette, dither) and
   FXAA on **every** tier (MSAA resolves light before the tone curve: bright edges, leaf
-  cut-outs and glints stayed stepped and flickering on HIGH/ULTRA without it).
+  cut-outs and glints stayed stepped and flickering on HIGH/ULTRA without it). The half-res AO
+  is upsampled depth-aware (`compositeAo`), not bilinearly (shade fringes at silhouettes).
   `renderFrame()` replaces `renderer.render()`.
 - Custom `ShaderMaterial`s that compute final screen colours (the water) end with
   `#include <city_hdr_output>` (and include `<city_hdr_pars>`) to invert the tone curve;
