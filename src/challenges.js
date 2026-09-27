@@ -128,7 +128,7 @@
         foot = !player.car && ground;
       if (missionState.index === 2) {
         if (missionState.stage === 0 && player.car === missionState.car) {
-          crime(2);
+          crime(2, 'seen');
           setStage(
             1,
             missionState.workshop,
@@ -180,7 +180,7 @@
           missionState.actionProgress = 0;
           if (missionState.stage === 0) {
             missionState.timer = missionState.timeLimit = 95;
-            crime(2);
+            crime(2, 'seen');
           }
           missionState.receipt++;
           if (missionState.receipt < 3)
@@ -211,7 +211,7 @@
           boardElena(missionState);
           missionState.oldCar = missionState.car;
           missionState.timer = missionState.timeLimit = 210;
-          crime(2);
+          crime(2, 'seen');
           missionState.cleanCar = spawnClearCar(
             'sedan',
             missionState.swap.x + 26,
@@ -270,7 +270,7 @@
         ) {
           missionState.actionProgress = 0;
           challengeGuards('glass', 6, LOC.warehouse, 'books');
-          crime(2);
+          crime(2, 'seen');
           setStage(2, LOC.warehouse, 'CLEAR THE WAREHOUSE GUARDS · SECOND ACCOUNT BOOK');
         } else if (missionState.stage === 2 && cleared('books'))
           setStage(3, LOC.warehouse, 'PARK THE VAN · HOLD E TO LOAD VALE’S BOOK');
@@ -375,7 +375,7 @@
           missionState.actionProgress = 0;
           // (150 s before the route went round the runway pier, ~20 s longer.)
           missionState.timer = missionState.timeLimit = 170;
-          crime(2);
+          crime(2, 'seen');
           // Down Palm Sound under the Palm Sound Causeway, out past the south-west
           // corner of Northbank, round the end of Southport's runway pier, under
           // the Coast Line viaduct and up the inlet to the Southport speedboat
@@ -443,7 +443,7 @@
       if (missionState.index === 8) {
         if (missionState.stage === 0 && ground && near && stopped && passengerCar(player.car)) {
           boardElena(missionState);
-          crime(2);
+          crime(2, 'seen');
           setStage(
             1,
             LOC.hangar,

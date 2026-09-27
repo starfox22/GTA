@@ -317,7 +317,9 @@
           tone(140, 0.07, 0.2, 'square');
           return;
         }
-        // Somebody at the wheel: the struggle at the door (carjack-struggle.js).
+        // Somebody at the wheel: the struggle at the door (carjack-struggle.js), which
+        // charges the hijack (crime 0.8, 'carjack') and makes the driver a witness who
+        // phones it in (witnessReport) once back on their feet and clear of the player.
         if (c.occupied && startCarjack(c)) return;
         enterVehicle(c);
         return;

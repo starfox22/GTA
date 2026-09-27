@@ -156,7 +156,9 @@
         const shout = members.reduce((a, b) => (distanceBetween(a, car) < distanceBetween(b, car) ? a : b));
         clubSay(shout, TRAIL_CLUB_THEFT);
         shout.speechKind = 'shout';
-        crime(0.6);
+        crime(0.6, 'theft');
+        // The member who shouted phones it in (witnesses.js witnessReport).
+        witnessReport(shout, 'theft', car.x, car.y, { delay: 3 });
         clubState.talkClock = 3;
         return;
       }

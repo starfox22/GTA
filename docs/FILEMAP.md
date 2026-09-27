@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-366 files in the include tree, 139,237 lines.
+369 files in the include tree, 140,348 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   155 — ▸ Game orchestration and shared state
+- `src/game.js`   156 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -25,20 +25,21 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/audio.js`   559 — Effects and voice audio
 - `src/voices.js`   173 — People's voices: whether someone is drawn as a woman or a man (personFemale) and the recorded scream that fits them (screamVoice, playPersonScream …
 - `src/footwork.js`    61 — On foot: where the player's body faces (the aim while fighting, else the way they go) and what facing one way while moving another costs the pace …
-- `src/heat.js`   254 — Heat and wanted stars
+- `src/heat.js`   283 — Heat and wanted stars
+- `src/witnesses.js`   485 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   234 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
 - `src/game-car-spawn.js`   163 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   472 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   262 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
-- `src/game-player-actions.js`   527 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
-- `src/game-cops.js`   170 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
+- `src/game-player-actions.js`   529 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-cops.js`   171 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    18 — ▸ Vehicle and pedestrian physics
-- `src/game-people.js`   147 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
+- `src/game-people.js`   155 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   342 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
 - `src/game-update.js`   226 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/game-draw2d.js`   630 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   221 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
-- `src/game-ui.js`   407 — Weapon chip, mission card and updateUI() (HUD text refresh).
+- `src/game-ui.js`   409 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   167 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/game-input.js`   413 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   294 — Key bindings
@@ -52,15 +53,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   146 — Wounds, hit reactions and death falls
 - `src/story.js`   890 — Story characters and mission stages
-- `src/campaign.js`   442 — Campaign saves and replay
+- `src/campaign.js`   447 — Campaign saves and replay
 - `src/chase.js`   544 — Cargo pursuit
 - `src/roadblocks.js`   434 — Police containment and roadblocks
-- `src/carjack.js`   334 — Carjacking and driver reactions
-- `src/carjack-struggle.js`   352 — The carjack struggle: walking round to the driver's door, the door, a short tug of war, the throw and taking the seat (startCarjack, updateCarjack …
+- `src/carjack.js`   315 — Carjacking and driver reactions
+- `src/carjack-struggle.js`   353 — The carjack struggle: walking round to the driver's door, the door, a short tug of war, the throw and taking the seat (startCarjack, updateCarjack …
 - `src/riders.js`   391 — Riders thrown from motorbikes and bicycles
 - `src/themepark.js`    63 — ▸ Sunset Pier resort and theme park
 - `src/marina.js`    11 — ▸ Harbor Point marina, the superyacht and the cruise liners
-- `src/taxi.js`   285 — Yellow cabs
+- `src/taxi.js`   286 — Yellow cabs
 - `src/cycles.js`   801 — City bicycles
 - `src/weather.js`   214 — Weather
 - `src/weather-audio.js`   270 — Rain and thunder sound
@@ -110,7 +111,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/world-view.js`   164 — World camera gestures
 - `src/car-radio.js`   836 — Vehicle radio stations
 - `src/garages.js`   810 — Drive-in repair and respray
-- `src/crowd.js`   188 — ▸ Crowd life, perception and reactions
+- `src/crowd.js`   192 — ▸ Crowd life, perception and reactions
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
 - `src/dealership.js`    57 — ▸ MONARCH MOTORS: the plan, the sale, the garage and the alarm
 - `src/dealership-people.js`   804 — MONARCH MOTORS: salesmen, guards and enthusiasts
@@ -122,7 +123,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ambience.js`   277 — City soundscape
 - `src/quality.js`   218 — Graphics quality tiers
 - `src/settings.js`   837 — Settings menu
-- `src/god-panel.js`   773 — God mode settings
+- `src/god-panel.js`   774 — God mode settings
 - `src/driving.js`   466 — Tyres, brakes and driving assists
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
 - `src/render3d.js`   211 — ▸ Three.js renderer and resource lifecycle
@@ -158,11 +159,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/citylife-places.js`   503 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
 - `src/citylife-police.js`   600 — City life services and police sight: service menus, crowd density, search, gang targets, deploying officers (renderService, policeSees).
-- `src/citylife-civic.js`   635 — City life: officers and the wanted level (updateOfficers, updateWanted), blood and injury, updateCivic(), navigation and the civic map.
+- `src/citylife-civic.js`   637 — City life: officers and the wanted level (updateOfficers, updateWanted), blood and injury, updateCivic(), navigation and the civic map.
 
 ## src/pursuit.js ▸ Police response and pursuit tactics
 
-- `src/pursuit-dispatch.js`   663 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
+- `src/pursuit-dispatch.js`   671 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
 - `src/pursuit-officers.js`   677 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
 
 ## src/themepark.js ▸ Sunset Pier resort and theme park
@@ -193,7 +194,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/county.js ▸ Outlying districts
 
 - `src/county-map.js`   521 — South Coast County: shared playable geography, roads and map data.
-- `src/county-build.js`   509 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
+- `src/county-build.js`   511 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
 
 ## src/monarch.js ▸ Monarch Isle: the plan, the land and the streets
 
@@ -224,14 +225,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/offroad.js ▸ The 4x4 club, trail mud, off-road traction and the hill climb
 
 - `src/offroad-trails.js`   640 — Off-road club block and trails: layout, terrain pads, vehicle types, trail sections and surfaces (offroadSurfaceAt).
-- `src/offroad-club.js`   626 — Off-road club lot: vehicles, colliders, ground, club talk and scenes, the hill climb.
+- `src/offroad-club.js`   628 — Off-road club lot: vehicles, colliders, ground, club talk and scenes, the hill climb.
 
 ## src/sports.js ▸ Live basketball and soccer matches
 
 - `src/sports-setup.js`   277 — Sports venues, stands, exits, kits and shared sports helpers.
 - `src/sports-play.js`   479 — Match play: possession, passing, movement, offside (sportsPass, sportsBestReceiver).
 - `src/sports-ball.js`   592 — Sports ball physics: bounces, goal frames and nets, out and goal detection, respots, keeper reach.
-- `src/sports-timeline.js`   321 — Sports officials, schedule, warm-up, walk-outs and leaving, harm checks and abandonment.
+- `src/sports-timeline.js`   322 — Sports officials, schedule, warm-up, walk-outs and leaving, harm checks and abandonment.
 - `src/sports-human.js`   242 — The player on the pitch: touches, kicks, prompts, pitch invaders and escorts, crowd presence.
 - `src/sports-frame.js`   319 — updateSports() and drawSports(): per-frame match update, board clock, console snapshot.
 
@@ -249,12 +250,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/crowd.js ▸ Crowd life, perception and reactions
 
 - `src/crowd-looks.js`   167 — Crowd appearance: palettes, role weights, dressPerson() and ensureLook().
-- `src/crowd-speech.js`   198 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
+- `src/crowd-speech.js`   213 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
+- `src/crowd-chatter.js`   293 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
 - `src/crowd-space.js`   265 — Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
-- `src/crowd-streaming.js`   222 — Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
+- `src/crowd-streaming.js`   224 — Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
 - `src/crowd-walking.js`   409 — Walking the grid: crossings, sidewalks, going indoors, rain, updateStreetWalker() and encounters.
-- `src/crowd-perception.js`   412 — Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
-- `src/crowd-reactions.js`   543 — Crowd reactions per frame (updateReaction), pose galleries and lineups, updateCrowdPerson(), dogs and witness reports.
+- `src/crowd-perception.js`   447 — Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
+- `src/crowd-reactions.js`   497 — Crowd reactions per frame (updateReaction), pose galleries and lineups, updateCrowdPerson(), dogs and witness reports.
+- `src/crowd-witnesses.js`   200 — Crowd witnesses: who really saw or heard what the player did, who gets somewhere safe and phones 911, the call itself (phone out, the lines, cut …
 - `src/crowd-scenes.js`   354 — Street scenes: set pieces staged round the player, their members and props (sceneOpen, spawnSceneMember, streetFrontages).
 - `src/crowd-transit.js`   323 — Crowd taxis and buses: hailing, bus arrivals, deliveries and the per-frame scene update (updateScenes).
 - `src/crowd-traffic.js`   245 — Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
@@ -547,9 +550,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
-- `src/game-console-core.js`   121 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
-- `src/game-console-missions.js`   184 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   132 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-core.js`   134 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
+- `src/game-console-missions.js`   186 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-police.js`   193 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   191 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht

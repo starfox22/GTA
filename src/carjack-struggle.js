@@ -4,8 +4,9 @@
      * THE STRUGGLE AT THE DOOR
      * E at an occupied car that is (nearly) stopped starts `player.carjack`: the
      * player walks (round the front or the back if need be) to the driver's door,
-     * yanks it open (the hijack's crime(0.8) happens here, the crowd sees a fight:
-     * crowdAlarm 'melee', and any passenger bails out of the far door), grabs the
+     * yanks it open (the hijack's crime(0.8, 'carjack') happens here, the street
+     * sees it: crowdAlarm 'carjack', and any passenger bails out of the far door;
+     * the driver becomes a sure 911 caller, witnessReport), grabs the
      * driver and hauls: a tug of war of a third of a second to about one second by
      * the driver's temper (CARJACK.tug) with the driver clinging to the wheel, arms
      * flailing, a defiant one landing a punch, then throws them out and behind; a
@@ -107,9 +108,11 @@
       if (why) {
         // No room at the door or rolling too fast: yanked out at once, as before.
         carjackLast.passengers = c.passengers || 0;
-        carjackLast.driver = ejectDriver(c, 'hijack');
-        carjackLast.inc = carjackLast.driver?.carjackInc || null;
-        crime(0.8);
+        const driver = ejectDriver(c, 'hijack');
+        carjackLast.driver = driver;
+        crime(0.8, 'carjack');
+        // Once back on their feet and clear of the player they phone it in.
+        carjackLast.inc = witnessReport(driver, 'carjack', c.x, c.y);
         enterVehicle(c);
         return true;
       }
@@ -134,19 +137,18 @@
       if (phase === 'door') {
         // Yanked open: the crime, and a fight the street can see.
         c.doorSwing = { openAt: gameTime, closeAt: 0 };
-        crime(0.8);
-        job.inc = crowdAlarm('melee', { x: job.seat.x, y: job.seat.y }, player, 1.2);
-        if (job.inc) job.inc.carjack = true;
+        crime(0.8, 'carjack');
+        job.inc = crowdAlarm('carjack', { x: job.seat.x, y: job.seat.y }, player, 1.2);
         carjackLast.passengers = c.passengers || 0;
         bailPassengers(c, job.inc);
         noise(0.05, 0.12, 2600);
       } else if (phase === 'tug') {
         const d = makeCarDriver(c, job.seat.x, job.seat.y, job.doorA);
         carjackLast.driver = d;
-        carjackLast.inc = job.inc;
         c.occupied = false;
         d.carjackHeld = job;
-        d.carjackInc = job.inc;
+        // A sure 911 caller once up and clear of the player (crowd-witnesses.js).
+        carjackLast.inc = witnessReport(d, 'carjack', c.x, c.y) || job.inc;
         d.pose = job.mood === 'plead' ? 'handsUp' : 'carjackCling';
         job.driver = d;
         driverTalk(d, job.mood === 'plead' ? 'plead' : 'pulled', true);
@@ -159,7 +161,6 @@
           d.pose = null;
           moveBody(d, Math.cos(job.doorA - 0.6) * 7, Math.sin(job.doorA - 0.6) * 7, 5);
           d.handsUpUntil = gameTime + 1.4;
-          d.reportAt = gameTime + 4;
           d.threat = { x: player.x, y: player.y };
         } else if (d) {
           // Swung round the player, out of the door and away from the car.
@@ -331,7 +332,7 @@
           down: (v.knockedFor || 0) > 0,
           speech: v.speechUntil > gameTime ? v.speech : '',
           reported: !!carjackLast.inc?.reported,
-          reportDue: v.reportAt ? +(v.reportAt - gameTime).toFixed(1) : null,
+          calling: !!v.onPhone,
           d: Math.round(distanceBetween(v, player)),
         };
       if (!job) return { running: false, inCar: player.car?.type || null, victim, passengers: carjackLast.passengers, instant: carjackLast.instant };

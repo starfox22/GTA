@@ -32,6 +32,7 @@
       announceTime = t;
     }
     // @include src/heat.js
+    // @include src/witnesses.js
     // @include src/game-collision.js
     // @include src/game-car-spawn.js
     // @include src/game-worldgen.js

@@ -12,8 +12,8 @@
      * fast for that, a bike or a cab hijacked from its window has the driver thrown
      * clear along the door line at once. Either way the driver lands, gets up dazed
      * and only then decides what to do: most shout and run, some plead, a few chase
-     * or fight, one in eight calls it in on the spot; every victim reports the car
-     * stolen to the police a few seconds later (crowd-reactions.js crowdReport).
+     * or fight, one in eight goes straight for the phone; every victim is a sure
+     * 911 caller once up and clear of the player (witnessReport, crowd-witnesses.js).
      * Roughly one car in three is locked; the window has to go first, and how that
      * driver answers a gunshot through their glass depends on who they are. Every
      * reaction is a normal pedestrian state afterwards, so the panic, police and
@@ -168,8 +168,9 @@
       driverTalk(driver, reason === 'hijack' ? 'pulled' : 'plead');
       scream(driver);
       particle(x, y, '#b9b3a0', 5, 45, 2);
-      if (reason === 'hijack') driver.carjackInc = crowdAlarm('melee', driver, player, 1.2);
-      bailPassengers(vehicle, driver.carjackInc || null);
+      // The street sees it (crowd-perception.js); passengers get out and run.
+      const inc = reason === 'hijack' ? crowdAlarm('carjack', driver, player, 1.2) : null;
+      bailPassengers(vehicle, inc);
       return driver;
     }
     /* Passengers get out of the far door and run (crowd-perception.js startReaction). */
@@ -205,18 +206,15 @@
         x: player.x,
         y: player.y,
       };
-      // Back on their feet, they report it a few seconds later, wherever they are.
-      if (person.carjackInc) person.reportAt = gameTime + randomBetween(3, 6);
+      // The 911 call itself is the witness system's (witnessReport, crowd-witnesses.js):
+      // it waits until they are up, done shouting and clear of the player.
       if (mood === 'angry' || mood === 'defiant') {
         // Chases the car a few steps, shouting, before thinking better of it.
         person.angryUntil = gameTime + 3 + seededRandom() * 2;
         driverTalk(person, mood === 'angry' ? 'angry' : 'defiant', true);
       } else if (mood === 'witness') {
-        // Calls it in. That is a real cost: the description reaches dispatch.
-        person.witnessUntil = gameTime + 7;
+        // Straight for the phone: no running first.
         driverTalk(person, 'witness', true);
-        crime(0.7);
-        if (person.carjackInc) person.reportAt = person.witnessUntil;
       } else {
         person.flee = 10 + seededRandom() * 4;
         driverTalk(person, mood === 'plead' && seededRandom() < 0.4 ? 'plead' : 'victim', true);
@@ -244,11 +242,6 @@
     function updateCarjackReactions(person, deltaSeconds) {
       // Held at the door in the struggle: carjack-struggle.js places and poses them.
       if (person.carjackHeld) return true;
-      // The stolen car reported (the witness path the crowd uses).
-      if (person.reportAt && gameTime >= person.reportAt) {
-        person.reportAt = 0;
-        crowdReport(person, person.carjackInc);
-      }
       if (person.handsUpUntil > gameTime) {
         // Frozen with the hands up, watching whoever took the car.
         person.pose = 'handsUp';
@@ -276,18 +269,6 @@
           );
         if (seededRandom() < deltaSeconds * 0.5) driverTalk(person, person.mood === 'defiant' ? 'defiant' : 'angry');
         return true;
-      }
-      if (person.witnessUntil > gameTime) {
-        person.walking = false;
-        person.sitting = false;
-        person.a = headingBetween(person, player.car || player);
-        person.onPhone = true;
-        if (seededRandom() < deltaSeconds * 0.45) driverTalk(person, 'witness');
-        return true;
-      }
-      if (person.onPhone && person.witnessUntil <= gameTime) {
-        person.onPhone = false;
-        person.flee = 8;
       }
       return false;
     }

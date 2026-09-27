@@ -183,6 +183,7 @@
         }
     }
     function updateWanted(deltaSeconds) {
+      updateWitnesses(deltaSeconds);
       updateStarProgress(deltaSeconds);
       updatePursuit(deltaSeconds);
       if (mission?.index === 2 && [1, 2].includes(mission.stage)) {
@@ -246,8 +247,9 @@
         }
         // Inside the search area (the circle on the radar) the clock barely
         // moves: the police are combing those streets. Get out of it.
+        // A reported crime: nobody is looking until the first unit gets there.
         const inZone = distanceBetween(player, lastSeen) < policeSearchRadius();
-        searchRemaining = Math.max(0, searchRemaining - deltaSeconds * (inZone ? 0.2 : 1));
+        if (!policeResponseHolding()) searchRemaining = Math.max(0, searchRemaining - deltaSeconds * (inZone ? 0.2 : 1));
         if (searchRemaining === 0) {
           clearPolice(true);
           return;

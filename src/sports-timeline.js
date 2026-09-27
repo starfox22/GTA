@@ -297,7 +297,8 @@
       if (match.policeCallAt !== null && match.time >= match.policeCallAt) {
         match.policeCallAt = Infinity;
         if (gameMode === 'play') {
-          crime(0.5);
+          // A report, not a sighting: the units come to the stadium and search it.
+          crime(0.5, { x: player.x, y: player.y, kind: 'crime', caller: 'security', note: false });
           tell(match.sport === 'soccer' ? 'STADIUM SECURITY CALLED THE POLICE' : 'A WITNESS CALLED THE POLICE', 2.6);
         }
       }

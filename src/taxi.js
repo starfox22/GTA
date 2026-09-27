@@ -65,7 +65,8 @@
         const car = taxiOffer;
         closeTaxiOffer();
         if (!car) return;
-        // The struggle at the driver's door (carjack-struggle.js).
+        // The struggle at the driver's door (carjack-struggle.js): the hijack's crime
+        // and the driver's 911 call (witnessReport) happen there.
         startCarjack(car);
       });
       getElement('taxiOverlay').classList.remove('hidden');

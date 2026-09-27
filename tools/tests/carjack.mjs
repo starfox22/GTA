@@ -32,17 +32,20 @@ export default async function (t) {
   s = await t.call('carjack');
   t.assert(s.victim && s.victim.female === true, 'victim not dressed as the car said: ' + JSON.stringify(s.victim));
   t.assert(s.passengers === 1, 'passenger count ' + s.passengers);
-  const st = await t.call('status');
-  t.assert(st.wanted >= 1, 'no crime for the carjack');
-  // Up again, shouting, and the theft reported.
-  let v = s.victim;
-  for (let i = 0; i < 12 && !(v.reported && !v.down); i++) {
+  const w = await t.call('witnesses');
+  t.assert(w.incidents.some((i) => i.kind === 'carjack'), 'carjack not left to the driver to report: ' + JSON.stringify(w.incidents));
+  // Up again and shouting; once the player has driven off, the theft is phoned in.
+  await t.wait(2);
+  let v = (await t.call('carjack')).victim;
+  t.assert(!v.down, 'victim still down: ' + JSON.stringify(v));
+  t.assert(v.d > 12, 'victim still at the car (' + v.d + ')');
+  await t.keys('KeyW', 3);
+  for (let i = 0; i < 30 && !v.reported; i++) {
     await t.wait(1);
     v = (await t.call('carjack')).victim;
     if (v.speech) t.note('victim: ' + v.speech);
   }
-  t.assert(!v.down && v.reported, 'victim not up and reported: ' + JSON.stringify(v));
-  t.assert(v.d > 12, 'victim still at the car (' + v.d + ')');
+  t.assert(v.reported, 'the driver never called it in: ' + JSON.stringify(v));
 
   // From the kerb (passenger) side: round the car first; a defiant driver punches.
   await t.call('god', false);
