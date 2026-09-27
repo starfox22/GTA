@@ -16,6 +16,18 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   car, fire on foot). `overrides` lets an air action take a key from movement in the `air`
   context (`ascend` / `descend` on the arrows); `controlConflicts()` knows that pair.
 - Menu keys (Escape, Enter, the map's arrows / + / − / 0 / C) are fixed.
+- **Hints follow the device** (input-hints.js): `keyName(id)` returns the touch button's
+  label (`touchButtonLabel`, mobile.js: the same text the button shows, so ACTION / EXIT /
+  GAS follow the context) or the gamepad button (`gamepadKeyName`) while that device was
+  the last one used (`hintDevice()`; `body[data-input]`). Write `pressKey(id, style)`
+  ('PRESS E' / 'TAP ACTION' / 'PRESS A') instead of `'Press ' + keyName(id)`, and
+  `keyPrefix(id)` for a chip's 'E · '. `keyNames()` and the settings screen stay keys.
+  Console `inputHints('touch' | 'gamepad' | 'keyboard' | 'auto')`.
+- Gamepad (gamepad.js, standard mapping): each button sends the key bound to an action
+  (`PAD_PLAY` per context) through the keyboard handler, so bindings and modes apply; the
+  events are untrusted, so they never flip the hint device back to keyboard. Menus: D-pad /
+  stick move the focus (arrow keys where a menu has them), A presses, B backs out; the city
+  map pans / zooms and A drops the waypoint under the centre cross. Console `gamepadFeed`.
 
 ## Settings (settings.js)
 
@@ -54,7 +66,16 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   `hudPop(id)` or hover; in touch mode only by `hudPop` (a tap), since a tapped box keeps
   `:hover` / `:focus-within` long after its pop ends (touch-hud.css).
 - Minimap: zoom by wheel or pinch (`minimapZoom()` scales the cached base layer), foldable,
-  saved in `dead-end-city-hud`. GPS route on the minimap (`hudState.gps`).
+  saved in `dead-end-city-hud`. GPS route on the minimap (`hudState.gps`). map-view.js:
+  it pulls back with speed (`minimapSpeedZoom`, eased), an arrow on its rim points at an
+  off-map job or waypoint, and both map canvases keep a fixed logical frame (minimap 240
+  wide, city map 800 x 660) with a backing store at the screen's pixel ratio: always draw
+  through `drawMinimap()` / the logical sizes, never the canvas's `width`.
+- City map (map-view.js): the MAP LAYERS chips filter both maps (`mapLayerOn(id)` in
+  drawMap; saved in `dead-end-city-map`; the job, waypoint, route and player always show);
+  GO TO lists the nearest hospital, respray, armory, shops, rail, sports... and a tap sets
+  the waypoint. Place names skip any that would overlap one already drawn (region and water
+  names first), so the district names appear as you zoom in. Console `mapView()`.
 - **Interaction prompt contract** (hud.js INTERACTION PROMPT): systems never write
   `#interaction`. During an `updateUI()` pass they call
   `offerPrompt(text, { key, hold, id })`; the last offer wins; `commitPrompt()` applies the
@@ -64,9 +85,16 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   every pass: the old flickering prompt).
 - Range tests behind a prompt have hysteresis asked the same way by the prompt and by the
   action key: `withinRange(key, distance, enter, exit)`; `nearestPlace()` for doors.
-- Centre cards: `announce()` headline card; `tell()` toasts. PANEL COVER: `body.panel-open`
-  hides HUD text under full-screen panels (`hudCovered()`); a toast raised meanwhile is
-  tagged `.over-panel`.
+- Centre cards: `announce()` headline card. PANEL COVER: `body.panel-open` hides HUD text
+  under full-screen panels (`hudCovered()`); a toast raised meanwhile is tagged `.over-panel`.
+- **Notifications** (hud-notify.js): `tell(text, seconds, { id, tone })` adds a `.note` to
+  the `#toast` feed, newest first, at most 3 (2 on a phone); nothing overwrites. A line with
+  the same `id` (default: the text with its numbers masked) refreshes in place, so a counter
+  or a per-frame tell never piles up. Life is at least ~0.24 s a word (1.5-7 s) on the HUD
+  clock. Tone (edge colour) from the words unless given: police, warn, good, info. Console
+  `notices()`.
+- Car radio on a phone (`phoneHud()`): `hudPop('carRadio')` only flashes the chip; it opens
+  on a tap (the old 4 s mid-screen pop on getting in covered the road and the toasts).
 - Speed box (`#vehicleStats`): one readout for every way of moving; on foot the movement
   state and measured pace (`trackPlayerPace`). **Every printed speed goes through
   `speedReading` / `speedText` / `kmhReading`** (km/h or mph setting); boats keep knots,

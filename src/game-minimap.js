@@ -213,12 +213,20 @@
           ['N O R T H  S O U N D', 1500, -4900],
           ...MONARCH_MAP_LABELS,
         ];
-        for (const [label, x, y] of labels) {
-          drawingContext.font = 'bold ' + Math.round(11 * text) + 'px Arial';
-          drawingContext.strokeStyle = '#102d3de0';
-          drawingContext.lineWidth = 3 * text;
+        // Region and water names (letter-spaced) first, then the rest in list
+        // order; a name that would run into one already drawn waits for a closer zoom.
+        const placed = [],
+          size = Math.round(11 * text);
+        drawingContext.font = 'bold ' + size + 'px Arial';
+        drawingContext.strokeStyle = '#102d3de0';
+        drawingContext.lineWidth = 3 * text;
+        for (const [label, x, y] of [...labels.filter((l) => / . /.test(l[0])), ...labels.filter((l) => !/ . /.test(l[0]))]) {
           const px = width / 2 + (x - cx) * scale,
-            py = height / 2 + (y - cy) * scale;
+            py = height / 2 + (y - cy) * scale,
+            half = drawingContext.measureText(label).width / 2 + 3;
+          if (px + half < 0 || px - half > width || py < -size || py > height + size) continue;
+          if (placed.some((r) => Math.abs(r.x - px) < r.half + half && Math.abs(r.y - py) < size + 2)) continue;
+          placed.push({ x: px, y: py, half });
           drawingContext.strokeText(label, px, py);
           drawingContext.fillStyle = /B A Y|S O U N D|C H A N N E L/.test(label) ? '#a3d1d5' : '#ede6d2';
           drawingContext.fillText(label, px, py);

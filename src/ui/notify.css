@@ -92,9 +92,24 @@
     padding: 7px 12px 8px;
   }
 }
+/* A phone does not unfold the car radio over the road on its own (hud-state.js
+   hudPop): a new station or the power button flashes the chip instead. */
+.touch-mode #carRadio.flash {
+  animation: radioChipFlash 0.9s var(--ui-ease);
+}
+@keyframes radioChipFlash {
+  0%,
+  60% {
+    border-color: var(--acid);
+    box-shadow:
+      0 0 0 2px #c7f26455,
+      var(--ui-shadow);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   #toast .note,
-  .note-timer {
+  .note-timer,
+  .touch-mode #carRadio.flash {
     animation: none;
   }
   #toast .note.leaving {

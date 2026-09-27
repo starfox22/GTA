@@ -14,7 +14,8 @@
 #bigmap {
   justify-self: center;
   width: 100%;
-  max-width: calc(74vh * 800 / 660);
+  /* The heading, the tools row and the legend take about 250 px of the panel's 96vh. */
+  max-width: min(calc(74vh * 800 / 660), calc((96vh - 250px) * 800 / 660));
   height: auto;
   max-height: none;
   aspect-ratio: 800 / 660;
@@ -24,7 +25,7 @@
   flex-direction: column;
   gap: 8px;
   min-height: 0;
-  max-height: 74vh;
+  max-height: min(74vh, calc(96vh - 250px));
   overflow: auto;
   overscroll-behavior: contain;
 }
