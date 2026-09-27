@@ -5,5 +5,5 @@
 - Vegetation by region: dune grass and sea grape on the Palm Keys beach, hibiscus and bougainvillea in the Keys' parks, royal palms along Monarch Isle's boulevards, palms, stone pines and sea grape on the county's resort coast, oak woodland and groves in the lowlands, forest stands of one kind in the range, pines along the sea, meadow grass on the mountain roads' verges.
 - Italian cypress is one smooth column; the Bradford pear is a fuller, brighter tree; the far forest keeps each tree's form (pines no longer spruce cones); county road verges are a dusty olive, not pale gravel.
 - No tree stands on a carriageway, in a building, under a rail deck, on a runway or in a doorway.
-- Internals: terrain-roads.js / terrain-grading.js / terrain-roadside.js (filleted centrelines, spline profiles, carve, furniture, colliders), county3d-roads.js (ribbon and furniture), vegetation3d-landscape.js; `onCountyRoad` is bucketed.
+- Internals: terrain-roads.js / terrain-grading.js / terrain-roadside.js (filleted centrelines kept out of towns, spline profiles, carve with embankment faces under the fall grade, furniture, colliders), county3d-roads.js (ribbon and furniture), vegetation3d-landscape.js; `onCountyRoad` is bucketed.
 - Console: `mountainRoad()`, `mountainRoadDrive()`, `treeAudit()`; `vegetation()` gains `regions` and `landscape`. Test: tools/tests/mountain-road.mjs.
