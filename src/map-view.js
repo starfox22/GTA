@@ -261,11 +261,13 @@
       if (target) blips.push({ x: target.x, y: target.y, color: '#f2d485' });
       if (userWaypoint) blips.push({ x: userWaypoint.x, y: userWaypoint.y, color: '#8effed' });
       for (const b of blips) {
+        // The rim inset; deeper at the bottom, where the district name and the
+        // MAP chip sit over the minimap.
         const dx = (b.x - cx) * scale,
           dy = (b.y - cy) * scale,
           m = 11,
           hx = width / 2 - m,
-          hy = height / 2 - m;
+          hy = dy > 0 ? height / 2 - 30 : height / 2 - m;
         if (Math.abs(dx) <= hx && Math.abs(dy) <= hy) continue;
         const k = Math.min(hx / Math.max(1e-6, Math.abs(dx)), hy / Math.max(1e-6, Math.abs(dy))),
           x = width / 2 + dx * k,
@@ -294,7 +296,7 @@
         g.strokeStyle = '#081822e0';
         g.fillStyle = b.color;
         const lx = clamp(x - Math.cos(a) * 17, 16, width - 16),
-          ly = clamp(y - Math.sin(a) * 13 + 3, 9, height - 4);
+          ly = clamp(y - Math.sin(a) * 13 + 3, 9, height - 24);
         g.strokeText(label, lx, ly);
         g.fillText(label, lx, ly);
         g.restore();
