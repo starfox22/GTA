@@ -34,7 +34,7 @@
           hot = m.alarm || m.suspicion >= 70;
         getElement('stealthLabel').textContent = m.alarm
           ? m.boss.hp > 0 && !poisonCommitted(m)
-            ? 'COVER BLOWN · FINISH IT OR GET OUT'
+            ? 'COVER BLOWN · FINISH IT HERE'
             : 'COVER BLOWN · GET TO THE ELEVATOR'
           : hot
             ? seen

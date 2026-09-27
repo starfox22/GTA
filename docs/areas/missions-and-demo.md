@@ -68,6 +68,9 @@ index plus one.
   `poisoned` with a `deathStyle.poison`: wounds.js skips the fall, wounds and blood for it.
 - Clean poisoning (no alarm, no stars at the lift): stage 4 is WALK AWAY FROM THE HOTEL
   (`ROOF_AWAY` from the doors); the alarm or the takedown keep the run to Coral Palms.
+- Cover blown with Vescari standing (not `poisonCommitted`): leaving the terrace (street
+  level, or `ROOF_AWAY` off) fails the job, "Vescari got away". Walking out before any alarm
+  leaves the job waiting upstairs.
 - The ambulance is a real `ambulance` vehicle on `countyRouteControl` (route
   `ROOF_AMBULANCE`), braked to its stop by the mission and parked there; a stuck one is
   placed at the stop. It is `mission` (removed on retry) and stays parked after a win.

@@ -180,8 +180,16 @@
       m.weaponDrawn = true;
       m.partyPanic = true;
       crime(2, 'seen');
-      announce('THE BLUE HOUR · COVER BLOWN', 'GET OUT ALIVE', 2.5);
-      tell('Bodyguards alerted. Break their line of sight and reach the elevator.', 4);
+      // Vescari still standing is still the job: leaving the terrace now lets him
+      // go (updateRooftopHit fails it). Dying already, only the way out is left.
+      const bossLive = m.boss.hp > 0 && !poisonCommitted(m);
+      announce('THE BLUE HOUR · COVER BLOWN', bossLive ? 'TAKE HIM DOWN' : 'GET OUT ALIVE', 2.5);
+      tell(
+        bossLive
+          ? 'Bodyguards alerted. Take Vescari down before you leave the terrace, or he gets away.'
+          : 'Bodyguards alerted. Break their line of sight and reach the elevator.',
+        4,
+      );
       for (const e of enemies)
         if (e.missionTag === 'rooftop-hit') {
           e.aiming = true;
@@ -198,7 +206,7 @@
       // The car brings the lift back up; the way out is not simply standing open.
       m.liftRecalled = gameTime + 9;
       // The objective follows: Vescari is still the job, if he is not already dying.
-      if (m.boss.hp > 0 && !poisonCommitted(m)) setStage(2, m.boss, 'COVER BLOWN · TAKE DOWN VESCARI OR GET OUT');
+      if (bossLive) setStage(2, m.boss, 'COVER BLOWN · TAKE DOWN VESCARI');
     }
     function canSilentHit(m) {
       return (
@@ -288,6 +296,19 @@
         !player.parachute &&
         gameMode === 'play' &&
         Math.abs(entityElevation(player) - terrainHeight(player.x, player.y)) < 3;
+      // Cover blown and off the terrace with Vescari standing (and not already
+      // poisoned past saving): his detail has him out of the building, and the
+      // job is lost. Walking out before any alarm leaves the job waiting upstairs.
+      if (
+        m.alarm &&
+        b.hp > 0 &&
+        !poisonCommitted(m) &&
+        !player.roof &&
+        (grounded || distanceBetween(player, ROOFTOP.door) > ROOF_AWAY)
+      ) {
+        failMission('Vescari got away: his detail had him out of the Blue Hour while you ran.');
+        return;
+      }
       if (m.stage === 3 && grounded) {
         m.quietExit = !!b.poisoned && !m.alarm && wantedStars === 0;
         if (m.quietExit)
