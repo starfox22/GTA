@@ -126,6 +126,13 @@
     function keyPrefix(id) {
       return hintDevice() === 'touch' ? '' : keyName(id) + ' · ';
     }
+    /* ' · ENTER' / ' · A' after a dialog button's word ('accept'; 'back': ESCAPE /
+       B); nothing on touch, where the button is tapped. */
+    function menuKeySuffix(kind) {
+      const device = hintDevice();
+      if (device === 'touch') return '';
+      return ' · ' + (device === 'gamepad' ? (kind === 'back' ? 'B' : 'A') : kind === 'back' ? 'ESCAPE' : 'ENTER');
+    }
     /* What the tests and the console see: the device and a sample of names. */
     function inputHintsReport() {
       const sample = ['interact', 'forward', 'back', 'fire', 'bail', 'map', 'radioPower', 'radioNext', 'reload'];

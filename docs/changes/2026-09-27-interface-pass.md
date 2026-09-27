@@ -3,7 +3,7 @@
   below, at most three (two on a phone), each up long enough to read, with a colour edge
   for police, warnings and rewards and a thin timer bar; a repeated line refreshes itself.
 - Hints name the control you are using: on a touch screen the on-screen button (TAP
-  ACTION, GAS, EXIT), with a gamepad its button (PRESS A, RT); radio chips drop key caps.
+  ACTION, GAS, EXIT), with a gamepad its button (PRESS A, RT); radio chips and the phone call's buttons drop key caps.
 - Gamepad support (standard layout): drive, walk, aim with the right stick, fire with RT,
   menus by D-pad / A / B, the city map by stick and triggers with A to set a route.
 - City map: filter chips for every kind of marker, a GO TO list of the nearest hospital,
