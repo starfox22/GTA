@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-362 files in the include tree, 138,273 lines.
+367 files in the include tree, 140,449 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -81,8 +81,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
 - `src/challenges.js`   607 — Mission-specific encounters
 - `src/sidejobs.js`   418 — Contract missions after the main story
-- `src/streets.js`   926 — Road presentation
-- `src/terrain.js`    13 — ▸ Mountains and off-road contact
+- `src/streets.js`   953 — Road presentation
+- `src/terrain.js`    16 — ▸ Mountains and off-road contact
 - `src/offroad.js`    49 — ▸ The 4x4 club, trail mud, off-road traction and the hill climb
 - `src/hypercars.js`   604 — The Prestige Collection: hypercar types, specs and sound
 - `src/mountain-village.js`   648 — The mountain villages of Ridgeline County
@@ -189,8 +189,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/county.js ▸ Outlying districts
 
-- `src/county-map.js`   521 — South Coast County: shared playable geography, roads and map data.
-- `src/county-build.js`   509 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
+- `src/county-map.js`   558 — South Coast County: shared playable geography, roads and map data.
+- `src/county-build.js`   511 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
 
 ## src/monarch.js ▸ Monarch Isle: the plan, the land and the streets
 
@@ -214,13 +214,16 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/terrain.js ▸ Mountains and off-road contact
 
+- `src/terrain-roads.js`   489 — Ridgeline's scenic roads: smooth centrelines through the plan's corners, grading over the range (profile, cross-fall, cuttings and fills), guard …
+- `src/terrain-grading.js`   475 — Grading the scenic roads over the range (terrain generation): profiles, the caps and fills they set, the viewpoints' lay-bys and the carriageway …
 - `src/terrain-noise.js`   536 — Ridgeline Range: terrain cells, switchback trails and noise functions (terrainNoise, terrainFbm, terrainRidged).
-- `src/terrain-field.js`   644 — Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
-- `src/terrain-scenery.js`   559 — Baked terrain data: treeline, scenery, streams, snow, mountain ground paint and terrainReport().
+- `src/terrain-field.js`   660 — Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
+- `src/terrain-scenery.js`   585 — Baked terrain data: treeline, scenery, streams, snow, mountain ground paint and terrainReport().
+- `src/terrain-roadside.js`   361 — Scenic roads' roadside: guard rails and viewpoint walls (drawn and solid), reflector posts, the report (mountainRoad) and a test autopilot …
 
 ## src/offroad.js ▸ The 4x4 club, trail mud, off-road traction and the hill climb
 
-- `src/offroad-trails.js`   640 — Off-road club block and trails: layout, terrain pads, vehicle types, trail sections and surfaces (offroadSurfaceAt).
+- `src/offroad-trails.js`   664 — Off-road club block and trails: layout, terrain pads, vehicle types, trail sections and surfaces (offroadSurfaceAt).
 - `src/offroad-club.js`   626 — Off-road club lot: vehicles, colliders, ground, club talk and scenes, the hill climb.
 
 ## src/sports.js ▸ Live basketball and soccer matches
@@ -285,7 +288,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/searchlight3d.js`   924 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   313 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   294 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
-- `src/vegetation3d.js`    57 — ▸ Tree library: species, foliage atlas, wind, LOD
+- `src/vegetation3d.js`    58 — ▸ Tree library: species, foliage atlas, wind, LOD
 - `src/render3d-streetprops.js`   250 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 - `src/cityscape3d.js`    21 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
@@ -306,7 +309,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sealife3d.js`    41 — ▸ Sea life meshes
 - `src/beachvolley3d.js`   178 — Beach volleyball court meshes
 - `src/beach3d.js`   806 — Palm Keys Beach meshes
-- `src/county3d.js`    12 — ▸ County and mountain meshes
+- `src/county3d.js`    13 — ▸ County and mountain meshes
 - `src/base3d.js`    62 — ▸ Fort Sentinel meshes
 - `src/airfields3d.js`   487 — Runways, taxiways and airfield lighting
 - `src/boats3d.js`    21 — ▸ Boat kit: lofted hulls and shared yacht parts
@@ -327,7 +330,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    83 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/clouds3d.js`   618 — Volumetric clouds and cloud shadows
-- `src/ground-data3d.js`   825 — Ground shader data
+- `src/ground-data3d.js`   826 — Ground shader data
 - `src/surfaces3d.js`   195 — ▸ Procedural surface detail
 - `src/grass3d.js`   152 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
@@ -353,9 +356,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/vegetation3d.js ▸ Tree library: species, foliage atlas, wind, LOD
 
-- `src/vegetation3d-atlas.js`   582 — Vegetation 3D foliage atlas: painting, normals and mips (FOLIAGE_ATLAS, foliageAtlas).
-- `src/vegetation3d-material.js`   481 — Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
-- `src/vegetation3d-species.js`   588 — Vegetation 3D species (conifers, palms and others), LOD meshes, instances, tints and far trees.
+- `src/vegetation3d-atlas.js`   605 — Vegetation 3D foliage atlas: painting, normals and mips (FOLIAGE_ATLAS, foliageAtlas).
+- `src/vegetation3d-material.js`   491 — Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
+- `src/vegetation3d-species.js`   670 — Vegetation 3D species (conifers, palms and others), LOD meshes, instances, tints and far trees.
+- `src/vegetation3d-landscape.js`   128 — Vegetation 3D landscaping: dune grass and sea grape on the Palm Keys beach, flowering shrubs in the Keys' parks, meadow grass on the mountain roads' …
 
 ## src/render3d-streetprops.js ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 
@@ -380,7 +384,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/signdesigns3d-families-a.js`   520 — SignArt FAMILIES part 1: neonScript, neonBlock, bulbs, lightbox, enamel, wood, stencil, deco.
 - `src/signdesigns3d-families-b.js`   448 — SignArt FAMILIES part 2: carved, plaque, customs, airbrush, varsity, highway, pixel, tattoo and the rest.
-- `src/signdesigns3d-styles.js`   661 — SignArt style table (SIGN_DESIGNS), designFor(), paint(), hotel and tower names, billboards and SignArt's API.
+- `src/signdesigns3d-styles.js`   663 — SignArt style table (SIGN_DESIGNS), designFor(), paint(), hotel and tower names, billboards and SignArt's API.
 
 ## src/cityscape3d.js ▸ Building archetypes, roofs, shopfronts and street furniture
 
@@ -428,8 +432,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/county3d.js ▸ County and mountain meshes
 
-- `src/county3d-ground.js`   521 — County 3D ground: regional terrain materials and patches (terrainMaterials, TERRAIN_* maps) and scenery cells.
-- `src/county3d-forest.js`   493 — County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
+- `src/county3d-ground.js`   526 — County 3D ground: regional terrain materials and patches (terrainMaterials, TERRAIN_* maps) and scenery cells.
+- `src/county3d-forest.js`   523 — County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
+- `src/county3d-roads.js`   424 — County 3D scenic roads: the asphalt ribbon over the graded surface (markings, shoulders, wet film), guard rails, viewpoint walls, reflector posts and …
 
 ## src/base3d.js ▸ Fort Sentinel meshes
 
@@ -547,7 +552,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-missions.js`   184 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   132 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
-- `src/game-console-world.js`   191 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-world.js`   200 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`    98 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost

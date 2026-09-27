@@ -419,10 +419,47 @@
       },
     };
     const countyGroundTiles = [];
+    /* Whether (x, y) is within `margin` of a county road's carriageway. Asked for
+       every walker step and vehicle (onRoad, solid), so the segments are bucketed
+       by 128-unit cell, grown by their half-width and COUNTY_ROAD_MARGIN; the
+       buckets are rebuilt when roads are added (or reset to null when a road's
+       points change: terrain-roads.js). */
+    const COUNTY_ROAD_MARGIN = 100;
+    let countyRoadGrid = null,
+      countyRoadGridRoads = 0;
+    function countyRoadCells() {
+      if (countyRoadGrid && countyRoadGridRoads === COUNTY_ROADS.length) return countyRoadGrid;
+      countyRoadGrid = new Map();
+      countyRoadGridRoads = COUNTY_ROADS.length;
+      for (const r of COUNTY_ROADS)
+        for (let i = 1; i < r.points.length; i++) {
+          const a = r.points[i - 1],
+            b = r.points[i],
+            grow = r.width / 2 + COUNTY_ROAD_MARGIN,
+            entry = { a, b, half: r.width / 2 };
+          if (a[0] === b[0] && a[1] === b[1]) continue;
+          for (let cx = Math.floor((Math.min(a[0], b[0]) - grow) / 128); cx <= Math.floor((Math.max(a[0], b[0]) + grow) / 128); cx++)
+            for (let cy = Math.floor((Math.min(a[1], b[1]) - grow) / 128); cy <= Math.floor((Math.max(a[1], b[1]) + grow) / 128); cy++) {
+              const key = cx * 4096 + cy;
+              let cell = countyRoadGrid.get(key);
+              if (!cell) countyRoadGrid.set(key, (cell = []));
+              cell.push(entry);
+            }
+        }
+      return countyRoadGrid;
+    }
     function onCountyRoad(x, y, margin = 0) {
-      return COUNTY_ROADS.some((r) =>
-        r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + margin),
-      );
+      if (margin > COUNTY_ROAD_MARGIN)
+        return COUNTY_ROADS.some((r) =>
+          r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + margin),
+        );
+      const cell = countyRoadCells().get(Math.floor(x / 128) * 4096 + Math.floor(y / 128));
+      if (!cell) return false;
+      for (let i = 0; i < cell.length; i++) {
+        const e = cell[i];
+        if (segmentDistance(x, y, e.a, e.b) < e.half + margin) return true;
+      }
+      return false;
     }
     function countyRegionAt(x, y) {
       return COUNTY_REGIONS.find((r) => regionContains(r, x, y));

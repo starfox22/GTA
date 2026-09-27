@@ -69,6 +69,8 @@
           'ROAD UNDERPASS': ['highway', { arrow: 'up' }],
           'OCEANVIEW / AIRPORT': ['highway', { icon: 'plane', arrow: 'right' }],
           'EAGLE PASS · SCENIC ROUTE': ['highway', { ground: '#6b3f1f', icon: 'mountain' }],
+          // The mountain roads' lay-bys (county3d-roads.js): a brown recreation sign.
+          'SCENIC VIEW': ['highway', { ground: '#6b3f1f', icon: 'mountain' }],
           'CORAL COAST': ['enamel', { ground: '#f2ccae', ink: '#1f5f63', rim: '#1f5f63', font: 'times', subAbove: 'WELCOME TO THE', icon: 'palm', icon2: true, iconColor: '#1f5f63', shape: 'round' }],
           // The park
           'CENTRAL GARDEN': ['wood', { plank: '#4a3522', ink: '#efe0b8', routed: true, icon: 'leaf', icon2: true, iconColor: '#9fca7a', font: 'times', sub: 'CITY PARKS · OPEN DAWN TO DUSK' }],

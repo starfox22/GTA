@@ -506,6 +506,9 @@
      * tyre force the ground can give (offroadStep, reused), and applies gravity.
      */
     function offroadDrive(c, spec, t, acceleration, along, stepSeconds) {
+      // Tarmac on the range (the county roads, the graded mountain roads: terrain-roads.js).
+      t.paved = countyPavedAt(c.x, c.y);
+      if (t.paved) return offroadPaved(c, t, acceleration, along, stepSeconds);
       const s = offroadSurfaceAt(c.x, c.y, offroadSurface),
         wet = clamp(weather.wet || 0, 0, 1),
         tyre = offroadTyre(spec),
@@ -594,6 +597,27 @@
       t.limit = roughKmh * 1.6 * KMH;
       return offroadStep;
     }
+    /* On a paved road over the range the engine, brakes and tyres work as on any
+       road (physics.js has already held them to the tyres' grip); the ground only
+       adds gravity along its slope: a climb slows the car, a descent runs it on,
+       and a banked bend leans it into the curve. A car stopped with nothing
+       pressed is held on its brakes. */
+    function offroadPaved(c, t, acceleration, along, stepSeconds) {
+      const cn = 1 / Math.sqrt(1 + t.slope.x * t.slope.x + t.slope.y * t.slope.y);
+      let force = acceleration;
+      if (Math.abs(acceleration) < 0.05 * GRAVITY && Math.abs(along) < 2 * KMH && !c.ai) {
+        const hold = 0.8 * GRAVITY * cn;
+        force = clamp(GRAVITY * t.along * cn - along / stepSeconds, -hold, hold);
+      }
+      c.vx -= t.slope.x * GRAVITY * cn * stepSeconds;
+      c.vy -= t.slope.y * GRAVITY * cn * stepSeconds;
+      offroadRoll(c, stepSeconds);
+      offroadStep.acceleration = force;
+      offroadStep.grip = 1;
+      offroadStep.lateral = 1;
+      t.limit = Infinity;
+      return offroadStep;
+    }
     // Off the range: wheels roll with the ground again.
     function offroadRoll(c, stepSeconds) {
       if (c.wheelSpin) c.wheelSpin = Math.max(0, c.wheelSpin - stepSeconds * 4);
@@ -625,7 +649,7 @@
         wet = weather.wet || 0;
       let gain = 0;
       if (c.surfaceMud > 0.05) gain = c.surfaceMud * (0.01 + 0.00035 * speed + 0.07 * c.wheelSpin);
-      else if (c.offroadState && speed > 20) gain = 0.0015 * (1 - wet) * (c.mudCoat < 0.3 ? 1 : 0);
+      else if (c.offroadState && !c.offroadState.paved && speed > 20) gain = 0.0015 * (1 - wet) * (c.mudCoat < 0.3 ? 1 : 0);
       if (gain > 0) {
         c.mudCoat = Math.min(1, c.mudCoat + gain * deltaSeconds);
         if (c.surfaceMud > 0.05) c.mudWet = Math.min(1, c.mudWet + deltaSeconds * 0.8);

@@ -168,6 +168,18 @@
           last: userRoute.at(-1) || null,
         };
       },
+      // Ridgeline's scenic roads (terrain-roads.js): per road its length, points,
+      // tightest curve, grading (top, steepest grade, sharpest vertical curve, bank),
+      // how far the ground on each lane strays from the designed surface and the
+      // worst bump (as g at 100 km/h, open road and junction mouths), rails, walls
+      // and posts; the viewpoints. With a road's name, only that road and its
+      // profile every `step` samples ([x, y, height, fall left %, fall right %,
+      // relief, pinned height]); with a map point [x, y] too, the right lane's
+      // ground and designed surface every 2 units round it.
+      mountainRoad: (name, step, near) => scenicRoadReport(name, step, near),
+      // Drive a car along a scenic road on an autopilot (terrain-roadside.js
+      // scenicRoadDrive): lane holding, paved, vertical g, height steps, knocks, damage.
+      mountainRoadDrive: (name, kmh, from, seconds, reverse, type) => scenicRoadDrive(name, kmh, from, seconds, !!reverse, type),
       // Barrier audit (tools/layout-audit.mjs): every visible barrier line as data
       // -- the sea railing runs, the street-end guardrails, gate piers and
       // railings -- and how many foot obstacles are registered.

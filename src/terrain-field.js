@@ -30,12 +30,13 @@
           }
         }
       // Everything the plan lays on the ground stays at street level.
-      for (const road of [...COUNTY_ROADS, ...SERVICE_ROADS]) rasterizePolyline(flat, field, road.points, road.width / 2 + 26);
+      // (A graded scenic road is not flat: terrain-grading.js levels the ground to its profile.)
+      for (const road of [...COUNTY_ROADS, ...SERVICE_ROADS]) if (!scenicRoadGraded(road, field)) rasterizePolyline(flat, field, road.points, road.width / 2 + 26);
       for (const line of RAIL_LINES) rasterizePolyline(flat, field, line.route, 40);
       for (const t of COUNTY_TOWNS) rasterizeRect(flat, field, t.x - 90, t.y - 90, BLOCK_SIZE * 2 + 180, BLOCK_SIZE * 2 + 180);
       rasterizePolyline(flat, field, [[FLIGHT.pickup.x, FLIGHT.pickup.y], [FLIGHT.pickup.x, FLIGHT.pickup.y]], 150);
       // Level pads the plan cuts into the hillside (the 4x4 club's lot, offroad.js).
-      for (const pad of offroadTerrainPads()) rasterizeRect(flat, field, pad.x, pad.y, pad.w, pad.h);
+      for (const pad of offroadTerrainPads()) if (!scenicPadRoad(pad, field)) rasterizeRect(flat, field, pad.x, pad.y, pad.w, pad.h);
       lap('masks');
       const flatDistance = gridDistance(flat, cols, rows, TERRAIN_CELL),
         seaDistance = gridDistance(sea, cols, rows, TERRAIN_CELL),
@@ -166,7 +167,11 @@
             }
           }
       lap('erosion');
-      // 4. The plan's caps: embankments, shores, sea cliffs, the field's edge.
+      // 3b. The scenic roads' profiles over this relief (terrain-grading.js).
+      const grade = gradeScenicRoads(field, heights, flatDistance, seaDistance, lakeDistance, land);
+      lap('roads');
+      // 4. The plan's caps: embankments, shores, sea cliffs, the field's edge;
+      // a graded road caps and fills the ground from its own level.
       for (let i = 0; i < count; i++) {
         const c = i % cols,
           r = (i - c) / cols,
@@ -181,13 +186,17 @@
           fb = Math.max(0, fd + bend * smoothStep(0, 160, fd)),
           sb = Math.max(0, sd + bend * smoothStep(60, 200, sd)),
           lb = Math.max(0, ld + bend * smoothStep(0, 160, ld)),
+          rd = grade ? Math.max(0, grade.distance[i] - 6) : 0,
+          rb = Math.max(0, rd + bend * smoothStep(0, 160, rd)),
           cap = Math.min(
             (fb * 0.4 + fb * fb * 0.0009) * wander,
             sd < 70 ? sd * 2.6 : 182 + (sb - 70) * 1.7 * wander,
             (lb * 0.36 + lb * lb * 0.0006) * wander,
             ed * 0.5 + ed * ed * 0.001,
+            grade ? grade.level[i] + (rb * 0.4 + rb * rb * 0.0009) * wander : Infinity,
           );
         heights[i] = land[i] ? Math.max(0, smoothMin(heights[i], cap, 60)) : 0;
+        if (grade && land[i]) heights[i] = Math.max(heights[i], grade.level[i] - scenicFillDrop(grade.distance[i]));
       }
       // 5. Trails: graded, cut and filled, with a level platform at the top.
       const trailMask = new Float32Array(count),
@@ -228,12 +237,16 @@
         // Two ends are fixed: street level at the trailhead and the summit (as high as
         // the grade allows). Between them the trail follows the relief, held inside
         // the band it can climb from the one and still reach the other.
-        const total = along.at(-1),
-          end = Math.min(smoothed.at(-1) + 60, (total - 50) * TRAIL_MAX_GRADE * 0.97);
-        profile = smoothed.map((h, i) =>
-          clamp(h, Math.max(0, end - (total - along[i]) * TRAIL_MAX_GRADE), along[i] * TRAIL_MAX_GRADE),
-        );
-        profile[0] = 0;
+        // The trailhead is on a road, at that road's level (a graded scenic road may be
+        // well above street level there); the trail leaves it level for its first 60 units.
+        const start = scenicRoadLevel(points[0][0], points[0][1]),
+          total = along.at(-1),
+          end = Math.min(smoothed.at(-1) + 60, start + (total - 50) * TRAIL_MAX_GRADE * 0.97);
+        profile = smoothed.map((h, i) => {
+          const run = Math.max(0, along[i] - 60) * TRAIL_MAX_GRADE;
+          return clamp(h, Math.max(0, start - run, end - (total - along[i]) * TRAIL_MAX_GRADE), start + run);
+        });
+        profile[0] = start;
         // The last stretch is level: it runs onto the summit platform.
         const levelFrom = profile.findIndex((_, i) => along[i] >= total - 50);
         for (let i = levelFrom; i < profile.length; i++) profile[i] = end;
@@ -350,6 +363,8 @@
             }
           }
       }
+      // 6. The scenic roads' carriageways, exactly (terrain-grading.js).
+      if (grade) carveScenicRoads(field, heights, grade, land);
       // Mud, rock and the trail's own frame per vertex (offroad.js).
       offroadTrailBake(field, heights, trailNear, trailSegment, trailOwner);
       lap('trails');
@@ -360,6 +375,7 @@
       field.trailMask = trailMask;
       field.lakeDistance = lakeDistance;
       field.flatDistance = flatDistance;
+      field.seaDistance = seaDistance;
       const triangles = new Uint8Array(field.nx * field.ny * 2);
       for (let r = 0; r < field.ny; r++)
         for (let c = 0; c < field.nx; c++) {

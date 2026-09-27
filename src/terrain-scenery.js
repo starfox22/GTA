@@ -15,6 +15,8 @@
       if (field.bakes) return field.bakes;
       terrainField(field);
       const { cols, rows, heights, land, flow, trailMask, x0, y0, seed, flatDistance, lakeDistance } = field,
+        // Distance from a graded scenic road's band (terrain-grading.js); none on the lone hills.
+        roadDistance = field.roadDistance || null,
         count = cols * rows,
         normals = new Float32Array(count * 3),
         ao = new Float32Array(count),
@@ -61,7 +63,7 @@
         for (let c = 0; c < cols; c++) {
           const i = r * cols + c,
             h = heights[i];
-          if (!land[i] || trailMask[i] > 0.01 || flatDistance[i] < 50 || lakeDistance[i] < 30) continue;
+          if (!land[i] || trailMask[i] > 0.01 || flatDistance[i] < 50 || lakeDistance[i] < 30 || (roadDistance && roadDistance[i] < 6)) continue;
           const x = x0 + c * TERRAIN_CELL,
             y = y0 + r * TERRAIN_CELL,
             steep = 1 - normals[i * 3 + 1],
@@ -74,6 +76,8 @@
           f *= 1 - smoothStep(0.74, 0.8, damp);
           // Thin out towards the roads and towns so the forest edge is open woodland.
           f *= smoothStep(2, 30, h) * (0.35 + 0.65 * smoothStep(60, 260, flatDistance[i]));
+          // A mountain road runs through the forest: a clearing a few trees deep either side.
+          if (roadDistance) f *= 0.4 + 0.6 * smoothStep(20, 200, roadDistance[i]);
           // and fades out raggedly towards the field's edge (no straight forest line).
           const edge = Math.min(c, r, cols - 1 - c, rows - 1 - r) * TERRAIN_CELL;
           f *= smoothStep(40, 420, edge + stands * 500);
@@ -99,7 +103,7 @@
         broadleaf = [],
         rocks = [];
       for (const field of TERRAIN_FIELDS) {
-        const { cols, rows, heights, land, x0, y0, seed, trailMask, flatDistance } = terrainField(field),
+        const { cols, rows, heights, land, x0, y0, seed, trailMask, flatDistance, roadDistance } = terrainField(field),
           { normals, forest } = terrainBakes(field),
           spacing = 17;
         for (let y = y0 + spacing / 2; y < field.y1; y += spacing)
@@ -118,7 +122,7 @@
                 size = (13 + terrainHash(c, r, seed + 4) * 11) * (1 - alpine * 0.45),
                 conifer = terrainHash(c, r, seed + 5) < 0.5 + smoothStep(40, 260, ground) * 0.48;
               (conifer ? conifers : broadleaf).push(jx, jy, ground, size, terrainHash(c, r, seed + 6), roll * TAU * 7);
-            } else if (roll > 0.962 && land[i] && trailMask[i] < 0.01 && flatDistance[i] > 40) {
+            } else if (roll > 0.962 && land[i] && trailMask[i] < 0.01 && flatDistance[i] > 40 && !(roadDistance && roadDistance[i] < 24)) {
               // Boulders: scree and cliff feet, and some out in the meadows.
               const steep = 1 - normals[i * 3 + 1],
                 h = heights[i];
@@ -147,7 +151,7 @@
       if (terrainStreamCache) return terrainStreamCache;
       const streams = [];
       for (const field of TERRAIN_FIELDS) {
-        const { cols, rows, heights, land, x0, y0, trailMask } = terrainField(field),
+        const { cols, rows, heights, land, x0, y0, trailMask, roadMask } = terrainField(field),
           count = cols * rows,
           wet = new Uint8Array(count);
         for (let i = 0; i < count; i++) wet[i] = land[i] ? 0 : 1;
@@ -186,8 +190,8 @@
               r = (i - c) / cols,
               h = heights[i],
               down = next[i] >= 0 ? h - heights[next[i]] : 0;
-            // A stream running over a trail goes under it in a culvert.
-            if (h < 1.5 || trailMask[i] > 0.5) break;
+            // A stream running over a trail or a road goes under it in a culvert.
+            if (h < 1.5 || trailMask[i] > 0.5 || (roadMask && roadMask[i] > 0.3)) break;
             line.push([x0 + c * TERRAIN_CELL, y0 + r * TERRAIN_CELL, h, 5 + Math.sqrt(area[i]) * 0.16, down / TERRAIN_CELL]);
             if (taken[i]) break;
             taken[i] = 1;
@@ -268,6 +272,14 @@
         );
         drawingContext.restore();
       }
+    }
+    // Distance to the sea from a point on a terrain field (Infinity off the fields): the coast's pines.
+    function terrainSeaDistance(x, y) {
+      const f = terrainFieldAt(x, y);
+      if (!f || !f.seaDistance) return Infinity;
+      const c = clamp(Math.round((x - f.x0) / TERRAIN_CELL), 0, f.cols - 1),
+        r = clamp(Math.round((y - f.y0) / TERRAIN_CELL), 0, f.rows - 1);
+      return f.seaDistance[r * f.cols + c];
     }
     function terrainReport() {
       const scenery = mountainScenery();
@@ -511,12 +523,26 @@
         },
       );
     }
+    // A club truck at each trailhead: parked on the trail 90 units up from the road,
+    // to one side, facing the climb (it used to stand in the road's lane).
     function spawnTrailVehicles() {
       for (const t of MOUNTAIN_TRAILS) {
-        const [x, y] = t.points[0],
-          p = findStreetPoint(x + 65, y, 20);
-        if (canSpawnCar('suv', p.x, p.y, headingBetween(p, t.peak), 8))
-          makeCar('suv', p.x, p.y, headingBetween(p, t.peak), false, '#bc9762');
+        let [x, y] = t.points[0],
+          left = 90,
+          heading = 0;
+        for (let i = 1; i < t.points.length && left > 0; i++) {
+          const [ax, ay] = t.points[i - 1],
+            [bx, by] = t.points[i],
+            length = Math.hypot(bx - ax, by - ay),
+            f = Math.min(1, left / length);
+          heading = Math.atan2(by - ay, bx - ax);
+          x = ax + (bx - ax) * f;
+          y = ay + (by - ay) * f;
+          left -= length;
+        }
+        x -= Math.sin(heading) * 11;
+        y += Math.cos(heading) * 11;
+        if (canSpawnCar('suv', x, y, heading, 8)) makeCar('suv', x, y, heading, false, '#bc9762');
       }
     }
     const SERVICE_ROADS = [

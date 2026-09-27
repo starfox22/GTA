@@ -808,13 +808,39 @@
       drawingContext.restore();
     }
     /* County roads' centre dashes as marking shapes (ROAD MARKINGS): 22 long every
-       46 down each leg, not where another road joins; one shape per run. */
+       46 down each leg, not where another road joins; one shape per run. The
+       scenic mountain roads' curves are walked as one line, a shape per dash;
+       in 3D they paint their own (county3d-roads.js). */
     let countyMarkingCache = null;
     function countyMarkingShapes() {
       if (countyMarkingCache) return countyMarkingCache;
       countyMarkingCache = [];
+      const joinedAt = (r, x, y) =>
+        COUNTY_ROADS.some((o) => o !== r && o.points.some((p, j) => j && segmentDistance(x, y, o.points[j - 1], p) < o.width / 2 + 22));
+      for (const r of COUNTY_ROADS) {
+        if (!r.scenic) continue;
+        if (VECTOR_GROUND_MARKINGS) continue;
+        let along = 0;
+        const at = (d) => {
+          let rest = d;
+          for (let i = 1; i < r.points.length; i++) {
+            const a = r.points[i - 1],
+              b = r.points[i],
+              len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+            if (rest <= len) return [a[0] + ((b[0] - a[0]) * rest) / len, a[1] + ((b[1] - a[1]) * rest) / len];
+            rest -= len;
+          }
+          return r.points[r.points.length - 1];
+        };
+        for (let i = 1; i < r.points.length; i++) along += Math.hypot(r.points[i][0] - r.points[i - 1][0], r.points[i][1] - r.points[i - 1][1]);
+        for (let d = 18; d < along - 30; d += 46) {
+          const [ax, ay] = at(d),
+            [bx, by] = at(d + 22);
+          if (!joinedAt(r, ax, ay)) countyMarkingCache.push({ ax, ay, bx, by, hw: 1, pattern: 'solid', paint: '#d7c697' });
+        }
+      }
       for (const r of COUNTY_ROADS)
-        for (let i = 1; i < r.points.length; i++) {
+        for (let i = 1; i < r.points.length && !r.scenic; i++) {
           const a = r.points[i - 1],
             b = r.points[i],
             dx = b[0] - a[0],
@@ -853,8 +879,9 @@
     // County roads on a ground layer; with `detail` their centre dashes, unless
     // the 3D ground draws those itself (VECTOR_GROUND_MARKINGS).
     function paintCountyRoads(g, detail) {
+      // The verge: a dusty olive shoulder (it read as pale gravel), grey on the bridges.
       for (const r of COUNTY_ROADS)
-        strokeRoad(g, r.points, r.width + 12, r.bridge ? '#b1b4a9' : '#9eaa92');
+        strokeRoad(g, r.points, r.width + 12, r.bridge ? '#b1b4a9' : '#7f876b');
       for (const r of COUNTY_ROADS) strokeRoad(g, r.points, r.width, '#414d51');
       if (!detail || VECTOR_GROUND_MARKINGS) return;
       paintMarkingShapes(g, countyMarkingShapes());

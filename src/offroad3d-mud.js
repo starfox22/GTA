@@ -286,7 +286,7 @@
       }
       // Throw mud (or dust) from a vehicle's tyres and lay its tracks.
       function vehicleSpray(c, m, deltaSeconds) {
-        const onRange = !!c.offroadState,
+        const onRange = !!c.offroadState && !c.offroadState.paved,
           dirt = onRange || (c.x > CITY_SIZE - 200 && landAt(c.x, c.y) && !onRoad(c.x, c.y) && !onCountyRoad(c.x, c.y, 2));
         if (!dirt || isAircraft(c) || isBoat(c) || c.hp <= 0) return;
         const along = c.speed || 0,

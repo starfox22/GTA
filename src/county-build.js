@@ -73,10 +73,14 @@
           airport: true,
         });
       }
-      for (let i = 0; i < 530; i++) {
+      // Ridgeline's lowland trees stand in groves and woods with open pasture
+      // between (a low-frequency noise), not scattered evenly: more candidates,
+      // most of the open ground left to the meadows.
+      for (let i = 0; i < 900; i++) {
         const x = 5800 + seededRandom() * 5000,
           y = 500 + seededRandom() * 5700;
         if (
+          terrainNoise(x / 460, y / 460, 55) * 0.7 + terrainNoise(x / 150, y / 150, 57) * 0.3 < -0.02 ||
           !landAt(x, y) ||
           onCountyRoad(x, y, 95) ||
           terrainHeight(x, y) > 5 ||
@@ -386,6 +390,8 @@
         for (const p of bridgePylons(bridge)) addBridgeBody({ ...p, kind: 'bridge ' + p.kind });
       for (const bridge of BRIDGES)
         for (const piece of countyBridgeRails(bridge)) addBridgeBody({ ...piece, kind: 'rail', height: 8 });
+      // The mountain roads' guard rails and viewpoint walls (terrain-roadside.js).
+      addScenicRoadColliders();
     }
     // An oriented static body, filed in every grid cell its corners reach.
     function addBridgeBody(piece) {

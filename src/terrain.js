@@ -7,7 +7,10 @@
      * triangulated height surface (rendering, collision, elevation), its 4x4 trails,
      * slope handling, the scenery placement the renderer plants on it, and services.
      */
+    // @include src/terrain-roads.js
+    // @include src/terrain-grading.js
     // @include src/terrain-noise.js
     // @include src/terrain-field.js
     // @include src/terrain-scenery.js
+    // @include src/terrain-roadside.js
     // END SUBSYSTEM: src/terrain.js

@@ -510,7 +510,7 @@
         const steer = clamp(Math.atan(((c.av || 0) * spec.l * 0.62) / Math.max(Math.abs(along), 12)) * Math.sign(along || 1), -0.62, 0.62),
           cos = Math.cos(c.a),
           sin = Math.sin(c.a),
-          onGround = !!c.offroadState,
+          onGround = !!c.offroadState && !c.offroadState.paved,
           travel = r * 0.45 * (spec.travel || 1),
           pitch = Math.sin(c.slopePitch || 0),
           rollSlope = Math.sin(c.slopeRoll || 0),

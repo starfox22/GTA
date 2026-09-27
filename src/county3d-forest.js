@@ -1,20 +1,35 @@
       // County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
-      // The Ridgeline's species: conifers by altitude, broadleaf by chance.
-      function forestSpecies(conifer, ground, roll) {
-        if (!conifer) return roll < 0.55 ? 'beech' : roll < 0.8 ? 'birch' : 'maple';
-        const [pine, fir] = ground < 150 ? [0.55, 0.8] : ground < 400 ? [0.2, 0.6] : [0.1, 0.35];
-        return roll < pine ? 'pine' : roll < fir ? 'fir' : 'spruce';
+      /* The Ridgeline's species. A stand (a patch a few hundred units across, from
+         low-frequency noise) leans one way, so the forest grows in groves of one
+         kind rather than salt and pepper: broadleaf down in the valleys (oak low,
+         beech and maple higher, birch on the edges and up towards the conifers),
+         pine on the warm lower slopes and all along the sea, fir through the
+         middle, spruce up to the treeline. */
+      function forestSpecies(conifer, ground, roll, x, y) {
+        const stand = 0.5 + 0.5 * (terrainNoise(x / 260, y / 260, 71) * 0.65 + terrainNoise(x / 90, y / 90, 73) * 0.35),
+          r = clamp(roll * 0.55 + stand * 0.45, 0, 0.999),
+          coast = terrainSeaDistance(x, y) < 260;
+        if (!conifer) {
+          if (ground < 90) return r < 0.5 ? 'oak' : r < 0.72 ? 'maple' : r < 0.9 ? 'beech' : 'birch';
+          return r < 0.45 ? 'beech' : r < 0.72 ? 'birch' : r < 0.9 ? 'maple' : 'oak';
+        }
+        if (coast) return r < 0.85 ? 'pine' : 'fir';
+        const [pine, fir] = ground < 150 ? [0.55, 0.82] : ground < 400 ? [0.22, 0.62] : [0.1, 0.35];
+        return r < pine ? 'pine' : r < fir ? 'fir' : 'spruce';
       }
       // Size 1 of mountainScenery() is 1/21 of a species' modelled size.
-      const FOREST_SCALE = 1 / 21;
+      const FOREST_SCALE = 1 / 21,
+        // The far level's model per species.
+        FOREST_FAR = { spruce: 'spruce', fir: 'spruce', pine: 'pine', oak: 'beech', beech: 'beech', maple: 'beech', birch: 'beech' };
       function plantForest(lists) {
         const cells = new Map();
         for (const { list, conifer } of lists)
           for (let k = 0; k < list.length; k += 6) {
             const key = Math.floor(list[k] / SCENERY_CELL) * 4096 + Math.floor(list[k + 1] / SCENERY_CELL);
             if (!cells.has(key)) cells.set(key, []);
-            const roll = (list[k + 4] * 7.31 + list[k + 5] * 0.137) % 1;
-            cells.get(key).push({ list, k, conifer, species: forestSpecies(conifer, list[k + 2], roll) });
+            const roll = (list[k + 4] * 7.31 + list[k + 5] * 0.137) % 1,
+              species = forestSpecies(conifer, list[k + 2], roll, list[k], list[k + 1]);
+            cells.get(key).push({ list, k, conifer, species, far: FOREST_FAR[species] || 'beech' });
           }
         const m = new Three.Matrix4(),
           q = new Three.Quaternion(),
@@ -24,17 +39,17 @@
           up = new Three.Vector3(0, 1, 0),
           axis = new Three.Vector3(),
           ratio = new Three.Color();
-        // The far level: every conifer is the spruce's low cone, every broadleaf
-        // the beech's blob, tinted to its own species' leaf colour.
-        const farBase = { true: TREE_SPECIES.spruce, false: TREE_SPECIES.beech };
+        // The far level: each tree the mid model of its form (a spruce cone for
+        // spruce and fir, a pine's tufted crown for the pines, the beech's blob
+        // for every broadleaf), tinted to its own species' leaf colour.
         for (const entries of cells.values()) {
           const bySpecies = new Map(),
             byFar = new Map();
           for (const e of entries) {
             if (!bySpecies.has(e.species)) bySpecies.set(e.species, []);
             bySpecies.get(e.species).push(e);
-            if (!byFar.has(e.conifer)) byFar.set(e.conifer, []);
-            byFar.get(e.conifer).push(e);
+            if (!byFar.has(e.far)) byFar.set(e.far, []);
+            byFar.get(e.far).push(e);
           }
           const place = (mesh, list, far) =>
             list.forEach((e, j) => {
@@ -51,11 +66,12 @@
               m.compose(p, q, s);
               mesh.setMatrixAt(j, m);
               if (far) {
-                const base = farBase[e.conifer].leafColor;
+                const base = TREE_SPECIES[e.far].leafColor;
                 ratio.setRGB(S.leafColor.r / base.r, S.leafColor.g / base.g, S.leafColor.b / base.b).multiply(v.tint);
                 setFoliageInstance(mesh, j, ratio, v.morph, 0);
               } else setFoliageInstance(mesh, j, v.tint, v.morph, v.density);
               forestCounts[species] = (forestCounts[species] || 0) + (far ? 0 : 1);
+              if (!far) tallyVegetation(data[k], data[k + 1], species, data[k] > 5800 && data[k + 1] < 3500 ? 'Ridgeline range' : undefined);
             });
           const near = [],
             far = [];
@@ -65,9 +81,9 @@
             place(mesh, list, false);
             near.push(mesh);
           }
-          for (const [conifer, list] of byFar) {
-            const mesh = foliageInstances(speciesGeometry(farBase[conifer].key, 1), list.length);
-            mesh.name = 'Ridgeline ' + (conifer ? 'conifers' : 'broadleaf') + ' far';
+          for (const [farKey, list] of byFar) {
+            const mesh = foliageInstances(speciesGeometry(farKey, 1), list.length);
+            mesh.name = 'Ridgeline ' + farKey + ' far';
             mesh.castShadow = false;
             place(mesh, list, true);
             mesh.visible = false;
@@ -312,14 +328,28 @@
         const board = box(group, boardX, boardY + 10, boardZ, 17, 1.5, 10, staticMat('#9e9c79'));
         board.rotation.x = -0.22;
         box(group, boardX, boardY + 11, boardZ, 12, 0.3, 6, staticMat('#506d64'));
-        sign(
-          trail.peak.name + ' · 4×4 TRAIL',
-          trail.points[0][0] + 55,
-          trail.points[0][1] + 30,
+        // Beside the trail a little way up from the road (the trail starts on the
+        // road's curve now), at the ground's height there.
+        let [bx, by] = trail.points[0],
+          left = 80,
+          heading = 0;
+        for (let i = 1; i < trail.points.length && left > 0; i++) {
+          const [ax, ay] = trail.points[i - 1],
+            [cx, cy] = trail.points[i],
+            length = Math.hypot(cx - ax, cy - ay),
+            f = Math.min(1, left / length);
+          heading = Math.atan2(cy - ay, cx - ax);
+          bx = ax + (cx - ax) * f;
+          by = ay + (cy - ay) * f;
+          left -= length;
+        }
+        const trailX = bx + Math.sin(heading) * 62,
+          trailZ = by - Math.cos(heading) * 62,
           // A trailhead board at real size (it was 19 m across).
-          88,
-          '#d4cb92',
-        );
+          trailBoard = sign(trail.peak.name + ' · 4×4 TRAIL', trailX, trailZ, 88, '#d4cb92'),
+          lift = terrainHeight(trailX, trailZ);
+        trailBoard.position.y += lift;
+        if (trailBoard.userData.backing) trailBoard.userData.backing.position.y += lift;
         statics.push({
           x: p.x,
           y: p.y,

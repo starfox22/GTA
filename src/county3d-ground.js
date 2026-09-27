@@ -172,6 +172,9 @@
           tCol = mix( tCol, slab, smoothstep( 0.3, 0.8, tRockStep ) * 0.85 );
           tMudW *= mudWetness;
         }
+        // Beside a scenic road: a worn verge of soil and trampled grass.
+        float tVerge = vTerrainMud.w;
+        tCol = mix( tCol, terrainSrgb( vec3( 0.37, 0.33, 0.25 ) ) * ( 0.8 + 0.4 * tFine ), tVerge * 0.5 * ( 1.0 - tSnow ) );
         // Ambient occlusion also darkens the albedo a little in the deepest folds.
         tCol *= mix( 0.72, 1.0, smoothstep( 0.35, 0.95, tAo ) );
         // At the foot the colour meets the painted county ground it rises from.
@@ -285,7 +288,7 @@
       }
       for (const field of TERRAIN_FIELDS) {
         const terrainMaterial = terrainMaterialAt((field.x0 + field.x1) / 2, (field.y0 + field.y1) / 2);
-        const { cols, rows, nx, ny, heights, triangles, flow, trailMask, x0, y0, mudField, rockField, trailAcross } = terrainField(field),
+        const { cols, rows, nx, ny, heights, triangles, flow, trailMask, x0, y0, mudField, rockField, trailAcross, roadMask } = terrainField(field),
           { normals, ao, forest } = terrainBakes(field);
         for (let cz = 0; cz < ny; cz += TERRAIN_CHUNK)
           for (let cx = 0; cx < nx; cx += TERRAIN_CHUNK) {
@@ -318,6 +321,8 @@
                 mudData[v * 4] = Math.round(mudField[i] * 255);
                 mudData[v * 4 + 1] = Math.round(clamp(trailAcross[i] / 3, 0, 1) * 255);
                 mudData[v * 4 + 2] = Math.round(rockField[i] * 255);
+                // A scenic road's verge (terrain-grading.js).
+                mudData[v * 4 + 3] = roadMask ? Math.round(roadMask[i] * 255) : 0;
                 top = Math.max(top, heights[i]);
               }
             const full = [];

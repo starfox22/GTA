@@ -446,8 +446,9 @@
       }
       function countyCarriageways() {
         const roads = [];
+        // (The scenic mountain roads draw their own ribbon: county3d-roads.js.)
         for (const road of COUNTY_ROADS)
-          for (let i = 1; i < road.points.length; i++) {
+          for (let i = 1; i < road.points.length && !road.scenic; i++) {
             const a = road.points[i - 1],
               b = road.points[i];
             roads.push({ seg: [a[0], a[1], b[0], b[1]], half: road.width / 2, lane: road.width >= 96 ? 28 : road.width / 2 });
