@@ -8,7 +8,9 @@
      * (`wallDistance`, which sets the slap-back delay) and their height over the ear
      * (`tall`). `relief` is how far the ground rises or falls 500 units off (hills throw
      * an echo back), `lift` the ear's height over the ground under it (a roof, a tower,
-     * the helideck), `county` whether the ear is out of town. The same probe names the
+     * the helideck), `county` whether the ear is out of town, `cover` whether a deck or a
+     * roof is overhead (the underpass, a garage, a canopy, a bridge: a concrete box that
+     * also sends the player's engine and footsteps to the room). The same probe names the
      * place (`zone`) for ambience-beds.js, so districtAt() runs three times a second at
      * most.
      *
@@ -38,12 +40,15 @@
       relief: 0,
       lift: 0,
       county: 0,
+      cover: 0,
+      // The player's engine into the room under cover (a tunnel's boom).
+      engineTap: null,
       // Where the smoothed values last glided from (a teleport snaps them).
       probeX: 1e9,
       probeY: 1e9,
       returns: null,
       // The last probe (targets the smoothed values above glide to).
-      probe: { enclosure: 0, tall: 0, wallDistance: 280, relief: 0, lift: 0, county: 0, x: 1e9, y: 1e9, at: -1, rays: 0 },
+      probe: { enclosure: 0, tall: 0, wallDistance: 280, relief: 0, lift: 0, county: 0, cover: 0, x: 1e9, y: 1e9, at: -1, rays: 0 },
       // The place round the ear, for the ambience beds (ambience-beds.js).
       zone: { district: '', city: 0, harbour: 0, green: 0, country: 0, mountain: 0, monarch: 0, beach: 0, ground: 0, lake: 1e9 },
       stats: { placed: 0, occluded: 0, rays: 0 },
@@ -51,7 +56,11 @@
     // Audio-only randomness: never the game's seeded sequence (game-state.js seededRandom),
     // so whether the sound is on never changes what happens in the world.
     const sfxRandom = (lo, hi) => lo + Math.random() * (hi - lo);
-    const PROBE_STEPS = [36, 80, 140, 210, 280],
+    // How much of a room each kind of cover makes (air-cover.js overheadCover kinds): an
+    // awning, a canopy or a bus shelter (any kind not listed) hardly any, the underpass, a
+    // garage or MONARCH MOTORS' showroom a hard-walled box.
+    const COVER_ROOM = { underpass: 1, building: 1, garage: 1, 'garage office': 1, roof: 0.8, railway: 0.6, bridge: 0.6 },
+      PROBE_STEPS = [36, 80, 140, 210, 280],
       PROBE_DIRS = 8,
       PROBE_REACH = 320;
     /* The room's returns: the convolver's wet, the canyon slap and the open-country echo. */
@@ -133,8 +142,13 @@
         }
       }
       acoustics.stats.rays += PROBE_DIRS;
-      p.enclosure = clamp(sum / PROBE_DIRS / 0.42, 0, 1);
+      // Under a deck or a roof (the Northbank underpass, a garage, a station canopy, a
+      // bridge over the water): a concrete box, close and loud.
+      const cover = overheadCover(ear.x, ear.y, z);
+      p.cover = cover ? COVER_ROOM[cover.kind] ?? 0.25 : 0;
+      p.enclosure = Math.max(clamp(sum / PROBE_DIRS / 0.42, 0, 1), p.cover * 0.85);
       p.wallDistance = hits ? dist / hits : PROBE_REACH;
+      if (p.cover) p.wallDistance = Math.min(p.wallDistance, 70);
       p.tall = hits ? clamp(height / hits / 400, 0, 1) : 0;
       p.lift = lift;
       p.rays = hits;
@@ -205,10 +219,18 @@
       acoustics.relief += (p.relief - acoustics.relief) * k;
       acoustics.lift += (p.lift - acoustics.lift) * k;
       acoustics.county += (p.county - acoustics.county) * k;
+      acoustics.cover += (p.cover - acoustics.cover) * (jump ? 1 : 1 - Math.exp(-deltaSeconds / 0.35));
       acoustics.open = 1 - acoustics.enclosure;
       const r = acoustics.returns;
       if (!r) return;
-      const now = audio.currentTime,
+      const now = audio.currentTime;
+      if (!acoustics.engineTap && engineAudio?.out && reverbSend) {
+        acoustics.engineTap = audio.createGain();
+        acoustics.engineTap.gain.value = 0;
+        engineAudio.out.connect(acoustics.engineTap).connect(reverbSend);
+      }
+      if (acoustics.engineTap) glideParam(acoustics.engineTap.gain, 0.45 * acoustics.cover, now, 0.3);
+      const
         e = acoustics.enclosure,
         // Two round trips to the walls at the speed of sound (343 m/s = 2,744 units/s).
         slap = clamp((2 * acoustics.wallDistance) / 2744, 0.035, 0.16),
@@ -318,7 +340,9 @@
         relief: f(acoustics.relief),
         lift: Math.round(acoustics.lift),
         county: f(acoustics.county),
-        probe: { enclosure: f(p.enclosure), walls: p.rays, wallDistance: Math.round(p.wallDistance), relief: f(p.relief), lift: Math.round(p.lift), county: p.county },
+        cover: f(acoustics.cover),
+        engineRoom: acoustics.engineTap ? f(acoustics.engineTap.gain.value) : 0,
+        probe: { enclosure: f(p.enclosure), walls: p.rays, cover: p.cover, wallDistance: Math.round(p.wallDistance), relief: f(p.relief), lift: Math.round(p.lift), county: p.county },
         zone: { district: z.district, city: z.city, harbour: z.harbour, green: z.green, country: z.country, mountain: f(z.mountain), monarch: z.monarch, beach: z.beach, ground: Math.round(z.ground), lake: Math.round(Math.min(z.lake, 99999)) },
         returns: r
           ? {
@@ -330,6 +354,7 @@
             }
           : null,
         stats: { ...acoustics.stats },
+        bullets: bulletAudioReport(),
         at,
       };
     }

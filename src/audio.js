@@ -381,6 +381,8 @@
       updateVehicleFoley(deltaSeconds, active);
       // The ear probe and the room's returns (acoustics-audio.js).
       updateAcoustics(deltaSeconds);
+      // Enemy rounds passing close: the whizz and the crack (bullets-audio.js).
+      updateBulletWhizz(deltaSeconds, active);
       absBuzz(active && !!c?.absActive);
       const siren = audioLoops.siren;
       if (siren) {

@@ -140,26 +140,35 @@
        longest layer (`seconds`). */
     function foleyBus(level, pan, seconds = 0.7) {
       const g = audio.createGain(),
-        p = audio.createStereoPanner();
+        p = audio.createStereoPanner(),
+        // Under a deck or between close walls the steps ring back (acoustics-audio.js).
+        room = acoustics.cover * 0.7 + acoustics.enclosure * 0.12,
+        send = room > 0.03 && reverbSend ? audio.createGain() : null;
       g.gain.value = level;
       p.pan.value = pan;
       g.connect(p).connect(master);
+      if (send) {
+        send.gain.value = room;
+        g.connect(send).connect(reverbSend);
+      }
       setTimeout(() => {
         g.disconnect();
         p.disconnect();
+        if (send) send.disconnect();
       }, seconds * 1000);
       return g;
     }
     /**
      * One footfall on `surface` (FOOT_SURFACES), `run` 0 (a stroll) to 1 (a full run),
-     * `weight` 1 for a step (more for a landing), `wet` 0..1, `pan` the foot's side.
+     * `weight` 1 for a step (more for a landing), `wet` 0..1, `pan` the foot's side (or
+     * where someone else is), `gain` for someone else's steps at a distance.
      */
-    function footstepSound(surface, run, weight = 1, wet = 0, pan = 0, delay = 0) {
+    function footstepSound(surface, run, weight = 1, wet = 0, pan = 0, delay = 0, gain = 1) {
       const fa = foleyBuffers();
       if (!fa || !soundOn) return;
       const k = FOOT_SURFACES[surface] || FOOT_SURFACES.pavement,
         t = audio.currentTime + delay,
-        out = foleyBus((0.62 + 0.38 * run) * weight, pan),
+        out = foleyBus((0.5 + 0.35 * run) * weight * gain, pan),
         pitch = sfxRandom(0.92, 1.08),
         // A walk rolls from heel to toe (longer, softer); a run slaps.
         stretch = 1.25 - 0.3 * run;
@@ -225,6 +234,8 @@
         !taxiRide &&
         player.hp > 0 &&
         !((player.jumpUntil || 0) > gameTime);
+      // Runners round about (officers, people fleeing).
+      updateNpcSteps(deltaSeconds, active);
       const moved = Math.hypot(player.x - footTrail.x, player.y - footTrail.y);
       footTrail.x = player.x;
       footTrail.y = player.y;
@@ -262,6 +273,58 @@
       footstepSound(surface, run, 1, wet, footTrail.side * 0.05);
       runFoley(run, footTrail.side);
     }
+    /**
+     * OTHER PEOPLE'S STEPS: runners near the player on foot (officers giving chase,
+     * people fleeing, joggers) step too. Each person within NPC_STEP_REACH keeps a stride
+     * clock (a WeakMap of the last position and the phase) and steps on their own ground,
+     * placed and quieter with distance, an officer's boots a little heavier. Walkers are
+     * left out (a busy street would patter) and a token bucket holds them to about
+     * NPC_STEP_RATE steps a second.
+     */
+    const NPC_STEP_REACH = 150,
+      NPC_STEP_RATE = 8,
+      NPC_STEP_BURST = 3,
+      npcStride = new WeakMap(),
+      npcSteps = { tokens: NPC_STEP_BURST, heard: 0, dropped: 0, dt: 0, wet: 0, seen: 0, runners: 0 };
+    function updateNpcSteps(deltaSeconds, active) {
+      if (!active || deltaSeconds <= 0 || player.car) return;
+      npcSteps.tokens = Math.min(NPC_STEP_BURST, npcSteps.tokens + deltaSeconds * NPC_STEP_RATE);
+      npcSteps.dt = deltaSeconds;
+      npcSteps.wet = weather.wet * (1 - rainShelter());
+      for (const o of officers) if (Math.abs(o.x - player.x) < NPC_STEP_REACH && Math.abs(o.y - player.y) < NPC_STEP_REACH) npcStepVisit(o);
+      forPeopleNear(player.x, player.y, NPC_STEP_REACH, npcStepVisit);
+    }
+    function npcStepVisit(p) {
+      if (p === player || p.hp <= 0 || p.car || p.hidden || p.sitting || p.swimming) return;
+      let s = npcStride.get(p);
+      if (!s) {
+        npcStride.set(p, { x: p.x, y: p.y, phase: Math.random(), at: gameTime });
+        return;
+      }
+      const moved = Math.hypot(p.x - s.x, p.y - s.y),
+        gap = gameTime - s.at;
+      s.x = p.x;
+      s.y = p.y;
+      s.at = gameTime;
+      npcSteps.seen++;
+      if (gap > 0.25 || gap <= 0 || moved > 30) return;
+      const speed = moved / npcSteps.dt;
+      if (speed < 2.4 * UNITS_PER_METRE || speed > 9 * UNITS_PER_METRE) return;
+      npcSteps.runners++;
+      s.phase += moved / (strideCycle(speed) / 2);
+      if (s.phase < 1) return;
+      s.phase %= 1;
+      const d = Math.hypot(p.x - player.x, p.y - player.y),
+        gain = (p.police ? 0.8 : 0.6) / (1 + d / 45);
+      if (gain < 0.05) return;
+      if (npcSteps.tokens < 1) {
+        npcSteps.dropped++;
+        return;
+      }
+      npcSteps.tokens--;
+      npcSteps.heard++;
+      footstepSound(footSurfaceAt(p.x, p.y), 1, p.police ? 1.2 : 0.9, npcSteps.wet, clamp((p.x - player.x) / 300, -0.8, 0.8), 0, gain);
+    }
     // Console (DeadEndCity.footsteps): the last steps, and the ground at a point.
     function footstepsReport(x, y) {
       const at = Number.isFinite(x) && Number.isFinite(y);
@@ -273,5 +336,7 @@
         wet: +footTrail.wet.toFixed(2),
         landings: footTrail.landings,
         lastLand: footTrail.lastLand,
+        // Other people's steps: people looked at (per frame, summed), runners among them, steps heard and dropped.
+        others: { seen: npcSteps.seen, runners: npcSteps.runners, heard: npcSteps.heard, dropped: npcSteps.dropped },
       };
     }
