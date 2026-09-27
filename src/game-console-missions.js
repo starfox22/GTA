@@ -124,6 +124,17 @@
         return inside.length;
       },
       missions: () => missions.map((m, i) => ({ index: i, title: m.title, contact: m.contact })),
+      // The pause menu's RESTART CURRENT JOB (story.js retryMission).
+      retryMission() {
+        retryMission();
+        return { mode: gameMode, ...this.missionState() };
+      },
+      // A pick in the mission picker (campaign.js chooseMission, gated as the
+      // picker is): the job's call comes up (accept it with Enter or E).
+      chooseMission(index) {
+        const chosen = chooseMission(index);
+        return { chosen, mode: gameMode, missionIndex, ...this.missionState() };
+      },
       // Mission 1 test shortcut: start Dockside Favor if needed, load all three
       // crates, and put the player in the truck on the road outside Vinny's
       // warehouse, facing its shutter, with the harbor alarm already raised.
