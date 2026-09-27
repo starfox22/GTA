@@ -50,6 +50,7 @@ index plus one.
   from the north-looking camera. `spawnVinnyTruck` slides it along that kerb when traffic
   or a double-parked delivery van (crowd-scenes.js) holds the spot; `MISSION_STARTS`
   (bike share) reads the same point.
+- The truck's model and the payphone's dressing: missions-and-demo-mission1.md.
 
 ## Mission 2: the Blue Hour (roofmission-*.js)
 
