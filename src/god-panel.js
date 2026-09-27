@@ -284,7 +284,7 @@
       row.append(
         godLabel(
           'Refill everything',
-          'Every weapon to a full clip and reserve, health and armour to 100' +
+          'Every weapon to a full clip and reserve, health and armor to 100' +
             (player.car ? ', your ' + vehicleSpec(player.car).name.toLowerCase() + ' mended' + (player.car.type === 'tank' ? ' with 40 shells and a full MG belt' : '') : '') +
             '.',
         ),
@@ -375,7 +375,7 @@
       drawWeapon();
       updateUI();
       tone(880, 0.12, 0.12, 'sine');
-      tell('REFILLED · every weapon full · health and armour 100' + (c ? ' · vehicle mended' : ''), 2.5);
+      tell('REFILLED · every weapon full · health and armor 100' + (c ? ' · vehicle mended' : ''), 2.5);
       godLastRefill = { before, after: snapshot() };
       return godLastRefill;
     }

@@ -212,6 +212,9 @@
         return;
       }
       let found = false;
+      // A boat puts you over either side; a car out of the driver's door first (a - 90
+      // degrees, as carjack.js driverDoor and every NPC driver), then the passenger side,
+      // behind and in front.
       const vehicleDefinition = vehicleSpec(vehicle),
         candidates = isBoat(vehicle)
           ? [36, 48, 60, 72].flatMap((r) =>
@@ -221,7 +224,7 @@
               })),
             )
           : [0, 14, 28].flatMap((extra) =>
-              [Math.PI / 2, -Math.PI / 2, Math.PI, 0].map((a) => ({
+              [-Math.PI / 2, Math.PI / 2, Math.PI, 0].map((a) => ({
                 a: vehicle.a + a,
                 r:
                   (Math.abs(Math.sin(a)) > 0.5 ? vehicleDefinition.w : vehicleDefinition.l) / 2 +

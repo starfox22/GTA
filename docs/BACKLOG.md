@@ -89,5 +89,3 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Dealership staff (MONARCH MOTORS) and North Point Key guests have their own alarms and never call 911; a crashed driver's call (crowd-traffic.js) is not counted among the incident's witnesses, so a second caller may be sent.
 - A call from inside a shop (hidden off-stage call) has no bubble; the 911 bubble keeps the street's 10 px font: check it reads on a HiDPI screen.
 
-## Other
-- `src/marina.js` calls the superyacht 105 m; its deck spans about 66 m at the current scale.
