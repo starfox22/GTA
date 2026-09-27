@@ -137,12 +137,15 @@
       lampTexture.flipY = false;
       lampTexture.minFilter = Three.LinearFilter;
       /* Monarch Isle (monarch.js) lies north-east of the city frame, so it has a
-         map of its own over MONARCH_BOUNDS at the same scale: its lanterns, shop
-         windows, sign spill and the pools its renderer files add to
-         isleLightPools (the Palm House, the marina, villa drives, fountains). */
-      const isleLampCanvas = document.createElement('canvas');
-      isleLampCanvas.width = Math.ceil((MONARCH_BOUNDS.x1 - MONARCH_BOUNDS.x0) / LAMP_MAP_UNITS);
-      isleLampCanvas.height = Math.ceil((MONARCH_BOUNDS.y1 - MONARCH_BOUNDS.y0) / LAMP_MAP_UNITS);
+         map of its own at the same scale: its lanterns, shop windows, sign spill
+         and the pools its renderer files add to isleLightPools (the Palm House,
+         the marina, villa drives, fountains). The map reaches west to the city
+         frame, so North Point Key (east of the frame, north of the isle's
+         south edge) is lit from it too: its lanterns, gate and lobby spill. */
+      const ISLE_LAMP_BOUNDS = { x0: CITY_RIGHT - 16, y0: MONARCH_BOUNDS.y0, x1: MONARCH_BOUNDS.x1, y1: MONARCH_BOUNDS.y1 },
+        isleLampCanvas = document.createElement('canvas');
+      isleLampCanvas.width = Math.ceil((ISLE_LAMP_BOUNDS.x1 - ISLE_LAMP_BOUNDS.x0) / LAMP_MAP_UNITS);
+      isleLampCanvas.height = Math.ceil((ISLE_LAMP_BOUNDS.y1 - ISLE_LAMP_BOUNDS.y0) / LAMP_MAP_UNITS);
       const isleLampTexture = new Three.CanvasTexture(isleLampCanvas);
       isleLampTexture.colorSpace = Three.SRGBColorSpace;
       isleLampTexture.generateMipmaps = false;
@@ -153,7 +156,7 @@
       const cityLightUniforms = {
         cityIsleMap: { value: isleLampTexture },
         cityIsleRect: {
-          value: new Three.Vector4(MONARCH_BOUNDS.x0, MONARCH_BOUNDS.y0, 1 / (MONARCH_BOUNDS.x1 - MONARCH_BOUNDS.x0), 1 / (MONARCH_BOUNDS.y1 - MONARCH_BOUNDS.y0)),
+          value: new Three.Vector4(ISLE_LAMP_BOUNDS.x0, ISLE_LAMP_BOUNDS.y0, 1 / (ISLE_LAMP_BOUNDS.x1 - ISLE_LAMP_BOUNDS.x0), 1 / (ISLE_LAMP_BOUNDS.y1 - ISLE_LAMP_BOUNDS.y0)),
         },
         cityLampMap: { value: lampTexture },
         // (origin x, origin z, 1 / width, 1 / height) of the map in world units.
@@ -198,11 +201,12 @@
         if (on === !lampLightOut.has(key)) return;
         if (on) lampLightOut.delete(key);
         else lampLightOut.add(key);
-        paintLampLight({ x: prop.x + 6, y: prop.y + 6, r: LAMP_POOL_RADIUS + 8 });
+        paintLampLight({ x: prop.x + 6, y: prop.y + 6, r: STREET_LAMP_RADIUS + 8 });
       }
-      // Monarch Isle's map (see isleLampCanvas): whole, or the pools touching `region`.
+      // Monarch Isle's (and North Point Key's) map (see isleLampCanvas): whole,
+      // or the pools touching `region`.
       function paintIsleLampLight(region = null) {
-        const B = MONARCH_BOUNDS;
+        const B = ISLE_LAMP_BOUNDS;
         if (region && (region.x + region.r < B.x0 || region.x - region.r > B.x1 || region.y + region.r < B.y0 || region.y - region.r > B.y1)) return;
         const g = isleLampCanvas.getContext('2d'),
           s = 1 / LAMP_MAP_UNITS;
@@ -243,6 +247,21 @@
               [0.7, 0.09],
               [1, 0],
             ]);
+        // North Point Key (skyline-islet.js): the promenade lanterns (knockable,
+        // like the isle's), the gate lanterns on their pylons and the fountain's
+        // ring of cool uplights round the circle's island.
+        const key = NORTH_POINT_KEY;
+        for (const l of northPointKeyFurniture().lamps)
+          if (!lampLightOut.has(l.x + ',' + l.y))
+            pool(l.x, l.y, LAMP_POOL_RADIUS * 0.85, LAMP_WARM, [
+              [0, 0.6],
+              [0.16, 0.44],
+              [0.4, 0.22],
+              [0.7, 0.08],
+              [1, 0],
+            ]);
+        for (const side of [-1, 1]) pool(NORTH_POINT_KEY_GATE.x, key.row + side * NORTH_POINT_KEY_GATE.half, 90, [255, 217, 160], soft(0.4));
+        pool(key.circle.x, key.circle.y, key.fountain.r + 40, [174, 230, 255], soft(0.34));
         for (const b of buildings) if (b.monarch) for (const pane of b.shopPanes || []) pool(pane.cx, pane.face + 10, Math.max(22, pane.width * 0.8), [255, 214, 160], soft(0.45));
         for (const p of signLightPools) pool(p.x, p.y, p.r, [p.color[0] * 255, p.color[1] * 255, p.color[2] * 255], soft(p.strength));
         for (const p of isleLightPools) pool(p.x, p.y, p.r, p.color, soft(p.strength));
@@ -250,8 +269,11 @@
         g.restore();
         isleLampTexture.needsUpdate = true;
       }
-      // Reach of a street lamp's pool on the ground (world units; ~19 m).
+      // Reach of a lantern's pool on the ground (world units; ~12 m), and of a
+      // 9 m street lamp's (~18 m: its soft tail reaches across the road, where
+      // the old 12 m pool left the carriageway dark between lit kerbs).
       const LAMP_POOL_RADIUS = 100,
+        STREET_LAMP_RADIUS = 145,
         LAMP_SODIUM = [255, 164, 78],
         LAMP_LED = [196, 210, 244],
         LAMP_WARM = [255, 204, 146];
@@ -300,18 +322,20 @@
            district (lampTint): sodium orange in the docks and the Old Quarter,
            cool white LED in the financial core, warm white elsewhere. */
         const lampPool = (x, y, tint) => {
-          if (region && (Math.abs(x - region.x) > region.r + LAMP_POOL_RADIUS || Math.abs(y - region.y) > region.r + LAMP_POOL_RADIUS)) return;
+          if (region && (Math.abs(x - region.x) > region.r + STREET_LAMP_RADIUS || Math.abs(y - region.y) > region.r + STREET_LAMP_RADIUS)) return;
           const px = (x - CITY_LEFT) * s,
             py = (y - CITY_TOP) * s,
-            pr = LAMP_POOL_RADIUS * s,
+            pr = STREET_LAMP_RADIUS * s,
             grad = g.createRadialGradient(px, py, 0, px, py, pr),
             rgb = tint.join(',');
           // (A softer core than the old 62-unit pool: pale pavement under a
-          // lamp head clipped to white and bloomed into a blob.)
+          // lamp head clipped to white and bloomed into a blob. The core is as
+          // it was in world units; the tail runs on, falling off like 1 / d².)
           grad.addColorStop(0, `rgba(${rgb},0.78)`);
-          grad.addColorStop(0.16, `rgba(${rgb},0.58)`);
-          grad.addColorStop(0.4, `rgba(${rgb},0.3)`);
-          grad.addColorStop(0.7, `rgba(${rgb},0.11)`);
+          grad.addColorStop(0.11, `rgba(${rgb},0.58)`);
+          grad.addColorStop(0.28, `rgba(${rgb},0.31)`);
+          grad.addColorStop(0.5, `rgba(${rgb},0.14)`);
+          grad.addColorStop(0.75, `rgba(${rgb},0.05)`);
           grad.addColorStop(1, `rgba(${rgb},0)`);
           g.fillStyle = grad;
           g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
