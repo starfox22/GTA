@@ -32,7 +32,8 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   so a deadlock nobody watches heals; one in view is left alone.
 - `trafficControl` (physics-traffic.js) now scans the junction box and the exit only for a
   car short of the line on a green (the scans were 60% of its cost) and queries people
-  ahead of the car, not round it.
+  ahead of the car, not round it. Stopped 4 s for the same person (not the player), a car
+  eases round them at 7 km/h (`c.easePerson`), never past a red, a car or a stop.
 
 ## Sirens (livingcity-sirens.js)
 
@@ -90,7 +91,9 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   (`navAngle` west, like Monarch Isle's hand-off at Crown Avenue).
 - Driven by `keyRunControl` through `countyRouteControl` (`c.countyRoute` is the run's
   points, which also keeps the streamer off them): pure pursuit, 38-44 km/h on the avenue,
-  20 on the ring, the car ahead (a wider look on the ring), people in the road. A visitor
+  20 on the ring, the car ahead (a wider look on the ring), people in its own swath (half
+  its width + 5 units of the run): one who stays toots at 2 s, is crept round at 7 km/h
+  from 3.5 s (`keyVisitors()` `heldBy`, `waited`; `handed` is the last car handed back). A visitor
   the player takes, wrecks or empties becomes an ordinary car; far, unseen, untouched ones
   are removed when the player is 2,400 units away. Console `keyVisitors`, `keyVisitorSpawn`.
 - **Gotcha**: the sea-wall rail at the bridge's west end (x ≈ 3362) stops 12 units inside the

@@ -38,7 +38,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## North Point Key (skyline*.js, skyline3d-*.js)
 - Key visitors pause by the valet but nobody gets out (no guest walks in, no valet takes the car).
-- A Key visitor waits for anyone standing on its path (the player on the circle holds the ring); it never steers round a person, and crowd-traffic's honk only moves people whose reaction is `watch`.
+- A Key visitor, and city traffic, creeps round a person who holds it (3.5 s / 4 s) but never round the player on foot, who still holds the ring; crowd-traffic's honk only moves people whose reaction is `watch`.
+- Grid walkers treat the Key's row (-3456) as an ordinary street: their pavement line and "kerbs" run across the drop-off ring, where they stand waiting for a signal in the carriageway; and at the bridge's west end (x 3270-3340) walkers pause or stall in the road for many seconds (the traffic creep now gets past them).
 - The 2D fallback draws its ground tile and towers but not its palms or furniture.
 - CIRRUS guests are spawned per visit; the sky bar has no pool (the oval deck is 23 x 15 m).
 
