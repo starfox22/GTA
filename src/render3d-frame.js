@@ -16,8 +16,10 @@
           updateFlightView(deltaSeconds, altitude, flying);
           // Riding the Falcon or the Eye: the ride camera takes over (themepark3d.js).
           updateParkCamera(deltaSeconds);
-          camera.position.x += (Math.random() - 0.5) * shake * 0.35;
-          camera.position.y += (Math.random() - 0.5) * shake * 0.2;
+          // The camera's kick and tremor (camera-feel.js: game state, read here).
+          const tremor = cameraShakeOffset(gameTime, shake);
+          camera.position.x += cameraKick.x + tremor.x;
+          camera.position.z += cameraKick.y + tremor.y;
           if (camera === streetCamera) lockStreetCameraToPixels();
           camera.updateMatrixWorld(true);
           viewFrustum.setFromProjectionMatrix(

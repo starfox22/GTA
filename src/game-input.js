@@ -74,6 +74,7 @@
       player.y = y;
       cameraTarget.x = x;
       cameraTarget.y = y;
+      resetCameraFeel();
     }
     // Returns true once the tail of the buffer is going somewhere, so the caller
     // can swallow the keypress: spelling a code should not also drive the car.

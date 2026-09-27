@@ -31,6 +31,8 @@
       playSample('explosion', 0.9, 0.9 + Math.random() * 0.12, blast);
       if (city3D) city3D.explosion(x, y, power, altitude);
       shake = Math.max(shake, 11 * power * proximity);
+      // The blast shoves the view away from it (camera-feel.js).
+      if (proximity > 0) kickCamera(Math.atan2(player.y - y, player.x - x), 12 * power * proximity * proximity);
       flash = Math.max(flash, 0.15 * proximity);
       fires.push({
         x,
@@ -537,5 +539,8 @@
       notifyViolence(player, 'gunfire', player);
       crime(w.rocket ? 0.4 : 0.075);
       shake = Math.max(shake, w.rocket ? 5 : 1.4);
+      // Recoil: the view kicks back against the aim, harder for heavier rounds
+      // (camera-feel.js); less from a car window.
+      kickCamera(a + Math.PI, 0.27 * Math.sqrt(w.dmg * (w.pellets || 1)) * (w.rocket ? 1.6 : 1) * (player.car ? 0.6 : 1));
       if (!w.ammo && w.reserve) startReload();
     }
