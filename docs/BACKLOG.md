@@ -45,6 +45,16 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
 - Soaked roads add 43–58 % to ABS stops (target 30–50 %).
 - AI traffic and police use the simple ABS-equivalent brake, not the per-axle tyre model.
+- Drifts need TCS and ESC off (or a classic): with ESC on a handbrake-started slide is damped
+  0.8 s after the handbrake. A 'sport' ESC mode that allows ~15 degrees would open drifting up.
+- Traffic and police smoke only from `c.sliding` (no tyre slip of their own); a shoved parked
+  car lays rubber but no smoke.
+
+## Camera and combat feel (camera-feel.js, tyresmoke3d.js)
+- With both a mouse and the touch aim stick used on one page, `playerShotTarget` still snaps to
+  whoever is near the (stale) cursor; the camera leans along the stick.
+- Rain spray and dust were checked only in stills (headless frames are seconds apart); worth a
+  look on a real GPU at speed in the rain and on the beach.
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Windows glow only faintly at night from the default camera height; lamp pools still strong.
