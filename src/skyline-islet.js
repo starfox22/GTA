@@ -70,7 +70,8 @@
     }
     // The gate at the bridge landing: two pylons either side of the carriageway.
     const NORTH_POINT_KEY_GATE = { x: 3806, half: 60, size: 16 };
-    // Palms: the avenue off the bridge, the circle, the forecourt edge, the lawns and the beach top.
+    // Palms: the avenue off the bridge, the circle, the forecourt edge, the lawns and the beach
+    // top, all clear of the sea-wall walk (72 in from the edge) and its planters.
     function northPointKeyPalms() {
       const K = NORTH_POINT_KEY,
         C = K.circle,
@@ -82,7 +83,7 @@
       }
       for (let x = 3812; x < 4440; x += 64) if (Math.abs(x - C.x) > 76) list.push([x, K.forecourt.y1 - 10, 18, 'royal']);
       for (const [x, y, r, s] of [
-        [3850, -3300, 17, 'canary'],
+        [3890, -3310, 17, 'canary'],
         [3915, -3250, 16, 'coconut'],
         [3990, -3226, 18, 'coconut'],
         [4040, -3290, 15, 'fan'],
@@ -90,8 +91,7 @@
         [4238, -3372, 18, 'coconut'],
         [4292, -3450, 16, 'coconut'],
         [4322, -3530, 17, 'royal'],
-        [3812, -3560, 17, 'canary'],
-        [3806, -3350, 16, 'fan'],
+        [3834, -3572, 17, 'canary'],
       ])
         list.push([x, y, r, s]);
       return list;
