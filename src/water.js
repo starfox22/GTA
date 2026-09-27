@@ -570,7 +570,7 @@
       player.swimStroke = 0;
       player.swimDrive = 0;
       splashAt(player.x, player.y, 1.4);
-      tell('OVER THE SIDE · swim back and press E to climb aboard', 3);
+      tell('OVER THE SIDE · swim back and press ' + keyName('interact') + ' to climb aboard', 3);
       return true;
     }
     /* A parachute that comes down on the sea: into the water, if there is a way out. */
@@ -628,7 +628,7 @@
         if (first) {
           splashAt(c.x, c.y, 2.2);
           carFloodSound(c);
-          if (c === player.car) tell('THE CAR IS GOING UNDER · E to get out', 3);
+          if (c === player.car) tell('THE CAR IS GOING UNDER · ' + keyName('interact') + ' to get out', 3);
         }
         const drag = Math.exp(-2.6 * deltaSeconds);
         c.vx = (c.vx || 0) * drag;
