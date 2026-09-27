@@ -93,7 +93,7 @@
       ['BAR', () => nearestOf(placeDoors('bar'))],
       ['NIGHTCLUB', () => nearestOf(placeDoors('club'))],
       ['CITY RAIL', () => nearestOf(RAIL_STATIONS.map((s) => ({ x: (s.entry || s).x, y: (s.entry || s).y, name: s.name + ' STATION' })))],
-      ['BIKE SHARE', () => nearestOf((bikeStationCache || []).map((s) => ({ x: s.x, y: s.y, name: s.label || 'SOUTH COAST CYCLE' })))],
+      ['BIKE SHARE', () => nearestOf((bikeStationCache || []).map((s) => ({ x: s.x, y: s.y, name: s.label ? 'STAND AT ' + s.label : 'SOUTH COAST CYCLE' })))],
       ['CASINO', () => ({ x: CASINO.x + CASINO.w / 2, y: CASINO.y + CASINO.h, name: CASINO.name })],
       ['BEACH CLUB', () => ({ x: BEACH_CLUB_PLOT.x + 302, y: BEACH_CLUB_PLOT.y + 60, name: 'MAREA BEACH CLUB' })],
       ['BASKETBALL', () => ({ ...SPORTS_ENTRANCES.basketball, name: 'CITY COURTS' })],
@@ -138,6 +138,15 @@
     }
     /* On opening the city map (toggleMap): sharp canvas, filters and the GO TO list. */
     function prepareCityMap() {
+      // The heading's key caps name the device's buttons (hidden on touch: map-panel.css).
+      const pad = hintDevice() === 'gamepad';
+      for (const [id, text] of [
+        ['findMe', pad ? 'Y' : 'C'],
+        ['closeMap', pad ? 'B' : keyName('map')],
+      ]) {
+        const cap = getElement(id)?.querySelector('kbd');
+        if (cap) cap.textContent = text;
+      }
       renderMapFilters();
       renderMapPlaces();
       fitBigMapCanvas();
@@ -301,6 +310,51 @@
         g.fillText(label, lx, ly);
         g.restore();
       }
+    }
+    /**
+     * MAP NAMES
+     * Place names on the city map never print over each other or the player's
+     * marker: land regions first (letter-spaced), then the places in list order,
+     * then the water. A name with no room where it belongs tries a line lower,
+     * then a line higher, and otherwise waits for a closer zoom (so the district
+     * names appear as the map zooms in). Sizes follow mapTextScale.
+     */
+    function drawMapLabels(g, labels, width, height, scale, cx, cy, text) {
+      const size = Math.round(11 * text),
+        spaced = (l) => / . /.test(l[0]),
+        water = (l) => /B A Y|S O U N D|C H A N N E L/.test(l[0]),
+        me = { x: width / 2 + (player.x - cx) * scale, y: height / 2 + (player.y - cy) * scale },
+        placed = [
+          { x: me.x, y: me.y, half: 26 * text, h: 52 * text },
+          // YOU ARE HERE (drawPlayerMapMarker) sits under the marker.
+          { x: me.x, y: me.y + 34 * text, half: 60 * text, h: 12 * text },
+        ],
+        order = [
+          ...labels.filter((l) => spaced(l) && !water(l)),
+          ...labels.filter((l) => !spaced(l)),
+          ...labels.filter((l) => spaced(l) && water(l)),
+        ];
+      g.save();
+      g.textAlign = 'center';
+      g.font = 'bold ' + size + 'px Arial';
+      g.strokeStyle = '#102d3de0';
+      g.lineWidth = 3 * text;
+      for (const label of order) {
+        const [name, x, y] = label,
+          px = width / 2 + (x - cx) * scale,
+          half = g.measureText(name).width / 2 + 3;
+        let py = height / 2 + (y - cy) * scale;
+        if (px + half < 0 || px - half > width || py < -size || py > height + size) continue;
+        const free = (ty) => !placed.some((r) => Math.abs(r.x - px) < r.half + half && Math.abs(r.y - ty) < (r.h + size) / 2 + 2);
+        const at = [py, py + size * 1.3, py - size * 1.3].find(free);
+        if (at === undefined) continue;
+        py = at;
+        placed.push({ x: px, y: py, half, h: size });
+        g.strokeText(name, px, py);
+        g.fillStyle = water(label) ? '#a3d1d5' : '#ede6d2';
+        g.fillText(name, px, py);
+      }
+      g.restore();
     }
     /* DeadEndCity.mapView(): the filters, the GO TO list and the canvases' sizes. */
     function mapViewReport() {

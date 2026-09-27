@@ -37,6 +37,7 @@
   letter-spacing: 0.18em;
 }
 .map-filters {
+  flex: none;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -69,6 +70,7 @@
   text-decoration: line-through;
 }
 .map-places {
+  flex: none;
   display: grid;
   gap: 4px;
 }
@@ -114,6 +116,10 @@
 .map-places button:focus-visible {
   border-color: var(--acid);
   background: #22322a;
+}
+/* A touch screen has no keys to name on the heading's buttons. */
+body[data-input='touch'] .map-heading kbd {
+  display: none;
 }
 .waypoint-key {
   background: #73edf0;

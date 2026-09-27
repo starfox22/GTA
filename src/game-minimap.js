@@ -213,31 +213,8 @@
           ['N O R T H  S O U N D', 1500, -4900],
           ...MONARCH_MAP_LABELS,
         ];
-        // Region and water names (letter-spaced) always, first; then the rest in
-        // list order, a name that would run into one already drawn (or the player's
-        // marker) waiting for a closer zoom.
-        const size = Math.round(11 * text),
-          me = { x: width / 2 + (player.x - cx) * scale, y: height / 2 + (player.y - cy) * scale },
-          placed = [
-            { x: me.x, y: me.y, half: 22 * text },
-            // YOU ARE HERE (drawPlayerMapMarker) sits under the marker.
-            { x: me.x, y: me.y + 34 * text, half: 60 * text },
-          ];
-        drawingContext.font = 'bold ' + size + 'px Arial';
-        drawingContext.strokeStyle = '#102d3de0';
-        drawingContext.lineWidth = 3 * text;
-        const region = (l) => / . /.test(l[0]);
-        for (const [label, x, y] of [...labels.filter(region), ...labels.filter((l) => !region(l))]) {
-          const px = width / 2 + (x - cx) * scale,
-            py = height / 2 + (y - cy) * scale,
-            half = drawingContext.measureText(label).width / 2 + 3;
-          if (px + half < 0 || px - half > width || py < -size || py > height + size) continue;
-          if (!region([label]) && placed.some((r) => Math.abs(r.x - px) < r.half + half && Math.abs(r.y - py) < size + 2)) continue;
-          placed.push({ x: px, y: py, half });
-          drawingContext.strokeText(label, px, py);
-          drawingContext.fillStyle = /B A Y|S O U N D|C H A N N E L/.test(label) ? '#a3d1d5' : '#ede6d2';
-          drawingContext.fillText(label, px, py);
-        }
+        // Names that never print over each other (map-view.js).
+        drawMapLabels(drawingContext, labels, width, height, scale, cx, cy, text);
         // A dark band under the footer keeps it readable over the land when zoomed.
         drawingContext.fillStyle = '#0b1d28c8';
         drawingContext.fillRect(0, height - 17 - 13 * text, width, 17 + 13 * text);
@@ -245,9 +222,13 @@
         drawingContext.font = Math.round(10 * text) + 'px monospace';
         drawingContext.textAlign = 'left';
         drawingContext.fillText('N ↑', 28, 27);
-        drawingContext.fillText('SOUTH COAST COUNTY / CITY GUIDE', 28, height - 17);
+        // The guide's title only where the controls line leaves room for it.
+        const controls = mapControlsLine(),
+          guide = 'SOUTH COAST COUNTY / CITY GUIDE';
+        if (drawingContext.measureText(guide + controls).width + 20 * text < width - 56)
+          drawingContext.fillText(guide, 28, height - 17);
         drawingContext.textAlign = 'right';
-        drawingContext.fillText(mapControlsLine(), width - 28, height - 17);
+        drawingContext.fillText(controls, width - 28, height - 17);
         // A gamepad drops the waypoint under the centre cross (gamepad.js).
         if (hintDevice() === 'gamepad') drawMapCross(drawingContext, width, height);
       }
