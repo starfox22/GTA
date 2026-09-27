@@ -79,6 +79,14 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Rain spray and dust were checked only in stills (headless frames are seconds apart); worth a
   look on a real GPU at speed in the rain and on the beach.
 
+## Drive-bys (driveby.js, crowd3d-driveby.js)
+- Only the pistol fires from a vehicle, so the SMG one-hand and two-handed lean-out poses are not
+  drawn; the rear shot and the passenger-side shot fire from inside the cabin, which the opaque
+  roof hides from the street camera (only the flash, the burst screen and the tracers show).
+- Trucks and special bodies have no per-pane glass: their driver's window does not show wound down.
+- A boat's helmsman and an aircraft's pilot are not drawn during a drive-by (the shot still
+  follows the arcs and leaves from `driveByGrip`).
+
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.
 - The Last Witness now lands at the Northridge ranger station pad: play the mission through once.

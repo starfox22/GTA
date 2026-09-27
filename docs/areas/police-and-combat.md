@@ -62,6 +62,7 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
 
 ## Shooting and wounds
 
+- Shooting from a vehicle (arcs per window, the rear screen, the pose): docs/areas/police-and-combat-driveby.md.
 - One 3D world for all gunfire: elevation-aware shots (combat-rules.js), `shotBlocked()`
   against the building grid, `bulletTargets` from the 64-unit pedestrian grid plus
   `sportsTargets()` and other venue lists.
