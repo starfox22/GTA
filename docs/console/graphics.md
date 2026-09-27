@@ -4,6 +4,7 @@
 
 | Method | Purpose |
 | --- | --- |
+| `tyreSmoke()` | Tyre smoke, dust and road spray (tyresmoke3d.js): puffs alive, the graphics tier's cap, the pool's capacity, puffs emitted since boot and the peak alive (`null` without the 3D renderer) |
 | `scaleReport(radius)` | World-scale audit in metres: every vehicle type's spec (`l`, `w`), the built models within `radius` of the player measured from their meshes (length, width, height), the player's figure, the crowd's statures (rig at look height 1, the player, shortest, average and tallest adult pedestrian) and the building heights (lowest, median, 90th percentile, tallest) |
 | `policeLineup(x, y, heading, lights, spacing)` | Park every police model and livery (pursuit sedan, utility and Crown Vic in black and white / modern / sheriff / unmarked, the agents' Tahoe, the SWAT BearCat) in a column, lights on (`true` parked at a scene, `'pursuit'`, `false`); returns ids and looks (police3d.js) |
 | `carLineup(types, x, y, heading, spacing, color, lamps)` | Park one of each civilian car and motorbike type in `types` (default every one: the redesigned cars, the flagships and the bikes) in a column, each in its own or the given colour; `lamps` true lights them as if driven (riders shown on the bikes), `'brake'` holds the brake lights (cars3d.js, motorbikes3d.js) |

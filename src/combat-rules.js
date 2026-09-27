@@ -141,11 +141,14 @@
      * that lands comes from someone the player can see. Long-range guns (army
      * roof gunners 480, the tank 680, base towers 650) hold fire until they
      * close in. In the air the flight camera shows far more, and the rule is off.
+     * On foot the view leads toward the aim in a fight (camera-feel.js), so the
+     * box is centred where the view is, not on the player.
      */
     function shooterInView(shooter, inset = 20) {
       if (isAircraft(player.car) || player.parachute) return true;
-      const view = crowdViewHalf();
-      return Math.abs(shooter.x - player.x) < view.w - 40 - inset && Math.abs(shooter.y - player.y) < view.h - 40 - inset;
+      const view = crowdViewHalf(),
+        centre = player.car ? player : cameraTarget;
+      return Math.abs(shooter.x - centre.x) < view.w - 40 - inset && Math.abs(shooter.y - centre.y) < view.h - 40 - inset;
     }
     const shotLog = { bySource: {}, recent: [], total: 0, offscreen: 0 };
     // (hits and damage per source are the rounds that struck, before armour.)
