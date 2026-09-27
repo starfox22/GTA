@@ -48,8 +48,10 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   lights crosses it; one behind going our way is let through by pulling over instead.
 - The ambulance on a run (`emergencyRunControl`, reached through countyRouteControl when
   `c.emergency` is set) straddles the centre line (a car in either lane leaves it about a
-  metre each side), runs red lights, slows for its turns, creeps round a car poking into its
-  way (`run.dodge`), and never loops its route (`countyIndex` does not wrap).
+  metre each side), runs red lights, slows for its turns, creeps round a car stopped in its way
+  on whichever side clears it with the least swing within 26 units of the centre line
+  (`run.dodge`; a car pulled over and stopped for it used to deadlock it), and never loops
+  its route (`countyIndex` does not wrap).
 
 ## Ambulances (livingcity-medics.js)
 
@@ -58,7 +60,8 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   one job at a time (`MEDIC_COOLDOWN` 25 s between). The ambulance starts off screen
   650-1,400 units away on a street pointing at a junction and follows `copRoute` to the
   body's junction, then the stop on the body's street (`medicStopFor`), on the body's side.
-- Stuck 8 s (or 70 s on the way) with neither it nor the stop in view: it is simply there.
+- Stuck 8 s (or 70 s on the way) with neither it nor the stop in view: it is simply there;
+  boxed in 35 s where it can be seen (or 90 s on the way): the job is off.
   On scene: two paramedics (whites over navy, `cityRole.kind 'medic'`) get out on the
   victim's side; one kneels (`help` pose), one radios (`phone`); a walker who makes no
   progress for 3 s works from where they stand (within 30 units). After 9 s the victim comes
