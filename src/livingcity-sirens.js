@@ -54,7 +54,7 @@
         sa = Math.sin(c.a);
       for (let i = 0; i < sirenUnits.length; i++) {
         const e = sirenUnits[i];
-        if (e === c) continue;
+        if (e === c || (c.sirenClear?.unit === e && c.sirenClear.until > gameTime)) continue;
         const dx = e.x - c.x,
           dy = e.y - c.y;
         if (dx > 360 || dx < -360 || dy > 360 || dy < -360) continue;
@@ -118,6 +118,7 @@
         lastLeg = route.length - 2;
       let i = c.countyIndex || 0;
       run.why = null;
+      run.blocker = null;
       while (i < route.length - 1 && Math.hypot(route[i].x - c.x, route[i].y - c.y) < (i >= lastLeg ? 12 : 45)) i++;
       c.countyIndex = i;
       const next = route[i],
@@ -200,6 +201,11 @@
         if (limit < desired) {
           desired = limit;
           run.why = 'car';
+          run.blocker = o;
+          // Held up by it (a car stopped half across our way, pulled over for us):
+          // for 3 s it stops giving way to us and drives on out of the way
+          // (sirenPullOver), or each would wait for the other for good.
+          if (Math.hypot(c.vx || 0, c.vy || 0) < 6 * KMH) o.sirenClear = { unit: c, until: gameTime + 3 };
         }
       }
       // People on the carriageway ahead (not the pavement a turn sweeps across).

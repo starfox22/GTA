@@ -194,20 +194,63 @@
           c.speed = Math.sign(c.speed || 1) * Math.min(Math.abs(c.speed || 0), limit);
         }
       }
-      job.stuckFor = speed < 3 && left > 40 ? job.stuckFor + deltaSeconds : 0;
-      if (
-        (job.stuckFor > 8 || gameTime - job.startedAt > 70) &&
-        !crowdInView(c.x, c.y, 120) &&
-        !crowdInView(job.stop.x, job.stop.y, 60) &&
-        canSpawnCar('ambulance', job.stop.x, job.stop.y, job.heading, 4)
-      ) {
-        Object.assign(c, { x: job.stop.x, y: job.stop.y, a: job.heading, vx: 0, vy: 0, speed: 0 });
-        return arriveMedicJob(job);
+      // Stuck: stopped, or creeping (under 5 km/h over the last 2 s) the way it
+      // does grinding along a car that pulled over for it in a jam; either way
+      // the jam counts, not a moment's crawl.
+      if (!job.pace || gameTime - job.pace.at >= 2) {
+        job.slow = !!job.pace && Math.hypot(c.x - job.pace.x, c.y - job.pace.y) < (gameTime - job.pace.at) * 5 * KMH;
+        job.pace = { x: c.x, y: c.y, at: gameTime };
+      }
+      job.stuckFor = (speed < 3 || job.slow) && left > 40 ? job.stuckFor + deltaSeconds : 0;
+      if ((job.stuckFor > 8 || gameTime - job.startedAt > 70) && !crowdInView(c.x, c.y, 120)) {
+        if (!crowdInView(job.stop.x, job.stop.y, 60) && canSpawnCar('ambulance', job.stop.x, job.stop.y, job.heading, 4)) {
+          Object.assign(c, { x: job.stop.x, y: job.stop.y, a: job.heading, vx: 0, vy: 0, speed: 0 });
+          return arriveMedicJob(job);
+        }
+        // The stop in view (the player at the scene, as a rule): on past the jam
+        // to the point of its route nearest the stop that nobody can see.
+        if (job.stuckFor > 8) hopMedicPastJam(job);
       }
       // Boxed in for good where everyone can see: it gives up and drives on.
       if (gameTime - job.startedAt > 90 || job.stuckFor > 35) return medicJobEnd(job, 'aborted', job.stuckFor > 35 ? 'boxed in' : 'too long');
       // At the stop, or held up within sight of it: the crew walks the rest.
       if (left < 8 || (left < 40 && speed < 4) || (Math.hypot(job.stop.x - c.x, job.stop.y - c.y) < 170 && job.stuckFor > 2.5)) arriveMedicJob(job);
+    }
+    /* Out of sight and jammed: the ambulance goes on to the point of its route
+       ahead nearest the stop that is out of view, on the street and clear
+       (sampled every 40 units along each leg, at least 80 past where it stands),
+       lined up on that leg. False when there is none (it waits, or gives up
+       boxed in). */
+    function hopMedicPastJam(job) {
+      const c = job.ambulance,
+        route = c.countyRoute,
+        index = c.countyIndex || 0,
+        lastLeg = route.length - 2;
+      for (let j = lastLeg; j >= index; j--) {
+        const from = j === index ? c : route[j - 1],
+          to = route[j],
+          len = Math.hypot(to.x - from.x, to.y - from.y),
+          a = Math.atan2(to.y - from.y, to.x - from.x);
+        for (let t = len - 40; t >= (j === index ? 80 : 40); t -= 40) {
+          const x = from.x + Math.cos(a) * t,
+            y = from.y + Math.sin(a) * t;
+          if (crowdInView(x, y, 120) || !cityStreetAt(x, y) || !canSpawnCar('ambulance', x, y, a, 4)) continue;
+          // Nobody standing where it lands, or just ahead (it would wait for them).
+          let people = false;
+          forEachPedestrianNear(x + Math.cos(a) * 30, y + Math.sin(a) * 30, 70, (p) => {
+            if (p.hp > 0) people = true;
+          });
+          if (people) continue;
+          Object.assign(c, { x, y, a, vx: 0, vy: 0, av: 0, speed: 0, countyIndex: j });
+          if (c.emergency) c.emergency.dodge = null;
+          job.stuckFor = 0;
+          job.pace = null;
+          job.slow = false;
+          job.hops = (job.hops || 0) + 1;
+          return true;
+        }
+      }
+      return false;
     }
     function arriveMedicJob(job) {
       const c = job.ambulance;
@@ -255,7 +298,10 @@
       if (!working.length) return medicJobEnd(job, 'aborted', 'no crew');
       // Scared off and never back, or held up for good: they call it a day.
       if (gameTime - job.startedAt > 150) return medicJobEnd(job, 'timeout');
-      if (job.phase === 'scene' && working.some((m) => m.cityRole.at)) {
+      // The treatment starts with the kneeler at the victim (or with the radio
+      // alone when the kneeler is gone).
+      const kneeler = working.find((m) => m.cityRole.index === 0);
+      if (job.phase === 'scene' && (kneeler ? kneeler.cityRole.at : working.some((m) => m.cityRole.at))) {
         job.phase = 'treat';
         job.phaseAt = gameTime;
       } else if (job.phase === 'treat' && t > 9) {
@@ -334,18 +380,26 @@
       const d = Math.hypot(spot.x - p.x, spot.y - p.y);
       // Getting nowhere (a wall, a parked car, a body against a shopfront): every
       // 1.5 s the distance must drop by 4 units; twice not, and they work from
-      // where they stand (or climb in from there).
+      // where they stand (or climb in from there). The kneeler must be within 30
+      // units of the victim; the one on the radio can radio in from anywhere.
       if (gameTime - (role.checkAt ?? -9) > 1.5) {
         role.stall = role.checkD !== undefined && role.checkD - d < 4 && d > 3 ? (role.stall || 0) + 1 : 0;
         role.checkD = d;
         role.checkAt = gameTime;
       }
-      const stalled = role.stall >= 2 && (job.phase === 'leave' || d < 30);
+      const stalled = role.stall >= 2 && (job.phase === 'leave' || role.index === 1 || d < 30);
       if (d > 3 && !stalled && !(role.at && job.phase !== 'leave' && d < 12)) {
         p.pose = null;
         if (crowdStep(p, headingBetween(p, spot), Math.min(d / deltaSeconds, 7 * KMH), deltaSeconds)) {
-          // A wall or a car in the way: sidestep round it.
-          crowdStep(p, headingBetween(p, spot) + (role.index ? 1.2 : -1.2), 5 * KMH, deltaSeconds);
+          // Caught in a car's outline (one nudged the parked ambulance onto them):
+          // out of it first; else a wall or a car in the way: sidestep round it,
+          // trying the other way after each 3 s that got them nowhere.
+          const on = vehicles.find((o) => pointInCar(p.x, p.y, o, 1));
+          if (on) stepClearOfCar(p, on, deltaSeconds, 5 * KMH);
+          else {
+            const turn = (role.index ? 1.2 : -1.2) * ((role.stall || 0) % 4 < 2 ? 1 : -1);
+            crowdStep(p, headingBetween(p, spot) + turn, 5 * KMH, deltaSeconds);
+          }
         }
         if (job.phase === 'leave' && d < 16) role.boarded = true;
         return true;
@@ -408,16 +462,28 @@
       if (best && !dispatchMedics(best)) best.medicTries = (best.medicTries || 0) + 1;
       if (best && best.medicTries > 3) best.medicSeen = true;
     }
+    /* What holds the ambulance: the car emergencyRunControl last braked for, else
+       the nearest vehicle ahead within 30 units of its line. */
     function medicBlocker(c) {
+      const describe = (o) => {
+        const dx = o.x - c.x,
+          dy = o.y - c.y;
+        return {
+          type: o.type,
+          along: Math.round(dx * Math.cos(c.a) + dy * Math.sin(c.a)),
+          lateral: Math.round(-dx * Math.sin(c.a) + dy * Math.cos(c.a)),
+          turn: Math.round((normalizeAngle(o.a - c.a) * 180) / Math.PI),
+          kmh: Math.round(Math.hypot(o.vx || 0, o.vy || 0) / KMH),
+          ai: !!o.ai,
+          braked: o === c.emergency?.blocker,
+        };
+      };
+      if (c.emergency?.blocker && vehicles.includes(c.emergency.blocker)) return describe(c.emergency.blocker);
       let best = null;
       for (const o of vehicles) {
         if (o === c) continue;
-        const dx = o.x - c.x,
-          dy = o.y - c.y,
-          along = dx * Math.cos(c.a) + dy * Math.sin(c.a),
-          lateral = -dx * Math.sin(c.a) + dy * Math.cos(c.a);
-        if (along > 0 && along < 240 && Math.abs(lateral) < 30 && (!best || along < best.along))
-          best = { type: o.type, along: Math.round(along), lateral: Math.round(lateral), kmh: Math.round(Math.hypot(o.vx || 0, o.vy || 0) / KMH), ai: !!o.ai };
+        const b = describe(o);
+        if (b.along > 0 && b.along < 240 && Math.abs(b.lateral) < 30 && (!best || b.along < best.along)) best = b;
       }
       return best;
     }
@@ -444,6 +510,8 @@
               ambulance: c ? { x: round(c.x), y: round(c.y), kmh: round(Math.hypot(c.vx || 0, c.vy || 0) / KMH), d: round(distanceBetween(c, job.stop)), siren: !!c.emergency?.running, leg: c.countyIndex || 0, legs: c.countyRoute?.length || 0 } : null,
               medics: job.medics.map((m) => ({ x: round(m.x), y: round(m.y), d: round(distanceBetween(m, job.body)), pose: m.pose || null, react: m.react?.kind || null, boarded: !!m.cityRole?.boarded })),
               stuckFor: +job.stuckFor.toFixed(1),
+              // Times it went on past a jam out of sight (hopMedicPastJam).
+              hops: job.hops || 0,
               // The ambulance's wanted speed and whatever stands nearest ahead of it.
               desiredKmh: c?.aiControl ? Math.round(c.aiControl.desired / KMH) : null,
               // What held it last (car / person / player), null when nothing did.
