@@ -131,6 +131,15 @@
         },
         // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
         searchlight: (options) => searchlightReport(options),
+        // Vehicle lights this frame: CAR LAMPS slots and drive-map beams (lighting3d-vehicle-lights.js).
+        headlights: () => vehicleLightsReport(),
+        // A/B switches for the look: pixelLock, fxaa (after MSAA), vibrance, carLamps, groundSlopeCap.
+        lookSwitches(options) {
+          if (options && typeof options === 'object')
+            for (const key of Object.keys(lookSwitchState)) if (key in options) lookSwitchState[key] = !!options[key];
+          groundShared.cityGroundSlopeCap.value = lookSwitchState.groundSlopeCap ? 1 : 0;
+          return { ...lookSwitchState };
+        },
         /* Shadow casters the view does not show (for "shadows from nowhere"):
            every mesh the sun's shadow pass draws, near the view, that the camera
            pass would not: hidden by its material (fully transparent, no colour
