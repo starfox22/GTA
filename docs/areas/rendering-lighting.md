@@ -1,7 +1,8 @@
 # Rendering: image pipeline and light
 
-The HDR pipeline, sun, night and vehicle light, searchlights and the cutaway, inside
-`createCityRenderer()` like the rest of rendering.md (cameras, draw calls, buildings, ground).
+The HDR pipeline and film grade, sun and time of day, night light, searchlights and the
+cutaway, inside `createCityRenderer()` like the rest of rendering.md (cameras, draw calls,
+buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
 
 ## Image pipeline (postfx3d.js, lighting3d.js)
 
@@ -32,15 +33,15 @@ The HDR pipeline, sun, night and vehicle light, searchlights and the cutaway, in
 
 - Sun and sky (lighting3d.js): `sunDirection` follows the clock; the shadow box is fitted to
   the view and texel-snapped (`placeSun`); the sky is PMREM-filtered into
-  `scene.environment`.
+  `scene.environment`. Shadows are redrawn every frame when on (kept maps trailed moving
+  objects); with shadows off, contact blobs (CONTACT SHADOWS).
 - Time of day: `daylight()` sets the sun's strength; `skyDarkness(light)`
   (lighting3d-look.js: 0 until the last half hour of sun) sets the sky keys, the fill's and
   the sun's colour mix and the NIGHT_LOOK (moon and sky fill, exposure, blue grade). The
   lights (`nightAmount`, the lamp map's power, glows, windows) come on earlier, from
   ~1.5 h before sunset. Laying the night look over the low sun turned the golden hour
   magenta; its keys are `SUN_DUSK`, `HEMI_*_DUSK` (civic3d.js) and `SKY_KEYS.dusk` (the
-  environment's sky: a violet zenith over an orange horizon filters to mauve). Shadows are redrawn every frame when on (kept maps trailed moving
-  objects); with shadows off, contact blobs (CONTACT SHADOWS).
+  environment's sky: a violet zenith over an orange horizon filters to mauve).
 - Night light: lamp, window and neon pools painted once into a city-wide light map;
   `cityMaterialPatch` (MeshStandardMaterial's default `onBeforeCompile`) adds it to lit
   surfaces. **A material with its own `onBeforeCompile` must call
