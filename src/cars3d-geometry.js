@@ -282,10 +282,12 @@
           centreX = ((g.xf + g.xb + g.rf + g.rb) / 4) * l,
           inside = (p, out) => out.set(centreX, g.base - 2, 0),
           empty = () => gridGeometry(1, 1, () => [centreX, g.base, 0], inside),
+          // A curved glasshouse (crown, screenCurve, backCurve) needs finer side panes.
+          [sideCols, sideRows] = g.crown || g.screenCurve || g.backCurve ? [8, 3] : [5, 2],
           panes = [
-            gridGeometry(5, 2, (u, v) => glassPoint(g, l, w, 'side', lerpNumber(from, 1, u), v, -1), inside),
+            gridGeometry(sideCols, sideRows, (u, v) => glassPoint(g, l, w, 'side', lerpNumber(from, 1, u), v, -1), inside),
             gridGeometry(8, 4, (u, v) => glassPoint(g, l, w, 'front', u * 2 - 1, v), inside),
-            gridGeometry(5, 2, (u, v) => glassPoint(g, l, w, 'side', lerpNumber(from, 1, u), v, 1), inside),
+            gridGeometry(sideCols, sideRows, (u, v) => glassPoint(g, l, w, 'side', lerpNumber(from, 1, u), v, 1), inside),
             g.open ? empty() : gridGeometry(8, 3, (u, v) => glassPoint(g, l, w, 'rear', u * 2 - 1, v), inside),
             g.open ? empty() : gridGeometry(5, 4, (u, v) => glassPoint(g, l, w, 'roof', u * 2 - 1, v), inside),
           ];

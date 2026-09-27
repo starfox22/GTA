@@ -3,7 +3,9 @@
 export default async function (t) {
   for (const type of ['sedan', 'bike', 'truck']) {
     await t.call('teleport', 1600, 2700);
-    const s = await t.call('drive', type);
+    // Heading east along the street (the default, the player's own heading, was whatever
+    // the last vehicle ended on: a 10 m truck spawned across the 11 m street could not move).
+    const s = await t.call('drive', type, 0, 0);
     t.assert(s.vehicle === type, `${type}: boarded ${s.vehicle}`);
     const before = await t.call('status');
     const r1 = await t.keys('KeyW', 4);
