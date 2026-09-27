@@ -338,7 +338,7 @@
         d.pending = false;
         return;
       }
-      const wanted = d.pending || d.raised || gameTime - d.wantAt < DRIVE_BY_HOLD;
+      const wanted = d.pending || d.raised || d.holdFire || gameTime - d.wantAt < DRIVE_BY_HOLD;
       if (!wanted && d.out <= 0) {
         d.window = null;
         return;
@@ -481,6 +481,8 @@
         body: profile?.body || null,
         rear: profile ? profile.rear : null,
         arcs: c && profile ? driveByArcs(c).map(([a, b, w]) => ({ window: w, from: deg(a), to: deg(b) })) : [],
+        // Why no arm comes out: the first of the conditions driveByArmed needs that fails.
+        armed: !c ? 'no vehicle' : c.hp <= 0 ? 'wrecked' : !profile ? 'no profile' : isApache(c) ? 'apache' : transitRide || taxiRide ? 'riding' : gameMode !== 'play' ? gameMode : selectedWeaponIndex !== 0 || !weaponIsEquipped(0) ? 'no pistol' : 'yes',
         out: +d.out.toFixed(2),
         window: d.window,
         relDeg: deg(d.rel),
@@ -516,6 +518,8 @@
           driveBy.holdRel = null;
           if (relDegrees === null || !player.car) touchAim = null;
           else {
+            // Empty-handed at the wheel: draw the pistol as the fire key does (shoot()).
+            if (selectedWeaponIndex === FISTS_INDEX && weapons[0]?.owned) selectWeapon(0);
             driveBy.holdRel = relDegrees * DRIVE_BY_DEG;
             touchAim = normalizeAngle(player.car.a + driveBy.holdRel);
             driveBy.holdFire = fire === true;
