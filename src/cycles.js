@@ -218,6 +218,8 @@
         })
         .filter(Boolean);
     }
+    /* A job's number: MISSION 1, CONTRACT 2 (no total). The map's start markers, the
+       mission card (game-ui.js) and the start headline (story.js) all use it. */
     function missionStartLabel(index) {
       return index >= SIDE_JOB_FIRST ? 'CONTRACT ' + (index + 1 - SIDE_JOB_FIRST) : 'MISSION ' + (index + 1);
     }

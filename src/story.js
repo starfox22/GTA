@@ -431,13 +431,8 @@
       else if (missionState.index <= 8) startChallengeMission(missionState);
       else if (missionState.index < SIDE_JOB_FIRST) flightMissionStart(missionState);
       else startSideJob(missionState);
-      announce(
-        missionState.index >= SIDE_JOB_FIRST
-          ? 'CONTRACT ' + (missionState.index + 1 - SIDE_JOB_FIRST) + ' / ' + (missions.length - SIDE_JOB_FIRST)
-          : 'MISSION ' + (missionState.index + 1) + ' / ' + SIDE_JOB_FIRST,
-        info.title.toUpperCase(),
-        3,
-      );
+      // MISSION 1, CONTRACT 2: no total (missionStartLabel, cycles.js).
+      announce(missionStartLabel(missionState.index), info.title.toUpperCase(), 3);
       missionLine(info.contact, info.brief);
       save();
     }

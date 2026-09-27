@@ -250,17 +250,10 @@
       const target = objective(),
         m = mission;
       getElement('pager').classList.toggle('hidden', !m && incomingCallRemaining <= 0 && !demoStoryOver());
-      // Numbered the same way as the mission-start headline: story missions out
-      // of the story, contracts out of the contracts.
+      // Numbered the same way as the mission-start headline (missionStartLabel, cycles.js):
+      // MISSION 1, CONTRACT 2, with no total.
       const shownIndex = Math.min(mission?.index ?? missionIndex, missions.length - 1);
-      getElement('missionCounter').textContent = !m && demoStoryOver()
-        ? 'DEMO COMPLETE'
-        : shownIndex >= SIDE_JOB_FIRST
-          ? 'CONTRACT ' + (shownIndex + 1 - SIDE_JOB_FIRST) + ' / ' + (missions.length - SIDE_JOB_FIRST)
-          : 'MISSION ' +
-            String(shownIndex + 1).padStart(2, '0') +
-            ' / ' +
-            String(SIDE_JOB_FIRST).padStart(2, '0');
+      getElement('missionCounter').textContent = !m && demoStoryOver() ? 'DEMO COMPLETE' : missionStartLabel(shownIndex);
       getElement('missionTimer').textContent = m?.timeLimit
         ? Math.floor(Math.ceil(m.timer) / 60) + ':' + String(Math.ceil(m.timer) % 60).padStart(2, '0')
         : '';
