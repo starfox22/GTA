@@ -148,7 +148,10 @@
         VINNY_DEPOT.inside,
         'STOP THE TRUCK · SHUTTER COMING DOWN',
         'vinny',
-        'Brakes on. I am dropping the shutter behind you — they are right on your tail.',
+        // A resprayed truck brought nobody with it.
+        wantedStars > 0
+          ? 'Brakes on. I am dropping the shutter behind you — they are right on your tail.'
+          : 'Brakes on. I am dropping the shutter behind you.',
       );
     }
     /* Officers still alive inside the sealed warehouse. A downed officer (hit
@@ -284,11 +287,11 @@
         Math.abs(player.x - exit.x) < 70 &&
         Math.abs(player.y - exit.y) < 60
       ) {
+        const wasWanted = wantedStars > 0;
         missionState.escapedAt = gameTime;
-        missionState.instruction = 'POLICE LOST';
+        missionState.instruction = wasWanted ? 'POLICE LOST' : 'CLEAN GETAWAY';
         missionState.target = null;
         depotSealed = false;
-        const wasWanted = wantedStars > 0;
         clearPolice();
         if (wasWanted) showPoliceNotice('POLICE LOST!', true);
       }
