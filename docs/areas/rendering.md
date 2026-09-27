@@ -86,7 +86,12 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   shader, not in the county kerb field. Scenery-only plants: vegetation3d-landscape.js.
 - Wet roads: one shared GLSL pattern (`cityWetLow`, `cityWetFilm`, `cityPuddle`) from
   `weather.wet`; LOW darkens, MEDIUM adds gloss and neon streaks, HIGH/ULTRA add puddles and
-  a screen-space reflection pass (skipped when dry).
+  a screen-space reflection pass (skipped when dry). The film levels most of the ground's
+  bump (a glossy film on the full aggregate bump glinted pixel by pixel: rain read as snow);
+  a wet night road mirrors less sky than by day (`WET_SKY_SHARE_NIGHT`).
+- Trees (vegetation3d-material.js): on MSAA tiers the leaf cut-outs use alpha to coverage
+  (`setFoliageCoverage`; r160 forces an opaque material's alpha to 1, so the tree material
+  writes the coverage back after `<opaque_fragment>`). A/B `lookSwitches({ foliageCoverage })`.
 - Water (world3d-water.js): one ShaderMaterial with a distance-to-shore texture, Gerstner waves;
   boat wakes are drawn into a wake map it samples (`wakeEmit`, wakes3d.js).
 - Weather visuals (weather3d.js): GPU rain streaks, splashes, drips and spray from uniforms,

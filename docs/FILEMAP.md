@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-430 files in the include tree, 151,665 lines.
+430 files in the include tree, 151,805 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -152,7 +152,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/geography-regions.js`   458 — One coastline model drives terrain, water, the map and all vehicle footprints.
 - `src/geography-key.js`    69 — North Point Key: the islet off Northbank's north-east point that carries the three towers (coast and plan anchors).
 - `src/geography-land.js`   558 — Land cell cache (landAt), airport and boulevard tests, BRIDGES, bridge frames, clearance and approach piers.
-- `src/geography-ground.js`   496 — Bridge pylons and footings on the map, groundAt(), lake, coast and region paths, painted district ground and beach.
+- `src/geography-ground.js`   498 — Bridge pylons and footings on the map, groundAt(), lake, coast and region paths, painted district ground and beach.
 
 ## src/drawbridge.js ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
 
@@ -343,7 +343,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
 - `src/flight-view3d.js`   882 — Flight camera and aerial perspective
-- `src/postfx3d.js`   933 — ▸ HDR post-processing pipeline
+- `src/postfx3d.js`   949 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   924 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   313 — Static building batches, static cells and culling (staticInView), shared materials.
@@ -356,7 +356,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/themepark3d.js`    22 — ▸ Sunset Pier resort meshes
 - `src/garage3d.js`    27 — ▸ Garage meshes
 - `src/landmarks3d.js`    36 — City landmark meshes
-- `src/civic3d.js`   375 — Civic and rooftop meshes
+- `src/civic3d.js`   382 — Civic and rooftop meshes
 - `src/air-cover3d.js`    46 — Underpass meshes
 - `src/renewal3d.js`   474 — Park meshes
 - `src/landscape3d.js`   116 — Landscaping for open lawns
@@ -389,7 +389,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/dealership3d.js`    43 — ▸ MONARCH MOTORS in 3D
 - `src/beachclub3d.js`    38 — ▸ Marea Beach Club meshes and show lighting
 - `src/cycles3d.js`   450 — Bike-share station meshes
-- `src/weather3d.js`   666 — Weather and sky visuals
+- `src/weather3d.js`   694 — Weather and sky visuals
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    84 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/carjack3d.js`   153 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
@@ -410,7 +410,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-vehicle-models.js`   348 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/render3d-effects.js`   214 — ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 - `src/render3d-resources.js`   141 — GPU resource lifecycle: shared geometries, model pruning and disposal.
-- `src/render3d-api.js`   471 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   472 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   661 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
@@ -419,16 +419,16 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
-- `src/lighting3d-sky.js`   778 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
+- `src/lighting3d-sky.js`   802 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
 - `src/lighting3d-cutaway.js`   144 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
 - `src/lighting3d-vehicle-lights.js`   638 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
 - `src/lighting3d-vehicle-shadows.js`   222 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people and cars in the player's beams), the TERRAIN HORIZON strip kept in the same texture, and the …
-- `src/lighting3d-look.js`   252 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
+- `src/lighting3d-look.js`   268 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
 
 ## src/vegetation3d.js ▸ Tree library: species, foliage atlas, wind, LOD
 
 - `src/vegetation3d-atlas.js`   605 — Vegetation 3D foliage atlas: painting, normals and mips (FOLIAGE_ATLAS, foliageAtlas).
-- `src/vegetation3d-material.js`   491 — Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
+- `src/vegetation3d-material.js`   512 — Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
 - `src/vegetation3d-species.js`   673 — Vegetation 3D species (conifers, palms and others), LOD meshes, instances, tints and far trees.
 - `src/vegetation3d-landscape.js`   128 — Vegetation 3D landscaping: dune grass and sea grape on the Palm Keys beach, flowering shrubs in the Keys' parks, meadow grass on the mountain roads' …
 
@@ -486,7 +486,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/themepark3d-carousel.js ▸ Theme park 3D Sunset Palace carousel, teacups and flume boats (updateFlume).
 
-- `src/unicorn3d.js`   508 — Aurora, the black unicorn on Sunset Pier
+- `src/unicorn3d.js`   512 — Aurora, the black unicorn on Sunset Pier
 
 ## src/garage3d.js ▸ Garage meshes
 
@@ -586,14 +586,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/ground-shader3d.js ▸ Ground materials (GLSL)
 
-- `src/ground-shader3d-pars.js`   291 — Ground shader GLSL chunks: shared uniforms and helpers (GROUND_PARS), sheet magnification (GROUND_SHEET_PARS), the marks (GROUND_MARKS).
-- `src/ground-shader3d-albedo.js`   610 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
+- `src/ground-shader3d-pars.js`   305 — Ground shader GLSL chunks: shared uniforms and helpers (GROUND_PARS), sheet magnification (GROUND_SHEET_PARS), the marks (GROUND_MARKS).
+- `src/ground-shader3d-albedo.js`   612 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
 
 ## src/helicopter3d.js ▸ Helicopter models
 
 - `src/helicopter3d-looks.js`   184 — Helicopter looks and civil and executive paint schemes (pickHelicopterLook).
 - `src/helicopter3d-plans.js`   314 — Helicopter airframe plans: Colibri, Robin, Hawk (heliPlans).
-- `src/helicopter3d-geometry.js`   332 — Helicopter surface maths: monotone interpolation, sections, lofted grids and geometry helpers.
+- `src/helicopter3d-geometry.js`   335 — Helicopter surface maths: monotone interpolation, sections, lofted grids and geometry helpers.
 - `src/helicopter3d-livery.js`   626 — Helicopter livery painting: emblems, seals, roundels, lettering.
 - `src/helicopter3d-kit.js`   220 — Helicopter kit: every shared geometry of one look (heliKit, heliKits).
 - `src/helicopter3d-equipment.js`   331 — Helicopter equipment: skids, lenses, nav lights, beacons, Nightsun, per-type kit and cabins.
@@ -627,7 +627,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/mountain-village3d-textures.js`   606 — Mountain village 3D textures and materials: window, door and map atlases (MV_TEX, MV_MAT).
 - `src/mountain-village3d-kit.js`   643 — Mountain village 3D kit: per-material buffers and primitives (mvBatch, mvQuad, mvBox, mvCyl).
-- `src/mountain-village3d-details.js`   649 — ▸ Mountain village 3D details: balconies, false fronts, porches, awnings, steeples, motel and barn fronts, decks, lights.
+- `src/mountain-village3d-details.js`   651 — ▸ Mountain village 3D details: balconies, false fronts, porches, awnings, steeples, motel and barn fronts, decks, lights.
 
 ## src/mountain-village3d-details.js ▸ Mountain village 3D details: balconies, false fronts, porches, awnings, steeples, motel and barn fronts, decks, lights.
 
