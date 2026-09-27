@@ -284,11 +284,4 @@
         signBoards.push({ mesh: m, width, color: design.light || color, marquee: !!(options.marquee || design.marquee), lamps: design.lamps });
         return m;
       }
-      const ph = new Three.Group();
-      ph.position.set(phone.x, 0, phone.y);
-      scene.add(ph);
-      box(ph, 0, 7, 0, 7, 14, 5, mat('#4f7d73', 0.5, 0.45));
-      box(ph, 0, 10, 2.8, 5, 7, 0.5, darkMetal);
-      box(ph, 0, 12, 3.1, 3, 2, 0.1, mat('#b0c9b1'));
-      box(ph, 0, 17, 0, 12, 2, 8, mat('#517c70'));
-      halo(ph, 0, 14, 0, 8, '#9bdbb1');
+      // (The story payphone is payphone3d.js.)

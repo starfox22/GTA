@@ -104,6 +104,8 @@
           const look = policeLookFor(vehicle);
           if (look) return makePoliceVehicle(vehicle, look);
         }
+        // Vinny's truck, mission 1's flatbed, at real size (vinnytruck3d.js).
+        if (vehicle.type === 'flatbed') return makeVinnyTruck(vehicle);
         // Civilian cars at real size (cars3d.js).
         if (CAR_BODIES[vehicle.type]) return makeCivilianCar(vehicle);
         if (vehicleSpec(vehicle).truck) return makeTruck(vehicle);

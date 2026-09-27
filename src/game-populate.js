@@ -61,6 +61,12 @@
       particles.length = 0;
       skids.length = 0;
       makeCar('coupe', 782, 576, 0, false, '#88bcaa');
+      // The car park behind the story payphone, in the opening shot: three cars in its
+      // south row of bays (26 units wide, y 498..537; ground-data3d.js cityLotRecords),
+      // the bay behind the booth left empty.
+      makeCar('sedan', 732.5, 517, -Math.PI / 2, false, '#7f8b90');
+      makeCar('suv', 836.5, 518, Math.PI / 2, false, '#5a2a2a');
+      makeCar('van', 888.5, 516, -Math.PI / 2, false, '#e4e1d8');
       makeCar('bike', 850, 704, 0, false);
       makeCar('supercar', 975, 704, 0, false);
       // Clear of Royal Ave (x 1096..1208): at x 1100 its nose stood in the

@@ -47,6 +47,7 @@
           updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
+          updatePayphoneVisuals();
           updateMarinaVisuals(deltaSeconds);
           updateMonarchVisuals();
           updateDealershipVisuals(deltaSeconds);
@@ -129,21 +130,8 @@
               stance.roll;
             m.body.rotation.z =
               Math.sin(gameTime * 7 + c.id) * Math.min(0.008, Math.abs(c.speed) * 0.00002) + stance.pitch;
-            if (c.type === 'flatbed') {
-              if (!m.cargo) {
-                m.cargo = Array.from(
-                  {
-                    length: 3,
-                  },
-                  (_, i) => {
-                    const g = makeCargoCrate(m.body, 18);
-                    g.position.set(-34 + i * 19, 8, 0);
-                    return g;
-                  },
-                );
-              }
-              m.cargo.forEach((g, i) => (g.visible = i < (c.cargoCount || 0)));
-            }
+            // Vinny's truck shows the crates loaded so far (vinnytruck3d.js).
+            if (m.cargo) m.cargo.forEach((g, i) => (g.visible = i < (c.cargoCount || 0)));
             if (m.nightLights) {
               // Drawn together by the instanced halo pass (VEHICLE HALOS), not one
               // sprite draw call each.

@@ -494,16 +494,16 @@
           worldContext.ellipse(d.x, d.y, 38, 31, 0, 0, TAU);
           worldContext.fill();
         }
-      // A payphone you can spot from the street.
-      worldContext.fillStyle = '#132c26';
+      // The yellow payphone you can spot from the street (payphone3d.js in 3D).
+      worldContext.fillStyle = '#2a2410';
       worldContext.fillRect(phone.x - 8, phone.y - 6, 16, 18);
-      worldContext.fillStyle = '#79a995';
+      worldContext.fillStyle = '#e3b21f';
       worldContext.fillRect(phone.x - 7, phone.y - 6, 14, 13);
-      worldContext.fillStyle = '#243e34';
+      worldContext.fillStyle = '#3a3c3e';
       worldContext.fillRect(phone.x - 4, phone.y - 3, 8, 9);
-      worldContext.fillStyle = '#d1e3b3';
+      worldContext.fillStyle = '#d7dbde';
       worldContext.fillRect(phone.x - 2, phone.y - 1, 4, 5);
-      worldContext.fillStyle = '#698c76';
+      worldContext.fillStyle = '#3a3e41';
       worldContext.fillRect(phone.x - 2, phone.y + 10, 4, 7);
       for (const p of pickups)
         if (p.ready < gameTime && visible(p)) {

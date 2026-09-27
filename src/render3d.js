@@ -187,12 +187,15 @@
       // @include src/hypercars3d.js
       // @include src/motorbikes3d.js
       // @include src/offroad3d.js
+      // @include src/vinnytruck3d.js
       // @include src/tyresmoke3d.js
       // @include src/mountain-village3d.js
       // @include src/plane3d.js
       // @include src/render3d-vehicle-models.js
       // @include src/render3d-effects.js
       // @include src/render3d-resources.js
+      // The story payphone uses the shared-resource sets (render3d-resources.js).
+      // @include src/payphone3d.js
       const api = {
         // @include src/render3d-api.js
         // @include src/render3d-frame.js
