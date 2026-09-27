@@ -304,6 +304,8 @@
     }
     // For reports and tests: the layer over (x, y) in metres.
     function cloudLayerReport(x = player.x, y = player.y, altitudeM = null) {
+      // (Fresh from the weather, even while a test holds the simulation.)
+      setCloudLayer();
       const slab = cloudLayerAt(x, y),
         area = cloudAreaAt(x, y, {}),
         z = altitudeM === null ? entityElevation(player.car || player) : altitudeM * UNITS_PER_METRE,

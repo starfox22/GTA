@@ -4,6 +4,7 @@
        with cloud just north of it, where the camera looks ('edge'), `lead` seconds from
        now (the field drifts with the wind while the jumper falls). */
     function cloudSpot(kind = 'cloud', x = player.x, y = player.y, lead = 0, onLand = false) {
+      setCloudLayer();
       const windSpeed = 30 + weather.wind * 70,
         ahead = windSpeed * lead,
         dx = Math.cos(weather.windAngle) * ahead,

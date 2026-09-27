@@ -42,14 +42,21 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
   the veil hands over (`uNearFade`). LOW: no march, a flat veil from `cloudAmountAt`.
 - An aircraft keeps its pocket of clear air (walls of cloud, the ground below); freefall has
   none (the white-out is the point), a canopy a thin one.
-- wisps: instanced rags between the near plane and the subject, fixed in the air (drifting with
-  the cloud) so the camera's motion streams them past; the vertex shader reads the density, so
-  they only show in cloud. Count by tier (10/24/40/56).
+- wisps: instanced rags between the near plane and just past the subject, fixed in the air
+  (drifting with the cloud) so the camera's motion streams them past, streaked along the
+  subject's own velocity (not frame deltas: slow frames would smear them); the vertex shader
+  reads the density, so they only show in cloud, and thins those in front of the subject.
+  Count by tier (8/14/22/32). The veil's light is also combed into streaks radiating from
+  where the camera is heading (`setCloudStreaks`), strongest in freefall.
 - lens: water beads in the post composite (clouds3d-lens.js, `cloudLensUniforms`), a jumper's
   camera only (not LOW): gather in cloud, dry after, swept up the frame by the freefall air.
 - frame: in cloud the frame greys out (saturation, contrast down, bloom up) through `postLook`.
-- The clouds are lit by `SUN_DIRECTION`, which lighting3d-look.js sets to the real sun (the moon
-  at night); the city's glow lights the underside at night.
+- Light: `SUN_DIRECTION`, which lighting3d-look.js sets to the real sun (the moon at night);
+  Beer's law plus two multiple-scattering orders (clouds glow through; only the heart and base
+  of a deep deck go grey); the city's glow on the underside at night. The day sun is whitened
+  by half for cloud and most of the day grade's warm gain is taken back out (`uCloudTint`), or
+  sunlit cloud turns sand-coloured. Shafts under broken cloud (HIGH/ULTRA): the haze in each
+  cloud's shadow column is drawn darker in the far march.
 
 ## Gotchas
 

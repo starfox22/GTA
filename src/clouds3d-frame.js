@@ -67,8 +67,10 @@
         }
         // The sun dims as a shadow crosses the middle of the view. The clouds are lit
         // by the sun above the weather (the time-of-day strength, plus any lightning):
-        // an overcast is grey underneath and bright on top.
-        const cloudSunIntensity = 0.35 + light * 3.6 + 9 * weather.flash * weather.flash;
+        // an overcast is grey underneath and bright on top. By night the moon (and the
+        // city's glow under the base) is kept dim: with the multiple scattering a brighter
+        // moon lit night cloud like a sunset.
+        const cloudSunIntensity = 0.12 + light * 3.83 + 9 * weather.flash * weather.flash;
         // Only while the view is about the size of a cloud: from the air the frame
         // spans several, and dimming the whole city for the one in the middle made
         // the light pump as the helicopter crossed their edges.
@@ -124,7 +126,7 @@
           .copy(hemi.groundColor)
           .lerp(cloudGrey.setScalar(hemi.groundColor.r * 0.3 + hemi.groundColor.g * 0.59 + hemi.groundColor.b * 0.11), 0.7)
           .multiplyScalar(hemi.intensity * 0.3);
-        marchUniforms.uGlowColor.value.setRGB(1, 0.56, 0.3).multiplyScalar(nightAmount * 0.55);
+        marchUniforms.uGlowColor.value.setRGB(1, 0.56, 0.3).multiplyScalar(nightAmount * 0.4);
         // Most of the day grade's warm gain taken back out: sunlit cloud is white.
         const gain = postLook.gain;
         marchUniforms.uCloudTint.value.set(1 + (1 / gain.x - 1) * 0.85, 1 + (1 / gain.y - 1) * 0.85, 1 + (1 / gain.z - 1) * 0.85);
