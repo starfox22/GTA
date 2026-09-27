@@ -38,6 +38,8 @@ next command thaws it, state kept).
 
 ```sh
 node tools/test.mjs [filter] [--verbose]      # regression suite (~40 s, no-render page): after logic changes
+                                              # (`dev.mjs stop` between separate runs: a leftover server fails boots with
+                                              #  'browser.newContext: Target page ... closed')
 node tools/dev.mjs start [--render]           # ONE persistent headless page (~7 s no-render, ~35 s rendered)
 node tools/dev.mjs call <method> [json...]    # a NAMED DeadEndCity method → compact JSON (--max N / --full)
 node tools/dev.mjs keys KeyW,KeyD 3 | wait 5  # simulate() game seconds (--real: real key presses)
