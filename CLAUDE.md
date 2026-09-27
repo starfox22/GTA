@@ -48,7 +48,9 @@ The default dev page is `?dev&norender` (`NO_RENDER` in render3d.js: no WebGL, ~
 `--render` (or `reload --render`) only for images, after `call graphics high` (bare words pass as strings). `--nodev`
 boots `?test` (demo gate live). New test: one file `tools/tests/<name>.mjs` exporting
 `default async (t)` (`t.call/keys/wait/assert/near/finite`); set up the state it needs,
-`fresh = true` for a clean page. The dev server holds a browser slot while awake: `stop` it
+`fresh = true` for a clean page. The live frame loop runs between console calls: a test
+that depends on exact timing (keys, goals, calls) should `holdSimulation(true)` and step
+with `t.wait`/`t.keys`, then release it. The dev server holds a browser slot while awake: `stop` it
 when you are done with it (and before smoke/tour if slots are short).
 
 **Publish** (only when asked): `python3 tools/build.py --split-media dist/publish`, then the
@@ -83,6 +85,8 @@ page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
   nothing stands north of them (the camera looks north): North Point Key, Monarch One.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
+- `playerImpact()` / `fallInjury()` (falls-body.js) are the only fall-damage scale;
+  `player.fall` is a carrier. The parachute opens only on a second `bail` press.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - **Dev console** `window.DeadEndCity` has explicit named methods only. **Never** add an
