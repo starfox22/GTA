@@ -106,10 +106,6 @@
         // On the volleyball court a click hits the ball instead (beachvolley.js);
         // nothing is fired while thrown off a bike (riders.js).
         if (!volleyTakesFire() && !player.thrown && !player.carjack && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
-        if (keys.KeyE && canSilentHit(rooftopJob())) {
-          rooftopMissionInteract();
-          keys.KeyE = false;
-        }
         timed('people', () => updatePeople(deltaSeconds));
         timed('bullets', () => updateBullets(deltaSeconds));
         timed('damage', () => updateDamage(deltaSeconds));

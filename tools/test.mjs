@@ -17,7 +17,8 @@
 //     const r = await t.call('brakeTest', 'sedan', 100);   // a NAMED console method
 //     t.near(r.distance, 30, 45, 'sedan 100-0 m');
 //   }
-// t.call(method, ...args), t.keys(codes, seconds) / t.wait(seconds) (console simulate),
+// t.call(method, ...args), t.keys(codes, seconds[, { real: true }]) / t.wait(seconds) (console simulate;
+// real: true presses real keys through the page), t.realWait(seconds) (wall clock),
 // t.assert(cond, msg), t.near(value, lo, hi, label), t.finite(obj, label) (no NaN /
 // Infinity anywhere inside), t.note(text) (shown with --verbose). A test fails on a
 // thrown error, a failed assertion or any console error it caused.
@@ -48,7 +49,8 @@ async function op(o) {
 function makeApi(notes) {
   return {
     call: (method, ...args) => op({ op: 'call', method, args }),
-    keys: (codes, seconds) => op({ op: 'keys', codes: [].concat(codes), seconds }),
+    keys: (codes, seconds, { real = false } = {}) => op({ op: 'keys', codes: [].concat(codes), seconds, real }),
+    realWait: (seconds) => op({ op: 'wait', seconds, real: true }),
     wait: (seconds) => op({ op: 'wait', seconds }),
     assert(cond, msg) {
       if (!cond) throw new Failure(msg);
