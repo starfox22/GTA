@@ -96,6 +96,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
   opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
   for the freefall cue: change them there only.
+- `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
+  only read `cameraKick` and `cameraShakeOffset`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
