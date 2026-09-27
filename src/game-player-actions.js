@@ -298,6 +298,8 @@
         return;
       }
       if (policeBlocksMissionDelivery()) return;
+      // Over the body of someone who carried a gun: take it (ammo-supply.js).
+      if (lootInteract()) return;
       // A lobby lift on North Point Key (skyline-lift.js).
       if (northPointKeyInteract()) return;
       if (transitInteract()) return;
@@ -371,6 +373,8 @@
         enforceVehicleHandgun();
         c.abandonedFlight = false;
         if (c.type === 'police' || c.military) c.stolen = true;
+        // A police car, SWAT van or FBI SUV: the rounds it carries, once (ammo-supply.js).
+        takeVehicleArms(c);
         c.gangTarget = null;
         player.x = c.x;
         player.y = c.y;

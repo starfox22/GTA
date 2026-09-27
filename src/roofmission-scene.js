@@ -374,7 +374,8 @@
         e.aiming = seen;
         e.timer -= deltaSeconds;
         if (!seen || distanceBetween(e, player) > 120) roofStep(e, player, deltaSeconds, 9 * KMH);
-        if (seen && e.timer <= 0) {
+        // Only from on screen (combat-rules.js ON-SCREEN RULE).
+        if (seen && e.timer <= 0 && shooterInView(e)) {
           // Handguns across a crowded terrace: steady, not a firing squad (five
           // of them at 17 hp every 0.8 s killed the player before the first step).
           e.timer = 0.95 + seededRandom() * 0.45;

@@ -9,14 +9,15 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
 - Street: orthographic, looking north and down at ~50°, so roofs and south facades carry the
   look (and anything tall hides what stands north of it). The camera stands clear of the
   tallest roof (`streetCeiling()`); no distance haze on the street.
-- Framing (world-view.js): the player's zoom (`STREET_ZOOM` 2.5 on foot: a person ~33 px tall
-  at 1280x800, ~27 m of street on screen) times a CAMERA CONTEXT share for what they are in
-  (car 0.7, motorbike 0.76, bicycle 0.82, bus/truck/boat 0.6, aircraft 0.64 = the flight
-  view's old 1.6) times the speed pull-back (from 45 km/h to 0.82 by ~205 km/h), eased as
+- Framing (world-view.js): the player's zoom (`STREET_ZOOM` 2 on foot, one `STREET_ZOOM_STEP`
+  (x1.25) out from the old 2.5: a person ~26 px tall at 1280x800, ~34 m of street on screen;
+  not saved) times a CAMERA CONTEXT share for what they are in (the old shares x1.25, so
+  vehicles frame as before: car 0.875 = 1.75, motorbike 0.95, bicycle 1.025, bus/truck/boat
+  0.75, aircraft 0.8 = the flight view's old 1.6) times the speed pull-back (from 45 km/h to 0.82 by ~205 km/h), eased as
   `speedZoom` (~1.3 s, drawn frames only), so boarding and stepping out glide. The frame is
   `clamp(viewportHeight * 0.68, 430, 630) / worldZoom` units tall. `cameraView()` reports it.
-  Game rules read the same footprint (`crowdViewHalf`: off-screen spawning, `shooterInView`),
-  so on foot enemies must be on the closer screen (~22 m) before they fire.
+  Game rules read the same footprint (`crowdViewHalf`: off-screen spawning, with a margin;
+  `screenViewHalf`, exact, for `shooterInView`: enemies fire only from on screen).
 - Follow (camera-feel.js, game side): `cameraTarget` eases (frame-rate independent) to the
   player plus a smoothed lead along the vehicle's **velocity** (not its nose), on foot the
   run and, in a fight, toward the aim; shorter with police on the tail (chase framing);

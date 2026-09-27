@@ -212,4 +212,6 @@
         return { type: c.type, x: Math.round(c.x), y: Math.round(c.y), d: Math.round(distanceBetween(c, player)) };
       },
     });
+    // Ammunition supply: pickups, bodies to search, police vehicles' stock (ammo-supply.js).
+    addConsoleMethods('ammoSupply', ammoSupplyConsole());
     // END SUBSYSTEM: src/game-console-police.js

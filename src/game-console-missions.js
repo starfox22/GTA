@@ -27,6 +27,12 @@
         picker: missions.map((m, i) => missionPickerTitle(i)),
         stats: { ...campaignStats, playSeconds: Math.round(campaignStats.playSeconds) },
       }),
+      // The HUD's mission card (refreshed first) and the last announcement's small line:
+      // 'MISSION 1', 'CONTRACT 2', 'DEMO COMPLETE'.
+      missionCard() {
+        updateUI();
+        return { counter: getElement('missionCounter').textContent, announce: getElement('announceSmall').textContent };
+      },
       // Mission 2 test shortcut: start A Seat at the Table if needed, put Vescari
       // down and the player on the street for the last stage (reach the motel).
       skipToRooftopEscape() {

@@ -8,14 +8,17 @@
     /* World gestures are independent from navigation-map gestures and touch sticks. */
     /* The street view's default zoom. At true scale a car is 4.8 m and a person
        1.75 m (game.js WORLD SCALE). On foot the camera stands close enough that
-       a person reads clearly (about 35 px tall on a 1280 x 800 screen, over
-       about 27 m of street top to bottom); in a vehicle it frames wider
-       (CAMERA CONTEXT below) and eases back further with speed. The wheel
-       reaches from the whole district (0.14) to 4.5, close enough to see a
-       face. The player's zoom is one number: the context and speed framing
-       are factors on it, so a player who zooms out on foot is zoomed out in
-       the car too. */
-    const STREET_ZOOM = 2.5,
+       a person reads clearly (about 28 px tall on a 1280 x 800 screen, over
+       about 34 m of street top to bottom: one zoom step, x1.25, out from the
+       old 2.5, so more of the street round the player is on screen); in a
+       vehicle it frames wider (CAMERA CONTEXT below) and eases back further
+       with speed. The wheel reaches from the whole district (0.14) to 4.5,
+       close enough to see a face. The player's zoom is one number: the context
+       and speed framing are factors on it, so a player who zooms out on foot is
+       zoomed out in the car too. The zoom is not saved: every start is here. */
+    const STREET_ZOOM = 2,
+      // One step of the zoom keys (game-input.js).
+      STREET_ZOOM_STEP = 1.25,
       STREET_ZOOM_MIN = 0.14,
       STREET_ZOOM_MAX = 4.5,
       // How far out the street camera eases at full speed (below).
@@ -23,11 +26,22 @@
     /* CAMERA CONTEXT: the share of the player's zoom the camera frames at for
        what the player is in, so entering a car pulls the view back over a
        couple of seconds and stepping out brings it in again (both eased with
-       the speed framing in updateWorldView). A car at rest frames at 0.7 of
+       the speed framing in updateWorldView). A car at rest frames at 0.875 of
        the on-foot zoom (1.75 by default, about the old all-round 1.6), so the
        road ahead reads as before; long vehicles and boats wider; aircraft
-       keep the framing the flight view was tuned at (1.6 by default). */
-    const CAMERA_CONTEXT = { car: 0.7, bike: 0.76, bicycle: 0.82, long: 0.6, boat: 0.6, air: 1.6 / STREET_ZOOM, ride: 0.7, parachute: 0.78 };
+       keep the framing the flight view was tuned at (1.6 by default). The
+       shares were tuned against an on-foot 2.5: moving the on-foot default a
+       step out scaled them by the same step, so every vehicle frames as before. */
+    const CAMERA_CONTEXT = {
+      car: 0.7 * STREET_ZOOM_STEP,
+      bike: 0.76 * STREET_ZOOM_STEP,
+      bicycle: 0.82 * STREET_ZOOM_STEP,
+      long: 0.6 * STREET_ZOOM_STEP,
+      boat: 0.6 * STREET_ZOOM_STEP,
+      air: 1.6 / STREET_ZOOM,
+      ride: 0.7 * STREET_ZOOM_STEP,
+      parachute: 0.78 * STREET_ZOOM_STEP,
+    };
     function cameraContextZoom() {
       const c = player.car;
       if (c) {

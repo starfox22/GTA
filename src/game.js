@@ -51,6 +51,7 @@
     // @include src/harbor.js
     // @include src/police-feedback.js
     // @include src/arsenal.js
+    // @include src/ammo-supply.js
     // @include src/citylife.js
     // @include src/pursuit.js
     // @include src/swat.js
