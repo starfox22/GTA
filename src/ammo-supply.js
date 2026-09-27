@@ -133,7 +133,8 @@
        that went back (a new game, a load) never leaves the player stuck. */
     function lootCrouching() {
       const left = (player.lootUntil || 0) - gameTime;
-      return left > 0 && left <= LOOT_CROUCH;
+      // (gameTime + 0.6) - gameTime can round a hair past 0.6: allow for it.
+      return left > 0 && left <= LOOT_CROUCH + 1e-6;
     }
     function vehicleArmsKind(c) {
       if (c.lawUnit === 'swat' || c.lawUnit === 'fed') return c.lawUnit;
