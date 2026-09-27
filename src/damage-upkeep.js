@@ -565,7 +565,9 @@
         vehicleAt(x, y) {
           let best = null;
           for (const c of vehicles) if (!best || distanceBetween(c, { x, y }) < distanceBetween(best, { x, y })) best = c;
-          return best ? { id: best.id, type: best.type, x: Math.round(best.x), y: Math.round(best.y), a: best.a } : null;
+          return best
+            ? { id: best.id, type: best.type, x: Math.round(best.x), y: Math.round(best.y), a: best.a, altitude: Math.round(best.altitude || 0) }
+            : null;
         },
         // Street furniture within `radius` of a point and whether it is still standing.
         streetProps(x = player.x, y = player.y, radius = 200) {

@@ -43,6 +43,14 @@ index plus one.
 - Test from the console: `startMission(i)`, `missionTargets()`, `steerTo()`, `walk()`,
   `interact()`, `simulate(seconds, keys)`; docs/audit/missions-qa.md shows the method.
 
+## Mission 1: Dockside Favor (harbor-*.js, chase.js)
+
+- Vinny's truck (`HARBOR.truck`) waits on the carriageway at the north kerb of the street
+  at y 640, westbound lane, nose west: on the south side the tall block south of it hid it
+  from the north-looking camera. `spawnVinnyTruck` slides it along that kerb when traffic
+  or a double-parked delivery van (crowd-scenes.js) holds the spot; `MISSION_STARTS`
+  (bike share) reads the same point.
+
 ## Mission 2: the Blue Hour (roofmission-*.js)
 
 - Guards see only inside their cone: `roofGuardSees` = `ROOF_VIEW` half-angle and range

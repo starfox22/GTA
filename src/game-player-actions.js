@@ -172,7 +172,7 @@
         isAircraft(vehicle) &&
         (aircraftClearance(vehicle) > 1 || Math.hypot(vehicle.vx || 0, vehicle.vy || 0) > 12)
       ) {
-        tell('Land and stop to exit, or press J to bail out with a parachute.');
+        tell('Land and stop to exit, or press ' + keyName('bail') + ' to bail out with a parachute.');
         return;
       }
       // Off a cliff (falls-vehicles.js): nowhere to step out to until it comes down.
@@ -242,7 +242,7 @@
       if (!found) {
         tell(
           isBoat(vehicle)
-            ? 'Pull alongside a wooden dock to step off, or press J to dive in.'
+            ? 'Pull alongside a wooden dock to step off, or press ' + keyName('bail') + ' to dive in.'
             : 'No room to get out. Move away from the wall.',
         );
         return;

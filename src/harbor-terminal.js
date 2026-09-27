@@ -14,10 +14,13 @@
         x: 3210,
         y: 1520,
       },
+      // Vinny's truck, at the north kerb of the street at y 640 (carriageway
+      // 596..684) in the westbound lane, facing west: the camera looks north, so a
+      // truck on the south side hid behind the tall block south of it.
       truck: {
         x: 1830,
-        y: 704,
-        a: 0,
+        y: 609,
+        a: Math.PI,
       },
       delivery: {
         x: -1664,

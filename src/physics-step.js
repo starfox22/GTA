@@ -3,9 +3,12 @@
     function vehicleBroadphase(pc) {
       // Vehicles that are far from the player, barely moving and untouched for a while
       // "rest": they skip static-contact passes (they cannot have moved into a wall).
+      // A pilotless helicopter coming down (abandonedFlight) has no way on but is
+      // falling: it must not rest, or it hung in the air two seconds after the
+      // pilot died or restarted the job.
       for (const c of vehicles) {
         const still =
-            Math.abs(c.vx || 0) + Math.abs(c.vy || 0) < 0.6 && Math.abs(c.av || 0) < 0.02,
+            Math.abs(c.vx || 0) + Math.abs(c.vy || 0) < 0.6 && Math.abs(c.av || 0) < 0.02 && !c.abandonedFlight,
           far = Math.abs(c.x - player.x) > 1700 || Math.abs(c.y - player.y) > 1700;
         c.restSteps = still && c !== pc ? (c.restSteps || 0) + 1 : 0;
         c.farFromPlayer = far;

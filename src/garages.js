@@ -254,12 +254,12 @@
       if (!c) return false;
       if (mission?.index === 2 && [1, 2].includes(mission.stage) && garageForCar(c)) {
         if (c === mission.car && garageForCar(c).id === 'eastside' && Math.abs(c.speed) < 8 && mission.stage === 1)
-          setStage(2, c, 'GET OUT · HOLD E BESIDE THE COUPE TO REMOVE TRACKER');
+          setStage(2, c, 'GET OUT · HOLD ' + keyName('interact') + ' BESIDE THE COUPE TO REMOVE TRACKER');
         exitCar();
         if (!player.car)
           tell(
             mission.stage === 2
-              ? 'Hold E beside the coupe to remove its transmitter before respraying.'
+              ? 'Hold ' + keyName('interact') + ' beside the coupe to remove its transmitter before respraying.'
               : 'Take the marked coupe to Eastside Garage to remove its transmitter.',
             4,
           );
