@@ -177,7 +177,7 @@
         splashGeometry.instanceCount = 0;
       }
       const splashUniforms = {
-        uOrigin: rainUniforms.uOrigin,
+        uOrigin: { value: new Three.Vector3() },
         uTime: rainUniforms.uTime,
         uReach: { value: 700 },
         uStrength: { value: 0 },
@@ -519,6 +519,20 @@
       function vehicleLampAmount() {
         return Math.max(nightAmount, clamp((weather.rain - 0.4) / 0.4, 0, 1) * 0.65);
       }
+      // No drop falls below the rain box's floor. On the range it reaches down to the lowest
+      // ground RAIN_FLOOR_REACH round the view's subject (RAIN_FLOOR_DIP at most below the
+      // street there), so rain falls down a slope below the car too and a beam aimed down a
+      // descent has drops to light. The city is level: the floor is the street.
+      const RAIN_FLOOR_REACH = 32 * UNITS_PER_METRE,
+        RAIN_FLOOR_DIP = 12 * UNITS_PER_METRE,
+        RAIN_FLOOR_SAMPLES = Object.freeze([1, 0, -1, 0, 0, 1, 0, -1, 0.7, 0.7, -0.7, 0.7, 0.7, -0.7, -0.7, -0.7]);
+      function rainFloor(x, y, street) {
+        if (!terrainWithin(x, y, RAIN_FLOOR_REACH)) return street;
+        let low = street;
+        for (let i = 0; i < RAIN_FLOOR_SAMPLES.length; i += 2)
+          low = Math.min(low, terrainHeight(x + RAIN_FLOOR_SAMPLES[i] * RAIN_FLOOR_REACH, y + RAIN_FLOOR_SAMPLES[i + 1] * RAIN_FLOOR_REACH));
+        return Math.max(low, street - RAIN_FLOOR_DIP);
+      }
       // ---- Frame update --------------------------------------------------------------
       const rainAmbientDay = new Three.Color('#b9c8d6'),
         rainAmbientNight = new Three.Color('#3d4a5c'),
@@ -543,8 +557,10 @@
           // so you fly through the streaks instead of looking down on a patch of them.
           ground = flightViewActive
             ? Math.max(street, Math.min(flightAltitude, cloudBaseAt(cameraTarget.x, cameraTarget.y)) - RAIN_TOP * 0.6)
-            : street;
+            : rainFloor(cameraTarget.x, cameraTarget.y, street);
         rainUniforms.uOrigin.value.set(viewCenter.x, ground, viewCenter.y);
+        // Splashes stay on the street (they are not drawn from the air).
+        splashUniforms.uOrigin.value.set(viewCenter.x, street, viewCenter.y);
         rainMesh.visible = rain > 0.02;
         if (rainMesh.visible) {
           const drops = Math.min(RAIN_MAX, Math.round((touchEnabled() ? Math.min(tier.rain, 1100) : tier.rain) * clamp(0.25 + rain, 0, 1)));
