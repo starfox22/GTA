@@ -4,9 +4,6 @@ Known, unfixed issues reported by the agents that built each feature (as of v30)
 here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
-- Mission 2: after COVER BLOWN, leaving by the lift with Vescari alive keeps stage 2 ("TAKE DOWN VESCARI OR GET OUT", marker on him): getting out neither ends nor fails the job, and going back up (stars lost) walks into a terrace still on alarm. Design call: fail it ("Vescari got away") or calm the party after a while.
-- Dying on the Blue Hour terrace clears `player.roof` at once (game-player-actions.js), so the body lies at street level inside the hotel, under its roof, for the WASTED screen (code reading, not shot).
-- The pause menu's RESTART CURRENT JOB silently does nothing when there is no job to restart (demo over, every job done): disable or hide it then.
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 
 ## North Point Key (skyline*.js, skyline3d-*.js)

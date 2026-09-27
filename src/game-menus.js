@@ -78,6 +78,17 @@
           ' jobs complete · $' +
           cash.toLocaleString() +
           ' earned and in your pocket.';
+        // RESTART CURRENT JOB with nothing to restart (the demo's story or every
+        // job done, no job running): shown disabled, saying why (retryMission).
+        const restart = getElement('restartMission'),
+          noJob = !mission && !storyCallWaiting();
+        restart.disabled = noJob;
+        restart.replaceChildren('RESTART CURRENT JOB');
+        if (noJob) {
+          const why = document.createElement('span');
+          why.textContent = 'NO JOB TO RESTART';
+          restart.appendChild(why);
+        }
         getElement('resumeBtn').focus();
       } else if (gameMode === 'pause') {
         initAudio();

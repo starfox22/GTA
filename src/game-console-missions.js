@@ -130,6 +130,17 @@
         retryMission();
         return { mode: gameMode, ...this.missionState() };
       },
+      // Open (true) or close (false) the pause menu as Escape does; its RESTART
+      // CURRENT JOB button as shown (disabled with nothing to restart).
+      pauseMenu(open) {
+        if (open !== undefined && !!open !== (gameMode === 'pause')) togglePause();
+        const restart = getElement('restartMission');
+        return {
+          mode: gameMode,
+          open: gameMode === 'pause',
+          restart: { disabled: restart.disabled, note: restart.querySelector('span')?.textContent || null },
+        };
+      },
       // A pick in the mission picker (campaign.js chooseMission, gated as the
       // picker is): the job's call comes up (accept it with Enter or E).
       chooseMission(index) {
