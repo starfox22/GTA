@@ -129,7 +129,7 @@
       headlights: () => city3D?.headlights?.() ?? null,
       // The player's lamps on a slope: pose, aim, and beam coordinates and the terrain horizon at points ahead (terrain-headlights.js).
       headlightAim: (metres) => headlightAimReport(metres),
-      // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap, terrainBeams } (true = as in play).
+      // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap, terrainBeams, lightBar } (true = as in play).
       lookSwitches: (options) => city3D?.lookSwitches?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,

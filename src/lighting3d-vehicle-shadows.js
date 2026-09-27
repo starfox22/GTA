@@ -217,6 +217,6 @@
           horizonsComputed: horizonComputed,
           terrainBeams: lookSwitchState.terrainBeams,
           headBeamPeak: round(headBeamPeak),
-          hazeLevel: round(hazeUniforms.uHaze.value * hazePeak * 100) / 100,
+          hazeLevel: Math.round(hazeUniforms.uHaze.value * hazePeak * 1000) / 1000,
         };
       }

@@ -430,9 +430,9 @@
           same = key.car === c && key.flood === flood;
         if (
           same &&
-          Math.abs(key.x - frame.x) + Math.abs(key.y - frame.y) < 2 &&
-          Math.abs(key.z - frame.z) < 1 &&
-          Math.abs(normalizeAngle(key.a - frame.heading)) < 0.01
+          Math.abs(key.x - frame.x) + Math.abs(key.y - frame.y) < 4 &&
+          Math.abs(key.z - frame.z) < 1.5 &&
+          Math.abs(normalizeAngle(key.a - frame.heading)) < 0.015
         )
           return key.on;
         if (same && horizonRefreshed >= HORIZON_REFRESHES) return key.on;

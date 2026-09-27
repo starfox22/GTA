@@ -1,0 +1,8 @@
+# Headlights that follow the mountain
+- Headlights aim with the car's body on a slope: climbing, descending or leaning on a side slope, the road ahead is lit like a level road (it used to go dark uphill and fade away downhill), from the lamps' real height (the 4x4 club trucks' lamps sit up to 1.35 m high).
+- No light through a hill: past a crest the beams leave the ground and lift into the night, the road beyond stays dark until the car tips over; a hill face ahead takes a short, bright pool.
+- On the range a little mountain air shows the beams on a clear night; the beam haze fades where the ground rises into it (no hard seam) and thickens where the beams leave the ground.
+- A club truck's roof light bar or pods now throw a wide flood on the range (MEDIUM and up), lighting trees and rock faces round the bends.
+- Tail, brake and reversing washes and far traffic's beams tilt with the car on slopes; the scenic roads' reflector posts flare amber in the headlights.
+- Internals: terrain-headlights.js (headlightFrame, the terrain horizon), a third CAR LAMPS uniform (pitch, roll, mode), the horizon tables in a strip of the beam shadow texture (no extra sampler); lighting3d-vehicle-shadows.js split from lighting3d-vehicle-lights.js.
+- Console: `headlightAim(metres)`, new `headlights()` fields (pitch, roll, aim, horizon, lightBar, horizonsComputed), `lookSwitches({ terrainBeams })`; test tools/tests/headlight-aim.mjs.

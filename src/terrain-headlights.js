@@ -148,7 +148,9 @@
       const round = (v, k = 1000) => Math.round(v * k) / k,
         frame = headlightFrame(c, aimFrame, null, false),
         level = headlightFrame(c, aimLevel, null, true),
+        started = performance.now(),
         horizon = headlightHorizon(frame, aimTable),
+        horizonMs = performance.now() - started,
         f = frame.forward,
         r = frame.right,
         u = frame.up,
@@ -183,6 +185,8 @@
         lampHeightM: round(frame.height / UNITS_PER_METRE, 100),
         lampOverGroundM: round((frame.z - terrainHeight(frame.x, frame.y)) / UNITS_PER_METRE, 100),
         horizon,
+        // One lamp's horizon (24 rays x 48 ground samples), as the renderer recomputes it.
+        horizonMs: round(horizonMs, 100),
         probes,
       };
     }
