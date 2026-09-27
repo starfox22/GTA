@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-365 files in the include tree, 139,295 lines.
+366 files in the include tree, 139,306 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -106,7 +106,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mobile.js`   259 — Touch controls
 - `src/world-view.js`   164 — World camera gestures
 - `src/car-radio.js`   836 — Vehicle radio stations
-- `src/garages.js`   898 — Drive-in repair and respray
+- `src/garages.js`   750 — ▸ Drive-in repair and respray
 - `src/crowd.js`   188 — ▸ Crowd life, perception and reactions
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
 - `src/dealership.js`    57 — ▸ MONARCH MOTORS: the plan, the sale, the garage and the alarm
@@ -168,7 +168,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/themepark-falcon-train.js`   423 — The Falcon coaster train: stepping, boarding and leaving, riders, screams and speakers (stepCoasterTrain).
 - `src/themepark-rides.js`   191 — The Sunset Eye wheel, coaster status, park shows and fireworks (updateWheelRide, updateParkShows).
 - `src/themepark-colliders.js`   293 — Theme park colliders: solids, air solids, kiosks, coaster footings, lagoon and paths (parkBlocked).
-- `src/themepark-grounds.js`   336 — Theme park grounds: the log flume, the pier ground paint, buildSunsetPier() and park palms.
+- `src/themepark-grounds.js`   337 — Theme park grounds: the log flume, the pier ground paint, buildSunsetPier() and park palms.
 - `src/themepark-crowd.js`   268 — Theme park crowd: lines, spots, queues and guests (spawnParkGuest).
 - `src/themepark-sound.js`   313 — Theme park sound: screams, fountain music, fireworks and splashes (updateParkAudio).
 
@@ -199,7 +199,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/monarch-streets.js`   397 — Monarch Isle streets, circles, carriageways, roads, bridges, parcels and villas (ISLE_STREETS, MONARCH_ROADS).
 - `src/monarch-towers.js`   277 — Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
 - `src/monarch-one.js`   372 — Monarch Isle's MONARCH ONE estate: the supertall's gated grounds, porte-cochère, pool deck, private cove, gate arm, staff and ground paint …
-- `src/monarch-blocks.js`   396 — Monarch Isle block planning (planIsleBlock, planIsleStreetscape), solids, districts and shore styles.
+- `src/monarch-blocks.js`   397 — Monarch Isle block planning (planIsleBlock, planIsleStreetscape), solids, districts and shore styles.
 - `src/monarch-ground.js`   594 — Monarch Isle ground sheet: one painted canvas tile (paintMonarchGround) with junctions, villas, blocks, garden, marina.
 - `src/monarch-map.js`    99 — Monarch Isle minimap and big-map layer (paintMonarchMap), labels, helipads and monarchLayout.
 
@@ -243,6 +243,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sealife-sea.js`   620 — The sea field: distance to land, steering, viewer, hour and events for sea life (seaField, seaSteer).
 - `src/sealife-gulls.js`   581 — Gulls (updateGulls) and the shark's setup: encounters, beach alarm and placement.
 - `src/sealife-shark.js`   535 — Shark bites, patrols, beach passes and bumps (updateShark) and the beach shark alarm.
+
+## src/garages.js ▸ Drive-in repair and respray
+
+- `src/garages-shops.js`   157 — Garage plan and shops: GARAGE_PLAN (real-scale workshop), GARAGES (one per island at least, GARAGE_ISLANDS) and each shop's worked-out plan.
 
 ## src/crowd.js ▸ Crowd life, perception and reactions
 

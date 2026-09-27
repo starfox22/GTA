@@ -374,6 +374,7 @@
       if (e.region !== 'monarch') return null;
       if (e.y < -5080 && e.x > 5700 && e.x < 9232) return 'beach';
       if (e.y < -5140 && e.x > 9356 && e.x < 9716) return 'beach';
+      if (e.y < -5180 && e.x >= 9232 && e.x <= 9356) return 'rock';
       if (e.x > 9620 && e.y < -1150) return 'rock';
       if (e.y > -600 || (e.x > 9890 && e.y > -1170)) return 'rock';
       return 'quay';
