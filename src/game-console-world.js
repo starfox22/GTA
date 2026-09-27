@@ -63,6 +63,9 @@
       // Runways, their thresholds, lights and PAPI indications, the piers and
       // where every plane is (airfields.js).
       airfields: () => airfieldReport(),
+      // The Blue Hour's street entrance (roofmission-entrance.js): the forecourt kept
+      // clear, the limousines at the kerb and the doormen and valet on post.
+      blueHourEntrance: () => blueHourEntranceReport(),
       // Rooftop helipads, the roof the player stands on and the roof under the
       // player's helicopter (rooftops.js); with a map point, that roof and its plant.
       rooftops: (x, y) => ({

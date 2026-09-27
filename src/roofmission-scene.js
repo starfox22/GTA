@@ -44,6 +44,8 @@
           walk: 0,
         };
       m.boss = boss;
+      // A limousine taken from the hotel's door is back at the kerb (out of view).
+      parkBlueHourLimousines(true);
       enemies.push(boss);
       const routes = [
         [
@@ -131,15 +133,16 @@
         [221, 174],
         [159, 135],
       ];
+      // Evening wear: midnight, champagne, burgundy, emerald, ivory, black, plum, old gold.
       const colors = [
-        '#c9ae8c',
-        '#718ca7',
-        '#a86274',
-        '#70a59a',
-        '#dfd7b8',
-        '#5e628b',
-        '#b47c57',
-        '#ada2bb',
+        '#1d2940',
+        '#d9c49a',
+        '#6e1f2e',
+        '#1f5a4a',
+        '#ece4d2',
+        '#1a1a1d',
+        '#4f2a4f',
+        '#b08a4a',
       ];
       spots.forEach(([x, y], i) => {
         const home = roofAt(x, y);

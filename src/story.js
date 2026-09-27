@@ -75,8 +75,8 @@
         contact: 'vinny',
         reward: 4200,
         phoneMessage:
-          'Vinny gave you a mission: dress as a guest, kill Luciano Vescari at the Blue Hour, and walk out.',
-        brief: 'Dress as a guest, kill Luciano Vescari at the Blue Hour, and walk out.',
+          'Vinny gave you a mission: dress as a guest and kill Luciano Vescari at the Blue Hour. Poison his glass, or shoot it out.',
+        brief: 'Dress as a guest and kill Luciano Vescari at the Blue Hour: poison his glass unseen, or shoot it out with his detail.',
       },
       {
         title: "Vinny's Favor",

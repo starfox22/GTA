@@ -244,6 +244,8 @@
         }),
       );
       populateCasino();
+      // The Blue Hour's doormen, valet and limousines (roofmission-entrance.js).
+      populateBlueHourEntrance();
       resetSports();
       [
         [128, 1800],
