@@ -1,7 +1,7 @@
 // Headless smoke test: boots the built HTML in Chromium, starts a game, drives
 // the player for a few seconds and reports console errors plus screenshots.
 //   node tools/smoke.mjs [dead-end-city.html] [outdir]
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+import { launchBrowser } from './browser.mjs';
 import path from 'node:path';
 import fs from 'node:fs';
 
@@ -10,10 +10,8 @@ if (!fs.existsSync(file)) { console.error('missing ' + file + ': build it first 
 const out = path.resolve(process.argv[3] || 'dist/smoke');
 fs.mkdirSync(out, { recursive: true });
 
-const browser = await chromium.launch({
-  executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args: ['--disable-accelerated-2d-canvas', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--autoplay-policy=no-user-gesture-required'],
-});
+// A machine-wide browser slot first (tools/browser.mjs), then Chromium.
+const { browser } = await launchBrowser({ label: 'smoke', args: ['--autoplay-policy=no-user-gesture-required'] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 const errors = [];
 const logs = [];

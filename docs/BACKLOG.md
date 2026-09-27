@@ -22,6 +22,12 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Measured top speeds a little under the card: Wayron 417/431, Tourbillon 435/445, Jasko 457/480 km/h.
 - The salesman walks at most ~9 km/h, so he lags a running player.
 
+## Falls and parachute (falls*.js, parachute.js)
+- NPCs knocked off drops do not fall; the splat pool is a flat decal and sinks into steep slopes.
+- AI cars cannot fly into the sea (the footprint check stops them at the edge).
+- A canopy landing on an ordinary roof still glides past the building; only freefall onto a roof is an impact.
+- The Blue Hour terrace canopy landing is kept but has no test.
+
 ## Driving (driving.js, physics-*.js)
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
 - Soaked roads add 43–58 % to ABS stops (target 30–50 %).

@@ -125,6 +125,16 @@
       </div>
     </div>
     <div id="sniperWarning" aria-hidden="true"></div>
+    <!-- Freefall cue (parachute.js FREEFALL CUE): open the canopy, and the height left to do it in. -->
+    <div id="freefallCue" data-state="high" role="status" aria-live="polite">
+      <div class="ffc-card">
+        <div class="ffc-call"><kbd id="freefallKey">J</kbd><strong id="freefallCall">PRESS J TO OPEN PARACHUTE</strong></div>
+        <div class="ffc-read">
+          <small id="freefallNote">FREEFALL</small><span class="ffc-alt"><b id="freefallAlt">0</b><i>M ABOVE GROUND</i></span>
+        </div>
+        <div class="ffc-bar"><i class="ffc-left"></i><i class="ffc-need"></i></div>
+      </div>
+    </div>
     <!-- Flight HUD (hud.js, FLIGHT HUD): shown in an aircraft only. -->
     <div id="flightHud" aria-hidden="true">
       <div class="fh-frame">

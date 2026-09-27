@@ -98,6 +98,8 @@
       settleCentreCards();
       watchDockLine();
       updateFlightHud();
+      // Freefall: the call to open the canopy and the height left (parachute.js).
+      updateFreefallCue();
       watchWeaponBox();
       watchRadioBox();
       updateHudPops();

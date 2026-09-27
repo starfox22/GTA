@@ -268,6 +268,8 @@
           a: c.a,
         };
       terrainVehiclePose(c, stepSeconds);
+      // Off a cliff or a crest too fast: airborne, landings, rollovers (falls-vehicles.js).
+      cliffSettle(c, stepSeconds);
       // Drawbridge leaves as ramps, take-off, landing and the gap (drawbridge.js).
       drawbridgeSettle(c, stepSeconds);
       rotorStrikes(c, stepSeconds);

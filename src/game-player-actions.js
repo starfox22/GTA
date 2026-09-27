@@ -104,6 +104,7 @@
       player.tumble = null;
       player.tumbleRoll = 0;
       player.thrown = null;
+      player.fall = null;
       cancelCarjack();
       if (player.roof || player.buildingRoof) {
         player.roof = false;
@@ -156,7 +157,8 @@
         const d = distanceBetween(vehicle, player);
         // A helicopter parked on a roof is reached from that roof, not the street.
         if (isAircraft(vehicle) && Math.abs(entityElevation(vehicle) - entityElevation(player)) > 30) continue;
-        if (vehicle.hp > 0 && aircraftClearance(vehicle) < 2 && d < bd) {
+        // A car on its roof or side (falls-vehicles.js) has nothing to drive on.
+        if (vehicle.hp > 0 && aircraftClearance(vehicle) < 2 && d < bd && !vehicle.overturned) {
           best = vehicle;
           bd = d;
         }
@@ -173,6 +175,8 @@
         tell('Land and stop to exit, or press J to bail out with a parachute.');
         return;
       }
+      // Off a cliff (falls-vehicles.js): nowhere to step out to until it comes down.
+      if (vehicle.cliffAir) return;
       // Parked on a roof: out onto the roof beside it (rooftops.js).
       if (vehicle.roofSite && isAircraft(vehicle)) {
         if (!exitOntoRoof(vehicle, vehicle.roofSite)) {
@@ -182,7 +186,7 @@
         vehicle.vx = vehicle.vy = vehicle.speed = 0;
         player.car = null;
         player.inv = 0.5;
-        tell('ROOFTOP · E at the helicopter to fly on', 2.5);
+        tell('ROOFTOP · ' + keyName('interact') + ' at the helicopter to fly on', 2.5);
         tone(160, 0.06, 0.15, 'triangle');
         return;
       }
@@ -328,7 +332,7 @@
         return;
       }
       if (GARAGES.some((s) => distanceBetween(player, s) < 140))
-        tell('Drive up to the door and press E: respray from $200, repairs by the damage.');
+        tell('Drive up to the door and press ' + keyName('interact') + ': respray from $200, repairs by the damage.');
     }
     /* Taking the wheel: shared by the action key, the cab hijack and the getaway
        cars missions hand you, so every entry sets the same state. */

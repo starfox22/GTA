@@ -4,16 +4,13 @@
 //   node tools/media-check.mjs <dir>/index.html
 // Exits 1 if any track fails to load. Only needs the page's media blocks, so it
 // does not wait for the game to boot.
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+import { launchBrowser } from './browser.mjs';
 import path from 'node:path';
 import fs from 'node:fs';
 
 const file = path.resolve(process.argv[2] || 'dist/publish/index.html');
 if (!fs.existsSync(file)) { console.error('missing ' + file + ': build it first (python3 tools/build.py --split-media DIR)'); process.exit(1); }
-const browser = await chromium.launch({
-  executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args: ['--autoplay-policy=no-user-gesture-required'],
-});
+const { browser } = await launchBrowser({ label: 'media-check', args: ['--autoplay-policy=no-user-gesture-required'] });
 const page = await browser.newPage();
 await page.goto('file://' + file, { timeout: 300000, waitUntil: 'domcontentloaded' });
 const results = await page.evaluate(async () => {

@@ -641,21 +641,23 @@
       }
       if (transitRide) {
         getElement('terrainStatus').textContent =
-          'CITY RAIL → ' + transitRide.target.name + ' · E: NEXT STOP';
+          'CITY RAIL → ' + transitRide.target.name + ' · ' + keyName('interact') + ': NEXT STOP';
         return;
       }
       if (p)
         getElement('terrainStatus').textContent =
           (p.stage === 'freefall'
-            ? 'FREEFALL · ' + keyName('handbrake') + ' TO OPEN'
-            : 'PARACHUTE · A/D STEER · W GLIDE · S FLARE') +
+            ? 'FREEFALL · ' + keyName('bail') + ' TO OPEN'
+            : 'PARACHUTE · ' + keyName('left') + '/' + keyName('right') + ' STEER · ' + keyName('forward') + ' GLIDE · ' + keyName('back') + ' FLARE') +
           ' · ' +
           Math.round(worldMeters(player.altitude - terrainHeight(player.x, player.y))) +
           ' m ABOVE GROUND';
       else if (trekking) {
         const grade = player.mountainGrade || 0,
           degrees = Math.round((Math.atan(grade) * 180) / Math.PI);
-        getElement('terrainStatus').textContent = player.tumble
+        getElement('terrainStatus').textContent = player.fall
+          ? 'FALLING'
+          : player.tumble
           ? 'FALLING · ' + degrees + '° SLOPE'
           : (player.onMountainTrail
               ? 'ON THE TRAIL'

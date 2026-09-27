@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-398 files in the include tree, 147,522 lines.
+402 files in the include tree, 148,894 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   156 — ▸ Game orchestration and shared state
+- `src/game.js`   157 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -31,17 +31,17 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-car-spawn.js`   163 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   479 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   264 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
-- `src/game-player-actions.js`   532 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   536 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   171 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    18 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   159 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   342 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
-- `src/game-update.js`   226 — update(dt): the per-frame simulation step (only active play advances clocks).
+- `src/game-update.js`   230 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/game-draw2d.js`   630 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   224 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/game-ui.js`   415 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   167 — Resize, begin/newGame, pause, help, big map toggle.
-- `src/game-input.js`   413 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/game-input.js`   414 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   294 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
@@ -105,9 +105,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ecology.js`   339 — Wildlife behavior
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
-- `src/navigation.js`   687 — City map and route planning
-- `src/parachute.js`   345 — Bailout and parachute
-- `src/mobile.js`   261 — Touch controls
+- `src/navigation.js`   689 — City map and route planning
+- `src/parachute.js`   515 — Bailout and parachute
+- `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
+- `src/mobile.js`   258 — Touch controls
 - `src/world-view.js`   224 — World camera gestures
 - `src/car-radio.js`   836 — Vehicle radio stations
 - `src/garages.js`   750 — ▸ Drive-in repair and respray
@@ -134,11 +135,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/physics.js ▸ Vehicle and pedestrian physics
 
 - `src/physics-shapes.js`   341 — Oriented collision boxes, vehicle shapes, the static-collider grid (addStatic, nearbyStatics).
-- `src/physics-collisions.js`   343 — Contact resolution, crash severity, damage and injury (resolveContact, damageVehicle, repairVehicle).
+- `src/physics-collisions.js`   345 — Contact resolution, crash severity, damage and injury (resolveContact, damageVehicle, repairVehicle).
 - `src/physics-traffic.js`   394 — Traffic AI: signals, junction planning, road-line following (trafficControl).
 - `src/physics-aircraft.js`   273 — Aircraft strikes: An airframe is not a car: a helicopter or a plane flown into a building, a hillside or a bridge tower faster than …
-- `src/physics-driving.js`   633 — controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
-- `src/physics-step.js`   302 — physicsStep(): the fixed step, broadphase, contact passes, settling.
+- `src/physics-driving.js`   637 — controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
+- `src/physics-step.js`   304 — physicsStep(): the fixed step, broadphase, contact passes, settling.
 - `src/physics-knockdowns.js`   218 — People knocked down by vehicles, swept person contacts, blood tracks.
 - `src/physics-update.js`   118 — updateCars(): per-frame vehicle update driving the fixed steps.
 - `src/physics-console.js`   563 — HANDLING TESTS (developer console) turnTest() drives a fresh vehicle on the open strip beside the Oceanview runway through the real game step …
@@ -153,7 +154,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/drawbridge.js ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
 
 - `src/drawbridge-span.js`   453 — Drawbridge span: opening timetable, geometry, surface, gap and on-span tests (DRAWBRIDGE_OPENINGS, drawbridgeSurface).
-- `src/drawbridge-motion.js`   462 — Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
+- `src/drawbridge-motion.js`   463 — Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
 - `src/drawbridge-opening.js`   445 — Drawbridge openings: clearing the span, camera zoom, swinging the leaves, updateDrawbridge(), map, console command and report.
 
 ## src/citylife.js ▸ Civic services and police
@@ -228,12 +229,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/terrain.js ▸ Mountains and off-road contact
 
-- `src/terrain-roads.js`   507 — Ridgeline's scenic roads: smooth centrelines through the plan's corners, grading over the range (profile, cross-fall, cuttings and fills), guard …
+- `src/terrain-roads.js`   535 — Ridgeline's scenic roads: smooth centrelines through the plan's corners, grading over the range (profile, cross-fall, cuttings and fills), guard …
 - `src/terrain-grading.js`   534 — Grading the scenic roads over the range (terrain generation): profiles, the caps and fills they set, the viewpoints' lay-bys and the carriageway …
 - `src/terrain-noise.js`   536 — Ridgeline Range: terrain cells, switchback trails and noise functions (terrainNoise, terrainFbm, terrainRidged).
-- `src/terrain-field.js`   664 — Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
+- `src/terrain-field.js`   667 — Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
 - `src/terrain-scenery.js`   585 — Baked terrain data: treeline, scenery, streams, snow, mountain ground paint and terrainReport().
-- `src/terrain-roadside.js`   394 — Scenic roads' roadside: guard rails and viewpoint walls (drawn and solid), reflector posts, the report (mountainRoad) and a test autopilot …
+- `src/terrain-roadside.js`   406 — Scenic roads' roadside: guard rails and viewpoint walls (drawn and solid), reflector posts, the report (mountainRoad) and a test autopilot …
 
 ## src/offroad.js ▸ The 4x4 club, trail mud, off-road traction and the hill climb
 
@@ -268,6 +269,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sealife-sea.js`   620 — The sea field: distance to land, steering, viewer, hour and events for sea life (seaField, seaSteer).
 - `src/sealife-gulls.js`   581 — Gulls (updateGulls) and the shark's setup: encounters, beach alarm and placement.
 - `src/sealife-shark.js`   536 — Shark bites, patrols, beach passes and bumps (updateShark) and the beach shark alarm.
+
+## src/falls.js ▸ Falls: bodies and vehicles off cliffs, fatal impacts
+
+- `src/falls-body.js`   317 — Falls on foot: the impact scale (fallInjury), the player's ballistic fall off a drop, landings and the fatal splat.
+- `src/falls-vehicles.js`   351 — Falls, vehicles: road vehicles leaving the terrain (cliffSettle, cliffFlight), landings, tumbles down a face and rollovers.
+- `src/falls-console.js`   429 — Falls console: the cliff finder (cliffSpots), bail-out and parachute helpers, scripted fall and descent tests (fallsConsole).
 
 ## src/garages.js ▸ Drive-in repair and respray
 
@@ -306,8 +313,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   628 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
-- `src/hud-panels.js`   636 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
+- `src/hud-state.js`   629 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-panels.js`   638 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -523,10 +530,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-bodies.js`   302 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
 - `src/crowd3d-looks.js`   478 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/crowd3d-joints.js`   139 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
-- `src/crowd3d-poses.js`   883 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
+- `src/crowd3d-poses.js`   891 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   554 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
-- `src/crowd3d-special.js`   466 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
+- `src/crowd3d-special.js`   473 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-frame.js`   258 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/surfaces3d.js ▸ Procedural surface detail
@@ -584,7 +591,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d-effects.js ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 
-- `src/parachute3d.js`   528 — Ram-air parachute
+- `src/parachute3d.js`   529 — Ram-air parachute
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
@@ -592,7 +599,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-missions.js`   248 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   193 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
-- `src/game-console-world.js`   210 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-world.js`   213 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   140 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
@@ -601,7 +608,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
 
-- `src/ui/build-header.html`   361 — Dead end city — readable development / review build 30.0.0: Open this HTML directly to play offline.
+- `src/ui/build-header.html`   364 — Dead end city — readable development / review build 30.0.0: Open this HTML directly to play offline.
 - `src/ui/base.css`   586 — styles: :root, body, button, button:focus-visible, …
 - `src/ui/touch-controls.css`   312 — Compact dashboard radio: presets stay within reach without covering the road ahead.
 - `src/ui/casino-transit.css`   201 — styles: #casinoTable, .roulette-top, .roulette-top canvas, .roulette-bank, …
@@ -620,14 +627,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/touch-hud.css`   314 — Touch play: thumbs own the lower corners, so the HUD moves up
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   274 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
+- `src/ui/freefall.css`   167 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below and …
 - `src/ui/reduced-motion.css`    48 — Reduced motion: keep the states, drop the movement
-- `src/ui/hud.html`   273 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
+- `src/ui/hud.html`   283 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   227 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
-- `src/ui/panels.html`   222 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
+- `src/ui/panels.html`   223 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
 - `src/ui/transit.html`    18 — markup: #transitOverlay, #transitPanel, #transitTitle, #transitOptions, #closeTransit
 
 ## Outside the include tree
 
 - `src/asset-loader.js`   160 — decodes the embedded/streamed media into ASSETS before the game starts
-- `src/shell.html`    72 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
+- `src/shell.html`    73 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

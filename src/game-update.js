@@ -61,6 +61,8 @@
           !transitRide &&
           !taxiRide &&
           !player.coaster &&
+          // Off a drop: flying until the ground comes up (falls-body.js).
+          !updatePlayerFall(deltaSeconds) &&
           // Thrown off a bike: flying, sliding or lying there (riders.js).
           !updateThrownPlayer(deltaSeconds) &&
           // Taking a car off its driver: walking round, the door, the struggle (carjack-struggle.js).
@@ -89,6 +91,7 @@
           !player.buildingRoof &&
           !player.deck &&
           !player.parachute &&
+          !player.fall &&
           !player.swimming &&
           !player.wading &&
           !player.climbing &&
@@ -98,7 +101,8 @@
           !taxiRide &&
           !player.coaster
         )
-          player.altitude = terrainHeight(player.x, player.y);
+          // On the ground, or off the edge of a drop (falls-body.js).
+          settleFootOnGround();
         // On the volleyball court a click hits the ball instead (beachvolley.js);
         // nothing is fired while thrown off a bike (riders.js).
         if (!volleyTakesFire() && !player.thrown && !player.carjack && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();

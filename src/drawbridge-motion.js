@@ -2,7 +2,8 @@
     /* After the contacts (settleVehicle): follow a leaf's surface, take off from
        its tip, land, strike the far leaf's end or fall into the Sound. */
     function drawbridgeSettle(c, stepSeconds) {
-      if (isAircraft(c) || isBoat(c)) return;
+      // Off a mountain edge or overturned, deckLift is falls-vehicles.js's.
+      if (isAircraft(c) || isBoat(c) || c.cliffAir || c.cliffLift) return;
       const active = c.deckAir || c.deckLeaf || c.deckLift;
       // In the Sound (water.js floods it): the leaves have nothing more to do with it.
       if (c.sinkFor > 0) {

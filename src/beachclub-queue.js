@@ -288,14 +288,14 @@
           tell('MAREA · The bouncers remember you.', 2.5);
         } else {
           if (dDoor < 24) mareaSay(head, marea.queue.length ? MAREA_DOOR_TALK.player.line : MAREA_DOOR_TALK.player.cover);
-          tell('MAREA BEACH CLUB · Cover $40 · E to pay the door', 2.5);
+          tell('MAREA BEACH CLUB · Cover $40 · ' + keyName('interact') + ' to pay the door', 2.5);
         }
       }
       const vip = mareaPoint(314, 148);
       if (marea.pass && !marea.vip && distanceBetween(player, vip) < 26 && gameTime - marea.hintAt > 4) {
         marea.hintAt = gameTime;
         mareaSay(mareaSlots.find((s) => s.vipGuard)?.person, MAREA_DOOR_TALK.player.vipAsk);
-        tell('MAREA VIP · $250 band · E to buy', 2.5);
+        tell('MAREA VIP · $250 band · ' + keyName('interact') + ' to buy', 2.5);
       }
     }
     /* E by the door or the VIP rope. True when handled. */

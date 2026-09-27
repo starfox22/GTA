@@ -15,8 +15,9 @@ rules and contracts; follow it. Working pattern:
    - `sh tools/quick-check.sh` before every commit (seconds, no browser);
    - the fast tools in tools/ (dev server, `node tools/test.mjs`) when they exist; add a test in
      `tools/tests/` for logic you change;
-   - a headless boot or screenshot only for visual or boot-path changes, one browser at a time,
-     small screenshots;
+   - a headless boot or screenshot only for visual or boot-path changes, small screenshots;
+     browsers are shared machine-wide through browser slots (CLAUDE.md): `node tools/dev.mjs
+     stop` as soon as you no longer need yours;
    - pure-move refactors: the byte-identical `cmp` recipe in CLAUDE.md.
 4. **Record it.** A new file opens with a 1–3 line comment saying what it holds; run
    `python3 tools/filemap.py` after adding, removing or renaming files. Update only the area doc

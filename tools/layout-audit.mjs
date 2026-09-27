@@ -16,16 +16,14 @@
 // crosswalks leading into a building or a park. Passing a JSON path also
 // saves the layout, which is handy for drawing the plan. See
 // docs/audit/world-layout.md for what the last run found.
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+import { launchBrowser } from './browser.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
 const file = path.resolve(process.argv[2] || 'dead-end-city.html');
 if (!fs.existsSync(file)) { console.error('missing ' + file + ': build it first (python3 tools/build.py)'); process.exit(1); }
-const browser = await chromium.launch({
-  executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args: ['--disable-accelerated-2d-canvas', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
-});
+// A machine-wide browser slot first (tools/browser.mjs), then Chromium.
+const { browser } = await launchBrowser({ label: 'layout-audit' });
 const page = await browser.newPage({ viewport: { width: 800, height: 600 } });
 await page.goto('file://' + file + '?dev', { timeout: 1800000, waitUntil: 'domcontentloaded' });
 await page.waitForFunction(() => window.DeadEndCity, null, { timeout: 2400000 });

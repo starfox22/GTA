@@ -89,15 +89,22 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   samples the exact Float32 vertices the renderer draws, so contact and picture agree. Console
   `terrain()`.
 - **Scenic roads** (terrain-roads/-grading/-roadside.js, `SCENIC_ROAD_NAMES`): corners are
-  filleted arcs (shrunk where one would sweep deeper into a town than its legs; the layout
-  audit notes a crossing once per arc segment); `road.points` is what everything reads, `road.dense` (4-unit samples) what
-  grading and the ribbon read. Graded over the range (8%, spline profile, crown and bank, cut
+  filleted arcs (kept out of towns; the layout audit notes a crossing per arc segment);
+  `road.points` is what everything reads, `road.dense` (4-unit samples) what grading and
+  the ribbon read. Graded over the range (8%, spline profile, crown and bank, cut
   and fill), at street level by towns, bridges and other roads; trails start at road level. A
   road or trail that began on a rounded corner is moved onto the curve (don't assume the old
   vertex). County carriageways are tarmac to `offroadDrive` (`offroadState.paved`); rails are
   oriented statics. Check `mountainRoad()` and tools/tests/mountain-road.mjs after edits.
 - `prunePlanTrees` (end of `buildCounty`) drops plan trees on carriageways, in buildings, under
   rail decks, on runways or in doorways (`treeAudit()`).
+- Falls (falls.js): on foot, ground dropping away steeper than 1.35 (54°) under a step starts
+  a ballistic fall (`player.fall`, a carrier; `settleFootOnGround` replaced the plain terrain
+  snap); faces over 45° cannot be landed on (the body slides down, scraping) and where it
+  stops the whole height counts. One impact scale (`fallInjury`, falls-body.js): under 6 m a
+  stumble, 6-17 m 8-100 hp, beyond dead (a splat: face down, blood pool); water safe to
+  20 m/s, fatal from 30. Slopes up to the tumble (terrain-field.js) are unchanged. Console
+  group `falls` (`cliffSpot`, `fallTest`, `fallState`, `bailOut`, `parachuteState`).
 - Railway (transit.js, transit3d.js): SHORE LINE (Cruise Terminal → west sea wall → Southport
   Airport), COAST LINE (→ Oceanview → Palmshore), RIDGE LINE (→ Eastgate, Northridge,
   Stonecreek). Each `route` is a control polygon filleted by `railTrackGeometry`; everything

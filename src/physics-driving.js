@@ -101,6 +101,7 @@
       // Parked roadblock and deployed cruisers and burnt-out wrecks sleep the same way.
       if (
         c.resting &&
+        !c.cliffAir &&
         c !== pc &&
         !c.ai &&
         !c.isleBoat &&
@@ -127,6 +128,9 @@
       } else if (c.deckAir) {
         // Off the tip of a drawbridge leaf: ballistic until drawbridgeSettle lands it.
         drawbridgeFlight(c, stepSeconds);
+      } else if (c.cliffAir || c.overturned) {
+        // Off a cliff, or on its roof or side (falls-vehicles.js): nothing to drive on.
+        cliffFlight(c, stepSeconds);
       } else {
         if (
           c.cop &&

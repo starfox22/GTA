@@ -25,20 +25,28 @@
 // scales it down further, --crop clips in viewport pixels, --full saves a PNG).
 // Every command prints "(N new console errors: node tools/dev.mjs errors)" when the page
 // logged errors since the last `errors`.
+//
+// Sharing the machine (tools/browser.mjs): the server takes one of the machine-wide
+// browser slots before it launches Chromium (it waits, saying so, when all are busy), and
+// after DEC_IDLE_FREEZE seconds (default 20) without a command it freezes the page (no
+// frames, no CPU) and gives its slot back; the next command takes a slot again and thaws
+// it, so game state is kept. `status` shows `frozen` and the slot holders.
 import { spawn, execFileSync } from 'node:child_process';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { acquireSlot, loadChromium, chromeExecutable, glArgs, slotHolders, slotCount } from './browser.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const STATE = path.join(ROOT, 'dist', 'dev.json');
 const LOG = path.join(ROOT, 'dist', 'dev.log');
 const DEFAULT_HTML = path.join(ROOT, 'dist', 'dev', 'game.html');
 const SHOTS = path.join(ROOT, 'dist', 'dev', 'shots');
-const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
-const PLAYWRIGHT = '/opt/node22/lib/node_modules/playwright/index.mjs';
 const BOOT_TIMEOUT_MS = 15 * 60 * 1000;
+// Seconds without a command before the server freezes its page (0 = never).
+const IDLE_ENV = process.env.DEC_IDLE_FREEZE;
+const IDLE_FREEZE_MS = 1000 * (IDLE_ENV != null && IDLE_ENV !== '' && Number(IDLE_ENV) >= 0 ? Number(IDLE_ENV) : 20);
 
 // A per-worktree default port, so parallel worktrees never share a server by accident.
 function defaultPort() {
@@ -127,10 +135,12 @@ export async function start({ html = null, render = false, nodev = false, size =
 }
 
 async function waitReady(port, say) {
-  const t0 = Date.now();
+  let t0 = Date.now();
   let last = '';
   while (Date.now() - t0 < BOOT_TIMEOUT_MS) {
     const st = await alive(port);
+    // Queueing for a browser slot is not booting: the boot clock starts after it.
+    if (st?.phase === 'waiting for a browser slot') t0 = Date.now();
     if (st?.state === 'ready') {
       say(`ready: boot ${st.bootSeconds}s (${st.url})`);
       return st;
@@ -149,11 +159,15 @@ async function waitReady(port, say) {
 // ---------------------------------------------------------------------------------
 // Server side (the background process).
 async function serve(file, port, flags, size, ownBuild) {
-  const { chromium } = await import(PLAYWRIGHT);
+  const chromium = await loadChromium();
   const [width, height] = size.split('x').map(Number);
-  const status = { state: 'booting', phase: 'launching browser', html: file, flags, port, pid: process.pid, url: '', bootSeconds: null };
+  const status = { state: 'booting', phase: 'waiting for a browser slot', html: file, flags, port, pid: process.pid, url: '', bootSeconds: null, frozen: false };
   let errors = [];
   let queue = Promise.resolve();
+  const label = 'dev ' + path.basename(ROOT);
+  let releaseSlot = null;
+  let cdp = null;
+  let lastOp = Date.now();
 
   const server = http.createServer((req, res) => {
     let body = '';
@@ -171,16 +185,53 @@ async function serve(file, port, flags, size, ownBuild) {
         res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify(out));
       };
-      if (op.op === 'status') return reply({ ...status });
-      queue = queue.then(() => handle(op).then(reply, (e) => reply({ error: String(e.message || e).split('\n')[0] })));
+      if (op.op === 'status') return reply({ ...status, slots: `${slotHolders().length}/${slotCount()}` });
+      lastOp = Date.now();
+      queue = queue.then(() =>
+        // Stopping or reading errors needs no running page (nor a slot).
+        (op.op === 'stop' || op.op === 'errors' ? Promise.resolve() : thaw())
+          .then(() => handle(op))
+          .then(reply, (e) => reply({ error: String(e.message || e).split('\n')[0] }))
+          .finally(() => (lastOp = Date.now())),
+      );
     });
   });
   server.listen(port, '127.0.0.1');
 
+  releaseSlot = await acquireSlot(label);
+  status.phase = 'launching browser';
   const browser = await chromium.launch({
-    executablePath: CHROME,
-    args: ['--disable-accelerated-2d-canvas', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--autoplay-policy=no-user-gesture-required', '--ignore-gpu-blocklist'],
+    executablePath: chromeExecutable(),
+    args: [...glArgs(), '--autoplay-policy=no-user-gesture-required'],
   });
+
+  // Idle: freeze the page (no timers, no frames) and hand the slot to someone else.
+  async function freeze() {
+    if (status.frozen || status.state !== 'ready' || !cdp || Date.now() - lastOp < IDLE_FREEZE_MS) return;
+    // CSS animations run on the compositor even with the main thread frozen (a
+    // software GPU process keeps compositing the HUD's pulses): pause them too.
+    await cdp.send('Animation.enable').catch(() => {});
+    await cdp.send('Animation.setPlaybackRate', { playbackRate: 0 }).catch(() => {});
+    await cdp.send('Page.setWebLifecycleState', { state: 'frozen' });
+    status.frozen = true;
+    releaseSlot?.();
+    releaseSlot = null;
+    console.log(`idle ${Math.round((Date.now() - lastOp) / 1000)}s: page frozen, browser slot released`);
+  }
+  async function thaw() {
+    if (!status.frozen) return;
+    status.phase = 'waiting for a browser slot';
+    releaseSlot = await acquireSlot(label);
+    await cdp.send('Page.setWebLifecycleState', { state: 'active' });
+    await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 }).catch(() => {});
+    status.frozen = false;
+    status.phase = status.state === 'ready' ? 'ready' : status.phase;
+    console.log('page thawed');
+  }
+  if (IDLE_FREEZE_MS > 0)
+    setInterval(() => {
+      if (!status.frozen && status.state === 'ready' && Date.now() - lastOp >= IDLE_FREEZE_MS) queue = queue.then(freeze).catch(() => {});
+    }, 5000).unref();
   // Each boot gets a fresh browser context (empty localStorage: no saved progress or
   // settings carried from the last run), so tests start from the same state.
   let context = null;
@@ -193,6 +244,8 @@ async function serve(file, port, flags, size, ownBuild) {
     if (context) await context.close().catch(() => {});
     context = await browser.newContext({ viewport: { width, height } });
     page = await context.newPage();
+    cdp = await context.newCDPSession(page);
+    status.frozen = false;
     page.setDefaultTimeout(BOOT_TIMEOUT_MS);
     page.on('console', (m) => {
       if (m.type() === 'error') errors.push('[console] ' + m.text().slice(0, 500));
@@ -223,6 +276,7 @@ async function serve(file, port, flags, size, ownBuild) {
       await page.waitForTimeout(250);
     }
     Object.assign(status, { state: 'ready', phase: 'ready', bootSeconds: +((Date.now() - t0) / 1000).toFixed(1) });
+    lastOp = Date.now();
     console.log(`ready in ${status.bootSeconds}s`);
   }
 
@@ -411,7 +465,11 @@ async function main(argv) {
         console.log('no dev server running');
         return;
       }
-      return print(await request({ op: 'stop' }), max);
+      print(await request({ op: 'stop' }), max);
+      // The server exits a moment after replying: wait, so a `start` right after
+      // does not reuse a server that is going away.
+      for (let i = 0; i < 40 && (await alive(st.port)); i++) await new Promise((r) => setTimeout(r, 250));
+      return;
     }
     default:
       console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\nimport ')[0].replace(/^\/\/ ?/gm, ''));
