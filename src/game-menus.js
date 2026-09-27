@@ -98,6 +98,10 @@
       previousMode = gameMode;
       gameMode = 'help';
       renderControlsHelp();
+      // The public demo's manual says how far the story goes (campaign.js DEMO_MISSIONS).
+      if (DEMO_BUILD)
+        getElement('helpJobs').textContent =
+          'This demo holds the first ' + DEMO_MISSIONS + ' jobs of the story; each opens once you finish the one before.';
       getElement('help').classList.remove('hidden');
       // Focus the button without scrolling the manual to its end.
       getElement('closeHelp').focus({ preventScroll: true });

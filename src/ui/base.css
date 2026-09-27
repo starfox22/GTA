@@ -195,6 +195,18 @@ kbd {
   padding-left: 14px;
   margin: 20px 0;
 }
+.help-dialog .help-tip h3 {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--acid);
+  margin: 16px 0 4px;
+}
+.help-dialog .help-tip h3:first-child {
+  margin-top: 0;
+}
+.help-dialog .help-tip p {
+  margin: 0 0 6px;
+}
 .map-panel {
   width: min(830px, 94vw);
   max-height: 96vh;
