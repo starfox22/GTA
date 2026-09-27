@@ -20,5 +20,8 @@
   ruts and landings knock through the suspension; fast cars whoosh past.
 - Bullets chip concrete, ricochet, knock on metal, crack glass and thud into dirt; enemy
   rounds whizz and crack past you. The car radio's duck under callouts glides.
+- The mix: the street dips for a moment under a nearby shot or blast and swells back; a
+  brick-wall ceiling after the limiter; near thunder rolls off the hills and slaps between
+  the towers; beeps no longer click in.
 - Console: `acoustics(x, y)`, `soundscape()`, `footsteps(x, y)`, `vehicleFoley()`
   (settings group); test tools/tests/soundscape.mjs.

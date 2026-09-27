@@ -1,6 +1,6 @@
 // The free-roam soundscape: the ground under a step at known places (footSurfaceAt), a
 // building muffling a sound behind it, a shotgun's strikes on a wall within the impact budget,
-// the ear's zone downtown against up the range, footsteps while running, and a truck's air
+// the ambience ducking under the shot, the ear's zone downtown against up the range, footsteps while running, and a truck's air
 // horn and its doors.
 const GROUND = [
   [128, 128, 'asphalt', 'a Northbank junction'],
@@ -75,6 +75,13 @@ export default async function (t) {
     await t.call('interact');
     foley = await t.call('vehicleFoley');
     t.assert(foley.doors.some((d) => d.action === 'exit'), `no door on the way out: ${JSON.stringify(foley.doors)}`);
+    // A shotgun fired on foot ducks the ambience under it.
+    await t.call('arm', 2);
+    const ducks = (await t.call('audioMix')).loudDuck.events;
+    await t.keys('KeyF', 0.05);
+    const ducked = (await t.call('audioMix')).loudDuck;
+    t.assert(ducked.events > ducks && ducked.depth > 0.2, `the shotgun did not duck the ambience: ${JSON.stringify(ducked)}`);
+    await t.call('wanted', 0);
     t.finite(await t.call('soundscape'), 'soundscape');
     t.finite(foley.thumps + foley.passBys, 'thumps and pass-bys');
     t.note(`Midtown enclosure ${town.probe.enclosure}, summit echo ${peak.returns.echo}, ${run.steps - before} steps in 2 s`);

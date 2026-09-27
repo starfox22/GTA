@@ -28,7 +28,8 @@
      * them under the black while the radio and the callouts play on;
      * `setMixDuck()` moves it), then the ear filter (dulled while swimming),
      * where the callouts join; `mixBus` (the master volume and the Sound switch)
-     * and the limiter follow.
+     * and the limiter follow, then a brick-wall ceiling at -1 dBFS. The ambience
+     * bus passes `loudDuck` first: gunfire and explosions near the ear dip it.
      */
     let soundOn = true,
       audio = null,
@@ -39,7 +40,8 @@
       musicBus = null,
       voiceBus = null,
       duckBus = null,
-      mixBus = null;
+      mixBus = null,
+      ambienceDuck = null;
     let audioBuffers = {},
       audioLoops = {},
       reverb = null,
@@ -68,7 +70,16 @@
         duckBus = audio.createGain();
         mixBus = audio.createGain();
         mixBus.gain.value = mixLevel();
-        duckBus.connect(earFilter).connect(mixBus).connect(limiter).connect(audio.destination);
+        // The ceiling only catches peaks the limiter's soft knee lets past.
+        const ceiling = audio.createDynamicsCompressor();
+        ceiling.threshold.value = -1;
+        ceiling.knee.value = 0;
+        ceiling.ratio.value = 20;
+        ceiling.attack.value = 0.001;
+        ceiling.release.value = 0.1;
+        duckBus.connect(earFilter).connect(mixBus).connect(limiter).connect(ceiling).connect(audio.destination);
+        ambienceDuck = audio.createGain();
+        ambienceDuck.connect(duckBus);
         const bus = (channel, into = duckBus) => {
           const node = audio.createGain();
           node.gain.value = busLevel(channel);
@@ -77,7 +88,7 @@
         };
         master = bus('sound');
         engineBus = bus('engine');
-        ambienceBus = bus('ambience');
+        ambienceBus = bus('ambience', ambienceDuck);
         sirenBus = bus('siren');
         musicBus = bus('radio');
         voiceBus = bus('voice', earFilter);
@@ -206,6 +217,33 @@
       duckBus.gain.cancelScheduledValues(audio.currentTime);
       duckBus.gain.setTargetAtTime(clamp(level, 0, 1), audio.currentTime, Math.max(0.01, seconds / 3));
     }
+    /**
+     * LOUD DUCK: a shot or a blast near the ear dips the ambience (the beds, the street,
+     * rain) by up to 5 dB in ~15 ms, holds 0.12 s and lets it back over ~1 s, so gunfire
+     * punches out of the street. `level` is the sound's direct level (volume x distance
+     * and occlusion); far shots (under ~0.1) do not duck. Released in soundUpdate.
+     */
+    const loudDuck = { depth: 0, hold: 0, events: 0 };
+    function duckForLoud(level) {
+      if (!ambienceDuck) return;
+      const depth = clamp((level - 0.08) * 0.7, 0, 0.45);
+      if (depth < 0.02) return;
+      loudDuck.events++;
+      loudDuck.hold = 0.12;
+      if (depth <= loudDuck.depth) return;
+      loudDuck.depth = depth;
+      ambienceDuck.gain.setTargetAtTime(1 - depth, audio.currentTime, 0.006);
+    }
+    function updateLoudDuck(deltaSeconds) {
+      if (!ambienceDuck || loudDuck.depth <= 0) return;
+      if (loudDuck.hold > 0) {
+        loudDuck.hold -= deltaSeconds;
+        return;
+      }
+      loudDuck.depth *= Math.exp(-deltaSeconds / 0.35);
+      if (loudDuck.depth < 0.005) loudDuck.depth = 0;
+      glideParam(ambienceDuck.gain, 1 - loudDuck.depth, audio.currentTime, 0.12);
+    }
     /* A recorded sample, optionally from a map position (attenuated and panned
        from the player; a position with an `elevation` also counts the height
        between it and the player, e.g. the Falcon's train) and `delay` seconds
@@ -242,6 +280,7 @@
       }
       g.gain.value = volume * attenuation;
       (air ? s.connect(air) : s).connect(g).connect(pan).connect(bus || master);
+      if (ROOM_SAMPLES.has(name)) duckForLoud(volume * attenuation);
       if (ROOM_SAMPLES.has(name) && reverbSend) {
         send = audio.createGain();
         send.gain.value = volume * roomSendLevel(distance);
@@ -263,11 +302,17 @@
       o.type = type === 'square' ? 'triangle' : type;
       o.frequency.setValueAtTime(f, audio.currentTime);
       if (end) o.frequency.exponentialRampToValueAtTime(end, audio.currentTime + d);
-      g.gain.setValueAtTime(v * 0.35, audio.currentTime);
+      // A 4 ms attack: a beep that starts at full level clicks in.
+      g.gain.setValueAtTime(0.0001, audio.currentTime);
+      g.gain.linearRampToValueAtTime(v * 0.35, audio.currentTime + Math.min(0.004, d * 0.2));
       g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + d);
       o.connect(g).connect(master);
       o.start();
       o.stop(audio.currentTime + d);
+      o.onended = () => {
+        o.disconnect();
+        g.disconnect();
+      };
     }
     function noise(d = 0.1, v = 0.25, freq = 1300) {
       if (!audio || !soundOn) return;
@@ -381,6 +426,8 @@
       updateVehicleFoley(deltaSeconds, active);
       // The ear probe and the room's returns (acoustics-audio.js).
       updateAcoustics(deltaSeconds);
+      // The ambience coming back up after a shot or a blast (LOUD DUCK).
+      updateLoudDuck(deltaSeconds);
       // Enemy rounds passing close: the whizz and the crack (bullets-audio.js).
       updateBulletWhizz(deltaSeconds, active);
       absBuzz(active && !!c?.absActive);
@@ -563,6 +610,8 @@
             : null,
           master: master ? +master.gain.value.toFixed(3) : null,
           duck: duckBus ? +duckBus.gain.value.toFixed(3) : null,
+          // LOUD DUCK: the ambience dip under nearby gunfire (1 = open) and dips so far.
+          loudDuck: ambienceDuck ? { gain: +ambienceDuck.gain.value.toFixed(3), depth: +loudDuck.depth.toFixed(3), events: loudDuck.events } : null,
           buffers: Object.keys(audioBuffers).length,
           loops: Object.fromEntries(
             Object.entries(audioLoops).map(([k, l]) => [

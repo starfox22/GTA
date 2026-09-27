@@ -17,7 +17,12 @@ doors, tyre ground) is in audio-soundscape.md.
     parachute wind, the stadium's goal reactions.
   - `sirenBus`, `musicBus` (the beach club), `voiceBus` (callouts).
 - All but voices pass the ride-skip `duckBus` (`setMixDuck`), then the ear filter
-  (`earFilter`, dulled while swimming), then `mixBus` (master × Sound switch) and a limiter.
+  (`earFilter`, dulled while swimming), then `mixBus` (master × Sound switch), a limiter
+  (soft knee at -12 dB) and a brick-wall ceiling at -1 dBFS.
+- The ambience bus passes `ambienceDuck` (LOUD DUCK): `duckForLoud(level)` from playSample
+  for ROOM_SAMPLES dips it up to 0.45 (~5 dB) in ~15 ms, holds 0.12 s, releases over ~1 s
+  (`updateLoudDuck`). The ambience slider stays on `ambienceBus`; never set the duck's gain
+  elsewhere.
 - `applyVolumes()` pushes every change into the live mix and the radio knob.
 - Roomy sounds (guns, explosions, crashes) connect to `reverbSend`, never to `reverb`
   directly: it also feeds the street slap-back and the county echo (audio-soundscape.md).

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-437 files in the include tree, 153,959 lines.
+437 files in the include tree, 154,009 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -22,7 +22,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-state.js`   380 — Shared data contracts: Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
 - `src/game-vehicles.js`   747 — VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road and air resistance.
 - `src/game-weapons.js`    78 — Weapon table (weapons) and mission list (missions).
-- `src/audio.js`   590 — Effects and voice audio
+- `src/audio.js`   639 — Effects and voice audio
 - `src/voices.js`   173 — People's voices: whether someone is drawn as a woman or a man (personFemale) and the recorded scream that fits them (screamVoice, playPersonScream …
 - `src/footwork.js`    61 — On foot: where the player's body faces (the aim while fighting, else the way they go) and what facing one way while moving another costs the pace …
 - `src/camera-feel.js`   228 — Camera feel: the street camera's follow (a lead along the vehicle's path; on foot the way the player goes and toward the aim in a fight) and its …
@@ -65,7 +65,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/taxi.js`   286 — Yellow cabs
 - `src/cycles.js`   801 — City bicycles
 - `src/weather.js`   216 — Weather
-- `src/weather-audio.js`   270 — Rain and thunder sound
+- `src/weather-audio.js`   271 — Rain and thunder sound
 - `src/clouds.js`   329 — Cloud layer (game side): cloudBaseAt/cloudTopAt, the only source of the cloud altitude, by weather and area; the coverage and area maps the renderer …
 - `src/clouds-audio.js`    61 — Cloud sound: inside a cloud the rush of air goes deep and damp (a low, soft roar and a fine hiss of droplets), following cloudLayer.immersion and the …
 - `src/clouds-console.js`    64 — Cloud console (registered by game-console-world.js as 'clouds'): cloudLayer() report, cloudSpot() and cloudJump(), a freefall from a given altitude …
