@@ -140,13 +140,36 @@
       return {
         stage: p.stage,
         armed: !!p.armed,
+        phase: p.stage === 'canopy' ? p.phase : null,
+        deployS: p.stage === 'canopy' ? +p.deploy.toFixed(2) : null,
         opening: +p.opening.toFixed(2),
         aglM: +worldMeters(Math.max(0, player.altitude - parachuteFloor(player.x, player.y))).toFixed(1),
         descentMs: +worldMeters(-p.vz).toFixed(1),
+        loadG: +(p.load ?? 1).toFixed(2),
+        peakLoadG: p.peakLoad != null ? +p.peakLoad.toFixed(2) : null,
         from: p.from,
         openedAtM: p.openedAt ?? null,
-        cue: cue ? { state: cue.state, needM: +worldMeters(cue.need).toFixed(1) } : null,
+        pullMs: p.pullRate != null ? +worldMeters(p.pullRate).toFixed(1) : null,
+        openAtM: p.openAt ?? null,
+        openTimeS: p.openTime ?? null,
+        openLostM: p.openLost ?? null,
+        cue: cue ? { state: cue.state, needM: +worldMeters(cue.need).toFixed(1), seconds: +cue.seconds.toFixed(2) } : null,
       };
+    }
+    /* Console: step the jump at 30 Hz (as simulate does) until the height above
+       the ground is down to `target` metres or, for a word, until the cue shows that
+       state (soon, now, danger, opening, short) or the deployment reaches that
+       phase (lines, snivel, snap, open); at most 120 s, or until the jump ends. */
+    function parachuteFallTo(target) {
+      const reached = () => {
+        const p = player.parachute;
+        if (!p) return true;
+        if (typeof target === 'number') return worldMeters(player.altitude - parachuteFloor(player.x, player.y)) <= target;
+        const cue = parachuteCueState();
+        return (cue && cue.state === target) || (p.stage === 'canopy' && p.phase === target);
+      };
+      const steppedS = stepFor(120, () => !reached());
+      return { steppedS, ...(parachuteReport() || { landed: true }) };
     }
     // Put the player on foot at (x, y), healed, nothing chasing them.
     function stagePlayer(x, y) {
@@ -417,8 +440,10 @@
         bailOut: (metres, x, y, heading) => consoleBailOut(metres, x, y, heading),
         // Pull the ripcord as a fresh press of the bail key would (freefall only).
         openParachute: () => (openParachuteByHand(), parachuteReport()),
-        // Stage, armed, opening, height above ground, descent rate, the cue's state and the room it needs.
+        // Stage, deployment phase and load, height above ground, descent rate, where it was pulled and fully open, the cue's state and the height it needs.
         parachuteState: () => parachuteReport(),
+        // Step the jump until `target` metres above the ground, or a cue state / deployment phase by name.
+        parachuteFallTo: (target) => parachuteFallTo(target),
         // The player's fall: altitude, ground, falling / tumbling, the last impacts and vehicle landings.
         fallState: () => fallStateReport(),
         // A cliff to test on: 'lethal' or 'car' (see CLIFF FINDER), with the profile of the way down.

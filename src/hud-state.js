@@ -337,7 +337,7 @@
         // Freefall and canopy: the speed through the air, the rate of descent and
         // the height left.
         const p = player.parachute;
-        name = p.stage === 'freefall' ? 'FALLING · FREEFALL' : 'FALLING · CANOPY';
+        name = p.stage === 'freefall' ? 'FALLING · FREEFALL' : p.phase === 'open' ? 'FALLING · CANOPY' : 'FALLING · OPENING';
         figure = Math.round(speedReading(Math.hypot(p.vx || 0, p.vy || 0, p.vz || 0)));
         unit =
           units + ' · ↓ ' + Math.round(speedReading(Math.min(0, p.vz || 0))) + ' · ' +
