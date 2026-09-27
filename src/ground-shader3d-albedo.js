@@ -569,8 +569,10 @@
       const GROUND_NORMAL = `
         {
           // The materials' height as a bump (three.js perturbNormalArb): grain,
-          // joints, cracks, the kerb's face, paint, setts. Water levels it.
-          float bumpH = gHeight * ( 1.0 - puddle ) * ( cityGroundDetail > 0.5 ? 1.0 : 0.0 );
+          // joints, cracks, the kerb's face, paint, setts. Water levels it: a
+          // puddle entirely, the damp film mostly (the glossy film on the full
+          // aggregate bump glinted pixel by pixel, a snow of specks in the rain).
+          float bumpH = gHeight * ( 1.0 - puddle ) * ( 1.0 - 0.65 * wetFilm ) * ( cityGroundDetail > 0.5 ? 1.0 : 0.0 );
           vec2 dHdxy = vec2( dFdx( bumpH ), dFdy( bumpH ) ) * 0.9;
           // Screen derivatives are shared by each 2 x 2 block of pixels, so a
           // height step (a paint edge, a joint, the kerb's arris) landing inside
