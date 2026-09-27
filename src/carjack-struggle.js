@@ -199,8 +199,11 @@
         }
         const target = job.path[job.leg],
           remaining = Math.max(0.001, job.approachFor - job.t),
-          d = distanceBetween(player, target),
-          step = Math.min(d, Math.max(CARJACK.walk * 0.6, d / remaining) * deltaSeconds);
+          d = distanceBetween(player, target);
+        // The pace that reaches the door on time over what is left of the way.
+        let ahead = d;
+        for (let i = job.leg + 1; i < job.path.length; i++) ahead += distanceBetween(job.path[i - 1], job.path[i]);
+        const step = Math.min(d, Math.max(CARJACK.walk * 0.6, ahead / remaining) * deltaSeconds);
         if (d > 0.01) {
           const a = headingBetween(player, target);
           player.x += Math.cos(a) * step;

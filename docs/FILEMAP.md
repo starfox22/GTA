@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-366 files in the include tree, 139,234 lines.
+366 files in the include tree, 139,237 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -56,7 +56,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/chase.js`   544 — Cargo pursuit
 - `src/roadblocks.js`   434 — Police containment and roadblocks
 - `src/carjack.js`   334 — Carjacking and driver reactions
-- `src/carjack-struggle.js`   349 — The carjack struggle: walking round to the driver's door, the door, a short tug of war, the throw and taking the seat (startCarjack, updateCarjack …
+- `src/carjack-struggle.js`   352 — The carjack struggle: walking round to the driver's door, the door, a short tug of war, the throw and taking the seat (startCarjack, updateCarjack …
 - `src/riders.js`   391 — Riders thrown from motorbikes and bicycles
 - `src/themepark.js`    63 — ▸ Sunset Pier resort and theme park
 - `src/marina.js`    11 — ▸ Harbor Point marina, the superyacht and the cruise liners
