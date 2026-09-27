@@ -346,9 +346,9 @@
         linden: { form: 'broad', H: 64, R: 21, Ry: 23, shape: 'oval', lobes: 7, cards: 10, cell: 'leafRound', leaf: '#5d813c', bark: 1, trunk: '#6a5a4c', trunkR: 1.8, limbs: 3 },
         locust: { form: 'broad', H: 64, R: 26, Ry: 18, shape: 'vase', lobes: 8, cards: 8, cell: 'leafFine', leaf: '#a3b555', bark: 1, trunk: '#4d423a', trunkR: 1.6, limbs: 5, airy: true },
         // Bradford pear: a full, glossy teardrop 9-10 m tall (it read small and near black at street zoom).
-        pear: { form: 'broad', H: 64, R: 21, Ry: 24, shape: 'teardrop', lobes: 7, cards: 11, cell: 'leafRound', leaf: '#5f9043', bark: 1, trunk: '#5e5047', trunkR: 1.5, limbs: 3 },
+        pear: { form: 'broad', H: 64, R: 21, Ry: 24, shape: 'teardrop', lobes: 7, cards: 11, cell: 'leafRound', leaf: '#6a9a47', bark: 1, trunk: '#5e5047', trunkR: 1.5, limbs: 3 },
         // A Bradford pear in its white spring blossom (one pear in five).
-        pearBlossom: { form: 'broad', H: 64, R: 21, Ry: 24, shape: 'teardrop', lobes: 7, cards: 11, cell: 'leafRound', leaf: '#5f9043', bark: 1, trunk: '#5e5047', trunkR: 1.5, limbs: 3, blossom: { color: '#f4f2ea', share: 0.7 } },
+        pearBlossom: { form: 'broad', H: 64, R: 21, Ry: 24, shape: 'teardrop', lobes: 7, cards: 11, cell: 'leafRound', leaf: '#6a9a47', bark: 1, trunk: '#5e5047', trunkR: 1.5, limbs: 3, blossom: { color: '#f4f2ea', share: 0.7 } },
         maple: { form: 'broad', H: 60, R: 24, Ry: 21, shape: 'round', lobes: 7, cards: 10, cell: 'leafLobed', leaf: '#628a3e', bark: 1, trunk: '#6e6053', trunkR: 1.7, limbs: 4 },
         oak: { form: 'broad', H: 76, R: 33, Ry: 24, shape: 'spreading', lobes: 9, cards: 10, cell: 'leafLobed', leaf: '#58763a', bark: 1, trunk: '#55473a', trunkR: 2.6, limbs: 5 },
         willow: { form: 'broad', H: 66, R: 29, Ry: 22, shape: 'weeping', lobes: 7, cards: 14, cell: 'willow', leaf: '#a2b964', bark: 1, trunk: '#5f5245', trunkR: 2.2, limbs: 5 },

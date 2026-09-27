@@ -37,12 +37,16 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Tinted canopy glass looks very dark in daylight close-ups.
 
 ## Ground and trees (ground-*.js, surfaces3d.js, vegetation3d*.js)
-- The beach keeps the old painted speckle under the ripples; county verges read as pale gravel.
+- The beach keeps the old painted speckle under the ripples.
 - District paving is chosen on a 64-unit grid, so the style can switch mid-pavement at a boundary.
 - Sunset Pier and Fort Sentinel have no kerb distance field (no kerb stones or lane wear).
-- Italian cypress looks stacked from the side; Bradford pear is small and dark at street zoom.
-- The mountain far LOD uses the spruce cone for pines too.
 - Sea sun glitter looked very speckled in headless shots: check on a real GPU.
+
+## Scenic mountain roads (terrain-roads.js, terrain-grading.js, county3d-roads.js)
+- Junction mouths between two graded roads keep a small ripple where the surfaces blend (up to ~6 g at 100 km/h at Eagle Pass's start; `mountainRoad()` junctionBumpG100).
+- Monarch Isle traffic turns round at the Regency Road's end, in Eagle Pass's junction: cars coming down the pass can meet it.
+- No tunnel or stone bridge yet; the lay-by signs are small at street zoom.
+- Grading and carving add about half a second to the range's first build (`terrain()` buildMs roadJunctions..roadCarve).
 
 ## Unicorn (unicorn3d.js)
 - Bright sky-reflection patch under the chest in daylight (lacquer material); little muscle definition.

@@ -114,6 +114,8 @@ Everything in `createCityRenderer()` (render3d.js and its include list, render3d
   space at screen resolution from a signed distance-to-kerb field (`buildGroundField`) and
   mark records (`buildGroundMarks`, shared with the maps' `cityMarkingShapes`). Everything
   fades what it cannot resolve (no shimmer). Console `groundDetail()`.
+- Scenic roads (county3d-roads.js): a ribbon at `terrainHeight` + 0.12, markings in its
+  shader, not in the county kerb field. Scenery-only plants: vegetation3d-landscape.js.
 - Wet roads: one shared GLSL pattern (`cityWetLow`, `cityWetFilm`, `cityPuddle`) from
   `weather.wet`; LOW darkens, MEDIUM adds gloss and neon streaks, HIGH/ULTRA add puddles and
   a screen-space reflection pass (skipped when dry).

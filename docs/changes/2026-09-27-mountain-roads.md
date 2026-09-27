@@ -1,0 +1,9 @@
+# Scenic mountain roads and regional vegetation
+- Ridgeline's roads (Ridgeline Highway, Eagle Pass, Regency Road and the connectors) are real mountain roads: smooth curves instead of squared corners, climbing and falling with the hills at up to 8% with long vertical curves, banked through the bends, on cuttings and embankments.
+- A crisp asphalt ribbon with white edge lines, a yellow centre line (double through bends and junctions), gravel shoulders, patches and a wet sheen; guard rails where the ground drops away, reflector posts, three viewpoint lay-bys with a bench, a coin telescope and a SCENIC VIEW sign.
+- A car on a mountain road has tarmac grip (it used to be treated as rough dirt near the peaks); the terrain panel reads MOUNTAIN ROAD · grade · height.
+- Vegetation by region: dune grass and sea grape on the Palm Keys beach, hibiscus and bougainvillea in the Keys' parks, royal palms along Monarch Isle's boulevards, palms, stone pines and sea grape on the county's resort coast, oak woodland and groves in the lowlands, forest stands of one kind in the range, pines along the sea, meadow grass on the mountain roads' verges.
+- Italian cypress is one smooth column; the Bradford pear is a fuller, brighter tree; the far forest keeps each tree's form (pines no longer spruce cones); county road verges are a dusty olive, not pale gravel.
+- No tree stands on a carriageway, in a building, under a rail deck, on a runway or in a doorway.
+- Internals: terrain-roads.js / terrain-grading.js / terrain-roadside.js (filleted centrelines, spline profiles, carve, furniture, colliders), county3d-roads.js (ribbon and furniture), vegetation3d-landscape.js; `onCountyRoad` is bucketed.
+- Console: `mountainRoad()`, `mountainRoadDrive()`, `treeAudit()`; `vegetation()` gains `regions` and `landscape`. Test: tools/tests/mountain-road.mjs.

@@ -76,10 +76,19 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
 - County (county.js): its own roads (`COUNTY_ROADS`, also GPS and police routing), towns and
   scenery. Ridgeline's three towns are planned by mountain-village.js.
 - **Ridgeline Range** (terrain.js, drawn by county3d.js): one generated, eroded height field
-  (deterministic, typed arrays, built on first use), flattened under roads, rail, towns and
-  helipads, with two switchback 4x4 trails (`TRAIL_MAX_GRADE` 0.28). `terrainHeight` samples
-  the exact Float32 vertices the renderer draws, so contact and picture agree. Console
+  (deterministic, typed arrays, built on first use), flattened under rail, towns, helipads and
+  the other roads, with two switchback 4x4 trails (`TRAIL_MAX_GRADE` 0.28). `terrainHeight`
+  samples the exact Float32 vertices the renderer draws, so contact and picture agree. Console
   `terrain()`.
+- **Scenic roads** (terrain-roads/-grading/-roadside.js, `SCENIC_ROAD_NAMES`): corners are
+  filleted arcs; `road.points` is what everything reads, `road.dense` (4-unit samples) what
+  grading and the ribbon read. Graded over the range (8%, spline profile, crown and bank, cut
+  and fill), at street level by towns, bridges and other roads; trails start at road level. A
+  road or trail that began on a rounded corner is moved onto the curve (don't assume the old
+  vertex). County carriageways are tarmac to `offroadDrive` (`offroadState.paved`); rails are
+  oriented statics. Check `mountainRoad()` and tools/tests/mountain-road.mjs after edits.
+- `prunePlanTrees` (end of `buildCounty`) drops plan trees on carriageways, in buildings, under
+  rail decks, on runways or in doorways (`treeAudit()`).
 - Railway (transit.js, transit3d.js): SHORE LINE (Cruise Terminal → west sea wall → Southport
   Airport), COAST LINE (→ Oceanview → Palmshore), RIDGE LINE (→ Eastgate, Northridge,
   Stonecreek). Each `route` is a control polygon filleted by `railTrackGeometry`; everything
