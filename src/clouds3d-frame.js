@@ -126,7 +126,7 @@
           .copy(hemi.groundColor)
           .lerp(cloudGrey.setScalar(hemi.groundColor.r * 0.3 + hemi.groundColor.g * 0.59 + hemi.groundColor.b * 0.11), 0.7)
           .multiplyScalar(hemi.intensity * 0.3);
-        marchUniforms.uGlowColor.value.setRGB(1, 0.56, 0.3).multiplyScalar(nightAmount * 0.4);
+        marchUniforms.uGlowColor.value.setRGB(1, 0.6, 0.36).multiplyScalar(nightAmount * 0.3);
         // Most of the day grade's warm gain taken back out: sunlit cloud is white.
         const gain = postLook.gain;
         marchUniforms.uCloudTint.value.set(1 + (1 / gain.x - 1) * 0.85, 1 + (1 / gain.y - 1) * 0.85, 1 + (1 / gain.z - 1) * 0.85);

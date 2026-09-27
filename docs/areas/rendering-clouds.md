@@ -65,3 +65,7 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
 - Headless (SwiftShader) fps is not a real GPU's: compare before/after on the same page only.
 - `DeadEndCity.cloudLayer()` reports `view` (the renderer's camera state) only when rendering;
   under `holdSimulation` the view is from the last drawn frame.
+- `cloudLayer` follows the weather in `updateCloudLayer` (from updateWeather): while a test holds
+  the simulation, call `setCloudLayer()` before reading it (the report and cloudSpot do).
+- Night cloud: the moon's share of the cloud light and the city glow are kept small on purpose;
+  with the multiple scattering a brighter moon lit night cloud like a sunset.
