@@ -10,7 +10,10 @@
      * in a fight (footwork.js playerInFight), a share of the way to the cursor or the
      * aim, so the street the gun points at is on screen. The lead eases on its own
      * (CAMERA_LEAD_RATE) so a change of direction swings the view smoothly. Settings
-     * · Driving · Camera look-ahead scales every lead (0 turns them off).
+     * · Driving · Camera look-ahead scales every lead (0 turns them off). CHASE
+     * FRAMING: with police on the player's tail (a unit within CAMERA_CHASE_REACH
+     * behind), a vehicle's lead shrinks by up to CAMERA_CHASE_PULL so the pursuer
+     * stays in the frame.
      * KICKS: kickCamera(heading, units) pushes the view along a map heading; a
      * damped spring (CAMERA_KICK_SPRING / _DAMPING, about 0.1 s to the peak) brings
      * it back. Gunfire kicks against the aim, crashes along the way the car was
@@ -29,6 +32,8 @@
       CAMERA_AIM_SHARE = 0.3,
       CAMERA_AIM_MAX = 52,
       CAMERA_AIM_KEYS = 34,
+      CAMERA_CHASE_REACH = 420,
+      CAMERA_CHASE_PULL = 0.35,
       CAMERA_KICK_SPRING = 150,
       CAMERA_KICK_DAMPING = 17,
       // Impulse per unit of peak displacement for that spring (about 1 / 0.0378).
@@ -91,6 +96,26 @@
       m.x = player.x;
       m.y = player.y;
     }
+    /* How close a police unit sits on the tail of the player's vehicle, 0..1
+       (checked four times a second). */
+    const cameraChase = { at: -1, close: 0 };
+    function cameraChaseCloseness(c, vx, vy, speed) {
+      if (!(wantedStars > 0)) return (cameraChase.close = 0);
+      if (gameTime >= cameraChase.at && gameTime - cameraChase.at < 0.25) return cameraChase.close;
+      cameraChase.at = gameTime;
+      let close = 0;
+      for (const u of vehicles) {
+        if (u === c || !(u.cop || u.lawUnit) || u.hp <= 0 || u.crewDeployed || u.blockade) continue;
+        const dx = u.x - c.x,
+          dy = u.y - c.y;
+        if (Math.abs(dx) > CAMERA_CHASE_REACH || Math.abs(dy) > CAMERA_CHASE_REACH) continue;
+        // Behind: at least a car's length back along the way the player is going.
+        if ((dx * vx + dy * vy) / speed > -40) continue;
+        close = Math.max(close, 1 - Math.hypot(dx, dy) / CAMERA_CHASE_REACH);
+      }
+      cameraChase.close = close;
+      return close;
+    }
     /* Where the lead wants to be now (units from the player), into `out`. */
     const cameraLeadAim = { x: 0, y: 0 };
     function cameraLeadTarget(out) {
@@ -104,7 +129,8 @@
           speed = Math.hypot(vx, vy);
         if (speed < 1) return out;
         const forward = vx * Math.cos(c.a) + vy * Math.sin(c.a) >= 0,
-          lead = Math.min(speed * CAMERA_LEAD_SECONDS, forward ? CAMERA_LEAD_AHEAD : CAMERA_LEAD_BEHIND) * scale;
+          chase = 1 - CAMERA_CHASE_PULL * cameraChaseCloseness(c, vx, vy, speed),
+          lead = Math.min(speed * CAMERA_LEAD_SECONDS, forward ? CAMERA_LEAD_AHEAD : CAMERA_LEAD_BEHIND) * scale * chase;
         out.x = (vx / speed) * lead;
         out.y = (vy / speed) * lead;
         return out;
@@ -197,5 +223,6 @@
         kickSpeed: r(Math.hypot(cameraKick.vx, cameraKick.vy)),
         shake: +shake.toFixed(2),
         lookAhead: drivingLookAhead(),
+        chase: +cameraChase.close.toFixed(2),
       };
     }
