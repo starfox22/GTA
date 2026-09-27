@@ -51,7 +51,8 @@
       // Floating at the surface: the body rides just awash.
       SWIM_ALTITUDE = -4.6,
       // Seconds spent with no strength left before the harbor patrol pulls you out.
-      RESCUE_AFTER = 14;
+      RESCUE_AFTER = 14,
+      EXHAUSTED_HP_PER_SECOND = 5;
     let swimBreath = SWIM_BREATH,
       swimLast = { x: 0, y: 0 },
       spentFor = 0,
@@ -413,7 +414,10 @@
       if (swimBreath <= 0) {
         swimBreath = 0;
         spentFor += deltaSeconds;
-        hurt(8 * deltaSeconds, 'blast');
+        // Spent, the swimmer ships water: 70 hp over the RESCUE_AFTER wait, so an
+        // unhurt swimmer lives to be fished out and a wounded one can still drown (at
+        // 8 hp/s nobody without armor lasted until the harbor patrol came).
+        hurt(EXHAUSTED_HP_PER_SECOND * deltaSeconds, 'blast');
         if (Math.floor(gameTime * 2) % 4 === 0 && Math.random() < deltaSeconds * 4) splashAt(player.x, player.y, 0.5);
         if (spentFor > RESCUE_AFTER && gameMode === 'play') harborPatrolRescue();
       } else spentFor = 0;
@@ -457,13 +461,8 @@
     /* Pulled from the sea by the harbor patrol: never left to tread water forever. */
     function harborPatrolRescue() {
       const exit = nearestWaterExit(player.x, player.y) || { x: spawn.x, y: spawn.y };
-      player.swimming = false;
-      player.wading = 0;
-      player.x = exit.x;
-      player.y = exit.y;
+      teleportPlayer(exit.x, exit.y);
       player.altitude = terrainHeight(exit.x, exit.y);
-      cameraTarget.x = player.x;
-      cameraTarget.y = player.y;
       swimBreath = SWIM_BREATH * 0.5;
       spentFor = 0;
       cash = Math.max(0, cash - 100);

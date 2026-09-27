@@ -5,13 +5,14 @@
 //   node tools/dev.mjs keys <Code[,Code...]> <seconds> [--real]
 //   node tools/dev.mjs wait <seconds> [--real]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
-//   node tools/dev.mjs errors | status | reload [--render|--norender] | stop
+//   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] | stop
 //
 // `start` with no html builds dist/dev/game.html (and `reload` rebuilds it after code
 // edits, reusing the browser). The page opens with `?dev&norender` (no WebGL renderer,
 // no frame drawing: logic checks boot and tick fast); `--render` opens it with the real
 // renderer for screenshots. The server runs in the background: state in dist/dev.json,
-// its log in dist/dev.log. A second `start` reuses a running server.
+// its log in dist/dev.log. A second `start` reuses a running server. `reload --keep`
+// keeps the browser profile (localStorage), so a save can be checked after a reload.
 //
 // `call` runs one NAMED window.DeadEndCity method with JSON arguments (bare words that
 // are not JSON are passed as strings) and prints the result as one compact JSON line,
@@ -233,16 +234,20 @@ async function serve(file, port, flags, size, ownBuild) {
       if (!status.frozen && status.state === 'ready' && Date.now() - lastOp >= IDLE_FREEZE_MS) queue = queue.then(freeze).catch(() => {});
     }, 5000).unref();
   // Each boot gets a fresh browser context (empty localStorage: no saved progress or
-  // settings carried from the last run), so tests start from the same state.
+  // settings carried from the last run), so tests start from the same state;
+  // `reload --keep` reopens the page in the same context to check what a save restores.
   let context = null;
   let page = null;
 
-  async function boot() {
+  async function boot(keepStorage = false) {
     const t0 = Date.now();
     Object.assign(status, { state: 'booting', phase: 'loading page', url: 'file://' + file + '?' + status.flags, error: null });
     errors = [];
-    if (context) await context.close().catch(() => {});
-    context = await browser.newContext({ viewport: { width, height } });
+    if (keepStorage && context) await page?.close().catch(() => {});
+    else {
+      if (context) await context.close().catch(() => {});
+      context = await browser.newContext({ viewport: { width, height } });
+    }
     page = await context.newPage();
     cdp = await context.newCDPSession(page);
     status.frozen = false;
@@ -362,8 +367,8 @@ async function serve(file, port, flags, size, ownBuild) {
         let buildSeconds = null;
         if (ownBuild) buildSeconds = +build(file).toFixed(1);
         if (op.flags) status.flags = op.flags;
-        boot().catch((e) => Object.assign(status, { state: 'failed', error: String(e.message || e) }));
-        return { result: { buildSeconds, flags: status.flags, booting: true } };
+        boot(!!op.keep).catch((e) => Object.assign(status, { state: 'failed', error: String(e.message || e) }));
+        return { result: { buildSeconds, flags: status.flags, booting: true, keptStorage: !!op.keep } };
       }
       case 'stop':
         setTimeout(async () => {
@@ -413,7 +418,7 @@ async function main(argv) {
   const pos = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--full' || a === '--real' || a === '--render' || a === '--norender' || a === '--nodev') opts[a.slice(2)] = true;
+    if (a === '--full' || a === '--real' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep') opts[a.slice(2)] = true;
     else if (a === '--port' || a === '--max' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
     else pos.push(a);
   }
@@ -452,7 +457,7 @@ async function main(argv) {
     case 'reload': {
       const st = readState();
       const flags = opts.render ? st.flags.replace(/&?norender/, '') : opts.norender && !/norender/.test(st.flags) ? st.flags + '&norender' : undefined;
-      const reply = await request({ op: 'reload', flags });
+      const reply = await request({ op: 'reload', flags, keep: !!opts.keep });
       if (reply.error) return print(reply, max);
       if (reply.result.buildSeconds != null) console.log(`rebuilt in ${reply.result.buildSeconds}s`);
       await waitReady(st.port, (s) => console.log(s));
