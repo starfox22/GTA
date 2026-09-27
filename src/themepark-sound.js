@@ -63,7 +63,10 @@
           f1 = audio.createBiquadFilter(),
           f2 = audio.createBiquadFilter(),
           mix = audio.createGain(),
-          base = randomBetween(520, 980);
+          // A ride full of men and women: every other voice is a man's, lower and
+          // with his lower formants (voices.js keeps recorded screams to their owners).
+          male = v % 2 === 1,
+          base = male ? randomBetween(290, 470) : randomBetween(560, 980);
         o.type = 'sawtooth';
         o.frequency.setValueAtTime(base * 0.8, t);
         o.frequency.exponentialRampToValueAtTime(base * 1.25, t + dur * 0.3);
@@ -71,12 +74,12 @@
         vib.frequency.value = randomBetween(5, 8);
         vibGain.gain.value = base * 0.03;
         vib.connect(vibGain).connect(o.frequency);
-        // "Aah": formants near 900 and 1400 Hz.
+        // "Aah": formants near 900 and 1400 Hz (a man's near 730 and 1150).
         f1.type = 'bandpass';
-        f1.frequency.value = 900;
+        f1.frequency.value = male ? 730 : 900;
         f1.Q.value = 6;
         f2.type = 'bandpass';
-        f2.frequency.value = 1450;
+        f2.frequency.value = male ? 1150 : 1450;
         f2.Q.value = 8;
         mix.gain.value = 0.5;
         o.connect(f1).connect(mix);

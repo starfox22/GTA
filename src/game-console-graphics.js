@@ -125,6 +125,10 @@
       groundDetail: () => city3D?.groundReport?.() ?? null,
       // The helicopter searchlight's state, screen points and shaft / pool switches.
       searchlight: (options) => city3D?.searchlight?.(options) ?? null,
+      // Vehicle lights: the cars lighting the world as real lights, drive-map beams, tails, reversing, haze.
+      headlights: () => city3D?.headlights?.() ?? null,
+      // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap } (true = as in play).
+      lookSwitches: (options) => city3D?.lookSwitches?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
       // What casts the sun's shadow onto the ground point (x, y).

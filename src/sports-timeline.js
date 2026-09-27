@@ -254,10 +254,11 @@
       if (onField) sportsWhistle(match, 'long');
       // The crowd heads for the exits; those near the gates see and hear it.
       if (sportsCrowdPresence(match) > 0.05 || onField) {
-        sportsCrowdPanicSound(match);
         const gate = match.sport === 'soccer' ? { x: 2689, y: 4872 } : { x: match.venue.x + match.venue.w / 2, y: match.venue.y + match.venue.h / 2 };
         crowdAlarm('melee', gate, attacker, 1.4);
         if (match.sport === 'soccer') sportsFansStampede(match, source, attacker);
+        // After the stampede, so the screams come from fans running out (sports-audio.js).
+        sportsCrowdPanicSound(match);
       }
       if (Math.hypot(player.x - match.venue.x - match.venue.w / 2, player.y - match.venue.y - match.venue.h / 2) < 1400)
         tell(match.sport === 'soccer' ? 'MATCH ABANDONED · PANIC IN THE STANDS' : 'GAME OVER · THE COURT EMPTIES', 3);

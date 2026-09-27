@@ -80,7 +80,14 @@ damage.js / damage3d.js, air-cover.js.
   `chooseDeathFall` (backwards, face down, slumped against a wall).
 - Melee and FISTS live in arsenal.js (`meleeAttack`; `playerUnarmed()` tells the crowd the
   player is harmless).
-- Carjacking and driver reactions: carjack.js (locked doors, ejection throw).
+- Carjacking: carjack.js (drivers and passengers per car with sex, age and temper, locked
+  doors, the ejection throw, reactions and lines; the 911 call is `witnessReport(driver,
+  'carjack', ...)`, made when the driver appears) and carjack-struggle.js (`player.carjack`:
+  approach round the car, door, tug, swing, `enterVehicle`). The hijack keeps
+  `crime(0.8, 'carjack')` (now when the door is yanked open) plus enterVehicle's own; the
+  street gets `crowdAlarm('carjack')`. Cars rolling over 14 km/h, bikes, or no room at the
+  door keep the old instant yank. Anything that moves or resets the player calls
+  `cancelCarjack()` (teleportPlayer, die, resetMissionState).
 - Tank armour: `vehicleArmorShare` (the Apache takes 30% of small arms). The player's tank
   turret (`traverseTurret`) is shared by the pursuit tank and army gunners.
 - Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding, and

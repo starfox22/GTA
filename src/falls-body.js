@@ -247,7 +247,8 @@
       // A yell once it is clearly a long way down.
       if (!f.screamed && f.time > 0.55 && Math.hypot(f.vx, f.vy, f.vz) > 9 * UNITS_PER_METRE) {
         f.screamed = true;
-        playSample(Math.random() < 0.5 ? 'civilian-scream-male-1' : 'civilian-scream-male-2', 0.55, 0.95, player);
+        // The player's own voice, as the rig draws them (voices.js).
+        playPersonScream(player, 0.55);
       }
       const water = !groundAt(player.x, player.y),
         ground = water ? 0 : terrainHeight(player.x, player.y);

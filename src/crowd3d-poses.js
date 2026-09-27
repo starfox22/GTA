@@ -766,6 +766,13 @@
             T[J_HIP[1]] = -0.2;
             T[J_ARMFREE[0]] = T[J_ARMFREE[1]] = 0;
             break;
+          // The carjack struggle (carjack3d.js).
+          case 'carjackReach':
+          case 'carjackTug':
+          case 'carjackThrow':
+          case 'carjackCling':
+            carjackPose(p, T, spec, pose);
+            break;
           case 'tumble':
             T[J_LOCO] = 0;
             setArm(T, 0, 2.1, 0.8, 0.6);

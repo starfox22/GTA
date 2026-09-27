@@ -33,7 +33,9 @@
         if (p === player) {
           sp.rim = true;
           sp.snapFacing = true;
-          if (mouse.active || touchAim !== null) sp.facing = aim();
+          // The aim in a fight or standing still, else the way they run (footwork.js).
+          const aimFacing = playerAimFacing();
+          if (aimFacing !== null) sp.facing = aimFacing;
           const holstered = !!rooftopJob() && player.disguised && !rooftopJob().weaponDrawn;
           // The Marea pool (clubpool.js): a dive in, and a climb out onto the deck.
           if (player.pool?.phase === 'out') {
@@ -58,6 +60,8 @@
             sp.elevation = entityElevation(player);
             return sp;
           }
+          // Taking a car off its driver (carjack3d.js).
+          if (player.carjack) return playerCarjackSpec(sp);
           if (player.tumble) {
             sp.pose = 'tumble';
             sp.elevation = entityElevation(player) + 2;

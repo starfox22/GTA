@@ -204,8 +204,12 @@
     /* The pace the player's legs are going on foot now; the movement, mountain
        footing (terrain.js), footsteps (audio.js) and the police's aim read it. */
     function footPace() {
-      if (player.roof) return roofPartyPace() && actionHeld('walk') ? FOOT_RUN : FOOT_WALK;
-      return actionHeld('walk') ? FOOT_WALK : FOOT_RUN;
+      // On the Blue Hour terrace during the job walking is the default (roofPartyPace).
+      const base = player.roof
+        ? (roofPartyPace() && actionHeld('walk') ? FOOT_RUN : FOOT_WALK)
+        : (actionHeld('walk') ? FOOT_WALK : FOOT_RUN);
+      // Backpedalling or side-stepping while facing the aim is slower (footwork.js).
+      return base * footworkPace(playerMoveHeading());
     }
     /* People's legs: one stride (two steps) covers 10 units plus 0.3 s of travel,
        so a walk steps about twice a second and a sprint four times. strideCycle

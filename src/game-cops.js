@@ -11,6 +11,7 @@
       player.tumble = null;
       player.tumbleRoll = 0;
       player.thrown = null;
+      cancelCarjack();
       cleanupMissionExtras();
       clearDepotFloor();
       cancelGarageJob();

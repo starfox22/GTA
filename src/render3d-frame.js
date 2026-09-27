@@ -18,6 +18,7 @@
           updateParkCamera(deltaSeconds);
           camera.position.x += (Math.random() - 0.5) * shake * 0.35;
           camera.position.y += (Math.random() - 0.5) * shake * 0.2;
+          if (camera === streetCamera) lockStreetCameraToPixels();
           camera.updateMatrixWorld(true);
           viewFrustum.setFromProjectionMatrix(
             viewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
@@ -150,13 +151,18 @@
                 // `showLamps`: a parked review car lit as if driven (DeadEndCity.carLineup).
                 driven = c.hp > 0 && (c.ai || c === player.car || !!c.showLamps),
                 lit = driven && lampsOn > 0.25,
-                braking = driven && (!!c.braking || c.showLamps === 'brake');
+                braking = driven && (!!c.braking || c.showLamps === 'brake'),
+                reversing = driven && forwardSpeed(c) < -6;
+              // Head lamps (even) face forward, tail lamps (odd) back: they glow
+              // brighter facing the camera (VEHICLE HALOS). Brake lights flare;
+              // reversing adds white lamps on the tail sprites.
               for (let k = 0; k < m.nightLights.length; k++) {
                 const sprite = m.nightLights[k];
                 sprite.visible = false;
                 if (m.lampOut?.[k]) continue;
-                if (k % 2 && braking) queueVehicleHalo(sprite, Math.max(0.75, lampsOn));
-                else if (lit) queueVehicleHalo(sprite, (k % 2 ? 0.55 : 0.85) * lampsOn);
+                if (k % 2 && braking) queueVehicleHalo(sprite, Math.max(0.75, lampsOn), -1, 2.2);
+                else if (lit) queueVehicleHalo(sprite, (k % 2 ? 0.55 : 0.85) * lampsOn, k % 2 ? -1 : 1);
+                if (k % 2 && reversing) queueVehicleHalo(sprite, 0.8 * Math.max(0.45, lampsOn), -1, 1.6, REVERSE_LAMP_TINT, 0.75);
               }
             }
             // Brake lights: tail lamps that aren't broken swap material while braking.
@@ -267,6 +273,8 @@
                 );
             }
             if (m.blood) m.blood.visible = c.bloodyUntil > gameTime;
+            // The driver's door in a carjack (carjack3d.js).
+            if (c.doorSwing || m.carjackDoor) swingDriverDoor(c, m);
             // SWAT van rear doors swing open for the team and stay open (swat.js).
             if (m.rearDoors) {
               const open = c.doorsOpenAt ? clamp((gameTime - c.doorsOpenAt) / 0.7, 0, 1) : 0;
@@ -354,17 +362,6 @@
             arrowGroup.rotation.y = gameTime * 0.6;
             targetLight.position.set(target.x, targetAltitude + 10, target.y);
           }
-          if (player.car && !isAircraft(player.car)) {
-            playerHeadlight.intensity = 850 * headlightShare(player.car);
-            const x = player.x + Math.cos(player.a) * 160,
-              z = player.y + Math.sin(player.a) * 160;
-            playerHeadlight.position.set(
-              player.x + Math.cos(player.a) * 18,
-              entityElevation(player.car) + 9,
-              player.y + Math.sin(player.a) * 18,
-            );
-            playerHeadlight.target.position.set(x, terrainHeight(x, z), z);
-          } else playerHeadlight.intensity = 0;
           if (gameTime > muzzleUntil) muzzleLight.intensity = 0;
           for (const ring of blastRings) {
             if (!ring.visible) continue;
