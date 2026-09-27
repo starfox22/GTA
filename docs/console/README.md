@@ -36,6 +36,6 @@ One table per console group in this folder. Find a method with
 | [world](world.md) | `src/game-console-world.js` | World and places: map probes, the plan as data, terrain and towns, weather, airfields, rooftops, the drawbridge, GPS, Monarch Isle |
 | [rides](rides.md) | `src/game-console-rides.js` | Passenger rides: bike share, cabs, trains, the liner, the ride skip, the superyacht |
 | [leisure](leisure.md) | `src/game-console-leisure.js` | Beach, sea and leisure: swimming, beach, sea life, the Marea club and pool, volleyball, Sunset Pier (+ `sportsConsole()`, `sportsbookConsole()`) |
-| [crowd](crowd.md) | `src/game-console-crowd.js` | People: crowd report, shots and alarms, street scenes, lineups, speech bubbles, crowd render cost |
+| [crowd](crowd.md) | `src/game-console-crowd.js` | People: crowd report, shots and alarms, street scenes, lineups, speech bubbles, crowd render cost; the living city (`livingCity`: traffic streaming, sirens, ambulances, street events) |
 | [graphics](graphics.md) | `src/game-console-graphics.js` | Graphics and render probes: quality, render scale, frame stats, post views, shadow and draw-call probes, scale audit, model lineups |
 | [settings](settings.md) | `src/game-console-settings.js` | Settings, key bindings and the car radio (+ `audioConsole()`) |

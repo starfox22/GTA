@@ -19,3 +19,20 @@
 | `carjackTest(mood, side, female, passengers)` | The carjack struggle (carjack-struggle.js): a stopped sedan beside the player with a driver of `mood` (`flee`, `plead`, `angry`, `witness`, `defiant`), a woman or a man (`female` true / false, null at random), `passengers` 0 / 1, the player on its `side` (`'driver'` or `'passenger'`, the kerb side: the walk goes round the car), and E pressed at it; returns `carjack()`. The previous test car is removed first |
 | `carjack()` | The struggle in progress (`phase` approach / door / tug / throw, seconds, the temper, `approachFor`, `waypoints` round the car, driver and player positions) or, when none runs, whether the player is in the car and `instant` (why the last one was a yank without a struggle: `rolling`, `no room`, `kind`); the last `victim` (sex, role, mood, pose, `down`, what they are saying, `reported`, seconds to the report, distance) and how many `passengers` ran |
 | `speechView()` | The speech bubble height rule for someone on the ground at the view's centre: the view's height over them (m), the fade (1 below 40 m, 0 from 50 m), the zoom counted, riding / flying, and the bubbles on screen with their fades |
+
+## livingCity (livingcity-console.js, registered from game-console-crowd.js)
+
+The living city in free roam (docs/areas/people-and-crowd-living-city.md).
+
+| Method | Purpose |
+| --- | --- |
+| `trafficReport()` | Traffic round the player: `target` for the hour and district, `ring`, the streamed `pool`, cars `near` (in the ring), `inView`, `moving` / `stopped` and why they stand (`held`: signal, queue, blocked, kerb, siren, junction, other), `yielding` to a siren now, `idle30` (standing 30 s+), streamer totals (`recycled`, `added`, `retired`, `streamMs`), `types` near |
+| `trafficMix(n)` | `n` picks of what the streamer would put on the street here and now, by type |
+| `trafficBenchmark(steps)` | Step the vehicle physics `steps` × 1/120 s back to back (the world moves on) and time it: `msPerStep`, `msPerFrame60`, vehicles, near, moving |
+| `trafficStreaming(on)` | Switch the streamer on or off (A/B measurements); returns trafficReport() |
+| `sirenPass(behind, gap)` | On the street the player stands on: an ambulance on a run `behind` units back and a traffic sedan `gap` units ahead of it in its lane, both heading along the street |
+| `sirenPassState()` | Both vehicles of the siren pass (km/h, `lane` offset right of the centre line, along), how long since the sedan last gave way, `passed` |
+| `medicReport()` | The ambulance service: jobs, revived, lost, aborted, `last`, cooldown, and the job under way (phase driving / scene / treat / outcome / leave, the ambulance, its siren, leg, `desiredKmh`, what stands `ahead`, the medics with distance to the victim, pose, reaction, boarded) |
+| `medicTest(x, y, revive)` | A body at (x, y) (default 60 units along the pavement from the player), dead 12 s, and an ambulance sent at once; `revive` forces the outcome |
+| `streetEvents()` | Street events: staged, caught, escaped, seconds to the next try, whether one is `allowed` here now, `last`, the one under way (thief and victim, the gap) |
+| `snatchTest()` | Stage a bag snatch round the player now (null `active` when no victim with a bag is in view or no thief close by) |

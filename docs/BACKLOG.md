@@ -3,6 +3,14 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## The living city (livingcity*.js)
+- Traffic streams only on the city grid: Monarch Isle and the county keep their own fixed traffic; North Point Key still has none (see below).
+- Signals cycle every 24 s on a 64 m grid, so about half the traffic in the ring stands at a light or in its queue at any moment (`trafficReport().held`).
+- Paramedics walk straight at the victim (with a sidestep); round a building corner they may work from up to 30 units off. The revive is a mercy of the game (GTA's paramedics did it too), not a medical outcome.
+- No stretcher or sheet: a lost victim stays where they fell until the crowd streamer clears the dead out of view.
+- The bag snatch's tackle is proximity only (no tackle animation); punching or shooting the thief is still an assault.
+- Performance (headless): physics +0.1-0.7 ms per 60 fps frame with ~40 more cars moving round the player (`trafficBenchmark`).
+
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 

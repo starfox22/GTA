@@ -10,8 +10,8 @@
        attack (punching or shooting him still is, through the usual rules). */
     const streetEvents = { timer: 60, active: null, staged: 0, caught: 0, escaped: 0, last: null };
     const SNATCH_LINES = {
-      victim: ['Hey! My bag!', 'Stop! Thief!', 'He took my bag! Somebody stop him!', 'Thief! THIEF!'],
-      thanks: ['My bag! Thank you!', 'Oh, thank you, thank you!', 'You got him! Bless you.', 'That was brave. Thank you.'],
+      victim: ['Hey! Give that back!', 'Stop! Thief!', 'He robbed me! Somebody stop him!', 'Thief! THIEF!'],
+      thanks: ['Oh, thank you, thank you!', 'You got him! Bless you.', 'That was brave. Thank you.', 'I owe you one!'],
       caught: ['Alright, alright! Take it!', 'Get off me! Here!', 'Okay! Okay! It is yours!'],
     };
     function eventSay(p, kind, seconds = 2.8) {
@@ -36,14 +36,15 @@
         districtBustle(player.x, player.y) >= 0.75
       );
     }
-    /* A snatch round the player: the victim a lone adult with a bag in view
-       90-330 units off, the thief an ordinary walker 50-260 units from them. */
+    /* A snatch round the player: the victim a lone adult with a bag (or a phone
+       out) in or just by the view 60-330 units off, the thief an ordinary walker
+       40-220 units from them who walks up behind them at 11 km/h. */
     function stageSnatch() {
       let victim = null,
         best = Infinity;
       forPeopleNear(player.x, player.y, 330, (p, d) => {
-        if (d < 90 || p.hp <= 0 || !streamableWalker(p) || p.role === 'kid' || !crowdInView(p.x, p.y, -30)) return;
-        if (!['handbag', 'shopping', 'briefcase', 'camera'].includes(p.carry) || crowdOnRoad(p.x, p.y)) return;
+        if (d < 60 || p.hp <= 0 || !streamableWalker(p) || p.role === 'kid' || !crowdInView(p.x, p.y, 80)) return;
+        if (!(['handbag', 'shopping', 'briefcase', 'camera'].includes(p.carry) || p.texting) || crowdOnRoad(p.x, p.y)) return;
         if (pedestrians.some((q) => q.leader === p)) return;
         if (d < best) {
           best = d;
@@ -53,8 +54,8 @@
       if (!victim) return null;
       let thief = null;
       best = Infinity;
-      forPeopleNear(victim.x, victim.y, 260, (p, d) => {
-        if (p === victim || d < 50 || p.hp <= 0 || !streamableWalker(p) || p.leader || p.dog) return;
+      forPeopleNear(victim.x, victim.y, 220, (p, d) => {
+        if (p === victim || d < 40 || p.hp <= 0 || !streamableWalker(p) || p.leader || p.dog) return;
         if (['kid', 'elder', 'jogger'].includes(p.role) || pedestrians.some((q) => q.leader === p)) return;
         if (distanceBetween(p, player) < 70 || !crowdSight(p, victim)) return;
         if (d < best) {
@@ -63,7 +64,8 @@
         }
       });
       if (!thief) return null;
-      const event = { kind: 'snatch', victim, thief, bag: victim.carry, phase: 'approach', at: gameTime, startHp: thief.hp, reward: 0 };
+      // A bag, or the phone out of a texter's hand.
+      const event = { kind: 'snatch', victim, thief, bag: victim.carry, phone: !victim.carry, phase: 'approach', at: gameTime, startHp: thief.hp, reward: 0 };
       thief.cityRole = { kind: 'thief', event };
       thief.carry = null;
       victim.cityRole = { kind: 'victim', event };
@@ -78,7 +80,7 @@
       if (event.phase !== 'approach') return false;
       const v = event.victim;
       const d = distanceBetween(p, v);
-      if (d > 8) crowdStep(p, headingBetween(p, v), Math.min(d / deltaSeconds, 8.5 * KMH), deltaSeconds);
+      if (d > 8) crowdStep(p, headingBetween(p, v), Math.min(d / deltaSeconds, 11 * KMH), deltaSeconds);
       return true;
     }
     function endStreetEvent(event, why) {
@@ -107,12 +109,13 @@
           event.phase = 'run';
           event.runAt = gameTime;
           victim.carry = null;
-          thief.carry = event.bag === 'briefcase' ? 'briefcase' : 'handbag';
+          if (event.phone) victim.texting = false;
+          thief.carry = event.phone ? null : event.bag === 'briefcase' ? 'briefcase' : 'handbag';
           startReaction(victim, 'startle', 1.2, thief, null, { then: 'lookBack' });
           eventSay(victim, 'victim', 3);
           scream(victim);
           startReaction(thief, 'flee', 60, player, null);
-          tell('BAG SNATCHER · CATCH HIM ON FOOT', 3);
+          tell((event.phone ? 'PHONE' : 'BAG') + ' SNATCHER · CATCH HIM ON FOOT', 3);
         }
         return;
       }
@@ -137,7 +140,7 @@
           victim.carry = event.bag;
           eventSay(victim, 'thanks', 3);
         }
-        tell('THIEF STOPPED · BAG RETURNED · +$' + event.reward, 3);
+        tell('THIEF STOPPED · ' + (event.phone ? 'PHONE' : 'BAG') + ' RETURNED · +$' + event.reward, 3);
         streetEvents.caught++;
         return endStreetEvent(event, 'caught');
       }

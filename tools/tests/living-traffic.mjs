@@ -16,6 +16,10 @@ export default async function (t) {
   t.assert(rush.target >= 35, 'rush-hour target too low: ' + rush.target);
   t.assert(rush.near >= rush.target * 0.75, `too little traffic round the player: ${rush.near} of ${rush.target}`);
   t.assert(rush.pool <= 150, 'pool over its cap: ' + rush.pool);
+  // The district's own cars: Broadway's taxis.
+  const mix = await t.call('trafficMix', 400);
+  t.note('Broadway mix: ' + JSON.stringify(mix.picks));
+  t.assert((mix.picks.taxi || 0) >= 40, 'too few taxis in the Broadway mix: ' + (mix.picks.taxi || 0));
   // Drive time on: the cars keep moving, nothing piles up for good.
   await t.wait(20);
   const later = await t.call('trafficReport');
@@ -26,7 +30,10 @@ export default async function (t) {
   await t.call('teleport', 1180, -380);
   await t.wait(3);
   const docks = await t.call('trafficReport');
-  t.note(`${docks.district}: target ${docks.target}, near ${docks.near}, ${JSON.stringify(docks.types)}`);
+  const docksMix = (await t.call('trafficMix', 400)).picks,
+    heavy = (docksMix.truck || 0) + (docksMix.pickup || 0) + (docksMix.van || 0);
+  t.note(`${docks.district}: target ${docks.target}, near ${docks.near}, trucks/pickups/vans ${heavy} of 400`);
+  t.assert(heavy >= 100, 'the working district has no working vehicles: ' + JSON.stringify(docksMix));
   // Three in the morning: a quiet street after a teleport (the settle).
   await t.call('setClock', 3);
   await t.call('teleport', 2680, 2890);
