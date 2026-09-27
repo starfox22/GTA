@@ -18,3 +18,7 @@
 - A carjacked driver always phones it in: no longer taken over by the car-theft incident,
   never recycled by the crowd streamer while the call is owed, and finishing the call off
   stage if the player is far away (the carjack test failed about 1 run in 3).
+- Police answering a call on Monarch Isle no longer stall on the way: they go round Crown
+  Circus (not across it into the fountain, whose collider no longer sticks into the ring),
+  slow for sharp corners, steer past oncoming cars instead of shoving them, and a call's
+  length shows from its first moment. Console: `reportCall`, `respondingUnit`; test police-circus.

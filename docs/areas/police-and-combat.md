@@ -33,6 +33,13 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
 - `dispatchPolice` / `spawnPursuitUnit` spawn off-camera on roads ahead of the player;
   `pursuitControl` drives (lead, PIT, flank, block, search along routes, off-road shortcuts);
   county pursuits use the GPS road graph (`policeNavRoute`).
+- **Steering aids** (pursuit-steering.js): a straight run at a destination (in sight within
+  420, or a shortcut) only when `roomToTurn` (within ~60° of the nose, and the way ahead open
+  for the braking distance), else the road route; `routeCornerSpeed` brakes for the route's
+  corners (a roundabout ring's polyline gives its own radius; full brakes when over it);
+  `carInPath` makes a unit aim past traffic in its path (never the quarry) and back out of
+  one it is shoving. A unit backing out swings its nose toward the target (the yaw follows
+  the steer whichever way the car rolls).
 - **The police helicopter is unarmed** (combat-rules.js POLICE HELICOPTER, `AIR_UNITS_MAX`
   one at a time): it tracks, lights and reports, never fires, and is blind to a player under
   overhead cover (`airCanSee`). Its searchlight lands on the roof over a covered player

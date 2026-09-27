@@ -87,7 +87,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Witnesses and 911 (witnesses.js, crowd-witnesses.js)
 - Dealership staff (MONARCH MOTORS) and North Point Key guests have their own alarms and never call 911; a crashed driver's call (crowd-traffic.js) is not counted among the incident's witnesses, so a second caller may be sent.
-- A responding cruiser on Monarch Isle now and then barely moves for several seconds (tools/tests/witnesses-monarch.mjs failed 1 run in ~6 with "547 → 475"): check its route or what blocks it.
 - A call from inside a shop (hidden off-stage call) has no bubble; the 911 bubble keeps the street's 10 px font: check it reads on a HiDPI screen.
 
 ## Other
