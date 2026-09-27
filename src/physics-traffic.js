@@ -369,6 +369,9 @@
       // Give crossing pedestrians and an innocent player time to clear the lane.
       // Runs 120 times a second per car, so it scans in place without building arrays
       // and skips anyone farther than the look-ahead box before doing any trigonometry.
+      const beforePeople = desired;
+      let heldBy = null,
+        heldAt = Infinity;
       const yieldTo = (p) => {
         if (p.hp <= 0 || p.roof) return;
         const dx = p.x - c.x,
@@ -379,13 +382,43 @@
         // Only people out on the carriageway: mid-turn the look-ahead box sweeps
         // across the pavement, and a bus used to wait for ever on walkers who
         // were themselves waiting at the kerb for it to clear.
-        if (along > 0 && along < 200 && lateral < side + 11 && cityStreetAt(p.x, p.y))
+        if (along > 0 && along < 200 && lateral < side + 11 && cityStreetAt(p.x, p.y)) {
           desired = Math.min(desired, Math.sqrt(2 * 0.7 * GRAVITY * Math.max(0, along - half - 22)) * 0.8);
+          if (along < heldAt) {
+            heldBy = p;
+            heldAt = along;
+          }
+        }
       };
       // Everyone the box can hold (0-200 ahead, a lane's width either side) is
       // within 103 units of the point 100 ahead: a quarter of the old query.
       forEachPedestrianNear(c.x + headingCosine2 * 100, c.y + headingSine2 * 100, 110, yieldTo);
       if (!player.car) yieldTo(player);
+      // Nobody holds a car for ever: someone standing or stalled in the lane (a
+      // walker paused mid-crossing or stuck in the road) held traffic, and every
+      // car queued behind it, until they moved or the player left. After
+      // a few seconds stopped for the same person the driver eases round them at a
+      // walking pace, on whichever side leaves them room. Never round the player
+      // (the honk is their cue), nor while already easing round a parked car.
+      let e = c.easePerson;
+      if (heldBy && heldBy !== player && e?.p !== heldBy && desired < 3 * KMH && Math.abs(c.speed || 0) < 6 * KMH)
+        e = c.easePerson = { p: heldBy, since: gameTime, going: false };
+      if (e) {
+        const dx = e.p.x - c.x,
+          dy = e.p.y - c.y,
+          along = dx * headingCosine2 + dy * headingSine2,
+          // Right of our lane's centre line (steady while we pull across).
+          fromLane = dx * rx + dy * ry + laneOffset;
+        if (e.p.hp <= 0 || along < -half - 10 || Math.abs(fromLane) > side + 44 || gameTime - e.since > 40 || (!e.going && heldBy !== e.p))
+          c.easePerson = null;
+        else if ((e.going || gameTime - e.since > 4) && !ease.amount) {
+          // Round the left of someone right of the centre line, else round the right.
+          e.going = true;
+          ease.amount = Math.max(4, side + 6 - Math.abs(fromLane));
+          ease.side = fromLane >= 0 ? 1 : -1;
+          if (heldBy === e.p) desired = Math.min(beforePeople, 7 * KMH);
+        }
+      }
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
       desired = Math.min(desired, curbsideStop(c));
       // Held at the drawbridge's stop line while it opens (src/drawbridge.js).
