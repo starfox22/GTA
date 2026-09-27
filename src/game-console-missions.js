@@ -41,7 +41,8 @@
         player.roof = false;
         player.buildingRoof = null;
         player.altitude = 0;
-        teleportPlayer(ROOF_HIT.escape.x, ROOF_HIT.escape.y - 120);
+        // South of the motel (the spot 120 north of it is inside a building).
+        teleportPlayer(ROOF_HIT.escape.x, ROOF_HIT.escape.y + 120);
         setStage(4, ROOF_HIT.escape, 'LOSE THE POLICE · REACH CORAL PALMS MOTEL ON FOOT');
         return this.missionState();
       },
