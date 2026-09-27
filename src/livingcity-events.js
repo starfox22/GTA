@@ -83,6 +83,10 @@
       if (d > 8) crowdStep(p, headingBetween(p, v), Math.min(d / deltaSeconds, 11 * KMH), deltaSeconds);
       return true;
     }
+    /* Frightened enough that the snatch is off: running, hiding, hands up, on the phone to 911. */
+    function snatchScared(p) {
+      return !!p.react && ['flee', 'cower', 'shelter', 'freeze', 'handsUp', 'kneel', 'call', 'groan'].includes(p.react.kind);
+    }
     function endStreetEvent(event, why) {
       for (const p of [event.thief, event.victim]) if (p?.cityRole?.event === event) p.cityRole = null;
       streetEvents.last = { kind: event.kind, why, seconds: Math.round(gameTime - event.at), reward: event.reward };
@@ -103,8 +107,10 @@
       if (thief.hp <= 0 || !pedestrians.includes(thief)) return endStreetEvent(event, thief.hp <= 0 ? 'thief down' : 'gone');
       if (event.phase === 'approach') {
         // Called off: the player drew a gun on the street, took a car, a mission began.
-        if (!streetEventsAllowed() || victim.hp <= 0 || victim.react || thief.react || gameTime - event.at > 25)
+        // (A glance or a startle is waited out; the thief walks on once it ends.)
+        if (!streetEventsAllowed() || victim.hp <= 0 || snatchScared(victim) || snatchScared(thief) || gameTime - event.at > 25)
           return endStreetEvent(event, 'called off');
+        if (victim.react) return;
         if (distanceBetween(thief, victim) <= 9) {
           event.phase = 'run';
           event.runAt = gameTime;

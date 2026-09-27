@@ -51,7 +51,7 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
 - **Sight** (`policeSightRange`, citylife-police.js): 440 units (55 m) by day; after dark a
   figure on foot is picked out from ~40 m on the lit city streets and ~32 m in the county, a
   car from ~51 m; heavy rain takes up to a fifth off; a unit already on the player keeps
-  them 20% further. The air unit keeps its own rule (`airCanSee`). `policeReport().sightRange`.
+  them 20% further in the dark or rain, never past the day's 55 m. The air unit keeps its own rule (`airCanSee`). `policeReport().sightRange`.
   Traffic pulls over for units under lights (people-and-crowd-living-city.md).
 - Radio (`policeRadioEvent`, pursuit-dispatch.js): besides the tier lines, `lost` when the
   search starts, `spotted` when it finds the player again (street and what they are in), and

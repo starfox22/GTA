@@ -18,15 +18,26 @@ async function untilRun(t) {
   }
   return t.call('streetEvents');
 }
+// A snatch that reaches the grab: the street can call one off (someone takes
+// fright at something else first), so up to four tries.
+async function stageToRun(t) {
+  let run = null;
+  for (let k = 0; k < 4; k++) {
+    const staged = await stage(t);
+    if (!staged) continue;
+    run = await untilRun(t);
+    if (run.active && run.active.phase === 'run') return run;
+    t.note('try ' + k + ': ' + JSON.stringify(run.last));
+  }
+  return run;
+}
 export default async function (t) {
   await t.call('god', true);
   await t.call('setClock', 14);
   await t.call('teleport', 1330, 3390);
   await t.wait(3);
   const cashBefore = (await t.call('status')).cash;
-  const first = await stage(t);
-  t.assert(first, 'no snatch could be staged on Broadway at 14:00');
-  const run = await untilRun(t);
+  const run = await stageToRun(t);
   t.assert(run.active && run.active.phase === 'run', 'the thief never grabbed: ' + JSON.stringify(run));
   t.assert(run.active.thief.react === 'flee', 'the thief is not running: ' + JSON.stringify(run.active));
   // Catch him: the player right beside the runner.
@@ -42,9 +53,7 @@ export default async function (t) {
   // A second one, left alone, gets away.
   await t.call('teleport', 1330, 3390);
   await t.wait(2);
-  const second = await stage(t);
-  t.assert(second, 'no second snatch');
-  const run2 = await untilRun(t);
+  const run2 = await stageToRun(t);
   t.assert(run2.active && run2.active.phase === 'run', 'the second thief never grabbed');
   for (let i = 0; i < 12; i++) {
     await t.wait(5);
