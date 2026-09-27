@@ -5,7 +5,7 @@
 //   node tools/dev.mjs keys <Code[,Code...]> <seconds> [--real]
 //   node tools/dev.mjs wait <seconds> [--real]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
-//   node tools/dev.mjs errors | status | reload [--render|--norender] | stop
+//   node tools/dev.mjs errors | status | reload [--render|--norender] [--shadercheck] | stop
 //
 // `start` with no html builds dist/dev/game.html (and `reload` rebuilds it after code
 // edits, reusing the browser). The page opens with `?dev&norender` (no WebGL renderer,
@@ -104,9 +104,10 @@ function build(html) {
 }
 
 // Start (or reuse) the server and wait until the game is in play. Returns its status.
-export async function start({ html = null, render = false, nodev = false, size = '960x600', port = null, quiet = false } = {}) {
+export async function start({ html = null, render = false, nodev = false, shadercheck = false, size = '960x600', port = null, quiet = false } = {}) {
   const say = quiet ? () => {} : (s) => console.log(s);
-  const flags = [nodev ? 'test' : 'dev', render ? null : 'norender'].filter(Boolean).join('&');
+  // ?shadercheck makes three.js report shader compile errors (console errors).
+  const flags = [nodev ? 'test' : 'dev', render ? null : 'norender', shadercheck ? 'shadercheck' : null].filter(Boolean).join('&');
   const running = readState();
   if (running) {
     const st = await alive(running.port);
@@ -413,7 +414,7 @@ async function main(argv) {
   const pos = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--full' || a === '--real' || a === '--render' || a === '--norender' || a === '--nodev') opts[a.slice(2)] = true;
+    if (a === '--full' || a === '--real' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--shadercheck') opts[a.slice(2)] = true;
     else if (a === '--port' || a === '--max' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
     else pos.push(a);
   }
@@ -423,7 +424,7 @@ async function main(argv) {
     case 'serve':
       return serve(rest[0], Number(rest[1]), rest[2], rest[3], rest[4] === '1');
     case 'start':
-      await start({ html: rest[0], render: !!opts.render, nodev: !!opts.nodev, size: opts.size, port: Number(opts.port) || null });
+      await start({ html: rest[0], render: !!opts.render, nodev: !!opts.nodev, shadercheck: !!opts.shadercheck, size: opts.size, port: Number(opts.port) || null });
       return;
     case 'status': {
       const st = readState();
@@ -451,7 +452,8 @@ async function main(argv) {
     }
     case 'reload': {
       const st = readState();
-      const flags = opts.render ? st.flags.replace(/&?norender/, '') : opts.norender && !/norender/.test(st.flags) ? st.flags + '&norender' : undefined;
+      let flags = opts.render ? st.flags.replace(/&?norender/, '') : opts.norender && !/norender/.test(st.flags) ? st.flags + '&norender' : undefined;
+      if (opts.shadercheck && !/shadercheck/.test(flags ?? st.flags)) flags = (flags ?? st.flags) + '&shadercheck';
       const reply = await request({ op: 'reload', flags });
       if (reply.error) return print(reply, max);
       if (reply.result.buildSeconds != null) console.log(`rebuilt in ${reply.result.buildSeconds}s`);
