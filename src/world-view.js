@@ -56,6 +56,14 @@
     function setWorldZoom(value) {
       worldZoomTarget = clamp(value, STREET_ZOOM_MIN, STREET_ZOOM_MAX);
     }
+    // The factor on the player's zoom the camera eases towards (updateWorldView).
+    function cameraFramingTarget() {
+      // A garage's drive-in show eases in closer, and quicker (garages.js).
+      const garageFrame = garageCameraFrame(),
+        context = cameraContextZoom();
+      // So does a drawbridge opening close by, the other way: back a little (drawbridge.js).
+      return context * (garageFrame ? garageFrame.zoom : speedZoomTarget(context) * drawbridgeCameraZoom());
+    }
     function resetWorldGesture() {
       worldPointers.clear();
       worldPinch = null;
@@ -66,11 +74,7 @@
         resetWorldGesture();
         return;
       }
-      // A garage's drive-in show eases in closer, and quicker (garages.js).
-      const garageFrame = garageCameraFrame(),
-        context = cameraContextZoom();
-      // So does a drawbridge opening close by, the other way: back a little (drawbridge.js).
-      speedZoom += (context * (garageFrame ? garageFrame.zoom : speedZoomTarget(context) * drawbridgeCameraZoom()) - speedZoom) * (1 - Math.exp(-deltaSeconds * (repairJob ? 2.5 : 0.8)));
+      speedZoom += (cameraFramingTarget() - speedZoom) * (1 - Math.exp(-deltaSeconds * (repairJob ? 2.5 : 0.8)));
       worldZoom += (worldZoomTarget * speedZoom - worldZoom) * (1 - Math.exp(-deltaSeconds * 12));
       canvasScale = clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
       incomingCallRemaining = Math.max(0, incomingCallRemaining - deltaSeconds);
@@ -96,9 +100,11 @@
     /* DeadEndCity.cameraView(): the street camera's framing as it stands. `zoom` is
        the zoom in force (player's zoom × framing), `target` the player's own,
        `context` the share for what the player is in, `speed` the speed pull-back
-       on top, `framing` the eased product; `viewMetres` the screen's height in
-       metres of street and `personPx` how tall a 1.75 m person stands on screen
-       (the street camera looks down at STREET_PITCH, flight-view3d.js). */
+       on top, `framing` the eased product and `aim` the zoom it eases to (drawn
+       frames advance the easing; console simulate() does not); `viewMetres` the
+       screen's height in metres of street and `personPx` how tall a 1.75 m
+       person stands on screen (the street camera looks down at STREET_PITCH,
+       flight-view3d.js). */
     function cameraViewReport() {
       const context = cameraContextZoom(),
         frameH = clamp(viewportHeight * 0.68, 430, 630),
@@ -110,6 +116,7 @@
         context: +context.toFixed(3),
         speed: +speedZoomTarget(context).toFixed(3),
         framing: +speedZoom.toFixed(3),
+        aim: +(worldZoomTarget * cameraFramingTarget()).toFixed(3),
         defaultZoom: STREET_ZOOM,
         limits: [STREET_ZOOM_MIN, STREET_ZOOM_MAX],
         viewport: [viewportWidth, viewportHeight],
