@@ -103,7 +103,8 @@
         e.roofRoute = null;
         guardLine(e, 'lost', 'Where did he go?', 12);
       }
-      e.lastSeen = sees ? e.lastSeen : m.suspicion > 45 ? e.lastSeen : null;
+      // Not wary enough to go looking: he forgets where he saw them.
+      if (!sees && m.suspicion <= 45) e.lastSeen = null;
       if (e.investigate) {
         const spot = e.investigate;
         if (!spot.arrived && distanceBetween(e, spot) > 6 && gameTime < spot.until) {

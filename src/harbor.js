@@ -393,7 +393,10 @@
       );
       m.car.mission = true;
       m.car.cargoCount = 0;
-      m.car.hp = m.car.maxhp = 460;
+      // Vinny's truck has a steel cage over the cab: the Harbor Kings open up on it
+      // in the bay (alertGang, ~20 hp/s even at the 40% mission share), and a
+      // careful three-point turn out of the bay must not lose the job.
+      m.car.hp = m.car.maxhp = 620;
       setStage(0, m.car, 'PICK UP VINNY’S MARKED CARGO TRUCK');
     }
     /* THE DROP
@@ -446,6 +449,9 @@
       m.cargoDelivered = true;
       m.truck = m.car;
       m.truck.cargoCount = 0;
+      // The cargo is in: the truck wrecked in the firefight round it (the
+      // officers' rounds, the player's own) no longer fails the job.
+      m.car = null;
       m.throughBuilding = false;
       m.escapedAt = 0;
       // The police saw the truck go in: the heat they had is held until the back
@@ -626,7 +632,7 @@
             distanceBetween(missionState.car, HARBOR.bay) > 48
           ) {
             missionState.loading = null;
-            tell('Loading cancelled. Stop in the bay and press E.', 3);
+            tell('Loading cancelled. Stop in the bay and press ' + keyName('interact') + '.', 3);
             return;
           }
           missionState.loading.time += deltaSeconds;

@@ -48,8 +48,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Bright sky-reflection patch under the chest in daylight (lacquer material); little muscle definition.
 
 ## Missions and demo (harbor.js, campaign.js)
-- A POLICE LOST banner can sit over the PAYDAY line of the MISSION COMPLETE card.
-- A downed (crawling) officer counts as eliminated in mission 1's warehouse stage.
 - The demo card also appears when a player replays mission 2.
 
 ## Other

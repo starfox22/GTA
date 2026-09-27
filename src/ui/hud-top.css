@@ -257,7 +257,9 @@ kbd {
   display: none;
 }
 #stealthStatus {
-  top: 102px;
+  /* Under the docked prompt (hud-state.js placeDockLine), which the Blue Hour
+     keeps busy (the glass, the takedown, the lift). */
+  top: calc(var(--hud-dock-top, 72px) + 36px);
   min-width: 220px;
   text-align: center;
 }

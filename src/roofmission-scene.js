@@ -175,7 +175,7 @@
       m.suspicion = 100;
       m.weaponDrawn = true;
       m.partyPanic = true;
-      crime(2);
+      crime(2, 'seen');
       announce('THE BLUE HOUR · COVER BLOWN', 'GET OUT ALIVE', 2.5);
       tell('Bodyguards alerted. Break their line of sight and reach the elevator.', 4);
       for (const e of enemies)
@@ -256,7 +256,7 @@
         setStage(
           2,
           ROOF_HIT.drink,
-          'SPIKE VESCARI’S GLASS · ' + keyName('poison') + ' WHEN NO GUARD IS LOOKING',
+          'SPIKE VESCARI’S GLASS UNSEEN · ' + keyName('poison'),
         );
       if (b.hp <= 0 && !m.killRegistered) {
         m.killRegistered = true;

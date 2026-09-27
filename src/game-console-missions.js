@@ -156,6 +156,11 @@
               depotBackDoor: +depotBackDoor.toFixed(2),
               depotSealed,
               policeInside: mission.index === 0 ? depotPoliceInside().length : undefined,
+              // Mission 1's sealed warehouse: who is still in there, and how.
+              depotPolice:
+                mission.index === 0 && mission.stage === 5
+                  ? depotPoliceInside().map((o) => ({ x: Math.round(o.x), y: Math.round(o.y), hp: Math.round(o.hp), downed: !!o.downed, state: o.state || null }))
+                  : undefined,
               wanted: Math.ceil(wantedStars),
             }
           : { mission: null, last: lastMissionOutcome, completed, depotShutter: +depotFrontShutter.toFixed(2), depotBackDoor: +depotBackDoor.toFixed(2) },
