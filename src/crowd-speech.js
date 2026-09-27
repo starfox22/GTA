@@ -1,24 +1,37 @@
     // Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
     const CROWD_LINES = {
-      cower: ['Get down!', 'Oh god, oh god…', 'Don’t shoot!', 'Stay down!', 'Please, no!'],
-      flee: ['Run!', 'He’s got a gun!', 'Move, move!', 'Get out of here!', 'Somebody help!', 'Go, go, go!'],
-      heard: ['Was that a gunshot?', 'Fireworks?', 'That was close…', 'What was that?', 'Did you hear that?'],
-      boom: ['What the hell was that?!', 'Something blew up!', 'Oh my god!', 'Everybody get back!'],
-      film: ['Are you getting this?', 'This is going online.', 'I’m filming, I’m filming!', 'Nobody’s gonna believe this.'],
+      cower: ['Get down!', 'Oh god, oh god…', 'Don’t shoot!', 'Stay down!', 'Please, no!', 'Keep your head down!', 'Is he gone? Is he gone?', 'I don’t wanna die…'],
+      flee: ['Run!', 'He’s got a gun!', 'Move, move!', 'Get out of here!', 'Somebody help!', 'Go, go, go!', 'Get inside!', 'This way!', 'Call the cops!', 'Where’s my kid?!'],
+      heard: ['Was that a gunshot?', 'Fireworks?', 'That was close…', 'What was that?', 'Did you hear that?', 'Car backfiring?', 'That came from over there.', 'I don’t like the sound of that.'],
+      boom: ['What the hell was that?!', 'Something blew up!', 'Oh my god!', 'Everybody get back!', 'Is it a gas main?!', 'I felt that in my chest.'],
+      film: ['Are you getting this?', 'This is going on the news.', 'I’m filming, I’m filming!', 'Nobody’s gonna believe this.', 'Channel Six pays for this stuff.', 'Hold still, hold still…', 'Is it recording?'],
       shout: ['Put the gun down!', 'Hey! Stop!', 'Police are coming, pal!', 'Are you out of your mind?!'],
       handsUp: ['Don’t shoot!', 'Take my wallet!', 'Please, I have kids!', 'I didn’t see anything!', 'Easy, easy…', 'Whatever you want!'],
       plead: ['Please… please…', 'I won’t tell anyone.', 'I just want to go home.', 'Please don’t.'],
-      dodge: ['Whoa!', 'Jesus!', 'Hey!', 'Look out!'],
-      fist: ['Learn to drive!', 'You maniac!', 'I’ve got your plate!', 'Sidewalk, pal!', 'Slow down, idiot!', 'You nearly killed me!'],
-      gasp: ['Oh my god…', 'Is he… dead?', 'Don’t look.', 'Somebody help him!', 'Jesus Christ…'],
-      crashWatch: ['Is everyone okay?', 'Did you see that?', 'He came out of nowhere!', 'Somebody call an ambulance!', 'That’s gonna cost him.', 'Total wreck.'],
-      bodyWatch: ['Somebody cover him up.', 'Don’t touch anything.', 'Who would do this?', 'Where are the cops?', 'I saw the whole thing.'],
+      dodge: ['Whoa!', 'Jesus!', 'Hey!', 'Look out!', 'Watch it!', 'Oh, come on!'],
+      fist: [
+        'Learn to drive!',
+        'You maniac!',
+        'I’ve got your plate!',
+        'Sidewalk, pal!',
+        'Slow down, idiot!',
+        'You nearly killed me!',
+        'Watch where you’re going!',
+        'This is a sidewalk, genius!',
+        'Are you trying to kill someone?!',
+        'Nice driving, jerk!',
+        'My kids walk here!',
+        'Who gave you a license?!',
+      ],
+      gasp: ['Oh my god…', 'Is he… dead?', 'Don’t look.', 'Somebody help him!', 'Oh my god!', 'No, no, no…', 'Is he breathing?', 'Somebody call 911!'],
+      crashWatch: ['Is everyone okay?', 'Did you see that?', 'He came out of nowhere!', 'Somebody call an ambulance!', 'That’s gonna cost him.', 'Total wreck.', 'Is that gas leaking?', 'He ran the light, I saw it.'],
+      bodyWatch: ['Somebody cover him up.', 'Don’t touch anything.', 'Who would do this?', 'Where are the cops?', 'I saw the whole thing.', 'He’s not moving.', 'Get the kids away from here.', 'Has anyone called it in?'],
       injured: ['Ugh… my leg…', 'Help me…', 'I’m hit… I’m hit…', 'Somebody… please…', 'Oww…'],
       helper: ['Stay with me!', 'Don’t move, help’s coming.', 'Can you hear me?', 'Breathe. Just breathe.'],
       point: ['He went that way!', 'That way, officer!', 'Over there!', 'He ran down there!'],
       greet: ['Hey.', 'Evening.', 'Nice day for it.', 'How’s it going?', 'Morning.', 'Hey, man.', 'Alright?'],
       relief: ['Okay… okay.', 'Thank god.', 'Jesus, man.', 'I’m going. I’m going.'],
-      recover: ['Is it over?', 'I think he’s gone.', 'My heart’s still pounding.', 'Unbelievable. This city.', 'I need a drink.'],
+      recover: ['Is it over?', 'I think he’s gone.', 'My heart’s still pounding.', 'Unbelievable. This city.', 'I need a drink.', 'I’m calling my mom.', 'Everyone okay?', 'My hands won’t stop shaking.'],
       angryDriver: ['Look at my car!', 'You’re paying for this!', 'Where’d you learn to drive?!', 'Are you blind?!', 'Unbelievable!', 'Insurance. Now.'],
       shakenDriver: ['My neck…', 'I didn’t see him…', 'Is everyone alright?', 'I need to sit down.'],
       honk: ['Move it!', 'Come ON!', 'Green means go!', 'Some of us work!', 'Get out of the road!'],
@@ -41,8 +54,9 @@
     function crowdSay(p, kind, chance = 1, extra = '') {
       if ((p.speechUntil || 0) > gameTime || seededRandom() > chance) return false;
       const lines = CROWD_LINES[kind] || PED_LINES[kind];
-      if (!lines) return false;
-      p.speech = randomChoice(lines) + extra;
+      if (!lines || !ambientAllowed(kind, p)) return false;
+      // Never the same line twice running from one person (crowd-chatter.js).
+      p.speech = pickLine(lines, p) + extra;
       p.speechUntil = gameTime + 2.6;
       // What kind of line this is, for the bubble priority (speechBubbles).
       p.speechKind = kind;
@@ -68,7 +82,8 @@
     const SPEECH_BUBBLES_MAX = 2,
       SPEECH_QUEUE_SECONDS = 2.5,
       SPEECH_RANGE = 460,
-      SPEECH_TO_PLAYER = new Set(['handsUp', 'plead', 'fist', 'angryDriver', 'shout', 'point', 'dodge', 'carjack']);
+      // (Plus a witness on the phone to 911, and remarks about the player.)
+      SPEECH_TO_PLAYER = new Set(['handsUp', 'plead', 'fist', 'angryDriver', 'shout', 'point', 'dodge', 'carjack', 'call911', 'armedNear', 'knifeNear', 'playerHurt', 'niceCar', 'copCar', 'wreckCar']);
     let speechShown = [];
     function speechReadSeconds(text) {
       return clamp(1.5 + text.length * 0.065, 2.4, 6);

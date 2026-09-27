@@ -121,7 +121,7 @@
         // scale (the five-star floor plus room for the climb, heat.js), and the
         // stars rise to the military response at the usual pace.
         const short = HEAT_MAX - wantedHeat;
-        if (short > 0) crime(short / CRIME_HEAT);
+        if (short > 0) crime(short / CRIME_HEAT, 'seen');
         if (gameTime - lastDispatchLine > 3) dispatchCaption('MILITARY ATTACK HELICOPTER STOLEN · ARMY RESPONSE AUTHORISED', 'call-backup');
       }
       tell(

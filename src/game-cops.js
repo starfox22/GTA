@@ -150,6 +150,7 @@
           if (
             d > 550 &&
             d < 1050 &&
+            !crowdInView(x, y, 140) &&
             !inHarbor(x, y, 100) &&
             !solid(x, y, 30) &&
             !vehicles.some((c) => Math.hypot(c.x - x, c.y - y) < 70)

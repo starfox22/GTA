@@ -1,0 +1,8 @@
+# Witnesses and 911 calls
+- The police only come when they know: a crime nobody saw or heard brings no stars. A unit that sees it (or hears the shots) responds at once, as before.
+- Civilians who saw it (in their field of view) or heard the shots duck and run, then get clear and phone 911 with a speech bubble ("911? There's been a shooting on Ocean Drive!"). The first star comes only when the call ends ("A WITNESS CALLED 911"); kill, threaten or reach the caller and the call is lost.
+- Dispatch sends units to the reported spot after a response time that grows with how remote it is (seconds downtown, longer in the county and on Monarch Isle); they spawn off screen, search, and take up the chase only on sight. Escalation waits until they arrive.
+- A carjacked driver (and a Trail Club member watching their truck go) phones it in once back on their feet; a body found later still gets reported; a body found long after with the player gone is only investigated.
+- Street life: context chatter by hour, weather and district, remarks about a gun on show, blood, a showy or stolen car; more varied panic, filming, near-miss and onlooker lines; onlookers comfort each other; no person repeats a line twice running and idle remarks are spaced out.
+- Internals: witnesses.js (unreported crimes, police eyes and ears, reports, response time, `witnessReport()` API), crowd-witnesses.js (witness memory, the call director, the call), crowd-chatter.js (lines and pickers); `crime(amount, how)` takes `'seen'` for scripted crimes.
+- Console: `witnesses()`, `witnessStage(count, police, radius, lookAway)`, `carjackTarget(type, mood)`. Test: tools/tests/police-witness.mjs.

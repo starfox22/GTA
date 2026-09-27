@@ -245,7 +245,7 @@
       if (!enemy) {
         shake = Math.max(shake, 6);
         notifyViolence(player, 'gunfire', player);
-        crime(0.45);
+        crime(0.45, 'seen');
       }
       return true;
     }
