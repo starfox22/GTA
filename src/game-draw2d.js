@@ -549,7 +549,7 @@
       if (!player.car && !transitRide) {
         let drawP = {
           ...player,
-          a: mouse.active ? aim() : player.a,
+          a: playerAimFacing() ?? player.a,
         };
         drawPerson(drawP, true);
       }

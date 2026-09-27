@@ -310,11 +310,12 @@
       shapedNoise({ type: 'lowpass', freq: 420, sweepTo: 120, attack: 0.004, decay: 0.3, gain: 0.3 });
       if (!seaSprite('sealife-splash', 2, 0.45, 0.85, c, { delay: 0.08 })) waterSplashSound(1.2, c);
     }
-    function beachShoutSound() {
+    /* A scream from one of the beachgoers shouting SHARK (sealife-shark.js), in their
+       own voice and from where they stand (voices.js). */
+    function beachShoutSound(person) {
       const beach = { x: -1970, y: 5560 };
-      if (!seaAudible(beach, 1400)) return;
-      const names = ['civilian-scream-female-1', 'civilian-scream-female-2', 'civilian-scream-male-1', 'civilian-scream-male-2'];
-      if (Math.random() < 0.45) playSample(names[Math.floor(Math.random() * names.length)], 0.16, 0.95 + Math.random() * 0.1, { x: beach.x + (Math.random() - 0.5) * 500, y: beach.y }, ambienceBus);
+      if (!person || !voicesOn || !seaAudible(beach, 1400)) return;
+      if (Math.random() < 0.45) playPersonScream(person, 0.16, ambienceBus);
     }
     /**
      * Per frame (from audio.js soundUpdate): the score's heartbeat and drone

@@ -249,3 +249,10 @@
         const look = p.look || (renderPeople.includes(p) ? specialLook(p) : null);
         return look ? compiledLook(look, p).height * PERSON_HEIGHT : null;
       }
+      /* Whether the rig draws `p` as a woman, from the look it is drawn in (the
+         specials' outfits, the street's own looks): voices.js voiceReport compares. */
+      function drawnFemale(p) {
+        const special = p === player || renderPeople.includes(p),
+          look = special ? specialLook(p) : p.look;
+        return look ? !!compiledLook(look, p).female : null;
+      }

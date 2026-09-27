@@ -104,6 +104,7 @@
       player.tumble = null;
       player.tumbleRoll = 0;
       player.thrown = null;
+      cancelCarjack();
       if (player.roof || player.buildingRoof) {
         player.roof = false;
         player.buildingRoof = null;
@@ -256,6 +257,8 @@
     }
     function interact() {
       if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
+      // E again in a carjack cuts the struggle short (carjack-struggle.js).
+      if (skipCarjack()) return;
       // On a building roof: a North Point Key lift or bar (skyline-lift.js), else fly off again.
       if (player.buildingRoof && !player.car) {
         if (northPointKeyInteract()) return;
@@ -317,12 +320,10 @@
           tone(140, 0.07, 0.2, 'square');
           return;
         }
-        if (c.occupied) {
-          const driver = ejectDriver(c, 'hijack');
-          crime(0.8, 'carjack');
-          // Once back on their feet and clear of the player they phone it in.
-          witnessReport(driver, 'carjack', c.x, c.y);
-        }
+        // Somebody at the wheel: the struggle at the door (carjack-struggle.js), which
+        // charges the hijack (crime 0.8, 'carjack') and makes the driver a witness who
+        // phones it in (witnessReport) once back on their feet and clear of the player.
+        if (c.occupied && startCarjack(c)) return;
         enterVehicle(c);
         return;
       }

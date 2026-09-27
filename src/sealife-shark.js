@@ -277,7 +277,8 @@
       }
       if (gameTime > a.shoutAt && gameTime - a.started < 20) {
         a.shoutAt = gameTime + 2.5 + Math.random() * 3;
-        beachShoutSound();
+        // One of the people shouting screams, in their own voice (voices.js).
+        beachShoutSound(a.speakers[Math.floor(Math.random() * a.speakers.length)]?.person);
       }
     }
     function beachSharkAlarmStart() {

@@ -90,6 +90,7 @@ export default async function (t) {
   const car = await t.call('carjackTarget', 'sedan', 'flee');
   t.assert(car, 'no car to take');
   await t.call('interact');
+  await t.wait(2.6); // the struggle at the door, then the seat (carjack-struggle.js)
   w = await t.call('witnesses');
   t.assert(w.stars === 0 && w.incidents.some((i) => i.kind === 'carjack'), 'carjack not left to a witness: ' + JSON.stringify(w));
   await t.keys('KeyW', 3);

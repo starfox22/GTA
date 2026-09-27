@@ -63,6 +63,8 @@
           !player.coaster &&
           // Thrown off a bike: flying, sliding or lying there (riders.js).
           !updateThrownPlayer(deltaSeconds) &&
+          // Taking a car off its driver: walking round, the door, the struggle (carjack-struggle.js).
+          !updateCarjack(deltaSeconds) &&
           !updateMountainFooting(deltaSeconds)
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
@@ -99,7 +101,7 @@
           player.altitude = terrainHeight(player.x, player.y);
         // On the volleyball court a click hits the ball instead (beachvolley.js);
         // nothing is fired while thrown off a bike (riders.js).
-        if (!volleyTakesFire() && !player.thrown && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
+        if (!volleyTakesFire() && !player.thrown && !player.carjack && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
         if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
           tone(220, 0.08, 0.04, 'sawtooth');
         if (keys.KeyE && canSilentHit(rooftopJob())) {

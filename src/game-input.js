@@ -37,6 +37,7 @@
     /* Put the player somewhere else, letting go of anything that was carrying
        them: a hired cab or a liner deck would otherwise drag them straight back. */
     function teleportPlayer(x, y) {
+      cancelCarjack();
       if (player.car) exitCar();
       if (taxiRide) endTaxiRide(false);
       cancelTaxiPick();

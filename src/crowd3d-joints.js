@@ -32,6 +32,7 @@
             phase: Math.random() * TAU,
             turnPhase: 0,
             turning: false,
+            backing: false, // backing off: the hips lead along the reverse of travel (crowd3d-draw.js BACKPEDAL)
             seed: Math.random() * 100,
             seen: false,
             holdKind: null,
