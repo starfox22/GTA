@@ -125,6 +125,7 @@
         });
       }
       randomSeed = oldSeed;
+      prunePlanTrees();
       buildMilitary();
       installCountyServices();
       for (const [x, y] of [
@@ -167,6 +168,45 @@
         drawingContext.translate(-tile.x, -tile.y);
         paintAirfieldGround(drawingContext, true);
         countyGroundTiles.push({ ...tile, canvas });
+      }
+    }
+    /* Where a tree of the plan may not stand: its trunk on a carriageway, inside a
+       building, under a rail deck, on a runway, or in front of a door (within 16
+       units of it). planTreeAudit lists them by kind; prunePlanTrees (end of
+       buildCounty, before Monarch Isle, which plans its own round its doors)
+       takes them out of the plan. */
+    function planTreeProblem(t) {
+      if (t.isle) return null;
+      if (cityStreetAt(t.x, t.y, -3) || onCountyRoad(t.x, t.y, -3)) return 'carriageway';
+      if (buildings.some((b) => t.x > b.x + 1 && t.x < b.x + b.w - 1 && t.y > b.y + 1 && t.y < b.y + b.h - 1)) return 'building';
+      if (railDecks().some((d) => {
+        const dx = t.x - d.x,
+          dy = t.y - d.y,
+          c = Math.cos(d.a),
+          s = Math.sin(d.a);
+        return Math.abs(dx * c + dy * s) < d.hx && Math.abs(-dx * s + dy * c) < d.hy + 6;
+      }))
+        return 'rail deck';
+      if (runwayUnder(t.x, t.y, 0)) return 'runway';
+      if (PLACES.some((p) => p.door && Math.hypot(p.door.x - t.x, p.door.y - t.y) < 16)) return 'doorway';
+      return null;
+    }
+    const prunedPlanTrees = {};
+    function planTreeAudit() {
+      const out = { trees: trees.length, pruned: prunedPlanTrees };
+      for (const t of trees) {
+        const problem = planTreeProblem(t);
+        if (!problem) continue;
+        (out[problem] ||= []).push([Math.round(t.x), Math.round(t.y)]);
+      }
+      return out;
+    }
+    function prunePlanTrees() {
+      for (let i = trees.length - 1; i >= 0; i--) {
+        const problem = planTreeProblem(trees[i]);
+        if (!problem) continue;
+        prunedPlanTrees[problem] = (prunedPlanTrees[problem] || 0) + 1;
+        trees.splice(i, 1);
       }
     }
     function countyRouteControl(c) {

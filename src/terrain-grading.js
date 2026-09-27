@@ -157,7 +157,9 @@
     function gradeScenicRoads(field, heights, flatDistance, seaDistance, lakeDistance, land) {
       const roads = SCENIC_ROADS.filter((r) => scenicRoadGraded(r, field));
       if (!roads.length) return null;
+      const t0 = performance.now();
       scenicJunctions();
+      field.timing.roadJunctions = Math.round(performance.now() - t0);
       const { x0, y0, x1, y1, cols, rows } = field,
         count = cols * rows,
         vertex = (x, y) => clamp(Math.round((y - y0) / TERRAIN_CELL), 0, rows - 1) * cols + clamp(Math.round((x - x0) / TERRAIN_CELL), 0, cols - 1),
@@ -285,6 +287,7 @@
         }
         done.push(road);
       }
+      field.timing.roadProfiles = Math.round(performance.now() - t0);
       // Viewpoints: where the view opens widest (the ground beside the road lowest
       // against it) along a raised, gently curving stretch, clear of junctions,
       // towns, trailheads and each other.
@@ -320,6 +323,7 @@
         c.road.bays.push(bay);
         SCENIC_VIEWPOINTS.push({ road: c.road, k: c.k, side: c.side, x: p.x, y: p.y, a: p.a, level: c.road.profile[c.k], drop: Math.round(c.score) });
       }
+      field.timing.roadViews = Math.round(performance.now() - t0);
       // The band each road lays down (carriageway, shoulders, lay-bys and a margin),
       // with the road's height, and the car park it carries.
       const mask = new Uint8Array(count),
@@ -327,9 +331,12 @@
         gap = new Float32Array(count).fill(Infinity);
       for (const road of roads) {
         const d = road.dense,
-          reach = road.half + 26 + SCENIC_BAY.width;
+          bayAt = scenicBayMask(road);
         for (let k = 0; k < road.n - 1; k++) {
-          const ax = d[k * 2],
+          // (Only a lay-by's stretch reaches further than the carriageway's band.)
+          const bay = bayAt[k] || bayAt[k + 1],
+            reach = road.half + 26 + (bay ? SCENIC_BAY.width : 0),
+            ax = d[k * 2],
             ay = d[k * 2 + 1],
             dx = d[k * 2 + 2] - ax,
             dy = d[k * 2 + 3] - ay,
@@ -345,9 +352,10 @@
                 u = clamp((ex * dx + ey * dy) / len2, 0, 1),
                 qx = ex - dx * u,
                 qy = ey - dy * u,
-                dist = Math.hypot(qx, qy),
-                side = dx * qy - dy * qx >= 0 ? 1 : -1,
-                band = road.half + 26 + scenicBayWidth(road, k + u, side),
+                d2 = qx * qx + qy * qy;
+              if (d2 > reach * reach) continue;
+              const dist = Math.sqrt(d2),
+                band = road.half + 26 + (bay ? scenicBayWidth(road, k + u, dx * qy - dy * qx >= 0 ? 1 : -1) : 0),
                 i = r * cols + c;
               if (dist > band || dist - band >= gap[i]) continue;
               gap[i] = dist - band;
@@ -369,6 +377,7 @@
             level[r * cols + c] = lvl;
           }
       }
+      field.timing.roadBand = Math.round(performance.now() - t0);
       const { distance, nearest } = gridNearest(mask, cols, rows, TERRAIN_CELL),
         base = new Float32Array(count);
       for (let i = 0; i < count; i++) base[i] = level[nearest[i]];
@@ -376,7 +385,17 @@
       // Inside the band the road's own height is exact; the blur only eases it outwards.
       for (let i = 0; i < count; i++) if (mask[i]) base[i] = level[i];
       field.roadDistance = distance;
+      field.timing.roadField = Math.round(performance.now() - t0);
       return { roads, distance, level: base, pads };
+    }
+    // Per sample: whether a lay-by widens the road there (either side).
+    function scenicBayMask(road) {
+      const mask = new Uint8Array(road.n);
+      for (const bay of road.bays) {
+        const span = Math.ceil((bay.length / 2 + bay.taper) / SCENIC_SAMPLE) + 1;
+        for (let k = Math.max(0, bay.k - span); k <= Math.min(road.n - 1, bay.k + span); k++) mask[k] = 1;
+      }
+      return mask;
     }
     // How far a fill falls away from the road's level at `distance` from its band: a 42-degree embankment steepening out.
     function scenicFillDrop(distance) {
@@ -409,9 +428,10 @@
         roads = grade.roads;
       roads.forEach((road, index) => {
         const d = road.dense,
-          reach = road.half + SCENIC_BAY.width + SCENIC_SHOULDER + 80;
+          bayAt = scenicBayMask(road);
         for (let k = 0; k < road.n - 1; k++) {
-          const ax = d[k * 2],
+          const reach = road.half + (bayAt[k] || bayAt[k + 1] ? SCENIC_BAY.width : 0) + SCENIC_SHOULDER + 80,
+            ax = d[k * 2],
             ay = d[k * 2 + 1],
             dx = d[k * 2 + 2] - ax,
             dy = d[k * 2 + 3] - ay,
@@ -427,10 +447,12 @@
                 u = clamp((ex * dx + ey * dy) / len2, 0, 1),
                 qx = ex - dx * u,
                 qy = ey - dy * u,
-                dist = Math.hypot(qx, qy),
+                d2 = qx * qx + qy * qy;
+              if (d2 > reach * reach) continue;
+              const dist = Math.sqrt(d2),
                 e = dist - road.half,
                 i = r * cols + c;
-              if (dist > reach) continue;
+              if (e >= best2[i] && owner[i] !== index) continue;
               const signed = (dx * qy - dy * qx >= 0 ? 1 : -1) * dist;
               if (owner[i] === index) {
                 if (e < best[i]) {

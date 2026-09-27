@@ -8,19 +8,21 @@
       function forestSpecies(conifer, ground, roll, x, y) {
         const stand = 0.5 + 0.5 * (terrainNoise(x / 260, y / 260, 71) * 0.65 + terrainNoise(x / 90, y / 90, 73) * 0.35),
           r = clamp(roll * 0.55 + stand * 0.45, 0, 0.999),
-          coast = terrainSeaDistance(x, y) < 260;
+          // (The lone hill above Oceanview is coastal woodland too.)
+          coast = terrainSeaDistance(x, y) < 260 || x < 5800;
         if (!conifer) {
+          if (coast) return r < 0.8 ? 'oak' : 'beech';
           if (ground < 90) return r < 0.5 ? 'oak' : r < 0.72 ? 'maple' : r < 0.9 ? 'beech' : 'birch';
           return r < 0.45 ? 'beech' : r < 0.72 ? 'birch' : r < 0.9 ? 'maple' : 'oak';
         }
-        if (coast) return r < 0.85 ? 'pine' : 'fir';
+        if (coast) return r < 0.8 ? 'pine' : 'stonePine';
         const [pine, fir] = ground < 150 ? [0.55, 0.82] : ground < 400 ? [0.22, 0.62] : [0.1, 0.35];
         return r < pine ? 'pine' : r < fir ? 'fir' : 'spruce';
       }
       // Size 1 of mountainScenery() is 1/21 of a species' modelled size.
       const FOREST_SCALE = 1 / 21,
         // The far level's model per species.
-        FOREST_FAR = { spruce: 'spruce', fir: 'spruce', pine: 'pine', oak: 'beech', beech: 'beech', maple: 'beech', birch: 'beech' };
+        FOREST_FAR = { spruce: 'spruce', fir: 'spruce', pine: 'pine', stonePine: 'pine', oak: 'beech', beech: 'beech', maple: 'beech', birch: 'beech' };
       function plantForest(lists) {
         const cells = new Map();
         for (const { list, conifer } of lists)

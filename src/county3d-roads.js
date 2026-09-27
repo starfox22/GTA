@@ -17,12 +17,13 @@
        * mouths, dashed on the open straights), gravel shoulders fraying into the
        * verge through a dithered edge, the shared wet film and puddles. A later
        * road stops where it meets an earlier one's carriageway, so junctions
-       * never draw twice. Pieces of ~48 rows are culled as statics; they never
+       * never draw twice. Pieces of ~72 rows are culled as statics; they never
        * cast shadows (they lie on the ground they would shade).
-       * Furniture: W-beam guard rails on timber posts and low stone walls along
-       * the lay-bys (the same lists the colliders use), white reflector posts,
-       * and each viewpoint's bench, coin telescope and sign; merged per cell
-       * (batchGroups).
+       * Furniture: galvanised W-beam guard rails on steel posts and low stone
+       * walls along the lay-bys (the same lists the colliders use) and each
+       * viewpoint's bench, coin telescope and sign, merged per cell (batchGroups);
+       * white reflector posts (band and amber reflector in one vertex-coloured
+       * model), instanced per cell.
        */
       const SCENIC_RIBBON_LIFT = 0.12;
       const SCENIC_ROAD_PARS = `
@@ -52,8 +53,8 @@
         asphalt *= 1.0 - 0.16 * sWheel;
         // Patches of newer, darker tarmac; hairline cracks near the edges.
         vec2 sCell = floor( vec2( sS / 64.0, sT / 18.0 ) ), sIn = fract( vec2( sS / 64.0, sT / 18.0 ) );
-        float sPatch = step( 0.87, cityHash( sCell + 3.1 ) ) * srBand( sIn.x, 0.12, 0.72, fwS / 64.0 ) * srBand( sIn.y, 0.08, 0.92, fwT / 18.0 ) * step( sAt, sHalf - 1.5 );
-        asphalt = mix( asphalt, vec3( 0.047, 0.049, 0.052 ) * ( 0.9 + 0.2 * grain ), sPatch * 0.85 );
+        float sPatch = step( 0.92, cityHash( sCell + 3.1 ) ) * srBand( sIn.x, 0.12, 0.72, fwS / 64.0 ) * srBand( sIn.y, 0.08, 0.92, fwT / 18.0 ) * step( sAt, sHalf - 1.5 );
+        asphalt = mix( asphalt, vec3( 0.062, 0.063, 0.066 ) * ( 0.9 + 0.2 * grain ), sPatch * 0.7 );
         float sCrack = ( 1.0 - smoothstep( 0.0, 0.03, abs( cityNoise( vec2( sS * 0.05, sT * 0.7 ) + 4.0 ) - 0.5 ) ) ) * smoothstep( sHalf - 12.0, sHalf - 1.0, sAt ) * sDetail;
         asphalt *= 1.0 - 0.4 * sCrack;
         // Markings: white edge lines just inside each edge, the yellow centre line.
@@ -250,23 +251,27 @@
               continue;
             }
             rows.push(k);
-            if (rows.length >= 48) flush();
+            if (rows.length >= 72) flush();
           }
           flush();
         }
       }
       /* ---- Furniture --------------------------------------------------------------------- */
-      // (The beam is a single sheet, seen from both sides: its own material.)
+      // (The beam is a single sheet, seen from both sides: its own material, which
+      // its posts share, as the wall's cap shares the wall's: fewer draws per cell.)
       const scenicRailMaterial = new Three.MeshStandardMaterial({ color: '#a3aaab', roughness: 0.42, metalness: 0.72, side: Three.DoubleSide }),
         scenicPostMaterial = staticMat('#5a4838', 0.9),
         scenicWallMaterial = new Three.MeshStandardMaterial({ color: '#8a8374', roughness: 0.95, side: Three.DoubleSide }),
-        scenicWallCap = new Three.MeshStandardMaterial({ color: '#a39c8c', roughness: 0.9, side: Three.DoubleSide }),
-        scenicDelineator = staticMat('#e9e7df', 0.6),
-        scenicBand = staticMat('#1d1f21', 0.7),
-        scenicReflector = new Three.MeshStandardMaterial({ color: '#ffb347', emissive: '#ffa12e', emissiveIntensity: 0.45, roughness: 0.3 }),
-        scenicReflectorWhite = new Three.MeshStandardMaterial({ color: '#f4f2e8', emissive: '#f2efe2', emissiveIntensity: 0.35, roughness: 0.3 }),
         scenicTimber = staticMat('#6d5642', 0.85),
-        scenicScope = staticMat('#2f4a3c', 0.5, 0.4);
+        scenicScope = staticMat('#2f4a3c', 0.5, 0.4),
+        // A reflector post as one vertex-coloured model: the white post, its black
+        // band and the amber reflector (instanced per cell, casting no shadow).
+        scenicDelineatorGeometry = mergedColoredGeometry([
+          [new Three.BoxGeometry(0.8, 8.2, 0.5).translate(0, 4.1, 0), '#e9e7df', 0.12],
+          [new Three.BoxGeometry(0.84, 1.1, 0.54).translate(0, 7.2, 0), '#1d1f21', 0],
+          [new Three.BoxGeometry(0.3, 0.8, 0.6).translate(0, 7.2, 0), '#ffb347', 0],
+        ]),
+        scenicDelineatorMaterial = new Three.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 });
       // A strip along a run of points ([x, y, ground]): each profile point [offset out, height]
       // extruded, `side` turning offsets outward from the road.
       function scenicExtrude(points, side, profile, material, closed = false) {
@@ -343,7 +348,7 @@
             group = cellGroup(pts[0][0], pts[0][1]);
           if (wall) {
             group.add(scenicExtrude(pts, rail.side, WALL, scenicWallMaterial, true));
-            group.add(scenicExtrude(pts, rail.side, [[-2.6, 6], [-2.6, 7.2], [2.6, 7.2], [2.6, 6]], scenicWallCap, true));
+            group.add(scenicExtrude(pts, rail.side, [[-2.6, 6], [-2.6, 7.2], [2.6, 7.2], [2.6, 6]], scenicWallMaterial, true));
             continue;
           }
           // The beam's ends bend down into the ground (a buried terminal).
@@ -358,23 +363,40 @@
               a = pts[Math.max(0, i - 1)],
               b = pts[Math.min(pts.length - 1, i + 1)],
               heading = Math.atan2(b[1] - a[1], b[0] - a[0]),
-              post = box(group, x, z + 2.6, y, 1.1, 6.2, 1.1, scenicPostMaterial);
+              post = box(group, x, z + 2.6, y, 0.9, 6.2, 1.1, scenicRailMaterial);
             post.rotation.y = -heading;
-            if (i % 12 === 6) {
-              const r = box(group, x, z + 5.2, y, 0.9, 0.9, 0.3, rail.side > 0 ? scenicReflectorWhite : scenicReflector);
-              r.rotation.y = -heading + Math.PI / 2;
-            }
           }
         }
-        // Reflector posts: white, a black band, a reflector facing the traffic.
-        for (const [x, y, z, heading, side] of posts) {
-          const group = cellGroup(x, y),
-            post = box(group, x, z + 4.1, y, 0.8, 8.2, 0.5, scenicDelineator);
-          post.rotation.y = -heading;
-          const band = box(group, x, z + 7.2, y, 0.84, 1.1, 0.54, scenicBand);
-          band.rotation.y = -heading;
-          const r = box(group, x, z + 7.2, y, 0.3, 0.8, 0.58, side > 0 ? scenicReflectorWhite : scenicReflector);
-          r.rotation.y = -heading;
+        // Reflector posts, instanced per 1024-unit cell.
+        {
+          const byCell = new Map(),
+            m = new Three.Matrix4(),
+            q = new Three.Quaternion(),
+            one = new Three.Vector3(1, 1, 1),
+            at = new Three.Vector3(),
+            up = new Three.Vector3(0, 1, 0);
+          for (const post of posts) {
+            const key = Math.floor(post[0] / 1024) * 4096 + Math.floor(post[1] / 1024);
+            if (!byCell.has(key)) byCell.set(key, []);
+            byCell.get(key).push(post);
+          }
+          for (const list of byCell.values()) {
+            const im = new Three.InstancedMesh(scenicDelineatorGeometry, scenicDelineatorMaterial, list.length);
+            let cx = 0,
+              cy = 0;
+            list.forEach(([x, y, z, heading], j) => {
+              m.compose(at.set(x, z, y), q.setFromAxisAngle(up, -heading), one);
+              im.setMatrixAt(j, m);
+              cx += x / list.length;
+              cy += y / list.length;
+            });
+            im.name = 'scenic reflector posts';
+            im.castShadow = false;
+            im.receiveShadow = true;
+            im.computeBoundingSphere();
+            scene.add(im);
+            statics.push({ x: cx, y: cy, group: im, radius: im.boundingSphere.radius + 40 });
+          }
         }
         // Viewpoints: a bench and a coin telescope looking out, a brown sign at the lay-by.
         for (const v of views) {

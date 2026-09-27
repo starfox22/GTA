@@ -364,7 +364,11 @@
           }
       }
       // 6. The scenic roads' carriageways, exactly (terrain-grading.js).
-      if (grade) carveScenicRoads(field, heights, grade, land);
+      if (grade) {
+        const carveStart = performance.now();
+        carveScenicRoads(field, heights, grade, land);
+        field.timing.roadCarve = Math.round(performance.now() - carveStart);
+      }
       // Mud, rock and the trail's own frame per vertex (offroad.js).
       offroadTrailBake(field, heights, trailNear, trailSegment, trailOwner);
       lap('trails');

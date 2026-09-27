@@ -671,7 +671,11 @@
             '° · ' +
             Math.round(worldMeters(terrainHeight(player.x, player.y))) +
             ' m';
-      } else if (t?.z > 8)
+      } else if (t?.z > 8 && t.paved)
+        // On a graded mountain road (terrain-roads.js): its grade and height.
+        getElement('terrainStatus').textContent =
+          'MOUNTAIN ROAD · ' + Math.round(Math.abs(t.along) * 100) + '% ' + (t.along > 0.005 ? 'CLIMB' : t.along < -0.005 ? 'DESCENT' : 'LEVEL') + ' · ' + Math.round(worldMeters(t.z)) + ' m';
+      else if (t?.z > 8)
         getElement('terrainStatus').textContent =
           (t.four ? '4×4 TRACTION' : 'ROAD TIRES · LOW GRIP') +
           ' · ' +

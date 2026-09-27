@@ -177,6 +177,11 @@
       // relief, pinned height]); with a map point [x, y] too, the right lane's
       // ground and designed surface every 2 units round it.
       mountainRoad: (name, step, near) => scenicRoadReport(name, step, near),
+      // Trees of the plan standing where a tree may not (county-build.js
+      // planTreeProblem): on a carriageway, in a building, under a rail deck, on a
+      // runway or in a doorway, with their positions; prunePlanTrees took them out
+      // at build, so all but Monarch Isle's own planting should be empty.
+      treeAudit: () => planTreeAudit(),
       // Drive a car along a scenic road on an autopilot (terrain-roadside.js
       // scenicRoadDrive): lane holding, paved, vertical g, height steps, knocks, damage.
       mountainRoadDrive: (name, kmh, from, seconds, reverse, type) => scenicRoadDrive(name, kmh, from, seconds, !!reverse, type),
