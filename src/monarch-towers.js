@@ -205,9 +205,13 @@
       planIsleGardenFence();
       isleSolid(MONARCH_GARDEN.pond.x - MONARCH_GARDEN.pond.rx, MONARCH_GARDEN.pond.y - MONARCH_GARDEN.pond.ry, MONARCH_GARDEN.pond.rx * 2, MONARCH_GARDEN.pond.ry * 2, 2, 'lily pond');
       // ---- Roundabout fountains ----
+      // The island is round (lawn, hedges, basin), so its collider is a stack of
+      // boxes kept inside that circle: one square as wide as the island stuck its
+      // corners 18 units out into the ring's lane, where cars going round caught them.
       for (const c of ISLE_CIRCLES) {
-        const r = c.island - 6;
-        isleSolid(c.x - r, c.y - r, r * 2, r * 2, 12, 'fountain');
+        const r = c.island - 4;
+        for (const [hx, hy] of [[1, 0.36], [0.36, 1], [0.88, 0.55], [0.55, 0.88], [0.72, 0.72]])
+          isleSolid(c.x - r * hx, c.y - r * hy, r * hx * 2, r * hy * 2, 12, 'fountain');
       }
       for (const p of MONARCH_PAYPHONES) isleSolid(p.x - 4, p.y - 3, 8, 6, 2.4 * UNITS_PER_METRE, 'payphone');
       planIsleStreetscape(random);
