@@ -17,6 +17,8 @@ async function untilInCar(t, limit = 3.5) {
   return null;
 }
 export default async function (t) {
+  // Only t.wait advances the game, so the timings below are game seconds.
+  await t.call('holdSimulation', true);
   await t.call('god', true);
   // Each case from the same open ground, so no wall or parked car is in the way.
   const jack = async (...args) => {
@@ -82,4 +84,5 @@ export default async function (t) {
   await t.keys('KeyS', 0.3);
   s = await t.call('carjack');
   t.assert(!s.running && !s.inCar, 'walking off did not cancel: ' + JSON.stringify(s));
+  await t.call('holdSimulation', false);
 }
