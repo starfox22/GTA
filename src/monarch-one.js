@@ -106,9 +106,9 @@
       isleSolid(T.x + T.w + 4, T.y - 6, 2, T.h + 12, 14, 'fence');
       isleSolid(T.x - 6, T.y - 6, 2, T.h / 2 - 10, 14, 'fence');
       isleSolid(T.x - 6, T.y + T.h / 2 + 16, 2, T.h / 2 - 10, 14, 'fence');
-      // Planting: royal palms along the drive, a clipped allée of limes down the
-      // residents' walk, palms round the deck and on the point, cypresses along
-      // the west wall; a grove of pines on the clifftop outside the south wall.
+      // Planting: royal palms at the drive's head, plane trees down the residents'
+      // walk, palms round the deck and on the point, cypresses along the west
+      // wall; cypresses and planes on the clifftop outside the south wall.
       const plant = (x, y, r, kind) => {
         if (!landAt(x, y) || monarchSolidList.some((b) => x > b.x - 8 && x < b.x + b.w + 8 && y > b.y - 8 && y < b.y + b.h + 8)) return;
         const tree = { x, y, r, isle: kind, tropical: kind === 'palm', county: true, pine: kind === 'cypress' };
@@ -130,7 +130,7 @@
         plant(x, y, 17, 'palm');
       for (let x = 9730; x <= 10060; x += 70)
         for (let y = -4600; y <= -4460; y += 70)
-          if (random() < 0.7 && !(x < 9700 && y > -4600)) plant(x + (random() - 0.5) * 24, y + (random() - 0.5) * 24, random() < 0.5 ? 9 : 16, random() < 0.5 ? 'cypress' : 'plane');
+          if (random() < 0.7) plant(x + (random() - 0.5) * 24, y + (random() - 0.5) * 24, random() < 0.5 ? 9 : 16, random() < 0.5 ? 'cypress' : 'plane');
     }
     /* Vehicles only: the arm while it is down (physics-shapes.js takes monarchSolids()). */
     let monarchOneArmBody = null,
@@ -176,7 +176,7 @@
         C = M.canopy,
         cx = C.x + C.w / 2;
       return [
-        { id: 'monarch-one-gate', x: M.gatehouse.x - 8, y: M.gate.y - 10, a: Math.PI / 2, role: 'guard', lines: 'monarchOneGate' },
+        { id: 'monarch-one-gate', x: M.gatehouse.x - 6, y: M.gate.y - 28, a: Math.PI / 2, role: 'guard', lines: 'monarchOneGate' },
         { x: cx - 16, y: C.y + 8, a: Math.PI / 2, role: 'doorman', lines: 'monarchOneDoor' },
         { x: cx + 16, y: C.y + 8, a: Math.PI / 2, role: 'doorman', lines: 'monarchOneDoor' },
         { x: C.x + 20, y: C.y + C.h - 4, a: Math.PI / 2, role: 'valet', lines: 'monarchOneDoor' },
