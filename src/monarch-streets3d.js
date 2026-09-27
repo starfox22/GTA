@@ -400,6 +400,7 @@
         for (const b of buildings) if (b.monarch && !b.villa && !b.monarchTower && !b.garden) buildIsleBuilding(b);
         for (const plan of monarchPlan.villas) buildIsleVilla(plan);
         for (const t of MONARCH_TOWERS) buildIsleTower(t);
+        buildMonarchOneEstate();
         buildIsleMarina();
         buildIsleGarden();
         for (const c of ISLE_CIRCLES) buildIsleFountain(c);
@@ -427,6 +428,7 @@
         isleBasinWater.emissiveIntensity = 0.05 + night * 0.4;
         updateIsleGarden(night, nearIsle);
         if (!nearIsle) return;
+        updateMonarchOneVisuals();
         animateIsleFountains(gameTime);
       }
       // END SUBSYSTEM: src/monarch-streets3d.js

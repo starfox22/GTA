@@ -140,7 +140,8 @@
         } else if (tile && tile.x >= 0 && tile.y >= 0) {
           field = countyField;
           style = GROUND_STYLE.county;
-        } else if (tile && tile.y < CITY_TOP) style = GROUND_STYLE.palmKeys; // Sunset Pier's resort paving
+        } else if (tile && tile.style) style = GROUND_STYLE[tile.style]; // North Point Key's limestone (skyline-islet.js)
+        else if (tile && tile.y < CITY_TOP) style = GROUND_STYLE.palmKeys; // Sunset Pier's resort paving
         const image = m.map ? m.map.image : { width: 1, height: 1 },
           sheet = groundSheetUniforms(tile ? tile.w : 1, tile ? tile.h : 1, image.width, image.height, field, style);
         m.onBeforeCompile = (shader) => groundDetailPatch(shader, sheet, chunk);

@@ -29,6 +29,7 @@
      * game.js still cover the everyday chatter; these are the reactions.
      */
     // @include src/crowd-speech.js
+    // @include src/crowd-chatter.js
 
     /**
      * SHARED STATE
@@ -78,6 +79,7 @@
      * the next (cover → run, gasp → watch, dodge → shake a fist).
      */
     // @include src/crowd-reactions.js
+    // @include src/crowd-witnesses.js
 
     /**
      * STREET SCENES
@@ -122,6 +124,8 @@
       refreshBodies(deltaSeconds);
       aimReactions(deltaSeconds);
       policeTips(deltaSeconds);
+      witnessDirector(deltaSeconds);
+      playerRemarks(deltaSeconds);
       nearMisses(deltaSeconds);
       crowdEncounters(deltaSeconds);
       updateScenes(deltaSeconds);

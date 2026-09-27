@@ -174,7 +174,7 @@
         findStreetPoint(c.x + (missionState.divert ? 210 : 170), c.y, 10),
         'manifest',
       );
-      crime(missionState.escapeHeat);
+      crime(missionState.escapeHeat, 'seen');
       missionState.dispatchTimer = 5;
       setStage(
         4,

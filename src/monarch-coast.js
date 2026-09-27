@@ -26,19 +26,43 @@
             [7000, -5258],
             [7700, -5272],
             [8400, -5266],
-            [9050, -5238],
-            [9520, -5170],
+            [8900, -5250],
+            [9200, -5232],
+            [9236, -5240],
           ],
           6,
         ),
-        // The north-east rocks: a knuckled granite point.
-        [9700, -5120],
-        [9800, -5062],
-        [9880, -4990],
-        [9950, -4900],
-        [10010, -4800],
-        [10050, -4700],
-        [10080, -4600],
+        // The groyne: a granite spur closing the public beach, and Monarch One's
+        // cove behind it, on the west (the estate wall runs out along its crest).
+        [9236, -5252],
+        [9262, -5296],
+        [9298, -5320],
+        [9334, -5306],
+        [9352, -5262],
+        [9350, -5222],
+        // Monarch One's private cove: a crescent of sand facing the open sea.
+        ...smoothShoreline(
+          [
+            [9380, -5196],
+            [9460, -5178],
+            [9560, -5172],
+            [9640, -5184],
+            [9690, -5206],
+            [9712, -5220],
+          ],
+          4,
+        ),
+        // The north-east point under Monarch One: granite shelves round the corner.
+        [9740, -5236],
+        [9800, -5254],
+        [9860, -5250],
+        [9920, -5214],
+        [9976, -5146],
+        [10024, -5060],
+        [10058, -4960],
+        [10080, -4850],
+        [10094, -4740],
+        [10098, -4620],
         [10094, -4500],
         [10090, -4380],
         [10106, -4240],
@@ -199,10 +223,14 @@
         ...MONARCH_SUPERYACHTS.map((s) => ({ x: s.x, y: s.y, hx: s.len / 2, hy: s.beam / 2, a: s.a })),
       ];
     }
-    /* Pontoons are walkable decks over the basin (groundAt). */
+    // Monarch One's teak jetty: out from the middle of its cove (monarch-one.js).
+    const MONARCH_ONE_JETTY = { x: 9500, y: -5326, w: 16, h: 158 };
+    /* Pontoons (and the cove's jetty) are walkable decks over the water (groundAt). */
     function onIslePontoon(x, y, r = 0) {
       if (!nearMonarchIsle(x, y)) return false;
-      const m = MONARCH_MARINA;
+      const m = MONARCH_MARINA,
+        J = MONARCH_ONE_JETTY;
+      if (x - r >= J.x && x + r <= J.x + J.w && y - r >= J.y && y + r <= J.y + J.h) return true;
       for (const f of m.fingers) if (x - r >= f.x && x + r <= f.x + f.w && y - r >= f.y && y + r <= f.y + f.h) return true;
       const f = m.fuel;
       return x - r >= f.x && x + r <= f.x + f.w && y - r >= f.y && y + r <= f.y + f.h;
@@ -213,6 +241,7 @@
       return [
         ...m.fingers.map((f) => ({ x: f.x + f.w / 2, y: f.y + f.h / 2, hx: f.w / 2 + 3, hy: f.h / 2, a: 0 })),
         { x: m.fuel.x + m.fuel.w / 2, y: m.fuel.y + m.fuel.h / 2, hx: m.fuel.w / 2 + 3, hy: m.fuel.h / 2, a: 0 },
+        { x: MONARCH_ONE_JETTY.x + MONARCH_ONE_JETTY.w / 2, y: MONARCH_ONE_JETTY.y + MONARCH_ONE_JETTY.h / 2, hx: MONARCH_ONE_JETTY.w / 2 + 3, hy: MONARCH_ONE_JETTY.h / 2, a: 0 },
         ...isleMooredHulls(),
       ];
     }

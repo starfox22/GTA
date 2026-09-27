@@ -78,6 +78,7 @@
       }
       /* ---- The styles -------------------------------------------------------------- */
       const BRIDGE_BUILDERS = {
+        key: buildKeyBridge,
         truss(g, bridge, s, kit) {
           const W = bridge.width,
             green = bridgeGlowPaint('#4c6a60', '#ffdca6', 0.16, 'satin'),

@@ -32,6 +32,7 @@
         !p.posed &&
         !p.stroll &&
         !p.onDeck &&
+        !p.keyPerson &&
         !p.parkGuest &&
         !p.react &&
         !p.pending &&
@@ -39,6 +40,8 @@
         !p.injured &&
         !(p.flee > 0) &&
         !p.knockedFor &&
+        // A witness who has not made (or dropped) their call yet stays put.
+        !(p.witnessOf && !p.witnessOf.reported && gameTime - (p.witnessAt ?? -100) < 90) &&
         inCityGrid(p.x, p.y)
       );
     }
