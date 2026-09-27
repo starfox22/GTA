@@ -24,9 +24,14 @@
         last = (last + 0.02 * w[i]) / 1.02;
         b[i] = last * 3.5;
       }
-      const bus = audio.createGain();
+      const bus = audio.createGain(),
+        // Closed cabins dull the world outside (updateAmbience).
+        cabin = audio.createBiquadFilter();
       bus.gain.value = 0;
-      bus.connect(ambienceBus);
+      cabin.type = 'lowpass';
+      cabin.frequency.value = 20000;
+      cabin.Q.value = 0.5;
+      bus.connect(cabin).connect(ambienceBus);
       // One looping noise source feeding a filter and a gain: a layer.
       const layer = (buffer, type, frequency, q = 0.7, second) => {
         const source = audio.createBufferSource(),
@@ -52,7 +57,9 @@
       };
       ambience = {
         bus,
+        cabin,
         white,
+        brown,
         traffic: layer(brown, 'lowpass', 240),
         murmur: layer(white, 'bandpass', 700, 0.9, { type: 'lowpass', frequency: 1500 }),
         murmurHigh: layer(white, 'bandpass', 1500, 1.4),
@@ -121,22 +128,20 @@
     }
     /**
      * HORNS
-     * Two detuned square waves a third apart through a low-pass: the classic
-     * car horn. Length sets a tap or a lean; `double` makes it beep-beep.
+     * A traffic car's horn in its class's voicing (vehicle-foley-audio.js
+     * HORN_VOICES: a car's two-tone, a truck's air horn, a bike's beep), placed,
+     * dulled by distance and muffled behind a building. Length sets a tap or a
+     * lean; `double` makes it beep-beep.
      */
     function hornSound(position, length = 0.3, double = false) {
       if (!audio || !soundOn || gameMode !== 'play' || !buildAmbience()) return;
       const where = spatial(position, 260);
       if (where.gain < 0.08) return;
-      const base = 360 + ((position?.id || 0) % 7) * 22,
-        now = audio.currentTime,
-        peak = 0.11 * where.gain;
-      for (let k = 0; k < (double ? 2 : 1); k++) {
-        const start = now + k * (length + 0.09);
-        voice('square', base, start, length, peak, 0, where.pan, 1700);
-        voice('square', base * 1.26, start, length, peak * 0.8, 0, where.pan, 1700);
-      }
+      const shade = soundShade(position, where.d);
+      trafficHorn(position, length, double, 0.45 * where.gain * shade.gain, where.pan, Math.min(4500, shade.cutoff));
     }
+    // Horns somewhere across the city: mostly cars, now and then a van, a cab or a truck.
+    const DISTANT_HORN_TYPES = ['sedan', 'sedan', 'coupe', 'taxi', 'van', 'truck', 'sport', 'bus'];
     function airBrakeSound(position) {
       if (!audio || !soundOn || !buildAmbience()) return;
       const where = spatial(position, 260);
@@ -204,7 +209,13 @@
         active = gameMode === 'play' && soundOn,
         inside = !!(taxiRide || transitRide),
         city = inCityGrid(player.x, player.y);
-      glideParam(a.bus.gain, active ? (inside ? 0.45 : 1) : 0, now, 0.4);
+      // In a closed car the street is dulled; on a bike, a bicycle or a boat it is not.
+      const c = player.car,
+        spec = c ? vehicleSpec(c) : null,
+        open = !c || !spec || spec.bike || spec.bicycle || spec.boat || c.type === 'roadster',
+        closed = inside ? 1 : open ? 0 : isAircraft(c) ? 2 : 1;
+      glideParam(a.bus.gain, active ? (inside ? 0.45 : closed === 2 ? 0.6 : closed ? 0.8 : 1) : 0, now, 0.4);
+      glideParam(a.cabin.frequency, closed === 2 ? 900 : closed ? (inside ? 1400 : 1800) : 20000, now, 0.25);
       if (!active) return;
       // Lounge music and glasses on CIRRUS's terrace (skyline-bar.js).
       skyBarSound(deltaSeconds);
@@ -215,7 +226,8 @@
       const hour = crowdHour(),
         light = daylight(),
         night = hour > 22 || hour < 5.5;
-      glideParam(a.traffic.gain.gain, (city ? 0.05 : 0.015) + Math.min(0.1, moving * 0.006), now, 0.8);
+      // Up on a roof the near hum thins out and the city's far wash takes over (ambience-beds.js).
+      glideParam(a.traffic.gain.gain, ((city ? 0.05 : 0.015) + Math.min(0.1, moving * 0.006)) * (1 - 0.6 * ambienceBeds.weights.height), now, 0.8);
       // Crowd murmur: louder with more people close by, jittered like speech.
       let people = 0,
         panic = 0;
@@ -227,13 +239,17 @@
       const murmur = Math.min(0.07, people * 0.0022) * (0.75 + Math.random() * 0.5);
       glideParam(a.murmur.gain.gain, murmur, now, 0.12);
       glideParam(a.murmurHigh.gain.gain, murmur * 0.35 * (1 + Math.min(2, panic * 0.4)), now, 0.1);
-      glideParam(a.wind.gain.gain, Math.max(0, weather.wind - 0.35) * 0.06, now, 1.2);
+      // Wind, the city's wash, leaves, insects and the places' own events (ambience-beds.js).
+      updateAmbienceBeds(deltaSeconds, now);
       const clock = a.clock;
       for (const k in clock) clock[k] -= deltaSeconds;
-      // Birds by day (more in parks and near trees), crickets by night.
-      const green = districtAt(player.x, player.y) === 'CENTRAL GARDEN' || !city ? 1.6 : 1;
+      // Birds by day (more in parks, gardens and the county, few up the bare range, few
+      // on a roof), crickets by night. The zone comes from the ear probe (acoustics-audio.js).
+      const w = ambienceBeds.weights,
+        leafy = Math.max(w.green, w.country, w.monarch * 0.8),
+        green = (1 + 0.6 * leafy) * (1 - 0.7 * clamp((w.mountain - 0.6) * 2.5, 0, 1)) * (1 - 0.5 * w.height);
       if (clock.bird <= 0) {
-        clock.bird = randomBetween(2, 7) / green;
+        clock.bird = randomBetween(2, 7) / Math.max(0.3, green);
         if (light > 0.45 && weather.rain < 0.2) birdCall(green * 0.8);
       }
       if (clock.cricket <= 0) {
@@ -245,7 +261,11 @@
         clock.horn = randomBetween(6, 18) * (night ? 2.5 : 1);
         if (city) {
           const a2 = Math.random() * TAU;
-          hornSound({ x: player.x + Math.cos(a2) * 520, y: player.y + Math.sin(a2) * 520, id: Math.floor(Math.random() * 9) }, randomChoice([0.18, 0.3, 0.6]), Math.random() < 0.3);
+          hornSound(
+            { x: player.x + Math.cos(a2) * 520, y: player.y + Math.sin(a2) * 520, id: Math.floor(Math.random() * 9), type: DISTANT_HORN_TYPES[Math.floor(Math.random() * DISTANT_HORN_TYPES.length)] },
+            [0.18, 0.3, 0.6][Math.floor(Math.random() * 3)],
+            Math.random() < 0.3,
+          );
         }
       }
       if (clock.siren <= 0) {
