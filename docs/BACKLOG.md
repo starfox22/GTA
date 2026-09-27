@@ -3,6 +3,12 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## Free roam and HUD (docs/audit/freeroam-sweep.md)
+- Phone (390 px): the car radio unfolds mid-screen for 4 s on getting in, and a toast can sit over it.
+- Touch: toasts and the radio chips name keyboard keys (`keyName` has no touch labels).
+- The demo's mission card counts MISSION 01 / 11 with two jobs open (design question).
+- MIDTOWN, SOUTH BANK, IRONWORKS DOCKS and PALM KEYS · ART DECO have no label on the city map.
+
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 

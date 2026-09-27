@@ -49,11 +49,12 @@ node tools/dev.mjs call brakeTest sedan 100 '{"wet":1}'   # a NAMED console meth
 node tools/dev.mjs keys KeyW,KeyD 3    # simulate(3, keys): game seconds, no drawing (--real: key presses)
 node tools/dev.mjs wait 5              # simulate(5) (--real: wall-clock wait)
 node tools/dev.mjs shot name [--crop x,y,w,h] [--width 480] [--full]  # dist/dev/shots/name.jpg
-node tools/dev.mjs errors | status | reload [--render|--norender] | stop
+node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] | stop
 ```
 
 - With no html, `start` builds `dist/dev/game.html` and `reload` rebuilds it (browser reused;
-  each boot gets a fresh browser context: no saved game or settings carried over). State in
+  each boot gets a fresh browser context: no saved game or settings carried over; `reload
+  --keep` reopens the page in the same context, to check what a save restores). State in
   `dist/dev.json`, log in `dist/dev.log`; the port is per worktree.
 - Default page: `?dev&norender`. **No-render mode** (`NO_RENDER`, render3d.js; honoured only
   with `?dev` or `?test`): no WebGL renderer, `drawWorld()` skipped (game-loop.js); the HUD

@@ -48,6 +48,7 @@ re-auditing it.
 | audit/missions-qa.md | All 16 missions after the world overhaul |
 | audit/physics-flight.md | Physics, combat rules, arsenal, air cover, parachute, aviation |
 | audit/systems-qa.md | Open-world systems after the railway, beach, superyacht, damage and crowd passes |
+| audit/freeroam-sweep.md | Free roam on every island: doors, vehicles, police, services, touch HUD, saves, long idle |
 
 Area docs hold the *why*: contracts, gotchas and decisions the code does not say. Details
 that code or FILEMAP already state belong there, not here. Keep each area doc under ~8 KB;
