@@ -6,7 +6,7 @@
        * the carriageway's edges, quarter points and crown, each at terrainHeight
        * plus SCENIC_RIBBON_LIFT: on the range that is the graded surface the cars
        * ride, beyond it the flat county sheet, so the picture is the contact
-       * surface either way. uv = (offset across, positive left of travel;
+       * surface either way. uv = (offset across, positive right of travel, map y south;
        * distance along), `scenicInfo` = (half-width, left and right asphalt edge,
        * centre line: 0 none, 1 dashed, 2 double solid) and `scenicMarks` = (edge
        * line left, right; 0 across a junction mouth). One shared material draws
