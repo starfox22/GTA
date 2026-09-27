@@ -99,6 +99,8 @@
         )
           // On the ground, or off the edge of a drop (falls-body.js).
           settleFootOnGround();
+        // The gun arm out of a vehicle's window, and a shot waiting for it (driveby.js).
+        updateDriveBy(deltaSeconds);
         // On the volleyball court a click hits the ball instead (beachvolley.js);
         // nothing is fired while thrown off a bike (riders.js).
         if (!volleyTakesFire() && !player.thrown && !player.carjack && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();

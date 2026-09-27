@@ -256,6 +256,8 @@
         };
       },
     });
+    // Drive-bys: driveBy(), driveByArcs(), driveByCheck(), driveByAim() (see driveby.js driveByConsole).
+    addConsoleMethods('vehicles', driveByConsole());
     // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
     // streetProps(), damageStats() (see damage.js damageConsole).
     addConsoleMethods('damage', damageConsole());
