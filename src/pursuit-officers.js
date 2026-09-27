@@ -624,6 +624,9 @@
           sees: !!c.seesPlayer,
           reversals: c.reversals || 0,
           crew: (c.crew || []).filter((o) => o.hp > 0).length,
+          // Where it is driving at (the plan's target) and the next nodes of its road route.
+          goal: c.pursuitPlan?.target ? { x: round(c.pursuitPlan.target.x), y: round(c.pursuitPlan.target.y) } : null,
+          route: (c.route || []).slice(0, 3).map((p) => [round(p.x), round(p.y)]),
         }));
       const foot = officers.map((o) => ({
         unit: o.unit || 'patrol',

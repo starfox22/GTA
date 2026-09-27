@@ -27,6 +27,14 @@ tools/tests/police-witness.mjs, witnesses-monarch.mjs.
 - **Gotcha**: search points snap to the city grid (`roadNear`/`rowNear`) only inside
   `inCityGrid`; off it (county, Monarch Isle) the point is used as is and `copRoute` finds
   the road graph (snapping used to send Monarch searches to the city's corner).
+- **Gotcha** (Monarch Isle responders): units spawn on either carriageway of the divided
+  boulevards, so half drive against the one-way traffic, and most reach Crown Avenue through
+  Crown Circus. A unit used to stall there for seconds: it aimed straight across the circus
+  at the reported spot (a 70-80° turn at speed) into the fountain, took the ring too fast,
+  caught the fountain collider's square corners (it is now boxes inside the round island),
+  shoved an oncoming island car backwards at walking pace, or backed out nose away from the
+  target. See the steering aids in police-and-combat.md; test tools/tests/police-circus.mjs
+  (staged units, `respondingUnit`, `reportCall`).
 - A body found more than 30 s after the killing with the player 630+ units away: the police
   investigate (caption, toast) but nobody is wanted.
 - A unit that comes on the player within 15 s / 320 units of an unreported crime counts it
@@ -55,7 +63,8 @@ tools/tests/police-witness.mjs, witnesses-monarch.mjs.
   `then: 'call'` (fleeStep stops them once clear; `inc.callerDue` reserves the phone),
   otherwise straight into the `call` reaction (`callStep`): phone pose, the opening line and
   then a detail line back to back (`witnessCallLines`), the closing line when the report
-  goes in. The player within `CALL_CUT_DISTANCE` (60) cuts the call (they run and retry);
+  goes in. A `call` reaction gets its `callTime` in `startReaction` however it began (a flee
+  or startle handing over to it used to show 0 s in `witnesses()` until its first step). The player within `CALL_CUT_DISTANCE` (60) cuts the call (they run and retry);
   death ends it; held at gunpoint 2.5 s (`witnessThreatened`) most stay silent 3 min.
 - `inc.callers` is not given back when a caller dies or leaves the street, so the director
   counts live callers (`witnessCallUnderWay`), and only those on stage (in `pedestrians`,

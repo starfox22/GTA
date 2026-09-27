@@ -366,10 +366,15 @@
       return ok;
     }
     function routeToward(c, destination) {
-      if (destination && distanceBetween(c, destination) < 420 && clearSight(c, destination))
-        return destination;
-      // Straight across open ground when the whole line is drivable.
-      if (destination && shortcutTo(c, destination)) return destination;
+      if (destination && roomToTurn(c, destination)) {
+        // Straight there when it is close and in plain sight, or across open
+        // ground when the whole line is drivable. A route planned before the
+        // straight run is stale after it: plan afresh if the roads are needed again.
+        if ((distanceBetween(c, destination) < 420 && clearSight(c, destination)) || shortcutTo(c, destination)) {
+          c.routeTime = 0;
+          return destination;
+        }
+      }
       const moved =
         destination && (!c.routeFor || Math.hypot(c.routeFor.x - destination.x, c.routeFor.y - destination.y) > 90);
       if ((c.routeTime || 0) <= 0 || !c.route?.length || moved) {
@@ -452,7 +457,7 @@
         target = routeToward(c, null);
         // The last leg: straight at the runner once there is a clear line, or
         // across a park or plaza when the ground between is open.
-        if ((d < 380 && c.seesPlayer) || shortcutTo(c, quarry)) target = quarry;
+        if ((d < 380 && c.seesPlayer) || (roomToTurn(c, quarry) && shortcutTo(c, quarry))) target = quarry;
       }
       // Coming at the runner nose to nose: no suicide rams. Brake hard and angle
       // across the lane to make a rolling block the runner has to swerve round.
@@ -490,6 +495,33 @@
         if (probe(-0.42, reach * 0.8)) plan.avoid = 0.55;
         else if (probe(0.42, reach * 0.8)) plan.avoid = -0.55;
       }
+      // Traffic in the path (never the one being chased): slow for it (sooner for
+      // one coming the other way) and aim to pass beside it, on the side it leaves
+      // open, or toward the target when it sits dead ahead.
+      const block = carInPath(c, quarry, Math.max(reach + 20, (speed * speed) / (2 * spec.brake) + 30));
+      plan.blockedBy = block?.car || null;
+      if (block) {
+        plan.wall = Math.min(plan.wall, Math.max(0, block.gap - Math.max(0, block.approach) * 0.6));
+        // (The same car keeps the side first chosen: dead ahead it would flip-flop.)
+        let side =
+          plan.passFor === block.car && plan.passSide
+            ? plan.passSide
+            : Math.abs(block.side) > 3
+              ? -Math.sign(block.side)
+              : normalizeAngle(headingBetween(c, target) - heading) >= 0
+                ? 1
+                : -1;
+        if (probe(0.5 * side, reach * 0.8) && !probe(-0.5 * side, reach * 0.8)) side = -side;
+        plan.passFor = block.car;
+        const fx = Math.cos(heading),
+          fy = Math.sin(heading),
+          off = side * (spec.w / 2 + block.across + 6),
+          past = block.along + 10;
+        plan.passSide = side;
+        plan.target = { x: block.car.x - fy * off + fx * past, y: block.car.y + fx * off + fy * past };
+      }
+      // On the road route: slow in time for the corners ahead (pursuit-steering.js).
+      plan.cornerTop = c.route?.length && target === c.route[0] ? routeCornerSpeed(c, spec) : Infinity;
       // Top speed by tier; a unit far behind and out of sight drives harder.
       plan.top = spec.max * (0.8 + stars * 0.035) * (d > 700 && !crowdInView(c.x, c.y, 100) ? 1.12 : 1);
     }
@@ -510,6 +542,7 @@
       let steer = clamp(da * 3 + plan.avoid * 1.4, -2.2, 2.2),
         desired = plan.top * clamp(1.15 - Math.abs(da) * 0.75, 0.22, 1);
       if (plan.wall < Infinity) desired = Math.min(desired, 40 + plan.wall * 1.1);
+      desired = Math.min(desired, plan.cornerTop ?? Infinity);
       if (plan.onFoot && distanceBetween(c, player) < 320) {
         // Pull up short of a runner on foot so the crew can get out.
         desired = clamp((distanceBetween(c, player) - 150) * 1.5, 0, 150);
@@ -528,19 +561,27 @@
         desired = Math.min(desired, plan.quarrySpeed * 0.95);
       // Yaw needs rolling wheels: a stopped car cannot spin on the spot.
       steer *= clamp(Math.abs(along) / 55, 0.3, 1) * (along < -5 ? -1 : 1);
-      // Stuck: wanting to go, not going.
-      if (desired > 60 && Math.abs(along) < 14 && physicsClock - (c.spawnedAt || 0) > 1)
+      // Stuck: wanting to go, not going; or nose to nose with a car, shoving it.
+      const pressing = plan.blockedBy && plan.wall < 3 && desired > 30 && Math.abs(along) < 30;
+      if (((desired > 60 && Math.abs(along) < 14) || pressing) && physicsClock - (c.spawnedAt || 0) > 1)
         c.pinnedFor = (c.pinnedFor || 0) + stepSeconds;
       else c.pinnedFor = 0;
       if (c.pinnedFor > 1.1) {
         c.pinnedFor = 0;
         c.reverseUntil = physicsClock + randomBetween(0.8, 1.2);
-        c.reverseSteer = da > 0 ? -1 : 1;
+        // The yaw follows the steer whichever way the car rolls: backing out, the
+        // nose swings toward the target (or the open side of a car in the way).
+        // It used to swing away, so the unit then drove off the wrong way.
+        c.reverseSteer = pressing ? plan.passSide || 1 : da > 0 ? 1 : -1;
         c.reversals = (c.reversals || 0) + 1;
       }
       return {
         steer,
-        acceleration: clamp((desired - along) * 3, -spec.brake * (plan.onFoot ? 1.2 : 1.05), engineAcceleration(spec, along)),
+        // Over the speed a corner ahead allows: brake in earnest, the plan counts on it.
+        acceleration:
+          along > (plan.cornerTop ?? Infinity) + 5
+            ? -spec.brake * 1.05
+            : clamp((desired - along) * 3, -spec.brake * (plan.onFoot ? 1.2 : 1.05), engineAcceleration(spec, along)),
         drag: 0,
       };
     }

@@ -237,6 +237,10 @@
       } else startReaction(p, 'flee', randomBetween(2.5, 4), player, inc, { then: 'call' });
       inc.callerDue = p;
     }
+    /* The talking part of a call reaction lasting `dur` (it ends 2.5 s after the report goes in). */
+    function witnessCallLength(dur) {
+      return clamp(dur - 2.5, CALL_SECONDS[0], CALL_SECONDS[1]);
+    }
     function beginWitnessCall(p, inc) {
       const callTime = randomBetween(CALL_SECONDS[0], CALL_SECONDS[1]);
       startReaction(p, 'call', callTime + 2.5, { x: inc.x, y: inc.y }, inc, { callTime });
@@ -257,7 +261,7 @@
           return false;
         }
         r.counted = true;
-        r.callTime ??= clamp(r.dur - 2.5, CALL_SECONDS[0], CALL_SECONDS[1]);
+        r.callTime ??= witnessCallLength(r.dur);
         r.dur = Math.max(r.dur, r.callTime + 2.5);
         witnessStats.calls++;
       }

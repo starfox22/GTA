@@ -22,5 +22,6 @@
      * carry `armyUnit` (not `military`, which is Fort Sentinel's own garrison).
      */
     // @include src/pursuit-dispatch.js
+    // @include src/pursuit-steering.js
     // @include src/pursuit-officers.js
     // END SUBSYSTEM: src/pursuit.js

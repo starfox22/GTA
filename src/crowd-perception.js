@@ -245,6 +245,9 @@
         inc: inc || null,
         ...extra,
       };
+      // A call knows its length from its first moment, however it began (a flee or
+      // a startle handing over to it included): witnesses() read 0 s until callStep ran.
+      if (kind === 'call') p.react.callTime ??= witnessCallLength(dur);
       p.flee = Math.max(p.flee || 0, 1);
       if (from) p.threat = { x: from.x, y: from.y };
       if (inc && ROLE_COUNTS[kind]) inc[ROLE_COUNTS[kind]]++;

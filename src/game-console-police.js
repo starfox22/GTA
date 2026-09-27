@@ -132,14 +132,31 @@
       // under way (who, about what, how far through), the player's incidents and
       // their witnesses, the response to the last report and running totals.
       witnesses: () => witnessReportData(),
+      // A 911 call that got through about (x, y) (witnesses.js reportedCrime): one
+      // star, the search on that spot, the first unit sent after `eta` seconds.
+      // Returns the response (witnesses().response).
+      reportCall(x = player.x, y = player.y, kind = 'gunfire', eta = 1.5) {
+        crime(1, { x, y, kind, eta, note: false });
+        return witnessReportData().response;
+      },
+      // A crewed patrol cruiser answering the call from (x, y), pointing `heading`
+      // (radians) and already doing `speed` units/s (policeReport shows it by id).
+      // Null when the spot, or the road 40 and 80 units ahead, is not clear.
+      respondingUnit(x, y, heading = 0, speed = 0) {
+        if ([0, 40, 80].some((d) => !canSpawnCar('police', x + Math.cos(heading) * d, y + Math.sin(heading) * d, heading, 4))) return null;
+        const c = makeCar('police', x, y, heading, true);
+        Object.assign(c, { speed, vx: Math.cos(heading) * speed, vy: Math.sin(heading) * speed, routeTime: 0 });
+        return { id: c.id, x: Math.round(c.x), y: Math.round(c.y) };
+      },
       // Stage a witness test round the player: nobody else within `radius` (people,
       // officers and police vehicles removed, stars, calls and unreported crimes
       // cleared), a victim standing 60 units in front of the player, `count`
       // onlookers 170+ units off to the side facing the victim, and with `police`
       // a crewed patrol car 180 units behind the player. `lookAway` stands them
-      // 120 units off facing away (they notice a body, not a quiet killing).
+      // 120 units off facing away (they notice a body, not a quiet killing);
+      // `traffic` removes every other road vehicle within `radius` as well.
       // Returns the positions.
-      witnessStage(count = 1, police = false, radius = 1100, lookAway = false, isle = false) {
+      witnessStage(count = 1, police = false, radius = 1100, lookAway = false, isle = false, traffic = false) {
         if (player.car) exitCar();
         clearPolice(false);
         const far = (e) => distanceBetween(e, player) >= radius;
@@ -147,7 +164,7 @@
         for (let i = officers.length - 1; i >= 0; i--) if (!far(officers[i])) officers.splice(i, 1);
         for (let i = vehicles.length - 1; i >= 0; i--) {
           const c = vehicles[i];
-          if (c !== player.car && (c.type === 'police' || c.cop || c.lawUnit || c.airUnit) && !far(c)) vehicles.splice(i, 1);
+          if (c !== player.car && (c.type === 'police' || c.cop || c.lawUnit || c.airUnit || (traffic && !isBoat(c) && !isAircraft(c))) && !far(c)) vehicles.splice(i, 1);
         }
         crowd.incidents.length = 0;
         forgetWitnessedCrimes();
