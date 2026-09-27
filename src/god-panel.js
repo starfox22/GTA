@@ -391,7 +391,8 @@
         units = () => vehicles.filter((c) => c.cop && c.hp > 0).length;
       const report = { before, unitsBefore: units(), baseAlarm: militaryAlertUntil > gameTime };
       if (before > 0) clearPolice(true);
-      for (const inc of crowd.incidents) if (inc.attacker === player) inc.reported = true;
+      // Calls in progress come to nothing; unreported crimes are forgotten (witnesses.js).
+      forgetWitnessedCrimes();
       if (militaryAlertUntil > gameTime || militaryLockdownUntil > gameTime) {
         militaryAlertUntil = militaryLockdownUntil = 0;
         militaryChallenge.level = 0;

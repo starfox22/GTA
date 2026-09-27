@@ -366,7 +366,7 @@
         militaryAlarmStartedAt = gameTime;
         announce('FORT SENTINEL · INTRUDER ALERT', 'BASE LOCKDOWN', 2.8);
         tell('Sirens across the base: the gates are closing and the garrison is responding. Get out or dig in.', 5);
-        crime(3);
+        crime(3, 'seen');
         militaryChallenge.level = 3;
       }
       militaryAlertUntil = gameTime + 22;

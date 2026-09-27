@@ -245,7 +245,7 @@
           const target = missionState.checkpoints[missionState.checkpoint];
           if (player.car === missionState.car && distanceBetween(player, target) < 70) {
             missionState.checkpoint++;
-            crime(0.9);
+            crime(0.9, 'seen');
             noise(0.08, 0.2, 1800);
             if (missionState.checkpoint >= 8) {
               setStage(9, VINNY_DEPOT.inside, 'DELIVER THE CAR TO VINNY’S DEPOT', 'vinny', 'That’s the route. Now lose them and bring it home.');

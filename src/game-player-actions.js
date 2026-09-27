@@ -315,8 +315,10 @@
           return;
         }
         if (c.occupied) {
-          ejectDriver(c, 'hijack');
-          crime(0.8);
+          const driver = ejectDriver(c, 'hijack');
+          crime(0.8, 'carjack');
+          // Once back on their feet and clear of the player they phone it in.
+          witnessReport(driver, 'carjack', c.x, c.y);
         }
         enterVehicle(c);
         return;

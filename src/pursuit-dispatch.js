@@ -105,19 +105,25 @@
      * REINFORCEMENTS
      * One unit at a time, on the tier's cadence, at a road junction 520-1250
      * units away and outside the camera. Interceptors are placed ahead of a
-     * moving runner so they come at them rather than trail behind.
+     * moving runner so they come at them rather than trail behind. While the
+     * police are searching (a witness report, a lost runner) units come in round
+     * the place they are searching, not round the player they have not found.
      */
+    function pursuitCentre() {
+      return searchActive && lastSeen ? lastSeen : player;
+    }
     function pursuitSpawnPoint(ahead) {
-      const heading = Math.atan2(player.car?.vy || 0, player.car?.vx || 0),
-        moving = Math.hypot(player.car?.vx || 0, player.car?.vy || 0) > 60,
+      const centre = pursuitCentre(),
+        heading = Math.atan2(player.car?.vy || 0, player.car?.vx || 0),
+        moving = centre === player && Math.hypot(player.car?.vx || 0, player.car?.vy || 0) > 60,
         points = [];
       for (const x of ROAD_CENTERS)
         for (const y of ROAD_ROWS) {
-          const d = Math.hypot(x - player.x, y - player.y);
+          const d = Math.hypot(x - centre.x, y - centre.y);
           if (d < 520 || d > 1250 || crowdInView(x, y, 140)) continue;
           if (inHarbor(x, y, 100) || harborPoliceProtected(x, y, 60) || !groundAt(x, y, 30)) continue;
           if (solid(x, y, 30) || vehicles.some((c) => Math.abs(c.x - x) < 70 && Math.abs(c.y - y) < 70)) continue;
-          const toward = Math.cos(normalizeAngle(Math.atan2(y - player.y, x - player.x) - heading));
+          const toward = Math.cos(normalizeAngle(Math.atan2(y - centre.y, x - centre.x) - heading));
           points.push({ x, y, score: (ahead && moving ? toward * 2 : 0) + seededRandom() });
         }
       points.sort((a, b) => b.score - a.score);
@@ -141,12 +147,13 @@
         return null;
       }
       const build = UNIT_BUILDS[kind],
+        centre = pursuitCentre(),
         count = vehicles.filter((c) => c.cop && c.hp > 0 && !c.blockade && !c.airUnit).length,
         p = pursuitSpawnPoint(kind === 'patrol' ? count % 2 === 1 : kind !== 'army').find((q) =>
-          canSpawnCar(build.type, q.x, q.y, headingBetween(q, player), 4),
+          canSpawnCar(build.type, q.x, q.y, headingBetween(q, centre), 4),
         );
       if (!p) return null;
-      const a = headingBetween(p, player);
+      const a = headingBetween(p, centre);
       const c = makeCar(build.type, p.x, p.y, a, kind === 'patrol', build.color);
       Object.assign(c, {
         cop: true,
@@ -170,7 +177,7 @@
       c.vx = Math.cos(a) * 120;
       c.vy = Math.sin(a) * 120;
       c.maxhp = c.hp = Math.round(c.hp * build.hp);
-      c.route = copRoute(c);
+      c.route = copRoute(c, centre === player ? null : centre);
       c.routeTime = 2;
       pursuitStats.spawned++;
       if (kind === 'swat') policeRadioEvent('swat', c);
@@ -198,6 +205,7 @@
       // Patrol cars already cruising nearby join the pursuit before any new unit
       // is sent: the response starts with whoever is closest.
       if (have.patrol < tier.patrols && !offCityStreets(player.x, player.y)) {
+        const centre = pursuitCentre();
         let nearest = null;
         for (const c of vehicles)
           if (
@@ -209,8 +217,8 @@
             !c.crewLost &&
             !c.crewDeployed &&
             c !== player.car &&
-            distanceBetween(c, player) < 1100 &&
-            (!nearest || distanceBetween(c, player) < distanceBetween(nearest, player))
+            distanceBetween(c, centre) < 1100 &&
+            (!nearest || distanceBetween(c, centre) < distanceBetween(nearest, centre))
           )
             nearest = c;
         if (nearest) {
