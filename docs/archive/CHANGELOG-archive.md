@@ -7,6 +7,154 @@ The first block holds the full notes of the changes made after 30.0.0 and before
 changelog-fragment convention (docs/changes/); docs/CHANGELOG.md lists them one line
 each under "Unreleased" until the next release folds them in.
 
+## 30.0.0 — The islands rearranged, AAA pass two
+
+Settings, controls and HUD (controls.js, settings.js, hud.js)
+- A settings screen from the title and pause menus: Graphics (quality tier, FPS counter,
+  character see-through), Audio (master, effects, radio and voice volumes), Gameplay (NPC
+  chatter, minimap, control hints) and Controls (touch mode, every key rebindable with clash
+  detection and swap, reset to defaults). Everything is saved and applies live.
+- Aircraft climb and descend moved to T / G (Shift is sprint, Space the handbrake).
+- A new HUD: radio and weapon boxes rest as small chips and pop open on a change or on hover
+  with animated transitions; a foldable minimap that zooms with the wheel or a pinch;
+  context key hints; a new animated title screen. `godmode` unlocks every mission in the picker.
+
+Radio (car-radio.js)
+- Three new stations with licensed tracks: VELVET 91.5 (lounge jazz), PALMS 95.9 (island
+  grooves) and BLOCK 101.7 (lo-fi beats); stations play playlists and every station has a
+  synthesized ident. Music streams from files beside the page in the published build
+  (`tools/build.py --split-media`).
+
+Combat and police (heat.js, pursuit.js, wounds.js; docs/audit/combat-qa.md)
+- Heat from every crime and kill (civilians, officers, SWAT, soldiers, destroyed police
+  vehicles) drives the stars at 12 / 32 / 72 / 125, one flashing step at a time; a heat meter
+  and body count on the HUD; heat cools only out of sight.
+- Response per star: patrols that arrest at 1, PIT/flank/box cruisers at 2, a helicopter
+  marksman and roadblocks at 3, SWAT vans and two helicopters at 4, federal agents and a tank
+  from Fort Sentinel at 5; reinforcements arrive off-camera ahead of the player; a radar search
+  area with sight cones; police launches and a helicopter chase boats from 2 stars; cruisers
+  cut across open ground and use the county road graph.
+- BUSTED as well as WASTED; hit markers, headshots, incoming-fire arcs; hit reactions by body
+  area, limping, blood trails, directional death falls and slumps against walls, downed
+  officers dragged to cover. 5-star physics about 25% cheaper.
+
+Stadium (sports-fixtures.js, sports-audio.js)
+- Players, referees and stewards can be shot, stabbed and run over like anyone else; the match
+  is abandoned and the stands empty. Walk onto the pitch through the board gaps, dribble the
+  ball and press E to kick (Shift for power): a goal lights every board, pays out and brings
+  the stewards. Six scoreboards; 11 football clubs and 6 basketball teams with kits and crests
+  on a daily fixture list; procedural crowd sound.
+
+North Point and signage (skyline.js, skyline3d.js, signage3d.js)
+- The financial district is a Moscow-City-style cluster of 18 unique supertall towers
+  (twisting, stepped copper, twin sails, stacked blocks, curved, needle, crown, diagrid...) on
+  landscaped plazas with lit crowns and aircraft lights.
+- Signage lit as real neon, lightboxes and channel letters with bloom and flicker, LED
+  billboards that cycle ads, marquee bulbs, light spill on the street and reflections in rain.
+
+Bridges and the sailing liner (bridges3d.js)
+- Every bridge has its own design: green steel truss (Keys Bridge), causeway with a bascule
+  span (Palm Sound), white cable-stayed A-pylon (East Bay), red suspension bridge (South Bay),
+  LED network arch (Sunset Pier) and distinct county crossings, with lighting and collision.
+- The MS Meridian Star sails a 19-minute loop round the islands with a port call, wake, horn
+  and a deck the player can ride.
+
+Visual fixes
+- Blood stays dark red at every hour; the see-through cutaway only opens a small hole in a
+  roof directly over the player (and can be turned off); boats leave real Kelvin wakes, foam
+  and spray in the sea (wakes3d.js); no camera jolt under bridges; the half-screen milky veil
+  (cloud-shadow plane cut by the camera's near plane) is gone; the player gets a rim light at
+  night; Blue Hour rooftop plants no longer sway.
+
+Streets and collision (docs/audit/streets-collision-qa.md)
+- Sea railings stand on the quay edge, block people and open at ladders and gangways; street
+  ends stop square at a kerb; no painted turning circles, no district boards over the road; stop
+  lines, full-width crossings and bus stop boxes; street furniture stops the player; long
+  steps are sub-stepped so railings can't be skipped. The layout audit checks all of it.
+
+Graphics review and performance (docs/audit/graphics-review.md)
+- Daylight balanced into the tone curve (no more washed-out noon, shadows read), a warm strong
+  sun at golden hour, glass towers that reflect the sky, richer lawns, rippling park water,
+  a calmer sea from the air, trees and flower beds along Battery Park, picnics on the Great
+  Lawn, steel garage roofs, no map labels painted on the lawns.
+- The district name appears once: a gold reveal on the location block top left.
+- Draw calls: shared facade materials, merged building parts and instanced theme park rides
+  (a third fewer draws from the helicopter and at Sunset Pier); match-day players cast torso
+  shadows only (the stadium's shadow pass halved); car wheels merged.
+- AUTO graphics adapts to the frame rate (dynamic resolution, then a tier down); shader
+  compile stalls removed (no info-log read-back, programs compiled behind the title
+  screen); ~250 MB of baked canvas bitmaps freed after upload; faster boot.
+
+Marea Beach Club (beachclub.js, beachclub-audio.js, beachclub3d.js; SOURCE_GUIDE section 4)
+- On the beach-club plot at the west end of Palm Keys Beach: a street forecourt with a
+  snaking roped queue, red carpet, bronze portal and neon sign; a stage with an LED wall and
+  speaker stacks; an LED dance floor under a lighting truss; the main bar under white sails;
+  a roped VIP terrace; daybeds and cabanas; an infinity pool with a swim-up bar; a sunken fire
+  lounge; a deck with a gate onto the club's own sand, sunbeds and parasols.
+- Social club 09:30-18:30 (loungers, swimmers, bar guests, waiters with trays, a balearic
+  set), sunset sessions with a setup crew, a nightclub 21:45-04:15 (a packed floor dancing to
+  the beat, DJ and MC on stage, moving heads, lasers, strobe, searchlights), closing with
+  taxis at the kerb, cleaners at dawn. Procedural music on a look-ahead scheduler, muffled
+  by the wall from the street and open inside.
+- The door: bouncers and a host work the line with spoken exchanges (let in, turned away,
+  people walking off complaining); the player pays $40 cover or buys a $250 VIP band with E.
+  Gunfire empties the club through the door and the beach gate; the bouncers hold the door,
+  call it in and shove the shooter away.
+- Crowd: seven beat-synced dance styles and a floor-wide jump on the drop; swim, lounge, DJ,
+  bartend, tray, drink, sparkler, sweep, stop and shove poses; cocktail, tray and bottle props.
+  `DeadEndCity.beachClub()` reports the club.
+
+Sunset Pier resort (SOURCE_GUIDE section 4)
+- The island is a Gulf-style resort: main gate at the bridge, the Fountain Lagoon with a
+  musical fountain show (three choreographies to procedural Hijaz-mode music, hourly after
+  dark), fireworks two nights in three at 21:00, the crescent Sunset Palace hotel, a beach
+  club, palm promenades, a bus bay by the car park.
+- The Falcon: a 1.47 km, 64 m steel coaster (125 km/h) with a lift, a 72-degree first drop over
+  the shore, loop, camelback, overbanked turn, heartline roll, corkscrew and helix, banked for
+  the speed the train really carries, with supports, station, queue hall and a seven-car
+  train of riders running all day. Ride it from the platform (E); E cycles chase, front seat
+  and trackside cameras.
+- The Sunset Eye: a 110 m observation wheel on twin A-frame legs with cable spokes, 48 level
+  glass capsules and LED shows at night; ride one turn from the terminal.
+- Swing ride, drop tower, carousel, teacups, dodgems, the Arabian Nights dark ride, the Wadi
+  Splash log flume with splashes, a souk food court and kiosks; guests walk the promenades and
+  queue for the rides; riders scream (procedural voices).
+
+World layout (docs/audit/world-layout.md, SOURCE_GUIDE section 4)
+- West to east: Palm Keys (the tropical island) across Palm Sound from Northbank, Northbank
+  in the middle, Ridgeline's forest and mountains across a Marlow Bay now 2400..2700 wide.
+  The Sunset Pier amusement park has its own island north of the reclamation.
+- Palm Keys moved west and was reflected so Ocean Drive and its strand face the open sea;
+  every place, the Blue Hour, Vinny's depot, the casino, jetties, gangs and mission points
+  moved with it. The public beach (Palm Keys Beach, formerly Southport Beach) is on the
+  island's south shore, with a 400 x 300 beach-club plot reserved at its west end.
+  Northbank's south shore is a sea wall with Battery Park.
+- Sunset Pier's rides stand in the east half of the new island, turned to face the bridge;
+  a 1400 x 900 attraction ground is reserved in the west half.
+- Every link is a bridge in one list (`BRIDGES`): the Keys Bridge and Palm Sound Causeway,
+  the East Bay Crossing and South Bay Bridge (with the new Foothill Road), the Sunset Pier
+  Bridge, and the county's four. Decks, rails, pylons, roadblock cuts, cover and the route
+  graph all come from it.
+- The world box and the city frame grew west and north (`WORLD_LEFT`, `CITY_LEFT`,
+  `CITY_RIGHT`); maps, water, ground sheets and the night light map follow.
+- Fixed on the way: the airport test swallowed all of southern Palm Keys; Palm Grill was
+  never built (Palm Auto Paint's lot deleted it); collinear roads (a street over a bridge)
+  never joined in the route graph; long bridges were invisible in the 2D view.
+- Rush Hour (390 s) and Repo Man (660 s) clocks grew with the longer crossings.
+  `DeadEndCity.route(x, y)` reports the GPS route.
+
+Fort Sentinel (military.js, base3d.js)
+- The restricted base is rebuilt as a working coastal army air base: double razor-wire fence,
+  eight watch towers with night searchlights, a fortified main gate (funnel, guard booth,
+  canopy, drop arms, anti-ram bollards, sliding gates), HQ, barracks, mess hall, clinic, motor
+  pool, containers, fuel depot, ammunition bunkers, comms mast, radome, radar, water tower,
+  rifle range, obstacle course, parade ground and flags, hangars, control tower, helipads and a
+  runway, floodlights, CCTV, sandbag nests, camouflage nets and signage, on its own ground sheet.
+- Garrison life: gate MPs who challenge and then fire, tower sentries, foot patrols, patrol
+  jeeps on the perimeter road, a platoon drilling by day, range practice, supply trucks
+  checked through the gate. Alarm: siren, PA, lockdown, QRF jeeps and crewed armour respond.
+- New drivable jeep, APC and army truck; the tank model is merged into a few meshes.
+
 ## After 30.0.0 (unreleased) — sea life: dolphins, gulls and a great white
 
 sealife.js, sealife-audio.js, sealife3d.js (SOURCE_GUIDE "Sea life").
@@ -107,6 +255,7 @@ reach their governed maximum, which the physics holds at `topKmh`):
 | BRUTINI SVJ (sold new) | $520,000 | 759 hp · 720 Nm | 6.5 V12 · AWD | 4.94 m · 1.53 t | 2.8 s (spec) | | 350 |
 
 Models: 20-28 draw calls, 3-4 shadow casters and 7.3-10.2k triangles each (`carModels`).
+
 ## After 30.0.0 (unreleased) — brakes, ABS, stability and traction control, Settings · Driving
 
 The audit (before, measured with the new `DeadEndCity.brakeTest`): the brakes were a constant
@@ -334,6 +483,7 @@ now only say what lies where; the ground shader draws the surfaces themselves, c
   220 km/h).
 - LOW keeps a cheap path (the sheet, one detail sample, the kerb, the marks).
   `DeadEndCity.groundDetail()` reports the ground data and the tufts.
+
 ## After 30.0.0 (unreleased) — the Ridgeline mountain villages and the 4x4 clubhouse
 
 The Ridgeline island has its own architecture now (mountain-village.js, mountain-village3d.js,
@@ -447,6 +597,7 @@ look alike, and no two trees of a species are the same.
   view, and one plain crown per tree in the far city.
 - **Console**: `DeadEndCity.vegetation()` (species counts, tree draws and triangles in view),
   `DeadEndCity.treeLineup()` (one of every species, for inspection).
+
 ## After 30.0.0 (unreleased) — the public demo build, and mission 1's warehouse ending
 
 - **Public demo** (`DEMO_BUILD = true` at the top of game.js; campaign.js PUBLIC DEMO): normal
@@ -696,6 +847,7 @@ base3d.js, parachute3d.js, flight-view3d.js, lighting3d.js)
   machine (`crowdBenchmark`).
 - Console: `characterLineup(stance, spacing)`, `inspectView(yaw, pitch, lift)`,
   `crowdStats(byPart)`, `crowdBenchmark(frames)`; `closeUp` goes to 24; `scaleReport().crowd` reads the rig's statures.
+
 ## After 30.0.0 (unreleased) — the 4x4 club, trail mud and the hill climb
 
 World (offroad.js, offroad3d.js, terrain.js, county3d.js)
@@ -1078,6 +1230,7 @@ South Coast Cycle bike share (cycles.js, cycles3d.js)
   breakables from merged vertex-coloured parts (one instance per bike), a handful of draws per
   map cell. Every size follows the bicycle's length (`SHARE_BIKE_LENGTH`) or the metre.
 - `DeadEndCity.bikeShare()` (network, nearest station, rent/dock log), `DeadEndCity.bikeStation(id)`.
+
 ## After 30.0.0 (unreleased) — a 90s volume knob, the radio at 100 by default
 
 Radio volume (car-radio.js RADIO VOLUME, shell.html, settings.js)

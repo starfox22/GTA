@@ -638,7 +638,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
 
-- `src/ui/build-header.html`   364 — Dead end city — readable development / review build 30.0.0: Open this HTML directly to play offline.
+- `src/ui/build-header.html`   364 — Dead end city — readable development / review build 0.9.0: Open this HTML directly to play offline.
 - `src/ui/base.css`   598 — styles: :root, body, button, button:focus-visible, …
 - `src/ui/touch-controls.css`   312 — Compact dashboard radio: presets stay within reach without covering the road ahead.
 - `src/ui/casino-transit.css`   201 — styles: #casinoTable, .roulette-top, .roulette-top canvas, .roulette-bank, …
