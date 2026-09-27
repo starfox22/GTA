@@ -32,7 +32,7 @@ The living city in free roam (docs/areas/people-and-crowd-living-city.md).
 | `trafficStreaming(on)` | Switch the streamer on or off (A/B measurements); returns trafficReport() |
 | `sirenPass(behind, gap)` | On the street the player stands on: an ambulance on a run `behind` units back and a traffic sedan `gap` units ahead of it in its lane, both heading along the street |
 | `sirenPassState()` | Both vehicles of the siren pass (km/h, `lane` offset right of the centre line, along), how long since the sedan last gave way, `passed` |
-| `medicReport()` | The ambulance service: jobs, revived, lost, aborted, `last`, cooldown, and the job under way (phase driving / scene / treat / outcome / leave, the ambulance, its siren, leg, `desiredKmh`, what stands `ahead`, the medics with distance to the victim, pose, reaction, boarded) |
+| `medicReport()` | The ambulance service: jobs, revived, lost, aborted, `last`, cooldown, and the job under way (phase driving / scene / treat / outcome / leave, the ambulance, its siren, leg, `desiredKmh`, `heldBy` (car / person / player), what stands `ahead`, the medics with distance to the victim, pose, reaction, boarded) |
 | `medicTest(x, y, revive)` | A body at (x, y) (default 60 units along the pavement from the player), dead 12 s, and an ambulance sent at once; `revive` forces the outcome |
 | `streetEvents()` | Street events: staged, caught, escaped, seconds to the next try, whether one is `allowed` here now, `last`, the one under way (thief and victim, the gap) |
 | `snatchTest()` | Stage a bag snatch round the player now (null `active` when no victim with a bag is in view or no thief close by) |
