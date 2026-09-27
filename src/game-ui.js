@@ -300,6 +300,8 @@
       const bikeShare = gameMode === 'play' && !rideSkipActive() ? bikeShareOffer() : null;
       // A passenger ride that can be skipped offers that first (ride-skip.js).
       const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
+      // Over the body of someone who carried a gun (ammo-supply.js).
+      const loot = gameMode === 'play' && !c ? lootPrompt() : null;
       // Thrown off a bike (riders.js): nothing to offer until back on their feet.
       if (gameMode === 'play' && (rideSkipActive() || player.thrown)) prompt = '';
       else if (skip) {
@@ -339,10 +341,9 @@
           } else if (garagePrompt(c) !== null)
             // The price at the door (garages.js PRICE LIST); E skips the show.
             prompt = garagePrompt(c);
-        } else if (lootPrompt()) {
-          // Over the body of someone who carried a gun (ammo-supply.js).
-          prompt = lootPrompt().text;
-          promptId = lootPrompt().id;
+        } else if (loot) {
+          prompt = loot.text;
+          promptId = loot.id;
         } else if (northPointKeyPrompt()) {
           // North Point Key: a tower lift, the CIRRUS bar (skyline-lift.js, skyline-bar.js).
           const key = northPointKeyPrompt();

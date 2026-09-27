@@ -66,7 +66,7 @@
       if (!w) return (p.loot = null);
       const fired = (p.muzzleAt ?? p.lastShotAt) !== undefined,
         ammo = arms.loose
-          ? Math.round(randomBetween(0.2, 1) * w.clip)
+          ? Math.max(3, Math.round(randomBetween(0.2, 1) * w.clip))
           : fired
             ? Math.max(1, Math.round(randomBetween(0.3, 1) * w.clip))
             : w.clip,
