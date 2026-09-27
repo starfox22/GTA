@@ -233,6 +233,10 @@
       }
       const seen = policeHaveEyesOnPlayer();
       if (seen) {
+        // Dispatch says so when the search finds the player again, and when the
+        // player they are watching turns up in another car or on foot.
+        if (searchActive && wantedStars >= 1) policeRadioEvent('spotted', player);
+        else policeDescribeSuspect();
         lastSeen = {
           x: player.x,
           y: player.y,
@@ -426,6 +430,8 @@
       timed('police:roadblocks', () => updateRoadblocks(deltaSeconds));
       updateDepotDoors(deltaSeconds);
       updateCrowdDensity(deltaSeconds);
+      // Traffic round the player, sirens, ambulances, street events (livingcity.js).
+      timed('citylife', () => updateLivingCity(deltaSeconds));
       timed('police:air', () => updateAirPolice(deltaSeconds));
       updateWounds();
       for (let i = bloodPools.length - 1; i >= 0; i--)

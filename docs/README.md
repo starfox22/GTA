@@ -14,13 +14,15 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft, vehicle models and their contracts |
 | areas/vehicles-and-driving-handling.md | Steering and grip, brakes and assists, drifts and the handbrake (`driftTest`) |
 | areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles, the character rig |
+| areas/people-and-crowd-living-city.md | Free roam's living city: traffic streamed round the player by hour and district, sirens and pulling over, ambulances and paramedics, street events |
 | areas/police-and-combat.md | Heat and stars, police response, shooting and wounds, carjacking, overhead cover, damage and breakables |
 | areas/police-and-combat-witnesses.md | Witnesses and 911 calls: who calls, the call and its bubbles, the response to a report, `witnessReport` |
 | areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, saves, the demo build, god mode, ride skip |
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
 | areas/audio-soundscape.md | Free-roam sound: the ear probe and the room (slap-back, echo, occlusion), ambience beds by place, footsteps by surface, horns, doors, tyre ground |
 | areas/rendering.md | Cameras and view, draw-call rules, buildings and signs, ground, water, wet roads, weather, tiers |
-| areas/rendering-lighting.md | HDR pipeline and post passes, sun, night light map, vehicle lamps, searchlights, the cutaway |
+| areas/rendering-lighting.md | HDR pipeline, post passes and the film grade, sun and time of day, night light map, searchlights, the cutaway |
+| areas/rendering-vehicle-lights.md | Vehicle lamps: CAR LAMPS, the drive light map, beam shadows, beams on slopes and the terrain horizon |
 | areas/rendering-clouds.md | The cloud layer's altitude by weather and area (`cloudBaseAt`), the march, the veil, wisps and lens in cloud, cloud shadows |
 | areas/ui-and-settings.md | Input actions, settings, HUD and the interaction prompt, touch, bike share |
 | areas/testing-and-console.md | Checks, the headless browser and slots, the dev server, writing tests, tours |

@@ -3,6 +3,14 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## The living city (livingcity*.js)
+- Traffic streams only on the city grid: Monarch Isle and the county keep their own fixed traffic; North Point Key gets only its few visitors (livingcity-key.js: one lane each way, no overtaking, no sirens pull-over on the Key).
+- Signals cycle every 24 s on a 64 m grid, so about half the traffic in the ring stands at a light or in its queue at any moment (`trafficReport().held`).
+- Paramedics walk straight at the victim (with a sidestep); round a building corner they may work from up to 30 units off. The revive is a mercy of the game (GTA's paramedics did it too), not a medical outcome.
+- No stretcher or sheet: a lost victim stays where they fell until the crowd streamer clears the dead out of view.
+- The bag snatch's tackle is proximity only (no tackle animation); punching or shooting the thief is still an assault.
+- Performance (headless): physics +0.1-0.7 ms per 60 fps frame with ~40 more cars moving round the player (`trafficBenchmark`).
+
 ## Soundscape (acoustics-audio.js, ambience-beds.js, footsteps-audio.js, vehicle-foley-audio.js, bullets-audio.js)
 - The room's returns (reverb, slap, echo) are on the effects bus: a tunnel's engine boom and footsteps' reflections follow the Effects slider, not Engines.
 - Ambience events are not placed by occlusion or sent to the room (a ship's horn has no echo); zones are coarse (districts, park rectangles, terrain height).
@@ -29,8 +37,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - No shafts on LOW/MEDIUM; no lens on LOW; the cloud sound has no test.
 
 ## North Point Key (skyline*.js, skyline3d-*.js)
-- East of the city frame: the night lamp map (and signSpill pools) does not reach its ground; it is lit by glows only.
-- City traffic never drives onto the Key (the street ends at the circle); no valet cars circle it.
+- Key visitors pause by the valet but nobody gets out (no guest walks in, no valet takes the car).
+- A Key visitor waits for anyone standing on its path (the player on the circle holds the ring); it never steers round a person, and crowd-traffic's honk only moves people whose reaction is `watch`.
 - The 2D fallback draws its ground tile and towers but not its palms or furniture.
 - CIRRUS guests are spawned per visit; the sky bar has no pool (the oval deck is 23 x 15 m).
 
@@ -71,7 +79,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
   look on a real GPU at speed in the rain and on the beach.
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
-- Windows glow only faintly at night from the default camera height; lamp pools still strong.
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.
 - The Last Witness now lands at the Northridge ranger station pad: play the mission through once.
 
@@ -82,12 +89,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Helicopters (helicopter3d*.js)
 - "POLICE" on the tail boom is partly hidden from low side angles; the door seal is small.
-- Tinted canopy glass looks very dark in daylight close-ups.
+- Canopy glass was made less metallic (0.55) so the sky shines in it: re-check daylight close-ups on a real GPU.
 
 ## Ground and trees (ground-*.js, surfaces3d.js, vegetation3d*.js)
-- The beach keeps the old painted speckle under the ripples.
 - District paving is chosen on a 64-unit grid, so the style can switch mid-pavement at a boundary.
-- Sunset Pier and Fort Sentinel have no kerb distance field (no kerb stones or lane wear).
 - Sea sun glitter looked very speckled in headless shots: check on a real GPU.
 
 ## Scenic mountain roads (terrain-roads.js, terrain-grading.js, county3d-roads.js)
@@ -97,8 +102,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Rendering (postfx3d.js, lighting3d-*.js)
 - Only the player's beams are shadowed (BEAM SHADOWS); other CAR LAMPS light through people and cars.
-- The ground's crisp-edge rebuild still uses 2x2-quad derivatives: each 1-pixel scroll flips the edge AA on some kerbs and markings (~1% of pixels).
-- Tree cut-outs would antialias better with alpha-to-coverage on MSAA tiers (vegetation3d-material.js; r160 forces alpha 1 on opaque materials).
+- The ground's screen-space bump (GROUND_NORMAL) still takes 2x2-quad derivatives: a 1-pixel scroll changes the shading of the asphalt aggregate and slab joints on ~3% of pixels (Old Quarter on MEDIUM, 1 px against 2 px shifts; the crisp-edge rebuild no longer does).
+- The film grade and the golden hour (skyDarkness, the dusk keys) were tuned on SwiftShader: check on a real GPU; dark asphalt in the low sun still leans slightly mauve.
 - Headlight strength, beam haze and night bloom were tuned on SwiftShader: check on a real GPU and a HiDPI screen.
 - On the range, traffic beyond the CAR LAMPS slots (drive light map) tilts with its car but has no terrain horizon: its light only fades a few metres off the tilted plane.
 - On the range rain splashes lie on a flat plane at the street height under the view's subject (sunk uphill, floating downhill) and read the car light at city street level (y 1), so they never catch the beams there (weather3d.js).
@@ -106,9 +111,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The terrain horizon sees the height field only: boulders, trees and buildings on the range do not shadow the beams; the mountain haze level and the light bar's strength were tuned on SwiftShader.
 
 ## Unicorn (unicorn3d.js)
-- Bright sky-reflection patch under the chest in daylight (lacquer material); little muscle definition.
+- Little muscle definition. The sky reflection now fades on surfaces facing the ground (the bright patch under the chest): not re-shot.
 
 ## Witnesses and 911 (witnesses.js, crowd-witnesses.js)
-- Dealership staff (MONARCH MOTORS) and North Point Key guests have their own alarms and never call 911; a crashed driver's call (crowd-traffic.js) is not counted among the incident's witnesses, so a second caller may be sent.
 - A call from inside a shop (hidden off-stage call) has no bubble; the 911 bubble keeps the street's 10 px font: check it reads on a HiDPI screen.
 

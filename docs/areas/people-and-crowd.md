@@ -41,7 +41,9 @@ Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
   cafes, buskers, the drawbridge onlookers, the 4x4 club members); anything that frightens
   them breaks the scene.
 - Traffic life: crash drivers argue or leave (`crowdCrash`, `updateTrafficLife`); taxis and
-  buses pick people up at the kerb (`curbsideStop`, a speed cap the traffic AI obeys).
+  buses pick people up at the kerb (`curbsideStop`, a speed cap the traffic AI obeys). The
+  traffic round the player, sirens, ambulances and street events:
+  people-and-crowd-living-city.md.
 - Rain: remarks before a shower, umbrellas, sheltering (`rainReaction`).
 - Neighbour grid: rebuilt once a frame at 64 units; perception, panic, yielding, car contacts,
   bullet targets and near misses all query `forEachPedestrianNear` instead of scanning.

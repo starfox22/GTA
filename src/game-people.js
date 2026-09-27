@@ -134,12 +134,15 @@
         // North Point Key's guests, staff and doormen stay where they are placed.
         if (updateKeyPerson(p, deltaSeconds)) continue;
         if (!p.look) ensureLook(p);
-        // MONARCH MOTORS' staff and visitors (dealership-people.js).
+        // MONARCH MOTORS' staff and visitors (dealership-people.js); what they saw goes to 911.
+        dealerWitness(p);
         if (updateDealerPerson(p, deltaSeconds)) continue;
         // A shot heard or a crime seen turns into a reaction before anyone's own
         // routine runs: island walkers, strollers and park guests only step aside
         // for the crowd once a reaction has started (crowd-witnesses.js needs it).
         if (p.pending && gameTime >= p.pending.at) crowdPerceive(p);
+        // Paramedics and street-event people (livingcity.js) step aside for a reaction.
+        if (updateCityRolePerson(p, deltaSeconds)) continue;
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateIsleWalker(p, deltaSeconds)) continue;

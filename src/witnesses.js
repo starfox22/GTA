@@ -34,7 +34,7 @@
     // The response to the last report: where the units are going and when the first arrived.
     const policeResponse = { active: false, x: 0, y: 0, at: -100, eta: 0, arrivedAt: -100, kind: '', street: '' };
     const lawEyes = { at: -100, seen: false };
-    const witnessStats = { banked: 0, reports: 0, calls: 0, dropped: 0, silenced: 0, seenByPolice: 0, heardByPolice: 0, stumbledOn: 0, bodiesFound: 0 };
+    const witnessStats = { banked: 0, reports: 0, calls: 0, dropped: 0, silenced: 0, seenByPolice: 0, heardByPolice: 0, stumbledOn: 0, bodiesFound: 0, venueCalls: 0 };
     let witnessTimer = 0;
 
     /* A police unit that could see anything: officers on their feet, crewed cruisers

@@ -159,6 +159,8 @@
       drawDrawbridgeMap(drawingContext, scale, big);
       if (mapLayerOn('air')) drawAviationMap(drawingContext, scale);
       if (mapLayerOn('police')) drawPoliceMap(drawingContext, scale);
+      // A street event's runner (livingcity-events.js).
+      drawLivingCityMap(drawingContext, scale);
       drawingContext.restore();
       // Off the minimap's edge: an arrow on the rim toward the job and the waypoint.
       if (!big) drawMinimapEdgeBlips(drawingContext, width, height, scale, cx, cy, target);

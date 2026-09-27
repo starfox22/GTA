@@ -1,0 +1,11 @@
+# The living city: busy streets, sirens, ambulances and bag snatches
+- The streets round the player carry real traffic now (before, about 30 traffic cars shared the whole grid, two or three of them near the player): busier in the rush hours, quiet at 3 am, with the district's own cars (cabs on Broadway, limousines at North Point, trucks at the docks, roadsters on Ocean Drive).
+- Drivers make way for sirens: they crawl over to the kerb and stop while a cruiser under lights or an ambulance goes by, and hold at a junction while one crosses.
+- A body left in a city street brings an ambulance with lights and siren; two paramedics work on the victim, who often comes round and staggers off.
+- North Point Key has visitors: cabs, limousines and fine cars cross the Key bridge, round the drop-off circle, often pull up by the valet, and head back into town.
+- Bag and phone snatches: catch the thief on foot (red on the radar) for a reward.
+- Dispatch calls it when the search finds you again (the street and what you are in) and when you switch cars or get out on foot in sight of a unit.
+- North Point Key's guests and doormen and the dealership's staff now phone 911 about shots and fights they witness (they used to only cower); a caller with no street name no longer says "shots,.".
+- Police see less far at night (about 40 m on foot on the lit streets, 51 m in a car) and in heavy rain; a unit already on you keeps you a little longer.
+- Internals: livingcity*.js (traffic pool streamed round the player and bounded, `emergencyBeacons`, `sirenPullOver`, `emergencyRunControl`, the ambulance service, street events, Key visitors `keyRunControl`), `policeSightRange`; trafficControl skips its junction scans when they cannot matter.
+- Console (`livingCity`): `trafficReport`, `trafficMix`, `trafficBenchmark`, `trafficStreaming`, `sirenPass`/`sirenPassState`, `medicReport`, `medicTest`, `streetEvents`, `snatchTest`, `keyVisitors`, `keyVisitorSpawn`; `policeReport().sightRange`; `witnesses().stats.venueCalls`.

@@ -436,7 +436,7 @@
         let d = 10000,
           nearest = null;
         for (const car of vehicles)
-          if (car.hp > 0 && ((car.cop && wantedStars > 0) || car.gangTarget)) {
+          if (car.hp > 0 && ((car.cop && wantedStars > 0) || car.gangTarget || car.emergency?.running)) {
             const dc = distanceBetween(car, player);
             if (dc < d) {
               d = dc;

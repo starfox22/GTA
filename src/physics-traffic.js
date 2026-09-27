@@ -167,35 +167,45 @@
         const progress = (j.x - c.x) * headingCosine + (j.y - c.y) * headingSine,
           signal = trafficSignal(j.x, j.y)[vertical ? 'vertical' : 'horizontal'],
           gap = progress - 88 - vehicleDefinition.l / 2;
-        const occupied = vehicles.some(
-          (o) =>
-            o !== c &&
-            o.hp > 0 &&
-            o.junction?.committed &&
-            Math.abs(o.junction.x - j.x) < 5 &&
-            Math.abs(o.junction.y - j.y) < 5 &&
-            Math.abs(o.x - j.x) < 110 + vehicleSpec(o).l / 2 &&
-            Math.abs(o.y - j.y) < 110 + vehicleSpec(o).l / 2 &&
-            (Math.abs(normalizeAngle(o.junction.a - j.a)) > 0.2 || o.junction.turn || j.turn),
-        );
         const headingCosine3 = Math.cos(j.exit),
           headingSine3 = Math.sin(j.exit),
           end = j.points[j.points.length - 1];
-        const exitBlocked = vehicles.some((o) => {
-          if (o === c || isBoat(o) || (o.altitude || 0) > 20 || Math.abs(o.speed) > 18) return false;
-          const dx = o.x - end.x,
-            dy = o.y - end.y;
-          return (
-            Math.abs(-dx * headingSine3 + dy * headingCosine3) <
-              (vehicleDefinition.w + vehicleSpec(o).w) / 2 + 7 &&
-            Math.abs(dx * headingCosine3 + dy * headingSine3) <
-              (vehicleDefinition.l + vehicleSpec(o).l) / 2 + 22
-          );
-        });
         // A green light with the box and the exit clear is driven through at
         // speed, committing about half a second out; anything else is a stop
-        // at the line, braked for at about half a g.
-        const proceed = signal === 'green' && !occupied && !exitBlocked;
+        // at the line, braked for at about half a g. Only a car still short of
+        // the line on a green looks at the box and the exit (the scans cost more
+        // than the rest of the decision), each skipping far cars first.
+        const proceed =
+          !j.committed &&
+          signal === 'green' &&
+          !vehicles.some(
+            (o) =>
+              o !== c &&
+              Math.abs(o.x - j.x) < 200 &&
+              Math.abs(o.y - j.y) < 200 &&
+              o.hp > 0 &&
+              o.junction?.committed &&
+              Math.abs(o.junction.x - j.x) < 5 &&
+              Math.abs(o.junction.y - j.y) < 5 &&
+              Math.abs(o.x - j.x) < 110 + vehicleSpec(o).l / 2 &&
+              Math.abs(o.y - j.y) < 110 + vehicleSpec(o).l / 2 &&
+              (Math.abs(normalizeAngle(o.junction.a - j.a)) > 0.2 || o.junction.turn || j.turn),
+          ) &&
+          !vehicles.some((o) => {
+            const dx = o.x - end.x,
+              dy = o.y - end.y;
+            if (o === c || Math.abs(dx) > 120 || Math.abs(dy) > 120) return false;
+            if (isBoat(o) || (o.altitude || 0) > 20 || Math.abs(o.speed) > 18) return false;
+            return (
+              Math.abs(-dx * headingSine3 + dy * headingCosine3) <
+                (vehicleDefinition.w + vehicleSpec(o).w) / 2 + 7 &&
+              Math.abs(dx * headingCosine3 + dy * headingSine3) <
+                (vehicleDefinition.l + vehicleSpec(o).l) / 2 + 22
+            );
+          }) &&
+          // An ambulance or a cruiser under lights crossing: wait at the line
+          // (livingcity-sirens.js).
+          !sirenCrossing(c, j);
         if (!j.committed && gap < 25 + Math.max(0, c.speed || 0) * 0.5 && proceed) j.committed = true;
         if (!j.committed) {
           if (!proceed) {
@@ -372,12 +382,25 @@
         if (along > 0 && along < 200 && lateral < side + 11 && cityStreetAt(p.x, p.y))
           desired = Math.min(desired, Math.sqrt(2 * 0.7 * GRAVITY * Math.max(0, along - half - 22)) * 0.8);
       };
-      forEachPedestrianNear(c.x, c.y, 220, yieldTo);
+      // Everyone the box can hold (0-200 ahead, a lane's width either side) is
+      // within 103 units of the point 100 ahead: a quarter of the old query.
+      forEachPedestrianNear(c.x + headingCosine2 * 100, c.y + headingSine2 * 100, 110, yieldTo);
       if (!player.car) yieldTo(player);
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
       desired = Math.min(desired, curbsideStop(c));
       // Held at the drawbridge's stop line while it opens (src/drawbridge.js).
       desired = drawbridgeTrafficLimit(c, desired);
+      // A siren behind or coming head-on down our side: over to the kerb and
+      // stop until it is by (livingcity-sirens.js); not while passing a parked
+      // car, which already has us steering round it.
+      const pull = sirenPullOver(c);
+      if (pull) {
+        desired = Math.min(desired, pull.speed);
+        if (!ease.amount && pull.shift > 0) {
+          ease.amount = pull.shift;
+          ease.side = -1;
+        }
+      }
       // Steer for a point shifted away from whatever was easing us across the lane.
       const steerA = ease.amount
         ? normalizeAngle(

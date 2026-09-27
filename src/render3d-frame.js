@@ -290,7 +290,7 @@
             for (let i = 0; i < m.strobes.length; i++)
               m.strobes[i].material.color.copy(
                 cachedColor(
-                  ((c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.type === 'ambulance') &&
+                  emergencyBeacons(c) &&
                     Math.sin(gameTime * 17 + i * 3) > 0
                     ? i
                       ? '#78aefa'

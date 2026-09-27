@@ -607,11 +607,25 @@
             color = cityACES( color );
             #ifdef USE_GRADE
               float luma = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
-              // Saturation, plus vibrance: more for muted colours than vivid ones.
-              float chroma = max( color.r, max( color.g, color.b ) ) - min( color.r, min( color.g, color.b ) );
-              color = max( mix( vec3( luma ), color, uSaturation * ( 1.0 + uVibrance * ( 1.0 - smoothstep( 0.0, 0.5, chroma ) ) ) ), 0.0 );
-              color = clamp( ( color - 0.18 ) * uContrast + 0.18, 0.0, 1.0 );
-              color = uGain * ( color + uLift * ( 1.0 - color ) );
+              // Saturation, plus vibrance: more for muted colours than vivid ones,
+              // judged by saturation (chroma over value). Raw chroma counted every
+              // dark colour as muted, so shade and night went to saturated navy.
+              float peak = max( color.r, max( color.g, color.b ) );
+              float sat = ( peak - min( color.r, min( color.g, color.b ) ) ) / max( peak, 1e-4 );
+              color = max( mix( vec3( luma ), color, uSaturation * ( 1.0 + uVibrance * ( 1.0 - smoothstep( 0.05, 0.6, sat ) ) ) ), 0.0 );
+              // FILM GRADE: contrast and lift on a perceptual scale (gamma 2.2).
+              // The contrast is an S-curve about mid grey that bends but never
+              // clips (the old linear ( c - 0.18 ) * k + 0.18 cut everything under
+              // ~20% of the display range to black: shade and night streets lost
+              // their texture and showed only the lift's flat navy). The lift
+              // tints the darks and the gain the lights (split toning): a gain
+              // over the whole range also reddened the blue shade, magenta at dusk.
+              vec3 g = pow( min( color, vec3( 1.0 ) ), vec3( 1.0 / 2.2 ) );
+              g += uContrast * g * ( 1.0 - g ) * ( 2.0 * g - 1.0 );
+              g += uLift * ( 1.0 - g );
+              g = max( g, vec3( 0.0 ) );
+              float lights = smoothstep( 0.05, 0.7, dot( g, vec3( 0.2126, 0.7152, 0.0722 ) ) );
+              color = pow( g, vec3( 2.2 ) ) * mix( vec3( 1.0 ), uGain, lights );
               vec2 v = ( vUv - 0.5 ) * vec2( uAspect, 1.0 );
               color *= 1.0 - uVignette * smoothstep( 0.35, 1.05, length( v ) );
             #endif
@@ -748,7 +762,7 @@
        * camera sees, so the snap never shows. Zooming still resamples, as it must.
        */
       // A/B switches for the look (DeadEndCity.lookSwitches): all on in play.
-      const lookSwitchState = { pixelLock: true, fxaa: true, vibrance: true, carLamps: true, groundSlopeCap: true, terrainBeams: true, lightBar: true };
+      const lookSwitchState = { pixelLock: true, fxaa: true, vibrance: true, carLamps: true, groundSlopeCap: true, terrainBeams: true, lightBar: true, foliageCoverage: true };
       const snapRight = new Three.Vector3(),
         snapUp = new Three.Vector3(),
         snapBuffer = new Three.Vector2();
@@ -915,7 +929,9 @@
         postCompositeUniforms.uBloomStrength.value = postLook.bloomStrength;
         postCompositeUniforms.uSaturation.value = postLook.saturation;
         postCompositeUniforms.uVibrance.value = lookSwitchState.vibrance ? postLook.vibrance : 0;
-        postCompositeUniforms.uContrast.value = postLook.contrast;
+        // postLook.contrast is the slope at mid grey; the shader's S-curve takes
+        // its bend (slope 1 + bend / 2 in the middle, 1 - bend at the ends).
+        postCompositeUniforms.uContrast.value = clamp((postLook.contrast - 1) * 2, -1, 1);
         postCompositeUniforms.uLift.value.copy(postLook.lift);
         postCompositeUniforms.uGain.value.copy(postLook.gain);
         postCompositeUniforms.uVignette.value = postLook.vignette;

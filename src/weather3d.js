@@ -231,7 +231,9 @@
             // An expanding ring, and a crown of spray in the first instant.
             float r = vLife;
             float ring = exp( -pow( ( d - r ) * 6.0, 2.0 ) ) * ( 1.0 - vLife ) * ( 1.0 - vLife ) * 0.45;
-            float crown = ( 1.0 - smoothstep( 0.0, 0.4, d ) ) * ( 1.0 - smoothstep( 0.0, 0.2, vLife ) ) * 0.9;
+            // (A pin-prick crown: at 0.4 of the quad every drop on the tarmac
+            // left a bright blob several pixels wide, and a downpour read as snow.)
+            float crown = ( 1.0 - smoothstep( 0.0, 0.2, d ) ) * ( 1.0 - smoothstep( 0.0, 0.15, vLife ) ) * 0.7;
             float a = ( ring + crown ) * vAlpha;
             if ( a < 0.004 || d > 1.0 ) discard;
             gl_FragColor = vec4( vLight, a );
@@ -644,7 +646,12 @@
       const WET_MIRROR_DAY = 0.55,
         WET_MIRROR_NIGHT = 0.6,
         WET_STREAK_GAIN = 0.65,
+        // The sky's share by day and by night: the night sky is the readable
+        // blue-hour ambient, and mirrored at the day's share it greyed a wet
+        // night road lighter than a dry one (wet asphalt at night reads darker,
+        // with the lamps and neon shining in it).
         WET_SKY_SHARE = 0.4,
+        WET_SKY_SHARE_NIGHT = 0.14,
         wetGreyScratch = new Three.Color(),
         wetSkyScratch = new Three.Color(),
         wetViewScratch = new Three.Vector3();
@@ -662,7 +669,7 @@
         // patches read as blue paint.
         wetSkyScratch.copy(skyUniforms.uHorizon.value).lerp(skyUniforms.uZenith.value, 0.78);
         const skyGrey = (wetSkyScratch.r + wetSkyScratch.g + wetSkyScratch.b) / 3;
-        wetSkyScratch.lerp(wetGreyScratch.setScalar(skyGrey), 0.4).multiplyScalar(WET_SKY_SHARE);
+        wetSkyScratch.lerp(wetGreyScratch.setScalar(skyGrey), 0.4).multiplyScalar(WET_SKY_SHARE_NIGHT + (WET_SKY_SHARE - WET_SKY_SHARE_NIGHT) * light);
         wetUniforms.citySkyReflect.value.copy(wetSkyScratch).multiplyScalar(mirror);
         camera.getWorldDirection(wetViewScratch);
         const flat = Math.hypot(wetViewScratch.x, wetViewScratch.z);

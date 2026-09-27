@@ -167,7 +167,9 @@
         '#9a9c96',
       );
       paintAirfieldGround(drawingContext, detail);
-      paintBeach(drawingContext, detail);
+      // (The 3D ground, which asks for vector marks, draws the sand's own grain,
+      // ripples and footprints: the painted speckle is for the 2D maps only.)
+      paintBeach(drawingContext, detail && !vectorMarks);
       drawingContext.restore();
       paintPromenades(drawingContext);
       drawBridgeGround(drawingContext);

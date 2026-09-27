@@ -117,21 +117,35 @@
           // MAGNIFICATION). tdx, tdy: texel-coordinate derivatives; magnify:
           // pixels per texel. Out: s (0 on side a, 1 on side b, 0.5 on the edge),
           // trust (how edge-like it is) and the two pure colours.
+          float groundSheetKey( vec3 c ) {
+            return dot( c, vec3( 0.3, 0.55, 0.15 ) ) + 1.5 * ( c.g - max( c.r, c.b ) );
+          }
           vec3 groundSheetSharp( vec3 c, vec2 uv, vec2 tdx, vec2 tdy, float magnify, out float s, out float trust, out vec3 ca, out vec3 cb ) {
             s = 0.5; trust = 0.0; ca = c; cb = c;
-            float k = dot( c, vec3( 0.3, 0.55, 0.15 ) ) + 1.5 * ( c.g - max( c.r, c.b ) );
-            vec2 gs = vec2( dFdx( k ), dFdy( k ) );
-            float det = tdx.x * tdy.y - tdx.y * tdy.x;
-            vec2 g = vec2( tdy.y * gs.x - tdx.y * gs.y, -tdy.x * gs.x + tdx.x * gs.y ) / ( abs( det ) > 1e-12 ? det : 1e-12 );
+            // Flat sheet round this pixel's block (and too little magnification
+            // to re-cut): nothing to do. (Either way the result is c, so this
+            // screen-derivative test cannot flicker.)
+            float k = groundSheetKey( c );
+            if ( dFdx( k ) == 0.0 && dFdy( k ) == 0.0 || magnify < 1.25 ) return c;
+            // The colour gradient from the sheet itself, a texel either side, and
+            // the ramp's width from the texel footprint along it: the screen
+            // derivatives of this pixel's own sample are shared by each 2 x 2 block
+            // of pixels, so which blocks straddled an edge (and with it the edge's
+            // direction and antialiasing) changed each time the view moved a pixel.
+            vec2 texel = cityGroundTexel;
+            vec2 g = vec2(
+              groundSheetKey( groundSheetAt( uv + vec2( texel.x, 0.0 ) ) ) - groundSheetKey( groundSheetAt( uv - vec2( texel.x, 0.0 ) ) ),
+              groundSheetKey( groundSheetAt( uv + vec2( 0.0, texel.y ) ) ) - groundSheetKey( groundSheetAt( uv - vec2( 0.0, texel.y ) ) )
+            );
             float gl = length( g );
             vec2 n = gl > 1e-6 ? g / gl : vec2( 1.0, 0.0 );
-            vec2 texel = cityGroundTexel;
             vec3 a = groundSheetAt( uv - n * texel * 1.6 ), b = groundSheetAt( uv + n * texel * 1.6 );
             vec3 ab = b - a;
             float l2 = dot( ab, ab );
             float sr = l2 > 1e-6 ? clamp( dot( c - a, ab ) / l2, 0.0, 1.0 ) : 0.5;
             float resid = length( c - ( a + ab * sr ) );
-            float w = clamp( fwidth( sr ), 0.004, 0.5 ) * 0.6;
+            // (sr runs 0 to 1 over the one texel of the bilinear ramp.)
+            float w = clamp( abs( dot( n, tdx ) ) + abs( dot( n, tdy ) ), 0.004, 0.5 ) * 0.6;
             trust = smoothstep( 0.0006, 0.0025, l2 ) * ( 1.0 - smoothstep( 0.012, 0.045, resid ) ) * smoothstep( 1.25, 2.4, magnify ) * step( 1e-6, gl );
             // Lawn against lawn (the county's painted tufts, meadow tones) stays
             // soft: cut crisp, those blotches turned into hard little blocks.

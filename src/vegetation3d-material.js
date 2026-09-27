@@ -46,9 +46,20 @@
           gl_Position = projectionMatrix * mvPosition;
         }`;
       // Sparser crowns (instance density) drop more of their leaf-card pixels.
+      // With CITY_A2C (alpha to coverage, MSAA tiers) the cut is a one-pixel ramp
+      // across the threshold instead, handed to the multisample coverage: leaf
+      // edges come out antialiased instead of stepped (they crawled as the view
+      // scrolled). three.js r160 forces an opaque material's alpha to 1 in
+      // <opaque_fragment>, so the tree material writes it back after that.
       const FOLIAGE_ALPHATEST = `
         #ifdef USE_ALPHATEST
-          if ( diffuseColor.a < alphaTest + vFoliageDensity * 0.32 * step( 0.8, vFoliageLeaf ) ) discard;
+          float foliageCut = alphaTest + vFoliageDensity * 0.32 * step( 0.8, vFoliageLeaf );
+          #ifdef CITY_A2C
+            foliageCoverage = clamp( ( diffuseColor.a - foliageCut ) / max( fwidth( diffuseColor.a ), 1e-3 ) + 0.5, 0.0, 1.0 );
+            if ( foliageCoverage < 0.02 ) discard;
+          #else
+            if ( diffuseColor.a < foliageCut ) discard;
+          #endif
         #endif`;
       function foliageVertexPatch(shader) {
         Object.assign(shader.uniforms, foliageUniforms);
@@ -57,7 +68,7 @@
           .replace('#include <begin_vertex>', FOLIAGE_BEGIN)
           .replace('#include <project_vertex>', '#include <project_vertex>\n' + FOLIAGE_SWAY);
         shader.fragmentShader = shader.fragmentShader
-          .replace('#include <common>', '#include <common>\nvarying float vFoliageLeaf;\nvarying float vFoliageDensity;')
+          .replace('#include <common>', '#include <common>\nvarying float vFoliageLeaf;\nvarying float vFoliageDensity;\nfloat foliageCoverage = 1.0;')
           .replace('#include <alphatest_fragment>', FOLIAGE_ALPHATEST);
       }
       const treeMaterial = new Three.MeshStandardMaterial({
@@ -98,9 +109,19 @@
           .replace(
             '#include <lights_fragment_end>',
             '#include <lights_fragment_end>\nreflectedLight.indirectDiffuse += diffuseColor.rgb * vFoliageLeaf * 0.07;',
-          );
+          )
+          .replace('#include <opaque_fragment>', '#include <opaque_fragment>\n#ifdef CITY_A2C\ngl_FragColor.a = foliageCoverage;\n#endif');
       };
-      treeMaterial.customProgramCacheKey = () => 'city-trees';
+      treeMaterial.customProgramCacheKey = () => (treeMaterial.alphaToCoverage ? 'city-trees-a2c' : 'city-trees');
+      // Alpha to coverage on the tiers that draw into a multisampled target
+      // (quality.js msaa; applyRendererQuality). One relink when it changes.
+      function setFoliageCoverage(tier) {
+        const on = !!(tier && tier.msaa > 0 && hdrCapable && lookSwitchState.foliageCoverage);
+        if (treeMaterial.alphaToCoverage === on) return;
+        treeMaterial.alphaToCoverage = on;
+        treeMaterial.defines = on ? { CITY_A2C: 1 } : {};
+        treeMaterial.needsUpdate = true;
+      }
       // The shadow pass: the same cut-outs, morph and sway.
       const treeDepthMaterial = new Three.MeshDepthMaterial({
         depthPacking: Three.RGBADepthPacking,

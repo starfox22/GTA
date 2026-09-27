@@ -44,12 +44,12 @@ sh tools/check.sh dead && node tools/dead-code.mjs dist/check/dead.js   # unused
 ## Dev server (tools/dev.mjs) and tests (tools/test.mjs)
 
 ```
-node tools/dev.mjs start [html] [--render] [--nodev] [--size WxH]  # boot once (reuses a running one)
+node tools/dev.mjs start [html] [--render] [--nodev] [--shadercheck] [--size WxH]  # boot once (reuses a running one); --shadercheck: shader compile errors as console errors
 node tools/dev.mjs call brakeTest sedan 100 '{"wet":1}'   # a NAMED console method, JSON args
 node tools/dev.mjs keys KeyW,KeyD 3    # simulate(3, keys): game seconds, no drawing (--real: key presses)
 node tools/dev.mjs wait 5              # simulate(5) (--real: wall-clock wait)
 node tools/dev.mjs shot name [--crop x,y,w,h] [--width 480] [--full]  # dist/dev/shots/name.jpg
-node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] | stop
+node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] | stop
 ```
 
 - With no html, `start` builds `dist/dev/game.html` and `reload` rebuilds it (browser reused;

@@ -304,13 +304,17 @@
         SKY_DAY = new Three.Color('#9fc0d8'),
         SKY_DUSK = new Three.Color('#c07a55'),
         SUN_NIGHT = new Three.Color('#9aaed8'),
-        SUN_DUSK = new Three.Color('#ffa564'),
+        SUN_DUSK = new Three.Color('#ffb46e'),
         SUN_DAY = new Three.Color('#ffe6c0'),
         HEMI_SKY_NIGHT = new Three.Color('#4a5c84'),
         HEMI_SKY_DAY = new Three.Color('#b9d0ef'),
         HEMI_GROUND_NIGHT = new Three.Color('#2c2b35'),
         // Daylight bounces off pavement and planting, not off bare earth.
         HEMI_GROUND_DAY = new Three.Color('#7a6b50'),
+        // Golden hour: a clear blue sky opposite the low sun, warm light bounced
+        // off sunlit walls and paving (a purple mix of the night keys before).
+        HEMI_SKY_DUSK = new Three.Color('#a6b6cc'),
+        HEMI_GROUND_DUSK = new Three.Color('#8a6448'),
         skyScratch = new Three.Color();
       let lastBadge = '';
       function updateCivicVisuals() {
@@ -327,12 +331,15 @@
         // went black against the lit streets.)
         // (A deeper sky fill by day than before: the sun is the key, the shade
         // cooler and a step darker, so streets read with depth, not flat grey.)
-        hemi.intensity = 0.45 + light * 0.36 + dusk * 0.35;
-        hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, light);
-        hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, light);
+        // (The fill's colour follows the sky, which stays a day sky until the
+        // sun is nearly down: skyDarkness, lighting3d-look.js.)
+        const skyDay = 1 - skyDarkness(light);
+        hemi.intensity = 0.45 + light * 0.36 + dusk * 0.25;
+        hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, skyDay).lerp(HEMI_SKY_DUSK, dusk * 0.8);
+        hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, skyDay).lerp(HEMI_GROUND_DUSK, dusk * 0.7);
         // Golden hour: the low sun is a strong warm key, not a fading one.
-        sun.intensity = (0.35 + light * 3.95 + dusk * 0.9) * daylightScale;
-        sun.color.copy(SUN_NIGHT).lerp(SUN_DAY, light).lerp(SUN_DUSK, dusk * 0.85);
+        sun.intensity = (0.35 + light * 3.95 + dusk * 1.6) * daylightScale;
+        sun.color.copy(SUN_NIGHT).lerp(SUN_DAY, skyDay).lerp(SUN_DUSK, dusk * 0.85);
         fill.intensity = 0.28 + night * 0.25;
         skyScratch.copy(SKY_NIGHT).lerp(SKY_DAY, light).lerp(SKY_DUSK, dusk * 0.6);
         scene.background.copy(skyScratch);
