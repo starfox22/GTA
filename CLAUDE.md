@@ -88,6 +88,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
 - No ammo, armor or weapon pickups: rounds come from gun shops, `lootInteract` (bodies, once)
   and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
+- Shooting from a vehicle goes through `driveByAim(vehicle, heading)` (driveby.js): arcs per
+  window and body live in `spec.driveBy`; the bullet and the pose both use `driveByGrip`.
 - **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
   hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
   pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911. Crowd
