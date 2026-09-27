@@ -214,6 +214,33 @@
             last[l] = ground;
           });
         }
+        // Drop-offs beside the road (ground below its edge) steep enough that a person
+        // stepping onto them falls (falls-body.js FALL_START_GRADE), within 100 units
+        // of the shoulder.
+        const probe = {};
+        let side = 0,
+          sideAt = null,
+          sideRuns = 0;
+        for (let k = 0; k < n; k += 4) {
+          if (skip[k]) continue;
+          let steep = false;
+          for (const sign of [-1, 1]) {
+            const edge = scenicSurface(road, k, sign * road.half);
+            for (let o = road.half + SCENIC_SHOULDER + 4; o < road.half + SCENIC_SHOULDER + 100; o += 8) {
+              scenicPointAt(road, k, sign * o, p);
+              const on = scenicRoadNear(p.x, p.y, probe);
+              if ((on && on.d < on.road.half + SCENIC_SHOULDER) || terrainHeight(p.x, p.y) > edge - 8) continue;
+              const slope = terrainSlope(p.x, p.y),
+                g = Math.hypot(slope.x, slope.y);
+              if (g > side) {
+                side = g;
+                sideAt = [Math.round(p.x), Math.round(p.y)];
+              }
+              if (g > FALL_START_GRADE) steep = true;
+            }
+          }
+          if (steep) sideRuns++;
+        }
         const mine = rails.filter((r) => r.road === road.name),
           railLength = mine.reduce((sum, r) => sum + (r.to - r.from) * SCENIC_SAMPLE, 0);
         return {
@@ -241,6 +268,9 @@
           bumpG100: +((((100 / 3.6) ** 2 * (bump / SCENIC_SAMPLE)) / (SCENIC_SAMPLE / UNITS_PER_METRE)) / 9.81).toFixed(2),
           junctionBumpG100: +((((100 / 3.6) ** 2 * (junctionBump / SCENIC_SAMPLE)) / (SCENIC_SAMPLE / UNITS_PER_METRE)) / 9.81).toFixed(2),
           maxBumpAt: bumpAt,
+          maxSideGrade: +side.toFixed(2),
+          maxSideAt: sideAt,
+          dropFaceM: Math.round((sideRuns * 4 * SCENIC_SAMPLE) / UNITS_PER_METRE),
           nan,
           rails: mine.filter((r) => r.kind === 'rail').length,
           walls: mine.filter((r) => r.kind === 'wall').length,

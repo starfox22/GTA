@@ -16,6 +16,8 @@ export default async function (t) {
     // A bump as felt at 100 km/h (g): the open road, and the junction mouths where two surfaces meet.
     t.assert(r.bumpG100 < 2.5, `${r.name}: a ${r.bumpG100} g bump (at 100 km/h) at ${r.maxBumpAt}`);
     t.assert(r.junctionBumpG100 < 8, `${r.name}: a ${r.junctionBumpG100} g bump in a junction mouth`);
+    // Embankments stay under the grade a person falls off (natural gullies leave a few metres).
+    t.assert(r.dropFaceM <= 20, `${r.name}: ${r.dropFaceM} m of road beside a drop steeper than the fall grade (${r.maxSideGrade} at ${r.maxSideAt})`);
     t.note(`${r.name}: ${r.lengthM} m, top ${r.topM} m, grade ${r.maxGradePct}%, R ${r.minRadiusM} m, rails ${r.railM} m`);
   }
   t.assert(report.viewpoints.length >= 2, `only ${report.viewpoints.length} viewpoints`);

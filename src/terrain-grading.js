@@ -398,8 +398,11 @@
       return mask;
     }
     // How far a fill falls away from the road's level at `distance` from its band: a 42-degree embankment steepening out.
+    // Embankment below the shoulder: steepening from 1.1 to a 1.2 face from 25 units
+    // out, under the 1.35 a person falls off (falls-body.js FALL_START_GRADE).
     function scenicFillDrop(distance) {
-      return Math.max(0, distance - 2) * 1.1 + distance * distance * 0.002;
+      const face = (d) => Math.max(0, d - 2) * 1.1 + d * d * 0.002;
+      return distance <= 25 ? face(distance) : face(25) + (distance - 25) * 1.2;
     }
     /**
      * The carriageway, last of all (after the trails): per vertex, the nearest
