@@ -90,7 +90,11 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
 - Water (world3d-water.js): one ShaderMaterial with a distance-to-shore texture, Gerstner waves;
   boat wakes are drawn into a wake map it samples (`wakeEmit`, wakes3d.js).
 - Weather visuals (weather3d.js): GPU rain streaks, splashes, drips and spray from uniforms,
-  lit by the night light map; lightning bolts at a place; `vehicleLampAmount()`.
+  lit by the night light map and the CAR LAMPS (`RAIN_LAMP_GLSL`, the same body frame and
+  terrain horizon as lit materials); lightning bolts at a place; `vehicleLampAmount()`. No
+  drop falls below the rain box's floor: the street in the city, on the range the lowest
+  ground 32 m round the view's subject (≤ 12 m lower, `rainFloor`), so a beam down a descent
+  has rain to light; splashes stay on the street; in the air the box rides below the cloud base.
 - Tiers (quality.js): pixel ratio, shadows, MSAA, AO, SSR steps, bloom, LOD bias, rain
   density. `DeadEndCity.graphics('high')` in tests: SwiftShader auto-detects as LOW.
   `?shadercheck` in the URL makes three.js report shader compile errors.

@@ -63,26 +63,39 @@
       };
       // Night light map (lighting3d.js): the drops glitter where the lamps are,
       // and in the low beams of the nearest cars (CAR LAMPS), whose cut-off is
-      // relaxed a little so the rain over the lit road catches them.
+      // relaxed a little so the rain over the lit road catches them. The beams
+      // run in the car's body frame as the ground's do (CAR LAMP FRAME,
+      // lighting3d-sky.js): on a slope the lit column follows the road, a light
+      // bar slot throws its flood, and a slot on the range reads the TERRAIN
+      // HORIZON, so drops past a crest below the line the beam grazes stay dark.
+      // A level car (C = 0, 0, 1) gives the old level numbers.
       const RAIN_LAMP_GLSL = `
         uniform sampler2D cityLampMap;
         uniform vec4 cityLampRect;
         uniform float cityLampPower;
         uniform vec4 cityCarLampA[ ${CAR_LAMP_SLOTS} ];
         uniform vec4 cityCarLampB[ ${CAR_LAMP_SLOTS} ];
+        uniform vec4 cityCarLampC[ ${CAR_LAMP_SLOTS} ];
         uniform float cityCarLampCount;
+        uniform sampler2D cityBeamShadow;
         ${CITY_LOW_BEAM}
+        ${CITY_LAMP_FRAME}
         vec3 rainCarLight( vec3 p ) {
           float sum = 0.0;
           for ( int i = 0; i < ${CAR_LAMP_SLOTS}; i ++ ) {
             if ( float( i ) >= cityCarLampCount ) break;
-            vec4 a = cityCarLampA[ i ], b = cityCarLampB[ i ];
+            vec4 a = cityCarLampA[ i ], b = cityCarLampB[ i ], c = cityCarLampC[ i ];
+            vec3 aim, kerb;
+            cityLampFrame( b, c, aim, kerb );
             vec3 d = p - a.xyz;
-            float ahead = dot( d.xz, b.xy );
+            float ahead = dot( d, aim );
             if ( ahead < 2.0 || ahead > 480.0 ) continue;
-            float side = dot( d.xz, vec2( -b.y, b.x ) );
+            float side = dot( d, kerb );
             side = sign( side ) * max( abs( side ) - b.z, 0.0 );
-            sum += a.w * cityLowBeam( side / ahead, d.y / ahead - 0.05 ) / max( dot( d, d ) * 0.015625, 0.5 );
+            float rise = dot( d, cross( kerb, aim ) );
+            float beam = c.w > 1.5 ? cityFloodBeam( side / ahead, rise / ahead ) : cityLowBeam( side / ahead, rise / ahead - 0.05 );
+            if ( beam > 0.0005 && mod( c.w, 2.0 ) > 0.5 ) beam *= cityHorizonShade( float( i ), d, b.xy );
+            sum += a.w * beam / max( dot( d, d ) * 0.015625, 0.5 );
           }
           return vec3( 1.0, 0.93, 0.8 ) * min( sum * 0.012, 3.0 );
         }
@@ -92,15 +105,22 @@
           if ( cityLampPower < 0.001 || uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 ) return cars;
           return cars + texture2D( cityLampMap, uv ).rgb * cityLampPower * ( 1.0 - smoothstep( 8.0, 70.0, p.y ) );
         }`;
+      // The uniforms RAIN_LAMP_GLSL reads: the lit materials' own (street lamps, CAR LAMPS,
+      // the horizon strip under the BEAM SHADOWS mask).
+      const RAIN_LAMP_UNIFORMS = {
+        cityLampMap: cityLightUniforms.cityLampMap,
+        cityLampRect: cityLightUniforms.cityLampRect,
+        cityLampPower: cityLightUniforms.cityLampPower,
+        cityCarLampA: cityLightUniforms.cityCarLampA,
+        cityCarLampB: cityLightUniforms.cityCarLampB,
+        cityCarLampC: cityLightUniforms.cityCarLampC,
+        cityCarLampCount: cityLightUniforms.cityCarLampCount,
+        cityBeamShadow: cityLightUniforms.cityBeamShadow,
+      };
       const rainMaterial = new Three.ShaderMaterial({
         uniforms: {
           ...rainUniforms,
-          cityLampMap: cityLightUniforms.cityLampMap,
-          cityLampRect: cityLightUniforms.cityLampRect,
-          cityLampPower: cityLightUniforms.cityLampPower,
-          cityCarLampA: cityLightUniforms.cityCarLampA,
-          cityCarLampB: cityLightUniforms.cityCarLampB,
-          cityCarLampCount: cityLightUniforms.cityCarLampCount,
+          ...RAIN_LAMP_UNIFORMS,
         },
         vertexShader: `
           attribute vec4 aDrop;
@@ -157,7 +177,7 @@
         splashGeometry.instanceCount = 0;
       }
       const splashUniforms = {
-        uOrigin: rainUniforms.uOrigin,
+        uOrigin: { value: new Three.Vector3() },
         uTime: rainUniforms.uTime,
         uReach: { value: 700 },
         uStrength: { value: 0 },
@@ -166,12 +186,7 @@
       const splashMaterial = new Three.ShaderMaterial({
         uniforms: {
           ...splashUniforms,
-          cityLampMap: cityLightUniforms.cityLampMap,
-          cityLampRect: cityLightUniforms.cityLampRect,
-          cityLampPower: cityLightUniforms.cityLampPower,
-          cityCarLampA: cityLightUniforms.cityCarLampA,
-          cityCarLampB: cityLightUniforms.cityCarLampB,
-          cityCarLampCount: cityLightUniforms.cityCarLampCount,
+          ...RAIN_LAMP_UNIFORMS,
         },
         vertexShader: `
           attribute vec3 aSeed;
@@ -254,12 +269,7 @@
       const dripMaterial = new Three.ShaderMaterial({
         uniforms: {
           ...dripUniforms,
-          cityLampMap: cityLightUniforms.cityLampMap,
-          cityLampRect: cityLightUniforms.cityLampRect,
-          cityLampPower: cityLightUniforms.cityLampPower,
-          cityCarLampA: cityLightUniforms.cityCarLampA,
-          cityCarLampB: cityLightUniforms.cityCarLampB,
-          cityCarLampCount: cityLightUniforms.cityCarLampCount,
+          ...RAIN_LAMP_UNIFORMS,
         },
         vertexShader: `
           attribute vec4 aEmit;
@@ -336,12 +346,7 @@
       const roadSprayMaterial = new Three.ShaderMaterial({
         uniforms: {
           ...roadSprayUniforms,
-          cityLampMap: cityLightUniforms.cityLampMap,
-          cityLampRect: cityLightUniforms.cityLampRect,
-          cityLampPower: cityLightUniforms.cityLampPower,
-          cityCarLampA: cityLightUniforms.cityCarLampA,
-          cityCarLampB: cityLightUniforms.cityCarLampB,
-          cityCarLampCount: cityLightUniforms.cityCarLampCount,
+          ...RAIN_LAMP_UNIFORMS,
         },
         vertexShader: `
           attribute vec3 aVelocity;
@@ -514,6 +519,20 @@
       function vehicleLampAmount() {
         return Math.max(nightAmount, clamp((weather.rain - 0.4) / 0.4, 0, 1) * 0.65);
       }
+      // No drop falls below the rain box's floor. On the range it reaches down to the lowest
+      // ground RAIN_FLOOR_REACH round the view's subject (RAIN_FLOOR_DIP at most below the
+      // street there), so rain falls down a slope below the car too and a beam aimed down a
+      // descent has drops to light. The city is level: the floor is the street.
+      const RAIN_FLOOR_REACH = 32 * UNITS_PER_METRE,
+        RAIN_FLOOR_DIP = 12 * UNITS_PER_METRE,
+        RAIN_FLOOR_SAMPLES = Object.freeze([1, 0, -1, 0, 0, 1, 0, -1, 0.7, 0.7, -0.7, 0.7, 0.7, -0.7, -0.7, -0.7]);
+      function rainFloor(x, y, street) {
+        if (!terrainWithin(x, y, RAIN_FLOOR_REACH)) return street;
+        let low = street;
+        for (let i = 0; i < RAIN_FLOOR_SAMPLES.length; i += 2)
+          low = Math.min(low, terrainHeight(x + RAIN_FLOOR_SAMPLES[i] * RAIN_FLOOR_REACH, y + RAIN_FLOOR_SAMPLES[i + 1] * RAIN_FLOOR_REACH));
+        return Math.max(low, street - RAIN_FLOOR_DIP);
+      }
       // ---- Frame update --------------------------------------------------------------
       const rainAmbientDay = new Three.Color('#b9c8d6'),
         rainAmbientNight = new Three.Color('#3d4a5c'),
@@ -538,8 +557,10 @@
           // so you fly through the streaks instead of looking down on a patch of them.
           ground = flightViewActive
             ? Math.max(street, Math.min(flightAltitude, cloudBaseAt(cameraTarget.x, cameraTarget.y)) - RAIN_TOP * 0.6)
-            : street;
+            : rainFloor(cameraTarget.x, cameraTarget.y, street);
         rainUniforms.uOrigin.value.set(viewCenter.x, ground, viewCenter.y);
+        // Splashes stay on the street (they are not drawn from the air).
+        splashUniforms.uOrigin.value.set(viewCenter.x, street, viewCenter.y);
         rainMesh.visible = rain > 0.02;
         if (rainMesh.visible) {
           const drops = Math.min(RAIN_MAX, Math.round((touchEnabled() ? Math.min(tier.rain, 1100) : tier.rain) * clamp(0.25 + rain, 0, 1)));

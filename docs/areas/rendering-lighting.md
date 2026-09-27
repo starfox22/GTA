@@ -47,9 +47,12 @@ The HDR pipeline, sun, night and vehicle light, searchlights and the cutaway, in
   (`headlightFrame(c, out, mount, level)`: yaw, then `slopePitch`/`slopeRoll`, not the
   suspension's `loadPitch`, which would pump the beam's far end), from the lamps' real
   height (club trucks: their model's head lamps). Slot uniforms: A = lamp point + strength,
-  B = heading, half span, lamp height (layout kept: the rain in weather3d.js reads A/B
-  level), **C = sin pitch, sin roll, cos roll, mode** (bit 1 terrain horizon, bit 2 light
-  bar). GLSL `cityLampFrame` rebuilds the axes; a level car gives exactly the old numbers.
+  B = heading, half span, lamp height, **C = sin pitch, sin roll, cos roll, mode** (bit 1
+  terrain horizon, bit 2 light bar). GLSL `cityLampFrame` rebuilds the axes; a level car
+  gives exactly the old numbers. Every reader of the slots takes the frame and the mode:
+  lit materials, the beam haze and the rain (`rainCarLight` in weather3d.js: body frame,
+  flood for a light bar, `cityHorizonShade` for horizon slots, its vertex shaders sample
+  `cityBeamShadow` too).
   Drive-map quads, tail/brake/reversing washes and haze sheets are laid with
   `setBodyMatrix` in the same frame, so the map's road level follows the grade.
 - TERRAIN HORIZON: a slot with terrain in reach (`terrainWithin`) samples the ground on 24
