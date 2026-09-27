@@ -611,6 +611,7 @@
               radioed: !!med.radioed,
               ambulance: med.ambulance
                 ? {
+                    id: med.ambulance.id,
                     x: Math.round(med.ambulance.x),
                     y: Math.round(med.ambulance.y),
                     speed: Math.round(speedKmh(Math.hypot(med.ambulance.vx || 0, med.ambulance.vy || 0))),

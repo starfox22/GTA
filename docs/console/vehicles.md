@@ -30,6 +30,7 @@
 | `crashSounds()` | The last crash sounds chosen (crash-audio.js): sample, set, gain, rate, layers |
 | `crashTest(type, targetType, side, metersPerSecond, seconds)` | Drive a fresh car east into a parked one turned to show `side` (`front`, `rear`, `left`, `right`), throttle held; returns both damage reports |
 | `park(type, dx, dy, heading)`, `vehicleAt(x, y)` | Park an empty vehicle beside the player (returns its id); find the nearest vehicle (id, type, x, y, heading `a`, altitude) |
+| `vehicleById(id)` | One vehicle by id, or null once it is gone: type, x, y, heading `a`, `kmh`, `ai`, `occupied`, altitude |
 | `shootAt(x, y, weaponIndex)` | Fire one round (or one shotgun load) from the player at a map point |
 | `blast(x, y, power)` | Detonate at a map point (1 = a rocket) |
 | `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
