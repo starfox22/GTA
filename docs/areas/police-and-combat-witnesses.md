@@ -58,8 +58,18 @@ tools/tests/police-witness.mjs, witnesses-monarch.mjs.
   goes in. The player within `CALL_CUT_DISTANCE` (60) cuts the call (they run and retry);
   death ends it; held at gunpoint 2.5 s (`witnessThreatened`) most stay silent 3 min.
 - `inc.callers` is not given back when a caller dies or leaves the street, so the director
-  counts live callers (`witnessCallUnderWay`). Someone sheltering in a shop may call from
-  inside (`offstageCalls`, hidden, no bubble: it waits while a street caller is on it).
+  counts live callers (`witnessCallUnderWay`), and only those on stage (in `pedestrians`,
+  within 1,400 units: beyond that updatePeople freezes them mid-call). Someone sheltering in
+  a shop may call from inside (`offstageCalls`, hidden, no bubble: it waits while a street
+  caller is on it).
+- **A told witness always gets through** (`witnessMust`, e.g. a carjacked driver):
+  `noteWitness` never moves them to another incident while theirs is unreported (the
+  player getting into the car raises a separate 'theft' incident that used to take the
+  victim over, leaving the carjack with no caller); the crowd streamer never moves or
+  redresses anyone who still owes a call (`witnessOwesCall` in `streamableWalker`); and a
+  told witness or a frozen caller who is `gone` or `far` finishes the call off stage from
+  where they were (`witnessCallsOffstage`). `witnessReport` marks its incident `direct`
+  only when it created it (a merged crowd incident stays visible to `recentPlayerIncident`).
 - Bubbles: a 911 line (`speechKind` 'call911') ranks with police lines, and the renderer
   never culls it: outside the bubble band (x 40..W-40, y 90..H-190, only ~50-100 units
   north/south of the player at the street zoom) it is held inside the frame with a red edge
