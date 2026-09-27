@@ -1,8 +1,8 @@
 # Police, combat and damage
 
-heat.js, witnesses.js, pursuit.js, citylife.js (officers, `policeSees`, `clearPolice`), police-feedback.js,
-swat.js, roadblocks.js, combat-rules.js, game-combat.js, arsenal.js, wounds.js, carjack.js,
-damage.js / damage3d.js, air-cover.js.
+heat.js, witnesses.js, pursuit.js, citylife.js (officers, `policeSees`, `clearPolice`),
+swat.js, roadblocks.js, combat-rules.js, arsenal.js, wounds.js, carjack.js, damage.js,
+air-cover.js. `policeReport()` has `wounds` and `crimes`; methods: docs/console/police.md.
 
 ## Heat and stars (heat.js)
 
@@ -26,25 +26,23 @@ damage.js / damage3d.js, air-cover.js.
   victims; merged within 20 s / 420 units; kept `UNREPORTED_KEEP` 240 s). Officer and police
   vehicle kills are always known (the radio).
 - A civilian who perceived it (crowd-witnesses.js) reacts, then once calm and 140+ units
-  from the player phones 911: 5-12 s with the phone pose and bubbles. The call's end runs
-  `crowdReport` → `reportIncidentToPolice`: the matching unreported heat (by time and place,
-  or by victim for a body) goes through `crime(amount, { x, y, … })` → `reportedCrime`: the
-  first star, a "A WITNESS CALLED 911" toast, a 911 dispatch caption, the search set on the
-  reported spot (the player if the caller can see them), and the first unit after
-  `policeResponseSeconds` (2.5-10 s in the city by district, 11-36 s in the county,
-  16-22 s on Monarch Isle). Until a unit reaches the spot the search clock and escalation
-  hold (`policeResponseHolding`). Units spawn off screen round the search centre
-  (`pursuitCentre`) and take up the chase only on sight.
+  from the player phones 911 (5-12 s, phone pose, bubbles). The call's end (`crowdReport` →
+  `reportIncidentToPolice`) sends the matching unreported heat (by time and place, or victim
+  for a body) through `crime(amount, { x, y, … })` → `reportedCrime`: first star, "A WITNESS
+  CALLED 911" toast and caption, the search on the reported spot (on the player if the
+  caller sees them), the first unit after `policeResponseSeconds` (city 2.5-10 s by
+  district, county 11-36 s, Monarch Isle 16-22 s). Until a unit reaches the spot the search
+  clock and escalation hold (`policeResponseHolding`). Units spawn off screen round the
+  search centre (`pursuitCentre`) and chase only on sight.
 - A body found more than 30 s after the killing with the player 630+ units away: the police
   investigate (caption, toast) but nobody is wanted.
 - A unit that comes on the player within 15 s / 320 units of an unreported crime counts it
-  as seen. `clearPolice` (via `resetHeat` → `forgetWitnessedCrimes`) and the god panel's Lose
-  police forget unreported crimes and let calls in progress come to nothing.
+  as seen. `clearPolice` (`resetHeat` → `forgetWitnessedCrimes`) and the god panel's Lose
+  police forget unreported crimes and void calls in progress.
 - **API for other systems**: `witnessReport(person, kind, x, y, { delay, severity })` makes
-  one person a certain caller about what the player just did at (x, y) (kinds: carjack,
-  theft, gunfire, melee, body, crime). Used by the hijack paths (game-player-actions.js,
-  taxi.js) and the Trail Club; carjack.js may call it for its own moods. Non-crowd people
-  (venue staff) call "off stage" with bubbles only.
+  one person a certain caller about what the player just did at (x, y) (carjack, theft,
+  gunfire, melee, body, crime). Used by the hijack paths (game-player-actions.js, taxi.js),
+  the Trail Club and carjack.js. Non-crowd people (venue staff) call "off stage" (bubbles only).
 
 ## Response (pursuit.js)
 
@@ -52,45 +50,42 @@ damage.js / damage3d.js, air-cover.js.
   (PIT, box) and shooting (2), the unarmed helicopter and a roadblock (3), SWAT vans (4),
   federal agents, army jeeps, an APC, a truck and after `TANK_AFTER_SECONDS` the tank (5).
 - `OFFICER_KINDS` (patrol, road, swat, fed, soldier, sniper): hp, vest, fire rate, damage to
-  NPCs vs the player (`playerDmg`), and `run` pace: the player's default run (25 km/h)
-  outpaces every officer.
+  NPCs vs the player (`playerDmg`), `run` pace (the player's 25 km/h run outpaces them all).
 - `dispatchPolice` / `spawnPursuitUnit` spawn off-camera on roads ahead of the player;
   `pursuitControl` drives (lead, PIT, flank, block, search along routes, off-road shortcuts);
   county pursuits use the GPS road graph (`policeNavRoute`).
 - **The police helicopter is unarmed** (combat-rules.js POLICE HELICOPTER, `AIR_UNITS_MAX`
   one at a time): it tracks, lights and reports, never fires, and is blind to a player under
   overhead cover (`airCanSee`). Its searchlight lands on the roof over a covered player
-  (rendering.md, searchlights).
-- **Rooftop snipers are switched off**: `SNIPERS_ENABLED = false` in swat.js gates every
-  spawn, laser, beep and caption. Set it to true to restore them (their rules are in
-  combat-rules.js SNIPER FIRE).
-- Roadblocks: braced cruisers are ordinary 1.6 t bodies on locked brakes (`parkedFriction`),
-  so momentum decides who gets through; a cruiser shoved > 1 m is knocked loose.
-- Rain affects pursuit drivers too (vehicles-and-driving.md).
-- Respray garages clear the stars only if no unit saw the player drive in.
+  (rendering-lighting.md, Searchlights).
+- **Rooftop snipers are off**: `SNIPERS_ENABLED = false` (swat.js) gates every spawn, laser,
+  beep and caption; true restores them (rules: combat-rules.js SNIPER FIRE).
+- Roadblock cruisers are plain 1.6 t bodies on locked brakes (`parkedFriction`): momentum
+  decides who gets through; one shoved > 1 m is knocked loose.
+- Rain affects pursuit drivers too (vehicles-and-driving.md). A respray clears the stars only
+  if no unit saw the player drive in.
 
 ## Shooting and wounds
 
-- All gunfire travels through one 3D world: elevation-aware shots (combat-rules.js),
-  `shotBlocked()` against the building grid, `bulletTargets` from the 64-unit pedestrian
-  grid plus `sportsTargets()` and other venue lists.
+- One 3D world for all gunfire: elevation-aware shots (combat-rules.js), `shotBlocked()`
+  against the building grid, `bulletTargets` from the 64-unit pedestrian grid plus
+  `sportsTargets()` and other venue lists.
 - LETHALITY (combat-rules.js): firearms are lethal (one or two torso rounds); `vest` is the
   NPC counterpart of `player.armor`; `VEST_SHARE` per damage kind.
 - Wounds (wounds.js): hit zones, flinch, limp, blood trail, downed officers dragged to cover,
   `chooseDeathFall` (backwards, face down, slumped against a wall).
 - Melee and FISTS live in arsenal.js (`meleeAttack`; `playerUnarmed()` tells the crowd the
   player is harmless).
-- Carjacking: carjack.js (drivers and passengers per car with sex, age and temper, locked
-  doors, the ejection throw, reactions and lines; the 911 call is `witnessReport(driver,
-  'carjack', ...)`, made when the driver appears) and carjack-struggle.js (`player.carjack`:
-  approach round the car, door, tug, swing, `enterVehicle`). The hijack keeps
-  `crime(0.8, 'carjack')` (now when the door is yanked open) plus enterVehicle's own; the
-  street gets `crowdAlarm('carjack')`. Cars rolling over 14 km/h, bikes, or no room at the
-  door keep the old instant yank. Anything that moves or resets the player calls
+- Carjacking: carjack.js (occupants with sex, age and temper, locked doors, the ejection,
+  lines; the driver's 911 call is `witnessReport(driver, 'carjack', ...)` when they appear)
+  and carjack-struggle.js (`player.carjack`: round the car, door, tug, swing,
+  `enterVehicle`). `crime(0.8, 'carjack')` fires when the door is yanked open, plus
+  enterVehicle's own; the street gets `crowdAlarm('carjack')`. Over 14 km/h, bikes, or no
+  room at the door: the instant yank. Anything that moves or resets the player calls
   `cancelCarjack()` (teleportPlayer, die, resetMissionState).
 - Tank armour: `vehicleArmorShare` (the Apache takes 30% of small arms). The player's tank
   turret (`traverseTurret`) is shared by the pursuit tank and army gunners.
-- Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding, and
+- Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding; they
   take 40% of gang small-arms damage.
 
 ## Overhead cover (air-cover.js)
@@ -103,10 +98,9 @@ damage.js / damage3d.js, air-cover.js.
 
 ## Damage and destruction (damage.js, damage3d.js)
 
-- Damage is data on the entity; damage3d.js only draws it.
-- `damageVehicle(vehicle, amount, x, y, source, detail)` takes hp and hands the rest to
-  `recordVehicleDamage()`; `detail.kind` shapes it: `crash` crumples along the normal,
-  `blast` dishes toward the explosion, `bullet` only marks the skin.
+- Damage is data on the entity (damage3d.js only draws it). `damageVehicle(vehicle, amount,
+  x, y, source, detail)` takes hp, the rest goes to `recordVehicleDamage()`; `detail.kind`:
+  `crash` crumples along the normal, `blast` dishes toward the blast, `bullet` marks the skin.
 - `vehicle.dents[]` are `{x, y, z, nx, ny, depth, r}` in vehicle space (x forward, y right,
   z up); nearby dents merge. `damage.front/rear/left/right` (0..1) drive panels, glass,
   lamps, tyres and `damage.pull`. `vehicleHandling(c)` turns damage into power, grip and
@@ -121,8 +115,3 @@ damage.js / damage3d.js, air-cover.js.
 - Decals: one procedural atlas; `worldDecals` is a 2400-slot ring buffer; vehicle decals are
   rebuilt from `damage.marks`.
 - Console: `park()`, `shootAt()`, `blast()`, `crashTest()`, `damageReport()`, `repair()`.
-
-## Reports
-
-`policeReport()` (includes `wounds` and `crimes`); see
-docs/console/police.md for the police console methods.

@@ -8,7 +8,7 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
 ## Specs are real
 
 - `VEHICLE_DEFINITIONS` sizes are metres × `UNITS_PER_METRE` (`w` is the collider: body plus
-  mirrors; car bodies are drawn at 0.87 of it, trucks 0.91). Sedan 4.85 m, bus 12 m, etc.
+  mirrors; car bodies are drawn at 0.87 of it, trucks 0.91).
 - Performance is written as road tests print it: `topKmh`, `zeroTo` ([km/h, s]), `brakeG`,
   `cornerG`, `tractionG`, `mass` (tonnes), `balance` (-1..1: push wide vs tail out).
   `roadPerformance()` turns them into `max`, `acc`, `brake`, `power` (bisected so the car
@@ -41,8 +41,8 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   TCS), classics none; `spec.abs` / `esc` / `tcs` override. `c.braking` and
   `drivingAssistStates` feed the HUD lamps. Tests: `brakeTest`, `liftOffTest`, `accelTest`,
   `drivingState`. Settings · Driving is saved as `dead-end-city-driving`.
-- Traffic in the rain drives inside `wetGrip()` and slower; one driver in eleven keeps dry
-  habits (the occasional rear-ender). `aiDriving()` counts crashes and slides.
+- Traffic in the rain drives inside `wetGrip()`, slower; one driver in eleven keeps dry habits
+  (the odd rear-ender). `aiDriving()` counts crashes and slides.
 
 ## Crashes, riders, aircraft strikes (physics-collisions.js, riders.js, physics-aircraft.js)
 
@@ -55,8 +55,7 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
 - An airborne helicopter or plane faster than `AIRCRAFT_CRASH_SPEED` (40 km/h) into a
   building, hillside or big vehicle is destroyed (`destroyAircraft`); rotor discs strike walls
   (`rotorStrikes`). Console `heliInto`.
-- Damage is data on the entity (damage.js; see police-and-combat.md for the damage model and
-  breakable props).
+- The damage model and breakable props: police-and-combat.md.
 - Off a drop (falls-vehicles.js): a road vehicle on a terrain field tracks a free body height
   (`fallZ`); past 0.75 m of suspension droop it is airborne (`c.cliffAir`: ballistic, nose
   tipping at about g / 2v, roll if it went over at an angle; `cliffFlight` replaces the
@@ -72,13 +71,12 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
 
 - Planes (aviation.js `AIRFRAME_SPECS`): thrust is a real share of weight; take-off rolls are
   measured (courier ~236 m, jet ~504, airliner ~794) and the runways are sized from them
-  (world-and-map.md, Airfields). Flight controls: spool, pitch/roll springs, flaps, gear,
-  stall warnings; `flightData()` feeds the HUD and console.
+  (world-county-and-sea.md, Airfields). Flight controls: spool, pitch/roll springs, flaps,
+  gear, stall warnings; `flightData()` feeds the HUD and console.
 - Helicopters: `helicopterControl` (physics); rooftop landings in rooftops.js. The police
   helicopter is unarmed (police-and-combat.md). The Apache (apache.js) is player-only.
-- Street camera: `STREET_ZOOM` 2.5 on foot (world-view.js); a vehicle frames at its CAMERA
-  CONTEXT share of it (a car 0.7 = 1.75) and from ~45 km/h eases back (`speedZoomTarget`). In
-  the air a perspective camera takes over (rendering.md).
+- Camera: a vehicle frames at its CAMERA CONTEXT share of `STREET_ZOOM` (a car 0.7) and eases
+  back from ~45 km/h (`speedZoomTarget`); in the air a perspective camera (rendering.md).
 
 ## Vehicle models
 
@@ -98,14 +96,13 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   car ~22, helicopters 9-14. Zoomed out, cars pool into instanced impostors per type
   (BODY IMPOSTORS). Report with `carModels()`, `helicopterModels()`; line-ups with
   `carLineup`, `policeLineup`, `helicopterLineup`.
-- Looks are cached per vehicle in a WeakMap (`pickPoliceLook`, `helicopterLookFor`), never
-  stored on the vehicle.
+- Looks are cached per vehicle in a WeakMap (`pickPoliceLook`, `helicopterLookFor`), not on it.
 - Police lights run when `(c.cop && wantedStars > 0) || c.airUnit || c.gangTarget ||
   c.showLights`; `policeLightLevels` writes the flash pattern.
 - `helicopterSearchlightMount(c, out)` returns the Nightsun lens in world space: the only
   thing searchlight3d.js takes from the helicopter model. Keep it when changing models.
-- Helicopter liveries are generator jobs (`heliLiveryJob`), prewarmed on the title screen
-  so the air unit's first call does not hitch.
+- Helicopter liveries are generator jobs (`heliLiveryJob`) prewarmed behind the title, so the
+  air unit's first call does not hitch.
 - Motorbikes: the body's `rider` pose gives `riderSeat`; the character rig draws whoever
   rides (crowd3d RIDERS).
 - Boat kit (boats3d.js): `loftHull`, deckhouses, railings; `tint(color, finish)` meshes are
@@ -113,4 +110,4 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   `batchGroups`: the static batcher drops vertex colours.
 - Flagships: one traffic car in forty (`FLAGSHIP_TYPES`); SHOWCASE PARKING in
   game-populate.js (`showcase()`). The Prestige Collection and MONARCH MOTORS:
-  places-and-venues.md.
+  places-monarch-and-county.md.

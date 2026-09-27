@@ -5,23 +5,48 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | Doc | Read it for |
 | --- | --- |
 | FILEMAP.md | Which file holds what (generated; grep it first) |
+| BACKLOG.md | Known issues and loose ends per feature (check before polishing an area) |
 | areas/core-and-contracts.md | The closure and include model, units and scale, entity contracts, carriers, saves, performance rules |
-| areas/world-and-map.md | Coordinates, the street grid, bridges and the drawbridge, county, terrain, rail, airfields, sea life, layout audit |
-| areas/places-and-venues.md | Palm Keys and Marea, Sunset Pier, Monarch Isle, marina and liners, roofs, Ridgeline and the 4x4 club, Fort Sentinel, stadium and GOALLINE, MONARCH MOTORS |
-| areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, aircraft, vehicle models and their contracts |
+| areas/world-and-map.md | Layout and coordinates, frames, the Northbank grid, shores, bridges and the drawbridge, navigation, `layout()` and the layout audit |
+| areas/world-county-and-sea.md | The county, Ridgeline terrain, scenic roads, falls off cliffs, rail, airfields, parks, sea life |
+| areas/places-and-venues.md | Palm Keys, the beach and Marea, Sunset Pier, Harbor Point (marina, superyacht, liners, cargo terminal), North Point Key, roofs and helipads, garages, casino |
+| areas/places-monarch-and-county.md | Monarch Isle and MONARCH ONE, Ridgeline villages and the 4x4 club, Fort Sentinel and the Apache, the stadium and GOALLINE, MONARCH MOTORS |
+| areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft, vehicle models and their contracts |
 | areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles, the character rig |
-| areas/police-and-combat.md | Heat and stars, police response, shooting and wounds, overhead cover, damage and breakables |
+| areas/police-and-combat.md | Heat and stars, witnesses and 911, police response, shooting and wounds, carjacking, overhead cover, damage and breakables |
 | areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, saves, the demo build, god mode, ride skip |
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
-| areas/rendering.md | Cameras, draw-call rules, HDR pipeline, lighting, searchlights, cutaway, buildings and signs, ground, wet roads |
+| areas/rendering.md | Cameras and view, draw-call rules, buildings and signs, ground, water, wet roads, weather, tiers |
+| areas/rendering-lighting.md | HDR pipeline and post passes, sun, night light map, vehicle lamps, searchlights, the cutaway |
 | areas/ui-and-settings.md | Input actions, settings, HUD and the interaction prompt, touch, bike share |
-| areas/testing-and-console.md | Test tools, headless tips, tours, console rules and the index of the `DeadEndCity` tables (console/) |
+| areas/testing-and-console.md | Checks, the headless browser and slots, the dev server, writing tests, tours |
+| console/README.md | `window.DeadEndCity` rules (named methods only, adding one) and the index of the per-group method tables in console/ |
 | changes/ | Changelog fragments, one per change (see changes/README.md) |
 | CHANGELOG.md | The latest release; older ones in archive/CHANGELOG-archive.md |
-| audit/ | QA and review logs (method, findings, open observations) |
 | THIRD_PARTY_CREDITS.txt | Credits for every third-party asset (embedded in the build: keep it) |
 | SOURCE_GUIDE.md, DEVELOPMENT.md | Stubs mapping the old guides to the docs above |
 
+## Audit and QA logs (audit/)
+
+Method, findings and open observations of past passes; read the one for an area before
+re-auditing it.
+
+| Log | Covers |
+| --- | --- |
+| audit/scale-audit.md | People, vehicles, streets, furniture and the camera measured against real sizes (`scaleReport`) |
+| audit/performance.md | Simulation, render CPU and frame pacing budgets |
+| audit/graphics-review.md | Art-direction review of the map on HIGH, fixes and a performance pass |
+| audit/visual-qa.md | Screenshot tour of the whole map after the graphics overhaul |
+| audit/3d-meshes.md | Mesh fragments (garage, landmarks, civic, sports, transit, county, harbor, aircraft...) |
+| audit/world-layout.md | World layout, railway, county, parks, harbor, sports, streets; the layout audit |
+| audit/streets-collision-qa.md | Streets, barriers and collision on the waterfront |
+| audit/core-loop.md | Core loop, input, UI, mobile, radio, garages, audio |
+| audit/combat-qa.md | Wanted system, police response, pursuit driving, on-foot combat |
+| audit/missions-police.md | Missions, police, campaign, chase, challenges, rooftop, casino |
+| audit/missions-qa.md | All 16 missions after the world overhaul |
+| audit/physics-flight.md | Physics, combat rules, arsenal, air cover, parachute, aviation |
+| audit/systems-qa.md | Open-world systems after the railway, beach, superyacht, damage and crowd passes |
+
 Area docs hold the *why*: contracts, gotchas and decisions the code does not say. Details
 that code or FILEMAP already state belong there, not here. Keep each area doc under ~8 KB;
-when one grows past that, split it.
+when one grows past that, split it by topic (`<area>-<topic>.md`) and add it to this table.

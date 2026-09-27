@@ -4,7 +4,7 @@ Behaviour: crowd.js and crowd-*.js (looks, speech, streaming, walking, perceptio
 reactions, scenes, transit, traffic life), game-people.js (everyday chatter), wounds.js,
 riders.js, venue files that staff their own people (beachclub, dealership-people,
 sportsbook, monarch-life, themepark-crowd). Drawing: character-rig3d.js and crowd3d-*.js.
-Animals: ecology.js / ecology3d.js, sealife (world-and-map.md).
+Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
 
 ## The split
 

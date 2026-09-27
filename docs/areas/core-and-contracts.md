@@ -19,7 +19,7 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
 - Parent files named `<parent>.js` with siblings `<parent>-<area>.js` are include lists
   after pure-move splits. `game-console.js` is the console registry: each
   `game-console-<group>.js` is a self-contained `addConsoleMethods(group, {...})` call
-  (see testing-and-console.md).
+  (see docs/console/README.md).
 - `src/asset-loader.js` sits outside the closure: it decodes the embedded media blocks
   (or, in a split build, returns the `data-src` URL of a streamed file) and calls
   `startDeadEndCity(ASSETS)`. `src/shell.html` + `src/ui/*` hold the DOM and CSS
