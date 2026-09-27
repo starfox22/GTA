@@ -10,6 +10,9 @@ driving.js). Specs, crashes, aircraft and models: vehicles-and-driving.md.
   pursuit alike (a city corner is 30-40 km/h). Tyre side force peaks at `TYRE_PEAK_SLIP`
   (7°); `PLAYER_YAW_RESPONSE` 8.5/s; UNDERSTEER SKID above 28 km/h. Measure with
   `turnTest(type, kmh)`.
+- Loose ground (`tyreSurfaceGrip`, the player's vehicle): road tyres keep 0.7 of their grip
+  on the beach's sand and 0.82 on park lawns (off-roaders 0.88 / 0.94); the county's dirt is
+  offroad.js's.
 - One grip budget (friction circle): braking hard in a bend ploughs wide. Rain (`wetGrip()`,
   down to 0.72 soaked) scales traction, brakes and cornering. `kerbStrike` jolts on kerbs.
 - **Brakes and assists** (driving.js, player's road vehicle only): a pedal ramp, front/rear

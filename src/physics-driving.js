@@ -88,9 +88,16 @@
        KR 500) squirm on tarmac once the speed is up, down to 0.8 of their grip
        by 120 km/h for braking, drive and cornering alike; on dirt, grass and the
        trails they have it all (roadVehicleTerrain gives them full traction).
-       Every other tyre is 1 here. */
+       Road tyres on loose ground in the city slide: the beach's sand gives 0.7 of
+       the grip (an off-roader's 0.88), a park's lawn 0.82 (0.94); the county's
+       dirt is offroad.js's. Every other surface is 1 here. */
     function tyreSurfaceGrip(c, spec, along) {
-      if (!spec.dirt) return 1;
+      if (!spec.dirt) {
+        if (c.offroadState || c.x > CITY_SIZE - 200 || onRoad(c.x, c.y)) return 1;
+        if (onBeach(c.x, c.y)) return spec.offroad ? 0.88 : 0.7;
+        if (parkAt(c.x, c.y)) return spec.offroad ? 0.94 : 0.82;
+        return 1;
+      }
       if (!onRoad(c.x, c.y) && !onCountyRoad(c.x, c.y)) return 1;
       return 1 - 0.2 * clamp((Math.abs(along) - 50 * KMH) / (70 * KMH), 0, 1);
     }
