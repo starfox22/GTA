@@ -50,6 +50,12 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The mountain far LOD uses the spruce cone for pines too.
 - Sea sun glitter looked very speckled in headless shots: check on a real GPU.
 
+## Rendering (postfx3d.js, lighting3d-*.js)
+- Only the player's beams are shadowed (BEAM SHADOWS); other CAR LAMPS light through people and cars.
+- The ground's crisp-edge rebuild still uses 2x2-quad derivatives: each 1-pixel scroll flips the edge AA on some kerbs and markings (~1% of pixels).
+- Tree cut-outs would antialias better with alpha-to-coverage on MSAA tiers (vegetation3d-material.js; r160 forces alpha 1 on opaque materials).
+- Headlight strength, beam haze and night bloom were tuned on SwiftShader: check on a real GPU and a HiDPI screen.
+
 ## Unicorn (unicorn3d.js)
 - Bright sky-reflection patch under the chest in daylight (lacquer material); little muscle definition.
 
