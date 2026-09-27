@@ -470,6 +470,10 @@ body.no-key-hints .quickkeys {
   .binding-key {
     min-width: 76px;
   }
+  /* Keys on their own line under every action, not beside the short labels only. */
+  .binding-row .binding-slots {
+    flex-basis: 100%;
+  }
   .settings-slider input {
     width: min(200px, 50vw);
   }
