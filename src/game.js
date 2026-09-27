@@ -71,6 +71,9 @@
     // @include src/cycles.js
     // @include src/weather.js
     // @include src/weather-audio.js
+    // @include src/clouds.js
+    // @include src/clouds-audio.js
+    // @include src/clouds-console.js
     // @include src/water.js
     // @include src/water-audio.js
     // @include src/beachvolley.js

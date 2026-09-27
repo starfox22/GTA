@@ -457,7 +457,8 @@
       function buildBolt(x, z, ground, seed) {
         let rnd = seed * 2147483646 + 1;
         const random = () => ((rnd = (rnd * 16807) % 2147483647) / 2147483647),
-          top = Math.min(CLOUD_BASE * 0.3, 900),
+          // (Seen from the street, whose camera never shows the real base: ~110 m up.)
+          top = 900,
           paths = [];
         // Midpoint displacement: jagged at every scale, like a real channel.
         const channel = (a, b, rough, depth, out) => {
@@ -535,7 +536,9 @@
         const street = terrainHeight(cameraTarget.x, cameraTarget.y),
           // In the air the box of rain rides with the aircraft (below the cloud base),
           // so you fly through the streaks instead of looking down on a patch of them.
-          ground = flightViewActive ? Math.max(street, Math.min(flightAltitude, CLOUD_BASE) - RAIN_TOP * 0.6) : street;
+          ground = flightViewActive
+            ? Math.max(street, Math.min(flightAltitude, cloudBaseAt(cameraTarget.x, cameraTarget.y)) - RAIN_TOP * 0.6)
+            : street;
         rainUniforms.uOrigin.value.set(viewCenter.x, ground, viewCenter.y);
         rainMesh.visible = rain > 0.02;
         if (rainMesh.visible) {

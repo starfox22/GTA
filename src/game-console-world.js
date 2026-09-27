@@ -210,4 +210,6 @@
     addConsoleMethods('falls', fallsConsole());
     // North Point Key: skyline(), skylineVisit(spot) (skyline-console.js).
     addConsoleMethods('skyline', skylineConsole());
+    // Clouds: cloudLayer(x, y, altitudeM), cloudSpot(kind, lead), cloudJump(metres, kind) (clouds-console.js).
+    addConsoleMethods('clouds', cloudsConsole());
     // END SUBSYSTEM: src/game-console-world.js

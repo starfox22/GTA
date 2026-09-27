@@ -483,8 +483,11 @@
        * tints shadows and highlights separately (teal shadows and amber lights at
        * dusk, blue shadows and sodium-warm lights at night), and a gentle vignette.
        * A little blue-noise-like dither stops the night sky and fog from banding.
+       * Water on the lens after a cloud refracts the whole frame (clouds3d-lens.js).
        */
+      // @include src/clouds3d-lens.js
       const postCompositeUniforms = {
+        ...cloudLensUniforms,
         tScene: { value: null },
         tDepth: { value: null },
         tAo: { value: null },
@@ -574,13 +577,17 @@
           vec3 cityLinearToSRGB( vec3 c ) {
             return mix( c * 12.92, pow( c, vec3( 0.41666 ) ) * 1.055 - 0.055, step( 0.0031308, c ) );
           }
+          #include <city_lens_pars>
           void main() {
-            vec3 color = texture2D( tScene, vUv ).rgb;
+            // Water on the lens bends the whole image under each bead.
+            vec3 lens = cityLens( vUv, uAspect );
+            vec2 sceneUv = clamp( vUv + lens.xy, 0.0, 1.0 );
+            vec3 color = texture2D( tScene, sceneUv ).rgb;
             // A NaN pixel would come out of the tone curve black, an overflowed one
             // (half float infinity) as NaN too: show them as nothing and as white.
             color = any( isnan( color ) ) ? vec3( 0.0 ) : clamp( color, vec3( 0.0 ), vec3( 6.0e4 ) );
             #ifdef USE_AO
-              float ao = compositeAo( vUv );
+              float ao = compositeAo( sceneUv );
               // Lights (lamps, neon, lit windows) are not shaded; sunlit paving is.
               float lum = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
               color *= mix( 1.0, ao, uAoStrength * ( 1.0 - smoothstep( 3.5, 9.0, lum ) ) );
@@ -589,12 +596,14 @@
               // Wet reflections: the ground's own reflectivity (negative alpha) at
               // full resolution keeps the half-resolution reflection off the cars
               // and kerbs standing in it.
-              float wet = clamp( -texture2D( tScene, vUv ).a, 0.0, 1.0 );
-              if ( uReflect > 0.0 && wet > 0.0 ) color = max( color + texture2D( tReflect, vUv ).rgb * wet * uReflect, 0.0 );
+              float wet = clamp( -texture2D( tScene, sceneUv ).a, 0.0, 1.0 );
+              if ( uReflect > 0.0 && wet > 0.0 ) color = max( color + texture2D( tReflect, sceneUv ).rgb * wet * uReflect, 0.0 );
             #endif
             #ifdef USE_BLOOM
-              color += texture2D( tBloom, vUv ).rgb * uBloomStrength;
+              color += texture2D( tBloom, sceneUv ).rgb * uBloomStrength;
             #endif
+            // A bead's rim is a little darker than what it shows.
+            color *= 1.0 - lens.z * 0.14;
             color = cityACES( color );
             #ifdef USE_GRADE
               float luma = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );

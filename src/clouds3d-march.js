@@ -1,4 +1,5 @@
-      // Clouds 3D ray-march pass: the half-resolution march through the layer, its composite and depth quads behind the aircraft.
+      // Clouds 3D ray-march pass: the half-resolution march through the layer beyond the subject (stopped by the
+      // hills and the tall towers), its composite and depth quads behind the aircraft, and the shared cloud lighting.
       // ---- Ray-march pass ----------------------------------------------------------------
       const CLOUD_STEPS = cloudsMobile ? 28 : 56,
         CLOUD_RESOLUTION = cloudsMobile ? 0.34 : 0.5,
@@ -17,21 +18,91 @@
             generateMipmaps: false,
           })
         : null;
+      // Light uniforms shared by the far march and the veil near the camera (clouds3d-near.js).
+      function cloudLightUniforms() {
+        return {
+          uSunDirection: { value: SUN_DIRECTION.clone() },
+          uSunColor: { value: new Three.Color() },
+          uSkyColor: { value: new Three.Color() },
+          uGroundColor: { value: new Three.Color() },
+          uGlowColor: { value: new Three.Color() },
+        };
+      }
+      /* The light a bit of cloud sends towards the eye. Beer-Lambert extinction and a
+         short march towards the sun for self-shadowing; the cloud standing above in its
+         column dims it further, so the heart and underside of a deep deck are grey and
+         only its top is sunlit; a two-lobe phase function; sky light from above fading
+         into the shadowed body; light bounced up from the ground under the base; and at
+         night the city's glow on the underside of the deck. */
+      const CLOUD_LIGHT_GLSL = `
+        uniform vec3 uSunDirection, uSunColor, uSkyColor, uGroundColor, uGlowColor;
+        const float EXTINCTION = 0.028; // per world unit at density 1
+        float henyeyGreenstein(float c, float g){
+          float g2 = g * g;
+          return (1. - g2) / pow(1. + g2 - 2. * g * c, 1.5); // x 4pi: isotropic = 1
+        }
+        float cloudPhase(float cosine){
+          return mix(henyeyGreenstein(cosine, 0.6), henyeyGreenstein(cosine, -0.25), 0.4);
+        }
+        // Optical depth towards the sun, for self-shadowing.
+        float sunDepth(vec3 p){
+          float d = cloudDensity(p + uSunDirection * 70., false) * 140.
+                  + cloudDensity(p + uSunDirection * 260., false) * 240.;
+          ${cloudsMobile ? '' : 'd += cloudDensity(p + uSunDirection * 620., false) * 480.;'}
+          return d * EXTINCTION;
+        }
+        vec3 cloudRadiance(vec3 p, vec4 area, float d, float phase){
+          vec2 slab = cloudSlab(area);
+          float h = clamp((p.y - slab.x) / (slab.y - slab.x), 0., 1.);
+          float od = sunDepth(p) + cloudColumnAbove(p, area) * 0.0012;
+          // Beer's law plus two orders of multiple scattering (each weaker, reaching
+          // deeper and less forward-peaked), which is why a real cloud glows white
+          // right through and only its heart and base go grey; "powder" darkening on
+          // thin edges.
+          float sun = (exp(-od) * phase + exp(-od * 0.25) * 0.5 * mix(1., phase, 0.5) + exp(-od * 0.07) * 0.22)
+                    * (1. - exp(-d * 4.)) * 0.85;
+          float city = smoothstep(-3900., -2700., p.x) * smoothstep(4600., 3600., p.x)
+                     * smoothstep(-4700., -3800., p.z) * smoothstep(6200., 5300., p.z);
+          return uSunColor * sun
+               + uSkyColor * (0.25 + 0.75 * h) * (0.35 + 0.65 * exp(-od * 0.5))
+               + uGroundColor * (1. - h)
+               + uGlowColor * city * pow(1. - h, 3.);
+        }`;
+      // Where a ray first meets one of the tall towers the layer can reach (a big number if none).
+      const CLOUD_TOWERS_GLSL = `
+        uniform vec4 uTowerBox[${CLOUD_TOWERS}];
+        uniform float uTowerTop[${CLOUD_TOWERS}];
+        float cloudOccluded(vec3 ro, vec3 rd){
+          float hit = 1e9;
+          vec3 inv = 1. / (rd + vec3(equal(rd, vec3(0.))) * 1e-6);
+          for (int i = 0; i < ${CLOUD_TOWERS}; i++){
+            vec4 b = uTowerBox[i];
+            if (b.z < b.x) continue;
+            vec3 ta = (vec3(b.x, -1000., b.y) - ro) * inv, tb = (vec3(b.z, uTowerTop[i], b.w) - ro) * inv;
+            vec3 lo = min(ta, tb), hi = max(ta, tb);
+            float enter = max(max(lo.x, lo.y), lo.z), leave = min(min(hi.x, hi.y), hi.z);
+            if (leave > max(enter, 0.)) hit = min(hit, max(enter, 0.));
+          }
+          return hit;
+        }`;
       const marchUniforms = {
         ...cloudFieldUniforms(),
+        ...cloudLightUniforms(),
         uInverseProjection: { value: new Three.Matrix4() },
         uCameraWorld: { value: new Three.Matrix4() },
         uCameraPosition: { value: new Three.Vector3() },
-        uSunDirection: { value: SUN_DIRECTION.clone() },
-        uSunColor: { value: new Three.Color() },
-        uSkyColor: { value: new Three.Color() },
-        uGroundColor: { value: new Three.Color() },
-        uGlowColor: { value: new Three.Color() },
         uHazeColor: { value: new Three.Color() },
         uHaze: { value: new Three.Vector2(0, 6000) },
         uNearFade: { value: new Three.Vector2(0, 1) },
         uAircraft: { value: new Three.Vector3() },
+        // Clear air round the subject: inner and outer radius, strength (1 for aircraft).
+        uPocket: { value: new Three.Vector3(CLOUD_POCKET_INNER, CLOUD_POCKET_OUTER, 1) },
+        // The layer's lowest and highest point now (cloudLayerBounds).
+        uSlab: { value: new Three.Vector2(0, 1) },
+        uTowerBox: { value: cloudTowerBoxes },
+        uTowerTop: { value: cloudTowerTops },
         uMaxDistance: { value: 30000 },
+        uShafts: { value: new Three.Vector3(0, 0, 0) },
       };
       const marchMaterial = new Three.ShaderMaterial({
         uniforms: marchUniforms,
@@ -49,65 +120,46 @@
         fragmentShader: `
           precision highp float;
           ${CLOUD_FIELD_GLSL}
-          uniform vec3 uCameraPosition, uSunDirection, uSunColor, uSkyColor, uGroundColor, uGlowColor, uHazeColor;
-          uniform vec2 uHaze, uNearFade;
-          uniform vec3 uAircraft;
+          ${CLOUD_LIGHT_GLSL}
+          ${CLOUD_TOWERS_GLSL}
+          uniform vec3 uCameraPosition, uHazeColor, uAircraft, uPocket;
+          uniform vec2 uHaze, uNearFade, uSlab;
           uniform float uMaxDistance;
+          // Shafts under the layer: x strength (0 off), y haze per world unit, z the ground.
+          uniform vec3 uShafts;
           varying vec3 vRay;
-          const float EXTINCTION = 0.028; // per world unit at density 1
-          float henyeyGreenstein(float c, float g){
-            float g2 = g * g;
-            return (1. - g2) / pow(1. + g2 - 2. * g * c, 1.5); // x 4pi: isotropic = 1
-          }
-          // Optical depth towards the sun, for self-shadowing.
-          float sunDepth(vec3 p){
-            float d = cloudDensity(p + uSunDirection * 70., false) * 140.
-                    + cloudDensity(p + uSunDirection * 260., false) * 240.;
-            ${cloudsMobile ? '' : 'd += cloudDensity(p + uSunDirection * 620., false) * 480.;'}
-            return d * EXTINCTION;
-          }
           void main(){
-            vec3 rd = normalize(vRay);
+            vec3 rd = normalize(vRay), ro = uCameraPosition;
             gl_FragColor = vec4(0.);
-            if (rd.y > -0.0001 && uCameraPosition.y < uBase) return;
-            // Where the ray is inside the slab, less what is faded out near the camera.
-            float toBase = (uBase - uCameraPosition.y) / rd.y, toTop = (uTop - uCameraPosition.y) / rd.y;
-            float t0 = max(max(min(toBase, toTop), 0.), uNearFade.x);
-            float t1 = min(max(toBase, toTop), uMaxDistance);
-            if (t1 <= t0) return;
-            float stepLength = (t1 - t0) / float(${CLOUD_STEPS});
+            // Where the ray is inside the slab, less what is faded out near the camera and
+            // what lies behind a tower.
+            float ry = abs(rd.y) < 1e-4 ? 1e-4 : rd.y;
+            float toLow = (uSlab.x - ro.y) / ry, toHigh = (uSlab.y - ro.y) / ry;
+            float t0 = max(max(min(toLow, toHigh), 0.), uNearFade.x);
+            float t1 = min(min(max(toLow, toHigh), uMaxDistance), cloudOccluded(ro, rd));
+            float stepLength = max(t1 - t0, 0.) / float(${CLOUD_STEPS});
             // Interleaved-gradient jitter trades banding for fine grain.
             float jitter = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
             float t = t0 + stepLength * jitter;
-            float cosine = dot(rd, uSunDirection);
-            float phase = mix(henyeyGreenstein(cosine, 0.6), henyeyGreenstein(cosine, -0.25), 0.4);
+            float phase = cloudPhase(dot(rd, uSunDirection));
             float transmittance = 1., firstHit = -1.;
             vec3 light = vec3(0.);
-            // Over the city at night the streetlights glow on the underside of the deck.
             for (int i = 0; i < ${CLOUD_STEPS}; i++){
-              vec3 p = uCameraPosition + rd * t;
+              if (t1 <= t0) break;
+              vec3 p = ro + rd * t;
+              vec4 area = cloudArea(p.xz);
+              // The ray has met the hills: nothing beyond is seen.
+              if (p.y < cloudGround(area)) break;
               // A pocket of clear air around the aircraft: inside the layer you see
               // cloud walls and wisps around you and the ground straight below,
               // rather than a flat white-out.
               vec3 fromCraft = p - uAircraft;
               fromCraft.y *= 1.4;
-              float d = cloudDensity(p, true) * smoothstep(uNearFade.x, uNearFade.y, t)
-                      * smoothstep(${CLOUD_POCKET_INNER.toFixed(1)}, ${CLOUD_POCKET_OUTER.toFixed(1)}, length(fromCraft));
+              float d = cloudDensityAt(p, area, true) * smoothstep(uNearFade.x, uNearFade.y, t)
+                      * mix(1., smoothstep(uPocket.x, uPocket.y, length(fromCraft)), uPocket.z);
               if (d > 0.003){
                 if (firstHit < 0.) firstHit = t;
-                float h = clamp((p.y - uBase) / (uTop - uBase), 0., 1.);
-                float od = sunDepth(p);
-                // Beer's law with a softened tail (multiple scattering keeps deep
-                // cloud from going black) and "powder" darkening on thin edges.
-                float sun = max(exp(-od), exp(-od * 0.25) * 0.3) * (1. - exp(-d * 4.)) * 1.2;
-                float city = smoothstep(-3900., -2700., p.x) * smoothstep(4600., 3600., p.x)
-                           * smoothstep(-4700., -3800., p.z) * smoothstep(6200., 5300., p.z);
-                // Ambient: open sky above, fading into the shadowed body; a little
-                // light bounced up from the ground under the base.
-                vec3 radiance = uSunColor * phase * sun
-                              + uSkyColor * (0.25 + 0.75 * h) * (0.35 + 0.65 * exp(-od * 0.5))
-                              + uGroundColor * (1. - h)
-                              + uGlowColor * city * pow(1. - h, 3.);
+                vec3 radiance = cloudRadiance(p, area, d, phase);
                 float stepTransmittance = exp(-d * EXTINCTION * stepLength);
                 light += transmittance * radiance * (1. - stepTransmittance);
                 transmittance *= stepTransmittance;
@@ -120,6 +172,23 @@
               // The same aerial perspective as the scene (flight-view3d.js).
               float reach = max(firstHit - uHaze.x, 0.) / uHaze.y;
               light = mix(light, uHazeColor * alpha, 1. - exp(-reach * reach));
+            }
+            // Shafts: the haze under the layer is lit only where the sun gets through, so
+            // each cloud's shadow runs down through the air to the ground as a darker column
+            // and the gaps between stand out as beams (seen from above: slanting light
+            // under the breaks). The shadowed haze is drawn as black over what lies below.
+            if (uShafts.x > 0. && rd.y < -0.05 && transmittance > 0.05){
+              float a = max(max(toLow, 0.), uNearFade.x), b = min((uShafts.z - ro.y) / rd.y, uMaxDistance);
+              if (b > a){
+                float shade = 0.;
+                for (int k = 0; k < 6; k++){
+                  vec3 p = ro + rd * mix(a, b, (float(k) + jitter) / 6.);
+                  vec2 slab = cloudSlab(cloudArea(p.xz));
+                  shade += cloudDensity(p + uSunDirection * ((mix(slab.x, slab.y, 0.25) - p.y) / uSunDirection.y), false);
+                }
+                float dark = (1. - exp(-(b - a) * uShafts.y)) * clamp(shade / 6. * 3., 0., 1.) * uShafts.x;
+                alpha += transmittance * dark;
+              }
             }
             gl_FragColor = vec4(light * ${CLOUD_STORE_SCALE.toFixed(2)}, alpha);
           }`,

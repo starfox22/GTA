@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-421 files in the include tree, 149,215 lines.
+427 files in the include tree, 150,271 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   157 — ▸ Game orchestration and shared state
+- `src/game.js`   160 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -63,8 +63,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/marina.js`    11 — ▸ Harbor Point marina, the superyacht and the cruise liners
 - `src/taxi.js`   286 — Yellow cabs
 - `src/cycles.js`   801 — City bicycles
-- `src/weather.js`   214 — Weather
+- `src/weather.js`   216 — Weather
 - `src/weather-audio.js`   270 — Rain and thunder sound
+- `src/clouds.js`   327 — Cloud layer (game side): cloudBaseAt/cloudTopAt, the only source of the cloud altitude, by weather and area; the coverage and area maps the renderer …
+- `src/clouds-audio.js`    61 — Cloud sound: inside a cloud the rush of air goes deep and damp (a low, soft roar and a fine hiss of droplets), following cloudLayer.immersion and the …
+- `src/clouds-console.js`    58 — Cloud console (registered by game-console-world.js as 'clouds'): cloudLayer() report, cloudSpot() and cloudJump(), a freefall from a given altitude …
 - `src/water.js`   690 — Swimming and sinking
 - `src/water-audio.js`   394 — Water and beach sound
 - `src/beachvolley.js`    43 — ▸ Beach volleyball on Palm Keys Beach
@@ -338,7 +341,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
 - `src/flight-view3d.js`   882 — Flight camera and aerial perspective
-- `src/postfx3d.js`   924 — HDR post-processing pipeline
+- `src/postfx3d.js`   933 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    26 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   924 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   313 — Static building batches, static cells and culling (staticInView), shared materials.
@@ -384,11 +387,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/dealership3d.js`    43 — ▸ MONARCH MOTORS in 3D
 - `src/beachclub3d.js`    38 — ▸ Marea Beach Club meshes and show lighting
 - `src/cycles3d.js`   450 — Bike-share station meshes
-- `src/weather3d.js`   663 — Weather and sky visuals
+- `src/weather3d.js`   666 — Weather and sky visuals
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    84 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/carjack3d.js`   153 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
-- `src/clouds3d.js`    45 — ▸ Volumetric clouds and cloud shadows
+- `src/clouds3d.js`    55 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
 - `src/surfaces3d.js`   198 — ▸ Procedural surface detail
 - `src/grass3d.js`   152 — Grass tufts
@@ -405,8 +408,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-vehicle-models.js`   348 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/render3d-effects.js`   214 — ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 - `src/render3d-resources.js`   141 — GPU resource lifecycle: shared geometries, model pruning and disposal.
-- `src/render3d-api.js`   469 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   471 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   661 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+
+## src/postfx3d.js ▸ HDR post-processing pipeline
+
+- `src/clouds3d-lens.js`    41 — Clouds 3D lens: beads of water on the camera's lens after a cloud, refracting the frame and swept up it by the freefall airflow; a GLSL chunk and …
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
@@ -563,10 +570,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
-- `src/clouds3d-field.js`   199 — Clouds 3D field: layer constants, the coverage map, the GPU noise volume and the shared density field (CLOUD_FIELD_GLSL).
-- `src/clouds3d-march.js`   182 — Clouds 3D ray-march pass: the half-resolution march through the layer, its composite and depth quads behind the aircraft.
-- `src/clouds3d-shadows.js`    80 — Clouds 3D shadows: the plane over the city that throws the cloud field's shadows on the ground.
-- `src/clouds3d-frame.js`   120 — Clouds 3D frame update (updateCloudVisuals): wind, coverage, shadows, sun dimming and the march.
+- `src/clouds3d-field.js`   233 — Clouds 3D field: textures of the game's cloud layer (clouds.js), the GPU noise volume, the shared density field (CLOUD_FIELD_GLSL: base and top by …
+- `src/clouds3d-march.js`   228 — Clouds 3D ray-march pass: the half-resolution march through the layer beyond the subject (stopped by the hills and the tall towers), its composite …
+- `src/clouds3d-near.js`   151 — Clouds 3D near the camera: the veil of cloud between the camera and the subject (the jumper or the aircraft), marched like the far layer and …
+- `src/clouds3d-wisps.js`   199 — Clouds 3D wisps: soft rags of cloud streaming past the camera at the speed it moves through the layer (streaked along the relative wind), shown only …
+- `src/clouds3d-shadows.js`    85 — Clouds 3D shadows: the plane over the city that throws the cloud field's shadows on the ground.
+- `src/clouds3d-frame.js`   223 — Clouds 3D frame update (updateCloudVisuals): shadows, sun dimming, the far march, the veil near the camera, the wisps, the lens and the in-cloud …
 
 ## src/surfaces3d.js ▸ Procedural surface detail
 
@@ -636,7 +645,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-missions.js`   248 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   198 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
-- `src/game-console-world.js`   213 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-world.js`   215 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   140 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost

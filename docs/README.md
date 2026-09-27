@@ -19,6 +19,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
 | areas/rendering.md | Cameras and view, draw-call rules, buildings and signs, ground, water, wet roads, weather, tiers |
 | areas/rendering-lighting.md | HDR pipeline and post passes, sun, night light map, vehicle lamps, searchlights, the cutaway |
+| areas/rendering-clouds.md | The cloud layer's altitude by weather and area (`cloudBaseAt`), the march, the veil, wisps and lens in cloud, cloud shadows |
 | areas/ui-and-settings.md | Input actions, settings, HUD and the interaction prompt, touch, bike share |
 | areas/testing-and-console.md | Checks, the headless browser and slots, the dev server, writing tests, tours |
 | console/README.md | `window.DeadEndCity` rules (named methods only, adding one) and the index of the per-group method tables in console/ |

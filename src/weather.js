@@ -176,6 +176,8 @@
         }
       updateWeatherAudio(deltaSeconds);
       updateParachuteWind();
+      // The cloud layer's height, drift and the airborne player's immersion (clouds.js).
+      updateCloudLayer(deltaSeconds);
     }
     /**
      * The weather machine itself, with no sound or lightning: the state moves on

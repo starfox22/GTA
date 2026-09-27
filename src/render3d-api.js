@@ -131,6 +131,8 @@
         },
         // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
         searchlight: (options) => searchlightReport(options),
+        // The cloud layer as the camera sees it this frame: in cloud, veil, wisps, lens (clouds3d-frame.js).
+        cloudView: () => cloudViewReport(),
         // Vehicle lights this frame: CAR LAMPS slots and drive-map beams (lighting3d-vehicle-lights.js).
         headlights: () => vehicleLightsReport(),
         // A/B switches for the look: pixelLock, fxaa (after MSAA), vibrance, carLamps, groundSlopeCap.

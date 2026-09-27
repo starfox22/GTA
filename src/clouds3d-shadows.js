@@ -38,12 +38,14 @@
             // the ground, a pattern of hard-edged blotches a hundred metres across
             // (camouflage, seen from a helicopter). A real cloud shadow is a broad,
             // soft pool: the same cells, but their edges ramp in over a wide band.
-            float softCloud(vec3 p){
-              float h = (p.y - uBase) / (uTop - uBase);
-              float cover = cloudCoverage(p.xz);
+            // (area: the area map near p, read once for a ring of taps; it varies slowly.)
+            float softCloud(vec3 p, vec4 area){
+              vec2 slab = cloudSlab(area);
+              float h = (p.y - slab.x) / (slab.y - slab.x);
+              float cover = cloudCoverage(p.xz, area);
               if (cover <= 0.001 || h <= 0. || h >= 1.) return 0.;
               float top = mix(0.36, 1.0, cover);
-              float profile = smoothstep(0., 0.07, h) * (1. - smoothstep(top * 0.35, top, h));
+              float profile = smoothstep(0., 0.07, h) * (1. - smoothstep(top * mix(0.35, 0.72, uDeck), top, h));
               vec3 q = vec3(p.x + uWind.x, p.y, p.z + uWind.y);
               vec4 n = texture(uNoise, q / ${CLOUD_SHAPE_SCALE.toFixed(1)});
               float shape = n.r * 0.75 + n.b * 0.25;
@@ -58,14 +60,17 @@
               // each a small ring of taps (a ~60 m penumbra) so edges blur into the
               // soft pools a sun-lit cumulus actually throws.
               float depth = 0.;
+              // The layer over this ground (its base and top follow the weather and the area).
+              vec2 slab = cloudSlab(cloudArea(ground.xz));
               for (int i = 0; i < 2; i++){
-                float y = mix(uBase, uTop, 0.22 + 0.26 * float(i));
+                float y = mix(slab.x, slab.y, 0.22 + 0.26 * float(i));
                 vec3 p = ground + uSunDirection * ((y - ground.y) / uSunDirection.y);
-                depth += softCloud(p) * 2.;
-                depth += softCloud(p + vec3(310., 0., 90.));
-                depth += softCloud(p + vec3(-90., 0., 310.));
-                depth += softCloud(p + vec3(-310., 0., -90.));
-                depth += softCloud(p + vec3(90., 0., -310.));
+                vec4 area = cloudArea(p.xz);
+                depth += softCloud(p, area) * 2.;
+                depth += softCloud(p + vec3(310., 0., 90.), area);
+                depth += softCloud(p + vec3(-90., 0., 310.), area);
+                depth += softCloud(p + vec3(-310., 0., -90.), area);
+                depth += softCloud(p + vec3(90., 0., -310.), area);
               }
               float shade = smoothstep(0.04, 0.8, depth / 12.);
               // Sky-lit shade is cool but not ink: a slate tone rather than navy.
