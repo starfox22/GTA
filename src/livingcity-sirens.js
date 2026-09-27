@@ -80,7 +80,7 @@
       return null;
     }
     /* A unit under lights about to cross the junction a car is waiting at (or
-       already in it): hold at the line. One behind us going our way is let
+       standing in the box): hold at the line. One behind us going our way is let
        through by pulling over instead. */
     function sirenCrossing(c, j) {
       for (let i = 0; i < sirenUnits.length; i++) {
@@ -94,7 +94,10 @@
           speed = Math.hypot(vx, vy),
           d = Math.hypot(dx, dy);
         if (Math.cos(e.a - j.a) > 0.7 && (c.x - e.x) * Math.cos(j.a) + (c.y - e.y) * Math.sin(j.a) > 0) continue;
-        if (d < 90 || (speed > 8 * KMH && (dx * vx + dy * vy) / (d * speed) > 0.6)) {
+        // Moving at the junction, or standing in the box itself (one parked
+        // short of it, an ambulance at its stop, holds nobody: they used to wait
+        // for it while it waited for them).
+        if (d < 50 || (speed > 8 * KMH && (dx * vx + dy * vy) / (d * speed) > 0.6)) {
           c.sirenYield = gameTime;
           return true;
         }
@@ -114,6 +117,7 @@
         run = c.emergency,
         lastLeg = route.length - 2;
       let i = c.countyIndex || 0;
+      run.why = null;
       while (i < route.length - 1 && Math.hypot(route[i].x - c.x, route[i].y - c.y) < (i >= lastLeg ? 12 : 45)) i++;
       c.countyIndex = i;
       const next = route[i],
@@ -125,7 +129,7 @@
         look = Math.max(0, t) + 70,
         // Steering round a stopped car that pokes into our way (set below, held
         // a moment): the aim line moves across by the offset.
-        dodge = run.dodge && run.dodge.until > gameTime && i < lastLeg ? run.dodge.offset : 0,
+        dodge = run.dodge && run.dodge.until > gameTime && i <= lastLeg ? run.dodge.offset : 0,
         // Near the junction the aim point runs on round the corner into the next
         // leg, so it turns onto the new centre line instead of overshooting it.
         after = i < lastLeg ? route[i + 1] : null,
@@ -171,7 +175,7 @@
         // side of it clears it with the least swing (the left on a tie), as long
         // as that stays within 26 units of the route's centre line, and creep
         // past. A car a dodge already clears is simply passed.
-        if (lead < 12 * KMH && gap < 90 && i < lastLeg) {
+        if (lead < 12 * KMH && gap < 90 && i <= lastLeg) {
           const own = -(c.x - prev.x) * uy + (c.y - prev.y) * ux,
             at = own + lateral,
             clearBy = side + ow + 3,
@@ -192,15 +196,25 @@
             continue;
           }
         }
-        desired = Math.min(desired, lead + Math.max(0, gap) * 1.2, Math.sqrt(lead * lead + 2 * 0.8 * GRAVITY * Math.max(0, gap)) * 0.9);
+        const limit = Math.min(lead + Math.max(0, gap) * 1.2, Math.sqrt(lead * lead + 2 * 0.8 * GRAVITY * Math.max(0, gap)) * 0.9);
+        if (limit < desired) {
+          desired = limit;
+          run.why = 'car';
+        }
       }
+      // People on the carriageway ahead (not the pavement a turn sweeps across).
       const yieldTo = (p) => {
         if (p.hp <= 0 || p.roof || p.cityRole) return;
         const dx = p.x - c.x,
           dy = p.y - c.y,
           along = dx * ca + dy * sa;
-        if (along > 0 && along < 170 && Math.abs(-dx * sa + dy * ca) < side + 10)
-          desired = Math.min(desired, Math.sqrt(2 * 0.7 * GRAVITY * Math.max(0, along - spec.l / 2 - 16)) * 0.8);
+        if (along > 0 && along < 170 && Math.abs(-dx * sa + dy * ca) < side + 10 && (p === player || cityStreetAt(p.x, p.y))) {
+          const limit = Math.sqrt(2 * 0.7 * GRAVITY * Math.max(0, along - spec.l / 2 - 16)) * 0.8;
+          if (limit < desired) {
+            desired = limit;
+            run.why = p === player ? 'player' : 'person';
+          }
+        }
       };
       forEachPedestrianNear(c.x + ca * 85, c.y + sa * 85, 100, yieldTo);
       if (!player.car) yieldTo(player);

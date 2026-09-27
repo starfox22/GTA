@@ -52,21 +52,35 @@
     /* Where the ambulance stops for a body: on the body's street, off the
        junction box, on the side of the road nearest the body. Returns the stop,
        the junction at the end of the route and the street's direction. */
-    function medicStopFor(body) {
+    function medicStopFor(body, end = 0) {
+      // The body's street runs between two junctions; `end` 0 is the nearer, 1
+      // the one at the other end of its block (the ambulance comes in from
+      // whichever its route reaches first, so it never passes the victim and
+      // turns round).
       const colX = roadNear(body.x),
         rowY = rowNear(body.y),
-        onColumn = Math.abs(body.x - colX) < Math.abs(body.y - rowY),
-        junction = { x: colX, y: rowY };
+        onColumn = Math.abs(body.x - colX) < Math.abs(body.y - rowY);
       if (onColumn) {
-        const side = Math.sign(body.x - colX) || 1,
-          y = rowY + clamp(body.y - rowY, -BLOCK_SIZE + 130, BLOCK_SIZE - 130),
-          yy = Math.abs(y - rowY) < 110 ? rowY + Math.sign(y - rowY || 1) * 110 : y;
-        return { stop: { x: colX + side * 22, y: yy }, junction, heading: Math.sign(yy - rowY) * (Math.PI / 2) };
+        const jy = end ? rowY + (body.y >= rowY ? BLOCK_SIZE : -BLOCK_SIZE) : rowY,
+          side = Math.sign(body.x - colX) || 1,
+          y = jy + clamp(body.y - jy, -BLOCK_SIZE + 110, BLOCK_SIZE - 110),
+          yy = Math.abs(y - jy) < 110 ? jy + Math.sign(y - jy || 1) * 110 : y;
+        return { stop: { x: colX + side * 22, y: yy }, junction: { x: colX, y: jy }, heading: Math.sign(yy - jy) * (Math.PI / 2) };
       }
-      const side = Math.sign(body.y - rowY) || 1,
-        x = colX + clamp(body.x - colX, -BLOCK_SIZE + 130, BLOCK_SIZE - 130),
-        xx = Math.abs(x - colX) < 110 ? colX + Math.sign(x - colX || 1) * 110 : x;
-      return { stop: { x: xx, y: rowY + side * 22 }, junction, heading: xx > colX ? 0 : Math.PI };
+      const jx = end ? colX + (body.x >= colX ? BLOCK_SIZE : -BLOCK_SIZE) : colX,
+        side = Math.sign(body.y - rowY) || 1,
+        x = jx + clamp(body.x - jx, -BLOCK_SIZE + 110, BLOCK_SIZE - 110),
+        xx = Math.abs(x - jx) < 110 ? jx + Math.sign(x - jx || 1) * 110 : x;
+      return { stop: { x: xx, y: rowY + side * 22 }, junction: { x: jx, y: rowY }, heading: xx > jx ? 0 : Math.PI };
+    }
+    function routeLength(from, route) {
+      let d = 0,
+        at = from;
+      for (const p of route) {
+        d += Math.abs(p.x - at.x) + Math.abs(p.y - at.y);
+        at = p;
+      }
+      return d;
     }
     /* A start off screen: 150 units short of a junction 650-1300 units from the
        body, pointing at it, on the centre line of a real street. */
@@ -88,13 +102,27 @@
     }
     /* Send an ambulance to `body`; false when no route or start was found. */
     function dispatchMedics(body) {
-      const plan = medicStopFor(body),
-        start = medicStartFor(body);
+      const start = medicStartFor(body);
       if (!start) return false;
-      const route = copRoute({ x: start.junction.x, y: start.junction.y, pursuitTarget: plan.junction }, plan.junction),
-        last = route.length ? route[route.length - 1] : start.junction;
-      // The route must end at the body's own junction, or the last leg would cut a block.
-      if (Math.abs(last.x - plan.junction.x) > 4 || Math.abs(last.y - plan.junction.y) > 4) return false;
+      // Both ends of the body's block: the shorter way in that really gets there
+      // (a route must end at its junction, or the last leg would cut a block).
+      let plan = null,
+        route = null,
+        best = Infinity;
+      for (const end of [0, 1]) {
+        const p = medicStopFor(body, end);
+        if (!landAt(p.junction.x, p.junction.y)) continue;
+        const r = copRoute({ x: start.junction.x, y: start.junction.y, pursuitTarget: p.junction }, p.junction),
+          last = r.length ? r[r.length - 1] : start.junction;
+        if (Math.abs(last.x - p.junction.x) > 4 || Math.abs(last.y - p.junction.y) > 4) continue;
+        const length = routeLength(start.junction, r) + Math.hypot(p.stop.x - p.junction.x, p.stop.y - p.junction.y);
+        if (length < best) {
+          best = length;
+          plan = p;
+          route = r;
+        }
+      }
+      if (!plan) return false;
       const c = makeCar('ambulance', start.x, start.y, start.a, true, VEHICLE_DEFINITIONS.ambulance.color);
       Object.assign(c, { speed: 40 * KMH, occupied: true, locked: true, countyIndex: 0 });
       // A point well past the stop keeps it heading on down the street while the
@@ -178,7 +206,8 @@
       }
       // Boxed in for good where everyone can see: it gives up and drives on.
       if (gameTime - job.startedAt > 90 || job.stuckFor > 35) return medicJobEnd(job, 'aborted');
-      if (left < 8 || (left < 40 && speed < 4)) arriveMedicJob(job);
+      // At the stop, or held up within sight of it: the crew walks the rest.
+      if (left < 8 || (left < 40 && speed < 4) || (Math.hypot(job.stop.x - c.x, job.stop.y - c.y) < 170 && job.stuckFor > 2.5)) arriveMedicJob(job);
     }
     function arriveMedicJob(job) {
       const c = job.ambulance;
@@ -413,6 +442,8 @@
               stuckFor: +job.stuckFor.toFixed(1),
               // The ambulance's wanted speed and whatever stands nearest ahead of it.
               desiredKmh: c?.aiControl ? Math.round(c.aiControl.desired / KMH) : null,
+              // What held it last (car / person / player), null when nothing did.
+              heldBy: c?.emergency?.why || null,
               ahead: c ? medicBlocker(c) : null,
             }
           : null,

@@ -7,13 +7,17 @@ async function runJob(t, x, y, revive) {
   await t.wait(1.5);
   const start = await t.call('medicTest', null, null, revive);
   t.assert(start.job, 'no ambulance sent: ' + JSON.stringify(start));
+  t.note(`start (revive ${revive}): jobs ${start.jobs}, revivable ${start.job.revivable}, last ${JSON.stringify(start.last)}`);
   t.assert(start.job.ambulance.siren, 'the ambulance is not running with its siren');
   const seen = { phases: new Set(), help: false, phone: false, arrivedAt: null };
   let r = start;
   for (let i = 0; i < 40 && r.job; i++) {
     await t.wait(2);
     r = await t.call('medicReport');
-    if (!r.job) break;
+    if (!r.job) {
+      t.note(`ended after ${i * 2 + 2} s: jobs ${r.jobs}, ${JSON.stringify(r.last)}`);
+      break;
+    }
     seen.phases.add(r.job.phase);
     if (r.job.phase !== 'driving' && seen.arrivedAt === null) seen.arrivedAt = r.job.seconds;
     for (const m of r.job.medics) {
