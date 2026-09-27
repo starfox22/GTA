@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-402 files in the include tree, 148,931 lines.
+417 files in the include tree, 148,961 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -45,7 +45,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/controls.js`   294 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
-- `src/harbor.js`   987 — Ironworks cargo terminal
+- `src/harbor.js`    11 — ▸ Ironworks cargo terminal
 - `src/police-feedback.js`    52 — Police action feedback
 - `src/arsenal.js`   257 — Arsenal and knife combat
 - `src/citylife.js`    11 — ▸ Civic services and police
@@ -68,7 +68,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/water.js`   690 — Swimming and sinking
 - `src/water-audio.js`   394 — Water and beach sound
 - `src/beachvolley.js`    43 — ▸ Beach volleyball on Palm Keys Beach
-- `src/beach.js`   968 — Palm Keys Beach life
+- `src/beach.js`    12 — ▸ Palm Keys Beach life
 - `src/roofmission.js`    14 — ▸ Blue Hour rooftop mission
 - `src/rooftops.js`   158 — Building roofs: helipads, helicopter landings, walking on a roof
 - `src/air-cover.js`   404 — Overhead cover geometry
@@ -85,7 +85,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
 - `src/challenges.js`   607 — Mission-specific encounters
 - `src/sidejobs.js`   418 — Contract missions after the main story
-- `src/streets.js`   963 — Road presentation
+- `src/streets.js`    12 — ▸ Road presentation
 - `src/terrain.js`    16 — ▸ Mountains and off-road contact
 - `src/offroad.js`    49 — ▸ The 4x4 club, trail mud, off-road traction and the hill climb
 - `src/hypercars.js`   604 — The Prestige Collection: hypercar types, specs and sound
@@ -157,6 +157,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/drawbridge-motion.js`   463 — Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
 - `src/drawbridge-opening.js`   445 — Drawbridge openings: clearing the span, camera zoom, swinging the leaves, updateDrawbridge(), map, console command and report.
 
+## src/harbor.js ▸ Ironworks cargo terminal
+
+- `src/harbor-terminal.js`   279 — Ironworks terminal geometry: HARBOR, the gate, solids, police hold, cargo slots and gang alerts (alertGang, notifyViolence).
+- `src/harbor-cargo-job.js`   440 — The cargo job: loading bay range, crane loading, the depot drop and stakeout, updateHarborMission and updateHarbor (gate, witnesses).
+- `src/harbor-draw.js`   263 — Harbor drawing: ground paint, buildHarbor, the 2D view, map and 3D labels, and the 2D traffic lights.
+
 ## src/citylife.js ▸ Civic services and police
 
 - `src/citylife-places.js`   503 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
@@ -187,6 +193,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/beachvolley-court.js`   483 — Beach volleyball: court plan, teams, bounds and match state (VOLLEY, volley, volleyCourtPlan, onVolleyCourt).
 - `src/beachvolley-play.js`   487 — Beach volleyball play: serves, the ball, athletes, the bench and the player joining in (updateVolleyball, volleyJoin).
+
+## src/beach.js ▸ Palm Keys Beach life
+
+- `src/beach-plan.js`   284 — The beach plan: waterline coordinates (shoreAt, sandDepthAt), BEACH_LAYOUT furniture, colliders.
+- `src/beach-cast.js`   505 — The beach cast: slots and hours, populateBeach, time-of-day density, updateBeach and each kind's behaviour (beachBehave).
+- `src/beach-games.js`   173 — Beach games (volleyball rally, frisbee) and panic: beachHearsViolence, fleeing, car threats, crowd level, beachStatus.
 
 ## src/roofmission.js ▸ Blue Hour rooftop mission
 
@@ -226,6 +238,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/aviation-flight.js`   514 — Fixed-wing flight and two additional campaign chapters.
 - `src/aviation-missions.js`   535 — Aircraft cockpit warnings and flight data, the flight missions (flightMissionStart, flightMissionUpdate) and 2D drawing of planes and airfields.
+
+## src/streets.js ▸ Road presentation
+
+- `src/streets-grid.js`   274 — City street footprints (cityStreets), street names, Ocean Drive palms, benches, street ends (closed and gate ends) and cityStreetAt.
+- `src/streets-markings.js`   173 — Road markings as data (cityMarkingShapes), painting the city grid's streets, and crosswalks.
+- `src/streets-waterfront.js`   368 — Waterfront: shore helpers, esplanade spots (promenadeSpots), sea railing, foot obstacles, strollers and paintPromenades.
+- `src/streets-county-map.js`   144 — County road centre dashes (countyMarkingShapes, paintCountyRoads) and the player's map marker (centerMapOnPlayer).
 
 ## src/terrain.js ▸ Mountains and off-road contact
 
@@ -340,7 +359,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sportsbook3d.js`   420 — GOALLINE betting shop meshes
 - `src/transit3d.js`   457 — Railway meshes
 - `src/ecology3d.js`   321 — Wildlife meshes
-- `src/world3d.js`   978 — World scenery meshes
+- `src/world3d.js`    11 — ▸ World scenery meshes
 - `src/wakes3d.js`   513 — Boat wakes and spray
 - `src/sealife3d.js`    41 — ▸ Sea life meshes
 - `src/beachvolley3d.js`   178 — Beach volleyball court meshes
@@ -470,6 +489,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sports3d-venues.js`   600 — Sports 3D venue materials, net and ball materials, ground lines and scoreboards.
 - `src/sports3d-stadium.js`   545 — Sports 3D stadium crowd (one instance per seat), floodlights and venue builders (createSoccerVenue).
 
+## src/world3d.js ▸ World scenery meshes
+
+- `src/world3d-water.js`   361 — Water: the distance-to-shore field, the one water shader (bay, river, ocean, reservoir) and its surfaces.
+- `src/world3d-shore.js`   243 — Shoreline notes, street ends (barriers, gates) and the esplanade furniture along the waterfront (buildPromenade).
+- `src/world3d-resort.js`   369 — Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
+
 ## src/sealife3d.js ▸ Sea life meshes
 
 - `src/sealife3d-models.js`   519 — Sea life 3D geometry and materials: dolphins, sharks, gulls, deformation (SEA_KINDS).
@@ -538,7 +563,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/surfaces3d.js ▸ Procedural surface detail
 
-- `src/ground-shader3d.js`   952 — Ground materials (GLSL)
+- `src/ground-shader3d.js`    55 — ▸ Ground materials (GLSL)
+
+## src/ground-shader3d.js ▸ Ground materials (GLSL)
+
+- `src/ground-shader3d-pars.js`   291 — Ground shader GLSL chunks: shared uniforms and helpers (GROUND_PARS), sheet magnification (GROUND_SHEET_PARS), the marks (GROUND_MARKS).
+- `src/ground-shader3d-albedo.js`   610 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
 
 ## src/helicopter3d.js ▸ Helicopter models
 
@@ -637,5 +667,5 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## Outside the include tree
 
-- `src/asset-loader.js`   160 — decodes the embedded/streamed media into ASSETS before the game starts
+- `src/asset-loader.js`   164 — decodes the embedded/streamed media into ASSETS before the game starts
 - `src/shell.html`    73 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
