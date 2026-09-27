@@ -31,7 +31,7 @@
         ...cloudLightUniforms(),
         // Air relative to the camera (world units per second) and the streak's exposure.
         uVelocity: { value: new Three.Vector3() },
-        uExposure: { value: 0.06 },
+        uExposure: { value: 0.12 },
         // Fade in from the near plane (x .. y) and out towards the far end (z .. w).
         uFade: { value: new Three.Vector4(0, 1, 1e5, 2e5) },
         uOpacity: { value: 0 },
@@ -105,7 +105,8 @@
               float body = smoothstep(1., 0.15, r) * smoothstep(0.3, 0.8, n.g * 0.7 + n.r * 0.5 + (1. - r) * 0.3);
               float a = body * vAlpha / vStretch;
               if (a < 0.002) discard;
-              gl_FragColor = vec4(vLight, 1.);
+              // Lit unevenly (a brighter crown, a greyer core) so a rag reads against the white.
+              gl_FragColor = vec4(vLight * mix(0.62, 1.35, clamp(n.r * 0.7 + (c.y * 0.5 + 0.5) * 0.35 + fract(vSeed * 0.37) * 0.2 - 0.1, 0., 1.)), 1.);
               #include <tonemapping_fragment>
               #include <colorspace_fragment>
               gl_FragColor = vec4(gl_FragColor.rgb * a, a);
@@ -187,7 +188,7 @@
         wispGeometry.instanceCount = count;
         wispAttribute.needsUpdate = true;
         syncCloudField(wispUniforms);
-        for (const key of ['uSunDirection', 'uSunColor', 'uSkyColor', 'uGroundColor', 'uGlowColor'])
+        for (const key of CLOUD_LIGHT_KEYS)
           wispUniforms[key].value.copy(marchUniforms[key].value);
         // The air moves opposite to the camera through it; the wind carries the rags.
         wispUniforms.uVelocity.value

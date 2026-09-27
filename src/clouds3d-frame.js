@@ -1,7 +1,8 @@
       // Clouds 3D frame update (updateCloudVisuals): shadows, sun dimming, the far march, the veil near the camera,
       // the wisps, the lens and the in-cloud grade; cloudViewReport() for the console.
       // ---- Frame update -------------------------------------------------------------------
-      const cloudBuffer = new Three.Vector2(),
+      const cloudQuads = [cloudComposite, cloudDepth],
+        cloudBuffer = new Three.Vector2(),
         cloudBounds = new Three.Vector2(),
         cloudForward = new Three.Vector3(),
         cloudSubject = new Three.Vector3(),
@@ -117,6 +118,10 @@
           .lerp(cloudGrey.setScalar(hemi.groundColor.r * 0.3 + hemi.groundColor.g * 0.59 + hemi.groundColor.b * 0.11), 0.7)
           .multiplyScalar(hemi.intensity * 0.3);
         marchUniforms.uGlowColor.value.setRGB(1, 0.56, 0.3).multiplyScalar(nightAmount * 0.55);
+        // Most of the day grade's warm gain taken back out: sunlit cloud is white.
+        const gain = postLook.gain;
+        marchUniforms.uCloudTint.value.set(1 + (1 / gain.x - 1) * 0.85, 1 + (1 / gain.y - 1) * 0.85, 1 + (1 / gain.z - 1) * 0.85);
+        marchUniforms.uEye.value.copy(camera.position);
         marchUniforms.uHazeColor.value.copy(scene.fog.color);
         marchUniforms.uHaze.value.set(scene.fog.near, scene.fog.far);
         marchUniforms.uSlab.value.copy(cloudBounds);
@@ -178,7 +183,7 @@
         const depth = subjectDistance + 70,
           tall = 2 * depth * Math.tan((camera.fov * Math.PI) / 360) * 1.25;
         camera.getWorldDirection(cloudForward);
-        for (const quad of [cloudComposite, cloudDepth]) {
+        for (const quad of cloudQuads) {
           quad.position.copy(camera.position).addScaledVector(cloudForward, depth);
           quad.quaternion.copy(camera.quaternion);
           quad.scale.set(tall * camera.aspect, tall, 1);
@@ -231,5 +236,7 @@
           lensWet: r(cloudView.lensWet),
           subjectDistanceM: +worldMeters(cloudView.subjectDistance).toFixed(1),
           towers: cloudTowerBoxes.filter((b) => b.z > b.x).length,
+          // The light the clouds are drawn with (scene-linear RGB).
+          light: ['uSunColor', 'uSkyColor', 'uGroundColor'].map((k) => marchUniforms[k].value.toArray().map(r)),
         };
       }

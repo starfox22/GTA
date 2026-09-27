@@ -26,8 +26,13 @@
           uSkyColor: { value: new Three.Color() },
           uGroundColor: { value: new Three.Color() },
           uGlowColor: { value: new Three.Color() },
+          // White balance against the day grade's warm gain (postLook.gain), so sunlit
+          // cloud comes out of the grade white rather than sand-coloured.
+          uCloudTint: { value: new Three.Vector3(1, 1, 1) },
         };
       }
+      // The per-frame light (and eye) the veil and the wisps copy from the far march.
+      const CLOUD_LIGHT_KEYS = ['uSunDirection', 'uSunColor', 'uSkyColor', 'uGroundColor', 'uGlowColor', 'uCloudTint', 'uEye'];
       /* The light a bit of cloud sends towards the eye. Beer-Lambert extinction and a
          short march towards the sun for self-shadowing; the cloud standing above in its
          column dims it further, so the heart and underside of a deep deck are grey and
@@ -35,7 +40,7 @@
          into the shadowed body; light bounced up from the ground under the base; and at
          night the city's glow on the underside of the deck. */
       const CLOUD_LIGHT_GLSL = `
-        uniform vec3 uSunDirection, uSunColor, uSkyColor, uGroundColor, uGlowColor;
+        uniform vec3 uSunDirection, uSunColor, uSkyColor, uGroundColor, uGlowColor, uCloudTint;
         const float EXTINCTION = 0.028; // per world unit at density 1
         float henyeyGreenstein(float c, float g){
           float g2 = g * g;
@@ -55,18 +60,22 @@
           vec2 slab = cloudSlab(area);
           float h = clamp((p.y - slab.x) / (slab.y - slab.x), 0., 1.);
           float od = sunDepth(p) + cloudColumnAbove(p, area) * 0.0012;
+          // Close to the camera a short, detailed tap towards the sun shades the fine
+          // billows, so the cauliflower relief of a top reads as you fall onto it.
+          float close = cloudCloseness(p);
+          if (close > 0.) od += cloudDensityAt(p + uSunDirection * 28., area, true) * 28. * EXTINCTION * close;
           // Beer's law plus two orders of multiple scattering (each weaker, reaching
           // deeper and less forward-peaked), which is why a real cloud glows white
-          // right through and only its heart and base go grey; "powder" darkening on
-          // thin edges.
+          // right through and only its heart and base go grey; a touch of "powder"
+          // darkening on thin edges.
           float sun = (exp(-od) * phase + exp(-od * 0.25) * 0.5 * mix(1., phase, 0.5) + exp(-od * 0.07) * 0.22)
-                    * (1. - exp(-d * 4.)) * 0.85;
+                    * mix(1., 1. - exp(-d * 6.), 0.5) * 1.3;
           float city = smoothstep(-3900., -2700., p.x) * smoothstep(4600., 3600., p.x)
                      * smoothstep(-4700., -3800., p.z) * smoothstep(6200., 5300., p.z);
-          return uSunColor * sun
+          return (uSunColor * sun
                + uSkyColor * (0.25 + 0.75 * h) * (0.35 + 0.65 * exp(-od * 0.5))
                + uGroundColor * (1. - h)
-               + uGlowColor * city * pow(1. - h, 3.);
+               + uGlowColor * city * pow(1. - h, 3.)) * uCloudTint;
         }`;
       // Where a ray first meets one of the tall towers the layer can reach (a big number if none).
       const CLOUD_TOWERS_GLSL = `

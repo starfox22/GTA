@@ -8,6 +8,7 @@ const CITY = [748, 584],
   ASCENT = [7760, 1090];
 export default async function (t) {
   try {
+    await t.call('teleport', ...CITY);
     await t.call('holdSimulation', true);
     await t.call('sky', 'fair');
     const fair = await t.call('cloudLayer', ...CITY);

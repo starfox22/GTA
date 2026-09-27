@@ -140,6 +140,10 @@
         uniform vec3 uAreaBase, uAreaTop;
         // x: extra cover over the mountains, y: scud depth under the base, z: scud amount.
         uniform vec3 uLayerExtra;
+        // The camera (far away for the shadows): cloud within ~150 m of it gets a finer
+        // octave of billows, what a body falling through it actually sees.
+        uniform vec3 uEye;
+        float cloudCloseness(vec3 p){ return 1. - smoothstep(700., 1300., length(p - uEye)); }
         // The area map at a map point: r sea, g mountain, b city, a the highest ground.
         vec4 cloudArea(vec2 xz){ return texture2D(uAreaMap, (xz - uAreaFrame.xy) * uAreaFrame.zw); }
         float cloudGround(vec4 area){ return area.a * ${(255 * CLOUD_GROUND_STEP).toFixed(1)}; }
@@ -181,6 +185,12 @@
             vec4 fine = texture(uNoise, q / ${CLOUD_DETAIL_SCALE.toFixed(1)} + vec3(uTime * 0.003, uTime * 0.006, 0.));
             float erode = mix(1. - fine.g, fine.g, clamp(h * 3., 0., 1.));
             d = clamp((d - erode * 0.38) / (1. - erode * 0.38), 0., 1.);
+            float close = cloudCloseness(p);
+            if (close > 0. && d > 0.){
+              vec4 finer = texture(uNoise, q / ${(CLOUD_DETAIL_SCALE * 0.22).toFixed(1)} + vec3(uTime * 0.011, uTime * 0.02, uTime * 0.004));
+              float bite = mix(1. - finer.g, finer.b, clamp(h * 3., 0., 1.)) * 0.34 * close;
+              d = clamp((d - bite) / (1. - bite), 0., 1.);
+            }
           }
           return h > 0. ? d : d * 0.7;
         }
@@ -207,6 +217,7 @@
           uAreaBase: { value: new Three.Vector3() },
           uAreaTop: { value: new Three.Vector3() },
           uLayerExtra: { value: new Three.Vector3(0, 1, 0) },
+          uEye: { value: new Three.Vector3(0, 1e7, 0) },
         };
       }
       // The game's layer (clouds.js) into a set of field uniforms, once a frame.

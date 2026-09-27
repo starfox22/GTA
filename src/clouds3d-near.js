@@ -137,7 +137,7 @@
         if (!(steps > 0)) return;
         if (nearTarget.width !== width || nearTarget.height !== height) nearTarget.setSize(width, height);
         syncCloudField(nearUniforms);
-        for (const key of ['uSunDirection', 'uSunColor', 'uSkyColor', 'uGroundColor', 'uGlowColor'])
+        for (const key of CLOUD_LIGHT_KEYS)
           nearUniforms[key].value.copy(marchUniforms[key].value);
         nearUniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
         nearUniforms.uCameraWorld.value.copy(camera.matrixWorld);
