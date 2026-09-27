@@ -2,7 +2,7 @@
 
 An original top-down crime game in the spirit of GTA 1 and 2, set on the South Coast in
 1997. It runs in any modern desktop or mobile browser, with no install and no server.
-Version 30.0.0 (see `docs/CHANGELOG.md`).
+Version 0.9.0, the public demo (see `docs/CHANGELOG.md`).
 
 ## How to play
 

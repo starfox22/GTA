@@ -28,14 +28,12 @@ Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
   a switch. Reactions chain (`then`: cover → run). Quiet incidents (melee, knock, `crime`,
   `theft`) need the field of view (`witnessFacing`: 100° either side, 46° on a phone) or
   55 units; gunfire and blasts turn heads. A runner 40 m clear of the player stops early.
-- Witnesses (crowd-witnesses.js): everyone who perceived something the player did keeps
-  `witnessOf` / `witnessSaw`; `witnessDirector` (4 Hz) hands each unreported incident's
-  phone to the best placed calm witness (a sighting of a serious crime always calls; heard
-  only, about half). The `call` reaction (`callStep`): phone out, the 911 line, a detail,
-  then `crowdReport` (police side: docs/areas/police-and-combat.md). The player within 100
-  units, a gun on them (`witnessThreatened`: most then stay silent 3 min) or death drops it.
-  Someone sheltering in a shop may call from inside (`offstageCalls`). A person reacts to a
-  given body once (`bodySeen`); with an armed player standing over it they run.
+  **Gotcha**: a pending perception (`p.pending`) is resolved by `crowdPerceive` in
+  updatePeople *before* the special routines (island walkers, strollers, park guests), which
+  only step aside once `p.react` or `p.flee` is set; without it they never react or call.
+- Witnesses and 911 calls (crowd-witnesses.js): docs/areas/police-and-combat-witnesses.md.
+- A person reacts to a given body once (`bodySeen`); with an armed player standing over it
+  they run.
   Onlookers at a body comfort each other (`comfortStep`).
   `notifyViolence` (harbor.js) fans out to venues (`beachHearsViolence`,
   `dealershipHearsViolence`, `beachClubHearsViolence`).
@@ -63,8 +61,11 @@ Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
 ## Speech bubbles
 
 - `crowdSay` queues a line; `speechBubbles` shows at most two on screen, ranked:
-  conversations (`inConversation`), Falcon riders with the player, soldiers, police and
-  mission characters, lines aimed at the player, then the nearest.
+  conversations (`inConversation`), Falcon riders with the player, soldiers, police,
+  mission characters and 911 callers (`speechKind` 'call911'), lines aimed at the player,
+  then the nearest. The renderer culls bubbles outside x 40..W-40, y 90..H-190 (the HUD
+  strip), which at the street zoom is only ~50-100 units north/south of the player; a 911
+  bubble is instead held inside the frame (red edge, tail toward the caller).
 - SPEECH SEEN FROM ABOVE: every bubble fades from 40 to 50 m of height between view and
   speaker (`speechHeightFade`, `speechViewHeight`); a hidden line takes no slot.
 - Settings · Gameplay · NPC chatter off hides street bubbles; mission dialogue (`#storyLine`,

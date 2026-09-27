@@ -16,7 +16,7 @@
      */
 
     // The build's version, shown on the title menu and by DeadEndCity.version.
-    const GAME_VERSION = '30.0.0';
+    const GAME_VERSION = '0.9.0';
     /**
      * DEMO BUILD FLAG
      * true: the public demo. A normal player gets missions 1 and 2 only; every

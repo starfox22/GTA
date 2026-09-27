@@ -82,6 +82,11 @@
           faceToward(p, player, deltaSeconds, 6);
           const aimed = gameTime - (p.aimedAt || -10) < 0.5;
           if (aimed) r.aimTime = (r.aimTime || 0) + deltaSeconds;
+          // Held at gunpoint, not just swept by the barrel: a witness may not dare call now.
+          if (!r.threatened && (r.aimTime || 0) > 2.5) {
+            r.threatened = true;
+            witnessThreatened(p);
+          }
           if (r.kind === 'handsUp' && !r.escalated && (r.aimTime || 0) > 3.5) {
             r.escalated = true;
             const roll = seededRandom();
@@ -294,14 +299,16 @@
       p.speechUntil = gameTime + 1;
       return true;
     }
+    /* A perception that has reached this person becomes their reaction (updatePeople asks first). */
+    function crowdPerceive(p) {
+      const pending = p.pending;
+      p.pending = null;
+      decideReaction(p, pending);
+    }
     /* Per person: pending perception, then the reaction if any. True when handled. */
     function updateCrowdPerson(p, deltaSeconds) {
       if (p.posed) return updatePosed(p, deltaSeconds);
-      if (p.pending && gameTime >= p.pending.at) {
-        const pending = p.pending;
-        p.pending = null;
-        decideReaction(p, pending);
-      }
+      if (p.pending && gameTime >= p.pending.at) crowdPerceive(p);
       if (!p.react && p.flee > 0) adoptLegacyFlee(p);
       if (p.react) return updateReaction(p, deltaSeconds);
       if (p.scene) return updateSceneMember(p, deltaSeconds);
@@ -417,7 +424,6 @@
         if (cur === 'flee' && (d > 110 || seededRandom() < 0.5)) return;
         startReaction(p, 'handsUp', 60, player, null);
         crowdSay(p, 'handsUp', 0.9);
-        witnessThreatened(p);
       });
     }
     /* An unarmed player walking by calm people gets the odd nod or hello. */

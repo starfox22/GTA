@@ -41,7 +41,8 @@
         player.roof = false;
         player.buildingRoof = null;
         player.altitude = 0;
-        teleportPlayer(ROOF_HIT.escape.x, ROOF_HIT.escape.y - 120);
+        // South of the motel (the spot 120 north of it is inside a building).
+        teleportPlayer(ROOF_HIT.escape.x, ROOF_HIT.escape.y + 120);
         setStage(4, ROOF_HIT.escape, 'LOSE THE POLICE · REACH CORAL PALMS MOTEL ON FOOT');
         return this.missionState();
       },
@@ -124,6 +125,28 @@
         return inside.length;
       },
       missions: () => missions.map((m, i) => ({ index: i, title: m.title, contact: m.contact })),
+      // The pause menu's RESTART CURRENT JOB (story.js retryMission).
+      retryMission() {
+        retryMission();
+        return { mode: gameMode, ...this.missionState() };
+      },
+      // Open (true) or close (false) the pause menu as Escape does; its RESTART
+      // CURRENT JOB button as shown (disabled with nothing to restart).
+      pauseMenu(open) {
+        if (open !== undefined && !!open !== (gameMode === 'pause')) togglePause();
+        const restart = getElement('restartMission');
+        return {
+          mode: gameMode,
+          open: gameMode === 'pause',
+          restart: { disabled: restart.disabled, note: restart.querySelector('span')?.textContent || null },
+        };
+      },
+      // A pick in the mission picker (campaign.js chooseMission, gated as the
+      // picker is): the job's call comes up (accept it with Enter or E).
+      chooseMission(index) {
+        const chosen = chooseMission(index);
+        return { chosen, mode: gameMode, missionIndex, ...this.missionState() };
+      },
       // Mission 1 test shortcut: start Dockside Favor if needed, load all three
       // crates, and put the player in the truck on the road outside Vinny's
       // warehouse, facing its shutter, with the harbor alarm already raised.

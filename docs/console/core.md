@@ -6,7 +6,7 @@
 | --- | --- |
 | `setClock(hours)` | Time of day (hours, 0-24) |
 | `god(on)` | Invulnerability |
-| `version` | The build version (30.0.0) |
+| `version` | The build version (0.9.0) |
 | `unitsPerMetre` | The world scale, map units to the metre (8) |
 | `status()` | Mode, position, district, health, cash, wanted level, mission, vehicle, weapon in hand, renderer (`3d` or `2d`) |
 | `teleport(x, y)`, `look(x, y, zoom)` | Move the player (and camera), optionally zoom (applied at once); lets go of any carrier |

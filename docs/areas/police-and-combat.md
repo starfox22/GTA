@@ -18,32 +18,10 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
 - Wanted chips (NEED TO LOSE POLICE, POLICE CLEARED) only on a real drop;
   `policeBlocksMissionDelivery` lists the mission stages that need zero stars.
 
-## Witnesses and 911 (witnesses.js, crowd-witnesses.js)
+## Witnesses and 911
 
-- With no stars up a crime only counts if the police know: a unit sees it
-  (`policeEyesOnPlayer`: officers on foot, crewed cruisers on patrol or on a job, the
-  helicopter, through `policeSees`) or hears it (gunfire / blasts within `POLICE_EARSHOT`
-  480 units of a unit). Otherwise it is banked in `unreportedCrimes` (where, when, heat,
-  victims; merged within 20 s / 420 units; kept `UNREPORTED_KEEP` 240 s). Officer and police
-  vehicle kills are always known (the radio).
-- A civilian who perceived it (crowd-witnesses.js) reacts, then once calm and 140+ units
-  from the player phones 911 (5-12 s, phone pose, bubbles). The call's end (`crowdReport` →
-  `reportIncidentToPolice`) sends the matching unreported heat (by time and place, or victim
-  for a body) through `crime(amount, { x, y, … })` → `reportedCrime`: first star, "A WITNESS
-  CALLED 911" toast and caption, the search on the reported spot (on the player if the
-  caller sees them), the first unit after `policeResponseSeconds` (city 2.5-10 s by
-  district, county 11-36 s, Monarch Isle 16-22 s). Until a unit reaches the spot the search
-  clock and escalation hold (`policeResponseHolding`). Units spawn off screen round the
-  search centre (`pursuitCentre`) and chase only on sight.
-- A body found more than 30 s after the killing with the player 630+ units away: the police
-  investigate (caption, toast) but nobody is wanted.
-- A unit that comes on the player within 15 s / 320 units of an unreported crime counts it
-  as seen. `clearPolice` (`resetHeat` → `forgetWitnessedCrimes`) and the god panel's Lose
-  police forget unreported crimes and void calls in progress.
-- **API for other systems**: `witnessReport(person, kind, x, y, { delay, severity })` makes
-  one person a certain caller about what the player just did at (x, y) (carjack, theft,
-  gunfire, melee, body, crime). Used by the hijack paths (game-player-actions.js, taxi.js),
-  the Trail Club and carjack.js. Non-crowd people (venue staff) call "off stage" (bubbles only).
+- Moved to docs/areas/police-and-combat-witnesses.md (who calls, the call, the response to
+  a report, `witnessReport`).
 
 ## Response (pursuit.js)
 
