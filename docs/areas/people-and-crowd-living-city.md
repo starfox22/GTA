@@ -52,6 +52,8 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   lights crosses it (moving at the junction, or standing in the box); one behind going our
   way is let through by pulling over instead. **Gotcha**: a unit standing short of the box
   (an ambulance at its stop) must not hold anyone, or they wait for it while it waits for them.
+  Likewise a car an ambulance is held up by (crawling, braking for it) gets `c.sirenClear`
+  and stops pulling over for that unit for 3 s: it drives on out of the way.
 - The ambulance on a run (`emergencyRunControl`, reached through countyRouteControl when
   `c.emergency` is set) straddles the centre line (a car in either lane leaves it about a
   metre each side), runs red lights, slows for its turns, creeps round a car stopped in its way
@@ -68,17 +70,24 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   nearer end of the body's block (both ends tried, so it never passes the victim and turns
   round), then the stop on the body's street (`medicStopFor`), on the body's side. Held up
   within 170 units of the stop for 2.5 s, it stops there and the crew walks.
-- Stuck 8 s (or 70 s on the way) with neither it nor the stop in view: it is simply there;
-  boxed in 35 s where it can be seen (or 90 s on the way): the job is off.
+- Stuck (stopped, or under 5 km/h over 2 s: grinding past cars pulled over in a jam) 8 s
+  (or 70 s on the way) out of view: at the stop if that is out of view too, else at the
+  point of its route nearest the stop that is out of view, on the street and clear
+  (`hopMedicPastJam`, `hops` in medicReport); boxed in 35 s (or 90 s on the way): job off.
+- A person knocked down against a stopped car crawls out from under it (`stepClearOfCar`,
+  physics-knockdowns.js; a medic caught in a car's outline steps out the same way): before, one lying at an ambulance's bumper held it for good.
   On scene: two paramedics (whites over navy, `cityRole.kind 'medic'`) get out on the
   victim's side; one kneels (`help` pose), one radios (`phone`); a walker who makes no
-  progress for 3 s works from where they stand (within 30 units). After 9 s the victim comes
+  progress for 3 s works from where they stand (the kneeler within 30 units, the radio
+  anywhere). After 9 s the victim comes
   round (`reviveBody`: knocked down 2.4 s, then up and away, injured) if found within 120 s
   and 3 in 4 times; otherwise they are lost. The crew climbs back in; the ambulance joins the
   traffic (`streamed`, lamps off).
 - **Contracts kept**: medics are ordinary pedestrians with `cityRole`; perception runs first
   and they step aside for any reaction (`updateCityRolePerson` returns false on
-  `p.react`/`p.flee`); they never take in bodies (refreshBodies skips them); the streamer
+  `p.react`/`p.flee`); they never take in bodies (refreshBodies skips them) and on a job
+  react only to danger (gunfire, explosion, melee, or panic from one: `decideReaction`),
+  never go off to watch, help or flee at a crash, knock-down, body or crime; the streamer
   never moves anyone with a `cityRole`. The kill already counted stays counted.
 - Off: the player takes the ambulance, wrecks it (under 50%), leaves (2,200 units), a
   mission starts, or 150 s pass.
