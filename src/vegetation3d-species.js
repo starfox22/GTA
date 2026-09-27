@@ -106,20 +106,38 @@
         const width = (t) => R * Math.pow(Math.sin(Math.PI * Math.min(1, 0.18 + t * 0.82)), 0.8) * (1.05 - t * 0.25);
         if (lod) blob(fm, C, R, Ry, R, 0, 'scale', shade(S.leafColor, 0.9), { normal, sway, seed: 1, uvSpread: 0.25, lumpy: 0.1, morph: new Three.Vector3(R * 0.1, 0, 0) });
         else {
-          // A stack of overlapping lumps (the column), then small sprays on it.
-          const lumps = 8;
-          for (let s = 0; s < lumps; s++) {
-            const t = (s + 0.5) / lumps,
-              w = width(t),
-              p = new Three.Vector3(between(-0.12, 0.12) * R, C.y - Ry + Ry * 2 * t, between(-0.12, 0.12) * R);
-            blob(fm, p, w, (Ry / lumps) * 1.7, w, 0, 'scale', shade(S.leafColor, 0.95), { normal, sway, seed: s, uvSpread: 0.24, lumpy: 0.16, morph: new Three.Vector3(R * 0.18 * t, 0, 0) });
+          // The column: one lathed surface, rippled a little ring by ring (a stack
+          // of separate lumps read as beads on a string from the side), then
+          // small sprays of scale foliage lying close all the way up it.
+          const rings = 16,
+            sides = 9,
+            cell = atlasUV(ATLAS_CELLS.scale),
+            grid = [];
+          for (let r = 0; r <= rings; r++) {
+            const t = r / rings,
+              y = C.y - Ry + Ry * 2 * t,
+              w = r === rings ? 0 : width(t) * 0.9,
+              morph = new Three.Vector3(R * 0.18 * t, 0, 0),
+              row = [];
+            for (let q = 0; q <= sides; q++) {
+              const a = (q / sides) * TAU + r * 0.41,
+                bump = 1 + 0.2 * (vegHash(r * 13, (q % sides) * 7, 11) - 0.5),
+                p = new Three.Vector3(Math.cos(a) * w * bump, y + (vegHash(r, q % sides, 5) - 0.5) * (Ry / rings) * 0.6, Math.sin(a) * w * bump);
+              row.push(fm.vert(p, normal(p), cell.u0 + (q / sides) * cell.du, cell.v0 + ((r % 4) / 4) * cell.dv, shade(S.leafColor, 0.72 + 0.28 * t), 1, sway(p), morph));
+            }
+            grid.push(row);
           }
-          for (let k = 0; k < 12; k++) {
+          for (let r = 0; r < rings; r++)
+            for (let q = 0; q < sides; q++) {
+              fm.tri(grid[r][q], grid[r + 1][q], grid[r][q + 1]);
+              fm.tri(grid[r][q + 1], grid[r + 1][q], grid[r + 1][q + 1]);
+            }
+          for (let k = 0; k < 26; k++) {
             const a = k * 2.39996,
-              t = clamp((k + 0.5) / 12 + between(-0.04, 0.04), 0, 0.96),
-              r = width(t) * 0.85,
+              t = clamp((k + 0.5) / 26 + between(-0.02, 0.02), 0, 0.95),
+              r = width(t) * 0.8,
               pos = new Three.Vector3(Math.cos(a) * r, C.y - Ry + Ry * 2 * t, Math.sin(a) * r);
-            card(fm, pos, new Three.Vector3(Math.cos(a), 0.6, Math.sin(a)), r * 1.4, r * 1.4, random() * TAU, 'scale', S.leafColor, {
+            card(fm, pos, new Three.Vector3(Math.cos(a), 0.35, Math.sin(a)), r * 1.25, r * 1.6, between(-0.3, 0.3), 'scale', S.leafColor, {
               normal,
               sway,
               morph: new Three.Vector3(R * 0.18 * t, 0, 0),
@@ -223,13 +241,37 @@
           }
         return fm.geometry({ species: S.key, lod, reach: S.R, crown: { y: crown.y, r: S.R, ry: 12 } });
       }
+      // Grass (dune and meadow grass): crossed upright cards of blades round a clump.
+      function buildGrass(S, lod) {
+        const fm = new FoliageMesh(),
+          random = vegRandom(S.seed + lod),
+          between = (a, b) => a + random() * (b - a),
+          { H, R } = S,
+          normal = (p) => new Three.Vector3((p.x / R) * 0.35, 1, (p.z / R) * 0.35).normalize(),
+          sway = (p) => clamp(p.y / H, 0, 1) * 1.1,
+          cards = lod ? 4 : 9;
+        for (let k = 0; k < cards; k++) {
+          // Round the clump, each card leaning out from its middle (a tuft seen from
+          // the street camera, not a row of blades edge on).
+          const a = (k / cards) * TAU + between(-0.25, 0.25),
+            h = H * between(0.7, 1.1),
+            out = new Three.Vector3(Math.cos(a), 0, Math.sin(a)),
+            centre = out.clone().multiplyScalar(R * between(0.15, 0.4)).setY(h * 0.42 - 0.4);
+          card(fm, centre, out.clone().setY(between(0.45, 0.75)), R * between(1.2, 1.7), h, between(-0.1, 0.1), 'grass', shade(S.leafColor, between(0.9, 1.12)), {
+            normal,
+            sway,
+            tint: (p, color) => shade(color, 0.62 + 0.45 * clamp(p.y / h, 0, 1)),
+          });
+        }
+        return fm.geometry({ species: S.key, lod, reach: R, crown: { y: H * 0.5, r: R, ry: H * 0.5 } });
+      }
       const speciesGeometries = new Map();
       // One geometry per species and level of detail (0 near, 1 mid), made on first use.
       function speciesGeometry(key, lod = 0) {
         const id = key + '|' + lod;
         if (!speciesGeometries.has(id)) {
           const S = TREE_SPECIES[key];
-          speciesGeometries.set(id, S.form === 'broad' ? buildBroadleaf(S, lod) : S.form === 'palm' ? buildPalm(S, lod) : buildConifer(S, lod));
+          speciesGeometries.set(id, S.form === 'broad' ? buildBroadleaf(S, lod) : S.form === 'palm' ? buildPalm(S, lod) : S.form === 'grass' ? buildGrass(S, lod) : buildConifer(S, lod));
         }
         return speciesGeometries.get(id);
       }
@@ -393,17 +435,34 @@
           ['plane', 2],
           ['beech', 1],
         ],
+        // County towns and lowland farms: oak woodland with maples, a few beech and birch.
         COUNTY_TREES = [
-          ['oak', 3],
-          ['maple', 3],
-          ['linden', 2],
+          ['oak', 4.5],
+          ['maple', 2.5],
+          ['linden', 1],
           ['beech', 1.5],
-          ['birch', 1],
+          ['birch', 0.8],
         ],
         FOOTHILL_CONIFERS = [
           ['pine', 5],
           ['spruce', 2.5],
           ['fir', 2.5],
+        ],
+        // The open lowlands south of the range: oak woodland and pasture oaks, pines on the knolls.
+        LOWLAND_TREES = [
+          ['oak', 6],
+          ['pine', 2],
+          ['maple', 1.2],
+          ['birch', 0.6],
+        ],
+        // Oceanview and the Coral Coast: palms on the resort streets, stone pines and sea grape by the shore.
+        COAST_TREES = [
+          ['coconut', 3],
+          ['royal', 1.5],
+          ['canary', 1.2],
+          ['stonePine', 2],
+          ['seagrape', 1.6],
+          ['flame', 0.6],
         ];
       // Palms by place on the Keys and in the resort towns.
       function palmSpeciesAt(x, y, roll) {
@@ -426,15 +485,22 @@
           if (t.isle === 'palm') return pickSpecies([['royal', 3], ['coconut', 2], ['canary', 2]], roll);
           if (t.isle === 'cherry') return 'cherry';
           if (t.isle === 'cypress') return 'cypress';
+          // Royal palms line the divided boulevards; planes and stone pines the rest.
+          if (ISLE_STREETS.some((s) => s.divided && Math.abs((s.vertical ? t.x : t.y) - s.at) < isleKerbHalf(s.at, s.vertical) + 30 && (s.vertical ? t.y : t.x) > s.from - 40 && (s.vertical ? t.y : t.x) < s.to + 40))
+            return 'royal';
           return roll < 0.2 ? 'stonePine' : 'plane';
         }
         const tropical = t.tropical ?? (onPalmKeys(t.x) && !t.county);
         if (tropical) {
-          // Flame trees and jacarandas among the palms.
-          if (roll < 0.26) return roll < 0.15 ? 'flame' : 'jacaranda';
+          // The county's resort coast: palms, stone pines and sea grape.
+          if (t.county && !t.isle && !onPalmKeys(t.x)) return pickSpecies(COAST_TREES, roll);
+          // Palm Keys: palms first; flame trees and jacarandas among them, sea grape near the sand.
+          if (roll < 0.18) return roll < 0.1 ? 'flame' : 'jacaranda';
+          if (roll < 0.24 && districtAt(t.x, t.y) === BEACH.name) return 'seagrape';
           return palmSpeciesAt(t.x, t.y, vegHash(t.x, t.y, 2));
         }
-        if (t.pine) return pickSpecies(FOOTHILL_CONIFERS, roll);
+        // Ridgeline's foot: conifers against the range, oak woodland out in the open lowlands.
+        if (t.pine) return pickSpecies(t.y > 3500 || terrainHeight(t.x, t.y - 300) < 5 ? LOWLAND_TREES : FOOTHILL_CONIFERS, roll);
         if (t.park) {
           if (t.nearPond && roll < 0.7) return 'willow';
           if (t.blossom) return 'cherry';
@@ -446,7 +512,21 @@
           key = pickSpecies(table || DISTRICT_TREES.MIDTOWN, roll);
         return key === 'pear' && vegHash(t.x, t.y, 4) < 0.2 ? 'pearBlossom' : key;
       }
-      const speciesCounts = {};
+      const speciesCounts = {},
+        regionCounts = {};
+      // Which part of the world a point is in, for the vegetation survey.
+      function vegetationRegion(x, y) {
+        if (onPalmKeys(x)) return 'Palm Keys';
+        if (typeof nearMonarchIsle === 'function' && nearMonarchIsle(x, y)) return 'Monarch Isle';
+        if (districtAt(x, y) === 'SUNSET PIER') return 'Sunset Pier';
+        const county = countyRegionAt(x, y);
+        if (county) return county.id === 'ridgeline' ? (terrainFieldAt(x, y) && terrainHeight(x, y) > 2 ? 'Ridgeline range' : 'Ridgeline lowlands') : county.name;
+        return 'Northbank';
+      }
+      function tallyVegetation(x, y, key, region = vegetationRegion(x, y)) {
+        const counts = regionCounts[region] || (regionCounts[region] = {});
+        counts[key] = (counts[key] || 0) + 1;
+      }
       /**
        * One tree of the plan (or a renderer-only one, landscape3d.js): a palm or a
        * tree of its species, a breakable prop (damage.js) drawn as instances
@@ -468,6 +548,7 @@
         t.prop = treeProp({ x: t.x, y: t.y, r: (S.R * scale) / 1.4, pine: S.conifer || S.form === 'cypress' || S.form === 'stonePine' });
         t.species = key;
         speciesCounts[key] = (speciesCounts[key] || 0) + 1;
+        tallyVegetation(t.x, t.y, key);
         addTreeMeshes(group, S, v, scale);
         breakableGroup(t.prop, group);
         noteFarTree(S, t.x, ground, t.y, scale);
@@ -496,6 +577,7 @@
           ground = terrainHeight(x, z),
           prop = registerStreetProp('palm', x, z, 0, { half: [2 * size * S.girth, 2 * size * S.girth], size: 12 * size, breakKJ: S.breakKJ });
         speciesCounts[key] = (speciesCounts[key] || 0) + 1;
+        tallyVegetation(x, z, key);
         const group = new Three.Group();
         group.position.set(x, ground, z);
         // Palms lean more than they vary in width.
@@ -550,6 +632,9 @@
         return {
           species: { ...speciesCounts },
           forest: { ...forestCounts },
+          // Per region: every tree, palm, shrub and grass clump planted there, by species.
+          regions: JSON.parse(JSON.stringify(regionCounts)),
+          landscape: { ...landscapeCounts },
           view: { drawCalls: calls, shadowCasters: calls, instances, triangles: Math.round(triangles), meshes: inView },
           trianglesPerTree: perTree,
         };

@@ -345,9 +345,10 @@
         plane: { form: 'broad', H: 70, R: 27, Ry: 23, shape: 'round', lobes: 7, cards: 10, cell: 'leafLobed', leaf: '#6f8c45', bark: 0, trunk: '#bdb298', trunkR: 2.1, limbs: 4 },
         linden: { form: 'broad', H: 64, R: 21, Ry: 23, shape: 'oval', lobes: 7, cards: 10, cell: 'leafRound', leaf: '#5d813c', bark: 1, trunk: '#6a5a4c', trunkR: 1.8, limbs: 3 },
         locust: { form: 'broad', H: 64, R: 26, Ry: 18, shape: 'vase', lobes: 8, cards: 8, cell: 'leafFine', leaf: '#a3b555', bark: 1, trunk: '#4d423a', trunkR: 1.6, limbs: 5, airy: true },
-        pear: { form: 'broad', H: 54, R: 17, Ry: 21, shape: 'teardrop', lobes: 6, cards: 10, cell: 'leafRound', leaf: '#4b7a3a', bark: 1, trunk: '#5e5047', trunkR: 1.4, limbs: 3 },
+        // Bradford pear: a full, glossy teardrop 9-10 m tall (it read small and near black at street zoom).
+        pear: { form: 'broad', H: 64, R: 21, Ry: 24, shape: 'teardrop', lobes: 7, cards: 11, cell: 'leafRound', leaf: '#5f9043', bark: 1, trunk: '#5e5047', trunkR: 1.5, limbs: 3 },
         // A Bradford pear in its white spring blossom (one pear in five).
-        pearBlossom: { form: 'broad', H: 54, R: 17, Ry: 21, shape: 'teardrop', lobes: 6, cards: 10, cell: 'leafRound', leaf: '#4b7a3a', bark: 1, trunk: '#5e5047', trunkR: 1.4, limbs: 3, blossom: { color: '#f4f2ea', share: 0.7 } },
+        pearBlossom: { form: 'broad', H: 64, R: 21, Ry: 24, shape: 'teardrop', lobes: 7, cards: 11, cell: 'leafRound', leaf: '#5f9043', bark: 1, trunk: '#5e5047', trunkR: 1.5, limbs: 3, blossom: { color: '#f4f2ea', share: 0.7 } },
         maple: { form: 'broad', H: 60, R: 24, Ry: 21, shape: 'round', lobes: 7, cards: 10, cell: 'leafLobed', leaf: '#628a3e', bark: 1, trunk: '#6e6053', trunkR: 1.7, limbs: 4 },
         oak: { form: 'broad', H: 76, R: 33, Ry: 24, shape: 'spreading', lobes: 9, cards: 10, cell: 'leafLobed', leaf: '#58763a', bark: 1, trunk: '#55473a', trunkR: 2.6, limbs: 5 },
         willow: { form: 'broad', H: 66, R: 29, Ry: 22, shape: 'weeping', lobes: 7, cards: 14, cell: 'willow', leaf: '#a2b964', bark: 1, trunk: '#5f5245', trunkR: 2.2, limbs: 5 },
@@ -361,6 +362,15 @@
         spruce: { form: 'spruce', H: 88, R: 20, leaf: '#46704a', bark: 7, trunk: '#5e4d40', trunkR: 1.5, conifer: true },
         fir: { form: 'fir', H: 80, R: 17, leaf: '#4f7a68', bark: 7, trunk: '#6b6259', trunkR: 1.5, conifer: true },
         pine: { form: 'pine', H: 92, R: 25, Ry: 15, leaf: '#62824a', bark: 5, trunk: '#91603f', trunkR: 1.9, conifer: true },
+        // Coastal and garden shrubs: sea grape (a sprawling, multi-stemmed small tree
+        // of big round leaves behind the beaches), hibiscus (red flowers) and
+        // bougainvillea (magenta bracts over a low mound); dune grass in clumps.
+        seagrape: { form: 'broad', H: 30, R: 19, Ry: 11, shape: 'spreading', lobes: 7, cards: 9, cell: 'leafRound', leaf: '#7d9a3e', bark: 2, trunk: '#7b6a58', trunkR: 1.1, limbs: 4 },
+        hibiscus: { form: 'broad', H: 17, R: 10, Ry: 7.5, shape: 'round', lobes: 5, cards: 9, cell: 'leafLobed', leaf: '#4f7f36', bark: 1, trunk: '#5b4b3c', trunkR: 0.6, limbs: 3, blossom: { color: '#e0342c', share: 0.32 } },
+        bougainvillea: { form: 'broad', H: 15, R: 12, Ry: 6.5, shape: 'spreading', lobes: 6, cards: 9, cell: 'leafFine', leaf: '#557f38', bark: 1, trunk: '#5b4b3c', trunkR: 0.6, limbs: 3, blossom: { color: '#c42a86', share: 0.62 } },
+        duneGrass: { form: 'grass', H: 9, R: 6, leaf: '#d2ca8a', bark: 1, trunk: '#8e8558', trunkR: 0.3 },
+        // Tall meadow grass and bracken on the mountain roads' verges.
+        meadowGrass: { form: 'grass', H: 7, R: 7, leaf: '#a3ab5c', bark: 1, trunk: '#6f6a45', trunkR: 0.3 },
         // Palms at makePalm's size 1 (plan radius 17): heights of the trunk top.
         canary: { form: 'palm', palm: 'canary', H: 64, R: 34, leaf: '#5a7a3b', bark: 3, trunk: '#86765b', trunkR: 3.9, fronds: 26, frondLen: 36, frondW: 9, elevTop: 1.0, elevLow: -0.35, droop: 0.55, girth: 1.5, breakKJ: 320 },
         fan: { form: 'palm', palm: 'fan', H: 100, R: 20, leaf: '#6a8a40', bark: 4, trunk: '#8f806b', trunkR: 1.7, fronds: 22, fanR: 10.5, girth: 0.8, breakKJ: 120 },

@@ -13,6 +13,8 @@
           thatch: [512, 512, 256, 128],
           // Pine tufts: needle pompoms in clumps (pines, stone pines).
           tuft: [768, 512, 256, 256],
+          // Grass blades rising from the bottom edge, a few seed heads (dune and meadow grass).
+          grass: [0, 640, 384, 128],
         },
         // Bark strips along the bottom: 0 plane (mottled), 1 furrowed, 2 smooth
         // with rings, 3 date palm leaf bases, 4 palm rings, 5 pine plates, 6 birch,
@@ -515,6 +517,27 @@
           c.fillStyle = tone(0.5, 0.4);
           c.fillRect(0, 0, w, hh);
           barkNoise(w, hh, 700, 0.35, 0.8, 4);
+        });
+        // (Painted last, so the cells before it keep their random draws.)
+        // Grass: curved, tapering blades from the bottom edge; seed heads on a few.
+        inCell(ATLAS_CELLS.grass, (w, hh) => {
+          for (let i = 0; i < 150; i++) {
+            const x0 = between(6, w - 6),
+              len = hh * between(0.4, 0.97),
+              lean = between(-22, 22),
+              value = between(0.55, 1);
+            path((g) => {
+              g.moveTo(x0 - 1.6, hh);
+              g.quadraticCurveTo(x0 + lean * 0.35, hh - len * 0.55, x0 + lean, hh - len);
+              g.quadraticCurveTo(x0 + lean * 0.35 + 1.2, hh - len * 0.55, x0 + 1.6, hh);
+              g.closePath();
+            });
+            fillBoth(value, between(0.4, 0.9), between(0, 1));
+            if (random() < 0.12) {
+              path((g) => g.ellipse(x0 + lean, hh - len + 5, 1.6, 6, lean * 0.02, 0, TAU));
+              fillBoth(value * 1.1, 0.8, 1);
+            }
+          }
         });
         return { colorCanvas, heightCanvas };
       }

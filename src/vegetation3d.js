@@ -54,4 +54,5 @@
       // @include src/vegetation3d-atlas.js
       // @include src/vegetation3d-material.js
       // @include src/vegetation3d-species.js
+      // @include src/vegetation3d-landscape.js
       // END SUBSYSTEM: src/vegetation3d.js
