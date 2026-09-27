@@ -94,6 +94,8 @@
       }
       physicsAccumulator = 0;
       impactContacts.clear();
+      // The traffic round the player settles at once (livingcity-traffic.js).
+      resetTrafficStream();
       for (let i = 0; i < 150; i++) {
         const vert = seededRandom() > 0.5,
           r = randomChoice(vert ? ROAD_CENTERS : ROAD_ROWS),

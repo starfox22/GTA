@@ -99,6 +99,46 @@
       else if (kind === 'tank') dispatchCaption('ARMOR ON SCENE · CIVILIANS CLEAR THE AREA', null);
       else if (kind === 'army') dispatchCaption('ARMY UNITS INBOUND · GUNNERS WEAPONS FREE', null);
       else if (kind === 'lost') dispatchCaption('LOST VISUAL · UNITS SEARCH THE AREA', null);
+      else if (kind === 'spotted') {
+        const street = spokenStreet(player.x, player.y);
+        dispatchCaption('SUSPECT SPOTTED' + (street ? ' ON ' + street.toUpperCase() : '') + ' · ' + suspectDescription() + ' · ALL UNITS', null);
+        suspectSeenIn = player.car || 'foot';
+        suspectSeenAt = gameTime;
+      }
+    }
+    /* What the units last saw the player in, for the radio: a new car (or the
+       player out of one) while they watch is called in once it has lasted a
+       second and a half. */
+    let suspectSeenIn = null,
+      suspectSeenAt = -100,
+      suspectChangeAt = 0;
+    function suspectDescription() {
+      const car = player.car;
+      if (!car) return 'ON FOOT';
+      if (isAircraft(car)) return 'IN THE AIR';
+      if (isBoat(car)) return 'ON THE WATER';
+      const colour = colourWord(car.color);
+      return ('IN A ' + (colour ? colour + ' ' : '') + (CAR_WORDS[car.type] || (car.type in PRESTIGE_TYPES ? 'sports car' : 'car'))).toUpperCase();
+    }
+    function policeDescribeSuspect() {
+      const now = player.car || 'foot',
+        fresh = gameTime - suspectSeenAt > 20;
+      suspectSeenAt = gameTime;
+      // A new pursuit (or none): what they see now is simply what they saw.
+      if (suspectSeenIn === null || wantedStars <= 0 || fresh) {
+        suspectSeenIn = now;
+        suspectChangeAt = 0;
+        return;
+      }
+      if (now === suspectSeenIn) {
+        suspectChangeAt = 0;
+        return;
+      }
+      if (!suspectChangeAt) suspectChangeAt = gameTime;
+      if (gameTime - suspectChangeAt < 1.5 || gameTime - lastDispatchLine < 5) return;
+      suspectSeenIn = now;
+      suspectChangeAt = 0;
+      dispatchCaption('SUSPECT SWITCHED · NOW ' + suspectDescription(), null);
     }
 
     /**

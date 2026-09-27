@@ -1,7 +1,8 @@
     // Traffic streaming: the city's traffic pool kept round the player (streamTraffic), how busy by
     // hour and district (trafficTarget), which cars by district and hour (TRAFFIC_MIX), trafficReport().
-    /* The pool is fixed (populate() spreads ~120 cars over the whole grid, and
-       TRAFFIC_POOL_CAP bounds it); only where the cars are changes. A car that is
+    /* The pool is small and bounded (populate() lays ~30 cars over the whole
+       grid, the streamer adds up to the target, TRAFFIC_POOL_CAP caps it); mostly
+       only where the cars are changes. A car that is
        far away, out of sight and untouched is taken off the street and a car of a
        type that suits the district and the hour comes onto a lane just beyond the
        edge of the screen instead, so the streets in view are as busy as the hour
@@ -20,6 +21,9 @@
       enabled: true,
       timer: 0,
       settledAt: null,
+      // Ticks left of a settle (a teleport or a new world): 20 cars a tick, 0.1 s
+      // apart, so the fill never costs one long frame.
+      settling: 0,
       recycled: 0,
       added: 0,
       retired: 0,
@@ -201,17 +205,28 @@
       trafficStream.target = target;
       if (target <= 0) return;
       const ring = trafficRing(),
-        settle =
+        jump =
           trafficStream.settledAt === null ||
           Math.hypot(player.x - trafficStream.settledAt.x, player.y - trafficStream.settledAt.y) > 2600;
+      if (jump) {
+        trafficStream.settledAt = { x: player.x, y: player.y };
+        trafficStream.settling = 5;
+      }
+      const settle = trafficStream.settling > 0;
+      if (settle) {
+        trafficStream.settling--;
+        trafficStream.timer = 0.1;
+      }
       let near = 0,
         pool = 0;
-      const far = [];
+      const far = [],
+        since = clamp(gameTime - (trafficStream.lastTick ?? gameTime), 0, 1);
+      trafficStream.lastTick = gameTime;
       for (const c of vehicles) {
         if (!c.ai || c.cop || c.isle || c.countyRoute || isBoat(c) || isAircraft(c)) continue;
         if (c.streamed) pool++;
         // How long it has stood still (a deadlock nobody is watching is cleared).
-        c.trafficIdle = Math.abs(c.speed || 0) < 3 * KMH ? (c.trafficIdle || 0) + 0.5 : 0;
+        c.trafficIdle = Math.abs(c.speed || 0) < 3 * KMH ? (c.trafficIdle || 0) + since : 0;
         const dx = Math.abs(c.x - player.x),
           dy = Math.abs(c.y - player.y),
           outside = dx > ring + 250 || dy > ring + 250,
@@ -228,7 +243,7 @@
         if (index >= 0) vehicles.splice(index, 1);
       };
       if (near < target) {
-        const want = Math.min(target - near, settle ? 80 : 3);
+        const want = Math.min(target - near, settle ? 20 : 3);
         for (let placed = 0; placed < want; placed++) {
           const spot = trafficSpawnSpot(settle, ring);
           if (!spot) break;
@@ -250,7 +265,6 @@
           trafficStream.retired++;
         }
       }
-      if (settle) trafficStream.settledAt = { x: player.x, y: player.y };
       trafficStream.lastMs = performance.now() - started;
     }
     /* Why a stopped traffic car is standing (trafficReport): at a light, in a
@@ -277,6 +291,12 @@
       }
       if (j && j.committed) return 'junction';
       return 'other';
+    }
+    /* A new world (populate()): the next tick settles the traffic round the
+       player at once instead of trickling it in. */
+    function resetTrafficStream() {
+      trafficStream.settledAt = null;
+      trafficStream.timer = 0;
     }
     /* Developer console: the traffic round the player. */
     function trafficReport() {

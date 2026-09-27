@@ -233,6 +233,10 @@
       }
       const seen = policeHaveEyesOnPlayer();
       if (seen) {
+        // Dispatch says so when the search finds the player again, and when the
+        // player they are watching turns up in another car or on foot.
+        if (searchActive && wantedStars >= 1) policeRadioEvent('spotted', player);
+        else policeDescribeSuspect();
         lastSeen = {
           x: player.x,
           y: player.y,
