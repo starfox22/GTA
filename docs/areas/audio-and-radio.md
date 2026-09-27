@@ -46,11 +46,16 @@ sports-audio.js, beachclub-audio.js, themepark-sound.js, car-radio.js, settings.
   `original`), referenced by id from `src/asset-loader.js`.
 - **Every third-party asset is credited in `docs/THIRD_PARTY_CREDITS.txt`** (the build embeds
   that file in the page: keep it, and keep it accurate).
-- Entries marked `"stream": true` (the nine radio tracks in `assets/music/`) are embedded in
-  the single-file build but, with `--split-media` / `--zip`, written beside the page as
-  `media/*.mp3` and loaded by URL. The published artifact page is capped at 16 MB (each extra
-  file at 15 MB): keep the split page under ~15.5 MB; prefer procedural textures and small
-  media (WebP, MP3/OGG).
+- The single-file build (`build.py`, `--out`: dev, tests) embeds every entry as a Base64
+  block. The split build (`--split-media`, `--zip`: the artifact and the download) puts **no
+  media in the page**: `"stream": true` entries (the nine radio tracks) are copied to
+  `media/*.mp3` and played by URL; every other entry goes into a media pack,
+  `media/pack-{images,audio,data}[-n].js`, a plain script registering the same data: URL in
+  `window.DEAD_END_CITY_MEDIA` (asset-loader.js reads it first). Classic `<script src>` works
+  from file://, where fetch() and WebGL textures from image files are blocked, so the zip
+  still plays offline. Limits: page ≤ 16 MB, each file ≤ 15 MB (packs split at 12 MB),
+  256 MB per artifact version. Prefer small media (WebP, MP3/OGG) all the same: players
+  download it.
 - Generated media is rebuilt by its tool, not edited: `assets/unicorn-horse.json` comes from
   `python3 tools/unicorn_model.py` (numpy; reads `tools/models/Horse.glb`).
 

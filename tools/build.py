@@ -12,11 +12,18 @@ and SHA-256 so the assembled file can be audited without tooling.
 
     python3 tools/build.py --split-media dist/publish
                                       -> dist/publish/index.html plus dist/publish/media/*:
-                                         the same game, but manifest entries marked
-                                         "stream": true (the radio music) are left out of
-                                         the page and loaded from media/ beside it. This is
-                                         the variant published as the claude.ai artifact,
-                                         whose page size is capped at 16 MB.
+                                         the same game with no media inside the page.
+                                         Manifest entries marked "stream": true (the radio
+                                         music) are copied to media/ and played by URL; every
+                                         other entry goes into a media pack, media/pack-<kind>.js
+                                         (images, audio, data; -2, -3... past PACK_LIMIT), a
+                                         plain script that registers the same labelled Base64
+                                         as a data: URL. Classic <script src> tags load them in
+                                         order before the asset loader, so the game starts the
+                                         same way, and they work from file:// (the zip) where
+                                         fetch() and WebGL textures from files are blocked.
+                                         This is the variant published as the claude.ai
+                                         artifact, whose page (not its files) is capped at 16 MB.
 
     python3 tools/build.py --zip dist/DeadEndCity.zip
                                       -> the downloadable game: DeadEndCity/index.html
@@ -84,12 +91,67 @@ def expand(rel, seen=()):
     return '\n'.join(out)
 
 
+# A media pack file stays well under the claude.ai artifact limit for one file (15 MB).
+PACK_LIMIT = 12_000_000
+
+
+def pack_kind(entry):
+    mime = entry['mime']
+    return 'images' if mime.startswith('image/') else 'audio' if mime.startswith('audio/') else 'data'
+
+
+def write_media_packs(split_dir, entries):
+    """The non-streamed entries as media/pack-<kind>[-n].js files; returns the
+    <script src> tags (in manifest order of first use) that load them."""
+    os.makedirs(os.path.join(split_dir, 'media'), exist_ok=True)
+    packs = {}  # file name -> list of text chunks
+    sizes = {}
+    order = []
+    counters = {}
+    for entry in entries:
+        with open(os.path.join(ROOT, entry['file']), 'rb') as fh:
+            raw = fh.read()
+        sha = hashlib.sha256(raw).hexdigest()
+        url = 'data:' + entry['mime'] + ';base64,' + base64.b64encode(raw).decode('ascii')
+        chunk = (
+            f"// {entry['original']} | {len(raw)} bytes | SHA-256 {sha}\n"
+            f"M[{json.dumps(entry['id'])}] = {json.dumps(url)};\n"
+        )
+        kind = pack_kind(entry)
+        n = counters.setdefault(kind, 1)
+        name = f'pack-{kind}.js' if n == 1 else f'pack-{kind}-{n}.js'
+        if name in packs and sizes[name] + len(chunk) > PACK_LIMIT:
+            counters[kind] = n = n + 1
+            name = f'pack-{kind}-{n}.js'
+        if name not in packs:
+            packs[name] = [
+                '// Dead End City media pack (tools/build.py --split-media): labelled Base64\n'
+                '// registered as data: URLs for src/asset-loader.js. Not code to edit.\n'
+                '(function (M) {\n'
+            ]
+            sizes[name] = 0
+            order.append(name)
+        packs[name].append(chunk)
+        sizes[name] += len(chunk)
+    for name in order:
+        with open(os.path.join(split_dir, 'media', name), 'w', encoding='ascii') as fh:
+            fh.write(''.join(packs[name]) + '})((window.DEAD_END_CITY_MEDIA = window.DEAD_END_CITY_MEDIA || {}));\n')
+    return [f'<script src="media/{name}"></script>\n' for name in order]
+
+
 def media_blocks(split_dir=None):
-    """Every manifest entry as a labelled Base64 block. With split_dir, entries
-    marked "stream" are copied to split_dir/media/ instead and their block is
-    left empty with a data-src the media loader resolves relative to the page."""
+    """Every manifest entry as a labelled Base64 block. With split_dir, no media
+    stays in the page: entries marked "stream" are copied to split_dir/media/ and
+    their block is left empty with a data-src the media loader resolves relative
+    to the page; every other entry goes into a media pack (write_media_packs)."""
     manifest = json.loads(read('assets/manifest.json'))
     parts = []
+    if split_dir:
+        packed = [e for e in manifest if not e.get('stream')]
+        parts.append(
+            f"<!-- MEDIA PACKS: {len(packed)} images, sounds and data files are served from media/pack-*.js -->\n"
+            + ''.join(write_media_packs(split_dir, packed))
+        )
     for entry in manifest:
         if split_dir and entry.get('stream'):
             name = os.path.basename(entry['file'])
@@ -102,6 +164,8 @@ def media_blocks(split_dir=None):
                 f"<script type=\"application/octet-stream\" id=\"{entry['id']}\" data-mime=\"{entry['mime']}\" "
                 f"data-src=\"media/{name}\"></script>\n"
             )
+            continue
+        if split_dir:
             continue
         with open(os.path.join(ROOT, entry['file']), 'rb') as fh:
             raw = fh.read()
@@ -142,8 +206,8 @@ ZIP_README = '''DEAD END CITY
 Double-click index.html to play. It works in Chrome, Edge, Firefox and Safari,
 straight from this folder: no install and no internet connection needed.
 
-Keep the media folder next to index.html: the car radio streams its music
-from there. Everything else (graphics, sound effects) is inside index.html.
+Keep the media folder next to index.html: the graphics, the sound effects and
+the car radio's music all load from there.
 
 The controls are in the game (HOW TO PLAY on the title screen). Third-party credits
 are embedded in index.html (search it for "third-party-credits").

@@ -4,7 +4,8 @@ A browser top-down crime game (GTA 1/2 style, 1997 South Coast; Three.js r160 3D
 fallback). ~260 source files in `src/*.js` are spliced by `// @include src/x.js` lines
 (recursive, from `src/main.js` → `src/game.js`) into one closure inside one HTML page by
 `tools/build.py`. No bundler, no npm, no minification. Ships as a claude.ai artifact (split
-build: `index.html` + `media/*.mp3`) and as a downloadable zip folder.
+build: `index.html` + `media/` holding the music and the media packs) and as a downloadable
+zip folder.
 
 ## Commands
 
@@ -13,7 +14,7 @@ sh tools/quick-check.sh [tag]            # BEFORE EVERY COMMIT: syntax + build +
 sh tools/check.sh [tag]                  # syntax gate only (dist/check/<tag>.{html,js})
 python3 tools/build.py                   # dead-end-city.html (local, git-ignored: never commit it)
 python3 tools/build.py --out dist/game.html            # scratch build
-python3 tools/build.py --split-media dist/publish      # dist/publish/index.html + media/*.mp3 (the artifact)
+python3 tools/build.py --split-media dist/publish      # dist/publish/index.html + media/ (*.mp3 + pack-*.js): the artifact
 python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI (.github/workflows/release-zip.yml) attaches it to the "latest" GitHub Release on every push, and to a versioned release for tags v*
 python3 tools/filemap.py                 # regenerate docs/FILEMAP.md after adding/removing/renaming files
 node tools/smoke.mjs dist/game.html dist/smoke         # headless boot, walk, drive, map: errors + 5 screenshots
@@ -55,11 +56,15 @@ when you are done with it (and before smoke/tour if slots are short).
 
 **Publish** (only when asked): `python3 tools/build.py --split-media dist/publish`, then the
 Artifact tool with `file_path` dist/publish/index.html, `url`
-https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B and a `files` map of the nine
-`media/<name>.mp3` → `dist/publish/media/<name>.mp3` (island-colada, island-dub,
-lofi-freeway, lofi-hooptie, lounge-heists, lounge-martini, oddball, rock, synth). If the tool refuses because this session hasn't read the live page, republish at once with
-`force: true` (the owner's standing permission for this link only; never read the 13+ MB page). The
-page must stay under 16 MB (aim ≤ 15.5 MB); each media file ≤ 15 MB.
+https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B and a `files` map with one
+`media/<file>` → `dist/publish/media/<file>` entry for **every** file in dist/publish/media/
+(the nine radio `.mp3`s and the `pack-*.js` media packs: `ls dist/publish/media`). If the
+tool refuses because this session hasn't read the live page, republish at once with
+`force: true` (the owner's standing permission for this link only; never read the page).
+Limits: the page ≤ 16 MB (it is ~9 MB of code: media never goes in the split page), each
+file ≤ 15 MB (packs split themselves at 12 MB), 511 files / 256 MB per version. New media:
+add it to assets/ + manifest and it lands in a pack automatically; the split page loads
+packs with plain `<script src>` so the zip still plays from file://.
 
 ## Rules
 

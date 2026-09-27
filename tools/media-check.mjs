@@ -1,6 +1,7 @@
 // Streamed-media check for a split build (build.py --split-media or --zip):
 // opens the page from file:// and plays every streamed track (the radio music,
-// media/*.mp3) through an <audio> element until it fires `canplay`.
+// media/*.mp3) through an <audio> element until it fires `canplay`. The media packs
+// (media/pack-*.js: images and sounds) are proved by a smoke boot of the same page.
 //   node tools/media-check.mjs <dir>/index.html
 // Exits 1 if any track fails to load. Only needs the page's media blocks, so it
 // does not wait for the game to boot.

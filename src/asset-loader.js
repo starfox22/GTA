@@ -127,7 +127,11 @@ const embeddedAssetReferences = {
   }
 };
 
+// Split builds (tools/build.py --split-media) carry no media in the page: the
+// media/pack-*.js scripts loaded above register each entry's data: URL here.
+const mediaPacks = window.DEAD_END_CITY_MEDIA || {};
 function embeddedMediaDataUrl(identifier) {
+  if (Object.prototype.hasOwnProperty.call(mediaPacks, identifier)) return mediaPacks[identifier];
   const payloadElement = document.getElementById(identifier);
   if (!payloadElement) throw new Error('Missing embedded media: ' + identifier);
   // Split builds (tools/build.py --split-media) leave large streamed media such as

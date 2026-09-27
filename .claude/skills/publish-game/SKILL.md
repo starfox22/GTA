@@ -6,13 +6,13 @@ description: Build Dead End City and publish it to its claude.ai artifact link (
 1. `sh tools/quick-check.sh publish` must pass. Run `node tools/smoke.mjs dist/publish/index.html dist/smoke`
    after step 2 when the change touched boot, rendering, input or HUD (0 errors expected; the
    three.js "build/three.js deprecated" warning is normal).
-2. `python3 tools/build.py --split-media dist/publish` (page must stay under 16 MB).
+2. `python3 tools/build.py --split-media dist/publish` (page ≤ 16 MB, each media file ≤ 15 MB).
 3. Artifact tool, action publish:
    - `url`: https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B
    - `file_path`: dist/publish/index.html
-   - `files`: `{"media/<name>.mp3": "dist/publish/media/<name>.mp3"}` for each of island-colada,
-     island-dub, lofi-freeway, lofi-hooptie, lounge-heists, lounge-martini, oddball, rock, synth
-     (list dist/publish/media/ to confirm the set; add any new streamed track).
+   - `files`: `{"media/<file>": "dist/publish/media/<file>"}` for EVERY file in
+     dist/publish/media/ (`ls` it): the nine radio `.mp3`s and the `pack-*.js` media packs
+     (images, sounds, model data). A missing pack means missing textures or sounds.
    - a short `label` naming the release.
    If the tool refuses because this session has not read the live page, do NOT read the 13+ MB
    page and do NOT ask: the owner has given standing permission (2026-09-26) to overwrite this
