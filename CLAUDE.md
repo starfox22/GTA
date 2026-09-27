@@ -177,6 +177,8 @@ packs with plain `<script src>` so the zip still plays from file://.
 
 - `docs/BACKLOG.md`: known issues and loose ends per feature; check it before polishing an area,
   delete a line when you fix it.
+- `docs/console/README.md`: console rules and the per-group table index. An area doc that outgrows
+  ~8 KB splits as `<area>-<topic>.md` and gets a row in docs/README.md.
 - `docs/README.md` (index) · `docs/FILEMAP.md` (generated) · `docs/areas/*.md` (≤ ~8 KB each;
   update the one your change affects: contracts and gotchas, not what code says) ·
   `docs/audit/` (QA logs) · `docs/CHANGELOG.md` (latest release only) ·
