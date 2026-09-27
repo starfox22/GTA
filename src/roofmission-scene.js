@@ -24,6 +24,10 @@
         playerSpeed: 0,
         lastPlayerSpot: null,
       });
+      // The last run's ambulance stays parked below the doors after a win: it
+      // goes now, or this run's would queue behind it (and they piled up).
+      for (let i = vehicles.length - 1; i >= 0; i--)
+        if (vehicles[i].missionAmbulance && vehicles[i] !== player.car) vehicles.splice(i, 1);
       const z = ROOFTOP.height + 3,
         boss = {
           ...ROOF_HIT.home,
