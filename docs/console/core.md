@@ -18,7 +18,7 @@
 | `heal(armor)` | Restore the player's health (and optionally armour) without god mode, for long tests under fire |
 | `holdSimulation(on)` | Stop the frame loop's simulation while it keeps drawing, so a screenshot sequence can be stepped with `simulate()` |
 | `closeUp(zoom)` | Inspection only: zoom past the player's limit (up to 24) to look at people |
-| `footwork(aimDegrees)` | Facing and footwork (footwork.js): with a number (0 east, 90 south) hold the aim there as the touch aim stick does, `null` lets it go; returns where the body faces (`aim` or `travel`), the movement keys' heading, `inFight`, the pace share (1 forwards, 0.8 side-step, 0.6 backpedal) and km/h. Move with `simulate(s, ['KeyS'])` |
+| `footwork(aimDegrees, moveDegrees, fire)` | Facing and footwork (footwork.js): with a number (0 east, 90 south) hold the aim there as the touch aim stick does, `null` lets it go (and releases any keys it held); `moveDegrees` holds the movement keys toward that bearing (nearest of eight) and `fire` the fire key while the page runs, for gait screenshots; returns where the body faces (`aim` or `travel`), the movement keys' heading, `inFight`, the pace share (1 forwards, 0.8 side-step, 0.6 backpedal) and km/h. Move with `simulate(s, ['KeyS'])` |
 | `walk(heading, distance)` | Walk on foot through the real collision code (headless frames are too slow for keys) |
 
 ## godPanel (`godPanelConsole() in src/god-panel.js`)

@@ -104,9 +104,22 @@
       // aim there as the touch aim stick does, `null` lets it go; returns where the
       // body faces, the movement keys' heading and the pace share (1, 0.8 side-step,
       // 0.6 backpedal) and km/h. Hold keys with simulate() to move.
-      footwork(aimDegrees) {
+      // For screenshots of the gait: `moveDegrees` holds the movement keys toward that
+      // bearing (the nearest of eight) and `fire` the fire key, until footwork(null).
+      footwork(aimDegrees, moveDegrees = null, fire = false) {
         if (aimDegrees === null) touchAim = null;
         else if (typeof aimDegrees === 'number') touchAim = (aimDegrees * Math.PI) / 180;
+        for (const code of ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF']) keys[code] = false;
+        if (typeof moveDegrees === 'number') {
+          const a = (moveDegrees * Math.PI) / 180,
+            dx = Math.round(Math.cos(a)),
+            dy = Math.round(Math.sin(a));
+          keys.KeyD = dx > 0;
+          keys.KeyA = dx < 0;
+          keys.KeyS = dy > 0;
+          keys.KeyW = dy < 0;
+          keys.KeyF = !!fire;
+        }
         return footworkReport();
       },
       // Stop the frame loop's simulation (it still draws) so a screenshot sequence
