@@ -174,6 +174,7 @@
      */
     const CALL_OPENERS = {
       gunfire: [
+        '911? Someone’s been shot on {street}!',
         '911? There’s been a shooting on {street}!',
         'Police? Someone’s shooting people on {street}!',
         'Shots fired, shots fired! {street}, please hurry!',

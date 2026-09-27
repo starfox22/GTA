@@ -1,4 +1,4 @@
-    // Crowd witnesses: who really saw or heard what the player did, who gets somewhere safe and phones 911,
+    // Crowd witnesses: who really saw or heard what the player did, who runs a short way and phones 911,
     // the call itself (phone out, the lines, cut short by a gun or a death) and crowdReport().
     /**
      * WITNESSES
@@ -9,23 +9,42 @@
      * anyone with a clear line (a shot turns heads). Everyone who perceived
      * something the player did remembers it (`witnessOf`, `witnessSaw`).
      *
-     * Most react first (duck, run, gasp). A few seconds after it, once they are
-     * out of the fear reaction and the player is not on top of them, the
-     * director below hands the incident's phone to one of them: someone who saw
-     * a serious crime always calls, someone who only heard it sometimes. The call
-     * (CALL, below) takes 5-12 s; only when it ends does crowdReport() reach the
-     * police. Kill the caller, hold them at gunpoint (they may not dare call
-     * again) or get to them and the call is lost; another witness may try later.
+     * Most react first (duck, run, gasp). A second or two after it the director
+     * below hands the incident's phone to one of them, preferring someone who
+     * saw it and is on screen: a shooting, a blast, a stabbing, a hit-and-run, a
+     * body or a carjacking is always called in (seen or only heard); lesser
+     * crimes sometimes. The caller runs a short way if the player is close
+     * (CALL_SAFE_DISTANCE), stops, and makes the call (CALL, below: 5-8 s, phone
+     * at the ear, a speech bubble all the way); only when it ends does
+     * crowdReport() reach the police. Kill the caller or hold them at gunpoint
+     * (most will not dare call again) and the call is lost; walk up to them and
+     * they run and try again once clear. While living witnesses remain, the
+     * director keeps handing the phone on until someone gets through.
      */
     const WITNESS_FOV = 1.75,
       WITNESS_FOV_PHONE = 0.8,
       // Seconds after an incident within which a call still brings the police
       // (a body: after the death, see UNREPORTED_KEEP in witnesses.js).
       WITNESS_REPORT_WINDOW = 75,
-      // Incident kinds that are always crimes, and how sure a witness is to call.
+      // How sure a witness is to call (1: always, even someone who only heard it).
       WITNESS_CALL_CHANCE = { gunfire: 1, explosion: 1, melee: 1, knock: 1, body: 1, carjack: 1, theft: 0.8, crime: 0.6, crash: 0.35 },
-      // Reactions that leave no hand free for a phone (or no nerve).
-      CALL_BLOCKING = new Set(['flee', 'cower', 'freeze', 'shelter', 'dodge', 'handsUp', 'kneel', 'groan', 'call', 'point', 'fist', 'shout', 'argue', 'help', 'returnCar']);
+      // Remembered per incident (the nearest first when the list is full).
+      WITNESS_LIST_MAX = 20,
+      // Seconds of quiet after the last shot or blast before the phone is handed out.
+      WITNESS_LULL = 1,
+      // A caller runs until this far from the player (about 15 m: still on screen
+      // at the street camera's zoom), then phones; the player coming within
+      // CALL_CUT_DISTANCE cuts the call (they run and try again).
+      CALL_SAFE_DISTANCE = 120,
+      CALL_CUT_DISTANCE = 60,
+      CALL_SECONDS = [5, 8],
+      // Reactions nobody is pulled out of to make a call: hands up or kneeling
+      // under the gun, hurt on the ground, already on a phone, busy with a car.
+      CALL_BLOCKING = new Set(['handsUp', 'kneel', 'groan', 'call', 'argue', 'help', 'returnCar']),
+      // Moments over in a second or two: the director waits for them.
+      CALL_WAIT = new Set(['startle', 'gasp', 'dodge', 'shout', 'point', 'fist']),
+      // Frightened states the caller first runs out of (unless already clear).
+      CALL_RUN_FIRST = new Set(['flee', 'shelter', 'cower', 'freeze']);
     let witnessDirectorTimer = 0,
       witnessToldAt = -100;
     /* Within the person's field of view (or close enough to notice regardless). */
@@ -37,15 +56,39 @@
     /* Someone perceived an incident the player caused (crowdAlarm, bodies). */
     function noteWitness(p, inc, sees, d) {
       if (!inc.witnesses) inc.witnesses = [];
-      if (inc.witnesses.length < 12 && !inc.witnesses.includes(p)) inc.witnesses.push(p);
+      const list = inc.witnesses;
+      if (!list.includes(p)) {
+        if (list.length < WITNESS_LIST_MAX) list.push(p);
+        else {
+          // Full: the dead, or whoever is furthest from it, makes room for someone nearer.
+          let worst = -1,
+            worstD = d;
+          for (let i = 0; i < list.length; i++) {
+            const q = list[i],
+              qd = q.hp > 0 ? Math.hypot(q.x - inc.x, q.y - inc.y) : Infinity;
+            if (qd > worstD) {
+              worst = i;
+              worstD = qd;
+            }
+          }
+          if (worst >= 0) list[worst] = p;
+        }
+      }
       // Seeing something beats having heard something else.
       const prev = p.witnessOf;
       if (prev && prev !== inc && !prev.reported && gameTime - (p.witnessAt ?? -100) < 30 && p.witnessSaw && !sees) return;
+      if (prev === inc) {
+        // More of the same (the next shot): they keep what they saw.
+        p.witnessSaw = p.witnessSaw || sees;
+        p.witnessD = Math.min(p.witnessD ?? d, d);
+        return;
+      }
       p.witnessOf = inc;
       p.witnessSaw = sees;
       p.witnessD = d;
       p.witnessAt = gameTime;
-      p.witnessReadyAt = gameTime + randomBetween(2.5, 6) + d / 500;
+      // A moment to take it in (the director also waits for a lull in the shooting).
+      p.witnessReadyAt = gameTime + 0.9 + d / 2000;
       if (p.witnessDeclined === inc) return;
       p.witnessDeclined = null;
     }
@@ -55,22 +98,48 @@
     function witnessWindow(inc) {
       return inc.kind === 'body' ? UNREPORTED_KEEP : WITNESS_REPORT_WINDOW;
     }
-    /* Free, calm enough and far enough from the player to make the call. */
+    /* Could this witness be handed the phone now? True when nothing stops them. */
     function witnessCanCall(p, inc) {
-      if (p.hp <= 0 || p.witnessOf !== inc || gameTime < (p.witnessReadyAt ?? 0) || p.silencedUntil > gameTime) return false;
-      if (p.pending || p.onDeck || p.posed || p.ejected || personIncapacitated(p)) return false;
-      if (p.react && CALL_BLOCKING.has(p.react.kind)) return false;
+      return !witnessCallBlock(p, inc);
+    }
+    /* Why not (for DeadEndCity.witnesses() too): '' when they can. */
+    function witnessCallBlock(p, inc) {
+      if (p.hp <= 0) return 'dead';
+      if (p.witnessOf !== inc) return 'other';
+      // Gone indoors, recycled or never on the street: only the street crowd is run.
+      if (!pedestrians.includes(p)) return 'gone';
+      if (p.silencedUntil > gameTime) return 'silenced';
+      if (p.pending || p.onDeck || p.posed || p.ejected || personIncapacitated(p)) return 'busy';
+      if (p.react && CALL_BLOCKING.has(p.react.kind)) return p.react.kind;
       // A carjacked driver still chasing the car or shouting at it (carjack.js).
-      if (p.angryUntil > gameTime || p.witnessUntil > gameTime) return false;
-      // Clear of the player, and near enough to be simulated (updatePeople runs 1,500 units round).
-      const d = distanceBetween(p, player);
-      return d > 140 && d < 1400;
+      if (p.angryUntil > gameTime || p.witnessUntil > gameTime) return 'angry';
+      if (gameTime < (p.witnessReadyAt ?? 0)) return 'shaken';
+      if (p.react && CALL_WAIT.has(p.react.kind)) return p.react.kind;
+      // Near enough to be simulated (updatePeople runs 1,500 units round).
+      return distanceBetween(p, player) < 1400 ? '' : 'far';
+    }
+    /* Someone is on the phone about it, or on the way to a phone (the incident's
+       caller count is not given back when a caller dies or leaves the street). */
+    function witnessCallUnderWay(inc) {
+      const due = inc.callerDue;
+      if (due) {
+        const r = due.react;
+        if (due.hp > 0 && r && r.inc === inc && (r.kind === 'call' ? !r.reported : r.then === 'call') && pedestrians.includes(due)) return true;
+        inc.callerDue = null;
+      }
+      if (inc.callers <= 0) return false;
+      let live = 0;
+      for (const p of inc.witnesses) if (p.hp > 0 && p.react?.kind === 'call' && p.react.inc === inc && !p.react.released) live++;
+      for (const c of offstageCalls) if (c.inc === inc && c.startedAt > 0 && !c.hidden) live++;
+      if (!live) inc.callers = 0;
+      return live > 0;
     }
     /**
      * THE DIRECTOR (four times a second)
-     * For each unreported incident of the player's with nobody on the phone yet,
-     * the best placed witness (saw it, nearest, bravest) decides whether to call;
-     * one who decides not to is not asked again about that incident.
+     * For each unreported incident of the player's with nobody on the phone or
+     * on the way to one, the best placed witness (someone told it to, saw it, on
+     * screen, a short run from the player, brave) is handed the phone; one who
+     * decides not to (lesser crimes only) is not asked again about that incident.
      */
     function witnessDirector(deltaSeconds) {
       witnessDirectorTimer -= deltaSeconds;
@@ -78,73 +147,120 @@
       witnessDirectorTimer = 0.25;
       if (gameMode !== 'play') return;
       for (const inc of crowd.incidents) {
-        if (inc.attacker !== player || inc.reported || inc.callers > 0 || !inc.witnesses?.length) continue;
+        if (inc.attacker !== player || inc.reported || !inc.witnesses?.length) continue;
         if (gameTime - witnessCrimeTime(inc) > witnessWindow(inc)) continue;
+        // Nobody reaches for a phone while the shots are still coming.
+        if (inc.loud && gameTime - inc.time < WITNESS_LULL) continue;
+        if (witnessCallUnderWay(inc)) continue;
         let best = null,
           bestScore = -Infinity;
         for (const p of inc.witnesses) {
-          if (p.witnessDeclined === inc || !witnessCanCall(p, inc)) continue;
-          const score = (p.witnessMust === inc ? 3 : 0) + (p.witnessSaw ? 1.5 : 0) + (p.nerve ?? 0.5) - (p.witnessD || 0) / 800;
+          if (p.witnessDeclined === inc || witnessCallBlock(p, inc)) continue;
+          const d = distanceBetween(p, player),
+            score =
+              (p.witnessMust === inc ? 3 : 0) +
+              (p.witnessSaw ? 1.5 : 0) +
+              (crowdInView(p.x, p.y, -30) ? 1.2 : 0) +
+              (p.nerve ?? 0.5) -
+              Math.abs(d - CALL_SAFE_DISTANCE * 1.3) / 400;
           if (score > bestScore) {
             best = p;
             bestScore = score;
           }
         }
         if (!best) continue;
-        const chance = best.witnessMust === inc ? 1 : (WITNESS_CALL_CHANCE[inc.kind] ?? 0.5) * (best.witnessSaw ? 1 : 0.55);
+        const base = WITNESS_CALL_CHANCE[inc.kind] ?? 0.5,
+          chance = best.witnessMust === inc || base >= 1 ? 1 : base * (best.witnessSaw ? 1 : 0.55);
         if (seededRandom() > chance) {
           best.witnessDeclined = inc;
           continue;
         }
-        beginWitnessCall(best, inc);
+        witnessTakesPhone(best, inc);
       }
     }
+    /* The chosen caller: straight to the phone when clear of the player, otherwise a short run first. */
+    function witnessTakesPhone(p, inc) {
+      const r = p.react,
+        clear = distanceBetween(p, player) >= CALL_SAFE_DISTANCE;
+      if (clear && !(r && CALL_RUN_FIRST.has(r.kind))) {
+        beginWitnessCall(p, inc);
+        return;
+      }
+      if (r && r.kind === 'flee') {
+        // Already running: they stop once clear (fleeStep) and phone.
+        r.inc = inc;
+        r.then = 'call';
+        r.thenExtra = null;
+        r.dur = Math.min(Math.max(r.dur, r.t + 1.2), r.t + 5);
+      } else startReaction(p, 'flee', randomBetween(2.5, 4), player, inc, { then: 'call' });
+      inc.callerDue = p;
+    }
     function beginWitnessCall(p, inc) {
-      const callTime = randomBetween(5, 12);
+      const callTime = randomBetween(CALL_SECONDS[0], CALL_SECONDS[1]);
       startReaction(p, 'call', callTime + 2.5, { x: inc.x, y: inc.y }, inc, { callTime });
     }
     /**
      * THE CALL
-     * The phone comes out (a second of dialling, head down), then the line to the
-     * operator, the details a moment later, and when it ends the report goes in.
-     * The player walking up (100 units) or a gun on them cuts it off.
+     * The phone comes out (a moment of dialling, head down), then the line to
+     * the operator and the details, each in a bubble until the next, and when it
+     * ends the report goes in and the caller says the police are coming. The
+     * player walking up (CALL_CUT_DISTANCE) or a gun on them cuts it off: they
+     * run, and try again once clear unless scared silent.
      */
     function callStep(p, r, deltaSeconds) {
       if (!r.counted) {
+        // Someone else got through while they were running for it: no call.
+        if (r.inc?.reported && r.inc.attacker === player) {
+          r.dur = r.t;
+          return false;
+        }
         r.counted = true;
-        r.callTime ??= clamp(r.dur - 2.5, 5, 12);
+        r.callTime ??= clamp(r.dur - 2.5, CALL_SECONDS[0], CALL_SECONDS[1]);
+        r.dur = Math.max(r.dur, r.callTime + 2.5);
         witnessStats.calls++;
       }
       p.onPhone = true;
-      p.pose = r.t < 1 ? 'text' : 'phone';
+      p.pose = r.t < 0.6 ? 'text' : 'phone';
       const threat = r.inc?.attacker;
-      if (!r.reported && (p.silencedUntil > gameTime || (threat && threat.hp > 0 && distanceBetween(p, threat) < 100))) {
+      if (!r.reported && (p.silencedUntil > gameTime || (threat && threat.hp > 0 && distanceBetween(p, threat) < CALL_CUT_DISTANCE))) {
         witnessStats.dropped++;
-        startReaction(p, 'flee', randomBetween(6, 9), threat || r.from, r.inc, { scream: true });
+        const inc = r.inc,
+          retry = inc && inc.attacker === player && !inc.reported && !r.then && !(p.silencedUntil > gameTime);
+        startReaction(p, 'flee', randomBetween(3, 5), threat || r.from, inc, retry ? { scream: true, then: 'call' } : { scream: true });
+        if (retry) inc.callerDue = p;
         return true;
       }
       // Turned half away, the way people talk on the phone about something.
       faceToward(p, r.from || player, deltaSeconds, 2);
-      if (!r.opened && r.t > 1.1) {
-        r.opened = true;
-        sayCallLine(p, call911Opening(r.inc, p), 3.6);
-        // On screen and about the player: the one warning they get.
-        if (r.inc?.attacker === player && !r.inc.reported && wantedStars <= 0 && crowdInView(p.x, p.y, 0) && gameTime - witnessToldAt > 12) {
-          witnessToldAt = gameTime;
-          tell('SOMEONE IS CALLING 911', 2.2);
-        }
-      }
-      if (r.opened && !r.detailed && r.t > Math.max(4.2, r.callTime * 0.6)) {
-        r.detailed = true;
-        sayCallLine(p, call911Detail(r.inc, p), 3.2);
-      }
+      witnessCallLines(p, r.inc, r.t, r.callTime, r);
       if (!r.reported && r.t >= r.callTime) {
         r.reported = true;
         crowdReport(p, r.inc);
-        if (seededRandom() < 0.6) sayCallLine(p, randomChoice(CALL_CLOSING), 2.4);
+        sayCallLine(p, randomChoice(CALL_CLOSING), 2.4);
         r.dur = Math.min(r.dur, r.t + 2);
       }
       return false;
+    }
+    /* The call's bubbles, back to back: the opening (what and where), then a
+       detail until the end (crowd callers and off-stage callers alike). */
+    function witnessCallLines(p, inc, t, callTime, s) {
+      if (s.reported) return;
+      if (!s.opened) {
+        if (t < 0.5) return;
+        s.opened = true;
+        s.detailAt = t + clamp(callTime * 0.45, 2.4, 3.6);
+        sayCallLine(p, call911Opening(inc, p), s.detailAt - t + 0.3);
+        // On screen and about the player: the one warning they get.
+        if (inc?.attacker === player && !inc.reported && wantedStars <= 0 && crowdInView(p.x, p.y, 0) && gameTime - witnessToldAt > 12) {
+          witnessToldAt = gameTime;
+          tell('SOMEONE IS CALLING 911', 2.2);
+        }
+        return;
+      }
+      if (!s.detailed && t >= s.detailAt) {
+        s.detailed = true;
+        sayCallLine(p, call911Detail(inc, p), Math.max(1.5, callTime - t) + 0.3);
+      }
     }
     function sayCallLine(p, text, seconds) {
       if (!text) return;
@@ -154,7 +270,7 @@
       p.speechKindText = text;
       p.lastLine = text;
     }
-    /* A witness put under the gun: most will not dare call now. */
+    /* A witness held at gunpoint: most will not dare call now. */
     function witnessThreatened(p) {
       const inc = p.witnessOf;
       if (!inc || inc.reported || p.silencedUntil > gameTime) return;
@@ -163,12 +279,14 @@
         witnessStats.silenced++;
       }
     }
-    /* Someone who ran inside a shop can still make the call from in there. */
+    /* Someone who ran inside a shop can still make the call from in there (it
+       waits while a caller on the street is on the phone about it). */
     function witnessCallsFromInside(p) {
       const inc = p.witnessOf;
-      if (!inc || inc.reported || inc.attacker !== player || inc.callers > 0 || p.silencedUntil > gameTime) return;
-      if (seededRandom() > 0.5 * (WITNESS_CALL_CHANCE[inc.kind] ?? 0.5)) return;
-      offstageCalls.push({ person: p, inc, readyAt: gameTime + randomBetween(2, 5), startedAt: -1, callTime: randomBetween(6, 12), hidden: true });
+      if (!inc || inc.reported || inc.attacker !== player || p.silencedUntil > gameTime) return;
+      if (offstageCalls.some((c) => c.inc === inc && c.hidden)) return;
+      if (seededRandom() > (WITNESS_CALL_CHANCE[inc.kind] ?? 0.5)) return;
+      offstageCalls.push({ person: p, inc, readyAt: gameTime + randomBetween(2, 5), startedAt: -1, callTime: randomBetween(CALL_SECONDS[0], CALL_SECONDS[1]), hidden: true });
     }
 
     /**

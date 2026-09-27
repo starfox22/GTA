@@ -587,14 +587,26 @@
           // that would overlap the first rises clear above it. Seen from high up
           // (above 40 m, gone by 50 m: speechHeightFade, crowd.js) they fade out.
           // A Falcon rider's bubble is anchored over the head (`bubbleZ`).
+          // A witness on the phone to 911 (crowd-witnesses.js) is never culled: a
+          // caller outside that band (behind the HUD, off the edge) keeps the
+          // bubble inside the frame, with a pointer toward them.
           const bubbleRects = [];
           for (const p of speechBubbles()) {
             const q = api.project(p.x, p.y, p.bubbleZ ?? entityElevation(p) + (p.type ? 19 : PERSON_HEIGHT + 9.5));
-            if (q.behind || q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) continue;
+            if (q.behind) continue;
+            const call911 = p.speechKind === 'call911' && p.speechKindText === p.speech;
             worldContext.font = '600 10px Arial';
             const tw = worldContext.measureText(p.speech).width + 12,
               fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1) * speechHeightFade(p);
             if (fade <= 0.01) continue;
+            let pointTo = null;
+            if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) {
+              if (!call911) continue;
+              pointTo = { x: q.x, y: q.y };
+              q.x = clamp(q.x, tw / 2 + 10, viewportWidth - tw / 2 - 10);
+              // (Clear of the district name and the notices along the top.)
+              q.y = clamp(q.y, 150, viewportHeight - 190);
+            }
             for (const r of bubbleRects)
               if (Math.abs(q.x - r.x) < (tw + r.w) / 2 + 4 && Math.abs(q.y - r.y) < 20)
                 q.y = r.y - 20;
@@ -605,10 +617,28 @@
             if (worldContext.roundRect) worldContext.roundRect(q.x - tw / 2, q.y - 20, tw, 16, 5);
             else worldContext.rect(q.x - tw / 2, q.y - 20, tw, 16);
             worldContext.fill();
+            if (call911) {
+              // The emergency call stands out: a red edge round the bubble.
+              const width = worldContext.lineWidth;
+              worldContext.strokeStyle = '#c7583e';
+              worldContext.lineWidth = 1.5;
+              worldContext.stroke();
+              worldContext.lineWidth = width;
+            }
             worldContext.beginPath();
-            worldContext.moveTo(q.x - 3, q.y - 4);
-            worldContext.lineTo(q.x + 3, q.y - 4);
-            worldContext.lineTo(q.x, q.y);
+            if (pointTo) {
+              // Held inside the frame: the tail points toward the caller.
+              const a = Math.atan2(pointTo.y - (q.y - 12), pointTo.x - q.x),
+                ex = q.x + Math.cos(a) * (tw / 2 + 8) * Math.min(1, Math.abs(Math.cos(a)) * 2),
+                ey = q.y - 12 + Math.sin(a) * 18;
+              worldContext.moveTo(q.x - 4 * Math.sin(a), q.y - 12 + 4 * Math.cos(a));
+              worldContext.lineTo(q.x + 4 * Math.sin(a), q.y - 12 - 4 * Math.cos(a));
+              worldContext.lineTo(ex, ey);
+            } else {
+              worldContext.moveTo(q.x - 3, q.y - 4);
+              worldContext.lineTo(q.x + 3, q.y - 4);
+              worldContext.lineTo(q.x, q.y);
+            }
             worldContext.fill();
             worldContext.fillStyle = '#1b2026';
             worldContext.textAlign = 'center';

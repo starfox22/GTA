@@ -106,7 +106,8 @@
       if (inc.kind === 'gunfire' || inc.kind === 'explosion' || inc.kind === 'melee') {
         const boom = inc.kind === 'explosion';
         if (cur === 'flee' || cur === 'shelter') {
-          p.react.dur = Math.max(p.react.dur, p.react.t + 7);
+          // (A caller on the way to the phone keeps going only until clear: fleeStep.)
+          p.react.dur = Math.max(p.react.dur, p.react.t + (p.react.then === 'call' ? 2.5 : 7));
           p.react.from = guess;
           return;
         }
@@ -125,7 +126,9 @@
           return;
         }
         if (sees || d < 330) {
-          if (nerve > 0.9 && inc.callers < 1 && inc.attacker) startReaction(p, 'startle', randomBetween(0.8, 1.5), guess, inc, { then: 'call' });
+          // (The player's own incidents: the witness director hands out the phone.)
+          if (nerve > 0.9 && inc.callers < 1 && inc.attacker && inc.attacker !== player)
+            startReaction(p, 'startle', randomBetween(0.8, 1.5), guess, inc, { then: 'call' });
           else if (nerve > 0.78 && inc.filmers < 2 && sees) startReaction(p, 'film', randomBetween(7, 13), guess, inc, { then: 'hurry' });
           else if (nerve > 0.95 && sees && d < 300 && inc.attacker === player)
             startReaction(p, 'shout', 1.8, guess, inc, { then: 'flee' });
@@ -136,7 +139,8 @@
         }
         // At the edge of hearing: stop, look, decide.
         if (r < (boom ? 0.5 : 0.22)) startReaction(p, 'flee', randomBetween(3.5, 6), guess, inc);
-        else if (nerve > 0.82 && inc.callers < 2 && inc.attacker) startReaction(p, 'startle', randomBetween(0.9, 1.6), guess, inc, { then: 'call' });
+        else if (nerve > 0.82 && inc.callers < 2 && inc.attacker && inc.attacker !== player)
+          startReaction(p, 'startle', randomBetween(0.9, 1.6), guess, inc, { then: 'call' });
         else {
           startReaction(p, 'startle', randomBetween(0.7, 1.3), guess, inc, { then: 'hurry' });
           crowdSay(p, boom ? 'boom' : 'heard', 0.5);
@@ -178,7 +182,7 @@
             ? 'help'
             : r < 0.52 && inc.watchers < 8 && gathered < 12
               ? 'watch'
-              : r < 0.66 && severe && inc.callers < 1 && (inc.attacker || inc.kind !== 'crash')
+              : r < 0.66 && severe && inc.callers < 1 && inc.attacker !== player && (inc.attacker || inc.kind !== 'crash')
                 ? 'call'
                 : r < 0.74 && inc.filmers < 2 && gathered < 14
                   ? 'film'
@@ -192,7 +196,7 @@
         {
           flee: randomBetween(4.5, 7),
           watch: randomBetween(12, 28),
-          call: randomBetween(8, 11),
+          call: randomBetween(7.5, 10.5),
           film: randomBetween(7, 13),
           fist: randomBetween(1.8, 3),
           help: randomBetween(12, 22),
@@ -284,7 +288,7 @@
       }
       // Once clear, plenty of people stop and look back at what they ran from.
       if (r.kind === 'flee' && r.from && distanceBetween(p, r.from) > 200 && seededRandom() < 0.5) {
-        const call = (p.nerve ?? 0.5) > 0.65 && r.inc?.attacker && r.inc.callers < 2 && seededRandom() < 0.4;
+        const call = (p.nerve ?? 0.5) > 0.65 && r.inc?.attacker && r.inc.attacker !== player && r.inc.callers < 2 && seededRandom() < 0.4;
         startReaction(p, call ? 'call' : 'lookBack', call ? reactionDuration('call') : randomBetween(3, 7), r.from, r.inc, {
           filming: seededRandom() < 0.25,
         });
@@ -376,6 +380,8 @@
       // slow down and take stock (then look back, or phone it in).
       const fromPlayer = attacker === player || (!r.inc && p.witnessOf?.attacker === player && !p.witnessOf.reported);
       if (fromPlayer && r.t > 3 && r.dur - r.t > 0.5 && distanceBetween(p, player) > 320) r.dur = r.t + 0.4;
+      // A witness handed the phone (crowd-witnesses.js) stops as soon as they are clear.
+      if (r.then === 'call' && r.t > 0.8 && r.dur - r.t > 0.3 && distanceBetween(p, player) > CALL_SAFE_DISTANCE + 20) r.dur = r.t + 0.3;
       r.choose = (r.choose || 0) - deltaSeconds;
       if (r.choose <= 0 || r.fleeDir === undefined) {
         r.choose = 0.4;
