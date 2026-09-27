@@ -44,6 +44,7 @@ node tools/dev.mjs keys KeyW,KeyD 3 | wait 5  # simulate() game seconds (--real:
 node tools/dev.mjs shot <name> [--crop x,y,w,h] [--width 480]   # small JPEG in dist/dev/shots/
 node tools/dev.mjs reload | errors | stop     # rebuild+reload after edits (fresh profile) / console errors / quit
 node tools/dev.mjs reload --keep             # reload with the same browser profile (check a save survives)
+node tools/dev.mjs start|reload --shadercheck # report three.js shader compile errors: after any GLSL edit
 ```
 
 The default dev page is `?dev&norender` (`NO_RENDER` in render3d.js: no WebGL, ~55 fps). Use
