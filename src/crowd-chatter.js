@@ -205,7 +205,7 @@
     const CALL_CLOSING = ['They’re on their way.', 'Okay. Okay. They’re coming.', 'They said to stay put.', 'They’re sending a car.'];
     function fillStreet(line, street) {
       if (street) return line.replace('{street}', street);
-      return line.replace(/ (on|near|by|over by) \{street\}/, '').replace(/,? ?Somewhere \{street\}/, '').replace('{street}', 'Here');
+      return line.replace(/ Somewhere near \{street\}!/, '').replace(/,? (on|near|by|over by|to) \{street\}/, '').replace('{street}', 'Here');
     }
     function call911Opening(inc, p) {
       if (!inc) return '911? Please send someone!';

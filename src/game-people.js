@@ -134,7 +134,8 @@
         // North Point Key's guests, staff and doormen stay where they are placed.
         if (updateKeyPerson(p, deltaSeconds)) continue;
         if (!p.look) ensureLook(p);
-        // MONARCH MOTORS' staff and visitors (dealership-people.js).
+        // MONARCH MOTORS' staff and visitors (dealership-people.js); what they saw goes to 911.
+        dealerWitness(p);
         if (updateDealerPerson(p, deltaSeconds)) continue;
         // A shot heard or a crime seen turns into a reaction before anyone's own
         // routine runs: island walkers, strollers and park guests only step aside

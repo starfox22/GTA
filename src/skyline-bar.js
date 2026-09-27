@@ -343,6 +343,7 @@
       // what happens up there counts (the alarms reach by distance on the map).
       if (p.pending || p.react || p.flee > 0) {
         const fright = (p.pending && KEY_ALARMS.has(p.pending.inc?.kind)) || (p.react && KEY_FRIGHTS.has(p.react.kind)) || p.flee > 0,
+          inc = p.pending?.inc || p.react?.inc,
           here = !p.altitude || player.buildingRoof?.skyline?.roof === 'bar';
         p.pending = null;
         p.react = null;
@@ -350,6 +351,8 @@
         if (fright && here) {
           if (!(k.scaredUntil > gameTime)) keySay(p, randomChoice(SKY_BAR_LINES.scared));
           k.scaredUntil = gameTime + randomBetween(9, 14);
+          // One of them phones 911 from where they are (crowd-witnesses.js).
+          venueWitness(p, inc);
         }
       }
       // The street's remarks reach people by map distance: nobody up on the terrace

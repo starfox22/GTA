@@ -118,6 +118,37 @@
       if (offstageCalls.some((c) => c.person === p)) return;
       offstageCalls.push({ person: p, inc, readyAt: gameTime + randomBetween(1, 3), startedAt: -1, callTime: randomBetween(CALL_SECONDS[0], CALL_SECONDS[1]), hidden: true });
     }
+    /**
+     * VENUE WITNESSES: people the crowd does not run (North Point Key's guests,
+     * staff and doormen in skyline-bar.js; MONARCH MOTORS' staff and visitors)
+     * keep their own routines and never took the phone. One of them per
+     * incident now phones 911 about what the player did, from where they stand
+     * (an off-stage call with the street's bubbles; a street caller already on
+     * the phone goes first). One too near the player hands it to one further off.
+     */
+    const VENUE_REPORTS = new Set(['gunfire', 'explosion', 'melee', 'knock', 'carjack', 'theft', 'crime', 'body']);
+    function venueWitness(p, inc) {
+      if (!inc || inc.attacker !== player || inc.reported || !VENUE_REPORTS.has(inc.kind) || !(p.hp > 0) || gameMode !== 'play') return false;
+      if (gameTime - witnessCrimeTime(inc) > witnessWindow(inc)) return false;
+      const mine = offstageCalls.find((c) => c.inc === inc && c.venue),
+        busy = offstageCalls.some((c) => c.person === p);
+      if (mine) {
+        if (mine.startedAt < 0 && !busy && distanceBetween(mine.person, player) < CALL_CUT_DISTANCE && distanceBetween(p, player) >= CALL_CUT_DISTANCE) mine.person = p;
+        return false;
+      }
+      if (busy) return false;
+      offstageCalls.push({ person: p, inc, readyAt: gameTime + randomBetween(2.5, 5), startedAt: -1, callTime: randomBetween(CALL_SECONDS[0], CALL_SECONDS[1]), venue: true });
+      witnessStats.venueCalls++;
+      return true;
+    }
+    /* MONARCH MOTORS' people (game-people.js, before their own routine): what they
+       perceived becomes a venue call, unless the showroom's alarm (dealershipAlarm:
+       four stars at once) has already gone to the police. */
+    function dealerWitness(p) {
+      if (!p.dealer || !p.pending || gameTime < p.pending.at) return;
+      if (!(dealer.alarmUntil > gameTime)) venueWitness(p, p.pending.inc);
+      p.pending = null;
+    }
     /* Could this witness be handed the phone now? True when nothing stops them. */
     function witnessCanCall(p, inc) {
       return !witnessCallBlock(p, inc);
