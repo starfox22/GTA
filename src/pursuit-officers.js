@@ -402,6 +402,7 @@
     let damageArcTimer = null;
     function playerHitFeedback(b) {
       shake = Math.max(shake, 3);
+      kickCamera(Math.atan2(b.vy || 0, b.vx || 0), 2.5);
       noise(0.05, 0.14, 180);
       const el = getElement('damageArc'),
         from = b.owner || { x: b.x - (b.vx || 0), y: b.y - (b.vy || 0) };

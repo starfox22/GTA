@@ -444,12 +444,11 @@
       }
       drawWater2D();
       worldContext.save();
-      worldContext.translate(
-        viewportWidth / 2 + (Math.random() - 0.5) * shake,
-        viewportHeight / 2 + (Math.random() - 0.5) * shake,
-      );
+      // The camera's kick and tremor (camera-feel.js), as on the 3D street camera.
+      const tremor = cameraShakeOffset(gameTime, shake * 2.2);
+      worldContext.translate(viewportWidth / 2, viewportHeight / 2);
       worldContext.scale(canvasScale, canvasScale);
-      worldContext.translate(-cameraTarget.x, -cameraTarget.y);
+      worldContext.translate(-cameraTarget.x - cameraKick.x - tremor.x / canvasScale, -cameraTarget.y - cameraKick.y - tremor.y / canvasScale);
       const sx = clamp(cameraTarget.x - viewportWidth / canvasScale / 2 - 20, CITY_LEFT, CITY_RIGHT),
         sy = clamp(cameraTarget.y - viewportHeight / canvasScale / 2 - 20, CITY_TOP, CITY_SIZE),
         sw = Math.min(viewportWidth / canvasScale + 40, CITY_RIGHT - sx),
