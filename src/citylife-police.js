@@ -499,6 +499,23 @@
             return false;
       return true;
     }
+    /* How far an officer or a crew picks the player out (units). 440 (55 m) by
+       day; after dark a figure on foot is seen from about 40 m on the lit city
+       streets and 32 m out in the county, a car from about 51 m (its lamps give
+       it away); a downpour takes up to a fifth off. Twilight still counts as day
+       (the dark sets in below a third of the daylight). An officer already on
+       the player keeps them a fifth further in the dark or the rain (tracking a
+       runner is easier than spotting one), never past the day's 440, so the
+       night helps break contact without making a chase flicker and a clear day
+       is exactly as before. The air unit has its own rule (airCanSee). */
+    function policeSightRange(o) {
+      const dark = 1 - clamp(daylight() / 0.33, 0, 1),
+        driving = player.car && !isAircraft(player.car),
+        night = driving ? 0.92 : inCityGrid(player.x, player.y) ? 0.72 : 0.58,
+        rain = 1 - 0.2 * clamp(weather.rain || 0, 0, 1),
+        keep = o?.seesPlayer ? 1.2 : 1;
+      return Math.min(440, 440 * (1 - dark * (1 - night)) * rain * keep);
+    }
     function policeSees(o) {
       if (o.airUnit) return !harborPoliceProtected(player.x, player.y, 30) && airCanSee(o, player);
       return (
@@ -508,7 +525,7 @@
         !personIncapacitated(o) &&
         !o.crewLost &&
         Math.hypot(o.x - player.x, o.y - player.y, entityElevation(o) - entityElevation(player)) <
-          440 &&
+          policeSightRange(o) &&
         clearSight(o, player)
       );
     }

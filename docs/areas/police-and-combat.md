@@ -48,6 +48,15 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   beep and caption; true restores them (rules: combat-rules.js SNIPER FIRE).
 - Roadblock cruisers are plain 1.6 t bodies on locked brakes (`parkedFriction`): momentum
   decides who gets through; one shoved > 1 m is knocked loose.
+- **Sight** (`policeSightRange`, citylife-police.js): 440 units (55 m) by day; after dark a
+  figure on foot is picked out from ~40 m on the lit city streets and ~32 m in the county, a
+  car from ~51 m; heavy rain takes up to a fifth off; a unit already on the player keeps
+  them 20% further in the dark or rain, never past the day's 55 m. The air unit keeps its own rule (`airCanSee`). `policeReport().sightRange`.
+  Traffic pulls over for units under lights (people-and-crowd-living-city.md).
+- Radio (`policeRadioEvent`, pursuit-dispatch.js): besides the tier lines, `lost` when the
+  search starts, `spotted` when it finds the player again (street and what they are in), and
+  `policeDescribeSuspect`: a new car (or the player out of one) seen for 1.5 s while wanted
+  is called in once ("SUSPECT SWITCHED · NOW IN A RED PICKUP"); 5 s between captions.
 - Rain affects pursuit drivers too (vehicles-and-driving.md). A respray clears the stars only
   if no unit saw the player drive in.
 

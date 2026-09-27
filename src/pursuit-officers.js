@@ -640,6 +640,10 @@
       return {
         stars: Math.ceil(wantedStars),
         heat: Math.round(wantedHeat * 10) / 10,
+        // How far a unit on the ground picks the player out now (policeSightRange: day, night, rain).
+        sightRange: Math.round(policeSightRange(null)),
+        // The last dispatch caption and how long ago (s).
+        radio: lastDispatchText ? { text: lastDispatchText, ago: Math.round((gameTime - lastDispatchLine) * 10) / 10 } : null,
         nextStarAt: HEAT_STARS[Math.min(5, Math.ceil(wantedStars) + 1)] ?? null,
         unreported: Math.round(unreportedHeat * 10) / 10,
         crimes: crimeLog.slice(),

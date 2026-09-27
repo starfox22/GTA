@@ -3,6 +3,14 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## The living city (livingcity*.js)
+- Traffic streams only on the city grid: Monarch Isle and the county keep their own fixed traffic; North Point Key gets only its few visitors (livingcity-key.js: one lane each way, no overtaking, no sirens pull-over on the Key).
+- Signals cycle every 24 s on a 64 m grid, so about half the traffic in the ring stands at a light or in its queue at any moment (`trafficReport().held`).
+- Paramedics walk straight at the victim (with a sidestep); round a building corner they may work from up to 30 units off. The revive is a mercy of the game (GTA's paramedics did it too), not a medical outcome.
+- No stretcher or sheet: a lost victim stays where they fell until the crowd streamer clears the dead out of view.
+- The bag snatch's tackle is proximity only (no tackle animation); punching or shooting the thief is still an assault.
+- Performance (headless): physics +0.1-0.7 ms per 60 fps frame with ~40 more cars moving round the player (`trafficBenchmark`).
+
 ## Soundscape (acoustics-audio.js, ambience-beds.js, footsteps-audio.js, vehicle-foley-audio.js, bullets-audio.js)
 - The room's returns (reverb, slap, echo) are on the effects bus: a tunnel's engine boom and footsteps' reflections follow the Effects slider, not Engines.
 - Ambience events are not placed by occlusion or sent to the room (a ship's horn has no echo); zones are coarse (districts, park rectangles, terrain height).
@@ -29,7 +37,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - No shafts on LOW/MEDIUM; no lens on LOW; the cloud sound has no test.
 
 ## North Point Key (skyline*.js, skyline3d-*.js)
-- City traffic never drives onto the Key (the street ends at the circle); no valet cars circle it.
+- Key visitors pause by the valet but nobody gets out (no guest walks in, no valet takes the car).
+- A Key visitor waits for anyone standing on its path (the player on the circle holds the ring); it never steers round a person, and crowd-traffic's honk only moves people whose reaction is `watch`.
 - The 2D fallback draws its ground tile and towers but not its palms or furniture.
 - CIRRUS guests are spawned per visit; the sky bar has no pool (the oval deck is 23 x 15 m).
 
@@ -105,6 +114,5 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Little muscle definition. The sky reflection now fades on surfaces facing the ground (the bright patch under the chest): not re-shot.
 
 ## Witnesses and 911 (witnesses.js, crowd-witnesses.js)
-- Dealership staff (MONARCH MOTORS) and North Point Key guests have their own alarms and never call 911; a crashed driver's call (crowd-traffic.js) is not counted among the incident's witnesses, so a second caller may be sent.
 - A call from inside a shop (hidden off-stage call) has no bubble; the 911 bubble keeps the street's 10 px font: check it reads on a HiDPI screen.
 

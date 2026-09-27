@@ -137,4 +137,6 @@
         return inc ? { kind: inc.kind, x: Math.round(inc.x), y: Math.round(inc.y) } : null;
       },
     });
+    // The living city (livingcity-console.js): traffic streaming.
+    addConsoleMethods('livingCity', livingCityConsole());
     // END SUBSYSTEM: src/game-console-crowd.js
