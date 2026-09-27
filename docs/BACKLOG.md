@@ -25,6 +25,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The 2D fallback renderer's speech bubbles keep the old 10 px text.
 
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
+- Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only), and a respray keeps its MORETTI & SONS door lettering.
+- The payphone's and newspaper boxes' foot obstacles are registered by the renderer (like the bus shelters), so a `?norender` page walks through them.
+- At night the white faces round the payphone (newspaper pages, placards) sit in the street lamp's pool and read bright.
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
