@@ -55,7 +55,9 @@ boots `?test` (demo gate live). New test: one file `tools/tests/<name>.mjs` expo
 `default async (t)` (`t.call/keys/wait/assert/near/finite`); set up the state it needs,
 `fresh = true` for a clean page. The live frame loop runs between console calls: a test
 that depends on exact timing (keys, goals, calls) should `holdSimulation(true)` and step
-with `t.wait`/`t.keys`, then release it. The dev server holds a browser slot while awake: `stop` it
+with `t.wait`/`t.keys`, then release it. Console calls like `interact()` skip the per-frame key
+handling: when removing or changing an action, also press the real key (`t.keys(code, s, { real: true })`,
+tools/tests/enter-key.mjs). The dev server holds a browser slot while awake: `stop` it
 when you are done with it (and before smoke/tour if slots are short).
 
 **Publish** (only when asked): `python3 tools/build.py --split-media dist/publish`, then the
