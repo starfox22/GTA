@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-430 files in the include tree, 151,718 lines.
+430 files in the include tree, 151,737 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -30,7 +30,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-collision.js`   235 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
 - `src/game-car-spawn.js`   163 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   479 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
-- `src/game-populate.js`   264 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
+- `src/game-populate.js`   283 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/game-player-actions.js`   560 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   171 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    18 — ▸ Vehicle and pedestrian physics
