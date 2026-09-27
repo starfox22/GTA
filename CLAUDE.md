@@ -98,6 +98,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   for the freefall cue: change them there only.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
+- `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
+  altitude (by weather and area); the renderer draws from the same maps
+  (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over
+  a cloud.
 - Vehicle beams run in `headlightFrame()` (terrain-headlights.js: body pitch/roll, lamp
   height); the CAR LAMPS uniform and the horizon strip in `cityBeamShadow` must stay in step
   with `headlightHorizonLit`.
