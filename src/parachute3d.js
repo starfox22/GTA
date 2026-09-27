@@ -18,11 +18,17 @@
        *    brake lines from the tail to the rear risers, the slider, the risers and
        *    the harness container on the jumper's back. All lines are one
        *    LineSegments.
-       *  - Deployment over opening 0 -> 1 (PARACHUTE_OPEN_SECONDS, 2.4 s, only once
-       *    the jumper pulls the ripcord: parachute.js): the pilot chute is thrown
-       *    and drags the bag out on its bridle, the lines stretch, the canopy
-       *    inflates from the centre cells out (span overshoots slightly and
-       *    settles) while the slider runs down the lines.
+       *  - Deployment, stage by stage (player.parachute.phase / phaseK, the
+       *    DEPLOYMENT of parachute.js, about 4.5 s from terminal speed): pilot, the
+       *    right hand throws the pilot chute, which inflates and rises on its
+       *    bridle; lines, the bag lifts off the container and the lines pay out
+       *    behind it, starting to lift the jumper's shoulders; snivel, at line
+       *    stretch the body swings upright and the canopy leaves the bag, a narrow
+       *    flogging bundle held closed by the slider at the top of the lines; snap,
+       *    the canopy spreads from the centre cells out (the span overshoots and
+       *    settles) as the slider runs down, and the shock swings the jumper
+       *    forward under the wing. The bag stays on the bridle under the pilot
+       *    chute, which the kill-line then collapses.
        *  - Flight: the jumper hangs under the wing on a damped pendulum; turns bank
        *    the whole rig into the turn and pull one toggle down (that side's tail
        *    deflects), the flare (hand-held, and automatically in the last seconds)
@@ -183,6 +189,11 @@
         chutePilot.add(mesh);
       }
       chuteRoot.add(chutePilot);
+      // The deployment bag: out of the container on the bridle, then left under the pilot chute.
+      const chuteBag = new Three.Mesh(boxGeo, mat('#15181c', 0.85));
+      chuteBag.scale.set(1.6, 2.4, 3);
+      chuteBag.visible = false;
+      chuteRoot.add(chuteBag);
       // The container on the jumper's back (a child of the rig so it follows the pose).
       const chutePack = new Three.Group();
       {
@@ -285,9 +296,13 @@
         heading: 0,
         harness: new Three.Vector3(),
         quaternion: new Three.Quaternion(),
+        // 0 in the box position .. 1 hanging under the lines (a sprung swing at line stretch).
+        upright: 0,
+        uprightRate: 0,
         // After landing: where the canopy came down and how long ago.
         collapse: null,
         lastStage: null,
+        lastOpening: 0,
         pilotLag: new Three.Vector3(),
       };
       const chuteEuler = new Three.Euler(0, 0, 0, 'YXZ'),
@@ -303,8 +318,12 @@
       const easeOutBack = (t) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
       /**
        * Pose the player's body for the parachute (called from the person pass).
-       * Freefall: belly to earth, arched, arms and legs spread. Under canopy:
-       * hanging from the harness on the pendulum, hands on the toggles.
+       * Freefall: belly to earth, arched, arms and legs spread; the pull throws
+       * the pilot chute with the right hand. The lines paying out start to lift the
+       * shoulders and line stretch swings the body upright (a sprung swing), then
+       * it hangs from the harness on the pendulum, hands on the toggles. Records
+       * `chuteRig.harness`, where the rig hangs from: the container on the back,
+       * moving to the shoulders as the body comes upright.
        */
       function poseParachutist(m, deltaSeconds) {
         const p = player.parachute,
@@ -313,69 +332,87 @@
         if (!p) {
           if (chuteRig.active) for (const part of [...arms, ...legs]) part.rotation.x = 0;
           chuteRig.active = false;
+          chuteRig.upright = chuteRig.uprightRate = 0;
           chutePack.visible = false;
           return;
         }
         chuteRig.active = true;
         const dt = Math.min(0.05, deltaSeconds || 0.016),
-          turnInput = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
+          turnInput = (actionHeld('right') ? 1 : 0) - (actionHeld('left') ? 1 : 0),
           agl = player.altitude - terrainHeight(player.x, player.y),
-          flareInput = keys.KeyS || keys.ArrowDown ? 1 : 0,
           canopy = p.stage === 'canopy',
-          // The last few metres: a jumper flares whether or not you ask.
-          autoFlare = canopy ? smooth01(40, 12, agl) : 0;
+          phase = canopy ? p.phase : 'freefall',
+          k = canopy ? p.phaseK : 0,
+          flying = phase === 'open',
+          // Brakes stay stowed until the canopy flies; the last few metres a jumper flares whether or not you ask.
+          flareInput = flying && actionHeld('back') ? 1 : 0,
+          autoFlare = flying ? smooth01(40, 12, agl) : 0;
         chuteRig.turn += (turnInput - chuteRig.turn) * (1 - Math.exp(-dt * 4));
         chuteRig.flare += (Math.max(flareInput, autoFlare) - chuteRig.flare) * (1 - Math.exp(-dt * 5));
         chuteRig.heading = p.heading;
         m.parts.guns.forEach((gun) => (gun.visible = false));
-        if (!canopy) {
-          // Box position, a slow wobble; a turn drops a shoulder.
-          const wobble = Math.sin(gameTime * 2.3) * 0.06 + chuteRig.turn * 0.35;
-          m.group.rotation.set(wobble, -p.heading, -Math.PI / 2 + Math.sin(gameTime * 1.7) * 0.04);
-          m.group.position.set(player.x, player.altitude + 6, player.y);
-          arms.forEach((arm, i) => {
-            const side = i === 0 ? 1 : -1;
-            arm.rotation.z = 0.75 + Math.sin(gameTime * 3.1 + i) * 0.05;
-            arm.rotation.x = -side * 1.35;
-          });
-          legs.forEach((leg, i) => {
-            const side = i === 0 ? 1 : -1;
-            leg.rotation.z = -0.55;
-            leg.rotation.x = -side * 0.32;
-          });
-          m.torso.rotation.z = -0.08;
-          chuteRig.roll = chuteRig.rollRate = chuteRig.pitch = chuteRig.pitchRate = 0;
-        } else {
-          // Damped pendulum: the rig banks into the turn and pitches with the flare.
+        // Box position to hanging: the lines lift the shoulders a little as they pay
+        // out, line stretch swings the body upright with a small overshoot.
+        if (!canopy) chuteRig.upright = chuteRig.uprightRate = 0;
+        else {
+          const target = phase === 'pilot' ? 0 : phase === 'lines' ? 0.3 * k * k : 1;
+          chuteRig.uprightRate += ((target - chuteRig.upright) * 40 - chuteRig.uprightRate * 9) * dt;
+          chuteRig.upright = clamp(chuteRig.upright + chuteRig.uprightRate * dt, 0, 1.08);
+        }
+        const u = clamp(chuteRig.upright, 0, 1);
+        // Damped pendulum under the wing: it banks into the turn and pitches with the flare.
+        if (!canopy) chuteRig.roll = chuteRig.rollRate = chuteRig.pitch = chuteRig.pitchRate = 0;
+        else {
           const opening = p.opening,
             rollTarget = chuteRig.turn * 0.5 * opening,
-            pitchTarget = (-chuteRig.flare * 0.3 + (keys.KeyW || keys.ArrowUp ? 0.1 : 0)) * opening;
+            pitchTarget = (-chuteRig.flare * 0.3 + (flying && actionHeld('forward') ? 0.1 : 0)) * opening;
           chuteRig.rollRate += ((rollTarget - chuteRig.roll) * 9 - chuteRig.rollRate * 3.2) * dt;
           chuteRig.pitchRate += ((pitchTarget - chuteRig.pitch) * 7 - chuteRig.pitchRate * 2.6) * dt;
           // The opening shock swings the jumper forward under the wing.
-          if (opening < 1) chuteRig.pitchRate += Math.sin(opening * Math.PI) * 1.2 * dt;
+          if (phase === 'snap') chuteRig.pitchRate += Math.max(0, (p.load || 1) - 1) * 0.9 * dt;
           chuteRig.roll += chuteRig.rollRate * dt;
           chuteRig.pitch += chuteRig.pitchRate * dt;
-          chuteEuler.set(chuteRig.roll, -p.heading, chuteRig.pitch, 'YXZ');
-          m.group.rotation.copy(chuteEuler);
-          // Swing about the harness, not the feet.
-          chuteRig.harness.set(player.x, player.altitude + chuteHarnessOffset.y, player.y);
-          chuteTmp.copy(chuteHarnessOffset).applyEuler(chuteEuler);
-          m.group.position.copy(chuteRig.harness).sub(chuteTmp);
-          const pullR = Math.max(chuteRig.flare, chuteRig.turn),
-            pullL = Math.max(chuteRig.flare, -chuteRig.turn);
-          // Hands on the toggles: up by the risers, down to the hips to brake.
-          m.parts.arm1.rotation.z = 2.75 - pullR * 1.6;
-          m.parts['arm-1'].rotation.z = 2.75 - pullL * 1.6;
-          arms.forEach((arm, i) => (arm.rotation.x = (i === 0 ? -1 : 1) * 0.18));
-          // Legs together and a little forward, raised for the landing.
-          const legLift = 0.25 + chuteRig.flare * 0.5 + Math.sin(gameTime * 1.3) * 0.04;
-          legs.forEach((leg, i) => {
-            leg.rotation.z = legLift + (i ? 0.06 : 0);
-            leg.rotation.x = 0;
-          });
-          m.torso.rotation.z = 0;
         }
+        // Box: a slow wobble, a turn drops a shoulder; blended into the pendulum's angles.
+        const boxRoll = Math.sin(gameTime * 2.3) * 0.06 + chuteRig.turn * 0.35,
+          boxPitch = -Math.PI / 2 + Math.sin(gameTime * 1.7) * 0.04;
+        chuteEuler.set(boxRoll + (chuteRig.roll - boxRoll) * u, -p.heading, boxPitch + (chuteRig.pitch - boxPitch) * u, 'YXZ');
+        m.group.rotation.copy(chuteEuler);
+        // Hanging, the body swings about the harness, not the feet.
+        chuteTmp2.set(player.x, player.altitude + chuteHarnessOffset.y, player.y);
+        chuteTmp.copy(chuteHarnessOffset).applyEuler(chuteEuler);
+        const hangX = chuteTmp2.x - chuteTmp.x,
+          hangY = chuteTmp2.y - chuteTmp.y,
+          hangZ = chuteTmp2.z - chuteTmp.z;
+        m.group.position.set(
+          player.x + (hangX - player.x) * u,
+          player.altitude + 6 + (hangY - player.altitude - 6) * u,
+          player.y + (hangZ - player.y) * u,
+        );
+        // The pull: the right hand goes back to the pilot chute pouch, then flings it out.
+        const reach = phase === 'pilot' ? smooth01(0, 0.25, k) * (1 - smooth01(0.3, 0.5, k)) : 0,
+          fling = phase === 'pilot' ? smooth01(0.3, 0.5, k) * (1 - smooth01(0.6, 1, k)) : 0,
+          pullR = Math.max(chuteRig.flare, chuteRig.turn),
+          pullL = Math.max(chuteRig.flare, -chuteRig.turn),
+          legLift = 0.25 + chuteRig.flare * 0.5 + Math.sin(gameTime * 1.3) * 0.04;
+        arms.forEach((arm, i) => {
+          const side = i === 0 ? 1 : -1,
+            boxZ = 0.75 + Math.sin(gameTime * 3.1 + i) * 0.05 + (i === 0 ? 0.5 * fling - 1.1 * reach : 0),
+            boxX = -side * 1.35 + (i === 0 ? reach - 0.3 * fling : 0),
+            // Hands on the toggles: up by the risers, down to the hips to brake.
+            togglesZ = 2.75 - (i === 0 ? pullR : pullL) * 1.6,
+            togglesX = -side * 0.18;
+          arm.rotation.z = boxZ + (togglesZ - boxZ) * u;
+          arm.rotation.x = boxX + (togglesX - boxX) * u;
+        });
+        // Legs spread in the box; together, a little forward and raised for the landing under the wing.
+        legs.forEach((leg, i) => {
+          const side = i === 0 ? 1 : -1,
+            lift = legLift + (i ? 0.06 : 0);
+          leg.rotation.z = -0.55 + (lift + 0.55) * u;
+          leg.rotation.x = -side * 0.32 * (1 - u);
+        });
+        m.torso.rotation.z = -0.08 * (1 - u);
         // The container rides on the back.
         chutePack.visible = true;
         chutePack.position.copy(m.group.position);
@@ -383,6 +420,8 @@
         chuteTmp.set(-1.6, 10.2, 0).multiplyScalar(PERSON_HEIGHT / 14).applyQuaternion(chutePack.quaternion);
         chutePack.position.add(chuteTmp);
         chutePack.scale.setScalar(0.72 * (PERSON_HEIGHT / 14));
+        // The rig hangs from the container while the jumper lies flat, the shoulders once upright.
+        chuteRig.harness.copy(chutePack.position).lerp(chuteTmp2, u);
       }
       function chuteSetLine(i, a, b) {
         chuteLinePos[i * 6] = a.x;
@@ -392,7 +431,7 @@
         chuteLinePos[i * 6 + 4] = b.y;
         chuteLinePos[i * 6 + 5] = b.z;
       }
-      function chuteRigging(opening, pilotWorld) {
+      function chuteRigging(opening, pilotWorld, slide = smooth01(0.25, 1, opening), stowed = false) {
         // Risers: front and rear on each shoulder, up to the connector links.
         const riserTop = 6 + 3 * opening;
         for (let i = 0; i < 4; i++) {
@@ -421,28 +460,30 @@
         }
         // Bridle from the top of the centre cell to the pilot chute.
         chuteSkinPoint(0, 0.35, 0.5, true, chutePoint);
+        // Stowed (only the pilot chute out): every other line is still in the container.
+        if (stowed) for (let i = 0; i < line; i++) chuteSetLine(i, chutePoint, chutePoint);
         chuteRoot.worldToLocal(chuteTmp2.copy(pilotWorld));
         chuteSetLine(line++, chutePoint, chuteTmp2);
         chuteLineGeometry.attributes.position.needsUpdate = true;
         chuteLineGeometry.computeBoundingSphere();
         // Slider: at the canopy while it opens, then down the lines to the risers.
-        const slide = smooth01(0.25, 1, opening);
         chuteSkinPoint(0, 0.4, 0, false, chutePoint);
         chuteSlider.position.set(0, chutePoint.y + (riserTop + 1 - chutePoint.y) * slide, 0);
         const w = 4 + 3 * slide;
         chuteSlider.scale.set(w, 7 + 3 * slide, 1);
       }
       /**
-       * Per frame (after the person pass): place and shape the wing for the
-       * current stage, or play the collapse after a landing.
+       * Per frame (after the person pass): place and shape the rig for the
+       * current stage and deployment phase, or play the collapse after a landing.
        */
       function updateParachute3D(deltaSeconds) {
         const p = player.parachute,
           dt = Math.min(0.05, deltaSeconds || 0.016);
         chuteShape.time += dt;
         const stage = p ? p.stage : null;
-        // Just landed (or splashed down) from under a canopy: start the collapse.
-        if (!p && chuteRig.lastStage === 'canopy' && !chuteRig.collapse)
+        // Just landed (or splashed down) from under a canopy: start the collapse
+        // (not for one still in the bag or barely out of it).
+        if (!p && chuteRig.lastStage === 'canopy' && !chuteRig.collapse && chuteRig.lastOpening > 0.5)
           chuteRig.collapse = {
             t: 0,
             // Where the jumper stands now: a landing is moved to clear ground
@@ -453,44 +494,100 @@
             heading: chuteRig.heading,
           };
         chuteRig.lastStage = stage;
+        chuteRig.lastOpening = p ? p.opening : 0;
         if (p) {
           chuteRig.collapse = null;
         }
         if (stage === 'canopy') {
-          const opening = p.opening,
-            stretch = smooth01(0, 0.35, opening),
-            inflate = smooth01(0.28, 1, opening);
+          const phase = p.phase,
+            k = p.phaseK,
+            opening = p.opening,
+            u = clamp(chuteRig.upright, 0, 1),
+            packed = phase === 'pilot' || phase === 'lines',
+            flying = phase === 'open',
+            // The lines out of the bag: 0 in the container .. 1 at line stretch.
+            stretch = phase === 'pilot' ? 0 : phase === 'lines' ? k : 1,
+            // The kill-line collapses the pilot chute once the canopy has taken the load.
+            inflate = smooth01(0.3, 1, opening);
           chuteRoot.visible = true;
           chuteRoot.position.copy(chuteRig.harness);
-          chuteRoot.quaternion.setFromEuler(chuteEuler.set(chuteRig.roll, -chuteRig.heading, chuteRig.pitch, 'YXZ'));
+          // Lying flat, the lines trail straight up into the relative wind.
+          chuteRoot.quaternion.setFromEuler(chuteEuler.set(chuteRig.roll * u, -chuteRig.heading, chuteRig.pitch * u, 'YXZ'));
           chuteRoot.scale.setScalar(1);
-          // The bag lifts off the back on the bridle, the lines stretch, then it inflates.
-          chuteShape.height = 4 + (CHUTE_LINES - 4) * stretch;
-          chuteShape.span = 0.14 + 0.86 * (inflate < 1 ? clamp(easeOutBack(inflate), 0, 1.06) : 1);
-          chuteShape.chord = 0.3 + 0.7 * smooth01(0.3, 0.75, opening);
-          chuteShape.thick = 0.25 + 0.75 * inflate;
-          chuteShape.arc = CHUTE_ARC * (1.6 - 0.6 * inflate);
-          chuteShape.flutter = 1 + (1 - inflate) * 4;
+          chuteShape.height = 1 + (CHUTE_LINES - 1) * stretch;
+          let slide = 1;
+          if (packed) {
+            // Still in the bag: the cloth is a bundle at the top of the lines.
+            chuteShape.span = 0.05;
+            chuteShape.chord = 0.12;
+            chuteShape.thick = 0.6;
+            chuteShape.arc = 0.3;
+            chuteShape.flutter = 0;
+            slide = 0;
+          } else if (phase === 'snivel') {
+            // Out of the bag, held nearly closed by the slider: a narrow bundle flogging in the wind.
+            chuteShape.span = 0.14 + 0.24 * k + 0.035 * Math.sin(chuteShape.time * 11);
+            chuteShape.chord = 0.3 + 0.25 * k;
+            chuteShape.thick = 0.2 + 0.3 * k;
+            chuteShape.arc = CHUTE_ARC * 1.8;
+            chuteShape.flutter = 5;
+            slide = 0.08 * k;
+          } else if (phase === 'snap') {
+            // The slider comes down and the wing spreads from the centre out, overshooting a little.
+            chuteShape.span = 0.38 + 0.62 * clamp(easeOutBack(k), 0, 1.06);
+            chuteShape.chord = 0.55 + 0.45 * smooth01(0, 0.7, k);
+            chuteShape.thick = 0.5 + 0.5 * smooth01(0.1, 0.9, k);
+            chuteShape.arc = CHUTE_ARC * (1.8 - 0.8 * smooth01(0, 0.8, k));
+            chuteShape.flutter = 5 - 4 * k;
+            slide = 0.08 + 0.92 * smooth01(0.2, 1, k);
+          } else {
+            chuteShape.span = chuteShape.chord = chuteShape.thick = chuteShape.flutter = 1;
+            chuteShape.arc = CHUTE_ARC;
+          }
           chuteShape.shift = 0;
-          const pullR = Math.max(chuteRig.flare, chuteRig.turn),
-            pullL = Math.max(chuteRig.flare, -chuteRig.turn);
+          // The brakes are stowed until the canopy flies.
+          const pullR = flying ? Math.max(chuteRig.flare, chuteRig.turn) : 0,
+            pullL = flying ? Math.max(chuteRig.flare, -chuteRig.turn) : 0;
           chuteShape.brakeR = clamp(pullR, 0, 1) * 1.3;
           chuteShape.brakeL = clamp(pullL, 0, 1) * 1.3;
-          chuteRebuild();
-          // Pilot chute: thrown up and back, it then trails above the tail.
+          chuteSkin.visible = chuteRibs.visible = !packed;
+          if (!packed) chuteRebuild();
+          // Pilot chute: out of the hand, inflating as it climbs on the bridle; then
+          // it drags the bag up the lines; after line stretch it trails above the tail.
           chuteSkinPoint(0, 0.5, 0.5, true, chutePoint);
-          chuteTmp.set(-10 - 8 * stretch, chutePoint.y + 5 + (1 - stretch) * 10, Math.sin(chuteShape.time * 1.3) * 1.5);
+          if (phase === 'pilot') {
+            const thrown = smooth01(0.3, 0.5, k),
+              rise = smooth01(0.45, 1, k);
+            chuteTmp.set(-thrown - 5 * rise, 1 + 2 * thrown + 13 * rise, 3 + 3 * thrown - 5 * rise);
+            chutePilot.scale.setScalar(0.3 + 0.7 * smooth01(0.4, 0.85, k));
+            chutePilot.visible = k > 0.25;
+          } else if (phase === 'lines') {
+            chuteTmp.set(-1.5 * stretch - 4, chuteShape.height + 14, 1);
+            chutePilot.scale.setScalar(1);
+            chutePilot.visible = true;
+          } else {
+            chuteTmp.set(-18, chutePoint.y + 5, Math.sin(chuteShape.time * 1.3) * 1.5);
+            chutePilot.scale.setScalar(1 - 0.62 * inflate);
+            chutePilot.visible = true;
+          }
           chutePilot.position.copy(chuteTmp);
-          chutePilot.rotation.set(0, 0, 0.5 + Math.sin(chuteShape.time * 3.1) * 0.15);
-          // Once the canopy has taken the load the kill-line collapses it to a small bundle.
-          chutePilot.scale.setScalar(1 - 0.62 * inflate);
+          chutePilot.rotation.set(0, 0, (phase === 'pilot' ? 0 : 0.5) + Math.sin(chuteShape.time * 3.1) * 0.15);
+          // The bag: in the container, then climbing on top of the lines, then on the bridle under the pilot chute.
+          chuteBag.visible = phase !== 'pilot';
+          if (phase === 'lines') chuteBag.position.set(-1.5 * stretch, chuteShape.height + 2, 0);
+          else chuteBag.position.set(chuteTmp.x + 1.5, chuteTmp.y - 3.5 * chutePilot.scale.x, chuteTmp.z);
+          chuteBag.rotation.set(0, 0, phase === 'lines' ? 0 : 0.6);
           chutePilot.updateMatrixWorld();
           chuteRoot.updateMatrixWorld();
-          chuteRigging(opening, chutePilot.getWorldPosition(chuteTmp2));
-          chutePilot.visible = chuteSlider.visible = chuteLines.visible = true;
-          for (const r of chuteRisers) r.visible = true;
+          chuteRigging(opening, chutePilot.getWorldPosition(chuteTmp2), slide, phase === 'pilot');
+          chuteLines.visible = true;
+          chuteSlider.visible = !packed;
+          // The risers come out of the container with the bag.
+          for (const r of chuteRisers) r.visible = phase !== 'pilot';
           return;
         }
+        chuteBag.visible = false;
+        chuteSkin.visible = chuteRibs.visible = true;
         const c = chuteRig.collapse;
         if (!c || stage === 'freefall') {
           chuteRoot.visible = false;

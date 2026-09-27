@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-417 files in the include tree, 149,357 lines.
+417 files in the include tree, 149,653 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -106,7 +106,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
 - `src/navigation.js`   689 — City map and route planning
-- `src/parachute.js`   515 — Bailout and parachute
+- `src/parachute.js`   689 — Bailout and parachute
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
 - `src/mobile.js`   258 — Touch controls
 - `src/world-view.js`   224 — World camera gestures
@@ -293,7 +293,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/falls-body.js`   317 — Falls on foot: the impact scale (fallInjury), the player's ballistic fall off a drop, landings and the fatal splat.
 - `src/falls-vehicles.js`   351 — Falls, vehicles: road vehicles leaving the terrain (cliffSettle, cliffFlight), landings, tumbles down a face and rollovers.
-- `src/falls-console.js`   429 — Falls console: the cliff finder (cliffSpots), bail-out and parachute helpers, scripted fall and descent tests (fallsConsole).
+- `src/falls-console.js`   454 — Falls console: the cliff finder (cliffSpots), bail-out and parachute helpers, scripted fall and descent tests (fallsConsole).
 
 ## src/garages.js ▸ Drive-in repair and respray
 
@@ -621,7 +621,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d-effects.js ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 
-- `src/parachute3d.js`   529 — Ram-air parachute
+- `src/parachute3d.js`   626 — Ram-air parachute
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
@@ -657,9 +657,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/touch-hud.css`   314 — Touch play: thumbs own the lower corners, so the HUD moves up
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   274 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
-- `src/ui/freefall.css`   167 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below and …
+- `src/ui/freefall.css`   192 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below, a …
 - `src/ui/reduced-motion.css`    48 — Reduced motion: keep the states, drop the movement
-- `src/ui/hud.html`   283 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
+- `src/ui/hud.html`   284 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   227 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
 - `src/ui/panels.html`   210 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
