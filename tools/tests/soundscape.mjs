@@ -81,6 +81,9 @@ export default async function (t) {
     await t.keys('KeyF', 0.05);
     const ducked = (await t.call('audioMix')).loudDuck;
     t.assert(ducked.events > ducks && ducked.depth > 0.2, `the shotgun did not duck the ambience: ${JSON.stringify(ducked)}`);
+    // Let the pellets land here (0.6 s): left in flight down the sidewalk they killed
+    // someone during the next test and paid the player $10 (sportsbook-bets' cash).
+    await t.wait(0.8);
     await t.call('wanted', 0);
     t.finite(await t.call('soundscape'), 'soundscape');
     t.finite(foley.thumps + foley.passBys, 'thumps and pass-bys');
