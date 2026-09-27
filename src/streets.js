@@ -101,7 +101,7 @@
       },
     };
     function streetNameAt(x, y) {
-      const isleStreet = monarchStreetName(x, y);
+      const isleStreet = monarchStreetName(x, y) || northPointKeyStreetName(x, y);
       if (isleStreet) return isleStreet;
       if (x > CITY_SIZE || y > CITY_SIZE || !landAt(x, y)) {
         const county = COUNTY_ROADS.find((r) =>

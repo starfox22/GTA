@@ -25,7 +25,6 @@
         box(T.group, x, H + 9, z + d / 2 + 0.6, 0.3, 17.4, 0.2, skyBronze);
         if (sign) atlasSign(T.group, towerNameCell(sign), x, H + 20.2, z + d / 2 + 0.7, Math.min(w - 4, 26), Math.min(w - 4, 26) / 8, neonCutout);
         addGroupGlow(T.group, x, H + 19.5, z + d / 2 + 2, 7, '#ffe3b8', 1.2, { day: 0.1 });
-        signSpill(b.x + x, b.y + z + d / 2 + 8, 16, '#ffe3b8', 0.3);
       }
       function buildKeyHelideck(T) {
         const b = T.b,

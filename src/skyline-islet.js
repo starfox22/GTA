@@ -31,6 +31,15 @@
       if (!onNorthPointKey(x, y)) return false;
       return vertical || Math.abs(y - NORTH_POINT_KEY.row) > 1 || x > NORTH_POINT_KEY.streetEnd;
     }
+    // The HUD's street name on the Key: the avenue off the bridge and the circle.
+    function northPointKeyStreetName(x, y) {
+      if (!onNorthPointKey(x, y)) return '';
+      const K = NORTH_POINT_KEY,
+        C = K.circle;
+      if (Math.abs(Math.hypot(x - C.x, y - C.y) - C.r) < C.width / 2 + 14) return 'KEY CIRCLE';
+      if (Math.abs(y - K.row) < 62 && x < C.x) return 'KEY AVENUE';
+      return '';
+    }
     // Sand down the south-east shore, a quay wall everywhere else.
     function northPointKeyShoreStyle(e) {
       if (e.region !== NORTH_POINT_KEY.id) return null;
@@ -132,6 +141,8 @@
         b.height = realBuildingHeight(t.height);
         b.skyline = t;
         b.islet = true;
+        // Outside the city sheet: the 2D view draws it with the county's buildings.
+        b.county = true;
       }
       for (const [x, y, r, species] of northPointKeyPalms()) trees.push({ x, y, r, species, tropical: true, islet: true });
       NORTH_POINT_KEY_SOLIDS.length = 0;

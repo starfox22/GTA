@@ -134,7 +134,13 @@
         startSkyLift(reach.lift, reach.up);
         return true;
       }
-      return skyBarInteract();
+      if (skyBarInteract()) return true;
+      // Up on CIRRUS there is no helicopter: say where the way down is.
+      if (player.buildingRoof?.skyline?.roof === 'bar') {
+        tell('CIRRUS · ' + keyName('interact') + ' at the bar for a drink, or at the lift to go down.', 2.5);
+        return true;
+      }
+      return false;
     }
     function startSkyLift(lift, up) {
       if (gameMode !== 'play' || skyLift) return false;

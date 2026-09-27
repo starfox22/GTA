@@ -2,8 +2,8 @@
       /* Built once from the islet plan (skyline-islet.js: NORTH_POINT_KEY,
          northPointKeyFurniture): static meshes in one batched group, the lamps and
          benches as knockable pieces like the esplanade's. The lamps and fountain
-         light the night with glows and light pools of their own (the city's lamp
-         light map stops at the city frame, west of the islet). */
+         light the night with glows (the city's lamp light map, and with it every
+         signSpill pool, stops at the city frame, west of the islet). */
       {
         const K = NORTH_POINT_KEY,
           C = K.circle,
@@ -40,7 +40,6 @@
           addGlow(C.x + Math.cos(a) * 24, 4.6, C.y + Math.sin(a) * 24, 7, '#aee6ff', 1.2, { mode: 'pulse', phase: k / 12 });
         }
         addGlow(C.x, 31, C.y, 16, '#ffe0a0', 1.2, { day: 0.05 });
-        signSpill(C.x, C.y, 70, '#a8e6ff', 0.35);
         // The gate at the bridge landing: limestone pylons, the islet's name, a lantern on each.
         for (const side of [-1, 1]) {
           const y = K.row + side * G.half;
@@ -50,7 +49,6 @@
           box(group, G.x, 74, y, 6, 8, 6, lampGlass);
           atlasSign(group, towerNameCell('NORTH POINT KEY'), G.x - G.size / 2 - 0.4, 50, y, G.size + 22, (G.size + 22) / 8, neonCutout, -Math.PI / 2);
           addGlow(G.x, 74, y, 12, '#ffd9a0', 1.6, { day: 0.05 });
-          signSpill(G.x - 20, y, 36, '#ffd9a0', 0.35);
         }
         // Lamp standards: a slim black post, a lantern head.
         for (const l of furniture.lamps) {
@@ -63,7 +61,6 @@
           box(g, 0, 33.4, 0, 5.4, 0.8, 5.4, lampPost);
           breakableGroup(prop, g);
           addGlow(l.x, 30.5, l.y, 13, '#ffe0b0', 1.5, { day: 0 });
-          signSpill(l.x, l.y, 44, '#ffdca8', 0.4);
         }
         // Benches on the forecourt, facing the circle.
         for (const s of furniture.benches) {

@@ -92,7 +92,6 @@
         mesh(cylinderGeo, barStone, g, fx, H + 2.2, fz, L.pit, 4.4, L.pit);
         mesh(cylinderGeo, barCoals, g, fx, H + 4.5, fz, L.pit - 2, 0.3, L.pit - 2);
         for (let n = 0; n < 5; n++) addGroupGlow(g, fx + Math.cos(n * 1.3) * 3, H + 6 + (n % 2) * 1.5, fz + Math.sin(n * 1.3) * 3, 7, '#ff9a3c', 2.2, { mode: 'flicker', day: 0.4 });
-        signSpill(b.x + fx, b.y + fz, 26, '#ffb46b', 0.45);
         // Olive trees in stone pots.
         for (const p of P.planters) {
           const x = lx(p),
@@ -113,6 +112,5 @@
           box(g, x, H + 14.6, z, 2.2, 2.6, 2.2, warm);
           addGroupGlow(g, x, H + 14.6, z, 6, '#ffd08a', 1.5, { day: 0.05 });
         }
-        signSpill(b.x + T.cx, b.y + T.cz + 10, 70, '#ffc98a', 0.35);
         T.top = Math.max(T.top, H + 26);
       }
