@@ -1,21 +1,22 @@
 # Police, combat and damage
 
 heat.js, witnesses.js, pursuit.js, citylife.js (officers, `policeSees`, `clearPolice`),
-swat.js, roadblocks.js, combat-rules.js, arsenal.js, wounds.js, carjack.js, damage.js,
-air-cover.js. `policeReport()` has `wounds` and `crimes`; methods: docs/console/police.md.
+police-feedback.js, swat.js, roadblocks.js, combat-rules.js, game-combat.js, arsenal.js,
+wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` and `crimes`
+(`crimeLog`); methods: docs/console/police.md.
 
 ## Heat and stars (heat.js)
 
 - `crime(amount, how)` is **the only way heat rises**; nothing adds it passively. Kills count
   by victim (`recordKill`, `recordVehicleKill`) with a spree bonus. Stars are read off heat at
   `HEAT_STARS` (12 / 32 / 72 / 125), one flashing step at a time; heat cools only out of
-  sight. `crimeLog` feeds `policeReport().crimes`. `setWantedLevel(n)` forces a level.
+  sight. `setWantedLevel(n)` forces a level.
 - `how`: omitted (or a kind hint such as `'gunfire'`, `'carjack'`) = decide by who knows;
   `'seen'` = scripted, the stars rise regardless (base alarms, mission stages in
   challenges.js, roadblock rams, stealing the Apache); an object `{ x, y, kind, caller }` =
   a witness report reaching dispatch. New scripted crimes that must raise stars need `'seen'`.
-- Wanted chips (NEED TO LOSE POLICE, POLICE CLEARED) only on a real drop.
-  `policeBlocksMissionDelivery` lists mission stages that need zero stars.
+- Wanted chips (NEED TO LOSE POLICE, POLICE CLEARED) only on a real drop;
+  `policeBlocksMissionDelivery` lists the mission stages that need zero stars.
 
 ## Witnesses and 911 (witnesses.js, crowd-witnesses.js)
 
@@ -83,8 +84,8 @@ air-cover.js. `policeReport()` has `wounds` and `crimes`; methods: docs/console/
   enterVehicle's own; the street gets `crowdAlarm('carjack')`. Over 14 km/h, bikes, or no
   room at the door: the instant yank. Anything that moves or resets the player calls
   `cancelCarjack()` (teleportPlayer, die, resetMissionState).
-- Tank armour: `vehicleArmorShare` (the Apache takes 30% of small arms). The player's tank
-  turret (`traverseTurret`) is shared by the pursuit tank and army gunners.
+- Armour: `vehicleArmorShare` (the Apache takes 30% of small arms). The tank turret
+  (`traverseTurret`) is shared by the player, the pursuit tank and army gunners.
 - Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding; they
   take 40% of gang small-arms damage.
 
