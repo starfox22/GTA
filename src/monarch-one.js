@@ -152,7 +152,8 @@
       if (c && !isBoat(c) && !isAircraft(c) && (c.altitude || 0) < 20) {
         const dx = Math.abs(c.x - g.x),
           dy = c.y - g.armY;
-        if (dx < 70 && dy > -140 && dy < 150 && Math.abs(c.speed) < 30 * KMH) want = true;
+        // A crawl raises it; once up it stays up until the car has gone through.
+        if (dx < 70 && dy > -140 && dy < 150 && (Math.abs(c.speed) < 30 * KMH || g.open > 0.5)) want = true;
       }
       if (!want && g.open > 0) for (const v of vehicles) if (v.hp > 0 && Math.abs(v.x - g.x) < g.half + 10 && Math.abs(v.y - g.armY) < 30) want = true;
       if (want && !g.want && gameTime - g.greetedAt > 20) {
