@@ -378,6 +378,8 @@
         if (inc && !crowd.incidents.includes(inc)) inc = null;
         forPeopleNear(body.x, body.y, ALARM_REACH.body, (p, d) => {
           if (p.hp <= 0 || p.react || p.pending || p.leader || p.onDeck || personIncapacitated(p)) return;
+          // Paramedics see bodies all day (livingcity-medics.js).
+          if (p.cityRole?.kind === 'medic') return;
           // Each person takes in a given body once (then they watch, call or move on).
           if (p.bodySeen === body) return;
           if (d > 55 && !crowdSight(p, body)) return;

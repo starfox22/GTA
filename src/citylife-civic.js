@@ -426,6 +426,8 @@
       timed('police:roadblocks', () => updateRoadblocks(deltaSeconds));
       updateDepotDoors(deltaSeconds);
       updateCrowdDensity(deltaSeconds);
+      // Traffic round the player, sirens, ambulances, street events (livingcity.js).
+      timed('citylife', () => updateLivingCity(deltaSeconds));
       timed('police:air', () => updateAirPolice(deltaSeconds));
       updateWounds();
       for (let i = bloodPools.length - 1; i >= 0; i--)

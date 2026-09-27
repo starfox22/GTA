@@ -140,6 +140,8 @@
         // routine runs: island walkers, strollers and park guests only step aside
         // for the crowd once a reaction has started (crowd-witnesses.js needs it).
         if (p.pending && gameTime >= p.pending.at) crowdPerceive(p);
+        // Paramedics and street-event people (livingcity.js) step aside for a reaction.
+        if (updateCityRolePerson(p, deltaSeconds)) continue;
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateIsleWalker(p, deltaSeconds)) continue;

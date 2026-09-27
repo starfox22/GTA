@@ -153,6 +153,8 @@
       drawDrawbridgeMap(drawingContext, scale, big);
       drawAviationMap(drawingContext, scale);
       drawPoliceMap(drawingContext, scale);
+      // A street event's runner (livingcity-events.js).
+      drawLivingCityMap(drawingContext, scale);
       drawingContext.restore();
       if (big) {
         drawingContext.save();

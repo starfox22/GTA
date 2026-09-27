@@ -357,7 +357,7 @@
       if (siren) {
         let d = 10000;
         for (const car of vehicles)
-          if (car.hp > 0 && ((car.cop && wantedStars > 0) || car.gangTarget))
+          if (car.hp > 0 && ((car.cop && wantedStars > 0) || car.gangTarget || car.emergency?.running))
             d = Math.min(d, distanceBetween(car, player));
         glideParam(siren.gain.gain, 
           active ? clamp(1 - d / 700, 0, 1) * 0.18 : 0,

@@ -210,6 +210,8 @@
       }
     }
     function countyRouteControl(c) {
+      // An ambulance on a run through the city (livingcity-sirens.js).
+      if (c.emergency) return emergencyRunControl(c);
       const route = c.countyRoute;
       let i = c.countyIndex || 0;
       if (distanceBetween(c, route[i]) < 65) {

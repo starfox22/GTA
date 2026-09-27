@@ -133,14 +133,8 @@
           !canSpawnCar(type, x, y, a, 12)
         )
           continue;
-        makeCar(
-          type,
-          x,
-          y,
-          a,
-          true,
-          vehiclePaint(type),
-        );
+        // City traffic the streamer may move round the player (livingcity-traffic.js).
+        makeCar(type, x, y, a, true, vehiclePaint(type)).streamed = true;
       }
       for (let i = 0; i < 70; i++) {
         const r = randomChoice(ROAD_ROWS),

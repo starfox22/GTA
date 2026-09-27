@@ -33,6 +33,7 @@
         !p.stroll &&
         !p.onDeck &&
         !p.keyPerson &&
+        !p.cityRole &&
         !p.parkGuest &&
         !p.react &&
         !p.pending &&

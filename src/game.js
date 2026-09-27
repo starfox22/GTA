@@ -122,6 +122,7 @@
     // @include src/car-radio.js
     // @include src/garages.js
     // @include src/crowd.js
+    // @include src/livingcity.js
     // @include src/monarch-life.js
     // @include src/dealership.js
     // @include src/dealership-people.js
