@@ -7,6 +7,8 @@
 - The suspicion meter fills while you are seen (faster up close, running, or hovering at
   Vescari's side) and drains out of sight; it shows who sees you and a walk / run reminder.
 - On the terrace guests walk; hold the walk key to run (it costs suspicion when seen).
+- Cover blown: the bodyguards draw in about a second and fire steadily rather than all at
+  once, so breaking for cover is possible; the objective turns to Vescari or the way out.
 - The poisoned glass: Vescari toasts, sips, coughs, clutches his throat as the glass
   shatters, staggers, and faints to the floor. No blood. Guests gasp and step back, one
   kneels at his side, one shouts for an ambulance and phones it in, a bodyguard radios the

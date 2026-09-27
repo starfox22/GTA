@@ -181,8 +181,9 @@
       for (const e of enemies)
         if (e.missionTag === 'rooftop-hit') {
           e.aiming = true;
-          // Close protection details do not hesitate: weapons come up now.
-          e.timer = 0.15 + seededRandom() * 0.15;
+          // Weapons come up fast, but a guest's shoulders and the party's panic
+          // give the player a beat to break for cover (drawn and fired in ~1 s).
+          e.timer = 0.7 + seededRandom() * 0.5;
           e.roofRoute = null;
           e.look = 0;
           e.sees = false;
@@ -192,6 +193,8 @@
       wantedStars = Math.max(2, wantedStars);
       // The car brings the lift back up; the way out is not simply standing open.
       m.liftRecalled = gameTime + 9;
+      // The objective follows: Vescari is still the job, if he is not already dying.
+      if (m.boss.hp > 0 && !poisonCommitted(m)) setStage(2, m.boss, 'COVER BLOWN · TAKE DOWN VESCARI OR GET OUT');
     }
     function canSilentHit(m) {
       return (
@@ -293,6 +296,8 @@
         if (wantedStars === 0 && distanceBetween(player, ROOFTOP.door) > ROOF_AWAY) winMission();
         return;
       }
+      m.instruction =
+        wantedStars > 0 ? 'LOSE THE POLICE · REACH CORAL PALMS MOTEL ON FOOT' : 'REACH CORAL PALMS MOTEL ON FOOT';
       if (
         !player.car &&
         distanceBetween(player, ROOF_HIT.escape) < 55 &&
@@ -345,8 +350,10 @@
         e.timer -= deltaSeconds;
         if (!seen || distanceBetween(e, player) > 120) roofStep(e, player, deltaSeconds, 9 * KMH);
         if (seen && e.timer <= 0) {
-          e.timer = 0.72 + seededRandom() * 0.34;
-          const a = e.a + randomBetween(-0.038, 0.038);
+          // Handguns across a crowded terrace: steady, not a firing squad (five
+          // of them at 17 hp every 0.8 s killed the player before the first step).
+          e.timer = 0.95 + seededRandom() * 0.45;
+          const a = e.a + randomBetween(-0.07, 0.07);
           bullets.push({
             x: e.x + Math.cos(a) * 14,
             y: e.y + Math.sin(a) * 14,
@@ -354,7 +361,7 @@
             vx: Math.cos(a) * 520,
             vy: Math.sin(a) * 520,
             life: 0.6,
-            dmg: 17,
+            dmg: 14,
             enemy: true,
             faction: 'vescari',
             owner: e,

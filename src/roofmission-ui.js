@@ -33,7 +33,9 @@
           running = roofPlayerRunning(m),
           hot = m.alarm || m.suspicion >= 70;
         getElement('stealthLabel').textContent = m.alarm
-          ? 'COVER BLOWN · GET TO THE ELEVATOR'
+          ? m.boss.hp > 0 && !poisonCommitted(m)
+            ? 'COVER BLOWN · FINISH IT OR GET OUT'
+            : 'COVER BLOWN · GET TO THE ELEVATOR'
           : hot
             ? seen
               ? 'ALMOST MADE · GET OUT OF SIGHT'
