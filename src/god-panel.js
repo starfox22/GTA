@@ -479,8 +479,16 @@
     /**
      * SAFE TELEPORT
      */
+    // Also not on a loose face (terrain-field.js SLIP_GRADE): someone standing there
+    // slips downhill, and on the range that can end in a tumble off a cliff.
     function godWalkable(x, y, r = 8) {
-      return !solid(x, y, r) && !footObstacleBlocked(x, y, 8) && !vehicles.some((o) => (o.altitude || 0) < 20 && pointInCar(x, y, o, 9));
+      const slope = terrainSlope(x, y);
+      return (
+        Math.hypot(slope.x, slope.y) < SLIP_GRADE &&
+        !solid(x, y, r) &&
+        !footObstacleBlocked(x, y, 8) &&
+        !vehicles.some((o) => (o.altitude || 0) < 20 && pointInCar(x, y, o, 9))
+      );
     }
     /* The nearest walkable ground to a point: rings outward, about 12 units
        apart. A point that is already walkable is kept; otherwise (a roof, a

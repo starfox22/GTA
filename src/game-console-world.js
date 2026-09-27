@@ -155,7 +155,8 @@
       // isleRegencyTraffic): lane keeping in the bends, turning round off Eagle Pass.
       regencyTraffic: (seconds) => isleRegencyTraffic(seconds),
       // Named places the tests can visit: every PLACES entry plus the landmarks.
-      places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
+      // A place with no footprint of its own (YOUR SAFEHOUSE) is where its door is.
+      places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x ?? p.door.x), y: Math.round(p.y ?? p.door.y) })),
       // GPS: set a map waypoint and report the route the navigation graph finds
       // from the player (status, road length, the islands it passes through).
       route(x, y) {

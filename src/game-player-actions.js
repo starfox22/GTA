@@ -139,15 +139,31 @@
         player.hp = 100;
         player.armor = 0;
         player.inv = 3;
-        const hospital = PLACES.find((p) => p.kind === 'hospital').door;
-        teleportPlayer(hospital.x, hospital.y);
+        const hospital = nearestHospital(player.x, player.y);
+        teleportPlayer(hospital.door.x, hospital.door.y);
         clearPolice();
         resetOfficerCrews();
         gameMode = 'play';
         if (mission) failMission('Hospital bill: $250. Your job is ready to retry.');
-        else tell('Back on your feet. Hospital bill: $250.', 4);
+        else tell('Back on your feet at ' + hospital.name + '. Hospital bill: $250.', 4);
         save();
       }, 4200);
+    }
+    /* Where WASTED wakes the player: the nearest hospital (RIVERSIDE MEDICAL on Palm
+       Keys, not across the sound), THE HALCYON CLINIC only on and round Monarch Isle,
+       SAINT MARLOW for the rest of the city and the county. */
+    function nearestHospital(x, y) {
+      let best = null,
+        bestD = Infinity;
+      for (const p of PLACES) {
+        if (p.kind !== 'hospital' || !p.door || (p.monarch && !nearMonarchIsle(x, y))) continue;
+        const d = Math.hypot(p.door.x - x, p.door.y - y);
+        if (d < bestD) {
+          best = p;
+          bestD = d;
+        }
+      }
+      return best || PLACES.find((p) => p.kind === 'hospital');
     }
     /* The ringing payphone's reach, shared by its prompt and E (hysteresis). */
     function payphoneInReach() {

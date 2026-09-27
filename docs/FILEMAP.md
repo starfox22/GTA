@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-430 files in the include tree, 151,665 lines.
+430 files in the include tree, 151,716 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -31,7 +31,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-car-spawn.js`   163 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   479 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   264 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
-- `src/game-player-actions.js`   541 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   557 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   171 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    18 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   163 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
@@ -40,7 +40,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-draw2d.js`   630 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   224 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/game-ui.js`   415 — Weapon chip, mission card and updateUI() (HUD text refresh).
-- `src/game-menus.js`   182 — Resize, begin/newGame, pause, help, big map toggle.
+- `src/game-menus.js`   185 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/game-input.js`   414 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   294 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
@@ -127,7 +127,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ambience.js`   279 — City soundscape
 - `src/quality.js`   221 — Graphics quality tiers
 - `src/settings.js`   837 — Settings menu
-- `src/god-panel.js`   774 — God mode settings
+- `src/god-panel.js`   782 — God mode settings
 - `src/driving.js`   466 — Tyres, brakes and driving assists
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
 - `src/render3d.js`   214 — ▸ Three.js renderer and resource lifecycle
@@ -227,7 +227,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/monarch-grid.js`    47 — Monarch Isle grid: columns, blocks, kerbs and floors (ISLE_COLS, isleBlock).
 - `src/monarch-coast.js`   247 — Monarch Isle outline and coast (MONARCH_ISLE, onMonarchIsle), marina berths and superyachts.
 - `src/monarch-streets.js`   397 — Monarch Isle streets, circles, carriageways, roads, bridges, parcels and villas (ISLE_STREETS, MONARCH_ROADS).
-- `src/monarch-towers.js`   281 — Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
+- `src/monarch-towers.js`   282 — Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
 - `src/monarch-one.js`   373 — Monarch Isle's MONARCH ONE estate: the supertall's gated grounds, porte-cochère, pool deck, private cove, gate arm, staff and ground paint …
 - `src/monarch-blocks.js`   397 — Monarch Isle block planning (planIsleBlock, planIsleStreetscape), solids, districts and shore styles.
 - `src/monarch-ground.js`   594 — Monarch Isle ground sheet: one painted canvas tile (paintMonarchGround) with junctions, villas, blocks, garden, marina.
@@ -286,7 +286,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/transit.js ▸ Public railway simulation
 
 - `src/transit-rails.js`   478 — Railway lines and stations, track geometry, speeds and decks (RAIL_LINES, railTrackGeometry, railGraph).
-- `src/transit-network.js`   531 — Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
+- `src/transit-network.js`   532 — Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
 
 ## src/sealife.js ▸ Sea life: dolphins, gulls and the great white
 
@@ -389,7 +389,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/dealership3d.js`    43 — ▸ MONARCH MOTORS in 3D
 - `src/beachclub3d.js`    38 — ▸ Marea Beach Club meshes and show lighting
 - `src/cycles3d.js`   450 — Bike-share station meshes
-- `src/weather3d.js`   666 — Weather and sky visuals
+- `src/weather3d.js`   687 — Weather and sky visuals
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    84 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/carjack3d.js`   153 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
@@ -648,7 +648,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-missions.js`   271 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   215 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   269 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
-- `src/game-console-world.js`   218 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-world.js`   219 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   140 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
@@ -682,7 +682,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/menus.html`   227 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
 - `src/ui/panels.html`   210 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
-- `src/ui/transit.html`    18 — markup: #transitOverlay, #transitPanel, #transitTitle, #transitOptions, #closeTransit
+- `src/ui/transit.html`    18 — markup: #transitOverlay, #transitPanel, #transitTitle, #transitKey, #transitOptions, …
 
 ## Outside the include tree
 
