@@ -394,33 +394,9 @@
       // within 103 units of the point 100 ahead: a quarter of the old query.
       forEachPedestrianNear(c.x + headingCosine2 * 100, c.y + headingSine2 * 100, 110, yieldTo);
       if (!player.car) yieldTo(player);
-      // Nobody holds a car for ever: someone standing or stalled in the lane (a
-      // walker paused mid-crossing or stuck in the road) held traffic, and every
-      // car queued behind it, until they moved or the player left. After
-      // a few seconds stopped for the same person the driver eases round them at a
-      // walking pace, on whichever side leaves them room. Never round the player
-      // (the honk is their cue), nor while already easing round a parked car.
-      let e = c.easePerson;
-      if (heldBy && heldBy !== player && e?.p !== heldBy && desired < 3 * KMH && Math.abs(c.speed || 0) < 6 * KMH)
-        e = c.easePerson = { p: heldBy, since: gameTime, going: false };
-      if (e) {
-        const dx = e.p.x - c.x,
-          dy = e.p.y - c.y,
-          along = dx * headingCosine2 + dy * headingSine2,
-          // Right of our lane's centre line (steady while we pull across).
-          fromLane = dx * rx + dy * ry + laneOffset;
-        if (e.p.hp <= 0 || along < -half - 10 || Math.abs(fromLane) > side + 44 || gameTime - e.since > 40 || (!e.going && heldBy !== e.p))
-          c.easePerson = null;
-        else if ((e.going || gameTime - e.since > 4) && !ease.amount) {
-          // Round the left of someone right of the centre line, else round the right.
-          e.going = true;
-          ease.amount = Math.max(4, side + 6 - Math.abs(fromLane));
-          ease.side = fromLane >= 0 ? 1 : -1;
-          if (heldBy === e.p) desired = Math.min(beforePeople, 7 * KMH);
-        }
-      }
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
-      desired = Math.min(desired, curbsideStop(c));
+      const curb = curbsideStop(c);
+      desired = Math.min(desired, curb);
       // Held at the drawbridge's stop line while it opens (src/drawbridge.js).
       desired = drawbridgeTrafficLimit(c, desired);
       // A siren behind or coming head-on down our side: over to the kerb and
@@ -432,6 +408,33 @@
         if (!ease.amount && pull.shift > 0) {
           ease.amount = pull.shift;
           ease.side = -1;
+        }
+      }
+      // Nobody holds a car for ever: someone standing or stalled in the lane (a
+      // walker paused mid-crossing or stuck in the road) held traffic, and every
+      // car queued behind it, until they moved or the player left. After
+      // a few seconds stopped for the same person the driver eases round them at a
+      // walking pace, on whichever side leaves them room. Never round the player
+      // (the honk is their cue), nor while already easing round a parked car or
+      // pulling over for a siren (an ambulance runs down the centre line).
+      let e = c.easePerson;
+      if (heldBy && heldBy !== player && e?.p !== heldBy && desired < 3 * KMH && Math.abs(c.speed || 0) < 6 * KMH)
+        e = c.easePerson = { p: heldBy, since: gameTime, going: false };
+      if (e) {
+        const dx = e.p.x - c.x,
+          dy = e.p.y - c.y,
+          along = dx * headingCosine2 + dy * headingSine2,
+          // Right of our lane's centre line (steady while we pull across).
+          fromLane = dx * rx + dy * ry + laneOffset;
+        if (e.p.hp <= 0 || along < -half - 10 || Math.abs(fromLane) > side + 44 || gameTime - e.since > 40 || (!e.going && heldBy !== e.p))
+          c.easePerson = null;
+        else if ((e.going || gameTime - e.since > 4) && !ease.amount && !pull) {
+          // Round the left of someone right of the centre line, else round the right.
+          e.going = true;
+          ease.amount = Math.max(4, side + 6 - Math.abs(fromLane));
+          ease.side = fromLane >= 0 ? 1 : -1;
+          // The crawl never beats a red, a car ahead, a kerbside stop or the drawbridge.
+          if (heldBy === e.p) desired = drawbridgeTrafficLimit(c, Math.min(beforePeople, 7 * KMH, curb));
         }
       }
       // Steer for a point shifted away from whatever was easing us across the lane.

@@ -153,7 +153,7 @@
       medicService.jobs++;
       return true;
     }
-    function medicJobEnd(job, why) {
+    function medicJobEnd(job, why, cause = null) {
       const c = job.ambulance;
       if (c && vehicles.includes(c) && c !== player.car) {
         // Back into the traffic, lamps off (livingcity-traffic.js may stream it away).
@@ -170,7 +170,7 @@
           p.pose = null;
         }
       if (why === 'aborted') medicService.aborted++;
-      medicService.last = { why, outcome: job.outcome, seconds: Math.round(gameTime - job.startedAt) };
+      medicService.last = { why, outcome: job.outcome, seconds: Math.round(gameTime - job.startedAt), ...(cause ? { cause } : {}) };
       medicService.job = null;
       medicService.cooldownUntil = gameTime + MEDIC_COOLDOWN;
     }
@@ -205,7 +205,7 @@
         return arriveMedicJob(job);
       }
       // Boxed in for good where everyone can see: it gives up and drives on.
-      if (gameTime - job.startedAt > 90 || job.stuckFor > 35) return medicJobEnd(job, 'aborted');
+      if (gameTime - job.startedAt > 90 || job.stuckFor > 35) return medicJobEnd(job, 'aborted', job.stuckFor > 35 ? 'boxed in' : 'too long');
       // At the stop, or held up within sight of it: the crew walks the rest.
       if (left < 8 || (left < 40 && speed < 4) || (Math.hypot(job.stop.x - c.x, job.stop.y - c.y) < 170 && job.stuckFor > 2.5)) arriveMedicJob(job);
     }
@@ -252,7 +252,7 @@
         body = job.body,
         t = gameTime - job.phaseAt,
         working = job.medics.filter((m) => m.hp > 0 && m.cityRole?.job === job);
-      if (!working.length) return medicJobEnd(job, 'aborted');
+      if (!working.length) return medicJobEnd(job, 'aborted', 'no crew');
       // Scared off and never back, or held up for good: they call it a day.
       if (gameTime - job.startedAt > 150) return medicJobEnd(job, 'timeout');
       if (job.phase === 'scene' && working.some((m) => m.cityRole.at)) {
@@ -382,7 +382,11 @@
           Math.abs(job.body.y - player.y) > 2200 ||
           mission
         )
-          return medicJobEnd(job, 'aborted');
+          return medicJobEnd(
+            job,
+            'aborted',
+            !vehicles.includes(c) ? 'ambulance gone' : c === player.car ? 'taken' : c.hp < c.maxhp * 0.5 ? 'ambulance damaged' : mission ? 'mission' : 'player left',
+          );
         if (job.phase === 'driving') driveMedicJob(job, deltaSeconds);
         else updateMedicScene(job);
         return;
