@@ -268,7 +268,7 @@
       if (gameMode !== 'play') return;
       if (is('zoomIn') || is('zoomOut') || is('zoomReset')) {
         e.preventDefault();
-        setWorldZoom(is('zoomReset') ? STREET_ZOOM : worldZoomTarget * (is('zoomOut') ? 1 / 1.25 : 1.25));
+        setWorldZoom(is('zoomReset') ? STREET_ZOOM : worldZoomTarget * (is('zoomOut') ? 1 / STREET_ZOOM_STEP : STREET_ZOOM_STEP));
         return;
       }
       if (is('bail')) {

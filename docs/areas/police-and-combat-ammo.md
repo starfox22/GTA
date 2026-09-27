@@ -1,0 +1,52 @@
+# Guns, ammunition and who may fire
+
+Where the player's weapons and rounds come from (ammo-supply.js), and the rule that nobody
+shoots the player from off screen (combat-rules.js ON-SCREEN RULE). Part of
+police-and-combat.md.
+
+## Supply (ammo-supply.js)
+
+- **No street ammo, armour or weapon pickups.** `pickups` (game-populate.js) holds health
+  only: five in Northbank, six by the other hospitals and county lodges. The pickup loop in
+  game-update.js ignores any other type. `tools/tests/pickups-islands.mjs` checks the island
+  health pickups; `tools/tests/ammo-supply.mjs` that nothing else is on the street.
+- **Gun shops** sell weapons, refills (`PRICES`, `AMMO_PRICES`, citylife-places.js) and body
+  armour ($350): SOUTH COAST ARMORY in Northbank (door 876, 410, a few blocks from missions 1
+  and 2) and the county OUTFITTERS (terrain-scenery.js). The door prompt reads
+  `<name> · GUNS, AMMO & ARMOR`; the action key opens the counter (not while wanted).
+- **Bodies**: anyone who carried a gun can be searched once while the player stands over
+  them (`LOOT_REACH` 22 units, same floor) with the action key. `bodyLoot(p)` works out what
+  they had once (`p.loot`), so the prompt (`TAKE <GUN> · n RDS`, game-ui.js) and the take
+  agree: patrol, roadblock and shield officers a 9 mm with one or two magazines; FBI agents
+  the machine pistol; SWAT and soldiers the assault rifle (two to four magazines); a rooftop
+  marksman the precision rifle; gang members and mission gunmen the machine pistol with what
+  is left in it and at most one spare; the Blue Hour's guards and dealership security a
+  pistol. The party's host carries nothing. A gun that fired (`muzzleAt`/`lastShotAt`) is
+  part empty. Nothing is drawn on the ground (a dead body has no weapon in the renderer).
+  A new gun comes as found and is selected; an owned one takes the rounds in reserve, up to
+  ten magazines (`RESERVE_MAGS`). `p.looted` marks the body.
+- The take is a 0.6 s crouch (`player.lootUntil`, `lootCrouching()`): the kneel pose
+  (crowd3d-special.js), feet held in game-update.js. A clock that went back never holds it.
+- **Police vehicles** (`takeVehicleArms`, from `enterVehicle`): the first time the player
+  gets into a patrol car (a box of 9 mm: pistol reserve up to 48), a SWAT van (assault
+  rifle up to 150, given if not owned; shotgun shells to 24, SMG to 90, pistol to 48) or an
+  FBI SUV (machine pistol up to 90, given if not owned; rifle 90, shells 24, pistol 48).
+  Only owned weapons are topped up besides the one each gives. `c.armsTaken` makes it once
+  per vehicle (set only when something was taken); a `tell` line lists what came aboard.
+  Army vehicles and the police marine launches carry nothing for the player.
+
+## ON-SCREEN RULE (combat-rules.js)
+
+- `shooterInView(shooter, inset = 20)`: nobody fires at the player on the ground unless
+  they stand inside the street camera's visible ground (`screenViewHalf()`: the orthographic
+  frame, `clamp(viewportHeight * 0.68, 430, 630) / worldZoom` tall, laid on the ground by
+  the street pitch) round `cameraTarget` (the view leads toward the aim on foot and down the
+  road in a car), less the inset. Off screen they may run toward the player; they hold fire.
+- Everyone who shoots the player uses it: patrol officers, SWAT, FBI, roadblocks, pursuit
+  gunners, Fort Sentinel's soldiers, towers and tanks, gang members and mission gunmen
+  (`updateGangFights`, story.js) and the Blue Hour's guards (roofmission-scene.js). Police
+  follow the same rule as gangs: one fair rule for every shooter. In the air or under a
+  parachute it is off (the flight view shows far more).
+- `shotLog()` counts every round aimed at the player with `onScreen` from the same test, so
+  `offscreen` should stay 0 for every source.
+- Gang fire between factions, and at the police, is not limited by the screen.

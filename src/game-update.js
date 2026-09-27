@@ -63,7 +63,9 @@
           !updateThrownPlayer(deltaSeconds) &&
           // Taking a car off its driver: walking round, the door, the struggle (carjack-struggle.js).
           !updateCarjack(deltaSeconds) &&
-          !updateMountainFooting(deltaSeconds)
+          !updateMountainFooting(deltaSeconds) &&
+          // Crouched over a body, taking the gun (ammo-supply.js).
+          !lootCrouching()
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
@@ -121,23 +123,11 @@
             gameTime > p.ready &&
             distanceBetween(player, p) < 27
           ) {
-            if (p.type === 'health') {
-              if (player.hp >= 100) continue;
-              player.hp = 100;
-              tell('Health restored');
-            }
-            if (p.type === 'ammo') {
-              for (const w of weapons) {
-                if (!w.owned) continue;
-                w.ammo = w.clip;
-                w.reserve = Math.max(w.reserve, w.clip * 8);
-              }
-              tell('Ammo restocked · all weapons');
-            }
-            if (p.type === 'armor') {
-              player.armor = 100;
-              tell('Body armor acquired');
-            }
+            // Health only: ammunition and armour come from the gun shops, bodies and
+            // police vehicles (ammo-supply.js).
+            if (p.type !== 'health' || player.hp >= 100) continue;
+            player.hp = 100;
+            tell('Health restored');
             p.ready = gameTime + 70;
             tone(840, 0.15, 0.15, 'triangle');
             particle(p.x, p.y, '#d5efa8', 9, 70);

@@ -84,6 +84,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   literal keys). Details: docs/areas/core-and-contracts.md.
 - `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
+- `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
+  player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
+- No ammo, armor or weapon pickups: rounds come from gun shops, `lootInteract` (bodies, once)
+  and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
 - **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
   hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
   pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911. Crowd

@@ -64,6 +64,12 @@
           }
           // Taking a car off its driver (carjack3d.js).
           if (player.carjack) return playerCarjackSpec(sp);
+          // Crouched over a body, taking the gun (ammo-supply.js).
+          if (lootCrouching()) {
+            sp.pose = 'kneel';
+            sp.facing = player.lootFacing ?? player.a;
+            return sp;
+          }
           if (player.tumble) {
             sp.pose = 'tumble';
             sp.elevation = entityElevation(player) + 2;
