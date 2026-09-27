@@ -72,9 +72,9 @@
      * SPEECH_BUBBLES_MAX at once, so they can be read. A bubble keeps its slot
      * until its line ends, and every shown line stays up long enough to read
      * (speechReadSeconds). Free slots go to the most important waiting line:
-     * soldiers, police and mission characters first, then lines aimed at the
-     * player (hands up, pleading, a carjacked or rammed driver, anyone speaking
-     * right beside them), then the nearest. A command or a line to the player
+     * soldiers, police, mission characters and a witness on the phone to 911
+     * first, then lines aimed at the player (hands up, pleading, a carjacked or
+     * rammed driver, anyone speaking right beside them), then the nearest. A command or a line to the player
      * takes the slot of an idle remark. A line that finds no slot waits up to
      * SPEECH_QUEUE_SECONDS and is then dropped. Mission and contact dialogue
      * (the dialogue box, the Blue Hour boss) is drawn elsewhere and not counted.
@@ -82,7 +82,7 @@
     const SPEECH_BUBBLES_MAX = 2,
       SPEECH_QUEUE_SECONDS = 2.5,
       SPEECH_RANGE = 460,
-      // (Plus a witness on the phone to 911, and remarks about the player.)
+      // (Plus remarks about the player; a 911 call ranks with the police.)
       SPEECH_TO_PLAYER = new Set(['handsUp', 'plead', 'fist', 'angryDriver', 'shout', 'point', 'dodge', 'carjack', 'call911', 'armedNear', 'knifeNear', 'playerHurt', 'niceCar', 'copCar', 'wreckCar']);
     let speechShown = [];
     function speechReadSeconds(text) {
@@ -93,6 +93,8 @@
       if (p.coasterRider && player.coaster?.kind === 'train') return 4;
       if (p.military || p.police || p.missionTag || p.ally || p.inConversation) return 3;
       const kind = p.speechKindText === p.speech ? p.speechKind : '';
+      // A 911 call about the player is the one line they must not miss.
+      if (kind === 'call911') return 3;
       if (SPEECH_TO_PLAYER.has(kind) || distanceBetween(p, player) < 70) return 2;
       return 1;
     }
@@ -165,7 +167,8 @@
       // coasterSpeakers(): the Falcon's riders (themepark.js); clubTalkSpeakers(): the
       // player, while talking with a club-goer (clubtalk.js).
       // sealifeSpeakers(): the beach shouting SHARK! (sealife.js).
-      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers(), clubTalkSpeakers(), sealifeSpeakers()])
+      // offstageCallSpeakers(): 911 callers the crowd does not run (witnesses.js).
+      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers(), clubTalkSpeakers(), sealifeSpeakers(), offstageCallSpeakers()])
         for (const p of list) {
           if (!p.speech || p.speechUntil < gameTime) continue;
           if (p.speechHeard !== p.speech) {

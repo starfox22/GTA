@@ -470,6 +470,9 @@
       player.roof = false;
       player.buildingRoof = null;
       player.altitude = 0;
+      // An aircraft left in the air comes down, as after a death, instead of
+      // hanging there pilotless with its rotor stopped.
+      if (player.car && isAircraft(player.car)) player.car.abandonedFlight = true;
       player.car = null;
       player.x = spawn.x;
       player.y = spawn.y;

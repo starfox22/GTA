@@ -136,6 +136,10 @@
         if (!p.look) ensureLook(p);
         // MONARCH MOTORS' staff and visitors (dealership-people.js).
         if (updateDealerPerson(p, deltaSeconds)) continue;
+        // A shot heard or a crime seen turns into a reaction before anyone's own
+        // routine runs: island walkers, strollers and park guests only step aside
+        // for the crowd once a reaction has started (crowd-witnesses.js needs it).
+        if (p.pending && gameTime >= p.pending.at) crowdPerceive(p);
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateIsleWalker(p, deltaSeconds)) continue;

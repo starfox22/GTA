@@ -107,7 +107,8 @@
      * units away and outside the camera. Interceptors are placed ahead of a
      * moving runner so they come at them rather than trail behind. While the
      * police are searching (a witness report, a lost runner) units come in round
-     * the place they are searching, not round the player they have not found.
+     * the place they are searching, not round the player they have not found;
+     * answering a 911 call they come from the nearest junctions off screen.
      */
     function pursuitCentre() {
       return searchActive && lastSeen ? lastSeen : player;
@@ -116,6 +117,8 @@
       const centre = pursuitCentre(),
         heading = Math.atan2(player.car?.vy || 0, player.car?.vx || 0),
         moving = centre === player && Math.hypot(player.car?.vx || 0, player.car?.vy || 0) > 60,
+        // Answering a 911 call: the nearest junctions off screen, so the chase starts soon.
+        responding = policeResponding(),
         points = [];
       for (const x of ROAD_CENTERS)
         for (const y of ROAD_ROWS) {
@@ -124,7 +127,7 @@
           if (inHarbor(x, y, 100) || harborPoliceProtected(x, y, 60) || !groundAt(x, y, 30)) continue;
           if (solid(x, y, 30) || vehicles.some((c) => Math.abs(c.x - x) < 70 && Math.abs(c.y - y) < 70)) continue;
           const toward = Math.cos(normalizeAngle(Math.atan2(y - centre.y, x - centre.x) - heading));
-          points.push({ x, y, score: (ahead && moving ? toward * 2 : 0) + seededRandom() });
+          points.push({ x, y, score: responding ? seededRandom() * 0.5 - d / 300 : (ahead && moving ? toward * 2 : 0) + seededRandom() });
         }
       points.sort((a, b) => b.score - a.score);
       return points.slice(0, 5);
@@ -436,11 +439,12 @@
           const first = !c.searchPoint || c.searchFrom !== lastSeen;
           c.searchFrom = lastSeen;
           const r = first ? 0 : randomBetween(120, policeSearchRadius() * 0.8),
-            a = randomBetween(0, TAU);
-          c.searchPoint = {
-            x: roadNear(lastSeen.x + Math.cos(a) * r),
-            y: rowNear(lastSeen.y + Math.sin(a) * r),
-          };
+            a = randomBetween(0, TAU),
+            sx = lastSeen.x + Math.cos(a) * r,
+            sy = lastSeen.y + Math.sin(a) * r;
+          // On the city grid the nearest junction; off it (the county, Monarch Isle)
+          // the spot itself: copRoute finds the road graph's way there.
+          c.searchPoint = inCityGrid(sx, sy) ? { x: roadNear(sx), y: rowNear(sy) } : { x: sx, y: sy };
           c.searchUntil = gameTime + 9;
         }
         target = routeToward(c, c.searchPoint);

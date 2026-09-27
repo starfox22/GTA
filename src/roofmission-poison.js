@@ -449,6 +449,25 @@
       m.medical.ambulance = c;
       m.medical.ambulanceAt = gameTime;
     }
+    /* The job ended (won, failed or restarted: cleanupMissionExtras) with the
+       ambulance still on its way. Nothing brakes it to the stop any more and its
+       county route loops, so it circled back through Little Havana for good, or
+       sat with its engine running behind whatever held it up. It pulls up at the
+       stop now when nobody is looking and the stop is free, else where it is,
+       and stays parked like one that arrived. */
+    function settleRoofAmbulance(m) {
+      const med = m?.medical,
+        c = med?.ambulance;
+      if (!c || med.parked || c.hp <= 0 || c === player.car || !vehicles.includes(c)) return;
+      const stop = ROOF_AMBULANCE.stop;
+      if (!crowdInView(c.x, c.y, 80) && !crowdInView(stop.x, stop.y, 80) && canSpawnCar('ambulance', stop.x, stop.y, Math.PI))
+        Object.assign(c, { x: stop.x, y: stop.y, a: Math.PI });
+      c.ai = false;
+      c.countyRoute = null;
+      c.vx = c.vy = c.av = c.speed = 0;
+      c.braking = true;
+      med.parked = gameTime;
+    }
     /* Siren on the way, then a firm stop in the kerb lane below the doors. */
     function updateRoofAmbulance(m) {
       const med = m.medical,

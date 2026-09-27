@@ -549,9 +549,13 @@
           return d > 550 && d < 1000 && !crowdInView(p.x, p.y, 140) && canSpawnCar('police', p.x, p.y, 0, 10);
         });
       if (!points.length) return;
+      // Answering a 911 call: one of the nearest, so the chase starts soon.
+      if (policeResponding()) points.sort((a, b) => distanceBetween(a, centre) - distanceBetween(b, centre)).splice(3);
       const p = randomChoice(points),
-        c = makeCar('police', p.x, p.y, 0, true);
-      c.a = copRoute(c).length > 1 ? headingBetween(c, copRoute(c)[1]) : headingBetween(c, player);
-      c.route = copRoute(c);
+        c = makeCar('police', p.x, p.y, 0, true),
+        // To the reported spot while searching, as in the city (pursuitCentre).
+        route = copRoute(c, centre === player ? null : centre);
+      c.a = route.length > 1 ? headingBetween(c, route[1]) : headingBetween(c, centre);
+      c.route = route;
       c.routeTime = 2;
     }

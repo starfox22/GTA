@@ -8,19 +8,39 @@
     /* Deliberate bailout, freefall, a canopy the jumper must open, steering and landings.
        Nothing opens by itself: after the jump the bail action (J) pressed again,
        once it has been let go, pulls the ripcord. Leave it and the jumper meets the
-       ground at freefall speed (falls-body.js splatPlayer). The canopy takes
-       PARACHUTE_OPEN_SECONDS to inflate; opened from terminal speed it needs about
-       55 m to bring the rate down to a safe landing, so opened lower it lands hard
-       (playerImpact: hurt, or dead below about 25 m). The freefall cue on screen
-       (FREEFALL CUE below) counts the height down and turns red once there is no
-       longer room to open. */
+       ground at freefall speed (falls-body.js splatPlayer). A pull is not an open
+       canopy: the deployment runs in real stages (DEPLOYMENT below) and from
+       terminal speed takes about 4.5 s and 178 m, so it has to be timed. Opened too
+       low, the jumper meets the ground still fast (playerImpact: hurt, or dead).
+       The freefall cue on screen (FREEFALL CUE below) counts the height down against
+       the height the opening needs from the current fall rate, calls OPEN SOON and
+       OPEN NOW in time, and then follows the opening until the canopy flies. */
     // Belly-to-earth freefall tops out at about 50 m/s; the canopy settles at 3.5 m/s.
     const PARACHUTE_TERMINAL = 50 * UNITS_PER_METRE,
-      PARACHUTE_OPEN_SECONDS = 2.4,
-      // The slider keeps the opening shock under about 5 g.
-      PARACHUTE_OPEN_SHOCK = 5,
+      /* DEPLOYMENT, from the pull (a ram-air sport rig, seconds):
+           pilot   0.7   the pilot chute is thrown, inflates, pulls the pin, lifts the bag;
+           lines   1.0   the bag leaves the container and the lines pay out; line stretch
+                         swings the jumper upright;
+           snivel  1-2   out of the bag, the canopy snivels, held half-closed by the slider
+                         (1 s pulled from rest, 2 s at terminal speed);
+           snap    0.8   the slider runs down and the canopy bangs open: the opening shock.
+         The drag comes in along the way (PARACHUTE_DEPLOY_DRAG): pulled at terminal speed
+         it is open 4.5 s and 178 m later, down to 6 m/s after a 4 g shock; pulled at a few
+         m/s (straight off a hovering helicopter) 3.6 s and 54 m. */
+      PARACHUTE_DEPLOY = { pilot: 0.7, lines: 1, snivel: 1, snivelFast: 1, snap: 0.8 },
+      PARACHUTE_PHASES = ['pilot', 'lines', 'snivel', 'snap'],
+      // Drag area, in multiples of the freefall body's, at the end of each stage.
+      PARACHUTE_DEPLOY_DRAG = { pilot: 1.35, lines: 1.5, snivel: 8 },
+      // The slider keeps the opening shock under this load (g felt in the harness).
+      PARACHUTE_OPEN_SHOCK = 4,
       // A descent rate the jumper lands on their feet from (the body scale's 6 m drop is 11 m/s).
-      PARACHUTE_SAFE_RATE = 7 * UNITS_PER_METRE;
+      PARACHUTE_SAFE_RATE = 7 * UNITS_PER_METRE,
+      /* The freefall cue's lines, in seconds of fall at the current rate above the
+         height the opening needs (with a floor in metres for slow falls): OPEN SOON,
+         then OPEN NOW (still room for a full opening), then TOO LOW (none left). */
+      PARACHUTE_CUE_SOON = [4, 40],
+      PARACHUTE_CUE_NOW = [1.5, 15],
+      PARACHUTE_CUE_LATE = [0, 2];
     // Height above whatever the aircraft would set down on: the ground, or the
     // flat roof under a helicopter (`roofSite`, rooftops.js).
     function aircraftClearance(c) {
@@ -74,8 +94,9 @@
             : 'You abandoned the aircraft needed for this mission.',
         );
       tell(
-        'FREEFALL · ' + keyName('bail') + ' again to open the parachute · ' + keyName('left') + '/' + keyName('right') + ' steer · ' +
-          keyName('forward') + ' track · It will not open by itself',
+        'FREEFALL · ' + keyName('bail') + ' again to open the parachute · It will not open by itself, and opening takes about ' +
+          Math.round(worldMeters(parachuteForecast(PARACHUTE_TERMINAL).need) / 10) * 10 + ' m at full speed · ' +
+          keyName('left') + '/' + keyName('right') + ' steer · ' + keyName('forward') + ' track',
         7,
       );
       if (requiredAircraft)
@@ -87,15 +108,90 @@
         );
       return true;
     }
+    /* The ripcord: `stage` becomes 'canopy' for good (no second opening), and the
+       deployment runs from here: `deploy` seconds since the pull, `phase` (pilot,
+       lines, snivel, snap, open) with `phaseK` 0..1 through it, `opening` the
+       canopy's inflation (0 in the bag .. 1 flying), `pullRate` the fall rate at
+       the pull (it sets the snivel), `load` the g felt in the harness. */
     function deployParachute() {
       const p = player.parachute;
       if (!p || p.stage !== 'freefall') return false;
       p.stage = 'canopy';
+      p.deploy = 0;
+      p.phase = 'pilot';
+      p.phaseK = 0;
       p.opening = 0;
+      p.pullRate = Math.max(0, -p.vz);
+      p.load = p.peakLoad = 1;
       p.openedAt = Math.round(worldMeters(Math.max(0, player.altitude - parachuteFloor(player.x, player.y))));
-      parachuteOpeningSound();
-      tell('CANOPY OPENING · Steer toward clear ground · Hold ' + keyName('back') + ' to flare and slow your landing', 4);
+      p.openAt = p.openTime = p.openLost = null;
+      p.pullAltitude = player.altitude;
+      parachutePhaseSound('pilot');
       return true;
+    }
+    /* Deployment stage `t` seconds after a pull at `pullRate` (map units a second,
+       downward), written into `out` as { phase, phaseK }; 'open' once it is done. */
+    function parachuteDeployPhase(t, pullRate, out) {
+      const d = PARACHUTE_DEPLOY,
+        snivel = d.snivel + d.snivelFast * clamp(pullRate / PARACHUTE_TERMINAL, 0, 1);
+      let start = 0;
+      for (let i = 0; i < 4; i++) {
+        const length = i === 0 ? d.pilot : i === 1 ? d.lines : i === 2 ? snivel : d.snap;
+        if (t < start + length) {
+          out.phase = PARACHUTE_PHASES[i];
+          out.phaseK = Math.max(0, t - start) / length;
+          return out;
+        }
+        start += length;
+      }
+      out.phase = 'open';
+      out.phaseK = 1;
+      return out;
+    }
+    /* Drag area of the jumper and whatever is out, in multiples of the freefall
+       body's, at `k` through `phase` ('freefall' is the body alone); open, the
+       canopy's settles the descent at `rate`. The pilot chute and bag add a little,
+       the snivelling canopy grows it several times over, the snap the rest. */
+    function parachuteDragArea(phase, k, rate) {
+      const drag = PARACHUTE_DEPLOY_DRAG,
+        full = (PARACHUTE_TERMINAL / rate) ** 2,
+        ease = k * k * (3 - 2 * k);
+      if (phase === 'pilot') return 1 + (drag.pilot - 1) * ease;
+      if (phase === 'lines') return drag.pilot + (drag.lines - drag.pilot) * k;
+      if (phase === 'snivel') return drag.lines * (drag.snivel / drag.lines) ** (k ** 1.6);
+      if (phase === 'snap') return drag.snivel * (full / drag.snivel) ** ease;
+      if (phase === 'open') return full;
+      return 1;
+    }
+    // How far the canopy is inflated (0 in the bag .. 1 flying): the drawing, steering and wind read it.
+    function parachuteInflation(phase, k) {
+      if (phase === 'snivel') return 0.3 * k;
+      if (phase === 'snap') return 0.3 + 0.7 * k * k * (3 - 2 * k);
+      return phase === 'open' ? 1 : 0;
+    }
+    // The canopy's settled descent rate for the brakes held: flared, trimmed, risers pulled.
+    function parachuteSinkRate() {
+      return (actionHeld('back') ? 2.1 : actionHeld('forward') ? 4.2 : 3.5) * UNITS_PER_METRE;
+    }
+    /* Height the canopy still needs (map units), stepping the deployment on from
+       `deploy` seconds after a pull at `pullRate` (a pull now if still packed),
+       falling at `fall`, until it is out of the snivel with the descent down to
+       PARACHUTE_SAFE_RATE; and how many seconds that takes. The same steps the
+       flight uses at the console's 30 Hz. */
+    const parachuteForecastPhase = { phase: '', phaseK: 0 };
+    function parachuteForecast(fall, deploy = 0, pullRate = fall, rate = 3.5 * UNITS_PER_METRE) {
+      const dt = 1 / 30;
+      let lost = 0,
+        t = deploy,
+        fallRate = Math.max(0, fall);
+      for (let i = 0; i < 600; i++) {
+        t += dt;
+        const s = parachuteDeployPhase(t, pullRate, parachuteForecastPhase);
+        fallRate = Math.max(0, fallRate + parachuteFallAccel(fallRate, parachuteDragArea(s.phase, s.phaseK, rate)) * dt);
+        lost += fallRate * dt;
+        if ((s.phase === 'snap' || s.phase === 'open') && fallRate <= PARACHUTE_SAFE_RATE) break;
+      }
+      return { need: lost, seconds: t - deploy };
     }
     /* A fresh press of the bail action (a keydown or the touch button): pull the
        ripcord. The press that jumped never gets here (game-input.js jumps first). */
@@ -116,27 +212,15 @@
         roof = parachuteRoofAt(x, y);
       return roof ? Math.max(ground, roof.height) : ground;
     }
-    /* Height lost opening the canopy from a fall rate of `rate` (map units a
-       second, downward) before it is down to PARACHUTE_SAFE_RATE: about 55 m from
-       terminal speed. The same drag the flight uses, stepped ahead. */
-    function parachuteOpeningLoss(rate) {
-      let fall = Math.max(0, rate),
-        lost = 0;
-      const dt = 1 / 30;
-      for (let t = 0; t < 6 && fall > PARACHUTE_SAFE_RATE; t += dt) {
-        fall += parachuteFallAccel(fall, Math.min(1, t / PARACHUTE_OPEN_SECONDS), 3.5 * UNITS_PER_METRE) * dt;
-        lost += fall * dt;
-      }
-      return lost;
+    // The load (g felt in the harness) of a jumper falling at `fall` with drag area `area`, capped by the slider.
+    function parachuteLoad(fall, area) {
+      return Math.min(PARACHUTE_OPEN_SHOCK, area * (fall / PARACHUTE_TERMINAL) ** 2);
     }
-    /* Downward acceleration of a jumper falling at `fall` with the canopy
-       `opening` (0 in freefall .. 1 open, settling at `rate`): gravity less a
-       drag that grows with the square of the speed, the canopy's area coming in
-       with the cube of the opening, the shock capped by the slider. */
-    function parachuteFallAccel(fall, opening, rate) {
-      const ratio = (PARACHUTE_TERMINAL / rate) ** 2,
-        terminal = PARACHUTE_TERMINAL / Math.sqrt(1 + (ratio - 1) * opening ** 3);
-      return Math.max(-PARACHUTE_OPEN_SHOCK * GRAVITY, GRAVITY * (1 - (fall / terminal) ** 2));
+    /* Downward acceleration of a jumper falling at `fall` with drag area `area`
+       (parachuteDragArea): gravity less a drag that grows with the square of the
+       speed, the opening shock capped by the slider. */
+    function parachuteFallAccel(fall, area) {
+      return GRAVITY * (1 - parachuteLoad(fall, area));
     }
     function roofLandingSpot(x, y) {
       for (let r = 12; r <= 200; r += 12)
@@ -228,22 +312,38 @@
       else if (p.armed && p.stage === 'freefall') deployParachute();
       const turn = (actionHeld('right') ? 1 : 0) - (actionHeld('left') ? 1 : 0),
         fast = actionHeld('forward'),
-        flare = actionHeld('back');
-      p.heading = normalizeAngle(
-        p.heading + turn * (p.stage === 'canopy' ? 1.15 : 0.65) * deltaSeconds,
-      );
+        flare = actionHeld('back'),
+        canopy = p.stage === 'canopy',
+        rate = parachuteSinkRate();
+      // The deployment runs on from the pull (DEPLOYMENT); `area` is the drag it gives.
+      let area = 1;
+      if (canopy) {
+        const was = p.phase;
+        p.deploy += deltaSeconds;
+        parachuteDeployPhase(p.deploy, p.pullRate, p);
+        p.opening = parachuteInflation(p.phase, p.phaseK);
+        area = parachuteDragArea(p.phase, p.phaseK, rate);
+        if (p.phase !== was) parachutePhaseChange(p);
+      }
+      // Until the canopy flies the jumper steers and moves as in freefall.
+      const wing = canopy ? p.opening : 0,
+        flying = canopy && p.phase === 'open';
+      p.heading = normalizeAngle(p.heading + turn * (0.65 + 0.5 * wing) * deltaSeconds);
       player.a = p.heading;
-      const canopy = p.stage === 'canopy';
-      if (canopy) p.opening = Math.min(1, p.opening + deltaSeconds / PARACHUTE_OPEN_SECONDS);
       // Canopy forward speed: about 15 km/h flared, 31 trimmed, 45 with the risers pulled.
-      const speed = (canopy ? (flare ? 15 : fast ? 45 : 31) : 34) * KMH,
-        response = 1 - Math.exp(-deltaSeconds * (canopy ? 2.6 * Math.max(0.2, p.opening) : 0.65));
+      const speed = (34 + ((flare ? 15 : fast ? 45 : 31) - 34) * wing) * KMH,
+        response = 1 - Math.exp(-deltaSeconds * (0.65 + (2.6 - 0.65) * wing));
       p.vx += (Math.cos(p.heading) * speed - p.vx) * response;
       p.vy += (Math.sin(p.heading) * speed - p.vy) * response;
-      // The fall: gravity against drag, the canopy's share coming in as it inflates.
-      const rate = (canopy ? (flare ? 2.1 : fast ? 4.2 : 3.5) : 3.5) * UNITS_PER_METRE,
-        fall = Math.max(0, -p.vz);
-      p.vz = -Math.max(0, fall + parachuteFallAccel(fall, canopy ? p.opening : 0, rate) * deltaSeconds);
+      // The fall: gravity against drag, the canopy's share coming in along the stages.
+      const fall = Math.max(0, -p.vz);
+      p.load = parachuteLoad(fall, area);
+      if (canopy) {
+        p.peakLoad = Math.max(p.peakLoad, p.load);
+        // The opening shock jolts the view (the renderer reads `shake`).
+        if (p.phase === 'snap') shake = Math.max(shake, (p.load - 1) * 1.2);
+      }
+      p.vz = -Math.max(0, fall + parachuteFallAccel(fall, area) * deltaSeconds);
       // Aircraft can fly over open ocean; a bailout keeps that position until landing.
       const wasAltitude = player.altitude;
       player.x += p.vx * deltaSeconds;
@@ -284,14 +384,14 @@
           return;
         }
       }
-      // Freefall onto a roof: it is the ground as far as the body is concerned.
-      if (!canopy) {
+      // Freefall (or a canopy still opening) onto a roof: it is the ground as far as the body is concerned.
+      if (!flying) {
         const roof = parachuteRoofAt(player.x, player.y);
         if (roof && player.altitude <= roof.height && wasAltitude > roof.height - 12) {
           player.altitude = roof.height;
           player.parachute = null;
           clearTouchInput();
-          if (playerImpact(Math.max(0, -p.vz), roof.height, 'freefall', false, true) === 'dead') return;
+          if (playerImpact(Math.max(0, -p.vz), roof.height, p.stage, false, true) === 'dead') return;
           // Survived a short drop onto it: stand on it, as off a helicopter (rooftops.js).
           if (roof.roofBar) {
             player.roof = true;
@@ -316,7 +416,7 @@
       for (const b of buildings)
         if (
           !(overTerrace && b.roofBar) &&
-          player.altitude < b.height + (canopy ? 18 : 0) &&
+          player.altitude < b.height + (flying ? 18 : 0) &&
           player.x > b.x - 9 &&
           player.x < b.x + b.w + 9 &&
           player.y > b.y - 9 &&
@@ -355,21 +455,46 @@
      * FREEFALL CUE
      * While the canopy is still packed: a call to open it with the key that does
      * (keyName('bail'), the touch button's name on a touch screen), the height
-     * above whatever is below, and a bar of that height against what opening
-     * takes from the current fall rate (parachuteOpeningLoss). It pulses; under
-     * the room needed to open (with a little margin) it turns red and pulses
-     * fast. Hidden the moment the ripcord is pulled.
+     * above whatever is below, a bar of that height against the height the
+     * opening needs from the current fall rate (parachuteForecast, the tick) and
+     * that height in metres. States (data-state): high (FREEFALL); soon (OPEN
+     * SOON, PARACHUTE_CUE_SOON above the need); now (OPEN NOW, PARACHUTE_CUE_NOW:
+     * pulled now it still opens fully); danger (TOO LOW, no room for a full
+     * opening left). After the pull: opening (the stage, the height left and
+     * what the rest of the opening takes), or short (TOO LOW · BRACE: it will not
+     * be open before the ground). Hidden once the canopy flies.
      */
-    const freefallCue = { shown: false, state: '', key: '', altitude: -1 };
+    const freefallCue = { shown: false, state: '', call: '', note: '', foot: '', altitude: -1 };
+    const PARACHUTE_PHASE_NOTES = {
+      pilot: 'PILOT CHUTE OUT',
+      lines: 'LINES PAYING OUT',
+      snivel: 'CANOPY INFLATING',
+      snap: 'CANOPY SNAPPING OPEN',
+    };
     function parachuteCueState() {
       const p = player.parachute;
-      if (!p || p.stage !== 'freefall' || gameMode !== 'play') return null;
+      if (!p || gameMode !== 'play' || (p.stage === 'canopy' && p.phase === 'open')) return null;
       const agl = Math.max(0, player.altitude - parachuteFloor(player.x, player.y)),
-        need = parachuteOpeningLoss(-p.vz);
+        fall = Math.max(0, -p.vz);
+      if (p.stage === 'canopy') {
+        const rest = parachuteForecast(fall, p.deploy, p.pullRate, parachuteSinkRate());
+        return { agl, need: rest.need, seconds: rest.seconds, phase: p.phase, state: agl < rest.need ? 'short' : 'opening' };
+      }
+      const f = parachuteForecast(fall),
+        above = ([seconds, metres]) => f.need + Math.max(seconds * fall, metres * UNITS_PER_METRE);
       return {
         agl,
-        need,
-        state: agl < need + 4 * UNITS_PER_METRE ? 'danger' : agl < need * 2 + 20 * UNITS_PER_METRE ? 'soon' : 'high',
+        need: f.need,
+        seconds: f.seconds,
+        phase: 'freefall',
+        state:
+          agl < above(PARACHUTE_CUE_LATE)
+            ? 'danger'
+            : agl < above(PARACHUTE_CUE_NOW)
+              ? 'now'
+              : agl < above(PARACHUTE_CUE_SOON)
+                ? 'soon'
+                : 'high',
       };
     }
     function updateFreefallCue() {
@@ -387,23 +512,48 @@
         freefallCue.shown = true;
         root.classList.add('on');
       }
-      const key = touchEnabled() ? 'TAP OPEN' : keyName('bail');
-      if (key !== freefallCue.key) {
-        freefallCue.key = key;
+      const opening = cue.phase !== 'freefall',
+        key = touchEnabled() ? 'TAP OPEN' : keyName('bail'),
+        call = opening ? 'CANOPY OPENING' : touchEnabled() ? 'TO OPEN PARACHUTE' : 'PRESS ' + key + ' TO OPEN PARACHUTE';
+      if (call !== freefallCue.call) {
+        freefallCue.call = call;
         getElement('freefallKey').textContent = key;
-        getElement('freefallCall').textContent = touchEnabled() ? 'TO OPEN PARACHUTE' : 'PRESS ' + key + ' TO OPEN PARACHUTE';
+        getElement('freefallCall').textContent = call;
       }
       if (cue.state !== freefallCue.state) {
         freefallCue.state = cue.state;
         root.dataset.state = cue.state;
-        getElement('freefallNote').textContent = cue.state === 'danger' ? 'TOO LOW · OPEN NOW' : cue.state === 'soon' ? 'OPEN SOON' : 'FREEFALL';
+      }
+      const note = opening
+        ? cue.state === 'short'
+          ? 'TOO LOW · BRACE'
+          : PARACHUTE_PHASE_NOTES[cue.phase]
+        : cue.state === 'danger'
+          ? 'TOO LOW · OPEN NOW'
+          : cue.state === 'now'
+            ? 'OPEN NOW'
+            : cue.state === 'soon'
+              ? 'OPEN SOON'
+              : 'FREEFALL';
+      if (note !== freefallCue.note) {
+        freefallCue.note = note;
+        getElement('freefallNote').textContent = note;
       }
       const metres = Math.round(worldMeters(cue.agl));
       if (metres !== freefallCue.altitude) {
         freefallCue.altitude = metres;
         getElement('freefallAlt').textContent = metres;
       }
-      // The bar: height left against three times the room needed; the mark is that room.
+      // What opening takes: from here in freefall, or what is left of it after the pull.
+      const needM = Math.round(worldMeters(cue.need) / 5) * 5,
+        foot = opening
+          ? 'FULLY OPEN IN ' + cue.seconds.toFixed(1) + ' S · ' + needM + ' M'
+          : 'OPENING TAKES ' + needM + ' M AT THIS SPEED';
+      if (foot !== freefallCue.foot) {
+        freefallCue.foot = foot;
+        getElement('freefallNeed').textContent = foot;
+      }
+      // The bar: height left against three times the height needed; the mark is that height.
       const full = Math.max(cue.need * 3, 60 * UNITS_PER_METRE);
       root.style.setProperty('--ff-left', clamp(cue.agl / full, 0, 1).toFixed(3));
       root.style.setProperty('--ff-need', clamp(cue.need / full, 0, 1).toFixed(3));
@@ -458,36 +608,52 @@
       let level = 0,
         centre = 500;
       if (p && soundOn && gameMode === 'play') {
-        if (p.stage === 'freefall') {
-          const rate = clamp(-p.vz / PARACHUTE_TERMINAL, 0, 1);
-          // Buffeting: the level and colour wander a few times a second.
-          const buffet = 0.8 + 0.2 * Math.sin(gameTime * 7.3) * Math.sin(gameTime * 3.1 + 1);
-          level = (0.08 + rate * 0.3) * buffet;
-          centre = 380 + rate * 900 + Math.sin(gameTime * 5.7) * 120;
-        } else {
-          // The tail flutters; the brakes and speed change its pitch.
-          const flap = 0.75 + 0.25 * Math.sin(gameTime * 23) * Math.sin(gameTime * 4.3);
-          level = 0.05 * flap * (0.5 + 0.5 * p.opening);
-          centre = 900 + Math.hypot(p.vx, p.vy) * 4;
-        }
+        // The roar lasts until the canopy has the speed off; the snivel flogs the cloth.
+        const rate = clamp(-p.vz / PARACHUTE_TERMINAL, 0, 1),
+          roar = p.stage === 'freefall' ? 1 : clamp(rate * 1.6 - 0.1, 0, 1);
+        // Buffeting: the level and colour wander a few times a second.
+        const buffet = 0.8 + 0.2 * Math.sin(gameTime * 7.3) * Math.sin(gameTime * 3.1 + 1),
+          freefall = (0.08 + rate * 0.3) * buffet,
+          freefallCentre = 380 + rate * 900 + Math.sin(gameTime * 5.7) * 120;
+        // The tail flutters; the brakes and speed change its pitch.
+        const flap = 0.75 + 0.25 * Math.sin(gameTime * 23) * Math.sin(gameTime * 4.3),
+          snivel = p.phase === 'snivel' ? 0.06 * (0.6 + 0.4 * Math.sin(gameTime * 31)) : 0,
+          wing = 0.05 * flap * (0.5 + 0.5 * (p.opening || 0)) + snivel,
+          wingCentre = 900 + Math.hypot(p.vx, p.vy) * 4;
+        level = freefall * roar + wing * (1 - roar);
+        centre = freefallCentre * roar + wingCentre * (1 - roar);
       }
       chuteWindGain.gain.setTargetAtTime(level, now, 0.12);
       chuteWindFilter.frequency.setTargetAtTime(centre, now, 0.1);
     }
-    function parachuteOpeningSound() {
+    // A stage of the deployment begins (updateParachute): its sound, the jolt of line stretch, the call once it flies.
+    function parachutePhaseChange(p) {
+      parachutePhaseSound(p.phase);
+      if (p.phase === 'snivel') shake = Math.max(shake, 1.6);
+      if (p.phase === 'open') {
+        p.openTime = +p.deploy.toFixed(2);
+        p.openLost = Math.round(worldMeters(p.pullAltitude - player.altitude));
+        p.openAt = Math.round(worldMeters(Math.max(0, player.altitude - parachuteFloor(player.x, player.y))));
+        tell('CANOPY OPEN · Steer toward clear ground · Hold ' + keyName('back') + ' to flare and slow your landing', 4);
+      }
+    }
+    /* The pull's sounds, stage by stage: the pilot chute thrown into the wind, the
+       bag off the back and the lines paying out, the snatch of line stretch, the
+       slider cracking down and the canopy taking the load. */
+    function parachutePhaseSound(phase) {
       if (!audio || !soundOn) return;
-      // Bag off the back and the lines paying out...
-      noise(0.35, 0.12, 2400);
-      // ...the slider cracks down and the canopy takes the load.
-      setTimeout(() => {
-        if (player.parachute) {
-          noise(0.18, 0.26, 900);
-          tone(70, 0.3, 0.3, 'sine', 42);
-        }
-      }, 520);
-      setTimeout(() => {
-        if (player.parachute) noise(0.4, 0.1, 500);
-      }, 760);
+      if (phase === 'pilot') noise(0.14, 0.1, 1800);
+      else if (phase === 'lines') noise(0.9, 0.09, 2600);
+      else if (phase === 'snivel') {
+        noise(0.12, 0.16, 1100);
+        tone(95, 0.14, 0.18, 'sine', 60);
+      } else if (phase === 'snap') {
+        noise(0.18, 0.26, 900);
+        tone(70, 0.3, 0.3, 'sine', 42);
+        setTimeout(() => {
+          if (player.parachute) noise(0.4, 0.1, 500);
+        }, 240);
+      }
     }
     function drawParachute2D() {
       const p = player.parachute;
@@ -495,10 +661,18 @@
       worldContext.save();
       worldContext.strokeStyle = '#ddd9bc';
       worldContext.lineWidth = 1;
+      // The lines pay out behind the pilot chute until line stretch.
+      const out = p.phase === 'pilot' ? 0.1 : p.phase === 'lines' ? 0.1 + 0.9 * p.phaseK : 1;
+      if (out < 1) {
+        worldContext.fillStyle = '#d2362a';
+        worldContext.beginPath();
+        worldContext.arc(player.x, player.y - 12 - 40 * out, 3, 0, TAU);
+        worldContext.fill();
+      }
       for (const side of [-1, 1]) {
         worldContext.beginPath();
         worldContext.moveTo(player.x + side * 3, player.y);
-        worldContext.lineTo(player.x + side * 27, player.y - 37);
+        worldContext.lineTo(player.x + side * (3 + 24 * p.opening), player.y - 37 * out);
         worldContext.stroke();
       }
       worldContext.fillStyle = '#df8659';

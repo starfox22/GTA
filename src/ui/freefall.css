@@ -1,8 +1,10 @@
 /* --- Freefall cue (parachute.js FREEFALL CUE) -------------------------------
    While the canopy is still packed: the call to open it with its key, the height
-   above whatever is below and a bar of that height against the room opening takes
-   (the tick; red below it). Pulses slowly high up, amber once it is time, red and
-   fast once there is no longer room. data-state: high, soon, danger. */
+   above whatever is below, a bar of that height against the height opening takes
+   (the tick; red below it) and that height in words. Pulses slowly high up, amber
+   once it is time, orange and quick at the last call, red and fast once there is
+   no longer room. After the pull it follows the opening (no key; sky blue, red if
+   it will not be open in time). data-state: high, soon, now, danger; opening, short. */
 #freefallCue {
   --ffc-accent: var(--acid, #d7f970);
   --ff-left: 1;
@@ -37,8 +39,19 @@
 #freefallCue[data-state='soon'] {
   --ffc-accent: var(--ui-gold, #e2c897);
 }
-#freefallCue[data-state='danger'] {
+#freefallCue[data-state='now'] {
+  --ffc-accent: #ff9a3d;
+}
+#freefallCue[data-state='danger'],
+#freefallCue[data-state='short'] {
   --ffc-accent: #ff5a47;
+}
+#freefallCue[data-state='opening'] {
+  --ffc-accent: #8fd3ff;
+}
+#freefallCue[data-state='opening'] kbd,
+#freefallCue[data-state='short'] kbd {
+  display: none;
 }
 #freefallCue .ffc-card {
   display: grid;
@@ -128,10 +141,22 @@
   background: #fff;
   box-shadow: 0 0 6px #fff;
 }
+/* What opening takes from this speed (freefall), what is left of it (opening). */
+#freefallCue .ffc-foot {
+  margin-top: -2px;
+  font:
+    700 10px/1.2 var(--ui-font);
+  letter-spacing: 0.16em;
+  opacity: 0.72;
+}
 #freefallCue[data-state='soon'] kbd {
   animation-duration: 0.8s;
 }
-#freefallCue[data-state='danger'] .ffc-card {
+#freefallCue[data-state='now'] kbd {
+  animation-duration: 0.5s;
+}
+#freefallCue[data-state='danger'] .ffc-card,
+#freefallCue[data-state='short'] .ffc-card {
   animation: ffcAlarm 0.36s ease-in-out infinite;
 }
 #freefallCue[data-state='danger'] kbd {

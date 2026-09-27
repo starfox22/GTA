@@ -74,6 +74,17 @@
       }
       return false;
     }
+    /* Vinny's truck waits at the north kerb (HARBOR.truck), in the westbound
+       lane. Traffic can be passing that spot as the job starts: the truck then
+       parks further along the same kerb, facing the same way, rather than being
+       ring-searched (spawnClearCar) into the middle of the road or across it. */
+    function spawnVinnyTruck() {
+      const t = HARBOR.truck;
+      for (const dx of [0, 24, -24, 48, 72, 96, 120, 144, 168, 192])
+        if (canSpawnCar('flatbed', t.x + dx, t.y, t.a))
+          return makeCar('flatbed', t.x + dx, t.y, t.a, false, '#b69b68');
+      return spawnClearCar('flatbed', t.x, t.y, t.a, false, '#b69b68');
+    }
     function startHarborJob(m) {
       clearHarborPolice();
       harborGateUntil = 0;
@@ -99,14 +110,7 @@
       }));
       m.collected = 0;
       m.loading = null;
-      m.car = spawnClearCar(
-        'flatbed',
-        HARBOR.truck.x,
-        HARBOR.truck.y,
-        HARBOR.truck.a,
-        false,
-        '#b69b68',
-      );
+      m.car = spawnVinnyTruck();
       m.car.mission = true;
       m.car.cargoCount = 0;
       // Vinny's truck has a steel cage over the cab: the Harbor Kings open up on it
@@ -144,7 +148,10 @@
         VINNY_DEPOT.inside,
         'STOP THE TRUCK · SHUTTER COMING DOWN',
         'vinny',
-        'Brakes on. I am dropping the shutter behind you — they are right on your tail.',
+        // A resprayed truck brought nobody with it.
+        wantedStars > 0
+          ? 'Brakes on. I am dropping the shutter behind you — they are right on your tail.'
+          : 'Brakes on. I am dropping the shutter behind you.',
       );
     }
     /* Officers still alive inside the sealed warehouse. A downed officer (hit
@@ -280,11 +287,11 @@
         Math.abs(player.x - exit.x) < 70 &&
         Math.abs(player.y - exit.y) < 60
       ) {
+        const wasWanted = wantedStars > 0;
         missionState.escapedAt = gameTime;
-        missionState.instruction = 'POLICE LOST';
+        missionState.instruction = wasWanted ? 'POLICE LOST' : 'CLEAN GETAWAY';
         missionState.target = null;
         depotSealed = false;
-        const wasWanted = wantedStars > 0;
         clearPolice();
         if (wasWanted) showPoliceNotice('POLICE LOST!', true);
       }

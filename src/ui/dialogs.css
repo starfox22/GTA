@@ -51,6 +51,16 @@
   border-color: #d7f97066;
   padding-left: 20px;
 }
+/* An option with nothing to act on (the pause menu's RESTART CURRENT JOB with no
+   job, game-menus.js togglePause): dimmed, no hover slide. */
+.secondary:disabled,
+.secondary:disabled:hover {
+  opacity: 0.4;
+  cursor: default;
+  background: #ffffff0b;
+  border-color: var(--ui-line);
+  padding-left: 15px;
+}
 .pause-dialog {
   width: min(420px, 92vw);
 }

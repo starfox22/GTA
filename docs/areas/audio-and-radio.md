@@ -74,8 +74,9 @@ sports-audio.js, beachclub-audio.js, themepark-sound.js, car-radio.js, settings.
   the old default 80 moves to 100 once; `radioVolumeSet` marks a player's own choice).
 - TITLE RADIO: the same box docks on the title menu (`setTitleRadio`) with its own station
   (NEON by default, saved as `titleStation`) and switch. The first `play()` without a gesture
-  is refused: `carRadioBlocked` shows "Click anywhere to play radio" and `titleRadioGesture`
-  retries inside the next gesture. Leaving the title, the radio carries into a vehicle or
+  is refused (browsers allow no sound before a click or key in the page; nothing gets
+  round that): `carRadioBlocked` shows "Click anywhere to play radio", `titleRadioGesture`
+  retries inside the next gesture and a timer retries every 2 s (autoplay granted later). Leaving the title, the radio carries into a vehicle or
   fades out over `RADIO_HANDOVER_MS`.
 - Saved in `dead-end-city-radio-v2`. Console `radio()` (state and knob).
 - Check streamed tracks load from a split build with `node tools/media-check.mjs <dir>/index.html`.

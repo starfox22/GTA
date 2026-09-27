@@ -105,7 +105,8 @@
      * slider).
      *
      * Browsers refuse to start sound before the page has had a user gesture:
-     * the first attempt is made at once and, while it is refused, the box says
+     * the first attempt is made at once (and retried every 2 s, in case the
+     * browser allows it later) and, while it is refused, the box says
      * "Click anywhere to play radio" and the first click, tap or key anywhere
      * starts it (titleRadioGesture). A refusal throws nothing: play()'s promise
      * is caught and only marks the radio blocked.
@@ -468,6 +469,28 @@
     }
     for (const type of ['pointerdown', 'mousedown', 'pointerup', 'touchend', 'keydown'])
       window.addEventListener(type, titleRadioGesture, true);
+    /* ...and until then the refused start is tried again every couple of seconds:
+       a browser that allows sound later without a gesture in the game itself (a
+       click on the host page when it gives its frame autoplay, the media
+       engagement Chrome remembers for a site) starts the music at once. A retry
+       refused again changes nothing on screen. */
+    const TITLE_RADIO_RETRY_MS = 2000;
+    setInterval(() => {
+      if (!titleRadioShown || !carRadioBlocked || carRadioUnavailable || carRadioPending) return;
+      if (!carRadioPlayer || !carRadioLoaded || document.hidden || !soundOn || !radioSwitchedOn()) return;
+      const revision = carRadioRevision;
+      carRadioPending = true;
+      Promise.resolve(carRadioPlayer.play())
+        .then(() => {
+          if (revision !== carRadioRevision) return;
+          carRadioPending = false;
+          carRadioBlocked = false;
+          updateCarRadioUI();
+        })
+        .catch(() => {
+          if (revision === carRadioRevision) carRadioPending = false;
+        });
+    }, TITLE_RADIO_RETRY_MS);
     /**
      * RADIO VOLUME
      * A 90s head-unit volume knob in the radio box: a knurled rubber knob with a

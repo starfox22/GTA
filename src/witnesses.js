@@ -6,12 +6,12 @@
      *   - a unit sees it: an officer, a crewed cruiser or the helicopter with a
      *     clear line to the player (policeSees), and the stars rise at once;
      *   - a unit hears it: gunfire or a blast within earshot of one, the same;
-     *   - somebody calls it in: a civilian who saw it, or heard the shots, gets
-     *     somewhere safe and phones 911 (crowd-witnesses.js). Only when that call
-     *     ends does the first star come up, and dispatch sends units to the spot
-     *     the caller gave after a response time that grows with how remote it is
-     *     (policeResponseSeconds). They search there; they take up the chase only
-     *     when one of them sees the player.
+     *   - somebody calls it in: a civilian who saw it, or heard the shots, runs
+     *     a short way and phones 911 (crowd-witnesses.js). Only when that call
+     *     ends does the first star come up, and dispatch sends the first units at
+     *     once (policeResponseSeconds: a second or two) to the spot the caller
+     *     gave: the player, if the caller can see them. They search there and
+     *     take up the chase when one of them sees the player.
      * Anything else is banked as an unreported crime: where, when, how much heat
      * and who died. A later call about it (a passer-by who finds the body) reports
      * it then; a police unit that comes on the player at the scene while it is
@@ -148,20 +148,14 @@
 
     /**
      * RESPONSE TIME
-     * There are no station houses on the map, so how long dispatch takes to get a
-     * unit rolling follows how built-up the place is: a few seconds downtown, more
-     * in the quiet districts and off the grid, longer again in the county the
-     * further out it is, and longest on Monarch Isle across its causeway. The
-     * units then still drive in from off screen.
+     * The chase starts right after the call: the first unit is sent within a
+     * second or two, a little sooner downtown, wherever it is (Monarch Isle and
+     * the county included). Like any dispatch it appears off screen round the
+     * reported spot (pursuitCentre) and still has to drive in; the nearest
+     * patrol already cruising is sent first (dispatchPolice).
      */
     function policeResponseSeconds(x, y) {
-      if (onMonarchIsle(x, y)) return randomBetween(16, 22);
-      if (offCityStreets(x, y)) {
-        const out = Math.max(0, x - CITY_SIZE, y - CITY_SIZE);
-        return clamp(11 + out / 900, 11, 32) + randomBetween(0, 4);
-      }
-      if (!inCityGrid(x, y)) return randomBetween(7, 11);
-      return clamp(9 - districtBustle(x, y) * 5, 2.5, 8) + randomBetween(0, 2);
+      return clamp(1.8 - districtBustle(x, y) * 0.8, 0.8, 1.8) + randomBetween(0, 0.4);
     }
 
     /* Title-cased street name for speech and captions ('OCEAN DR' → 'Ocean Drive'). */
@@ -223,15 +217,21 @@
         street: spokenStreet(x, y),
       });
       witnessStats.reports++;
-      // The first unit rolls after the response time; the next on the tier's cadence.
+      // The first unit rolls after the response time and a second right behind
+      // it; the rest on the tier's cadence.
       dispatchTimer = eta;
-      dispatchBurst = 0;
+      dispatchBurst = 1;
       if (gameMode === 'play') {
         const what = REPORT_CAPTIONS[report.kind] || REPORT_CAPTIONS.crime,
           where = policeResponse.street ? ' · ' + policeResponse.street.toUpperCase() : '';
         dispatchCaption('911 CALL · ' + what + where + ' · UNITS RESPONDING', null);
         if (report.note !== false) tell('A WITNESS CALLED 911', 2.8);
       }
+    }
+    /* Units still on their way to a reported spot: dispatch sends them from the
+       nearest places off screen (pursuitSpawnPoint, spawnCountyCop). */
+    function policeResponding() {
+      return policeResponse.active && policeResponse.arrivedAt < 0 && wantedStars > 0;
     }
     /* Until the first unit reaches the reported spot the search clock does not
        run: nobody has started looking yet (citylife-civic.js updateWanted). */
@@ -304,21 +304,27 @@
      * witnessReport(person, kind, x, y, options) makes `person` a witness to what
      * the player just did at (x, y) who phones 911 about it for certain, once they
      * can: up off the ground, done shouting after their car (carjack.js moods),
-     * not held at gunpoint, the player at least 140 units off; `options.delay`
-     * seconds at the soonest (default 2-4). The call takes 5-12 s with a phone
-     * and speech bubbles, and only its end brings the police (to (x, y)). It is
-     * lost if the person dies, is threatened into silence, or the player reaches
-     * them. `kind` picks the lines and the dispatch caption: 'carjack', 'theft',
-     * 'gunfire', 'melee', 'body', 'crime' (anything else). Crowd pedestrians do it
-     * through their 'call' reaction; anyone else (club members, venue staff) as
-     * an off-stage call with bubbles only. Returns the incident, or null.
+     * not held at gunpoint, a short run from the player first if they are close;
+     * `options.delay` seconds at the soonest (default 2-4). The call takes 5-8 s
+     * with a phone and speech bubbles, and only its end brings the police (to
+     * (x, y), or the player if the caller can see them). It is lost if the person
+     * dies or is threatened into silence; the player reaching them cuts it off
+     * until they are clear again. `kind` picks the lines and the dispatch
+     * caption: 'carjack', 'theft', 'gunfire', 'melee', 'body', 'crime' (anything
+     * else). Crowd pedestrians do it through their 'call' reaction; anyone else
+     * (venue staff) as an off-stage call with the same bubbles. Returns the
+     * incident, or null.
      */
-    const offstageCalls = [];
+    const offstageCalls = [],
+      // Off-stage callers just finished: their closing line still shows.
+      offstageCallTails = [];
     function witnessReport(person, kind = 'crime', x = player.x, y = player.y, options = {}) {
       if (!person || !(person.hp > 0) || gameMode !== 'play') return null;
       const inc = crowdIncident(kind, { x, y }, player, options.severity ?? 1);
-      // Told by this one person: bystanders still get asked what they saw.
-      inc.direct = true;
+      // Told by this one person: bystanders still get asked what they saw. (Not
+      // when it merged into what the street already saw, e.g. the carjack at the
+      // door: a second incident about the same crime would take its witnesses.)
+      if (inc.shots === 1 && inc.start === gameTime && !inc.witnesses?.length) inc.direct = true;
       if (!inc.witnesses) inc.witnesses = [];
       if (!inc.witnesses.includes(person)) inc.witnesses.push(person);
       person.witnessOf = inc;
@@ -330,46 +336,71 @@
       person.witnessDeclined = null;
       person.silencedUntil = 0;
       if (!pedestrians.includes(person) && !offstageCalls.some((c) => c.person === person))
-        offstageCalls.push({ person, inc, readyAt: person.witnessReadyAt, startedAt: -1, callTime: randomBetween(5, 12) });
+        offstageCalls.push({ person, inc, readyAt: person.witnessReadyAt, startedAt: -1, callTime: randomBetween(CALL_SECONDS[0], CALL_SECONDS[1]) });
       return inc;
     }
-    /* Calls made by people the crowd does not run (venue staff, someone inside a shop). */
+    /* Calls made by people the crowd does not run (venue staff, someone inside a
+       shop): the same lines as a street caller, unless out of sight indoors. A
+       call from indoors waits while someone on the street is on the phone. */
     function updateOffstageCalls() {
       for (let i = offstageCalls.length - 1; i >= 0; i--) {
         const c = offstageCalls[i],
           p = c.person;
         if (p.hp <= 0 || c.inc.reported || gameTime - witnessCrimeTime(c.inc) > witnessWindow(c.inc)) {
           if (c.startedAt > 0) {
-            c.inc.callers = Math.max(0, c.inc.callers - 1);
+            if (!c.hidden) c.inc.callers = Math.max(0, c.inc.callers - 1);
             if (!c.inc.reported) witnessStats.dropped++;
           }
+          p.onPhone = false;
           offstageCalls.splice(i, 1);
           continue;
         }
-        const close = distanceBetween(p, player) < (c.hidden ? 60 : 100);
+        const close = distanceBetween(p, player) < (c.hidden ? 60 : CALL_CUT_DISTANCE);
         if (c.startedAt < 0) {
           if (gameTime < c.readyAt || close || p.silencedUntil > gameTime || personIncapacitated(p)) continue;
-          if (c.inc.callers > 0 && !c.hidden && p.witnessMust !== c.inc) continue;
+          if (c.hidden ? witnessCallUnderWay(c.inc) : c.inc.callers > 0 && p.witnessMust !== c.inc) continue;
           c.startedAt = gameTime;
-          c.inc.callers++;
+          c.lines = {};
+          if (!c.hidden) c.inc.callers++;
           witnessStats.calls++;
-          if (!c.hidden) sayCallLine(p, call911Opening(c.inc, p), 3.6);
           continue;
         }
         if (close || p.silencedUntil > gameTime) {
           // Cut off: they try again once the player has gone.
           c.startedAt = -1;
           c.readyAt = gameTime + randomBetween(4, 8);
-          c.inc.callers = Math.max(0, c.inc.callers - 1);
+          if (!c.hidden) c.inc.callers = Math.max(0, c.inc.callers - 1);
+          p.onPhone = false;
           witnessStats.dropped++;
           continue;
         }
-        if (gameTime - c.startedAt >= c.callTime) {
+        const t = gameTime - c.startedAt;
+        if (!c.hidden) {
+          p.onPhone = true;
+          witnessCallLines(p, c.inc, t, c.callTime, c.lines);
+        }
+        if (t >= c.callTime) {
           offstageCalls.splice(i, 1);
-          c.inc.callers = Math.max(0, c.inc.callers - 1);
+          if (!c.hidden) {
+            c.inc.callers = Math.max(0, c.inc.callers - 1);
+            p.onPhone = false;
+            sayCallLine(p, randomChoice(CALL_CLOSING), 2.4);
+            offstageCallTails.push({ person: p, until: gameTime + 2.4 });
+          }
           crowdReport(p, c.inc);
         }
       }
+    }
+    /* Off-stage callers the speech bubbles would not otherwise find (crowd-speech.js). */
+    function offstageCallSpeakers() {
+      const out = [];
+      for (const c of offstageCalls) if (!c.hidden && c.startedAt > 0 && !pedestrians.includes(c.person)) out.push(c.person);
+      for (let i = offstageCallTails.length - 1; i >= 0; i--) {
+        const tail = offstageCallTails[i];
+        if (tail.until < gameTime) offstageCallTails.splice(i, 1);
+        else if (!out.includes(tail.person) && !pedestrians.includes(tail.person)) out.push(tail.person);
+      }
+      return out;
     }
     /* crowdReport → dispatch: the heat of whatever the call is about. */
     const REPORT_BASE = { gunfire: 0.5, explosion: 0.6, melee: 0.4, knock: 0.45, carjack: 0.8, theft: 0.6, crime: 0.3 };
@@ -431,6 +462,9 @@
             callSeconds: +(p.react.callTime || 0).toFixed(1),
             reported: !!p.react.reported,
             d: round(distanceBetween(p, player)),
+            // The bubble the caller has up (null between lines).
+            line: p.speechKind === 'call911' && p.speechUntil > gameTime ? p.speech : null,
+            phone: p.pose === 'phone' || p.pose === 'text',
           });
       for (const c of offstageCalls)
         calls.push({
@@ -438,10 +472,13 @@
           y: round(c.person.y),
           kind: c.inc.kind,
           about: 'player',
-          seconds: +Math.max(0, gameTime - c.startedAt).toFixed(1),
+          seconds: c.startedAt > 0 ? +(gameTime - c.startedAt).toFixed(1) : 0,
           callSeconds: +c.callTime.toFixed(1),
           reported: false,
           offstage: true,
+          hidden: !!c.hidden,
+          waiting: c.startedAt < 0,
+          line: c.person.speechKind === 'call911' && c.person.speechUntil > gameTime ? c.person.speech : null,
           d: round(distanceBetween(c.person, player)),
         });
       const incidents = [];
@@ -453,6 +490,13 @@
             witnesses: inc.witnesses ? inc.witnesses.filter((p) => p.hp > 0).length : 0,
             callers: inc.callers,
             reported: inc.reported,
+            // Who could call and why not yet (crowd-witnesses.js witnessCallBlock).
+            who: (inc.witnesses || []).map((p) => ({
+              d: round(distanceBetween(p, player)),
+              saw: !!p.witnessSaw,
+              react: p.react?.kind || null,
+              block: witnessCallBlock(p, inc) || null,
+            })),
           });
       return {
         stars: Math.ceil(wantedStars),

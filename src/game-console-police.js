@@ -139,7 +139,7 @@
       // a crewed patrol car 180 units behind the player. `lookAway` stands them
       // 120 units off facing away (they notice a body, not a quiet killing).
       // Returns the positions.
-      witnessStage(count = 1, police = false, radius = 1100, lookAway = false) {
+      witnessStage(count = 1, police = false, radius = 1100, lookAway = false, isle = false) {
         if (player.car) exitCar();
         clearPolice(false);
         const far = (e) => distanceBetween(e, player) >= radius;
@@ -155,9 +155,14 @@
           fx = Math.cos(a),
           fy = Math.sin(a),
           round = (e) => ({ x: Math.round(e.x), y: Math.round(e.y) });
-        const person = (x, y, face) => {
+        const person = (x, y, face, walker = false) => {
           const p = { x, y, a: face, dir: face, hp: 30, flee: 0, timer: 999, walk: 0, state: 'idle', stateTime: 900 };
           dressPerson(p, 'casual');
+          // `isle`: a Monarch Isle walker, run by its own routine (monarch-life-crowd.js), stopped a while to look.
+          if (walker) {
+            p.isle = { route: null, stay: 30 };
+            dressIsleWalker(p, 'casual');
+          }
           p.nerve = 0.6;
           pedestrians.push(p);
           return p;
@@ -169,7 +174,7 @@
             off = (lookAway ? 120 : 170) + Math.floor(i / 2) * 30,
             x = victim.x - fy * off * side,
             y = victim.y + fx * off * side;
-          onlookers.push(person(x, y, Math.atan2(victim.y - y, victim.x - x) + (lookAway ? Math.PI : 0)));
+          onlookers.push(person(x, y, Math.atan2(victim.y - y, victim.x - x) + (lookAway ? Math.PI : 0), isle));
         }
         let car = null;
         if (police) {

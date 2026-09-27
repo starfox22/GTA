@@ -82,7 +82,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   literal keys). Details: docs/areas/core-and-contracts.md.
 - **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
   hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
-  pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911.
+  pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911. Crowd
+  perception (`p.pending`) is resolved in updatePeople before any special routine: a new
+  routine that owns people must step aside when `p.react`/`p.flee` is set.
 - `personFemale()` (voices.js) is the only man/woman rule (looks and voices both use it);
   `player.carjack` is a carrier (`cancelCarjack()`).
 - New land or bridges: append to `LAND_REGIONS`/`BRIDGES` last and keep coast-walk rhythms
@@ -91,7 +93,9 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
 - `playerImpact()` / `fallInjury()` (falls-body.js) are the only fall-damage scale;
-  `player.fall` is a carrier. The parachute opens only on a second `bail` press.
+  `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
+  opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
+  for the freefall cue: change them there only.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - **Dev console** `window.DeadEndCity` has explicit named methods only. **Never** add an
@@ -188,3 +192,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   methods; under ~15 lines). At release, `python3 tools/changelog.py --release <ver> "<Title>"`
   folds fragments into a new section and archives the previous one; `python3
   tools/changelog.py` previews it.
+- **Version numbers**: 0.9.0 is the public demo (the old 1.0-30.0.0 numbers were pre-alpha
+  build counts). Each release adds 0.0.1 (0.9.1, 0.9.2 ...), only when the owner asks for a
+  release: `GAME_VERSION` (src/game-state.js), `src/ui/build-header.html`, README.md, then
+  `--release`.
