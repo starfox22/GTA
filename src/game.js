@@ -15,15 +15,10 @@
     // @include src/voices.js
     // @include src/footwork.js
     // @include src/camera-feel.js
-    function tell(text, duration = 3) {
-      getElement('toast').textContent = text;
-      getElement('toast').classList.add('show');
-      // Raised while a full-screen panel is up (hud.js PANEL COVER): about the
-      // panel, so it shows over it. (The class, not hudCovered(): tell() runs
-      // during boot, before hud.js's constants exist.)
-      getElement('toast').classList.toggle('over-panel', document.body.classList.contains('panel-open'));
-      freshToast();
-      toastTime = duration;
+    // @include src/hud-notify.js
+    // A line in the notification feed (hud-notify.js): `options` { id, tone }.
+    function tell(text, duration = 3, options) {
+      notify(text, duration, options);
     }
     function announce(small, big, t = 3) {
       getElement('announceSmall').textContent = small;
@@ -46,6 +41,7 @@
     // @include src/game-update.js
     // @include src/game-draw2d.js
     // @include src/game-minimap.js
+    // @include src/map-view.js
     // @include src/game-ui.js
     // @include src/game-menus.js
     // @include src/game-input.js
@@ -119,6 +115,8 @@
     // @include src/parachute.js
     // @include src/falls.js
     // @include src/mobile.js
+    // @include src/input-hints.js
+    // @include src/gamepad.js
     // @include src/world-view.js
     // @include src/car-radio.js
     // @include src/garages.js

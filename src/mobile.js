@@ -235,7 +235,7 @@
       show('touchWeapon', foot || c?.type === 'tank');
       show('touchPoison', foot && player.roof && !!rooftopJob());
       show('touchJump', freefall || (air && aircraftClearance(c) >= 60));
-      getElement('touchJump').textContent = freefall ? 'OPEN CHUTE' : 'PARACHUTE';
+      getElement('touchJump').textContent = touchButtonLabel('touchJump');
       show(
         'touchDivert',
         mission?.index === 10 && mission.compromised && [1, 2, 3].includes(mission.stage),
@@ -243,16 +243,30 @@
       show('touchRadio', !!c && !ridingBicycle());
       show('touchStation', !!c && !ridingBicycle());
       getElement('moveLabel').textContent = foot ? 'MOVE' : 'STEER';
-      getElement('touchGo').textContent = chute
-        ? 'GLIDE'
-        : air
-          ? 'POWER +'
-          : c?.type === 'bicycle'
-            ? 'PEDAL'
-            : 'GAS';
-      getElement('touchBrake').textContent = chute ? 'FLARE' : air ? 'POWER −' : 'BRAKE';
-      getElement('touchUp').textContent = c?.type === 'plane' ? 'NOSE UP' : c?.type === 'helicopter' ? 'RISE' : 'HANDBRAKE';
-      getElement('touchDown').textContent = c?.type === 'plane' ? 'NOSE DOWN' : 'DESCEND';
-      getElement('touchAction').textContent = c ? 'EXIT' : 'ACTION';
+      for (const id of ['touchGo', 'touchBrake', 'touchUp', 'touchDown', 'touchAction'])
+        getElement(id).textContent = touchButtonLabel(id);
+    }
+    /* What a context button says now. updateTouchUI writes it and keyName's
+       touch path (input-hints.js) names the action by it, so a hint always
+       matches the button under the player's thumb. */
+    function touchButtonLabel(id) {
+      const c = player.car,
+        air = isAircraft(c),
+        chute = !!player.parachute;
+      switch (id) {
+        case 'touchGo':
+          return chute ? 'GLIDE' : air ? 'POWER +' : c?.type === 'bicycle' ? 'PEDAL' : 'GAS';
+        case 'touchBrake':
+          return chute ? 'FLARE' : air ? 'POWER −' : 'BRAKE';
+        case 'touchUp':
+          return c?.type === 'plane' ? 'NOSE UP' : c?.type === 'helicopter' ? 'RISE' : 'HANDBRAKE';
+        case 'touchDown':
+          return c?.type === 'plane' ? 'NOSE DOWN' : 'DESCEND';
+        case 'touchAction':
+          return transitRide ? 'NEXT STOP' : c ? 'EXIT' : 'ACTION';
+        case 'touchJump':
+          return player.parachute?.stage === 'freefall' ? 'OPEN CHUTE' : 'PARACHUTE';
+      }
+      return getElement(id)?.textContent || '';
     }
     // END SUBSYSTEM: src/mobile.js

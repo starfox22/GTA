@@ -201,7 +201,8 @@
     /**
      * KEY NAMES
      * keyLabel('ShiftLeft') -> 'L-SHIFT'; keyName('ascend') -> '↑' (the first bound
-     * key, for prompts and help); keyNames('forward') -> 'W / ↑'.
+     * key, for prompts and help; the touch or gamepad button while that device
+     * is in use, input-hints.js); keyNames('forward') -> 'W / ↑' (always keys).
      */
     const KEY_LABELS = {
       Space: 'SPACE', ShiftLeft: 'SHIFT', ShiftRight: 'R-SHIFT', ControlLeft: 'CTRL', ControlRight: 'R-CTRL',
@@ -219,7 +220,11 @@
       if (/^Numpad\d$/.test(code)) return 'NUM ' + code.slice(6);
       return code.replace(/([a-z])([A-Z0-9])/g, '$1 $2').toUpperCase();
     }
+    /* On a touch screen or a gamepad the action is named by its button there
+       (input-hints.js deviceKeyName); the settings screen names keys with keyLabel. */
     function keyName(id) {
+      const device = deviceKeyName(id);
+      if (device) return device;
       const code = controlBindings[id]?.find(Boolean);
       return code ? keyLabel(code) : '(UNBOUND)';
     }
@@ -229,6 +234,7 @@
     }
     /* 'WASD' while the defaults hold, otherwise the four keys spelled out. */
     function moveKeysName() {
+      if (hintDevice() !== 'keyboard') return hintDevice() === 'touch' ? 'STICK' : 'L-STICK';
       const names = ['forward', 'left', 'back', 'right'].map(keyName);
       return names.every((n) => n.length === 1) ? names.join('') : names.join(' ');
     }

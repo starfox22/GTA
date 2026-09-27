@@ -355,7 +355,7 @@
             distanceBetween(missionState.car, HARBOR.bay) > 48
           ) {
             missionState.loading = null;
-            tell('Loading cancelled. Stop in the bay and press ' + keyName('interact') + '.', 3);
+            tell('Loading cancelled. Stop in the bay and ' + pressKey('interact', 'lower') + '.', 3);
             return;
           }
           missionState.loading.time += deltaSeconds;

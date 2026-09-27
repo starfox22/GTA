@@ -44,9 +44,21 @@
      * in menus, and a box that popped open should close on the player's clock.
      */
     const hudPops = new Map();
-    function hudPop(id, ms = HUD_POP_MS) {
+    /* A portrait phone in touch mode: the middle of the screen is the road. */
+    function phoneHud() {
+      return document.body.classList.contains('touch-mode') && innerWidth <= 600;
+    }
+    function hudPop(id, ms = HUD_POP_MS, tapped = false) {
       const el = getElement(id);
       if (!el) return;
+      // On a phone the radio opens only when its chip is tapped; a new station
+      // or the power button just flashes the chip (its name says what changed).
+      if (id === 'carRadio' && phoneHud() && !tapped) {
+        el.classList.remove('flash');
+        void el.offsetWidth;
+        el.classList.add('flash');
+        return;
+      }
       hudPops.set(id, performance.now() + ms);
       el.classList.add('open');
     }
@@ -61,7 +73,7 @@
     // Touch has no hover: a tap on a resting chip opens it instead.
     for (const id of ['carRadio']) {
       getElement(id).addEventListener('pointerdown', (e) => {
-        if (e.pointerType !== 'mouse' && !getElement(id).classList.contains('open')) hudPop(id, 6000);
+        if (e.pointerType !== 'mouse' && !getElement(id).classList.contains('open')) hudPop(id, 6000, true);
       });
     }
     /* What changed since the last HUD refresh, to decide what pops. */
@@ -86,7 +98,8 @@
     }
     function watchRadioBox() {
       const shown = !getElement('carRadio').classList.contains('hidden');
-      // Getting into a car shows what is playing, then tucks it away.
+      // Getting into a car shows what is playing, then tucks it away (on a phone
+      // only the chip flashes: hudPop).
       if (shown && !hudSeen.radioShown) hudPop('carRadio', 4200);
       hudSeen.radioShown = shown;
     }
@@ -140,7 +153,7 @@
         label.classList.remove('show');
         saveHudState();
       }, 900);
-      drawMap(minimapContext, getElement('minimap').width, getElement('minimap').height);
+      drawMinimap();
     }
     getElement('minimapFold').onclick = (e) => {
       e.stopPropagation();
@@ -430,7 +443,7 @@
       getElement('mapKeyHint').textContent = keyName('map');
       getElement('cycleKeyHint').textContent = keyName('cycleWeapon');
       getElement('pagerHint').textContent = keyName('missionCard');
-      getElement('radioNext').textContent = keyName('radioNext') + ' · NEXT';
+      getElement('radioNext').textContent = keyPrefix('radioNext') + 'NEXT';
     }
     /* HOW TO PLAY: the key grid, built from the bindings when the card opens. */
     function renderControlsHelp() {

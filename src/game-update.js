@@ -6,10 +6,6 @@
       // A skipped ride's fade (ride-skip.js): runs on this step's time, so a
       // pause holds it; death or the title menu cancels it.
       updateRideSkip(deltaSeconds);
-      if (toastTime > 0) {
-        toastTime -= deltaSeconds;
-        if (toastTime <= 0) getElement('toast').classList.remove('show');
-      }
       if (active) timed('knockdowns', () => updateKnockdowns(deltaSeconds));
       if (active || gameMode === 'menu') timed('cars', () => updateCars(deltaSeconds, active));
       // A shark's breach plays out while WASTED is on screen (sealife.js).

@@ -569,7 +569,7 @@
       player.swimStroke = 0;
       player.swimDrive = 0;
       splashAt(player.x, player.y, 1.4);
-      tell('OVER THE SIDE · swim back and press ' + keyName('interact') + ' to climb aboard', 3);
+      tell('OVER THE SIDE · swim back and ' + pressKey('interact', 'lower') + ' to climb aboard', 3);
       return true;
     }
     /* A parachute that comes down on the sea: into the water, if there is a way out. */

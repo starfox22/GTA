@@ -103,6 +103,8 @@
         return;
       }
       syncTouchInput();
+      // The gamepad's buttons and sticks (gamepad.js), through the same actions.
+      pollGamepad();
       updateFpsCounter(t);
       // At a 30 FPS cap a frame is 33.3 ms: the step limit allows it, so the
       // simulation keeps real time rather than running 1% slow.
@@ -117,6 +119,8 @@
         announceTime -= lastTime ? Math.min(1, Math.max(0, (t - lastTime) / 1000)) : 0;
         if (announceTime <= 0) getElement('announcement').classList.remove('show');
       }
+      // The notification feed runs on the HUD clock too (hud-notify.js).
+      updateNotices();
       if (profile.last) profile.frameGap += t - profile.last;
       profile.last = t;
       // The police banner is a notice, like the headline cards: it times out on
