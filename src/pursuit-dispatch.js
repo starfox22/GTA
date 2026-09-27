@@ -45,6 +45,8 @@
       dispatchBurst = 0,
       arrestProgress = 0,
       lastDispatchLine = -100,
+      // The last caption's text (policeReport().radio).
+      lastDispatchText = '',
       armorWarningAt = -100;
     function policeTier(stars = Math.ceil(wantedStars)) {
       return POLICE_TIERS[clamp(stars, 1, 5)];
@@ -79,6 +81,7 @@
         radioUntil = gameTime + 4;
       }
       lastDispatchLine = gameTime;
+      lastDispatchText = text;
     }
     function announceWantedLevel(stars) {
       if (!stars || gameMode !== 'play') return;

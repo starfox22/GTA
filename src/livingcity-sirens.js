@@ -166,16 +166,31 @@
         if (Math.abs(lateral) > side + ow + 2) continue;
         const gap = along - spec.l / 2 - ol - 8,
           lead = Math.max(0, (o.vx || 0) * ca + (o.vy || 0) * sa);
-        // A stopped or crawling car poking into our way from one side (pulling
-        // over, in its own lane after our turn): move the aim line across
-        // by what it takes to clear it (up to 18 units) and creep past.
-        const need = side + ow + 3 - Math.abs(lateral);
-        if (lead < 12 * KMH && Math.abs(lateral) > 3 && need < 18 && gap < 90 && i < lastLeg) {
-          const own = -(c.x - prev.x) * uy + (c.y - prev.y) * ux;
-          if (!run.dodge || run.dodge.until < gameTime || Math.abs(run.dodge.offset) < Math.abs(own - Math.sign(lateral) * need))
-            run.dodge = { offset: clamp(own - Math.sign(lateral) * need, -20, 20), until: gameTime + 1.5 };
-          desired = Math.min(desired, 9 * KMH);
-          continue;
+        // A stopped or crawling car in our way (pulling over, in its own lane
+        // after our turn, stopped dead ahead): move the aim line to whichever
+        // side of it clears it with the least swing (the left on a tie), as long
+        // as that stays within 26 units of the route's centre line, and creep
+        // past. A car a dodge already clears is simply passed.
+        if (lead < 12 * KMH && gap < 90 && i < lastLeg) {
+          const own = -(c.x - prev.x) * uy + (c.y - prev.y) * ux,
+            at = own + lateral,
+            clearBy = side + ow + 3,
+            held = run.dodge && run.dodge.until > gameTime ? run.dodge.offset : null;
+          if (held !== null && Math.abs(held - at) >= clearBy - 1) {
+            run.dodge.until = gameTime + 1.5;
+            desired = Math.min(desired, 9 * KMH);
+            continue;
+          }
+          const left = at - clearBy,
+            right = at + clearBy,
+            fitsLeft = Math.abs(left) <= 26,
+            fitsRight = Math.abs(right) <= 26;
+          if (fitsLeft || fitsRight) {
+            const pick = fitsLeft && (!fitsRight || Math.abs(left - own) <= Math.abs(right - own)) ? left : right;
+            run.dodge = { offset: pick, until: gameTime + 1.5 };
+            desired = Math.min(desired, 9 * KMH);
+            continue;
+          }
         }
         desired = Math.min(desired, lead + Math.max(0, gap) * 1.2, Math.sqrt(lead * lead + 2 * 0.8 * GRAVITY * Math.max(0, gap)) * 0.9);
       }

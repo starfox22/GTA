@@ -176,7 +176,8 @@
         Object.assign(c, { x: job.stop.x, y: job.stop.y, a: job.heading, vx: 0, vy: 0, speed: 0 });
         return arriveMedicJob(job);
       }
-      if (gameTime - job.startedAt > 90) return medicJobEnd(job, 'aborted');
+      // Boxed in for good where everyone can see: it gives up and drives on.
+      if (gameTime - job.startedAt > 90 || job.stuckFor > 35) return medicJobEnd(job, 'aborted');
       if (left < 8 || (left < 40 && speed < 4)) arriveMedicJob(job);
     }
     function arriveMedicJob(job) {
