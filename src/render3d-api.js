@@ -364,14 +364,15 @@
             smoke: true,
           });
         },
-        fire(x, z, a, rocket, altitude = 0) {
+        // `height`: the muzzle over `altitude` (a drive-by's gun out of the window, driveby.js).
+        fire(x, z, a, rocket, altitude = 0, height = 11) {
           muzzleUntil = gameTime + 0.055;
-          muzzleLight.position.set(x, 11 + altitude, z);
+          muzzleLight.position.set(x, height + altitude, z);
           muzzleLight.intensity = rocket ? 1250 : 760;
           for (let j = 0; j < 4; j++)
             fx.push({
               x: x + Math.cos(a) * j * 3,
-              y: 11 + altitude,
+              y: height + altitude,
               z: z + Math.sin(a) * j * 3,
               vx: Math.cos(a) * 65,
               vy: 5,
@@ -385,7 +386,7 @@
           if (!rocket) {
             fx.push({
               x,
-              y: 11 + altitude,
+              y: height + altitude,
               z,
               vx: -Math.sin(a) * 42,
               vy: 44,
@@ -399,7 +400,7 @@
             });
             fx.push({
               x,
-              y: 11 + altitude,
+              y: height + altitude,
               z,
               vx: Math.cos(a) * 15,
               vy: 13,

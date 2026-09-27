@@ -368,6 +368,11 @@
             holdPole.set(-0.4, -1, (side ? 1 : -1) * 0.6).transformDirection(mTorso);
             ikArm(mShoulder[side], mElbow[side], mHand[side], shoulderWorld[side], spec.handTargets[side], holdPole, RIG.upperArm * H, RIG.forearm * H, H);
           }
+          // A drive-by (crowd3d-driveby.js): the pistol along the aim, the firing hand on its grip.
+          if (spec.gunFrame) {
+            rigEmit(P[spec.weapon] || P.pistol, spec.gunFrame, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
+            mHand[spec.gunHand].copy(spec.gunHandFrame);
+          }
         }
         const armPaint = paints.upperArm,
           forePaint = paints.forearm;

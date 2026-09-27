@@ -306,10 +306,13 @@
           // `m.glass`: a model's own intact glass (police3d.js).
           paneMaterial = (state) => (state === 2 ? brokenGlass : state === 1 ? crackedGlass : m.glass || carGlass);
         if (m.cabinBase) {
-          const hurt = damage.burnt || glass.front || glass.rear || glass.left || glass.right;
+          // A side window wound down for a drive-by (driveby.js) shows the dark cabin, as an empty frame does.
+          const down = c.windowsDown,
+            paneState = (pane) => (pane === 'roof' ? (damage.burnt ? 2 : 0) : down?.[pane] ? 2 : glass[pane]),
+            hurt = damage.burnt || glass.front || glass.rear || glass.left || glass.right || down?.left || down?.right;
           if (hurt) {
             m.paneMaterials = m.paneMaterials || [carGlass, carGlass, carGlass, carGlass, carGlass].map(() => m.glass || carGlass);
-            PANE_ORDER.forEach((pane, i) => (m.paneMaterials[i] = paneMaterial(pane === 'roof' ? (damage.burnt ? 2 : 0) : glass[pane])));
+            PANE_ORDER.forEach((pane, i) => (m.paneMaterials[i] = paneMaterial(paneState(pane))));
             m.cabin.material = m.paneMaterials;
           } else m.cabin.material = m.glass || carGlass;
         } else m.cabin.material = paneMaterial(glass.front);

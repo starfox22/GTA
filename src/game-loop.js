@@ -153,6 +153,7 @@
       const drawStart = performance.now();
       if (!NO_RENDER) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
       updateTankReticle();
+      updateDriveByReticle();
       const frameEnd = performance.now();
       profile.update += drawStart - updateStart;
       profile.draw += frameEnd - drawStart;
