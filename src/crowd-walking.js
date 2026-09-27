@@ -141,7 +141,7 @@
         p.stateTime -= deltaSeconds;
         p.walking = false;
         p.pose = p.state === 'phone' ? 'phone' : p.texting ? 'text' : 'idle';
-        if (p.state === 'idle' && seededRandom() < deltaSeconds * 0.08) pedSay(p, 'idle');
+        if (p.state === 'idle' && seededRandom() < deltaSeconds * 0.08) pedSay(p, chatterKind(p));
         if (p.state === 'phone' && seededRandom() < deltaSeconds * 0.18) crowdSay(p, 'phoneTalk');
         if (p.state === 'idle' && seededRandom() < deltaSeconds * 0.4) p.a += (seededRandom() - 0.5) * 0.6;
         if (p.stateTime <= 0) {
@@ -217,7 +217,7 @@
         p.stateTime -= deltaSeconds;
         p.pose = 'sit';
         p.walking = false;
-        if (seededRandom() < deltaSeconds * 0.05) pedSay(p, 'idle');
+        if (seededRandom() < deltaSeconds * 0.05) pedSay(p, chatterKind(p));
         if (p.stateTime <= 0) {
           p.sitting = false;
           p.walking = true;

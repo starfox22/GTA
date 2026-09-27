@@ -22,5 +22,6 @@
        * batcher; the door, roof, upper facade, rig and fan stay live.
        */
       // @include src/garage3d-materials.js
+      // @include src/garage3d-styles.js
       // @include src/garage3d-build.js
       // END SUBSYSTEM: src/garage3d.js
