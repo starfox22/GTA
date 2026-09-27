@@ -252,6 +252,11 @@
   .touch-mode .ammo strong {
     font-size: 17px;
   }
+  /* A docked headline would sit under the minimap and weapon row: on a phone it fades
+     out instead (the mission card already carries the job's title). */
+  .touch-mode #announcement.show.docked {
+    opacity: 0;
+  }
   /* Between the mission card and the button strip: toast, dialogue, status. */
   .touch-mode #toast {
     top: 318px;

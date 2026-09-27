@@ -6,6 +6,6 @@
 - You climb out of a car by the driver's door first, as NPC drivers and carjacks do.
 - Every key hint follows your bindings: free-roam toasts, mission stage lines, the rail panel, the landing divert (no literal E, S or V).
 - The god-mode teleport never lands on a loose mountain face you would slide off.
-- Touch: the radio and weapon boxes fold when their tap pop ends (they stayed half open, every label cut); phone settings list each action's keys on their own line; HEALTH stays on one line; the police timer no longer covers the unfolded mission card; flight tape captions read over pale paving.
+- Touch: the radio and weapon boxes fold when their tap pop ends (they stayed half open, every label cut); phone settings list each action's keys on their own line; HEALTH stays on one line; the police timer and the docked headline no longer sit over the mission card or under the minimap; flight tape captions read over pale paving.
 - Console `places()` no longer reports NaN for YOUR SAFEHOUSE; `node tools/dev.mjs reload --keep` reloads with the same browser profile to check saves.
 - Tests: freeroam-respawn, swim-rescue, pickups-islands.

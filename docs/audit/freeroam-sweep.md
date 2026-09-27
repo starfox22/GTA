@@ -51,7 +51,9 @@ A systematic pass over free roam on every island, mostly on the no-render dev pa
   in the 150 px chip with every label cut; only `.open` unfolds pop boxes in touch mode.
 - Phone settings: short labels kept their keys beside them, long ones below (zig-zag).
 - Phone HUD: "HEALTH 100" wrapped onto two lines under the minimap; the police escape
-  timer covered the mission card while it was unfolded (it now waits below it).
+  timer covered the mission card while it was unfolded (it steps aside until the card
+  folds; the stars stay); a docked headline sat under the minimap and weapon row (it fades
+  on phones).
 - Flight HUD: the IAS / ALT captions were unreadable over pale paving (text shadow).
 - God panel said "armour", the HUD "ARMOR"; `places()` gave NaN for YOUR SAFEHOUSE; the
   superyacht comment said 105 m for a 66 m deck.
