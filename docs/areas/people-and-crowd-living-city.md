@@ -33,7 +33,10 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
 - `trafficControl` (physics-traffic.js) now scans the junction box and the exit only for a
   car short of the line on a green (the scans were 60% of its cost) and queries people
   ahead of the car, not round it. Stopped 4 s for the same person (not the player), a car
-  eases round them at 7 km/h (`c.easePerson`), never past a red, a car or a stop.
+  eases round them at 7 km/h (`c.easePerson`), never past a red, a car or a stop, nor while
+  pulling over for a siren. Close behind a parked car it passes, it aims beside its far
+  corner and turns out on the spot short of the bumper (it used to shove it); lane offsets
+  are taken across the lane (`navAngle`), not the car. Console `parkedPass`.
 
 ## Sirens (livingcity-sirens.js)
 

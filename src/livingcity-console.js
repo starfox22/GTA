@@ -8,6 +8,22 @@
         state = (c) => ({ x: Math.round(c.x), y: Math.round(c.y), kmh: Math.round(Math.hypot(c.vx || 0, c.vy || 0) / KMH), lane: lane(c), along: Math.round(s.column ? c.y : c.x) });
       return { ambulance: state(s.amb), car: { ...state(s.car), yieldedAgo: s.car.sirenYield ? +(gameTime - s.car.sirenYield).toFixed(2) : null }, passed: (s.column ? s.amb.y - s.car.y : s.amb.x - s.car.x) > 0 };
     }
+    // A traffic car passing a parked one that fills its lane (physics-traffic.js).
+    let parkedPassCars = null;
+    function parkedPassState() {
+      const s = parkedPassCars;
+      if (!s) return null;
+      const ux = Math.cos(s.a),
+        uy = Math.sin(s.a),
+        along = (c) => Math.round((c.x - s.x) * ux + (c.y - s.y) * uy),
+        // Left of the parked car's lane line (the traffic lane's line when offset is 0).
+        left = (c) => Math.round((c.x - s.lane.x) * uy - (c.y - s.lane.y) * ux);
+      return {
+        car: { id: s.car.id, kmh: Math.round(Math.hypot(s.car.vx || 0, s.car.vy || 0) / KMH), left: left(s.car), along: along(s.car) },
+        parked: { id: s.parked.id, left: left(s.parked), along: along(s.parked), moved: Math.round(Math.hypot(s.parked.x - s.x, s.parked.y - s.y) * 10) / 10 },
+        passed: along(s.car) - along(s.parked) > (vehicleSpec(s.car).l + vehicleSpec(s.parked).l) / 2,
+      };
+    }
     function livingCityConsole() {
       return {
         // The traffic round the player: pool, cars in the ring and in view, moving,
@@ -85,6 +101,25 @@
           return sirenPassState();
         },
         sirenPassState: () => sirenPassState(),
+        // A parked `type` in the traffic lane at (x, y) heading `heading` (snapped to
+        // a quarter turn), its centre `offset` units kerbward of the lane line, and a
+        // traffic sedan `gap` units behind it in the lane at `kmh`. Read the pass
+        // with parkedPassState() (`moved`: how far the parked car was shoved).
+        parkedPass(x, y, heading = 0, gap = 150, offset = 0, type = 'van', kmh = 30) {
+          if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+          const a = (Math.round(heading / (Math.PI / 2)) * Math.PI) / 2,
+            ux = Math.round(Math.cos(a)),
+            uy = Math.round(Math.sin(a)),
+            // The lane line traffic steers for (physics-traffic.js): 25 right of the road line.
+            lane = uy ? { x: roadNear(x) - uy * 25, y } : { x, y: rowNear(y) + ux * 25 },
+            spot = { x: lane.x - uy * offset, y: lane.y + ux * offset },
+            parked = makeCar(type, spot.x, spot.y, a, false),
+            car = makeCar('sedan', lane.x - ux * gap, lane.y - uy * gap, a, true, '#8a9aa8');
+          Object.assign(car, { speed: kmh * KMH, vx: ux * kmh * KMH, vy: uy * kmh * KMH });
+          parkedPassCars = { parked, car, a, lane, x: spot.x, y: spot.y };
+          return parkedPassState();
+        },
+        parkedPassState: () => parkedPassState(),
         // What the streamer would put on the street here now: `n` picks by type.
         trafficMix(n = 400) {
           const out = {};

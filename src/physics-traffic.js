@@ -269,8 +269,12 @@
           })),
         ],
         ease = { amount: 0, side: 1 },
-        // How far right of its lane's centre line the car is (the target sits on it).
-        laneOffset = -((target.x - c.x) * rx + (target.y - c.y) * ry),
+        // Right across the lane (not the car: turned out round a parked car or a
+        // walker, a car-frame measure grew by the look-ahead's sideways swing), and
+        // how far right of its lane's centre line the car is (the target sits on it).
+        laneRx = -headingSine,
+        laneRy = headingCosine,
+        laneOffset = -((target.x - c.x) * laneRx + (target.y - c.y) * laneRy),
         // Nothing in the oncoming lane (left of us) from just behind to well past
         // the obstacle, moving or not: room to pull out round it.
         oncomingClear = (obstacle, reach) =>
@@ -282,6 +286,10 @@
               left = -(vx * rx + vy * ry);
             return ahead > -60 && ahead < reach + 260 && left > 6 && left < 80;
           });
+      // The gap beside a parked car to steer for when caught close behind it.
+      let passAim = null,
+        passAt = Infinity,
+        pivotOut = 0;
       for (const o of vehicles) {
         if (
           o === c ||
@@ -335,7 +343,7 @@
         if (!through && !o.ai && !o.cop && o !== player.car && Math.abs(o.speed || 0) < 5) {
           // Measured from our lane's centre line, not from where we are now: the
           // shift must hold while we pull across, or it shrinks as we move.
-          const laneLateral = laneOffset + dx * rx + dy * ry,
+          const laneLateral = laneOffset + dx * laneRx + dy * laneRy,
             intrusion = side + ow + 4 - Math.abs(laneLateral),
             overtake =
               intrusion >= 12 && intrusion < 38 && laneLateral > -12 && !c.junction && oncomingClear(o, along);
@@ -347,14 +355,38 @@
               ease.amount = shift;
               ease.side = passLeft ? 1 : -1;
             }
-            if (intrusion < 12 || lateral > side + ow || along - half - ol > 45) continue;
-            // Caught close behind it still in line: creep out round it rather than
-            // stopping, which would leave the car unable to turn out at all.
-            desired = Math.min(desired, 20);
+            if (intrusion < 12 || along - half - ol > 45) continue;
+            // Close behind one filling the lane, the far-off lane point is too
+            // shallow a line: steer for the gap beside its far corner until we are
+            // by (swinging back to that point put the nose into its corner).
+            if (along < passAt) {
+              const passing = passLeft ? 1 : -1,
+                reach = side + ow + 4;
+              passAt = along;
+              passAim = {
+                x: o.x + headingCosine * ol - laneRx * passing * reach,
+                y: o.y + headingSine * ol - laneRy * passing * reach,
+              };
+            }
+            if (lateral > side + ow) continue;
+            // Still in line: creep out round it rather than stopping, which would
+            // leave the car unable to turn out at all, but stop short of the bumper
+            // and swing the nose out on the spot: nose to tail it shoved the
+            // parked car along the kerb (a mission's parked ambulance, 1 m in 15 s).
+            desired = Math.min(desired, 20, Math.max(0, along - half - ol - 2) * 2.5);
+            if (along - half - ol < 6) pivotOut = passLeft ? 1 : -1;
             continue;
           }
-          // Waiting for the oncoming lane to clear: hold back far enough to pull out.
-          if (intrusion < 38 && laneLateral > -12) standoff = 40;
+          // Waiting for the oncoming lane to clear: hold back far enough to pull out,
+          // and hold the line if already part way out (swinging back into the lane
+          // put the nose into the parked car's corner).
+          if (intrusion < 38 && laneLateral > -12) {
+            standoff = 40;
+            if (laneOffset < -4 && -laneOffset > ease.amount) {
+              ease.amount = -laneOffset;
+              ease.side = 1;
+            }
+          }
         }
         // Follow at about 0.8 s behind the car ahead (plus a car's length of
         // slack), never faster than lets us stop behind it if it brakes.
@@ -425,7 +457,7 @@
           dy = e.p.y - c.y,
           along = dx * headingCosine2 + dy * headingSine2,
           // Right of our lane's centre line (steady while we pull across).
-          fromLane = dx * rx + dy * ry + laneOffset;
+          fromLane = dx * laneRx + dy * laneRy + laneOffset;
         if (e.p.hp <= 0 || along < -half - 10 || Math.abs(fromLane) > side + 44 || gameTime - e.since > 40 || (!e.going && heldBy !== e.p))
           c.easePerson = null;
         else if ((e.going || gameTime - e.since > 4) && !ease.amount && !pull) {
@@ -438,7 +470,11 @@
         }
       }
       // Steer for a point shifted away from whatever was easing us across the lane.
-      const steerA = ease.amount
+      const steerA = pivotOut
+        ? -0.35 * pivotOut
+        : passAim
+        ? normalizeAngle(headingBetween(c, passAim) - c.a)
+        : ease.amount
         ? normalizeAngle(
             headingBetween(c, {
               x: target.x - rx * ease.side * (ease.amount + 1),

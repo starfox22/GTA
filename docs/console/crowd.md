@@ -32,7 +32,9 @@ The living city in free roam (docs/areas/people-and-crowd-living-city.md).
 | `trafficStreaming(on)` | Switch the streamer on or off (A/B measurements); returns trafficReport() |
 | `sirenPass(behind, gap)` | On the street the player stands on: an ambulance on a run `behind` units back and a traffic sedan `gap` units ahead of it in its lane, both heading along the street |
 | `sirenPassState()` | Both vehicles of the siren pass (km/h, `lane` offset right of the centre line, along), how long since the sedan last gave way, `passed` |
-| `medicReport()` | The ambulance service: jobs, revived, lost, aborted, `last`, cooldown, and the job under way (phase driving / scene / treat / outcome / leave, the ambulance, its siren, leg, `desiredKmh`, `heldBy` (car / person / player), what stands `ahead`, the medics with distance to the victim, pose, reaction, boarded) |
+| `parkedPass(x, y, heading, gap, offset, type, kmh)` | A parked `type` (default van) in the traffic lane at (x, y) facing `heading` (a quarter turn), its centre `offset` units kerbward of the lane line, and a traffic sedan `gap` units behind it at `kmh` |
+| `parkedPassState()` | The parked pass: the sedan (`id`, km/h, `left` of the lane line, `along` from the parked car's spot), the parked car (`moved`: how far it was shoved), `passed` |
+| `medicReport()` | The ambulance service: jobs, revived, lost, aborted, `last` (with the `cause` of an abort), cooldown, and the job under way (phase driving / scene / treat / outcome / leave, the ambulance, its siren, leg, `desiredKmh`, `heldBy` (car / person / player), what stands `ahead`, the medics with distance to the victim, pose, reaction, boarded) |
 | `medicTest(x, y, revive)` | A body at (x, y) (default 60 units along the pavement from the player), dead 12 s, and an ambulance sent at once; `revive` forces the outcome |
 | `streetEvents()` | Street events: staged, caught, escaped, seconds to the next try, whether one is `allowed` here now, `last`, the one under way (thief and victim, the gap) |
 | `snatchTest()` | Stage a bag snatch round the player now (null `active` when no victim with a bag is in view or no thief close by) |
