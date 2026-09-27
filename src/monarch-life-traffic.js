@@ -1,6 +1,9 @@
     // Monarch Isle road graph, traffic control, car types and populateMonarchIsle().
     const ISLE_CITY_END = { x: 3290, y: -2944 },
-      ISLE_RIDGE_END = { x: 6500, y: 1800 };
+      ISLE_RIDGE_END = { x: 6500, y: 1800 },
+      // The Regency Road's cars turn round this far short of its end (the end is on
+      // Eagle Pass's centreline, in a bend): on their own road, out of the pass's lanes.
+      ISLE_END_TRIM = 120;
     let isleGraphCache = null;
     function isleRoadGraph() {
       if (isleGraphCache) return isleGraphCache;
@@ -65,6 +68,7 @@
     // How far from a node a lane stops before the crossing.
     function isleNodeTrim(node, link) {
       if (node.kind === 'circle') return node.circle.outer + 10;
+      if (node.kind === 'end') return ISLE_END_TRIM;
       if (node.kind === 'junction') {
         const alongX = Math.abs(link.points[1][1] - link.points[0][1]) < 1;
         return (alongX ? node.kx : node.ky) + 22;
@@ -294,10 +298,105 @@
             ahead = normalizeAngle(aO - aE);
           if (ahead > 0 && ahead < 1.6) return true;
         } else if (o.isle?.node === node && o.isle.granted && o.isle.crossing) return true;
-        else if (node.kind === 'junction' && !o.isle && Math.abs(o.x - node.x) < node.kx + 6 && Math.abs(o.y - node.y) < node.ky + 6 && Math.hypot(o.vx || 0, o.vy || 0) > 8) return true;
+        else if (node.kind === 'end') {
+          // Turning round: anything ahead or across the road, not the queue behind.
+          const dx = o.x - X.entry.x,
+            dy = o.y - X.entry.y,
+            along = dx * Math.cos(X.entry.a) + dy * Math.sin(X.entry.a);
+          if (along > -30 && along < 220 && Math.abs(-dx * Math.sin(X.entry.a) + dy * Math.cos(X.entry.a)) < 90) return true;
+        } else if (node.kind === 'junction' && !o.isle && Math.abs(o.x - node.x) < node.kx + 6 && Math.abs(o.y - node.y) < node.ky + 6 && Math.hypot(o.vx || 0, o.vy || 0) > 8) return true;
       }
       if (player.car && Math.abs(player.car.x - node.x) < (node.kx || 80) + 6 && Math.abs(player.car.y - node.y) < (node.ky || 80) + 6) return true;
       return false;
+    }
+    /* The Regency Road's island traffic, measured (console regencyTraffic): cars put
+       on its lanes (up from the bridge, down from the top, one about to turn round)
+       and the world stepped `seconds`, the player on foot out of the way. Per car:
+       the furthest its middle got over the centre line on the scenic road (metres,
+       positive = on the wrong side), steps with a corner in Eagle Pass's carriageway
+       and the closest it came, steps off the tarmac, turn-rounds done, damage and
+       the longest stand. */
+    function isleRegencyTraffic(seconds = 60) {
+      const road = SCENIC_ROADS.find((r) => r.name === 'REGENCY ROAD'),
+        pass = SCENIC_ROADS.find((r) => r.name === 'EAGLE PASS'),
+        link = isleRoadGraph().links.find((l) => l.name === 'REGENCY BRIDGE');
+      if (!road || !pass || !link) return { error: 'no Regency Road' };
+      // Its island traffic, and anything else on the road, is cleared first.
+      const probe = {};
+      for (let i = vehicles.length - 1; i >= 0; i--) {
+        const v = vehicles[i];
+        if (v === player.car || (!v.isle && !scenicRoadNear(v.x, v.y, probe, road))) continue;
+        if (v.isle ? v.isle.link === link || v.isle.next?.link === link : Math.abs(probe.t) < road.half + 20) vehicles.splice(i, 1);
+      }
+      if (player.car) exitCar();
+      // The player waits on foot beside the road's middle, on the landward side.
+      let beside = scenicPointAt(road, Math.round(road.n * 0.6), road.half + 60, {});
+      if (!landAt(beside.x, beside.y)) beside = scenicPointAt(road, Math.round(road.n * 0.6), -road.half - 60, {});
+      teleportPlayer(beside.x, beside.y);
+      // The road's start along the link (the bridge comes first).
+      const roadFrom = link.length - road.along[road.n - 1],
+        cars = [
+          [1, roadFrom + 40],
+          [-1, 200],
+          [1, link.length - ISLE_END_TRIM - 260],
+        ].map(([dir, d], i) => {
+          const p = isleLanePoint(link, dir, d),
+            c = makeCar(['luxury', 'suv', 'taxi'][i], p.x, p.y, p.a, true);
+          isleTrafficJoin(c, link, dir, d);
+          return { c, hp: c.hp, wrong: -Infinity, wrongAt: null, gap: Infinity, pass: 0, offRoad: 0, turns: 0, still: 0, longest: 0, dir };
+        });
+      const dt = 1 / 30,
+        near = {};
+      let step = 0;
+      for (; step < seconds / dt && gameMode === 'play'; step++) {
+        update(dt);
+        for (const m of cars) {
+          const c = m.c;
+          if (!vehicles.includes(c)) continue;
+          // A turn-round: back down the link it came up.
+          if (c.isle?.link === link) {
+            if (c.isle.dir < 0 && m.dir > 0) m.turns++;
+            m.dir = c.isle.dir;
+          }
+          const speed = Math.hypot(c.vx || 0, c.vy || 0);
+          m.still = speed < 8 ? m.still + dt : 0;
+          m.longest = Math.max(m.longest, m.still);
+          if (scenicRoadNear(c.x, c.y, near, pass)) {
+            // Its nearest corner's distance outside the pass's carriageway.
+            const gap = Math.abs(near.t) - pass.half - Math.hypot(vehicleSpec(c).l, vehicleSpec(c).w) / 2;
+            m.gap = Math.min(m.gap, gap);
+            if (gap < 0) m.pass++;
+          }
+          const hit = scenicRoadNear(c.x, c.y, near, road);
+          if (hit && !countyPavedAt(c.x, c.y) && !onBridgeDeck(c.x, c.y)) m.offRoad++;
+          // Along the road, not in its end junctions (a turn-round crosses the line).
+          if (!hit || hit.k < 30 || hit.k > road.n - ISLE_END_TRIM / SCENIC_SAMPLE - 10 || speed < 3 * KMH) continue;
+          const k = Math.round(hit.k),
+            sense = Math.sign((c.vx || 0) * road.tangent[k * 2] + (c.vy || 0) * road.tangent[k * 2 + 1]),
+            // Island lanes keep right: t (positive right of the road's direction) times the sense.
+            wrong = (-hit.t * sense) / UNITS_PER_METRE;
+          if (wrong > m.wrong) {
+            m.wrong = wrong;
+            m.wrongAt = [Math.round(c.x), Math.round(c.y), Math.round(speed / KMH)];
+          }
+        }
+      }
+      return {
+        seconds: +(step * dt).toFixed(1),
+        cars: cars.map((m) => ({
+          type: m.c.type,
+          gone: !vehicles.includes(m.c),
+          wrongSideM: Number.isFinite(m.wrong) ? +m.wrong.toFixed(2) : null,
+          wrongAt: m.wrongAt,
+          eaglePassSteps: m.pass,
+          eaglePassGapM: Number.isFinite(m.gap) ? +(m.gap / UNITS_PER_METRE).toFixed(2) : null,
+          offRoad: m.offRoad,
+          turns: m.turns,
+          longestStopS: +m.longest.toFixed(1),
+          damage: Math.round(m.hp - m.c.hp),
+          at: [Math.round(m.c.x), Math.round(m.c.y)],
+        })),
+      };
     }
     /* ---- Spawning the traffic, the parked cars and the boats ---- */
     const ISLE_CAR_TYPES = ['luxury', 'luxury', 'supercar', 'roadster', 'sport', 'suv', 'suv', 'limousine', 'coupe', 'luxury', 'taxi', 'sport'],

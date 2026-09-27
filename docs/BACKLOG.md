@@ -69,7 +69,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Scenic mountain roads (terrain-roads.js, terrain-grading.js, county3d-roads.js)
 - Junction mouths between two graded roads keep a small ripple where the surfaces blend (up to ~6 g at 100 km/h at Eagle Pass's start; `mountainRoad()` junctionBumpG100).
-- Monarch Isle traffic turns round at the Regency Road's end, in Eagle Pass's junction: cars coming down the pass can meet it.
 - No tunnel or stone bridge yet; the lay-by signs are small at street zoom.
 - Grading and carving add about half a second to the range's first build (`terrain()` buildMs roadJunctions..roadCarve).
 

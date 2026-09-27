@@ -151,6 +151,9 @@
       // Monarch Isle: the plan (grid, streets, villas, towers, businesses, marina,
       // garden) and its life (monarch.js, monarch-life.js).
       monarch: () => monarchReport(),
+      // The Regency Road's island traffic stepped `seconds` (monarch-life-traffic.js
+      // isleRegencyTraffic): lane keeping in the bends, turning round off Eagle Pass.
+      regencyTraffic: (seconds) => isleRegencyTraffic(seconds),
       // Named places the tests can visit: every PLACES entry plus the landmarks.
       places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
       // GPS: set a map waypoint and report the route the navigation graph finds
