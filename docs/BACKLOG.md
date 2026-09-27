@@ -3,6 +3,14 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## Soundscape (acoustics-audio.js, ambience-beds.js, footsteps-audio.js, vehicle-foley-audio.js, bullets-audio.js)
+- The room's returns (reverb, slap, echo) are on the effects bus: a tunnel's engine boom and footsteps' reflections follow the Effects slider, not Engines.
+- Ambience events are not placed by occlusion or sent to the room (a ship's horn has no echo); zones are coarse (districts, park rectangles, terrain height).
+- Only runners' steps are heard (walkers are silent); a person moving 2.4-9 m/s on something other than a car (a cyclist on the pavement) would step.
+- Drivers getting out after a crash make no door sound; traffic has no indicator ticks; the drawbridge's steel deck does not sing under tyres.
+- The listener is the player, not the camera: in the zoomed-out views pan and distance are from the player.
+- Headless, the reports read Web Audio automation in audio time: after a simulated `wait` the gliding gains lag the probe (they glide in real time); judge levels in a real browser.
+
 ## Free roam and HUD (docs/audit/freeroam-sweep.md)
 - The demo's mission card counts MISSION 01 / 11 with two jobs open (design question).
 - Damage direction: only gunfire shows the red arc (pursuit-officers.js playerHitFeedback); blasts and melee do not.

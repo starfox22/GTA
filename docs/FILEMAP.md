@@ -11,18 +11,18 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-436 files in the include tree, 153,240 lines.
+441 files in the include tree, 155,128 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   159 — ▸ Game orchestration and shared state
+- `src/game.js`   164 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
 - `src/game-state.js`   379 — Shared data contracts: Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
 - `src/game-vehicles.js`   747 — VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road and air resistance.
 - `src/game-weapons.js`    78 — Weapon table (weapons) and mission list (missions).
-- `src/audio.js`   559 — Effects and voice audio
+- `src/audio.js`   639 — Effects and voice audio
 - `src/voices.js`   173 — People's voices: whether someone is drawn as a woman or a man (personFemale) and the recorded scream that fits them (screamVoice, playPersonScream …
 - `src/footwork.js`    61 — On foot: where the player's body faces (the aim while fighting, else the way they go) and what facing one way while moving another costs the pace …
 - `src/camera-feel.js`   228 — Camera feel: the street camera's follow (a lead along the vehicle's path; on foot the way the player goes and toward the aim in a fight) and its …
@@ -33,15 +33,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-car-spawn.js`   163 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   479 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   283 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
-- `src/game-player-actions.js`   565 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   566 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   171 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    18 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   163 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
-- `src/game-combat.js`   342 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
-- `src/game-update.js`   208 — update(dt): the per-frame simulation step (only active play advances clocks).
+- `src/game-combat.js`   344 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
+- `src/game-update.js`   206 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/game-draw2d.js`   629 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
-- `src/game-minimap.js`   237 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
-- `src/map-view.js`   312 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
+- `src/game-minimap.js`   236 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
+- `src/map-view.js`   368 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   415 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   187 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/game-input.js`   414 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
@@ -67,7 +67,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/taxi.js`   286 — Yellow cabs
 - `src/cycles.js`   801 — City bicycles
 - `src/weather.js`   216 — Weather
-- `src/weather-audio.js`   270 — Rain and thunder sound
+- `src/weather-audio.js`   271 — Rain and thunder sound
 - `src/clouds.js`   329 — Cloud layer (game side): cloudBaseAt/cloudTopAt, the only source of the cloud altitude, by weather and area; the coverage and area maps the renderer …
 - `src/clouds-audio.js`    61 — Cloud sound: inside a cloud the rush of air goes deep and damp (a low, soft roar and a fine hiss of droplets), following cloudLayer.immersion and the …
 - `src/clouds-console.js`    64 — Cloud console (registered by game-console-world.js as 'clouds'): cloudLayer() report, cloudSpot() and cloudJump(), a freefall from a given altitude …
@@ -80,7 +80,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/air-cover.js`   404 — Overhead cover geometry
 - `src/combat-rules.js`   558 — Aerial combat and pursuit rules
 - `src/damage.js`    34 — ▸ Vehicle damage, bullet impacts and breakable street furniture
-- `src/crash-audio.js`   240 — Vehicle crash sound
+- `src/crash-audio.js`   243 — Vehicle crash sound
 - `src/engine-audio.js`   619 — Engine sound
 - `src/county.js`    10 — ▸ Outlying districts
 - `src/monarch.js`    77 — ▸ Monarch Isle: the plan, the land and the streets
@@ -112,13 +112,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
 - `src/navigation.js`   689 — City map and route planning
-- `src/parachute.js`   689 — Bailout and parachute
+- `src/parachute.js`   690 — Bailout and parachute
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
 - `src/mobile.js`   272 — Touch controls
 - `src/input-hints.js`   144 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   331 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   224 — World camera gestures
-- `src/car-radio.js`   859 — Vehicle radio stations
+- `src/car-radio.js`   865 — Vehicle radio stations
 - `src/garages.js`   750 — ▸ Drive-in repair and respray
 - `src/crowd.js`   192 — ▸ Crowd life, perception and reactions
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
@@ -129,7 +129,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/clubpool.js`   285 — Marea pool: in, swim, out
 - `src/clubtalk.js`   380 — Conversations with Marea club-goers
 - `src/leisure.js`    45 — Beach and club leisure: prompt and action key
-- `src/ambience.js`   279 — City soundscape
+- `src/ambience.js`   299 — City soundscape
+- `src/ambience-beds.js`   346 — Ambience beds by place and time: the city's far wash, gusting wind (the open, the heights, the range), leaves, cicadas and the night chorus, harbour …
+- `src/acoustics-audio.js`   360 — Acoustics: the space round the ear (street canyons, open country, height) and how a positioned sound reaches it (air absorption, occlusion by …
+- `src/footsteps-audio.js`   346 — Footsteps and foley on foot: the ground under each step (footSurfaceAt), a step's sound for that ground and pace, puddles in the wet, landings, and …
+- `src/vehicle-foley-audio.js`   465 — Vehicle foley: horns by class (the player's and traffic's), doors and a locked handle, the tyres' ground (squeal or scrub), traffic skids, suspension …
+- `src/bullets-audio.js`   179 — Bullet sound: strikes by surface (concrete chips and ricochets, metal, glass, dirt) and the crack and whizz of an enemy round passing close to the …
 - `src/quality.js`   221 — Graphics quality tiers
 - `src/settings.js`   837 — Settings menu
 - `src/god-panel.js`   782 — God mode settings
@@ -301,7 +306,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/falls.js ▸ Falls: bodies and vehicles off cliffs, fatal impacts
 
-- `src/falls-body.js`   317 — Falls on foot: the impact scale (fallInjury), the player's ballistic fall off a drop, landings and the fatal splat.
+- `src/falls-body.js`   318 — Falls on foot: the impact scale (fallInjury), the player's ballistic fall off a drop, landings and the fatal splat.
 - `src/falls-vehicles.js`   355 — Falls, vehicles: road vehicles leaving the terrain (cliffSettle, cliffFlight), landings, tumbles down a face and rollovers.
 - `src/falls-console.js`   454 — Falls console: the cliff finder (cliffSpots), bail-out and parachute helpers, scripted fall and descent tests (fallsConsole).
 
@@ -342,7 +347,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   629 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-state.js`   642 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   640 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
@@ -417,7 +422,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-effects.js`   214 — ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 - `src/render3d-resources.js`   141 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-api.js`   474 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   674 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-frame.js`   680 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
@@ -683,8 +688,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   276 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
 - `src/ui/freefall.css`   192 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below, a …
-- `src/ui/notify.css`   103 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
-- `src/ui/map-panel.css`   149 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
+- `src/ui/notify.css`   118 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
+- `src/ui/map-panel.css`   156 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
 - `src/ui/reduced-motion.css`    48 — Reduced motion: keep the states, drop the movement
 - `src/ui/hud.html`   284 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   227 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …

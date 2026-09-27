@@ -89,6 +89,8 @@
       carRadioRevision = 0,
       carRadioLead = MUSIC_STATIONS[0].lead,
       carRadioGain = 0,
+      // The level of the moment (syncCarRadio's target), glided so a duck never steps.
+      carRadioLevel = 0.27,
       // performance.now() time until which the station's tagline shows.
       carRadioTaglineUntil = 0,
       carRadioTaglineTimer = null;
@@ -333,7 +335,11 @@
           : 0.27;
       if (!carRadioPlayer.paused)
         carRadioGain = clamp(carRadioGain + (deltaSeconds || 0.016) * RADIO_FADE_IN, 0, 1);
-      carRadioPlayer.volume = clamp(target * carRadioGain * volumeScale('radio'), 0, 1);
+      // A callout or a mission line ducks the music: down in about a tenth of a
+      // second, back up over about a second.
+      const glide = (deltaSeconds || 0.016) * (target < carRadioLevel ? 10 : 1.6);
+      carRadioLevel = carRadioGain <= 0 ? target : carRadioLevel + (target - carRadioLevel) * Math.min(1, glide);
+      carRadioPlayer.volume = clamp(carRadioLevel * carRadioGain * volumeScale('radio'), 0, 1);
       if (gesture) carRadioBlocked = false;
       if (carRadioPlayer.paused && !carRadioPending && !carRadioBlocked) {
         const revision = carRadioRevision;

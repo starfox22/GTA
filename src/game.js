@@ -130,6 +130,11 @@
     // @include src/clubtalk.js
     // @include src/leisure.js
     // @include src/ambience.js
+    // @include src/ambience-beds.js
+    // @include src/acoustics-audio.js
+    // @include src/footsteps-audio.js
+    // @include src/vehicle-foley-audio.js
+    // @include src/bullets-audio.js
     // @include src/quality.js
     // @include src/settings.js
     // @include src/god-panel.js

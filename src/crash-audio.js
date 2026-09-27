@@ -210,14 +210,17 @@
       if (!audio || !soundOn) return;
       const bus = audio.createGain(),
         pan = audio.createStereoPanner(),
-        tone = audio.createBiquadFilter();
+        tone = audio.createBiquadFilter(),
+        // Behind a building a crash is a muffled thud (acoustics-audio.js).
+        shade = soundShade(o, d);
       // Far crashes lose their top end as well as their level.
       tone.type = 'lowpass';
-      tone.frequency.value = clamp(16000 - d * 11, 2500, 16000);
-      bus.gain.value = attenuation;
+      tone.frequency.value = Math.min(clamp(16000 - d * 11, 2500, 16000), Math.max(900, shade.cutoff));
+      bus.gain.value = attenuation * shade.gain;
       pan.pan.value = clamp((o.x - player.x) / 450, -0.9, 0.9);
       bus.connect(tone).connect(pan).connect(master);
-      if (c.set !== 'bump' && c.set !== 'scrape') pan.connect(reverb);
+      // The street's slap-back or the county's echo as well as the reverb.
+      if (c.set !== 'bump' && c.set !== 'scrape') pan.connect(reverbSend || reverb);
       crashLayer(bus, c.sample, 0, c.gain, c.rate);
       if (c.glass) crashLayer(bus, c.glass.sample, randomBetween(0.02, 0.05), c.glass.gain, randomBetween(0.95, 1.05));
       if (c.skid) {
