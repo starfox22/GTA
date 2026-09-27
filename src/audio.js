@@ -46,8 +46,7 @@
       reverbSend = null,
       // A low-pass across the whole mix: open on land, dulled while swimming
       // (water-audio.js dips it each time the face goes under).
-      earFilter = null,
-      footstepClock = 0;
+      earFilter = null;
     function initAudio() {
       if (!window.AudioContext && !window.webkitAudioContext) return;
       if (audio) {
@@ -95,9 +94,8 @@
           }
         }
         reverb.buffer = ir;
-        const wet = audio.createGain();
-        wet.gain.value = 0.2;
-        reverb.connect(wet).connect(master);
+        // The room's returns (slap-back, open-country echo) and `reverbSend` (acoustics-audio.js).
+        buildRoom();
         for (const [name, url] of Object.entries(ASSETS.audio || {})) {
           const bytes = Uint8Array.from(atob(url.split(',')[1]), (c) => c.charCodeAt(0));
           audio
@@ -122,13 +120,16 @@
       filter.type = 'lowpass';
       filter.frequency.value = 4800;
       g.gain.value = 0;
-      // The tyres and the rotor are vehicles; the siren has its own slider.
-      s.connect(filter).connect(g).connect(name === 'siren' ? sirenBus : engineBus);
+      // The tyres and the rotor are vehicles; the siren has its own slider and is
+      // placed on the nearest cruiser (pan, Doppler: soundUpdate).
+      const pan = audio.createStereoPanner();
+      s.connect(filter).connect(g).connect(pan).connect(name === 'siren' ? sirenBus : engineBus);
       s.start();
       audioLoops[name] = {
         source: s,
         gain: g,
         filter,
+        pan,
       };
     }
     /*
@@ -208,7 +209,10 @@
     /* A recorded sample, optionally from a map position (attenuated and panned
        from the player; a position with an `elevation` also counts the height
        between it and the player, e.g. the Falcon's train) and `delay` seconds
-       from now. */
+       from now. A positioned sound is dulled by distance and muffled behind a
+       building (acoustics-audio.js soundShade); gunfire and explosions also send
+       to the room (the reverb, a street's slap-back, the county's echo). */
+    const ROOM_SAMPLES = new Set(['pistol', 'automatic', 'shotgun', 'rifle', 'explosion']);
     function playSample(name, volume = 0.5, rate = 1, position = null, bus = master, delay = 0) {
       if (!audio || !soundOn) return;
       const b = audioBuffers[name];
@@ -218,21 +222,38 @@
         pan = audio.createStereoPanner();
       s.buffer = b;
       s.playbackRate.value = rate;
-      let attenuation = 1;
+      let attenuation = 1,
+        distance = 0,
+        air = null,
+        send = null;
       if (position) {
-        const rise = position.elevation === undefined ? 0 : position.elevation - entityElevation(player),
-          distance = Math.hypot(distanceBetween(position, player), rise);
+        const rise = position.elevation === undefined ? 0 : position.elevation - entityElevation(player);
+        distance = Math.hypot(distanceBetween(position, player), rise);
         attenuation = 1 / (1 + distance / 230);
         pan.pan.value = clamp((position.x - player.x) / 450, -0.9, 0.9);
+        if (distance > 24) {
+          const shade = soundShade(position, distance);
+          attenuation *= shade.gain;
+          air = audio.createBiquadFilter();
+          air.type = 'lowpass';
+          air.frequency.value = shade.cutoff;
+          air.Q.value = 0.5;
+        }
       }
       g.gain.value = volume * attenuation;
-      s.connect(g).connect(pan).connect(bus || master);
-      if (['pistol', 'automatic', 'shotgun', 'rifle', 'explosion'].includes(name)) pan.connect(reverb);
+      (air ? s.connect(air) : s).connect(g).connect(pan).connect(bus || master);
+      if (ROOM_SAMPLES.has(name) && reverbSend) {
+        send = audio.createGain();
+        send.gain.value = volume * roomSendLevel(distance);
+        s.connect(send).connect(reverbSend);
+      }
       s.start(delay > 0 ? audio.currentTime + delay : 0);
       s.onended = () => {
         s.disconnect();
         g.disconnect();
         pan.disconnect();
+        if (air) air.disconnect();
+        if (send) send.disconnect();
       };
     }
     function tone(f, d = 0.1, v = 0.2, type = 'sine', end) {
@@ -348,23 +369,49 @@
             // Narrow bicycle tyres do not howl through a turn.
             !vehicleSpec(c).bicycle,
           slip = road ? clamp(c.tyreSlip || 0, 0, 1) : 0,
-          locked = road && c.tyres ? Math.max(c.tyres.lock[0], c.tyres.lock[1]) : 0;
-        glideParam(tires.gain.gain, active && slip > 0.08 ? 0.05 + 0.19 * Math.pow(slip, 0.8) : 0, audio.currentTime, 0.07);
-        glideParam(tires.source.playbackRate, 1.04 - 0.14 * locked + 0.06 * (c?.tyres?.spin || 0), audio.currentTime, 0.1);
+          locked = road && c.tyres ? Math.max(c.tyres.lock[0], c.tyres.lock[1]) : 0,
+          // Only tarmac howls: sand, grass and dirt hiss and crunch instead (the
+          // scrub, vehicle-foley-audio.js), and a wet road squeals softer and lower.
+          ground = road ? tyreGround(c) : null,
+          squeal = !ground ? 0 : ground.loose ? 0.12 : 1 - 0.45 * ground.wet;
+        glideParam(tires.gain.gain, active && slip > 0.08 ? (0.05 + 0.19 * Math.pow(slip, 0.8)) * squeal : 0, audio.currentTime, 0.07);
+        glideParam(tires.source.playbackRate, (1.04 - 0.14 * locked + 0.06 * (c?.tyres?.spin || 0)) * (1 - 0.07 * (ground?.wet || 0)), audio.currentTime, 0.1);
       }
+      // The horn, the loose-ground scrub and traffic skids (vehicle-foley-audio.js).
+      updateVehicleFoley(deltaSeconds, active);
+      // The ear probe and the room's returns (acoustics-audio.js).
+      updateAcoustics(deltaSeconds);
       absBuzz(active && !!c?.absActive);
       const siren = audioLoops.siren;
       if (siren) {
-        let d = 10000;
+        let d = 10000,
+          nearest = null;
         for (const car of vehicles)
-          if (car.hp > 0 && ((car.cop && wantedStars > 0) || car.gangTarget))
-            d = Math.min(d, distanceBetween(car, player));
-        glideParam(siren.gain.gain, 
+          if (car.hp > 0 && ((car.cop && wantedStars > 0) || car.gangTarget)) {
+            const dc = distanceBetween(car, player);
+            if (dc < d) {
+              d = dc;
+              nearest = car;
+            }
+          }
+        glideParam(siren.gain.gain,
           active ? clamp(1 - d / 700, 0, 1) * 0.18 : 0,
           audio.currentTime,
           0.2,
         );
-        glideParam(siren.filter.frequency, clamp(6500 - d * 7, 800, 6500), audio.currentTime, 0.2);
+        // From where the cruiser is, pitched by its closing speed (the traffic
+        // engines' Doppler, engine-audio.js), dull behind a building.
+        const shade = nearest && d < 700 ? soundShade(nearest, d) : null;
+        glideParam(siren.filter.frequency, Math.min(clamp(6500 - d * 7, 800, 6500), shade ? Math.max(650, shade.cutoff) : 6500), audio.currentTime, 0.2);
+        if (nearest) {
+          const dx = nearest.x - player.x,
+            dy = nearest.y - player.y,
+            dd = Math.max(1, d),
+            ear = player.car || null,
+            closing = ((nearest.vx || 0) * -dx + (nearest.vy || 0) * -dy) / dd - ((ear?.vx || 0) * -dx + (ear?.vy || 0) * -dy) / dd;
+          glideParam(siren.pan.pan, clamp(dx / 450, -0.8, 0.8), audio.currentTime, 0.15);
+          glideParam(siren.source.playbackRate, clamp(SOUND_SPEED / (SOUND_SPEED - closing), 0.86, 1.16), audio.currentTime, 0.12);
+        }
       }
       const rotor = audioLoops['rotor-loop'];
       if (rotor) {
@@ -393,35 +440,8 @@
       updateWaterAudio(deltaSeconds);
       // The shark's score and the dolphins' voices (sealife-audio.js).
       updateSeaLifeAudio(deltaSeconds);
-      if (!active) return;
-      footstepClock -= deltaSeconds;
-      const walking =
-        !c &&
-        !player.swimming &&
-        !player.climbing &&
-        (keys.KeyW ||
-          keys.KeyA ||
-          keys.KeyS ||
-          keys.KeyD ||
-          keys.ArrowUp ||
-          keys.ArrowLeft ||
-          keys.ArrowDown ||
-          keys.ArrowRight);
-      if (walking && footstepClock <= 0) {
-        // One footfall per step at the pace the legs are going (game.js strideRate).
-        footstepClock = Math.PI / strideRate(footPace());
-        if (player.wading) {
-          // Striding through the shallows: slower steps, each one a swish.
-          footstepClock *= 1.35;
-          wadeStepSound(player.wading);
-        } else if (onBeach(player.x, player.y) && !player.roof) {
-          // Soft sand gives under the foot: a dull crunch and no heel strike.
-          noise(0.12, 0.07, 300 + Math.random() * 180);
-        } else {
-          noise(0.09, 0.095, 520 + Math.random() * 260);
-          tone(95 + Math.random() * 40, 0.045, 0.09, 'sine', 45);
-        }
-      }
+      // Footsteps by surface, landings and the rustle of a run (footsteps-audio.js).
+      updateFootsteps(deltaSeconds, active);
     }
     /* ABS: while it works, a faint rattle on the effects bus, the pump and the
        valves pulsing at about 12 Hz under the pedal. Built on first use. */
@@ -554,6 +574,15 @@
         engineSound: () => engineReport(),
         // The rain beds' gains, cover and cabin filter (weather-audio.js).
         rainSound: () => rainReport(),
+        // The ear probe (enclosure, walls, relief, lift), the zone and the room's
+        // returns (acoustics-audio.js).
+        acoustics: (x, y) => acousticsReport(x, y),
+        // The ambience beds: zone weights, gusts, bed levels, events heard (ambience-beds.js).
+        soundscape: () => ({ ...ambienceBedsReport(), cabin: ambience ? Math.round(ambience.cabin.frequency.value) : null, acoustics: acousticsReport() }),
+        // The ground under the player's steps (or at x, y), steps and landings (footsteps-audio.js).
+        footsteps: (x, y) => footstepsReport(x, y),
+        // The horn, the tyres' ground, the scrub, the traffic skid voice, doors (vehicle-foley-audio.js).
+        vehicleFoley: () => vehicleFoleyReport(),
       };
     }
     // END SUBSYSTEM: src/audio.js

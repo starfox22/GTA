@@ -194,7 +194,7 @@
         player.car = null;
         player.inv = 0.5;
         tell('ROOFTOP · ' + keyName('interact') + ' at the helicopter to fly on', 2.5);
-        tone(160, 0.06, 0.15, 'triangle');
+        vehicleDoorSound(vehicle, 'exit');
         return;
       }
       let found = false;
@@ -264,7 +264,7 @@
       player.car = null;
       player.inv = 0.5;
       tell('On foot · ' + keyName('fire') + ' to fire · hold ' + keyName('walk') + ' to walk', 1.8);
-      tone(160, 0.06, 0.15, 'triangle');
+      vehicleDoorSound(vehicle, 'exit');
     }
     function interact() {
       if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
@@ -328,7 +328,7 @@
       if (c) {
         if (vehicleIsLocked(c)) {
           tell('LOCKED', 1.8);
-          tone(140, 0.07, 0.2, 'square');
+          lockedHandleSound();
           return;
         }
         // Somebody at the wheel: the struggle at the door (carjack-struggle.js), which
@@ -405,7 +405,8 @@
               ' steer · ' + keyName('handbrake') + ' handbrake',
             3,
           );
-        tone(200, 0.12, 0.25, 'triangle');
+        // The door (or kickstand, hatch...) behind you (vehicle-foley-audio.js).
+        vehicleDoorSound(c, 'enter');
     }
     function roofClearanceText(c) {
       const roof = roofHeightNear(c.x, c.y),
