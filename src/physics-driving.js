@@ -331,11 +331,13 @@
             Math.sign(along || 1) *
             (brake ? 1.35 : 1);
           c.handbrakeTurn = !!brake && !pedalled && Math.abs(along) > 8 * KMH;
-          // The limit follows the speed along the path, not along the nose: in a
-          // slide the nose-on share shrinks, and a limit read from it let the car
-          // rotate ever faster the further round it went (a spin, not a drift).
+          // Well sideways the limit follows the speed along the path, not along the
+          // nose: in a slide the nose-on share shrinks, and a limit read from it let
+          // the car rotate ever faster the further round it went (a spin, not a
+          // drift). Up to ~37 degrees of slip (a trail's crabbing, a tidy drift) it
+          // is the nose-on speed, as for every other driver.
           const cornerLimit =
-            corneringLimit(vehicleDefinition, Math.hypot(c.vx, c.vy)) * handling.grip * surface * (pedalled ? 1 : cornerShare) * (brake ? (pedalled ? 1.6 : HANDBRAKE_CORNER) : 1);
+            corneringLimit(vehicleDefinition, Math.max(Math.abs(along), 0.8 * Math.hypot(c.vx, c.vy))) * handling.grip * surface * (pedalled ? 1 : cornerShare) * (brake ? (pedalled ? 1.6 : HANDBRAKE_CORNER) : 1);
           /* UNDERSTEER SKID
              The key asks for full lock; the tyres give what grip allows (the clamp
              below), which is a clean line for a tap, a lane change or a sweeping bend.

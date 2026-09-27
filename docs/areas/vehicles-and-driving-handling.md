@@ -29,8 +29,9 @@ driving.js). Specs, crashes, aircraft and models: vehicles-and-driving.md.
   lift catches it. Lift-off with the lock held and a locked rear still spin. The handbrake
   swings the tail (`HANDBRAKE_SWING`; `HANDBRAKE_CORNER`, `HANDBRAKE_YAW_RESPONSE` in
   physics-driving.js): a 0.5 s flick at 55 km/h turns a sedan ~40 degrees, held ~1.5 s it
-  makes a 180. Slide maths reads the speed along the path (`hypot(along, lateral)`), never
-  the nose-on share (that let a slide spin itself up). Measure with `driftTest`
+  makes a 180. Slide maths reads the speed along the path (`hypot(along, lateral)`), and the yaw
+  cap takes it past ~37 degrees of slip (a nose-on speed there let a slide spin itself up;
+  below that the trail pilot's crabbing needs the nose-on one: falls.mjs drive-trail). Measure with `driftTest`
   (tools/tests/drift-handling.mjs).
 - Traffic in the rain drives inside `wetGrip()`, slower; one driver in eleven keeps dry habits
   (the odd rear-ender). `aiDriving()` counts crashes and slides.
