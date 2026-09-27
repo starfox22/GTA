@@ -339,6 +339,10 @@
           } else if (garagePrompt(c) !== null)
             // The price at the door (garages.js PRICE LIST); E skips the show.
             prompt = garagePrompt(c);
+        } else if (lootPrompt()) {
+          // Over the body of someone who carried a gun (ammo-supply.js).
+          prompt = lootPrompt().text;
+          promptId = lootPrompt().id;
         } else if (northPointKeyPrompt()) {
           // North Point Key: a tower lift, the CIRRUS bar (skyline-lift.js, skyline-bar.js).
           const key = northPointKeyPrompt();

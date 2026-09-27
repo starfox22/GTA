@@ -69,9 +69,8 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   NPC counterpart of `player.armor`; `VEST_SHARE` per damage kind.
 - Wounds (wounds.js): hit zones, flinch, limp, blood trail, downed officers dragged to cover,
   `chooseDeathFall` (backwards, face down, slumped against a wall).
-- Firing kicks the view against the aim (`kickCamera`, by the round's weight; camera-feel.js);
-  on foot `shooterInView` centres its box on `cameraTarget` (the view leads toward the aim
-  in a fight), in a vehicle on the player.
+- Firing kicks the view against the aim (`kickCamera`, by the round's weight; camera-feel.js).
+  Nobody shoots the player from off screen: `shooterInView` (police-and-combat-ammo.md).
 - Melee and FISTS live in arsenal.js (`meleeAttack`; `playerUnarmed()` tells the crowd the
   player is harmless).
 - Carjacking: carjack.js (occupants with sex, age and temper, locked doors, the ejection,
