@@ -333,6 +333,8 @@
             if (hitKind === 'wall') hitKind = bulletHitSurface(b);
             particle(b.x, b.y, hitKind === 'metal' ? '#dbd8a7' : '#aaa89e', 3, 40);
             if (city3D) city3D.impact(b.x, b.y, hitKind, b.altitude || 0);
+            // The strike's sound by surface: a chip, a ricochet, a knock, glass (bullets-audio.js).
+            bulletImpactSound(b.x, b.y, hitKind, b.altitude || 0);
           } else if (!impact) bulletSpent(b);
           // The Apache's 30 mm rounds burst where they strike (apache.js).
           if (b.heavyRound && impact) apacheRoundImpact(b);

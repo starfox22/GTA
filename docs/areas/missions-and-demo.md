@@ -81,6 +81,12 @@ index plus one.
   ammunition, `stats` (`campaignStats`: play time, cash earned, wanted peak), sportsbook bets.
   Progression frontier decides what the picker offers; a job played ahead of the story does
   not advance the campaign.
+- `save()` runs on events (a job's end, WASTED, BUSTED, a purchase, a garage, a skipped
+  ride) and whenever play pauses, which leaving the tab does: nothing earned in free roam
+  waits for the next event. Check a save with `node tools/dev.mjs reload --keep`.
+- WASTED wakes the player at `nearestHospital()` (game-player-actions.js; THE HALCYON CLINIC
+  only on and round Monarch Isle), BUSTED at the Police HQ (`policeRespawnPoint`). The first
+  hospital in `PLACES` (Saint Marlow) keeps the rooftop helipad.
 
 ## Public demo (`DEMO_BUILD`, game-state.js; campaign.js PUBLIC DEMO)
 
@@ -107,7 +113,8 @@ index plus one.
   (`setGodWeather`), refill (`godRefill`), lose police (`godLosePolice`: also marks the
   player's crowd incidents reported so a call in progress does not re-raise a star, and ends
   the Fort Sentinel alarm), teleport (map pick mode).
-- `godTeleport(x, y)` is the safe move: nearest walkable spot, a boat spawned on open water,
+- `godTeleport(x, y)` is the safe move: nearest walkable spot (not a loose mountain face
+  steeper than `SLIP_GRADE`, where the body would slide off), a boat spawned on open water,
   the current road vehicle placed on the nearest lane where `canSpawnCar` passes, aircraft
   kept airborne; then `teleportPlayer`, camera snap, crowd resettle, a second's grace.
 - Console: `god(on)`, `godPanel()`, `godTeleport(x, y)`, `godRefill()`, `godLosePolice()`,

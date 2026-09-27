@@ -11,6 +11,20 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The bag snatch's tackle is proximity only (no tackle animation); punching or shooting the thief is still an assault.
 - Performance (headless): physics +0.1-0.7 ms per 60 fps frame with ~40 more cars moving round the player (`trafficBenchmark`).
 
+## Soundscape (acoustics-audio.js, ambience-beds.js, footsteps-audio.js, vehicle-foley-audio.js, bullets-audio.js)
+- The room's returns (reverb, slap, echo) are on the effects bus: a tunnel's engine boom and footsteps' reflections follow the Effects slider, not Engines.
+- Ambience events are not placed by occlusion or sent to the room (a ship's horn has no echo); zones are coarse (districts, park rectangles, terrain height).
+- Only runners' steps are heard (walkers are silent); a person moving 2.4-9 m/s on something other than a car (a cyclist on the pavement) would step.
+- Drivers getting out after a crash make no door sound; traffic has no indicator ticks; the drawbridge's steel deck does not sing under tyres.
+- The listener is the player, not the camera: in the zoomed-out views pan and distance are from the player.
+- Headless, the reports read Web Audio automation in audio time: after a simulated `wait` the gliding gains lag the probe (they glide in real time); judge levels in a real browser.
+
+## Free roam and HUD (docs/audit/freeroam-sweep.md)
+- Phone (390 px): the car radio unfolds mid-screen for 4 s on getting in, and a toast can sit over it.
+- Touch: toasts and the radio chips name keyboard keys (`keyName` has no touch labels).
+- The demo's mission card counts MISSION 01 / 11 with two jobs open (design question).
+- MIDTOWN, SOUTH BANK, IRONWORKS DOCKS and PALM KEYS · ART DECO have no label on the city map.
+
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 
@@ -106,5 +120,3 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Witnesses and 911 (witnesses.js, crowd-witnesses.js)
 - A call from inside a shop (hidden off-stage call) has no bubble; the 911 bubble keeps the street's 10 px font: check it reads on a HiDPI screen.
 
-## Other
-- `src/marina.js` calls the superyacht 105 m; its deck spans about 66 m at the current scale.

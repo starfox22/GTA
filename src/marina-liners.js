@@ -520,7 +520,7 @@
     ];
     /**
      * THE SUPERYACHT
-     * M/Y AURELIA, 105 metres, moored stern-to the west quay. Five walkable
+     * M/Y AURELIA, about 66 metres (aft to fwd), moored stern-to the west quay. Five walkable
      * levels plus the helipad; `levels[i].z` is the deck surface height. Walkable
      * area is each level's outline (the main deck follows the hull plan inside
      * the bulwarks) minus deckhouses, furniture and stair wells. A stair is a

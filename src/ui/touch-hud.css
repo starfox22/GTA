@@ -162,6 +162,23 @@
 .touch-mode #carRadio.open {
   width: 250px;
 }
+/* Touch has no hover: a tapped box keeps :hover, and a tapped preset keeps the focus,
+   long after the tap's pop (.open, hud-state.js hudPop) has ended. Here only .open
+   unfolds a pop box, or it stayed unfolded at the chip's width with every label cut. */
+.touch-mode .hud-pop:not(.open):hover .hud-more,
+.touch-mode .hud-pop:not(.open):focus-within .hud-more,
+.touch-mode .hud-pop:not(.open):focus-visible .hud-more {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+.touch-mode #carRadio:not(.open):hover,
+.touch-mode #carRadio:not(.open):focus-within {
+  padding: 7px 12px;
+  background: var(--ui-panel);
+}
+.touch-mode #carRadio:not(.open):hover #radioStation {
+  font-size: 13px;
+}
 .touch-mode .radio-knob {
   --size: 76px;
 }
@@ -234,6 +251,11 @@
   }
   .touch-mode .ammo strong {
     font-size: 17px;
+  }
+  /* A docked headline would sit under the minimap and weapon row: on a phone it fades
+     out instead (the mission card already carries the job's title). */
+  .touch-mode #announcement.show.docked {
+    opacity: 0;
   }
   /* Between the mission card and the button strip: toast, dialogue, status. */
   .touch-mode #toast {

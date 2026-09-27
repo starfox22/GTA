@@ -718,19 +718,12 @@
       if (t === 1) {
         const up = liftTravel.up;
         liftTravel = null;
+        // teleportPlayer is the one way to move the player (it lets go of every carrier
+        // and the roof); the terrace is taken again after it.
+        if (up) teleportPlayer(ROOFTOP.lift.x + 35, ROOFTOP.lift.y - 3);
+        else teleportPlayer(ROOFTOP.door.x, ROOFTOP.door.y);
         player.roof = up;
         player.altitude = up ? ROOFTOP.height + 3 : 0;
-        Object.assign(
-          player,
-          up
-            ? {
-                x: ROOFTOP.lift.x + 35,
-                y: ROOFTOP.lift.y - 3,
-              }
-            : ROOFTOP.door,
-        );
-        cameraTarget.x = player.x;
-        cameraTarget.y = player.y;
         gameMode = 'play';
         getElement('elevatorOverlay').classList.add('hidden');
         canvas.focus();

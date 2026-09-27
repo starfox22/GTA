@@ -105,6 +105,12 @@
     padding: 5px 12px;
     font-size: 12px;
   }
+  /* While the mission card is unfolded (its first seconds) it reaches down past 258
+     px on a phone, and the toast and dialogue lines sit under it: the chase status and
+     timer step aside until it folds (the stars still show the wanted level). */
+  .touch-mode:has(#pager:not(.compact):not(.hidden)) #policeStatusPanel {
+    visibility: hidden;
+  }
 }
 @media (max-height: 520px) and (min-width: 601px) {
   .touch-mode #policeStatusPanel {

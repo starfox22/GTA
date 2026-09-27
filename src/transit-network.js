@@ -181,6 +181,7 @@
       mouse.down = false;
       getElement('transitOverlay').classList.remove('hidden');
       getElement('transitTitle').textContent = s.name;
+      getElement('transitKey').textContent = keyName('interact');
       getElement('transitOptions').replaceChildren();
       for (const target of RAIL_STATIONS) {
         if (target === s) continue;
@@ -233,7 +234,7 @@
       player.x = train.x;
       player.y = train.y;
       player.altitude = 62;
-      tell('CITY RAIL · ' + target.name + ' · E to get off at the next station', 5);
+      tell('CITY RAIL · ' + target.name + ' · ' + keyName('interact') + ' to get off at the next station', 5);
       return true;
     }
     function transitInteract() {

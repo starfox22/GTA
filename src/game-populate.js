@@ -257,4 +257,23 @@
           ready: 0,
         }),
       );
+      // Beyond Northbank: health by the other hospitals and the county lodges, ammo
+      // by the Palm Keys armory and the Eastgate outfitters, armor on the Palm Keys
+      // sand, Crown Avenue, Sunset Pier, North Point Key and at Southport.
+      for (const [x, y, type] of [
+        [-1730, 1996, 'health'], // RIVERSIDE MEDICAL
+        [-2244, 1425, 'ammo'], // PALM KEYS ARMORY
+        [-2100, 5560, 'armor'], // PALM KEYS BEACH
+        [9000, -3030, 'health'], // THE HALCYON CLINIC
+        [7400, -3000, 'armor'], // CROWN AVENUE
+        [2943, -6382, 'armor'], // SUNSET PIER
+        [4091, -3522, 'armor'], // NORTH POINT KEY
+        [7020, 3450, 'health'], // STONECREEK
+        [9160, 3076, 'health'], // NORTHRIDGE
+        [8990, 4953, 'ammo'], // EASTGATE
+        [2476, 7260, 'health'], // OCEANVIEW
+        [7050, 7850, 'health'], // PALMSHORE
+        [800, 4476, 'armor'], // SOUTHPORT
+      ])
+        pickups.push({ x, y, type, ready: 0 });
     }

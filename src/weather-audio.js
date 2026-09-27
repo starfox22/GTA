@@ -253,7 +253,8 @@
       pan.pan.value = at ? clamp((at.x - player.x) / Math.max(400, distance), -0.8, 0.8) : 0;
       source.connect(low).connect(body).connect(gain).connect(pan);
       pan.connect(rainAudio ? rainAudio.cabin : master);
-      if (reverb && near > 0.2) pan.connect(reverb);
+      // Near claps fill the room: the reverb, a street's slap-back, the hills' echo.
+      if (reverbSend && near > 0.2) pan.connect(reverbSend);
       source.start(now);
       source.onended = () => {
         source.disconnect();

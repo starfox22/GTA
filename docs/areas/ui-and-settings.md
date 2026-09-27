@@ -51,7 +51,8 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
 - Layout: location top left; cash, stars and clock top right; waypoint pill top centre;
   minimap with health and armour, mission card and equipment column along the bottom (moved
   to the top in touch mode). Radio and weapon boxes are `.hud-pop` chips opened by
-  `hudPop(id)` or hover.
+  `hudPop(id)` or hover; in touch mode only by `hudPop` (a tap), since a tapped box keeps
+  `:hover` / `:focus-within` long after its pop ends (touch-hud.css).
 - Minimap: zoom by wheel or pinch (`minimapZoom()` scales the cached base layer), foldable,
   saved in `dead-end-city-hud`. GPS route on the minimap (`hudState.gps`).
 - **Interaction prompt contract** (hud.js INTERACTION PROMPT): systems never write

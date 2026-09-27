@@ -19,6 +19,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/police-and-combat-witnesses.md | Witnesses and 911 calls: who calls, the call and its bubbles, the response to a report, `witnessReport` |
 | areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, saves, the demo build, god mode, ride skip |
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
+| areas/audio-soundscape.md | Free-roam sound: the ear probe and the room (slap-back, echo, occlusion), ambience beds by place, footsteps by surface, horns, doors, tyre ground |
 | areas/rendering.md | Cameras and view, draw-call rules, buildings and signs, ground, water, wet roads, weather, tiers |
 | areas/rendering-lighting.md | HDR pipeline and post passes, sun, night light map, vehicle lamps, searchlights, the cutaway |
 | areas/rendering-clouds.md | The cloud layer's altitude by weather and area (`cloudBaseAt`), the march, the veil, wisps and lens in cloud, cloud shadows |
@@ -50,6 +51,7 @@ re-auditing it.
 | audit/missions-qa.md | All 16 missions after the world overhaul |
 | audit/physics-flight.md | Physics, combat rules, arsenal, air cover, parachute, aviation |
 | audit/systems-qa.md | Open-world systems after the railway, beach, superyacht, damage and crowd passes |
+| audit/freeroam-sweep.md | Free roam on every island: doors, vehicles, police, services, touch HUD, saves, long idle |
 
 Area docs hold the *why*: contracts, gotchas and decisions the code does not say. Details
 that code or FILEMAP already state belong there, not here. Keep each area doc under ~8 KB;

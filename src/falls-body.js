@@ -76,11 +76,12 @@
           outcome: 'safe',
         };
       logFall(entry);
+      // Both feet coming down on the ground's own surface (footsteps-audio.js).
+      if (!water && into > 1.5 * UNITS_PER_METRE && cause !== 'vehicle') footLandSound(into);
       if (!injury || player.godMode || gameMode !== 'play') {
         if (!water && into > 5 * UNITS_PER_METRE) {
-          // A stumble: dust, a grunt of the knees and a nudge of the camera.
+          // A stumble: dust, the knees and a nudge of the camera.
           particle(player.x, player.y, '#a39a82', 5, 45, 2.5);
-          noise(0.12, 0.16, 420);
           shake = Math.max(shake, 1.5);
         }
         return 'safe';

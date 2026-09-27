@@ -19,7 +19,7 @@ python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html
 python3 tools/filemap.py                 # regenerate docs/FILEMAP.md after adding/removing/renaming files
 node tools/smoke.mjs dist/game.html dist/smoke         # headless boot, walk, drive, map: errors + 5 screenshots
 node tools/tour.mjs steps.json dist/tour dist/game.html   # scripted screenshots (?dev console)
-node tools/layout-audit.mjs dist/game.html             # city-plan overlaps (28-39 oblique-junction notes are expected)
+node tools/layout-audit.mjs dist/game.html             # city-plan overlaps (~59 oblique-junction notes, county and Monarch, are expected)
 node tools/media-check.mjs dist/publish/index.html     # streamed tracks load over file://
 python3 tools/changelog.py --new <topic> "<Title>"     # start a changelog fragment
 ```
@@ -43,6 +43,7 @@ node tools/dev.mjs call <method> [json...]    # a NAMED DeadEndCity method → c
 node tools/dev.mjs keys KeyW,KeyD 3 | wait 5  # simulate() game seconds (--real: real key presses)
 node tools/dev.mjs shot <name> [--crop x,y,w,h] [--width 480]   # small JPEG in dist/dev/shots/
 node tools/dev.mjs reload | errors | stop     # rebuild+reload after edits (fresh profile) / console errors / quit
+node tools/dev.mjs reload --keep             # reload with the same browser profile (check a save survives)
 ```
 
 The default dev page is `?dev&norender` (`NO_RENDER` in render3d.js: no WebGL, ~55 fps). Use
@@ -98,6 +99,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   for the freefall cue: change them there only.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
+- Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
+  (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud

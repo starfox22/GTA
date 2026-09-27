@@ -70,6 +70,9 @@
       }
       if (gameMode === 'play') {
         gameMode = 'pause';
+        // Pausing saves: free-roam cash, ammo and the clock otherwise wait for the next
+        // purchase, job or respawn, and leaving the tab pauses first (game-input.js).
+        save();
         getElement('pauseMenu').classList.remove('hidden');
         getElement('pauseInfo').textContent =
           completed +
