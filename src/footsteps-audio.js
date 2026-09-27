@@ -41,6 +41,10 @@
       mud: { body: [75, 0.05, 0.08], grit: ['lowpass', 700, 1.2, 0.075, 0.02, 0.16], squelch: 0.05 },
     };
     const footGround = { mud: 0, rock: 0, across: 9, seg: -1, trail: -1 };
+    /* How wet the ground under the player is: weather.wet, dry under cover. */
+    function footWet() {
+      return weather.wet > 0.2 ? weather.wet * (1 - rainShelter()) : 0;
+    }
     /* The ground under a point, a FOOT_SURFACES key. `roof` is 'terrace' on the Blue
        Hour terrace, truthy on a building's roof. */
     function footSurfaceAt(x, y, roof = null) {
@@ -136,9 +140,9 @@
         g.disconnect();
       };
     }
-    /* A step's (or a door's) bus on the effects: one gain and pan, torn down after the
-       longest layer (`seconds`). */
-    function foleyBus(level, pan, seconds = 0.7) {
+    /* A step's (or a door's) bus on the effects (or `bus`): one gain and pan, torn down
+       after the longest layer (`seconds`). */
+    function foleyBus(level, pan, seconds = 0.7, bus = master) {
       const g = audio.createGain(),
         p = audio.createStereoPanner(),
         // Under a deck or between close walls the steps ring back (acoustics-audio.js).
@@ -146,7 +150,7 @@
         send = room > 0.03 && reverbSend ? audio.createGain() : null;
       g.gain.value = level;
       p.pan.value = pan;
-      g.connect(p).connect(master);
+      g.connect(p).connect(bus);
       if (send) {
         send.gain.value = room;
         g.connect(send).connect(reverbSend);
@@ -210,7 +214,7 @@
       if (!audio || !soundOn || gameMode !== 'play' || player.car || player.swimming) return;
       const surface = footSurfaceAt(player.x, player.y, player.roof ? 'terrace' : player.buildingRoof),
         weight = clamp(into / (7 * UNITS_PER_METRE), 0.6, 2.2),
-        wet = weather.wet * (1 - rainShelter());
+        wet = footWet();
       footstepSound(surface, 1, weight, wet, -0.05);
       footstepSound(surface, 0.6, weight * 0.7, wet, 0.05, 0.035);
       footTrail.landings++;
@@ -267,7 +271,7 @@
       }
       const run = clamp((footTrail.speed - 5.4 * KMH) / ((25 - 5.4) * KMH), 0, 1),
         surface = footSurfaceAt(player.x, player.y, player.roof ? 'terrace' : player.buildingRoof),
-        wet = weather.wet * (1 - rainShelter());
+        wet = footWet();
       footTrail.surface = surface;
       footTrail.wet = wet;
       footstepSound(surface, run, 1, wet, footTrail.side * 0.05);
@@ -290,7 +294,7 @@
       if (!active || deltaSeconds <= 0 || player.car) return;
       npcSteps.tokens = Math.min(NPC_STEP_BURST, npcSteps.tokens + deltaSeconds * NPC_STEP_RATE);
       npcSteps.dt = deltaSeconds;
-      npcSteps.wet = weather.wet * (1 - rainShelter());
+      npcSteps.wet = footWet();
       for (const o of officers) if (Math.abs(o.x - player.x) < NPC_STEP_REACH && Math.abs(o.y - player.y) < NPC_STEP_REACH) npcStepVisit(o);
       forPeopleNear(player.x, player.y, NPC_STEP_REACH, npcStepVisit);
     }

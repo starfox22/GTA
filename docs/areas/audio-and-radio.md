@@ -3,6 +3,8 @@
 audio.js (Web Audio lifecycle, the mix, samples, procedural sounds), engine-audio.js,
 crash-audio.js, weather-audio.js, water-audio.js, ambience.js, sealife-audio.js,
 sports-audio.js, beachclub-audio.js, themepark-sound.js, car-radio.js, settings.js (volumes).
+The free-roam soundscape (the ear probe and the room, ambience beds, footsteps, horns,
+doors, tyre ground) is in audio-soundscape.md.
 
 ## The mix (audio.js THE MIX)
 
@@ -17,10 +19,15 @@ sports-audio.js, beachclub-audio.js, themepark-sound.js, car-radio.js, settings.
 - All but voices pass the ride-skip `duckBus` (`setMixDuck`), then the ear filter
   (`earFilter`, dulled while swimming), then `mixBus` (master × Sound switch) and a limiter.
 - `applyVolumes()` pushes every change into the live mix and the radio knob.
+- Roomy sounds (guns, explosions, crashes) connect to `reverbSend`, never to `reverb`
+  directly: it also feeds the street slap-back and the county echo (audio-soundscape.md).
+- Audio code draws its randomness from `sfxRandom` (Math.random), not the seeded
+  `randomBetween`, so the world's sequence does not depend on the Sound switch.
 - Recorded loops (engines, rain) end with 0.2 s of their own start and are listed with their
   exact length in `LOOP_SECONDS`; play them with `loopingSource(name)` (Vorbis decoders
   disagree by a few hundred samples about where a file ends).
-- Console: `audioMix()`, `engineSound()`, `rainSound()`, `crashSounds()`, `stadiumSound()`.
+- Console: `audioMix()`, `engineSound()`, `rainSound()`, `crashSounds()`, `stadiumSound()`,
+  `acoustics()`, `soundscape()`, `footsteps(x, y)`, `vehicleFoley()`.
 
 ## Sound systems
 
@@ -36,9 +43,11 @@ sports-audio.js, beachclub-audio.js, themepark-sound.js, car-radio.js, settings.
 - Stadium: silent between goals (a filtered-noise bed read as white noise and was removed);
   a goal plays a recorded cheer from the scoring end and a groan from the other, scaled by
   `stadiumAudibility()`.
-- Everything else is procedural (ambience hum, water, drawbridge motors, parachute wind,
-  sea life whistles, the beach club's music on a look-ahead scheduler with `mareaGroove` as
-  the beat clock for dancers and lights).
+- Everything else is procedural (ambience hum and beds, footsteps, horns and doors, water,
+  drawbridge motors, parachute wind, sea life whistles, the beach club's music on a
+  look-ahead scheduler with `mareaGroove` as the beat clock for dancers and lights).
+- The car radio ducks under callouts and mission lines (0.27 to 0.11 of its level), gliding
+  down in ~0.1 s and back over ~1 s (`carRadioLevel`).
 
 ## Media and credits
 

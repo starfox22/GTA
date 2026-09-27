@@ -1,5 +1,5 @@
-    // Vehicle foley: the horn by class (the player's and traffic's), doors and a locked
-    // handle, the tyres' ground (squeal on tarmac, scrub on loose ground) and traffic skids.
+    // Vehicle foley: horns by class (the player's and traffic's), doors and a locked handle,
+    // the tyres' ground (squeal or scrub), traffic skids, suspension knocks and pass-by whooshes.
     /**
      * VEHICLE FOLEY
      * HORNS (hornKind, HORN_VOICES): a car's two-tone disc horn (square waves a major
@@ -22,7 +22,9 @@
      * SCRUB (the grit buffer looping through the ground's band) as loud as the slip; a
      * wet road squeals softer and lower. TRAFFIC SKIDS: the nearest traffic or police car
      * sliding (c.sliding, or its lateral speed) within 500 units gets one squeal voice,
-     * placed and dulled by distance.
+     * placed and dulled by distance. SUSPENSION: each new hop of the player's vehicle (a
+     * kerb, a rock, a rut, a landing) knocks through the body. PASS-BYS (below): a whoosh as
+     * a moving car goes by.
      */
     const HORN_VOICES = {
       // wave, notes (Hz), low-pass (Hz), level, attack (s), sag (the pitch it starts from).
@@ -160,6 +162,10 @@
       skidLevel: 0,
       skidClock: 0,
       doors: [],
+      hop: null,
+      thumps: 0,
+      passTokens: 3,
+      passBys: 0,
     };
     /* The player's horn while `horn` is held. */
     function updatePlayerHorn(c, held, dt) {
@@ -237,7 +243,98 @@
       glideParam(f.scrub.gain.gain, active && loose && slip > 0.06 ? 0.06 + 0.22 * Math.pow(slip, 0.8) : 0, now, 0.08);
       if (loose) glideParam(f.scrub.filter.frequency, LOOSE_GROUND[ground.kind], now, 0.2);
       glideParam(f.scrub.source.playbackRate, 0.8 + 0.5 * clamp(Math.abs(c?.speed || 0) / 400, 0, 1), now, 0.2);
+      // The body jolted into a hop: a kerb at speed (physics-driving.js kerbStrike), a rock
+      // or a rut on the trails (offroad-trails.js), a landing (falls-vehicles.js).
+      if (road && active && c.hop && c.hop !== f.hop) suspensionThump(c, c.hop.vz || 20);
+      f.hop = c ? c.hop || null : null;
       updateTrafficSkid(deltaSeconds, active, now);
+      updatePassBys(deltaSeconds, active);
+    }
+    /* The suspension taking a kerb or a rock: a low knock through the body and a rattle. */
+    function suspensionThump(c, vz) {
+      const fa = foleyBuffers();
+      if (!fa) return;
+      const k = clamp(vz / 40, 0.35, 1.1),
+        heavy = !!vehicleSpec(c).truck,
+        t = audio.currentTime,
+        out = foleyBus(1, 0, 0.8, engineBus);
+      foleyTone(out, 'sine', heavy ? 58 : 72, heavy ? 32 : 40, 0.26 * k, t, 0.14);
+      foleyNoise(out, fa.white, 'lowpass', 260, 0.8, 0.14 * k, t, 0.004, 0.09);
+      foleyNoise(out, fa.grit, 'bandpass', heavy ? 700 : 1000, 2, 0.04 * k, t + 0.02, 0.004, 0.08);
+      vehicleFoley.thumps++;
+    }
+    /**
+     * PASS-BYS: a moving car going past the ear (on foot, or past the player's car) at a
+     * closing speed over 25 km/h and within 80 units: a whoosh of tyres and air, its band
+     * falling as it goes (a Doppler of sorts), panned across. Heard on the ambience bus, so a
+     * closed cabin dulls it; a token bucket keeps a busy road to about two a second.
+     */
+    const passByState = new WeakMap();
+    function updatePassBys(deltaSeconds, active) {
+      const f = vehicleFoley;
+      if (!active || deltaSeconds <= 0 || !ambience) return;
+      f.passTokens = Math.min(3, f.passTokens + deltaSeconds * 2);
+      const ear = player.car || player,
+        evx = player.car ? player.car.vx || 0 : 0,
+        evy = player.car ? player.car.vy || 0 : 0;
+      for (const c of vehicles) {
+        if (c === player.car || c.hp <= 0) continue;
+        const dx = ear.x - c.x,
+          dy = ear.y - c.y;
+        if (Math.abs(dx) > 90 || Math.abs(dy) > 90 || isAircraft(c) || isBoat(c)) continue;
+        const cvx = c.vx || 0,
+          cvy = c.vy || 0,
+          rvx = cvx - evx,
+          rvy = cvy - evy,
+          rs = Math.hypot(rvx, rvy);
+        if (rs < 25 * KMH || Math.hypot(cvx, cvy) < 15 * KMH) continue;
+        const along = (dx * rvx + dy * rvy) / rs,
+          across = Math.abs(dx * rvy - dy * rvx) / rs;
+        let s = passByState.get(c);
+        if (!s) passByState.set(c, (s = { along, at: gameTime }));
+        else {
+          if (gameTime - s.at < 0.25 && s.along > 0 && along <= 0 && across < 80 && f.passTokens >= 1) {
+            f.passTokens--;
+            f.passBys++;
+            passByWhoosh(c, rs, across);
+          }
+          s.along = along;
+          s.at = gameTime;
+        }
+      }
+    }
+    function passByWhoosh(c, closing, across) {
+      const fa = foleyBuffers();
+      if (!fa) return;
+      const spec = vehicleSpec(c) || {},
+        size = spec.truck ? 1.4 : spec.bike || spec.bicycle ? 0.55 : 1,
+        level = 0.1 * size * clamp(closing / (110 * KMH), 0.2, 1.3) * (1 - across / 80),
+        t = audio.currentTime,
+        s = audio.createBufferSource(),
+        band = audio.createBiquadFilter(),
+        g = audio.createGain(),
+        p = audio.createStereoPanner(),
+        from = clamp((c.x - (player.car || player).x) / 60, -0.9, 0.9),
+        to = clamp(from + ((c.vx || 0) > 0 ? 0.9 : -0.9), -0.9, 0.9);
+      s.buffer = fa.white;
+      band.type = 'bandpass';
+      band.Q.value = 0.8;
+      band.frequency.setValueAtTime(1500, t);
+      band.frequency.exponentialRampToValueAtTime(520, t + 0.6);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(level, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
+      p.pan.setValueAtTime(from, t);
+      p.pan.linearRampToValueAtTime(to, t + 0.5);
+      s.connect(band).connect(g).connect(p).connect(ambience.bus);
+      s.start(t, Math.random() * 0.5);
+      s.stop(t + 0.7);
+      s.onended = () => {
+        s.disconnect();
+        band.disconnect();
+        g.disconnect();
+        p.disconnect();
+      };
     }
     /* The nearest sliding traffic or police car's squeal (one voice). */
     function updateTrafficSkid(deltaSeconds, active, now) {
@@ -361,6 +458,8 @@
         ground: g ? { kind: g.kind, loose: g.loose, wet: +g.wet.toFixed(2) } : null,
         scrub: f.scrub ? +f.scrub.gain.gain.value.toFixed(3) : 0,
         skid: f.skid ? { car: f.skidCar ? f.skidCar.type : null, level: +f.skidLevel.toFixed(3), gain: +f.skid.gain.gain.value.toFixed(3) } : null,
+        thumps: f.thumps,
+        passBys: f.passBys,
         doors: f.doors.slice(),
       };
     }
