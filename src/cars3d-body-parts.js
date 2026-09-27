@@ -18,7 +18,7 @@
         body.profile = spec.profile.map(([t, wf, top, bottom]) => (bottom === undefined ? [t, wf, top * M] : [t, wf, top * M, bottom * M]));
         if (spec.glass) {
           body.glass = { ...spec.glass };
-          for (const key of ['base', 'roof', 'arch', 'bulge', 'aWidth']) if (body.glass[key] !== undefined) body.glass[key] *= M;
+          for (const key of ['base', 'roof', 'arch', 'bulge', 'aWidth', 'crown', 'screenCurve', 'backCurve']) if (body.glass[key] !== undefined) body.glass[key] *= M;
           if (body.glass.pillars) body.glass.pillars = body.glass.pillars.map(([s, width, kind]) => [s, width * M, kind]);
         }
         body.wheel = { ...spec.wheel };
@@ -92,7 +92,13 @@
         SEC_FENDER = [[0, 0.86], [0.12, 0.97], [0.32, 1], [0.55, 0.985], [0.76, 0.95], [0.93, 0.88], [1.07, 0.77], [1.13, 0.62], [1.06, 0.4], [1, 0]],
         SEC_FENDER_SOFT = [[0, 0.84], [0.12, 0.95], [0.32, 1], [0.56, 0.99], [0.74, 0.96], [0.88, 0.9], [0.99, 0.8], [1.05, 0.64], [1.03, 0.4], [1, 0]],
         SEC_BRUTINI = [[0, 0.88], [0.1, 0.98], [0.28, 1], [0.5, 0.985], [0.64, 0.94], [0.76, 0.86], [0.86, 0.74], [0.93, 0.58], [0.98, 0.36], [1, 0]],
-        SEC_TALL = [[0, 0.9], [0.06, 0.98], [0.2, 1], [0.8, 1], [0.9, 0.985], [0.955, 0.95], [0.985, 0.88], [1, 0.66], [1, 0.33], [1, 0]];
+        SEC_TALL = [[0, 0.9], [0.06, 0.98], [0.2, 1], [0.8, 1], [0.9, 0.985], [0.955, 0.95], [0.985, 0.88], [1, 0.66], [1, 0.33], [1, 0]],
+        // A sport section with a shoulder crease two thirds up the flank (the light breaks along it).
+        SEC_CREASE = [[0, 0.82], [0.12, 0.94], [0.36, 0.995], [0.6, 1], [0.665, 0.99], [0.7, 0.96], [0.82, 0.915], [0.92, 0.8], [1, 0.4], [1, 0]],
+        // A tall body (SUVs, pickups) with a shoulder crease below the waist.
+        SEC_TALL_CREASE = [[0, 0.9], [0.06, 0.98], [0.2, 1], [0.62, 1], [0.68, 0.99], [0.72, 0.965], [0.86, 0.94], [0.95, 0.88], [1, 0.62], [1, 0]],
+        // A van's box: near-vertical sides, a generous radius into the roof.
+        SEC_VAN = [[0, 0.9], [0.05, 0.98], [0.16, 1], [0.78, 1], [0.87, 0.99], [0.93, 0.96], [0.97, 0.9], [0.992, 0.78], [1, 0.55], [1, 0]];
       // Shared bits of detailing.
       function plateLight(k, y) {
         k.patch(k.sets.drl, 'rear', -0.08 * k.M, 0.08 * k.M, (y + 0.075) * k.M, (y + 0.085) * k.M, { color: '#fff6e6', cols: 2, rows: 1, lift: 0.02 * k.M });
@@ -111,7 +117,7 @@
       function roofFin(k, t = 0.12) {
         const g = k.g,
           x = lerpNumber(g.rb, g.rf, t) * k.l;
-        k.add(k.sets.trim, k.S.box, x, g.roof + g.arch + 0.05 * k.M, 0, 0.16 * k.M, 0.06 * k.M, 0.04 * k.M, { color: CV_GLOSS, finish: 'gloss' }, 0, 0, 0.3);
+        k.add(k.sets.trim, k.S.box, x, g.roof + g.arch + glassCrown(g, x, k.l) + 0.05 * k.M, 0, 0.16 * k.M, 0.06 * k.M, 0.04 * k.M, { color: CV_GLOSS, finish: 'gloss' }, 0, 0, 0.3);
       }
       function sideMarker(k, x, y, side, color = CV_AMBER, set = k.sets.drl) {
         k.patch(set, 'side', x - 0.04 * k.M, x + 0.04 * k.M, (y - 0.015) * k.M, (y + 0.015) * k.M, { side, color, cols: 2, rows: 1, lift: 0.012 * k.M });
@@ -122,9 +128,17 @@
         for (const side of [-1, 1]) {
           const z = side * g.wt * k.w * inset,
             y = g.roof + g.arch * (1 - inset * inset) + 0.06 * k.M,
-            a = [g.rb * k.l + 0.08 * k.M, y, z],
-            b = [g.rf * k.l - 0.15 * k.M, y, z];
-          k.bar(k.sets.trim, a, b, 0.035 * k.M, 0.04 * k.M, 0.015 * k.M, { color, finish: color === CV_CHROME ? 'chrome' : 'gloss' });
-          for (const t of [0.04, 0.96]) k.add(k.sets.trim, k.S.box, lerpNumber(a[0], b[0], t), y - 0.03 * k.M, z, 0.08 * k.M, 0.06 * k.M, 0.03 * k.M, { color: CV_GLOSS, finish: 'gloss' });
+            x0 = g.rb * k.l + 0.08 * k.M,
+            x1 = g.rf * k.l - 0.15 * k.M,
+            // Along the roof's crown (civilian glasshouses may arch it).
+            at = (t) => {
+              const x = lerpNumber(x0, x1, t);
+              return [x, y + glassCrown(g, x, k.l), z];
+            };
+          for (let q = 0; q < 4; q++) k.bar(k.sets.trim, at(q / 4), at((q + 1) / 4), 0.035 * k.M, 0.04 * k.M, 0.015 * k.M, { color, finish: color === CV_CHROME ? 'chrome' : 'gloss' });
+          for (const t of [0.04, 0.96]) {
+            const p = at(t);
+            k.add(k.sets.trim, k.S.box, p[0], p[1] - 0.03 * k.M, z, 0.08 * k.M, 0.06 * k.M, 0.03 * k.M, { color: CV_GLOSS, finish: 'gloss' });
+          }
         }
       }

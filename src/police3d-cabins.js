@@ -2,8 +2,39 @@
       // ---- Glasshouse ------------------------------------------------------------------
       // A point on a pane: 'side' (s 0 rear..1 front, t 0 base..1 roof, `side` ±1),
       // 'front' / 'rear' (s -1..1 across), 'roof' (s across, t rear..front).
+      //
+      // Optional curves (civilian bodies; absent everywhere else, so those panes stay
+      // straight): `crown` (metres) arches the roof along its length, highest midway
+      // from rb to rf; `screenCurve` / `backCurve` (metres) bow the windscreen and
+      // the rear glass outward in profile, most at mid height. The side glass
+      // follows all three, so its top edge runs with the roofline.
+      function glassEdge(g, l, front, t) {
+        const x0 = (front ? g.xf : g.xb) * l,
+          x1 = (front ? g.rf : g.rb) * l,
+          dx = x1 - x0,
+          dy = g.roof - g.base,
+          n = Math.hypot(dx, dy) || 1,
+          c = (front ? g.screenCurve : g.backCurve) || 0,
+          bow = c * Math.sin(Math.PI * t);
+        // Outward in profile: forward and up for the screen, back and up for the rear glass.
+        return [lerpNumber(x0, x1, t) + (front ? dy : -dy) * (bow / n), lerpNumber(g.base, g.roof, t) + Math.abs(dx) * (bow / n)];
+      }
+      function glassCrown(g, x, l) {
+        return g.crown ? g.crown * Math.sin(Math.PI * clamp((x / l - g.rb) / Math.max(1e-6, g.rf - g.rb), 0, 1)) : 0;
+      }
       function glassPoint(g, l, w, pane, s, t, side = 1) {
         const half = (tt) => lerpNumber(g.wb, g.wt, tt) * w + g.bow * w * Math.sin(Math.PI * tt);
+        if ((g.crown || g.screenCurve || g.backCurve) && pane !== 'roof') {
+          if (pane === 'side') {
+            const f = glassEdge(g, l, true, t),
+              r = glassEdge(g, l, false, t),
+              x = lerpNumber(r[0], f[0], s);
+            return [x, lerpNumber(r[1], f[1], s) + glassCrown(g, lerpNumber(g.rb, g.rf, s) * l, l) * t * t, side * half(t)];
+          }
+          const front = pane === 'front',
+            e = glassEdge(g, l, front, t);
+          return [e[0] + (front ? 1 : -0.5) * g.bulge * (1 - s * s) * (1 - t), e[1] + g.arch * (1 - s * s) * t * t, s * half(t)];
+        }
         if (pane === 'side') {
           const xb = lerpNumber(g.xb, g.xf, s) * l,
             xt = lerpNumber(g.rb, g.rf, s) * l;
@@ -14,7 +45,8 @@
             x = lerpNumber(front ? g.xf : g.xb, front ? g.rf : g.rb, t) * l + (front ? 1 : -0.5) * g.bulge * (1 - s * s) * (1 - t);
           return [x, lerpNumber(g.base, g.roof, t) + g.arch * (1 - s * s) * t * t, s * half(t)];
         }
-        return [lerpNumber(g.rb, g.rf, t) * l, g.roof + g.arch * (1 - s * s), s * g.wt * w];
+        const x = lerpNumber(g.rb, g.rf, t) * l;
+        return [x, g.roof + g.arch * (1 - s * s) + glassCrown(g, x, l), s * g.wt * w];
       }
       const policeCabins = new Map();
       // Five panes in PANE_ORDER (left, front, right, rear, roof), each its own

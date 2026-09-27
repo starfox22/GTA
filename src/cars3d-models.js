@@ -22,7 +22,7 @@
         // Shut lines: door fronts and backs from the sill to the belt, with the
         // door tops and the fuel flap, from the body's `doors` ([front, back] pairs, fractions of l).
         const sill = body.yb + 0.08 * M,
-          belt = body.h - 0.02 * M;
+          belt = body.doorTop ? body.doorTop * M : body.h - 0.02 * M;
         for (const [front, back] of body.doors || []) {
           liveryBand(g, f, front * l - seamWidth, front * l + seamWidth, sill, belt, seam);
           liveryBand(g, f, back * l - seamWidth, back * l + seamWidth, sill, belt, seam);
