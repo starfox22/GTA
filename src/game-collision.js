@@ -92,6 +92,7 @@
         garageBlocked(x, y, r) ||
         parkBlocked(x, y, r) ||
         monarchBlocked(x, y, r) ||
+        northPointKeyBlocked(x, y, r) ||
         marinaBlocked(x, y, r) ||
         beachBlocked(x, y, r) ||
         promenadeRailBlocked(x, y, r) ||

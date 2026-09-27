@@ -92,6 +92,7 @@
         if (s.trade === 'restaurant') posts.push({ x: s.door.x + 20, y: s.door.y + 10, a: Math.PI / 2, role: 'valet' });
         if (s.trade === 'bank' || s.trade === 'jewellery') posts.push({ x: s.door.x + 14, y: s.door.y + 6, a: Math.PI / 2, role: 'guard' });
       }
+      posts.push(...monarchOneStaffPosts());
       for (const plan of monarchPlan.villas) {
         const g = plan.gateAt,
           out = plan.villa.gate === 'south' ? 1 : plan.villa.gate === 'west' ? 0 : -1;
@@ -116,6 +117,11 @@
       if (post.role === 'guard') {
         p.look.top = p.color = '#15171a';
         p.look.pants = '#15171a';
+      } else if (post.attire === 'white') {
+        // Monarch One's beach attendant: whites.
+        p.look.top = p.color = '#f4f1ea';
+        p.look.pants = '#f2efe6';
+        p.look.hat = 0;
       } else {
         p.look.top = p.color = post.role === 'valet' ? '#6b1f24' : '#1c2a44';
         p.look.pants = '#15171a';
@@ -202,7 +208,7 @@
         p.pose = s.post.role === 'guard' ? 'arms' : s.post.role === 'valet' ? 'wait' : null;
         p.a = s.post.a + Math.sin(gameTime * 0.2 + p.walk) * 0.4;
         if (distanceBetween(p, player) < 60 && (p.speechUntil || 0) < gameTime && seededRandom() < deltaSeconds * 0.4) {
-          p.speech = randomChoice(s.post.role === 'guard' ? ISLE_LINES.guard : ISLE_LINES.valet);
+          p.speech = randomChoice(ISLE_LINES[s.post.lines] || (s.post.role === 'guard' ? ISLE_LINES.guard : ISLE_LINES.valet));
           p.speechUntil = gameTime + 3;
         }
         return true;
@@ -335,6 +341,12 @@
       guard: ['Private property, sir.', 'Keep moving, please.', 'Can I help you?', 'The residents are not receiving visitors.'],
       valet: ['Your keys, sir?', 'Welcome to the Regent.', 'I’ll bring the car round.', 'Enjoy your evening.'],
       wanted: ['Someone call security!', 'Is that… oh my.', 'Not on this island, surely.'],
+      // Monarch One (monarch-one.js): the gate guard to strangers on foot and to
+      // drivers the arm lifts for, the doormen, the beach attendant.
+      monarchOneGate: ['Good evening. Residents only, I’m afraid.', 'Monarch One is a private residence, sir.', 'Do you have an appointment, sir?', 'I’ll have to ask you to wait here.', 'The grounds are closed to visitors.'],
+      monarchOneDriver: ['Welcome to Monarch One.', 'Good evening, sir. Go right through.', 'The concierge is expecting you.'],
+      monarchOneDoor: ['Good evening, sir.', 'Shall I call the lift?', 'Your car, sir?', 'Welcome home.'],
+      monarchOneBeach: ['Towel, sir?', 'The cove is for residents.', 'A drink from the bar?', 'The tender is ready when you are.'],
     };
     /* ---- Payphones ---- */
     function monarchPayphoneNear() {
@@ -426,6 +438,7 @@
       }
     }
     function updateMonarchIsle(deltaSeconds) {
+      updateMonarchOneGate(deltaSeconds);
       updateMonarchTraffic(deltaSeconds);
       updateMonarchCrowd(deltaSeconds);
       updateMonarchSound(deltaSeconds);

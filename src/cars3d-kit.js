@@ -268,7 +268,10 @@
         // ---- Glasshouse furniture: roof panel, pillars, waist line, frames, mirrors ----
         if (g && !g.open) {
           if (!g.glassRoof) {
-            const roofPoint = (s, t, lift = 0.018 * M) => [lerpNumber(g.rb * l - 0.03 * M, g.rf * l + 0.03 * M, t), g.roof + lift + g.arch * (1 - s * s), s * g.wt * w * 1.035];
+            const roofPoint = (s, t, lift = 0.018 * M) => {
+              const x = lerpNumber(g.rb * l - 0.03 * M, g.rf * l + 0.03 * M, t);
+              return [x, g.roof + lift + g.arch * (1 - s * s) + glassCrown(g, x, l), s * g.wt * w * 1.035];
+            };
             const roofGeo = gridGeometry(8, 6, (u, v) => roofPoint(u * 2 - 1, v), (p, out) => out.set(p.x, p.y - 5, 0));
             civAddMatrix(sets.paint, roofGeo, civIdentity, body.roofSwatch ? k.sw(body.roofSwatch) : { uvOf: topUv });
             roofGeo.dispose();
@@ -282,7 +285,8 @@
             }
           } else
             for (const side of [-1, 1])
-              civBeam(sets.trim, S.box, glassPoint(g, l, w, 'roof', side * 0.99, 0), glassPoint(g, l, w, 'roof', side * 0.99, 1), 0.02 * M, 0.06 * M, { color: '#0e0f11', finish: 'gloss' });
+              for (let q = 0; q < 4; q++)
+                civBeam(sets.trim, S.box, glassPoint(g, l, w, 'roof', side * 0.99, q / 4), glassPoint(g, l, w, 'roof', side * 0.99, (q + 1) / 4), 0.02 * M, 0.06 * M, { color: '#0e0f11', finish: 'gloss' });
           const pillarPoint = (s, t, side, out) => {
             const p = glassPoint(g, l, w, 'side', s, t, side);
             return [p[0], p[1], p[2] + side * out];
@@ -357,7 +361,8 @@
         // ---- Hood: a panel on the shell top from the hinge to the nose ----
         const hoodFrom = Math.max(0.215 * l, (g ? g.xf * l : 0) + (body.hoodGap ?? 0.12) * M),
           hoodTo = (0.5 - (body.hoodNose ?? 0.05)) * l,
-          hoodBaseY = top(0.215 * l),
+          // The hinge line (a fraction of l; the damage model hinges the hood there).
+          hoodBaseY = top((body.hoodHinge ?? 0.215) * l),
           hoodSet = civSet(),
           hoodHalf = (x) => at(x, top(x) - 0.004 * M).half * (body.hoodWidth ?? 0.93),
           hoodPoint = (u, v, lift) => {

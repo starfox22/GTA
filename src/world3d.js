@@ -853,16 +853,16 @@
       }
       const reservedGlass = new Three.Group();
       roofGroup.add(reservedGlass);
-      reservedGlass.position.set(273, 10, 131);
+      reservedGlass.position.set(ROOF_HIT.drink.x - ROOFTOP.x, 10, ROOF_HIT.drink.y - ROOFTOP.y);
       mesh(new Three.CylinderGeometry(2.5, 1.7, 4, 12), glass, reservedGlass, 0, 4, 0);
       mesh(new Three.CylinderGeometry(2, 1.4, 2, 12), wine, reservedGlass, 0, 3.3, 0);
       box(reservedGlass, 0, 1, 0, 0.5, 2, 0.5, brass);
       mesh(cylinderGeo, brass, reservedGlass, 0, 0, 0, 2, 0.3, 2);
       const drinkLabel = sign(
-        'P · RESERVED GLASS',
+        'RESERVED',
         ROOF_HIT.drink.x,
         ROOF_HIT.drink.y - 12,
-        66,
+        44,
         '#f2d491',
       );
       drinkLabel.position.y = ROOFTOP.height + 25;
@@ -932,7 +932,8 @@
       function updateWorldVisuals() {
         updateBeachVisuals();
         const hit = rooftopJob();
-        reservedGlass.visible = !hit || !['sip', 'sick', 'collapse', 'dead'].includes(hit.poisonPhase);
+        // Vescari picks it up mid-toast (roofmission-poison.js glassTaken).
+        reservedGlass.visible = !hit?.glassTaken;
         poolMat.emissiveIntensity = 0.22 + Math.sin(gameTime * 1.8) * 0.055;
         danceTiles.forEach(
           (t, i) =>
@@ -940,8 +941,8 @@
               ? 0.08
               : 0.23 + Math.sin(gameTime * 2.3 + i * 0.7) * 0.13),
         );
-        drinkLabel.visible = drinkLabel.userData.backing.visible =
-          !!rooftopJob() && player.roof && !rooftopJob().killRegistered;
+        // Down once the glass is spiked: the toast plays out in the open.
+        drinkLabel.visible = drinkLabel.userData.backing.visible = !!hit && player.roof && !hit.poisonUsed && !hit.killRegistered;
         const light = daylight();
         waterUniforms.uRain.value = weather.rain;
         waterUniforms.uTime.value = gameTime;

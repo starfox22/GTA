@@ -183,6 +183,7 @@
         }
     }
     function updateWanted(deltaSeconds) {
+      updateWitnesses(deltaSeconds);
       updateStarProgress(deltaSeconds);
       updatePursuit(deltaSeconds);
       if (mission?.index === 2 && [1, 2].includes(mission.stage)) {
@@ -246,8 +247,9 @@
         }
         // Inside the search area (the circle on the radar) the clock barely
         // moves: the police are combing those streets. Get out of it.
+        // A reported crime: nobody is looking until the first unit gets there.
         const inZone = distanceBetween(player, lastSeen) < policeSearchRadius();
-        searchRemaining = Math.max(0, searchRemaining - deltaSeconds * (inZone ? 0.2 : 1));
+        if (!policeResponseHolding()) searchRemaining = Math.max(0, searchRemaining - deltaSeconds * (inZone ? 0.2 : 1));
         if (searchRemaining === 0) {
           clearPolice(true);
           return;
@@ -369,17 +371,7 @@
     function scream(p) {
       if (!voicesOn || gameTime < screamAt || distanceBetween(p, player) > 470) return;
       screamAt = gameTime + 1.7;
-      playSample(
-        randomChoice([
-          'civilian-scream-male-1',
-          'civilian-scream-male-2',
-          'civilian-scream-female-1',
-          'civilian-scream-female-2',
-        ]),
-        0.65,
-        randomBetween(0.95, 1.05),
-        p,
-      );
+      playPersonScream(p, 0.65); // their own voice: a man's or a woman's take (voices.js)
     }
     function strikePerson(person, damage, a = 0, source = null, showBlood = true, kind = 'ballistic') {
       if (person.hp <= 0) return;

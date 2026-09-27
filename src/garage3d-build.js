@@ -1,24 +1,25 @@
       // Garage 3D build: fascia, buildGarage3D(), rustic roofs, mist and effects, updateGarageVisuals().
       // The fascia strip: tagline on the shop colour; the letters glow at night.
       function garageFasciaMaterial(s) {
-        const paint = (g, w, h, glow) => {
-          g.fillStyle = glow ? '#000' : s.color;
-          g.fillRect(0, 0, w, h);
-          if (!glow) {
-            g.fillStyle = 'rgba(0,0,0,0.18)';
-            g.fillRect(0, h - 10, w, 10);
-            g.fillStyle = 'rgba(255,255,255,0.25)';
-            g.fillRect(0, 0, w, 6);
-          }
-          g.font = '900 58px Arial';
-          g.textAlign = 'center';
-          g.textBaseline = 'middle';
-          const text = s.tagline.replace(/ · /g, '  ·  ');
-          let size = 58;
-          while (g.measureText(text).width > w * 0.94 && size > 20) g.font = '900 ' + (size -= 2) + 'px Arial';
-          g.fillStyle = glow ? '#fff4d8' : '#10181c';
-          g.fillText(text, w / 2, h / 2 + 3);
-        };
+        const colors = garageFasciaColors(s),
+          paint = (g, w, h, glow) => {
+            g.fillStyle = glow ? '#000' : colors.ground;
+            g.fillRect(0, 0, w, h);
+            if (!glow) {
+              g.fillStyle = 'rgba(0,0,0,0.18)';
+              g.fillRect(0, h - 10, w, 10);
+              g.fillStyle = 'rgba(255,255,255,0.25)';
+              g.fillRect(0, 0, w, 6);
+            }
+            g.font = '900 58px Arial';
+            g.textAlign = 'center';
+            g.textBaseline = 'middle';
+            const text = s.tagline.replace(/ · /g, '  ·  ');
+            let size = 58;
+            while (g.measureText(text).width > w * 0.94 && size > 20) g.font = '900 ' + (size -= 2) + 'px Arial';
+            g.fillStyle = glow ? colors.glow : colors.ink;
+            g.fillText(text, w / 2, h / 2 + 3);
+          };
         const face = garageCanvas('fascia-' + s.id, 1024, 96, (g, w, h) => paint(g, w, h, false)),
           glow = garageCanvas('fascia-glow-' + s.id, 1024, 96, (g, w, h) => paint(g, w, h, true));
         return litSignMaterial(face, glow, { night: 1.6, day: 0.05 });
@@ -39,9 +40,9 @@
           // v: map units from the inside of the door line towards the back wall.
           zOf = (v) => bay.y1 - v,
           B = (x, y, z, w, h, d, material, parent = group) => box(parent, x, y, z, w, h, d, material),
-          // The rustic shop's stone and boards, or the city shops' brick and cladding.
-          brick = s.rustic ? garageStone : garageBrick,
-          clad = s.rustic ? garageBoards : garageCladding;
+          // The rustic shop's stone and boards, the island styles' finishes
+          // (garage3d-styles.js), or the city shops' brick and cladding.
+          { brick, clad } = garageWallKit(s);
         live.userData.dynamic = true;
         scene.add(group);
         group.add(live);
@@ -139,7 +140,7 @@
         // skylights and the billboard.
         const roofW = wallX1 - wallX0,
           deckTop = eaves + P.roof;
-        if (s.rustic) rusticGarageRoof(s, roof, B, wallX0, wallX1, back, front, eaves, clad);
+        if (s.rustic || s.style === 'seaside') rusticGarageRoof(s, roof, B, wallX0, wallX1, back, front, eaves, clad);
         else {
           B(s.bayX, eaves + P.roof / 2, (back + front) / 2, roofW, P.roof, depth, GM.roofDeck, roof);
           for (const [x, z, w, d] of [
@@ -164,20 +165,23 @@
           for (const v of [36, 50]) B(s.bayX - 10, deckTop + 0.8, zOf(v), 18, 1.6, 10, GM.glass, roof);
           mesh(cylinderGeo, GM.galv, roof, s.bayX + 26, deckTop + 6, zOf(112), 2.2, 12, 2.2);
           mesh(cylinderGeo, GM.steel, roof, s.bayX + 26, deckTop + 12.6, zOf(112), 3.4, 1.2, 3.4);
-          // The rooftop billboard: two steel legs with braces, lit from below.
-          const boardW = 124,
-            boardH = boardW / 4,
-            boardY = deckTop + 6 + boardH / 2,
-            boardZ = front - 5;
-          for (const x of [s.bayX - boardW * 0.32, s.bayX + boardW * 0.32]) {
-            B(x, deckTop + 3 + boardH / 2, boardZ - 2.2, 1.4, boardH + 6, 1.4, GM.steel, roof);
-            rod(roof, new Three.Vector3(x, deckTop, boardZ - 12), new Three.Vector3(x, boardY, boardZ - 2.4), 0.5, GM.steel);
+          // The rooftop billboard: two steel legs with braces, lit from below
+          // (the coachworks carries its name along the parapet instead).
+          if (s.style !== 'coachworks') {
+            const boardW = 124,
+              boardH = boardW / 4,
+              boardY = deckTop + 6 + boardH / 2,
+              boardZ = front - 5;
+            for (const x of [s.bayX - boardW * 0.32, s.bayX + boardW * 0.32]) {
+              B(x, deckTop + 3 + boardH / 2, boardZ - 2.2, 1.4, boardH + 6, 1.4, GM.steel, roof);
+              rod(roof, new Three.Vector3(x, deckTop, boardZ - 12), new Three.Vector3(x, boardY, boardZ - 2.4), 0.5, GM.steel);
+            }
+            B(s.bayX, deckTop + 5.2, boardZ + 0.4, boardW + 4, 0.6, 3, GM.steel, roof);
+            const title = sign(s.name, s.bayX, boardZ, boardW, s.color);
+            title.position.y = title.userData.backing.position.y = boardY;
+            roof.add(title, title.userData.backing);
+            for (const x of [-0.3, 0, 0.3]) addGlow(s.bayX + x * boardW, deckTop + 4.4, boardZ + 3, 12, '#fff1d0', 0.8, { day: 0 });
           }
-          B(s.bayX, deckTop + 5.2, boardZ + 0.4, boardW + 4, 0.6, 3, GM.steel, roof);
-          const title = sign(s.name, s.bayX, boardZ, boardW, s.color);
-          title.position.y = title.userData.backing.position.y = boardY;
-          roof.add(title, title.userData.backing);
-          for (const x of [-0.3, 0, 0.3]) addGlow(s.bayX + x * boardW, deckTop + 4.4, boardZ + 3, 12, '#fff1d0', 0.8, { day: 0 });
         }
 
         // ---- The office: brick, a glass door and a big window, a lightbox sign.
@@ -348,6 +352,8 @@
         // The tubes' light on the floor at night (the light map; lighting3d.js).
         for (const v of [34, 84]) signSpill(s.bayX, zOf(v), 44, '#dfeaff', 0.22);
 
+        garageLotSlab(s, group);
+        dressGarageStyle(s, { group, roof, upper, B, wallX0, wallX1, front, eaves });
         const model = { shop: s, group, roof, upper, slats, slatH, beacon, rig, gun, fanBlades, rigPark: bay.x1 - 10 };
         garageModels.push(model);
         return model;
@@ -365,10 +371,11 @@
           rise = half * Math.tan((38 * Math.PI) / 180),
           pitch = Math.atan2(rise, half),
           L = (half + ov) / Math.cos(pitch),
-          dark = new Three.MeshStandardMaterial({ color: '#3a2a1e', roughness: 0.85 });
+          sheet = garageRoofSheet(s),
+          dark = new Three.MeshStandardMaterial({ color: s.style === 'seaside' ? '#f2efe6' : '#3a2a1e', roughness: 0.85 });
         B(cx, eaves + 0.3, cz, w, 0.6, depth, GM.roofDeck, roof);
         for (const side of [-1, 1]) {
-          const slab = box(roof, cx + side * (L / 2) * Math.cos(pitch), eaves + rise - (L / 2) * Math.sin(pitch) + 1.2, cz, L, 1.6, depth + 2 * ov, garageRedRoof(L, depth + 2 * ov));
+          const slab = box(roof, cx + side * (L / 2) * Math.cos(pitch), eaves + rise - (L / 2) * Math.sin(pitch) + 1.2, cz, L, 1.6, depth + 2 * ov, sheet(L, depth + 2 * ov));
           slab.rotation.z = -side * pitch;
           // Bargeboards front and back.
           for (const z of [cz - depth / 2 - ov, cz + depth / 2 + ov]) {
@@ -376,7 +383,7 @@
             barge.rotation.z = -side * pitch;
           }
         }
-        box(roof, cx, eaves + rise + 1.8, cz, 2.4, 1.2, depth + 2 * ov, garageRedRoof(2.4, depth));
+        box(roof, cx, eaves + rise + 1.8, cz, 2.4, 1.2, depth + 2 * ov, sheet(2.4, depth));
         // The gable ends in boards (a triangle each way).
         const tri = new Three.BufferGeometry();
         tri.setAttribute('position', new Three.Float32BufferAttribute([-half, 0, 0, half, 0, 0, 0, rise, 0], 3));
@@ -396,7 +403,7 @@
         for (const x of [-30, 30]) addGlow(cx + x, eaves + rise * 0.42 + 10, front + 4, 7, '#ffd9a0', 1, { day: 0 });
         // A little cupola on the ridge.
         B(cx, eaves + rise + 5, cz - 10, 10, 8, 10, clad(10, 8), roof);
-        const cap = box(roof, cx, eaves + rise + 10, cz - 10, 12, 2, 12, garageRedRoof(12, 12));
+        const cap = box(roof, cx, eaves + rise + 10, cz - 10, 12, 2, 12, sheet(12, 12));
         cap.castShadow = true;
       }
       for (const s of GARAGES) buildGarage3D(s);

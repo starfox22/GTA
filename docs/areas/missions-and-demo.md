@@ -43,6 +43,27 @@ index plus one.
 - Test from the console: `startMission(i)`, `missionTargets()`, `steerTo()`, `walk()`,
   `interact()`, `simulate(seconds, keys)`; docs/audit/missions-qa.md shows the method.
 
+## Mission 2: the Blue Hour (roofmission-*.js)
+
+- Guards see only inside their cone: `roofGuardSees` = `ROOF_VIEW` half-angle and range
+  round `roofGuardView(e)` (heading + head `look`) with `roofViewLength` clear (all cover
+  but the pool, and the balustrade). No all-round awareness; a bump is +10. The drawn
+  cones (roofmission3d.js, `drawRoofStealth2D`) call the same functions: change the
+  numbers in `ROOF_VIEW` only. Shots and the takedown use `roofSight` (low cover passes).
+- `m.suspicion` fills from `updateRoofSuspicion` (distance, running, beside Vescari, how
+  long watched) and drains unseen; 100 is `roofAlarm`. After the collapse, walking seen
+  tops out at `ROOF_WARY`; running still blows it.
+- `footPace`: during the job the terrace is walked and the walk action runs
+  (`roofPartyPace`); off the job the terrace is always walked.
+- The poison is `POISON_BEATS` (roofmission-poison.js); poses per beat in
+  crowd3d-roofparty.js. Past `approach` it is committed (`poisonCommitted`). The body is
+  `poisoned` with a `deathStyle.poison`: wounds.js skips the fall, wounds and blood for it.
+- Clean poisoning (no alarm, no stars at the lift): stage 4 is WALK AWAY FROM THE HOTEL
+  (`ROOF_AWAY` from the doors); the alarm or the takedown keep the run to Coral Palms.
+- The ambulance is a real `ambulance` vehicle on `countyRouteControl` (route
+  `ROOF_AMBULANCE`), braked to its stop by the mission and parked there; a stuck one is
+  placed at the stop. It is `mission` (removed on retry) and stays parked after a win.
+
 ## Campaign and saves (campaign.js)
 
 - Save schema in localStorage `dead-end-city-v1`: campaign indices, cash, clock, weapons,
@@ -53,9 +74,11 @@ index plus one.
 ## Public demo (`DEMO_BUILD`, game-state.js; campaign.js PUBLIC DEMO)
 
 - `DEMO_BUILD = true` today. A normal player gets missions 1 and 2 (`DEMO_MISSIONS`); later
-  jobs show locked with a FULL GAME badge and a buy note. The payphone stops ringing after
+  jobs show locked and nameless (`???`, `missionPickerTitle`) with a FULL GAME badge and a buy note
+  (a story job not reached yet is `???` too). The payphone stops ringing after
   mission 2 (`storyCallWaiting`), and completing it shows the DEMO COMPLETE card
-  (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`). Completion is kept
+  (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`) the first time only; a
+  replay of mission 2 is just a payday. Completion is kept
   in `dead-end-city-demo`. `demoLocked()` is the gate.
 - Never gated (not missions): the hill climb, volleyball, the stadium ball, the pier rides,
   bike share, cabs, rail, the liner, casino, garages, gun shop, Fort Sentinel, the Apache,

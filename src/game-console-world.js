@@ -205,4 +205,6 @@
         return points.map(([x, y]) => solid(x, y, r) || (foot && footObstacleBlocked(x, y, r)));
       },
     });
+    // North Point Key: skyline(), skylineVisit(spot) (skyline-console.js).
+    addConsoleMethods('skyline', skylineConsole());
     // END SUBSYSTEM: src/game-console-world.js

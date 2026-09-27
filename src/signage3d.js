@@ -513,7 +513,8 @@
       for (const name of SHOP_NAMES) shopSignCell(name);
       for (let i = 0; i < HOTEL_NAMES.length; i++) hotelScriptCell(i);
       for (const word of [...WINDOW_NEONS, 'VACANCY']) windowNeonCell(word);
-      for (const t of SKYLINE_TOWERS) towerNameCell(t.name);
+      // The towers that stand (skyline-towers.js), the sky bar and North Point Key's gate.
+      for (const name of [...activeSkylineTowers().map((t) => t.name), 'CIRRUS', 'NORTH POINT KEY']) towerNameCell(name);
       // Remaps a plane's UVs onto an atlas cell.
       function atlasPlane(width, height, cell, sizeX = NEON_ATLAS, sizeY = sizeX) {
         const g = new Three.PlaneGeometry(width, height),

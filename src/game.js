@@ -12,6 +12,8 @@
     // @include src/game-vehicles.js
     // @include src/game-weapons.js
     // @include src/audio.js
+    // @include src/voices.js
+    // @include src/footwork.js
     function tell(text, duration = 3) {
       getElement('toast').textContent = text;
       getElement('toast').classList.add('show');
@@ -30,6 +32,7 @@
       announceTime = t;
     }
     // @include src/heat.js
+    // @include src/witnesses.js
     // @include src/game-collision.js
     // @include src/game-car-spawn.js
     // @include src/game-worldgen.js
@@ -60,6 +63,7 @@
     // @include src/chase.js
     // @include src/roadblocks.js
     // @include src/carjack.js
+    // @include src/carjack-struggle.js
     // @include src/riders.js
     // @include src/themepark.js
     // @include src/marina.js

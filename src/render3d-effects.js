@@ -48,9 +48,7 @@
       scene.add(arrowGroup);
       const targetLight = new Three.PointLight('#ffd083', 0.5, 90, 1);
       scene.add(targetLight);
-      const playerHeadlight = new Three.SpotLight('#ffe6b4', 900, 210, Math.PI * 0.23, 0.7, 1.1);
-      playerHeadlight.position.set(0, 10, 0);
-      scene.add(playerHeadlight, playerHeadlight.target);
+      // (The player's headlights are CAR LAMPS slot 0, lighting3d-vehicle-lights.js.)
       const muzzleLight = new Three.PointLight('#ffc67a', 0, 95, 1.5);
       scene.add(muzzleLight);
       const smokeCanvas = document.createElement('canvas');

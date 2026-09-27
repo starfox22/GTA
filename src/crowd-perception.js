@@ -1,5 +1,7 @@
     // Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
-    const ALARM_REACH = { gunfire: 560, explosion: 950, crash: 380, knock: 300, melee: 170, body: 150 };
+    // 'crime': something the player did that raised no incident of its own (a theft,
+    // a carjacking): only those looking at them see it (witnesses.js).
+    const ALARM_REACH = { gunfire: 560, explosion: 950, crash: 380, knock: 300, melee: 170, body: 150, crime: 300, carjack: 260, theft: 260 };
     function crowdIncident(kind, source, attacker, severity = 1) {
       const loud = kind === 'gunfire' || kind === 'explosion';
       // Merge repeats: an automatic burst is one incident, not thirty.
@@ -32,6 +34,7 @@
         spread: 0,
         shots: 1,
         reported: false,
+        witnesses: [],
         focus: kind === 'body' || kind === 'knock' ? source : null,
       };
       crowd.incidents.push(inc);
@@ -52,12 +55,18 @@
           p.threat = { x: source.x, y: source.y };
           return;
         }
-        const sees = d < Math.min(reach, 460) && crowdSight(p, source);
+        // A shot or a bang turns heads; anything quieter has to happen in front of
+        // them (crowd-witnesses.js WITNESSES).
+        const sees =
+          d < Math.min(reach, 460) && (inc.loud || kind === 'crash' || witnessFacing(p, source, d)) && crowdSight(p, source);
         if (!inc.loud && !sees && d > 90) return;
         const delay = 0.06 + d / 1700 + seededRandom() * (p.texting || p.onPhone ? 0.7 : 0.25);
         if (p.pending && p.pending.inc === inc) return;
         p.pending = { inc, at: gameTime + delay, sees, d };
-        if (sees && attacker === player) p.sawPlayerAt = gameTime;
+        if (attacker === player) {
+          noteWitness(p, inc, sees, d);
+          if (sees) p.sawPlayerAt = gameTime;
+        }
       };
       if (nearPlayer) forPeopleNear(source.x, source.y, reach, perceive);
       else
@@ -116,7 +125,7 @@
           return;
         }
         if (sees || d < 330) {
-          if (nerve > 0.9 && inc.callers < 1 && inc.attacker) startReaction(p, 'call', randomBetween(8, 11), guess, inc);
+          if (nerve > 0.9 && inc.callers < 1 && inc.attacker) startReaction(p, 'startle', randomBetween(0.8, 1.5), guess, inc, { then: 'call' });
           else if (nerve > 0.78 && inc.filmers < 2 && sees) startReaction(p, 'film', randomBetween(7, 13), guess, inc, { then: 'hurry' });
           else if (nerve > 0.95 && sees && d < 300 && inc.attacker === player)
             startReaction(p, 'shout', 1.8, guess, inc, { then: 'flee' });
@@ -127,15 +136,37 @@
         }
         // At the edge of hearing: stop, look, decide.
         if (r < (boom ? 0.5 : 0.22)) startReaction(p, 'flee', randomBetween(3.5, 6), guess, inc);
-        else if (nerve > 0.82 && inc.callers < 2 && inc.attacker) startReaction(p, 'call', randomBetween(8, 10), guess, inc);
+        else if (nerve > 0.82 && inc.callers < 2 && inc.attacker) startReaction(p, 'startle', randomBetween(0.9, 1.6), guess, inc, { then: 'call' });
         else {
           startReaction(p, 'startle', randomBetween(0.7, 1.3), guess, inc, { then: 'hurry' });
           crowdSay(p, boom ? 'boom' : 'heard', 0.5);
         }
         return;
       }
+      if (inc.kind === 'crime' || inc.kind === 'carjack' || inc.kind === 'theft') {
+        // Something wrong going on in front of them: a look, a gasp, and most get
+        // out of it; the odd one films. Calling it in comes later (the director).
+        if (cur && !['startle', 'hurry'].includes(cur)) return;
+        const then = sees && nerve > 0.8 && inc.filmers < 1 && d < 220 ? 'film' : 'hurry';
+        startReaction(p, sees ? 'gasp' : 'startle', randomBetween(0.9, 1.7), guess, inc, { then });
+        crowdSay(p, 'sawCrime', 0.55);
+        return;
+      }
       if (inc.kind === 'crash' || inc.kind === 'knock' || inc.kind === 'body') {
         if (cur && !['startle', 'hurry'].includes(cur)) return;
+        // A body with somebody armed standing over it: nobody stays to look.
+        if (
+          inc.kind === 'body' &&
+          !playerUnarmed() &&
+          !player.car &&
+          distanceBetween(player, inc) < 160 &&
+          distanceBetween(p, player) < 420 &&
+          crowdSight(p, player)
+        ) {
+          startReaction(p, 'flee', randomBetween(5, 8), player, inc, { scream: r < 0.5 });
+          crowdSay(p, 'gasp', 0.6);
+          return;
+        }
         // A crowd forms, but only so big: past a dozen, newcomers look and move on.
         let gathered = 0;
         for (const other of crowd.incidents)
@@ -341,6 +372,10 @@
         if (distanceBetween(p, attacker) < 420 && crowdSight(p, attacker)) r.from = { x: attacker.x, y: attacker.y };
       }
       r.track = (r.track || 0) - deltaSeconds;
+      // Well clear of the player (40 m and more) after a few seconds of running:
+      // slow down and take stock (then look back, or phone it in).
+      const fromPlayer = attacker === player || (!r.inc && p.witnessOf?.attacker === player && !p.witnessOf.reported);
+      if (fromPlayer && r.t > 3 && r.dur - r.t > 0.5 && distanceBetween(p, player) > 320) r.dur = r.t + 0.4;
       r.choose = (r.choose || 0) - deltaSeconds;
       if (r.choose <= 0 || r.fleeDir === undefined) {
         r.choose = 0.4;

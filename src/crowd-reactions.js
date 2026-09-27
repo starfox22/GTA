@@ -37,6 +37,7 @@
               r.kind = 'flee';
               break;
             }
+            witnessCallsFromInside(p);
             goIndoors(p, door, randomBetween(25, 60), 'shelter');
             return true;
           }
@@ -53,35 +54,9 @@
           if (seededRandom() < deltaSeconds * 0.12) crowdSay(p, 'film', 1);
           break;
         }
-        case 'call': {
-          p.pose = 'phone';
-          p.onPhone = true;
-          const threat = r.inc?.attacker;
-          if (threat && threat.hp > 0 && distanceBetween(p, threat) < 100) {
-            startReaction(p, 'flee', randomBetween(6, 9), threat, r.inc, { scream: true });
-            return true;
-          }
-          // Turned half away, the way people talk on the phone about something.
-          faceToward(p, from, deltaSeconds, 2);
-          if (!r.opened && r.t > 0.8) {
-            r.opened = true;
-            const street = streetNameAt(p.x, p.y);
-            p.speech =
-              (r.inc?.kind === 'gunfire'
-                ? 'Police? Shots fired'
-                : r.inc?.kind === 'body'
-                  ? 'Police? Someone’s dead'
-                  : r.inc?.kind === 'crash' || r.inc?.kind === 'knock'
-                    ? '911? There’s been an accident'
-                    : 'Police? Send someone') + (street ? ' on ' + street.split(' & ')[0] : '') + '!';
-            p.speechUntil = gameTime + 3.2;
-          }
-          if (!r.reported && r.t > 5.5) {
-            r.reported = true;
-            crowdReport(p, r.inc);
-          }
+        case 'call':
+          if (callStep(p, r, deltaSeconds)) return true;
           break;
-        }
         case 'lookBack': {
           p.pose = r.filming ? 'film' : r.t % 5 < 1.1 ? 'despair' : 'watch';
           faceToward(p, from, deltaSeconds, 5);
@@ -166,6 +141,8 @@
             if (r.gesture < 0) r.gesture = randomBetween(4, 9);
             p.pose = r.gesture < 1.2 ? (body ? 'gasp' : 'despair') : r.filming ? 'film' : 'watch';
             if (r.filming === undefined) r.filming = seededRandom() < 0.18;
+            // Onlookers at a body turn to each other now and then (crowd-chatter.js).
+            if (body && comfortStep(p, r, deltaSeconds)) break;
             if (seededRandom() < deltaSeconds * 0.1) crowdSay(p, body ? 'bodyWatch' : 'crashWatch', 1);
           }
           break;
@@ -368,36 +345,6 @@
     }
 
     /**
-     * WITNESS CALLS
-     * A completed call is the only way a bystander changes the wanted level, and
-     * only for what the player did: with no stars, a call brings the police;
-     * while they are already searching, a caller who can see you tells them
-     * where you are. Stop the caller (or scare them off) and the call never ends.
-     */
-    const WITNESS_REPORT_WINDOW = 30;
-    function crowdReport(caller, inc) {
-      if (!inc || inc.reported) return;
-      inc.reported = true;
-      crowd.reports++;
-      crowd.lastReportAt = gameTime;
-      if (inc.attacker !== player || gameMode !== 'play' || distanceBetween(inc, player) > 1800) return;
-      // A call is prompt or it is nothing: a witness who rings in half a minute
-      // after the last shot (or the killing, for a body) no longer brings the
-      // police, so stars never rise long after the player stopped.
-      // A body keeps drawing onlookers for minutes; what counts is when it fell.
-      const crimeAt = inc.kind === 'body' ? (inc.focus?.deadTime ?? inc.start) : inc.time;
-      if (gameTime - crimeAt > WITNESS_REPORT_WINDOW) return;
-      if (wantedStars <= 0) {
-        const amount = { gunfire: 0.5, explosion: 0.6, knock: 0.45, crash: 0.25, body: 0.45, melee: 0.4 }[inc.kind] || 0.3;
-        crime(amount);
-        tell('A WITNESS CALLED THE POLICE', 2.6);
-      } else if (searchActive && distanceBetween(caller, player) < 450 && crowdSight(caller, player)) {
-        lastSeen = { x: player.x, y: player.y };
-        searchRemaining = Math.min(policeSearchSeconds(), searchRemaining + 2);
-        tell('A WITNESS IS GIVING THE POLICE YOUR POSITION', 2.6);
-      }
-    }
-    /**
      * BODIES
      * A body on the pavement stops people. Whoever walks into sight of one
      * gasps and backs off; some stay and stare from a distance, one calls it in.
@@ -420,8 +367,12 @@
             crowd.bodies.push(e);
       for (const body of crowd.bodies) {
         let inc = bodyIncidents.get(body);
+        // An old incident the crowd has since dropped: whoever finds it now starts a new one.
+        if (inc && !crowd.incidents.includes(inc)) inc = null;
         forPeopleNear(body.x, body.y, ALARM_REACH.body, (p, d) => {
           if (p.hp <= 0 || p.react || p.pending || p.leader || p.onDeck || personIncapacitated(p)) return;
+          // Each person takes in a given body once (then they watch, call or move on).
+          if (p.bodySeen === body) return;
           if (d > 55 && !crowdSight(p, body)) return;
           if (!inc) {
             inc = crowdIncident('body', body, body.killedBy === player ? player : null, 1);
@@ -429,7 +380,9 @@
             bodyIncidents.set(body, inc);
           }
           inc.time = gameTime;
+          p.bodySeen = body;
           p.pending = { inc, at: gameTime + randomBetween(0.15, 0.6), sees: true, d };
+          if (inc.attacker === player) noteWitness(p, inc, true, d);
         });
       }
     }
@@ -464,6 +417,7 @@
         if (cur === 'flee' && (d > 110 || seededRandom() < 0.5)) return;
         startReaction(p, 'handsUp', 60, player, null);
         crowdSay(p, 'handsUp', 0.9);
+        witnessThreatened(p);
       });
     }
     /* An unarmed player walking by calm people gets the odd nod or hello. */

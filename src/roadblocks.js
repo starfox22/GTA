@@ -316,7 +316,7 @@
       }
       if (rammer && rammer === player.car) {
         shake = Math.max(shake, 5);
-        crime(0.4);
+        crime(0.4, 'seen');
       }
     }
     /* The cut counts as busted once the player's car, having shoved a cruiser

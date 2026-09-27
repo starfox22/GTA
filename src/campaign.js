@@ -12,12 +12,16 @@
     function missionUnlocked(index) {
       return !demoLocked(index) && (index <= completed || !!player.godMode);
     }
+    /* The name the picker shows: a locked job (story or FULL GAME) is a mystery. */
+    function missionPickerTitle(index) {
+      return missionUnlocked(index) ? missions[index].title : '???';
+    }
     /**
      * PUBLIC DEMO (game.js DEMO_BUILD)
      * In a demo build a normal player gets missions 1 and 2 (indices below
      * DEMO_MISSIONS). Everything later in `missions` is a story job or a
-     * contract and is gated: the picker shows it locked with a FULL GAME badge
-     * (a click shows the buy note), the payphone does not ring for it, and
+     * contract and is gated: the picker shows it locked and nameless (???) with a
+     * FULL GAME badge (a click shows the buy note), the payphone does not ring for it, and
      * RESTART CURRENT JOB cannot reach it. Free-roam activities are not
      * missions and stay open: the hill climb, beach volleyball, the stadium ball,
      * the Sunset Pier rides, the bike share, cabs, rail and the liner, the
@@ -67,9 +71,11 @@
         if (demoCardIn === 0) showDemoComplete();
       }
     }
-    /* winMission: mission 2 closes the demo; the card follows the payday headline. */
-    function demoMissionWon(index) {
-      if (!DEMO_BUILD || player.godMode || index !== DEMO_MISSIONS - 1) return false;
+    /* winMission: mission 2 closes the demo; the card follows the payday headline.
+       Only the first time the story reaches the end (`firstTime`): a replay of
+       mission 2 is just a payday. */
+    function demoMissionWon(index, firstTime = true) {
+      if (!DEMO_BUILD || player.godMode || index !== DEMO_MISSIONS - 1 || !firstTime) return false;
       demoCompleted = true;
       try {
         localStorage.setItem(DEMO_KEY, JSON.stringify({ complete: true, version: GAME_VERSION }));
@@ -247,15 +253,14 @@
         const unlocked = missionUnlocked(i),
           b = document.createElement('button');
         if (demoLocked(i)) {
-          // Shown, not secret: the full game's jobs, locked, each a buy note.
+          // A mystery: the full game's jobs are locked and nameless (???), each
+          // a buy note.
           b.className = 'mission-choice locked full-game';
-          b.setAttribute?.('aria-label', 'Mission ' + (i + 1) + ': ' + missions[i].title + ', in the full game');
+          b.setAttribute?.('aria-label', 'Mission ' + (i + 1) + ': locked, in the full game');
           b.innerHTML =
             '<span class="mission-number">' +
             String(i + 1).padStart(2, '0') +
-            '</span><span><b>' +
-            missions[i].title +
-            '</b><small>' +
+            '</span><span><b>???</b><small>' +
             (i >= SIDE_JOB_FIRST ? 'CONTRACT · ' : '') +
             'AVAILABLE IN THE FULL GAME</small></span><span class="mission-badge">FULL GAME</span>';
           b.onclick = showDemoBuyNote;
@@ -274,7 +279,7 @@
           '<span class="mission-number">' +
           String(i + 1).padStart(2, '0') +
           '</span><span><b>' +
-          (unlocked ? missions[i].title : '???') +
+          missionPickerTitle(i) +
           '</b><small>' +
           (unlocked
             ? (i < completed

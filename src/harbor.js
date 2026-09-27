@@ -393,7 +393,10 @@
       );
       m.car.mission = true;
       m.car.cargoCount = 0;
-      m.car.hp = m.car.maxhp = 460;
+      // Vinny's truck has a steel cage over the cab: the Harbor Kings open up on it
+      // in the bay (alertGang, ~20 hp/s even at the 40% mission share), and a
+      // careful three-point turn out of the bay must not lose the job.
+      m.car.hp = m.car.maxhp = 620;
       setStage(0, m.car, 'PICK UP VINNY’S MARKED CARGO TRUCK');
     }
     /* THE DROP
@@ -428,12 +431,14 @@
         'Brakes on. I am dropping the shutter behind you — they are right on your tail.',
       );
     }
-    /* Officers still in the fight inside the sealed warehouse. A downed officer
-       (alive, crawling, no longer shooting) is out of it. */
+    /* Officers still alive inside the sealed warehouse. A downed officer (hit
+       hard, crawling, no longer shooting) still counts: he is a witness on the
+       floor, and the marker stays on him until he is dealt with. (Inside the
+       sealed warehouse a fatal body hit kills outright, wounds.js, so this is
+       only the officer left under 26 hp.) */
     function depotPoliceInside() {
       return officers.filter(
-        (o) =>
-          o.hp > 0 && !o.downed && !o.returned && o.state !== 'return' && insideDepot(o.x, o.y),
+        (o) => o.hp > 0 && !o.returned && o.state !== 'return' && insideDepot(o.x, o.y),
       );
     }
     function eliminateText(n) {
@@ -444,6 +449,9 @@
       m.cargoDelivered = true;
       m.truck = m.car;
       m.truck.cargoCount = 0;
+      // The cargo is in: the truck wrecked in the firefight round it (the
+      // officers' rounds, the player's own) no longer fails the job.
+      m.car = null;
       m.throughBuilding = false;
       m.escapedAt = 0;
       // The police saw the truck go in: the heat they had is held until the back
@@ -624,7 +632,7 @@
             distanceBetween(missionState.car, HARBOR.bay) > 48
           ) {
             missionState.loading = null;
-            tell('Loading cancelled. Stop in the bay and press E.', 3);
+            tell('Loading cancelled. Stop in the bay and press ' + keyName('interact') + '.', 3);
             return;
           }
           missionState.loading.time += deltaSeconds;

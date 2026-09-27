@@ -63,6 +63,7 @@
       // @include src/crowd3d-joints.js
       /* Base pose targets. `side` 0 is left, 1 is right. */
       // @include src/crowd3d-poses.js
+      // @include src/crowd3d-roofparty.js
 
       /**
        * HOLDS

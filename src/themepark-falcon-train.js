@@ -126,7 +126,8 @@
      * is upside down. A car that starts to fall faster than FALCON_FALLING m/s
      * has gone over a crest: the first time after the lift that is the first
      * drop, and its riders let out a chorus of the recorded screams the city's
-     * pedestrians use (citylife.js scream()), two voices a car, each with its
+     * pedestrians use (voices.js: each seat's rider is a woman or a man and screams
+     * in that voice), two voices a car, each with its
      * own pitch, level and a fraction of a second's delay, placed on that car;
      * because each car tips over in turn the chorus rolls down the train. Later
      * drops, airtime crests (the seat pushing up at less than FALCON_AIRTIME g)
@@ -169,9 +170,8 @@
         'My hair!',
       ],
     };
-    const FALCON_SCREAMS = ['civilian-scream-female-1', 'civilian-scream-female-2', 'civilian-scream-male-1', 'civilian-scream-male-2'],
-      // [along the car, across it]: the rider layout of themepark3d.js updateCoasterTrain.
-      FALCON_SEATS = [
+    // [along the car, across it]: the rider layout of themepark3d.js updateCoasterTrain.
+    const FALCON_SEATS = [
         [-2.6, -1.5],
         [-2.6, 1.5],
         [2.4, -1.5],
@@ -197,6 +197,8 @@
         hp: 1,
         speech: '',
         speechUntil: 0,
+        // Who sits there, for their scream (voices.js): about half the seats are women.
+        female: lookHash(r + 1, 5) < 0.5,
       })),
       falconCars = Array.from({ length: COASTER_CARS }, () => ({})),
       falconTalk = { running: false, nextLineAt: 0, eventLineAt: 0, firstDrop: false, last: {}, log: [] },
@@ -259,11 +261,16 @@
     function falconHush() {
       for (const rider of falconRiders) if (rider.speechUntil > gameTime) rider.speechUntil = gameTime;
     }
-    /* One rider's scream from car c, `delay` seconds from now. */
-    function falconScream(c, loud, delay) {
+    /* The v-th rider aboard car c screams, `delay` seconds from now, in their own
+       voice (voices.js: a woman's or a man's take, as the seat's `female` says). */
+    function falconScream(c, v, loud, delay) {
       if (!voicesOn || !audio) return;
+      let rider = null;
+      for (let k = 0, n = 0; k < 4; k++)
+        if (falconSeatTaken(c * 4 + ((k + v) % 4)) && n++ === 0) rider = falconRiders[c * 4 + ((k + v) % 4)];
+      if (!rider) return;
       const f = coasterFrame(coasterTrain.t - c * COASTER_CAR_GAP, falconFrameB);
-      playSample(randomChoice(FALCON_SCREAMS), loud, randomBetween(0.9, 1.14), { x: f.x, y: f.y, elevation: f.z }, voiceBus, delay);
+      playPersonScream(rider, loud, voiceBus, delay, { x: f.x, y: f.y, elevation: f.z });
     }
     /* A cue from car c: up to `voices` screams (one per rider aboard), each with
        probability `chance`, logged with where the car is on the track. */
@@ -272,7 +279,7 @@
       const seats = FALCON_SEATS.filter((_, k) => falconSeatTaken(c * 4 + k)).length;
       for (let v = 0; v < Math.min(voices, seats); v++)
         if (seededRandom() < chance) {
-          falconScream(c, loud * randomBetween(0.75, 1.15), v * randomBetween(0.08, 0.3) + randomBetween(0, 0.12));
+          falconScream(c, v, loud * randomBetween(0.75, 1.15), v * randomBetween(0.08, 0.3) + randomBetween(0, 0.12));
           played++;
         }
       const log = falconTalk.log;

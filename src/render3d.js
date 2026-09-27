@@ -157,11 +157,14 @@
       // @include src/boats3d.js
       // @include src/drawbridge3d.js
       // @include src/bridges3d.js
+      // @include src/skyline3d-islet.js
       // @include src/monarch-bridges3d.js
       // @include src/harbor3d.js
+      // @include src/roofmission3d.js
       // @include src/marina3d.js
       // @include src/monarch3d.js
       // @include src/monarch-villas3d.js
+      // @include src/monarch-one3d.js
       // @include src/monarch-marina3d.js
       // @include src/monarch-garden3d.js
       // @include src/monarch-streets3d.js
@@ -171,6 +174,7 @@
       // @include src/weather3d.js
       // @include src/character-rig3d.js
       // @include src/crowd3d.js
+      // @include src/carjack3d.js
       // @include src/clouds3d.js
       // @include src/ground-data3d.js
       // @include src/surfaces3d.js

@@ -32,6 +32,9 @@
         return clockText();
       },
       setZoom: (value) => setWorldZoom(value),
+      // The street camera's framing: zoom in force, the player's zoom, the vehicle
+      // context and speed shares, the metres of street on screen, a person's height in px.
+      cameraView: () => cameraViewReport(),
       // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
       // visible, text, identity, docked, seconds since it popped in, this pass's offer.
       promptState: () => promptReport(),
@@ -59,7 +62,10 @@
         const steps = Math.round(clamp(seconds, 0, 120) * 30);
         for (let i = 0; i < steps; i++) {
           // A Blue Hour elevator ride runs on its own clock (frame()); step it too.
-          if (gameMode === 'elevator') updateElevator(1 / 30);
+          if (gameMode === 'elevator') {
+            updateElevator(1 / 30);
+            updateSkyLift(1 / 30);
+          }
           else if (gameMode === 'play') update(1 / 30);
           else break;
           hudClockOffset += 1 / 30; // HUD timers (prompt docking) follow the stepped time
@@ -84,7 +90,7 @@
         return cash;
       },
       // Inspection only: zoom the camera in past the player's limit to look at
-      // people up close. Anything above 1.5 is not reachable in play.
+      // people up close. Anything above STREET_ZOOM_MAX (4.5) is not reachable in play.
       closeUp(zoom = 4) {
         worldZoom = worldZoomTarget = clamp(zoom, 0.14, 24);
         return worldZoom;
@@ -99,6 +105,28 @@
         }
         player.a = heading;
         return { x: Math.round(player.x), y: Math.round(player.y), yacht: superyachtDeckState() };
+      },
+      // Facing and footwork (footwork.js): with `aimDegrees` (0 east, 90 south) hold the
+      // aim there as the touch aim stick does, `null` lets it go; returns where the
+      // body faces, the movement keys' heading and the pace share (1, 0.8 side-step,
+      // 0.6 backpedal) and km/h. Hold keys with simulate() to move.
+      // For screenshots of the gait: `moveDegrees` holds the movement keys toward that
+      // bearing (the nearest of eight) and `fire` the fire key, until footwork(null).
+      footwork(aimDegrees, moveDegrees = null, fire = false) {
+        if (aimDegrees === null) touchAim = null;
+        else if (typeof aimDegrees === 'number') touchAim = (aimDegrees * Math.PI) / 180;
+        for (const code of ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF']) keys[code] = false;
+        if (typeof moveDegrees === 'number') {
+          const a = (moveDegrees * Math.PI) / 180,
+            dx = Math.round(Math.cos(a)),
+            dy = Math.round(Math.sin(a));
+          keys.KeyD = dx > 0;
+          keys.KeyA = dx < 0;
+          keys.KeyS = dy > 0;
+          keys.KeyW = dy < 0;
+          keys.KeyF = !!fire;
+        }
+        return footworkReport();
       },
       // Stop the frame loop's simulation (it still draws) so a screenshot sequence
       // can be stepped with simulate(); false lets it run again.

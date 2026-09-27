@@ -206,6 +206,8 @@
         city = inCityGrid(player.x, player.y);
       glideParam(a.bus.gain, active ? (inside ? 0.45 : 1) : 0, now, 0.4);
       if (!active) return;
+      // Lounge music and glasses on CIRRUS's terrace (skyline-bar.js).
+      skyBarSound(deltaSeconds);
       // Traffic hum follows the moving cars around you; the city never falls silent.
       let moving = 0;
       for (const c of vehicles)

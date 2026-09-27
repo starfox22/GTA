@@ -66,29 +66,36 @@
       const SKY_DESIGNS = {
         federation(T) {
           const H = T.b.height,
-            glass = skyGlass('federation', T.b);
+            glass = skyGlass('federation', T.b),
+            // On North Point Key its roof is the helideck (skyline3d-crowns.js).
+            pad = T.b.skyline.roof === 'helipad';
           skyPodium(T, 44);
           const plan0 = planSailTriangle(1, 1),
-            sections = [{ y: 40 }, { y: H * 0.72 }, { y: H, s: 0.9 }, { y: H + 46, s: 0.82 }],
+            sections = federationSections(H, pad),
             f = fitScale(plan0, sections, T.W / 2 - 6, T.D / 2 - 6),
             plan = scalePlan(plan0, f);
           const top = skyLoft(T, plan, sections, glass, { cap: skyRoof });
-          // The glass runs past the roof as a screen; an LED line traces its edge.
-          skyBand(T, plan, sections[3], H + 44, H + 47, 0.8, skyLed('#bfe4ff', 3.4));
           for (const y of [H * 0.25, H * 0.5, H * 0.72]) skyBand(T, plan, { y }, y - 2, y + 2, 1.4, skySteel);
-          // A slender spire from the roof, over the sharp south prow's axis.
-          const px = T.cx,
-            pz = T.cz + 4;
-          mesh(new Three.CylinderGeometry(1.2, 5, 190, 10), skySteel, T.group, px, H + 95, pz);
-          skyBeacon(T, px, H + 192, pz, 0);
-          skyBeacon(T, top[0].x, H + 48, top[0].z, 0.3);
+          if (pad) {
+            skyBand(T, plan, sections[2], H - 4, H + 1.5, 0.8, skyLed('#bfe4ff', 3.4));
+            buildKeyHelideck(T);
+          } else {
+            // The glass runs past the roof as a screen; an LED line traces its edge.
+            skyBand(T, plan, sections[3], H + 44, H + 47, 0.8, skyLed('#bfe4ff', 3.4));
+            // A slender spire from the roof, over the sharp south prow's axis.
+            const px = T.cx,
+              pz = T.cz + 4;
+            mesh(new Three.CylinderGeometry(1.2, 5, 190, 10), skySteel, T.group, px, H + 95, pz);
+            skyBeacon(T, px, H + 192, pz, 0);
+            skyBeacon(T, top[0].x, H + 48, top[0].z, 0.3);
+          }
           // Vertical LED on the prow (the point nearest the plaza).
           const prow = top.reduce((a, p) => (p.z > a.z ? p : a), top[0]);
           box(T.group, prow.x, (44 + H) / 2, prow.z + 1, 1.6, H - 44, 1.6, skyLed('#bfe4ff', 2.6));
           // Skybridge atrium to the west tower across the passage.
           box(T.group, T.W + 9, 34, 150, 20, 14, 120, skyLobby);
           box(T.group, T.W + 9, 41.5, 150, 22, 1.2, 122, skySteel);
-          T.top = Math.max(T.top, H + 192);
+          T.top = Math.max(T.top, pad ? H + 60 : H + 192);
         },
         federationWest(T) {
           const H = T.b.height,
@@ -186,24 +193,25 @@
           const H = T.b.height,
             glass = skyGlass('evolution', T.b),
             plan0 = planSuper(1, 0.64, 2.6, 48),
-            sections = [];
+            // On North Point Key it twists half a turn and carries CIRRUS (skyline3d-bar.js).
+            bar = T.b.skyline.roof === 'bar',
+            sections = evolutionSections(H, T.b.skyline.twist ?? 2.6),
+            steps = sections.length - 1;
           skyPodium(T, 42);
-          const steps = 34;
-          for (let k = 0; k <= steps; k++) {
-            const t = k / steps;
-            sections.push({ y: 40 + (H - 40) * t, r: t * 2.6, s: 1 + 0.05 * Math.sin(t * Math.PI) });
-          }
           const f = fitScale(plan0, sections, T.W / 2 - 6, T.D / 2 - 6),
             plan = scalePlan(plan0, f);
-          skyLoft(T, plan, sections, glass);
+          const top = skyLoft(T, plan, sections, glass);
           // Two seams run up the narrow ends and twist with the tower (lit at night).
           for (const index of [0, plan.length / 2]) skyRibbon(T, plan, sections, index, 7, skyLed('#8fd8ff', 1.6));
           // Colour-walking LED crown.
           const last = sections[steps];
           skyBand(T, plan, last, H - 5, H + 2, 1.2, skyLed('#8fd8ff', 3.6, true));
           skyBand(T, plan, sections[Math.round(steps / 2)], H / 2 + 18, H / 2 + 22, 1.1, skyLed('#8fd8ff', 2.4, true));
-          skyBeacon(T, T.cx, H + 12, T.cz, 0.4);
-          mesh(cylinderGeo, skyDarkSteel, T.group, T.cx, H + 5, T.cz, 1, 10, 1);
+          if (bar) buildSkyBar(T, plan, last, top);
+          else {
+            skyBeacon(T, T.cx, H + 12, T.cz, 0.4);
+            mesh(cylinderGeo, skyDarkSteel, T.group, T.cx, H + 5, T.cz, 1, 10, 1);
+          }
         },
         embankment(T) {
           const H = T.b.height,
@@ -421,9 +429,10 @@
         skySeed = 7919 + SKYLINE_TOWERS.indexOf(t) * 104729;
         const T = { b, group, W: b.w, D: b.h, cx: b.w / 2, cz: b.h / 2, top: b.height, podium: 0 };
         SKY_DESIGNS[t.design](T);
-        // Nothing lands on a tower but the one with a pad.
-        if (!b.helipad) roofKeepOut(b.x + b.w / 2, b.y + b.h / 2, b.w, b.h);
-        if (skylineBlockTowers(t.bx, t.by)[0] === t) skyPlaza(t);
+        // Nothing lands on a tower but the one with a pad; a roof deck is walked
+        // by its own shape (b.roofDeck, skyline-lift.js).
+        if (!b.helipad && !b.roofDeck) roofKeepOut(b.x + b.w / 2, b.y + b.h / 2, b.w, b.h);
+        if (!t.site && skylineBlockTowers(t.bx, t.by)[0] === t) skyPlaza(t);
         b.crownHeight = Math.max(0, T.top - b.height);
         return skyGlassMaterials.get(SKY_GLAZING_KEYS[t.design]);
       }

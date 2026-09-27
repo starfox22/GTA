@@ -13,7 +13,7 @@
             [-0.5, 0.8, 0.82, 0.3], [-0.49, 0.9, 0.88, 0.2], [-0.47, 0.96, 0.9, 0.13], [-0.4, 1.0, 0.9], [-0.3, 1.02, 0.89], [-0.15, 1.0, 0.86],
             [0.0, 0.98, 0.84], [0.1, 0.985, 0.8], [0.25, 0.995, 0.75], [0.36, 0.985, 0.7], [0.44, 0.955, 0.63], [0.475, 0.9, 0.56, 0.14], [0.49, 0.82, 0.48, 0.18], [0.5, 0.72, 0.4, 0.24],
           ],
-          glass: { base: 0.83, roof: 1.27, xf: 0.07, xb: -0.42, rf: -0.09, rb: -0.3, wb: 0.39, wt: 0.3, bow: 0.022, bulge: 0.06, arch: 0.05, frame: 'gloss', pillars: [[0.5, 0.05, 'black']], aPillar: 'black' },
+          glass: { base: 0.83, roof: 1.27, xf: 0.07, xb: -0.42, rf: -0.09, rb: -0.3, wb: 0.39, wt: 0.3, bow: 0.022, bulge: 0.06, arch: 0.05, crown: 0.035, screenCurve: 0.02, backCurve: 0.04, frame: 'gloss', pillars: [[0.5, 0.05, 'black']], aPillar: 'black' },
           wheel: { r: 0.36, width: 0.27, wr: 0.32, xf: 0.3, xr: -0.29, caliper: '#e3b62b' },
           rim: { style: 'split', spokes: 5, color: '#2a2c30', frac: 0.76, centreLock: true, lipColor: '#9aa0a6' },
           hatch: true,
@@ -66,7 +66,7 @@
             [-0.5, 0.82, 0.96, 0.34], [-0.492, 0.92, 1.03, 0.24], [-0.47, 0.975, 1.07, 0.2], [-0.42, 0.995, 1.08], [-0.3, 1.0, 1.08], [-0.2, 1.0, 1.08],
             [0.15, 1.0, 1.07], [0.25, 1.0, 1.06], [0.4, 0.995, 1.04], [0.47, 0.97, 1.0, 0.2], [0.49, 0.93, 0.95, 0.24], [0.5, 0.86, 0.88, 0.3],
           ],
-          glass: { base: 1.07, roof: 1.62, xf: 0.19, xb: -0.33, rf: 0.04, rb: -0.25, wb: 0.41, wt: 0.345, bow: 0.012, bulge: 0.04, arch: 0.04, frame: 'chrome', pillars: [[0.47, 0.09, 'paint'], [0, 0.2, 'paint']] },
+          glass: { base: 1.07, roof: 1.62, xf: 0.19, xb: -0.33, rf: 0.04, rb: -0.25, wb: 0.41, wt: 0.345, bow: 0.012, bulge: 0.04, arch: 0.04, crown: 0.02, screenCurve: 0.015, backCurve: 0.02, frame: 'chrome', pillars: [[0.47, 0.09, 'paint'], [0, 0.2, 'paint']] },
           wheel: { r: 0.39, width: 0.255, xf: 0.31, xr: -0.29 },
           rim: { style: 'spider', spokes: 7, color: '#e3e7ea', frac: 0.7, finish: 'chrome', capColor: '#e3e7ea' },
           doors: [[0.19, -0.02], [-0.02, -0.24]],
@@ -116,7 +116,7 @@
             [-0.5, 0.82, 0.88, 0.36], [-0.495, 0.92, 0.95, 0.26], [-0.485, 0.97, 0.99, 0.2], [-0.46, 0.99, 1.0], [-0.3, 1.0, 1.0], [0.3, 1.0, 1.0],
             [0.38, 1.0, 0.98], [0.45, 0.99, 0.95], [0.48, 0.96, 0.9, 0.2], [0.493, 0.9, 0.84, 0.24], [0.5, 0.82, 0.76, 0.3],
           ],
-          glass: { base: 0.98, roof: 1.47, xf: 0.3, xb: -0.4, rf: 0.24, rb: -0.36, wb: 0.415, wt: 0.35, bow: 0.012, bulge: 0.04, arch: 0.04, frame: 'chrome', pillars: [[0.9, 0.08, 'black'], [0.72, 0.06, 'black'], [0.5, 0.06, 'black'], [0.28, 0.06, 'black'], [0.1, 0.06, 'black'], [0, 0.14, 'paint']] },
+          glass: { base: 0.98, roof: 1.47, xf: 0.3, xb: -0.4, rf: 0.24, rb: -0.36, wb: 0.415, wt: 0.35, bow: 0.012, bulge: 0.04, arch: 0.04, crown: 0.015, screenCurve: 0.015, backCurve: 0.015, frame: 'chrome', pillars: [[0.9, 0.08, 'black'], [0.72, 0.06, 'black'], [0.5, 0.06, 'black'], [0.28, 0.06, 'black'], [0.1, 0.06, 'black'], [0, 0.14, 'paint']] },
           wheel: { r: 0.35, width: 0.235, xf: 0.4, xr: -0.36 },
           rim: { style: 'mesh', spokes: 12, color: '#e3e7ea', frac: 0.68, finish: 'chrome' },
           doors: [[0.3, 0.2], [0.2, 0.08], [-0.12, -0.24]],
@@ -152,17 +152,14 @@
           yb: 0.26,
           h: 1.16,
           arches: 0.01,
-          section: SEC_TALL,
+          section: SEC_TALL_CREASE,
           profile: [
             [-0.5, 0.86, 1.12, 0.42], [-0.494, 0.95, 1.16, 0.32], [-0.48, 0.99, 1.17, 0.27], [-0.4, 1.0, 1.17], [-0.2, 1.0, 1.16], [0.2, 1.0, 1.14],
             [0.3, 1.0, 1.12], [0.42, 0.99, 1.09], [0.475, 0.965, 1.05, 0.28], [0.49, 0.93, 1.0, 0.32], [0.5, 0.86, 0.92, 0.38],
           ],
-          glass: { base: 1.15, roof: 1.87, xf: 0.22, xb: -0.48, rf: 0.06, rb: -0.46, wb: 0.43, wt: 0.37, bow: 0.012, bulge: 0.04, arch: 0.03, frame: 'gloss', pillars: [[0.53, 0.08, 'black'], [0.2, 0.09, 'black'], [0, 0.12, 'black']], aPillar: 'black' },
+          glass: { base: 1.15, roof: 1.87, xf: 0.22, xb: -0.48, rf: 0.06, rb: -0.46, wb: 0.43, wt: 0.355, bow: 0.012, bulge: 0.04, arch: 0.03, crown: 0.03, screenCurve: 0.02, frame: 'gloss', pillars: [[0.53, 0.08, 'black'], [0.2, 0.09, 'black'], [0, 0.12, 'black']], aPillar: 'black' },
           wheel: { r: 0.41, width: 0.265, xf: 0.3, xr: -0.29, caliper: '#2e3136' },
           rim: { style: 'split', spokes: 5, color: '#8d939a', frac: 0.7 },
-          roofColor: '#0d0e10',
-          roofSwatch: 'roof',
-          mirrorSwatch: 'roof',
           hatch: true,
           flares: null,
           doors: [[0.22, -0.02], [-0.02, -0.23]],
@@ -203,25 +200,44 @@
             k.patch(sets.trim, 'rear', -tw * 0.7, tw * 0.7, 0.3 * M, 0.42 * M, { color: '#9aa0a6', finish: 'satin', cols: 6, rows: 1, lift: 0.02 * M });
             exhaustTips(k, [-0.55, 0.55], 0.38, 0.04, '#b9bec3');
             plateLight(k, 0.8);
-            roofFin(k, 0.1);
+            // A panoramic glass roof in the painted roof, silver rails either side.
+            const g = k.g,
+              pano = gridGeometry(6, 4, (u, v) => {
+                const p = glassPoint(g, l, k.w, 'roof', (u * 2 - 1) * 0.66, lerpNumber(0.1, 0.8, v));
+                return [p[0], p[1] + 0.026 * M, p[2]];
+              }, (p, out) => out.set(p.x, p.y - 5, 0));
+            civAddMatrix(sets.trim, pano, civIdentity, { color: '#0b0d10', finish: 'gloss' });
+            pano.dispose();
+            roofRails(k, '#aab0b6', 0.88);
+            roofFin(k, 0.06);
           },
         }),
-        /* MULE VAN: a high-roof panel van (Transit / Sprinter): a short nose, a
-           tall raked screen, slab sides with a sliding-door track, twin rear doors
-           with small windows, plastic bumpers and steel wheels. */
+        /* MULE VAN: a high-roof panel van (Transit / Sprinter): a short sloping
+           nose, a tall raked screen under the high roof's peak, one rounded box
+           to the roof (the shell runs up to it; the glasshouse is only the cab's
+           screen and door windows), roof ribs, a swage line and a sliding door,
+           twin rear doors with small windows, tall tail lamps, big black mirrors,
+           plastic bumpers and steel wheels. */
         van: civBody('van', {
-          yb: 0.24,
+          yb: 0.26,
           h: 1.12,
-          uvTop: 2.3,
-          section: SEC_TALL,
+          uvTop: 2.55,
+          // The door shut lines run up to the roof line, not the waist.
+          doorTop: 2.0,
+          // The bonnet starts at the foot of the steep screen, not at 0.215 of the length.
+          hoodHinge: 0.31,
+          section: SEC_VAN,
           profile: [
-            [-0.5, 0.95, 1.1, 0.34], [-0.496, 0.99, 1.12, 0.26], [0.26, 1.0, 1.12], [0.3, 0.99, 1.1], [0.38, 0.97, 1.02], [0.45, 0.94, 0.94], [0.48, 0.9, 0.88, 0.26], [0.495, 0.84, 0.8, 0.3], [0.5, 0.78, 0.72, 0.36],
+            [-0.5, 0.95, 2.45, 0.4], [-0.497, 0.985, 2.52, 0.3], [-0.49, 1.0, 2.55, 0.27], [0.1, 1.0, 2.55], [0.13, 0.998, 2.52], [0.155, 0.995, 2.36],
+            [0.17, 0.99, 2.08], [0.19, 0.99, 1.85], [0.21, 0.99, 1.715], [0.23, 0.99, 1.58], [0.25, 0.99, 1.445], [0.27, 0.99, 1.31], [0.29, 0.99, 1.17],
+            [0.305, 0.985, 1.1], [0.38, 0.97, 1.02], [0.45, 0.94, 0.94], [0.48, 0.9, 0.88, 0.26], [0.495, 0.84, 0.8, 0.3], [0.5, 0.78, 0.72, 0.36],
           ],
-          glass: { base: 1.1, roof: 2.5, xf: 0.3, xb: -0.498, rf: 0.16, rb: -0.494, wb: 0.47, wt: 0.455, bow: 0.004, bulge: 0.03, arch: 0.03, sideFrom: 0.83, frame: 'gloss', pillars: [[0.83, 0.06, 'black']], aPillar: 'black', buttress: 'paint' },
+          glass: { base: 1.1, roof: 2.02, xf: 0.305, xb: 0.1, rf: 0.17, rb: 0.1, wb: 0.504, wt: 0.503, bow: 0, bulge: 0.03, arch: 0.025, screenCurve: 0.012, frame: 'gloss', pillars: [[0, 0.08, 'paint']], aPillar: 'black' },
           wheel: { r: 0.37, width: 0.225, xf: 0.35, xr: -0.24 },
           rim: { style: 'steel', color: '#2e3136', capColor: '#1b1d20', frac: 0.64 },
           hatch: true,
-          doors: [[0.3, 0.16], [0.08, -0.12]],
+          mirrors: false,
+          doors: [[0.3, 0.1], [0.08, -0.2]],
           handles: [0.2, 0.0],
           sill: '#1b1d20',
           sillHeight: 0.12,
@@ -230,14 +246,15 @@
           plateFront: 0.44,
           livery(g, f, L) {
             const { l, M } = L;
-            // The sliding door's rail and seams, the rear doors' centre seam.
-            L.band(g, f, -0.2 * l, 0.1 * l, 2.02 * M, 2.03 * M, 'rgba(10,10,11,0.6)');
-            L.band(g, f, -0.12 * l, 0.1 * l, 0.52 * M, 0.53 * M, 'rgba(10,10,11,0.5)');
+            // The sliding door's rail, the swage line down the load bay, the rear doors' centre seam.
+            L.band(g, f, -0.2 * l, 0.08 * l, 1.98 * M, 1.995 * M, 'rgba(10,10,11,0.6)');
+            L.band(g, f, -0.47 * l, 0.1 * l, 1.52 * M, 1.535 * M, 'rgba(10,10,11,0.28)');
+            L.band(g, f, -0.47 * l, 0.1 * l, 1.535 * M, 1.55 * M, 'rgba(255,255,255,0.12)');
+            L.band(g, f, -0.12 * l, 0.08 * l, 0.52 * M, 0.53 * M, 'rgba(10,10,11,0.5)');
           },
           details(k) {
             const { M, S, sets, at, l } = k;
-            const hw = at(0.497 * l, 0.8 * M).half,
-              g = k.g;
+            const hw = at(0.497 * l, 0.8 * M).half;
             k.grille('front', -hw * 0.6, hw * 0.6, 0.6 * M, 0.82 * M, { cell: 'bars', color: '#2a2c30', frame: CV_GLOSS, frameFinish: 'plastic', tile: 0.06 * M });
             badge(k, 'front', 0, 0.72, 0.05, '#c9ced3');
             for (const side of [-1, 1]) {
@@ -250,27 +267,31 @@
               lampPatch(k, k.tail(side), 'rear', side * tw * 0.86, side * tw * 0.995, () => [0.6 * M, 1.08 * M], '#8e1016');
               k.patch(k.tail(side), 'rear', side * tw * 0.88, side * tw * 0.98, 0.8 * M, 0.9 * M, { color: CV_REVERSE, finish: 'lens', cols: 1, rows: 1, lift: 0.02 * M });
               k.halo('tail', side, k.surf('rear', side * tw * 0.92, 0.95 * M, 0.05 * M), 1);
-              // Sliding-door track on the right, plastic rubbing strip down both sides.
+              // Plastic rubbing strip down both sides.
               k.patch(sets.trim, 'side', -0.46 * l, 0.28 * l, 0.5 * M, 0.58 * M, { side, color: '#1b1d20', finish: 'plastic', cols: 8, rows: 1, lift: 0.01 * M });
+              // The rear doors' windows, high in each door.
+              const rw = at(-0.498 * l, 1.7 * M).half;
+              k.patch(sets.trim, 'rear', side * rw * 0.1, side * rw * 0.8, 1.45 * M, 2.02 * M, { color: '#0d0f12', finish: 'gloss', cols: 3, rows: 2, lift: 0.01 * M });
+              // Big black mirrors on arms at the foot of the A pillars.
+              const g = k.g,
+                base = glassPoint(g, l, k.w, 'side', 0.96, 0.08, side),
+                mx = base[0] - 0.05 * M,
+                mz = side * (Math.abs(base[2]) + 0.24 * M);
+              k.bar(sets.trim, [mx, base[1] + 0.05 * M, base[2]], [mx - 0.04 * M, base[1] + 0.1 * M, mz - side * 0.06 * M], 0.04 * M, 0.05 * M, 0.015 * M, { color: '#16181b', finish: 'plastic' }, [0, 1, 0]);
+              k.add(sets.trim, S.box, mx - 0.06 * M, base[1] + 0.18 * M, mz, 0.1 * M, 0.34 * M, 0.2 * M, { color: '#16181b', finish: 'plastic' });
+              k.add(sets.trim, S.box, mx - 0.115 * M, base[1] + 0.18 * M, mz, 0.01 * M, 0.3 * M, 0.17 * M, { color: '#3d4852', finish: 'lens' });
+              k.add(sets.drl, S.box, mx - 0.02 * M, base[1] + 0.03 * M, mz, 0.06 * M, 0.015 * M, 0.08 * M, { color: '#ffae3a' });
             }
-            // Rear doors: paint over the lower glass and round the two small windows.
-            const rear = (s, t) => {
-              const p = glassPoint(g, l, k.w, 'rear', s, t);
-              return [p[0] - 0.012 * M, p[1], p[2]];
-            };
-            const panel = (s0, s1, t0, t1) => {
-              const geo = gridGeometry(2, 2, (u, v) => rear(lerpNumber(s0, s1, u), lerpNumber(t0, t1, v)), (p, out) => out.set(p.x + 3, p.y, p.z));
-              civAddMatrix(sets.paint, geo, civIdentity, k.sw('paint'));
-              geo.dispose();
-            };
-            panel(-1, 1, 0, 0.5);
-            panel(-1, 1, 0.82, 1);
-            panel(-1, -0.86, 0.5, 0.82);
-            panel(0.86, 1, 0.5, 0.82);
-            panel(-0.08, 0.08, 0.5, 0.82);
-            k.bar(sets.trim, rear(0, 0.02), rear(0, 0.5), 0.01 * M, 0.012 * M, 0.004 * M, { color: '#0c0d0f', finish: 'gloss' });
-            // A third brake light over the doors, roof rails.
-            k.bar(sets.drl, rear(-0.25, 0.97), rear(0.25, 0.97), 0.03 * M, 0.02 * M, 0.01 * M, { color: '#ff3a2e' });
+            // The rear doors' seam, a third brake light at the top of the doors.
+            k.strip(sets.trim, 'rear', [[0, 0.46 * M], [0, 2.3 * M]], 0.012 * M, 0.012 * M, { color: '#0c0d0f', finish: 'gloss', lift: 0.004 * M, up: [0, 0, 1] });
+            k.strip(sets.drl, 'rear', [[-0.2 * M, 2.4 * M], [0.2 * M, 2.4 * M]], 0.03 * M, 0.02 * M, { color: '#ff3a2e', lift: 0.012 * M });
+            // Stiffening ribs across the high roof.
+            for (let i = 0; i < 7; i++) {
+              const x = lerpNumber(-0.44, 0.06, i / 6) * l,
+                y = k.top(x) + 0.008 * M,
+                z = at(x, 2.3 * M).half * 0.8;
+              k.bar(sets.paint, [x, y, -z], [x, y, z], 0.018 * M, 0.07 * M, 0.009 * M, k.sw('paint'), [0, 1, 0]);
+            }
             k.patch(sets.trim, 'rear', -0.9 * M, 0.9 * M, 0.3 * M, 0.34 * M, { cell: 'tread', color: '#2a2c2f', finish: 'rubber', tile: 0.3 * M, lift: 0.08 * M });
             plateLight(k, 0.62);
           },
@@ -282,12 +303,12 @@
           yb: 0.34,
           h: 1.28,
           arches: 0.012,
-          section: SEC_TALL,
+          section: SEC_TALL_CREASE,
           profile: [
             [-0.5, 0.97, 1.26, 0.52], [-0.495, 0.99, 1.27, 0.4], [-0.49, 1.0, 0.96], [-0.12, 1.0, 0.96], [-0.108, 1.0, 1.28], [0.2, 1.0, 1.28],
             [0.3, 1.0, 1.27], [0.42, 0.99, 1.25], [0.47, 0.975, 1.22, 0.34], [0.49, 0.95, 1.16, 0.38], [0.5, 0.9, 1.06, 0.44],
           ],
-          glass: { base: 1.27, roof: 1.95, xf: 0.25, xb: -0.103, rf: 0.1, rb: -0.1, wb: 0.43, wt: 0.37, bow: 0.012, bulge: 0.04, arch: 0.03, frame: 'gloss', pillars: [[0.5, 0.08, 'black'], [0, 0.1, 'paint']] },
+          glass: { base: 1.27, roof: 1.95, xf: 0.25, xb: -0.103, rf: 0.1, rb: -0.1, wb: 0.43, wt: 0.355, bow: 0.012, bulge: 0.04, arch: 0.03, crown: 0.02, screenCurve: 0.02, frame: 'gloss', pillars: [[0.5, 0.08, 'black'], [0, 0.1, 'paint']] },
           wheel: { r: 0.42, width: 0.27, xf: 0.34, xr: -0.29, caliper: '#2e3136' },
           rim: { style: 'offroad', spokes: 6, color: '#8d939a', frac: 0.66 },
           flares: '#16181b',
@@ -330,6 +351,21 @@
             k.bar(sets.trim, [-0.497 * l, 1.3 * M, -bz], [-0.497 * l, 1.3 * M, bz], 0.03 * M, 0.08 * M, 0.01 * M, { color: '#16181b', finish: 'plastic' });
             badge(k, 'rear', 0, 1.1, 0.07, '#1c2a55');
             k.bar(sets.drl, [-0.1 * l, 1.99 * M, -0.3 * M], [-0.1 * l, 1.99 * M, 0.3 * M], 0.03 * M, 0.03 * M, 0.01 * M, { color: '#ff3a2e' });
+            // A raised power dome down the bonnet, the tailgate handle.
+            k.bar(sets.paint, [0.3 * l, k.top(0.3 * l) + 0.022 * M, 0], [0.47 * l, k.top(0.47 * l) + 0.012 * M, 0], 0.045 * M, 0.62 * M, 0.03 * M, { uvOf: k.topUv }, [0, 1, 0]);
+            k.add(sets.trim, S.box, -0.5 * l - 0.012 * M, 1.2 * M, 0, 0.03 * M, 0.06 * M, 0.3 * M, { color: '#16181b', finish: 'gloss' });
+            // The cab's sliding rear window: two black frames across the back glass.
+            const g = k.g;
+            for (const s of [-0.3, 0.3]) {
+              const a = glassPoint(g, l, k.w, 'rear', s, 0.08),
+                b = glassPoint(g, l, k.w, 'rear', s, 0.92);
+              k.bar(sets.trim, [a[0] - 0.012 * M, a[1], a[2]], [b[0] - 0.012 * M, b[1], b[2]], 0.02 * M, 0.02 * M, 0.006 * M, { color: '#0c0d0f', finish: 'gloss' }, [1, 0, 0]);
+            }
+            // Three amber clearance lamps along the front of the cab roof.
+            for (const s of [-0.28, 0, 0.28]) {
+              const p = glassPoint(g, l, k.w, 'roof', s, 0.9);
+              k.add(sets.drl, S.box, p[0], p[1] + 0.035 * M, p[2], 0.05 * M, 0.03 * M, 0.1 * M, { color: CV_AMBER });
+            }
             exhaustTips(k, [0.7], 0.42, 0.045, '#b9bec3');
             plateLight(k, 0.62);
           },

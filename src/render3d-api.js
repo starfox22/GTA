@@ -131,6 +131,15 @@
         },
         // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
         searchlight: (options) => searchlightReport(options),
+        // Vehicle lights this frame: CAR LAMPS slots and drive-map beams (lighting3d-vehicle-lights.js).
+        headlights: () => vehicleLightsReport(),
+        // A/B switches for the look: pixelLock, fxaa (after MSAA), vibrance, carLamps, groundSlopeCap.
+        lookSwitches(options) {
+          if (options && typeof options === 'object')
+            for (const key of Object.keys(lookSwitchState)) if (key in options) lookSwitchState[key] = !!options[key];
+          groundShared.cityGroundSlopeCap.value = lookSwitchState.groundSlopeCap ? 1 : 0;
+          return { ...lookSwitchState };
+        },
         /* Shadow casters the view does not show (for "shadows from nowhere"):
            every mesh the sun's shadow pass draws, near the view, that the camera
            pass would not: hidden by its material (fully transparent, no colour
@@ -269,6 +278,7 @@
         crowdBenchmark: (frames) => crowdBenchmark(frames),
         // A person's drawn height from the soles to the crown (their compiled look), in map units.
         personStature: (p) => personStature(p),
+        drawnFemale: (p) => drawnFemale(p), // the rig's sex for a person (voices.js voiceReport)
         // Switch graphics quality tier (quality.js) at runtime.
         setQuality(tier) {
           applyRendererQuality(tier);

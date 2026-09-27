@@ -49,7 +49,7 @@
       mouse.down = false;
       getElement('taxiText').textContent =
         wantedStars > 0
-          ? 'The driver has the radio on and both hands on the wheel. She is not taking you anywhere.'
+          ? 'The driver has the radio on and both hands on the wheel. ' + (car.driverFemale === false ? 'He' : 'She') + ' is not taking you anywhere.'
           : 'The driver leans across and winds the window down. Where to?';
       const list = getElement('taxiActions');
       list.replaceChildren();
@@ -65,9 +65,9 @@
         const car = taxiOffer;
         closeTaxiOffer();
         if (!car) return;
-        ejectDriver(car, 'hijack');
-        crime(0.8);
-        enterVehicle(car);
+        // The struggle at the driver's door (carjack-struggle.js): the hijack's crime
+        // and the driver's 911 call (witnessReport) happen there.
+        startCarjack(car);
       });
       getElement('taxiOverlay').classList.remove('hidden');
       getElement('closeTaxi').focus();

@@ -12,7 +12,7 @@
             [-0.2, 1.0, 0.985], [0.1, 1.0, 0.95], [0.2, 1.0, 0.91], [0.3, 0.995, 0.87], [0.38, 0.985, 0.84], [0.44, 0.955, 0.8],
             [0.47, 0.91, 0.76, 0.19], [0.487, 0.85, 0.7, 0.23], [0.5, 0.74, 0.6, 0.3],
           ],
-          glass: { base: 0.95, roof: 1.44, xf: 0.2, xb: -0.37, rf: -0.03, rb: -0.24, wb: 0.41, wt: 0.33, bow: 0.02, bulge: 0.05, arch: 0.05, frame: 'chrome', pillars: [[0.47, 0.07, 'black'], [0, 0.16, 'paint']] },
+          glass: { base: 0.95, roof: 1.44, xf: 0.2, xb: -0.37, rf: -0.03, rb: -0.24, wb: 0.41, wt: 0.33, bow: 0.02, bulge: 0.05, arch: 0.05, crown: 0.04, screenCurve: 0.025, backCurve: 0.035, frame: 'chrome', pillars: [[0.47, 0.07, 'black'], [0, 0.16, 'paint']] },
           wheel: { r: 0.335, width: 0.23, xf: 0.3, xr: -0.28, caliper: '#3a3d42' },
           rim: { style: 'split', spokes: 5, color: '#aeb4ba', frac: 0.7 },
           doors: [[0.2, -0.02], [-0.02, -0.22]],
@@ -63,7 +63,7 @@
             [-0.5, 0.8, 0.86, 0.36], [-0.492, 0.9, 0.94, 0.26], [-0.47, 0.96, 0.99, 0.2], [-0.42, 0.99, 1.01], [-0.3, 1.0, 1.01], [-0.22, 1.0, 1.0],
             [0.2, 1.0, 1.0], [0.3, 1.0, 0.97], [0.42, 0.985, 0.93], [0.47, 0.95, 0.88, 0.2], [0.49, 0.89, 0.82, 0.24], [0.5, 0.8, 0.74, 0.3],
           ],
-          glass: { base: 0.98, roof: 1.46, xf: 0.21, xb: -0.28, rf: 0.07, rb: -0.19, wb: 0.415, wt: 0.345, bow: 0.012, bulge: 0.04, arch: 0.035, frame: 'chrome', pillars: [[0.5, 0.08, 'black'], [0, 0.14, 'paint']] },
+          glass: { base: 0.98, roof: 1.46, xf: 0.21, xb: -0.28, rf: 0.07, rb: -0.19, wb: 0.415, wt: 0.345, bow: 0.012, bulge: 0.04, arch: 0.035, screenCurve: 0.015, backCurve: 0.015, frame: 'chrome', pillars: [[0.5, 0.08, 'black'], [0, 0.14, 'paint']] },
           wheel: { r: 0.34, width: 0.225, xf: 0.3, xr: -0.28 },
           rim: { style: 'steel', color: '#2e3136', capColor: '#dfe3e6', frac: 0.66 },
           finish: { roughness: 0.3, metalness: 0.05 },
@@ -134,52 +134,78 @@
             return out;
           },
         }),
-        /* VOLT COUPE: a compact electric fastback (Model 3 / Polestar 2): a smooth
-           closed nose, slim lamps, one glass roof sweeping to the lid, flush
-           handles, a ducktail lip and aero wheels. */
+        /* VOLT COUPE: a compact electric fastback (Model 3 / Polestar 2): a low
+           closed nose between raised front wings, slim lamps under an LED brow, a
+           raked screen flowing into one arched roof and a long fastback glass
+           down to a short ducktail deck; a painted roof with a panoramic glass
+           panel, flush handles, a full-width light bar and twin-spoke wheels
+           filling the arches. */
         coupe: civBody('coupe', {
           yb: 0.15,
-          h: 0.96,
-          arches: 0.01,
-          section: SEC_SPORT,
+          h: 0.95,
+          arches: 0.024,
+          archSpan: 0.1,
+          section: SEC_CREASE,
+          sections: [[-0.5, SEC_FENDER_SOFT], [-0.3, SEC_FENDER_SOFT], [-0.16, SEC_CREASE], [0.16, SEC_CREASE], [0.26, SEC_FENDER_SOFT], [0.5, SEC_FENDER_SOFT]],
           profile: [
-            [-0.5, 0.76, 0.84, 0.36], [-0.492, 0.86, 0.93, 0.24], [-0.47, 0.94, 0.98, 0.17], [-0.43, 0.98, 1.0, 0.15], [-0.36, 1.0, 0.99], [-0.2, 1.0, 0.96],
-            [0.1, 1.0, 0.92], [0.22, 0.995, 0.86], [0.32, 0.99, 0.79], [0.4, 0.975, 0.74], [0.45, 0.94, 0.7], [0.475, 0.89, 0.65, 0.17], [0.49, 0.82, 0.58, 0.2], [0.5, 0.72, 0.5, 0.26],
+            [-0.5, 0.78, 0.74, 0.36], [-0.494, 0.88, 0.86, 0.26], [-0.482, 0.94, 0.95, 0.2], [-0.462, 0.975, 1.0, 0.17], [-0.43, 0.99, 1.0], [-0.38, 1.0, 0.985],
+            [-0.3, 1.0, 0.965], [-0.15, 1.0, 0.95], [0.05, 0.995, 0.935], [0.2, 0.985, 0.915], [0.28, 0.97, 0.885], [0.35, 0.95, 0.845], [0.41, 0.92, 0.795],
+            [0.45, 0.885, 0.75, 0.17], [0.475, 0.84, 0.7, 0.19], [0.49, 0.77, 0.64, 0.22], [0.5, 0.66, 0.56, 0.28],
           ],
-          glass: { base: 0.93, roof: 1.43, xf: 0.24, xb: -0.4, rf: 0.01, rb: -0.22, wb: 0.405, wt: 0.325, bow: 0.022, bulge: 0.06, arch: 0.06, glassRoof: true, pillars: [[0.5, 0.06, 'black'], [0, 0.12, 'black']], aPillar: 'black' },
-          wheel: { r: 0.33, width: 0.235, xf: 0.305, xr: -0.29, caliper: '#2b2d31' },
-          rim: { style: 'aero', spokes: 5, color: '#8d939a', frac: 0.72 },
-          doors: [[0.22, 0.0], [0.0, -0.2]],
+          glass: {
+            base: 0.915, roof: 1.33, xf: 0.25, xb: -0.415, rf: 0.03, rb: -0.2, wb: 0.405, wt: 0.305, bow: 0.02, bulge: 0.05, arch: 0.04,
+            crown: 0.055, screenCurve: 0.03, backCurve: 0.045, frame: 'gloss',
+            pillars: [[0.52, 0.06, 'black'], [0, 0.1, 'black']], aPillar: 'black', aWidth: 0.07,
+          },
+          wheel: { r: 0.34, width: 0.24, xf: 0.305, xr: -0.29, caliper: '#2b2d31', lip: 0.03 },
+          rim: { style: 'y', spokes: 5, color: '#8c939a', frac: 0.76 },
+          doors: [[0.215, 0.0], [0.0, -0.195]],
           handles: [0.05, -0.14],
           handleStyle: 'flush',
           mirrorSwatch: 'paint',
-          bumpers: [{ y: 0.22, h: 0.06, span: 0.7, material: 'black' }, { y: 0.26, h: 0.08, span: 0.8, material: 'black' }],
-          plateRear: 0.52,
+          sill: CV_PLASTIC,
+          sillHeight: 0.09,
+          bumpers: [{ y: 0.24, h: 0.06, span: 0.72, material: 'black' }, { y: 0.27, h: 0.07, span: 0.8, material: 'black' }],
+          plateRear: 0.54,
           plateFront: 0.32,
           frontPlate: false,
           details(k) {
-            const { M, S, sets, at } = k;
+            const { M, sets, at } = k;
             for (const side of [-1, 1]) {
-              const { hw } = cornerLamp(k, 1, side, { zIn: 0.55, zOut: 0.99, yIn: [0.52, 0.575], yOut: [0.56, 0.63], wrap: 0.28, wrapTip: 0.25, wrapRise: 0.03 });
-              ledLine(k, sets.drl, 'front', [[side * hw * 0.56, 0.565 * M], [side * hw * 0.8, 0.59 * M], [side * hw * 0.97, 0.625 * M]], CV_LED, 0.012);
-              projector(k, k.head(side), 'front', side * hw * 0.74, 0.58 * M, 0.03, side);
-              k.halo('head', side, k.surf('front', side * hw * 0.76, 0.58 * M, 0.05 * M), 1);
-              // Slim tail lamps along the ducktail, joined by a thin bar.
-              const tail = cornerLamp(k, -1, side, { zIn: 0.4, zOut: 0.99, yIn: [0.855, 0.895], yOut: [0.84, 0.9], wrap: 0.26, wrapTip: 0.4 });
-              ledLine(k, k.tail(side), 'rear', [[side * tail.hw * 0.02, 0.885 * M], [side * tail.hw * 0.6, 0.884 * M], [side * tail.hw * 0.95, 0.875 * M]], CV_TAIL_BAR, 0.012);
-              k.halo('tail', side, k.surf('rear', side * tail.hw * 0.75, 0.87 * M, 0.05 * M), 1);
-              k.patch(sets.trim, 'front', side * hw * 0.62, side * hw * 0.9, 0.24 * M, 0.3 * M, { color: CV_GLOSS, finish: 'gloss', cols: 4, rows: 1 });
+              // Slim swept headlamps under an LED brow, twin projectors in each.
+              const { hw } = cornerLamp(k, 1, side, { zIn: 0.5, zOut: 0.985, yIn: [0.55, 0.595], yOut: [0.585, 0.65], wrap: 0.3, wrapTip: 0.3, wrapRise: 0.03 });
+              ledLine(k, sets.drl, 'front', [[side * hw * 0.52, 0.598 * M], [side * hw * 0.72, 0.617 * M], [side * hw * 0.9, 0.638 * M], [side * hw * 0.975, 0.65 * M]], CV_LED, 0.011);
+              projector(k, k.head(side), 'front', side * hw * 0.66, 0.575 * M, 0.024, side);
+              projector(k, k.head(side), 'front', side * hw * 0.83, 0.594 * M, 0.024, side);
+              k.halo('head', side, k.surf('front', side * hw * 0.75, 0.585 * M, 0.05 * M), 1);
+              // Corner intakes low in the bumper.
+              k.patch(sets.trim, 'front', side * hw * 0.62, side * hw * 0.9, 0.26 * M, 0.33 * M, { cell: 'mesh', color: '#1c1e21', finish: 'gloss', tile: 0.05 * M });
+              // Tail: slim lamps along the ducktail, joined across the lid by the light bar.
+              const tail = cornerLamp(k, -1, side, { zIn: 0.34, zOut: 0.99, yIn: [0.862, 0.892], yOut: [0.842, 0.905], wrap: 0.3, wrapTip: 0.35 });
+              ledLine(k, k.tail(side), 'rear', [[side * tail.hw * 0.01, 0.879 * M], [side * tail.hw * 0.5, 0.879 * M], [side * tail.hw * 0.86, 0.876 * M], [side * tail.hw * 0.985, 0.867 * M]], CV_TAIL_BAR, 0.011);
+              ledLine(k, k.tail(side), 'rear', [[side * tail.hw * 0.7, 0.851 * M], [side * tail.hw * 0.88, 0.85 * M]], CV_REVERSE, 0.011);
+              k.halo('tail', side, k.surf('rear', side * tail.hw * 0.78, 0.875 * M, 0.05 * M), 1);
             }
-            // No grille: a sensor panel and a slim lower intake.
+            // No grille: a smooth nose, the badge, a slim lower intake with a splitter.
             const gw = at(0.49 * k.l, 0.3 * M).half;
-            k.grille('front', -gw * 0.55, gw * 0.55, 0.22 * M, 0.3 * M, { cell: 'mesh', color: '#2a2d31', tile: 0.06 * M });
-            badge(k, 'front', 0, 0.48, 0.035, '#c9ced3');
+            k.grille('front', -gw * 0.52, gw * 0.52, 0.22 * M, 0.3 * M, { cell: 'mesh', color: '#1c1e21', frame: CV_GLOSS, frameFinish: 'gloss', tile: 0.05 * M });
+            k.strip(sets.trim, 'front', [[-gw * 0.82, 0.2 * M], [0, 0.195 * M], [gw * 0.82, 0.2 * M]], 0.014 * M, 0.04 * M, { color: CV_GLOSS, finish: 'gloss', lift: 0.03 * M });
+            badge(k, 'front', 0, 0.5, 0.032, '#c9ced3');
+            // The rear: badge, diffuser, the ducktail lip in the body colour.
             const tw = at(-0.49 * k.l, 0.4 * M).half;
-            k.patch(sets.trim, 'rear', -tw * 0.75, tw * 0.75, 0.18 * M, 0.27 * M, { color: CV_PLASTIC, finish: 'plastic', cols: 8, rows: 1, lift: 0.01 * M });
-            // The ducktail lip in the body colour.
-            const x = -0.47 * k.l;
-            k.bar(sets.paint, [x, k.top(x) + 0.012 * M, -tw * 0.85], [x, k.top(x) + 0.012 * M, tw * 0.85], 0.025 * M, 0.08 * M, 0.012 * M, k.sw('paint'), [0, 1, 0]);
-            plateLight(k, 0.52);
+            badge(k, 'rear', 0, 0.8, 0.03, '#c9ced3');
+            k.patch(sets.trim, 'rear', -tw * 0.76, tw * 0.76, 0.18 * M, 0.3 * M, { cell: 'slats', color: CV_PLASTIC, finish: 'plastic', tile: 0.06 * M, lift: 0.012 * M });
+            const x = -0.466 * k.l;
+            k.bar(sets.paint, [x, k.top(x) + 0.01 * M, -tw * 0.84], [x, k.top(x) + 0.01 * M, tw * 0.84], 0.02 * M, 0.07 * M, 0.01 * M, k.sw('paint'), [0, 1, 0]);
+            // The panoramic glass over the painted roof, one dark panel to the rear glass.
+            const g = k.g,
+              pano = gridGeometry(6, 4, (u, v) => {
+                const p = glassPoint(g, k.l, k.w, 'roof', (u * 2 - 1) * 0.8, lerpNumber(-0.02, 0.95, v));
+                return [p[0], p[1] + 0.026 * M, p[2]];
+              }, (p, out) => out.set(p.x, p.y - 5, 0));
+            civAddMatrix(sets.trim, pano, civIdentity, { color: '#0b0d10', finish: 'gloss' });
+            pano.dispose();
+            plateLight(k, 0.54);
           },
         }),
         /* DUKE V8: a Challenger-style muscle car: a long flat hood with a power
@@ -194,7 +220,7 @@
             [-0.5, 0.86, 0.94, 0.34], [-0.492, 0.94, 0.99, 0.24], [-0.47, 0.985, 1.02, 0.17], [-0.4, 1.0, 1.03], [-0.3, 1.0, 1.02], [-0.18, 1.0, 1.0],
             [0.12, 1.0, 0.99], [0.25, 1.0, 0.97], [0.38, 0.995, 0.93], [0.46, 0.975, 0.89], [0.485, 0.94, 0.86, 0.18], [0.5, 0.88, 0.8, 0.22],
           ],
-          glass: { base: 1.0, roof: 1.42, xf: 0.13, xb: -0.29, rf: -0.06, rb: -0.21, wb: 0.405, wt: 0.33, bow: 0.012, bulge: 0.04, arch: 0.03, frame: 'gloss', sideFrom: 0.12, pillars: [[0.55, 0.05, 'black']], aPillar: 'paint' },
+          glass: { base: 1.0, roof: 1.42, xf: 0.13, xb: -0.29, rf: -0.06, rb: -0.21, wb: 0.405, wt: 0.33, bow: 0.012, bulge: 0.04, arch: 0.03, crown: 0.03, screenCurve: 0.02, backCurve: 0.03, frame: 'gloss', sideFrom: 0.12, pillars: [[0.55, 0.05, 'black']], aPillar: 'paint' },
           wheel: { r: 0.36, width: 0.27, wr: 0.29, xf: 0.3, xr: -0.29, caliper: '#c8141c' },
           rim: { style: 'star', spokes: 5, color: '#3a3d42', frac: 0.74, lipColor: '#c9ced3' },
           doors: [[0.13, -0.12]],
@@ -255,7 +281,7 @@
             [-0.5, 0.78, 0.8, 0.32], [-0.492, 0.88, 0.87, 0.22], [-0.47, 0.95, 0.9, 0.15], [-0.42, 0.99, 0.91], [-0.3, 1.02, 0.9], [-0.18, 1.0, 0.88],
             [0.05, 0.97, 0.86], [0.2, 0.96, 0.8], [0.3, 0.965, 0.76], [0.38, 0.955, 0.72], [0.44, 0.93, 0.67], [0.475, 0.88, 0.6, 0.16], [0.49, 0.8, 0.52, 0.2], [0.5, 0.7, 0.44, 0.26],
           ],
-          glass: { base: 0.86, roof: 1.29, xf: 0.21, xb: -0.36, rf: -0.02, rb: -0.19, wb: 0.39, wt: 0.3, bow: 0.02, bulge: 0.06, arch: 0.06, frame: 'gloss', pillars: [[0.5, 0.05, 'black']], aPillar: 'paint' },
+          glass: { base: 0.86, roof: 1.29, xf: 0.21, xb: -0.36, rf: -0.02, rb: -0.19, wb: 0.39, wt: 0.3, bow: 0.02, bulge: 0.06, arch: 0.06, crown: 0.045, screenCurve: 0.02, backCurve: 0.05, frame: 'gloss', pillars: [[0.5, 0.05, 'black']], aPillar: 'paint' },
           wheel: { r: 0.34, width: 0.25, wr: 0.3, xf: 0.3, xr: -0.29, caliper: '#c8141c' },
           rim: { style: 'y', spokes: 5, color: '#c3c8cd', frac: 0.74, centreLock: true },
           hatch: true,
@@ -364,7 +390,7 @@
             [-0.5, 0.8, 0.96, 0.36], [-0.492, 0.9, 1.0, 0.24], [-0.47, 0.96, 1.01, 0.17], [-0.42, 0.99, 1.0], [-0.3, 1.0, 0.99], [0.1, 1.0, 0.95],
             [0.2, 1.0, 0.92], [0.3, 0.995, 0.88], [0.4, 0.98, 0.84], [0.46, 0.94, 0.79], [0.485, 0.88, 0.73, 0.19], [0.5, 0.78, 0.64, 0.26],
           ],
-          glass: { base: 0.95, roof: 1.46, xf: 0.21, xb: -0.47, rf: 0.02, rb: -0.42, wb: 0.41, wt: 0.335, bow: 0.018, bulge: 0.05, arch: 0.04, frame: 'gloss', pillars: [[0.48, 0.07, 'black'], [0.14, 0.09, 'black'], [0, 0.1, 'paint']], aPillar: 'black' },
+          glass: { base: 0.95, roof: 1.46, xf: 0.21, xb: -0.47, rf: 0.02, rb: -0.42, wb: 0.41, wt: 0.335, bow: 0.018, bulge: 0.05, arch: 0.04, crown: 0.03, screenCurve: 0.02, backCurve: 0.02, frame: 'gloss', pillars: [[0.48, 0.07, 'black'], [0.14, 0.09, 'black'], [0, 0.1, 'paint']], aPillar: 'black' },
           wheel: { r: 0.33, width: 0.245, xf: 0.3, xr: -0.29, caliper: '#e3b62b' },
           rim: { style: 'mesh', spokes: 10, color: '#c9a24a', frac: 0.73 },
           flares: '#141517',

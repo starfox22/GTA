@@ -23,6 +23,8 @@
         completed: demoCompleted,
         cardShown: gameMode === 'demo',
         cardIn: Math.round(demoCardIn * 10) / 10,
+        // What the mission picker lists: locked jobs read ???.
+        picker: missions.map((m, i) => missionPickerTitle(i)),
         stats: { ...campaignStats, playSeconds: Math.round(campaignStats.playSeconds) },
       }),
       // Mission 2 test shortcut: start A Seat at the Table if needed, put Vescari
@@ -42,6 +44,63 @@
         teleportPlayer(ROOF_HIT.escape.x, ROOF_HIT.escape.y - 120);
         setStage(4, ROOF_HIT.escape, 'LOSE THE POLICE · REACH CORAL PALMS MOTEL ON FOOT');
         return this.missionState();
+      },
+      // Mission 2: put the player on the Blue Hour terrace at roof-local (x, y)
+      // (default: out of the lift), starting A Seat at the Table dressed as a
+      // guest if needed. Arrives the way the lift does (story.js updateElevator).
+      roofPlace(x = 71, y = 303) {
+        if (mission?.index !== 1) {
+          missionIndex = 1;
+          startMission();
+        }
+        const m = mission;
+        m.disguise = true;
+        player.disguised = true;
+        if (m.stage < 1) setStage(1, ROOFTOP.door, 'ENTER THE BLUE HOUR AS A GUEST');
+        if (!player.roof) teleportPlayer(ROOFTOP.door.x, ROOFTOP.door.y);
+        player.roof = true;
+        player.altitude = ROOFTOP.height + 3;
+        player.x = ROOFTOP.x + clamp(Number(x) || 0, 20, ROOFTOP.w - 20);
+        player.y = ROOFTOP.y + clamp(Number(y) || 0, 20, ROOFTOP.h - 20);
+        m.lastPlayerSpot = null;
+        m.playerSpeed = 0;
+        cameraTarget.x = player.x;
+        cameraTarget.y = player.y;
+        missionUpdate(0);
+        return roofStealthReport();
+      },
+      // Mission 2 test helper: hold bodyguard `i` still at roof-local (x, y)
+      // facing `heading` (radians, map angle), head straight. roofGuard(-1)
+      // lets every guard go back to his beat.
+      roofGuard(i, x, y, heading = 0) {
+        const guards = enemies.filter((e) => e.guard && e.missionTag === 'rooftop-hit');
+        if (i < 0) {
+          for (const e of guards) {
+            e.pinned = false;
+            e.roofRoute = null;
+          }
+          return roofStealthReport();
+        }
+        const e = guards[i];
+        if (!e) return null;
+        Object.assign(e, { x: ROOFTOP.x + x, y: ROOFTOP.y + y, a: heading, look: 0, pinned: true, roofRoute: null, investigate: null });
+        return roofStealthReport();
+      },
+      // Mission 2: the stealth state (suspicion, pace, each guard's view and
+      // whether he sees the player) and the drink's progress and aftermath.
+      roofStealth: () => roofStealthReport(),
+      roofPoison: () => roofPoisonReport(),
+      // Mission 2 test helper: set the party's suspicion meter (0-100).
+      roofSuspicion(value = 0) {
+        const m = rooftopJob();
+        if (!m) return null;
+        m.suspicion = clamp(Number(value) || 0, 0, 100);
+        return m.suspicion;
+      },
+      // Mission 2: the spike-the-glass action (the poison key) where the player stands.
+      spikeGlass() {
+        poisonDrink();
+        return roofPoisonReport();
       },
       // Mission 1 test helper: `n` patrol officers on foot just inside Vinny's
       // front doorway, as if they had run in after the truck.
@@ -99,6 +158,11 @@
               depotBackDoor: +depotBackDoor.toFixed(2),
               depotSealed,
               policeInside: mission.index === 0 ? depotPoliceInside().length : undefined,
+              // Mission 1's sealed warehouse: who is still in there, and how.
+              depotPolice:
+                mission.index === 0 && mission.stage === 5
+                  ? depotPoliceInside().map((o) => ({ x: Math.round(o.x), y: Math.round(o.y), hp: Math.round(o.hp), downed: !!o.downed, state: o.state || null }))
+                  : undefined,
               wanted: Math.ceil(wantedStars),
             }
           : { mission: null, last: lastMissionOutcome, completed, depotShutter: +depotFrontShutter.toFixed(2), depotBackDoor: +depotBackDoor.toFixed(2) },

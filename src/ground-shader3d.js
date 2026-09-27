@@ -53,6 +53,7 @@
       const GROUND_PARS = `
         uniform highp sampler2DArray cityDetail;
         uniform float cityGroundDetail;
+        uniform float cityGroundSlopeCap;
         uniform sampler2D cityFieldDist;
         uniform sampler2D cityFieldInfo;
         uniform vec4 cityFieldRect;
@@ -912,6 +913,20 @@
           // joints, cracks, the kerb's face, paint, setts. Water levels it.
           float bumpH = gHeight * ( 1.0 - puddle ) * ( cityGroundDetail > 0.5 ? 1.0 : 0.0 );
           vec2 dHdxy = vec2( dFdx( bumpH ), dFdy( bumpH ) ) * 0.9;
+          // Screen derivatives are shared by each 2 x 2 block of pixels, so a
+          // height step (a paint edge, a joint, the kerb's arris) landing inside
+          // one block tilted both pixels steeply, and which blocks caught the
+          // steps changed every time the view moved by a pixel: bright and dark
+          // fringes that crawled along every marking and kerb in motion. The tilt
+          // one pixel can take is capped (about 12 degrees), and what the cap
+          // removes goes into the roughness instead, so the edge keeps its
+          // average sheen rather than a flickering glint.
+          float slopeCap = 0.22 * fp, slope = length( dHdxy );
+          if ( cityGroundSlopeCap > 0.5 && slope > slopeCap ) {
+            dHdxy *= slopeCap / slope;
+            float lost = min( slope / fp, 2.0 ) - 0.22;
+            roughnessFactor = min( 1.0, sqrt( roughnessFactor * roughnessFactor + 0.35 * lost * lost ) );
+          }
           vec3 vSigmaX = dFdx( -vViewPosition ), vSigmaY = dFdy( -vViewPosition );
           vec3 vN = normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz );
           #ifdef CITY_HILL

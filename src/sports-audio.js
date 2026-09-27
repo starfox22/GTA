@@ -145,8 +145,12 @@
       if (!sportsSoundReady()) return;
       const level = match.sport === 'soccer' ? stadiumAudibility().level : 1 / (1 + distanceBetween(player, match.venue) / 300);
       if (level < 0.03) return;
-      playSample('civilian-scream-female-1', 0.45 * level, randomBetween(0.95, 1.05), player);
-      playSample('civilian-scream-male-1', 0.4 * level, randomBetween(0.95, 1.05), player);
+      // Two real people scream, each in their own voice (voices.js): fans pouring out
+      // of the turnstiles (sports-timeline.js sportsFansStampede), else the players.
+      const fans = pedestrians.filter((p) => p.fan && p.hp > 0 && distanceBetween(p, STADIUM_SOUND_CENTRE) < 1400),
+        pool = fans.length ? fans : match.people.filter((p) => p.hp > 0 && !p.hidden);
+      for (let i = 0; i < 2 && pool.length; i++)
+        playPersonScream(pool.splice(Math.floor(seededRandom() * pool.length), 1)[0], (i ? 0.4 : 0.45) * level, null, 0, player);
     }
 
     /* The referee: short (kickoff, goal), double (break), triple (full time), long. */

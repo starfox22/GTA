@@ -33,7 +33,9 @@
         if (p === player) {
           sp.rim = true;
           sp.snapFacing = true;
-          if (mouse.active || touchAim !== null) sp.facing = aim();
+          // The aim in a fight or standing still, else the way they run (footwork.js).
+          const aimFacing = playerAimFacing();
+          if (aimFacing !== null) sp.facing = aimFacing;
           const holstered = !!rooftopJob() && player.disguised && !rooftopJob().weaponDrawn;
           // The Marea pool (clubpool.js): a dive in, and a climb out onto the deck.
           if (player.pool?.phase === 'out') {
@@ -51,6 +53,8 @@
             sp.elevation = entityElevation(player);
             return sp;
           }
+          // Taking a car off its driver (carjack3d.js).
+          if (player.carjack) return playerCarjackSpec(sp);
           if (player.tumble) {
             sp.pose = 'tumble';
             sp.elevation = entityElevation(player) + 2;
@@ -117,11 +121,13 @@
           return sp;
         }
         if (p.guest || p.boss) {
+          // A scripted reaction (roofmission-poison.js p.pose) wins over the party loop.
           if (p.drinking) {
-            sp.pose = 'drink';
+            sp.pose = p.pose || 'drink';
             sp.cocktail = true;
             sp.sip = Math.sin(gameTime * 1.3 + (p.phase || 0)) > 0.6;
-          } else if (p.role === 'serve' || p.staff) sp.pose = 'serve';
+          } else if (p.pose) sp.pose = p.pose;
+          else if (p.role === 'serve' || p.staff) sp.pose = 'serve';
           else if (!p.dancing && p.role === 'chat') sp.pose = 'chat';
         }
         return sp;

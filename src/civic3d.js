@@ -305,12 +305,12 @@
         SKY_DUSK = new Three.Color('#c07a55'),
         SUN_NIGHT = new Three.Color('#9aaed8'),
         SUN_DUSK = new Three.Color('#ffa564'),
-        SUN_DAY = new Three.Color('#fff4de'),
+        SUN_DAY = new Three.Color('#ffe6c0'),
         HEMI_SKY_NIGHT = new Three.Color('#4a5c84'),
-        HEMI_SKY_DAY = new Three.Color('#cfe0f2'),
+        HEMI_SKY_DAY = new Three.Color('#b9d0ef'),
         HEMI_GROUND_NIGHT = new Three.Color('#2c2b35'),
         // Daylight bounces off pavement and planting, not off bare earth.
-        HEMI_GROUND_DAY = new Three.Color('#6d6a52'),
+        HEMI_GROUND_DAY = new Three.Color('#7a6b50'),
         skyScratch = new Three.Color();
       let lastBadge = '';
       function updateCivicVisuals() {
@@ -325,11 +325,13 @@
         const daylightScale = 1 - 0.29 * light;
         // (More sky fill through twilight, or roofs facing away from the low sun
         // went black against the lit streets.)
-        hemi.intensity = 0.45 + light * 0.5 + dusk * 0.35;
+        // (A deeper sky fill by day than before: the sun is the key, the shade
+        // cooler and a step darker, so streets read with depth, not flat grey.)
+        hemi.intensity = 0.45 + light * 0.36 + dusk * 0.35;
         hemi.color.copy(HEMI_SKY_NIGHT).lerp(HEMI_SKY_DAY, light);
         hemi.groundColor.copy(HEMI_GROUND_NIGHT).lerp(HEMI_GROUND_DAY, light);
         // Golden hour: the low sun is a strong warm key, not a fading one.
-        sun.intensity = (0.35 + light * 3.75 + dusk * 0.9) * daylightScale;
+        sun.intensity = (0.35 + light * 3.95 + dusk * 0.9) * daylightScale;
         sun.color.copy(SUN_NIGHT).lerp(SUN_DAY, light).lerp(SUN_DUSK, dusk * 0.85);
         fill.intensity = 0.28 + night * 0.25;
         skyScratch.copy(SKY_NIGHT).lerp(SKY_DAY, light).lerp(SKY_DUSK, dusk * 0.6);

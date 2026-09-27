@@ -8,10 +8,21 @@ Everything in `createCityRenderer()` (render3d.js and its include list, render3d
 - Street: orthographic, looking north and down at ~50°, so roofs and south facades carry the
   look (and anything tall hides what stands north of it). The camera stands clear of the
   tallest roof (`streetCeiling()`); no distance haze on the street.
+- Framing (world-view.js): the player's zoom (`STREET_ZOOM` 2.5 on foot: a person ~33 px tall
+  at 1280x800, ~27 m of street on screen) times a CAMERA CONTEXT share for what they are in
+  (car 0.7, motorbike 0.76, bicycle 0.82, bus/truck/boat 0.6, aircraft 0.64 = the flight
+  view's old 1.6) times the speed pull-back (from 45 km/h to 0.82 by ~205 km/h), eased as
+  `speedZoom` (~1.3 s, drawn frames only), so boarding and stepping out glide. The frame is
+  `clamp(viewportHeight * 0.68, 430, 630) / worldZoom` units tall. `cameraView()` reports it.
+  Game rules read the same footprint (`crowdViewHalf`: off-screen spawning, `shooterInView`),
+  so on foot enemies must be on the closer screen (~22 m) before they fire.
 - Air / parachute: a perspective camera (flight-view3d.js) framed like the street view (a
   dolly zoom from a 3° lens on the ground to 40° by ~90 m). `camera` is whichever is active.
   **Cull and pick LOD with `viewCenter`, `viewReach`, `viewZoom`**, not
   `cameraTarget`/`worldZoom`.
+- The street camera is **pixel-locked** (`lockStreetCameraToPixels`, postfx3d.js, in `render()`
+  after the shake): snapped to the scene buffer's pixel grid, so static surfaces never crawl
+  while the view scrolls. Move `camera` before that call, not after.
 - Haze is `scene.fog` with an aerial-perspective chunk: adjust `fog.density` and `fog.color`;
   `fog.near` belongs to `updateFlightView`. Nothing may lay a uniform wash over the frame.
 - From the air: small props drop by `viewZoom`, traffic becomes impostors, and below
@@ -41,7 +52,10 @@ Everything in `createCityRenderer()` (render3d.js and its include list, render3d
 ## Image pipeline (postfx3d.js, lighting3d.js)
 
 - The scene renders into a half-float HDR target (MSAA on HIGH/ULTRA), then SAO, wet
-  reflections, bloom, and one composite (exposure, ACES, grade, vignette, dither, FXAA).
+  reflections, bloom, one composite (exposure, ACES, grade + vibrance, vignette, dither) and
+  FXAA on **every** tier (MSAA resolves light before the tone curve: bright edges, leaf
+  cut-outs and glints stayed stepped and flickering on HIGH/ULTRA without it). The half-res AO
+  is upsampled depth-aware (`compositeAo`), not bilinearly (shade fringes at silhouettes).
   `renderFrame()` replaces `renderer.render()`.
 - Custom `ShaderMaterial`s that compute final screen colours (the water) end with
   `#include <city_hdr_output>` (and include `<city_hdr_pars>`) to invert the tone curve;
@@ -65,8 +79,15 @@ Everything in `createCityRenderer()` (render3d.js and its include list, render3d
   surfaces. **A material with its own `onBeforeCompile` must call
   `cityMaterialPatch(shader)` first.** A knocked-down lamp removes its pool
   (`lampLightSwitch`). Monarch Isle has its own map.
-- Vehicle lights: low beams and tail washes are instanced quads drawn into a drive light map
-  each night frame (DRIVE LIGHT MAP); the player's car keeps a real spotlight.
+- Vehicle lights (lighting3d-vehicle-lights.js): the player's car, then the cars nearest the
+  view (`carLamps` 1/4/8/12 by tier) are CAR LAMPS, real lights in `CITY_LIGHT_APPLY` from
+  fixed-size uniform arrays (`cityCarLampA/B` + count: no recompiles), with the LOW BEAM pattern
+  (`cityLowBeam` GLSL = `lowBeamIntensity` JS, keep in step) through `RE_Direct` with the
+  **unbumped** normal (grazing light on the ground bump turned to salt and pepper) and a soft
+  cap. Other cars: the same beam in the DRIVE LIGHT MAP, with tail/brake/reversing washes. The
+  player's beams are shadowed by people and cars (BEAM SHADOWS mask). Halos glow HDR-bright
+  facing the camera (`queueVehicleHalo(sprite, opacity, facing, gain, tint, size)`). Console
+  `headlights()`, A/B `lookSwitches()`.
 - Sign emissive is multiplied by `cityPower()` so the blackout job darkens districts.
 - `NIGHT_LOOK`: a readable blue-hour night; no light follows the player (only an optional
   rim, Settings · Graphics · Player outline).
@@ -113,7 +134,9 @@ Everything in `createCityRenderer()` (render3d.js and its include list, render3d
   what lies where; the shader draws asphalt, paving, lawn, loose ground and kerbs in world
   space at screen resolution from a signed distance-to-kerb field (`buildGroundField`) and
   mark records (`buildGroundMarks`, shared with the maps' `cityMarkingShapes`). Everything
-  fades what it cannot resolve (no shimmer). Console `groundDetail()`.
+  fades what it cannot resolve (no shimmer). The screen-space bump's per-pixel tilt is capped
+  (2x2-quad derivatives flipped fringes along marks and kerbs); the excess goes to roughness.
+  Console `groundDetail()`.
 - Scenic roads (county3d-roads.js): a ribbon at `terrainHeight` + 0.12, markings in its
   shader, not in the county kerb field. Scenery-only plants: vegetation3d-landscape.js.
 - Wet roads: one shared GLSL pattern (`cityWetLow`, `cityWetFilm`, `cityPuddle`) from

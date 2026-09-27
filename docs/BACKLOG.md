@@ -3,6 +3,12 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## North Point Key (skyline*.js, skyline3d-*.js)
+- East of the city frame: the night lamp map (and signSpill pools) does not reach its ground; it is lit by glows only.
+- City traffic never drives onto the Key (the street ends at the circle); no valet cars circle it.
+- The 2D fallback draws its ground tile and towers but not its palms or furniture.
+- CIRRUS guests are spawned per visit; the sky bar has no pool (the oval deck is 23 x 15 m).
+
 ## Sea life (sealife*.js)
 - The shark's breach reads small from the top-down camera (mostly a splash column).
 - Gulls are true size (1.4 m) and hard to see over dark marina water.
@@ -48,13 +54,14 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - No tunnel or stone bridge yet; the lay-by signs are small at street zoom.
 - Grading and carving add about half a second to the range's first build (`terrain()` buildMs roadJunctions..roadCarve).
 
+## Rendering (postfx3d.js, lighting3d-*.js)
+- Only the player's beams are shadowed (BEAM SHADOWS); other CAR LAMPS light through people and cars.
+- The ground's crisp-edge rebuild still uses 2x2-quad derivatives: each 1-pixel scroll flips the edge AA on some kerbs and markings (~1% of pixels).
+- Tree cut-outs would antialias better with alpha-to-coverage on MSAA tiers (vegetation3d-material.js; r160 forces alpha 1 on opaque materials).
+- Headlight strength, beam haze and night bloom were tuned on SwiftShader: check on a real GPU and a HiDPI screen.
+
 ## Unicorn (unicorn3d.js)
 - Bright sky-reflection patch under the chest in daylight (lacquer material); little muscle definition.
-
-## Missions and demo (harbor.js, campaign.js)
-- A POLICE LOST banner can sit over the PAYDAY line of the MISSION COMPLETE card.
-- A downed (crawling) officer counts as eliminated in mission 1's warehouse stage.
-- The demo card also appears when a player replays mission 2.
 
 ## Other
 - `src/marina.js` calls the superyacht 105 m; its deck spans about 66 m at the current scale.
