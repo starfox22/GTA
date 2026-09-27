@@ -106,13 +106,18 @@
       player.thrown = null;
       player.fall = null;
       cancelCarjack();
-      if (player.roof || player.buildingRoof) {
-        player.roof = false;
-        player.buildingRoof = null;
-        player.altitude = 0;
-      }
       player.parachute = null;
-      if (gameMode !== 'play') return;
+      // A body on a roof (the Blue Hour terrace, a building roof) stays up there
+      // for WASTED; the respawn below takes it off (teleportPlayer). Dropped to
+      // street level it lay inside the building, out of sight under its roof.
+      if (gameMode !== 'play') {
+        if (player.roof || player.buildingRoof) {
+          player.roof = false;
+          player.buildingRoof = null;
+          player.altitude = 0;
+        }
+        return;
+      }
       gameMode = 'dead';
       player.hp = 0;
       if (player.car) {
@@ -134,8 +139,8 @@
         player.hp = 100;
         player.armor = 0;
         player.inv = 3;
-        player.x = PLACES.find((p) => p.kind === 'hospital').door.x;
-        player.y = PLACES.find((p) => p.kind === 'hospital').door.y;
+        const hospital = PLACES.find((p) => p.kind === 'hospital').door;
+        teleportPlayer(hospital.x, hospital.y);
         clearPolice();
         resetOfficerCrews();
         gameMode = 'play';
@@ -172,7 +177,7 @@
         isAircraft(vehicle) &&
         (aircraftClearance(vehicle) > 1 || Math.hypot(vehicle.vx || 0, vehicle.vy || 0) > 12)
       ) {
-        tell('Land and stop to exit, or press J to bail out with a parachute.');
+        tell('Land and stop to exit, or press ' + keyName('bail') + ' to bail out with a parachute.');
         return;
       }
       // Off a cliff (falls-vehicles.js): nowhere to step out to until it comes down.
@@ -242,7 +247,7 @@
       if (!found) {
         tell(
           isBoat(vehicle)
-            ? 'Pull alongside a wooden dock to step off, or press J to dive in.'
+            ? 'Pull alongside a wooden dock to step off, or press ' + keyName('bail') + ' to dive in.'
             : 'No room to get out. Move away from the wall.',
         );
         return;

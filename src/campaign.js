@@ -406,6 +406,8 @@
       resetMissionState();
       mission = null;
       clearMissionOverlays();
+      // An aircraft left in the air comes down (story.js retryMission).
+      if (player.car && isAircraft(player.car)) player.car.abandonedFlight = true;
       player.car = null;
       player.roof = false;
       player.buildingRoof = null;

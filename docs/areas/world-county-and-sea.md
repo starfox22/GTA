@@ -28,7 +28,21 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
   stops the whole height counts. One impact scale (`fallInjury`, falls-body.js): under 6 m a
   stumble, 6-17 m 8-100 hp, beyond dead (a splat: face down, blood pool); water safe to
   20 m/s, fatal from 30. Slopes up to the tumble (terrain-field.js) are unchanged. Console
-  group `falls` (`cliffSpot`, `fallTest`, `fallState`, `bailOut`, `parachuteState`).
+  group `falls` (`cliffSpot`, `fallTest`, `fallState`, `bailOut`, `parachuteState`,
+  `parachuteFallTo`).
+- Parachute (parachute.js; parachute3d.js draws it): only an aircraft bail-out (60 m clear)
+  starts one; the ripcord is a second `bail` press once the first is let go, and
+  `deployParachute()` runs once (`stage` stays 'canopy'). The pull is not an open canopy: the
+  DEPLOYMENT stages (pilot 0.7 s, lines 1 s, snivel 1-2 s by pull speed, snap 0.8 s) bring
+  in drag gradually, the shock capped at 4 g; from terminal speed it is open 4.5 s / ~175 m
+  later, pulled at rest 3.6 s / 54 m, so a 60 m helicopter hop only just makes it.
+  `parachuteForecast()` steps that same model at 30 Hz and is the cue's "need" (to 7 m/s):
+  change the model there and the cue follows. Cue: OPEN SOON at need + 4 s of fall, OPEN NOW
+  at need + 1.5 s (a pull then still lands safe), TOO LOW under need + 2 m; after the pull it
+  shows the stage and the height the rest needs. Until `phase` is 'open' the jumper steers
+  as in freefall and a roof is an impact; the late-pull hurt band is only ~4 m of pull
+  height at terminal speed (the snap takes 28 → 7 m/s in ~12 m). The renderer reads
+  `phase`/`phaseK`/`opening`/`load`; the camera jolt is `shake`, set by parachute.js.
 - Railway (transit.js, transit3d.js): SHORE LINE (Cruise Terminal → west sea wall → Southport
   Airport), COAST LINE (→ Oceanview → Palmshore), RIDGE LINE (→ Eastgate, Northridge,
   Stonecreek). Each `route` is a control polygon filleted by `railTrackGeometry`; everything

@@ -93,7 +93,9 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
 - `playerImpact()` / `fallInjury()` (falls-body.js) are the only fall-damage scale;
-  `player.fall` is a carrier. The parachute opens only on a second `bail` press.
+  `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
+  opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
+  for the freefall cue: change them there only.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - **Dev console** `window.DeadEndCity` has explicit named methods only. **Never** add an

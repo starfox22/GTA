@@ -486,6 +486,8 @@
     function cleanupMissionExtras() {
       player.disguised = false;
       resetDepotDoors();
+      // Mission 2's ambulance, if it has not pulled up yet (roofmission-poison.js).
+      settleRoofAmbulance(rooftopJob());
       for (let i = vehicles.length - 1; i >= 0; i--)
         if (vehicles[i].missionPursuit || vehicles[i].reconPatrol) {
           const c = vehicles[i];

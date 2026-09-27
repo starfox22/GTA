@@ -43,6 +43,14 @@ index plus one.
 - Test from the console: `startMission(i)`, `missionTargets()`, `steerTo()`, `walk()`,
   `interact()`, `simulate(seconds, keys)`; docs/audit/missions-qa.md shows the method.
 
+## Mission 1: Dockside Favor (harbor-*.js, chase.js)
+
+- Vinny's truck (`HARBOR.truck`) waits on the carriageway at the north kerb of the street
+  at y 640, westbound lane, nose west: on the south side the tall block south of it hid it
+  from the north-looking camera. `spawnVinnyTruck` slides it along that kerb when traffic
+  or a double-parked delivery van (crowd-scenes.js) holds the spot; `MISSION_STARTS`
+  (bike share) reads the same point.
+
 ## Mission 2: the Blue Hour (roofmission-*.js)
 
 - Guards see only inside their cone: `roofGuardSees` = `ROOF_VIEW` half-angle and range
@@ -60,6 +68,9 @@ index plus one.
   `poisoned` with a `deathStyle.poison`: wounds.js skips the fall, wounds and blood for it.
 - Clean poisoning (no alarm, no stars at the lift): stage 4 is WALK AWAY FROM THE HOTEL
   (`ROOF_AWAY` from the doors); the alarm or the takedown keep the run to Coral Palms.
+- Cover blown with Vescari standing (not `poisonCommitted`): leaving the terrace (street
+  level, or `ROOF_AWAY` off) fails the job, "Vescari got away". Walking out before any alarm
+  leaves the job waiting upstairs.
 - The ambulance is a real `ambulance` vehicle on `countyRouteControl` (route
   `ROOF_AMBULANCE`), braked to its stop by the mission and parked there; a stuck one is
   placed at the stop. It is `mission` (removed on retry) and stays parked after a win.

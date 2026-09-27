@@ -3,6 +3,9 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
+- At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
+
 ## North Point Key (skyline*.js, skyline3d-*.js)
 - East of the city frame: the night lamp map (and signSpill pools) does not reach its ground; it is lit by glows only.
 - City traffic never drives onto the Key (the street ends at the circle); no valet cars circle it.
@@ -25,7 +28,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Falls and parachute (falls*.js, parachute.js)
 - NPCs knocked off drops do not fall; the splat pool is a flat decal and sinks into steep slopes.
 - AI cars cannot fly into the sea (the footprint check stops them at the edge).
-- A canopy landing on an ordinary roof still glides past the building; only freefall onto a roof is an impact.
+- A canopy landing on an ordinary roof still glides past the building; only freefall (or a canopy still opening) onto a roof is an impact.
+- The freefall cue measures the height opening needs against the floor straight below: a roof or hill drifted over while it opens is not forecast.
+- The deployment stages are only seen from above (the flight camera looks down): the body swinging upright at line stretch barely reads.
 - The Blue Hour terrace canopy landing is kept but has no test.
 
 ## Driving (driving.js, physics-*.js)

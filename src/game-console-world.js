@@ -205,7 +205,7 @@
         return points.map(([x, y]) => solid(x, y, r) || (foot && footObstacleBlocked(x, y, r)));
       },
     });
-    // FALLS: bailOut(metres, x, y, heading), openParachute(), parachuteState(), fallState(),
+    // FALLS: bailOut(metres, x, y, heading), openParachute(), parachuteState(), parachuteFallTo(target), fallState(),
     // cliffSpot(kind), fallTest(kind, arg) (falls-console.js).
     addConsoleMethods('falls', fallsConsole());
     // North Point Key: skyline(), skylineVisit(spot) (skyline-console.js).
