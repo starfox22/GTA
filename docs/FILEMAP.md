@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-417 files in the include tree, 148,961 lines.
+419 files in the include tree, 149,454 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -86,7 +86,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/challenges.js`   607 — Mission-specific encounters
 - `src/sidejobs.js`   418 — Contract missions after the main story
 - `src/streets.js`    12 — ▸ Road presentation
-- `src/terrain.js`    16 — ▸ Mountains and off-road contact
+- `src/terrain.js`    17 — ▸ Mountains and off-road contact
 - `src/offroad.js`    49 — ▸ The 4x4 club, trail mud, off-road traction and the hill climb
 - `src/hypercars.js`   604 — The Prestige Collection: hypercar types, specs and sound
 - `src/mountain-village.js`   648 — The mountain villages of Ridgeline County
@@ -254,6 +254,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/terrain-field.js`   667 — Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
 - `src/terrain-scenery.js`   585 — Baked terrain data: treeline, scenery, streams, snow, mountain ground paint and terrainReport().
 - `src/terrain-roadside.js`   436 — Scenic roads' roadside: guard rails and viewpoint walls (drawn and solid), reflector posts, the report (mountainRoad) and a test autopilot …
+- `src/terrain-headlights.js`   188 — Headlights on slopes: the lamps' body frame as a vehicle sits on the ground (headlightFrame) and the terrain horizon a beam sees (headlightHorizon) …
 
 ## src/offroad.js ▸ The 4x4 club, trail mud, off-road traction and the hill climb
 
@@ -339,7 +340,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/flight-view3d.js`   882 — Flight camera and aerial perspective
 - `src/postfx3d.js`   924 — HDR post-processing pipeline
-- `src/lighting3d.js`    26 — ▸ Sun, sky, reflections and night light
+- `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   924 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   313 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
@@ -410,9 +411,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
-- `src/lighting3d-sky.js`   708 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
+- `src/lighting3d-sky.js`   767 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
 - `src/lighting3d-cutaway.js`   144 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
-- `src/lighting3d-vehicle-lights.js`   609 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
+- `src/lighting3d-vehicle-lights.js`   629 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
+- `src/lighting3d-vehicle-shadows.js`   222 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people and cars in the player's beams), the TERRAIN HORIZON strip kept in the same texture, and the …
 - `src/lighting3d-look.js`   252 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
 
 ## src/vegetation3d.js ▸ Tree library: species, foliage atlas, wind, LOD
@@ -633,7 +635,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   140 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   174 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   176 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-settings.js`    95 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

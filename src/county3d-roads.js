@@ -272,6 +272,8 @@
           [new Three.BoxGeometry(0.3, 0.8, 0.6).translate(0, 7.2, 0), '#ffb347', 0],
         ]),
         scenicDelineatorMaterial = new Three.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 });
+      // The amber lens is a retroreflector: it flares in the CAR LAMPS (lighting3d-sky.js).
+      scenicDelineatorMaterial.defines = { CITY_RETRO: '3.0' };
       // A strip along a run of points ([x, y, ground]): each profile point [offset out, height]
       // extruded, `side` turning offsets outward from the road.
       function scenicExtrude(points, side, profile, material, closed = false) {

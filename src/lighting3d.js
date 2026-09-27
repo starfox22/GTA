@@ -22,5 +22,6 @@
       // @include src/lighting3d-sky.js
       // @include src/lighting3d-cutaway.js
       // @include src/lighting3d-vehicle-lights.js
+      // @include src/lighting3d-vehicle-shadows.js
       // @include src/lighting3d-look.js
       // END SUBSYSTEM: src/lighting3d.js
