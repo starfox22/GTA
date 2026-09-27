@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-417 files in the include tree, 149,183 lines.
+417 files in the include tree, 149,207 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -26,7 +26,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/voices.js`   173 — People's voices: whether someone is drawn as a woman or a man (personFemale) and the recorded scream that fits them (screamVoice, playPersonScream …
 - `src/footwork.js`    61 — On foot: where the player's body faces (the aim while fighting, else the way they go) and what facing one way while moving another costs the pace …
 - `src/heat.js`   283 — Heat and wanted stars
-- `src/witnesses.js`   526 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
+- `src/witnesses.js`   527 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   235 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
 - `src/game-car-spawn.js`   163 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   479 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
@@ -110,7 +110,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
 - `src/mobile.js`   258 — Touch controls
 - `src/world-view.js`   224 — World camera gestures
-- `src/car-radio.js`   836 — Vehicle radio stations
+- `src/car-radio.js`   859 — Vehicle radio stations
 - `src/garages.js`   750 — ▸ Drive-in repair and respray
 - `src/crowd.js`   192 — ▸ Crowd life, perception and reactions
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
@@ -302,8 +302,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/crowd.js ▸ Crowd life, perception and reactions
 
 - `src/crowd-looks.js`   167 — Crowd appearance: palettes, role weights, dressPerson() and ensureLook().
-- `src/crowd-speech.js`   217 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
-- `src/crowd-chatter.js`   293 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
+- `src/crowd-speech.js`   216 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
+- `src/crowd-chatter.js`   294 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
 - `src/crowd-space.js`   265 — Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
 - `src/crowd-streaming.js`   225 — Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
 - `src/crowd-walking.js`   409 — Walking the grid: crossings, sidewalks, going indoors, rain, updateStreetWalker() and encounters.
