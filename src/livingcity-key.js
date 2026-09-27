@@ -124,10 +124,16 @@
         c.junction = null;
         c.streamed = true;
         keyVisitors.handedBack++;
+        keyVisitors.lastHandedBack = c;
         return trafficControl(c, 1 / 60);
       }
       k.leg = k.index >= R.exitFrom ? 'exit' : k.index >= R.ringFrom ? 'ring' : 'avenue';
-      const target = pts[k.index],
+      // Going round someone who would not clear the lane: the aim shifts sideways
+      // along the run's normal by k.dodge (set below, from the last frame).
+      const on = pts[k.index],
+        from = pts[Math.max(0, k.index - 1)],
+        runLen = Math.hypot(on.x - from.x, on.y - from.y) || 1,
+        target = k.dodge ? { x: on.x - ((on.y - from.y) / runLen) * k.dodge, y: on.y + ((on.x - from.x) / runLen) * k.dodge } : on,
         da = normalizeAngle(headingBetween(c, target) - c.a),
         ringSpeed = 20 * KMH,
         brake = 0.35 * GRAVITY;
@@ -153,6 +159,7 @@
         if (k.stopUntil > 0) k.leg = 'stop';
       }
       desired *= clamp(1 - Math.abs(da) * 0.5, 0.25, 1);
+      k.holdup = null;
       // The car ahead (a wider, shorter look round the ring).
       const cos = Math.cos(c.a),
         sin = Math.sin(c.a),
@@ -166,25 +173,65 @@
         const along = dx * cos + dy * sin,
           side = Math.abs(-dx * sin + dy * cos);
         if (along > 0 && along < reach && side < (spec.w + vehicleSpec(o).w) / 2 + wide) {
-          const lead = Math.max(0, (o.vx || 0) * cos + (o.vy || 0) * sin);
-          desired = Math.min(desired, lead + Math.max(0, along - (spec.l + vehicleSpec(o).l) / 2 - 22 - lead * 0.8) * 1.2);
+          const lead = Math.max(0, (o.vx || 0) * cos + (o.vy || 0) * sin),
+            follow = lead + Math.max(0, along - (spec.l + vehicleSpec(o).l) / 2 - 22 - lead * 0.8) * 1.2;
+          if (follow < desired) {
+            desired = follow;
+            k.holdup = o;
+          }
         }
       }
       // People on the stretch of the run just ahead (the path, not a cone: on the
-      // ring a cone takes in the pavements and the island's edge).
+      // ring a cone takes in the pavements and the island's edge). Only someone in
+      // the car's own swath holds it (its half-width and a little over half a
+      // metre): a walker on the pavement or the lane's edge is passed.
       const reachPath = Math.min(pts.length - 1, k.index + (k.leg === 'ring' || k.leg === 'stop' ? 6 : 3)),
-        room = spec.w / 2 + 9,
-        yieldTo = (p) => {
-          if (!(p.hp > 0) || p.altitude || (p.x - c.x) * Math.cos(c.a) + (p.y - c.y) * Math.sin(c.a) < 0) return;
-          for (let i = Math.max(1, k.index); i <= reachPath; i++) {
-            if (keyPathDistance(p.x, p.y, pts[i - 1], pts[i]) < room) {
-              desired = Math.min(desired, Math.sqrt(2 * 0.6 * GRAVITY * Math.max(0, distanceBetween(c, p) - spec.l / 2 - 18)));
-              return;
+        room = spec.w / 2 + 5,
+        free = desired;
+      let held = null;
+      const yieldTo = (p) => {
+        if (!(p.hp > 0) || p.altitude || (p.x - c.x) * Math.cos(c.a) + (p.y - c.y) * Math.sin(c.a) < 0) return;
+        for (let i = Math.max(1, k.index); i <= reachPath; i++) {
+          const a = pts[i - 1],
+            b = pts[i];
+          if (keyPathDistance(p.x, p.y, a, b) < room) {
+            const d = distanceBetween(c, p),
+              stop = Math.sqrt(2 * 0.6 * GRAVITY * Math.max(0, d - spec.l / 2 - 18));
+            if (stop < desired) {
+              desired = stop;
+              k.holdup = p;
             }
+            if (!held || d < held.d) {
+              // Signed offset from the run (positive to the left of travel on the map).
+              const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+              held = { p, d, side: ((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)) / len };
+            }
+            return;
           }
-        };
+        }
+      };
       forEachPedestrianNear(c.x, c.y, 150, yieldTo);
       if (!player.car) yieldTo(player);
+      // Nobody waits for ever: a person holding the car up (standing at a kerb that
+      // is not there, walking down the lane) gets a toot after a couple of seconds,
+      // then the car creeps round them on the far side at walking pace.
+      if (held && (k.dodge || desired < 4 * KMH)) {
+        k.heldSince ||= gameTime;
+        const waited = gameTime - k.heldSince;
+        if (waited > 2 && !k.tooted) {
+          k.tooted = true;
+          hornSound(c, 0.25);
+        }
+        if (waited > 3.5) {
+          if (!k.dodge || Math.abs(held.side - k.dodge) < spec.w / 2 + 3)
+            k.dodge = -Math.sign(held.side || 1) * Math.min(14, Math.max(8, room + 4 - Math.abs(held.side)));
+          if (Math.abs(held.side - k.dodge) >= spec.w / 2 + 3) desired = Math.min(free, 7 * KMH);
+        }
+      } else {
+        k.heldSince = 0;
+        k.tooted = false;
+        k.dodge = 0;
+      }
       return { steer: clamp(da * 2.5, -1.6, 1.6), desired };
     }
     function keyPathDistance(x, y, a, b) {
@@ -212,6 +259,17 @@
       if (!player.car) look(player, 'player');
       return best;
     }
+    function keyHoldupReport(h) {
+      if (!h) return null;
+      const car = vehicles.includes(h);
+      return {
+        kind: car ? h.type : h === player ? 'player' : 'person',
+        x: Math.round(h.x),
+        y: Math.round(h.y),
+        kmh: Math.round(Math.hypot(h.vx || 0, h.vy || 0) / KMH),
+        ...(car ? { id: h.id, ai: !!h.ai, occupied: !!h.occupied, keyRun: !!h.keyRun } : { walking: !!h.walking, pose: h.pose || null }),
+      };
+    }
     function keyVisitorsReport() {
       const R = keyRunRoute();
       return {
@@ -221,6 +279,13 @@
         dropOffs: keyVisitors.dropOffs,
         lastFail: keyVisitors.lastFail,
         lastDropped: keyVisitors.lastDropped || null,
+        // The last car handed back, while it stays about (it is city traffic now).
+        handed: (() => {
+          const h = keyVisitors.lastHandedBack;
+          if (!h || !vehicles.includes(h)) return null;
+          const j = h.junction;
+          return { id: h.id, x: Math.round(h.x), y: Math.round(h.y), kmh: Math.round(Math.hypot(h.vx || 0, h.vy || 0) / KMH), ai: !!h.ai, navAngle: +(h.navAngle ?? 0).toFixed(2), junction: j ? { x: j.x, y: j.y, committed: !!j.committed, turn: !!j.turn, exit: +j.exit.toFixed(2), signal: trafficSignal(j.x, j.y) } : null };
+        })(),
         route: { points: R.points.length, ringFrom: R.ringFrom, exitFrom: R.exitFrom, stop: R.stop },
         cars: keyVisitorCars().map((c) => ({
           id: c.id,
@@ -231,8 +296,11 @@
           leg: c.keyRun.leg,
           index: c.keyRun.index,
           hp: Math.round(c.hp),
-          // What stands nearest in front (a person or a car), for a visitor held up.
+          // What stands nearest in front (a person or a car), and what last set the
+          // visitor's pace below its free speed (for a visitor held up).
           ahead: keyVisitorAhead(c),
+          heldBy: keyHoldupReport(c.keyRun.holdup),
+          waited: c.keyRun.heldSince ? +(gameTime - c.keyRun.heldSince).toFixed(1) : 0,
         })),
       };
     }

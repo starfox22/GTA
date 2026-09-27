@@ -8,7 +8,13 @@ export default async function (t) {
   await t.call('skylineVisit', 'forecourt');
   await t.wait(2);
   await t.call('holdSimulation', true);
-  const start = await t.call('keyVisitorSpawn', true);
+  // The Key's own spawner may have sent a visitor during the settle wait: its car
+  // sits on the start of the run for a moment, so let it roll on and try again.
+  let start = await t.call('keyVisitorSpawn', true);
+  for (let i = 0; i < 5 && !start.sent && start.lastFail.startsWith('car '); i++) {
+    await t.wait(2);
+    start = await t.call('keyVisitorSpawn', true);
+  }
   t.assert(start.sent, 'no visitor could be sent: ' + JSON.stringify(start));
   const id = start.id,
     legs = new Set();
