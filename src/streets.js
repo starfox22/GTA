@@ -549,10 +549,14 @@
       promenadeCache = [];
       let step = 0;
       for (const e of coastSegments()) {
-        if (e.opening || !PROMENADE_REGIONS.includes(e.region) || esplanadeGivesWay(e)) continue;
+        // Where North Point Key's bridge lands, the walk it replaced still counts
+        // in the rhythm, so every spot after it keeps its kind (skyline-islet.js).
+        const keyLanding = northPointKeyBridgeLanding(e);
+        if ((e.opening && !keyLanding) || !PROMENADE_REGIONS.includes(e.region) || esplanadeGivesWay(e)) continue;
         const p = esplanadePoint(e);
         if (!groundAt(p.x, p.y, 10)) continue;
         step++;
+        if (keyLanding) continue;
         // The walk runs on past a street mouth rather than stopping at it: the
         // paving and the sea railing carry straight across and only the furniture
         // steps aside, which is how a real seafront is built.

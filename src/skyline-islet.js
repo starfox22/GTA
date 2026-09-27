@@ -31,6 +31,14 @@
       if (!onNorthPointKey(x, y)) return false;
       return vertical || Math.abs(y - NORTH_POINT_KEY.row) > 1 || x > NORTH_POINT_KEY.streetEnd;
     }
+    /* A stretch of Northbank's sea wall under the Key's bridge. The coast walks that
+       keep a rhythm (esplanade furniture, sea-wall ladders) still count it, so
+       nothing along the rest of the waterfront moved when the bridge was added. */
+    function northPointKeyBridgeLanding(e) {
+      if (!e.opening || e.region !== 'northbank' || e.x < 3200 || Math.abs(e.y - NORTH_POINT_KEY.row) > 80) return false;
+      const B = NORTH_POINT_KEY.bridge;
+      return segmentDistance(e.x, e.y, B.a, B.b) <= B.width / 2 + 8;
+    }
     // The HUD's street name on the Key: the avenue off the bridge and the circle.
     function northPointKeyStreetName(x, y) {
       if (!onNorthPointKey(x, y)) return '';
