@@ -3,23 +3,23 @@
       function garageFasciaMaterial(s) {
         const colors = garageFasciaColors(s),
           paint = (g, w, h, glow) => {
-          g.fillStyle = glow ? '#000' : colors.ground;
-          g.fillRect(0, 0, w, h);
-          if (!glow) {
-            g.fillStyle = 'rgba(0,0,0,0.18)';
-            g.fillRect(0, h - 10, w, 10);
-            g.fillStyle = 'rgba(255,255,255,0.25)';
-            g.fillRect(0, 0, w, 6);
-          }
-          g.font = '900 58px Arial';
-          g.textAlign = 'center';
-          g.textBaseline = 'middle';
-          const text = s.tagline.replace(/ · /g, '  ·  ');
-          let size = 58;
-          while (g.measureText(text).width > w * 0.94 && size > 20) g.font = '900 ' + (size -= 2) + 'px Arial';
-          g.fillStyle = glow ? colors.glow : colors.ink;
-          g.fillText(text, w / 2, h / 2 + 3);
-        };
+            g.fillStyle = glow ? '#000' : colors.ground;
+            g.fillRect(0, 0, w, h);
+            if (!glow) {
+              g.fillStyle = 'rgba(0,0,0,0.18)';
+              g.fillRect(0, h - 10, w, 10);
+              g.fillStyle = 'rgba(255,255,255,0.25)';
+              g.fillRect(0, 0, w, 6);
+            }
+            g.font = '900 58px Arial';
+            g.textAlign = 'center';
+            g.textBaseline = 'middle';
+            const text = s.tagline.replace(/ · /g, '  ·  ');
+            let size = 58;
+            while (g.measureText(text).width > w * 0.94 && size > 20) g.font = '900 ' + (size -= 2) + 'px Arial';
+            g.fillStyle = glow ? colors.glow : colors.ink;
+            g.fillText(text, w / 2, h / 2 + 3);
+          };
         const face = garageCanvas('fascia-' + s.id, 1024, 96, (g, w, h) => paint(g, w, h, false)),
           glow = garageCanvas('fascia-glow-' + s.id, 1024, 96, (g, w, h) => paint(g, w, h, true));
         return litSignMaterial(face, glow, { night: 1.6, day: 0.05 });
@@ -168,19 +168,19 @@
           // The rooftop billboard: two steel legs with braces, lit from below
           // (the coachworks carries its name along the parapet instead).
           if (s.style !== 'coachworks') {
-          const boardW = 124,
-            boardH = boardW / 4,
-            boardY = deckTop + 6 + boardH / 2,
-            boardZ = front - 5;
-          for (const x of [s.bayX - boardW * 0.32, s.bayX + boardW * 0.32]) {
-            B(x, deckTop + 3 + boardH / 2, boardZ - 2.2, 1.4, boardH + 6, 1.4, GM.steel, roof);
-            rod(roof, new Three.Vector3(x, deckTop, boardZ - 12), new Three.Vector3(x, boardY, boardZ - 2.4), 0.5, GM.steel);
-          }
-          B(s.bayX, deckTop + 5.2, boardZ + 0.4, boardW + 4, 0.6, 3, GM.steel, roof);
-          const title = sign(s.name, s.bayX, boardZ, boardW, s.color);
-          title.position.y = title.userData.backing.position.y = boardY;
-          roof.add(title, title.userData.backing);
-          for (const x of [-0.3, 0, 0.3]) addGlow(s.bayX + x * boardW, deckTop + 4.4, boardZ + 3, 12, '#fff1d0', 0.8, { day: 0 });
+            const boardW = 124,
+              boardH = boardW / 4,
+              boardY = deckTop + 6 + boardH / 2,
+              boardZ = front - 5;
+            for (const x of [s.bayX - boardW * 0.32, s.bayX + boardW * 0.32]) {
+              B(x, deckTop + 3 + boardH / 2, boardZ - 2.2, 1.4, boardH + 6, 1.4, GM.steel, roof);
+              rod(roof, new Three.Vector3(x, deckTop, boardZ - 12), new Three.Vector3(x, boardY, boardZ - 2.4), 0.5, GM.steel);
+            }
+            B(s.bayX, deckTop + 5.2, boardZ + 0.4, boardW + 4, 0.6, 3, GM.steel, roof);
+            const title = sign(s.name, s.bayX, boardZ, boardW, s.color);
+            title.position.y = title.userData.backing.position.y = boardY;
+            roof.add(title, title.userData.backing);
+            for (const x of [-0.3, 0, 0.3]) addGlow(s.bayX + x * boardW, deckTop + 4.4, boardZ + 3, 12, '#fff1d0', 0.8, { day: 0 });
           }
         }
 
