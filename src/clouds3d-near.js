@@ -94,6 +94,11 @@
         uResolution: { value: new Three.Vector2(1, 1) },
         uUseTarget: { value: 0 },
         uFlat: { value: new Three.Vector4(0, 0, 0, 0) },
+        // Streaks of the veil rushing past: x strength, yz where they stream from on screen
+        // (NDC: where the camera is heading), w how far they have streamed (a phase).
+        uNoise: { value: cloudNoise ? cloudNoise.texture : null },
+        uStreaks: { value: new Three.Vector4(0, 0, 0, 0) },
+        uAspect: { value: 1 },
       };
       const cloudVeil = new Three.Mesh(
         fullScreenGeometry,
@@ -107,16 +112,30 @@
           blendDst: Three.OneMinusSrcAlphaFactor,
           vertexShader: `void main(){ gl_Position = vec4(position.xy, 0., 1.); }`,
           fragmentShader: `
+            precision highp sampler3D;
             uniform sampler2D uNear;
+            uniform sampler3D uNoise;
             uniform vec2 uResolution;
-            uniform float uUseTarget;
-            uniform vec4 uFlat;
+            uniform float uUseTarget, uAspect;
+            uniform vec4 uFlat, uStreaks;
             void main(){
-              vec4 c = uUseTarget > 0.5 ? texture2D(uNear, gl_FragCoord.xy / uResolution) : vec4(0.);
+              vec2 uv = gl_FragCoord.xy / uResolution;
+              vec4 c = uUseTarget > 0.5 ? texture2D(uNear, uv) : vec4(0.);
               c.rgb /= ${CLOUD_STORE_SCALE.toFixed(2)};
               // The flat veil goes under the marched one (LOW has only the flat one).
               c = c + vec4(uFlat.rgb, uFlat.a) * (1. - c.a);
               if (c.a < 0.004) discard;
+              if (uStreaks.x > 0.){
+                // Falling fast through cloud the murk streams out from where you are
+                // heading: the veil's light is combed into streaks along those lines
+                // (polar about that point, log-radius so they speed up as they pass).
+                vec2 rel = (uv * 2. - 1. - uStreaks.yz) * vec2(uAspect, 1.);
+                float around = atan(rel.y, rel.x) / 6.2831853 * 14.;
+                float out_ = log(length(rel) + 0.04) * 0.55 - uStreaks.w;
+                vec4 n = texture(uNoise, vec3(around, out_, around * 0.37));
+                float comb = (n.g * 0.8 + n.b * 0.6 - 0.7) * smoothstep(0.05, 0.4, length(rel));
+                c.rgb *= 1. + comb * uStreaks.x;
+              }
               gl_FragColor = vec4(c.rgb / c.a, 1.);
               #include <tonemapping_fragment>
               #include <colorspace_fragment>
@@ -128,6 +147,22 @@
       cloudVeil.frustumCulled = false;
       cloudVeil.visible = false;
       scene.add(cloudVeil);
+      // The veil's streaks this frame: `amount` 0 off; they stream from where the camera
+      // is heading (its velocity `velocity`, world units a second) at its speed.
+      const streakAhead = new Three.Vector3();
+      function setCloudStreaks(amount, velocity, deltaSeconds) {
+        const u = nearCompositeUniforms.uStreaks.value,
+          speed = velocity.length();
+        camera.getWorldDirection(streakAhead);
+        // (Only while the camera moves into the view: they stream from a point ahead.)
+        if (amount < 0.01 || speed < 1 || streakAhead.dot(velocity) < speed * 0.3) {
+          u.x = 0;
+          return;
+        }
+        streakAhead.copy(camera.position).addScaledVector(velocity, 1000 / speed).project(camera);
+        u.set(amount, clamp(streakAhead.x, -3, 3), clamp(streakAhead.y, -3, 3), (u.w + deltaSeconds * speed * 0.004) % 64);
+        nearCompositeUniforms.uAspect.value = camera.aspect;
+      }
       // Renders the veil for this frame: from the camera to `subjectDistance`, capped at
       // `cap`; `steps` 0 draws only the flat veil `flat` (premultiplied colour, alpha).
       function renderCloudVeil(subjectDistance, cap, steps, width, height, flat) {

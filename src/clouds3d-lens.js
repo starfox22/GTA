@@ -35,7 +35,10 @@
             float r = mix( 0.14, 0.28, h.y ) * mix( 1.0, 0.7, fl ), l = length( d );
             float bead = 1.0 - smoothstep( r * 0.75, r, l );
             lens.xy -= d / scale * vec2( 1.0 / aspect, stretch ) * bead * 2.4;
-            lens.z = max( lens.z, bead * smoothstep( r * 0.45, r, l ) );
+            // The rim: a glint along the top (light caught from above), shade along the
+            // bottom; z is how much darker (negative: brighter) the pixel is.
+            float rim = bead * smoothstep( r * 0.45, r, l ), up = d.y / max( l, 1e-4 );
+            lens.z += rim * ( 0.5 - 1.6 * max( up, 0.0 ) );
           }
           return lens;
         }`;

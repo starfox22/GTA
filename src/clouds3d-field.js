@@ -183,8 +183,8 @@
             // Erode the edges with finer billows: ragged wisps at the base, cauliflower
             // tops above.
             vec4 fine = texture(uNoise, q / ${CLOUD_DETAIL_SCALE.toFixed(1)} + vec3(uTime * 0.003, uTime * 0.006, 0.));
-            float erode = mix(1. - fine.g, fine.g, clamp(h * 3., 0., 1.));
-            d = clamp((d - erode * 0.38) / (1. - erode * 0.38), 0., 1.);
+            float erode = mix(1. - fine.g, fine.g, clamp(h * 3., 0., 1.)) * mix(0.38, 0.5, smoothstep(0.3, 0.8, h));
+            d = clamp((d - erode) / (1. - erode), 0., 1.);
             float close = cloudCloseness(p);
             if (close > 0. && d > 0.){
               vec4 finer = texture(uNoise, q / ${(CLOUD_DETAIL_SCALE * 0.22).toFixed(1)} + vec3(uTime * 0.011, uTime * 0.02, uTime * 0.004));

@@ -602,8 +602,8 @@
             #ifdef USE_BLOOM
               color += texture2D( tBloom, sceneUv ).rgb * uBloomStrength;
             #endif
-            // A bead's rim is a little darker than what it shows.
-            color *= 1.0 - lens.z * 0.07;
+            // A bead's rim: a glint along its top, shade along its bottom.
+            color *= 1.0 - lens.z * 0.1;
             color = cityACES( color );
             #ifdef USE_GRADE
               float luma = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );

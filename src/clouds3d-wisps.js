@@ -13,8 +13,8 @@
        * along its motion across the frame over a short exposure, its opacity divided by
        * the stretch so a fast rag is a faint long smear, not a bright bar.
        */
-      const WISP_MAX = 56,
-        WISP_COUNT = { LOW: 10, MEDIUM: 24, HIGH: 40, ULTRA: 56 },
+      const WISP_MAX = 32,
+        WISP_COUNT = { LOW: 8, MEDIUM: 14, HIGH: 22, ULTRA: 32 },
         wispData = new Float32Array(WISP_MAX * 4),
         wispSeeds = new Float32Array(WISP_MAX);
       for (let i = 0; i < WISP_MAX; i++) wispSeeds[i] = ((i * 0.6180339887) % 1) * 97;
@@ -35,6 +35,9 @@
         // Fade in from the near plane (x .. y) and out towards the far end (z .. w).
         uFade: { value: new Three.Vector4(0, 1, 1e5, 2e5) },
         uOpacity: { value: 0 },
+        // The subject on screen (NDC x, y, a radius) and its distance: rags between the
+        // camera and the subject thin out over it, so it is never lost behind one.
+        uSubject: { value: new Three.Vector4(0, 0, 0.3, 0) },
       };
       const wispMesh = new Three.Mesh(
         wispGeometry,
@@ -52,7 +55,7 @@
             attribute vec4 iWisp;
             attribute float iSeed;
             uniform vec3 uVelocity;
-            uniform vec4 uFade;
+            uniform vec4 uFade, uSubject;
             uniform float uExposure, uOpacity;
             varying vec2 vCorner;
             varying float vAlpha, vSeed, vStretch;
@@ -66,6 +69,9 @@
               float depth = -view.z;
               vAlpha = smoothstep(0.02, 0.35, d) * uOpacity
                      * smoothstep(uFade.x, uFade.y, depth) * (1. - smoothstep(uFade.z, uFade.w, depth));
+              vec4 clip = projectionMatrix * vec4(view, 1.);
+              vec2 fromSubject = (clip.xy / max(clip.w, 1e-3) - uSubject.xy) * vec2(projectionMatrix[0][0] / projectionMatrix[1][1], 1.);
+              if (depth < uSubject.w) vAlpha *= 0.15 + 0.85 * smoothstep(uSubject.z * 0.5, uSubject.z, length(fromSubject));
               vSeed = iSeed;
               vCorner = position.xy;
               if (vAlpha < 0.002 || depth < 1.){
@@ -81,6 +87,9 @@
               vec3 across = trail - ray * dot(trail, ray);
               float stretch = length(across);
               vec3 along = stretch > 0.01 * size ? across / stretch : normalize(cross(ray, vec3(0., 1., 0.)));
+              // (At most a streak five times its width: past that it is only a faint line.)
+              stretch = min(stretch, size * 5.);
+              across = along * stretch;
               vec3 side = normalize(cross(ray, along));
               float halfLength = stretch * 0.5 + size;
               vStretch = halfLength / size;
@@ -102,11 +111,11 @@
               float r = length(c);
               if (r > 1.) discard;
               vec4 n = texture(uNoise, vec3(c.x * 0.3 + vSeed, c.y * 0.3 / vStretch + vSeed * 0.37, vSeed * 0.13 + uTime * 0.004));
-              float body = smoothstep(1., 0.15, r) * smoothstep(0.3, 0.8, n.g * 0.7 + n.r * 0.5 + (1. - r) * 0.3);
+              float body = smoothstep(1., 0.15, r) * smoothstep(0.45, 0.9, n.g * 0.7 + n.r * 0.5 + (1. - r) * 0.3);
               float a = body * vAlpha / vStretch;
               if (a < 0.002) discard;
               // Lit unevenly (a brighter crown, a greyer core) so a rag reads against the white.
-              gl_FragColor = vec4(vLight * mix(0.62, 1.35, clamp(n.r * 0.7 + (c.y * 0.5 + 0.5) * 0.35 + fract(vSeed * 0.37) * 0.2 - 0.1, 0., 1.)), 1.);
+              gl_FragColor = vec4(vLight * mix(0.5, 1.5, clamp(n.r * 0.7 + (c.y * 0.5 + 0.5) * 0.35 + fract(vSeed * 0.37) * 0.2 - 0.1, 0., 1.)), 1.);
               #include <tonemapping_fragment>
               #include <colorspace_fragment>
               gl_FragColor = vec4(gl_FragColor.rgb * a, a);
@@ -140,28 +149,33 @@
         wispData[i * 4] = wispScratch.x;
         wispData[i * 4 + 1] = wispScratch.y;
         wispData[i * 4 + 2] = wispScratch.z;
-        // 3-12 m rags, larger farther away.
-        wispData[i * 4 + 3] = (24 + wispRandom() * 50) * (0.6 + 0.8 * clamp(depth / 700, 0, 1));
+        // 1-7 m rags, larger farther away.
+        wispData[i * 4 + 3] = (10 + wispRandom() * 34) * (0.6 + 0.8 * clamp(depth / 700, 0, 1));
       }
       const wispLateral = { x: 0, y: 0 };
       // Once a frame while the flight camera is in or near the layer: `count` wisps between
-      // the near plane and `reach` (world units) ahead, `opacity` 0 hides them.
-      function updateCloudWisps(deltaSeconds, count, reach, opacity) {
+      // the near plane and `reach` (world units) ahead, `opacity` 0 hides them; `subject`
+      // (world) is kept clear of rags in front of it.
+      function updateCloudWisps(deltaSeconds, count, reach, opacity, subject) {
         const show = opacity > 0.01 && count > 0 && cloudsSupported && camera === flightCamera;
         wispMesh.visible = show;
         if (!show) {
           wispReady = false;
           return;
         }
-        // The camera's velocity through the air (the cloud drifts with the wind too).
-        if (!wispReady) wispLast.copy(camera.position);
-        const dt = Math.max(deltaSeconds, 1e-3),
+        // The camera's velocity through the air is its subject's (the chase camera rides
+        // along): the jumper's or the aircraft's own, map (x, y, up) to world (x, up, y).
+        const jumper = player.parachute,
+          craft = !jumper && player.car && isAircraft(player.car) ? player.car : null,
           windSpeed = 30 + weather.wind * 70;
-        wispScratch.copy(camera.position).sub(wispLast).divideScalar(dt);
-        wispVelocity.lerp(wispScratch, wispReady ? 1 - Math.exp(-deltaSeconds * 8) : 1);
-        wispLast.copy(camera.position);
+        if (jumper) wispVelocity.set(jumper.vx || 0, jumper.vz || 0, jumper.vy || 0);
+        else if (craft) wispVelocity.set(craft.vx || 0, craft.vz || 0, craft.vy || 0);
+        else wispVelocity.set(0, 0, 0);
         const near = camera.near * 1.05,
-          far = Math.max(near * 2, reach);
+          far = Math.max(near * 2, reach),
+          // A jump of the camera (a teleport, or a slow frame) re-seeds the whole stretch.
+          jumped = !wispReady || camera.position.distanceTo(wispLast) > (far - near) * 0.5;
+        wispLast.copy(camera.position);
         wispInverse.copy(camera.matrixWorldInverse);
         // The air past the camera, in its own frame: which end and side rags come from.
         wispScratch.copy(wispVelocity).transformDirection(wispInverse).multiplyScalar(wispVelocity.length());
@@ -171,7 +185,7 @@
         const tanY = Math.tan((camera.fov * Math.PI) / 360) * 1.2,
           tanX = tanY * camera.aspect;
         for (let i = 0; i < count; i++) {
-          if (!wispReady) {
+          if (jumped) {
             placeWisp(i, near + wispRandom() * (far - near), null);
             continue;
           }
@@ -197,4 +211,6 @@
           .add(wispScratch.set(-Math.cos(weather.windAngle) * windSpeed, 0, -Math.sin(weather.windAngle) * windSpeed));
         wispUniforms.uFade.value.set(near, near * 1.8, far * 0.8, far);
         wispUniforms.uOpacity.value = opacity;
+        wispScratch.copy(subject).project(camera);
+        wispUniforms.uSubject.value.set(wispScratch.x, wispScratch.y, 0.32, camera.position.distanceTo(subject));
       }

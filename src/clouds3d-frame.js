@@ -6,6 +6,7 @@
         cloudBounds = new Three.Vector2(),
         cloudForward = new Three.Vector3(),
         cloudSubject = new Three.Vector3(),
+        cloudVelocity = new Three.Vector3(),
         cloudClearColor = new Three.Color(),
         cloudGrey = new Three.Color(),
         cloudFlat = new Three.Vector4(),
@@ -92,7 +93,7 @@
         if (!active) {
           cloudVeil.visible = false;
           cloudView.veilSteps = cloudView.veilCap = cloudView.flatVeil = 0;
-          updateCloudWisps(deltaSeconds, 0, 0, 0);
+          updateCloudWisps(deltaSeconds, 0, 0, 0, cloudSubject);
           cloudView.wisps = cloudView.wispOpacity = 0;
           return;
         }
@@ -111,6 +112,12 @@
         // Light: the scene's own sun, sky and ground colours, so dawn, dusk, night and
         // lightning all reach the clouds without a palette of their own.
         marchUniforms.uSunColor.value.copy(sun.color).multiplyScalar(cloudSunIntensity * 0.62);
+        // The game's day sun is a warm, stylised yellow; on cloud that reads as sand. Up
+        // high the sun is whiter: half-way to its own grey by day, all of it kept at dusk.
+        const cloudSun = marchUniforms.uSunColor.value,
+          sunGrey = cloudSun.r * 0.2126 + cloudSun.g * 0.7152 + cloudSun.b * 0.0722,
+          whiten = 0.5 * clamp((light - 0.35) / 0.4, 0, 1);
+        cloudSun.lerp(cloudGrey.setScalar(sunGrey), whiten);
         marchUniforms.uSkyColor.value.copy(hemi.color).multiplyScalar(hemi.intensity * 0.42);
         // Light bounced up off the city is greyed, or cloud bases turn olive.
         marchUniforms.uGroundColor.value
@@ -192,10 +199,21 @@
         const margin = 20 * UNITS_PER_METRE,
           nearLayer = camera.position.y > cloudBounds.x - margin && camera.position.y < cloudBounds.y + margin,
           wisps = nearLayer ? WISP_COUNT[tier] ?? WISP_COUNT.HIGH : 0,
-          wispOpacity = context === 'aircraft' ? 0.55 * clamp(cloudLayer.immersion * 3, 0, 1) : context === 'freefall' ? 0.85 : 0.7;
-        updateCloudWisps(deltaSeconds, wisps, subjectDistance * 1.3, wisps ? wispOpacity : 0);
+          wispOpacity = context === 'aircraft' ? 0.45 * clamp(cloudLayer.immersion * 3, 0, 1) : context === 'freefall' ? 0.7 : 0.6;
+        updateCloudWisps(deltaSeconds, wisps, subjectDistance * 1.3, wisps ? wispOpacity : 0, cloudSubject);
         cloudView.wisps = wispMesh.visible ? wisps : 0;
         cloudView.wispOpacity = wispMesh.visible ? wispOpacity : 0;
+        // The veil streams past a falling jumper (and, faintly, a canopy or an aircraft
+        // in cloud), strongest at a freefall's speed.
+        const fall = p ? clamp(-(p.vz || 0) / (50 * UNITS_PER_METRE), 0, 1) : 0,
+          streaks =
+            steps > 0
+              ? cameraAmount *
+                (context === 'freefall' ? 0.1 + 0.3 * fall : context === 'canopy' ? 0.1 : 0.12 * clamp(cloudLayer.immersion * 2, 0, 1))
+              : 0;
+        if (p) cloudVelocity.set(p.vx || 0, p.vz || 0, p.vy || 0);
+        else if (player.car) cloudVelocity.set(player.car.vx || 0, player.car.vz || 0, player.car.vy || 0);
+        setCloudStreaks(streaks, cloudVelocity, deltaSeconds);
         // Inside a cloud the world greys out: colour and contrast drain, and the white
         // around you glows.
         const grey = cloudView.inCloud * (context === 'aircraft' ? clamp(cloudLayer.immersion * 2, 0, 1) : 1);

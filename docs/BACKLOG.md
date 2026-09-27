@@ -6,6 +6,14 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 
+## Clouds (clouds*.js, clouds3d-*.js)
+- The flight camera never looks above ~30 degrees below the horizon: under the base the underside is never in view, only the shadows and the dimmer light.
+- The veil is capped so the subject stays readable, so the ground shows through it once a jumper is within ~30 m of the base (the far march covers only beyond the jumper).
+- Tower stops are boxes (lot + 0.5 m): a twisted crown (EVOLUTION) is approximated; only the six tallest towers stop rays.
+- `cloudAmountAt` (sound, lens, LOW's veil, grey-out) is a likelihood from the coverage map: in a gap the GPU carves it can still say "in cloud".
+- Headless: the eased in-cloud values (grey-out, lens) creep because render steps are capped at 0.04 s; judge them in a real browser.
+- No shafts on LOW/MEDIUM; no lens on LOW; the cloud sound has no test.
+
 ## North Point Key (skyline*.js, skyline3d-*.js)
 - East of the city frame: the night lamp map (and signSpill pools) does not reach its ground; it is lit by glows only.
 - City traffic never drives onto the Key (the street ends at the circle); no valet cars circle it.
