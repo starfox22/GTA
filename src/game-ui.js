@@ -284,7 +284,7 @@
         getElement('missionTitle').textContent =
           missionIndex === 0 ? 'Every city has an opening.' : 'Another call. Another score.';
         getElement('missionText').textContent =
-          'Find the ringing payphone and press ' + keyName('interact') + ' to take a job.';
+          'Find the ringing payphone and ' + pressKey('interact', 'lower') + ' to take a job.';
       }
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
@@ -396,7 +396,7 @@
         key: isAircraft(c) ? null : promptKey,
         id: promptId,
       });
-      if (!hudState.minimapFolded) drawMap(minimapContext, getElement('minimap').width, getElement('minimap').height);
+      drawMinimap();
       if (mapOpen) drawMap(cityMapContext, 800, 660, true);
       drawWeapon();
       civicUI();

@@ -82,6 +82,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   to move the player; releases every carrier), `solid()` (people collision), `crime()` (only
   heat source), `offerPrompt()` (only prompt writer), `actionHeld()`/`keyName()` (never
   literal keys). Details: docs/areas/core-and-contracts.md.
+- `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
+  `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
 - **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
   hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
   pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911. Crowd

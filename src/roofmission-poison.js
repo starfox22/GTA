@@ -61,8 +61,8 @@
       }
       if (distanceBetween(player, ROOF_HIT.drink) > 36 || !roofSight(player, ROOF_HIT.drink)) {
         tell(
-          'Vescari’s reserved glass is on the VIP table, northeast of the dance floor. Press ' +
-            keyName('poison') +
+          'Vescari’s reserved glass is on the VIP table, northeast of the dance floor. ' +
+            pressKey('poison', true) +
             ' beside it.',
           4,
         );

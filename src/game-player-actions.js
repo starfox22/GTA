@@ -195,7 +195,7 @@
         isAircraft(vehicle) &&
         (aircraftClearance(vehicle) > 1 || Math.hypot(vehicle.vx || 0, vehicle.vy || 0) > 12)
       ) {
-        tell('Land and stop to exit, or press ' + keyName('bail') + ' to bail out with a parachute.');
+        tell('Land and stop to exit, or ' + pressKey('bail', 'lower') + ' to bail out with a parachute.');
         return;
       }
       // Off a cliff (falls-vehicles.js): nowhere to step out to until it comes down.
@@ -268,7 +268,7 @@
       if (!found) {
         tell(
           isBoat(vehicle)
-            ? 'Pull alongside a wooden dock to step off, or press ' + keyName('bail') + ' to dive in.'
+            ? 'Pull alongside a wooden dock to step off, or ' + pressKey('bail', 'lower') + ' to dive in.'
             : 'No room to get out. Move away from the wall.',
         );
         return;
@@ -358,7 +358,7 @@
         return;
       }
       if (GARAGES.some((s) => distanceBetween(player, s) < 140))
-        tell('Drive up to the door and press ' + keyName('interact') + ': respray from $200, repairs by the damage.');
+        tell('Drive up to the door and ' + pressKey('interact', 'lower') + ': respray from $200, repairs by the damage.');
     }
     /* Taking the wheel: shared by the action key, the cab hijack and the getaway
        cars missions hand you, so every entry sets the same state. */

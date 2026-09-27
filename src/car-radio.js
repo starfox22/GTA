@@ -414,13 +414,13 @@
             : waiting
               ? '♪ ' + (touchEnabled() ? 'Tap' : 'Click') + ' anywhere to play radio'
               : carRadioBlocked
-              ? 'Press ' + keyName('radioPower') + ' to start playback'
+              ? pressKey('radioPower', true) + ' to start playback'
               : performance.now() < carRadioTaglineUntil
                 ? '“' + station.tagline + '”'
                 : track
                   ? track.title + ' · ' + track.artist
                   : 'Tuning…';
-      getElement('radioPower').textContent = keyName('radioPower') + ' · ' + (on ? 'ON' : 'OFF');
+      getElement('radioPower').textContent = keyPrefix('radioPower') + (on ? 'ON' : 'OFF');
       getElement('radioPower').setAttribute?.('aria-pressed', String(on));
       getElement('carRadio').classList.toggle('radio-off', !on);
       const tuned = radioStationIndex();

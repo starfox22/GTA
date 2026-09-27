@@ -251,7 +251,6 @@
         down: false,
       },
       mapOpen = false,
-      toastTime = 0,
       announceTime = 0,
       shake = 0,
       flash = 0,

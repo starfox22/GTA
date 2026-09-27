@@ -603,12 +603,17 @@
           // A witness on the phone to 911 (crowd-witnesses.js) is never culled: a
           // caller outside that band (behind the HUD, off the edge) keeps the
           // bubble inside the frame, with a pointer toward them.
-          const bubbleRects = [];
+          // Text size: 11 px, 12 on a phone-sized screen; the 911 call a size up
+          // and bold (the canvas is already at the screen's pixel ratio).
+          const bubbleRects = [],
+            bubbleFont = viewportWidth <= 600 || viewportHeight <= 480 ? 12 : 11;
           for (const p of speechBubbles()) {
             const q = api.project(p.x, p.y, p.bubbleZ ?? entityElevation(p) + (p.type ? 19 : PERSON_HEIGHT + 9.5));
             if (q.behind) continue;
             const call911 = p.speechKind === 'call911' && p.speechKindText === p.speech;
-            worldContext.font = '600 10px Arial';
+            const fs = bubbleFont + (call911 ? 1 : 0),
+              bh = fs + 6;
+            worldContext.font = (call911 ? '700 ' : '600 ') + fs + 'px Arial';
             const tw = worldContext.measureText(p.speech).width + 12,
               fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1) * speechHeightFade(p);
             if (fade <= 0.01) continue;
@@ -621,14 +626,15 @@
               q.y = clamp(q.y, 150, viewportHeight - 190);
             }
             for (const r of bubbleRects)
-              if (Math.abs(q.x - r.x) < (tw + r.w) / 2 + 4 && Math.abs(q.y - r.y) < 20)
-                q.y = r.y - 20;
+              if (Math.abs(q.x - r.x) < (tw + r.w) / 2 + 4 && Math.abs(q.y - r.y) < bh + 4)
+                q.y = r.y - bh - 4;
             bubbleRects.push({ x: q.x, y: q.y, w: tw });
+            const mid = q.y - 4 - bh / 2;
             worldContext.globalAlpha = fade;
             worldContext.fillStyle = '#f4efe2';
             worldContext.beginPath();
-            if (worldContext.roundRect) worldContext.roundRect(q.x - tw / 2, q.y - 20, tw, 16, 5);
-            else worldContext.rect(q.x - tw / 2, q.y - 20, tw, 16);
+            if (worldContext.roundRect) worldContext.roundRect(q.x - tw / 2, q.y - 4 - bh, tw, bh, 5);
+            else worldContext.rect(q.x - tw / 2, q.y - 4 - bh, tw, bh);
             worldContext.fill();
             if (call911) {
               // The emergency call stands out: a red edge round the bubble.
@@ -641,11 +647,11 @@
             worldContext.beginPath();
             if (pointTo) {
               // Held inside the frame: the tail points toward the caller.
-              const a = Math.atan2(pointTo.y - (q.y - 12), pointTo.x - q.x),
+              const a = Math.atan2(pointTo.y - mid, pointTo.x - q.x),
                 ex = q.x + Math.cos(a) * (tw / 2 + 8) * Math.min(1, Math.abs(Math.cos(a)) * 2),
-                ey = q.y - 12 + Math.sin(a) * 18;
-              worldContext.moveTo(q.x - 4 * Math.sin(a), q.y - 12 + 4 * Math.cos(a));
-              worldContext.lineTo(q.x + 4 * Math.sin(a), q.y - 12 - 4 * Math.cos(a));
+                ey = mid + Math.sin(a) * (bh + 2);
+              worldContext.moveTo(q.x - 4 * Math.sin(a), mid + 4 * Math.cos(a));
+              worldContext.lineTo(q.x + 4 * Math.sin(a), mid - 4 * Math.cos(a));
               worldContext.lineTo(ex, ey);
             } else {
               worldContext.moveTo(q.x - 3, q.y - 4);
@@ -655,7 +661,7 @@
             worldContext.fill();
             worldContext.fillStyle = '#1b2026';
             worldContext.textAlign = 'center';
-            worldContext.fillText(p.speech, q.x, q.y - 8);
+            worldContext.fillText(p.speech, q.x, mid + fs * 0.36);
             worldContext.globalAlpha = 1;
           }
           for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers])

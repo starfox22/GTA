@@ -309,7 +309,7 @@
             chooseFlightLanding(false);
             missionLine(
               'elena',
-              'Police have our manifest. Southport is an ambush. Press ' + keyName('divert') + ' to return to Oceanview: fewer guards, but a longer drive to safety.',
+              'Police have our manifest. Southport is an ambush. ' + pressKey('divert', true) + ' to return to Oceanview: fewer guards, but a longer drive to safety.',
             );
             announce('POLICE HAVE THE MANIFEST', keyName('divert') + ' · CHOOSE YOUR LANDING', 5);
           }

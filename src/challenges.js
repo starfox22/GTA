@@ -238,7 +238,7 @@
           setStage(
             2,
             missionState.cleanCar,
-            'EXIT · BOARD THE CLEAN SEDAN · PRESS ' + keyName('interact') + ' TO TRANSFER ELENA',
+            'EXIT · BOARD THE CLEAN SEDAN · ' + pressKey('interact') + ' TO TRANSFER ELENA',
           );
         } else if (
           missionState.stage === 3 &&

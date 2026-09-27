@@ -140,6 +140,8 @@
       if (mapOpen) {
         if (taxiPicking)
           getElement('mapRouteStatus').textContent = 'CAB WAITING · Tap where you want to be dropped off';
+        // Filters, the GO TO list and a canvas as sharp as the screen (map-view.js).
+        prepareCityMap();
         drawMap(cityMapContext, 800, 660, true);
         getElement('closeMap').focus();
       } else canvas.focus();

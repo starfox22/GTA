@@ -513,8 +513,9 @@
         root.classList.add('on');
       }
       const opening = cue.phase !== 'freefall',
-        key = touchEnabled() ? 'TAP OPEN' : keyName('bail'),
-        call = opening ? 'CANOPY OPENING' : touchEnabled() ? 'TO OPEN PARACHUTE' : 'PRESS ' + key + ' TO OPEN PARACHUTE';
+        touch = hintDevice() === 'touch',
+        key = touch ? 'TAP OPEN' : keyName('bail'),
+        call = opening ? 'CANOPY OPENING' : touch ? 'TO OPEN PARACHUTE' : 'PRESS ' + key + ' TO OPEN PARACHUTE';
       if (call !== freefallCue.call) {
         freefallCue.call = call;
         getElement('freefallKey').textContent = key;

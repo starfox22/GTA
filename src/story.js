@@ -302,7 +302,8 @@
         : '';
       getElement('callTitle').textContent = title;
       getElement('callMessage').textContent = message;
-      getElement('callAccept').textContent = button + ' · ENTER';
+      getElement('callAccept').textContent = button + menuKeySuffix('accept');
+      getElement('callDecline').textContent = 'HANG UP' + menuKeySuffix('back');
       getElement('callDecline').style.display = canClose ? 'block' : 'none';
       getElement('callOverlay').classList.remove('hidden');
       getElement('callAccept').focus();
