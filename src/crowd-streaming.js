@@ -32,6 +32,7 @@
         !p.posed &&
         !p.stroll &&
         !p.onDeck &&
+        !p.keyPerson &&
         !p.parkGuest &&
         !p.react &&
         !p.pending &&

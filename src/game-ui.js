@@ -346,6 +346,12 @@
           } else if (garagePrompt(c) !== null)
             // The price at the door (garages.js PRICE LIST); E skips the show.
             prompt = garagePrompt(c);
+        } else if (northPointKeyPrompt()) {
+          // North Point Key: a tower lift, the CIRRUS bar (skyline-lift.js, skyline-bar.js).
+          const key = northPointKeyPrompt();
+          prompt = key.text;
+          promptId = key.id;
+          if (key.key === null) promptKey = null;
         } else if (taxiRide) prompt = taxiRide.arrival > 0 ? '' : 'STOP HERE · $' + taxiRide.fare;
         else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
         else if (player.deck)

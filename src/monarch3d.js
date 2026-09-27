@@ -7,8 +7,8 @@
        *
        * Everything on the island that monarch.js planned: the town blocks (their
        * own facades, mansard roofs, shopfronts with the island's signs), fourteen
-       * villas in eight styles with their gardens, pools and courts, the two
-       * towers, the marina (pontoons, thirty-one moored yachts, three
+       * villas in eight styles with their gardens, pools and courts, MONARCH ONE
+       * and its grounds (monarch-one3d.js), the marina (pontoons, thirty-one moored yachts, three
        * superyachts, the yacht club, the harbour master's tower, the lighthouse,
        * the mole), the roundabout fountains, the street lanterns, the beach
        * furniture and the payphones. The botanic garden is monarch-garden3d.js.

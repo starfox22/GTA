@@ -266,6 +266,9 @@
       paintIsleMarinaGround(g, P, detail);
       // Beach access paths at Monarch Boulevard and St James Street.
       for (const x of [7200, 8800]) fill(x - 18, -5010, 36, 378, P.deck);
+      // Monarch One's grounds and cove (monarch-one.js), MONARCH COACHWORKS' lot (garages.js).
+      paintMonarchOneGround(g, P, detail);
+      for (const s of GARAGES) if (s.island === 'monarch') paintGarageLot(g, s);
       g.restore();
       // The esplanade along the sea walls and the beach boardwalk (streets.js).
       paintPromenades(g);
@@ -366,9 +369,25 @@
       fill({ x: B.x, y: B.y, w: B.w, h: B.h }, '#6a8b52');
       // MONARCH MOTORS' forecourt, lane and bays (dealership.js).
       if (plan.use === 'motors') paintDealershipGround(g, plan, P, detail);
-      if (['arcade', 'provisions', 'harbourfront', 'chandlery', 'towerSovereign', 'towerMonarch'].includes(plan.use))
+      if (['arcade', 'provisions', 'harbourfront', 'chandlery', 'towerSovereign', 'squareSovereign', 'courtRegent'].includes(plan.use))
         fill({ x: B.x, y: B.y + B.h - 20, w: B.w, h: 20 }, P.walk);
-      if (plan.use === 'towerSovereign' || plan.use === 'towerMonarch') {
+      if (plan.square) {
+        // A garden square: stone paving, a broad walk down the middle, two lawns.
+        const S = plan.square;
+        fill(S, P.stone);
+        if (plan.squareOpen) fill(plan.squareOpen, P.stone);
+        if (detail) {
+          g.strokeStyle = '#bdb4a0';
+          g.lineWidth = 1;
+          for (let x = S.x + 12; x < S.x + S.w; x += 24) {
+            g.beginPath();
+            g.moveTo(x, S.y);
+            g.lineTo(x, (plan.squareOpen ? plan.squareOpen.y + plan.squareOpen.h : S.y + S.h));
+            g.stroke();
+          }
+        }
+      }
+      if (plan.use === 'towerSovereign') {
         // The tower's plaza: stone paving in a radiating pattern.
         const t = plan.tower,
           cx = t.x + t.w / 2,
@@ -384,6 +403,8 @@
           }
         }
         fill({ x: t.x - 24, y: t.y + t.h, w: t.w + 48, h: 60 }, '#bfb49c');
+      }
+      if (plan.use === 'towerSovereign' || plan.square) {
         for (const l of plan.lawns || []) {
           fill({ x: l.x - 3, y: l.y - 3, w: l.w + 6, h: l.h + 6 }, '#8f8a78');
           fill(l, '#5f9148');

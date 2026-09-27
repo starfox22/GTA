@@ -36,86 +36,7 @@
      * stars stay (the roof still hides you, so the search timer keeps running).
      * The first mission's cargo truck is the exception its script needs.
      */
-    const GARAGE_PLAN = {
-      bayWidth: 10 * UNITS_PER_METRE, // inside faces of the side walls
-      bayDepth: 15 * UNITS_PER_METRE, // door line to the back wall's inside face
-      wall: 0.4 * UNITS_PER_METRE,
-      eaves: 6.4 * UNITS_PER_METRE, // underside of the roof deck
-      roof: 0.5 * UNITS_PER_METRE, // deck and parapet coping above the eaves
-      doorWidth: 6 * UNITS_PER_METRE,
-      doorHeight: 5 * UNITS_PER_METRE,
-      officeWidth: 6 * UNITS_PER_METRE,
-      officeDepth: 8 * UNITS_PER_METRE,
-      officeHeight: SHOP_FLOOR,
-      // Lift posts either side of the service spot (3.6 m apart inside).
-      liftHalfSpan: 2.25 * UNITS_PER_METRE,
-      // The facade stands this far south of the lot's centre (the apron in
-      // front of the door is the rest of the lot, about 7.5 m), and the bay's
-      // centre this far west of it (the office takes the east side).
-      facadeOffset: 38,
-      bayOffset: -24,
-    };
-    /* Physical repair bays: the same walls drive walking, vehicle contacts and rendering.
-       Every shop's billboard carries the word MECHANICS (`tagline`). */
-    const GARAGES = [
-      {
-        id: 'eastside',
-        name: 'EASTSIDE GARAGE',
-        tagline: 'MECHANICS · RESPRAY · REPAIR',
-        x: 1320,
-        y: 2022,
-        roadY: 2176,
-        color: '#83c5bd',
-      },
-      {
-        id: 'palm',
-        name: 'PALM KEYS AUTO',
-        tagline: 'MECHANICS · RESPRAYS WHILE YOU WAIT',
-        x: -2268,
-        y: 2530,
-        roadY: 2688,
-        color: '#e5ab9d',
-      },
-      {
-        id: 'south',
-        name: 'SOUTH BANK MOTOR WORKS',
-        tagline: 'MECHANICS · BODYWORK · PAINT',
-        x: 2470,
-        y: 3555,
-        roadY: 3712,
-        color: '#d9bc78',
-      },
-      {
-        id: 'county',
-        name: 'STONECREEK GARAGE',
-        tagline: 'MECHANICS · TOWING · TYRES',
-        x: 6950,
-        y: 3555,
-        roadY: 3712,
-        color: '#8ebac8',
-        // A mountain village's garage (mountain-village.js): fieldstone and
-        // board-and-batten under a steep red metal gable, drawn by garage3d.js.
-        rustic: true,
-      },
-    ];
-    /* Each shop's plan in map units, worked out once: the bay (inside faces),
-       the facade line, the door, the office, the service spot on the lift and
-       the apron exit. The door's `open` (0 shut .. 1 up) is live state. */
-    for (const s of GARAGES) {
-      const P = GARAGE_PLAN,
-        bayX = s.x + P.bayOffset,
-        front = s.y + P.facadeOffset,
-        inner = front - P.wall;
-      s.bayX = bayX;
-      s.front = front;
-      s.bay = { x0: bayX - P.bayWidth / 2, x1: bayX + P.bayWidth / 2, y0: inner - P.bayDepth, y1: inner };
-      s.back = s.bay.y0 - P.wall;
-      s.door = { x0: bayX - P.doorWidth / 2, x1: bayX + P.doorWidth / 2, y: front - P.wall / 2 };
-      s.office = { x: s.bay.x1 + P.wall, y: front - P.officeDepth, w: P.officeWidth, h: P.officeDepth };
-      s.service = { x: bayX, y: inner - P.bayDepth / 2 };
-      s.open = 1;
-      s.lotY1 = s.roadY - 56;
-    }
+    // @include src/garages-shops.js
     let repairJob = null,
       garageWallCache = null,
       garageLastService = null,
@@ -195,7 +116,14 @@
     }
     function inGarageLot(x, y, r = 0) {
       return GARAGES.some(
-        (s) => x > s.x - 108 - r && x < s.x + 108 + r && y > s.y - 98 - r && y < s.lotY1 + r,
+        (s) => Math.abs(x - s.x) < Math.min(108, (s.clear || 110) - 2) + r && y > s.y - 98 - r && y < s.lotY1 + r,
+      );
+    }
+    // A lot or a forecourt, for planting and props that must keep off it.
+    function garageKeepOut(x, y, pad = 0) {
+      return (
+        inGarageLot(x, y, pad) ||
+        GARAGES.some((s) => s.forecourt && x > s.forecourt.x - pad && x < s.forecourt.x + s.forecourt.w + pad && y > s.forecourt.y - pad && y < s.forecourt.y + s.forecourt.h + pad)
       );
     }
     // Which vehicles a shop will take: road vehicles that are not wrecks, pushbikes or tanks.
@@ -685,12 +613,14 @@
       }
     }
     function prepareGarages() {
+      // Clear the lot: every building on it goes (`clear` narrows it where a
+      // neighbour must stay, SENTINEL SURPLUS beside the causeway garage).
       for (let i = buildings.length - 1; i >= 0; i--) {
         const b = buildings[i];
         if (
           GARAGES.some(
             (s) =>
-              b.x < s.x + 110 && b.x + b.w > s.x - 110 && b.y < s.lotY1 && b.y + b.h > s.y - 100,
+              b.x < s.x + (s.clear || 110) && b.x + b.w > s.x - (s.clear || 110) && b.y < s.lotY1 && b.y + b.h > s.y - 100,
           )
         )
           buildings.splice(i, 1);
@@ -702,10 +632,17 @@
     /* The ground under a garage: the lot, the apron with its lead-in arrow and
        hatching, the bay's epoxy floor (drawn over by the 3D floor). */
     function paintGarages(drawingContext) {
-      for (const s of GARAGES) {
-        const { bay, door } = s;
+      for (const s of GARAGES) paintGarageLot(drawingContext, s);
+    }
+    // One shop's lot (the city canvas, the 2D view and Monarch Isle's tile).
+    function paintGarageLot(drawingContext, s) {
+      {
+        const { bay, door } = s,
+          half = Math.min(108, (s.clear || 110) - 2);
         drawingContext.fillStyle = '#4f5a5c';
-        drawingContext.fillRect(s.x - 108, s.y - 98, 216, s.lotY1 - (s.y - 98));
+        drawingContext.fillRect(s.x - half, s.y - 98, half * 2, s.lotY1 - (s.y - 98));
+        const F = s.forecourt;
+        if (F) drawingContext.fillRect(F.x, F.y, F.w, F.h);
         // Concrete apron in front of the door.
         drawingContext.fillStyle = '#8d918b';
         drawingContext.fillRect(door.x0 - 14, s.front, door.x1 - door.x0 + 28, s.lotY1 - s.front);
@@ -776,6 +713,8 @@
           id: s.id,
           name: s.name,
           tagline: s.tagline,
+          island: s.island || GARAGE_ISLAND_OF[s.id] || null,
+          style: s.style || (s.rustic ? 'rustic' : 'city'),
           door: { x0: s.door.x0, x1: s.door.x1, y: s.front, open: +s.open.toFixed(2) },
           bay: { ...s.bay, widthM: (s.bay.x1 - s.bay.x0) / UNITS_PER_METRE, depthM: (s.bay.y1 - s.bay.y0) / UNITS_PER_METRE },
           service: s.service,
@@ -788,6 +727,7 @@
           doorHeightM: GARAGE_PLAN.doorHeight / UNITS_PER_METRE,
           eavesM: GARAGE_PLAN.eaves / UNITS_PER_METRE,
         },
+        islands: GARAGE_ISLANDS,
         prices: { respray: GARAGE_RESPRAY_PRICES.map((p) => ({ class: p.label, price: p.price })), repair: '$100 + damage x $1,400 (to $1,500)', bundleDiscount: GARAGE_BUNDLE_DISCOUNT },
         cash,
         vehicle: c

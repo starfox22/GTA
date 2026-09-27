@@ -76,6 +76,8 @@
       makeCar('truck', 2850, 576, 0, false);
       makeCar('bus', 1410, 576, 0, false);
       for (const pad of HELIPADS) makeCar('helicopter', pad.x, pad.y, 0, false);
+      // North Point Key: the helicopter on FEDERATION EAST's deck, the doormen (skyline-lift.js).
+      populateNorthPointKey();
       for (let i = 0; i < 4; i++) makeCar('police', 1280 + i * 53, 3995, Math.PI / 2, false);
       for (const p of [
         {
