@@ -31,6 +31,8 @@
       playSample('explosion', 0.9, 0.9 + Math.random() * 0.12, blast);
       if (city3D) city3D.explosion(x, y, power, altitude);
       shake = Math.max(shake, 11 * power * proximity);
+      // The blast shoves the view away from it (camera-feel.js).
+      if (proximity > 0) kickCamera(Math.atan2(player.y - y, player.x - x), 12 * power * proximity * proximity);
       flash = Math.max(flash, 0.15 * proximity);
       fires.push({
         x,
@@ -139,15 +141,31 @@
         player.hp = 100;
         player.armor = 0;
         player.inv = 3;
-        const hospital = PLACES.find((p) => p.kind === 'hospital').door;
-        teleportPlayer(hospital.x, hospital.y);
+        const hospital = nearestHospital(player.x, player.y);
+        teleportPlayer(hospital.door.x, hospital.door.y);
         clearPolice();
         resetOfficerCrews();
         gameMode = 'play';
         if (mission) failMission('Hospital bill: $250. Your job is ready to retry.');
-        else tell('Back on your feet. Hospital bill: $250.', 4);
+        else tell('Back on your feet at ' + hospital.name + '. Hospital bill: $250.', 4);
         save();
       }, 4200);
+    }
+    /* Where WASTED wakes the player: the nearest hospital (RIVERSIDE MEDICAL on Palm
+       Keys, not across the sound), THE HALCYON CLINIC only on and round Monarch Isle,
+       SAINT MARLOW for the rest of the city and the county. */
+    function nearestHospital(x, y) {
+      let best = null,
+        bestD = Infinity;
+      for (const p of PLACES) {
+        if (p.kind !== 'hospital' || !p.door || (p.monarch && !nearMonarchIsle(x, y))) continue;
+        const d = Math.hypot(p.door.x - x, p.door.y - y);
+        if (d < bestD) {
+          best = p;
+          bestD = d;
+        }
+      }
+      return best || PLACES.find((p) => p.kind === 'hospital');
     }
     /* The ringing payphone's reach, shared by its prompt and E (hysteresis). */
     function payphoneInReach() {
@@ -196,6 +214,9 @@
         return;
       }
       let found = false;
+      // A boat puts you over either side; a car out of the driver's door first (a - 90
+      // degrees, as carjack.js driverDoor and every NPC driver), then the passenger side,
+      // behind and in front.
       const vehicleDefinition = vehicleSpec(vehicle),
         candidates = isBoat(vehicle)
           ? [36, 48, 60, 72].flatMap((r) =>
@@ -205,7 +226,7 @@
               })),
             )
           : [0, 14, 28].flatMap((extra) =>
-              [Math.PI / 2, -Math.PI / 2, Math.PI, 0].map((a) => ({
+              [-Math.PI / 2, Math.PI / 2, Math.PI, 0].map((a) => ({
                 a: vehicle.a + a,
                 r:
                   (Math.abs(Math.sin(a)) > 0.5 ? vehicleDefinition.w : vehicleDefinition.l) / 2 +
@@ -537,5 +558,8 @@
       notifyViolence(player, 'gunfire', player);
       crime(w.rocket ? 0.4 : 0.075);
       shake = Math.max(shake, w.rocket ? 5 : 1.4);
+      // Recoil: the view kicks back against the aim, harder for heavier rounds
+      // (camera-feel.js); less from a car window.
+      kickCamera(a + Math.PI, 0.27 * Math.sqrt(w.dmg * (w.pellets || 1)) * (w.rocket ? 1.6 : 1) * (player.car ? 0.6 : 1));
       if (!w.ammo && w.reserve) startReload();
     }

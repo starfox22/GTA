@@ -3,6 +3,8 @@
         ...damageApi,
         // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
         offroadInfo: () => offroadEffectsInfo(),
+        // Tyre smoke, dust and spray (tyresmoke3d.js): puffs alive, the tier's cap, emitted, peak.
+        tyreSmokeInfo: () => tyreSmokeReport(),
         // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
         mountainInfo: () => mountainVillageInfo(),
         /**
@@ -388,11 +390,12 @@
               vx: -Math.sin(a) * 42,
               vy: 44,
               vz: Math.cos(a) * 42,
-              life: 0.65,
-              max: 0.65,
+              life: 1.7,
+              max: 1.7,
               color: '#caa55e',
               size: 1.5,
               case: true,
+              floor: altitude + 0.35,
             });
             fx.push({
               x,

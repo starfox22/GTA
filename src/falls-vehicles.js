@@ -287,7 +287,11 @@
         playSample(into > 14 * UNITS_PER_METRE ? 'crash-heavy-1' : 'crash-medium-1', clamp(into / (18 * UNITS_PER_METRE), 0.3, 0.95), 0.95, c);
         if (into > 10 * UNITS_PER_METRE) playSample('crash-glass-1', 0.35, 1, c);
       }
-      if (c === player.car) shake = Math.max(shake, clamp(into / 14, 3, 14));
+      if (c === player.car) {
+        shake = Math.max(shake, clamp(into / 14, 3, 14));
+        // The landing throws the view on along the way the car was going (camera-feel.js).
+        kickCamera(Math.atan2(c.vy || 0, c.vx || 0), clamp(into / 12, 1.5, 10));
+      }
     }
     // Down for good: settle on whichever face is down, back on the terrain's pose.
     function cliffRest(c, ground, into, wheels) {

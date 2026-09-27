@@ -24,25 +24,9 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   km/h; sports and supercars 230-330; the patrol car 230 (catches anything but a sports car);
   trucks 115-120, bus 100, tank 55; traffic 40-55 in town. Boats in knots (speedboat 55).
 
-## Handling (physics-driving.js, driving.js)
+## Handling
 
-- Steering reaches full lock by 30 km/h (`STEER_FULL_SPEED`); above that
-  `corneringLimit(spec, v)` caps yaw rate at `cornerG * GRAVITY / v` for player, traffic and
-  pursuit alike (a city corner is 30-40 km/h). Tyre side force peaks at `TYRE_PEAK_SLIP`
-  (7°); `PLAYER_YAW_RESPONSE` 8.5/s; UNDERSTEER SKID above 28 km/h. Measure with
-  `turnTest(type, kmh)`.
-- One grip budget (friction circle): braking hard in a bend ploughs wide. Rain (`wetGrip()`,
-  down to 0.72 soaked) scales traction, brakes and cornering. `kerbStrike` jolts on kerbs.
-- **Brakes and assists** (driving.js, player's road vehicle only): a pedal ramp, front/rear
-  bias by class (`DRIVING_CHARACTER`), per-axle slip with a peak at 12% then a sliding value;
-  ABS cycles at 10-15 Hz and keeps the car steerable; TCS trims throttle; ESC (`yawStability`)
-  damps `yawSlide`. `spec.brakeG` stays the mean ABS stop (what road tests print; the tyres'
-  peak is brakeG / 0.93, `ABS_EFFICIENCY`). Fitment: cars all three, motorbikes ABS (some
-  TCS), classics none; `spec.abs` / `esc` / `tcs` override. `c.braking` and
-  `drivingAssistStates` feed the HUD lamps. Tests: `brakeTest`, `liftOffTest`, `accelTest`,
-  `drivingState`. Settings · Driving is saved as `dead-end-city-driving`.
-- Traffic in the rain drives inside `wetGrip()`, slower; one driver in eleven keeps dry habits
-  (the odd rear-ender). `aiDriving()` counts crashes and slides.
+- Steering, grip, brakes and assists, drifts and the handbrake: vehicles-and-driving-handling.md.
 
 ## Crashes, riders, aircraft strikes (physics-collisions.js, riders.js, physics-aircraft.js)
 

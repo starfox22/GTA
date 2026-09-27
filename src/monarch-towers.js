@@ -238,7 +238,8 @@
         const kind = MONARCH_PLACE_KINDS[shop.name];
         if (!kind || !shop.building || !shop.door) continue;
         const b = shop.building;
-        // The first hospital in PLACES is where the player wakes up: keep Saint Marlow first.
+        // The first hospital in PLACES has the rooftop helipad (rooftops.js): keep Saint Marlow
+        // first. WASTED wakes the player at the nearest one (nearestHospital).
         PLACES.push({ id: kind[1], kind: kind[0], name: shop.name, bx: null, by: null, x: b.x, y: b.y, w: b.w, h: b.h, height: b.height, color: kind[2], symbol: kind[3], door: { x: shop.door.x, y: shop.door.y }, monarch: true });
         b.place = kind[1];
       }

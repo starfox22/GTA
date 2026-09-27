@@ -3,6 +3,12 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## Free roam and HUD (docs/audit/freeroam-sweep.md)
+- Phone (390 px): the car radio unfolds mid-screen for 4 s on getting in, and a toast can sit over it.
+- Touch: toasts and the radio chips name keyboard keys (`keyName` has no touch labels).
+- The demo's mission card counts MISSION 01 / 11 with two jobs open (design question).
+- MIDTOWN, SOUTH BANK, IRONWORKS DOCKS and PALM KEYS · ART DECO have no label on the city map.
+
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 
@@ -43,8 +49,17 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Driving (driving.js, physics-*.js)
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
 - Soaked roads add 43–58 % to ABS stops (target 30–50 %).
-- The hot rod (no TCS/ESC) spins under power before lifting off.
 - AI traffic and police use the simple ABS-equivalent brake, not the per-axle tyre model.
+- Drifts need TCS and ESC off (or a classic): with ESC on a handbrake-started slide is damped
+  0.8 s after the handbrake. A 'sport' ESC mode that allows ~15 degrees would open drifting up.
+- Traffic and police smoke only from `c.sliding` (no tyre slip of their own); a shoved parked
+  car lays rubber but no smoke.
+
+## Camera and combat feel (camera-feel.js, tyresmoke3d.js)
+- With both a mouse and the touch aim stick used on one page, `playerShotTarget` still snaps to
+  whoever is near the (stale) cursor; the camera leans along the stick.
+- Rain spray and dust were checked only in stills (headless frames are seconds apart); worth a
+  look on a real GPU at speed in the rain and on the beach.
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.
@@ -86,5 +101,3 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Dealership staff (MONARCH MOTORS) and North Point Key guests have their own alarms and never call 911; a crashed driver's call (crowd-traffic.js) is not counted among the incident's witnesses, so a second caller may be sent.
 - A call from inside a shop (hidden off-stage call) has no bubble; the 911 bubble keeps the street's 10 px font: check it reads on a HiDPI screen.
 
-## Other
-- `src/marina.js` calls the superyacht 105 m; its deck spans about 66 m at the current scale.

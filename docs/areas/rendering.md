@@ -17,6 +17,12 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   `clamp(viewportHeight * 0.68, 430, 630) / worldZoom` units tall. `cameraView()` reports it.
   Game rules read the same footprint (`crowdViewHalf`: off-screen spawning, `shooterInView`),
   so on foot enemies must be on the closer screen (~22 m) before they fire.
+- Follow (camera-feel.js, game side): `cameraTarget` eases (frame-rate independent) to the
+  player plus a smoothed lead along the vehicle's **velocity** (not its nose), on foot the
+  run and, in a fight, toward the aim; shorter with police on the tail (chase framing);
+  Settings · Driving · Camera look-ahead scales it.
+  `kickCamera(heading, units)` drives a spring (`cameraKick`), `shake` a smooth tremor
+  (`cameraShakeOffset`); the renderers add both, nothing reads them back. `cameraFeel()`.
 - Air / parachute: a perspective camera (flight-view3d.js) framed like the street view (a
   dolly zoom from a 3° lens on the ground to 40° by ~90 m). `camera` is whichever is active.
   **Cull and pick LOD with `viewCenter`, `viewReach`, `viewZoom`**, not

@@ -235,6 +235,11 @@
   color: #d6f2b5;
   font-variant-numeric: tabular-nums;
 }
+/* HEALTH and its number stay on one line; the armor / hint text gives way. */
+.status-label > span:first-child {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 #armorLabel {
   color: var(--ui-armor);
   white-space: nowrap;

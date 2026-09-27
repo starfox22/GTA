@@ -284,7 +284,7 @@
       row.append(
         godLabel(
           'Refill everything',
-          'Every weapon to a full clip and reserve, health and armour to 100' +
+          'Every weapon to a full clip and reserve, health and armor to 100' +
             (player.car ? ', your ' + vehicleSpec(player.car).name.toLowerCase() + ' mended' + (player.car.type === 'tank' ? ' with 40 shells and a full MG belt' : '') : '') +
             '.',
         ),
@@ -375,7 +375,7 @@
       drawWeapon();
       updateUI();
       tone(880, 0.12, 0.12, 'sine');
-      tell('REFILLED · every weapon full · health and armour 100' + (c ? ' · vehicle mended' : ''), 2.5);
+      tell('REFILLED · every weapon full · health and armor 100' + (c ? ' · vehicle mended' : ''), 2.5);
       godLastRefill = { before, after: snapshot() };
       return godLastRefill;
     }
@@ -479,8 +479,16 @@
     /**
      * SAFE TELEPORT
      */
+    // Also not on a loose face (terrain-field.js SLIP_GRADE): someone standing there
+    // slips downhill, and on the range that can end in a tumble off a cliff.
     function godWalkable(x, y, r = 8) {
-      return !solid(x, y, r) && !footObstacleBlocked(x, y, 8) && !vehicles.some((o) => (o.altitude || 0) < 20 && pointInCar(x, y, o, 9));
+      const slope = terrainSlope(x, y);
+      return (
+        Math.hypot(slope.x, slope.y) < SLIP_GRADE &&
+        !solid(x, y, r) &&
+        !footObstacleBlocked(x, y, 8) &&
+        !vehicles.some((o) => (o.altitude || 0) < 20 && pointInCar(x, y, o, 9))
+      );
     }
     /* The nearest walkable ground to a point: rings outward, about 12 units
        apart. A point that is already walkable is kept; otherwise (a roof, a

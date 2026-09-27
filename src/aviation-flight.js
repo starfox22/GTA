@@ -210,7 +210,7 @@
               ? 'BELLY LANDING · Gear was up'
               : damage > 20
               ? 'HARD LANDING · Aircraft damaged'
-              : 'TOUCHDOWN · Hold S to brake',
+              : 'TOUCHDOWN · Hold ' + keyName('back') + ' to brake',
           4,
         );
     }

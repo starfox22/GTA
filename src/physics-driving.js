@@ -22,7 +22,11 @@
       STEER_FULL_SPEED = 30 * KMH,
       STEER_LOCK = 1.13,
       TYRE_PEAK_SLIP = 0.12,
-      PLAYER_YAW_RESPONSE = 8.5;
+      PLAYER_YAW_RESPONSE = 8.5,
+      // On the handbrake (the rear locked, sliding): how fast the yaw takes up the
+      // wheel (1/s) and how far past the tyres' cornering limit the front can swing it.
+      HANDBRAKE_YAW_RESPONSE = 5,
+      HANDBRAKE_CORNER = 2.1;
     /* The yaw rate (radians a second) the tyres' sideways grip allows at `along`:
        lateral acceleration is speed times yaw rate, capped at cornerG. */
     function corneringLimit(spec, along) {
@@ -84,9 +88,16 @@
        KR 500) squirm on tarmac once the speed is up, down to 0.8 of their grip
        by 120 km/h for braking, drive and cornering alike; on dirt, grass and the
        trails they have it all (roadVehicleTerrain gives them full traction).
-       Every other tyre is 1 here. */
+       Road tyres on loose ground in the city slide: the beach's sand gives 0.7 of
+       the grip (an off-roader's 0.88), a park's lawn 0.82 (0.94); the county's
+       dirt is offroad.js's. Every other surface is 1 here. */
     function tyreSurfaceGrip(c, spec, along) {
-      if (!spec.dirt) return 1;
+      if (!spec.dirt) {
+        if (c.offroadState || c.x > CITY_SIZE - 200 || onRoad(c.x, c.y)) return 1;
+        if (onBeach(c.x, c.y)) return spec.offroad ? 0.88 : 0.7;
+        if (parkAt(c.x, c.y)) return spec.offroad ? 0.94 : 0.82;
+        return 1;
+      }
       if (!onRoad(c.x, c.y) && !onCountyRoad(c.x, c.y)) return 1;
       return 1 - 0.2 * clamp((Math.abs(along) - 50 * KMH) / (70 * KMH), 0, 1);
     }
@@ -316,12 +327,17 @@
             handling.steer *
             // On the handbrake the locked rear slides out, so the car pivots about
             // its front wheels and reaches full swing by 15 km/h, not 30.
-            clamp(Math.abs(along) / (brake && !pedalled ? STEER_FULL_SPEED / 2 : STEER_FULL_SPEED), vehicleDefinition.tank ? 0.72 : 0, 1) *
+            clamp((brake && !pedalled ? Math.hypot(c.vx, c.vy) / (STEER_FULL_SPEED / 2) : Math.abs(along) / STEER_FULL_SPEED), vehicleDefinition.tank ? 0.72 : 0, 1) *
             Math.sign(along || 1) *
             (brake ? 1.35 : 1);
           c.handbrakeTurn = !!brake && !pedalled && Math.abs(along) > 8 * KMH;
+          // Well sideways the limit follows the speed along the path, not along the
+          // nose: in a slide the nose-on share shrinks, and a limit read from it let
+          // the car rotate ever faster the further round it went (a spin, not a
+          // drift). Up to ~37 degrees of slip (a trail's crabbing, a tidy drift) it
+          // is the nose-on speed, as for every other driver.
           const cornerLimit =
-            corneringLimit(vehicleDefinition, along) * handling.grip * surface * (pedalled ? 1 : cornerShare) * (brake ? 1.6 : 1);
+            corneringLimit(vehicleDefinition, Math.max(Math.abs(along), 0.8 * Math.hypot(c.vx, c.vy))) * handling.grip * surface * (pedalled ? 1 : cornerShare) * (brake ? (pedalled ? 1.6 : HANDBRAKE_CORNER) : 1);
           /* UNDERSTEER SKID
              The key asks for full lock; the tyres give what grip allows (the clamp
              below), which is a clean line for a tap, a lane change or a sweeping bend.
@@ -574,11 +590,11 @@
         else {
           // The player's car answers the wheel in about a tenth of a second (a
           // keyboard has no half-lock to feed in); drivers' cars more gently.
-          // In a handbrake turn the body's own rotation carries it on (the tail is
-          // sliding), so the yaw follows the wheel more lazily and a swing started
-          // at 30 km/h goes on round as the car slows.
+          // In a handbrake turn the yaw follows the wheel a little more lazily; the
+          // tail's swing (driving.js HANDBRAKE_SWING) carries the car on round, so a
+          // swing started at 30 km/h goes on round as the car slows.
           const yawAuthority =
-            physicsClock < (c.spinUntil || 0) ? 1.1 : c === pc ? (c.handbrakeTurn ? 2.6 : PLAYER_YAW_RESPONSE) : 5;
+            physicsClock < (c.spinUntil || 0) ? 1.1 : c === pc ? (c.handbrakeTurn ? HANDBRAKE_YAW_RESPONSE : PLAYER_YAW_RESPONSE) : 5;
           c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
         }
         c.a = normalizeAngle(c.a + c.av * stepSeconds);

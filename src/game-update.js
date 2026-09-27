@@ -196,26 +196,8 @@
       }
       shake *= Math.pow(0.008, deltaSeconds);
       flash = Math.max(0, flash - deltaSeconds);
-      // Look ahead of a moving vehicle: about 0.45 s of travel, up to 300 units
-      // (scaled by Settings · Driving · Camera look-ahead, driving.js).
-      const look = player.car ? clamp(player.car.speed * 0.45, -80, 300) * drivingLookAhead() : 0,
-        // A coaster outruns the usual trailing camera; stay with the train.
-        follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
-      if (player.car?.type === 'plane') {
-        const lead = 1 - Math.exp(-deltaSeconds * 1.4);
-        planeCameraLead.x += ((player.car.vx || 0) * 0.42 - planeCameraLead.x) * lead;
-        planeCameraLead.y += ((player.car.vy || 0) * 0.42 - planeCameraLead.y) * lead;
-        const hold = Math.min(1, deltaSeconds * 7);
-        cameraTarget.x += (player.x + planeCameraLead.x - cameraTarget.x) * hold;
-        cameraTarget.y += (player.y + planeCameraLead.y - cameraTarget.y) * hold;
-      } else {
-        planeCameraLead.x = Math.cos(player.a) * look;
-        planeCameraLead.y = Math.sin(player.a) * look;
-        // A garage's drive-in show frames the bay (garages.js garageCameraFrame).
-        const frame = garageCameraFrame();
-        cameraTarget.x += ((frame ? frame.x : player.x + Math.cos(player.a) * look) - cameraTarget.x) * follow;
-        cameraTarget.y += ((frame ? frame.y : player.y + Math.sin(player.a) * look) - cameraTarget.y) * follow;
-      }
+      // The street camera's follow, lead, kicks (camera-feel.js).
+      updateCameraFollow(deltaSeconds);
       timed('sound', () => {
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);

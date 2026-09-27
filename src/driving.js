@@ -309,9 +309,15 @@
      * Returns the throttle cut (0..1), the ESC brake (u/s²) and a factor on the
      * tyres' sideways hold.
      */
+    // DRIFT_ANGLE (+ DRIFT_ANGLE_BALANCE x balance): the body slip (radians) a
+    // power slide settles at; HANDBRAKE_SWING: the tail's swing on the handbrake.
+    const DRIFT_ANGLE = 0.4,
+      DRIFT_ANGLE_BALANCE = 0.3,
+      HANDBRAKE_SWING = 0.8;
     const stabilityOut = { cut: 0, brake: 0, hold: 1 };
     function yawStability(c, t, ch, assists, s) {
-      const speed = Math.abs(s.along),
+      // The speed along the path (in a slide the nose-on share is far less).
+      const speed = Math.hypot(s.along, s.lateral),
         dt = s.stepSeconds,
         out = stabilityOut;
       out.cut = 0;
@@ -326,30 +332,47 @@
         t.yawSlide *= Math.exp(-6 * dt);
         return out;
       }
-      const dir = Math.sign(c.av) || Math.sign(s.steer) || (c.id % 2 ? 1 : -1),
-        wetness = 1 + (1 - clamp(s.surface, 0.5, 1)) * 2.2;
+      const slide = t.yawSlide,
+        size = Math.abs(slide),
+        dir = Math.sign(slide) || Math.sign(c.av) || Math.sign(s.steer) || (c.id % 2 ? 1 : -1),
+        wetness = 1 + (1 - clamp(s.surface, 0.5, 1)) * 2.2,
+        counter = s.turnKey !== 0 && Math.sign(s.turnKey) === -Math.sign(slide) && size > 0.05,
+        // How far the body is turned past its path, on the side it is swinging.
+        over = -Math.atan2(s.lateral, Math.max(Math.abs(s.along), 1)) * dir;
       let deficit = 0;
       if (t.lift > 0) deficit += ch.liftOff * (t.lift / 0.7) * s.lateralUse * 1.1;
-      if (ch.drive !== 'fwd') deficit += t.spin * (ch.drive === '4x4' ? 0.3 : 1) * (0.1 + 1.2 * s.lateralUse);
       // (A motorbike's light rear just skips; the rider holds it straight.)
-      // Only a wheel really locked counts (ABS's brief slips keep a straight stop straight).
       // A locked rear with the fronts still rolling swings the tail round (the
       // unstable case); all four locked, the car slides on straight. Only a
       // wheel really locked counts: ABS's brief slips keep a straight stop straight.
       deficit += clamp((s.lockRear - 0.4) / 0.6, 0, 1) * (1 - s.lockFront) * (0.4 + s.lateralUse) * (ch.bike ? 0.3 : 1.5);
       if (s.slowing && !s.handbrake) deficit += Math.max(0, s.balance + 0.3) * 0.25 * s.longUse * s.lateralUse;
+      // HANDBRAKE: the rear wheels locked with the fronts steering swing the tail
+      // out (held, the car goes on round: a 180).
+      if (s.handbrake && !ch.bike) deficit += HANDBRAKE_SWING * Math.abs(s.turnKey) * clamp((speed - 12 * KMH) / (25 * KMH), 0, 1);
       deficit *= wetness;
-      const slide = t.yawSlide,
-        size = Math.abs(slide),
-        counter = s.turnKey !== 0 && Math.sign(s.turnKey) === -Math.sign(slide) && size > 0.05,
-        relaxed = s.handbrake || physicsClock - t.handbrakeAt < 0.8,
+      /* POWER OVERSTEER: wheelspin at the back lets the tail out, but it drifts
+         rather than spins: as the body turns past its path toward DRIFT_ANGLE
+         (wider in a tail-happy car, halved while counter-steering) the spinning
+         wheels push along the path again and the push fades, and past it they
+         pull the tail back. Held on the throttle through a bend, the car holds an
+         angle; lifting or counter-steering straightens it. */
+      let power = 0,
+        caught = 0;
+      if (ch.drive !== 'fwd') {
+        const angle = (DRIFT_ANGLE + DRIFT_ANGLE_BALANCE * Math.max(0, s.balance)) * (counter ? 0.5 : 1);
+        power = t.spin * (ch.drive === '4x4' ? 0.3 : 1) * (0.1 + 1.2 * s.lateralUse) * clamp(1 - over / angle, -1, 1) * wetness;
+        // Nearing the angle the swing is checked (it does not sail on past it).
+        caught = 3 * t.spin * clamp((over - 0.7 * angle) / (0.5 * angle), 0, 1);
+      }
+      const relaxed = s.handbrake || physicsClock - t.handbrakeAt < 0.8,
         esc = assists.esc && !relaxed;
       // Dead straight with nothing turning it, there is nothing to swing the tail
       // either way (a real car needs a nudge too).
       const nudged = size > 0.01 || Math.abs(c.av) > 0.02 || s.turnKey !== 0,
-        grow = nudged ? deficit * 2.3 * clamp(speed / (70 * KMH), 0.3, 1.4) * (1 + 1.4 * size) * (Math.sign(slide) || dir) : 0,
+        grow = nudged ? (deficit * (1 + 1.4 * size) + power) * 2.3 * clamp(speed / (70 * KMH), 0.3, 1.4) * dir : 0,
         // The rear finds its grip again as the cause goes; slower once the car is well round.
-        settle = (1.7 * clamp(1 - deficit, 0, 1)) / (1 + Math.max(0, size - 0.8) * 1.5) + (counter ? (esc ? 5.5 : 3.6) : 0);
+        settle = (1.7 * clamp(1 - deficit, 0, 1)) / (1 + Math.max(0, size - 0.8) * 1.5) + (counter ? (esc ? 5.5 : 3.6) : 0) + caught;
       let escDamp = 0;
       if (esc && size > 0.06) {
         escDamp = 4.5;

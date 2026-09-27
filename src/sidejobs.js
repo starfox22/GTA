@@ -160,7 +160,7 @@
         missionState.timeLimit = 360;
         missionState.timer = 360;
         missionState.defused = 0;
-        setStage(0, missionState.bombs[0], 'BOMB 1 / 3 · CASINO · ON FOOT, HOLD E TO DEFUSE', 'mara', 'Kit’s crew wired three of my neighbours. The fireworks start in six minutes, and I want them to be the only bang tonight.');
+        setStage(0, missionState.bombs[0], 'BOMB 1 / 3 · CASINO · ON FOOT, HOLD ' + keyName('interact') + ' TO DEFUSE', 'mara', 'Kit’s crew wired three of my neighbours. The fireworks start in six minutes, and I want them to be the only bang tonight.');
       }
       if (job === 2) {
         const hour = (worldMinutes % 1440) / 60;
@@ -177,7 +177,7 @@
         }));
         missionState.restored = [false, false, false];
         missionState.substations.forEach((s) => challengeGuards('glass', 4, s, s.tag));
-        setStage(0, missionState.substations[0], 'RESTORE THE OLD QUARTER SUBSTATION · HOLD E', 'elena', 'The Glasshouse Crew cut Northbank’s power to move product in the dark. Three substations. Bring the lights back and they lose their cover.');
+        setStage(0, missionState.substations[0], 'RESTORE THE OLD QUARTER SUBSTATION · HOLD ' + keyName('interact'), 'elena', 'The Glasshouse Crew cut Northbank’s power to move product in the dark. Three substations. Bring the lights back and they lose their cover.');
       }
       if (job === 3) {
         for (let i = vehicles.length - 1; i >= 0; i--)
@@ -295,8 +295,8 @@
             missionState.stage + 1,
             next,
             job === 1
-              ? 'BOMB ' + n + ' / 3 · ' + next.short + ' · HOLD E TO DEFUSE'
-              : 'RESTORE THE ' + next.name + ' · HOLD E',
+              ? 'BOMB ' + n + ' / 3 · ' + next.short + ' · HOLD ' + keyName('interact') + ' TO DEFUSE'
+              : 'RESTORE THE ' + next.name + ' · HOLD ' + keyName('interact'),
             job === 1 ? 'mara' : 'elena',
             job === 1
               ? n === 2

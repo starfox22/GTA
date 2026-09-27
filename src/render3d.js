@@ -187,6 +187,7 @@
       // @include src/hypercars3d.js
       // @include src/motorbikes3d.js
       // @include src/offroad3d.js
+      // @include src/tyresmoke3d.js
       // @include src/mountain-village3d.js
       // @include src/plane3d.js
       // @include src/render3d-vehicle-models.js

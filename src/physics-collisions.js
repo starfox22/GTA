@@ -166,6 +166,8 @@
         if (own) {
           const deltaV = crashDeltaV(own, own === a ? b : a, closing);
           shake = Math.min(10, deltaV * 0.03);
+          // The view lurches on the way the car was going, into what it hit (camera-feel.js).
+          kickCamera(Math.atan2(hit.n.y, hit.n.x) + (own === a ? 0 : Math.PI), clamp((deltaV - 12) * 0.075, 0, 16));
           hurt(crashInjury(own, deltaV), 'impact');
         }
         if (closing > 130) radio('look-out');
