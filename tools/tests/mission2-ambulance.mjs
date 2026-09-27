@@ -54,8 +54,12 @@ export default async function (t) {
     t.assert(parked.kmh < 2 && !parked.ai, 'the ambulance is still driving: ' + JSON.stringify(parked));
     if (!near(parked, STOP, 12)) {
       // It pulls up at the stop only when the stop is free, else it stays where it is.
-      t.assert(atStop && atStop.id !== own && near(atStop, STOP, 40), 'the ambulance did not pull up at a free stop: ' + JSON.stringify({ parked, atStop }));
-      t.note(`stop taken by a ${atStop.type}: parked where it was`);
+      // The car that held the stop as the job ended may have driven on by now, so
+      // the job's own record says what held it (and where it stood then).
+      const settled = (await t.call('roofPoison'))?.medical?.settled,
+        by = settled?.why === 'stop taken' ? settled.by : atStop;
+      t.assert(by && by.id !== own && near(by, STOP, 80), 'the ambulance did not pull up at a free stop: ' + JSON.stringify({ parked, atStop, settled }));
+      t.note(`stop taken by a ${by.type}: parked where it was`);
     }
     await t.wait(20);
     const later = await t.call('vehicleById', own);
