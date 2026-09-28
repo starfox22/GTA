@@ -95,7 +95,6 @@
           updateCrowd3D(deltaSeconds, people);
           lap = profileLap('r:crowd', lap);
           pruneModels(carModels, vehicles);
-          pruneModels(pickupModels, pickups);
           newModelsThisFrame = 0;
           beginVehicleImpostors();
           for (const c of vehicles) {
@@ -322,24 +321,6 @@
           // sea like a boat's (wakes3d.js). The flat V and ring planes that did this
           // sat at a fixed height, so the swell rose through them.
           if (player.swimming && !player.pool) wakeEmit(player, player.x, player.y, player.a, clamp(player.swimDrive || 0, 0, 1) * 70, 16, 7, 80, false);
-          for (const p of pickups) {
-            let m = pickupModels.get(p);
-            if (!m) {
-              m = new Three.Group();
-              scene.add(m);
-              const co = p.type === 'health' ? '#71d2b3' : p.type === 'ammo' ? '#b294d0' : '#7daecb';
-              box(m, 0, 5, 0, 9, 9, 9, mat('#3b474b', 0.55, 0.3));
-              if (p.type === 'health') {
-                box(m, 0, 5, 4.7, 2, 6, 0.2, mat(co));
-                box(m, 0, 5, 4.7, 6, 2, 0.2, mat(co));
-              } else for (let j = -1; j < 2; j++) box(m, j * 2.3, 5, 4.7, 1.2, 5, 0.2, mat(co));
-              halo(m, 0, 5, 0, 24, co);
-              pickupModels.set(p, m);
-            }
-            m.visible = p.ready < gameTime && entityInView(p, 24);
-            m.position.set(p.x, terrainHeight(p.x, p.y) + 2 + Math.sin(gameTime * 2) * 1.2, p.y);
-            m.rotation.y = gameTime * 0.2;
-          }
           disposeRetiredModels();
           const target = objective(),
             targetAltitude = target ? entityElevation(target) : 0;
@@ -468,15 +449,17 @@
             s.visible = true;
             s.position.set(
               p.x,
-              p.blood || p.flame ? Math.max(0.3, p.z) : 2 + (1 - p.life / p.max) * 13,
+              p.blood || p.flame || p.mist ? Math.max(0.3, p.z) : 2 + (1 - p.life / p.max) * 13,
               p.y,
             );
             s.material.map = p.blood ? bloodDropTx : p.flame ? flameTx : smokeTx;
             s.material.color.copy(cachedColor(p.color));
             if (!p.flame) s.material.color.multiplyScalar(spriteLight);
-            s.material.opacity = p.blood ? 0.97 : clamp(p.life / p.max, 0, 0.7);
+            // A wound's mist (blood.js): a faint puff that spreads as it fades.
+            s.material.opacity = p.blood ? 0.97 : p.mist ? clamp(p.life / p.max, 0, 1) * 0.45 : clamp(p.life / p.max, 0, 0.7);
             s.material.blending = p.flame ? Three.AdditiveBlending : Three.NormalBlending;
-            s.scale.set(p.size * (p.blood ? 1.1 : 1.6), p.size * (p.blood ? 1.8 : 1.6), 1);
+            const puff = p.mist ? 1.6 + (1 - p.life / p.max) * 2.2 : 1.6;
+            s.scale.set(p.size * (p.blood ? 1.1 : puff), p.size * (p.blood ? 1.8 : puff), 1);
           }
           for (; pi < particlePool.length; pi++) particlePool[pi].visible = false;
           let bi = 0;

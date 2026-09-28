@@ -3,7 +3,8 @@
       bloodTrackCandidates.length = 0;
       for (let i = 0; i < bloodPools.length; i++) {
         const b = bloodPools[i];
-        if (!b.track && gameTime - b.created < 180) bloodTrackCandidates.push(b);
+        // Tyres pick blood up from a pool, not from spatter and drops (blood.js).
+        if (!b.track && b.variant < BLOOD_SPATTER && b.r >= 2.5 && gameTime - b.created < 180) bloodTrackCandidates.push(b);
       }
       // Where each vehicle starts the frame (swept contacts with people), kept in place.
       for (const vehicle of vehicles) {

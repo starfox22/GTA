@@ -90,7 +90,7 @@
       if (player.inv > 0 || gameMode !== 'play' || player.godMode || sportsbookShelters()) return;
       d = ballisticDamage(player, d, kind);
       player.hp -= d;
-      if (d > 1 && !player.car) bleed(player, d / 35, player.a + Math.PI);
+      if (d > 1 && !player.car) bleed(player, d / 35, player.a + Math.PI, kind);
       flash = 0.12;
       if (player.hp <= 0) die();
     }

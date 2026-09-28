@@ -68,7 +68,7 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   `sportsTargets()` and other venue lists.
 - LETHALITY (combat-rules.js): firearms are lethal (one or two torso rounds); `vest` is the
   NPC counterpart of `player.armor`; `VEST_SHARE` per damage kind.
-- Wounds (wounds.js): hit zones, flinch, limp, blood trail, downed officers dragged to cover,
+- Wounds (wounds.js): hit zones, flinch, limp, blood trail (blood itself: police-and-combat-blood.md), downed officers dragged to cover,
   `chooseDeathFall` (backwards, face down, slumped against a wall).
 - Firing kicks the view against the aim (`kickCamera`, by the round's weight; camera-feel.js).
   Nobody shoots the player from off screen: `shooterInView` (police-and-combat-ammo.md).

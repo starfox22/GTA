@@ -140,14 +140,14 @@
         return;
       }
       if (!bloodOn) return;
-      // The pool spreads from under the body (civic3d.js grows it; bleed() on the
-      // ground, with its spray), and a few drops thrown out around it.
-      if (roof) addBloodPool(x, y, 14, a, { grow: true, opacity: 0.97, surface: z });
-      else bleed(player, 1.6, a + Math.PI);
+      // hurt() has bled the fall (blood.js bleed, kind 'fall'): the pool spreads
+      // from under the body on the surface it hit, and a few drops are thrown out.
+      const pool = bodyPool(player, 'fall', a + Math.PI, z);
+      if (pool) pool.surface = z;
       for (let i = 0; i < 4; i++) {
         const aa = a + randomBetween(-1.4, 1.4),
-          d = randomBetween(10, 24);
-        addBloodPool(x + Math.cos(aa) * d, y + Math.sin(aa) * d, randomBetween(2, 3.6), aa, { opacity: 0.85, surface: z });
+          d = randomBetween(8, 20);
+        addBloodDrop(x + Math.cos(aa) * d, y + Math.sin(aa) * d, randomBetween(0.8, 1.5), aa, { stretch: 1.6, surface: z });
       }
     }
     /* Into the sea or a lake from a height: a swim, a hurt one, or the end. */
