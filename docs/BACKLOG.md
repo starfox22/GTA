@@ -73,8 +73,11 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - AI traffic and police use the simple ABS-equivalent brake, not the per-axle tyre model.
 - Drifts need TCS and ESC off (or a classic): with ESC on a handbrake-started slide is damped
   0.8 s after the handbrake. A 'sport' ESC mode that allows ~15 degrees would open drifting up.
-- Traffic and police smoke only from `c.sliding` (no tyre slip of their own); a shoved parked
-  car lays rubber but no smoke.
+- Skid marks come only from the player's vehicle and shoved parked cars: traffic and police
+  slides (`c.sliding`) leave none. Rubber on the runways is recognised (`runwayUnder`), but
+  footSurfaceAt still calls the taxiways and aprons outside the old airport grass.
+- Burnouts are the player's only (a car; not motorbikes or on the trails' tyre model); no
+  donut steering (steering does nothing while the car is held).
 
 ## Camera and combat feel (camera-feel.js, tyresmoke3d.js)
 - With both a mouse and the touch aim stick used on one page, `playerShotTarget` still snaps to

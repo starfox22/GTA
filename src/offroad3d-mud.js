@@ -286,9 +286,8 @@
       }
       // Throw mud (or dust) from a vehicle's tyres and lay its tracks.
       function vehicleSpray(c, m, deltaSeconds) {
-        const onRange = !!c.offroadState && !c.offroadState.paved,
-          dirt = onRange || (c.x > CITY_SIZE - 200 && landAt(c.x, c.y) && !onRoad(c.x, c.y) && !onCountyRoad(c.x, c.y, 2));
-        if (!dirt || isAircraft(c) || isBoat(c) || c.hp <= 0) return;
+        const onRange = !!c.offroadState && !c.offroadState.paved;
+        if (!offroadGround(c) || isAircraft(c) || isBoat(c) || c.hp <= 0) return;
         const along = c.speed || 0,
           speed = Math.abs(along),
           spin = c.wheelSpin || 0,
@@ -314,9 +313,10 @@
             w.lastY = wy;
           } else if (spin > 0.6 && speed < 8 && Math.random() < deltaSeconds * 4) addGroundDecal(tyreTracks, wx, wy, c.a, w.r * 1.2, w.width, 120, wet);
           if (!w.driven && spin > 0.1) continue;
-          // How much is thrown: spin in mud throws the most; speed through mud some;
-          // dry dirt only a haze.
-          const rate = (spin * 150 + speed * (mud * 0.6 + 0.03)) * (w.driven ? 1 : 0.4) * (mud > 0.1 ? 1 : 0.25);
+          // How much is thrown: spin in mud throws the most, speed through mud some; dry
+          // ground gives dust by speed and spin, more from a 4x4, none when wet
+          // (tyreDustRate, tyre-effects.js).
+          const rate = mud > 0.1 ? (spin * 150 + speed * (mud * 0.6 + 0.03)) * (w.driven ? 1 : 0.4) : tyreDustRate(c, w.driven);
           w.emit += rate * deltaSeconds;
           while (w.emit >= 1) {
             w.emit -= 1;
@@ -336,7 +336,7 @@
                 clumpColor.copy(MUD_DRY).lerp(MUD_WET, wet).multiplyScalar(0.8);
                 spawnMist(ox, oz, oy, vx * 0.5, up * 0.4, vy * 0.5, 1.6 + Math.random() * 1.2, 4, 0.5, 0.7 + Math.random() * 0.5, clumpColor);
               }
-            } else if (Math.random() < 0.6) spawnMist(ox, oz - w.r * 0.3, oy, vx * 0.35, 4 + Math.random() * 6, vy * 0.35, 2.5 + Math.random() * 2, 9, 0.3, 1.6 + Math.random(), DUST);
+            } else spawnMist(ox, oz - w.r * 0.3, oy, vx * 0.3, 4 + Math.random() * 6, vy * 0.3, 3 + Math.random() * 3, 12, 0.28, 1.8 + Math.random() * 1.2, DUST);
           }
         }
       }

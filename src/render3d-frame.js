@@ -494,20 +494,47 @@
           tracerGeo.setDrawRange(0, bi / 3);
           tracerGeo.attributes.position.needsUpdate = true;
           tracer.frustumCulled = false;
-          let si = 0;
+          // Skid marks: strips as wide as a tyre, as dark as the slide was, fading out
+          // over their last dozen seconds.
+          let si = 0,
+            ci = 0;
           for (const s of skids) {
-            if (si + 6 > skidPos.length) break;
-            const x = s.x + Math.cos(s.a) * s.len,
-              z = s.y + Math.sin(s.a) * s.len;
-            skidPos[si++] = s.x;
-            skidPos[si++] = terrainHeight(s.x, s.y) + 0.15;
-            skidPos[si++] = s.y;
-            skidPos[si++] = x;
-            skidPos[si++] = terrainHeight(x, z) + 0.15;
-            skidPos[si++] = z;
+            if (si + 18 > skidPos.length) break;
+            const cos = Math.cos(s.a),
+              sin = Math.sin(s.a),
+              half = (s.w || 2) / 2,
+              px = -sin * half,
+              pz = cos * half,
+              x1 = s.x + cos * s.len,
+              z1 = s.y + sin * s.len,
+              h0 = terrainHeight(s.x, s.y) + 0.2,
+              h1 = terrainHeight(x1, z1) + 0.2,
+              alpha = 0.62 * (s.dark ?? 0.6) * Math.min(1, s.life / 12);
+            // (a, b, c) (a, c, d): a, b along the near edge, c, d the far one.
+            skidPos[si++] = s.x - px;
+            skidPos[si++] = h0;
+            skidPos[si++] = s.y - pz;
+            skidPos[si++] = s.x + px;
+            skidPos[si++] = h0;
+            skidPos[si++] = s.y + pz;
+            skidPos[si++] = x1 + px;
+            skidPos[si++] = h1;
+            skidPos[si++] = z1 + pz;
+            skidPos[si++] = s.x - px;
+            skidPos[si++] = h0;
+            skidPos[si++] = s.y - pz;
+            skidPos[si++] = x1 + px;
+            skidPos[si++] = h1;
+            skidPos[si++] = z1 + pz;
+            skidPos[si++] = x1 - px;
+            skidPos[si++] = h1;
+            skidPos[si++] = z1 - pz;
+            for (let k = 0; k < 6; k++, ci += 4) skidColor[ci + 3] = alpha;
           }
           skidGeo.setDrawRange(0, si / 3);
           skidGeo.attributes.position.needsUpdate = true;
+          skidGeo.attributes.color.needsUpdate = true;
+          skidLines.visible = si > 0;
           skidLines.frustumCulled = false;
           // The sun's shadow map is redrawn every frame it is on (quality.js
           // SHADOWS): a map kept for a few frames left the shadows of the player

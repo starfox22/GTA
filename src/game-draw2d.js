@@ -480,7 +480,7 @@
       for (const s of skids)
         if (visible(s)) {
           worldContext.save();
-          worldContext.globalAlpha = Math.min(0.6, s.life / 10);
+          worldContext.globalAlpha = Math.min(0.6, s.life / 10) * (s.dark ?? 0.8);
           worldContext.translate(s.x, s.y);
           worldContext.rotate(s.a);
           worldContext.fillStyle = '#111d16';

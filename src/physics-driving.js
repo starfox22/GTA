@@ -58,7 +58,7 @@
       const sliding = Math.hypot(c.vx, c.vy);
       if (sliding > 45 && Math.floor(physicsClock * 20) !== c.lastSkid && Math.abs(c.x - player.x) < 900 && Math.abs(c.y - player.y) < 900) {
         c.lastSkid = Math.floor(physicsClock * 20);
-        skids.push({ x: c.x, y: c.y, a: Math.atan2(c.vy, c.vx), len: sliding / 40 + 2, life: 35 });
+        skids.push({ x: c.x, y: c.y, a: Math.atan2(c.vy, c.vx), len: sliding / 40 + 2, dark: 0.45, w: 2, life: 35 });
       }
     }
     /* Kerb strike (the player's car): mounting or dropping off a kerb at speed
@@ -248,6 +248,10 @@
           // Off the tarmac (verges, lawns, dirt): more rolling resistance.
           if ((up || down) && !pedalled && !handlingTestPaved && !onRoad(c.x, c.y))
             acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (vehicleDefinition.dirt ? 0.02 : vehicleDefinition.offroad ? 0.05 : 0.14) * GRAVITY);
+          // BURNOUT (tyre-effects.js): forward and the handbrake at a standstill; the
+          // brakes hold the car while the driven wheels spin.
+          const burnout = modelled && burnoutStep(c, vehicleDefinition, stepSeconds);
+          if (burnout) acceleration = -Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, BURNOUT_HOLD * GRAVITY * surface);
           grip = brake ? 1.9 : (vehicleDefinition.grip || 7) * handling.grip;
           // Resistance is in engineAcceleration / coastDeceleration; drag here only
           // scrubs a handbrake slide (and a bicycle's brake).
@@ -283,6 +287,7 @@
               else spinAsk = clamp(excess / 0.4, 0, 1);
             }
           }
+          if (burnout) spinAsk = 1;
           if (modelled) {
             tyres.spin += (spinAsk - tyres.spin) * Math.min(1, stepSeconds * (spinAsk > tyres.spin ? 14 : 5));
             if (tyres.spin > 0.01) {
@@ -398,34 +403,12 @@
                     c.absActive ? 0.3 : 0,
                   );
           } else c.tyreSlip = brake && Math.abs(along) > 70 && !pedalled ? 0.8 : 0;
+          // A burnout howls at a standstill.
+          if (burnout) c.tyreSlip = Math.max(c.tyreSlip, 0.85 * tyres.spin);
           steer += handling.pull * clamp(Math.abs(along) / 160, 0, 1) * Math.sign(along || 1) * 0.45;
-          // Rubber on the road: the rear tyres under the handbrake, the front ones
-          // scrubbing wide, any tyre in a slide past about ten degrees, locked
-          // wheels and spinning driven ones.
-          const sliding = Math.abs(lateral) > Math.max(12, Math.abs(along) * 0.17),
-            lockedFront = brakeDecel > 0 && tyres.lock[0] > 0.5 && along > 30,
-            lockedRear = brakeDecel > 0 && tyres.lock[1] > 0.5 && along > 30,
-            spinning = modelled && tyres.spin > 0.35 && Math.abs(along) > 5;
-          if (
-            ((brake && Math.abs(along) > 80) || (c.skid > 0.3 && !pedalled) || (sliding && !pedalled && Math.abs(along) > 60) || lockedFront || lockedRear || spinning) &&
-            Math.floor(physicsClock * 40) !== c.lastSkid
-          ) {
-            c.lastSkid = Math.floor(physicsClock * 40);
-            // Axles and track from the vehicle's size; a motorbike lays one line.
-            const rearMarks = brake || sliding || lockedRear || (spinning && character.drive !== 'fwd'),
-              frontMarks = (c.skid > 0.3 && !brake && !sliding) || lockedFront || (spinning && character.drive !== 'rwd'),
-              track = vehicleDefinition.bike ? 0 : vehicleDefinition.w * 0.4;
-            for (const axle of [frontMarks ? 0.3 * vehicleDefinition.l : null, rearMarks || !frontMarks ? -0.3 * vehicleDefinition.l : null])
-              if (axle !== null)
-                for (const side of vehicleDefinition.bike ? [0] : [-1, 1])
-                  skids.push({
-                    x: c.x + headingCosine * axle - headingSine * side * track,
-                    y: c.y + headingSine * axle + headingCosine * side * track,
-                    a: Math.atan2(c.vy, c.vx),
-                    len: Math.abs(along) / 40 + 2,
-                    life: 35,
-                  });
-          }
+          // Rubber on the road and what the tyres throw up (tyre-effects.js).
+          layTyreMarks(c, vehicleDefinition, modelled ? tyres : null, { along, lateral, handbrake: !!brake, brakeDecel, pedalled, burnout });
+          tyreEffectsStep(c, stepSeconds);
           // A locked front wheel on a motorbike: the bike tucks and goes down (a lowside).
           if (character?.bike && brakeDecel > 0 && tyres.lock[0] > 0.8 && along > 25 * KMH) {
             tyres.frontLockTime += stepSeconds;

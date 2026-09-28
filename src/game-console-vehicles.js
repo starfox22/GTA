@@ -222,6 +222,9 @@
             return { id: c.id, type: c.type, x: Math.round(c.x), y: Math.round(c.y), district: districtAt(c.x, c.y), place: spot ? spot.place : null, driven: !!c.ai };
           });
       },
+      /* The player's tyres (tyre-effects.js): the burnout, what they throw up now and
+         the totals since `reset` (smoke, dust and spray puffs, skid marks, metres). */
+      tyreEffects: (reset = false) => tyreEffectsReport(!!reset),
       /* The player's road vehicle through the tyre model (driving.js): the
          assists it has and has switched on, the HUD lamps, the pedal and
          steering ramps, each axle's slip, lock, ABS pressure and sideways share,

@@ -621,7 +621,8 @@
     // Off the range: wheels roll with the ground again.
     function offroadRoll(c, stepSeconds) {
       if (c.wheelSpin) c.wheelSpin = Math.max(0, c.wheelSpin - stepSeconds * 4);
-      c.spinSpeed = c.wheelSpin * 50;
+      // A burnout's tyres run far ahead of the road (tyre-effects.js): the engine revs to them.
+      c.spinSpeed = c.wheelSpin * (c.burnout?.active && c === player.car ? BURNOUT_WHEEL_SPEED : 50);
       c.surfaceMud = 0;
       c.surfaceRock = 0;
       c.lowRange = false;

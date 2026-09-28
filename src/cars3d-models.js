@@ -267,10 +267,14 @@
         const steer = c === player.car ? clamp(c.tyres ? c.tyres.steer : (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0), -1, 1) * 0.42 : clamp(c.av * 0.5, -0.4, 0.4);
         m.steer = (m.steer || 0) + (steer - (m.steer || 0)) * Math.min(1, deltaSeconds * 8);
         // Locked wheels stop turning (driving.js: the brakes' lock, the handbrake's rears).
-        const locks = c === player.car ? c.tyres?.lock : null;
+        // Spinning driven wheels (wheelspin, a burnout: tyre-effects.js) turn ahead of the road.
+        const locks = c === player.car ? c.tyres?.lock : null,
+          spinning = (c.spinSpeed || 0) > 1 ? drivenAxle(c) : null,
+          spinExtra = spinning ? c.spinSpeed * (c.speed < -2 ? -1 : 1) : 0;
         for (const wheel of m.wheels) {
-          const lock = locks ? (wheel.front ? locks[0] : Math.max(locks[1], c.handbrakeTurn ? 1 : 0)) : 0;
-          wheel.wheel.rotation.z -= ((c.speed * deltaSeconds) / wheel.radius) * (1 - lock);
+          const lock = locks ? (wheel.front ? locks[0] : Math.max(locks[1], c.handbrakeTurn ? 1 : 0)) : 0,
+            driven = spinning === 'all' || spinning === (wheel.front ? 'front' : 'rear');
+          wheel.wheel.rotation.z -= (((c.speed + (driven ? spinExtra : 0)) * deltaSeconds) / wheel.radius) * (driven ? 1 : 1 - lock);
           if (wheel.front) wheel.wheel.rotation.y = -m.steer;
         }
         if (m.extra?.animate) m.extra.animate(c, m, deltaSeconds, driven, lampsOn);
