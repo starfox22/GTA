@@ -1,5 +1,5 @@
-// Ammunition supply (ammo-supply.js) and its neighbours: no street ammo, armour or weapon
-// pickups; the armory sells them; a body's gun is taken once with the action key; a police
+// Ammunition supply (ammo-supply.js) and its neighbours: no pickups on the
+// street at all; the armory sells guns, rounds and armour; a body's gun is taken once with the action key; a police
 // car, a SWAT van and an FBI SUV restock once each; a gunman off screen holds fire and one
 // on screen shoots (combat-rules.js ON-SCREEN RULE); the on-foot zoom starts one step out;
 // the mission card reads MISSION 1, no total.
@@ -25,10 +25,9 @@ export default async function (t) {
   let card = await t.call('missionCard');
   t.assert(card.counter === 'MISSION 1', `mission card before the first job: ${JSON.stringify(card)}`);
 
-  // Street pickups: health only.
+  // No pickups on the street at all (health: tools/tests/health-indoors.mjs).
   let supply = await t.call('ammoSupply');
-  t.assert(!supply.pickups.ammo && !supply.pickups.armor && Object.keys(supply.pickups).every((k) => k === 'health'), `street pickups: ${JSON.stringify(supply.pickups)}`);
-  t.assert(supply.pickups.health >= 5, `health pickups: ${JSON.stringify(supply.pickups)}`);
+  t.assert(!('pickups' in supply), `street pickups: ${JSON.stringify(supply.pickups)}`);
   const armory = supply.shops.find((s) => s.name === 'SOUTH COAST ARMORY');
   t.assert(armory, `no armory in Northbank: ${JSON.stringify(supply.shops)}`);
 

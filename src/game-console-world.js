@@ -159,7 +159,9 @@
       regencyTraffic: (seconds) => isleRegencyTraffic(seconds),
       // Named places the tests can visit: every PLACES entry plus the landmarks.
       // A place with no footprint of its own (YOUR SAFEHOUSE) is where its door is.
-      places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x ?? p.door.x), y: Math.round(p.y ?? p.door.y) })),
+      // `kind` (hospital, diner, bar, sleep, guns ...) and the `door` the action key opens.
+      places: () =>
+        PLACES.map((p) => ({ name: p.name, kind: p.kind, x: Math.round(p.x ?? p.door.x), y: Math.round(p.y ?? p.door.y), door: p.door ? { x: Math.round(p.door.x), y: Math.round(p.door.y) } : null })),
       // GPS: set a map waypoint and report the route the navigation graph finds
       // from the player (status, road length, the islands it passes through).
       route(x, y) {

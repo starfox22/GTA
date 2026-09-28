@@ -40,3 +40,12 @@ The living city in free roam (docs/areas/people-and-crowd-living-city.md).
 | `snatchTest()` | Stage a bag snatch round the player now (null `active` when no victim with a bag is in view or no thief close by) |
 | `keyVisitors()` | North Point Key visitors (livingcity-key.js): the hour's `target`, `spawned`, `handedBack` (to city traffic), `dropOffs` (pauses by the valet), `lastFail` (why the last spawn could not go), `lastDropped` (the last visitor that became an ordinary car: ai, hp, driverOut, crashStop, taken), the run's point counts, and each visitor's id, type, place, km/h, `leg` (avenue / ring / stop / exit), hp and what stands `ahead` |
 | `keyVisitorSpawn(dropOff)` | Send one visitor onto the Key avenue now, in view or not (tests; `dropOff` true/false forces the pause by the valet or none): `keyVisitors()` with `sent` and the car's `id` (`lastFail` says why not) |
+
+## blood (blood.js, registered from game-console-crowd.js)
+
+Wounds on the ground (docs/areas/police-and-combat.md, BLOOD).
+
+| Method | Purpose |
+| --- | --- |
+| `bloodReport(x, y, radius)` | Blood decals within `radius` (default 120) of (x, y) (default the player): `total` in the world, `near` counts by kind (`pool` spreading under a body, `spatter`, `drop`, `track`, `stain`), the `largest` radius, each pool's `r` / `rMax` / `tau` / `age`, drops still `flying` |
+| `bloodVictim(hits, damage, kind, distance)` | A bystander `distance` (50) ahead of the player, struck `hits` times for `damage` of `kind` (`ballistic`, `headshot`, `blast`, `impact`) as the player's shots would; returns position, hp, `dead`, `downed` |

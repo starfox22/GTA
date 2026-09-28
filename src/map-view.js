@@ -10,7 +10,6 @@
     const MAP_LAYERS = [
       { id: 'services', label: 'SHOPS & SERVICES', key: '+ GUN ZZ EAT' },
       { id: 'garages', label: 'RESPRAY', key: 'R' },
-      { id: 'pickups', label: 'PICKUPS', key: '■' },
       { id: 'transit', label: 'CITY RAIL', key: 'M' },
       { id: 'bikes', label: 'BIKE SHARE', key: '◆' },
       { id: 'sports', label: 'SPORTS', key: '●' },

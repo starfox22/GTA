@@ -1,9 +1,9 @@
-    // Ammunition supply: no street ammo, armour or weapon pickups. Guns come from the gun shops, from the bodies of armed
+    // Ammunition supply: no pickups on the street (not even health). Guns come from the gun shops, from the bodies of armed
     // people (one search per body: the weapon and a realistic count of rounds) and from police, SWAT and FBI vehicles (once each).
     /**
      * AMMUNITION SUPPLY
-     * The street holds health pickups only (game-populate.js). Everything else is
-     * bought or taken:
+     * Nothing lies on the street to be picked up (health is bought indoors:
+     * hospitals, diners, bars, motels). Rounds and weapons are bought or taken:
      *   - the gun shops (SOUTH COAST ARMORY in Northbank, the county OUTFITTERS):
      *     weapons, refills and body armour at the counter (citylife-police.js);
      *   - a body: anyone who carried a gun (police, SWAT, federal agents, soldiers,
@@ -162,12 +162,9 @@
       return got;
     }
     function ammoSupplyReport() {
-      const counts = {};
-      for (const p of pickups) counts[p.type] = (counts[p.type] || 0) + 1;
       const body = lootableBody(),
         loot = body && bodyLoot(body);
       return {
-        pickups: counts,
         weapons: weapons.map((w, i) => ({ i, name: w.name, owned: !!w.owned, ammo: w.ammo, reserve: w.reserve })),
         body: loot ? { kind: loot.kind, weapon: weapons[loot.index].name, ammo: loot.ammo, reserve: loot.reserve, d: Math.round(distanceBetween(body, player)) } : null,
         crouching: lootCrouching(),
@@ -177,7 +174,7 @@
     }
     function ammoSupplyConsole() {
       return {
-        // Pickups by type, the arsenal's rounds, the body in reach and what was taken.
+        // The arsenal's rounds, the body in reach and what was taken.
         ammoSupply: () => ammoSupplyReport(),
         // Set one weapon's ownership and rounds (tests): index 0 pistol ... 5 precision rifle.
         setAmmo(index = 0, ammo = 0, reserve = 0, owned = true) {

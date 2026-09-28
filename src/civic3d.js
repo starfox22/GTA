@@ -239,9 +239,10 @@
           radius: Math.max(p.w, p.h),
         });
       }
+      // Pools, spatters and drops (blood.js bloodStamp).
       const bloodMaps = Array.from(
         {
-          length: 4,
+          length: BLOOD_VARIANTS,
         },
         (_, i) => {
           const t = new Three.CanvasTexture(bloodStamp(i));
@@ -366,17 +367,16 @@
             Math.abs(p.x - cameraTarget.x) < 850 &&
             Math.abs(p.y - cameraTarget.y) < 950;
           if (!m.visible) continue;
-          const age = gameTime - p.created,
-            growth = p.grow ? 1 + Math.min(0.28, age * 0.045) : 1;
+          // The size is the game's (blood.js: a pool spreads in updateBlood); here
+          // only the look: blood darkens as it dries over the first minutes.
+          const s = bloodDecalScale(p),
+            dry = clamp((gameTime - p.created - 20) / 150, 0, 1);
           m.position.set(p.x, (p.surface || 0) + 0.32, p.y);
           m.rotation.z = -p.a;
-          m.scale.set(
-            p.track ? p.r * 2.6 : p.r * 2.5 * growth,
-            p.track ? p.r * 0.46 : p.r * 2.5 * growth,
-            1,
-          );
+          m.scale.set(s.along, s.across, 1);
           m.material.map = p.track ? treadMap : bloodMaps[p.variant || 0];
-          m.material.opacity = (p.opacity ?? 0.95) * clamp((240 - age) / 35, 0, 1);
+          m.material.color.setScalar(1 - dry * 0.35);
+          m.material.opacity = bloodFade(p);
         }
       }
       // END SUBSYSTEM: src/civic3d.js

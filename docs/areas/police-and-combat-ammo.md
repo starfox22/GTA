@@ -6,10 +6,12 @@ police-and-combat.md.
 
 ## Supply (ammo-supply.js)
 
-- **No street ammo, armour or weapon pickups.** `pickups` (game-populate.js) holds health
-  only: five in Northbank, six by the other hospitals and county lodges. The pickup loop in
-  game-update.js ignores any other type. `tools/tests/pickups-islands.mjs` checks the island
-  health pickups; `tools/tests/ammo-supply.mjs` that nothing else is on the street.
+- **No pickups on the street at all** (no ammo, armour, weapon or health boxes; the
+  `pickups` list is gone). Health is bought indoors through the service menus
+  (citylife-police.js `serviceAction`): hospital treatment $150 to full (SAINT MARLOW,
+  RIVERSIDE MEDICAL, THE HALCYON CLINIC), a diner plate +45 / coffee +12, a bar meal +30, a
+  club break +20, a motel, the safehouse or a county LODGE bed to full, and a LODGE's hot meal
+  +35 ($25; `countyLodge(p)`). `tools/tests/health-indoors.mjs` checks both.
 - **Gun shops** sell weapons, refills (`PRICES`, `AMMO_PRICES`, citylife-places.js) and body
   armour ($350): SOUTH COAST ARMORY in Northbank (door 876, 410, a few blocks from missions 1
   and 2) and the county OUTFITTERS (terrain-scenery.js). The door prompt reads

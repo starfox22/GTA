@@ -90,9 +90,9 @@
       if (player.inv > 0 || gameMode !== 'play' || player.godMode || sportsbookShelters()) return;
       d = ballisticDamage(player, d, kind);
       player.hp -= d;
-      // A fall ('fall': a landing, a rider's tumble) bruises without blood; a
-      // fatal one bleeds from its own code (falls-body.js splatPlayer, riders.js).
-      if (d > 1 && !player.car && kind !== 'fall') bleed(player, d / 35, player.a + Math.PI);
+      // A fall ('fall': a landing, a rider's tumble) bruises without blood
+      // unless it kills (then bleed() pools under the body).
+      if (d > 1 && !player.car && (kind !== 'fall' || player.hp <= 0)) bleed(player, d / 35, player.a + Math.PI, kind);
       flash = 0.12;
       if (player.hp <= 0) die();
     }

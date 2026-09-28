@@ -110,24 +110,6 @@
         timed('bullets', () => updateBullets(deltaSeconds));
         timed('damage', () => updateDamage(deltaSeconds));
         if (gameMode !== 'play') return;
-        for (const p of pickups)
-          if (
-            !transitRide &&
-            !player.parachute &&
-            !playerOnRoof() &&
-            (player.car?.altitude || 0) < 2 &&
-            gameTime > p.ready &&
-            distanceBetween(player, p) < 27
-          ) {
-            // Health only: ammunition and armour come from the gun shops, bodies and
-            // police vehicles (ammo-supply.js).
-            if (p.type !== 'health' || player.hp >= 100) continue;
-            player.hp = 100;
-            tell('Health restored');
-            p.ready = gameTime + 70;
-            tone(840, 0.15, 0.15, 'triangle');
-            particle(p.x, p.y, '#d5efa8', 9, 70);
-          }
         timed('garage', () => updateGarage(deltaSeconds));
         timed('civic', () => updateCivic(deltaSeconds));
         timed('roofencounter', () => updateRoofEncounter(deltaSeconds));
@@ -158,8 +140,9 @@
           p.vz -= 160 * deltaSeconds;
           p.z += p.vz * deltaSeconds;
           if (p.z <= (p.surface ?? bloodSurface(p.x, p.y)) + 0.3) {
-            addBloodPool(p.x, p.y, p.size * 0.8, Math.atan2(p.vy, p.vx), {
-              opacity: 0.83,
+            // A drop lands drawn out along its flight (blood.js).
+            addBloodDrop(p.x, p.y, p.size, Math.atan2(p.vy, p.vx), {
+              stretch: 1 + Math.min(1.5, Math.hypot(p.vx, p.vy) / 80),
               surface: p.surface ?? bloodSurface(p.x, p.y),
             });
             p.life = 0;

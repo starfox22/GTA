@@ -125,7 +125,7 @@
         const moved = Math.hypot(p.x - b.x, p.y - b.y);
         if (moved < 13) continue;
         if (moved < 120 && Math.abs(p.x - player.x) < 1400 && Math.abs(p.y - player.y) < 1400)
-          addBloodPool(p.x, p.y, randomBetween(1.6, 3.2), headingBetween(b, p), { opacity: 0.8 });
+          addBloodDrop(p.x + randomBetween(-1.5, 1.5), p.y + randomBetween(-1.5, 1.5), randomBetween(0.55, 1), headingBetween(b, p), { stretch: 1.3, opacity: 0.85 });
         b.x = p.x;
         b.y = p.y;
       }

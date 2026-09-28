@@ -505,32 +505,6 @@
       worldContext.fillRect(phone.x - 2, phone.y - 1, 4, 5);
       worldContext.fillStyle = '#3a3e41';
       worldContext.fillRect(phone.x - 2, phone.y + 10, 4, 7);
-      for (const p of pickups)
-        if (p.ready < gameTime && visible(p)) {
-          worldContext.save();
-          worldContext.translate(p.x, p.y + Math.sin(gameTime * 3) * 2);
-          worldContext.fillStyle = '#172e24e0';
-          worldContext.fillRect(-9, -9, 18, 18);
-          worldContext.strokeStyle =
-            p.type === 'health' ? '#90dcb0' : p.type === 'ammo' ? '#cc9fda' : '#83b7d6';
-          worldContext.strokeRect(-10, -10, 20, 20);
-          worldContext.fillStyle = worldContext.strokeStyle;
-          if (p.type === 'health') {
-            worldContext.fillRect(-2, -6, 4, 12);
-            worldContext.fillRect(-6, -2, 12, 4);
-          } else if (p.type === 'ammo') {
-            for (let j = -4; j <= 4; j += 4) worldContext.fillRect(j - 1, -5, 2, 10);
-          } else {
-            worldContext.beginPath();
-            worldContext.moveTo(-5, -6);
-            worldContext.lineTo(5, -6);
-            worldContext.lineTo(5, 2);
-            worldContext.lineTo(0, 7);
-            worldContext.lineTo(-5, 2);
-            worldContext.fill();
-          }
-          worldContext.restore();
-        }
       drawWildlife2D();
       drawSports(worldContext);
       drawTransit2D();

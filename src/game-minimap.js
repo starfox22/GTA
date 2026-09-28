@@ -110,12 +110,6 @@
           drawingContext.lineWidth = 7;
           drawingContext.stroke();
         }
-      if (mapLayerOn('pickups'))
-      for (const p of pickups) {
-        drawingContext.fillStyle =
-          p.type === 'health' ? '#84ccb0' : p.type === 'ammo' ? '#c7a2df' : '#94bfd5';
-        drawingContext.fillRect(p.x - 13, p.y - 13, 26, 26);
-      }
       paintSportsGround(drawingContext, false);
       if (mapLayerOn('services')) drawCivicMap(drawingContext, big);
       if (mapLayerOn('air')) {
