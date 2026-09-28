@@ -11,6 +11,11 @@
         cloudGrey = new Three.Color(),
         cloudFlat = new Three.Vector4(),
         cloudFlatColor = new Three.Color();
+      /* The light inside the cloud round a jumper (the same sky, sun and bounce the
+         layer is drawn with, by height in the slab) and how far in cloud the jumper
+         is: the parachute's rig takes it instead of the sun (parachute3d-canopy.js). */
+      const cloudRigLight = new Three.Color(1, 1, 1);
+      let cloudRigAmount = 0;
       // What the camera makes of the layer this frame (DeadEndCity.cloudLayer().view).
       const cloudView = {
         context: '',
@@ -81,7 +86,16 @@
         const flying = cloudsSupported && camera === flightCamera && coverage > 0.02,
           p = player.parachute,
           context = p ? (p.stage === 'freefall' ? 'freefall' : 'canopy') : 'aircraft',
-          active = flying && camera.position.y > cloudBounds.x;
+          active = flying && camera.position.y > cloudBounds.x,
+          /* A jumper goes from freefall to canopy over the opening, not at the pull:
+             the veil, the clear air round them, the mist streaming past and the lens
+             follow how far the canopy is out and how fast they still fall. */
+          underCanopy = p && p.stage === 'canopy' ? clamp(p.opening, 0, 1) : 0,
+          fallFlow = p ? clamp(-(p.vz || 0) / PARACHUTE_TERMINAL, 0, 1) : 0,
+          jumperCloud = p && cloudsSupported ? clamp(cloudLayer.immersion * 1.3, 0, 1) : 0;
+        // In cloud a jumper has no sun: the light round them is the cloud's own, dim and even.
+        sun.intensity *= 1 - 0.6 * jumperCloud;
+        cloudRigAmount = 0;
         cloudSubject.set(player.x, entityElevation(player.car || player), player.y);
         const subjectDistance = camera.position.distanceTo(cloudSubject),
           cameraAmount = flying ? cloudAmountAt(camera.position.x, camera.position.z, camera.position.y) : 0;
@@ -91,7 +105,7 @@
         cloudView.inCloud += (cameraAmount - cloudView.inCloud) * (1 - Math.exp(-deltaSeconds * (cameraAmount > cloudView.inCloud ? 4 : 2)));
         cloudView.subjectDistance = subjectDistance;
         cloudComposite.visible = cloudDepth.visible = active;
-        updateCloudLens(deltaSeconds, flying && tier !== 'LOW' ? context : '', cameraAmount);
+        updateCloudLens(deltaSeconds, flying && tier !== 'LOW' ? context : '', cameraAmount, underCanopy, fallFlow);
         if (!active) {
           cloudVeil.visible = false;
           cloudView.veilSteps = cloudView.veilCap = cloudView.flatVeil = 0;
@@ -137,7 +151,10 @@
         // The veil between the camera and the subject (clouds3d-near.js): a jumper always
         // (capped), an aircraft only as deep as it is in cloud itself, so flying under the
         // base the chase camera never looks through cloud the aircraft is not in.
-        const cap = context === 'aircraft' ? NEAR_CAP.aircraft * clamp(cloudLayer.immersion * 1.6, 0, 1) : NEAR_CAP[context],
+        const cap =
+            context === 'aircraft'
+              ? NEAR_CAP.aircraft * clamp(cloudLayer.immersion * 1.6, 0, 1)
+              : NEAR_CAP.freefall + (NEAR_CAP.canopy - NEAR_CAP.freefall) * underCanopy,
           segmentLow = Math.min(camera.position.y, cloudSubject.y),
           segmentHigh = Math.max(camera.position.y, cloudSubject.y),
           veil = cap > 0.01 && segmentHigh > cloudBounds.x && segmentLow < cloudBounds.y,
@@ -150,8 +167,7 @@
         marchUniforms.uAircraft.value.copy(cloudSubject);
         // Clear air round the subject: an aircraft's pocket (walls of cloud, the ground
         // below); none in freefall (the white-out is the point), a thin one under canopy.
-        if (context === 'freefall') marchUniforms.uPocket.value.set(1, 2, 0);
-        else if (context === 'canopy') marchUniforms.uPocket.value.set(120, 420, 0.5);
+        if (p) marchUniforms.uPocket.value.set(1 + 119 * underCanopy, 2 + 418 * underCanopy, 0.5 * underCanopy);
         else marchUniforms.uPocket.value.set(CLOUD_POCKET_INNER, CLOUD_POCKET_OUTER, 1);
         marchUniforms.uMaxDistance.value = camera.far;
         // Shafts under broken cloud by day (HIGH and ULTRA): gone under a closed deck,
@@ -182,6 +198,23 @@
           sky.b * skyShare + sunLight.b * sunShare + bounce.b * (1 - h),
         );
         cloudFlat.set(cloudFlatColor.r * flatAlpha, cloudFlatColor.g * flatAlpha, cloudFlatColor.b * flatAlpha, flatAlpha);
+        /* The light round the jumper for the rig: inside, cloud is lit by the sun
+           scattered down through it (less of it the deeper under the tops) and the sky,
+           with the ground's bounce near the base; about as bright as the veil, so white
+           cloth greys into it rather than showing as a dark shape. */
+        if (jumperCloud > 0) {
+          const subjectSlab = cloudLayerAt(cloudSubject.x, cloudSubject.z),
+            hs = clamp((cloudSubject.y - subjectSlab.base) / Math.max(1, subjectSlab.top - subjectSlab.base), 0, 1),
+            skyAt = 0.7 + 0.3 * hs,
+            sunAt = 0.12 + 0.3 * hs,
+            bounceAt = 0.8 * (1 - hs);
+          cloudRigLight.setRGB(
+            sky.r * skyAt + sunLight.r * sunAt + bounce.r * bounceAt,
+            sky.g * skyAt + sunLight.g * sunAt + bounce.g * bounceAt,
+            sky.b * skyAt + sunLight.b * sunAt + bounce.b * bounceAt,
+          );
+          cloudRigAmount = jumperCloud * 0.85;
+        }
         renderCloudVeil(subjectDistance, cap, steps, width, height, cloudFlat);
         renderer.setRenderTarget(null);
         renderer.setClearColor(cloudClearColor, clearAlpha);
@@ -201,18 +234,13 @@
         const margin = 20 * UNITS_PER_METRE,
           nearLayer = camera.position.y > cloudBounds.x - margin && camera.position.y < cloudBounds.y + margin,
           wisps = nearLayer ? WISP_COUNT[tier] ?? WISP_COUNT.HIGH : 0,
-          wispOpacity = context === 'aircraft' ? 0.45 * clamp(cloudLayer.immersion * 3, 0, 1) : context === 'freefall' ? 0.7 : 0.6;
+          wispOpacity = context === 'aircraft' ? 0.45 * clamp(cloudLayer.immersion * 3, 0, 1) : 0.7 - 0.1 * underCanopy;
         updateCloudWisps(deltaSeconds, wisps, subjectDistance * 1.3, wisps ? wispOpacity : 0, cloudSubject);
         cloudView.wisps = wispMesh.visible ? wisps : 0;
         cloudView.wispOpacity = wispMesh.visible ? wispOpacity : 0;
         // The veil streams past a falling jumper (and, faintly, a canopy or an aircraft
-        // in cloud), strongest at a freefall's speed.
-        const fall = p ? clamp(-(p.vz || 0) / (50 * UNITS_PER_METRE), 0, 1) : 0,
-          streaks =
-            steps > 0
-              ? cameraAmount *
-                (context === 'freefall' ? 0.1 + 0.3 * fall : context === 'canopy' ? 0.1 : 0.12 * clamp(cloudLayer.immersion * 2, 0, 1))
-              : 0;
+        // in cloud), strongest at a freefall's speed and slowing as the canopy opens.
+        const streaks = steps > 0 ? cameraAmount * (p ? 0.1 + 0.3 * fallFlow : 0.12 * clamp(cloudLayer.immersion * 2, 0, 1)) : 0;
         if (p) cloudVelocity.set(p.vx || 0, p.vz || 0, p.vy || 0);
         else if (player.car) cloudVelocity.set(player.car.vx || 0, player.car.vz || 0, player.car.vy || 0);
         setCloudStreaks(streaks, cloudVelocity, deltaSeconds);
@@ -226,13 +254,13 @@
       // Water on the lens (clouds3d-lens.js): only for a jumper's camera. Beads gather
       // within a second or two in cloud and dry or blow off over a few seconds after it;
       // in freefall the rush of air stretches them and sweeps them up the frame.
-      function updateCloudLens(deltaSeconds, context, cameraAmount) {
+      // `underCanopy` how far the canopy is out (0 freefall .. 1 flying), `fallFlow` the fall against freefall speed.
+      function updateCloudLens(deltaSeconds, context, cameraAmount, underCanopy = 0, fallFlow = 0) {
         const jumping = context === 'freefall' || context === 'canopy',
-          target = jumping ? clamp(cameraAmount * 1.4, 0, 1) * (context === 'freefall' ? 1 : 0.75) : 0,
+          target = jumping ? clamp(cameraAmount * 1.4, 0, 1) * (1 - 0.25 * underCanopy) : 0,
           wet = cloudLensUniforms.uLensWet.value,
-          rate = target > wet ? 0.7 : context === 'freefall' ? 0.3 : 0.18,
-          p = player.parachute,
-          flow = context === 'freefall' ? clamp(-(p?.vz || 0) / (50 * UNITS_PER_METRE), 0, 1) : context === 'canopy' ? 0.12 : 0;
+          rate = target > wet ? 0.7 : 0.3 - 0.12 * underCanopy,
+          flow = jumping ? Math.max(fallFlow, 0.12 * underCanopy) : 0;
         cloudLensUniforms.uLensWet.value = jumping ? wet + (target - wet) * (1 - Math.exp(-deltaSeconds * rate * 3)) : 0;
         if (cloudLensUniforms.uLensWet.value < 0.003) cloudLensUniforms.uLensWet.value = 0;
         cloudLensUniforms.uLensFlow.value += (flow - cloudLensUniforms.uLensFlow.value) * (1 - Math.exp(-deltaSeconds * 2));

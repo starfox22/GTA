@@ -449,6 +449,8 @@
         parachuteState: () => parachuteReport(),
         // Step the jump until `target` metres above the ground, or a cue state / deployment phase by name.
         parachuteFallTo: (target) => parachuteFallTo(target),
+        // The parachute as the renderer drew it last frame (null without WebGL): shape, slider, lines, pendulum, cloud light.
+        parachuteView: () => city3D?.parachuteView?.() ?? null,
         // The player's fall: altitude, ground, falling / tumbling, the last impacts and vehicle landings.
         fallState: () => fallStateReport(),
         // A cliff to test on: 'lethal' or 'car' (see CLIFF FINDER), with the profile of the way down.

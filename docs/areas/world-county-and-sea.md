@@ -35,16 +35,24 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
 - Parachute (parachute.js; parachute3d.js draws it): only an aircraft bail-out (60 m clear)
   starts one; the ripcord is a second `bail` press once the first is let go, and
   `deployParachute()` runs once (`stage` stays 'canopy'). The pull is not an open canopy: the
-  DEPLOYMENT stages (pilot 0.7 s, lines 1 s, snivel 1-2 s by pull speed, snap 0.8 s) bring
-  in drag gradually, the shock capped at 4 g; from terminal speed it is open 4.5 s / ~175 m
-  later, pulled at rest 3.6 s / 54 m, so a 60 m helicopter hop only just makes it.
-  `parachuteForecast()` steps that same model at 30 Hz and is the cue's "need" (to 7 m/s):
-  change the model there and the cue follows. Cue: OPEN SOON at need + 4 s of fall, OPEN NOW
+  DEPLOYMENT stages of a sport ram-air main from 54 m/s belly freefall: pilot 0.8 s (throw,
+  pin, bag lift), lines 1 s (line stretch 1.8 s / ~95 m after the pull, ~50 m of it paying
+  out), snivel 1.1-2 s by pull speed (the slider holds it, cells fill centre out), snap 0.9 s
+  (slider down, end cells last). Pulled at terminal it flies 4.7 s / ~200 m later at ~7 m/s,
+  the load easing to a 3.8 g peak (`PARACHUTE_OPEN_SHOCK` is a soft tanh cap, not a clip);
+  pulled at 30 m/s 4.3 s / 138 m, from a hover 3.8 s / ~57 m (a 75 m hop with an instant pull
+  just makes it). `parachuteForecast()` steps the same model at 30 Hz and is the cue's
+  "need" (to 7 m/s); `p.safeLost` records the same point in flight and the test holds them
+  equal: change the model there and the cue follows. Flying, the canopy is on its
+  deployment brakes (`p.brakesSet`, 15 km/h) for `PARACHUTE_BRAKES_SET` 1.4 s (or until the
+  first steer or flare), then surges to trim. Cue: OPEN SOON at need + 4 s of fall, OPEN NOW
   at need + 1.5 s (a pull then still lands safe), TOO LOW under need + 2 m; after the pull it
   shows the stage and the height the rest needs. Until `phase` is 'open' the jumper steers
-  as in freefall and a roof is an impact; the late-pull hurt band is only ~4 m of pull
-  height at terminal speed (the snap takes 28 → 7 m/s in ~12 m). The renderer reads
-  `phase`/`phaseK`/`opening`/`load`; the camera jolt is `shake`, set by parachute.js.
+  as in freefall and a roof is an impact. The renderer (parachute3d*.js) reads
+  `phase`/`phaseK`/`opening`/`load`/`brakesSet`/`flown` and the velocity (its pendulum is
+  driven by the rig's forward acceleration); the camera jolt is `shake`, set by parachute.js.
+  Every rig object is `userData.dynamic`: without it the detail pass hid the canopy from
+  the flight camera high up. Console `parachuteView()` reports the rig as drawn.
 - Railway (transit.js, transit3d.js): SHORE LINE (Cruise Terminal → west sea wall → Southport
   Airport), COAST LINE (→ Oceanview → Palmshore), RIDGE LINE (→ Eastgate, Northridge,
   Stonecreek). Each `route` is a control polygon filleted by `railTrackGeometry`; everything

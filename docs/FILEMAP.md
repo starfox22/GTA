@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-458 files in the include tree, 160,475 lines.
+461 files in the include tree, 160,797 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -114,7 +114,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
 - `src/navigation.js`   689 — City map and route planning
-- `src/parachute.js`   690 — Bailout and parachute
+- `src/parachute.js`   728 — Bailout and parachute
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
 - `src/mobile.js`   272 — Touch controls
 - `src/input-hints.js`   151 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
@@ -313,7 +313,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/falls-body.js`   318 — Falls on foot: the impact scale (fallInjury), the player's ballistic fall off a drop, landings and the fatal splat.
 - `src/falls-vehicles.js`   355 — Falls, vehicles: road vehicles leaving the terrain (cliffSettle, cliffFlight), landings, tumbles down a face and rollovers.
-- `src/falls-console.js`   454 — Falls console: the cliff finder (cliffSpots), bail-out and parachute helpers, scripted fall and descent tests (fallsConsole).
+- `src/falls-console.js`   458 — Falls console: the cliff finder (cliffSpots), bail-out and parachute helpers, scripted fall and descent tests (fallsConsole).
 
 ## src/garages.js ▸ Drive-in repair and respray
 
@@ -615,7 +615,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/clouds3d-near.js`   186 — Clouds 3D near the camera: the veil of cloud between the camera and the subject (the jumper or the aircraft), marched like the far layer and …
 - `src/clouds3d-wisps.js`   216 — Clouds 3D wisps: soft rags of cloud streaming past the camera at the speed it moves through the layer (streaked along the relative wind), shown only …
 - `src/clouds3d-shadows.js`    85 — Clouds 3D shadows: the plane over the city that throws the cloud field's shadows on the ground.
-- `src/clouds3d-frame.js`   262 — Clouds 3D frame update (updateCloudVisuals): shadows, sun dimming, the far march, the veil near the camera, the wisps, the lens and the in-cloud …
+- `src/clouds3d-frame.js`   287 — Clouds 3D frame update (updateCloudVisuals): shadows, sun dimming, the far march, the veil near the camera, the wisps, the lens and the in-cloud …
 
 ## src/surfaces3d.js ▸ Procedural surface detail
 
@@ -677,7 +677,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d-effects.js ▸ Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
 
-- `src/parachute3d.js`   626 — Ram-air parachute
+- `src/parachute3d.js`    51 — ▸ Ram-air parachute
+
+## src/parachute3d.js ▸ Ram-air parachute
+
+- `src/parachute3d-canopy.js`   257 — Parachute 3D canopy: the ram-air wing's meshes and materials, its shape (chuteShape, chuteSkinPoint: airfoil, arc, cell-by-cell pressurisation …
+- `src/parachute3d-pose.js`   170 — Parachute 3D pose: the rig's state (chuteRig), the jumper's body through the jump (box, the pull, line stretch, hanging) and the pendulum under the …
+- `src/parachute3d-rigging.js`   403 — Parachute 3D rigging: lines through the slider's grommets, risers, the billowing slider, pilot chute, bag and container; updateParachute3D() shapes …
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 

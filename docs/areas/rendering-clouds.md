@@ -41,7 +41,13 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
   aircraft 0.45 x its own immersion) so the subject stays readable. The far march starts where
   the veil hands over (`uNearFade`). LOW: no march, a flat veil from `cloudAmountAt`.
 - An aircraft keeps its pocket of clear air (walls of cloud, the ground below); freefall has
-  none (the white-out is the point), a canopy a thin one.
+  none (the white-out is the point), a canopy a thin one. A jumper passes from the freefall
+  values to the canopy's (veil cap, pocket, wisps, lens) by `p.opening`, and the streaks and
+  lens flow follow the fall rate, so pulling in cloud never pops.
+- A jumper in cloud: the sun dims (up to 60 %) and the parachute rig is lit by the cloud's own
+  light at its height in the slab (`cloudRigLight`/`cloudRigAmount`, read by
+  parachute3d-canopy.js `chuteCloudLit`), about as bright as the veil so white cloth greys
+  into it.
 - wisps: instanced rags between the near plane and just past the subject, fixed in the air
   (drifting with the cloud) so the camera's motion streams them past, streaked along the
   subject's own velocity (not frame deltas: slow frames would smear them); the vertex shader
