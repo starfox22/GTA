@@ -117,12 +117,14 @@ packs with plain `<script src>` so the zip still plays from file://.
   Terrace furniture stays inside `roofCover` footprints or the 14-unit strip along the railings.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
-- `playerImpact()` / `fallInjury()` (falls-body.js) are the only fall-damage scale;
+- `playerImpact()` / `fallInjury()` / `riderInjury()` (falls-body.js) are the only fall-damage
+  scale (a survived fall is `hurt(…, 'fall')`, which draws no blood);
   `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
   opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
   for the freefall cue: change them there only.
 - `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
   from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
+- `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
