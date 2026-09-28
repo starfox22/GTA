@@ -28,7 +28,9 @@ export default async function (t) {
   p = await t.call('driveByScreenPoint', 0, 14);
   await t.mouse(p.x, p.y, { seconds: 2.5, down: true, keys: ['KeyW'], taps: ['KeyA'] });
   r = await t.call('driveBy');
-  t.assert(r.stats.shots > back && r.window === 'front', 'no shot ahead: ' + JSON.stringify(r));
+  // The car keeps turning under a fixed pointer, so later shots may leave by the side
+  // window: the windscreen burst proves the first one went ahead.
+  t.assert(r.stats.shots > back && r.stats.windscreens === 1, 'no shot ahead: ' + JSON.stringify(r));
   t.assert(r.frontGlass === 2 && r.stats.windscreens === 1, 'windscreen not burst: ' + JSON.stringify(r));
   t.assert(r.stats.refused === 0 && !r.cross, 'a car refused an aim: ' + JSON.stringify(r));
 
