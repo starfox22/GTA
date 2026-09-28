@@ -105,7 +105,7 @@
         crowdPoseTargets(p, s, T, t + s.seed, spec);
         // Ease the base pose.
         // The carjack struggle moves quickly (carjack3d.js): its poses are followed closely.
-        const k = 1 - Math.exp(-dt * (p.carjackHeld || (p === player && player.carjack) ? 20 : p.react || spec?.hold?.aiming ? 14 : 9));
+        const k = 1 - Math.exp(-dt * (p.carjackHeld || p.stagger || (p === player && player.carjack) ? 20 : p.react || spec?.hold?.aiming ? 14 : 9));
         let unsettled = 0;
         for (let i = 0; i < J_COUNT; i++) {
           const d = (T[i] - J[i]) * (dt > 0 && !fresh ? k : 1);

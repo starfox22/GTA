@@ -1,11 +1,11 @@
 // The carjack struggle (carjack-struggle.js): walk to the driver's door (round the car
-// from the kerb side), the door, the tug of war, the throw, the seat in 1-2.5 s; the
+// from the kerb side), the door, reaching in, the tug of war, the pull, the seat in 2.5-4.5 s; the
 // victim is dressed as the car's driver, shouts, gets up and reports it; a passenger
 // runs; a defiant driver lands a punch; a pleading one puts their hands up; E again
 // cuts it short; walking off calls it off with the driver still at the wheel.
 export const fresh = true;
 let lastSeen = null;
-async function untilInCar(t, limit = 3.5) {
+async function untilInCar(t, limit = 5.5) {
   let waited = 0;
   while (waited < limit) {
     await t.wait(0.1);
@@ -30,7 +30,8 @@ export default async function (t) {
   t.assert(s.running && s.phase === 'approach' && s.waypoints === 1, 'start: ' + JSON.stringify(s));
   const took = await untilInCar(t);
   t.assert(took !== null, 'never got into the car');
-  t.near(took, 0.9, 2.2, 'seconds from E to the seat (driver side)');
+  t.near(took, 2.4, 4.2, 'seconds from E to the seat (driver side)');
+  t.assert((await t.call('carjack')).phases === 'approach > door > reach > tug > pull > enter', 'phases');
   s = await t.call('carjack');
   t.assert(s.victim && s.victim.female === true, 'victim not dressed as the car said: ' + JSON.stringify(s.victim));
   t.assert(s.passengers === 1, 'passenger count ' + s.passengers);
@@ -62,14 +63,14 @@ export default async function (t) {
 
   // A pleading driver: hands up, not thrown.
   s = await jack('plead', 'driver', false, 0);
-  await t.wait(0.75);
+  await t.wait(1.9);
   s = await t.call('carjack');
   t.assert(s.victim && s.victim.pose === 'handsUp' && !s.victim.down, 'plead: ' + JSON.stringify(s.victim));
 
-  // E again during the tug: straight to the throw.
+  // E again during the tug: straight to the pull.
   s = await jack('angry', 'driver', null, 0);
   let phase = s.phase;
-  for (let i = 0; i < 16 && phase !== 'tug'; i++) {
+  for (let i = 0; i < 36 && phase !== 'tug'; i++) {
     await t.wait(0.05);
     s = await t.call('carjack');
     phase = s.phase;
@@ -77,7 +78,7 @@ export default async function (t) {
   t.assert(phase === 'tug', 'never reached the tug: ' + JSON.stringify(s));
   await t.call('interact');
   s = await t.call('carjack');
-  t.assert(!s.running || s.phase === 'throw', 'E did not cut the struggle short: ' + s.phase);
+  t.assert(!s.running || s.phase === 'pull', 'E did not cut the struggle short: ' + s.phase);
 
   // Walking off during the approach calls it off; the driver stays at the wheel.
   s = await jack('flee', 'passenger', null, 0);

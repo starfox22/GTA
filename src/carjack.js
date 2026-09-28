@@ -242,6 +242,29 @@
     function updateCarjackReactions(person, deltaSeconds) {
       // Held at the door in the struggle: carjack-struggle.js places and poses them.
       if (person.carjackHeld) return true;
+      if (person.stagger) {
+        // Hauled out and let go: a few stumbling steps backwards, then away
+        // (carjack-struggle.js releaseSwing). A shot or a scare takes over at once.
+        const s = person.stagger;
+        if (person.hp <= 0 || person.react || person.knockedFor > 0 || person.ejected) {
+          person.stagger = null;
+          if (person.pose === 'carjackStagger') person.pose = null;
+          return false;
+        }
+        s.t += deltaSeconds;
+        const slow = Math.max(0, 1 - s.t / s.for);
+        moveBody(person, s.vx * slow * deltaSeconds, s.vy * slow * deltaSeconds, 5);
+        person.a = s.face;
+        person.walking = false;
+        person.sitting = false;
+        person.carjackT = s.t;
+        if (s.t >= s.for) {
+          person.stagger = null;
+          person.pose = null;
+          finishEjection(person);
+        }
+        return true;
+      }
       if (person.handsUpUntil > gameTime) {
         // Frozen with the hands up, watching whoever took the car.
         person.pose = 'handsUp';

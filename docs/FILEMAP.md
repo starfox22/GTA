@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-464 files in the include tree, 161,623 lines.
+464 files in the include tree, 161,869 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -39,7 +39,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-people.js`   166 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   344 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
 - `src/game-update.js`   177 — update(dt): the per-frame simulation step (only active play advances clocks).
-- `src/game-draw2d.js`   603 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
+- `src/game-draw2d.js`   590 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   232 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   367 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   413 — Weapon chip, mission card and updateUI() (HUD text refresh).
@@ -60,8 +60,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/campaign.js`   449 — Campaign saves and replay
 - `src/chase.js`   546 — Cargo pursuit
 - `src/roadblocks.js`   434 — Police containment and roadblocks
-- `src/carjack.js`   315 — Carjacking and driver reactions
-- `src/carjack-struggle.js`   353 — The carjack struggle: walking round to the driver's door, the door, a short tug of war, the throw and taking the seat (startCarjack, updateCarjack …
+- `src/carjack.js`   338 — Carjacking and driver reactions
+- `src/carjack-struggle.js`   523 — The carjack struggle: walking round to the driver's door, the door, reaching in, a tug of war, hauling the driver out and taking the seat …
 - `src/riders.js`   482 — Riders thrown from motorbikes and bicycles
 - `src/wheelie.js`   167 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
 - `src/themepark.js`    63 — ▸ Sunset Pier resort and theme park
@@ -120,7 +120,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mobile.js`   272 — Touch controls
 - `src/input-hints.js`   151 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   332 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
-- `src/world-view.js`   238 — World camera gestures
+- `src/world-view.js`   241 — World camera gestures
 - `src/car-radio.js`   865 — Vehicle radio stations
 - `src/garages.js`   750 — ▸ Drive-in repair and respray
 - `src/crowd.js`   192 — ▸ Crowd life, perception and reactions
@@ -422,7 +422,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/weather3d.js`   699 — Weather and sky visuals
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    85 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
-- `src/carjack3d.js`   153 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
+- `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    55 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
 - `src/surfaces3d.js`   232 — ▸ Procedural surface detail
@@ -444,7 +444,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   141 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
 - `src/render3d-api.js`   478 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   679 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-frame.js`   674 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
@@ -607,7 +607,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-bodies.js`   302 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
 - `src/crowd3d-looks.js`   478 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/crowd3d-joints.js`   139 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
-- `src/crowd3d-poses.js`   898 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
+- `src/crowd3d-poses.js`   901 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   559 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
@@ -700,7 +700,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-world.js`   224 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
-- `src/game-console-crowd.js`   144 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-crowd.js`   150 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   194 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-settings.js`   118 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 

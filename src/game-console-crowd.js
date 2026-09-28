@@ -131,6 +131,17 @@
       // the car, positions) and the last victim: sex, pose, down or up, what they are
       // saying, whether they have reported it and how many passengers ran.
       carjack: () => carjackState(),
+      // Occupied traffic near the player and what E at each would do from where the
+      // player stands (carjack-struggle.js planCarjack: why null = the struggle at the
+      // door, else 'kind' / 'rolling' / 'no room'), nearest first; `side` spots are map
+      // points a step off the driver's and the passenger's doors; `from` 'here' (the
+      // player), 'kerb' or 'driver' plans each car as if E were pressed at that side.
+      carjackScan: (radius = 600, count = 8, from = 'here') => carjackScan(radius, count, from),
+      // A stopped sedan staged for a carjack by the action key (nothing started):
+      // `hem` 'open', 'kerb' (parked cars close ahead and behind), 'lane' (a car beside
+      // the driver's door) or 'boxed' (both); the player on its `side`; the car rolling
+      // east at `kmh` (0: stopped). Returns its plan.
+      carjackStage: (hem = 'open', mood = 'flee', side = 'passenger', kmh = 0) => carjackStage(hem, mood, side, kmh),
       // Raise an incident at a map point without firing: gunfire, explosion, crash.
       alarm(kind = 'gunfire', x = player.x, y = player.y) {
         const inc = crowdAlarm(kind, { x, y }, kind === 'crash' ? null : player, 1.4);

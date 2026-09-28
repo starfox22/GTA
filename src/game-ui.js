@@ -381,7 +381,7 @@
           const n = nearestCar();
           promptId = 'vehicle';
           // In the struggle at the door E only hurries it (carjack-struggle.js skipCarjack).
-          if (player.carjack) prompt = player.carjack.phase === 'approach' ? '' : 'HAUL THEM OUT';
+          if (player.carjack) prompt = ['door', 'reach', 'tug'].includes(player.carjack.phase) ? 'HAUL THEM OUT' : '';
           else if (n)
             prompt = vehicleIsLocked(n)
               ? 'LOCKED · BREAK THE WINDOW'

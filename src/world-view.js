@@ -41,6 +41,8 @@
       air: 1.6 / STREET_ZOOM,
       ride: 0.7 * STREET_ZOOM_STEP,
       parachute: 0.78 * STREET_ZOOM_STEP,
+      // Pulling a driver out of a car (carjack-struggle.js): in close on the struggle.
+      carjack: 1.3,
     };
     function cameraContextZoom() {
       const c = player.car;
@@ -55,6 +57,7 @@
       }
       if (player.parachute) return CAMERA_CONTEXT.parachute;
       if (transitRide || taxiRide || player.coaster) return CAMERA_CONTEXT.ride;
+      if (player.carjack && player.carjack.phase !== 'approach') return CAMERA_CONTEXT.carjack;
       return 1;
     }
     let worldZoom = STREET_ZOOM,
@@ -88,7 +91,7 @@
         resetWorldGesture();
         return;
       }
-      speedZoom += (cameraFramingTarget() - speedZoom) * (1 - Math.exp(-deltaSeconds * (repairJob ? 2.5 : 0.8)));
+      speedZoom += (cameraFramingTarget() - speedZoom) * (1 - Math.exp(-deltaSeconds * (repairJob || player.carjack ? 2.5 : 0.8)));
       worldZoom += (worldZoomTarget * speedZoom - worldZoom) * (1 - Math.exp(-deltaSeconds * 12));
       canvasScale = clamp(Math.min(viewportWidth / 1250, viewportHeight / 850), 0.72, 1.35) * worldZoom;
       incomingCallRemaining = Math.max(0, incomingCallRemaining - deltaSeconds);

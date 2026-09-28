@@ -76,11 +76,13 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   player is harmless).
 - Carjacking: carjack.js (occupants with sex, age and temper, locked doors, the ejection,
   lines; the driver's 911 call is `witnessReport(driver, 'carjack', ...)` when they appear)
-  and carjack-struggle.js (`player.carjack`: round the car, door, tug, swing,
-  `enterVehicle`). `crime(0.8, 'carjack')` fires when the door is yanked open, plus
-  enterVehicle's own; the street gets `crowdAlarm('carjack')`. Over 14 km/h, bikes, or no
-  room at the door: the instant yank. Anything that moves or resets the player calls
-  `cancelCarjack()` (teleportPlayer, die, resetMissionState).
+  and carjack-struggle.js (`player.carjack` phases approach > door > reach > tug > pull >
+  enter, then `enterVehicle`). `crime(0.8, 'carjack')` fires when the door is yanked open,
+  plus enterVehicle's own; the street gets `crowdAlarm('carjack')`. Over 24 km/h or no way
+  to the door (`planCarjack`): the same phases cut short (`job.quick`), the car braking;
+  only bikes, boats and aircraft get the instant `ejectDriver`. Gotcha: about a third of
+  traffic is locked (E says LOCKED), which is not the carjack failing. Anything that moves
+  or resets the player calls `cancelCarjack()` (teleportPlayer, die, resetMissionState).
 - Armour: `vehicleArmorShare` (the Apache takes 30% of small arms). The tank turret
   (`traverseTurret`) is shared by the player, the pursuit tank and army gunners.
 - Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding; they

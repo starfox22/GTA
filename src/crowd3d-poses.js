@@ -775,9 +775,12 @@
             break;
           // The carjack struggle (carjack3d.js).
           case 'carjackReach':
+          case 'carjackReachIn':
           case 'carjackTug':
           case 'carjackThrow':
           case 'carjackCling':
+          case 'carjackHauled':
+          case 'carjackStagger':
             carjackPose(p, T, spec, pose);
             break;
           case 'tumble':
