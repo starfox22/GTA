@@ -15,6 +15,10 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
 - Two actions may share a key only when their contexts do not overlap (Space: handbrake in a
   car, fire on foot). `overrides` lets an air action take a key from movement in the `air`
   context (`ascend` / `descend` on the arrows); `controlConflicts()` knows that pair.
+  `overrideCtx` limits where it takes over: `ascend` is also a `drive` action (climb + throttle
+  = a wheelie, `wheelieHeld()`), but on the road ↑ stays forward too; the pad's stick-up in a
+  vehicle is `ascend`. The HUD strip has a `moto` context and a `wheelie` pseudo-key
+  (`keyName('forward') + '+' + keyName('ascend')`, left out on touch).
 - Menu keys (Escape, Enter, the map's arrows / + / − / 0 / C) are fixed.
 - **Hints follow the device** (input-hints.js): `keyName(id)` returns the touch button's
   label (`touchButtonLabel`, mobile.js: the same text the button shows, so ACTION / EXIT /

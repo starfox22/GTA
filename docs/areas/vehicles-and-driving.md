@@ -33,9 +33,21 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
 - Damage follows each body's delta-v with real masses: share of hp =
   ((Δv − 10 km/h) / 190 km/h)^1.5; walls have infinite mass. Driver injury (`crashInjury`)
   follows the same Δv. A vehicle nobody drives slides on Coulomb friction (`parkedFriction`).
-- Riders: a crash Δv over `RIDER_THROW` (24 km/h motorbike, 18 bicycle) throws the rider on a
-  ballistic arc (`throwRider`); the player becomes `player.thrown` (a carrier). Console:
-  `rideInto`, `riderReport()`.
+- Riders: a crash Δv over `RIDER_THROW` (20 km/h motorbike, 18 bicycle) throws the rider on a
+  ballistic arc (`throwRider`; causes crash, landing, lowside, loopout); the player becomes
+  `player.thrown` (a carrier). It costs falls-body.js's `riderInjury` (strike into a wall or
+  car, fatal from 75 km/h; tumble on first touching the ground; road rash) plus `fallInjury`
+  for the drop: a few points under 20 km/h, ~12 at 40, ~30 at 70, KO from 45 hp in one fall.
+  Survived falls hurt with kind `'fall'` (no blood: `hurt()` skips it); a fatal one bleeds and
+  pools (blood.js). Traffic riders lose hp directly, no wound. Console: `rideInto`,
+  `rideIntoWall`, `riderReport()` (`bloodNear`, `poolsNear`).
+- Wheelies (wheelie.js): `c.wheelie` (rad, pitch about the rear patch, slightly negative on the
+  fork's bounce) and `c.wheelieRate`; stepped in controlVehicle after the offroad and drawbridge
+  terms, it returns the acceleration (feathered throttle, rear brake only) and scales steer by
+  `wheelieSteerShare`. Input is `wheelieHeld()` (controls.js): climb + forward held by a key
+  that is not one of climb's, so ↑ alone on the road is still only the throttle. Per-type
+  geometry in `WHEELIE_GEOMETRY` (sport, enduro, cruiser barely lifts, bicycle). The renderers
+  only read it (motorbikes3d `animateMotorbike`, cycles3d `bicycleWheelie`). Console `wheelieState()`.
 - An airborne helicopter or plane faster than `AIRCRAFT_CRASH_SPEED` (40 km/h) into a
   building, hillside or big vehicle is destroyed (`destroyAircraft`); rotor discs strike walls
   (`rotorStrikes`). Console `heliInto`.
