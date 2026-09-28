@@ -144,6 +144,7 @@
         deployS: p.stage === 'canopy' ? +p.deploy.toFixed(2) : null,
         opening: +p.opening.toFixed(2),
         aglM: +worldMeters(Math.max(0, player.altitude - parachuteFloor(player.x, player.y))).toFixed(1),
+        altitudeM: +worldMeters(player.altitude).toFixed(1),
         descentMs: +worldMeters(-p.vz).toFixed(1),
         loadG: +(p.load ?? 1).toFixed(2),
         peakLoadG: p.peakLoad != null ? +p.peakLoad.toFixed(2) : null,
