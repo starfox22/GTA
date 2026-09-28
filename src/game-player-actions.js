@@ -90,7 +90,9 @@
       if (player.inv > 0 || gameMode !== 'play' || player.godMode || sportsbookShelters()) return;
       d = ballisticDamage(player, d, kind);
       player.hp -= d;
-      if (d > 1 && !player.car) bleed(player, d / 35, player.a + Math.PI);
+      // A fall ('fall': a landing, a rider's tumble) bruises without blood; a
+      // fatal one bleeds from its own code (falls-body.js splatPlayer, riders.js).
+      if (d > 1 && !player.car && kind !== 'fall') bleed(player, d / 35, player.a + Math.PI);
       flash = 0.12;
       if (player.hp <= 0) die();
     }
@@ -419,8 +421,15 @@
         else if (c.type === 'bicycle')
           tell(
             'CITY CYCLE · HOLD ' + keyName('forward') + ' to pedal · ' + keyName('sprint') + ' stand on the pedals · ' +
-              keyName('back') + ' brake',
+              keyName('back') + ' brake · ' + keyName('forward') + '+' + keyName('ascend') + ' wheelie',
             6,
+          );
+        else if (vehicleSpec(c).bike)
+          // A motorbike: the throttle and the climb key together pull a wheelie (wheelie.js).
+          tell(
+            vehicleSpec(c).name + ' · ' + keyName('forward') + ' throttle · ' + keyName('left') + '/' + keyName('right') +
+              ' steer · ' + keyName('forward') + '+' + keyName('ascend') + ' wheelie',
+            4,
           );
         else
           tell(

@@ -531,6 +531,12 @@
         } else if (c.wheelSpin || c.surfaceMud) offroadRoll(c, stepSeconds);
         // On a raised drawbridge leaf: gravity down the slope, grip up to ~40 degrees.
         if (c.deckLeaf) acceleration = drawbridgeSlopeDrive(c, acceleration, stepSeconds);
+        // WHEELIE (wheelie.js): the front wheel lifted about the rear tyre; while
+        // it is up the rear tyre alone drives and brakes, and the bike steers by leaning.
+        if (vehicleDefinition.bike && (c === pc || c.wheelie || c.wheelieRate)) {
+          acceleration = wheelieStep(c, vehicleDefinition, c === pc && active && c.hp > 0, acceleration, along, stepSeconds);
+          if (c.wheelie > 0) steer *= wheelieSteerShare(c);
+        }
         c.vx += headingCosine * acceleration * stepSeconds;
         c.vy += headingSine * acceleration * stepSeconds;
         // Tyres cancel sideways slip, but only up to what they can grip: a little

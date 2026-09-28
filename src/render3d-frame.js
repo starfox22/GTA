@@ -215,6 +215,7 @@
                 m.rider.visible = c.hp > 0 && (c === player.car || c.ai || !!c.showLamps);
                 // Lamps, the fork's steering and the wheelie (motorbikes3d.js).
                 if (m.bikeUpdate) m.bikeUpdate(c, deltaSeconds);
+                else if (m.bicycle) bicycleWheelie(c, m);
               }
               if (m.jetski) m.rider.visible = c === player.car && c.hp > 0;
               // The character rig draws the rider in their place (crowd3d.js RIDERS).

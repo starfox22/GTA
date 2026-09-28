@@ -49,6 +49,33 @@
       if (drop >= FALL_LETHAL_DROP) return Infinity;
       return 8 + 92 * Math.pow((drop - FALL_SAFE_DROP) / (FALL_LETHAL_DROP - FALL_SAFE_DROP), 1.5);
     }
+    /**
+     * THE RIDER'S SHARE OF THE SCALE (riders.js)
+     * A rider off a motorbike or a bicycle meets the world moving along it, not
+     * dropping onto it. riderInjury(speed, how) is the hit points of one contact
+     * at `speed` (map units a second); the drop into the ground on top of it is
+     * fallInjury()'s (a saddle's height is none).
+     *   'strike': the body into something that stops it (a wall, a car's side),
+     *     the speed into it: 2 at 20 km/h, 8 at 30, 17 at 40, 29 at 50, 44 at 60,
+     *     62 at 70, and nobody survives RIDER_STRIKE_LETHAL (75 km/h) into a wall.
+     *   'tumble': the first touch of the ground, the speed along it: a roll at
+     *     15 km/h costs a point or so, 3 at 20, 11 at 40, 20 at 60, 32 at 80,
+     *     50 at 110, 65 at 130.
+     *   'rash': a metre of sliding at that speed (riding gear on asphalt), from
+     *     25 km/h.
+     * Totals, a rider down on open road: a few points under 20 km/h, about 12 at
+     * 40, 30 at 70, 55 at 100; into a car or a wall past ~85 km/h it is fatal.
+     */
+    const RIDER_STRIKE_LETHAL = 75 * KMH;
+    function riderInjury(speed, how) {
+      const kmh = speed / KMH;
+      if (how === 'strike') {
+        if (speed >= RIDER_STRIKE_LETHAL) return Infinity;
+        return kmh <= 12 ? 0 : Math.pow((kmh - 12) / 10, 1.8) * 2.6;
+      }
+      if (how === 'tumble') return kmh <= 8 ? 0 : Math.pow((kmh - 8) / 10, 1.35) * 2.2;
+      return kmh <= 25 ? 0 : 0.15;
+    }
     function logFall(entry) {
       entry.at = +gameTime.toFixed(2);
       entry.seq = ++fallSeq;

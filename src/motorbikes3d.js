@@ -28,7 +28,7 @@
        * (front x > 0, each with its radius), lamps headLeft / tailLeft (lit, brake
        * and broken states as the cars'), nightLights [head, tail]. `bikeUpdate`
        * runs after the pass has leaned the body: lamps, the fork steering and the
-       * KR 500's wheelie (the body pitched about the rear tyre's contact patch).
+       * wheelie (wheelie.js c.wheelie: the body pitched about the rear tyre's contact patch).
        *
        * Draw calls per bike: paint, trim, drl, two lamps, two tyres, two rims and
        * the rider: ten, against ~35 for the old box-built bikes.
@@ -532,10 +532,8 @@
       }
       /*
        * Once a frame after the pass has posed the body: lamps and DRL, the fork
-       * turning with the steering, and the wheelie. A wheelie comes when the
-       * throttle is wide open at low speed on the KR 500 (and briefly on the
-       * superbikes off the line): the body pitches up about the rear tyre's
-       * contact patch, easing up and settling.
+       * turning with the steering, and the wheelie: the body pitched about the
+       * rear tyre's contact patch by the physics' angle (wheelie.js c.wheelie).
        */
       function animateMotorbike(c, m, deltaSeconds) {
         const lampsOn = vehicleLampAmount(),
@@ -568,18 +566,10 @@
           target = -turn * 0.35 * clamp(1 - speed / (60 * KMH), 0.15, 1);
         m.steerAngle = (m.steerAngle || 0) + (target - (m.steerAngle || 0)) * Math.min(1, deltaSeconds * 7);
         m.steer.rotation.y = m.steerAngle;
-        // Acceleration from the speed history (the physics does not keep it).
-        const accel = m.lastSpeed === undefined ? 0 : ((c.speed || 0) - m.lastSpeed) / Math.max(1e-3, deltaSeconds);
-        m.lastSpeed = c.speed || 0;
-        m.accel = (m.accel || 0) + (accel - (m.accel || 0)) * Math.min(1, deltaSeconds * 6);
-        const throttle = player_ ? !!(keys.KeyW || keys.ArrowUp) : m.accel > 0.2 * GRAVITY,
-          dirt = m.moto === 'kr500',
-          // The player's throttle is known; traffic's is read from how hard it pulls.
-          pulling = player_ ? throttle : throttle && m.accel > (dirt ? 0.3 : 0.62) * GRAVITY,
-          lift = c.hp > 0 && !c.fallen && pulling && speed < (dirt ? 70 : 45) * KMH && speed > 3 * KMH,
-          wheelieTarget = lift ? (dirt ? 0.42 : 0.12) : 0;
-        m.wheelie = (m.wheelie || 0) + (wheelieTarget - (m.wheelie || 0)) * Math.min(1, deltaSeconds * (wheelieTarget > (m.wheelie || 0) ? 2.2 : 4));
-        if (m.wheelie > 0.002) {
+        // The wheelie is the physics' (wheelie.js c.wheelie: the pitch about the
+        // rear tyre, a little below zero while the fork takes the landing).
+        m.wheelie = c.fallen || c.hp <= 0 ? 0 : c.wheelie || 0;
+        if (Math.abs(m.wheelie) > 0.002) {
           // Pitch about the rear contact patch (x = rear axle, y = 0).
           const xr = MOTO_BODIES[m.moto].wheels.xr * CAR_M,
             a = m.wheelie;
