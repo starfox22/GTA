@@ -5,7 +5,7 @@
 | Method | Purpose |
 | --- | --- |
 | `sky(id)` | Force the weather (`clear`, `fair`, `cloudy`, `overcast`, `rain`, `storm`); no argument hands the sky back to the weather machine |
-| `places()` | Named businesses and landmarks with coordinates |
+| `places()` | Named businesses and landmarks with coordinates, their `kind` and the `door` the action key opens |
 | `wetness(value)` | Set how wet the streets are (0 dry .. 1 soaked); with the rain stopped they dry on from there, so a test can look at a drying street at once; returns `weather()` |
 | `weather()`, `weatherFront(seconds)`, `lightning(distance)` | The weather machine's state (sky, next step, rain, wet, wind, `approach`, showers, strikes, thunder pending); bring a shower in after `seconds` (overcast now, the build-up, then rain; unlocks the sky); a lightning strike `distance` map units from the player (returns where, and when its thunder arrives) |
 | `probe(x, y, r)` | What occupies a map point: land/water, solid, road, rail, beach, whether a car or a jet ski fits |

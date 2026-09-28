@@ -343,7 +343,6 @@
       bullets = [],
       particles = [],
       skids = [],
-      pickups = [],
       enemies = [],
       buildings = [],
       trees = [],
