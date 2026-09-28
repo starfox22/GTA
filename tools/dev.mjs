@@ -4,6 +4,7 @@
 //   node tools/dev.mjs call <method> [jsonArg ...] [--max N | --full]
 //   node tools/dev.mjs keys <Code[,Code...]> <seconds> [--real]
 //   node tools/dev.mjs wait <seconds> [--real]
+//   node tools/dev.mjs mouse <x> <y> [seconds] [--down] [--keys Code,Code]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
 //   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] | stop
 //
@@ -22,6 +23,10 @@
 //
 // `keys` / `wait` advance game time with the console's simulate(seconds, keys) (no
 // drawing, deterministic, fast); --real holds real key presses / waits wall-clock time.
+// `mouse` moves the real pointer to viewport pixel (x, y) and holds it there for `seconds`
+// of wall-clock time, with --down the left button held and --keys those keys held (they
+// auto-repeat as a keyboard's do; tests can also pass `taps`, keys pressed afresh every
+// 0.3 s); the console's screen-point methods give the pixels.
 // `shot` saves dist/dev/shots/<name>.jpg (JPEG q70 of the 960x600 viewport; --width
 // scales it down further, --crop clips in viewport pixels, --full saves a PNG).
 // Every command prints "(N new console errors: node tools/dev.mjs errors)" when the page
@@ -333,6 +338,28 @@ async function serve(file, port, flags, size, ownBuild) {
         }
         return { result: await call('simulate', [op.seconds, codes]), ms: Date.now() - t0 };
       }
+      case 'mouse': {
+        const t0 = Date.now();
+        const codes = op.codes || [];
+        await page.mouse.move(op.x, op.y);
+        for (const c of codes) await page.keyboard.down(c);
+        if (op.down) await page.mouse.down();
+        const end = Date.now() + (op.seconds || 0) * 1000;
+        let tapAt = Date.now() + 200;
+        // Held keys repeat as a real keyboard's do (keydown events with repeat: true);
+        // `taps` are pressed afresh and let go every 0.3 s (steering corrections).
+        while (Date.now() < end) {
+          await page.waitForTimeout(Math.max(1, Math.min(50, end - Date.now())));
+          for (const c of codes) await page.keyboard.down(c);
+          if (op.taps?.length && Date.now() >= tapAt) {
+            tapAt += 300;
+            for (const c of op.taps) await page.keyboard.press(c, { delay: 60 });
+          }
+        }
+        if (op.down) await page.mouse.up();
+        for (const c of codes) await page.keyboard.up(c);
+        return { result: await call('status', []), ms: Date.now() - t0 };
+      }
       case 'shot': {
         fs.mkdirSync(SHOTS, { recursive: true });
         const clip = op.crop ? (([x, y, w, h]) => ({ x, y, width: w, height: h }))(op.crop) : undefined;
@@ -419,8 +446,8 @@ async function main(argv) {
   const pos = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--full' || a === '--real' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck') opts[a.slice(2)] = true;
-    else if (a === '--port' || a === '--max' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
+    if (a === '--full' || a === '--real' || a === '--down' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck') opts[a.slice(2)] = true;
+    else if (a === '--port' || a === '--keys' || a === '--max' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
     else pos.push(a);
   }
   const [cmd, ...rest] = pos;
@@ -444,6 +471,11 @@ async function main(argv) {
       return print(await request({ op: 'keys', codes: String(rest[0]).split(','), seconds: Number(rest[1] || 1), real: !!opts.real }), max);
     case 'wait':
       return print(await request({ op: 'wait', seconds: Number(rest[0] || 1), real: !!opts.real }), max);
+    case 'mouse':
+      return print(
+        await request({ op: 'mouse', x: Number(rest[0]), y: Number(rest[1]), seconds: Number(rest[2] || 0), down: !!opts.down, codes: opts.keys ? String(opts.keys).split(',') : [] }),
+        max,
+      );
     case 'shot':
       return print(
         await request({ op: 'shot', name: rest[0] || 'shot', full: !!opts.full, crop: opts.crop ? opts.crop.split(',').map(Number) : null, width: Number(opts.width) || 0 }),

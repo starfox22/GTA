@@ -48,6 +48,7 @@ node tools/dev.mjs start [html] [--render] [--nodev] [--shadercheck] [--size WxH
 node tools/dev.mjs call brakeTest sedan 100 '{"wet":1}'   # a NAMED console method, JSON args
 node tools/dev.mjs keys KeyW,KeyD 3    # simulate(3, keys): game seconds, no drawing (--real: key presses)
 node tools/dev.mjs wait 5              # simulate(5) (--real: wall-clock wait)
+node tools/dev.mjs mouse 480 300 2 --down --keys KeyW   # the real pointer at a pixel, button/keys held 2 s (tests: t.mouse)
 node tools/dev.mjs shot name [--crop x,y,w,h] [--width 480] [--full]  # dist/dev/shots/name.jpg
 node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] | stop
 ```
