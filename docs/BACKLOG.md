@@ -84,9 +84,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Drive-bys (driveby.js, crowd3d-driveby.js)
 - Only the pistol fires from a vehicle, so the SMG one-hand and two-handed lean-out poses are not
-  drawn; the rear shot and the passenger-side shot fire from inside the cabin, which the opaque
-  roof hides from the street camera (only the flash, the burst screen and the tracers show).
-- Trucks and special bodies have no per-pane glass: their driver's window does not show wound down.
+  drawn; the rear, windscreen and passenger-side shots fire from inside the cabin, which the
+  opaque roof hides from the street camera (only the flash, the burst screen and the tracers show).
+- Trucks, the hypercars and other special bodies have no per-pane glass: their driver's window
+  does not show wound down and a burst windscreen or rear screen shows only as the crumbs.
 - A boat's helmsman and an aircraft's pilot are not drawn during a drive-by (the shot still
   follows the arcs and leaves from `driveByGrip`).
 
