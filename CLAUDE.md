@@ -129,6 +129,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
+- All vehicle light on a surface shares one budget (VEHICLE LIGHT BUDGET; headlight-beam.js
+  `lowBeamIntensity`/`headlightRoadLight` mirror CITY_LIGHT_APPLY: keep them in step); a new
+  vehicle light source fills that budget rather than adding on top.
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over

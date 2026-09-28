@@ -54,36 +54,25 @@
         t.colorSpace = Three.SRGBColorSpace;
         return t;
       }
-      // The pattern's strength (hot-spot intensity x metres squared, in scene
-      // light) and the soft cap on what one surface takes from one car.
-      const CAR_LAMP_STRENGTH = 34000,
-        CAR_LAMP_CAP = 5,
-        // A nominal pair of lamps for the precomputed beam: height and half spacing (m).
-        NOMINAL_LAMP_HEIGHT = 0.65,
-        NOMINAL_LAMP_SPAN = 0.62,
-        // The head beam quad: length ahead of the bumper and width (world units).
-        HEAD_BEAM_LENGTH = 440,
-        HEAD_BEAM_WIDTH = 280;
-      // What a lit car's low beams lay on a level road, as CITY_LIGHT_APPLY would
-      // light it (soft cap included), normalised to its peak: `headBeamPeak`.
+      // The pattern, its strength and reach, and what a surface takes from all
+      // of them (VEHICLE LIGHT BUDGET): headlight-beam.js.
+      // The head beam quad: length ahead of the bumper and width (world units).
+      const HEAD_BEAM_LENGTH = 340,
+        HEAD_BEAM_WIDTH = 220;
+      // What a lit car's low beams lay on a level road before the budget's soft
+      // cap (CITY_LIGHT_APPLY applies it to the map's summed light, as it does to
+      // the CAR LAMPS), normalised to its peak: `headBeamPeak`.
       let headBeamPeak = 1;
       const headBeamTexture = beamTexture(256, 160, (g, width, height) => {
         const image = g.createImageData(width, height),
-          values = new Float32Array(width * height),
-          h = NOMINAL_LAMP_HEIGHT;
+          values = new Float32Array(width * height);
         let peak = 0;
         for (let y = 0; y < height; y++)
           for (let x = 0; x < width; x++) {
             // Canvas top is the oncoming side (the quad's -z), bottom the kerb side.
             const f = (((x + 0.5) / width) * HEAD_BEAM_LENGTH) / UNITS_PER_METRE,
               s = (((y + 0.5) / height - 0.5) * HEAD_BEAM_WIDTH) / UNITS_PER_METRE,
-              side = Math.sign(s) * Math.max(Math.abs(s) - NOMINAL_LAMP_SPAN, 0),
-              d2 = f * f + side * side + h * h,
-              ahead = Math.max(f, 0.05),
-              near = Three.MathUtils.smoothstep(f * UNITS_PER_METRE, 6, 26),
-              reach = 1 - Three.MathUtils.smoothstep(d2, 676, 3364),
-              e = ((CAR_LAMP_STRENGTH * lowBeamIntensity(side / ahead, -h / ahead) * near * reach) / Math.max(d2, 0.3)) * (h / Math.sqrt(d2)),
-              v = CAR_LAMP_CAP * (1 - Math.exp(-e / CAR_LAMP_CAP));
+              v = lowBeamRoad(f, s);
             values[y * width + x] = v;
             peak = Math.max(peak, v);
           }
@@ -213,6 +202,7 @@
           cityCarLampA: cityLightUniforms.cityCarLampA,
           cityCarLampB: cityLightUniforms.cityCarLampB,
           cityCarLampC: cityLightUniforms.cityCarLampC,
+          cityCarLampCount: cityLightUniforms.cityCarLampCount,
           // The BEAM SHADOWS texture (its horizon strip), set once it exists.
           cityBeamShadow: { value: null },
         },
@@ -240,6 +230,7 @@
               uniform vec4 cityCarLampA[ ${CAR_LAMP_SLOTS} ];
               uniform vec4 cityCarLampB[ ${CAR_LAMP_SLOTS} ];
               uniform vec4 cityCarLampC[ ${CAR_LAMP_SLOTS} ];
+              uniform float cityCarLampCount;
               uniform sampler2D cityBeamShadow;
               varying vec2 vUv;
               varying vec3 vStrength;
@@ -259,7 +250,9 @@
                 float wisp = cityNoise( vWorld.xz * 0.018 + vec2( uTime * 0.21, uTime * 0.07 ) ) * 0.6
                            + cityNoise( vWorld.xz * 0.05 - vec2( uTime * 0.13, uTime * 0.3 ) ) * 0.4;
                 float along = 1.0 - smoothstep( 0.05, 0.9, vUv.x );
-                float glow = sqrt( beam ) * ( 0.35 + 0.65 * along ) * ( 0.55 + 0.9 * wisp );
+                // (Mostly in the first metres of the cone: a sheet as bright to
+                // its far end laid a grey veil over a wet junction.)
+                float glow = 0.6 * sqrt( beam ) * ( 0.2 + 0.8 * along * along ) * ( 0.55 + 0.9 * wisp );
                 if ( vStrength.b > 0.5 ) {
                   // On the range the air is lit as the beam lights it, not as the
                   // road under it is: a fan from the lamps (the pattern just under
@@ -284,6 +277,20 @@
                   glow = 1.6 * fan * beamColumn( max( below, 0.0 ) / ahead ) / 0.035 * smoothstep( 0.0, 1.5, metres ) / ( 1.0 + metres * 0.12 )
                        * ( 0.55 + 0.9 * wisp ) * edge;
                 }
+                // Sheets overlap where cars meet (a junction, a queue): every sheet
+                // over this point takes the same share, so the air in N crossing
+                // beams glows up to ~1.5 of one, not N stacked to a white fog.
+                float cover = 0.0;
+                for ( int j = 0; j < ${CAR_LAMP_SLOTS}; j ++ ) {
+                  if ( float( j ) >= cityCarLampCount ) break;
+                  vec2 d = vWorld.xz - cityCarLampA[ j ].xz;
+                  vec2 heading = cityCarLampB[ j ].xy;
+                  float ahead = dot( d, heading );
+                  if ( ahead < 2.0 || ahead > 350.0 ) continue;
+                  float across = abs( dot( d, vec2( -heading.y, heading.x ) ) );
+                  cover += max( 1.0 - across / ( ahead * 0.7 + 20.0 ), 0.0 ) * ( 1.0 - ahead / 350.0 );
+                }
+                glow /= 1.0 + max( cover - 1.0, 0.0 ) * 0.6;
                 gl_FragColor = vec4( vec3( 1.0, 0.94, 0.84 ) * vStrength.r * glow * uHaze, 1.0 );
               }`,
           }),
@@ -488,8 +495,9 @@
           tails = 0,
           strobes = 0,
           reversing = 0;
-        // Lamps are on at night and in a downpour (weather3d.js).
-        const night = vehicleLampAmount(),
+        // Lamps are on at night and in a downpour (weather3d.js); A/B
+        // lookSwitches({ vehicleLights: false }) puts every vehicle's light out.
+        const night = lookSwitchState.vehicleLights ? vehicleLampAmount() : 0,
           wetBoost = 1 + weather.wet * 0.35,
           slots = lookSwitchState.carLamps ? Math.min(CAR_LAMP_SLOTS, activeTier?.carLamps ?? 4) : 0;
         pickCarLamps(night, slots);
