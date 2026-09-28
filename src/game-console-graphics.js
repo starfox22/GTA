@@ -132,7 +132,22 @@
       headlights: () => city3D?.headlights?.() ?? null,
       // The player's lamps on a slope: pose, aim, and beam coordinates and the terrain horizon at points ahead (terrain-headlights.js).
       headlightAim: (metres) => headlightAimReport(metres),
-      // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap, terrainBeams, lightBar } (true = as in play).
+      // The light a level road takes from low beams through the VEHICLE LIGHT BUDGET (headlight-beam.js; no
+      // renderer needed): `lamps` [[x, y, heading], ...] lamp points, `points` [[x, y], ...].
+      headlightBudget(lamps = [], points = []) {
+        const list = lamps.map(([x, y, a]) => ({ x: Number(x), y: Number(y), a: Number(a) })),
+          round = (v) => Math.round(v * 1000) / 1000;
+        return {
+          cap: CAR_LAMP_ROAD_CAP,
+          reachM: CAR_LAMP_REACH,
+          points: points.map(([x, y]) => {
+            const r = headlightRoadLight(list, Number(x), Number(y));
+            return { x, y, total: round(r.total), brightest: round(Math.max(0, ...r.beams)), sum: round(r.sum), beams: r.beams.map(round) };
+          }),
+        };
+      },
+      // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap, terrainBeams, lightBar,
+      // foliageCoverage, vehicleLights } (true = as in play).
       lookSwitches: (options) => city3D?.lookSwitches?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,

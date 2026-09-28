@@ -26,16 +26,18 @@
      *   carLamps     cars whose low beams light the world as real lights (the
      *                player's first, then the nearest; lighting3d-vehicle-lights.js
      *                CAR LAMPS); the rest light the road through the drive map
+     *   beamShadows  how many of those cars' beams are blocked by the people, cars,
+     *                trees and posts in them (BEAM SHADOWS, one mask tile each)
      *
      * The setting is 'auto' or a tier name and is remembered in localStorage next
      * to the other settings. 'auto' picks a tier from the GPU the browser reports
      * (see detectGraphicsTier); phones and tablets start at LOW or MEDIUM.
      */
     const GRAPHICS_TIERS = {
-      low: { name: 'LOW', pixelRatio: 1, shadowMap: 1024, shadows: 'off', msaa: 0, ao: 0, bloom: 0, grade: false, lodBias: 1.35, rain: 900, ssr: 0, carLamps: 1 },
-      medium: { name: 'MEDIUM', pixelRatio: 1.25, shadowMap: 2048, shadows: 'low', msaa: 0, ao: 0, bloom: 4, grade: true, lodBias: 1.1, rain: 1600, ssr: 0, carLamps: 4 },
-      high: { name: 'HIGH', pixelRatio: 1.5, shadowMap: 3072, shadows: 'high', msaa: 4, ao: 8, bloom: 5, grade: true, lodBias: 1, rain: 2600, ssr: 20, carLamps: 8 },
-      ultra: { name: 'ULTRA', pixelRatio: 2, shadowMap: 4096, shadows: 'high', msaa: 4, ao: 14, bloom: 6, grade: true, lodBias: 0.85, rain: 3200, ssr: 28, carLamps: 12 },
+      low: { name: 'LOW', pixelRatio: 1, shadowMap: 1024, shadows: 'off', msaa: 0, ao: 0, bloom: 0, grade: false, lodBias: 1.35, rain: 900, ssr: 0, carLamps: 1, beamShadows: 0 },
+      medium: { name: 'MEDIUM', pixelRatio: 1.25, shadowMap: 2048, shadows: 'low', msaa: 0, ao: 0, bloom: 4, grade: true, lodBias: 1.1, rain: 1600, ssr: 0, carLamps: 4, beamShadows: 2 },
+      high: { name: 'HIGH', pixelRatio: 1.5, shadowMap: 3072, shadows: 'high', msaa: 4, ao: 8, bloom: 5, grade: true, lodBias: 1, rain: 2600, ssr: 20, carLamps: 8, beamShadows: 6 },
+      ultra: { name: 'ULTRA', pixelRatio: 2, shadowMap: 4096, shadows: 'high', msaa: 4, ao: 14, bloom: 6, grade: true, lodBias: 0.85, rain: 3200, ssr: 28, carLamps: 12, beamShadows: 8 },
     };
     const GRAPHICS_ORDER = ['auto', 'low', 'medium', 'high', 'ultra'];
     let graphicsSetting = 'auto',
