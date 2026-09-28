@@ -121,7 +121,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   scale (a survived fall is `hurt(…, 'fall')`, which draws no blood);
   `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
   opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
-  for the freefall cue: change them there only.
+  for the freefall cue: change them there only. Rig objects are `userData.dynamic`
+  (flight-view3d.js `tagSceneryDetail` otherwise hides small meshes from the flight camera).
 - `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
   from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
 - `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).

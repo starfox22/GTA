@@ -67,7 +67,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The deployment stages are only seen from above (the flight camera looks down): the body swinging upright at line stretch barely reads.
 - The canopy's pendulum and surge run on drawn frames (parachute3d-pose.js): no test covers them (headless runs a few fps); the slider is mostly hidden under the canopy from the flight camera.
 - The freefall cue panel sits just under the frame's centre; while the camera catches up after the snap the canopy can pass behind it.
-- bailOut's "too low" check compares `aircraftClearance()` (map units) with 60: 7.5 m, not the 60 m the docs give.
 - The Blue Hour terrace canopy landing is kept but has no test.
 
 ## Driving (driving.js, physics-*.js)

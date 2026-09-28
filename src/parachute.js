@@ -64,7 +64,7 @@
     function bailOut() {
       const c = player.car;
       if (gameMode !== 'play' || !isAircraft(c)) return false;
-      if (aircraftClearance(c) < 60) {
+      if (aircraftClearance(c) < 60 * UNITS_PER_METRE) {
         tell('Too low to jump. Climb before using the parachute.', 3);
         return false;
       }
