@@ -3,7 +3,10 @@
       const SKY_KEYS = {
         // [zenith, horizon, ground, glow] in scene-linear sRGB hex.
         day: ['#5b87bd', '#c4d2dc', '#5c5a52', '#ffe2b8'],
-        dusk: ['#4a5a8a', '#f0a070', '#453c3a', '#ff9a50'],
+        // (A soft blue zenith over a gold horizon: the old slate violet and
+        // orange filtered into a mauve sky light that outshone the low sun on
+        // dark asphalt.)
+        dusk: ['#5a78a0', '#f2b27c', '#4a4038', '#ffa860'],
         // A blue-hour night, brighter than a real one on purpose: the moonlit sky
         // is the ambient that keeps streets readable between the lamp pools.
         night: ['#43557a', '#5f6a88', '#2b2e37', '#463d5e'],
@@ -36,11 +39,18 @@
       const gradeLiftNight = new Three.Vector3(0.012, 0.02, 0.036),
         gradeGainNight = new Three.Vector3(1.05, 1.0, 0.95),
         gradeLiftDusk = new Three.Vector3(0.0, 0.002, 0.006),
-        gradeGainDusk = new Three.Vector3(1.1, 1.0, 0.86),
+        gradeGainDusk = new Three.Vector3(1.08, 1.02, 0.84),
         // Day: cool, sky-lit shade and warm sunlit highlights, so depth reads as
         // colour as well as value.
-        gradeLiftDay = new Three.Vector3(0.0, 0.006, 0.018),
+        gradeLiftDay = new Three.Vector3(0.0, 0.004, 0.012),
         gradeGainDay = new Three.Vector3(1.07, 1.0, 0.88);
+      // How dark the sky is (0 by day .. 1 at night): it stays a day sky until
+      // the last half hour of sun, however low the sun, then dims through
+      // twilight. The night look and the sky fill's colour follow it.
+      function skyDarkness(light) {
+        const up = clamp(light / 0.3, 0, 1);
+        return 1 - up * up * (3 - 2 * up);
+      }
       let lightingClock = performance.now();
       function updateLighting(deltaSeconds) {
         // The environment rebuild is throttled on the wall clock, not game time.
@@ -49,7 +59,12 @@
         lightingClock = now;
         updateSunPath();
         const light = daylight(),
+          // The lights come on with `night` (from ~1.5 h before sunset); the
+          // night LOOK (moon and sky fill, exposure, the blue grade) waits for
+          // `dark`, from the last half hour of sun: the moonlit fill and blue lift
+          // laid over the low warm sun turned the golden hour magenta.
           night = clamp(1 - light * 1.6, 0, 1),
+          dark = skyDarkness(light),
           dusk = clamp(1 - Math.abs(light - 0.3) / 0.3, 0, 1),
           overcast = weather.cloud * weather.cloud,
           rain = weather.rain;
@@ -57,7 +72,7 @@
         const k = skyKeyColors;
         for (let i = 0; i < 4; i++) {
           const target = [skyUniforms.uZenith, skyUniforms.uHorizon, skyUniforms.uGround, skyUniforms.uGlow][i].value;
-          target.copy(k.night[i]).lerp(k.day[i], light).lerp(k.dusk[i], dusk * 0.75).lerp(k.overcast[i], overcast * 0.7 * light);
+          target.copy(k.night[i]).lerp(k.day[i], 1 - dark).lerp(k.dusk[i], dusk * 0.75).lerp(k.overcast[i], overcast * 0.7 * light);
         }
         skyUniforms.uNight.value = night;
         skyUniforms.uStars.value = night * (1 - overcast);
@@ -90,11 +105,11 @@
         brakeLamp.color.copy(brakeLampBase).multiplyScalar(3 + lampsOn * 3);
         updateHeadlightBeams();
         // Moonlight and sky light strong enough to read the streets by at night.
-        sun.intensity += night * NIGHT_LOOK.moon;
-        hemi.intensity += night * NIGHT_LOOK.sky;
+        sun.intensity += dark * NIGHT_LOOK.moon;
+        hemi.intensity += dark * NIGHT_LOOK.sky;
         // Post look: exposure, bloom and grade (postfx3d.js).
         // A touch more exposure at night: legibility first, darkness second.
-        postLook.exposure = renderer.toneMappingExposure * (1 + night * NIGHT_LOOK.exposure);
+        postLook.exposure = renderer.toneMappingExposure * (1 + dark * NIGHT_LOOK.exposure);
         // Bloom: by day only glints and the sun on glass and water (at 2.2 the
         // sunlit pale paving itself crossed the knee and hung a milky veil over
         // the street); after dark the lights themselves (lamps, neon, windows,
@@ -103,16 +118,16 @@
         postLook.bloomStrength = 0.18 + night * 0.32 + dusk * 0.12;
         // Rich rather than loud: a little saturation, more vibrance (it lifts
         // the muted paint, awnings and planting, not what is already strong).
-        postLook.saturation = (1.12 + dusk * 0.05 - night * NIGHT_LOOK.saturation) * (1 - overcast * 0.14 - rain * 0.06);
-        postLook.vibrance = (0.42 + dusk * 0.08 - night * 0.2) * (1 - overcast * 0.5);
-        postLook.contrast = 1.2 + dusk * 0.02 - night * NIGHT_LOOK.contrast - overcast * 0.08;
-        postLook.lift.copy(gradeLiftDay).lerp(gradeLiftDusk, dusk).lerp(gradeLiftNight, night);
-        postLook.gain.copy(gradeGainDay).lerp(gradeGainDusk, dusk).lerp(gradeGainNight, night);
+        postLook.saturation = (1.12 + dusk * 0.05 - dark * NIGHT_LOOK.saturation) * (1 - overcast * 0.14 - rain * 0.06);
+        postLook.vibrance = (0.42 + dusk * 0.08 - dark * 0.2) * (1 - overcast * 0.5);
+        postLook.contrast = 1.2 + dusk * 0.02 - dark * NIGHT_LOOK.contrast - overcast * 0.08;
+        postLook.lift.copy(gradeLiftDay).lerp(gradeLiftDusk, dusk).lerp(gradeLiftNight, dark);
+        postLook.gain.copy(gradeGainDay).lerp(gradeGainDusk, dusk).lerp(gradeGainNight, dark);
         if (rain > 0.05) {
           postLook.lift.lerp(gradeLiftNight, rain * 0.3);
           postLook.gain.lerp(gradeGainDay, rain * 0.5);
         }
-        postLook.vignette = 0.22 + night * 0.06;
+        postLook.vignette = 0.22 + dark * 0.06;
         // AO reads at street scale on the ground and grows with the view from the air.
         postLook.aoRadius = clamp(18 / Math.max(0.25, viewZoom), 18, 72);
         postLook.aoIntensity = 1.75;
@@ -249,4 +264,5 @@
         }
         setPostQuality(tier);
         setSearchlightQuality(tier);
+        setFoliageCoverage(tier);
       }

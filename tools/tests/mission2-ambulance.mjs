@@ -1,5 +1,6 @@
 // Mission 2's ambulance when the job ends before it pulls up: it is parked at the stop
-// (not left circling its county route), and the next run of the job clears it away.
+// (or where it was, when a car holds the stop), not left circling its county route,
+// and the next run of the job clears it away.
 export const fresh = true;
 const STOP = { x: -1618, y: 2661 }; // ROOF_AMBULANCE.stop (roofmission-poison.js)
 const near = (a, b, r) => Math.hypot(a.x - b.x, a.y - b.y) < r;
@@ -35,20 +36,38 @@ export default async function (t) {
       p = await t.call('roofPoison');
     }
     t.assert(p.medical?.ambulance && !p.medical.ambulance.parked, 'no ambulance on its way: ' + JSON.stringify(p.medical));
+    const own = p.medical.ambulance.id;
     // Walk away before it arrives: the job is won with the ambulance still driving.
-    await t.call('teleport', -1330, 2624);
+    // It pulls up at the stop only while nobody can see the stop or the ambulance
+    // (else it parks where it is), so walk well out of sight: north along Ocean
+    // Drive, away from its route up from Little Havana. The old spot (-1330, 2624),
+    // 290 units from the stop, was out of view only on a small, zoomed-in screen.
+    await t.call('teleport', -1330, 1720);
     await t.wait(0.5);
     m = await t.call('missionState');
     t.assert(m.last?.result === 'won' && m.last.index === 1, 'mission not won: ' + JSON.stringify(m));
-    const parked = await t.call('vehicleAt', STOP.x, STOP.y);
-    t.assert(parked?.type === 'ambulance' && near(parked, STOP, 12), 'the ambulance did not pull up: ' + JSON.stringify(parked));
+    // Followed by id: another car (a cab at the kerb, a living-city medic run) can
+    // stand at or near the stop, and was once taken for the mission's ambulance.
+    const atStop = await t.call('vehicleAt', STOP.x, STOP.y);
+    const parked = await t.call('vehicleById', own);
+    t.assert(parked?.type === 'ambulance', `the ambulance ${own} is gone: ` + JSON.stringify(parked));
+    t.assert(parked.kmh < 2 && !parked.ai, 'the ambulance is still driving: ' + JSON.stringify(parked));
+    if (!near(parked, STOP, 12)) {
+      // It pulls up at the stop only when the stop is free, else it stays where it is.
+      // The car that held the stop as the job ended may have driven on by now, so
+      // the job's own record says what held it (and where it stood then).
+      const settled = (await t.call('roofPoison'))?.medical?.settled,
+        by = settled?.why === 'stop taken' ? settled.by : atStop;
+      t.assert(by && by.id !== own && near(by, STOP, 80), 'the ambulance did not pull up at a free stop: ' + JSON.stringify({ parked, atStop, settled }));
+      t.note(`stop taken by a ${by.type}: parked where it was`);
+    }
     await t.wait(20);
-    const later = await t.call('vehicleAt', STOP.x, STOP.y);
-    t.assert(later?.id === parked.id && near(later, parked, 3), 'the ambulance drove off: ' + JSON.stringify(later));
-    // The job again: last run's ambulance no longer holds the stop.
+    const later = await t.call('vehicleById', own);
+    t.assert(later && near(later, parked, 3), 'the ambulance drove off: ' + JSON.stringify(later));
+    // The job again: last run's ambulance is cleared away, wherever it parked.
     await t.call('startMission', 1);
-    const replay = await t.call('vehicleAt', STOP.x, STOP.y);
-    t.assert(replay?.id !== parked.id, 'the last run’s ambulance is still at the stop: ' + JSON.stringify(replay));
+    const replay = await t.call('vehicleById', own);
+    t.assert(!replay, 'the last run’s ambulance is still about: ' + JSON.stringify(replay));
   } finally {
     await t.call('holdSimulation', false);
   }

@@ -1,10 +1,16 @@
 // Spawn a few vehicle kinds and drive them (throttle, steer, brake) for simulated
 // seconds: they move, and no telemetry goes NaN.
+// On the physics console's test track (the international airport's apron, where
+// brakeTest and driftTest run): no traffic there. On a city street the living-city
+// traffic kept round the player (more of it with a bigger view) put a car in the
+// bike's lane or at the next junction, and the rider came off: "speed 0".
+const TRACK = [-2600, 9650];
+
 export default async function (t) {
   for (const type of ['sedan', 'bike', 'truck']) {
-    await t.call('teleport', 1600, 2700);
-    // Heading east along the street (the default, the player's own heading, was whatever
-    // the last vehicle ended on: a 10 m truck spawned across the 11 m street could not move).
+    await t.call('teleport', ...TRACK);
+    // Heading east (the default, the player's own heading, was whatever the last
+    // vehicle ended on: a 10 m truck spawned across an 11 m street could not move).
     const s = await t.call('drive', type, 0, 0);
     t.assert(s.vehicle === type, `${type}: boarded ${s.vehicle}`);
     const before = await t.call('status');

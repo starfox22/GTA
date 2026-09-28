@@ -4,14 +4,16 @@
 //   node tools/dev.mjs call <method> [jsonArg ...] [--max N | --full]
 //   node tools/dev.mjs keys <Code[,Code...]> <seconds> [--real]
 //   node tools/dev.mjs wait <seconds> [--real]
+//   node tools/dev.mjs mouse <x> <y> [seconds] [--down] [--keys Code,Code]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
-//   node tools/dev.mjs errors | status | reload [--render|--norender] | stop
+//   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] | stop
 //
 // `start` with no html builds dist/dev/game.html (and `reload` rebuilds it after code
 // edits, reusing the browser). The page opens with `?dev&norender` (no WebGL renderer,
 // no frame drawing: logic checks boot and tick fast); `--render` opens it with the real
 // renderer for screenshots. The server runs in the background: state in dist/dev.json,
-// its log in dist/dev.log. A second `start` reuses a running server.
+// its log in dist/dev.log. A second `start` reuses a running server. `reload --keep`
+// keeps the browser profile (localStorage), so a save can be checked after a reload.
 //
 // `call` runs one NAMED window.DeadEndCity method with JSON arguments (bare words that
 // are not JSON are passed as strings) and prints the result as one compact JSON line,
@@ -21,6 +23,10 @@
 //
 // `keys` / `wait` advance game time with the console's simulate(seconds, keys) (no
 // drawing, deterministic, fast); --real holds real key presses / waits wall-clock time.
+// `mouse` moves the real pointer to viewport pixel (x, y) and holds it there for `seconds`
+// of wall-clock time, with --down the left button held and --keys those keys held (they
+// auto-repeat as a keyboard's do; tests can also pass `taps`, keys pressed afresh every
+// 0.3 s); the console's screen-point methods give the pixels.
 // `shot` saves dist/dev/shots/<name>.jpg (JPEG q70 of the 960x600 viewport; --width
 // scales it down further, --crop clips in viewport pixels, --full saves a PNG).
 // Every command prints "(N new console errors: node tools/dev.mjs errors)" when the page
@@ -104,9 +110,10 @@ function build(html) {
 }
 
 // Start (or reuse) the server and wait until the game is in play. Returns its status.
-export async function start({ html = null, render = false, nodev = false, size = '960x600', port = null, quiet = false } = {}) {
+export async function start({ html = null, render = false, nodev = false, shadercheck = false, size = '960x600', port = null, quiet = false } = {}) {
   const say = quiet ? () => {} : (s) => console.log(s);
-  const flags = [nodev ? 'test' : 'dev', render ? null : 'norender'].filter(Boolean).join('&');
+  // ?shadercheck makes three.js report shader compile errors (console errors).
+  const flags = [nodev ? 'test' : 'dev', render ? null : 'norender', shadercheck ? 'shadercheck' : null].filter(Boolean).join('&');
   const running = readState();
   if (running) {
     const st = await alive(running.port);
@@ -233,16 +240,20 @@ async function serve(file, port, flags, size, ownBuild) {
       if (!status.frozen && status.state === 'ready' && Date.now() - lastOp >= IDLE_FREEZE_MS) queue = queue.then(freeze).catch(() => {});
     }, 5000).unref();
   // Each boot gets a fresh browser context (empty localStorage: no saved progress or
-  // settings carried from the last run), so tests start from the same state.
+  // settings carried from the last run), so tests start from the same state;
+  // `reload --keep` reopens the page in the same context to check what a save restores.
   let context = null;
   let page = null;
 
-  async function boot() {
+  async function boot(keepStorage = false) {
     const t0 = Date.now();
     Object.assign(status, { state: 'booting', phase: 'loading page', url: 'file://' + file + '?' + status.flags, error: null });
     errors = [];
-    if (context) await context.close().catch(() => {});
-    context = await browser.newContext({ viewport: { width, height } });
+    if (keepStorage && context) await page?.close().catch(() => {});
+    else {
+      if (context) await context.close().catch(() => {});
+      context = await browser.newContext({ viewport: { width, height } });
+    }
     page = await context.newPage();
     cdp = await context.newCDPSession(page);
     status.frozen = false;
@@ -327,6 +338,28 @@ async function serve(file, port, flags, size, ownBuild) {
         }
         return { result: await call('simulate', [op.seconds, codes]), ms: Date.now() - t0 };
       }
+      case 'mouse': {
+        const t0 = Date.now();
+        const codes = op.codes || [];
+        await page.mouse.move(op.x, op.y);
+        for (const c of codes) await page.keyboard.down(c);
+        if (op.down) await page.mouse.down();
+        const end = Date.now() + (op.seconds || 0) * 1000;
+        let tapAt = Date.now() + 200;
+        // Held keys repeat as a real keyboard's do (keydown events with repeat: true);
+        // `taps` are pressed afresh and let go every 0.3 s (steering corrections).
+        while (Date.now() < end) {
+          await page.waitForTimeout(Math.max(1, Math.min(50, end - Date.now())));
+          for (const c of codes) await page.keyboard.down(c);
+          if (op.taps?.length && Date.now() >= tapAt) {
+            tapAt += 300;
+            for (const c of op.taps) await page.keyboard.press(c, { delay: 60 });
+          }
+        }
+        if (op.down) await page.mouse.up();
+        for (const c of codes) await page.keyboard.up(c);
+        return { result: await call('status', []), ms: Date.now() - t0 };
+      }
       case 'shot': {
         fs.mkdirSync(SHOTS, { recursive: true });
         const clip = op.crop ? (([x, y, w, h]) => ({ x, y, width: w, height: h }))(op.crop) : undefined;
@@ -362,8 +395,8 @@ async function serve(file, port, flags, size, ownBuild) {
         let buildSeconds = null;
         if (ownBuild) buildSeconds = +build(file).toFixed(1);
         if (op.flags) status.flags = op.flags;
-        boot().catch((e) => Object.assign(status, { state: 'failed', error: String(e.message || e) }));
-        return { result: { buildSeconds, flags: status.flags, booting: true } };
+        boot(!!op.keep).catch((e) => Object.assign(status, { state: 'failed', error: String(e.message || e) }));
+        return { result: { buildSeconds, flags: status.flags, booting: true, keptStorage: !!op.keep } };
       }
       case 'stop':
         setTimeout(async () => {
@@ -413,8 +446,8 @@ async function main(argv) {
   const pos = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--full' || a === '--real' || a === '--render' || a === '--norender' || a === '--nodev') opts[a.slice(2)] = true;
-    else if (a === '--port' || a === '--max' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
+    if (a === '--full' || a === '--real' || a === '--down' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck') opts[a.slice(2)] = true;
+    else if (a === '--port' || a === '--keys' || a === '--max' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
     else pos.push(a);
   }
   const [cmd, ...rest] = pos;
@@ -423,7 +456,7 @@ async function main(argv) {
     case 'serve':
       return serve(rest[0], Number(rest[1]), rest[2], rest[3], rest[4] === '1');
     case 'start':
-      await start({ html: rest[0], render: !!opts.render, nodev: !!opts.nodev, size: opts.size, port: Number(opts.port) || null });
+      await start({ html: rest[0], render: !!opts.render, nodev: !!opts.nodev, shadercheck: !!opts.shadercheck, size: opts.size, port: Number(opts.port) || null });
       return;
     case 'status': {
       const st = readState();
@@ -438,6 +471,11 @@ async function main(argv) {
       return print(await request({ op: 'keys', codes: String(rest[0]).split(','), seconds: Number(rest[1] || 1), real: !!opts.real }), max);
     case 'wait':
       return print(await request({ op: 'wait', seconds: Number(rest[0] || 1), real: !!opts.real }), max);
+    case 'mouse':
+      return print(
+        await request({ op: 'mouse', x: Number(rest[0]), y: Number(rest[1]), seconds: Number(rest[2] || 0), down: !!opts.down, codes: opts.keys ? String(opts.keys).split(',') : [] }),
+        max,
+      );
     case 'shot':
       return print(
         await request({ op: 'shot', name: rest[0] || 'shot', full: !!opts.full, crop: opts.crop ? opts.crop.split(',').map(Number) : null, width: Number(opts.width) || 0 }),
@@ -451,8 +489,9 @@ async function main(argv) {
     }
     case 'reload': {
       const st = readState();
-      const flags = opts.render ? st.flags.replace(/&?norender/, '') : opts.norender && !/norender/.test(st.flags) ? st.flags + '&norender' : undefined;
-      const reply = await request({ op: 'reload', flags });
+      let flags = opts.render ? st.flags.replace(/&?norender/, '') : opts.norender && !/norender/.test(st.flags) ? st.flags + '&norender' : undefined;
+      if (opts.shadercheck && !/shadercheck/.test(flags ?? st.flags)) flags = (flags ?? st.flags) + '&shadercheck';
+      const reply = await request({ op: 'reload', flags, keep: !!opts.keep });
       if (reply.error) return print(reply, max);
       if (reply.result.buildSeconds != null) console.log(`rebuilt in ${reply.result.buildSeconds}s`);
       await waitReady(st.port, (s) => console.log(s));

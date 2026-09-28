@@ -63,6 +63,9 @@
       // Runways, their thresholds, lights and PAPI indications, the piers and
       // where every plane is (airfields.js).
       airfields: () => airfieldReport(),
+      // The Blue Hour's street entrance (roofmission-entrance.js): the forecourt kept
+      // clear, the limousines at the kerb and the doormen and valet on post.
+      blueHourEntrance: () => blueHourEntranceReport(),
       // Rooftop helipads, the roof the player stands on and the roof under the
       // player's helicopter (rooftops.js); with a map point, that roof and its plant.
       rooftops: (x, y) => ({
@@ -155,7 +158,8 @@
       // isleRegencyTraffic): lane keeping in the bends, turning round off Eagle Pass.
       regencyTraffic: (seconds) => isleRegencyTraffic(seconds),
       // Named places the tests can visit: every PLACES entry plus the landmarks.
-      places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y) })),
+      // A place with no footprint of its own (YOUR SAFEHOUSE) is where its door is.
+      places: () => PLACES.map((p) => ({ name: p.name, x: Math.round(p.x ?? p.door.x), y: Math.round(p.y ?? p.door.y) })),
       // GPS: set a map waypoint and report the route the navigation graph finds
       // from the player (status, road length, the islands it passes through).
       route(x, y) {

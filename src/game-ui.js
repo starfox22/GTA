@@ -250,17 +250,10 @@
       const target = objective(),
         m = mission;
       getElement('pager').classList.toggle('hidden', !m && incomingCallRemaining <= 0 && !demoStoryOver());
-      // Numbered the same way as the mission-start headline: story missions out
-      // of the story, contracts out of the contracts.
+      // Numbered the same way as the mission-start headline (missionStartLabel, cycles.js):
+      // MISSION 1, CONTRACT 2, with no total.
       const shownIndex = Math.min(mission?.index ?? missionIndex, missions.length - 1);
-      getElement('missionCounter').textContent = !m && demoStoryOver()
-        ? 'DEMO COMPLETE'
-        : shownIndex >= SIDE_JOB_FIRST
-          ? 'CONTRACT ' + (shownIndex + 1 - SIDE_JOB_FIRST) + ' / ' + (missions.length - SIDE_JOB_FIRST)
-          : 'MISSION ' +
-            String(shownIndex + 1).padStart(2, '0') +
-            ' / ' +
-            String(SIDE_JOB_FIRST).padStart(2, '0');
+      getElement('missionCounter').textContent = !m && demoStoryOver() ? 'DEMO COMPLETE' : missionStartLabel(shownIndex);
       getElement('missionTimer').textContent = m?.timeLimit
         ? Math.floor(Math.ceil(m.timer) / 60) + ':' + String(Math.ceil(m.timer) % 60).padStart(2, '0')
         : '';
@@ -284,7 +277,7 @@
         getElement('missionTitle').textContent =
           missionIndex === 0 ? 'Every city has an opening.' : 'Another call. Another score.';
         getElement('missionText').textContent =
-          'Find the ringing payphone and press ' + keyName('interact') + ' to take a job.';
+          'Find the ringing payphone and ' + pressKey('interact', 'lower') + ' to take a job.';
       }
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
@@ -307,6 +300,8 @@
       const bikeShare = gameMode === 'play' && !rideSkipActive() ? bikeShareOffer() : null;
       // A passenger ride that can be skipped offers that first (ride-skip.js).
       const skip = gameMode === 'play' && !c ? rideSkipPrompt() : null;
+      // Over the body of someone who carried a gun (ammo-supply.js).
+      const loot = gameMode === 'play' && !c ? lootPrompt() : null;
       // Thrown off a bike (riders.js): nothing to offer until back on their feet.
       if (gameMode === 'play' && (rideSkipActive() || player.thrown)) prompt = '';
       else if (skip) {
@@ -346,6 +341,9 @@
           } else if (garagePrompt(c) !== null)
             // The price at the door (garages.js PRICE LIST); E skips the show.
             prompt = garagePrompt(c);
+        } else if (loot) {
+          prompt = loot.text;
+          promptId = loot.id;
         } else if (northPointKeyPrompt()) {
           // North Point Key: a tower lift, the CIRRUS bar (skyline-lift.js, skyline-bar.js).
           const key = northPointKeyPrompt();
@@ -396,7 +394,7 @@
         key: isAircraft(c) ? null : promptKey,
         id: promptId,
       });
-      if (!hudState.minimapFolded) drawMap(minimapContext, getElement('minimap').width, getElement('minimap').height);
+      drawMinimap();
       if (mapOpen) drawMap(cityMapContext, 800, 660, true);
       drawWeapon();
       civicUI();

@@ -16,8 +16,10 @@
           updateFlightView(deltaSeconds, altitude, flying);
           // Riding the Falcon or the Eye: the ride camera takes over (themepark3d.js).
           updateParkCamera(deltaSeconds);
-          camera.position.x += (Math.random() - 0.5) * shake * 0.35;
-          camera.position.y += (Math.random() - 0.5) * shake * 0.2;
+          // The camera's kick and tremor (camera-feel.js: game state, read here).
+          const tremor = cameraShakeOffset(gameTime, shake);
+          camera.position.x += cameraKick.x + tremor.x;
+          camera.position.z += cameraKick.y + tremor.y;
           if (camera === streetCamera) lockStreetCameraToPixels();
           camera.updateMatrixWorld(true);
           viewFrustum.setFromProjectionMatrix(
@@ -45,6 +47,7 @@
           updateParkVisuals();
           updateCountyVisuals();
           updateHarborVisuals();
+          updatePayphoneVisuals();
           updateMarinaVisuals(deltaSeconds);
           updateMonarchVisuals();
           updateDealershipVisuals(deltaSeconds);
@@ -127,21 +130,8 @@
               stance.roll;
             m.body.rotation.z =
               Math.sin(gameTime * 7 + c.id) * Math.min(0.008, Math.abs(c.speed) * 0.00002) + stance.pitch;
-            if (c.type === 'flatbed') {
-              if (!m.cargo) {
-                m.cargo = Array.from(
-                  {
-                    length: 3,
-                  },
-                  (_, i) => {
-                    const g = makeCargoCrate(m.body, 18);
-                    g.position.set(-34 + i * 19, 8, 0);
-                    return g;
-                  },
-                );
-              }
-              m.cargo.forEach((g, i) => (g.visible = i < (c.cargoCount || 0)));
-            }
+            // Vinny's truck shows the crates loaded so far (vinnytruck3d.js).
+            if (m.cargo) m.cargo.forEach((g, i) => (g.visible = i < (c.cargoCount || 0)));
             if (m.nightLights) {
               // Drawn together by the instanced halo pass (VEHICLE HALOS), not one
               // sprite draw call each.
@@ -288,7 +278,7 @@
             for (let i = 0; i < m.strobes.length; i++)
               m.strobes[i].material.color.copy(
                 cachedColor(
-                  ((c.cop && wantedStars > 0) || c.airUnit || c.gangTarget || c.type === 'ambulance') &&
+                  emergencyBeacons(c) &&
                     Math.sin(gameTime * 17 + i * 3) > 0
                     ? i
                       ? '#78aefa'
@@ -310,6 +300,8 @@
           updateWakes(deltaSeconds);
           // Mud and dust from the tyres, splats and tyre tracks, the 4x4 club's flag and smoke (offroad3d.js).
           updateOffroadVisuals(deltaSeconds);
+          // Smoke, dust and road spray off the tyres (tyresmoke3d.js).
+          updateTyreSmoke(deltaSeconds);
           for (const [c, m] of carModels)
             if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
               m.body.rotation.x += c.slopeRoll || 0;
@@ -441,8 +433,17 @@
             p.x += p.vx * deltaSeconds;
             p.y += p.vy * deltaSeconds;
             p.z += p.vz * deltaSeconds;
-            if (p.case) p.vy -= 120 * deltaSeconds;
-            else {
+            if (p.case) {
+              // A spent case falls, bounces and lies a moment on the ground before it fades.
+              p.vy -= 120 * deltaSeconds;
+              if (p.y < (p.floor ?? 0.5)) {
+                p.y = p.floor ?? 0.5;
+                const bounce = p.vy < -12;
+                p.vy = bounce ? -p.vy * 0.35 : 0;
+                p.vx *= bounce ? 0.55 : 0.6;
+                p.vz *= bounce ? 0.55 : 0.6;
+              }
+            } else {
               const drag = Math.pow(0.97, deltaSeconds * 60);
               p.vx *= drag;
               p.vz *= drag;
@@ -493,20 +494,47 @@
           tracerGeo.setDrawRange(0, bi / 3);
           tracerGeo.attributes.position.needsUpdate = true;
           tracer.frustumCulled = false;
-          let si = 0;
+          // Skid marks: strips as wide as a tyre, as dark as the slide was, fading out
+          // over their last dozen seconds.
+          let si = 0,
+            ci = 0;
           for (const s of skids) {
-            if (si + 6 > skidPos.length) break;
-            const x = s.x + Math.cos(s.a) * s.len,
-              z = s.y + Math.sin(s.a) * s.len;
-            skidPos[si++] = s.x;
-            skidPos[si++] = terrainHeight(s.x, s.y) + 0.15;
-            skidPos[si++] = s.y;
-            skidPos[si++] = x;
-            skidPos[si++] = terrainHeight(x, z) + 0.15;
-            skidPos[si++] = z;
+            if (si + 18 > skidPos.length) break;
+            const cos = Math.cos(s.a),
+              sin = Math.sin(s.a),
+              half = (s.w || 2) / 2,
+              px = -sin * half,
+              pz = cos * half,
+              x1 = s.x + cos * s.len,
+              z1 = s.y + sin * s.len,
+              h0 = terrainHeight(s.x, s.y) + 0.2,
+              h1 = terrainHeight(x1, z1) + 0.2,
+              alpha = 0.62 * (s.dark ?? 0.6) * Math.min(1, s.life / 12);
+            // (a, b, c) (a, c, d): a, b along the near edge, c, d the far one.
+            skidPos[si++] = s.x - px;
+            skidPos[si++] = h0;
+            skidPos[si++] = s.y - pz;
+            skidPos[si++] = s.x + px;
+            skidPos[si++] = h0;
+            skidPos[si++] = s.y + pz;
+            skidPos[si++] = x1 + px;
+            skidPos[si++] = h1;
+            skidPos[si++] = z1 + pz;
+            skidPos[si++] = s.x - px;
+            skidPos[si++] = h0;
+            skidPos[si++] = s.y - pz;
+            skidPos[si++] = x1 + px;
+            skidPos[si++] = h1;
+            skidPos[si++] = z1 + pz;
+            skidPos[si++] = x1 - px;
+            skidPos[si++] = h1;
+            skidPos[si++] = z1 - pz;
+            for (let k = 0; k < 6; k++, ci += 4) skidColor[ci + 3] = alpha;
           }
           skidGeo.setDrawRange(0, si / 3);
           skidGeo.attributes.position.needsUpdate = true;
+          skidGeo.attributes.color.needsUpdate = true;
+          skidLines.visible = si > 0;
           skidLines.frustumCulled = false;
           // The sun's shadow map is redrawn every frame it is on (quality.js
           // SHADOWS): a map kept for a few frames left the shadows of the player
@@ -590,12 +618,17 @@
           // A witness on the phone to 911 (crowd-witnesses.js) is never culled: a
           // caller outside that band (behind the HUD, off the edge) keeps the
           // bubble inside the frame, with a pointer toward them.
-          const bubbleRects = [];
+          // Text size: 11 px, 12 on a phone-sized screen; the 911 call a size up
+          // and bold (the canvas is already at the screen's pixel ratio).
+          const bubbleRects = [],
+            bubbleFont = viewportWidth <= 600 || viewportHeight <= 480 ? 12 : 11;
           for (const p of speechBubbles()) {
             const q = api.project(p.x, p.y, p.bubbleZ ?? entityElevation(p) + (p.type ? 19 : PERSON_HEIGHT + 9.5));
             if (q.behind) continue;
             const call911 = p.speechKind === 'call911' && p.speechKindText === p.speech;
-            worldContext.font = '600 10px Arial';
+            const fs = bubbleFont + (call911 ? 1 : 0),
+              bh = fs + 6;
+            worldContext.font = (call911 ? '700 ' : '600 ') + fs + 'px Arial';
             const tw = worldContext.measureText(p.speech).width + 12,
               fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1) * speechHeightFade(p);
             if (fade <= 0.01) continue;
@@ -608,14 +641,15 @@
               q.y = clamp(q.y, 150, viewportHeight - 190);
             }
             for (const r of bubbleRects)
-              if (Math.abs(q.x - r.x) < (tw + r.w) / 2 + 4 && Math.abs(q.y - r.y) < 20)
-                q.y = r.y - 20;
+              if (Math.abs(q.x - r.x) < (tw + r.w) / 2 + 4 && Math.abs(q.y - r.y) < bh + 4)
+                q.y = r.y - bh - 4;
             bubbleRects.push({ x: q.x, y: q.y, w: tw });
+            const mid = q.y - 4 - bh / 2;
             worldContext.globalAlpha = fade;
             worldContext.fillStyle = '#f4efe2';
             worldContext.beginPath();
-            if (worldContext.roundRect) worldContext.roundRect(q.x - tw / 2, q.y - 20, tw, 16, 5);
-            else worldContext.rect(q.x - tw / 2, q.y - 20, tw, 16);
+            if (worldContext.roundRect) worldContext.roundRect(q.x - tw / 2, q.y - 4 - bh, tw, bh, 5);
+            else worldContext.rect(q.x - tw / 2, q.y - 4 - bh, tw, bh);
             worldContext.fill();
             if (call911) {
               // The emergency call stands out: a red edge round the bubble.
@@ -628,11 +662,11 @@
             worldContext.beginPath();
             if (pointTo) {
               // Held inside the frame: the tail points toward the caller.
-              const a = Math.atan2(pointTo.y - (q.y - 12), pointTo.x - q.x),
+              const a = Math.atan2(pointTo.y - mid, pointTo.x - q.x),
                 ex = q.x + Math.cos(a) * (tw / 2 + 8) * Math.min(1, Math.abs(Math.cos(a)) * 2),
-                ey = q.y - 12 + Math.sin(a) * 18;
-              worldContext.moveTo(q.x - 4 * Math.sin(a), q.y - 12 + 4 * Math.cos(a));
-              worldContext.lineTo(q.x + 4 * Math.sin(a), q.y - 12 - 4 * Math.cos(a));
+                ey = mid + Math.sin(a) * (bh + 2);
+              worldContext.moveTo(q.x - 4 * Math.sin(a), mid + 4 * Math.cos(a));
+              worldContext.lineTo(q.x + 4 * Math.sin(a), mid - 4 * Math.cos(a));
               worldContext.lineTo(ex, ey);
             } else {
               worldContext.moveTo(q.x - 3, q.y - 4);
@@ -642,7 +676,7 @@
             worldContext.fill();
             worldContext.fillStyle = '#1b2026';
             worldContext.textAlign = 'center';
-            worldContext.fillText(p.speech, q.x, q.y - 8);
+            worldContext.fillText(p.speech, q.x, mid + fs * 0.36);
             worldContext.globalAlpha = 1;
           }
           for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers])

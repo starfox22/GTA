@@ -1,0 +1,11 @@
+# Free-roam sweep: fixes and safety nets
+- WASTED wakes you at the nearest hospital and names it: Riverside Medical on Palm Keys, the Halcyon Clinic on Monarch Isle, Saint Marlow everywhere else.
+- A swimmer who runs out of strength lives to be fished out by the harbor patrol ($100); before, anyone without armor drowned first.
+- 13 more health, ammo and armor pickups beyond Northbank: Palm Keys, Monarch Isle, Sunset Pier, North Point Key, Southport and the county towns.
+- Pausing (and so leaving the tab) saves cash, ammo and the clock.
+- You climb out of a car by the driver's door first, as NPC drivers and carjacks do.
+- Every key hint follows your bindings: free-roam toasts, mission stage lines, the rail panel, the landing divert (no literal E, S or V).
+- The god-mode teleport never lands on a loose mountain face you would slide off.
+- Touch: the radio and weapon boxes fold when their tap pop ends (they stayed half open, every label cut); phone settings list each action's keys on their own line; HEALTH stays on one line; the police timer and the docked headline no longer sit over the mission card or under the minimap; flight tape captions read over pale paving.
+- Console `places()` no longer reports NaN for YOUR SAFEHOUSE; `node tools/dev.mjs reload --keep` reloads with the same browser profile to check saves.
+- Tests: freeroam-respawn, swim-rescue, pickups-islands.

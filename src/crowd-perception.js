@@ -92,6 +92,11 @@
     function decideReaction(p, pending) {
       const { inc, sees, d, contagion } = pending;
       if (p.hp <= 0 || personIncapacitated(p) || !inc) return;
+      // A paramedic on a job has a patient (livingcity-medics.js): danger (a shot,
+      // a blast, a fight, or people running from one) sends them running like
+      // anyone, but a crash, a knock-down, a body or a crime down the street (or
+      // people running from that) is not theirs to go and watch or flee.
+      if (p.cityRole?.kind === 'medic' && !['gunfire', 'explosion', 'melee'].includes(inc.kind)) return;
       const cur = p.react?.kind,
         nerve = p.nerve ?? 0.5,
         r = seededRandom(),

@@ -93,6 +93,8 @@
     }
     /* Called at the end of updateUI(). */
     function updateHud() {
+      // Keyboard, touch or gamepad: how hints name the actions (input-hints.js).
+      refreshHintDevice();
       commitPrompt();
       updateSniperWarning();
       settleCentreCards();

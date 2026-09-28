@@ -61,8 +61,8 @@
       }
       if (distanceBetween(player, ROOF_HIT.drink) > 36 || !roofSight(player, ROOF_HIT.drink)) {
         tell(
-          'Vescari’s reserved glass is on the VIP table, northeast of the dance floor. Press ' +
-            keyName('poison') +
+          'Vescari’s reserved glass is on the VIP table, northeast of the dance floor. ' +
+            pressKey('poison', true) +
             ' beside it.',
           4,
         );
@@ -436,6 +436,8 @@
       updateRoofAmbulance(m);
       updateRoofMedics(m, deltaSeconds);
     }
+    // How the last run's ambulance was settled when the job ended (settleRoofAmbulance).
+    let roofAmbulanceSettled = null;
     function spawnRoofAmbulance(m) {
       const s = ROOF_AMBULANCE.start,
         c = makeCar('ambulance', s.x, s.y, s.a, true);
@@ -445,9 +447,10 @@
       c.locked = true;
       c.countyRoute = ROOF_AMBULANCE.route.map((p) => ({ ...p }));
       c.countyIndex = 0;
-      vehicles.push(c);
+      // makeCar has put it in `vehicles` (a second push stepped it twice a frame).
       m.medical.ambulance = c;
       m.medical.ambulanceAt = gameTime;
+      roofAmbulanceSettled = null;
     }
     /* The job ended (won, failed or restarted: cleanupMissionExtras) with the
        ambulance still on its way. Nothing brakes it to the stop any more and its
@@ -459,9 +462,19 @@
       const med = m?.medical,
         c = med?.ambulance;
       if (!c || med.parked || c.hp <= 0 || c === player.car || !vehicles.includes(c)) return;
-      const stop = ROOF_AMBULANCE.stop;
-      if (!crowdInView(c.x, c.y, 80) && !crowdInView(stop.x, stop.y, 80) && canSpawnCar('ambulance', stop.x, stop.y, Math.PI))
-        Object.assign(c, { x: stop.x, y: stop.y, a: Math.PI });
+      const stop = ROOF_AMBULANCE.stop,
+        seen = crowdInView(c.x, c.y, 80) || crowdInView(stop.x, stop.y, 80),
+        free = !seen && canSpawnCar('ambulance', stop.x, stop.y, Math.PI);
+      if (free) Object.assign(c, { x: stop.x, y: stop.y, a: Math.PI });
+      // Why it stands where it does (roofPoison().medical.settled; the stop's
+      // holder is gone again by the time anyone can look).
+      let by = null;
+      if (!seen && !free)
+        for (const o of vehicles)
+          if (o !== c && distanceBetween(o, stop) < 80 && (!by || distanceBetween(o, stop) < distanceBetween(by, stop))) by = o;
+      med.settled = roofAmbulanceSettled = free
+        ? { at: 'stop' }
+        : { at: 'where it was', why: seen ? 'in view' : 'stop taken', by: by && { id: by.id, type: by.type, x: Math.round(by.x), y: Math.round(by.y) } };
       c.ai = false;
       c.countyRoute = null;
       c.vx = c.vy = c.av = c.speed = 0;
@@ -590,7 +603,8 @@
       const m = rooftopJob(),
         b = m?.boss,
         med = m?.medical;
-      if (!m) return null;
+      // After the job: only how its ambulance was left.
+      if (!m) return roofAmbulanceSettled && { ended: true, medical: { settled: roofAmbulanceSettled } };
       return {
         phase: m.poisonPhase,
         beatT: Math.round((b.poisonT || 0) * 100) / 100,
@@ -611,6 +625,7 @@
               radioed: !!med.radioed,
               ambulance: med.ambulance
                 ? {
+                    id: med.ambulance.id,
                     x: Math.round(med.ambulance.x),
                     y: Math.round(med.ambulance.y),
                     speed: Math.round(speedKmh(Math.hypot(med.ambulance.vx || 0, med.ambulance.vy || 0))),
@@ -618,6 +633,7 @@
                     toDoor: Math.round(distanceBetween(med.ambulance, ROOFTOP.door)),
                   }
                 : null,
+              settled: med.settled || null,
               medics: med.medics.map((p) => ({ onRoof: !!p.onRoof, hidden: !!p.hidden, pose: p.pose || null })),
             }
           : null,

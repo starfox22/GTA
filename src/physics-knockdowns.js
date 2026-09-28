@@ -18,11 +18,15 @@
       if (p.knockedFor > 0) {
         p.aiming = false;
         p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);
-        if (
-          p.knockedFor < 0.55 &&
-          vehicles.some((c) => sameFloor(c, p) && pointInCar(p.x, p.y, c, 6))
-        )
-          p.knockedFor = 0.6;
+        if (p.knockedFor < 0.55) {
+          const on = vehicles.find((c) => sameFloor(c, p) && pointInCar(p.x, p.y, c, 6));
+          if (on) {
+            p.knockedFor = 0.6;
+            // Down against a car that has stopped (often one waiting for them to get
+            // out of its way, like an ambulance): they crawl out from under it.
+            if (Math.hypot(on.vx || 0, on.vy || 0) < 2 * KMH) stepClearOfCar(p, on, deltaSeconds);
+          }
+        }
         if (p.knockedFor === 0) {
           p.dazedFor = 1.4;
           p.flee = 8;
@@ -30,6 +34,39 @@
       } else if (p.dazedFor > 0) {
         p.aiming = false;
         p.dazedFor = Math.max(0, p.dazedFor - deltaSeconds);
+      }
+    }
+    /* Out from under (or inside the outline of) car `c` at `speed` (a crawl, about
+       1.5 m/s, by default): to its nearer side, 12 units clear of it, or the other
+       side, or past its nose or tail, whichever is open ground. moveBody cannot
+       take anyone out of a car they overlap (every step collides). */
+    function stepClearOfCar(p, c, deltaSeconds, speed = 12) {
+      const spec = vehicleSpec(c),
+        ca = Math.cos(c.a),
+        sa = Math.sin(c.a),
+        dx = p.x - c.x,
+        dy = p.y - c.y,
+        along = dx * ca + dy * sa,
+        lateral = -dx * sa + dy * ca,
+        side = Math.sign(lateral) || 1,
+        end = Math.sign(along) || 1,
+        inside = clamp(along, -spec.l / 2, spec.l / 2);
+      for (const [a, l] of [
+        [inside, side * (spec.w / 2 + 12)],
+        [inside, -side * (spec.w / 2 + 12)],
+        [end * (spec.l / 2 + 12), lateral],
+        [-end * (spec.l / 2 + 12), lateral],
+      ]) {
+        const x = c.x + a * ca - l * sa,
+          y = c.y + a * sa + l * ca;
+        if (solid(x, y, 5)) continue;
+        const d = Math.hypot(x - p.x, y - p.y),
+          step = Math.min(d, speed * deltaSeconds);
+        if (d > 0.01) {
+          p.x += ((x - p.x) / d) * step;
+          p.y += ((y - p.y) / d) * step;
+        }
+        return;
       }
     }
     function knockPerson(person, c, speed) {

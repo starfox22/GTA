@@ -61,6 +61,12 @@
       particles.length = 0;
       skids.length = 0;
       makeCar('coupe', 782, 576, 0, false, '#88bcaa');
+      // The car park behind the story payphone, in the opening shot: three cars in its
+      // south row of bays (26 units wide, y 498..537; ground-data3d.js cityLotRecords),
+      // the bay behind the booth left empty.
+      makeCar('sedan', 732.5, 517, -Math.PI / 2, false, '#7f8b90');
+      makeCar('suv', 836.5, 518, Math.PI / 2, false, '#5a2a2a');
+      makeCar('van', 888.5, 516, -Math.PI / 2, false, '#e4e1d8');
       makeCar('bike', 850, 704, 0, false);
       makeCar('supercar', 975, 704, 0, false);
       // Clear of Royal Ave (x 1096..1208): at x 1100 its nose stood in the
@@ -94,6 +100,8 @@
       }
       physicsAccumulator = 0;
       impactContacts.clear();
+      // The traffic round the player settles at once (livingcity-traffic.js).
+      resetTrafficStream();
       for (let i = 0; i < 150; i++) {
         const vert = seededRandom() > 0.5,
           r = randomChoice(vert ? ROAD_CENTERS : ROAD_ROWS),
@@ -133,14 +141,8 @@
           !canSpawnCar(type, x, y, a, 12)
         )
           continue;
-        makeCar(
-          type,
-          x,
-          y,
-          a,
-          true,
-          vehiclePaint(type),
-        );
+        // City traffic the streamer may move round the player (livingcity-traffic.js).
+        makeCar(type, x, y, a, true, vehiclePaint(type)).streamed = true;
       }
       for (let i = 0; i < 70; i++) {
         const r = randomChoice(ROAD_ROWS),
@@ -233,32 +235,20 @@
           ready: 0,
         }),
       );
-      [
-        [1040, 640],
-        [2240, 2176],
-        [2810, 1664],
-        [2176, 2870],
-        [640, 2688],
-      ].forEach(([x, y]) =>
-        pickups.push({
-          x,
-          y,
-          type: 'ammo',
-          ready: 0,
-        }),
-      );
       populateCasino();
+      // The Blue Hour's doormen, valet and limousines (roofmission-entrance.js).
+      populateBlueHourEntrance();
       resetSports();
-      [
-        [128, 1800],
-        [2700, 2176],
-        [3200, 750],
-      ].forEach(([x, y]) =>
-        pickups.push({
-          x,
-          y,
-          type: 'armor',
-          ready: 0,
-        }),
-      );
+      // Beyond Northbank: health by the other hospitals and the county lodges. There are
+      // no ammunition, armour or weapon pickups: those come from the gun shops, the
+      // bodies of armed people and police vehicles (ammo-supply.js).
+      for (const [x, y, type] of [
+        [-1730, 1996, 'health'], // RIVERSIDE MEDICAL
+        [9000, -3030, 'health'], // THE HALCYON CLINIC
+        [7020, 3450, 'health'], // STONECREEK
+        [9160, 3076, 'health'], // NORTHRIDGE
+        [2476, 7260, 'health'], // OCEANVIEW
+        [7050, 7850, 'health'], // PALMSHORE
+      ])
+        pickups.push({ x, y, type, ready: 0 });
     }

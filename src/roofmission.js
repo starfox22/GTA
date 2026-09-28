@@ -11,4 +11,5 @@
     // @include src/roofmission-poison.js
     // @include src/roofmission-scene.js
     // @include src/roofmission-ui.js
+    // @include src/roofmission-entrance.js
     // END SUBSYSTEM: src/roofmission.js

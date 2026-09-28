@@ -251,7 +251,6 @@
         down: false,
       },
       mapOpen = false,
-      toastTime = 0,
       announceTime = 0,
       shake = 0,
       flash = 0,
@@ -339,9 +338,6 @@
         x: spawn.x,
         y: spawn.y,
       },
-      // In a plane the camera leads the aircraft along its velocity, smoothed so a
-      // turn swings the view round gently instead of whipping it (updateGame).
-      planeCameraLead = { x: 0, y: 0 },
       vehicles = [],
       pedestrians = [],
       bullets = [],

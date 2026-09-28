@@ -71,6 +71,12 @@ tools/tests/police-witness.mjs, witnesses-monarch.mjs.
   within 1,400 units: beyond that updatePeople freezes them mid-call). Someone sheltering in
   a shop may call from inside (`offstageCalls`, hidden, no bubble: it waits while a street
   caller is on it).
+- **Venue witnesses** (`venueWitness`, crowd-witnesses.js): North Point Key's guests, staff
+  and doormen (`updateKeyPerson` wipes their reactions) and MONARCH MOTORS' staff and
+  visitors (`dealerWitness`, before `updateDealerPerson`; skipped while the showroom alarm,
+  itself a report, is on) never ran the crowd's call. One of them per incident now phones from
+  where they stand (a visible off-stage call, `c.venue`; waits for a street caller); one
+  within 60 of the player hands the call to another further off. `witnesses().stats.venueCalls`.
 - **A told witness always gets through** (`witnessMust`, e.g. a carjacked driver):
   `noteWitness` never moves them to another incident while theirs is unreported (the
   player getting into the car raises a separate 'theft' incident that used to take the

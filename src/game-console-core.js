@@ -35,6 +35,8 @@
       // The street camera's framing: zoom in force, the player's zoom, the vehicle
       // context and speed shares, the metres of street on screen, a person's height in px.
       cameraView: () => cameraViewReport(),
+      // The camera's lead, offset from the player, kick and shake (camera-feel.js).
+      cameraFeel: () => cameraFeelReport(),
       // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
       // visible, text, identity, docked, seconds since it popped in, this pass's offer.
       promptState: () => promptReport(),

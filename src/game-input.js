@@ -61,8 +61,7 @@
         player.swimming = false;
         player.wading = 0;
         if (!player.car) player.altitude = 0;
-        toastTime = 0;
-        getElement('toast').classList.remove('show');
+        clearNotices();
       }
       // An airborne aircraft cannot be left (exitCar refuses), so it comes along
       // rather than being abandoned in the sky while the player jumps away.
@@ -74,6 +73,7 @@
       player.y = y;
       cameraTarget.x = x;
       cameraTarget.y = y;
+      resetCameraFeel();
     }
     // Returns true once the tail of the buffer is going somewhere, so the caller
     // can swallow the keypress: spelling a code should not also drive the car.
@@ -268,7 +268,7 @@
       if (gameMode !== 'play') return;
       if (is('zoomIn') || is('zoomOut') || is('zoomReset')) {
         e.preventDefault();
-        setWorldZoom(is('zoomReset') ? STREET_ZOOM : worldZoomTarget * (is('zoomOut') ? 1 / 1.25 : 1.25));
+        setWorldZoom(is('zoomReset') ? STREET_ZOOM : worldZoomTarget * (is('zoomOut') ? 1 / STREET_ZOOM_STEP : STREET_ZOOM_STEP));
         return;
       }
       if (is('bail')) {
@@ -314,7 +314,10 @@
       if (weaponSlotKey(actions) >= 0) selectWeapon(weaponSlotKey(actions));
       if (is('cycleWeapon')) cycleWeapon();
       if (is('missionCard')) toggleMissionCard();
-      if (['forward', 'back', 'left', 'right'].some(is)) mouse.active = false;
+      // On foot the movement keys hand the aim back to the keyboard. At the wheel they only
+      // steer: the pointer keeps the drive-by aim (driveby.js), or a shot aimed behind would
+      // leave through the driver's window after every touch of the steering.
+      if (!player.car && ['forward', 'back', 'left', 'right'].some(is)) mouse.active = false;
     });
     /* weapon1..weapon6 -> 0..5, or -1. */
     function weaponSlotKey(actions) {

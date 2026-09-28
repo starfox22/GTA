@@ -6,10 +6,6 @@
       // A skipped ride's fade (ride-skip.js): runs on this step's time, so a
       // pause holds it; death or the title menu cancels it.
       updateRideSkip(deltaSeconds);
-      if (toastTime > 0) {
-        toastTime -= deltaSeconds;
-        if (toastTime <= 0) getElement('toast').classList.remove('show');
-      }
       if (active) timed('knockdowns', () => updateKnockdowns(deltaSeconds));
       if (active || gameMode === 'menu') timed('cars', () => updateCars(deltaSeconds, active));
       // A shark's breach plays out while WASTED is on screen (sealife.js).
@@ -67,7 +63,9 @@
           !updateThrownPlayer(deltaSeconds) &&
           // Taking a car off its driver: walking round, the door, the struggle (carjack-struggle.js).
           !updateCarjack(deltaSeconds) &&
-          !updateMountainFooting(deltaSeconds)
+          !updateMountainFooting(deltaSeconds) &&
+          // Crouched over a body, taking the gun (ammo-supply.js).
+          !lootCrouching()
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
@@ -103,15 +101,11 @@
         )
           // On the ground, or off the edge of a drop (falls-body.js).
           settleFootOnGround();
+        // The gun arm out of a vehicle's window, and a shot waiting for it (driveby.js).
+        updateDriveBy(deltaSeconds);
         // On the volleyball court a click hits the ball instead (beachvolley.js);
         // nothing is fired while thrown off a bike (riders.js).
         if (!volleyTakesFire() && !player.thrown && !player.carjack && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
-        if (keys.KeyH && player.car && Math.floor(gameTime * 6) % 3 === 0)
-          tone(220, 0.08, 0.04, 'sawtooth');
-        if (keys.KeyE && canSilentHit(rooftopJob())) {
-          rooftopMissionInteract();
-          keys.KeyE = false;
-        }
         timed('people', () => updatePeople(deltaSeconds));
         timed('bullets', () => updateBullets(deltaSeconds));
         timed('damage', () => updateDamage(deltaSeconds));
@@ -125,23 +119,11 @@
             gameTime > p.ready &&
             distanceBetween(player, p) < 27
           ) {
-            if (p.type === 'health') {
-              if (player.hp >= 100) continue;
-              player.hp = 100;
-              tell('Health restored');
-            }
-            if (p.type === 'ammo') {
-              for (const w of weapons) {
-                if (!w.owned) continue;
-                w.ammo = w.clip;
-                w.reserve = Math.max(w.reserve, w.clip * 8);
-              }
-              tell('Ammo restocked · all weapons');
-            }
-            if (p.type === 'armor') {
-              player.armor = 100;
-              tell('Body armor acquired');
-            }
+            // Health only: ammunition and armour come from the gun shops, bodies and
+            // police vehicles (ammo-supply.js).
+            if (p.type !== 'health' || player.hp >= 100) continue;
+            player.hp = 100;
+            tell('Health restored');
             p.ready = gameTime + 70;
             tone(840, 0.15, 0.15, 'triangle');
             particle(p.x, p.y, '#d5efa8', 9, 70);
@@ -196,26 +178,8 @@
       }
       shake *= Math.pow(0.008, deltaSeconds);
       flash = Math.max(0, flash - deltaSeconds);
-      // Look ahead of a moving vehicle: about 0.45 s of travel, up to 300 units
-      // (scaled by Settings · Driving · Camera look-ahead, driving.js).
-      const look = player.car ? clamp(player.car.speed * 0.45, -80, 300) * drivingLookAhead() : 0,
-        // A coaster outruns the usual trailing camera; stay with the train.
-        follow = Math.min(1, deltaSeconds * (player.coaster ? 10 : 4.5));
-      if (player.car?.type === 'plane') {
-        const lead = 1 - Math.exp(-deltaSeconds * 1.4);
-        planeCameraLead.x += ((player.car.vx || 0) * 0.42 - planeCameraLead.x) * lead;
-        planeCameraLead.y += ((player.car.vy || 0) * 0.42 - planeCameraLead.y) * lead;
-        const hold = Math.min(1, deltaSeconds * 7);
-        cameraTarget.x += (player.x + planeCameraLead.x - cameraTarget.x) * hold;
-        cameraTarget.y += (player.y + planeCameraLead.y - cameraTarget.y) * hold;
-      } else {
-        planeCameraLead.x = Math.cos(player.a) * look;
-        planeCameraLead.y = Math.sin(player.a) * look;
-        // A garage's drive-in show frames the bay (garages.js garageCameraFrame).
-        const frame = garageCameraFrame();
-        cameraTarget.x += ((frame ? frame.x : player.x + Math.cos(player.a) * look) - cameraTarget.x) * follow;
-        cameraTarget.y += ((frame ? frame.y : player.y + Math.sin(player.a) * look) - cameraTarget.y) * follow;
-      }
+      // The street camera's follow, lead, kicks (camera-feel.js).
+      updateCameraFollow(deltaSeconds);
       timed('sound', () => {
         soundUpdate(deltaSeconds);
         updateAmbience(deltaSeconds);

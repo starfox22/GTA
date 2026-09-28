@@ -19,7 +19,7 @@ python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html
 python3 tools/filemap.py                 # regenerate docs/FILEMAP.md after adding/removing/renaming files
 node tools/smoke.mjs dist/game.html dist/smoke         # headless boot, walk, drive, map: errors + 5 screenshots
 node tools/tour.mjs steps.json dist/tour dist/game.html   # scripted screenshots (?dev console)
-node tools/layout-audit.mjs dist/game.html             # city-plan overlaps (28-39 oblique-junction notes are expected)
+node tools/layout-audit.mjs dist/game.html             # city-plan overlaps (~59 oblique-junction notes, county and Monarch, are expected)
 node tools/media-check.mjs dist/publish/index.html     # streamed tracks load over file://
 python3 tools/changelog.py --new <topic> "<Title>"     # start a changelog fragment
 ```
@@ -38,11 +38,15 @@ next command thaws it, state kept).
 
 ```sh
 node tools/test.mjs [filter] [--verbose]      # regression suite (~40 s, no-render page): after logic changes
+                                              # (`dev.mjs stop` between separate runs: a leftover server fails boots with
+                                              #  'browser.newContext: Target page ... closed')
 node tools/dev.mjs start [--render]           # ONE persistent headless page (~7 s no-render, ~35 s rendered)
 node tools/dev.mjs call <method> [json...]    # a NAMED DeadEndCity method → compact JSON (--max N / --full)
 node tools/dev.mjs keys KeyW,KeyD 3 | wait 5  # simulate() game seconds (--real: real key presses)
 node tools/dev.mjs shot <name> [--crop x,y,w,h] [--width 480]   # small JPEG in dist/dev/shots/
 node tools/dev.mjs reload | errors | stop     # rebuild+reload after edits (fresh profile) / console errors / quit
+node tools/dev.mjs reload --keep             # reload with the same browser profile (check a save survives)
+node tools/dev.mjs start|reload --shadercheck # report three.js shader compile errors: after any GLSL edit
 ```
 
 The default dev page is `?dev&norender` (`NO_RENDER` in render3d.js: no WebGL, ~55 fps). Use
@@ -51,7 +55,10 @@ boots `?test` (demo gate live). New test: one file `tools/tests/<name>.mjs` expo
 `default async (t)` (`t.call/keys/wait/assert/near/finite`); set up the state it needs,
 `fresh = true` for a clean page. The live frame loop runs between console calls: a test
 that depends on exact timing (keys, goals, calls) should `holdSimulation(true)` and step
-with `t.wait`/`t.keys`, then release it. The dev server holds a browser slot while awake: `stop` it
+with `t.wait`/`t.keys`, then release it. Console calls like `interact()` skip the per-frame key
+handling: when removing or changing an action, also press the real key (`t.keys(code, s, { real: true })`,
+tools/tests/enter-key.mjs); `t.mouse(x, y, {seconds, down, keys, taps})` / `dev.mjs mouse` drive the real
+pointer (screen pixels from console methods such as `driveByScreenPoint`). The dev server holds a browser slot while awake: `stop` it
 when you are done with it (and before smoke/tour if slots are short).
 
 **Publish** (only when asked): `python3 tools/build.py --split-media dist/publish`, then the
@@ -80,6 +87,16 @@ packs with plain `<script src>` so the zip still plays from file://.
   to move the player; releases every carrier), `solid()` (people collision), `crime()` (only
   heat source), `offerPrompt()` (only prompt writer), `actionHeld()`/`keyName()` (never
   literal keys). Details: docs/areas/core-and-contracts.md.
+- `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
+  `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
+- `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
+  player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
+- No ammo, armor or weapon pickups: rounds come from gun shops, `lootInteract` (bodies, once)
+  and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
+- Shooting from a vehicle goes through `driveByAim(vehicle, heading)` (driveby.js): arcs per
+  window and body live in `spec.driveBy`; the bullet and the pose both use `driveByGrip`. A car fires all round, a
+  body with no rear window 270°; a blocked aim fires nothing and shows only the cross
+  (`#driveByCross`); at the wheel the driving keys never take the aim from the pointer (game-input.js).
 - **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
   hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
   pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911. Crowd
@@ -90,12 +107,23 @@ packs with plain `<script src>` so the zip still plays from file://.
 - New land or bridges: append to `LAND_REGIONS`/`BRIDGES` last and keep coast-walk rhythms
   and grid blocks unchanged (compare `layout()` with the base build). Tall towers only where
   nothing stands north of them (the camera looks north): North Point Key, Monarch One.
+- North Point Key visitors (livingcity-key.js) are the only traffic on the Key; its inbound
+  lane runs 17 units off the centre line, not 24 (the sea-wall rail reaches onto the deck).
+- The Blue Hour: `BLUE_HOUR_ENTRANCE` (roofmission-entrance.js) is the only plan for the hotel's
+  forecourt (canopy, limousines, staff); street furniture stays off it via `blueHourForecourt()`.
+  Terrace furniture stays inside `roofCover` footprints or the 14-unit strip along the railings.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
 - `playerImpact()` / `fallInjury()` (falls-body.js) are the only fall-damage scale;
   `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
   opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
   for the freefall cue: change them there only.
+- `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
+  from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
+- `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
+  only read `cameraKick` and `cameraShakeOffset`.
+- Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
+  (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud

@@ -141,8 +141,8 @@
         2,
         m.approach,
         divert
-          ? 'DIVERT OCEANVIEW · APPROACH WESTBOUND · V SWITCH'
-          : 'SOUTHPORT EXPOSED · APPROACH NORTHBOUND · V DIVERT',
+          ? 'DIVERT OCEANVIEW · APPROACH WESTBOUND · ' + keyName('divert') + ' SWITCH'
+          : 'SOUTHPORT EXPOSED · APPROACH NORTHBOUND · ' + keyName('divert') + ' DIVERT',
       );
     }
     function beginFlightEscape(missionState) {
@@ -263,7 +263,7 @@
         )
           setStage(2, FLIGHT.pickup, 'LAND SECURED · EXIT AND DEFEAT DANIEL’S GUARDS');
         else if (missionState.stage === 2 && cleared('rescue'))
-          setStage(3, missionState.witnessActor, 'APPROACH DANIEL ON FOOT · E TO FREE HIM');
+          setStage(3, missionState.witnessActor, 'APPROACH DANIEL ON FOOT · ' + keyName('interact') + ' TO FREE HIM');
         else if (missionState.stage === 4) {
           followWitness(missionState, deltaSeconds);
           missionState.target = missionState.car;
@@ -309,9 +309,9 @@
             chooseFlightLanding(false);
             missionLine(
               'elena',
-              'Police have our manifest. Southport is an ambush. Press V to return to Oceanview: fewer guards, but a longer drive to safety.',
+              'Police have our manifest. Southport is an ambush. ' + pressKey('divert', true) + ' to return to Oceanview: fewer guards, but a longer drive to safety.',
             );
-            announce('POLICE HAVE THE MANIFEST', 'V · CHOOSE YOUR LANDING', 5);
+            announce('POLICE HAVE THE MANIFEST', keyName('divert') + ' · CHOOSE YOUR LANDING', 5);
           }
         } else if ([2, 3].includes(missionState.stage) && player.car === missionState.car) {
           if (
@@ -371,7 +371,7 @@
         distanceBetween(player, missionState.witnessActor) < 55
       ) {
         missionState.witness = true;
-        setStage(4, missionState.car, 'ESCORT DANIEL TO THE HELICOPTER · E TO BOARD TOGETHER');
+        setStage(4, missionState.car, 'ESCORT DANIEL TO THE HELICOPTER · ' + keyName('interact') + ' TO BOARD TOGETHER');
         return true;
       }
       if (

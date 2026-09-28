@@ -4,12 +4,17 @@
 // frame after matchDay, so a bet and a goal sent before any frame ran left the goal
 // unseen; and a real goal could land between console calls. So: one stepped frame to
 // track the match, then the simulation is held and only stepped by simulate().
+// And the cash is the test's own: a kill pays the player $10, and the soundscape test
+// before it used to end with its shotgun pellets still in flight down a busy Midtown
+// sidewalk ("cash after settlement: 1001"). So first two held seconds for anything
+// left in the air to land (a rocket lives 1.8 s), then the fixture.
 export default async function (t) {
-  const m = await t.call('matchDay', 1, 10);
-  t.assert(m.stage === 'live', 'fixture not live: ' + m.stage);
   await t.call('holdSimulation', true);
-  await t.wait(1 / 30);
   try {
+    await t.wait(2);
+    const m = await t.call('matchDay', 1, 10);
+    t.assert(m.stage === 'live', 'fixture not live: ' + m.stage);
+    await t.wait(1 / 30);
     await run(t);
   } finally {
     await t.call('holdSimulation', false);

@@ -71,9 +71,11 @@
       drawingContext.restore();
     }
     function drawMap(drawingContext, width, height, big = false) {
-      const scale = big
+      // The minimap pulls back with speed (minimapSpeedZoom, map-view.js).
+      const view = big ? 1 : minimapZoom() * minimapSpeedZoom(),
+        scale = big
           ? Math.min(width / WORLD_WIDTH, height / WORLD_HEIGHT) * 0.92 * mapZoom
-          : MINIMAP_SCALE * minimapZoom(),
+          : MINIMAP_SCALE * view,
         cx = big ? mapCenter.x : player.x,
         cy = big ? mapCenter.y : player.y;
       drawingContext.fillStyle = '#123244';
@@ -82,7 +84,7 @@
         // Whole pixels keep the cached layer sharp; overlays are drawn in world units.
         // Zoomed (hud.js), the cached layer is scaled with it.
         const base = minimapBaseLayer(),
-          zoom = minimapZoom();
+          zoom = view;
         drawingContext.imageSmoothingEnabled = true;
         drawingContext.drawImage(
           base.canvas,
@@ -97,7 +99,8 @@
       drawingContext.scale(scale, scale);
       drawingContext.translate(-cx, -cy);
       if (big) paintMapBase(drawingContext, big);
-      if (big)
+      // Map filters (map-view.js MAP LAYERS) hide whole kinds of marker.
+      if (big && mapLayerOn('gangs'))
         for (const gang of GANGS) {
           drawingContext.fillStyle = gang.id === 'harbor' ? '#bb73571f' : '#ad88ca29';
           drawingContext.beginPath();
@@ -107,22 +110,25 @@
           drawingContext.lineWidth = 7;
           drawingContext.stroke();
         }
+      if (mapLayerOn('pickups'))
       for (const p of pickups) {
         drawingContext.fillStyle =
           p.type === 'health' ? '#84ccb0' : p.type === 'ammo' ? '#c7a2df' : '#94bfd5';
         drawingContext.fillRect(p.x - 13, p.y - 13, 26, 26);
       }
       paintSportsGround(drawingContext, false);
-      drawCivicMap(drawingContext, big);
-      for (const pad of HELIPADS) {
-        drawingContext.fillStyle = '#e4d3a3';
-        drawingContext.font = 'bold 90px monospace';
-        drawingContext.textAlign = 'center';
-        drawingContext.fillText('H', pad.x, pad.y + 27);
+      if (mapLayerOn('services')) drawCivicMap(drawingContext, big);
+      if (mapLayerOn('air')) {
+        for (const pad of HELIPADS) {
+          drawingContext.fillStyle = '#e4d3a3';
+          drawingContext.font = 'bold 90px monospace';
+          drawingContext.textAlign = 'center';
+          drawingContext.fillText('H', pad.x, pad.y + 27);
+        }
+        // Rooftop helipads (rooftops.js): a smaller H.
+        drawingContext.font = 'bold 64px monospace';
+        for (const pad of roofHelipads) drawingContext.fillText('H', pad.x, pad.y + 20);
       }
-      // Rooftop helipads (rooftops.js): a smaller H.
-      drawingContext.font = 'bold 64px monospace';
-      for (const pad of roofHelipads) drawingContext.fillText('H', pad.x, pad.y + 20);
       drawHarborMap(drawingContext, big);
       const target = objective();
       if (target) {
@@ -142,18 +148,22 @@
         drawingContext.arc(target.x, target.y, 36, 0, TAU);
         drawingContext.fill();
       }
-      drawTransitMap(drawingContext, scale, big);
-      drawSportsMap(drawingContext, scale, big);
+      if (mapLayerOn('transit')) drawTransitMap(drawingContext, scale, big);
+      if (mapLayerOn('sports')) drawSportsMap(drawingContext, scale, big);
       drawUserRoute(drawingContext, scale, big);
       if (!big) drawGpsRoutes(drawingContext, scale);
       drawCountyMap(drawingContext, scale, big);
-      drawGarageMap(drawingContext, scale);
-      drawBikeShareMap(drawingContext, scale, big);
+      if (mapLayerOn('garages')) drawGarageMap(drawingContext, scale);
+      if (mapLayerOn('bikes')) drawBikeShareMap(drawingContext, scale, big);
       drawAirCoverMap(drawingContext, scale);
       drawDrawbridgeMap(drawingContext, scale, big);
-      drawAviationMap(drawingContext, scale);
-      drawPoliceMap(drawingContext, scale);
+      if (mapLayerOn('air')) drawAviationMap(drawingContext, scale);
+      if (mapLayerOn('police')) drawPoliceMap(drawingContext, scale);
+      // A street event's runner (livingcity-events.js).
+      drawLivingCityMap(drawingContext, scale);
       drawingContext.restore();
+      // Off the minimap's edge: an arrow on the rim toward the job and the waypoint.
+      if (!big) drawMinimapEdgeBlips(drawingContext, width, height, scale, cx, cy, target);
       if (big) {
         drawingContext.save();
         drawingContext.strokeStyle = '#d3ddd5';
@@ -168,9 +178,10 @@
         drawingContext.moveTo(28 + bar, 40);
         drawingContext.lineTo(28 + bar, 50);
         drawingContext.stroke();
-        drawingContext.font = '11px Arial';
+        const text = mapTextScale();
+        drawingContext.font = Math.round(11 * text) + 'px Arial';
         drawingContext.textAlign = 'left';
-        drawingContext.fillText(distanceLabel(BLOCK_SIZE) + ' · 1 block', 28, 65);
+        drawingContext.fillText(distanceLabel(BLOCK_SIZE) + ' · 1 block', 28, 50 + 15 * text);
         drawingContext.restore();
         drawingContext.textAlign = 'center';
         const labels = [
@@ -180,6 +191,12 @@
           ['CRUISE TERMINAL', 2360, -3990],
           ['THE RECLAMATION', 1420, -760],
           ['N O R T H B A N K', 1580, 540],
+          // Northbank's districts (district(), geography-ground.js) and Palm Keys' north end.
+          ['OLD QUARTER', 1290, 1010],
+          ['IRONWORKS DOCKS', 2960, 520],
+          ['MIDTOWN', 1760, 2060],
+          ['SOUTH BANK', 1560, 4190],
+          ['ART DECO', -1830, 1010],
           ['CENTRAL GARDEN', 2176, 3224],
           ['SUNSET PIER', 3000, -6400],
           ['EXCHANGE DISTRICT', 2680, 2890],
@@ -198,27 +215,24 @@
           ['N O R T H  S O U N D', 1500, -4900],
           ...MONARCH_MAP_LABELS,
         ];
-        for (const [label, x, y] of labels) {
-          drawingContext.font = 'bold 11px Arial';
-          drawingContext.strokeStyle = '#102d3de0';
-          drawingContext.lineWidth = 3;
-          const px = width / 2 + (x - cx) * scale,
-            py = height / 2 + (y - cy) * scale;
-          drawingContext.strokeText(label, px, py);
-          drawingContext.fillStyle = /B A Y|S O U N D|C H A N N E L/.test(label) ? '#a3d1d5' : '#ede6d2';
-          drawingContext.fillText(label, px, py);
-        }
+        // Names that never print over each other (map-view.js).
+        drawMapLabels(drawingContext, labels, width, height, scale, cx, cy, text);
+        // A dark band under the footer keeps it readable over the land when zoomed.
+        drawingContext.fillStyle = '#0b1d28c8';
+        drawingContext.fillRect(0, height - 17 - 13 * text, width, 17 + 13 * text);
         drawingContext.fillStyle = '#a6c4cb';
-        drawingContext.font = '10px monospace';
+        drawingContext.font = Math.round(10 * text) + 'px monospace';
         drawingContext.textAlign = 'left';
         drawingContext.fillText('N ↑', 28, 27);
-        drawingContext.fillText('SOUTH COAST COUNTY / CITY GUIDE', 28, height - 17);
+        // The guide's title only where the controls line leaves room for it.
+        const controls = mapControlsLine(),
+          guide = 'SOUTH COAST COUNTY / CITY GUIDE';
+        if (drawingContext.measureText(guide + controls).width + 20 * text < width - 56)
+          drawingContext.fillText(guide, 28, height - 17);
         drawingContext.textAlign = 'right';
-        drawingContext.fillText(
-          '+ / − ZOOM · ARROWS PAN · C FIND ME · 0 RESET',
-          width - 28,
-          height - 17,
-        );
+        drawingContext.fillText(controls, width - 28, height - 17);
+        // A gamepad drops the waypoint under the centre cross (gamepad.js).
+        if (hintDevice() === 'gamepad') drawMapCross(drawingContext, width, height);
       }
       drawPlayerMapMarker(drawingContext, width, height, scale, cx, cy, big);
     }

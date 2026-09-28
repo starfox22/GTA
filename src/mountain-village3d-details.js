@@ -616,8 +616,10 @@
           hour = (worldMinutes % 1440) / 60,
           late = hour > 1 && hour < 5 ? 0.35 : 1;
         mvLastTime = gameTime;
-        MV_MAT.windowLit.emissiveIntensity = night * 1.25 * late;
-        MV_MAT.windowDark.emissiveIntensity = night * 0.05;
+        // (Bright enough to cross the night bloom's knee: at 1.25 the small
+        // panes read as dull amber from the street camera, under the lamp pools.)
+        MV_MAT.windowLit.emissiveIntensity = night * 2.8 * late;
+        MV_MAT.windowDark.emissiveIntensity = night * 0.08;
         MV_MAT.lamp.emissiveIntensity = night * 2.2;
         mvLampHeads.material.emissiveIntensity = night * 2.4;
         mvPoolMaterial.opacity = clamp(night * 1.15, 0, 1);

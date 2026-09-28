@@ -2,6 +2,9 @@
     // Graphics and render probes: quality tier, render scale, frame stats, post views,
     // shadow and draw-call probes, the world-scale audit and the vehicle/tree model lineups.
     addConsoleMethods('graphics', {
+      // Tyre smoke, dust and road spray (tyresmoke3d.js): puffs alive, the graphics
+      // tier's cap, the pool's capacity, puffs emitted since boot and the peak alive.
+      tyreSmoke: () => (city3D ? city3D.tyreSmokeInfo() : null),
       // World-scale audit, everything in metres: each road vehicle's spec
       // (length, width), the built models within `radius` of the player measured
       // from their meshes (length, width, height), the player's model, the crowd

@@ -1,4 +1,4 @@
-    // Blue Hour scene: guests and guards (startRooftopHit), the alarm, the takedown, stage flow and the party's frame update.
+    // Blue Hour scene: guests and guards (startRooftopHit), the alarm, stage flow and the party's frame update.
     function roofSay(p, text, seconds = 2.5) {
       p.speech = text;
       p.speechFor = seconds;
@@ -44,6 +44,8 @@
           walk: 0,
         };
       m.boss = boss;
+      // A limousine taken from the hotel's door is back at the kerb (out of view).
+      parkBlueHourLimousines(true);
       enemies.push(boss);
       const routes = [
         [
@@ -131,15 +133,16 @@
         [221, 174],
         [159, 135],
       ];
+      // Evening wear: midnight, champagne, burgundy, emerald, ivory, black, plum, old gold.
       const colors = [
-        '#c9ae8c',
-        '#718ca7',
-        '#a86274',
-        '#70a59a',
-        '#dfd7b8',
-        '#5e628b',
-        '#b47c57',
-        '#ada2bb',
+        '#1d2940',
+        '#d9c49a',
+        '#6e1f2e',
+        '#1f5a4a',
+        '#ece4d2',
+        '#1a1a1d',
+        '#4f2a4f',
+        '#b08a4a',
       ];
       spots.forEach(([x, y], i) => {
         const home = roofAt(x, y);
@@ -208,19 +211,6 @@
       // The objective follows: Vescari is still the job, if he is not already dying.
       if (bossLive) setStage(2, m.boss, 'COVER BLOWN · TAKE DOWN VESCARI');
     }
-    function canSilentHit(m) {
-      return (
-        !!m &&
-        player.roof &&
-        m.disguise &&
-        m.boss.hp > 0 &&
-        !m.alarm &&
-        !m.weaponDrawn &&
-        !poisonCommitted(m) &&
-        distanceBetween(player, m.boss) <= 36 &&
-        roofSight(player, m.boss)
-      );
-    }
     function rooftopMissionInteract() {
       const missionState = rooftopJob();
       if (!missionState) return false;
@@ -238,32 +228,16 @@
         tell(
           'Vescari is meeting the dock buyers in the VIP lounge. Walk, keep out of the bodyguards’ sight cones, and spike his reserved glass with ' +
             keyName('poison') +
-            ' when nobody is looking. Holding ' +
-            keyName('interact') +
-            ' beside him is a quiet takedown.',
+            ' when nobody is looking, or draw a gun and fight the whole detail.',
           9,
         );
-        return true;
-      }
-      if (canSilentHit(missionState)) {
-        // Seen doing it: the detail opens fire at once.
-        const witness = poisonWitness(missionState);
-        missionState.boss.hp = 0;
-        missionState.boss.deadTime = gameTime;
-        missionState.bodyDelay = 12;
-        missionState.boss.speech = '';
-        missionState.boss.drinking = false;
-        bleed(missionState.boss, 1.5, player.a);
-        updateRooftopHit(missionState, 0);
-        if (witness) roofAlarm(missionState);
-        else tell('Vescari is down. Leave before the bodyguards find him.', 4);
         return true;
       }
       return false;
     }
     /* Stage flow: the lounge, Vescari down, the lift, and the way out. A clean
        poisoning (no alarm, no stars) only asks the player to walk away from the
-       hotel; a loud job (the alarm, or the takedown) is the run to Coral Palms. */
+       hotel; a loud job (the alarm, or a body found) is the run to Coral Palms. */
     function updateRooftopHit(m, deltaSeconds) {
       const b = m.boss;
       updatePoisonDrink(m, deltaSeconds);
@@ -349,7 +323,7 @@
         if (e.boss && !m.alarm && !m.poisoned) e.a = -Math.PI / 2 + Math.sin(gameTime * 0.22) * 0.45;
       }
       updateRoofSuspicion(m, deltaSeconds, guards);
-      // The takedown's body: a bodyguard who sees it, or a guest who stumbles on it.
+      // A body with no alarm raised: a bodyguard who sees it, or a guest who stumbles on it.
       if (!m.alarm && m.killRegistered && !m.partyPanic) {
         m.bodyDelay -= deltaSeconds;
         if (
@@ -374,7 +348,8 @@
         e.aiming = seen;
         e.timer -= deltaSeconds;
         if (!seen || distanceBetween(e, player) > 120) roofStep(e, player, deltaSeconds, 9 * KMH);
-        if (seen && e.timer <= 0) {
+        // Only from on screen (combat-rules.js ON-SCREEN RULE).
+        if (seen && e.timer <= 0 && shooterInView(e)) {
           // Handguns across a crowded terrace: steady, not a firing squad (five
           // of them at 17 hp every 0.8 s killed the player before the first step).
           e.timer = 0.95 + seededRandom() * 0.45;

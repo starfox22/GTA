@@ -233,6 +233,10 @@
       }
       const seen = policeHaveEyesOnPlayer();
       if (seen) {
+        // Dispatch says so when the search finds the player again, and when the
+        // player they are watching turns up in another car or on foot.
+        if (searchActive && wantedStars >= 1) policeRadioEvent('spotted', player);
+        else policeDescribeSuspect();
         lastSeen = {
           x: player.x,
           y: player.y,
@@ -426,6 +430,8 @@
       timed('police:roadblocks', () => updateRoadblocks(deltaSeconds));
       updateDepotDoors(deltaSeconds);
       updateCrowdDensity(deltaSeconds);
+      // Traffic round the player, sirens, ambulances, street events (livingcity.js).
+      timed('citylife', () => updateLivingCity(deltaSeconds));
       timed('police:air', () => updateAirPolice(deltaSeconds));
       updateWounds();
       for (let i = bloodPools.length - 1; i >= 0; i--)
@@ -504,8 +510,9 @@
       document.body?.classList.toggle('police-search-active', wantedStars > 0 && searchActive);
       getElement('policeEscapeSeconds').textContent = Math.ceil(searchRemaining) + 's';
       if (gameMode === 'play' && !player.car && !playerOnRoof()) {
-        const place = nearestPlace();
-        if (place) offerPrompt(place.name, { id: 'place|' + place.name });
+        const place = !lootableBody() && nearestPlace();
+        // A gun shop says what it sells: ammunition and armour are bought, not found.
+        if (place) offerPrompt(place.kind === 'guns' ? place.name + ' · GUNS, AMMO & ARMOR' : place.name, { id: 'place|' + place.name });
       }
       roofMissionUI();
       militaryUI();

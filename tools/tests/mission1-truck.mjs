@@ -1,5 +1,9 @@
 // Mission 1's truck waits on the carriageway at the north kerb of its street (y 640,
 // 596..684), in the westbound lane facing west, clear of the junctions, on every start.
+// Fresh, so it runs among the fresh tests: it leaves Dockside Favor running (there is no
+// console abort), and the shared-page tests after it (mountain-road, regency-traffic,
+// soundscape, sportsbook-bets) ran with a job, its police and its timers under way.
+export const fresh = true;
 export default async function (t) {
   for (let run = 0; run < 3; run++) {
     await t.call('startMission', 0);

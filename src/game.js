@@ -14,15 +14,11 @@
     // @include src/audio.js
     // @include src/voices.js
     // @include src/footwork.js
-    function tell(text, duration = 3) {
-      getElement('toast').textContent = text;
-      getElement('toast').classList.add('show');
-      // Raised while a full-screen panel is up (hud.js PANEL COVER): about the
-      // panel, so it shows over it. (The class, not hudCovered(): tell() runs
-      // during boot, before hud.js's constants exist.)
-      getElement('toast').classList.toggle('over-panel', document.body.classList.contains('panel-open'));
-      freshToast();
-      toastTime = duration;
+    // @include src/camera-feel.js
+    // @include src/hud-notify.js
+    // A line in the notification feed (hud-notify.js): `options` { id, tone }.
+    function tell(text, duration = 3, options) {
+      notify(text, duration, options);
     }
     function announce(small, big, t = 3) {
       getElement('announceSmall').textContent = small;
@@ -45,6 +41,7 @@
     // @include src/game-update.js
     // @include src/game-draw2d.js
     // @include src/game-minimap.js
+    // @include src/map-view.js
     // @include src/game-ui.js
     // @include src/game-menus.js
     // @include src/game-input.js
@@ -54,6 +51,7 @@
     // @include src/harbor.js
     // @include src/police-feedback.js
     // @include src/arsenal.js
+    // @include src/ammo-supply.js
     // @include src/citylife.js
     // @include src/pursuit.js
     // @include src/swat.js
@@ -82,6 +80,7 @@
     // @include src/rooftops.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
+    // @include src/driveby.js
     // @include src/damage.js
     // @include src/crash-audio.js
     // @include src/engine-audio.js
@@ -118,10 +117,13 @@
     // @include src/parachute.js
     // @include src/falls.js
     // @include src/mobile.js
+    // @include src/input-hints.js
+    // @include src/gamepad.js
     // @include src/world-view.js
     // @include src/car-radio.js
     // @include src/garages.js
     // @include src/crowd.js
+    // @include src/livingcity.js
     // @include src/monarch-life.js
     // @include src/dealership.js
     // @include src/dealership-people.js
@@ -131,10 +133,16 @@
     // @include src/clubtalk.js
     // @include src/leisure.js
     // @include src/ambience.js
+    // @include src/ambience-beds.js
+    // @include src/acoustics-audio.js
+    // @include src/footsteps-audio.js
+    // @include src/vehicle-foley-audio.js
+    // @include src/bullets-audio.js
     // @include src/quality.js
     // @include src/settings.js
     // @include src/god-panel.js
     // @include src/driving.js
+    // @include src/tyre-effects.js
     // @include src/hud.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.

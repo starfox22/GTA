@@ -21,6 +21,7 @@
 | `flight()` | The player's aircraft instruments as the flight HUD shows them: airspeed km/h, altitude and AGL m, vertical speed m/s, heading, pitch, bank, throttle lever and spooled power, flaps, gear, g, angle of attack, stall speed, stall / gear warnings, buffet, whether the HUD is up and whether its instruments are on (`instruments`, the Flight HUD setting), and on the ground on a runway `runway` (name, designation this way, metres left) (`null` outside an aircraft). Flaps and gear are keydown actions: press X / Z / L through the page keyboard |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
 | `drivingState()` | The player's road vehicle through the tyre model (driving.js): the assists fitted and switched on, the HUD lamps (`na`, `off`, `ready`, `active`), the character (front weight, CG height over wheelbase, brake bias, drive, lift-off), the pedal and steering ramps, each axle's slip, lock, ABS pressure and sideways share, the wheelspin, the stability yaw and the tyre noise level |
+| `tyreEffects(reset)` | The player's tyres (tyre-effects.js): `burnout` (active, heat 0..1, seconds, driven axle), `emitting` now (kind `smoke`/`sand`/`lawn`/`dust`/`offroad`/`spray`, puffs a second per wheel, axle), `ground`, `wheelSpin`, and `totals` since the last `reset` (true zeroes them first): smoke, dust and spray puffs (before the graphics tier's share), skid marks laid, metres driven, burnout seconds and its top km/h |
 | `speedBox()` | The speed box as shown: mode, label, figure and unit line (hud.js SPEED BOX) |
 
 ## damage (`damageConsole() in src/damage.js`)
@@ -30,6 +31,7 @@
 | `crashSounds()` | The last crash sounds chosen (crash-audio.js): sample, set, gain, rate, layers |
 | `crashTest(type, targetType, side, metersPerSecond, seconds)` | Drive a fresh car east into a parked one turned to show `side` (`front`, `rear`, `left`, `right`), throttle held; returns both damage reports |
 | `park(type, dx, dy, heading)`, `vehicleAt(x, y)` | Park an empty vehicle beside the player (returns its id); find the nearest vehicle (id, type, x, y, heading `a`, altitude) |
+| `vehicleById(id)` | One vehicle by id, or null once it is gone: type, x, y, heading `a`, `kmh`, `ai`, `occupied`, altitude |
 | `shootAt(x, y, weaponIndex)` | Fire one round (or one shotgun load) from the player at a map point |
 | `blast(x, y, power)` | Detonate at a map point (1 = a rocket) |
 | `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
@@ -44,6 +46,7 @@
 | `turnTest(type, kmh, options)` | Steer a fresh vehicle on the strip by the Oceanview runway through the real step and measure: radius (m, fitted over 20-110 degrees of the turn) and kerb-to-kerb circle, lateral g, the run to 90 degrees from a straight entry (forward / sideways m, seconds), heading turned, end speed, slip, whether anything was touched. Options: `dir` (1 right, -1 left), `seconds`, `mode` (`cruise` holds the speed on and off the throttle, `coast`, `throttle`, `brake`, `handbrake`), `wet` (0..1), `entry` (seconds straight first), `trace` (samples) |
 | `brakeTest(type, kmh, options)` | Brake a fresh `type` from `kmh` to a stop on the strip by the Oceanview runway, S held (through the pedal ramp, the tyre model and the assists as Settings · Driving has them): distance (m), seconds, mean g, how far it went forward and sideways and turned while stopping, the peak body slip, how long ABS worked and its cycle rate (`absHz`), how long the wheels were locked. Options: `wet` (0..1), `steer` (1 right / -1 left, the key held with the brake: braking in a turn), `entry` (seconds of steering first), `seconds`, `trace` |
 | `liftOffTest(type, kmh, options)` | Lift-off oversteer: a fresh `type` at `kmh` steered hard on full throttle for `hold` s (1.5), then the throttle lifted with the wheel held for `after` s (2.5): body slip at the lift and its peak, the peak stability yaw (`peakYawSlide`), `spun`, heading turned after the lift, seconds of ESC work, end speed. Options: `dir`, `hold`, `after`, `wet` |
+| `driftTest(type, kmh, phases, options)` | A scripted drive of a fresh vehicle on the same strip: `phases` is `[[keys, seconds], ...]` (`'KeyW,KeyD'`, `'Space,KeyD'`, `''`), run in turn; returns each phase's end (`slip` and `turned` degrees, `kmh`), `peakSlip` and `spun` (slip past 100 degrees). Options: `wet`, `trace` (a sample every 0.1 s: seconds, slip, turned, km/h) |
 | `pose()` | The player's vehicle as the physics sees it: position, heading, yaw rate, km/h, slip angle, hp, drawbridge lift / air |
 | `aiDriving(reset)` | Traffic and police since the last reset: crashes and slides (counts, per minute), wetness and grip, moving traffic near the player and its mean speed, the last closing speeds |
 | `rideInto(type, kmh, target, gapMetres, seconds)` | Ride a fresh motorbike or bicycle east on the runway strip at `kmh` (held there), into a parked `target` (`'none'` for open road) turned across the way; returns `riderReport()` |
@@ -61,3 +64,13 @@
 | `dealerMenu(type)`, `dealerMenuPaint(i)`, `closeDealer()` | Open the purchase card on a car on display (a type, or the nearest; `'garage'` for MY GARAGE), pick a paint swatch, close it |
 | `dealerBuy(type, paint)` | Buy a car as the BUY button does (the cash must be there) and play the delivery; returns the result or why not (`funds` with `short`, `wanted`, `alarm`) |
 | `dealerAlarm(reason)`, `dealerShatter(index)`, `dealerCalm()`, `dealerResetGarage()` | Sound the dealership's alarm (4 stars), break a frontage pane (index or nearest), end the alarm and calm the staff, forget every owned car |
+
+**Drive-bys** (`driveByConsole()`, src/driveby.js):
+
+| Method | Purpose |
+| --- | --- |
+| `driveBy()` | The current vehicle's drive-by: body (`cabin`, `engine`, `bulkhead`, `box`, `cabWall`, `partition`, `open`, `rider`, `deck`, `cockpit`), front (`glass`, null) and rear (`glass`, `open`, null), the arcs in degrees off the nose (negative left) with their window, how far the arm is out, the window it is out of, the aim (`clear` / `blocked`), a shot waiting for the arm, the blocked-aim cross (showing, degrees off the nose), the windscreen and rear glass states, the windows wound down and counts (shots, refused, rear screens and windscreens burst, windows lowered) |
+| `driveByArcs(type)` | A vehicle type's drive-by profile and arcs (no vehicle needed) |
+| `driveByCheck(relDegrees)` | Where an aim `relDegrees` off the nose would fire from the current vehicle: ok and the window, or blocked with the nearest edge and the reason, no shot |
+| `driveByScreenPoint(relDegrees, metres)` | The viewport pixel of the point `metres` (default 20) from the current vehicle, `relDegrees` off its nose, at gun height: where a test puts the real pointer (`t.mouse`) |
+| `driveByAim(relDegrees, fire)` | Hold the aim `relDegrees` off the nose as the aim stick does (`null` lets go); `fire` true holds the trigger, `'raise'` holds the arm out without firing (pictures); step with `wait` |

@@ -3,6 +3,8 @@
         ...damageApi,
         // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
         offroadInfo: () => offroadEffectsInfo(),
+        // Tyre smoke, dust and spray (tyresmoke3d.js): puffs alive, the tier's cap, emitted, peak.
+        tyreSmokeInfo: () => tyreSmokeReport(),
         // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
         mountainInfo: () => mountainVillageInfo(),
         /**
@@ -140,6 +142,7 @@
           if (options && typeof options === 'object')
             for (const key of Object.keys(lookSwitchState)) if (key in options) lookSwitchState[key] = !!options[key];
           groundShared.cityGroundSlopeCap.value = lookSwitchState.groundSlopeCap ? 1 : 0;
+          setFoliageCoverage(activeTier);
           return { ...lookSwitchState };
         },
         /* Shadow casters the view does not show (for "shadows from nowhere"):
@@ -361,14 +364,15 @@
             smoke: true,
           });
         },
-        fire(x, z, a, rocket, altitude = 0) {
+        // `height`: the muzzle over `altitude` (a drive-by's gun out of the window, driveby.js).
+        fire(x, z, a, rocket, altitude = 0, height = 11) {
           muzzleUntil = gameTime + 0.055;
-          muzzleLight.position.set(x, 11 + altitude, z);
+          muzzleLight.position.set(x, height + altitude, z);
           muzzleLight.intensity = rocket ? 1250 : 760;
           for (let j = 0; j < 4; j++)
             fx.push({
               x: x + Math.cos(a) * j * 3,
-              y: 11 + altitude,
+              y: height + altitude,
               z: z + Math.sin(a) * j * 3,
               vx: Math.cos(a) * 65,
               vy: 5,
@@ -382,20 +386,21 @@
           if (!rocket) {
             fx.push({
               x,
-              y: 11 + altitude,
+              y: height + altitude,
               z,
               vx: -Math.sin(a) * 42,
               vy: 44,
               vz: Math.cos(a) * 42,
-              life: 0.65,
-              max: 0.65,
+              life: 1.7,
+              max: 1.7,
               color: '#caa55e',
               size: 1.5,
               case: true,
+              floor: altitude + 0.35,
             });
             fx.push({
               x,
-              y: 11 + altitude,
+              y: height + altitude,
               z,
               vx: Math.cos(a) * 15,
               vy: 13,

@@ -50,14 +50,19 @@ index plus one.
   from the north-looking camera. `spawnVinnyTruck` slides it along that kerb when traffic
   or a double-parked delivery van (crowd-scenes.js) holds the spot; `MISSION_STARTS`
   (bike share) reads the same point.
+- The truck's model and the payphone's dressing: missions-and-demo-mission1.md.
 
 ## Mission 2: the Blue Hour (roofmission-*.js)
 
+- Two ways to kill Vescari: spike his glass unseen, or draw and shoot it out with the
+  detail. No silent takedown (owner: nobody kills quietly in front of a party); tests
+  mission2-poison and mission2-paths. The hotel's look (terrace, VIP table, street
+  entrance, limousines): missions-bluehour.md.
 - Guards see only inside their cone: `roofGuardSees` = `ROOF_VIEW` half-angle and range
   round `roofGuardView(e)` (heading + head `look`) with `roofViewLength` clear (all cover
   but the pool, and the balustrade). No all-round awareness; a bump is +10. The drawn
   cones (roofmission3d.js, `drawRoofStealth2D`) call the same functions: change the
-  numbers in `ROOF_VIEW` only. Shots and the takedown use `roofSight` (low cover passes).
+  numbers in `ROOF_VIEW` only. Shots use `roofSight` (low cover passes).
 - `m.suspicion` fills from `updateRoofSuspicion` (distance, running, beside Vescari, how
   long watched) and drains unseen; 100 is `roofAlarm`. After the collapse, walking seen
   tops out at `ROOF_WARY`; running still blows it.
@@ -67,7 +72,7 @@ index plus one.
   crowd3d-roofparty.js. Past `approach` it is committed (`poisonCommitted`). The body is
   `poisoned` with a `deathStyle.poison`: wounds.js skips the fall, wounds and blood for it.
 - Clean poisoning (no alarm, no stars at the lift): stage 4 is WALK AWAY FROM THE HOTEL
-  (`ROOF_AWAY` from the doors); the alarm or the takedown keep the run to Coral Palms.
+  (`ROOF_AWAY` from the doors); the alarm (a gunfight) keeps the run to Coral Palms.
 - Cover blown with Vescari standing (not `poisonCommitted`): leaving the terrace (street
   level, or `ROOF_AWAY` off) fails the job, "Vescari got away". Walking out before any alarm
   leaves the job waiting upstairs.
@@ -81,6 +86,12 @@ index plus one.
   ammunition, `stats` (`campaignStats`: play time, cash earned, wanted peak), sportsbook bets.
   Progression frontier decides what the picker offers; a job played ahead of the story does
   not advance the campaign.
+- `save()` runs on events (a job's end, WASTED, BUSTED, a purchase, a garage, a skipped
+  ride) and whenever play pauses, which leaving the tab does: nothing earned in free roam
+  waits for the next event. Check a save with `node tools/dev.mjs reload --keep`.
+- WASTED wakes the player at `nearestHospital()` (game-player-actions.js; THE HALCYON CLINIC
+  only on and round Monarch Isle), BUSTED at the Police HQ (`policeRespawnPoint`). The first
+  hospital in `PLACES` (Saint Marlow) keeps the rooftop helipad.
 
 ## Public demo (`DEMO_BUILD`, game-state.js; campaign.js PUBLIC DEMO)
 
@@ -107,7 +118,8 @@ index plus one.
   (`setGodWeather`), refill (`godRefill`), lose police (`godLosePolice`: also marks the
   player's crowd incidents reported so a call in progress does not re-raise a star, and ends
   the Fort Sentinel alarm), teleport (map pick mode).
-- `godTeleport(x, y)` is the safe move: nearest walkable spot, a boat spawned on open water,
+- `godTeleport(x, y)` is the safe move: nearest walkable spot (not a loose mountain face
+  steeper than `SLIP_GRADE`, where the body would slide off), a boat spawned on open water,
   the current road vehicle placed on the nearest lane where `canSpawnCar` passes, aircraft
   kept airborne; then `teleportPlayer`, camera snap, crowd resettle, a second's grace.
 - Console: `god(on)`, `godPanel()`, `godTeleport(x, y)`, `godRefill()`, `godLosePolice()`,

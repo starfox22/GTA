@@ -1,0 +1,156 @@
+/* City map (map-view.js): as large as the screen allows, with its filters
+   (the legend doubles as them) and the GO TO list beside it, below it on a
+   narrow screen. The canvas keeps its 800 x 660 frame's shape; map-view.js
+   sizes its pixels to the screen. */
+.map-panel {
+  width: min(96vw, calc(74vh * 800 / 660 + 330px));
+}
+.map-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 14px;
+  min-height: 0;
+}
+#bigmap {
+  justify-self: center;
+  width: 100%;
+  /* The heading, the tools row and the legend take about 250 px of the panel's 96vh. */
+  max-width: min(calc(74vh * 800 / 660), calc((96vh - 250px) * 800 / 660));
+  height: auto;
+  max-height: none;
+  aspect-ratio: 800 / 660;
+}
+.map-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  max-height: min(74vh, calc(96vh - 250px));
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.map-side h3 {
+  margin: 4px 0 0;
+  color: #9fb4a3;
+  font:
+    800 10px/1 var(--ui-font);
+  letter-spacing: 0.18em;
+}
+.map-filters {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.map-filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 1px solid #4b6553;
+  border-radius: 99px;
+  background: #1c2b24;
+  color: #dce9d5;
+  font:
+    700 10px/1 var(--ui-font);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    opacity 0.15s,
+    background 0.15s;
+}
+.map-filters button b {
+  color: var(--acid);
+  font-size: 11px;
+}
+.map-filters button[aria-pressed='false'] {
+  opacity: 0.5;
+  background: transparent;
+  text-decoration: line-through;
+}
+.map-places {
+  flex: none;
+  display: grid;
+  gap: 4px;
+}
+.map-places button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid #34463b;
+  border-radius: 6px;
+  background: #17211c;
+  color: #e9efe2;
+  text-align: left;
+  cursor: pointer;
+}
+.map-places small {
+  grid-column: 1;
+  color: #93a795;
+  font:
+    800 9px/1.25 var(--ui-font);
+  letter-spacing: 0.14em;
+}
+.map-places span {
+  grid-column: 1;
+  overflow: hidden;
+  font:
+    700 12px/1.3 var(--ui-font);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.map-places b {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  color: var(--acid);
+  font:
+    700 11px var(--ui-font);
+  font-variant-numeric: tabular-nums;
+}
+.map-filters button:hover,
+.map-places button:hover,
+.map-filters button:focus-visible,
+.map-places button:focus-visible {
+  border-color: var(--acid);
+  background: #22322a;
+}
+/* A touch screen has no keys to name on the heading's buttons. */
+body[data-input='touch'] .map-heading kbd {
+  display: none;
+}
+.waypoint-key {
+  background: #73edf0;
+}
+@media (max-width: 900px) {
+  .map-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .map-side {
+    max-height: 26vh;
+  }
+  .map-places {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  #bigmap {
+    max-width: calc(58dvh * 800 / 660);
+  }
+  .map-side {
+    max-height: 24dvh;
+  }
+  .map-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .map-filters button {
+    flex: none;
+  }
+  /* The filter chips carry the symbols: the long legend steps aside. */
+  .map-panel .legend {
+    display: none;
+  }
+}

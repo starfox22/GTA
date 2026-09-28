@@ -75,8 +75,8 @@
         contact: 'vinny',
         reward: 4200,
         phoneMessage:
-          'Vinny gave you a mission: dress as a guest, kill Luciano Vescari at the Blue Hour, and walk out.',
-        brief: 'Dress as a guest, kill Luciano Vescari at the Blue Hour, and walk out.',
+          'Vinny gave you a mission: dress as a guest and kill Luciano Vescari at the Blue Hour. Poison his glass, or shoot it out.',
+        brief: 'Dress as a guest and kill Luciano Vescari at the Blue Hour: poison his glass unseen, or shoot it out with his detail.',
       },
       {
         title: "Vinny's Favor",
@@ -302,7 +302,8 @@
         : '';
       getElement('callTitle').textContent = title;
       getElement('callMessage').textContent = message;
-      getElement('callAccept').textContent = button + ' · ENTER';
+      getElement('callAccept').textContent = button + menuKeySuffix('accept');
+      getElement('callDecline').textContent = 'HANG UP' + menuKeySuffix('back');
       getElement('callDecline').style.display = canClose ? 'block' : 'none';
       getElement('callOverlay').classList.remove('hidden');
       getElement('callAccept').focus();
@@ -430,13 +431,8 @@
       else if (missionState.index <= 8) startChallengeMission(missionState);
       else if (missionState.index < SIDE_JOB_FIRST) flightMissionStart(missionState);
       else startSideJob(missionState);
-      announce(
-        missionState.index >= SIDE_JOB_FIRST
-          ? 'CONTRACT ' + (missionState.index + 1 - SIDE_JOB_FIRST) + ' / ' + (missions.length - SIDE_JOB_FIRST)
-          : 'MISSION ' + (missionState.index + 1) + ' / ' + SIDE_JOB_FIRST,
-        info.title.toUpperCase(),
-        3,
-      );
+      // MISSION 1, CONTRACT 2: no total (missionStartLabel, cycles.js).
+      announce(missionStartLabel(missionState.index), info.title.toUpperCase(), 3);
       missionLine(info.contact, info.brief);
       save();
     }
@@ -635,7 +631,9 @@
         e.a = headingBetween(e, target);
         e.walk += deltaSeconds * 8;
         if (best > 165) footStepTowards(e, target, deltaSeconds, 9 * KMH);
-        if (e.timer <= 0 && best < 335 && clearSight(e, target)) {
+        // At the player only from on screen (combat-rules.js ON-SCREEN RULE): off
+        // screen they close in but hold their fire.
+        if (e.timer <= 0 && best < 335 && (target !== player || shooterInView(e)) && clearSight(e, target)) {
           e.timer = 0.8 + seededRandom() * 0.85;
           e.lastShotAt = gameTime;
           if (target.police || target.type === 'police') e.policeThreatUntil = gameTime + 15;
@@ -718,19 +716,12 @@
       if (t === 1) {
         const up = liftTravel.up;
         liftTravel = null;
+        // teleportPlayer is the one way to move the player (it lets go of every carrier
+        // and the roof); the terrace is taken again after it.
+        if (up) teleportPlayer(ROOFTOP.lift.x + 35, ROOFTOP.lift.y - 3);
+        else teleportPlayer(ROOFTOP.door.x, ROOFTOP.door.y);
         player.roof = up;
         player.altitude = up ? ROOFTOP.height + 3 : 0;
-        Object.assign(
-          player,
-          up
-            ? {
-                x: ROOFTOP.lift.x + 35,
-                y: ROOFTOP.lift.y - 3,
-              }
-            : ROOFTOP.door,
-        );
-        cameraTarget.x = player.x;
-        cameraTarget.y = player.y;
         gameMode = 'play';
         getElement('elevatorOverlay').classList.add('hidden');
         canvas.focus();
@@ -741,11 +732,9 @@
                 keyName('walk') +
                 ' to run). Stay out of the bodyguards’ sight cones. ' +
                 keyName('poison') +
-                ' at Vescari’s reserved glass, or hold ' +
-                keyName('interact') +
-                ' beside him for a takedown. ' +
+                ' at Vescari’s reserved glass, or ' +
                 keyName('fire') +
-                ' draws your pistol.'
+                ' draws your pistol and the whole detail with it.'
               : 'THE BLUE HOUR · ' + keyName('interact') + ' at the bar or elevator · Weapons stay holstered on the terrace.'
             : 'Back at street level.',
           5,
@@ -772,9 +761,7 @@
           rooftopJob()
             ? 'Blend in. ' +
                 keyName('poison') +
-                ' beside Vescari’s reserved glass, or hold ' +
-                keyName('interact') +
-                ' beside him for a takedown; ' +
+                ' beside Vescari’s reserved glass; ' +
                 keyName('interact') +
                 ' at the elevator to leave.'
             : keyName('interact') + ' at the bar, Mara, or the elevator. Weapons stay holstered here.',

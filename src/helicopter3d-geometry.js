@@ -239,8 +239,11 @@
           M.glass[tint] = new Three.MeshStandardMaterial({
             color: tint,
             roughness: 0.04,
-            metalness: 0.9,
-            envMapIntensity: 1.5,
+            // (At 0.9 the dark tint coloured every reflection too: the canopy
+            // read as a black hole in daylight close-ups. Less metal lets the sky
+            // shine in it and the sunlit tint show.)
+            metalness: 0.55,
+            envMapIntensity: 2,
             transparent: true,
             opacity: 0.46,
             depthWrite: false,

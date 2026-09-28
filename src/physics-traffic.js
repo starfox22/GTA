@@ -167,35 +167,45 @@
         const progress = (j.x - c.x) * headingCosine + (j.y - c.y) * headingSine,
           signal = trafficSignal(j.x, j.y)[vertical ? 'vertical' : 'horizontal'],
           gap = progress - 88 - vehicleDefinition.l / 2;
-        const occupied = vehicles.some(
-          (o) =>
-            o !== c &&
-            o.hp > 0 &&
-            o.junction?.committed &&
-            Math.abs(o.junction.x - j.x) < 5 &&
-            Math.abs(o.junction.y - j.y) < 5 &&
-            Math.abs(o.x - j.x) < 110 + vehicleSpec(o).l / 2 &&
-            Math.abs(o.y - j.y) < 110 + vehicleSpec(o).l / 2 &&
-            (Math.abs(normalizeAngle(o.junction.a - j.a)) > 0.2 || o.junction.turn || j.turn),
-        );
         const headingCosine3 = Math.cos(j.exit),
           headingSine3 = Math.sin(j.exit),
           end = j.points[j.points.length - 1];
-        const exitBlocked = vehicles.some((o) => {
-          if (o === c || isBoat(o) || (o.altitude || 0) > 20 || Math.abs(o.speed) > 18) return false;
-          const dx = o.x - end.x,
-            dy = o.y - end.y;
-          return (
-            Math.abs(-dx * headingSine3 + dy * headingCosine3) <
-              (vehicleDefinition.w + vehicleSpec(o).w) / 2 + 7 &&
-            Math.abs(dx * headingCosine3 + dy * headingSine3) <
-              (vehicleDefinition.l + vehicleSpec(o).l) / 2 + 22
-          );
-        });
         // A green light with the box and the exit clear is driven through at
         // speed, committing about half a second out; anything else is a stop
-        // at the line, braked for at about half a g.
-        const proceed = signal === 'green' && !occupied && !exitBlocked;
+        // at the line, braked for at about half a g. Only a car still short of
+        // the line on a green looks at the box and the exit (the scans cost more
+        // than the rest of the decision), each skipping far cars first.
+        const proceed =
+          !j.committed &&
+          signal === 'green' &&
+          !vehicles.some(
+            (o) =>
+              o !== c &&
+              Math.abs(o.x - j.x) < 200 &&
+              Math.abs(o.y - j.y) < 200 &&
+              o.hp > 0 &&
+              o.junction?.committed &&
+              Math.abs(o.junction.x - j.x) < 5 &&
+              Math.abs(o.junction.y - j.y) < 5 &&
+              Math.abs(o.x - j.x) < 110 + vehicleSpec(o).l / 2 &&
+              Math.abs(o.y - j.y) < 110 + vehicleSpec(o).l / 2 &&
+              (Math.abs(normalizeAngle(o.junction.a - j.a)) > 0.2 || o.junction.turn || j.turn),
+          ) &&
+          !vehicles.some((o) => {
+            const dx = o.x - end.x,
+              dy = o.y - end.y;
+            if (o === c || Math.abs(dx) > 120 || Math.abs(dy) > 120) return false;
+            if (isBoat(o) || (o.altitude || 0) > 20 || Math.abs(o.speed) > 18) return false;
+            return (
+              Math.abs(-dx * headingSine3 + dy * headingCosine3) <
+                (vehicleDefinition.w + vehicleSpec(o).w) / 2 + 7 &&
+              Math.abs(dx * headingCosine3 + dy * headingSine3) <
+                (vehicleDefinition.l + vehicleSpec(o).l) / 2 + 22
+            );
+          }) &&
+          // An ambulance or a cruiser under lights crossing: wait at the line
+          // (livingcity-sirens.js).
+          !sirenCrossing(c, j);
         if (!j.committed && gap < 25 + Math.max(0, c.speed || 0) * 0.5 && proceed) j.committed = true;
         if (!j.committed) {
           if (!proceed) {
@@ -259,8 +269,12 @@
           })),
         ],
         ease = { amount: 0, side: 1 },
-        // How far right of its lane's centre line the car is (the target sits on it).
-        laneOffset = -((target.x - c.x) * rx + (target.y - c.y) * ry),
+        // Right across the lane (not the car: turned out round a parked car or a
+        // walker, a car-frame measure grew by the look-ahead's sideways swing), and
+        // how far right of its lane's centre line the car is (the target sits on it).
+        laneRx = -headingSine,
+        laneRy = headingCosine,
+        laneOffset = -((target.x - c.x) * laneRx + (target.y - c.y) * laneRy),
         // Nothing in the oncoming lane (left of us) from just behind to well past
         // the obstacle, moving or not: room to pull out round it.
         oncomingClear = (obstacle, reach) =>
@@ -272,6 +286,10 @@
               left = -(vx * rx + vy * ry);
             return ahead > -60 && ahead < reach + 260 && left > 6 && left < 80;
           });
+      // The gap beside a parked car to steer for when caught close behind it.
+      let passAim = null,
+        passAt = Infinity,
+        pivotOut = 0;
       for (const o of vehicles) {
         if (
           o === c ||
@@ -325,7 +343,7 @@
         if (!through && !o.ai && !o.cop && o !== player.car && Math.abs(o.speed || 0) < 5) {
           // Measured from our lane's centre line, not from where we are now: the
           // shift must hold while we pull across, or it shrinks as we move.
-          const laneLateral = laneOffset + dx * rx + dy * ry,
+          const laneLateral = laneOffset + dx * laneRx + dy * laneRy,
             intrusion = side + ow + 4 - Math.abs(laneLateral),
             overtake =
               intrusion >= 12 && intrusion < 38 && laneLateral > -12 && !c.junction && oncomingClear(o, along);
@@ -337,14 +355,38 @@
               ease.amount = shift;
               ease.side = passLeft ? 1 : -1;
             }
-            if (intrusion < 12 || lateral > side + ow || along - half - ol > 45) continue;
-            // Caught close behind it still in line: creep out round it rather than
-            // stopping, which would leave the car unable to turn out at all.
-            desired = Math.min(desired, 20);
+            if (intrusion < 12 || along - half - ol > 45) continue;
+            // Close behind one filling the lane, the far-off lane point is too
+            // shallow a line: steer for the gap beside its far corner until we are
+            // by (swinging back to that point put the nose into its corner).
+            if (along < passAt) {
+              const passing = passLeft ? 1 : -1,
+                reach = side + ow + 4;
+              passAt = along;
+              passAim = {
+                x: o.x + headingCosine * ol - laneRx * passing * reach,
+                y: o.y + headingSine * ol - laneRy * passing * reach,
+              };
+            }
+            if (lateral > side + ow) continue;
+            // Still in line: creep out round it rather than stopping, which would
+            // leave the car unable to turn out at all, but stop short of the bumper
+            // and swing the nose out on the spot: nose to tail it shoved the
+            // parked car along the kerb (a mission's parked ambulance, 1 m in 15 s).
+            desired = Math.min(desired, 20, Math.max(0, along - half - ol - 2) * 2.5);
+            if (along - half - ol < 6) pivotOut = passLeft ? 1 : -1;
             continue;
           }
-          // Waiting for the oncoming lane to clear: hold back far enough to pull out.
-          if (intrusion < 38 && laneLateral > -12) standoff = 40;
+          // Waiting for the oncoming lane to clear: hold back far enough to pull out,
+          // and hold the line if already part way out (swinging back into the lane
+          // put the nose into the parked car's corner).
+          if (intrusion < 38 && laneLateral > -12) {
+            standoff = 40;
+            if (laneOffset < -4 && -laneOffset > ease.amount) {
+              ease.amount = -laneOffset;
+              ease.side = 1;
+            }
+          }
         }
         // Follow at about 0.8 s behind the car ahead (plus a car's length of
         // slack), never faster than lets us stop behind it if it brakes.
@@ -359,6 +401,9 @@
       // Give crossing pedestrians and an innocent player time to clear the lane.
       // Runs 120 times a second per car, so it scans in place without building arrays
       // and skips anyone farther than the look-ahead box before doing any trigonometry.
+      const beforePeople = desired;
+      let heldBy = null,
+        heldAt = Infinity;
       const yieldTo = (p) => {
         if (p.hp <= 0 || p.roof) return;
         const dx = p.x - c.x,
@@ -369,17 +414,67 @@
         // Only people out on the carriageway: mid-turn the look-ahead box sweeps
         // across the pavement, and a bus used to wait for ever on walkers who
         // were themselves waiting at the kerb for it to clear.
-        if (along > 0 && along < 200 && lateral < side + 11 && cityStreetAt(p.x, p.y))
+        if (along > 0 && along < 200 && lateral < side + 11 && cityStreetAt(p.x, p.y)) {
           desired = Math.min(desired, Math.sqrt(2 * 0.7 * GRAVITY * Math.max(0, along - half - 22)) * 0.8);
+          if (along < heldAt) {
+            heldBy = p;
+            heldAt = along;
+          }
+        }
       };
-      forEachPedestrianNear(c.x, c.y, 220, yieldTo);
+      // Everyone the box can hold (0-200 ahead, a lane's width either side) is
+      // within 103 units of the point 100 ahead: a quarter of the old query.
+      forEachPedestrianNear(c.x + headingCosine2 * 100, c.y + headingSine2 * 100, 110, yieldTo);
       if (!player.car) yieldTo(player);
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
-      desired = Math.min(desired, curbsideStop(c));
+      const curb = curbsideStop(c);
+      desired = Math.min(desired, curb);
       // Held at the drawbridge's stop line while it opens (src/drawbridge.js).
       desired = drawbridgeTrafficLimit(c, desired);
+      // A siren behind or coming head-on down our side: over to the kerb and
+      // stop until it is by (livingcity-sirens.js); not while passing a parked
+      // car, which already has us steering round it.
+      const pull = sirenPullOver(c);
+      if (pull) {
+        desired = Math.min(desired, pull.speed);
+        if (!ease.amount && pull.shift > 0) {
+          ease.amount = pull.shift;
+          ease.side = -1;
+        }
+      }
+      // Nobody holds a car for ever: someone standing or stalled in the lane (a
+      // walker paused mid-crossing or stuck in the road) held traffic, and every
+      // car queued behind it, until they moved or the player left. After
+      // a few seconds stopped for the same person the driver eases round them at a
+      // walking pace, on whichever side leaves them room. Never round the player
+      // (the honk is their cue), nor while already easing round a parked car or
+      // pulling over for a siren (an ambulance runs down the centre line).
+      let e = c.easePerson;
+      if (heldBy && heldBy !== player && e?.p !== heldBy && desired < 3 * KMH && Math.abs(c.speed || 0) < 6 * KMH)
+        e = c.easePerson = { p: heldBy, since: gameTime, going: false };
+      if (e) {
+        const dx = e.p.x - c.x,
+          dy = e.p.y - c.y,
+          along = dx * headingCosine2 + dy * headingSine2,
+          // Right of our lane's centre line (steady while we pull across).
+          fromLane = dx * laneRx + dy * laneRy + laneOffset;
+        if (e.p.hp <= 0 || along < -half - 10 || Math.abs(fromLane) > side + 44 || gameTime - e.since > 40 || (!e.going && heldBy !== e.p))
+          c.easePerson = null;
+        else if ((e.going || gameTime - e.since > 4) && !ease.amount && !pull) {
+          // Round the left of someone right of the centre line, else round the right.
+          e.going = true;
+          ease.amount = Math.max(4, side + 6 - Math.abs(fromLane));
+          ease.side = fromLane >= 0 ? 1 : -1;
+          // The crawl never beats a red, a car ahead, a kerbside stop or the drawbridge.
+          if (heldBy === e.p) desired = drawbridgeTrafficLimit(c, Math.min(beforePeople, 7 * KMH, curb));
+        }
+      }
       // Steer for a point shifted away from whatever was easing us across the lane.
-      const steerA = ease.amount
+      const steerA = pivotOut
+        ? -0.35 * pivotOut
+        : passAim
+        ? normalizeAngle(headingBetween(c, passAim) - c.a)
+        : ease.amount
         ? normalizeAngle(
             headingBetween(c, {
               x: target.x - rx * ease.side * (ease.amount + 1),

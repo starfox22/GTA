@@ -194,20 +194,27 @@
         }),
       );
       scene.add(tracer);
-      const skidGeo = new Three.BufferGeometry(),
-        skidPos = new Float32Array(6600);
-      skidGeo.setAttribute(
-        'position',
-        new Three.BufferAttribute(skidPos, 3).setUsage(Three.DynamicDrawUsage),
-      );
-      const skidLines = new Three.LineSegments(
+      // Skid marks (tyre-effects.js `skids`): a thin strip per mark, two triangles, each
+      // with its own darkness and fade in the vertex colour's alpha.
+      const SKID_MARKS = 1100,
+        skidGeo = new Three.BufferGeometry(),
+        skidPos = new Float32Array(SKID_MARKS * 18),
+        skidColor = new Float32Array(SKID_MARKS * 24).fill(1);
+      skidGeo.setAttribute('position', new Three.BufferAttribute(skidPos, 3).setUsage(Three.DynamicDrawUsage));
+      skidGeo.setAttribute('color', new Three.BufferAttribute(skidColor, 4).setUsage(Three.DynamicDrawUsage));
+      const skidLines = new Three.Mesh(
         skidGeo,
-        new Three.LineBasicMaterial({
-          color: '#171b20',
+        new Three.MeshBasicMaterial({
+          color: '#15181b',
+          vertexColors: true,
           transparent: true,
-          opacity: 0.5,
+          depthWrite: false,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
         }),
       );
+      skidLines.renderOrder = 2;
       scene.add(skidLines);
       let muzzleUntil = 0,
         frames = 0,

@@ -569,6 +569,14 @@
             ? { id: best.id, type: best.type, x: Math.round(best.x), y: Math.round(best.y), a: best.a, altitude: Math.round(best.altitude || 0) }
             : null;
         },
+        // One vehicle by id (null once it is gone): place, heading, speed, whether
+        // it is driven by the AI or occupied (tests that follow a scripted car).
+        vehicleById(id) {
+          const c = vehicles.find((v) => v.id === id);
+          return c
+            ? { id: c.id, type: c.type, x: Math.round(c.x), y: Math.round(c.y), a: c.a, kmh: Math.round(Math.hypot(c.vx || 0, c.vy || 0) / KMH), ai: !!c.ai, occupied: !!c.occupied, altitude: Math.round(c.altitude || 0) }
+            : null;
+        },
         // Street furniture within `radius` of a point and whether it is still standing.
         streetProps(x = player.x, y = player.y, radius = 200) {
           const out = [];

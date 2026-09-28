@@ -66,10 +66,11 @@
       flatbed: {
         balance: -0.7,
         name: 'ATLAS CARGO FLATBED',
-        // A medium flatbed, 2.55 m body.
+        // A medium-duty conventional flatbed (Vinny's truck, vinnytruck3d.js): 2.44 m
+        // body, 2.8 m over the mirrors; the model is built at real size.
         l: 9.5 * UNITS_PER_METRE,
         w: 2.8 * UNITS_PER_METRE,
-        modelScale: 0.9,
+        modelScale: 1,
         topKmh: 120,
         zeroTo: [100, 22],
         brakeG: 0.75,

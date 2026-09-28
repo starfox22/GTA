@@ -226,12 +226,17 @@
       };
       return !!m.crossedHarborGate && corners(vehicleShape(c)).every((p) => p.x < HARBOR.gate.x);
     }
+    /* Vinny's truck bed (vinnytruck3d.js): the crates' slots in metres from the
+       truck's centre (forward +), the deck's height in metres, and a loaded
+       crate's size as a share of a bay crate. The crane lowers each crate onto
+       its slot (harbor3d.js), where the truck's own crate takes over. */
+    const VINNY_CARGO = { slots: [-0.26, -2.05, -3.84], deck: 1.28, scale: 0.43 };
     function cargoPosition(c, i) {
-      const x = -34 + i * 19;
+      const x = VINNY_CARGO.slots[i] * UNITS_PER_METRE;
       return {
         x: c.x + Math.cos(c.a) * x,
         y: c.y + Math.sin(c.a) * x,
-        altitude: 19,
+        altitude: VINNY_CARGO.deck * UNITS_PER_METRE,
       };
     }
     function alertGang(faction, source = player) {

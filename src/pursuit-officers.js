@@ -402,6 +402,7 @@
     let damageArcTimer = null;
     function playerHitFeedback(b) {
       shake = Math.max(shake, 3);
+      kickCamera(Math.atan2(b.vy || 0, b.vx || 0), 2.5);
       noise(0.05, 0.14, 180);
       const el = getElement('damageArc'),
         from = b.owner || { x: b.x - (b.vx || 0), y: b.y - (b.vy || 0) };
@@ -639,6 +640,10 @@
       return {
         stars: Math.ceil(wantedStars),
         heat: Math.round(wantedHeat * 10) / 10,
+        // How far a unit on the ground picks the player out now (policeSightRange: day, night, rain).
+        sightRange: Math.round(policeSightRange(null)),
+        // The last dispatch caption and how long ago (s).
+        radio: lastDispatchText ? { text: lastDispatchText, ago: Math.round((gameTime - lastDispatchLine) * 10) / 10 } : null,
         nextStarAt: HEAT_STARS[Math.min(5, Math.ceil(wantedStars) + 1)] ?? null,
         unreported: Math.round(unreportedHeat * 10) / 10,
         crimes: crimeLog.slice(),

@@ -60,6 +60,10 @@
       } else if (mood === 'angry' || mood === 'defiant' || (mood === 'flee' && seededRandom() < 0.4)) {
         startReaction(d, 'argue', reactionDuration('argue'), target || c, crash.inc, { target, car: c, then: 'returnCar' });
       } else if (mood === 'witness' && crash.inc?.attacker === player) {
+        // Counted among the incident's witnesses and holding the phone for it, so
+        // the witness director does not hand a second caller the same crash.
+        noteWitness(d, crash.inc, true, Math.hypot(d.x - crash.inc.x, d.y - crash.inc.y));
+        crash.inc.callerDue = d;
         startReaction(d, 'call', reactionDuration('call'), target || c, crash.inc, { then: 'returnCar' });
       } else {
         startReaction(d, 'watch', randomBetween(6, 10), c, crash.inc, { then: 'returnCar', focusCar: c });

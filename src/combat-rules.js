@@ -135,17 +135,38 @@
      */
     /**
      * ON-SCREEN RULE
-     * Nobody shoots the player from outside the view: police, army and base
-     * shooters only fire at a player on the ground while they themselves are on
-     * screen (the street view round the player, a little inset), so every round
-     * that lands comes from someone the player can see. Long-range guns (army
-     * roof gunners 480, the tank 680, base towers 650) hold fire until they
-     * close in. In the air the flight camera shows far more, and the rule is off.
+     * Nobody shoots the player from outside the view: police, army, base
+     * shooters, gang members, mission gunmen and the Blue Hour's guards only
+     * fire at a player on the ground while they themselves are on screen (a
+     * little inset), so every round that lands comes from someone the player can
+     * see. Off screen they may still close in; they hold fire until they show.
+     * Long-range guns (army roof gunners 480, the tank 680, base towers 650) hold
+     * fire until they close in. In the air the flight camera shows far more, and
+     * the rule is off. The view is the street camera's ground footprint
+     * (screenViewHalf), centred where the camera looks (`cameraTarget`: on foot
+     * it leads toward the aim in a fight, in a car along the road ahead;
+     * camera-feel.js), not on the player.
      */
+    const STREET_VIEW_SIN_PITCH = 680 / Math.hypot(680, 560);
+    const screenView = { w: 0, h: 0, width: 0, height: 0, zoom: 0 };
+    /* Half the street camera's visible ground, in map units: the orthographic frame
+       (flight-view3d.js: clamp(viewportHeight * 0.68, 430, 630) / worldZoom tall,
+       the screen's aspect wide) laid on the ground by the camera's pitch. */
+    function screenViewHalf() {
+      if (screenView.width !== viewportWidth || screenView.height !== viewportHeight || screenView.zoom !== worldZoom) {
+        const viewH = clamp(viewportHeight * 0.68, 430, 630) / Math.max(0.05, worldZoom);
+        screenView.w = (viewH * viewportWidth) / Math.max(1, viewportHeight) / 2;
+        screenView.h = viewH / 2 / STREET_VIEW_SIN_PITCH;
+        screenView.width = viewportWidth;
+        screenView.height = viewportHeight;
+        screenView.zoom = worldZoom;
+      }
+      return screenView;
+    }
     function shooterInView(shooter, inset = 20) {
       if (isAircraft(player.car) || player.parachute) return true;
-      const view = crowdViewHalf();
-      return Math.abs(shooter.x - player.x) < view.w - 40 - inset && Math.abs(shooter.y - player.y) < view.h - 40 - inset;
+      const view = screenViewHalf();
+      return Math.abs(shooter.x - cameraTarget.x) < view.w - inset && Math.abs(shooter.y - cameraTarget.y) < view.h - inset;
     }
     const shotLog = { bySource: {}, recent: [], total: 0, offscreen: 0 };
     // (hits and damage per source are the rounds that struck, before armour.)

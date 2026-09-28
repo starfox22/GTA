@@ -258,7 +258,7 @@ kbd {
 }
 #stealthStatus {
   /* Under the docked prompt (hud-state.js placeDockLine), which the Blue Hour
-     keeps busy (the glass, the takedown, the lift). */
+     keeps busy (the glass, the lift). */
   top: calc(var(--hud-dock-top, 72px) + 36px);
   min-width: 220px;
   text-align: center;
@@ -331,31 +331,27 @@ kbd {
   opacity: 1;
   transform: none;
 }
-/* Help and status lines, GTA-style: a box under the location, left. */
+/* Help and status lines, GTA-style: a feed under the location, left. Each
+   line is a .note box (notify.css, hud-notify.js); this is their column. */
 #toast {
   position: absolute;
   z-index: 11;
   top: 86px;
   left: var(--hud-edge);
-  max-width: min(380px, 40vw);
-  padding: 10px 14px;
-  border-radius: 8px;
-  border-left: 3px solid var(--acid);
-  background: var(--ui-panel-solid);
-  box-shadow: var(--ui-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: min(400px, 40vw);
   color: #eef2e8;
   font:
     13px/1.45 var(--ui-font);
   opacity: 0;
-  transform: translateX(-10px);
-  transition:
-    opacity 0.22s,
-    transform 0.3s var(--ui-ease);
+  transition: opacity 0.22s;
   pointer-events: none;
 }
 #toast.show {
   opacity: 1;
-  transform: none;
 }
 /* Headline cards: mission titles, arrivals. */
 #announcement {

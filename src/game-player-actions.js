@@ -31,6 +31,8 @@
       playSample('explosion', 0.9, 0.9 + Math.random() * 0.12, blast);
       if (city3D) city3D.explosion(x, y, power, altitude);
       shake = Math.max(shake, 11 * power * proximity);
+      // The blast shoves the view away from it (camera-feel.js).
+      if (proximity > 0) kickCamera(Math.atan2(player.y - y, player.x - x), 12 * power * proximity * proximity);
       flash = Math.max(flash, 0.15 * proximity);
       fires.push({
         x,
@@ -139,15 +141,31 @@
         player.hp = 100;
         player.armor = 0;
         player.inv = 3;
-        const hospital = PLACES.find((p) => p.kind === 'hospital').door;
-        teleportPlayer(hospital.x, hospital.y);
+        const hospital = nearestHospital(player.x, player.y);
+        teleportPlayer(hospital.door.x, hospital.door.y);
         clearPolice();
         resetOfficerCrews();
         gameMode = 'play';
         if (mission) failMission('Hospital bill: $250. Your job is ready to retry.');
-        else tell('Back on your feet. Hospital bill: $250.', 4);
+        else tell('Back on your feet at ' + hospital.name + '. Hospital bill: $250.', 4);
         save();
       }, 4200);
+    }
+    /* Where WASTED wakes the player: the nearest hospital (RIVERSIDE MEDICAL on Palm
+       Keys, not across the sound), THE HALCYON CLINIC only on and round Monarch Isle,
+       SAINT MARLOW for the rest of the city and the county. */
+    function nearestHospital(x, y) {
+      let best = null,
+        bestD = Infinity;
+      for (const p of PLACES) {
+        if (p.kind !== 'hospital' || !p.door || (p.monarch && !nearMonarchIsle(x, y))) continue;
+        const d = Math.hypot(p.door.x - x, p.door.y - y);
+        if (d < bestD) {
+          best = p;
+          bestD = d;
+        }
+      }
+      return best || PLACES.find((p) => p.kind === 'hospital');
     }
     /* The ringing payphone's reach, shared by its prompt and E (hysteresis). */
     function payphoneInReach() {
@@ -177,7 +195,7 @@
         isAircraft(vehicle) &&
         (aircraftClearance(vehicle) > 1 || Math.hypot(vehicle.vx || 0, vehicle.vy || 0) > 12)
       ) {
-        tell('Land and stop to exit, or press ' + keyName('bail') + ' to bail out with a parachute.');
+        tell('Land and stop to exit, or ' + pressKey('bail', 'lower') + ' to bail out with a parachute.');
         return;
       }
       // Off a cliff (falls-vehicles.js): nowhere to step out to until it comes down.
@@ -192,10 +210,13 @@
         player.car = null;
         player.inv = 0.5;
         tell('ROOFTOP · ' + keyName('interact') + ' at the helicopter to fly on', 2.5);
-        tone(160, 0.06, 0.15, 'triangle');
+        vehicleDoorSound(vehicle, 'exit');
         return;
       }
       let found = false;
+      // A boat puts you over either side; a car out of the driver's door first (a - 90
+      // degrees, as carjack.js driverDoor and every NPC driver), then the passenger side,
+      // behind and in front.
       const vehicleDefinition = vehicleSpec(vehicle),
         candidates = isBoat(vehicle)
           ? [36, 48, 60, 72].flatMap((r) =>
@@ -205,7 +226,7 @@
               })),
             )
           : [0, 14, 28].flatMap((extra) =>
-              [Math.PI / 2, -Math.PI / 2, Math.PI, 0].map((a) => ({
+              [-Math.PI / 2, Math.PI / 2, Math.PI, 0].map((a) => ({
                 a: vehicle.a + a,
                 r:
                   (Math.abs(Math.sin(a)) > 0.5 ? vehicleDefinition.w : vehicleDefinition.l) / 2 +
@@ -247,7 +268,7 @@
       if (!found) {
         tell(
           isBoat(vehicle)
-            ? 'Pull alongside a wooden dock to step off, or press ' + keyName('bail') + ' to dive in.'
+            ? 'Pull alongside a wooden dock to step off, or ' + pressKey('bail', 'lower') + ' to dive in.'
             : 'No room to get out. Move away from the wall.',
         );
         return;
@@ -262,7 +283,7 @@
       player.car = null;
       player.inv = 0.5;
       tell('On foot · ' + keyName('fire') + ' to fire · hold ' + keyName('walk') + ' to walk', 1.8);
-      tone(160, 0.06, 0.15, 'triangle');
+      vehicleDoorSound(vehicle, 'exit');
     }
     function interact() {
       if (gameMode !== 'play' || player.parachute || player.thrown || rideSkipActive()) return;
@@ -277,6 +298,8 @@
         return;
       }
       if (policeBlocksMissionDelivery()) return;
+      // Over the body of someone who carried a gun: take it (ammo-supply.js).
+      if (lootInteract()) return;
       // A lobby lift on North Point Key (skyline-lift.js).
       if (northPointKeyInteract()) return;
       if (transitInteract()) return;
@@ -326,7 +349,7 @@
       if (c) {
         if (vehicleIsLocked(c)) {
           tell('LOCKED', 1.8);
-          tone(140, 0.07, 0.2, 'square');
+          lockedHandleSound();
           return;
         }
         // Somebody at the wheel: the struggle at the door (carjack-struggle.js), which
@@ -337,7 +360,7 @@
         return;
       }
       if (GARAGES.some((s) => distanceBetween(player, s) < 140))
-        tell('Drive up to the door and press ' + keyName('interact') + ': respray from $200, repairs by the damage.');
+        tell('Drive up to the door and ' + pressKey('interact', 'lower') + ': respray from $200, repairs by the damage.');
     }
     /* Taking the wheel: shared by the action key, the cab hijack and the getaway
        cars missions hand you, so every entry sets the same state. */
@@ -350,6 +373,8 @@
         enforceVehicleHandgun();
         c.abandonedFlight = false;
         if (c.type === 'police' || c.military) c.stolen = true;
+        // A police car, SWAT van or FBI SUV: the rounds it carries, once (ammo-supply.js).
+        takeVehicleArms(c);
         c.gangTarget = null;
         player.x = c.x;
         player.y = c.y;
@@ -403,7 +428,8 @@
               ' steer · ' + keyName('handbrake') + ' handbrake',
             3,
           );
-        tone(200, 0.12, 0.25, 'triangle');
+        // The door (or kickstand, hatch...) behind you (vehicle-foley-audio.js).
+        vehicleDoorSound(c, 'enter');
     }
     function roofClearanceText(c) {
       const roof = roofHeightNear(c.x, c.y),
@@ -429,6 +455,11 @@
       if (touchAim !== null) return touchAim;
       if (mouse.active && city3D) return city3D.aim(mouse.x, mouse.y);
       let a = player.car ? player.car.a : player.a;
+      // From a vehicle: a threat inside the drive-by arcs, else out of the driver's window (driveby.js).
+      if (player.car && !mouse.active) {
+        const outOfWindow = driveByAutoAim(player.car);
+        if (outOfWindow !== null) return outOfWindow;
+      }
       if (mouse.active) {
         a = Math.atan2(
           mouse.y - ((player.y - cameraTarget.y) * canvasScale + viewportHeight / 2),
@@ -498,14 +529,30 @@
         return;
       }
       if (player.roof) rooftopShot();
-      let a = aim();
-      const shotTarget = playerShotTarget(a);
+      const aimed = aim();
+      let a = aimed,
+        shotTarget = playerShotTarget(a);
       if (shotTarget) a = headingBetween(player, shotTarget);
+      // From a vehicle: only through a window the arm is out of (driveby.js); a blocked aim holds fire.
+      const driveByMuzzle = player.car && driveByProfile(player.car) ? driveByOrigin : null;
+      if (driveByMuzzle) {
+        // A target the auto-aim picked outside the arcs: fire along the aim itself.
+        if (shotTarget && driveByAim(player.car, a).blocked) {
+          shotTarget = null;
+          a = aimed;
+        }
+        const along = driveByShot(player.car, a, driveByMuzzle);
+        if (along === null) {
+          shotCooldownSeconds = Math.max(shotCooldownSeconds, 0.05);
+          return;
+        }
+        a = along;
+      }
       let muzzle = player.car ? 30 : 14;
       w.ammo--;
       shotCooldownSeconds = w.rate;
-      const ox = player.x + Math.cos(a) * muzzle,
-        oy = player.y + Math.sin(a) * muzzle;
+      const ox = driveByMuzzle ? driveByMuzzle.x : player.x + Math.cos(a) * muzzle,
+        oy = driveByMuzzle ? driveByMuzzle.y : player.y + Math.sin(a) * muzzle;
       for (let j = 0; j < (w.pellets || 1); j++) {
         let ba = a + randomBetween(-w.spread, w.spread);
         bullets.push({
@@ -531,11 +578,15 @@
       }
       particle(ox, oy, '#f4d990', 5, 70, 4);
       weaponSound(selectedWeaponIndex, ox, oy);
-      if (city3D) city3D.fire(ox, oy, a, w.rocket, entityElevation(player));
+      // The flash at the gun's height out of a vehicle's window.
+      if (city3D) city3D.fire(ox, oy, a, w.rocket, entityElevation(player), driveByMuzzle ? driveByMuzzle.height : undefined);
       player.recoilUntil = gameTime + 0.12;
       player.lastShotAt = gameTime;
       notifyViolence(player, 'gunfire', player);
       crime(w.rocket ? 0.4 : 0.075);
       shake = Math.max(shake, w.rocket ? 5 : 1.4);
+      // Recoil: the view kicks back against the aim, harder for heavier rounds
+      // (camera-feel.js); less from a car window.
+      kickCamera(a + Math.PI, 0.27 * Math.sqrt(w.dmg * (w.pellets || 1)) * (w.rocket ? 1.6 : 1) * (player.car ? 0.6 : 1));
       if (!w.ammo && w.reserve) startReload();
     }

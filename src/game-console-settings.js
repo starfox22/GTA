@@ -71,6 +71,29 @@
       },
       // The car radio and the radio box's volume row (car-radio.js RADIO VOLUME).
       radio: () => radioReport(),
+      // How hints name the actions (input-hints.js): 'keyboard', 'touch' or
+      // 'gamepad' forces that device's names, 'auto' (or nothing) follows the
+      // last input; returns the device, sample names and the prompt as shown.
+      inputHints(device) {
+        if (typeof device === 'string') setHintDevice(device);
+        updateUI();
+        return inputHintsReport();
+      },
+      // A virtual gamepad (gamepad.js), held until changed: { buttons: { A: 1,
+      // RT: 1 }, axes: [lx, ly, rx, ry] }; null lets go of everything.
+      gamepadFeed: (state) => gamepadFeed(state),
+      // The notification feed (hud-notify.js), newest first: text, tone, seconds
+      // left and in all. With text, posts one as tell() does ({ id, tone } options).
+      notices(text, seconds, options) {
+        if (typeof text === 'string') tell(text, seconds, options && typeof options === 'object' ? options : undefined);
+        return noticesReport();
+      },
+      // The city map's filters, its GO TO list and both map canvases (map-view.js);
+      // pass { layer: 'police', on: false } to switch a filter.
+      mapView(change) {
+        if (change && typeof change.layer === 'string') setMapLayer(change.layer, change.on !== false);
+        return mapViewReport();
+      },
       // Open the settings screen on a tab ('graphics', 'audio', 'gameplay',
       // 'driving', 'controls'); during play it opens over the pause menu. Screenshot tours use it.
       openSettings(tab = 'graphics') {

@@ -62,7 +62,7 @@
           [3130, 1710],
         ].map((p) => findStreetPoint(...p));
         missionState.receipt = 0;
-        setStage(0, missionState.receipts[0], 'RECEIPTS 1 / 3 · ON FOOT, HOLD E TO COLLECT');
+        setStage(0, missionState.receipts[0], 'RECEIPTS 1 / 3 · ON FOOT, HOLD ' + keyName('interact') + ' TO COLLECT');
       }
       if (missionState.index === 4) {
         setStage(0, LOC.cinema, 'PICK UP ELENA AT THE CINEMA · USE A CAR');
@@ -96,7 +96,7 @@
             altitude: ROOFTOP.height,
           },
         ];
-        setStage(0, ROOFTOP.door, 'TAKE THE BLUE HOUR ELEVATOR · E');
+        setStage(0, ROOFTOP.door, 'TAKE THE BLUE HOUR ELEVATOR · ' + keyName('interact'));
       }
       if (missionState.index === 7) {
         const d = DOCKS.find((d) => d.type === 'jetski');
@@ -143,7 +143,7 @@
               garageForCar(missionState.car)?.id === 'eastside') &&
             Math.abs(missionState.car.speed) < 8
           )
-            setStage(2, missionState.car, 'GET OUT · HOLD E BESIDE THE COUPE TO REMOVE TRACKER');
+            setStage(2, missionState.car, 'GET OUT · HOLD ' + keyName('interact') + ' BESIDE THE COUPE TO REMOVE TRACKER');
         } else if (missionState.stage === 2) {
           wantedStars = Math.max(1, wantedStars);
           if (
@@ -187,7 +187,7 @@
             setStage(
               missionState.receipt,
               missionState.receipts[missionState.receipt],
-              'RECEIPTS ' + (missionState.receipt + 1) + ' / 3 · HOLD E · BEFORE THE SHREDDER',
+              'RECEIPTS ' + (missionState.receipt + 1) + ' / 3 · HOLD ' + keyName('interact') + ' · BEFORE THE SHREDDER',
             );
           else {
             missionState.timeLimit = 0;
@@ -238,7 +238,7 @@
           setStage(
             2,
             missionState.cleanCar,
-            'EXIT · BOARD THE CLEAN SEDAN · PRESS E TO TRANSFER ELENA',
+            'EXIT · BOARD THE CLEAN SEDAN · ' + pressKey('interact') + ' TO TRANSFER ELENA',
           );
         } else if (
           missionState.stage === 3 &&
@@ -257,7 +257,7 @@
               x: 2176,
               y: 990,
             },
-            'HOLD E AT THE DOCK OFFICE TO LOAD RUSK’S BOOK',
+            'HOLD ' + keyName('interact') + ' AT THE DOCK OFFICE TO LOAD RUSK’S BOOK',
           );
         else if (
           missionState.stage === 1 &&
@@ -273,7 +273,7 @@
           crime(2, 'seen');
           setStage(2, LOC.warehouse, 'CLEAR THE WAREHOUSE GUARDS · SECOND ACCOUNT BOOK');
         } else if (missionState.stage === 2 && cleared('books'))
-          setStage(3, LOC.warehouse, 'PARK THE VAN · HOLD E TO LOAD VALE’S BOOK');
+          setStage(3, LOC.warehouse, 'PARK THE VAN · HOLD ' + keyName('interact') + ' TO LOAD VALE’S BOOK');
         else if (
           missionState.stage === 3 &&
           holdMissionAction(
@@ -323,7 +323,7 @@
               ...ROOFTOP.contact,
               altitude: ROOFTOP.height,
             },
-            'SPEAK TO MARA ON THE TERRACE · E',
+            'SPEAK TO MARA ON THE TERRACE · ' + keyName('interact'),
           );
         else if (
           (missionState.stage === 2 || missionState.stage === 3) &&
@@ -339,7 +339,7 @@
             setStage(
               3,
               missionState.scans[1],
-              'EAST SIGHTLINE · HOLD E WHILE THE PATROL IS NORTH',
+              'EAST SIGHTLINE · HOLD ' + keyName('interact') + ' WHILE THE PATROL IS NORTH',
               'mara',
               'That launch carries Vale’s courier. Watch the east channel: the patrol loops leave one gap.',
             );
@@ -350,7 +350,7 @@
                 ...ROOFTOP.contact,
                 altitude: ROOFTOP.height,
               },
-              'BOTH SIGHTLINES LOGGED · REPORT TO MARA · E',
+              'BOTH SIGHTLINES LOGGED · REPORT TO MARA · ' + keyName('interact'),
             );
         } else if (missionState.stage === 5 && !player.roof && gameMode === 'play') winMission();
       }
@@ -359,7 +359,7 @@
           setStage(
             1,
             LOC.waterCase,
-            'STOP BESIDE THE BUOY · HOLD E TO SALVAGE THE CASE',
+            'STOP BESIDE THE BUOY · HOLD ' + keyName('interact') + ' TO SALVAGE THE CASE',
             'mara',
             'You found the patrol gap. The master ledger is chained below that buoy.',
           );
@@ -426,7 +426,7 @@
                 x: 1462,
                 y: 5247,
               },
-              'STOP AT THE DOCK · E TO DISEMBARK',
+              'STOP AT THE DOCK · ' + keyName('interact') + ' TO DISEMBARK',
             );
         } else if (missionState.stage === 3 && foot) {
           missionState.timeLimit = 0;
@@ -436,7 +436,7 @@
               x: LOC.hangar.x + 25,
               y: LOC.hangar.y - 26,
             },
-            'TAKE THE CASE TO RAFE ON FOOT · E',
+            'TAKE THE CASE TO RAFE ON FOOT · ' + keyName('interact'),
           );
         }
       }
@@ -455,7 +455,7 @@
           setStage(
             2,
             findStreetPoint(LOC.hangar.x + 60, LOC.hangar.y, 8),
-            'LEAVE THE CAR · HOLD E TO RECOVER FLIGHT PAPERS',
+            'LEAVE THE CAR · HOLD ' + keyName('interact') + ' TO RECOVER FLIGHT PAPERS',
           );
         else if (
           missionState.stage === 2 &&
@@ -507,7 +507,7 @@
           'mara',
           briefing ? 'Eyes on the channel' : 'The missing account',
           briefing
-            ? 'The two books disagree. Use the marked viewpoints. Hold E when the launch reaches the south buoy, then when it clears the north channel; I need a safe path to the hidden master ledger.'
+            ? 'The two books disagree. Use the marked viewpoints. Hold ' + keyName('interact') + ' when the launch reaches the south buoy, then when it clears the north channel; I need a safe path to the hidden master ledger.'
             : 'The courier hid the master ledger at the channel buoy. Use the patrol gap you found. Rafe can disable its beacon at Southport. Return downstairs for the job.',
           () =>
             setStage(
@@ -519,8 +519,8 @@
                     altitude: ROOFTOP.height,
                   },
               briefing
-                ? 'WEST SIGHTLINE · HOLD E WHEN THE LAUNCH REACHES SOUTH'
-                : 'RETURN DOWNSTAIRS · E AT THE ELEVATOR',
+                ? 'WEST SIGHTLINE · HOLD ' + keyName('interact') + ' WHEN THE LAUNCH REACHES SOUTH'
+                : 'RETURN DOWNSTAIRS · ' + keyName('interact') + ' AT THE ELEVATOR',
             ),
           false,
           'CONTINUE',

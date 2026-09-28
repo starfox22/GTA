@@ -195,16 +195,24 @@
             >Tap a destination · Drag to pan · Pinch or use + / − to zoom</span
           >
         </div>
-        <canvas id="bigmap" width="800" height="660"></canvas>
+        <!-- The map and, beside it (below on narrow screens), its filters and the
+             GO TO list (map-view.js builds both when the map opens). -->
+        <div class="map-body">
+          <canvas id="bigmap" width="800" height="660"></canvas>
+          <aside class="map-side" aria-label="Map filters and places">
+            <h3>SHOW ON MAP</h3>
+            <div class="map-filters" id="mapFilters"></div>
+            <h3>GO TO · NEAREST</h3>
+            <div class="map-places" id="mapPlaces"></div>
+          </aside>
+        </div>
         <div class="legend">
-          <span><i class="yellow"></i> JOB / PAYPHONE</span><span><i class="green"></i> HEALTH</span
-          ><span><i class="purple"></i> AMMO</span><span><i class="blue"></i> RESPRAY</span
-          ><span><i class="bikeshare-key"></i> BIKE SHARE · $5</span
+          <span><i class="yellow"></i> JOB / PAYPHONE</span><span><i class="waypoint-key"></i> YOUR ROUTE</span
+          ><span><i class="green"></i> HEALTH</span><span><i class="purple"></i> AMMO</span
           ><span><i class="police-map-key"></i> POLICE · FLASHING = PURSUIT</span
-          ><span>⊕ POLICE HELICOPTER</span><span>H HELIPAD</span><span>U RAILWAY UNDERPASS</span
-          ><span>M RAIL STATION</span><span>GUN ARMORY</span><span>ZZ SLEEP</span
-          ><span>CAS CASINO</span><span>+ HOSPITAL</span><span>BOAT / JET · WATERCRAFT</span
-          ><span>LIFT ROOFTOP</span><span>RUST / VIOLET GANGS</span><span>▲ YOU</span>
+          ><span>⊕ POLICE HELICOPTER</span><span>U RAILWAY UNDERPASS</span><span>GUN ARMORY</span
+          ><span>ZZ SLEEP</span><span>CAS CASINO</span><span>+ HOSPITAL</span><span>BOAT / JET · WATERCRAFT</span
+          ><span>LIFT ROOFTOP</span><span>▲ YOU</span>
         </div>
       </div>
     </div>

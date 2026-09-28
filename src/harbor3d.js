@@ -328,12 +328,13 @@
               end = cargoPosition(m.car, i);
             g.position.set(
               p.x + (end.x - p.x) * t,
-              Math.sin(t * Math.PI) * 40 + t * 9,
+              Math.sin(t * Math.PI) * 40 + t * end.altitude,
               p.y + (end.y - p.y) * t,
             );
-            g.scale.setScalar(1 - t * 0.36);
-          }
-          g.rotation.y = 0.04;
+            // Shrinks to the truck crate's size and turns to the truck's heading as it lands.
+            g.scale.setScalar(1 - t * (1 - VINNY_CARGO.scale));
+            g.rotation.y = 0.04 + normalizeAngle(-m.car.a - 0.04) * t;
+          } else g.rotation.y = 0.04;
         }
         harborBayRing.visible = !!m && m.stage === 2;
         harborBayRing.material.opacity = 0.09 + 0.04 * Math.sin(gameTime * 3);

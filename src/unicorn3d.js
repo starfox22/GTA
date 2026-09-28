@@ -130,7 +130,11 @@
             // A little of the sky's colour is kept, so black reads as black
             // (not navy) under a blue noon and still warms at sunset.
             sky = mix( vec3( dot( sky, vec3( 0.3, 0.59, 0.11 ) ) ), sky, 0.55 );
-            return sky * envMapIntensity;
+            // Surfaces facing the ground (under the chest and belly) look at the
+            // lawn and her own shade, not the sky: folded up like the flanks they
+            // lit a bright patch under the chest.
+            float underside = smoothstep( 0.05, -0.6, inverseTransformDirection( normal, viewMatrix ).y );
+            return sky * envMapIntensity * ( 1.0 - 0.85 * underside );
           #else
             return vec3( 0.0 );
           #endif

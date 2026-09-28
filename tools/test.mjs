@@ -17,7 +17,11 @@
 //     const r = await t.call('brakeTest', 'sedan', 100);   // a NAMED console method
 //     t.near(r.distance, 30, 45, 'sedan 100-0 m');
 //   }
-// t.call(method, ...args), t.keys(codes, seconds) / t.wait(seconds) (console simulate),
+// t.call(method, ...args), t.keys(codes, seconds[, { real: true }]) / t.wait(seconds) (console simulate;
+// real: true presses real keys through the page), t.realWait(seconds) (wall clock),
+// t.mouse(x, y, { seconds, down, keys, taps }) (the real pointer at viewport pixel x, y, held
+// for `seconds` of wall clock with the left button down, `keys` held and repeating, `taps`
+// pressed afresh every 0.3 s),
 // t.assert(cond, msg), t.near(value, lo, hi, label), t.finite(obj, label) (no NaN /
 // Infinity anywhere inside), t.note(text) (shown with --verbose). A test fails on a
 // thrown error, a failed assertion or any console error it caused.
@@ -48,7 +52,9 @@ async function op(o) {
 function makeApi(notes) {
   return {
     call: (method, ...args) => op({ op: 'call', method, args }),
-    keys: (codes, seconds) => op({ op: 'keys', codes: [].concat(codes), seconds }),
+    keys: (codes, seconds, { real = false } = {}) => op({ op: 'keys', codes: [].concat(codes), seconds, real }),
+    mouse: (x, y, { seconds = 0, down = false, keys = [], taps = [] } = {}) => op({ op: 'mouse', x, y, seconds, down, codes: [].concat(keys), taps: [].concat(taps) }),
+    realWait: (seconds) => op({ op: 'wait', seconds, real: true }),
     wait: (seconds) => op({ op: 'wait', seconds }),
     assert(cond, msg) {
       if (!cond) throw new Failure(msg);

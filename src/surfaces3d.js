@@ -128,6 +128,33 @@
       const citySheet = groundSheetUniforms(CITY_WIDTH, CITY_HEIGHT, terrain.width, terrain.height, cityField, GROUND_STYLE.city);
       groundMesh.material.onBeforeCompile = (shader) => groundDetailPatch(shader, citySheet);
       groundMesh.material.customProgramCacheKey = () => 'city-ground';
+      // Sunset Pier lies north of the county field's box and Fort Sentinel is a
+      // sheet of its own: each gets a small field for its kerbs and lane wear.
+      // (A fort road is a butt-capped, mitre-joined stroke: a box.)
+      const roadBox = (a, b, width, lane) => ({
+        box: [Math.min(a[0], b[0]) - width / 2, Math.min(a[1], b[1]) - width / 2, Math.max(a[0], b[0]) + width / 2, Math.max(a[1], b[1]) + width / 2],
+        lane,
+      });
+      function fortCarriageways(tile) {
+        const pr = SENTINEL.perimeterRoad,
+          ring = [[pr.x0, pr.y0], [pr.x1, pr.y0], [pr.x1, pr.y1], [pr.x0, pr.y1], [pr.x0, pr.y0]],
+          roads = countyCarriageways();
+        for (let i = 1; i < ring.length; i++) roads.push(roadBox(ring[i - 1], ring[i], pr.width, pr.width / 2));
+        for (const r of SENTINEL.roads) roads.push(roadBox(r.points[0], r.points[1], r.width, r.width / 2));
+        const o = SENTINEL.gate.opening;
+        roads.push({ box: [tile.x, o[0] - 12, MILITARY.x + 60, o[1] + 12], lane: 0 });
+        return roads;
+      }
+      const lot = PARK_CAR_PARK,
+        pierField = buildGroundField(
+          PARK_TILE,
+          4,
+          [...countyCarriageways(), { box: [lot.x, lot.y, lot.x + lot.w, lot.y + lot.h], lane: 0 }],
+          () => GROUND_STYLE.palmKeys,
+          () => false,
+        );
+      groundDataReport.fieldBytes += pierField.bytes;
+      let fortField = null;
       for (const m of countyGroundMaterials) {
         const entry = countyTileTextures.find((e) => e.texture === m.map),
           tile = entry && entry.tile,
@@ -137,11 +164,18 @@
         if (tile && tile.x === MONARCH_TILE.x && tile.y === MONARCH_TILE.y) {
           field = monarchField;
           style = GROUND_STYLE.monarch;
+        } else if (tile && tile.ground === 'fort') {
+          fortField = fortField || buildGroundField(tile, 4, fortCarriageways(tile), () => GROUND_STYLE.docks, () => false);
+          groundDataReport.fieldBytes += fortField.bytes;
+          field = fortField;
+        } else if (tile && tile.x === PARK_TILE.x && tile.y === PARK_TILE.y) {
+          field = pierField;
+          style = GROUND_STYLE.palmKeys; // the resort's paving
         } else if (tile && tile.x >= 0 && tile.y >= 0) {
           field = countyField;
           style = GROUND_STYLE.county;
         } else if (tile && tile.style) style = GROUND_STYLE[tile.style]; // North Point Key's limestone (skyline-islet.js)
-        else if (tile && tile.y < CITY_TOP) style = GROUND_STYLE.palmKeys; // Sunset Pier's resort paving
+        else if (tile && tile.y < CITY_TOP) style = GROUND_STYLE.palmKeys;
         const image = m.map ? m.map.image : { width: 1, height: 1 },
           sheet = groundSheetUniforms(tile ? tile.w : 1, tile ? tile.h : 1, image.width, image.height, field, style);
         m.onBeforeCompile = (shader) => groundDetailPatch(shader, sheet, chunk);
