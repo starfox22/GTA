@@ -118,6 +118,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
   opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
   for the freefall cue: change them there only.
+- `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
+  from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
