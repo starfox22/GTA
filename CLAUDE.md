@@ -91,8 +91,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
-- No ammo, armor or weapon pickups: rounds come from gun shops, `lootInteract` (bodies, once)
-  and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
+- No pickups on the street at all: health is bought indoors (hospitals, diners, bars, clubs,
+  motels, county lodges: `serviceAction`, citylife-police.js); rounds come from gun shops,
+  `lootInteract` (bodies, once) and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
+- `bleed(entity, severity, heading, kind)` (blood.js) is the only way to add a wound's blood; a
+  pool only forms under a body on the ground (`bodyPool`) and spreads in `updateBlood`.
 - Shooting from a vehicle goes through `driveByAim(vehicle, heading)` (driveby.js): arcs per
   window and body live in `spec.driveBy`; the bullet and the pose both use `driveByGrip`. A car fires all round, a
   body with no rear window 270°; a blocked aim fires nothing and shows only the cross
