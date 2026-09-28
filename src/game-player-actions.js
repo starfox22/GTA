@@ -533,7 +533,7 @@
       let a = aimed,
         shotTarget = playerShotTarget(a);
       if (shotTarget) a = headingBetween(player, shotTarget);
-      // From a vehicle: only through a window the arm is out of, along its arc (driveby.js).
+      // From a vehicle: only through a window the arm is out of (driveby.js); a blocked aim holds fire.
       const driveByMuzzle = player.car && driveByProfile(player.car) ? driveByOrigin : null;
       if (driveByMuzzle) {
         // A target the auto-aim picked outside the arcs: fire along the aim itself.
@@ -546,7 +546,6 @@
           shotCooldownSeconds = Math.max(shotCooldownSeconds, 0.05);
           return;
         }
-        if (driveByMuzzle.clamped) shotTarget = null;
         a = along;
       }
       let muzzle = player.car ? 30 : 14;

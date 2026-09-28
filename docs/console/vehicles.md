@@ -21,6 +21,7 @@
 | `flight()` | The player's aircraft instruments as the flight HUD shows them: airspeed km/h, altitude and AGL m, vertical speed m/s, heading, pitch, bank, throttle lever and spooled power, flaps, gear, g, angle of attack, stall speed, stall / gear warnings, buffet, whether the HUD is up and whether its instruments are on (`instruments`, the Flight HUD setting), and on the ground on a runway `runway` (name, designation this way, metres left) (`null` outside an aircraft). Flaps and gear are keydown actions: press X / Z / L through the page keyboard |
 | `launch(metersPerSecond)` | Set the current vehicle moving along its heading, e.g. to ram a roadblock |
 | `drivingState()` | The player's road vehicle through the tyre model (driving.js): the assists fitted and switched on, the HUD lamps (`na`, `off`, `ready`, `active`), the character (front weight, CG height over wheelbase, brake bias, drive, lift-off), the pedal and steering ramps, each axle's slip, lock, ABS pressure and sideways share, the wheelspin, the stability yaw and the tyre noise level |
+| `tyreEffects(reset)` | The player's tyres (tyre-effects.js): `burnout` (active, heat 0..1, seconds, driven axle), `emitting` now (kind `smoke`/`sand`/`lawn`/`dust`/`offroad`/`spray`, puffs a second per wheel, axle), `ground`, `wheelSpin`, and `totals` since the last `reset` (true zeroes them first): smoke, dust and spray puffs (before the graphics tier's share), skid marks laid, metres driven, burnout seconds and its top km/h |
 | `speedBox()` | The speed box as shown: mode, label, figure and unit line (hud.js SPEED BOX) |
 
 ## damage (`damageConsole() in src/damage.js`)
@@ -68,7 +69,8 @@
 
 | Method | Purpose |
 | --- | --- |
-| `driveBy()` | The current vehicle's drive-by: body (`cabin`, `engine`, `bulkhead`, `box`, `cabWall`, `partition`, `open`, `rider`, `deck`, `cockpit`), rear (`glass`, `open`, null), the arcs in degrees off the nose (negative left) with their window, how far the arm is out, the window it is out of, the aim (`clear` / `clamped` / `blocked`), a shot waiting for the arm, the rear glass state, the windows wound down and counts (shots, refused, clamped, rear screens burst, windows lowered) |
+| `driveBy()` | The current vehicle's drive-by: body (`cabin`, `engine`, `bulkhead`, `box`, `cabWall`, `partition`, `open`, `rider`, `deck`, `cockpit`), front (`glass`, null) and rear (`glass`, `open`, null), the arcs in degrees off the nose (negative left) with their window, how far the arm is out, the window it is out of, the aim (`clear` / `blocked`), a shot waiting for the arm, the blocked-aim cross (showing, degrees off the nose), the windscreen and rear glass states, the windows wound down and counts (shots, refused, rear screens and windscreens burst, windows lowered) |
 | `driveByArcs(type)` | A vehicle type's drive-by profile and arcs (no vehicle needed) |
-| `driveByCheck(relDegrees)` | Where an aim `relDegrees` off the nose would fire from the current vehicle: ok, clamped (to which edge), blocked with the hint text, no shot |
+| `driveByCheck(relDegrees)` | Where an aim `relDegrees` off the nose would fire from the current vehicle: ok and the window, or blocked with the nearest edge and the reason, no shot |
+| `driveByScreenPoint(relDegrees, metres)` | The viewport pixel of the point `metres` (default 20) from the current vehicle, `relDegrees` off its nose, at gun height: where a test puts the real pointer (`t.mouse`) |
 | `driveByAim(relDegrees, fire)` | Hold the aim `relDegrees` off the nose as the aim stick does (`null` lets go); `fire` true holds the trigger, `'raise'` holds the arm out without firing (pictures); step with `wait` |

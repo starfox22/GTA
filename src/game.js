@@ -142,6 +142,7 @@
     // @include src/settings.js
     // @include src/god-panel.js
     // @include src/driving.js
+    // @include src/tyre-effects.js
     // @include src/hud.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.

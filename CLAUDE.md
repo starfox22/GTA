@@ -57,7 +57,8 @@ boots `?test` (demo gate live). New test: one file `tools/tests/<name>.mjs` expo
 that depends on exact timing (keys, goals, calls) should `holdSimulation(true)` and step
 with `t.wait`/`t.keys`, then release it. Console calls like `interact()` skip the per-frame key
 handling: when removing or changing an action, also press the real key (`t.keys(code, s, { real: true })`,
-tools/tests/enter-key.mjs). The dev server holds a browser slot while awake: `stop` it
+tools/tests/enter-key.mjs); `t.mouse(x, y, {seconds, down, keys, taps})` / `dev.mjs mouse` drive the real
+pointer (screen pixels from console methods such as `driveByScreenPoint`). The dev server holds a browser slot while awake: `stop` it
 when you are done with it (and before smoke/tour if slots are short).
 
 **Publish** (only when asked): `python3 tools/build.py --split-media dist/publish`, then the
@@ -93,7 +94,9 @@ packs with plain `<script src>` so the zip still plays from file://.
 - No ammo, armor or weapon pickups: rounds come from gun shops, `lootInteract` (bodies, once)
   and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
 - Shooting from a vehicle goes through `driveByAim(vehicle, heading)` (driveby.js): arcs per
-  window and body live in `spec.driveBy`; the bullet and the pose both use `driveByGrip`.
+  window and body live in `spec.driveBy`; the bullet and the pose both use `driveByGrip`. A car fires all round, a
+  body with no rear window 270°; a blocked aim fires nothing and shows only the cross
+  (`#driveByCross`); at the wheel the driving keys never take the aim from the pointer (game-input.js).
 - **Police need a report**: `crime(amount, how)` with no stars counts only if police see or
   hear it or a witness call completes (witnesses.js); scripted crimes that must raise stars
   pass `'seen'`; `witnessReport(person, kind, x, y)` makes someone phone 911. Crowd
@@ -115,6 +118,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
   opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
   for the freefall cue: change them there only.
+- `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
+  from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
