@@ -314,7 +314,10 @@
       if (weaponSlotKey(actions) >= 0) selectWeapon(weaponSlotKey(actions));
       if (is('cycleWeapon')) cycleWeapon();
       if (is('missionCard')) toggleMissionCard();
-      if (['forward', 'back', 'left', 'right'].some(is)) mouse.active = false;
+      // On foot the movement keys hand the aim back to the keyboard. At the wheel they only
+      // steer: the pointer keeps the drive-by aim (driveby.js), or a shot aimed behind would
+      // leave through the driver's window after every touch of the steering.
+      if (!player.car && ['forward', 'back', 'left', 'right'].some(is)) mouse.active = false;
     });
     /* weapon1..weapon6 -> 0..5, or -1. */
     function weaponSlotKey(actions) {

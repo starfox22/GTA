@@ -150,54 +150,33 @@
   height: 14px;
   margin: -7px 0 0 -7px;
 }
-/* Drive-by aim (driveby.js): a faint line from the muzzle out of the window to a ring
-   on the line of fire. Clamped to an arc's edge it turns amber; outside every arc
-   (no shot) it dims and the ring is struck through; while the arm comes out it is faint. */
-#driveByReticle {
-  position: absolute;
-  inset: 0;
-  z-index: 7;
-  pointer-events: none;
-  transition: opacity 0.15s;
-}
-#driveByReticle i {
+/* Drive-by blocked aim (driveby.js updateDriveByCross): a small cross along the aim for
+   half a second when the trigger is pulled toward a sector the gun cannot reach (a truck's
+   cab wall behind the seats). There is no aim line or ring. */
+#driveByCross {
   position: absolute;
   left: 0;
   top: 0;
-  display: block;
+  z-index: 7;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  pointer-events: none;
 }
-#driveByRing {
-  width: 18px;
-  height: 18px;
-  margin: -9px 0 0 -9px;
-  border: 2px solid rgba(244, 244, 236, 0.85);
-  border-radius: 50%;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.55);
-}
-#driveByLine {
-  height: 1px;
-  margin-top: -0.5px;
-  transform-origin: 0 50%;
-  background: linear-gradient(90deg, rgba(244, 244, 236, 0), rgba(244, 244, 236, 0.5));
-}
-#driveByReticle.raising {
-  opacity: 0.45;
-}
-#driveByReticle.clamped #driveByRing {
-  border-color: rgba(232, 176, 74, 0.9);
-}
-#driveByReticle.blocked {
-  opacity: 0.35;
-}
-#driveByReticle.blocked #driveByRing::after {
+#driveByCross::before,
+#driveByCross::after {
   content: '';
   position: absolute;
-  left: 6px;
-  top: -3px;
+  left: 5px;
+  top: -1px;
   width: 2px;
-  height: 20px;
-  background: rgba(244, 244, 236, 0.85);
+  height: 14px;
+  background: rgba(244, 244, 236, 0.8);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
   transform: rotate(45deg);
+}
+#driveByCross::after {
+  transform: rotate(-45deg);
 }
 /* WASTED and BUSTED: the world drains of colour in slow motion. */
 body.wasted #scene,

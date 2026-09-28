@@ -69,7 +69,8 @@
 
 | Method | Purpose |
 | --- | --- |
-| `driveBy()` | The current vehicle's drive-by: body (`cabin`, `engine`, `bulkhead`, `box`, `cabWall`, `partition`, `open`, `rider`, `deck`, `cockpit`), rear (`glass`, `open`, null), the arcs in degrees off the nose (negative left) with their window, how far the arm is out, the window it is out of, the aim (`clear` / `clamped` / `blocked`), a shot waiting for the arm, the rear glass state, the windows wound down and counts (shots, refused, clamped, rear screens burst, windows lowered) |
+| `driveBy()` | The current vehicle's drive-by: body (`cabin`, `engine`, `bulkhead`, `box`, `cabWall`, `partition`, `open`, `rider`, `deck`, `cockpit`), front (`glass`, null) and rear (`glass`, `open`, null), the arcs in degrees off the nose (negative left) with their window, how far the arm is out, the window it is out of, the aim (`clear` / `blocked`), a shot waiting for the arm, the blocked-aim cross (showing, degrees off the nose), the windscreen and rear glass states, the windows wound down and counts (shots, refused, rear screens and windscreens burst, windows lowered) |
 | `driveByArcs(type)` | A vehicle type's drive-by profile and arcs (no vehicle needed) |
-| `driveByCheck(relDegrees)` | Where an aim `relDegrees` off the nose would fire from the current vehicle: ok, clamped (to which edge), blocked with the hint text, no shot |
+| `driveByCheck(relDegrees)` | Where an aim `relDegrees` off the nose would fire from the current vehicle: ok and the window, or blocked with the nearest edge and the reason, no shot |
+| `driveByScreenPoint(relDegrees, metres)` | The viewport pixel of the point `metres` (default 20) from the current vehicle, `relDegrees` off its nose, at gun height: where a test puts the real pointer (`t.mouse`) |
 | `driveByAim(relDegrees, fire)` | Hold the aim `relDegrees` off the nose as the aim stick does (`null` lets go); `fire` true holds the trigger, `'raise'` holds the arm out without firing (pictures); step with `wait` |

@@ -24,6 +24,8 @@
     function repairVehicle(vehicle) {
       vehicle.hp = vehicle.maxhp;
       vehicle.damage = freshDamage();
+      // The side windows a drive-by wound down go back up (driveby.js).
+      vehicle.windowsDown = null;
       vehicle.dents = [];
       vehicle.hop = null;
       vehicle.damageVersion = (vehicle.damageVersion || 0) + 1;
