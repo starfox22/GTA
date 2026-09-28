@@ -22,7 +22,7 @@
      * the ground ('tumble', by the speed along it), the drop into it, and the road
      * rash of the slide. A fall that is survived leaves no blood on the road
      * (hurt() kind 'fall', no wound for traffic's riders); a rider it kills
-     * bleeds as any body does (bleed()). The bike goes on alone on its side
+     * pools as any body does (blood.js bodyPool). The bike goes on alone on its side
      * (`fallen`: it tumbles while fast, then lies there and slides on Coulomb
      * friction) until someone picks it up by getting on.
      *
@@ -33,7 +33,7 @@
      */
     const RIDER_THROW = {
         // Delta-v that throws the rider: a motorbike's, a bicycle's.
-        motorbike: 24 * KMH,
+        motorbike: 20 * KMH,
         bicycle: 18 * KMH,
         // Speed into the surface on a landing that throws the rider (m/s).
         landing: 6.5 * UNITS_PER_METRE,
@@ -54,16 +54,17 @@
       lowside: { keep: 1, climb: 0.4, spin: 0.25, roll: 0.3 },
       loopout: { keep: 0.95, climb: 0, spin: -0.3, roll: 0.5 },
     };
-    // Whether someone is riding `c` (the player, or traffic's rider on its bike).
-    function riderAboard(c) {
+    // Whether someone is riding `c` (the player, or traffic's rider on its bike);
+    // `wrecking`: the crash that just wrecked it still throws them.
+    function riderAboard(c, wrecking = false) {
       const spec = vehicleSpec(c);
-      if (!spec?.bike || c.hp <= 0 || c.fallen) return false;
+      if (!spec?.bike || (c.hp <= 0 && !wrecking) || c.fallen) return false;
       return c === player.car || (!!c.ai && c.occupied !== false && !c.cop);
     }
     /* From collisionImpact: a crash of `deltaV` on a two-wheeler. `others` are the
        vehicles in the crash (the rider vaults a car's roof, not a van's side). */
     function riderCrash(c, deltaV, other) {
-      if (!riderAboard(c)) return false;
+      if (!riderAboard(c, true)) return false;
       const spec = vehicleSpec(c);
       if (deltaV < (spec.bicycle ? RIDER_THROW.bicycle : RIDER_THROW.motorbike)) return false;
       // The speed the bike had going in (resolveContact keeps it), which the rider still has.
@@ -126,8 +127,12 @@
       const climb = style.climb === null ? clamp(speed * 0.22, 0.6 * UNITS_PER_METRE, 6 * UNITS_PER_METRE) : style.climb * UNITS_PER_METRE,
         // The bike and whatever it hit are passed through for a moment while the
         // body clears them; a car low enough is vaulted, a van's side is not.
-        throwState = riderThrowState(vx * style.keep, vy * style.keep, RIDER_SEAT, climb, cause, [c, other && riderObstacleTop(other) - entityElevation(other) < 2.2 * UNITS_PER_METRE ? other : null], c);
+        // (A car's roof is low enough; a van's or an SUV's side is struck.)
+        throwState = riderThrowState(vx * style.keep, vy * style.keep, RIDER_SEAT, climb, cause, [c, other && riderObstacleTop(other) - entityElevation(other) < 1.6 * UNITS_PER_METRE ? other : null], c);
       throwState.spin *= style.spin;
+      // The legs and body into the bars (collisionImpact's crashInjury, already
+      // dealt): counted toward being knocked out.
+      throwState.crashHurt = deltaV ? crashInjury(c, deltaV) : 0;
       throwState.rollShare = style.roll;
       if (loopout) throwState.heading = c.a;
       // The rider starts at the handlebars, just ahead of the bike's middle (off
@@ -343,8 +348,9 @@
             // Lying still a moment, longer the worse it was: up again at once
             // after a roll, a few seconds after a bad one, out cold after a very
             // bad one.
-            t.knockedOut = t.hurt >= RIDER_KNOCKOUT;
-            t.downFor = t.knockedOut ? clamp(5 + (t.hurt - RIDER_KNOCKOUT) / 8, 5, 9) : clamp(0.5 + t.hurt / 14, 0.5, 3.4);
+            const total = t.hurt + (t.crashHurt || 0);
+            t.knockedOut = total >= RIDER_KNOCKOUT;
+            t.downFor = t.knockedOut ? clamp(5 + (total - RIDER_KNOCKOUT) / 8, 5, 9) : clamp(0.5 + total / 14, 0.5, 3.4);
             break;
           }
         }
@@ -358,10 +364,9 @@
       if (!t) return false;
       const up = stepThrownBody(player, t, deltaSeconds, (amount) => {
         if (player.hp <= 0) return;
-        // Kind 'fall': a fall that is survived draws no blood (hurt()).
+        // Kind 'fall': a fall that is survived draws no blood; one that kills
+        // bleeds and pools under the body as any death does (hurt(), blood.js).
         hurt(Math.min(amount, 1000), 'fall');
-        // Killed by it: the body bleeds where it lies, as any body does.
-        if (player.hp <= 0) bleed(player, 1.5, t.heading + Math.PI);
       });
       player.a = t.heading;
       if (player.thrown && t.phase === 'down' && t.knockedOut && !t.toldOut) {
@@ -393,8 +398,9 @@
           person.flee = 8;
           return;
         }
+        // Killed: a death like any other, and the pool under the body (blood.js).
         strikePerson(person, person.hp + 1, e.heading + Math.PI, null, false, 'impact');
-        bleed(person, 1.6, e.heading + Math.PI);
+        bodyPool(person, 'impact', e.heading + Math.PI);
       });
       person.a = e.heading;
       if (person.hp <= 0) {
@@ -447,13 +453,16 @@
           slidM: +worldMeters(t.slid).toFixed(1),
           fromM: +worldMeters(Math.hypot(player.x - t.from.x, player.y - t.from.y)).toFixed(1),
         };
+      const blood = bloodReport(player.x, player.y, 240).near;
       return {
         thrown: pack(player.thrown),
         hp: Math.round(player.hp),
         dead: gameMode === 'dead' || player.hp <= 0,
         onFoot: !player.car,
-        // Blood on the ground within 40 m of the player (a fall survived leaves none).
-        bloodNear: bloodPools.filter((b) => Math.abs(b.x - player.x) < 320 && Math.abs(b.y - player.y) < 320).length,
+        // Wound blood (not tyre tracks) within 30 m of the player, and the pools
+        // among it: a fall survived leaves none (blood.js bloodReport).
+        bloodNear: blood.pool + blood.spatter + blood.drop + blood.stain,
+        poolsNear: blood.pool,
         throws: riderThrows.map((r) => ({
           who: r.who,
           type: r.type,
