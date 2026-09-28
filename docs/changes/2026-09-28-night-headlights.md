@@ -1,0 +1,7 @@
+# Night headlights: no junction white-out, beams blocked by what stands in them
+- A junction with cars waiting on every arm no longer burns to a white sheet: all vehicle light a surface takes shares one soft-capped budget, so overlapping beams read a little brighter than one, never floodlit; the same in rain (the lit rain and the beam haze no longer stack into a grey veil, and a wet street mirrors car beams as streaks, not a milky sheen).
+- Low beams are real pools: a lane and a half wide, from a couple of metres out to ~40 m (the long throw stays on the mountain roads), a narrower fan with less wide flood, stray light above the cut-off fading within a few degrees (the car ahead's roof is no longer lit like the road).
+- Beam shadows for the nearest cars, not only the player's: the car in front, people (the player on foot too), trees, lamp posts, signals and street furniture block the light behind them (MEDIUM 2 cars, HIGH 6, ULTRA 8).
+- Night bloom only on the lights themselves (lamp lenses, street lamps, neon), not on lit paving.
+- Internals: the beam pattern, strength and budget are game side in headlight-beam.js (`lowBeamIntensity`, `headlightRoadLight`, the JS mirror of CAR LAMPS); BEAM SHADOWS draws one mask tile per slot (4 x 2 grid, 1024 x 384); quality tiers gain `beamShadows`.
+- Console: `headlightBudget(lamps, points)`, `lookSwitches({ vehicleLights })`, `headlights().shadowSlots`; test tools/tests/headlight-budget.mjs.

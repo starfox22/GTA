@@ -114,7 +114,7 @@
         // sunlit pale paving itself crossed the knee and hung a milky veil over
         // the street); after dark the lights themselves (lamps, neon, windows,
         // headlight glows), not the pale paving and paint a beam lights up.
-        postLook.bloomThreshold = 3.3 - night * 1.9 - dusk * 0.7;
+        postLook.bloomThreshold = 3.3 - night * 0.7 - dusk * 0.7;
         postLook.bloomStrength = 0.18 + night * 0.32 + dusk * 0.12;
         // Rich rather than loud: a little saturation, more vibrance (it lifts
         // the muted paint, awnings and planting, not what is already strong).
