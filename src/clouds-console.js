@@ -54,7 +54,7 @@
         // Freefall from `metres` above the ground (default 700) over a thick cloud ('cloud') or a
         // gap ('gap'), aimed where the drifting cloud will be when the jumper reaches it.
         cloudJump(metres = 700, kind = 'cloud') {
-          const fallSeconds = Math.max(0, metres - worldMeters(cloudBaseAt(player.x, player.y))) / 50 + 2,
+          const fallSeconds = Math.max(0, metres - worldMeters(cloudBaseAt(player.x, player.y))) / worldMeters(PARACHUTE_TERMINAL) + 2,
             spot = cloudSpot(kind, player.x, player.y, fallSeconds, true);
           if (!spot) return null;
           const state = consoleBailOut(metres, spot.x, spot.y, player.a);

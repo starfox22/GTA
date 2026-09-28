@@ -10,29 +10,43 @@
        once it has been let go, pulls the ripcord. Leave it and the jumper meets the
        ground at freefall speed (falls-body.js splatPlayer). A pull is not an open
        canopy: the deployment runs in real stages (DEPLOYMENT below) and from
-       terminal speed takes about 4.5 s and 178 m, so it has to be timed. Opened too
+       terminal speed takes about 4.7 s and 200 m, so it has to be timed. Opened too
        low, the jumper meets the ground still fast (playerImpact: hurt, or dead).
        The freefall cue on screen (FREEFALL CUE below) counts the height down against
        the height the opening needs from the current fall rate, calls OPEN SOON and
        OPEN NOW in time, and then follows the opening until the canopy flies. */
-    // Belly-to-earth freefall tops out at about 50 m/s; the canopy settles at 3.5 m/s.
-    const PARACHUTE_TERMINAL = 50 * UNITS_PER_METRE,
-      /* DEPLOYMENT, from the pull (a ram-air sport rig, seconds):
-           pilot   0.7   the pilot chute is thrown, inflates, pulls the pin, lifts the bag;
-           lines   1.0   the bag leaves the container and the lines pay out; line stretch
-                         swings the jumper upright;
-           snivel  1-2   out of the bag, the canopy snivels, held half-closed by the slider
-                         (1 s pulled from rest, 2 s at terminal speed);
-           snap    0.8   the slider runs down and the canopy bangs open: the opening shock.
-         The drag comes in along the way (PARACHUTE_DEPLOY_DRAG): pulled at terminal speed
-         it is open 4.5 s and 178 m later, down to 6 m/s after a 4 g shock; pulled at a few
-         m/s (straight off a hovering helicopter) 3.6 s and 54 m. */
-      PARACHUTE_DEPLOY = { pilot: 0.7, lines: 1, snivel: 1, snivelFast: 1, snap: 0.8 },
+    // Belly-to-earth freefall tops out at about 54 m/s (120 mph); the canopy settles at 3.5 m/s.
+    const PARACHUTE_TERMINAL = 54 * UNITS_PER_METRE,
+      /* DEPLOYMENT, from the pull (a ram-air sport main, seconds):
+           pilot   0.8   the hand goes to the pouch and throws the pilot chute, which
+                         inflates in the burble, stretches the bridle, pulls the
+                         closing pin and lifts the bag off the container;
+           lines   1.0   the bag leaves the container and the lines pay out of their
+                         stows; line stretch (1.8 s after the pull) snatches the
+                         jumper upright;
+           snivel  1.1-2 out of the bag, the canopy snivels: the slider at the top of the
+                         lines holds it half closed while the cells pressurise from the
+                         centre out (1.1 s pulled from rest, 2 s at terminal speed);
+           snap    0.9   the slider runs down the lines, the end cells fill and the
+                         canopy takes the load: the opening shock builds to a peak
+                         under 4 g (PARACHUTE_OPEN_SHOCK, soft) rather than a bang.
+         Measured at 30 Hz (tools/tests/parachute-deploy.mjs), pulled at 54 m/s: line
+         stretch 1.8 s / 95 m after the pull (pilot 45 m, bag and lines 50 m), out of
+         the snivel at 3.8 s / 183 m still falling 30 m/s, flying at 4.7 s and 200 m
+         at 7 m/s after a 3.8 g peak; pulled at 30 m/s 4.3 s / 138 m; pulled at a few
+         m/s (straight off a hovering helicopter) 3.8 s / 57 m. Once it flies, the
+         canopy is on its deployment brakes (PARACHUTE_BRAKES_SET) until the jumper
+         unstows the toggles, and then surges forward to trim speed. */
+      PARACHUTE_DEPLOY = { pilot: 0.8, lines: 1, snivel: 1.1, snivelFast: 0.9, snap: 0.9 },
       PARACHUTE_PHASES = ['pilot', 'lines', 'snivel', 'snap'],
       // Drag area, in multiples of the freefall body's, at the end of each stage.
-      PARACHUTE_DEPLOY_DRAG = { pilot: 1.35, lines: 1.5, snivel: 8 },
-      // The slider keeps the opening shock under this load (g felt in the harness).
-      PARACHUTE_OPEN_SHOCK = 4,
+      PARACHUTE_DEPLOY_DRAG = { pilot: 1.25, lines: 1.4, snivel: 12 },
+      // The snatch of line stretch: extra drag for the first moments of the snivel.
+      PARACHUTE_SNATCH = 0.9,
+      // The slider spreads the opening shock: the load (g in the harness) eases towards this and never passes it.
+      PARACHUTE_OPEN_SHOCK = 3.8,
+      // Flying on the deployment brakes: seconds before the toggles are unstowed (or the first steer or flare).
+      PARACHUTE_BRAKES_SET = 1.4,
       // A descent rate the jumper lands on their feet from (the body scale's 6 m drop is 11 m/s).
       PARACHUTE_SAFE_RATE = 7 * UNITS_PER_METRE,
       /* The freefall cue's lines, in seconds of fall at the current rate above the
@@ -112,7 +126,10 @@
        deployment runs from here: `deploy` seconds since the pull, `phase` (pilot,
        lines, snivel, snap, open) with `phaseK` 0..1 through it, `opening` the
        canopy's inflation (0 in the bag .. 1 flying), `pullRate` the fall rate at
-       the pull (it sets the snivel), `load` the g felt in the harness. */
+       the pull (it sets the snivel), `load` the g felt in the harness; once it
+       flies, `flown` seconds since and `brakesSet` while it is still on its
+       deployment brakes; `safeLost`/`safeTime` the height and time from the pull
+       to PARACHUTE_SAFE_RATE, the point parachuteForecast() counts to. */
     function deployParachute() {
       const p = player.parachute;
       if (!p || p.stage !== 'freefall') return false;
@@ -124,7 +141,9 @@
       p.pullRate = Math.max(0, -p.vz);
       p.load = p.peakLoad = 1;
       p.openedAt = Math.round(worldMeters(Math.max(0, player.altitude - parachuteFloor(player.x, player.y))));
-      p.openAt = p.openTime = p.openLost = null;
+      p.openAt = p.openTime = p.openLost = p.safeLost = p.safeTime = null;
+      p.flown = 0;
+      p.brakesSet = true;
       p.pullAltitude = player.altitude;
       parachutePhaseSound('pilot');
       return true;
@@ -151,21 +170,23 @@
     /* Drag area of the jumper and whatever is out, in multiples of the freefall
        body's, at `k` through `phase` ('freefall' is the body alone); open, the
        canopy's settles the descent at `rate`. The pilot chute and bag add a little,
-       the snivelling canopy grows it several times over, the snap the rest. */
+       line stretch snatches, the snivelling canopy grows it several times over as the
+       cells pressurise, the slider's run down the lines the rest. */
     function parachuteDragArea(phase, k, rate) {
       const drag = PARACHUTE_DEPLOY_DRAG,
         full = (PARACHUTE_TERMINAL / rate) ** 2,
         ease = k * k * (3 - 2 * k);
       if (phase === 'pilot') return 1 + (drag.pilot - 1) * ease;
       if (phase === 'lines') return drag.pilot + (drag.lines - drag.pilot) * k;
-      if (phase === 'snivel') return drag.lines * (drag.snivel / drag.lines) ** (k ** 1.6);
+      if (phase === 'snivel')
+        return drag.lines * (drag.snivel / drag.lines) ** (k ** 1.5) + PARACHUTE_SNATCH * Math.exp(-((k * 8) ** 2));
       if (phase === 'snap') return drag.snivel * (full / drag.snivel) ** ease;
       if (phase === 'open') return full;
       return 1;
     }
     // How far the canopy is inflated (0 in the bag .. 1 flying): the drawing, steering and wind read it.
     function parachuteInflation(phase, k) {
-      if (phase === 'snivel') return 0.3 * k;
+      if (phase === 'snivel') return 0.3 * k ** 1.3;
       if (phase === 'snap') return 0.3 + 0.7 * k * k * (3 - 2 * k);
       return phase === 'open' ? 1 : 0;
     }
@@ -212,9 +233,12 @@
         roof = parachuteRoofAt(x, y);
       return roof ? Math.max(ground, roof.height) : ground;
     }
-    // The load (g felt in the harness) of a jumper falling at `fall` with drag area `area`, capped by the slider.
+    /* The load (g felt in the harness) of a jumper falling at `fall` with drag area
+       `area`: the slider and the stretch in the lines round the peak off, so it eases
+       towards PARACHUTE_OPEN_SHOCK instead of clipping at it. */
     function parachuteLoad(fall, area) {
-      return Math.min(PARACHUTE_OPEN_SHOCK, area * (fall / PARACHUTE_TERMINAL) ** 2);
+      const raw = area * (fall / PARACHUTE_TERMINAL) ** 2;
+      return PARACHUTE_OPEN_SHOCK * Math.tanh(raw / PARACHUTE_OPEN_SHOCK);
     }
     /* Downward acceleration of a jumper falling at `fall` with drag area `area`
        (parachuteDragArea): gravity less a drag that grows with the square of the
@@ -328,10 +352,19 @@
       // Until the canopy flies the jumper steers and moves as in freefall.
       const wing = canopy ? p.opening : 0,
         flying = canopy && p.phase === 'open';
+      /* Flying, the canopy is still on its deployment brakes (the tails stowed half
+         down, slow and nose-high) until the jumper unstows the toggles: after
+         PARACHUTE_BRAKES_SET, or at once to steer or flare. Let go, it dives and
+         surges forward to trim speed, and the jumper swings back under it. */
+      if (flying) {
+        p.flown += deltaSeconds;
+        if (p.brakesSet && (p.flown >= PARACHUTE_BRAKES_SET || turn || flare)) p.brakesSet = false;
+      }
       p.heading = normalizeAngle(p.heading + turn * (0.65 + 0.5 * wing) * deltaSeconds);
       player.a = p.heading;
-      // Canopy forward speed: about 15 km/h flared, 31 trimmed, 45 with the risers pulled.
-      const speed = (34 + ((flare ? 15 : fast ? 45 : 31) - 34) * wing) * KMH,
+      // Canopy forward speed: about 15 km/h flared (or on its brakes), 31 trimmed, 45 with the risers pulled.
+      const braked = flare || (flying && p.brakesSet),
+        speed = (34 + ((braked ? 15 : fast ? 45 : 31) - 34) * wing) * KMH,
         response = 1 - Math.exp(-deltaSeconds * (0.65 + (2.6 - 0.65) * wing));
       p.vx += (Math.cos(p.heading) * speed - p.vx) * response;
       p.vy += (Math.sin(p.heading) * speed - p.vy) * response;
@@ -344,6 +377,11 @@
         if (p.phase === 'snap') shake = Math.max(shake, (p.load - 1) * 1.2);
       }
       p.vz = -Math.max(0, fall + parachuteFallAccel(fall, area) * deltaSeconds);
+      // Where the forecast stops counting: out of the snivel and down to a landable rate.
+      if (canopy && p.safeLost == null && (p.phase === 'snap' || p.phase === 'open') && -p.vz <= PARACHUTE_SAFE_RATE) {
+        p.safeLost = +worldMeters(p.pullAltitude - (player.altitude + p.vz * deltaSeconds)).toFixed(1);
+        p.safeTime = +p.deploy.toFixed(2);
+      }
       // Aircraft can fly over open ocean; a bailout keeps that position until landing.
       const wasAltitude = player.altitude;
       player.x += p.vx * deltaSeconds;

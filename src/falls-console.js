@@ -153,6 +153,10 @@
         openAtM: p.openAt ?? null,
         openTimeS: p.openTime ?? null,
         openLostM: p.openLost ?? null,
+        safeLostM: p.safeLost ?? null,
+        safeTimeS: p.safeTime ?? null,
+        brakesSet: p.stage === 'canopy' ? !!p.brakesSet : null,
+        flownS: p.flown != null ? +p.flown.toFixed(2) : null,
         cue: cue ? { state: cue.state, needM: +worldMeters(cue.need).toFixed(1), seconds: +cue.seconds.toFixed(2) } : null,
       };
     }
