@@ -113,10 +113,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Grading and carving add about half a second to the range's first build (`terrain()` buildMs roadJunctions..roadCarve).
 
 ## Rendering (postfx3d.js, lighting3d-*.js)
-- Only the player's beams are shadowed (BEAM SHADOWS); other CAR LAMPS light through people and cars.
+- Beam shadows cover the first 2/6/8 CAR LAMPS slots (MEDIUM/HIGH/ULTRA): drive-map traffic and later slots light through people and cars; buildings never shadow a beam (a corner block lets a kerb-side spill reach the cross street).
 - The ground's screen-space bump (GROUND_NORMAL) still takes 2x2-quad derivatives: a 1-pixel scroll changes the shading of the asphalt aggregate and slab joints on ~3% of pixels (Old Quarter on MEDIUM, 1 px against 2 px shifts; the crisp-edge rebuild no longer does).
 - The film grade and the golden hour (skyDarkness, the dusk keys) were tuned on SwiftShader: check on a real GPU; dark asphalt in the low sun still leans slightly mauve.
-- Headlight strength, beam haze and night bloom were tuned on SwiftShader: check on a real GPU and a HiDPI screen.
+- Headlight strength, the vehicle light budget (road cap 1.5), beam haze and night bloom (threshold 2.6) were tuned on SwiftShader: check on a real GPU and a HiDPI screen.
 - On the range, traffic beyond the CAR LAMPS slots (drive light map) tilts with its car but has no terrain horizon: its light only fades a few metres off the tilted plane.
 - On the range rain splashes lie on a flat plane at the street height under the view's subject (sunk uphill, floating downhill) and read the car light at city street level (y 1), so they never catch the beams there (weather3d.js).
 - A rain streak takes its head's light along its whole length (weather3d.js), so a drop just inside a beam's top edge draws a lit line up to ~6 m above it (lighting each vertex at its own point costs nothing more but changes the city look).
