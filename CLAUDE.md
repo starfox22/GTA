@@ -106,7 +106,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   perception (`p.pending`) is resolved in updatePeople before any special routine: a new
   routine that owns people must step aside when `p.react`/`p.flee` is set.
 - `personFemale()` (voices.js) is the only man/woman rule (looks and voices both use it);
-  `player.carjack` is a carrier (`cancelCarjack()`).
+  `player.carjack` is a carrier (`cancelCarjack()`). Carjack phases live in carjack-struggle.js
+  (`planCarjack`/`job.quick`); only bikes, boats and aircraft use the instant `ejectDriver`;
+  ~1/3 of traffic is locked (E says LOCKED), which is not the carjack failing.
 - New land or bridges: append to `LAND_REGIONS`/`BRIDGES` last and keep coast-walk rhythms
   and grid blocks unchanged (compare `layout()` with the base build). Tall towers only where
   nothing stands north of them (the camera looks north): North Point Key, Monarch One.
