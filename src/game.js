@@ -63,6 +63,7 @@
     // @include src/carjack.js
     // @include src/carjack-struggle.js
     // @include src/riders.js
+    // @include src/wheelie.js
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js

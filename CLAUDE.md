@@ -91,8 +91,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
-- No ammo, armor or weapon pickups: rounds come from gun shops, `lootInteract` (bodies, once)
-  and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
+- No pickups on the street at all: health is bought indoors (hospitals, diners, bars, clubs,
+  motels, county lodges: `serviceAction`, citylife-police.js); rounds come from gun shops,
+  `lootInteract` (bodies, once) and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
+- `bleed(entity, severity, heading, kind)` (blood.js) is the only way to add a wound's blood; a
+  pool only forms under a body on the ground (`bodyPool`) and spreads in `updateBlood`.
 - Shooting from a vehicle goes through `driveByAim(vehicle, heading)` (driveby.js): arcs per
   window and body live in `spec.driveBy`; the bullet and the pose both use `driveByGrip`. A car fires all round, a
   body with no rear window 270°; a blocked aim fires nothing and shows only the cross
@@ -114,18 +117,23 @@ packs with plain `<script src>` so the zip still plays from file://.
   Terrace furniture stays inside `roofCover` footprints or the 14-unit strip along the railings.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
-- `playerImpact()` / `fallInjury()` (falls-body.js) are the only fall-damage scale;
+- `playerImpact()` / `fallInjury()` / `riderInjury()` (falls-body.js) are the only fall-damage
+  scale (a survived fall is `hurt(…, 'fall')`, which draws no blood);
   `player.fall` is a carrier. The parachute opens only on a second `bail` press; its
   opening stages live in one model that `parachuteForecast()` (parachute.js) also steps
   for the freefall cue: change them there only.
 - `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
   from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
+- `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
   (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
+- All vehicle light on a surface shares one budget (VEHICLE LIGHT BUDGET; headlight-beam.js
+  `lowBeamIntensity`/`headlightRoadLight` mirror CITY_LIGHT_APPLY: keep them in step); a new
+  vehicle light source fills that budget rather than adding on top.
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over

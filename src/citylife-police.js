@@ -59,6 +59,11 @@
             action: 'morning',
           },
         ];
+        // A county lodge is the town's only kitchen: a hot meal without the night.
+        if (countyLodge(p)) {
+          text += ' The kitchen serves a hot meal that restores 35 health.';
+          options.push({ text: '3. HOT MEAL · $25', action: 'lodgeMeal' });
+        }
       }
       if (p.kind === 'bar') {
         text = 'Hot food and a quiet corner. A meal restores 30 health.';
@@ -123,6 +128,10 @@
         list.appendChild(b);
       });
     }
+    /* A county town's LODGE (terrain-scenery.js installCountyServices): sleep and a meal. */
+    function countyLodge(p) {
+      return p?.kind === 'sleep' && String(p.id || '').startsWith('county-sleep-');
+    }
     function serviceAction(action, slot = 0) {
       if (gameMode !== 'service' || !servicePlace) return false;
       if (wantedStars > 0 && action !== 'change') return needToLosePolice();
@@ -164,6 +173,11 @@
         if (servicePlace.kind !== 'bar') return false;
         cost = 35;
         health = 30;
+      } else if (action === 'lodgeMeal') {
+        if (!countyLodge(servicePlace)) return false;
+        cost = 25;
+        health = 35;
+        advance = 20;
       } else if (action === 'plate') {
         if (servicePlace.kind !== 'diner') return false;
         cost = 28;
@@ -247,7 +261,9 @@
               ? 'sleep'
               : n === 1
                 ? 'morning'
-                : null
+                : n === 2 && countyLodge(p)
+                  ? 'lodgeMeal'
+                  : null
             : p.kind === 'diner'
               ? n === 0
                 ? 'plate'

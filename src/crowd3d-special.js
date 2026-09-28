@@ -397,7 +397,8 @@
           sp.swim = null;
           sp.parachute = null;
           sp.pose = 'riding';
-          sp.riderLean = seat.lean;
+          // Up on a wheelie (wheelie.js) the rider leans forward over the bars.
+          sp.riderLean = seat.lean - 0.6 * Math.max(0, c.wheelie || 0);
           const R = compiledLook(sp.look, proxy),
             H = R.height * RIG_UNIT;
           // Root: the frame's rotation, the hips on the seat.

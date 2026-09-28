@@ -71,7 +71,9 @@
       { id: 'skipStop', label: 'Skip to another stop', note: 'On a train: choose the station the skip takes you to', group: 'vehicle', keys: ['KeyU'], ctx: ['foot'] },
       // The arrows climb and descend in an aircraft (they take over from forward /
       // back there, `overrides`); T / G stay as second keys and as the virtual codes.
-      { id: 'ascend', label: 'Climb', note: 'Helicopter rise and take off · plane nose up', group: 'air', code: 'KeyT', keys: ['ArrowUp', 'KeyT'], ctx: ['air'], overrides: 'forward' },
+      // On a motorbike or a bicycle the climb key, held with the throttle, pulls a
+      // wheelie (wheelieHeld); there it does not take over from forward (`overrideCtx`).
+      { id: 'ascend', label: 'Climb / wheelie', note: 'Helicopter rise and take off · plane nose up · on a motorbike or bicycle, hold with the throttle to lift the front wheel', group: 'air', code: 'KeyT', keys: ['ArrowUp', 'KeyT'], ctx: ['air', 'drive'], overrides: 'forward', overrideCtx: ['air'] },
       { id: 'descend', label: 'Descend', note: 'Helicopter descend and land · plane nose down', group: 'air', code: 'KeyG', keys: ['ArrowDown', 'KeyG'], ctx: ['air'], overrides: 'back' },
       { id: 'flapsDown', label: 'Flaps down', note: 'Plane: extend the flaps a notch (UP, 1, 2, FULL) for take-off and landing', group: 'air', keys: ['KeyX'], ctx: ['air'] },
       { id: 'flapsUp', label: 'Flaps up', note: 'Plane: retract the flaps a notch', group: 'air', keys: ['KeyZ'], ctx: ['air'] },
@@ -164,7 +166,7 @@
       const context = controlContext(),
         replaced = ids
           .map((id) => CONTROL_ACTION[id])
-          .filter((a) => a.overrides && a.ctx.includes(context))
+          .filter((a) => a.overrides && (a.overrideCtx || a.ctx).includes(context))
           .map((a) => a.overrides);
       return replaced.length ? ids.filter((id) => !replaced.includes(id)) : ids;
     }
@@ -174,6 +176,18 @@
     }
     function actionHeld(id) {
       return !!keys[actionCode(id)];
+    }
+    /* The wheelie (wheelie.js): the climb action held together with the throttle
+       held by something that is not one of climb's own keys. With the default
+       keys ↑ is both forward and climb on the road, so W + ↑ lifts the front and
+       ↑ alone (riding on the arrows) is only the throttle; a pad's trigger or a
+       test holding the virtual code counts as its own throttle. */
+    function wheelieHeld() {
+      if (!actionHeld('ascend') || !actionHeld('forward')) return false;
+      const climbKeys = controlBindings.ascend,
+        throttleKeys = controlBindings.forward.filter(Boolean);
+      if (!throttleKeys.some((k) => physicalKeysDown.has(k))) return true;
+      return throttleKeys.some((k) => physicalKeysDown.has(k) && !climbKeys.includes(k));
     }
     /* Keydown: remember the physical key and return the actions it drives. The
        caller decides (by game mode) whether they become held in `keys`. */

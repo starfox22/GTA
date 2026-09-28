@@ -281,9 +281,6 @@
         )
           vehicles.splice(i, 1);
       }
-      for (const p of pickups) {
-        if (solid(p.x, p.y, 8)) Object.assign(p, findStreetPoint(p.x, p.y, 10));
-      }
       spawnClearCar('sedan', 1180, 5005, Math.PI / 2, false, '#afb8aa');
       spawnClearCar('van', 1120, 5130, 0, false, '#b8bbae');
     }

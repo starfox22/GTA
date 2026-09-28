@@ -139,4 +139,6 @@
     });
     // The living city (livingcity-console.js): traffic streaming.
     addConsoleMethods('livingCity', livingCityConsole());
+    // Blood (blood.js): the decals round a point, a wounded bystander for tests.
+    addConsoleMethods('blood', bloodConsole());
     // END SUBSYSTEM: src/game-console-crowd.js

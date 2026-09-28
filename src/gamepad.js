@@ -36,7 +36,8 @@
     /* The left stick's four ways, per context (null: that way does nothing there). */
     const PAD_STICK = {
       foot: { up: 'forward', down: 'back', left: 'left', right: 'right' },
-      drive: { up: null, down: null, left: 'left', right: 'right' },
+      // The stick pushed up, with the throttle trigger: a wheelie on a two-wheeler (wheelie.js).
+      drive: { up: 'ascend', down: null, left: 'left', right: 'right' },
       air: { up: 'ascend', down: 'descend', left: 'left', right: 'right' },
       chute: { up: null, down: null, left: 'left', right: 'right' },
     };

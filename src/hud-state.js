@@ -404,7 +404,8 @@
       if (c.type === 'helicopter') return 'heli';
       if (c.type === 'plane') return 'plane';
       if (isBoat(c)) return 'boat';
-      return c.type === 'bicycle' ? 'bike' : 'car';
+      if (vehicleSpec(c).bike) return vehicleSpec(c).bicycle ? 'bike' : 'moto';
+      return 'car';
     }
     const QUICK_KEYS = {
       foot: [['move', 'RUN'], ['walk', 'WALK'], ['interact', 'INTERACT'], ['fire', 'FIRE'], ['help', 'CONTROLS']],
@@ -412,7 +413,9 @@
       // The Blue Hour during mission 2: guests walk; the walk key runs (footPace).
       party: [['move', 'WALK'], ['walk', 'RUN'], ['poison', 'SPIKE DRINK'], ['interact', 'INTERACT'], ['help', 'CONTROLS']],
       car: [['move', 'DRIVE'], ['handbrake', 'HANDBRAKE'], ['interact', 'EXIT'], ['radioNext', 'STATION'], ['help', 'CONTROLS']],
-      bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['back', 'BRAKE'], ['interact', 'EXIT']],
+      bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['back', 'BRAKE'], ['wheelie', 'WHEELIE'], ['interact', 'EXIT']],
+      // A motorbike: throttle and climb together lift the front (wheelie.js).
+      moto: [['move', 'RIDE'], ['wheelie', 'WHEELIE'], ['handbrake', 'HANDBRAKE'], ['interact', 'EXIT'], ['radioNext', 'STATION']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
       plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['flapsDown', 'FLAPS'], ['gear', 'GEAR'], ['bail', 'BAIL OUT']],
@@ -424,6 +427,7 @@
       coaster: [['interact', 'VIEW']],
     };
     function hintKey(id) {
+      if (id === 'wheelie') return keyName('forward') + '+' + keyName('ascend');
       return id === 'move' ? moveKeysName() : keyName(id);
     }
     function renderQuickKeys() {
@@ -434,6 +438,8 @@
       const strip = getElement('quickKeys');
       strip.replaceChildren();
       for (const [id, label] of QUICK_KEYS[context]) {
+        // No wheelie from the touch controls (their up button is the handbrake on the road).
+        if (id === 'wheelie' && hintDevice() === 'touch') continue;
         const item = document.createElement('span'),
           key = document.createElement('kbd');
         key.textContent = hintKey(id) === '/' ? '?' : hintKey(id);

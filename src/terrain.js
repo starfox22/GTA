@@ -14,4 +14,5 @@
     // @include src/terrain-scenery.js
     // @include src/terrain-roadside.js
     // @include src/terrain-headlights.js
+    // @include src/headlight-beam.js
     // END SUBSYSTEM: src/terrain.js

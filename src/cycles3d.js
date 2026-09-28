@@ -224,6 +224,21 @@
         model.wheels = wheels;
         return model;
       }
+      /* A bicycle's wheelie (wheelie.js c.wheelie): the body pitched about the
+         rear tyre's contact patch, the rear wheel (wheels[0]) under the body or
+         under the share bike's scaled frame. */
+      function bicycleWheelie(c, m) {
+        const a = c.fallen || c.hp <= 0 ? 0 : c.wheelie || 0,
+          wheel = m.wheels?.[0]?.wheel;
+        if (!wheel) return;
+        if (Math.abs(a) > 0.002) {
+          const holder = wheel.parent,
+            xr = holder === m.body ? wheel.position.x : holder.position.x + wheel.position.x * holder.scale.x;
+          m.body.rotation.z += a;
+          m.body.position.x = xr - xr * Math.cos(a);
+          m.body.position.y = -xr * Math.sin(a);
+        } else if (m.body.position.x || m.body.position.y) m.body.position.set(0, 0, 0);
+      }
       /* The dock rack for `n` docks in metres from the station origin (x along
          the rack, z toward the walkway): a low plinth rail, and per dock a steel
          post with a teal head, a lock jaw, a green LED and a wheel guide. */

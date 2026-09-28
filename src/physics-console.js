@@ -6,6 +6,15 @@
      * how far the car runs forward and sideways to turn 90 degrees from a straight
      * entry (a city corner). pose() is the player's vehicle as the physics sees it.
      */
+    // A test ride starts with the player on their feet, healed, nothing carried over.
+    function reviveForRide() {
+      player.thrown = null;
+      player.hp = 100;
+      player.inv = 0;
+      player.godMode = false;
+      keys = {};
+      if (gameMode === 'dead') gameMode = 'play';
+    }
     function handlingConsole() {
       const TRACK = { x: -2600, y: 9650 };
       // The last test car, taken away before the next test so none pile up.
@@ -433,9 +442,11 @@
         /* Ride a fresh `type` east along the runway strip at `kmh` (held there)
            into a parked `targetType` turned across the way (or 'none'), `gap`
            metres ahead; stepped for `seconds`. `trafficRider`: a traffic bike
-           (flat out at the player's side) instead. Returns the riders' report. */
+           (flat out at the player's side) instead. The player starts healed.
+           Returns the riders' report. */
         rideInto(type = 'bike', kmh = 50, targetType = 'sedan', gap = 25, seconds = 0.05, trafficRider = false) {
           if (player.car) exitCar();
+          reviveForRide();
           if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
           for (let i = vehicles.length - 1; i >= 0; i--)
             if (vehicles[i].rideTarget) vehicles.splice(i, 1);
@@ -466,6 +477,56 @@
           keys.KeyW = false;
           handlingTestPaved = false;
           return riderReport();
+        },
+        /* Ride a fresh `type` east at `kmh` (held there) into the nearest
+           building wall found round (x, y) (default the player) with a clear
+           `run` metres of road before it; stepped for `seconds`. The player
+           starts healed. Returns the riders' report and the wall's spot. */
+        rideIntoWall(type = 'bike', kmh = 60, seconds = 4, run = 20, x = player.x, y = player.y) {
+          if (player.car) exitCar();
+          reviveForRide();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          const runU = run * UNITS_PER_METRE,
+            inBuilding = (px, py) => buildingsNear(px, py).some((b) => px > b.x && px < b.x + b.w && py > b.y && py < b.y + b.h),
+            // The first thing east of (sx, sy), if it is a building's wall (a
+            // step either side too) with nothing in the way before it.
+            wallAt = (sx, sy) => {
+              for (let d = 0; d < runU + 480; d += 4) {
+                if (footObstacleBlocked(sx + d, sy, 8)) return 0;
+                if (solid(sx + d, sy, 6)) return d >= runU && inBuilding(sx + d + 8, sy - 8) && inBuilding(sx + d + 8, sy + 8) ? d : 0;
+              }
+              return 0;
+            };
+          let spot = null;
+          for (let ring = 0; ring < 40 && !spot; ring++)
+            for (let i = -ring; i <= ring && !spot; i++)
+              for (const [gx, gy] of [[i, -ring], [i, ring], [-ring, i], [ring, i]]) {
+                const sx = Math.round(x / 32) * 32 + gx * 32,
+                  sy = Math.round(y / 32) * 32 + gy * 32;
+                if (solid(sx, sy, 12)) continue;
+                const d = wallAt(sx, sy);
+                if (d) {
+                  spot = { x: sx, y: sy, wall: sx + d };
+                  break;
+                }
+              }
+          if (!spot) return { error: 'no wall with a clear run found' };
+          // Nothing parked in the way.
+          for (let i = vehicles.length - 1; i >= 0; i--) {
+            const o = vehicles[i];
+            if (o.x > spot.x - 60 && o.x < spot.wall + 20 && Math.abs(o.y - spot.y) < 40) vehicles.splice(i, 1);
+          }
+          teleportPlayer(spot.x - 40, spot.y);
+          const c = (testCar = makeCar(type, spot.x, spot.y, 0, false));
+          c.authorized = true;
+          enterVehicle(c);
+          Object.assign(c, { vx: kmh * KMH, vy: 0, speed: kmh * KMH, av: 0 });
+          for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play'; i++) {
+            keys.KeyW = !!player.car && c.vx < kmh * KMH;
+            update(1 / 30);
+          }
+          keys.KeyW = false;
+          return { ...riderReport(), wallM: +worldMeters(spot.wall - spot.x).toFixed(1), spot };
         },
         /* Steer a fresh `type` at `kmh` and measure. options:
            dir 1 right / -1 left; seconds; mode 'cruise' (throttle on and off to hold

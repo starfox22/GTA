@@ -2,7 +2,6 @@
       const allBuildings = [],
         statics = [],
         carModels = new Map(),
-        pickupModels = new Map(),
         fx = [];
       const boxGeo = new Three.BoxGeometry(1, 1, 1),
         sphereGeo = new Three.SphereGeometry(1, 12, 8),

@@ -267,6 +267,8 @@
     // Handling: turnTest(), pose(), aiDriving(), riderReport(), rideInto(),
     // bridgeJump() (see physics-console.js handlingConsole).
     addConsoleMethods('handling', handlingConsole());
+    // Wheelies: wheelieState() (see wheelie.js wheelieConsole).
+    addConsoleMethods('handling', wheelieConsole());
     // MONARCH MOTORS: dealership(), prestigeCatalog(), dealershipVisit(), dealerMenu(),
     // dealerBuy(), dealerAlarm(), dealerShatter(), dealerCalm(), dealerResetGarage()
     // (see dealership.js dealershipConsole).

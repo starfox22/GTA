@@ -1,4 +1,4 @@
-    // City life: officers and the wanted level (updateOfficers, updateWanted), blood and injury, updateCivic(), navigation and the civic map.
+    // City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
     function updateOfficers(deltaSeconds) {
       assignFireTokens(deltaSeconds);
       for (const c of vehicles) {
@@ -261,117 +261,8 @@
       }
       dispatchPolice(deltaSeconds);
     }
-    const BLOOD_LIMIT = 240,
-      BLOOD_TRACK_DISTANCE = BLOCK_SIZE * 0.07,
-      bloodArt = [];
-    function bloodSurface(x, y) {
-      return DOCKS.some((d) => x >= d.x && x <= d.x + d.w && y >= d.y && y <= d.y + d.h)
-        ? 2.2
-        : terrainHeight(x, y);
-    }
-    function bloodStamp(variant = 0) {
-      if (bloodArt[variant]) return bloodArt[variant];
-      const cv = document.createElement('canvas');
-      cv.width = cv.height = 128;
-      const drawingContext = cv.getContext('2d');
-      let state = 731 + variant * 977;
-      const random = () => {
-        state = (state * 1664525 + 1013904223) >>> 0;
-        return state / 4294967296;
-      };
-      const gr = drawingContext.createRadialGradient(64, 64, 8, 64, 64, 49);
-      gr.addColorStop(0, '#43030c');
-      gr.addColorStop(0.55, '#720819');
-      gr.addColorStop(1, '#a21b2bcc');
-      drawingContext.fillStyle = gr;
-      drawingContext.beginPath();
-      for (let i = 0; i < 40; i++) {
-        const a = (i * TAU) / 40,
-          r = 34 + random() * 15,
-          x = 64 + Math.cos(a) * r,
-          y = 64 + Math.sin(a) * r * 0.75;
-        i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y);
-      }
-      drawingContext.closePath();
-      drawingContext.fill();
-      for (let i = 0; i < 30; i++) {
-        const a = random() * TAU,
-          r = 35 + random() * 25;
-        drawingContext.fillStyle = i % 3 ? '#821025d9' : '#b92c36bd';
-        drawingContext.beginPath();
-        drawingContext.ellipse(
-          64 + Math.cos(a) * r,
-          64 + Math.sin(a) * r,
-          1 + random() * 3,
-          0.7 + random() * 2,
-          a,
-          0,
-          TAU,
-        );
-        drawingContext.fill();
-      }
-      drawingContext.fillStyle = '#ca4c493a';
-      drawingContext.beginPath();
-      drawingContext.ellipse(58, 56, 14, 4, -0.25, 0, TAU);
-      drawingContext.fill();
-      bloodArt[variant] = cv;
-      return cv;
-    }
-    function addBloodPool(x, y, r, a, extra = {}) {
-      if (!groundAt(x, y)) return;
-      bloodPools.push({
-        x,
-        y,
-        r,
-        a,
-        created: gameTime,
-        variant: Math.floor(seededRandom() * 4),
-        surface: bloodSurface(x, y),
-        ...extra,
-      });
-      while (bloodPools.length > BLOOD_LIMIT) bloodPools.shift();
-    }
-    function bleed(p, severity = 1, a = 0) {
-      if (!bloodOn) return;
-      severity = clamp(severity, 0.25, 2.5);
-      const n = Math.ceil(10 + severity * 12),
-        z = entityElevation(p),
-        roof = rooftopFloor(p);
-      for (let i = 0; i < n; i++) {
-        const spread = a + randomBetween(-1.05, 1.05),
-          v = randomBetween(24, 110) * Math.min(1.6, severity),
-          life = randomBetween(0.45, 0.9);
-        particles.push({
-          x: p.x,
-          y: p.y,
-          vx: Math.cos(spread) * v,
-          vy: Math.sin(spread) * v,
-          z: z + 9,
-          vz: randomBetween(16, 44),
-          life,
-          max: life,
-          color: randomChoice(['#a90c20', '#c42a35', '#760718']),
-          size: randomBetween(1.1, 3.1),
-          blood: true,
-          surface: roof ? z : undefined,
-        });
-      }
-      addBloodPool(p.x, p.y, clamp(7 + severity * 5, 8, 22), a, {
-        grow: p.hp <= 0,
-        opacity: 0.96,
-        surface: roof ? z : bloodSurface(p.x, p.y),
-      });
-      for (let i = 0; i < 3 + Math.ceil(severity * 3); i++) {
-        const aa = a + randomBetween(-0.8, 0.8),
-          d = randomBetween(9, 22) * severity,
-          x = p.x + Math.cos(aa) * d,
-          y = p.y + Math.sin(aa) * d;
-        addBloodPool(x, y, randomBetween(1.8, 4.4), aa, {
-          opacity: 0.86,
-          surface: roof ? z : bloodSurface(x, y),
-        });
-      }
-    }
+    // Wound spatter, drops, body pools and their decals (blood.js).
+    // @include src/blood.js
     function scream(p) {
       if (!voicesOn || gameTime < screamAt || distanceBetween(p, player) > 470) return;
       screamAt = gameTime + 1.7;
@@ -408,15 +299,17 @@
       // A round the vest ate sparks off the plate instead of opening a wound.
       const stopped = dealt < damage * 0.4 && wearingVest(person);
       if (stopped) particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
-      else if (showBlood) bleed(person, Math.min(2, dealt / 38), a);
       scream(person);
       // Where it landed, the flinch, a limp, a blood trail, the fall (wounds.js).
       if (dealt > 0) woundPerson(person, dealt, a, kind, source);
+      // After the fall is chosen: a spatter for the wound, and for the dead the
+      // pool that spreads from under the body (blood.js).
+      if (!stopped && showBlood && dealt > 0) bleed(person, Math.min(2, dealt / 38), a, kind);
+      else if (showBlood && person.hp <= 0) bodyPool(person, kind, a);
       if (person.hp <= 0) {
         person.deadTime = gameTime;
         // Witnesses who find the body later report whoever did it.
         person.killedBy = source;
-        if (showBlood) bleed(person, 2, a);
         if (source === player) recordKill(person, kind);
       }
     }
@@ -434,8 +327,7 @@
       timed('citylife', () => updateLivingCity(deltaSeconds));
       timed('police:air', () => updateAirPolice(deltaSeconds));
       updateWounds();
-      for (let i = bloodPools.length - 1; i >= 0; i--)
-        if (gameTime - bloodPools[i].created > 240) bloodPools.splice(i, 1);
+      updateBlood(deltaSeconds);
     }
     function navigationState() {
       const waypoint = waypointNavigation();
@@ -618,27 +510,5 @@
         }
         drawingContext.restore();
       }
-    }
-    function drawBlood2D(roof = false) {
-      for (const b of bloodPools)
-        if (rooftopFloor(b) === roof && visible(b, 45)) {
-          const age = gameTime - b.created,
-            growth = b.grow ? 1 + Math.min(0.28, age * 0.045) : 1;
-          worldContext.save();
-          worldContext.globalAlpha = (b.opacity ?? 0.95) * clamp((240 - age) / 35, 0, 1);
-          worldContext.translate(b.x, b.y);
-          worldContext.rotate(b.a);
-          if (b.track) {
-            worldContext.fillStyle = '#86101e';
-            worldContext.fillRect(-b.r * 1.3, -b.r * 0.23, b.r * 2.6, b.r * 0.46);
-            worldContext.fillStyle = '#3b171833';
-            for (let x = -b.r; x < b.r; x += 1.4)
-              worldContext.fillRect(x, -b.r * 0.23, 0.5, b.r * 0.46);
-          } else {
-            const size = b.r * 2.5 * growth;
-            worldContext.drawImage(bloodStamp(b.variant || 0), -size / 2, -size / 2, size, size);
-          }
-          worldContext.restore();
-        }
     }
     getElement('closeService').onclick = closeService;

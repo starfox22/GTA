@@ -53,7 +53,6 @@
       vehicles.length = 0;
       pedestrians.length = 0;
       enemies.length = 0;
-      pickups.length = 0;
       officers.length = 0;
       bloodPools.length = 0;
       fires.length = 0;
@@ -221,34 +220,11 @@
           }
         }
       }
-      [
-        [790, 745],
-        [1290, 2176],
-        [3200, 2780],
-        [1650, 2820],
-        [2655, 1140],
-      ].forEach(([x, y]) =>
-        pickups.push({
-          x,
-          y,
-          type: 'health',
-          ready: 0,
-        }),
-      );
       populateCasino();
       // The Blue Hour's doormen, valet and limousines (roofmission-entrance.js).
       populateBlueHourEntrance();
       resetSports();
-      // Beyond Northbank: health by the other hospitals and the county lodges. There are
-      // no ammunition, armour or weapon pickups: those come from the gun shops, the
-      // bodies of armed people and police vehicles (ammo-supply.js).
-      for (const [x, y, type] of [
-        [-1730, 1996, 'health'], // RIVERSIDE MEDICAL
-        [9000, -3030, 'health'], // THE HALCYON CLINIC
-        [7020, 3450, 'health'], // STONECREEK
-        [9160, 3076, 'health'], // NORTHRIDGE
-        [2476, 7260, 'health'], // OCEANVIEW
-        [7050, 7850, 'health'], // PALMSHORE
-      ])
-        pickups.push({ x, y, type, ready: 0 });
+      // Nothing lies about on the street to be picked up: health is bought indoors
+      // (hospitals, diners, bars, motels and lodges: citylife-police.js serviceAction),
+      // rounds come from the gun shops, bodies and police vehicles (ammo-supply.js).
     }

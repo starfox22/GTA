@@ -94,10 +94,15 @@
             side = sign( side ) * max( abs( side ) - b.z, 0.0 );
             float rise = dot( d, cross( kerb, aim ) );
             float beam = c.w > 1.5 ? cityFloodBeam( side / ahead, rise / ahead ) : cityLowBeam( side / ahead, rise / ahead - 0.05 );
-            if ( beam > 0.0005 && mod( c.w, 2.0 ) > 0.5 ) beam *= cityHorizonShade( float( i ), d, b.xy );
-            sum += a.w * beam / max( dot( d, d ) * 0.015625, 0.5 );
+            bool onRange = mod( c.w, 2.0 ) > 0.5;
+            if ( beam > 0.0005 && onRange ) beam *= cityHorizonShade( float( i ), d, b.xy );
+            float metres2 = dot( d, d ) * 0.015625;
+            vec2 reach = onRange ? vec2( ${CAR_LAMP_RANGE_REACH.map((m) => (m * m).toFixed(1)).join(', ')} ) : vec2( ${CAR_LAMP_REACH.map((m) => (m * m).toFixed(1)).join(', ')} );
+            sum += a.w * beam / max( metres2, 0.5 ) * ( 1.0 - smoothstep( reach.x, reach.y, metres2 ) );
           }
-          return vec3( 1.0, 0.93, 0.8 ) * min( sum * 0.012, 3.0 );
+          // Soft capped as the ground's VEHICLE LIGHT BUDGET is: one beam's cone
+          // glitters, the rain over a junction lit by eight is not a grey veil.
+          return vec3( 1.0, 0.93, 0.8 ) * 1.4 * ( 1.0 - exp( -sum * 0.006 / 1.4 ) );
         }
         vec3 rainLampLight( vec3 p ) {
           vec3 cars = cityCarLampCount > 0.5 ? rainCarLight( p ) : vec3( 0.0 );
