@@ -12,16 +12,19 @@
      * tail touches the road at `loop`. A sport bike with its rider tucked needs
      * 1.2 g (it stays down); leaning back (the climb key with the throttle)
      * moves the mass back and up, so 0.8 g lifts it and a clutch `pop` kicks it
-     * off the ground. The engine's pull falls with speed (power / speed), so a
+     * off the ground (the rider then works the throttle for a pace of lift).
+     * The engine's pull falls with speed (power / speed), so a
      * wheelie comes easily in the low gears and not at all near the top.
      * Cornering leans the bike: the drive's lift shrinks with cos² of the lean
      * and no pop starts in a bend.
      *
-     * CONTROL (wheelieHeld, controls.js): throttle + climb lifts and keeps
-     * lifting (the rider hangs back on it: held too long on a strong bike it
-     * loops); throttle alone with the front up feathers the throttle to let it
-     * settle slowly (tap climb to hold a wheelie); off the throttle it drops; the
-     * brake (the rear alone, 0.55 g at most) brings it down at once. The front
+     * CONTROL (wheelieHeld, controls.js): throttle + climb lifts the front at
+     * the rider's pace (WHEELIE_RISE, as far as the power allows: about 20° a
+     * second on a sport bike), and keeps lifting: past the balance point the
+     * throttle cannot hold it and it loops (held about three seconds); throttle
+     * alone with the front up feathers the throttle to let it settle slowly
+     * (tap climb to hold a wheelie); off the throttle it drops; the brake (the
+     * rear alone, 0.55 g at most) brings it down at once. The front
      * lands on its fork (a stiff, half-damped spring: a small bounce). While it
      * is up the bike steers only by leaning: WHEELIE_STEER at full height.
      * Heavy bikes barely lift (the cruiser: a hop of a degree or two); a
@@ -31,18 +34,21 @@
     const WHEELIE_GEOMETRY = {
       // b, h: the centre of mass ahead of / above the rear patch (m), riding
       // normally; `back`: how far leaning back moves it (b less, h half of it
-      // more); k2: radius of gyration squared about the patch (m²); pop: the
-      // clutch's (or the arms') kick (rad/s) at full pull `popG` (g); loop: where
-      // the tail meets the road (rad).
-      sport: { b: 0.74, h: 0.62, back: 0.18, k2: 1.0, pop: 0.9, popG: 0.5, loop: 1.2 },
-      enduro: { b: 0.66, h: 0.72, back: 0.2, k2: 0.95, pop: 1.2, popG: 0.4, loop: 1.25 },
-      cruiser: { b: 0.92, h: 0.55, back: 0.1, k2: 1.3, pop: 0.45, popG: 0.4, loop: 1.0 },
-      bicycle: { b: 0.42, h: 1.0, back: 0.12, k2: 1.2, pop: 0.6, popG: 0.08, loop: 1.3 },
+      // more); k2: radius of gyration squared about the patch (m²); rise: the
+      // rider's pace of lift (x WHEELIE_RISE); pull: the arms' share of the lift
+      // (g, a bicycle's yank on the bars); pop: the clutch's (or the arms') kick
+      // (rad/s) at full pull `popG` (g); loop: where the tail meets the road (rad).
+      sport: { b: 0.74, h: 0.62, back: 0.18, k2: 1.3, rise: 1, pull: 0, pop: 0.4, popG: 0.5, loop: 1.2 },
+      enduro: { b: 0.66, h: 0.72, back: 0.2, k2: 1.2, rise: 1.2, pull: 0, pop: 0.5, popG: 0.4, loop: 1.25 },
+      cruiser: { b: 0.92, h: 0.55, back: 0.1, k2: 1.3, rise: 0.5, pull: 0, pop: 0.45, popG: 0.4, loop: 1.0 },
+      bicycle: { b: 0.42, h: 1.0, back: 0.12, k2: 1.2, rise: 0.8, pull: 0.25, pop: 0.5, popG: 0.08, loop: 1.3 },
     };
     const WHEELIE_BY_TYPE = { bike: 'sport', dolcati: 'sport', yamasaki: 'sport', kr500: 'enduro', cruiser: 'cruiser', bicycle: 'bicycle' },
       WHEELIE_STEER = 0.25, // the steering left with the front fully up
       WHEELIE_REAR_BRAKE = 0.55, // g: the rear brake alone, the front in the air
+      WHEELIE_RISE = 0.45, // rad/s: the front lifted by a rider who has the power for it
       WHEELIE_SETTLE = 0.35, // rad/s: the front let down on a feathered throttle
+      WHEELIE_DAMP = 1.2, // the rider's body soaking up the pitch (1/s)
       WHEELIE_FORK = 900, // the fork's spring (rad/s² a radian) ...
       WHEELIE_FORK_DAMP = 30, // ... and damping: about half critical, one small bounce
       wheelieLog = { lifts: 0, loops: 0, pops: 0, bestDeg: 0, bestSeconds: 0, lastLoop: null };
@@ -79,26 +85,32 @@
         // Leaned over in a bend the drive's lift shrinks (cos² of the lean).
         bank = Math.atan(Math.abs(along * (c.av || 0)) / GRAVITY),
         upright = Math.cos(bank) ** 2;
-      let a = acceleration / UNITS_PER_METRE;
-      if (up && brake) a = Math.max(a, -WHEELIE_REAR_BRAKE * g);
-      else if (up && throttle && !ask && a > 0) {
-        // A feathered throttle: just enough drive to let the front settle slowly.
-        const want = 5 * (-WHEELIE_SETTLE - w);
-        a = clamp((want * geo.k2 + weight) / Math.max(0.2, lever * upright), 0, a);
+      // `a` drives the bike on; `lift` (the drive plus the arms' pull) turns it up.
+      let a = acceleration / UNITS_PER_METRE,
+        lift = a;
+      if (up && brake) lift = a = Math.max(a, -WHEELIE_REAR_BRAKE * g);
+      else if (throttle && a > 0 && (ask || up)) {
+        // The rider works the throttle for a pace of pitch: lifting while the
+        // climb key is held (as far as the power allows), letting it settle
+        // without. Past the balance point no throttle can hold it (only the brake).
+        const pace = ask ? WHEELIE_RISE * geo.rise : -WHEELIE_SETTLE,
+          want = 5 * (pace - w);
+        lift = clamp((want * geo.k2 + weight) / Math.max(0.2, lever * upright), 0, a + (ask ? geo.pull * g : 0));
+        a = Math.min(a, lift);
       }
       // The clutch popped (or the bars pulled) as the climb key goes down.
       if (ask && !c.wheeliePopped && th < 0.05 && upright > 0.8) {
-        const kick = geo.pop * clamp(a / (geo.popG * g), 0, 1);
+        const kick = geo.pop * clamp(lift / (geo.popG * g), 0, 1);
         if (kick > 0.05) {
           w += kick;
           wheelieLog.pops++;
         }
         c.wheeliePopped = true;
       } else if (!ask) c.wheeliePopped = false;
-      const torque = (a * lever * upright - weight) / geo.k2;
-      // Up: the pitch's own torque (a little damping from the rider's body);
-      // down on the fork: its spring, until the drive lifts it off again.
-      const angular = th > 0 ? torque - 0.6 * w : -WHEELIE_FORK * th - WHEELIE_FORK_DAMP * w + Math.max(0, torque);
+      const torque = (lift * lever * upright - weight) / geo.k2;
+      // Up: the pitch's own torque (damped by the rider's body); down on the
+      // fork: its spring, until the drive lifts it off again.
+      const angular = th > 0 ? torque - WHEELIE_DAMP * w : -WHEELIE_FORK * th - WHEELIE_FORK_DAMP * w + Math.max(0, torque);
       w += angular * stepSeconds;
       th = Math.max(-0.06, th + w * stepSeconds);
       if (th <= 0 && w < 0 && w > -0.05 && th > -0.002) th = w = 0;
