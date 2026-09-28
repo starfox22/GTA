@@ -663,11 +663,6 @@
             worldContext.fillText(p.speech, q.x, mid + fs * 0.36);
             worldContext.globalAlpha = 1;
           }
-          for (const p of [...pedestrians, ...enemies, ...gangMembers, ...officers])
-            if (personIncapacitated(p) && distanceBetween(p, cameraTarget) < 850) {
-              const q = api.project(p.x, p.y, entityElevation(p) + (p.knockedFor > 0 ? 8 : PERSON_HEIGHT + 8.5));
-              drawDizzy(q.x, q.y);
-            }
           drawHarborLabels3D(api);
           // SHARK! and the arrow to the fin (sealife3d.js).
           drawSealifeOverlay3D(api);

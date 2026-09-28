@@ -351,7 +351,6 @@
         worldContext.fillStyle = '#c8ac85';
         worldContext.fillRect(4, -2, 4, 4);
         worldContext.restore();
-        if (person.hp > 0) drawDizzy(person.x, person.y - 13);
         return;
       }
       if (isPlayer) {
@@ -393,18 +392,6 @@
           isPlayer && selectedWeaponIndex === 3 ? 12 : 7,
           isPlayer && selectedWeaponIndex === KNIFE_INDEX ? 1.5 : 3,
         );
-      }
-      worldContext.restore();
-      if (person.dazedFor > 0) drawDizzy(person.x, person.y - 18);
-    }
-    function drawDizzy(x, y) {
-      worldContext.save();
-      worldContext.fillStyle = '#f3d583';
-      for (let j = 0; j < 3; j++) {
-        const a = gameTime * 3 + (j * TAU) / 3;
-        worldContext.beginPath();
-        worldContext.arc(x + Math.cos(a) * 8, y + Math.sin(a) * 3, 1.8, 0, TAU);
-        worldContext.fill();
       }
       worldContext.restore();
     }
