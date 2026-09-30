@@ -354,11 +354,14 @@
         return;
       }
       if (isPlayer) {
-        worldContext.strokeStyle = '#d9f59890';
-        worldContext.lineWidth = 1;
-        worldContext.beginPath();
-        worldContext.arc(0, 0, 13, 0, TAU);
-        worldContext.stroke();
+        // Settings · Graphics · Ring under your character (off by default).
+        if (playerRingOn()) {
+          worldContext.strokeStyle = '#d9f59890';
+          worldContext.lineWidth = 1;
+          worldContext.beginPath();
+          worldContext.arc(0, 0, 13, 0, TAU);
+          worldContext.stroke();
+        }
         if (player.inv > 0) worldContext.globalAlpha = 0.45 + 0.4 * Math.sin(gameTime * 25);
       }
       worldContext.fillStyle = '#102b2380';
@@ -401,11 +404,7 @@
       worldContext.save();
       worldContext.strokeStyle = color;
       worldContext.lineWidth = 2;
-      worldContext.globalAlpha = 0.35 + 0.15 * Math.sin(gameTime * 4);
-      worldContext.beginPath();
-      worldContext.ellipse(p.x, p.y, 28, 16, 0, 0, TAU);
-      worldContext.stroke();
-      worldContext.globalAlpha = 1;
+      // Only the floating diamond: no ring on the ground (a marker is a pointer, not a platform).
       worldContext.translate(p.x, y);
       worldContext.fillStyle = '#13241dde';
       worldContext.beginPath();

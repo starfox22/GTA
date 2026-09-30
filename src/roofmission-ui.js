@@ -134,19 +134,13 @@
         }
       if (m.boss.hp > 0) {
         worldContext.save();
-        worldContext.strokeStyle = m.poisonUsed ? '#90bd98' : '#edc77f';
-        worldContext.lineWidth = 2;
-        worldContext.beginPath();
-        worldContext.arc(ROOF_HIT.drink.x, ROOF_HIT.drink.y, 16, 0, TAU);
-        worldContext.stroke();
-        worldContext.fillStyle = '#f4d696';
-        worldContext.font = 'bold 9px Arial';
-        worldContext.textAlign = 'center';
-        worldContext.fillText(
-          m.poisonUsed ? 'DRINK PREPARED' : keyName('poison') + ' · RESERVED GLASS',
-          ROOF_HIT.drink.x,
-          ROOF_HIT.drink.y - 20,
-        );
+        // Just the label, and only until the glass is spiked (no ring, nothing after).
+        if (!m.poisonUsed) {
+          worldContext.fillStyle = '#f4d696';
+          worldContext.font = 'bold 9px Arial';
+          worldContext.textAlign = 'center';
+          worldContext.fillText(keyName('poison') + ' · RESERVED GLASS', ROOF_HIT.drink.x, ROOF_HIT.drink.y - 20);
+        }
         worldContext.restore();
       }
     }

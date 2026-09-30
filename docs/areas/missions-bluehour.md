@@ -28,8 +28,11 @@ included from world3d-resort.js inside one IIFE (their helpers are private; only
   four settings, flowers, two hurricane candles, champagne in a bucket, four velvet chairs.
   East is left open: Vescari stands at `ROOF_HIT.seat`/`sip` to lift the glass.
 - The reserved glass sits at `ROOF_HIT.drink` and is drawn a little large on a gold
-  coaster; a pulsing gold ring and the RESERVED label show while it is the target (on the
-  roof, not yet spiked, Vescari alive) and hide with it (`glassTaken`).
+  coaster; only the RESERVED label marks it (no ring on the cloth), while it is the target
+  (on the roof, not yet spiked, Vescari alive). After the spike the objective is Vescari,
+  but nothing points at him while `roofWatchQuiet()` holds (glass spiked, no alarm, he is
+  alive): the floating arrow rests and the 2D fallback drops its glass label too. The
+  arrow is back the moment the cover is blown or he is down (lift target).
 
 ## Street entrance (roofmission-entrance.js, world3d-bluehour-entrance.js)
 

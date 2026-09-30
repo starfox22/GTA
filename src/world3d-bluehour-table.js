@@ -129,7 +129,7 @@
       vipChair(tx - 9.6, tz, 0);
       vipChair(tx + 6.3, tz + 7.4, Math.atan2(-7.4, -6.3));
       // The reserved glass: live (it leaves the table in Vescari's hand), on a gold
-      // coaster, and a thin gold ring on the cloth while it is the job's target.
+      // coaster; the RESERVED label shows while it is the job's target (no ring on the cloth).
       const reservedGlass = new Three.Group();
       reservedGlass.userData.dynamic = true;
       roofGroup.add(reservedGlass);
@@ -139,14 +139,6 @@
       round(reservedGlass, 0, 1, 0, 0.14, 1.5, crystal);
       mesh(new Three.CylinderGeometry(1.1, 0.78, 1.8, 20, 1, true), crystal, reservedGlass, 0, 2.6, 0);
       mesh(new Three.CylinderGeometry(0.98, 0.8, 0.8, 20), wine, reservedGlass, 0, 2.1, 0);
-      const targetRing = new Three.Mesh(
-        new Three.TorusGeometry(1.95, 0.09, 6, 36),
-        new Three.MeshBasicMaterial({ color: '#f2d491', transparent: true, opacity: 0.8, depthWrite: false }),
-      );
-      targetRing.rotation.x = Math.PI / 2;
-      targetRing.position.y = 0.08;
-      targetRing.castShadow = false;
-      reservedGlass.add(targetRing);
       const drinkLabel = sign('RESERVED', ROOF_HIT.drink.x, ROOF_HIT.drink.y - 12, 44, '#f2d491');
       drinkLabel.position.y = ROOFTOP.height + 25;
       drinkLabel.userData.backing.position.y = ROOFTOP.height + 25;
@@ -156,6 +148,4 @@
         // Down once the glass is spiked: the toast plays out in the open.
         const target = !!hit && player.roof && !hit.poisonUsed && !hit.killRegistered;
         drinkLabel.visible = drinkLabel.userData.backing.visible = target;
-        targetRing.visible = target;
-        if (target) targetRing.material.opacity = 0.55 + Math.sin(gameTime * 3) * 0.3;
       }
