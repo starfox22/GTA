@@ -11,11 +11,12 @@
   --ff-need: 0.3;
   position: absolute;
   z-index: 9;
-  left: 0;
-  right: 0;
-  top: calc(50% + 34px);
-  margin-inline: auto;
-  width: min(360px, calc(100vw - 32px));
+  /* Out of the way of the jumper and the canopy opening round the screen centre:
+     at the right edge, mid-height (between the cash and the speed box). */
+  right: 22px;
+  top: 50%;
+  margin-top: -64px;
+  width: min(330px, calc(100vw - 32px));
   pointer-events: none;
   font-family: var(--ui-font);
   color: var(--ui-text);
@@ -92,6 +93,7 @@
   letter-spacing: 0.14em;
 }
 #freefallCue .ffc-read {
+  gap: 10px;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -188,5 +190,16 @@
   #freefallCue * {
     animation: none !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Narrow or touch screens have no free side: under the top pills instead, still above the jumper. */
+@media (max-width: 820px), (pointer: coarse) {
+  #freefallCue {
+    left: 0;
+    right: 0;
+    top: 132px;
+    margin: 0 auto;
+    width: min(300px, calc(100vw - 32px));
   }
 }
