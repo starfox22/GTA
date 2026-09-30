@@ -55,6 +55,14 @@
     function demoStoryOver() {
       return missionIndex < missions.length && demoLocked(missionIndex);
     }
+    /* `missionIndex` is both the story's frontier and the job a replay picked
+       (chooseMission). Once the demo is complete a replay that was declined or
+       failed must not leave the index on the old job: storyCallWaiting() would
+       keep the payphone ringing (arrow, pager, HUD pill) for a job the story
+       finished. Called on HANG UP, on a failed job and when a save loads. */
+    function settleDemoStoryIndex() {
+      if (DEMO_BUILD && !player.godMode && completed >= DEMO_MISSIONS) missionIndex = completed;
+    }
     function resetCampaignStats() {
       campaignStats.playSeconds = campaignStats.cashEarned = campaignStats.wantedPeak = 0;
       statsCashSeen = null;
@@ -193,6 +201,7 @@
             ? campaignCount(s.highestCompleted ?? s.completed)
             : Math.max(campaignCount(s.completed), campaignCount(s.missionIndex));
         missionIndex = Math.min(campaignCount(s.missionIndex), completed);
+        settleDemoStoryIndex();
         cash = clamp(Number(s.cash) || 0, 0, 99999999);
         worldMinutes = Number.isFinite(s.worldMinutes) ? Math.max(0, s.worldMinutes) : worldMinutes;
         if (Array.isArray(s.owned)) weapons.forEach((w, i) => (w.owned = i === 0 || !!s.owned[i]));

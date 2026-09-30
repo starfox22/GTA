@@ -326,6 +326,10 @@
       gameMode = 'play';
       keys = {};
       canvas.focus();
+      // HANG UP on a replay picked after the demo ended: back to free roam.
+      settleDemoStoryIndex();
+      save();
+      updateUI();
     }
     function offerMission() {
       // PUBLIC DEMO (campaign.js): past mission 2 the payphone has nothing.
@@ -454,7 +458,10 @@
           c.failedMission = true;
         });
       announce('THE SOUTH COAST LEDGER', 'JOB FAILED', 3);
-      tell(reason + ' Return to the payphone or retry from pause.', 6);
+      // A replay after the demo ended has no ringing payphone to return to.
+      settleDemoStoryIndex();
+      save();
+      tell(reason + (demoStoryOver() ? ' Replay it from the pause menu.' : ' Return to the payphone or retry from pause.'), 6);
       getElement('storyLine').classList.remove('show');
     }
     function retryMission() {

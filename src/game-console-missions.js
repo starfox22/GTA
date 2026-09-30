@@ -27,6 +27,26 @@
         picker: missions.map((m, i) => missionPickerTitle(i)),
         stats: { ...campaignStats, playSeconds: Math.round(campaignStats.playSeconds) },
       }),
+      // Every on-screen pointer that refers to the story (HUD refreshed first):
+      // the objective the 3D arrow, minimap and map draw, the navigation pill,
+      // the pager, the flight strip's bearing and the ringing payphone.
+      pointers() {
+        updateUI();
+        const target = objective(),
+          bearing = objectiveBearing();
+        return {
+          objective: target ? { x: Math.round(target.x), y: Math.round(target.y) } : null,
+          navigation: navigationState().visible && getElement('navigation').style.display !== 'none',
+          navName: getElement('navTitle').textContent,
+          pagerShown: !getElement('pager').classList.contains('hidden'),
+          distanceLine: getElement('missionDistance').textContent,
+          bearing: bearing === null ? null : Math.round(bearing),
+          waypoint: !!userWaypoint,
+          payphoneRinging: !mission && storyCallWaiting(),
+          missionIndex,
+          completed,
+        };
+      },
       // The HUD's mission card (refreshed first) and the last announcement's small line:
       // 'MISSION 1', 'CONTRACT 2', 'DEMO COMPLETE'.
       missionCard() {

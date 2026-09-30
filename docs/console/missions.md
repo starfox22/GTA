@@ -9,6 +9,7 @@
 | `pauseMenu(open)` | Open (`true`) or close (`false`) the pause menu as Escape does; returns the mode and its RESTART CURRENT JOB button as shown (`disabled`, and `note` NO JOB TO RESTART when there is none) |
 | `retryMission()`, `chooseMission(i)` | The pause menu's RESTART CURRENT JOB; a pick in the mission picker, gated as the picker is (`chosen: false` for a locked job), which brings up the job's call (accept with `keys Enter --real`); both return the mode and `missionState()` |
 | `missionCard()` | The HUD mission card (refreshed first) and the last headline's small line: `MISSION 1`, `CONTRACT 2`, `DEMO COMPLETE` (no total) |
+| `pointers()` | Every story pointer after a HUD refresh: the `objective()` the arrow/minimap/map use, the navigation pill, the pager's distance line, the flight strip bearing, a waypoint and whether the payphone rings (none in a finished demo's free roam) |
 | `demo()` | The public demo (campaign.js): the build flag, `DEMO_MISSIONS`, god mode, the open job indices, whether the demo's story is over and a call is waiting, whether it was ever completed, the DEMO COMPLETE card (shown, seconds until it opens) and the stats recap |
 | `skipToRooftopEscape()` | Mission 2: Vescari down, the player on the street for the last stage (reach the motel with no stars); used to fast-complete mission 2 |
 | `roofPlace(x, y)` | Mission 2: the player on the Blue Hour terrace at roof-local `(x, y)` (0..360, 0..350; default out of the lift), starting the job dressed as a guest if needed; returns `roofStealth()` |
