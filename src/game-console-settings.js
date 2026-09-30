@@ -12,6 +12,7 @@
           if (typeof changes.chatter === 'boolean') settings.npcChatter = changes.chatter;
           if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
           if (typeof changes.playerOutline === 'boolean') settings.playerOutline = changes.playerOutline;
+          if (typeof changes.playerRing === 'boolean') settings.playerRing = changes.playerRing;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -45,6 +46,7 @@
           fps: fpsMeter.shown,
           cutaway: settings.cutaway,
           playerOutline: settings.playerOutline,
+          playerRing: settings.playerRing,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,

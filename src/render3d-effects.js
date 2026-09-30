@@ -1,4 +1,4 @@
-      // Player/objective rings, arrows, muzzle and head lights, smoke and flame sprites.
+      // The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
       /**
        * PLAYER AT NIGHT
        * No light follows the player (the pool of light that rode at their feet
@@ -24,18 +24,6 @@
       );
       playerRing.rotation.x = -Math.PI / 2;
       scene.add(playerRing);
-      const objectiveRing = new Three.Mesh(
-        new Three.RingGeometry(27, 29, 48),
-        new Three.MeshBasicMaterial({
-          color: '#ebd297',
-          transparent: true,
-          opacity: 0.8,
-          side: Three.DoubleSide,
-          depthWrite: false,
-        }),
-      );
-      objectiveRing.rotation.x = -Math.PI / 2;
-      scene.add(objectiveRing);
       const arrowGroup = new Three.Group();
       const arrowMat = new Three.MeshBasicMaterial({
         color: '#ffe2a2',
@@ -46,8 +34,6 @@
       cone.rotation.z = Math.PI;
       cone.renderOrder = 99;
       scene.add(arrowGroup);
-      const targetLight = new Three.PointLight('#ffd083', 0.5, 90, 1);
-      scene.add(targetLight);
       // (The player's headlights are CAR LAMPS slot 0, lighting3d-vehicle-lights.js.)
       const muzzleLight = new Three.PointLight('#ffc67a', 0, 95, 1.5);
       scene.add(muzzleLight);

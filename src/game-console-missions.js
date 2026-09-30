@@ -113,6 +113,8 @@
         Object.assign(e, { x: ROOFTOP.x + x, y: ROOFTOP.y + y, a: heading, look: 0, pinned: true, roofRoute: null, investigate: null });
         return roofStealthReport();
       },
+      // What marks the objective and the player (markers.js): arrow, no ring, the player ring setting.
+      markers: () => markersReport(),
       // Mission 2: the stealth state (suspicion, pace, each guard's view and
       // whether he sees the player) and the drink's progress and aftermath.
       roofStealth: () => roofStealthReport(),
