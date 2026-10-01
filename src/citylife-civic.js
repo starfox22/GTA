@@ -266,7 +266,7 @@
     // The blood a vehicle carries after hitting someone (car-stains.js).
     // @include src/car-stains.js
     function scream(p) {
-      if (!voicesOn || gameTime < screamAt || distanceBetween(p, player) > 470) return;
+      if (!voicesOn || gameTime < screamAt || gameTime < (p.mutedUntil || 0) || distanceBetween(p, player) > 470) return;
       screamAt = gameTime + 1.7;
       playPersonScream(p, 0.65); // their own voice: a man's or a woman's take (voices.js)
     }
