@@ -138,9 +138,17 @@ packs with plain `<script src>` so the zip still plays from file://.
   signs. Motels, inns and lodges are dressed by `dressHotel()` (civic3d-hotels.js). County boards (guide,
   scenic-view, town, trailhead) are drawn only through `roadsideSign()` (county3d-signs.js) at the spot
   `signSpot()` (county-guide-signs.js) finds clear of asphalt; never `sign()` for scenery in open country.
-- Blood on vehicles: `c.stains` (car-stains.js `addCarStain`/`clearCarStains`) is the only data and
-  carblood3d*.js only reads it; a new repair or respray path must call `clearCarStains(car)`. The painter
-  (carblood3d-paint.js) paints thickness only; the shader (`cbMaterial`) owns colour, gloss and drying.
+- Blood on vehicles: `c.stains` (car-stains.js `addCarStain`/`clearCarStains`) is the only data, including the
+  `reach`, `flow` and `creep` that `updateCarStainFlow` advances, and carblood3d*.js only reads it; a new repair
+  or respray path must call `clearCarStains(car)`. The painter (carblood3d-paint/-streaks) paints thickness and
+  arrival times only, as generators that yield on `cbOver()`; the shader (`cbMaterial`, carblood3d-skin.js) owns
+  colour, gloss and drying. Work goes through `cbSlice` (about 3 ms a frame); new vehicle GL resources are pooled
+  or made in `cbWarmStep`.
+- Pedestrians react to a car only through `watchVehicle()` (crowd-awareness.js: sight, hearing, attention,
+  reaction time); never start a 'dodge' directly. `carHorn(c, length)` is the only way a car honks (it sets
+  `c.hornUntil`, which the awareness model hears). Someone on the ground (`personOnGround(p)`) who is run over
+  again goes through `runOverDowned` (runover.js, from `knockPerson`); they die from it only via `p.dying` then
+  `finishDying()` then `strikePerson`. `p.mutedUntil` silences `scream()`.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
