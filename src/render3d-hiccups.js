@@ -285,6 +285,10 @@
           lights: hiccupLights(),
           gpu: hiccupSceneGpu(),
           cells: hiccupCells(),
+          // The body-impostor pools made so far (flight-view3d.js): pools, instanced meshes in them.
+          // The dormant-light guard (lighting3d-cutaway.js) is in the chunk every lit program is built from.
+          dormantLights: Three.ShaderChunk.lights_fragment_begin.includes('if ( directLight.visible ) RE_Direct('),
+          bodyPools: { pools: bodyPools.size, meshes: [...bodyPools.values()].reduce((n, pool) => n + (pool ? pool.parts.length : 0), 0) },
           lightsNested: (() => {
             let n = 0;
             scene.traverse((o) => {

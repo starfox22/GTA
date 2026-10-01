@@ -108,7 +108,7 @@
       let uploadTarget = null;
       function uploadMeshes(meshes) {
         if (!uploadTarget) {
-          uploadTarget = new Three.WebGLRenderTarget(1, 1, { type: Three.HalfFloatType, depthBuffer: true });
+          uploadTarget = new Three.WebGLRenderTarget(1, 1, { type: hdrCapable ? Three.HalfFloatType : Three.UnsignedByteType, depthBuffer: true });
           for (const o of scene.children) if (o.isLight) uploadLights.push(o);
         }
         const previous = renderer.getRenderTarget(),
@@ -330,9 +330,12 @@
           prewarmInfo.passes = passes.length;
           prewarmInfo.models = models.length;
           prewarmInfo.uploads = uploads.length;
-          prewarmInfo.ms += performance.now() - started;
+          const spent = performance.now() - started;
+          prewarmInfo.ms += spent;
           prewarmInfo.done = !queue.length && !passes.length && !models.length && !uploads.length && !unlinked.size;
-          if (!prewarmInfo.done) setTimeout(step, 30);
+          // A step that ran long (a model build, a big slice) is followed by a longer pause: the
+          // prewarm never takes much more than a quarter of the frames it shares with the menu.
+          if (!prewarmInfo.done) setTimeout(step, Math.max(30, Math.min(400, spent * 3)));
         };
         setTimeout(step, 1500);
       }

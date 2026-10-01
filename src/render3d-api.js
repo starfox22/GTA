@@ -75,6 +75,7 @@
           const byName = new Map(),
             byCell = new Map(),
             byTriangles = new Map(),
+            instancedList = [],
             sphere = new Three.Sphere(),
             roles = new Map();
           for (const m of carModels.values()) roles.set(m.group, 'vehicle');
@@ -134,9 +135,12 @@
                 // Triangles of what the camera pass draws (an instanced mesh: per instance).
                 const g = o.geometry,
                   count = g ? (g.index ? g.index.count : g.attributes.position ? g.attributes.position.count : 0) : 0,
-                  triangles = o.isMesh ? (count / 3) * (o.isInstancedMesh ? o.count : 1) : 0;
+                  instances = o.isInstancedMesh ? o.count : g && g.isInstancedBufferGeometry ? g.instanceCount : 1,
+                  triangles = o.isMesh ? (count / 3) * instances : 0;
                 byTriangles.set(key, (byTriangles.get(key) || 0) + triangles);
                 triangleTotal += triangles;
+                // Instanced meshes drawn whole whatever is in view are what a tile or a cull would save.
+                if (instances > 1) instancedList.push([key, instances, Math.round(count / 3), o.frustumCulled, !!o.castShadow]);
               }
             }
             for (const c of o.children) visit(c);
@@ -156,6 +160,8 @@
             // Triangles of the camera pass by the same names (the heaviest first).
             triangles: Math.round(triangleTotal),
             byTriangles: sorted(byTriangles).map(([name, n]) => [name, Math.round(n)]),
+            // [name, instances, triangles each, frustum culled, casts shadow], the most instances first.
+            instanced: instancedList.sort((a, b) => b[1] * b[2] - a[1] * a[2]).slice(0, top),
             programs: sorted(programs),
           };
         },

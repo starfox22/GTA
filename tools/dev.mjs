@@ -6,6 +6,8 @@
 //   node tools/dev.mjs wait <seconds> [--real]
 //   node tools/dev.mjs mouse <x> <y> [seconds] [--down] [--keys Code,Code]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
+//   node tools/dev.mjs heap   (the page's JS heap in MB after a full collection)
+//   node tools/dev.mjs cpucost <seconds>   (CPU ms per drawn frame of each browser process: the GPU process's share is software GL's pixel cost)
 //   node tools/dev.mjs profile <seconds> [--alloc] [--top N]   (CPU profile of the live page; --alloc: allocation sites)
 //   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] [--prewarm] | stop
 //
@@ -389,6 +391,33 @@ async function serve(file, port, flags, size, ownBuild) {
         fs.writeFileSync(out, buf);
         return { result: { path: path.relative(ROOT, out), bytes: buf.length } };
       }
+      case 'heap': {
+        // The page's JS heap after a full collection (what a new feature's tables and kits weigh).
+        await cdp.send('HeapProfiler.enable');
+        await cdp.send('HeapProfiler.collectGarbage');
+        const usage = await cdp.send('Runtime.getHeapUsage');
+        return { result: { usedMB: +(usage.usedSize / 1048576).toFixed(1), totalMB: +(usage.totalSize / 1048576).toFixed(1) } };
+      }
+      case 'cpucost': {
+        // CPU seconds the browser's processes spend over `seconds` of wall-clock time, per drawn
+        // frame (renderHiccups counts them): under software GL the GPU process's share is the
+        // cost of the pixels, which wall-clock frame times on a shared machine cannot show.
+        const session = await browser.newBrowserCDPSession();
+        const read = async () => (await session.send('SystemInfo.getProcessInfo')).processInfo;
+        await call('renderHiccups', [true]);
+        const before = await read();
+        await page.waitForTimeout(op.seconds * 1000);
+        const after = await read();
+        const frames = (await call('renderHiccups', [false])).frames;
+        await session.detach().catch(() => {});
+        const byType = {};
+        const key = (p) => `${p.type}:${p.id}`;
+        const was = new Map(before.map((p) => [key(p), p.cpuTime]));
+        for (const p of after) byType[p.type] = (byType[p.type] || 0) + p.cpuTime - (was.get(key(p)) ?? 0);
+        const out = { frames, seconds: op.seconds };
+        for (const [type, cpu] of Object.entries(byType)) out[type + 'CpuMsPerFrame'] = frames ? +((cpu * 1000) / frames).toFixed(1) : null;
+        return { result: out };
+      }
       case 'profile': {
         // A CPU (or sampled allocation) profile of the live page for `seconds` of wall-clock
         // time, summarised as self time by function (the line is in the built page).
@@ -544,6 +573,10 @@ async function main(argv) {
         await request({ op: 'shot', name: rest[0] || 'shot', full: !!opts.full, crop: opts.crop ? opts.crop.split(',').map(Number) : null, width: Number(opts.width) || 0 }),
         0,
       );
+    case 'heap':
+      return print(await request({ op: 'heap' }), max);
+    case 'cpucost':
+      return print(await request({ op: 'cpucost', seconds: Number(rest[0] || 20) }), max);
     case 'profile':
       return print(await request({ op: 'profile', seconds: Number(rest[0] || 10), alloc: !!opts.alloc, top: Number(opts.top) || 25 }), max);
     case 'errors': {
