@@ -128,6 +128,19 @@ packs with plain `<script src>` so the zip still plays from file://.
 - `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
   from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
 - `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).
+- Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
+  by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
+  setting (off by default, `playerRingOn()`). Console `markers()` lists what marks the objective and the player.
+- `missionIndex` is both the story frontier and the job a replay picked: once the demo is complete anything
+  that ends or declines a replay must call `settleDemoStoryIndex()` (campaign.js), or the payphone arrow returns.
+  Console `pointers()` lists every story pointer.
+- Every service place has a real building and its door on the pavement: no floor rings, no free-standing place
+  signs. Motels, inns and lodges are dressed by `dressHotel()` (civic3d-hotels.js). County boards (guide,
+  scenic-view, town, trailhead) are drawn only through `roadsideSign()` (county3d-signs.js) at the spot
+  `signSpot()` (county-guide-signs.js) finds clear of asphalt; never `sign()` for scenery in open country.
+- Blood on vehicles: `c.stains` (car-stains.js `addCarStain`/`clearCarStains`) is the only data and
+  carblood3d*.js only reads it; a new repair or respray path must call `clearCarStains(car)`. The painter
+  (carblood3d-paint.js) paints thickness only; the shader (`cbMaterial`) owns colour, gloss and drying.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
