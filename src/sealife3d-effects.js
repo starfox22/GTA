@@ -12,6 +12,7 @@
         lifeCamera = new Three.OrthographicCamera(-1, 1, 1, -1, 0, 1),
         lifeFrame = { value: new Three.Vector3(0, 0, 2048) },
         lifeClock = { value: 0 };
+      registerPrewarmPass(lifeScene, lifeCamera, lifeTarget);
       waterUniforms.uLife.value = lifeTarget.texture;
       const lifeBlend = {
         transparent: true,

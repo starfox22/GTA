@@ -156,6 +156,9 @@
       // Shadow casters near the view that the camera pass does not show.
       // With `everywhere`, every see-through caster in the scene.
       shadowCasters: (limit, everywhere) => city3D?.shadowCasters?.(limit, !!everywhere) ?? null,
+      // Shader programs, textures and geometries created in play (first uses) and the slowest
+      // frames' renderer CPU split; `reset` starts a fresh log.
+      renderHiccups: (reset) => city3D?.hiccups?.(!!reset) ?? null,
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

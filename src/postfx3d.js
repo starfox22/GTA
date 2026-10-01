@@ -80,6 +80,17 @@
           depthWrite: false,
         });
       }
+      // The wet-reflection passes only run in the rain: the prewarm compiles them (with their
+      // targets bound) as passes of the shared quad, like the shader prewarm's other passes.
+      function postWarmPasses() {
+        const passes = [];
+        if (hdrCapable && postTier && ssrMaterial && ssrTargets.length === 2)
+          passes.push(
+            { scene: postScene, camera: postCamera, material: ssrMaterial, target: ssrTargets[0] },
+            { scene: postScene, camera: postCamera, material: ssrBlurMaterial, target: ssrTargets[1] },
+          );
+        return passes;
+      }
       function runPass(material, target) {
         postQuad.material = material;
         renderer.setRenderTarget(target);

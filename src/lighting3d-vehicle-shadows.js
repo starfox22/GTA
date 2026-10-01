@@ -103,6 +103,8 @@
         );
       horizonQuad.frustumCulled = false;
       horizonScene.add(horizonQuad);
+      registerPrewarmPass(horizonScene, beamShadowCamera, beamShadowTarget);
+      registerPrewarmPass(beamShadowScene, beamShadowCamera, beamShadowTarget);
       function drawHorizonStrip() {
         if (!horizonDirty) return;
         horizonDirty = false;

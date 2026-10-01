@@ -111,6 +111,13 @@
       fill.position.set(-200, 100, -300);
       scene.add(fill);
       let camera = streetCamera;
+      // Off-screen passes with a scene, camera and target of their own (the light maps, the
+      // cloud march, the wake map...) register here so the shader prewarm compiles them too
+      // (render3d-resources.js SHADER PREWARM); `target` may be a function returning it.
+      const prewarmPasses = [];
+      function registerPrewarmPass(passScene, passCamera, target) {
+        prewarmPasses.push({ scene: passScene, camera: passCamera, target });
+      }
       // @include src/flight-view3d.js
       // @include src/postfx3d.js
       // @include src/lighting3d.js
@@ -192,8 +199,10 @@
       // @include src/mountain-village3d.js
       // @include src/plane3d.js
       // @include src/render3d-vehicle-models.js
+      // @include src/render3d-prewarm-models.js
       // @include src/render3d-effects.js
       // @include src/render3d-resources.js
+      // @include src/render3d-hiccups.js
       // The story payphone uses the shared-resource sets (render3d-resources.js).
       // @include src/payphone3d.js
       const api = {

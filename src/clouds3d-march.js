@@ -206,6 +206,7 @@
         marchQuad = new Three.Mesh(fullScreenGeometry, marchMaterial);
       marchQuad.frustumCulled = false;
       marchScene.add(marchQuad);
+      registerPrewarmPass(marchScene, fullScreenCamera, () => cloudTarget);
       // ---- Composite behind the aircraft ------------------------------------------------
       const compositeUniforms = {
         uClouds: { value: cloudTarget ? cloudTarget.texture : null },

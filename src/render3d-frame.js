@@ -4,6 +4,7 @@
           lastVisualTime = gameTime;
           // Split CPU timings of the frame for DeadEndCity.stats() (`r:` parts).
           let lap = performance.now();
+          hiccupBegin();
           nightAmount = clamp(1 - daylight() * 1.6, 0, 1);
           updateCivicVisuals();
           // A boat passing under a road bridge is dropped 30 units below the deck
@@ -655,4 +656,5 @@
             worldContext.fillStyle = 'rgba(199,88,62,' + flash * 0.7 + ')';
             worldContext.fillRect(0, 0, viewportWidth, viewportHeight);
           }
+          hiccupEnd();
         },

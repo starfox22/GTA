@@ -86,9 +86,69 @@
        * bound, so the programs match the ones the scene pass will ask for, and
        * each is linked once KHR_parallel_shader_compile reports it ready, so the
        * driver does the work in the background (only where that extension exists).
+       * The slices cover, in order: the scene's objects (never its lights: compile()
+       * counts the lights of what it is given as well as the scene's, so a slice
+       * holding one compiled its programs for one light too many); the off-screen
+       * passes (`registerPrewarmPass`, the wet reflections), each with its own
+       * target bound; the Points both ways round; then, only while the title is up,
+       * one stand-in vehicle per model (render3d-prewarm-models.js) and the far copy
+       * of the city's buffers. A program's key holds the light and shadow counts:
+       * keep them fixed in play, and register a new off-screen pass.
        */
+      /**
+       * OFF-SCREEN UPLOAD
+       * A mesh's buffers go to the GPU the first time it is drawn: the far copy of the city
+       * (42 MB in ~500 meshes) all in the frame the helicopter lifts off. `uploadMeshes` draws
+       * the given meshes once into a 1 x 1 target, under the scene's lights, fog and
+       * environment (so the programs are the scene's own), with their culling off for that draw:
+       * the shader prewarm calls it a few at a time behind the title.
+       */
+      const uploadScene = new Three.Scene(),
+        uploadLights = [];
+      let uploadTarget = null;
+      function uploadMeshes(meshes) {
+        if (!uploadTarget) {
+          uploadTarget = new Three.WebGLRenderTarget(1, 1, { type: Three.HalfFloatType, depthBuffer: true });
+          for (const o of scene.children) if (o.isLight) uploadLights.push(o);
+        }
+        const previous = renderer.getRenderTarget(),
+          culled = meshes.map((mesh) => mesh.frustumCulled);
+        uploadScene.matrixWorldAutoUpdate = false;
+        uploadScene.fog = scene.fog;
+        uploadScene.environment = scene.environment;
+        // (The children are listed, not re-parented: each stays under its own group.)
+        uploadScene.children = [...uploadLights, ...meshes];
+        for (const mesh of meshes) mesh.frustumCulled = false;
+        try {
+          renderer.setRenderTarget(uploadTarget);
+          // With shadows on, the sun's shadow pass draws them too: their depth programs compile
+          // here (the shadow map itself is redrawn by the next frame).
+          renderer.shadowMap.needsUpdate = renderer.shadowMap.enabled;
+          renderer.render(uploadScene, camera);
+        } finally {
+          renderer.shadowMap.needsUpdate = false;
+          meshes.forEach((mesh, i) => (mesh.frustumCulled = culled[i]));
+          uploadScene.children = [];
+          renderer.setRenderTarget(previous);
+        }
+      }
+      // Progress, for renderHiccups(): whether the driver compiles in parallel, scene objects and
+      // passes still to compile, models still to build, programs compiled and linked so far, the
+      // CPU spent, and any error that stopped a part of it.
+      const prewarmInfo = { parallel: false, queued: 0, passes: 0, models: 0, modelErrors: 0, uploads: 0, compiled: 0, linked: 0, ms: 0, done: false, error: '' };
       function prewarmShaders() {
-        const queue = [...scene.children],
+        // (Lights stay out of the slices: compile() counts the lights of a slice as well as the
+        // scene's, so a slice holding one compiled its programs for one light too many.)
+        const queue = scene.children.filter((o) => !o.isLight),
+          // The off-screen passes (registerPrewarmPass) and the wet-reflection passes: each
+          // is compiled with its own target bound, as that decides the program (colour space).
+          passes = [...prewarmPasses, ...postWarmPasses(), { run: () => warmPoints() }],
+          // Stand-in vehicles, one per model (render3d-prewarm-models.js), built last and only
+          // while the title is up.
+          models = prewarmModelList(),
+          // The far copy of the city, uploaded to the GPU a few meshes at a time once every
+          // program is ready (only while the title is up).
+          uploads = [...farScenery.children, ...(renderer.shadowMap.enabled ? prewarmShadowSamples() : [])],
           slice = new Three.Object3D(),
           // Programs compiled but not yet linked. compile() only starts the work:
           // three.js links a program (the blocking part, ~0.1-0.3 s each on a
@@ -101,33 +161,172 @@
         // and linking every material's program up front (most are never on screen
         // together) cost far more than it saved: there, programs link when first
         // drawn, as before.
-        if (!renderer.extensions.has('KHR_parallel_shader_compile')) return;
+        prewarmInfo.parallel = renderer.extensions.has('KHR_parallel_shader_compile');
+        prewarmInfo.queued = queue.length;
+        prewarmInfo.passes = passes.length;
+        prewarmInfo.models = models.length;
+        prewarmInfo.uploads = uploads.length;
+        // (`?prewarm` in the URL runs it without the extension, compile only and nothing linked:
+        // for headless runs on a software GL, which has none; tools/dev.mjs `--prewarm`.)
+        const forced = !prewarmInfo.parallel && /[?&]prewarm\b/.test(location.search);
+        if (!prewarmInfo.parallel && !forced) return;
+        let burntWarmed = false;
+        const note = (materials) => {
+          for (const material of materials) {
+            const program = renderer.properties.get(material).currentProgram;
+            if (program && !unlinked.has(program)) {
+              unlinked.add(program);
+              prewarmInfo.compiled++;
+            }
+          }
+        };
+        // Point sprites flip `sizeAttenuation` between the street camera and the flight camera
+        // (the bridge and boat lights), and the flight view's program is a variant of its own:
+        // compile each Points material both ways.
+        const warmPoints = () => {
+          const seen = new Set();
+          scene.traverse((o) => {
+            if (!o.isPoints || !o.material || seen.has(o.material)) return;
+            seen.add(o.material);
+            const m = o.material;
+            m.sizeAttenuation = !m.sizeAttenuation;
+            m.needsUpdate = true;
+            slice.children = [o];
+            try {
+              note(renderer.compile(slice, camera, scene));
+            } finally {
+              m.sizeAttenuation = !m.sizeAttenuation;
+              m.needsUpdate = true;
+            }
+          });
+          slice.children = [];
+        };
         const step = () => {
           const started = performance.now(),
-            previous = renderer.getRenderTarget();
-          if (hdrCapable && postTier) renderer.setRenderTarget(sceneTarget);
-          while (queue.length && performance.now() - started < 6) {
+            previous = renderer.getRenderTarget(),
+            // A slice of work may take 6 ms behind the title and 2.5 ms once the game is played.
+            budget = forced || gameMode === 'menu' ? 6 : 2.5,
+            bindScene = () => {
+              if (hdrCapable && postTier) renderer.setRenderTarget(sceneTarget);
+            };
+          bindScene();
+          while (queue.length && performance.now() - started < budget) {
             // Compile ~40 top-level objects per call: compile() walks the whole
             // scene for its lights each time.
             slice.children = queue.splice(0, 40);
             try {
-              for (const material of renderer.compile(slice, camera, scene)) {
-                const program = renderer.properties.get(material).currentProgram;
-                if (program) unlinked.add(program);
-              }
+              note(renderer.compile(slice, camera, scene));
             } catch (error) {
+              prewarmInfo.error = String(error).slice(0, 160);
               queue.length = 0;
             }
           }
           slice.children = [];
+          while (!queue.length && passes.length && performance.now() - started < budget) {
+            const pass = passes.shift(),
+              target = typeof pass.target === 'function' ? pass.target() : pass.target;
+            if (pass.run) {
+              try {
+                pass.run();
+              } catch (error) {
+                prewarmInfo.error = String(error).slice(0, 160);
+              }
+              continue;
+            }
+            if (!target) continue;
+            try {
+              renderer.setRenderTarget(target);
+              if (pass.material) {
+                // A post pass: its one material on the shared quad.
+                postQuad.material = pass.material;
+                note(renderer.compile(pass.scene, pass.camera));
+              } else {
+                const materials = renderer.compile(pass.scene, pass.camera);
+                note(materials);
+                // Its textures go up now too (a canvas painted for the pass, a table).
+                for (const material of materials)
+                  if (material.uniforms)
+                    for (const key in material.uniforms) {
+                      const texture = material.uniforms[key].value;
+                      if (texture && texture.isTexture && !texture.isRenderTargetTexture && texture.image) renderer.initTexture(texture);
+                    }
+              }
+            } catch (error) {
+              prewarmInfo.error = String(error).slice(0, 160);
+            }
+          }
+          bindScene();
+          // The stand-in models: one a step, only while the title is up (a build is a few
+          // milliseconds of kit geometry), taken out of the scene again once compiled. Their
+          // materials are not disposed, so their programs stay cached.
+          const titleUp = forced || gameMode === 'menu';
+          if (!titleUp) models.length = uploads.length = 0;
+          while (!queue.length && !passes.length && models.length && performance.now() - started < budget) {
+            const standIn = models.shift(),
+              before = scene.children.length;
+            try {
+              const model = makeVehicle(standIn);
+              note(renderer.compile(model.group, camera, scene));
+              // A burnt-out car: soot map, no clear coat (damage3d-bodies.js paintVehicle), the
+              // first car to burn would otherwise compile that program and upload the soot.
+              if (!burntWarmed && model.car && model.paint && model.paint.isMeshPhysicalMaterial) {
+                burntWarmed = true;
+                model.paint.map = model.paint.emissiveMap = sootTexture;
+                model.paint.clearcoat = 0;
+                model.paint.needsUpdate = true;
+                note(renderer.compile(model.group, camera, scene));
+                renderer.initTexture(sootTexture);
+              }
+              scene.remove(model.group);
+              // The type's body-impostor pool (flight-view3d.js BODY IMPOSTORS) is made from the
+              // first pristine model: make it now, and compile its instanced materials.
+              carModels.set(standIn, model);
+              try {
+                const pool = bodyPoolFor(standIn);
+                if (pool) for (const part of pool.parts) note(renderer.compile(part.mesh, camera, scene));
+              } finally {
+                carModels.delete(standIn);
+              }
+            } catch (error) {
+              prewarmInfo.modelErrors++;
+              prewarmInfo.error = String(error).slice(0, 160) + ' (' + standIn.type + ')';
+              // A failed build may leave a part of the model in the scene.
+              while (scene.children.length > before) scene.remove(scene.children[scene.children.length - 1]);
+            }
+          }
           renderer.setRenderTarget(previous);
+          // The far copy of the city, about 3 MB of buffers a step, once every program is ready.
+          if (titleUp && !queue.length && !passes.length && !models.length && !unlinked.size && uploads.length) {
+            const batch = [];
+            for (let bytes = 0; uploads.length && bytes < 3e6; ) {
+              const mesh = uploads.shift(),
+                g = mesh.geometry;
+              batch.push(mesh);
+              for (const name in g.attributes) bytes += g.attributes[name].array?.byteLength || 0;
+              if (g.index?.array) bytes += g.index.array.byteLength;
+            }
+            try {
+              uploadMeshes(batch);
+            } catch (error) {
+              prewarmInfo.error = String(error).slice(0, 160);
+              uploads.length = 0;
+            }
+          }
+          if (forced) unlinked.clear();
           for (const program of unlinked) {
-            if (performance.now() - started > 12) break;
+            if (performance.now() - started > budget * 2) break;
             if (!program.isReady()) continue;
             program.getUniforms();
             unlinked.delete(program);
+            prewarmInfo.linked++;
           }
-          if (queue.length || unlinked.size) setTimeout(step, 30);
+          prewarmInfo.queued = queue.length;
+          prewarmInfo.passes = passes.length;
+          prewarmInfo.models = models.length;
+          prewarmInfo.uploads = uploads.length;
+          prewarmInfo.ms += performance.now() - started;
+          prewarmInfo.done = !queue.length && !passes.length && !models.length && !uploads.length && !unlinked.size;
+          if (!prewarmInfo.done) setTimeout(step, 30);
         };
         setTimeout(step, 1500);
       }

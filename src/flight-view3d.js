@@ -583,6 +583,8 @@
           if (!pool) continue;
           for (const part of pool.parts) {
             part.mesh.count = pool.count;
+            // (An empty pool is not drawn: a no-op instanced draw still costs a program switch.)
+            part.mesh.visible = pool.count > 0;
             if (!pool.count) continue;
             part.mesh.instanceMatrix.needsUpdate = true;
             if (part.mesh.instanceColor) part.mesh.instanceColor.needsUpdate = true;
@@ -590,6 +592,7 @@
           pool.count = 0;
         }
         impostorBodies.count = impostorCabins.count = impostorCount;
+        impostorBodies.visible = impostorCabins.visible = impostorCount > 0;
         if (!impostorCount) return;
         impostorBodies.instanceMatrix.needsUpdate = impostorCabins.instanceMatrix.needsUpdate = true;
         impostorBodies.instanceColor.needsUpdate = true;

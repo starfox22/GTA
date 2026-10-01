@@ -6,7 +6,8 @@
 //   node tools/dev.mjs wait <seconds> [--real]
 //   node tools/dev.mjs mouse <x> <y> [seconds] [--down] [--keys Code,Code]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
-//   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] | stop
+//   node tools/dev.mjs profile <seconds> [--alloc] [--top N]   (CPU profile of the live page; --alloc: allocation sites)
+//   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] [--prewarm] | stop
 //
 // `start` with no html builds dist/dev/game.html (and `reload` rebuilds it after code
 // edits, reusing the browser). The page opens with `?dev&norender` (no WebGL renderer,
@@ -110,10 +111,12 @@ function build(html) {
 }
 
 // Start (or reuse) the server and wait until the game is in play. Returns its status.
-export async function start({ html = null, render = false, nodev = false, shadercheck = false, size = '960x600', port = null, quiet = false } = {}) {
+export async function start({ html = null, render = false, nodev = false, shadercheck = false, prewarm = false, size = '960x600', port = null, quiet = false } = {}) {
   const say = quiet ? () => {} : (s) => console.log(s);
   // ?shadercheck makes three.js report shader compile errors (console errors).
-  const flags = [nodev ? 'test' : 'dev', render ? null : 'norender', shadercheck ? 'shadercheck' : null].filter(Boolean).join('&');
+  // ?prewarm runs the title-screen shader prewarm without KHR_parallel_shader_compile (which
+  // software GL lacks), compile only, so the headless page exercises it.
+  const flags = [nodev ? 'test' : 'dev', render ? null : 'norender', shadercheck ? 'shadercheck' : null, prewarm ? 'prewarm' : null].filter(Boolean).join('&');
   const running = readState();
   if (running) {
     const st = await alive(running.port);
@@ -386,6 +389,23 @@ async function serve(file, port, flags, size, ownBuild) {
         fs.writeFileSync(out, buf);
         return { result: { path: path.relative(ROOT, out), bytes: buf.length } };
       }
+      case 'profile': {
+        // A CPU (or sampled allocation) profile of the live page for `seconds` of wall-clock
+        // time, summarised as self time by function (the line is in the built page).
+        await cdp.send('Profiler.enable');
+        if (op.alloc) {
+          await cdp.send('HeapProfiler.enable');
+          await cdp.send('HeapProfiler.startSampling', { samplingInterval: 8192, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
+          await page.waitForTimeout(op.seconds * 1000);
+          const { profile } = await cdp.send('HeapProfiler.stopSampling');
+          return { result: summarizeAllocation(profile, op.top || 25) };
+        }
+        await cdp.send('Profiler.setSamplingInterval', { interval: 400 });
+        await cdp.send('Profiler.start');
+        await page.waitForTimeout(op.seconds * 1000);
+        const { profile } = await cdp.send('Profiler.stop');
+        return { result: summarizeProfile(profile, op.top || 25) };
+      }
       case 'errors': {
         const out = errors;
         errors = [];
@@ -421,6 +441,49 @@ async function serve(file, port, flags, size, ownBuild) {
 }
 
 // ---------------------------------------------------------------------------------
+// Profile summaries (the `profile` op).
+function summarizeProfile(profile, top) {
+  const byId = new Map(profile.nodes.map((n) => [n.id, n]));
+  const self = new Map();
+  let total = 0;
+  for (let i = 0; i < profile.samples.length; i++) {
+    const dt = profile.timeDeltas[i] || 0;
+    total += dt;
+    self.set(profile.samples[i], (self.get(profile.samples[i]) || 0) + dt);
+  }
+  const byFunction = new Map();
+  let idle = 0;
+  for (const [id, t] of self) {
+    const f = byId.get(id).callFrame;
+    if (f.functionName === '(idle)') {
+      idle += t;
+      continue;
+    }
+    const key = (f.functionName || '(anonymous)') + (f.url ? ' @' + (f.lineNumber + 1) : '');
+    byFunction.set(key, (byFunction.get(key) || 0) + t);
+  }
+  const busy = total - idle;
+  const rows = [...byFunction].sort((a, b) => b[1] - a[1]).slice(0, top);
+  return { seconds: +(total / 1e6).toFixed(2), busyMs: +(busy / 1000).toFixed(0), top: rows.map(([k, t]) => [k, +(t / 1000).toFixed(1), +((100 * t) / Math.max(1, busy)).toFixed(1)]) };
+}
+function summarizeAllocation(profile, top) {
+  const byFunction = new Map();
+  let total = 0;
+  const walk = (node) => {
+    const f = node.callFrame,
+      own = node.selfSize || 0;
+    total += own;
+    if (own) {
+      const key = (f.functionName || '(anonymous)') + (f.url ? ' @' + (f.lineNumber + 1) : '');
+      byFunction.set(key, (byFunction.get(key) || 0) + own);
+    }
+    for (const c of node.children || []) walk(c);
+  };
+  walk(profile.head);
+  return { totalKB: Math.round(total / 1024), top: [...byFunction].sort((a, b) => b[1] - a[1]).slice(0, top).map(([k, n]) => [k, Math.round(n / 1024)]) };
+}
+
+// ---------------------------------------------------------------------------------
 // CLI.
 function parseArg(s) {
   try {
@@ -446,8 +509,8 @@ async function main(argv) {
   const pos = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--full' || a === '--real' || a === '--down' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck') opts[a.slice(2)] = true;
-    else if (a === '--port' || a === '--keys' || a === '--max' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
+    if (a === '--full' || a === '--real' || a === '--down' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck' || a === '--prewarm' || a === '--alloc') opts[a.slice(2)] = true;
+    else if (a === '--port' || a === '--keys' || a === '--max' || a === '--top' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
     else pos.push(a);
   }
   const [cmd, ...rest] = pos;
@@ -456,7 +519,7 @@ async function main(argv) {
     case 'serve':
       return serve(rest[0], Number(rest[1]), rest[2], rest[3], rest[4] === '1');
     case 'start':
-      await start({ html: rest[0], render: !!opts.render, nodev: !!opts.nodev, shadercheck: !!opts.shadercheck, size: opts.size, port: Number(opts.port) || null });
+      await start({ html: rest[0], render: !!opts.render, nodev: !!opts.nodev, shadercheck: !!opts.shadercheck, prewarm: !!opts.prewarm, size: opts.size, port: Number(opts.port) || null });
       return;
     case 'status': {
       const st = readState();
@@ -481,6 +544,8 @@ async function main(argv) {
         await request({ op: 'shot', name: rest[0] || 'shot', full: !!opts.full, crop: opts.crop ? opts.crop.split(',').map(Number) : null, width: Number(opts.width) || 0 }),
         0,
       );
+    case 'profile':
+      return print(await request({ op: 'profile', seconds: Number(rest[0] || 10), alloc: !!opts.alloc, top: Number(opts.top) || 25 }), max);
     case 'errors': {
       const reply = await request({ op: 'errors' });
       if (reply.error) return print(reply, max);
@@ -491,6 +556,7 @@ async function main(argv) {
       const st = readState();
       let flags = opts.render ? st.flags.replace(/&?norender/, '') : opts.norender && !/norender/.test(st.flags) ? st.flags + '&norender' : undefined;
       if (opts.shadercheck && !/shadercheck/.test(flags ?? st.flags)) flags = (flags ?? st.flags) + '&shadercheck';
+      if (opts.prewarm && !/prewarm/.test(flags ?? st.flags)) flags = (flags ?? st.flags) + '&prewarm';
       const reply = await request({ op: 'reload', flags, keep: !!opts.keep });
       if (reply.error) return print(reply, max);
       if (reply.result.buildSeconds != null) console.log(`rebuilt in ${reply.result.buildSeconds}s`);

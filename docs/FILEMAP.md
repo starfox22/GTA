@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-472 files in the include tree, 163,434 lines.
+474 files in the include tree, 164,052 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -146,7 +146,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/driving.js`   489 — Tyres, brakes and driving assists
 - `src/tyre-effects.js`   260 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   218 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   227 — ▸ Three.js renderer and resource lifecycle
 - `src/game-loop.js`   165 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    45 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
@@ -375,10 +375,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
-- `src/flight-view3d.js`   882 — Flight camera and aerial perspective
-- `src/postfx3d.js`   949 — ▸ HDR post-processing pipeline
+- `src/flight-view3d.js`   885 — Flight camera and aerial perspective
+- `src/postfx3d.js`   960 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
-- `src/searchlight3d.js`   924 — Searchlights: light shafts, ground pools, the helicopter's spot
+- `src/searchlight3d.js`   929 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   312 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    58 — ▸ Tree library: species, foliage atlas, wind, LOD
@@ -398,7 +398,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/transit3d.js`   457 — Railway meshes
 - `src/ecology3d.js`   321 — Wildlife meshes
 - `src/world3d.js`    11 — ▸ World scenery meshes
-- `src/wakes3d.js`   513 — Boat wakes and spray
+- `src/wakes3d.js`   514 — Boat wakes and spray
 - `src/sealife3d.js`    41 — ▸ Sea life meshes
 - `src/beachvolley3d.js`   178 — Beach volleyball court meshes
 - `src/beach3d.js`   806 — Palm Keys Beach meshes
@@ -443,11 +443,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mountain-village3d.js`    38 — ▸ Mountain village meshes
 - `src/plane3d.js`    48 — ▸ Airplane meshes
 - `src/render3d-vehicle-models.js`   350 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
+- `src/render3d-prewarm-models.js`    52 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
 - `src/render3d-effects.js`   207 — ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
-- `src/render3d-resources.js`   141 — GPU resource lifecycle: shared geometries, model pruning and disposal.
+- `src/render3d-resources.js`   340 — GPU resource lifecycle: shared geometries, model pruning and disposal.
+- `src/render3d-hiccups.js`   294 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   488 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   658 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-api.js`   506 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   660 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
@@ -456,9 +458,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
 - `src/lighting3d-sky.js`   813 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
-- `src/lighting3d-cutaway.js`   144 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
-- `src/lighting3d-vehicle-lights.js`   646 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
-- `src/lighting3d-vehicle-shadows.js`   312 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people, cars, trees and posts in the CAR LAMPS beams), the TERRAIN HORIZON strip kept in the same …
+- `src/lighting3d-cutaway.js`   159 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
+- `src/lighting3d-vehicle-lights.js`   647 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
+- `src/lighting3d-vehicle-shadows.js`   314 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people, cars, trees and posts in the CAR LAMPS beams), the TERRAIN HORIZON strip kept in the same …
 - `src/lighting3d-look.js`   268 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
 
 ## src/vegetation3d.js ▸ Tree library: species, foliage atlas, wind, LOD
@@ -563,7 +565,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/sealife3d.js ▸ Sea life meshes
 
 - `src/sealife3d-models.js`   519 — Sea life 3D geometry and materials: dolphins, sharks, gulls, deformation (SEA_KINDS).
-- `src/sealife3d-effects.js`   503 — Sea life 3D life map, blood clouds, foam rings, wakes and spray.
+- `src/sealife3d-effects.js`   504 — Sea life 3D life map, blood clouds, foam rings, wakes and spray.
 
 ## src/county3d.js ▸ County and mountain meshes
 
@@ -631,8 +633,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
 - `src/clouds3d-field.js`   244 — Clouds 3D field: textures of the game's cloud layer (clouds.js), the GPU noise volume, the shared density field (CLOUD_FIELD_GLSL: base and top by …
-- `src/clouds3d-march.js`   260 — Clouds 3D ray-march pass: the half-resolution march through the layer beyond the subject (stopped by the hills and the tall towers), its composite …
-- `src/clouds3d-near.js`   186 — Clouds 3D near the camera: the veil of cloud between the camera and the subject (the jumper or the aircraft), marched like the far layer and …
+- `src/clouds3d-march.js`   261 — Clouds 3D ray-march pass: the half-resolution march through the layer beyond the subject (stopped by the hills and the tall towers), its composite …
+- `src/clouds3d-near.js`   187 — Clouds 3D near the camera: the veil of cloud between the camera and the subject (the jumper or the aircraft), marched like the far layer and …
 - `src/clouds3d-wisps.js`   216 — Clouds 3D wisps: soft rags of cloud streaming past the camera at the speed it moves through the layer (streaked along the relative wind), shown only …
 - `src/clouds3d-shadows.js`    85 — Clouds 3D shadows: the plane over the city that throws the cloud field's shadows on the ground.
 - `src/clouds3d-frame.js`   290 — Clouds 3D frame update (updateCloudVisuals): shadows, sun dimming, the far march, the veil near the camera, the wisps, the lens and the in-cloud …
@@ -715,7 +717,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   157 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   194 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   197 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-settings.js`   120 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

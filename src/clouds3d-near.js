@@ -87,6 +87,7 @@
         nearQuad = new Three.Mesh(fullScreenGeometry, nearMaterial);
       nearQuad.frustumCulled = false;
       nearScene.add(nearQuad);
+      registerPrewarmPass(nearScene, fullScreenCamera, () => nearTarget);
       // The veil over the whole frame, after everything else in the scene (the subject
       // included). `uFlat` (premultiplied, scene light) is LOW's veil, or added haze.
       const nearCompositeUniforms = {

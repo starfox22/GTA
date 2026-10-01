@@ -26,6 +26,8 @@
         setCharacterCutaway(on) {
           setCharacterCutaway(on);
         },
+        // First uses and the slowest frames (render3d-hiccups.js; DeadEndCity.renderHiccups()).
+        hiccups: (reset) => hiccupReport(reset),
         info() {
           let objects = 0;
           const byType = {};
@@ -72,10 +74,12 @@
         drawProfile(top = 15) {
           const byName = new Map(),
             byCell = new Map(),
+            byTriangles = new Map(),
             sphere = new Three.Sphere(),
             roles = new Map();
           for (const m of carModels.values()) roles.set(m.group, 'vehicle');
-          let total = 0;
+          let total = 0,
+            triangleTotal = 0;
           const visit = (o) => {
             if (!o.visible || !o.layers.test(camera.layers)) return;
             if ((o.isMesh || o.isSprite || o.isLine || o.isPoints) && o.material) {
@@ -127,6 +131,12 @@
                 byName.set(key, (byName.get(key) || 0) + calls);
                 byCell.set(cell, (byCell.get(cell) || 0) + calls);
                 total += calls;
+                // Triangles of what the camera pass draws (an instanced mesh: per instance).
+                const g = o.geometry,
+                  count = g ? (g.index ? g.index.count : g.attributes.position ? g.attributes.position.count : 0) : 0,
+                  triangles = o.isMesh ? (count / 3) * (o.isInstancedMesh ? o.count : 1) : 0;
+                byTriangles.set(key, (byTriangles.get(key) || 0) + triangles);
+                triangleTotal += triangles;
               }
             }
             for (const c of o.children) visit(c);
@@ -139,7 +149,15 @@
             const kind = p.name || String(p.cacheKey).split(',')[0].slice(0, 40);
             programs.set(kind, (programs.get(kind) || 0) + 1);
           }
-          return { total, byName: sorted(byName), byCell: sorted(byCell), programs: sorted(programs) };
+          return {
+            total,
+            byName: sorted(byName),
+            byCell: sorted(byCell),
+            // Triangles of the camera pass by the same names (the heaviest first).
+            triangles: Math.round(triangleTotal),
+            byTriangles: sorted(byTriangles).map(([name, n]) => [name, Math.round(n)]),
+            programs: sorted(programs),
+          };
         },
         // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
         searchlight: (options) => searchlightReport(options),

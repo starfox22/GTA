@@ -122,6 +122,7 @@
       // Looking straight down with north (-z) up the image, so the map's v runs
       // north from the rect's south edge (see cityDriveRect).
       driveCamera.up.set(0, 0, -1);
+      registerPrewarmPass(driveScene, driveCamera, driveTarget);
       const carLampA = Array.from({ length: CAR_LAMP_SLOTS }, () => new Three.Vector4()),
         carLampB = Array.from({ length: CAR_LAMP_SLOTS }, () => new Three.Vector4()),
         carLampC = Array.from({ length: CAR_LAMP_SLOTS }, () => new Three.Vector4(0, 0, 1, 0));

@@ -48,6 +48,7 @@
         wakeFrame = { value: new Three.Vector3(0, 0, 2048) },
         wakeClock = { value: 0 },
         wakeClearColor = new Three.Color();
+      registerPrewarmPass(wakeScene, wakeCamera, wakeTarget);
       waterUniforms.uWake.value = wakeTarget.texture;
       const WAKE_NOISE = `
         float wakeHash( vec2 p ) { return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 ); }
