@@ -41,6 +41,10 @@ Part of police-and-combat.md.
   killing blast, max 2.5; `kind` 'ballistic' | 'headshot' | 'blast' | 'impact' | 'fall' |
   'melee'. It counts the wound and pools the body if it is dead. A thrown bike rider or a
   fall calls `bleed(rider, severity, heading, 'impact')`; a pool alone: `bodyPool(p, kind, a)`.
+- Someone already down who is run over again (runover.js, docs/areas/people-and-crowd-vehicles.md): a
+  splash (`bleed(p, sev, heading, 'impact')`, a living body does not pool), streaks along the tyre path,
+  `c.bloodTrackRemaining` for the tyres, and the pool (`bodyPool`) once they have died a second or two later.
+  A non-fatal first pass leaves no blood at all.
 - Console: `bloodReport(x, y, radius)`, `bloodVictim(hits, damage, kind)` (docs/console/crowd.md).
   Test: tools/tests/blood-wounds.mjs.
 
@@ -48,25 +52,46 @@ Part of police-and-combat.md.
 
 A hit that hurts (20 km/h and up) leaves a stain on the car (`addCarStain`, car-stains.js, called
 from knockPerson). It is data on the vehicle: `c.stains`, at most 3 records `{id, t, face, x, z,
-sev, sx, sz, kph, seed, wash}` (the body-local point struck, severity, the direction the blood is
-carried: inward and back along the airflow). Fatal: sev 0.55-1 by speed; survivor 0.12-0.42; a slow
-bump nothing. `updateCarStains` (every 0.5 s, only stained cars) washes them in rain > 0.5 outside
-cover and retires them after 1500 s; `clearCarStains` runs from `repairVehicle` and the garage
-service. `bloodOn` false stops new ones and hides the old.
+sev, sx, sz, kph, seed, wash, reach, flow, creep}` (the body-local point struck, severity, the
+direction the blood is carried: inward and back along the airflow). Fatal: sev 0.62-1 by speed;
+survivor 0.12-0.42; a slow bump nothing. `reach` is the metres the airflow can drag it back (1.5 m
+for a survivor, ~3 m for a fatal hit at speed: bumper to roof edge). `flow` (0-1) is how far it has
+been dragged: `updateCarStainFlow` advances it every frame, only while the car runs faster than
+4 m/s, so a car that keeps going blows the streaks the whole length of the bonnet in about a
+second and one that stops dead stops them short; `creep` (0-1) is the gravity runs, advanced only
+while the car is slow (18 s at rest). `updateCarStains` (every 0.5 s, only stained cars) washes
+them in rain > 0.5 outside cover and retires them after 1500 s; `clearCarStains` runs from
+`repairVehicle` and the garage service. `bloodOn` false stops new ones and hides the old.
 
-- Renderer (carblood3d.js, + `-paint`, `-fit`): the only reader. One mesh (child of `m.body`), one
-  material and one 1536x1024 canvas per stained car, `CB_MAX_CARS` 5 (out of sight / oldest retire,
-  disposed with the model or by the sweep). Each stain is two 512 px tiles: TOP (bonnet, fender
-  tops, windscreen base) and FACE (bumper, grille or flank). The boxes are laid out once per stain
-  (`event.layout`) and every visible mesh triangle inside is clipped to them, lifted 0.1 units
-  along its normal, UV-mapped; meshes another mesh covers (bonnet over shell) are skipped. It
-  re-fits when `damageVersion` / `shapeVersion` change (crumple, hood hinge).
-- The canvas holds a THICKNESS FIELD (R thickness, G arrival time of a run), painted once, seeded.
-  The shader makes colour, cover, roughness and normals from thickness and the wet/dry look from the
-  age (`vBlood.x` birth, `uBloodNow`): wet crimson and glossy, dry brown-black by ~2 min, thick
-  cores later; runs reveal over 25 s; fade 200-1500 s. Never emissive; lit through
+- Renderer (carblood3d.js, `-paint`, `-streaks`, `-fit`, `-skin`): the only reader. One mesh
+  (child of `m.body`), one material and one 1536x1024 canvas sheet per stained car, `CB_MAX_CARS`
+  5 (out of sight / oldest retire; a retired skin goes back to a pool of one). Each stain is two
+  512 px tiles: TOP (bonnet, fender tops, windscreen base, as long as `reach`) and FACE (bumper,
+  grille or flank). The boxes are laid out once per stain (`event.layout`) and every visible mesh
+  triangle inside is clipped to them, lifted 0.1 units along its normal, UV-mapped; meshes another
+  mesh covers (bonnet over shell) are skipped. It re-fits when `damageVersion` / `shapeVersion`
+  change (crumple, hood hinge), the old geometry showing until the new one is committed.
+- The sheet holds a FIELD, painted once, seeded: R thickness, G and B arrival values times the
+  thickness (a soft edge keeps the ratio; the shader divides it back out): G when the airflow's
+  streak reaches the pixel (shown once `flow` passes it), B when a gravity run does (once `creep`
+  does). Strands grow at their own speeds, so they end ragged where the car stopped. TOP: impact
+  mass + pad where the body slid, wipe fingers, a band of strands in bundles, thick beaded ropes,
+  hairlines and veils, spray, mist, short runs toward the nose. The shader makes colour, cover,
+  roughness and normals from thickness and the wet/dry look from the age (uniform `uBloodEv[3]`:
+  birth, rain left, flow, creep per stain): wet crimson and glossy, dry brown-black by ~2 min, thick
+  cores later; fade 200-1500 s; thin films barely glint. Never emissive; lit through
   `cityMaterialPatch` like the paint. Change colours only in the shader (paint has no colour).
+- Cost (the first stain used to hitch): the fit and the paint are generators run in slices of
+  `CB_BUDGET_MS` (3 ms, up to 9 on a slow frame) from the vehicle pass (`cbSlice`, one budget for
+  every car); any yield point checks `cbOver()`. Gather (body-space copy of the meshes) is cached
+  per vehicle type while its geometry is the shared one; the fit clips on typed buffers and the
+  cover test reads a grid. A spare skin (canvas, uploaded texture, material) is made and the
+  program compiled and linked while the title menu is up (`cbWarmStep`, again if the post pipeline
+  changes); a painted tile goes to the GPU as `copyTextureToTexture` of the shared scratch tile,
+  not the whole sheet. `carBloodReport().skin` shows slices, `work`, `warm` and `programs`.
 - Gotchas: do not parent anything else raycastable to the skin (its `raycast` is a no-op so bullet
-  marks pass through); a newly pushed pedestrian is struck only from the next frame; the fit costs
-  ~20-90 ms and the paint ~20-50 ms, on separate frames (`updateCarBlood`).
-- Test: tools/tests/car-blood.mjs; console `carBloodReport`, `carBloodMark` (docs/console/crowd.md).
+  marks pass through); a newly pushed pedestrian is struck only from the next frame; a headless
+  software GL (SwiftShader) rasterises canvas work at the tile upload, so its slices look longer
+  than on a GPU; new paint primitives must yield (`cbOver()`) and keep G, B as arrival x R.
+- Test: tools/tests/car-blood.mjs (reach, flow, creep, drying, cap, rain, repair, garage); console
+  `carBloodReport`, `carBloodMark`, `carBloodVictim` (docs/console/crowd.md).

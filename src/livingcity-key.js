@@ -220,7 +220,7 @@
         const waited = gameTime - k.heldSince;
         if (waited > 2 && !k.tooted) {
           k.tooted = true;
-          hornSound(c, 0.25);
+          carHorn(c, 0.25);
         }
         if (waited > 3.5) {
           if (!k.dodge || Math.abs(held.side - k.dodge) < spec.w / 2 + 3)

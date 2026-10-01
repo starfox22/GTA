@@ -13,6 +13,7 @@
     // @include src/physics-driving.js
     // @include src/physics-step.js
     // @include src/physics-knockdowns.js
+    // @include src/runover.js
     // @include src/physics-update.js
     // @include src/physics-console.js
     // END SUBSYSTEM: src/physics.js
