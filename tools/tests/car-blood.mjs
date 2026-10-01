@@ -1,5 +1,7 @@
-// Car blood (car-stains.js; carblood3d.js draws it): a fatal run-over stains the nose, a slow bump
-// and a bump that lets the person live at walking pace leave nothing, a flank hit stains the
+// Car blood (car-stains.js; carblood3d.js draws it): a fatal run-over stains the nose and the airflow
+// drags it the whole length of the bonnet while the car runs (a car that stops at once stops the
+// streaks short, and its gravity runs creep once it is still), a slow bump and a bump that lets the
+// person live at walking pace leave nothing, a survivor's is small and short, a flank hit stains the
 // flank, the stain dries over ~2 min, repeated hits stop at three, rain washes it, a repair or a
 // garage respray clears it, and with the blood setting off nothing stains.
 export const fresh = true;
@@ -20,6 +22,19 @@ async function hit(t, ms, along, lateral, expect = false) {
     await t.wait(1.2);
     const r = await t.call('carBloodReport');
     if (!expect || r.stains.length) return r;
+  }
+  return t.call('carBloodReport');
+}
+// The same, but the car stops dead a moment after the hit.
+async function hitAndStop(t) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    if (attempt) await arrange(t);
+    await t.call('carBloodVictim', 31, 0);
+    await t.call('launch', 19);
+    await t.wait(0.13);
+    await t.call('launch', 0);
+    const r = await t.call('carBloodReport');
+    if (r.stains.length) return r;
   }
   return t.call('carBloodReport');
 }
@@ -46,6 +61,12 @@ export default async function (t) {
     t.assert(s.sev >= 0.55, 'a fatal hit left a small stain: ' + s.sev);
     t.assert(s.x > half * 0.8 && Math.abs(s.z) < 9, 'stain off the nose: ' + JSON.stringify(s));
     t.assert(s.dry < 0.2, 'a fresh stain is dry already: ' + s.dry);
+    // Bloody: the airflow can drag it from the bumper to the windscreen's base and over (2.5 m and more), and the
+    // car that ran on for a second has dragged all of it; its runs have not crept (the car never stopped).
+    t.assert(s.sev >= 0.9, 'a fatal hit at speed is not heavy: ' + s.sev);
+    t.assert(s.reach >= 2.5, 'the streaks cannot run the length of the bonnet: ' + s.reach + ' m');
+    t.assert(s.flow >= 0.95, 'the airflow has not dragged it back: flow ' + s.flow);
+    t.assert(s.creep < 0.2, 'gravity runs crept on a moving car: ' + s.creep);
     if (r.skin && r.skin.skins > 0) t.assert(r.skin.triangles > 0, 'the renderer fitted nothing: ' + JSON.stringify(r.skin));
     t.note(`fatal run-over: sev ${s.sev} at (${s.x}, ${s.z}) ${s.kph} km/h`);
 
@@ -66,7 +87,22 @@ export default async function (t) {
     // A survivor hit at 40 km/h: a small stain, smaller than the fatal one.
     await arrange(t);
     r = await hit(t, 11, half + 14, 0);
-    if (r.stains.length) t.assert(r.stains[0].sev < s.sev, 'a survivor stained as much as a death: ' + JSON.stringify(r.stains[0]));
+    if (r.stains.length) {
+      t.assert(r.stains[0].sev < s.sev, 'a survivor stained as much as a death: ' + JSON.stringify(r.stains[0]));
+      t.assert(r.stains[0].sev <= 0.45 && r.stains[0].reach < s.reach - 0.8, 'a survivor\'s stain is not modest: ' + JSON.stringify(r.stains[0]));
+    }
+
+    // A fatal hit and the car stopping dead: the streaks stop short, and the gravity runs creep once it is still.
+    await arrange(t);
+    r = await hitAndStop(t);
+    t.assert(r.stains.length === 1 && r.stains[0].sev >= 0.8, 'the stop-after-hit run left no heavy stain: ' + JSON.stringify(r.stains));
+    const stopped = r.stains[0];
+    t.assert(stopped.flow < 0.45, 'streaks ran on although the car stopped: flow ' + stopped.flow);
+    await t.wait(24);
+    const rested = (await t.call('carBloodReport')).stains[0];
+    t.assert(rested.creep >= 0.99, 'the runs did not creep on a stopped car: ' + rested.creep);
+    t.assert(rested.flow <= stopped.flow + 0.02, 'streaks grew on a stopped car: ' + stopped.flow + ' -> ' + rested.flow);
+    t.note(`stopped at once: flow ${stopped.flow}, creep ${rested.creep} after 24 s`);
 
     // Repeated hits accumulate up to three.
     await arrange(t);

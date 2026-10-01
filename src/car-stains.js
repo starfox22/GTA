@@ -2,13 +2,18 @@
     /**
      * CAR STAINS
      * `c.stains` is plain data, at most CAR_STAIN_LIMIT records, oldest first:
-     *   { id, t, face, x, z, sev, sx, sz, kph, seed, wash }
+     *   { id, t, face, x, z, sev, sx, sz, kph, seed, wash, reach, flow, creep }
      * `face` is the side of the body the person met ('front' | 'rear' | 'left' |
      * 'right'), (x, z) the point on it in world units from the car's centre (x along
      * the heading, z to the right, as the model is laid out), `sev` 0.1-1 how much
      * blood it left, (sx, sz) the unit direction the blood is carried over the body
      * (away from the impact, back along the airflow), `seed` makes each stain its own
      * pattern and `wash` (0-1) is how much of it the rain has taken.
+     * `reach` is how far (metres) the airflow can drag it back along the bodywork;
+     * `flow` (0-1) how much of that it has covered: it advances only while the car is
+     * moving (so a car that brakes at once stops the streaks short, one that keeps
+     * going blows them the whole length of the bonnet); `creep` (0-1) is how far the
+     * slow gravity runs have crept, which only happens once the car has slowed.
      *
      * Only a hit that hurts leaves any (20 km/h and up, blood setting on): a killing
      * one a proper splatter, more with speed; a survivor's a small one. A respray, a
@@ -18,11 +23,17 @@
     const CAR_STAIN_LIMIT = 3,
       CAR_STAIN_LIFE = 1500,
       CAR_STAIN_WASH_RATE = 0.09, // per second per unit of rain above 0.45 (a storm clears a stain in ~20 s)
+      CAR_STAIN_FLOW_RATE = 0.25, // the blown blood's front travels this share of the car's speed above the wind that does nothing (4 m/s)
+      CAR_STAIN_CREEP_SECONDS = 18, // seconds at rest for the gravity runs to finish
       carStained = new Set();
     let carStainCounter = 0,
       carStainClock = 0;
     function carStainable(c) {
       return c && !isBoat(c) && !isAircraft(c) && !vehicleSpec(c)?.jetski;
+    }
+    // How far back along the bodywork (metres, from the point struck) a stain can be dragged: a small one a bonnet's length, a fatal one at speed bumper to roof edge.
+    function carStainReach(sev, kph) {
+      return +(1.2 + 0.8 * sev + 1.2 * clamp(kph / 90, 0, 1.2) * sev).toFixed(2);
     }
     // Where on the body `person` met `c`, and the stain it leaves. Returns the record or null.
     function addCarStain(c, person, kph, fatal) {
@@ -53,7 +64,7 @@
       const n = Math.hypot(sx, sz) || 1;
       sx /= n;
       sz /= n;
-      const sev = fatal ? clamp(0.55 + (kph - 40) / 100, 0.55, 1) : clamp((kph - 18) / 90, 0.12, 0.42),
+      const sev = fatal ? clamp(0.62 + (kph - 40) / 90, 0.62, 1) : clamp((kph - 18) / 90, 0.12, 0.42),
         stain = {
           id: ++carStainCounter,
           t: gameTime,
@@ -66,6 +77,9 @@
           kph: Math.round(kph),
           seed: (Math.imul(carStainCounter + 1, 2654435761) ^ Math.imul(c.id | 0 || 7, 40503)) >>> 0,
           wash: 0,
+          reach: carStainReach(sev, kph),
+          flow: 0,
+          creep: 0,
         };
       if (!c.stains) c.stains = [];
       c.stains.push(stain);
@@ -83,8 +97,22 @@
       const age = gameTime - s.t;
       return clamp((age - 8) / 100, 0, 1);
     }
+    // Every frame, for the stains still moving: the airflow drags the blood back while the car runs, the gravity runs creep once it has slowed.
+    function updateCarStainFlow(deltaSeconds) {
+      for (const c of carStained) {
+        const list = c.stains;
+        if (!list) continue;
+        const v = Math.hypot(c.vx || 0, c.vy || 0) / UNITS_PER_METRE,
+          air = clamp((v - 2) / 5, 0, 1);
+        for (const s of list) {
+          if (s.flow < 1 && v > 4) s.flow = Math.min(1, s.flow + (deltaSeconds * CAR_STAIN_FLOW_RATE * (v - 4)) / s.reach);
+          if (s.creep < 1) s.creep = Math.min(1, s.creep + (deltaSeconds * (1 - air)) / CAR_STAIN_CREEP_SECONDS);
+        }
+      }
+    }
     function updateCarStains(deltaSeconds) {
       if (!carStained.size) return;
+      updateCarStainFlow(deltaSeconds);
       carStainClock += deltaSeconds;
       if (carStainClock < 0.5) return;
       const dt = carStainClock;
@@ -109,18 +137,34 @@
         if (!list.length) clearCarStains(c);
       }
     }
-    // The 2D fallback: a dark splat on the nose (or wherever the body was struck).
+    // The 2D fallback: a dark splat on the nose (or wherever the body was struck) with a few streaks dragged back along the airflow.
     function drawCarStains2D(c) {
       if (!c.stains?.length) return;
       const ca = Math.cos(c.a),
         sa = Math.sin(c.a);
+      worldContext.lineCap = 'round';
       for (const s of c.stains) {
         const px = c.x + s.x * ca - s.z * sa,
           py = c.y + s.x * sa + s.z * ca,
-          r = 1.6 + s.sev * 3.4,
-          dry = carStainDryness(s);
+          r = 1.8 + s.sev * 3.6,
+          dry = carStainDryness(s),
+          wx = s.sx * ca - s.sz * sa,
+          wy = s.sx * sa + s.sz * ca,
+          color = dry > 0.6 ? '#3c1612' : '#871428';
         worldContext.globalAlpha = (1 - s.wash) * (1 - 0.25 * dry);
-        worldContext.fillStyle = dry > 0.6 ? '#3c1612' : '#871428';
+        worldContext.fillStyle = worldContext.strokeStyle = color;
+        // Streaks: each a little different in length, as far as the airflow has dragged it.
+        const run = s.reach * UNITS_PER_METRE * 0.8 * s.flow * (0.3 + 0.7 * s.sev);
+        if (run > 2)
+          for (let i = 0; i < 5; i++) {
+            const side = (i - 2) * 0.9,
+              len = run * (0.45 + 0.55 * (((s.seed >>> (i * 3)) & 7) / 7));
+            worldContext.lineWidth = 1.1 - Math.abs(i - 2) * 0.22;
+            worldContext.beginPath();
+            worldContext.moveTo(px - wy * side, py + wx * side);
+            worldContext.lineTo(px - wy * side + wx * len, py + wx * side + wy * len);
+            worldContext.stroke();
+          }
         worldContext.beginPath();
         worldContext.ellipse(px, py, r * 1.35, r, c.a, 0, TAU);
         worldContext.fill();
@@ -130,8 +174,8 @@
     // Console: what a vehicle carries (default the player's car), with the renderer's share when it is drawing.
     function carStainConsole() {
       return {
-        // The blood stains on a vehicle (default the player's car): each record (face, x, z, sev, age, dry 0-1, wash) and, when the 3D view is on, what it draws (`skin`).
-        carBloodReport() {
+        // The blood stains on a vehicle (default the player's car): each record (face, x, z, sev, age, dry 0-1, wash, reach, flow, creep) and, when the 3D view is on, what it draws (`skin`: fit and paint cost, the work and frame gaps of the last frames); `reset` true clears those frame probes.
+        carBloodReport(reset = false) {
           const c = player.car;
           if (!c) return { stains: [], car: null };
           return {
@@ -146,8 +190,11 @@
               age: +(gameTime - s.t).toFixed(1),
               dry: +carStainDryness(s).toFixed(2),
               wash: +s.wash.toFixed(2),
+              reach: s.reach,
+              flow: +s.flow.toFixed(2),
+              creep: +s.creep.toFixed(2),
             })),
-            skin: city3D?.carBloodInfo?.(c) ?? null,
+            skin: city3D?.carBloodInfo?.(c, reset) ?? null,
           };
         },
         // Tests: the blood setting (on by default): `bloodEnabled(false)` stops all blood, stains included; no argument reports it.
@@ -155,8 +202,8 @@
           if (on !== undefined) bloodOn = !!on;
           return bloodOn;
         },
-        // Tests and looks: stain the player's car as a person struck on `face` ('front' | 'rear' | 'left' | 'right') at `kph` would (fatal or not), `across` units to the right of the centre line (or along a flank), aged `age` seconds; returns the record.
-        carBloodMark(face = 'front', kph = 70, fatal = true, across = 0, age = 0) {
+        // Tests and looks: stain the player's car as a person struck on `face` ('front' | 'rear' | 'left' | 'right') at `kph` would (fatal or not), `across` units to the right of the centre line (or along a flank), aged `age` seconds; returns the record. A mark of any age starts with the airflow's streaks done (`flow` 1) and the gravity runs crept by its age; `flow` (0-1) overrides that, and a car that is moving carries on from there.
+        carBloodMark(face = 'front', kph = 70, fatal = true, across = 0, age = 0, flow = age > 0 ? 1 : 0) {
           const c = player.car;
           if (!c) return null;
           const spec = vehicleSpec(c),
@@ -166,7 +213,11 @@
             along = end ? (face === 'front' ? 1 : -1) * (spec.l / 2 + 2) : across,
             lateral = end ? across : (face === 'right' ? 1 : -1) * (spec.w / 2 - 1),
             stain = addCarStain(c, { x: c.x + ca * along - sa * lateral, y: c.y + sa * along + ca * lateral }, kph, fatal);
-          if (stain) stain.t = gameTime - age;
+          if (stain) {
+            stain.t = gameTime - age;
+            stain.flow = clamp(flow, 0, 1);
+            stain.creep = clamp((age - 2) / CAR_STAIN_CREEP_SECONDS, 0, 1);
+          }
           return stain;
         },
         // Tests: stand a bystander on the player's car, `along` units ahead of its centre and `lateral` to its right (try the nose: half the length plus 30; a flank: 0 and half the width minus 3); a moving car then knocks them down.
