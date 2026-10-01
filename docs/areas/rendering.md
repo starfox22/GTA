@@ -56,8 +56,14 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
 - Matrices: world matrices are updated once a frame just before drawing, and only for what
   is shown; code reading a hidden object's `matrixWorld` calls `updateWorldMatrix()` first.
 - Baked ground canvases are released after upload (`releaseBakedCanvases`): nothing may
-  repaint them after start-up. Shaders are compiled behind the title (`prewarmShaders`).
-- Measure: `DeadEndCity.stats()` (`viewCalls`, `shadowCalls`, parts), `drawProfile()`.
+  repaint them after start-up. Shaders, off-screen passes, one stand-in per vehicle model and the far
+  copy's buffers are warmed behind the title (`prewarmShaders`): **rendering-hiccups.md** (what is
+  warmed, the first-use log, the rules a new effect follows).
+- Lit materials run the BRDF of a point or spot light only where it adds light (DORMANT LIGHTS,
+  lighting3d-cutaway.js): the muzzle, fire and searchlight lights stay in the scene at intensity 0 so
+  the programs never change, and cost nothing where they do not reach.
+- Measure: `DeadEndCity.stats()` (`viewCalls`, `shadowCalls`, parts), `drawProfile()` (calls and
+  triangles by name), `renderHiccups()` (first uses, slowest frames), `node tools/dev.mjs profile`.
 
 ## Buildings and signs
 

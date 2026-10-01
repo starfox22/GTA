@@ -26,6 +26,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
 | areas/audio-soundscape.md | Free-roam sound: the ear probe and the room (slap-back, echo, occlusion), ambience beds by place, footsteps by surface, horns, doors, tyre ground |
 | areas/rendering.md | Cameras and view, draw-call rules, buildings and signs, ground, water, wet roads, weather, tiers |
+| areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |
 | areas/rendering-lighting.md | HDR pipeline, post passes and the film grade, sun and time of day, night light map, searchlights, the cutaway |
 | areas/rendering-vehicle-lights.md | Vehicle lamps: CAR LAMPS, the drive light map, beam shadows, beams on slopes and the terrain horizon |
 | areas/rendering-clouds.md | The cloud layer's altitude by weather and area (`cloudBaseAt`), the march, the veil, wisps and lens in cloud, cloud shadows |
