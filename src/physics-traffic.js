@@ -119,6 +119,81 @@
         committed: false,
       };
     }
+    /* The scans trafficControl makes at a junction and in the lane, as functions of their own
+       (they were closures made afresh on every call). */
+    // Another car already committed to this junction, in its box.
+    function junctionBoxBusy(c, j) {
+      for (let i = 0; i < vehicles.length; i++) {
+        const o = vehicles[i];
+        if (
+          o !== c &&
+          Math.abs(o.x - j.x) < 200 &&
+          Math.abs(o.y - j.y) < 200 &&
+          o.hp > 0 &&
+          o.junction?.committed &&
+          Math.abs(o.junction.x - j.x) < 5 &&
+          Math.abs(o.junction.y - j.y) < 5 &&
+          Math.abs(o.x - j.x) < 110 + vehicleSpec(o).l / 2 &&
+          Math.abs(o.y - j.y) < 110 + vehicleSpec(o).l / 2 &&
+          (Math.abs(normalizeAngle(o.junction.a - j.a)) > 0.2 || o.junction.turn || j.turn)
+        )
+          return true;
+      }
+      return false;
+    }
+    // A car standing or crawling where the exit lane begins (`end`, heading cosine / sine).
+    function junctionExitOccupied(c, end, headingCosine3, headingSine3, vehicleDefinition) {
+      for (let i = 0; i < vehicles.length; i++) {
+        const o = vehicles[i],
+          dx = o.x - end.x,
+          dy = o.y - end.y;
+        if (o === c || Math.abs(dx) > 120 || Math.abs(dy) > 120) continue;
+        if (isBoat(o) || (o.altitude || 0) > 20 || Math.abs(o.speed) > 18) continue;
+        if (
+          Math.abs(-dx * headingSine3 + dy * headingCosine3) < (vehicleDefinition.w + vehicleSpec(o).w) / 2 + 7 &&
+          Math.abs(dx * headingCosine3 + dy * headingSine3) < (vehicleDefinition.l + vehicleSpec(o).l) / 2 + 22
+        )
+          return true;
+      }
+      return false;
+    }
+    // Nothing in the oncoming lane (left of `c`) from just behind to well past the obstacle,
+    // moving or not: room to pull out round it. (cos / sin of c's heading, its right-hand normal.)
+    function oncomingLaneClear(c, obstacle, reach, headingCosine2, headingSine2, rx, ry) {
+      for (let i = 0; i < vehicles.length; i++) {
+        const v = vehicles[i];
+        if (v === c || v === obstacle || isBoat(v) || (v.altitude || 0) > 20) continue;
+        const vx = v.x - c.x,
+          vy = v.y - c.y,
+          ahead = vx * headingCosine2 + vy * headingSine2,
+          left = -(vx * rx + vy * ry);
+        if (ahead > -60 && ahead < reach + 260 && left > 6 && left < 80) return false;
+      }
+      return true;
+    }
+    // The pedestrian scan's state (set per call, read by trafficYieldTo, which the crowd grid calls).
+    const trafficYield = { c: null, desired: 0, heldBy: null, heldAt: Infinity, hc: 0, hs: 0, rx: 0, ry: 0, side: 0, half: 0 },
+      trafficEase = { amount: 0, side: 1 };
+    function trafficYieldTo(p) {
+      if (p.hp <= 0 || p.roof) return;
+      const s = trafficYield,
+        c = s.c,
+        dx = p.x - c.x,
+        dy = p.y - c.y;
+      if (dx > 210 || dx < -210 || dy > 210 || dy < -210) return;
+      const along = dx * s.hc + dy * s.hs,
+        lateral = Math.abs(dx * s.rx + dy * s.ry);
+      // Only people out on the carriageway: mid-turn the look-ahead box sweeps
+      // across the pavement, and a bus used to wait for ever on walkers who
+      // were themselves waiting at the kerb for it to clear.
+      if (along > 0 && along < 200 && lateral < s.side + 11 && cityStreetAt(p.x, p.y)) {
+        s.desired = Math.min(s.desired, Math.sqrt(2 * 0.7 * GRAVITY * Math.max(0, along - s.half - 22)) * 0.8);
+        if (along < s.heldAt) {
+          s.heldBy = p;
+          s.heldAt = along;
+        }
+      }
+    }
     function trafficControl(c, stepSeconds) {
       // A driver who decided to answer a gunshot with the accelerator.
       if (c.ramUntil > gameTime && gameMode === 'play') {
@@ -175,31 +250,8 @@
         const proceed =
           !j.committed &&
           signal === 'green' &&
-          !vehicles.some(
-            (o) =>
-              o !== c &&
-              Math.abs(o.x - j.x) < 200 &&
-              Math.abs(o.y - j.y) < 200 &&
-              o.hp > 0 &&
-              o.junction?.committed &&
-              Math.abs(o.junction.x - j.x) < 5 &&
-              Math.abs(o.junction.y - j.y) < 5 &&
-              Math.abs(o.x - j.x) < 110 + vehicleSpec(o).l / 2 &&
-              Math.abs(o.y - j.y) < 110 + vehicleSpec(o).l / 2 &&
-              (Math.abs(normalizeAngle(o.junction.a - j.a)) > 0.2 || o.junction.turn || j.turn),
-          ) &&
-          !vehicles.some((o) => {
-            const dx = o.x - end.x,
-              dy = o.y - end.y;
-            if (o === c || Math.abs(dx) > 120 || Math.abs(dy) > 120) return false;
-            if (isBoat(o) || (o.altitude || 0) > 20 || Math.abs(o.speed) > 18) return false;
-            return (
-              Math.abs(-dx * headingSine3 + dy * headingCosine3) <
-                (vehicleDefinition.w + vehicleSpec(o).w) / 2 + 7 &&
-              Math.abs(dx * headingCosine3 + dy * headingSine3) <
-                (vehicleDefinition.l + vehicleSpec(o).l) / 2 + 22
-            );
-          }) &&
+          !junctionBoxBusy(c, j) &&
+          !junctionExitOccupied(c, end, headingCosine3, headingSine3, vehicleDefinition) &&
           // An ambulance or a cruiser under lights crossing: wait at the line
           // (livingcity-sirens.js).
           !sirenCrossing(c, j);
@@ -265,24 +317,15 @@
             y: through.points.at(-1).y + Math.sin(through.exit) * d,
           })),
         ],
-        ease = { amount: 0, side: 1 },
+        ease = trafficEase,
         // Right across the lane (not the car: turned out round a parked car or a
         // walker, a car-frame measure grew by the look-ahead's sideways swing), and
         // how far right of its lane's centre line the car is (the target sits on it).
         laneRx = -headingSine,
         laneRy = headingCosine,
-        laneOffset = -((target.x - c.x) * laneRx + (target.y - c.y) * laneRy),
-        // Nothing in the oncoming lane (left of us) from just behind to well past
-        // the obstacle, moving or not: room to pull out round it.
-        oncomingClear = (obstacle, reach) =>
-          !vehicles.some((v) => {
-            if (v === c || v === obstacle || isBoat(v) || (v.altitude || 0) > 20) return false;
-            const vx = v.x - c.x,
-              vy = v.y - c.y,
-              ahead = vx * headingCosine2 + vy * headingSine2,
-              left = -(vx * rx + vy * ry);
-            return ahead > -60 && ahead < reach + 260 && left > 6 && left < 80;
-          });
+        laneOffset = -((target.x - c.x) * laneRx + (target.y - c.y) * laneRy);
+      ease.amount = 0;
+      ease.side = 1;
       // The gap beside a parked car to steer for when caught close behind it.
       let passAim = null,
         passAt = Infinity,
@@ -343,7 +386,7 @@
           const laneLateral = laneOffset + dx * laneRx + dy * laneRy,
             intrusion = side + ow + 4 - Math.abs(laneLateral),
             overtake =
-              intrusion >= 12 && intrusion < 38 && laneLateral > -12 && !c.junction && oncomingClear(o, along);
+              intrusion >= 12 && intrusion < 38 && laneLateral > -12 && !c.junction && oncomingLaneClear(c, o, along, headingCosine2, headingSine2, rx, ry);
           if (intrusion < 12 || overtake) {
             // Pass on the left of anything in the middle of the lane.
             const passLeft = overtake || laneLateral >= 0,
@@ -398,31 +441,25 @@
       // Give crossing pedestrians and an innocent player time to clear the lane.
       // Runs 120 times a second per car, so it scans in place without building arrays
       // and skips anyone farther than the look-ahead box before doing any trigonometry.
-      const beforePeople = desired;
-      let heldBy = null,
-        heldAt = Infinity;
-      const yieldTo = (p) => {
-        if (p.hp <= 0 || p.roof) return;
-        const dx = p.x - c.x,
-          dy = p.y - c.y;
-        if (dx > 210 || dx < -210 || dy > 210 || dy < -210) return;
-        const along = dx * headingCosine2 + dy * headingSine2,
-          lateral = Math.abs(dx * rx + dy * ry);
-        // Only people out on the carriageway: mid-turn the look-ahead box sweeps
-        // across the pavement, and a bus used to wait for ever on walkers who
-        // were themselves waiting at the kerb for it to clear.
-        if (along > 0 && along < 200 && lateral < side + 11 && cityStreetAt(p.x, p.y)) {
-          desired = Math.min(desired, Math.sqrt(2 * 0.7 * GRAVITY * Math.max(0, along - half - 22)) * 0.8);
-          if (along < heldAt) {
-            heldBy = p;
-            heldAt = along;
-          }
-        }
-      };
+      const beforePeople = desired,
+        scan = trafficYield;
+      scan.c = c;
+      scan.desired = desired;
+      scan.heldBy = null;
+      scan.heldAt = Infinity;
+      scan.hc = headingCosine2;
+      scan.hs = headingSine2;
+      scan.rx = rx;
+      scan.ry = ry;
+      scan.side = side;
+      scan.half = half;
       // Everyone the box can hold (0-200 ahead, a lane's width either side) is
       // within 103 units of the point 100 ahead: a quarter of the old query.
-      forEachPedestrianNear(c.x + headingCosine2 * 100, c.y + headingSine2 * 100, 110, yieldTo);
-      if (!player.car) yieldTo(player);
+      forEachPedestrianNear(c.x + headingCosine2 * 100, c.y + headingSine2 * 100, 110, trafficYieldTo);
+      if (!player.car) trafficYieldTo(player);
+      desired = scan.desired;
+      const heldBy = scan.heldBy;
+      scan.c = scan.heldBy = null;
       // Pulling in for a fare or a bus stop, or stopped after a crash (src/crowd.js).
       const curb = curbsideStop(c);
       desired = Math.min(desired, curb);

@@ -10,8 +10,21 @@
      */
     const MINIMAP_SCALE = 0.137;
     let minimapBase = null;
+    /* The fonts the map overlays draw with, set once on a scratch canvas when the base layer is
+       built: the first fillText in a font costs a font lookup and glyph build (tens of
+       milliseconds on some platforms), which would otherwise land mid-drive the first time a
+       station, garage or helipad came into the minimap's window. */
+    function warmMapFonts() {
+      const g = document.createElement('canvas').getContext('2d');
+      if (!g) return;
+      for (const font of ['bold 6px Arial', 'bold 7px Arial', 'bold 8px Arial', 'bold 9px Arial', 'bold 10px Arial', 'bold 11px Arial', 'bold 12px Arial', 'bold 64px monospace', 'bold 65px monospace', 'bold 90px monospace']) {
+        g.font = font;
+        g.fillText('MRHU$ PLANE', 0, 8);
+      }
+    }
     function minimapBaseLayer() {
       if (minimapBase) return minimapBase;
+      warmMapFonts();
       let minx = Infinity,
         miny = Infinity,
         maxx = -Infinity,

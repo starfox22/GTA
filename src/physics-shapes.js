@@ -27,11 +27,16 @@
       const vehicleDefinition = vehicleSpec(c);
       let shape = c.contactBox;
       if (!shape) shape = c.contactBox = { x: 0, y: 0, a: 0, hx: 0, hy: 0 };
-      shape.x = c.x;
-      shape.y = c.y;
-      shape.a = c.a;
-      shape.hx = vehicleDefinition.l / 2;
-      shape.hy = vehicleDefinition.w / 2;
+      // Each field written only when it differs: this is asked for every pair and wall in
+      // up to seven passes a step, nearly always for a car that has not moved since the last
+      // ask, and a double stored into an object's field is a new boxed number for V8.
+      if (shape.x !== c.x) shape.x = c.x;
+      if (shape.y !== c.y) shape.y = c.y;
+      if (shape.a !== c.a) shape.a = c.a;
+      const hx = vehicleDefinition.l / 2,
+        hy = vehicleDefinition.w / 2;
+      if (shape.hx !== hx) shape.hx = hx;
+      if (shape.hy !== hy) shape.hy = hy;
       return shape;
     }
     // Bounding radius of a vehicle type's box (the broadphase asks for every car every step).

@@ -404,10 +404,8 @@ async function serve(file, port, flags, size, ownBuild) {
       by.set(k, (by.get(k) || 0) + (n.selfSize || 0));
       for (const c of n.children || []) walk(c, n.callFrame.url ? own : caller);
     })(head, '');
-    return [...by]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, top)
-      .map(([k, b]) => [Math.round(b / 1024), ...k.split(/:(?=\d+$)/)]);
+    const total = [...by.values()].reduce((a, b) => a + b, 0);
+    return [['(all)', total], ...[...by].sort((a, b) => b[1] - a[1]).slice(0, top)].map(([k, b]) => [Math.round(b / 1024), ...k.split(/:(?=\d+$)/)]);
   }
 
   // The page's main-thread CPU seconds so far (Performance.getMetrics ThreadTime).
@@ -451,7 +449,8 @@ async function serve(file, port, flags, size, ownBuild) {
         const t0 = Date.now();
         // `cpu`: also report the page's main-thread CPU time for the call (CDP ThreadTime),
         // which a busy machine does not inflate the way wall-clock milliseconds are.
-        const cpu0 = op.cpu ? await threadTime() : 0;
+        const cpu0 = op.cpu ? await threadTime() : 0,
+          heap0 = op.cpu ? (await cdp.send('Runtime.getHeapUsage').catch((e) => (console.log('heap', e.message), null))) || { usedSize: 0 } : null;
         // `profile`: V8 sampling profile of the call, the `profile` heaviest functions by self time.
         if (op.profile) {
           await cdp.send('Profiler.enable');
@@ -467,7 +466,11 @@ async function serve(file, port, flags, size, ownBuild) {
         const out = { result, ms: Date.now() - t0 };
         if (op.alloc) out.alloc = summariseAllocations((await cdp.send('HeapProfiler.stopSampling')).profile.head, Number(op.alloc) || 30);
         if (op.profile) out.profile = summariseProfile((await cdp.send('Profiler.stop')).profile, Number(op.profile) || 30, op.who || '');
-        if (op.cpu) out.cpuMs = Math.round(((await threadTime()) - cpu0) * 1000);
+        if (op.cpu) {
+          out.cpuMs = Math.round(((await threadTime()) - cpu0) * 1000);
+          const heap = await cdp.send('Runtime.getHeapUsage').catch(() => null);
+          if (heap) out.heapMB = [+(heap0.usedSize / 1048576).toFixed(1), +(heap.usedSize / 1048576).toFixed(1), +(heap.totalSize / 1048576).toFixed(1)];
+        }
         return out;
       }
       case 'keys':
@@ -583,7 +586,7 @@ function print(reply, max) {
     console.log(max && text.length > max ? text.slice(0, max) + `… [${text.length} chars; --max N or --full]` : text);
     if (reply.profile) for (const r of reply.profile) console.log(`  ${String(r[0]).padStart(8)} self ms ${String(r[1]).padStart(8)} total ms  ${r[2]} :${r[3]}  ${r[4] ? 'lines(ticks) ' + r[4] : ''}`);
     if (reply.alloc) for (const r of reply.alloc) console.log(`  ${String(r[0]).padStart(8)} KB allocated  ${r[1]} :${r[2]}`);
-    if (reply.cpuMs !== undefined) console.log(`(page CPU ${reply.cpuMs} ms of ${reply.ms} ms wall)`);
+    if (reply.cpuMs !== undefined) console.log(`(page CPU ${reply.cpuMs} ms of ${reply.ms} ms wall${reply.heapMB ? `; JS heap ${reply.heapMB[0]} -> ${reply.heapMB[1]} MB used of ${reply.heapMB[2]} MB` : ''})`);
   }
   if (reply.newErrors) console.log(`(${reply.newErrors} new console errors: node tools/dev.mjs errors)`);
 }

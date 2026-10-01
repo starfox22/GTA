@@ -409,9 +409,11 @@
       if (!el) return;
       const a = headingBetween(player, from);
       el.style.transform = 'translate(-50%, -50%) rotate(' + ((a * 180) / Math.PI + 90).toFixed(1) + 'deg)';
-      el.classList.remove('show');
-      void el.offsetWidth;
-      el.classList.add('show');
+      // Restart the flash without forcing a layout (`void el.offsetWidth` made the browser
+      // lay the whole HUD out on every hit): an animation restarts when its name changes, so
+      // a hit while it shows switches between two identical keyframes (wanted-effects.css).
+      if (el.classList.contains('show')) el.classList.toggle('alt');
+      else el.classList.add('show');
       clearTimeout(damageArcTimer);
       damageArcTimer = setTimeout(() => el.classList.remove('show'), 700);
     }

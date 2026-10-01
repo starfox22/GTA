@@ -85,5 +85,31 @@
       // code), the five slowest frames with their biggest section, the JS heap growth in MB and the number of
       // collections seen. Read-only: it advances the simulation like simulate().
       simProfile: (seconds = 6, held = [], top = 14) => simProfileRun(seconds, Array.isArray(held) ? held : [], clamp(Number(top) || 14, 1, 60)),
+      // The settle shortcut (physics-step.js settleIsTrivial): steps the physics `steps` times (1/120 s each, the
+      // world moves on) and, after each, runs the whole settle on every vehicle the shortcut skips and counts any
+      // field it changed besides `speed`. `changed` must be 0; `checked` is how many were looked at.
+      settleAudit(steps = 120) {
+        const pc = player.car,
+          diffs = {};
+        let checked = 0,
+          changed = 0;
+        for (let i = 0; i < clamp(Number(steps) || 120, 1, 2400); i++) {
+          physicsStep(1 / 120, true);
+          for (const c of vehicles) {
+            if (!settleIsTrivial(c, pc)) continue;
+            const before = Object.assign({}, c);
+            settleVehicleFull(c, pc, 1 / 120);
+            checked++;
+            let any = false;
+            for (const k of Object.keys(c)) {
+              if (k === 'speed' || Object.is(before[k], c[k])) continue;
+              diffs[k] = (diffs[k] || 0) + 1;
+              any = true;
+            }
+            if (any) changed++;
+          }
+        }
+        return { checked, changed, diffs };
+      },
     });
     // END SUBSYSTEM: src/game-console-perf.js

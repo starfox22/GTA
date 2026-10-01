@@ -95,8 +95,23 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   of scanning lists.
 - Distant things think less: far traffic re-plans at 4 Hz, off-screen pedestrians every
   4th-6th frame, parked cars skip land checks.
-- Measure with `DeadEndCity.stats()` (CPU ms per subsystem, draw calls, triangles) before
-  and after any hot-loop change; `drawProfile()` lists draw calls by object and cell.
+- Never empty a reused list with `length = 0` (it frees the backing store and every step
+  regrows it): keep a count (broadphase buckets and pairs, crowd cells `cell.n`). A double stored
+  into an object field allocates a boxed number, so hot unconditional stores are
+  `if (a !== b) a = b` (`controlVehicle`, `contactShape`).
+- Reading a property an object lacks costs about 60 ns against 8 (objects of many layouts):
+  `makeCar` declares the optional vehicle fields as `undefined` (add one when the step reads it
+  on every vehicle); `vehicleSpec` reads `type` before `airframe`. Pedestrians left in V8's
+  dictionary mode by `Object.assign` (`resetWalkerState`) measured faster than fast mode: do
+  not "fix" that.
+- Map overlays draw only what is in `mapWindow` (`mapWindowHas`) and set fixed-size text with
+  `mapLabel` (one font string): `px / scale` is a new font lookup per refresh while the minimap
+  eases with speed (stalls of 50-150 ms).
+- No `void el.offsetWidth` to restart an animation on a repeating event (a forced layout per
+  hit): alternate two animation names (`#damageArc.alt`).
+- Measure with `DeadEndCity.stats()` (CPU ms per subsystem, draw calls, triangles) and, for the
+  logic, `simProfile()` with `dev.mjs --cpu / --profile` (testing-and-console.md) before and
+  after any hot-loop change; `drawProfile()` lists draw calls by object and cell.
 
 ## Known limitations
 

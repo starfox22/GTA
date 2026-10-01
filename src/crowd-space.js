@@ -179,20 +179,22 @@
     }
     const CROWD_GRID_REACH = 1300;
     function buildCrowdGrid() {
-      // Cell arrays are reused frame to frame; empty ones are swept now and then.
+      // Cell arrays are reused frame to frame (each holds `n` people; entries past it are
+      // stale: `length = 0` would free the backing store and every frame regrow every cell);
+      // empty ones are swept now and then.
       const sweep = ++crowd.gridStamp % 120 === 0;
       if (sweep) {
-        for (const [k, cell] of crowd.grid) if (!cell.length) crowd.grid.delete(k);
+        for (const [k, cell] of crowd.grid) if (!cell.n) crowd.grid.delete(k);
       }
-      for (const cell of crowd.grid.values()) cell.length = 0;
+      for (const cell of crowd.grid.values()) cell.n = 0;
       crowd.gridX = player.x;
       crowd.gridY = player.y;
       for (const p of pedestrians) {
         if (p.hp <= 0 || Math.abs(p.x - player.x) > CROWD_GRID_REACH || Math.abs(p.y - player.y) > CROWD_GRID_REACH) continue;
         const k = crowdKey(p.x, p.y);
         let cell = crowd.grid.get(k);
-        if (!cell) crowd.grid.set(k, (cell = []));
-        cell.push(p);
+        if (!cell) crowd.grid.set(k, (cell = Object.assign([], { n: 0 })));
+        cell[cell.n++] = p;
       }
     }
     /**
@@ -210,7 +212,7 @@
         for (let i = x0; i <= x1; i++)
           for (let j = y0; j <= y1; j++) {
             const cell = crowd.grid.get(i * 65536 + j);
-            if (cell) for (let k = 0; k < cell.length; k++) fn(cell[k]);
+            if (cell) for (let k = 0; k < cell.n; k++) fn(cell[k]);
           }
         return;
       }
@@ -226,13 +228,13 @@
           const p = pedestrians[i],
             k = crowdKey(p.x, p.y);
           let cell = far.cells.get(k);
-          if (!cell) far.cells.set(k, (cell = []));
+          if (!cell) far.cells.set(k, (cell = Object.assign([], { n: 0, build: 0 })));
           // Reset lazily: a cell with an old build number is empty.
           if (cell.build !== build) {
             cell.build = build;
-            cell.length = 0;
+            cell.n = 0;
           }
-          cell.push(p);
+          cell[cell.n++] = p;
         }
       }
       // People move a little between the grid being built and this query: widen it.
@@ -244,7 +246,7 @@
       for (let i = x0; i <= x1; i++)
         for (let j = y0; j <= y1; j++) {
           const cell = far.cells.get(i * 65536 + j);
-          if (cell && cell.build === far.build) for (let k = 0; k < cell.length; k++) fn(cell[k]);
+          if (cell && cell.build === far.build) for (let k = 0; k < cell.n; k++) fn(cell[k]);
         }
     }
     const crowdFarGrid = { stamp: -1, count: -1, build: 0, cells: new Map() };
@@ -257,8 +259,9 @@
         for (let j = y0; j <= y1; j++) {
           const cell = crowd.grid.get(i * 65536 + j);
           if (!cell) continue;
-          for (const p of cell) {
-            const d = Math.hypot(p.x - x, p.y - y);
+          for (let k = 0; k < cell.n; k++) {
+            const p = cell[k],
+              d = Math.hypot(p.x - x, p.y - y);
             if (d <= r) fn(p, d);
           }
         }
