@@ -155,6 +155,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   step with terrainVehiclePose, cliffSettle, drawbridgeSettle and rotorStrikes (`settleAudit()` checks it).
   Measure with `DeadEndCity.simProfile()` and `dev.mjs call <method> --cpu|--profile N|--alloc N`
   (docs/areas/core-and-contracts.md Performance rules).
+- Prewarm and first uses (docs/areas/rendering-hiccups.md): an off-screen pass registers itself with
+  `registerPrewarmPass(scene, camera, target)`; prewarm slices never contain lights (compile() counts a slice's
+  lights too); light and shadow counts are part of every lit program's key, so never toggle a light's
+  `visible`/`castShadow`/layers in play; after adding an effect check `renderHiccups()` (a program, texture or
+  geometry on its first frame is a hitch to warm). `dev.mjs start --render --prewarm` runs the title prewarm on
+  software GL (compile only); `dev.mjs cpucost 45` is CPU ms per drawn frame per browser process.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
