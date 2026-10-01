@@ -152,4 +152,6 @@
     addConsoleMethods('livingCity', livingCityConsole());
     // Blood (blood.js): the decals round a point, a wounded bystander for tests.
     addConsoleMethods('blood', bloodConsole());
+    // Blood a vehicle carries (car-stains.js): the stain report, a bystander to run over.
+    addConsoleMethods('blood', carStainConsole());
     // END SUBSYSTEM: src/game-console-crowd.js

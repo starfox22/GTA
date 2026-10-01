@@ -88,8 +88,9 @@
       if (damage > 0) {
         const fatal = damage >= person.hp;
         strikePerson(person, damage, a, source, fatal, 'impact');
+        // The bonnet, bumper or flank takes the blood (car-stains.js; carblood3d.js draws it).
+        addCarStain(c, person, kph, fatal);
         if (bloodOn && fatal) {
-          c.bloodyUntil = gameTime + 14;
           c.bloodTrackRemaining = BLOOD_TRACK_DISTANCE;
           c.bloodTrackSides = [-1, 1];
         }

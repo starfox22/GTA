@@ -263,6 +263,8 @@
     }
     // Wound spatter, drops, body pools and their decals (blood.js).
     // @include src/blood.js
+    // The blood a vehicle carries after hitting someone (car-stains.js).
+    // @include src/car-stains.js
     function scream(p) {
       if (!voicesOn || gameTime < screamAt || distanceBetween(p, player) > 470) return;
       screamAt = gameTime + 1.7;
@@ -328,6 +330,7 @@
       timed('police:air', () => updateAirPolice(deltaSeconds));
       updateWounds();
       updateBlood(deltaSeconds);
+      updateCarStains(deltaSeconds);
     }
     function navigationState() {
       const waypoint = waypointNavigation();

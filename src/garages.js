@@ -453,7 +453,7 @@
       car.color = job.colorTo;
       if (offer.service === 'full') repairVehicle(car);
       car.bloodTrackRemaining = 0;
-      car.bloodyUntil = 0;
+      clearCarStains(car);
       // The car comes out nose first.
       job.heading = Math.PI / 2;
       placeGarageCar(job, shop.service.x, shop.service.y, Math.PI / 2);

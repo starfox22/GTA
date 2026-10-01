@@ -310,10 +310,7 @@
         }
       }
       worldContext.restore();
-      if (vehicle.bloodyUntil > gameTime) {
-        worldContext.fillStyle = '#871428';
-        worldContext.fillRect(vehicle.x - 2, vehicle.y - 3, 7, 6);
-      }
+      if (vehicle.stains) drawCarStains2D(vehicle);
       if (
         !vehicleDefinition.bicycle &&
         vehicle.hp > 0 &&

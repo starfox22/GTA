@@ -27,6 +27,7 @@
       // The side windows a drive-by wound down go back up (driveby.js).
       vehicle.windowsDown = null;
       vehicle.dents = [];
+      clearCarStains(vehicle);
       vehicle.hop = null;
       vehicle.damageVersion = (vehicle.damageVersion || 0) + 1;
       vehicle.deadTime = 0;
