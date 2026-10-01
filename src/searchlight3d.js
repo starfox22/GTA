@@ -750,6 +750,11 @@
         searchFlare.visible = active;
         beamRain.visible = active && weather.rain > 0.04 && searchlightDebug.shaft;
         airRoofStandIn.visible = active && !!s.roof && airSpot.castShadow;
+        // With no light to shade the spot's shadow map is not redrawn (three.js redraws a
+        // casting light's map every frame, intensity 0 or not: a second shadow pass of the
+        // whole scene while no helicopter is up). The first map is drawn once so it exists;
+        // the frame the light comes on redraws it before anything is lit by it.
+        airSpot.shadow.autoUpdate = active || !airSpot.shadow.map;
         if (!active) {
           airSpot.intensity = 0;
           return;

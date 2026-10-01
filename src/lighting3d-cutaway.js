@@ -126,6 +126,21 @@
         characterCutaway = !!on;
       }
       Three.MeshStandardMaterial.prototype.onBeforeCompile = cityMaterialPatch;
+      /**
+       * DORMANT LIGHTS
+       * three.js runs the BRDF (RE_Direct) for every point and spot light of the scene at every
+       * pixel of every lit material, whether the light reaches it or not. Here most are off
+       * (muzzle, fire, searchlight: kept in the scene at intensity 0 so the programs never
+       * change) or far away, so the BRDFs summed zero. getPointLightInfo / getSpotLightInfo
+       * already flag a light that adds nothing here (`directLight.visible`: its colour, after
+       * the distance and cone falloff, is zero): the BRDF waits for that flag. Same result,
+       * the work skipped where it was zero.
+       */
+      {
+        const brdf = 'RE_Direct( directLight, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );',
+          parts = Three.ShaderChunk.lights_fragment_begin.split(brdf);
+        if (parts.length > 1) Three.ShaderChunk.lights_fragment_begin = parts.join('if ( directLight.visible ) ' + brdf);
+      }
       // Unlit materials that opted out of tone mapping (signs, ad panels, screens)
       // were designed as final screen colours: carry them through the HDR pipeline.
       if (hdrCapable) {
