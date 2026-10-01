@@ -68,11 +68,32 @@ Steps 3 and 4 stop when the game starts (they cost a build each); the rest conti
 
 ## Numbers
 
-Headless SwiftShader, prewarm on (`--prewarm`), a fresh page per tier, first-use programs (and
-textures / geometries uploaded) created by each scenario after settling; before = the lead branch
-(7045d9b) with its old prewarm run the same way.
+Headless SwiftShader, prewarm on (`--prewarm`), a fresh page per tier and build, scripted scenarios
+after settling (`renderHiccups`); before = the lead branch at 7045d9b with its old prewarm run the
+same way. First-use programs created in play (before -> after):
 
-NUMBERS
+| scenario | LOW | MEDIUM | HIGH | ULTRA |
+| --- | --- | --- | --- | --- |
+| night | 2 -> 0 | 2 -> 0 | 2 -> 0 | |
+| rain | 0 -> 0 | 1 -> 0 | 4 -> 0 | 7 -> 0 |
+| explosion | 1 -> 0 | 1 -> 0 | 2 -> 0 | |
+| helicopter flight | 14 -> 0 | 18 -> 1 | 16 -> 2 | 18 -> 1 |
+| plane, parachute | 6 -> 0 | | 4 -> 0 | |
+| chase, drive, tour | 0 -> 0 | | 1 -> 0 | |
+| **total** | **23 -> 0** | **22 -> 1** | **29 -> 2** | **25 -> 1** |
+
+At the first flight 72-79 textures and 408-486 geometries upload in one frame before, 38-45 and
+296-352 after (the far copy is on the GPU behind the title). The slowest frames' renderer CPU
+(without the GPU submit, noisy on a shared machine): chase 33 -> 16 ms, drive 43 -> 17, plane
+361 -> 19, tour 98 -> 24 at LOW; rain 33 -> 13, drive 53 -> 24, plane 1246 -> 28, tour 137 -> 17 at HIGH.
+
+Steady state, a Midtown view: at HIGH the shadow pass drew 262 calls / 2.12 M triangles a frame and
+draws 175 / 1.58 M (the idle helicopter spot light was drawing all the city's instanced props into
+its own map), and the GPU process spends 6% (day) to 8% (night) less CPU a frame. At LOW nothing
+changes there (3992 -> 4003 ms a frame: under software GL the cost is the triangles, so the
+dormant-light saving does not show). The JS heap after the prewarm is 10 MB larger (the stand-in
+models' kits). Hiding every instanced prop pool saves 13% of the GPU process's CPU at LOW, an upper
+bound for tiling them (it would trade vertex work for draw calls; not done).
 
 Not measurable here: link times (software GL), real GPU pixel cost (the dormant lights), the
 parallel-compile path itself. Known gaps: a tier change that turns shadows on or off relinks every

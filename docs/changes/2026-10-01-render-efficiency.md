@@ -1,2 +1,6 @@
-# Render efficiency: fewer first-use hitches, cheaper lit pixels
-- 
+# Render efficiency: fewer first-use hitches, a lighter shadow pass
+- The first night, rain, explosion, burning car, helicopter take-off and parachute jump no longer compile shaders mid-game: the title-screen prewarm covers what it missed (scripted scenarios: 23 -> 0 programs at LOW, 29 -> 2 at HIGH), builds one stand-in per vehicle model and puts the far city's buffers on the GPU, so the first flight uploads 40% fewer textures and a third fewer buffers.
+- MEDIUM and up: the helicopter spotlight's shadow map is no longer redrawn every frame while no helicopter is up (HIGH Midtown shadow pass 262 -> 175 calls, 2.1 M -> 1.6 M triangles a frame).
+- Lit pixels skip point and spot lights that add nothing (muzzle, fire and searchlight lights sit at intensity 0): same image, less shading work where it matters (not measurable under software GL).
+- Internals: the prewarm no longer counts a slice's lights twice (render3d-resources.js), `registerPrewarmPass(scene, camera, target)` for off-screen passes, stand-in models (render3d-prewarm-models.js), `uploadMeshes`, empty body-impostor pools hidden, the cutaway's ray test without per-frame garbage (about 160 KB a frame).
+- New console method `renderHiccups(reset)` (first-use log); `drawProfile` reports triangles and the instanced meshes drawn whole. Tools: `dev.mjs profile`, `heap`, `cpucost`, `--prewarm`; test render-hiccups. Doc: areas/rendering-hiccups.md.
