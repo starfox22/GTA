@@ -316,10 +316,12 @@
             p.a += normalizeAngle(dir - p.a) * Math.min(1, deltaSeconds * 6);
             return;
           }
+          // Both ways before stepping out (the first time at a crossing, not on every step of it):
+          // crowd-awareness.js treats them as aware of what is on the road for the next few seconds.
           if (p.waiting) {
             p.waiting = false;
             p.glanceUntil = gameTime + 0.9;
-          }
+          } else if (!(p.glanceUntil > gameTime - 8)) p.glanceUntil = gameTime + 0.9;
         }
         // Caught mid-crossing by the change: hurry.
         if (remaining < crossOff - 10 && remaining > 20) {

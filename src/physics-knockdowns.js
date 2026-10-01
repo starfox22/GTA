@@ -13,6 +13,11 @@
     }
     function updateKnockdown(p, deltaSeconds) {
       if (p.impactCooldown > 0) p.impactCooldown = Math.max(0, p.impactCooldown - deltaSeconds);
+      if (p.hp <= 0) {
+        p.dying = null;
+        return;
+      }
+      if (p.dying) stepDying(p, deltaSeconds);
       if (p.hp <= 0) return;
       if (p.ejected) stepEjection(p, deltaSeconds);
       if (p.knockedFor > 0) {
@@ -71,20 +76,26 @@
     }
     function knockPerson(person, c, speed) {
       const kph = worldMeters(speed) * 3.6;
-      if (kph < 0.1 || (person.impactCooldown || 0) > 0 || (kph < 20 && personIncapacitated(person)))
-        return;
+      if (kph < 0.1 || (person.impactCooldown || 0) > 0) return;
+      // Someone already on the ground is run over, not knocked down (runover.js).
+      if (personOnGround(person)) return runOverDowned(person, c, speed, kph);
+      if (kph < 20 && personIncapacitated(person)) return;
       const a = Math.atan2(c.vy, c.vx),
         source = c === player.car ? player : c;
       // These are gameplay thresholds, not a prediction of real-world injury.
       const damage = kph < 20 ? 0 : Math.min(250, 36 * ((kph - 20) / 27) ** 2);
       person.impactCooldown = 0.9;
+      person.carHit = { car: c, at: gameTime };
       person.threat = {
         x: c.x,
         y: c.y,
       };
       person.flee = 8;
       person.aiming = false;
-      scream(person);
+      // A cry only from someone who saw it coming (crowd-awareness.js) or felt a bump; hit unaware
+      // at speed, the breath goes out of them before any sound (scream() reads mutedUntil).
+      if (carNoticed(person, c) || damage <= 0) scream(person);
+      else person.mutedUntil = gameTime + 0.6;
       if (damage > 0) {
         const fatal = damage >= person.hp;
         strikePerson(person, damage, a, source, fatal, 'impact');

@@ -153,7 +153,7 @@
         if (!c.ai || !c.occupied) continue;
         if (c.honkAt && gameTime >= c.honkAt) {
           c.honkAt = 0;
-          hornSound(c, 0.4);
+          carHorn(c, 0.4);
         }
         if (Math.abs(c.speed || 0) > 6 || c.curbStop) {
           c.blockedFor = 0;
@@ -172,7 +172,7 @@
             c.nextHonk = gameTime + randomBetween(3, 6);
             continue;
           }
-          hornSound(c, fed ? randomBetween(0.7, 1.2) : randomChoice([0.16, 0.28, 0.4]), fed && seededRandom() < 0.4);
+          carHorn(c, fed ? randomBetween(0.7, 1.2) : randomChoice([0.16, 0.28, 0.4]), fed && seededRandom() < 0.4);
           crowd.honks++;
           c.nextHonk = gameTime + (fed ? randomBetween(1.3, 2.6) : randomBetween(2.2, 4.5));
           if (fed && blocker.kind !== 'queue' && seededRandom() < 0.4) {
