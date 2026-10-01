@@ -243,26 +243,8 @@
               }
               for (const { wheel, radius } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / (radius || 5 * (m.modelScale || 1));
             }
-            if (c.bloodyUntil > gameTime && !m.blood) {
-              m.blood = new Three.Group();
-              m.body.add(m.blood);
-              // In the model's own units (its drawn scale, DESIGN SIZE).
-              const k = m.modelScale || 1,
-                vehicleDefinition = { l: vehicleSpec(c).l / k, w: vehicleSpec(c).w / k },
-                red = mat('#7a0f1f', 0.62);
-              for (let j = 0; j < 9; j++)
-                box(
-                  m.blood,
-                  vehicleDefinition.l * 0.493,
-                  5 + (j % 3) * 1.4,
-                  (j - 4) * vehicleDefinition.w * 0.082,
-                  0.3,
-                  1.4,
-                  1.8,
-                  red,
-                );
-            }
-            if (m.blood) m.blood.visible = c.bloodyUntil > gameTime;
+            // Blood on the bodywork (carblood3d.js; the records are c.stains).
+            if (c.stains || m.bloodSkin) updateCarBlood(c, m);
             // The driver's door in a carjack (carjack3d.js).
             if (c.doorSwing || m.carjackDoor) swingDriverDoor(c, m);
             // SWAT van rear doors swing open for the team and stay open (swat.js).

@@ -189,6 +189,8 @@
         vehicleHaloCount = 0;
       }
       // @include src/damage3d.js
+      // Blood stains on a vehicle's bodywork (car-stains.js holds the data).
+      // @include src/carblood3d.js
       const lampGlowPending = [];
       // Lamp posts are instanced (post, arm, lantern) so a car can knock one flat
       // without unbatching the street; each is a street prop in damage.js.

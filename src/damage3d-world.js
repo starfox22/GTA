@@ -592,6 +592,7 @@
         propDebris,
         groundStain,
         sparks,
+        carBloodInfo,
         damageInfo: () => ({
           worldDecals: worldDecals.used,
           worldDecalCapacity: worldDecals.capacity,
