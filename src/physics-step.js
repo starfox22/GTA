@@ -18,12 +18,15 @@
       // (cells 6,144 units apart share a bucket; such a pair is dropped by the
       // distance check before any contact test). The buckets are kept between
       // steps (this runs 120 times a second) and emptied lazily: one is reset
-      // when first used in a step, its stamp being stale.
+      // when first used in a step, its stamp being stale. Each holds `n` entries and the
+      // pair lists `broadphasePairCount`: they are never emptied with `length = 0`, which
+      // frees the backing store, so every step then grew every list again from nothing
+      // (some 80 KB of garbage a step with the traffic round the player).
       const cells = broadphaseCells,
         pairA = broadphasePairA,
         pairB = broadphasePairB;
       const stamp = ++broadphaseStamp;
-      pairA.length = pairB.length = 0;
+      let pairs = 0;
       for (let v = 0; v < vehicles.length; v++) {
         const c = vehicles[v],
           radius = vehicleRadius(c) + 2,
@@ -40,20 +43,22 @@
             const list = cells[((x & 63) << 6) | (y & 63)];
             if (list.stamp !== stamp) {
               list.stamp = stamp;
-              list.length = 0;
+              list.n = 0;
             }
-            for (let k = 0; k < list.length; k++) {
+            for (let k = 0; k < list.n; k++) {
               const o = list[k];
               if (c.resting && o.resting) continue;
               if (x !== Math.max(x0, o.broadCellX) || y !== Math.max(y0, o.broadCellY)) continue;
               if (boat === !!isBoat(o) && Math.abs(level - (o.altitude || 0) - (o.groundHeight || 0)) < 19) {
-                pairA.push(c);
-                pairB.push(o);
+                pairA[pairs] = c;
+                pairB[pairs] = o;
+                pairs++;
               }
             }
-            list.push(c);
+            list[list.n++] = c;
           }
       }
+      broadphasePairCount = pairs;
       for (let v = 0; v < vehicles.length; v++) {
         const c = vehicles[v];
         if (c.resting) continue;
@@ -155,7 +160,7 @@
       for (let pass = 0; pass < 7; pass++) {
         contactPass = pass + 1;
         // A body is revisited in this pass if the pass before moved it.
-        for (let k = 0; k < pairA.length; k++) {
+        for (let k = 0; k < broadphasePairCount; k++) {
           const a = pairA[k],
             b = pairB[k];
           if (pass !== 0 && a.contactPass !== pass && b.contactPass !== pass) continue;
@@ -191,9 +196,50 @@
         }
       }
     }
-    // After the contacts: harbor hold, kerbs and the shore, boats kept on water,
-    // the terrain pose, and the player carried along.
+    /* After the contacts, each vehicle is settled (below). Most of the ~280 vehicles are parked,
+       and for a parked one that no contact moved this step, with none of the states the settle
+       steps look for, every one of those steps returns at once (law-vehicle harbor hold: not a
+       police car; pond, shore and boat checks need it to have moved; terrain pose: cached for
+       this position; cliff and deck states: none; drawbridge: shut; rotor: not a helicopter),
+       leaving only `speed` to refresh. The long way round costs about a microsecond a vehicle a
+       step, this about a tenth of that. Keep `settleIsTrivial` in step with those functions: the console
+       `settleAudit()` runs the whole settle on every vehicle it skips and reports any change. */
+    function settleIsTrivial(c, pc) {
+      return (
+        c.resting &&
+        c.x === c.stepStartX &&
+        c.y === c.stepStartY &&
+        c.a === c.stepStartA &&
+        c.poseX === c.x &&
+        c.poseY === c.y &&
+        c.poseA === c.a &&
+        c.type !== 'police' &&
+        c.type !== 'helicopter' &&
+        c.type !== 'plane' &&
+        !c.lawUnit &&
+        !c.deckAir &&
+        !c.deckLeaf &&
+        !c.deckLift &&
+        !(c.sinkFor > 0) &&
+        !c.cliffAir &&
+        !c.cliffLift &&
+        !(c.fallVz > 0) &&
+        c !== pc &&
+        drawbridge.angle < 0.004 &&
+        !isBoat(c)
+      );
+    }
     function settleVehicle(c, pc, stepSeconds) {
+      if (settleIsTrivial(c, pc)) {
+        const speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
+        if (c.speed !== speed) c.speed = speed;
+        return;
+      }
+      settleVehicleFull(c, pc, stepSeconds);
+    }
+    // The whole settle: harbor hold, kerbs and the shore, boats kept on water, the terrain pose,
+    // cliff and deck states, rotor strikes and the player carried along.
+    function settleVehicleFull(c, pc, stepSeconds) {
       if (
         lawVehicle(c) &&
         harborPoliceHold() &&
@@ -276,7 +322,9 @@
       // Drawbridge leaves as ramps, take-off, landing and the gap (drawbridge.js).
       drawbridgeSettle(c, stepSeconds);
       rotorStrikes(c, stepSeconds);
-      c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
+      // (Written only when it changed: most vehicles stand still.)
+      const speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
+      if (c.speed !== speed) c.speed = speed;
       if (c === player.car) {
         player.x = c.x;
         player.y = c.y;

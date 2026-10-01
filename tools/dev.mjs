@@ -1,14 +1,14 @@
 // Persistent headless dev page + CLI: boot the game once, then send it console calls.
 //
 //   node tools/dev.mjs start [html] [--render] [--nodev] [--size 960x600] [--port N]
-//   node tools/dev.mjs call <method> [jsonArg ...] [--max N | --full]
+//   node tools/dev.mjs call <method> [jsonArg ...] [--max N | --full] [--cpu]
 //   node tools/dev.mjs keys <Code[,Code...]> <seconds> [--real]
 //   node tools/dev.mjs wait <seconds> [--real]
 //   node tools/dev.mjs mouse <x> <y> [seconds] [--down] [--keys Code,Code]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
 //   node tools/dev.mjs heap   (the page's JS heap in MB after a full collection)
 //   node tools/dev.mjs cpucost <seconds>   (CPU ms per drawn frame of each browser process: the GPU process's share is software GL's pixel cost)
-//   node tools/dev.mjs profile <seconds> [--alloc] [--top N]   (CPU profile of the live page; --alloc: allocation sites)
+//   node tools/dev.mjs profile <seconds> [--allocations] [--top N]   (CPU profile of the live page for N seconds; --allocations: allocation sites instead)
 //   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] [--prewarm] | stop
 //
 // `start` with no html builds dist/dev/game.html (and `reload` rebuilds it after code
@@ -20,7 +20,10 @@
 //
 // `call` runs one NAMED window.DeadEndCity method with JSON arguments (bare words that
 // are not JSON are passed as strings) and prints the result as one compact JSON line,
-// truncated to --max characters (default 1500; --full for all). NaN and Infinity come
+// truncated to --max characters (default 1500; --full for all; --cpu adds the page's main-thread
+// CPU time of the call, which a busy machine does not inflate; --profile N lists the N heaviest
+// functions of a V8 sampling profile of the call by self time; --alloc N the N biggest allocators
+// by bytes, collected objects included, to find what feeds the garbage collector). NaN and Infinity come
 // back as the strings "NaN" / "Infinity" so tests can see them. There is deliberately
 // no way to run arbitrary page JS: the console has named methods only (CLAUDE.md).
 //
@@ -214,7 +217,8 @@ async function serve(file, port, flags, size, ownBuild) {
   status.phase = 'launching browser';
   const browser = await chromium.launch({
     executablePath: chromeExecutable(),
-    args: [...glArgs(), '--autoplay-policy=no-user-gesture-required'],
+    // DEC_JS_FLAGS: V8 flags for the page, e.g. `--no-turbo-inlining` so a profile names the real function.
+    args: [...glArgs(), '--autoplay-policy=no-user-gesture-required', ...(process.env.DEC_JS_FLAGS ? ['--js-flags=' + process.env.DEC_JS_FLAGS] : [])],
   });
 
   // Idle: freeze the page (no timers, no frames) and hand the slot to someone else.
@@ -296,6 +300,126 @@ async function serve(file, port, flags, size, ownBuild) {
     console.log(`ready in ${status.bootSeconds}s`);
   }
 
+  // The heaviest functions of a V8 CPU profile: [self ms, total ms, name, line].
+  function summariseProfile(profile, top, who = '') {
+    const byId = new Map(profile.nodes.map((n) => [n.id, n])),
+      self = new Map(),
+      parent = new Map();
+    for (const n of profile.nodes) for (const c of n.children || []) parent.set(c, n.id);
+    (profile.samples || []).forEach((id, i) => self.set(id, (self.get(id) || 0) + (profile.timeDeltas[i] || 0)));
+    // A built-in (fillText, push, hypot...) is listed under the function that called it.
+    const key = (n) => {
+        const f = n.callFrame.functionName || '(anon)';
+        if (n.callFrame.url || f[0] === '(') return `${f}:${n.callFrame.lineNumber + 1}`;
+        const up = byId.get(parent.get(n.id));
+        return up ? `${up.callFrame.functionName || '(anon)'} > ${f}:0` : `${f}:0`;
+      },
+      selfBy = new Map(),
+      totalBy = new Map();
+    // Line-level ticks inside each function (the built page's line numbers), for the hot-loop hunt.
+    const linesBy = new Map();
+    for (const n of profile.nodes) {
+      if (!n.positionTicks) continue;
+      const k = key(n),
+        m = linesBy.get(k) || new Map();
+      for (const t of n.positionTicks) m.set(t.line, (m.get(t.line) || 0) + t.ticks);
+      linesBy.set(k, m);
+    }
+    for (const [id, us] of self) {
+      const k = key(byId.get(id));
+      selfBy.set(k, (selfBy.get(k) || 0) + us);
+      const seen = new Set();
+      for (let at = id; at; at = parent.get(at)) {
+        const kk = key(byId.get(at));
+        if (seen.has(kk)) continue;
+        seen.add(kk);
+        totalBy.set(kk, (totalBy.get(kk) || 0) + us);
+      }
+    }
+    // `who` = 'bursts': the longest single calls of each section of update() (the first function
+    // below `update` that is not the `timed` wrapper), in CPU ms: gaps where the thread was
+    // descheduled (a sample more than 3 ms after the last) are left out, so a busy machine does
+    // not look like a hitch. Each row: [ms, 0, section, '', the hottest functions in that call].
+    if (who === 'bursts') {
+      const sectionOf = new Map();
+      const section = (id) => {
+        if (sectionOf.has(id)) return sectionOf.get(id);
+        const chain = [];
+        for (let at = id; at; at = parent.get(at)) chain.push(byId.get(at).callFrame.functionName || '(anon)');
+        chain.reverse();
+        const u = chain.lastIndexOf('update');
+        let name = u < 0 ? '(outside update)' : '(update itself)';
+        for (let i = u + 1; u >= 0 && i < chain.length; i++)
+          if (chain[i] !== 'timed' && chain[i] !== '(anon)') {
+            name = chain[i];
+            break;
+          }
+        sectionOf.set(id, name);
+        return name;
+      };
+      const runs = [];
+      let run = null;
+      (profile.samples || []).forEach((id, i) => {
+        const s = section(id),
+          d = profile.timeDeltas[i] || 0;
+        if (!run || run.s !== s) runs.push((run = { s, us: 0, gaps: 0, fn: new Map() }));
+        if (d <= 3000) run.us += d;
+        else run.gaps++;
+        const k = key(byId.get(id));
+        run.fn.set(k, (run.fn.get(k) || 0) + Math.min(d, 3000));
+      });
+      return runs
+        .sort((a, b) => b.us - a.us)
+        .slice(0, top)
+        .map((r) => [+(r.us / 1000).toFixed(1), 0, r.s, '', [...r.fn].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, us]) => `${k.split(/:(?=\d+$)/)[0]} ${(us / 1000).toFixed(1)}`).join(', ') + (r.gaps ? ` (+${r.gaps} gaps)` : '')]);
+    }
+    // `who`: the callers of that function (self ms of the calls it made), to see who feeds a hot helper.
+    if (who) {
+      const callers = new Map();
+      for (const [id, us] of self) {
+        const n = byId.get(id);
+        if ((n.callFrame.functionName || '(anon)') !== who) continue;
+        const k = key(byId.get(parent.get(id)) || n);
+        callers.set(k, (callers.get(k) || 0) + us);
+      }
+      return [...callers].sort((a, b) => b[1] - a[1]).slice(0, top).map(([k, us]) => [+(us / 1000).toFixed(1), 0, ...k.split(/:(?=\d+$)/), '']);
+    }
+    return [...selfBy]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, top)
+      .map(([k, us]) => [
+        +(us / 1000).toFixed(1),
+        +((totalBy.get(k) || 0) / 1000).toFixed(1),
+        ...k.split(/:(?=\d+$)/),
+        [...(linesBy.get(k) || [])]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(([line, ticks]) => `${line}:${ticks}`)
+          .join(' '),
+      ]);
+  }
+
+  // The biggest allocators of a V8 sampling heap profile: [KB allocated, name, line].
+  function summariseAllocations(head, top) {
+    const by = new Map();
+    // A built-in (no script: next, push, hypot...) is charged to the function that called it.
+    (function walk(n, caller) {
+      const own = `${n.callFrame.functionName || '(anon)'}:${n.callFrame.lineNumber + 1}`,
+        k = n.callFrame.url || !caller ? own : `${caller} > ${n.callFrame.functionName || '(anon)'}`;
+      by.set(k, (by.get(k) || 0) + (n.selfSize || 0));
+      for (const c of n.children || []) walk(c, n.callFrame.url ? own : caller);
+    })(head, '');
+    const total = [...by.values()].reduce((a, b) => a + b, 0);
+    return [['(all)', total], ...[...by].sort((a, b) => b[1] - a[1]).slice(0, top)].map(([k, b]) => [Math.round(b / 1024), ...k.split(/:(?=\d+$)/)]);
+  }
+
+  // The page's main-thread CPU seconds so far (Performance.getMetrics ThreadTime).
+  async function threadTime() {
+    await cdp.send('Performance.enable').catch(() => {});
+    const { metrics } = await cdp.send('Performance.getMetrics');
+    return metrics.find((m) => m.name === 'ThreadTime')?.value ?? 0;
+  }
+
   // Calls DeadEndCity[method](...args) in the page. The page function is fixed: only
   // the method name and JSON arguments travel. Results come back as JSON text so
   // NaN / Infinity / cycles survive as strings instead of vanishing.
@@ -328,8 +452,31 @@ async function serve(file, port, flags, size, ownBuild) {
     switch (op.op) {
       case 'call': {
         const t0 = Date.now();
+        // `cpu`: also report the page's main-thread CPU time for the call (CDP ThreadTime),
+        // which a busy machine does not inflate the way wall-clock milliseconds are.
+        const cpu0 = op.cpu ? await threadTime() : 0,
+          heap0 = op.cpu ? (await cdp.send('Runtime.getHeapUsage').catch((e) => (console.log('heap', e.message), null))) || { usedSize: 0 } : null;
+        // `profile`: V8 sampling profile of the call, the `profile` heaviest functions by self time.
+        if (op.profile) {
+          await cdp.send('Profiler.enable');
+          await cdp.send('Profiler.setSamplingInterval', { interval: 250 });
+          await cdp.send('Profiler.start');
+        }
+        // `alloc`: V8 sampling heap profile (every allocation, collected ones too): the `alloc` biggest allocators.
+        if (op.alloc) {
+          await cdp.send('HeapProfiler.enable');
+          await cdp.send('HeapProfiler.startSampling', { samplingInterval: 2048, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
+        }
         const result = await call(op.method, op.args || []);
-        return { result, ms: Date.now() - t0 };
+        const out = { result, ms: Date.now() - t0 };
+        if (op.alloc) out.alloc = summariseAllocations((await cdp.send('HeapProfiler.stopSampling')).profile.head, Number(op.alloc) || 30);
+        if (op.profile) out.profile = summariseProfile((await cdp.send('Profiler.stop')).profile, Number(op.profile) || 30, op.who || '');
+        if (op.cpu) {
+          out.cpuMs = Math.round(((await threadTime()) - cpu0) * 1000);
+          const heap = await cdp.send('Runtime.getHeapUsage').catch(() => null);
+          if (heap) out.heapMB = [+(heap0.usedSize / 1048576).toFixed(1), +(heap.usedSize / 1048576).toFixed(1), +(heap.totalSize / 1048576).toFixed(1)];
+        }
+        return out;
       }
       case 'keys':
       case 'wait': {
@@ -529,6 +676,9 @@ function print(reply, max) {
   } else {
     const text = typeof reply.result === 'string' ? reply.result : JSON.stringify(reply.result);
     console.log(max && text.length > max ? text.slice(0, max) + `… [${text.length} chars; --max N or --full]` : text);
+    if (reply.profile) for (const r of reply.profile) console.log(`  ${String(r[0]).padStart(8)} self ms ${String(r[1]).padStart(8)} total ms  ${r[2]} :${r[3]}  ${r[4] ? 'lines(ticks) ' + r[4] : ''}`);
+    if (reply.alloc) for (const r of reply.alloc) console.log(`  ${String(r[0]).padStart(8)} KB allocated  ${r[1]} :${r[2]}`);
+    if (reply.cpuMs !== undefined) console.log(`(page CPU ${reply.cpuMs} ms of ${reply.ms} ms wall${reply.heapMB ? `; JS heap ${reply.heapMB[0]} -> ${reply.heapMB[1]} MB used of ${reply.heapMB[2]} MB` : ''})`);
   }
   if (reply.newErrors) console.log(`(${reply.newErrors} new console errors: node tools/dev.mjs errors)`);
 }
@@ -538,8 +688,8 @@ async function main(argv) {
   const pos = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--full' || a === '--real' || a === '--down' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck' || a === '--prewarm' || a === '--alloc') opts[a.slice(2)] = true;
-    else if (a === '--port' || a === '--keys' || a === '--max' || a === '--top' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
+    if (a === '--full' || a === '--real' || a === '--down' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck' || a === '--prewarm' || a === '--allocations' || a === '--cpu') opts[a.slice(2)] = true;
+    else if (a === '--profile' || a === '--who' || a === '--alloc' || a === '--port' || a === '--keys' || a === '--max' || a === '--top' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
     else pos.push(a);
   }
   const [cmd, ...rest] = pos;
@@ -558,7 +708,7 @@ async function main(argv) {
     }
     case 'call':
       if (!rest[0]) throw new Error('usage: call <method> [jsonArg ...]');
-      return print(await request({ op: 'call', method: rest[0], args: rest.slice(1).map(parseArg) }), max);
+      return print(await request({ op: 'call', method: rest[0], args: rest.slice(1).map(parseArg), cpu: !!opts.cpu, profile: opts.profile ? Number(opts.profile) : 0, alloc: opts.alloc ? Number(opts.alloc) : 0, who: opts.who || '' }), max);
     case 'keys':
       return print(await request({ op: 'keys', codes: String(rest[0]).split(','), seconds: Number(rest[1] || 1), real: !!opts.real }), max);
     case 'wait':
@@ -578,7 +728,7 @@ async function main(argv) {
     case 'cpucost':
       return print(await request({ op: 'cpucost', seconds: Number(rest[0] || 20) }), max);
     case 'profile':
-      return print(await request({ op: 'profile', seconds: Number(rest[0] || 10), alloc: !!opts.alloc, top: Number(opts.top) || 25 }), max);
+      return print(await request({ op: 'profile', seconds: Number(rest[0] || 10), alloc: !!opts.allocations, top: Number(opts.top) || 25 }), max);
     case 'errors': {
       const reply = await request({ op: 'errors' });
       if (reply.error) return print(reply, max);

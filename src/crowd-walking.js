@@ -366,7 +366,8 @@
       if (crowd.timers.chat > 0) return;
       crowd.timers.chat = 0.3;
       for (const cell of crowd.grid.values())
-        for (const p of cell) {
+        for (let cellIndex = 0; cellIndex < cell.n; cellIndex++) {
+          const p = cell[cellIndex];
           if (p.state !== 'walk' || p.react || p.leader || p.flee > 0 || p.hp <= 0 || p.scene) continue;
           const dir = p.dir ?? p.a,
             c = Math.cos(dir),

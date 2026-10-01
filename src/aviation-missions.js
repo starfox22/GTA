@@ -523,13 +523,13 @@
     function drawAviationMap(drawingContext, scale) {
       drawingContext.save();
       drawingContext.textAlign = 'center';
-      drawingContext.font = 'bold ' + 11 / scale + 'px Arial';
+      drawingContext.font = 'bold 11px Arial';
       for (const c of vehicles)
-        if (c.type === 'plane' && c.hp > 0) {
+        if (c.type === 'plane' && c.hp > 0 && mapWindowHas(c.x, c.y, 40 / scale)) {
           drawingContext.fillStyle = '#203b48';
           drawingContext.fillRect(c.x - 19 / scale, c.y - 9 / scale, 38 / scale, 17 / scale);
           drawingContext.fillStyle = '#f0dbae';
-          drawingContext.fillText('PLANE', c.x, c.y + 4 / scale);
+          mapLabel(drawingContext, 'PLANE', c.x, c.y + 4 / scale, scale);
         }
       drawingContext.restore();
     }

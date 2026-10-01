@@ -1,12 +1,14 @@
     // controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
     const noStatics = [];
     // Broadphase containers reused from step to step (see physicsStep).
-    const broadphaseCells = Array.from({ length: 4096 }, () => Object.assign([], { stamp: 0 })),
+    const broadphaseCells = Array.from({ length: 4096 }, () => Object.assign([], { stamp: 0, n: 0 })),
       broadphasePairA = [],
       broadphasePairB = [],
       broadphaseBarrierCars = [],
       broadphaseBarrierBodies = [];
-    let broadphaseStamp = 0;
+    let broadphaseStamp = 0,
+      // How many of broadphasePairA / B this step's broadphase filled (the arrays keep older entries past it).
+      broadphasePairCount = 0;
     // One vehicle's controls and integration for a physics step (player input,
     // pursuit, traffic, boats and aircraft).
     // Reverse gear tops out at about 25 km/h; steering reaches full lock by 30 km/h.
@@ -103,9 +105,11 @@
     }
     function controlVehicle(c, pc, stepSeconds, active) {
       const vehicleDefinition = vehicleSpec(c);
-      c.stepStartX = c.x;
-      c.stepStartY = c.y;
-      c.stepStartA = c.a;
+      // Written only when different: most vehicles are parked, and storing a double into a
+      // vehicle's field makes V8 allocate a new boxed number each time.
+      if (c.stepStartX !== c.x) c.stepStartX = c.x;
+      if (c.stepStartY !== c.y) c.stepStartY = c.y;
+      if (c.stepStartA !== c.a) c.stepStartA = c.a;
       // A parked car a long way off with nothing driving it has nothing to
       // integrate: skipping its control and integration is what keeps a city
       // with hundreds of kerbside vehicles and bicycles affordable.

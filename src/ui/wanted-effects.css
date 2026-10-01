@@ -89,7 +89,19 @@
 #damageArc.show {
   animation: damagearc 0.7s ease-out forwards;
 }
+/* A second hit while it shows: the same animation under another name restarts it. */
+#damageArc.show.alt {
+  animation-name: damagearc-again;
+}
 @keyframes damagearc {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes damagearc-again {
   from {
     opacity: 1;
   }

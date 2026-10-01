@@ -14,7 +14,7 @@ answer is to do that work behind the title, a few milliseconds at a time (render
   older program of the same shader (light counts, shadows, `mapUv`, instancing, side...), which is
   how a program "compiled twice" shows. `lights` is what three.js keys programs by (see below).
   `gpu` and `cells` say how much geometry the scene could draw against what is uploaded.
-- `node tools/dev.mjs profile 30 [--alloc]` is a CPU (or allocation) profile of the live page.
+- `node tools/dev.mjs profile 30 [--allocations]` is a CPU (or allocation) profile of the live page.
 - Software GL has no `KHR_parallel_shader_compile`, so the prewarm does not run there: start or
   reload the dev page with `--prewarm` (`?prewarm`) to run it compile-only. Programs and buffers
   created are what transfers to a real GPU; link and GPU times under SwiftShader do not.

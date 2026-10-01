@@ -339,7 +339,13 @@
       // second, back up over about a second.
       const glide = (deltaSeconds || 0.016) * (target < carRadioLevel ? 10 : 1.6);
       carRadioLevel = carRadioGain <= 0 ? target : carRadioLevel + (target - carRadioLevel) * Math.min(1, glide);
-      carRadioPlayer.volume = clamp(carRadioLevel * carRadioGain * volumeScale('radio'), 0, 1);
+      // Written only when it moved by an audible step (a twentieth of a percent of full
+      // volume is not): the level eases toward its target for many seconds, and each write
+      // is a message to the media pipeline, sent every frame. Read back from the element.
+      const radioVolume = clamp(carRadioLevel * carRadioGain * volumeScale('radio'), 0, 1),
+        shownVolume = carRadioPlayer.volume;
+      if (Math.abs(shownVolume - radioVolume) > 0.0005 || (shownVolume !== radioVolume && (radioVolume === 0 || radioVolume === 1)))
+        carRadioPlayer.volume = radioVolume;
       if (gesture) carRadioBlocked = false;
       if (carRadioPlayer.paused && !carRadioPending && !carRadioBlocked) {
         const revision = carRadioRevision;

@@ -27,6 +27,7 @@
     // @include src/game-console-leisure.js
     // @include src/game-console-crowd.js
     // @include src/game-console-graphics.js
+    // @include src/game-console-perf.js
     // @include src/game-console-settings.js
     window.DeadEndCity = (() => {
       const methods = {},

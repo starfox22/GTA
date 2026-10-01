@@ -138,3 +138,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Pedestrians and cars (crowd-awareness.js, runover.js)
 - Only the player's car is watched from 16 km/h; traffic keeps the old 31 km/h floor so a queue at a crossing does not become leaping crowds. Night and glare do not change what people see, and music (other than earbuds) does not mask a car.
 - A second pass needs 4 km/h and 2 s since the same car's first: a car that creeps over someone it bumped (under 20 km/h) for 2+ s counts as running them over. People outside the four crowd lists (athletes) die at once from a mortal second pass, with no dying second.
+
+## Simulation performance (docs/audit/performance.md, second pass)
+- Every parked vehicle (~230 of ~280) is still visited by the broadphase, contact and control loops 120 times a second, about a microsecond each. An active list with the parked ones tracked by the cells they occupy would remove most of the physics cost; contact results must stay exact (`settleIsTrivial` already skips the settle for them).
+- `updateCars` (physics-update.js) makes a closure and a four-element array per vehicle near the player every frame for the pedestrian contact test.
+- The remaining garbage (~1.2 MB a frame headless) is boxed doubles passed to helpers V8 does not inline (`solid()` and its twenty `*Blocked` helpers, `rectListBlocked`, `distanceBetween`).
+- A third of the crowd sits in V8 dictionary mode (after `Object.assign` in `resetWalkerState`); it measured faster than fast mode. Re-measure before changing the people's object layout.
+- `carjack-traffic` is flaky: when the traffic car it picks stands beside a bike-share dock, E rents a bike instead (about one run in four).

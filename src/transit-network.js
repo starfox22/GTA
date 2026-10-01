@@ -511,9 +511,11 @@
         drawingContext.restore();
       }
       drawingContext.save();
-      drawingContext.font = 'bold ' + 10 / scale + 'px Arial';
+      drawingContext.font = 'bold 10px Arial';
       drawingContext.textAlign = 'center';
       for (const s of RAIL_STATIONS) {
+        // Off the map's window (game-minimap.js): nothing to draw (the state is saved and restored).
+        if (!mapWindowHas(s.x, s.y, 130 / scale)) continue;
         drawingContext.fillStyle = '#173f4b';
         drawingContext.beginPath();
         drawingContext.arc(s.x, s.y, 7 / scale, 0, TAU);
@@ -522,9 +524,9 @@
         drawingContext.lineWidth = 1.5 / scale;
         drawingContext.stroke();
         drawingContext.fillStyle = '#e5f1d1';
-        drawingContext.fillText('M', s.x, s.y + 3.5 / scale);
+        mapLabel(drawingContext, 'M', s.x, s.y + 3.5 / scale, scale);
         if (big && mapZoom > 2) {
-          drawingContext.fillText(s.name, s.x, s.y - 12 / scale);
+          mapLabel(drawingContext, s.name, s.x, s.y - 12 / scale, scale);
         }
       }
       drawingContext.restore();

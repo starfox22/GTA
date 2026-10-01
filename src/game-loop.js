@@ -102,6 +102,7 @@
         requestAnimationFrame(frame);
         return;
       }
+      const frameStart = performance.now();
       syncTouchInput();
       // The gamepad's buttons and sticks (gamepad.js), through the same actions.
       pollGamepad();
@@ -133,7 +134,8 @@
       updateElevator(deltaSeconds);
       // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
       updateSkyLift(deltaSeconds);
-      const updateStart = performance.now();
+      // Everything the frame does before the simulation step (the `f:pre` part of stats()).
+      const updateStart = profileLap('f:pre', frameStart);
       // The city keeps living behind the title menu, and behind settings opened
       // from it. WASTED and BUSTED play out in slow motion.
       // A test holding the simulation (console `holdSimulation`) still draws.

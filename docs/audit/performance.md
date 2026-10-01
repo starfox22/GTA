@@ -262,3 +262,91 @@ passes.
   muzzle, target, headlight pools kept at zero intensity so the programs never change);
   turning them into a light pool per tier would change the programs and is left for a
   change that can recompile at start-up only.
+
+## Second pass: the simulation side (1 October 2026)
+
+Goal: fewer CPU milliseconds and fewer hitches from the game logic (physics, people, traffic,
+HUD), identical behaviour at every graphics setting. "Before" is the lead branch as this pass
+merged it (`f828cdb`; `7045d9b` for the first runs), "after" this branch; both numbers come from the
+same console report on the same scenarios.
+
+### How it was measured
+
+- `DeadEndCity.simProfile(seconds, keys)` steps `update()` at 1/60 s with no drawing and
+  reports the per-section milliseconds (average and worst), p50 / p95 / p99 / max frame and the
+  slowest frames. Scenarios, each staged with console calls (`teleport(748, 584)`, `drive`,
+  `wanted`, `arm`, `hostileGunman`): STREET (on foot at the start, 17:24), DRIVE (sedan, W held,
+  noon), CHASE (sedan, five stars), FIREFIGHT (pistol, four stars, three Harbor Kings gunmen).
+- The shared test machine ran at a load of 8-20 on 4 cores, so wall-clock milliseconds swing
+  by 2x and any single frame can be a descheduling. What held up:
+  - `node tools/dev.mjs call simProfile ... --cpu`: the page's main-thread CPU time (CDP
+    `ThreadTime`), reported per frame;
+  - `--profile N --who bursts`: the longest single call of each `update()` section from a V8
+    sampling profile, counting only CPU time (gaps where the thread was descheduled are
+    dropped). This is what found the hitches: a call that stays slow here is real;
+  - A/B runs in blocks (A B B A) against a clean build of the base commit, medians and minima.
+
+### What was found, and what was done
+
+| Finding | Evidence | Change |
+| --- | --- | --- |
+| Minimap text stalls | `updateUI` single calls of 50-180 ms while driving (`drawTransitMap > fillText`, `drawGarageMap > fillText`): the minimap's scale eases with speed and text was set at `10 / scale` px, a new font string (a font lookup and glyph build) every refresh | overlay painters skip markers outside the drawn window (`mapWindowHas`), set fixed-size text through `mapLabel` (one font string, counter-scaled), and the fonts are set once at boot (`warmMapFonts`) |
+| `vehicleSpec` was 12% of a driving frame | ~10,000 calls a frame at 83 ns (micro-benchmark): reading `airframe`, which a car does not have, off objects of many layouts costs about 60 ns | `type` first, `airframe` only for aircraft: 22 ns; `makeCar` declares the optional fields the step reads on every vehicle |
+| Boat hull test allocated about 20% of everything | `hullTouchesLand` + `segmentCross` + its closure: 100-240 MB per 600 frames in the street scene (a list of every region, two objects per polygon vertex, a closure per edge) | plain numbers, far edges rejected first: no allocation, same answers (240,000 random hulls against the old code) |
+| Broadphase and traffic AI garbage | `length = 0` frees an array's backing store, so every step regrew ~250 bucket lists and the pair lists; `trafficControl` made four closures and two objects per call | counted lists (`list.n`, `broadphasePairCount`), scan functions of their own, scratch records |
+| Writes of unchanged doubles | a double stored into an object field allocates a boxed number: three per parked vehicle per step in `controlVehicle`, five per `contactShape` call | `if (a !== b) a = b` |
+| Crowd grid | its cells were emptied with `length = 0` every frame | counted cells (`cell.n`): the people part 12% cheaper |
+| Forced layout per hit | `playerHitFeedback` read `el.offsetWidth` on every bullet that hit the player | the arc's animation restarts by switching between two identical keyframes |
+| Car radio | `audio.volume` written every frame while the level eased | written when it moves by 0.0005 |
+| Parked vehicles in `settleVehicle` | ~1 us a vehicle a step for ~230 parked vehicles that return at every check | a guarded early exit (`settleVehicleFull` is the old body) |
+
+### What did not work
+
+- Making every pedestrian a fast-mode object (replacing `Object.assign` in `resetWalkerState`):
+  V8 had left a third of the crowd in dictionary mode, which looked like a defect, but fast mode
+  with a dozen shapes was *slower* (people part +30%, `knockdowns` 0.08 -> 0.2 ms in A/B), so it was
+  reverted.
+  Do not give people "one declared layout" expecting a win without measuring it.
+- Per-line profiles of optimised code only name the function's first line (callees are inlined);
+  `DEC_JS_FLAGS=--no-turbo-inlining` shows the callees but inflates allocation by boxing.
+
+### Results
+
+Per 60 fps frame of `update()` at the lead branch before this pass (A) and after (B); medians of
+4 runs of 8 s per build, in blocks A B B A on two dev servers. CPU is the page's main-thread CPU time per
+frame (`--cpu`); the sections are wall-clock ms from `simProfile` (inflated by the machine's load, the
+comparison between A and B is what holds).
+
+| Scenario | CPU ms A -> B (median; min) | cars section | phys control / settle / broadphase | people | note |
+| --- | --- | --- | --- | --- | --- |
+| STREET (on foot, ~280 vehicles, ~610 people) | 5.88 -> 4.87 (-17%); 5.34 -> 4.66 | 4.15 -> 3.13 | 1.65 -> 1.33 / 0.83 -> 0.53 / 0.74 -> 0.52 | 1.10 -> 1.04 | p99 frame 15.3 -> 11.3 ms |
+| DRIVE (sedan, W held) | 7.04 -> 5.84 (-17%); 6.53 -> 5.60 | 7.65 -> 6.68 | 3.26 -> 2.79 / 1.63 -> 1.32 / 1.47 -> 1.20 | 2.42 -> 1.90 | `ui` 1.37 -> 0.48 ms |
+| CHASE (five stars, 300 vehicles) | 10.2 -> 10.3 (no change; mins 7.8 / 9.1) | 13.1 -> 9.9 | 5.0 -> 4.1 / 2.4 -> 1.55 / 2.4 -> 1.6 | 2.1 -> 2.2 | the police and civic parts differ run to run (B's world had 9 more vehicles and more officers) and swamp the physics gain |
+| FIREFIGHT (320 vehicles) | 10.7 -> 10.2 (-5%); 10.0 -> 9.6 | 7.0 -> 7.0 | 2.85 -> 2.66 / 1.5 -> 1.5 / 1.3 -> 1.1 | 1.15 -> 1.4 | physics here is the awake cars, which this pass leaves alone |
+
+- The gain is where cars are parked: the parked ~230 vehicles cost about a third less per physics
+  step, and a drive no longer pays for the minimap's font churn. Heavy scenes with many awake
+  police and gangs move little.
+- The minimap refresh while its scale eases (accelerating), raster flush included: median 2.7 -> 1.0 ms,
+  p90 6.7 -> 2.8 ms, worst 29-35 -> 6-17 ms at three places in the city (a console-called loop).
+- Allocation per 600 STREET frames (V8 sampling heap profile, includes every object): 1.25 GB ->
+  1.10 GB; the largest left are `trafficControl`, `controlVehicle`, `vehicleBroadphase` and
+  `rectListBlocked` (boxed doubles: most hot functions run in V8's mid-tier compiler, Maglev, which
+  boxes more than TurboFan would).
+- Micro-benchmarks: `vehicleSpec` 83 -> 22 ns per call (~10,000 calls a frame); an unchanged `count`
+  list against `length = 0` + push 43 against 105 ns and no garbage.
+
+
+### Left for later
+
+- Every parked vehicle is still visited by the broadphase, contact and settle loops 120 times a
+  second (about 1 us each). An explicit list of the awake vehicles, with resting ones tracked
+  by the cells they occupy, would remove most of the physics cost but must keep contact
+  results exact.
+- `updateCars` makes a closure and a four-array per vehicle per frame for the pedestrian
+  contact test (physics-update.js); `touch` is called for every person near a car.
+- What remains of the garbage (~1.2 MB a frame) is mostly boxed doubles passed to helpers
+  that are not inlined (`solid()` and its twenty `*Blocked` helpers, `rectListBlocked`).
+- GC pauses of 50-100 ms seen in headless runs coincide with a loaded machine (the scavenger's
+  helper threads wait for a core); they shrink with the allocation volume but cannot be
+  measured here without an idle machine.

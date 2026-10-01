@@ -97,6 +97,43 @@
           // vehicle that last hit a braced roadblock cruiser (roadblocks.js).
           onTarmac: null,
           rammedBy: null,
+          // Fields other systems set only on some vehicles (falls, the drawbridge, a
+          // tow, police, traffic lanes, a flight), declared as `undefined`, which is what
+          // their readers already get when the field is absent. Reading an absent property
+          // off objects of many layouts is the slowest property read there is (about 60 ns
+          // against 8), and the physics step and the traffic streamer read these on every
+          // vehicle, most of them parked, every step.
+          cliffAir: undefined,
+          cliffLift: undefined,
+          deckAir: undefined,
+          deckLeaf: undefined,
+          deckLift: undefined,
+          sinkFor: undefined,
+          overturned: undefined,
+          fallZ: undefined,
+          isleBoat: undefined,
+          isle: undefined,
+          countyRoute: undefined,
+          streamed: undefined,
+          trafficIdle: undefined,
+          taxiHire: undefined,
+          crewDeployed: undefined,
+          crewLost: undefined,
+          blockade: undefined,
+          lawUnit: undefined,
+          stolen: undefined,
+          abandonedFlight: undefined,
+          airframe: undefined,
+          roofSite: undefined,
+          hop: undefined,
+          scrape: undefined,
+          easePerson: undefined,
+          panicUntil: undefined,
+          ramUntil: undefined,
+          navAngle: undefined,
+          curbStop: undefined,
+          crashStop: undefined,
+          rotorSpeed: undefined,
         };
       vehicles.push(vehicle);
       if (autonomous) assignDriver(vehicle);

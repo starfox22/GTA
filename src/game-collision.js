@@ -224,11 +224,25 @@
       }
       return hit;
     }
+    // The entry of the ascending `lines` nearest `v` (a tie goes to the later one, NaN to the
+    // last), as `lines.reduce((a, b) => (|a - v| < |b - v| ? a : b))` gave, without its closure:
+    // the traffic AI asks this several times per car per physics step. Once an entry past `v`
+    // is no nearer than the best, every later one is farther still.
+    function nearestLine(lines, v) {
+      let best = lines[0];
+      for (let i = 1; i < lines.length; i++) {
+        const b = lines[i];
+        if (Math.abs(best - v) < Math.abs(b - v)) {
+          if (b > v) break;
+        } else best = b;
+      }
+      return best;
+    }
     function roadNear(v) {
-      return ROAD_CENTERS.reduce((a, b) => (Math.abs(a - v) < Math.abs(b - v) ? a : b));
+      return nearestLine(ROAD_CENTERS, v);
     }
     function rowNear(v) {
-      return ROAD_ROWS.reduce((a, b) => (Math.abs(a - v) < Math.abs(b - v) ? a : b));
+      return nearestLine(ROAD_ROWS, v);
     }
     function onRoad(x, y) {
       return cityStreetAt(x, y);

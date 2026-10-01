@@ -216,53 +216,75 @@
       }
       drawingContext.restore();
     }
-    function segmentCross(a, b, c, d) {
-      const cross = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+    // Which side of the line p-q the point r lies on (twice the signed triangle area).
+    function crossSide(px, py, qx, qy, rx, ry) {
+      return (qx - px) * (ry - py) - (qy - py) * (rx - px);
+    }
+    // Whether segment a-b meets segment c-d, on plain numbers.
+    function segmentCross(ax, ay, bx, by, cx, cy, dx, dy) {
       return (
-        cross(a, b, c) * cross(a, b, d) <= 0 &&
-        cross(c, d, a) * cross(c, d, b) <= 0 &&
-        Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x)) <=
-          Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x)) &&
-        Math.max(Math.min(a.y, b.y), Math.min(c.y, d.y)) <=
-          Math.min(Math.max(a.y, b.y), Math.max(c.y, d.y))
+        crossSide(ax, ay, bx, by, cx, cy) * crossSide(ax, ay, bx, by, dx, dy) <= 0 &&
+        crossSide(cx, cy, dx, dy, ax, ay) * crossSide(cx, cy, dx, dy, bx, by) <= 0 &&
+        Math.max(Math.min(ax, bx), Math.min(cx, dx)) <= Math.min(Math.max(ax, bx), Math.max(cx, dx)) &&
+        Math.max(Math.min(ay, by), Math.min(cy, dy)) <= Math.min(Math.max(ay, by), Math.max(cy, dy))
       );
     }
+    /* Whether a boat's hull (an oriented box) touches any land: a corner on land, or the
+       hull meeting a coast polygon's edge or vertex. Asked for every moving boat each
+       physics step, so it works in scratch numbers and allocates nothing (it once built
+       the corner list, a list of every region, two objects per polygon vertex and a
+       closure per edge test). Same answers as before. */
+    const hullX = new Float64Array(4),
+      hullY = new Float64Array(4),
+      hullVertexBox = { x: 0, y: 0, hx: 0.2, hy: 0.2, a: 0 };
     function hullTouchesLand(shape) {
-      const cs = corners(shape),
-        hull = [cs[0], cs[2], cs[3], cs[1]];
-      if (hull.some((p) => landAt(p.x, p.y))) return true;
-      for (const reg of [...LAND_REGIONS, ...COUNTY_LAKES]) {
-        regionContains(reg, shape.x, shape.y);
-        const b = reg.bounds,
-          radius = Math.hypot(shape.hx, shape.hy);
+      // The four corners in hull order: (-1,-1), (1,-1), (1,1), (-1,1) in the box's axes.
+      const cos = Math.cos(shape.a || 0),
+        sin = Math.sin(shape.a || 0);
+      for (let k = 0; k < 4; k++) {
+        const i = k === 0 || k === 3 ? -1 : 1,
+          j = k < 2 ? -1 : 1;
+        hullX[k] = shape.x + cos * shape.hx * i + -sin * shape.hy * j;
+        hullY[k] = shape.y + sin * shape.hx * i + cos * shape.hy * j;
+      }
+      for (let k = 0; k < 4; k++) if (landAt(hullX[k], hullY[k])) return true;
+      const radius = Math.hypot(shape.hx, shape.hy),
+        vertexReach = shape.hx + shape.hy + 0.2 + 0.2,
+        minX = Math.min(hullX[0], hullX[1], hullX[2], hullX[3]),
+        maxX = Math.max(hullX[0], hullX[1], hullX[2], hullX[3]),
+        minY = Math.min(hullY[0], hullY[1], hullY[2], hullY[3]),
+        maxY = Math.max(hullY[0], hullY[1], hullY[2], hullY[3]);
+      for (let n = 0; n < LAND_REGIONS.length + COUNTY_LAKES.length; n++) {
+        const reg = n < LAND_REGIONS.length ? LAND_REGIONS[n] : COUNTY_LAKES[n - LAND_REGIONS.length];
+        // (Builds the region's bounds the first time.)
+        if (!reg.bounds) regionContains(reg, shape.x, shape.y);
+        const bounds = reg.bounds;
         if (
-          shape.x + radius < b.minx ||
-          shape.x - radius > b.maxx ||
-          shape.y + radius < b.miny ||
-          shape.y - radius > b.maxy
+          shape.x + radius < bounds.minx ||
+          shape.x - radius > bounds.maxx ||
+          shape.y + radius < bounds.miny ||
+          shape.y - radius > bounds.maxy
         )
           continue;
-        for (let i = 0; i < reg.polygon.length; i++) {
-          const a = {
-              x: reg.polygon[i][0],
-              y: reg.polygon[i][1],
-            },
-            j = (i + 1) % reg.polygon.length,
-            b = {
-              x: reg.polygon[j][0],
-              y: reg.polygon[j][1],
-            };
-          if (
-            boxContact(shape, {
-              x: a.x,
-              y: a.y,
-              hx: 0.2,
-              hy: 0.2,
-              a: 0,
-            })
-          )
-            return true;
-          for (let k = 0; k < 4; k++) if (segmentCross(hull[k], hull[(k + 1) % 4], a, b)) return true;
+        const polygon = reg.polygon;
+        for (let i = 0; i < polygon.length; i++) {
+          const ax = polygon[i][0],
+            ay = polygon[i][1],
+            end = polygon[(i + 1) % polygon.length],
+            bx = end[0],
+            by = end[1];
+          // boxContact()'s own first test, here so the usual far vertex costs no call.
+          if (!(Math.abs(shape.x - ax) > vertexReach || Math.abs(shape.y - ay) > vertexReach)) {
+            hullVertexBox.x = ax;
+            hullVertexBox.y = ay;
+            if (boxContact(shape, hullVertexBox)) return true;
+          }
+          // An edge wholly outside the hull's bounding box cannot cross any hull side.
+          if (Math.min(ax, bx) > maxX || Math.max(ax, bx) < minX || Math.min(ay, by) > maxY || Math.max(ay, by) < minY) continue;
+          for (let k = 0; k < 4; k++) {
+            const m = (k + 1) % 4;
+            if (segmentCross(hullX[k], hullY[k], hullX[m], hullY[m], ax, ay, bx, by)) return true;
+          }
         }
       }
       return false;
