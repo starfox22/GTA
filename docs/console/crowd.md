@@ -51,3 +51,7 @@ Wounds on the ground (docs/areas/police-and-combat.md, BLOOD).
 | --- | --- |
 | `bloodReport(x, y, radius)` | Blood decals within `radius` (default 120) of (x, y) (default the player): `total` in the world, `near` counts by kind (`pool` spreading under a body, `spatter`, `drop`, `track`, `stain`), the `largest` radius, each pool's `r` / `rMax` / `tau` / `age`, drops still `flying` |
 | `bloodVictim(hits, damage, kind, distance)` | A bystander `distance` (50) ahead of the player, struck `hits` times for `damage` of `kind` (`ballistic`, `headshot`, `blast`, `impact`) as the player's shots would; returns position, hp, `dead`, `downed` |
+| `carBloodReport()` | Blood on the player's car (car-stains.js): each stain's `face`, `x`/`z`, `sev`, `kph`, `age`, `dry` (0 wet .. 1 dry), `wash`; `skin` is what the 3D view fitted (`triangles`, `events`, `panels`, `paintMs`, `buildMs`, `skins` alive of `maxSkins`), null without the renderer |
+| `carBloodVictim(along, lateral, hp)` | Stand a bystander on the player's car: `along` units ahead of its centre, `lateral` to its right (nose: half the length + 30; flank: 0 and half the width - 3); a moving car then runs into them (`launch`) |
+| `carBloodMark(face, kph, fatal, across, age)` | Stain the player's car as a person hit on `face` (`front`, `rear`, `left`, `right`) would, aged `age` s; returns the record |
+| `bloodEnabled(on)` | The blood setting for tests: false stops all blood and stains; no argument reports it |

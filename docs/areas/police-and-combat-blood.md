@@ -43,3 +43,30 @@ Part of police-and-combat.md.
   fall calls `bleed(rider, severity, heading, 'impact')`; a pool alone: `bodyPool(p, kind, a)`.
 - Console: `bloodReport(x, y, radius)`, `bloodVictim(hits, damage, kind)` (docs/console/crowd.md).
   Test: tools/tests/blood-wounds.mjs.
+
+## Blood on vehicles
+
+A hit that hurts (20 km/h and up) leaves a stain on the car (`addCarStain`, car-stains.js, called
+from knockPerson). It is data on the vehicle: `c.stains`, at most 3 records `{id, t, face, x, z,
+sev, sx, sz, kph, seed, wash}` (the body-local point struck, severity, the direction the blood is
+carried: inward and back along the airflow). Fatal: sev 0.55-1 by speed; survivor 0.12-0.42; a slow
+bump nothing. `updateCarStains` (every 0.5 s, only stained cars) washes them in rain > 0.5 outside
+cover and retires them after 1500 s; `clearCarStains` runs from `repairVehicle` and the garage
+service. `bloodOn` false stops new ones and hides the old.
+
+- Renderer (carblood3d.js, + `-paint`, `-fit`): the only reader. One mesh (child of `m.body`), one
+  material and one 1536x1024 canvas per stained car, `CB_MAX_CARS` 5 (out of sight / oldest retire,
+  disposed with the model or by the sweep). Each stain is two 512 px tiles: TOP (bonnet, fender
+  tops, windscreen base) and FACE (bumper, grille or flank). The boxes are laid out once per stain
+  (`event.layout`) and every visible mesh triangle inside is clipped to them, lifted 0.1 units
+  along its normal, UV-mapped; meshes another mesh covers (bonnet over shell) are skipped. It
+  re-fits when `damageVersion` / `shapeVersion` change (crumple, hood hinge).
+- The canvas holds a THICKNESS FIELD (R thickness, G arrival time of a run), painted once, seeded.
+  The shader makes colour, cover, roughness and normals from thickness and the wet/dry look from the
+  age (`vBlood.x` birth, `uBloodNow`): wet crimson and glossy, dry brown-black by ~2 min, thick
+  cores later; runs reveal over 25 s; fade 200-1500 s. Never emissive; lit through
+  `cityMaterialPatch` like the paint. Change colours only in the shader (paint has no colour).
+- Gotchas: do not parent anything else raycastable to the skin (its `raycast` is a no-op so bullet
+  marks pass through); a newly pushed pedestrian is struck only from the next frame; the fit costs
+  ~20-90 ms and the paint ~20-50 ms, on separate frames (`updateCarBlood`).
+- Test: tools/tests/car-blood.mjs; console `carBloodReport`, `carBloodMark` (docs/console/crowd.md).
