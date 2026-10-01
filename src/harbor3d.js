@@ -289,18 +289,6 @@
         group.position.set(p.x, 0, p.y);
         return group;
       });
-      const harborBayRing = new Three.Mesh(
-        new Three.PlaneGeometry(96, 124),
-        new Three.MeshBasicMaterial({
-          color: '#f2c66d',
-          transparent: true,
-          opacity: 0.09,
-          depthWrite: false,
-        }),
-      );
-      harborBayRing.rotation.x = -Math.PI / 2;
-      harborBayRing.position.set(HARBOR.bay.x, 0.25, HARBOR.bay.y);
-      scene.add(harborBayRing);
       function updateHarborVisuals() {
         gateRoot.rotation.x = (-harborGate * Math.PI) / 2;
         gateLamp.material.color.set(harborGate > 0.82 ? '#96cc84' : '#dd5541');
@@ -336,8 +324,6 @@
             g.rotation.y = 0.04 + normalizeAngle(-m.car.a - 0.04) * t;
           } else g.rotation.y = 0.04;
         }
-        harborBayRing.visible = !!m && m.stage === 2;
-        harborBayRing.material.opacity = 0.09 + 0.04 * Math.sin(gameTime * 3);
       }
       /**
        * TRAFFIC SIGNALS

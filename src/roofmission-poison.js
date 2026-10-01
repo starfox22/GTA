@@ -598,6 +598,13 @@
         }
       }
     }
+    /* True while the job is only watching: the glass is spiked, the alarm is quiet and
+       Vescari is still on his feet. Nothing points at him then (render3d-frame.js hides
+       the floating arrow); the HUD's distance pill and the map are unchanged. */
+    function roofWatchQuiet() {
+      const m = rooftopJob();
+      return !!m && m.poisonUsed && !m.alarm && !m.killRegistered && m.boss.hp > 0;
+    }
     /* Console (game-console-missions.js): how the drink and its aftermath stand. */
     function roofPoisonReport() {
       const m = rooftopJob(),

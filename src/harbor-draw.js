@@ -166,11 +166,6 @@
         worldContext.fillRect(p.x + 6, p.y - 16, 4, 30);
         marker(p, '#ffdc86', String(i + 1), 15);
       }
-      if (m?.stage === 2) {
-        worldContext.strokeStyle = '#f2d68d';
-        worldContext.lineWidth = 3;
-        worldContext.strokeRect(HARBOR.bay.x - 48, HARBOR.bay.y - 62, 96, 124);
-      }
     }
     function drawHarborMap(drawingContext, big) {
       drawingContext.fillStyle = '#ad996b55';

@@ -64,6 +64,8 @@
       cutaway: true,
       // The faint moonlit rim on the player's silhouette at night (render3d.js).
       playerOutline: true,
+      // The ring on the ground under the player (render3d-effects.js, game-draw2d.js): off by default.
+      playerRing: false,
       // The camera eases back for a spectacle close by (drawbridge.js drawbridgeCameraZoom).
       eventCamera: true,
     };
@@ -96,6 +98,7 @@
         settings.radioVolumeSet = radioChosen;
         if (typeof saved.npcChatter === 'boolean') settings.npcChatter = saved.npcChatter;
         if (typeof saved.playerOutline === 'boolean') settings.playerOutline = saved.playerOutline;
+        if (typeof saved.playerRing === 'boolean') settings.playerRing = saved.playerRing;
         if (typeof saved.eventCamera === 'boolean') settings.eventCamera = saved.eventCamera;
         // The title menu's radio (car-radio.js TITLE RADIO), on unless switched off.
         if (typeof saved.titleRadio === 'boolean') titleRadioEnabled = saved.titleRadio;
@@ -119,6 +122,7 @@
             radioVolumeSet: settings.radioVolumeSet,
             npcChatter: settings.npcChatter,
             playerOutline: settings.playerOutline,
+            playerRing: settings.playerRing,
             eventCamera: settings.eventCamera,
             titleRadio: titleRadioEnabled,
             soundOn,
@@ -154,6 +158,9 @@
     // Read by the renderer every frame, so a change applies at once.
     function playerOutlineOn() {
       return settings.playerOutline;
+    }
+    function playerRingOn() {
+      return settings.playerRing;
     }
     function eventCameraOn() {
       return settings.eventCamera;
@@ -242,6 +249,16 @@
           get: () => settings.playerOutline,
           set: (on) => {
             settings.playerOutline = !!on;
+          },
+        },
+        {
+          id: 'playerRing',
+          kind: 'toggle',
+          label: 'Ring under your character',
+          note: () => 'A thin ring on the ground under your character. Off by default.',
+          get: () => settings.playerRing,
+          set: (on) => {
+            settings.playerRing = !!on;
           },
         },
       ],

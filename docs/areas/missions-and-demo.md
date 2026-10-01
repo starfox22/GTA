@@ -102,6 +102,10 @@ index plus one.
   (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`) the first time only; a
   replay of mission 2 is just a payday. Completion is kept
   in `dead-end-city-demo`. `demoLocked()` is the gate.
+- `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so once
+  `completed >= DEMO_MISSIONS` a declined or failed replay must call `settleDemoStoryIndex()`
+  (also on load): otherwise `storyCallWaiting()` keeps the payphone arrow, pager and HUD pill up.
+  Every pointer reads `objective()`; console `pointers()` reports them all.
 - Never gated (not missions): the hill climb, volleyball, the stadium ball, the pier rides,
   bike share, cabs, rail, the liner, casino, garages, gun shop, Fort Sentinel, the Apache,
   MONARCH MOTORS.

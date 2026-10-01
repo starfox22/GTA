@@ -40,7 +40,10 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   `render(body)` draws itself.
 - While open, `gameMode` is `'settings'` and every key goes to `settingsKeyDown()`.
 - Renderer-owned switches go through the renderer (`city3D.setCharacterCutaway(on)`); values
-  the renderer polls (player outline) are read every frame from `settings`.
+  the renderer polls (player outline, player ring) are read every frame from `settings`.
+- Graphics · Ring under your character (`settings.playerRing`, `playerRingOn()`): off by
+  default, also for saves that predate it; drives the 3D `playerRing` and the 2D fallback's
+  circle under the player. Objectives have no ring at all (markers.js): the floating arrow only.
 - Storage keys: see core-and-contracts.md. `DeadEndCity.settings({...})` sets rows from the
   console (e.g. `{ units: 'mph', footSpeed: true }`).
 
