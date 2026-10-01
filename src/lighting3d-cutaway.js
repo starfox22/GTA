@@ -4,34 +4,42 @@
          the player's middle and head towards the camera through each one's box
          (grown by `margin`, so the hole opens just before the player is lost). */
       const occluderRay = { x: 0, y: 0, z: 0 };
+      // The slab test on one axis: narrows [slabNear, slabFar] and says whether it is still non-empty.
+      // (Plain module-level numbers: this runs for every building near the player on every frame,
+      // and an array per axis and a closure per height were most of the cutaway's garbage.)
+      let slabNear = 0,
+        slabFar = 0;
+      function slabHit(origin, direction, half) {
+        if (Math.abs(direction) < 1e-6) return Math.abs(origin) <= half;
+        let t0 = (-half - origin) / direction,
+          t1 = (half - origin) / direction;
+        if (t0 > t1) {
+          const swap = t0;
+          t0 = t1;
+          t1 = swap;
+        }
+        if (t0 > slabNear) slabNear = t0;
+        if (t1 < slabFar) slabFar = t1;
+        return slabNear <= slabFar;
+      }
       function rayHitsBox(px, py, pz, localX, localZ, hx, hz, bottom, top) {
         // Slab test in the box's own frame: px/pz and localX/localZ are the ray's
         // origin and direction already turned into it; y is shared.
-        let near = 0.5,
-          far = 1e9;
-        const axes = [
-          [px, localX, hx],
-          [pz, localZ, hz],
-        ];
-        for (const [origin, direction, half] of axes) {
-          if (Math.abs(direction) < 1e-6) {
-            if (Math.abs(origin) > half) return false;
-            continue;
-          }
-          let t0 = (-half - origin) / direction,
-            t1 = (half - origin) / direction;
-          if (t0 > t1) [t0, t1] = [t1, t0];
-          near = Math.max(near, t0);
-          far = Math.min(far, t1);
-          if (near > far) return false;
-        }
+        slabNear = 0.5;
+        slabFar = 1e9;
+        if (!slabHit(px, localX, hx) || !slabHit(pz, localZ, hz)) return false;
         // Height: the ray climbs, so it is inside the box's span between these.
         const dy = occluderRay.y;
         if (dy > 1e-6) {
-          near = Math.max(near, (bottom - py) / dy);
-          far = Math.min(far, (top - py) / dy);
+          slabNear = Math.max(slabNear, (bottom - py) / dy);
+          slabFar = Math.min(slabFar, (top - py) / dy);
         } else if (py < bottom || py > top) return false;
-        return near < far;
+        return slabNear < slabFar;
+      }
+      // Whether the ray from any of `heights` (metres up the subject) hits the box.
+      function rayHitsBoxAt(heights, px, pz, localX, localZ, hx, hz, bottom, top) {
+        for (let i = 0; i < heights.length; i++) if (rayHitsBox(px, heights[i], pz, localX, localZ, hx, hz, bottom, top)) return true;
+        return false;
       }
       function findOccluders(x, y, heights, margin, list) {
         const ray = occluderRay;
@@ -60,7 +68,7 @@
           if (x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) continue;
           const cx = b.x + b.w / 2,
             cy = b.y + b.h / 2;
-          if (!heights.some((h) => rayHitsBox(x - cx, h, y - cy, ray.x, ray.z, b.w / 2 + margin, b.h / 2 + margin, -60, o.height))) continue;
+          if (!rayHitsBoxAt(heights, x - cx, y - cy, ray.x, ray.z, b.w / 2 + margin, b.h / 2 + margin, -60, o.height)) continue;
           list.push({ x: cx, y: cy, hx: b.w / 2 + 2, hy: b.h / 2 + 2, a: 0, bottom: -60, top: o.height + 24, near: Math.hypot(cx - x, cy - y) });
         }
         for (const b of airCoverVolumes()) {
@@ -71,7 +79,7 @@
             sin = b.sin ?? Math.sin(b.a),
             localX = ray.x * cos + ray.z * sin,
             localZ = -ray.x * sin + ray.z * cos;
-          if (!heights.some((h) => rayHitsBox(local.x, h, local.y, localX, localZ, b.hx + margin, b.hy + margin, b.minHeight, b.height))) continue;
+          if (!rayHitsBoxAt(heights, local.x, local.y, localX, localZ, b.hx + margin, b.hy + margin, b.minHeight, b.height)) continue;
           list.push({ x: b.x, y: b.y, hx: b.hx, hy: b.hy, a: b.a, bottom: b.minHeight - 8, top: b.height + 2, near: Math.hypot(b.x - x, b.y - y) });
         }
         list.sort((p, q) => p.near - q.near);

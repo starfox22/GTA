@@ -135,7 +135,7 @@
       // Progress, for renderHiccups(): whether the driver compiles in parallel, scene objects and
       // passes still to compile, models still to build, programs compiled and linked so far, the
       // CPU spent, and any error that stopped a part of it.
-      const prewarmInfo = { parallel: false, queued: 0, passes: 0, models: 0, modelErrors: 0, uploads: 0, compiled: 0, linked: 0, ms: 0, done: false, error: '' };
+      const prewarmInfo = { parallel: false, queued: 0, passes: 0, models: 0, modelErrors: 0, strays: 0, uploads: 0, compiled: 0, linked: 0, ms: 0, done: false, error: '' };
       function prewarmShaders() {
         // (Lights stay out of the slices: compile() counts the lights of a slice as well as the
         // scene's, so a slice holding one compiled its programs for one light too many.)
@@ -278,6 +278,11 @@
                 renderer.initTexture(sootTexture);
               }
               scene.remove(model.group);
+              // (A builder that also hung something else on the scene would leave it there.)
+              while (scene.children.length > before) {
+                scene.remove(scene.children[scene.children.length - 1]);
+                prewarmInfo.strays++;
+              }
               // The type's body-impostor pool (flight-view3d.js BODY IMPOSTORS) is made from the
               // first pristine model: make it now, and compile its instanced materials.
               carModels.set(standIn, model);
@@ -320,6 +325,7 @@
             unlinked.delete(program);
             prewarmInfo.linked++;
           }
+          hiccupSync();
           prewarmInfo.queued = queue.length;
           prewarmInfo.passes = passes.length;
           prewarmInfo.models = models.length;

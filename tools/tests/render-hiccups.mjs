@@ -11,7 +11,10 @@ export default async function (t) {
   t.finite(report, 'renderHiccups');
   for (const key of ['frames', 'programsLinked', 'texturesCreated', 'geometriesCreated', 'worstCpuMs'])
     t.assert(typeof report[key] === 'number', `renderHiccups.${key} is a number`);
-  t.assert(report.prewarm && report.prewarm.error === '' && report.prewarm.modelErrors === 0, `prewarm error: ${JSON.stringify(report.prewarm)}`);
+  t.assert(
+    report.prewarm && report.prewarm.error === '' && report.prewarm.modelErrors === 0 && report.prewarm.strays === 0,
+    `prewarm error: ${JSON.stringify(report.prewarm)}`,
+  );
   t.assert(report.gpu.geometries > 0 && report.gpu.uploadedGeometries <= report.gpu.geometries, 'gpu geometry totals');
   await t.call('renderHiccups', true);
   const after = await t.call('renderHiccups');

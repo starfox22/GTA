@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-474 files in the include tree, 164,052 lines.
+474 files in the include tree, 164,079 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -445,8 +445,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-vehicle-models.js`   350 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/render3d-prewarm-models.js`    52 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
 - `src/render3d-effects.js`   207 — ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
-- `src/render3d-resources.js`   340 — GPU resource lifecycle: shared geometries, model pruning and disposal.
-- `src/render3d-hiccups.js`   294 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
+- `src/render3d-resources.js`   346 — GPU resource lifecycle: shared geometries, model pruning and disposal.
+- `src/render3d-hiccups.js`   307 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
 - `src/render3d-api.js`   506 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   660 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
@@ -458,7 +458,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
 - `src/lighting3d-sky.js`   813 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
-- `src/lighting3d-cutaway.js`   159 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
+- `src/lighting3d-cutaway.js`   167 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
 - `src/lighting3d-vehicle-lights.js`   647 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
 - `src/lighting3d-vehicle-shadows.js`   314 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people, cars, trees and posts in the CAR LAMPS beams), the TERRAIN HORIZON strip kept in the same …
 - `src/lighting3d-look.js`   268 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.

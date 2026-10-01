@@ -111,6 +111,12 @@
         });
         return 'dir' + d + ' point' + p + ' spot' + sp + ' hemi' + h + ' shadows' + shadow;
       }
+      // Work done between frames (the prewarm) is not a frame's first use: the next frame starts from here.
+      function hiccupSync() {
+        hiccupSeenPrograms = hiccupPrograms();
+        hiccupSeenTextures = renderer.info.memory.textures;
+        hiccupSeenGeometries = renderer.info.memory.geometries;
+      }
       function hiccupBegin() {
         hiccupFrameStart = performance.now();
         if (hiccupSeenPrograms < 0) {
@@ -195,7 +201,8 @@
       // pixels, against how many the GPU holds now (a first draw uploads the rest).
       function hiccupSceneGpu() {
         const geometries = new Set(),
-          textures = new Set();
+          textures = new Set(),
+          big = [];
         let bytes = 0,
           texturePixels = 0;
         scene.traverse((o) => {
@@ -215,15 +222,21 @@
               if (t && t.isTexture && !textures.has(t)) {
                 textures.add(t);
                 const image = t.image;
-                if (image && image.width) texturePixels += image.width * image.height;
+                if (image && image.width) {
+                  texturePixels += image.width * image.height;
+                  if (image.width * image.height >= 1 << 20) big.push([key + ' ' + image.width + 'x' + image.height + (image.getContext ? ' canvas' : ' ' + (image.constructor && image.constructor.name)), image.width * image.height]);
+                }
               }
             }
         });
+        big.sort((a, b) => b[1] - a[1]);
         return {
           geometries: geometries.size,
           geometryMB: +(bytes / 1048576).toFixed(1),
           textures: textures.size,
           texturePixelsM: +(texturePixels / 1e6).toFixed(1),
+          // Textures of a megapixel or more (a canvas keeps its backing store after the upload).
+          bigTextures: big.slice(0, 12).map(([name, pixels]) => name + ' ' + (pixels / 1e6).toFixed(1) + 'M'),
           uploadedGeometries: renderer.info.memory.geometries,
           uploadedTextures: renderer.info.memory.textures,
         };
