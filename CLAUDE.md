@@ -149,6 +149,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   `c.hornUntil`, which the awareness model hears). Someone on the ground (`personOnGround(p)`) who is run over
   again goes through `runOverDowned` (runover.js, from `knockPerson`); they die from it only via `p.dying` then
   `finishDying()` then `strikePerson`. `p.mutedUntil` silences `scream()`.
+- Hot loops: never `length = 0` on a reused list (keep a count: `list.n`, `broadphasePairCount`); write a double
+  to an object field only when it changed; declare optional vehicle fields in `makeCar`. Map overlay painters gate
+  on `mapWindowHas` and draw fixed-size text with `mapLabel`. `settleIsTrivial` (physics-step.js) must stay in
+  step with terrainVehiclePose, cliffSettle, drawbridgeSettle and rotorStrikes (`settleAudit()` checks it).
+  Measure with `DeadEndCity.simProfile()` and `dev.mjs call <method> --cpu|--profile N|--alloc N`
+  (docs/areas/core-and-contracts.md Performance rules).
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
