@@ -1,7 +1,7 @@
 // Free-roam safety nets: WASTED wakes the player at the nearest hospital (Palm Keys ->
 // RIVERSIDE MEDICAL, Monarch Isle -> THE HALCYON CLINIC, the county -> SAINT MARLOW), the
 // god-mode teleport never leaves someone on a mountain face they slide off, and places()
-// reports finite coordinates for every place (YOUR SAFEHOUSE has only a door).
+// reports finite coordinates for every place (a place without a footprint falls back to its door).
 export const fresh = true;
 const HOSPITALS = { 'RIVERSIDE MEDICAL': [-1670, 1972] };
 async function dieAt(t, x, y) {

@@ -319,9 +319,11 @@
         x: 790,
         y: 553,
       },
+      // Home is a room at the SUNSET MOTEL (citylife-places.js 'motel'): its door, on the
+      // pavement. It was once a bare point in the middle of the east boulevard.
       safehouse = {
-        x: 3200,
-        y: 2880,
+        x: 882,
+        y: 1964,
       };
     // Set only by the console's holdSimulation (screenshot sequences).
     let simulationHeld = false;

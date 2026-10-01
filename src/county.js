@@ -7,4 +7,5 @@
      */
     // @include src/county-map.js
     // @include src/county-build.js
+    // @include src/county-guide-signs.js
     // END SUBSYSTEM: src/county.js

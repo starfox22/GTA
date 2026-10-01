@@ -74,3 +74,14 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
 - Drawing: one InstancedMesh per species animated in the vertex shader; what is under the
   surface goes into a life map the water shader samples. Console: `sealife()`,
   `sharkAttack(stage)`, `spawnDolphins(...)`.
+
+## Roadside boards (county-guide-signs.js, county3d-signs.js)
+
+- No board stands on or across a carriageway. `COUNTY_GUIDE_SIGNS` (EAGLE PASS, OCEANVIEW /
+  AIRPORT, CORAL COAST), the SCENIC VIEW lay-by signs, the town name boards and the
+  trailhead boards are drawn by `roadsideSign()`: a 4-9 m board on two posts, bottom edge 2 m
+  up, at the spot `signSpot()` finds clear of every road by `SIGN_VERGE` (12 units; the
+  nearest clear ground within 60, else the board is left out: NEEDLE RIDGE's trailhead
+  is on a junction). A `sign()` alone floats at 5 m with no posts and faces south: never
+  call it for scenery in open country. Console `guideSigns()` lists every board with
+  `onAsphalt` and `clearance`; test road-signs.mjs keeps them off the road.

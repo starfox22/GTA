@@ -292,14 +292,6 @@
           y: 3442,
         },
       },
-      {
-        id: 'home',
-        kind: 'sleep',
-        name: 'YOUR SAFEHOUSE',
-        color: '#8ccba4',
-        symbol: 'ZZ',
-        door: safehouse,
-      },
     ];
     const DOCKS = [
       {
