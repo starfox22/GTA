@@ -41,6 +41,10 @@ Part of police-and-combat.md.
   killing blast, max 2.5; `kind` 'ballistic' | 'headshot' | 'blast' | 'impact' | 'fall' |
   'melee'. It counts the wound and pools the body if it is dead. A thrown bike rider or a
   fall calls `bleed(rider, severity, heading, 'impact')`; a pool alone: `bodyPool(p, kind, a)`.
+- Someone already down who is run over again (runover.js, docs/areas/people-and-crowd-vehicles.md): a
+  splash (`bleed(p, sev, heading, 'impact')`, a living body does not pool), streaks along the tyre path,
+  `c.bloodTrackRemaining` for the tyres, and the pool (`bodyPool`) once they have died a second or two later.
+  A non-fatal first pass leaves no blood at all.
 - Console: `bloodReport(x, y, radius)`, `bloodVictim(hits, damage, kind)` (docs/console/crowd.md).
   Test: tools/tests/blood-wounds.mjs.
 

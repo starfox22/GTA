@@ -134,3 +134,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Witnesses and 911 (witnesses.js, crowd-witnesses.js)
 - A call from inside a shop (hidden off-stage call) has no bubble; the 911 bubble keeps the street's 10 px font: check it reads on a HiDPI screen.
 
+
+## Pedestrians and cars (crowd-awareness.js, runover.js)
+- Only the player's car is watched from 16 km/h; traffic keeps the old 31 km/h floor so a queue at a crossing does not become leaping crowds. Night and glare do not change what people see, and music (other than earbuds) does not mask a car.
+- A second pass needs 4 km/h and 2 s since the same car's first: a car that creeps over someone it bumped (under 20 km/h) for 2+ s counts as running them over. People outside the four crowd lists (athletes) die at once from a mortal second pass, with no dying second.
