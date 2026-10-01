@@ -154,4 +154,7 @@
     addConsoleMethods('blood', bloodConsole());
     // Blood a vehicle carries (car-stains.js): the stain report, a bystander to run over.
     addConsoleMethods('blood', carStainConsole());
+    // Who sees a car coming (crowd-awareness.js) and the second pass over someone on the ground (runover.js): test staging and reports.
+    addConsoleMethods('crowd', awarenessConsole());
+    addConsoleMethods('blood', runOverConsole());
     // END SUBSYSTEM: src/game-console-crowd.js

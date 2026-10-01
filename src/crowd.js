@@ -71,6 +71,8 @@
      * flipping everyone at once. Someone staring at their phone is slower.
      */
     // @include src/crowd-perception.js
+    // @include src/crowd-awareness.js
+    // @include src/crowd-awareness-console.js
 
     /**
      * RUNNING A REACTION

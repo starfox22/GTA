@@ -115,10 +115,17 @@
           break;
         }
         case 'dodge': {
-          p.pose = 'dodge';
-          if (r.t < 0.42) {
-            const speed = 55 * (1 - r.t / 0.42) + 10;
+          // A leap (the default: 55 units/s fading over 0.42 s), a back-step, or a calm sidestep
+          // while looking at the car (r.calm, crowd-awareness.js).
+          const leapFor = r.leapFor || 0.42;
+          if (r.calm) {
+            p.pose = null;
+            faceToward(p, r.car || from, deltaSeconds, 8);
+          } else p.pose = 'dodge';
+          if (r.t < leapFor) {
+            const speed = (r.leapV || 55) * (1 - r.t / leapFor) + 10;
             moveBody(p, Math.cos(r.leap) * speed * deltaSeconds, Math.sin(r.leap) * speed * deltaSeconds, 5);
+            if (r.calm) p.walking = true;
           }
           break;
         }
@@ -471,8 +478,9 @@
     }
     /**
      * NEAR MISSES
-     * A car coming fast along a line that would clip someone makes them leap
-     * clear; once safe, most turn round and let the driver have it.
+     * A car coming fast along a line that would clip someone: those who see or hear it (crowd-awareness.js
+     * watchVehicle: facing, hearing, attention, reaction time) leap clear, step aside, freeze or jump back;
+     * the rest are hit unaware. Once safe, most turn round and let the driver have it.
      */
     function nearMisses(deltaSeconds) {
       crowd.timers.near -= deltaSeconds;
@@ -480,12 +488,12 @@
       crowd.timers.near = 0.08;
       for (const c of vehicles) {
         if (c.hp <= 0 || isBoat(c) || (isAircraft(c) && aircraftClearance(c) > 3)) continue;
-        if (Math.abs(c.x - player.x) > 1000 || Math.abs(c.y - player.y) > 1000) continue;
+        if (Math.abs(c.x - player.x) > CAR_REACH || Math.abs(c.y - player.y) > CAR_REACH) continue;
         const speed = Math.hypot(c.vx || 0, c.vy || 0);
-        if (speed < 70) continue;
+        if (speed < (c === player.car ? CAR_MIN_SPEED : CAR_MIN_SPEED_TRAFFIC)) continue;
         const ux = c.vx / speed,
           uy = c.vy / speed,
-          look = 18 + speed * 0.42,
+          look = 18 + Math.min(speed, 180) * CAR_HORIZON,
           half = vehicleSpec(c).w / 2 + vehicleSpec(c).l * 0.1;
         forPeopleNear(c.x + (ux * look) / 2, c.y + (uy * look) / 2, look / 2 + 34, (p) => {
           if (p.hp <= 0 || personIncapacitated(p) || p.onDeck || ['dodge', 'groan'].includes(p.react?.kind)) return;
@@ -494,12 +502,13 @@
             along = dx * ux + dy * uy,
             side = -dx * uy + dy * ux;
           if (along < 0 || along > look || Math.abs(side) > half + 18) return;
-          const s = Math.sign(side) || (seededRandom() < 0.5 ? -1 : 1),
-            leap = Math.atan2(ux * s, -uy * s);
-          const angry = (c === player.car || speed > 110) && (p.nerve ?? 0.5) > 0.2;
-          startReaction(p, 'dodge', 0.5, c, null, { leap, car: c, then: angry ? 'fist' : 'hurry', thenExtra: { car: c } });
-          crowdSay(p, 'dodge', 0.7);
-          if (c === player.car) p.sawPlayerAt = gameTime;
+          carSeen.speed = speed;
+          carSeen.ux = ux;
+          carSeen.uy = uy;
+          carSeen.along = along;
+          carSeen.side = side;
+          watchVehicle(p, c, carSeen);
         });
       }
     }
+    const carSeen = { speed: 0, ux: 0, uy: 0, along: 0, side: 0 };
