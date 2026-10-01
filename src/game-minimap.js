@@ -70,6 +70,33 @@
       }
       drawingContext.restore();
     }
+    /* MAP WINDOW. The world rectangle the map being drawn shows (set by drawMap, open
+       again after its overlays): the overlay painters skip any marker and name outside
+       it, margin in world units. Text is the dear part of a map pass, and on the
+       minimap its device size changes every refresh while the view eases with speed, so
+       every glyph is rasterised afresh: with some forty markers in the county that
+       was a quarter of a driving frame's CPU, nearly all for markers off the card. */
+    const mapWindow = { x0: -Infinity, y0: -Infinity, x1: Infinity, y1: Infinity };
+    function mapWindowHas(x, y, margin) {
+      return x + margin > mapWindow.x0 && x - margin < mapWindow.x1 && y + margin > mapWindow.y0 && y - margin < mapWindow.y1;
+    }
+    // The same for a rectangle (x, y, w, h).
+    function mapWindowHasRect(x, y, w, h, margin) {
+      return x + w + margin > mapWindow.x0 && x - margin < mapWindow.x1 && y + h + margin > mapWindow.y0 && y - margin < mapWindow.y1;
+    }
+    /* Text of a fixed size on the glass at a map point (the map is drawn under
+       scale(scale)). It used to be set as `10 / scale` px: the minimap's scale eases
+       with speed, so every refresh brought a font string never seen, and each new
+       size is a font lookup of its own (tens of milliseconds on a platform with slow
+       font matching). Counter-scaling keeps the font string fixed and the glyphs the
+       same size. Set `font` and `textAlign` as before, in px of the glass. */
+    function mapLabel(g, text, x, y, scale) {
+      g.save();
+      g.translate(x, y);
+      g.scale(1 / scale, 1 / scale);
+      g.fillText(text, 0, 0);
+      g.restore();
+    }
     function drawMap(drawingContext, width, height, big = false) {
       // The minimap pulls back with speed (minimapSpeedZoom, map-view.js).
       const view = big ? 1 : minimapZoom() * minimapSpeedZoom(),
@@ -78,6 +105,10 @@
           : MINIMAP_SCALE * view,
         cx = big ? mapCenter.x : player.x,
         cy = big ? mapCenter.y : player.y;
+      mapWindow.x0 = cx - width / 2 / scale;
+      mapWindow.x1 = cx + width / 2 / scale;
+      mapWindow.y0 = cy - height / 2 / scale;
+      mapWindow.y1 = cy + height / 2 / scale;
       drawingContext.fillStyle = '#123244';
       drawingContext.fillRect(0, 0, width, height);
       if (!big) {
@@ -117,11 +148,11 @@
           drawingContext.fillStyle = '#e4d3a3';
           drawingContext.font = 'bold 90px monospace';
           drawingContext.textAlign = 'center';
-          drawingContext.fillText('H', pad.x, pad.y + 27);
+          if (mapWindowHas(pad.x, pad.y, 70)) drawingContext.fillText('H', pad.x, pad.y + 27);
         }
         // Rooftop helipads (rooftops.js): a smaller H.
         drawingContext.font = 'bold 64px monospace';
-        for (const pad of roofHelipads) drawingContext.fillText('H', pad.x, pad.y + 20);
+        for (const pad of roofHelipads) if (mapWindowHas(pad.x, pad.y, 50)) drawingContext.fillText('H', pad.x, pad.y + 20);
       }
       drawHarborMap(drawingContext, big);
       const target = objective();
@@ -155,6 +186,8 @@
       if (mapLayerOn('police')) drawPoliceMap(drawingContext, scale);
       // A street event's runner (livingcity-events.js).
       drawLivingCityMap(drawingContext, scale);
+      mapWindow.x0 = mapWindow.y0 = -Infinity;
+      mapWindow.x1 = mapWindow.y1 = Infinity;
       drawingContext.restore();
       // Off the minimap's edge: an arrow on the rim toward the job and the waypoint.
       if (!big) drawMinimapEdgeBlips(drawingContext, width, height, scale, cx, cy, target);

@@ -417,20 +417,22 @@
       for (const p of PLACES) {
         const font = big ? 90 : 65,
           w = p.symbol.length * (big ? 59 : 43) + 35,
-          h = big ? 115 : 87;
+          h = big ? 115 : 87,
+          // Off the map's window nothing is drawn (the state below is still set, as before).
+          shown = mapWindowHas(p.door.x, p.door.y, w / 2 + h);
         drawingContext.fillStyle = '#101d25';
-        drawingContext.fillRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
+        if (shown) drawingContext.fillRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
         drawingContext.strokeStyle = p.color;
         drawingContext.lineWidth = big ? 8 : 5;
-        drawingContext.strokeRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
+        if (shown) drawingContext.strokeRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
         drawingContext.fillStyle = p.color;
         drawingContext.font = 'bold ' + font + 'px monospace';
         drawingContext.textAlign = 'center';
-        drawingContext.fillText(p.symbol, p.door.x, p.door.y + font * 0.34);
+        if (shown) drawingContext.fillText(p.symbol, p.door.x, p.door.y + font * 0.34);
       }
       for (const d of DOCKS) {
         drawingContext.fillStyle = '#8fbad5';
-        drawingContext.fillRect(d.x, d.y, d.w, d.h);
+        if (mapWindowHasRect(d.x, d.y, d.w, d.h, 150)) drawingContext.fillRect(d.x, d.y, d.w, d.h);
         if (big) {
           drawingContext.fillStyle = '#101d25';
           drawingContext.fillRect(d.boatX - 145, d.boatY + 20, 290, 100);

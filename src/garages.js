@@ -682,6 +682,8 @@
       drawingContext.save();
       drawingContext.textAlign = 'center';
       for (const s of GARAGES) {
+        // Off the map's window (game-minimap.js): nothing to draw (the state is saved and restored).
+        if (!mapWindowHas(s.x, s.y, 110 / scale)) continue;
         const r = 10 / scale;
         drawingContext.fillStyle = '#122e38';
         drawingContext.beginPath();
@@ -691,15 +693,15 @@
         drawingContext.lineWidth = 2 / scale;
         drawingContext.stroke();
         drawingContext.fillStyle = s.color;
-        drawingContext.font = 'bold ' + 11 / scale + 'px Arial';
-        drawingContext.fillText('R', s.x, s.y + 4 / scale);
+        drawingContext.font = 'bold 11px Arial';
+        mapLabel(drawingContext, 'R', s.x, s.y + 4 / scale, scale);
         if (scale > 0.09) {
-          drawingContext.font = 'bold ' + 9 / scale + 'px Arial';
+          drawingContext.font = 'bold 9px Arial';
           drawingContext.fillStyle = '#e9f1ee';
-          drawingContext.fillText(s.name, s.x, s.y + 22 / scale);
+          mapLabel(drawingContext, s.name, s.x, s.y + 22 / scale, scale);
           drawingContext.fillStyle = s.color;
-          drawingContext.font = 'bold ' + 7 / scale + 'px Arial';
-          drawingContext.fillText('MECHANICS · RESPRAY', s.x, s.y + 31 / scale);
+          drawingContext.font = 'bold 7px Arial';
+          mapLabel(drawingContext, 'MECHANICS · RESPRAY', s.x, s.y + 31 / scale, scale);
         }
       }
       drawingContext.restore();

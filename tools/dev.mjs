@@ -212,7 +212,8 @@ async function serve(file, port, flags, size, ownBuild) {
   status.phase = 'launching browser';
   const browser = await chromium.launch({
     executablePath: chromeExecutable(),
-    args: [...glArgs(), '--autoplay-policy=no-user-gesture-required'],
+    // DEC_JS_FLAGS: V8 flags for the page, e.g. `--no-turbo-inlining` so a profile names the real function.
+    args: [...glArgs(), '--autoplay-policy=no-user-gesture-required', ...(process.env.DEC_JS_FLAGS ? ['--js-flags=' + process.env.DEC_JS_FLAGS] : [])],
   });
 
   // Idle: freeze the page (no timers, no frames) and hand the slot to someone else.
@@ -329,6 +330,43 @@ async function serve(file, port, flags, size, ownBuild) {
         seen.add(kk);
         totalBy.set(kk, (totalBy.get(kk) || 0) + us);
       }
+    }
+    // `who` = 'bursts': the longest single calls of each section of update() (the first function
+    // below `update` that is not the `timed` wrapper), in CPU ms: gaps where the thread was
+    // descheduled (a sample more than 3 ms after the last) are left out, so a busy machine does
+    // not look like a hitch. Each row: [ms, 0, section, '', the hottest functions in that call].
+    if (who === 'bursts') {
+      const sectionOf = new Map();
+      const section = (id) => {
+        if (sectionOf.has(id)) return sectionOf.get(id);
+        const chain = [];
+        for (let at = id; at; at = parent.get(at)) chain.push(byId.get(at).callFrame.functionName || '(anon)');
+        chain.reverse();
+        const u = chain.lastIndexOf('update');
+        let name = u < 0 ? '(outside update)' : '(update itself)';
+        for (let i = u + 1; u >= 0 && i < chain.length; i++)
+          if (chain[i] !== 'timed' && chain[i] !== '(anon)') {
+            name = chain[i];
+            break;
+          }
+        sectionOf.set(id, name);
+        return name;
+      };
+      const runs = [];
+      let run = null;
+      (profile.samples || []).forEach((id, i) => {
+        const s = section(id),
+          d = profile.timeDeltas[i] || 0;
+        if (!run || run.s !== s) runs.push((run = { s, us: 0, gaps: 0, fn: new Map() }));
+        if (d <= 3000) run.us += d;
+        else run.gaps++;
+        const k = key(byId.get(id));
+        run.fn.set(k, (run.fn.get(k) || 0) + Math.min(d, 3000));
+      });
+      return runs
+        .sort((a, b) => b.us - a.us)
+        .slice(0, top)
+        .map((r) => [+(r.us / 1000).toFixed(1), 0, r.s, '', [...r.fn].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, us]) => `${k.split(/:(?=\d+$)/)[0]} ${(us / 1000).toFixed(1)}`).join(', ') + (r.gaps ? ` (+${r.gaps} gaps)` : '')]);
     }
     // `who`: the callers of that function (self ms of the calls it made), to see who feeds a hot helper.
     if (who) {

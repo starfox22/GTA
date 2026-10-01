@@ -576,6 +576,8 @@
       const S = SPORTSBOOK_SHOP,
         x = (S.door.x0 + S.door.x1) / 2,
         y = S.y1 + 6;
+      // Off the map's window (game-minimap.js): nothing to draw.
+      if (!mapWindowHas(x, y, 130 / scale)) return;
       context.save();
       context.fillStyle = '#06140c';
       context.strokeStyle = '#3dff8e';
@@ -586,8 +588,8 @@
       context.stroke();
       context.fillStyle = '#3dff8e';
       context.textAlign = 'center';
-      context.font = 'bold ' + (big ? 8 : 6) / scale + 'px Arial';
-      context.fillText('$', x, y + (big ? 3 : 2) / scale);
+      context.font = 'bold ' + (big ? 8 : 6) + 'px Arial';
+      mapLabel(context, '$', x, y + (big ? 3 : 2) / scale, scale);
       if (big && scale > 0.09) {
         context.font = 'bold ' + 9 / scale + 'px Arial';
         context.strokeStyle = '#152731';

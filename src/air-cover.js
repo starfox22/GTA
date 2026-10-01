@@ -297,6 +297,8 @@
       worldContext.restore();
     }
     function drawAirCoverMap(drawingContext, scale) {
+      // The underpass off the map's window (game-minimap.js): nothing to draw.
+      if (!mapWindowHasRect(UNDERPASS.x, UNDERPASS.y, UNDERPASS.w, UNDERPASS.h, 40 / scale)) return;
       drawingContext.save();
       drawingContext.strokeStyle = '#7ad9bc';
       drawingContext.lineWidth = 3 / scale;
@@ -306,9 +308,9 @@
       drawingContext.fillStyle = '#102b2b';
       drawingContext.fillRect(2688 - 9 / scale, 2940 - 9 / scale, 18 / scale, 18 / scale);
       drawingContext.fillStyle = '#a0f6cc';
-      drawingContext.font = 'bold ' + 12 / scale + 'px Arial';
+      drawingContext.font = 'bold 12px Arial';
       drawingContext.textAlign = 'center';
-      drawingContext.fillText('U', 2688, 2940 + 4 / scale);
+      mapLabel(drawingContext, 'U', 2688, 2940 + 4 / scale, scale);
       drawingContext.restore();
     }
     /**

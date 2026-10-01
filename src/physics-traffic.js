@@ -9,18 +9,15 @@
       };
     }
     function trafficRoadValid(x, y, a, reach = 260) {
-      const u = {
-          x: Math.cos(a),
-          y: Math.sin(a),
-        },
-        r = {
-          x: -u.y,
-          y: u.x,
-        };
+      // The heading and the right-hand normal as plain numbers (every car asks this each physics step).
+      const ux = Math.cos(a),
+        uy = Math.sin(a),
+        rx = -uy,
+        ry = ux;
       for (let d = 80; d <= reach + 79; d += 80) {
         const step = Math.min(d, reach),
-          px = x + u.x * step + r.x * 25,
-          py = y + u.y * step + r.y * 25;
+          px = x + ux * step + rx * 25,
+          py = y + uy * step + ry * 25;
         if (!cityStreetAt(px, py) || !groundAt(px, py, 20) || solid(px, py, 16) || inHarbor(px, py, 50))
           return false;
       }
