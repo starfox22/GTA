@@ -3,6 +3,16 @@
         ...damageApi,
         // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
         offroadInfo: () => offroadEffectsInfo(),
+        // Markers as drawn (markers.js `markersReport`): the player ring, the arrow, and any
+        // flat ring-like mesh left standing in the scene's root within 60 units of the objective.
+        markerProbe() {
+          const target = objective(),
+            near = [];
+          for (const o of scene.children)
+            if (o.visible && o.isMesh && /^(Ring|Circle)Geometry$/.test(o.geometry.type) && target && Math.hypot(o.position.x - target.x, o.position.z - target.y) < 60)
+              near.push(o.geometry.type);
+          return { playerRing: playerRing.visible, arrow: arrowGroup.visible, flatMarkersAtTarget: near.length };
+        },
         // Tyre smoke, dust and spray (tyresmoke3d.js): puffs alive, the tier's cap, emitted, peak.
         tyreSmokeInfo: () => tyreSmokeReport(),
         // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.

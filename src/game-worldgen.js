@@ -254,7 +254,8 @@
             label(place.name, place.door.x, place.door.y + 1, 12, place.color);
             for (const side of [-1, 1])
               drawTree(
-                place.door.x + side * (place.kind === 'rooftop' ? 125 : 80),
+                // (A motel's trees flank its building: its room doors stand where they were.)
+                place.door.x + side * (place.kind === 'rooftop' ? 125 : place.kind === 'sleep' ? place.w / 2 + 10 : 80),
                 place.door.y + (place.kind === 'rooftop' ? -11 : 14),
                 place.kind === 'rooftop' ? 10 : 15,
               );

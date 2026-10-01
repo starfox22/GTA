@@ -332,26 +332,9 @@
         box(group, boardX, boardY + 11, boardZ, 12, 0.3, 6, staticMat('#506d64'));
         // Beside the trail a little way up from the road (the trail starts on the
         // road's curve now), at the ground's height there.
-        let [bx, by] = trail.points[0],
-          left = 80,
-          heading = 0;
-        for (let i = 1; i < trail.points.length && left > 0; i++) {
-          const [ax, ay] = trail.points[i - 1],
-            [cx, cy] = trail.points[i],
-            length = Math.hypot(cx - ax, cy - ay),
-            f = Math.min(1, left / length);
-          heading = Math.atan2(cy - ay, cx - ax);
-          bx = ax + (cx - ax) * f;
-          by = ay + (cy - ay) * f;
-          left -= length;
-        }
-        const trailX = bx + Math.sin(heading) * 62,
-          trailZ = by - Math.cos(heading) * 62,
-          // A trailhead board at real size (it was 19 m across).
-          trailBoard = sign(trail.peak.name + ' · 4×4 TRAIL', trailX, trailZ, 88, '#d4cb92'),
-          lift = terrainHeight(trailX, trailZ);
-        trailBoard.position.y += lift;
-        if (trailBoard.userData.backing) trailBoard.userData.backing.position.y += lift;
+        // A trailhead board at real size on two posts (it was 19 m across, 11 m after); none where the trail starts on asphalt.
+        const head = trailheadSignSpot(trail);
+        roadsideSign(trail.peak.name + ' · 4×4 TRAIL', head.x, head.y, TRAILHEAD_SIGN_WIDTH, '#d4cb92');
         statics.push({
           x: p.x,
           y: p.y,
@@ -399,7 +382,8 @@
       }
       // The bridges are drawn by bridges3d.js, each in its own style.
       for (const t of COUNTY_TOWNS) {
-        sign(t.name, t.x + 200, t.y - 72, 150, t.style === 'resort' ? '#e3b9b5' : '#d6d6be', false, { style: t.style === 'resort' ? 'resort' : 'town' });
+        // The town's name board stands on two posts on the verge (it floated, 19 m across, before).
+        roadsideSign(t.name, t.x + 200, t.y - 72, TOWN_SIGN_WIDTH, t.style === 'resort' ? '#e3b9b5' : '#d6d6be', { style: t.style === 'resort' ? 'resort' : 'town' });
         // The mountain villages light their streets with iron lanterns (mountain-village3d.js).
         for (let j = 0; j < 5 && !isMountainTown(t); j++) {
           const group = new Three.Group();
@@ -421,9 +405,8 @@
           });
         }
       }
-      sign('EAGLE PASS · SCENIC ROUTE', 6650, 2460, 195, '#d5d6b9');
-      sign('OCEANVIEW / AIRPORT', 3370, 6920, 190, '#c3ded5');
-      sign('CORAL COAST', 7080, 7360, 165, '#f2ccae');
+      // Road guide signs stand on the verge (county-guide-signs.js), never across the carriageway.
+      for (const g of COUNTY_GUIDE_SIGNS) roadsideSign(g.text, g.x, g.y, g.width, g.color);
       // The county airport is merged by the static batcher; the radar (which
       // turns) is flagged dynamic.
       const airportGroup = new Three.Group();

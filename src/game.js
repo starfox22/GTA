@@ -141,6 +141,7 @@
     // @include src/bullets-audio.js
     // @include src/quality.js
     // @include src/settings.js
+    // @include src/markers.js
     // @include src/god-panel.js
     // @include src/driving.js
     // @include src/tyre-effects.js

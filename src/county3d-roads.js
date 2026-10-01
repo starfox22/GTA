@@ -433,15 +433,8 @@
             const body = box(group, tx + Math.cos(v.a) * 0.8, z + 8.8, ty + Math.sin(v.a) * 0.8, 1.6, 1.6, 4.2, scenicScope);
             body.rotation.y = -v.a + Math.PI / 2;
           }
-          // The sign on two posts before the lay-by (sign() paints the words).
-          {
-            const s = v.sign,
-              board = sign('SCENIC VIEW', s.x, s.y, 44, '#f1ead2');
-            board.position.y += s.ground;
-            if (board.userData.backing) board.userData.backing.position.y += s.ground;
-            const top = board.position.y;
-            for (const d of [-15, 15]) box(group, s.x + d, (top + s.ground) / 2, s.y - 1.8, 1.2, top - s.ground, 1.2, scenicPostMaterial);
-          }
+          // The sign on two posts before the lay-by, on clear verge (roadsideSign places it).
+          roadsideSign('SCENIC VIEW', v.sign.x, v.sign.y, SCENIC_SIGN_WIDTH, '#f1ead2');
         }
       }
       function scenicRoadVisualReport() {

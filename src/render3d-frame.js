@@ -295,7 +295,9 @@
           updateSniperSights();
           // The parachute hangs from the harness point the person pass just posed.
           updateParachute3D(deltaSeconds);
+          // Settings · Graphics · Ring under your character: off unless switched on.
           playerRing.visible =
+            playerRingOn() &&
             !transitRide && !taxiRide && !player.car && !player.parachute && !player.swimming;
           playerRing.position.set(player.x, 0.3 + entityElevation(player), player.y);
           // Settings · Graphics · Player outline at night turns it off.
@@ -307,16 +309,16 @@
           disposeRetiredModels();
           const target = objective(),
             targetAltitude = target ? entityElevation(target) : 0;
-          objectiveRing.visible = arrowGroup.visible = !!target;
+          // Only the floating arrow marks the objective (no ring on the ground); it stays
+          // away while the Blue Hour job is just watching the spiked glass take effect.
+          arrowGroup.visible = objectiveArrowShown(target);
           if (target) {
-            objectiveRing.position.set(target.x, 0.4 + targetAltitude, target.y);
             arrowGroup.position.set(
               target.x,
               targetAltitude + 39 + Math.sin(gameTime * 3) * 3,
               target.y,
             );
             arrowGroup.rotation.y = gameTime * 0.6;
-            targetLight.position.set(target.x, targetAltitude + 10, target.y);
           }
           if (gameTime > muzzleUntil) muzzleLight.intensity = 0;
           for (const ring of blastRings) {

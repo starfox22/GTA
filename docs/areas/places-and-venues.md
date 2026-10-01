@@ -81,3 +81,20 @@ MONARCH MOTORS, Ridgeline, Fort Sentinel and the stadium: places-monarch-and-cou
   (`roadY`); `slab`/`forecourt` for shops off the city canvas, `style` in
   garage3d-styles.js; planting keeps off via `garageKeepOut`. Console `garage()`.
 - Casino roulette: casino.js. Bike share: ui-and-settings.md.
+
+## Motels, inns and lodges (civic3d.js, civic3d-hotels.js)
+
+- Every service place is a real building with its door on the pavement: there are no
+  floor rings at doors (map and minimap blips stay) and no free-standing signs. YOUR
+  SAFEHOUSE (the old bare point in the east boulevard) is gone: home is a room at the
+  SUNSET MOTEL, `safehouse` (game-state.js) = that door (mission 4's GO HOME goal).
+- `dressHotel(p, group, x, face)` dresses every non-Monarch, non-mountain `'sleep'` place
+  (SUNSET MOTEL, CORAL PALMS MOTEL, the county lodges and inns): steps and a ramp, a glazed
+  lobby (lit at night through `shopGlassMaterial`), a porte-cochere on slender columns
+  (`registerOverheadCover`), a paved forecourt, planters and palms, a covered walkway of
+  numbered room doors (atlas plates), lit windows, AC units, a vending alcove and the VACANCY
+  pylon. It reads the free depth in front (`room`: first carriageway) so a lodge close to its
+  street gets a shallower dressing. The camera sees the front foreshortened: what reads is the
+  canopy, walkway roofs, court and palms; keep the car park's trees clear of the room doors
+  (game-worldgen.js plants a motel's two trees beyond its ends). Footprint and door are fixed.
+- Monarch's REGENT HOTEL, the Blue Hour and the mountain lodges dress themselves.

@@ -45,7 +45,6 @@
           // Rooms
           'SUNSET MOTEL': ['neonScript', { board: '#1f8a8c', shape: 'boomerang', rim: '#f4efe2', script: 'Sunset', block: 'MOTEL', tube: '#ff8a3d', blockTube: '#ff3b5c', painted: 'sunset', paintedColor: '#ffb347', flicker: true }],
           'CORAL PALMS MOTEL': ['neonScript', { board: '#f29c8f', shape: 'round', rim: '#fff4e6', script: 'Coral Palms', block: 'MOTEL', tube: '#19d3c5', blockTube: '#1a5fd0', icon: 'palm', iconColor: '#2fe07a', iconFill: '#1f7a52', flicker: true, balance: false }],
-          'SAFEHOUSE · ROOMS': ['hand', { ground: '#d9d0b8', ink: '#6e1f1f', lines: ['ROOMS'] }],
           'CAUSEWAY INN': ['enamel', { ground: '#0f3550', ink: '#f4e7c5', rim: '#f4e7c5', icon: 'helm', icon2: true, iconColor: '#f4e7c5', font: 'times', shape: 'round', sub: 'ROOMS · BAR · BAIT' }],
           // Clothes
           'SOUTH COAST OUTFITTERS': ['enamel', { ground: '#cdbb8a', kind: 'matte', ink: '#1f4a2c', rim: '#1f4a2c', font: 'slab', weight: '900', icon: 'mountain', iconColor: '#1f4a2c', iconColor2: '#f2ecd8', sub: 'SUPPLY CO. · SINCE 1952' }],

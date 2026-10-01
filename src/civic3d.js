@@ -5,9 +5,9 @@
        * Scope: createCityRenderer() closure.
        * Businesses, rooftop party, service signs and animated city lighting.
        */
+      // @include src/civic3d-hotels.js
       // The island ends at masonry seawalls, with open water beyond every coast.
-      const coast = staticMat('#727d7b', 0.88),
-        serviceRings = [];
+      const coast = staticMat('#727d7b', 0.88);
       for (const d of DOCKS) {
         const group = new Three.Group();
         scene.add(group);
@@ -29,32 +29,12 @@
       for (const p of PLACES) {
         // Monarch Isle dresses its own businesses (monarch3d.js).
         if (p.monarch) continue;
-        const color = new Three.Color(p.color),
-          group = new Three.Group();
+        // A mountain village dresses its own shopfront (mountain-village3d.js); every
+        // other service place has a real building, so its door is drawn, never a ring.
+        if (p.mountain || p.x === undefined) continue;
+        const group = new Three.Group();
         scene.add(group);
-        const x = p.door.x,
-          z = p.door.y;
-        const ring = new Three.Mesh(
-          new Three.RingGeometry(p.kind === 'rooftop' ? 7 : 15, p.kind === 'rooftop' ? 9 : 17, 40),
-          new Three.MeshBasicMaterial({
-            color,
-            transparent: true,
-            opacity: 0.6,
-            side: Three.DoubleSide,
-            depthWrite: false,
-          }),
-        );
-        ring.rotation.x = -Math.PI / 2;
-        ring.position.set(x, 0.28, z);
-        group.add(ring);
-        serviceRings.push(ring);
-        // A mountain village dresses its own shopfront (mountain-village3d.js).
-        if (p.mountain) continue;
-        if (p.x === undefined) {
-          sign('SAFEHOUSE · ROOMS', x, z - 27, 95, p.color);
-          box(group, x, 12, z - 29, 4, 24, 4, darkMetal);
-          continue;
-        }
+        const x = p.door.x;
         const face = p.y + p.h;
         if (p.kind !== 'rooftop') {
           // The fascia board sits above the entrance canopy (top at 27) so the
@@ -63,32 +43,36 @@
             board = sign(p.name, p.x + p.w / 2, face + 2, width, p.color);
           board.position.y = board.userData.backing.position.y = Math.max(board.position.y, 29 + width / 8);
         }
-        // Recessed glass doors, lit entrances, steps and weather canopies.
-        // Doors a little over DOOR_HEIGHT with a glazed head, the canopy 3.2 m up.
-        box(group, x, 11, face + 1, 17, 22, 1.2, glass);
-        box(group, x, 11, face + 1.8, 0.7, 22, 0.3, chrome);
-        box(group, x, 26, face + 7, 38, 2, 16, mat(p.kind === 'club' ? '#332745' : '#4f6464'));
-        registerOverheadCover(x, face + 7, 19, 8, 0, 25, 27, 'entrance canopy');
-        box(group, x, 0.8, face + 10, 34, 1.6, 17, concrete);
-        // The lit entrance: a glow under the canopy, its colour on the steps and,
-        // in the rain, down the wet road.
-        addGlow(x, 22, face + 11, 30, p.color, 0.5, {});
-        signSpill(x, face + 20, 70, p.color, 0.45, { width: 40, length: 90, strength: 0.9 });
-        for (const side of [-1, 1]) {
-          box(group, x + side * 17, 13, face + 13, 1.1, 26, 1.1, chrome);
-          box(group, x + side * (p.w * 0.38), 1.5, face + 14, 23, 3, 10, concrete);
-          for (let j = 0; j < 3; j++)
-            mesh(
-              sphereGeo,
-              stillLeafMat,
-              group,
-              x + side * (p.w * 0.38) + j * 5 - 5,
-              6,
-              face + 14,
-              5,
-              4,
-              4,
-            );
+        // A motel, inn or lodge has its own entrance, walkway and rooms (civic3d-hotels.js).
+        if (p.kind === 'sleep') dressHotel(p, group, x, face);
+        else {
+          // Recessed glass doors, lit entrances, steps and weather canopies.
+          // Doors a little over DOOR_HEIGHT with a glazed head, the canopy 3.2 m up.
+          box(group, x, 11, face + 1, 17, 22, 1.2, glass);
+          box(group, x, 11, face + 1.8, 0.7, 22, 0.3, chrome);
+          box(group, x, 26, face + 7, 38, 2, 16, mat(p.kind === 'club' ? '#332745' : '#4f6464'));
+          registerOverheadCover(x, face + 7, 19, 8, 0, 25, 27, 'entrance canopy');
+          box(group, x, 0.8, face + 10, 34, 1.6, 17, concrete);
+          // The lit entrance: a glow under the canopy, its colour on the steps and,
+          // in the rain, down the wet road.
+          addGlow(x, 22, face + 11, 30, p.color, 0.5, {});
+          signSpill(x, face + 20, 70, p.color, 0.45, { width: 40, length: 90, strength: 0.9 });
+          for (const side of [-1, 1]) {
+            box(group, x + side * 17, 13, face + 13, 1.1, 26, 1.1, chrome);
+            box(group, x + side * (p.w * 0.38), 1.5, face + 14, 23, 3, 10, concrete);
+            for (let j = 0; j < 3; j++)
+              mesh(
+                sphereGeo,
+                stillLeafMat,
+                group,
+                x + side * (p.w * 0.38) + j * 5 - 5,
+                6,
+                face + 14,
+                5,
+                4,
+                4,
+              );
+          }
         }
         if (p.kind === 'casino') {
           const gold = staticMat('#bd9654', 0.3, 0.65),
@@ -212,13 +196,6 @@
           bulbRow(x - 19, 17, face + 15.2, x + 19, 17, face + 15.2, 3.2, p.color);
           signSpill(x, face + 26, 90, p.color, 0.5, { width: 70, length: 110, strength: 1.3, mode: 'cycle' });
         }
-        if (p.kind === 'sleep') {
-          // A VACANCY neon on a post by the door; it stutters.
-          box(group, x + 58, 13, face + 16, 1.2, 26, 1.2, darkMetal);
-          atlasSign(group, windowNeonCell('VACANCY'), x + 58, 29, face + 16.8, 22, 11, neonBoardFlicker[0]);
-          box(group, x + 58, 29, face + 16, 23, 12, 1, darkMetal);
-          signSpill(x + 58, face + 28, 40, '#ff4f6d', 0.35, { width: 16, length: 60, strength: 0.9, mode: 'flicker' });
-        }
         if (p.kind === 'guns') {
           for (const side of [-1, 1]) {
             box(group, x + side * 60, 11, face + 1, 43, 15, 1, glass);
@@ -227,11 +204,6 @@
           }
           sign('WEAPONS · AMMO · ARMOR', x, face + 36, 137, '#e9cb91');
         }
-        if (p.kind === 'sleep')
-          for (let dx = 30; dx < p.w; dx += 45) {
-            box(group, p.x + dx, 9, face + 1, 14, 18, 1, staticMat('#4c7477'));
-            box(group, p.x + dx, 11, face + 1.6, 8, 4, 0.4, glass);
-          }
         statics.push({
           x: p.x + p.w / 2,
           y: p.y + p.h / 2,
