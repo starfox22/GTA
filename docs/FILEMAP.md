@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-482 files in the include tree, 166,000 lines.
+482 files in the include tree, 166,037 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -56,7 +56,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   153 — Wounds, hit reactions and death falls
-- `src/story.js`   901 — Story characters and mission stages
+- `src/story.js`   908 — Story characters and mission stages
 - `src/campaign.js`   458 — Campaign saves and replay
 - `src/chase.js`   546 — Cargo pursuit
 - `src/roadblocks.js`   434 — Police containment and roadblocks
@@ -117,7 +117,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/navigation.js`   689 — City map and route planning
 - `src/parachute.js`   728 — Bailout and parachute
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
-- `src/mobile.js`   272 — Touch controls
+- `src/mobile.js`   282 — Touch controls
 - `src/input-hints.js`   151 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   332 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   241 — World camera gestures
@@ -230,10 +230,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/roofmission.js ▸ Blue Hour rooftop mission
 
 - `src/roofmission-layout.js`   398 — Blue Hour layout: ROOF_HIT points, roof cover, entityElevation, sight rays and terrace routes (roofRoute, roofStep).
-- `src/roofmission-stealth.js`   237 — Blue Hour stealth: the bodyguards' beats and scanning heads, the vision-cone suspicion meter, walking and running on the terrace.
+- `src/roofmission-stealth.js`   240 — Blue Hour stealth: the bodyguards' beats and scanning heads, the vision-cone suspicion meter, walking and running on the terrace.
 - `src/roofmission-poison.js`   653 — Blue Hour poison: the reserved glass (P), Vescari's toast, cough and faint, the party's reaction, the call and the ambulance.
 - `src/roofmission-scene.js`   376 — Blue Hour scene: guests and guards (startRooftopHit), the alarm, stage flow and the party's frame update.
-- `src/roofmission-ui.js`   152 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
+- `src/roofmission-ui.js`   155 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
 - `src/roofmission-entrance.js`   116 — Blue Hour street entrance: the forecourt plan (canopy, carpet, planters, bollards, valet stand), the pavement kept clear of street furniture, the …
 
 ## src/damage.js ▸ Vehicle damage, bullet impacts and breakable street furniture
@@ -334,7 +334,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/crowd-looks.js`   167 — Crowd appearance: palettes, role weights, dressPerson() and ensureLook().
 - `src/crowd-speech.js`   216 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
-- `src/crowd-chatter.js`   294 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
+- `src/crowd-chatter.js`   297 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
 - `src/crowd-space.js`   268 — Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
 - `src/crowd-streaming.js`   227 — Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
 - `src/crowd-walking.js`   412 — Walking the grid: crossings, sidewalks, going indoors, rain, updateStreetWalker() and encounters.
@@ -351,7 +351,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/livingcity-traffic.js`   351 — Traffic streaming: the city's traffic pool kept round the player (streamTraffic), how busy by hour and district (trafficTarget), which cars by …
 - `src/livingcity-sirens.js`   228 — Sirens: which vehicles run with lights (emergencyBeacons, sirenUnit), and traffic making way for them: pulling over to the kerb and stopping …
-- `src/livingcity-medics.js`   523 — Ambulances in free roam: a body left in a city street brings an ambulance under lights and siren (dispatchMedics); two paramedics work on the victim …
+- `src/livingcity-medics.js`   524 — Ambulances in free roam: a body left in a city street brings an ambulance under lights and siren (dispatchMedics); two paramedics work on the victim …
 - `src/livingcity-events.js`   195 — Street events in free roam: a bag snatch the player can stop by catching the thief on foot (updateStreetEvents, stageSnatch), his marker on the radar …
 - `src/livingcity-key.js`   306 — North Point Key visitors: cabs, limousines and fine cars that come over the Key bridge, round the drop-off circle (a pause by the valet), and back …
 - `src/livingcity-console.js`   148 — DeadEndCity console methods for the living city (registered by game-console-crowd.js as 'livingCity'): traffic reports and switches, the siren pass …
@@ -716,13 +716,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
 - `src/game-console-core.js`   142 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
-- `src/game-console-missions.js`   299 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-missions.js`   307 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   276 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   227 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
-- `src/game-console-crowd.js`   160 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   197 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   115 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-integrity.js`   167 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action

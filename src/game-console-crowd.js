@@ -29,6 +29,8 @@
       },
       // Speech bubbles and height: the view's height over someone on the ground at the view's centre, and their bubble's fade.
       speechView: () => speechViewReport(),
+      // The three ways a 911 caller names the player's vehicle (crowd-chatter.js carSightingLines).
+      witnessCarLines: (type, color, dir = 'north') => carSightingLines({ type, color }, dir),
       // The crowd around the player: counts by reaction, pose, role and state,
       // street scenes, recent incidents and witness reports (src/crowd.js).
       pedestrianReport: () => pedestrianReport(),

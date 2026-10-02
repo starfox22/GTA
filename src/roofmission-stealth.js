@@ -220,6 +220,9 @@
         rate: Math.round((m.suspicionRate || 0) * 10) / 10,
         alarm: !!m.alarm,
         partyPanic: !!m.partyPanic,
+        // The stealth box as shown (the walk / run reminder names this device's button).
+        label: getElement('stealthLabel').textContent,
+        hint: getElement('stealthHint').textContent,
         boss: { ...local(m.boss), hp: Math.round(m.boss.hp) },
         guards: enemies
           .filter((e) => e.guard && e.missionTag === 'rooftop-hit')

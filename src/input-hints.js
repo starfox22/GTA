@@ -73,7 +73,7 @@
         case 'right':
           return foot ? 'STICK →' : 'STEER →';
         case 'walk':
-          return 'WALK';
+          return touchButtonLabel('touchRun');
         case 'interact':
           return touchButtonLabel('touchAction');
         case 'fire':
@@ -135,7 +135,7 @@
     }
     /* What the tests and the console see: the device and a sample of names. */
     function inputHintsReport() {
-      const sample = ['interact', 'forward', 'back', 'fire', 'bail', 'map', 'radioPower', 'radioNext', 'reload'];
+      const sample = ['interact', 'forward', 'back', 'fire', 'bail', 'map', 'radioPower', 'radioNext', 'reload', 'walk'];
       return {
         device: hintDevice(),
         forced: hintInput.forced,

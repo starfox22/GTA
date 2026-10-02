@@ -245,6 +245,13 @@
       getElement('moveLabel').textContent = foot ? 'MOVE' : 'STEER';
       for (const id of ['touchGo', 'touchBrake', 'touchUp', 'touchDown', 'touchAction'])
         getElement(id).textContent = touchButtonLabel(id);
+      // WALK, or RUN on the party terrace (written only when it changes).
+      const runButton = getElement('touchRun'),
+        runLabel = touchButtonLabel('touchRun');
+      if (runButton.textContent !== runLabel) {
+        runButton.textContent = runLabel;
+        runButton.setAttribute('aria-label', runLabel === 'RUN' ? 'Hold to run' : 'Hold to walk');
+      }
     }
     /* What a context button says now. updateTouchUI writes it and keyName's
        touch path (input-hints.js) names the action by it, so a hint always
@@ -264,6 +271,9 @@
           return c?.type === 'plane' ? 'NOSE DOWN' : 'DESCEND';
         case 'touchAction':
           return transitRide ? 'NEXT STOP' : c ? 'EXIT' : 'ACTION';
+        case 'touchRun':
+          // The Blue Hour terrace during the job walks by default: the walk action runs there.
+          return roofPartyPace() ? 'RUN' : 'WALK';
         case 'touchJump':
           return player.parachute?.stage === 'freefall' ? 'OPEN CHUTE' : 'PARACHUTE';
       }

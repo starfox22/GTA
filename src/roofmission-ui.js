@@ -56,7 +56,10 @@
           ? ''
           : running
             ? 'RUNNING · LET GO OF ' + keyName('walk') + ' TO WALK'
-            : 'WALK TO BLEND IN · ' + keyName('walk') + ' TO RUN';
+            : // On touch the button is the RUN button here (touchButtonLabel), not "WALK TO RUN".
+              hintDevice() === 'touch'
+              ? 'WALK TO BLEND IN · HOLD RUN TO RUN'
+              : 'WALK TO BLEND IN · ' + keyName('walk') + ' TO RUN';
         box.classList.toggle('seen', seen);
         box.classList.toggle('hot', hot);
         if (!m.alarm && m.boss.hp > 0) {
