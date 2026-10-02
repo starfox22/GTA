@@ -243,9 +243,15 @@
       show('touchRadio', !!c && !ridingBicycle());
       show('touchStation', !!c && !ridingBicycle());
       getElement('moveLabel').textContent = foot ? 'MOVE' : 'STEER';
-      for (const id of ['touchGo', 'touchBrake', 'touchUp', 'touchDown', 'touchAction', 'touchRun'])
+      for (const id of ['touchGo', 'touchBrake', 'touchUp', 'touchDown', 'touchAction'])
         getElement(id).textContent = touchButtonLabel(id);
-      getElement('touchRun').setAttribute('aria-label', roofPartyPace() ? 'Hold to run' : 'Hold to walk');
+      // WALK, or RUN on the party terrace (written only when it changes).
+      const runButton = getElement('touchRun'),
+        runLabel = touchButtonLabel('touchRun');
+      if (runButton.textContent !== runLabel) {
+        runButton.textContent = runLabel;
+        runButton.setAttribute('aria-label', runLabel === 'RUN' ? 'Hold to run' : 'Hold to walk');
+      }
     }
     /* What a context button says now. updateTouchUI writes it and keyName's
        touch path (input-hints.js) names the action by it, so a hint always

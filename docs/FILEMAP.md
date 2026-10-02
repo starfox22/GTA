@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-481 files in the include tree, 165,856 lines.
+481 files in the include tree, 165,869 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -56,7 +56,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   153 — Wounds, hit reactions and death falls
-- `src/story.js`   906 — Story characters and mission stages
+- `src/story.js`   908 — Story characters and mission stages
 - `src/campaign.js`   458 — Campaign saves and replay
 - `src/chase.js`   546 — Cargo pursuit
 - `src/roadblocks.js`   434 — Police containment and roadblocks
@@ -117,7 +117,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/navigation.js`   689 — City map and route planning
 - `src/parachute.js`   728 — Bailout and parachute
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
-- `src/mobile.js`   276 — Touch controls
+- `src/mobile.js`   282 — Touch controls
 - `src/input-hints.js`   151 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   332 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   241 — World camera gestures
@@ -334,7 +334,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/crowd-looks.js`   167 — Crowd appearance: palettes, role weights, dressPerson() and ensureLook().
 - `src/crowd-speech.js`   216 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
-- `src/crowd-chatter.js`   294 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
+- `src/crowd-chatter.js`   297 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
 - `src/crowd-space.js`   268 — Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
 - `src/crowd-streaming.js`   227 — Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
 - `src/crowd-walking.js`   412 — Walking the grid: crossings, sidewalks, going indoors, rain, updateStreetWalker() and encounters.
@@ -722,7 +722,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-world.js`   227 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
-- `src/game-console-crowd.js`   160 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   197 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   115 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-settings.js`   120 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)

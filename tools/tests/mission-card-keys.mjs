@@ -22,4 +22,17 @@ export default async function (t) {
   card = await t.call('missionCard');
   t.assert(/^Vinny gave you a mission: spike Vescari’s glass unseen · P\.$/.test(card.text), 'M2 stage 2 card: ' + card.text);
   t.assert(/^OBJECTIVE · /.test(card.distance), 'distance pill: ' + card.distance);
+
+  // A gamepad's interact button is "A": kept behind the "·", but the article in "AS A GUEST" is not a key.
+  await t.call('inputHints', 'gamepad');
+  await t.call('retryMission');
+  card = await t.call('missionCard');
+  t.assert(/^Vinny gave you a mission: collect guest clothes at Sunset Motel · A\.$/.test(card.text), 'gamepad stage 0 card: ' + card.text);
+  await t.call('teleport', 882, 1990);
+  await t.call('interact');
+  m = await t.call('missionState');
+  t.assert(m.stage === 1, 'outfit not collected: ' + JSON.stringify(m));
+  card = await t.call('missionCard');
+  t.assert(/^Vinny gave you a mission: enter the Blue Hour as a guest\.$/.test(card.text), 'gamepad stage 1 card: ' + card.text);
+  await t.call('inputHints', 'auto');
 }

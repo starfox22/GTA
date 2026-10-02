@@ -370,12 +370,14 @@
           missions[m.index].brief
         );
       const name = CHARACTERS[missions[m.index].contact].name.split(' ')[0],
-        // A key's own name in the stage text ("· E TO LOAD", "· P") stays as the key
-        // reads: lower-cased it looked like a typo ("e to load").
+        // A key's own name in the stage text ("· E TO LOAD", "· P", "HOLD E TO ...") stays as
+        // the key reads: lower-cased it looked like a typo ("e to load"). Only straight after
+        // the "·" or "HOLD" that the stage texts put it behind, so a gamepad's "A" is not
+        // kept in "AS A GUEST".
         keyNames = new Set(['interact', 'poison', 'fire', 'walk'].map((id) => keyName(id))),
-        task = (m.instruction || missions[m.index].brief)
-          .split(' ')
-          .map((word) => (keyNames.has(word) ? word : word.toLowerCase()))
+        words = (m.instruction || missions[m.index].brief).split(' '),
+        task = words
+          .map((word, i) => (keyNames.has(word) && /^(·|HOLD)$/.test(words[i - 1] || '') ? word : word.toLowerCase()))
           .join(' ')
           // Every name the stage instructions use, capitalised wherever it appears
           // ("fly to northridge", "daniel's guards" read as typos on the card).
