@@ -168,6 +168,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   walk action reads `keyName('walk')` or the touch label, never a literal "WALK".
 - `node tools/bot.mjs --seed N --minutes M` is the random-walk bot (console `integrity()`): run it after changes to
   input, modes, carriers or saving (docs/areas/testing-and-console.md).
+- A tier or shadow change goes through `litStateFor` / `applyLitState` (lighting3d-look.js LIT STATE) and is staged
+  where the prewarm runs, so anything else a tier flips that is part of a lit program's key joins that record. Post
+  targets are sized lazily: use `postSceneTarget()` outside `renderFrame`. Start-up stages are marked with
+  `bootMark(name)` (`DeadEndCity.bootTimings()`); a canvas texture painted once and uploaded once goes on
+  `bakedCanvases`, never one that is cloned or repainted.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
