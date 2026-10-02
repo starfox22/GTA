@@ -89,6 +89,31 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
   jobs), `?shadercheck` to have three.js report shader compile errors.
 - Take screenshots only to prove a visual point; prefer console reports (numbers) otherwise.
 
+## Long-session soak (tools/soak.mjs)
+
+```
+node tools/dev.mjs reload                        # a fresh no-render page (the soak runs on the running dev server)
+node tools/soak.mjs --minutes 30 --every 30 --seed 1 --tag base     # dist/soak/base.json + the growth table
+node tools/soak.mjs --table dist/soak/base.json                     # print a saved run's table again
+node tools/dev.mjs heap                          # JS heap after a full collection, DOM nodes, event listeners, live Web Audio nodes
+node tools/dev.mjs call simProfile 8 --retain 30 # what a call left ALIVE after a collection, by allocation site (a leak's source)
+```
+
+A seeded bot plays the page through the console with the frame loop held (`holdSimulation`, stepped by
+`simulate()`): walks, drives every kind of vehicle, shoots, runs people over, blows things up and sets cars
+alight, gets chased, busted and killed (the real-time WASTED and BUSTED waits included), shops, rides trains and
+cabs, flies and parachutes, changes weather and time, opens the menus and the map, saves (the pause menu), and
+starts the first two jobs. Every `--every` game seconds it records `soakReport()` (the size of every list, log and
+cache the game appends to, DOM nodes per container, NaN/Infinity in positions), the heap, DOM nodes, listeners
+and Web Audio nodes (`dev.mjs heap`) and the console errors; every `--probe` seconds it profiles one fixed scene
+(`simProfile`, CPU ms per frame) to show a session slowing down. The table lists what grew (rising slope, at
+least 60% of the steps not falling), then the rest. `seedRandom` seeds the game's own randomness, so the same
+`--seed` replays the same world and the state hashes of two builds can be compared. A console method that
+throws, a console error or a non-finite position is a finding: fix it with a test. The page has no renderer
+here, so renderer-side leaks (meshes, textures) are not covered. `tools/dup-functions.mjs` (run by
+quick-check.sh) fails when two fragments declare the same function name: one closure, so the later one
+silently replaces the earlier (`routeLength` did).
+
 ## Tours (tools/tour.mjs)
 
 Starts a game, declines the opening call, runs steps in order. Each step may run page JS

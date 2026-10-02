@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-481 files in the include tree, 165,833 lines.
+482 files in the include tree, 166,376 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -19,7 +19,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/game.js ▸ Game orchestration and shared state
 
-- `src/game-state.js`   380 — Shared data contracts: Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
+- `src/game-state.js`   396 — Shared data contracts: Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
 - `src/game-vehicles.js`   751 — VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road and air resistance.
 - `src/game-weapons.js`    78 — Weapon table (weapons) and mission list (missions).
 - `src/audio.js`   639 — Effects and voice audio
@@ -29,7 +29,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/hud-notify.js`   157 — Notification feed behind tell(): lines stack in #toast, newest first, at most NOTICE_MAX (two on a phone); a repeat refreshes its own line; readable …
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
-- `src/game-collision.js`   249 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
+- `src/game-collision.js`   360 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
 - `src/game-car-spawn.js`   200 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   230 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
@@ -66,7 +66,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/wheelie.js`   167 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
 - `src/themepark.js`    63 — ▸ Sunset Pier resort and theme park
 - `src/marina.js`    11 — ▸ Harbor Point marina, the superyacht and the cruise liners
-- `src/taxi.js`   286 — Yellow cabs
+- `src/taxi.js`   287 — Yellow cabs
 - `src/cycles.js`   803 — City bicycles
 - `src/weather.js`   216 — Weather
 - `src/weather-audio.js`   271 — Rain and thunder sound
@@ -79,7 +79,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/beach.js`    12 — ▸ Palm Keys Beach life
 - `src/roofmission.js`    15 — ▸ Blue Hour rooftop mission
 - `src/rooftops.js`   158 — Building roofs: helipads, helicopter landings, walking on a roof
-- `src/air-cover.js`   406 — Overhead cover geometry
+- `src/air-cover.js`   408 — Overhead cover geometry
 - `src/combat-rules.js`   576 — Aerial combat and pursuit rules
 - `src/driveby.js`   550 — Drive-bys: the arcs a gun can point out of each vehicle (per window, from the driver's seat), the lean-out before the first shot, the panes it breaks …
 - `src/damage.js`    34 — ▸ Vehicle damage, bullet impacts and breakable street furniture
@@ -101,7 +101,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mountain-village.js`   648 — The mountain villages of Ridgeline County
 - `src/casino.js`   266 — Casino roulette
 - `src/skyline.js`    14 — ▸ North Point towers, North Point Key, the tower lifts and the CIRRUS sky bar
-- `src/renewal.js`   597 — Parks and recreation
+- `src/renewal.js`   601 — Parks and recreation
 - `src/sports-fixtures.js`   300 — Teams, kits, crests and the fixture calendar
 - `src/sportsbook-odds.js`   300 — Sportsbook pricing model
 - `src/sports.js`    86 — ▸ Live basketball and soccer matches
@@ -149,7 +149,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
 - `src/render3d.js`   227 — ▸ Three.js renderer and resource lifecycle
 - `src/game-loop.js`   167 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
-- `src/game-console.js`    46 — ▸ DeadEndCity console registry and assembly
+- `src/game-console.js`    47 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
 
 ## src/physics.js ▸ Vehicle and pedestrian physics
@@ -158,11 +158,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/physics-collisions.js`   350 — Contact resolution, crash severity, damage and injury (resolveContact, damageVehicle, repairVehicle).
 - `src/physics-traffic.js`   523 — Traffic AI: signals, junction planning, road-line following (trafficControl).
 - `src/physics-aircraft.js`   273 — Aircraft strikes: An airframe is not a car: a helicopter or a plane flown into a building, a hillside or a bridge tower faster than …
-- `src/physics-driving.js`   646 — controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
+- `src/physics-driving.js`   647 — controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
 - `src/physics-step.js`   355 — physicsStep(): the fixed step, broadphase, contact passes, settling.
-- `src/physics-knockdowns.js`   267 — People knocked down by vehicles, swept person contacts, blood tracks.
+- `src/physics-knockdowns.js`   272 — People knocked down by vehicles, swept person contacts, blood tracks.
 - `src/runover.js`   223 — Second pass: a vehicle runs over someone already on the ground (knockPerson hands over): harm by speed and weight, blood, the car's stain, a death a …
-- `src/physics-update.js`   119 — updateCars(): per-frame vehicle update driving the fixed steps.
+- `src/physics-update.js`   140 — updateCars(): per-frame vehicle update driving the fixed steps.
 - `src/physics-console.js`   672 — HANDLING TESTS (developer console) turnTest() drives a fresh vehicle on the open strip beside the Oceanview runway through the real game step …
 
 ## src/geography.js ▸ Coastlines and land regions
@@ -243,7 +243,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/county.js ▸ Outlying districts
 
-- `src/county-map.js`   558 — South Coast County: shared playable geography, roads and map data.
+- `src/county-map.js`   565 — South Coast County: shared playable geography, roads and map data.
 - `src/county-build.js`   565 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
 - `src/county-guide-signs.js`    78 — The county's roadside guide signs as a plan (verge, two posts, real size) and the audit that no board of any kind stands on or across asphalt …
 
@@ -272,7 +272,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/streets-grid.js`   274 — City street footprints (cityStreets), street names, Ocean Drive palms, benches, street ends (closed and gate ends) and cityStreetAt.
 - `src/streets-markings.js`   173 — Road markings as data (cityMarkingShapes), painting the city grid's streets, and crosswalks.
-- `src/streets-waterfront.js`   368 — Waterfront: shore helpers, esplanade spots (promenadeSpots), sea railing, foot obstacles, strollers and paintPromenades.
+- `src/streets-waterfront.js`   370 — Waterfront: shore helpers, esplanade spots (promenadeSpots), sea railing, foot obstacles, strollers and paintPromenades.
 - `src/streets-county-map.js`   144 — County road centre dashes (countyMarkingShapes, paintCountyRoads) and the player's map marker (centerMapOnPlayer).
 
 ## src/terrain.js ▸ Mountains and off-road contact
@@ -312,7 +312,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/transit.js ▸ Public railway simulation
 
 - `src/transit-rails.js`   478 — Railway lines and stations, track geometry, speeds and decks (RAIL_LINES, railTrackGeometry, railGraph).
-- `src/transit-network.js`   534 — Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
+- `src/transit-network.js`   532 — Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
 
 ## src/sealife.js ▸ Sea life: dolphins, gulls and the great white
 
@@ -725,6 +725,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-crowd.js`   160 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   197 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   115 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
+- `src/game-console-soak.js`   374 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-settings.js`   120 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

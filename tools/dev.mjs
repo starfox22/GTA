@@ -6,7 +6,7 @@
 //   node tools/dev.mjs wait <seconds> [--real]
 //   node tools/dev.mjs mouse <x> <y> [seconds] [--down] [--keys Code,Code]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
-//   node tools/dev.mjs heap   (the page's JS heap in MB after a full collection)
+//   node tools/dev.mjs heap   (the page's JS heap in MB after a full collection, DOM nodes, event listeners, live Web Audio nodes: tools/soak.mjs)
 //   node tools/dev.mjs cpucost <seconds>   (CPU ms per drawn frame of each browser process: the GPU process's share is software GL's pixel cost)
 //   node tools/dev.mjs profile <seconds> [--allocations] [--top N]   (CPU profile of the live page for N seconds; --allocations: allocation sites instead)
 //   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] [--prewarm] | stop
@@ -23,7 +23,8 @@
 // truncated to --max characters (default 1500; --full for all; --cpu adds the page's main-thread
 // CPU time of the call, which a busy machine does not inflate; --profile N lists the N heaviest
 // functions of a V8 sampling profile of the call by self time; --alloc N the N biggest allocators
-// by bytes, collected objects included, to find what feeds the garbage collector). NaN and Infinity come
+// by bytes, collected objects included, to find what feeds the garbage collector; --retain N the N biggest
+// sites of what is still ALIVE after the call and a full collection, to find what a long run leaks). NaN and Infinity come
 // back as the strings "NaN" / "Infinity" so tests can see them. There is deliberately
 // no way to run arbitrary page JS: the console has named methods only (CLAUDE.md).
 //
@@ -206,7 +207,11 @@ async function serve(file, port, flags, size, ownBuild) {
         // Stopping or reading errors needs no running page (nor a slot).
         (op.op === 'stop' || op.op === 'errors' ? Promise.resolve() : thaw())
           .then(() => handle(op))
-          .then(reply, (e) => reply({ error: String(e.message || e).split('\n')[0] }))
+          // A page exception keeps its first stack frames (function names and built-page lines), `stack`.
+          .then(reply, (e) => {
+            const lines = String(e.message || e).split('\n');
+            reply({ error: lines[0], stack: lines.slice(1, 6).map((l) => l.trim()).filter(Boolean) });
+          })
           .finally(() => (lastOp = Date.now())),
       );
     });
@@ -265,6 +270,7 @@ async function serve(file, port, flags, size, ownBuild) {
     }
     page = await context.newPage();
     cdp = await context.newCDPSession(page);
+    webAudio = null;
     status.frozen = false;
     page.setDefaultTimeout(BOOT_TIMEOUT_MS);
     page.on('console', (m) => {
@@ -420,6 +426,22 @@ async function serve(file, port, flags, size, ownBuild) {
     return metrics.find((m) => m.name === 'ThreadTime')?.value ?? 0;
   }
 
+  // Web Audio nodes alive, counted from the protocol's events: enabled on the first `heap` call, so a node
+  // made earlier is never counted and never subtracted. A new page (reload) starts a new tally.
+  let webAudio = null;
+  async function audioTally() {
+    if (webAudio) return;
+    const tally = (webAudio = { live: new Map(), created: 0, contexts: new Set() });
+    cdp.on('WebAudio.contextCreated', (e) => tally.contexts.add(e.context.contextId));
+    cdp.on('WebAudio.contextWillBeDestroyed', (e) => tally.contexts.delete(e.contextId));
+    cdp.on('WebAudio.audioNodeCreated', (e) => {
+      tally.live.set(e.node.nodeId, e.node.nodeType);
+      tally.created++;
+    });
+    cdp.on('WebAudio.audioNodeWillBeDestroyed', (e) => tally.live.delete(e.nodeId));
+    await cdp.send('WebAudio.enable').catch(() => {});
+  }
+
   // Calls DeadEndCity[method](...args) in the page. The page function is fixed: only
   // the method name and JSON arguments travel. Results come back as JSON text so
   // NaN / Infinity / cycles survive as strings instead of vanishing.
@@ -467,8 +489,18 @@ async function serve(file, port, flags, size, ownBuild) {
           await cdp.send('HeapProfiler.enable');
           await cdp.send('HeapProfiler.startSampling', { samplingInterval: 2048, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
         }
+        // `retain`: the same sampler without the collected objects, read after a full collection: only what
+        // the call left alive (a leak's allocation sites).
+        if (op.retain) {
+          await cdp.send('HeapProfiler.enable');
+          await cdp.send('HeapProfiler.startSampling', { samplingInterval: 4096 });
+        }
         const result = await call(op.method, op.args || []);
         const out = { result, ms: Date.now() - t0 };
+        if (op.retain) {
+          await cdp.send('HeapProfiler.collectGarbage');
+          out.retain = summariseAllocations((await cdp.send('HeapProfiler.stopSampling')).profile.head, Number(op.retain) || 30);
+        }
         if (op.alloc) out.alloc = summariseAllocations((await cdp.send('HeapProfiler.stopSampling')).profile.head, Number(op.alloc) || 30);
         if (op.profile) out.profile = summariseProfile((await cdp.send('Profiler.stop')).profile, Number(op.profile) || 30, op.who || '');
         if (op.cpu) {
@@ -541,9 +573,16 @@ async function serve(file, port, flags, size, ownBuild) {
       case 'heap': {
         // The page's JS heap after a full collection (what a new feature's tables and kits weigh).
         await cdp.send('HeapProfiler.enable');
+        await audioTally();
         await cdp.send('HeapProfiler.collectGarbage');
         const usage = await cdp.send('Runtime.getHeapUsage');
-        return { result: { usedMB: +(usage.usedSize / 1048576).toFixed(1), totalMB: +(usage.totalSize / 1048576).toFixed(1) } };
+        const dom = await cdp.send('Memory.getDOMCounters').catch(() => null);
+        const out = { usedMB: +(usage.usedSize / 1048576).toFixed(1), totalMB: +(usage.totalSize / 1048576).toFixed(1) };
+        if (dom) Object.assign(out, { domNodes: dom.nodes, listeners: dom.jsEventListeners });
+        // Web Audio nodes alive since the first `heap` call (counted from the protocol's creation and
+        // destruction events, after the collection above has let unreferenced ones go).
+        if (webAudio) Object.assign(out, { audioNodes: webAudio.live.size, audioCreated: webAudio.created, audioContexts: webAudio.contexts.size });
+        return { result: out };
       }
       case 'cpucost': {
         // CPU seconds the browser's processes spend over `seconds` of wall-clock time, per drawn
@@ -672,12 +711,14 @@ function parseArg(s) {
 function print(reply, max) {
   if (reply.error) {
     console.log('ERROR ' + reply.error);
+    for (const l of reply.stack || []) console.log('   ' + l.slice(0, 200));
     process.exitCode = 1;
   } else {
     const text = typeof reply.result === 'string' ? reply.result : JSON.stringify(reply.result);
     console.log(max && text.length > max ? text.slice(0, max) + `… [${text.length} chars; --max N or --full]` : text);
     if (reply.profile) for (const r of reply.profile) console.log(`  ${String(r[0]).padStart(8)} self ms ${String(r[1]).padStart(8)} total ms  ${r[2]} :${r[3]}  ${r[4] ? 'lines(ticks) ' + r[4] : ''}`);
     if (reply.alloc) for (const r of reply.alloc) console.log(`  ${String(r[0]).padStart(8)} KB allocated  ${r[1]} :${r[2]}`);
+    if (reply.retain) for (const r of reply.retain) console.log(`  ${String(r[0]).padStart(8)} KB still alive  ${r[1]} :${r[2]}`);
     if (reply.cpuMs !== undefined) console.log(`(page CPU ${reply.cpuMs} ms of ${reply.ms} ms wall${reply.heapMB ? `; JS heap ${reply.heapMB[0]} -> ${reply.heapMB[1]} MB used of ${reply.heapMB[2]} MB` : ''})`);
   }
   if (reply.newErrors) console.log(`(${reply.newErrors} new console errors: node tools/dev.mjs errors)`);
@@ -689,7 +730,7 @@ async function main(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--full' || a === '--real' || a === '--down' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck' || a === '--prewarm' || a === '--allocations' || a === '--cpu') opts[a.slice(2)] = true;
-    else if (a === '--profile' || a === '--who' || a === '--alloc' || a === '--port' || a === '--keys' || a === '--max' || a === '--top' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
+    else if (a === '--profile' || a === '--who' || a === '--alloc' || a === '--retain' || a === '--port' || a === '--keys' || a === '--max' || a === '--top' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
     else pos.push(a);
   }
   const [cmd, ...rest] = pos;
@@ -708,7 +749,7 @@ async function main(argv) {
     }
     case 'call':
       if (!rest[0]) throw new Error('usage: call <method> [jsonArg ...]');
-      return print(await request({ op: 'call', method: rest[0], args: rest.slice(1).map(parseArg), cpu: !!opts.cpu, profile: opts.profile ? Number(opts.profile) : 0, alloc: opts.alloc ? Number(opts.alloc) : 0, who: opts.who || '' }), max);
+      return print(await request({ op: 'call', method: rest[0], args: rest.slice(1).map(parseArg), cpu: !!opts.cpu, profile: opts.profile ? Number(opts.profile) : 0, alloc: opts.alloc ? Number(opts.alloc) : 0, retain: opts.retain ? Number(opts.retain) : 0, who: opts.who || '' }), max);
     case 'keys':
       return print(await request({ op: 'keys', codes: String(rest[0]).split(','), seconds: Number(rest[1] || 1), real: !!opts.real }), max);
     case 'wait':
