@@ -10,6 +10,7 @@ mkdir -p dist/check
 python3 tools/build.py --out "dist/check/$TAG.html" --js-out "dist/check/$TAG.js" >/dev/null
 node --check "dist/check/$TAG.js"
 echo "syntax OK ($(wc -l < "dist/check/$TAG.js") lines), build OK ($(wc -c < "dist/check/$TAG.html") bytes)"
+node tools/dup-functions.mjs "dist/check/$TAG.js"
 if ! python3 tools/filemap.py --check; then
   echo "FAIL: run python3 tools/filemap.py and commit docs/FILEMAP.md" >&2
   exit 1

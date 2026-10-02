@@ -127,9 +127,10 @@
       car.taxiHire = true;
       car.speed = 0;
       player.inv = Math.max(player.inv, 0.5);
-      tell('FARE $' + fare + ' · ' + Math.round(worldMeters(routeLength(route))) + ' m · ' + keyName('interact') + ' to get out', 5);
+      tell('FARE $' + fare + ' · ' + Math.round(worldMeters(taxiRouteLength(route))) + ' m · ' + keyName('interact') + ' to get out', 5);
     }
-    function routeLength(route) {
+    // (Not `routeLength`: livingcity-medics.js declares that name, and the later declaration of two in one closure wins.)
+    function taxiRouteLength(route) {
       let total = 0;
       for (let i = 1; i < route.length; i++) total += distanceBetween(route[i - 1], route[i]);
       return total;
