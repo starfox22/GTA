@@ -239,6 +239,8 @@
           bigTextures: big.slice(0, 12).map(([name, pixels]) => name + ' ' + (pixels / 1e6).toFixed(1) + 'M'),
           uploadedGeometries: renderer.info.memory.geometries,
           uploadedTextures: renderer.info.memory.textures,
+          // Baked canvas textures (ground sheets, sign faces) still waiting for their upload and release.
+          canvasesToRelease: bakedCanvases.length,
         };
       }
       // Geometry bytes of one object's subtree (each geometry once).
