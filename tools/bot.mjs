@@ -131,6 +131,9 @@ async function ensurePlay(why) {
     if (st.mode === 'dead') {
       died = true;
       await realWait(1);
+    } else if (st.mode === 'elevator') {
+      // The Blue Hour lift runs on the frame clock (1.7 s of frames): a loaded machine needs a while; simulate steps it.
+      await sim([], 1);
     } else {
       await press('Escape');
       await realWait(0.2);
@@ -213,7 +216,8 @@ const actions = {
     const a = pick(anchors);
     const jitter = chance(0.5) ? 0 : between(-300, 300);
     const r = await call('godTeleport', a.x + jitter, a.y + jitter * 0.7);
-    if (r.solidHere) find('teleport', `godTeleport left the player inside solid geometry at ${r.to.x},${r.to.y} (${r.district}, asked ${r.asked.x},${r.asked.y})`);
+    // (A boat on the sea or an aircraft in the air is over "solid" ground by that test: only people and road vehicles count.)
+    if (r.solidHere && (r.kind === 'foot' || r.kind === 'road')) find('teleport', `godTeleport left the player inside solid geometry at ${r.to.x},${r.to.y} (${r.district}, asked ${r.asked.x},${r.asked.y})`);
     await sim([], between(0.3, 2));
     return `${a.region} -> ${r.kind} ${r.district}`;
   },
@@ -231,6 +235,7 @@ const actions = {
     for (const k of ['KeyD', 'KeyA', 'KeyS', 'KeyW']) {
       await sim([k], 0.8);
       const st = await call('status');
+      if (st.mode !== 'play') return 'skip (' + st.mode + ')';
       if (dist(st, st0) > 6) return 'moves ' + k;
     }
     const prompt = await call('promptState');
@@ -271,13 +276,16 @@ const actions = {
     if (kind === 'road' && rep.player.vehicle === type && type !== 'tank') {
       const a = await call('status');
       let moved = 0;
+      let alive = a.mode === 'play';
       for (const k of ['KeyW', 'KeyS']) {
+        if (!alive) break;
         await sim([k], 1.6);
         const b = await call('status');
+        alive = b.mode === 'play'; // (arrested or shot meanwhile: nothing moves in a WASTED / BUSTED sequence)
         moved = Math.max(moved, dist(a, b));
         if (moved > 8) break;
       }
-      if (moved <= 8) find('trapped', `${type} cannot move forward or back at ${a.x},${a.y} (${a.district})`);
+      if (alive && moved <= 8) find('trapped', `${type} cannot move forward or back at ${a.x},${a.y} (${a.district})`);
     }
     return `${type} ${legs} legs -> ${rep.player.vehicle || 'foot'}`;
   },
