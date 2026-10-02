@@ -39,7 +39,8 @@ answer is to do that work behind the title, a few milliseconds at a time (render
    up from the table; a new model builder must work on a bare `{id, type, color, x, y, a}` record.
 4. While the title is up: the far copy of the city (42 MB in ~500 meshes) and sample shadow casters
    are drawn once into a 1 x 1 target (`uploadMeshes`) so their buffers and shadow-depth programs
-   (side, alpha cut-out, instancing) are on the GPU before the first flight.
+   (side, alpha cut-out, instancing, and a stand-in for each custom depth material: the trees, sea life,
+   the helicopter's roof stand-in) are on the GPU before the first flight.
 
 Steps 3 and 4 stop when the game starts (they cost a build each); the rest continues at 2.5 ms a step.
 

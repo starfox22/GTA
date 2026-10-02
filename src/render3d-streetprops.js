@@ -239,6 +239,10 @@
        * `options.style` is a hint for names the style table does not know
        * ('transit', 'kiosk', 'truck', 'town', 'resort', 'trail').
        */
+      // Canvas textures painted once and uploaded once (the ground sheets, each sign's face and glow mask): their
+      // bitmaps are freed after the upload (render3d-resources.js BAKED CANVAS RELEASE). A sign's two 1024 x 256
+      // canvases are 2 MB: a few hundred signs held ~0.5 GB of canvas memory beside their copy on the GPU.
+      const bakedCanvases = [];
       const signBoards = [],
         signTexture = (canvas) => {
           const tx = new Three.CanvasTexture(canvas);
@@ -246,6 +250,7 @@
           tx.minFilter = Three.LinearMipmapLinearFilter;
           tx.magFilter = Three.LinearFilter;
           tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          bakedCanvases.push(tx);
           return tx;
         };
       function sign(text, x, z, width, color, vertical = false, options = {}) {

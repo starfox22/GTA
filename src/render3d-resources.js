@@ -65,9 +65,12 @@
        * 110 MB as a canvas; the county, Sunset Pier and Fort Sentinel tiles add
        * ~70 MB) are uploaded to the GPU once and never repainted. Once a sheet's
        * texture is on the GPU its canvas is shrunk to a pixel, which frees the
-       * bitmap; the texture keeps its GPU copy (nothing bumps its version again).
+       * bitmap; the texture keeps its GPU copy (nothing bumps its version again). The list
+       * (`bakedCanvases`, render3d-streetprops.js) also holds every `sign()` face and glow mask.
+       * Never list a texture that is cloned (far scenery's `identity()` clones share the image
+       * and upload later) or repainted.
        */
-      const bakedCanvases = [groundTx, ...countyGroundMaterials.map((m) => m.map)].filter((t) => t && t.image);
+      bakedCanvases.push(...[groundTx, ...countyGroundMaterials.map((m) => m.map)].filter((t) => t && t.image));
       function releaseBakedCanvases() {
         for (let i = bakedCanvases.length - 1; i >= 0; i--) {
           const texture = bakedCanvases[i],
@@ -418,6 +421,12 @@
             }
           }
           if (forced) unlinked.clear();
+          // A staged switch that has not finished in 20 s (a program that never reports ready) is let through:
+          // the flags must not stay behind for want of one program.
+          if (stage && performance.now() - stage.started > 20000) {
+            queue.length = passes.length = uploads.length = 0;
+            unlinked.clear();
+          }
           for (const program of unlinked) {
             if (performance.now() - started > budget * 2) break;
             if (!program.isReady()) continue;
@@ -449,6 +458,12 @@
           if (stage) setLitFlags(stage.state);
           try {
             stepWork();
+          } catch (error) {
+            if (!stage) throw error;
+            // A failed staged step gives up staging: the switch is made at once, as it was before it was staged.
+            info.error = String(error).slice(0, 160);
+            setLitFlags(before);
+            finishLitSwitch(stage);
           } finally {
             // (A step that finished the switch has set the flags for good: nothing to put back.)
             if (stage && litStaged === stage) setLitFlags(before);

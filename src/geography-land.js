@@ -94,9 +94,26 @@
       return Math.hypot(x - a[0] - t * dx, y - a[1] - t * dy);
     }
     function onBoulevard(x, y, margin = 0) {
-      return BOULEVARDS.some((r) =>
-        r.points.some((p, i) => i && segmentDistance(x, y, r.points[i - 1], p) < r.width / 2 + margin),
-      );
+      for (let k = 0; k < BOULEVARDS.length; k++) {
+        const r = BOULEVARDS[k],
+          pts = r.points,
+          reach = r.width / 2 + margin;
+        for (let i = 1; i < pts.length; i++) {
+          const a = pts[i - 1],
+            b = pts[i];
+          // A point beyond `reach` of the segment's box is further than `reach` from it: only the near ones
+          // need the exact distance (the placement of every building asks this about five points).
+          if (
+            (x < a[0] - reach && x < b[0] - reach) ||
+            (x > a[0] + reach && x > b[0] + reach) ||
+            (y < a[1] - reach && y < b[1] - reach) ||
+            (y > a[1] + reach && y > b[1] + reach)
+          )
+            continue;
+          if (segmentDistance(x, y, a, b) < reach) return true;
+        }
+      }
+      return false;
     }
     function landRect(x, y, w, h) {
       return [

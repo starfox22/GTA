@@ -128,6 +128,12 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - A rain streak takes its head's light along its whole length (weather3d.js), so a drop just inside a beam's top edge draws a lit line up to ~6 m above it (lighting each vertex at its own point costs nothing more but changes the city look).
 - The terrain horizon sees the height field only: boulders, trees and buildings on the range do not shadow the beams; the mountain haze level and the light bar's strength were tuned on SwiftShader.
 
+## Boot and render memory (docs/areas/boot-and-memory.md)
+- Boot is ~6 s of simulation (terrain field 1.7 s, county, bike-share plan) plus the renderer's scene build before the title answers: signs and the neon atlas (~16%), ground fields, airport liveries (a per-pixel loop), the far copy of the city (built at boot, used only from the air or zoomed far out). Each could be built lazily (aircraft must stay in their `statics` group; the far copy needs its prewarm upload moved to the pre-upload timer).
+- A tier change stages the scene's programs, the post chain and the shadow-depth samples; a car type not in the scene at the switch still compiles on first sight (stand-in models are only built behind the title).
+- The cell pre-upload and the staged switch are measured by counts only (software GL has no parallel compiler and no GPU): check the first-visit upload sizes and a tier change on a real GPU.
+- JS heap creeps ~0.1-0.2 MB per teleport stop in quiet play (not attributed); the chaos soak's +17 MB follows the sim's retained vehicles (crash-test cars, police): diff two heap snapshots on a quiet machine.
+
 ## Unicorn (unicorn3d.js)
 - Little muscle definition. The sky reflection now fades on surfaces facing the ground (the bright patch under the chest): not re-shot.
 

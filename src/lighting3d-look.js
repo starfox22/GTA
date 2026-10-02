@@ -296,10 +296,18 @@
         // A shadow map that does not exist yet takes its size now, so the staged shadow pass makes the right one.
         if (state.shadows && !renderer.shadowMap.enabled) sun.shadow.mapSize.set(state.size, state.size);
         if (state.spot.cast && !airSpot.castShadow) airSpot.shadow.mapSize.set(state.spot.size, state.spot.size);
-        postSceneTarget(); // (the post targets of the new tier must exist for the post passes)
-        litStaged = { state };
+        litStaged = { state, started: performance.now() };
         litStageInfo.pending = true;
-        prewarmShaders(litStaged);
+        try {
+          postSceneTarget(); // (the post targets of the new tier must exist for the post passes)
+          prewarmShaders(litStaged);
+        } catch (error) {
+          // Staging is an optimisation: when it cannot start the switch is made at once.
+          litStageInfo.error = String(error).slice(0, 160);
+          litStaged = null;
+          litStageInfo.pending = false;
+          applyLitState(state);
+        }
       }
       // Called by the staged prewarm when every program of the new state is ready.
       function finishLitSwitch(stage) {
@@ -321,6 +329,6 @@
         setSearchlightQuality(tier, false);
         litStaged = null;
         litStageInfo.pending = false;
-        if (litStagingReady && litProgramsDiffer(state)) stageLitSwitch(state);
+        if (litStagingReady && lookSwitchState.stagedSwitch && litProgramsDiffer(state)) stageLitSwitch(state);
         else applyLitState(state);
       }
