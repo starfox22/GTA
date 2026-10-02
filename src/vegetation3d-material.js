@@ -115,12 +115,17 @@
       treeMaterial.customProgramCacheKey = () => (treeMaterial.alphaToCoverage ? 'city-trees-a2c' : 'city-trees');
       // Alpha to coverage on the tiers that draw into a multisampled target
       // (quality.js msaa; applyRendererQuality). One relink when it changes.
-      function setFoliageCoverage(tier) {
-        const on = !!(tier && tier.msaa > 0 && hdrCapable && lookSwitchState.foliageCoverage);
+      function foliageCoverageFor(tier) {
+        return !!(tier && tier.msaa > 0 && hdrCapable && lookSwitchState.foliageCoverage);
+      }
+      function setFoliageCoverageOn(on) {
         if (treeMaterial.alphaToCoverage === on) return;
         treeMaterial.alphaToCoverage = on;
         treeMaterial.defines = on ? { CITY_A2C: 1 } : {};
         treeMaterial.needsUpdate = true;
+      }
+      function setFoliageCoverage(tier) {
+        setFoliageCoverageOn(foliageCoverageFor(tier));
       }
       // The shadow pass: the same cut-outs, morph and sway.
       const treeDepthMaterial = new Three.MeshDepthMaterial({

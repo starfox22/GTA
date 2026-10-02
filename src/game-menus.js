@@ -17,7 +17,9 @@
     }
     function begin() {
       if (gameMode !== 'menu') return;
+      bootMark('begin');
       initAudio();
+      bootMark('audio-init');
       newCallNotice();
       gameMode = 'play';
       getElement('menu').classList.add('hidden');

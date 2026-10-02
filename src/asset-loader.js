@@ -6,6 +6,9 @@
        * calls startDeadEndCity(). Each reference below points to a non-executable
        * media block above it in the file.
        */
+try {
+  performance.mark('dec:loader');
+} catch (error) {}
 const embeddedAssetReferences = {
   "architecture": "media-architecture",
   "ground": "media-ground",
@@ -161,4 +164,7 @@ document.documentElement.style.setProperty(
 );
 
 // All code and media are present. Starting the game needs no network fetch.
+try {
+  performance.mark('dec:media-ready');
+} catch (error) {}
 startDeadEndCity(gameAssets);
