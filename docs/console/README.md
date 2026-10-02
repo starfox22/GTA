@@ -39,3 +39,4 @@ One table per console group in this folder. Find a method with
 | [crowd](crowd.md) | `src/game-console-crowd.js` | People: crowd report, shots and alarms, street scenes, lineups, speech bubbles, crowd render cost; the living city (`livingCity`: traffic streaming, sirens, ambulances, street events) |
 | [graphics](graphics.md) | `src/game-console-graphics.js` | Graphics and render probes: quality, render scale, frame stats, post views, shadow and draw-call probes, scale audit, model lineups |
 | [settings](settings.md) | `src/game-console-settings.js` | Settings, key bindings and the car radio (+ `audioConsole()`) |
+| [integrity](integrity.md) | `src/game-console-integrity.js` | One read-only sweep for impossible state (`integrity()`), what `tools/bot.mjs` checks after every action |
