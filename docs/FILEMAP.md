@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-481 files in the include tree, 166,203 lines.
+481 files in the include tree, 166,228 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -386,7 +386,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-statics.js`   312 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    58 — ▸ Tree library: species, foliage atlas, wind, LOD
-- `src/render3d-streetprops.js`   294 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
+- `src/render3d-streetprops.js`   297 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 - `src/cityscape3d.js`    21 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
 - `src/roadblocks3d.js`    70 — Police roadblock meshes
@@ -449,8 +449,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-vehicle-models.js`   350 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/render3d-prewarm-models.js`    67 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
 - `src/render3d-effects.js`   207 — ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
-- `src/render3d-resources.js`   481 — GPU resource lifecycle: shared geometries, model pruning and disposal.
-- `src/render3d-hiccups.js`   321 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
+- `src/render3d-resources.js`   501 — GPU resource lifecycle: shared geometries, model pruning and disposal.
+- `src/render3d-hiccups.js`   323 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
 - `src/render3d-api.js`   512 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   660 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().

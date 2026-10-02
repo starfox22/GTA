@@ -178,10 +178,30 @@
             bestDistance = d;
           }
         }
-        if (!best) return 0;
         const batch = [];
         let bytes = 0;
-        while (best.next < best.meshes.length && bytes < CELL_SLICE_BYTES) {
+        // Signs hang from the scene, not from a cell: the two nearest not drawn yet (each is two 1 MB textures)
+        // go in the same slice, which also lets their canvases be freed (BAKED CANVAS RELEASE).
+        let first = null,
+          second = null,
+          firstD = limit,
+          secondD = limit;
+        for (const m of signMeshes) {
+          if (!m.visible || geometryUploaded(m.geometry)) continue;
+          const d = Math.max(Math.abs(m.position.x - viewCenter.x), Math.abs(m.position.z - viewCenter.y));
+          if (d < firstD) {
+            second = first;
+            secondD = firstD;
+            first = m;
+            firstD = d;
+          } else if (d < secondD) {
+            second = m;
+            secondD = d;
+          }
+        }
+        if (first) batch.push(first);
+        if (second) batch.push(second);
+        while (best && best.next < best.meshes.length && bytes < CELL_SLICE_BYTES) {
           const mesh = best.meshes[best.next++],
             g = mesh.geometry;
           if (!mesh.visible || geometryUploaded(g)) continue;

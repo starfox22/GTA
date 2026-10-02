@@ -5,6 +5,8 @@
   crossing into a new map cell uploads its geometry ahead of the camera in slices of ~1.5 MB; AUTO resolution stops
   hunting between two scales (it holds below the one that was too much, 30 s then longer) and every tier change
   reallocates the post targets once instead of up to four times.
+- Memory: each sign's two canvases (2 MB) are freed once uploaded (the pre-upload sends the nearest signs); `onBoulevard` and
+  `roadPerformance` cost less at start-up (identical results).
 - Internals: lit state (`litStateFor`, `setLitFlags`, `applyLitState`, `stageLitSwitch`, lighting3d-look.js) and
   `prewarmShaders(stage)`; `postWarmPasses(all)`; lazy `sizePostTargets` / `postSceneTarget()`; CELL PRE-UPLOAD
   (`cellWarmTick`, render3d-resources.js); shadow-depth stand-ins for meshes with a custom depth material

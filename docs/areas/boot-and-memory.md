@@ -33,12 +33,22 @@ must stay in the `statics` group so the batcher treats them as before); the terr
 the land regions, roads and rails, so that is a rewrite) or cached per build in IndexedDB; yielding between the
 renderer's includes so the title answers while it builds (the START button would wait for `renderer`).
 
+The title card paints at ~0.45 s (first contentful paint) while the script runs: the browser paints the static
+HTML before the 8 MB game script, so deferring the start-up to let it paint would gain nothing. The gap between
+`console-ready` and `first-frame` (~1.2 s headless) is the browser's own first style and layout.
+
 ## What this pass changed at boot
 
 - `initAudio` (ENTER) turned 65 base64 samples into bytes with `Uint8Array.from(string, fn)`, a call per byte:
   `audio-init` took ~0.5 s of the first click. `dataUrlBytes` is a plain loop with the same bytes.
 - `roadPerformance` (vehicle 0-100 bisection) integrates only until the car is slower than the target time and
-  stops when the bracket cannot narrow: the same `power` for 400 random specs, ~45% less CPU.
+  stops when the bracket cannot narrow: the same `power` for 400 random specs, ~45% less CPU. `onBoulevard` rejects
+  a segment by its box before the exact distance (same answers for 300,000 random queries, ~6x faster).
+- Measured on the idle machine (A B B A, 4 boots each, medians, headless `dev&norender`): ENTER to `audio-init`
+  330 -> 203 ms (51-228 after, 314-351 before), ENTER to the first play frame 603 -> 396 ms, `populate` +
+  `buildColliders` 1266 -> 1160 ms, main-thread CPU to the title 6258 -> 6224 ms (the terrain, county and renderer
+  costs above are untouched). Rendered boot (`dev`, one each): `createCityRenderer` 16.1 -> 12.9 s, thread CPU
+  21.8 -> 19.5 s (noisy: one run each).
 
 ## Renderer memory soak
 
@@ -76,6 +86,9 @@ quiet play that this soak could not attribute (a heap-snapshot diff on a quiet m
   to what a program is keyed by in a tier change goes through `litStateFor` / `setLitFlags` / `applyLitState`. Software GL
   without `?prewarm` switches at once, as before. Models not in the scene at the switch (a car type not yet seen) still
   compile on first sight.
+  Measured (software GL, forced prewarm, 480 x 300): LOW -> HIGH created **45 programs** in the first frame
+  with the immediate flip (base build; HIGH -> LOW 0, -> ULTRA 1) against **1** staged (LOW -> HIGH 1, -> LOW 0,
+  -> ULTRA 0; the stage took 44 s, 7 s and 15 s of slow frames here, seconds on a GPU).
 - **Lazy post targets** (postfx3d.js): `sizePostTargets()` only marks them stale; the next frame, or whoever needs the
   scene target first (`postSceneTarget()`), allocates once. A tier change reallocated every post target up to four times
   in a row (scale reset, post quality, resize, LOW's resolution cap).
@@ -87,3 +100,16 @@ quiet play that this soak could not attribute (a heap-snapshot diff on a quiet m
   meshes drawn into the 1 x 1 upload target (no shadow pass), so the camera's first draw finds them there; a slice over
   10 ms backs the timer off to 500 ms. "On the GPU" is three.js's dispose listener on the geometry. Only where the
   prewarm runs (the first-visit uploads of 0.2-13 MB per cell are what it removes). `renderHiccups().cells.preUpload`.
+- **Sign canvases**: each `sign()` face and glow mask (2 MB) is in `bakedCanvases` and freed after its upload; the
+  pre-upload sends the two nearest undrawn signs with each slice. Without it ~330 sign canvases (~85 M pixels,
+  ~340 MB of bitmaps) stayed alive beside their GPU copies; `renderHiccups().gpu.canvasesToRelease` counts those
+  waiting (334 -> 314 after a minute of software-GL slices, whose slowest took 3 s; a GPU takes ms).
+
+## First uses per scenario (LOW, software GL, forced prewarm, after this pass)
+
+Programs created in play: street 1 (the first frame), drive, night, rain, explosion, police chase, mission 1
+harbour, mission 2 hotel, helicopter, plane, parachute 0 each; textures 0-28 and geometries 0-88 (new vehicle
+models and sea/air kits). The first night frame has a `sky` lap of 1.7 s that is native time (the profile shows
+`(program)` 835 ms: software GL drawing the sky environment), not JS. Not measured at MEDIUM-ULTRA (software
+frames of 20 s+). Steady state at LOW: street 256 calls / 0.88 M triangles, hotel 209 / 0.79 M, harbour 211 /
+0.69 M, 185 programs, no shadow calls, geometry 169 MB, textures 270 M pixels.

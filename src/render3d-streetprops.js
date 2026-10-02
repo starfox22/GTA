@@ -242,7 +242,9 @@
       // Canvas textures painted once and uploaded once (the ground sheets, each sign's face and glow mask): their
       // bitmaps are freed after the upload (render3d-resources.js BAKED CANVAS RELEASE). A sign's two 1024 x 256
       // canvases are 2 MB: a few hundred signs held ~0.5 GB of canvas memory beside their copy on the GPU.
-      const bakedCanvases = [];
+      const bakedCanvases = [],
+        // Every sign() board: they hang straight from the scene, so the cell pre-upload lists them itself.
+        signMeshes = [];
       const signBoards = [],
         signTexture = (canvas) => {
           const tx = new Three.CanvasTexture(canvas);
@@ -281,6 +283,7 @@
         m.userData.sign = true;
         m.receiveShadow = true;
         scene.add(m);
+        signMeshes.push(m);
         const backMat = staticMat(design.backColor, 0.6, 0.3);
         m.userData.backing =
           design.backing === 'raceway'
