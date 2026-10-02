@@ -73,7 +73,8 @@
         xx = Math.abs(x - jx) < 110 ? jx + Math.sign(x - jx || 1) * 110 : x;
       return { stop: { x: xx, y: rowY + side * 22 }, junction: { x: jx, y: rowY }, heading: xx > jx ? 0 : Math.PI };
     }
-    function routeLength(from, route) {
+    // (Not `routeLength`: taxi.js declares one of that name, and the later declaration in the closure wins for both.)
+    function medicRouteLength(from, route) {
       let d = 0,
         at = from;
       for (const p of route) {
@@ -115,7 +116,7 @@
         const r = copRoute({ x: start.junction.x, y: start.junction.y, pursuitTarget: p.junction }, p.junction),
           last = r.length ? r[r.length - 1] : start.junction;
         if (Math.abs(last.x - p.junction.x) > 4 || Math.abs(last.y - p.junction.y) > 4) continue;
-        const length = routeLength(start.junction, r) + Math.hypot(p.stop.x - p.junction.x, p.stop.y - p.junction.y);
+        const length = medicRouteLength(start.junction, r) + Math.hypot(p.stop.x - p.junction.x, p.stop.y - p.junction.y);
         if (length < best) {
           best = length;
           plan = p;
