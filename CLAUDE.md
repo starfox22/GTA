@@ -173,6 +173,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   targets are sized lazily: use `postSceneTarget()` outside `renderFrame`. Start-up stages are marked with
   `bootMark(name)` (`DeadEndCity.bootTimings()`); a canvas texture painted once and uploaded once goes on
   `bakedCanvases`, never one that is cloned or repainted.
+- Hot paths use `hypot2()` (game-state.js; bit-identical to Math.hypot, which allocates); a rectangle list asked
+  by `solid()` goes through `rectListBlocked` (cell-indexed), never a per-call walk of a world-spanning list.
+  Anything new that grows is capped and listed in `soakReport()`; `node tools/soak.mjs` (30 game min) shows
+  growth and `node tools/ab.mjs A.html B.html` A/Bs two builds on one browser slot.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
