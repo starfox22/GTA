@@ -474,8 +474,8 @@
       // hanging there pilotless with its rotor stopped.
       if (player.car && isAircraft(player.car)) player.car.abandonedFlight = true;
       player.car = null;
-      player.x = spawn.x;
-      player.y = spawn.y;
+      // The one way to move the player: it lets go of a fall, a ladder or a pool that would pull them back.
+      teleportPlayer(spawn.x, spawn.y);
       gameMode = 'play';
       startMission();
       getElement('pauseMenu').classList.add('hidden');

@@ -167,8 +167,7 @@
       cash = 0;
       mission = null;
       player.car = null;
-      player.x = spawn.x;
-      player.y = spawn.y;
+      teleportPlayer(spawn.x, spawn.y);
       player.hp = 100;
       player.armor = 0;
       cameraTarget.x = player.x;

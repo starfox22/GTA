@@ -421,7 +421,7 @@
       player.roof = false;
       player.buildingRoof = null;
       player.altitude = 0;
-      Object.assign(player, spawn);
+      teleportPlayer(spawn.x, spawn.y);
       cameraTarget.x = player.x;
       cameraTarget.y = player.y;
       missionIndex = index;
